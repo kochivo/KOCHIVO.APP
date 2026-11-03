@@ -1,13 +1,18 @@
+import { createT } from '@/core/i18n/messages';
+import type { Translator } from '@/core/i18n/messages';
+import type { Locale } from '@/core/i18n/locale';
+import { messages } from './messages';
 import { Home, MessageCircle, TrendingUp, Utensils } from 'lucide-react';
 
-const items = [
-  { href: '/player', label: 'الرئيسية', icon: Home },
-  { href: '/player/nutrition', label: 'التغذية', icon: Utensils },
-  { href: '/player/progress', label: 'التطور', icon: TrendingUp },
-  { href: '/player/captain', label: 'الكابتن', icon: MessageCircle },
-];
+function navItems(t: Translator<typeof messages>) { return [
+  { href: '/player', label: t('home'), icon: Home },
+  { href: '/player/nutrition', label: t('nutrition'), icon: Utensils },
+  { href: '/player/progress', label: t('progress'), icon: TrendingUp },
+  { href: '/player/captain', label: t('coach'), icon: MessageCircle },
+]; }
 
-export function playerNav(pathname: string) {
+export function playerNav(pathname: string, locale: Locale = 'ar') {
+  const items = navItems(createT(messages, locale));
   const active = items.filter(({ href }) => pathname === href ||
     (href !== '/player' && pathname.startsWith(`${href}/`)))
     .sort((a, b) => b.href.length - a.href.length)[0]?.href;

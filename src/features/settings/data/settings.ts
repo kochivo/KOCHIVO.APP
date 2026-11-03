@@ -1,14 +1,17 @@
 'use server';
+import { getT } from '@/core/i18n/server';
+import { messages } from '../messages';
+
 
 import { supabaseServer } from '@/core/supabase/server';
-import { inviteMessageSchema, profileSchema } from '../schema';
+import { settingsSchemas } from '../schema';
 import type { SettingsProfile } from '../schema';
 
 type Row = Record<string, unknown>;
 type ExportTable = 'workout_sessions' | 'set_logs' | 'meal_logs' | 'check_ins' | 'form_checks' |
   'player_intake' | 'coach_clients' | 'programs' | 'nutrition_plans';
 type Result<T> = { data: T; error?: never } | { error: string; data?: never };
-const failure = 'مش قادرين نحفظ التغيير. جرّب تاني';
+
 
 async function ownSession() {
   const client = await supabaseServer();
@@ -18,16 +21,19 @@ async function ownSession() {
 }
 
 export async function loadSettings(): Promise<Result<SettingsProfile>> {
+  const t = await getT(messages);
   try {
     const { client, id } = await ownSession();
     const result = await client.from('profiles').select('*').eq('id', id).single();
-    if (result.error || !result.data) return { error: 'مش قادرين نحمّل الإعدادات. جرّب تاني' };
+    if (result.error || !result.data) return { error: t('couldnTLoadSettingsTryAgain') };
     return { data: result.data };
-  } catch { return { error: 'مش قادرين نحمّل الإعدادات. جرّب تاني' }; }
+  } catch { return { error: t('couldnTLoadSettingsTryAgain') }; }
 }
 
 export async function saveProfile(input: unknown): Promise<Result<SettingsProfile>> {
-  const parsed = profileSchema.safeParse(input);
+  const t = await getT(messages);
+  const failure = t('couldnTSaveChangesTryAgain');
+  const parsed = settingsSchemas(t).profileSchema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? failure };
   try {
     const { client, id } = await ownSession();
@@ -38,13 +44,15 @@ export async function saveProfile(input: unknown): Promise<Result<SettingsProfil
 }
 
 export async function saveInviteMessage(input: unknown): Promise<Result<SettingsProfile>> {
-  const parsed = inviteMessageSchema.safeParse(input);
+  const t = await getT(messages);
+  const failure = t('couldnTSaveChangesTryAgain');
+  const parsed = settingsSchemas(t).inviteMessageSchema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? failure };
   try {
     const { client, id } = await ownSession();
     const profile = await client.from('profiles').select('*').eq('id', id).single();
     if (profile.error || !profile.data) return { error: failure };
-    if (profile.data.role !== 'captain') return { error: 'رسالة الدعوة للكابتن بس' };
+    if (profile.data.role !== 'captain') return { error: t('onlyCoachesCanSetInviteMessages') };
     const result = await client.from('profiles').update(parsed.data).eq('id', id).eq('role', 'captain').select('*').single();
     if (result.error || !result.data) return { error: failure };
     return { data: result.data };
@@ -52,6 +60,8 @@ export async function saveInviteMessage(input: unknown): Promise<Result<Settings
 }
 
 export async function requestDeletion(): Promise<Result<string>> {
+  const t = await getT(messages);
+  const failure = t('couldnTSaveChangesTryAgain');
   try {
     const { client } = await ownSession();
     const result = await client.rpc('request_account_deletion');
@@ -61,6 +71,8 @@ export async function requestDeletion(): Promise<Result<string>> {
 }
 
 export async function cancelDeletion(): Promise<Result<null>> {
+  const t = await getT(messages);
+  const failure = t('couldnTSaveChangesTryAgain');
   try {
     const { client } = await ownSession();
     const result = await client.rpc('cancel_account_deletion');
@@ -69,10 +81,11 @@ export async function cancelDeletion(): Promise<Result<null>> {
 }
 
 export async function exportMyData(): Promise<Result<{ profile: Row; rows: Record<string, Row[]> }>> {
+  const t = await getT(messages);
   try {
     const { client, id } = await ownSession();
     const profile = await client.from('profiles').select('*').eq('id', id).single();
-    if (profile.error || !profile.data) return { error: 'مش قادرين ننزّل بياناتك. جرّب تاني' };
+    if (profile.error || !profile.data) return { error: t('couldnTDownloadYourDataTry') };
     const captain = profile.data.role === 'captain';
     const tables: ExportTable[] = captain ? ['coach_clients', 'programs', 'nutrition_plans'] :
       ['workout_sessions', 'set_logs', 'meal_logs', 'check_ins', 'form_checks', 'player_intake'];
@@ -92,5 +105,5 @@ export async function exportMyData(): Promise<Result<{ profile: Row; rows: Recor
       return [table, rows] as const;
     }));
     return { data: { profile: { ...profile.data }, rows: Object.fromEntries(entries) } };
-  } catch { return { error: 'مش قادرين ننزّل بياناتك. جرّب تاني' }; }
+  } catch { return { error: t('couldnTDownloadYourDataTry') }; }
 }

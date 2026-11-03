@@ -1,3 +1,4 @@
+import { getLocale } from '@/core/i18n/server';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
@@ -41,7 +42,7 @@ export async function handleAuthCallback(request: NextRequest) {
     return NextResponse.redirect(new URL(user.role === 'captain' ? '/captain' : '/player', request.url));
   } catch (error) {
     const target = new URL(invite ? `/i/${invite}` : '/login', request.url);
-    target.searchParams.set('error', authError(error));
+    target.searchParams.set('error', authError(error, await getLocale()));
     return NextResponse.redirect(target);
   }
 }

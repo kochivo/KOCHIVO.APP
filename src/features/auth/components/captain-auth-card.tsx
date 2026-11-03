@@ -1,26 +1,34 @@
 'use client';
+import { LanguageSwitch } from '@/ui/language-switch';
+import { localeDir } from '@/core/i18n/locale';
+import { useLocale, useT } from '@/core/i18n/client';
+import { messages } from '../messages';
 import Link from 'next/link';
 import { useState, useTransition } from 'react';
 import { Button, GlassCard, Segmented, TextField } from '@/ui';
 import { signInPassword } from '../data/sign-in-password';
 import { signUpCaptain } from '../data/sign-up-captain';
 import { GoogleButton } from './google-button';
-import { callAuthAction } from '../data/client-action';
+import { callAuthAction as runAuthAction } from '../data/client-action';
 import type { AuthMode } from '../auth-mode';
 
 export function CaptainAuthCard({ callbackError = false, initialMode = 'login' }: { callbackError?: boolean; initialMode?: AuthMode }) {
+  const t = useT(messages);
+  const locale = useLocale();
+  const callAuthAction = (action: Parameters<typeof runAuthAction>[0]) => runAuthAction(action, locale);
   const [mode, setMode] = useState<string>(initialMode);
   const [message, setMessage] = useState('');
-  const [error, setError] = useState(callbackError ? 'الدخول مكملش، جرّب تاني' : '');
+  const [error, setError] = useState(callbackError ? t('signInFailedTryAgain') : '');
   const [pending, start] = useTransition();
-  return <main className="mesh flex min-h-dvh items-center justify-center p-6">
+  return <main dir={localeDir(locale)} className="mesh flex min-h-dvh items-center justify-center p-6">
     <GlassCard level="strong" className="w-full max-w-md space-y-6 p-8">
-      <h1 className="text-3xl font-extrabold">{mode === 'login' ? 'أهلاً يا كابتن' : 'اعمل حسابك كابتن'}</h1>
-      <p className="text-muted">{mode === 'login' ? 'ادخل تكمّل مع لاعبينك' : 'دقيقتين وتبعت أول دعوة للاعب'}</p>
-      <Segmented aria-label="الدخول أو حساب جديد" value={mode} onChange={(value) => { setMode(value); setError(''); setMessage(''); }}
-        options={[{ value: 'login', label: 'دخول' }, { value: 'signup', label: 'حساب جديد' }]} />
+      <LanguageSwitch />
+      <h1 className="text-3xl font-extrabold">{mode === 'login' ? t('welcomeCoach') : t('createYourCoachAccount')}</h1>
+      <p className="text-muted">{mode === 'login' ? t('pickUpWhereYourPlayersLeft') : t('inviteYourFirstPlayerInMinutes')}</p>
+      <Segmented aria-label={t('signInOrCreateAnAccount')} value={mode} onChange={(value) => { setMode(value); setError(''); setMessage(''); }}
+        options={[{ value: 'login', label: t('signIn') }, { value: 'signup', label: t('createAccount') }]} />
       <GoogleButton intent="captain" />
-      <p className="text-center text-muted">أو بالإيميل</p>
+      <p className="text-center text-muted">{t('orUseEmail')}</p>
       <form className="space-y-4" aria-busy={pending} onSubmit={(event) => {
         event.preventDefault();
         const input = Object.fromEntries(new FormData(event.currentTarget));
@@ -31,16 +39,16 @@ export function CaptainAuthCard({ callbackError = false, initialMode = 'login' }
         });
       }}>
         <fieldset disabled={pending} className="space-y-4">
-          {mode === 'signup' && <TextField name="full_name" label="اسمك" autoComplete="name" maxLength={80} required />}
-          <TextField name="email" type="email" label="الإيميل" autoComplete="email" dir="ltr" required />
-          <TextField name="password" type="password" label="كلمة السر" autoComplete={mode === 'login' ? 'current-password' : 'new-password'} required />
+          {mode === 'signup' && <TextField name="full_name" label={t('yourName')} autoComplete="name" maxLength={80} required />}
+          <TextField name="email" type="email" label={t('email')} autoComplete="email" dir="ltr" required />
+          <TextField name="password" type="password" label={t('password')} autoComplete={mode === 'login' ? 'current-password' : 'new-password'} required />
           {error && <p role="alert" className="text-danger">{error}</p>}
           {message && <p role="status">{message}</p>}
-          <Button type="submit" size="lg" className="w-full">{pending ? 'استنى لحظة' : mode === 'login' ? 'دخول' : 'اعمل الحساب'}</Button>
+          <Button type="submit" size="lg" className="w-full">{pending ? t('oneMoment') : mode === 'login' ? t('signIn') : t('createAccountAction')}</Button>
         </fieldset>
       </form>
-      <Link href="/forgot-password" className="flex min-h-12 items-center text-lime">نسيت كلمة السر؟</Link>
-      <p className="text-sm text-muted">لاعب؟ افتح لينك الدعوة اللي بعتهولك الكابتن</p>
+      <Link href="/forgot-password" className="flex min-h-12 items-center text-lime">{t('forgotPassword')}</Link>
+      <p className="text-sm text-muted">{t('playerOpenTheInviteYourCoach')}</p>
     </GlassCard>
   </main>;
 }

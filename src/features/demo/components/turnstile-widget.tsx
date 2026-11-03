@@ -1,11 +1,13 @@
 'use client';
+import { useLocale, useT } from '@/core/i18n/client';
+import { messages } from '../messages';
 import { useEffect, useRef } from 'react';
 
 declare global {
   interface Window {
     turnstile?: {
       render: (element: HTMLElement, options: {
-        sitekey: string; callback: (token: string) => void;
+        sitekey: string; language: 'ar' | 'en'; callback: (token: string) => void;
         'expired-callback': () => void; 'error-callback': () => void;
       }) => string;
       remove: (id: string) => void;
@@ -15,6 +17,8 @@ declare global {
 export function TurnstileWidget({ siteKey, onToken, onError }: {
   siteKey: string; onToken: (token: string) => void; onError: () => void;
 }) {
+  const t = useT(messages);
+  const locale = useLocale();
   const container = useRef<HTMLDivElement>(null);
   useEffect(() => {
     let id: string | undefined;
@@ -25,7 +29,7 @@ export function TurnstileWidget({ siteKey, onToken, onError }: {
     const render = () => {
       if (!active || !container.current || !window.turnstile) return;
       id = window.turnstile.render(container.current, {
-        sitekey: siteKey, callback: onToken,
+        sitekey: siteKey, language: locale, callback: onToken,
         'expired-callback': () => onToken(''), 'error-callback': onError,
       });
     };
@@ -38,6 +42,6 @@ export function TurnstileWidget({ siteKey, onToken, onError }: {
       if (id !== undefined) window.turnstile?.remove(id);
       script.remove();
     };
-  }, [siteKey, onToken, onError]);
-  return <div ref={container} aria-label="اتأكد إنك مش روبوت" />;
+  }, [siteKey, onToken, onError, locale]);
+  return <div ref={container} aria-label={t('verifyYouReHuman')} />;
 }

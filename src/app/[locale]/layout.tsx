@@ -4,7 +4,10 @@ import type { ReactNode } from 'react';
 import { RegisterServiceWorker } from '@/core/pwa/register-sw';
 import { glassBootScript } from '@/lib/glass-mode';
 import { themeBootScript } from '@/lib/theme-mode';
-import './globals.css';
+import '../globals.css';
+import { setRequestLocale } from '@/core/i18n/server';
+import { LOCALES, localeDir, parseLocale } from '@/core/i18n/locale';
+import { LocaleProvider } from '@/core/i18n/client';
 
 const manrope = Manrope({ subsets: ['latin'], variable: '--font-manrope', display: 'swap' });
 const alexandria = Alexandria({ subsets: ['arabic'], variable: '--font-alexandria', display: 'swap' });
@@ -30,13 +33,24 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export const dynamicParams = false;
+export function generateStaticParams() {
+  return LOCALES.map(locale => ({ locale }));
+}
+
+export default async function RootLayout({ children, params }: {
+  children: ReactNode; params: Promise<{ locale: string }>;
+}) {
+  const locale = parseLocale((await params).locale);
+  setRequestLocale(locale);
   return (
-    <html lang="ar" dir="rtl" suppressHydrationWarning className={`${manrope.variable} ${alexandria.variable} ${changa.variable}`}>
+    <html lang={locale} dir={localeDir(locale)} suppressHydrationWarning className={`${manrope.variable} ${alexandria.variable} ${changa.variable}`}>
       <head><script dangerouslySetInnerHTML={{ __html: themeBootScript + ';' + glassBootScript }} /></head>
       <body className="min-h-dvh">
-        {children}
-        <RegisterServiceWorker />
+        <LocaleProvider locale={locale}>
+          {children}
+          <RegisterServiceWorker />
+        </LocaleProvider>
       </body>
     </html>
   );

@@ -1,4 +1,6 @@
 'use client';
+import { useLocale, useT } from '@/core/i18n/client';
+import { messages } from '../messages';
 
 import type { ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
@@ -12,6 +14,8 @@ import { MyCaptainContext, useMyCaptain } from '../hooks/use-my-captain';
 import { useOnline } from '../hooks/use-online';
 
 export function PlayerShell({ children }: { children: ReactNode }) {
+  const t = useT(messages);
+  const locale = useLocale();
   const pathname = usePathname();
   const captain = useMyCaptain();
   const online = useOnline();
@@ -20,25 +24,25 @@ export function PlayerShell({ children }: { children: ReactNode }) {
   const url = whatsappUrl({ phone: captain.data?.phone ?? '' });
   const left = captain.data ? daysBetween(today, captain.data.accessUntil) : 0;
   const message = state === 'ending' ?
-    (left === 0 ? 'اشتراكك بيخلص النهارده' : left === 1 ? 'اشتراكك هيخلص بكره' : `اشتراكك هيخلص بعد ${left} أيام`) :
-    state === 'ended' ? 'اشتراكك خلص. كلّم الكابتن عشان تجدد' :
-    state === 'archived' ? 'الكابتن وقف متابعتك' : null;
+    t('subscriptionEndsIn', { n: left }) :
+    state === 'ended' ? t('yourSubscriptionEndedContactYourCoach') :
+    state === 'archived' ? t('yourCoachPausedYourCoaching') : null;
   return <MyCaptainContext.Provider value={captain}>
     <div className="mx-auto max-w-lg space-y-3 px-5 pt-3" aria-live="polite">
       {!online && <p role="status" className="glass rounded-card p-4 text-sm">
-        إنت أوفلاين. اللي بتسجله محفوظ وهيتبعت لما النت يرجع
+        {t('youReOfflineYourLogsAre')}
       </p>}
       {message && <div role="status" className="rounded-card border border-warn bg-warn-soft p-4 text-sm">
         <p>{message}</p>
         {(state === 'ended' || state === 'archived') && url &&
-          <a href={url} target="_blank" rel="noopener noreferrer" aria-label="كلّم الكابتن واتساب"
+          <a href={url} target="_blank" rel="noopener noreferrer" aria-label={t('messageYourCoachOnWhatsApp')}
             className="mt-2 flex min-h-12 items-center justify-center rounded-control border border-lime px-4 font-bold text-lime">
-            كلّم الكابتن واتساب
+            {t('messageYourCoachOnWhatsApp')}
           </a>}
       </div>}
     </div>
     {children}
     {showsNav(pathname) && <InstallSheet />}
-    {showsNav(pathname) && <BottomNav aria-label="التنقل" items={playerNav(pathname)} />}
+    {showsNav(pathname) && <BottomNav aria-label={t('navigation')} items={playerNav(pathname, locale)} />}
   </MyCaptainContext.Provider>;
 }

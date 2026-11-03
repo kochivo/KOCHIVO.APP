@@ -1,3 +1,6 @@
+import { intlLocale } from '@/core/i18n/locale';
+import type { Locale } from '@/core/i18n/locale';
+
 export const DEFAULT_TIMEZONE = 'Africa/Cairo';
 
 /**
@@ -23,11 +26,11 @@ export function saturdayWeek(today: string): string[] {
   });
 }
 
-export function formatDateAr(date: string, options: Intl.DateTimeFormatOptions): string {
-  return new Intl.DateTimeFormat('ar-EG', { ...options, timeZone: 'UTC' })
+export function formatDateAr(date: string, options: Intl.DateTimeFormatOptions, locale: Locale = 'ar'): string {
+  return new Intl.DateTimeFormat(intlLocale(locale), { ...options, timeZone: 'UTC' })
     .format(new Date(`${date}T12:00:00Z`));
 }
 
-export function formatTimestampAr(iso: string, options: Intl.DateTimeFormatOptions): string {
-  return new Intl.DateTimeFormat('ar-EG', { ...options, timeZone: DEFAULT_TIMEZONE }).format(new Date(iso));
+export function formatTimestampAr(iso: string, options: Intl.DateTimeFormatOptions, locale: Locale = 'ar'): string {
+  return new Intl.DateTimeFormat(intlLocale(locale), { ...options, timeZone: DEFAULT_TIMEZONE }).format(new Date(iso));
 }

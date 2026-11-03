@@ -1,13 +1,17 @@
 'use server';
+import { getT } from '@/core/i18n/server';
+import { messages } from '../messages';
+
 import { cookies } from 'next/headers';
 import { parseInviteCode } from '../invite-code';
 import { authClient, runAction, siteOrigin } from './auth-client';
 
 export async function signInGoogle(intent: 'captain' | 'player', invite?: string) {
+  const t = await getT(messages);
   return runAction(async () => {
-    if (!['captain', 'player'].includes(intent)) return { error: 'اختار نوع الحساب' };
+    if (!['captain', 'player'].includes(intent)) return { error: t('chooseAnAccountType') };
     const code = invite ? parseInviteCode(invite) : null;
-    if (intent === 'player' && !code) return { error: 'الدعوة مش صالحة أو انتهت' };
+    if (intent === 'player' && !code) return { error: t('inviteIsInvalidOrExpired') };
     const client = await authClient();
     const { data, error } = await client.auth.signInWithOAuth({ provider: 'google', options: {
       redirectTo: `${await siteOrigin()}/auth/callback`, skipBrowserRedirect: true,

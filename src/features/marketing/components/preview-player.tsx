@@ -1,7 +1,11 @@
+import { getT } from '@/core/i18n/server';
+import { messages } from '../messages';
 import { Dumbbell } from 'lucide-react';
-import { content } from '../content';
+import { getContent } from '../content';
 
-export function PreviewPlayer() {
+export async function PreviewPlayer() {
+  const t = await getT(messages);
+  const content = getContent(t);
   const p = content.preview;
   return <div className="flex h-full flex-col gap-3 rounded-[36px] bg-bg-deep px-4 py-5">
     <p className="text-[10px] text-muted">{p.day}</p>

@@ -1,10 +1,15 @@
 'use client';
+import { useT } from '@/core/i18n/client';
+import { messages } from '../messages';
+
 
 import { useState } from 'react';
 import type { ReactNode } from 'react';
-import { content } from '../content';
+import { getContent } from '../content';
 
 export function PreviewToggle({ player, captain }: { player: ReactNode; captain: ReactNode }) {
+  const t = useT(messages);
+  const content = getContent(t);
   const [view, setView] = useState<'player' | 'captain'>('player');
   return <div className="mx-auto flex w-full max-w-[340px] flex-col items-center gap-3">
     <div className="glass flex w-full max-w-[310px] gap-1 rounded-control p-1" role="group" aria-label={content.preview.label}>

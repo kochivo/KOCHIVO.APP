@@ -1,3 +1,4 @@
+import { getLocale } from '@/core/i18n/server';
 import 'server-only';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { headers } from 'next/headers';
@@ -23,5 +24,5 @@ export async function profile(client: SupabaseClient<Database>): Promise<AuthUse
   return { role: result.data.role, roleConfirmed: result.data.role_confirmed };
 }
 export async function runAction(work: () => Promise<ActionResult>): Promise<ActionResult> {
-  try { return await work(); } catch (error) { return { error: authError(error) }; }
+  try { return await work(); } catch (error) { return { error: authError(error, await getLocale()) }; }
 }
