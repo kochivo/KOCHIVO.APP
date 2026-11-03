@@ -1,11 +1,34 @@
-import Image from 'next/image';
+import type { Metadata } from 'next';
+import {
+  content, SiteHeader, Hero, StatsStrip, HowItWorks, FeaturesGrid,
+  PlayerSection, Pricing, Faq, FinalCta, SiteFooter,
+} from '@/features/marketing';
 
-// Placeholder entry point; role-based routing (captain / player) lands in T-003.
+export const metadata: Metadata = {
+  title: content.seo.title,
+  description: content.seo.description,
+  openGraph: {
+    title: content.seo.title,
+    description: content.seo.description,
+    locale: 'ar_EG',
+    type: 'website',
+    siteName: content.brand,
+  },
+};
+
 export default function HomePage() {
-  return (
-    <main className="flex min-h-dvh flex-col items-center justify-center gap-6 px-6 text-center">
-      <Image src="/brand/logo-primary.png" alt="KOCHIVO" width={320} height={91} priority />
-      <p className="text-muted">الأساس جاهز. الشاشات جاية في المراحل الجاية.</p>
+  return <>
+    <SiteHeader />
+    <main>
+      <Hero />
+      <StatsStrip />
+      <HowItWorks />
+      <FeaturesGrid />
+      <PlayerSection />
+      <Pricing />
+      <Faq />
+      <FinalCta />
     </main>
-  );
+    <SiteFooter />
+  </>;
 }

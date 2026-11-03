@@ -1,0 +1,11 @@
+export { content } from './content';
+export { SiteHeader } from './components/site-header';
+export { Hero } from './components/hero';
+export { StatsStrip } from './components/stats-strip';
+export { HowItWorks } from './components/how-it-works';
+export { FeaturesGrid } from './components/features-grid';
+export { PlayerSection } from './components/player-section';
+export { Pricing } from './components/pricing';
+export { Faq } from './components/faq';
+export { FinalCta } from './components/final-cta';
+export { SiteFooter } from './components/site-footer';
