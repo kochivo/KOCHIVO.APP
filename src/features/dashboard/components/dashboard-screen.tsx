@@ -2,15 +2,15 @@ import { getLocale, getT } from '@/core/i18n/server';
 import { formatNumber } from '@/lib/format';
 import { messages } from '../messages';
 
-import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { UserPlus } from 'lucide-react';
 import { GlassCard } from '@/ui';
 import { lastSeenLabel, RadarCard } from '@/features/roster';
 import type { RosterResult } from '@/features/roster';
 import { buildAlerts, dashboardStats, recentActivity } from '../alerts';
 import { PlayerFinder } from './player-finder';
 import { SmartAlerts } from './smart-alerts';
+import { captainNextTasks } from '../next-task';
+import { NextTaskCard } from './next-task-card';
 
 interface Props {
   data: Promise<[RosterResult, string, Map<string, number>]>;
@@ -30,14 +30,8 @@ export async function DashboardScreen({ data, today, plan }: Props) {
   if (roster.error !== undefined) return <section className="space-y-6">{header}
     <p role="alert" className="glass rounded-card p-5 text-danger">{t('loadFailed')}</p></section>;
   const players = roster.players;
-  if (players.length === 0) return <section className="space-y-6">{header}
-    <GlassCard className="empty-state-in flex flex-col items-center gap-4 px-6 py-10 text-center">
-      <span aria-hidden className="grid size-16 place-items-center rounded-full bg-lime-soft text-lime ring-8 ring-lime-soft"><UserPlus className="size-7" /></span>
-      <h2 className="text-xl font-bold">{t('noPlayersTitle')}</h2>
-      <p className="max-w-prose text-sm text-muted">{t('noPlayersBody')}</p>
-      <Link href="/captain/players" className="inline-flex min-h-12 items-center rounded-control bg-lime px-5 font-extrabold text-on-lime">{t('goToPlayers')}</Link>
-    </GlassCard>
-  </section>;
+  const tasks = captainNextTasks(players, dues, today);
+  if (players.length === 0) return <section className="space-y-6">{header}<NextTaskCard tasks={tasks} captainFirstName={firstName} /></section>;
 
   const stats = dashboardStats(players, today);
   const cards = [
@@ -51,6 +45,7 @@ export async function DashboardScreen({ data, today, plan }: Props) {
   return (
     <section className="space-y-6">
       {header}
+      <NextTaskCard tasks={tasks} captainFirstName={firstName} />
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {cards.map(({ label, value, color }) => <GlassCard key={label} level="strong" className="space-y-2 p-5">
           <p className="text-sm text-muted">{label}</p>

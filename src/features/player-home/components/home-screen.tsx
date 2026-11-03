@@ -13,6 +13,7 @@ import { pickTodayDay } from '../next-day';
 import { buildWeek } from '../week';
 import { Greeting } from './greeting';
 import { WeekStrip } from './week-strip';
+import { NextTaskSlot } from './next-task-slot';
 import { TodayCard } from './today-card';
 import { NutritionSlot } from './nutrition-slot';
 
@@ -60,6 +61,8 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
     {failed && (!snapshot || localError) ? <ErrorState message={t('couldntLoadYourProgram')} retryLabel={t('tryAgain')} onRetry={() => {
       setLocalError(false); setRetryKey((value) => value + 1); void retry();
     }} /> : !now || status === 'loading' || (snapshot && (!sessions || !weekSessions)) ? <LoadingState variant="cards" /> : <>
+      <NextTaskSlot snapshot={snapshot ?? null} sessions={sessions ?? []} today={today} playerId={playerId}
+        retryKey={retryKey} onRetry={() => setRetryKey(value => value + 1)} />
       <WeekStrip today={today} days={buildWeek(today, snapshot?.training_days ?? [],
         weekSessions?.filter((session) => snapshot?.days.some((day) => day.id === session.program_day_id)) ?? [], locale)} />
       {snapshot && day ? <TodayCard day={day} rest={Boolean(rest)} /> :
