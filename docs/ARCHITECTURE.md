@@ -99,6 +99,8 @@ profiles ─┬─< coach_clients >─┬─ profiles
 
 الدوال المساعدة اللي بتحسب الحالة دي `security definer` وبترجع boolean بس: `is_captain_of(player)` و`player_can_read(captain)` و`player_can_write(captain)`.
 
+**الصلاحيات من 0014:** `anon` مالوش أي صلاحية على الجداول أو الدوال غير `invite_preview`. وأي دالة جديدة مقفولة افتراضياً، فكل migration لازم تعمل `grant execute ... to authenticated` بنفسها للدوال اللي محتاجاها. ودوال الـ trigger مبتاخدش grant خالص.
+
 ## 6. محرك الـ Offline
 
 ```
