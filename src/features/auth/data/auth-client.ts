@@ -2,6 +2,7 @@ import { getLocale } from '@/core/i18n/server';
 import 'server-only';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { headers } from 'next/headers';
+import { unstable_rethrow } from 'next/navigation';
 import type { Database } from '@/types/database';
 import { authError } from '../errors';
 import type { AuthUser } from '../routing';
@@ -24,5 +25,5 @@ export async function profile(client: SupabaseClient<Database>): Promise<AuthUse
   return { role: result.data.role, roleConfirmed: result.data.role_confirmed };
 }
 export async function runAction(work: () => Promise<ActionResult>): Promise<ActionResult> {
-  try { return await work(); } catch (error) { return { error: authError(error, await getLocale()) }; }
+  try { return await work(); } catch (error) { unstable_rethrow(error); return { error: authError(error, await getLocale()) }; }
 }

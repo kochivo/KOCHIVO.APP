@@ -42,7 +42,9 @@ export async function saveCaptainProfile(input: unknown): Promise<Result<Setting
     if (path && (!path.startsWith(`${id}/`) || !/^[-a-zA-Z0-9/]+\.webp$/.test(path))) return { error: failure };
     const previous = await client.from('profiles').select('avatar_path').eq('id', id).single();
     if (previous.error) return { error: failure };
-    const result = await client.from('profiles').update(parsed.data).eq('id', id).eq('role', 'captain').select('*').single();
+    const result = await client.from('profiles').update({ ...parsed.data,
+      ...(parsed.data.public_slug !== undefined ? { public_slug: parsed.data.public_slug || null } : {}),
+    }).eq('id', id).eq('role', 'captain').select('*').single();
     if (result.error || !result.data) return { error: failure };
     if (path && previous.data.avatar_path && path !== previous.data.avatar_path) {
       // Cleanup is best effort: a committed profile must never be reported as rolled back.

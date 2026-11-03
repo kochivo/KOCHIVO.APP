@@ -2,6 +2,9 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    playerSignup: 'اعمل حساب لاعب', coachRequestHint: 'هنبعت طلب للكابتن. هتبدأ بعد ما يوافق.',
+    sendCoachRequest: 'ابعت طلب انضمام', confirmCoachRequest: 'افتح رسالة التأكيد في إيميلك عشان نبعت طلبك للكابتن',
+    coachRequestFailed: 'طلب الانضمام متعملش. اتأكد إن عندك حساب لاعب وجرّب تاني',
     "resendAfter.one": "ابعت تاني بعد ثانية",
     "resendAfter.two": "ابعت تاني بعد ثانيتين",
     "resendAfter.few": "ابعت تاني بعد {n} ثواني",
@@ -86,6 +89,9 @@ export const messages = defineMessages({
     checkYourEmailToConfirmYour: "شوف إيميلك عشان تأكد حسابك وتدخل",
   },
   en: {
+    playerSignup: 'Create a player account', coachRequestHint: 'We will send a request to the coach. You get access after they accept.',
+    sendCoachRequest: 'Send join request', confirmCoachRequest: 'Open the confirmation email so we can send your request to the coach',
+    coachRequestFailed: 'Could not send your request. Use a player account and try again',
     "resendAfter.one": "Send again in {n} second",
     "resendAfter.other": "Send again in {n} seconds",
     "coachInvitation": "Coach {name} invites you to get started",

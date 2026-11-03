@@ -2,6 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    join_requested: '{name} بعت طلب انضمام',
     title: 'الإشعارات', close: 'اقفل الإشعارات', markAll: 'علّم الكل كمقروء',
     loading: 'بنحمّل الإشعارات…', empty: 'لسه مفيش إشعارات',
     error: 'مش قادرين نحمّل الإشعارات، جرّب تاني', retry: 'جرّب تاني',
@@ -11,6 +12,7 @@ export const messages = defineMessages({
     now: 'دلوقتي', minutes: 'من {n} دقيقة', hours: 'من {n} ساعة', days: 'من {n} يوم',
   },
   en: {
+    join_requested: '{name} requested to join',
     title: 'Notifications', close: 'Close notifications', markAll: 'Mark all as read',
     loading: 'Loading notifications…', empty: 'No notifications yet',
     error: 'Could not load notifications. Try again', retry: 'Try again',

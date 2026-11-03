@@ -11,19 +11,15 @@ import { LocaleProvider } from '@/core/i18n/client';
 import { MobileViewport } from '@/ui/mobile-viewport';
 import { ToastProvider } from '@/ui/toast';
 import { InAppBrowserWarning } from '@/ui/in-app-browser-warning';
+import { siteMetadata } from '@/features/coach-page';
 
 const manrope = Manrope({ subsets: ['latin'], variable: '--font-manrope', display: 'swap' });
 const alexandria = Alexandria({ subsets: ['arabic'], variable: '--font-alexandria', display: 'swap' });
 const changa = Changa({ subsets: ['arabic'], variable: '--font-changa', display: 'swap' });
 
-export const metadata: Metadata = {
-  metadataBase: new URL('https://kochivo.site'),
-  title: { default: 'KOCHIVO', template: '%s · KOCHIVO' },
-  description: 'COACH BETTER',
-  applicationName: 'KOCHIVO',
-  appleWebApp: { capable: true, title: 'KOCHIVO', statusBarStyle: 'black-translucent' },
-  icons: { icon: '/icons/favicon-32.png', apple: '/icons/icon-192.png' },
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  return siteMetadata(parseLocale((await params).locale));
+}
 
 export const viewport: Viewport = {
   themeColor: [

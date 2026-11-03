@@ -1,4 +1,4 @@
-export type NotificationType = 'plan_assigned' | 'nutrition_updated' | 'player_joined' | 'player_inactive';
+export type NotificationType = 'plan_assigned' | 'nutrition_updated' | 'player_joined' | 'player_inactive' | 'join_requested';
 export interface Notification {
   id: string;
   type: NotificationType;

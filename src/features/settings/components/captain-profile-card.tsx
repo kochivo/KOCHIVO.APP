@@ -14,6 +14,7 @@ import { SocialLinksFields } from './social-links-fields';
 
 function values(profile: SettingsProfile): CaptainProfileInput {
   return { full_name: profile.full_name, bio: profile.bio ?? '', location: profile.location ?? '',
+    public_slug: profile.public_slug ?? '',
     timezone: profile.timezone ?? 'Africa/Cairo', units: profile.units ?? 'metric',
     social: profile.social ?? {}, avatar_path: profile.avatar_path ?? null };
 }

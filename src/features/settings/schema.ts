@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { coachSlug } from '@/lib/coach-slug';
 import { createT } from '@/core/i18n/messages';
 import type { Translator } from '@/core/i18n/messages';
 import { messages } from './messages';
@@ -42,6 +43,7 @@ export function settingsSchemas(t: Translator<typeof messages> = createT(message
     return normalized;
   }).optional();
   const captainProfileSchema = z.object({
+    public_slug: z.string().refine(value => value === '' || coachSlug(value) !== null, t('invalidSlug')).optional(),
     full_name: profileSchema.shape.full_name,
     bio: z.string().trim().max(280, t('bioTooLong')),
     location: z.string().trim().max(80, t('locationTooLong')),
@@ -59,6 +61,7 @@ export type CaptainProfileInput = z.infer<ReturnType<typeof settingsSchemas>['ca
 export const { profileSchema, inviteMessageSchema } = settingsSchemas();
 
 export type SettingsProfile = {
+  public_slug?: string | null;
   id: string;
   role: 'captain' | 'player';
   full_name: string;

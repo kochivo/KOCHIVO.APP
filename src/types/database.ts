@@ -14,6 +14,12 @@ export type Database = {
   }
   public: {
     Tables: {
+      coach_join_requests: {
+        Row: { id: string; captain_id: string; player_id: string; created_at: string; status: 'pending' | 'accepted' | 'declined' }
+        Insert: { id: string; captain_id: string; player_id: string }
+        Update: never
+        Relationships: []
+      }
       notifications: {
         Row: { id: string; user_id: string; type: string; payload: Json; is_read: boolean; created_at: string }
         Insert: never
@@ -938,6 +944,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          public_slug: string | null
           bio: string | null
           location: string | null
           units: 'metric' | 'imperial'
@@ -960,6 +967,7 @@ export type Database = {
         }
         Insert: {
           bio?: string | null
+          public_slug?: string | null
           location?: string | null
           units?: 'metric' | 'imperial'
           avatar_path?: string | null
@@ -981,6 +989,7 @@ export type Database = {
         }
         Update: {
           bio?: string | null
+          public_slug?: string | null
           location?: string | null
           units?: 'metric' | 'imperial'
           avatar_path?: string | null
@@ -1295,6 +1304,12 @@ export type Database = {
       }
     }
     Functions: {
+      coach_public_profile: { Args: { slug: string }; Returns: {
+        id: string; full_name: string; bio: string | null; location: string | null; avatar_path: string | null;
+        social: Partial<Record<'whatsapp' | 'instagram' | 'tiktok' | 'facebook' | 'youtube' | 'x', string>>
+      }[] }
+      pending_coach_join_requests: { Args: never; Returns: { id: string; full_name: string; created_at: string }[] }
+      resolve_coach_join_request: { Args: { p_request: string; p_status: string; p_link_id: string }; Returns: undefined }
       refresh_inactive_alerts: { Args: never; Returns: undefined }
       admin_notification_kpis: {
         Args: never
