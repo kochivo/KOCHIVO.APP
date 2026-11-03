@@ -2,6 +2,8 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    paidShare: 'نسبة الكباتن على باقة مدفوعة',
+    percentage: '{n}%',
     clearSearch: "امسح البحث والفلاتر",
     emptyHint: "جرّب اسم تاني أو ارجع لكل الكباتن",
     auditHint: "تفعيل الاشتراكات وإيقاف الحسابات بيظهر هنا",
@@ -92,6 +94,8 @@ export const messages = defineMessages({
     'dash': "—",
   },
   en: {
+    paidShare: 'Captains on paid plans',
+    percentage: '{n}%',
     clearSearch: "Clear search and filters",
     emptyHint: "Try another name or return to all captains",
     auditHint: "Plan activations and account changes appear here",
