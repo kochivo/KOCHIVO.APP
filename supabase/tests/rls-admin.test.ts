@@ -78,10 +78,15 @@ it('enforces entry limits, permits champion, and preserves active players after 
   await activate(admin, coach, 'champion');
   await add();
   await db.query(`update public.captain_subscriptions set starts_at = now() - interval '2 months',
-    ends_at = now() - interval '1 month' where captain_id = $1`, [coach]);
+    ends_at = now() - interval '1 day' where captain_id = $1`, [coach]);
   await expect(add()).rejects.toThrow(/5 active players/);
   expect((await db.query(`select * from public.coach_clients where captain_id = $1 and archived_at is null`, [coach])).rows)
     .toHaveLength(6);
+  const result = await asUser(db, admin, (tx) => tx.query(`select * from public.admin_captains(null, 100, 0) where id = $1`, [coach]));
+  const subscription = await db.query<{ ends_at: Date }>(`select ends_at from public.captain_subscriptions where captain_id = $1`, [coach]);
+  expect(result.rows[0]).toMatchObject({ tier: 'entry', tier_ends_at: null,
+    last_paid_tier: 'champion', last_paid_ends_at: subscription.rows[0]?.ends_at,
+    active_players: 6, player_limit: 5, over_limit: true });
 });
 
 it('blocks suspended invites and profile tampering, then restores invites and audits both actions', async () => {
@@ -99,6 +104,19 @@ it('blocks suspended invites and profile tampering, then restores invites and au
     .toEqual([{ action: 'suspend', reason: 'review' }, { action: 'unsuspend', reason: 'review' }]);
 });
 
+it('returns the latest paid history across all time, ignoring entry subscriptions', async () => {
+  const coach = await createUser(db, 'captain', 'History');
+  const list = () => asUser(db, admin, (tx) => tx.query(`select * from public.admin_captains('History')`));
+  expect((await list()).rows[0]).toMatchObject({ last_paid_tier: null, last_paid_ends_at: null, over_limit: false });
+  await db.query(`insert into public.captain_subscriptions
+    (captain_id, tier, starts_at, ends_at, amount_egp, activated_by) values
+    ($1, 'legend', '2026-01-01Z', '2026-02-01Z', 699, $2),
+    ($1, 'champion', '2099-01-01Z', '2099-02-01Z', 399, $2),
+    ($1, 'entry', '2099-02-01Z', '2099-03-01Z', 0, $2)`, [coach, admin]);
+  expect((await list()).rows[0]).toMatchObject({ last_paid_tier: 'champion',
+    last_paid_ends_at: new Date('2099-02-01T00:00:00Z') });
+});
+
 it('reads emails, escapes search metacharacters, sorts and caps pagination', async () => {
   await db.query('update auth.users set email = $2, email_confirmed_at = now() where id = $1', [captain, 'captain@example.com']);
   for (let i = 0; i < 101; i++) await createUser(db, 'captain', `Bulk ${i}`);
@@ -107,7 +125,8 @@ it('reads emails, escapes search metacharacters, sorts and caps pagination', asy
   const result = await list('%_');
   expect(result.rows).toHaveLength(1);
   expect(result.rows[0]).toMatchObject({ id: captain, email: 'captain@example.com', email_confirmed: true,
-    tier: 'legend', player_limit: 40, active_players: 0, suspended: false });
+    tier: 'legend', player_limit: 40, active_players: 0, suspended: false,
+    last_paid_tier: 'legend', over_limit: false });
   expect((await list('CAPTAIN@EXAMPLE')).rows).toHaveLength(1);
   expect((await list(null, 500)).rows).toHaveLength(100);
   expect((await list('Bulk', 100, 100)).rows).toHaveLength(1);

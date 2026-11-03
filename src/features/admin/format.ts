@@ -1,12 +1,11 @@
-import { localDate } from '@/lib/dates';
 import type { CaptainRow, CaptainState, Tier } from './types';
 
 export const tierLabel = (tier: Tier) => tier.toUpperCase();
 export const usageLabel = (active: number, limit: number) => `${active} من ${limit}`;
-export function captainState(row: CaptainRow, today: string): CaptainState {
+export function captainState(row: CaptainRow): CaptainState {
   if (row.suspended) return 'suspended';
   if (!row.email_confirmed) return 'unconfirmed';
-  if (row.tier_ends_at && localDate(new Date(row.tier_ends_at)) < today) return 'expired';
+  if (row.tier === 'entry' && row.last_paid_ends_at !== null) return 'expired';
   return row.tier === 'entry' ? 'free' : 'paid';
 }
 export function endsLabel(date: string | null): string {

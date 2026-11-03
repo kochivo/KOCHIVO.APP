@@ -1,7 +1,6 @@
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { AdminScreen, requireAdmin, fetchCaptains, fetchPlanTiers, fetchAudit } from '@/features/admin';
-import { localDate } from '@/lib/dates';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { title: 'لوحة الإدارة', robots: { index: false } };
@@ -17,7 +16,7 @@ async function AdminData({ searchParams }: { searchParams: Params }) {
   ]);
   const now = new Date();
   return <AdminScreen captains={captains} plans={plans} audit={audit} search={search} offset={offset}
-    today={localDate(now)} now={now.toISOString()} />;
+    now={now.toISOString()} />;
 }
 
 export default async function AdminPage({ searchParams }: { searchParams: Params }) {
