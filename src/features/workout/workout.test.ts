@@ -231,7 +231,7 @@ it('keeps the session live query read-only so a missing session can load', async
     useProgramSnapshot: () => ({ snapshot: { days: [day] }, status: 'ready', retry: async () => undefined }),
   }));
   const { useFocusSession } = await import('./hooks/use-focus-session');
-  useFocusSession(day.id, '2026-11-03', 'player');
+  expect(useFocusSession(day.id, '2026-11-03', 'player').loading).toBe(false);
   const query = queries[2];
   if (!query) throw new Error('Session query missing');
   await db.open();

@@ -24,10 +24,18 @@ export function FocusScreen({ dayId, playerId }: { dayId: string; playerId?: str
   const [online, setOnline] = useState(true);
   useEffect(() => {
     const update = () => { setToday(localDate(new Date())); setOnline(navigator.onLine); };
+    const resume = () => { if (document.visibilityState === 'visible') update(); };
     update();
     window.addEventListener('online', update);
     window.addEventListener('offline', update);
-    return () => { window.removeEventListener('online', update); window.removeEventListener('offline', update); };
+    window.addEventListener('focus', update);
+    document.addEventListener('visibilitychange', resume);
+    return () => {
+      window.removeEventListener('online', update);
+      window.removeEventListener('offline', update);
+      window.removeEventListener('focus', update);
+      document.removeEventListener('visibilitychange', resume);
+    };
   }, []);
   useWakeLock();
   const state = useFocusSession(dayId, today, playerId);
