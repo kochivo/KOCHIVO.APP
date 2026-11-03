@@ -69,7 +69,10 @@ describe('template actions', () => {
   ])('maps %s errors to Arabic', async (code, error) => {
     mocks.client.rpc.mockResolvedValue({ data: null, error: { code } });
     expect(await saveAsTemplate({ kind: 'program', id, title: 'قالب' })).toEqual({ error });
-    expect(await assignTemplate({ kind: 'nutrition', templateId: id, playerId })).toEqual({ error });
+    for (const kind of ['program', 'nutrition'] as const) {
+      expect(await assignTemplate({ kind, templateId: id, playerId }))
+        .toEqual({ error: code === '22023' ? 'القالب فاضي. زوّد أيام أو وجبات الأول' : error });
+    }
   });
   it('rejects signed-out and non-captain sessions', async () => {
     mocks.client.auth.getUser.mockResolvedValueOnce({ data: { user: null }, error: null });

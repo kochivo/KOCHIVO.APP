@@ -15,7 +15,7 @@ const key = 'kochivo.install';
 const countFinished = () => localDb().workout_sessions.filter((row) => row.completed_at !== null).count();
 
 export function useInstallPrompt() {
-  const [browser, setBrowser] = useState({ userAgent: '', standalone: false, ready: false });
+  const [browser, setBrowser] = useState({ userAgent: '', maxTouchPoints: 0, standalone: false, ready: false });
   const [event, setEvent] = useState<PromptEvent | null>(null);
   const [history, setHistory] = useState(empty);
   const [now, setNow] = useState(0);
@@ -27,7 +27,8 @@ export function useInstallPrompt() {
     const media = window.matchMedia('(display-mode: standalone)');
     const refresh = () => {
       const nav = navigator as Navigator & { standalone?: boolean };
-      setBrowser({ userAgent: nav.userAgent, standalone: media.matches || nav.standalone === true, ready: true });
+      setBrowser({ userAgent: nav.userAgent, maxTouchPoints: nav.maxTouchPoints,
+        standalone: media.matches || nav.standalone === true, ready: true });
       setNow(Date.now());
     };
     let active = true;

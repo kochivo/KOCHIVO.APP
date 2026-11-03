@@ -121,6 +121,23 @@ it('uses P0002 for hidden, missing and wrong-kind sources, and checks the player
   }
 });
 
+it.each(['program', 'nutrition'] as const)('rejects empty %s templates without changing any rows', async kind => {
+  const program = kind === 'program';
+  const table = program ? 'programs' : 'nutrition_plans';
+  const template = id(program ? 800 : 801);
+  await db.query(`insert into public.${table} (id, captain_id, is_template, title)
+    values ($1, $2, true, 'قالب فاضي')`, [template, captain]);
+  const name = program ? 'assign_program_template' : 'assign_nutrition_template';
+  const tables = program ? ['programs', 'program_days', 'program_exercises']
+    : ['nutrition_plans', 'meals', 'meal_items', 'meal_item_alternatives'];
+  const snapshot = () => Promise.all(tables.map(t => db.query(`select * from public.${t} order by id`)));
+  const before = await snapshot();
+  await expect(rpc(other, name, [template, player])).rejects.toMatchObject({ code: '42501' });
+  await expect(rpc(other, name, [template, otherPlayer])).rejects.toMatchObject({ code: 'P0002' });
+  await expect(rpc(captain, name, [template, player])).rejects.toMatchObject({ code: '22023' });
+  expect(await snapshot()).toEqual(before);
+});
+
 it.each([null, '', '   ', '\n\t ', 'x'.repeat(81)])('rejects invalid title %s with 22023', async title => {
   for (const [name, source] of [['program_to_template', id(1)], ['nutrition_plan_to_template', id(3)]] as const) {
     await expect(rpc(captain, name, [source, title])).rejects.toMatchObject({ code: '22023' });
