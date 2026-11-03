@@ -3,6 +3,7 @@
 import type { ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
 import { BottomNav } from '@/ui';
+import { InstallSheet } from '@/features/install';
 import { daysBetween, localDate } from '@/lib/dates';
 import { accessState, whatsappUrl } from '../access';
 import { playerNav, showsNav } from '../nav';
@@ -36,6 +37,7 @@ export function PlayerShell({ children }: { children: ReactNode }) {
       </div>}
     </div>
     {children}
+    {showsNav(pathname) && <InstallSheet />}
     {showsNav(pathname) && <BottomNav aria-label="التنقل" items={playerNav(pathname)} />}
   </MyCaptainContext.Provider>;
 }
