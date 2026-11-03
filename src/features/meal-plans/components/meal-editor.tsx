@@ -3,7 +3,8 @@
 import { useLocale, useT } from '@/core/i18n/client';
 import { formatNumber } from '@/lib/format';
 import { messages } from '../messages';
-import { useState } from 'react';
+import { useId, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { ArrowDown, ArrowUp, Trash2 } from 'lucide-react';
 import { Button } from '@/ui';
 import { uuidv7 } from '@/core/offline/ids';
@@ -13,10 +14,14 @@ import { ItemRow } from './item-row';
 import { FoodPicker } from './food-picker';
 import type { Meal, PlanDraft } from '../types';
 
+const CustomFoodSheet = dynamic(() => import('./custom-food-sheet').then(module => module.CustomFoodSheet));
+
 export function MealEditor({ meal, first, last, update }: { meal: Meal; first: boolean; last: boolean; update: (change: (draft: PlanDraft) => PlanDraft) => void }) {
   const t = useT(messages);
   const locale = useLocale();
   const [picking, setPicking] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const openerId = useId();
   return <section aria-label={meal.name || t('meal')} className="glass grid gap-4 rounded-card p-4">
     <div className="flex flex-wrap items-center justify-between gap-2">
       <label>{t('mealName')}<input value={meal.name} maxLength={40} onChange={event => update(d => renameMeal(d, meal.id, event.target.value))}
@@ -30,7 +35,13 @@ export function MealEditor({ meal, first, last, update }: { meal: Meal; first: b
     <p className="text-muted">{formatNumber(mealTotals(meal).kcal, locale)}  {t('kcal')}</p>
     {!meal.items.length && <p>{t('addTheFirstFood')}</p>}
     <ul className="grid gap-3">{meal.items.map((item, index) => <ItemRow key={item.id} item={item} first={index === 0} last={index === meal.items.length - 1} update={update} />)}</ul>
-    <Button variant="secondary" onClick={() => setPicking(!picking)}>{picking ? t('closeSearch') : t('addFood')}</Button>
+    <div className="flex flex-wrap gap-2">
+      <Button variant="secondary" onClick={() => setPicking(!picking)}>{picking ? t('closeSearch') : t('addFood')}</Button>
+      <Button id={openerId} variant="secondary" onClick={() => setCreating(true)}>{t('newFood')}</Button>
+    </div>
+    {creating && <CustomFoodSheet openerId={openerId} onClose={() => setCreating(false)} onSave={(food, grams) => {
+      const id = uuidv7(); update(d => addItem(d, meal.id, food, grams, id, t)); setCreating(false); setPicking(false);
+    }} />}
     {picking && <FoodPicker onPick={(food, grams) => { const id = uuidv7(); update(d => addItem(d, meal.id, food, grams, id, t)); setPicking(false); }} />}
   </section>;
 }

@@ -13,3 +13,7 @@ export function exerciseMediaUrl(path: string): string {
 export function foodMediaUrl(path: string): string {
   return publicUrl('food-media', path);
 }
+
+export function foodPhotoUrl(path: string): string {
+  return path.startsWith('captain-food-photos/') ? publicUrl('captain-food-photos', path) : foodMediaUrl(path);
+}

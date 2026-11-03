@@ -4,8 +4,8 @@ import { useLocale, useT } from '@/core/i18n/client';
 import { formatNumber } from '@/lib/format';
 import { messages } from '../messages';
 import { useEffect, useState } from 'react';
-import { foodMediaUrl } from '@/core/storage/media-url';
-import { Button } from '@/ui';
+import { foodPhotoUrl } from '@/core/storage/media-url';
+import { Button, Segmented } from '@/ui';
 import { searchFoods } from '../data/foods';
 import type { Food } from '../types';
 
@@ -13,6 +13,7 @@ export function FoodPicker({ onPick, alternative = false }: { onPick: (food: Foo
   const t = useT(messages);
   const locale = useLocale();
   const [query, setQuery] = useState('');
+  const [filter, setFilter] = useState('all');
   const [grams, setGrams] = useState(100);
   const [result, setResult] = useState<{ foods: Food[]; catalogEmpty: boolean } | null>(null);
   const [error, setError] = useState(false);
@@ -20,12 +21,14 @@ export function FoodPicker({ onPick, alternative = false }: { onPick: (food: Foo
   const [retry, setRetry] = useState(0);
   useEffect(() => {
     let current = true;
-    searchFoods({ query, limit: 30 }).then(value => {
+    searchFoods({ query, limit: 30, mine: filter === 'mine' }).then(value => {
       if (current) { setResult(value); setLoading(false); setError(false); }
     }).catch(() => { if (current) { setError(true); setLoading(false); } });
     return () => { current = false; };
-  }, [query, retry]);
+  }, [query, retry, filter]);
   return <section aria-label={alternative ? t('chooseAnAlternative') : t('chooseAFood')} className="glass grid gap-3 rounded-card p-4">
+    <Segmented aria-label={t('searchFoods')} options={[{ value: 'all', label: t('allFoods') }, { value: 'mine', label: t('myFoods') }]}
+      value={filter} onChange={value => { if (value !== filter) { setFilter(value); setLoading(true); } }} />
     <label>{t('searchFoods')}<input value={query} onChange={event => { setQuery(event.target.value); setLoading(true); }}
       className="mt-2 min-h-12 w-full rounded-control border border-line bg-surface px-3" /></label>
     {!alternative && <label>{t('grams')}<input type="number" min={5} max={2000} step={5} value={grams}
@@ -37,8 +40,8 @@ export function FoodPicker({ onPick, alternative = false }: { onPick: (food: Foo
           onClick={() => onPick(food, grams)} className="flex min-h-12 w-full items-center gap-3 rounded-control border border-line p-3 text-start disabled:opacity-40">
           {/* Public storage hosts vary by deployment and are not in the optimizer allowlist. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          {food.photo && <img src={foodMediaUrl(food.photo)} alt="" width={48} height={48} loading="lazy" decoding="async" className="size-12 shrink-0 rounded-control object-cover" />}
-          <span><strong>{food.name}</strong><span className="block text-sm text-muted">{t('per100g')} {formatNumber(food.kcal, locale)}  {t('kcalProtein')} {formatNumber(food.protein, locale)}  {t('carbs')} {formatNumber(food.carbs, locale)}  {t('fat')} {formatNumber(food.fat, locale)}</span></span>
+          {food.photo && <img src={foodPhotoUrl(food.photo)} alt="" width={48} height={48} loading="lazy" decoding="async" className="size-12 shrink-0 rounded-control object-cover" />}
+          <span><strong>{food.name}</strong>{food.custom && <span className="ms-2 rounded-control bg-surface px-2 text-xs text-muted">{t('mine')}</span>}<span className="block text-sm text-muted">{t('per100g')} {formatNumber(food.kcal, locale)}  {t('kcalProtein')} {formatNumber(food.protein, locale)}  {t('carbs')} {formatNumber(food.carbs, locale)}  {t('fat')} {formatNumber(food.fat, locale)}</span></span>
         </button>
       </li>)}</ul>
     </>}
