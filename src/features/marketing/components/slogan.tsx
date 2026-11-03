@@ -14,7 +14,9 @@ export async function Slogan() {
     </h1>
     <div className="marketing-after flex flex-col items-start gap-3">
       <span aria-hidden="true" className="marketing-beam h-1 w-14 rounded bg-lime" />
-      <p className="font-display text-2xl font-bold">{content.hero.arabic}</p>
+      {/* The tagline translates the slogan; in English it would only repeat it. */}
+      {content.hero.arabic.toLowerCase() !== content.hero.label.toLowerCase()
+        && <p className="font-display text-2xl font-bold">{content.hero.arabic}</p>}
     </div>
   </>;
 }

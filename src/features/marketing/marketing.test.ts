@@ -12,13 +12,15 @@ import { SiteFooter } from './components/site-footer';
 import { content } from './content';
 
 describe('public marketing page', () => {
-  it.each([['ar', 'خطوتك الجاية بتبدأ من هنا'], ['en', 'Your next move starts here']] as const)('renders the hero in %s', async (language, tagline) => {
+  it.each([['ar', 'خطوتك الجاية بتبدأ من هنا'], ['en', null]] as const)('renders the hero in %s', async (language, tagline) => {
     locale.value = language;
     try {
       const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: language }, await Hero()));
-      // The slogan is an English brand mark in both locales; only the tagline under it is translated.
+      // The slogan is an English brand mark in both locales; the Arabic tagline translates it,
+      // and English shows no tagline because it would repeat the slogan.
       expect(html).toContain('<h1 aria-label="Your next move starts here" class="marketing-slogan" dir="ltr" lang="en">');
-      expect(html).toContain(tagline);
+      if (tagline) expect(html).toContain(tagline);
+      else expect(html.split('Your next move starts here')).toHaveLength(2);
       if (language === 'en') expect(html).not.toMatch(/[\u0600-\u06ff]/);
     } finally { locale.value = 'ar'; }
   });
