@@ -15,7 +15,7 @@ export function MediaStatus() {
     catch { console.error('Background sync could not start'); }
   }, []);
 
-  return <p role="status" className="text-xs text-muted">
+  return <p role={error ? 'alert' : 'status'} className="text-xs text-muted">
     {error ? 'مش قادرين نقرأ الفيديوهات المحفوظة' : pending === undefined ? 'بنراجع الفيديوهات…' :
       pending > 0 ? `فيديو مستني يتبعت · ${pending}` : 'مفيش فيديوهات مستنية'}
   </p>;

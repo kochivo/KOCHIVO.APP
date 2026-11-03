@@ -24,8 +24,8 @@ export function NutritionScreen() {
             <p>آخر تحديث من شوية</p><Button variant="ghost" onClick={retry}>جرّب تاني</Button>
           </div>}
           <MacroRing eaten={eatenTotals(snapshot, logs, today)} target={targetsOf(snapshot)} />
-          {snapshot.meals.map((meal) => <MealCard key={`${today}-${meal.id}`} meal={meal} today={today}
-            log={logs.find((row) => row.meal_id === meal.id)} />)}
+          <ul className="space-y-4" aria-label="وجبات النهارده">{snapshot.meals.map((meal) => <li key={`${today}-${meal.id}`}><MealCard meal={meal} today={today}
+            log={logs.find((row) => row.meal_id === meal.id)} /></li>)}</ul>
         </>}
   </main>;
 }

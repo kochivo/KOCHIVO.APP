@@ -60,7 +60,7 @@ export function FormCheckButton({ exerciseId, setLogId }: { exerciseId: string; 
       aria-label="اختار فيديو الفورم" onChange={select} />
     {saved && <p role="status" className="text-sm text-muted">اتحفظ. هيتبعت للكابتن لما النت يكون كويس</p>}
     {error && !selection && <p role="alert" className="text-sm text-danger">{error}</p>}
-    <dialog ref={sheet} dir="rtl" aria-labelledby={titleId} onCancel={() => setSelection(null)}
+    <dialog ref={sheet} aria-labelledby={titleId} onCancel={() => setSelection(null)}
       className="glass-strong m-auto w-full max-w-sm rounded-card p-5 text-ink">
       <form className="space-y-4" onSubmit={(event) => { event.preventDefault(); void save(); }}>
         <h2 id={titleId} className="font-bold">فيديو الفورم</h2>

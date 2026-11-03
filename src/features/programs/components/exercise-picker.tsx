@@ -38,8 +38,8 @@ export function ExercisePicker({ disabled, onAdd }: { disabled: boolean; onAdd: 
         <ul className="space-y-2">{result.data?.map(exercise => <li key={exercise.id}>
           <button type="button" disabled={disabled} onClick={() => onAdd(exercise)}
             className="glass flex min-h-16 w-full items-center gap-3 rounded-control p-2 text-start disabled:opacity-40">
-            {exercise.media_path && <Image unoptimized src={exerciseMediaUrl(exercise.media_path)} alt="" width={48} height={48} className="size-12 rounded-control object-cover" />}
-            <span className="min-w-0 flex-1 break-words text-sm font-bold">{exercise.name_ar ?? exercise.name_en}</span>
+            {exercise.media_path && <Image unoptimized src={exerciseMediaUrl(exercise.media_path)} alt="" width={48} height={48} className="size-12 rounded-control object-cover motion-reduce:hidden" />}
+            <span className="min-w-0 flex-1 break-words text-sm font-bold"><bdi>{exercise.name_ar ?? exercise.name_en}</bdi></span>
             <span className="text-xs text-muted">ضيف</span>
           </button>
         </li>)}</ul>

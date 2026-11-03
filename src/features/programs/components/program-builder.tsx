@@ -106,9 +106,9 @@ export function ProgramBuilder({ programId, playerId }: { programId?: string; pl
               {item.position} · {item.title || 'يوم جديد'}
             </Button>
             <div className="flex gap-2">
-              <IconButton aria-label="طلّع اليوم لفوق" disabled={index === 0} onClick={() => state.update(current => moveDay(current, item.id, -1))}><ArrowUp aria-hidden className="size-5" /></IconButton>
-              <IconButton aria-label="نزّل اليوم لتحت" disabled={index === draft.days.length - 1} onClick={() => state.update(current => moveDay(current, item.id, 1))}><ArrowDown aria-hidden className="size-5" /></IconButton>
-              <IconButton aria-label="امسح اليوم" onClick={() => state.update(current => removeDay(current, item.id))}><Trash2 aria-hidden className="size-5" /></IconButton>
+              <IconButton aria-label={`طلّع اليوم لفوق: ${item.position}، ${item.title}`} disabled={index === 0} onClick={() => state.update(current => moveDay(current, item.id, -1))}><ArrowUp aria-hidden className="size-5" /></IconButton>
+              <IconButton aria-label={`نزّل اليوم لتحت: ${item.position}، ${item.title}`} disabled={index === draft.days.length - 1} onClick={() => state.update(current => moveDay(current, item.id, 1))}><ArrowDown aria-hidden className="size-5" /></IconButton>
+              <IconButton aria-label={`امسح اليوم: ${item.position}، ${item.title}`} onClick={() => state.update(current => removeDay(current, item.id))}><Trash2 aria-hidden className="size-5" /></IconButton>
             </div>
           </li>)}</ul>
           <Button variant="secondary" className="min-h-12 w-full" onClick={() => {

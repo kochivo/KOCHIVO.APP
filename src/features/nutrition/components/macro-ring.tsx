@@ -10,9 +10,9 @@ export function MacroRing({ eaten, target }: { eaten: Macros; target: Macros }) 
         <circle cx="58" cy="58" r="50" fill="none" className="stroke-lime" strokeWidth="9"
           strokeLinecap="round" strokeDasharray={`${ratio(eaten.kcal, target.kcal) * 314.16} 314.16`} />
       </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center" dir="ltr">
-        <strong className="text-3xl font-extrabold">{eaten.kcal.toLocaleString('en-US')}</strong>
-        <span className="text-xs text-muted">/ {target.kcal.toLocaleString('en-US')} KCAL</span>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <strong className="text-3xl font-extrabold"><bdi>{eaten.kcal.toLocaleString('en-US')}</bdi></strong>
+        <span className="text-xs text-muted"><bdi>/ {target.kcal.toLocaleString('en-US')} KCAL</bdi></span>
       </div>
     </div>
     <div className="min-w-0 flex-1 space-y-4">
