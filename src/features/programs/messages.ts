@@ -2,6 +2,15 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    newCustomExercise: '+ تمرين خاص بيك', myExercises: 'تماريني', ownExercise: 'بتاعي',
+    editCustomExercise: 'عدّل التمرين', deleteCustomExercise: 'امسح التمرين',
+    customExerciseName: 'اسم التمرين', customTarget: 'تفاصيل العضلة (اختياري)', customVideo: 'لينك الفيديو (اختياري)',
+    saveCustomExercise: 'احفظ التمرين', cancelCustomExercise: 'إلغاء', customExerciseSaved: 'التمرين اتحفظ',
+    customNameError: 'اكتب اسم من حرف لـ 60 حرف', customTargetError: 'التفاصيل لحد 40 حرف',
+    customBodyError: 'اختار جزء من الجسم', customVideoError: 'اكتب لينك HTTPS صحيح لحد 500 حرف',
+    invalidCustomExercise: 'راجع بيانات التمرين', customExerciseSaveFailed: 'التمرين متحفظش. جرّب تاني',
+    customExerciseDeleteFailed: 'التمرين متمسحش. جرّب تاني', customExerciseInUse: 'التمرين موجود في برنامج أو سجل تمرين ومينفعش يتمسح',
+    customExerciseSaving: 'جاري حفظ التمرين', customExerciseDeleted: 'التمرين اتمسح',
     emptyBody: "ابدأ من قالب جاهز أو ضيف أيام وتمارين تناسب اللاعب",
     clearSearch: "امسح البحث والفلاتر",
     "exerciseCount.one": "{count} تمارين",
@@ -105,6 +114,15 @@ export const messages = defineMessages({
     addADayWithAtLeastOne: "ضيف يوم فيه تمرين واحد على الأقل",
   },
   en: {
+    newCustomExercise: '+ My custom exercise', myExercises: 'My exercises', ownExercise: 'Mine',
+    editCustomExercise: 'Edit exercise', deleteCustomExercise: 'Delete exercise',
+    customExerciseName: 'Exercise name', customTarget: 'Muscle detail (optional)', customVideo: 'Video link (optional)',
+    saveCustomExercise: 'Save exercise', cancelCustomExercise: 'Cancel', customExerciseSaved: 'Exercise saved',
+    customNameError: 'Enter a name of 1–60 characters', customTargetError: 'Use up to 40 characters',
+    customBodyError: 'Choose a body part', customVideoError: 'Enter a valid HTTPS link up to 500 characters',
+    invalidCustomExercise: 'Check the exercise details', customExerciseSaveFailed: 'Could not save the exercise. Try again',
+    customExerciseDeleteFailed: 'Could not delete the exercise. Try again', customExerciseInUse: 'This exercise is used in a program or workout log and cannot be deleted',
+    customExerciseSaving: 'Saving exercise', customExerciseDeleted: 'Exercise deleted',
     emptyBody: "Start with a template or add days and exercises for this player",
     clearSearch: "Clear search and filters",
     "exerciseCount.one": "{count} exercise",

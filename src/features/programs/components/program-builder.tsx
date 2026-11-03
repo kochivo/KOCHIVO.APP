@@ -122,7 +122,8 @@ export function ProgramBuilder({ programId, playerId }: { programId?: string; pl
             const id = uuidv7(); state.update(current => addDay(current, id, t('newDay'))); setSelectedDay(id);
           }}>{t('addDay')}</Button>}
         </aside>
-        {day && <DayEditor key={day.id} day={day} update={state.update} />}
+        {day && <DayEditor key={day.id} day={day} update={state.update}
+          usedExerciseIds={draft.days.flatMap(item => item.exercises.map(row => row.exercise_id))} />}
       </div>
     </fieldset>
   </div>;

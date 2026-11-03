@@ -2,6 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    watchVideo: 'شوف الفيديو',
     messageCoach: "ابعت للكابتن",
     pageTitle: "التمرين",
     gymVisual: "© Gym visual",
@@ -63,6 +64,7 @@ export const messages = defineMessages({
     setNumber: "مجموعة {value0}",
   },
   en: {
+    watchVideo: 'Watch video',
     messageCoach: "Message your coach",
     pageTitle: "Workout",
     gymVisual: "© Gym visual",
