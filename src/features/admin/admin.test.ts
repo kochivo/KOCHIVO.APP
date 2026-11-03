@@ -13,6 +13,7 @@ import type { CaptainRow } from './types';
 
 const mocks = vi.hoisted(() => ({ rpc: vi.fn(), revalidate: vi.fn() }));
 vi.mock('server-only', () => ({}));
+vi.mock('next/headers', () => ({ cookies: async () => ({ get: () => undefined }) }));
 vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => ({ rpc: mocks.rpc }) }));
 vi.mock('next/navigation', () => ({ notFound: () => { throw new Error('NOT_FOUND'); } }));
 vi.mock('next/cache', () => ({ revalidatePath: mocks.revalidate }));

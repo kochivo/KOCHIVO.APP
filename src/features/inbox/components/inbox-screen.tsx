@@ -1,4 +1,7 @@
 'use client';
+import { formatNumber } from '@/lib/format';
+import { useLocale, useT } from '@/core/i18n/client';
+import { messages } from '../messages';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
@@ -11,6 +14,8 @@ import { CheckinDetail } from './checkin-detail';
 import { ReplyBox } from './reply-box';
 
 export function InboxScreen() {
+  const t = useT(messages);
+  const locale = useLocale();
   const [status, setStatus] = useState<'open' | 'reviewed'>('open');
   const [filter, setFilter] = useState<'all' | InboxItem['kind']>('all');
   const [items, setItems] = useState<InboxItem[]>([]);
@@ -31,9 +36,9 @@ export function InboxScreen() {
       setItems(result.data ?? []);
       if (status === 'open') setCount(result.data?.length ?? 0);
       setNow(new Date());
-    } catch { if (current === generation.current) setError('مش قادرين نحمّل المهام. جرّب تاني'); }
+    } catch { if (current === generation.current) setError(t('loadFailed')); }
     finally { if (current === generation.current) setLoading(false); }
-  }, [status]);
+  }, [status, t]);
   useEffect(() => {
     const token = generation;
     let active = true;
@@ -57,39 +62,39 @@ export function InboxScreen() {
       setItems(snapshot);
       setCount((value) => value === null ? null : value + 1);
       setSelected({ ...item, reply });
-      setError(failure instanceof Error ? failure.message : 'الرد متبعتش. جرّب تاني');
+      setError(failure instanceof Error ? failure.message : t('sendFailed'));
     } finally { setPending(false); }
   }
   const visible = items.filter((item) => filter === 'all' || item.kind === filter);
   return <div className="mx-auto max-w-6xl space-y-6">
     <header className="flex flex-wrap items-center justify-between gap-4">
-      <h1 id="inbox-heading" tabIndex={-1} className="text-3xl font-extrabold">المهام <span className="text-lime">{count ?? '—'}</span></h1>
-      <div className="glass flex rounded-control p-1" aria-label="حالة المهام">
+      <h1 id="inbox-heading" tabIndex={-1} className="text-3xl font-extrabold">{t('inbox')} <span className="text-lime">{count === null ? t('dash') : formatNumber(count, locale)}</span></h1>
+      <div className="glass flex rounded-control p-1" aria-label={t('status')}>
         {(['open', 'reviewed'] as const).map((tab) => <button key={tab} disabled={pending} aria-pressed={status === tab}
           className={`min-h-12 rounded-control px-5 ${status === tab ? 'bg-surface-raised text-lime' : 'text-muted'}`}
-          onClick={() => { if (tab !== status) { setLoading(true); setError(''); setSelected(null); setStatus(tab); } }}>{tab === 'open' ? 'مستنياك' : 'اتراجعت'}</button>)}
+          onClick={() => { if (tab !== status) { setLoading(true); setError(''); setSelected(null); setStatus(tab); } }}>{tab === 'open' ? t('open') : t('reviewed')}</button>)}
       </div>
     </header>
-    <div className="flex flex-wrap gap-2" aria-label="نوع المهمة">
+    <div className="flex flex-wrap gap-2" aria-label={t('type')}>
       {(['all', 'form', 'checkin'] as const).map((kind) => <button key={kind} aria-pressed={filter === kind}
         className={`glass min-h-12 rounded-full px-5 ${filter === kind ? 'text-lime' : 'text-muted'}`}
-        onClick={() => { setSelected(null); setFilter(kind); }}>{kind === 'all' ? 'الكل' : kind === 'form' ? 'فيديوهات' : 'تحديثات'}</button>)}
+        onClick={() => { setSelected(null); setFilter(kind); }}>{kind === 'all' ? t('all') : kind === 'form' ? t('videos') : t('checkins')}</button>)}
     </div>
-    {error && <div role="alert" className="glass rounded-card p-4 text-danger">{error}<button disabled={pending} onClick={() => { setLoading(true); setError(''); void load(); }} className="ms-3 min-h-12 px-4 text-ink">جرّب تاني</button></div>}
-    {pending && <p role="status" className="text-muted">بنبعت الرد…</p>}
-    {loading ? <p role="status">بنحمّل المهام…</p> : <div className="grid items-start gap-5 lg:grid-cols-2">
-      <section aria-label="المهام" className="space-y-3">
-        {!visible.length && !error && <p className="glass rounded-card p-6 text-muted">{items.length ? 'مفيش مهام من النوع ده' : status === 'open' ? 'مفيش حاجة مستنياك. عاش' : 'لسه مراجعتش حاجة'}</p>}
+    {error && <div role="alert" className="glass rounded-card p-4 text-danger">{error}<button disabled={pending} onClick={() => { setLoading(true); setError(''); void load(); }} className="ms-3 min-h-12 px-4 text-ink">{t('retry')}</button></div>}
+    {pending && <p role="status" className="text-muted">{t('sending')}</p>}
+    {loading ? <p role="status">{t('loading')}</p> : <div className="grid items-start gap-5 lg:grid-cols-2">
+      <section aria-label={t('inbox')} className="space-y-3">
+        {!visible.length && !error && <p className="glass rounded-card p-6 text-muted">{items.length ? t('noType') : status === 'open' ? t('noPending') : t('noReviewed')}</p>}
         <ul className="space-y-3">{now && visible.map((item) => <li key={`${item.kind}:${item.id}`}><InboxRow item={item} now={now}
           selected={selected?.id === item.id && selected.kind === item.kind} onSelect={() => { if (!pending) setSelected(item); }} /></li>)}</ul>
       </section>
-      {selected && <ResponsiveDialog key={`${selected.kind}:${selected.id}`} openerId={`inbox-${selected.kind}-${selected.id}`} fallbackId="inbox-heading" aria-label={`تفاصيل مهمة ${selected.player_name}`} onDismiss={() => setSelected(null)}
+      {selected && <ResponsiveDialog key={`${selected.kind}:${selected.id}`} openerId={`inbox-${selected.kind}-${selected.id}`} fallbackId="inbox-heading" aria-label={t('details', { name: selected.player_name })} onDismiss={() => setSelected(null)}
         className="glass-strong fixed inset-0 z-50 m-0 h-full max-h-dvh w-full max-w-none space-y-5 overflow-y-auto bg-bg p-5 text-ink backdrop:bg-bg/80 lg:static lg:z-auto lg:h-auto lg:rounded-card lg:p-6">
         <header className="flex items-center justify-between gap-3"><h2 className="text-2xl font-bold">{selected.player_name}</h2>
-          <button aria-label="اقفل التفاصيل" className="flex min-h-12 min-w-12 items-center justify-center" onClick={() => setSelected(null)}><X aria-hidden="true" /></button></header>
+          <button aria-label={t('close')} className="flex min-h-12 min-w-12 items-center justify-center" onClick={() => setSelected(null)}><X aria-hidden="true" /></button></header>
         {error && <p role="alert" className="text-danger">{error}</p>}
         {selected.kind === 'form' ? <FormCheckDetail key={`form:${selected.id}`} item={selected} /> : <CheckinDetail key={`checkin:${selected.id}`} item={selected} />}
-        {selected.reviewed_at ? <div className="glass rounded-card p-4"><p className="text-muted">اتراجعت</p><p className="whitespace-pre-wrap">{selected.reply || 'اتراجعت من غير رد'}</p></div> :
+        {selected.reviewed_at ? <div className="glass rounded-card p-4"><p className="text-muted">{t('reviewed')}</p><p className="whitespace-pre-wrap">{selected.reply || t('noReply')}</p></div> :
           <ReplyBox key={`${selected.kind}:${selected.id}`} item={selected} onSend={send} />}
       </ResponsiveDialog>}
     </div>}

@@ -11,6 +11,7 @@ const captain = {
 };
 const audit = { id: 'audit', admin_id: 'admin', target_id: 'captain', created_at: '2026-11-01T10:00:00Z' };
 vi.mock('server-only', () => ({}));
+vi.mock('next/headers', () => ({ cookies: async () => ({ get: () => undefined }) }));
 vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => ({ rpc: mocks.rpc, from: mocks.from }) }));
 vi.mock('next/navigation', () => ({ notFound: () => { throw new Error('NOT_FOUND'); } }));
 

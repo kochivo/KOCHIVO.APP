@@ -1,3 +1,5 @@
+import { getT } from '@/core/i18n/server';
+import { messages } from '../messages';
 import 'server-only';
 
 import { fetchRoster, playerStatus } from '@/features/roster';
@@ -6,6 +8,7 @@ import { captainClient } from './client';
 import type { BillingResult } from '../types';
 
 export async function fetchBillingAt(now: Date): Promise<BillingResult> {
+  const t = await getT(messages);
   try {
     const { client, captainId } = await captainClient();
     const [roster, tier] = await Promise.all([
@@ -32,5 +35,5 @@ export async function fetchBillingAt(now: Date): Promise<BillingResult> {
         lastPayment: paymentMap.get(player.playerId) ?? null })),
       plan: plan.data, used: roster.players.length, subscriptionEnd: subscription.data?.ends_at ?? null,
     } };
-  } catch { return { error: 'مش قادرين نحمّل الاشتراكات. جرّب تاني' }; }
+  } catch { return { error: t('loadFailed') }; }
 }
