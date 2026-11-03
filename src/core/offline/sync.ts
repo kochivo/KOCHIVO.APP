@@ -49,6 +49,7 @@ async function sendBatch(
     const message = error instanceof Error ? error.message : String(error);
     await db.outbox.bulkUpdate(
       batch.map((e) => ({
+        // Entries read from the auto-increment outbox table always have a persisted key.
         key: e.id!,
         changes: { attempts: e.attempts + 1, next_attempt_at: now + backoffDelay(e.attempts + 1), last_error: message },
       })),
@@ -58,8 +59,10 @@ async function sendBatch(
   // Only remove entries that were not re-queued while the request was in flight.
   await db.transaction('rw', db.outbox, async () => {
     for (const e of batch) {
+      // Entries read from the auto-increment outbox table always have a persisted key.
       const current = await db.outbox.get(e.id!);
       if (current && current.revision === e.revision) {
+        // The same persisted key was used to read current above.
         await db.outbox.delete(e.id!);
       }
     }

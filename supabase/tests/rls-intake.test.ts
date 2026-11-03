@@ -110,7 +110,7 @@ describe('intake constraints', () => {
   });
 
   for (const assignment of [
-    'birth_year = 1929', 'birth_year = extract(year from current_date)::int - 9', "sex = 'other'",
+    'birth_year = 1929', 'birth_year = extract(year from test_clock.today())::int - 9', "sex = 'other'",
     'height_cm = 99.9', 'height_cm = 250.1', 'weight_kg = 24.9', 'weight_kg = 300.1',
     'target_weight_kg = 24.9', 'target_weight_kg = 300.1', 'session_minutes = 15', "experience = 'expert'",
     "notes = repeat('أ', 501)",

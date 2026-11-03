@@ -71,7 +71,7 @@ it('enforces entry limits, permits champion, and preserves active players after 
   const add = async () => {
     const player = await createUser(db, 'player');
     return db.query(`insert into public.coach_clients
-      (captain_id, player_id, access_until) values ($1, $2, current_date + 30)`, [coach, player]);
+      (captain_id, player_id, access_until) values ($1, $2, test_clock.today() + 30)`, [coach, player]);
   };
   for (let i = 0; i < 5; i++) await add();
   await expect(add()).rejects.toMatchObject({ code: 'P0001' });
@@ -91,7 +91,7 @@ it('enforces entry limits, permits champion, and preserves active players after 
 
 it('blocks suspended invites and profile tampering, then restores invites and audits both actions', async () => {
   const invite = () => asUser(db, captain, (tx) => tx.query(`insert into public.coach_invites
-    (captain_id, access_until) values ($1, current_date + 30)`, [captain]));
+    (captain_id, access_until) values ($1, test_clock.today() + 30)`, [captain]));
   await invite();
   await suspend(admin, captain, true);
   await expect(invite()).rejects.toMatchObject({ code: '42501' });
@@ -166,14 +166,14 @@ it('captains cannot attach, reassign, or re-activate players directly', async ()
   const player = await createUser(db, 'player');
   const stranger = await createUser(db, 'player');
   await expect(asUser(db, coach, (tx) => tx.query(`insert into public.coach_clients
-    (captain_id, player_id, access_until) values ($1, $2, current_date + 30)`, [coach, stranger])))
+    (captain_id, player_id, access_until) values ($1, $2, test_clock.today() + 30)`, [coach, stranger])))
     .rejects.toMatchObject({ code: '42501' });
   const { rows } = await db.query<{ id: string }>(`insert into public.coach_clients
-    (captain_id, player_id, access_until) values ($1, $2, current_date + 30) returning id`, [coach, player]);
+    (captain_id, player_id, access_until) values ($1, $2, test_clock.today() + 30) returning id`, [coach, player]);
   const id = rows[0]?.id;
   const update = (set: string) => asUser(db, coach, (tx) => tx.query(`update public.coach_clients set ${set} where id = $1`, [id]));
   await expect(update(`player_id = '${stranger}'`)).rejects.toMatchObject({ code: '42501' });
-  await update('access_until = current_date + 60');
+  await update('access_until = test_clock.today() + 60');
   await update('archived_at = now()');
   await expect(update('archived_at = null')).rejects.toMatchObject({ code: '42501' });
 });
@@ -181,7 +181,7 @@ it('captains cannot attach, reassign, or re-activate players directly', async ()
 it('a suspended captain’s existing invite cannot be redeemed', async () => {
   const coach = await createUser(db, 'captain');
   const player = await createUser(db, 'player');
-  await db.query(`insert into public.coach_invites (captain_id, code, access_until) values ($1, 'paused-coach', current_date + 30)`, [coach]);
+  await db.query(`insert into public.coach_invites (captain_id, code, access_until) values ($1, 'paused-coach', test_clock.today() + 30)`, [coach]);
   await suspend(admin, coach, true);
   await expect(asUser(db, player, (tx) => tx.query(`select public.redeem_invite('paused-coach')`)))
     .rejects.toMatchObject({ code: '42501' });

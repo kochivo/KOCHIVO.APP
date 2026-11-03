@@ -34,7 +34,7 @@ describe('role confirmation', () => {
       .rejects.toMatchObject({ code: '42501' });
     await expect(asUser(db, id, (tx) => tx.query("update profiles set role = 'captain' where id = $1", [id])))
       .rejects.toMatchObject({ code: '42501' });
-    await expect(asUser(db, id, (tx) => tx.query('update profiles set created_at = now() where id = $1', [id])))
+    await expect(asUser(db, id, (tx) => tx.query("update profiles set created_at = now() - interval '1 second' where id = $1", [id])))
       .rejects.toMatchObject({ code: '42501' });
   });
 });
@@ -43,8 +43,8 @@ describe('anonymous invite preview', () => {
   it('returns only first name and validity, with indistinguishable expired/unknown output', async () => {
     const captain = await createUser(db, 'captain', 'محمد علي');
     await db.query(`insert into coach_invites (captain_id, code, access_until, expires_at) values
-      ($1, 'preview-valid', current_date + 30, now() + interval '1 day'),
-      ($1, 'preview-expired', current_date + 30, now() - interval '1 day')`, [captain]);
+      ($1, 'preview-valid', test_clock.today() + 30, now() + interval '1 day'),
+      ($1, 'preview-expired', test_clock.today() + 30, now() - interval '1 day')`, [captain]);
     const preview = (code: string) => db.transaction(async (tx) => {
       await tx.exec('set local role anon');
       return (await tx.query('select * from public.invite_preview($1)', [code])).rows;

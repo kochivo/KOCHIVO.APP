@@ -73,7 +73,7 @@ describe('SEC-03 review fields start empty', () => {
 
 const invite = (inviter: string, code: string, owner = false) => {
   const sql = `insert into public.coach_invites (captain_id, code, access_until)
-    values ($1, $2, current_date + 30)`;
+    values ($1, $2, test_clock.today() + 30)`;
   return owner ? db.query(sql, [inviter, code]) : asUser(db, inviter, (tx) => tx.query(sql, [inviter, code]));
 };
 const redeem = (redeemer: string, code: string) => asUser(db, redeemer,
@@ -150,7 +150,7 @@ describe('SEC-05 lookups respect caller authorization', () => {
     const coach = await createUser(db, 'captain');
     for (let i = 0; i < 5; i++) {
       await db.query(`insert into public.coach_clients (captain_id, player_id, access_until)
-        values ($1, $2, current_date + 30)`, [coach, await createUser(db, 'player')]);
+        values ($1, $2, test_clock.today() + 30)`, [coach, await createUser(db, 'player')]);
     }
     const sixth = await createUser(db, 'player');
     await invite(coach, 'sixth-player');
