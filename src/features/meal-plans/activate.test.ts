@@ -1,3 +1,5 @@
+vi.mock('server-only', () => ({}));
+vi.mock('next/headers', () => ({ cookies: async () => ({ get: () => undefined }) }));
 import { beforeEach, expect, it, vi } from 'vitest';
 import { activatePlan } from './data/activate';
 
@@ -24,7 +26,7 @@ it('activates the selected plan', async () => {
 });
 
 it('preserves validation and transport exceptions', async () => {
-  await expect(activatePlan('bad')).rejects.toThrow();
+  await expect(activatePlan('bad')).rejects.toThrow('النظام مش موجود');
   expect(rpc).not.toHaveBeenCalled();
   rpc.mockRejectedValue(new Error('private'));
   await expect(activatePlan(id)).rejects.toThrow('private');

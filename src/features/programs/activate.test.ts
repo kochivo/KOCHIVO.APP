@@ -1,3 +1,5 @@
+vi.mock('server-only', () => ({}));
+vi.mock('next/headers', () => ({ cookies: async () => ({ get: () => undefined }) }));
 import { beforeEach, expect, it, vi } from 'vitest';
 import { activateProgram } from './data/activate';
 

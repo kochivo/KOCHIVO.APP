@@ -1,16 +1,20 @@
+import { createT } from '@/core/i18n/messages';
+import { messages } from './messages';
+import type { Translator } from '@/core/i18n/messages';
+
 import { CreditCard, Files, Inbox, Settings, Users } from 'lucide-react';
 
 export const captainLinks = [
-  { href: '/captain', label: 'اللاعبين', icon: Users },
-  { href: '/captain/inbox', label: 'المهام', icon: Inbox },
-  { href: '/captain/templates', label: 'القوالب', icon: Files },
-  { href: '/captain/billing', label: 'الاشتراكات', icon: CreditCard },
-  { href: '/captain/settings', label: 'الإعدادات', icon: Settings },
+  { href: '/captain', label: 'players' as const, icon: Users },
+  { href: '/captain/inbox', label: 'tasks' as const, icon: Inbox },
+  { href: '/captain/templates', label: 'templates' as const, icon: Files },
+  { href: '/captain/billing', label: 'subscriptions' as const, icon: CreditCard },
+  { href: '/captain/settings', label: 'settings' as const, icon: Settings },
 ];
 
-export function captainNav(pathname: string) {
+export function captainNav(pathname: string, t: Translator<typeof messages> = createT(messages, 'ar')) {
   return captainLinks.map((link) => ({
-    ...link,
+    ...link, label: t(link.label),
     active: link.href === '/captain'
       ? pathname === '/captain' || ['players', 'programs', 'nutrition']
         .some((section) => pathname.startsWith(`/captain/${section}/`))
@@ -18,6 +22,6 @@ export function captainNav(pathname: string) {
   }));
 }
 
-export function mobileCaptainNav(pathname: string) {
-  return captainNav(pathname);
+export function mobileCaptainNav(pathname: string, t: Translator<typeof messages> = createT(messages, 'ar')) {
+  return captainNav(pathname, t);
 }

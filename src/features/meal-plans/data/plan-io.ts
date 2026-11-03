@@ -1,5 +1,8 @@
 'use server';
 
+import { getT } from '@/core/i18n/server';
+import { messages } from '../messages';
+
 import { z } from 'zod';
 import { uuidv7 } from '@/core/offline/ids';
 import { planClient, toFood } from './client';
@@ -19,44 +22,47 @@ const draftSchema = z.object({
 });
 
 export async function createPlan(playerId: string, title: string): Promise<string> {
+  const t = await getT(messages);
   z.uuid().parse(playerId);
   title = z.string().trim().min(1).max(80).parse(title);
   const client = await planClient();
   const { data, error } = await client.auth.getUser();
-  if (error || !data.user) throw new Error('سجّل دخولك الأول');
+  if (error || !data.user) throw new Error(t('signInFirst'));
   const id = uuidv7();
   const result = await client.from('nutrition_plans').insert({ id, player_id: playerId, captain_id: data.user.id, title });
-  if (result.error) throw new Error('النظام متعملش. جرّب تاني');
+  if (result.error) throw new Error(t('couldntCreateThePlanTryAgain'));
   return id;
 }
 export async function listPlayerPlans(playerId: string): Promise<PlanSummary[]> {
+  const t = await getT(messages);
   z.uuid().parse(playerId);
   const client = await planClient();
   const { data, error } = await client.from('nutrition_plans').select('*').eq('player_id', playerId).order('created_at', { ascending: false });
-  if (error) throw new Error('الأنظمة متحملتش. جرّب تاني');
+  if (error) throw new Error(t('couldntLoadPlansTryAgain'));
   return (data ?? []).map(({ id, title, status }) => ({ id, title, status }));
 }
 export async function loadPlan(id: string): Promise<PlanDraft> {
+  const t = await getT(messages);
   z.uuid().parse(id);
   const client = await planClient();
   const { data: plan, error } = await client.from('nutrition_plans').select('*').eq('id', id).single();
   const user = await client.auth.getUser();
-  if (error || !plan || plan.captain_id !== user.data.user?.id || !plan.player_id) throw new Error('النظام مش موجود');
+  if (error || !plan || plan.captain_id !== user.data.user?.id || !plan.player_id) throw new Error(t('planNotFound'));
   const meals = await client.from('meals').select('*').eq('plan_id', id).order('position');
-  if (meals.error) throw new Error('الوجبات متحملتش');
+  if (meals.error) throw new Error(t('couldntLoadMeals'));
   const mealIds = (meals.data ?? []).map(meal => meal.id);
   const items = mealIds.length ? await client.from('meal_items').select('*').in('meal_id', mealIds).order('position') : { data: [], error: null };
-  if (items.error) throw new Error('الأكل متحملش');
+  if (items.error) throw new Error(t('couldntLoadFoods'));
   const itemIds = (items.data ?? []).map(item => item.id);
   const alts = itemIds.length ? await client.from('meal_item_alternatives').select('*').in('meal_item_id', itemIds) : { data: [], error: null };
-  if (alts.error) throw new Error('البدائل متحملتش');
+  if (alts.error) throw new Error(t('couldntLoadAlternatives'));
   const foodIds = [...new Set([...(items.data ?? []), ...(alts.data ?? [])].map(item => item.food_id))];
   const foods = foodIds.length ? await client.from('foods').select('*').in('id', foodIds) : { data: [], error: null };
-  if (foods.error) throw new Error('الأكل متحملش');
+  if (foods.error) throw new Error(t('couldntLoadFoods'));
   const foodMap = new Map((foods.data ?? []).map(row => [row.id, toFood(row)]));
   function food(id: string) {
     const result = foodMap.get(id);
-    if (!result) throw new Error('أكلة مش متاحة. جرّب تاني');
+    if (!result) throw new Error(t('foodUnavailableTryAgain'));
     return result;
   }
   return { id, playerId: plan.player_id, title: plan.title, status: plan.status,
@@ -70,10 +76,11 @@ export async function loadPlan(id: string): Promise<PlanDraft> {
   };
 }
 export async function savePlan(input: PlanDraft): Promise<void> {
+  const t = await getT(messages);
   const parsed = draftSchema.safeParse(input);
-  if (!parsed.success) throw new Error('راجع اسم النظام والوجبات والأهداف والجرامات');
+  if (!parsed.success) throw new Error(t('checkThePlanNameMealsTargetsAnd'));
   const draft = parsed.data;
   const client = await planClient();
   const { error } = await client.rpc('save_nutrition_plan', { p_plan: draft.id, p_draft: draft });
-  if (error) throw new Error('الحفظ متعملش. جرّب تاني');
+  if (error) throw new Error(t('couldntSaveTryAgain'));
 }

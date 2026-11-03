@@ -1,5 +1,8 @@
 'use client';
 
+import { useT } from '@/core/i18n/client';
+import { messages } from '../messages';
+
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/ui';
@@ -8,6 +11,7 @@ import { assignTemplate, listTemplatePlayers } from '../data/templates';
 import type { Template } from '../types';
 
 export function AssignSheet({ template, onClose }: { template: Template; onClose: () => void }) {
+  const t = useT(messages);
   const dialog = useRef<HTMLDialogElement>(null);
   const router = useRouter();
   const [players, setPlayers] = useState<RosterPlayer[]>([]);
@@ -26,10 +30,10 @@ export function AssignSheet({ template, onClose }: { template: Template; onClose
       else { setPlayers(result.data); setLoadError(''); }
       setLoading(false);
     }).catch(() => {
-      if (current) { setLoadError('اللاعبين متحملوش. جرّب تاني'); setLoading(false); }
+      if (current) { setLoadError(t('couldntLoadPlayersTryAgain')); setLoading(false); }
     });
     return () => { current = false; };
-  }, [attempt]);
+  }, [attempt, t]);
   async function assign() {
     if (busy || !selected) return;
     setBusy(true); setError('');
@@ -37,19 +41,19 @@ export function AssignSheet({ template, onClose }: { template: Template; onClose
       const result = await assignTemplate({ kind: template.kind, templateId: template.id, playerId: selected });
       if (result.error !== undefined) { setError(result.error); setBusy(false); return; }
       router.push(`/captain/${template.kind === 'program' ? 'programs' : 'nutrition'}/${result.data}`);
-    } catch { setError('القالب متعيّنش. جرّب تاني'); setBusy(false); }
+    } catch { setError(t('couldntAssignTemplateTryAgain')); setBusy(false); }
   }
-  return <dialog ref={dialog} dir="rtl" aria-labelledby="assign-template-title"
+  return <dialog ref={dialog} aria-labelledby="assign-template-title"
     onCancel={event => { if (busy) event.preventDefault(); else onClose(); }}
     className="fixed inset-0 m-auto max-h-[85dvh] w-[calc(100%_-_2rem)] max-w-lg overflow-y-auto rounded-card border border-line bg-surface p-6 text-ink">
     <div className="grid gap-4">
-      <h2 id="assign-template-title" className="text-xl font-bold">ادّي «{template.title}» للاعب</h2>
-      <p className="text-sm text-muted">هياخد نسخة مستقلة، والنظام النشط عنده هيتأرشف</p>
-      {loading ? <p role="status">جاري تحميل اللاعبين</p> : loadError ? <div role="alert">{loadError}
-        <Button variant="ghost" className="min-h-12" onClick={() => { setLoading(true); setAttempt(value => value + 1); }}>جرّب تاني</Button>
-      </div> : players.length === 0 ? <p className="text-muted">لسه مفيش لاعبين. ضيف لاعب الأول</p> :
+      <h2 id="assign-template-title" className="text-xl font-bold">{t('assignTitle', { title: template.title })}</h2>
+      <p className="text-sm text-muted">{t('theyllGetASeparateCopyTheirActive')}</p>
+      {loading ? <p role="status">{t('loadingPlayers')}</p> : loadError ? <div role="alert">{loadError}
+        <Button variant="ghost" className="min-h-12" onClick={() => { setLoading(true); setAttempt(value => value + 1); }}>{t('tryAgain')}</Button>
+      </div> : players.length === 0 ? <p className="text-muted">{t('noPlayersYetAddAPlayerFirst')}</p> :
         <fieldset disabled={busy} className="grid gap-2">
-          <legend className="mb-2 text-sm text-muted">اختار اللاعب</legend>
+          <legend className="mb-2 text-sm text-muted">{t('chooseAPlayer')}</legend>
           {players.map(player => <label key={player.playerId} className="glass flex min-h-12 cursor-pointer items-center gap-3 rounded-control px-4 py-3">
             <input type="radio" className="size-5 accent-lime" name="template-player" value={player.playerId} checked={selected === player.playerId}
               onChange={() => { setSelected(player.playerId); setError(''); }} />
@@ -57,12 +61,12 @@ export function AssignSheet({ template, onClose }: { template: Template; onClose
           </label>)}
         </fieldset>}
       {error && <p role="alert" className="text-danger">{error}</p>}
-      {busy && <p role="status">جاري تعيين القالب</p>}
+      {busy && <p role="status">{t('assigningTemplate')}</p>}
       <div className="flex flex-wrap gap-2">
         <Button className="min-h-12" disabled={!selected || busy || loading || !!loadError} onClick={() => void assign()}>
-          {error ? 'جرّب تاني' : 'أكّد التعيين'}
+          {error ? t('tryAgain') : t('confirmAssignment')}
         </Button>
-        <Button variant="ghost" className="min-h-12" disabled={busy} onClick={onClose}>إلغاء</Button>
+        <Button variant="ghost" className="min-h-12" disabled={busy} onClick={onClose}>{t('cancel')}</Button>
       </div>
     </div>
   </dialog>;

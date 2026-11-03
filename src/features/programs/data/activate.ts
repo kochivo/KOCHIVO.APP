@@ -1,5 +1,8 @@
 'use server';
 
+import { getT } from '@/core/i18n/server';
+import { messages } from '../messages';
+
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { supabaseServer } from '@/core/supabase/server';
@@ -7,14 +10,15 @@ import { isPermissionDenied, readError } from '@/core/supabase/errors';
 import type { Result } from '../types';
 
 export async function activateProgram(id: string): Promise<Result<true>> {
-  if (!z.uuid().safeParse(id).success) return { error: 'البرنامج مش موجود' };
+  const t = await getT(messages);
+  if (!z.uuid().safeParse(id).success) return { error: t('programNotFound') };
   try {
     const client = await supabaseServer();
     const { error } = await client.rpc('activate_program', { p_program: id });
-    if (error) return { error: readError(error).code === '22023' ? 'ضيف يوم فيه تمرين واختار لاعب الأول' :
-      isPermissionDenied(error) ? 'البرنامج مش متاح ليك' : 'التفعيل متعملش. جرّب تاني' };
+    if (error) return { error: readError(error).code === '22023' ? t('addAnExerciseDayAndChooseA') :
+      isPermissionDenied(error) ? t('youCantAccessThisProgram') : t('couldntActivateTryAgain') };
     revalidatePath('/captain');
     revalidatePath('/player');
     return { data: true };
-  } catch { return { error: 'التفعيل متعملش. جرّب تاني' }; }
+  } catch { return { error: t('couldntActivateTryAgain') }; }
 }

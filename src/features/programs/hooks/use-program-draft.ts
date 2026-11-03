@@ -1,10 +1,14 @@
 'use client';
 
+import { useT } from '@/core/i18n/client';
+import { messages } from '../messages';
+
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { loadProgram, saveProgram } from '../data/program-io';
 import type { ProgramDraft } from '../types';
 
 export function useProgramDraft(id?: string) {
+  const t = useT(messages);
   const [draft, setDraft] = useState<ProgramDraft | null>(null);
   const [dirty, setDirty] = useState(false);
   const [loading, setLoading] = useState(Boolean(id));
@@ -20,9 +24,9 @@ export function useProgramDraft(id?: string) {
       if (result.error) setError(result.error);
       else if (result.data) { setDraft(result.data); setDirty(false); setError(''); }
       setLoading(false);
-    }).catch(() => { if (current) { setError('البرنامج متحمّلش. جرّب تاني'); setLoading(false); } });
+    }).catch(() => { if (current) { setError(t('couldntLoadTheProgramTryAgain')); setLoading(false); } });
     return () => { current = false; };
-  }, [id, revision]);
+  }, [id, revision, t]);
   useEffect(() => {
     if (!dirty && !saving) return;
     const warn = (event: BeforeUnloadEvent) => { event.preventDefault(); event.returnValue = ''; };
@@ -45,7 +49,7 @@ export function useProgramDraft(id?: string) {
       if (result.error) { setError(result.error); setDirty(true); return false; }
       return true;
     } catch {
-      setError('الحفظ متعملش. جرّب تاني'); setDirty(true); return false;
+      setError(t('couldntSaveTryAgain')); setDirty(true); return false;
     } finally { busy.current = false; setSaving(false); }
   }
   function retry() { setLoading(true); setError(''); setRevision(value => value + 1); }

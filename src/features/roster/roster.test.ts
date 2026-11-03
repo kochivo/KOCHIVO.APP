@@ -1,3 +1,4 @@
+vi.mock('next/headers', () => ({ cookies: async () => ({ get: () => undefined }) }));
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { lastSeenLabel, playerStatus } from './status';
 import { inviteDaysSchema, inviteMessage, inviteUrl } from './invite';

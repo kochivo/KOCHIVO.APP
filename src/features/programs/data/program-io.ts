@@ -1,5 +1,8 @@
 'use server';
 
+import { getT } from '@/core/i18n/server';
+import { messages } from '../messages';
+
 import { z } from 'zod';
 import { supabaseServer } from '@/core/supabase/server';
 import { uuidv7 } from '@/core/offline/ids';
@@ -17,7 +20,6 @@ const draftSchema = z.object({
   days: z.array(z.object({ id: z.uuid(), program_id: z.uuid(), title: z.string().max(60),
     position: z.number().int().positive().max(32767), exercises: z.array(exerciseSchema) })),
 });
-const failure = 'البرنامج متحفظش بالكامل. جرّب الحفظ تاني';
 async function session() {
   const client = await supabaseServer();
   const { data, error } = await client.auth.getClaims();
@@ -25,48 +27,51 @@ async function session() {
   return { client, captain: data.claims.sub };
 }
 export async function loadProgram(id: string): Promise<Result<ProgramDraft>> {
-  if (!z.uuid().safeParse(id).success) return { error: 'البرنامج مش موجود' };
+  const t = await getT(messages);
+  if (!z.uuid().safeParse(id).success) return { error: t('programNotFound') };
   try {
     const { client, captain } = await session();
     const program = await client.from('programs').select('*').eq('id', id).eq('captain_id', captain).single();
-    if (program.error) return { error: 'مش قادرين نفتح البرنامج. جرّب تاني' };
+    if (program.error) return { error: t('couldntOpenTheProgramTryAgain') };
     const days = await client.from('program_days').select('*').eq('program_id', id).order('position');
-    if (days.error) return { error: 'الأيام متحمّلتش. جرّب تاني' };
+    if (days.error) return { error: t('couldntLoadDaysTryAgain') };
     const draftDays: DraftDay[] = [];
     for (const day of days.data) {
       const rows = await client.from('program_exercises').select('*').eq('day_id', day.id).order('position');
-      if (rows.error) return { error: 'التمارين متحمّلتش. جرّب تاني' };
+      if (rows.error) return { error: t('couldntLoadExercisesTryAgain') };
       const ids = rows.data.map(row => row.exercise_id);
       const library = ids.length ? await client.from('exercises').select('*').in('id', ids) : { data: [], error: null };
-      if (library.error) return { error: 'مكتبة التمارين متحمّلتش. جرّب تاني' };
+      if (library.error) return { error: t('couldntLoadTheExerciseLibraryTryAgain') };
       draftDays.push({ ...day, exercises: rows.data.map(row => ({ ...row, library: library.data?.find(e => e.id === row.exercise_id) ?? null })) });
     }
     return { data: { ...program.data, days: draftDays } };
-  } catch { return { error: 'مش قادرين نفتح البرنامج. جرّب تاني' }; }
+  } catch { return { error: t('couldntOpenTheProgramTryAgain') }; }
 }
 export async function saveProgram(draft: ProgramDraft): Promise<Result<true>> {
+  const t = await getT(messages);
+  const failure = t('programWasntFullySavedTrySavingAgain');
   const parsed = draftSchema.safeParse(draft);
-  if (!parsed.success) return { error: 'راجع اسم البرنامج وأرقام التمارين' };
+  if (!parsed.success) return { error: t('checkTheProgramNameAndExerciseNumbers') };
   const input = parsed.data;
   const dayIds = input.days.map(day => day.id);
   const rows = input.days.flatMap(day => day.exercises);
   if (new Set(dayIds).size !== dayIds.length || new Set(rows.map(row => row.id)).size !== rows.length ||
     input.days.some((day, i) => day.program_id !== input.id || day.position !== i + 1 ||
-      day.exercises.some((row, j) => row.day_id !== day.id || row.position !== j + 1))) return { error: 'ترتيب البرنامج مش مظبوط' };
+      day.exercises.some((row, j) => row.day_id !== day.id || row.position !== j + 1))) return { error: t('programOrderIsInvalid') };
   try {
     const { client, captain } = await session();
     const existing = await client.from('programs').select('*').eq('id', input.id).eq('captain_id', captain).single();
-    if (existing.error || existing.data.player_id !== input.player_id) return { error: 'البرنامج مش متاح للتعديل' };
+    if (existing.error || existing.data.player_id !== input.player_id) return { error: t('programCantBeEdited') };
     const oldDays = await client.from('program_days').select('*').eq('program_id', input.id);
     if (oldDays.error) return { error: failure };
     // A captain may own many programs: IDs must not move rows out of another program.
     if (dayIds.length) {
       const claimed = await client.from('program_days').select('*').in('id', dayIds);
-      if (claimed.error || claimed.data.some(day => day.program_id !== input.id)) return { error: 'اليوم تابع لبرنامج تاني' };
+      if (claimed.error || claimed.data.some(day => day.program_id !== input.id)) return { error: t('dayBelongsToAnotherProgram') };
     }
     if (rows.length) {
       const claimed = await client.from('program_exercises').select('*').in('id', rows.map(row => row.id));
-      if (claimed.error || claimed.data.some(row => !oldDays.data.some(day => day.id === row.day_id))) return { error: 'التمرين تابع لبرنامج تاني' };
+      if (claimed.error || claimed.data.some(row => !oldDays.data.some(day => day.id === row.day_id))) return { error: t('exerciseBelongsToAnotherProgram') };
     }
     const program = await client.from('programs').upsert({ id: input.id, captain_id: captain,
       player_id: input.player_id, is_template: false, title: input.title });
@@ -89,19 +94,21 @@ export async function saveProgram(draft: ProgramDraft): Promise<Result<true>> {
   } catch { return { error: failure }; }
 }
 export async function createProgram(playerId: string, title: string): Promise<Result<string>> {
-  if (!z.uuid().safeParse(playerId).success || !title.trim() || title.trim().length > 80) return { error: 'راجع اللاعب واسم البرنامج' };
+  const t = await getT(messages);
+  if (!z.uuid().safeParse(playerId).success || !title.trim() || title.trim().length > 80) return { error: t('checkThePlayerAndProgramName') };
   try {
     const { client, captain } = await session();
     const id = uuidv7();
     const result = await client.from('programs').insert({ id, captain_id: captain, player_id: playerId, title: title.trim(), is_template: false, status: 'draft' });
-    return result.error ? { error: 'البرنامج متعملش. جرّب تاني' } : { data: id };
-  } catch { return { error: 'البرنامج متعملش. جرّب تاني' }; }
+    return result.error ? { error: t('couldntCreateTheProgramTryAgain') } : { data: id };
+  } catch { return { error: t('couldntCreateTheProgramTryAgain') }; }
 }
 export async function listPlayerPrograms(playerId: string): Promise<Result<ProgramRow[]>> {
-  if (!z.uuid().safeParse(playerId).success) return { error: 'اللاعب مش موجود' };
+  const t = await getT(messages);
+  if (!z.uuid().safeParse(playerId).success) return { error: t('playerNotFound') };
   try {
     const { client, captain } = await session();
     const result = await client.from('programs').select('*').eq('player_id', playerId).eq('captain_id', captain).order('created_at', { ascending: false });
-    return result.error ? { error: 'البرامج متحمّلتش. جرّب تاني' } : { data: result.data };
-  } catch { return { error: 'البرامج متحمّلتش. جرّب تاني' }; }
+    return result.error ? { error: t('couldntLoadProgramsTryAgain') } : { data: result.data };
+  } catch { return { error: t('couldntLoadProgramsTryAgain') }; }
 }
