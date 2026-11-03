@@ -1,12 +1,11 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { Home, MessageCircle, TrendingUp, Utensils } from 'lucide-react';
 import { localDb, useLiveQuery } from '@/core/offline';
 import { signedMediaUrl } from '@/core/storage';
 import { supabaseBrowser } from '@/core/supabase/browser';
 import { localDate } from '@/lib/dates';
-import { BottomNav, Button, Chip, ErrorState, LoadingState } from '@/ui';
+import { Button, Chip, ErrorState, LoadingState } from '@/ui';
 import { listCheckIns } from '../data/checkins';
 import type { CheckIn } from '../data/checkins';
 import { readStrength } from '../data/strength';
@@ -15,13 +14,6 @@ import type { TrendPoint } from '../trends';
 import { weekStart } from '../week';
 import { CheckinSheet } from './checkin-sheet';
 import { LineChart } from './line-chart';
-
-const navigation = [
-  { href: '/player', label: 'الرئيسية', icon: Home },
-  { href: '/player/nutrition', label: 'التغذية', icon: Utensils },
-  { href: '/player/progress', label: 'التطور', icon: TrendingUp, active: true },
-  { href: '/player/captain', label: 'الكابتن', icon: MessageCircle },
-];
 
 function deltaLabel(points: TrendPoint[], unit: string) {
   const delta = trendDelta(points);
@@ -144,6 +136,5 @@ export function ProgressScreen() {
     {(checkins || checkinError) && <CheckinSheet latest={latest} open={sheet} onClose={() => setSheet(false)} onSent={() => {
       setSheet(false); setRetryKey((value) => value + 1);
     }} />}
-    <BottomNav aria-label="التنقل" items={navigation} />
   </main>;
 }
