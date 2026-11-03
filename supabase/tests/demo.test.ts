@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import type { PGlite } from '@electric-sql/pglite';
 import { afterAll, beforeAll, expect, it } from 'vitest';
 import { asUser, createTestDb, createUser, TEST_NOW } from './harness';
@@ -20,6 +21,16 @@ const snapshot = () => db.query(`select
   (select count(*)::int from public.workout_sessions) as sessions,
   (select count(*)::int from public.set_logs) as sets,
   (select count(*)::int from public.meal_logs) as meals`);
+const libraryText = readFileSync('supabase/seed/source/starter-templates.json', 'utf8');
+const datasetIds = [...new Set([...libraryText.matchAll(/"dataset_id":\s*"(\d+)"/g)].map(m => m[1]))];
+const seedKeys = [...new Set([...libraryText.matchAll(/"seed_key":\s*"([^"]+)"/g)].map(m => m[1]))];
+async function seedCatalog() {
+  await db.query(`insert into public.exercises (dataset_id, name_en, body_part)
+    select id, 'Exercise ' || id, 'legs' from unnest($1::text[]) id`, [datasetIds]);
+  await db.query(`insert into public.foods (seed_key, name_ar, kcal_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g)
+    select key, key, 130, 10, 20, 3 from unnest($1::text[]) key`, [seedKeys]);
+}
+const mine = (sql: string) => db.query<{ n: number }>(sql, [captain]).then(r => r.rows[0]?.n);
 beforeAll(async () => { db = await createTestDb(); captain = await anonymous(); });
 afterAll(async () => { await db?.close(); });
 
@@ -29,21 +40,30 @@ it('demo log IDs match the offline stableId algorithm', async () => {
     .toEqual([{ id: await stableId(...parts) }]);
 });
 
-it('an anonymous caller gets eight players, assigned plans, history and an inbox', async () => {
-  await db.exec(`insert into public.exercises (name_en, body_part) values ('Squat', 'legs');
-    insert into public.foods (name_ar, kcal_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g)
-    values ('رز', 130, 3, 28, 1)`);
+it('an anonymous caller gets eight players, the starter library, assigned plans, history and an inbox', async () => {
+  await seedCatalog();
   await demo(captain);
   expect((await db.query('select role, role_confirmed, full_name, demo_expires_at from public.profiles where id = $1',
     [captain])).rows).toEqual([{ role: 'captain', role_confirmed: true, full_name: 'كابتن تجريبي',
     demo_expires_at: new Date(new Date(TEST_NOW).getTime() + 86400000) }]);
   expect((await asUser(db, captain, tx => tx.query('select * from public.coach_clients'))).rows).toHaveLength(8);
   expect(await count('public.player_intake')).toBe(8);
-  expect((await snapshot()).rows).toEqual([{ profiles: 9, programs: 2, plans: 2, sessions: 20, sets: 60, meals: 20 }]);
-  expect((await asUser(db, captain, tx => tx.query('select * from public.inbox_items'))).rows).toHaveLength(2);
-  expect((await asUser(db, captain, tx => tx.query("select * from public.captain_dropout_radar() where reason = 'no_activity'"))).rows).toHaveLength(2);
-  expect((await db.query(`select min(training_date)::text as first, max(training_date)::text as last
-    from public.workout_sessions`)).rows).toEqual([{ first: '2026-10-20', last: '2026-10-29' }]);
+  expect(await mine('select count(*)::int as n from public.programs where captain_id = $1 and is_template')).toBe(6);
+  expect(await mine('select count(*)::int as n from public.nutrition_plans where captain_id = $1 and is_template')).toBe(4);
+  expect(await mine(`select count(distinct player_id)::int as n from public.programs where captain_id = $1 and status = 'active'`)).toBe(6);
+  expect(await mine(`select count(distinct player_id)::int as n from public.nutrition_plans where captain_id = $1 and status = 'active'`)).toBe(6);
+  expect(await count('public.workout_sessions')).toBe(25);
+  expect(await count('public.workout_sessions s where not exists (select 1 from public.set_logs l where l.session_id = s.id)')).toBe(0);
+  expect(await count('(select distinct player_id from public.meal_logs) p')).toBe(5);
+  expect(await count('public.player_payments')).toBe(8);
+  expect((await db.query(`select count(*)::int as n from public.set_logs l join public.workout_sessions s on s.id = l.session_id
+    join public.program_exercises e on e.id = l.program_exercise_id where e.day_id <> s.program_day_id`)).rows).toEqual([{ n: 0 }]);
+  expect((await asUser(db, captain, tx => tx.query('select * from public.inbox_items where reviewed_at is null'))).rows).toHaveLength(2);
+  const radar = await asUser(db, captain, tx => tx.query<{ reason: string; days: number }>(
+    'select reason, days from public.captain_dropout_radar() order by reason, days'));
+  expect(radar.rows).toEqual([{ reason: 'never_started', days: 28 }, { reason: 'no_activity', days: 9 },
+    { reason: 'no_program', days: 28 }, { reason: 'no_program', days: 28 }]);
+  expect((await db.query(`select max(training_date)::text as last from public.workout_sessions`)).rows).toEqual([{ last: '2026-11-02' }]);
   expect((await db.query('select count(*)::int as n from auth.users where email is not null')).rows).toEqual([{ n: 0 }]);
 });
 
@@ -124,7 +144,7 @@ it('works with empty global catalogs and never borrows private exercises or food
   await db.query('update public.foods set owner_id = $1', [owner]);
   const user = await anonymous();
   await demo(user);
-  expect((await db.query('select count(*)::int as n from public.programs where captain_id = $1', [user])).rows).toEqual([{ n: 2 }]);
+  expect((await db.query('select count(*)::int as n from public.programs where captain_id = $1', [user])).rows).toEqual([{ n: 12 }]);
   expect((await db.query(`select count(*)::int as n from public.program_exercises e join public.program_days d on d.id = e.day_id
     join public.programs p on p.id = d.program_id where p.captain_id = $1`, [user])).rows).toEqual([{ n: 0 }]);
   expect((await db.query(`select count(*)::int as n from public.meal_items i join public.meals m on m.id = i.meal_id
