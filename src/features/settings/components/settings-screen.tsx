@@ -8,6 +8,7 @@ import { ProfileForm } from './profile-form';
 import { InviteMessageForm } from './invite-message-form';
 import { ExportCard } from './export-card';
 import { DeleteAccountCard } from './delete-account-card';
+import { GlassToggle } from './glass-toggle';
 
 export function SettingsScreen() {
   const [profile, setProfile] = useState<SettingsProfile | null>(null);
@@ -28,6 +29,7 @@ export function SettingsScreen() {
   }, [attempt]);
   return <div className="mx-auto max-w-3xl space-y-5">
     <h1 className="text-2xl font-extrabold">الإعدادات</h1>
+    <GlassToggle />
     {loading ? <LoadingState /> : error ? <ErrorState message={error} retryLabel="جرّب تاني" onRetry={() => {
       setLoading(true); setError(''); setAttempt((value) => value + 1);
     }} /> : profile ? <>

@@ -2,6 +2,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { deletionDate, inviteMessageSchema, profileSchema } from './schema';
 import { buildExport, exportFileName } from './export';
 import { exportMyData, saveInviteMessage } from './data/settings';
+import { createElement } from 'react';
+import type * as React from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 
 const mock = vi.hoisted(() => ({ from: vi.fn(), getUser: vi.fn() }));
 vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => ({ auth: { getUser: mock.getUser }, from: mock.from }) }));
@@ -68,4 +71,36 @@ describe('settings', () => {
     }) }));
     expect(await exportMyData()).toEqual({ error: 'مش قادرين ننزّل بياناتك. جرّب تاني' });
   });
+});
+
+it.each([false, true])('renders a switch and flips glass mode with blocked storage=%s', async (blocked) => {
+  const dataset = { glass: 'blur' };
+  const setItem = vi.fn(() => { if (blocked) throw new Error('blocked'); });
+  vi.stubGlobal('document', { documentElement: { dataset } });
+  vi.stubGlobal('localStorage', { setItem });
+  vi.stubGlobal('window', { dispatchEvent: vi.fn() });
+  // The node test environment has no DOM renderer; read the real snapshot on each render.
+  vi.doMock('react', async (original) => ({
+    ...await original<typeof React>(),
+    useSyncExternalStore: (_subscribe: unknown, snapshot: () => boolean) => snapshot(),
+  }));
+  try {
+    const { GlassToggle } = await import('./components/glass-toggle');
+    const render = () => renderToStaticMarkup(createElement(GlassToggle));
+    expect(render()).toContain('role="switch"');
+    expect(render()).toContain('aria-checked="false"');
+    expect(render()).toContain('min-h-12');
+    expect(render()).toContain('شكل أخف للموبايلات الضعيفة');
+    GlassToggle().props.onClick();
+    expect(dataset.glass).toBe('solid');
+    expect(setItem).toHaveBeenLastCalledWith('kochivo.glass', 'solid');
+    expect(render()).toContain('aria-checked="true"');
+    GlassToggle().props.onClick();
+    expect(dataset.glass).toBe('blur');
+    expect(setItem).toHaveBeenLastCalledWith('kochivo.glass', 'blur');
+    expect(render()).toContain('aria-checked="false"');
+  } finally {
+    vi.doUnmock('react');
+    vi.unstubAllGlobals();
+  }
 });
