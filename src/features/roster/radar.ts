@@ -1,4 +1,4 @@
-import { whatsappShareUrl } from './invite';
+import { whatsappUrl } from '@/lib/whatsapp';
 
 export type RadarReason = 'no_activity' | 'never_started' | 'no_program';
 export interface RadarPlayer {
@@ -29,7 +29,5 @@ export function radarMessage(name: string, reason: RadarReason): string {
 
 export function radarWhatsappUrl(player: Pick<RadarPlayer, 'phone' | 'full_name' | 'reason'>): string | null {
   if (!player.phone) return null;
-  const url = new URL(whatsappShareUrl(radarMessage(player.full_name, player.reason)));
-  url.pathname = `/${player.phone.replace(/\D/g, '')}`;
-  return url.toString();
+  return whatsappUrl({ phone: player.phone, text: radarMessage(player.full_name, player.reason) });
 }

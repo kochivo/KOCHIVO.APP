@@ -4,7 +4,8 @@ import { useEffect, useRef, useState, useTransition } from 'react';
 import { X } from 'lucide-react';
 import { Button, Segmented } from '@/ui';
 import { createInvite } from '../data/create-invite';
-import { inviteMessage, inviteUrl, whatsappShareUrl } from '../invite';
+import { whatsappUrl } from '@/lib/whatsapp';
+import { inviteMessage, inviteUrl } from '../invite';
 
 export function InviteSheet({ captainFirstName, onClose }: { captainFirstName: string; onClose: () => void }) {
   const dialog = useRef<HTMLDialogElement>(null);
@@ -51,7 +52,7 @@ export function InviteSheet({ captainFirstName, onClose }: { captainFirstName: s
         <label className="block space-y-2 text-sm">لينك الدعوة
           <input readOnly dir="ltr" value={url} onFocus={(event) => event.currentTarget.select()} className="mt-2 min-h-12 w-full rounded-control border border-line bg-bg px-3 text-ink" />
         </label>
-        <a href={whatsappShareUrl(inviteMessage(captainFirstName, url))} target="_blank" rel="noopener noreferrer" className="flex min-h-12 items-center justify-center rounded-control bg-lime px-4 font-bold text-on-lime">ابعت على واتساب</a>
+        <a href={whatsappUrl({ text: inviteMessage(captainFirstName, url) })} target="_blank" rel="noopener noreferrer" className="flex min-h-12 items-center justify-center rounded-control bg-lime px-4 font-bold text-on-lime">ابعت على واتساب</a>
         <Button variant="ghost" onClick={copy} className="w-full min-h-12">انسخ اللينك</Button>
         {copyMessage && <p role="status" className="text-sm text-muted">{copyMessage}</p>}
       </div>}

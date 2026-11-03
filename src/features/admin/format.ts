@@ -1,3 +1,4 @@
+import { formatTimestampAr } from '@/lib/dates';
 import type { CaptainRow, CaptainState, Tier } from './types';
 
 export const tierLabel = (tier: Tier) => tier.toUpperCase();
@@ -10,9 +11,7 @@ export function captainState(row: CaptainRow): CaptainState {
 }
 export function endsLabel(date: string | null): string {
   if (!date || !Number.isFinite(Date.parse(date))) return '—';
-  return new Intl.DateTimeFormat('ar-EG', {
-    timeZone: 'Africa/Cairo', day: 'numeric', month: 'short', year: 'numeric',
-  }).format(new Date(date));
+  return formatTimestampAr(date, { day: 'numeric', month: 'short', year: 'numeric' });
 }
 export function actionError(error: { code?: string; message?: string }): string {
   if (error.code === '42501') return 'مش مسموح';

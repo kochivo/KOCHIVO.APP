@@ -3,20 +3,18 @@
 import { MessageCircle } from 'lucide-react';
 import Link from 'next/link';
 import { Button, EmptyState, ErrorState, GlassCard, LoadingState } from '@/ui';
-import { localDate } from '@/lib/dates';
-import { accessState, whatsappUrl } from '../access';
+import { formatDateAr, localDate } from '@/lib/dates';
+import { whatsappUrl } from '@/lib/whatsapp';
+import { accessState } from '../access';
 import { useCaptainContext } from '../hooks/use-my-captain';
 
 const labels = { active: 'اشتراكك شغال', ending: 'اشتراكك هيخلص قريب', ended: 'اشتراكك خلص', archived: 'المتابعة متوقفة' };
-const dateFormat = new Intl.DateTimeFormat('ar-EG', {
-  day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC',
-});
-const formatDate = (date: string) => dateFormat.format(new Date(`${date}T00:00:00Z`));
+const formatDate = (date: string) => formatDateAr(date, { day: 'numeric', month: 'long', year: 'numeric' });
 
 export function CaptainScreen() {
   const { data, status, retry } = useCaptainContext();
   const state = data ? accessState({ ...data, today: localDate(new Date()) }) : 'active';
-  const url = whatsappUrl(data?.phone ?? null);
+  const url = whatsappUrl({ phone: data?.phone ?? '' });
   return <main className="mx-auto max-w-lg space-y-5 px-5 pt-6 pb-32">
     <header><h1 className="text-2xl font-extrabold">الكابتن</h1></header>
     {status === 'loading' ? <LoadingState /> : status === 'error' ?

@@ -1,4 +1,5 @@
 import type { Macros } from '@/lib/macros';
+import { formatNumber } from '@/lib/format';
 
 const ratio = (value: number, target: number) => target > 0 ? Math.min(1, Math.max(0, value / target)) : 0;
 
@@ -11,8 +12,8 @@ export function MacroRing({ eaten, target }: { eaten: Macros; target: Macros }) 
           strokeLinecap="round" strokeDasharray={`${ratio(eaten.kcal, target.kcal) * 314.16} 314.16`} />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <strong className="text-3xl font-extrabold"><bdi>{eaten.kcal.toLocaleString('en-US')}</bdi></strong>
-        <span className="text-xs text-muted"><bdi>/ {target.kcal.toLocaleString('en-US')}</bdi> سعر حراري</span>
+        <strong className="text-3xl font-extrabold"><bdi>{formatNumber(eaten.kcal)}</bdi></strong>
+        <span className="text-xs text-muted"><bdi>/ {formatNumber(target.kcal)}</bdi> سعر حراري</span>
       </div>
     </div>
     <div className="min-w-0 flex-1 space-y-4">

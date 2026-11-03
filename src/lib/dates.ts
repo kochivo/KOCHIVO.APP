@@ -12,3 +12,22 @@ export function localDate(at: Date, timeZone: string = DEFAULT_TIMEZONE): string
 export function daysBetween(from: string, to: string): number {
   return Math.round((Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / 86_400_000);
 }
+
+export function saturdayWeek(today: string): string[] {
+  const anchor = new Date(`${today}T12:00:00Z`);
+  const offset = (anchor.getUTCDay() + 1) % 7;
+  return Array.from({ length: 7 }, (_, index) => {
+    const at = new Date(anchor);
+    at.setUTCDate(at.getUTCDate() - offset + index);
+    return localDate(at, 'UTC');
+  });
+}
+
+export function formatDateAr(date: string, options: Intl.DateTimeFormatOptions): string {
+  return new Intl.DateTimeFormat('ar-EG', { ...options, timeZone: 'UTC' })
+    .format(new Date(`${date}T12:00:00Z`));
+}
+
+export function formatTimestampAr(iso: string, options: Intl.DateTimeFormatOptions): string {
+  return new Intl.DateTimeFormat('ar-EG', { ...options, timeZone: DEFAULT_TIMEZONE }).format(new Date(iso));
+}

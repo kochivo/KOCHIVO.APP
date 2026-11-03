@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Button, TextField } from '@/ui';
+import { formatTimestampAr } from '@/lib/dates';
 import { cancelDeletion, requestDeletion } from '../data/settings';
 import { deletionDate } from '../schema';
 
@@ -29,9 +30,9 @@ export function DeleteAccountCard({ requestedAt }: { requestedAt: string | null 
   return <section className="glass space-y-4 rounded-card border border-danger p-6">
     <h2 className="text-lg font-bold text-danger">امسح الحساب</h2>
     {due ? <p role="status" className="glass-strong rounded-control p-4">
-      حسابك هيتمسح يوم <time dateTime={due}>{new Intl.DateTimeFormat('ar-EG', {
-        timeZone: 'Africa/Cairo', day: 'numeric', month: 'long', year: 'numeric',
-      }).format(new Date(due))}</time>. تقدر تلغي قبلها
+      حسابك هيتمسح يوم <time dateTime={due}>{formatTimestampAr(due, {
+        day: 'numeric', month: 'long', year: 'numeric',
+      })}</time>. تقدر تلغي قبلها
     </p> : <>
       <p className="text-sm text-muted">المسح نهائي بعد ٧ أيام. تقدر تلغي الطلب قبلها.</p>
       <TextField label="اكتب امسح عشان تأكد" value={confirmation} onChange={(event) => setConfirmation(event.target.value)} disabled={pending} autoComplete="off" />

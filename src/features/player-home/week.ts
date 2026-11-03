@@ -1,5 +1,5 @@
 import type { WorkoutSessionRow } from '@/core/offline';
-import { localDate } from '@/lib/dates';
+import { saturdayWeek } from '@/lib/dates';
 
 export interface WeekEntry {
   date: string;
@@ -10,12 +10,10 @@ export interface WeekEntry {
 const labels = ['سبت', 'حد', 'اتنين', 'تلات', 'أربع', 'خميس', 'جمعة'];
 
 export function buildWeek(today: string, trainingDays: number[], sessions: WorkoutSessionRow[]): WeekEntry[] {
-  const anchor = new Date(`${today}T12:00:00Z`);
-  const offset = (anchor.getUTCDay() + 1) % 7;
-  return labels.map((label, index) => {
-    const at = new Date(anchor);
-    at.setUTCDate(at.getUTCDate() - offset + index);
-    const date = localDate(at);
+  return saturdayWeek(today).map((date, index) => {
+    const label = labels[index];
+    if (label === undefined) throw new Error('Week day label missing');
+    const at = new Date(`${date}T12:00:00Z`);
     const done = sessions.some((session) => session.training_date === date && session.completed_at !== null);
     return {
       date, label, dayOfMonth: Number(date.slice(-2)),
