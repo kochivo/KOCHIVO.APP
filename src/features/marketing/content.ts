@@ -1,3 +1,5 @@
+import { whatsappUrl as contactUrl } from '@/lib/whatsapp';
+
 type Plan = { name: string; price: number; displayPrice: string; limit: number; limitLabel: string; hot: boolean; action: string };
 type Detail = { t: string; d: string };
 
@@ -61,4 +63,5 @@ export const content = {
   footer: { copyright: '© 2026 KOCHIVO · رسوم التمارين المتحركة', credit: '© Gym visual', privacy: 'الخصوصية', terms: 'الشروط', support: 'واتساب الدعم' },
 } as const;
 
-export const whatsappUrl = `https://wa.me/${content.whatsappNumber}`;
+// The configured marketing number contains digits, so a contact link is guaranteed.
+export const whatsappUrl = contactUrl({ phone: content.whatsappNumber })!;

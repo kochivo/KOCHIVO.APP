@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { pickTodayDay } from '@/features/player-home';
+import { formatDateAr } from '@/lib/dates';
 import type { fetchPlayerPreview } from '../data/preview';
 import { PhoneFrame } from './phone-frame';
 import { PreviewProgram } from './preview-program';
@@ -42,7 +43,7 @@ export function PreviewScreen({ result, today }: { result: Result; today: string
               <ol aria-label="أيام الأسبوع" className="glass grid grid-cols-7 rounded-control p-2">
                 {data.week.map((entry) => <li key={entry.date} aria-current={entry.date === today ? 'date' : undefined}
                   className={`py-2 text-center text-xs ${entry.date === today ? 'rounded-control bg-lime-soft text-lime' : 'text-muted'}`}>
-                  <span>{new Intl.DateTimeFormat('ar-EG', { weekday: 'short', timeZone: 'UTC' }).format(new Date(`${entry.date}T12:00:00Z`))}</span>
+                  <span>{formatDateAr(entry.date, { weekday: 'short' })}</span>
                   <p className="font-bold">{Number(entry.date.slice(-2))}</p>
                   <span>{entry.trained ? 'اتمرّن' : !data.program ? '—' : data.program.training_days.length === 0 ||
                     data.program.training_days.includes(new Date(`${entry.date}T12:00:00Z`).getUTCDay()) ? 'تمرين' : 'راحة'}</span>

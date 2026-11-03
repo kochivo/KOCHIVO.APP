@@ -5,7 +5,8 @@ import { usePathname } from 'next/navigation';
 import { BottomNav } from '@/ui';
 import { InstallSheet } from '@/features/install';
 import { daysBetween, localDate } from '@/lib/dates';
-import { accessState, whatsappUrl } from '../access';
+import { whatsappUrl } from '@/lib/whatsapp';
+import { accessState } from '../access';
 import { playerNav, showsNav } from '../nav';
 import { MyCaptainContext, useMyCaptain } from '../hooks/use-my-captain';
 import { useOnline } from '../hooks/use-online';
@@ -16,7 +17,7 @@ export function PlayerShell({ children }: { children: ReactNode }) {
   const online = useOnline();
   const today = localDate(new Date());
   const state = captain.data ? accessState({ ...captain.data, today }) : 'active';
-  const url = whatsappUrl(captain.data?.phone ?? null);
+  const url = whatsappUrl({ phone: captain.data?.phone ?? '' });
   const left = captain.data ? daysBetween(today, captain.data.accessUntil) : 0;
   const message = state === 'ending' ?
     (left === 0 ? 'اشتراكك بيخلص النهارده' : left === 1 ? 'اشتراكك هيخلص بكره' : `اشتراكك هيخلص بعد ${left} أيام`) :

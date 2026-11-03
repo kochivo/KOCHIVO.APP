@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Archive } from 'lucide-react';
 import { Button, GlassCard } from '@/ui';
+import { formatDateAr } from '@/lib/dates';
 import { lastSeenLabel, playerStatus } from '../status';
 import { archivePlayer } from '../data/archive-player';
 import type { RosterPlayer } from '../types';
@@ -49,7 +50,7 @@ export function RosterRow({ player, today }: { player: RosterPlayer; today: stri
           <Link href={`/captain/players/${player.playerId}/preview`} className="flex min-h-12 items-center text-lime">شوف كلاعب</Link>
         </span>
       </div>
-      <div role="cell" className="text-sm text-muted"><span className="lg:hidden">الاشتراك لحد: </span><time dateTime={player.accessUntil}>{new Intl.DateTimeFormat('ar-EG', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${player.accessUntil}T00:00:00Z`))}</time></div>
+      <div role="cell" className="text-sm text-muted"><span className="lg:hidden">الاشتراك لحد: </span><time dateTime={player.accessUntil}>{formatDateAr(player.accessUntil, { day: 'numeric', month: 'long', year: 'numeric' })}</time></div>
       <div role="cell">
         <Button variant="ghost" disabled={pending} onClick={archive} aria-label={`أرشفة ${player.fullName}`} className="min-h-12 min-w-12 px-0"><Archive aria-hidden className="size-5" /></Button>
       </div>

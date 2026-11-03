@@ -7,8 +7,3 @@ export function accessState({ accessUntil, archivedAt, today }: {
   if (accessUntil < today) return 'ended';
   return daysBetween(today, accessUntil) <= 3 ? 'ending' : 'active';
 }
-
-export function whatsappUrl(phone: string | null) {
-  const digits = phone?.replace(/\D/g, '');
-  return digits ? `https://wa.me/${digits}` : null;
-}

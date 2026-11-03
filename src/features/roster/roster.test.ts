@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { lastSeenLabel, playerStatus } from './status';
-import { inviteDaysSchema, inviteMessage, inviteUrl, whatsappShareUrl } from './invite';
+import { inviteDaysSchema, inviteMessage, inviteUrl } from './invite';
+import { whatsappUrl } from '@/lib/whatsapp';
 import { createInviteAt } from './data/create-invite-internal';
 import { archivePlayerAt } from './data/archive-player-internal';
 
@@ -138,7 +139,7 @@ describe('invites', () => {
   });
   it('encodes Arabic, spaces, ampersands and link parameters for WhatsApp', () => {
     const message = 'أحمد & محمد https://kochivo.site/i/a?x=1&y=2';
-    const url = whatsappShareUrl(message);
+    const url = whatsappUrl({ text: message });
     expect(url).toBe(`https://wa.me/?text=${encodeURIComponent(message)}`);
     expect(new URL(url).searchParams.get('text')).toBe(message);
   });

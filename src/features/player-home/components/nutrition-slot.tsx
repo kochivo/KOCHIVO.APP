@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { eatenTotals, targetsOf, useMealLogs, useNutritionSnapshot } from '@/features/nutrition';
 import { ErrorState, GlassCard, LoadingState } from '@/ui';
+import { formatNumber } from '@/lib/format';
 
 export function NutritionSlot() {
   const { snapshot, status, stale, today, retry, onError, retryKey } = useNutritionSnapshot();
@@ -14,7 +15,7 @@ export function NutritionSlot() {
     <GlassCard className="space-y-2 p-5 text-sm">
       <h2 className="font-bold">أكل النهارده</h2>
       {snapshot && snapshot.meals.length > 0 ? <>
-        <p>{eatenTotals(snapshot, logs, today).kcal.toLocaleString('en-US')} / {targetsOf(snapshot).kcal.toLocaleString('en-US')} سعرة</p>
+        <p>{formatNumber(eatenTotals(snapshot, logs, today).kcal)} / {formatNumber(targetsOf(snapshot).kcal)} سعرة</p>
         <p className="text-muted">{next ? `الوجبة الجاية: ${next.name}` : 'كلت كل وجباتك النهارده'}</p>
         {stale && <p className="text-muted">آخر تحديث من شوية</p>}
       </> : <p className="text-muted">الكابتن لسه بيجهز نظام أكلك</p>}

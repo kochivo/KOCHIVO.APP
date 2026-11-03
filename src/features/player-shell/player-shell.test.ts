@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { playerNav, showsNav } from './nav';
-import { accessState, whatsappUrl } from './access';
+import { accessState } from './access';
+import { whatsappUrl } from '@/lib/whatsapp';
 import { readCaptainCache, writeCaptainCache } from './hooks/use-my-captain';
 
 vi.mock('./data/my-captain', () => ({ fetchMyCaptain: vi.fn() }));
@@ -42,9 +43,9 @@ describe('subscription access', () => {
 });
 
 it('builds WhatsApp URLs from digits only', () => {
-  expect(whatsappUrl('+20 100-123-4567')).toBe('https://wa.me/201001234567');
-  expect(whatsappUrl(null)).toBeNull();
-  expect(whatsappUrl(' + ')).toBeNull();
+  expect(whatsappUrl({ phone: '+20 100-123-4567' })).toBe('https://wa.me/201001234567');
+  expect(whatsappUrl({ phone: '' })).toBeNull();
+  expect(whatsappUrl({ phone: ' + ' })).toBeNull();
 });
 
 describe('captain cache', () => {
