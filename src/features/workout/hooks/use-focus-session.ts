@@ -9,6 +9,7 @@ import { prHistory } from '../data/pr-history';
 import { detectPr, type Pr } from '../pr';
 import { setId } from '../ids';
 import { buildQueue } from '../queue';
+import { trainingDate } from '../training-date';
 import { useRestTimer } from './use-rest-timer';
 
 const readCached = () => localDb().program_snapshot.get('active');
@@ -35,8 +36,16 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
   const pending = useLiveQuery(readPending, onError, retryKey);
   const readSession = useCallback(async () => {
     if (!day || !today) return null;
-    return await localDb().workout_sessions.where('training_date').equals(today)
-      .filter((row) => row.program_day_id === day.id).first() ?? null;
+    const sessions = await localDb().workout_sessions.where('training_date').belowOrEqual(today).reverse()
+      .filter((row) => row.program_day_id === day.id).limit(2).toArray();
+    // A logged, unfinished workout survives midnight (including a reload), unless today's already started.
+    const candidate = sessions.find((row) => row.training_date !== today);
+    if (candidate && !sessions.some((row) => row.training_date === today)) {
+      const logged = await localDb().set_logs.where('session_id').equals(candidate.id)
+        .filter((row) => row.deleted_at === null).first();
+      if (trainingDate(today, candidate, Boolean(logged)) === candidate.training_date) return candidate;
+    }
+    return sessions.find((row) => row.training_date === today) ?? null;
   }, [day, today]);
   const session = useLiveQuery(readSession, onError, retryKey);
   // The session is created with the first logged set, so merely opening the workout never
@@ -101,7 +110,7 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
       currentIndex < 0 ? queue.length : currentIndex + 1,
     next: queue[(edited ? queue.findIndex((step) => matches(edited, step.exercise.id, step.setIndex)) : currentIndex) + 1],
     finished: Boolean(session?.completed_at) && currentIndex === -1,
-    loading: !today || status === 'loading' || Boolean(day && (!session || !sets)),
+    loading: !today || status === 'loading' || Boolean(day && (session === undefined || sets === undefined)),
     error: error ?? (status === 'error' && !snapshot ? 'مش قادرين نحمّل برنامجك دلوقتي' : null),
     disabled: busy || !ready,
     setWeight: (value: number) => setDraft({ key, weight: Math.min(500, Math.max(0, value)), reps }),
