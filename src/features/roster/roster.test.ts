@@ -5,6 +5,8 @@ import { createInvite } from './data/create-invite';
 import { archivePlayer } from './data/archive-player';
 import { fetchRoster } from './data/roster';
 import { captainNav, mobileCaptainNav } from './nav';
+import { radarMessage, radarReasonLabel, radarWhatsappUrl } from './radar';
+import { fetchRadar } from './data/radar';
 
 const mocks = vi.hoisted(() => {
   const single = vi.fn();
@@ -29,6 +31,53 @@ afterEach(() => { vi.useRealTimers(); });
 
 const today = '2026-11-03';
 const base = { today, startedOn: '2026-10-01', lastTrainingDate: today, accessUntil: '2026-12-01' };
+
+describe('dropout radar', () => {
+  it('addresses the player phone and encodes the ready Arabic message', () => {
+    const player = { full_name: 'علي & أحمد', phone: '+201001234567', reason: 'no_activity' } as const;
+    const url = new URL(radarWhatsappUrl(player) ?? '');
+    expect(url.origin + url.pathname).toBe('https://wa.me/201001234567');
+    expect(url.searchParams.get('text')).toBe(radarMessage(player.full_name, player.reason));
+    expect(radarWhatsappUrl({ ...player, phone: null })).toBeNull();
+  });
+  it.each([
+    ['no_activity', 3, 'مسجّلش تمرين من 3 أيام'],
+    ['no_activity', 10, 'مسجّلش تمرين من 10 أيام'],
+    ['no_activity', 11, 'مسجّلش تمرين من 11 يوم'],
+    ['never_started', 3, 'لسه مبدأش من 3 أيام'],
+    ['never_started', 11, 'لسه مبدأش من 11 يوم'],
+    ['no_program', 2, 'من غير برنامج'],
+  ] as const)('labels %s after %s days', (reason, days, label) => {
+    expect(radarReasonLabel(reason, days)).toBe(label);
+  });
+  it.each([
+    ['no_activity', 'يا علي، وحشتنا في التمرين. نرجع النهارده؟'],
+    ['never_started', 'يا علي، جاهز نبدأ أول تمرين؟ أنا معاك.'],
+    ['no_program', 'يا علي، هجهزلك برنامجك ونبدأ مع بعض.'],
+  ] as const)('prepares a personal %s nudge', (reason, message) => {
+    expect(radarMessage('علي', reason)).toBe(message);
+  });
+  it.each(['2026-1-03', '2026-02-30', '2026-13-01', '', null, 123])('rejects invalid today %s', async (date) => {
+    expect(await fetchRadar(date)).toEqual({ error: 'التاريخ مش صحيح' });
+    expect(mocks.client.rpc).not.toHaveBeenCalled();
+  });
+  it('passes the supplied Cairo date and preserves SQL order and nullable phones', async () => {
+    const data = [{ player_id: 'p', full_name: 'علي', phone: null, reason: 'never_started', days: 3 }];
+    mocks.client.rpc.mockResolvedValueOnce({ data, error: null });
+    expect(await fetchRadar(today)).toEqual({ data });
+    expect(mocks.client.rpc).toHaveBeenCalledWith('captain_dropout_radar', { p_today: today });
+    mocks.client.rpc.mockResolvedValueOnce({ data: [], error: null });
+    expect(await fetchRadar('2028-02-29')).toEqual({ data: [] });
+  });
+  it('maps RPC, missing data and network failures to Arabic', async () => {
+    mocks.client.rpc.mockResolvedValueOnce({ data: null, error: { code: '42501' } })
+      .mockResolvedValueOnce({ data: null, error: null })
+      .mockRejectedValueOnce(new Error('offline'));
+    for (let attempt = 0; attempt < 3; attempt++) {
+      expect(await fetchRadar(today)).toEqual({ error: 'الرادار مش متاح دلوقتي' });
+    }
+  });
+});
 
 describe('captainNav', () => {
   it.each([

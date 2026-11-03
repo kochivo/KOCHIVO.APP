@@ -8,6 +8,7 @@ import { playerStatus } from '../status';
 import type { RosterResult } from '../types';
 import { RosterRow } from './roster-row';
 import { InviteSheet } from './invite-sheet';
+import { RadarCard } from './radar-card';
 
 export function RosterScreen({ data, today }: { data: Promise<[RosterResult, string]>; today: string }) {
   const [result, captainFirstName] = use(data);
@@ -33,6 +34,7 @@ export function RosterScreen({ data, today }: { data: Promise<[RosterResult, str
         <div><p className="mb-1 text-xs tracking-widest text-muted">ROSTER · {players.length} لاعب</p><h1 className="text-3xl font-extrabold">اللاعبين</h1></div>
         {(players.length > 0 || result.error) && inviteButton}
       </header>
+      <RadarCard today={today} />
       {pending ? <LoadingState /> : result.error ? <ErrorState message={result.error} retryLabel="جرّب تاني" onRetry={() => startTransition(() => router.refresh())} /> : players.length === 0 ? (
         <EmptyState icon={Users} title="لسه مفيش لاعبين. ابعت أول دعوة." body="ابدأ بلينك دعوة للاعبك" action={{ label: 'لاعب جديد', onClick: () => setInviteOpen(true) }} />
       ) : <>
