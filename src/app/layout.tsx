@@ -3,6 +3,7 @@ import { Alexandria, Changa, Manrope } from 'next/font/google';
 import type { ReactNode } from 'react';
 import { RegisterServiceWorker } from '@/core/pwa/register-sw';
 import { glassBootScript } from '@/lib/glass-mode';
+import { themeBootScript } from '@/lib/theme-mode';
 import './globals.css';
 
 const manrope = Manrope({ subsets: ['latin'], variable: '--font-manrope', display: 'swap' });
@@ -19,7 +20,11 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#101418',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#f6f7f4' },
+    { media: '(prefers-color-scheme: dark)', color: '#101418' },
+  ],
+  colorScheme: 'light dark',
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
@@ -28,7 +33,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning className={`${manrope.variable} ${alexandria.variable} ${changa.variable}`}>
-      <head><script dangerouslySetInnerHTML={{ __html: glassBootScript }} /></head>
+      <head><script dangerouslySetInnerHTML={{ __html: themeBootScript + ';' + glassBootScript }} /></head>
       <body className="min-h-dvh">
         {children}
         <RegisterServiceWorker />
