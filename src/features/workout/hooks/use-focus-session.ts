@@ -6,12 +6,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { localDb, pendingCount, useLiveQuery, type SetLogRow } from '@/core/offline';
 import { useProgramSnapshot } from '@/features/player-home';
 import { finishSession, logSet, startSession } from '../data/log-set';
-import { lastPerformance } from '../data/last-performance';
+import { performanceFor } from '../data/last-performance';
 import { prHistory } from '../data/pr-history';
 import { detectPr, type Pr } from '../pr';
 import { setId } from '../ids';
 import { buildQueue } from '../queue';
 import { trainingDate } from '../training-date';
+import { useLastSession } from './use-last-session';
 import { useRestTimer } from './use-rest-timer';
 
 const readCached = () => localDb().program_snapshot.get('active');
@@ -63,18 +64,15 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
   const key = `${session?.id}:${current?.exercise.id}:${current?.setIndex}`;
   const exerciseId = String(current?.exercise.exercise_id ?? '');
   const historySessionId = session?.id ?? '';
-  const readHistory = useCallback(async () => exerciseId ?
-    { exerciseId, sessionId: historySessionId, value: await lastPerformance(localDb(), exerciseId, historySessionId) } : null,
-  [exerciseId, historySessionId]);
-  const history = useLiveQuery(readHistory, onError, retryKey);
-  const performance = history?.exerciseId === exerciseId && history?.sessionId === historySessionId ? history?.value : null;
+  const memory = useLastSession(playerId ?? cached?.player_id, exerciseId, historySessionId, onError, retryKey);
+  const performance = performanceFor(memory.last, current?.setIndex ?? 0);
   const previous = doneSets.filter((row) => row.program_exercise_id === current?.exercise.id &&
     row.set_index < (current?.setIndex ?? 0)).sort((a, b) => b.set_index - a.set_index)[0];
-  const prefill = edited ?? previous ?? performance;
+  // Last time's same set beats today's previous set: that is the number to match or beat.
+  const prefill = edited ?? performance ?? previous ?? memory.last?.sets.at(-1);
   const weight = Math.min(500, Math.max(0, draft?.key === key ? draft.weight : prefill?.weight_kg ?? 0));
   const reps = Math.min(100, Math.max(0, draft?.key === key ? draft.reps : prefill?.reps ?? current?.exercise.reps_min ?? 0));
-  const ready = Boolean(day && session !== undefined && sets && today && (!exerciseId ||
-    (history?.exerciseId === exerciseId && history.sessionId === historySessionId)));
+  const ready = Boolean(day && session !== undefined && sets && today && memory.ready);
   useEffect(() => () => { clearTimeout(cooldown.current); }, []);
   // Recover a final set saved just before the tab closed, before completion was recorded.
   useEffect(() => {
@@ -108,7 +106,7 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
       cooldown.current = setTimeout(() => { saving.current = false; setBusy(false); }, Math.max(0, 600 - (Date.now() - tappedAt)));
     }
   }, [day, today, session, current, ready, rest, edited, weight, reps, t]);
-  return { day, queue, current, doneSets, performance, weight, reps, rest, pending, pr, dismissPr,
+  return { day, queue, current, doneSets, performance, lastSession: memory.last, weight, reps, rest, pending, pr, dismissPr,
     progress: edited ? queue.findIndex((step) => matches(edited, step.exercise.id, step.setIndex)) + 1 :
       currentIndex < 0 ? queue.length : currentIndex + 1,
     next: queue[(edited ? queue.findIndex((step) => matches(edited, step.exercise.id, step.setIndex)) : currentIndex) + 1],

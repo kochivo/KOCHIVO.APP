@@ -13,6 +13,7 @@ import { InboxRow } from './inbox-row';
 import { FormCheckDetail } from './form-check-detail';
 import { CheckinDetail } from './checkin-detail';
 import { ReplyBox } from './reply-box';
+import { VoiceRecorder } from '@/features/voice-notes';
 
 export function InboxScreen() {
   const t = useT(messages);
@@ -103,6 +104,10 @@ export function InboxScreen() {
         {selected.kind === 'form' ? <FormCheckDetail key={`form:${selected.id}`} item={selected} /> : <CheckinDetail key={`checkin:${selected.id}`} item={selected} />}
         {selected.reviewed_at ? <div className="glass rounded-card p-4"><p className="text-muted">{t('reviewed')}</p><p className="whitespace-pre-wrap">{selected.reply || t('noReply')}</p></div> :
           <ReplyBox key={`${selected.kind}:${selected.id}`} item={selected} onSend={send} />}
+        <section aria-labelledby="inbox-voice" className="space-y-3">
+          <h3 id="inbox-voice" className="font-bold">{t('voiceReply')}</h3>
+          <VoiceRecorder key={`voice:${selected.kind}:${selected.id}`} playerId={selected.player_id} context={{ kind: selected.kind, id: selected.id }} />
+        </section>
       </ResponsiveDialog>}
     </div>}
   </div>;

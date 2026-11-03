@@ -804,6 +804,42 @@ export type Database = {
         }
         Relationships: []
       }
+      voice_notes: {
+        Row: {
+          audio_path: string
+          captain_id: string
+          context_id: string | null
+          context_kind: string | null
+          created_at: string
+          duration_seconds: number
+          id: string
+          listened_at: string | null
+          player_id: string
+        }
+        Insert: {
+          audio_path: string
+          captain_id: string
+          context_id?: string | null
+          context_kind?: string | null
+          created_at?: string
+          duration_seconds: number
+          id: string
+          listened_at?: string | null
+          player_id: string
+        }
+        Update: {
+          audio_path?: string
+          captain_id?: string
+          context_id?: string | null
+          context_kind?: string | null
+          created_at?: string
+          duration_seconds?: number
+          id?: string
+          listened_at?: string | null
+          player_id?: string
+        }
+        Relationships: []
+      }
       payment_collections: {
         Row: {
           amount_egp: number

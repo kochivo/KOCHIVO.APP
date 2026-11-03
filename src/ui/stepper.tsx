@@ -13,13 +13,15 @@ export interface StepperProps {
   onChange: (next: number) => void;
   /** Formats the big number, e.g. weight with one decimal. */
   format?: (value: number) => string;
+  /** Muted line under the number, e.g. last time's value for progressive overload. */
+  hint?: string;
 }
 
 /**
  * Keyboard-free number input for sweaty hands (PRD §4): two 76px buttons and a big value.
  * In RTL the + sits on the right (start), matching reading order.
  */
-export function Stepper({ label, controlLabel = label, value, step, min = 0, onChange, format = String }: StepperProps) {
+export function Stepper({ label, controlLabel = label, value, step, min = 0, onChange, format = String, hint }: StepperProps) {
   const t = useT(messages);
   const set = (next: number) => onChange(Math.max(min, Math.round(next * 100) / 100));
   return (
@@ -47,6 +49,7 @@ export function Stepper({ label, controlLabel = label, value, step, min = 0, onC
           <Minus className="size-8" aria-hidden />
         </button>
       </div>
+      {hint && <span className="text-sm font-bold text-muted">{hint}</span>}
     </div>
   );
 }

@@ -4,13 +4,14 @@ import { messages } from '../messages';
 
 import { MessageCircle } from 'lucide-react';
 import Link from 'next/link';
+import type { ReactNode } from 'react';
 import { Button, EmptyState, ErrorState, GlassCard, LoadingState } from '@/ui';
 import { formatDateAr, localDate } from '@/lib/dates';
 import { whatsappUrl } from '@/lib/whatsapp';
 import { accessState } from '../access';
 import { useCaptainContext } from '../hooks/use-my-captain';
 
-export function CaptainScreen() {
+export function CaptainScreen({ voiceNotes }: { voiceNotes?: ReactNode }) {
   const t = useT(messages);
   const locale = useLocale();
   const labels = { active: t('subscriptionActive'), ending: t('subscriptionEndingSoon'), ended: t('subscriptionEnded'), archived: t('coachingPaused') };
@@ -43,6 +44,7 @@ export function CaptainScreen() {
             <MessageCircle aria-hidden className="size-5" />{t('messageYourCoachOnWhatsApp')}
           </a> : <Button disabled className="min-h-12 w-full">{t('yourCoachHasnTAddedA')}</Button>}
         </GlassCard>}
+    {data && voiceNotes}
     <Link href="/player/settings" className="glass flex min-h-12 items-center justify-center rounded-control px-4">{t('settings')}</Link>
   </main>;
 }

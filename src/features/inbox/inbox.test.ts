@@ -28,7 +28,7 @@ beforeEach(() => {
 
 describe('inbox logic', () => {
   it('merges newest first, breaking ties by id without mutating inputs', () => {
-    const base = { player_name: 'أحمد', created_at: now.toISOString(), reviewed_at: null, reply: null };
+    const base = { player_id: 'p1', player_name: 'أحمد', created_at: now.toISOString(), reviewed_at: null, reply: null };
     const forms: Extract<InboxItem, { kind: 'form' }>[] = [
       { ...base, id: 'b', kind: 'form', exercise_name: 'سكوات', note: null },
     ];

@@ -1,5 +1,6 @@
 interface InboxBase {
   id: string;
+  player_id: string;
   player_name: string;
   created_at: string;
   reviewed_at: string | null;

@@ -7,9 +7,9 @@ import { formatNumber } from '@/lib/format';
 import Image from 'next/image';
 import type { SnapshotExercise } from '@/core/offline';
 import { exerciseMediaUrl } from '@/core/storage';
-import type { Performance } from '../data/last-performance';
+import type { LastSession } from '../data/last-performance';
 
-export function ExerciseHeader({ exercise, performance }: { exercise: SnapshotExercise; performance: Performance | null | undefined }) {
+export function ExerciseHeader({ exercise, last }: { exercise: SnapshotExercise; last: LastSession | null }) {
   const t = useT(messages);
   const locale = useLocale();
   const name = exerciseName(exercise, locale);
@@ -21,7 +21,8 @@ export function ExerciseHeader({ exercise, performance }: { exercise: SnapshotEx
     </figure>}
     <div className="min-w-0 space-y-2">
       <h1 className="text-2xl font-extrabold"><bdi>{name}</bdi></h1>
-      {performance && <p className="text-sm text-muted">{t('lastWeek')} <bdi>{formatNumber(performance.weight_kg ?? 0, locale)} × {formatNumber(performance.reps ?? 0, locale)}</bdi></p>}
+      {last?.sets.length ? <p className="text-sm text-muted">{t('lastTime')} <bdi dir="ltr">{last.sets.map((set) =>
+        `${formatNumber(set.weight_kg ?? 0, locale)}×${formatNumber(set.reps ?? 0, locale)}`).join(' · ')}</bdi></p> : null}
     </div>
   </section>;
 }

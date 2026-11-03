@@ -41,7 +41,7 @@ export async function listInbox(input: { status: 'open' | 'reviewed'; limit: 50 
     ]);
     if (players.error || exercises.error) throw new Error();
     const base = (row: { id: string; player_id: string; created_at: string; reviewed_at: string | null; captain_reply: string | null }) => ({
-      id: row.id, player_name: players.data?.find((p) => p.id === row.player_id)?.full_name ?? t('player'),
+      id: row.id, player_id: row.player_id, player_name: players.data?.find((p) => p.id === row.player_id)?.full_name ?? t('player'),
       created_at: row.created_at, reviewed_at: row.reviewed_at, reply: row.captain_reply,
     });
     let data = mergeInbox(forms.data.map((row) => ({ ...base(row), kind: 'form', note: row.note,

@@ -6,7 +6,7 @@ import { buildQueue } from './queue';
 import { extendRest, formatRest, restRemaining } from './rest';
 import { sessionId, setId } from './ids';
 import { finishSession, logSet, startSession } from './data/log-set';
-import { lastPerformance } from './data/last-performance';
+import { lastSession, performanceFor } from './data/last-performance';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { RestPanel } from './components/rest-panel';
@@ -121,14 +121,15 @@ it('updates the same set and keeps one outbox entry at revision 2', async () => 
 });
 it('returns the latest other-session performance and ignores deleted rows', async () => {
   await db.open();
-  expect(await lastPerformance(db, 'a', 'current')).toBeNull();
+  const lastPerformance = async () => performanceFor(await lastSession(db, 'a', 'current'), 1);
+  expect(await lastPerformance()).toBeNull();
   const input = { program_exercise_id: 'a', exercise_id: 'a', set_index: 1, weight_kg: 60, reps: 8 };
   await logSet(db, { ...input, session_id: 'old' }, now);
   await logSet(db, { ...input, session_id: 'recent', weight_kg: 65 }, now + 1000);
   await logSet(db, { ...input, session_id: 'current', weight_kg: 70 }, now + 2000);
-  expect(await lastPerformance(db, 'a', 'current')).toEqual({ weight_kg: 65, reps: 8 });
+  expect(await lastPerformance()).toEqual({ weight_kg: 65, reps: 8 });
   await db.set_logs.update(await setId('recent', 'a', 1), { deleted_at: new Date(now + 3000).toISOString() });
-  expect(await lastPerformance(db, 'a', 'current')).toEqual({ weight_kg: 60, reps: 8 });
+  expect(await lastPerformance()).toEqual({ weight_kg: 60, reps: 8 });
 });
 it('renders an accessible rest countdown with reduced-motion-safe flashing', () => {
   const html = renderToStaticMarkup(createElement(RestPanel, {

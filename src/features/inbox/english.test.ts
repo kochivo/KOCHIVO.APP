@@ -15,7 +15,7 @@ it('renders English inbox controls and loading text', () => {
 
 it('renders English check-in measurements and loading text', () => {
   const html = renderToStaticMarkup(h(LocaleProvider, { locale: 'en' }, h(CheckinDetail, {
-    item: { kind: 'checkin', id: 'checkin', player_name: 'Ali', created_at: '2026-11-03T12:00:00Z',
+    item: { kind: 'checkin', id: 'checkin', player_id: 'p1', player_name: 'Ali', created_at: '2026-11-03T12:00:00Z',
       week_start: '2026-11-01', body_weight_kg: 80, waist_cm: null, notes: null, reviewed_at: null, reply: null },
   })));
   expect(html).toContain('Week of 1 November');

@@ -67,12 +67,14 @@ export function FocusScreen({ dayId, playerId }: { dayId: string; playerId?: str
         <p className="text-sm text-muted">{t('setProgress', { value0: formatNumber(state.progress, locale), value1: formatNumber(state.queue.length, locale) })}</p>
         <ProgressBar value={state.doneSets.length} max={state.queue.length} aria-label={t('setProgress', { value0: formatNumber(state.progress, locale), value1: formatNumber(state.queue.length, locale) })} />
         {state.finished ? <DonePanel /> : current ? <>
-          <ExerciseHeader exercise={current.exercise} performance={state.performance} />
+          <ExerciseHeader exercise={current.exercise} last={state.lastSession} />
           <SetDots exercise={current.exercise} currentIndex={current.setIndex} doneSets={state.doneSets}
             onEdit={state.edit} disabled={state.disabled} />
           {rest.remaining > 0 ? <RestPanel remaining={rest.remaining} flashing={rest.flashing} onExtend={rest.extend} onSkip={rest.skip} /> : <>
-            <Stepper format={(value) => formatNumber(value, locale)} label={t('weightKg')} value={state.weight} step={2.5} min={0} onChange={state.setWeight} />
-            <Stepper format={(value) => formatNumber(value, locale)} label={t('reps')} value={state.reps} step={1} min={0} onChange={state.setReps} />
+            <Stepper format={(value) => formatNumber(value, locale)} label={t('weightKg')} value={state.weight} step={2.5} min={0} onChange={state.setWeight}
+              hint={state.performance?.weight_kg != null ? t('lastTimeWeight', { value: formatNumber(state.performance.weight_kg, locale) }) : undefined} />
+            <Stepper format={(value) => formatNumber(value, locale)} label={t('reps')} value={state.reps} step={1} min={0} onChange={state.setReps}
+              hint={state.performance?.reps != null ? t('lastTimeReps', { value: formatNumber(state.performance.reps, locale) }) : undefined} />
             <Button size="xl" className="w-full" disabled={state.disabled} onClick={() => void state.complete()}>
               <Check aria-hidden />{t('completeSet')}
             </Button>

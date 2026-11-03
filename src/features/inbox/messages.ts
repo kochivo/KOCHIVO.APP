@@ -2,6 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    'voiceReply': "رد بصوتك",
     'now': "دلوقتي",
     'hours.one': "من {count} ساعات",
     'hours.two': "من {count} ساعات",
@@ -75,6 +76,7 @@ export const messages = defineMessages({
     'dash': "—",
   },
   en: {
+    'voiceReply': "Reply by voice",
     'now': "Just now",
     'hours.one': "{count} hour ago",
     'hours.other': "{count} hours ago",
