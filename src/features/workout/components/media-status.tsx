@@ -5,7 +5,7 @@ import { formatNumber } from '@/lib/format';
 
 import { useCallback, useEffect, useState } from 'react';
 import { localDb, mediaPending, startSync, supabaseTransport, useLiveQuery } from '@/core/offline';
-import { supabaseBrowser } from '@/core/supabase/browser';
+import { loadSupabaseBrowser } from '@/core/supabase/lazy';
 
 const readPending = () => mediaPending(localDb());
 
@@ -16,8 +16,12 @@ export function MediaStatus() {
   const onError = useCallback(() => setError(true), []);
   const pending = useLiveQuery(readPending, onError);
   useEffect(() => {
-    try { return startSync(localDb(), supabaseTransport(supabaseBrowser())); }
-    catch { console.error('Background sync could not start'); }
+    let stopped = false;
+    let stop: (() => void) | undefined;
+    void loadSupabaseBrowser().then(client => {
+      if (!stopped) stop = startSync(localDb(), supabaseTransport(client));
+    }).catch(() => { console.error('Background sync could not start'); });
+    return () => { stopped = true; stop?.(); };
   }, []);
 
   return <p role={error ? 'alert' : 'status'} className="text-xs text-muted">

@@ -2,18 +2,23 @@
 import { formatNumber } from '@/lib/format';
 import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
-import { itemMacros, mealMacros } from '@/features/nutrition';
-import { sumMacros } from '@/lib/macros';
+import { macrosFor, sumMacros } from '@/lib/macros';
 import type { fetchPlayerPreview } from '../data/preview';
 
 type Preview = NonNullable<Awaited<ReturnType<typeof fetchPlayerPreview>>['data']>;
+type Meal = NonNullable<Preview['nutrition']>['meals'][number];
+
+// The preview never applies swaps, so it needs only the pure sums. Importing the nutrition
+// feature here would pull the player's offline screen and its database into the captain bundle.
+const itemMacros = (item: Meal['items'][number]) => macrosFor(item.per100g, item.grams);
+const mealMacros = (meal: Meal) => sumMacros(meal.items.map(itemMacros));
 
 export function PreviewNutrition({ nutrition }: Pick<Preview, 'nutrition'>) {
   const t = useT(messages);
   const locale = useLocale();
   const labels = { kcal: t('kcal'), protein: t('protein'), carbs: t('carbs'), fat: t('fat') } as const;
   if (!nutrition) return <p className="text-muted">{t('noNutrition')}</p>;
-  const total = sumMacros(nutrition.meals.map((meal) => mealMacros(meal, {})));
+  const total = sumMacros(nutrition.meals.map((meal) => mealMacros(meal)));
   return <section className="space-y-4">
     <h2 className="text-xl font-bold">{nutrition.title}</h2>
     <dl className="glass-strong grid grid-cols-2 gap-3 rounded-card p-4">
@@ -25,7 +30,7 @@ export function PreviewNutrition({ nutrition }: Pick<Preview, 'nutrition'>) {
     </dl>
     {nutrition.meals.length === 0 && <p className="text-muted">{t('noMeals')}</p>}
     {nutrition.meals.map((meal) => {
-      const macros = mealMacros(meal, {});
+      const macros = mealMacros(meal);
       return <section key={meal.id} className="glass space-y-3 rounded-card p-3">
         <h3 className="font-bold">{meal.name}</h3>
         <p className="text-sm text-muted">{t('macros', { kcal: formatNumber(Math.round(macros.kcal), locale), protein: formatNumber(Math.round(macros.protein), locale), carbs: formatNumber(Math.round(macros.carbs), locale), fat: formatNumber(Math.round(macros.fat), locale) })}</p>

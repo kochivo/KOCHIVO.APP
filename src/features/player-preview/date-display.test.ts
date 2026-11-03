@@ -12,7 +12,7 @@ it('keeps preview dates and weekday labels in Arabic', () => {
   const html = renderToStaticMarkup(createElement(PreviewWeek, { week, today: '2026-11-03' }));
   expect(html).toContain('الثلاثاء، ٣ نوفمبر');
   const screen = renderToStaticMarkup(createElement(PreviewScreen, {
-    today: '2026-11-03', result: { data: { name: 'علي', program: null, nutrition: null, sessions: [], week } },
+    today: '2026-11-03', result: { data: { name: 'علي', program: null, todayDay: null, nutrition: null, sessions: [], week } },
   }));
   expect(screen).toContain('<span>الثلاثاء</span>');
 });

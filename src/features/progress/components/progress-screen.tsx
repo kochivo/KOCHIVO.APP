@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { localDb, useLiveQuery } from '@/core/offline';
 import { signedMediaUrl } from '@/core/storage';
-import { supabaseBrowser } from '@/core/supabase/browser';
+import { loadSupabaseBrowser } from '@/core/supabase/lazy';
 import { formatNumber } from '@/lib/format';
 import { localDate } from '@/lib/dates';
 import { Button, Chip, ErrorState, LoadingState } from '@/ui';
@@ -61,7 +61,7 @@ export function ProgressScreen() {
     async function load() {
       setCheckinError(false);
       try {
-        const rows = await listCheckIns(supabaseBrowser(), t);
+        const rows = await listCheckIns(await loadSupabaseBrowser(), t);
         if (!cancelled) setCheckins(rows);
       } catch { if (!cancelled) setCheckinError(true); }
     }
@@ -77,7 +77,7 @@ export function ProgressScreen() {
     if (!first || !last) return;
     async function load(first: string, last: string, rows: CheckIn[]) {
       try {
-        const client = supabaseBrowser();
+        const client = await loadSupabaseBrowser();
         const [before, after] = await Promise.all([
           signedMediaUrl(client, 'checkin-photos', first),
           signedMediaUrl(client, 'checkin-photos', last),

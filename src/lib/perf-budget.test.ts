@@ -8,10 +8,7 @@ const statsPath = resolve('.next/diagnostics/route-bundle-stats.json');
 
 // Fixed ceilings for scoped misses; measurements and retained modules are in docs/PERFORMANCE.md.
 const exceptions: Record<string, number> = {
-  '/demo': 285,
-  '/player': 345, '/player/settings': 345, '/player/captain': 340,
-  '/player/nutrition': 330, '/player/progress': 325, '/player/onboarding': 325,
-  '/player/workout/[dayId]': 345,
+  '/player/settings': 345,
   '/captain/players/[playerId]/preview': 355,
 };
 

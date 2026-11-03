@@ -6,7 +6,7 @@ import { messages } from '../messages';
 
 import { z } from 'zod';
 import { supabaseServer } from '@/core/supabase/server';
-import { mapProgramSnapshot } from '@/features/player-home';
+import { mapProgramSnapshot, pickTodayDay } from '@/features/player-home';
 import { mapNutritionSnapshot } from '@/features/nutrition';
 import type { WorkoutSessionRow } from '@/core/offline';
 import { localDate } from '@/lib/dates';
@@ -48,7 +48,10 @@ export async function fetchPlayerPreview(playerId: string, today: string) {
       .lte('training_date', today).not('completed_at', 'is', null)
       .order('completed_at', { ascending: false }).order('id', { ascending: false }).limit(1) : null;
     if (history?.error) return { error };
+    const previewSessions = [...(sessions.data ?? []), ...(history?.data ?? [])]
+      .filter((row): row is WorkoutSessionRow => row.program_day_id !== null);
     return { data: { name: profile.data.full_name, program: snapshot,
+      todayDay: snapshot ? pickTodayDay(snapshot, previewSessions, today) ?? null : null,
       nutrition: nutrition.data ? mapNutritionSnapshot({ ...nutrition.data, meals: nutrition.data.meals.map(meal => ({
         ...meal, meal_items: meal.meal_items.map(item => ({
           ...item, foods: item.foods ? { ...item.foods, name_ar: foodName(item.foods, locale) } : null,
@@ -57,8 +60,7 @@ export async function fetchPlayerPreview(playerId: string, today: string) {
           })),
         })),
       })) }, playerId) : null,
-      sessions: [...(sessions.data ?? []), ...(history?.data ?? [])]
-        .filter((row): row is WorkoutSessionRow => row.program_day_id !== null),
+      sessions: previewSessions,
       week: activityWeek(today, sessions.data ?? [], meals.data ?? []),
     } };
   } catch { return { error }; }

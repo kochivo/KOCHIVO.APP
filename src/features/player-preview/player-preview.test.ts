@@ -77,6 +77,7 @@ describe('fetchPlayerPreview', () => {
     expect(result.data?.nutrition).toMatchObject({ plan_id: 'plan', targets: { kcal: 2000 } });
     if (!result.data?.program) throw new Error('Missing preview fixture');
     expect(pickTodayDay(result.data.program, result.data.sessions, '2026-11-03')?.id).toBe('second');
+    expect(result.data).toHaveProperty('todayDay.id', 'second');
     expect(result.data.week.every((day) => !day.trained)).toBe(true);
     results.delete('nutrition_plans');
     expect((await fetchPlayerPreview(player, '2026-11-03')).data?.nutrition).toBeNull();

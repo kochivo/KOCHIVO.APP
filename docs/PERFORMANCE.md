@@ -1,5 +1,64 @@
 # T-027g mobile polish and performance
 
+## T-027h — player import boundaries
+
+The public environment validator no longer imports the Zod runtime. Its URL
+acceptance, whitespace handling, minimum key length, error name/message/issues,
+and lazy successful-result cache are compared against the previous schema in
+`src/core/config/env.test.ts`. Environment failures are ordinary Error instances
+with the same diagnostic fields; they are no longer Zod class instances. No
+repository caller inspects the error prototype or uses Zod error methods.
+
+Player snapshot refreshes dynamically import their fetch/validation modules only
+inside the online fetch callback. Zod program-settings parsing is unchanged.
+Supabase loads through an async adapter which reuses the existing browser
+singleton. Nutrition authentication, progress requests and workout background
+sync await that adapter; effect cleanup prevents a late import from starting a
+subscription or sync loop after unmount. Media sync loads the client only when
+online and there is queued media. Injected snapshot fetches and offline refreshes
+do not load it. Existing snapshot, transaction and outbox semantics are retained.
+
+Captain preview computes today's day in its server loader with the same
+`pickTodayDay` function. The client no longer imports the player-home public API
+at runtime merely to select the day. Arabic/English rendering fixtures and the
+older-completion rotation test cover the added server result.
+
+Dexie remains eager: player-shell renders InstallSheet, whose out-of-scope
+`features/install/hooks/use-install-prompt.ts` imports the synchronous `localDb`
+API. Player screens also need Dexie to read their cached first snapshot. Changing
+that API globally would require callers outside this card. No database schema,
+`saveAndQueue`, service-worker cache policy or offline tests were changed.
+
+### Measured after T-027h (reviewer build, 2026-11-03)
+
+Measured by the reviewer from a completed production build, the same way the
+budget test does. The reviewer also removed Zod from `features/demo/data/demo-profile.ts`
+(plain checks with the same rules) and made the captain preview compute macros with
+`lib/macros` directly instead of importing the nutrition feature.
+
+| Route (without `/[locale]`) | Before gzip KiB | After gzip KiB | Guard KiB |
+| --- | ---: | ---: | ---: |
+| `/player` | 342.33 | 245.48 | 300 |
+| `/player/captain` | 335.98 | 239.58 | 300 |
+| `/player/nutrition` | 327.96 | 231.94 | 300 |
+| `/player/progress` | 324.77 | 228.54 | 300 |
+| `/player/onboarding` | 324.43 | 258.15 | 300 |
+| `/player/workout/[dayId]` | 344.08 | 278.02 | 300 |
+| `/player/settings` | 344.06 | 342.42 | 345 |
+| `/demo` | 282.98 | 253.19 | 280 |
+| `/captain/players/[playerId]/preview` | 351.15 | 350.79 | 355 |
+
+Two routes still miss their target:
+- `/player/settings`: the profile, export and delete-account forms load the browser
+  Supabase client (~66 KiB) and Zod (~30 KiB) eagerly. Fix in the settings feature by
+  loading them on submit.
+- Captain preview: one 32 KiB chunk with Dexie is still pulled in, through an import
+  path not yet traced (the nutrition import was not it).
+
+Both are follow-up work; their guards are the achieved size rounded up to 5 KiB.
+
+---
+
 Measured on 2026-11-03 with Next 16.4.4 / Turbopack and Node 22.23.4.
 The before column comes from the existing build diagnostics read before edits;
 it agrees with the reviewer's rounded baseline. The after column comes from a

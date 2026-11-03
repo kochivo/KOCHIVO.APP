@@ -1,11 +1,9 @@
-import { z } from 'zod';
+import type { ZodIssue } from 'zod';
 
-const publicEnvSchema = z.object({
-  NEXT_PUBLIC_SUPABASE_URL: z.url(),
-  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z.string().min(20),
-});
-
-export type PublicEnv = z.infer<typeof publicEnvSchema>;
+export interface PublicEnv {
+  NEXT_PUBLIC_SUPABASE_URL: string;
+  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: string;
+}
 
 let cached: PublicEnv | undefined;
 
@@ -15,9 +13,34 @@ let cached: PublicEnv | undefined;
  * which is why each key is referenced explicitly.
  */
 export function publicEnv(): PublicEnv {
-  cached ??= publicEnvSchema.parse({
-    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
-  });
+  if (cached) return cached;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  const issues: ZodIssue[] = [];
+  if (url === undefined) issues.push(missing('NEXT_PUBLIC_SUPABASE_URL'));
+  else {
+    try { new URL(url.trim()); }
+    catch {
+      issues.push({ code: 'invalid_format', format: 'url', path: ['NEXT_PUBLIC_SUPABASE_URL'], message: 'Invalid URL' });
+    }
+  }
+  if (key === undefined) issues.push(missing('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY'));
+  else if (key.length < 20) issues.push({ origin: 'string', code: 'too_small', minimum: 20,
+    inclusive: true, path: ['NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY'],
+    message: 'Too small: expected string to have >=20 characters' });
+  if (issues.length) {
+    // Preserve the diagnostic contract without shipping a schema engine for two env values.
+    const error = new Error(JSON.stringify(issues, null, 2));
+    error.name = 'ZodError';
+    throw Object.assign(error, { issues });
+  }
+  // Missing values already produced issues above; keep narrowing explicit for strict callers.
+  if (url === undefined || key === undefined) throw new Error('Missing public environment');
+  cached = { NEXT_PUBLIC_SUPABASE_URL: url.trim().replace(/[\t\n\r]/g, ''), NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: key };
   return cached;
+}
+
+function missing(name: keyof PublicEnv): ZodIssue {
+  return { expected: 'string', code: 'invalid_type', path: [name],
+    message: 'Invalid input: expected string, received undefined' };
 }

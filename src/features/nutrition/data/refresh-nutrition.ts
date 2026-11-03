@@ -1,6 +1,5 @@
 import { localDb, refreshCachedSnapshot, type KochivoDB, type NutritionSnapshot } from '@/core/offline';
-import { supabaseBrowser } from '@/core/supabase/browser';
-import { fetchNutritionSnapshot } from './nutrition-snapshot';
+import { loadSupabaseBrowser } from '@/core/supabase/lazy';
 
 interface RefreshOptions {
   db?: KochivoDB;
@@ -11,7 +10,10 @@ interface RefreshOptions {
 export async function refreshNutrition(options: RefreshOptions = {}): Promise<'ready' | 'empty' | 'error' | 'offline'> {
   return refreshCachedSnapshot({
     online: options.online,
-    fetch: options.fetch ?? (() => fetchNutritionSnapshot(supabaseBrowser())),
+    fetch: options.fetch ?? (async () => {
+      const { fetchNutritionSnapshot } = await import('./nutrition-snapshot');
+      return fetchNutritionSnapshot(await loadSupabaseBrowser());
+    }),
     db: () => options.db ?? localDb(),
     table: db => db.nutrition_snapshot,
   });

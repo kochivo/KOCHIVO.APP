@@ -1,5 +1,5 @@
 import type { KochivoDB } from './db';
-import { supabaseBrowser } from '@/core/supabase/browser';
+import { loadSupabaseBrowser } from '@/core/supabase/lazy';
 import { flushMediaQueue, mediaPending, supabaseMediaTransport } from './media-queue';
 import { flushOutbox, type SyncTransport } from './sync';
 
@@ -20,7 +20,8 @@ export function startSync(db: KochivoDB, send: SyncTransport): () => void {
     mediaRunning = true;
     try {
       if (await mediaPending(db) === 0) return;
-      const client = supabaseBrowser();
+      const client = await loadSupabaseBrowser();
+      if (stopped) return;
       const { data, error } = await client.auth.getUser();
       if (!stopped && !error && data.user) {
         await flushMediaQueue(db, supabaseMediaTransport(client, data.user.id));
