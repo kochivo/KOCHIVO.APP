@@ -43,7 +43,10 @@ export function RosterRow({ player, today }: { player: RosterPlayer; today: stri
       <div role="cell"><span className={`inline-flex rounded-full px-3 py-1 text-xs font-bold ${tag.color}`}>{tag.label}</span></div>
       <div role="cell" className="text-sm text-muted"><span className="lg:hidden">آخر تسجيل: </span>{lastSeenLabel(player.lastTrainingDate, today)}</div>
       <div role="cell" className="break-words text-sm">{player.programTitle ?? 'من غير برنامج'}
-        <Link href={`/captain/players/${player.playerId}/programs`} className="flex min-h-12 items-center text-lime">البرامج</Link>
+        <span className="flex gap-4">
+          <Link href={`/captain/players/${player.playerId}/programs`} className="flex min-h-12 items-center text-lime">البرامج</Link>
+          <Link href={`/captain/players/${player.playerId}/nutrition`} className="flex min-h-12 items-center text-lime">الأكل</Link>
+        </span>
       </div>
       <div role="cell" className="text-sm text-muted"><span className="lg:hidden">الاشتراك لحد: </span><time dateTime={player.accessUntil}>{new Intl.DateTimeFormat('ar-EG', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${player.accessUntil}T00:00:00Z`))}</time></div>
       <div role="cell">
