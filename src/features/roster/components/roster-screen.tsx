@@ -31,7 +31,7 @@ export function RosterScreen({ data, today }: { data: Promise<[RosterResult, str
   return (
     <section className="space-y-6">
       <header className="flex flex-wrap items-end justify-between gap-4">
-        <div><p className="mb-1 text-xs tracking-widest text-muted"><bdi>ROSTER</bdi> · {players.length} لاعب</p><h1 className="text-3xl font-extrabold">اللاعبين</h1></div>
+        <div><p className="mb-1 text-xs text-muted">{players.length} لاعب</p><h1 className="text-3xl font-extrabold">اللاعبين</h1></div>
         {(players.length > 0 || result.error) && inviteButton}
       </header>
       <RadarCard today={today} />

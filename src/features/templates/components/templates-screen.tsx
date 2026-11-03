@@ -53,7 +53,7 @@ export function TemplatesScreen() {
   const visible = templates.filter(template => template.kind === kind);
   return <div className="mx-auto grid max-w-5xl gap-6">
     <header className="space-y-2">
-      <p className="font-display text-sm tracking-widest text-muted">TEMPLATES · القوالب</p>
+      <p className="font-display text-sm text-muted">القوالب</p>
       <h1 className="text-3xl font-extrabold">قوالبك الجاهزة</h1>
       <p className="text-muted">احفظ شغلك وادّي نسخة مستقلة لأي لاعب</p>
     </header>

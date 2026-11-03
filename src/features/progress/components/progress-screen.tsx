@@ -90,7 +90,7 @@ export function ProgressScreen() {
   ] as const;
   const hasFronts = checkins?.some((row) => row.photo_paths.length > 0);
   return <main className="mx-auto max-w-lg space-y-4 px-5 pt-6 pb-32">
-    <header><h1 className="text-2xl font-extrabold"><bdi>PROGRESS</bdi> · تطورك</h1></header>
+    <header><h1 className="text-2xl font-extrabold">تطورك</h1></header>
     {localError ? <ErrorState message="مش قادرين نحمّل تمارينك" retryLabel="جرّب تاني" onRetry={() => {
       setLocalError(false); setRetryKey((value) => value + 1);
     }} /> : !strength ? <LoadingState /> : !lifts.length ?

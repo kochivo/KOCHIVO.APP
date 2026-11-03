@@ -2,7 +2,7 @@ import { content } from '../content';
 
 export function Slogan() {
   return <>
-    <h1 aria-label={content.hero.label} className="marketing-slogan" dir="ltr">
+    <h1 aria-label={content.hero.label} className="marketing-slogan" dir="rtl">
       <span className="block">{content.hero.lines[0]}</span>
       <span className="marketing-outline block">{content.hero.lines[1]}</span>
       <span className="block text-lime">{content.hero.lines[2]}<span className="text-ink">{content.hero.period}</span></span>

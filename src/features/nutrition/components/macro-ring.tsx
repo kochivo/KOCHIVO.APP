@@ -12,7 +12,7 @@ export function MacroRing({ eaten, target }: { eaten: Macros; target: Macros }) 
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <strong className="text-3xl font-extrabold"><bdi>{eaten.kcal.toLocaleString('en-US')}</bdi></strong>
-        <span className="text-xs text-muted"><bdi>/ {target.kcal.toLocaleString('en-US')} KCAL</bdi></span>
+        <span className="text-xs text-muted"><bdi>/ {target.kcal.toLocaleString('en-US')}</bdi> سعر حراري</span>
       </div>
     </div>
     <div className="min-w-0 flex-1 space-y-4">

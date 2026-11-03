@@ -2,7 +2,7 @@ import { content } from '../content';
 
 export function PreviewCaptain() {
   return <div className="flex h-full flex-col gap-2.5 rounded-[36px] bg-bg-deep px-4 py-5">
-    <p className="text-[10px] tracking-widest text-muted">{content.preview.radar}</p>
+    <p className="text-[10px] text-muted">{content.preview.radar}</p>
     <p className="font-display text-[22px] font-extrabold">{content.preview.heading}</p>
     {content.radar.map(row => <div key={row.name} className="glass flex flex-col gap-1.5 rounded-[18px] p-3">
       <div className="flex items-center justify-between gap-2"><span className="text-sm font-extrabold">{row.name}</span><span className="text-[11px] font-bold text-danger">{row.days}</span></div>

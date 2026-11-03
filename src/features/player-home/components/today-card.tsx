@@ -13,13 +13,12 @@ export function TodayCard({ day, rest }: { day: SnapshotDay; rest: boolean }) {
   const sets = day.exercises.reduce((total, exercise) => total + exercise.sets, 0);
   return <GlassCard level="strong" className="space-y-5 p-5">
     <div className="space-y-2">
-      <p className="text-xs tracking-widest text-lime"><bdi>DAY {day.position}</bdi> · تمرين النهارده</p>
+      <p className="text-xs text-lime">اليوم {day.position} · تمرين النهارده</p>
       <h2 className="text-3xl font-extrabold">{rest ? 'النهارده راحة' : day.title}</h2>
       {rest && <p className="text-muted">{day.title}</p>}
       <p className="text-sm text-muted">{day.exercises.length} تمارين · {sets} سِت · حوالي {estimateMinutes(day.exercises)} دقيقة</p>
     </div>
     {day.exercises.length === 0 && <p className="text-sm text-muted">الكابتن لسه بيجهز تمارين اليوم.</p>}
-    {/* TODO(T-006): Focus Mode owns this route. */}
     <Link href={`/player/workout/${day.id}`} className={rest ?
       'flex min-h-12 items-center justify-center rounded-control border border-line px-4 font-bold text-muted hover:text-ink' :
       'workout-go flex min-h-20 items-center justify-center gap-3 rounded-card bg-lime px-4 text-xl font-extrabold text-on-lime'}>

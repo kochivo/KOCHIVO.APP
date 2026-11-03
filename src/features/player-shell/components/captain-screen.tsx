@@ -18,7 +18,7 @@ export function CaptainScreen() {
   const state = data ? accessState({ ...data, today: localDate(new Date()) }) : 'active';
   const url = whatsappUrl(data?.phone ?? null);
   return <main className="mx-auto max-w-lg space-y-5 px-5 pt-6 pb-32">
-    <header><h1 className="text-2xl font-extrabold"><bdi>CAPTAIN</bdi> · الكابتن</h1></header>
+    <header><h1 className="text-2xl font-extrabold">الكابتن</h1></header>
     {status === 'loading' ? <LoadingState /> : status === 'error' ?
       <ErrorState message="مش قادرين نحمّل بيانات الكابتن" retryLabel="جرّب تاني" onRetry={() => void retry()} /> :
       !data ? <EmptyState icon={MessageCircle} title="إنت مش متابع مع كابتن دلوقتي" body="بيانات الكابتن هتظهر هنا لما تبدأ المتابعة" /> :

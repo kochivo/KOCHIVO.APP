@@ -5,7 +5,7 @@ import type { Performance } from '../data/last-performance';
 
 export function ExerciseHeader({ exercise, performance }: { exercise: SnapshotExercise; performance: Performance | null | undefined }) {
   const name = exercise.name_ar || exercise.name_en;
-  return <section className="glass flex items-center gap-4 rounded-card p-4">
+  return <section className="glass-strong flex items-center gap-4 rounded-card p-4">
     {exercise.media_path && <figure className="shrink-0 text-center">
       <Image src={exerciseMediaUrl(exercise.media_path)} alt={name} width={84} height={84}
         unoptimized className="rounded-control motion-reduce:hidden" />
