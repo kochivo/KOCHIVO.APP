@@ -17,7 +17,7 @@ export function BuilderHeader({ draft, dirty, busy, onTitle, onSave, onActivate 
     <div className="min-w-0 flex-1 space-y-2">
       <h1 className="text-2xl font-extrabold">{t('programBuilder')}</h1>
       <TextField label={t('programName')} maxLength={80} value={draft.title} onChange={event => onTitle(event.target.value)} disabled={busy} />
-      <span className="inline-flex rounded-full bg-surface-raised px-3 py-1 text-sm text-muted">{statuses[draft.status]}{dirty ? t('unsavedChanges') : ''}</span>
+      <span className="glass-raised inline-flex rounded-full px-3 py-1 text-sm text-muted">{statuses[draft.status]}{dirty ? t('unsavedChanges') : ''}</span>
     </div>
     <div className="flex flex-wrap gap-2">
       {!dirty && !busy && draft.player_id && <SaveTemplateButton kind="program" id={draft.id} title={draft.title} />}
