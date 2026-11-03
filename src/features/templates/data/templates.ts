@@ -4,6 +4,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { supabaseServer } from '@/core/supabase/server';
+import { isMissingRow, isPermissionDenied, readError } from '@/core/supabase/errors';
 import { fetchRoster } from '@/features/roster';
 import type { RosterPlayer } from '@/features/roster';
 import type { Template, TemplateKind, TemplateResult, TemplatesDatabase } from '../types';
@@ -17,14 +18,11 @@ const unavailable = 'القالب أو المصدر مش موجود';
 const failed = 'الطلب متنفذش. جرّب تاني';
 
 function errorMessage(error: unknown): string {
-  if (error instanceof Error && ['سجّل دخولك الأول', 'القوالب للكباتن بس'].includes(error.message)) return error.message;
-  if (typeof error === 'object' && error !== null && 'code' in error) {
-    switch (error.code) {
-      case 'P0002': case 'PGRST116': return unavailable;
-      case '42501': return 'مش مسموح لك تعمل كده';
-      case '22023': return 'اسم القالب لازم يكون من 1 لـ80 حرف';
-    }
-  }
+  const { code, message } = readError(error);
+  if (error instanceof Error && typeof message === 'string' && ['سجّل دخولك الأول', 'القوالب للكباتن بس'].includes(message)) return message;
+  if (isMissingRow(error, true)) return unavailable;
+  if (isPermissionDenied(error)) return 'مش مسموح لك تعمل كده';
+  if (code === '22023') return 'اسم القالب لازم يكون من 1 لـ80 حرف';
   return failed;
 }
 async function session() {
