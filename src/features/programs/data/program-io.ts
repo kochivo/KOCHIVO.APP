@@ -1,10 +1,9 @@
 'use server';
 
-import type { SupabaseClient } from '@supabase/supabase-js';
 import { z } from 'zod';
 import { supabaseServer } from '@/core/supabase/server';
 import { uuidv7 } from '@/core/offline/ids';
-import type { DraftDay, ExerciseRow, ProgramDraft, ProgramRow, ProgramsDatabase, Result } from '../types';
+import type { DraftDay, ExerciseRow, ProgramDraft, ProgramRow, Result } from '../types';
 
 const exerciseSchema = z.object({
   id: z.uuid(), day_id: z.uuid(), exercise_id: z.uuid(), position: z.number().int().positive().max(32767),
@@ -20,7 +19,7 @@ const draftSchema = z.object({
 });
 const failure = 'البرنامج متحفظش بالكامل. جرّب الحفظ تاني';
 async function session() {
-  const client = await supabaseServer() as unknown as SupabaseClient<ProgramsDatabase>;
+  const client = await supabaseServer();
   const { data, error } = await client.auth.getClaims();
   if (error || !data?.claims.sub) throw new Error('session');
   return { client, captain: data.claims.sub };

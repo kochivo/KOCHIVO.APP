@@ -28,6 +28,10 @@ const config = [
     },
   },
   {
+    files: ['src/types/database.ts'],
+    rules: { 'max-lines': 'off' },
+  },
+  {
     files: ['src/core/**', 'src/ui/**', 'src/lib/**'],
     rules: { 'no-restricted-imports': ['error', { patterns: [noFeatureImports] }] },
   },

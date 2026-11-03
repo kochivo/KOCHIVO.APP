@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '@/types/database';
+import type { AppDatabase } from '@/types/app-database';
 import { uploadPrivateMedia, signedMediaUrl } from '@/core/storage/private-media';
 import { weekStart } from './week';
 import { mainLifts, topSets, trendDelta } from './trends';
@@ -16,6 +16,11 @@ vi.mock('@/core/offline', async (original) => ({
 }));
 afterEach(() => vi.unstubAllGlobals());
 
+function fakeClient(client: object): SupabaseClient<AppDatabase> {
+  // This unit double implements only the Auth, Storage and query methods exercised below.
+  return client as SupabaseClient<AppDatabase>;
+}
+
 function mockClient(code?: string) {
   const upload = vi.fn().mockResolvedValue({ error: null });
   const createSignedUrl = vi.fn().mockResolvedValue({ data: { signedUrl: 'signed' }, error: null });
@@ -29,7 +34,7 @@ function mockClient(code?: string) {
     storage: { from: vi.fn(() => ({ upload, createSignedUrl })) },
     from: vi.fn(() => ({ insert, select })),
   };
-  return { client: client as unknown as SupabaseClient<Database>, upload, createSignedUrl, insert, eq, order, limit };
+  return { client: fakeClient(client), upload, createSignedUrl, insert, eq, order, limit };
 }
 
 describe('Saturday weeks', () => {
@@ -93,10 +98,11 @@ it('uploads before inserting a check-in, using the authenticated player and Satu
     today: '2026-11-03', body_weight_kg: 75, waist_cm: 90, notes: 'تمام', photos: [photo],
   })).toEqual({ error: null });
   expect(upload.mock.invocationCallOrder[0]).toBeLessThan(insert.mock.invocationCallOrder[0] ?? 0);
-  expect(insert).toHaveBeenCalledWith(expect.objectContaining({
+  expect(insert).toHaveBeenCalledWith({
+    id: '0194cc00-0000-7000-8000-000000000001', notes: 'تمام',
     player_id: 'player', week_start: '2026-10-31', body_weight_kg: 75, waist_cm: 90,
     photo_paths: ['player/0194cc00-0000-7000-8000-000000000001.jpg'],
-  }));
+  });
 });
 it('lists only the authenticated player, newest first, capped at 26', async () => {
   const { client, eq, order, limit } = mockClient();

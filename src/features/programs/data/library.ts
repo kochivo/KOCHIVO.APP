@@ -1,15 +1,14 @@
 'use server';
 
-import type { SupabaseClient } from '@supabase/supabase-js';
 import { supabaseServer } from '@/core/supabase/server';
 import { escapeSearch } from '../summary';
-import type { LibraryExercise, ProgramsDatabase, Result } from '../types';
+import type { LibraryExercise, Result } from '../types';
 
 export async function searchExercises({ query, bodyPart, limit = 30 }: {
   query: string; bodyPart: string; limit?: 30;
 }): Promise<Result<LibraryExercise[]>> {
   try {
-    const client = await supabaseServer() as unknown as SupabaseClient<ProgramsDatabase>;
+    const client = await supabaseServer();
     // Quoting the PostgREST value also keeps commas and parentheses inside the search term.
     const pattern = `"%${escapeSearch(query.trim().slice(0, 120)).replace(/\\/g, '\\\\').replace(/"/g, '\\"')}%"`;
     let request = client.from('exercises').select('id,name_ar,name_en,body_part,equipment,media_path');

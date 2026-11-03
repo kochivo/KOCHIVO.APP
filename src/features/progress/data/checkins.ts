@@ -3,19 +3,13 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { uuidv7 } from '@/core/offline';
 import { uploadPrivateMedia } from '@/core/storage';
-import type { Database } from '@/types/database';
+import type { Tables } from '@/types/database';
+import type { AppDatabase } from '@/types/app-database';
 import { compressImage } from '../image';
 import { weekStart } from '../week';
 
-export type CheckIn = {
-  id: string;
-  player_id: string;
-  week_start: string;
-  body_weight_kg: number | null;
-  waist_cm: number | null;
-  notes: string | null;
-  photo_paths: string[];
-};
+export type CheckIn = Pick<Tables<'check_ins'>,
+  'id' | 'player_id' | 'week_start' | 'body_weight_kg' | 'waist_cm' | 'notes' | 'photo_paths'>;
 export interface CheckInInput {
   today: string;
   body_weight_kg: number;
@@ -24,36 +18,22 @@ export interface CheckInInput {
   photos: File[];
   onProgress?: (completed: number, total: number) => void;
 }
-interface CheckInDatabase {
-  public: {
-    Tables: { check_ins: {
-      Row: CheckIn;
-      Insert: CheckIn;
-      Update: never;
-      Relationships: [];
-    } };
-    Views: Record<string, never>;
-    Functions: Record<string, never>;
-  };
-}
-
-async function playerId(client: SupabaseClient<Database>) {
+async function playerId(client: SupabaseClient<AppDatabase>) {
   const { data, error } = await client.auth.getUser();
   if (error || !data.user) throw new Error('سجّل دخولك تاني');
   return data.user.id;
 }
 
-export async function listCheckIns(client: SupabaseClient<Database>): Promise<CheckIn[]> {
+export async function listCheckIns(client: SupabaseClient<AppDatabase>): Promise<CheckIn[]> {
   const id = await playerId(client);
-  const reader = client as unknown as SupabaseClient<CheckInDatabase>;
-  const { data, error } = await reader.from('check_ins')
+  const { data, error } = await client.from('check_ins')
     .select('id,player_id,week_start,body_weight_kg,waist_cm,notes,photo_paths')
     .eq('player_id', id).order('week_start', { ascending: false }).limit(26);
   if (error) throw new Error('مش قادرين نحمّل تحديثاتك');
   return data ?? [];
 }
 
-export async function submitCheckIn(client: SupabaseClient<Database>, input: CheckInInput): Promise<{ error: string | null }> {
+export async function submitCheckIn(client: SupabaseClient<AppDatabase>, input: CheckInInput): Promise<{ error: string | null }> {
   if (typeof navigator !== 'undefined' && navigator.onLine === false) return { error: 'محتاج نت عشان تبعت الصور' };
   if (!Number.isFinite(input.body_weight_kg) || input.body_weight_kg < 20 || input.body_weight_kg > 400 ||
     (input.waist_cm !== null && (!Number.isFinite(input.waist_cm) || input.waist_cm < 30 || input.waist_cm > 300)) ||
@@ -66,8 +46,7 @@ export async function submitCheckIn(client: SupabaseClient<Database>, input: Che
       paths.push(await uploadPrivateMedia(client, 'checkin-photos', id, blob));
       input.onProgress?.(paths.length, input.photos.length + 1);
     }
-    const writer = client as unknown as SupabaseClient<CheckInDatabase>;
-    const { error } = await writer.from('check_ins').insert({
+    const { error } = await client.from('check_ins').insert({
       id: uuidv7(), player_id: id, week_start: weekStart(input.today),
       body_weight_kg: input.body_weight_kg, waist_cm: input.waist_cm,
       notes: input.notes, photo_paths: paths,

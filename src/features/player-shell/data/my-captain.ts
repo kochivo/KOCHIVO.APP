@@ -1,25 +1,15 @@
 'use server';
 
-import type { SupabaseClient } from '@supabase/supabase-js';
 import { supabaseServer } from '@/core/supabase/server';
 
 export interface MyCaptain {
   fullName: string; phone: string | null; accessUntil: string;
   archivedAt: string | null; startedOn: string | null;
 }
-type ReadTable<Row> = { Row: Row; Insert: never; Update: never; Relationships: [] };
-type CaptainDatabase = { public: {
-  Tables: {
-    coach_clients: ReadTable<{ player_id: string; captain_id: string; access_until: string; archived_at: string | null; started_on: string; created_at: string }>;
-    profiles: ReadTable<{ id: string; full_name: string; phone: string | null }>;
-  };
-  Views: Record<string, never>; Functions: Record<string, never>;
-} };
 
 export async function fetchMyCaptain(): Promise<{ data: MyCaptain | null } | { error: string }> {
   try {
-    // The shared database types are still a placeholder; keep this read schema local.
-    const client = await supabaseServer() as unknown as SupabaseClient<CaptainDatabase>;
+    const client = await supabaseServer();
     const { data: auth, error: authError } = await client.auth.getUser();
     if (authError || !auth.user) return { error: 'سجّل دخولك تاني' };
     const relation = await client.from('coach_clients')

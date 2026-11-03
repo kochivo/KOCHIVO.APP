@@ -1,25 +1,13 @@
 import type { playerStatus, RosterPlayer } from '@/features/roster';
+import type { Tables } from '@/types/database';
 
-export interface Payment {
-  id: string;
-  player_id: string;
-  captain_id: string;
-  amount_egp: number | null;
-  days: number;
-  period_start: string;
-  period_end: string;
-  created_at: string;
-}
+export type Payment = Tables<'player_payments'>;
 export interface BillingPlayer extends RosterPlayer {
   status: ReturnType<typeof playerStatus>;
   phone: string | null;
   lastPayment: Payment | null;
 }
-export interface Plan {
-  tier: string;
-  price_egp: number;
-  player_limit: number;
-}
+export type Plan = Pick<Tables<'plan_tiers'>, 'tier' | 'price_egp' | 'player_limit'>;
 export interface BillingData {
   players: BillingPlayer[];
   plan: Plan;

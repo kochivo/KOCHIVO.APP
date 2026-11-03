@@ -183,7 +183,7 @@ describe('server actions and roster reads', () => {
   it('maps roster RPC rows without accepting a player id', async () => {
     mocks.client.rpc.mockResolvedValueOnce({ data: [{ player_id: 'p', full_name: 'علي', access_until: '2026-12-01', started_on: '2026-10-01', last_training_date: null, program_title: null, open_tasks: 2 }], error: null });
     expect(await fetchRoster()).toEqual({ players: [{ playerId: 'p', fullName: 'علي', accessUntil: '2026-12-01', startedOn: '2026-10-01', lastTrainingDate: null, programTitle: null, openTasks: 2 }] });
-    expect(mocks.client.rpc).toHaveBeenCalledWith('captain_roster', {});
+    expect(mocks.client.rpc).toHaveBeenCalledWith('captain_roster');
     mocks.client.rpc.mockResolvedValueOnce({ data: null, error: { code: '500' } });
     expect(await fetchRoster()).toHaveProperty('error');
     mocks.client.rpc.mockRejectedValueOnce(new Error('offline'));
