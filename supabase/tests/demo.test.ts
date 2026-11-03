@@ -8,7 +8,7 @@ let db: PGlite;
 let captain: string;
 async function anonymous() {
   const row = (await db.query<{ id: string }>(
-    'insert into auth.users (id) values (gen_random_uuid()) returning id')).rows[0];
+    'insert into auth.users (id, is_anonymous) values (gen_random_uuid(), true) returning id')).rows[0];
   if (!row) throw new Error('Missing anonymous user');
   return row.id;
 }
