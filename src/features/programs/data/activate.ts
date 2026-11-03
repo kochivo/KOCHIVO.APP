@@ -4,6 +4,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { supabaseServer } from '@/core/supabase/server';
+import { isPermissionDenied, readError } from '@/core/supabase/errors';
 import type { ProgramsDatabase, Result } from '../types';
 
 export async function activateProgram(id: string): Promise<Result<true>> {
@@ -11,8 +12,8 @@ export async function activateProgram(id: string): Promise<Result<true>> {
   try {
     const client = await supabaseServer() as unknown as SupabaseClient<ProgramsDatabase>;
     const { error } = await client.rpc('activate_program', { p_program: id });
-    if (error) return { error: error.code === '22023' ? 'ضيف يوم فيه تمرين واختار لاعب الأول' :
-      error.code === '42501' ? 'البرنامج مش متاح ليك' : 'التفعيل متعملش. جرّب تاني' };
+    if (error) return { error: readError(error).code === '22023' ? 'ضيف يوم فيه تمرين واختار لاعب الأول' :
+      isPermissionDenied(error) ? 'البرنامج مش متاح ليك' : 'التفعيل متعملش. جرّب تاني' };
     revalidatePath('/captain');
     revalidatePath('/player');
     return { data: true };

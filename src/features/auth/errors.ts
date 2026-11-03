@@ -1,3 +1,5 @@
+import { readError } from '@/core/supabase/errors';
+
 const messages: Record<string, string> = {
   invalid_credentials: 'الإيميل أو كلمة السر مش مظبوطين',
   user_not_found: 'الإيميل أو كلمة السر مش مظبوطين',
@@ -13,6 +15,6 @@ const messages: Record<string, string> = {
   '23505': 'حسابك مربوط بكابتن بالفعل',
 };
 export function authError(error: unknown): string {
-  const code = error && typeof error === 'object' && 'code' in error ? String(error.code) : '';
+  const code = String(readError(error).code ?? '');
   return messages[code] ?? 'حصلت مشكلة، جرّب تاني';
 }

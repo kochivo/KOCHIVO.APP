@@ -3,6 +3,7 @@
 import { fetchBillingAt } from './billing-internal';
 
 import { z } from 'zod';
+import { isPermissionDenied, readError } from '@/core/supabase/errors';
 import { captainClient } from './client';
 import type { BillingResult, RenewalInput } from '../types';
 
@@ -20,8 +21,8 @@ export async function renewPlayer(input: RenewalInput): Promise<{ data: string; 
     const { client } = await captainClient();
     const { playerId, days, amount } = parsed.data;
     const result = await client.rpc('renew_player', { p_player: playerId, p_days: days, p_amount: amount });
-    if (result.error) return { error: result.error.code === '42501' ? 'مش مسموح تجدّد للاعب ده. راجع حسابك'
-      : result.error.code === '22023' ? invalid : failed };
+    if (result.error) return { error: isPermissionDenied(result.error) ? 'مش مسموح تجدّد للاعب ده. راجع حسابك'
+      : readError(result.error).code === '22023' ? invalid : failed };
     return result.data ? { data: result.data } : { error: failed };
   } catch { return { error: failed }; }
 }

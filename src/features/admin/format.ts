@@ -1,4 +1,5 @@
 import { formatTimestampAr } from '@/lib/dates';
+import { isPermissionDenied, readError } from '@/core/supabase/errors';
 import type { CaptainRow, CaptainState, Tier } from './types';
 
 export const tierLabel = (tier: Tier) => tier.toUpperCase();
@@ -13,10 +14,11 @@ export function endsLabel(date: string | null): string {
   if (!date || !Number.isFinite(Date.parse(date))) return '—';
   return formatTimestampAr(date, { day: 'numeric', month: 'short', year: 'numeric' });
 }
-export function actionError(error: { code?: string; message?: string }): string {
-  if (error.code === '42501') return 'مش مسموح';
-  if (error.code === '22023' && error.message === 'unknown tier') return 'الباقة مش موجودة';
-  if (error.code === '22023') return 'البيانات مش صحيحة، راجع الحساب والمدة';
+export function actionError(error: unknown): string {
+  const { code, message } = readError(error);
+  if (isPermissionDenied(error)) return 'مش مسموح';
+  if (code === '22023' && message === 'unknown tier') return 'الباقة مش موجودة';
+  if (code === '22023') return 'البيانات مش صحيحة، راجع الحساب والمدة';
   return 'العملية ما كملتش، جرّب تاني';
 }
 export const stateLabels: Record<CaptainState, string> = {
