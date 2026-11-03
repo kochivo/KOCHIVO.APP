@@ -29,8 +29,21 @@ export function InboxScreen() {
   const [count, setCount] = useState<number | null>(null);
   const [selected, setSelected] = useState<InboxItem | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [pending, setPending] = useState(false);
+  const [actionError, setError] = useState('');
+  const [loadError, setLoadError] = useState('');
+  const error = actionError || loadError;
+  const [pending, setPending] = useState<string[]>([]);
+  const inFlight = useRef(new Set<string>());
+  const [reviews, setReviews] = useState<Record<string, InboxItem>>({});
+  const [drafts, setDrafts] = useState<Record<string, string>>({});
+  const reviewsRef = useRef<Record<string, InboxItem>>({});
+  const currentStatus = useRef(status);
+  const keyOf = (item: InboxItem) => `${item.kind}:${item.id}`;
+  function markReview(key: string, item: InboxItem | null) {
+    const next = { ...reviewsRef.current };
+    if (item) next[key] = item; else delete next[key];
+    reviewsRef.current = next; setReviews(next);
+  }
   const [now, setNow] = useState<Date | null>(null);
   const generation = useRef(0);
   const load = useCallback(async () => {
@@ -38,12 +51,12 @@ export function InboxScreen() {
     try {
       const result = await listInbox({ status, limit: 50 });
       if (current !== generation.current) return;
-      setError(result.error ?? '');
+      setLoadError(result.error ?? '');
       if (result.error) return;
       setItems(result.data ?? []);
-      if (status === 'open') setCount(result.data?.length ?? 0);
+      if (status === 'open') setCount((result.data ?? []).filter(item => !reviewsRef.current[`${item.kind}:${item.id}`]).length);
       setNow(new Date());
-    } catch { if (current === generation.current) setError(t('loadFailed')); }
+    } catch { if (current === generation.current) setLoadError(t('loadFailed')); }
     finally { if (current === generation.current) setLoading(false); }
   }, [status, t]);
   useEffect(() => {
@@ -53,36 +66,45 @@ export function InboxScreen() {
     return () => { active = false; token.current++; };
   }, [load]);
   async function send(reply: string) {
-    if (!selected || pending) return;
+    if (!selected || inFlight.current.has(keyOf(selected))) return;
     const item = selected;
-    const snapshot = items;
-    generation.current++;
-    setPending(true);
+    const key = keyOf(item);
+    inFlight.current.add(key);
+    setPending([...inFlight.current]);
     setError('');
-    setItems((rows) => rows.filter((row) => row.kind !== item.kind || row.id !== item.id));
+    let failure = t('sendFailed');
+    markReview(key, { ...item, reply: reply.trim() || null, reviewed_at: new Date().toISOString() });
     setCount((value) => value === null ? null : Math.max(0, value - 1));
     setSelected(null);
     try {
       const result = await reviewItem({ kind: item.kind, id: item.id, reply });
-      if (result.error) throw new Error(result.error);
+      if (result.error !== undefined) { failure = result.error; throw new Error(failure); }
+      setDrafts(current => { const next = { ...current }; delete next[key]; return next; });
       toast.success(feedback('reviewSent'));
-    } catch (failure) {
-      setItems(snapshot);
+    } catch {
+      markReview(key, null);
+      setDrafts(current => ({ ...current, [key]: reply }));
+      if (currentStatus.current === 'open') setItems(rows => rows.some(row => keyOf(row) === key) ? rows : [...rows, item]
+        .sort((a, b) => b.created_at.localeCompare(a.created_at) || a.id.localeCompare(b.id)));
       setCount((value) => value === null ? null : value + 1);
-      setSelected({ ...item, reply });
-      setError(failure instanceof Error ? failure.message : t('sendFailed'));
-    } finally { setPending(false); }
+      if (currentStatus.current === 'open') setSelected(current => current ?? { ...item, reply });
+      setError(failure);
+    } finally { inFlight.current.delete(key); setPending([...inFlight.current]); }
   }
   function switchTo(tab: 'open' | 'reviewed') {
     if (tab === status) return;
-    setLoading(true); setError(''); setSelected(null); setStatus(tab);
+    currentStatus.current = tab;
+    setItems([]); setLoading(true); setError(''); setLoadError(''); setSelected(null); setStatus(tab);
   }
-  const visible = items.filter((item) => filter === 'all' || item.kind === filter);
+  const displayed = status === 'open' ? items.filter(item => !reviews[keyOf(item)])
+    : [...items, ...Object.values(reviews).filter(item => !items.some(row => keyOf(row) === keyOf(item)))]
+      .sort((a, b) => b.created_at.localeCompare(a.created_at) || a.id.localeCompare(b.id));
+  const visible = displayed.filter((item) => filter === 'all' || item.kind === filter);
   return <div className="mx-auto max-w-6xl space-y-6">
     <header className="flex flex-wrap items-center justify-between gap-4">
       <h1 id="inbox-heading" tabIndex={-1} className="text-3xl font-extrabold">{t('inbox')} <span className="text-lime">{count === null ? t('dash') : formatNumber(count, locale)}</span></h1>
       <div className="glass flex rounded-control p-1" aria-label={t('status')}>
-        {(['open', 'reviewed'] as const).map((tab) => <button key={tab} disabled={pending} aria-pressed={status === tab}
+        {(['open', 'reviewed'] as const).map((tab) => <button key={tab} aria-pressed={status === tab}
           className={`min-h-12 rounded-control px-5 ${status === tab ? 'bg-surface-raised text-lime' : 'text-muted'}`}
           onClick={() => switchTo(tab)}>{tab === 'open' ? t('open') : t('reviewed')}</button>)}
       </div>
@@ -92,15 +114,15 @@ export function InboxScreen() {
         className={`glass min-h-12 rounded-full px-5 ${filter === kind ? 'text-lime' : 'text-muted'}`}
         onClick={() => { setSelected(null); setFilter(kind); }}>{kind === 'all' ? t('all') : kind === 'form' ? t('videos') : t('checkins')}</button>)}
     </div>
-    {error && <div role="alert" className="glass rounded-card p-4 text-danger">{error}<button disabled={pending} onClick={() => { setLoading(true); setError(''); void load(); }} className="ms-3 min-h-12 px-4 text-ink">{t('retry')}</button></div>}
-    {pending && <p role="status" className="text-muted">{t('sending')}</p>}
-    {loading ? <LoadingState variant="list" aria-label={t('loading')} /> : <div className="grid items-start gap-5 lg:grid-cols-2">
+    {error && <div role="alert" className="glass rounded-card p-4 text-danger">{error}<button onClick={() => { setLoading(true); setError(''); setLoadError(''); void load(); }} className="ms-3 min-h-12 px-4 text-ink">{t('retry')}</button></div>}
+    {pending.length > 0 && <p role="status" className="text-muted">{t('sending')}</p>}
+    {loading && !displayed.length ? <LoadingState variant="list" aria-label={t('loading')} /> : <div className="grid items-start gap-5 lg:grid-cols-2">
       <section aria-label={t('inbox')} className="space-y-3">
-        {!visible.length && !error && (items.length ? <EmptyState icon={ListFilter} title={t('noType')} body={t('noTypeBody')} action={{ label: t('showAll'), onClick: () => setFilter('all') }} />
+        {!visible.length && !error && (displayed.length ? <EmptyState icon={ListFilter} title={t('noType')} body={t('noTypeBody')} action={{ label: t('showAll'), onClick: () => setFilter('all') }} />
           : status === 'open' ? <EmptyState icon={CheckCheck} title={t('noPending')} body={t('noPendingBody')} steps={[t('stepForm'), t('stepCheckin')]} action={{ label: t('showReviewed'), onClick: () => switchTo('reviewed') }} />
           : <EmptyState icon={History} title={t('noReviewed')} body={t('noReviewedBody')} action={{ label: t('showOpen'), onClick: () => switchTo('open') }} />)}
-        <ul className="space-y-3">{now && visible.map((item) => <li key={`${item.kind}:${item.id}`}><InboxRow item={item} now={now}
-          selected={selected?.id === item.id && selected.kind === item.kind} onSelect={() => { if (!pending) setSelected(item); }} /></li>)}</ul>
+        <ul className="space-y-3">{now && visible.map((item) => <li key={`${item.kind}:${item.id}`} inert={pending.includes(keyOf(item))} aria-busy={pending.includes(keyOf(item))}><InboxRow item={item} now={now}
+          selected={selected?.id === item.id && selected.kind === item.kind} onSelect={() => { if (!inFlight.current.has(keyOf(item))) setSelected({ ...item, reply: drafts[keyOf(item)] ?? item.reply }); }} /></li>)}</ul>
       </section>
       {selected && <ResponsiveDialog key={`${selected.kind}:${selected.id}`} openerId={`inbox-${selected.kind}-${selected.id}`} fallbackId="inbox-heading" aria-label={t('details', { name: selected.player_name })} onDismiss={() => setSelected(null)}
         className="glass-strong fixed inset-0 z-50 m-0 h-full max-h-dvh w-full max-w-none space-y-5 overflow-y-auto bg-bg p-5 text-ink backdrop:bg-bg/80 lg:static lg:z-auto lg:h-auto lg:rounded-card lg:p-6">

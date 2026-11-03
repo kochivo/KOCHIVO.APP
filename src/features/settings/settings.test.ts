@@ -98,10 +98,12 @@ it.each([false, true])('renders a switch and flips glass mode with blocked stora
     expect(render()).toContain('شكل أخف للموبايلات الضعيفة');
     GlassToggle().props.onClick();
     expect(dataset.glass).toBe('solid');
+    expect(window.dispatchEvent).toHaveBeenCalledTimes(1);
     expect(setItem).toHaveBeenLastCalledWith('kochivo.glass', 'solid');
     expect(render()).toContain('aria-checked="true"');
     GlassToggle().props.onClick();
     expect(dataset.glass).toBe('blur');
+    expect(window.dispatchEvent).toHaveBeenCalledTimes(2);
     expect(setItem).toHaveBeenLastCalledWith('kochivo.glass', 'blur');
     expect(render()).toContain('aria-checked="false"');
   } finally {

@@ -3,7 +3,7 @@ import { formatNumber } from '@/lib/format';
 import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 
-import { useState, useTransition } from 'react';
+import { useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { formatDateAr, formatTimestampAr } from '@/lib/dates';
 import { Button } from '@/ui';
@@ -37,6 +37,7 @@ export function PlayerBillingRow({ player, today, packages }: { player: BillingP
   const [due, setDue] = useState(player.due);
   const [collecting, setCollecting] = useState(false);
   const [pending, setPending] = useState(false);
+  const inFlight = useRef(false);
   const [refreshing, startRefresh] = useTransition();
   const [error, setError] = useState('');
   const router = useRouter();
@@ -44,6 +45,8 @@ export function PlayerBillingRow({ player, today, packages }: { player: BillingP
   const reminder = waLink(player.phone, reminderText(player.fullName, accessUntil, locale));
 
   async function save(renewal: Renewal) {
+    if (inFlight.current) return;
+    inFlight.current = true;
     const chosen = packages.find((item) => item.id === renewal.packageId);
     const days = chosen?.days ?? renewal.days ?? 0;
     const oldAccess = accessUntil;
@@ -51,7 +54,7 @@ export function PlayerBillingRow({ player, today, packages }: { player: BillingP
     const oldDue = due;
     setAccessUntil(renewalPreview(accessUntil, today, days).end);
     setLastPayment({ created_at: today, amount_egp: renewal.amount, days });
-    setDue(due + remaining(renewal.price ?? null, renewal.amount));
+    setDue(due + remaining(renewal.price ?? chosen?.price_egp ?? null, renewal.amount));
     setOpen(false);
     setPending(true);
     setError('');
@@ -71,9 +74,11 @@ export function PlayerBillingRow({ player, today, packages }: { player: BillingP
       }
     } catch {
       rollback(t('renewFailed'));
-    } finally { setPending(false); }
+    } finally { inFlight.current = false; setPending(false); }
   }
   async function collect(amount: number) {
+    if (inFlight.current) return;
+    inFlight.current = true;
     const oldDue = due;
     setDue(due - amount);
     setCollecting(false);
@@ -83,7 +88,7 @@ export function PlayerBillingRow({ player, today, packages }: { player: BillingP
       const result = await collectPayment({ playerId: player.playerId, amount });
       if (result.error !== undefined) { setDue(oldDue); setError(result.error); }
       else { setDue(result.data); toast.success(feedback('paymentRecorded')); startRefresh(() => router.refresh()); }
-    } catch { setDue(oldDue); setError(t('collectFailed')); } finally { setPending(false); }
+    } catch { setDue(oldDue); setError(t('collectFailed')); } finally { inFlight.current = false; setPending(false); }
   }
 
   return (
