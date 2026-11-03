@@ -1,4 +1,6 @@
 import type { KochivoDB } from './db';
+import { supabaseBrowser } from '@/core/supabase/browser';
+import { flushMediaQueue, mediaPending, supabaseMediaTransport } from './media-queue';
 import { flushOutbox, type SyncTransport } from './sync';
 
 const INTERVAL_MS = 30_000;
@@ -10,9 +12,28 @@ const INTERVAL_MS = 30_000;
  */
 export function startSync(db: KochivoDB, send: SyncTransport): () => void {
   let running = false;
+  let mediaRunning = false;
+  let stopped = false;
+
+  const runMedia = async () => {
+    if (mediaRunning || stopped || !navigator.onLine) return;
+    mediaRunning = true;
+    try {
+      if (await mediaPending(db) === 0) return;
+      const client = supabaseBrowser();
+      const { data, error } = await client.auth.getUser();
+      if (!stopped && !error && data.user) {
+        await flushMediaQueue(db, supabaseMediaTransport(client, data.user.id));
+      }
+    } catch {
+      console.error('Media sync failed');
+    } finally {
+      mediaRunning = false;
+    }
+  };
 
   const run = async () => {
-    if (running || !navigator.onLine) return;
+    if (running || stopped || !navigator.onLine) return;
     running = true;
     try {
       await flushOutbox(db, send);
@@ -20,6 +41,8 @@ export function startSync(db: KochivoDB, send: SyncTransport): () => void {
       console.error('Sync run failed', error);
     } finally {
       running = false;
+      // A slow upload must not hold the next outbox flush behind the media queue.
+      void runMedia();
     }
   };
 
@@ -33,6 +56,7 @@ export function startSync(db: KochivoDB, send: SyncTransport): () => void {
   void run();
 
   return () => {
+    stopped = true;
     window.removeEventListener('online', run);
     document.removeEventListener('visibilitychange', onVisible);
     window.clearInterval(timer);

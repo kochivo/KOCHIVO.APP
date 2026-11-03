@@ -1,4 +1,5 @@
-export { KochivoDB, localDb, type OutboxEntry } from './db';
+export { KochivoDB, localDb, type OutboxEntry, type MediaQueueEntry } from './db';
+export { enqueueMedia, mediaPending, flushMediaQueue, supabaseMediaTransport, type MediaTransport } from './media-queue';
 export { stableId, uuidv7 } from './ids';
 export { saveAndQueue, pendingCount } from './outbox';
 export { flushOutbox, type SyncTransport, type FlushResult } from './sync';
