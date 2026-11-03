@@ -12,7 +12,38 @@ import { RestPanel } from './components/rest-panel';
 import { SetDots } from './components/set-dots';
 import { DonePanel } from './components/done-panel';
 import { liveQuery } from 'dexie';
+import { detectPr } from './pr';
+import { prHistory } from './data/pr-history';
 
+describe('personal records', () => {
+  const best = { weight_kg: 80, reps: 5 };
+  it.each([
+    [[], { weight_kg: 80, reps: 5 }, null],
+    [[best], { weight_kg: 82.5, reps: 1 }, { kind: 'weight', previous: best }],
+    [[best, { weight_kg: 80, reps: 3 }], { weight_kg: 80, reps: 6 }, { kind: 'reps', previous: best }],
+    [[best], { weight_kg: 80, reps: 5 }, null],
+    [[best], { weight_kg: 60, reps: 20 }, null],
+    [[best], { weight_kg: 90, reps: 0 }, null],
+    [[{ weight_kg: 100, reps: 0 }, best], { weight_kg: 85, reps: 5 }, { kind: 'weight', previous: best }],
+    [[best], { weight_kg: null, reps: 5 }, null],
+  ])('compares valid history %j with %j', (history, set, expected) => {
+    expect(detectPr(history, set)).toEqual(expected);
+  });
+  it('reads all sessions for one exercise, excluding the saved id and deleted rows', async () => {
+    await db.open();
+    const input = { program_exercise_id: 'a', exercise_id: 'a', set_index: 1, weight_kg: 80, reps: 5 };
+    await logSet(db, { ...input, session_id: 'old' }, now);
+    await logSet(db, { ...input, session_id: 'deleted', weight_kg: 100 }, now);
+    await logSet(db, { ...input, session_id: 'current', weight_kg: 85 }, now);
+    await logSet(db, { ...input, session_id: 'other', exercise_id: 'b' }, now);
+    await db.set_logs.update(await setId('deleted', 'a', 1), { deleted_at: new Date(now).toISOString() });
+    const history = await prHistory(db, 'a', await setId('current', 'a', 1));
+    expect(history.map((row) => row.session_id)).toEqual(['old']);
+    expect(detectPr(history, { weight_kg: 85, reps: 5 })).toEqual({
+      kind: 'weight', previous: { weight_kg: 80, reps: 5 },
+    });
+  });
+});
 const exercise = (id: string, position: number, group: number | null = null, sets = 2): SnapshotExercise => ({
   id, exercise_id: id, position, sets, reps_min: 8, reps_max: 12, rest_seconds: position * 30,
   superset_group: group, rpe: null, tempo: null, notes: null, name_ar: null, name_en: id, media_path: null,
@@ -28,7 +59,6 @@ afterEach(async () => {
   vi.doUnmock('@/core/offline');
   vi.doUnmock('@/features/player-home');
 });
-
 describe('queue', () => {
   it('orders plain exercises and removes only the final rest without mutating the day', () => {
     const input = { ...day, exercises: [exercise('b', 2), exercise('a', 1)] };
@@ -51,7 +81,6 @@ describe('queue', () => {
     ]);
   });
 });
-
 it('computes rest from timestamps, clamps expired rests, formats and extends', () => {
   expect(restRemaining(now + 1001, now)).toBe(2);
   expect(restRemaining(now - 1000, now)).toBe(0);
@@ -61,12 +90,10 @@ it('computes rest from timestamps, clamps expired rests, formats and extends', (
   expect(formatRest(65)).toBe('1:05');
   expect(formatRest(0)).toBe('0:00');
 });
-
 it('uses the stable session and set namespaces', async () => {
   expect(await sessionId('day', '2026-11-03')).toBe(await stableId('session', 'day', '2026-11-03'));
   expect(await setId('s', 'a', 1)).toBe(await stableId('set', 's', 'a', '1'));
 });
-
 it('starts a session idempotently, including concurrent starts, and finishes it', async () => {
   await db.open();
   const [first, second] = await Promise.all([
@@ -78,7 +105,6 @@ it('starts a session idempotently, including concurrent starts, and finishes it'
   await finishSession(db, first.id, now + 1000);
   expect(await db.workout_sessions.get(first.id)).toMatchObject({ completed_at: new Date(now + 1000).toISOString() });
 });
-
 it('updates the same set and keeps one outbox entry at revision 2', async () => {
   await db.open();
   const session = await startSession(db, day, '2026-11-03', now);
@@ -91,7 +117,6 @@ it('updates the same set and keeps one outbox entry at revision 2', async () => 
   expect(entries).toHaveLength(1);
   expect(entries[0]?.revision).toBe(2);
 });
-
 it('returns the latest other-session performance and ignores deleted rows', async () => {
   await db.open();
   expect(await lastPerformance(db, 'a', 'current')).toBeNull();
@@ -103,7 +128,6 @@ it('returns the latest other-session performance and ignores deleted rows', asyn
   await db.set_logs.update(await setId('recent', 'a', 1), { deleted_at: new Date(now + 3000).toISOString() });
   expect(await lastPerformance(db, 'a', 'current')).toEqual({ weight_kg: 60, reps: 8 });
 });
-
 it('renders an accessible rest countdown with reduced-motion-safe flashing', () => {
   const html = renderToStaticMarkup(createElement(RestPanel, {
     remaining: 3, flashing: true, onExtend: () => undefined, onSkip: () => undefined,

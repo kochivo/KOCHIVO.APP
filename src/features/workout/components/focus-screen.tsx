@@ -13,6 +13,7 @@ import { ExerciseHeader } from './exercise-header';
 import { NextUp } from './next-up';
 import { RestPanel } from './rest-panel';
 import { SetDots } from './set-dots';
+import { PrBurst } from './pr-burst';
 
 export function FocusScreen({ dayId, playerId }: { dayId: string; playerId?: string }) {
   const router = useRouter();
@@ -29,6 +30,7 @@ export function FocusScreen({ dayId, playerId }: { dayId: string; playerId?: str
   const state = useFocusSession(dayId, today, playerId);
   const { current, rest } = state;
   return <main dir="rtl" className="mx-auto max-w-lg space-y-4 px-5 py-6">
+    {state.pr && <PrBurst key={state.pr.id} pr={state.pr} onDismiss={state.dismissPr} />}
     <header className="flex flex-wrap items-center gap-3">
       <IconButton aria-label="رجوع" onClick={() => router.push('/player')}><ArrowRight aria-hidden /></IconButton>
       <h2 className="flex-1 font-bold">{state.day?.title ?? 'التمرين'}</h2>
