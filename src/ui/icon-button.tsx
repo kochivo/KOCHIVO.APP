@@ -6,5 +6,5 @@ export interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>
 }
 
 export function IconButton({ className, type = 'button', ...props }: IconButtonProps) {
-  return <button {...props} type={type} className={cn('glass inline-flex size-12 shrink-0 items-center justify-center rounded-control text-ink transition-colors duration-150 motion-reduce:transition-none hover:bg-surface-raised disabled:opacity-40', className)} />;
+  return <button {...props} type={type} className={cn('glass press inline-flex size-12 shrink-0 items-center justify-center rounded-control text-ink hover:bg-surface-raised disabled:opacity-40', className)} />;
 }

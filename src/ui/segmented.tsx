@@ -43,7 +43,7 @@ export function Segmented({ options, value, onChange, className, ...props }: Seg
             const target = event.currentTarget.parentElement?.children.item(next);
             if (target instanceof HTMLButtonElement) target.focus();
           }}
-          className={cn('min-h-12 min-w-0 flex-1 rounded-control px-3 text-sm transition-colors duration-150 motion-reduce:transition-none', variants[option.value === value ? 'active' : 'idle'])}
+          className={cn('press min-h-12 min-w-0 flex-1 rounded-control px-3 text-sm', variants[option.value === value ? 'active' : 'idle'])}
         >{option.label}</button>
       ))}
     </div>
