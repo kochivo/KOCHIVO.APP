@@ -1,9 +1,14 @@
 'use client';
-import { useT } from '@/core/i18n/client';
-import { LanguageSwitch } from '@/ui/language-switch';
+import { useLocale, useT } from '@/core/i18n/client';
+import { LOCALES } from '@/core/i18n/locale';
+import type { Locale } from '@/core/i18n/locale';
+import { setLocale } from '@/core/i18n/set-locale';
+import { messages as appearanceMessages } from '@/ui/messages';
+import { applyOptimistic } from '@/lib/optimistic';
 import { messages } from '../messages';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { ErrorState, LoadingState, ThemeSwitch } from '@/ui';
 import { loadSettings } from '../data/settings';
@@ -17,11 +22,29 @@ import { demoExpiry, useDemoExpiry } from '@/features/demo';
 
 export function SettingsScreen({ signOut }: { signOut?: ReactNode }) {
   const t = useT(messages);
+  const appearanceT = useT(appearanceMessages);
+  const locale = useLocale();
+  const router = useRouter();
+  const [language, setLanguage] = useState(locale);
+  const [languageError, setLanguageError] = useState('');
+  const [languagePending, setLanguagePending] = useState(false);
+  const languageInFlight = useRef(false);
   const demo = useDemoExpiry();
   const [profile, setProfile] = useState<SettingsProfile | null>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [attempt, setAttempt] = useState(0);
+  async function changeLanguage(value: Locale) {
+    if (languageInFlight.current || value === language) return;
+    languageInFlight.current = true; setLanguagePending(true); setLanguageError('');
+    try {
+      await applyOptimistic(language, {
+        apply: () => setLanguage(value), rollback: setLanguage,
+      }, () => setLocale(value));
+      router.refresh();
+    } catch { setLanguageError(appearanceT('languageFailed')); }
+    finally { languageInFlight.current = false; setLanguagePending(false); }
+  }
   useEffect(() => {
     let active = true;
     void loadSettings().then((result) => {
@@ -36,7 +59,16 @@ export function SettingsScreen({ signOut }: { signOut?: ReactNode }) {
   }, [attempt, t]);
   return <div className="mx-auto max-w-3xl space-y-5">
     <h1 className="text-2xl font-extrabold">{t('settings')}</h1>
-    <LanguageSwitch />
+    <div>
+      <div role="group" aria-label={appearanceT('language')} className="flex gap-1">
+        {LOCALES.map(value => <button key={value} type="button" lang={value} aria-pressed={language === value}
+          disabled={languagePending} onClick={() => void changeLanguage(value)}
+          className="min-h-12 rounded-control px-3 text-sm text-muted aria-pressed:bg-surface-raised aria-pressed:font-bold aria-pressed:text-ink disabled:opacity-40">
+          {appearanceT(value === 'ar' ? 'arabic' : 'english')}
+        </button>)}
+      </div>
+      {languageError && <p role="alert" className="text-sm text-danger">{languageError}</p>}
+    </div>
     <GlassToggle />
     <ThemeSwitch />
     {loading ? <LoadingState /> : error ? <ErrorState message={error} retryLabel={t('tryAgain')} onRetry={() => {
