@@ -5,3 +5,5 @@ export { eatenTotals, targetsOf } from './macros';
 export { mapNutritionSnapshot } from './data/nutrition-snapshot';
 export type { NutritionResponse } from './data/nutrition-snapshot';
 export { itemMacros, mealMacros } from './macros';
+
+export { messages as nutritionMessages } from './messages';

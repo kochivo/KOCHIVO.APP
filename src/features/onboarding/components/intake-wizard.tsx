@@ -1,4 +1,7 @@
 'use client';
+import { useLocale, useT } from '@/core/i18n/client';
+import { messages } from '../messages';
+import { formatNumber } from '@/lib/format';
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -14,11 +17,13 @@ import { StepSchedule } from './step-schedule';
 import { StepHealth } from './step-health';
 import { StepFood } from './step-food';
 
-const titles = ['نعرفك الأول', 'وقتك في الأسبوع', 'صحتك', 'الأكل'];
 const screens = [StepBasics, StepSchedule, StepHealth, StepFood];
-const offlineMessage = 'مفيش نت. إجاباتك محفوظة، ابعتها لما النت يرجع';
 
 export function IntakeWizard({ statusError }: { statusError?: string }) {
+  const t = useT(messages);
+  const locale = useLocale();
+  const offlineMessage = t('youreOfflineYourAnswersAreSavedSend');
+  const titles = [t('letsGetToKnowYou'), t('yourWeeklySchedule'), t('yourHealth'), t('food')];
   const { draft, update, clear, ready } = useIntakeDraft();
   const [index, setIndex] = useState(0);
   const [now] = useState(() => new Date());
@@ -31,7 +36,7 @@ export function IntakeWizard({ statusError }: { statusError?: string }) {
   const router = useRouter();
   const step = stepOrder[index] ?? 'basics';
   const Screen = screens[index] ?? StepBasics;
-  const validation = makeIntakeSchema(now).stepSchemas[step].safeParse(draft);
+  const validation = makeIntakeSchema(now, t).stepSchemas[step].safeParse(draft);
   const errors: Partial<Record<keyof Intake, string>> = {};
   if (!validation.success) {
     for (const issue of validation.error.issues) {
@@ -68,7 +73,7 @@ export function IntakeWizard({ statusError }: { statusError?: string }) {
     for (const candidate of stepOrder) {
       if (!canAdvance(candidate, draft, now)) {
         setIndex(stepOrder.indexOf(candidate));
-        setError('راجع إجاباتك قبل ما تبعتها');
+        setError(t('reviewYourAnswersBeforeSending'));
         return;
       }
     }
@@ -82,23 +87,23 @@ export function IntakeWizard({ statusError }: { statusError?: string }) {
       router.replace('/player');
       router.refresh();
     } catch {
-      setError(navigator.onLine ? 'مش قادرين نبعت إجاباتك. جرّب تاني' : offlineMessage);
+      setError(navigator.onLine ? t('couldntSendYourAnswersTryAgain') : offlineMessage);
     } finally {
       submitting.current = false;
       setBusy(false);
     }
   }
 
-  if (statusError) return <ErrorState message={statusError} retryLabel="جرّب تاني" onRetry={() => router.refresh()} />;
-  if (!ready) return <LoadingState aria-label="بنحمّل إجاباتك" />;
+  if (statusError) return <ErrorState message={statusError} retryLabel={t('tryAgain')} onRetry={() => router.refresh()} />;
+  if (!ready) return <LoadingState aria-label={t('loadingYourAnswers')} />;
   return (
-    <main dir="rtl" className="mx-auto flex min-h-dvh w-full max-w-lg flex-col gap-6 px-5 pt-6 text-start">
+    <main className="mx-auto flex min-h-dvh w-full max-w-lg flex-col gap-6 px-5 pt-6 text-start">
       <header className="space-y-3">
         <div className="flex flex-wrap justify-between gap-2 text-xs text-muted">
-          <span>خطوة {index + 1} من 4</span>
-          <span>بياناتك بتروح للكابتن بتاعك بس</span>
+          <span>{t('stepProgress', { value0: formatNumber(index + 1, locale) })}</span>
+          <span>{t('onlyYourCoachCanSeeYourAnswers')}</span>
         </div>
-        <ProgressBar value={progress(step)} max={100} aria-label={`خطوة ${index + 1} من 4`} />
+        <ProgressBar value={progress(step)} max={100} aria-label={t('stepProgress', { value0: formatNumber(index + 1, locale) })} />
         <h1 ref={heading} tabIndex={-1} className="text-3xl font-extrabold outline-none">{titles[index]}</h1>
       </header>
       <fieldset disabled={busy} className="min-w-0 flex-1">
@@ -109,9 +114,9 @@ export function IntakeWizard({ statusError }: { statusError?: string }) {
         {offline && <p role="status" className="text-sm text-muted">{offlineMessage}</p>}
         {error && <p role="alert" className="text-sm text-danger">{error}</p>}
         <div className="flex gap-3">
-          <Button variant="ghost" size="lg" disabled={index === 0 || busy} onClick={() => setIndex(index - 1)}>رجوع</Button>
+          <Button variant="ghost" size="lg" disabled={index === 0 || busy} onClick={() => setIndex(index - 1)}>{t('back')}</Button>
           <Button size="lg" className="flex-1" disabled={busy || !canAdvance(step, draft, now)}
-            aria-busy={busy} onClick={next}>{busy ? 'بنبعت إجاباتك…' : index === 3 ? 'ابعت للكابتن' : 'التالي'}</Button>
+            aria-busy={busy} onClick={next}>{busy ? t('sendingYourAnswers') : index === 3 ? t('sendToCoach') : t('next')}</Button>
         </div>
       </footer>
     </main>

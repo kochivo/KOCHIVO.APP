@@ -1,3 +1,5 @@
+import { createT } from '@/core/i18n/messages';
+import { messages } from './messages';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { allergyOptions, injuryOptions, makeIntakeSchema, medicalOptions, toggleChip } from './data/intake-schema';
 import { canAdvance, progress, stepOrder, toPayload } from './wizard';
@@ -11,6 +13,7 @@ import { readIntakeDraft } from './hooks/use-intake-draft';
 
 const server = vi.hoisted(() => ({ claims: vi.fn(), upsert: vi.fn(), row: vi.fn(), eq: vi.fn(), from: vi.fn() }));
 vi.mock('server-only', () => ({}));
+vi.mock('next/headers', () => ({ cookies: async () => ({ get: () => undefined }) }));
 vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => ({
   auth: { getClaims: server.claims }, from: server.from,
 }) }));
@@ -154,8 +157,10 @@ describe('chip selections', () => {
       'none', 'heart', 'blood_pressure', 'diabetes', 'asthma', 'recent_surgery', 'pregnancy', 'other',
     ]);
     for (const options of [injuryOptions, allergyOptions, medicalOptions]) {
-      expect(options[0]).toEqual({ key: 'none', label: 'مفيش' });
-      expect(options.every(({ label }) => /[\u0600-\u06ff]/u.test(label))).toBe(true);
+      expect(options[0]?.key).toBe('none');
+      const t = createT(messages, 'ar');
+      expect(t(options[0].label)).toBe('مفيش');
+      expect(options.every(({ label }) => /[\u0600-\u06ff]/u.test(t(label)))).toBe(true);
     }
   });
 });

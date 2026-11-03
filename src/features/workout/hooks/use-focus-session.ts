@@ -1,4 +1,6 @@
 'use client';
+import { useT } from '@/core/i18n/client';
+import { messages } from '../messages';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { localDb, pendingCount, useLiveQuery, type SetLogRow } from '@/core/offline';
@@ -18,6 +20,7 @@ const matches = (row: SetLogRow, exerciseId: string, index: number) =>
   row.program_exercise_id === exerciseId && row.set_index === index;
 
 export function useFocusSession(dayId: string, today: string, playerId?: string) {
+  const t = useT(messages);
   const [pr, setPr] = useState<(Pr & { id: string; current: { weight_kg: number; reps: number } }) | null>(null);
   const dismissPr = useCallback(() => setPr(null), []);
   const [error, setError] = useState<string | null>(null);
@@ -27,7 +30,7 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
   const [busy, setBusy] = useState(false);
   const saving = useRef(false);
   const cooldown = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  const onError = useCallback(() => setError('مش قادرين نقرأ التمرين من الموبايل. جرّب تاني.'), []);
+  const onError = useCallback(() => setError(t('couldntReadTheWorkoutOnYourPhone')), [t]);
   const cached = useLiveQuery(readCached, onError, retryKey);
   const { snapshot, status, retry: refresh } = useProgramSnapshot(playerId ?? cached?.player_id, retryKey);
   const day = snapshot?.days.find((item) => item.id === dayId);
@@ -76,9 +79,9 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
   // Recover a final set saved just before the tab closed, before completion was recorded.
   useEffect(() => {
     if (session && sets && queue.length > 0 && currentIndex === -1 && !session.completed_at) {
-      void finishSession(localDb(), session.id, Date.now()).catch(() => setError('السِت محفوظ، بس إنهاء التمرين محتاج محاولة تانية.'));
+      void finishSession(localDb(), session.id, Date.now()).catch(() => setError(t('setSavedTryAgainToFinishThe')));
     }
-  }, [session, sets, queue.length, currentIndex, retryKey]);
+  }, [session, sets, queue.length, currentIndex, retryKey, t]);
   const complete = useCallback(async () => {
     if (!day || !current || !ready || saving.current || rest.remaining > 0) return;
     saving.current = true;
@@ -100,18 +103,18 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
       if (!edited) rest.start(current.restAfter);
       setEditing(null);
       setDraft(null);
-    } catch { setError('مش قادرين نحفظ السِت على الموبايل. جرّب تاني.'); }
+    } catch { setError(t('couldntSaveTheSetOnYourPhone')); }
     finally {
       cooldown.current = setTimeout(() => { saving.current = false; setBusy(false); }, Math.max(0, 600 - (Date.now() - tappedAt)));
     }
-  }, [day, today, session, current, ready, rest, edited, weight, reps]);
+  }, [day, today, session, current, ready, rest, edited, weight, reps, t]);
   return { day, queue, current, doneSets, performance, weight, reps, rest, pending, pr, dismissPr,
     progress: edited ? queue.findIndex((step) => matches(edited, step.exercise.id, step.setIndex)) + 1 :
       currentIndex < 0 ? queue.length : currentIndex + 1,
     next: queue[(edited ? queue.findIndex((step) => matches(edited, step.exercise.id, step.setIndex)) : currentIndex) + 1],
     finished: Boolean(session?.completed_at) && currentIndex === -1,
     loading: !today || status === 'loading' || Boolean(day && (session === undefined || sets === undefined)),
-    error: error ?? (status === 'error' && !snapshot ? 'مش قادرين نحمّل برنامجك دلوقتي' : null),
+    error: error ?? (status === 'error' && !snapshot ? t('couldntLoadYourProgram') : null),
     disabled: busy || !ready,
     setWeight: (value: number) => setDraft({ key, weight: Math.min(500, Math.max(0, value)), reps }),
     setReps: (value: number) => setDraft({ key, weight, reps: Math.min(100, Math.max(0, value)) }),

@@ -1,4 +1,7 @@
 'use client';
+import { useLocale, useT } from '@/core/i18n/client';
+import { messages } from '../messages';
+import { formatNumber } from '@/lib/format';
 
 import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
@@ -9,11 +12,12 @@ import { Button, Chip, Stepper, TextField } from '@/ui';
 import { submitCheckIn } from '../data/checkins';
 import type { CheckIn } from '../data/checkins';
 
-const positions = ['قدام', 'جنب', 'ضهر'];
-
 export function CheckinSheet({ latest, open, onClose, onSent }: {
   latest?: CheckIn; open: boolean; onClose: () => void; onSent: () => void;
 }) {
+  const t = useT(messages);
+  const locale = useLocale();
+  const positions = [t('front'), t('side'), t('back')];
   const dialog = useRef<HTMLDialogElement>(null);
   const [weight, setWeight] = useState(latest?.body_weight_kg ?? 75);
   const [waist, setWaist] = useState<number | null>(latest?.waist_cm ?? null);
@@ -39,29 +43,29 @@ export function CheckinSheet({ latest, open, onClose, onSent }: {
     else dialog.current?.close();
   }, [open]);
   useEffect(() => {
-    const update = () => { if (!navigator.onLine) setError('محتاج نت عشان تبعت الصور'); };
+    const update = () => { if (!navigator.onLine) setError(t('goOnlineToSendPhotos')); };
     update();
     window.addEventListener('offline', update);
     return () => window.removeEventListener('offline', update);
-  }, []);
+  }, [t]);
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (busy) return;
     // photo_paths has no slot labels, so the front photo must always be first for before/after.
-    if (!photos[0] && photos.some(Boolean)) { setError('ابدأ بصورة من قدام'); return; }
+    if (!photos[0] && photos.some(Boolean)) { setError(t('startWithAFrontPhoto')); return; }
     setBusy(true); setError(''); setProgress(0);
     try {
       const result = await submitCheckIn(supabaseBrowser(), {
         today: localDate(new Date()), body_weight_kg: weight, waist_cm: waist, notes,
         photos: photos.flatMap((photo) => photo ? [photo.file] : []),
         onProgress: (completed, total) => setProgress(Math.round(completed / total * 100)),
-      });
+      }, t);
       if (result.error) {
         setError(result.error);
-        if (result.error === 'بعتّ تحديث الأسبوع ده خلاص') onSent();
+        if (result.error === t('youveAlreadySentThisWeeksCheckin')) onSent();
       } else onSent();
     } catch {
-      setError('التحديث متبعتش. جرّب تاني');
+      setError(t('couldntSendTheCheckinTryAgain'));
     } finally { setBusy(false); }
   }
   return <dialog ref={dialog} aria-labelledby="checkin-title" onCancel={(event) => {
@@ -69,40 +73,40 @@ export function CheckinSheet({ latest, open, onClose, onSent }: {
   }} className="fixed inset-0 m-auto max-h-[90dvh] w-full max-w-lg overflow-y-auto rounded-card border border-line bg-bg p-5 text-ink backdrop:bg-bg/80">
     <form onSubmit={submit} className="space-y-4">
       <header className="flex items-center justify-between">
-        <h2 id="checkin-title" className="text-xl font-bold">تحديث الأسبوع</h2>
-        <Button variant="ghost" aria-label="اقفل التحديث" onClick={onClose}><X aria-hidden /></Button>
+        <h2 id="checkin-title" className="text-xl font-bold">{t('weeklyCheckin')}</h2>
+        <Button variant="ghost" aria-label={t('closeCheckin')} onClick={onClose}><X aria-hidden /></Button>
       </header>
       <fieldset disabled={busy} className="space-y-4">
-        <Stepper label="الوزن بالكيلو" value={weight} min={20} step={0.1} onChange={(value) => setWeight(Math.min(400, value))} format={(value) => value.toFixed(1)} />
+        <Stepper label={t('weightKg')} value={weight} min={20} step={0.1} onChange={(value) => setWeight(Math.min(400, value))} format={(value) => formatNumber(Number(value.toFixed(1)), locale)} />
         <div className="flex items-center justify-between gap-2">
-          <span>محيط الوسط</span>
-          <Chip pressed={waist === null} onClick={() => setWaist(waist === null ? latest?.waist_cm ?? 90 : null)}>من غير</Chip>
+          <span>{t('waist')}</span>
+          <Chip pressed={waist === null} onClick={() => setWaist(waist === null ? latest?.waist_cm ?? 90 : null)}>{t('none')}</Chip>
         </div>
-        {waist !== null && <Stepper label="الوسط بالسنتي" value={waist} min={30} step={0.5} onChange={(value) => setWaist(Math.min(300, value))} format={(value) => value.toFixed(1)} />}
-        <TextField label="عايز تقول إيه للكابتن؟" value={notes} maxLength={1000} onChange={(event) => setNotes(event.target.value)} hint={`${notes.length} / 1000`} />
-        <p className="text-sm text-muted">لحد ٣ صور خاصة بيك وبالكابتن</p>
+        {waist !== null && <Stepper label={t('waistCm')} value={waist} min={30} step={0.5} onChange={(value) => setWaist(Math.min(300, value))} format={(value) => formatNumber(Number(value.toFixed(1)), locale)} />}
+        <TextField label={t('whatWouldYouLikeToTellYour')} value={notes} maxLength={1000} onChange={(event) => setNotes(event.target.value)} hint={`${formatNumber(notes.length, locale)} / ${formatNumber(1000, locale)}`} />
+        <p className="text-sm text-muted">{t('upTo3PhotosPrivateToYou')}</p>
         <div className="grid grid-cols-3 gap-2">
           {positions.map((position, index) => <div key={position} className="glass space-y-2 rounded-control p-2">
             <label className="flex min-h-12 cursor-pointer items-center justify-center rounded-control text-sm has-focus-visible:outline-2 has-focus-visible:outline-lime has-focus-visible:outline-offset-2">
               {position}
-              <input aria-label={`صورة ${position}`} type="file" accept="image/*" capture="environment" className="sr-only" onChange={(event) => {
+              <input aria-label={t('photoPosition', { value0: position })} type="file" accept="image/*" capture="environment" className="sr-only" onChange={(event) => {
                 const file = event.target.files?.[0];
-                if (file && !file.type.startsWith('image/')) setError('اختار صورة');
+                if (file && !file.type.startsWith('image/')) setError(t('chooseAnImage'));
                 else if (file) changePhoto(index, file);
                 event.target.value = '';
               }} />
             </label>
             {photos[index] && <>
               {/* eslint-disable-next-line @next/next/no-img-element -- In-memory file preview. */}
-              <img src={photos[index].preview} alt={`معاينة ${position}`} className="aspect-[3/4] w-full rounded-control object-cover" />
-              <Button variant="ghost" className="w-full" aria-label={`امسح صورة ${position}`} onClick={() => changePhoto(index, null)}><X aria-hidden className="size-5" /></Button>
+              <img src={photos[index].preview} alt={t('previewPosition', { value0: position })} className="aspect-[3/4] w-full rounded-control object-cover" />
+              <Button variant="ghost" className="w-full" aria-label={t('removePhoto', { value0: position })} onClick={() => changePhoto(index, null)}><X aria-hidden className="size-5" /></Button>
             </>}
           </div>)}
         </div>
       </fieldset>
       {error && <p role="alert" className="text-sm text-danger">{error}</p>}
-      {busy && <div role="status" className="space-y-2"><p>جاري الإرسال {progress}٪</p><progress aria-label="تقدم الإرسال" value={progress} max={100} className="w-full accent-lime" /></div>}
-      <Button type="submit" size="lg" disabled={busy} className="w-full">{busy ? 'جاري الإرسال' : 'ابعت التحديث'}</Button>
+      {busy && <div role="status" className="space-y-2"><p>{t('sending')} {formatNumber(progress, locale)}{t('percent')}</p><progress aria-label={t('uploadProgress')} value={progress} max={100} className="w-full accent-lime" /></div>}
+      <Button type="submit" size="lg" disabled={busy} className="w-full">{busy ? t('sending') : t('sendCheckin')}</Button>
     </form>
   </dialog>;
 }

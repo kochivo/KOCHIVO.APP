@@ -1,3 +1,7 @@
+import { createT } from '@/core/i18n/messages';
+import { messages } from '../messages';
+const t = createT(messages, 'ar');
+
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { NutritionFood, NutritionSnapshot } from '@/core/offline';
 import type { Database, Tables } from '@/types/database';
@@ -15,7 +19,7 @@ export type NutritionResponse = Pick<Tables<'nutrition_plans'>,
 };
 
 function mapFood(row: AlternativeResponse): NutritionFood {
-  if (!row.foods) throw new Error('بيانات الأكل ناقصة');
+  if (!row.foods) throw new Error(t('foodDataIsMissing'));
   return { name: row.foods.name_ar, grams: row.grams, photo_path: row.foods.photo_path,
     per100g: { kcal: row.foods.kcal_per_100g, protein: row.foods.protein_per_100g,
       carbs: row.foods.carbs_per_100g, fat: row.foods.fat_per_100g } };

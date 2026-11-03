@@ -1,3 +1,7 @@
+import { createT } from '@/core/i18n/messages';
+import { messages } from './messages';
+import type { Locale } from '@/core/i18n/locale';
+
 import type { WorkoutSessionRow } from '@/core/offline';
 import { saturdayWeek } from '@/lib/dates';
 
@@ -7,9 +11,11 @@ export interface WeekEntry {
   dayOfMonth: number;
   state: 'done' | 'today' | 'train' | 'rest';
 }
-const labels = ['سبت', 'حد', 'اتنين', 'تلات', 'أربع', 'خميس', 'جمعة'];
 
-export function buildWeek(today: string, trainingDays: number[], sessions: WorkoutSessionRow[]): WeekEntry[] {
+export function buildWeek(today: string, trainingDays: number[], sessions: WorkoutSessionRow[], locale: Locale = 'ar'): WeekEntry[] {
+  const t = createT(messages, locale);
+  const labels = [t('sat'), t('sun'), t('mon'), t('tue'), t('wed'), t('thu'), t('fri')];
+
   return saturdayWeek(today).map((date, index) => {
     const label = labels[index];
     if (label === undefined) throw new Error('Week day label missing');

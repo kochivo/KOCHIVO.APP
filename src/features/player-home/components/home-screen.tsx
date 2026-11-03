@@ -1,4 +1,6 @@
 'use client';
+import { useLocale, useT } from '@/core/i18n/client';
+import { messages } from '../messages';
 
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { Dumbbell } from 'lucide-react';
@@ -18,6 +20,8 @@ const readPending = () => pendingCount(localDb());
 const readSessions = () => localDb().workout_sessions.toArray();
 
 export function HomeScreen({ firstName, playerId, signOut }: { firstName?: string; playerId?: string; signOut: ReactNode }) {
+  const t = useT(messages);
+  const locale = useLocale();
   const [now, setNow] = useState<Date>();
   const [online, setOnline] = useState(true);
   const [localError, setLocalError] = useState(false);
@@ -53,14 +57,14 @@ export function HomeScreen({ firstName, playerId, signOut }: { firstName?: strin
       {now && <Greeting firstName={firstName} now={now} />}
       <SyncPill state={!online ? 'offline' : pending === undefined || pending > 0 ? 'pending' : 'synced'} pending={pending} />
     </header>
-    {failed && (!snapshot || localError) ? <ErrorState message="مش قادرين نحمّل برنامجك دلوقتي" retryLabel="جرّب تاني" onRetry={() => {
+    {failed && (!snapshot || localError) ? <ErrorState message={t('couldntLoadYourProgram')} retryLabel={t('tryAgain')} onRetry={() => {
       setLocalError(false); setRetryKey((value) => value + 1); void retry();
     }} /> : !now || status === 'loading' || (snapshot && (!sessions || !weekSessions)) ? <LoadingState /> : <>
       <WeekStrip today={today} days={buildWeek(today, snapshot?.training_days ?? [],
-        weekSessions?.filter((session) => snapshot?.days.some((day) => day.id === session.program_day_id)) ?? [])} />
+        weekSessions?.filter((session) => snapshot?.days.some((day) => day.id === session.program_day_id)) ?? [], locale)} />
       {snapshot && day ? <TodayCard day={day} rest={Boolean(rest)} /> :
-        <EmptyState icon={Dumbbell} title="برنامجك لسه بيتجهز" body="الكابتن لسه بيجهز برنامجك. هيوصلك أول ما يخلص." />}
-      {failed && snapshot && <p className="text-sm text-muted">آخر تحديث من شوية</p>}
+        <EmptyState icon={Dumbbell} title={t('yourProgramIsBeingPrepared')} body={t('yourCoachIsPreparingYourProgramIt')} />}
+      {failed && snapshot && <p className="text-sm text-muted">{t('lastUpdatedAWhileAgo')}</p>}
     </>}
     <NutritionSlot />
     <div className="[&_button]:min-h-12 [&_button]:bg-transparent [&_button]:text-muted">{signOut}</div>
