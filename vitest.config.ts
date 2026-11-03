@@ -5,7 +5,7 @@ export default defineConfig({
   resolve: { alias: { '@': path.resolve(import.meta.dirname, 'src') } },
   test: {
     environment: 'node',
-    include: ['src/**/*.test.ts', 'supabase/tests/**/*.test.ts'],
+    include: ['src/**/*.test.ts', 'supabase/tests/**/*.test.ts', 'scripts/**/*.test.ts'],
     setupFiles: ['fake-indexeddb/auto'],
   },
 });
