@@ -27,7 +27,7 @@ export function Stepper({ label, controlLabel = label, value, step, min = 0, onC
           type="button"
           aria-label={`زوّد ${controlLabel}`}
           onClick={() => set(value + step)}
-          className="flex size-19 items-center justify-center rounded-card bg-white/10 active:bg-white/20"
+          className="flex size-19 items-center justify-center rounded-card bg-ink/10 active:bg-ink/20"
         >
           <Plus className="size-8" aria-hidden />
         </button>
@@ -39,7 +39,7 @@ export function Stepper({ label, controlLabel = label, value, step, min = 0, onC
           aria-label={`قلّل ${controlLabel}`}
           onClick={() => set(value - step)}
           disabled={value <= min}
-          className="flex size-19 items-center justify-center rounded-card bg-white/10 active:bg-white/20 disabled:opacity-40"
+          className="flex size-19 items-center justify-center rounded-card bg-ink/10 active:bg-ink/20 disabled:opacity-40"
         >
           <Minus className="size-8" aria-hidden />
         </button>

@@ -63,7 +63,7 @@ export function InboxScreen() {
   const visible = items.filter((item) => filter === 'all' || item.kind === filter);
   return <div className="mx-auto max-w-6xl space-y-6">
     <header className="flex flex-wrap items-center justify-between gap-4">
-      <h1 id="inbox-heading" tabIndex={-1} className="text-3xl font-extrabold"><bdi>INBOX</bdi> · المهام <span className="text-lime">{count ?? '—'}</span></h1>
+      <h1 id="inbox-heading" tabIndex={-1} className="text-3xl font-extrabold">المهام <span className="text-lime">{count ?? '—'}</span></h1>
       <div className="glass flex rounded-control p-1" aria-label="حالة المهام">
         {(['open', 'reviewed'] as const).map((tab) => <button key={tab} disabled={pending} aria-pressed={status === tab}
           className={`min-h-12 rounded-control px-5 ${status === tab ? 'bg-surface-raised text-lime' : 'text-muted'}`}

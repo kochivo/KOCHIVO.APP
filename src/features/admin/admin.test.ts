@@ -109,7 +109,8 @@ describe('page KPIs', () => {
       { ...recent, id: 'e', created_at: '2026-11-04T11:00:00Z' },
     ] }));
     expect(value(html, 'مشبوهين')).toBe('1');
-    expect(value(html, 'مستنيين تفعيل')).toBe('0');
+    expect(html).not.toContain('مستنيين تفعيل');
+    expect(html.match(/<dt /g)).toHaveLength(4);
   });
   it('labels capped results and preserves the scope of a partial later page', () => {
     const capped = renderToStaticMarkup(createElement(KpiRow, { ...props,

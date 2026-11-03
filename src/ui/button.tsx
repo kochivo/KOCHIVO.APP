@@ -6,8 +6,8 @@ type Size = 'md' | 'lg' | 'xl';
 
 const variants: Record<Variant, string> = {
   primary: 'bg-lime text-on-lime font-extrabold hover:brightness-105 active:brightness-95',
-  secondary: 'glass text-ink hover:bg-white/10',
-  ghost: 'bg-transparent text-ink hover:bg-white/5',
+  secondary: 'glass text-ink hover:bg-ink/10',
+  ghost: 'bg-transparent text-ink hover:bg-ink/5',
 };
 
 const sizes: Record<Size, string> = {
