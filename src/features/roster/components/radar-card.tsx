@@ -20,7 +20,7 @@ export function RadarCard({ today }: { today: string }) {
 
   if (!loaded || loaded.today !== today) return <p role="status" className="text-sm text-muted">بنحمّل الرادار…</p>;
   const { result } = loaded;
-  if (result.error) return <p role="status" className="text-sm text-muted">الرادار مش متاح دلوقتي</p>;
+  if (result.error) return <p role="alert" className="text-sm text-muted">الرادار مش متاح دلوقتي</p>;
   const players = result.data ?? [];
   if (players.length === 0) return null;
 

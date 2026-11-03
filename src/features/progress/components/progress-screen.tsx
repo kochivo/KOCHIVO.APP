@@ -90,7 +90,7 @@ export function ProgressScreen() {
   ] as const;
   const hasFronts = checkins?.some((row) => row.photo_paths.length > 0);
   return <main className="mx-auto max-w-lg space-y-4 px-5 pt-6 pb-32">
-    <header><h1 className="text-2xl font-extrabold">PROGRESS · تطورك</h1></header>
+    <header><h1 className="text-2xl font-extrabold"><bdi>PROGRESS</bdi> · تطورك</h1></header>
     {localError ? <ErrorState message="مش قادرين نحمّل تمارينك" retryLabel="جرّب تاني" onRetry={() => {
       setLocalError(false); setRetryKey((value) => value + 1);
     }} /> : !strength ? <LoadingState /> : !lifts.length ?
@@ -131,8 +131,8 @@ export function ProgressScreen() {
           </figure>)}</div> : hasFronts ? <LoadingState /> : <p className="text-sm text-muted">صور المقارنة لسه مش متاحة</p>}
       </section>
     </>}
-    {sent ? <p className="min-h-12 py-3 text-center text-muted">اتبعت ✓</p> : !sheet &&
-      <Button size="lg" className="w-full" disabled={!today || (!checkins && !checkinError)} onClick={() => setSheet(true)}>ابعت تحديث الأسبوع</Button>}
+    {sent && <p role="status" className="min-h-12 py-3 text-center text-muted">اتبعت</p>}
+    <Button size="lg" className="w-full" aria-disabled={Boolean(sent)} disabled={!today || (!checkins && !checkinError)} onClick={() => { if (!sent) setSheet(true); }}>ابعت تحديث الأسبوع</Button>
     {(checkins || checkinError) && <CheckinSheet latest={latest} open={sheet} onClose={() => setSheet(false)} onSent={() => {
       setSheet(false); setRetryKey((value) => value + 1);
     }} />}

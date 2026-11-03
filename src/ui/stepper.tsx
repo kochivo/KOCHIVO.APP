@@ -4,6 +4,7 @@ import { Minus, Plus } from 'lucide-react';
 
 export interface StepperProps {
   label: string;
+  controlLabel?: string;
   value: number;
   step: number;
   min?: number;
@@ -16,7 +17,7 @@ export interface StepperProps {
  * Keyboard-free number input for sweaty hands (PRD §4): two 76px buttons and a big value.
  * In RTL the + sits on the right (start), matching reading order.
  */
-export function Stepper({ label, value, step, min = 0, onChange, format = String }: StepperProps) {
+export function Stepper({ label, controlLabel = label, value, step, min = 0, onChange, format = String }: StepperProps) {
   const set = (next: number) => onChange(Math.max(min, Math.round(next * 100) / 100));
   return (
     <div className="glass-strong flex flex-col items-center gap-2 rounded-card p-4">
@@ -24,18 +25,18 @@ export function Stepper({ label, value, step, min = 0, onChange, format = String
       <div className="flex w-full items-center justify-between">
         <button
           type="button"
-          aria-label={`زوّد ${label}`}
+          aria-label={`زوّد ${controlLabel}`}
           onClick={() => set(value + step)}
           className="flex size-19 items-center justify-center rounded-card bg-white/10 active:bg-white/20"
         >
           <Plus className="size-8" aria-hidden />
         </button>
-        <output aria-live="polite" className="text-6xl font-extrabold tracking-tight">
-          {format(value)}
+        <output aria-label={controlLabel} aria-live="polite" className="text-6xl font-extrabold tracking-tight">
+          <bdi>{format(value)}</bdi>
         </output>
         <button
           type="button"
-          aria-label={`قلّل ${label}`}
+          aria-label={`قلّل ${controlLabel}`}
           onClick={() => set(value - step)}
           disabled={value <= min}
           className="flex size-19 items-center justify-center rounded-card bg-white/10 active:bg-white/20 disabled:opacity-40"

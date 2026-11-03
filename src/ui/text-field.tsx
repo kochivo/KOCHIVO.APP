@@ -23,7 +23,7 @@ export function TextField({ label, hint, error, id, className, 'aria-describedby
         className={cn('min-h-12 w-full rounded-control border border-line bg-surface px-4 text-start text-ink placeholder:text-muted disabled:opacity-40', error && 'border-danger', className)}
       />
       {hint && <p id={`${fieldId}-hint`} className="text-sm text-muted">{hint}</p>}
-      {error && <p id={`${fieldId}-error`} className="text-sm text-danger">{error}</p>}
+      {error && <p role="alert" id={`${fieldId}-error`} className="text-sm text-danger">{error}</p>}
     </div>
   );
 }

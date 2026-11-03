@@ -49,7 +49,7 @@ export function MealCard({ meal, log, today }: { meal: NutritionMeal; log?: Meal
         </li>;
       })}
     </ul>
-    <p dir="ltr" className="text-start text-xs text-muted">P {macros.protein} · C {macros.carbs} · F {macros.fat}</p>
+    <p className="text-start text-xs text-muted"><bdi>P {macros.protein} · C {macros.carbs} · F {macros.fat}</bdi></p>
     <Button size="lg" className="w-full" variant={eaten ? 'ghost' : 'primary'} aria-pressed={eaten}
       disabled={busy || !meal.items.length} onClick={() => void save(!eaten, swaps, Date.now())}>
       {eaten && <Check aria-hidden="true" className="size-5" />}كلت الوجبة

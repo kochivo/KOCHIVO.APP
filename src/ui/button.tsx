@@ -26,7 +26,7 @@ export function Button({ variant = 'primary', size = 'md', className, type = 'bu
     <button
       type={type}
       className={cn(
-        'inline-flex items-center justify-center gap-2 transition disabled:opacity-40',
+        'inline-flex items-center justify-center gap-2 transition motion-reduce:transition-none disabled:opacity-40',
         variants[variant],
         sizes[size],
         className,

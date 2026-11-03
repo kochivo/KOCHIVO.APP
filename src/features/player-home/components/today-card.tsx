@@ -13,7 +13,7 @@ export function TodayCard({ day, rest }: { day: SnapshotDay; rest: boolean }) {
   const sets = day.exercises.reduce((total, exercise) => total + exercise.sets, 0);
   return <GlassCard level="strong" className="space-y-5 p-5">
     <div className="space-y-2">
-      <p className="text-xs tracking-widest text-lime">DAY {day.position} · تمرين النهارده</p>
+      <p className="text-xs tracking-widest text-lime"><bdi>DAY {day.position}</bdi> · تمرين النهارده</p>
       <h2 className="text-3xl font-extrabold">{rest ? 'النهارده راحة' : day.title}</h2>
       {rest && <p className="text-muted">{day.title}</p>}
       <p className="text-sm text-muted">{day.exercises.length} تمارين · {sets} سِت · حوالي {estimateMinutes(day.exercises)} دقيقة</p>

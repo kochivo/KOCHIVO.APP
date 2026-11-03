@@ -65,12 +65,12 @@ export function CheckinSheet({ latest, open, onClose, onSent }: {
     } finally { setBusy(false); }
   }
   return <dialog ref={dialog} aria-labelledby="checkin-title" onCancel={(event) => {
-    event.preventDefault(); if (!busy) onClose();
+    event.preventDefault(); onClose();
   }} className="fixed inset-0 m-auto max-h-[90dvh] w-full max-w-lg overflow-y-auto rounded-card border border-line bg-bg p-5 text-ink backdrop:bg-bg/80">
     <form onSubmit={submit} className="space-y-4">
       <header className="flex items-center justify-between">
         <h2 id="checkin-title" className="text-xl font-bold">تحديث الأسبوع</h2>
-        <Button variant="ghost" aria-label="اقفل التحديث" disabled={busy} onClick={onClose}><X aria-hidden /></Button>
+        <Button variant="ghost" aria-label="اقفل التحديث" onClick={onClose}><X aria-hidden /></Button>
       </header>
       <fieldset disabled={busy} className="space-y-4">
         <Stepper label="الوزن بالكيلو" value={weight} min={20} step={0.1} onChange={(value) => setWeight(Math.min(400, value))} format={(value) => value.toFixed(1)} />
@@ -83,7 +83,7 @@ export function CheckinSheet({ latest, open, onClose, onSent }: {
         <p className="text-sm text-muted">لحد ٣ صور خاصة بيك وبالكابتن</p>
         <div className="grid grid-cols-3 gap-2">
           {positions.map((position, index) => <div key={position} className="glass space-y-2 rounded-control p-2">
-            <label className="flex min-h-12 cursor-pointer items-center justify-center text-sm">
+            <label className="flex min-h-12 cursor-pointer items-center justify-center rounded-control text-sm has-focus-visible:outline-2 has-focus-visible:outline-lime has-focus-visible:outline-offset-2">
               {position}
               <input aria-label={`صورة ${position}`} type="file" accept="image/*" capture="environment" className="sr-only" onChange={(event) => {
                 const file = event.target.files?.[0];

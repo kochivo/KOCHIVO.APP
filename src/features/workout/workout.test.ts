@@ -132,7 +132,7 @@ it('renders an accessible rest countdown with reduced-motion-safe flashing', () 
   const html = renderToStaticMarkup(createElement(RestPanel, {
     remaining: 3, flashing: true, onExtend: () => undefined, onSkip: () => undefined,
   }));
-  expect(html).toContain('aria-live="polite"');
+  expect(html).toContain('aria-live="off"');
   expect(html).toContain('0:03');
   expect(html).toContain('motion-safe:animate-pulse');
   expect(html).toContain('+30 ث');

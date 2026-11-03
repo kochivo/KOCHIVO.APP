@@ -8,11 +8,11 @@ export function ExerciseHeader({ exercise, performance }: { exercise: SnapshotEx
   return <section className="glass flex items-center gap-4 rounded-card p-4">
     {exercise.media_path && <figure className="shrink-0 text-center">
       <Image src={exerciseMediaUrl(exercise.media_path)} alt={name} width={84} height={84}
-        unoptimized className="rounded-control" />
+        unoptimized className="rounded-control motion-reduce:hidden" />
       <figcaption className="mt-1 text-xs text-muted">© Gym visual</figcaption>
     </figure>}
     <div className="space-y-2">
-      <h1 className="text-2xl font-extrabold">{name}</h1>
+      <h1 className="text-2xl font-extrabold"><bdi>{name}</bdi></h1>
       {performance && <p className="text-sm text-muted">الأسبوع اللي فات · <bdi>{performance.weight_kg ?? 0} × {performance.reps ?? 0}</bdi></p>}
     </div>
   </section>;
