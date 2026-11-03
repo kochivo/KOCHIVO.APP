@@ -30,19 +30,19 @@
    - **Secret key**: سري. **ماتفعّلش Captcha في Supabase دلوقتي.** لو اتفعّل، Supabase هيطلب التحقق في الدخول والتسجيل ونسيت كلمة السر كمان، والصفحات دي لسه مافيهاش الـ widget، فهتقف. فعّله بس بعد ما Claude يضيف التحقق للصفحات دي.
 3. من غير تفعيل الـ secret، الديمو بيعرض التحقق بس Supabase مش بيراجعه.
 
-## 3. الرفع (deploy)
+## 3. الرفع على Spaceship (Hyperlift)
 
-1. الريبو لسه مش متربط بـ GitHub. اعمل repo **private** فاضي على GitHub (من غير README)، وبعدين من فولدر المشروع:
-   ```powershell
-   git remote add origin https://github.com/<اسمك>/kochivo.git
-   git push -u origin master
-   ```
-   (Claude مش بيعمل push.)
-   بعدها اربط الـ repo بـ Vercel (Add New Project ← Import).
-2. في إعدادات الاستضافة حط:
-   - `NEXT_PUBLIC_SUPABASE_URL` و `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (من Supabase ← API Keys، الـ publishable مش السري)
-   - `NEXT_PUBLIC_TURNSTILE_SITE_KEY` (لو عملت خطوة 2)
-3. في Supabase ← Authentication ← URL Configuration اتأكد إن `https://kochivo.site` موجود في Site URL و Redirect URLs.
+الكود متربط بـ `github.com/kochivo/KOCHIVO.APP` (private). استضافة Web Hosting العادية بتاعة Spaceship مش هتشغّل المشروع، لأنه محتاج سيرفر Node. لازم تستخدم **Starlight Hyperlift**.
+
+1. Spaceship ← Hyperlift ← Create app، واربط GitHub واختار `KOCHIVO.APP` وفرع `master`.
+2. مكان الـ Dockerfile: `Dockerfile` (في أول الريبو).
+3. البورت: `8080`.
+4. مش محتاج تحط أي env vars. رابط Supabase والمفتاح الـ publishable ومفتاح Turnstile ورقم الواتساب كلهم جوه الكود، ومفيش ولا واحد فيهم سري.
+5. بعد أول build هتاخد رابط `....hyperlift.io`. افتحه واتأكد إن الصفحة الرئيسية شغالة.
+6. اربط الدومين `kochivo.site` بالتطبيق من إعدادات Hyperlift (Custom domain).
+7. في Supabase ← Authentication ← URL Configuration: حط `https://kochivo.site` في Site URL، وحطه هو ورابط الـ hyperlift.io في Redirect URLs.
+
+أي push على `master` بعد كده Hyperlift بيبنيه وينزّله لوحده.
 
 ## 4. حساب الأدمن
 

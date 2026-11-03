@@ -1,0 +1,12 @@
+node_modules
+.next
+.git
+.env
+.env.*
+!.env.example
+assets-source
+coverage
+screenshots
+docs/screens
+.claude
+*.log
