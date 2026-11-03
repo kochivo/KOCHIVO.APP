@@ -6,8 +6,7 @@ type Detail = { t: string; d: string };
 export const content = {
   brand: 'KOCHIVO',
   seo: { title: 'كوتشيفو — كل لاعبينك في مكان واحد', description: 'كل لاعبينك، وبرنامج وأكل ومتابعة كل واحد، في مكان واحد. واللاعب بيسجّل في الجيم حتى لو النت فاصل.' },
-  // Owner: replace this placeholder before publishing contact details.
-  whatsappNumber: '201000000000',
+  whatsappNumber: '201100539306',
   links: { signup: '/login?tab=signup', demo: '/login' },
   nav: [{ href: '#how', label: 'إزاي بيشتغل' }, { href: '#features', label: 'المميزات' }, { href: '#pricing', label: 'الباقات' }, { href: '#faq', label: 'أسئلة' }],
   login: 'دخول', signup: 'ابدأ مجاناً', contact: 'كلّمنا على واتساب',
