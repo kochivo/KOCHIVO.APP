@@ -9,6 +9,7 @@ const alexandria = Alexandria({ subsets: ['arabic'], variable: '--font-alexandri
 const changa = Changa({ subsets: ['arabic'], variable: '--font-changa', display: 'swap' });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://kochivo.site'),
   title: { default: 'KOCHIVO', template: '%s · KOCHIVO' },
   description: 'COACH BETTER',
   applicationName: 'KOCHIVO',

@@ -41,7 +41,7 @@ export const content = {
     { t: 'زي التطبيق', d: 'بيتثبّت على الشاشة الرئيسية في ثانيتين.' },
   ] satisfies Detail[],
   pricing: { label: 'الباقات', title: 'على قد عدد لاعبينك', description: 'من غير خصم ولا تجديد أوتوماتيك. بتشترك على واتساب، والتفعيل بيحصل بعد تأكيد الدفع.', note: 'مفيش تجديد تلقائي. التفعيل بيتم على واتساب', popular: 'الأكثر طلباً', unit: 'ج', monthly: 'ج / شهر' },
-  // Prices are pending owner confirmation.
+  // Prices confirmed by the owner on 2026-11-03. The DB plan limits must match these.
   plans: [
     { name: 'ENTRY', price: 0, displayPrice: '0', limit: 5, limitLabel: 'لحد 5 لاعبين', action: 'ابدأ مجاناً', hot: false },
     { name: 'CHAMPION', price: 399, displayPrice: '399', limit: 20, limitLabel: 'لحد 20 لاعب', action: 'اشترك', hot: false },
