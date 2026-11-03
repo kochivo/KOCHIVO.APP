@@ -22,6 +22,7 @@ import { FoodPicker } from './components/food-picker';
 import { ItemRow } from './components/item-row';
 vi.mock('./data/plan-io', () => ({ createPlan() {}, listPlayerPlans() {} }));
 vi.mock('./data/foods', () => ({ searchFoods() {} }));
+vi.mock('./data/custom-food', () => ({ deleteCustomFood() {} }));
 vi.mock('@/features/templates', () => ({ SaveTemplateButton: () => null }));
 vi.mock('./hooks/use-plan-draft', () => ({ usePlanDraft: () => ({ draft: { id: 'p', playerId: 'player', title: 'Plan', meals: [], targets: { kcal: 2000, protein: 150, carbs: 200, fat: 60 } }, update() {} }) }));
 it('links empty player nutrition plans to templates', () => {

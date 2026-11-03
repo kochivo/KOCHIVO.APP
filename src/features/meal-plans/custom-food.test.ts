@@ -1,18 +1,21 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 vi.mock('server-only', () => ({}));
 vi.mock('next/headers', () => ({ cookies: async () => ({ get: () => undefined }) }));
-import { createCustomFood } from './data/custom-food';
+import { createCustomFood, updateCustomFood, deleteCustomFood } from './data/custom-food';
 import { searchFoods } from './data/foods';
 
-const mocks = vi.hoisted(() => ({ insert: vi.fn(), eq: vi.fn(), getUser: vi.fn(), single: vi.fn() }));
+const mocks = vi.hoisted(() => ({ insert: vi.fn(), update: vi.fn(), delete: vi.fn(), remove: vi.fn(), eq: vi.fn(), getUser: vi.fn(), single: vi.fn() }));
 vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => ({
   auth: { getUser: mocks.getUser },
+  storage: { from: () => ({ remove: mocks.remove }) },
   from: (table: string) => {
     const request = { select: () => request, order: () => request, limit: () => request,
       or: () => request, eq: (key: string, value: string) => { mocks.eq(key, value); return request; },
-      insert: mocks.insert, single: table === 'profiles' ? async () => ({ data: { role: 'captain' }, error: null }) : mocks.single,
+      insert: mocks.insert, update: mocks.update, delete: mocks.delete,
+      single: table === 'profiles' ? async () => ({ data: { role: 'captain' }, error: null }) : mocks.single,
       then: (resolve: (value: unknown) => unknown) => Promise.resolve({ data: [], error: null }).then(resolve) };
     mocks.insert.mockReturnValue(request);
+    mocks.update.mockReturnValue(request); mocks.delete.mockReturnValue(request);
     return request;
   },
 }) }));
@@ -20,9 +23,37 @@ const captain = '01900000-0000-7000-8000-000000000001';
 const input = { name: 'Soup', servingGrams: 150, kcal: 200, protein: 10, carbs: 20, fat: 5 };
 beforeEach(() => {
   vi.clearAllMocks();
+  mocks.remove.mockResolvedValue({ error: null });
   mocks.getUser.mockResolvedValue({ data: { user: { id: captain } }, error: null });
   mocks.single.mockResolvedValue({ data: { id: captain, owner_id: captain, name_ar: 'Soup', photo_path: null,
     kcal_per_100g: 133.3, protein_per_100g: 6.7, carbs_per_100g: 13.3, fat_per_100g: 3.3 }, error: null });
+});
+it('converts edits per 100g and restricts them to the caller', async () => {
+  await updateCustomFood(captain, input);
+  expect(mocks.update).toHaveBeenCalledWith(expect.objectContaining({ kcal_per_100g: 133.3, protein_per_100g: 6.7 }));
+  expect(mocks.eq).toHaveBeenCalledWith('owner_id', captain);
+});
+it('does not delete a photo before the replacement update succeeds', async () => {
+  const old = `captain-food-photos/${captain}/old.jpg`;
+  mocks.single.mockResolvedValueOnce({ data: { photo_path: old }, error: null })
+    .mockResolvedValueOnce({ data: null, error: { code: '42501' } });
+  await expect(updateCustomFood(captain, { ...input, photoPath: `captain-food-photos/${captain}/abc.jpg` })).rejects.toThrow();
+  expect(mocks.remove).not.toHaveBeenCalled();
+});
+it('removes the previous photo after replacement succeeds', async () => {
+  mocks.single.mockResolvedValueOnce({ data: { photo_path: `captain-food-photos/${captain}/old.jpg` }, error: null });
+  await updateCustomFood(captain, { ...input, photoPath: `captain-food-photos/${captain}/abc.jpg` });
+  expect(mocks.remove).toHaveBeenCalledWith([`${captain}/old.jpg`]);
+});
+it('surfaces a clear error for foods used in plans without removing the photo', async () => {
+  mocks.single.mockResolvedValueOnce({ data: null, error: { code: '23503' } });
+  await expect(deleteCustomFood(captain)).resolves.toEqual({ error: 'in-use' });
+  expect(mocks.remove).not.toHaveBeenCalled();
+});
+it('removes the photo after deleting a food', async () => {
+  mocks.single.mockResolvedValueOnce({ data: { photo_path: `captain-food-photos/${captain}/old.jpg` }, error: null });
+  await deleteCustomFood(captain);
+  expect(mocks.remove).toHaveBeenCalledWith([`${captain}/old.jpg`]);
 });
 describe('custom food server validation', () => {
   it('stores rounded per-100g values owned by the caller', async () => {

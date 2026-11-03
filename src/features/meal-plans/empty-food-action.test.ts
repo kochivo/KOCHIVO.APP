@@ -19,6 +19,7 @@ import { FoodPicker } from './components/food-picker';
 import type { Food } from './types';
 const sheet = vi.hoisted(() => ({ save: undefined as undefined | ((food: Food, grams: number) => void) }));
 vi.mock('./data/foods', () => ({ searchFoods() {} }));
+vi.mock('./data/custom-food', () => ({ deleteCustomFood() {} }));
 vi.mock('next/dynamic', () => ({ default: () => (props: { onSave: (food: Food, grams: number) => void }) => { sheet.save = props.onSave; return null; } }));
 it('keeps zero-calorie custom foods out of alternatives', () => {
  state.values = ['', 'all', 100, { foods: [], catalogEmpty: true }, false, false, 0, true];
