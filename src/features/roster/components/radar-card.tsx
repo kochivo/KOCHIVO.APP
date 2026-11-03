@@ -10,7 +10,7 @@ import { fetchRadar } from '../data/radar';
 import { radarReasonLabel, radarWhatsappUrl } from '../radar';
 import type { RadarResult } from '../radar';
 
-export function RadarCard({ today }: { today: string }) {
+export function RadarCard({ today, showEmpty = false }: { today: string; showEmpty?: boolean }) {
   const t = useT(messages);
   const locale = useLocale();
   const [loaded, setLoaded] = useState<{ today: string; result: RadarResult } | null>(null);
@@ -28,13 +28,16 @@ export function RadarCard({ today }: { today: string }) {
   const { result } = loaded;
   if (result.error) return <p role="alert" className="text-sm text-muted">{t('radarIsUnavailable')}</p>;
   const players = result.data ?? [];
-  if (players.length === 0) return null;
+  if (players.length === 0) return showEmpty ? <GlassCard level="strong" className="flex items-center gap-3 p-5">
+    <span aria-hidden className="size-2 shrink-0 rounded-full bg-lime" />
+    <div><h2 className="text-lg font-bold">{t('dropoutRadar')}</h2><p className="text-sm text-muted">{t('radarAllClear')}</p></div>
+  </GlassCard> : null;
 
   return (
-    <GlassCard level="strong" className="space-y-3 p-5">
+    <GlassCard level="strong" className="space-y-3 border-warn/40 p-5">
       <h2 className="flex items-center gap-2 text-lg font-bold">
-        <span aria-hidden className="size-2 rounded-full bg-warn" />
-         {t('dropoutRadar')} <span className="text-warn">{formatNumber(players.length, locale)}</span>
+        <span aria-hidden className="size-2 rounded-full bg-warn motion-safe:animate-pulse" />
+        {t('dropoutRadar')} <span className="text-warn">{formatNumber(players.length, locale)}</span>
       </h2>
       <ul className="divide-y divide-line">
         {(expanded ? players : players.slice(0, 5)).map((player) => {

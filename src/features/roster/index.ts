@@ -1,6 +1,8 @@
 export { CaptainShell } from './components/captain-shell';
 export { RosterScreen } from './components/roster-screen';
+export { RadarCard } from './components/radar-card';
 export { fetchRoster, fetchCaptainFirstName } from './data/roster';
-export { playerStatus } from './status';
-export type { RosterPlayer } from './types';
+export { lastSeenLabel, playerStatus } from './status';
+export type { PlayerStatus } from './status';
+export type { RosterPlayer, RosterResult } from './types';
 export { messages as rosterMessages } from './messages';

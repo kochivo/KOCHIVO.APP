@@ -83,7 +83,8 @@ describe('dropout radar', () => {
 
 describe('captainNav', () => {
   it.each([
-    ['/captain', 'اللاعبين'],
+    ['/captain', 'الرئيسية'],
+    ['/captain/players', 'اللاعبين'],
     ['/captain/players/x/programs', 'اللاعبين'],
     ['/captain/programs/abc', 'اللاعبين'],
     ['/captain/nutrition/abc', 'اللاعبين'],
@@ -101,7 +102,7 @@ describe('captainNav', () => {
     expect(captainNav(pathname).filter((item) => item.active).map((item) => item.label))
       .toEqual(label ? [label] : []);
     expect(captainNav(pathname).map((item) => item.href)).toEqual([
-      '/captain', '/captain/inbox', '/captain/templates', '/captain/billing', '/captain/settings',
+      '/captain', '/captain/players', '/captain/inbox', '/captain/templates', '/captain/billing', '/captain/settings',
     ]);
   });
 

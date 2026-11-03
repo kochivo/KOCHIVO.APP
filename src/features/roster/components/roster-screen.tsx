@@ -8,12 +8,11 @@ import { messages } from '../messages';
 import { use, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, UserPlus, Users } from 'lucide-react';
-import { Button, Chip, EmptyState, ErrorState, GlassCard, LoadingState, TextField } from '@/ui';
+import { Button, Chip, EmptyState, ErrorState, LoadingState, TextField } from '@/ui';
 import { playerStatus } from '../status';
 import type { RosterResult } from '../types';
 import { RosterRow } from './roster-row';
 import { InviteSheet } from './invite-sheet';
-import { RadarCard } from './radar-card';
 import { useDemoExpiry } from '@/features/demo';
 
 export function RosterScreen({ data, today, plan }: { data: Promise<[RosterResult, string]>; today: string; plan?: ReactNode }) {
@@ -30,12 +29,6 @@ export function RosterScreen({ data, today, plan }: { data: Promise<[RosterResul
   const statuses = players.map((player) => ({ player, status: playerStatus({ ...player, today }) }));
   const visible = statuses.filter(({ player, status }) => (filter === 'all' || status === filter)
     && player.fullName.includes(search.trim()));
-  const counts = [
-    { label: t('active'), count: statuses.filter(({ status }) => status === 'active').length, color: 'text-lime' },
-    { label: t('late'), count: statuses.filter(({ status }) => status === 'late').length, color: 'text-warn' },
-    { label: t('endingSoon'), count: statuses.filter(({ status }) => status === 'ending').length, color: 'text-danger' },
-    { label: t('pendingTasks2'), count: players.reduce((sum, player) => sum + player.openTasks, 0), color: 'text-ink' },
-  ];
   const inviteButton = <Button onClick={() => setInviteOpen(true)} className="min-h-12"><Plus aria-hidden className="size-5" />{demo ? t('invitesAreDisabledInTheDemo') : t('newPlayer')}</Button>;
   return (
     <section className="space-y-6">
@@ -43,12 +36,6 @@ export function RosterScreen({ data, today, plan }: { data: Promise<[RosterResul
         <div><p className="mb-1 text-xs text-muted">{t('playerCount', { n: players.length, count: formatNumber(players.length, locale) })}</p><h1 className="text-3xl font-extrabold">{t('players')}</h1></div>
         <div className="flex flex-wrap items-center gap-3">{plan}{(players.length > 0 || result.error) && inviteButton}</div>
       </header>
-      <div className="grid items-start gap-6 xl:grid-cols-2">
-        <RadarCard today={today} />
-        {!pending && !result.error && players.length > 0 && <div className="grid grid-cols-2 gap-3">
-          {counts.map(({ label, count, color }) => <GlassCard key={label} level="strong" className="space-y-2 p-5"><p className="text-sm text-muted">{label}</p><p className={`font-display text-4xl font-extrabold ${color}`}>{formatNumber(count, locale)}</p></GlassCard>)}
-        </div>}
-      </div>
       {pending ? <LoadingState /> : result.error ? <ErrorState message={result.error} retryLabel={t('tryAgain')} onRetry={() => startTransition(() => router.refresh())} /> : players.length === 0 ? (
         <EmptyState icon={UserPlus} title={demo ? t('noDemoDataYet') : t('noPlayersYetSendYourFirstInvite')} body={demo ? t('invitesAreDisabledInTheDemo') : t('startWithAnInviteLink')} steps={demo ? undefined : [t('stepInvite'), t('stepIntake'), t('stepAssign')]} action={{ label: demo ? t('invitesAreDisabledInTheDemo') : t('newPlayer'), onClick: () => setInviteOpen(true) }} />
       ) : <>
