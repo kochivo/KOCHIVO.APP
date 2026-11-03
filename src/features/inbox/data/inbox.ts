@@ -1,5 +1,7 @@
 'use server';
 
+import { reviewItemAt } from './inbox-internal';
+
 import 'server-only';
 import { z } from 'zod';
 import { inboxClient } from './client';
@@ -50,18 +52,7 @@ export async function listInbox(input: { status: 'open' | 'reviewed'; limit: 50 
 }
 
 export async function reviewItem(input: unknown): Promise<Result<true>> {
-  const parsed = identity.extend({ reply: z.string().trim().max(1000) }).safeParse(input);
-  if (!parsed.success) return { error: 'الرد لازم يكون لحد 1000 حرف' };
-  try {
-    const client = await inboxClient();
-    const auth = await client.auth.getUser();
-    if (auth.error || !auth.data.user) return { error: 'سجّل دخولك الأول' };
-    const result = await client.from(tableFor(parsed.data.kind)).update({
-      reviewed_at: new Date().toISOString(), captain_reply: parsed.data.reply || null,
-    }).eq('id', parsed.data.id).eq('captain_id', auth.data.user.id).select('id');
-    if (result.error || result.data?.length !== 1) throw new Error();
-    return { data: true };
-  } catch { return { error: 'الرد متبعتش. جرّب تاني' }; }
+  return reviewItemAt(input, new Date());
 }
 
 export async function mediaUrls(input: unknown): Promise<Result<string[]>> {
