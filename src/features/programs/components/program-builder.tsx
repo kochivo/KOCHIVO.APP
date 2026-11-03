@@ -64,7 +64,7 @@ export function ProgramBuilder({ programId, playerId }: { programId?: string; pl
     } catch { setMessage('التفعيل متعملش. جرّب تاني'); }
     finally { setPending(false); }
   }
-  if (playerId) return <main dir="rtl" className="mx-auto max-w-5xl space-y-6 p-4 md:p-8">
+  if (playerId) return <div className="mx-auto max-w-5xl space-y-6">
     <h1 className="text-3xl font-extrabold">البرامج</h1>
     <form className="glass space-y-4 rounded-card p-5" onSubmit={event => { event.preventDefault(); void create(); }}>
       <TextField label="اسم البرنامج الجديد" value={title} maxLength={80} required disabled={pending} onChange={event => setTitle(event.target.value)} />
@@ -82,13 +82,13 @@ export function ProgramBuilder({ programId, playerId }: { programId?: string; pl
           </Link>
         </li>)}</ul>
       </>}
-  </main>;
-  if (state.loading) return <main className="p-4"><LoadingState /></main>;
-  if (!state.draft) return <main className="p-4"><ErrorState message={state.error || 'البرنامج مش موجود'} retryLabel="جرّب تاني" onRetry={state.retry} /></main>;
+  </div>;
+  if (state.loading) return <div><LoadingState /></div>;
+  if (!state.draft) return <div><ErrorState message={state.error || 'البرنامج مش موجود'} retryLabel="جرّب تاني" onRetry={state.retry} /></div>;
   const draft = state.draft;
   const day = draft.days.find(item => item.id === selectedDay) ?? draft.days[0];
   const busy = pending || state.saving;
-  return <main dir="rtl" className="mx-auto max-w-screen-2xl space-y-6 p-4 md:p-8">
+  return <div className="mx-auto max-w-screen-2xl space-y-6">
     <fieldset disabled={busy} className="min-w-0 space-y-6">
       <BuilderHeader draft={draft} dirty={state.dirty} busy={busy} onTitle={value => state.update(current => ({ ...current, title: value }))}
         onSave={() => void save()} onActivate={() => void activate()} />
@@ -123,5 +123,5 @@ export function ProgramBuilder({ programId, playerId }: { programId?: string; pl
         </div>
       </div>
     </fieldset>
-  </main>;
+  </div>;
 }

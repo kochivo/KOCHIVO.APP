@@ -25,7 +25,7 @@ export function PlayerPlans({ playerId }: { playerId: string }) {
     try { router.push(`/captain/nutrition/${await createPlan(playerId, title)}`); }
     catch { setError('النظام متعملش. جرّب تاني'); setBusy(false); }
   }
-  return <main className="mx-auto grid max-w-4xl gap-5 p-5">
+  return <div className="mx-auto grid max-w-4xl gap-5">
     <h1 className="text-3xl font-bold">الأنظمة الغذائية</h1>
     <div className="glass flex flex-wrap items-end gap-3 rounded-card p-4">
       <label className="grid gap-2">اسم النظام<input value={title} maxLength={80} onChange={event => setTitle(event.target.value)} className="min-h-12 rounded-control bg-surface px-3" /></label>
@@ -38,5 +38,5 @@ export function PlayerPlans({ playerId }: { playerId: string }) {
     <ul className="grid gap-3">{plans?.map(plan => <li key={plan.id}><Link href={`/captain/nutrition/${plan.id}`} className="glass flex min-h-12 items-center justify-between gap-3 rounded-control p-4">
       <span>{plan.title}</span><span className="text-muted">{statuses[plan.status]}</span>
     </Link></li>)}</ul>
-  </main>;
+  </div>;
 }
