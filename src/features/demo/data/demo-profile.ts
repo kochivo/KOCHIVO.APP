@@ -1,13 +1,18 @@
 import { createT } from '@/core/i18n/messages';
 import type { Locale } from '@/core/i18n/locale';
 import { messages } from '../messages';
-import { z } from 'zod';
 
-const profileSchema = z.object({ demo_expires_at: z.iso.datetime({ offset: true }).nullable().optional() });
+// Plain checks instead of Zod: this module ships to every settings screen, and two fields
+// do not justify bundling a schema library there. Same rule as z.iso.datetime({ offset: true }).
+const isoWithOffset = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{2}:\d{2})$/;
+
+function field(value: unknown, key: string): unknown {
+  return typeof value === 'object' && value !== null ? (value as Record<string, unknown>)[key] : undefined;
+}
 
 export function demoExpiry(profile: unknown): string | null {
-  const result = profileSchema.safeParse(profile);
-  return result.success ? result.data.demo_expires_at ?? null : null;
+  const value = field(profile, 'demo_expires_at');
+  return typeof value === 'string' && isoWithOffset.test(value) && !Number.isNaN(Date.parse(value)) ? value : null;
 }
 
 export function demoHours(expiresAt: string, now: Date): number {
@@ -16,8 +21,8 @@ export function demoHours(expiresAt: string, now: Date): number {
 
 export function demoError(error: unknown, locale: Locale = 'ar'): string {
   const t = createT(messages, locale);
-  const result = z.object({ code: z.string().optional(), message: z.string().optional() }).safeParse(error);
-  const message = result.success ? `${result.data.code ?? ''} ${result.data.message ?? ''}` : '';
+  const text = (key: string) => { const value = field(error, key); return typeof value === 'string' ? value : ''; };
+  const message = `${text('code')} ${text('message')}`;
   if (message.includes('demo_limit')) return t('theDemoIsBusyTryAgain');
   if (/captcha|turnstile/i.test(message)) return t('completeTheVerificationAndTryAgain');
   return t('theDemoIsUnavailableRightNow');

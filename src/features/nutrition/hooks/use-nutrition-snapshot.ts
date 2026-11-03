@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { localDb, pendingCount, useLiveQuery } from '@/core/offline';
-import { supabaseBrowser } from '@/core/supabase/browser';
+import { loadSupabaseBrowser } from '@/core/supabase/lazy';
 import { localDate } from '@/lib/dates';
 import { refreshNutrition } from '../data/refresh-nutrition';
 
@@ -34,14 +34,18 @@ export function useNutritionSnapshot() {
     void refresh();
   }, [refresh]);
   useEffect(() => {
-    const client = supabaseBrowser();
     let active = true;
-    void client.auth.getSession().then(({ data, error }) => {
+    let unsubscribe: (() => void) | undefined;
+    void loadSupabaseBrowser().then(async client => {
       if (!active) return;
-      if (error) onError();
-      setPlayerId(data.session?.user.id);
-    }).catch(onError);
-    const { data: listener } = client.auth.onAuthStateChange((_event, session) => setPlayerId(session?.user.id));
+      const { data: listener } = client.auth.onAuthStateChange((_event, session) => setPlayerId(session?.user.id));
+      unsubscribe = () => listener.subscription.unsubscribe();
+      const { data, error } = await client.auth.getSession();
+      if (active) {
+        if (error) onError();
+        setPlayerId(data.session?.user.id);
+      }
+    }).catch(() => { if (active) onError(); });
     const update = () => { setToday(localDate(new Date())); setOnline(navigator.onLine); };
     update();
     void refresh();
@@ -52,7 +56,7 @@ export function useNutritionSnapshot() {
     document.addEventListener('visibilitychange', update);
     return () => {
       active = false;
-      listener.subscription.unsubscribe();
+      unsubscribe?.();
       window.removeEventListener('online', reconnect);
       window.removeEventListener('offline', update);
       window.removeEventListener('focus', update);

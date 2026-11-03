@@ -7,7 +7,6 @@ import { messages } from '../messages';
 import { useState, useTransition } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { pickTodayDay } from '@/features/player-home';
 import { formatDateAr } from '@/lib/dates';
 import type { fetchPlayerPreview } from '../data/preview';
 import { PhoneFrame } from './phone-frame';
@@ -25,7 +24,7 @@ export function PreviewScreen({ result, today }: { result: Result; today: string
   const [pending, startTransition] = useTransition();
   const router = useRouter();
   const data = result.data;
-  const day = data?.program ? pickTodayDay(data.program, data.sessions, today) : undefined;
+  const day = data?.todayDay;
   const rest = data?.program && data.program.training_days.length > 0 &&
     !data.program.training_days.includes(new Date(`${today}T12:00:00Z`).getUTCDay()) &&
     !data.sessions.some((session) => session.training_date === today && data.program?.days.some((entry) => entry.id === session.program_day_id));

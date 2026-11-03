@@ -10,7 +10,7 @@ vi.mock('server-only', () => ({}));
 vi.mock('@/core/storage', () => ({ exerciseMediaUrl: () => 'https://example.test/squat.gif' }));
 it('renders the English preview with LTR and localized weekdays', () => {
   const html = renderToStaticMarkup(h(LocaleProvider, { locale: 'en' }, h(PreviewScreen, {
-    today: '2026-11-03', result: { data: { name: 'Ali', program: null, nutrition: null, sessions: [],
+    today: '2026-11-03', result: { data: { name: 'Ali', program: null, todayDay: null, nutrition: null, sessions: [],
       week: [{ date: '2026-11-03', trained: false, mealsEaten: 0 }] } },
   })));
   expect(html).toContain('Player preview');
