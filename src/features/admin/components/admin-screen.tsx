@@ -1,4 +1,8 @@
 'use client';
+import { localeDir } from '@/core/i18n/locale';
+import { formatNumber } from '@/lib/format';
+import { useLocale, useT } from '@/core/i18n/client';
+import { messages } from '../messages';
 
 import { useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
@@ -22,6 +26,8 @@ interface Props {
 }
 const filters: Array<'all' | CaptainState> = ['all', 'paid', 'free', 'expired', 'unconfirmed', 'suspended'];
 export function AdminScreen({ captains, audit, plans, search, offset, now }: Props) {
+  const t = useT(messages);
+  const locale = useLocale();
   const router = useRouter();
   const [filter, setFilter] = useState<'all' | CaptainState>('all');
   const [selected, setSelected] = useState<CaptainRow | null>(null);
@@ -39,40 +45,40 @@ export function AdminScreen({ captains, audit, plans, search, offset, now }: Pro
     setMessage(text); setSelected(null); setSuspending(null);
     startTransition(() => router.refresh());
   }
-  return <main dir="rtl" className="mx-auto max-w-[1440px] space-y-7 px-4 py-8 text-start lg:px-8 lg:py-12">
+  return <main dir={localeDir(locale)} className="mx-auto max-w-[1440px] space-y-7 px-4 py-8 text-start lg:px-8 lg:py-12">
     <header className="flex flex-wrap items-center justify-between gap-4 border-b border-line pb-6">
-      <h1 className="text-3xl font-extrabold lg:text-4xl">لوحة الإدارة</h1>
+      <h1 className="text-3xl font-extrabold lg:text-4xl">{t('admin')}</h1>
       <span className="flex items-center gap-2 rounded-control border border-line px-4 py-2 text-sm text-muted">
-        <ShieldCheck aria-hidden className="size-4" /> ADMIN · للإدارة بس
+        <ShieldCheck aria-hidden className="size-4" /> {t('adminOnly')}
       </span>
     </header>
     {!captains.error && <KpiRow rows={captains.rows} now={now}
-      scope={offset > 0 ? 'من الصفحة الحالية' : search ? 'من نتائج البحث' : undefined} />}
-    <section aria-label="إدارة الكباتن" className="space-y-5">
+      scope={offset > 0 ? t('pageScope') : search ? t('searchScope') : undefined} />}
+    <section aria-label={t('manage')} className="space-y-5">
       <form className="flex gap-2" onSubmit={event => {
         event.preventDefault();
         const value = new FormData(event.currentTarget).get('search');
         navigate(typeof value === 'string' ? value : '', 0);
       }}>
         <label className="relative block min-w-0 flex-1">
-          <span className="sr-only">دور باسم الكابتن أو الإيميل</span>
+          <span className="sr-only">{t('searchLabel')}</span>
           <Search aria-hidden className="pointer-events-none absolute start-4 top-4 size-5 text-muted" />
-          <input key={search} name="search" defaultValue={search} placeholder="دور بالاسم أو الإيميل"
+          <input key={search} name="search" defaultValue={search} placeholder={t('searchPlaceholder')}
             className="min-h-14 w-full rounded-control border border-line bg-surface ps-12 pe-4" />
         </label>
-        <Button type="submit" variant="secondary" disabled={pending}>بحث</Button>
+        <Button type="submit" variant="secondary" disabled={pending}>{t('search')}</Button>
       </form>
-      <div aria-label="فلتر الحالة" className="flex flex-wrap gap-2">
+      <div aria-label={t('filter')} className="flex flex-wrap gap-2">
         {filters.map(value => <button key={value} type="button" aria-pressed={filter === value}
           onClick={() => setFilter(value)}
           className={`min-h-12 rounded-control border px-4 text-sm ${filter === value ? 'border-ink bg-surface-raised font-bold' : 'border-line text-muted'}`}>
-          {value === 'all' ? 'الكل' : stateLabels[value]}
+          {value === 'all' ? t('all') : t(stateLabels[value])}
         </button>)}
       </div>
-      <p role="status" aria-live="polite" className="text-sm text-muted">{pending ? 'جاري تحميل البيانات…' : message}</p>
+      <p role="status" aria-live="polite" className="text-sm text-muted">{pending ? t('loading') : message}</p>
       {captains.error ? <div role="alert" className="glass rounded-card p-5">
         <p className="text-danger">{captains.error}</p>
-        <Button variant="secondary" disabled={pending} onClick={() => startTransition(() => router.refresh())}>جرّب تاني</Button>
+        <Button variant="secondary" disabled={pending} onClick={() => startTransition(() => router.refresh())}>{t('retry')}</Button>
       </div> : <>
         {plans.error && <p role="alert" className="text-danger">{plans.error}</p>}
         <div className={selected ? 'grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_340px]' : ''}>
@@ -89,10 +95,10 @@ export function AdminScreen({ captains, audit, plans, search, offset, now }: Pro
               onClose={() => setSelected(null)} onSuccess={success} />
           </div>}
         </div>
-        <nav aria-label="صفحات الكباتن" className="flex items-center justify-between gap-2">
-          <Button variant="ghost" disabled={pending || offset === 0} onClick={() => navigate(search, Math.max(0, offset - 100))}>السابق</Button>
-          <span className="text-sm text-muted">صفحة {Math.floor(offset / 100) + 1}</span>
-          <Button variant="ghost" disabled={pending || captains.rows.length < 100} onClick={() => navigate(search, offset + 100)}>التالي</Button>
+        <nav aria-label={t('pages')} className="flex items-center justify-between gap-2">
+          <Button variant="ghost" disabled={pending || offset === 0} onClick={() => navigate(search, Math.max(0, offset - 100))}>{t('previous')}</Button>
+          <span className="text-sm text-muted">{t('page', { n: formatNumber(Math.floor(offset / 100) + 1, locale) })}</span>
+          <Button variant="ghost" disabled={pending || captains.rows.length < 100} onClick={() => navigate(search, offset + 100)}>{t('next')}</Button>
         </nav>
       </>}
     </section>

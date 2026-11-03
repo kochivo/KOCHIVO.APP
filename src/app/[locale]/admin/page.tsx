@@ -1,9 +1,13 @@
 import { Suspense } from 'react';
-import type { Metadata } from 'next';
-import { AdminScreen, requireAdmin, fetchCaptains, fetchPlanTiers, fetchAudit } from '@/features/admin';
+import { createT, parseLocale } from '@/core/i18n';
+import { AdminScreen, requireAdmin, fetchCaptains, fetchPlanTiers, fetchAudit, messages } from '@/features/admin';
 
 export const dynamic = 'force-dynamic';
-export const metadata: Metadata = { title: 'لوحة الإدارة', robots: { index: false } };
+type RouteParams = Promise<{ locale: string }>;
+export async function generateMetadata({ params }: { params: RouteParams }) {
+  const { locale } = await params;
+  return { title: createT(messages, parseLocale(locale))('admin'), robots: { index: false } };
+}
 type Params = Promise<{ search?: string; offset?: string }>;
 
 async function AdminData({ searchParams }: { searchParams: Params }) {
@@ -19,9 +23,11 @@ async function AdminData({ searchParams }: { searchParams: Params }) {
     now={now.toISOString()} />;
 }
 
-export default async function AdminPage({ searchParams }: { searchParams: Params }) {
+export default async function AdminPage({ searchParams, params }: { searchParams: Params; params: RouteParams }) {
+  const { locale } = await params;
+  const t = createT(messages, parseLocale(locale));
   await requireAdmin();
-  return <Suspense fallback={<p role="status" className="p-8 text-muted">جاري تحميل لوحة الإدارة…</p>}>
+  return <Suspense fallback={<p role="status" className="p-8 text-muted">{t('loadingAdmin')}</p>}>
     <AdminData searchParams={searchParams} />
   </Suspense>;
 }

@@ -10,6 +10,7 @@ const mocks = vi.hoisted(() => {
   return { query, signing, client: { from: vi.fn(), auth: { getUser: vi.fn() }, storage: { from: vi.fn() } }, server: vi.fn() };
 });
 vi.mock('server-only', () => ({}));
+vi.mock('next/headers', () => ({ cookies: async () => ({ get: () => undefined }) }));
 vi.mock('@/core/supabase/server', () => ({ supabaseServer: mocks.server }));
 const id = '019a0000-0000-7000-8000-000000000001';
 const now = new Date('2026-11-03T12:00:00Z');

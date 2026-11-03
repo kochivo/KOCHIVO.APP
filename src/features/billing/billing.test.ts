@@ -7,6 +7,7 @@ const fetchBilling = () => fetchBillingAt(new Date('2026-11-02T23:30:00Z'));
 
 const mocks = vi.hoisted(() => ({ server: vi.fn(), rpc: vi.fn(), user: vi.fn(), profile: vi.fn(), from: vi.fn() }));
 vi.mock('server-only', () => ({}));
+vi.mock('next/headers', () => ({ cookies: async () => ({ get: () => undefined }) }));
 vi.mock('@/core/supabase/server', () => ({ supabaseServer: mocks.server }));
 
 describe('renewal dates and reminders', () => {

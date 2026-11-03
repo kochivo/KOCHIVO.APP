@@ -6,6 +6,8 @@ import { pickTodayDay } from '@/features/player-home';
 const { server, from, rpc, results } = vi.hoisted(() => ({
   server: vi.fn(), from: vi.fn(), rpc: vi.fn(), results: new Map<string, { data: unknown; error: unknown }>(),
 }));
+vi.mock('server-only', () => ({}));
+vi.mock('next/headers', () => ({ cookies: async () => ({ get: () => undefined }) }));
 vi.mock('@/core/supabase/server', () => ({ supabaseServer: server }));
 const player = '00000000-0000-4000-8000-000000000001';
 beforeEach(() => {

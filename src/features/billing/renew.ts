@@ -1,3 +1,6 @@
+import { createT } from '@/core/i18n/messages';
+import type { Locale } from '@/core/i18n/locale';
+import { messages } from './messages';
 import { formatDateAr } from '@/lib/dates';
 import { whatsappUrl } from '@/lib/whatsapp';
 
@@ -13,9 +16,10 @@ export function renewalPreview(accessUntil: string, today: string, days: number)
   return { start, end: addDays(start, days - 1) };
 }
 
-export function reminderText(playerName: string, accessUntil: string): string {
-  const date = formatDateAr(accessUntil, { day: 'numeric', month: 'long' });
-  return `يا ${playerName}، اشتراكك مع الكابتن بيخلص ${date}. تحب نجدد؟`;
+export function reminderText(playerName: string, accessUntil: string, locale: Locale = 'ar'): string {
+  const t = createT(messages, locale);
+  const date = formatDateAr(accessUntil, { day: 'numeric', month: 'long' }, locale);
+  return t('reminder', { name: playerName, date });
 }
 
 export function waLink(phone: string | null | undefined, text: string): string | null {

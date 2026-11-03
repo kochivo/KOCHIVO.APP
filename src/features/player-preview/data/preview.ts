@@ -1,4 +1,8 @@
 'use server';
+import { foodName } from '@/lib/display-name';
+import { getLocale } from '@/core/i18n/server';
+import { getT } from '@/core/i18n/server';
+import { messages } from '../messages';
 
 import { z } from 'zod';
 import { supabaseServer } from '@/core/supabase/server';
@@ -8,10 +12,12 @@ import type { WorkoutSessionRow } from '@/core/offline';
 import { localDate } from '@/lib/dates';
 import { activityWeek } from '../week';
 const input = z.object({ playerId: z.uuid(), today: z.iso.date() });
-const error = 'المعاينة متحمّلتش. جرّب تاني';
 
 export async function fetchPlayerPreview(playerId: string, today: string) {
-  if (!input.safeParse({ playerId, today }).success) return { error: 'بيانات المعاينة مش صحيحة' };
+  const locale = await getLocale();
+  const t = await getT(messages, locale);
+  const error = t('failed');
+  if (!input.safeParse({ playerId, today }).success) return { error: t('invalid') };
   try {
     const client = await supabaseServer();
     const ownership = await client.rpc('is_captain_of', { p_player: playerId });
@@ -20,7 +26,7 @@ export async function fetchPlayerPreview(playerId: string, today: string) {
     const start = new Date(`${today}T12:00:00Z`);
     start.setUTCDate(start.getUTCDate() - 6);
     const since = localDate(start);
-    const food = 'name_ar,photo_path,kcal_per_100g,protein_per_100g,carbs_per_100g,fat_per_100g';
+    const food = 'name_ar,name_en,photo_path,kcal_per_100g,protein_per_100g,carbs_per_100g,fat_per_100g';
     const sessionFields = 'id,program_day_id,training_date,started_at,completed_at,client_updated_at';
     const [program, intake, nutrition, profile, sessions, meals] = await Promise.all([
       client.from('programs').select('id,title,notes,settings,program_days(id,position,title,program_exercises(id,exercise_id,position,sets,reps_min,reps_max,rest_seconds,superset_group,rpe,tempo,notes,exercises(name_ar,name_en,media_path)))')
@@ -43,7 +49,14 @@ export async function fetchPlayerPreview(playerId: string, today: string) {
       .order('completed_at', { ascending: false }).order('id', { ascending: false }).limit(1) : null;
     if (history?.error) return { error };
     return { data: { name: profile.data.full_name, program: snapshot,
-      nutrition: nutrition.data ? mapNutritionSnapshot(nutrition.data, playerId) : null,
+      nutrition: nutrition.data ? mapNutritionSnapshot({ ...nutrition.data, meals: nutrition.data.meals.map(meal => ({
+        ...meal, meal_items: meal.meal_items.map(item => ({
+          ...item, foods: item.foods ? { ...item.foods, name_ar: foodName(item.foods, locale) } : null,
+          meal_item_alternatives: item.meal_item_alternatives.map(alternative => ({
+            ...alternative, foods: alternative.foods ? { ...alternative.foods, name_ar: foodName(alternative.foods, locale) } : null,
+          })),
+        })),
+      })) }, playerId) : null,
       sessions: [...(sessions.data ?? []), ...(history?.data ?? [])]
         .filter((row): row is WorkoutSessionRow => row.program_day_id !== null),
       week: activityWeek(today, sessions.data ?? [], meals.data ?? []),
