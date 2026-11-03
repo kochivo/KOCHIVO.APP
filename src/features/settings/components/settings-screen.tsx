@@ -39,7 +39,7 @@ export function SettingsScreen({ signOut }: { signOut?: ReactNode }) {
     <LanguageSwitch />
     <GlassToggle />
     <ThemeSwitch />
-    {loading ? <LoadingState /> : error ? <ErrorState message={error} retryLabel={t('tryAgain')} onRetry={() => {
+    {loading ? <LoadingState variant="detail" /> : error ? <ErrorState message={error} retryLabel={t('tryAgain')} onRetry={() => {
       setLoading(true); setError(''); setAttempt((value) => value + 1);
     }} /> : profile ? <>
       <ProfileForm profile={profile} />

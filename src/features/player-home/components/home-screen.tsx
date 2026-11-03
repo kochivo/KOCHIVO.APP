@@ -59,7 +59,7 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
     </header>
     {failed && (!snapshot || localError) ? <ErrorState message={t('couldntLoadYourProgram')} retryLabel={t('tryAgain')} onRetry={() => {
       setLocalError(false); setRetryKey((value) => value + 1); void retry();
-    }} /> : !now || status === 'loading' || (snapshot && (!sessions || !weekSessions)) ? <LoadingState /> : <>
+    }} /> : !now || status === 'loading' || (snapshot && (!sessions || !weekSessions)) ? <LoadingState variant="cards" /> : <>
       <WeekStrip today={today} days={buildWeek(today, snapshot?.training_days ?? [],
         weekSessions?.filter((session) => snapshot?.days.some((day) => day.id === session.program_day_id)) ?? [], locale)} />
       {snapshot && day ? <TodayCard day={day} rest={Boolean(rest)} /> :

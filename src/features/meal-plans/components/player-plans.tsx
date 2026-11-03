@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Button } from '@/ui';
+import { LoadingState } from '@/ui/loading-state';
 import { createPlan, listPlayerPlans } from '../data/plan-io';
 import type { PlanSummary } from '../types';
 import { starterText } from '@/lib/starter-text';
@@ -39,7 +40,7 @@ export function PlayerPlans({ playerId }: { playerId: string }) {
     </div>
     {busy && <p role="status">{t('creatingPlan')}</p>}
     {error && <div role="alert">{error}<Button variant="secondary" onClick={() => setRetry(n => n + 1)}>{t('tryAgain')}</Button></div>}
-    {!plans && !error && <p role="status">{t('loadingPlans')}</p>}
+    {!plans && !error && <LoadingState variant="cards" />}
     {plans?.length === 0 && <div className="glass grid justify-items-start gap-3 rounded-card p-6"><p className="text-muted">{t('noPlansYetCreateANewOne')}</p>
       <Link href="/captain/templates" className="inline-flex min-h-12 items-center font-bold text-lime">{t('orStartFromTemplate')}</Link></div>}
     <ul className="grid gap-3 lg:grid-cols-2">{plans?.map(plan => <li key={plan.id}><Link href={`/captain/nutrition/${plan.id}`} className="glass flex min-h-12 items-center justify-between gap-3 rounded-control p-4">

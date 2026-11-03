@@ -1,1 +1,5 @@
-export { RouteLoading as default } from '@/ui/route-loading';
+import { LoadingState } from '@/ui/loading-state';
+
+export default function Loading() {
+  return <LoadingState variant="detail" />;
+}

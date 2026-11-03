@@ -9,10 +9,80 @@ import { SwitchTrack } from './switch-track';
 import Template from '../app/[locale]/template';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { Home } from 'lucide-react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+import { Skeleton, SkeletonText, SkeletonCard, SkeletonList } from './skeleton';
+import { createToastQueue, ToastProvider } from './toast';
 import { BottomNav, Chip, EmptyState, ErrorState, IconButton, LoadingState, ProgressBar, Segmented, SyncPill, TextField } from './index';
 
 describe('UI primitives', () => {
+  it('renders translated skeleton status with content-shaped presets', () => {
+    for (const component of [Skeleton, SkeletonText, SkeletonCard, SkeletonList]) {
+      const html = renderToStaticMarkup(createElement(component));
+      expect(html).toContain('role="status"');
+      expect(html).toContain('جاري التحميل');
+      expect(html).toContain('shimmer');
+    }
+    expect(renderToStaticMarkup(createElement(SkeletonText, { lines: 4 })).match(/shimmer/g)).toHaveLength(4);
+    expect(renderToStaticMarkup(createElement(SkeletonList, { rows: 2 })).match(/rounded-full/g)).toHaveLength(2);
+  });
+
+  it('caps the toast stack, preserves error roles and dismisses on schedule', () => {
+    vi.useFakeTimers();
+    try {
+      const queue = createToastQueue({ now: () => Date.now(), setTimer: setTimeout, clearTimer: clearTimeout });
+      queue.success('one'); queue.success('two'); queue.success('three'); queue.error('four');
+      expect(queue.getSnapshot().map(item => item.text)).toEqual(['two', 'three', 'four']);
+      const html = renderToStaticMarkup(createElement(ToastProvider, { queue }));
+      expect(html).toContain('aria-live="polite"');
+      expect(html).toContain('role="alert"');
+      expect(html).toContain('aria-label="اقفل الإشعار"');
+      vi.advanceTimersByTime(4000);
+      expect(queue.getSnapshot().filter(item => !item.leaving).map(item => item.text)).toEqual(['four']);
+      vi.advanceTimersByTime(2000);
+      expect(queue.getSnapshot().every(item => item.leaving)).toBe(true);
+      vi.advanceTimersByTime(200);
+      expect(queue.getSnapshot()).toEqual([]);
+      queue.dispose();
+    } finally { vi.useRealTimers(); }
+  });
+
+  it('pauses independently for hover and focus, then resumes the remaining duration', () => {
+    vi.useFakeTimers();
+    try {
+      const queue = createToastQueue({ now: () => Date.now(), setTimer: setTimeout, clearTimer: clearTimeout });
+      queue.success('saved');
+      const id = queue.getSnapshot()[0]?.id ?? '';
+      vi.advanceTimersByTime(1000);
+      queue.pause(id, 'hover'); queue.pause(id, 'focus');
+      vi.advanceTimersByTime(10000);
+      queue.resume(id, 'hover');
+      vi.advanceTimersByTime(10000);
+      expect(queue.getSnapshot()[0]?.leaving).toBe(false);
+      queue.resume(id, 'focus');
+      vi.advanceTimersByTime(2999);
+      expect(queue.getSnapshot()[0]?.leaving).toBe(false);
+      vi.advanceTimersByTime(1);
+      expect(queue.getSnapshot()[0]?.leaving).toBe(true);
+      queue.dismiss(id);
+      vi.advanceTimersByTime(200);
+      expect(queue.getSnapshot()).toEqual([]);
+      queue.dispose();
+    } finally { vi.useRealTimers(); }
+  });
+  it('cleans up timers when a dismissed toast loses hover and focus', () => {
+    vi.useFakeTimers();
+    try {
+      const queue = createToastQueue({ now: () => Date.now(), setTimer: setTimeout, clearTimer: clearTimeout });
+      queue.error('failed');
+      const id = queue.getSnapshot()[0]?.id ?? '';
+      queue.pause(id, 'hover'); queue.pause(id, 'focus');
+      queue.dismiss(id);
+      queue.resume(id, 'hover'); queue.resume(id, 'focus');
+      queue.dispose();
+      expect(queue.getSnapshot()).toEqual([]);
+      expect(vi.getTimerCount()).toBe(0);
+    } finally { vi.useRealTimers(); }
+  });
   it('adds press feedback and reserves glow for the primary button only', () => {
     for (const component of [createElement(Button), createElement(IconButton, { 'aria-label': 'Open' }),
       createElement(Chip, { pressed: true })]) {
@@ -89,7 +159,7 @@ describe('UI primitives', () => {
     expect(css).toContain('box-shadow: var(--press-glow-hover, 0 0 transparent), 0 10px 20px -12px');
     expect(css).toContain('.empty-state-in { animation: surface-in .28s ease-out; }');
     const reduced = css.slice(css.lastIndexOf('@media (prefers-reduced-motion: reduce)'));
-    for (const selector of ['.press', '.press-scale', '.enter']) expect(reduced).toContain(selector);
+    for (const selector of ['.press', '.press-scale', '.enter', '.shimmer', '.toast-leave']) expect(reduced).toContain(selector);
     expect(reduced).toContain('animation: none');
     expect(reduced).toContain('transition: none');
     expect(reduced).toContain('scale: none');

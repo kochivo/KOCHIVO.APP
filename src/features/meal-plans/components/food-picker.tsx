@@ -6,6 +6,7 @@ import { messages } from '../messages';
 import { useEffect, useState } from 'react';
 import { foodPhotoUrl } from '@/core/storage/media-url';
 import { Button, Segmented } from '@/ui';
+import { LoadingState } from '@/ui/loading-state';
 import { searchFoods } from '../data/foods';
 import type { Food } from '../types';
 
@@ -33,7 +34,7 @@ export function FoodPicker({ onPick, alternative = false }: { onPick: (food: Foo
       className="mt-2 min-h-12 w-full rounded-control border border-line bg-surface px-3" /></label>
     {!alternative && <label>{t('grams')}<input type="number" min={5} max={2000} step={5} value={grams}
       onChange={event => setGrams(Number(event.target.value))} className="ms-3 min-h-12 w-28 rounded-control bg-surface px-3" /></label>}
-    {loading ? <p role="status">{t('loadingFoods')}</p> : error ? <div role="alert">{t('searchFailed')} <Button variant="secondary" onClick={() => { setLoading(true); setRetry(n => n + 1); }}>{t('tryAgain')}</Button></div> : <>
+    {loading ? <LoadingState variant="list" /> : error ? <div role="alert">{t('searchFailed')} <Button variant="secondary" onClick={() => { setLoading(true); setRetry(n => n + 1); }}>{t('tryAgain')}</Button></div> : <>
       {!result?.foods.length && <p>{result?.catalogEmpty ? t('theFoodLibraryIsEmpty') : t('noFoodWithThisName')}</p>}
       <ul className="grid max-h-96 gap-2 overflow-y-auto">{result?.foods.map(food => <li key={food.id}>
         <button type="button" disabled={(!alternative && (!Number.isFinite(grams) || grams < 5 || grams > 2000 || grams % 5 !== 0)) || (alternative && food.kcal <= 0)}

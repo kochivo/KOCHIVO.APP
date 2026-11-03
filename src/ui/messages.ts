@@ -2,6 +2,12 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    closeNotification: "اقفل الإشعار",
+    reviewSent: "المراجعة اتبعتت",
+    playerRenewed: "اشتراك اللاعب اتجدد",
+    paymentRecorded: "الدفعة اتسجلت",
+    templateCopied: "القالب اتنسخ",
+    voiceNoteSent: "الرسالة الصوتية اتبعتت",
     loading: "جاري التحميل",
     increase: "زوّد {controlLabel}",
     decrease: "قلّل {controlLabel}",
@@ -25,6 +31,12 @@ export const messages = defineMessages({
     themeCycle: "شكل التطبيق: {current}، غيّر لـ{next}",
   },
   en: {
+    closeNotification: "Close notification",
+    reviewSent: "Review sent",
+    playerRenewed: "Player renewed",
+    paymentRecorded: "Payment recorded",
+    templateCopied: "Template copied",
+    voiceNoteSent: "Voice note sent",
     loading: "Loading",
     increase: "Increase {controlLabel}",
     decrease: "Decrease {controlLabel}",

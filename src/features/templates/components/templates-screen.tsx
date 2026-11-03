@@ -12,11 +12,16 @@ import type { Template, TemplateKind } from '../types';
 import { AssignSheet } from './assign-sheet';
 import { PreviewSheet } from './preview-sheet';
 import { starterText } from '@/lib/starter-text';
+import { LoadingState } from '@/ui/loading-state';
+import { useToast } from '@/ui/toast';
+import { messages as uiMessages } from '@/ui/messages';
 
 type Edit = { template: Template; title: string } | { template: Template; title?: never };
 
 export function TemplatesScreen() {
   const t = useT(messages);
+  const feedback = useT(uiMessages);
+  const toast = useToast();
   const locale = useLocale();
   const [templates, setTemplates] = useState<Template[]>([]);
   const [kind, setKind] = useState<TemplateKind>('program');
@@ -66,7 +71,7 @@ export function TemplatesScreen() {
       const title = t('copyOf', { title: starterText(template.title, locale) }).slice(0, 80);
       const result = await copyTemplate({ kind: template.kind, id: template.id, title });
       if (result.error !== undefined) setError(result.error);
-      else { setLoading(true); setAttempt(value => value + 1); }
+      else { toast.success(feedback('templateCopied')); setLoading(true); setAttempt(value => value + 1); }
     } catch { setError(t('couldntSaveChangesTryAgain')); } finally { setBusy(false); }
   }
   const visible = templates.filter(template => template.kind === kind);
@@ -80,7 +85,7 @@ export function TemplatesScreen() {
       {(['program', 'nutrition'] as const).map(tab => <Button key={tab} variant="ghost" className={`min-h-12 ${kind === tab ? 'glass-strong font-bold' : 'text-muted'}`}
         aria-pressed={kind === tab} onClick={() => setKind(tab)}>{tab === 'program' ? t('workouts') : t('nutrition')}</Button>)}
     </div>
-    {loading ? <p role="status">{t('loadingTemplates')}</p> : loadError ? <div role="alert" className="glass rounded-card p-5">{loadError}
+    {loading ? <LoadingState variant="cards" /> : loadError ? <div role="alert" className="glass rounded-card p-5">{loadError}
       <Button variant="ghost" className="min-h-12" onClick={() => { setLoading(true); setAttempt(value => value + 1); }}>{t('tryAgain')}</Button>
     </div> : <>
       {busy && <p role="status">{t('savingChanges')}</p>}

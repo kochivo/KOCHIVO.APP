@@ -6,6 +6,7 @@ import { messages } from '../messages';
 
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/ui';
+import { LoadingState } from '@/ui/loading-state';
 import { exerciseName, foodName } from '@/lib/display-name';
 import { starterText } from '@/lib/starter-text';
 import { previewTemplate } from '../data/template-preview';
@@ -37,7 +38,7 @@ export function PreviewSheet({ template, onAssign, onClose }: { template: Templa
       <h2 id="preview-template-title" className="text-xl font-bold">{t('previewTitle', { title })}</h2>
       {error ? <div role="alert" className="grid justify-items-start gap-2">{error}
         <Button variant="ghost" className="min-h-12" onClick={() => { setError(''); setPreview(null); setAttempt(value => value + 1); }}>{t('tryAgain')}</Button>
-      </div> : !preview ? <p role="status" className="text-muted">{t('loadingPreview')}</p>
+      </div> : !preview ? <LoadingState variant="detail" />
         : preview.groups.length === 0 ? <p className="text-muted">{t('templateIsEmptyAddDaysOrMeals')}</p> : <>
           {preview.kind === 'nutrition' && <p className="glass-strong w-fit rounded-control px-3 py-2 text-sm font-bold">{t('totalKcal', { kcal: n(preview.kcal) })}</p>}
           {preview.groups.map((group, index) => <section key={index} className="glass grid gap-2 rounded-card p-4">

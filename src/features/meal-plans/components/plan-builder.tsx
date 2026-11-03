@@ -5,6 +5,7 @@ import { messages } from '../messages';
 import Link from 'next/link';
 import { uuidv7 } from '@/core/offline/ids';
 import { Button } from '@/ui';
+import { LoadingState } from '@/ui/loading-state';
 import { SaveTemplateButton } from '@/features/templates';
 import { usePlanDraft } from '../hooks/use-plan-draft';
 import { addMeal } from '../draft';
@@ -16,7 +17,7 @@ export function PlanBuilder({ planId }: { planId: string }) {
   const t = useT(messages);
   const state = usePlanDraft(planId);
   const { draft, update } = state;
-  if (state.loading) return <p role="status">{t('loadingPlan')}</p>;
+  if (state.loading) return <LoadingState variant="detail" />;
   if (!draft) return <div role="alert">{state.error}<Button variant="secondary" onClick={state.reload}>{t('tryAgain')}</Button></div>;
   return <div className="mx-auto grid max-w-6xl gap-5">
     <Link className="inline-flex min-h-12 items-center text-muted" href={`/captain/players/${draft.playerId}/nutrition`}>{t('mealPlans')}</Link>
@@ -33,7 +34,6 @@ export function PlanBuilder({ planId }: { planId: string }) {
     {state.busy && <p role="status">{t('saving')}</p>}
     {state.dirty && <p className="text-warn">{t('youHaveUnsavedChanges')}</p>}
     {state.error && <div role="alert" className="text-danger">{state.error}<Button variant="secondary" onClick={() => void state.retrySave()}>{t('tryAgain')}</Button></div>}
-    {state.message && <p role="status">{state.message}</p>}
     <fieldset disabled={state.busy} className="grid min-w-0 gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(16rem,1fr)]">
       <section aria-label={t('meals')} className="grid content-start gap-4">
         {!draft.meals.length && <p className="glass rounded-card p-6">{t('addYourFirstMealToStart')}</p>}

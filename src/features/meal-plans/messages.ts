@@ -3,6 +3,7 @@ import { defineMessages } from '@/core/i18n/messages';
 export const messages = defineMessages({
   ar: {
     newFood: "+ أكلة جديدة",
+    customFoodSaved: "الأكلة اتحفظت",
     allFoods: "كل الأكل",
     myFoods: "أكلاتي",
     mine: "أكلتي",
@@ -97,6 +98,7 @@ export const messages = defineMessages({
   },
   en: {
     newFood: "+ New food",
+    customFoodSaved: "Food saved",
     allFoods: "All foods",
     myFoods: "My foods",
     mine: "Mine",

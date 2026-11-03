@@ -6,6 +6,7 @@ import { X } from 'lucide-react';
 import { useT } from '@/core/i18n/client';
 import { Button } from '@/ui';
 import { ResponsiveDialog } from '@/ui/responsive-dialog';
+import { useToast } from '@/ui/toast';
 import { messages } from '../messages';
 import { customFoodSchema } from '../types';
 import type { Food } from '../types';
@@ -15,6 +16,7 @@ export function CustomFoodSheet({ onClose, onSave, openerId }: {
   onClose: () => void; onSave: (food: Food, grams: number) => void; openerId: string;
 }) {
   const t = useT(messages);
+  const toast = useToast();
   const titleId = useId();
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState('');
@@ -36,6 +38,7 @@ export function CustomFoodSheet({ onClose, onSave, openerId }: {
     try {
       const food = await saveCustomFood(value.data, file, t);
       onSave(food, value.data.servingGrams);
+      toast.success(t('customFoodSaved'));
     } catch (cause) {
       const known = [t('photoFailed'), t('photoCleanupFailed'), t('imageIsTooLargeOrUnsupportedChoose'), t('chooseAnImage')];
       setError(cause instanceof Error && known.includes(cause.message) ? cause.message : t('couldntSaveTryAgain'));

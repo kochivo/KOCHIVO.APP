@@ -113,7 +113,7 @@ export function ProgressScreen() {
           {top.length ? <LineChart points={top} title={t('topWeightTrend')} unit={t('kg')} /> : <p className="text-sm text-muted">{t('noMeasurementsYet')}</p>}
         </section>
       </>}
-    {checkinError ? <ErrorState message={t('couldntLoadCheckinsCheckYourConnection')} retryLabel={t('tryAgain')} onRetry={() => setRetryKey((value) => value + 1)} /> : !checkins ? <LoadingState /> : <>
+    {checkinError ? <ErrorState message={t('couldntLoadCheckinsCheckYourConnection')} retryLabel={t('tryAgain')} onRetry={() => setRetryKey((value) => value + 1)} /> : !checkins ? <LoadingState variant="cards" /> : <>
       {!checkins.length && <p className="glass rounded-card p-6 text-muted">{t('yourFirstCheckinIsYourStartingPoint')}</p>}
       <div className="grid grid-cols-2 gap-3">
         {measures.map(({ key, label, unit }) => {

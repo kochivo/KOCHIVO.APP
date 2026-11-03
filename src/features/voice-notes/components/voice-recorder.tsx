@@ -10,22 +10,25 @@ import { MAX_VOICE_SECONDS, clock } from '../audio';
 import { sendVoiceNote } from '../data/voice-notes';
 import { useRecorder } from '../hooks/use-recorder';
 import type { VoiceContext, VoiceNote } from '../types';
+import { useToast } from '@/ui/toast';
+import { messages as uiMessages } from '@/ui/messages';
 
 export function VoiceRecorder({ playerId, context, onSent }: { playerId: string; context?: VoiceContext; onSent?: (note: VoiceNote) => void }) {
   const t = useT(messages);
+  const feedback = useT(uiMessages);
+  const toast = useToast();
   const { state, start, stop, reset } = useRecorder();
   const [sending, setSending] = useState(false);
-  const [failed, setFailed] = useState(false);
   const send = async () => {
     if (state.status !== 'recorded') return;
     setSending(true);
-    setFailed(false);
     try {
       onSent?.(await sendVoiceNote(await loadSupabaseBrowser(), { playerId, recording: state.blob, seconds: state.seconds, context }));
       reset();
+      toast.success(feedback('voiceNoteSent'));
     } catch (error) {
       console.warn('Voice note upload failed', error);
-      setFailed(true);
+      toast.error(t('sendFailed'));
     } finally { setSending(false); }
   };
   return (
@@ -46,7 +49,6 @@ export function VoiceRecorder({ playerId, context, onSent }: { playerId: string;
       </Button>}
       {state.status === 'denied' && <p role="alert" className="text-sm text-warn">{t('micDenied')}</p>}
       {state.status === 'unsupported' && <p role="alert" className="text-sm text-warn">{t('unsupported')}</p>}
-      {failed && <p role="alert" className="text-sm text-danger">{t('sendFailed')}</p>}
       {state.status === 'idle' && <p className="text-xs text-muted">{t('hint')}</p>}
     </div>
   );
