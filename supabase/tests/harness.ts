@@ -65,3 +65,14 @@ export async function dayOffset(db: PGlite, days: number): Promise<string> {
   const { rows } = await db.query<{ d: string }>(`select (current_date + $1::int)::text as d`, [days]);
   return rows[0]!.d;
 }
+
+export async function createCaptainWithPlayer(db: PGlite) {
+  const captain = await createUser(db, 'captain');
+  const player = await createUser(db, 'player');
+  const accessUntil = await dayOffset(db, 30);
+  await asUser(db, captain, (tx) => tx.query(
+    `insert into public.coach_clients (captain_id, player_id, access_until) values ($1, $2, $3)`,
+    [captain, player, accessUntil],
+  ));
+  return { captain, player };
+}
