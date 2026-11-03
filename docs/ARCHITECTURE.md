@@ -102,6 +102,8 @@ profiles ─┬─< coach_clients >─┬─ profiles
 
 **الصلاحيات من 0014:** `anon` مالوش أي صلاحية على الجداول أو الدوال غير `invite_preview`. وأي دالة جديدة مقفولة افتراضياً، فكل migration لازم تعمل `grant execute ... to authenticated` بنفسها للدوال اللي محتاجاها. ودوال الـ trigger مبتاخدش grant خالص.
 
+مخطط `security_private` مش مكشوف أبدًا في Data API، وبيحتفظ بالاستعلامات غير المفلترة للكود اللي بيشتغل بصلاحيات مالك قاعدة البيانات.
+
 ## 6. محرك الـ Offline
 
 ```

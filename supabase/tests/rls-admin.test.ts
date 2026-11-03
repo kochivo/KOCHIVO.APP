@@ -52,9 +52,9 @@ it('chooses the highest overlapping tier and excludes future and ended subscript
       ($1, 'legend', now(), now() + interval '1 month', 699, $2),
       ($1, 'empire', now() + interval '1 month', now() + interval '2 months', 1499, $2),
       ($1, 'empire', now() - interval '1 month', now(), 1499, $2)`, [coach, admin]);
-    expect((await tx.query('select public.current_tier($1) as tier', [coach])).rows).toEqual([{ tier: 'legend' }]);
+    expect((await tx.query('select security_private.current_tier($1) as tier', [coach])).rows).toEqual([{ tier: 'legend' }]);
     await tx.query(`delete from public.captain_subscriptions where captain_id = $1 and tier in ('champion', 'legend')`, [coach]);
-    expect((await tx.query('select public.current_tier($1) as tier', [coach])).rows).toEqual([{ tier: 'entry' }]);
+    expect((await tx.query('select security_private.current_tier($1) as tier', [coach])).rows).toEqual([{ tier: 'entry' }]);
   });
 });
 
