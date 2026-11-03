@@ -1,6 +1,41 @@
 import Dexie, { type Table } from 'dexie';
 import type { MealLogRow, SetLogRow, SyncTable, WorkoutSessionRow } from './tables';
 
+export interface SnapshotExercise {
+  id: string;
+  exercise_id: string;
+  position: number;
+  sets: number;
+  reps_min: number;
+  reps_max: number | null;
+  rest_seconds: number;
+  superset_group: number | null;
+  rpe: number | null;
+  tempo: string | null;
+  notes: string | null;
+  name_ar: string | null;
+  name_en: string;
+  media_path: string | null;
+}
+
+export interface SnapshotDay {
+  id: string;
+  position: number;
+  title: string;
+  exercises: SnapshotExercise[];
+}
+
+export interface ProgramSnapshot {
+  id: 'active';
+  player_id: string;
+  program_id: string;
+  title: string;
+  notes: string | null;
+  settings: { advanced?: boolean };
+  training_days: number[];
+  days: SnapshotDay[];
+}
+
 export interface OutboxEntry {
   id?: number;
   table: SyncTable;
@@ -22,6 +57,7 @@ export class KochivoDB extends Dexie {
   set_logs!: Table<SetLogRow, string>;
   meal_logs!: Table<MealLogRow, string>;
   outbox!: Table<OutboxEntry, number>;
+  program_snapshot!: Table<ProgramSnapshot, string>;
 
   constructor(name = 'kochivo') {
     super(name);
@@ -31,6 +67,7 @@ export class KochivoDB extends Dexie {
       meal_logs: 'id, &[meal_id+log_date]',
       outbox: '++id, &[table+row_id], next_attempt_at',
     });
+    this.version(2).stores({ program_snapshot: 'id' });
   }
 }
 
