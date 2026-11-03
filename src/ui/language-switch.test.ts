@@ -6,7 +6,7 @@ import { beforeEach, expect, it, vi } from 'vitest';
 import { createT } from '@/core/i18n/messages';
 import { LanguageSwitch } from './language-switch';
 
-const state = vi.hoisted(() => ({ error: false, work: Promise.resolve(), refresh: vi.fn(), setLocale: vi.fn() }));
+const state = vi.hoisted(() => ({ locale: 'ar' as 'ar' | 'en', error: false, work: Promise.resolve(), refresh: vi.fn(), setLocale: vi.fn() }));
 vi.mock('react', async original => ({
   ...await original<typeof ReactModule>(),
   useState: () => [state.error, (value: boolean) => { state.error = value; }],
@@ -15,8 +15,8 @@ vi.mock('react', async original => ({
 vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh: state.refresh }) }));
 vi.mock('@/core/i18n/set-locale', () => ({ setLocale: state.setLocale }));
 vi.mock('@/core/i18n/client', () => ({
-  useLocale: () => 'ar',
-  useT: (messages: Parameters<typeof createT>[0]) => createT(messages, 'ar'),
+  useLocale: () => state.locale,
+  useT: (messages: Parameters<typeof createT>[0]) => createT(messages, state.locale),
 }));
 
 function button(language: string, node: ReactNode = LanguageSwitch()): (() => void) | undefined {
@@ -28,7 +28,7 @@ function button(language: string, node: ReactNode = LanguageSwitch()): (() => vo
   }
 }
 
-beforeEach(() => { vi.clearAllMocks(); state.error = false; });
+beforeEach(() => { vi.clearAllMocks(); state.error = false; state.locale = 'ar'; });
 
 it('refreshes only after the cookie action succeeds, without a reload', async () => {
   let finish = () => {};
@@ -51,4 +51,23 @@ it('shows a retryable error when changing the cookie fails', async () => {
   await state.work;
   expect(state.refresh).not.toHaveBeenCalled();
   expect(renderToStaticMarkup(LanguageSwitch())).toContain('مش قادرين نغيّر اللغة. جرّب تاني');
+});
+
+it('offers only the other language in compact mode', async () => {
+  state.setLocale.mockResolvedValue(undefined);
+  const node = LanguageSwitch({ compact: true });
+  const html = renderToStaticMarkup(node);
+  expect(html.match(/<button/g)).toHaveLength(1);
+  expect(html).toContain('English');
+  button('en', node)?.();
+  await state.work;
+  expect(state.setLocale).toHaveBeenCalledWith('en');
+});
+
+it('offers Arabic from the English compact header', () => {
+  state.locale = 'en';
+  const html = renderToStaticMarkup(LanguageSwitch({ compact: true }));
+  expect(html.match(/<button/g)).toHaveLength(1);
+  expect(html).toContain('العربية');
+  expect(html).not.toContain('aria-pressed=');
 });

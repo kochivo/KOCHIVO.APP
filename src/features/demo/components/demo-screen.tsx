@@ -3,10 +3,12 @@ import { useLocale, useT } from '@/core/i18n/client';
 import { LanguageSwitch } from '@/ui/language-switch';
 import { messages } from '../messages';
 import { useCallback, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { Button } from '@/ui';
 import { publicConfig } from '@/lib/public-config';
-import { startDemo } from '../data/start-demo';
-import { TurnstileWidget } from './turnstile-widget';
+const TurnstileWidget = dynamic(() => import('./turnstile-widget').then(module => module.TurnstileWidget), {
+  ssr: false, loading: () => <div aria-hidden className="min-h-16" />,
+});
 
 export function DemoScreen() {
   const t = useT(messages);
@@ -27,7 +29,11 @@ export function DemoScreen() {
       {siteKey && <TurnstileWidget key={attempt} siteKey={siteKey} onToken={setToken} onError={captchaError} />}
       <Button className="min-h-12 w-full" disabled={pending || Boolean(siteKey && !token)} onClick={async () => {
         setPending(true); setError('');
-        const failure = await startDemo((path) => window.location.assign(path), token || undefined, locale);
+        let failure: string | undefined;
+        try {
+          const { startDemo } = await import('../data/start-demo');
+          failure = await startDemo((path) => window.location.assign(path), token || undefined, locale);
+        } catch { failure = t('theDemoIsUnavailableRightNow'); }
         if (failure) {
           setError(failure); setPending(false); setToken(''); setAttempt((value) => value + 1);
         }

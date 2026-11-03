@@ -32,4 +32,6 @@ export default withSentryConfig(config, {
   silent: true,
   sourcemaps: { disable: true },
   telemetry: false,
+  // All three runtime configs disable tracing; retain error capture without unused tracing code.
+  bundleSizeOptimizations: { excludeTracing: true },
 });

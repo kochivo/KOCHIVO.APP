@@ -7,7 +7,7 @@ declare global {
   interface Window {
     turnstile?: {
       render: (element: HTMLElement, options: {
-        sitekey: string; language: 'ar' | 'en'; callback: (token: string) => void;
+        sitekey: string; language: 'ar' | 'en'; size: 'compact' | 'normal'; callback: (token: string) => void;
         'expired-callback': () => void; 'error-callback': () => void;
       }) => string;
       remove: (id: string) => void;
@@ -29,7 +29,7 @@ export function TurnstileWidget({ siteKey, onToken, onError }: {
     const render = () => {
       if (!active || !container.current || !window.turnstile) return;
       id = window.turnstile.render(container.current, {
-        sitekey: siteKey, language: locale, callback: onToken,
+        sitekey: siteKey, language: locale, size: container.current.clientWidth < 300 ? 'compact' : 'normal', callback: onToken,
         'expired-callback': () => onToken(''), 'error-callback': onError,
       });
     };

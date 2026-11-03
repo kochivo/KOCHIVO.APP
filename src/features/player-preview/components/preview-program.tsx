@@ -3,7 +3,7 @@ import { formatNumber } from '@/lib/format';
 import { exerciseName } from '@/lib/display-name';
 import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
-import Image from 'next/image';
+import { ExerciseImage } from '@/ui/exercise-image';
 import { exerciseMediaUrl } from '@/core/storage';
 import type { ProgramSnapshot } from '@/features/player-home';
 
@@ -20,7 +20,7 @@ export function PreviewProgram({ program }: { program: ProgramSnapshot | null })
       {day.exercises.length === 0 && <p className="text-sm text-muted">{t('noExercises')}</p>}
       <ul className="space-y-3">{day.exercises.map((exercise) => <li key={exercise.id} className="space-y-2 border-t border-line pt-3">
         <p className="font-bold">{exerciseName(exercise, locale)}</p>
-        {exercise.media_path && <Image unoptimized src={exerciseMediaUrl(exercise.media_path)}
+        {exercise.media_path && <ExerciseImage fullWidth src={exerciseMediaUrl(exercise.media_path)}
           alt={exerciseName(exercise, locale)} width={280} height={200} className="w-full rounded-control object-contain" />}
         <p className="text-sm">{t('sets', { n: exercise.sets, count: formatNumber(exercise.sets, locale) })} × {t('reps', { n: exercise.reps_max ?? exercise.reps_min, count: exercise.reps_max !== null && exercise.reps_max !== exercise.reps_min ? `${formatNumber(exercise.reps_min, locale)}–${formatNumber(exercise.reps_max, locale)}` : formatNumber(exercise.reps_min, locale) })}</p>
         <p className="text-sm text-muted">{t('rest', { n: exercise.rest_seconds, count: formatNumber(exercise.rest_seconds, locale) })}</p>

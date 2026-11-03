@@ -98,7 +98,7 @@ export function CheckinSheet({ latest, open, onClose, onSent }: {
             </label>
             {photos[index] && <>
               {/* eslint-disable-next-line @next/next/no-img-element -- In-memory file preview. */}
-              <img src={photos[index].preview} alt={t('previewPosition', { value0: position })} className="aspect-[3/4] w-full rounded-control object-cover" />
+              <img src={photos[index].preview} alt={t('previewPosition', { value0: position })} loading="lazy" decoding="async" width={480} height={640} className="aspect-[3/4] w-full rounded-control object-cover" />
               <Button variant="ghost" className="w-full" aria-label={t('removePhoto', { value0: position })} onClick={() => changePhoto(index, null)}><X aria-hidden className="size-5" /></Button>
             </>}
           </div>)}

@@ -3,6 +3,7 @@ import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 
 import { useCallback, useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { localDb, useLiveQuery } from '@/core/offline';
 import { signedMediaUrl } from '@/core/storage';
 import { supabaseBrowser } from '@/core/supabase/browser';
@@ -15,8 +16,10 @@ import { readStrength } from '../data/strength';
 import { mainLifts, topSets, trendDelta } from '../trends';
 import type { TrendPoint } from '../trends';
 import { weekStart } from '../week';
-import { CheckinSheet } from './checkin-sheet';
-import { LineChart } from './line-chart';
+const CheckinSheet = dynamic(() => import('./checkin-sheet').then(module => module.CheckinSheet), { ssr: false });
+const LineChart = dynamic(() => import('./line-chart').then(module => module.LineChart), {
+  ssr: false, loading: () => <div aria-hidden className="aspect-[350/155] w-full" />,
+});
 
 export function ProgressScreen() {
   const t = useT(messages);
@@ -33,6 +36,7 @@ export function ProgressScreen() {
   const [checkinError, setCheckinError] = useState(false);
   const [selected, setSelected] = useState('');
   const [sheet, setSheet] = useState(false);
+  const [sheetLoaded, setSheetLoaded] = useState(false);
   const [photos, setPhotos] = useState<{ rows: CheckIn[]; before: string; after: string }>();
   const [photoError, setPhotoError] = useState<CheckIn[]>();
   const [photoRetry, setPhotoRetry] = useState(0);
@@ -106,7 +110,7 @@ export function ProgressScreen() {
         <section className="glass-strong space-y-2 rounded-card p-5">
           <h2 className="text-sm text-muted">{t('topWeight')}</h2>
           {top.length > 0 && <p className="text-5xl font-extrabold">{formatNumber(top.at(-1)?.value ?? 0, locale)} <span className="text-sm text-muted">{t('kg')}</span></p>}
-          <LineChart points={top} title={t('topWeightTrend')} unit={t('kg')} />
+          {top.length ? <LineChart points={top} title={t('topWeightTrend')} unit={t('kg')} /> : <p className="text-sm text-muted">{t('noMeasurementsYet')}</p>}
         </section>
       </>}
     {checkinError ? <ErrorState message={t('couldntLoadCheckinsCheckYourConnection')} retryLabel={t('tryAgain')} onRetry={() => setRetryKey((value) => value + 1)} /> : !checkins ? <LoadingState /> : <>
@@ -118,7 +122,7 @@ export function ProgressScreen() {
             <h2 className="text-sm text-muted">{label}</h2>
             <p className="text-2xl font-extrabold">{points.length ? formatNumber(points.at(-1)?.value ?? 0, locale) : '—'} <span className="text-sm text-muted">{unit}</span></p>
             <p className="text-xs text-muted">{deltaLabel(points, unit)}</p>
-            <LineChart points={points} title={t('measureTrend', { value0: label })} unit={unit} />
+            {points.length ? <LineChart points={points} title={t('measureTrend', { value0: label })} unit={unit} /> : <p className="text-sm text-muted">{t('noMeasurementsYet')}</p>}
           </section>;
         })}
       </div>
@@ -131,14 +135,14 @@ export function ProgressScreen() {
             [t('before'), photos.before], [t('after'), photos.after],
           ] as const).map(([label, url]) => <figure key={label}>
             {/* eslint-disable-next-line @next/next/no-img-element -- Signed private URLs must bypass the image optimizer cache. */}
-            <img src={url} alt={t('frontPhoto', { value0: label })} referrerPolicy="no-referrer" className="aspect-[3/4] w-full rounded-control object-cover" onError={() => setPhotoError(checkins)} />
+            <img src={url} alt={t('frontPhoto', { value0: label })} loading="lazy" decoding="async" width={480} height={640} referrerPolicy="no-referrer" className="aspect-[3/4] w-full rounded-control object-cover" onError={() => setPhotoError(checkins)} />
             <figcaption className="pt-2 text-center text-sm text-muted">{label}</figcaption>
           </figure>)}</div> : hasFronts ? <LoadingState /> : <p className="text-sm text-muted">{t('comparisonPhotosArentAvailableYet')}</p>}
       </section>
     </>}
     {sent && <p role="status" className="min-h-12 py-3 text-center text-muted">{t('sent')}</p>}
-    <Button size="lg" className="w-full" aria-disabled={Boolean(sent)} disabled={!today || (!checkins && !checkinError)} onClick={() => { if (!sent) setSheet(true); }}>{t('sendWeeklyCheckin')}</Button>
-    {(checkins || checkinError) && <CheckinSheet latest={latest} open={sheet} onClose={() => setSheet(false)} onSent={() => {
+    <Button size="lg" className="w-full" aria-disabled={Boolean(sent)} disabled={!today || (!checkins && !checkinError)} onClick={() => { if (!sent) { setSheetLoaded(true); setSheet(true); } }}>{t('sendWeeklyCheckin')}</Button>
+    {sheetLoaded && (checkins || checkinError) && <CheckinSheet latest={latest} open={sheet} onClose={() => setSheet(false)} onSent={() => {
       setSheet(false); setRetryKey((value) => value + 1);
     }} />}
   </main>;

@@ -16,10 +16,10 @@ export function ExerciseHeader({ exercise, performance }: { exercise: SnapshotEx
   return <section className="glass-strong flex items-center gap-4 rounded-card p-4">
     {exercise.media_path && <figure className="shrink-0 text-center">
       <Image src={exerciseMediaUrl(exercise.media_path)} alt={name} width={84} height={84}
-        unoptimized className="rounded-control motion-reduce:hidden" />
+        unoptimized loading="eager" decoding="async" className="rounded-control motion-reduce:hidden" />
       <figcaption className="mt-1 text-xs text-muted">{t('gymVisual')}</figcaption>
     </figure>}
-    <div className="space-y-2">
+    <div className="min-w-0 space-y-2">
       <h1 className="text-2xl font-extrabold"><bdi>{name}</bdi></h1>
       {performance && <p className="text-sm text-muted">{t('lastWeek')} <bdi>{formatNumber(performance.weight_kg ?? 0, locale)} × {formatNumber(performance.reps ?? 0, locale)}</bdi></p>}
     </div>

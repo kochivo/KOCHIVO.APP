@@ -38,9 +38,9 @@ export function FoodPicker({ onPick, alternative = false }: { onPick: (food: Foo
       <ul className="grid max-h-96 gap-2 overflow-y-auto">{result?.foods.map(food => <li key={food.id}>
         <button type="button" disabled={(!alternative && (!Number.isFinite(grams) || grams < 5 || grams > 2000 || grams % 5 !== 0)) || (alternative && food.kcal <= 0)}
           onClick={() => onPick(food, grams)} className="flex min-h-12 w-full items-center gap-3 rounded-control border border-line p-3 text-start disabled:opacity-40">
-          {/* Catalog media uses the existing public storage URL convention. */}
+          {/* Public storage hosts vary by deployment and are not in the optimizer allowlist. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          {food.photo && <img src={foodMediaUrl(food.photo)} alt="" width={48} height={48} className="size-12 rounded-control object-cover" />}
+          {food.photo && <img src={foodMediaUrl(food.photo)} alt="" width={48} height={48} loading="lazy" decoding="async" className="size-12 shrink-0 rounded-control object-cover" />}
           <span><strong>{food.name}</strong><span className="block text-sm text-muted">{t('per100g')} {formatNumber(food.kcal, locale)}  {t('kcalProtein')} {formatNumber(food.protein, locale)}  {t('carbs')} {formatNumber(food.carbs, locale)}  {t('fat')} {formatNumber(food.fat, locale)}</span></span>
         </button>
       </li>)}</ul>

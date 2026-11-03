@@ -8,6 +8,7 @@ import '../globals.css';
 import { setRequestLocale } from '@/core/i18n/server';
 import { LOCALES, localeDir, parseLocale } from '@/core/i18n/locale';
 import { LocaleProvider } from '@/core/i18n/client';
+import { MobileViewport } from '@/ui/mobile-viewport';
 
 const manrope = Manrope({ subsets: ['latin'], variable: '--font-manrope', display: 'swap' });
 const alexandria = Alexandria({ subsets: ['arabic'], variable: '--font-alexandria', display: 'swap' });
@@ -49,6 +50,7 @@ export default async function RootLayout({ children, params }: {
       <body className="min-h-dvh">
         <LocaleProvider locale={locale}>
           {children}
+          <MobileViewport />
           <RegisterServiceWorker />
         </LocaleProvider>
       </body>
