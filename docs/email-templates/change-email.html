@@ -3,37 +3,41 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="color-scheme" content="dark">
-<meta name="supported-color-schemes" content="dark">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
 <title>KOCHIVO</title>
 </head>
-<body style="margin:0;padding:0;background:#0b0e11;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0b0e11;">
-<tr><td align="center" style="padding:32px 16px;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#101418;border:1px solid #2a3038;border-radius:20px;">
-<tr><td align="center" style="padding:32px 32px 8px;">
-<img src="https://kochivo.site/brand/logo-primary.png" width="200" alt="KOCHIVO" style="display:block;width:200px;max-width:70%;height:auto;border:0;">
+<body style="margin:0;padding:0;background:#eceee8;">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;">كود تأكيد الإيميل الجديد على KOCHIVO</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#eceee8;">
+<tr><td align="center" style="padding:36px 16px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background:#ffffff;border-radius:24px;overflow:hidden;">
+<tr><td style="height:6px;background:#b6e94f;line-height:6px;font-size:6px;">&nbsp;</td></tr>
+<tr><td align="center" style="padding:32px 32px 4px;">
+<img src="https://kochivo.site/brand/logo-primary-light.png" width="168" alt="KOCHIVO" style="display:block;width:168px;max-width:60%;height:auto;border:0;">
 </td></tr>
-<tr><td style="padding:16px 32px 0;">
-<div style="height:1px;background:#2a3038;line-height:1px;font-size:1px;">&nbsp;</div>
+<tr><td dir="rtl" align="center" style="padding:28px 32px 4px;font-family:Tahoma,Arial,sans-serif;">
+<span style="display:inline-block;background:#f0f6e1;color:#426c00;font-size:12px;font-weight:bold;padding:6px 14px;border-radius:999px;">تغيير الإيميل</span>
+<h1 style="margin:16px 0 10px;font-size:24px;line-height:1.4;font-weight:bold;color:#12161a;">تأكيد الإيميل الجديد</h1>
+<p style="margin:0;font-size:15px;line-height:1.8;color:#535b63;">اكتب الكود ده في KOCHIVO عشان تأكّد تغيير إيميل حسابك لـ {{ .NewEmail }}.</p>
 </td></tr>
-<tr><td dir="rtl" style="padding:28px 32px 8px;font-family:Tahoma,Arial,sans-serif;text-align:right;color:#f2f2ee;">
-<h1 style="margin:0 0 12px;font-size:22px;line-height:1.4;font-weight:bold;color:#f2f2ee;">تأكيد الإيميل الجديد</h1>
-<p style="margin:0 0 24px;font-size:15px;line-height:1.8;color:#b5bbc1;">طلبت تغيّر إيميل حسابك من {{ .Email }} لـ {{ .NewEmail }}. دوس على الزرار عشان تأكّد.</p>
+<tr><td align="center" style="padding:26px 32px 6px;">
+<table role="presentation" cellpadding="0" cellspacing="0" style="background:#12161a;border-radius:18px;">
+<tr><td dir="ltr" align="center" style="padding:20px 30px;font-family:'Courier New',Courier,monospace;font-size:36px;line-height:1;letter-spacing:12px;font-weight:bold;color:#b6e94f;">{{ .Token }}</td></tr>
+</table>
+<p style="margin:12px 0 0;font-family:Tahoma,Arial,sans-serif;font-size:13px;color:#8a9199;">الكود بيشتغل مرة واحدة ولمدة ساعة</p>
 </td></tr>
-<tr><td align="center" style="padding:0 32px 8px;">
-<a href="{{ .ConfirmationURL }}" style="display:inline-block;background:#b6e94f;color:#101418;font-family:Tahoma,Arial,sans-serif;font-size:16px;font-weight:bold;text-decoration:none;padding:14px 32px;border-radius:12px;">أكّد الإيميل الجديد</a>
+<tr><td dir="rtl" style="padding:24px 32px 0;font-family:Tahoma,Arial,sans-serif;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f6f7f4;border-radius:14px;">
+<tr><td style="padding:14px 16px;font-size:13px;line-height:1.7;color:#535b63;text-align:right;">لو مش إنت اللي طلبت التغيير، تجاهل الإيميل وغيّر كلمة السر بتاعتك.</td></tr>
+</table>
 </td></tr>
-<tr><td dir="rtl" style="padding:16px 32px 0;font-family:Tahoma,Arial,sans-serif;text-align:right;">
-<p style="margin:0;font-size:13px;line-height:1.7;color:#8a9199;">لو مش إنت اللي طلبت التغيير، متدوسش على الزرار وغيّر كلمة السر بتاعتك.</p>
-</td></tr>
-<tr><td dir="ltr" style="padding:20px 32px 28px;font-family:Arial,sans-serif;text-align:left;">
-<div style="height:1px;background:#2a3038;line-height:1px;font-size:1px;margin-bottom:16px;">&nbsp;</div>
-<p style="margin:0 0 6px;font-size:14px;line-height:1.6;color:#f2f2ee;font-weight:bold;">Confirm your new email</p>
-<p style="margin:0;font-size:13px;line-height:1.6;color:#8a9199;">Tap the button above to confirm changing your account email. If this was not you, ignore it and change your password.</p>
+<tr><td dir="ltr" style="padding:22px 32px 30px;font-family:Arial,sans-serif;text-align:left;">
+<p style="margin:0 0 4px;font-size:13px;line-height:1.6;color:#12161a;font-weight:bold;">Confirm your new email</p>
+<p style="margin:0;font-size:12px;line-height:1.6;color:#8a9199;">Enter this code in KOCHIVO to confirm your new email. If this was not you, change your password.</p>
 </td></tr>
 </table>
-<p style="margin:20px 0 0;font-family:Arial,sans-serif;font-size:12px;color:#5d646c;">KOCHIVO · Coach better · <a href="https://kochivo.site" style="color:#b6e94f;text-decoration:none;">kochivo.site</a></p>
+<p style="margin:22px 0 0;font-family:Arial,sans-serif;font-size:12px;color:#8a9199;">Coach better &nbsp;|&nbsp; <a href="https://kochivo.site" style="color:#426c00;text-decoration:none;font-weight:bold;">kochivo.site</a></p>
 </td></tr>
 </table>
 </body>
