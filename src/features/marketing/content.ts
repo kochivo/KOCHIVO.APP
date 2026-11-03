@@ -8,10 +8,10 @@ export const content = {
   brand: 'KOCHIVO',
   seo: { title: 'كوتشيفو — كل لاعبينك في مكان واحد', description: 'كل لاعبينك، وبرنامج وأكل ومتابعة كل واحد، في مكان واحد. واللاعب بيسجّل في الجيم حتى لو النت فاصل.' },
   whatsappNumber: publicConfig.ownerWhatsapp,
-  links: { signup: '/login?tab=signup', demo: '/login' },
+  links: { signup: '/login?tab=signup', demo: '/demo' },
   nav: [{ href: '#how', label: 'إزاي بيشتغل' }, { href: '#features', label: 'المميزات' }, { href: '#pricing', label: 'الباقات' }, { href: '#faq', label: 'أسئلة' }],
   login: 'دخول', signup: 'ابدأ مجاناً', contact: 'كلّمنا على واتساب',
-  hero: { eyebrow: 'للكباتن الأونلاين', lines: ['خطوتك الجاية', 'بتبدأ', 'من هنا'], period: '.', label: 'خطوتك الجاية بتبدأ من هنا', arabic: 'خطوتك الجاية بتبدأ من هنا', signup: 'ابدأ مجاناً · لحد 5 لاعبين', demo: 'جرّب KOCHIVO', invite: 'لاعب ومعاك دعوة؟', inviteNote: 'افتح لينك الدعوة اللي وصلك من الكابتن.' },
+  hero: { eyebrow: 'للكباتن الأونلاين', lines: ['خطوتك الجاية', 'بتبدأ', 'من هنا'], period: '.', label: 'خطوتك الجاية بتبدأ من هنا', arabic: 'خطوتك الجاية بتبدأ من هنا', signup: 'ابدأ مجاناً · لحد 5 لاعبين', demo: 'جرّب الديمو', demoNote: 'لوحة كابتن ببيانات تجريبية لمدة ٢٤ ساعة، من غير دعوات', invite: 'لاعب ومعاك دعوة؟', inviteNote: 'افتح لينك الدعوة اللي وصلك من الكابتن.' },
   preview: { player: 'شوف كلاعب', captain: 'شوف ككابتن', label: 'معاينة توضيحية · بيانات مثال', day: 'اليوم 2 · صدر وترايسبس', exercise: 'بنش بريس بالبار', weightLabel: 'الوزن · كجم', weight: '65', plus: '+', minus: '−', pr: 'رقم جديد', record: '65 كجم × 8 · زيادة 5 كجم', done: 'تمّ السِت', radar: 'محتاجين متابعة', heading: '3 لاعبين بيبعدوا', send: 'ابعتله على واتساب', waiting: 'فيديوهات مستنية ردّك', videos: '2' },
   radar: [
     { name: 'كريم عادل', days: '4 أيام', reason: 'ماسجّلش تمرين من يوم السبت' },

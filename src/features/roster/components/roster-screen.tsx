@@ -9,8 +9,10 @@ import type { RosterResult } from '../types';
 import { RosterRow } from './roster-row';
 import { InviteSheet } from './invite-sheet';
 import { RadarCard } from './radar-card';
+import { useDemoExpiry } from '@/features/demo';
 
 export function RosterScreen({ data, today }: { data: Promise<[RosterResult, string]>; today: string }) {
+  const demo = useDemoExpiry();
   const [result, captainFirstName] = use(data);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
@@ -27,7 +29,7 @@ export function RosterScreen({ data, today }: { data: Promise<[RosterResult, str
     { label: 'هيخلص قريب', count: statuses.filter(({ status }) => status === 'ending').length, color: 'text-danger' },
     { label: 'مهام مستنياك', count: players.reduce((sum, player) => sum + player.openTasks, 0), color: 'text-ink' },
   ];
-  const inviteButton = <Button onClick={() => setInviteOpen(true)} className="min-h-12"><Plus aria-hidden className="size-5" />لاعب جديد</Button>;
+  const inviteButton = <Button onClick={() => setInviteOpen(true)} className="min-h-12"><Plus aria-hidden className="size-5" />{demo ? 'الدعوات مقفولة في الديمو' : 'لاعب جديد'}</Button>;
   return (
     <section className="space-y-6">
       <header className="flex flex-wrap items-end justify-between gap-4">
@@ -36,7 +38,7 @@ export function RosterScreen({ data, today }: { data: Promise<[RosterResult, str
       </header>
       <RadarCard today={today} />
       {pending ? <LoadingState /> : result.error ? <ErrorState message={result.error} retryLabel="جرّب تاني" onRetry={() => startTransition(() => router.refresh())} /> : players.length === 0 ? (
-        <EmptyState icon={Users} title="لسه مفيش لاعبين. ابعت أول دعوة." body="ابدأ بلينك دعوة للاعبك" action={{ label: 'لاعب جديد', onClick: () => setInviteOpen(true) }} />
+        <EmptyState icon={Users} title={demo ? 'لسه مفيش بيانات تجريبية' : 'لسه مفيش لاعبين. ابعت أول دعوة.'} body={demo ? 'الدعوات مقفولة في الديمو' : 'ابدأ بلينك دعوة للاعبك'} action={{ label: demo ? 'الدعوات مقفولة في الديمو' : 'لاعب جديد', onClick: () => setInviteOpen(true) }} />
       ) : <>
         <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
           {counts.map(({ label, count, color }) => <GlassCard key={label} level="strong" className="space-y-2 p-5"><p className="text-sm text-muted">{label}</p><p className={`font-display text-4xl font-extrabold ${color}`}>{count}</p></GlassCard>)}

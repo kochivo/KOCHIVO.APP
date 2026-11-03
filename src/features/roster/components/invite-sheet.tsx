@@ -6,8 +6,10 @@ import { Button, Segmented } from '@/ui';
 import { createInvite } from '../data/create-invite';
 import { whatsappUrl } from '@/lib/whatsapp';
 import { inviteMessage, inviteUrl } from '../invite';
+import { useDemoExpiry } from '@/features/demo';
 
 export function InviteSheet({ captainFirstName, onClose }: { captainFirstName: string; onClose: () => void }) {
+  const demo = useDemoExpiry();
   const dialog = useRef<HTMLDialogElement>(null);
   const [days, setDays] = useState('30');
   const [url, setUrl] = useState('');
@@ -20,6 +22,7 @@ export function InviteSheet({ captainFirstName, onClose }: { captainFirstName: s
     return () => element?.close();
   }, []);
   function create() {
+    if (demo) { setError('الدعوات مقفولة في الديمو'); return; }
     setError('');
     startTransition(async () => {
       try {
@@ -42,7 +45,7 @@ export function InviteSheet({ captainFirstName, onClose }: { captainFirstName: s
         <h2 id="invite-heading" className="text-2xl font-extrabold">دعوة لاعب جديد</h2>
         <Button variant="ghost" aria-label="اقفل الدعوة" onClick={onClose} className="min-h-12 min-w-12 px-0"><X aria-hidden className="size-5" /></Button>
       </div>
-      {!url ? <div className="space-y-5">
+      {demo ? <p className="text-muted">الدعوات مقفولة في الديمو</p> : !url ? <div className="space-y-5">
         <p className="text-sm text-muted">الاشتراك يبدأ من النهارده. اختار مدته</p>
         <Segmented aria-label="مدة الاشتراك" options={[{ value: '7', label: '7 أيام' }, { value: '30', label: '30 يوم' }, { value: '90', label: '90 يوم' }]} value={days} onChange={(value) => { if (!pending) setDays(value); }} />
         <Button onClick={create} disabled={pending} className="w-full min-h-12">{pending ? 'جاري تجهيز الدعوة' : 'اعمل لينك الدعوة'}</Button>

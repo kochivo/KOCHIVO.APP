@@ -1,4 +1,4 @@
-export type AuthUser = { role: 'captain' | 'player'; roleConfirmed: boolean; suspended?: boolean };
+export type AuthUser = { role: 'captain' | 'player'; roleConfirmed: boolean; suspended?: boolean; anonymous?: boolean };
 export function decideRoute({ path, user }: { path: string; user: AuthUser | null }): { redirect?: string } {
   if (user?.suspended) {
     return ['/suspended', '/sign-out', '/auth/sign-out', '/auth/callback'].includes(path) ? {} : { redirect: '/suspended' };
@@ -7,6 +7,7 @@ export function decideRoute({ path, user }: { path: string; user: AuthUser | nul
   const playerArea = path === '/player' || path.startsWith('/player/');
   const home = user?.role === 'captain' ? '/captain' : '/player';
   if (captainArea || playerArea) {
+    if (user?.anonymous && !user.roleConfirmed) return { redirect: '/demo' };
     if (!user || (user.role === 'captain' && !user.roleConfirmed)) return { redirect: '/login' };
     if (captainArea !== (user.role === 'captain')) return { redirect: home };
   }
