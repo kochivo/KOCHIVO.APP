@@ -32,7 +32,13 @@
 
 ## 3. الرفع (deploy)
 
-1. اعمل push للـ master على GitHub بنفسك (Claude مش بيعمل push).
+1. الريبو لسه مش متربط بـ GitHub. اعمل repo **private** فاضي على GitHub (من غير README)، وبعدين من فولدر المشروع:
+   ```powershell
+   git remote add origin https://github.com/<اسمك>/kochivo.git
+   git push -u origin master
+   ```
+   (Claude مش بيعمل push.)
+   بعدها اربط الـ repo بـ Vercel (Add New Project ← Import).
 2. في إعدادات الاستضافة حط:
    - `NEXT_PUBLIC_SUPABASE_URL` و `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (من Supabase ← API Keys، الـ publishable مش السري)
    - `NEXT_PUBLIC_TURNSTILE_SITE_KEY` (لو عملت خطوة 2)
