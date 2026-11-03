@@ -5,7 +5,8 @@ import { messages } from '../messages';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Button } from '@/ui';
+import { Utensils } from 'lucide-react';
+import { Button, EmptyState } from '@/ui';
 import { LoadingState } from '@/ui/loading-state';
 import { createPlan, listPlayerPlans } from '../data/plan-io';
 import type { PlanSummary } from '../types';
@@ -41,8 +42,7 @@ export function PlayerPlans({ playerId }: { playerId: string }) {
     {busy && <p role="status">{t('creatingPlan')}</p>}
     {error && <div role="alert">{error}<Button variant="secondary" onClick={() => setRetry(n => n + 1)}>{t('tryAgain')}</Button></div>}
     {!plans && !error && <LoadingState variant="cards" />}
-    {plans?.length === 0 && <div className="glass grid justify-items-start gap-3 rounded-card p-6"><p className="text-muted">{t('noPlansYetCreateANewOne')}</p>
-      <Link href="/captain/templates" className="inline-flex min-h-12 items-center font-bold text-lime">{t('orStartFromTemplate')}</Link></div>}
+    {plans?.length === 0 && <EmptyState icon={Utensils} title={t('noPlansYetCreateANewOne')} body={t('emptyBody')} action={{ label: t('orStartFromTemplate'), href: '/captain/templates' }} />}
     <ul className="grid gap-3 lg:grid-cols-2">{plans?.map(plan => <li key={plan.id}><Link href={`/captain/nutrition/${plan.id}`} className="glass flex min-h-12 items-center justify-between gap-3 rounded-control p-4">
       <span>{starterText(plan.title, locale)}</span><span className="text-muted">{statuses[plan.status]}</span>
     </Link></li>)}</ul>

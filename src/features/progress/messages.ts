@@ -2,6 +2,10 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    messageCoach: "ابعت للكابتن",
+    firstWorkout: "ابدأ تمرين",
+    workoutsTitle: "سجّل أول تمرين",
+    firstCheckin: "ابعت أول متابعة",
     pageTitle: "تطورك",
     weekLabel: "أ{count}",
     front: "قدام",
@@ -64,6 +68,10 @@ export const messages = defineMessages({
     frontPhoto: "صورة {value0} من قدام",
   },
   en: {
+    messageCoach: "Message your coach",
+    firstWorkout: "Start a workout",
+    workoutsTitle: "Your workout history starts here",
+    firstCheckin: "Your first check-in",
     pageTitle: "Your progress",
     weekLabel: "W{count}",
     front: "Front",

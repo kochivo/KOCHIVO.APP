@@ -5,7 +5,8 @@ import { formatNumber } from '@/lib/format';
 import { messages } from '../messages';
 
 import { useEffect, useState } from 'react';
-import { Button, GlassCard } from '@/ui';
+import { CheckCheck } from 'lucide-react';
+import { Button, EmptyState, GlassCard } from '@/ui';
 import { LoadingState } from '@/ui/loading-state';
 import { fetchRadar } from '../data/radar';
 import { radarReasonLabel, radarWhatsappUrl } from '../radar';
@@ -29,10 +30,7 @@ export function RadarCard({ today, showEmpty = false }: { today: string; showEmp
   const { result } = loaded;
   if (result.error) return <p role="alert" className="text-sm text-muted">{t('radarIsUnavailable')}</p>;
   const players = result.data ?? [];
-  if (players.length === 0) return showEmpty ? <GlassCard level="strong" className="flex items-center gap-3 p-5">
-    <span aria-hidden className="size-2 shrink-0 rounded-full bg-lime" />
-    <div><h2 className="text-lg font-bold">{t('dropoutRadar')}</h2><p className="text-sm text-muted">{t('radarAllClear')}</p></div>
-  </GlassCard> : null;
+  if (players.length === 0) return showEmpty ? <EmptyState className="glass-strong" icon={CheckCheck} title={t('dropoutRadar')} body={t('radarAllClear')} action={{ label: t('players'), href: '/captain/players' }} /> : null;
 
   return (
     <GlassCard level="strong" className="space-y-3 border-warn/40 p-5">

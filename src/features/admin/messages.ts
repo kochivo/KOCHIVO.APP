@@ -2,6 +2,10 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    clearSearch: "امسح البحث والفلاتر",
+    emptyHint: "جرّب اسم تاني أو ارجع لكل الكباتن",
+    auditHint: "تفعيل الاشتراكات وإيقاف الحسابات بيظهر هنا",
+    manageCaptains: "إدارة الكباتن",
     'usage': "{active} من {limit}",
     'denied': "مش مسموح",
     'noTier': "الباقة مش موجودة",
@@ -88,6 +92,10 @@ export const messages = defineMessages({
     'dash': "—",
   },
   en: {
+    clearSearch: "Clear search and filters",
+    emptyHint: "Try another name or return to all captains",
+    auditHint: "Plan activations and account changes appear here",
+    manageCaptains: "Manage captains",
     'usage': "{active} of {limit}",
     'denied': "Not allowed",
     'noTier': "Plan not found",

@@ -5,13 +5,15 @@ import { formatNumber } from '@/lib/format';
 import { formatDateAr } from '@/lib/dates';
 
 import { useId } from 'react';
+import { Scale } from 'lucide-react';
+import { EmptyState } from '@/ui/empty-state';
 import type { TrendPoint } from '../trends';
 
 export function LineChart({ points, title, unit }: { points: readonly TrendPoint[]; title: string; unit: string }) {
   const t = useT(messages);
   const locale = useLocale();
   const id = useId();
-  if (!points.length) return <p className="text-sm text-muted">{t('noMeasurementsYet')}</p>;
+  if (!points.length) return <EmptyState icon={Scale} title={t('noMeasurementsYet')} body={t('yourFirstCheckinIsYourStartingPoint')} action={{ label: t('sendWeeklyCheckin'), href: '/player/progress' }} />;
   const min = Math.min(...points.map((point) => point.value));
   const range = Math.max(1, Math.max(...points.map((point) => point.value)) - min);
   const coordinates = points.map((point, index) => ({

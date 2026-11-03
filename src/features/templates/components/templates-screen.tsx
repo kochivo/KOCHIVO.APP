@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from 'react';
 import { uuidv7 } from '@/core/offline/ids';
 import { applyOptimistic } from '@/lib/optimistic';
 import { Copy, Eye, Files, Pencil, Trash2 } from 'lucide-react';
-import { Button } from '@/ui';
+import { Button, EmptyState } from '@/ui';
 import { copyTemplate, deleteTemplate, listTemplates, renameTemplate } from '../data/templates';
 import type { Template, TemplateKind } from '../types';
 import { AssignSheet } from './assign-sheet';
@@ -104,6 +104,7 @@ export function TemplatesScreen() {
     finally { unlock(keys); }
   }
   const visible = templates.filter(template => template.kind === kind && !deleted.includes(keyOf(template)));
+  const starter = visible.find(template => template.starter && !busy.includes(keyOf(template)));
   return <div className="mx-auto grid max-w-5xl gap-6">
     <header className="space-y-2">
       <p className="font-display text-sm text-muted">{t('templates')}</p>
@@ -118,10 +119,9 @@ export function TemplatesScreen() {
       <Button variant="ghost" className="min-h-12" onClick={() => { setLoading(true); setAttempt(value => value + 1); }}>{t('tryAgain')}</Button>
     </div> : <>
       {busy.length > 0 && <p role="status">{t('savingChanges')}</p>}
-      {visible.length === 0 ? <div className="glass grid justify-items-start gap-3 rounded-card p-8">
-        <Files aria-hidden className="size-8 text-muted" />
-        <p>{t('noTemplatesYetOpenAPlayersProgram')}</p>
-      </div> : <ul className="grid gap-4 sm:grid-cols-2">
+      {!visible.some(template => !template.starter) && <EmptyState icon={Files} title={t('emptyTitle')} body={starter ? t('emptyBody') : t('noTemplatesYetOpenAPlayersProgram')}
+        action={starter ? { label: t('copyStarter'), onClick: () => void duplicate(starter) } : { label: t('openPlayers'), href: '/captain/players' }} />}
+      {visible.length > 0 && <ul className="grid gap-4 sm:grid-cols-2">
         {visible.map(template => <li key={`${template.kind}-${template.id}`} className="glass flex flex-col gap-4 rounded-card p-5">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 space-y-1.5">

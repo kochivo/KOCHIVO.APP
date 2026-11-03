@@ -5,9 +5,9 @@ import { formatNumber } from '@/lib/format';
 import { messages } from '../messages';
 
 import { useState } from 'react';
-import { Plus } from 'lucide-react';
+import { Dumbbell, Plus } from 'lucide-react';
 import { uuidv7 } from '@/core/offline/ids';
-import { Button, TextField } from '@/ui';
+import { Button, EmptyState, TextField } from '@/ui';
 import { addExercise, moveExercise, removeExercise, renameDay, toggleSuperset, updateExercise } from '../draft';
 import { daySummary } from '../summary';
 import type { DraftDay, ProgramDraft } from '../types';
@@ -29,9 +29,8 @@ export function DayEditor({ day, update }: { day: DraftDay; update: (operation: 
     <h2 className="sr-only">{t('todaysExercises')}</h2>
     <TextField label={t('dayName')} maxLength={60} value={day.title} onChange={event => update(draft => renameDay(draft, day.id, event.target.value))} />
     <p className="glass-strong rounded-control p-4 text-sm">{t('exerciseCount', { n: summary.exercises, count: formatNumber(summary.exercises, locale) })} · {t('setCount', { n: summary.sets, count: formatNumber(summary.sets, locale) })} · {t('minuteCount', { n: summary.minutes, count: formatNumber(summary.minutes, locale) })}</p>
-    {day.exercises.length === 0 && <div className="glass-raised space-y-4 rounded-card p-6">
-      <p className="text-muted">{t('addTheFirstExercise')}</p>{addButton}
-    </div>}
+    {day.exercises.length === 0 && <EmptyState icon={Dumbbell} title={t('addTheFirstExercise')} body={t('emptyBody')}
+      action={{ label: t('addExercise'), onClick: () => setLibraryOpen(true) }} />}
     <ol className="space-y-4">{day.exercises.map((row, index) => <li key={row.id}><ExerciseRow row={row} first={index === 0} last={index === day.exercises.length - 1}
       selected={selection.includes(row.id)} onSelect={() => setSelected(current => current.includes(row.id) ? current.filter(id => id !== row.id) : [...current, row.id])}
       onMove={delta => update(draft => moveExercise(draft, day.id, row.id, delta))}

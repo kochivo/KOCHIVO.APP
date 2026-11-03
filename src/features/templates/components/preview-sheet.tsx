@@ -5,7 +5,8 @@ import { formatNumber } from '@/lib/format';
 import { messages } from '../messages';
 
 import { useEffect, useRef, useState } from 'react';
-import { Button } from '@/ui';
+import { Files } from 'lucide-react';
+import { Button, EmptyState } from '@/ui';
 import { LoadingState } from '@/ui/loading-state';
 import { exerciseName, foodName } from '@/lib/display-name';
 import { starterText } from '@/lib/starter-text';
@@ -32,6 +33,7 @@ export function PreviewSheet({ template, onAssign, onClose }: { template: Templa
   }, [attempt, template.id, template.kind, t]);
   const n = (value: number) => formatNumber(value, locale);
   const title = starterText(template.title, locale);
+  const emptyAction = { label: t('chooseAnother'), onClick: onClose };
   return <dialog ref={dialog} aria-labelledby="preview-template-title" onCancel={onClose} onClose={onClose}
     className="fixed inset-0 m-auto max-h-[85dvh] w-[calc(100%_-_2rem)] max-w-lg overflow-y-auto rounded-card border border-line bg-surface p-6 text-ink">
     <div className="grid gap-4">
@@ -39,11 +41,11 @@ export function PreviewSheet({ template, onAssign, onClose }: { template: Templa
       {error ? <div role="alert" className="grid justify-items-start gap-2">{error}
         <Button variant="ghost" className="min-h-12" onClick={() => { setError(''); setPreview(null); setAttempt(value => value + 1); }}>{t('tryAgain')}</Button>
       </div> : !preview ? <LoadingState variant="detail" />
-        : preview.groups.length === 0 ? <p className="text-muted">{t('templateIsEmptyAddDaysOrMeals')}</p> : <>
+        : preview.groups.length === 0 ? <EmptyState icon={Files} title={t('nothingHereYet')} body={t('templateIsEmptyAddDaysOrMeals')} action={emptyAction} /> : <>
           {preview.kind === 'nutrition' && <p className="glass-strong w-fit rounded-control px-3 py-2 text-sm font-bold">{t('totalKcal', { kcal: n(preview.kcal) })}</p>}
           {preview.groups.map((group, index) => <section key={index} className="glass grid gap-2 rounded-card p-4">
             <h3 className="font-bold">{starterText(group.title, locale, template.title)}</h3>
-            {group.items.length === 0 ? <p className="text-sm text-muted">{t('nothingHereYet')}</p> : <ul className="grid gap-1.5 text-sm">
+            {group.items.length === 0 ? <EmptyState icon={Files} title={t('nothingHereYet')} body={t('templateIsEmptyAddDaysOrMeals')} action={emptyAction} /> : <ul className="grid gap-1.5 text-sm">
               {preview.kind === 'program'
                 ? preview.groups[index]?.items.map((item, i) => <li key={i} className="flex justify-between gap-3">
                   <span className="min-w-0 break-words">{exerciseName(item, locale)}</span>
@@ -57,7 +59,7 @@ export function PreviewSheet({ template, onAssign, onClose }: { template: Templa
           </section>)}
         </>}
       <div className="flex flex-wrap gap-2">
-        <Button className="min-h-12" disabled={!preview || preview.groups.length === 0} onClick={onAssign}>{t('assignToPlayer')}</Button>
+        <Button variant={preview?.groups.length ? 'primary' : 'secondary'} className="min-h-12" disabled={!preview || preview.groups.length === 0} onClick={onAssign}>{t('assignToPlayer')}</Button>
         <Button variant="ghost" className="min-h-12" onClick={onClose}>{t('close')}</Button>
       </div>
     </div>

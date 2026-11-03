@@ -5,7 +5,6 @@ import { formatNumber } from '@/lib/format';
 
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowRight, Check, Dumbbell } from 'lucide-react';
 import { localDate } from '@/lib/dates';
@@ -60,10 +59,9 @@ export function FocusScreen({ dayId, playerId }: { dayId: string; playerId?: str
       <MediaStatus />
     </header>
     {state.error ? <ErrorState message={state.error} retryLabel={t('tryAgain')} onRetry={state.retry} /> :
-      state.loading ? <LoadingState /> : !state.day ? <>
-        <EmptyState icon={Dumbbell} title={t('thisWorkoutIsntInYourProgram')} body={t('goHomeToSeeYourCurrentWorkout')} />
-        <Link href="/player" className="glass flex min-h-12 items-center justify-center rounded-control px-4">{t('backToHome')}</Link>
-      </> : state.queue.length === 0 ? <EmptyState icon={Dumbbell} title={t('noExercisesForThisDay')} body={t('yourCoachIsPreparingYourWorkout')} /> : <>
+      state.loading ? <LoadingState /> : !state.day ?
+        <EmptyState icon={Dumbbell} title={t('thisWorkoutIsntInYourProgram')} body={t('goHomeToSeeYourCurrentWorkout')} action={{ label: t('backToHome'), href: '/player' }} />
+      : state.queue.length === 0 ? <EmptyState icon={Dumbbell} title={t('noExercisesForThisDay')} body={t('yourCoachIsPreparingYourWorkout')} action={{ label: t('messageCoach'), href: '/player/captain' }} /> : <>
         <p className="text-sm text-muted">{t('setProgress', { value0: formatNumber(state.progress, locale), value1: formatNumber(state.queue.length, locale) })}</p>
         <ProgressBar value={state.doneSets.length} max={state.queue.length} aria-label={t('setProgress', { value0: formatNumber(state.progress, locale), value1: formatNumber(state.queue.length, locale) })} />
         {state.finished ? <DonePanel /> : current ? <>

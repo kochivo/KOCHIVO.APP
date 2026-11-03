@@ -44,7 +44,7 @@ export function PlayerVoiceNotes() {
       <h2 id="voice-heading" className="text-xl font-bold">{t('fromCoach')}</h2>
       {load.status === 'loading' ? <LoadingState variant="list" /> : load.status === 'error' ?
         <ErrorState message={t('loadFailed')} retryLabel={t('retry')} onRetry={() => { setLoad({ status: 'loading' }); void fetchNotes(); }} /> :
-        load.notes.length === 0 ? <EmptyState icon={Mic} title={t('noNotesTitle')} body={t('noNotesBody')} /> :
+        load.notes.length === 0 ? <EmptyState icon={Mic} title={t('noNotesTitle')} body={t('noNotesBody')} action={{ label: t('sendCheckin'), href: '/player/progress' }} /> :
           <VoiceNoteList notes={load.notes} onPlay={played} />}
     </GlassCard>
   );

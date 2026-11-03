@@ -2,6 +2,11 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    emptyTitle: "ابدأ قوالبك",
+    emptyBody: "اعمل نسخة من قالب جاهز وعدّلها على طريقتك",
+    copyStarter: "انسخ قالب جاهز",
+    openPlayers: "افتح اللاعبين",
+    chooseAnother: "اختار قالب تاني",
     "dayCount.one": "{count} أيام",
     "dayCount.other": "{count} أيام",
     "mealCount.one": "{count} وجبات",
@@ -63,6 +68,11 @@ export const messages = defineMessages({
     copyOf: "{title} (نسخة)",
   },
   en: {
+    emptyTitle: "Build your template collection",
+    emptyBody: "Copy a starter and make it your own",
+    copyStarter: "Copy a starter",
+    openPlayers: "Open players",
+    chooseAnother: "Choose another template",
     "dayCount.one": "{count} day",
     "dayCount.other": "{count} days",
     "mealCount.one": "{count} meal",

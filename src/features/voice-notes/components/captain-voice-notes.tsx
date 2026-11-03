@@ -3,7 +3,8 @@ import { useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 
 import { useCallback, useEffect, useState } from 'react';
-import { ErrorState, GlassCard, LoadingState } from '@/ui';
+import { Mic } from 'lucide-react';
+import { EmptyState, ErrorState, GlassCard, LoadingState } from '@/ui';
 import { loadSupabaseBrowser } from '@/core/supabase/lazy';
 import { listVoiceNotes } from '../data/voice-notes';
 import type { VoiceNote } from '../types';
@@ -31,10 +32,11 @@ export function CaptainVoiceNotes({ playerId }: { playerId: string }) {
   return (
     <GlassCard role="region" aria-labelledby="captain-voice-heading" className="space-y-4 p-5">
       <h2 id="captain-voice-heading" className="text-lg font-bold">{t('voiceNotes')}</h2>
-      <VoiceRecorder playerId={playerId} onSent={sent} />
+      <div id={`voice-recorder-${playerId}`} tabIndex={-1}><VoiceRecorder playerId={playerId} onSent={sent} /></div>
       {load.status === 'loading' ? <LoadingState variant="list" /> : load.status === 'error' ?
         <ErrorState message={t('loadFailed')} retryLabel={t('retry')} onRetry={() => { setLoad({ status: 'loading' }); void fetchNotes(); }} /> :
-        load.notes.length > 0 && <VoiceNoteList notes={load.notes} />}
+        load.notes.length > 0 ? <VoiceNoteList notes={load.notes} /> :
+          <EmptyState icon={Mic} title={t('noNotesTitle')} body={t('captainEmptyBody')} action={{ label: t('record'), href: `#voice-recorder-${playerId}` }} />}
     </GlassCard>
   );
 }

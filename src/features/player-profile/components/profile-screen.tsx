@@ -44,8 +44,8 @@ export async function ProfileScreen({ playerId, tab, today, data }: Props) {
           className={cn('flex min-h-12 flex-1 shrink-0 items-center justify-center whitespace-nowrap rounded-control px-4 text-sm font-bold transition-colors duration-150 motion-reduce:transition-none',
             key === tab ? 'bg-lime text-on-lime' : 'text-muted hover:bg-ink/5 hover:text-ink')}>{t(`tab.${key}`)}</Link>)}
       </nav>
-      {tab === 'intake' ? <IntakeTab intake={profile.intake} today={today} /> :
-        tab === 'progress' ? <ProgressTab checkIns={profile.checkIns} targetKg={profile.intake?.targetWeightKg ?? null} /> :
+      {tab === 'intake' ? <IntakeTab playerId={playerId} intake={profile.intake} today={today} /> :
+        tab === 'progress' ? <ProgressTab playerId={playerId} checkIns={profile.checkIns} targetKg={profile.intake?.targetWeightKg ?? null} /> :
           tab === 'plan' ? <PlanTab playerId={playerId} program={profile.program} nutrition={profile.nutrition} /> :
             <CheckinsTab playerId={playerId} checkIns={profile.checkIns} />}
     </section>

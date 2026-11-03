@@ -5,7 +5,7 @@ import { messages } from '../messages';
 
 import { useState } from 'react';
 import { Package as PackageIcon, Plus, X } from 'lucide-react';
-import { Button, GlassCard, TextField } from '@/ui';
+import { Button, EmptyState, GlassCard, TextField } from '@/ui';
 import { archivePackage, createPackage } from '../data/finance-actions';
 import type { Package } from '../types';
 
@@ -50,9 +50,7 @@ export function PackagesCard({ packages: initial, onChange }: { packages: Packag
         <h2 id="packages-heading" className="text-xl font-bold">{t('packages')}</h2>
         <p className="text-sm text-muted">{t('packagesHint')}</p>
       </div>
-      {packages.length === 0 && !adding ? <div className="flex items-center gap-3 rounded-control bg-ink/5 p-4 text-sm text-muted">
-        <PackageIcon aria-hidden className="size-5 shrink-0" />{t('noPackages')}
-      </div> : <ul className="space-y-2">{packages.map((item) => <li key={item.id} className="glass-raised flex min-h-12 items-center justify-between gap-3 rounded-control ps-4 pe-1">
+      {packages.length === 0 && !adding ? <EmptyState icon={PackageIcon} title={t('noPackages')} body={t('packagesHint')} action={{ label: t('newPackage'), onClick: () => setAdding(true) }} /> : <ul className="space-y-2">{packages.map((item) => <li key={item.id} className="glass-raised flex min-h-12 items-center justify-between gap-3 rounded-control ps-4 pe-1">
         <div className="min-w-0 py-2"><p className="truncate font-bold">{item.name}</p>
           <p className="text-xs text-muted">{t('amount', { amount: formatNumber(item.price_egp, locale) })} · {t('days', { n: item.days, count: formatNumber(item.days, locale) })}</p></div>
         <Button variant="ghost" className="min-h-12 min-w-12 px-0" aria-label={t('archivePackage', { name: item.name })} onClick={() => void archive(item)}><X aria-hidden className="size-5" /></Button>
@@ -67,7 +65,7 @@ export function PackagesCard({ packages: initial, onChange }: { packages: Packag
           <Button type="submit" className="min-h-12 flex-1" disabled={!valid || busy}>{t('addPackage')}</Button>
           <Button variant="ghost" className="min-h-12" disabled={busy} onClick={() => { setAdding(false); setError(''); }}>{t('closeCollect')}</Button>
         </div>
-      </form> : <Button variant="secondary" className="min-h-12 w-full" onClick={() => setAdding(true)}><Plus aria-hidden className="size-5" />{t('newPackage')}</Button>}
+      </form> : packages.length > 0 && <Button variant="secondary" className="min-h-12 w-full" onClick={() => setAdding(true)}><Plus aria-hidden className="size-5" />{t('newPackage')}</Button>}
       {error && <p role="alert" className="text-sm text-danger">{error}</p>}
     </GlassCard>
   );

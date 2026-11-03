@@ -5,6 +5,8 @@ import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 
 import Image from 'next/image';
+import { Camera } from 'lucide-react';
+import { EmptyState } from '@/ui/empty-state';
 import { LoadingState } from '@/ui/loading-state';
 import { useInboxMedia } from '../hooks/use-inbox-media';
 import type { InboxItem } from '../types';
@@ -23,6 +25,7 @@ export function CheckinDetail({ item }: { item: Extract<InboxItem, { kind: 'chec
     {media.loading ? <LoadingState variant="cards" aria-label={t('loadingPhotos')} /> : media.error ?
       <div role="alert"><p>{t('photosFailed')}</p><button className="min-h-12 px-4" onClick={media.retry}>{t('retry')}</button></div> :
       media.urls.length ? <div className="grid gap-3 sm:grid-cols-3">{media.urls.slice(0, 3).map((url, index) =>
-        <Image key={url} src={url} alt={t('photo', { n: formatNumber(index + 1, locale) })} width={480} height={640} unoptimized onError={media.failed} className="h-auto w-full rounded-control object-contain" />)}</div> : <p className="text-muted">{t('noPhotos')}</p>}
+        <Image key={url} src={url} alt={t('photo', { n: formatNumber(index + 1, locale) })} width={480} height={640} unoptimized onError={media.failed} className="h-auto w-full rounded-control object-contain" />)}</div> :
+          <EmptyState icon={Camera} title={t('noPhotos')} body={t('photoHint')} action={{ label: t('openPlayer'), href: `/captain/players/${item.player_id}?tab=checkins` }} />}
   </div>;
 }

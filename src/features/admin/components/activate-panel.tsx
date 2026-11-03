@@ -5,6 +5,8 @@ import { messages } from '../messages';
 
 import { useState, useTransition } from 'react';
 import { Button } from '@/ui/button';
+import { Package } from 'lucide-react';
+import { EmptyState } from '@/ui/empty-state';
 import { Stepper } from '@/ui/stepper';
 import { activatePlan } from '../data/activate-plan';
 import { tierLabel } from '../format';
@@ -47,7 +49,7 @@ export function ActivatePanel({ captain, plans, onClose, onSuccess }: Props) {
             <span className="text-sm text-muted">{t('monthlyPrice', { price: formatNumber(item.price_egp, locale) })}</span>
           </button>)}
         </div>
-        {!plans.length && <p role="alert">{t('plansFailed')}</p>}
+        {!plans.length && <EmptyState icon={Package} title={t('plansFailed')} body={t('emptyHint')} action={{ label: t('manageCaptains'), onClick: onClose }} />}
         <Stepper label={t('monthCount')} value={months} min={1} step={1} onChange={value => setMonths(Math.min(12, value))} />
         <p className="text-sm text-muted">{t('monthsHint')}</p>
         <label className="block space-y-2"><span>{t('paymentRef')}</span>

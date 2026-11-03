@@ -12,8 +12,8 @@ import { customFoodSchema } from '../types';
 import type { Food } from '../types';
 import { saveCustomFood } from '../data/custom-food-photo';
 
-export function CustomFoodSheet({ onClose, onSave, openerId }: {
-  onClose: () => void; onSave: (food: Food, grams: number) => void; openerId: string;
+export function CustomFoodSheet({ onClose, onSave, openerId, alternative = false }: {
+  onClose: () => void; onSave: (food: Food, grams: number) => void; openerId: string; alternative?: boolean;
 }) {
   const t = useT(messages);
   const toast = useToast();
@@ -33,6 +33,7 @@ export function CustomFoodSheet({ onClose, onSave, openerId }: {
     const value = customFoodSchema.safeParse({ name: form.get('name'),
       ...Object.fromEntries(['servingGrams', 'kcal', 'protein', 'carbs', 'fat'].map(key => [key, Number(form.get(key))])) });
     if (!value.success) { setError(t('invalidCustomFood')); return; }
+    if (alternative && value.data.kcal <= 0) { setError(t('alternativeNeedsCalories')); return; }
     saving.current = true;
     setBusy(true); setError('');
     try {
@@ -46,7 +47,7 @@ export function CustomFoodSheet({ onClose, onSave, openerId }: {
   }
   const fields = [
     { name: 'servingGrams', label: t('servingGrams'), min: 5, max: 2000, value: 100 },
-    { name: 'kcal', label: t('calories'), min: 0, max: 5000, value: 0 },
+    { name: 'kcal', label: t('calories'), min: alternative ? 0.1 : 0, max: 5000, value: 0 },
     { name: 'protein', label: t('protein'), min: 0, max: 1000, value: 0 },
     { name: 'carbs', label: t('carbs2'), min: 0, max: 1000, value: 0 },
     { name: 'fat', label: t('fat2'), min: 0, max: 1000, value: 0 },

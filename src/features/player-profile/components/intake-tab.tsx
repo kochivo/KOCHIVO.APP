@@ -15,9 +15,9 @@ function Fact({ label, children }: { label: string; children: ReactNode }) {
   return <div className="space-y-1"><dt className="text-xs text-muted">{label}</dt><dd className="font-bold">{children}</dd></div>;
 }
 
-export async function IntakeTab({ intake, today }: { intake: ProfileIntake | null; today: string }) {
+export async function IntakeTab({ intake, today, playerId }: { intake: ProfileIntake | null; today: string; playerId: string }) {
   const [t, o, locale] = await Promise.all([getT(messages), getT(onboardingMessages), getLocale()]);
-  if (!intake) return <EmptyState icon={ClipboardList} title={t('noIntakeTitle')} body={t('noIntakeBody')} />;
+  if (!intake) return <EmptyState icon={ClipboardList} title={t('noIntakeTitle')} body={t('noIntakeBody')} action={{ label: t('remindPlayer'), href: `/captain/players/${playerId}?tab=checkins#voice-recorder-${playerId}` }} />;
   const n = (value: number) => formatNumber(value, locale);
   const list = (labels: string[]) => labels.length ? labels.join(t('listSeparator')) : t('nothing');
   const experience = experienceLabels[intake.experience as keyof typeof experienceLabels];

@@ -2,6 +2,11 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    unavailable: "اختار لاعب عشان تشوف خطته",
+    openPlayers: "افتح اللاعبين",
+    emptyBody: "ابدأ من قالب جاهز وكمّل الخطة قبل ما تفعّلها للاعب",
+    chooseTemplate: "اختار قالب",
+    editPlan: "عدّل الخطة",
     'phone': "معاينة موبايل اللاعب",
     'kcal': "سعرة",
     'protein': "بروتين",
@@ -56,6 +61,11 @@ export const messages = defineMessages({
     'dash': "—",
   },
   en: {
+    unavailable: "Choose a player to preview",
+    openPlayers: "Open players",
+    emptyBody: "Choose a template or finish the plan before activating it",
+    chooseTemplate: "Choose a template",
+    editPlan: "Edit plan",
     'phone': "Player phone preview",
     'kcal': "kcal",
     'protein': "protein",

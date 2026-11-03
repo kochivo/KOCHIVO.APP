@@ -5,10 +5,10 @@ import { formatNumber } from '@/lib/format';
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { Check } from 'lucide-react';
+import { Check, Utensils } from 'lucide-react';
 import { localDb, type MealLogRow, type NutritionMeal } from '@/core/offline';
 import { foodPhotoUrl } from '@/core/storage/media-url';
-import { Button, GlassCard } from '@/ui';
+import { Button, EmptyState, GlassCard } from '@/ui';
 import { setMealEaten } from '../data/log-meal';
 import { mealMacros } from '../macros';
 import { starterText } from '@/lib/starter-text';
@@ -41,7 +41,7 @@ export function MealCard({ meal, log, today, planTitle }: { meal: NutritionMeal;
   }
   return <GlassCard className="space-y-4 p-4">
     <h2 className="text-lg font-bold">{starterText(meal.name, locale, planTitle)}</h2>
-    {meal.items.length === 0 && <p className="text-sm text-muted">{t('thisMealIsBeingPrepared')}</p>}
+    {meal.items.length === 0 && <EmptyState icon={Utensils} title={t('thisMealIsBeingPrepared')} body={t('itWillAppearHereWhenReady')} action={{ label: t('messageCoach'), href: '/player/captain' }} />}
     <ul className="space-y-3">
       {meal.items.map((item) => {
         const chosen = item.alternatives.find((alt) => alt.id === swaps[item.id]) ?? item;
@@ -56,7 +56,7 @@ export function MealCard({ meal, log, today, planTitle }: { meal: NutritionMeal;
       })}
     </ul>
     <p className="text-start text-xs text-muted"><bdi>{t('macroSummary', { protein: formatNumber(macros.protein, locale), carbs: formatNumber(macros.carbs, locale), fat: formatNumber(macros.fat, locale) })}</bdi></p>
-    <Button size="lg" className="w-full" variant={eaten ? 'ghost' : 'primary'} aria-pressed={eaten}
+    <Button size="lg" className="w-full" variant={!meal.items.length ? 'secondary' : eaten ? 'ghost' : 'primary'} aria-pressed={eaten}
       disabled={busy || !meal.items.length} onClick={() => void save(!eaten, swaps, Date.now())}>
       {eaten && <Check aria-hidden="true" className="size-5" />}{t('mealEaten')}
     </Button>

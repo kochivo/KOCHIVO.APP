@@ -4,6 +4,8 @@ import { exerciseName } from '@/lib/display-name';
 import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 import { ExerciseImage } from '@/ui/exercise-image';
+import { Dumbbell } from 'lucide-react';
+import { EmptyState } from '@/ui/empty-state';
 import { exerciseMediaUrl } from '@/core/storage';
 import type { ProgramSnapshot } from '@/features/player-home';
 import { starterText } from '@/lib/starter-text';
@@ -11,14 +13,15 @@ import { starterText } from '@/lib/starter-text';
 export function PreviewProgram({ program }: { program: ProgramSnapshot | null }) {
   const t = useT(messages);
   const locale = useLocale();
-  if (!program) return <p className="text-muted">{t('noProgram')}</p>;
+  if (!program) return <EmptyState icon={Dumbbell} title={t('noProgram')} body={t('emptyBody')} action={{ label: t('chooseTemplate'), href: '/captain/templates' }} />;
+  const action = { label: t('editPlan'), href: `/captain/programs/${program.program_id}` };
   return <section className="space-y-4">
     <h2 className="text-xl font-bold">{starterText(program.title, locale)}</h2>
     {program.notes && <p className="text-muted">{starterText(program.notes, locale)}</p>}
-    {program.days.length === 0 && <p className="text-muted">{t('noDays')}</p>}
+    {program.days.length === 0 && <EmptyState icon={Dumbbell} title={t('noDays')} body={t('emptyBody')} action={action} />}
     {program.days.map((day) => <section key={day.id} className="glass space-y-3 rounded-card p-3">
       <h3 className="font-bold">{starterText(day.title, locale)}</h3>
-      {day.exercises.length === 0 && <p className="text-sm text-muted">{t('noExercises')}</p>}
+      {day.exercises.length === 0 && <EmptyState icon={Dumbbell} title={t('noExercises')} body={t('emptyBody')} action={action} />}
       <ul className="space-y-3">{day.exercises.map((exercise) => <li key={exercise.id} className="space-y-2 border-t border-line pt-3">
         <p className="font-bold">{exerciseName(exercise, locale)}</p>
         {exercise.media_path && <ExerciseImage fullWidth src={exerciseMediaUrl(exercise.media_path)}

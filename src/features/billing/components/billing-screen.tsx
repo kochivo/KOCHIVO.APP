@@ -25,7 +25,7 @@ export function BillingScreen({ data, today }: { data: Promise<BillingResult>; t
         : <><FinanceSummary revenue={result.data.revenue} /><div className="grid items-start gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
           <section className="space-y-4" aria-labelledby="billing-players">
             <h2 id="billing-players" className="text-xl font-bold">{t('players')}</h2>
-            {result.data.players.length === 0 ? <EmptyState icon={Users} title={t('noPlayers')} body={t('playersHint')} />
+            {result.data.players.length === 0 ? <EmptyState icon={Users} title={t('noPlayers')} body={t('playersHint')} action={{ label: t('invitePlayer'), href: '/captain/players' }} />
               : <ul className="space-y-3">{result.data.players.map((player) => <PlayerBillingRow key={`${player.playerId}:${player.accessUntil}:${player.lastPayment?.id ?? ''}:${player.due}`} player={player} today={today} packages={packages} />)}</ul>}
           </section>
           <div className="order-first space-y-6 xl:order-none">

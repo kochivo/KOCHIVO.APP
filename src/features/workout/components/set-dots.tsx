@@ -3,7 +3,8 @@ import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 import { formatNumber } from '@/lib/format';
 
-import { Check } from 'lucide-react';
+import { Check, Dumbbell } from 'lucide-react';
+import { EmptyState } from '@/ui/empty-state';
 import type { SetLogRow, SnapshotExercise } from '@/core/offline';
 import { cn } from '@/lib/cn';
 
@@ -13,7 +14,7 @@ export function SetDots({ exercise, currentIndex, doneSets, onEdit, disabled = f
 }) {
   const t = useT(messages);
   const locale = useLocale();
-  if (exercise.sets === 0) return <p className="text-muted">{t('noSetsForThisExercise')}</p>;
+  if (exercise.sets === 0) return <EmptyState icon={Dumbbell} title={t('noSetsForThisExercise')} body={t('yourCoachIsPreparingYourWorkout')} action={{ label: t('messageCoach'), href: '/player/captain' }} />;
   return <div className="flex flex-wrap gap-2" aria-label={t('exerciseSets')}>
     {Array.from({ length: exercise.sets }, (_, index) => {
       const setIndex = index + 1;

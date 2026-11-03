@@ -2,6 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    messageCoach: "ابعت للكابتن",
     pageTitle: "التمرين",
     gymVisual: "© Gym visual",
     workoutComplete: "خلصت التمرين",
@@ -62,6 +63,7 @@ export const messages = defineMessages({
     setNumber: "سِت {value0}",
   },
   en: {
+    messageCoach: "Message your coach",
     pageTitle: "Workout",
     gymVisual: "© Gym visual",
     workoutComplete: "Workout complete",
