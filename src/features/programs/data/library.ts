@@ -18,7 +18,8 @@ export async function searchExercises({ query, bodyPart, limit = 30, mine = fals
     if (auth.error || !auth.data.user) return { error: t('couldntLoadExercisesTryAgain') };
     // Quoting the PostgREST value also keeps commas and parentheses inside the search term.
     const pattern = `"%${escapeSearch(query.trim().slice(0, 120)).replace(/\\/g, '\\\\').replace(/"/g, '\\"')}%"`;
-    let request = client.from('exercises').select('id,name_ar,name_en,body_part,equipment,media_path,owner_id,target,video_url');
+    let request = client.from('exercises').select('id,name_ar,name_en,body_part,equipment,media_path,owner_id,target,video_url')
+      .is('archived_at', null);
     if (mine) request = request.eq('owner_id', auth.data.user.id);
     if (query.trim()) request = request.or(`name_ar.ilike.${pattern},name_en.ilike.${pattern}`);
     if (bodyPart) request = request.eq('body_part', bodyPart);

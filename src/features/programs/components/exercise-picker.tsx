@@ -20,7 +20,7 @@ import type { LibraryExercise, Result } from '../types';
 const CustomExerciseSheet = dynamic(() => import('./custom-exercise-sheet').then(module => module.CustomExerciseSheet), {
   ssr: false, loading: () => <LoadingState />,
 });
-export function ExercisePicker({ disabled, onAdd, usedExerciseIds = [] }: {
+export function ExercisePicker({ disabled, onAdd }: {
   disabled: boolean; onAdd: (exercise: LibraryExercise) => void; usedExerciseIds?: string[];
 }) {
   const t = useT(messages);
@@ -68,13 +68,12 @@ export function ExercisePicker({ disabled, onAdd, usedExerciseIds = [] }: {
     });
   };
   const remove = async (id: string) => {
-    if (usedExerciseIds.includes(id)) { toast.error(t('customExerciseInUse')); return; }
     setBusy(ids => [...ids, id]);
     setDeleting(ids => [...ids, id]);
     try {
       const deleted = await deleteCustomExercise(id);
       if (deleted.error) toast.error(deleted.error);
-      else { setRemoved(ids => [...ids, id]); toast.success(t('customExerciseDeleted')); }
+      else { setRemoved(ids => [...ids, id]); toast.success(t(deleted.data && deleted.data !== true ? 'customExerciseArchived' : 'customExerciseDeleted')); }
     } catch { toast.error(t('customExerciseDeleteFailed')); }
     finally { setBusy(ids => ids.filter(value => value !== id)); setDeleting(ids => ids.filter(value => value !== id)); }
   };

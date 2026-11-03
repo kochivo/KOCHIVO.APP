@@ -4,13 +4,14 @@ vi.mock('next/headers', () => ({ cookies: async () => ({ get: () => undefined })
 import { createCustomFood, updateCustomFood, deleteCustomFood } from './data/custom-food';
 import { searchFoods } from './data/foods';
 
-const mocks = vi.hoisted(() => ({ insert: vi.fn(), update: vi.fn(), delete: vi.fn(), remove: vi.fn(), eq: vi.fn(), getUser: vi.fn(), single: vi.fn() }));
+const mocks = vi.hoisted(() => ({ insert: vi.fn(), update: vi.fn(), delete: vi.fn(), remove: vi.fn(), eq: vi.fn(), is: vi.fn(), getUser: vi.fn(), single: vi.fn() }));
 vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => ({
   auth: { getUser: mocks.getUser },
   storage: { from: () => ({ remove: mocks.remove }) },
   from: (table: string) => {
     const request = { select: () => request, order: () => request, limit: () => request,
-      or: () => request, eq: (key: string, value: string) => { mocks.eq(key, value); return request; },
+      or: () => request, is: (key: string, value: null) => { mocks.is(key, value); return request; },
+      eq: (key: string, value: string) => { mocks.eq(key, value); return request; },
       insert: mocks.insert, update: mocks.update, delete: mocks.delete,
       single: table === 'profiles' ? async () => ({ data: { role: 'captain' }, error: null }) : mocks.single,
       then: (resolve: (value: unknown) => unknown) => Promise.resolve({ data: [], error: null }).then(resolve) };
@@ -45,9 +46,20 @@ it('removes the previous photo after replacement succeeds', async () => {
   await updateCustomFood(captain, { ...input, photoPath: `captain-food-photos/${captain}/abc.jpg` });
   expect(mocks.remove).toHaveBeenCalledWith([`${captain}/old.jpg`]);
 });
-it('surfaces a clear error for foods used in plans without removing the photo', async () => {
-  mocks.single.mockResolvedValueOnce({ data: null, error: { code: '23503' } });
-  await expect(deleteCustomFood(captain)).resolves.toEqual({ error: 'in-use' });
+it('archives foods used in plans without removing the photo', async () => {
+  vi.useFakeTimers(); vi.setSystemTime(new Date('2026-11-04T10:00:00Z'));
+  try {
+    mocks.single.mockResolvedValueOnce({ data: null, error: { code: '23503' } });
+    await expect(deleteCustomFood(captain)).resolves.toEqual({ archived: true });
+    expect(mocks.update).toHaveBeenCalledWith({ archived_at: '2026-11-04T10:00:00.000Z' });
+    expect(mocks.eq.mock.calls).toEqual([['id', captain], ['owner_id', captain], ['id', captain], ['owner_id', captain]]);
+  } finally { vi.useRealTimers(); }
+  expect(mocks.remove).not.toHaveBeenCalled();
+});
+it('does not claim success or remove a photo if archiving fails', async () => {
+  mocks.single.mockResolvedValueOnce({ data: null, error: { code: '23503' } })
+    .mockResolvedValueOnce({ data: null, error: { code: 'PGRST116' } });
+  await expect(deleteCustomFood(captain)).rejects.toThrow();
   expect(mocks.remove).not.toHaveBeenCalled();
 });
 it('removes the photo after deleting a food', async () => {
@@ -81,8 +93,15 @@ describe('custom food server validation', () => {
 it('applies the mine filter to the authenticated caller', async () => {
   await searchFoods({ query: 'soup', mine: true });
   expect(mocks.eq).toHaveBeenCalledWith('owner_id', captain);
+  expect(mocks.is).toHaveBeenCalledWith('archived_at', null);
 });
 it('does not filter all foods by owner', async () => {
   await searchFoods({ query: '' });
   expect(mocks.eq).not.toHaveBeenCalled();
+  expect(mocks.is).toHaveBeenCalledWith('archived_at', null);
+  expect(mocks.is).toHaveBeenCalledTimes(1);
+});
+it('excludes archived foods from the empty-catalog probe', async () => {
+  await searchFoods({ query: 'missing' });
+  expect(mocks.is.mock.calls).toEqual([['archived_at', null], ['archived_at', null]]);
 });
