@@ -87,6 +87,8 @@ describe('captainNav', () => {
     ['/captain/nutrition/abc', 'اللاعبين'],
     ['/captain/inbox', 'المهام'],
     ['/captain/inbox/x', 'المهام'],
+    ['/captain/templates', 'القوالب'],
+    ['/captain/templates/x', 'القوالب'],
     ['/captain/billing', 'الاشتراكات'],
     ['/captain/settings/x', 'الإعدادات'],
     ['/unknown', undefined],
@@ -98,7 +100,7 @@ describe('captainNav', () => {
       expect(items.filter((item) => item.active).map((item) => item.label))
         .toEqual(label ? [label] : []);
       expect(items.map((item) => item.href)).toEqual([
-        '/captain', '/captain/inbox', '/captain/billing', '/captain/settings',
+        '/captain', '/captain/inbox', '/captain/templates', '/captain/billing', '/captain/settings',
       ]);
     }
   });

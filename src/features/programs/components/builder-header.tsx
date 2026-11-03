@@ -1,6 +1,7 @@
 'use client';
 
 import { Button, TextField } from '@/ui';
+import { SaveTemplateButton } from '@/features/templates';
 import type { ProgramDraft } from '../types';
 
 export function BuilderHeader({ draft, dirty, busy, onTitle, onSave, onActivate }: {
@@ -15,6 +16,7 @@ export function BuilderHeader({ draft, dirty, busy, onTitle, onSave, onActivate 
       <span className="inline-flex rounded-full bg-surface-raised px-3 py-1 text-sm text-muted">{statuses[draft.status]}{dirty ? ' · تغييرات متحفظتش' : ''}</span>
     </div>
     <div className="flex flex-wrap gap-2">
+      {!dirty && !busy && draft.player_id && <SaveTemplateButton kind="program" id={draft.id} title={draft.title} />}
       <Button variant="ghost" className="min-h-12" disabled={busy} onClick={onSave}>احفظ</Button>
       <Button className="min-h-12" disabled={busy} onClick={onActivate}>فعّل للاعب</Button>
     </div>
