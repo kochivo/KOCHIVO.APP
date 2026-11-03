@@ -1,6 +1,7 @@
 import { expect, it } from 'vitest';
 import { coachSlug, coachSignupHref } from './slug';
-import { siteMetadata, coachMetadata } from './metadata';
+import { coachMetadata } from './metadata';
+import { siteMetadata } from '@/app/[locale]/site-metadata';
 
 it('accepts public slugs and rejects reserved or malformed links', () => {
   expect(coachSlug('ahmed-1')).toBe('ahmed-1');

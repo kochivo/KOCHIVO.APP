@@ -11,7 +11,7 @@ import { LocaleProvider } from '@/core/i18n/client';
 import { MobileViewport } from '@/ui/mobile-viewport';
 import { ToastProvider } from '@/ui/toast';
 import { InAppBrowserWarning } from '@/ui/in-app-browser-warning';
-import { siteMetadata } from '@/features/coach-page';
+import { siteMetadata } from './site-metadata';
 
 const manrope = Manrope({ subsets: ['latin'], variable: '--font-manrope', display: 'swap' });
 const alexandria = Alexandria({ subsets: ['arabic'], variable: '--font-alexandria', display: 'swap' });

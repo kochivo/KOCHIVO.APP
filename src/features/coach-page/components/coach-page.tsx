@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { MapPin } from 'lucide-react';
 import { notFound } from 'next/navigation';
@@ -21,7 +20,10 @@ export async function CoachPage({ slug, requested = false }: { slug: string; req
   return <main className="mesh flex min-h-dvh items-center justify-center p-6">
     <article className="glass-strong w-full max-w-xl space-y-6 rounded-card p-6 text-start md:p-10">
       <p className="font-display text-sm font-bold tracking-widest text-lime">{t('brand')}</p>
-      {coach.avatar ? <Image src={coach.avatar} alt="" width={112} height={112} unoptimized className="size-28 rounded-full object-cover" /> :
+      {coach.avatar ? (
+        // Already unoptimized, so next/image would only add client JS to this public page.
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={coach.avatar} alt="" width={112} height={112} className="size-28 rounded-full object-cover" />) :
         <span aria-hidden className="glass flex size-28 items-center justify-center rounded-full text-4xl font-bold">{coach.full_name.slice(0, 1)}</span>}
       <h1 className="text-4xl font-extrabold">{coach.full_name}</h1>
       <p className="whitespace-pre-wrap text-muted">{coach.bio || t('noBio')}</p>

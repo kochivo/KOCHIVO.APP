@@ -6,7 +6,6 @@ import type { NextRequest } from 'next/server';
 import { authClient, profile, siteOrigin } from './auth-client';
 import { authError } from '../errors';
 import { parseInviteCode } from '../invite-code';
-import { unstable_rethrow } from 'next/navigation';
 import { coachSlug } from '@/lib/coach-slug';
 import { completeCoachRequest } from './coach-request';
 

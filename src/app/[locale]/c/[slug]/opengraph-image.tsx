@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { parseLocale } from '@/core/i18n/locale';
-import { loadPublicCoach, shareImage } from '@/features/coach-page';
+import { loadPublicCoach } from '@/features/coach-page';
+import { shareImage } from '@/features/share-card';
 
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';

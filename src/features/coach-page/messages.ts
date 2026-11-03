@@ -2,9 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
-    brand: 'KOCHIVO', slogan: 'Your next move starts here', arabicLine: 'خطوتك الجاية بتبدأ من هنا',
-    title: 'كوتشيفو — كل لاعبينك في مكان واحد', titleTemplate: '%s · كوتشيفو',
-    description: 'برنامج وأكل ومتابعة كل لاعب في مكان واحد. واللاعب بيسجّل حتى لو النت فاصل.',
+    brand: 'KOCHIVO',
     train: 'ابدأ التدريب معي', coachDescription: 'ابدأ التدريب مع {name} على كوتشيفو',
     noBio: 'الكابتن لسه مضافش نبذة', noSocial: 'لسه مفيش روابط تواصل',
     pending: 'طلبات الانضمام', empty: 'لسه مفيش طلبات انضمام', accept: 'اقبل', decline: 'ارفض',
@@ -16,9 +14,7 @@ export const messages = defineMessages({
     whatsapp: 'واتساب', instagram: 'إنستجرام', tiktok: 'تيك توك', facebook: 'فيسبوك', youtube: 'يوتيوب', x: 'إكس',
   },
   en: {
-    brand: 'KOCHIVO', slogan: 'Your next move starts here', arabicLine: 'خطوتك الجاية بتبدأ من هنا',
-    title: 'KOCHIVO — All your players in one place', titleTemplate: '%s · KOCHIVO',
-    description: 'Training, meals and follow-up for every player in one place. Players can log offline.',
+    brand: 'KOCHIVO',
     train: 'Start training with me', coachDescription: 'Train with {name} on KOCHIVO',
     noBio: 'This coach has not added a bio yet', noSocial: 'No contact links yet',
     pending: 'Join requests', empty: 'No join requests yet', accept: 'Accept', decline: 'Decline',
