@@ -4,14 +4,11 @@ import { useLocale, useT } from '@/core/i18n/client';
 import { formatNumber } from '@/lib/format';
 import { messages } from '../messages';
 import { useEffect, useState } from 'react';
-import { publicEnv } from '@/core/config/env';
+import { foodMediaUrl } from '@/core/storage/media-url';
 import { Button } from '@/ui';
 import { searchFoods } from '../data/foods';
 import type { Food } from '../types';
 
-function foodMediaUrl(path: string) {
-  return `${publicEnv().NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/food-media/${encodeURI(path)}`;
-}
 export function FoodPicker({ onPick, alternative = false }: { onPick: (food: Food, grams: number) => void; alternative?: boolean }) {
   const t = useT(messages);
   const locale = useLocale();

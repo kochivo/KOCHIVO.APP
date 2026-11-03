@@ -14,6 +14,7 @@ vi.mock('next/headers', () => ({ cookies: async () => callback.cookie }));
 vi.mock('../../src/features/auth/data/auth-client', () => ({
   authClient: async () => ({ auth: { exchangeCodeForSession: callback.exchange }, rpc: callback.rpc }),
   profile: callback.profile,
+  siteOrigin: async () => 'https://kochivo.site',
 }));
 
 describe('Pass 2 callback destinations', () => {

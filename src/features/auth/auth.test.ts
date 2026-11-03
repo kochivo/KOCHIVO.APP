@@ -215,6 +215,14 @@ describe('auth actions and callback', () => {
     expect(response.headers.get('location')).toBe('http://localhost:3000/player/onboarding');
     expect(mocks.rpc).toHaveBeenCalledWith('redeem_invite', { p_code: 'invite' });
   });
+  it('redirects to the public site in production, not the container address', async () => {
+    vi.stubEnv('NODE_ENV', 'production');
+    try {
+      mocks.single.mockResolvedValue({ data: { role: 'captain', role_confirmed: true }, error: null });
+      const response = await handleAuthCallback(new NextRequest('https://0.0.0.0:8080/auth/callback?code=oauth-code'));
+      expect(response.headers.get('location')).toBe('https://kochivo.site/captain');
+    } finally { vi.unstubAllEnvs(); }
+  });
 });
 
 describe('session integration', () => {

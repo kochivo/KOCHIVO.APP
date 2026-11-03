@@ -5,6 +5,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 const locale = vi.hoisted(() => ({ value: 'ar' }));
 vi.mock('server-only', () => ({}));
+vi.mock('@/core/storage/media-url', () => ({ exerciseMediaUrl: (path: string) => `https://demo.supabase.co/${path}` }));
 vi.mock('next/headers', () => ({ cookies: async () => ({ get: () => ({ value: locale.value }) }) }));
 import { Hero } from './components/hero';
 import { PlayerSection } from './components/player-section';
