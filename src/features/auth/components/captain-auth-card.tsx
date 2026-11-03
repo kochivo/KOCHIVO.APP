@@ -11,6 +11,7 @@ import { signUpCaptain } from '../data/sign-up-captain';
 import { GoogleButton } from './google-button';
 import { callAuthAction as runAuthAction } from '../data/client-action';
 import type { AuthMode } from '../auth-mode';
+import { SignupCodeStep } from './signup-code-step';
 
 export function CaptainAuthCard({ callbackError = false, initialMode = 'login' }: { callbackError?: boolean; initialMode?: AuthMode }) {
   const t = useT(messages);
@@ -18,6 +19,7 @@ export function CaptainAuthCard({ callbackError = false, initialMode = 'login' }
   const callAuthAction = (action: Parameters<typeof runAuthAction>[0]) => runAuthAction(action, locale);
   const [mode, setMode] = useState<string>(initialMode);
   const [message, setMessage] = useState('');
+  const [codeEmail, setCodeEmail] = useState('');
   const [error, setError] = useState(callbackError ? t('signInFailedTryAgain') : '');
   const [pending, start] = useTransition();
   return <main dir={localeDir(locale)} className="mesh flex min-h-dvh items-center justify-center p-6">
@@ -25,6 +27,7 @@ export function CaptainAuthCard({ callbackError = false, initialMode = 'login' }
       <LanguageSwitch />
       <h1 className="text-3xl font-extrabold">{mode === 'login' ? t('welcomeCoach') : t('createYourCoachAccount')}</h1>
       <p className="text-muted">{mode === 'login' ? t('pickUpWhereYourPlayersLeft') : t('inviteYourFirstPlayerInMinutes')}</p>
+      {codeEmail ? <SignupCodeStep email={codeEmail} /> : <>
       <Segmented aria-label={t('signInOrCreateAnAccount')} value={mode} onChange={(value) => { setMode(value); setError(''); setMessage(''); }}
         options={[{ value: 'login', label: t('signIn') }, { value: 'signup', label: t('createAccount') }]} />
       <GoogleButton intent="captain" />
@@ -35,6 +38,7 @@ export function CaptainAuthCard({ callbackError = false, initialMode = 'login' }
         start(async () => {
           const result = await callAuthAction(() => mode === 'login' ? signInPassword(input) : signUpCaptain(input));
           setError(result.error ?? ''); setMessage(result.message ?? '');
+          if (result.codeEmail) setCodeEmail(result.codeEmail);
           if (result.redirect) window.location.assign(result.redirect);
         });
       }}>
@@ -48,6 +52,7 @@ export function CaptainAuthCard({ callbackError = false, initialMode = 'login' }
         </fieldset>
       </form>
       <Link href="/forgot-password" className="flex min-h-12 items-center text-lime">{t('forgotPassword')}</Link>
+      </>}
       <p className="text-sm text-muted">{t('playerOpenTheInviteYourCoach')}</p>
     </GlassCard>
   </main>;

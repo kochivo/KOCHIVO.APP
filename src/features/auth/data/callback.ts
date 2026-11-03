@@ -1,4 +1,5 @@
 import { getLocale } from '@/core/i18n/server';
+import { unstable_rethrow } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
@@ -31,9 +32,13 @@ export async function handleAuthCallback(request: NextRequest) {
     // An explicit coach signup must never redeem an unrelated, stale OAuth invite.
     if (coach) { intent = 'player'; invite = null; }
     const code = request.nextUrl.searchParams.get('code');
-    if (!code) throw new Error('Missing authorization code');
+    const tokenHash = request.nextUrl.searchParams.get('token_hash');
+    const type = request.nextUrl.searchParams.get('type');
+    if (!code && !(tokenHash && type === 'signup')) throw new Error('Missing authorization code');
     const client = await authClient();
-    const exchange = await client.auth.exchangeCodeForSession(code);
+    const exchange = tokenHash && type === 'signup'
+      ? await client.auth.verifyOtp({ token_hash: tokenHash, type: 'signup' })
+      : await client.auth.exchangeCodeForSession(code ?? '');
     if (exchange.error) throw exchange.error;
     const user = await profile(client);
     if (!user) throw new Error('Missing profile');

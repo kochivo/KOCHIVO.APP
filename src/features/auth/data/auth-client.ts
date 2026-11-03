@@ -9,7 +9,7 @@ import type { AuthUser } from '../routing';
 
 export { supabaseServer as authClient } from '@/core/supabase/server';
 
-export type ActionResult = { error?: string; redirect?: string; message?: string; recoveryReady?: boolean };
+export type ActionResult = { error?: string; redirect?: string; message?: string; codeEmail?: string; recoveryReady?: boolean; recoveryInvalid?: boolean };
 export async function siteOrigin() {
   // The Host header is client-controlled; never build auth email or OAuth links from it in production.
   if (process.env.NODE_ENV === 'production') return 'https://kochivo.site';

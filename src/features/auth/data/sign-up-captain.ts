@@ -1,9 +1,10 @@
 'use server';
 import { getT } from '@/core/i18n/server';
+import { cookies } from 'next/headers';
 import { messages } from '../messages';
 
 import { authSchemas } from '../schemas';
-import { authClient, runAction, siteOrigin } from './auth-client';
+import { authClient, profile, runAction } from './auth-client';
 
 export async function signUpCaptain(input: unknown) {
   const t = await getT(messages);
@@ -14,9 +15,47 @@ export async function signUpCaptain(input: unknown) {
     const { email, password, full_name } = parsed.data;
     const client = await authClient();
     const { data, error } = await client.auth.signUp({ email, password, options: {
-      data: { role: 'captain', full_name }, emailRedirectTo: `${await siteOrigin()}/auth/callback`,
+      data: { role: 'captain', full_name },
     } });
     if (error) throw error;
-    return data.session ? { redirect: '/captain' } : { message: t('checkYourEmailToConfirmYour') };
+    (await cookies()).set('auth-intent', JSON.stringify({ intent: 'captain' }), {
+      httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/', maxAge: 3600,
+    });
+    return data.session ? finishCaptainSignup(client) : { codeEmail: email };
+  });
+}
+
+async function finishCaptainSignup(client: Awaited<ReturnType<typeof authClient>>) {
+  const user = await profile(client);
+  if (!user) throw new Error('Missing profile');
+  if (!user.roleConfirmed) {
+    const { error } = await client.rpc('confirm_role', { p_role: 'captain' });
+    if (error) throw error;
+    user.role = 'captain';
+  }
+  (await cookies()).delete('auth-intent');
+  return { redirect: user.role === 'captain' ? '/captain' : '/player' };
+}
+
+export async function verifyCaptainCode(input: unknown) {
+  const t = await getT(messages);
+  return runAction(async () => {
+    const parsed = authSchemas(t).otpSchema.safeParse(input);
+    if (!parsed.success) return { error: parsed.error.issues[0]?.message };
+    const client = await authClient();
+    const { error } = await client.auth.verifyOtp({ ...parsed.data, type: 'signup' });
+    if (error) return { error: t(error.code === 'otp_expired' ? 'codeExpired' : 'codeWrong') };
+    return finishCaptainSignup(client);
+  });
+}
+
+export async function resendCaptainCode(input: unknown) {
+  const t = await getT(messages);
+  return runAction(async () => {
+    const parsed = authSchemas(t).emailSchema.safeParse(input);
+    if (!parsed.success) return { error: parsed.error.issues[0]?.message };
+    const { error } = await (await authClient()).auth.resend({ ...parsed.data, type: 'signup' });
+    if (error) throw error;
+    return {};
   });
 }

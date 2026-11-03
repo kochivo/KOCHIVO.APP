@@ -12,8 +12,8 @@ export function decideRoute({ path, user, coach }: { path: string; user: AuthUse
     if (!user || (user.role === 'captain' && !user.roleConfirmed)) return { redirect: '/login' };
     if (captainArea !== (user.role === 'captain')) return { redirect: home };
   }
-  if (user && (user.role === 'player' || user.roleConfirmed) && ['/login', '/forgot-password'].includes(path)
-    && !(path === '/login' && coachSlug(coach))) {
+  // Recovery code verification creates a session before password validation can be retried.
+  if (user && (user.role === 'player' || user.roleConfirmed) && path === '/login' && !coachSlug(coach)) {
     return { redirect: home };
   }
   return {};
