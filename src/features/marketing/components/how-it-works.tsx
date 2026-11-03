@@ -1,6 +1,10 @@
-import { content } from '../content';
+import { getT } from '@/core/i18n/server';
+import { messages } from '../messages';
+import { getContent } from '../content';
 
-export function HowItWorks() {
+export async function HowItWorks() {
+  const t = await getT(messages);
+  const content = getContent(t);
   return <section id="how" className="marketing-wrap marketing-reveal marketing-section flex flex-wrap items-center gap-10">
     <div className="flex flex-[1_1_460px] flex-col gap-6">
       <p className="marketing-eyebrow">{content.how.label}</p><h2 className="marketing-heading">{content.how.title[0]}<br />{content.how.title[1]}</h2>

@@ -1,6 +1,10 @@
-import { content } from '../content';
+import { getT } from '@/core/i18n/server';
+import { messages } from '../messages';
+import { getContent } from '../content';
 
-export function PlayerSection() {
+export async function PlayerSection() {
+  const t = await getT(messages);
+  const content = getContent(t);
   return <section id="players" className="marketing-wrap marketing-reveal marketing-section">
     <div className="glass-strong flex flex-wrap items-center gap-10 rounded-[36px] p-6 md:p-12">
       <div className="flex flex-[1_1_300px] flex-col gap-3.5"><p className="marketing-eyebrow">{content.playerHeading.label}</p><h2 className="marketing-heading">{content.playerHeading.title[0]}<br />{content.playerHeading.title[1]}</h2><p className="text-[17px] leading-relaxed text-muted">{content.playerHeading.description}</p></div>

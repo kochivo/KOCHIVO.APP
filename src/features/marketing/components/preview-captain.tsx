@@ -1,6 +1,10 @@
-import { content } from '../content';
+import { getT } from '@/core/i18n/server';
+import { messages } from '../messages';
+import { getContent } from '../content';
 
-export function PreviewCaptain() {
+export async function PreviewCaptain() {
+  const t = await getT(messages);
+  const content = getContent(t);
   return <div className="flex h-full flex-col gap-2.5 rounded-[36px] bg-bg-deep px-4 py-5">
     <p className="text-[10px] text-muted">{content.preview.radar}</p>
     <p className="font-display text-[22px] font-extrabold">{content.preview.heading}</p>

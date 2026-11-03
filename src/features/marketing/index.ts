@@ -1,4 +1,5 @@
-export { content } from './content';
+export { content, getContent } from './content';
+export { messages as marketingMessages } from './messages';
 export { SiteHeader } from './components/site-header';
 export { Hero } from './components/hero';
 export { StatsStrip } from './components/stats-strip';

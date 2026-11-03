@@ -1,5 +1,14 @@
 import { expect, it } from 'vitest';
 import { authError } from './errors';
+import { createT } from '@/core/i18n/messages';
+import { messages } from './messages';
+import { authSchemas } from './schemas';
+
+it('translates domain and validation errors in English', () => {
+  expect(authError({ code: 'invalid_credentials' }, 'en')).toBe('Email or password is incorrect');
+  const result = authSchemas(createT(messages, 'en')).emailSchema.safeParse({ email: 'invalid' });
+  expect(result.error?.issues[0]?.message).toBe('Enter a valid email');
+});
 
 it.each([
   [{ code: 42501 }, 'الحساب ده مش مسموح له بالخطوة دي'],

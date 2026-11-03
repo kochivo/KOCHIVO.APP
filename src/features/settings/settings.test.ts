@@ -7,6 +7,8 @@ import type * as React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 
 const mock = vi.hoisted(() => ({ from: vi.fn(), getUser: vi.fn() }));
+vi.mock('server-only', () => ({}));
+vi.mock('next/headers', () => ({ cookies: async () => ({ get: () => undefined }) }));
 vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => ({ auth: { getUser: mock.getUser }, from: mock.from }) }));
 
 beforeEach(() => vi.clearAllMocks());
@@ -83,6 +85,8 @@ it.each([false, true])('renders a switch and flips glass mode with blocked stora
   vi.doMock('react', async (original) => ({
     ...await original<typeof React>(),
     useSyncExternalStore: (_subscribe: unknown, snapshot: () => boolean) => snapshot(),
+    useContext: () => 'ar',
+    useMemo: (factory: () => unknown) => factory(),
   }));
   try {
     const { GlassToggle } = await import('./components/glass-toggle');

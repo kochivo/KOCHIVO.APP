@@ -1,4 +1,7 @@
 'use client';
+import { useT } from '@/core/i18n/client';
+import { LanguageSwitch } from '@/ui/language-switch';
+import { messages } from '../messages';
 
 import { useEffect, useState } from 'react';
 import { ErrorState, LoadingState, ThemeSwitch } from '@/ui';
@@ -12,6 +15,7 @@ import { GlassToggle } from './glass-toggle';
 import { demoExpiry, useDemoExpiry } from '@/features/demo';
 
 export function SettingsScreen() {
+  const t = useT(messages);
   const demo = useDemoExpiry();
   const [profile, setProfile] = useState<SettingsProfile | null>(null);
   const [error, setError] = useState('');
@@ -21,19 +25,20 @@ export function SettingsScreen() {
     let active = true;
     void loadSettings().then((result) => {
       if (!active) return;
-      if (result.data) setProfile(result.data);
+      if (result.data) { setProfile(result.data); setError(''); }
       else setError(result.error);
       setLoading(false);
     }).catch(() => {
-      if (active) { setError('مش قادرين نحمّل الإعدادات'); setLoading(false); }
+      if (active) { setError(t('couldnTLoadSettings')); setLoading(false); }
     });
     return () => { active = false; };
-  }, [attempt]);
+  }, [attempt, t]);
   return <div className="mx-auto max-w-3xl space-y-5">
-    <h1 className="text-2xl font-extrabold">الإعدادات</h1>
+    <h1 className="text-2xl font-extrabold">{t('settings')}</h1>
+    <LanguageSwitch />
     <GlassToggle />
     <ThemeSwitch />
-    {loading ? <LoadingState /> : error ? <ErrorState message={error} retryLabel="جرّب تاني" onRetry={() => {
+    {loading ? <LoadingState /> : error ? <ErrorState message={error} retryLabel={t('tryAgain')} onRetry={() => {
       setLoading(true); setError(''); setAttempt((value) => value + 1);
     }} /> : profile ? <>
       <ProfileForm profile={profile} />

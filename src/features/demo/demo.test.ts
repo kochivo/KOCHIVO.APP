@@ -2,6 +2,17 @@ import { beforeEach, expect, it, vi } from 'vitest';
 import { startDemo } from './data/start-demo';
 import { demoError, demoExpiry, demoHours } from './data/demo-profile';
 import { decideRoute } from '@/features/auth';
+import { createT } from '@/core/i18n/messages';
+import { messages } from './messages';
+
+it('uses Arabic hour forms and English singular and plural in the banner', () => {
+  const ar = createT(messages, 'ar');
+  const en = createT(messages, 'en');
+  expect(ar('demoExpiry', { n: 2, count: '٢' })).toBe('وضع الديمو · بيتمسح بعد ساعتين');
+  expect(ar('demoExpiry', { n: 3, count: '٣' })).toBe('وضع الديمو · بيتمسح بعد ٣ ساعات');
+  expect(en('demoExpiry', { n: 1, count: '1' })).toBe('Demo mode · clears in 1 hour');
+  expect(en('demoExpiry', { n: 24, count: '24' })).toBe('Demo mode · clears in 24 hours');
+});
 
 const mocks = vi.hoisted(() => {
   const single = vi.fn();

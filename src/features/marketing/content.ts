@@ -1,67 +1,74 @@
+import { createT } from '@/core/i18n/messages';
+import type { Translator } from '@/core/i18n/messages';
+import { messages } from './messages';
 import { whatsappUrl as contactUrl } from '@/lib/whatsapp';
 import { publicConfig } from '@/lib/public-config';
 
 type Plan = { name: string; price: number; displayPrice: string; limit: number; limitLabel: string; hot: boolean; action: string };
 type Detail = { t: string; d: string };
 
-export const content = {
-  brand: 'KOCHIVO',
-  seo: { title: 'كوتشيفو — كل لاعبينك في مكان واحد', description: 'كل لاعبينك، وبرنامج وأكل ومتابعة كل واحد، في مكان واحد. واللاعب بيسجّل في الجيم حتى لو النت فاصل.' },
+export function getContent(t: Translator<typeof messages>) {
+  return {
+  brand: t('brand'),
+  seo: { title: t('kochivoAllYourPlayersInOne'), description: t('everyPlayerSTrainingMealsAnd') },
   whatsappNumber: publicConfig.ownerWhatsapp,
   links: { signup: '/login?tab=signup', demo: '/demo' },
-  nav: [{ href: '#how', label: 'إزاي بيشتغل' }, { href: '#features', label: 'المميزات' }, { href: '#pricing', label: 'الباقات' }, { href: '#faq', label: 'أسئلة' }],
-  login: 'دخول', signup: 'ابدأ مجاناً', contact: 'كلّمنا على واتساب',
-  hero: { eyebrow: 'للكباتن الأونلاين', lines: ['خطوتك الجاية', 'بتبدأ', 'من هنا'], period: '.', label: 'خطوتك الجاية بتبدأ من هنا', arabic: 'خطوتك الجاية بتبدأ من هنا', signup: 'ابدأ مجاناً · لحد 5 لاعبين', demo: 'جرّب الديمو', demoNote: 'لوحة كابتن ببيانات تجريبية لمدة ٢٤ ساعة، من غير دعوات', invite: 'لاعب ومعاك دعوة؟', inviteNote: 'افتح لينك الدعوة اللي وصلك من الكابتن.' },
-  preview: { player: 'شوف كلاعب', captain: 'شوف ككابتن', label: 'معاينة توضيحية · بيانات مثال', day: 'اليوم 2 · صدر وترايسبس', exercise: 'بنش بريس بالبار', weightLabel: 'الوزن · كجم', weight: '65', plus: '+', minus: '−', pr: 'رقم جديد', record: '65 كجم × 8 · زيادة 5 كجم', done: 'تمّ السِت', radar: 'محتاجين متابعة', heading: '3 لاعبين بيبعدوا', send: 'ابعتله على واتساب', waiting: 'فيديوهات مستنية ردّك', videos: '2' },
+  nav: [{ href: '#how', label: t('howItWorks') }, { href: '#features', label: t('features') }, { href: '#pricing', label: t('plans') }, { href: '#faq', label: t('faq') }],
+  login: t('signIn'), signup: t('startFree'), contact: t('chatOnWhatsApp'),
+  hero: { eyebrow: t('forOnlineCoaches'), lines: [t('yourNextStep'), t('starts'), t('here')], period: t('period'), label: t('yourNextStepStartsHere'), arabic: t('yourNextStepStartsHere'), signup: t('startFreeUpTo5Players'), demo: t('tryTheDemo'), demoNote: t('aCoachWorkspaceWithSampleData'), invite: t('gotAPlayerInvite'), inviteNote: t('openTheInviteLinkYourCoach') },
+  preview: { player: t('playerView'), captain: t('coachView'), label: t('previewSampleData'), day: t('day2ChestAndTriceps'), exercise: t('barbellBenchPress'), weightLabel: t('weightKg'), weight: t('weight'), plus: t('plus'), minus: t('minus'), pr: t('newRecord'), record: t('previewRecord'), done: t('setDone'), radar: t('needsAttention'), heading: t('driftingPlayers'), send: t('messageOnWhatsApp'), waiting: t('videosWaitingForFeedback'), videos: t('videos') },
   radar: [
-    { name: 'كريم عادل', days: '4 أيام', reason: 'ماسجّلش تمرين من يوم السبت' },
-    { name: 'محمد طارق', days: '3 أيام', reason: 'التحديث الأسبوعي متأخر' },
-    { name: 'مصطفى علي', days: 'فاضل يومين', reason: 'الاشتراك قرب يخلص' },
+    { name: t('karimAdel'), days: t('fourDays'), reason: t('noWorkoutLoggedSinceSaturday') },
+    { name: t('mohamedTarek'), days: t('threeDays'), reason: t('weeklyCheckInOverdue') },
+    { name: t('mostafaAli'), days: t('twoDaysLeft'), reason: t('subscriptionEndingSoon') },
   ],
-  stats: [{ v: '1,300+', l: 'تمرين بحركة متحركة' }, { v: '60', l: 'أكلة مصرية بالماكروز' }, { v: '3 ضغطات', l: 'لأي مهمة يومية' }, { v: 'من غير نت', l: 'اللاعب بيسجّل من غير نت' }],
-  how: { label: 'إزاي بيشتغل', title: ['من البرنامج للرد', 'في دقايق.'], today: 'يوم كابتن عادي', example: 'بيانات مثال' },
+  stats: [{ v: t('exerciseCount'), l: t('animatedExercises') }, { v: t('foodCount'), l: t('egyptianFoodsWithMacros') }, { v: t('threeTaps'), l: t('forEverydayTasks') }, { v: t('offline'), l: t('playersCanLogOffline') }],
+  how: { label: t('howItWorks'), title: [t('fromPlanToFeedback'), t('inMinutes')], today: t('aCoachSDay'), example: t('sampleData') },
   steps: [
-    { n: '1', t: 'جهّز البرنامج', d: 'ابدأ من قالب جاهز أو من الأول، ووزّعه على لاعب واحد أو عشرة في ضغطة.' },
-    { n: '2', t: 'اللاعب يسجّل', d: 'بيشوف تمرين النهارده ويسجّل الوزن والعدّات بإيد واحدة، حتى من غير نت.' },
-    { n: '3', t: 'إنت ترد', d: 'تعرف مين خلّص ومين بيبعد ومين مستني ردّك، وترد بضغطة.' },
+    { n: t('stepOne'), t: t('buildThePlan'), d: t('startWithATemplateOrBuild') },
+    { n: t('stepTwo'), t: t('playersLog'), d: t('todaySWorkoutWeightsAndReps') },
+    { n: t('stepThree'), t: t('youGiveFeedback'), d: t('seeWhoSDoneWhoS') },
   ],
-  feed: [{ t: 'برنامج بوش اتوزّع على سارة', at: '9:02' }, { t: 'سارة خلّصت تمرين النهارده', at: '10:15' }, { t: 'سارة بعتت فيديو سكوات', at: '10:16' }, { t: 'ردّيت عليها: نزّل أبطأ', at: '10:20' }],
-  featuresHeading: { label: 'للكابتن', title: 'كل اللي محتاجه. ومفيش حاجة زيادة.' },
+  feed: [{ t: t('pushPlanAssignedToSara'), at: t('feedAssignedAt') }, { t: t('saraFinishedTodaySWorkout'), at: t('feedWorkoutAt') }, { t: t('saraSentASquatVideo'), at: t('feedVideoAt') }, { t: t('yourFeedbackLowerMoreSlowly'), at: t('feedFeedbackAt') }],
+  featuresHeading: { label: t('forCoaches'), title: t('everythingYouNeedKeepItSimple') },
   features: [
-    { n: '01', t: 'مصمم البرامج', d: 'سوبر سِت، وقوالب جاهزة، ومكتبة فيها أكتر من 1300 تمرين متحرك.' },
-    { n: '02', t: 'تغذية بالبدائل', d: 'الماكروز بتتحسب وانت بتكتب، واللاعب يبدّل الرز بالمكرونة والكمية بتتظبط لوحدها.' },
-    { n: '03', t: 'رادار الانسحاب', d: 'أي لاعب يعدّي عليه 3 أيام من غير تسجيل يظهرلك فوق قبل ما يفكّر يمشي.' },
-    { n: '04', t: 'صندوق مهام واحد', d: 'فيديوهات الأداء وصور التحديث الأسبوعي في مكان واحد، وفيه ردود سريعة جاهزة.' },
+    { n: t('featureOne'), t: t('workoutBuilder'), d: t('supersetsReadyMadeTemplatesAndOver') },
+    { n: t('featureTwo'), t: t('flexibleMealPlans'), d: t('macrosUpdateAsYouBuildPlayers') },
+    { n: t('featureThree'), t: t('dropOffRadar'), d: t('spotPlayersWhoHavenTLogged') },
+    { n: t('featureFour'), t: t('oneInbox'), d: t('formVideosCheckInPhotosAnd') },
   ],
-  playerHeading: { label: 'للاعب', title: ['معمول للجيم.', 'بإيد واحدة.'], description: 'اللاعب مش بيدفع حاجة، ومش محتاج يحمّل من المتجر. بيفتح لينك الدعوة، وبيثبّته على الشاشة الرئيسية زي أي تطبيق.' },
+  playerHeading: { label: t('forPlayers'), title: [t('builtForTheGym'), t('oneHand')], description: t('freeForPlayersNoAppStore') },
   // The board's timer claim contradicts ARCHITECTURE §9; leave it pending owner review.
   player: [
-    { t: 'وضع التركيز', d: 'تمرين واحد قدامك، وأزرار + و − كبيرة.' },
-    { t: 'من غير نت', d: 'بيتحفظ على الموبايل وبيتبعت لوحده.' },
-    { t: 'رقم قياسي جديد', d: 'احتفال على الشاشة كل ما تكسر رقمك.' },
-    { t: 'صوّر وابعت', d: 'فيديو السِت بيترفع وانت مكمّل.' },
-    { t: 'زي التطبيق', d: 'بيتثبّت على الشاشة الرئيسية في ثانيتين.' },
+    { t: t('focusMode'), d: t('oneExerciseAtATimeBig') },
+    { t: t('offline'), d: t('savedOnYourPhoneSyncedAutomatically') },
+    { t: t('personalBest'), d: t('celebrateEveryNewRecordOnScreen') },
+    { t: t('recordAndSend'), d: t('uploadYourSetVideoWhileYou') },
+    { t: t('feelsLikeAnApp'), d: t('addItToYourHomeScreen') },
   ] satisfies Detail[],
-  pricing: { label: 'الباقات', title: 'على قد عدد لاعبينك', description: 'من غير خصم ولا تجديد أوتوماتيك. بتشترك على واتساب، والتفعيل بيحصل بعد تأكيد الدفع.', note: 'مفيش تجديد تلقائي. التفعيل بيتم على واتساب', popular: 'الأكثر طلباً', unit: 'ج', monthly: 'ج / شهر' },
+  pricing: { label: t('plans'), title: t('roomForEveryPlayer'), description: t('noAutomaticBillingSubscribeOnWhatsApp'), note: t('noAutoRenewalActivateOnWhatsApp'), popular: t('mostPopular'), unit: t('egp'), monthly: t('egpMonth') },
   // Prices confirmed by the owner on 2026-11-03. The DB plan limits must match these.
   plans: [
-    { name: 'ENTRY', price: 0, displayPrice: '0', limit: 5, limitLabel: 'لحد 5 لاعبين', action: 'ابدأ مجاناً', hot: false },
-    { name: 'CHAMPION', price: 399, displayPrice: '399', limit: 20, limitLabel: 'لحد 20 لاعب', action: 'اشترك', hot: false },
-    { name: 'LEGEND', price: 699, displayPrice: '699', limit: 40, limitLabel: 'لحد 40 لاعب', action: 'اشترك', hot: true },
-    { name: 'EMPIRE', price: 1499, displayPrice: '1,499', limit: 100, limitLabel: 'لحد 100 لاعب', action: 'اشترك', hot: false },
+    { name: t('planEntry'), price: 0, displayPrice: t('priceFree'), limit: 5, limitLabel: t('upTo5Players'), action: t('startFree'), hot: false },
+    { name: t('planChampion'), price: 399, displayPrice: t('priceChampion'), limit: 20, limitLabel: t('upTo20Players'), action: t('subscribe'), hot: false },
+    { name: t('planLegend'), price: 699, displayPrice: t('priceLegend'), limit: 40, limitLabel: t('upTo40Players'), action: t('subscribe'), hot: true },
+    { name: t('planEmpire'), price: 1499, displayPrice: t('priceEmpire'), limit: 100, limitLabel: t('upTo100Players'), action: t('subscribe'), hot: false },
   ] satisfies Plan[],
-  whiteLabel: 'عايز التطبيق باسم الجيم بتاعك ولوجوه؟',
-  faqHeading: { label: 'أسئلة', title: 'قبل ما تبدأ' },
+  whiteLabel: t('wantYourGymSNameAnd'),
+  faqHeading: { label: t('faq'), title: t('beforeYouStart') },
   faq: [
-    { q: 'اللاعب محتاج يدفع حاجة؟', a: 'لأ. الكابتن هو اللي بيشترك، واللاعب بيدخل ببلاش من لينك الدعوة.' },
-    { q: 'بيشتغل من غير نت؟', a: 'أيوه. التمرين والوجبات بيتسجّلوا على الموبايل، وبيتبعتوا لوحدهم أول ما النت يرجع.' },
-    { q: 'لازم أنزّله من المتجر؟', a: 'لأ. بيفتح من المتصفح، وتقدر تثبّته على الشاشة الرئيسية في أندرويد وآيفون.' },
-    { q: 'حد غيري يقدر يشوف لاعبيني؟', a: 'لأ. كل كابتن بيشوف لاعبينه بس، والحماية دي في قاعدة البيانات نفسها، مش في الشاشة بس.' },
-    { q: 'لو الاشتراك خلص أو عايز لاعبين أكتر؟', a: 'مفيش حاجة بتتمسح أبداً. اللاعب بيفضل شايف برنامجه 3 أيام بعد ما الاشتراك يخلص، وتاريخه محفوظ دايماً. ولو عايز تضيف لاعبين أكتر من باقتك، كبّر الباقة.' },
+    { q: t('doPlayersPay'), a: t('noCoachesSubscribePlayersJoinFree') },
+    { q: t('doesItWorkOffline'), a: t('yesWorkoutsAndMealsAreSaved') },
+    { q: t('doINeedTheAppStore'), a: t('noOpenItInYourBrowser') },
+    { q: t('canOtherCoachesSeeMyPlayers'), a: t('noEachCoachCanOnlyAccess') },
+    { q: t('whatIfASubscriptionEndsOr'), a: t('nothingIsDeletedPlayersKeepAccess') },
   ],
-  final: { title: 'ابدأ بأول لاعب النهارده', action: 'اعمل حسابك كابتن' },
-  footer: { copyright: '© 2026 KOCHIVO · رسوم التمارين المتحركة', credit: '© Gym visual', privacy: 'الخصوصية', terms: 'الشروط', support: 'واتساب الدعم' },
+  final: { title: t('startWithYourFirstPlayerToday'), action: t('createYourCoachAccount') },
+  footer: { copyright: t('copyright'), credit: t('mediaCredit'), privacy: t('privacy'), terms: t('terms'), support: t('whatsappSupport') },
 } as const;
+}
+
+export const content = getContent(createT(messages, 'ar'));
 
 // The configured marketing number contains digits, so a contact link is guaranteed.
 export const whatsappUrl = contactUrl({ phone: content.whatsappNumber })!;

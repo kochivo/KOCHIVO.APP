@@ -10,7 +10,7 @@
 4. **اللاعب Offline-first.** أي حاجة اللاعب بيسجلها بتتكتب على الجهاز الأول (IndexedDB) وبعدين تتبعت للسيرفر. الواجهة عمرها ما تستنى الشبكة.
 5. **الأمان في الداتابيز.** RLS هي خط الدفاع الحقيقي، وأي check في الواجهة بيبقى للـ UX بس.
 6. **مفيش ألوان hard-coded.** كل الألوان tokens جاية من الهوية (`src/app/globals.css`).
-7. **عربي أولاً و RTL أصيل.** نستخدم logical properties (`ms-*` و`pe-*` و`start`/`end`) ومنستخدمش `left`/`right`.
+7. **عربي أولاً و RTL أصيل.** Every user-facing string lives in `messages.ts`; Arabic is Egyptian, English is short and plain, and there is no inline UI text. نستخدم logical properties (`ms-*` و`pe-*` و`start`/`end`) ومنستخدمش `left`/`right`.
 8. **مفيش dependency جديدة من غير موافقة.** كل مكتبة بنضيفها بتبقى مسؤولية صيانة.
 
 ## 2. الـ Stack

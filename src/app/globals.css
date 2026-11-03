@@ -1,5 +1,7 @@
 @import 'tailwindcss';
 
+[dir='ltr'] .dir-icon { transform: scaleX(-1); }
+
 /*
  * KOCHIVO design tokens — the only place colors are defined.
  * Brand source: brand/tokens/palette.css (2026-10-26). Extra shades below are derived from it.

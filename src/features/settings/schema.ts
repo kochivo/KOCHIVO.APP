@@ -1,13 +1,21 @@
 import { z } from 'zod';
+import { createT } from '@/core/i18n/messages';
+import type { Translator } from '@/core/i18n/messages';
+import { messages } from './messages';
 
-export const profileSchema = z.object({
-  full_name: z.string().trim().min(1, 'اكتب اسمك').max(80, 'الاسم طويل، آخره ٨٠ حرف'),
-  phone: z.string().regex(/^\+[1-9][0-9]{7,14}$/, 'اكتب الرقم بالصيغة الدولية زي +201012345678'),
-});
+export function settingsSchemas(t: Translator<typeof messages> = createT(messages, 'ar')) {
+  const profileSchema = z.object({
+    full_name: z.string().trim().min(1, t('enterYourName')).max(80, t('nameMustBe80CharactersOr')),
+    phone: z.string().regex(/^\+[1-9][0-9]{7,14}$/, t('useAnInternationalNumberLike201012345678')),
+  });
 
-export const inviteMessageSchema = z.object({
-  invite_message: z.string().max(500, 'الرسالة آخرها ٥٠٠ حرف'),
-});
+  const inviteMessageSchema = z.object({
+    invite_message: z.string().max(500, t('messageMustBe500CharactersOr')),
+  });
+  return { profileSchema, inviteMessageSchema };
+}
+
+export const { profileSchema, inviteMessageSchema } = settingsSchemas();
 
 export function deletionDate(requestedAt: string): string {
   return new Date(Date.parse(requestedAt) + 7 * 86_400_000).toISOString();
