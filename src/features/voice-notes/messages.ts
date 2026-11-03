@@ -2,6 +2,8 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    recordingLimitReached: 'التسجيل وقف عشان وصلت لدقيقتين',
+    voiceNoteTooLarge: 'الرسالة أكبر من ٢ ميجا. سجّل رسالة أقصر',
     sendCheckin: "ابعت متابعة",
     captainEmptyBody: "ابدأ برسالة تشجيع أو فكّر اللاعب بالمتابعة",
     voiceNotes: "رسايل صوتية",
@@ -26,6 +28,8 @@ export const messages = defineMessages({
     hint: "لحد دقيقتين. اللاعب هيسمعها من صفحة الكابتن",
   },
   en: {
+    recordingLimitReached: 'Recording stopped at two minutes',
+    voiceNoteTooLarge: 'Voice note is over 2 MB. Record a shorter note',
     sendCheckin: "Send a check-in",
     captainEmptyBody: "Send some encouragement or a check-in reminder",
     voiceNotes: "Voice notes",

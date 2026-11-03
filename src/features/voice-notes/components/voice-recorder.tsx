@@ -12,6 +12,7 @@ import { useRecorder } from '../hooks/use-recorder';
 import type { VoiceContext, VoiceNote } from '../types';
 import { useToast } from '@/ui/toast';
 import { messages as uiMessages } from '@/ui/messages';
+import { voiceNoteTooLarge } from '@/lib/upload-guards';
 
 export function VoiceRecorder({ playerId, context, onSent }: { playerId: string; context?: VoiceContext; onSent?: (note: VoiceNote) => void }) {
   const t = useT(messages);
@@ -21,6 +22,7 @@ export function VoiceRecorder({ playerId, context, onSent }: { playerId: string;
   const [sending, setSending] = useState(false);
   const send = async () => {
     if (state.status !== 'recorded') return;
+    if (voiceNoteTooLarge(state.blob.size)) { toast.error(t('voiceNoteTooLarge')); return; }
     setSending(true);
     try {
       onSent?.(await sendVoiceNote(await loadSupabaseBrowser(), { playerId, recording: state.blob, seconds: state.seconds, context }));

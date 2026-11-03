@@ -7,6 +7,8 @@ import type { ChangeEvent } from 'react';
 import { Video } from 'lucide-react';
 import { enqueueMedia, localDb } from '@/core/offline';
 import { Button, TextField } from '@/ui';
+import { formVideoError } from '@/lib/upload-guards';
+import { readVideoDuration } from '@/lib/video-duration';
 
 const ALLOWED = ['video/mp4', 'video/quicktime', 'video/webm'];
 const MAX_BYTES = 50 * 1024 * 1024;
@@ -16,6 +18,7 @@ export function FormCheckButton({ exerciseId, setLogId }: { exerciseId: string; 
   const input = useRef<HTMLInputElement>(null);
   const sheet = useRef<HTMLDialogElement>(null);
   const saving = useRef(false);
+  const selecting = useRef(0);
   const titleId = useId();
   const [selection, setSelection] = useState<{ file: File; exerciseId: string; setLogId: string } | null>(null);
   const [note, setNote] = useState('');
@@ -23,14 +26,27 @@ export function FormCheckButton({ exerciseId, setLogId }: { exerciseId: string; 
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
 
-  function select(event: ChangeEvent<HTMLInputElement>) {
+  async function select(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     event.target.value = '';
     if (!file) return;
+    const attempt = ++selecting.current;
     setSaved(false);
     setError(null);
     if (!ALLOWED.includes(file.type)) { setError(t('unsupportedVideoType')); return; }
     if (file.size > MAX_BYTES) { setError(t('videoMustBeUnder50MB')); return; }
+    setBusy(true);
+    try {
+      const duration = await readVideoDuration(file);
+      if (attempt !== selecting.current) return;
+      const problem = formVideoError(file.size, duration);
+      if (problem) { setError(t(problem === 'duration' ? 'videoTooLong' : 'videoMetadataFailed')); return; }
+    } catch {
+      if (attempt === selecting.current) setError(t('videoMetadataFailed'));
+      return;
+    } finally {
+      if (attempt === selecting.current) setBusy(false);
+    }
     setSelection({ file, exerciseId, setLogId });
     setNote('');
     sheet.current?.showModal();
@@ -56,11 +72,12 @@ export function FormCheckButton({ exerciseId, setLogId }: { exerciseId: string; 
   }
 
   return <div className="space-y-2">
-    <Button variant="ghost" className="min-h-12" aria-label={t('recordForm')} onClick={() => input.current?.click()}>
+    <Button variant="ghost" className="min-h-12" disabled={busy} aria-label={t('recordForm')} onClick={() => input.current?.click()}>
       <Video aria-hidden />{t('recordForm')}
     </Button>
     <input ref={input} type="file" accept="video/*" capture="environment" className="hidden"
       aria-label={t('chooseAFormVideo')} onChange={select} />
+    {busy && !selection && <p role="status" className="text-sm text-muted">{t('checkingVideo')}</p>}
     {saved && <p role="status" className="text-sm text-muted">{t('savedItWillReachYourCoachWhen')}</p>}
     {error && !selection && <p role="alert" className="text-sm text-danger">{error}</p>}
     <dialog ref={sheet} aria-labelledby={titleId} onCancel={() => setSelection(null)}

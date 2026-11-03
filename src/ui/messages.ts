@@ -2,6 +2,10 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    inAppBrowserWarning: 'افتح الرابط في كروم أو سفاري عشان تسجيل الدخول يشتغل',
+    copyLink: 'انسخ الرابط',
+    linkCopied: 'الرابط اتنسخ',
+    linkCopyFailed: 'مقدرناش ننسخ الرابط. انسخه من شريط العنوان',
     closeNotification: "اقفل الإشعار",
     reviewSent: "المراجعة اتبعتت",
     playerRenewed: "اشتراك اللاعب اتجدد",
@@ -31,6 +35,10 @@ export const messages = defineMessages({
     themeCycle: "شكل التطبيق: {current}، غيّر لـ{next}",
   },
   en: {
+    inAppBrowserWarning: 'Open this link in Chrome or Safari so sign-in works',
+    copyLink: 'Copy link',
+    linkCopied: 'Link copied',
+    linkCopyFailed: 'Could not copy the link. Copy it from the address bar',
     closeNotification: "Close notification",
     reviewSent: "Review sent",
     playerRenewed: "Player renewed",
