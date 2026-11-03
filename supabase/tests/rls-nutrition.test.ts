@@ -48,7 +48,8 @@ describe('nutrition isolation', () => {
   it('Another captain cannot read or update the assigned nutrition plan hierarchy.', async () => {
     await asUser(db, otherCaptain, async (tx) => {
       for (const [index, table] of tables.entries()) {
-        expect((await tx.query(`select * from public.${table}`)).rows).toHaveLength(0);
+        // The other captain owns starter-template copies, so check the fixture rows specifically.
+        expect((await tx.query(`select * from public.${table} where id = $1`, [ids[index]])).rows).toHaveLength(0);
         expect((await tx.query(`update public.${table} set ${updates[index]} where id = $1 returning id`, [ids[index]])).rows).toHaveLength(0);
       }
     });

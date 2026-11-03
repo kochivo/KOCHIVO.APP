@@ -76,7 +76,7 @@ it('blocks renewal, archiving, content CRUD and review with the same authenticat
   expect((await run(captain, 'select id, suspended_at is not null as suspended from public.profiles')).rows)
     .toEqual([{ id: captain, suspended: true }]);
   expect((await run(other, 'select * from public.plan_tiers')).rows).toHaveLength(4);
-  expect((await run(other, `update public.programs set title = 'Still active' returning title`)).rows)
+  expect((await run(other, `update public.programs set title = 'Still active' where title = 'Other' returning title`)).rows)
     .toEqual([{ title: 'Still active' }]);
   for (const table of ['program_days', 'meals']) {
     expect((await run(captain, `select * from public.${table}`)).rows).toEqual([]);
