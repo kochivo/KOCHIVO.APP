@@ -8,6 +8,9 @@ export type CaptainRow = {
   created_at: string;
   tier: Tier;
   tier_ends_at: string | null;
+  last_paid_tier: Tier | null;
+  last_paid_ends_at: string | null;
+  over_limit: boolean;
   active_players: number;
   player_limit: number;
   suspended: boolean;

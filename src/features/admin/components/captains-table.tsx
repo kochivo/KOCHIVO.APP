@@ -6,12 +6,18 @@ import type { CaptainRow } from '../types';
 
 interface Props {
   rows: CaptainRow[];
-  today: string;
   selected: string | null;
   onActivate: (row: CaptainRow) => void;
   onSuspend: (row: CaptainRow) => void;
 }
-export function CaptainsTable({ rows, today, selected, onActivate, onSuspend }: Props) {
+export function CaptainsTable({ rows, selected, onActivate, onSuspend }: Props) {
+  const plan = (row: CaptainRow) => row.tier === 'entry' && row.last_paid_ends_at !== null
+    ? `انتهت ${row.last_paid_tier ? tierLabel(row.last_paid_tier) : 'الباقة'} يوم ${endsLabel(row.last_paid_ends_at)}`
+    : tierLabel(row.tier);
+  const usage = (row: CaptainRow) => <>
+    {usageLabel(row.active_players, row.player_limit)}
+    {row.over_limit && <span className="ms-2 inline-block rounded-full bg-warn/10 px-2 py-1 text-xs text-warn">فوق الحد</span>}
+  </>;
   const controls = (row: CaptainRow) => <div className="flex flex-wrap gap-2">
     <Button variant="secondary" className={selected === row.id ? 'border-lime text-lime' : ''} onClick={() => onActivate(row)}>فعّل باقة</Button>
     <Button variant="ghost" onClick={() => onSuspend(row)}>{row.suspended ? 'رجّع' : 'وقّف'}</Button>
@@ -29,10 +35,10 @@ export function CaptainsTable({ rows, today, selected, onActivate, onSuspend }: 
           <th scope="row" className="max-w-64 break-words p-4 text-start font-medium">
             {row.full_name}<span dir="ltr" className="mt-1 block break-all text-start text-xs text-muted">{row.email ?? 'من غير إيميل'}</span>
           </th>
-          <td className="p-4 font-bold">{tierLabel(row.tier)}</td>
-          <td className="whitespace-nowrap p-4 tabular-nums">{usageLabel(row.active_players, row.player_limit)}</td>
+          <td className="p-4 font-bold">{plan(row)}</td>
+          <td className="whitespace-nowrap p-4 tabular-nums">{usage(row)}</td>
           <td className="p-4">{endsLabel(row.tier_ends_at)}</td>
-          <td className="p-4">{stateLabels[captainState(row, today)]}</td>
+          <td className="p-4">{stateLabels[captainState(row)]}</td>
           <td className="p-4">{controls(row)}</td>
         </tr>)}</tbody>
       </table>
@@ -41,10 +47,10 @@ export function CaptainsTable({ rows, today, selected, onActivate, onSuspend }: 
       <div><h3 className="font-bold">{row.full_name}</h3>
         <p dir="ltr" className="break-all text-start text-sm text-muted">{row.email ?? 'من غير إيميل'}</p></div>
       <dl className="grid grid-cols-2 gap-3 text-sm">
-        <div><dt className="text-muted">الباقة</dt><dd>{tierLabel(row.tier)}</dd></div>
-        <div><dt className="text-muted">اللاعبين</dt><dd>{usageLabel(row.active_players, row.player_limit)}</dd></div>
+        <div><dt className="text-muted">الباقة</dt><dd>{plan(row)}</dd></div>
+        <div><dt className="text-muted">اللاعبين</dt><dd>{usage(row)}</dd></div>
         <div><dt className="text-muted">نهاية الباقة</dt><dd>{endsLabel(row.tier_ends_at)}</dd></div>
-        <div><dt className="text-muted">الحالة</dt><dd>{stateLabels[captainState(row, today)]}</dd></div>
+        <div><dt className="text-muted">الحالة</dt><dd>{stateLabels[captainState(row)]}</dd></div>
       </dl>
       {controls(row)}
     </li>)}</ul>

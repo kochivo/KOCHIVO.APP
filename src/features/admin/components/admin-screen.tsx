@@ -18,11 +18,10 @@ interface Props {
   plans: { rows: PlanTier[]; error: string | null };
   search: string;
   offset: number;
-  today: string;
   now: string;
 }
 const filters: Array<'all' | CaptainState> = ['all', 'paid', 'free', 'expired', 'unconfirmed', 'suspended'];
-export function AdminScreen({ captains, audit, plans, search, offset, today, now }: Props) {
+export function AdminScreen({ captains, audit, plans, search, offset, now }: Props) {
   const router = useRouter();
   const [filter, setFilter] = useState<'all' | CaptainState>('all');
   const [selected, setSelected] = useState<CaptainRow | null>(null);
@@ -30,7 +29,7 @@ export function AdminScreen({ captains, audit, plans, search, offset, today, now
   const [message, setMessage] = useState('');
   const [pending, startTransition] = useTransition();
   const panelRef = useRef<HTMLDivElement>(null);
-  const rows = captains.rows.filter(row => filter === 'all' || captainState(row, today) === filter);
+  const rows = captains.rows.filter(row => filter === 'all' || captainState(row) === filter);
   function navigate(nextSearch: string, nextOffset: number) {
     const params = new URLSearchParams({ search: nextSearch, offset: String(nextOffset) });
     setSelected(null);
@@ -78,7 +77,7 @@ export function AdminScreen({ captains, audit, plans, search, offset, today, now
         {plans.error && <p role="alert" className="text-danger">{plans.error}</p>}
         <div className={selected ? 'grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_340px]' : ''}>
           <div className="min-w-0" aria-busy={pending}>
-            <CaptainsTable rows={rows} today={today} selected={suspending ? null : selected?.id ?? null}
+            <CaptainsTable rows={rows} selected={suspending ? null : selected?.id ?? null}
               onActivate={row => {
                 setSelected(row); setMessage('');
                 requestAnimationFrame(() => panelRef.current?.focus());

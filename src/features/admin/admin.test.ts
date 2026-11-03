@@ -7,6 +7,7 @@ import { setSuspended } from './data/set-suspended';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { KpiRow } from './components/kpi-row';
+import { CaptainsTable } from './components/captains-table';
 import type { CaptainRow } from './types';
 
 const mocks = vi.hoisted(() => ({ rpc: vi.fn(), revalidate: vi.fn() }));
@@ -19,6 +20,7 @@ const row: CaptainRow = {
   id, full_name: 'كابتن', email: 'captain@example.com', email_confirmed: true,
   created_at: '2026-11-01T10:00:00Z', tier: 'entry', tier_ends_at: null,
   active_players: 0, player_limit: 5, suspended: false,
+  last_paid_tier: null, last_paid_ends_at: null, over_limit: false,
 };
 const input = { captain_id: id, tier: 'legend', months: 1 };
 beforeEach(() => {
@@ -30,12 +32,14 @@ describe('captain display', () => {
   it.each([
     [{ suspended: true, email_confirmed: false }, 'suspended'],
     [{ email_confirmed: false }, 'unconfirmed'],
-    [{ tier: 'legend', tier_ends_at: '2026-11-02T20:00:00Z' }, 'expired'],
+    [{ last_paid_tier: 'legend', last_paid_ends_at: '2026-11-02T20:00:00Z' }, 'expired'],
+    [{ tier: 'legend', tier_ends_at: '2026-11-02T20:00:00Z' }, 'paid'],
+    [{ tier: 'legend', last_paid_ends_at: '2026-11-02T20:00:00Z' }, 'paid'],
     [{ tier: 'legend', tier_ends_at: '2026-11-03T20:00:00Z' }, 'paid'],
     [{ tier: 'champion', tier_ends_at: null }, 'paid'],
     [{}, 'free'],
   ] as const)('classifies %j as %s', (patch, expected) => {
-    expect(captainState({ ...row, ...patch }, '2026-11-03')).toBe(expected);
+    expect(captainState({ ...row, ...patch })).toBe(expected);
   });
   it('formats usage and tier', () => {
     expect(usageLabel(31, 40)).toBe('31 من 40');
@@ -44,6 +48,15 @@ describe('captain display', () => {
   it('handles absent and invalid dates', () => {
     expect(endsLabel(null)).toBe('—');
     expect(endsLabel('invalid')).toBe('—');
+  });
+  it('shows expired plan history and over-limit warnings in both layouts', () => {
+    const html = renderToStaticMarkup(createElement(CaptainsTable, {
+      rows: [{ ...row, last_paid_tier: 'legend', last_paid_ends_at: '2026-11-02T23:30:00Z',
+        active_players: 6, over_limit: true }],
+      selected: null, onActivate: () => {}, onSuspend: () => {},
+    }));
+    expect(html.match(/انتهت LEGEND يوم ٣ نوفمبر ٢٠٢٦/g)).toHaveLength(2);
+    expect(html.match(/فوق الحد/g)).toHaveLength(2);
   });
 });
 
@@ -71,6 +84,14 @@ describe('page KPIs', () => {
   function value(html: string, label: string) {
     return html.match(new RegExp(`<dt[^>]*>${label}</dt><dd[^>]*>(\\d+)</dd>`))?.[1];
   }
+  it('counts expired entry plans independently of suspension and confirmation', () => {
+    const expired = { ...row, last_paid_tier: 'legend' as const, last_paid_ends_at: '2026-11-02T00:00:00Z' };
+    const html = renderToStaticMarkup(createElement(KpiRow, { ...props, rows: [
+      expired, { ...expired, suspended: true }, { ...expired, email_confirmed: false },
+      { ...expired, tier: 'legend' }, row,
+    ] }));
+    expect(value(html, 'باقات خلصت')).toBe('3');
+  });
   it('counts live paid plans independently of suspension and confirmation', () => {
     const html = renderToStaticMarkup(createElement(KpiRow, { ...props, rows: [
       { ...row, id: 'a', tier: 'legend', suspended: true, tier_ends_at: '2026-12-01T00:00:00Z' },
