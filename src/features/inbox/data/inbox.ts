@@ -1,0 +1,83 @@
+'use server';
+
+import 'server-only';
+import { z } from 'zod';
+import { inboxClient } from './client';
+import { mergeInbox } from '../merge';
+import type { InboxItem, Result } from '../types';
+
+const identity = z.object({ kind: z.enum(['form', 'checkin']), id: z.uuid() });
+const tableFor = (kind: InboxItem['kind']) => kind === 'form' ? 'form_checks' as const : 'check_ins' as const;
+
+export async function listInbox(input: { status: 'open' | 'reviewed'; limit: 50 }): Promise<Result<InboxItem[]>> {
+  const parsed = z.object({ status: z.enum(['open', 'reviewed']), limit: z.literal(50) }).safeParse(input);
+  if (!parsed.success) return { error: 'اختار قائمة المهام' };
+  try {
+    const client = await inboxClient();
+    const auth = await client.auth.getUser();
+    if (auth.error || !auth.data.user) return { error: 'سجّل دخولك الأول' };
+    const reviewed = parsed.data.status === 'reviewed';
+    const formRows = client.from('form_checks').select('*').eq('captain_id', auth.data.user.id);
+    const checkRows = client.from('check_ins').select('*').eq('captain_id', auth.data.user.id);
+    const formQuery = (reviewed ? formRows.not('reviewed_at', 'is', null) : formRows.is('reviewed_at', null))
+      .order(reviewed ? 'reviewed_at' : 'created_at', { ascending: false }).order('id');
+    const checkQuery = (reviewed ? checkRows.not('reviewed_at', 'is', null) : checkRows.is('reviewed_at', null))
+      .order(reviewed ? 'reviewed_at' : 'created_at', { ascending: false }).order('id');
+    const [forms, checks] = await Promise.all([reviewed ? formQuery.limit(50) : formQuery, reviewed ? checkQuery.limit(50) : checkQuery]);
+    if (forms.error || checks.error || !forms.data || !checks.data) throw new Error();
+    const playerIds = [...new Set([...forms.data, ...checks.data].map((row) => row.player_id))];
+    const exerciseIds = [...new Set(forms.data.map((row) => row.exercise_id))];
+    const [players, exercises] = await Promise.all([
+      playerIds.length ? client.from('profiles').select('id,full_name').in('id', playerIds) : Promise.resolve({ data: [], error: null }),
+      exerciseIds.length ? client.from('exercises').select('id,name_ar').in('id', exerciseIds) : Promise.resolve({ data: [], error: null }),
+    ]);
+    if (players.error || exercises.error) throw new Error();
+    const base = (row: { id: string; player_id: string; created_at: string; reviewed_at: string | null; captain_reply: string | null }) => ({
+      id: row.id, player_name: players.data?.find((p) => p.id === row.player_id)?.full_name ?? 'لاعب',
+      created_at: row.created_at, reviewed_at: row.reviewed_at, reply: row.captain_reply,
+    });
+    let data = mergeInbox(forms.data.map((row) => ({ ...base(row), kind: 'form', note: row.note,
+      exercise_name: exercises.data?.find((e) => e.id === row.exercise_id)?.name_ar ?? 'تمرين' })),
+    checks.data.map((row) => ({ ...base(row), kind: 'checkin', week_start: row.week_start,
+      body_weight_kg: row.body_weight_kg, waist_cm: row.waist_cm, notes: row.notes })));
+    // Select the newest reviews across both tables, then preserve the inbox's creation ordering.
+    if (reviewed) {
+      const ids = new Set([...data].sort((a, b) => Date.parse(b.reviewed_at ?? '') - Date.parse(a.reviewed_at ?? '') || a.id.localeCompare(b.id)).slice(0, 50).map((row) => `${row.kind}:${row.id}`));
+      data = data.filter((row) => ids.has(`${row.kind}:${row.id}`));
+    }
+    return { data };
+  } catch { return { error: 'مش قادرين نحمّل المهام. جرّب تاني' }; }
+}
+
+export async function reviewItem(input: unknown): Promise<Result<true>> {
+  const parsed = identity.extend({ reply: z.string().trim().max(1000) }).safeParse(input);
+  if (!parsed.success) return { error: 'الرد لازم يكون لحد 1000 حرف' };
+  try {
+    const client = await inboxClient();
+    const auth = await client.auth.getUser();
+    if (auth.error || !auth.data.user) return { error: 'سجّل دخولك الأول' };
+    const result = await client.from(tableFor(parsed.data.kind)).update({
+      reviewed_at: new Date().toISOString(), captain_reply: parsed.data.reply || null,
+    }).eq('id', parsed.data.id).eq('captain_id', auth.data.user.id).select('id');
+    if (result.error || result.data?.length !== 1) throw new Error();
+    return { data: true };
+  } catch { return { error: 'الرد متبعتش. جرّب تاني' }; }
+}
+
+export async function mediaUrls(input: unknown): Promise<Result<string[]>> {
+  const parsed = identity.safeParse(input);
+  if (!parsed.success) return { error: 'المهمة مش موجودة' };
+  try {
+    const client = await inboxClient();
+    const auth = await client.auth.getUser();
+    if (auth.error || !auth.data.user) return { error: 'سجّل دخولك الأول' };
+    const row = await client.from(tableFor(parsed.data.kind)).select('*')
+      .eq('id', parsed.data.id).eq('captain_id', auth.data.user.id).single();
+    if (row.error || !row.data) throw new Error();
+    const paths = 'video_path' in row.data ? [row.data.video_path] : row.data.photo_paths.slice(0, 3);
+    if (!paths.length) return { data: [] };
+    const result = await client.storage.from(parsed.data.kind === 'form' ? 'form-videos' : 'checkin-photos').createSignedUrls(paths, 600);
+    if (result.error || !result.data || result.data.some((file) => file.error || !file.signedUrl)) throw new Error();
+    return { data: result.data.flatMap((file) => file.signedUrl ? [file.signedUrl] : []) };
+  } catch { return { error: 'مش قادرين نفتح الميديا. جرّب تاني' }; }
+}
