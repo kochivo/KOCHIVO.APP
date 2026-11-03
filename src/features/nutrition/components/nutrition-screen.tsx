@@ -1,19 +1,12 @@
 'use client';
 
-import { Home, MessageCircle, TrendingUp, Utensils } from 'lucide-react';
-import { BottomNav, Button, EmptyState, ErrorState, LoadingState, SyncPill } from '@/ui';
+import { Utensils } from 'lucide-react';
+import { Button, EmptyState, ErrorState, LoadingState, SyncPill } from '@/ui';
 import { useNutritionSnapshot } from '../hooks/use-nutrition-snapshot';
 import { useMealLogs } from '../hooks/use-meal-logs';
 import { eatenTotals, targetsOf } from '../macros';
 import { MacroRing } from './macro-ring';
 import { MealCard } from './meal-card';
-
-const navigation = [
-  { href: '/player', label: 'الرئيسية', icon: Home },
-  { href: '/player/nutrition', label: 'التغذية', icon: Utensils, active: true },
-  { href: '/player/progress', label: 'التطور', icon: TrendingUp },
-  { href: '/player/captain', label: 'الكابتن', icon: MessageCircle },
-];
 
 export function NutritionScreen() {
   const { snapshot, status, stale, online, pending, today, retry, onError, retryKey } = useNutritionSnapshot();
@@ -34,6 +27,5 @@ export function NutritionScreen() {
           {snapshot.meals.map((meal) => <MealCard key={`${today}-${meal.id}`} meal={meal} today={today}
             log={logs.find((row) => row.meal_id === meal.id)} />)}
         </>}
-    <BottomNav aria-label="التنقل" items={navigation} />
   </main>;
 }

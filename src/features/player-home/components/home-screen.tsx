@@ -1,10 +1,10 @@
 'use client';
 
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
-import { Dumbbell, Home, MessageCircle, TrendingUp, Utensils } from 'lucide-react';
+import { Dumbbell } from 'lucide-react';
 import { localDb, pendingCount, useLiveQuery } from '@/core/offline';
 import { localDate } from '@/lib/dates';
-import { BottomNav, EmptyState, ErrorState, LoadingState, SyncPill } from '@/ui';
+import { EmptyState, ErrorState, LoadingState, SyncPill } from '@/ui';
 import { useProgramSnapshot } from '../hooks/use-program-snapshot';
 import { useWeekSessions } from '../hooks/use-week-sessions';
 import { pickTodayDay } from '../next-day';
@@ -16,13 +16,6 @@ import { NutritionSlot } from './nutrition-slot';
 
 const readPending = () => pendingCount(localDb());
 const readSessions = () => localDb().workout_sessions.toArray();
-// TODO: Nutrition, progress, and captain routes are delivered by later task cards.
-const navigation = [
-  { href: '/player', label: 'الرئيسية', icon: Home, active: true },
-  { href: '/player/nutrition', label: 'التغذية', icon: Utensils },
-  { href: '/player/progress', label: 'التطور', icon: TrendingUp },
-  { href: '/player/captain', label: 'الكابتن', icon: MessageCircle },
-];
 
 export function HomeScreen({ firstName, playerId, signOut }: { firstName?: string; playerId?: string; signOut: ReactNode }) {
   const [now, setNow] = useState<Date>();
@@ -71,6 +64,5 @@ export function HomeScreen({ firstName, playerId, signOut }: { firstName?: strin
     </>}
     <NutritionSlot />
     <div className="[&_button]:min-h-12 [&_button]:bg-transparent [&_button]:text-muted">{signOut}</div>
-    <BottomNav aria-label="التنقل" items={navigation} />
   </main>;
 }
