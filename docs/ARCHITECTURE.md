@@ -88,6 +88,8 @@ profiles ─┬─< coach_clients >─┬─ profiles
 
 ## 5. الصلاحيات (RLS)
 
+Every new public table must add the restrictive `active_caller` policy; the catalog test in `supabase/tests/rls-suspension.test.ts` enforces it.
+
 | الدور | يقرأ | يكتب |
 |---|---|---|
 | الكابتن | متدربينه بس، وبرامجه وقوالبه، واللوجز بتاعة متدربينه | برامجه وقوالبه، وبيانات اشتراك متدربينه، والردود |

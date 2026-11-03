@@ -48,6 +48,16 @@ beforeEach(() => {
 describe('route decisions', () => {
   const captain = { role: 'captain', roleConfirmed: true } as const;
   const player = { role: 'player', roleConfirmed: true } as const;
+  it('blocks suspended users on all routes except suspension, sign-out and callback', () => {
+    for (const user of [captain, player, { ...captain, roleConfirmed: false }]) {
+      for (const path of ['/', '/captain', '/player', '/login', '/i/abc', '/reset-password', '/suspended-other', '/auth/callback-other']) {
+        expect(decideRoute({ path, user: { ...user, suspended: true } })).toEqual({ redirect: '/suspended' });
+      }
+      for (const path of ['/suspended', '/sign-out', '/auth/sign-out', '/auth/callback']) {
+        expect(decideRoute({ path, user: { ...user, suspended: true } })).toEqual({});
+      }
+    }
+  });
   for (const path of ['/', '/i/abc', '/reset-password', '/auth/callback', '/dev/ui', '/offline']) {
     for (const user of [null, captain, player]) it(`${path} is public for ${user?.role}`, () => {
       expect(decideRoute({ path, user })).toEqual({});
@@ -199,6 +209,11 @@ describe('auth actions and callback', () => {
 });
 
 describe('session integration', () => {
+  it('routes a suspended session to the blocked screen using the profile lookup', async () => {
+    mocks.single.mockResolvedValue({ data: { role: 'captain', role_confirmed: true, suspended_at: '2026-01-01' }, error: null });
+    const response = await refreshSession(new NextRequest('http://localhost:3000/captain'), decideRoute);
+    expect(response.headers.get('location')).toBe('http://localhost:3000/suspended');
+  });
   it('reads the profile once and applies the injected role decision', async () => {
     const response = await refreshSession(new NextRequest('http://localhost:3000/captain'), decideRoute);
     expect(response.headers.get('location')).toBe('http://localhost:3000/player');

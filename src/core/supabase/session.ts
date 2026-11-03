@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { publicEnv } from '@/core/config/env';
 
 type RouteDecision = (input: {
-  path: string; user: { role: 'captain' | 'player'; roleConfirmed: boolean } | null;
+  path: string; user: { role: 'captain' | 'player'; roleConfirmed: boolean; suspended: boolean } | null;
 }) => { redirect?: string };
 
 export async function refreshSession(request: NextRequest, decideRoute: RouteDecision): Promise<NextResponse> {
@@ -23,11 +23,11 @@ export async function refreshSession(request: NextRequest, decideRoute: RouteDec
 
   // Must run before anything reads the session, otherwise users get logged out at random.
   const { data, error } = await supabase.auth.getClaims();
-  let user: { role: 'captain' | 'player'; roleConfirmed: boolean } | null = null;
+  let user: { role: 'captain' | 'player'; roleConfirmed: boolean; suspended: boolean } | null = null;
   if (!error && data?.claims.sub) {
-    const result = await supabase.from('profiles').select('role, role_confirmed').eq('id', data.claims.sub).single();
+    const result = await supabase.from('profiles').select('role, role_confirmed, suspended_at').eq('id', data.claims.sub).single();
     if (!result.error && (result.data.role === 'captain' || result.data.role === 'player')) {
-      user = { role: result.data.role, roleConfirmed: result.data.role_confirmed === true };
+      user = { role: result.data.role, roleConfirmed: result.data.role_confirmed === true, suspended: result.data.suspended_at != null };
     }
   }
   const decision = decideRoute({ path: request.nextUrl.pathname, user });
