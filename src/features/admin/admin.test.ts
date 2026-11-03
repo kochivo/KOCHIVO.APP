@@ -81,47 +81,17 @@ describe('schemas', () => {
   });
 });
 
-describe('page KPIs', () => {
-  const props = { today: '2026-11-03', now: '2026-11-03T12:00:00Z' };
-  function value(html: string, label: string) {
-    return html.match(new RegExp(`<dt[^>]*>${label}</dt><dd[^>]*>(\\d+)</dd>`))?.[1];
-  }
-  it('counts expired entry plans independently of suspension and confirmation', () => {
-    const expired = { ...row, last_paid_tier: 'legend' as const, last_paid_ends_at: '2026-11-02T00:00:00Z' };
-    const html = renderToStaticMarkup(createElement(KpiRow, { ...props, rows: [
-      expired, { ...expired, suspended: true }, { ...expired, email_confirmed: false },
-      { ...expired, tier: 'legend' }, row,
-    ] }));
-    expect(value(html, 'باقات خلصت')).toBe('3');
+describe('global KPIs', () => {
+  it('shows total captains, total players and the paid percentage', () => {
+    const html = renderToStaticMarkup(createElement(KpiRow, { data: { captains: 200, players: 700, paid_captains: 50 } }));
+    expect(html).toContain('200</dd>');
+    expect(html).toContain('700</dd>');
+    expect(html).toContain('25%</dd>');
+    expect(html.match(/<dt /g)).toHaveLength(3);
   });
-  it('counts live paid plans independently of suspension and confirmation', () => {
-    const html = renderToStaticMarkup(createElement(KpiRow, { ...props, rows: [
-      { ...row, id: 'a', tier: 'legend', suspended: true, tier_ends_at: '2026-12-01T00:00:00Z' },
-      { ...row, id: 'b', tier: 'champion', email_confirmed: false, tier_ends_at: '2026-12-01T00:00:00Z' },
-      { ...row, id: 'c', tier: 'legend', tier_ends_at: '2026-11-02T00:00:00Z' },
-      row,
-    ] }));
-    expect(value(html, 'باقات مدفوعة')).toBe('2');
-  });
-  it('counts only unconfirmed zero-player accounts created in the past 24 hours', () => {
-    const recent = { ...row, email_confirmed: false, created_at: '2026-11-03T11:00:00Z' };
-    const html = renderToStaticMarkup(createElement(KpiRow, { ...props, rows: [
-      recent, { ...recent, id: 'b', active_players: 1 }, { ...recent, id: 'c', email_confirmed: true },
-      { ...recent, id: 'd', created_at: '2026-11-02T12:00:00Z' },
-      { ...recent, id: 'e', created_at: '2026-11-04T11:00:00Z' },
-    ] }));
-    expect(value(html, 'مشبوهين')).toBe('1');
-    expect(html).not.toContain('مستنيين تفعيل');
-    expect(html.match(/<dt /g)).toHaveLength(4);
-  });
-  it('labels capped results and preserves the scope of a partial later page', () => {
-    const capped = renderToStaticMarkup(createElement(KpiRow, { ...props,
-      rows: Array.from({ length: 100 }, (_, index) => ({ ...row, id: String(index) })),
-    }));
-    expect(capped).toContain('من أول 100');
-    const later = renderToStaticMarkup(createElement(KpiRow, { ...props, rows: [row], scope: 'من الصفحة الحالية' }));
-    expect(later).toContain('من الصفحة الحالية');
-    expect(later).not.toContain('من أول 100');
+  it('renders zero percent for no captains', () => {
+    const html = renderToStaticMarkup(createElement(KpiRow, { data: { captains: 0, players: 0, paid_captains: 0 } }));
+    expect(html).toContain('0%</dd>');
   });
 });
 

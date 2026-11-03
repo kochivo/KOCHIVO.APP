@@ -14,6 +14,12 @@ export type Database = {
   }
   public: {
     Tables: {
+      notifications: {
+        Row: { id: string; user_id: string; type: string; payload: Json; is_read: boolean; created_at: string }
+        Insert: never
+        Update: { is_read?: boolean }
+        Relationships: []
+      }
       admin_audit_log: {
         Row: {
           action: string
@@ -1289,6 +1295,11 @@ export type Database = {
       }
     }
     Functions: {
+      refresh_inactive_alerts: { Args: never; Returns: undefined }
+      admin_notification_kpis: {
+        Args: never
+        Returns: { captains: number; players: number; paid_captains: number }[]
+      }
       activate_nutrition_plan: { Args: { p_plan: string }; Returns: undefined }
       activate_program: { Args: { p_program: string }; Returns: undefined }
       admin_activate_plan: {
