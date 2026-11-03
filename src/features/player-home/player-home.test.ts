@@ -84,6 +84,12 @@ it('maps the joined response into an ordered plain snapshot', () => {
   expect(snapshot.days[0]?.exercises[0]).toMatchObject({ name_ar: 'صدر', name_en: 'Chest', media_path: '/exercise.gif', sets: 3 });
   expect(fixture.program_days[0]?.id).toBe('d2');
 });
+it('retains a custom video link in the offline workout snapshot', () => {
+  const response: ProgramResponse = { ...fixture, program_days: [{ id: 'day', position: 1, title: 'Day',
+    program_exercises: [{ ...exercise, exercises: { ...exercise.exercises, video_url: 'https://example.com/video' } }] }] };
+  expect(mapProgramSnapshot(response, [], 'player').days[0]?.exercises[0]?.video_url).toBe('https://example.com/video');
+  expect(snapshot.days[0]?.exercises[0]?.video_url).toBeNull();
+});
 
 it('keeps the previous Dexie snapshot on failed refresh or offline', async () => {
   const db = new KochivoDB('player-home-refresh-test');

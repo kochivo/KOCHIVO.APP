@@ -16,6 +16,7 @@ export interface SnapshotExercise {
   name_ar: string | null;
   name_en: string;
   media_path: string | null;
+  video_url?: string | null;
 }
 
 export interface SnapshotDay {

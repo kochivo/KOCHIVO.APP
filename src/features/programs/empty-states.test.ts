@@ -22,6 +22,7 @@ vi.mock('@/features/templates', () => ({ SaveTemplateButton: () => null }));
 vi.mock('./data/program-io', () => ({ createProgram() {}, listPlayerPrograms() {} }));
 vi.mock('./data/activate', () => ({ activateProgram() {} }));
 vi.mock('./data/library', () => ({ searchExercises() {} }));
+vi.mock('./data/custom-exercise', () => ({ createCustomExercise() {}, updateCustomExercise() {}, deleteCustomExercise() {} }));
 vi.mock('./hooks/use-program-draft', () => ({ useProgramDraft: () => ({ loading: false, draft: { id: 'p', title: 'Plan', settings: {}, days: [], player_id: 'player' }, update() {} }) }));
 it('links empty player programs to templates', () => {
  state.values = ['', '', false, '', { data: [] }, 0, 0];

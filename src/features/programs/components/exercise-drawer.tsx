@@ -14,8 +14,9 @@ const ExercisePicker = dynamic(() => import('./exercise-picker').then(module => 
   ssr: false, loading: () => <LoadingState />,
 });
 
-export function ExerciseDrawer({ openerId, onClose, onAdd }: {
+export function ExerciseDrawer({ openerId, onClose, onAdd, usedExerciseIds }: {
   openerId: string; onClose: () => void; onAdd: (exercise: LibraryExercise) => void;
+  usedExerciseIds?: string[];
 }) {
   const t = useT(messages);
   const locale = useLocale();
@@ -49,7 +50,7 @@ export function ExerciseDrawer({ openerId, onClose, onAdd }: {
       <IconButton aria-label={t('closeLibrary')} onClick={onClose}><X aria-hidden className="size-5" /></IconButton>
     </div>
     <p role="status" aria-live="polite" className="mb-4 text-lime">{added && t('exerciseAdded', { name: added })}</p>
-    <Deferred fallback={<LoadingState />}><ExercisePicker disabled={false} onAdd={exercise => {
+    <Deferred fallback={<LoadingState />}><ExercisePicker disabled={false} usedExerciseIds={usedExerciseIds} onAdd={exercise => {
       onAdd(exercise); setAdded(exerciseName(exercise, locale));
     }} /></Deferred>
   </dialog>;
