@@ -15,7 +15,7 @@ export function getContent(t: Translator<typeof messages>) {
   links: { signup: '/login?tab=signup', demo: '/demo' },
   nav: [{ href: '#how', label: t('howItWorks') }, { href: '#features', label: t('features') }, { href: '#pricing', label: t('plans') }, { href: '#faq', label: t('faq') }],
   login: t('signIn'), signup: t('startFree'), contact: t('chatOnWhatsApp'),
-  hero: { eyebrow: t('forOnlineCoaches'), lines: [t('yourNextStep'), t('starts'), t('here')], period: t('period'), label: t('yourNextStepStartsHere'), arabic: t('yourNextStepStartsHere'), signup: t('startFreeUpTo5Players'), demo: t('tryTheDemo'), demoNote: t('aCoachWorkspaceWithSampleData'), invite: t('gotAPlayerInvite'), inviteNote: t('openTheInviteLinkYourCoach') },
+  hero: { eyebrow: t('forOnlineCoaches'), lines: [t('yourNextStep'), t('starts'), t('here')], period: t('period'), label: t('sloganLabel'), arabic: t('yourNextStepStartsHere'), signup: t('startFreeUpTo5Players'), demo: t('tryTheDemo'), demoNote: t('aCoachWorkspaceWithSampleData'), invite: t('gotAPlayerInvite'), inviteNote: t('openTheInviteLinkYourCoach') },
   preview: { player: t('playerView'), captain: t('coachView'), label: t('previewSampleData'), day: t('day2ChestAndTriceps'), exercise: t('barbellBenchPress'), weightLabel: t('weightKg'), weight: t('weight'), plus: t('plus'), minus: t('minus'), pr: t('newRecord'), record: t('previewRecord'), done: t('setDone'), radar: t('needsAttention'), heading: t('driftingPlayers'), send: t('messageOnWhatsApp'), waiting: t('videosWaitingForFeedback'), videos: t('videos') },
   radar: [
     { name: t('karimAdel'), days: t('fourDays'), reason: t('noWorkoutLoggedSinceSaturday') },
