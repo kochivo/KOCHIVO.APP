@@ -1,4 +1,7 @@
 'use client';
+import { useLocale, useT } from '@/core/i18n/client';
+import { messages } from '../messages';
+import { formatNumber } from '@/lib/format';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -19,6 +22,8 @@ import { MediaStatus } from './media-status';
 import { restAnnouncement } from '../rest';
 
 export function FocusScreen({ dayId, playerId }: { dayId: string; playerId?: string }) {
+  const t = useT(messages);
+  const locale = useLocale();
   const router = useRouter();
   const [today, setToday] = useState('');
   const [online, setOnline] = useState(true);
@@ -43,30 +48,30 @@ export function FocusScreen({ dayId, playerId }: { dayId: string; playerId?: str
   const lastSet = state.doneSets.filter((row) => row.program_exercise_id === current?.exercise.id)
     .sort((a, b) => b.completed_at.localeCompare(a.completed_at))[0];
   return <main className="mx-auto max-w-lg space-y-4 px-5 py-6">
-    <p role="status" aria-live="polite" aria-atomic="true" className="sr-only">{restAnnouncement(rest.remaining, rest.endsAt !== null)}</p>
+    <p role="status" aria-live="polite" aria-atomic="true" className="sr-only">{restAnnouncement(rest.remaining, rest.endsAt !== null, t)}</p>
     {state.pr && <PrBurst key={state.pr.id} pr={state.pr} onDismiss={state.dismissPr} />}
     <header className="flex flex-wrap items-center gap-3">
-      <IconButton aria-label="رجوع" onClick={() => router.push('/player')}><ArrowRight aria-hidden /></IconButton>
-      <p className="flex-1 font-bold">{state.day?.title ?? 'التمرين'}</p>
+      <IconButton aria-label={t('back')} onClick={() => router.push('/player')}><ArrowRight aria-hidden className="dir-icon" /></IconButton>
+      <p className="flex-1 font-bold">{state.day?.title ?? t('workout')}</p>
       <SyncPill state={!online ? 'offline' : state.pending === undefined || state.pending > 0 ? 'pending' : 'synced'} pending={state.pending} />
       <MediaStatus />
     </header>
-    {state.error ? <ErrorState message={state.error} retryLabel="جرّب تاني" onRetry={state.retry} /> :
+    {state.error ? <ErrorState message={state.error} retryLabel={t('tryAgain')} onRetry={state.retry} /> :
       state.loading ? <LoadingState /> : !state.day ? <>
-        <EmptyState icon={Dumbbell} title="التمرين ده مش في برنامجك" body="ارجع للرئيسية وشوف تمرينك الحالي" />
-        <Link href="/player" className="glass flex min-h-12 items-center justify-center rounded-control px-4">ارجع للرئيسية</Link>
-      </> : state.queue.length === 0 ? <EmptyState icon={Dumbbell} title="مفيش تمارين لليوم ده" body="الكابتن لسه بيجهز تمرينك" /> : <>
-        <p className="text-sm text-muted">سِت {state.progress} من {state.queue.length}</p>
-        <ProgressBar value={state.doneSets.length} max={state.queue.length} aria-label={`سِت ${state.progress} من ${state.queue.length}`} />
+        <EmptyState icon={Dumbbell} title={t('thisWorkoutIsntInYourProgram')} body={t('goHomeToSeeYourCurrentWorkout')} />
+        <Link href="/player" className="glass flex min-h-12 items-center justify-center rounded-control px-4">{t('backToHome')}</Link>
+      </> : state.queue.length === 0 ? <EmptyState icon={Dumbbell} title={t('noExercisesForThisDay')} body={t('yourCoachIsPreparingYourWorkout')} /> : <>
+        <p className="text-sm text-muted">{t('setProgress', { value0: formatNumber(state.progress, locale), value1: formatNumber(state.queue.length, locale) })}</p>
+        <ProgressBar value={state.doneSets.length} max={state.queue.length} aria-label={t('setProgress', { value0: formatNumber(state.progress, locale), value1: formatNumber(state.queue.length, locale) })} />
         {state.finished ? <DonePanel /> : current ? <>
           <ExerciseHeader exercise={current.exercise} performance={state.performance} />
           <SetDots exercise={current.exercise} currentIndex={current.setIndex} doneSets={state.doneSets}
             onEdit={state.edit} disabled={state.disabled} />
           {rest.remaining > 0 ? <RestPanel remaining={rest.remaining} flashing={rest.flashing} onExtend={rest.extend} onSkip={rest.skip} /> : <>
-            <Stepper label="الوزن كجم" value={state.weight} step={2.5} min={0} onChange={state.setWeight} />
-            <Stepper label="العدّات" value={state.reps} step={1} min={0} onChange={state.setReps} />
+            <Stepper format={(value) => formatNumber(value, locale)} label={t('weightKg')} value={state.weight} step={2.5} min={0} onChange={state.setWeight} />
+            <Stepper format={(value) => formatNumber(value, locale)} label={t('reps')} value={state.reps} step={1} min={0} onChange={state.setReps} />
             <Button size="xl" className="w-full" disabled={state.disabled} onClick={() => void state.complete()}>
-              <Check aria-hidden />تمّ السِت
+              <Check aria-hidden />{t('completeSet')}
             </Button>
           </>}
           {lastSet && <FormCheckButton exerciseId={lastSet.exercise_id} setLogId={lastSet.id} />}

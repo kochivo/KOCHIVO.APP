@@ -1,4 +1,7 @@
 'use client';
+import { useLocale, useT } from '@/core/i18n/client';
+import { messages } from '../messages';
+import { formatNumber } from '@/lib/format';
 
 import Link from 'next/link';
 import { Play } from 'lucide-react';
@@ -10,19 +13,22 @@ export function estimateMinutes(exercises: { sets: number; rest_seconds: number 
 }
 
 export function TodayCard({ day, rest }: { day: SnapshotDay; rest: boolean }) {
+  const t = useT(messages);
+  const locale = useLocale();
+  const minutes = estimateMinutes(day.exercises);
   const sets = day.exercises.reduce((total, exercise) => total + exercise.sets, 0);
   return <GlassCard level="strong" className="space-y-5 p-5">
     <div className="space-y-2">
-      <p className="text-xs text-lime">اليوم {day.position} · تمرين النهارده</p>
-      <h2 className="text-3xl font-extrabold">{rest ? 'النهارده راحة' : day.title}</h2>
+      <p className="text-xs text-lime">{t('dayHeading', { position: formatNumber(day.position, locale) })}</p>
+      <h2 className="text-3xl font-extrabold">{rest ? t('restDay') : day.title}</h2>
       {rest && <p className="text-muted">{day.title}</p>}
-      <p className="text-sm text-muted">{day.exercises.length} تمارين · {sets} سِت · حوالي {estimateMinutes(day.exercises)} دقيقة</p>
+      <p className="text-sm text-muted">{t('exerciseCount', { n: day.exercises.length, count: formatNumber(day.exercises.length, locale) })} · {t('setCount', { n: sets, count: formatNumber(sets, locale) })} · {t('minuteCount', { n: minutes, count: formatNumber(minutes, locale) })}</p>
     </div>
-    {day.exercises.length === 0 && <p className="text-sm text-muted">الكابتن لسه بيجهز تمارين اليوم.</p>}
+    {day.exercises.length === 0 && <p className="text-sm text-muted">{t('yourCoachIsPreparingTodaysExercises')}</p>}
     <Link href={`/player/workout/${day.id}`} className={rest ?
       'flex min-h-12 items-center justify-center rounded-control border border-line px-4 font-bold text-muted hover:text-ink' :
       'workout-go flex min-h-20 items-center justify-center gap-3 rounded-card bg-lime px-4 text-xl font-extrabold text-on-lime'}>
-      {!rest && <Play aria-hidden className="size-6 fill-current" />}{rest ? 'تمرّن برضه' : 'ابدأ التمرين'}
+      {!rest && <Play aria-hidden className="size-6 fill-current" />}{rest ? t('trainAnyway') : t('startWorkout')}
     </Link>
     <style jsx>{`
       :global(.workout-go) { box-shadow: 0 0 0 6px var(--color-lime-soft), 0 18px 44px -8px var(--color-lime); animation: workout-glow 2.4s ease-in-out infinite; }

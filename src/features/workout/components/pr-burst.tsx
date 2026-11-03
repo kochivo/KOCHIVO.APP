@@ -1,5 +1,9 @@
 'use client';
+import { useLocale, useT } from '@/core/i18n/client';
+import { messages } from '../messages';
+import { formatNumber } from '@/lib/format';
 
+import { ArrowLeft } from 'lucide-react';
 import { useEffect } from 'react';
 import type { Pr } from '../pr';
 
@@ -9,18 +13,19 @@ type Props = {
 };
 
 export function PrBurst({ pr, onDismiss }: Props) {
+  const t = useT(messages);
+  const locale = useLocale();
   useEffect(() => {
     const timer = setTimeout(onDismiss, 2500);
     return () => clearTimeout(timer);
   }, [pr, onDismiss]);
-  const format = (value: { weight_kg: number; reps: number }) => `${value.weight_kg} كجم × ${value.reps}`;
+  const format = (value: { weight_kg: number; reps: number }) => t('performance', { value0: formatNumber(value.weight_kg, locale), value1: formatNumber(value.reps, locale) });
   return <div className="pointer-events-none fixed inset-x-0 top-4 z-50 flex justify-center px-5">
     <div role="status" aria-live="polite" className="glass-strong pointer-events-auto relative rounded-card">
-      <button type="button" onClick={onDismiss} aria-label="اقفل احتفال الرقم الجديد"
+      <button type="button" onClick={onDismiss} aria-label={t('dismissNewRecord')}
         className="min-h-12 px-6 py-4 text-center">
-        <span className="block text-xl font-bold text-lime">رقم جديد!</span>
-        {/* RTL reading order: the old best sits on the start side and the arrow points to the new one. */}
-        <span className="block"><bdi>{format(pr.previous)}</bdi> ← <bdi className="font-bold">{format(pr.current)}</bdi></span>
+        <span className="block text-xl font-bold text-lime">{t('newRecord')}</span>
+        <span className="flex items-center justify-center gap-1"><bdi>{format(pr.previous)}</bdi><ArrowLeft aria-hidden className="dir-icon size-4" /><bdi className="font-bold">{format(pr.current)}</bdi></span>
       </button>
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden motion-reduce:hidden">
         {Array.from({ length: 24 }, (_, index) => <span key={index}

@@ -1,9 +1,12 @@
 'use client';
+import { useLocale, useT } from '@/core/i18n/client';
+import { messages } from '../messages';
 
 import { useCallback, useEffect, useState } from 'react';
 import { localDb, useLiveQuery } from '@/core/offline';
 import { signedMediaUrl } from '@/core/storage';
 import { supabaseBrowser } from '@/core/supabase/browser';
+import { formatNumber } from '@/lib/format';
 import { localDate } from '@/lib/dates';
 import { Button, Chip, ErrorState, LoadingState } from '@/ui';
 import { listCheckIns } from '../data/checkins';
@@ -15,12 +18,14 @@ import { weekStart } from '../week';
 import { CheckinSheet } from './checkin-sheet';
 import { LineChart } from './line-chart';
 
-function deltaLabel(points: TrendPoint[], unit: string) {
-  const delta = trendDelta(points);
-  return delta === null ? 'لسه مفيش ٤ أسابيع للمقارنة' : `${delta < 0 ? '−' : '+'}${Math.abs(delta).toFixed(1)} ${unit} في 4 أسابيع`;
-}
-
 export function ProgressScreen() {
+  const t = useT(messages);
+  const locale = useLocale();
+  function deltaLabel(points: TrendPoint[], unit: string) {
+    const delta = trendDelta(points);
+    return delta === null ? t('youNeed4WeeksToCompare') : t('fourWeekDelta', { value0: delta < 0 ? '−' : '+', value1: formatNumber(Number(Math.abs(delta).toFixed(1)), locale), value2: unit });
+  }
+
   const [today, setToday] = useState('');
   const [retryKey, setRetryKey] = useState(0);
   const [localError, setLocalError] = useState(false);
@@ -34,8 +39,8 @@ export function ProgressScreen() {
   const onLocalError = useCallback(() => setLocalError(true), []);
   const query = useCallback(async () => {
     const snapshot = await localDb().program_snapshot.get('active');
-    return readStrength(snapshot ?? null);
-  }, []);
+    return readStrength(snapshot ?? null, locale);
+  }, [locale]);
   const strength = useLiveQuery(query, onLocalError, retryKey);
   useEffect(() => {
     const update = () => setToday(localDate(new Date()));
@@ -52,13 +57,13 @@ export function ProgressScreen() {
     async function load() {
       setCheckinError(false);
       try {
-        const rows = await listCheckIns(supabaseBrowser());
+        const rows = await listCheckIns(supabaseBrowser(), t);
         if (!cancelled) setCheckins(rows);
       } catch { if (!cancelled) setCheckinError(true); }
     }
     void load();
     return () => { cancelled = true; };
-  }, [retryKey]);
+  }, [retryKey, t]);
   useEffect(() => {
     let cancelled = false;
     // The check-in sheet only sends photos when the front one is set, so index 0 is the front.
@@ -85,54 +90,54 @@ export function ProgressScreen() {
   const latest = checkins?.[0];
   const sent = today && checkins?.some((row) => row.week_start === weekStart(today));
   const measures = [
-    { key: 'body_weight_kg', label: 'الوزن', unit: 'كجم' },
-    { key: 'waist_cm', label: 'محيط الوسط', unit: 'سم' },
+    { key: 'body_weight_kg', label: t('weight'), unit: t('kg') },
+    { key: 'waist_cm', label: t('waist'), unit: t('cm') },
   ] as const;
   const hasFronts = checkins?.some((row) => row.photo_paths.length > 0);
   return <main className="mx-auto max-w-lg space-y-4 px-5 pt-6 pb-32">
-    <header><h1 className="text-2xl font-extrabold">تطورك</h1></header>
-    {localError ? <ErrorState message="مش قادرين نحمّل تمارينك" retryLabel="جرّب تاني" onRetry={() => {
+    <header><h1 className="text-2xl font-extrabold">{t('yourProgress')}</h1></header>
+    {localError ? <ErrorState message={t('couldntLoadYourWorkouts')} retryLabel={t('tryAgain')} onRetry={() => {
       setLocalError(false); setRetryKey((value) => value + 1);
     }} /> : !strength ? <LoadingState /> : !lifts.length ?
-      <p className="glass rounded-card p-6 text-muted">سجّل أول تمرين وهتشوف تطورك هنا</p> : <>
-        <div className="glass flex flex-wrap gap-2 rounded-control p-2" aria-label="التمارين الأساسية">
-          {lifts.map((lift, index) => <Chip key={lift} pressed={lift === active} onClick={() => setSelected(lift)}>{strength.names[lift] || `تمرين ${index + 1}`}</Chip>)}
+      <p className="glass rounded-card p-6 text-muted">{t('logYourFirstWorkoutToSeeYour')}</p> : <>
+        <div className="glass flex flex-wrap gap-2 rounded-control p-2" aria-label={t('mainLifts')}>
+          {lifts.map((lift, index) => <Chip key={lift} pressed={lift === active} onClick={() => setSelected(lift)}>{strength.names[lift] || t('exerciseNumber', { value0: formatNumber(index + 1, locale) })}</Chip>)}
         </div>
         <section className="glass-strong space-y-2 rounded-card p-5">
-          <h2 className="text-sm text-muted">أعلى وزن</h2>
-          {top.length > 0 && <p className="text-5xl font-extrabold">{top.at(-1)?.value} <span className="text-sm text-muted">كجم</span></p>}
-          <LineChart points={top} title="تطور أعلى وزن" unit="كجم" />
+          <h2 className="text-sm text-muted">{t('topWeight')}</h2>
+          {top.length > 0 && <p className="text-5xl font-extrabold">{formatNumber(top.at(-1)?.value ?? 0, locale)} <span className="text-sm text-muted">{t('kg')}</span></p>}
+          <LineChart points={top} title={t('topWeightTrend')} unit={t('kg')} />
         </section>
       </>}
-    {checkinError ? <ErrorState message="مش قادرين نحمّل تحديثاتك. راجع النت" retryLabel="جرّب تاني" onRetry={() => setRetryKey((value) => value + 1)} /> : !checkins ? <LoadingState /> : <>
-      {!checkins.length && <p className="glass rounded-card p-6 text-muted">أول تحديث هيبقى نقطة البداية</p>}
+    {checkinError ? <ErrorState message={t('couldntLoadCheckinsCheckYourConnection')} retryLabel={t('tryAgain')} onRetry={() => setRetryKey((value) => value + 1)} /> : !checkins ? <LoadingState /> : <>
+      {!checkins.length && <p className="glass rounded-card p-6 text-muted">{t('yourFirstCheckinIsYourStartingPoint')}</p>}
       <div className="grid grid-cols-2 gap-3">
         {measures.map(({ key, label, unit }) => {
           const points = checkins.flatMap((row) => row[key] === null ? [] : [{ date: row.week_start, value: row[key] }]).reverse();
           return <section key={key} className="glass-strong space-y-2 rounded-card p-4">
             <h2 className="text-sm text-muted">{label}</h2>
-            <p className="text-2xl font-extrabold">{points.at(-1)?.value ?? '—'} <span className="text-sm text-muted">{unit}</span></p>
+            <p className="text-2xl font-extrabold">{points.length ? formatNumber(points.at(-1)?.value ?? 0, locale) : '—'} <span className="text-sm text-muted">{unit}</span></p>
             <p className="text-xs text-muted">{deltaLabel(points, unit)}</p>
-            <LineChart points={points} title={`تطور ${label}`} unit={unit} />
+            <LineChart points={points} title={t('measureTrend', { value0: label })} unit={unit} />
           </section>;
         })}
       </div>
       <section className="glass space-y-3 rounded-card p-4">
-        <h2 className="font-bold">قبل وبعد</h2>
-        {photoError === checkins ? <ErrorState message="مش قادرين نعرض الصور" retryLabel="جرّب تاني" onRetry={() => {
+        <h2 className="font-bold">{t('beforeAndAfter')}</h2>
+        {photoError === checkins ? <ErrorState message={t('couldntLoadPhotos')} retryLabel={t('tryAgain')} onRetry={() => {
           setPhotoError(undefined); setPhotos(undefined); setPhotoRetry((value) => value + 1);
         }} /> : photos?.rows === checkins ?
           <div className="grid grid-cols-2 gap-2">{([
-            ['قبل', photos.before], ['بعد', photos.after],
+            [t('before'), photos.before], [t('after'), photos.after],
           ] as const).map(([label, url]) => <figure key={label}>
             {/* eslint-disable-next-line @next/next/no-img-element -- Signed private URLs must bypass the image optimizer cache. */}
-            <img src={url} alt={`صورة ${label} من قدام`} referrerPolicy="no-referrer" className="aspect-[3/4] w-full rounded-control object-cover" onError={() => setPhotoError(checkins)} />
+            <img src={url} alt={t('frontPhoto', { value0: label })} referrerPolicy="no-referrer" className="aspect-[3/4] w-full rounded-control object-cover" onError={() => setPhotoError(checkins)} />
             <figcaption className="pt-2 text-center text-sm text-muted">{label}</figcaption>
-          </figure>)}</div> : hasFronts ? <LoadingState /> : <p className="text-sm text-muted">صور المقارنة لسه مش متاحة</p>}
+          </figure>)}</div> : hasFronts ? <LoadingState /> : <p className="text-sm text-muted">{t('comparisonPhotosArentAvailableYet')}</p>}
       </section>
     </>}
-    {sent && <p role="status" className="min-h-12 py-3 text-center text-muted">اتبعت</p>}
-    <Button size="lg" className="w-full" aria-disabled={Boolean(sent)} disabled={!today || (!checkins && !checkinError)} onClick={() => { if (!sent) setSheet(true); }}>ابعت تحديث الأسبوع</Button>
+    {sent && <p role="status" className="min-h-12 py-3 text-center text-muted">{t('sent')}</p>}
+    <Button size="lg" className="w-full" aria-disabled={Boolean(sent)} disabled={!today || (!checkins && !checkinError)} onClick={() => { if (!sent) setSheet(true); }}>{t('sendWeeklyCheckin')}</Button>
     {(checkins || checkinError) && <CheckinSheet latest={latest} open={sheet} onClose={() => setSheet(false)} onSent={() => {
       setSheet(false); setRetryKey((value) => value + 1);
     }} />}

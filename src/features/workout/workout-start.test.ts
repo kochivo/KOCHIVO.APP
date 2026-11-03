@@ -1,3 +1,4 @@
+import { createT } from '@/core/i18n/messages';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { KochivoDB, type SnapshotDay } from '@/core/offline';
 import type * as Offline from '@/core/offline';
@@ -22,6 +23,7 @@ beforeEach(async () => {
   vi.useFakeTimers({ now: afterMidnight, toFake: ['Date', 'setTimeout', 'clearTimeout'] });
   queries = [];
   values = [];
+  vi.doMock('@/core/i18n/client', () => ({ useT: (messages: Parameters<typeof createT>[0]) => createT(messages, 'ar'), useLocale: () => 'ar' }));
   vi.doMock('react', () => ({
     useState: (initial: unknown) => [initial, () => undefined],
     useRef: (current: unknown) => ({ current }),
@@ -50,6 +52,7 @@ afterEach(async () => {
   vi.useRealTimers();
   await db.delete();
   vi.doUnmock('react');
+  vi.doUnmock('@/core/i18n/client');
   vi.doUnmock('@/core/offline');
   vi.doUnmock('@/features/player-home');
   vi.doUnmock('./hooks/use-rest-timer');
@@ -142,6 +145,7 @@ it('refreshes Cairo today on visible resume and focus, then removes its listener
   const effects: (() => void | (() => void))[] = [];
   const dates: unknown[] = [];
   let stateIndex = 0;
+  vi.doMock('@/core/i18n/client', () => ({ useT: (messages: Parameters<typeof createT>[0]) => createT(messages, 'ar'), useLocale: () => 'ar' }));
   vi.doMock('react', async (original) => ({
     ...await original<typeof React>(),
     useState: (initial: unknown) => {

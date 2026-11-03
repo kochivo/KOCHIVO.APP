@@ -1,4 +1,6 @@
 'use client';
+import { useT } from '@/core/i18n/client';
+import { messages } from '../messages';
 
 import { useId, useRef, useState } from 'react';
 import type { ChangeEvent } from 'react';
@@ -10,6 +12,7 @@ const ALLOWED = ['video/mp4', 'video/quicktime', 'video/webm'];
 const MAX_BYTES = 50 * 1024 * 1024;
 
 export function FormCheckButton({ exerciseId, setLogId }: { exerciseId: string; setLogId: string }) {
+  const t = useT(messages);
   const input = useRef<HTMLInputElement>(null);
   const sheet = useRef<HTMLDialogElement>(null);
   const saving = useRef(false);
@@ -26,8 +29,8 @@ export function FormCheckButton({ exerciseId, setLogId }: { exerciseId: string; 
     if (!file) return;
     setSaved(false);
     setError(null);
-    if (!ALLOWED.includes(file.type)) { setError('نوع الفيديو مش مدعوم'); return; }
-    if (file.size > MAX_BYTES) { setError('الفيديو لازم يبقى أقل من 50 ميجا'); return; }
+    if (!ALLOWED.includes(file.type)) { setError(t('unsupportedVideoType')); return; }
+    if (file.size > MAX_BYTES) { setError(t('videoMustBeUnder50MB')); return; }
     setSelection({ file, exerciseId, setLogId });
     setNote('');
     sheet.current?.showModal();
@@ -45,7 +48,7 @@ export function FormCheckButton({ exerciseId, setLogId }: { exerciseId: string; 
       setSelection(null);
       sheet.current?.close();
     } catch {
-      setError('مش قادرين نحفظ الفيديو على الموبايل. جرّب تاني');
+      setError(t('couldntSaveTheVideoOnYourPhone'));
     } finally {
       saving.current = false;
       setBusy(false);
@@ -53,24 +56,24 @@ export function FormCheckButton({ exerciseId, setLogId }: { exerciseId: string; 
   }
 
   return <div className="space-y-2">
-    <Button variant="ghost" className="min-h-12" aria-label="صوّر الفورم" onClick={() => input.current?.click()}>
-      <Video aria-hidden />صوّر الفورم
+    <Button variant="ghost" className="min-h-12" aria-label={t('recordForm')} onClick={() => input.current?.click()}>
+      <Video aria-hidden />{t('recordForm')}
     </Button>
     <input ref={input} type="file" accept="video/*" capture="environment" className="hidden"
-      aria-label="اختار فيديو الفورم" onChange={select} />
-    {saved && <p role="status" className="text-sm text-muted">اتحفظ. هيتبعت للكابتن لما النت يكون كويس</p>}
+      aria-label={t('chooseAFormVideo')} onChange={select} />
+    {saved && <p role="status" className="text-sm text-muted">{t('savedItWillReachYourCoachWhen')}</p>}
     {error && !selection && <p role="alert" className="text-sm text-danger">{error}</p>}
     <dialog ref={sheet} aria-labelledby={titleId} onCancel={() => setSelection(null)}
       className="glass-strong m-auto w-full max-w-sm rounded-card p-5 text-ink">
       <form className="space-y-4" onSubmit={(event) => { event.preventDefault(); void save(); }}>
-        <h2 id={titleId} className="font-bold">فيديو الفورم</h2>
-        <TextField label="ملاحظة للكابتن (اختياري)" value={note} maxLength={500}
+        <h2 id={titleId} className="font-bold">{t('formVideo')}</h2>
+        <TextField label={t('noteForYourCoachOptional')} value={note} maxLength={500}
           onChange={(event) => setNote(event.target.value)} disabled={busy} />
         {error && <p role="alert" className="text-sm text-danger">{error}</p>}
         <div className="flex flex-wrap gap-2">
-          <Button type="submit" className="min-h-12" disabled={busy}>{busy ? 'بيتحفظ…' : 'ابعته للكابتن'}</Button>
+          <Button type="submit" className="min-h-12" disabled={busy}>{busy ? t('saving') : t('sendToCoach')}</Button>
           <Button variant="ghost" className="min-h-12" disabled={busy}
-            onClick={() => { sheet.current?.close(); setSelection(null); }}>كمّل التمرين</Button>
+            onClick={() => { sheet.current?.close(); setSelection(null); }}>{t('continueWorkout')}</Button>
         </div>
       </form>
     </dialog>

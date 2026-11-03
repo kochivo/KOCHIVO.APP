@@ -1,8 +1,12 @@
+import { createT } from '@/core/i18n/messages';
+import { messages } from './messages';
+import type { Translator } from '@/core/i18n/messages';
+
 const MAX_BYTES = 5 * 1024 * 1024;
 
-export async function compressImage(file: File, maxSide = 1600, quality = 0.8): Promise<Blob> {
-  if (!file.type.startsWith('image/')) throw new Error('اختار صورة');
-  if (!(maxSide > 0) || quality < 0 || quality > 1) throw new Error('إعدادات الصورة مش مناسبة');
+export async function compressImage(file: File, maxSide = 1600, quality = 0.8, t: Translator<typeof messages> = createT(messages, 'ar')): Promise<Blob> {
+  if (!file.type.startsWith('image/')) throw new Error(t('chooseAnImage'));
+  if (!(maxSide > 0) || quality < 0 || quality > 1) throw new Error(t('invalidImageSettings'));
   let bitmap: ImageBitmap | undefined;
   try {
     if (typeof createImageBitmap === 'undefined') throw new Error('unsupported');
@@ -33,5 +37,5 @@ export async function compressImage(file: File, maxSide = 1600, quality = 0.8): 
     bitmap?.close();
   }
   if (file.size <= MAX_BYTES && ['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) return file;
-  throw new Error('الصورة كبيرة أو نوعها مش مدعوم. اختار صورة أقل من ٥ ميجا');
+  throw new Error(t('imageIsTooLargeOrUnsupportedChoose'));
 }

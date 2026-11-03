@@ -1,12 +1,18 @@
-import { DEFAULT_TIMEZONE, localDate } from '@/lib/dates';
+'use client';
+import { useLocale, useT } from '@/core/i18n/client';
+import { messages } from '../messages';
+
+import { DEFAULT_TIMEZONE, localDate, formatDateAr } from '@/lib/dates';
 
 export function Greeting({ firstName, now }: { firstName?: string; now: Date }) {
+  const t = useT(messages);
+  const locale = useLocale();
   const hour = Number(new Intl.DateTimeFormat('en-GB', { timeZone: DEFAULT_TIMEZONE, hour: 'numeric', hourCycle: 'h23' }).format(now));
-  const date = new Date(`${localDate(now)}T12:00:00Z`);
-  const weekday = new Intl.DateTimeFormat('ar-EG', { weekday: 'long', timeZone: 'UTC' }).format(date);
-  const dayMonth = new Intl.DateTimeFormat('ar-EG', { day: 'numeric', month: 'long', timeZone: 'UTC' }).format(date);
+  const date = localDate(now);
+  const weekday = formatDateAr(date, { weekday: 'long' }, locale);
+  const dayMonth = formatDateAr(date, { day: 'numeric', month: 'long' }, locale);
   return <div className="space-y-1">
     <p className="text-start text-xs text-muted"><bdi>{`${weekday} · ${dayMonth}`}</bdi></p>
-    <h1 className="text-2xl font-extrabold">{hour < 12 ? 'صباح الخير' : 'مساء الخير'}{firstName ? ` يا ${firstName}` : ''}</h1>
+    <h1 className="text-2xl font-extrabold">{hour < 12 ? t('goodMorning') : t('goodEvening')}{firstName ? t('namedGreeting', { value0: firstName }) : ''}</h1>
   </div>;
 }

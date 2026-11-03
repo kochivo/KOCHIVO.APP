@@ -1,3 +1,4 @@
+import { createT } from '@/core/i18n/messages';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { KochivoDB, stableId, type SnapshotDay, type SnapshotExercise } from '@/core/offline';
 import type * as Offline from '@/core/offline';
@@ -56,6 +57,7 @@ afterEach(async () => {
   await db.delete();
   vi.unstubAllGlobals();
   vi.doUnmock('react');
+  vi.doUnmock('@/core/i18n/client');
   vi.doUnmock('@/core/offline');
   vi.doUnmock('@/features/player-home');
 });
@@ -153,6 +155,7 @@ it('restores rest after a lock, vibrates once, persists extensions and cleans up
   const states: unknown[] = [];
   let stateIndex = 0;
   let mount: (() => (() => void)) | undefined;
+  vi.doMock('@/core/i18n/client', () => ({ useT: (messages: Parameters<typeof createT>[0]) => createT(messages, 'ar'), useLocale: () => 'ar' }));
   vi.doMock('react', () => ({
     useState: (initial: unknown) => {
       const index = stateIndex++;
@@ -212,6 +215,8 @@ it('restores rest after a lock, vibrates once, persists extensions and cleans up
 });
 
 it('keeps the session live query read-only so a missing session can load', async () => {
+  vi.resetModules();
+  vi.doMock('@/core/i18n/client', () => ({ useT: (messages: Parameters<typeof createT>[0]) => createT(messages, 'ar'), useLocale: () => 'ar' }));
   const queries: (() => unknown)[] = [];
   vi.doMock('react', () => ({
     useState: (initial: unknown) => [initial, () => undefined],

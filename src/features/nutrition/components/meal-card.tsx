@@ -1,4 +1,7 @@
 'use client';
+import { useLocale, useT } from '@/core/i18n/client';
+import { messages } from '../messages';
+import { formatNumber } from '@/lib/format';
 
 import { useState } from 'react';
 import Image from 'next/image';
@@ -10,6 +13,8 @@ import { setMealEaten } from '../data/log-meal';
 import { mealMacros } from '../macros';
 
 export function MealCard({ meal, log, today }: { meal: NutritionMeal; log?: MealLogRow; today: string }) {
+  const t = useT(messages);
+  const locale = useLocale();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(false);
   const swaps = log?.swaps ?? {};
@@ -35,7 +40,7 @@ export function MealCard({ meal, log, today }: { meal: NutritionMeal; log?: Meal
   }
   return <GlassCard className="space-y-4 p-4">
     <h2 className="text-lg font-bold">{meal.name}</h2>
-    {meal.items.length === 0 && <p className="text-sm text-muted">الوجبة لسه بتتجهز</p>}
+    {meal.items.length === 0 && <p className="text-sm text-muted">{t('thisMealIsBeingPrepared')}</p>}
     <ul className="space-y-3">
       {meal.items.map((item) => {
         const chosen = item.alternatives.find((alt) => alt.id === swaps[item.id]) ?? item;
@@ -43,17 +48,17 @@ export function MealCard({ meal, log, today }: { meal: NutritionMeal; log?: Meal
           {chosen.photo_path ? <Image src={foodMediaUrl(chosen.photo_path)} alt={chosen.name} width={60} height={60}
             unoptimized className="size-15 shrink-0 rounded-control object-cover" /> :
             <span aria-hidden="true" className="glass flex size-15 shrink-0 items-center justify-center rounded-control text-muted">{chosen.name.charAt(0)}</span>}
-          <span className="min-w-0 flex-1 text-sm font-bold">{chosen.name} · {chosen.grams}ج</span>
+          <span className="min-w-0 flex-1 text-sm font-bold">{chosen.name} · {formatNumber(chosen.grams, locale)}{t('g')}</span>
           {item.alternatives.length > 0 && <Button className="min-h-12" variant="ghost" disabled={busy}
-            aria-label={`بدّل ${chosen.name}`} onClick={() => swap(item.id, Date.now())}>بدّل</Button>}
+            aria-label={t('swapFood', { value0: chosen.name })} onClick={() => swap(item.id, Date.now())}>{t('swap')}</Button>}
         </li>;
       })}
     </ul>
-    <p className="text-start text-xs text-muted"><bdi>P {macros.protein} · C {macros.carbs} · F {macros.fat}</bdi></p>
+    <p className="text-start text-xs text-muted"><bdi>{t('macroSummary', { protein: formatNumber(macros.protein, locale), carbs: formatNumber(macros.carbs, locale), fat: formatNumber(macros.fat, locale) })}</bdi></p>
     <Button size="lg" className="w-full" variant={eaten ? 'ghost' : 'primary'} aria-pressed={eaten}
       disabled={busy || !meal.items.length} onClick={() => void save(!eaten, swaps, Date.now())}>
-      {eaten && <Check aria-hidden="true" className="size-5" />}كلت الوجبة
+      {eaten && <Check aria-hidden="true" className="size-5" />}{t('mealEaten')}
     </Button>
-    {error && <p role="alert" className="text-sm text-danger">الحفظ متعملش. جرّب تاني.</p>}
+    {error && <p role="alert" className="text-sm text-danger">{t('saveFailedTryAgain')}</p>}
   </GlassCard>;
 }

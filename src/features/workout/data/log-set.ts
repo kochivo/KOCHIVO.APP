@@ -1,3 +1,7 @@
+import { createT } from '@/core/i18n/messages';
+import { messages } from '../messages';
+const t = createT(messages, 'ar');
+
 import { saveAndQueue, type KochivoDB, type SetLogRow, type SnapshotDay } from '@/core/offline';
 import { sessionId, setId } from '../ids';
 
@@ -27,7 +31,7 @@ export async function logSet(db: KochivoDB, input: LogSetInput, now: number): Pr
 export async function finishSession(db: KochivoDB, id: string, now: number): Promise<void> {
   await db.transaction('rw', db.workout_sessions, db.outbox, async () => {
     const row = await db.workout_sessions.get(id);
-    if (!row) throw new Error('الجلسة مش موجودة على الموبايل');
+    if (!row) throw new Error(t('sessionNotFoundOnThisPhone'));
     const timestamp = new Date(now).toISOString();
     await saveAndQueue(db, 'workout_sessions', { ...row, completed_at: timestamp, client_updated_at: timestamp }, now);
   });

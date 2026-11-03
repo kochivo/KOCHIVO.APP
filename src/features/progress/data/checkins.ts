@@ -1,4 +1,7 @@
 'use client';
+import { createT } from '@/core/i18n/messages';
+import { messages } from '../messages';
+import type { Translator } from '@/core/i18n/messages';
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { uuidv7 } from '@/core/offline';
@@ -18,31 +21,31 @@ export interface CheckInInput {
   photos: File[];
   onProgress?: (completed: number, total: number) => void;
 }
-async function playerId(client: SupabaseClient<AppDatabase>) {
+async function playerId(client: SupabaseClient<AppDatabase>, t: Translator<typeof messages>) {
   const { data, error } = await client.auth.getUser();
-  if (error || !data.user) throw new Error('سجّل دخولك تاني');
+  if (error || !data.user) throw new Error(t('signInAgain'));
   return data.user.id;
 }
 
-export async function listCheckIns(client: SupabaseClient<AppDatabase>): Promise<CheckIn[]> {
-  const id = await playerId(client);
+export async function listCheckIns(client: SupabaseClient<AppDatabase>, t: Translator<typeof messages> = createT(messages, 'ar')): Promise<CheckIn[]> {
+  const id = await playerId(client, t);
   const { data, error } = await client.from('check_ins')
     .select('id,player_id,week_start,body_weight_kg,waist_cm,notes,photo_paths')
     .eq('player_id', id).order('week_start', { ascending: false }).limit(26);
-  if (error) throw new Error('مش قادرين نحمّل تحديثاتك');
+  if (error) throw new Error(t('couldntLoadYourCheckins'));
   return data ?? [];
 }
 
-export async function submitCheckIn(client: SupabaseClient<AppDatabase>, input: CheckInInput): Promise<{ error: string | null }> {
-  if (typeof navigator !== 'undefined' && navigator.onLine === false) return { error: 'محتاج نت عشان تبعت الصور' };
+export async function submitCheckIn(client: SupabaseClient<AppDatabase>, input: CheckInInput, t: Translator<typeof messages> = createT(messages, 'ar')): Promise<{ error: string | null }> {
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) return { error: t('goOnlineToSendPhotos') };
   if (!Number.isFinite(input.body_weight_kg) || input.body_weight_kg < 20 || input.body_weight_kg > 400 ||
     (input.waist_cm !== null && (!Number.isFinite(input.waist_cm) || input.waist_cm < 30 || input.waist_cm > 300)) ||
-    input.notes.length > 1000 || input.photos.length > 3) return { error: 'راجع الوزن والمقاسات والصور' };
+    input.notes.length > 1000 || input.photos.length > 3) return { error: t('checkYourWeightMeasurementsAndPhotos') };
   try {
-    const id = await playerId(client);
+    const id = await playerId(client, t);
     const paths: string[] = [];
     for (const file of input.photos) {
-      const blob = await compressImage(file);
+      const blob = await compressImage(file, 1600, 0.8, t);
       paths.push(await uploadPrivateMedia(client, 'checkin-photos', id, blob));
       input.onProgress?.(paths.length, input.photos.length + 1);
     }
@@ -51,12 +54,12 @@ export async function submitCheckIn(client: SupabaseClient<AppDatabase>, input: 
       body_weight_kg: input.body_weight_kg, waist_cm: input.waist_cm,
       notes: input.notes, photo_paths: paths,
     });
-    if (error?.code === '23505') return { error: 'بعتّ تحديث الأسبوع ده خلاص' };
-    if (error) return { error: 'التحديث متبعتش. جرّب تاني' };
+    if (error?.code === '23505') return { error: t('youveAlreadySentThisWeeksCheckin') };
+    if (error) return { error: t('couldntSendTheCheckinTryAgain') };
     input.onProgress?.(input.photos.length + 1, input.photos.length + 1);
     return { error: null };
   } catch {
     return { error: typeof navigator !== 'undefined' && !navigator.onLine ?
-      'محتاج نت عشان تبعت الصور' : 'التحديث متبعتش. راجع الصور والنت وجرّب تاني' };
+      t('goOnlineToSendPhotos') : t('couldntSendTheCheckinCheckYourPhotos') };
   }
 }
