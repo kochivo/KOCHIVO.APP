@@ -67,7 +67,7 @@ describe('route decisions', () => {
       }
     }
   });
-  for (const path of ['/', '/i/abc', '/reset-password', '/auth/callback', '/dev/ui', '/offline']) {
+  for (const path of ['/', '/i/abc', '/forgot-password', '/reset-password', '/auth/callback', '/dev/ui', '/offline']) {
     for (const user of [null, captain, player]) it(`${path} is public for ${user?.role}`, () => {
       expect(decideRoute({ path, user })).toEqual({});
     });
@@ -83,7 +83,7 @@ describe('route decisions', () => {
       expect(decideRoute({ path: `/captain${suffix}`, user: { ...captain, roleConfirmed: false } })).toEqual({ redirect: '/login' });
     });
   }
-  for (const path of ['/login', '/forgot-password']) it(`redirects sessions from ${path}`, () => {
+  for (const path of ['/login']) it(`redirects sessions from ${path}`, () => {
     expect(decideRoute({ path, user: null })).toEqual({});
     expect(decideRoute({ path, user: captain })).toEqual({ redirect: '/captain' });
     expect(decideRoute({ path, user: player })).toEqual({ redirect: '/player' });
@@ -151,7 +151,7 @@ describe('Arabic error mapping', () => {
 describe('auth actions and callback', () => {
   const email = 'player@example.com';
   it('sends captain metadata and handles email confirmation', async () => {
-    expect(await signUpCaptain({ email, password: 'abcdefgh1', full_name: 'محمد' })).toHaveProperty('message');
+    expect(await signUpCaptain({ email, password: 'abcdefgh1', full_name: 'محمد' })).toHaveProperty('codeEmail', email);
     expect(mocks.auth.signUp).toHaveBeenCalledWith(expect.objectContaining({ options: expect.objectContaining({ data: { role: 'captain', full_name: 'محمد' } }) }));
   });
   it('maps password errors and routes successful sessions using profiles', async () => {
@@ -173,9 +173,9 @@ describe('auth actions and callback', () => {
     expect(await verifyEmailCode({ email, token: '012345' }, 'abc')).toHaveProperty('error');
     expect(mocks.rpc).not.toHaveBeenCalled();
   });
-  it('requests reset at the reset page and validates before updating', async () => {
+  it('requests a reset code and validates before updating legacy recovery', async () => {
     await requestReset({ email });
-    expect(mocks.auth.resetPasswordForEmail).toHaveBeenCalledWith(email, { redirectTo: 'http://localhost:3000/reset-password' });
+    expect(mocks.auth.resetPasswordForEmail).toHaveBeenCalledWith(email);
     expect(await updatePassword({ password: 'bad', confirm: 'bad' })).toHaveProperty('error');
     expect(mocks.auth.updateUser).not.toHaveBeenCalled();
     expect(await updatePassword({ password: 'abcdefgh1', confirm: 'abcdefgh1' }, 'recovery-code')).toEqual({ redirect: '/login' });
