@@ -5,6 +5,7 @@ import { messages } from '../messages';
 import { useCallback, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Button } from '@/ui';
+import { useToast } from '@/ui/toast';
 import { publicConfig } from '@/lib/public-config';
 import { DemoHighlights } from './demo-highlights';
 const TurnstileWidget = dynamic(() => import('./turnstile-widget').then(module => module.TurnstileWidget), {
@@ -14,6 +15,7 @@ const TurnstileWidget = dynamic(() => import('./turnstile-widget').then(module =
 export function DemoScreen() {
   const t = useT(messages);
   const locale = useLocale();
+  const toast = useToast();
   const [token, setToken] = useState('');
   const [error, setError] = useState('');
   const [pending, setPending] = useState(false);
@@ -35,8 +37,9 @@ export function DemoScreen() {
           const { startDemo } = await import('../data/start-demo');
           failure = await startDemo((path) => window.location.assign(path), token || undefined, locale);
         } catch { failure = t('theDemoIsUnavailableRightNow'); }
+        finally { setPending(false); }
         if (failure) {
-          setError(failure); setPending(false); setToken(''); setAttempt((value) => value + 1);
+          setError(failure); setToken(''); setAttempt((value) => value + 1); toast.error(failure);
         }
       }}>{pending ? t('preparingTheDemo') : t('openDemo')}</Button>
       <p className="text-sm text-muted">{t('sampleAccountClearsAfter24Hours')}</p>
