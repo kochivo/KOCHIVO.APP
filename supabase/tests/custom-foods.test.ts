@@ -42,6 +42,21 @@ it('rejects a custom photo outside the owner folder', async () => {
   await expect(as(captain, `update public.foods set photo_path = $1 where id = $2`,
     [`captain-food-photos/${other}/a.jpg`, food])).rejects.toThrow(/check constraint/);
 });
+it('rejects food creation by a player', async () => {
+  await expect(insert(player)).rejects.toThrow(/row-level security/);
+});
+it('lets a captain edit and delete their own food', async () => {
+  const row = (await insert(captain)).rows[0] as { id: string };
+  expect((await as(captain, `update public.foods set name_ar = 'Edited' where id = $1 returning name_ar`, [row.id])).rows)
+    .toEqual([{ name_ar: 'Edited' }]);
+  expect((await as(captain, 'delete from public.foods where id = $1 returning id', [row.id])).rows).toHaveLength(1);
+});
+it('preserves food used in a meal plan with a foreign key error', async () => {
+  const plan = await db.query<{ id: string }>(`insert into public.nutrition_plans (captain_id, title, is_template) values ($1, 'Plan', true) returning id`, [captain]);
+  const meal = await db.query<{ id: string }>(`insert into public.meals (plan_id, name, position) values ($1, 'Lunch', 0) returning id`, [plan.rows[0]?.id]);
+  await db.query(`insert into public.meal_items (meal_id, food_id, grams, position) values ($1, $2, 100, 0)`, [meal.rows[0]?.id, food]);
+  await expect(as(captain, 'delete from public.foods where id = $1', [food])).rejects.toMatchObject({ code: '23503' });
+});
 it('blocks a suspended captain from food and storage writes', async () => {
   await upload(captain, `${captain}/before-suspension.jpg`);
   await db.query('update public.profiles set suspended_at = now() where id = $1', [captain]);

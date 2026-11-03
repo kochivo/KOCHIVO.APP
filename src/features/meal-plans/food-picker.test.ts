@@ -11,10 +11,13 @@ vi.mock('react', async original => ({
   ...await original<typeof React>(),
   useEffect: () => {},
   useId: () => 'food-picker-test',
+  useRef: (current: unknown) => ({ current }),
   useState: (initial: unknown) => [initial === 'all' ? state.filter : initial, (value: unknown) => state.changes.push(value)],
 }));
 vi.mock('@/core/i18n/client', () => ({ useLocale: () => 'en', useT: () => createT(messages, 'en') }));
 vi.mock('./data/foods', () => ({ searchFoods: vi.fn() }));
+vi.mock('./data/custom-food', () => ({ deleteCustomFood: vi.fn() }));
+vi.mock('@/ui/toast', () => ({ useToast: () => ({ success() {}, error() {} }) }));
 
 beforeEach(() => { state.changes = []; state.filter = 'all'; });
 function select(value: string) {

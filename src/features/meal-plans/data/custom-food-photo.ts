@@ -4,7 +4,7 @@ import { compressImage } from '@/lib/compress-image';
 import type { Translator } from '@/core/i18n/messages';
 import type { messages } from '../messages';
 import type { CustomFoodInput, Food } from '../types';
-import { createCustomFood } from './custom-food';
+import { createCustomFood, updateCustomFood } from './custom-food';
 
 const BUCKET = 'captain-food-photos';
 
@@ -19,14 +19,15 @@ export async function uploadCustomFoodPhoto(
   return `${BUCKET}/${key}`;
 }
 
-export async function saveCustomFood(input: CustomFoodInput, file: File | null, t: Translator<typeof messages>): Promise<Food> {
-  if (!file) return createCustomFood(input);
+export async function saveCustomFood(input: CustomFoodInput, file: File | null, t: Translator<typeof messages>, id?: string): Promise<Food> {
+  const save = (value: CustomFoodInput) => id ? updateCustomFood(id, value) : createCustomFood(value);
+  if (!file) return save(input);
   const client = await loadSupabaseBrowser();
   const { data, error } = await client.auth.getUser();
   if (error || !data.user) throw new Error(t('signInFirst'));
   const photoPath = await uploadCustomFoodPhoto(client, data.user.id, file, t);
   try {
-    return await createCustomFood({ ...input, photoPath });
+    return await save({ ...input, photoPath });
   } catch (error) {
     try {
       const removed = await client.storage.from(BUCKET).remove([photoPath.slice(BUCKET.length + 1)]);
