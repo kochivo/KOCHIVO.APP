@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ErrorState, LoadingState } from '@/ui';
+import { ErrorState, LoadingState, ThemeSwitch } from '@/ui';
 import { loadSettings } from '../data/settings';
 import type { SettingsProfile } from '../schema';
 import { ProfileForm } from './profile-form';
@@ -32,6 +32,7 @@ export function SettingsScreen() {
   return <div className="mx-auto max-w-3xl space-y-5">
     <h1 className="text-2xl font-extrabold">الإعدادات</h1>
     <GlassToggle />
+    <ThemeSwitch />
     {loading ? <LoadingState /> : error ? <ErrorState message={error} retryLabel="جرّب تاني" onRetry={() => {
       setLoading(true); setError(''); setAttempt((value) => value + 1);
     }} /> : profile ? <>

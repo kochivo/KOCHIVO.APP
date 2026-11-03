@@ -3,6 +3,7 @@ export { GlassCard } from './glass-card';
 export { Stepper } from './stepper';
 export { TextField } from './text-field';
 export { Segmented } from './segmented';
+export { ThemeSwitch } from './theme-switch';
 export { Chip } from './chip';
 export { IconButton } from './icon-button';
 export { ProgressBar } from './progress-bar';
