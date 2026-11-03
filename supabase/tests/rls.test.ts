@@ -74,7 +74,8 @@ describe('captain isolation', () => {
   it('captain B sees none of captain A players, programs or templates', async () => {
     await asUser(db, captainB, async (tx) => {
       expect((await tx.query(`select * from public.coach_clients`)).rows).toHaveLength(0);
-      expect((await tx.query(`select * from public.programs`)).rows).toHaveLength(0);
+      // Captain B owns starter-template copies; only other captains' programs must stay hidden.
+      expect((await tx.query(`select * from public.programs where captain_id <> $1`, [captainB])).rows).toHaveLength(0);
       expect((await tx.query(`select * from public.profiles where id = $1`, [player])).rows).toHaveLength(0);
     });
   });
