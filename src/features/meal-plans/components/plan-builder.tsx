@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { uuidv7 } from '@/core/offline/ids';
 import { Button } from '@/ui';
+import { SaveTemplateButton } from '@/features/templates';
 import { usePlanDraft } from '../hooks/use-plan-draft';
 import { addMeal } from '../draft';
 import { planTotals } from '../totals';
@@ -20,6 +21,7 @@ export function PlanBuilder({ planId }: { planId: string }) {
         <input aria-label="اسم النظام" disabled={state.busy} maxLength={80} value={draft.title} onChange={event => update(d => ({ ...d, title: event.target.value }))}
           className="min-h-12 rounded-control border border-line bg-surface px-4 text-2xl font-bold" /></label>
       <div className="flex flex-wrap gap-2">
+        {!state.dirty && !state.busy && <SaveTemplateButton kind="nutrition" id={draft.id} title={draft.title} />}
         <Button variant="secondary" disabled={state.busy} onClick={() => void state.persist()}>احفظ النظام</Button>
         <Button disabled={state.busy} onClick={() => void state.persist(true)}>فعّل للاعب</Button>
       </div>

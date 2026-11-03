@@ -1,8 +1,9 @@
-import { CreditCard, Inbox, Settings, Users } from 'lucide-react';
+import { CreditCard, Files, Inbox, Settings, Users } from 'lucide-react';
 
 export const captainLinks = [
   { href: '/captain', label: 'اللاعبين', icon: Users },
   { href: '/captain/inbox', label: 'المهام', icon: Inbox },
+  { href: '/captain/templates', label: 'القوالب', icon: Files },
   { href: '/captain/billing', label: 'الاشتراكات', icon: CreditCard },
   { href: '/captain/settings', label: 'الإعدادات', icon: Settings },
 ];
