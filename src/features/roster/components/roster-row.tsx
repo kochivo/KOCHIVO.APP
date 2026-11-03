@@ -46,6 +46,7 @@ export function RosterRow({ player, today }: { player: RosterPlayer; today: stri
         <span className="flex gap-4">
           <Link href={`/captain/players/${player.playerId}/programs`} className="flex min-h-12 items-center text-lime">البرامج</Link>
           <Link href={`/captain/players/${player.playerId}/nutrition`} className="flex min-h-12 items-center text-lime">الأكل</Link>
+          <Link href={`/captain/players/${player.playerId}/preview`} className="flex min-h-12 items-center text-lime">شوف كلاعب</Link>
         </span>
       </div>
       <div role="cell" className="text-sm text-muted"><span className="lg:hidden">الاشتراك لحد: </span><time dateTime={player.accessUntil}>{new Intl.DateTimeFormat('ar-EG', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${player.accessUntil}T00:00:00Z`))}</time></div>
