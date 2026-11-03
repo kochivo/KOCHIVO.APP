@@ -1,0 +1,39 @@
+@utility glass {
+  @apply glass-surface;
+  --glass-blur-background: var(--glass-tint);
+  --glass-blur-filter: blur(24px);
+  border: 1px solid var(--glass-hairline);
+  box-shadow: inset 0 1px 0 var(--glass-highlight);
+}
+@utility glass-raised {
+  @apply glass-surface;
+  --glass-blur-background: var(--glass-tint-raised);
+  --glass-blur-filter: blur(12px);
+  border: 1px solid var(--glass-hairline);
+  box-shadow: inset 0 1px 0 var(--glass-highlight);
+}
+@utility glass-strong {
+  @apply glass-surface;
+  --glass-blur-background: var(--glass-strong-tint);
+  --glass-blur-filter: blur(24px);
+  border: 1px solid var(--glass-strong-border);
+  box-shadow: inset 0 1px 0 var(--glass-strong-highlight);
+}
+/* Shared by all three utilities, including responsive variants such as lg:glass-strong. */
+@utility glass-surface {
+  background: var(--glass-solid-background, var(--glass-blur-background));
+  -webkit-backdrop-filter: var(--glass-solid-filter, var(--glass-blur-filter));
+  backdrop-filter: var(--glass-solid-filter, var(--glass-blur-filter));
+}
+html[data-glass='solid'] { --glass-solid-background: var(--color-surface); --glass-solid-filter: none; }
+/* Nested panels keep their contrast without asking the GPU to blur the same pixels again. */
+:is(.glass, .glass-strong, .glass-raised) :is(.glass, .glass-strong, .glass-raised) {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  html { --glass-solid-background: var(--color-surface); --glass-solid-filter: none; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  html { --glass-solid-background: var(--color-surface); --glass-solid-filter: none; }
+}

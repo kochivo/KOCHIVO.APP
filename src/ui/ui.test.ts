@@ -1,5 +1,6 @@
 import { createElement } from 'react';
 import { readFileSync } from 'node:fs';
+import { Stat } from './stat';
 import { Button } from './button';
 import { GlassCard } from './glass-card';
 import { Stepper } from './stepper';
@@ -15,6 +16,28 @@ import { createToastQueue, ToastProvider } from './toast';
 import { BottomNav, Chip, EmptyState, ErrorState, IconButton, LoadingState, ProgressBar, Segmented, SyncPill, TextField } from './index';
 
 describe('UI primitives', () => {
+  it('sizes buttons responsively and supports desktop block actions', () => {
+    expect(renderToStaticMarkup(createElement(Button))).toContain('w-full md:w-auto');
+    const block = renderToStaticMarkup(createElement(Button, { block: true }));
+    expect(block).toContain('w-full');
+    expect(block).not.toContain('md:w-auto');
+    expect(renderToStaticMarkup(createElement(Button, { variant: 'ghost' }))).not.toContain('w-full');
+  });
+  it('renders display numbers with tabular spacing', () => {
+    for (const size of ['md', 'lg'] as const) expect(renderToStaticMarkup(createElement(Stat, { size }, '125'))).toContain('tabular-nums');
+  });
+  it('offers responsive card padding', () => {
+    expect(renderToStaticMarkup(createElement(GlassCard))).toContain('p-4 md:p-6');
+    expect(renderToStaticMarkup(createElement(GlassCard, { padding: 'sm' }))).toContain('p-3 md:p-4');
+    expect(renderToStaticMarkup(createElement(GlassCard))).not.toContain('hover-lift');
+    expect(renderToStaticMarkup(createElement(GlassCard, { interactive: true }))).toContain('press hover-lift');
+    expect(renderToStaticMarkup(createElement(GlassCard, { className: 'px-2 py-3' }))).not.toContain('md:p-6');
+  });
+  it('defines hover lift only for hover devices and removes reduced-motion translation', () => {
+    const css = readFileSync(new URL('../app/globals.css', import.meta.url), 'utf8');
+    expect(css).toMatch(/@utility hover-lift[\s\S]*?@media \(hover: hover\)[\s\S]*?translate: 0 -\.25rem/);
+    expect(css.slice(css.lastIndexOf('@media (prefers-reduced-motion: reduce)'))).toContain('.hover-lift:hover');
+  });
   it('keeps gym sizing by default and offers compact controls with full touch targets', () => {
     const props = { label: 'Reps', value: 8, step: 1, onChange: () => {} };
     const gym = renderToStaticMarkup(createElement(Stepper, props));
@@ -116,13 +139,6 @@ describe('UI primitives', () => {
     }
   });
 
-  it('gives cards breathing room while preserving caller padding and opt-in interaction', () => {
-    expect(renderToStaticMarkup(createElement(GlassCard))).toContain('p-6');
-    expect(renderToStaticMarkup(createElement(GlassCard))).not.toContain('press');
-    expect(renderToStaticMarkup(createElement(GlassCard, { interactive: true }))).toContain('press');
-    expect(renderToStaticMarkup(createElement(GlassCard, { className: 'px-2 py-3' }))).not.toContain('p-6');
-  });
-
   it.each(['dark', 'light'])('keeps text readable with the actual %s strong-glass token', theme => {
     const css = readFileSync(new URL('../app/globals.css', import.meta.url), 'utf8');
     const source = theme === 'light' ? css.split("html[data-theme='light'] {")[1]?.split('}')[0] ?? '' : css;
@@ -134,8 +150,8 @@ describe('UI primitives', () => {
     const tint = source.match(/--glass-strong-tint: rgb\((\d+) (\d+) (\d+) \/ ([\d.]+)\)/);
     if (!tint) throw new Error('Missing strong glass tint');
     const alpha = Number(tint[4]);
-    const mesh = (theme === 'light' ? [231, 236, 226] : [23, 34, 46])
-      .map((channel, index) => channel * .92 + (token('lime')[index] ?? 0) * .08);
+    const glowAlpha = theme === 'light' ? .06 : .14;
+    const mesh = token('bg').map((channel, index) => channel * (1 - glowAlpha) + (token('lime')[index] ?? 0) * glowAlpha);
     const background = mesh.map((channel, index) => Number(tint[index + 1]) * alpha + channel * (1 - alpha));
     const luminance = (rgb: number[]) => rgb.reduce((sum, value, index) => {
       const channel = value / 255;

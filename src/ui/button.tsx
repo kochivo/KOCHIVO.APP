@@ -20,14 +20,16 @@ const sizes: Record<Size, string> = {
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
   size?: Size;
+  block?: boolean;
 }
 
-export function Button({ variant = 'primary', size = 'md', className, type = 'button', ...props }: ButtonProps) {
+export function Button({ variant = 'primary', size = 'md', block = false, className, type = 'button', ...props }: ButtonProps) {
   return (
     <button
       type={type}
       className={cn(
-        'press inline-flex items-center justify-center gap-2 disabled:opacity-40',
+        'press hover-lift inline-flex items-center justify-center gap-2 disabled:opacity-40',
+        block ? 'w-full' : variant === 'primary' && 'w-full md:w-auto',
         variants[variant],
         sizes[size],
         className,

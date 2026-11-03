@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import './surfaces.css';
 [dir='ltr'] .dir-icon { transform: scaleX(-1); }
 /*
  * KOCHIVO design tokens — the only place colors are defined.
@@ -35,11 +36,14 @@
 :root {
   --safe-start: env(safe-area-inset-left);
   --safe-end: env(safe-area-inset-right);
-  --glass-tint: rgb(255 255 255 / 0.05);
-  --glass-tint-raised: rgb(255 255 255 / 0.08);
-  --glass-strong-tint: rgb(0 0 0 / 0.65);
-  --glass-hairline: rgb(255 255 255 / 0.1);
-  --glass-highlight: rgb(255 255 255 / 0.06);
+  --glass-tint: rgb(255 255 255 / 0.02);
+  --glass-tint-raised: rgb(255 255 255 / 0.04);
+  --glass-strong-tint: rgb(255 255 255 / 0.05);
+  --glass-hairline: rgb(255 255 255 / 0.08);
+  --glass-highlight: rgb(255 255 255 / 0.1);
+  --glass-strong-border: rgb(255 255 255 / 0.12);
+  --glass-strong-highlight: rgb(255 255 255 / 0.16);
+  --page-glow: rgb(182 233 79 / 0.14);
   --mesh-glow: rgb(182 233 79 / 0.08);
   --mesh-top: #17222e;
   --mesh-bottom: #131c25;
@@ -62,11 +66,14 @@ html[data-theme='light'] {
   --color-warn-soft: rgb(128 84 0 / 0.12);
   --color-danger: #ac391b;
   --color-danger-soft: rgb(172 57 27 / 0.12);
-  --glass-tint: rgb(255 255 255 / 0.7);
+  --glass-tint: rgb(255 255 255 / 0.6);
   --glass-tint-raised: rgb(255 255 255 / 0.85);
   --glass-strong-tint: rgb(255 255 255 / 0.95);
-  --glass-hairline: rgb(18 22 26 / 0.14);
-  --glass-highlight: rgb(255 255 255 / 0.8);
+  --glass-hairline: var(--color-line-soft);
+  --glass-highlight: rgb(255 255 255 / 0.5);
+  --glass-strong-border: rgb(18 22 26 / 0.12);
+  --glass-strong-highlight: rgb(255 255 255 / 0.8);
+  --page-glow: rgb(182 233 79 / 0.06);
   --mesh-glow: rgb(182 233 79 / 0.08);
   --mesh-top: #e7ece2;
   --mesh-bottom: #edf0e9;
@@ -75,6 +82,9 @@ html[data-theme='light'] .text-lime { color: var(--color-lime-ink); }
 @utility mesh {
   background: radial-gradient(ellipse at top, var(--mesh-glow), transparent 60%),
     linear-gradient(135deg, var(--mesh-top), var(--color-bg-deep));
+}
+@utility bg-glow {
+  background: radial-gradient(ellipse at top, var(--page-glow), transparent 65%), var(--color-bg);
 }
 html[data-theme='light'] .bg-ink.text-on-lime { color: var(--color-surface); }
 /* Theme-specific artwork, such as the logo whose letters are white in dark mode. */
@@ -114,6 +124,7 @@ html:not([data-theme='light']) .theme-light-only, html[data-theme='light'] .them
       var(--color-bg-deep);
   }
   h1, h2, h3, button { font-family: var(--font-display); }
+  body:not(:has(.marketing-wrap)) { @apply text-sm md:text-base; }
   :focus-visible { outline: 2px solid var(--color-lime-ink); outline-offset: 2px; }
 }
 /* Override sheet utility padding as well as browser defaults, including landscape notches. */
@@ -125,53 +136,6 @@ dialog:modal {
   padding-inline-end: max(1.25rem, var(--safe-end));
 }
 html[data-keyboard='open'] dialog:modal { inset-block-end: var(--keyboard-inset); }
-/*
- * Glass surfaces. Three levels only — pick by how much must stay readable on top:
- *   glass        lists, cards (white/5, blur 12)
- *   glass-raised selected / hovered item (white/8, blur 12)
- *   glass-strong gym focus mode and anything with big numbers (black/65, blur 24) — highest contrast
- * Every level has a 1px white/10 hairline and falls back to a solid surface without backdrop-filter.
- * Cards blur 12px (lighter than the old 16px + saturate); nested panels never blur twice, and the
- * "lighter visuals" setting turns every blur off on slow phones.
- */
-@utility glass {
-  @apply glass-surface;
-  --glass-blur-background: var(--glass-tint);
-  --glass-blur-filter: blur(12px);
-  border: 1px solid var(--glass-hairline);
-  box-shadow: inset 0 1px 0 var(--glass-highlight);
-}
-@utility glass-raised {
-  @apply glass-surface;
-  --glass-blur-background: var(--glass-tint-raised);
-  --glass-blur-filter: blur(12px);
-  border: 1px solid var(--glass-hairline);
-  box-shadow: inset 0 1px 0 var(--glass-highlight);
-}
-@utility glass-strong {
-  @apply glass-surface;
-  --glass-blur-background: var(--glass-strong-tint);
-  --glass-blur-filter: blur(24px);
-  border: 1px solid var(--glass-hairline);
-}
-/* Shared by all three utilities, including responsive variants such as lg:glass-strong. */
-@utility glass-surface {
-  background: var(--glass-solid-background, var(--glass-blur-background));
-  -webkit-backdrop-filter: var(--glass-solid-filter, var(--glass-blur-filter));
-  backdrop-filter: var(--glass-solid-filter, var(--glass-blur-filter));
-}
-html[data-glass='solid'] { --glass-solid-background: var(--color-surface); --glass-solid-filter: none; }
-/* Nested panels keep their contrast without asking the GPU to blur the same pixels again. */
-:is(.glass, .glass-strong, .glass-raised) :is(.glass, .glass-strong, .glass-raised) {
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-}
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  html { --glass-solid-background: var(--color-surface); --glass-solid-filter: none; }
-}
-@media (prefers-reduced-transparency: reduce) {
-  html { --glass-solid-background: var(--color-surface); --glass-solid-filter: none; }
-}
 /* Landing utilities use the existing theme and font metrics. */
 @layer components {
   .marketing-wrap { width: 100%; max-width: 1200px; margin-inline: auto; padding-inline: clamp(1rem, 4vw, 2rem); }
@@ -210,6 +174,16 @@ html[data-glass='solid'] { --glass-solid-background: var(--color-surface); --gla
   transition: transform 300ms ease-out;
   &:active:not(:disabled) { transform: scale(.95); }
 }
+@utility hover-lift {
+  transition: all 300ms ease-out;
+  @media (hover: hover) {
+    &:hover:not(:disabled) {
+      translate: 0 -.25rem;
+      transform: none;
+      --glass-blur-background: var(--glass-tint-raised);
+    }
+  }
+}
 @utility press {
   transition-property: transform, box-shadow, background-color, border-color, opacity;
   transition-duration: 300ms;
@@ -246,6 +220,9 @@ html[data-glass='solid'] { --glass-solid-background: var(--color-surface); --gla
 @keyframes toast-fade { to { opacity: 0; } }
 /* The marketing page keeps its own type scale. */
 body:not(:has(.marketing-wrap)) :is(h1, h2, h3) { font-weight: 700; color: var(--color-ink); }
+@layer base {
+  body:not(:has(.marketing-wrap)) :is(h2, h3) { @apply font-display text-base md:text-lg tracking-tight; }
+}
 body:not(:has(.marketing-wrap)) .text-muted { font-weight: 500; }
 @keyframes surface-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) {
@@ -257,4 +234,5 @@ body:not(:has(.marketing-wrap)) .text-muted { font-weight: 500; }
     scale: none;
     translate: none;
   }
+  .hover-lift, .hover-lift:hover, .hover-lift:active { transform: none; translate: none; transition-property: background-color, color, border-color; }
 }
