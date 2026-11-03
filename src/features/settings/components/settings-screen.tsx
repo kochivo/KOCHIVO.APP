@@ -19,6 +19,7 @@ import { ExportCard } from './export-card';
 import { DeleteAccountCard } from './delete-account-card';
 import { GlassToggle } from './glass-toggle';
 import { demoExpiry, useDemoExpiry } from '@/features/demo';
+import { TourReplay } from '@/ui/tour-replay';
 
 export function SettingsScreen({ signOut }: { signOut?: ReactNode }) {
   const t = useT(messages);
@@ -75,6 +76,7 @@ export function SettingsScreen({ signOut }: { signOut?: ReactNode }) {
       setLoading(true); setError(''); setAttempt((value) => value + 1);
     }} /> : profile ? <>
       <ProfileForm profile={profile} />
+      <TourReplay role={profile.role} />
       {profile.role === 'captain' && <InviteMessageForm initialMessage={profile.invite_message} />}
       <ExportCard />
       {!demo && !demoExpiry(profile) && <DeleteAccountCard requestedAt={profile.deletion_requested_at} />}

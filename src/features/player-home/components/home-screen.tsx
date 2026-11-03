@@ -53,7 +53,7 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
     !snapshot.training_days.includes(new Date(`${today}T12:00:00Z`).getUTCDay()) &&
     !sessions?.some((session) => session.training_date === today);
   const failed = localError || status === 'error';
-  return <main className="mx-auto max-w-lg space-y-4 px-5 pt-6 pb-32">
+  return <main data-tour-ready={Boolean(now && status !== 'loading' && (!snapshot || (sessions && weekSessions)))} className="mx-auto max-w-lg space-y-4 px-5 pt-6 pb-32">
     <header className="flex flex-wrap items-center justify-between gap-3">
       {now && <Greeting firstName={firstName} now={now} />}
       <SyncPill state={!online ? 'offline' : pending === undefined || pending > 0 ? 'pending' : 'synced'} pending={pending} />

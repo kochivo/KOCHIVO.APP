@@ -8,7 +8,7 @@ import { InviteSheet } from './invite-sheet';
 export function InviteButton({ captainFirstName, label, className }: { captainFirstName: string; label: string; className?: string }) {
   const [open, setOpen] = useState(false);
   return <>
-    <Button className={className} onClick={() => setOpen(true)}>{label}</Button>
+    <Button data-tour="invite-player" className={className} onClick={() => setOpen(true)}>{label}</Button>
     {open && <InviteSheet captainFirstName={captainFirstName} onClose={() => setOpen(false)} />}
   </>;
 }

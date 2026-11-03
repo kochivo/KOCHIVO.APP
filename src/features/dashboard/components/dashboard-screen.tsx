@@ -27,11 +27,11 @@ export async function DashboardScreen({ data, today, plan }: Props) {
     </div>
     {plan}
   </header>;
-  if (roster.error !== undefined) return <section className="space-y-6">{header}
+  if (roster.error !== undefined) return <section data-tour-ready="true" className="space-y-6">{header}
     <p role="alert" className="glass rounded-card p-5 text-danger">{t('loadFailed')}</p></section>;
   const players = roster.players;
   const tasks = captainNextTasks(players, dues, today);
-  if (players.length === 0) return <section className="space-y-6">{header}<NextTaskCard tasks={tasks} captainFirstName={firstName} /></section>;
+  if (players.length === 0) return <section data-tour-ready="true" className="space-y-6">{header}<NextTaskCard tasks={tasks} captainFirstName={firstName} /></section>;
 
   const stats = dashboardStats(players, today);
   const cards = [
@@ -43,7 +43,7 @@ export async function DashboardScreen({ data, today, plan }: Props) {
   const finder = (rows: typeof players) => rows.map((player) => ({ playerId: player.playerId, fullName: player.fullName,
     programTitle: player.programTitle, lastSeen: lastSeenLabel(player.lastTrainingDate, today, locale) }));
   return (
-    <section className="space-y-6">
+    <section data-tour-ready="true" className="space-y-6">
       {header}
       <NextTaskCard tasks={tasks} captainFirstName={firstName} />
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">

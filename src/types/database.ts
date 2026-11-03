@@ -935,6 +935,7 @@ export type Database = {
           role_confirmed: boolean
           suspended_at: string | null
           timezone: string
+          tour_seen_at: string | null
           updated_at: string
         }
         Insert: {
@@ -950,6 +951,7 @@ export type Database = {
           role_confirmed?: boolean
           suspended_at?: string | null
           timezone?: string
+          tour_seen_at?: string | null
           updated_at?: string
         }
         Update: {
@@ -965,6 +967,7 @@ export type Database = {
           role_confirmed?: boolean
           suspended_at?: string | null
           timezone?: string
+          tour_seen_at?: string | null
           updated_at?: string
         }
         Relationships: []
