@@ -15,7 +15,8 @@ const subscribe = () => () => {};
 export function readIntakeDraft(now: Date): IntakeDraft {
   try {
     if (typeof window === 'undefined') return { ...defaults };
-    const raw: unknown = JSON.parse(window.localStorage.getItem(key) ?? 'null');
+    try { window.localStorage.removeItem(key); } catch { /* Legacy storage may be unavailable. */ }
+    const raw: unknown = JSON.parse(window.sessionStorage.getItem(key) ?? 'null');
     if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return { ...defaults };
     // Keep unfinished measurements so reloading cannot silently replace an answer that needs fixing.
     const fields = makeIntakeSchema(now).intakeSchema.extend({
@@ -35,10 +36,10 @@ export function useIntakeDraft() {
   function update(patch: IntakeDraft) {
     const next = { ...draft, ...patch };
     setDraft(next);
-    try { window.localStorage.setItem(key, JSON.stringify(next)); } catch { /* Storage may be unavailable. */ }
+    try { window.sessionStorage.setItem(key, JSON.stringify(next)); } catch { /* Storage may be unavailable. */ }
   }
   function clear() {
-    try { window.localStorage.removeItem(key); } catch { /* Storage may be unavailable. */ }
+    try { window.sessionStorage.removeItem(key); } catch { /* Storage may be unavailable. */ }
   }
   return { draft, update, clear, ready };
 }

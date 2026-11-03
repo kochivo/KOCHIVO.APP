@@ -98,16 +98,23 @@ describe('local draft restoration', () => {
   it('keeps answers including measurements awaiting correction across reloads', () => {
     const getItem = vi.fn(() => JSON.stringify({ ...samples.basics, weight_kg: 301, notes: 'لسه بكمل',
       training_days: [], injuries: [], medical: [], allergies: [] }));
-    vi.stubGlobal('window', { localStorage: { getItem } });
+    const removeItem = vi.fn();
+    vi.stubGlobal('window', { localStorage: { removeItem }, sessionStorage: { getItem } });
     expect(readIntakeDraft(now)).toMatchObject({ ...samples.basics, weight_kg: 301, notes: 'لسه بكمل' });
     expect(getItem).toHaveBeenCalledWith('kochivo:intake-draft');
+    expect(removeItem).toHaveBeenCalledWith('kochivo:intake-draft');
+  });
+  it('restores the session even when legacy local storage is denied', () => {
+    vi.stubGlobal('window', { get localStorage() { throw new Error('denied'); },
+      sessionStorage: { getItem: () => JSON.stringify({ injuries: ['knee'] }) } });
+    expect(readIntakeDraft(now).injuries).toEqual(['knee']);
   });
   it('uses sane defaults when storage is corrupt, denied, or missing on the server', () => {
     for (const raw of ['{', 'null', '[]', '{"sex":"invalid"}']) {
-      vi.stubGlobal('window', { localStorage: { getItem: () => raw } });
+      vi.stubGlobal('window', { sessionStorage: { getItem: () => raw } });
       expect(readIntakeDraft(now)).toMatchObject({ birth_year: 1998, height_cm: 170, weight_kg: 75 });
     }
-    vi.stubGlobal('window', { get localStorage() { throw new Error('denied'); } });
+    vi.stubGlobal('window', { get sessionStorage() { throw new Error('denied'); } });
     expect(readIntakeDraft(now).target_weight_kg).toBeNull();
     vi.stubGlobal('window', undefined);
     expect(readIntakeDraft(now).training_days).toEqual([]);

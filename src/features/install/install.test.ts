@@ -3,6 +3,12 @@ import { installPlatform } from './platform';
 import { shouldShowInstall } from './policy';
 
 describe('installPlatform', () => {
+  it.each([[0, 'unsupported'], [1, 'unsupported'], [5, 'ios']] as const)('detects Macintosh with %s touch points', (maxTouchPoints, expected) => {
+    expect(installPlatform({ userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15)',
+      maxTouchPoints, standalone: false, hasPromptEvent: false })).toBe(expected);
+    expect(installPlatform({ userAgent: 'Macintosh', maxTouchPoints,
+      standalone: true, hasPromptEvent: true })).toBe('installed');
+  });
   it.each([
     ['Mozilla/5.0 (Linux; Android 14) Chrome/130.0', false, true, 'android'],
     ['Mozilla/5.0 (iPhone) AppleWebKit/605.1 Safari/604.1', false, false, 'ios'],
