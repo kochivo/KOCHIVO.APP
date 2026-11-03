@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Archive } from 'lucide-react';
 import { Button, GlassCard } from '@/ui';
 import { lastSeenLabel, playerStatus } from '../status';
@@ -41,7 +42,9 @@ export function RosterRow({ player, today }: { player: RosterPlayer; today: stri
       </div>
       <div role="cell"><span className={`inline-flex rounded-full px-3 py-1 text-xs font-bold ${tag.color}`}>{tag.label}</span></div>
       <div role="cell" className="text-sm text-muted"><span className="lg:hidden">آخر تسجيل: </span>{lastSeenLabel(player.lastTrainingDate, today)}</div>
-      <div role="cell" className="break-words text-sm">{player.programTitle ?? 'من غير برنامج'}</div>
+      <div role="cell" className="break-words text-sm">{player.programTitle ?? 'من غير برنامج'}
+        <Link href={`/captain/players/${player.playerId}/programs`} className="flex min-h-12 items-center text-lime">البرامج</Link>
+      </div>
       <div role="cell" className="text-sm text-muted"><span className="lg:hidden">الاشتراك لحد: </span><time dateTime={player.accessUntil}>{new Intl.DateTimeFormat('ar-EG', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${player.accessUntil}T00:00:00Z`))}</time></div>
       <div role="cell">
         <Button variant="ghost" disabled={pending} onClick={archive} aria-label={`أرشفة ${player.fullName}`} className="min-h-12 min-w-12 px-0"><Archive aria-hidden className="size-5" /></Button>
