@@ -7,8 +7,11 @@ const frameKey = /^(filename|abs_path|module|function)$/;
 const email = /[\w.+-]+@[\w.-]+\.[a-z]{2,}/gi;
 const phone = /(?<!\w)\+?\d[\d ().-]{6,}\d(?!\w)|\(\d{2,4}\)[\d .-]{6,}\d/g;
 
+// Invite links are bearer credentials: whoever sees /i/<code> can redeem it.
+const inviteCode = /\/i\/[^\s"'<>/?#]+/g;
+
 function scrubText(value: string): string {
-  return value.replace(/https?:\/\/[^\s"'<>]+|\/[^\s"'<>]*\?[^\s"'<>]*/gi,
+  return value.replace(inviteCode, '/i/[Redacted]').replace(/https?:\/\/[^\s"'<>]+|\/[^\s"'<>]*\?[^\s"'<>]*/gi,
     (url) => url.includes('/storage/') ? '[Redacted]' : url.split(/[?#]/)[0] ?? '')
     .replace(email, '[Redacted]').replace(phone, '[Redacted]');
 }

@@ -247,3 +247,190 @@ The targeted probe confirmed four finding paths and the RLS/definer catalog chec
 - Retried with `--maxWorkers 1`: **Test Files 41 passed (41); Tests 588 passed (588)**, exit 0.
 - `npm run build`: **Compiled successfully in 6.6s**, then **spawn EPERM** at `Running TypeScript ...`, exit 1. This was a process-spawning failure, not a Google Fonts fetch failure. The independent typecheck above passed; the complete build gate remains unverified.
 - `git diff --check` passed; final status contains only the new report.
+
+## Pass 2 (T-027a)
+
+Reviewed 2026-11-03, baseline **38716ea** (T-015 report), through **40d2ea9**,
+with migrations **0001–0033 applied in order**. This section supersedes neither
+the historical findings nor their evidence limits. The header fix is implemented;
+SEC2-02 was fixed by the reviewer in `src/lib/sentry-scrub.ts` (invite paths become `/i/[Redacted]`).
+
+| ID | Severity | Area | Title |
+| --- | --- | --- | --- |
+| SEC2-01 | medium | HTTP / framing | Missing response security headers permit authenticated-page framing — fixed |
+| SEC2-02 | medium | Sentry / invitations | Invitation bearer codes survive URL scrubbing — fixed in review |
+| SEC2-03 | low | Demo lifecycle | Expiry relies on scheduled purge rather than immediate access revocation — report only |
+
+### SEC2-01 — Missing response security headers (fixed)
+
+**Attack:** Host an iframe of an authenticated captain page, disguise its controls,
+and induce a signed-in victim to perform a roster or billing action if their browser
+sends credentials in that embedding context. The attacker needs a victim interaction;
+this does not bypass database ownership. Missing CSP also leaves injected external
+resources unconstrained if a separate injection vulnerability is introduced.
+
+**Why allowed:** `next.config.ts` previously supplied only `/sw.js` cache headers.
+There was no `frame-ancestors` or `X-Frame-Options` protection in repository configuration.
+Deployment-added headers and cross-site cookie behavior were not independently tested.
+
+**Fix:** A `/:path*` rule installs the requested CSP, framing, MIME, referrer,
+permissions and opener policies, plus production-only HSTS and HTTPS upgrading.
+`publicEnv()` supplies the Supabase URL at build time; the pure builder extracts its
+origin and websocket counterpart, with the requested Supabase wildcard fallback.
+The `/sw.js` cache/registration rule is retained. Inline scripts are deliberately
+allowed for Next RSC payloads and pre-paint scripts to preserve static rendering;
+this CSP does not eliminate inline-script injection risk.
+
+**Proof:** `src/lib/security-headers.test.ts` asserts every directive, the complete
+header list, development exclusions, origin extraction, fallback, local websocket
+ports and Next's route configuration. The initial test run failed because the
+builder did not exist; the implemented builder and route rule pass the tests.
+
+### SEC2-02 — Invitation bearer codes survive Sentry scrubbing (fixed in review)
+
+**Objects:** `src/lib/sentry-scrub.ts`, `src/instrumentation-client.ts`,
+`sentry.server.config.ts`, `sentry.edge.config.ts`, and `/i/[code]`.
+
+**Attack:** A legitimate visitor opens an unused invitation and an error event is
+captured with that page's request URL, navigation breadcrumb or exception text.
+A person with access to that telemetry can copy `/i/AbCdEfGh1234` and redeem the
+invitation with their own player account before its intended recipient does.
+This requires an emitted event carrying the URL and access to the telemetry;
+no actual production event, telemetry compromise or redemption was attempted.
+
+**Why allowed:** `scrubText` removes URL queries/fragments and storage URLs but
+retains invitation path segments. `beforeSend` explicitly retains the scrubbed
+request URL. The client, server and edge integrations share this scrubber, and
+production has a default DSN. An offline invocation of `beforeSend` preserved the
+code in both `request.url` and `exception.values[0].value`.
+
+**Required fix:** Redact invitation credentials in absolute and relative paths,
+including navigation breadcrumbs, request URLs and exception strings, without
+mutating input events or destroying diagnostic stack locations. Add regression
+cases to the existing Sentry suite. **Not implemented:** the card allows only
+`security-headers.ts` and its test under `src/lib`, excluding `sentry-scrub.ts`
+and `sentry-scrub.test.ts`. No alternate implementation was wired around that rule.
+`supabase/tests/security-pass-2.test.ts` contains an explicit `it.fails` reproduction
+so the open finding is visible and an eventual fix requires removing that marker.
+
+### SEC2-03 — Demo expiry waits for purge (report only)
+
+**Attack:** Keep a demo session and directly read or edit its synthetic workspace
+after `demo_expires_at`, before a successful scheduled purge. A missing cleanup job
+can extend this window indefinitely.
+
+**Why allowed:** `demoHours` displays zero after expiry, while `is_suspended` and
+ownership policies do not evaluate demo expiry. The expiry timestamp is protected
+from client changes and the owner-only purge deletes the workspace identities.
+This does not grant access to another captain's real users or permit demo invitations.
+
+**Proposed fix:** Verify that the production purge job is installed and monitored;
+if expiry must immediately revoke access, add a separate database expiry boundary
+with tests while preserving ordinary accounts and purge privileges. Dashboard/cron
+configuration is outside this card. No policy was changed for this low finding.
+
+### Coverage and negative checks
+
+- **0024–0027:** Admin history keeps the admin check, escaped search and bounded
+  pagination. The final internal tier lookup stays in the non-exposed private schema.
+  Forged review insertion, invite-role admission, suspension restrictions and content
+  authorization bound to the issuing captain remain enforced by the later migrations.
+- **0028–0030:** Template assignment remains an invoker and checks source ownership
+  and player relationship; empty templates are rejected. `captain_last_payments` is
+  an invoker filtered to the caller. Starter templates and receipts have RLS, revoked
+  client access and owner-only copy/trigger functions with pinned search paths;
+  confirmation locks and receipts prevent repeated starter-library copying.
+- **0031–0033:** Demo creation requires a verified anonymous JWT, locks the profile,
+  serializes admission to 50 workspaces/hour and reuses an existing workspace.
+  The richer demo creates synthetic identities and uses private helpers. Anonymous
+  role confirmation and invite redemption are denied by database triggers reading
+  `auth.users.is_anonymous`; metadata cannot set demo expiry. Private purge helpers
+  are not API-callable. Live CAPTCHA enforcement, anonymous account linking and
+  scheduled cleanup are deployment checks, not established by the local stubs.
+- **Server actions:** Reviewed all 32 `use server` modules and their supporting
+  data clients: admin, auth, billing, demo expiry, inbox, meal-plan IO/search/activation,
+  onboarding, identity/preview/captain reads, programs, roster, settings/export and
+  templates. They use caller-bound publishable-key clients, not service-role clients.
+  Admin writes call `requireAdmin` and admin-checked RPCs; roster/plan ownership and
+  player writes remain subject to database policies. No new cross-tenant action
+  bypass was established. Client-side hidden demo controls are not treated as authorization.
+- **Callback and proxy:** Callback destinations remain fixed relative paths, with
+  validated invite tokens interpolated only beneath `/i/`. There is no arbitrary
+  return-to URL feature to repair. Tests exercise `next=//evil.com`, `/\\evil.com`,
+  `https://evil.com` and `/captain`: untrusted return-to inputs are ignored and the
+  captain destination remains `/captain`. Malicious invite-cookie paths are rejected
+  on successful exchange and the error path. The proxy validates claims, loads the
+  database role/suspension and preserves refreshed cookies across internal redirects.
+  Host trust at the deployment boundary remains an integration assumption.
+- **Storage and offline:** Signed URL helpers use caller-bound Storage clients and
+  private bucket RLS; inbox signing first resolves the authorized submission.
+  URLs default to 600 seconds. Existing bearer URLs live until expiration after a
+  suspension. Sync RPCs remain security invokers, omit caller-supplied player IDs,
+  enforce RLS on insert/conflict updates and null unowned plan references. Snapshot
+  refresh preserves cache on failures; local cache is not treated as server authorization.
+- **Sentry:** User identity, credentials, payloads, sensitive structured fields,
+  storage URLs, query strings, console and DOM breadcrumbs are scrubbed; traces and
+  session replay are disabled. SEC2-02 is the exception found in path handling.
+- **Remaining source changes since baseline:** Checked the changed routes, UI and
+  hooks, shared formatting/date helpers, pre-paint glass script, public configuration
+  and generated type integration for new input/output and execution sinks. User
+  content remains React-escaped; the pre-paint script contains a serialized static
+  function, not interpolated user input. Generated TypeScript is not an authorization boundary.
+
+### Invite guessing assessment
+
+The database default in 0003 is `gen_random_bytes(9)` encoded as base64url:
+**12 case-sensitive characters, 72 random bits, 2^72 possible codes**. The app
+omits `code` on insert and uses that default. Both `invite_preview` and
+`redeem_invite` can serve as validity oracles; the former is intentionally available
+to `anon` and reveals only a first name/validity. Redemption locks an unused,
+unexpired invite and uses database admission guards. Codes expire after seven days
+by default. Even 10^9 guesses against one code have probability about 2.12×10^-13;
+with N active codes the small-probability approximation multiplies by N. This is
+not a short PIN, so the card's conditional DB attempt limit is not warranted for
+generated codes. Captains can explicitly insert their own codes through the Data
+API; this assessment does not assign 72-bit entropy to arbitrary caller-chosen
+values. No successful brute-force path against generated codes was demonstrated.
+No DB finding requiring a fix was identified, so migration 0034 was not created.
+
+### Header list asserted by the production test
+
+Fixture origin: `https://project.supabase.co`; a configured deployment uses its own
+validated Supabase origin. This is test evidence, not a live `curl -I` capture.
+
+```text
+Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://project.supabase.co; media-src 'self' blob: https://project.supabase.co; connect-src 'self' https://project.supabase.co wss://project.supabase.co https://*.ingest.de.sentry.io; frame-src https://challenges.cloudflare.com; font-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
+Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+X-Frame-Options: DENY
+Permissions-Policy: camera=(self), microphone=(self), geolocation=(), payment=(), usb=()
+Cross-Origin-Opener-Policy: same-origin
+```
+
+### Pass 2 validation limits
+
+The PGlite harness uses a fixed clock and no network. New tests verify final anon
+execution grants, empty public-definer search paths, invoker sync functions,
+cryptographic invite defaults and denial of admin history to non-admins. Callback
+tests mock exchange/profile dependencies; they do not exercise live OAuth.
+The Sentry `it.fails` is an open reproduction, not a remediated vulnerability.
+Production RLS deployment, trusted hosts, auth rate limits/CAPTCHA, leaked-password
+protection and purge-job installation still require reviewer verification in Supabase.
+
+- Used `npm.cmd` because PowerShell disables the `npm.ps1` launcher.
+- `npm run check`: typecheck and lint passed; default Vitest config loading failed
+  with `spawn EPERM`.
+- Requested fallback `npm run test -- --configLoader native --pool threads`:
+  **Test Files 80 passed (80); Tests 891 passed | 1 expected fail (892)**, exit 0.
+  The expected failure is SEC2-02, deliberately left open under the card's scope rule.
+- `npm run build`: **Compiled successfully in 12.9s**, then **spawn EPERM** at
+  `Running TypeScript ...`, exit 1. The independent typecheck passed; this is a
+  process-spawning restriction, not a Google Fonts failure. A complete production
+  build and live response capture remain unverified in this sandbox.
+- `git diff --check` passed. No dependencies, historical migrations, environment
+  files, branches or commits were changed.
+
+**Reviewer decision (SEC2-03):** kept report-only. The data is synthetic, the hosted
+`purge-demo-workspaces` job runs every 30 minutes (verified active), and locking the
+session early would replace the demo's "sign up" banner with error states.
