@@ -5,14 +5,35 @@ import { describe, expect, it, vi } from 'vitest';
 
 const locale = vi.hoisted(() => ({ value: 'ar' }));
 vi.mock('server-only', () => ({}));
+vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh: () => {} }) }));
 vi.mock('@/core/storage/media-url', () => ({ exerciseMediaUrl: (path: string) => `https://demo.supabase.co/${path}` }));
 vi.mock('next/headers', () => ({ cookies: async () => ({ get: () => ({ value: locale.value }) }) }));
 import { Hero } from './components/hero';
 import { PlayerSection } from './components/player-section';
 import { SiteFooter } from './components/site-footer';
 import { content } from './content';
+import { SiteHeader } from './components/site-header';
+import { Pricing } from './components/pricing';
+import { FinalCta } from './components/final-cta';
 
 describe('public marketing page', () => {
+  it.each(['ar', 'en'] as const)('routes auth and demo CTAs by label in %s', async language => {
+    locale.value = language;
+    try {
+      const elements = await Promise.all([SiteHeader(), Hero(), Pricing(), FinalCta(), SiteFooter()]);
+      const html = elements.map(element => renderToStaticMarkup(createElement(LocaleProvider, { locale: language }, element))).join('');
+      const links = [...html.matchAll(/<a\b[^>]*href="([^"]+)"[^>]*>(.*?)<\/a>/gs)]
+        .map(match => ({ href: match[1], label: match[2]?.replace(/<[^>]+>/g, '') }));
+      const labels = language === 'ar'
+        ? ['دخول', 'ابدأ مجاناً', 'ابدأ مجاناً · لحد 5 لاعبين', 'اعمل حسابك كابتن', 'جرّب الديمو']
+        : ['Sign in', 'Start free', 'Start free · up to 5 players', 'Create your coach account', 'Try the demo'];
+      for (const label of labels) expect(links.some(link => link.label === label)).toBe(true);
+      for (const link of links.filter(link => labels.includes(link.label ?? ''))) {
+        expect(link.href).toBe(link.label === labels[0] ? '/login' : link.label === labels[4] ? '/demo' : '/login?tab=signup');
+      }
+      expect(links.some(link => link.label === labels[0])).toBe(true);
+    } finally { locale.value = 'ar'; }
+  });
   it.each([['ar', 'خطوتك الجاية بتبدأ من هنا'], ['en', null]] as const)('renders the hero in %s', async (language, tagline) => {
     locale.value = language;
     try {

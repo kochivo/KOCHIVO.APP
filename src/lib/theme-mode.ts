@@ -18,6 +18,13 @@ export const themeBootScript = `(()=>{
   };
   root.dataset.themeMode=stored==='light'||stored==='dark'?stored:'system';
   apply();
+  // A locale refresh reconciles html attributes without rerunning this head script.
+  if(typeof MutationObserver!=='undefined')new MutationObserver(()=>{
+    try{stored=localStorage.getItem('kochivo.theme')}catch{}
+    root.dataset.themeMode=stored==='light'||stored==='dark'?stored:'system';
+    apply();
+    window.dispatchEvent(new Event('kochivo:theme-change'));
+  }).observe(root,{attributes:true,attributeFilter:['lang','dir']});
   media.addEventListener('change',apply);
   window.addEventListener('kochivo:theme-change',apply);
   window.addEventListener('storage',event=>{
