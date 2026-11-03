@@ -98,13 +98,21 @@ describe('captainNav', () => {
     ['/captain/inboxes', undefined],
     ['/captain/players-other/x', undefined],
   ])('%s activates only %s on desktop and mobile', (pathname, label) => {
+    expect(captainNav(pathname).filter((item) => item.active).map((item) => item.label))
+      .toEqual(label ? [label] : []);
+    const activeHrefs = captainNav(pathname).filter((item) => item.active).map((item) => item.href);
     for (const items of [captainNav(pathname), mobileCaptainNav(pathname)]) {
-      expect(items.filter((item) => item.active).map((item) => item.label))
-        .toEqual(label ? [label] : []);
+      expect(items.filter((item) => item.active).map((item) => item.href)).toEqual(activeHrefs);
       expect(items.map((item) => item.href)).toEqual([
         '/captain', '/captain/inbox', '/captain/templates', '/captain/billing', '/captain/settings',
       ]);
     }
+  });
+
+  it('uses the short billing label only in the phone bar', () => {
+    const billing = (items: { href: string; label: string }[]) => items.find((item) => item.href === '/captain/billing')?.label;
+    expect(billing(captainNav('/captain'))).toBe('الاشتراكات');
+    expect(billing(mobileCaptainNav('/captain'))).toBe('الدفعات');
   });
 });
 

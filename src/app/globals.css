@@ -99,7 +99,8 @@ html:not([data-theme='light']) .theme-light-only, html[data-theme='light'] .them
     font-family: var(--font-sans);
     font-feature-settings: 'tnum' 1;
     -webkit-font-smoothing: antialiased;
-    overflow-wrap: anywhere;
+    /* break-word, not anywhere: anywhere shrinks min-content and splits short words in tight grids. */
+    overflow-wrap: break-word;
     padding-inline: var(--safe-start) var(--safe-end);
   }
 

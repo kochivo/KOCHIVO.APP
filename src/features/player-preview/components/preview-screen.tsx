@@ -51,8 +51,10 @@ export function PreviewScreen({ result, today }: { result: Result; today: string
                   className={`py-2 text-center text-xs ${entry.date === today ? 'rounded-control bg-lime-soft text-lime' : 'text-muted'}`}>
                   <span>{formatDateAr(entry.date, { weekday: 'short' }, locale)}</span>
                   <p className="font-bold">{formatNumber(Number(entry.date.slice(-2)), locale)}</p>
-                  <span>{entry.trained ? t('trained') : !data.program ? t('dash') : data.program.training_days.length === 0 ||
+                  {/* A dot like the player's own strip: words do not fit seven 40px columns in English. */}
+                  <span className="sr-only">{entry.trained ? t('trained') : !data.program ? t('dash') : data.program.training_days.length === 0 ||
                     data.program.training_days.includes(new Date(`${entry.date}T12:00:00Z`).getUTCDay()) ? t('training') : t('restDay')}</span>
+                  <span aria-hidden className={`mx-auto mt-1 block size-1.5 rounded-full ${entry.trained ? 'bg-lime' : 'border border-muted'}`} />
                 </li>)}
               </ol>
               <section className="glass-strong space-y-3 rounded-card p-4">

@@ -23,5 +23,7 @@ export function captainNav(pathname: string, t: Translator<typeof messages> = cr
 }
 
 export function mobileCaptainNav(pathname: string, t: Translator<typeof messages> = createT(messages, 'ar')) {
-  return captainNav(pathname, t);
+  // Five items share a 360px bar, so the longest label gets a short form on phones.
+  return captainNav(pathname, t).map((item) => item.href === '/captain/billing'
+    ? { ...item, label: t('subscriptionsShort') } : item);
 }
