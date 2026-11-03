@@ -1,0 +1,76 @@
+'use client';
+
+import { useCallback, useEffect, useState, type ReactNode } from 'react';
+import { Dumbbell, Home, MessageCircle, TrendingUp, Utensils } from 'lucide-react';
+import { localDb, pendingCount, useLiveQuery } from '@/core/offline';
+import { localDate } from '@/lib/dates';
+import { BottomNav, EmptyState, ErrorState, LoadingState, SyncPill } from '@/ui';
+import { useProgramSnapshot } from '../hooks/use-program-snapshot';
+import { useWeekSessions } from '../hooks/use-week-sessions';
+import { pickTodayDay } from '../next-day';
+import { buildWeek } from '../week';
+import { Greeting } from './greeting';
+import { WeekStrip } from './week-strip';
+import { TodayCard } from './today-card';
+import { NutritionSlot } from './nutrition-slot';
+
+const readPending = () => pendingCount(localDb());
+const readSessions = () => localDb().workout_sessions.toArray();
+// TODO: Nutrition, progress, and captain routes are delivered by later task cards.
+const navigation = [
+  { href: '/player', label: 'الرئيسية', icon: Home, active: true },
+  { href: '/player/nutrition', label: 'التغذية', icon: Utensils },
+  { href: '/player/progress', label: 'التطور', icon: TrendingUp },
+  { href: '/player/captain', label: 'الكابتن', icon: MessageCircle },
+];
+
+export function HomeScreen({ firstName, playerId, signOut }: { firstName?: string; playerId?: string; signOut: ReactNode }) {
+  const [now, setNow] = useState<Date>();
+  const [online, setOnline] = useState(true);
+  const [localError, setLocalError] = useState(false);
+  const [retryKey, setRetryKey] = useState(0);
+  const onError = useCallback(() => setLocalError(true), []);
+  const { snapshot, status, retry } = useProgramSnapshot(playerId, retryKey);
+  const pending = useLiveQuery(readPending, onError, retryKey);
+  const allSessions = useLiveQuery(readSessions, onError, retryKey);
+  const sessions = allSessions?.filter((session) => snapshot?.days.some((day) => day.id === session.program_day_id));
+  const today = now ? localDate(now) : '';
+  const weekSessions = useWeekSessions(today || '2000-01-01', onError, retryKey);
+  useEffect(() => {
+    const update = () => { setNow(new Date()); setOnline(navigator.onLine); };
+    update();
+    window.addEventListener('online', update);
+    window.addEventListener('offline', update);
+    window.addEventListener('focus', update);
+    document.addEventListener('visibilitychange', update);
+    return () => {
+      window.removeEventListener('online', update);
+      window.removeEventListener('offline', update);
+      window.removeEventListener('focus', update);
+      document.removeEventListener('visibilitychange', update);
+    };
+  }, []);
+  const day = snapshot && sessions && today ? pickTodayDay(snapshot, sessions, today) : undefined;
+  const rest = snapshot && now && snapshot.training_days.length > 0 &&
+    !snapshot.training_days.includes(new Date(`${today}T12:00:00Z`).getUTCDay()) &&
+    !sessions?.some((session) => session.training_date === today);
+  const failed = localError || status === 'error';
+  return <main className="mx-auto max-w-lg space-y-4 px-5 pt-6 pb-32">
+    <header className="flex flex-wrap items-center justify-between gap-3">
+      {now && <Greeting firstName={firstName} now={now} />}
+      <SyncPill state={!online ? 'offline' : pending === undefined || pending > 0 ? 'pending' : 'synced'} pending={pending} />
+    </header>
+    {failed && (!snapshot || localError) ? <ErrorState message="مش قادرين نحمّل برنامجك دلوقتي" retryLabel="جرّب تاني" onRetry={() => {
+      setLocalError(false); setRetryKey((value) => value + 1); void retry();
+    }} /> : !now || status === 'loading' || (snapshot && (!sessions || !weekSessions)) ? <LoadingState /> : <>
+      <WeekStrip today={today} days={buildWeek(today, snapshot?.training_days ?? [],
+        weekSessions?.filter((session) => snapshot?.days.some((day) => day.id === session.program_day_id)) ?? [])} />
+      {snapshot && day ? <TodayCard day={day} rest={Boolean(rest)} /> :
+        <EmptyState icon={Dumbbell} title="برنامجك لسه بيتجهز" body="الكابتن لسه بيجهز برنامجك. هيوصلك أول ما يخلص." />}
+      {failed && snapshot && <p className="text-sm text-muted">آخر تحديث من شوية</p>}
+    </>}
+    <NutritionSlot />
+    <div className="[&_button]:min-h-12 [&_button]:bg-transparent [&_button]:text-muted">{signOut}</div>
+    <BottomNav aria-label="التنقل" items={navigation} />
+  </main>;
+}
