@@ -2,12 +2,13 @@ import { Button, GlassCard, ProgressBar } from '@/ui';
 import { localDate } from '@/lib/dates';
 import { waLink } from '../renew';
 import type { Plan } from '../types';
+import { publicConfig } from '@/lib/public-config';
 
 const tierNames: Record<string, string> = { entry: 'البداية', champion: 'البطل', legend: 'الأسطورة', empire: 'الإمبراطورية' };
 
 export function PlanCard({ plan, used, subscriptionEnd }: { plan: Plan; used: number; subscriptionEnd: string | null }) {
   const tierName = tierNames[plan.tier] ?? plan.tier;
-  const upgrade = waLink(process.env.NEXT_PUBLIC_OWNER_WHATSAPP, `عايز أرقّي باقتي في كوتشيفو. باقتي الحالية ${tierName}. إيه خطوات الدفع والتفعيل؟`);
+  const upgrade = waLink(publicConfig.ownerWhatsapp, `عايز أرقّي باقتي في كوتشيفو. باقتي الحالية ${tierName}. إيه خطوات الدفع والتفعيل؟`);
   return (
     <GlassCard level="strong" className="space-y-5 p-6">
       <div><h2 className="text-xl font-bold">باقتي</h2><p className="mt-3 text-3xl font-extrabold">{tierName}</p></div>

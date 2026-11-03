@@ -1,8 +1,9 @@
 import { whatsappUrl } from '@/lib/whatsapp';
 import { SignOutButton } from './sign-out-button';
+import { publicConfig } from '@/lib/public-config';
 
 export function SuspendedScreen() {
-  const whatsapp = whatsappUrl({ phone: process.env.NEXT_PUBLIC_OWNER_WHATSAPP ?? '' });
+  const whatsapp = whatsappUrl({ phone: publicConfig.ownerWhatsapp });
   return <main dir="rtl" className="flex min-h-dvh items-center justify-center p-6 text-start">
     <section className="glass-strong w-full max-w-md space-y-6 rounded-card p-8" aria-labelledby="suspended-title">
       <h1 id="suspended-title" className="text-2xl font-bold">حسابك متوقف مؤقتاً</h1>

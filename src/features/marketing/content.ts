@@ -1,4 +1,5 @@
 import { whatsappUrl as contactUrl } from '@/lib/whatsapp';
+import { publicConfig } from '@/lib/public-config';
 
 type Plan = { name: string; price: number; displayPrice: string; limit: number; limitLabel: string; hot: boolean; action: string };
 type Detail = { t: string; d: string };
@@ -6,7 +7,7 @@ type Detail = { t: string; d: string };
 export const content = {
   brand: 'KOCHIVO',
   seo: { title: 'كوتشيفو — كل لاعبينك في مكان واحد', description: 'كل لاعبينك، وبرنامج وأكل ومتابعة كل واحد، في مكان واحد. واللاعب بيسجّل في الجيم حتى لو النت فاصل.' },
-  whatsappNumber: '201100539306',
+  whatsappNumber: publicConfig.ownerWhatsapp,
   links: { signup: '/login?tab=signup', demo: '/login' },
   nav: [{ href: '#how', label: 'إزاي بيشتغل' }, { href: '#features', label: 'المميزات' }, { href: '#pricing', label: 'الباقات' }, { href: '#faq', label: 'أسئلة' }],
   login: 'دخول', signup: 'ابدأ مجاناً', contact: 'كلّمنا على واتساب',

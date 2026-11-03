@@ -3,13 +3,14 @@
 import { useEffect } from 'react';
 import { captureException } from '@sentry/nextjs';
 import './globals.css';
+import { publicConfig } from '@/lib/public-config';
 
 export default function GlobalError({ error, reset }: {
   error: Error & { digest?: string };
   reset: () => void;
 }) {
   useEffect(() => {
-    if (process.env.NEXT_PUBLIC_SENTRY_DSN?.trim()) captureException(error);
+    if (publicConfig.sentryDsn) captureException(error);
   }, [error]);
 
   return (

@@ -1,7 +1,8 @@
 import * as Sentry from '@sentry/nextjs';
 import { beforeBreadcrumb, beforeSend } from '@/lib/sentry-scrub';
+import { publicConfig } from '@/lib/public-config';
 
-const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN?.trim();
+const dsn = publicConfig.sentryDsn;
 if (dsn) {
   Sentry.init({
     dsn,
