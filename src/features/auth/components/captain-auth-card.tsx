@@ -6,9 +6,10 @@ import { signInPassword } from '../data/sign-in-password';
 import { signUpCaptain } from '../data/sign-up-captain';
 import { GoogleButton } from './google-button';
 import { callAuthAction } from '../data/client-action';
+import type { AuthMode } from '../auth-mode';
 
-export function CaptainAuthCard({ callbackError = false }: { callbackError?: boolean }) {
-  const [mode, setMode] = useState('login');
+export function CaptainAuthCard({ callbackError = false, initialMode = 'login' }: { callbackError?: boolean; initialMode?: AuthMode }) {
+  const [mode, setMode] = useState<string>(initialMode);
   const [message, setMessage] = useState('');
   const [error, setError] = useState(callbackError ? 'الدخول مكملش، جرّب تاني' : '');
   const [pending, start] = useTransition();
