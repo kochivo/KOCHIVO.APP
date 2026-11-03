@@ -17,12 +17,12 @@ it.each(['dark', 'light'])('keeps %s text readable on mesh, glass and solid surf
     if (!hex) throw new Error(`Missing ${name} color`);
     return [0, 2, 4].map(offset => Number.parseInt(hex.slice(offset, offset + 2), 16));
   };
-  // Upper bound: the full lime glow over the brightest navy mesh, even where gradients don't overlap.
+  // Upper bound: the full page glow with the translucent surfaces composited over it.
   const light = theme === 'light';
-  const mesh = mix(token('lime'), light ? [231, 236, 226] : [23, 34, 46], 0.08);
-  const glass = mix([255, 255, 255], mesh, light ? 0.7 : 0.05);
-  const backgrounds = [mesh, glass, mix([255, 255, 255], glass, light ? 0.85 : 0.08),
-    mix(light ? [255, 255, 255] : [0, 0, 0], mesh, light ? 0.95 : 0.4),
+  const mesh = mix(token('lime'), token('bg'), light ? 0.06 : 0.14);
+  const glass = mix([255, 255, 255], mesh, light ? 0.6 : 0.02);
+  const backgrounds = [mesh, glass, mix([255, 255, 255], glass, light ? 0.85 : 0.04),
+    mix([255, 255, 255], mesh, light ? 0.95 : 0.05),
     token('bg'), token('bg-deep'), token('surface'), token('surface-raised')];
   const contrast = (a: number[], b: number[]) =>
     (Math.max(luminance(a), luminance(b)) + 0.05) / (Math.min(luminance(a), luminance(b)) + 0.05);

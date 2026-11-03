@@ -6,7 +6,7 @@ import { cn } from '@/lib/cn';
 interface Option { value: string; label: string }
 type Options = readonly [Option, Option] | readonly [Option, Option, Option] | readonly [Option, Option, Option, Option];
 const variants: Record<'active' | 'idle', string> = {
-  active: 'bg-ink text-on-lime',
+  active: 'glass-raised text-ink font-bold',
   idle: 'text-muted hover:text-ink',
 };
 
