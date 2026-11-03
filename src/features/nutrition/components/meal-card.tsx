@@ -7,7 +7,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { Check } from 'lucide-react';
 import { localDb, type MealLogRow, type NutritionMeal } from '@/core/offline';
-import { foodMediaUrl } from '@/core/storage';
+import { foodPhotoUrl } from '@/core/storage/media-url';
 import { Button, GlassCard } from '@/ui';
 import { setMealEaten } from '../data/log-meal';
 import { mealMacros } from '../macros';
@@ -46,7 +46,7 @@ export function MealCard({ meal, log, today, planTitle }: { meal: NutritionMeal;
       {meal.items.map((item) => {
         const chosen = item.alternatives.find((alt) => alt.id === swaps[item.id]) ?? item;
         return <li key={item.id} className="flex items-center gap-3">
-          {chosen.photo_path ? <Image src={foodMediaUrl(chosen.photo_path)} alt={chosen.name} width={60} height={60}
+          {chosen.photo_path ? <Image src={foodPhotoUrl(chosen.photo_path)} alt={chosen.name} width={60} height={60}
             unoptimized className="size-15 shrink-0 rounded-control object-cover" /> :
             <span aria-hidden="true" className="glass flex size-15 shrink-0 items-center justify-center rounded-control text-muted">{chosen.name.charAt(0)}</span>}
           <span className="min-w-0 flex-1 text-sm font-bold">{chosen.name} · {formatNumber(chosen.grams, locale)}{t('g')}</span>

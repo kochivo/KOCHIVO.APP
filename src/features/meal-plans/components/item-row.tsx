@@ -8,6 +8,7 @@ import { ArrowDown, ArrowUp, Trash2 } from 'lucide-react';
 import { Button, Stepper } from '@/ui';
 import { uuidv7 } from '@/core/offline/ids';
 import { macrosFor } from '@/lib/macros';
+import { foodPhotoUrl } from '@/core/storage/media-url';
 import { addAlternative, moveItem, removeAlternative, removeItem, setGrams } from '../draft';
 import { FoodPicker } from './food-picker';
 import type { MealItem, PlanDraft } from '../types';
@@ -19,7 +20,11 @@ export function ItemRow({ item, first, last, update }: { item: MealItem; first: 
   const [picking, setPicking] = useState(false);
   const macros = macrosFor(item.food, item.grams);
   return <li className="glass-strong grid gap-3 rounded-card p-4">
-    <div className="flex flex-wrap items-center justify-between gap-2"><h3 className="font-bold">{item.food.name}</h3>
+    <div className="flex flex-wrap items-center justify-between gap-2">
+      {/* Public storage hosts vary by deployment and are not in the optimizer allowlist. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      {item.food.photo && <img src={foodPhotoUrl(item.food.photo)} alt="" width={48} height={48} loading="lazy" decoding="async" className="size-12 rounded-control object-cover" />}
+      <h3 className="font-bold">{item.food.name}</h3>
       <div className="flex gap-1">
         <Button variant="ghost" disabled={first} aria-label={t('moveFoodUp')} onClick={() => update(d => moveItem(d, item.id, -1))}><ArrowUp aria-hidden className="dir-icon" /></Button>
         <Button variant="ghost" disabled={last} aria-label={t('moveFoodDown')} onClick={() => update(d => moveItem(d, item.id, 1))}><ArrowDown aria-hidden className="dir-icon" /></Button>

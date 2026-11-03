@@ -1,0 +1,57 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+vi.mock('server-only', () => ({}));
+vi.mock('next/headers', () => ({ cookies: async () => ({ get: () => undefined }) }));
+import { createCustomFood } from './data/custom-food';
+import { searchFoods } from './data/foods';
+
+const mocks = vi.hoisted(() => ({ insert: vi.fn(), eq: vi.fn(), getUser: vi.fn(), single: vi.fn() }));
+vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => ({
+  auth: { getUser: mocks.getUser },
+  from: (table: string) => {
+    const request = { select: () => request, order: () => request, limit: () => request,
+      or: () => request, eq: (key: string, value: string) => { mocks.eq(key, value); return request; },
+      insert: mocks.insert, single: table === 'profiles' ? async () => ({ data: { role: 'captain' }, error: null }) : mocks.single,
+      then: (resolve: (value: unknown) => unknown) => Promise.resolve({ data: [], error: null }).then(resolve) };
+    mocks.insert.mockReturnValue(request);
+    return request;
+  },
+}) }));
+const captain = '01900000-0000-7000-8000-000000000001';
+const input = { name: 'Soup', servingGrams: 150, kcal: 200, protein: 10, carbs: 20, fat: 5 };
+beforeEach(() => {
+  vi.clearAllMocks();
+  mocks.getUser.mockResolvedValue({ data: { user: { id: captain } }, error: null });
+  mocks.single.mockResolvedValue({ data: { id: captain, owner_id: captain, name_ar: 'Soup', photo_path: null,
+    kcal_per_100g: 133.3, protein_per_100g: 6.7, carbs_per_100g: 13.3, fat_per_100g: 3.3 }, error: null });
+});
+describe('custom food server validation', () => {
+  it('stores rounded per-100g values owned by the caller', async () => {
+    const food = await createCustomFood(input);
+    expect(mocks.insert).toHaveBeenCalledWith(expect.objectContaining({ owner_id: captain, source: 'captain',
+      name_ar: 'Soup', name_en: null, kcal_per_100g: 133.3, protein_per_100g: 6.7,
+      carbs_per_100g: 13.3, fat_per_100g: 3.3 }));
+    expect(food).toMatchObject({ custom: true, kcal: 133.3 });
+  });
+  it.each([{ name: '' }, { name: 'a'.repeat(61) }, { servingGrams: 4 }, { servingGrams: 2001 },
+    { kcal: -1 }, { kcal: 5001 }, { kcal: 1350.01 }, { protein: -1 }, { carbs: 1001 },
+    { fat: Infinity }, { servingGrams: NaN }, { servingGrams: 10, protein: 8, carbs: 2, fat: 1 }])('rejects invalid input %j before writing', async patch => {
+    await expect(createCustomFood({ ...input, ...patch })).rejects.toThrow();
+    expect(mocks.insert).not.toHaveBeenCalled();
+  });
+  it('accepts the 900 kcal per 100g boundary', async () => {
+    await createCustomFood({ ...input, kcal: 1350 });
+    expect(mocks.insert).toHaveBeenCalledWith(expect.objectContaining({ kcal_per_100g: 900 }));
+  });
+  it('rejects a photo belonging to another captain', async () => {
+    await expect(createCustomFood({ ...input, photoPath: 'captain-food-photos/other/a.jpg' })).rejects.toThrow();
+    expect(mocks.insert).not.toHaveBeenCalled();
+  });
+});
+it('applies the mine filter to the authenticated caller', async () => {
+  await searchFoods({ query: 'soup', mine: true });
+  expect(mocks.eq).toHaveBeenCalledWith('owner_id', captain);
+});
+it('does not filter all foods by owner', async () => {
+  await searchFoods({ query: '' });
+  expect(mocks.eq).not.toHaveBeenCalled();
+});
