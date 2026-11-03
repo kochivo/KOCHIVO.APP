@@ -15,3 +15,6 @@ assets-source/
 
 .DS_Store
 Thumbs.db
+
+# Local review screenshots
+screenshots/
