@@ -2,6 +2,9 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    publicSlug: 'لينك صفحتك العامة', publicPreview: 'kochivo.site/c/{slug}', copyLink: 'انسخ اللينك',
+    copied: 'اللينك اتنسخ', copyFailed: 'النسخ متعملش. جرّب تاني',
+    invalidSlug: 'اكتب من 3 لـ30 حرف إنجليزي صغير أو رقم أو شرطة. الاسم ده ممكن يكون محجوز',
     branding: 'البروفايل والبراند',
     brandingHint: 'عرّف لاعيبتك بيك وبطرق التواصل معاك',
     bio: 'نبذة عنك',
@@ -68,6 +71,9 @@ export const messages = defineMessages({
     couldnTDownloadYourDataTry: "مش قادرين ننزّل بياناتك. جرّب تاني",
   },
   en: {
+    publicSlug: 'Public page link', publicPreview: 'kochivo.site/c/{slug}', copyLink: 'Copy link',
+    copied: 'Link copied', copyFailed: 'Could not copy. Try again',
+    invalidSlug: 'Use 3–30 lowercase letters, numbers or hyphens. Reserved names are unavailable',
     branding: 'Profile and branding',
     brandingHint: 'Introduce yourself and share your contact links',
     bio: 'Bio', bioPlaceholder: 'Online coach, fat loss and strength. 6 years of experience',

@@ -19,3 +19,11 @@ it('rejects wrong domains, unsafe URLs, unknown keys and invalid profile fields'
   }
   expect(schema.safeParse({ ...valid, social: { x: 'https://twitter.com/ali', youtube: 'https://youtu.be/video' } }).success).toBe(true);
 });
+it('validates public slugs and permits clearing the public page', () => {
+  const schema = settingsSchemas().captainProfileSchema;
+  expect(schema.parse({ ...valid, public_slug: 'ahmed' }).public_slug).toBe('ahmed');
+  expect(schema.parse({ ...valid, public_slug: '' }).public_slug).toBe('');
+  for (const public_slug of ['admin', 'api', 'login', 'ABCD', 'ab', 'a'.repeat(31), 'bad_name']) {
+    expect(schema.safeParse({ ...valid, public_slug }).success).toBe(false);
+  }
+});

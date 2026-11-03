@@ -52,12 +52,12 @@ describe('Pass 2 database boundaries', () => {
   beforeAll(async () => { db = await createTestDb(); });
   afterAll(async () => { await db?.close(); });
 
-  it('keeps anonymous API execution limited to invite_preview', async () => {
+  it('keeps anonymous API execution limited to invite_preview and the public coach page', async () => {
     const result = await db.query<{ name: string }>(`
       select p.proname as name from pg_proc p join pg_namespace n on n.oid = p.pronamespace
       where n.nspname = 'public' and has_function_privilege('anon', p.oid, 'EXECUTE')
       order by p.proname`);
-    expect(result.rows).toEqual([{ name: 'invite_preview' }]);
+    expect(result.rows).toEqual([{ name: 'coach_public_profile' }, { name: 'invite_preview' }]);
   });
 
   it('keeps all public definers on an empty search path and sync RPCs as invokers', async () => {

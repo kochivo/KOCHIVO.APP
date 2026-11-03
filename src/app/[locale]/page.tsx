@@ -19,7 +19,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       locale: locale === 'ar' ? 'ar_EG' : 'en_GB',
       type: 'website',
       siteName: content.brand,
+      images: [{ url: '/opengraph-image', width: 1200, height: 630 }],
     },
+    twitter: { card: 'summary_large_image', title: content.seo.title, description: content.seo.description,
+      images: ['/opengraph-image'] },
   };
 }
 

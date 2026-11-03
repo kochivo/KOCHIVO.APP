@@ -2,6 +2,9 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    playerSignup: 'اعمل حساب لاعب', coachRequestHint: 'هنبعت طلب للكابتن. هتبدأ بعد ما يوافق.',
+    sendCoachRequest: 'ابعت طلب انضمام', confirmCoachRequest: 'افتح رسالة التأكيد في إيميلك عشان نبعت طلبك للكابتن',
+    coachRequestFailed: 'طلب الانضمام متعملش. اتأكد إن عندك حساب لاعب وجرّب تاني',
     codeSentTo: "بعتنالك كود من 6 أرقام على {email}",
     resendCode: "ابعت الكود تاني",
     codeWrong: "الكود غلط",
@@ -93,6 +96,9 @@ export const messages = defineMessages({
     checkYourEmailToConfirmYour: "شوف إيميلك عشان تأكد حسابك وتدخل",
   },
   en: {
+    playerSignup: 'Create a player account', coachRequestHint: 'We will send a request to the coach. You get access after they accept.',
+    sendCoachRequest: 'Send join request', confirmCoachRequest: 'Open the confirmation email so we can send your request to the coach',
+    coachRequestFailed: 'Could not send your request. Use a player account and try again',
     codeSentTo: "We sent a 6-digit code to {email}",
     resendCode: "Send the code again",
     codeWrong: "Wrong code",

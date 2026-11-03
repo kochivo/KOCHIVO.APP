@@ -1,5 +1,6 @@
+import { coachSlug } from '@/lib/coach-slug';
 export type AuthUser = { role: 'captain' | 'player'; roleConfirmed: boolean; suspended?: boolean; anonymous?: boolean };
-export function decideRoute({ path, user }: { path: string; user: AuthUser | null }): { redirect?: string } {
+export function decideRoute({ path, user, coach }: { path: string; user: AuthUser | null; coach?: string }): { redirect?: string } {
   if (user?.suspended) {
     return ['/suspended', '/sign-out', '/auth/sign-out', '/auth/callback'].includes(path) ? {} : { redirect: '/suspended' };
   }
@@ -12,7 +13,7 @@ export function decideRoute({ path, user }: { path: string; user: AuthUser | nul
     if (captainArea !== (user.role === 'captain')) return { redirect: home };
   }
   // Recovery code verification creates a session before password validation can be retried.
-  if (user && (user.role === 'player' || user.roleConfirmed) && path === '/login') {
+  if (user && (user.role === 'player' || user.roleConfirmed) && path === '/login' && !coachSlug(coach)) {
     return { redirect: home };
   }
   return {};
