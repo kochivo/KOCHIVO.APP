@@ -1,7 +1,7 @@
 # Auth email templates
 
 The owner must update these templates in Supabase Authentication → Email
-Templates. Deploy T-054 first, then change the templates. Set Site URL to
+Templates. Deploy T-055 first, then change the templates. Set Site URL to
 `https://kochivo.site` in production. No database migration is needed.
 
 Branded, ready-to-paste templates (logo, Arabic first with an English line)
@@ -18,47 +18,36 @@ Supabase template:
 `_layout.txt` is the shared frame; edit it and regenerate rather than editing
 the four files by hand. The logo loads from `https://kochivo.site/brand/logo-primary.png`.
 
-## Reset password
+## Email OTP settings
 
-Use this exact link instead of `{{ .ConfirmationURL }}`:
+In Supabase Authentication settings, set **Email OTP length = 6**. The shared
+`OtpInput` expects exactly six numeric digits. Do not leave this at 8; supporting
+eight digits would require a length prop and matching validation changes first.
+Set **Email OTP expiration = 3600 seconds** so the email's «لمدة ساعة» matches
+the actual one-hour expiration. Resend is available after 60 seconds.
 
-```html
-<a href="{{ .SiteURL }}/reset-password?token_hash={{ .TokenHash }}&type=recovery">Reset password</a>
-```
+## Code templates and flows
 
-The server verifies the recovery hash on the device opening the email; no
-verifier from the device requesting the email is needed. Existing `?code=`
-links remain supported on the requesting browser. Expired, used, and missing
-verifier links offer a new reset link.
+Paste the full branded HTML files listed above from [email-templates](email-templates/).
+They display only `{{ .Token }}`. Do not add `{{ .ConfirmationURL }}` or
+`{{ .TokenHash }}` links to new emails.
 
-## Magic link (player email sign-in)
+- **Confirm signup:** use [confirm-signup.html](email-templates/confirm-signup.html).
+  Captains enter the code on the signup screen, which verifies `type: 'signup'`,
+  confirms the captain role, and continues through the existing onboarding path.
+  New players also receive this template when signing in with email OTP.
+- **Reset password:** use [reset-password.html](email-templates/reset-password.html).
+  Users enter the code and a new password on the forgot-password screen. The
+  server verifies `type: 'recovery'`, updates the password, and signs out. This
+  works on any device, with no link or PKCE verifier required.
+- **Magic link:** use [magic-link-code.html](email-templates/magic-link-code.html).
+  Players enter the code in the invite flow (`sendEmailCode` / `verifyEmailCode`).
+- **Change email address:** use [change-email.html](email-templates/change-email.html).
 
-Players enter a six-digit code in the invite flow (`sendEmailCode` and
-`verifyEmailCode`), rather than following a magic link. Use this exact template
-body; do not use a `ConfirmationURL` link:
-
-```html
-<p>Your sign-in code is: {{ .Token }}</p>
-```
-
-## Confirm signup
-
-Captain email/password signup requests email confirmation. Use this exact link:
-
-```html
-<a href="{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=signup">Confirm email</a>
-```
-
-The callback verifies the signup hash without PKCE. Existing OAuth and signup
-`?code=` callbacks remain supported. If role confirmation still needs the
-original browser's intent cookie, the callback returns to login, where the user
-can finish signing in. New players created through email OTP also receive the
-Confirm signup template, so include the code in that same template:
-
-```html
-<p>Your sign-in code is: {{ .Token }}</p>
-<a href="{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=signup">Confirm email</a>
-```
+Previously sent T-054 signup and recovery `token_hash` links remain supported,
+as do existing `?code=` paths (which require the original browser's PKCE verifier).
+Invalid recovery links offer the new code flow. The callback still uses the
+original role-intent cookie when role confirmation is needed.
 
 Google sign-in uses the OAuth callback and no email template. Invite links are
 application links and do not use Supabase email templates.
