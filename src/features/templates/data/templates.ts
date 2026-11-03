@@ -1,13 +1,12 @@
 'use server';
 
-import type { SupabaseClient } from '@supabase/supabase-js';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { supabaseServer } from '@/core/supabase/server';
 import { isMissingRow, isPermissionDenied, readError } from '@/core/supabase/errors';
 import { fetchRoster } from '@/features/roster';
 import type { RosterPlayer } from '@/features/roster';
-import type { Template, TemplateKind, TemplateResult, TemplatesDatabase } from '../types';
+import type { Template, TemplateKind, TemplateResult } from '../types';
 
 const kindSchema = z.enum(['program', 'nutrition']);
 const identity = z.object({ kind: kindSchema, id: z.uuid() }).strict();
@@ -26,8 +25,7 @@ function errorMessage(error: unknown): string {
   return failed;
 }
 async function session() {
-  // Match the other captain features until the shared generated schema replaces its placeholder.
-  const client = await supabaseServer() as unknown as SupabaseClient<TemplatesDatabase>;
+  const client = await supabaseServer();
   const user = await client.auth.getUser();
   if (user.error || !user.data.user) throw new Error('سجّل دخولك الأول');
   const captain = user.data.user.id;

@@ -1,26 +1,18 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { NutritionFood, NutritionSnapshot } from '@/core/offline';
-import type { Database } from '@/types/database';
+import type { Database, Tables } from '@/types/database';
 
-interface FoodResponse {
-  name_ar: string;
-  photo_path: string | null;
-  kcal_per_100g: number;
-  protein_per_100g: number;
-  carbs_per_100g: number;
-  fat_per_100g: number;
-}
-interface AlternativeResponse { id: string; grams: number; foods: FoodResponse | null }
-export interface NutritionResponse {
-  id: string;
-  title: string;
-  target_kcal: number | null;
-  target_protein: number | null;
-  target_carbs: number | null;
-  target_fat: number | null;
-  meals: { id: string; position: number; name: string;
-    meal_items: (AlternativeResponse & { position: number; meal_item_alternatives: AlternativeResponse[] })[] }[];
-}
+type FoodResponse = Pick<Tables<'foods'>, 'name_ar' | 'photo_path' |
+  'kcal_per_100g' | 'protein_per_100g' | 'carbs_per_100g' | 'fat_per_100g'>;
+type AlternativeResponse = Pick<Tables<'meal_item_alternatives'>, 'id' | 'grams'> & { foods: FoodResponse | null };
+export type NutritionResponse = Pick<Tables<'nutrition_plans'>,
+  'id' | 'title' | 'target_kcal' | 'target_protein' | 'target_carbs' | 'target_fat'> & {
+  meals: (Pick<Tables<'meals'>, 'id' | 'position' | 'name'> & {
+    meal_items: (AlternativeResponse & Pick<Tables<'meal_items'>, 'position'> & {
+      meal_item_alternatives: AlternativeResponse[];
+    })[];
+  })[];
+};
 
 function mapFood(row: AlternativeResponse): NutritionFood {
   if (!row.foods) throw new Error('بيانات الأكل ناقصة');
@@ -41,25 +33,13 @@ export function mapNutritionSnapshot(plan: NutritionResponse, playerId: string):
     })),
   };
 }
-
-interface SnapshotDatabase {
-  public: {
-    Tables: { nutrition_plans: { Row: NutritionResponse & { player_id: string; status: string };
-      Insert: never; Update: never; Relationships: [] } };
-    Views: Record<string, never>;
-    Functions: Record<string, never>;
-  };
-}
-
 export async function fetchNutritionSnapshot(client: SupabaseClient<Database>): Promise<NutritionSnapshot | null> {
   const { data: auth, error } = await client.auth.getUser();
   if (error || !auth.user) throw error ?? new Error('Missing session');
-  // The generated schema is still a placeholder, so reads use a narrow schema view.
-  const reader = client as unknown as SupabaseClient<SnapshotDatabase>;
   const foodFields = 'name_ar,photo_path,kcal_per_100g,protein_per_100g,carbs_per_100g,fat_per_100g';
-  const { data, error: readError } = await reader.from('nutrition_plans')
+  const { data, error: readError } = await client.from('nutrition_plans')
     .select(`id,title,target_kcal,target_protein,target_carbs,target_fat,meals(id,position,name,meal_items(id,position,grams,foods(${foodFields}),meal_item_alternatives(id,grams,foods(${foodFields}))))`)
-    .eq('player_id', auth.user.id).eq('status', 'active').maybeSingle<NutritionResponse>();
+    .eq('player_id', auth.user.id).eq('status', 'active').maybeSingle();
   if (readError) throw readError;
   return data ? mapNutritionSnapshot(data, auth.user.id) : null;
 }

@@ -20,7 +20,9 @@ export async function renewPlayer(input: RenewalInput): Promise<{ data: string; 
   try {
     const { client } = await captainClient();
     const { playerId, days, amount } = parsed.data;
-    const result = await client.rpc('renew_player', { p_player: playerId, p_days: days, p_amount: amount });
+    const result = await client.rpc('renew_player', {
+      p_player: playerId, p_days: days, ...(amount == null ? {} : { p_amount: amount }),
+    });
     if (result.error) return { error: isPermissionDenied(result.error) ? 'مش مسموح تجدّد للاعب ده. راجع حسابك'
       : readError(result.error).code === '22023' ? invalid : failed };
     return result.data ? { data: result.data } : { error: failed };

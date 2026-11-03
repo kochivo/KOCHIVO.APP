@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { uploadPrivateMedia } from '@/core/storage/private-media';
-import type { Database } from '@/types/database';
+import type { AppDatabase } from '@/types/app-database';
 import { backoffDelay } from './backoff';
 import type { KochivoDB, MediaQueueEntry } from './db';
 import { uuidv7 } from './ids';
@@ -66,26 +66,11 @@ export async function flushMediaQueue(db: KochivoDB, transport: MediaTransport, 
   return result;
 }
 
-// Database currently has placeholder table types; keep the insert contract local until generation.
-interface FormCheckDatabase {
-  public: {
-    Tables: { form_checks: {
-      Row: FormCheckRow & { id: string };
-      Insert: FormCheckRow & { id: string };
-      Update: Partial<FormCheckRow>;
-      Relationships: [];
-    } };
-    Views: Record<string, never>;
-    Functions: Record<string, never>;
-  };
-}
-
-export function supabaseMediaTransport(client: SupabaseClient<Database>, playerId: string): MediaTransport {
+export function supabaseMediaTransport(client: SupabaseClient<AppDatabase>, playerId: string): MediaTransport {
   return {
     upload: (blob, mime) => uploadPrivateMedia(client, 'form-videos', playerId, blob.slice(0, blob.size, mime)),
     async insertFormCheck(row) {
-      const typed = client as unknown as SupabaseClient<FormCheckDatabase>;
-      const { error } = await typed.from('form_checks').insert(row);
+      const { error } = await client.from('form_checks').insert(row);
       if (error) throw error;
     },
   };

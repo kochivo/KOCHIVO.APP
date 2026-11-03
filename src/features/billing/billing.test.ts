@@ -53,9 +53,13 @@ describe('renewPlayer', () => {
     expect(await renewPlayer({ ...input, playerId: 'bad' })).toHaveProperty('error');
     expect(mocks.server).not.toHaveBeenCalled();
   });
-  it('renews using only the player, days and amount', async () => {
+  it('omits a null amount so the SQL default applies', async () => {
     expect(await renewPlayer(input)).toEqual({ data: '2026-12-10' });
-    expect(mocks.rpc).toHaveBeenCalledWith('renew_player', { p_player: input.playerId, p_days: 30, p_amount: null });
+    expect(mocks.rpc).toHaveBeenCalledWith('renew_player', { p_player: input.playerId, p_days: 30 });
+  });
+  it.each([0, 800])('preserves a supplied amount of %s', async amount => {
+    expect(await renewPlayer({ ...input, amount })).toEqual({ data: '2026-12-10' });
+    expect(mocks.rpc).toHaveBeenCalledWith('renew_player', { p_player: input.playerId, p_days: 30, p_amount: amount });
   });
   it.each([
     ['42501', 'مش مسموح تجدّد للاعب ده. راجع حسابك'],

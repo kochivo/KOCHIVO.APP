@@ -19,6 +19,10 @@ const fixture: ProgramResponse = {
   ],
 };
 const snapshot = mapProgramSnapshot(fixture, [1, 3], 'player-1');
+it('rejects program settings that cannot represent the advanced toggle', () => {
+  expect(() => mapProgramSnapshot({ ...fixture, settings: { advanced: 'yes' } }, [], 'player-1')).toThrow();
+});
+
 const session = (day: string, date = '2026-11-02', completed = true): WorkoutSessionRow => ({
   id: `${day}-${date}`, program_day_id: day, training_date: date,
   started_at: `${date}T08:00:00Z`, completed_at: completed ? `${date}T09:00:00Z` : null,

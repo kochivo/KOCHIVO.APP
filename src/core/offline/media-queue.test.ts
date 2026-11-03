@@ -1,11 +1,16 @@
 import Dexie from 'dexie';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '@/types/database';
+import type { AppDatabase } from '@/types/app-database';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { KochivoDB } from './db';
 import { enqueueMedia, flushMediaQueue, mediaPending, supabaseMediaTransport, type MediaTransport } from './media-queue';
 
 let db: KochivoDB;
+function fakeClient(client: object): SupabaseClient<AppDatabase> {
+  // This unit double supplies only the Storage and insert methods exercised by the transport.
+  return client as SupabaseClient<AppDatabase>;
+}
+
 let sequence = 0;
 const entry = (setId: string | null = null) => ({
   kind: 'form_check' as const, blob: new Blob(['video'], { type: 'video/mp4' }),
@@ -96,7 +101,7 @@ describe('media queue', () => {
     const insert = vi.fn().mockResolvedValue({ error: null });
     const storageFrom = vi.fn().mockReturnValue({ upload });
     const from = vi.fn().mockReturnValue({ insert });
-    const client = { storage: { from: storageFrom }, from } as unknown as SupabaseClient<Database>;
+    const client = fakeClient({ storage: { from: storageFrom }, from });
     const send = supabaseMediaTransport(client, 'player');
     const path = await send.upload(new Blob(['video']), 'video/quicktime');
     expect(path).toMatch(/^player\/[0-9a-f-]+\.mov$/);

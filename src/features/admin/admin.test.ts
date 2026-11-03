@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { captainState, endsLabel, tierLabel, usageLabel } from './format';
 import { activationSchema, suspensionSchema } from './schemas';
 import { requireAdmin } from './data/require-admin';
+import { fetchCaptains } from './data/captains';
 import { activatePlan } from './data/activate-plan';
 import { setSuspended } from './data/set-suspended';
 import { createElement } from 'react';
@@ -124,6 +125,16 @@ describe('page KPIs', () => {
 });
 
 describe('admin boundary and actions', () => {
+  it.each(['', '   '])('omits an empty search %j so the SQL default applies', async search => {
+    mocks.rpc.mockResolvedValueOnce({ data: true, error: null }).mockResolvedValueOnce({ data: [], error: null });
+    expect(await fetchCaptains({ search })).toEqual({ rows: [], error: null });
+    expect(mocks.rpc).toHaveBeenLastCalledWith('admin_captains', { p_limit: 100, p_offset: 0 });
+  });
+  it('preserves a trimmed search and pagination', async () => {
+    mocks.rpc.mockResolvedValueOnce({ data: true, error: null }).mockResolvedValueOnce({ data: [], error: null });
+    expect(await fetchCaptains({ search: '  captain  ', limit: 20, offset: 40 })).toEqual({ rows: [], error: null });
+    expect(mocks.rpc).toHaveBeenLastCalledWith('admin_captains', { p_search: 'captain', p_limit: 20, p_offset: 40 });
+  });
   it.each([{ data: false, error: null }, { data: true, error: { code: '42501' } }])('404s unauthorized results', async result => {
     mocks.rpc.mockResolvedValue(result);
     await expect(requireAdmin()).rejects.toThrow('NOT_FOUND');
