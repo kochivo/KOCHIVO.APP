@@ -1,8 +1,9 @@
 import type { NextRequest } from 'next/server';
 import { refreshSession } from '@/core/supabase/session';
+import { decideRoute } from '@/features/auth';
 
 export function proxy(request: NextRequest) {
-  return refreshSession(request);
+  return refreshSession(request, decideRoute);
 }
 
 export const config = {
