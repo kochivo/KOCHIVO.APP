@@ -2,7 +2,7 @@
   {
     "key": "beginner-full-body",
     "title": "جسم كامل للمبتدئين",
-    "notes": "٣ أيام وبينهم يوم راحة. ابدأ بوزن خفيف وزوّد بالتدريج.",
+    "notes": "3 أيام وبينهم يوم راحة. ابدأ بوزن خفيف وزوّد بالتدريج.",
     "kind": "workout",
     "days": [
       {"title":"اليوم الأول","exercises":[{"dataset_id":"0739","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0025","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0861","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0300","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0334","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":90}]},
@@ -13,7 +13,7 @@
   {
     "key": "upper-lower",
     "title": "علوي وسفلي",
-    "notes": "٤ أيام. يومين تمرين وبعدهم يوم راحة.",
+    "notes": "4 أيام. يومين تمرين وبعدهم يوم راحة.",
     "kind": "workout",
     "days": [
       {"title":"علوي أول","exercises":[{"dataset_id":"0025","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0861","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0426","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"2330","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0416","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0201","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90}]},
@@ -25,7 +25,7 @@
   {
     "key": "push-pull-legs",
     "title": "دفع وسحب ورجل",
-    "notes": "٦ أيام وبعدهم يوم راحة. سيب عدتين في قدرتك آخر كل مجموعة.",
+    "notes": "6 أيام وبعدهم يوم راحة. سيب عدتين في قدرتك آخر كل مجموعة.",
     "kind": "workout",
     "days": [
       {"title":"دفع أول","exercises":[{"dataset_id":"0025","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0426","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0334","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0201","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90}]},
@@ -39,7 +39,7 @@
   {
     "key": "fat-loss-circuits",
     "title": "دايرة تمارين للتخسيس",
-    "notes": "٣ أيام وبينهم راحة. العب التمارين ورا بعض، وارتاح ٩٠ ثانية بين اللفات. الأكل المناسب مهم للتخسيس.",
+    "notes": "3 أيام وبينهم راحة. العب التمارين ورا بعض، وارتاح 90 ثانية بين اللفات. الأكل المناسب مهم للتخسيس.",
     "kind": "workout",
     "days": [
       {"title":"دايرة أولى","exercises":[{"dataset_id":"1760","sets":3,"reps_min":12,"reps_max":15,"rest_seconds":30,"superset_group":1},{"dataset_id":"0662","sets":3,"reps_min":12,"reps_max":15,"rest_seconds":30,"superset_group":1},{"dataset_id":"0293","sets":3,"reps_min":12,"reps_max":15,"rest_seconds":30,"superset_group":1},{"dataset_id":"0630","sets":3,"reps_min":12,"reps_max":15,"rest_seconds":90,"superset_group":1}]},
@@ -50,7 +50,7 @@
   {
     "key": "home-dumbbells",
     "title": "في البيت بالدامبل",
-    "notes": "٣ أيام وبينهم راحة. محتاج دامبل بس ومساحة فاضية على الأرض.",
+    "notes": "3 أيام وبينهم راحة. محتاج دامبل بس ومساحة فاضية على الأرض.",
     "kind": "workout",
     "days": [
       {"title":"اليوم الأول","exercises":[{"dataset_id":"1760","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0293","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0426","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0416","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90}]},
@@ -61,7 +61,7 @@
   {
     "key": "ramadan-workout",
     "title": "رمضان بعد الفطار",
-    "notes": "٤ حصص خفيفة بعد الفطار بساعتين. حوالي ٢٥ دقيقة، وراحة أطول بين المجموعات. اشرب مية كويس.",
+    "notes": "4 حصص خفيفة بعد الفطار بساعتين. حوالي 25 دقيقة، وراحة أطول بين المجموعات. اشرب مية كويس.",
     "kind": "workout",
     "days": [
       {"title":"علوي أول","exercises":[{"dataset_id":"0025","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":150},{"dataset_id":"0861","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":150},{"dataset_id":"0334","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":150}]},

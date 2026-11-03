@@ -50,7 +50,7 @@ export const messages = defineMessages({
     couldntSaveTheSetOnYourPhone: "مش قادرين نحفظ السِت على الموبايل. جرّب تاني.",
     couldntLoadYourProgram: "مش قادرين نحمّل برنامجك دلوقتي",
     restFinished: "الراحة خلصت",
-    message10SecondsOrLessLeft: "فاضل ١٠ ثواني أو أقل",
+    message10SecondsOrLessLeft: "فاضل 10 ثواني أو أقل",
     restStarted: "بدأت الراحة",
     setProgress: "سِت {value0} من {value1}",
     "pendingVideos.one": "فيديو مستني يتبعت · {count}",

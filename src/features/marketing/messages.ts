@@ -27,7 +27,7 @@ export const messages = defineMessages({
     yourNextStepStartsHere: "خطوتك الجاية بتبدأ من هنا",
     startFreeUpTo5Players: "ابدأ مجاناً · لحد 5 لاعبين",
     tryTheDemo: "جرّب الديمو",
-    aCoachWorkspaceWithSampleData: "لوحة كابتن ببيانات تجريبية لمدة ٢٤ ساعة، من غير دعوات",
+    aCoachWorkspaceWithSampleData: "لوحة كابتن ببيانات تجريبية لمدة 24 ساعة، من غير دعوات",
     gotAPlayerInvite: "لاعب ومعاك دعوة؟",
     openTheInviteLinkYourCoach: "افتح لينك الدعوة اللي وصلك من الكابتن.",
     playerView: "شوف كلاعب",

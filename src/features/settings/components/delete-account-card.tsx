@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { Button, TextField } from '@/ui';
 import { formatTimestampAr } from '@/lib/dates';
 import { cancelDeletion, requestDeletion } from '../data/settings';
-import { deletionDate } from '../schema';
+import { deletionDate } from '../deletion';
 
 export function DeleteAccountCard({ requestedAt }: { requestedAt: string | null }) {
   const t = useT(messages);

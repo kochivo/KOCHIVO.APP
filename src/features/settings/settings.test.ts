@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { deletionDate, inviteMessageSchema, profileSchema } from './schema';
+import { deletionDate } from './deletion';
+import { inviteMessageSchema, profileSchema } from './schema';
 import { buildExport, exportFileName } from './export';
 import { exportMyData, saveInviteMessage } from './data/settings';
 import { createElement } from 'react';

@@ -88,9 +88,11 @@ it('uses dumbbells without a bench at home and shorter Ramadan sessions with lon
     .toEqual(['الفطار', 'سناك خفيف', 'السحور']);
 });
 
-it('embeds exactly the same library in the migration and source JSON', () => {
+it('embeds the same library in the migrations and source JSON', () => {
   const sql = fs.readFileSync(new URL('../../supabase/migrations/0030_starter_templates.sql', import.meta.url), 'utf8');
   const payload = sql.match(/\$starter_library\$([\s\S]*?)\$starter_library\$/)?.[1];
   expect(payload).toBeDefined();
-  expect(JSON.parse(payload ?? 'null')).toEqual(templates);
+  // 0030 is immutable; 0034 rewrites its Arabic-Indic digits to Latin, as the source JSON now has.
+  const latin = (payload ?? 'null').replace(/[٠-٩]/g, c => String(c.charCodeAt(0) - 0x660));
+  expect(JSON.parse(latin)).toEqual(templates);
 });

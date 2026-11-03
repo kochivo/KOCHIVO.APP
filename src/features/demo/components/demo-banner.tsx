@@ -2,12 +2,12 @@
 import Link from 'next/link';
 import { useLocale, useT } from '@/core/i18n/client';
 import { LanguageSwitch } from '@/ui/language-switch';
-import { intlLocale } from '@/core/i18n/locale';
+import { formatNumber } from '@/lib/format';
 import { messages } from '../messages';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabaseBrowser } from '@/core/supabase/browser';
+import { loadSupabaseBrowser } from '@/core/supabase/lazy';
 
 export function DemoBanner({ hours }: { hours: number }) {
   const t = useT(messages);
@@ -17,13 +17,13 @@ export function DemoBanner({ hours }: { hours: number }) {
   const [pending, setPending] = useState(false);
   return <aside className="glass-strong mb-4 flex flex-wrap items-center justify-between gap-x-4 rounded-control px-4 text-sm" aria-label={t('demoMode')}>
     <LanguageSwitch />
-    <p>{t('demoExpiry', { n: hours, count: new Intl.NumberFormat(intlLocale(locale)).format(hours) })}</p>
+    <p>{t('demoExpiry', { n: hours, count: formatNumber(hours, locale) })}</p>
     <Link href="/login?tab=signup" aria-disabled={pending} className="flex min-h-12 items-center font-bold text-lime" onClick={async (event) => {
       event.preventDefault();
       if (pending) return;
       setPending(true); setError('');
       try {
-        const result = await supabaseBrowser().auth.signOut();
+        const result = await (await loadSupabaseBrowser()).auth.signOut();
         if (result.error) throw result.error;
         router.push('/login?tab=signup');
         router.refresh();

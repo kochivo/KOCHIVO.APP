@@ -7,7 +7,7 @@ import { buildWeek } from './week';
 
 it('renders the Cairo date in Egyptian Arabic without changing block direction', () => {
   const html = renderToStaticMarkup(createElement(Greeting, { now: new Date('2026-11-03T10:00:00Z') }));
-  expect(html).toContain('<bdi>الثلاثاء · ٣ نوفمبر</bdi>');
+  expect(html).toContain('<bdi>الثلاثاء · 3 نوفمبر</bdi>');
   expect(html).not.toContain('dir=');
 });
 it('renders the week as a named native list with one current day', () => {

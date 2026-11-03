@@ -11,7 +11,7 @@ vi.mock('next/headers', () => ({ cookies: async () => jar }));
 describe('locale foundation', () => {
   it('formats English dates while preserving Arabic defaults and stable log dates', () => {
     const options = { day: 'numeric', month: 'long', year: 'numeric' } as const;
-    expect(formatDateAr('2026-11-03', options)).toBe('٣ نوفمبر ٢٠٢٦');
+    expect(formatDateAr('2026-11-03', options)).toBe('3 نوفمبر 2026');
     expect(formatDateAr('2026-11-03', options, 'en')).toBe('3 November 2026');
     expect(formatTimestampAr('2026-11-02T23:30:00Z', options, 'en')).toBe('3 November 2026');
     expect(localDate(new Date('2026-11-02T23:30:00Z'))).toBe('2026-11-03');

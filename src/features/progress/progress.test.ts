@@ -7,11 +7,11 @@ import { mainLifts, topSets, trendDelta } from './trends';
 import { listCheckIns, submitCheckIn } from './data/checkins';
 import { compressImage } from './image';
 import { localDb } from '@/core/offline';
-import type * as Offline from '@/core/offline';
+import type * as Ids from '@/core/offline/ids';
 import { readStrength } from './data/strength';
 
-vi.mock('@/core/offline', async (original) => ({
-  ...await original<typeof Offline>(),
+vi.mock('@/core/offline/ids', async (original) => ({
+  ...await original<typeof Ids>(),
   uuidv7: () => '0194cc00-0000-7000-8000-000000000001',
 }));
 afterEach(() => vi.unstubAllGlobals());

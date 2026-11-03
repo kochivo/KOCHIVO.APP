@@ -13,7 +13,7 @@ it('keeps the full Arabic start and expiry dates', () => {
   vi.setSystemTime(new Date('2026-11-03T12:00:00Z'));
   try {
     const html = renderToStaticMarkup(createElement(CaptainScreen));
-    expect(html).toContain('dateTime="2026-10-01">١ أكتوبر ٢٠٢٦</time>');
-    expect(html).toContain('dateTime="2026-11-03">٣ نوفمبر ٢٠٢٦</time>');
+    expect(html).toContain('dateTime="2026-10-01">1 أكتوبر 2026</time>');
+    expect(html).toContain('dateTime="2026-11-03">3 نوفمبر 2026</time>');
   } finally { vi.useRealTimers(); }
 });

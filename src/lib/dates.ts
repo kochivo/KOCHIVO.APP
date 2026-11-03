@@ -26,11 +26,14 @@ export function saturdayWeek(today: string): string[] {
   });
 }
 
+// Arabic dates use Latin digits so they match weights, reps and amounts on the same line.
+const numberingSystem = 'latn';
+
 export function formatDateAr(date: string, options: Intl.DateTimeFormatOptions, locale: Locale = 'ar'): string {
-  return new Intl.DateTimeFormat(intlLocale(locale), { ...options, timeZone: 'UTC' })
+  return new Intl.DateTimeFormat(intlLocale(locale), { ...options, numberingSystem, timeZone: 'UTC' })
     .format(new Date(`${date}T12:00:00Z`));
 }
 
 export function formatTimestampAr(iso: string, options: Intl.DateTimeFormatOptions, locale: Locale = 'ar'): string {
-  return new Intl.DateTimeFormat(intlLocale(locale), { ...options, timeZone: DEFAULT_TIMEZONE }).format(new Date(iso));
+  return new Intl.DateTimeFormat(intlLocale(locale), { ...options, numberingSystem, timeZone: DEFAULT_TIMEZONE }).format(new Date(iso));
 }

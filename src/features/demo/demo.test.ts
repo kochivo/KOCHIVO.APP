@@ -8,8 +8,8 @@ import { messages } from './messages';
 it('uses Arabic hour forms and English singular and plural in the banner', () => {
   const ar = createT(messages, 'ar');
   const en = createT(messages, 'en');
-  expect(ar('demoExpiry', { n: 2, count: '٢' })).toBe('وضع الديمو · بيتمسح بعد ساعتين');
-  expect(ar('demoExpiry', { n: 3, count: '٣' })).toBe('وضع الديمو · بيتمسح بعد ٣ ساعات');
+  expect(ar('demoExpiry', { n: 2, count: '2' })).toBe('وضع الديمو · بيتمسح بعد ساعتين');
+  expect(ar('demoExpiry', { n: 3, count: '3' })).toBe('وضع الديمو · بيتمسح بعد 3 ساعات');
   expect(en('demoExpiry', { n: 1, count: '1' })).toBe('Demo mode · clears in 1 hour');
   expect(en('demoExpiry', { n: 24, count: '24' })).toBe('Demo mode · clears in 24 hours');
 });

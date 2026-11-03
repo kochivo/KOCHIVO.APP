@@ -17,10 +17,6 @@ export function settingsSchemas(t: Translator<typeof messages> = createT(message
 
 export const { profileSchema, inviteMessageSchema } = settingsSchemas();
 
-export function deletionDate(requestedAt: string): string {
-  return new Date(Date.parse(requestedAt) + 7 * 86_400_000).toISOString();
-}
-
 export type SettingsProfile = {
   id: string;
   role: 'captain' | 'player';

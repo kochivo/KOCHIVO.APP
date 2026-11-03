@@ -20,8 +20,7 @@ describe('renewal dates and reminders', () => {
     expect(renewalPreview(access, today, days)).toEqual({ start, end });
   });
   it('prepares a short Arabic reminder', () => {
-    const date = new Intl.DateTimeFormat('ar-EG', { day: 'numeric', month: 'long', timeZone: 'UTC' }).format(new Date('2026-11-03T00:00:00Z'));
-    expect(reminderText('علي', '2026-11-03')).toBe(`يا علي، اشتراكك مع الكابتن بيخلص ${date}. تحب نجدد؟`);
+    expect(reminderText('علي', '2026-11-03')).toBe('يا علي، اشتراكك مع الكابتن بيخلص 3 نوفمبر. تحب نجدد؟');
   });
   it('requires digits and encodes the message', () => {
     expect(waLink(null, 'رسالة')).toBeNull();

@@ -94,7 +94,7 @@ export const messages = defineMessages({
     couldntLoadTheProgramTryAgain: "البرنامج متحمّلش. جرّب تاني",
     couldntSaveTryAgain: "الحفظ متعملش. جرّب تاني",
     chooseAPlayerForThisProgram: "اختار لاعب للبرنامج",
-    enterAProgramNameUpTo80: "اكتب اسم للبرنامج لحد ٨٠ حرف",
+    enterAProgramNameUpTo80: "اكتب اسم للبرنامج لحد 80 حرف",
     addADayWithAtLeastOne: "ضيف يوم فيه تمرين واحد على الأقل",
   },
   en: {

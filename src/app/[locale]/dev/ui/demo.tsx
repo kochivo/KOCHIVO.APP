@@ -32,7 +32,7 @@ export function UiDemo() {
         <div className="grid gap-4 sm:grid-cols-3">
           <GlassCard className="p-5">كارت عادي</GlassCard>
           <GlassCard level="raised" className="p-5">كارت بارز</GlassCard>
-          <GlassCard level="strong" className="p-5"><span className="text-4xl font-extrabold">١٢٠</span></GlassCard>
+          <GlassCard level="strong" className="p-5"><span className="text-4xl font-extrabold">120</span></GlassCard>
         </div>
       </section>
       <section id="profile" className="space-y-4">

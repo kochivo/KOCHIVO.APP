@@ -7,10 +7,7 @@ interface RouteStats { route: string; firstLoadChunkPaths: string[] }
 const statsPath = resolve('.next/diagnostics/route-bundle-stats.json');
 
 // Fixed ceilings for scoped misses; measurements and retained modules are in docs/PERFORMANCE.md.
-const exceptions: Record<string, number> = {
-  '/player/settings': 345,
-  '/captain/players/[playerId]/preview': 355,
-};
+const exceptions: Record<string, number> = {};
 
 it.skipIf(!existsSync(statsPath))('keeps first-load route JavaScript within gzip budgets', () => {
   const routes: RouteStats[] = JSON.parse(readFileSync(statsPath, 'utf8'));

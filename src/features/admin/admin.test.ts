@@ -57,7 +57,7 @@ describe('captain display', () => {
         active_players: 6, over_limit: true }],
       selected: null, onActivate: () => {}, onSuspend: () => {},
     }));
-    expect(html.match(/انتهت LEGEND يوم ٣ نوفمبر ٢٠٢٦/g)).toHaveLength(2);
+    expect(html.match(/انتهت LEGEND يوم 3 نوفمبر 2026/g)).toHaveLength(2);
     expect(html.match(/فوق الحد/g)).toHaveLength(2);
   });
 });

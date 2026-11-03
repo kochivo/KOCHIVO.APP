@@ -20,14 +20,14 @@ describe('Saturday calendar week', () => {
 
 describe('Arabic displays', () => {
   it('preserves each date-only display style', () => {
-    expect(formatDateAr('2026-11-03', { day: 'numeric', month: 'long' })).toBe('٣ نوفمبر');
-    expect(formatDateAr('2026-11-03', { day: 'numeric', month: 'long', year: 'numeric' })).toBe('٣ نوفمبر ٢٠٢٦');
+    expect(formatDateAr('2026-11-03', { day: 'numeric', month: 'long' })).toBe('3 نوفمبر');
+    expect(formatDateAr('2026-11-03', { day: 'numeric', month: 'long', year: 'numeric' })).toBe('3 نوفمبر 2026');
     expect(formatDateAr('2026-11-03', { weekday: 'short' })).toBe('الثلاثاء');
-    expect(formatDateAr('2026-11-03', { weekday: 'short', day: 'numeric', month: 'short' })).toBe('الثلاثاء، ٣ نوفمبر');
+    expect(formatDateAr('2026-11-03', { weekday: 'short', day: 'numeric', month: 'short' })).toBe('الثلاثاء، 3 نوفمبر');
   });
   it('converts timestamps across Cairo midnight and summer time', () => {
-    expect(formatTimestampAr('2026-11-02T23:30:00Z', { day: 'numeric', month: 'short', year: 'numeric' })).toBe('٣ نوفمبر ٢٠٢٦');
-    expect(formatTimestampAr('2026-07-01T21:30:00Z', { day: 'numeric', month: 'long', year: 'numeric' })).toBe('٢ يوليو ٢٠٢٦');
+    expect(formatTimestampAr('2026-11-02T23:30:00Z', { day: 'numeric', month: 'short', year: 'numeric' })).toBe('3 نوفمبر 2026');
+    expect(formatTimestampAr('2026-07-01T21:30:00Z', { day: 'numeric', month: 'long', year: 'numeric' })).toBe('2 يوليو 2026');
   });
   it('keeps Latin digits, grouping and decimal rounding', () => {
     expect(formatNumber(12345.6789)).toBe('12,345.679');

@@ -48,14 +48,24 @@ budget test does. The reviewer also removed Zod from `features/demo/data/demo-pr
 | `/demo` | 282.98 | 253.19 | 280 |
 | `/captain/players/[playerId]/preview` | 351.15 | 350.79 | 355 |
 
-Two routes still miss their target:
-- `/player/settings`: the profile, export and delete-account forms load the browser
-  Supabase client (~66 KiB) and Zod (~30 KiB) eagerly. Fix in the settings feature by
-  loading them on submit.
-- Captain preview: one 32 KiB chunk with Dexie is still pulled in, through an import
-  path not yet traced (the nutrition import was not it).
+### Follow-up (reviewer, 2026-11-03): the two misses closed
 
-Both are follow-up work; their guards are the achieved size rounded up to 5 KiB.
+- `/player/settings`: `deletionDate` moved out of the Zod schema module into
+  `features/settings/deletion.ts`, and `DemoBanner` signs out through
+  `loadSupabaseBrowser()`, so the `@/features/demo` barrel no longer pulls the
+  browser Supabase client eagerly.
+- Captain preview: the Dexie chunk came from `core/storage/private-media.ts`, which
+  imported `uuidv7` through the `@/core/offline` barrel. It now imports
+  `@/core/offline/ids` directly.
+
+| Route (without `/[locale]`) | After gzip KiB | Guard KiB |
+| --- | ---: | ---: |
+| `/player/settings` | 244.08 | 300 |
+| `/captain/players/[playerId]/preview` | 283.24 | 310 |
+| `/captain/settings` | 234.66 | 310 |
+| `/demo` | 186.88 | 280 |
+
+Every route is now within its default target, so the exceptions map is empty.
 
 ---
 

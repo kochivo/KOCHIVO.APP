@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { uuidv7 } from '@/core/offline';
+// Direct module import: the offline barrel would drag Dexie into every page that shows exercise media.
+import { uuidv7 } from '@/core/offline/ids';
 import type { Database } from '@/types/database';
 
 const extensions: Record<string, string> = {

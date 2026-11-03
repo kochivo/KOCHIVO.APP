@@ -21,7 +21,7 @@ export const messages = defineMessages({
     exploreTheCoachWorkspaceWithSample: "شوف لوحة الكابتن بلاعبين وبيانات تجريبية",
     preparingTheDemo: "جاري تجهيز الديمو",
     openDemo: "ادخل الديمو",
-    sampleAccountClearsAfter24Hours: "حساب تجريبي بيتمسح بعد ٢٤ ساعة",
+    sampleAccountClearsAfter24Hours: "حساب تجريبي بيتمسح بعد 24 ساعة",
     preparingSampleData: "بنجهّز البيانات التجريبية",
     verifyYouReHuman: "اتأكد إنك مش روبوت",
     theDemoIsBusyTryAgain: "الديمو زحمة دلوقتي، جرّب بعد شوية",

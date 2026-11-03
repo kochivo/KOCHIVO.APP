@@ -47,7 +47,7 @@ describe('public marketing page', () => {
     expect(html).toContain('href="/login?tab=signup"');
     expect(html).toContain('href="/demo"');
     expect(html).toContain('جرّب الديمو');
-    expect(html).toContain('لوحة كابتن ببيانات تجريبية لمدة ٢٤ ساعة، من غير دعوات');
+    expect(html).toContain('لوحة كابتن ببيانات تجريبية لمدة 24 ساعة، من غير دعوات');
     expect(html).toContain('© Gym visual');
     expect(html).toContain('معاينة توضيحية · بيانات مثال');
     expect(html).toContain('بنش بريس بالبار');
