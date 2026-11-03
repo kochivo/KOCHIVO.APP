@@ -11,10 +11,10 @@ export async function uploadPrivateMedia(
   client: SupabaseClient<Database>, bucket: string, playerId: string, file: Blob,
 ): Promise<string> {
   const ext = extensions[file.type];
-  if (!ext) throw new Error('نوع الملف مش مدعوم');
+  if (!ext) throw new Error(`Unsupported media type: ${file.type}`);
   const path = `${playerId}/${uuidv7()}.${ext}`;
   const { error } = await client.storage.from(bucket).upload(path, file, { contentType: file.type, upsert: false });
-  if (error) throw new Error('مش قادرين نرفع الملف. جرّب تاني');
+  if (error) throw new Error('Media upload failed');
   return path;
 }
 
@@ -22,6 +22,6 @@ export async function signedMediaUrl(
   client: SupabaseClient<Database>, bucket: string, path: string, seconds = 600,
 ): Promise<string> {
   const { data, error } = await client.storage.from(bucket).createSignedUrl(path, seconds);
-  if (error || !data) throw new Error('مش قادرين نعرض الصورة. جرّب تاني');
+  if (error || !data) throw new Error('Signing media URL failed');
   return data.signedUrl;
 }
