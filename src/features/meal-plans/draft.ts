@@ -1,3 +1,7 @@
+import { createT } from '@/core/i18n/messages';
+import { messages } from './messages';
+import type { Translator } from '@/core/i18n/messages';
+
 import { equivalentGrams } from '@/lib/macros';
 import type { Food, MealItem, PlanDraft } from './types';
 
@@ -14,8 +18,8 @@ function move<T extends { id: string; position: number }>(rows: T[], id: string,
 function items(draft: PlanDraft, update: (rows: MealItem[]) => MealItem[]): PlanDraft {
   return { ...draft, meals: draft.meals.map(meal => ({ ...meal, items: update(meal.items) })) };
 }
-function gramsValue(grams: number) {
-  if (!Number.isFinite(grams) || grams < 5 || grams > 2000) throw new Error('الكمية من ٥ لـ٢٠٠٠ جرام');
+function gramsValue(grams: number, t: Translator<typeof messages>) {
+  if (!Number.isFinite(grams) || grams < 5 || grams > 2000) throw new Error(t('amountMustBe5To2000Grams'));
   return grams;
 }
 export function addMeal(draft: PlanDraft, name: string, id: string): PlanDraft {
@@ -30,14 +34,14 @@ export function removeMeal(draft: PlanDraft, id: string): PlanDraft {
 export function moveMeal(draft: PlanDraft, id: string, direction: number): PlanDraft {
   return { ...draft, meals: move(draft.meals, id, direction) };
 }
-export function addItem(draft: PlanDraft, mealId: string, food: Food, grams: number, id: string): PlanDraft {
-  gramsValue(grams);
+export function addItem(draft: PlanDraft, mealId: string, food: Food, grams: number, id: string, t: Translator<typeof messages> = createT(messages, 'ar')): PlanDraft {
+  gramsValue(grams, t);
   return { ...draft, meals: draft.meals.map(meal => meal.id === mealId ? {
     ...meal, items: positions([...meal.items, { id, food, grams, position: 0, alternatives: [] }]),
   } : meal) };
 }
-export function setGrams(draft: PlanDraft, itemId: string, grams: number): PlanDraft {
-  gramsValue(grams);
+export function setGrams(draft: PlanDraft, itemId: string, grams: number, t: Translator<typeof messages> = createT(messages, 'ar')): PlanDraft {
+  gramsValue(grams, t);
   return items(draft, rows => rows.map(item => item.id === itemId ? {
     ...item, grams, alternatives: item.alternatives.map(alt => ({ ...alt, grams: equivalentGrams(item.food, grams, alt.food) })),
   } : item));

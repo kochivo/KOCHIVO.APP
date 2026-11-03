@@ -1,3 +1,8 @@
+import { createT } from '@/core/i18n/messages';
+import { messages } from './messages';
+import type { Locale } from '@/core/i18n/locale';
+import { formatNumber } from '@/lib/format';
+
 import { daysBetween } from '@/lib/dates';
 
 export type PlayerStatus = 'ending' | 'grace' | 'expired' | 'late' | 'active';
@@ -17,11 +22,11 @@ export function playerStatus({ accessUntil, startedOn, lastTrainingDate, today }
   return 'active';
 }
 
-export function lastSeenLabel(date: string | null, today: string): string {
-  if (!date) return 'لسه مبدأش';
+export function lastSeenLabel(date: string | null, today: string, locale: Locale = 'ar'): string {
+  const t = createT(messages, locale);
+  if (!date) return t('hasntStarted');
   const days = daysBetween(date, today);
-  if (days <= 0) return 'النهارده';
-  if (days === 1) return 'امبارح';
-  // Arabic counts 3–10 take the plural, 11+ take the singular.
-  return days <= 10 ? `من ${days} أيام` : `من ${days} يوم`;
+  if (days <= 0) return t('today');
+  if (days === 1) return t('yesterday');
+  return t('daysAgoCount', { n: days, count: formatNumber(days, locale) });
 }

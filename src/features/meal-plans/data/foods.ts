@@ -1,10 +1,14 @@
 'use server';
 
+import { getT } from '@/core/i18n/server';
+import { messages } from '../messages';
+
 import { planClient, toFood } from './client';
 import { escapeSearch } from '../types';
 import type { Food } from '../types';
 
 export async function searchFoods({ query, limit = 30 }: { query: string; limit?: number }): Promise<{ foods: Food[]; catalogEmpty: boolean }> {
+  const t = await getT(messages);
   const client = await planClient();
   let request = client.from('foods').select('*').order('name_ar').limit(Math.max(1, Math.min(30, limit)));
   if (query.trim()) {
@@ -12,11 +16,11 @@ export async function searchFoods({ query, limit = 30 }: { query: string; limit?
     request = request.or(`name_ar.ilike."${pattern}",name_en.ilike."${pattern}"`);
   }
   const { data, error } = await request;
-  if (error) throw new Error('البحث متعملش. جرّب تاني');
+  if (error) throw new Error(t('searchFailedTryAgain'));
   let catalogEmpty = !query.trim() && !data?.length;
   if (query.trim() && !data?.length) {
     const catalog = await client.from('foods').select('id').limit(1);
-    if (catalog.error) throw new Error('البحث متعملش. جرّب تاني');
+    if (catalog.error) throw new Error(t('searchFailedTryAgain'));
     catalogEmpty = !catalog.data?.length;
   }
   return { foods: (data ?? []).map(toFood), catalogEmpty };

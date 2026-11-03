@@ -1,3 +1,7 @@
+import { createT } from '@/core/i18n/messages';
+import { messages } from './messages';
+import type { Translator } from '@/core/i18n/messages';
+
 import type { DraftDay, ProgramDraft } from './types';
 
 export function daySummary(day: DraftDay) {
@@ -7,11 +11,11 @@ export function daySummary(day: DraftDay) {
     minutes: Math.round(day.exercises.reduce((total, row) => total + row.sets * (40 + row.rest_seconds), 0) / 60 / 5) * 5,
   };
 }
-export function validateForActivation(draft: ProgramDraft): string[] {
+export function validateForActivation(draft: ProgramDraft, t: Translator<typeof messages> = createT(messages, 'ar')): string[] {
   const errors: string[] = [];
-  if (!draft.player_id) errors.push('اختار لاعب للبرنامج');
-  if (!draft.title.trim() || draft.title.length > 80) errors.push('اكتب اسم للبرنامج لحد ٨٠ حرف');
-  if (!draft.days.some(day => day.exercises.length > 0)) errors.push('ضيف يوم فيه تمرين واحد على الأقل');
+  if (!draft.player_id) errors.push(t('chooseAPlayerForThisProgram'));
+  if (!draft.title.trim() || draft.title.length > 80) errors.push(t('enterAProgramNameUpTo80'));
+  if (!draft.days.some(day => day.exercises.length > 0)) errors.push(t('addADayWithAtLeastOne'));
   return errors;
 }
 export function escapeSearch(query: string): string {

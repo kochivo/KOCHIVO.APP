@@ -1,3 +1,5 @@
+vi.mock('server-only', () => ({}));
+vi.mock('next/headers', () => ({ cookies: async () => ({ get: () => undefined }) }));
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { assignTemplate, deleteTemplate, listTemplatePlayers, listTemplates, renameTemplate, saveAsTemplate } from './data/templates';
 

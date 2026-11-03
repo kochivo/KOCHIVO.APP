@@ -1,3 +1,6 @@
+import { getT } from '@/core/i18n/server';
+import { messages } from '../messages';
+
 import 'server-only';
 
 import { localDate } from '@/lib/dates';
@@ -7,15 +10,16 @@ import { rosterClient } from './client';
 import { demoExpiry } from '@/features/demo';
 
 export async function createInviteAt(days: unknown, now: Date): Promise<{ code: string } | { error: string }> {
+  const t = await getT(messages);
   const parsed = inviteDaysSchema.safeParse(days);
-  if (!parsed.success) return { error: 'اختار 7 أو 30 أو 90 يوم' };
+  if (!parsed.success) return { error: t('choose730Or90Days') };
   try {
     const client = await rosterClient();
     const { data, error } = await client.auth.getUser();
-    if (error || !data.user) return { error: 'سجّل دخولك الأول' };
+    if (error || !data.user) return { error: t('signInFirst') };
     const profile = await client.from('profiles').select('*').eq('id', data.user.id).single();
-    if (profile.error || profile.data.role !== 'captain') return { error: 'الدعوات للكباتن بس' };
-    if (demoExpiry(profile.data)) return { error: 'الدعوات مقفولة في الديمو' };
+    if (profile.error || profile.data.role !== 'captain') return { error: t('onlyCoachesCanSendInvites') };
+    if (demoExpiry(profile.data)) return { error: t('invitesAreDisabledInTheDemo') };
     const today = localDate(now);
     const end = new Date(`${today}T00:00:00Z`);
     end.setUTCDate(end.getUTCDate() + parsed.data);
@@ -25,10 +29,10 @@ export async function createInviteAt(days: unknown, now: Date): Promise<{ code: 
     if (result.error) {
       if (result.error.code === '42501') {
         const current = await client.from('profiles').select('suspended_at').eq('id', data.user.id).single();
-        if (current.data?.suspended_at) return { error: 'حسابك موقوف. كلّم الدعم' };
+        if (current.data?.suspended_at) return { error: t('yourAccountIsSuspendedContactSupport') };
       }
-      return { error: 'الدعوة متعملتش. جرّب تاني' };
+      return { error: t('couldntCreateTheInviteTryAgain') };
     }
     return { code: result.data.code };
-  } catch { return { error: 'الدعوة متعملتش. جرّب تاني' }; }
+  } catch { return { error: t('couldntCreateTheInviteTryAgain') }; }
 }
