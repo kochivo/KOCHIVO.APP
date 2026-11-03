@@ -64,7 +64,7 @@ export async function updateCustomFood(id: string, input: CustomFoodInput): Prom
   return writeCustomFood(input, id);
 }
 
-export async function deleteCustomFood(id: string): Promise<{ error: 'in-use' } | void> {
+export async function deleteCustomFood(id: string): Promise<{ archived: true } | void> {
   const t = await getT(messages);
   if (!z.uuid().safeParse(id).success) throw new Error(t('foodDeleteFailed'));
   const client = await planClient();
@@ -72,8 +72,12 @@ export async function deleteCustomFood(id: string): Promise<{ error: 'in-use' } 
   if (user.error || !user.data.user) throw new Error(t('signInFirst'));
   const { data, error } = await client.from('foods').delete().eq('id', id)
     .eq('owner_id', user.data.user.id).select('photo_path').single();
-  // Expected errors cross the action boundary as data; Next masks thrown messages in production.
-  if (error?.code === '23503') return { error: 'in-use' };
+  if (error?.code === '23503') {
+    const archived = await client.from('foods').update({ archived_at: new Date().toISOString() })
+      .eq('id', id).eq('owner_id', user.data.user.id).select('id').single();
+    if (archived.error || !archived.data) throw new Error(t('foodDeleteFailed'));
+    return { archived: true };
+  }
   if (error || !data) throw new Error(t('foodDeleteFailed'));
   if (data.photo_path) await removePhoto(client, data.photo_path);
 }

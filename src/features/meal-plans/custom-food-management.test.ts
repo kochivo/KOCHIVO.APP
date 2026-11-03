@@ -61,6 +61,14 @@ it('keeps the food when deletion is cancelled', () => {
   expect(foods()).toEqual([food]);
   expect(state.remove).not.toHaveBeenCalled();
 });
+it('keeps archived food out of the picker and explains that plans are preserved', async () => {
+  state.remove.mockResolvedValue({ archived: true });
+  click('Delete food');
+  await Promise.resolve();
+  expect(foods()).toEqual([]);
+  expect(state.success).toHaveBeenCalledWith('Removed from your library. Existing plans are unchanged');
+  expect(state.error).not.toHaveBeenCalled();
+});
 it('updates immediately during an edit and restores the previous values on failure', () => {
   click('Edit food');
   const sheet = elements(render()).find(element => element.props.food === food);

@@ -94,12 +94,15 @@ it('dismisses only the custom sheet when Escape is pressed', () => {
   expect(event.stopPropagation).toHaveBeenCalledOnce();
   expect(close).toHaveBeenCalledOnce();
 });
-it('keeps an exercise referenced by the unsaved program', () => {
+it('removes an archived exercise from the picker even when the draft uses it', async () => {
   hooks.values[3] = { data: [{ id: 'used', name_ar: 'Press', name_en: 'Press', body_part: 'chest', is_own: true }] };
   const nodes = render(vi.fn(), ['used']);
+  hooks.remove.mockResolvedValue({ data: { archived: true } });
   nodes.find(node => node.props.children === 'deleteCustomExercise')?.props.onClick?.();
-  expect(hooks.remove).not.toHaveBeenCalled();
-  expect(hooks.error).toHaveBeenCalledWith('customExerciseInUse');
+  await Promise.resolve();
+  expect(hooks.remove).toHaveBeenCalledWith('used');
+  expect(render(vi.fn()).some(node => node.props.children === 'Press')).toBe(false);
+  expect(hooks.success).toHaveBeenCalledWith('customExerciseArchived');
 });
 it('blocks addition while deletion is pending and keeps the row on a delete failure', async () => {
   hooks.values[3] = { data: [{ id: 'unused', name_ar: 'Press', name_en: 'Press', body_part: 'chest', is_own: true }] };

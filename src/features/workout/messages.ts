@@ -2,6 +2,9 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    videoTooLong: 'الفيديو لازم يكون دقيقة أو أقل',
+    videoMetadataFailed: 'مقدرناش نقرأ مدة الفيديو. اختار فيديو تاني',
+    checkingVideo: 'بنتأكد من مدة الفيديو',
     watchVideo: 'شوف الفيديو',
     messageCoach: "ابعت للكابتن",
     pageTitle: "التمرين",
@@ -64,6 +67,9 @@ export const messages = defineMessages({
     setNumber: "مجموعة {value0}",
   },
   en: {
+    videoTooLong: 'Video must be 60 seconds or shorter',
+    videoMetadataFailed: 'Could not read the video duration. Choose another video',
+    checkingVideo: 'Checking video duration',
     watchVideo: 'Watch video',
     messageCoach: "Message your coach",
     pageTitle: "Workout",

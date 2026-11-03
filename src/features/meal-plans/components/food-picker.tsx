@@ -47,12 +47,11 @@ export function FoodPicker({ onPick, alternative = false }: { onPick: (food: Foo
     setResult(value => value && { ...value, foods: value.foods.filter(row => row.id !== food.id) });
     try {
       const result = await deleteCustomFood(food.id);
-      if (result?.error === 'in-use') throw new Error(t('foodInUse'));
-      toast.success(t('foodDeleted'));
+      toast.success(t(result?.archived ? 'foodArchived' : 'foodDeleted'));
     }
-    catch (cause) {
+    catch {
       showFood(food);
-      toast.error(cause instanceof Error && cause.message === t('foodInUse') ? cause.message : t('foodDeleteFailed'));
+      toast.error(t('foodDeleteFailed'));
     } finally { pending.current.delete(food.id); }
   }
   useEffect(() => {
