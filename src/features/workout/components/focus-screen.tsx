@@ -19,6 +19,7 @@ import { RestPanel } from './rest-panel';
 import { SetDots } from './set-dots';
 import { MediaStatus } from './media-status';
 import { restAnnouncement } from '../rest';
+import { starterText } from '@/lib/starter-text';
 
 const PrBurst = dynamic(() => import('./pr-burst').then(module => module.PrBurst), { ssr: false });
 const FormCheckButton = dynamic(() => import('./form-check-button').then(module => module.FormCheckButton), { ssr: false });
@@ -54,7 +55,7 @@ export function FocusScreen({ dayId, playerId }: { dayId: string; playerId?: str
     {state.pr && <PrBurst key={state.pr.id} pr={state.pr} onDismiss={state.dismissPr} />}
     <header className="flex flex-wrap items-center gap-3">
       <IconButton aria-label={t('back')} onClick={() => router.push('/player')}><ArrowRight aria-hidden className="dir-icon" /></IconButton>
-      <p className="min-w-0 flex-1 truncate font-bold">{state.day?.title ?? t('workout')}</p>
+      <p className="min-w-0 flex-1 truncate font-bold">{state.day ? starterText(state.day.title, locale) : t('workout')}</p>
       <SyncPill state={!online ? 'offline' : state.pending === undefined || state.pending > 0 ? 'pending' : 'synced'} pending={state.pending} />
       <MediaStatus />
     </header>

@@ -10,6 +10,7 @@ import { Button } from '@/ui';
 import { deleteTemplate, listTemplates, renameTemplate } from '../data/templates';
 import type { Template, TemplateKind } from '../types';
 import { AssignSheet } from './assign-sheet';
+import { starterText } from '@/lib/starter-text';
 
 type Edit = { template: Template; title: string } | { template: Template; title?: never };
 
@@ -80,7 +81,7 @@ export function TemplatesScreen() {
       </div> : <ul className="grid gap-4 sm:grid-cols-2">
         {visible.map(template => <li key={`${template.kind}-${template.id}`} className="glass flex flex-col gap-4 rounded-card p-5">
           <div className="flex items-start justify-between gap-3">
-            <h2 className="break-words text-xl font-bold">{template.title}</h2>
+            <h2 className="break-words text-xl font-bold">{starterText(template.title, locale)}</h2>
             <span className="glass-strong shrink-0 rounded-control px-3 py-2 text-sm">{t(kind === 'program' ? 'dayCount' : 'mealCount', { n: template.count, count: formatNumber(template.count, locale) })}</span>
           </div>
           <div className="mt-auto flex flex-wrap items-center gap-2">

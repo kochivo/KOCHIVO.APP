@@ -13,6 +13,7 @@ import { formatDateAr } from '@/lib/dates';
 import { lastSeenLabel, playerStatus } from '../status';
 import { archivePlayer } from '../data/archive-player';
 import type { RosterPlayer } from '../types';
+import { starterText } from '@/lib/starter-text';
 
 
 
@@ -50,7 +51,7 @@ export function RosterRow({ player, today }: { player: RosterPlayer; today: stri
       </div>
       <div role="cell"><span className={`inline-flex rounded-full px-3 py-1 text-xs font-bold ${tag.color}`}>{tag.label}</span></div>
       <div role="cell" className="text-sm text-muted"><span className="lg:hidden">{t('lastActivity')} </span>{lastSeenLabel(player.lastTrainingDate, today, locale)}</div>
-      <div role="cell" className="min-w-0 break-words text-sm">{player.programTitle ?? t('noProgram')}
+      <div role="cell" className="min-w-0 break-words text-sm">{player.programTitle ? starterText(player.programTitle, locale) : t('noProgram')}
         <span className="flex flex-wrap gap-4">
           <Link href={`/captain/players/${player.playerId}/programs`} className="flex min-h-12 items-center text-lime">{t('programs')}</Link>
           <Link href={`/captain/players/${player.playerId}/nutrition`} className="flex min-h-12 items-center text-lime">{t('nutrition')}</Link>

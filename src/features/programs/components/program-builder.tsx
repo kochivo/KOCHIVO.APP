@@ -20,6 +20,7 @@ import { useProgramDraft } from '../hooks/use-program-draft';
 import type { ProgramRow, Result } from '../types';
 import { BuilderHeader } from './builder-header';
 import { DayEditor } from './day-editor';
+import { starterText } from '@/lib/starter-text';
 const ExercisePicker = dynamic(() => import('./exercise-picker').then(module => module.ExercisePicker), {
   ssr: false, loading: () => <LoadingState />,
 });
@@ -76,18 +77,19 @@ export function ProgramBuilder({ programId, playerId }: { programId?: string; pl
   }
   if (playerId) return <div className="mx-auto max-w-5xl space-y-6">
     <h1 className="text-3xl font-extrabold">{t('programs')}</h1>
-    <form className="glass space-y-4 rounded-card p-5" onSubmit={event => { event.preventDefault(); void create(); }}>
+    <form className="glass grid gap-4 rounded-card p-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end" onSubmit={event => { event.preventDefault(); void create(); }}>
       <TextField label={t('newProgramName')} value={title} maxLength={80} required disabled={pending} onChange={event => setTitle(event.target.value)} />
       <Button type="submit" className="min-h-12" disabled={pending}>{t('newProgram')}</Button>
-      {pending && <p role="status">{t('creatingProgram')}</p>}
-      {message && <p role="alert" className="text-danger">{message}</p>}
+      {pending && <p role="status" className="sm:col-span-2">{t('creatingProgram')}</p>}
+      {message && <p role="alert" className="text-danger sm:col-span-2">{message}</p>}
     </form>
     {programs === null || loadedRevision !== revision ? <LoadingState /> : programs.error ?
       <ErrorState message={programs.error} retryLabel={t('tryAgain')} onRetry={() => setRevision(value => value + 1)} /> : <>
-        {programs.data?.length === 0 && <p className="glass rounded-card p-6 text-muted">{t('noProgramsForThisPlayerYet')}</p>}
-        <ul className="space-y-3">{programs.data?.map(program => <li key={program.id}>
+        {programs.data?.length === 0 && <div className="glass grid justify-items-start gap-3 rounded-card p-6"><p className="text-muted">{t('noProgramsForThisPlayerYet')}</p>
+          <Link href="/captain/templates" className="inline-flex min-h-12 items-center font-bold text-lime">{t('orStartFromTemplate')}</Link></div>}
+        <ul className="grid gap-3 lg:grid-cols-2">{programs.data?.map(program => <li key={program.id}>
           <Link className="glass flex min-h-16 items-center justify-between gap-4 rounded-control p-4" href={`/captain/programs/${program.id}`}>
-            <span className="min-w-0 break-words font-bold">{program.title}</span>
+            <span className="min-w-0 break-words font-bold">{starterText(program.title, locale)}</span>
             <span className="shrink-0 text-sm text-muted">{{ active: t('active'), draft: t('draft'), archived: t('archived') }[program.status]}</span>
           </Link>
         </li>)}</ul>
@@ -113,7 +115,7 @@ export function ProgramBuilder({ programId, playerId }: { programId?: string; pl
           {draft.days.length === 0 && <p className="text-sm text-muted">{t('addTheFirstDay')}</p>}
           <ul className="space-y-3">{draft.days.map((item, index) => <li key={item.id} className="space-y-2">
             <Button variant="ghost" aria-pressed={item.id === day?.id} className="min-h-12 w-full justify-start text-start" onClick={() => setSelectedDay(item.id)}>
-              {formatNumber(item.position, locale)} · {item.title || t('newDay')}
+              {formatNumber(item.position, locale)} · {item.title ? starterText(item.title, locale) : t('newDay')}
             </Button>
             <div className="flex gap-2">
               <IconButton aria-label={t('moveDayUp', { v0: formatNumber(item.position, locale), v1: item.title })} disabled={index === 0} onClick={() => state.update(current => moveDay(current, item.id, -1))}><ArrowUp aria-hidden className="dir-icon size-5" /></IconButton>

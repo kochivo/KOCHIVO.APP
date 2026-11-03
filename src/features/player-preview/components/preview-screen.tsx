@@ -13,6 +13,7 @@ import { PhoneFrame } from './phone-frame';
 import { PreviewProgram } from './preview-program';
 import { PreviewNutrition } from './preview-nutrition';
 import { PreviewWeek } from './preview-week';
+import { starterText } from '@/lib/starter-text';
 
 type Result = Awaited<ReturnType<typeof fetchPlayerPreview>>;
 
@@ -57,8 +58,8 @@ export function PreviewScreen({ result, today }: { result: Result; today: string
                 </li>)}
               </ol>
               <section className="glass-strong space-y-3 rounded-card p-4">
-                <h2 className="text-xl font-bold">{!data.program ? t('noProgram') : rest ? t('todayRest') : day?.title ?? t('noDays')}</h2>
-                {day && <><p className="text-sm text-muted">{rest && `${day.title} · `}{t('exercises', { n: day.exercises.length, count: formatNumber(day.exercises.length, locale) })} · {t('sets', { n: day.exercises.reduce((count, exercise) => count + exercise.sets, 0), count: formatNumber(day.exercises.reduce((count, exercise) => count + exercise.sets, 0), locale) })}</p>
+                <h2 className="text-xl font-bold">{!data.program ? t('noProgram') : rest ? t('todayRest') : day ? starterText(day.title, locale) : t('noDays')}</h2>
+                {day && <><p className="text-sm text-muted">{rest && `${starterText(day.title, locale)} · `}{t('exercises', { n: day.exercises.length, count: formatNumber(day.exercises.length, locale) })} · {t('sets', { n: day.exercises.reduce((count, exercise) => count + exercise.sets, 0), count: formatNumber(day.exercises.reduce((count, exercise) => count + exercise.sets, 0), locale) })}</p>
                   <PreviewProgram program={data.program ? { ...data.program, days: [day] } : null} /></>}
               </section>
             </div>}

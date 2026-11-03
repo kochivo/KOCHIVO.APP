@@ -1,5 +1,5 @@
 'use client';
-import { useT } from '@/core/i18n/client';
+import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 
 import { Utensils } from 'lucide-react';
@@ -9,15 +9,17 @@ import { useMealLogs } from '../hooks/use-meal-logs';
 import { eatenTotals, targetsOf } from '../macros';
 import { MacroRing } from './macro-ring';
 import { MealCard } from './meal-card';
+import { starterText } from '@/lib/starter-text';
 
 export function NutritionScreen() {
   const t = useT(messages);
+  const locale = useLocale();
   const { snapshot, status, stale, online, pending, today, retry, onError, retryKey } = useNutritionSnapshot();
   const logs = useMealLogs(today, onError, retryKey);
   return <main className="mx-auto max-w-lg space-y-4 px-5 pt-6 pb-32">
     <header className="flex flex-wrap items-center justify-between gap-3">
       <div><h1 className="text-2xl font-extrabold">{t('todaysMeals')}</h1>
-        {snapshot && <p className="text-sm text-muted">{snapshot.title}</p>}</div>
+        {snapshot && <p className="text-sm text-muted">{starterText(snapshot.title, locale)}</p>}</div>
       <SyncPill state={!online ? 'offline' : pending === undefined || pending > 0 ? 'pending' : 'synced'} pending={pending} />
     </header>
     {status === 'error' ? <ErrorState message={t('couldntLoadYourMealPlan')} retryLabel={t('tryAgain')} onRetry={retry} /> :

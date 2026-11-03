@@ -42,13 +42,15 @@ export function RosterScreen({ data, today }: { data: Promise<[RosterResult, str
         <div><p className="mb-1 text-xs text-muted">{t('playerCount', { n: players.length, count: formatNumber(players.length, locale) })}</p><h1 className="text-3xl font-extrabold">{t('players')}</h1></div>
         {(players.length > 0 || result.error) && inviteButton}
       </header>
-      <RadarCard today={today} />
+      <div className="grid items-start gap-6 xl:grid-cols-2">
+        <RadarCard today={today} />
+        {!pending && !result.error && players.length > 0 && <div className="grid grid-cols-2 gap-3">
+          {counts.map(({ label, count, color }) => <GlassCard key={label} level="strong" className="space-y-2 p-5"><p className="text-sm text-muted">{label}</p><p className={`font-display text-4xl font-extrabold ${color}`}>{formatNumber(count, locale)}</p></GlassCard>)}
+        </div>}
+      </div>
       {pending ? <LoadingState /> : result.error ? <ErrorState message={result.error} retryLabel={t('tryAgain')} onRetry={() => startTransition(() => router.refresh())} /> : players.length === 0 ? (
         <EmptyState icon={Users} title={demo ? t('noDemoDataYet') : t('noPlayersYetSendYourFirstInvite')} body={demo ? t('invitesAreDisabledInTheDemo') : t('startWithAnInviteLink')} action={{ label: demo ? t('invitesAreDisabledInTheDemo') : t('newPlayer'), onClick: () => setInviteOpen(true) }} />
       ) : <>
-        <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
-          {counts.map(({ label, count, color }) => <GlassCard key={label} level="strong" className="space-y-2 p-5"><p className="text-sm text-muted">{label}</p><p className={`font-display text-4xl font-extrabold ${color}`}>{formatNumber(count, locale)}</p></GlassCard>)}
-        </div>
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div aria-label={t('filterPlayers')} className="flex flex-wrap gap-2">
             {([{ value: 'all', label: t('all') }, { value: 'late', label: t('late') }, { value: 'ending', label: t('endingSoon') }]).map(({ value, label }) => <Chip key={value} pressed={filter === value} onClick={() => setFilter(value)}>{label}</Chip>)}

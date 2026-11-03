@@ -6,6 +6,7 @@ import { useCallback, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Button } from '@/ui';
 import { publicConfig } from '@/lib/public-config';
+import { DemoHighlights } from './demo-highlights';
 const TurnstileWidget = dynamic(() => import('./turnstile-widget').then(module => module.TurnstileWidget), {
   ssr: false, loading: () => <div aria-hidden className="min-h-16" />,
 });
@@ -21,7 +22,7 @@ export function DemoScreen() {
     setToken(''); setError(t('completeTheVerificationAndTryAgain'));
   }, [t]);
   const siteKey = publicConfig.turnstileSiteKey;
-  return <main className="mx-auto flex min-h-dvh max-w-lg items-center p-6">
+  return <main className="mx-auto grid min-h-dvh max-w-lg content-center items-center gap-6 p-6 lg:max-w-5xl lg:grid-cols-2">
     <section className="glass-strong w-full space-y-5 rounded-card p-6">
       <LanguageSwitch />
       <h1 className="text-3xl font-extrabold">{t('tryTheDemo')}</h1>
@@ -46,5 +47,6 @@ export function DemoScreen() {
         }}>{t('tryAgain')}</Button>
       </div>}
     </section>
+    <DemoHighlights />
   </main>;
 }
