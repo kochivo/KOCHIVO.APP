@@ -15,6 +15,18 @@ import { createToastQueue, ToastProvider } from './toast';
 import { BottomNav, Chip, EmptyState, ErrorState, IconButton, LoadingState, ProgressBar, Segmented, SyncPill, TextField } from './index';
 
 describe('UI primitives', () => {
+  it('keeps gym sizing by default and offers compact controls with full touch targets', () => {
+    const props = { label: 'Reps', value: 8, step: 1, onChange: () => {} };
+    const gym = renderToStaticMarkup(createElement(Stepper, props));
+    expect(gym).toContain('glass-strong');
+    expect(gym.match(/size-19/g)).toHaveLength(2);
+    expect(gym).toContain('text-4xl');
+    const compact = renderToStaticMarkup(createElement(Stepper, { ...props, size: 'compact' }));
+    expect(compact).not.toContain('glass-strong');
+    expect(compact).toContain('text-lg font-bold');
+    expect(compact.match(/min-h-12 min-w-12/g)).toHaveLength(2);
+    expect(compact).toContain('aria-live="polite"');
+  });
   it('renders translated skeleton status with content-shaped presets', () => {
     for (const component of [Skeleton, SkeletonText, SkeletonCard, SkeletonList]) {
       const html = renderToStaticMarkup(createElement(component));
