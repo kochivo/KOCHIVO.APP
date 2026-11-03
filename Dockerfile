@@ -1,4 +1,5 @@
-# Production image for Spaceship Hyperlift (or any container host).
+# Full image that builds and runs the app, for a VPS or any host with 2 GB+ for the build.
+# Hyperlift uses docker/runtime.Dockerfile on the deploy branch instead (see .github/workflows).
 # NEXT_PUBLIC_* values are inlined at build time. They ship to every browser, so they are not
 # secrets; a host can still override them with build args.
 # It runs `next start` on the full build, the same server the project is tested with.

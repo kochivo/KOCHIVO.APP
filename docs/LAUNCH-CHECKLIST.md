@@ -34,7 +34,7 @@
 
 الكود متربط بـ `github.com/kochivo/KOCHIVO.APP` (private). استضافة Web Hosting العادية بتاعة Spaceship مش هتشغّل المشروع، لأنه محتاج سيرفر Node. لازم تستخدم **Starlight Hyperlift**.
 
-1. Spaceship ← Hyperlift ← Create app، واربط GitHub واختار `KOCHIVO.APP` وفرع `master`.
+1. Spaceship ← Hyperlift ← Create app، واربط GitHub واختار `KOCHIVO.APP` وفرع **`deploy`** (مش master). GitHub بيبني المشروع على سيرفراته وينزّل النسخة الجاهزة في فرع `deploy`، لأن الـ build محتاج رام أكتر من خطة Small.
 2. مكان الـ Dockerfile: `Dockerfile` (في أول الريبو).
 3. البورت: `8080`.
 4. مش محتاج تحط أي env vars. رابط Supabase والمفتاح الـ publishable ومفتاح Turnstile ورقم الواتساب كلهم جوه الكود، ومفيش ولا واحد فيهم سري.
@@ -42,7 +42,7 @@
 6. اربط الدومين `kochivo.site` بالتطبيق من إعدادات Hyperlift (Custom domain).
 7. في Supabase ← Authentication ← URL Configuration: حط `https://kochivo.site` في Site URL، وحطه هو ورابط الـ hyperlift.io في Redirect URLs.
 
-أي push على `master` بعد كده Hyperlift بيبنيه وينزّله لوحده.
+أي push على `master`: GitHub بيشغّل الاختبارات ويبني، ولو كله نجح بيحدّث `deploy`، وHyperlift بينزّله. لو الاختبارات فشلت، الموقع بيفضل على النسخة القديمة. تقدر تتابع ده من تبويب Actions في الريبو.
 
 ## 4. حساب الأدمن
 
