@@ -4,6 +4,8 @@ import { extname, join } from 'node:path';
 import { createClient } from '@supabase/supabase-js';
 import { mapExercise } from './map-exercise.ts';
 import { mapFood } from './map-food.ts';
+import { mergeArabicNames } from './merge-names.ts';
+import { z } from 'zod';
 import { uploadFile } from './upload.ts';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
@@ -25,10 +27,14 @@ async function main() {
   if (args.some((arg) => arg !== '--dry-run')) throw new Error('Only --dry-run is supported.');
   const exerciseDir = join(root, 'assets-source/exercise-motion');
   const foodDir = join(root, 'assets-source/food-photos');
-  const [exerciseEntries, foodEntries, gifs, photos] = await Promise.all([
+  const [exerciseEntries, foodEntries, nameEntries, gifs, photos] = await Promise.all([
     readEntries('exercises-gif.json'), readEntries('foods-starter.json'),
+    readEntries('exercise-names-ar.proposed.json'),
     mediaFiles(exerciseDir), mediaFiles(foodDir),
   ]);
+  const proposals = z.array(z.object({
+    dataset_id: z.string(), name_ar: z.string().min(1), confidence: z.enum(['high', 'medium', 'low']),
+  })).parse(nameEntries);
   const failures: string[] = [];
   function validate<T>(entries: unknown[], files: ReadonlySet<string>,
     mapper: (entry: unknown, files: ReadonlySet<string>) => T, label: string): T[] {
@@ -41,14 +47,17 @@ async function main() {
     });
     return rows;
   }
-  const exercises = validate(exerciseEntries, gifs, mapExercise, 'exercises');
+  // Reviewed names (high, plus medium kept for the trial) fill only exercises without one.
+  const exercises = mergeArabicNames(validate(exerciseEntries, gifs, mapExercise, 'exercises'),
+    proposals, { minConfidence: 'medium' });
   const foods = validate(foodEntries, photos, mapFood, 'foods');
   const ids = exercises.map((row) => row.dataset_id);
   if (new Set(ids).size !== ids.length) failures.push('Duplicate exercise dataset_id.');
   const foodKeys = foods.map((row) => row.seed_key);
   if (new Set(foodKeys).size !== foodKeys.length) failures.push('Duplicate food seed_key.');
   if (failures.length) throw new Error(failures.join('\n'));
-  print(`${exercises.length} exercises and ${foods.length} foods valid.`);
+  const unnamed = exercises.filter((row) => !row.name_ar).length;
+  print(`${exercises.length} exercises (${unnamed} without Arabic name) and ${foods.length} foods valid.`);
   if (args.includes('--dry-run')) {
     print('Dry run: wrote nothing.');
     return;
