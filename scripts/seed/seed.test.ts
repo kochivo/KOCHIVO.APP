@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { mapExercise } from './map-exercise.ts';
 import { mapFood } from './map-food.ts';
+import { mergeArabicNames } from './merge-names.ts';
+import type { ArabicNameProposal } from './merge-names.ts';
 
 const exercise = {
   dataset_id: '0001', name_en: 'Sit-up', name_ar: 'بطن', body_part: 'waist',
@@ -48,5 +50,50 @@ describe('seed mappers', () => {
     expect(() => mapFood({ ...food, fat_per_100g: -1 }, new Set(['rice.webp']))).toThrow();
     expect(() => mapExercise({ ...exercise, instructions_en: 'Lift' },
       new Set(['0001.gif']))).toThrow();
+  });
+});
+
+describe('mergeArabicNames', () => {
+  const proposals: ArabicNameProposal[] = [
+    { dataset_id: '0001', name_ar: 'اسم مقترح', confidence: 'high' },
+    { dataset_id: '0002', name_ar: 'سكوات', confidence: 'medium' },
+    { dataset_id: '0003', name_ar: 'ضغط صدر', confidence: 'low' },
+    { dataset_id: '0004', name_ar: 'بايسبس', confidence: 'high' },
+  ];
+  const exercises = [
+    { dataset_id: '0003', name_ar: null, target: 'pectorals' },
+    { dataset_id: '0001', name_ar: 'بطن', target: 'abs' },
+    { dataset_id: '0004', target: 'biceps' },
+    { dataset_id: '0002', name_ar: '', target: 'quads' },
+  ];
+
+  it('does not overwrite an existing name or mutate either input', () => {
+    const beforeExercises = structuredClone(exercises);
+    const beforeProposals = structuredClone(proposals);
+    const result = mergeArabicNames(exercises, proposals, { minConfidence: 'low' });
+    expect(result[1]).toEqual({ dataset_id: '0001', name_ar: 'بطن', target: 'abs' });
+    expect(result).not.toBe(exercises);
+    expect(exercises).toEqual(beforeExercises);
+    expect(proposals).toEqual(beforeProposals);
+  });
+
+  it.each([
+    ['high', [null, 'بطن', 'بايسبس', '']],
+    ['medium', [null, 'بطن', 'بايسبس', 'سكوات']],
+    ['low', ['ضغط صدر', 'بطن', 'بايسبس', 'سكوات']],
+  ] as const)('respects the inclusive %s confidence threshold', (minConfidence, names) => {
+    expect(mergeArabicNames(exercises, proposals, { minConfidence })
+      .map((entry) => entry.name_ar)).toEqual(names);
+  });
+
+  it('ignores unknown ids', () => {
+    expect(mergeArabicNames(exercises, [
+      { dataset_id: 'unknown', name_ar: 'سكوات', confidence: 'high' },
+    ], { minConfidence: 'low' })).toEqual(exercises);
+  });
+
+  it('preserves input order even when proposals have a different order', () => {
+    expect(mergeArabicNames(exercises, proposals, { minConfidence: 'low' })
+      .map((entry) => entry.dataset_id)).toEqual(['0003', '0001', '0004', '0002']);
   });
 });
