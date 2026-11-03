@@ -6,15 +6,16 @@ import { useEffect, useState } from 'react';
 import { loadPlan, savePlan } from '../data/plan-io';
 import { activatePlan } from '../data/activate';
 import type { PlanDraft } from '../types';
+import { useToast } from '@/ui/toast';
 
 export function usePlanDraft(planId: string) {
   const t = useT(messages);
+  const toast = useToast();
   const [draft, setDraft] = useState<PlanDraft | null>(null);
   const [saved, setSaved] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
-  const [message, setMessage] = useState('');
   const [retry, setRetry] = useState(0);
   const [lastActivate, setLastActivate] = useState(false);
   const dirty = !!draft && JSON.stringify(draft) !== saved;
@@ -33,12 +34,11 @@ export function usePlanDraft(planId: string) {
   }, [dirty]);
   function update(change: (draft: PlanDraft) => PlanDraft) {
     setDraft(previous => previous ? change(previous) : previous);
-    setMessage('');
   }
   async function persist(activate = false) {
     if (!draft || busy) return;
     setLastActivate(activate);
-    setBusy(true); setError(''); setMessage('');
+    setBusy(true); setError('');
     try {
       await savePlan(draft);
       setSaved(JSON.stringify(draft));
@@ -47,10 +47,10 @@ export function usePlanDraft(planId: string) {
         const active = { ...draft, status: 'active' as const };
         setDraft(active); setSaved(JSON.stringify(active));
       }
-      setMessage(activate ? t('planActivatedForPlayer') : t('planSaved'));
+      toast.success(activate ? t('planActivatedForPlayer') : t('planSaved'));
     } catch (failure) { setError(failure instanceof Error ? failure.message : t('couldntSaveTryAgain')); }
     finally { setBusy(false); }
   }
-  return { draft, dirty, error, loading, busy, message, update, persist, retrySave: () => persist(lastActivate),
+  return { draft, dirty, error, loading, busy, update, persist, retrySave: () => persist(lastActivate),
     reload: () => { setLoading(true); setRetry(value => value + 1); } };
 }

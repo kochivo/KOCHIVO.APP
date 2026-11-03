@@ -234,10 +234,23 @@ html[data-glass='solid'] { --glass-solid-background: var(--color-surface); --gla
 /* Empty states fade in with opacity and transform only, so the browser never re-lays out the page. */
 .empty-state-in { animation: surface-in .28s ease-out; }
 @utility enter { animation: surface-in 280ms ease-out; }
+@utility shimmer {
+  background-image: linear-gradient(100deg, transparent 25%, var(--glass-highlight) 50%, transparent 75%);
+  background-size: 200% 100%;
+  animation: skeleton-sweep 1.6s ease-in-out infinite;
+}
+@keyframes skeleton-sweep { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+/* Sits above the bottom nav and the sticky primary action, so a toast never covers either. */
+.toast-stack { inset-inline: 0; bottom: calc(10.5rem + env(safe-area-inset-bottom)); }
+.toast-leave { animation: toast-fade 200ms ease-out forwards; }
+@keyframes toast-fade { to { opacity: 0; } }
+/* The marketing page keeps its own type scale. */
+body:not(:has(.marketing-wrap)) :is(h1, h2, h3) { font-weight: 700; color: var(--color-ink); }
+body:not(:has(.marketing-wrap)) .text-muted { font-weight: 500; }
 @keyframes surface-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) {
   .marketing-slogan > span, .marketing-after, .marketing-beam, .marketing-phone, .marketing-reveal, .empty-state-in { animation: none; }
-  .enter { animation: none; }
+  .enter, .shimmer, .toast-leave { animation: none; }
   .press, .press-scale, .press:hover, .press:active, .press-scale:active {
     transition: none;
     transform: none;

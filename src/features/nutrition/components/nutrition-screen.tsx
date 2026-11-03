@@ -23,7 +23,7 @@ export function NutritionScreen() {
       <SyncPill state={!online ? 'offline' : pending === undefined || pending > 0 ? 'pending' : 'synced'} pending={pending} />
     </header>
     {status === 'error' ? <ErrorState message={t('couldntLoadYourMealPlan')} retryLabel={t('tryAgain')} onRetry={retry} /> :
-      status === 'loading' || logs === undefined ? <LoadingState /> : !snapshot || !snapshot.meals.length ?
+      status === 'loading' || logs === undefined ? <LoadingState variant="cards" /> : !snapshot || !snapshot.meals.length ?
         <EmptyState icon={Utensils} title={t('yourCoachIsPreparingYourMealPlan')} body={t('itWillAppearHereWhenReady')} /> : <>
           {stale && <div className="flex items-center justify-between gap-2 text-sm text-muted">
             <p>{t('lastUpdatedAWhileAgo')}</p><Button variant="ghost" onClick={retry}>{t('tryAgain')}</Button>
