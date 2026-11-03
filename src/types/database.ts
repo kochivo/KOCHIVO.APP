@@ -938,6 +938,11 @@ export type Database = {
       }
       profiles: {
         Row: {
+          bio: string | null
+          location: string | null
+          units: 'metric' | 'imperial'
+          avatar_path: string | null
+          social: Partial<Record<'whatsapp' | 'instagram' | 'tiktok' | 'facebook' | 'youtube' | 'x', string>>
           created_at: string
           deletion_requested_at: string | null
           demo_expires_at: string | null
@@ -954,6 +959,11 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          bio?: string | null
+          location?: string | null
+          units?: 'metric' | 'imperial'
+          avatar_path?: string | null
+          social?: Partial<Record<'whatsapp' | 'instagram' | 'tiktok' | 'facebook' | 'youtube' | 'x', string>>
           created_at?: string
           deletion_requested_at?: string | null
           demo_expires_at?: string | null
@@ -970,6 +980,11 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          bio?: string | null
+          location?: string | null
+          units?: 'metric' | 'imperial'
+          avatar_path?: string | null
+          social?: Partial<Record<'whatsapp' | 'instagram' | 'tiktok' | 'facebook' | 'youtube' | 'x', string>>
           created_at?: string
           deletion_requested_at?: string | null
           demo_expires_at?: string | null
@@ -1395,6 +1410,10 @@ export type Database = {
       is_captain_of: { Args: { p_player: string }; Returns: boolean }
       is_suspended: { Args: never; Returns: boolean }
       my_captain_id: { Args: never; Returns: string }
+      my_captain_profile: { Args: never; Returns: {
+        full_name: string; phone: string | null; bio: string | null; location: string | null; avatar_path: string | null;
+        social: Partial<Record<'whatsapp' | 'instagram' | 'tiktok' | 'facebook' | 'youtube' | 'x', string>>
+      }[] }
       nutrition_plan_to_template: {
         Args: { p_plan: string; p_title: string }
         Returns: string

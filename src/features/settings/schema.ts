@@ -3,6 +3,28 @@ import { createT } from '@/core/i18n/messages';
 import type { Translator } from '@/core/i18n/messages';
 import { messages } from './messages';
 
+export const socialKeys = ['whatsapp', 'instagram', 'tiktok', 'facebook', 'youtube', 'x'] as const;
+export type SocialKey = typeof socialKeys[number];
+export const timezones = Array.from(new Set(['Africa/Cairo', ...(typeof Intl.supportedValuesOf === 'function'
+  ? Intl.supportedValuesOf('timeZone') : ['UTC', 'Asia/Riyadh', 'Asia/Dubai', 'Europe/London', 'America/New_York'])]));
+const domains = { instagram: ['instagram.com'], tiktok: ['tiktok.com'], facebook: ['facebook.com', 'fb.com'],
+  youtube: ['youtube.com', 'youtu.be'], x: ['x.com', 'twitter.com'] };
+export function normalizeSocial(key: SocialKey, raw: string): string | null {
+  const value = raw.trim();
+  if (!value) return '';
+  if (key === 'whatsapp') {
+    let digits = value.replace(/^https:\/\/wa\.me\//, '').replace(/[\s()+-]/g, '');
+    if (/^01[0125]\d{8}$/.test(digits)) digits = `2${digits}`;
+    if (digits.startsWith('00')) digits = digits.slice(2);
+    return /^[1-9]\d{7,14}$/.test(digits) ? `https://wa.me/${digits}` : null;
+  }
+  try {
+    const url = new URL(value);
+    return url.protocol === 'https:' && !url.username && !url.password && !url.port &&
+      domains[key].some(domain => url.hostname === domain || url.hostname === `www.${domain}`) ? url.href : null;
+  } catch { return null; }
+}
+
 export function settingsSchemas(t: Translator<typeof messages> = createT(messages, 'ar')) {
   const profileSchema = z.object({
     full_name: z.string().trim().min(1, t('enterYourName')).max(80, t('nameMustBe80CharactersOr')),
@@ -12,8 +34,27 @@ export function settingsSchemas(t: Translator<typeof messages> = createT(message
   const inviteMessageSchema = z.object({
     invite_message: z.string().max(500, t('messageMustBe500CharactersOr')),
   });
-  return { profileSchema, inviteMessageSchema };
+  const link = (key: SocialKey) => z.string().trim().max(200, t('invalidLink')).transform((value, ctx) => {
+    const normalized = normalizeSocial(key, value);
+    if (normalized === null || normalized.length > 200) {
+      ctx.addIssue({ code: 'custom', message: t('invalidLink') }); return z.NEVER;
+    }
+    return normalized;
+  }).optional();
+  const captainProfileSchema = z.object({
+    full_name: profileSchema.shape.full_name,
+    bio: z.string().trim().max(280, t('bioTooLong')),
+    location: z.string().trim().max(80, t('locationTooLong')),
+    timezone: z.string().refine(value => timezones.includes(value), t('invalidTimezone')),
+    units: z.enum(['metric', 'imperial'], { error: t('invalidUnits') }),
+    social: z.object({ whatsapp: link('whatsapp'), instagram: link('instagram'), tiktok: link('tiktok'),
+      facebook: link('facebook'), youtube: link('youtube'), x: link('x') }).strict(),
+    avatar_path: z.string().max(200).nullable().optional(),
+  });
+  return { profileSchema, inviteMessageSchema, captainProfileSchema };
 }
+
+export type CaptainProfileInput = z.infer<ReturnType<typeof settingsSchemas>['captainProfileSchema']>;
 
 export const { profileSchema, inviteMessageSchema } = settingsSchemas();
 
@@ -24,4 +65,10 @@ export type SettingsProfile = {
   phone: string | null;
   invite_message: string | null;
   deletion_requested_at: string | null;
+  timezone?: string;
+  bio?: string | null;
+  location?: string | null;
+  units?: 'metric' | 'imperial';
+  avatar_path?: string | null;
+  social?: Partial<Record<SocialKey, string>>;
 };

@@ -15,16 +15,24 @@ export function readCaptainCache(): MyCaptain | null {
       !/^\d{4}-\d{2}-\d{2}$/.test(row.accessUntil) ||
       (row.phone !== null && typeof row.phone !== 'string') ||
       (row.archivedAt !== null && typeof row.archivedAt !== 'string')) return null;
-    return { fullName: row.fullName, phone: row.phone, accessUntil: row.accessUntil,
-      archivedAt: row.archivedAt, startedOn: null };
+    const branding: Partial<MyCaptain> = {};
+    for (const key of ['bio', 'location', 'avatarUrl'] as const) {
+      if (typeof row[key] === 'string' || row[key] === null) branding[key] = row[key];
+    }
+    if (row.social && typeof row.social === 'object' && !Array.isArray(row.social)) {
+      branding.social = Object.fromEntries(Object.entries(row.social).filter(([key, value]) =>
+        ['whatsapp', 'instagram', 'tiktok', 'facebook', 'youtube', 'x'].includes(key) && typeof value === 'string'));
+    }
+    return { fullName: row.fullName, phone: null, accessUntil: row.accessUntil,
+      archivedAt: row.archivedAt, startedOn: null, ...branding };
   } catch { return null; }
 }
 
 export function writeCaptainCache(data: MyCaptain | null) {
   try {
     if (!data) { window.localStorage.removeItem(cacheKey); return; }
-    const { fullName, phone, accessUntil, archivedAt } = data;
-    window.localStorage.setItem(cacheKey, JSON.stringify({ fullName, phone, accessUntil, archivedAt }));
+    const { fullName, accessUntil, archivedAt, bio, location, avatarUrl, social } = data;
+    window.localStorage.setItem(cacheKey, JSON.stringify({ fullName, phone: null, accessUntil, archivedAt, bio, location, avatarUrl, social }));
   } catch { /* Storage can be unavailable in private browsing. */ }
 }
 
