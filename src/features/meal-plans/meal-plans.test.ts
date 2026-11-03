@@ -4,7 +4,7 @@ import { mealTotals, planTotals, targetDelta, macroTargetsFromKcal } from './tot
 import { escapeSearch } from './types';
 import type { PlanDraft, Food } from './types';
 
-const food: Food = { id: 'food', name: 'رز', photo: null, kcal: 100, protein: 10, carbs: 20, fat: 2 };
+const food: Food = { id: 'food', name: 'رز', photo: null, custom: false, kcal: 100, protein: 10, carbs: 20, fat: 2 };
 const alternative: Food = { ...food, id: 'alt', name: 'مكرونة', kcal: 50 };
 const empty: PlanDraft = { id: 'plan', playerId: 'player', title: 'نظام', status: 'draft', targets: { kcal: 2000, protein: 150, carbs: 225, fat: 56 }, meals: [] };
 
