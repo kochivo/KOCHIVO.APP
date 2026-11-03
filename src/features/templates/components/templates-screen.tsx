@@ -5,11 +5,12 @@ import { formatNumber } from '@/lib/format';
 import { messages } from '../messages';
 
 import { useEffect, useState } from 'react';
-import { Files, Pencil, Trash2 } from 'lucide-react';
+import { Copy, Eye, Files, Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/ui';
-import { deleteTemplate, listTemplates, renameTemplate } from '../data/templates';
+import { copyTemplate, deleteTemplate, listTemplates, renameTemplate } from '../data/templates';
 import type { Template, TemplateKind } from '../types';
 import { AssignSheet } from './assign-sheet';
+import { PreviewSheet } from './preview-sheet';
 import { starterText } from '@/lib/starter-text';
 
 type Edit = { template: Template; title: string } | { template: Template; title?: never };
@@ -20,6 +21,7 @@ export function TemplatesScreen() {
   const [templates, setTemplates] = useState<Template[]>([]);
   const [kind, setKind] = useState<TemplateKind>('program');
   const [selected, setSelected] = useState<Template | null>(null);
+  const [previewing, setPreviewing] = useState<Template | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
   const [error, setError] = useState('');
@@ -57,6 +59,16 @@ export function TemplatesScreen() {
       setTemplates(before); setError(t('couldntSaveChangesTryAgain')); setFailedEdit(change);
     } finally { setBusy(false); }
   }
+  async function duplicate(template: Template) {
+    if (busy) return;
+    setBusy(true); setError(''); setFailedEdit(null);
+    try {
+      const title = t('copyOf', { title: starterText(template.title, locale) }).slice(0, 80);
+      const result = await copyTemplate({ kind: template.kind, id: template.id, title });
+      if (result.error !== undefined) setError(result.error);
+      else { setLoading(true); setAttempt(value => value + 1); }
+    } catch { setError(t('couldntSaveChangesTryAgain')); } finally { setBusy(false); }
+  }
   const visible = templates.filter(template => template.kind === kind);
   return <div className="mx-auto grid max-w-5xl gap-6">
     <header className="space-y-2">
@@ -81,22 +93,30 @@ export function TemplatesScreen() {
       </div> : <ul className="grid gap-4 sm:grid-cols-2">
         {visible.map(template => <li key={`${template.kind}-${template.id}`} className="glass flex flex-col gap-4 rounded-card p-5">
           <div className="flex items-start justify-between gap-3">
-            <h2 className="break-words text-xl font-bold">{starterText(template.title, locale)}</h2>
+            <div className="min-w-0 space-y-1.5">
+              <h2 className="break-words text-xl font-bold">{starterText(template.title, locale)}</h2>
+              {template.starter && <p className="w-fit rounded-full bg-lime-soft px-2.5 py-0.5 text-xs font-bold text-lime">{t('starterBadge')}</p>}
+            </div>
             <span className="glass-strong shrink-0 rounded-control px-3 py-2 text-sm">{t(kind === 'program' ? 'dayCount' : 'mealCount', { n: template.count, count: formatNumber(template.count, locale) })}</span>
           </div>
           <div className="mt-auto flex flex-wrap items-center gap-2">
+            <Button variant="ghost" className="min-h-12" disabled={busy} onClick={() => setPreviewing(template)}><Eye aria-hidden className="size-5" />{t('preview')}</Button>
             <Button variant="secondary" className="min-h-12 flex-1" disabled={busy} onClick={() => setSelected(template)}>{t('assignToPlayer')}</Button>
-            <Button variant="ghost" className="min-h-12 min-w-12" aria-label={t('rename', { v0: template.title })} disabled={busy} onClick={() => {
-              const title = window.prompt(t('newTemplateName'), template.title);
-              if (title !== null) void edit({ template, title: title.trim() });
-            }}><Pencil aria-hidden className="size-5" /></Button>
-            <Button variant="ghost" className="min-h-12 min-w-12" aria-label={t('delete', { v0: template.title })} disabled={busy} onClick={() => {
-              if (window.confirm(t('deleteTemplatePlayerCopiesWillStayUnchanged', { v0: template.title }))) void edit({ template });
-            }}><Trash2 aria-hidden className="size-5" /></Button>
+            {template.starter ? <Button variant="ghost" className="min-h-12" disabled={busy} onClick={() => void duplicate(template)}><Copy aria-hidden className="size-5" />{t('copy')}</Button> : <>
+              <Button variant="ghost" className="min-h-12 min-w-12" aria-label={t('rename', { v0: template.title })} disabled={busy} onClick={() => {
+                const title = window.prompt(t('newTemplateName'), template.title);
+                if (title !== null) void edit({ template, title: title.trim() });
+              }}><Pencil aria-hidden className="size-5" /></Button>
+              <Button variant="ghost" className="min-h-12 min-w-12" aria-label={t('delete', { v0: template.title })} disabled={busy} onClick={() => {
+                if (window.confirm(t('deleteTemplatePlayerCopiesWillStayUnchanged', { v0: template.title }))) void edit({ template });
+              }}><Trash2 aria-hidden className="size-5" /></Button>
+            </>}
           </div>
         </li>)}
       </ul>}
     </>}
+    {previewing && <PreviewSheet template={previewing} onClose={() => setPreviewing(null)}
+      onAssign={() => { setSelected(previewing); setPreviewing(null); }} />}
     {selected && <AssignSheet template={selected} onClose={() => setSelected(null)} />}
   </div>;
 }

@@ -92,15 +92,11 @@ it('also handles captains confirmed on profile insertion and gives players none'
   expect(await counts(player)).toEqual([{ workouts: 0, nutrition: 0 }]);
 });
 
-it('is idempotent and never restores edited or deleted copies', async () => {
+// Starters are read-only since 0036 (see starter-lock.test.ts), so a retry can only add duplicates.
+it('is idempotent', async () => {
+  await copy(captain);
   await copy(captain);
   expect(await counts(captain)).toEqual([{ workouts: 6, nutrition: 4 }]);
-  await asUser(db, captain, tx => tx.query("update public.programs set title = 'تعديلي' where captain_id = $1", [captain]));
-  await asUser(db, captain, tx => tx.query('delete from public.nutrition_plans where captain_id = $1', [captain]));
-  await copy(captain);
-  expect(await counts(captain)).toEqual([{ workouts: 6, nutrition: 0 }]);
-  expect((await db.query('select distinct title from public.programs where captain_id = $1', [captain])).rows)
-    .toEqual([{ title: 'تعديلي' }]);
 });
 
 it('skips missing exercises, foods and alternatives without aborting confirmation', async () => {
@@ -150,7 +146,7 @@ it('backfills existing confirmed captains and preserves existing copies', async 
     const backfill = migration.slice(migration.lastIndexOf('-- Backfill'));
     await db.exec(backfill);
     expect(await counts(user)).toEqual([{ workouts: 6, nutrition: 4 }]);
-    expect(await counts(captain)).toEqual([{ workouts: 6, nutrition: 0 }]);
+    expect(await counts(captain)).toEqual([{ workouts: 6, nutrition: 4 }]);
   } finally { await db.exec('rollback'); }
 });
 

@@ -11,5 +11,5 @@ export interface ChipProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 export function Chip({ pressed, className, type = 'button', ...props }: ChipProps) {
-  return <button {...props} type={type} aria-pressed={pressed} className={cn('min-h-12 rounded-control border px-4 text-sm transition motion-reduce:transition-none disabled:opacity-40', variants[pressed ? 'pressed' : 'idle'], className)} />;
+  return <button {...props} type={type} aria-pressed={pressed} className={cn('min-h-12 rounded-control border px-4 text-sm transition-colors duration-150 motion-reduce:transition-none disabled:opacity-40', variants[pressed ? 'pressed' : 'idle'], className)} />;
 }

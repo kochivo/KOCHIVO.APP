@@ -620,6 +620,7 @@ export type Database = {
           captain_id: string
           created_at: string
           id: string
+          is_starter: boolean
           is_template: boolean
           player_id: string | null
           source_template_id: string | null
@@ -635,6 +636,7 @@ export type Database = {
           captain_id: string
           created_at?: string
           id?: string
+          is_starter?: boolean
           is_template?: boolean
           player_id?: string | null
           source_template_id?: string | null
@@ -650,6 +652,7 @@ export type Database = {
           captain_id?: string
           created_at?: string
           id?: string
+          is_starter?: boolean
           is_template?: boolean
           player_id?: string | null
           source_template_id?: string | null
@@ -771,6 +774,63 @@ export type Database = {
           },
         ]
       }
+      captain_packages: {
+        Row: {
+          archived_at: string | null
+          captain_id: string
+          created_at: string
+          days: number
+          id: string
+          name: string
+          price_egp: number
+        }
+        Insert: {
+          archived_at?: string | null
+          captain_id: string
+          created_at?: string
+          days: number
+          id?: string
+          name: string
+          price_egp: number
+        }
+        Update: {
+          archived_at?: string | null
+          captain_id?: string
+          created_at?: string
+          days?: number
+          id?: string
+          name?: string
+          price_egp?: number
+        }
+        Relationships: []
+      }
+      payment_collections: {
+        Row: {
+          amount_egp: number
+          captain_id: string
+          created_at: string
+          id: string
+          payment_id: string
+          player_id: string
+        }
+        Insert: {
+          amount_egp: number
+          captain_id: string
+          created_at?: string
+          id?: string
+          payment_id: string
+          player_id: string
+        }
+        Update: {
+          amount_egp?: number
+          captain_id?: string
+          created_at?: string
+          id?: string
+          payment_id?: string
+          player_id?: string
+        }
+        Relationships: []
+      }
       player_payments: {
         Row: {
           amount_egp: number | null
@@ -778,9 +838,11 @@ export type Database = {
           created_at: string
           days: number
           id: string
+          package_id: string | null
           period_end: string
           period_start: string
           player_id: string
+          price_egp: number | null
         }
         Insert: {
           amount_egp?: number | null
@@ -788,9 +850,11 @@ export type Database = {
           created_at?: string
           days: number
           id?: string
+          package_id?: string | null
           period_end: string
           period_start: string
           player_id: string
+          price_egp?: number | null
         }
         Update: {
           amount_egp?: number | null
@@ -798,9 +862,11 @@ export type Database = {
           created_at?: string
           days?: number
           id?: string
+          package_id?: string | null
           period_end?: string
           period_start?: string
           player_id?: string
+          price_egp?: number | null
         }
         Relationships: [
           {
@@ -961,6 +1027,7 @@ export type Database = {
           captain_id: string
           created_at: string
           id: string
+          is_starter: boolean
           is_template: boolean
           notes: string | null
           player_id: string | null
@@ -974,6 +1041,7 @@ export type Database = {
           captain_id: string
           created_at?: string
           id?: string
+          is_starter?: boolean
           is_template?: boolean
           notes?: string | null
           player_id?: string | null
@@ -987,6 +1055,7 @@ export type Database = {
           captain_id?: string
           created_at?: string
           id?: string
+          is_starter?: boolean
           is_template?: boolean
           notes?: string | null
           player_id?: string | null
@@ -1194,6 +1263,10 @@ export type Database = {
         Args: { p_player: string; p_template: string }
         Returns: string
       }
+      copy_template: {
+        Args: { p_kind: string; p_template: string; p_title: string }
+        Returns: string
+      }
       assign_program_template: {
         Args: { p_player: string; p_template: string }
         Returns: string
@@ -1212,6 +1285,14 @@ export type Database = {
           player_id: string
           reason: string
         }[]
+      }
+      captain_dues: {
+        Args: never
+        Returns: { due_egp: number; player_id: string }[]
+      }
+      collect_player_payment: {
+        Args: { p_amount: number; p_player: string }
+        Returns: number
       }
       captain_last_payments: {
         Args: never
@@ -1275,7 +1356,7 @@ export type Database = {
       purge_deleted_accounts: { Args: never; Returns: number }
       redeem_invite: { Args: { p_code: string }; Returns: string }
       renew_player: {
-        Args: { p_amount?: number; p_days: number; p_player: string }
+        Args: { p_amount?: number; p_days?: number; p_package?: string; p_player: string; p_price?: number }
         Returns: string
       }
       request_account_deletion: { Args: never; Returns: string }

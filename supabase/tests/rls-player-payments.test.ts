@@ -96,7 +96,7 @@ describe('player payments', () => {
     }
   });
   it('grants no anon execute', async () => {
-    expect((await db.query(`select has_function_privilege('anon', 'public.renew_player(uuid,int,int)', 'EXECUTE') as allowed`)).rows).toEqual([{ allowed: false }]);
+    expect((await db.query(`select has_function_privilege('anon', 'public.renew_player(uuid,int,int,int,uuid)', 'EXECUTE') as allowed`)).rows).toEqual([{ allowed: false }]);
     await expect(db.transaction(async (tx) => {
       await tx.exec('set local role anon');
       await tx.query('select public.renew_player(null, 30)');

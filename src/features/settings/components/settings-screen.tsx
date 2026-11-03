@@ -4,6 +4,7 @@ import { LanguageSwitch } from '@/ui/language-switch';
 import { messages } from '../messages';
 
 import { useEffect, useState } from 'react';
+import type { ReactNode } from 'react';
 import { ErrorState, LoadingState, ThemeSwitch } from '@/ui';
 import { loadSettings } from '../data/settings';
 import type { SettingsProfile } from '../schema';
@@ -14,7 +15,7 @@ import { DeleteAccountCard } from './delete-account-card';
 import { GlassToggle } from './glass-toggle';
 import { demoExpiry, useDemoExpiry } from '@/features/demo';
 
-export function SettingsScreen() {
+export function SettingsScreen({ signOut }: { signOut?: ReactNode }) {
   const t = useT(messages);
   const demo = useDemoExpiry();
   const [profile, setProfile] = useState<SettingsProfile | null>(null);
@@ -46,5 +47,6 @@ export function SettingsScreen() {
       <ExportCard />
       {!demo && !demoExpiry(profile) && <DeleteAccountCard requestedAt={profile.deletion_requested_at} />}
     </> : null}
+    {signOut}
   </div>;
 }

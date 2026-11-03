@@ -69,6 +69,16 @@ describe('renewPlayer', () => {
     mocks.rpc.mockResolvedValue({ data: null, error: { code } });
     expect(await renewPlayer(input)).toEqual({ error });
   });
+  it('renews from a package and lets SQL fill the days', async () => {
+    const packageId = '22222222-2222-4222-8222-222222222222';
+    expect(await renewPlayer({ playerId: input.playerId, days: null, amount: 500, price: 1500, packageId })).toEqual({ data: '2026-12-10' });
+    expect(mocks.rpc).toHaveBeenCalledWith('renew_player', { p_player: input.playerId, p_amount: 500, p_price: 1500, p_package: packageId });
+  });
+  it('rejects paying more than the price or no length at all', async () => {
+    expect(await renewPlayer({ ...input, amount: 2000, price: 1500 })).toHaveProperty('error');
+    expect(await renewPlayer({ ...input, days: null })).toHaveProperty('error');
+    expect(mocks.server).not.toHaveBeenCalled();
+  });
   it('handles network failure', async () => {
     mocks.rpc.mockRejectedValue(new Error('offline'));
     expect(await renewPlayer(input)).toEqual({ error: 'التجديد متسجلش. جرّب تاني' });
@@ -86,6 +96,12 @@ describe('fetchBilling', () => {
   const payment = { id: 'payment-1', captain_id: 'session-captain', player_id: 'player-1', amount_egp: 800,
     days: 30, period_start: '2026-11-02', period_end: '2026-12-01', created_at: '2026-11-02T12:00:00Z' };
   const filters = vi.fn();
+  const pkg = { id: 'package-1', name: 'شهري', price_egp: 1500, days: 30 };
+  const tables: Record<string, unknown[]> = {
+    captain_packages: [pkg],
+    player_payments: [{ amount_egp: 800, created_at: '2026-11-02T12:00:00Z' }],
+    payment_collections: [{ amount_egp: 200, created_at: '2026-10-10T12:00:00Z' }],
+  };
   let phoneError = false;
   let paymentError = false;
   beforeEach(() => {
@@ -95,7 +111,8 @@ describe('fetchBilling', () => {
     mocks.user.mockResolvedValue({ data: { user: { id: 'session-captain' } }, error: null });
     mocks.rpc.mockImplementation(async (name: string) => ({
       error: name === 'captain_last_payments' && paymentError ? { code: '500' } : null,
-      data: name === 'current_tier' ? 'champion' : name === 'captain_last_payments' ? [payment] : [player],
+      data: name === 'current_tier' ? 'champion' : name === 'captain_last_payments' ? [payment]
+        : name === 'captain_dues' ? [{ player_id: 'player-1', due_egp: 700 }] : [player],
     }));
     mocks.from.mockImplementation((table: string) => {
       const query = {
@@ -103,7 +120,9 @@ describe('fetchBilling', () => {
         eq: (...args: unknown[]) => { filters(table, 'eq', ...args); return query; },
         lte: (...args: unknown[]) => { filters(table, 'lte', ...args); return query; },
         gt: (...args: unknown[]) => { filters(table, 'gt', ...args); return query; },
-        order: () => query, limit: () => query,
+        order: () => query, limit: () => query, is: () => query,
+        gte: (...args: unknown[]) => { filters(table, 'gte', ...args); return query; },
+        then: (resolve: (value: unknown) => void) => resolve({ data: tables[table] ?? [], error: null }),
         in: async () => ({ data: [{ id: 'player-1', phone: '+201001234567' }], error: phoneError ? { code: '500' } : null }),
         single: async () => ({ data: table === 'profiles' ? { role: 'captain' } : { tier: 'champion', player_limit: 20, price_egp: 399 }, error: null }),
         maybeSingle: async () => ({ data: { ends_at: '2026-12-01T00:00:00Z' }, error: null }),
@@ -115,12 +134,14 @@ describe('fetchBilling', () => {
   it('combines the roster, phones, last payments and the session captain plan', async () => {
     expect(await fetchBilling()).toEqual({ data: {
       players: [{ playerId: 'player-1', fullName: 'علي', accessUntil: '2026-12-01', startedOn: '2026-10-01',
-        lastTrainingDate: '2026-11-03', programTitle: null, openTasks: 0, status: 'active', phone: '+201001234567', lastPayment: payment }],
+        lastTrainingDate: '2026-11-03', programTitle: null, openTasks: 0, status: 'active', phone: '+201001234567', lastPayment: payment, due: 700 }],
       plan: { tier: 'champion', player_limit: 20, price_egp: 399 }, used: 1, subscriptionEnd: '2026-12-01T00:00:00Z',
+      packages: [pkg], revenue: { thisMonth: 800, lastMonth: 200, dues: 700, owing: 1 },
     } });
+    expect(mocks.rpc).toHaveBeenCalledWith('captain_dues');
+    expect(filters).toHaveBeenCalledWith('player_payments', 'gte', 'created_at', '2026-09-30T00:00:00.000Z');
     expect(mocks.rpc).toHaveBeenCalledWith('current_tier', { p_captain: 'session-captain' });
     expect(mocks.rpc).toHaveBeenCalledWith('captain_last_payments');
-    expect(mocks.from).not.toHaveBeenCalledWith('player_payments');
     expect(filters).toHaveBeenCalledWith('captain_subscriptions', 'lte', 'starts_at', '2026-11-02T23:30:00.000Z');
     expect(filters).toHaveBeenCalledWith('captain_subscriptions', 'gt', 'ends_at', '2026-11-02T23:30:00.000Z');
   });
@@ -129,7 +150,6 @@ describe('fetchBilling', () => {
     const result = await fetchBilling();
     expect(result.data?.players).toEqual([]);
     expect(result.data?.used).toBe(0);
-    expect(mocks.from).not.toHaveBeenCalledWith('player_payments');
   });
   it.each([1, 40])('uses one payment RPC for %s players and maps missing payments to null', async (count) => {
     mocks.rpc.mockImplementation(async (name: string) => ({ error: null,
@@ -141,7 +161,6 @@ describe('fetchBilling', () => {
     expect(result.data?.players.find((row) => row.playerId === 'player-1')?.lastPayment).toEqual(payment);
     expect(result.data?.players.filter((row) => row.playerId !== 'player-1').every((row) => row.lastPayment === null)).toBe(true);
     expect(mocks.rpc.mock.calls.filter(([name]) => name === 'captain_last_payments')).toEqual([['captain_last_payments']]);
-    expect(mocks.from).not.toHaveBeenCalledWith('player_payments');
   });
   it.each(['phone', 'payment', 'roster'])('reports a %s read failure', async (failure) => {
     phoneError = failure === 'phone';

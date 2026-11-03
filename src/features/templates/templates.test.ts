@@ -1,7 +1,7 @@
 vi.mock('server-only', () => ({}));
 vi.mock('next/headers', () => ({ cookies: async () => ({ get: () => undefined }) }));
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { assignTemplate, deleteTemplate, listTemplatePlayers, listTemplates, renameTemplate, saveAsTemplate } from './data/templates';
+import { assignTemplate, copyTemplate, deleteTemplate, listTemplatePlayers, listTemplates, renameTemplate, saveAsTemplate } from './data/templates';
 
 const mocks = vi.hoisted(() => {
   const query = { select: vi.fn(), eq: vi.fn(), in: vi.fn(), order: vi.fn(), single: vi.fn(), update: vi.fn(), delete: vi.fn() };
@@ -41,6 +41,10 @@ describe('template validation', () => {
 });
 
 describe('template actions', () => {
+  it.each(['program', 'nutrition'] as const)('copies a %s template through copy_template', async kind => {
+    expect(await copyTemplate({ kind, id, title: ' نسخة ' })).toEqual({ data: id });
+    expect(mocks.client.rpc).toHaveBeenLastCalledWith('copy_template', { p_kind: kind, p_template: id, p_title: 'نسخة' });
+  });
   it.each(['program', 'nutrition'] as const)('saves and assigns %s via the correct RPC', async kind => {
     expect(await saveAsTemplate({ kind, id, title: '  قالب  ' })).toEqual({ data: id });
     expect(mocks.client.rpc).toHaveBeenLastCalledWith(kind === 'program' ? 'program_to_template' : 'nutrition_plan_to_template',
@@ -93,14 +97,14 @@ describe('template actions', () => {
   });
   it('returns both kinds, dates and hierarchy counts', async () => {
     const created_at = '2026-11-03T00:00:00Z';
-    mocks.query.order.mockResolvedValueOnce({ data: [{ id, title: 'تمرين', created_at, program_days: [{ count: 1201 }] }], error: null })
-      .mockResolvedValueOnce({ data: [{ id: playerId, title: 'أكل', created_at, meals: [{ count: 2 }] }], error: null });
+    mocks.query.order.mockResolvedValueOnce({ data: [{ id, title: 'تمرين', created_at, is_starter: true, program_days: [{ count: 1201 }] }], error: null })
+      .mockResolvedValueOnce({ data: [{ id: playerId, title: 'أكل', created_at, is_starter: false, meals: [{ count: 2 }] }], error: null });
     expect(await listTemplates()).toEqual({ data: [
-      { id, title: 'تمرين', kind: 'program', created_at, count: 1201 },
-      { id: playerId, title: 'أكل', kind: 'nutrition', created_at, count: 2 },
+      { id, title: 'تمرين', kind: 'program', created_at, count: 1201, starter: true },
+      { id: playerId, title: 'أكل', kind: 'nutrition', created_at, count: 2, starter: false },
     ] });
-    expect(mocks.query.select).toHaveBeenCalledWith('id,title,created_at,program_days(count)');
-    expect(mocks.query.select).toHaveBeenCalledWith('id,title,created_at,meals(count)');
+    expect(mocks.query.select).toHaveBeenCalledWith('id,title,created_at,is_starter,program_days(count)');
+    expect(mocks.query.select).toHaveBeenCalledWith('id,title,created_at,is_starter,meals(count)');
   });
   it('returns an empty library and handles failed list queries', async () => {
     mocks.query.order.mockResolvedValue({ data: [], error: null });

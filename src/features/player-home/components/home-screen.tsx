@@ -2,7 +2,7 @@
 import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 
-import { useCallback, useEffect, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Dumbbell } from 'lucide-react';
 import { localDb, pendingCount, useLiveQuery } from '@/core/offline';
 import { localDate } from '@/lib/dates';
@@ -19,7 +19,7 @@ import { NutritionSlot } from './nutrition-slot';
 const readPending = () => pendingCount(localDb());
 const readSessions = () => localDb().workout_sessions.toArray();
 
-export function HomeScreen({ firstName, playerId, signOut }: { firstName?: string; playerId?: string; signOut: ReactNode }) {
+export function HomeScreen({ firstName, playerId }: { firstName?: string; playerId?: string }) {
   const t = useT(messages);
   const locale = useLocale();
   const [now, setNow] = useState<Date>();
@@ -67,6 +67,5 @@ export function HomeScreen({ firstName, playerId, signOut }: { firstName?: strin
       {failed && snapshot && <p className="text-sm text-muted">{t('lastUpdatedAWhileAgo')}</p>}
     </>}
     <NutritionSlot />
-    <div className="[&_button]:min-h-12 [&_button]:bg-transparent [&_button]:text-muted">{signOut}</div>
   </main>;
 }

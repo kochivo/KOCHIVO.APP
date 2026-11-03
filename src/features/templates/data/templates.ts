@@ -45,12 +45,12 @@ export async function listTemplates(): Promise<TemplateResult<Template[]>> {
     const templates: Template[] = [];
     for (const kind of kindSchema.options) {
       const rows = kind === 'program'
-        ? await client.from('programs').select('id,title,created_at,program_days(count)')
+        ? await client.from('programs').select('id,title,created_at,is_starter,program_days(count)')
           .eq('captain_id', captain).eq('is_template', true).order('created_at', { ascending: false })
-        : await client.from('nutrition_plans').select('id,title,created_at,meals(count)')
+        : await client.from('nutrition_plans').select('id,title,created_at,is_starter,meals(count)')
           .eq('captain_id', captain).eq('is_template', true).order('created_at', { ascending: false });
       if (rows.error) throw rows.error;
-      templates.push(...rows.data.map(row => ({ id: row.id, title: row.title, created_at: row.created_at, kind,
+      templates.push(...rows.data.map(row => ({ id: row.id, title: row.title, created_at: row.created_at, kind, starter: row.is_starter,
         count: ('program_days' in row ? row.program_days[0]?.count : row.meals[0]?.count) ?? 0 })));
     }
     return { data: templates.sort((a, b) => b.created_at.localeCompare(a.created_at)) };
@@ -88,6 +88,20 @@ export async function assignTemplate(input: unknown): Promise<TemplateResult<str
     if (!result.data) return { error: t('templateOrSourceNotFound') };
     revalidatePath(`/captain/players/${playerId}/${kind === 'program' ? 'programs' : 'nutrition'}`);
     revalidatePath('/captain');
+    return { data: result.data };
+  } catch (error) { return { error: errorMessage(error, t) }; }
+}
+
+export async function copyTemplate(input: unknown): Promise<TemplateResult<string>> {
+  const t = await getT(messages);
+  const parsed = titled.safeParse(input);
+  if (!parsed.success) return { error: t('checkTheTemplateTypeNameAndPlayer') };
+  const { kind, id, title } = parsed.data;
+  try {
+    const { client } = await session();
+    const result = await client.rpc('copy_template', { p_kind: kind, p_template: id, p_title: title });
+    if (result.error) throw result.error;
+    revalidatePath('/captain/templates');
     return { data: result.data };
   } catch (error) { return { error: errorMessage(error, t) }; }
 }

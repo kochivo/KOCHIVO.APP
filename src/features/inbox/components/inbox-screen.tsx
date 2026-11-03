@@ -4,7 +4,8 @@ import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { X } from 'lucide-react';
+import { CheckCheck, History, ListFilter, X } from 'lucide-react';
+import { EmptyState } from '@/ui';
 import { ResponsiveDialog } from '@/ui/responsive-dialog';
 import { listInbox, reviewItem } from '../data/inbox';
 import type { InboxItem } from '../types';
@@ -65,6 +66,10 @@ export function InboxScreen() {
       setError(failure instanceof Error ? failure.message : t('sendFailed'));
     } finally { setPending(false); }
   }
+  function switchTo(tab: 'open' | 'reviewed') {
+    if (tab === status) return;
+    setLoading(true); setError(''); setSelected(null); setStatus(tab);
+  }
   const visible = items.filter((item) => filter === 'all' || item.kind === filter);
   return <div className="mx-auto max-w-6xl space-y-6">
     <header className="flex flex-wrap items-center justify-between gap-4">
@@ -72,7 +77,7 @@ export function InboxScreen() {
       <div className="glass flex rounded-control p-1" aria-label={t('status')}>
         {(['open', 'reviewed'] as const).map((tab) => <button key={tab} disabled={pending} aria-pressed={status === tab}
           className={`min-h-12 rounded-control px-5 ${status === tab ? 'bg-surface-raised text-lime' : 'text-muted'}`}
-          onClick={() => { if (tab !== status) { setLoading(true); setError(''); setSelected(null); setStatus(tab); } }}>{tab === 'open' ? t('open') : t('reviewed')}</button>)}
+          onClick={() => switchTo(tab)}>{tab === 'open' ? t('open') : t('reviewed')}</button>)}
       </div>
     </header>
     <div className="flex flex-wrap gap-2" aria-label={t('type')}>
@@ -84,7 +89,9 @@ export function InboxScreen() {
     {pending && <p role="status" className="text-muted">{t('sending')}</p>}
     {loading ? <p role="status">{t('loading')}</p> : <div className="grid items-start gap-5 lg:grid-cols-2">
       <section aria-label={t('inbox')} className="space-y-3">
-        {!visible.length && !error && <p className="glass rounded-card p-6 text-muted">{items.length ? t('noType') : status === 'open' ? t('noPending') : t('noReviewed')}</p>}
+        {!visible.length && !error && (items.length ? <EmptyState icon={ListFilter} title={t('noType')} body={t('noTypeBody')} action={{ label: t('showAll'), onClick: () => setFilter('all') }} />
+          : status === 'open' ? <EmptyState icon={CheckCheck} title={t('noPending')} body={t('noPendingBody')} steps={[t('stepForm'), t('stepCheckin')]} action={{ label: t('showReviewed'), onClick: () => switchTo('reviewed') }} />
+          : <EmptyState icon={History} title={t('noReviewed')} body={t('noReviewedBody')} action={{ label: t('showOpen'), onClick: () => switchTo('open') }} />)}
         <ul className="space-y-3">{now && visible.map((item) => <li key={`${item.kind}:${item.id}`}><InboxRow item={item} now={now}
           selected={selected?.id === item.id && selected.kind === item.kind} onSelect={() => { if (!pending) setSelected(item); }} /></li>)}</ul>
       </section>

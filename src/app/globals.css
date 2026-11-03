@@ -153,15 +153,17 @@ html[data-keyboard='open'] dialog:modal { inset-block-end: var(--keyboard-inset)
 
 /*
  * Glass surfaces. Three levels only — pick by how much must stay readable on top:
- *   glass        lists, cards, nav (white/5, blur 16)
- *   glass-raised selected / hovered item (white/8)
+ *   glass        lists, cards (white/5, blur 12)
+ *   glass-raised selected / hovered item (white/8, blur 12)
  *   glass-strong gym focus mode and anything with big numbers (black/40, blur 24) — highest contrast
  * Every level has a 1px white/10 hairline and falls back to a solid surface without backdrop-filter.
+ * Cards blur 12px (lighter than the old 16px + saturate); nested panels never blur twice, and the
+ * "lighter visuals" setting turns every blur off on slow phones.
  */
 @utility glass {
   @apply glass-surface;
   --glass-blur-background: var(--glass-tint);
-  --glass-blur-filter: blur(16px) saturate(140%);
+  --glass-blur-filter: blur(12px);
   border: 1px solid var(--glass-hairline);
   box-shadow: inset 0 1px 0 var(--glass-highlight);
 }
@@ -169,7 +171,7 @@ html[data-keyboard='open'] dialog:modal { inset-block-end: var(--keyboard-inset)
 @utility glass-raised {
   @apply glass-surface;
   --glass-blur-background: var(--glass-tint-raised);
-  --glass-blur-filter: blur(16px) saturate(140%);
+  --glass-blur-filter: blur(12px);
   border: 1px solid var(--glass-hairline);
   box-shadow: inset 0 1px 0 var(--glass-highlight);
 }
@@ -247,6 +249,10 @@ html[data-glass='solid'] {
   .marketing-reveal { animation: marketing-rise linear both; animation-timeline: view(); animation-range: entry 0% entry 35%; }
 }
 
+/* Empty states fade in with opacity and transform only, so the browser never re-lays out the page. */
+.empty-state-in { animation: empty-state-in .28s ease-out both; }
+@keyframes empty-state-in { from { opacity: 0; transform: translateY(8px); } }
+
 @media (prefers-reduced-motion: reduce) {
-  .marketing-slogan > span, .marketing-after, .marketing-beam, .marketing-phone, .marketing-reveal { animation: none; }
+  .marketing-slogan > span, .marketing-after, .marketing-beam, .marketing-phone, .marketing-reveal, .empty-state-in { animation: none; }
 }

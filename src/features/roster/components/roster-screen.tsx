@@ -7,7 +7,7 @@ import { messages } from '../messages';
 
 import { use, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Plus, Users } from 'lucide-react';
+import { Plus, UserPlus, Users } from 'lucide-react';
 import { Button, Chip, EmptyState, ErrorState, GlassCard, LoadingState, TextField } from '@/ui';
 import { playerStatus } from '../status';
 import type { RosterResult } from '../types';
@@ -50,7 +50,7 @@ export function RosterScreen({ data, today, plan }: { data: Promise<[RosterResul
         </div>}
       </div>
       {pending ? <LoadingState /> : result.error ? <ErrorState message={result.error} retryLabel={t('tryAgain')} onRetry={() => startTransition(() => router.refresh())} /> : players.length === 0 ? (
-        <EmptyState icon={Users} title={demo ? t('noDemoDataYet') : t('noPlayersYetSendYourFirstInvite')} body={demo ? t('invitesAreDisabledInTheDemo') : t('startWithAnInviteLink')} action={{ label: demo ? t('invitesAreDisabledInTheDemo') : t('newPlayer'), onClick: () => setInviteOpen(true) }} />
+        <EmptyState icon={UserPlus} title={demo ? t('noDemoDataYet') : t('noPlayersYetSendYourFirstInvite')} body={demo ? t('invitesAreDisabledInTheDemo') : t('startWithAnInviteLink')} steps={demo ? undefined : [t('stepInvite'), t('stepIntake'), t('stepAssign')]} action={{ label: demo ? t('invitesAreDisabledInTheDemo') : t('newPlayer'), onClick: () => setInviteOpen(true) }} />
       ) : <>
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div aria-label={t('filterPlayers')} className="flex flex-wrap gap-2">
@@ -58,7 +58,7 @@ export function RosterScreen({ data, today, plan }: { data: Promise<[RosterResul
           </div>
           <div className="w-full sm:max-w-xs"><TextField label={t('searchPlayers')} type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t('playerName')} /></div>
         </div>
-        {visible.length === 0 ? <EmptyState icon={Users} title={search.trim() ? t('noPlayerWithThisName') : t('noPlayersMatchThisFilter')} body={t('tryAnotherNameOrFilter')} /> : (
+        {visible.length === 0 ? <EmptyState icon={Users} title={search.trim() ? t('noPlayerWithThisName') : t('noPlayersMatchThisFilter')} body={t('tryAnotherNameOrFilter')} action={{ label: t('clearSearchAndFilter'), onClick: () => { setSearch(''); setFilter('all'); } }} /> : (
           <div role="table" aria-label={t('players')} className="space-y-3 lg:glass-strong lg:overflow-hidden lg:rounded-card lg:space-y-0">
             <div role="rowgroup" className="hidden lg:block"><div role="row" className="grid grid-cols-[1.3fr_1fr_1fr_1.2fr_1fr_3rem] gap-4 p-4 text-xs text-muted">
               {[t('player2'), t('status'), t('lastActivity2'), t('program'), t('accessUntil2'), t('archive2')].map((label) => <span role="columnheader" key={label}>{label}</span>)}
