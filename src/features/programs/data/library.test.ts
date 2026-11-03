@@ -1,0 +1,23 @@
+import { beforeEach, expect, it, vi } from 'vitest';
+import { searchExercises } from './library';
+
+const mocks = vi.hoisted(() => ({ is: vi.fn(), eq: vi.fn() }));
+vi.mock('@/core/i18n/server', () => ({ getT: async () => (key: string) => key }));
+vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => ({
+  auth: { getUser: async () => ({ data: { user: { id: 'captain' } }, error: null }) },
+  from: () => {
+    const query = {
+      select: () => query, order: () => query, or: () => query,
+      is: (key: string, value: null) => { mocks.is(key, value); return query; },
+      eq: (key: string, value: string) => { mocks.eq(key, value); return query; },
+      limit: async () => ({ data: [], error: null }),
+    };
+    return query;
+  },
+}) }));
+beforeEach(() => vi.clearAllMocks());
+it.each([false, true])('excludes archived exercises from search with mine=%s', async mine => {
+  expect(await searchExercises({ query: 'press', bodyPart: 'chest', mine })).toEqual({ data: [] });
+  expect(mocks.is).toHaveBeenCalledExactlyOnceWith('archived_at', null);
+  if (mine) expect(mocks.eq).toHaveBeenCalledWith('owner_id', 'captain');
+});

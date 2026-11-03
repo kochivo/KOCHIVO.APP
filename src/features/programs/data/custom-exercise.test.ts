@@ -50,9 +50,19 @@ it('scopes edits and deletes to the authenticated owner and clears optional fiel
   expect(await deleteCustomExercise(id)).toEqual({ data: true });
   expect(mocks.eq.mock.calls).toEqual([['id', id], ['owner_id', owner]]);
 });
-it('reports an in-use exercise instead of deleting program references', async () => {
-  mocks.row.mockResolvedValue({ data: null, error: { code: '23503' } });
-  expect(await deleteCustomExercise(id)).toEqual({ error: 'customExerciseInUse' });
+it('archives a referenced exercise with an owner-scoped update', async () => {
+  vi.useFakeTimers(); vi.setSystemTime(new Date('2026-11-04T10:00:00Z'));
+  try {
+    mocks.row.mockResolvedValueOnce({ data: null, error: { code: '23503' } });
+    expect(await deleteCustomExercise(id)).toEqual({ data: { archived: true } });
+    expect(mocks.update).toHaveBeenCalledWith({ archived_at: '2026-11-04T10:00:00.000Z' });
+    expect(mocks.eq.mock.calls).toEqual([['id', id], ['owner_id', owner], ['id', id], ['owner_id', owner]]);
+  } finally { vi.useRealTimers(); }
+});
+it('reports an archive failure without claiming success', async () => {
+  mocks.row.mockResolvedValueOnce({ data: null, error: { code: '23503' } })
+    .mockResolvedValueOnce({ data: null, error: { code: 'PGRST116' } });
+  expect(await deleteCustomExercise(id)).toEqual({ error: 'customExerciseDeleteFailed' });
 });
 it('returns translated errors for missing rows and transport failures', async () => {
   mocks.row.mockResolvedValue({ data: null, error: { code: 'PGRST116' } });

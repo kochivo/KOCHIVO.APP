@@ -42,13 +42,18 @@ export async function createCustomExercise(input: unknown, id = uuidv7()): Promi
 export async function updateCustomExercise(id: string, input: unknown): Promise<Result<LibraryExercise>> {
   return save(input, id, true);
 }
-export async function deleteCustomExercise(id: string): Promise<Result<true>> {
+export async function deleteCustomExercise(id: string): Promise<Result<true | { archived: true }>> {
   const t = await getT(messages);
   if (!z.uuid().safeParse(id).success) return { error: t('invalidCustomExercise') };
   try {
     const { client, owner } = await captainClient();
     const result = await client.from('exercises').delete().eq('id', id).eq('owner_id', owner).select('id').single();
-    if (result.error) return { error: t(result.error.code === '23503' ? 'customExerciseInUse' : 'customExerciseDeleteFailed') };
+    if (result.error?.code === '23503') {
+      const archived = await client.from('exercises').update({ archived_at: new Date().toISOString() })
+        .eq('id', id).eq('owner_id', owner).select('id').single();
+      return archived.error ? { error: t('customExerciseDeleteFailed') } : { data: { archived: true } };
+    }
+    if (result.error) return { error: t('customExerciseDeleteFailed') };
     return { data: true };
   } catch (error) {
     unstable_rethrow(error);

@@ -285,6 +285,7 @@ export type Database = {
       }
       exercises: {
         Row: {
+          archived_at: string | null
           video_url: string | null
           body_part: string
           created_at: string
@@ -301,6 +302,7 @@ export type Database = {
           target: string | null
         }
         Insert: {
+          archived_at?: string | null
           video_url?: string | null
           body_part: string
           created_at?: string
@@ -317,6 +319,7 @@ export type Database = {
           target?: string | null
         }
         Update: {
+          archived_at?: string | null
           video_url?: string | null
           body_part?: string
           created_at?: string
@@ -344,6 +347,7 @@ export type Database = {
       }
       foods: {
         Row: {
+          archived_at: string | null
           carbs_per_100g: number
           created_at: string
           fat_per_100g: number
@@ -358,6 +362,7 @@ export type Database = {
           source: string | null
         }
         Insert: {
+          archived_at?: string | null
           carbs_per_100g: number
           created_at?: string
           fat_per_100g: number
@@ -372,6 +377,7 @@ export type Database = {
           source?: string | null
         }
         Update: {
+          archived_at?: string | null
           carbs_per_100g?: number
           created_at?: string
           fat_per_100g?: number
