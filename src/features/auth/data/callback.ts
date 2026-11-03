@@ -1,4 +1,5 @@
 import { getLocale } from '@/core/i18n/server';
+import { unstable_rethrow } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
@@ -23,9 +24,13 @@ export async function handleAuthCallback(request: NextRequest) {
       }
     }
     const code = request.nextUrl.searchParams.get('code');
-    if (!code) throw new Error('Missing authorization code');
+    const tokenHash = request.nextUrl.searchParams.get('token_hash');
+    const type = request.nextUrl.searchParams.get('type');
+    if (!code && !(tokenHash && type === 'signup')) throw new Error('Missing authorization code');
     const client = await authClient();
-    const exchange = await client.auth.exchangeCodeForSession(code);
+    const exchange = tokenHash && type === 'signup'
+      ? await client.auth.verifyOtp({ token_hash: tokenHash, type: 'signup' })
+      : await client.auth.exchangeCodeForSession(code ?? '');
     if (exchange.error) throw exchange.error;
     const user = await profile(client);
     if (!user) throw new Error('Missing profile');
@@ -43,6 +48,7 @@ export async function handleAuthCallback(request: NextRequest) {
     }
     return NextResponse.redirect(new URL(user.role === 'captain' ? '/captain' : '/player', origin));
   } catch (error) {
+    unstable_rethrow(error);
     const target = new URL(invite ? `/i/${invite}` : '/login', origin);
     target.searchParams.set('error', authError(error, await getLocale()));
     return NextResponse.redirect(target);
