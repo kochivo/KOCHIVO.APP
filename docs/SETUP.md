@@ -16,7 +16,7 @@ Supabase template:
 | Change email address | `change-email.html` | تأكيد الإيميل الجديد · KOCHIVO |
 
 `_layout.txt` is the shared frame; edit it and regenerate rather than editing
-the four files by hand. The logo loads from `https://kochivo.site/brand/logo-primary.png`.
+the four files by hand. The logo loads from `https://kochivo.site/brand/logo-primary-light.png`.
 
 ## Email OTP settings
 
