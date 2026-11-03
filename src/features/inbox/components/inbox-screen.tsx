@@ -16,9 +16,12 @@ import { InboxRow } from './inbox-row';
 import { FormCheckDetail } from './form-check-detail';
 import { CheckinDetail } from './checkin-detail';
 import { ReplyBox } from './reply-box';
-import { VoiceRecorder } from '@/features/voice-notes';
+import { VoiceRecorder, useRecorder, sendVoiceNote } from '@/features/voice-notes';
+import { loadSupabaseBrowser } from '@/core/supabase/lazy';
+import { useUnsentVoiceGuard } from '../hooks/use-unsent-voice-guard';
 
-export function InboxScreen() {
+const currentTime = () => new Date();
+export function InboxScreen({ now: clock = currentTime }: { now?: () => Date } = {}) {
   const t = useT(messages);
   const feedback = useT(uiMessages);
   const toast = useToast();
@@ -28,12 +31,25 @@ export function InboxScreen() {
   const [items, setItems] = useState<InboxItem[]>([]);
   const [count, setCount] = useState<number | null>(null);
   const [selected, setSelected] = useState<InboxItem | null>(null);
+  const recorder = useRecorder();
+  const [uploaded, setUploaded] = useState<Blob | null>(null);
+  const hasVoice = recorder.state.status === 'recorded';
+  const recording = recorder.state.status === 'recording' || recorder.state.status === 'requesting';
+  const dirtyVoice = hasVoice || recording;
   const [loading, setLoading] = useState(true);
   const [actionError, setError] = useState('');
   const [loadError, setLoadError] = useState('');
   const error = actionError || loadError;
   const [pending, setPending] = useState<string[]>([]);
   const inFlight = useRef(new Set<string>());
+  const canLeave = useUnsentVoiceGuard(dirtyVoice, dirtyVoice && pending.length > 0, t('unsentVoice'));
+  function leave() {
+    if (!canLeave()) return false;
+    if (dirtyVoice) recorder.reset();
+    setUploaded(null);
+    setSelected(null);
+    return true;
+  }
   const [reviews, setReviews] = useState<Record<string, InboxItem>>({});
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const reviewsRef = useRef<Record<string, InboxItem>>({});
@@ -55,10 +71,10 @@ export function InboxScreen() {
       if (result.error) return;
       setItems(result.data ?? []);
       if (status === 'open') setCount((result.data ?? []).filter(item => !reviewsRef.current[`${item.kind}:${item.id}`]).length);
-      setNow(new Date());
+      setNow(clock());
     } catch { if (current === generation.current) setLoadError(t('loadFailed')); }
     finally { if (current === generation.current) setLoading(false); }
-  }, [status, t]);
+  }, [status, t, clock]);
   useEffect(() => {
     const token = generation;
     let active = true;
@@ -66,19 +82,31 @@ export function InboxScreen() {
     return () => { active = false; token.current++; };
   }, [load]);
   async function send(reply: string) {
-    if (!selected || inFlight.current.has(keyOf(selected))) return;
+    if (!selected || recording || inFlight.current.has(keyOf(selected))) return;
     const item = selected;
     const key = keyOf(item);
     inFlight.current.add(key);
     setPending([...inFlight.current]);
     setError('');
     let failure = t('sendFailed');
-    markReview(key, { ...item, reply: reply.trim() || null, reviewed_at: new Date().toISOString() });
-    setCount((value) => value === null ? null : Math.max(0, value - 1));
-    setSelected(null);
+    if (!hasVoice) {
+      markReview(key, { ...item, reply: reply.trim() || null, reviewed_at: clock().toISOString() });
+      setCount((value) => value === null ? null : Math.max(0, value - 1));
+      setSelected(null);
+    }
     try {
+      if (recorder.state.status === 'recorded' && uploaded !== recorder.state.blob) {
+        await sendVoiceNote(await loadSupabaseBrowser(), { playerId: item.player_id,
+          recording: recorder.state.blob, previewUrl: recorder.state.url, seconds: recorder.state.seconds, context: { kind: item.kind, id: item.id } });
+        setUploaded(recorder.state.blob);
+      }
       const result = await reviewItem({ kind: item.kind, id: item.id, reply });
       if (result.error !== undefined) { failure = result.error; throw new Error(failure); }
+      if (hasVoice) {
+        markReview(key, { ...item, reply: reply.trim() || null, reviewed_at: clock().toISOString() });
+        setCount(value => value === null ? null : Math.max(0, value - 1));
+        recorder.reset(); setUploaded(null); setSelected(null);
+      }
       setDrafts(current => { const next = { ...current }; delete next[key]; return next; });
       toast.success(feedback('reviewSent'));
     } catch {
@@ -86,13 +114,14 @@ export function InboxScreen() {
       setDrafts(current => ({ ...current, [key]: reply }));
       if (currentStatus.current === 'open') setItems(rows => rows.some(row => keyOf(row) === key) ? rows : [...rows, item]
         .sort((a, b) => b.created_at.localeCompare(a.created_at) || a.id.localeCompare(b.id)));
-      setCount((value) => value === null ? null : value + 1);
+      if (!hasVoice) setCount((value) => value === null ? null : value + 1);
       if (currentStatus.current === 'open') setSelected(current => current ?? { ...item, reply });
       setError(failure);
     } finally { inFlight.current.delete(key); setPending([...inFlight.current]); }
   }
   function switchTo(tab: 'open' | 'reviewed') {
     if (tab === status) return;
+    if (!leave()) return;
     currentStatus.current = tab;
     setItems([]); setLoading(true); setError(''); setLoadError(''); setSelected(null); setStatus(tab);
   }
@@ -112,7 +141,7 @@ export function InboxScreen() {
     <div className="flex flex-wrap gap-2" aria-label={t('type')}>
       {(['all', 'form', 'checkin'] as const).map((kind) => <button key={kind} aria-pressed={filter === kind}
         className={`glass min-h-12 rounded-full px-5 ${filter === kind ? 'text-lime' : 'text-muted'}`}
-        onClick={() => { setSelected(null); setFilter(kind); }}>{kind === 'all' ? t('all') : kind === 'form' ? t('videos') : t('checkins')}</button>)}
+        onClick={() => { if (leave()) setFilter(kind); }}>{kind === 'all' ? t('all') : kind === 'form' ? t('videos') : t('checkins')}</button>)}
     </div>
     {error && <div role="alert" className="glass rounded-card p-4 text-danger">{error}<button onClick={() => { setLoading(true); setError(''); setLoadError(''); void load(); }} className="ms-3 min-h-12 px-4 text-ink">{t('retry')}</button></div>}
     {pending.length > 0 && <p role="status" className="text-muted">{t('sending')}</p>}
@@ -122,20 +151,22 @@ export function InboxScreen() {
           : status === 'open' ? <EmptyState icon={CheckCheck} title={t('noPending')} body={t('noPendingBody')} steps={[t('stepForm'), t('stepCheckin')]} action={{ label: t('showReviewed'), onClick: () => switchTo('reviewed') }} />
           : <EmptyState icon={History} title={t('noReviewed')} body={t('noReviewedBody')} action={{ label: t('showOpen'), onClick: () => switchTo('open') }} />)}
         <ul className="space-y-3">{now && visible.map((item) => <li key={`${item.kind}:${item.id}`} inert={pending.includes(keyOf(item))} aria-busy={pending.includes(keyOf(item))}><InboxRow item={item} now={now}
-          selected={selected?.id === item.id && selected.kind === item.kind} onSelect={() => { if (!inFlight.current.has(keyOf(item))) setSelected({ ...item, reply: drafts[keyOf(item)] ?? item.reply }); }} /></li>)}</ul>
+          selected={selected?.id === item.id && selected.kind === item.kind} onSelect={() => { if (!inFlight.current.has(keyOf(item)) && leave()) setSelected({ ...item, reply: drafts[keyOf(item)] ?? item.reply }); }} /></li>)}</ul>
       </section>
-      {selected && <ResponsiveDialog key={`${selected.kind}:${selected.id}`} openerId={`inbox-${selected.kind}-${selected.id}`} fallbackId="inbox-heading" aria-label={t('details', { name: selected.player_name })} onDismiss={() => setSelected(null)}
+      {selected && <ResponsiveDialog key={`${selected.kind}:${selected.id}`} openerId={`inbox-${selected.kind}-${selected.id}`} fallbackId="inbox-heading" aria-label={t('details', { name: selected.player_name })} onDismiss={() => { leave(); }}
         className="glass-strong fixed inset-0 z-50 m-0 h-full max-h-dvh w-full max-w-none space-y-5 overflow-y-auto bg-bg p-5 text-ink backdrop:bg-bg/80 lg:static lg:z-auto lg:h-auto lg:rounded-card lg:p-6">
         <header className="flex items-center justify-between gap-3"><h2 className="text-2xl font-bold">{selected.player_name}</h2>
-          <button aria-label={t('close')} className="flex min-h-12 min-w-12 items-center justify-center" onClick={() => setSelected(null)}><X aria-hidden="true" /></button></header>
+          <button aria-label={t('close')} className="flex min-h-12 min-w-12 items-center justify-center" onClick={() => { leave(); }}><X aria-hidden="true" /></button></header>
         {error && <p role="alert" className="text-danger">{error}</p>}
         {selected.kind === 'form' ? <FormCheckDetail key={`form:${selected.id}`} item={selected} /> : <CheckinDetail key={`checkin:${selected.id}`} item={selected} />}
         {selected.reviewed_at ? <div className="glass rounded-card p-4"><p className="text-muted">{t('reviewed')}</p><p className="whitespace-pre-wrap">{selected.reply || t('noReply')}</p></div> :
-          <ReplyBox key={`${selected.kind}:${selected.id}`} item={selected} onSend={send} />}
-        <section aria-labelledby="inbox-voice" className="space-y-3">
+          <ReplyBox key={`${selected.kind}:${selected.id}`} item={selected} onSend={send} disabled={pending.includes(keyOf(selected)) || recording} />}
+        {!selected.reviewed_at && <section aria-labelledby="inbox-voice" className="space-y-3">
           <h3 id="inbox-voice" className="font-bold">{t('voiceReply')}</h3>
-          <VoiceRecorder key={`voice:${selected.kind}:${selected.id}`} playerId={selected.player_id} context={{ kind: selected.kind, id: selected.id }} />
-        </section>
+          <fieldset disabled={pending.includes(keyOf(selected)) || Boolean(uploaded)}>
+            <VoiceRecorder key={`voice:${selected.kind}:${selected.id}`} playerId={selected.player_id} recorder={recorder} />
+          </fieldset>
+        </section>}
       </ResponsiveDialog>}
     </div>}
   </div>;

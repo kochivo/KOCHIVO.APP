@@ -18,6 +18,7 @@ import { mainLifts, topSets, trendDelta } from '../trends';
 import type { TrendPoint } from '../trends';
 import { weekStart } from '../week';
 const CheckinSheet = dynamic(() => import('./checkin-sheet').then(module => module.CheckinSheet), { ssr: false });
+const CheckinHistory = dynamic(() => import('./checkin-history').then(module => module.CheckinHistory), { ssr: false, loading: () => <LoadingState variant="list" /> });
 const LineChart = dynamic(() => import('./line-chart').then(module => module.LineChart), {
   ssr: false, loading: () => <div aria-hidden className="aspect-[350/155] w-full" />,
 });
@@ -144,6 +145,7 @@ export function ProgressScreen() {
       </section></>}
     </>}
     {sent && <p role="status" className="min-h-12 py-3 text-center text-muted">{t('sent')}</p>}
+    {checkins && checkins.length > 0 && <CheckinHistory checkins={checkins} />}
     {(checkins?.length !== 0 || checkinError) && <Button size="lg" className="w-full" aria-disabled={Boolean(sent)} disabled={!today || (!checkins && !checkinError)} onClick={() => { if (!sent) { setSheetLoaded(true); setSheet(true); } }}>{t('sendWeeklyCheckin')}</Button>}
     {sheetLoaded && (checkins || checkinError) && <CheckinSheet latest={latest} open={sheet} onClose={() => setSheet(false)} onSent={() => {
       setSheet(false); setRetryKey((value) => value + 1);

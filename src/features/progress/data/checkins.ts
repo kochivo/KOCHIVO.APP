@@ -12,7 +12,7 @@ import { compressImage } from '../image';
 import { weekStart } from '../week';
 
 export type CheckIn = Pick<Tables<'check_ins'>,
-  'id' | 'player_id' | 'week_start' | 'body_weight_kg' | 'waist_cm' | 'notes' | 'photo_paths'>;
+  'id' | 'player_id' | 'week_start' | 'body_weight_kg' | 'waist_cm' | 'notes' | 'photo_paths' | 'captain_reply' | 'reviewed_at'>;
 export interface CheckInInput {
   today: string;
   body_weight_kg: number;
@@ -30,7 +30,7 @@ async function playerId(client: SupabaseClient<AppDatabase>, t: Translator<typeo
 export async function listCheckIns(client: SupabaseClient<AppDatabase>, t: Translator<typeof messages> = createT(messages, 'ar')): Promise<CheckIn[]> {
   const id = await playerId(client, t);
   const { data, error } = await client.from('check_ins')
-    .select('id,player_id,week_start,body_weight_kg,waist_cm,notes,photo_paths')
+    .select('id,player_id,week_start,body_weight_kg,waist_cm,notes,photo_paths,captain_reply,reviewed_at')
     .eq('player_id', id).order('week_start', { ascending: false }).limit(26);
   if (error) throw new Error(t('couldntLoadYourCheckins'));
   return data ?? [];

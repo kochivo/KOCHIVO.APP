@@ -8,6 +8,7 @@ import { messages } from '../messages';
 
 export type RecorderState =
   | { status: 'idle' }
+  | { status: 'requesting' }
   | { status: 'recording'; seconds: number }
   | { status: 'recorded'; blob: Blob; url: string; seconds: number }
   | { status: 'denied' }
@@ -20,6 +21,7 @@ export function useRecorder() {
   const recorder = useRef<MediaRecorder | null>(null);
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
   const preview = useRef<string | null>(null);
+  const generation = useRef(0);
 
   const release = useCallback(() => {
     if (timer.current) clearInterval(timer.current);
@@ -37,8 +39,12 @@ export function useRecorder() {
 
   const start = async () => {
     if (typeof MediaRecorder === 'undefined' || !navigator.mediaDevices?.getUserMedia) return setState({ status: 'unsupported' });
+    const attempt = ++generation.current;
+    setState({ status: 'requesting' });
     let stream: MediaStream;
-    try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); } catch { return setState({ status: 'denied' }); }
+    try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); }
+    catch { if (attempt === generation.current) setState({ status: 'denied' }); return; }
+    if (attempt !== generation.current) { stream.getTracks().forEach(track => track.stop()); return; }
     clearPreview();
     const mimeType = pickRecorderType((type) => MediaRecorder.isTypeSupported(type));
     const media = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
@@ -46,6 +52,7 @@ export function useRecorder() {
     const startedAt = performance.now();
     media.ondataavailable = (event) => { if (event.data.size) chunks.push(event.data); };
     media.onstop = () => {
+      if (attempt !== generation.current) return;
       release();
       const blob = new Blob(chunks, { type: media.mimeType || mimeType || 'audio/webm' });
       preview.current = URL.createObjectURL(blob);
@@ -63,13 +70,22 @@ export function useRecorder() {
     }, 250);
   };
 
-  const reset = () => { clearPreview(); setState({ status: 'idle' }); };
+  const reset = () => {
+    generation.current++;
+    if (recorder.current) {
+      recorder.current.onstop = null;
+      if (recorder.current.state === 'recording') recorder.current.stop();
+    }
+    release(); recorder.current = null;
+    clearPreview(); setState({ status: 'idle' });
+  };
 
   useEffect(() => () => {
+    generation.current++;
     release();
-    if (recorder.current?.state === 'recording') {
+    if (recorder.current) {
       recorder.current.onstop = null;
-      recorder.current.stop();
+      if (recorder.current.state === 'recording') recorder.current.stop();
     }
     clearPreview();
   }, [release]);

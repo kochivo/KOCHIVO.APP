@@ -2,6 +2,11 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    checkinHistory: 'التحديثات وردود الكابتن',
+    voiceLoadFailed: 'مش قادرين نحمّل تسجيلات الكابتن. جرّب تاني',
+    noReplyYet: 'الكابتن لسه مردش',
+    voiceReply: 'رد الكابتن',
+    noVoiceReply: 'مفيش تسجيل مع الرد ده',
     messageCoach: "ابعت للكابتن",
     firstWorkout: "ابدأ تمرين",
     workoutsTitle: "سجّل أول تمرين",
@@ -68,6 +73,11 @@ export const messages = defineMessages({
     frontPhoto: "صورة {value0} من قدام",
   },
   en: {
+    checkinHistory: 'Check-ins and coach replies',
+    voiceLoadFailed: 'Could not load coach recordings. Try again',
+    noReplyYet: 'Your coach has not replied yet',
+    voiceReply: 'Coach reply',
+    noVoiceReply: 'No recording with this reply',
     messageCoach: "Message your coach",
     firstWorkout: "Start a workout",
     workoutsTitle: "Your workout history starts here",

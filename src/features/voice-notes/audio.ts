@@ -1,5 +1,10 @@
 export const MAX_VOICE_SECONDS = 120;
 
+export function audioMimeFromPath(path: string): string | undefined {
+  const extension = path.split('.').at(-1)?.toLowerCase();
+  return extension ? ({ webm: 'audio/webm', m4a: 'audio/mp4', mp4: 'audio/mp4', ogg: 'audio/ogg', mp3: 'audio/mpeg' } as Record<string, string>)[extension] : undefined;
+}
+
 // Safari records mp4, Chrome and Firefox record webm/ogg; the first supported one wins.
 const recorderTypes = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg;codecs=opus'];
 
