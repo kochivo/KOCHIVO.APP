@@ -6,7 +6,7 @@
 On the first sign-in, a short guided tour points the captain, or the player, at the few buttons that matter. It can be skipped at any time, it never shows again once finished or skipped, and it can be replayed from Settings.
 
 ## Decision
-The owner was offered react-joyride and did not choose it; the default applies. **Build it ourselves; do not add react-joyride or any other dependency.**
+The owner chose our own tour over react-joyride (2026-11-03). **Build it ourselves; do not add react-joyride or any other dependency.**
 
 ## Files
 - `src/ui/tour.tsx`, a tour component:
