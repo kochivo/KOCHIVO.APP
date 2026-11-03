@@ -1,0 +1,27 @@
+import type { SupabaseClient } from '@supabase/supabase-js';
+import { uuidv7 } from '@/core/offline';
+import type { Database } from '@/types/database';
+
+const extensions: Record<string, string> = {
+  'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp',
+  'video/mp4': 'mp4', 'video/quicktime': 'mov', 'video/webm': 'webm',
+};
+
+export async function uploadPrivateMedia(
+  client: SupabaseClient<Database>, bucket: string, playerId: string, file: Blob,
+): Promise<string> {
+  const ext = extensions[file.type];
+  if (!ext) throw new Error('نوع الملف مش مدعوم');
+  const path = `${playerId}/${uuidv7()}.${ext}`;
+  const { error } = await client.storage.from(bucket).upload(path, file, { contentType: file.type, upsert: false });
+  if (error) throw new Error('مش قادرين نرفع الملف. جرّب تاني');
+  return path;
+}
+
+export async function signedMediaUrl(
+  client: SupabaseClient<Database>, bucket: string, path: string, seconds = 600,
+): Promise<string> {
+  const { data, error } = await client.storage.from(bucket).createSignedUrl(path, seconds);
+  if (error || !data) throw new Error('مش قادرين نعرض الصورة. جرّب تاني');
+  return data.signedUrl;
+}
