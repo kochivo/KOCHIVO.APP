@@ -25,7 +25,7 @@ export function BillingScreen({ data, today }: { data: Promise<BillingResult>; t
             {result.data.players.length === 0 ? <EmptyState icon={Users} title={t('noPlayers')} body={t('playersHint')} />
               : <ul className="space-y-3">{result.data.players.map((player) => <PlayerBillingRow key={`${player.playerId}:${player.accessUntil}:${player.lastPayment?.id ?? ''}`} player={player} today={today} />)}</ul>}
           </section>
-          <PlanCard plan={result.data.plan} used={result.data.used} subscriptionEnd={result.data.subscriptionEnd} />
+          <div className="order-first xl:order-none"><PlanCard plan={result.data.plan} used={result.data.used} subscriptionEnd={result.data.subscriptionEnd} /></div>
         </div>}
     </section>
   );

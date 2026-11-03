@@ -67,6 +67,14 @@ it('an anonymous caller gets eight players, the starter library, assigned plans,
   expect((await db.query('select count(*)::int as n from auth.users where email is not null')).rows).toEqual([{ n: 0 }]);
 });
 
+it('demo captains read as Champion so eight sample players fit, real captains stay on Entry', async () => {
+  const tier = async (user: string) => (await asUser(db, user,
+    tx => tx.query<{ tier: string }>('select public.current_tier($1) as tier', [user]))).rows[0]?.tier;
+  expect(await tier(captain)).toBe('champion');
+  const real = await createUser(db, 'captain');
+  expect(await tier(real)).toBe('entry');
+});
+
 it('rejects non-anonymous and missing claims with 42501', async () => {
   const user = await anonymous();
   await expect(asUser(db, user, tx => tx.query('select public.create_demo_workspace()'))).rejects.toMatchObject({ code: '42501' });
@@ -202,3 +210,4 @@ it('purges expired captains and their original players, cascades all data, and k
   expect((await db.query('select security_private.purge_demo_workspaces() as n')).rows).toEqual([{ n: 0 }]);
   await db.exec('drop trigger block_delete on storage.objects');
 });
+

@@ -1,4 +1,5 @@
 'use client';
+import type { ReactNode } from 'react';
 
 import { useLocale, useT } from '@/core/i18n/client';
 import { formatNumber } from '@/lib/format';
@@ -15,7 +16,7 @@ import { InviteSheet } from './invite-sheet';
 import { RadarCard } from './radar-card';
 import { useDemoExpiry } from '@/features/demo';
 
-export function RosterScreen({ data, today }: { data: Promise<[RosterResult, string]>; today: string }) {
+export function RosterScreen({ data, today, plan }: { data: Promise<[RosterResult, string]>; today: string; plan?: ReactNode }) {
   const t = useT(messages);
   const locale = useLocale();
   const demo = useDemoExpiry();
@@ -40,7 +41,7 @@ export function RosterScreen({ data, today }: { data: Promise<[RosterResult, str
     <section className="space-y-6">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div><p className="mb-1 text-xs text-muted">{t('playerCount', { n: players.length, count: formatNumber(players.length, locale) })}</p><h1 className="text-3xl font-extrabold">{t('players')}</h1></div>
-        {(players.length > 0 || result.error) && inviteButton}
+        <div className="flex flex-wrap items-center gap-3">{plan}{(players.length > 0 || result.error) && inviteButton}</div>
       </header>
       <div className="grid items-start gap-6 xl:grid-cols-2">
         <RadarCard today={today} />
