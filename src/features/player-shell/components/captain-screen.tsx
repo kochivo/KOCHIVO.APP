@@ -1,6 +1,7 @@
 'use client';
 
 import { MessageCircle } from 'lucide-react';
+import Link from 'next/link';
 import { Button, EmptyState, ErrorState, GlassCard, LoadingState } from '@/ui';
 import { localDate } from '@/lib/dates';
 import { accessState, whatsappUrl } from '../access';
@@ -41,5 +42,6 @@ export function CaptainScreen() {
             <MessageCircle aria-hidden className="size-5" />كلّم الكابتن واتساب
           </a> : <Button disabled className="min-h-12 w-full">الكابتن لسه محطش رقمه</Button>}
         </GlassCard>}
+    <Link href="/player/settings" className="glass flex min-h-12 items-center justify-center rounded-control px-4">الإعدادات</Link>
   </main>;
 }
