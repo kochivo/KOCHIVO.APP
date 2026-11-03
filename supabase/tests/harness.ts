@@ -30,6 +30,8 @@ const SUPABASE_STUB = `
     raw_user_meta_data jsonb not null default '{}');
   create function auth.uid() returns uuid language sql stable
     as $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
+  create function auth.jwt() returns jsonb language sql stable
+    as $$ select coalesce(nullif(current_setting('request.jwt.claims', true), ''), '{}')::jsonb $$;
   grant usage on schema auth to authenticated;
   grant execute on function auth.uid() to authenticated;
   create schema storage;
@@ -75,9 +77,11 @@ export async function makeAdmin(db: PGlite, userId: string): Promise<void> {
 }
 
 /** Runs `fn` as a signed-in user: role `authenticated` and auth.uid() = userId, like PostgREST does. */
-export async function asUser<T>(db: PGlite, userId: string, fn: (tx: Transaction) => Promise<T>): Promise<T> {
+export async function asUser<T>(db: PGlite, userId: string, fn: (tx: Transaction) => Promise<T>, isAnonymous = false): Promise<T> {
   return db.transaction(async (tx) => {
     await tx.query(`select set_config('request.jwt.claim.sub', $1, true)`, [userId]);
+    await tx.query(`select set_config('request.jwt.claims', $1, true)`,
+      [JSON.stringify({ sub: userId, role: 'authenticated', is_anonymous: isAnonymous })]);
     await tx.exec('set local role authenticated');
     return fn(tx);
   });
