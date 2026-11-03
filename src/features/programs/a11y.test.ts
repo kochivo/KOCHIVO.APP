@@ -21,6 +21,6 @@ it('names repeated exercise controls uniquely and keeps headings and an ordered 
   expect(html).toContain('+ إضافة تمرين');
   expect(html).toContain('aria-label="امسح التمرين: بنش، 1"');
   expect(html).toContain('aria-label="امسح التمرين: بنش، 2"');
-  expect(html).toContain('aria-label="زوّد السِتات: بنش، 1"');
-  expect(html).toContain('aria-label="زوّد السِتات: بنش، 2"');
+  expect(html).toContain('aria-label="زوّد المجموعات: بنش، 1"');
+  expect(html).toContain('aria-label="زوّد المجموعات: بنش، 2"');
 });

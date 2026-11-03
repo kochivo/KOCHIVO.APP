@@ -2,6 +2,34 @@ import { runInNewContext } from 'node:vm';
 import { describe, expect, it } from 'vitest';
 import { themeBootScript, themeMode } from './theme-mode';
 
+it('restores stored light after a locale refresh replaces document attributes, and on reload', () => {
+  const root = { dataset: {} as Record<string, string>, style: { colorScheme: '' }, lang: 'ar' };
+  let refresh = () => {};
+  const context = {
+    document: { documentElement: root },
+    matchMedia: () => ({ matches: true, addEventListener: () => {} }),
+    localStorage: { getItem: () => 'light' },
+    window: { addEventListener: () => {}, dispatchEvent: () => {} }, Event,
+    MutationObserver: class {
+      constructor(callback: () => void) { refresh = callback; }
+      observe() {}
+    },
+  };
+  runInNewContext(themeBootScript, context);
+  for (const lang of ['en', 'ar']) {
+    root.lang = lang;
+    root.dataset = {};
+    root.style.colorScheme = '';
+    refresh();
+    expect(root.dataset.theme).toBe('light');
+    expect(root.dataset.themeMode).toBe('light');
+    expect(root.style.colorScheme).toBe('light');
+  }
+  root.dataset = {};
+  runInNewContext(themeBootScript, context);
+  expect(root.dataset.theme).toBe('light');
+});
+
 describe('themeMode', () => {
   it.each([true, false])('honors explicit choices with prefersDark=%s', prefersDark => {
     expect(themeMode({ stored: 'light', prefersDark })).toBe('light');

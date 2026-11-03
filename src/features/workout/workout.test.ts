@@ -144,7 +144,7 @@ it('renders an accessible rest countdown with reduced-motion-safe flashing', () 
 it('renders empty sets and the local-save completion message', () => {
   expect(renderToStaticMarkup(createElement(SetDots, {
     exercise: { ...exercise('a', 1), sets: 0 }, currentIndex: 1, doneSets: [], onEdit: () => undefined,
-  }))).toContain('مفيش سِتات');
+  }))).toContain('مفيش مجموعات');
   const html = renderToStaticMarkup(createElement(DonePanel));
   expect(html).toContain('خلصت التمرين');
   expect(html).toContain('href="/player"');

@@ -12,7 +12,7 @@ export function getContent(t: Translator<typeof messages>) {
   brand: t('brand'),
   seo: { title: t('kochivoAllYourPlayersInOne'), description: t('everyPlayerSTrainingMealsAnd') },
   whatsappNumber: publicConfig.ownerWhatsapp,
-  links: { signup: '/login?tab=signup', demo: '/demo' },
+  links: { login: '/login', signup: '/login?tab=signup', demo: '/demo' },
   nav: [{ href: '#how', label: t('howItWorks') }, { href: '#features', label: t('features') }, { href: '#pricing', label: t('plans') }, { href: '#faq', label: t('faq') }],
   login: t('signIn'), signup: t('startFree'), contact: t('chatOnWhatsApp'),
   hero: { eyebrow: t('forOnlineCoaches'), lines: [t('yourNextStep'), t('starts'), t('here')], period: t('period'), label: t('sloganLabel'), arabic: t('yourNextStepStartsHere'), signup: t('startFreeUpTo5Players'), demo: t('tryTheDemo'), demoNote: t('aCoachWorkspaceWithSampleData'), invite: t('gotAPlayerInvite'), inviteNote: t('openTheInviteLinkYourCoach') },

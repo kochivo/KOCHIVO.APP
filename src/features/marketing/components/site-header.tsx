@@ -18,7 +18,7 @@ export async function SiteHeader() {
       <a className="marketing-primary col-start-2 row-start-1 px-4 text-sm lg:hidden" href={content.links.signup}>{content.signup}</a>
       <div className="col-span-2 row-start-2 flex min-w-0 flex-wrap items-center justify-center gap-2 text-sm font-bold lg:justify-start">
         <div className="lg:hidden"><LanguageSwitch compact /></div><div className="hidden lg:block"><LanguageSwitch /></div>
-        <ThemeSwitch compact /><a className="marketing-ghost px-3" href={content.links.demo}>{content.login}</a><a className="marketing-primary hidden px-4 lg:inline-flex" href={content.links.signup}>{content.signup}</a>
+        <ThemeSwitch compact /><a className="marketing-ghost px-3" href={content.links.login}>{content.login}</a><a className="marketing-primary hidden px-4 lg:inline-flex" href={content.links.signup}>{content.signup}</a>
       </div>
     </div>
   </header>;
