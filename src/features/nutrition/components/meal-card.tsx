@@ -13,7 +13,7 @@ import { setMealEaten } from '../data/log-meal';
 import { mealMacros } from '../macros';
 import { starterText } from '@/lib/starter-text';
 
-export function MealCard({ meal, log, today }: { meal: NutritionMeal; log?: MealLogRow; today: string }) {
+export function MealCard({ meal, log, today, planTitle }: { meal: NutritionMeal; log?: MealLogRow; today: string; planTitle?: string }) {
   const t = useT(messages);
   const locale = useLocale();
   const [busy, setBusy] = useState(false);
@@ -40,7 +40,7 @@ export function MealCard({ meal, log, today }: { meal: NutritionMeal; log?: Meal
     void save(eaten, nextSwaps, now);
   }
   return <GlassCard className="space-y-4 p-4">
-    <h2 className="text-lg font-bold">{starterText(meal.name, locale)}</h2>
+    <h2 className="text-lg font-bold">{starterText(meal.name, locale, planTitle)}</h2>
     {meal.items.length === 0 && <p className="text-sm text-muted">{t('thisMealIsBeingPrepared')}</p>}
     <ul className="space-y-3">
       {meal.items.map((item) => {

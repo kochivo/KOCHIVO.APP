@@ -33,7 +33,7 @@ export function PreviewNutrition({ nutrition }: Pick<Preview, 'nutrition'>) {
     {nutrition.meals.map((meal) => {
       const macros = mealMacros(meal);
       return <section key={meal.id} className="glass space-y-3 rounded-card p-3">
-        <h3 className="font-bold">{starterText(meal.name, locale)}</h3>
+        <h3 className="font-bold">{starterText(meal.name, locale, nutrition.title)}</h3>
         <p className="text-sm text-muted">{t('macros', { kcal: formatNumber(Math.round(macros.kcal), locale), protein: formatNumber(Math.round(macros.protein), locale), carbs: formatNumber(Math.round(macros.carbs), locale), fat: formatNumber(Math.round(macros.fat), locale) })}</p>
         {meal.items.length === 0 && <p className="text-muted">{t('noItems')}</p>}
         <ul className="space-y-2">{meal.items.map((item) => <li key={item.id} className="border-t border-line pt-2 text-sm">

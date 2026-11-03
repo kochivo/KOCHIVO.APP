@@ -29,7 +29,7 @@ export function NutritionScreen() {
             <p>{t('lastUpdatedAWhileAgo')}</p><Button variant="ghost" onClick={retry}>{t('tryAgain')}</Button>
           </div>}
           <MacroRing eaten={eatenTotals(snapshot, logs, today)} target={targetsOf(snapshot)} />
-          <ul className="space-y-4" aria-label={t('todaysMealsList')}>{snapshot.meals.map((meal) => <li key={`${today}-${meal.id}`}><MealCard meal={meal} today={today}
+          <ul className="space-y-4" aria-label={t('todaysMealsList')}>{snapshot.meals.map((meal) => <li key={`${today}-${meal.id}`}><MealCard meal={meal} today={today} planTitle={snapshot.title}
             log={logs.find((row) => row.meal_id === meal.id)} /></li>)}</ul>
         </>}
   </main>;

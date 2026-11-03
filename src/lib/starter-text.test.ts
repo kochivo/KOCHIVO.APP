@@ -18,3 +18,11 @@ it('translates unedited starter text for English only and leaves captain text al
   expect(starterText('برنامج أحمد', 'en')).toBe('برنامج أحمد');
   expect(starterText('My plan', 'en')).toBe('My plan');
 });
+
+it('names the Ramadan first meal iftar and other plans breakfast', () => {
+  expect(starterText('الفطار', 'en', 'أكل رمضان')).toBe('Iftar');
+  expect(starterText('الفطار', 'en', 'أكل للتنشيف')).toBe('Breakfast');
+  expect(starterText('الفطار', 'en')).toBe('Breakfast');
+  expect(starterText('الفطار', 'en', '')).toBe('Breakfast');
+  expect(starterText('الفطار', 'ar', 'أكل رمضان')).toBe('الفطار');
+});

@@ -48,8 +48,15 @@ const english: Record<string, string> = {
   'السحور': 'Suhoor',
 };
 
-export function starterText(text: string, locale: Locale): string {
-  return locale === 'en' ? english[text.trim()] ?? text : text;
+// The same Arabic word means a different meal in Ramadan: الفطار is iftar there, not breakfast.
+const inPlan: Record<string, Record<string, string>> = {
+  'أكل رمضان': { 'الفطار': 'Iftar' },
+};
+
+export function starterText(text: string, locale: Locale, parent?: string): string {
+  if (locale !== 'en') return text;
+  const key = text.trim();
+  return (parent ? inPlan[parent.trim()]?.[key] : undefined) ?? english[key] ?? text;
 }
 
 export function hasStarterEnglish(text: string): boolean {

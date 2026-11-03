@@ -21,7 +21,7 @@ export function NutritionSlot() {
       <h2 className="font-bold">{t('todaysMeals')}</h2>
       {snapshot && snapshot.meals.length > 0 ? <>
         <p>{formatNumber(eatenTotals(snapshot, logs, today).kcal, locale)} / {formatNumber(targetsOf(snapshot).kcal, locale)} {t('kcal')}</p>
-        <p className="text-muted">{next ? t('nextMeal', { value0: starterText(next.name, locale) }) : t('youveEatenAllYourMealsToday')}</p>
+        <p className="text-muted">{next ? t('nextMeal', { value0: starterText(next.name, locale, snapshot.title) }) : t('youveEatenAllYourMealsToday')}</p>
         {stale && <p className="text-muted">{t('lastUpdatedAWhileAgo')}</p>}
       </> : <p className="text-muted">{t('yourCoachIsPreparingYourMealPlan')}</p>}
     </GlassCard>
