@@ -9,7 +9,10 @@ import { DayEditor } from './components/day-editor';
 const hooks = vi.hoisted(() => ({ active: false, index: 0, values: [] as unknown[], open: undefined as (() => void) | undefined }));
 vi.mock('@/ui', async original => {
   const ui = await original<typeof UI>();
-  return { ...ui, Button: (props: React.ComponentProps<typeof ui.Button>) => {
+  return { ...ui, EmptyState: (props: React.ComponentProps<typeof ui.EmptyState>) => {
+    if (props.action?.label === '+ إضافة تمرين') hooks.open = props.action.onClick;
+    return createElement(ui.EmptyState, props);
+  }, Button: (props: React.ComponentProps<typeof ui.Button>) => {
     if (Array.isArray(props.children) && props.children.includes('+ إضافة تمرين')) hooks.open = () => props.onClick?.({} as React.MouseEvent<HTMLButtonElement>);
     return createElement(ui.Button, props);
   } };

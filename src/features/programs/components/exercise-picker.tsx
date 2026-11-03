@@ -4,10 +4,11 @@ import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 
 import { ExerciseImage } from '@/ui/exercise-image';
+import { Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { exerciseMediaUrl } from '@/core/storage';
 import { exerciseName } from '@/lib/display-name';
-import { Button, ErrorState, LoadingState, TextField } from '@/ui';
+import { Button, EmptyState, ErrorState, LoadingState, TextField } from '@/ui';
 import { searchExercises } from '../data/library';
 import type { LibraryExercise, Result } from '../types';
 
@@ -41,7 +42,8 @@ export function ExercisePicker({ disabled, onAdd }: { disabled: boolean; onAdd: 
     <p className="text-xs text-muted">{t('attribution')}</p>
     {loadedKey !== key || result === null ? <LoadingState /> : result.error ?
       <ErrorState message={result.error} retryLabel={t('tryAgain')} onRetry={() => setRevision(value => value + 1)} /> : <>
-        {result.data?.length === 0 && <p className="py-6 text-muted">{t('noExerciseWithThisName')}</p>}
+        {result.data?.length === 0 && <EmptyState icon={Search} title={t('noExerciseWithThisName')} body={t('searchInArabicOrEnglish')}
+          action={{ label: t('clearSearch'), onClick: () => { setQuery(''); setBodyPart(''); setRevision(value => value + 1); } }} />}
         <ul className="space-y-2">{result.data?.map(exercise => <li key={exercise.id}>
           <button type="button" disabled={disabled} onClick={() => onAdd(exercise)}
             className="glass flex min-h-16 w-full items-center gap-3 rounded-control p-2 text-start disabled:opacity-40">

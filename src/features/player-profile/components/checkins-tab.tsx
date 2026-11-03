@@ -14,7 +14,7 @@ export async function CheckinsTab({ playerId, checkIns }: { playerId: string; ch
   const n = (value: number | null, unit: string) => value === null ? t('dash') : `${formatNumber(value, locale)} ${unit}`;
   return (
     <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-      {checkIns.length === 0 ? <EmptyState icon={CalendarCheck} title={t('noCheckinsTitle')} body={t('noCheckinsBody')} /> :
+      {checkIns.length === 0 ? <EmptyState icon={CalendarCheck} title={t('noCheckinsTitle')} body={t('noCheckinsBody')} action={{ label: t('remindPlayer'), href: `#voice-recorder-${playerId}` }} /> :
         <ul className="space-y-3">{checkIns.map((row) => <li key={row.id}>
           <GlassCard className="space-y-3 p-5">
             <div className="flex flex-wrap items-center justify-between gap-2">

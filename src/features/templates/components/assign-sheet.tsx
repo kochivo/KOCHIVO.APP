@@ -5,7 +5,8 @@ import { messages } from '../messages';
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/ui';
+import { Users } from 'lucide-react';
+import { Button, EmptyState } from '@/ui';
 import { LoadingState } from '@/ui/loading-state';
 import type { RosterPlayer } from '@/features/roster';
 import { assignTemplate, listTemplatePlayers } from '../data/templates';
@@ -54,7 +55,7 @@ export function AssignSheet({ template, onClose }: { template: Template; onClose
       <p className="text-sm text-muted">{t('theyllGetASeparateCopyTheirActive')}</p>
       {loading ? <LoadingState variant="list" /> : loadError ? <div role="alert">{loadError}
         <Button variant="ghost" className="min-h-12" onClick={() => { setLoading(true); setAttempt(value => value + 1); }}>{t('tryAgain')}</Button>
-      </div> : players.length === 0 ? <p className="text-muted">{t('noPlayersYetAddAPlayerFirst')}</p> :
+      </div> : players.length === 0 ? <EmptyState icon={Users} title={t('noPlayersYetAddAPlayerFirst')} body={t('chooseAPlayer')} action={{ label: t('openPlayers'), href: '/captain/players' }} /> :
         <fieldset disabled={busy} className="grid gap-2">
           <legend className="mb-2 text-sm text-muted">{t('chooseAPlayer')}</legend>
           {players.map(player => <label key={player.playerId} className="glass flex min-h-12 cursor-pointer items-center gap-3 rounded-control px-4 py-3">
@@ -66,7 +67,7 @@ export function AssignSheet({ template, onClose }: { template: Template; onClose
       {error && <p role="alert" className="text-danger">{error}</p>}
       {busy && <p role="status">{t('assigningTemplate')}</p>}
       <div className="flex flex-wrap gap-2">
-        <Button className="min-h-12" disabled={!selected || busy || loading || !!loadError} onClick={() => void assign()}>
+        <Button variant={players.length ? 'primary' : 'secondary'} className="min-h-12" disabled={!selected || busy || loading || !!loadError} onClick={() => void assign()}>
           {error ? t('tryAgain') : t('confirmAssignment')}
         </Button>
         <Button variant="ghost" className="min-h-12" disabled={busy} onClick={onClose}>{t('cancel')}</Button>

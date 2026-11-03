@@ -2,6 +2,8 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    photoHint: "افتح ملف اللاعب وابعتله تذكير يضيف صور في المتابعة الجاية",
+    openPlayer: "افتح اللاعب",
     'voiceReply': "رد بصوتك",
     'now': "دلوقتي",
     'hours.one': "من {count} ساعات",
@@ -76,6 +78,8 @@ export const messages = defineMessages({
     'dash': "—",
   },
   en: {
+    photoHint: "Open the player profile to remind them to add photos next time",
+    openPlayer: "Open player",
     'voiceReply': "Reply by voice",
     'now': "Just now",
     'hours.one': "{count} hour ago",

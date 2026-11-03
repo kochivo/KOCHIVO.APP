@@ -4,7 +4,8 @@ import { useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 import Link from 'next/link';
 import { uuidv7 } from '@/core/offline/ids';
-import { Button } from '@/ui';
+import { Utensils } from 'lucide-react';
+import { Button, EmptyState } from '@/ui';
 import { LoadingState } from '@/ui/loading-state';
 import { SaveTemplateButton } from '@/features/templates';
 import { usePlanDraft } from '../hooks/use-plan-draft';
@@ -36,9 +37,10 @@ export function PlanBuilder({ planId }: { planId: string }) {
     {state.error && <div role="alert" className="text-danger">{state.error}<Button variant="secondary" onClick={() => void state.retrySave()}>{t('tryAgain')}</Button></div>}
     <fieldset disabled={state.busy} className="grid min-w-0 gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(16rem,1fr)]">
       <section aria-label={t('meals')} className="grid content-start gap-4">
-        {!draft.meals.length && <p className="glass rounded-card p-6">{t('addYourFirstMealToStart')}</p>}
+        {!draft.meals.length && <EmptyState icon={Utensils} title={t('addYourFirstMealToStart')} body={t('emptyBody')}
+          action={{ label: t('addMeal'), onClick: () => { const id = uuidv7(); update(d => addMeal(d, t('newMeal'), id)); } }} />}
         {draft.meals.map((meal, index) => <MealEditor key={meal.id} meal={meal} first={index === 0} last={index === draft.meals.length - 1} update={update} />)}
-        <Button variant="secondary" onClick={() => { const id = uuidv7(); update(d => addMeal(d, t('newMeal'), id)); }}>{t('addMeal')}</Button>
+        {draft.meals.length > 0 && <Button variant="secondary" onClick={() => { const id = uuidv7(); update(d => addMeal(d, t('newMeal'), id)); }}>{t('addMeal')}</Button>}
       </section>
       <aside><TargetsBar targets={draft.targets} totals={planTotals(draft)} onChange={targets => update(d => ({ ...d, targets }))} /></aside>
     </fieldset>

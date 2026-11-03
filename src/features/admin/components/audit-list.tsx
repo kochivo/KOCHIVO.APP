@@ -3,6 +3,8 @@ import { formatTimestampAr } from '@/lib/dates';
 import { formatNumber } from '@/lib/format';
 import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
+import { History } from 'lucide-react';
+import { EmptyState } from '@/ui/empty-state';
 import { endsLabel } from '../format';
 import type { AuditRow, CaptainRow } from '../types';
 
@@ -13,7 +15,7 @@ export function AuditList({ rows, captains, error }: { rows: AuditRow[]; captain
   return <section className="glass rounded-card p-5" aria-labelledby="audit-title">
     <h2 id="audit-title" className="mb-5 text-xl font-bold">{t('audit')}</h2>
     {error ? <p role="alert" className="text-danger">{error}</p> : !rows.length ?
-      <p className="text-muted">{t('noAudit')}</p> :
+      <EmptyState icon={History} title={t('noAudit')} body={t('auditHint')} action={{ label: t('manageCaptains'), href: '#captain-management' }} /> :
       <ol className="divide-y divide-line">{rows.map(row => <li key={row.id} className="space-y-2 py-4 first:pt-0">
         <div className="flex flex-wrap justify-between gap-2">
           <p className="break-words font-bold">{labels[row.action]} · {captains.find(captain => captain.id === row.target_id)?.full_name ?? row.target_id}</p>

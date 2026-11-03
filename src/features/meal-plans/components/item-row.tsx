@@ -4,8 +4,8 @@ import { useLocale, useT } from '@/core/i18n/client';
 import { formatNumber } from '@/lib/format';
 import { messages } from '../messages';
 import { useState } from 'react';
-import { ArrowDown, ArrowUp, Trash2 } from 'lucide-react';
-import { Button, Stepper } from '@/ui';
+import { ArrowDown, ArrowUp, Trash2, Utensils } from 'lucide-react';
+import { Button, EmptyState, Stepper } from '@/ui';
 import { uuidv7 } from '@/core/offline/ids';
 import { macrosFor } from '@/lib/macros';
 import { foodPhotoUrl } from '@/core/storage/media-url';
@@ -36,12 +36,13 @@ export function ItemRow({ item, first, last, update }: { item: MealItem; first: 
     <p className="text-sm text-muted">{formatNumber(macros.kcal, locale)}  {t('kcalProtein')} {formatNumber(macros.protein, locale)}  {t('carbs')} {formatNumber(macros.carbs, locale)}  {t('fat')} {formatNumber(macros.fat, locale)}</p>
     <Button variant="secondary" aria-expanded={expanded} onClick={() => setExpanded(!expanded)}>{t('alternatives')}</Button>
     {expanded && <div className="grid gap-2">
-      {!item.alternatives.length && <p className="text-muted">{t('noAlternativesYet')}</p>}
+      {!item.alternatives.length && !picking && <EmptyState icon={Utensils} title={t('noAlternativesYet')} body={t('searchHint')}
+        action={{ label: t('addAlternative'), onClick: () => setPicking(true) }} />}
       <ul>{item.alternatives.map(alt => <li key={alt.id} className="flex items-center justify-between gap-2">
         <span>{alt.food.name} · {formatNumber(alt.grams, locale)}{t('gSameCalories')}</span>
         <Button variant="ghost" aria-label={t('deleteAlternative', { v0: alt.food.name })} onClick={() => update(d => removeAlternative(d, item.id, alt.id))}><Trash2 aria-hidden /></Button>
       </li>)}</ul>
-      <Button variant="secondary" onClick={() => setPicking(!picking)}>{picking ? t('closeSearch') : t('addAlternative')}</Button>
+      {(item.alternatives.length > 0 || picking) && <Button variant="secondary" onClick={() => setPicking(!picking)}>{picking ? t('closeSearch') : t('addAlternative')}</Button>}
       {picking && <FoodPicker alternative onPick={food => { const id = uuidv7(); update(d => addAlternative(d, item.id, food, id)); setPicking(false); }} />}
     </div>}
   </li>;

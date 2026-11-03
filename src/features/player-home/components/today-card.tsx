@@ -5,7 +5,8 @@ import { formatNumber } from '@/lib/format';
 
 import Link from 'next/link';
 import type { SnapshotDay } from '@/core/offline';
-import { GlassCard } from '@/ui';
+import { Dumbbell } from 'lucide-react';
+import { EmptyState, GlassCard } from '@/ui';
 import { starterText } from '@/lib/starter-text';
 
 export function estimateMinutes(exercises: { sets: number; rest_seconds: number }[]): number {
@@ -24,9 +25,9 @@ export function TodayCard({ day, rest }: { day: SnapshotDay; rest: boolean }) {
       {rest && <p className="text-muted">{starterText(day.title, locale)}</p>}
       <p className="text-sm text-muted">{t('exerciseCount', { n: day.exercises.length, count: formatNumber(day.exercises.length, locale) })} · {t('setCount', { n: sets, count: formatNumber(sets, locale) })} · {t('minuteCount', { n: minutes, count: formatNumber(minutes, locale) })}</p>
     </div>
-    {day.exercises.length === 0 && <p className="text-sm text-muted">{t('yourCoachIsPreparingTodaysExercises')}</p>}
+    {day.exercises.length === 0 ? <EmptyState icon={Dumbbell} title={t('yourProgramIsBeingPrepared')} body={t('yourCoachIsPreparingTodaysExercises')} action={{ label: t('messageCoach'), href: '/player/captain' }} /> :
     <Link href={`/player/workout/${day.id}`} className="flex min-h-12 items-center justify-center rounded-control border border-line px-4 font-bold text-muted hover:text-ink">
       {rest ? t('trainAnyway') : t('startWorkout')}
-    </Link>
+    </Link>}
   </GlassCard>;
 }

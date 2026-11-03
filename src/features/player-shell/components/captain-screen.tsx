@@ -23,7 +23,7 @@ export function CaptainScreen({ voiceNotes }: { voiceNotes?: ReactNode }) {
     <header><h1 className="text-2xl font-extrabold">{t('coach')}</h1></header>
     {status === 'loading' ? <LoadingState variant="detail" /> : status === 'error' ?
       <ErrorState message={t('couldnTLoadYourCoach')} retryLabel={t('tryAgain')} onRetry={() => void retry()} /> :
-      !data ? <EmptyState icon={MessageCircle} title={t('youReNotWorkingWithA')} body={t('yourCoachSDetailsWillAppear')} /> :
+      !data ? <EmptyState icon={MessageCircle} title={t('youReNotWorkingWithA')} body={t('yourCoachSDetailsWillAppear')} action={{ label: t('backHome'), href: '/player' }} /> :
         <GlassCard className="space-y-5 p-6">
           <div className="flex items-center gap-4">
             <span aria-hidden className="glass flex size-16 shrink-0 items-center justify-center rounded-card text-2xl font-bold">

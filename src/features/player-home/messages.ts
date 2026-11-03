@@ -2,6 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    messageCoach: "ابعت للكابتن",
     'task.intake': "كمّل أسئلة البداية",
     'task.start': "ابدأ تمرين النهارده: {name}",
     'task.continue': "كمّل تمرين النهارده: {name}",
@@ -62,6 +63,7 @@ export const messages = defineMessages({
     weekDayLabel: "{value0} {value1}، {value2}",
   },
   en: {
+    messageCoach: "Message your coach",
     'task.intake': "Finish your starter questions",
     'task.start': "Start today's workout: {name}",
     'task.continue': "Continue today's workout: {name}",

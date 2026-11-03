@@ -4,7 +4,7 @@ import { messages } from '../messages';
 import Link from 'next/link';
 import type { LucideIcon } from 'lucide-react';
 import { Dumbbell, Eye, Salad } from 'lucide-react';
-import { GlassCard } from '@/ui';
+import { EmptyState, GlassCard } from '@/ui';
 import { formatNumber } from '@/lib/format';
 import { formatDateAr, localDate } from '@/lib/dates';
 import { starterText } from '@/lib/starter-text';
@@ -36,11 +36,11 @@ export async function PlanTab({ playerId, program, nutrition }: Pick<PlayerProfi
       <div className="grid gap-4 md:grid-cols-2">
         {program ? <PlanCard icon={Dumbbell} heading={t('program')} title={starterText(program.title, locale)} href={`${base}/programs`} action={t('edit')}
           lines={[t('programSummary', { days: n(program.days), exercises: n(program.exercises) }), updated(program.updatedAt)]} /> :
-          <PlanCard icon={Dumbbell} heading={t('noProgramTitle')} title={null} lines={[t('noProgramBody')]} href={`${base}/programs`} action={t('writeProgram')} />}
+          <EmptyState icon={Dumbbell} title={t('noProgramTitle')} body={t('noProgramBody')} action={{ label: t('writeProgram'), href: `${base}/programs` }} />}
         {nutrition ? <PlanCard icon={Salad} heading={t('nutrition')} title={starterText(nutrition.title, locale)} href={`${base}/nutrition`} action={t('edit')}
           lines={[t('nutritionSummary', { meals: n(nutrition.meals), kcal: n(nutrition.kcal) }),
             t('macros', { protein: n(nutrition.protein), carbs: n(nutrition.carbs), fat: n(nutrition.fat) }), updated(nutrition.updatedAt)]} /> :
-          <PlanCard icon={Salad} heading={t('noNutritionTitle')} title={null} lines={[t('noNutritionBody')]} href={`${base}/nutrition`} action={t('writeNutrition')} />}
+          <EmptyState icon={Salad} title={t('noNutritionTitle')} body={t('noNutritionBody')} action={{ label: t('writeNutrition'), href: `${base}/nutrition` }} />}
       </div>
       <Link href={`${base}/preview`} className="inline-flex min-h-12 items-center gap-2 rounded-control px-4 text-sm font-bold hover:bg-ink/5">
         <Eye aria-hidden className="size-5" />{t('preview')}

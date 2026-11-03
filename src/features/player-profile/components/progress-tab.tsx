@@ -10,12 +10,13 @@ import { LineChart } from '@/features/progress';
 import { weightPoints, weightSummary } from '../model';
 import type { ProfileCheckIn } from '../types';
 
-export async function ProgressTab({ checkIns, targetKg }: { checkIns: ProfileCheckIn[]; targetKg: number | null }) {
+export async function ProgressTab({ checkIns, targetKg, playerId }: { checkIns: ProfileCheckIn[]; targetKg: number | null; playerId: string }) {
   const [t, locale] = await Promise.all([getT(messages), getLocale()]);
   const points = weightPoints(checkIns);
   const summary = weightSummary(points, targetKg);
   const signed = (value: number) => `${value > 0 ? '+' : ''}${formatNumber(value, locale)} ${t('kg')}`;
   const photos = checkIns.filter((row) => row.photos.length);
+  const action = { label: t('remindPlayer'), href: `/captain/players/${playerId}?tab=checkins#voice-recorder-${playerId}` };
   return (
     <div className="space-y-4">
       {summary ? <GlassCard className="space-y-5 p-5">
@@ -29,7 +30,7 @@ export async function ProgressTab({ checkIns, targetKg }: { checkIns: ProfileChe
             <dd className="font-display text-2xl font-extrabold" dir="ltr">{summary.toTarget === null ? t('dash') : signed(summary.toTarget)}</dd></div>
         </dl>
         <LineChart points={points} title={t('weightTrend')} unit={t('kg')} />
-      </GlassCard> : <EmptyState icon={Scale} title={t('noWeightsTitle')} body={t('noWeightsBody')} />}
+      </GlassCard> : <EmptyState icon={Scale} title={t('noWeightsTitle')} body={t('noWeightsBody')} action={action} />}
       <GlassCard className="space-y-4 p-5">
         <h2 className="text-lg font-bold">{t('photos')}</h2>
         {photos.length ? <ul className="space-y-4">{photos.map((row) => {
@@ -40,7 +41,7 @@ export async function ProgressTab({ checkIns, targetKg }: { checkIns: ProfileChe
               <Image key={url} src={url} alt={t('photoAlt', { date })} width={320} height={427} unoptimized
                 className="aspect-3/4 h-auto w-full rounded-control object-cover" />)}</div>
           </li>;
-        })}</ul> : <p className="text-sm text-muted">{t('noPhotos')}</p>}
+        })}</ul> : <EmptyState icon={Scale} title={t('noPhotos')} body={t('noCheckinsBody')} action={action} />}
       </GlassCard>
     </div>
   );

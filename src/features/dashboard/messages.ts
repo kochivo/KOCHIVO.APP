@@ -2,6 +2,8 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    clearSearch: "امسح البحث",
+    noAlertsBody: "خد نظرة على اللاعبين وخطّط للخطوة الجاية",
     'task.invite': "اعزم أول لاعب عندك",
     'task.noProgram': "اكتب برنامج لـ{name}",
     'task.review': "راجع {count} متابعات وفيديوهات",
@@ -49,6 +51,8 @@ export const messages = defineMessages({
     noProgram: "من غير برنامج",
   },
   en: {
+    clearSearch: "Clear search",
+    noAlertsBody: "Check on your players and plan their next step",
     'task.invite': "Invite your first player",
     'task.noProgram': "Write a program for {name}",
     'task.review': "Review {count} check-ins / videos",

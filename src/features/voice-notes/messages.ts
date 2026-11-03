@@ -2,6 +2,8 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    sendCheckin: "ابعت متابعة",
+    captainEmptyBody: "ابدأ برسالة تشجيع أو فكّر اللاعب بالمتابعة",
     voiceNotes: "رسايل صوتية",
     record: "سجّل رسالة صوتية",
     stop: "وقّف التسجيل",
@@ -24,6 +26,8 @@ export const messages = defineMessages({
     hint: "لحد دقيقتين. اللاعب هيسمعها من صفحة الكابتن",
   },
   en: {
+    sendCheckin: "Send a check-in",
+    captainEmptyBody: "Send some encouragement or a check-in reminder",
     voiceNotes: "Voice notes",
     record: "Record a voice note",
     stop: "Stop recording",

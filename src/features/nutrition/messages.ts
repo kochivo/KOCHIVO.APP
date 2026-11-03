@@ -2,6 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    messageCoach: "ابعت للكابتن",
     macroSummary: "P {protein} · C {carbs} · F {fat}",
     pageTitle: "أكل النهارده",
     todaysNutrition: "أكلك النهارده",
@@ -26,6 +27,7 @@ export const messages = defineMessages({
     swapFood: "بدّل {value0}",
   },
   en: {
+    messageCoach: "Message your coach",
     macroSummary: "P {protein} · C {carbs} · F {fat}",
     pageTitle: "Today's meals",
     todaysNutrition: "Today's nutrition",

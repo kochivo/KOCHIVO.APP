@@ -10,6 +10,7 @@ const state = vi.hoisted(() => ({ changes: [] as unknown[], filter: 'all' }));
 vi.mock('react', async original => ({
   ...await original<typeof React>(),
   useEffect: () => {},
+  useId: () => 'food-picker-test',
   useState: (initial: unknown) => [initial === 'all' ? state.filter : initial, (value: unknown) => state.changes.push(value)],
 }));
 vi.mock('@/core/i18n/client', () => ({ useLocale: () => 'en', useT: () => createT(messages, 'en') }));

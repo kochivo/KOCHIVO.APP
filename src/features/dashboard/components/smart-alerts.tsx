@@ -7,7 +7,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { BellRing, CalendarClock, CheckCheck, ClipboardList, Dumbbell, Wallet } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { Button, GlassCard } from '@/ui';
+import { Button, EmptyState, GlassCard } from '@/ui';
 import type { AlertKind, SmartAlert } from '../alerts';
 
 const styles: Record<AlertKind, { icon: LucideIcon; tone: string }> = {
@@ -31,9 +31,7 @@ export function SmartAlerts({ alerts }: { alerts: SmartAlert[] }) {
         <h2 id="alerts-heading" className="text-xl font-bold">{t('smartAlerts')}</h2>
         <p className="text-sm text-muted">{t('alertsHint')}</p>
       </div>
-      {alerts.length === 0 ? <p className="flex items-center gap-3 rounded-control bg-lime-soft p-4 text-sm">
-        <CheckCheck aria-hidden className="size-5 shrink-0 text-lime" />{t('noAlerts')}
-      </p> : <ul className="space-y-2">
+      {alerts.length === 0 ? <EmptyState icon={CheckCheck} title={t('noAlerts')} body={t('noAlertsBody')} action={{ label: t('goToPlayers'), href: '/captain/players' }} /> : <ul className="space-y-2">
         {shown.map((alert) => {
           const { icon: Icon, tone } = styles[alert.kind];
           const count = formatNumber(alert.value, locale);

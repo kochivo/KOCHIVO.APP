@@ -1,9 +1,10 @@
 import type { LucideIcon } from 'lucide-react';
 import type { HTMLAttributes } from 'react';
+import Link from 'next/link';
 import { cn } from '@/lib/cn';
 import { Button } from './button';
 
-type Action = { label: string; onClick: () => void };
+type Action = { label: string } & ({ href: string; onClick?: never } | { onClick: () => void; href?: never });
 export interface EmptyStateProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
   icon: LucideIcon;
   title: string;
@@ -31,8 +32,10 @@ export function EmptyState({ icon: Icon, title, body, steps, action, secondary, 
         </li>)}
       </ol>}
       {(action || secondary) && <div className="flex flex-wrap justify-center gap-2">
-        {action && <Button className="min-h-12" onClick={action.onClick}>{action.label}</Button>}
-        {secondary && <Button variant="ghost" className="min-h-12" onClick={secondary.onClick}>{secondary.label}</Button>}
+        {action && (action.href !== undefined ? <Link href={action.href} className="press glow inline-flex min-h-12 items-center justify-center rounded-control bg-lime px-4 text-sm font-extrabold text-on-lime">{action.label}</Link> :
+          <Button className="min-h-12" onClick={action.onClick}>{action.label}</Button>)}
+        {secondary && (secondary.href !== undefined ? <Link href={secondary.href} className="press inline-flex min-h-12 items-center justify-center rounded-control px-4 text-sm hover:bg-ink/5">{secondary.label}</Link> :
+          <Button variant="ghost" className="min-h-12" onClick={secondary.onClick}>{secondary.label}</Button>)}
       </div>}
     </div>
   );

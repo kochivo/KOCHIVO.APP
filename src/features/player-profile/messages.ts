@@ -2,6 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    remindPlayer: "ابعت تذكير صوتي",
     profile: "ملف اللاعب",
     backToPlayers: "رجوع للاعبين",
     tabs: "أقسام ملف اللاعب",
@@ -68,6 +69,7 @@ export const messages = defineMessages({
     listSeparator: "، ",
   },
   en: {
+    remindPlayer: "Send a voice reminder",
     profile: "Player profile",
     backToPlayers: "Back to players",
     tabs: "Player profile sections",

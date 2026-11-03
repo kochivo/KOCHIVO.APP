@@ -2,6 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    backHome: "ارجع للرئيسية",
     "subscriptionEndsIn.zero": "اشتراكك بيخلص النهارده",
     "subscriptionEndsIn.one": "اشتراكك هيخلص بكره",
     "subscriptionEndsIn.two": "اشتراكك هيخلص بعد يومين",
@@ -36,6 +37,7 @@ export const messages = defineMessages({
     signInAgain: "سجّل دخولك تاني",
   },
   en: {
+    backHome: "Back to home",
     "subscriptionEndsIn.one": "Your subscription ends in {n} day",
     "subscriptionEndsIn.other": "Your subscription ends in {n} days",
     home: "Home",

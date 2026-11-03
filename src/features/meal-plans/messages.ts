@@ -2,6 +2,11 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    alternativeNeedsCalories: "البديل لازم يكون فيه سعرات عشان نحسب كميته",
+    catalogHint: "ضيف أكلة بالمقادير بتاعتها عشان تبدأ الوجبة",
+    emptyBody: "ابدأ من قالب جاهز أو ضيف وجبات وأكل يناسب اللاعب",
+    clearSearch: "امسح البحث والفلاتر",
+    searchHint: "جرّب اسم تاني أو اختار كل الأكل",
     newFood: "+ أكلة جديدة",
     customFoodSaved: "الأكلة اتحفظت",
     allFoods: "كل الأكل",
@@ -97,6 +102,11 @@ export const messages = defineMessages({
     planSaved: "النظام اتحفظ",
   },
   en: {
+    alternativeNeedsCalories: "An alternative needs calories so we can calculate its portion",
+    catalogHint: "Add a food and its serving details to start this meal",
+    emptyBody: "Start with a template or add meals and foods for this player",
+    clearSearch: "Clear search and filters",
+    searchHint: "Try another name or browse all foods",
     newFood: "+ New food",
     customFoodSaved: "Food saved",
     allFoods: "All foods",

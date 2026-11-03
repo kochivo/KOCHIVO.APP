@@ -2,6 +2,8 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    emptyBody: "ابدأ من قالب جاهز أو ضيف أيام وتمارين تناسب اللاعب",
+    clearSearch: "امسح البحث والفلاتر",
     "exerciseCount.one": "{count} تمارين",
     "exerciseCount.other": "{count} تمارين",
     "setCount.one": "{count} سِت",
@@ -103,6 +105,8 @@ export const messages = defineMessages({
     addADayWithAtLeastOne: "ضيف يوم فيه تمرين واحد على الأقل",
   },
   en: {
+    emptyBody: "Start with a template or add days and exercises for this player",
+    clearSearch: "Clear search and filters",
     "exerciseCount.one": "{count} exercise",
     "exerciseCount.other": "{count} exercises",
     "setCount.one": "{count} set",

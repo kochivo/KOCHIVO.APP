@@ -5,8 +5,8 @@ import { formatNumber } from '@/lib/format';
 import { messages } from '../messages';
 import { useId, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { ArrowDown, ArrowUp, Trash2 } from 'lucide-react';
-import { Button } from '@/ui';
+import { ArrowDown, ArrowUp, Trash2, Utensils } from 'lucide-react';
+import { Button, EmptyState } from '@/ui';
 import { uuidv7 } from '@/core/offline/ids';
 import { addItem, moveMeal, removeMeal, renameMeal } from '../draft';
 import { mealTotals } from '../totals';
@@ -33,10 +33,11 @@ export function MealEditor({ meal, first, last, update }: { meal: Meal; first: b
       </div>
     </div>
     <p className="text-muted">{formatNumber(mealTotals(meal).kcal, locale)}  {t('kcal')}</p>
-    {!meal.items.length && <p>{t('addTheFirstFood')}</p>}
+    {!meal.items.length && !picking && <EmptyState icon={Utensils} title={t('addTheFirstFood')} body={t('emptyBody')}
+      action={{ label: t('addFood'), onClick: () => setPicking(true) }} />}
     <ul className="grid gap-3">{meal.items.map((item, index) => <ItemRow key={item.id} item={item} first={index === 0} last={index === meal.items.length - 1} update={update} />)}</ul>
     <div className="flex flex-wrap gap-2">
-      <Button variant="secondary" onClick={() => setPicking(!picking)}>{picking ? t('closeSearch') : t('addFood')}</Button>
+      {(meal.items.length > 0 || picking) && <Button variant="secondary" onClick={() => setPicking(!picking)}>{picking ? t('closeSearch') : t('addFood')}</Button>}
       <Button id={openerId} variant="secondary" onClick={() => setCreating(true)}>{t('newFood')}</Button>
     </div>
     {creating && <CustomFoodSheet openerId={openerId} onClose={() => setCreating(false)} onSave={(food, grams) => {

@@ -3,6 +3,8 @@ import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 
 import { Button } from '@/ui/button';
+import { Users } from 'lucide-react';
+import { EmptyState } from '@/ui/empty-state';
 import { captainState, endsLabel, stateLabels, tierLabel, usageLabel } from '../format';
 import type { CaptainRow } from '../types';
 
@@ -11,8 +13,9 @@ interface Props {
   selected: string | null;
   onActivate: (row: CaptainRow) => void;
   onSuspend: (row: CaptainRow) => void;
+  onReset?: () => void;
 }
-export function CaptainsTable({ rows, selected, onActivate, onSuspend }: Props) {
+export function CaptainsTable({ rows, selected, onActivate, onSuspend, onReset }: Props) {
   const t = useT(messages);
   const locale = useLocale();
   const plan = (row: CaptainRow) => row.tier === 'entry' && row.last_paid_ends_at !== null
@@ -26,7 +29,7 @@ export function CaptainsTable({ rows, selected, onActivate, onSuspend }: Props) 
     <Button variant="secondary" className={selected === row.id ? 'border-lime text-lime' : ''} onClick={() => onActivate(row)}>{t('activate')}</Button>
     <Button variant="ghost" onClick={() => onSuspend(row)}>{row.suspended ? t('restore') : t('suspend')}</Button>
   </div>;
-  if (!rows.length) return <p className="glass rounded-card p-8 text-muted">{t('noCaptains')}</p>;
+  if (!rows.length) return <EmptyState icon={Users} title={t('noCaptains')} body={t('emptyHint')} action={onReset ? { label: t('clearSearch'), onClick: onReset } : { label: t('clearSearch'), href: '/admin' }} />;
   return <>
     <div className="hidden overflow-x-auto rounded-card border border-line lg:block">
       <table className="w-full text-start text-sm">

@@ -62,7 +62,7 @@ export function AdminScreen({ captains, audit, plans, search, offset, now }: Pro
     </header>
     {!captains.error && <KpiRow rows={captains.rows} now={now}
       scope={offset > 0 ? t('pageScope') : search ? t('searchScope') : undefined} />}
-    <section aria-label={t('manage')} className="space-y-5">
+    <section id="captain-management" tabIndex={-1} aria-label={t('manage')} className="space-y-5">
       <form className="flex gap-2" onSubmit={event => {
         event.preventDefault();
         const value = new FormData(event.currentTarget).get('search');
@@ -91,7 +91,7 @@ export function AdminScreen({ captains, audit, plans, search, offset, now }: Pro
         {plans.error && <p role="alert" className="text-danger">{plans.error}</p>}
         <div className={selected ? 'grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_340px]' : ''}>
           <div className="min-w-0" aria-busy={pending}>
-            <CaptainsTable rows={rows} selected={suspending ? null : selected?.id ?? null}
+            <CaptainsTable rows={rows} selected={suspending ? null : selected?.id ?? null} onReset={() => { setFilter('all'); navigate('', 0); }}
               onActivate={row => {
                 setSelected(row); setMessage('');
                 requestAnimationFrame(() => panelRef.current?.focus());

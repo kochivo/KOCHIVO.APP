@@ -7,9 +7,9 @@ import { messages } from '../messages';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowDown, ArrowUp, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, Dumbbell, Trash2 } from 'lucide-react';
 import { uuidv7 } from '@/core/offline/ids';
-import { Button, ErrorState, IconButton, LoadingState, TextField } from '@/ui';
+import { Button, EmptyState, ErrorState, IconButton, LoadingState, TextField } from '@/ui';
 import { addDay, moveDay, removeDay } from '../draft';
 import { validateForActivation } from '../summary';
 import { createProgram, listPlayerPrograms } from '../data/program-io';
@@ -74,14 +74,13 @@ export function ProgramBuilder({ programId, playerId }: { programId?: string; pl
     <h1 className="text-3xl font-extrabold">{t('programs')}</h1>
     <form className="glass grid gap-4 rounded-card p-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end" onSubmit={event => { event.preventDefault(); void create(); }}>
       <TextField label={t('newProgramName')} value={title} maxLength={80} required disabled={pending} onChange={event => setTitle(event.target.value)} />
-      <Button type="submit" className="min-h-12" disabled={pending}>{t('newProgram')}</Button>
+      <Button type="submit" variant={programs?.data?.length === 0 ? 'secondary' : 'primary'} className="min-h-12" disabled={pending}>{t('newProgram')}</Button>
       {pending && <p role="status" className="sm:col-span-2">{t('creatingProgram')}</p>}
       {message && <p role="alert" className="text-danger sm:col-span-2">{message}</p>}
     </form>
     {programs === null || loadedRevision !== revision ? <LoadingState /> : programs.error ?
       <ErrorState message={programs.error} retryLabel={t('tryAgain')} onRetry={() => setRevision(value => value + 1)} /> : <>
-        {programs.data?.length === 0 && <div className="glass grid justify-items-start gap-3 rounded-card p-6"><p className="text-muted">{t('noProgramsForThisPlayerYet')}</p>
-          <Link href="/captain/templates" className="inline-flex min-h-12 items-center font-bold text-lime">{t('orStartFromTemplate')}</Link></div>}
+        {programs.data?.length === 0 && <EmptyState icon={Dumbbell} title={t('noProgramsForThisPlayerYet')} body={t('emptyBody')} action={{ label: t('orStartFromTemplate'), href: '/captain/templates' }} />}
         <ul className="grid gap-3 lg:grid-cols-2">{programs.data?.map(program => <li key={program.id}>
           <Link className="glass flex min-h-16 items-center justify-between gap-4 rounded-control p-4" href={`/captain/programs/${program.id}`}>
             <span className="min-w-0 break-words font-bold">{starterText(program.title, locale)}</span>
@@ -106,7 +105,9 @@ export function ProgramBuilder({ programId, playerId }: { programId?: string; pl
       <div className="grid items-start gap-5 lg:grid-cols-[15rem_minmax(0,1fr)]">
         <aside aria-label={t('programDays')} className="glass space-y-3 rounded-card p-4">
           <h2 className="font-bold">{t('programDays')}</h2>
-          {draft.days.length === 0 && <p className="text-sm text-muted">{t('addTheFirstDay')}</p>}
+          {draft.days.length === 0 && <EmptyState icon={Dumbbell} title={t('addTheFirstDay')} body={t('emptyBody')} action={{ label: t('addDay'), onClick: () => {
+            const id = uuidv7(); state.update(current => addDay(current, id, t('newDay'))); setSelectedDay(id);
+          } }} />}
           <ul className="space-y-3">{draft.days.map((item, index) => <li key={item.id} className="space-y-2">
             <Button variant="ghost" aria-pressed={item.id === day?.id} className="min-h-12 w-full justify-start text-start" onClick={() => setSelectedDay(item.id)}>
               {formatNumber(item.position, locale)} · {item.title ? starterText(item.title, locale) : t('newDay')}
@@ -117,9 +118,9 @@ export function ProgramBuilder({ programId, playerId }: { programId?: string; pl
               <IconButton aria-label={t('deleteDay', { v0: formatNumber(item.position, locale), v1: item.title })} onClick={() => state.update(current => removeDay(current, item.id))}><Trash2 aria-hidden className="size-5" /></IconButton>
             </div>
           </li>)}</ul>
-          <Button variant="secondary" className="min-h-12 w-full" onClick={() => {
+          {draft.days.length > 0 && <Button variant="secondary" className="min-h-12 w-full" onClick={() => {
             const id = uuidv7(); state.update(current => addDay(current, id, t('newDay'))); setSelectedDay(id);
-          }}>{t('addDay')}</Button>
+          }}>{t('addDay')}</Button>}
         </aside>
         {day && <DayEditor key={day.id} day={day} update={state.update} />}
       </div>

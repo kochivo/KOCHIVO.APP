@@ -7,6 +7,8 @@ import { messages } from '../messages';
 import { useState, useTransition } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { Users } from 'lucide-react';
+import { EmptyState } from '@/ui/empty-state';
 import { formatDateAr } from '@/lib/dates';
 import type { fetchPlayerPreview } from '../data/preview';
 import { PhoneFrame } from './phone-frame';
@@ -43,7 +45,7 @@ export function PreviewScreen({ result, today }: { result: Result; today: string
       <div className="min-h-0 flex-1 overflow-y-auto p-3">
           {pending ? <p role="status">{t('loading')}</p> : result.error ? <div role="alert" className="space-y-3">
             <p>{result.error}</p><button type="button" className="min-h-12 text-lime" onClick={() => startTransition(() => router.refresh())}>{t('retry')}</button>
-          </div> : data && <>
+          </div> : !data ? <EmptyState icon={Users} title={t('unavailable')} body={t('emptyBody')} action={{ label: t('openPlayers'), href: '/captain/players' }} /> : <>
             {tab === 0 && <div className="space-y-4">
               <p className="font-bold">{t('hello', { name: data.name })}</p>
               <ol aria-label={t('weekdays')} className="glass grid grid-cols-7 rounded-control p-2">
@@ -61,6 +63,7 @@ export function PreviewScreen({ result, today }: { result: Result; today: string
                 <h2 className="text-xl font-bold">{!data.program ? t('noProgram') : rest ? t('todayRest') : day ? starterText(day.title, locale) : t('noDays')}</h2>
                 {day && <><p className="text-sm text-muted">{rest && `${starterText(day.title, locale)} · `}{t('exercises', { n: day.exercises.length, count: formatNumber(day.exercises.length, locale) })} · {t('sets', { n: day.exercises.reduce((count, exercise) => count + exercise.sets, 0), count: formatNumber(day.exercises.reduce((count, exercise) => count + exercise.sets, 0), locale) })}</p>
                   <PreviewProgram program={data.program ? { ...data.program, days: [day] } : null} /></>}
+                {!day && <PreviewProgram program={data.program} />}
               </section>
             </div>}
             {tab === 1 && <PreviewProgram program={data.program} />}
