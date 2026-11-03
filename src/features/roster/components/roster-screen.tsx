@@ -5,7 +5,9 @@ import { useLocale, useT } from '@/core/i18n/client';
 import { formatNumber } from '@/lib/format';
 import { messages } from '../messages';
 
-import { use, useState, useTransition } from 'react';
+import { use, useRef, useState, useTransition } from 'react';
+import { applyOptimistic } from '@/lib/optimistic';
+import { archivePlayer } from '../data/archive-player';
 import { useRouter } from 'next/navigation';
 import { Plus, UserPlus, Users } from 'lucide-react';
 import { Button, Chip, EmptyState, ErrorState, LoadingState, TextField } from '@/ui';
@@ -25,7 +27,27 @@ export function RosterScreen({ data, today, plan }: { data: Promise<[RosterResul
   const [inviteOpen, setInviteOpen] = useState(false);
   const [pending, startTransition] = useTransition();
   const router = useRouter();
-  const players = result.players ?? [];
+  const [archived, setArchived] = useState<Record<string, boolean>>({});
+  const [archiveErrors, setArchiveErrors] = useState<Record<string, string>>({});
+  const inFlight = useRef(new Set<string>());
+  const players = (result.players ?? []).filter(player => !archived[player.playerId]);
+  async function archive(id: string) {
+    if (inFlight.current.has(id)) return;
+    inFlight.current.add(id);
+    setArchiveErrors(current => ({ ...current, [id]: '' }));
+    let failure = t('couldntArchiveTryAgain');
+    try {
+      await applyOptimistic(false, {
+        apply: () => setArchived(current => ({ ...current, [id]: true })),
+        rollback: previous => setArchived(current => ({ ...current, [id]: previous })),
+      }, async () => {
+        const response = await archivePlayer(id);
+        if ('error' in response) { failure = response.error; throw new Error(failure); }
+      });
+    } catch {
+      setArchiveErrors(current => ({ ...current, [id]: failure }));
+    } finally { inFlight.current.delete(id); }
+  }
   const statuses = players.map((player) => ({ player, status: playerStatus({ ...player, today }) }));
   const visible = statuses.filter(({ player, status }) => (filter === 'all' || status === filter)
     && player.fullName.includes(search.trim()));
@@ -36,7 +58,7 @@ export function RosterScreen({ data, today, plan }: { data: Promise<[RosterResul
         <div><p className="mb-1 text-xs text-muted">{t('playerCount', { n: players.length, count: formatNumber(players.length, locale) })}</p><h1 className="text-3xl font-extrabold">{t('players')}</h1></div>
         <div className="flex flex-wrap items-center gap-3">{plan}{(players.length > 0 || result.error) && inviteButton}</div>
       </header>
-      {pending ? <LoadingState /> : result.error ? <ErrorState message={result.error} retryLabel={t('tryAgain')} onRetry={() => startTransition(() => router.refresh())} /> : players.length === 0 ? (
+      {pending ? <LoadingState variant="list" /> : result.error ? <ErrorState message={result.error} retryLabel={t('tryAgain')} onRetry={() => startTransition(() => router.refresh())} /> : players.length === 0 ? (
         <EmptyState icon={UserPlus} title={demo ? t('noDemoDataYet') : t('noPlayersYetSendYourFirstInvite')} body={demo ? t('invitesAreDisabledInTheDemo') : t('startWithAnInviteLink')} steps={demo ? undefined : [t('stepInvite'), t('stepIntake'), t('stepAssign')]} action={{ label: demo ? t('invitesAreDisabledInTheDemo') : t('newPlayer'), onClick: () => setInviteOpen(true) }} />
       ) : <>
         <div className="flex flex-wrap items-end justify-between gap-4">
@@ -50,7 +72,7 @@ export function RosterScreen({ data, today, plan }: { data: Promise<[RosterResul
             <div role="rowgroup" className="hidden lg:block"><div role="row" className="grid grid-cols-[1.3fr_1fr_1fr_1.2fr_1fr_3rem] gap-4 p-4 text-xs text-muted">
               {[t('player2'), t('status'), t('lastActivity2'), t('program'), t('accessUntil2'), t('archive2')].map((label) => <span role="columnheader" key={label}>{label}</span>)}
             </div></div>
-            <div role="rowgroup" className="space-y-3 lg:space-y-0">{visible.map(({ player }) => <RosterRow key={player.playerId} player={player} today={today} />)}</div>
+            <div role="rowgroup" className="space-y-3 lg:space-y-0">{visible.map(({ player }) => <RosterRow key={player.playerId} player={player} today={today} error={archiveErrors[player.playerId]} onArchive={() => void archive(player.playerId)} />)}</div>
           </div>
         )}
       </>}

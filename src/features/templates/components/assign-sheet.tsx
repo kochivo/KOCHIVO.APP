@@ -6,6 +6,7 @@ import { messages } from '../messages';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/ui';
+import { LoadingState } from '@/ui/loading-state';
 import type { RosterPlayer } from '@/features/roster';
 import { assignTemplate, listTemplatePlayers } from '../data/templates';
 import type { Template } from '../types';
@@ -51,7 +52,7 @@ export function AssignSheet({ template, onClose }: { template: Template; onClose
     <div className="grid gap-4">
       <h2 id="assign-template-title" className="text-xl font-bold">{t('assignTitle', { title: starterText(template.title, locale) })}</h2>
       <p className="text-sm text-muted">{t('theyllGetASeparateCopyTheirActive')}</p>
-      {loading ? <p role="status">{t('loadingPlayers')}</p> : loadError ? <div role="alert">{loadError}
+      {loading ? <LoadingState variant="list" /> : loadError ? <div role="alert">{loadError}
         <Button variant="ghost" className="min-h-12" onClick={() => { setLoading(true); setAttempt(value => value + 1); }}>{t('tryAgain')}</Button>
       </div> : players.length === 0 ? <p className="text-muted">{t('noPlayersYetAddAPlayerFirst')}</p> :
         <fieldset disabled={busy} className="grid gap-2">

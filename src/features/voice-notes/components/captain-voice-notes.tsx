@@ -32,7 +32,7 @@ export function CaptainVoiceNotes({ playerId }: { playerId: string }) {
     <GlassCard role="region" aria-labelledby="captain-voice-heading" className="space-y-4 p-5">
       <h2 id="captain-voice-heading" className="text-lg font-bold">{t('voiceNotes')}</h2>
       <VoiceRecorder playerId={playerId} onSent={sent} />
-      {load.status === 'loading' ? <LoadingState /> : load.status === 'error' ?
+      {load.status === 'loading' ? <LoadingState variant="list" /> : load.status === 'error' ?
         <ErrorState message={t('loadFailed')} retryLabel={t('retry')} onRetry={() => { setLoad({ status: 'loading' }); void fetchNotes(); }} /> :
         load.notes.length > 0 && <VoiceNoteList notes={load.notes} />}
     </GlassCard>

@@ -4,20 +4,19 @@ import { useLocale, useT } from '@/core/i18n/client';
 import { formatNumber } from '@/lib/format';
 import { messages } from '../messages';
 
-import { useState, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Archive } from 'lucide-react';
 import { Button, GlassCard } from '@/ui';
 import { formatDateAr } from '@/lib/dates';
 import { lastSeenLabel, playerStatus } from '../status';
-import { archivePlayer } from '../data/archive-player';
 import type { RosterPlayer } from '../types';
 import { starterText } from '@/lib/starter-text';
 
 
 
-export function RosterRow({ player, today }: { player: RosterPlayer; today: string }) {
+export function RosterRow({ player, today, error, onArchive }: {
+  player: RosterPlayer; today: string; error?: string; onArchive: () => void;
+}) {
   const t = useT(messages);
   const locale = useLocale();
   const tags = {
@@ -28,19 +27,9 @@ export function RosterRow({ player, today }: { player: RosterPlayer; today: stri
   expired: { label: t('expired'), color: 'bg-danger-soft text-danger' },
 };
   const tag = tags[playerStatus({ ...player, today })];
-  const [error, setError] = useState('');
-  const [pending, startTransition] = useTransition();
-  const router = useRouter();
   function archive() {
     if (!window.confirm(t('archiveTheyllBeRemovedFromThePlayer', { v0: player.fullName }))) return;
-    setError('');
-    startTransition(async () => {
-      try {
-        const result = await archivePlayer(player.playerId);
-        if ('error' in result) setError(result.error);
-        else router.refresh();
-      } catch { setError(t('couldntArchiveTryAgain')); }
-    });
+    onArchive();
   }
   return (
     <GlassCard role="row" className="grid gap-4 p-4 lg:grid-cols-[1.3fr_1fr_1fr_1.2fr_1fr_3rem] lg:items-center lg:rounded-none lg:border-0 lg:border-t lg:border-line lg:bg-transparent lg:shadow-none lg:backdrop-blur-none">
@@ -60,9 +49,8 @@ export function RosterRow({ player, today }: { player: RosterPlayer; today: stri
       </div>
       <div role="cell" className="text-sm text-muted"><span className="lg:hidden">{t('accessUntil')} </span><time dateTime={player.accessUntil}>{formatDateAr(player.accessUntil, { day: 'numeric', month: 'long', year: 'numeric' }, locale)}</time></div>
       <div role="cell">
-        <Button variant="ghost" disabled={pending} onClick={archive} aria-label={t('archive', { v0: player.fullName })} className="min-h-12 min-w-12 px-0"><Archive aria-hidden className="size-5" /></Button>
+        <Button variant="ghost" onClick={archive} aria-label={t('archive', { v0: player.fullName })} className="min-h-12 min-w-12 px-0"><Archive aria-hidden className="size-5" /></Button>
       </div>
-      {pending && <p role="status" className="text-sm text-muted lg:col-span-6">{t('archiving')}</p>}
       {error && <p role="alert" className="text-sm text-danger lg:col-span-6">{error}</p>}
     </GlassCard>
   );

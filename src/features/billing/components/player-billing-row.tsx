@@ -3,7 +3,7 @@ import { formatNumber } from '@/lib/format';
 import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 
-import { useState, useTransition } from 'react';
+import { useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { formatDateAr, formatTimestampAr } from '@/lib/dates';
 import { Button } from '@/ui';
@@ -15,6 +15,8 @@ import type { BillingPlayer, Package } from '../types';
 import { CollectSheet } from './collect-sheet';
 import { RenewSheet } from './renew-sheet';
 import type { Renewal } from './renew-sheet';
+import { useToast } from '@/ui/toast';
+import { messages as uiMessages } from '@/ui/messages';
 
 const statuses = {
   active: { label: 'active', color: 'bg-lime-soft text-lime' },
@@ -26,6 +28,8 @@ const statuses = {
 
 export function PlayerBillingRow({ player, today, packages }: { player: BillingPlayer; today: string; packages: Package[] }) {
   const t = useT(messages);
+  const feedback = useT(uiMessages);
+  const toast = useToast();
   const locale = useLocale();
   const [accessUntil, setAccessUntil] = useState(player.accessUntil);
   const [lastPayment, setLastPayment] = useState<Pick<NonNullable<BillingPlayer['lastPayment']>, 'created_at' | 'amount_egp' | 'days'> | null>(player.lastPayment);
@@ -33,6 +37,7 @@ export function PlayerBillingRow({ player, today, packages }: { player: BillingP
   const [due, setDue] = useState(player.due);
   const [collecting, setCollecting] = useState(false);
   const [pending, setPending] = useState(false);
+  const inFlight = useRef(false);
   const [refreshing, startRefresh] = useTransition();
   const [error, setError] = useState('');
   const router = useRouter();
@@ -40,6 +45,8 @@ export function PlayerBillingRow({ player, today, packages }: { player: BillingP
   const reminder = waLink(player.phone, reminderText(player.fullName, accessUntil, locale));
 
   async function save(renewal: Renewal) {
+    if (inFlight.current) return;
+    inFlight.current = true;
     const chosen = packages.find((item) => item.id === renewal.packageId);
     const days = chosen?.days ?? renewal.days ?? 0;
     const oldAccess = accessUntil;
@@ -47,7 +54,7 @@ export function PlayerBillingRow({ player, today, packages }: { player: BillingP
     const oldDue = due;
     setAccessUntil(renewalPreview(accessUntil, today, days).end);
     setLastPayment({ created_at: today, amount_egp: renewal.amount, days });
-    setDue(due + remaining(renewal.price ?? null, renewal.amount));
+    setDue(due + remaining(renewal.price ?? chosen?.price_egp ?? null, renewal.amount));
     setOpen(false);
     setPending(true);
     setError('');
@@ -62,13 +69,16 @@ export function PlayerBillingRow({ player, today, packages }: { player: BillingP
       if (result.error || !result.data) rollback(result.error ?? t('renewFailed'));
       else {
         setAccessUntil(result.data);
+        toast.success(feedback('playerRenewed'));
         startRefresh(() => router.refresh());
       }
     } catch {
       rollback(t('renewFailed'));
-    } finally { setPending(false); }
+    } finally { inFlight.current = false; setPending(false); }
   }
   async function collect(amount: number) {
+    if (inFlight.current) return;
+    inFlight.current = true;
     const oldDue = due;
     setDue(due - amount);
     setCollecting(false);
@@ -77,8 +87,8 @@ export function PlayerBillingRow({ player, today, packages }: { player: BillingP
     try {
       const result = await collectPayment({ playerId: player.playerId, amount });
       if (result.error !== undefined) { setDue(oldDue); setError(result.error); }
-      else { setDue(result.data); startRefresh(() => router.refresh()); }
-    } catch { setDue(oldDue); setError(t('collectFailed')); } finally { setPending(false); }
+      else { setDue(result.data); toast.success(feedback('paymentRecorded')); startRefresh(() => router.refresh()); }
+    } catch { setDue(oldDue); setError(t('collectFailed')); } finally { inFlight.current = false; setPending(false); }
   }
 
   return (

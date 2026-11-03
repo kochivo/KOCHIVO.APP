@@ -6,6 +6,7 @@ import { messages } from '../messages';
 
 import { useEffect, useState } from 'react';
 import { Button, GlassCard } from '@/ui';
+import { LoadingState } from '@/ui/loading-state';
 import { fetchRadar } from '../data/radar';
 import { radarReasonLabel, radarWhatsappUrl } from '../radar';
 import type { RadarResult } from '../radar';
@@ -24,7 +25,7 @@ export function RadarCard({ today, showEmpty = false }: { today: string; showEmp
     return () => { active = false; };
   }, [today, t]);
 
-  if (!loaded || loaded.today !== today) return <p role="status" className="text-sm text-muted">{t('loadingRadar')}</p>;
+  if (!loaded || loaded.today !== today) return <LoadingState variant="list" />;
   const { result } = loaded;
   if (result.error) return <p role="alert" className="text-sm text-muted">{t('radarIsUnavailable')}</p>;
   const players = result.data ?? [];

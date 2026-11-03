@@ -19,14 +19,15 @@ import type { ProgramRow, Result } from '../types';
 import { BuilderHeader } from './builder-header';
 import { DayEditor } from './day-editor';
 import { starterText } from '@/lib/starter-text';
+import { useToast } from '@/ui/toast';
 
 export function ProgramBuilder({ programId, playerId }: { programId?: string; playerId?: string }) {
   const t = useT(messages);
+  const toast = useToast();
   const locale = useLocale();
   const state = useProgramDraft(programId);
   const [selectedDay, setSelectedDay] = useState('');
   const [message, setMessage] = useState('');
-  const [notice, setNotice] = useState('');
   const [pending, setPending] = useState(false);
   const [title, setTitle] = useState('');
   const [programs, setPrograms] = useState<Result<ProgramRow[]> | null>(null);
@@ -52,12 +53,11 @@ export function ProgramBuilder({ programId, playerId }: { programId?: string; pl
     finally { setPending(false); }
   }
   async function save() {
-    setNotice(''); setMessage('');
-    if (await state.save()) setNotice(t('saved'));
+    setMessage('');
+    if (await state.save()) toast.success(t('saved'));
   }
   async function activate() {
     if (!state.draft || pending || state.saving) return;
-    setNotice('');
     const errors = validateForActivation(state.draft, t);
     setMessage(errors.join(' · '));
     if (errors.length) return;
@@ -66,7 +66,7 @@ export function ProgramBuilder({ programId, playerId }: { programId?: string; pl
       if (!await state.save()) return;
       const result = await activateProgram(state.draft.id);
       if (result.error) setMessage(result.error);
-      else { state.activated(); setNotice(t('programActivatedForPlayer')); }
+      else { state.activated(); toast.success(t('programActivatedForPlayer')); }
     } catch { setMessage(t('couldntActivateTryAgain')); }
     finally { setPending(false); }
   }
@@ -90,7 +90,7 @@ export function ProgramBuilder({ programId, playerId }: { programId?: string; pl
         </li>)}</ul>
       </>}
   </div>;
-  if (state.loading) return <div><LoadingState /></div>;
+  if (state.loading) return <div><LoadingState variant="detail" /></div>;
   if (!state.draft) return <div><ErrorState message={state.error || t('programNotFound')} retryLabel={t('tryAgain')} onRetry={state.retry} /></div>;
   const draft = state.draft;
   const day = draft.days.find(item => item.id === selectedDay) ?? draft.days[0];
@@ -103,7 +103,6 @@ export function ProgramBuilder({ programId, playerId }: { programId?: string; pl
       {(message || state.error) && <div role="alert" className="text-danger"><p>{message || state.error}</p>
         <Button variant="ghost" className="min-h-12" onClick={() => void (message ? activate() : save())}>{t('tryAgain')}</Button>
       </div>}
-      {notice && <p role="status" className="text-lime">{notice}</p>}
       <div className="grid items-start gap-5 lg:grid-cols-[15rem_minmax(0,1fr)]">
         <aside aria-label={t('programDays')} className="glass space-y-3 rounded-card p-4">
           <h2 className="font-bold">{t('programDays')}</h2>

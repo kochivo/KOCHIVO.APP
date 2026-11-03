@@ -19,7 +19,7 @@ export function NextTaskSlot({ snapshot, sessions, today, playerId, retryKey, on
   const logs = useMealLogs(today, nutrition.onError, nutrition.retryKey);
   if (nutrition.status === 'error') return <ErrorState message={t('taskLoadFailed')}
     retryLabel={t('tryAgain')} onRetry={() => { onRetry(); nutrition.retry(); }} />;
-  if (!status || nutrition.status === 'loading' || !logs) return <LoadingState />;
+  if (!status || nutrition.status === 'loading' || !logs) return <LoadingState variant="detail" />;
   // Offline at the gym the server read fails; skip the server-only rules so the workout and meal tasks still show.
   const remote = status.status === 'ready' ? status
     : { intakeDone: true, checkInWeeks: [saturdayWeek(today)[0] ?? today], voiceNotes: [] };
