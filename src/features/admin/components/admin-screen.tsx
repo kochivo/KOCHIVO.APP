@@ -30,10 +30,10 @@ interface Props {
   plans: { rows: PlanTier[]; error: string | null };
   search: string;
   offset: number;
-  now: string;
+  kpis: { data: { captains: number; players: number; paid_captains: number } | null; error: string | null };
 }
 const filters: Array<'all' | CaptainState> = ['all', 'paid', 'free', 'expired', 'unconfirmed', 'suspended'];
-export function AdminScreen({ captains, audit, plans, search, offset, now }: Props) {
+export function AdminScreen({ captains, audit, plans, search, offset, kpis }: Props) {
   const t = useT(messages);
   const locale = useLocale();
   const router = useRouter();
@@ -60,8 +60,7 @@ export function AdminScreen({ captains, audit, plans, search, offset, now }: Pro
         <ShieldCheck aria-hidden className="size-4" /> {t('adminOnly')}
       </span>
     </header>
-    {!captains.error && <KpiRow rows={captains.rows} now={now}
-      scope={offset > 0 ? t('pageScope') : search ? t('searchScope') : undefined} />}
+    {kpis.error ? <p role="alert" className="text-danger">{kpis.error}</p> : kpis.data && <KpiRow data={kpis.data} />}
     <section id="captain-management" tabIndex={-1} aria-label={t('manage')} className="space-y-5">
       <form className="flex gap-2" onSubmit={event => {
         event.preventDefault();

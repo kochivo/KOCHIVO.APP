@@ -3,6 +3,7 @@ import { messages } from '../messages';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { CaptainNav } from './captain-nav';
+import { NotificationBell } from '@/features/notifications';
 
 export async function CaptainShell({ children }: { children: ReactNode }) {
   const t = await getT(messages);
@@ -13,8 +14,9 @@ export async function CaptainShell({ children }: { children: ReactNode }) {
         <CaptainNav />
       </aside>
       <div className="min-w-0 flex-1 pb-28 lg:pb-0">
-        <div className="mb-6 flex items-center lg:hidden">
-          <Link href="/captain" className="flex min-h-12 items-center font-display text-xl font-extrabold">{t('brand')}</Link>
+        <div className="mb-6 flex items-center justify-between">
+          <Link href="/captain" className="flex min-h-12 items-center font-display text-xl font-extrabold lg:invisible">{t('brand')}</Link>
+          <NotificationBell captain />
         </div>
         <main>{children}</main>
       </div>
