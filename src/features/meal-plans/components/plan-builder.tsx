@@ -13,7 +13,7 @@ export function PlanBuilder({ planId }: { planId: string }) {
   const { draft, update } = state;
   if (state.loading) return <p role="status">جاري تحميل النظام</p>;
   if (!draft) return <div role="alert">{state.error}<Button variant="secondary" onClick={state.reload}>جرّب تاني</Button></div>;
-  return <main className="mx-auto grid max-w-6xl gap-5 p-4 md:p-6">
+  return <div className="mx-auto grid max-w-6xl gap-5">
     <Link className="inline-flex min-h-12 items-center text-muted" href={`/captain/players/${draft.playerId}/nutrition`}>الأنظمة الغذائية</Link>
     <header className="flex flex-wrap items-end justify-between gap-4">
       <label className="grid gap-2"><span className="text-sm text-muted">اسم النظام</span>
@@ -36,5 +36,5 @@ export function PlanBuilder({ planId }: { planId: string }) {
       </section>
       <aside><TargetsBar targets={draft.targets} totals={planTotals(draft)} onChange={targets => update(d => ({ ...d, targets }))} /></aside>
     </fieldset>
-  </main>;
+  </div>;
 }

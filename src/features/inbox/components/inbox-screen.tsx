@@ -60,7 +60,7 @@ export function InboxScreen() {
     } finally { setPending(false); }
   }
   const visible = items.filter((item) => filter === 'all' || item.kind === filter);
-  return <main dir="rtl" className="mx-auto max-w-6xl space-y-6 p-4 md:p-8">
+  return <div className="mx-auto max-w-6xl space-y-6">
     <header className="flex flex-wrap items-center justify-between gap-4">
       <h1 className="text-3xl font-extrabold">INBOX · المهام <span className="text-lime">{count ?? '—'}</span></h1>
       <div className="glass flex rounded-control p-1" aria-label="حالة المهام">
@@ -92,5 +92,5 @@ export function InboxScreen() {
           <ReplyBox key={`${selected.kind}:${selected.id}`} item={selected} onSend={send} />}
       </section>}
     </div>}
-  </main>;
+  </div>;
 }

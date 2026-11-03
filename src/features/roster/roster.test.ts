@@ -4,6 +4,7 @@ import { inviteDaysSchema, inviteMessage, inviteUrl, whatsappShareUrl } from './
 import { createInvite } from './data/create-invite';
 import { archivePlayer } from './data/archive-player';
 import { fetchRoster } from './data/roster';
+import { captainNav, mobileCaptainNav } from './nav';
 
 const mocks = vi.hoisted(() => {
   const single = vi.fn();
@@ -28,6 +29,31 @@ afterEach(() => { vi.useRealTimers(); });
 
 const today = '2026-11-03';
 const base = { today, startedOn: '2026-10-01', lastTrainingDate: today, accessUntil: '2026-12-01' };
+
+describe('captainNav', () => {
+  it.each([
+    ['/captain', 'اللاعبين'],
+    ['/captain/players/x/programs', 'اللاعبين'],
+    ['/captain/programs/abc', 'اللاعبين'],
+    ['/captain/nutrition/abc', 'اللاعبين'],
+    ['/captain/inbox', 'المهام'],
+    ['/captain/inbox/x', 'المهام'],
+    ['/captain/billing', 'الاشتراكات'],
+    ['/captain/settings/x', 'الإعدادات'],
+    ['/unknown', undefined],
+    ['/captain/unknown', undefined],
+    ['/captain/inboxes', undefined],
+    ['/captain/players-other/x', undefined],
+  ])('%s activates only %s on desktop and mobile', (pathname, label) => {
+    for (const items of [captainNav(pathname), mobileCaptainNav(pathname)]) {
+      expect(items.filter((item) => item.active).map((item) => item.label))
+        .toEqual(label ? [label] : []);
+      expect(items.map((item) => item.href)).toEqual([
+        '/captain', '/captain/inbox', '/captain/billing', '/captain/settings',
+      ]);
+    }
+  });
+});
 
 describe('playerStatus', () => {
   it.each([
