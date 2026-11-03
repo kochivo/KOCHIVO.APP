@@ -1,12 +1,16 @@
+'use client';
+
 import { Button, GlassCard, ProgressBar } from '@/ui';
 import { localDate } from '@/lib/dates';
 import { waLink } from '../renew';
 import type { Plan } from '../types';
 import { publicConfig } from '@/lib/public-config';
+import { useDemoExpiry } from '@/features/demo';
 
 const tierNames: Record<string, string> = { entry: 'البداية', champion: 'البطل', legend: 'الأسطورة', empire: 'الإمبراطورية' };
 
 export function PlanCard({ plan, used, subscriptionEnd }: { plan: Plan; used: number; subscriptionEnd: string | null }) {
+  const demo = useDemoExpiry();
   const tierName = tierNames[plan.tier] ?? plan.tier;
   const upgrade = waLink(publicConfig.ownerWhatsapp, `عايز أرقّي باقتي في كوتشيفو. باقتي الحالية ${tierName}. إيه خطوات الدفع والتفعيل؟`);
   return (
@@ -18,9 +22,9 @@ export function PlanCard({ plan, used, subscriptionEnd }: { plan: Plan; used: nu
         <ProgressBar value={used} max={plan.player_limit} aria-label="اللاعبين المستخدمين من الباقة" aria-valuetext={`${used} من ${plan.player_limit} لاعب`} />
       </div>
       {subscriptionEnd && <p className="text-sm text-muted">باقتك مدفوعة لحد <time dateTime={subscriptionEnd}>{localDate(new Date(subscriptionEnd))}</time></p>}
-      {upgrade ? <a href={upgrade} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 w-full items-center justify-center rounded-control border border-line px-4 font-bold hover:bg-surface-raised">رقّي باقتك</a>
-        : <><Button variant="ghost" disabled className="min-h-12 w-full" aria-describedby="owner-phone-missing">رقّي باقتك</Button><p id="owner-phone-missing" className="text-sm text-muted">رقم الدعم لسه متضافش</p></>}
-      <p className="text-sm text-muted">بعد الدفع، الإدارة بتفعّل الباقة</p>
+      {!demo && (upgrade ? <a href={upgrade} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 w-full items-center justify-center rounded-control border border-line px-4 font-bold hover:bg-surface-raised">رقّي باقتك</a>
+        : <><Button variant="ghost" disabled className="min-h-12 w-full" aria-describedby="owner-phone-missing">رقّي باقتك</Button><p id="owner-phone-missing" className="text-sm text-muted">رقم الدعم لسه متضافش</p></>)}
+      {!demo && <p className="text-sm text-muted">بعد الدفع، الإدارة بتفعّل الباقة</p>}
     </GlassCard>
   );
 }

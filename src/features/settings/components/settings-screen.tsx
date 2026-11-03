@@ -9,8 +9,10 @@ import { InviteMessageForm } from './invite-message-form';
 import { ExportCard } from './export-card';
 import { DeleteAccountCard } from './delete-account-card';
 import { GlassToggle } from './glass-toggle';
+import { demoExpiry, useDemoExpiry } from '@/features/demo';
 
 export function SettingsScreen() {
+  const demo = useDemoExpiry();
   const [profile, setProfile] = useState<SettingsProfile | null>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
@@ -36,7 +38,7 @@ export function SettingsScreen() {
       <ProfileForm profile={profile} />
       {profile.role === 'captain' && <InviteMessageForm initialMessage={profile.invite_message} />}
       <ExportCard />
-      <DeleteAccountCard requestedAt={profile.deletion_requested_at} />
+      {!demo && !demoExpiry(profile) && <DeleteAccountCard requestedAt={profile.deletion_requested_at} />}
     </> : null}
   </div>;
 }

@@ -46,6 +46,15 @@ beforeEach(() => {
 });
 
 describe('route decisions', () => {
+  it('routes anonymous users without a workspace to demo using verified claims', async () => {
+    mocks.auth.getClaims.mockResolvedValue({ data: { claims: { sub: 'demo', is_anonymous: true } }, error: null });
+    mocks.single.mockResolvedValue({ data: { role: 'player', role_confirmed: false }, error: null });
+    const response = await refreshSession(new NextRequest('http://localhost:3000/captain'), decideRoute);
+    expect(response.headers.get('location')).toBe('http://localhost:3000/demo');
+  });
+  it('lets a confirmed demo captain use captain routes', () => {
+    expect(decideRoute({ path: '/captain', user: { role: 'captain', roleConfirmed: true, anonymous: true } })).toEqual({});
+  });
   const captain = { role: 'captain', roleConfirmed: true } as const;
   const player = { role: 'player', roleConfirmed: true } as const;
   it('blocks suspended users on all routes except suspension, sign-out and callback', () => {

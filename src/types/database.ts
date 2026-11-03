@@ -823,6 +823,7 @@ export type Database = {
         Row: {
           created_at: string
           deletion_requested_at: string | null
+          demo_expires_at: string | null
           full_name: string
           id: string
           invite_message: string | null
@@ -837,6 +838,7 @@ export type Database = {
         Insert: {
           created_at?: string
           deletion_requested_at?: string | null
+          demo_expires_at?: string | null
           full_name?: string
           id: string
           invite_message?: string | null
@@ -851,6 +853,7 @@ export type Database = {
         Update: {
           created_at?: string
           deletion_requested_at?: string | null
+          demo_expires_at?: string | null
           full_name?: string
           id?: string
           invite_message?: string | null
@@ -1239,6 +1242,7 @@ export type Database = {
         Args: { p_role: Database["public"]["Enums"]["user_role"] }
         Returns: undefined
       }
+      create_demo_workspace: { Args: never; Returns: undefined }
       current_tier: { Args: { p_captain: string }; Returns: string }
       invite_preview: {
         Args: { p_code: string }

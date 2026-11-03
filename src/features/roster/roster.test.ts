@@ -148,6 +148,11 @@ describe('invites', () => {
 });
 
 describe('server actions and roster reads', () => {
+  it('blocks a demo invite before inserting', async () => {
+    mocks.query.single.mockResolvedValue({ data: { role: 'captain', demo_expires_at: '2026-11-04T12:00:00Z' }, error: null });
+    expect(await createInvite(30)).toEqual({ error: 'الدعوات مقفولة في الديمو' });
+    expect(mocks.query.insert).not.toHaveBeenCalled();
+  });
   it.each([7, 30, 90])('creates a %s day invite using Cairo today and the verified session', async (days) => {
     mocks.query.single.mockResolvedValueOnce({ data: { role: 'captain' }, error: null })
       .mockResolvedValueOnce({ data: { code: 'invite-code' }, error: null });

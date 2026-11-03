@@ -28,7 +28,9 @@ describe('public marketing page', () => {
     const html = [Hero, PlayerSection, SiteFooter].map((component) => renderToStaticMarkup(createElement(component))).join('');
     expect(html.match(/<h1\b/g)).toHaveLength(1);
     expect(html).toContain('href="/login?tab=signup"');
-    expect(html).toContain('href="/login"');
+    expect(html).toContain('href="/demo"');
+    expect(html).toContain('جرّب الديمو');
+    expect(html).toContain('لوحة كابتن ببيانات تجريبية لمدة ٢٤ ساعة، من غير دعوات');
     expect(html).toContain('© Gym visual');
     expect(html).toContain('معاينة توضيحية · بيانات مثال');
     expect(html).toContain('بنش بريس بالبار');
