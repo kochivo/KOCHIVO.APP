@@ -5,14 +5,12 @@ import { formatNumber } from '@/lib/format';
 import { messages } from '../messages';
 
 import Link from 'next/link';
-import dynamic from 'next/dynamic';
-import { Deferred } from '@/ui/deferred';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowDown, ArrowUp, Trash2 } from 'lucide-react';
 import { uuidv7 } from '@/core/offline/ids';
 import { Button, ErrorState, IconButton, LoadingState, TextField } from '@/ui';
-import { addDay, addExercise, moveDay, removeDay } from '../draft';
+import { addDay, moveDay, removeDay } from '../draft';
 import { validateForActivation } from '../summary';
 import { createProgram, listPlayerPrograms } from '../data/program-io';
 import { activateProgram } from '../data/activate';
@@ -21,17 +19,15 @@ import type { ProgramRow, Result } from '../types';
 import { BuilderHeader } from './builder-header';
 import { DayEditor } from './day-editor';
 import { starterText } from '@/lib/starter-text';
-const ExercisePicker = dynamic(() => import('./exercise-picker').then(module => module.ExercisePicker), {
-  ssr: false, loading: () => <LoadingState />,
-});
+import { useToast } from '@/ui/toast';
 
 export function ProgramBuilder({ programId, playerId }: { programId?: string; playerId?: string }) {
   const t = useT(messages);
+  const toast = useToast();
   const locale = useLocale();
   const state = useProgramDraft(programId);
   const [selectedDay, setSelectedDay] = useState('');
   const [message, setMessage] = useState('');
-  const [notice, setNotice] = useState('');
   const [pending, setPending] = useState(false);
   const [title, setTitle] = useState('');
   const [programs, setPrograms] = useState<Result<ProgramRow[]> | null>(null);
@@ -57,12 +53,11 @@ export function ProgramBuilder({ programId, playerId }: { programId?: string; pl
     finally { setPending(false); }
   }
   async function save() {
-    setNotice(''); setMessage('');
-    if (await state.save()) setNotice(t('saved'));
+    setMessage('');
+    if (await state.save()) toast.success(t('saved'));
   }
   async function activate() {
     if (!state.draft || pending || state.saving) return;
-    setNotice('');
     const errors = validateForActivation(state.draft, t);
     setMessage(errors.join(' · '));
     if (errors.length) return;
@@ -71,7 +66,7 @@ export function ProgramBuilder({ programId, playerId }: { programId?: string; pl
       if (!await state.save()) return;
       const result = await activateProgram(state.draft.id);
       if (result.error) setMessage(result.error);
-      else { state.activated(); setNotice(t('programActivatedForPlayer')); }
+      else { state.activated(); toast.success(t('programActivatedForPlayer')); }
     } catch { setMessage(t('couldntActivateTryAgain')); }
     finally { setPending(false); }
   }
@@ -95,7 +90,7 @@ export function ProgramBuilder({ programId, playerId }: { programId?: string; pl
         </li>)}</ul>
       </>}
   </div>;
-  if (state.loading) return <div><LoadingState /></div>;
+  if (state.loading) return <div><LoadingState variant="detail" /></div>;
   if (!state.draft) return <div><ErrorState message={state.error || t('programNotFound')} retryLabel={t('tryAgain')} onRetry={state.retry} /></div>;
   const draft = state.draft;
   const day = draft.days.find(item => item.id === selectedDay) ?? draft.days[0];
@@ -108,7 +103,6 @@ export function ProgramBuilder({ programId, playerId }: { programId?: string; pl
       {(message || state.error) && <div role="alert" className="text-danger"><p>{message || state.error}</p>
         <Button variant="ghost" className="min-h-12" onClick={() => void (message ? activate() : save())}>{t('tryAgain')}</Button>
       </div>}
-      {notice && <p role="status" className="text-lime">{notice}</p>}
       <div className="grid items-start gap-5 lg:grid-cols-[15rem_minmax(0,1fr)]">
         <aside aria-label={t('programDays')} className="glass space-y-3 rounded-card p-4">
           <h2 className="font-bold">{t('programDays')}</h2>
@@ -127,12 +121,7 @@ export function ProgramBuilder({ programId, playerId }: { programId?: string; pl
             const id = uuidv7(); state.update(current => addDay(current, id, t('newDay'))); setSelectedDay(id);
           }}>{t('addDay')}</Button>
         </aside>
-        <div className="grid min-w-0 items-start gap-5 2xl:grid-cols-[minmax(0,1fr)_20rem]">
-          {day && <DayEditor key={day.id} day={day} update={state.update} />}
-          <Deferred fallback={<LoadingState className="min-h-96" />}><ExercisePicker disabled={!day || busy} onAdd={exercise => {
-            if (day) { const id = uuidv7(); state.update(current => addExercise(current, day.id, exercise, id)); }
-          }} /></Deferred>
-        </div>
+        {day && <DayEditor key={day.id} day={day} update={state.update} />}
       </div>
     </fieldset>
   </div>;

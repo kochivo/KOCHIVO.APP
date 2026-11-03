@@ -16,7 +16,7 @@ export interface EmptyStateProps extends Omit<HTMLAttributes<HTMLDivElement>, 't
 
 export function EmptyState({ icon: Icon, title, body, steps, action, secondary, className, ...props }: EmptyStateProps) {
   return (
-    <div {...props} className={cn('glass empty-state-in flex flex-col items-center gap-4 rounded-card px-6 py-8 text-center', className)}>
+    <div {...props} className={cn('glass enter flex flex-col items-center gap-4 rounded-card px-6 py-8 text-center', className)}>
       <span aria-hidden className="grid size-16 place-items-center rounded-full bg-lime-soft text-lime ring-8 ring-lime-soft">
         <Icon className="size-7" />
       </span>

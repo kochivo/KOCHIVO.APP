@@ -10,5 +10,5 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 }
 
 export default function BillingPage() {
-  return <Suspense fallback={<LoadingState />}><BillingScreen data={fetchBilling()} today={localDate(new Date())} /></Suspense>;
+  return <Suspense fallback={<LoadingState variant="cards" />}><BillingScreen data={fetchBilling()} today={localDate(new Date())} /></Suspense>;
 }

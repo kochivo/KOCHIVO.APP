@@ -14,7 +14,7 @@ export function NutritionSlot() {
   const { snapshot, status, stale, today, retry, onError, retryKey } = useNutritionSnapshot();
   const logs = useMealLogs(today, onError, retryKey);
   if (status === 'error') return <ErrorState message={t('couldntLoadYourMealPlan')} retryLabel={t('tryAgain')} onRetry={retry} />;
-  if (status === 'loading' || logs === undefined) return <LoadingState />;
+  if (status === 'loading' || logs === undefined) return <LoadingState variant="cards" />;
   const next = snapshot?.meals.find((meal) => !logs.some((row) => row.meal_id === meal.id && row.completed_at));
   return <Link href="/player/nutrition" className="block min-h-12 rounded-card">
     <GlassCard className="space-y-2 p-5 text-sm">

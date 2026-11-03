@@ -1,7 +1,5 @@
 @import 'tailwindcss';
-
 [dir='ltr'] .dir-icon { transform: scaleX(-1); }
-
 /*
  * KOCHIVO design tokens — the only place colors are defined.
  * Brand source: brand/tokens/palette.css (2026-10-26). Extra shades below are derived from it.
@@ -16,7 +14,6 @@
   --color-muted: #b5bbc1;
   --color-lime: #b6e94f;
   --color-lime-ink: #b6e94f;
-
   /* derived */
   --color-bg-deep: #0b0e11;
   --color-surface-raised: #222831;
@@ -27,24 +24,20 @@
   --color-warn-soft: rgb(242 181 68 / 0.12);
   --color-danger: #ffa080;
   --color-danger-soft: rgb(255 138 101 / 0.12);
-
   --font-sans: var(--font-manrope), var(--font-alexandria), system-ui, sans-serif;
   /* headings, buttons and big labels: athletic display face; body text stays on the calmer sans */
   --font-display: var(--font-manrope), var(--font-changa), var(--font-alexandria), system-ui, sans-serif;
-
   --radius-card: 1.5rem;
   --radius-control: 1rem;
-
   /* minimum touch target from the PRD (48dp) */
   --spacing-touch: 3rem;
 }
-
 :root {
   --safe-start: env(safe-area-inset-left);
   --safe-end: env(safe-area-inset-right);
   --glass-tint: rgb(255 255 255 / 0.05);
   --glass-tint-raised: rgb(255 255 255 / 0.08);
-  --glass-strong-tint: rgb(0 0 0 / 0.4);
+  --glass-strong-tint: rgb(0 0 0 / 0.65);
   --glass-hairline: rgb(255 255 255 / 0.1);
   --glass-highlight: rgb(255 255 255 / 0.06);
   --mesh-glow: rgb(182 233 79 / 0.08);
@@ -86,13 +79,8 @@ html[data-theme='light'] .text-lime { color: var(--color-lime-ink); }
 html[data-theme='light'] .bg-ink.text-on-lime { color: var(--color-surface); }
 /* Theme-specific artwork, such as the logo whose letters are white in dark mode. */
 html:not([data-theme='light']) .theme-light-only, html[data-theme='light'] .theme-dark-only { display: none; }
-
 @layer base {
-  html {
-    color-scheme: light dark;
-    -webkit-tap-highlight-color: transparent;
-  }
-
+  html { color-scheme: light dark; -webkit-tap-highlight-color: transparent; }
   body {
     background: var(--color-bg-deep);
     color: var(--color-ink);
@@ -103,14 +91,12 @@ html:not([data-theme='light']) .theme-light-only, html[data-theme='light'] .them
     overflow-wrap: break-word;
     padding-inline: var(--safe-start) var(--safe-end);
   }
-
   button, summary, [role='button'] { touch-action: manipulation; }
   button { min-block-size: 3rem; }
   input, textarea, select { font-size: max(1rem, 16px) !important; min-inline-size: 0; scroll-margin-block: 5rem; }
   html { scroll-padding-block: 5rem; }
   html:has(dialog:modal), body:has(dialog:modal) { overflow: hidden; }
   dialog { overflow-y: auto; overscroll-behavior: contain; }
-
   /*
    * Dark mesh built only from brand hues: deep black, a steel-navy lifted from the surface tone,
    * and one faint lime glow. Fixed pseudo-element instead of background-attachment:fixed (broken on iOS).
@@ -127,20 +113,9 @@ html:not([data-theme='light']) .theme-light-only, html[data-theme='light'] .them
       radial-gradient(40rem 36rem at 80% 110%, var(--mesh-bottom), transparent 70%),
       var(--color-bg-deep);
   }
-
-  h1,
-  h2,
-  h3,
-  button {
-    font-family: var(--font-display);
-  }
-
-  :focus-visible {
-    outline: 2px solid var(--color-lime-ink);
-    outline-offset: 2px;
-  }
+  h1, h2, h3, button { font-family: var(--font-display); }
+  :focus-visible { outline: 2px solid var(--color-lime-ink); outline-offset: 2px; }
 }
-
 /* Override sheet utility padding as well as browser defaults, including landscape notches. */
 dialog:modal {
   max-block-size: min(90dvh, calc(var(--visible-viewport-height, 100dvh) - 2rem));
@@ -150,12 +125,11 @@ dialog:modal {
   padding-inline-end: max(1.25rem, var(--safe-end));
 }
 html[data-keyboard='open'] dialog:modal { inset-block-end: var(--keyboard-inset); }
-
 /*
  * Glass surfaces. Three levels only — pick by how much must stay readable on top:
  *   glass        lists, cards (white/5, blur 12)
  *   glass-raised selected / hovered item (white/8, blur 12)
- *   glass-strong gym focus mode and anything with big numbers (black/40, blur 24) — highest contrast
+ *   glass-strong gym focus mode and anything with big numbers (black/65, blur 24) — highest contrast
  * Every level has a 1px white/10 hairline and falls back to a solid surface without backdrop-filter.
  * Cards blur 12px (lighter than the old 16px + saturate); nested panels never blur twice, and the
  * "lighter visuals" setting turns every blur off on slow phones.
@@ -167,7 +141,6 @@ html[data-keyboard='open'] dialog:modal { inset-block-end: var(--keyboard-inset)
   border: 1px solid var(--glass-hairline);
   box-shadow: inset 0 1px 0 var(--glass-highlight);
 }
-
 @utility glass-raised {
   @apply glass-surface;
   --glass-blur-background: var(--glass-tint-raised);
@@ -175,46 +148,30 @@ html[data-keyboard='open'] dialog:modal { inset-block-end: var(--keyboard-inset)
   border: 1px solid var(--glass-hairline);
   box-shadow: inset 0 1px 0 var(--glass-highlight);
 }
-
 @utility glass-strong {
   @apply glass-surface;
   --glass-blur-background: var(--glass-strong-tint);
   --glass-blur-filter: blur(24px);
   border: 1px solid var(--glass-hairline);
 }
-
 /* Shared by all three utilities, including responsive variants such as lg:glass-strong. */
 @utility glass-surface {
   background: var(--glass-solid-background, var(--glass-blur-background));
   -webkit-backdrop-filter: var(--glass-solid-filter, var(--glass-blur-filter));
   backdrop-filter: var(--glass-solid-filter, var(--glass-blur-filter));
 }
-
-html[data-glass='solid'] {
-  --glass-solid-background: var(--color-surface);
-  --glass-solid-filter: none;
-}
-
+html[data-glass='solid'] { --glass-solid-background: var(--color-surface); --glass-solid-filter: none; }
 /* Nested panels keep their contrast without asking the GPU to blur the same pixels again. */
 :is(.glass, .glass-strong, .glass-raised) :is(.glass, .glass-strong, .glass-raised) {
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
-
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  html {
-    --glass-solid-background: var(--color-surface);
-    --glass-solid-filter: none;
-  }
+  html { --glass-solid-background: var(--color-surface); --glass-solid-filter: none; }
 }
-
 @media (prefers-reduced-transparency: reduce) {
-  html {
-    --glass-solid-background: var(--color-surface);
-    --glass-solid-filter: none;
-  }
+  html { --glass-solid-background: var(--color-surface); --glass-solid-filter: none; }
 }
-
 /* Landing utilities use the existing theme and font metrics. */
 @layer components {
   .marketing-wrap { width: 100%; max-width: 1200px; margin-inline: auto; padding-inline: clamp(1rem, 4vw, 2rem); }
@@ -249,10 +206,55 @@ html[data-glass='solid'] {
   .marketing-reveal { animation: marketing-rise linear both; animation-timeline: view(); animation-range: entry 0% entry 35%; }
 }
 
+@utility press-scale {
+  transition: transform 300ms ease-out;
+  &:active:not(:disabled) { transform: scale(.95); }
+}
+@utility press {
+  transition-property: transform, box-shadow, background-color, border-color, opacity;
+  transition-duration: 300ms;
+  transition-timing-function: ease-out;
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      transform: translateY(-.25rem);
+      box-shadow: var(--press-glow-hover, 0 0 transparent), 0 10px 20px -12px color-mix(in srgb, var(--color-ink) 12%, transparent);
+    }
+  }
+  &:active:not(:disabled) { transform: scale(.95); }
+}
+@utility glow {
+  --press-glow: 0 0 0 1px color-mix(in srgb, var(--color-lime) 25%, transparent), 0 4px 14px color-mix(in srgb, var(--color-lime) 16%, transparent);
+  --press-glow-hover: 0 0 0 1px color-mix(in srgb, var(--color-lime) 35%, transparent), 0 6px 18px color-mix(in srgb, var(--color-lime) 22%, transparent);
+  box-shadow: var(--press-glow);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) { box-shadow: var(--press-glow-hover), 0 10px 20px -12px color-mix(in srgb, var(--color-ink) 12%, transparent); }
+  }
+}
+/* No retained transform: route wrappers must not become containing blocks for fixed controls. */
 /* Empty states fade in with opacity and transform only, so the browser never re-lays out the page. */
-.empty-state-in { animation: empty-state-in .28s ease-out both; }
-@keyframes empty-state-in { from { opacity: 0; transform: translateY(8px); } }
-
+.empty-state-in { animation: surface-in .28s ease-out; }
+@utility enter { animation: surface-in 280ms ease-out; }
+@utility shimmer {
+  background-image: linear-gradient(100deg, transparent 25%, var(--glass-highlight) 50%, transparent 75%);
+  background-size: 200% 100%;
+  animation: skeleton-sweep 1.6s ease-in-out infinite;
+}
+@keyframes skeleton-sweep { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+/* Sits above the bottom nav and the sticky primary action, so a toast never covers either. */
+.toast-stack { inset-inline: 0; bottom: calc(10.5rem + env(safe-area-inset-bottom)); }
+.toast-leave { animation: toast-fade 200ms ease-out forwards; }
+@keyframes toast-fade { to { opacity: 0; } }
+/* The marketing page keeps its own type scale. */
+body:not(:has(.marketing-wrap)) :is(h1, h2, h3) { font-weight: 700; color: var(--color-ink); }
+body:not(:has(.marketing-wrap)) .text-muted { font-weight: 500; }
+@keyframes surface-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) {
   .marketing-slogan > span, .marketing-after, .marketing-beam, .marketing-phone, .marketing-reveal, .empty-state-in { animation: none; }
+  .enter, .shimmer, .toast-leave { animation: none; }
+  .press, .press-scale, .press:hover, .press:active, .press-scale:active {
+    transition: none;
+    transform: none;
+    scale: none;
+    translate: none;
+  }
 }

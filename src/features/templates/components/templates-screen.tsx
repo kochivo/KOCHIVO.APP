@@ -14,11 +14,16 @@ import type { Template, TemplateKind } from '../types';
 import { AssignSheet } from './assign-sheet';
 import { PreviewSheet } from './preview-sheet';
 import { starterText } from '@/lib/starter-text';
+import { LoadingState } from '@/ui/loading-state';
+import { useToast } from '@/ui/toast';
+import { messages as uiMessages } from '@/ui/messages';
 
 type Edit = { template: Template; title: string } | { template: Template; title?: never };
 
 export function TemplatesScreen() {
   const t = useT(messages);
+  const feedback = useT(uiMessages);
+  const toast = useToast();
   const locale = useLocale();
   const [templates, setTemplates] = useState<Template[]>([]);
   const [kind, setKind] = useState<TemplateKind>('program');
@@ -94,6 +99,7 @@ export function TemplatesScreen() {
         if (result.error !== undefined) { failure = result.error; throw new Error(failure); }
         return result.data;
       });
+      toast.success(feedback('templateCopied'));
     } catch { setErrors(current => ({ ...current, [keyOf(template)]: failure })); }
     finally { unlock(keys); }
   }
@@ -108,7 +114,7 @@ export function TemplatesScreen() {
       {(['program', 'nutrition'] as const).map(tab => <Button key={tab} variant="ghost" className={`min-h-12 ${kind === tab ? 'glass-strong font-bold' : 'text-muted'}`}
         aria-pressed={kind === tab} onClick={() => setKind(tab)}>{tab === 'program' ? t('workouts') : t('nutrition')}</Button>)}
     </div>
-    {loading ? <p role="status">{t('loadingTemplates')}</p> : loadError ? <div role="alert" className="glass rounded-card p-5">{loadError}
+    {loading ? <LoadingState variant="cards" /> : loadError ? <div role="alert" className="glass rounded-card p-5">{loadError}
       <Button variant="ghost" className="min-h-12" onClick={() => { setLoading(true); setAttempt(value => value + 1); }}>{t('tryAgain')}</Button>
     </div> : <>
       {busy.length > 0 && <p role="status">{t('savingChanges')}</p>}

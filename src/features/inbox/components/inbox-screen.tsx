@@ -6,6 +6,9 @@ import { messages } from '../messages';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { CheckCheck, History, ListFilter, X } from 'lucide-react';
 import { EmptyState } from '@/ui';
+import { LoadingState } from '@/ui/loading-state';
+import { useToast } from '@/ui/toast';
+import { messages as uiMessages } from '@/ui/messages';
 import { ResponsiveDialog } from '@/ui/responsive-dialog';
 import { listInbox, reviewItem } from '../data/inbox';
 import type { InboxItem } from '../types';
@@ -17,6 +20,8 @@ import { VoiceRecorder } from '@/features/voice-notes';
 
 export function InboxScreen() {
   const t = useT(messages);
+  const feedback = useT(uiMessages);
+  const toast = useToast();
   const locale = useLocale();
   const [status, setStatus] = useState<'open' | 'reviewed'>('open');
   const [filter, setFilter] = useState<'all' | InboxItem['kind']>('all');
@@ -75,6 +80,7 @@ export function InboxScreen() {
       const result = await reviewItem({ kind: item.kind, id: item.id, reply });
       if (result.error !== undefined) { failure = result.error; throw new Error(failure); }
       setDrafts(current => { const next = { ...current }; delete next[key]; return next; });
+      toast.success(feedback('reviewSent'));
     } catch {
       markReview(key, null);
       setDrafts(current => ({ ...current, [key]: reply }));
@@ -110,7 +116,7 @@ export function InboxScreen() {
     </div>
     {error && <div role="alert" className="glass rounded-card p-4 text-danger">{error}<button onClick={() => { setLoading(true); setError(''); setLoadError(''); void load(); }} className="ms-3 min-h-12 px-4 text-ink">{t('retry')}</button></div>}
     {pending.length > 0 && <p role="status" className="text-muted">{t('sending')}</p>}
-    {loading && !displayed.length ? <p role="status">{t('loading')}</p> : <div className="grid items-start gap-5 lg:grid-cols-2">
+    {loading && !displayed.length ? <LoadingState variant="list" aria-label={t('loading')} /> : <div className="grid items-start gap-5 lg:grid-cols-2">
       <section aria-label={t('inbox')} className="space-y-3">
         {!visible.length && !error && (displayed.length ? <EmptyState icon={ListFilter} title={t('noType')} body={t('noTypeBody')} action={{ label: t('showAll'), onClick: () => setFilter('all') }} />
           : status === 'open' ? <EmptyState icon={CheckCheck} title={t('noPending')} body={t('noPendingBody')} steps={[t('stepForm'), t('stepCheckin')]} action={{ label: t('showReviewed'), onClick: () => switchTo('reviewed') }} />

@@ -39,6 +39,7 @@ vi.mock('react', async original => ({
 vi.mock('@/core/i18n/client', () => ({ useT: () => hooks.t, useLocale: () => 'en' }));
 vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh: vi.fn() }) }));
 vi.mock('@/features/demo', () => ({ useDemoExpiry: () => null }));
+vi.mock('@/ui/toast', () => ({ useToast: () => ({ success: vi.fn(), error: vi.fn() }) }));
 type Node = ReactElement<Record<string, unknown>>;
 function nodes(value: unknown): Node[] {
   if (Array.isArray(value)) return value.flatMap(nodes);

@@ -5,7 +5,7 @@ import { LoadingState } from '@/ui';
 
 export default function PlayersPage() {
   const data = Promise.all([fetchRoster(), fetchCaptainFirstName()]);
-  return <Suspense fallback={<LoadingState />}>
+  return <Suspense fallback={<LoadingState variant="list" />}>
     <RosterScreen data={data} today={localDate(new Date())} />
   </Suspense>;
 }

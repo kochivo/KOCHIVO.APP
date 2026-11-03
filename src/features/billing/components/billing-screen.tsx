@@ -21,7 +21,7 @@ export function BillingScreen({ data, today }: { data: Promise<BillingResult>; t
   return (
     <section className="space-y-6">
       <header><h1 className="text-3xl font-extrabold">{t('billing')}</h1><p className="mt-2 text-sm text-muted">{t('intro')}</p></header>
-      {pending ? <LoadingState /> : result.error || !result.data ? <ErrorState message={result.error ?? t('loadFailed')} retryLabel={t('retry')} onRetry={() => startTransition(() => router.refresh())} />
+      {pending ? <LoadingState variant="cards" /> : result.error || !result.data ? <ErrorState message={result.error ?? t('loadFailed')} retryLabel={t('retry')} onRetry={() => startTransition(() => router.refresh())} />
         : <><FinanceSummary revenue={result.data.revenue} /><div className="grid items-start gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
           <section className="space-y-4" aria-labelledby="billing-players">
             <h2 id="billing-players" className="text-xl font-bold">{t('players')}</h2>

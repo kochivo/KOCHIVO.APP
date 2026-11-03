@@ -21,7 +21,7 @@ export function CaptainScreen({ voiceNotes }: { voiceNotes?: ReactNode }) {
   const url = whatsappUrl({ phone: data?.phone ?? '' });
   return <main className="mx-auto max-w-lg space-y-5 px-5 pt-6 pb-32">
     <header><h1 className="text-2xl font-extrabold">{t('coach')}</h1></header>
-    {status === 'loading' ? <LoadingState /> : status === 'error' ?
+    {status === 'loading' ? <LoadingState variant="detail" /> : status === 'error' ?
       <ErrorState message={t('couldnTLoadYourCoach')} retryLabel={t('tryAgain')} onRetry={() => void retry()} /> :
       !data ? <EmptyState icon={MessageCircle} title={t('youReNotWorkingWithA')} body={t('yourCoachSDetailsWillAppear')} /> :
         <GlassCard className="space-y-5 p-6">

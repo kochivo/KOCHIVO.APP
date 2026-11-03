@@ -5,7 +5,7 @@ type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
 type Size = 'md' | 'lg' | 'xl';
 
 const variants: Record<Variant, string> = {
-  primary: 'bg-lime text-on-lime font-extrabold hover:brightness-105 active:brightness-95',
+  primary: 'glow bg-lime text-on-lime font-extrabold',
   secondary: 'glass text-ink hover:bg-ink/10',
   ghost: 'bg-transparent text-ink hover:bg-ink/5',
   danger: 'border border-danger/40 bg-danger-soft text-danger font-bold hover:bg-danger/20',
@@ -27,7 +27,7 @@ export function Button({ variant = 'primary', size = 'md', className, type = 'bu
     <button
       type={type}
       className={cn(
-        'inline-flex items-center justify-center gap-2 transition-colors duration-150 motion-reduce:transition-none disabled:opacity-40',
+        'press inline-flex items-center justify-center gap-2 disabled:opacity-40',
         variants[variant],
         sizes[size],
         className,

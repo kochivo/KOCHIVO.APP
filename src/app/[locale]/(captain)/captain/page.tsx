@@ -7,7 +7,7 @@ import { LoadingState } from '@/ui';
 
 export default function CaptainPage() {
   const data = Promise.all([fetchRoster(), fetchCaptainFirstName(), fetchDues()]);
-  return <Suspense fallback={<LoadingState />}>
+  return <Suspense fallback={<LoadingState variant="cards" />}>
     <DashboardScreen data={data} today={localDate(new Date())} plan={<Suspense fallback={null}><PlanBadge /></Suspense>} />
   </Suspense>;
 }

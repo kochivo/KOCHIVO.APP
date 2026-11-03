@@ -42,7 +42,7 @@ export function PlayerVoiceNotes() {
   return (
     <GlassCard role="region" aria-labelledby="voice-heading" className="space-y-4 p-5">
       <h2 id="voice-heading" className="text-xl font-bold">{t('fromCoach')}</h2>
-      {load.status === 'loading' ? <LoadingState /> : load.status === 'error' ?
+      {load.status === 'loading' ? <LoadingState variant="list" /> : load.status === 'error' ?
         <ErrorState message={t('loadFailed')} retryLabel={t('retry')} onRetry={() => { setLoad({ status: 'loading' }); void fetchNotes(); }} /> :
         load.notes.length === 0 ? <EmptyState icon={Mic} title={t('noNotesTitle')} body={t('noNotesBody')} /> :
           <VoiceNoteList notes={load.notes} onPlay={played} />}
