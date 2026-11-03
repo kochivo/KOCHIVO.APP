@@ -47,13 +47,20 @@ async function sendBatch(
     await send(table, rows as SyncRows[typeof table][]);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    await db.outbox.bulkUpdate(
-      batch.map((e) => ({
+    // A failed older request must not postpone an edit that was re-queued while sending.
+    await db.transaction('rw', db.outbox, async () => {
+      for (const e of batch) {
         // Entries read from the auto-increment outbox table always have a persisted key.
-        key: e.id!,
-        changes: { attempts: e.attempts + 1, next_attempt_at: now + backoffDelay(e.attempts + 1), last_error: message },
-      })),
-    );
+        const current = await db.outbox.get(e.id!);
+        if (current?.revision !== e.revision) continue;
+        // The persisted key was used to read current above.
+        await db.outbox.update(e.id!, {
+          attempts: e.attempts + 1,
+          next_attempt_at: now + backoffDelay(e.attempts + 1),
+          last_error: message,
+        });
+      }
+    });
     return false;
   }
   // Only remove entries that were not re-queued while the request was in flight.

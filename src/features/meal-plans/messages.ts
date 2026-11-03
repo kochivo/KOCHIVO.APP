@@ -2,6 +2,12 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    editFood: "عدّل الأكلة",
+    saveFood: "احفظ التعديلات",
+    confirmDeleteFood: "متأكد إنك عايز تمسح الأكلة دي؟",
+    foodDeleted: "الأكلة اتمسحت",
+    foodDeleteFailed: "الأكلة متمسحتش. جرّب تاني",
+    foodInUse: "الأكلة مستخدمة في نظام غذائي. شيلها من النظام الأول عشان تمسحها",
     alternativeNeedsCalories: "البديل لازم يكون فيه سعرات عشان نحسب كميته",
     catalogHint: "ضيف أكلة بالمقادير بتاعتها عشان تبدأ الوجبة",
     emptyBody: "ابدأ من قالب جاهز أو ضيف وجبات وأكل يناسب اللاعب",
@@ -102,6 +108,12 @@ export const messages = defineMessages({
     planSaved: "النظام اتحفظ",
   },
   en: {
+    editFood: "Edit food",
+    saveFood: "Save changes",
+    confirmDeleteFood: "Delete this food?",
+    foodDeleted: "Food deleted",
+    foodDeleteFailed: "Couldn't delete food. Try again",
+    foodInUse: "This food is used in a meal plan. Remove it from the plan before deleting it",
     alternativeNeedsCalories: "An alternative needs calories so we can calculate its portion",
     catalogHint: "Add a food and its serving details to start this meal",
     emptyBody: "Start with a template or add meals and foods for this player",

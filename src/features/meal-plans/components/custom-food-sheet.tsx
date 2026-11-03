@@ -12,8 +12,9 @@ import { customFoodSchema } from '../types';
 import type { Food } from '../types';
 import { saveCustomFood } from '../data/custom-food-photo';
 
-export function CustomFoodSheet({ onClose, onSave, openerId, alternative = false }: {
+export function CustomFoodSheet({ onClose, onSave, openerId, alternative = false, food, onOptimistic }: {
   onClose: () => void; onSave: (food: Food, grams: number) => void; openerId: string; alternative?: boolean;
+  food?: Food; onOptimistic?: (food: Food) => () => void;
 }) {
   const t = useT(messages);
   const toast = useToast();
@@ -36,31 +37,37 @@ export function CustomFoodSheet({ onClose, onSave, openerId, alternative = false
     if (alternative && value.data.kcal <= 0) { setError(t('alternativeNeedsCalories')); return; }
     saving.current = true;
     setBusy(true); setError('');
+    const per100 = (number: number) => Math.round(number / value.data.servingGrams * 1000) / 10;
+    const rollback = food && onOptimistic?.({ ...food, name: value.data.name,
+      kcal: per100(value.data.kcal), protein: per100(value.data.protein),
+      carbs: per100(value.data.carbs), fat: per100(value.data.fat) });
     try {
-      const food = await saveCustomFood(value.data, file, t);
-      onSave(food, value.data.servingGrams);
+      const saved = await saveCustomFood(value.data, file, t, food?.id);
+      onSave(saved, value.data.servingGrams);
       toast.success(t('customFoodSaved'));
     } catch (cause) {
+      rollback?.();
       const known = [t('photoFailed'), t('photoCleanupFailed'), t('imageIsTooLargeOrUnsupportedChoose'), t('chooseAnImage')];
       setError(cause instanceof Error && known.includes(cause.message) ? cause.message : t('couldntSaveTryAgain'));
+      toast.error(t('couldntSaveTryAgain'));
     } finally { saving.current = false; setBusy(false); }
   }
   const fields = [
     { name: 'servingGrams', label: t('servingGrams'), min: 5, max: 2000, value: 100 },
-    { name: 'kcal', label: t('calories'), min: alternative ? 0.1 : 0, max: 5000, value: 0 },
-    { name: 'protein', label: t('protein'), min: 0, max: 1000, value: 0 },
-    { name: 'carbs', label: t('carbs2'), min: 0, max: 1000, value: 0 },
-    { name: 'fat', label: t('fat2'), min: 0, max: 1000, value: 0 },
+    { name: 'kcal', label: t('calories'), min: alternative ? 0.1 : 0, max: 5000, value: food?.kcal ?? 0 },
+    { name: 'protein', label: t('protein'), min: 0, max: 1000, value: food?.protein ?? 0 },
+    { name: 'carbs', label: t('carbs2'), min: 0, max: 1000, value: food?.carbs ?? 0 },
+    { name: 'fat', label: t('fat2'), min: 0, max: 1000, value: food?.fat ?? 0 },
   ];
   return <ResponsiveDialog fallbackId={openerId} openerId={openerId} onDismiss={() => { if (!saving.current) onClose(); }}
     aria-labelledby={titleId} className="glass-strong fixed inset-0 z-50 m-auto max-h-dvh w-full max-w-lg overflow-y-auto rounded-card p-5 text-ink">
     <div className="flex items-center justify-between gap-3">
-      <h2 id={titleId} className="text-xl font-bold">{t('newFood')}</h2>
+      <h2 id={titleId} className="text-xl font-bold">{food ? t('editFood') : t('newFood')}</h2>
       <Button variant="ghost" disabled={busy} aria-label={t('close')} onClick={onClose}><X aria-hidden /></Button>
     </div>
     <form onSubmit={event => void submit(event)} className="mt-4 grid gap-4" aria-busy={busy}>
       <fieldset disabled={busy} className="grid gap-3">
-        <label className="grid gap-1">{t('foodName')}<input name="name" required maxLength={60}
+        <label className="grid gap-1">{t('foodName')}<input name="name" required maxLength={60} defaultValue={food?.name}
           className="min-h-12 rounded-control border border-line bg-surface px-3" /></label>
         <p className="text-sm text-muted">{t('servingMacros')}</p>
         {fields.map(field => <label key={field.name} className="grid gap-1">{field.label}
@@ -78,7 +85,7 @@ export function CustomFoodSheet({ onClose, onSave, openerId, alternative = false
       </fieldset>
       {error && <p role="alert" className="text-danger">{error}</p>}
       {busy && <p role="status">{t('saving')}</p>}
-      <Button type="submit" disabled={busy}>{t('saveAndAdd')}</Button>
+      <Button type="submit" disabled={busy}>{food ? t('saveFood') : t('saveAndAdd')}</Button>
     </form>
   </ResponsiveDialog>;
 }
