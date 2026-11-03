@@ -6,15 +6,23 @@ import { messages } from '../messages';
 
 import { useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { Search, ShieldCheck } from 'lucide-react';
 import { Button } from '@/ui/button';
 import { captainState, stateLabels } from '../format';
 import type { AuditRow, CaptainRow, CaptainState, PlanTier } from '../types';
 import { KpiRow } from './kpi-row';
-import { CaptainsTable } from './captains-table';
+import { LoadingState } from '@/ui/loading-state';
 import { ActivatePanel } from './activate-panel';
 import { SuspendDialog } from './suspend-dialog';
-import { AuditList } from './audit-list';
+import { Deferred } from '@/ui/deferred';
+
+const CaptainsTable = dynamic(() => import('./captains-table').then(module => module.CaptainsTable), {
+  loading: () => <LoadingState className="min-h-96" />,
+});
+const AuditList = dynamic(() => import('./audit-list').then(module => module.AuditList), {
+  ssr: false, loading: () => <LoadingState />,
+});
 
 interface Props {
   captains: { rows: CaptainRow[]; error: string | null };
@@ -102,7 +110,7 @@ export function AdminScreen({ captains, audit, plans, search, offset, now }: Pro
         </nav>
       </>}
     </section>
-    <AuditList rows={audit.rows} captains={captains.rows} error={audit.error} />
+    <Deferred fallback={<LoadingState className="min-h-96" />}><AuditList rows={audit.rows} captains={captains.rows} error={audit.error} /></Deferred>
     {suspending && <SuspendDialog key={suspending.id} captain={suspending} onClose={() => setSuspending(null)} onSuccess={success} />}
   </main>;
 }

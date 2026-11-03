@@ -10,12 +10,11 @@ import { PreviewCaptain } from './preview-captain';
 export async function Hero() {
   const t = await getT(messages);
   const content = getContent(t);
-  const player = await PreviewPlayer();
-  const captain = await PreviewCaptain();
+  const [player, captain, slogan] = await Promise.all([PreviewPlayer(), PreviewCaptain(), Slogan()]);
   return <section className="marketing-wrap flex flex-wrap items-center gap-14 pt-16 lg:pt-22">
     <div className="flex min-w-0 flex-[1_1_560px] flex-col gap-[22px]">
       <p className="marketing-eyebrow">{content.hero.eyebrow}</p>
-      {await Slogan()}
+      {slogan}
       <p className="marketing-after max-w-[540px] text-lg leading-relaxed text-muted">{content.seo.description}</p>
       <div className="marketing-after flex flex-wrap gap-3">
         <a href={content.links.signup} className="marketing-primary min-h-16 px-7 text-lg">{content.hero.signup}</a>

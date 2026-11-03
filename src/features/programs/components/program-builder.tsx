@@ -5,6 +5,8 @@ import { formatNumber } from '@/lib/format';
 import { messages } from '../messages';
 
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
+import { Deferred } from '@/ui/deferred';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowDown, ArrowUp, Trash2 } from 'lucide-react';
@@ -18,7 +20,9 @@ import { useProgramDraft } from '../hooks/use-program-draft';
 import type { ProgramRow, Result } from '../types';
 import { BuilderHeader } from './builder-header';
 import { DayEditor } from './day-editor';
-import { ExercisePicker } from './exercise-picker';
+const ExercisePicker = dynamic(() => import('./exercise-picker').then(module => module.ExercisePicker), {
+  ssr: false, loading: () => <LoadingState />,
+});
 
 export function ProgramBuilder({ programId, playerId }: { programId?: string; playerId?: string }) {
   const t = useT(messages);
@@ -83,7 +87,7 @@ export function ProgramBuilder({ programId, playerId }: { programId?: string; pl
         {programs.data?.length === 0 && <p className="glass rounded-card p-6 text-muted">{t('noProgramsForThisPlayerYet')}</p>}
         <ul className="space-y-3">{programs.data?.map(program => <li key={program.id}>
           <Link className="glass flex min-h-16 items-center justify-between gap-4 rounded-control p-4" href={`/captain/programs/${program.id}`}>
-            <span className="break-words font-bold">{program.title}</span>
+            <span className="min-w-0 break-words font-bold">{program.title}</span>
             <span className="shrink-0 text-sm text-muted">{{ active: t('active'), draft: t('draft'), archived: t('archived') }[program.status]}</span>
           </Link>
         </li>)}</ul>
@@ -123,9 +127,9 @@ export function ProgramBuilder({ programId, playerId }: { programId?: string; pl
         </aside>
         <div className="grid min-w-0 items-start gap-5 2xl:grid-cols-[minmax(0,1fr)_20rem]">
           {day && <DayEditor key={day.id} day={day} update={state.update} />}
-          <ExercisePicker disabled={!day || busy} onAdd={exercise => {
+          <Deferred fallback={<LoadingState className="min-h-96" />}><ExercisePicker disabled={!day || busy} onAdd={exercise => {
             if (day) { const id = uuidv7(); state.update(current => addExercise(current, day.id, exercise, id)); }
-          }} />
+          }} /></Deferred>
         </div>
       </div>
     </fieldset>

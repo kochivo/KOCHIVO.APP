@@ -34,7 +34,7 @@ export function Stepper({ label, controlLabel = label, value, step, min = 0, onC
         >
           <Plus className="size-8" aria-hidden />
         </button>
-        <output aria-label={controlLabel} aria-live="polite" className="text-6xl font-extrabold tracking-tight">
+        <output aria-label={controlLabel} aria-live="polite" className="min-w-0 text-4xl font-extrabold tracking-tight sm:text-6xl">
           <bdi>{format(value)}</bdi>
         </output>
         <button

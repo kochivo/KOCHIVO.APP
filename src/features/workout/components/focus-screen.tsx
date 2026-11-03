@@ -4,6 +4,7 @@ import { messages } from '../messages';
 import { formatNumber } from '@/lib/format';
 
 import { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowRight, Check, Dumbbell } from 'lucide-react';
@@ -16,10 +17,11 @@ import { ExerciseHeader } from './exercise-header';
 import { NextUp } from './next-up';
 import { RestPanel } from './rest-panel';
 import { SetDots } from './set-dots';
-import { PrBurst } from './pr-burst';
-import { FormCheckButton } from './form-check-button';
 import { MediaStatus } from './media-status';
 import { restAnnouncement } from '../rest';
+
+const PrBurst = dynamic(() => import('./pr-burst').then(module => module.PrBurst), { ssr: false });
+const FormCheckButton = dynamic(() => import('./form-check-button').then(module => module.FormCheckButton), { ssr: false });
 
 export function FocusScreen({ dayId, playerId }: { dayId: string; playerId?: string }) {
   const t = useT(messages);
@@ -47,12 +49,12 @@ export function FocusScreen({ dayId, playerId }: { dayId: string; playerId?: str
   const { current, rest } = state;
   const lastSet = state.doneSets.filter((row) => row.program_exercise_id === current?.exercise.id)
     .sort((a, b) => b.completed_at.localeCompare(a.completed_at))[0];
-  return <main className="mx-auto max-w-lg space-y-4 px-5 py-6">
+  return <main className="mx-auto max-w-lg space-y-4 px-5 pt-[max(1.5rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))]">
     <p role="status" aria-live="polite" aria-atomic="true" className="sr-only">{restAnnouncement(rest.remaining, rest.endsAt !== null, t)}</p>
     {state.pr && <PrBurst key={state.pr.id} pr={state.pr} onDismiss={state.dismissPr} />}
     <header className="flex flex-wrap items-center gap-3">
       <IconButton aria-label={t('back')} onClick={() => router.push('/player')}><ArrowRight aria-hidden className="dir-icon" /></IconButton>
-      <p className="flex-1 font-bold">{state.day?.title ?? t('workout')}</p>
+      <p className="min-w-0 flex-1 truncate font-bold">{state.day?.title ?? t('workout')}</p>
       <SyncPill state={!online ? 'offline' : state.pending === undefined || state.pending > 0 ? 'pending' : 'synced'} pending={state.pending} />
       <MediaStatus />
     </header>

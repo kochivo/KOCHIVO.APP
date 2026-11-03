@@ -40,6 +40,8 @@
 }
 
 :root {
+  --safe-start: env(safe-area-inset-left);
+  --safe-end: env(safe-area-inset-right);
   --glass-tint: rgb(255 255 255 / 0.05);
   --glass-tint-raised: rgb(255 255 255 / 0.08);
   --glass-strong-tint: rgb(0 0 0 / 0.4);
@@ -49,6 +51,7 @@
   --mesh-top: #17222e;
   --mesh-bottom: #131c25;
 }
+[dir='rtl'] { --safe-start: env(safe-area-inset-right); --safe-end: env(safe-area-inset-left); }
 html[data-theme='light'] {
   --color-bg: #f6f7f4;
   --color-bg-deep: #eceee8;
@@ -96,7 +99,16 @@ html:not([data-theme='light']) .theme-light-only, html[data-theme='light'] .them
     font-family: var(--font-sans);
     font-feature-settings: 'tnum' 1;
     -webkit-font-smoothing: antialiased;
+    overflow-wrap: anywhere;
+    padding-inline: var(--safe-start) var(--safe-end);
   }
+
+  button, summary, [role='button'] { touch-action: manipulation; }
+  button { min-block-size: 3rem; }
+  input, textarea, select { font-size: max(1rem, 16px) !important; min-inline-size: 0; scroll-margin-block: 5rem; }
+  html { scroll-padding-block: 5rem; }
+  html:has(dialog:modal), body:has(dialog:modal) { overflow: hidden; }
+  dialog { overflow-y: auto; overscroll-behavior: contain; }
 
   /*
    * Dark mesh built only from brand hues: deep black, a steel-navy lifted from the surface tone,
@@ -127,6 +139,16 @@ html:not([data-theme='light']) .theme-light-only, html[data-theme='light'] .them
     outline-offset: 2px;
   }
 }
+
+/* Override sheet utility padding as well as browser defaults, including landscape notches. */
+dialog:modal {
+  max-block-size: min(90dvh, calc(var(--visible-viewport-height, 100dvh) - 2rem));
+  padding-block-start: max(1.25rem, env(safe-area-inset-top));
+  padding-block-end: max(1.25rem, env(safe-area-inset-bottom));
+  padding-inline-start: max(1.25rem, var(--safe-start));
+  padding-inline-end: max(1.25rem, var(--safe-end));
+}
+html[data-keyboard='open'] dialog:modal { inset-block-end: var(--keyboard-inset); }
 
 /*
  * Glass surfaces. Three levels only — pick by how much must stay readable on top:
@@ -168,6 +190,12 @@ html:not([data-theme='light']) .theme-light-only, html[data-theme='light'] .them
 html[data-glass='solid'] {
   --glass-solid-background: var(--color-surface);
   --glass-solid-filter: none;
+}
+
+/* Nested panels keep their contrast without asking the GPU to blur the same pixels again. */
+:is(.glass, .glass-strong, .glass-raised) :is(.glass, .glass-strong, .glass-raised) {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {

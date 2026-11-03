@@ -3,7 +3,7 @@
 import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 
-import Image from 'next/image';
+import { ExerciseImage } from '@/ui/exercise-image';
 import { useEffect, useState } from 'react';
 import { exerciseMediaUrl } from '@/core/storage';
 import { exerciseName } from '@/lib/display-name';
@@ -45,7 +45,7 @@ export function ExercisePicker({ disabled, onAdd }: { disabled: boolean; onAdd: 
         <ul className="space-y-2">{result.data?.map(exercise => <li key={exercise.id}>
           <button type="button" disabled={disabled} onClick={() => onAdd(exercise)}
             className="glass flex min-h-16 w-full items-center gap-3 rounded-control p-2 text-start disabled:opacity-40">
-            {exercise.media_path && <Image unoptimized src={exerciseMediaUrl(exercise.media_path)} alt="" width={48} height={48} className="size-12 rounded-control object-cover motion-reduce:hidden" />}
+            {exercise.media_path && <ExerciseImage src={exerciseMediaUrl(exercise.media_path)} alt="" width={48} height={48} />}
             <span className="min-w-0 flex-1 break-words text-sm font-bold"><bdi>{exerciseName(exercise, locale)}</bdi></span>
             <span className="text-xs text-muted">{t('add')}</span>
           </button>
