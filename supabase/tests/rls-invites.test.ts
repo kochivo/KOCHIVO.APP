@@ -52,9 +52,9 @@ describe('invite redemption', () => {
     const accessUntil = await dayOffset(db, 30);
     for (let index = 0; index < 4; index++) {
       const player = await createUser(db, 'player');
-      await asUser(db, captain, (tx) => tx.query(
+      await db.query(
         `insert into public.coach_clients (captain_id, player_id, access_until) values ($1, $2, $3)`, [captain, player, accessUntil],
-      ));
+      );
     }
     expect((await db.query(`select plan from public.profiles where id = $1`, [captain])).rows).toEqual([{ plan: 'free' }]);
     await invite(captain, 'full-captain');

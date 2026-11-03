@@ -12,7 +12,8 @@ const SUPABASE_STUB = `
   create role authenticated nologin;
   create role service_role nologin bypassrls;
   create schema auth;
-  create table auth.users (id uuid primary key, raw_user_meta_data jsonb not null default '{}');
+  create table auth.users (id uuid primary key, email text, email_confirmed_at timestamptz,
+    raw_user_meta_data jsonb not null default '{}');
   create function auth.uid() returns uuid language sql stable
     as $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
   grant usage on schema auth to authenticated;
@@ -51,6 +52,10 @@ export async function createUser(db: PGlite, role: 'captain' | 'player', name: s
   return rows[0]!.id;
 }
 
+export async function makeAdmin(db: PGlite, userId: string): Promise<void> {
+  await db.query('insert into public.admins (user_id) values ($1)', [userId]);
+}
+
 /** Runs `fn` as a signed-in user: role `authenticated` and auth.uid() = userId, like PostgREST does. */
 export async function asUser<T>(db: PGlite, userId: string, fn: (tx: Transaction) => Promise<T>): Promise<T> {
   return db.transaction(async (tx) => {
@@ -70,9 +75,10 @@ export async function createCaptainWithPlayer(db: PGlite) {
   const captain = await createUser(db, 'captain');
   const player = await createUser(db, 'player');
   const accessUntil = await dayOffset(db, 30);
-  await asUser(db, captain, (tx) => tx.query(
+  // Superuser stands in for redeem_invite: since 0015 captains cannot insert relationships.
+  await db.query(
     `insert into public.coach_clients (captain_id, player_id, access_until) values ($1, $2, $3)`,
     [captain, player, accessUntil],
-  ));
+  );
   return { captain, player };
 }
