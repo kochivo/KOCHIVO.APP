@@ -48,6 +48,23 @@ export interface OutboxEntry {
   last_error?: string;
 }
 
+export interface MediaQueueEntry {
+  id?: number;
+  kind: 'form_check';
+  /** Server row id, fixed at enqueue so a retried insert hits 23505 instead of duplicating. */
+  form_check_id: string;
+  blob: Blob;
+  mime: string;
+  exercise_id: string;
+  set_log_id: string | null;
+  note: string | null;
+  created_at: number;
+  attempts: number;
+  next_attempt_at: number;
+  video_path?: string;
+  last_error?: string;
+}
+
 export interface NutritionFood {
   name: string;
   grams: number;
@@ -90,6 +107,7 @@ export class KochivoDB extends Dexie {
   outbox!: Table<OutboxEntry, number>;
   program_snapshot!: Table<ProgramSnapshot, string>;
   nutrition_snapshot!: Table<NutritionSnapshot, string>;
+  media_queue!: Table<MediaQueueEntry, number>;
 
   constructor(name = 'kochivo') {
     super(name);
@@ -101,6 +119,7 @@ export class KochivoDB extends Dexie {
     });
     this.version(2).stores({ program_snapshot: 'id' });
     this.version(3).stores({ nutrition_snapshot: 'id' });
+    this.version(4).stores({ media_queue: '++id, next_attempt_at' });
   }
 }
 
