@@ -7,6 +7,54 @@ beforeAll(async () => { db = await createTestDb(); });
 afterAll(async () => { await db?.close(); });
 
 describe('player payments', () => {
+  it('indexes each requested hot foreign key as the leading column', async () => {
+    for (const [table, column] of [
+      ['meal_items', 'meal_id'], ['meal_item_alternatives', 'meal_item_id'], ['meal_logs', 'meal_id'],
+      ['set_logs', 'program_exercise_id'], ['workout_sessions', 'program_day_id'],
+      ['coach_invites', 'captain_id'], ['form_checks', 'player_id'], ['nutrition_plans', 'captain_id'],
+      ['programs', 'source_template_id'], ['nutrition_plans', 'source_template_id'],
+    ]) {
+      expect((await db.query(`select a.attname from pg_index i
+        join pg_attribute a on a.attrelid = i.indrelid and a.attnum = i.indkey[0]
+        where i.indrelid = $1::regclass and a.attname = $2 and i.indisvalid`,
+      [`public.${table}`, column])).rows).toEqual([{ attname: column }]);
+    }
+  });
+  it('returns one latest payment per caller player, breaking timestamp ties by ascending id', async () => {
+    const { captain, player } = await createCaptainWithPlayer(db);
+    const second = await createUser(db, 'player');
+    const foreign = await createCaptainWithPlayer(db);
+    const stranger = await createUser(db, 'captain');
+    await db.query(`insert into public.coach_clients (captain_id, player_id, access_until)
+      values ($1, $2, '2026-12-01')`, [captain, second]);
+    const ids = ['00000000-0000-4000-8000-000000000001', '00000000-0000-4000-8000-000000000002',
+      '00000000-0000-4000-8000-000000000003', '00000000-0000-4000-8000-000000000004'];
+    for (const [id, owner, payer, created] of [
+      [ids[2], captain, player, '2026-11-03'], [ids[1], captain, player, '2026-11-03'],
+      [ids[0], captain, player, '2026-11-02'], [ids[3], captain, second, '2026-11-01'],
+      ['00000000-0000-4000-8000-000000000005', foreign.captain, foreign.player, '2026-11-04'],
+    ]) {
+      await db.query(`insert into public.player_payments
+        (id, captain_id, player_id, days, amount_egp, period_start, period_end, created_at)
+        values ($1, $2, $3, 30, 800, '2026-11-01', '2026-11-30', $4)`, [id, owner, payer, created]);
+    }
+    const result = await asUser(db, captain, (tx) => tx.query('select id, player_id from public.captain_last_payments()'));
+    expect(result.rows).toHaveLength(2);
+    expect(result.rows).toEqual(expect.arrayContaining([{ id: ids[1], player_id: player }, { id: ids[3], player_id: second }]));
+    for (const caller of [player, stranger]) {
+      expect((await asUser(db, caller, (tx) => tx.query('select * from public.captain_last_payments()'))).rows).toEqual([]);
+    }
+    await db.query('update public.profiles set suspended_at = now() where id = $1', [captain]);
+    expect((await asUser(db, captain, (tx) => tx.query('select * from public.captain_last_payments()'))).rows).toEqual([]);
+  });
+  it('keeps the payment RPC invoker, stable, search-path hardened and unavailable to anon', async () => {
+    expect((await db.query(`select prosecdef, provolatile, proconfig,
+      has_function_privilege('anon', oid, 'EXECUTE') as anon,
+      has_function_privilege('authenticated', oid, 'EXECUTE') as authenticated
+      from pg_proc where oid = 'public.captain_last_payments()'::regprocedure`)).rows).toEqual([
+      { prosecdef: false, provolatile: 's', proconfig: ['search_path=""'], anon: false, authenticated: true },
+    ]);
+  });
   it.each([
     ['2026-12-10', '2026-11-03', '2026-12-11', '2027-01-09'],
     ['2026-10-01', '2026-11-03', '2026-11-03', '2026-12-02'],
