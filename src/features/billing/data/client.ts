@@ -13,6 +13,7 @@ type BillingDatabase = { public: {
   };
   Views: Record<string, never>;
   Functions: {
+    captain_last_payments: { Args: Record<string, never>; Returns: Payment[] };
     current_tier: { Args: { p_captain: string }; Returns: string };
     renew_player: { Args: { p_player: string; p_days: number; p_amount: number | null }; Returns: string };
   };

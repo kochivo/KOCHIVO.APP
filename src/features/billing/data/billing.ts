@@ -42,17 +42,16 @@ export async function fetchBilling(): Promise<BillingResult> {
       client.from('plan_tiers').select('tier, price_egp, player_limit').eq('tier', tier.data).single(),
       client.from('captain_subscriptions').select('ends_at').eq('captain_id', captainId).eq('tier', tier.data)
         .lte('starts_at', now).gt('ends_at', now).order('ends_at', { ascending: false }).limit(1).maybeSingle(),
-      // Query each latest row so a prolific payer cannot hide another player's last payment behind the API row cap.
-      Promise.all(ids.map((id) => client.from('player_payments').select('*').eq('captain_id', captainId)
-        .eq('player_id', id).order('created_at', { ascending: false }).order('id').limit(1).maybeSingle())),
+      client.rpc('captain_last_payments'),
     ]);
-    if (phones.error || plan.error || !plan.data || subscription.error || payments.some((payment) => payment.error)) {
+    if (phones.error || plan.error || !plan.data || subscription.error || payments.error) {
       throw new Error('billing unavailable');
     }
     const phoneMap = new Map(phones.data?.map((profile) => [profile.id, profile.phone]));
+    const paymentMap = new Map(payments.data?.map((payment) => [payment.player_id, payment]));
     return { data: {
-      players: roster.players.map((player, index) => ({ ...player, status: playerStatus({ ...player, today }), phone: phoneMap.get(player.playerId) ?? null,
-        lastPayment: payments[index]?.data ?? null })),
+      players: roster.players.map((player) => ({ ...player, status: playerStatus({ ...player, today }), phone: phoneMap.get(player.playerId) ?? null,
+        lastPayment: paymentMap.get(player.playerId) ?? null })),
       plan: plan.data, used: roster.players.length, subscriptionEnd: subscription.data?.ends_at ?? null,
     } };
   } catch { return { error: 'مش قادرين نحمّل الاشتراكات. جرّب تاني' }; }
