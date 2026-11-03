@@ -2,6 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    instagram: 'إنستجرام', tiktok: 'تيك توك', facebook: 'فيسبوك', youtube: 'يوتيوب', x: 'إكس',
     backHome: "ارجع للرئيسية",
     "subscriptionEndsIn.zero": "اشتراكك بيخلص النهارده",
     "subscriptionEndsIn.one": "اشتراكك هيخلص بكره",
@@ -37,6 +38,7 @@ export const messages = defineMessages({
     signInAgain: "سجّل دخولك تاني",
   },
   en: {
+    instagram: 'Instagram', tiktok: 'TikTok', facebook: 'Facebook', youtube: 'YouTube', x: 'X',
     backHome: "Back to home",
     "subscriptionEndsIn.one": "Your subscription ends in {n} day",
     "subscriptionEndsIn.other": "Your subscription ends in {n} days",

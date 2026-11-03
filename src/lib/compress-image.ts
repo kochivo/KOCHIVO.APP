@@ -2,6 +2,7 @@ type ImageMessage = 'chooseAnImage' | 'invalidImageSettings' | 'imageIsTooLargeO
 
 export async function compressImage(
   file: File, maxSide: number, quality: number, t: (key: ImageMessage) => string, strict = false,
+  mime: 'image/jpeg' | 'image/webp' = 'image/jpeg',
 ): Promise<Blob> {
   if (!file.type.startsWith('image/')) throw new Error(t('chooseAnImage'));
   if (!(maxSide > 0) || quality < 0 || quality > 1) throw new Error(t('invalidImageSettings'));
@@ -17,7 +18,7 @@ export async function compressImage(
       const context = canvas.getContext('2d');
       if (!context) throw new Error('unsupported');
       context.drawImage(bitmap, 0, 0, width, height);
-      blob = await canvas.convertToBlob({ type: 'image/jpeg', quality });
+      blob = await canvas.convertToBlob({ type: mime, quality });
     } else {
       const canvas = document.createElement('canvas');
       canvas.width = width;
@@ -25,9 +26,9 @@ export async function compressImage(
       const context = canvas.getContext('2d');
       if (!context) throw new Error('unsupported');
       context.drawImage(bitmap, 0, 0, width, height);
-      blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/jpeg', quality));
+      blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, mime, quality));
     }
-    if (blob && blob.type === 'image/jpeg' && blob.size <= 5 * 1024 * 1024) return blob;
+    if (blob && blob.type === mime && blob.size <= 5 * 1024 * 1024) return blob;
   } catch {
     // Progress keeps its original fallback; food photos require resized JPEG output.
   } finally {

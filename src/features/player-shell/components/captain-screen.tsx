@@ -4,12 +4,22 @@ import { messages } from '../messages';
 
 import { MessageCircle } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import type { ReactNode } from 'react';
 import { Button, EmptyState, ErrorState, GlassCard, LoadingState } from '@/ui';
 import { formatDateAr, localDate } from '@/lib/dates';
-import { whatsappUrl } from '@/lib/whatsapp';
 import { accessState } from '../access';
 import { useCaptainContext } from '../hooks/use-my-captain';
+import { whatsappUrl } from '@/lib/whatsapp';
+
+const contactPatterns = {
+  whatsapp: /^https:\/\/wa\.me\/[1-9]\d{7,14}$/,
+  instagram: /^https:\/\/(www\.)?instagram\.com(\/|$)/,
+  tiktok: /^https:\/\/(www\.)?tiktok\.com(\/|$)/,
+  facebook: /^https:\/\/(www\.)?(facebook\.com|fb\.com)(\/|$)/,
+  youtube: /^https:\/\/(www\.)?(youtube\.com|youtu\.be)(\/|$)/,
+  x: /^https:\/\/(www\.)?(x\.com|twitter\.com)(\/|$)/,
+};
 
 export function CaptainScreen({ voiceNotes }: { voiceNotes?: ReactNode }) {
   const t = useT(messages);
@@ -18,7 +28,9 @@ export function CaptainScreen({ voiceNotes }: { voiceNotes?: ReactNode }) {
   const formatDate = (date: string) => formatDateAr(date, { day: 'numeric', month: 'long', year: 'numeric' }, locale);
   const { data, status, retry } = useCaptainContext();
   const state = data ? accessState({ ...data, today: localDate(new Date()) }) : 'active';
-  const url = whatsappUrl({ phone: data?.phone ?? '' });
+  const social = Object.fromEntries(Object.entries(data?.social ?? {}).filter(([key, link]) =>
+  const url = social.whatsapp ?? (data?.phone ? whatsappUrl({ phone: data.phone }) ?? undefined : undefined);
+  const url = social.whatsapp ?? (data?.phone ? whatsappUrl({ phone: data.phone }) : undefined);
   return <main className="mx-auto max-w-lg space-y-5 px-5 pt-6 pb-32">
     <header><h1 className="text-2xl font-extrabold">{t('coach')}</h1></header>
     {status === 'loading' ? <LoadingState variant="detail" /> : status === 'error' ?
@@ -26,10 +38,17 @@ export function CaptainScreen({ voiceNotes }: { voiceNotes?: ReactNode }) {
       !data ? <EmptyState icon={MessageCircle} title={t('youReNotWorkingWithA')} body={t('yourCoachSDetailsWillAppear')} action={{ label: t('backHome'), href: '/player' }} /> :
         <GlassCard className="space-y-5 p-6">
           <div className="flex items-center gap-4">
-            <span aria-hidden className="glass flex size-16 shrink-0 items-center justify-center rounded-card text-2xl font-bold">
+            {data.avatarUrl ? <Image src={data.avatarUrl} alt="" width={64} height={64} unoptimized className="size-16 shrink-0 rounded-full object-cover" /> : <span aria-hidden className="glass flex size-16 shrink-0 items-center justify-center rounded-full text-2xl font-bold">
               {data.fullName.trim().slice(0, 1)}
-            </span>
+            </span>}
             <h2 className="break-words text-xl font-bold">{data.fullName}</h2>
+          </div>
+          {data.bio && <p className="whitespace-pre-wrap break-words">{data.bio}</p>}
+          {data.location && <p className="text-sm text-muted">{data.location}</p>}
+          <div className="flex flex-wrap gap-3">
+            {(['instagram', 'tiktok', 'facebook', 'youtube', 'x'] as const).map(key => social[key] ?
+              <a key={key} href={social[key]} target="_blank" rel="noopener noreferrer"
+                className="glass flex min-h-12 items-center rounded-control px-4">{t(key)}</a> : null)}
           </div>
           <span className={`inline-flex rounded-full px-3 py-2 text-sm ${state === 'active' ? 'bg-lime-soft text-lime' : 'bg-warn-soft text-warn'}`}>
             {labels[state]}

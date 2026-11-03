@@ -25,7 +25,7 @@ export function InviteMessageForm({ initialMessage }: { initialMessage: string |
     <label htmlFor={id} className="block text-sm text-muted">{t('defaultInviteMessageUpTo500')}</label>
     <textarea id={id} name="invite_message" maxLength={500} defaultValue={initialMessage ?? ''} disabled={pending}
       className="min-h-32 w-full rounded-control border border-line bg-surface p-4 text-start text-ink" />
-    <Button type="submit" className="min-h-12" disabled={pending}>{pending ? t('saving') : t('save')}</Button>
+    <Button type="submit" variant="secondary" className="min-h-12" disabled={pending}>{pending ? t('saving') : t('save')}</Button>
     <p role="status" aria-live="polite">{message}</p>
   </form>;
 }
