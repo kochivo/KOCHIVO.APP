@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8">
+<title>معاينة كلاعب</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300..900&amp;family=Changa:wght@500..800&amp;family=Manrope:wght@500;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#0B0E11}
+h1,h2,h3,button,.cta,.display{font-family:Manrope,Changa,Alexandria,sans-serif}
+button{cursor:pointer}
+a{color:#B6E94F}a:hover{color:#d3f58f}
+.mesh{background:radial-gradient(60rem 30rem at 100% -10%,rgba(182,233,79,.08),transparent 60%),radial-gradient(50rem 50rem at -10% 40%,#17222e,transparent 65%),radial-gradient(40rem 30rem at 60% 110%,#131c25,transparent 70%),#0B0E11}
+.glass{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.10);backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.glass-strong{background:rgba(0,0,0,.40);border:1px solid rgba(255,255,255,.10);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px)}
+.cta{background:#B6E94F;color:#101418;box-shadow:0 12px 32px -10px rgba(182,233,79,.55)}
+.nav a{height:44px;padding:0 14px;border-radius:14px;color:#F2F2EE;text-decoration:none;display:flex;align-items:center;justify-content:space-between;font-size:14px}
+.nav a:hover{background:rgba(255,255,255,.05)}
+.nav a[aria-current]{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.10);color:#B6E94F;font-weight:700}
+.tab{height:40px;padding:0 16px;border-radius:12px;border:none;font-size:14px;font-weight:700;background:transparent;color:#F2F2EE}
+.tab[aria-current]{background:#F2F2EE;color:#101418;font-weight:800}
+.ptab{flex:1;height:48px;border:none;border-radius:16px;font-size:11px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:transparent;color:#9AA0A6}
+.ptab[aria-current]{background:rgba(182,233,79,.14);color:#B6E94F;font-weight:700}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+.swap{animation:fadein .3s ease-out both}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+</helmet>
+<div dir="rtl" class="mesh" style="min-height: 900px; box-sizing: border-box; color: #F2F2EE; font-family: Manrope, Alexandria, sans-serif; display: flex; flex-direction: column">
+
+  <div role="status" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 14px; padding: 10px 20px; background: rgba(242,181,68,.12); border-bottom: 1px solid rgba(242,181,68,.35); font-size: 13px">
+    <span style="font-weight: 800; color: #F2B544">وضع الديمو</span>
+    <span>كل اللاعبين والبرامج دي وهمية، وهتتمسح بعد <b>23 ساعة</b>.</span>
+    <a href="CaptainLogin.dc.html" style="font-weight: 800; text-decoration: none">اعمل حسابك الحقيقي ←</a>
+  </div>
+
+  <div style="flex-grow: 1; display: flex; flex-wrap: wrap; gap: 20px; padding: 20px">
+    <aside class="glass nav" style="flex: 1 0 232px; max-width: 100%; box-sizing: border-box; padding: 22px 14px; border-radius: 28px; display: flex; flex-direction: column; gap: 4px">
+      <img src="/_blob/a4c76c30a72e976839e1e233247010c5" alt="KOCHIVO" style="height: 28px; width: auto; align-self: flex-start; margin: 0 10px 22px">
+      <a href="CaptainClients.dc.html" aria-current="page">اللاعبين</a>
+      <a href="CaptainBuilder.dc.html">البرامج</a>
+      <a href="CaptainNutrition.dc.html">الأنظمة الغذائية</a>
+      <a href="CaptainInbox.dc.html">صندوق المهام <span style="min-width: 24px; height: 22px; border-radius: 11px; background: #B6E94F; color: #101418; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center">5</span></a>
+      <a href="CaptainTemplates.dc.html">القوالب</a>
+      <a href="CaptainBilling.dc.html">الاشتراكات</a>
+    <a href="CaptainSettings.dc.html">الإعدادات</a>
+    </aside>
+
+    <main style="flex: 999 1 640px; min-width: 0; display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start">
+      <section style="flex: 1 1 380px; min-width: 0; display: flex; flex-direction: column; gap: 16px; padding-top: 8px">
+        <a href="CaptainClients.dc.html" style="font-size: 13px; font-weight: 700; text-decoration: none">→ اللاعبين</a>
+        <div style="display: flex; align-items: center; gap: 14px">
+          <span class="display" style="width: 60px; height: 60px; border-radius: 20px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 800">أ</span>
+          <div style="display: flex; flex-direction: column; gap: 4px">
+            <h1 style="margin: 0; font-size: 30px; font-weight: 800">أحمد سمير</h1>
+            <span style="font-size: 13px; color: #9AA0A6">تضخيم · أسبوع 3 · الاشتراك لحد 12 ديسمبر</span>
+          </div>
+        </div>
+        <div class="glass" style="display: flex; gap: 4px; padding: 4px; border-radius: 16px; align-self: flex-start">
+          <button class="tab">الملخص</button><button class="tab">التمرين</button><button class="tab">الأكل</button><button class="tab" aria-current="true">معاينة كلاعب</button>
+        </div>
+        <div class="glass-strong" style="border-radius: 24px; padding: 20px; display: flex; flex-direction: column; gap: 12px">
+          <span style="font-size: 11px; letter-spacing: .16em; color: #B6E94F">VIEW AS PLAYER</span>
+          <span class="display" style="font-size: 20px; font-weight: 800">ده بالظبط اللي أحمد شايفه دلوقتي</span>
+          <span style="font-size: 14px; color: #9AA0A6; line-height: 1.8">المعاينة للقراءة بس. أي حاجة تدوس عليها جوه الموبايل مش هتتسجّل باسم أحمد، ولا هتغيّر حاجة في بياناته.</span>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px">
+            <a href="CaptainBuilder.dc.html" class="cta" style="height: 46px; padding: 0 18px; border-radius: 14px; display: flex; align-items: center; font-size: 14px; font-weight: 800; text-decoration: none; color: #101418">عدّل البرنامج</a>
+            <button class="glass" style="height: 46px; padding: 0 18px; border-radius: 14px; color: #F2F2EE; font-size: 14px">اقفل المعاينة</button>
+          </div>
+        </div>
+        <div class="glass" style="border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 8px">
+          <span style="font-size: 13px; font-weight: 800">بتشوف إيه هنا؟</span>
+          <span style="font-size: 13px; color: #9AA0A6; line-height: 1.8">نفس الشاشات بنفس البيانات: تمرين النهارده، والأكل، والتطور. لو حاجة مش واضحة للاعب، هتلاحظها قبل ما يكلّمك.</span>
+        </div>
+      </section>
+
+      <section aria-label="معاينة موبايل اللاعب" style="flex: 0 0 auto; margin-inline: auto; display: flex; flex-direction: column; align-items: center; gap: 10px">
+        <div style="width: 340px; height: 700px; border-radius: 52px; padding: 12px; box-sizing: border-box; background: #050608; border: 1px solid rgba(255,255,255,.14); box-shadow: 0 40px 90px -30px rgba(0,0,0,.9), inset 0 0 0 2px rgba(255,255,255,.04); position: relative">
+          <div style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; border-radius: 13px; background: #000; z-index: 2"></div>
+          <div class="mesh" style="height: 100%; border-radius: 40px; overflow: hidden; display: flex; flex-direction: column; position: relative">
+            <div style="padding: 54px 16px 8px; display: flex; align-items: center; justify-content: space-between">
+              <span style="height: 24px; padding: 0 10px; border-radius: 12px; background: rgba(242,181,68,.16); color: #F2B544; font-size: 10px; font-weight: 800; display: flex; align-items: center">معاينة · قراءة بس</span>
+              <span style="font-size: 10px; letter-spacing: .12em; color: #9AA0A6">TUE · 3 NOV</span>
+            </div>
+
+            <sc-if value="{{ home }}" hint-placeholder-val="{{ true }}">
+              <div class="swap" style="flex-grow: 1; padding: 6px 16px 0; display: flex; flex-direction: column; gap: 12px">
+                <span class="display" style="font-size: 21px; font-weight: 800">صباح الخير يا أحمد</span>
+                <div class="glass" style="border-radius: 18px; padding: 8px; display: flex; gap: 3px">
+                  <sc-for list="{{ week }}" as="d" hint-placeholder-count="7">
+                    <sc-if value="{{ d.today }}" hint-placeholder-val="{{ false }}"><span style="flex: 1; height: 46px; border-radius: 12px; background: #F2F2EE; color: #101418; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 9px; font-weight: 700">{{ d.name }}<b style="font-size: 14px">{{ d.n }}</b></span></sc-if>
+                    <sc-if value="{{ d.other }}" hint-placeholder-val="{{ true }}"><span style="flex: 1; height: 46px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 9px; color: #9AA0A6">{{ d.name }}<b style="font-size: 14px; color: #F2F2EE">{{ d.n }}</b></span></sc-if>
+                  </sc-for>
+                </div>
+                <div class="glass-strong" style="border-radius: 24px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+                  <span style="font-size: 10px; letter-spacing: .16em; color: #B6E94F">DAY 2 · تمرين النهارده</span>
+                  <span class="display" style="font-size: 22px; font-weight: 800">صدر وترايسبس</span>
+                  <span style="font-size: 12px; color: #9AA0A6">5 تمارين · 18 سِت · حوالي 55 دقيقة</span>
+                  <div style="display: flex; gap: 6px">
+                    <img src="/_blob/919f5f22ecd90ea627037d134608f40a" alt="" style="width: 52px; height: 52px; border-radius: 14px; background: #fff; object-fit: cover">
+                    <img src="/_blob/14a7a6e88645b1ae8582e0d11ee84650" alt="" style="width: 52px; height: 52px; border-radius: 14px; background: #fff; object-fit: cover">
+                    <img src="/_blob/13455f37974e9af25f2b0b5ebbaad531" alt="" style="width: 52px; height: 52px; border-radius: 14px; background: #fff; object-fit: cover">
+                  </div>
+                  <span class="cta display" style="height: 58px; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 800">ابدأ التمرين</span>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ food }}" hint-placeholder-val="{{ false }}">
+              <div class="swap" style="flex-grow: 1; padding: 6px 16px 0; display: flex; flex-direction: column; gap: 12px">
+                <span class="display" style="font-size: 21px; font-weight: 800">أكل النهارده</span>
+                <div class="glass-strong" style="border-radius: 22px; padding: 16px; display: flex; flex-direction: column; gap: 6px">
+                  <span style="font-size: 32px; font-weight: 800">1,240 <span style="font-size: 12px; color: #9AA0A6; font-weight: 500">/ 2,900 سعرة</span></span>
+                  <svg width="100%" height="6" viewBox="0 0 100 6" preserveAspectRatio="none" aria-hidden="true"><rect width="100" height="6" rx="3" fill="rgba(255,255,255,.08)"></rect><rect x="57" width="43" height="6" rx="3" fill="#B6E94F"></rect></svg>
+                </div>
+                <div class="glass" style="border-radius: 20px; padding: 12px; display: flex; gap: 10px; align-items: center">
+                  <img src="/_blob/90f6af83ca4aae30a6a557e6a9275491" alt="" style="width: 52px; height: 52px; border-radius: 14px; object-fit: cover">
+                  <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px; font-weight: 800">الفطار ✓</span><span style="font-size: 11px; color: #9AA0A6">شوفان 80ج + 3 بيضات</span></div>
+                </div>
+                <div class="glass" style="border-radius: 20px; padding: 12px; display: flex; gap: 10px; align-items: center">
+                  <img src="/_blob/ef1025f9bd9fb5d7bfe4266664151e15" alt="" style="width: 52px; height: 52px; border-radius: 14px; object-fit: cover">
+                  <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px; font-weight: 800">الغدا · الجاية</span><span style="font-size: 11px; color: #9AA0A6">فراخ 200ج + رز 250ج</span></div>
+                </div>
+              </div>
+            </sc-if>
+
+            <nav aria-label="تنقل اللاعب" style="margin: 10px; padding: 6px; border-radius: 22px; display: flex; gap: 4px; background: rgba(16,20,24,.8); border: 1px solid rgba(255,255,255,.10)">
+              <sc-if value="{{ home }}" hint-placeholder-val="{{ true }}">
+                <button class="ptab" aria-current="page">الرئيسية</button>
+                <button onClick="{{ toFood }}" class="ptab">التغذية</button>
+              </sc-if>
+              <sc-if value="{{ food }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ toHome }}" class="ptab">الرئيسية</button>
+                <button class="ptab" aria-current="page">التغذية</button>
+              </sc-if>
+              <button class="ptab">التطور</button>
+              <button class="ptab">الكابتن</button>
+            </nav>
+          </div>
+        </div>
+        <span style="font-size: 12px; color: #9AA0A6">دوس على الرئيسية والتغذية جوه الموبايل</span>
+      </section>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { tab: 'home' }; }
+  renderVals() {
+    const home = this.state.tab === 'home';
+    const days = [['سبت', 31], ['حد', 1], ['اتنين', 2], ['تلات', 3], ['أربع', 4], ['خميس', 5], ['جمعة', 6]];
+    return {
+      home, food: !home,
+      week: days.map((d) => ({ name: d[0], n: d[1], today: d[1] === 3, other: d[1] !== 3 })),
+      toHome: () => this.setState({ tab: 'home' }),
+      toFood: () => this.setState({ tab: 'food' })
+    };
+  }
+}
+</script>
+</body>
+</html>

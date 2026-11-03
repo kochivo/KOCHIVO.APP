@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8">
+<title>مصمم البرنامج</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300..900&amp;family=Changa:wght@500..800&amp;family=Manrope:wght@500;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#0B0E11}
+h1,h2,h3,button,.cta,.go,.display{font-family:Manrope,Changa,Alexandria,sans-serif}
+button,input{font-family:inherit}
+button{cursor:pointer}
+a{color:#B6E94F}a:hover{color:#d3f58f}
+.mesh{background:radial-gradient(60rem 30rem at 100% -10%,rgba(182,233,79,.08),transparent 60%),radial-gradient(50rem 50rem at -10% 40%,#17222e,transparent 65%),radial-gradient(40rem 30rem at 60% 110%,#131c25,transparent 70%),#0B0E11}
+.glass{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.10);backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.glass-strong{background:rgba(0,0,0,.40);border:1px solid rgba(255,255,255,.10);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px)}
+.cta{background:#B6E94F;color:#101418;box-shadow:0 10px 28px -10px rgba(182,233,79,.55)}
+.nav a{height:44px;padding:0 14px;border-radius:14px;color:#F2F2EE;text-decoration:none;display:flex;align-items:center;justify-content:space-between;font-size:14px}
+.nav a:hover{background:rgba(255,255,255,.05)}
+.nav a[aria-current]{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.10);color:#B6E94F;font-weight:700}
+.field{height:40px;width:100%;box-sizing:border-box;border-radius:12px;border:1px solid rgba(255,255,255,.10);background:rgba(0,0,0,.35);color:#F2F2EE;text-align:center;font-size:14px;font-weight:700}
+.chip{height:34px;padding:0 14px;border-radius:17px;border:1px solid rgba(255,255,255,.10);background:transparent;color:#F2F2EE;font-size:12px}
+</style>
+</helmet>
+<div dir="rtl" class="mesh" style="min-height: 900px; box-sizing: border-box; color: #F2F2EE; font-family: Manrope, Alexandria, sans-serif; display: flex; flex-wrap: wrap; gap: 20px; padding: 20px">
+
+  <aside class="glass nav" style="flex: 1 0 232px; max-width: 100%; box-sizing: border-box; padding: 22px 14px; border-radius: 28px; display: flex; flex-direction: column; gap: 4px">
+    <img src="/_blob/a4c76c30a72e976839e1e233247010c5" alt="KOCHIVO" style="height: 28px; width: auto; align-self: flex-start; margin: 0 10px 22px">
+    <a href="CaptainClients.dc.html">اللاعبين</a>
+    <a href="CaptainBuilder.dc.html" aria-current="page">البرامج</a>
+    <a href="CaptainNutrition.dc.html">الأنظمة الغذائية</a>
+    <a href="CaptainInbox.dc.html">صندوق المهام <span style="min-width: 24px; height: 22px; border-radius: 11px; background: #B6E94F; color: #101418; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center">5</span></a>
+    <a href="CaptainTemplates.dc.html">القوالب</a>
+    <a href="CaptainBilling.dc.html">الاشتراكات</a>
+    <a href="CaptainSettings.dc.html">الإعدادات</a>
+  </aside>
+
+  <main style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; padding: 12px 8px; display: flex; flex-direction: column; gap: 18px">
+    <div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px">
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <span style="font-size: 11px; letter-spacing: 0.16em; color: #9AA0A6">PROGRAM · لأحمد سمير</span>
+        <h1 style="margin: 0; font-size: 30px; font-weight: 800; letter-spacing: -0.5px">تضخيم · 4 أيام</h1>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 10px">
+        <button class="glass" style="height: 46px; padding: 0 18px; border-radius: 16px; color: #F2F2EE; font-size: 14px">احفظ كقالب</button>
+        <button class="cta" style="height: 46px; padding: 0 20px; border-radius: 16px; border: none; font-size: 14px; font-weight: 800">ابعت للاعب</button>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-start">
+      <section aria-label="مكتبة التمارين" class="glass" style="flex: 1 1 270px; min-width: 0; padding: 16px; border-radius: 26px; display: flex; flex-direction: column; gap: 12px">
+        <div style="display: flex; justify-content: space-between; align-items: baseline">
+          <span style="font-size: 15px; font-weight: 800">مكتبة التمارين</span>
+          <span style="font-size: 11px; color: #9AA0A6">1,324 حركة</span>
+        </div>
+        <label style="height: 42px; padding: 0 12px; border-radius: 14px; background: rgba(0,0,0,.35); border: 1px solid rgba(255,255,255,.10); display: flex; align-items: center; gap: 8px; color: #9AA0A6">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg>
+          <input placeholder="دوّر بالعربي أو الإنجليزي" aria-label="بحث في التمارين" style="flex-grow: 1; background: transparent; border: none; outline: none; color: #F2F2EE; font-size: 13px">
+        </label>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px">
+          <button class="chip" style="background: #F2F2EE; color: #101418; border-color: #F2F2EE; font-weight: 800">صدر</button>
+          <button class="chip">ضهر</button>
+          <button class="chip">رجل</button>
+          <button class="chip">كتف</button>
+          <button class="chip">دراع</button>
+        </div>
+        <sc-for list="{{ library }}" as="ex" hint-placeholder-count="5">
+          <div style="padding: 6px; border-radius: 16px; background: rgba(0,0,0,.25); border: 1px solid rgba(255,255,255,.08); display: flex; align-items: center; gap: 10px; cursor: grab">
+            <img src="{{ ex.gif }}" alt="" style="width: 48px; height: 48px; border-radius: 12px; background: #ffffff; object-fit: cover; flex-shrink: 0">
+            <span style="flex-grow: 1; font-size: 13px; font-weight: 700">{{ ex.name }}</span>
+            <span style="font-size: 11px; color: #9AA0A6; padding-left: 6px">{{ ex.tool }}</span>
+          </div>
+        </sc-for>
+      </section>
+
+      <section aria-label="أيام البرنامج" style="flex: 3 1 480px; min-width: 0; display: flex; flex-direction: column; gap: 12px">
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+          <div class="glass" style="display: flex; gap: 4px; padding: 4px; border-radius: 16px">
+            <button style="height: 40px; padding: 0 16px; border-radius: 12px; border: none; background: #F2F2EE; color: #101418; font-size: 13px; font-weight: 800">يوم 1 · صدر</button>
+            <button style="height: 40px; padding: 0 16px; border-radius: 12px; border: none; background: transparent; color: #F2F2EE; font-size: 13px">يوم 2 · ضهر</button>
+            <button style="height: 40px; padding: 0 16px; border-radius: 12px; border: none; background: transparent; color: #F2F2EE; font-size: 13px">يوم 3 · رجل</button>
+            <button style="height: 40px; padding: 0 16px; border-radius: 12px; border: none; background: transparent; color: #F2F2EE; font-size: 13px">يوم 4 · كتف</button>
+          </div>
+          <button aria-label="ضيف يوم" class="glass" style="width: 48px; height: 48px; border-radius: 16px; color: #9AA0A6; font-size: 20px">+</button>
+          <span style="flex-grow: 1"></span>
+          <span style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #9AA0A6">
+            <span style="width: 38px; height: 22px; border-radius: 11px; background: rgba(255,255,255,.10); display: flex; align-items: center; padding: 3px; box-sizing: border-box"><span style="width: 16px; height: 16px; border-radius: 8px; background: #9AA0A6"></span></span>
+            RPE / Tempo
+          </span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 52px 1fr 72px 92px 80px; gap: 10px; padding: 0 14px; font-size: 11px; letter-spacing: 0.06em; color: #9AA0A6">
+          <span></span><span>التمرين</span><span>سِتات</span><span>عدّات</span><span>راحة</span>
+        </div>
+
+        <sc-for list="{{ singles }}" as="row" hint-placeholder-count="2">
+          <div class="glass" style="display: grid; grid-template-columns: 52px 1fr 72px 92px 80px; gap: 10px; align-items: center; padding: 8px 14px 8px 10px; border-radius: 20px">
+            <img src="{{ row.gif }}" alt="" style="width: 52px; height: 52px; border-radius: 14px; background: #ffffff; object-fit: cover">
+            <span style="font-size: 14px; font-weight: 800">{{ row.name }}</span>
+            <input aria-label="سِتات" defaultValue="{{ row.sets }}" class="field">
+            <input aria-label="عدّات" defaultValue="{{ row.reps }}" class="field">
+            <input aria-label="راحة" defaultValue="{{ row.rest }}" class="field">
+          </div>
+        </sc-for>
+
+        <div style="padding: 10px; border-radius: 24px; background: rgba(182,233,79,.06); border: 1px solid rgba(182,233,79,.35); display: flex; flex-direction: column; gap: 6px">
+          <span style="align-self: flex-start; height: 26px; padding: 0 12px; border-radius: 13px; background: rgba(182,233,79,.16); color: #B6E94F; font-size: 11px; font-weight: 800; letter-spacing: 0.04em; display: flex; align-items: center">SUPERSET · من غير راحة بينهم</span>
+          <sc-for list="{{ superset }}" as="row" hint-placeholder-count="2">
+            <div style="display: grid; grid-template-columns: 52px 1fr 72px 92px 80px; gap: 10px; align-items: center; padding: 4px">
+              <img src="{{ row.gif }}" alt="" style="width: 52px; height: 52px; border-radius: 14px; background: #ffffff; object-fit: cover">
+              <span style="font-size: 14px; font-weight: 800"><span style="color: #B6E94F">{{ row.tag }}</span> · {{ row.name }}</span>
+              <input aria-label="سِتات" defaultValue="{{ row.sets }}" class="field">
+              <input aria-label="عدّات" defaultValue="{{ row.reps }}" class="field">
+              <input aria-label="راحة" defaultValue="{{ row.rest }}" class="field">
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="height: 64px; border-radius: 20px; border: 1.5px dashed rgba(255,255,255,.18); display: flex; align-items: center; justify-content: center; color: #9AA0A6; font-size: 14px">
+          اسحب تمرين هنا · أو فوق تمرين تاني يبقى سوبر سِت
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const bench = '/_blob/919f5f22ecd90ea627037d134608f40a';
+    const fly = '/_blob/14a7a6e88645b1ae8582e0d11ee84650';
+    const push = '/_blob/13455f37974e9af25f2b0b5ebbaad531';
+    return {
+      library: [
+        { name: 'بنش بريس بالبار', tool: 'بار', gif: bench },
+        { name: 'تفتيح دمبل', tool: 'دمبل', gif: fly },
+        { name: 'ترايسبس بالحبل', tool: 'كيبل', gif: push },
+        { name: 'بنش بريس بالبار', tool: 'بار', gif: bench },
+        { name: 'تفتيح دمبل', tool: 'دمبل', gif: fly }
+      ],
+      singles: [
+        { name: 'بنش بريس بالبار', sets: '4', reps: '8-10', rest: '120ث', gif: bench },
+        { name: 'إنكلاين دمبل بريس', sets: '3', reps: '10-12', rest: '90ث', gif: fly }
+      ],
+      superset: [
+        { tag: 'A1', name: 'تفتيح دمبل', sets: '3', reps: '12', rest: '0', gif: fly },
+        { tag: 'A2', name: 'ترايسبس بالحبل', sets: '3', reps: '12', rest: '75ث', gif: push }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

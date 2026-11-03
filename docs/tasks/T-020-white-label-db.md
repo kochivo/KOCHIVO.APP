@@ -11,7 +11,7 @@ A captain can set a gym name, a logo, and one primary color. Their players then 
 Captains without branding keep the KOCHIVO look.
 
 ## Files
-- `supabase/migrations/0013_captain_branding.sql` (new)
+- `supabase/migrations/0014_captain_branding.sql` (new)
 - `supabase/tests/rls-branding.test.ts` (new)
 - `src/lib/contrast.ts` (new): pure WCAG contrast helpers
 - `src/lib/contrast.test.ts` (new)

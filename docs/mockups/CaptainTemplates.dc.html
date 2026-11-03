@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8">
+<title>القوالب</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300..900&amp;family=Changa:wght@500..800&amp;family=Manrope:wght@500;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#0B0E11}
+h1,h2,h3,button,.cta,.display{font-family:Manrope,Changa,Alexandria,sans-serif}
+button,input,textarea{font-family:inherit}
+button{cursor:pointer}
+a{color:#B6E94F}
+.mesh{background:radial-gradient(60rem 30rem at 100% -10%,rgba(182,233,79,.08),transparent 60%),radial-gradient(50rem 50rem at -10% 40%,#17222e,transparent 65%),radial-gradient(40rem 30rem at 60% 110%,#131c25,transparent 70%),#0B0E11}
+.glass{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.10);backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.glass-strong{background:rgba(0,0,0,.40);border:1px solid rgba(255,255,255,.10);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px)}
+.cta{background:#B6E94F;color:#101418;border:none;box-shadow:0 10px 28px -10px rgba(182,233,79,.55)}
+.ghost{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#F2F2EE}
+.nav a{height:44px;padding:0 14px;border-radius:14px;color:#F2F2EE;text-decoration:none;display:flex;align-items:center;justify-content:space-between;font-size:14px}
+.nav a:hover{background:rgba(255,255,255,.05)}
+.nav a[aria-current]{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.10);color:#B6E94F;font-weight:700}
+.muted{color:#9AA0A6}
+.tag{height:26px;padding:0 10px;border-radius:13px;font-size:12px;display:inline-flex;align-items:center;background:rgba(255,255,255,.06);color:#9AA0A6}
+.input{height:50px;width:100%;box-sizing:border-box;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.35);color:#F2F2EE;padding:0 14px;font-size:14px;outline:none}
+.lbl{display:flex;flex-direction:column;gap:8px;font-size:13px;color:#9AA0A6}
+.sw{width:46px;height:28px;border-radius:14px;position:relative;flex-shrink:0}
+.sw::after{content:'';position:absolute;top:3px;width:22px;height:22px;border-radius:11px;background:#F2F2EE}
+.sw.on{background:#B6E94F}.sw.on::after{inset-inline-end:3px;background:#101418}
+.sw.off{background:rgba(255,255,255,.14)}.sw.off::after{inset-inline-start:3px}
+
+</style>
+</helmet>
+<div dir="rtl" class="mesh" style="min-height: 900px; box-sizing: border-box; color: #F2F2EE; font-family: Manrope, Alexandria, sans-serif; display: flex; flex-wrap: wrap; gap: 20px; padding: 20px">
+  <aside class="glass nav" style="flex: 1 0 232px; max-width: 100%; box-sizing: border-box; padding: 22px 14px; border-radius: 28px; display: flex; flex-direction: column; gap: 4px">
+    <img src="/_blob/a4c76c30a72e976839e1e233247010c5" alt="KOCHIVO" style="height: 28px; width: auto; align-self: flex-start; margin: 0 10px 22px">
+    <a href="CaptainClients.dc.html">اللاعبين</a>
+    <a href="CaptainBuilder.dc.html">البرامج</a>
+    <a href="CaptainNutrition.dc.html">الأنظمة الغذائية</a>
+    <a href="CaptainInbox.dc.html">صندوق المهام <span style="min-width: 24px; height: 22px; border-radius: 11px; background: #B6E94F; color: #101418; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center">5</span></a>
+    <a href="CaptainTemplates.dc.html" aria-current="page">القوالب</a>
+    <a href="CaptainBilling.dc.html">الاشتراكات</a>
+    <a href="CaptainSettings.dc.html">الإعدادات</a>
+  </aside>
+  <main style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; padding: 12px 8px; display: flex; flex-direction: column; gap: 20px">
+    <div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px">
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <span style="font-size: 11px; letter-spacing: 0.16em; color: #9AA0A6">TEMPLATES · 10 جاهزين + قوالبك</span>
+        <h1 style="margin: 0; font-size: 32px; font-weight: 800; letter-spacing: -0.5px">القوالب</h1>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 10px"><button class="ghost" style="height: 46px; padding: 0 18px; border-radius: 16px; font-size: 14px; font-weight: 700">احفظ برنامج كقالب</button></div>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between">
+      <div class="glass" style="display: flex; padding: 4px; border-radius: 16px; gap: 4px">
+        <sc-if value="{{ isTraining }}" hint-placeholder-val="{{ true }}">
+          <button style="height: 40px; padding: 0 18px; border-radius: 12px; border: none; background: #F2F2EE; color: #101418; font-size: 14px; font-weight: 800">تمرين · 6</button>
+          <button onClick="{{ toFood }}" style="height: 40px; padding: 0 18px; border-radius: 12px; border: none; background: transparent; color: #F2F2EE; font-size: 14px; font-weight: 700">أكل · 4</button>
+        </sc-if>
+        <sc-if value="{{ isFood }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ toTraining }}" style="height: 40px; padding: 0 18px; border-radius: 12px; border: none; background: transparent; color: #F2F2EE; font-size: 14px; font-weight: 700">تمرين · 6</button>
+          <button style="height: 40px; padding: 0 18px; border-radius: 12px; border: none; background: #F2F2EE; color: #101418; font-size: 14px; font-weight: 800">أكل · 4</button>
+        </sc-if>
+      </div>
+      <div style="display: flex; gap: 6px; flex-wrap: wrap"><span class="tag" style="background: #F2F2EE; color: #101418; font-weight: 700">الكل</span><span class="tag">مبتدئ</span><span class="tag">متوسط</span><span class="tag">متقدم</span><span class="tag">قوالبي</span></div>
+    </div>
+    <sc-if value="{{ isTraining }}" hint-placeholder-val="{{ true }}">
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px">
+        <div class="glass" style="border-radius: 24px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px">
+            <div style="display: flex; flex-direction: column; gap: 4px"><b style="font-size: 17px">Full Body · مبتدئ</b><span class="muted" style="font-size: 13px">3 أيام في الأسبوع · 45 دقيقة</span></div>
+            <span class="tag">KOCHIVO</span>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px"><span class="tag">مبتدئ</span><span class="tag">جيم كامل</span></div>
+          <span class="muted" style="font-size: 12px">اتستخدم مع 9 لاعبين</span>
+          <div style="display: flex; gap: 8px; margin-top: auto">
+            <button class="cta" style="flex: 1; height: 44px; border-radius: 14px; font-size: 14px; font-weight: 800">استخدمه للاعب</button>
+            <button class="ghost" style="height: 44px; padding: 0 16px; border-radius: 14px; font-size: 14px; font-weight: 700">معاينة</button>
+          </div>
+        </div>
+        <div class="glass" style="border-radius: 24px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px">
+            <div style="display: flex; flex-direction: column; gap: 4px"><b style="font-size: 17px">Push Pull Legs</b><span class="muted" style="font-size: 13px">6 أيام · 60 دقيقة</span></div>
+            <span class="tag">KOCHIVO</span>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px"><span class="tag">متوسط</span><span class="tag">تضخيم</span></div>
+          <span class="muted" style="font-size: 12px">اتستخدم مع 6 لاعبين</span>
+          <div style="display: flex; gap: 8px; margin-top: auto">
+            <button class="cta" style="flex: 1; height: 44px; border-radius: 14px; font-size: 14px; font-weight: 800">استخدمه للاعب</button>
+            <button class="ghost" style="height: 44px; padding: 0 16px; border-radius: 14px; font-size: 14px; font-weight: 700">معاينة</button>
+          </div>
+        </div>
+        <div class="glass" style="border-radius: 24px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px">
+            <div style="display: flex; flex-direction: column; gap: 4px"><b style="font-size: 17px">Upper / Lower</b><span class="muted" style="font-size: 13px">4 أيام · 60 دقيقة</span></div>
+            <span class="tag">KOCHIVO</span>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px"><span class="tag">متوسط</span><span class="tag">قوة</span></div>
+          <span class="muted" style="font-size: 12px">اتستخدم مع 4 لاعبين</span>
+          <div style="display: flex; gap: 8px; margin-top: auto">
+            <button class="cta" style="flex: 1; height: 44px; border-radius: 14px; font-size: 14px; font-weight: 800">استخدمه للاعب</button>
+            <button class="ghost" style="height: 44px; padding: 0 16px; border-radius: 14px; font-size: 14px; font-weight: 700">معاينة</button>
+          </div>
+        </div>
+        <div class="glass" style="border-radius: 24px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px">
+            <div style="display: flex; flex-direction: column; gap: 4px"><b style="font-size: 17px">تنشيف · دوائر</b><span class="muted" style="font-size: 13px">4 أيام · 45 دقيقة</span></div>
+            <span class="tag">KOCHIVO</span>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px"><span class="tag">كل المستويات</span><span class="tag">حرق</span></div>
+          <span class="muted" style="font-size: 12px">اتستخدم مع 3 لاعبين</span>
+          <div style="display: flex; gap: 8px; margin-top: auto">
+            <button class="cta" style="flex: 1; height: 44px; border-radius: 14px; font-size: 14px; font-weight: 800">استخدمه للاعب</button>
+            <button class="ghost" style="height: 44px; padding: 0 16px; border-radius: 14px; font-size: 14px; font-weight: 700">معاينة</button>
+          </div>
+        </div>
+        <div class="glass" style="border-radius: 24px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px">
+            <div style="display: flex; flex-direction: column; gap: 4px"><b style="font-size: 17px">من البيت · من غير أجهزة</b><span class="muted" style="font-size: 13px">3 أيام · 30 دقيقة</span></div>
+            <span class="tag">KOCHIVO</span>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px"><span class="tag">مبتدئ</span><span class="tag">بيت</span></div>
+          <span class="muted" style="font-size: 12px">جديد</span>
+          <div style="display: flex; gap: 8px; margin-top: auto">
+            <button class="cta" style="flex: 1; height: 44px; border-radius: 14px; font-size: 14px; font-weight: 800">استخدمه للاعب</button>
+            <button class="ghost" style="height: 44px; padding: 0 16px; border-radius: 14px; font-size: 14px; font-weight: 700">معاينة</button>
+          </div>
+        </div>
+        <div class="glass" style="border-radius: 24px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px">
+            <div style="display: flex; flex-direction: column; gap: 4px"><b style="font-size: 17px">برنامج كابتن محمد للبطولات</b><span class="muted" style="font-size: 13px">5 أيام · 75 دقيقة</span></div>
+            <span class="tag" style="background: rgba(182,233,79,.14); color: #B6E94F">قالبك</span>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px"><span class="tag">متقدم</span></div>
+          <span class="muted" style="font-size: 12px">اتعمل من برنامج كريم عادل</span>
+          <div style="display: flex; gap: 8px; margin-top: auto">
+            <button class="cta" style="flex: 1; height: 44px; border-radius: 14px; font-size: 14px; font-weight: 800">استخدمه للاعب</button>
+            <button class="ghost" style="height: 44px; padding: 0 16px; border-radius: 14px; font-size: 14px; font-weight: 700">معاينة</button>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ isFood }}" hint-placeholder-val="{{ false }}">
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px">
+        <div class="glass" style="border-radius: 24px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px">
+            <div style="display: flex; flex-direction: column; gap: 4px"><b style="font-size: 17px">تنشيف · 1800 سعرة</b><span class="muted" style="font-size: 13px">5 وجبات · بروتين عالي</span></div>
+            <span class="tag">KOCHIVO</span>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px"><span class="tag">تنشيف</span></div>
+          <span class="muted" style="font-size: 12px">اتستخدم مع 11 لاعب</span>
+          <div style="display: flex; gap: 8px; margin-top: auto">
+            <button class="cta" style="flex: 1; height: 44px; border-radius: 14px; font-size: 14px; font-weight: 800">استخدمه للاعب</button>
+            <button class="ghost" style="height: 44px; padding: 0 16px; border-radius: 14px; font-size: 14px; font-weight: 700">معاينة</button>
+          </div>
+        </div>
+        <div class="glass" style="border-radius: 24px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px">
+            <div style="display: flex; flex-direction: column; gap: 4px"><b style="font-size: 17px">تضخيم نضيف · 3000 سعرة</b><span class="muted" style="font-size: 13px">6 وجبات</span></div>
+            <span class="tag">KOCHIVO</span>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px"><span class="tag">تضخيم</span></div>
+          <span class="muted" style="font-size: 12px">اتستخدم مع 5 لاعبين</span>
+          <div style="display: flex; gap: 8px; margin-top: auto">
+            <button class="cta" style="flex: 1; height: 44px; border-radius: 14px; font-size: 14px; font-weight: 800">استخدمه للاعب</button>
+            <button class="ghost" style="height: 44px; padding: 0 16px; border-radius: 14px; font-size: 14px; font-weight: 700">معاينة</button>
+          </div>
+        </div>
+        <div class="glass" style="border-radius: 24px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px">
+            <div style="display: flex; flex-direction: column; gap: 4px"><b style="font-size: 17px">ثبات الوزن · 2400 سعرة</b><span class="muted" style="font-size: 13px">4 وجبات</span></div>
+            <span class="tag">KOCHIVO</span>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px"><span class="tag">صيانة</span></div>
+          <span class="muted" style="font-size: 12px">اتستخدم مع 2 لاعبين</span>
+          <div style="display: flex; gap: 8px; margin-top: auto">
+            <button class="cta" style="flex: 1; height: 44px; border-radius: 14px; font-size: 14px; font-weight: 800">استخدمه للاعب</button>
+            <button class="ghost" style="height: 44px; padding: 0 16px; border-radius: 14px; font-size: 14px; font-weight: 700">معاينة</button>
+          </div>
+        </div>
+        <div class="glass" style="border-radius: 24px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px">
+            <div style="display: flex; flex-direction: column; gap: 4px"><b style="font-size: 17px">رمضان · فطار وسحور</b><span class="muted" style="font-size: 13px">وجبتين وسناك</span></div>
+            <span class="tag">KOCHIVO</span>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px"><span class="tag">رمضان</span></div>
+          <span class="muted" style="font-size: 12px">موسمي</span>
+          <div style="display: flex; gap: 8px; margin-top: auto">
+            <button class="cta" style="flex: 1; height: 44px; border-radius: 14px; font-size: 14px; font-weight: 800">استخدمه للاعب</button>
+            <button class="ghost" style="height: 44px; padding: 0 16px; border-radius: 14px; font-size: 14px; font-weight: 700">معاينة</button>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+    <span class="muted" style="font-size: 12px">القالب نسخة: لما تستخدمه للاعب بيتنسخ، وتعديلك عليه مبيغيّرش القالب الأصلي ولا برامج اللاعبين التانيين.</span>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { tab: 'training' }; }
+  renderVals() {
+    const t = this.state.tab;
+    return { isTraining: t === 'training', isFood: t === 'food',
+      toFood: () => this.setState({ tab: 'food' }), toTraining: () => this.setState({ tab: 'training' }) };
+  }
+}
+</script>
+</body>
+</html>
