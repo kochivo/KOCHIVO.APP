@@ -9,8 +9,9 @@ export async function uploadFile(
   contentType: string,
 ): Promise<'uploaded' | 'skipped'> {
   const storage = client.storage.from(bucket);
+  // storage-js reports a missing object as { data: false, error } and throws on real failures,
+  // so the error here only means not found. Treating it as a failure stopped every first seed.
   const existing = await storage.exists(objectPath);
-  if (existing.error) throw new Error(`Could not check media: ${objectPath}`);
   if (existing.data) return 'skipped';
   const { error } = await storage.upload(objectPath, await readFile(localPath), {
     contentType, upsert: false,
@@ -19,7 +20,7 @@ export async function uploadFile(
     // Another seed process may have uploaded the same object after our check.
     if (error.statusCode === '409' || error.statusCode === '400') {
       const recheck = await storage.exists(objectPath);
-      if (!recheck.error && recheck.data) return 'skipped';
+      if (recheck.data) return 'skipped';
     }
     throw new Error(`Could not upload media: ${objectPath}`);
   }
