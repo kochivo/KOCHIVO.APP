@@ -10,6 +10,7 @@ import { LOCALES, localeDir, parseLocale } from '@/core/i18n/locale';
 import { LocaleProvider } from '@/core/i18n/client';
 import { MobileViewport } from '@/ui/mobile-viewport';
 import { ToastProvider } from '@/ui/toast';
+import { InAppBrowserWarning } from '@/ui/in-app-browser-warning';
 
 const manrope = Manrope({ subsets: ['latin'], variable: '--font-manrope', display: 'swap' });
 const alexandria = Alexandria({ subsets: ['arabic'], variable: '--font-alexandria', display: 'swap' });
@@ -50,7 +51,7 @@ export default async function RootLayout({ children, params }: {
       <head><script dangerouslySetInnerHTML={{ __html: themeBootScript + ';' + glassBootScript }} /></head>
       <body className="min-h-dvh">
         <LocaleProvider locale={locale}>
-          <ToastProvider>{children}</ToastProvider>
+          <ToastProvider><InAppBrowserWarning />{children}</ToastProvider>
           <MobileViewport />
           <RegisterServiceWorker />
         </LocaleProvider>

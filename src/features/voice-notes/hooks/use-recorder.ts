@@ -1,6 +1,10 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { MAX_VOICE_SECONDS, pickRecorderType, recordedSeconds } from '../audio';
+import { pickRecorderType, recordedSeconds } from '../audio';
+import { shouldStopVoiceRecording } from '@/lib/upload-guards';
+import { useT } from '@/core/i18n/client';
+import { useToast } from '@/ui/toast';
+import { messages } from '../messages';
 
 export type RecorderState =
   | { status: 'idle' }
@@ -10,6 +14,8 @@ export type RecorderState =
   | { status: 'unsupported' };
 
 export function useRecorder() {
+  const t = useT(messages);
+  const toast = useToast();
   const [state, setState] = useState<RecorderState>({ status: 'idle' });
   const recorder = useRef<MediaRecorder | null>(null);
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -50,7 +56,9 @@ export function useRecorder() {
     setState({ status: 'recording', seconds: 0 });
     timer.current = setInterval(() => {
       const seconds = Math.floor((performance.now() - startedAt) / 1000);
-      if (seconds >= MAX_VOICE_SECONDS) stop();
+      if (shouldStopVoiceRecording(performance.now() - startedAt)) {
+        if (media.state === 'recording') { stop(); toast.success(t('recordingLimitReached')); }
+      }
       else setState({ status: 'recording', seconds });
     }, 250);
   };

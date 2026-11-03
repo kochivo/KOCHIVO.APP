@@ -5,6 +5,7 @@ import { uploadPrivateMedia } from '@/core/storage';
 import type { AppDatabase } from '@/types/app-database';
 import { bareAudioType } from '../audio';
 import type { VoiceContext, VoiceNote } from '../types';
+import { voiceNoteTooLarge } from '@/lib/upload-guards';
 
 const BUCKET = 'voice-notes';
 const fields = 'id,audio_path,duration_seconds,listened_at,created_at,context_kind,context_id';
@@ -26,6 +27,7 @@ export async function withUrls(client: SupabaseClient<AppDatabase>, rows: Row[])
 export async function sendVoiceNote(client: SupabaseClient<AppDatabase>, input: {
   playerId: string; recording: Blob; seconds: number; context?: VoiceContext;
 }): Promise<VoiceNote> {
+  if (voiceNoteTooLarge(input.recording.size)) throw new Error('Voice note exceeds 2 MB');
   const auth = await client.auth.getUser();
   if (auth.error || !auth.data.user) throw new Error('Not signed in');
   const blob = new Blob([input.recording], { type: bareAudioType(input.recording.type) });
