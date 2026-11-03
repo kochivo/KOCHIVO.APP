@@ -5,6 +5,9 @@ import { localDb, pendingCount, useLiveQuery, type SetLogRow } from '@/core/offl
 import { useProgramSnapshot } from '@/features/player-home';
 import { finishSession, logSet, startSession } from '../data/log-set';
 import { lastPerformance } from '../data/last-performance';
+import { prHistory } from '../data/pr-history';
+import { detectPr, type Pr } from '../pr';
+import { setId } from '../ids';
 import { buildQueue } from '../queue';
 import { useRestTimer } from './use-rest-timer';
 
@@ -14,6 +17,8 @@ const matches = (row: SetLogRow, exerciseId: string, index: number) =>
   row.program_exercise_id === exerciseId && row.set_index === index;
 
 export function useFocusSession(dayId: string, today: string, playerId?: string) {
+  const [pr, setPr] = useState<(Pr & { id: string; current: { weight_kg: number; reps: number } }) | null>(null);
+  const dismissPr = useCallback(() => setPr(null), []);
   const [error, setError] = useState<string | null>(null);
   const [retryKey, setRetryKey] = useState(0);
   const [editing, setEditing] = useState<string | null>(null);
@@ -74,6 +79,15 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
       const active = session ?? await startSession(localDb(), day, today, tappedAt);
       await logSet(localDb(), { session_id: active.id, program_exercise_id: current.exercise.id,
         exercise_id: current.exercise.exercise_id, set_index: current.setIndex, weight_kg: weight, reps }, tappedAt);
+      if (!edited) {
+        // Celebration is best-effort and never holds the next set behind a history read.
+        void (async () => {
+          const id = await setId(active.id, current.exercise.id, current.setIndex);
+          const history = await prHistory(localDb(), current.exercise.exercise_id, id);
+          const result = detectPr(history, { weight_kg: weight, reps });
+          if (result) setPr({ ...result, id, current: { weight_kg: weight, reps } });
+        })().catch(() => undefined);
+      }
       if (!edited) rest.start(current.restAfter);
       setEditing(null);
       setDraft(null);
@@ -82,7 +96,7 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
       cooldown.current = setTimeout(() => { saving.current = false; setBusy(false); }, Math.max(0, 600 - (Date.now() - tappedAt)));
     }
   }, [day, today, session, current, ready, rest, edited, weight, reps]);
-  return { day, queue, current, doneSets, performance, weight, reps, rest, pending,
+  return { day, queue, current, doneSets, performance, weight, reps, rest, pending, pr, dismissPr,
     progress: edited ? queue.findIndex((step) => matches(edited, step.exercise.id, step.setIndex)) + 1 :
       currentIndex < 0 ? queue.length : currentIndex + 1,
     next: queue[(edited ? queue.findIndex((step) => matches(edited, step.exercise.id, step.setIndex)) : currentIndex) + 1],
