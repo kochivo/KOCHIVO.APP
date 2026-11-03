@@ -5,14 +5,12 @@ import { formatNumber } from '@/lib/format';
 import { messages } from '../messages';
 
 import Link from 'next/link';
-import dynamic from 'next/dynamic';
-import { Deferred } from '@/ui/deferred';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowDown, ArrowUp, Trash2 } from 'lucide-react';
 import { uuidv7 } from '@/core/offline/ids';
 import { Button, ErrorState, IconButton, LoadingState, TextField } from '@/ui';
-import { addDay, addExercise, moveDay, removeDay } from '../draft';
+import { addDay, moveDay, removeDay } from '../draft';
 import { validateForActivation } from '../summary';
 import { createProgram, listPlayerPrograms } from '../data/program-io';
 import { activateProgram } from '../data/activate';
@@ -21,9 +19,6 @@ import type { ProgramRow, Result } from '../types';
 import { BuilderHeader } from './builder-header';
 import { DayEditor } from './day-editor';
 import { starterText } from '@/lib/starter-text';
-const ExercisePicker = dynamic(() => import('./exercise-picker').then(module => module.ExercisePicker), {
-  ssr: false, loading: () => <LoadingState />,
-});
 
 export function ProgramBuilder({ programId, playerId }: { programId?: string; playerId?: string }) {
   const t = useT(messages);
@@ -127,12 +122,7 @@ export function ProgramBuilder({ programId, playerId }: { programId?: string; pl
             const id = uuidv7(); state.update(current => addDay(current, id, t('newDay'))); setSelectedDay(id);
           }}>{t('addDay')}</Button>
         </aside>
-        <div className="grid min-w-0 items-start gap-5 2xl:grid-cols-[minmax(0,1fr)_20rem]">
-          {day && <DayEditor key={day.id} day={day} update={state.update} />}
-          <Deferred fallback={<LoadingState className="min-h-96" />}><ExercisePicker disabled={!day || busy} onAdd={exercise => {
-            if (day) { const id = uuidv7(); state.update(current => addExercise(current, day.id, exercise, id)); }
-          }} /></Deferred>
-        </div>
+        {day && <DayEditor key={day.id} day={day} update={state.update} />}
       </div>
     </fieldset>
   </div>;
