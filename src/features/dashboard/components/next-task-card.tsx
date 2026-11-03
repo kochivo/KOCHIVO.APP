@@ -11,7 +11,7 @@ export async function NextTaskCard({ tasks, captainFirstName }: { tasks: Captain
   const task = tasks[0];
   if (!task) return null;
   const title = (task: CaptainTask) => t(`task.${task.kind}`, { name: task.name ?? '', count: formatNumber(task.count ?? 0, locale) });
-  return <GlassCard level="strong" className="space-y-4 p-6">
+  return <GlassCard data-tour="captain-home" level="strong" className="space-y-4 p-6">
     <h2 className="text-3xl font-extrabold">{title(task)}</h2>
     <p className="text-sm text-muted">{t(task.kind === 'done' ? 'taskDoneContext' : 'taskContext')}</p>
     {task.kind === 'invite' ? <InviteButton captainFirstName={captainFirstName} label={t('taskInviteAction')} className="min-h-14" /> : <Link href={task.href} className={task.kind === 'done' ?
