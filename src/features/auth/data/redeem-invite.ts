@@ -16,6 +16,6 @@ export async function redeemInvite(input: string) {
     }
     const { error } = await client.rpc('redeem_invite', { p_code: code });
     if (error) throw error;
-    return { redirect: '/player' };
+    return { redirect: '/player/onboarding' };
   });
 }

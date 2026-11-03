@@ -1,5 +1,16 @@
-import { describe, expect, it } from 'vitest';
-import { allergyOptions, injuryOptions, makeIntakeSchema, medicalOptions, toggleChip } from './index';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { allergyOptions, injuryOptions, makeIntakeSchema, medicalOptions, toggleChip } from './data/intake-schema';
+import { canAdvance, progress, stepOrder, toPayload } from './wizard';
+import type { Intake } from './data/intake-schema';
+import { saveIntake } from './data/save-intake';
+import { hasIntake } from './data/intake-status';
+import { readIntakeDraft } from './hooks/use-intake-draft';
+
+const server = vi.hoisted(() => ({ claims: vi.fn(), upsert: vi.fn(), row: vi.fn(), eq: vi.fn(), from: vi.fn() }));
+vi.mock('server-only', () => ({}));
+vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => ({
+  auth: { getClaims: server.claims }, from: server.from,
+}) }));
 
 const { intakeSchema, stepSchemas } = makeIntakeSchema(new Date('2026-06-01T12:00:00Z'));
 const samples = {
@@ -7,7 +18,101 @@ const samples = {
   schedule: { training_days: [0, 2, 4], session_minutes: 60, experience: 'new' },
   health: { injuries: ['knee'], medical: ['none'] },
   food: { allergies: ['lactose'], notes: 'وجع بسيط في الركبة' },
-};
+} satisfies Record<string, Partial<Intake>>;
+
+describe('wizard navigation and payload', () => {
+  const now = new Date('2026-06-01T12:00:00Z');
+  const draft = { ...samples.basics, ...samples.schedule, ...samples.health, ...samples.food };
+  it('orders the steps and reports their percentage', () => {
+    expect(stepOrder).toEqual(['basics', 'schedule', 'health', 'food']);
+    expect(stepOrder.map(progress)).toEqual([25, 50, 75, 100]);
+  });
+  for (const step of ['basics', 'schedule', 'health', 'food'] as const) {
+    it(`allows a valid ${step} independently of other steps`, () => {
+      expect(canAdvance(step, samples[step], now)).toBe(true);
+    });
+  }
+  it('rejects an invalid answer on each step', () => {
+    expect(canAdvance('basics', { ...draft, sex: undefined }, now)).toBe(false);
+    expect(canAdvance('schedule', { ...draft, training_days: [] }, now)).toBe(false);
+    expect(canAdvance('health', { ...draft, medical: ['none', 'heart'] }, now)).toBe(false);
+    expect(canAdvance('food', { ...draft, notes: 'أ'.repeat(501) }, now)).toBe(false);
+    expect(canAdvance('basics', { ...draft, birth_year: 2017 }, now)).toBe(false);
+    expect(canAdvance('basics', { ...draft, birth_year: 2017 }, new Date('2027-06-01'))).toBe(true);
+  });
+  it('keeps optional targets null and trims notes without mutating answers', () => {
+    expect(toPayload({ ...draft, notes: '   ' })).toMatchObject({ target_weight_kg: null, notes: null });
+    expect(toPayload(draft).notes).toBe(samples.food.notes);
+    expect(toPayload({ ...draft, notes: '  كلام  ' }).notes).toBe('كلام');
+    expect(toPayload(draft).medical).toEqual(['none']);
+    expect(toPayload({ ...draft, injuries: ['none', 'knee'] }).injuries).toEqual(['knee']);
+    expect(toPayload({ ...draft, allergies: ['none', 'eggs'] }).allergies).toEqual(['eggs']);
+    expect(draft.medical).toEqual(['none']);
+  });
+});
+
+describe('intake server boundary', () => {
+  const draft = { ...samples.basics, ...samples.schedule, ...samples.health, ...samples.food };
+  beforeEach(() => {
+    vi.resetAllMocks();
+    vi.setSystemTime(new Date('2026-06-01T12:00:00Z'));
+    server.claims.mockResolvedValue({ data: { claims: { sub: 'verified-player' } }, error: null });
+    server.upsert.mockResolvedValue({ error: null });
+    server.row.mockResolvedValue({ data: null, error: null });
+    server.eq.mockReturnValue({ maybeSingle: server.row });
+    server.from.mockReturnValue({ upsert: server.upsert, select: () => ({ eq: server.eq }) });
+  });
+  afterEach(() => { vi.useRealTimers(); });
+  it('validates before writing and uses only the verified caller identity', async () => {
+    expect(await saveIntake({ ...draft, weight_kg: 301 })).toHaveProperty('error');
+    expect(server.from).not.toHaveBeenCalled();
+    expect(await saveIntake({ ...draft, player_id: 'forged-player' })).toEqual({});
+    expect(server.from).toHaveBeenCalledWith('player_intake');
+    expect(server.upsert).toHaveBeenCalledWith({ ...draft, player_id: 'verified-player',
+      completed_at: '2026-06-01T12:00:00.000Z' }, { onConflict: 'player_id' });
+  });
+  it('refuses anonymous writes and reports database and transport failures', async () => {
+    server.claims.mockResolvedValueOnce({ data: null, error: null });
+    expect(await saveIntake(draft)).toEqual({ error: 'ادخل حسابك الأول' });
+    expect(server.upsert).not.toHaveBeenCalled();
+    server.upsert.mockResolvedValueOnce({ error: { message: 'private detail' } });
+    expect(await saveIntake(draft)).toEqual({ error: 'مش قادرين نبعت إجاباتك. جرّب تاني' });
+    server.upsert.mockRejectedValueOnce(new Error('network'));
+    expect(await saveIntake(draft)).toHaveProperty('error');
+  });
+  it('checks the caller row and distinguishes missing intake from query failures', async () => {
+    expect(await hasIntake()).toBe(false);
+    expect(server.eq).toHaveBeenCalledWith('player_id', 'verified-player');
+    server.row.mockResolvedValueOnce({ data: { player_id: 'verified-player' }, error: null });
+    expect(await hasIntake()).toBe(true);
+    server.row.mockResolvedValueOnce({ data: null, error: { message: 'database' } });
+    await expect(hasIntake()).rejects.toThrow('مش قادرين نحمّل بياناتك');
+    server.claims.mockResolvedValueOnce({ data: null, error: null });
+    await expect(hasIntake()).rejects.toThrow('ادخل حسابك الأول');
+  });
+});
+
+describe('local draft restoration', () => {
+  const now = new Date('2026-06-01T12:00:00Z');
+  afterEach(() => { vi.unstubAllGlobals(); });
+  it('keeps answers including measurements awaiting correction across reloads', () => {
+    const getItem = vi.fn(() => JSON.stringify({ ...samples.basics, weight_kg: 301, notes: 'لسه بكمل',
+      training_days: [], injuries: [], medical: [], allergies: [] }));
+    vi.stubGlobal('window', { localStorage: { getItem } });
+    expect(readIntakeDraft(now)).toMatchObject({ ...samples.basics, weight_kg: 301, notes: 'لسه بكمل' });
+    expect(getItem).toHaveBeenCalledWith('kochivo:intake-draft');
+  });
+  it('uses sane defaults when storage is corrupt, denied, or missing on the server', () => {
+    for (const raw of ['{', 'null', '[]', '{"sex":"invalid"}']) {
+      vi.stubGlobal('window', { localStorage: { getItem: () => raw } });
+      expect(readIntakeDraft(now)).toMatchObject({ birth_year: 1998, height_cm: 170, weight_kg: 75 });
+    }
+    vi.stubGlobal('window', { get localStorage() { throw new Error('denied'); } });
+    expect(readIntakeDraft(now).target_weight_kg).toBeNull();
+    vi.stubGlobal('window', undefined);
+    expect(readIntakeDraft(now).training_days).toEqual([]);
+  });
+});
 
 describe('chip selections', () => {
   it('selecting none clears the other chips without mutating the input', () => {

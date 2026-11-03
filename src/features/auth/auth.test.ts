@@ -143,7 +143,7 @@ describe('auth actions and callback', () => {
   it('sends player OTP metadata, verifies six digits, then redeems', async () => {
     await sendEmailCode({ email });
     expect(mocks.auth.signInWithOtp).toHaveBeenCalledWith({ email, options: { shouldCreateUser: true, data: { role: 'player' } } });
-    expect(await verifyEmailCode({ email, token: '012345' }, 'abc')).toEqual({ redirect: '/player' });
+    expect(await verifyEmailCode({ email, token: '012345' }, 'abc')).toEqual({ redirect: '/player/onboarding' });
     expect(mocks.auth.verifyOtp).toHaveBeenCalledWith({ email, token: '012345', type: 'email' });
     expect(mocks.rpc).toHaveBeenCalledWith('redeem_invite', { p_code: 'abc' });
   });
@@ -188,6 +188,13 @@ describe('auth actions and callback', () => {
     const response = await handleAuthCallback(new NextRequest('http://localhost:3000/auth/callback?code=oauth-code'));
     expect(response.headers.get('location')).toBe('http://localhost:3000/i/invite');
     expect(mocks.rpc).not.toHaveBeenCalled();
+  });
+  it('lands a player on intake only after redeeming the callback invite', async () => {
+    mocks.cookie.get.mockReturnValue({ value: JSON.stringify({ intent: 'player', code: 'invite' }) });
+    const request = new NextRequest('http://localhost:3000/auth/callback?code=oauth-code');
+    const response = await handleAuthCallback(request);
+    expect(response.headers.get('location')).toBe('http://localhost:3000/player/onboarding');
+    expect(mocks.rpc).toHaveBeenCalledWith('redeem_invite', { p_code: 'invite' });
   });
 });
 

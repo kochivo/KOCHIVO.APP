@@ -36,6 +36,7 @@ export async function handleAuthCallback(request: NextRequest) {
       if (user.role === 'captain') return NextResponse.redirect(new URL(`/i/${invite}`, request.url));
       const redemption = await client.rpc('redeem_invite', { p_code: invite });
       if (redemption.error) throw redemption.error;
+      return NextResponse.redirect(new URL('/player/onboarding', request.url));
     }
     return NextResponse.redirect(new URL(user.role === 'captain' ? '/captain' : '/player', request.url));
   } catch (error) {
