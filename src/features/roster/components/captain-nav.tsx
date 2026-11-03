@@ -6,7 +6,7 @@ import { messages } from '../messages';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { BottomNav } from '@/ui';
-import { captainNav, mobileCaptainNav } from '../nav';
+import { captainNav } from '../nav';
 
 export function CaptainNav() {
   const t = useT(messages);
@@ -21,7 +21,7 @@ export function CaptainNav() {
           </Link>
         ))}
       </nav>
-      <BottomNav aria-label={t('captainMenu')} items={mobileCaptainNav(pathname, t)} className="lg:hidden" />
+      <BottomNav aria-label={t('captainMenu')} items={captainNav(pathname, t)} className="lg:hidden" />
     </>
   );
 }

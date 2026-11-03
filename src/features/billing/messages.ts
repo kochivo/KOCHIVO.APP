@@ -3,9 +3,9 @@ import { defineMessages } from '@/core/i18n/messages';
 export const messages = defineMessages({
   ar: {
     'reminder': "يا {name}، اشتراكك مع الكابتن بيخلص {date}. تحب نجدد؟",
-    'billing': "الاشتراكات",
+    'billing': "الدفعات",
     'intro': "جدّد للاعبينك وتابع باقتك",
-    'loadFailed': "مش قادرين نحمّل الاشتراكات. جرّب تاني",
+    'loadFailed': "مش قادرين نحمّل الدفعات. جرّب تاني",
     'retry': "جرّب تاني",
     'players': "لاعبيني",
     'noPlayers': "لسه مفيش لاعبين. ابعت دعوة من صفحة اللاعبين",

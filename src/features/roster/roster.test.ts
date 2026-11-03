@@ -9,7 +9,7 @@ import { archivePlayerAt } from './data/archive-player-internal';
 const createInvite = (days: unknown) => createInviteAt(days, new Date('2026-10-31T23:30:00Z'));
 const archivePlayer = (id: unknown) => archivePlayerAt(id, new Date('2026-10-31T23:30:00Z'));
 import { fetchRoster } from './data/roster';
-import { captainNav, mobileCaptainNav } from './nav';
+import { captainNav } from './nav';
 import { radarMessage, radarReasonLabel, radarWhatsappUrl } from './radar';
 import { fetchRadar } from './data/radar';
 
@@ -91,28 +91,22 @@ describe('captainNav', () => {
     ['/captain/inbox/x', 'المهام'],
     ['/captain/templates', 'القوالب'],
     ['/captain/templates/x', 'القوالب'],
-    ['/captain/billing', 'الاشتراكات'],
+    ['/captain/billing', 'الدفعات'],
     ['/captain/settings/x', 'الإعدادات'],
     ['/unknown', undefined],
     ['/captain/unknown', undefined],
     ['/captain/inboxes', undefined],
     ['/captain/players-other/x', undefined],
-  ])('%s activates only %s on desktop and mobile', (pathname, label) => {
+  ])('%s activates only %s', (pathname, label) => {
     expect(captainNav(pathname).filter((item) => item.active).map((item) => item.label))
       .toEqual(label ? [label] : []);
-    const activeHrefs = captainNav(pathname).filter((item) => item.active).map((item) => item.href);
-    for (const items of [captainNav(pathname), mobileCaptainNav(pathname)]) {
-      expect(items.filter((item) => item.active).map((item) => item.href)).toEqual(activeHrefs);
-      expect(items.map((item) => item.href)).toEqual([
-        '/captain', '/captain/inbox', '/captain/templates', '/captain/billing', '/captain/settings',
-      ]);
-    }
+    expect(captainNav(pathname).map((item) => item.href)).toEqual([
+      '/captain', '/captain/inbox', '/captain/templates', '/captain/billing', '/captain/settings',
+    ]);
   });
 
-  it('uses the short billing label only in the phone bar', () => {
-    const billing = (items: { href: string; label: string }[]) => items.find((item) => item.href === '/captain/billing')?.label;
-    expect(billing(captainNav('/captain'))).toBe('الاشتراكات');
-    expect(billing(mobileCaptainNav('/captain'))).toBe('الدفعات');
+  it('names billing the same everywhere', () => {
+    expect(captainNav('/captain').find((item) => item.href === '/captain/billing')?.label).toBe('الدفعات');
   });
 });
 

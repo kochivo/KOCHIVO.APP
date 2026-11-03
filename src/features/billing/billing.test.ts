@@ -147,7 +147,7 @@ describe('fetchBilling', () => {
     phoneError = failure === 'phone';
     paymentError = failure === 'payment';
     if (failure === 'roster') mocks.rpc.mockResolvedValue({ data: null, error: { code: '500' } });
-    expect(await fetchBilling()).toEqual({ error: 'مش قادرين نحمّل الاشتراكات. جرّب تاني' });
+    expect(await fetchBilling()).toEqual({ error: 'مش قادرين نحمّل الدفعات. جرّب تاني' });
   });
   it('denies an anonymous session before loading billing', async () => {
     mocks.user.mockResolvedValue({ data: { user: null }, error: null });
