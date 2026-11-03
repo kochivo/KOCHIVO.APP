@@ -27,13 +27,13 @@ beforeAll(async () => {
   await run(other, `insert into public.programs (captain_id, is_template, title) values ($1, true, 'Other')`, [other]);
   await db.query(`insert into public.workout_sessions
     (id, player_id, training_date, started_at, client_updated_at)
-    values (gen_random_uuid(), $1, current_date, now(), now())`, [player]);
+    values (gen_random_uuid(), $1, test_clock.today(), now(), now())`, [player]);
   await db.query(`insert into public.meal_logs (id, player_id, log_date, client_updated_at)
-    values (gen_random_uuid(), $1, current_date, now())`, [player]);
+    values (gen_random_uuid(), $1, test_clock.today(), now())`, [player]);
   await run(player, `insert into public.player_intake
     (player_id, birth_year, sex, height_cm, weight_kg, training_days, session_minutes, experience)
     values ($1, 2000, 'male', 180, 80, array[1,3]::smallint[], 60, 'new')`, [player]);
-  await run(player, `insert into public.check_ins (player_id, week_start) values ($1, current_date)`, [player]);
+  await run(player, `insert into public.check_ins (player_id, week_start) values ($1, test_clock.today())`, [player]);
   await run(player, `insert into storage.objects (bucket_id, name) values ('checkin-photos', $1)`, [`${player}/photo.jpg`]);
   await run(player, `insert into storage.objects (bucket_id, name) values ('form-videos', $1)`, [`${player}/video.mp4`]);
 });
@@ -55,7 +55,7 @@ it('requires a restrictive active_caller policy on every public table', async ()
 it('blocks renewal, archiving, content CRUD and review with the same authenticated identity', async () => {
   expect((await run(captain, 'select * from public.coach_clients')).rows).toHaveLength(1);
   await suspend(captain, true);
-  for (const assignment of ['access_until = current_date + 365', 'archived_at = now()']) {
+  for (const assignment of ['access_until = test_clock.today() + 365', 'archived_at = now()']) {
     expect((await run(captain, `update public.coach_clients set ${assignment} returning id`)).rows).toEqual([]);
   }
   for (const table of ['programs', 'nutrition_plans']) {
@@ -85,7 +85,7 @@ it('blocks renewal, archiving, content CRUD and review with the same authenticat
   expect((await run(player, 'select id from public.programs')).rows).toEqual([{ id: program }]);
   expect((await run(player, 'select id from public.nutrition_plans')).rows).toEqual([{ id: plan }]);
   await suspend(captain, false);
-  expect((await run(captain, `update public.coach_clients set access_until = current_date + 60 returning id`)).rows).toHaveLength(1);
+  expect((await run(captain, `update public.coach_clients set access_until = test_clock.today() + 60 returning id`)).rows).toHaveLength(1);
   expect((await run(captain, 'select * from storage.objects')).rows).toHaveLength(2);
 });
 

@@ -1,6 +1,6 @@
 import type { PGlite } from '@electric-sql/pglite';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { asUser, createTestDb, createUser, dayOffset } from './harness';
+import { asUser, createTestDb, createUser, dayOffset, TEST_NOW } from './harness';
 
 let db: PGlite;
 let captainA: string;
@@ -25,15 +25,18 @@ beforeAll(async () => {
   player = await createUser(db, 'player');
   await link(captainA, player, 30);
 
+  // INSERT RETURNING produces exactly one row or rejects the query.
   exerciseId = (await db.query<{ id: string }>(
     `insert into public.exercises (name_en, name_ar, body_part) values ('bench press', 'بنش', 'chest') returning id`,
   )).rows[0]!.id;
 
   // Captain A builds a template (one day, one exercise) and assigns it.
   templateId = await asUser(db, captainA, async (tx) => {
+    // Each single-row INSERT RETURNING below produces one row or rejects the query.
     const t = (await tx.query<{ id: string }>(
       `insert into public.programs (captain_id, is_template, title) values ($1, true, 'تضخيم') returning id`, [captainA],
     )).rows[0]!.id;
+    // This single-row INSERT RETURNING produces one row or rejects the query.
     const d = (await tx.query<{ id: string }>(
       `insert into public.program_days (program_id, position, title) values ($1, 0, 'صدر') returning id`, [t],
     )).rows[0]!.id;
@@ -46,6 +49,21 @@ beforeAll(async () => {
 });
 
 describe('migrations', () => {
+  it('shares a fixed clock across roles, hardened functions, defaults and date offsets', async () => {
+    await db.exec(`create function public.clock_probe() returns timestamptz
+      language sql set search_path = '' as $$ select pg_catalog.now() $$`);
+    expect((await asUser(db, player, tx => tx.query(`select now() as instant,
+      public.clock_probe() as hardened`))).rows).toEqual([
+      { instant: new Date(TEST_NOW), hardened: new Date(TEST_NOW) },
+    ]);
+    expect((await db.query(`select created_at from public.profiles where id = $1`, [player])).rows)
+      .toEqual([{ created_at: new Date(TEST_NOW) }]);
+    expect((await db.query(`select started_on::text from public.coach_clients where player_id = $1`, [player])).rows)
+      .toEqual([{ started_on: TEST_NOW.split('T')[0] }]);
+    expect(await dayOffset(db, -3)).toBe('2026-10-31');
+    expect(await dayOffset(db, 30)).toBe('2026-12-03');
+  });
+
   it('apply cleanly and create profiles from sign-up metadata', async () => {
     const { rows } = await db.query<{ role: string }>(`select role from public.profiles where id = $1`, [captainA]);
     expect(rows[0]?.role).toBe('captain');
@@ -110,7 +128,8 @@ describe('subscription grace period (PRD §7)', () => {
   }
 
   it('active: logs sync, and an older edit never overwrites a newer one', async () => {
-    const ids = (await assignedIds())!;
+    const ids = await assignedIds();
+    if (!ids) throw new Error('Active player has no assigned exercise fixture');
     await asUser(db, player, (tx) => logSet(tx, ids.day, ids.pe, '2026-11-03T08:10:00Z', 62.5));
     await asUser(db, player, (tx) => logSet(tx, ids.day, ids.pe, '2026-11-03T08:05:00Z', 60));
     const { rows } = await db.query<{ weight_kg: string }>(`select weight_kg from public.set_logs where id = $1`, [SET]);
@@ -118,8 +137,9 @@ describe('subscription grace period (PRD §7)', () => {
   });
 
   it('expired 2 days ago: still reads the program, cannot log', async () => {
-    const ids = (await assignedIds())!;
-    await db.query(`update public.coach_clients set access_until = current_date - 2 where player_id = $1`, [player]);
+    const ids = await assignedIds();
+    if (!ids) throw new Error('Player has no assigned exercise before entering grace period');
+    await db.query(`update public.coach_clients set access_until = test_clock.today() - 2 where player_id = $1`, [player]);
     expect(await assignedIds()).toBeDefined();
     await expect(asUser(db, player, (tx) => logSet(tx, ids.day, ids.pe, '2026-11-03T09:00:00Z', 70))).rejects.toThrow(
       /row-level security/,
@@ -127,11 +147,11 @@ describe('subscription grace period (PRD §7)', () => {
   });
 
   it('expired 5 days ago: program hidden, own history kept', async () => {
-    await db.query(`update public.coach_clients set access_until = current_date - 5 where player_id = $1`, [player]);
+    await db.query(`update public.coach_clients set access_until = test_clock.today() - 5 where player_id = $1`, [player]);
     expect(await assignedIds()).toBeUndefined();
     const history = await asUser(db, player, (tx) => tx.query(`select * from public.set_logs`));
     expect(history.rows).toHaveLength(1);
-    await db.query(`update public.coach_clients set access_until = current_date + 30 where player_id = $1`, [player]);
+    await db.query(`update public.coach_clients set access_until = test_clock.today() + 30 where player_id = $1`, [player]);
   });
 });
 

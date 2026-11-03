@@ -22,7 +22,7 @@ beforeAll(async () => {
   ({ captain, player } = await createCaptainWithPlayer(db));
   otherCaptain = await createUser(db, 'captain', 'B');
   const teammate = await createUser(db, 'player');
-  await db.query(`insert into public.coach_clients (captain_id, player_id, access_until) values ($1, $2, current_date + 30)`, [captain, teammate]);
+  await db.query(`insert into public.coach_clients (captain_id, player_id, access_until) values ($1, $2, test_clock.today() + 30)`, [captain, teammate]);
   await db.query(`insert into public.foods (id, name_ar, kcal_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g)
     values ($1, 'أرز', 130, 3, 28, 0)`, [GLOBAL]);
   await asUser(db, captain, async (tx) => {

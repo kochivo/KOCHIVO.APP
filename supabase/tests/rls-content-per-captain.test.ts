@@ -84,13 +84,13 @@ describe('content access belongs to its captain (0027)', () => {
     const f = await content(a, player);
     const logs = await history(player, f, NOW);
     await asUser(db, a, (tx) => tx.query(`update public.coach_clients
-      set access_until = current_date + $1::int where player_id = $2`, [offset, player]));
+      set access_until = test_clock.today() + $1::int where player_id = $2`, [offset, player]));
     await visible(player, f, offset >= -3);
     await asUser(db, a, (tx) => tx.query(`update public.coach_clients
       set archived_at = now() where player_id = $1`, [player]));
     const { rows } = await asUser(db, b, (tx) => tx.query<{ code: string }>(
       `insert into public.coach_invites (captain_id, access_until)
-       values ($1, current_date + 30) returning code`, [b],
+       values ($1, test_clock.today() + 30) returning code`, [b],
     ));
     await asUser(db, player, (tx) => tx.query('select public.redeem_invite($1)', [rows[0]?.code]));
     // Keep A active for the regression assertion; activating B first would mask SEC-02.
@@ -110,7 +110,7 @@ describe('content access belongs to its captain (0027)', () => {
     const { captain, player } = await createCaptainWithPlayer(db);
     const stranger = await createUser(db, 'player');
     await db.query(`insert into public.coach_clients (captain_id, player_id, access_until)
-      values ($1, $2, current_date + 30)`, [captain, stranger]);
+      values ($1, $2, test_clock.today() + 30)`, [captain, stranger]);
     await visible(stranger, await content(captain, player), false);
   });
 

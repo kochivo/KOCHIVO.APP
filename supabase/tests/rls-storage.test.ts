@@ -39,7 +39,7 @@ describe('private photo isolation', () => {
   it('A player with expired access cannot upload a new check-in photo.', async () => {
     const name = `${player}/expired.jpg`;
     await upload(`${player}/active.jpg`);
-    await db.query(`update public.coach_clients set access_until = current_date - 1 where player_id = $1`, [player]);
+    await db.query(`update public.coach_clients set access_until = test_clock.today() - 1 where player_id = $1`, [player]);
     await expect(upload(name)).rejects.toThrow(/row-level security/);
     expect((await db.query(`select name from storage.objects where name = $1`, [name])).rows).toHaveLength(0);
   });
