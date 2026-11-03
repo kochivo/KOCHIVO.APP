@@ -1,17 +1,12 @@
 import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
-import { hasIntake, IntakeWizard } from '@/features/onboarding';
+import { fetchOnboardingStatus, IntakeWizard } from '@/features/onboarding';
 import { LoadingState } from '@/ui';
 
 async function IntakeContent() {
-  let submitted: boolean;
-  try {
-    submitted = await hasIntake();
-  } catch {
-    return <IntakeWizard statusError="مش قادرين نحمّل بياناتك. جرّب تاني" />;
-  }
+  const { submitted, statusError } = await fetchOnboardingStatus();
   if (submitted) redirect('/player');
-  return <IntakeWizard />;
+  return <IntakeWizard statusError={statusError} />;
 }
 
 export default function OnboardingPage() {

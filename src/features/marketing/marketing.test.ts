@@ -1,7 +1,9 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import HomePage from '../../app/page';
+import { Hero } from './components/hero';
+import { PlayerSection } from './components/player-section';
+import { SiteFooter } from './components/site-footer';
 import { content } from './content';
 
 describe('public marketing page', () => {
@@ -23,7 +25,7 @@ describe('public marketing page', () => {
     expect(content.footer.credit).toContain('© Gym visual');
   });
   it('renders one heading and public entry links with server-visible previews', () => {
-    const html = renderToStaticMarkup(createElement(HomePage));
+    const html = [Hero, PlayerSection, SiteFooter].map((component) => renderToStaticMarkup(createElement(component))).join('');
     expect(html.match(/<h1\b/g)).toHaveLength(1);
     expect(html).toContain('href="/login?tab=signup"');
     expect(html).toContain('href="/login"');

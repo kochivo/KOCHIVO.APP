@@ -1,6 +1,7 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ageLabel, mergeInbox, quickReplies } from './merge';
-import { mediaUrls, reviewItem } from './data/inbox';
+import { mediaUrls } from './data/inbox';
+import { reviewItemAt } from './data/inbox-internal';
 import type { InboxItem } from './types';
 
 const mocks = vi.hoisted(() => {
@@ -12,10 +13,9 @@ vi.mock('server-only', () => ({}));
 vi.mock('@/core/supabase/server', () => ({ supabaseServer: mocks.server }));
 const id = '019a0000-0000-7000-8000-000000000001';
 const now = new Date('2026-11-03T12:00:00Z');
+const reviewItem = (input: unknown) => reviewItemAt(input, now);
 beforeEach(() => {
   vi.resetAllMocks();
-  vi.useFakeTimers();
-  vi.setSystemTime(now);
   mocks.server.mockResolvedValue(mocks.client);
   mocks.client.auth.getUser.mockResolvedValue({ data: { user: { id: 'captain' } }, error: null });
   mocks.client.from.mockReturnValue(mocks.query);
@@ -24,7 +24,6 @@ beforeEach(() => {
   mocks.query.select.mockResolvedValue({ data: [{ id }], error: null });
   mocks.client.storage.from.mockReturnValue(mocks.signing);
 });
-afterEach(() => vi.useRealTimers());
 
 describe('inbox logic', () => {
   it('merges newest first, breaking ties by id without mutating inputs', () => {

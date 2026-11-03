@@ -1,6 +1,9 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { reminderText, renewalPreview, waLink } from './renew';
-import { fetchBilling, renewPlayer } from './data/billing';
+import { renewPlayer } from './data/billing';
+import { fetchBillingAt } from './data/billing-internal';
+
+const fetchBilling = () => fetchBillingAt(new Date('2026-11-02T23:30:00Z'));
 
 const mocks = vi.hoisted(() => ({ server: vi.fn(), rpc: vi.fn(), user: vi.fn(), profile: vi.fn(), from: vi.fn() }));
 vi.mock('server-only', () => ({}));
@@ -83,8 +86,6 @@ describe('fetchBilling', () => {
   let paymentError = false;
   beforeEach(() => {
     vi.resetAllMocks();
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date('2026-11-02T23:30:00Z'));
     phoneError = false;
     paymentError = false;
     mocks.user.mockResolvedValue({ data: { user: { id: 'session-captain' } }, error: null });
@@ -107,7 +108,6 @@ describe('fetchBilling', () => {
     });
     mocks.server.mockResolvedValue({ auth: { getUser: mocks.user }, from: mocks.from, rpc: mocks.rpc });
   });
-  afterEach(() => vi.useRealTimers());
   it('combines the roster, phones, last payments and the session captain plan', async () => {
     expect(await fetchBilling()).toEqual({ data: {
       players: [{ playerId: 'player-1', fullName: 'علي', accessUntil: '2026-12-01', startedOn: '2026-10-01',

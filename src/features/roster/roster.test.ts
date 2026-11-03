@@ -1,8 +1,11 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { lastSeenLabel, playerStatus } from './status';
 import { inviteDaysSchema, inviteMessage, inviteUrl, whatsappShareUrl } from './invite';
-import { createInvite } from './data/create-invite';
-import { archivePlayer } from './data/archive-player';
+import { createInviteAt } from './data/create-invite-internal';
+import { archivePlayerAt } from './data/archive-player-internal';
+
+const createInvite = (days: unknown) => createInviteAt(days, new Date('2026-10-31T23:30:00Z'));
+const archivePlayer = (id: unknown) => archivePlayerAt(id, new Date('2026-10-31T23:30:00Z'));
 import { fetchRoster } from './data/roster';
 import { captainNav, mobileCaptainNav } from './nav';
 import { radarMessage, radarReasonLabel, radarWhatsappUrl } from './radar';
@@ -19,15 +22,12 @@ vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => mocks.cli
 vi.mock('next/cache', () => ({ revalidatePath: mocks.revalidate }));
 
 beforeEach(() => {
-  vi.useFakeTimers();
-  vi.setSystemTime(new Date('2026-10-31T23:30:00Z'));
   vi.resetAllMocks();
   mocks.client.auth.getUser.mockResolvedValue({ data: { user: { id: 'captain-id' } }, error: null });
   mocks.client.from.mockReturnValue(mocks.query);
   for (const method of ['select', 'eq', 'is', 'insert', 'update'] as const) mocks.query[method].mockReturnValue(mocks.query);
   mocks.query.single.mockResolvedValue({ data: { role: 'captain', suspended_at: null }, error: null });
 });
-afterEach(() => { vi.useRealTimers(); });
 
 const today = '2026-11-03';
 const base = { today, startedOn: '2026-10-01', lastTrainingDate: today, accessUntil: '2026-12-01' };

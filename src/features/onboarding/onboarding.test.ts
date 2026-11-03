@@ -2,8 +2,11 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { allergyOptions, injuryOptions, makeIntakeSchema, medicalOptions, toggleChip } from './data/intake-schema';
 import { canAdvance, progress, stepOrder, toPayload } from './wizard';
 import type { Intake } from './data/intake-schema';
-import { saveIntake } from './data/save-intake';
+import { saveIntakeAt } from './data/save-intake-internal';
+
+const saveIntake = (input: unknown) => saveIntakeAt(input, new Date('2026-06-01T12:00:00Z'));
 import { hasIntake } from './data/intake-status';
+import { fetchOnboardingStatus } from './data/onboarding-status';
 import { readIntakeDraft } from './hooks/use-intake-draft';
 
 const server = vi.hoisted(() => ({ claims: vi.fn(), upsert: vi.fn(), row: vi.fn(), eq: vi.fn(), from: vi.fn() }));
@@ -55,14 +58,12 @@ describe('intake server boundary', () => {
   const draft = { ...samples.basics, ...samples.schedule, ...samples.health, ...samples.food };
   beforeEach(() => {
     vi.resetAllMocks();
-    vi.setSystemTime(new Date('2026-06-01T12:00:00Z'));
     server.claims.mockResolvedValue({ data: { claims: { sub: 'verified-player' } }, error: null });
     server.upsert.mockResolvedValue({ error: null });
     server.row.mockResolvedValue({ data: null, error: null });
     server.eq.mockReturnValue({ maybeSingle: server.row });
     server.from.mockReturnValue({ upsert: server.upsert, select: () => ({ eq: server.eq }) });
   });
-  afterEach(() => { vi.useRealTimers(); });
   it('validates before writing and uses only the verified caller identity', async () => {
     expect(await saveIntake({ ...draft, weight_kg: 301 })).toHaveProperty('error');
     expect(server.from).not.toHaveBeenCalled();
@@ -89,6 +90,14 @@ describe('intake server boundary', () => {
     await expect(hasIntake()).rejects.toThrow('مش قادرين نحمّل بياناتك');
     server.claims.mockResolvedValueOnce({ data: null, error: null });
     await expect(hasIntake()).rejects.toThrow('ادخل حسابك الأول');
+  });
+  it('maps intake completion and lookup failures for the route', async () => {
+    expect(await fetchOnboardingStatus()).toEqual({ submitted: false });
+    server.row.mockResolvedValueOnce({ data: { player_id: 'verified-player' }, error: null });
+    expect(await fetchOnboardingStatus()).toMatchObject({ submitted: true });
+    server.row.mockRejectedValueOnce(new Error('offline'));
+    expect(await fetchOnboardingStatus()).toEqual({ submitted: false,
+      statusError: 'مش قادرين نحمّل بياناتك. جرّب تاني' });
   });
 });
 
