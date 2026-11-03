@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Alexandria, Changa, Manrope } from 'next/font/google';
 import type { ReactNode } from 'react';
 import { RegisterServiceWorker } from '@/core/pwa/register-sw';
+import { glassBootScript } from '@/lib/glass-mode';
 import './globals.css';
 
 const manrope = Manrope({ subsets: ['latin'], variable: '--font-manrope', display: 'swap' });
@@ -26,7 +27,8 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="ar" dir="rtl" className={`${manrope.variable} ${alexandria.variable} ${changa.variable}`}>
+    <html lang="ar" dir="rtl" suppressHydrationWarning className={`${manrope.variable} ${alexandria.variable} ${changa.variable}`}>
+      <head><script dangerouslySetInnerHTML={{ __html: glassBootScript }} /></head>
       <body className="min-h-dvh">
         {children}
         <RegisterServiceWorker />

@@ -88,33 +88,51 @@
  * Every level has a 1px white/10 hairline and falls back to a solid surface without backdrop-filter.
  */
 @utility glass {
-  background: rgb(255 255 255 / 0.05);
+  @apply glass-surface;
+  --glass-blur-background: rgb(255 255 255 / 0.05);
+  --glass-blur-filter: blur(16px) saturate(140%);
   border: 1px solid rgb(255 255 255 / 0.1);
-  backdrop-filter: blur(16px) saturate(140%);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06);
 }
 
 @utility glass-raised {
-  background: rgb(255 255 255 / 0.08);
+  @apply glass-surface;
+  --glass-blur-background: rgb(255 255 255 / 0.08);
+  --glass-blur-filter: blur(16px) saturate(140%);
   border: 1px solid rgb(255 255 255 / 0.14);
-  backdrop-filter: blur(16px) saturate(140%);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08);
 }
 
 @utility glass-strong {
-  background: rgb(0 0 0 / 0.4);
+  @apply glass-surface;
+  --glass-blur-background: rgb(0 0 0 / 0.4);
+  --glass-blur-filter: blur(24px);
   border: 1px solid rgb(255 255 255 / 0.1);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+}
+
+/* Shared by all three utilities, including responsive variants such as lg:glass-strong. */
+@utility glass-surface {
+  background: var(--glass-solid-background, var(--glass-blur-background));
+  -webkit-backdrop-filter: var(--glass-solid-filter, var(--glass-blur-filter));
+  backdrop-filter: var(--glass-solid-filter, var(--glass-blur-filter));
+}
+
+html[data-glass='solid'] {
+  --glass-solid-background: var(--color-surface);
+  --glass-solid-filter: none;
 }
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .glass,
-  .glass-raised,
-  .glass-strong {
-    background: var(--color-surface);
+  html {
+    --glass-solid-background: var(--color-surface);
+    --glass-solid-filter: none;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  html {
+    --glass-solid-background: var(--color-surface);
+    --glass-solid-filter: none;
   }
 }
 
