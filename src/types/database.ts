@@ -285,6 +285,7 @@ export type Database = {
       }
       exercises: {
         Row: {
+          video_url: string | null
           body_part: string
           created_at: string
           dataset_id: string | null
@@ -300,6 +301,7 @@ export type Database = {
           target: string | null
         }
         Insert: {
+          video_url?: string | null
           body_part: string
           created_at?: string
           dataset_id?: string | null
@@ -315,6 +317,7 @@ export type Database = {
           target?: string | null
         }
         Update: {
+          video_url?: string | null
           body_part?: string
           created_at?: string
           dataset_id?: string | null

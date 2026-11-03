@@ -14,7 +14,9 @@ import type { DraftDay, ProgramDraft } from '../types';
 import { ExerciseRow } from './exercise-row';
 import { ExerciseDrawer } from './exercise-drawer';
 
-export function DayEditor({ day, update }: { day: DraftDay; update: (operation: (draft: ProgramDraft) => ProgramDraft) => void }) {
+export function DayEditor({ day, update, usedExerciseIds }: {
+  day: DraftDay; update: (operation: (draft: ProgramDraft) => ProgramDraft) => void; usedExerciseIds?: string[];
+}) {
   const t = useT(messages);
   const locale = useLocale();
   const [selected, setSelected] = useState<string[]>([]);
@@ -40,7 +42,8 @@ export function DayEditor({ day, update }: { day: DraftDay; update: (operation: 
     {day.exercises.length > 0 && <Button variant="secondary" className="min-h-12" disabled={selection.length < 2} onClick={() => {
       update(draft => toggleSuperset(draft, day.id, selection)); setSelected([]);
     }}>{t('groupUngroupSuperset')}</Button>}
-    {libraryOpen && <ExerciseDrawer openerId={openerId} onClose={() => setLibraryOpen(false)} onAdd={exercise => {
+    {libraryOpen && <ExerciseDrawer openerId={openerId} usedExerciseIds={usedExerciseIds ?? day.exercises.map(row => row.exercise_id)}
+      onClose={() => setLibraryOpen(false)} onAdd={exercise => {
       const id = uuidv7(); update(draft => addExercise(draft, day.id, exercise, id));
     }} />}
   </section>;
