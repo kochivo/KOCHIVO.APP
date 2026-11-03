@@ -1,0 +1,17 @@
+node_modules/
+.next/
+out/
+coverage/
+*.tsbuildinfo
+next-env.d.ts
+
+# secrets
+.env
+.env.*
+!.env.example
+
+# large source media: uploaded to Storage by the seed script, never committed
+assets-source/
+
+.DS_Store
+Thumbs.db

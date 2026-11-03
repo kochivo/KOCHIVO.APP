@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"><meta name="supported-color-schemes" content="dark"><title>Confirm your KOCHIVO account | تأكيد حسابك</title></head>
+<body style="margin:0;padding:0;background:#0e1213;color:#f2f2ec;font-family:Tahoma,Arial,sans-serif">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0">كود تأكيد حسابك: {{ .Token }} · Your KOCHIVO confirmation code</div>
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#0e1213"><tr><td align="center" style="padding:28px 16px 40px">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:520px">
+<tr><td align="center" style="padding:4px 0 26px"><img src="{{ .SiteURL }}/brand/kochivo-v4-logo.png" width="168" alt="KOCHIVO" style="display:block;width:168px;max-width:60%;height:auto;border:0"></td></tr>
+<tr><td style="background:#181d1e;border:1px solid #2c3435;border-radius:20px;padding:34px 26px 30px;text-align:right">
+<h1 style="margin:0 0 10px;font-size:26px;line-height:1.5;font-weight:700;color:#f2f2ec">أكّد حسابك</h1>
+<p style="margin:0 0 24px;font-size:16px;line-height:1.9;color:#c3cac6">اكتب الكود ده في صفحة التسجيل اللي مفتوحة عندك عشان تكمّل.</p>
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr><td align="center" dir="ltr" style="background:#0e1213;border:1px solid #3d4a2a;border-radius:14px;padding:20px 12px;font-family:'Courier New',Courier,monospace;font-size:34px;line-height:1.2;font-weight:700;letter-spacing:8px;color:#c6ee6a">{{ .Token }}</td></tr></table>
+<p style="margin:12px 0 0;font-size:13px;line-height:1.8;color:#98a29d;text-align:center">الكود صالح لمدة ساعة، ولمرة واحدة بس.</p>
+<p style="margin:28px 0 14px;font-size:14px;line-height:1.8;color:#c3cac6;text-align:center">أو أكّد بضغطة واحدة:</p>
+<table role="presentation" cellspacing="0" cellpadding="0" align="center"><tr><td style="border-radius:999px;background:#c6ee6a"><a href="{{ .SiteURL }}/auth/email?token_hash={{ .TokenHash }}&amp;type=email&amp;redirect_to={{ .RedirectTo }}" style="display:inline-block;padding:14px 30px;color:#0e1213;font-size:15px;line-height:1.5;font-weight:700;text-decoration:none">تأكيد الحساب</a></td></tr></table>
+<div lang="en" dir="ltr" style="margin:32px 0 0;padding:22px 0 0;border-top:1px solid #2c3435;text-align:left">
+<h2 style="margin:0 0 8px;font-size:18px;line-height:1.5;font-weight:700;color:#f2f2ec">Confirm your account</h2>
+<p style="margin:0;font-size:14px;line-height:1.75;color:#c3cac6">Enter the code above on the sign-up page you have open, or use the button. The code works once and expires in one hour.</p>
+</div>
+</td></tr>
+<tr><td style="padding:22px 6px 0;font-size:12px;line-height:1.9;color:#8b958f;text-align:center">لو مش إنت اللي عملت الحساب ده، تجاهل الرسالة.<br><span lang="en" dir="ltr">Didn't create this account? You can ignore this email.</span><br>{{ .Email }} · <a href="mailto:support@kochivo.site" style="color:#c6ee6a;text-decoration:none">support@kochivo.site</a></td></tr>
+</table>
+</td></tr></table></body></html>

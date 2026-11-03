@@ -1,0 +1,119 @@
+@import 'tailwindcss';
+
+/*
+ * KOCHIVO design tokens — the only place colors are defined.
+ * Brand source: brand/tokens/palette.css (2026-10-26). Extra shades below are derived from it.
+ * Use the generated utilities (bg-surface, text-muted, border-line, bg-lime …), never raw hex in components.
+ */
+@theme {
+  /* brand */
+  --color-bg: #101418;
+  --color-surface: #1b2026;
+  --color-line: #2a3038;
+  --color-ink: #f2f2ee;
+  --color-muted: #9aa0a6;
+  --color-lime: #b6e94f;
+
+  /* derived */
+  --color-bg-deep: #0b0e11;
+  --color-surface-raised: #222831;
+  --color-line-soft: rgb(242 242 238 / 0.06);
+  --color-on-lime: #101418;
+  --color-lime-soft: rgb(182 233 79 / 0.12);
+  --color-warn: #f2b544;
+  --color-warn-soft: rgb(242 181 68 / 0.12);
+  --color-danger: #ff8a65;
+  --color-danger-soft: rgb(255 138 101 / 0.12);
+
+  --font-sans: var(--font-manrope), var(--font-alexandria), system-ui, sans-serif;
+  /* headings, buttons and big labels: athletic display face; body text stays on the calmer sans */
+  --font-display: var(--font-manrope), var(--font-changa), var(--font-alexandria), system-ui, sans-serif;
+
+  --radius-card: 1.5rem;
+  --radius-control: 1rem;
+
+  /* minimum touch target from the PRD (48dp) */
+  --spacing-touch: 3rem;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background: var(--color-bg-deep);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-feature-settings: 'tnum' 1;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /*
+   * Dark mesh built only from brand hues: deep black, a steel-navy lifted from the surface tone,
+   * and one faint lime glow. Fixed pseudo-element instead of background-attachment:fixed (broken on iOS).
+   */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(50rem 32rem at 100% -10%, rgb(182 233 79 / 0.08), transparent 60%),
+      radial-gradient(48rem 48rem at -10% 25%, #17222e, transparent 65%),
+      radial-gradient(40rem 36rem at 80% 110%, #131c25, transparent 70%),
+      var(--color-bg-deep);
+  }
+
+  h1,
+  h2,
+  h3,
+  button {
+    font-family: var(--font-display);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-lime);
+    outline-offset: 2px;
+  }
+}
+
+/*
+ * Glass surfaces. Three levels only — pick by how much must stay readable on top:
+ *   glass        lists, cards, nav (white/5, blur 16)
+ *   glass-raised selected / hovered item (white/8)
+ *   glass-strong gym focus mode and anything with big numbers (black/40, blur 24) — highest contrast
+ * Every level has a 1px white/10 hairline and falls back to a solid surface without backdrop-filter.
+ */
+@utility glass {
+  background: rgb(255 255 255 / 0.05);
+  border: 1px solid rgb(255 255 255 / 0.1);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06);
+}
+
+@utility glass-raised {
+  background: rgb(255 255 255 / 0.08);
+  border: 1px solid rgb(255 255 255 / 0.14);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08);
+}
+
+@utility glass-strong {
+  background: rgb(0 0 0 / 0.4);
+  border: 1px solid rgb(255 255 255 / 0.1);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass,
+  .glass-raised,
+  .glass-strong {
+    background: var(--color-surface);
+  }
+}

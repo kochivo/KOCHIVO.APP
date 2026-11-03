@@ -1,0 +1,12 @@
+{
+  "brand": "KOCHIVO",
+  "version": "2026-10-26",
+  "colors": {
+    "background": "#101418",
+    "accent": "#B6E94F",
+    "text": "#F2F2EE",
+    "secondary": "#9AA0A6",
+    "surface": "#1B2026",
+    "border": "#2A3038"
+  }
+}

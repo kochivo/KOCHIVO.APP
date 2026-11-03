@@ -1,0 +1,542 @@
+[
+  {
+    "name": "White rice, cooked",
+    "name_ar": "أرز أبيض مطبوخ",
+    "kcal_per_100g": 130,
+    "protein_per_100g": 2.7,
+    "carbs_per_100g": 28.2,
+    "fat_per_100g": 0.3,
+    "photo_file": "food_white_rice-v1.webp"
+  },
+  {
+    "name": "Brown rice, cooked",
+    "name_ar": "أرز بني مطبوخ",
+    "kcal_per_100g": 123,
+    "protein_per_100g": 2.7,
+    "carbs_per_100g": 25.6,
+    "fat_per_100g": 1,
+    "photo_file": "food_brown_rice-v1.webp"
+  },
+  {
+    "name": "Chicken breast, cooked",
+    "name_ar": "صدور دجاج مطبوخة",
+    "kcal_per_100g": 165,
+    "protein_per_100g": 31,
+    "carbs_per_100g": 0,
+    "fat_per_100g": 3.6,
+    "photo_file": "food_chicken_breast-v1.webp"
+  },
+  {
+    "name": "Chicken thigh, cooked",
+    "name_ar": "ورك دجاج مطبوخ",
+    "kcal_per_100g": 179,
+    "protein_per_100g": 24.8,
+    "carbs_per_100g": 0,
+    "fat_per_100g": 8.2,
+    "photo_file": "food_chicken_thigh-v1.webp"
+  },
+  {
+    "name": "Lean beef, cooked",
+    "name_ar": "لحم بقري قليل الدهن مطبوخ",
+    "kcal_per_100g": 217,
+    "protein_per_100g": 26.1,
+    "carbs_per_100g": 0,
+    "fat_per_100g": 11.8,
+    "photo_file": "food_lean_beef-v1.webp"
+  },
+  {
+    "name": "Tuna in water, drained",
+    "name_ar": "تونة بالماء مصفاة",
+    "kcal_per_100g": 116,
+    "protein_per_100g": 25.5,
+    "carbs_per_100g": 0,
+    "fat_per_100g": 0.8,
+    "photo_file": "food_tuna-v1.webp"
+  },
+  {
+    "name": "Sardines, canned",
+    "name_ar": "سردين معلب",
+    "kcal_per_100g": 208,
+    "protein_per_100g": 24.6,
+    "carbs_per_100g": 0,
+    "fat_per_100g": 11.5,
+    "photo_file": "food_sardines-v1.webp"
+  },
+  {
+    "name": "Tilapia, cooked",
+    "name_ar": "بلطي مطبوخ",
+    "kcal_per_100g": 128,
+    "protein_per_100g": 26.2,
+    "carbs_per_100g": 0,
+    "fat_per_100g": 2.7,
+    "photo_file": "food_tilapia-v1.webp"
+  },
+  {
+    "name": "Salmon, cooked",
+    "name_ar": "سلمون مطبوخ",
+    "kcal_per_100g": 206,
+    "protein_per_100g": 22.1,
+    "carbs_per_100g": 0,
+    "fat_per_100g": 12.4,
+    "photo_file": "food_salmon-v1.webp"
+  },
+  {
+    "name": "Whole egg, boiled",
+    "name_ar": "بيض مسلوق",
+    "kcal_per_100g": 155,
+    "protein_per_100g": 12.6,
+    "carbs_per_100g": 1.1,
+    "fat_per_100g": 10.6,
+    "photo_file": "food_eggs-v1.webp"
+  },
+  {
+    "name": "Egg white, cooked",
+    "name_ar": "بياض بيض مطبوخ",
+    "kcal_per_100g": 52,
+    "protein_per_100g": 10.7,
+    "carbs_per_100g": 2.4,
+    "fat_per_100g": 0,
+    "photo_file": "food_egg_white-v1.webp"
+  },
+  {
+    "name": "Fava beans, boiled",
+    "name_ar": "فول مسلوق بدون زيت",
+    "kcal_per_100g": 110,
+    "protein_per_100g": 7.6,
+    "carbs_per_100g": 19.7,
+    "fat_per_100g": 0.4,
+    "photo_file": "food_boiled_fava-v1.webp"
+  },
+  {
+    "name": "Ful medames, plain",
+    "name_ar": "فول مدمس سادة",
+    "kcal_per_100g": 110,
+    "protein_per_100g": 7.6,
+    "carbs_per_100g": 19.7,
+    "fat_per_100g": 0.4,
+    "photo_file": "food_foul-v1.webp"
+  },
+  {
+    "name": "Falafel, fried",
+    "name_ar": "طعمية مقلية",
+    "kcal_per_100g": 333,
+    "protein_per_100g": 13.3,
+    "carbs_per_100g": 31.8,
+    "fat_per_100g": 17.8,
+    "photo_file": "food_falafel-v1.webp"
+  },
+  {
+    "name": "Lentils, cooked",
+    "name_ar": "عدس مطبوخ",
+    "kcal_per_100g": 116,
+    "protein_per_100g": 9,
+    "carbs_per_100g": 20.1,
+    "fat_per_100g": 0.4,
+    "photo_file": "food_lentils-v1.webp"
+  },
+  {
+    "name": "Chickpeas, cooked",
+    "name_ar": "حمص مسلوق",
+    "kcal_per_100g": 164,
+    "protein_per_100g": 8.9,
+    "carbs_per_100g": 27.4,
+    "fat_per_100g": 2.6,
+    "photo_file": "food_chickpeas-v1.webp"
+  },
+  {
+    "name": "White beans, cooked",
+    "name_ar": "فاصوليا بيضاء مطبوخة",
+    "kcal_per_100g": 139,
+    "protein_per_100g": 9.7,
+    "carbs_per_100g": 25.1,
+    "fat_per_100g": 0.4,
+    "photo_file": "food_white_beans-v1.webp"
+  },
+  {
+    "name": "Baladi bread",
+    "name_ar": "عيش بلدي",
+    "kcal_per_100g": 262,
+    "protein_per_100g": 9.8,
+    "carbs_per_100g": 55.9,
+    "fat_per_100g": 1.7,
+    "photo_file": "food_baladi_bread-v1.webp"
+  },
+  {
+    "name": "Whole wheat bread",
+    "name_ar": "خبز قمح كامل",
+    "kcal_per_100g": 252,
+    "protein_per_100g": 12.5,
+    "carbs_per_100g": 42.7,
+    "fat_per_100g": 3.5,
+    "photo_file": "food_wheat_bread-v1.webp"
+  },
+  {
+    "name": "White toast",
+    "name_ar": "توست أبيض",
+    "kcal_per_100g": 266,
+    "protein_per_100g": 8.9,
+    "carbs_per_100g": 49.4,
+    "fat_per_100g": 3.3,
+    "photo_file": "food_white_toast-v1.webp"
+  },
+  {
+    "name": "Oats, dry",
+    "name_ar": "شوفان جاف",
+    "kcal_per_100g": 389,
+    "protein_per_100g": 16.9,
+    "carbs_per_100g": 66.3,
+    "fat_per_100g": 6.9,
+    "photo_file": "food_oats-v1.webp"
+  },
+  {
+    "name": "Pasta, cooked",
+    "name_ar": "مكرونة مسلوقة",
+    "kcal_per_100g": 158,
+    "protein_per_100g": 5.8,
+    "carbs_per_100g": 30.9,
+    "fat_per_100g": 0.9,
+    "photo_file": "food_pasta-v1.webp"
+  },
+  {
+    "name": "Potatoes, boiled",
+    "name_ar": "بطاطس مسلوقة",
+    "kcal_per_100g": 87,
+    "protein_per_100g": 1.9,
+    "carbs_per_100g": 20.1,
+    "fat_per_100g": 0.1,
+    "photo_file": "food_potatoes-v1.webp"
+  },
+  {
+    "name": "Sweet potato, cooked",
+    "name_ar": "بطاطا مطبوخة",
+    "kcal_per_100g": 90,
+    "protein_per_100g": 2,
+    "carbs_per_100g": 20.7,
+    "fat_per_100g": 0.2,
+    "photo_file": "food_sweet_potato-v1.webp"
+  },
+  {
+    "name": "Bulgur, cooked",
+    "name_ar": "برغل مطبوخ",
+    "kcal_per_100g": 83,
+    "protein_per_100g": 3.1,
+    "carbs_per_100g": 18.6,
+    "fat_per_100g": 0.2,
+    "photo_file": "food_bulgur-v1.webp"
+  },
+  {
+    "name": "Quinoa, cooked",
+    "name_ar": "كينوا مطبوخة",
+    "kcal_per_100g": 120,
+    "protein_per_100g": 4.4,
+    "carbs_per_100g": 21.3,
+    "fat_per_100g": 1.9,
+    "photo_file": "food_quinoa-v1.webp"
+  },
+  {
+    "name": "Cottage cheese",
+    "name_ar": "جبنة قريش",
+    "kcal_per_100g": 72,
+    "protein_per_100g": 12.4,
+    "carbs_per_100g": 2.7,
+    "fat_per_100g": 1,
+    "photo_file": "food_cottage_cheese-v1.webp"
+  },
+  {
+    "name": "Feta cheese",
+    "name_ar": "جبنة فيتا",
+    "kcal_per_100g": 265,
+    "protein_per_100g": 14.2,
+    "carbs_per_100g": 3.9,
+    "fat_per_100g": 21.5,
+    "photo_file": "food_feta-v1.webp"
+  },
+  {
+    "name": "Low fat yogurt",
+    "name_ar": "زبادي قليل الدسم",
+    "kcal_per_100g": 63,
+    "protein_per_100g": 5.3,
+    "carbs_per_100g": 7,
+    "fat_per_100g": 1.6,
+    "photo_file": "food_yogurt-v1.webp"
+  },
+  {
+    "name": "Greek yogurt, plain",
+    "name_ar": "زبادي يوناني سادة",
+    "kcal_per_100g": 73,
+    "protein_per_100g": 10,
+    "carbs_per_100g": 3.9,
+    "fat_per_100g": 1.9,
+    "photo_file": "food_greek_yogurt-v1.webp"
+  },
+  {
+    "name": "Whole milk",
+    "name_ar": "حليب كامل الدسم",
+    "kcal_per_100g": 61,
+    "protein_per_100g": 3.2,
+    "carbs_per_100g": 4.8,
+    "fat_per_100g": 3.3,
+    "photo_file": "food_whole_milk-v1.webp"
+  },
+  {
+    "name": "Skimmed milk",
+    "name_ar": "حليب خالي الدسم",
+    "kcal_per_100g": 34,
+    "protein_per_100g": 3.4,
+    "carbs_per_100g": 5,
+    "fat_per_100g": 0.1,
+    "photo_file": "food_skim_milk-v1.webp"
+  },
+  {
+    "name": "Laban, plain",
+    "name_ar": "لبن رايب سادة",
+    "kcal_per_100g": 40,
+    "protein_per_100g": 3.3,
+    "carbs_per_100g": 4.8,
+    "fat_per_100g": 1.1,
+    "photo_file": "food_laban-v1.webp"
+  },
+  {
+    "name": "Cheddar cheese",
+    "name_ar": "جبنة شيدر",
+    "kcal_per_100g": 403,
+    "protein_per_100g": 22.9,
+    "carbs_per_100g": 3.4,
+    "fat_per_100g": 33.3,
+    "photo_file": "food_cheddar-v1.webp"
+  },
+  {
+    "name": "Peanut butter",
+    "name_ar": "زبدة فول سوداني",
+    "kcal_per_100g": 598,
+    "protein_per_100g": 22.2,
+    "carbs_per_100g": 22.3,
+    "fat_per_100g": 51.4,
+    "photo_file": "food_peanut_butter-v1.webp"
+  },
+  {
+    "name": "Peanuts",
+    "name_ar": "فول سوداني",
+    "kcal_per_100g": 567,
+    "protein_per_100g": 25.8,
+    "carbs_per_100g": 16.1,
+    "fat_per_100g": 49.2,
+    "photo_file": "food_peanuts-v1.webp"
+  },
+  {
+    "name": "Almonds",
+    "name_ar": "لوز",
+    "kcal_per_100g": 579,
+    "protein_per_100g": 21.2,
+    "carbs_per_100g": 21.6,
+    "fat_per_100g": 49.9,
+    "photo_file": "food_almonds-v1.webp"
+  },
+  {
+    "name": "Walnuts",
+    "name_ar": "عين جمل",
+    "kcal_per_100g": 654,
+    "protein_per_100g": 15.2,
+    "carbs_per_100g": 13.7,
+    "fat_per_100g": 65.2,
+    "photo_file": "food_walnuts-v1.webp"
+  },
+  {
+    "name": "Tahini",
+    "name_ar": "طحينة",
+    "kcal_per_100g": 595,
+    "protein_per_100g": 17,
+    "carbs_per_100g": 21.2,
+    "fat_per_100g": 53.8,
+    "photo_file": "food_tahini-v1.webp"
+  },
+  {
+    "name": "Olive oil",
+    "name_ar": "زيت زيتون",
+    "kcal_per_100g": 884,
+    "protein_per_100g": 0,
+    "carbs_per_100g": 0,
+    "fat_per_100g": 100,
+    "photo_file": "food_olive_oil-v1.webp"
+  },
+  {
+    "name": "Butter",
+    "name_ar": "زبدة",
+    "kcal_per_100g": 717,
+    "protein_per_100g": 0.9,
+    "carbs_per_100g": 0.1,
+    "fat_per_100g": 81.1,
+    "photo_file": "food_butter-v1.webp"
+  },
+  {
+    "name": "Banana",
+    "name_ar": "موز",
+    "kcal_per_100g": 89,
+    "protein_per_100g": 1.1,
+    "carbs_per_100g": 22.8,
+    "fat_per_100g": 0.3,
+    "photo_file": "food_banana-v1.webp"
+  },
+  {
+    "name": "Apple",
+    "name_ar": "تفاح",
+    "kcal_per_100g": 52,
+    "protein_per_100g": 0.3,
+    "carbs_per_100g": 13.8,
+    "fat_per_100g": 0.2,
+    "photo_file": "food_apple-v1.webp"
+  },
+  {
+    "name": "Orange",
+    "name_ar": "برتقال",
+    "kcal_per_100g": 47,
+    "protein_per_100g": 0.9,
+    "carbs_per_100g": 11.8,
+    "fat_per_100g": 0.1,
+    "photo_file": "food_orange-v1.webp"
+  },
+  {
+    "name": "Dates",
+    "name_ar": "بلح",
+    "kcal_per_100g": 277,
+    "protein_per_100g": 1.8,
+    "carbs_per_100g": 75,
+    "fat_per_100g": 0.2,
+    "photo_file": "food_dates-v1.webp"
+  },
+  {
+    "name": "Strawberries",
+    "name_ar": "فراولة",
+    "kcal_per_100g": 32,
+    "protein_per_100g": 0.7,
+    "carbs_per_100g": 7.7,
+    "fat_per_100g": 0.3,
+    "photo_file": "food_strawberries-v1.webp"
+  },
+  {
+    "name": "Mango",
+    "name_ar": "مانجو",
+    "kcal_per_100g": 60,
+    "protein_per_100g": 0.8,
+    "carbs_per_100g": 15,
+    "fat_per_100g": 0.4,
+    "photo_file": "food_mango-v1.webp"
+  },
+  {
+    "name": "Watermelon",
+    "name_ar": "بطيخ",
+    "kcal_per_100g": 30,
+    "protein_per_100g": 0.6,
+    "carbs_per_100g": 7.6,
+    "fat_per_100g": 0.2,
+    "photo_file": "food_watermelon-v1.webp"
+  },
+  {
+    "name": "Grapes",
+    "name_ar": "عنب",
+    "kcal_per_100g": 69,
+    "protein_per_100g": 0.7,
+    "carbs_per_100g": 18.1,
+    "fat_per_100g": 0.2,
+    "photo_file": "food_grapes-v1.webp"
+  },
+  {
+    "name": "Cucumber",
+    "name_ar": "خيار",
+    "kcal_per_100g": 15,
+    "protein_per_100g": 0.7,
+    "carbs_per_100g": 3.6,
+    "fat_per_100g": 0.1,
+    "photo_file": "food_cucumber-v1.webp"
+  },
+  {
+    "name": "Tomato",
+    "name_ar": "طماطم",
+    "kcal_per_100g": 18,
+    "protein_per_100g": 0.9,
+    "carbs_per_100g": 3.9,
+    "fat_per_100g": 0.2,
+    "photo_file": "food_tomato-v1.webp"
+  },
+  {
+    "name": "Carrot",
+    "name_ar": "جزر",
+    "kcal_per_100g": 41,
+    "protein_per_100g": 0.9,
+    "carbs_per_100g": 9.6,
+    "fat_per_100g": 0.2,
+    "photo_file": "food_carrot-v1.webp"
+  },
+  {
+    "name": "Broccoli, cooked",
+    "name_ar": "بروكلي مطبوخ",
+    "kcal_per_100g": 35,
+    "protein_per_100g": 2.4,
+    "carbs_per_100g": 7.2,
+    "fat_per_100g": 0.4,
+    "photo_file": "food_broccoli-v1.webp"
+  },
+  {
+    "name": "Spinach, cooked",
+    "name_ar": "سبانخ مطبوخة",
+    "kcal_per_100g": 23,
+    "protein_per_100g": 3,
+    "carbs_per_100g": 3.8,
+    "fat_per_100g": 0.3,
+    "photo_file": "food_spinach-v1.webp"
+  },
+  {
+    "name": "Zucchini, cooked",
+    "name_ar": "كوسة مطبوخة",
+    "kcal_per_100g": 15,
+    "protein_per_100g": 1.1,
+    "carbs_per_100g": 2.7,
+    "fat_per_100g": 0.4,
+    "photo_file": "food_zucchini-v1.webp"
+  },
+  {
+    "name": "Green beans, cooked",
+    "name_ar": "فاصوليا خضراء مطبوخة",
+    "kcal_per_100g": 35,
+    "protein_per_100g": 1.9,
+    "carbs_per_100g": 7.9,
+    "fat_per_100g": 0.3,
+    "photo_file": "food_green_beans-v1.webp"
+  },
+  {
+    "name": "Molokhia, plain",
+    "name_ar": "ملوخية سادة بدون تقلية",
+    "kcal_per_100g": 14.8,
+    "protein_per_100g": 1.5,
+    "carbs_per_100g": 2.9,
+    "fat_per_100g": 0.1,
+    "photo_file": "food_molokhia-v1.webp"
+  },
+  {
+    "name": "Honey",
+    "name_ar": "عسل",
+    "kcal_per_100g": 304,
+    "protein_per_100g": 0.3,
+    "carbs_per_100g": 82.4,
+    "fat_per_100g": 0,
+    "photo_file": "food_honey-v1.webp"
+  },
+  {
+    "name": "Sugar",
+    "name_ar": "سكر",
+    "kcal_per_100g": 387,
+    "protein_per_100g": 0,
+    "carbs_per_100g": 100,
+    "fat_per_100g": 0,
+    "photo_file": "food_sugar-v1.webp"
+  },
+  {
+    "name": "Koshari, typical",
+    "name_ar": "كشري (قيمة تقريبية)",
+    "kcal_per_100g": 138.9,
+    "protein_per_100g": 5.1,
+    "carbs_per_100g": 23.6,
+    "fat_per_100g": 2.7,
+    "photo_file": "food_koshari-v1.webp"
+  }
+]

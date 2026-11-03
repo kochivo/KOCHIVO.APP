@@ -1,0 +1,3494 @@
+{
+  "3_4_Sit-Up": {
+    "en": "3/4 Sit-Up",
+    "ar": "بطن بمدى حركة ثلاثة أرباع"
+  },
+  "90_90_Hamstring": {
+    "en": "90/90 Hamstring",
+    "ar": "إطالة خلفية الرجل ٩٠/٩٠"
+  },
+  "Ab_Crunch_Machine": {
+    "en": "Ab Crunch Machine",
+    "ar": "كرانش البطن على الجهاز"
+  },
+  "Ab_Roller": {
+    "en": "Ab Roller",
+    "ar": "عجلة البطن"
+  },
+  "Adductor": {
+    "en": "Adductor",
+    "ar": "إطالة العضلات الضامة"
+  },
+  "Adductor_Groin": {
+    "en": "Adductor/Groin",
+    "ar": "إطالة الضامة وأعلى الفخذ"
+  },
+  "Advanced_Kettlebell_Windmill": {
+    "en": "Advanced Kettlebell Windmill",
+    "ar": "طاحونة الكيتل بيل المتقدمة"
+  },
+  "Air_Bike": {
+    "en": "Air Bike",
+    "ar": "دراجة البطن"
+  },
+  "All_Fours_Quad_Stretch": {
+    "en": "All Fours Quad Stretch",
+    "ar": "إطالة أمامية الرجل من وضع الارتكاز الرباعي"
+  },
+  "Alternate_Hammer_Curl": {
+    "en": "Alternate Hammer Curl",
+    "ar": "باي هامر بالتبادل"
+  },
+  "Alternate_Heel_Touchers": {
+    "en": "Alternate Heel Touchers",
+    "ar": "لمس الكعبين بالتبادل"
+  },
+  "Alternate_Incline_Dumbbell_Curl": {
+    "en": "Alternate Incline Dumbbell Curl",
+    "ar": "باي دمبل على بنش مائل بالتبادل"
+  },
+  "Alternate_Leg_Diagonal_Bound": {
+    "en": "Alternate Leg Diagonal Bound",
+    "ar": "وثب قطري بالرجلين بالتبادل"
+  },
+  "Alternating_Cable_Shoulder_Press": {
+    "en": "Alternating Cable Shoulder Press",
+    "ar": "ضغط كتف بالكابل بالتبادل"
+  },
+  "Alternating_Deltoid_Raise": {
+    "en": "Alternating Deltoid Raise",
+    "ar": "رفرفة كتف بالتبادل"
+  },
+  "Alternating_Floor_Press": {
+    "en": "Alternating Floor Press",
+    "ar": "ضغط أرضي بالتبادل"
+  },
+  "Alternating_Hang_Clean": {
+    "en": "Alternating Hang Clean",
+    "ar": "كلين من التعليق بالتبادل"
+  },
+  "Alternating_Kettlebell_Press": {
+    "en": "Alternating Kettlebell Press",
+    "ar": "ضغط كتف بالكيتل بيل بالتبادل"
+  },
+  "Alternating_Kettlebell_Row": {
+    "en": "Alternating Kettlebell Row",
+    "ar": "تجديف بالكيتل بيل بالتبادل"
+  },
+  "Alternating_Renegade_Row": {
+    "en": "Alternating Renegade Row",
+    "ar": "تجديف رينيجيد بالتبادل"
+  },
+  "Ankle_Circles": {
+    "en": "Ankle Circles",
+    "ar": "تدوير الكاحل"
+  },
+  "Ankle_On_The_Knee": {
+    "en": "Ankle On The Knee",
+    "ar": "إطالة بوضع الكاحل على الركبة"
+  },
+  "Anterior_Tibialis-SMR": {
+    "en": "Anterior Tibialis-SMR",
+    "ar": "تدليك العضلة الأمامية للساق بالرول"
+  },
+  "Anti-Gravity_Press": {
+    "en": "Anti-Gravity Press",
+    "ar": "ضغط مقاوم للجاذبية"
+  },
+  "Arm_Circles": {
+    "en": "Arm Circles",
+    "ar": "تدوير الذراعين"
+  },
+  "Arnold_Dumbbell_Press": {
+    "en": "Arnold Dumbbell Press",
+    "ar": "ضغط أرنولد بالدمبل"
+  },
+  "Around_The_Worlds": {
+    "en": "Around The Worlds",
+    "ar": "دوران الدمبل حول الجسم"
+  },
+  "Atlas_Stone_Trainer": {
+    "en": "Atlas Stone Trainer",
+    "ar": "تدريب رفع حجر الأطلس"
+  },
+  "Atlas_Stones": {
+    "en": "Atlas Stones",
+    "ar": "رفع أحجار الأطلس"
+  },
+  "Axle_Deadlift": {
+    "en": "Axle Deadlift",
+    "ar": "رفعة ميتة ببار المحور السميك"
+  },
+  "Back_Flyes_-_With_Bands": {
+    "en": "Back Flyes - With Bands",
+    "ar": "رفرفة خلفية بشريط المقاومة"
+  },
+  "Backward_Drag": {
+    "en": "Backward Drag",
+    "ar": "جر الزلاجة للخلف"
+  },
+  "Backward_Medicine_Ball_Throw": {
+    "en": "Backward Medicine Ball Throw",
+    "ar": "رمي الكرة الطبية للخلف"
+  },
+  "Balance_Board": {
+    "en": "Balance Board",
+    "ar": "لوح التوازن"
+  },
+  "Ball_Leg_Curl": {
+    "en": "Ball Leg Curl",
+    "ar": "ثني الرجلين على الكرة"
+  },
+  "Band_Assisted_Pull-Up": {
+    "en": "Band Assisted Pull-Up",
+    "ar": "عقلة بمساعدة شريط المقاومة"
+  },
+  "Band_Good_Morning": {
+    "en": "Band Good Morning",
+    "ar": "انحناء الجذع بشريط المقاومة"
+  },
+  "Band_Good_Morning_Pull_Through": {
+    "en": "Band Good Morning (Pull Through)",
+    "ar": "سحب شريط المقاومة بين الرجلين"
+  },
+  "Band_Hip_Adductions": {
+    "en": "Band Hip Adductions",
+    "ar": "ضم الفخذ بشريط المقاومة"
+  },
+  "Band_Pull_Apart": {
+    "en": "Band Pull Apart",
+    "ar": "فتح الذراعين بشريط المقاومة"
+  },
+  "Band_Skull_Crusher": {
+    "en": "Band Skull Crusher",
+    "ar": "تمديد ترايسبس خلف الرأس بشريط المقاومة"
+  },
+  "Barbell_Ab_Rollout": {
+    "en": "Barbell Ab Rollout",
+    "ar": "مد البطن بدحرجة البار"
+  },
+  "Barbell_Ab_Rollout_-_On_Knees": {
+    "en": "Barbell Ab Rollout - On Knees",
+    "ar": "مد البطن بدحرجة البار من الركوع"
+  },
+  "Barbell_Bench_Press_-_Medium_Grip": {
+    "en": "Barbell Bench Press - Medium Grip",
+    "ar": "بنش بالبار بمسكة متوسطة"
+  },
+  "Barbell_Curl": {
+    "en": "Barbell Curl",
+    "ar": "باي بالبار"
+  },
+  "Barbell_Curls_Lying_Against_An_Incline": {
+    "en": "Barbell Curls Lying Against An Incline",
+    "ar": "باي بالبار مع إسناد الصدر على بنش مائل"
+  },
+  "Barbell_Deadlift": {
+    "en": "Barbell Deadlift",
+    "ar": "رفعة ميتة بالبار"
+  },
+  "Barbell_Full_Squat": {
+    "en": "Barbell Full Squat",
+    "ar": "سكوات كامل بالبار"
+  },
+  "Barbell_Glute_Bridge": {
+    "en": "Barbell Glute Bridge",
+    "ar": "جسر الأرداف بالبار"
+  },
+  "Barbell_Guillotine_Bench_Press": {
+    "en": "Barbell Guillotine Bench Press",
+    "ar": "بنش جيلوتين بالبار"
+  },
+  "Barbell_Hack_Squat": {
+    "en": "Barbell Hack Squat",
+    "ar": "هاك سكوات بالبار"
+  },
+  "Barbell_Hip_Thrust": {
+    "en": "Barbell Hip Thrust",
+    "ar": "دفع الحوض بالبار"
+  },
+  "Barbell_Incline_Bench_Press_-_Medium_Grip": {
+    "en": "Barbell Incline Bench Press - Medium Grip",
+    "ar": "بنش بالبار عالي بمسكة متوسطة"
+  },
+  "Barbell_Incline_Shoulder_Raise": {
+    "en": "Barbell Incline Shoulder Raise",
+    "ar": "رفع الكتفين بالبار على بنش مائل"
+  },
+  "Barbell_Lunge": {
+    "en": "Barbell Lunge",
+    "ar": "اندفاع بالبار"
+  },
+  "Barbell_Rear_Delt_Row": {
+    "en": "Barbell Rear Delt Row",
+    "ar": "تجديف بالبار للكتف الخلفي"
+  },
+  "Barbell_Rollout_from_Bench": {
+    "en": "Barbell Rollout from Bench",
+    "ar": "مد البطن بدحرجة البار من البنش"
+  },
+  "Barbell_Seated_Calf_Raise": {
+    "en": "Barbell Seated Calf Raise",
+    "ar": "رفع السمانة بالبار من الجلوس"
+  },
+  "Barbell_Shoulder_Press": {
+    "en": "Barbell Shoulder Press",
+    "ar": "ضغط كتف بالبار"
+  },
+  "Barbell_Shrug": {
+    "en": "Barbell Shrug",
+    "ar": "هز الكتفين بالبار"
+  },
+  "Barbell_Shrug_Behind_The_Back": {
+    "en": "Barbell Shrug Behind The Back",
+    "ar": "هز الكتفين بالبار خلف الظهر"
+  },
+  "Barbell_Side_Bend": {
+    "en": "Barbell Side Bend",
+    "ar": "ميل جانبي بالبار"
+  },
+  "Barbell_Side_Split_Squat": {
+    "en": "Barbell Side Split Squat",
+    "ar": "سكوات جانبي بوقفة واسعة بالبار"
+  },
+  "Barbell_Squat": {
+    "en": "Barbell Squat",
+    "ar": "سكوات بالبار"
+  },
+  "Barbell_Squat_To_A_Bench": {
+    "en": "Barbell Squat To A Bench",
+    "ar": "سكوات بالبار إلى البنش"
+  },
+  "Barbell_Step_Ups": {
+    "en": "Barbell Step Ups",
+    "ar": "صعود البنش بالبار"
+  },
+  "Barbell_Walking_Lunge": {
+    "en": "Barbell Walking Lunge",
+    "ar": "اندفاع بالمشي بالبار"
+  },
+  "Battling_Ropes": {
+    "en": "Battling Ropes",
+    "ar": "حبال المقاومة المتحركة"
+  },
+  "Bear_Crawl_Sled_Drags": {
+    "en": "Bear Crawl Sled Drags",
+    "ar": "جر الزلاجة بزحف الدب"
+  },
+  "Behind_Head_Chest_Stretch": {
+    "en": "Behind Head Chest Stretch",
+    "ar": "إطالة الصدر واليدان خلف الرأس"
+  },
+  "Bench_Dips": {
+    "en": "Bench Dips",
+    "ar": "متوازي على البنش"
+  },
+  "Bench_Jump": {
+    "en": "Bench Jump",
+    "ar": "قفز على البنش"
+  },
+  "Bench_Press_-_Powerlifting": {
+    "en": "Bench Press - Powerlifting",
+    "ar": "بنش بأسلوب رفع القوة"
+  },
+  "Bench_Press_-_With_Bands": {
+    "en": "Bench Press - With Bands",
+    "ar": "بنش مع أشرطة المقاومة"
+  },
+  "Bench_Press_with_Chains": {
+    "en": "Bench Press with Chains",
+    "ar": "بنش مع السلاسل"
+  },
+  "Bench_Sprint": {
+    "en": "Bench Sprint",
+    "ar": "صعود البنش بسرعة"
+  },
+  "Bent-Arm_Barbell_Pullover": {
+    "en": "Bent-Arm Barbell Pullover",
+    "ar": "بول أوفر بالبار مع ثني الذراعين"
+  },
+  "Bent-Arm_Dumbbell_Pullover": {
+    "en": "Bent-Arm Dumbbell Pullover",
+    "ar": "بول أوفر بالدمبل مع ثني الذراعين"
+  },
+  "Bent-Knee_Hip_Raise": {
+    "en": "Bent-Knee Hip Raise",
+    "ar": "رفع الحوض مع ثني الركبتين"
+  },
+  "Bent_Over_Barbell_Row": {
+    "en": "Bent Over Barbell Row",
+    "ar": "تجديف بالبار مع انحناء الجذع"
+  },
+  "Bent_Over_Dumbbell_Rear_Delt_Raise_With_Head_On_Bench": {
+    "en": "Bent Over Dumbbell Rear Delt Raise With Head On Bench",
+    "ar": "رفرفة خلفية بالدمبل والرأس مسنود على البنش"
+  },
+  "Bent_Over_Low-Pulley_Side_Lateral": {
+    "en": "Bent Over Low-Pulley Side Lateral",
+    "ar": "رفرفة جانبية منحنية بالكابل السفلي"
+  },
+  "Bent_Over_One-Arm_Long_Bar_Row": {
+    "en": "Bent Over One-Arm Long Bar Row",
+    "ar": "تجديف لاندماين بدراع واحدة"
+  },
+  "Bent_Over_Two-Arm_Long_Bar_Row": {
+    "en": "Bent Over Two-Arm Long Bar Row",
+    "ar": "تجديف لاندماين بالذراعين"
+  },
+  "Bent_Over_Two-Dumbbell_Row": {
+    "en": "Bent Over Two-Dumbbell Row",
+    "ar": "تجديف بالدمبلين مع انحناء الجذع"
+  },
+  "Bent_Over_Two-Dumbbell_Row_With_Palms_In": {
+    "en": "Bent Over Two-Dumbbell Row With Palms In",
+    "ar": "تجديف بالدمبلين بمسكة محايدة"
+  },
+  "Bent_Press": {
+    "en": "Bent Press",
+    "ar": "ضغط جانبي مع ميل الجذع"
+  },
+  "Bicycling": {
+    "en": "Bicycling",
+    "ar": "ركوب الدراجة"
+  },
+  "Bicycling_Stationary": {
+    "en": "Bicycling, Stationary",
+    "ar": "الدراجة الثابتة"
+  },
+  "Board_Press": {
+    "en": "Board Press",
+    "ar": "ضغط صدر باستخدام لوح لتقليل المدى"
+  },
+  "Body-Up": {
+    "en": "Body-Up",
+    "ar": "رفع الجسم من الساعدين"
+  },
+  "Body_Tricep_Press": {
+    "en": "Body Tricep Press",
+    "ar": "ضغط ترايسبس بوزن الجسم"
+  },
+  "Bodyweight_Flyes": {
+    "en": "Bodyweight Flyes",
+    "ar": "تفتيح صدر بوزن الجسم"
+  },
+  "Bodyweight_Mid_Row": {
+    "en": "Bodyweight Mid Row",
+    "ar": "تجديف أفقي بوزن الجسم"
+  },
+  "Bodyweight_Squat": {
+    "en": "Bodyweight Squat",
+    "ar": "سكوات بوزن الجسم"
+  },
+  "Bodyweight_Walking_Lunge": {
+    "en": "Bodyweight Walking Lunge",
+    "ar": "اندفاع بالمشي بوزن الجسم"
+  },
+  "Bosu_Ball_Cable_Crunch_With_Side_Bends": {
+    "en": "Bosu Ball Cable Crunch With Side Bends",
+    "ar": "كرانش بالكابل على كرة بوسو مع ميل جانبي"
+  },
+  "Bottoms-Up_Clean_From_The_Hang_Position": {
+    "en": "Bottoms-Up Clean From The Hang Position",
+    "ar": "كلين بالكيتل بيل المقلوبة من التعليق"
+  },
+  "Bottoms_Up": {
+    "en": "Bottoms Up",
+    "ar": "رفع الحوض والرجلين لأعلى"
+  },
+  "Box_Jump_Multiple_Response": {
+    "en": "Box Jump (Multiple Response)",
+    "ar": "قفز متتابع على الصندوق"
+  },
+  "Box_Skip": {
+    "en": "Box Skip",
+    "ar": "وثب تبادلي على الصندوق"
+  },
+  "Box_Squat": {
+    "en": "Box Squat",
+    "ar": "سكوات الصندوق"
+  },
+  "Box_Squat_with_Bands": {
+    "en": "Box Squat with Bands",
+    "ar": "سكوات الصندوق مع أشرطة المقاومة"
+  },
+  "Box_Squat_with_Chains": {
+    "en": "Box Squat with Chains",
+    "ar": "سكوات الصندوق مع السلاسل"
+  },
+  "Brachialis-SMR": {
+    "en": "Brachialis-SMR",
+    "ar": "تدليك العضلة العضدية بالرول"
+  },
+  "Bradford_Rocky_Presses": {
+    "en": "Bradford/Rocky Presses",
+    "ar": "ضغط كتف برادفورد أو روكي"
+  },
+  "Butt-Ups": {
+    "en": "Butt-Ups",
+    "ar": "رفع الحوض من وضع البلانك"
+  },
+  "Butt_Lift_Bridge": {
+    "en": "Butt Lift (Bridge)",
+    "ar": "جسر الأرداف"
+  },
+  "Butterfly": {
+    "en": "Butterfly",
+    "ar": "إطالة الفراشة"
+  },
+  "Cable_Chest_Press": {
+    "en": "Cable Chest Press",
+    "ar": "ضغط صدر بالكابل"
+  },
+  "Cable_Crossover": {
+    "en": "Cable Crossover",
+    "ar": "تفتيح صدر بالكابل المتقاطع"
+  },
+  "Cable_Crunch": {
+    "en": "Cable Crunch",
+    "ar": "كرانش البطن بالكابل"
+  },
+  "Cable_Deadlifts": {
+    "en": "Cable Deadlifts",
+    "ar": "رفعة ميتة بالكابل"
+  },
+  "Cable_Hammer_Curls_-_Rope_Attachment": {
+    "en": "Cable Hammer Curls - Rope Attachment",
+    "ar": "باي هامر بحبل الكابل"
+  },
+  "Cable_Hip_Adduction": {
+    "en": "Cable Hip Adduction",
+    "ar": "ضم الفخذ بالكابل"
+  },
+  "Cable_Incline_Pushdown": {
+    "en": "Cable Incline Pushdown",
+    "ar": "دفع الكابل لأسفل على بنش مائل"
+  },
+  "Cable_Incline_Triceps_Extension": {
+    "en": "Cable Incline Triceps Extension",
+    "ar": "تمديد ترايسبس بالكابل على بنش مائل لأعلى"
+  },
+  "Cable_Internal_Rotation": {
+    "en": "Cable Internal Rotation",
+    "ar": "تدوير الكتف للداخل بالكابل"
+  },
+  "Cable_Iron_Cross": {
+    "en": "Cable Iron Cross",
+    "ar": "فتح الذراعين بالكابل بوضع الصليب"
+  },
+  "Cable_Judo_Flip": {
+    "en": "Cable Judo Flip",
+    "ar": "سحب الكابل بحركة رمية الجودو"
+  },
+  "Cable_Lying_Triceps_Extension": {
+    "en": "Cable Lying Triceps Extension",
+    "ar": "تمديد ترايسبس بالكابل من النوم"
+  },
+  "Cable_One_Arm_Tricep_Extension": {
+    "en": "Cable One Arm Tricep Extension",
+    "ar": "تمديد ترايسبس بالكابل بدراع واحدة"
+  },
+  "Cable_Preacher_Curl": {
+    "en": "Cable Preacher Curl",
+    "ar": "باي بريتشر بالكابل"
+  },
+  "Cable_Rear_Delt_Fly": {
+    "en": "Cable Rear Delt Fly",
+    "ar": "رفرفة كتف خلفية بالكابل"
+  },
+  "Cable_Reverse_Crunch": {
+    "en": "Cable Reverse Crunch",
+    "ar": "كرانش عكسي بالكابل"
+  },
+  "Cable_Rope_Overhead_Triceps_Extension": {
+    "en": "Cable Rope Overhead Triceps Extension",
+    "ar": "تمديد ترايسبس بحبل الكابل فوق الرأس"
+  },
+  "Cable_Rope_Rear-Delt_Rows": {
+    "en": "Cable Rope Rear-Delt Rows",
+    "ar": "تجديف بحبل الكابل للكتف الخلفي"
+  },
+  "Cable_Russian_Twists": {
+    "en": "Cable Russian Twists",
+    "ar": "لف الجذع الروسي بالكابل"
+  },
+  "Cable_Seated_Crunch": {
+    "en": "Cable Seated Crunch",
+    "ar": "كرانش البطن بالكابل من الجلوس"
+  },
+  "Cable_Seated_Lateral_Raise": {
+    "en": "Cable Seated Lateral Raise",
+    "ar": "رفرفة جانبية بالكابل من الجلوس"
+  },
+  "Cable_Shoulder_Press": {
+    "en": "Cable Shoulder Press",
+    "ar": "ضغط كتف بالكابل"
+  },
+  "Cable_Shrugs": {
+    "en": "Cable Shrugs",
+    "ar": "هز الكتفين بالكابل"
+  },
+  "Cable_Wrist_Curl": {
+    "en": "Cable Wrist Curl",
+    "ar": "ثني الرسغ بالكابل"
+  },
+  "Calf-Machine_Shoulder_Shrug": {
+    "en": "Calf-Machine Shoulder Shrug",
+    "ar": "هز الكتفين على جهاز السمانة"
+  },
+  "Calf_Press": {
+    "en": "Calf Press",
+    "ar": "دفع السمانة"
+  },
+  "Calf_Press_On_The_Leg_Press_Machine": {
+    "en": "Calf Press On The Leg Press Machine",
+    "ar": "دفع السمانة على جهاز ضغط الرجلين"
+  },
+  "Calf_Raise_On_A_Dumbbell": {
+    "en": "Calf Raise On A Dumbbell",
+    "ar": "رفع السمانة بالوقوف على دمبل"
+  },
+  "Calf_Raises_-_With_Bands": {
+    "en": "Calf Raises - With Bands",
+    "ar": "رفع السمانة بشريط المقاومة"
+  },
+  "Calf_Stretch_Elbows_Against_Wall": {
+    "en": "Calf Stretch Elbows Against Wall",
+    "ar": "إطالة السمانة مع إسناد المرفقين للحائط"
+  },
+  "Calf_Stretch_Hands_Against_Wall": {
+    "en": "Calf Stretch Hands Against Wall",
+    "ar": "إطالة السمانة مع إسناد اليدين للحائط"
+  },
+  "Calves-SMR": {
+    "en": "Calves-SMR",
+    "ar": "تدليك السمانة بالرول"
+  },
+  "Car_Deadlift": {
+    "en": "Car Deadlift",
+    "ar": "رفعة ميتة برفع السيارة"
+  },
+  "Car_Drivers": {
+    "en": "Car Drivers",
+    "ar": "تدوير القرص أمام الجسم"
+  },
+  "Carioca_Quick_Step": {
+    "en": "Carioca Quick Step",
+    "ar": "خطوات كاريوكا السريعة"
+  },
+  "Cat_Stretch": {
+    "en": "Cat Stretch",
+    "ar": "إطالة القطة"
+  },
+  "Catch_and_Overhead_Throw": {
+    "en": "Catch and Overhead Throw",
+    "ar": "التقاط الكرة ورميها فوق الرأس"
+  },
+  "Chain_Handle_Extension": {
+    "en": "Chain Handle Extension",
+    "ar": "تمديد ترايسبس بمقابض السلاسل"
+  },
+  "Chain_Press": {
+    "en": "Chain Press",
+    "ar": "ضغط صدر بالسلاسل"
+  },
+  "Chair_Leg_Extended_Stretch": {
+    "en": "Chair Leg Extended Stretch",
+    "ar": "إطالة الرجل الممدودة على الكرسي"
+  },
+  "Chair_Lower_Back_Stretch": {
+    "en": "Chair Lower Back Stretch",
+    "ar": "إطالة أسفل الظهر على الكرسي"
+  },
+  "Chair_Squat": {
+    "en": "Chair Squat",
+    "ar": "سكوات الكرسي"
+  },
+  "Chair_Upper_Body_Stretch": {
+    "en": "Chair Upper Body Stretch",
+    "ar": "إطالة الجزء العلوي باستخدام الكرسي"
+  },
+  "Chest_And_Front_Of_Shoulder_Stretch": {
+    "en": "Chest And Front Of Shoulder Stretch",
+    "ar": "إطالة الصدر ومقدمة الكتف"
+  },
+  "Chest_Push_from_3_point_stance": {
+    "en": "Chest Push from 3 point stance",
+    "ar": "دفع الكرة من الصدر بوضعية الارتكاز الثلاثي"
+  },
+  "Chest_Push_multiple_response": {
+    "en": "Chest Push (multiple response)",
+    "ar": "دفع الكرة من الصدر بتكرارات متتابعة"
+  },
+  "Chest_Push_single_response": {
+    "en": "Chest Push (single response)",
+    "ar": "دفع الكرة من الصدر بتكرار منفرد"
+  },
+  "Chest_Push_with_Run_Release": {
+    "en": "Chest Push with Run Release",
+    "ar": "دفع الكرة من الصدر مع الجري"
+  },
+  "Chest_Stretch_on_Stability_Ball": {
+    "en": "Chest Stretch on Stability Ball",
+    "ar": "إطالة الصدر على كرة التوازن"
+  },
+  "Childs_Pose": {
+    "en": "Child's Pose",
+    "ar": "وضعية الطفل"
+  },
+  "Chin-Up": {
+    "en": "Chin-Up",
+    "ar": "عقلة بمسكة معكوسة"
+  },
+  "Chin_To_Chest_Stretch": {
+    "en": "Chin To Chest Stretch",
+    "ar": "إطالة الرقبة بخفض الذقن للصدر"
+  },
+  "Circus_Bell": {
+    "en": "Circus Bell",
+    "ar": "رفع دمبل السيرك"
+  },
+  "Clean": {
+    "en": "Clean",
+    "ar": "كلين"
+  },
+  "Clean_Deadlift": {
+    "en": "Clean Deadlift",
+    "ar": "رفعة ميتة بأسلوب الكلين"
+  },
+  "Clean_Pull": {
+    "en": "Clean Pull",
+    "ar": "سحب الكلين"
+  },
+  "Clean_Shrug": {
+    "en": "Clean Shrug",
+    "ar": "هز الكتفين بأسلوب الكلين"
+  },
+  "Clean_and_Jerk": {
+    "en": "Clean and Jerk",
+    "ar": "كلين ونتر"
+  },
+  "Clean_and_Press": {
+    "en": "Clean and Press",
+    "ar": "كلين وضغط كتف"
+  },
+  "Clean_from_Blocks": {
+    "en": "Clean from Blocks",
+    "ar": "كلين من البلوكات"
+  },
+  "Clock_Push-Up": {
+    "en": "Clock Push-Up",
+    "ar": "ضغط حول عقارب الساعة"
+  },
+  "Close-Grip_Barbell_Bench_Press": {
+    "en": "Close-Grip Barbell Bench Press",
+    "ar": "بنش بالبار بمسكة ضيقة"
+  },
+  "Close-Grip_Dumbbell_Press": {
+    "en": "Close-Grip Dumbbell Press",
+    "ar": "ضغط صدر بالدمبل بمسكة ضيقة"
+  },
+  "Close-Grip_EZ-Bar_Curl_with_Band": {
+    "en": "Close-Grip EZ-Bar Curl with Band",
+    "ar": "باي بالبار المتعرج بمسكة ضيقة وشريط مقاومة"
+  },
+  "Close-Grip_EZ-Bar_Press": {
+    "en": "Close-Grip EZ-Bar Press",
+    "ar": "ضغط صدر بالبار المتعرج بمسكة ضيقة"
+  },
+  "Close-Grip_EZ_Bar_Curl": {
+    "en": "Close-Grip EZ Bar Curl",
+    "ar": "باي بالبار المتعرج بمسكة ضيقة"
+  },
+  "Close-Grip_Front_Lat_Pulldown": {
+    "en": "Close-Grip Front Lat Pulldown",
+    "ar": "سحب علوي أمامي بمسكة ضيقة"
+  },
+  "Close-Grip_Push-Up_off_of_a_Dumbbell": {
+    "en": "Close-Grip Push-Up off of a Dumbbell",
+    "ar": "ضغط أرضي بمسكة ضيقة على دمبل"
+  },
+  "Close-Grip_Standing_Barbell_Curl": {
+    "en": "Close-Grip Standing Barbell Curl",
+    "ar": "باي بالبار من الوقوف بمسكة ضيقة"
+  },
+  "Cocoons": {
+    "en": "Cocoons",
+    "ar": "ضم الجذع والركبتين"
+  },
+  "Conans_Wheel": {
+    "en": "Conan's Wheel",
+    "ar": "المشي بعجلة كونان"
+  },
+  "Concentration_Curls": {
+    "en": "Concentration Curls",
+    "ar": "باي تركيز"
+  },
+  "Cross-Body_Crunch": {
+    "en": "Cross-Body Crunch",
+    "ar": "كرانش متقاطع"
+  },
+  "Cross_Body_Hammer_Curl": {
+    "en": "Cross Body Hammer Curl",
+    "ar": "باي هامر أمام الجسم"
+  },
+  "Cross_Over_-_With_Bands": {
+    "en": "Cross Over - With Bands",
+    "ar": "تفتيح صدر متقاطع بشريط المقاومة"
+  },
+  "Crossover_Reverse_Lunge": {
+    "en": "Crossover Reverse Lunge",
+    "ar": "اندفاع خلفي متقاطع"
+  },
+  "Crucifix": {
+    "en": "Crucifix",
+    "ar": "ثبات جانبي بالأوزان بوضع الصليب"
+  },
+  "Crunch_-_Hands_Overhead": {
+    "en": "Crunch - Hands Overhead",
+    "ar": "كرانش والذراعان فوق الرأس"
+  },
+  "Crunch_-_Legs_On_Exercise_Ball": {
+    "en": "Crunch - Legs On Exercise Ball",
+    "ar": "كرانش والرجلان على كرة التمرين"
+  },
+  "Crunches": {
+    "en": "Crunches",
+    "ar": "كرانش البطن"
+  },
+  "Cuban_Press": {
+    "en": "Cuban Press",
+    "ar": "ضغط كتف كوبي"
+  },
+  "Dancers_Stretch": {
+    "en": "Dancer's Stretch",
+    "ar": "إطالة الراقص"
+  },
+  "Dead_Bug": {
+    "en": "Dead Bug",
+    "ar": "ديد باج لثبات الجذع"
+  },
+  "Deadlift_with_Bands": {
+    "en": "Deadlift with Bands",
+    "ar": "رفعة ميتة مع أشرطة المقاومة"
+  },
+  "Deadlift_with_Chains": {
+    "en": "Deadlift with Chains",
+    "ar": "رفعة ميتة مع السلاسل"
+  },
+  "Decline_Barbell_Bench_Press": {
+    "en": "Decline Barbell Bench Press",
+    "ar": "بنش بالبار مقلوب"
+  },
+  "Decline_Close-Grip_Bench_To_Skull_Crusher": {
+    "en": "Decline Close-Grip Bench To Skull Crusher",
+    "ar": "ضغط صدر ضيق وتمديد ترايسبس على بنش مائل لأسفل"
+  },
+  "Decline_Crunch": {
+    "en": "Decline Crunch",
+    "ar": "كرانش على بنش مائل لأسفل"
+  },
+  "Decline_Dumbbell_Bench_Press": {
+    "en": "Decline Dumbbell Bench Press",
+    "ar": "بنش بالدمبل مقلوب"
+  },
+  "Decline_Dumbbell_Flyes": {
+    "en": "Decline Dumbbell Flyes",
+    "ar": "تفتيح صدر بالدمبل على بنش مائل لأسفل"
+  },
+  "Decline_Dumbbell_Triceps_Extension": {
+    "en": "Decline Dumbbell Triceps Extension",
+    "ar": "تمديد ترايسبس بالدمبل على بنش مائل لأسفل"
+  },
+  "Decline_EZ_Bar_Triceps_Extension": {
+    "en": "Decline EZ Bar Triceps Extension",
+    "ar": "تمديد ترايسبس بالبار المتعرج على بنش مائل لأسفل"
+  },
+  "Decline_Oblique_Crunch": {
+    "en": "Decline Oblique Crunch",
+    "ar": "كرانش جانبي على بنش مائل لأسفل"
+  },
+  "Decline_Push-Up": {
+    "en": "Decline Push-Up",
+    "ar": "ضغط أرضي مع رفع القدمين"
+  },
+  "Decline_Reverse_Crunch": {
+    "en": "Decline Reverse Crunch",
+    "ar": "كرانش عكسي على بنش مائل لأسفل"
+  },
+  "Decline_Smith_Press": {
+    "en": "Decline Smith Press",
+    "ar": "ضغط صدر سميث على بنش مائل لأسفل"
+  },
+  "Deficit_Deadlift": {
+    "en": "Deficit Deadlift",
+    "ar": "رفعة ميتة من منصة مرتفعة"
+  },
+  "Depth_Jump_Leap": {
+    "en": "Depth Jump Leap",
+    "ar": "قفزة عميقة مع وثب للأمام"
+  },
+  "Dip_Machine": {
+    "en": "Dip Machine",
+    "ar": "متوازي على الجهاز"
+  },
+  "Dips_-_Chest_Version": {
+    "en": "Dips - Chest Version",
+    "ar": "متوازي للصدر"
+  },
+  "Dips_-_Triceps_Version": {
+    "en": "Dips - Triceps Version",
+    "ar": "متوازي للترايسبس"
+  },
+  "Donkey_Calf_Raises": {
+    "en": "Donkey Calf Raises",
+    "ar": "رفع السمانة مع انحناء الجذع"
+  },
+  "Double_Kettlebell_Alternating_Hang_Clean": {
+    "en": "Double Kettlebell Alternating Hang Clean",
+    "ar": "كلين من التعليق بكيتل بيل مزدوجة بالتبادل"
+  },
+  "Double_Kettlebell_Jerk": {
+    "en": "Double Kettlebell Jerk",
+    "ar": "نتر بكيتل بيل مزدوجة"
+  },
+  "Double_Kettlebell_Push_Press": {
+    "en": "Double Kettlebell Push Press",
+    "ar": "ضغط دفع بكيتل بيل مزدوجة"
+  },
+  "Double_Kettlebell_Snatch": {
+    "en": "Double Kettlebell Snatch",
+    "ar": "خطف بكيتل بيل مزدوجة"
+  },
+  "Double_Kettlebell_Windmill": {
+    "en": "Double Kettlebell Windmill",
+    "ar": "طاحونة بكيتل بيل مزدوجة"
+  },
+  "Double_Leg_Butt_Kick": {
+    "en": "Double Leg Butt Kick",
+    "ar": "ركل الأرداف بالرجلين مع القفز"
+  },
+  "Downward_Facing_Balance": {
+    "en": "Downward Facing Balance",
+    "ar": "توازن مع الميل لأسفل"
+  },
+  "Drag_Curl": {
+    "en": "Drag Curl",
+    "ar": "باي بالسحب بمحاذاة الجذع"
+  },
+  "Drop_Push": {
+    "en": "Drop Push",
+    "ar": "دفع الكرة مع الإسقاط"
+  },
+  "Dumbbell_Alternate_Bicep_Curl": {
+    "en": "Dumbbell Alternate Bicep Curl",
+    "ar": "باي بالدمبل بالتبادل"
+  },
+  "Dumbbell_Bench_Press": {
+    "en": "Dumbbell Bench Press",
+    "ar": "بنش مستوي بالدمبل"
+  },
+  "Dumbbell_Bench_Press_with_Neutral_Grip": {
+    "en": "Dumbbell Bench Press with Neutral Grip",
+    "ar": "بنش بالدمبل بمسكة محايدة"
+  },
+  "Dumbbell_Bicep_Curl": {
+    "en": "Dumbbell Bicep Curl",
+    "ar": "باي بالدمبل"
+  },
+  "Dumbbell_Clean": {
+    "en": "Dumbbell Clean",
+    "ar": "كلين بالدمبل"
+  },
+  "Dumbbell_Floor_Press": {
+    "en": "Dumbbell Floor Press",
+    "ar": "ضغط صدر أرضي بالدمبل"
+  },
+  "Dumbbell_Flyes": {
+    "en": "Dumbbell Flyes",
+    "ar": "تفتيح صدر بالدمبل"
+  },
+  "Dumbbell_Incline_Row": {
+    "en": "Dumbbell Incline Row",
+    "ar": "تجديف بالدمبل على بنش مائل"
+  },
+  "Dumbbell_Incline_Shoulder_Raise": {
+    "en": "Dumbbell Incline Shoulder Raise",
+    "ar": "رفع الكتفين بالدمبل على بنش مائل"
+  },
+  "Dumbbell_Lunges": {
+    "en": "Dumbbell Lunges",
+    "ar": "اندفاع بالدمبل"
+  },
+  "Dumbbell_Lying_One-Arm_Rear_Lateral_Raise": {
+    "en": "Dumbbell Lying One-Arm Rear Lateral Raise",
+    "ar": "رفرفة خلفية بدراع واحدة بالدمبل من النوم"
+  },
+  "Dumbbell_Lying_Pronation": {
+    "en": "Dumbbell Lying Pronation",
+    "ar": "تدوير الساعد للداخل بالدمبل من النوم"
+  },
+  "Dumbbell_Lying_Rear_Lateral_Raise": {
+    "en": "Dumbbell Lying Rear Lateral Raise",
+    "ar": "رفرفة خلفية بالدمبل من النوم"
+  },
+  "Dumbbell_Lying_Supination": {
+    "en": "Dumbbell Lying Supination",
+    "ar": "تدوير الساعد للخارج بالدمبل من النوم"
+  },
+  "Dumbbell_One-Arm_Shoulder_Press": {
+    "en": "Dumbbell One-Arm Shoulder Press",
+    "ar": "ضغط كتف بالدمبل بدراع واحدة"
+  },
+  "Dumbbell_One-Arm_Triceps_Extension": {
+    "en": "Dumbbell One-Arm Triceps Extension",
+    "ar": "تمديد ترايسبس بالدمبل بدراع واحدة"
+  },
+  "Dumbbell_One-Arm_Upright_Row": {
+    "en": "Dumbbell One-Arm Upright Row",
+    "ar": "سحب عمودي بالدمبل بدراع واحدة"
+  },
+  "Dumbbell_Prone_Incline_Curl": {
+    "en": "Dumbbell Prone Incline Curl",
+    "ar": "باي بالدمبل مع إسناد الصدر على بنش مائل"
+  },
+  "Dumbbell_Raise": {
+    "en": "Dumbbell Raise",
+    "ar": "رفع الدمبل"
+  },
+  "Dumbbell_Rear_Lunge": {
+    "en": "Dumbbell Rear Lunge",
+    "ar": "اندفاع خلفي بالدمبل"
+  },
+  "Dumbbell_Scaption": {
+    "en": "Dumbbell Scaption",
+    "ar": "رفع الدمبل في مستوى لوح الكتف"
+  },
+  "Dumbbell_Seated_Box_Jump": {
+    "en": "Dumbbell Seated Box Jump",
+    "ar": "قفز على الصندوق بالدمبل من الجلوس"
+  },
+  "Dumbbell_Seated_One-Leg_Calf_Raise": {
+    "en": "Dumbbell Seated One-Leg Calf Raise",
+    "ar": "رفع السمانة برجل واحدة بالدمبل من الجلوس"
+  },
+  "Dumbbell_Shoulder_Press": {
+    "en": "Dumbbell Shoulder Press",
+    "ar": "ضغط كتف بالدمبل"
+  },
+  "Dumbbell_Shrug": {
+    "en": "Dumbbell Shrug",
+    "ar": "هز الكتفين بالدمبل"
+  },
+  "Dumbbell_Side_Bend": {
+    "en": "Dumbbell Side Bend",
+    "ar": "ميل جانبي بالدمبل"
+  },
+  "Dumbbell_Squat": {
+    "en": "Dumbbell Squat",
+    "ar": "سكوات بالدمبل"
+  },
+  "Dumbbell_Squat_To_A_Bench": {
+    "en": "Dumbbell Squat To A Bench",
+    "ar": "سكوات بالدمبل إلى البنش"
+  },
+  "Dumbbell_Step_Ups": {
+    "en": "Dumbbell Step Ups",
+    "ar": "صعود البنش بالدمبل"
+  },
+  "Dumbbell_Tricep_Extension_-Pronated_Grip": {
+    "en": "Dumbbell Tricep Extension -Pronated Grip",
+    "ar": "تمديد ترايسبس بالدمبل بمسكة علوية"
+  },
+  "Dynamic_Back_Stretch": {
+    "en": "Dynamic Back Stretch",
+    "ar": "إطالة الظهر بالحركة"
+  },
+  "Dynamic_Chest_Stretch": {
+    "en": "Dynamic Chest Stretch",
+    "ar": "إطالة الصدر بالحركة"
+  },
+  "EZ-Bar_Curl": {
+    "en": "EZ-Bar Curl",
+    "ar": "باي بالبار المتعرج"
+  },
+  "EZ-Bar_Skullcrusher": {
+    "en": "EZ-Bar Skullcrusher",
+    "ar": "تمديد ترايسبس خلف الرأس بالبار المتعرج"
+  },
+  "Elbow_Circles": {
+    "en": "Elbow Circles",
+    "ar": "تدوير المرفقين"
+  },
+  "Elbow_to_Knee": {
+    "en": "Elbow to Knee",
+    "ar": "لمس الركبة بالمرفق"
+  },
+  "Elbows_Back": {
+    "en": "Elbows Back",
+    "ar": "سحب المرفقين للخلف"
+  },
+  "Elevated_Back_Lunge": {
+    "en": "Elevated Back Lunge",
+    "ar": "اندفاع خلفي من منصة مرتفعة"
+  },
+  "Elevated_Cable_Rows": {
+    "en": "Elevated Cable Rows",
+    "ar": "تجديف بالكابل من مقعد مرتفع"
+  },
+  "Elliptical_Trainer": {
+    "en": "Elliptical Trainer",
+    "ar": "الجهاز البيضاوي"
+  },
+  "Exercise_Ball_Crunch": {
+    "en": "Exercise Ball Crunch",
+    "ar": "كرانش على كرة التمرين"
+  },
+  "Exercise_Ball_Pull-In": {
+    "en": "Exercise Ball Pull-In",
+    "ar": "ضم الركبتين على كرة التمرين"
+  },
+  "Extended_Range_One-Arm_Kettlebell_Floor_Press": {
+    "en": "Extended Range One-Arm Kettlebell Floor Press",
+    "ar": "ضغط أرضي بالكيتل بيل بدراع واحدة بمدى ممتد"
+  },
+  "External_Rotation": {
+    "en": "External Rotation",
+    "ar": "تدوير الكتف للخارج"
+  },
+  "External_Rotation_with_Band": {
+    "en": "External Rotation with Band",
+    "ar": "تدوير الكتف للخارج بشريط المقاومة"
+  },
+  "External_Rotation_with_Cable": {
+    "en": "External Rotation with Cable",
+    "ar": "تدوير الكتف للخارج بالكابل"
+  },
+  "Face_Pull": {
+    "en": "Face Pull",
+    "ar": "سحب الحبل للوجه"
+  },
+  "Farmers_Walk": {
+    "en": "Farmer's Walk",
+    "ar": "مشية المزارع بالأوزان"
+  },
+  "Fast_Skipping": {
+    "en": "Fast Skipping",
+    "ar": "وثب تبادلي سريع"
+  },
+  "Finger_Curls": {
+    "en": "Finger Curls",
+    "ar": "ثني الأصابع بالبار"
+  },
+  "Flat_Bench_Cable_Flyes": {
+    "en": "Flat Bench Cable Flyes",
+    "ar": "تفتيح صدر بالكابل على بنش مسطح"
+  },
+  "Flat_Bench_Leg_Pull-In": {
+    "en": "Flat Bench Leg Pull-In",
+    "ar": "ضم الركبتين على بنش مسطح"
+  },
+  "Flat_Bench_Lying_Leg_Raise": {
+    "en": "Flat Bench Lying Leg Raise",
+    "ar": "رفع الرجلين من النوم على بنش مسطح"
+  },
+  "Flexor_Incline_Dumbbell_Curls": {
+    "en": "Flexor Incline Dumbbell Curls",
+    "ar": "باي بالدمبل على بنش مائل مع مد الرسغ"
+  },
+  "Floor_Glute-Ham_Raise": {
+    "en": "Floor Glute-Ham Raise",
+    "ar": "رفع الجذع بالأرداف وخلفية الرجل من الأرض"
+  },
+  "Floor_Press": {
+    "en": "Floor Press",
+    "ar": "ضغط صدر أرضي"
+  },
+  "Floor_Press_with_Chains": {
+    "en": "Floor Press with Chains",
+    "ar": "ضغط صدر أرضي بالسلاسل"
+  },
+  "Flutter_Kicks": {
+    "en": "Flutter Kicks",
+    "ar": "ركلات الرجلين بالتبادل"
+  },
+  "Foot-SMR": {
+    "en": "Foot-SMR",
+    "ar": "تدليك باطن القدم بالرول"
+  },
+  "Forward_Drag_with_Press": {
+    "en": "Forward Drag with Press",
+    "ar": "جر الزلاجة للأمام مع الضغط"
+  },
+  "Frankenstein_Squat": {
+    "en": "Frankenstein Squat",
+    "ar": "سكوات فرانكشتاين"
+  },
+  "Freehand_Jump_Squat": {
+    "en": "Freehand Jump Squat",
+    "ar": "سكوات بالقفز دون أوزان"
+  },
+  "Frog_Hops": {
+    "en": "Frog Hops",
+    "ar": "قفزات الضفدع"
+  },
+  "Frog_Sit-Ups": {
+    "en": "Frog Sit-Ups",
+    "ar": "رفع الجذع بوضعية الضفدع"
+  },
+  "Front_Barbell_Squat": {
+    "en": "Front Barbell Squat",
+    "ar": "سكوات أمامي بالبار"
+  },
+  "Front_Barbell_Squat_To_A_Bench": {
+    "en": "Front Barbell Squat To A Bench",
+    "ar": "سكوات أمامي بالبار إلى البنش"
+  },
+  "Front_Box_Jump": {
+    "en": "Front Box Jump",
+    "ar": "قفز أمامي على الصندوق"
+  },
+  "Front_Cable_Raise": {
+    "en": "Front Cable Raise",
+    "ar": "رفرفة أمامية بالكابل"
+  },
+  "Front_Cone_Hops_or_hurdle_hops": {
+    "en": "Front Cone Hops (or hurdle hops)",
+    "ar": "قفز أمامي فوق الأقماع أو الحواجز"
+  },
+  "Front_Dumbbell_Raise": {
+    "en": "Front Dumbbell Raise",
+    "ar": "رفرفة أمامية بالدمبل"
+  },
+  "Front_Incline_Dumbbell_Raise": {
+    "en": "Front Incline Dumbbell Raise",
+    "ar": "رفرفة أمامية بالدمبل على بنش مائل"
+  },
+  "Front_Leg_Raises": {
+    "en": "Front Leg Raises",
+    "ar": "رفع الرجل للأمام"
+  },
+  "Front_Plate_Raise": {
+    "en": "Front Plate Raise",
+    "ar": "رفع قرص الوزن للأمام"
+  },
+  "Front_Raise_And_Pullover": {
+    "en": "Front Raise And Pullover",
+    "ar": "رفع أمامي مع بول أوفر"
+  },
+  "Front_Squat_Clean_Grip": {
+    "en": "Front Squat (Clean Grip)",
+    "ar": "سكوات أمامي بمسكة الكلين"
+  },
+  "Front_Squats_With_Two_Kettlebells": {
+    "en": "Front Squats With Two Kettlebells",
+    "ar": "سكوات أمامي بكيتل بيل مزدوجة"
+  },
+  "Front_Two-Dumbbell_Raise": {
+    "en": "Front Two-Dumbbell Raise",
+    "ar": "رفرفة أمامية بالدمبلين معًا"
+  },
+  "Full_Range-Of-Motion_Lat_Pulldown": {
+    "en": "Full Range-Of-Motion Lat Pulldown",
+    "ar": "سحب علوي بمدى حركة كامل"
+  },
+  "Gironda_Sternum_Chins": {
+    "en": "Gironda Sternum Chins",
+    "ar": "عقلة جيروندا حتى الصدر"
+  },
+  "Glute_Ham_Raise": {
+    "en": "Glute Ham Raise",
+    "ar": "رفع الجذع بالأرداف وخلفية الرجل"
+  },
+  "Glute_Kickback": {
+    "en": "Glute Kickback",
+    "ar": "دفع الرجل للخلف للأرداف"
+  },
+  "Goblet_Squat": {
+    "en": "Goblet Squat",
+    "ar": "سكوات الكأس"
+  },
+  "Good_Morning": {
+    "en": "Good Morning",
+    "ar": "انحناء الجذع بالبار"
+  },
+  "Good_Morning_off_Pins": {
+    "en": "Good Morning off Pins",
+    "ar": "انحناء الجذع بالبار من دعامات الراك"
+  },
+  "Gorilla_Chin_Crunch": {
+    "en": "Gorilla Chin/Crunch",
+    "ar": "عقلة مع كرانش الغوريلا"
+  },
+  "Groin_and_Back_Stretch": {
+    "en": "Groin and Back Stretch",
+    "ar": "إطالة أعلى الفخذ والظهر"
+  },
+  "Groiners": {
+    "en": "Groiners",
+    "ar": "فتح الورك من وضع الارتكاز"
+  },
+  "Hack_Squat": {
+    "en": "Hack Squat",
+    "ar": "هاك سكوات"
+  },
+  "Hammer_Curls": {
+    "en": "Hammer Curls",
+    "ar": "باي هامر"
+  },
+  "Hammer_Grip_Incline_DB_Bench_Press": {
+    "en": "Hammer Grip Incline DB Bench Press",
+    "ar": "بنش بالدمبل على بنش مائل بمسكة محايدة"
+  },
+  "Hamstring-SMR": {
+    "en": "Hamstring-SMR",
+    "ar": "تدليك خلفية الرجل بالرول"
+  },
+  "Hamstring_Stretch": {
+    "en": "Hamstring Stretch",
+    "ar": "إطالة خلفية الرجل"
+  },
+  "Handstand_Push-Ups": {
+    "en": "Handstand Push-Ups",
+    "ar": "ضغط من الوقوف على اليدين"
+  },
+  "Hang_Clean": {
+    "en": "Hang Clean",
+    "ar": "كلين من التعليق"
+  },
+  "Hang_Clean_-_Below_the_Knees": {
+    "en": "Hang Clean - Below the Knees",
+    "ar": "كلين من التعليق أسفل الركبتين"
+  },
+  "Hang_Snatch": {
+    "en": "Hang Snatch",
+    "ar": "خطف من التعليق"
+  },
+  "Hang_Snatch_-_Below_Knees": {
+    "en": "Hang Snatch - Below Knees",
+    "ar": "خطف من التعليق أسفل الركبتين"
+  },
+  "Hanging_Bar_Good_Morning": {
+    "en": "Hanging Bar Good Morning",
+    "ar": "انحناء الجذع ببار معلّق"
+  },
+  "Hanging_Leg_Raise": {
+    "en": "Hanging Leg Raise",
+    "ar": "رفع الرجلين من التعليق"
+  },
+  "Hanging_Pike": {
+    "en": "Hanging Pike",
+    "ar": "رفع الرجلين مستقيمتين للمس البار"
+  },
+  "Heaving_Snatch_Balance": {
+    "en": "Heaving Snatch Balance",
+    "ar": "توازن الخطف بدفعة الرجلين"
+  },
+  "Heavy_Bag_Thrust": {
+    "en": "Heavy Bag Thrust",
+    "ar": "دفع كيس الملاكمة الثقيل"
+  },
+  "High_Cable_Curls": {
+    "en": "High Cable Curls",
+    "ar": "باي بالكابل العلوي"
+  },
+  "Hip_Circles_prone": {
+    "en": "Hip Circles (prone)",
+    "ar": "تدوير الورك من وضع الانبطاح"
+  },
+  "Hip_Extension_with_Bands": {
+    "en": "Hip Extension with Bands",
+    "ar": "مد الورك بشريط المقاومة"
+  },
+  "Hip_Flexion_with_Band": {
+    "en": "Hip Flexion with Band",
+    "ar": "ثني الورك بشريط المقاومة"
+  },
+  "Hip_Lift_with_Band": {
+    "en": "Hip Lift with Band",
+    "ar": "رفع الحوض بشريط المقاومة"
+  },
+  "Hug_A_Ball": {
+    "en": "Hug A Ball",
+    "ar": "احتضان الكرة لإطالة الظهر"
+  },
+  "Hug_Knees_To_Chest": {
+    "en": "Hug Knees To Chest",
+    "ar": "ضم الركبتين إلى الصدر"
+  },
+  "Hurdle_Hops": {
+    "en": "Hurdle Hops",
+    "ar": "قفز فوق الحواجز"
+  },
+  "Hyperextensions_Back_Extensions": {
+    "en": "Hyperextensions (Back Extensions)",
+    "ar": "تمديد الظهر على البنش"
+  },
+  "Hyperextensions_With_No_Hyperextension_Bench": {
+    "en": "Hyperextensions With No Hyperextension Bench",
+    "ar": "تمديد الظهر دون بنش مخصص"
+  },
+  "IT_Band_and_Glute_Stretch": {
+    "en": "IT Band and Glute Stretch",
+    "ar": "إطالة الشريط الحرقفي الظنبوبي والأرداف"
+  },
+  "Iliotibial_Tract-SMR": {
+    "en": "Iliotibial Tract-SMR",
+    "ar": "تدليك الشريط الحرقفي الظنبوبي بالرول"
+  },
+  "Inchworm": {
+    "en": "Inchworm",
+    "ar": "المشي باليدين من الوقوف"
+  },
+  "Incline_Barbell_Triceps_Extension": {
+    "en": "Incline Barbell Triceps Extension",
+    "ar": "تمديد ترايسبس بالبار على بنش مائل لأعلى"
+  },
+  "Incline_Bench_Pull": {
+    "en": "Incline Bench Pull",
+    "ar": "تجديف مع إسناد الصدر على بنش مائل"
+  },
+  "Incline_Cable_Chest_Press": {
+    "en": "Incline Cable Chest Press",
+    "ar": "ضغط صدر بالكابل على بنش مائل لأعلى"
+  },
+  "Incline_Cable_Flye": {
+    "en": "Incline Cable Flye",
+    "ar": "تفتيح صدر بالكابل على بنش مائل لأعلى"
+  },
+  "Incline_Dumbbell_Bench_With_Palms_Facing_In": {
+    "en": "Incline Dumbbell Bench With Palms Facing In",
+    "ar": "ضغط صدر بالدمبل على بنش مائل بمسكة محايدة"
+  },
+  "Incline_Dumbbell_Curl": {
+    "en": "Incline Dumbbell Curl",
+    "ar": "باي بالدمبل على بنش مائل"
+  },
+  "Incline_Dumbbell_Flyes": {
+    "en": "Incline Dumbbell Flyes",
+    "ar": "تفتيح صدر بالدمبل على بنش مائل لأعلى"
+  },
+  "Incline_Dumbbell_Flyes_-_With_A_Twist": {
+    "en": "Incline Dumbbell Flyes - With A Twist",
+    "ar": "تفتيح صدر بالدمبل على بنش مائل مع تدوير الرسغ"
+  },
+  "Incline_Dumbbell_Press": {
+    "en": "Incline Dumbbell Press",
+    "ar": "ضغط صدر بالدمبل على بنش مائل لأعلى"
+  },
+  "Incline_Hammer_Curls": {
+    "en": "Incline Hammer Curls",
+    "ar": "باي هامر على بنش مائل"
+  },
+  "Incline_Inner_Biceps_Curl": {
+    "en": "Incline Inner Biceps Curl",
+    "ar": "باي للداخل على بنش مائل"
+  },
+  "Incline_Push-Up": {
+    "en": "Incline Push-Up",
+    "ar": "ضغط أرضي واليدان مرتفعتان"
+  },
+  "Incline_Push-Up_Close-Grip": {
+    "en": "Incline Push-Up Close-Grip",
+    "ar": "ضغط أرضي واليدان مرتفعتان بمسكة ضيقة"
+  },
+  "Incline_Push-Up_Depth_Jump": {
+    "en": "Incline Push-Up Depth Jump",
+    "ar": "ضغط قفزي واليدان مرتفعتان"
+  },
+  "Incline_Push-Up_Medium": {
+    "en": "Incline Push-Up Medium",
+    "ar": "ضغط أرضي واليدان مرتفعتان بمسكة متوسطة"
+  },
+  "Incline_Push-Up_Reverse_Grip": {
+    "en": "Incline Push-Up Reverse Grip",
+    "ar": "ضغط أرضي واليدان مرتفعتان بمسكة معكوسة"
+  },
+  "Incline_Push-Up_Wide": {
+    "en": "Incline Push-Up Wide",
+    "ar": "ضغط أرضي واليدان مرتفعتان بمسكة واسعة"
+  },
+  "Intermediate_Groin_Stretch": {
+    "en": "Intermediate Groin Stretch",
+    "ar": "إطالة الضامة للمستوى المتوسط"
+  },
+  "Intermediate_Hip_Flexor_and_Quad_Stretch": {
+    "en": "Intermediate Hip Flexor and Quad Stretch",
+    "ar": "إطالة مثنيات الورك وأمامية الرجل للمستوى المتوسط"
+  },
+  "Internal_Rotation_with_Band": {
+    "en": "Internal Rotation with Band",
+    "ar": "تدوير الكتف للداخل بشريط المقاومة"
+  },
+  "Inverted_Row": {
+    "en": "Inverted Row",
+    "ar": "تجديف مقلوب بوزن الجسم"
+  },
+  "Inverted_Row_with_Straps": {
+    "en": "Inverted Row with Straps",
+    "ar": "تجديف مقلوب بأحزمة التعليق"
+  },
+  "Iron_Cross": {
+    "en": "Iron Cross",
+    "ar": "ثبات الصليب الحديدي"
+  },
+  "Iron_Crosses_stretch": {
+    "en": "Iron Crosses (stretch)",
+    "ar": "إطالة الصليب الحديدي"
+  },
+  "Isometric_Chest_Squeezes": {
+    "en": "Isometric Chest Squeezes",
+    "ar": "ضغط الصدر الثابت"
+  },
+  "Isometric_Neck_Exercise_-_Front_And_Back": {
+    "en": "Isometric Neck Exercise - Front And Back",
+    "ar": "مقاومة ثابتة للرقبة أمامًا وخلفًا"
+  },
+  "Isometric_Neck_Exercise_-_Sides": {
+    "en": "Isometric Neck Exercise - Sides",
+    "ar": "مقاومة ثابتة للرقبة جانبيًا"
+  },
+  "Isometric_Wipers": {
+    "en": "Isometric Wipers",
+    "ar": "مسح الرجلين جانبيًا مع ثبات الجذع"
+  },
+  "JM_Press": {
+    "en": "JM Press",
+    "ar": "ضغط جيه إم للترايسبس"
+  },
+  "Jackknife_Sit-Up": {
+    "en": "Jackknife Sit-Up",
+    "ar": "رفع الجذع والرجلين معًا"
+  },
+  "Janda_Sit-Up": {
+    "en": "Janda Sit-Up",
+    "ar": "رفع الجذع بأسلوب ياندا"
+  },
+  "Jefferson_Squats": {
+    "en": "Jefferson Squats",
+    "ar": "سكوات جيفرسون"
+  },
+  "Jerk_Balance": {
+    "en": "Jerk Balance",
+    "ar": "توازن النتر"
+  },
+  "Jerk_Dip_Squat": {
+    "en": "Jerk Dip Squat",
+    "ar": "سكوات قصير للإعداد للنتر"
+  },
+  "Jogging_Treadmill": {
+    "en": "Jogging, Treadmill",
+    "ar": "هرولة على جهاز المشي"
+  },
+  "Keg_Load": {
+    "en": "Keg Load",
+    "ar": "رفع البرميل وتحميله"
+  },
+  "Kettlebell_Arnold_Press": {
+    "en": "Kettlebell Arnold Press",
+    "ar": "ضغط أرنولد بالكيتل بيل"
+  },
+  "Kettlebell_Dead_Clean": {
+    "en": "Kettlebell Dead Clean",
+    "ar": "كلين بالكيتل بيل من الأرض"
+  },
+  "Kettlebell_Figure_8": {
+    "en": "Kettlebell Figure 8",
+    "ar": "تمرير الكيتل بيل بشكل رقم ثمانية"
+  },
+  "Kettlebell_Hang_Clean": {
+    "en": "Kettlebell Hang Clean",
+    "ar": "كلين بالكيتل بيل من التعليق"
+  },
+  "Kettlebell_One-Legged_Deadlift": {
+    "en": "Kettlebell One-Legged Deadlift",
+    "ar": "رفعة ميتة بالكيتل بيل برجل واحدة"
+  },
+  "Kettlebell_Pass_Between_The_Legs": {
+    "en": "Kettlebell Pass Between The Legs",
+    "ar": "تمرير الكيتل بيل بين الرجلين"
+  },
+  "Kettlebell_Pirate_Ships": {
+    "en": "Kettlebell Pirate Ships",
+    "ar": "أرجحة الكيتل بيل قطريًا"
+  },
+  "Kettlebell_Pistol_Squat": {
+    "en": "Kettlebell Pistol Squat",
+    "ar": "سكوات المسدس بالكيتل بيل"
+  },
+  "Kettlebell_Seated_Press": {
+    "en": "Kettlebell Seated Press",
+    "ar": "ضغط كتف بالكيتل بيل من الجلوس"
+  },
+  "Kettlebell_Seesaw_Press": {
+    "en": "Kettlebell Seesaw Press",
+    "ar": "ضغط كتف تبادلي بالكيتل بيل"
+  },
+  "Kettlebell_Sumo_High_Pull": {
+    "en": "Kettlebell Sumo High Pull",
+    "ar": "سحب سومو عالٍ بالكيتل بيل"
+  },
+  "Kettlebell_Thruster": {
+    "en": "Kettlebell Thruster",
+    "ar": "سكوات مع ضغط كتف بالكيتل بيل"
+  },
+  "Kettlebell_Turkish_Get-Up_Lunge_style": {
+    "en": "Kettlebell Turkish Get-Up (Lunge style)",
+    "ar": "النهوض التركي بالكيتل بيل بأسلوب الاندفاع"
+  },
+  "Kettlebell_Turkish_Get-Up_Squat_style": {
+    "en": "Kettlebell Turkish Get-Up (Squat style)",
+    "ar": "النهوض التركي بالكيتل بيل بأسلوب السكوات"
+  },
+  "Kettlebell_Windmill": {
+    "en": "Kettlebell Windmill",
+    "ar": "طاحونة الكيتل بيل"
+  },
+  "Kipping_Muscle_Up": {
+    "en": "Kipping Muscle Up",
+    "ar": "ماسل أب باستخدام المرجحة"
+  },
+  "Knee_Across_The_Body": {
+    "en": "Knee Across The Body",
+    "ar": "إطالة بوضع الركبة عبر الجسم"
+  },
+  "Knee_Circles": {
+    "en": "Knee Circles",
+    "ar": "تدوير الركبتين"
+  },
+  "Knee_Hip_Raise_On_Parallel_Bars": {
+    "en": "Knee/Hip Raise On Parallel Bars",
+    "ar": "رفع الركبتين والحوض على المتوازي"
+  },
+  "Knee_Tuck_Jump": {
+    "en": "Knee Tuck Jump",
+    "ar": "قفز مع ضم الركبتين"
+  },
+  "Kneeling_Arm_Drill": {
+    "en": "Kneeling Arm Drill",
+    "ar": "تدريب حركة الذراعين من الركوع"
+  },
+  "Kneeling_Cable_Crunch_With_Alternating_Oblique_Twists": {
+    "en": "Kneeling Cable Crunch With Alternating Oblique Twists",
+    "ar": "كرانش بالكابل من الركوع مع لف جانبي بالتبادل"
+  },
+  "Kneeling_Cable_Triceps_Extension": {
+    "en": "Kneeling Cable Triceps Extension",
+    "ar": "تمديد ترايسبس بالكابل من الركوع"
+  },
+  "Kneeling_Forearm_Stretch": {
+    "en": "Kneeling Forearm Stretch",
+    "ar": "إطالة الساعد من الركوع"
+  },
+  "Kneeling_High_Pulley_Row": {
+    "en": "Kneeling High Pulley Row",
+    "ar": "تجديف بالكابل العلوي من الركوع"
+  },
+  "Kneeling_Hip_Flexor": {
+    "en": "Kneeling Hip Flexor",
+    "ar": "إطالة مثنيات الورك من الركوع"
+  },
+  "Kneeling_Jump_Squat": {
+    "en": "Kneeling Jump Squat",
+    "ar": "قفزة سكوات من الركوع"
+  },
+  "Kneeling_Single-Arm_High_Pulley_Row": {
+    "en": "Kneeling Single-Arm High Pulley Row",
+    "ar": "تجديف بدراع واحدة بالكابل العلوي من الركوع"
+  },
+  "Kneeling_Squat": {
+    "en": "Kneeling Squat",
+    "ar": "سكوات من الركوع"
+  },
+  "Landmine_180s": {
+    "en": "Landmine 180's",
+    "ar": "تدوير اللاندماين نصف دائرة"
+  },
+  "Landmine_Linear_Jammer": {
+    "en": "Landmine Linear Jammer",
+    "ar": "دفع اللاندماين للأمام"
+  },
+  "Lateral_Bound": {
+    "en": "Lateral Bound",
+    "ar": "وثب جانبي"
+  },
+  "Lateral_Box_Jump": {
+    "en": "Lateral Box Jump",
+    "ar": "قفز جانبي على الصندوق"
+  },
+  "Lateral_Cone_Hops": {
+    "en": "Lateral Cone Hops",
+    "ar": "قفز جانبي فوق الأقماع"
+  },
+  "Lateral_Raise_-_With_Bands": {
+    "en": "Lateral Raise - With Bands",
+    "ar": "رفرفة جانبية بشريط المقاومة"
+  },
+  "Latissimus_Dorsi-SMR": {
+    "en": "Latissimus Dorsi-SMR",
+    "ar": "تدليك المجنص بالرول"
+  },
+  "Leg-Over_Floor_Press": {
+    "en": "Leg-Over Floor Press",
+    "ar": "ضغط أرضي مع تمرير الرجل عبر الجسم"
+  },
+  "Leg-Up_Hamstring_Stretch": {
+    "en": "Leg-Up Hamstring Stretch",
+    "ar": "إطالة خلفية الرجل برفع الرجل"
+  },
+  "Leg_Extensions": {
+    "en": "Leg Extensions",
+    "ar": "مد الرجلين على الجهاز"
+  },
+  "Leg_Lift": {
+    "en": "Leg Lift",
+    "ar": "رفع الرجل"
+  },
+  "Leg_Press": {
+    "en": "Leg Press",
+    "ar": "ضغط الرجلين على الجهاز"
+  },
+  "Leg_Pull-In": {
+    "en": "Leg Pull-In",
+    "ar": "ضم الركبتين للداخل"
+  },
+  "Leverage_Chest_Press": {
+    "en": "Leverage Chest Press",
+    "ar": "ضغط صدر على جهاز الرافعة"
+  },
+  "Leverage_Deadlift": {
+    "en": "Leverage Deadlift",
+    "ar": "رفعة ميتة على جهاز الرافعة"
+  },
+  "Leverage_Decline_Chest_Press": {
+    "en": "Leverage Decline Chest Press",
+    "ar": "ضغط صدر سفلي على جهاز الرافعة"
+  },
+  "Leverage_High_Row": {
+    "en": "Leverage High Row",
+    "ar": "تجديف علوي على جهاز الرافعة"
+  },
+  "Leverage_Incline_Chest_Press": {
+    "en": "Leverage Incline Chest Press",
+    "ar": "ضغط صدر علوي على جهاز الرافعة"
+  },
+  "Leverage_Iso_Row": {
+    "en": "Leverage Iso Row",
+    "ar": "تجديف مستقل للذراعين على الجهاز"
+  },
+  "Leverage_Shoulder_Press": {
+    "en": "Leverage Shoulder Press",
+    "ar": "ضغط كتف على جهاز الرافعة"
+  },
+  "Leverage_Shrug": {
+    "en": "Leverage Shrug",
+    "ar": "هز الكتفين على جهاز الرافعة"
+  },
+  "Linear_3-Part_Start_Technique": {
+    "en": "Linear 3-Part Start Technique",
+    "ar": "انطلاقة خطية من ثلاث مراحل"
+  },
+  "Linear_Acceleration_Wall_Drill": {
+    "en": "Linear Acceleration Wall Drill",
+    "ar": "تدريب التسارع الخطي عند الحائط"
+  },
+  "Linear_Depth_Jump": {
+    "en": "Linear Depth Jump",
+    "ar": "قفزة عمق للأمام"
+  },
+  "Log_Lift": {
+    "en": "Log Lift",
+    "ar": "رفع بار الأسطوانة"
+  },
+  "London_Bridges": {
+    "en": "London Bridges",
+    "ar": "جسور لندن بالحبل"
+  },
+  "Looking_At_Ceiling": {
+    "en": "Looking At Ceiling",
+    "ar": "إطالة الرقبة بالنظر للسقف"
+  },
+  "Low_Cable_Crossover": {
+    "en": "Low Cable Crossover",
+    "ar": "تفتيح صدر بالكابل السفلي"
+  },
+  "Low_Cable_Triceps_Extension": {
+    "en": "Low Cable Triceps Extension",
+    "ar": "تمديد ترايسبس بالكابل السفلي"
+  },
+  "Low_Pulley_Row_To_Neck": {
+    "en": "Low Pulley Row To Neck",
+    "ar": "تجديف بالكابل السفلي إلى الرقبة"
+  },
+  "Lower_Back-SMR": {
+    "en": "Lower Back-SMR",
+    "ar": "تدليك أسفل الظهر بالرول"
+  },
+  "Lower_Back_Curl": {
+    "en": "Lower Back Curl",
+    "ar": "ثني أسفل الظهر"
+  },
+  "Lunge_Pass_Through": {
+    "en": "Lunge Pass Through",
+    "ar": "اندفاع مع تمرير الوزن بين الرجلين"
+  },
+  "Lunge_Sprint": {
+    "en": "Lunge Sprint",
+    "ar": "انطلاق سريع من وضع الاندفاع"
+  },
+  "Lying_Bent_Leg_Groin": {
+    "en": "Lying Bent Leg Groin",
+    "ar": "إطالة الضامة من النوم مع ثني الرجلين"
+  },
+  "Lying_Cable_Curl": {
+    "en": "Lying Cable Curl",
+    "ar": "باي بالكابل من النوم"
+  },
+  "Lying_Cambered_Barbell_Row": {
+    "en": "Lying Cambered Barbell Row",
+    "ar": "تجديف بالبار المقوس مع النوم على البنش"
+  },
+  "Lying_Close-Grip_Bar_Curl_On_High_Pulley": {
+    "en": "Lying Close-Grip Bar Curl On High Pulley",
+    "ar": "باي بمسكة ضيقة بالكابل العلوي من النوم"
+  },
+  "Lying_Close-Grip_Barbell_Triceps_Extension_Behind_The_Head": {
+    "en": "Lying Close-Grip Barbell Triceps Extension Behind The Head",
+    "ar": "تمديد ترايسبس بالبار خلف الرأس بمسكة ضيقة من النوم"
+  },
+  "Lying_Close-Grip_Barbell_Triceps_Press_To_Chin": {
+    "en": "Lying Close-Grip Barbell Triceps Press To Chin",
+    "ar": "ضغط ترايسبس بالبار إلى الذقن بمسكة ضيقة من النوم"
+  },
+  "Lying_Crossover": {
+    "en": "Lying Crossover",
+    "ar": "إطالة متقاطعة من النوم"
+  },
+  "Lying_Dumbbell_Tricep_Extension": {
+    "en": "Lying Dumbbell Tricep Extension",
+    "ar": "تمديد ترايسبس بالدمبل من النوم"
+  },
+  "Lying_Face_Down_Plate_Neck_Resistance": {
+    "en": "Lying Face Down Plate Neck Resistance",
+    "ar": "مقاومة الرقبة بقرص وزن من النوم على البطن"
+  },
+  "Lying_Face_Up_Plate_Neck_Resistance": {
+    "en": "Lying Face Up Plate Neck Resistance",
+    "ar": "مقاومة الرقبة بقرص وزن من النوم على الظهر"
+  },
+  "Lying_Glute": {
+    "en": "Lying Glute",
+    "ar": "إطالة الأرداف من النوم"
+  },
+  "Lying_Hamstring": {
+    "en": "Lying Hamstring",
+    "ar": "إطالة خلفية الرجل من النوم"
+  },
+  "Lying_High_Bench_Barbell_Curl": {
+    "en": "Lying High Bench Barbell Curl",
+    "ar": "باي بالبار من النوم على بنش مرتفع"
+  },
+  "Lying_Leg_Curls": {
+    "en": "Lying Leg Curls",
+    "ar": "ثني الرجلين من النوم على الجهاز"
+  },
+  "Lying_Machine_Squat": {
+    "en": "Lying Machine Squat",
+    "ar": "سكوات على جهاز النوم"
+  },
+  "Lying_One-Arm_Lateral_Raise": {
+    "en": "Lying One-Arm Lateral Raise",
+    "ar": "رفرفة جانبية بدراع واحدة من النوم"
+  },
+  "Lying_Prone_Quadriceps": {
+    "en": "Lying Prone Quadriceps",
+    "ar": "إطالة أمامية الرجل من الانبطاح"
+  },
+  "Lying_Rear_Delt_Raise": {
+    "en": "Lying Rear Delt Raise",
+    "ar": "رفرفة كتف خلفية من النوم"
+  },
+  "Lying_Supine_Dumbbell_Curl": {
+    "en": "Lying Supine Dumbbell Curl",
+    "ar": "باي بالدمبل من النوم على الظهر"
+  },
+  "Lying_T-Bar_Row": {
+    "en": "Lying T-Bar Row",
+    "ar": "تجديف تي بار مع إسناد الصدر"
+  },
+  "Lying_Triceps_Press": {
+    "en": "Lying Triceps Press",
+    "ar": "ضغط ترايسبس من النوم"
+  },
+  "Machine_Bench_Press": {
+    "en": "Machine Bench Press",
+    "ar": "بنش على الجهاز"
+  },
+  "Machine_Bicep_Curl": {
+    "en": "Machine Bicep Curl",
+    "ar": "باي على الجهاز"
+  },
+  "Machine_Preacher_Curls": {
+    "en": "Machine Preacher Curls",
+    "ar": "باي بريتشر على الجهاز"
+  },
+  "Machine_Shoulder_Military_Press": {
+    "en": "Machine Shoulder (Military) Press",
+    "ar": "ضغط كتف عسكري على الجهاز"
+  },
+  "Machine_Triceps_Extension": {
+    "en": "Machine Triceps Extension",
+    "ar": "تمديد ترايسبس على الجهاز"
+  },
+  "Medicine_Ball_Chest_Pass": {
+    "en": "Medicine Ball Chest Pass",
+    "ar": "تمرير الكرة الطبية من الصدر"
+  },
+  "Medicine_Ball_Full_Twist": {
+    "en": "Medicine Ball Full Twist",
+    "ar": "لف الجذع الكامل بالكرة الطبية"
+  },
+  "Medicine_Ball_Scoop_Throw": {
+    "en": "Medicine Ball Scoop Throw",
+    "ar": "رمي الكرة الطبية من أسفل لأعلى"
+  },
+  "Middle_Back_Shrug": {
+    "en": "Middle Back Shrug",
+    "ar": "هز الكتفين لتقريب لوحي الكتف"
+  },
+  "Middle_Back_Stretch": {
+    "en": "Middle Back Stretch",
+    "ar": "إطالة منتصف الظهر"
+  },
+  "Mixed_Grip_Chin": {
+    "en": "Mixed Grip Chin",
+    "ar": "عقلة بمسكة مختلطة"
+  },
+  "Monster_Walk": {
+    "en": "Monster Walk",
+    "ar": "المشي بشريط المقاومة حول الرجلين"
+  },
+  "Mountain_Climbers": {
+    "en": "Mountain Climbers",
+    "ar": "متسلق الجبال"
+  },
+  "Moving_Claw_Series": {
+    "en": "Moving Claw Series",
+    "ar": "سلسلة خطوات المخلب المتحركة"
+  },
+  "Muscle_Snatch": {
+    "en": "Muscle Snatch",
+    "ar": "خطف بالقوة العضلية"
+  },
+  "Muscle_Up": {
+    "en": "Muscle Up",
+    "ar": "ماسل أب"
+  },
+  "Narrow_Stance_Hack_Squats": {
+    "en": "Narrow Stance Hack Squats",
+    "ar": "هاك سكوات بوقفة ضيقة"
+  },
+  "Narrow_Stance_Leg_Press": {
+    "en": "Narrow Stance Leg Press",
+    "ar": "ضغط الرجلين بوقفة ضيقة"
+  },
+  "Narrow_Stance_Squats": {
+    "en": "Narrow Stance Squats",
+    "ar": "سكوات بوقفة ضيقة"
+  },
+  "Natural_Glute_Ham_Raise": {
+    "en": "Natural Glute Ham Raise",
+    "ar": "رفع الجذع بالأرداف وخلفية الرجل بوزن الجسم"
+  },
+  "Neck-SMR": {
+    "en": "Neck-SMR",
+    "ar": "تدليك الرقبة بالرول"
+  },
+  "Neck_Press": {
+    "en": "Neck Press",
+    "ar": "ضغط صدر بالبار باتجاه الرقبة"
+  },
+  "Oblique_Crunches": {
+    "en": "Oblique Crunches",
+    "ar": "كرانش جانبي"
+  },
+  "Oblique_Crunches_-_On_The_Floor": {
+    "en": "Oblique Crunches - On The Floor",
+    "ar": "كرانش جانبي على الأرض"
+  },
+  "Olympic_Squat": {
+    "en": "Olympic Squat",
+    "ar": "سكوات أولمبي"
+  },
+  "On-Your-Back_Quad_Stretch": {
+    "en": "On-Your-Back Quad Stretch",
+    "ar": "إطالة أمامية الرجل من النوم على الظهر"
+  },
+  "On_Your_Side_Quad_Stretch": {
+    "en": "On Your Side Quad Stretch",
+    "ar": "إطالة أمامية الرجل من النوم الجانبي"
+  },
+  "One-Arm_Dumbbell_Row": {
+    "en": "One-Arm Dumbbell Row",
+    "ar": "تجديف بالدمبل بدراع واحدة"
+  },
+  "One-Arm_Flat_Bench_Dumbbell_Flye": {
+    "en": "One-Arm Flat Bench Dumbbell Flye",
+    "ar": "تفتيح صدر بالدمبل بدراع واحدة على بنش مسطح"
+  },
+  "One-Arm_High-Pulley_Cable_Side_Bends": {
+    "en": "One-Arm High-Pulley Cable Side Bends",
+    "ar": "ميل جانبي بدراع واحدة بالكابل العلوي"
+  },
+  "One-Arm_Incline_Lateral_Raise": {
+    "en": "One-Arm Incline Lateral Raise",
+    "ar": "رفرفة جانبية بدراع واحدة مع الميل"
+  },
+  "One-Arm_Kettlebell_Clean": {
+    "en": "One-Arm Kettlebell Clean",
+    "ar": "كلين بالكيتل بيل بدراع واحدة"
+  },
+  "One-Arm_Kettlebell_Clean_and_Jerk": {
+    "en": "One-Arm Kettlebell Clean and Jerk",
+    "ar": "كلين ونتر بالكيتل بيل بدراع واحدة"
+  },
+  "One-Arm_Kettlebell_Floor_Press": {
+    "en": "One-Arm Kettlebell Floor Press",
+    "ar": "ضغط أرضي بالكيتل بيل بدراع واحدة"
+  },
+  "One-Arm_Kettlebell_Jerk": {
+    "en": "One-Arm Kettlebell Jerk",
+    "ar": "نتر بالكيتل بيل بدراع واحدة"
+  },
+  "One-Arm_Kettlebell_Military_Press_To_The_Side": {
+    "en": "One-Arm Kettlebell Military Press To The Side",
+    "ar": "ضغط كتف عسكري جانبي بالكيتل بيل بدراع واحدة"
+  },
+  "One-Arm_Kettlebell_Para_Press": {
+    "en": "One-Arm Kettlebell Para Press",
+    "ar": "ضغط بارا بالكيتل بيل بدراع واحدة"
+  },
+  "One-Arm_Kettlebell_Push_Press": {
+    "en": "One-Arm Kettlebell Push Press",
+    "ar": "ضغط دفع بالكيتل بيل بدراع واحدة"
+  },
+  "One-Arm_Kettlebell_Row": {
+    "en": "One-Arm Kettlebell Row",
+    "ar": "تجديف بالكيتل بيل بدراع واحدة"
+  },
+  "One-Arm_Kettlebell_Snatch": {
+    "en": "One-Arm Kettlebell Snatch",
+    "ar": "خطف بالكيتل بيل بدراع واحدة"
+  },
+  "One-Arm_Kettlebell_Split_Jerk": {
+    "en": "One-Arm Kettlebell Split Jerk",
+    "ar": "نتر مع فتح الرجلين بالكيتل بيل بدراع واحدة"
+  },
+  "One-Arm_Kettlebell_Split_Snatch": {
+    "en": "One-Arm Kettlebell Split Snatch",
+    "ar": "خطف مع فتح الرجلين بالكيتل بيل بدراع واحدة"
+  },
+  "One-Arm_Kettlebell_Swings": {
+    "en": "One-Arm Kettlebell Swings",
+    "ar": "أرجحة الكيتل بيل بدراع واحدة"
+  },
+  "One-Arm_Long_Bar_Row": {
+    "en": "One-Arm Long Bar Row",
+    "ar": "تجديف لاندماين بدراع واحدة"
+  },
+  "One-Arm_Medicine_Ball_Slam": {
+    "en": "One-Arm Medicine Ball Slam",
+    "ar": "ضرب الكرة الطبية بالأرض بدراع واحدة"
+  },
+  "One-Arm_Open_Palm_Kettlebell_Clean": {
+    "en": "One-Arm Open Palm Kettlebell Clean",
+    "ar": "كلين بالكيتل بيل بدراع واحدة وراحة يد مفتوحة"
+  },
+  "One-Arm_Overhead_Kettlebell_Squats": {
+    "en": "One-Arm Overhead Kettlebell Squats",
+    "ar": "سكوات والكيتل بيل فوق الرأس بدراع واحدة"
+  },
+  "One-Arm_Side_Deadlift": {
+    "en": "One-Arm Side Deadlift",
+    "ar": "رفعة ميتة جانبية بدراع واحدة"
+  },
+  "One-Arm_Side_Laterals": {
+    "en": "One-Arm Side Laterals",
+    "ar": "رفرفة جانبية بدراع واحدة"
+  },
+  "One-Legged_Cable_Kickback": {
+    "en": "One-Legged Cable Kickback",
+    "ar": "دفع الرجل للخلف بالكابل"
+  },
+  "One_Arm_Against_Wall": {
+    "en": "One Arm Against Wall",
+    "ar": "إطالة دراع واحدة عند الحائط"
+  },
+  "One_Arm_Chin-Up": {
+    "en": "One Arm Chin-Up",
+    "ar": "عقلة بدراع واحدة بمسكة معكوسة"
+  },
+  "One_Arm_Dumbbell_Bench_Press": {
+    "en": "One Arm Dumbbell Bench Press",
+    "ar": "بنش بالدمبل بدراع واحدة"
+  },
+  "One_Arm_Dumbbell_Preacher_Curl": {
+    "en": "One Arm Dumbbell Preacher Curl",
+    "ar": "باي بريتشر بالدمبل بدراع واحدة"
+  },
+  "One_Arm_Floor_Press": {
+    "en": "One Arm Floor Press",
+    "ar": "ضغط صدر أرضي بدراع واحدة"
+  },
+  "One_Arm_Lat_Pulldown": {
+    "en": "One Arm Lat Pulldown",
+    "ar": "سحب علوي بدراع واحدة"
+  },
+  "One_Arm_Pronated_Dumbbell_Triceps_Extension": {
+    "en": "One Arm Pronated Dumbbell Triceps Extension",
+    "ar": "تمديد ترايسبس بالدمبل بدراع واحدة بمسكة علوية"
+  },
+  "One_Arm_Supinated_Dumbbell_Triceps_Extension": {
+    "en": "One Arm Supinated Dumbbell Triceps Extension",
+    "ar": "تمديد ترايسبس بالدمبل بدراع واحدة بمسكة سفلية"
+  },
+  "One_Half_Locust": {
+    "en": "One Half Locust",
+    "ar": "وضعية نصف الجرادة"
+  },
+  "One_Handed_Hang": {
+    "en": "One Handed Hang",
+    "ar": "التعليق بيد واحدة"
+  },
+  "One_Knee_To_Chest": {
+    "en": "One Knee To Chest",
+    "ar": "ضم ركبة واحدة إلى الصدر"
+  },
+  "One_Leg_Barbell_Squat": {
+    "en": "One Leg Barbell Squat",
+    "ar": "سكوات بالبار برجل واحدة"
+  },
+  "Open_Palm_Kettlebell_Clean": {
+    "en": "Open Palm Kettlebell Clean",
+    "ar": "كلين بالكيتل بيل وراحة اليد مفتوحة"
+  },
+  "Otis-Up": {
+    "en": "Otis-Up",
+    "ar": "رفع الجذع بأسلوب أوتيس"
+  },
+  "Overhead_Cable_Curl": {
+    "en": "Overhead Cable Curl",
+    "ar": "باي بالكابل فوق الرأس"
+  },
+  "Overhead_Lat": {
+    "en": "Overhead Lat",
+    "ar": "إطالة الظهرية العريضة والذراع فوق الرأس"
+  },
+  "Overhead_Slam": {
+    "en": "Overhead Slam",
+    "ar": "ضرب الكرة بالأرض من فوق الرأس"
+  },
+  "Overhead_Squat": {
+    "en": "Overhead Squat",
+    "ar": "سكوات والبار فوق الرأس"
+  },
+  "Overhead_Stretch": {
+    "en": "Overhead Stretch",
+    "ar": "إطالة الذراعين فوق الرأس"
+  },
+  "Overhead_Triceps": {
+    "en": "Overhead Triceps",
+    "ar": "إطالة الترايسبس فوق الرأس"
+  },
+  "Pallof_Press": {
+    "en": "Pallof Press",
+    "ar": "ضغط بالوف لمقاومة دوران الجذع"
+  },
+  "Pallof_Press_With_Rotation": {
+    "en": "Pallof Press With Rotation",
+    "ar": "ضغط بالوف مع الدوران"
+  },
+  "Palms-Down_Dumbbell_Wrist_Curl_Over_A_Bench": {
+    "en": "Palms-Down Dumbbell Wrist Curl Over A Bench",
+    "ar": "مد الرسغ بالدمبل بمسكة علوية على البنش"
+  },
+  "Palms-Down_Wrist_Curl_Over_A_Bench": {
+    "en": "Palms-Down Wrist Curl Over A Bench",
+    "ar": "مد الرسغ بالبار بمسكة علوية على البنش"
+  },
+  "Palms-Up_Barbell_Wrist_Curl_Over_A_Bench": {
+    "en": "Palms-Up Barbell Wrist Curl Over A Bench",
+    "ar": "ثني الرسغ بالبار بمسكة سفلية على البنش"
+  },
+  "Palms-Up_Dumbbell_Wrist_Curl_Over_A_Bench": {
+    "en": "Palms-Up Dumbbell Wrist Curl Over A Bench",
+    "ar": "ثني الرسغ بالدمبل بمسكة سفلية على البنش"
+  },
+  "Parallel_Bar_Dip": {
+    "en": "Parallel Bar Dip",
+    "ar": "متوازي"
+  },
+  "Pelvic_Tilt_Into_Bridge": {
+    "en": "Pelvic Tilt Into Bridge",
+    "ar": "إمالة الحوض ثم جسر الأرداف"
+  },
+  "Peroneals-SMR": {
+    "en": "Peroneals-SMR",
+    "ar": "تدليك العضلات الشظوية بالرول"
+  },
+  "Peroneals_Stretch": {
+    "en": "Peroneals Stretch",
+    "ar": "إطالة العضلات الشظوية"
+  },
+  "Physioball_Hip_Bridge": {
+    "en": "Physioball Hip Bridge",
+    "ar": "جسر الحوض على كرة التوازن"
+  },
+  "Pin_Presses": {
+    "en": "Pin Presses",
+    "ar": "ضغط صدر من دعامات الراك"
+  },
+  "Piriformis-SMR": {
+    "en": "Piriformis-SMR",
+    "ar": "تدليك العضلة الكمثرية بالرول"
+  },
+  "Plank": {
+    "en": "Plank",
+    "ar": "بلانك"
+  },
+  "Plate_Pinch": {
+    "en": "Plate Pinch",
+    "ar": "مسك أقراص الوزن بالأصابع"
+  },
+  "Plate_Twist": {
+    "en": "Plate Twist",
+    "ar": "لف الجذع بقرص وزن"
+  },
+  "Platform_Hamstring_Slides": {
+    "en": "Platform Hamstring Slides",
+    "ar": "سحب الكعبين لخلفية الرجل على منصة منزلقة"
+  },
+  "Plie_Dumbbell_Squat": {
+    "en": "Plie Dumbbell Squat",
+    "ar": "سكوات بليه بالدمبل"
+  },
+  "Plyo_Kettlebell_Pushups": {
+    "en": "Plyo Kettlebell Pushups",
+    "ar": "ضغط قفزي على الكيتل بيل"
+  },
+  "Plyo_Push-up": {
+    "en": "Plyo Push-up",
+    "ar": "ضغط قفزي"
+  },
+  "Posterior_Tibialis_Stretch": {
+    "en": "Posterior Tibialis Stretch",
+    "ar": "إطالة العضلة الظنبوبية الخلفية"
+  },
+  "Power_Clean": {
+    "en": "Power Clean",
+    "ar": "باور كلين"
+  },
+  "Power_Clean_from_Blocks": {
+    "en": "Power Clean from Blocks",
+    "ar": "باور كلين من البلوكات"
+  },
+  "Power_Jerk": {
+    "en": "Power Jerk",
+    "ar": "باور نتر"
+  },
+  "Power_Partials": {
+    "en": "Power Partials",
+    "ar": "رفرفة جانبية بمدى جزئي"
+  },
+  "Power_Snatch": {
+    "en": "Power Snatch",
+    "ar": "باور خطف"
+  },
+  "Power_Snatch_from_Blocks": {
+    "en": "Power Snatch from Blocks",
+    "ar": "باور خطف من البلوكات"
+  },
+  "Power_Stairs": {
+    "en": "Power Stairs",
+    "ar": "صعود درج القوة بالأوزان"
+  },
+  "Preacher_Curl": {
+    "en": "Preacher Curl",
+    "ar": "باي بريتشر"
+  },
+  "Preacher_Hammer_Dumbbell_Curl": {
+    "en": "Preacher Hammer Dumbbell Curl",
+    "ar": "باي بريتشر بالدمبل بمسكة المطرقة"
+  },
+  "Press_Sit-Up": {
+    "en": "Press Sit-Up",
+    "ar": "رفع الجذع مع ضغط الوزن لأعلى"
+  },
+  "Prone_Manual_Hamstring": {
+    "en": "Prone Manual Hamstring",
+    "ar": "ثني الرجل من الانبطاح بمقاومة يدوية"
+  },
+  "Prowler_Sprint": {
+    "en": "Prowler Sprint",
+    "ar": "جري بدفع الزلاجة"
+  },
+  "Pull_Through": {
+    "en": "Pull Through",
+    "ar": "سحب الكابل بين الرجلين"
+  },
+  "Pullups": {
+    "en": "Pullups",
+    "ar": "عقلة"
+  },
+  "Push-Up_Wide": {
+    "en": "Push-Up Wide",
+    "ar": "ضغط أرضي بمسكة واسعة"
+  },
+  "Push-Ups_-_Close_Triceps_Position": {
+    "en": "Push-Ups - Close Triceps Position",
+    "ar": "ضغط أرضي بمسكة ضيقة للترايسبس"
+  },
+  "Push-Ups_With_Feet_Elevated": {
+    "en": "Push-Ups With Feet Elevated",
+    "ar": "ضغط أرضي مع رفع القدمين"
+  },
+  "Push-Ups_With_Feet_On_An_Exercise_Ball": {
+    "en": "Push-Ups With Feet On An Exercise Ball",
+    "ar": "ضغط أرضي والقدمان على كرة التمرين"
+  },
+  "Push_Press": {
+    "en": "Push Press",
+    "ar": "ضغط كتف بدفعة الرجلين"
+  },
+  "Push_Press_-_Behind_the_Neck": {
+    "en": "Push Press - Behind the Neck",
+    "ar": "ضغط كتف بدفعة الرجلين خلف الرقبة"
+  },
+  "Push_Up_to_Side_Plank": {
+    "en": "Push Up to Side Plank",
+    "ar": "ضغط أرضي ثم بلانك جانبي"
+  },
+  "Pushups": {
+    "en": "Pushups",
+    "ar": "ضغط أرضي"
+  },
+  "Pushups_Close_and_Wide_Hand_Positions": {
+    "en": "Pushups (Close and Wide Hand Positions)",
+    "ar": "ضغط أرضي بالتبادل بين مسكة ضيقة وواسعة"
+  },
+  "Pyramid": {
+    "en": "Pyramid",
+    "ar": "وضعية الهرم"
+  },
+  "Quad_Stretch": {
+    "en": "Quad Stretch",
+    "ar": "إطالة أمامية الرجل"
+  },
+  "Quadriceps-SMR": {
+    "en": "Quadriceps-SMR",
+    "ar": "تدليك أمامية الرجل بالرول"
+  },
+  "Quick_Leap": {
+    "en": "Quick Leap",
+    "ar": "وثب سريع"
+  },
+  "Rack_Delivery": {
+    "en": "Rack Delivery",
+    "ar": "نقل البار من الراك لوضع الاستعداد"
+  },
+  "Rack_Pull_with_Bands": {
+    "en": "Rack Pull with Bands",
+    "ar": "سحب البار من الراك مع أشرطة المقاومة"
+  },
+  "Rack_Pulls": {
+    "en": "Rack Pulls",
+    "ar": "سحب البار من الراك"
+  },
+  "Rear_Leg_Raises": {
+    "en": "Rear Leg Raises",
+    "ar": "رفع الرجل للخلف"
+  },
+  "Recumbent_Bike": {
+    "en": "Recumbent Bike",
+    "ar": "دراجة ثابتة بمسند ظهر"
+  },
+  "Return_Push_from_Stance": {
+    "en": "Return Push from Stance",
+    "ar": "دفع الكرة المرتدة من وضع الاستعداد"
+  },
+  "Reverse_Band_Bench_Press": {
+    "en": "Reverse Band Bench Press",
+    "ar": "بنش بأشرطة مقاومة معلقة من أعلى"
+  },
+  "Reverse_Band_Box_Squat": {
+    "en": "Reverse Band Box Squat",
+    "ar": "سكوات الصندوق بأشرطة مقاومة معلقة من أعلى"
+  },
+  "Reverse_Band_Deadlift": {
+    "en": "Reverse Band Deadlift",
+    "ar": "رفعة ميتة بأشرطة مقاومة معلقة من أعلى"
+  },
+  "Reverse_Band_Power_Squat": {
+    "en": "Reverse Band Power Squat",
+    "ar": "سكوات قوة بأشرطة مقاومة معلقة من أعلى"
+  },
+  "Reverse_Band_Sumo_Deadlift": {
+    "en": "Reverse Band Sumo Deadlift",
+    "ar": "رفعة ميتة سومو بأشرطة مقاومة معلقة من أعلى"
+  },
+  "Reverse_Barbell_Curl": {
+    "en": "Reverse Barbell Curl",
+    "ar": "باي بالبار بمسكة معكوسة"
+  },
+  "Reverse_Barbell_Preacher_Curls": {
+    "en": "Reverse Barbell Preacher Curls",
+    "ar": "باي بريتشر بالبار بمسكة معكوسة"
+  },
+  "Reverse_Cable_Curl": {
+    "en": "Reverse Cable Curl",
+    "ar": "باي بالكابل بمسكة معكوسة"
+  },
+  "Reverse_Crunch": {
+    "en": "Reverse Crunch",
+    "ar": "كرانش عكسي"
+  },
+  "Reverse_Flyes": {
+    "en": "Reverse Flyes",
+    "ar": "رفرفة خلفية"
+  },
+  "Reverse_Flyes_With_External_Rotation": {
+    "en": "Reverse Flyes With External Rotation",
+    "ar": "رفرفة خلفية مع تدوير الكتف للخارج"
+  },
+  "Reverse_Grip_Bent-Over_Rows": {
+    "en": "Reverse Grip Bent-Over Rows",
+    "ar": "تجديف بالبار بمسكة معكوسة مع انحناء الجذع"
+  },
+  "Reverse_Grip_Triceps_Pushdown": {
+    "en": "Reverse Grip Triceps Pushdown",
+    "ar": "دفع ترايسبس بالكابل لأسفل بمسكة معكوسة"
+  },
+  "Reverse_Hyperextension": {
+    "en": "Reverse Hyperextension",
+    "ar": "رفع الرجلين للخلف على بنش تمديد الظهر"
+  },
+  "Reverse_Machine_Flyes": {
+    "en": "Reverse Machine Flyes",
+    "ar": "رفرفة خلفية على الجهاز"
+  },
+  "Reverse_Plate_Curls": {
+    "en": "Reverse Plate Curls",
+    "ar": "باي بقرص وزن بمسكة معكوسة"
+  },
+  "Reverse_Triceps_Bench_Press": {
+    "en": "Reverse Triceps Bench Press",
+    "ar": "بنش للترايسبس بمسكة معكوسة"
+  },
+  "Rhomboids-SMR": {
+    "en": "Rhomboids-SMR",
+    "ar": "تدليك العضلات المعينية بالرول"
+  },
+  "Rickshaw_Carry": {
+    "en": "Rickshaw Carry",
+    "ar": "المشي بحمل إطار الريكشو"
+  },
+  "Rickshaw_Deadlift": {
+    "en": "Rickshaw Deadlift",
+    "ar": "رفعة ميتة بإطار الريكشو"
+  },
+  "Ring_Dips": {
+    "en": "Ring Dips",
+    "ar": "متوازي على الحلقات"
+  },
+  "Rocket_Jump": {
+    "en": "Rocket Jump",
+    "ar": "قفزة الصاروخ"
+  },
+  "Rocking_Standing_Calf_Raise": {
+    "en": "Rocking Standing Calf Raise",
+    "ar": "رفع السمانة مع التأرجح من الوقوف"
+  },
+  "Rocky_Pull-Ups_Pulldowns": {
+    "en": "Rocky Pull-Ups/Pulldowns",
+    "ar": "عقلة أو سحب علوي بأسلوب روكي"
+  },
+  "Romanian_Deadlift": {
+    "en": "Romanian Deadlift",
+    "ar": "رفعة ميتة رومانية"
+  },
+  "Romanian_Deadlift_from_Deficit": {
+    "en": "Romanian Deadlift from Deficit",
+    "ar": "رفعة ميتة رومانية من منصة مرتفعة"
+  },
+  "Rope_Climb": {
+    "en": "Rope Climb",
+    "ar": "تسلق الحبل"
+  },
+  "Rope_Crunch": {
+    "en": "Rope Crunch",
+    "ar": "كرانش بحبل الكابل"
+  },
+  "Rope_Jumping": {
+    "en": "Rope Jumping",
+    "ar": "نط الحبل"
+  },
+  "Rope_Straight-Arm_Pulldown": {
+    "en": "Rope Straight-Arm Pulldown",
+    "ar": "سحب الحبل لأسفل بدراعين ممدودتين"
+  },
+  "Round_The_World_Shoulder_Stretch": {
+    "en": "Round The World Shoulder Stretch",
+    "ar": "إطالة الكتف بالدوران حول الجسم"
+  },
+  "Rowing_Stationary": {
+    "en": "Rowing, Stationary",
+    "ar": "جهاز التجديف الثابت"
+  },
+  "Runners_Stretch": {
+    "en": "Runner's Stretch",
+    "ar": "إطالة العداء"
+  },
+  "Running_Treadmill": {
+    "en": "Running, Treadmill",
+    "ar": "الجري على جهاز المشي"
+  },
+  "Russian_Twist": {
+    "en": "Russian Twist",
+    "ar": "لف الجذع الروسي"
+  },
+  "Sandbag_Load": {
+    "en": "Sandbag Load",
+    "ar": "رفع كيس الرمل وتحميله"
+  },
+  "Scapular_Pull-Up": {
+    "en": "Scapular Pull-Up",
+    "ar": "عقلة بتحريك لوحي الكتف"
+  },
+  "Scissor_Kick": {
+    "en": "Scissor Kick",
+    "ar": "ركلات المقص"
+  },
+  "Scissors_Jump": {
+    "en": "Scissors Jump",
+    "ar": "قفزات المقص"
+  },
+  "Seated_Band_Hamstring_Curl": {
+    "en": "Seated Band Hamstring Curl",
+    "ar": "ثني الرجل بشريط المقاومة من الجلوس"
+  },
+  "Seated_Barbell_Military_Press": {
+    "en": "Seated Barbell Military Press",
+    "ar": "ضغط كتف عسكري بالبار من الجلوس"
+  },
+  "Seated_Barbell_Twist": {
+    "en": "Seated Barbell Twist",
+    "ar": "لف الجذع بالبار من الجلوس"
+  },
+  "Seated_Bent-Over_One-Arm_Dumbbell_Triceps_Extension": {
+    "en": "Seated Bent-Over One-Arm Dumbbell Triceps Extension",
+    "ar": "تمديد ترايسبس بالدمبل بدراع واحدة مع الانحناء من الجلوس"
+  },
+  "Seated_Bent-Over_Rear_Delt_Raise": {
+    "en": "Seated Bent-Over Rear Delt Raise",
+    "ar": "رفرفة خلفية مع الانحناء من الجلوس"
+  },
+  "Seated_Bent-Over_Two-Arm_Dumbbell_Triceps_Extension": {
+    "en": "Seated Bent-Over Two-Arm Dumbbell Triceps Extension",
+    "ar": "تمديد ترايسبس بالدمبلين مع الانحناء من الجلوس"
+  },
+  "Seated_Biceps": {
+    "en": "Seated Biceps",
+    "ar": "إطالة الباي من الجلوس"
+  },
+  "Seated_Cable_Rows": {
+    "en": "Seated Cable Rows",
+    "ar": "تجديف بالكابل من الجلوس"
+  },
+  "Seated_Cable_Shoulder_Press": {
+    "en": "Seated Cable Shoulder Press",
+    "ar": "ضغط كتف بالكابل من الجلوس"
+  },
+  "Seated_Calf_Raise": {
+    "en": "Seated Calf Raise",
+    "ar": "رفع السمانة من الجلوس"
+  },
+  "Seated_Calf_Stretch": {
+    "en": "Seated Calf Stretch",
+    "ar": "إطالة السمانة من الجلوس"
+  },
+  "Seated_Close-Grip_Concentration_Barbell_Curl": {
+    "en": "Seated Close-Grip Concentration Barbell Curl",
+    "ar": "باي تركيز بالبار بمسكة ضيقة من الجلوس"
+  },
+  "Seated_Dumbbell_Curl": {
+    "en": "Seated Dumbbell Curl",
+    "ar": "باي بالدمبل من الجلوس"
+  },
+  "Seated_Dumbbell_Inner_Biceps_Curl": {
+    "en": "Seated Dumbbell Inner Biceps Curl",
+    "ar": "باي بالدمبل للداخل من الجلوس"
+  },
+  "Seated_Dumbbell_Palms-Down_Wrist_Curl": {
+    "en": "Seated Dumbbell Palms-Down Wrist Curl",
+    "ar": "مد الرسغ بالدمبل بمسكة علوية من الجلوس"
+  },
+  "Seated_Dumbbell_Palms-Up_Wrist_Curl": {
+    "en": "Seated Dumbbell Palms-Up Wrist Curl",
+    "ar": "ثني الرسغ بالدمبل بمسكة سفلية من الجلوس"
+  },
+  "Seated_Dumbbell_Press": {
+    "en": "Seated Dumbbell Press",
+    "ar": "ضغط كتف بالدمبل من الجلوس"
+  },
+  "Seated_Flat_Bench_Leg_Pull-In": {
+    "en": "Seated Flat Bench Leg Pull-In",
+    "ar": "ضم الركبتين من الجلوس على بنش مسطح"
+  },
+  "Seated_Floor_Hamstring_Stretch": {
+    "en": "Seated Floor Hamstring Stretch",
+    "ar": "إطالة خلفية الرجل من الجلوس على الأرض"
+  },
+  "Seated_Front_Deltoid": {
+    "en": "Seated Front Deltoid",
+    "ar": "إطالة مقدمة الكتف من الجلوس"
+  },
+  "Seated_Glute": {
+    "en": "Seated Glute",
+    "ar": "إطالة الأرداف من الجلوس"
+  },
+  "Seated_Good_Mornings": {
+    "en": "Seated Good Mornings",
+    "ar": "انحناء الجذع بالبار من الجلوس"
+  },
+  "Seated_Hamstring": {
+    "en": "Seated Hamstring",
+    "ar": "إطالة خلفية الرجل من الجلوس"
+  },
+  "Seated_Hamstring_and_Calf_Stretch": {
+    "en": "Seated Hamstring and Calf Stretch",
+    "ar": "إطالة خلفية الرجل والسمانة من الجلوس"
+  },
+  "Seated_Head_Harness_Neck_Resistance": {
+    "en": "Seated Head Harness Neck Resistance",
+    "ar": "مقاومة الرقبة بحزام الرأس من الجلوس"
+  },
+  "Seated_Leg_Curl": {
+    "en": "Seated Leg Curl",
+    "ar": "ثني الرجلين على الجهاز من الجلوس"
+  },
+  "Seated_Leg_Tucks": {
+    "en": "Seated Leg Tucks",
+    "ar": "ضم الرجلين من الجلوس"
+  },
+  "Seated_One-Arm_Dumbbell_Palms-Down_Wrist_Curl": {
+    "en": "Seated One-Arm Dumbbell Palms-Down Wrist Curl",
+    "ar": "مد الرسغ بدراع واحدة بالدمبل بمسكة علوية من الجلوس"
+  },
+  "Seated_One-Arm_Dumbbell_Palms-Up_Wrist_Curl": {
+    "en": "Seated One-Arm Dumbbell Palms-Up Wrist Curl",
+    "ar": "ثني الرسغ بدراع واحدة بالدمبل بمسكة سفلية من الجلوس"
+  },
+  "Seated_One-arm_Cable_Pulley_Rows": {
+    "en": "Seated One-arm Cable Pulley Rows",
+    "ar": "تجديف بالكابل بدراع واحدة من الجلوس"
+  },
+  "Seated_Overhead_Stretch": {
+    "en": "Seated Overhead Stretch",
+    "ar": "إطالة الذراعين فوق الرأس من الجلوس"
+  },
+  "Seated_Palm-Up_Barbell_Wrist_Curl": {
+    "en": "Seated Palm-Up Barbell Wrist Curl",
+    "ar": "ثني الرسغ بالبار بمسكة سفلية من الجلوس"
+  },
+  "Seated_Palms-Down_Barbell_Wrist_Curl": {
+    "en": "Seated Palms-Down Barbell Wrist Curl",
+    "ar": "مد الرسغ بالبار بمسكة علوية من الجلوس"
+  },
+  "Seated_Side_Lateral_Raise": {
+    "en": "Seated Side Lateral Raise",
+    "ar": "رفرفة جانبية من الجلوس"
+  },
+  "Seated_Triceps_Press": {
+    "en": "Seated Triceps Press",
+    "ar": "تمديد ترايسبس فوق الرأس من الجلوس"
+  },
+  "Seated_Two-Arm_Palms-Up_Low-Pulley_Wrist_Curl": {
+    "en": "Seated Two-Arm Palms-Up Low-Pulley Wrist Curl",
+    "ar": "ثني الرسغ بالكابل السفلي بالذراعين بمسكة سفلية"
+  },
+  "See-Saw_Press_Alternating_Side_Press": {
+    "en": "See-Saw Press (Alternating Side Press)",
+    "ar": "ضغط كتف جانبي بالتبادل"
+  },
+  "Shotgun_Row": {
+    "en": "Shotgun Row",
+    "ar": "تجديف بالكابل بأسلوب شوتجان"
+  },
+  "Shoulder_Circles": {
+    "en": "Shoulder Circles",
+    "ar": "تدوير الكتفين"
+  },
+  "Shoulder_Press_-_With_Bands": {
+    "en": "Shoulder Press - With Bands",
+    "ar": "ضغط كتف بشريط المقاومة"
+  },
+  "Shoulder_Raise": {
+    "en": "Shoulder Raise",
+    "ar": "رفع الكتف"
+  },
+  "Shoulder_Stretch": {
+    "en": "Shoulder Stretch",
+    "ar": "إطالة الكتف"
+  },
+  "Side-Lying_Floor_Stretch": {
+    "en": "Side-Lying Floor Stretch",
+    "ar": "إطالة جانبية من النوم على الأرض"
+  },
+  "Side_Bridge": {
+    "en": "Side Bridge",
+    "ar": "جسر جانبي"
+  },
+  "Side_Hop-Sprint": {
+    "en": "Side Hop-Sprint",
+    "ar": "وثب جانبي ثم انطلاق سريع"
+  },
+  "Side_Jackknife": {
+    "en": "Side Jackknife",
+    "ar": "رفع الجذع والرجلين جانبيًا"
+  },
+  "Side_Lateral_Raise": {
+    "en": "Side Lateral Raise",
+    "ar": "رفرفة جانبي بالدمبل"
+  },
+  "Side_Laterals_to_Front_Raise": {
+    "en": "Side Laterals to Front Raise",
+    "ar": "رفرفة جانبية ثم رفع أمامي"
+  },
+  "Side_Leg_Raises": {
+    "en": "Side Leg Raises",
+    "ar": "رفع الرجل جانبيًا"
+  },
+  "Side_Lying_Groin_Stretch": {
+    "en": "Side Lying Groin Stretch",
+    "ar": "إطالة الضامة من النوم الجانبي"
+  },
+  "Side_Neck_Stretch": {
+    "en": "Side Neck Stretch",
+    "ar": "إطالة الرقبة جانبيًا"
+  },
+  "Side_Standing_Long_Jump": {
+    "en": "Side Standing Long Jump",
+    "ar": "وثب طويل جانبي من الثبات"
+  },
+  "Side_To_Side_Chins": {
+    "en": "Side To Side Chins",
+    "ar": "عقلة بالتنقل من جانب لآخر"
+  },
+  "Side_Wrist_Pull": {
+    "en": "Side Wrist Pull",
+    "ar": "إطالة الرسغ بالسحب الجانبي"
+  },
+  "Side_to_Side_Box_Shuffle": {
+    "en": "Side to Side Box Shuffle",
+    "ar": "خطوات جانبية متبادلة على الصندوق"
+  },
+  "Single-Arm_Cable_Crossover": {
+    "en": "Single-Arm Cable Crossover",
+    "ar": "تفتيح صدر بالكابل بدراع واحدة"
+  },
+  "Single-Arm_Linear_Jammer": {
+    "en": "Single-Arm Linear Jammer",
+    "ar": "دفع اللاندماين للأمام بدراع واحدة"
+  },
+  "Single-Arm_Push-Up": {
+    "en": "Single-Arm Push-Up",
+    "ar": "ضغط أرضي بدراع واحدة"
+  },
+  "Single-Cone_Sprint_Drill": {
+    "en": "Single-Cone Sprint Drill",
+    "ar": "انطلاق سريع حول قمع واحد"
+  },
+  "Single-Leg_High_Box_Squat": {
+    "en": "Single-Leg High Box Squat",
+    "ar": "سكوات برجل واحدة إلى صندوق مرتفع"
+  },
+  "Single-Leg_Hop_Progression": {
+    "en": "Single-Leg Hop Progression",
+    "ar": "تدرج الوثب برجل واحدة"
+  },
+  "Single-Leg_Lateral_Hop": {
+    "en": "Single-Leg Lateral Hop",
+    "ar": "وثب جانبي برجل واحدة"
+  },
+  "Single-Leg_Leg_Extension": {
+    "en": "Single-Leg Leg Extension",
+    "ar": "مد رجل واحدة على الجهاز"
+  },
+  "Single-Leg_Stride_Jump": {
+    "en": "Single-Leg Stride Jump",
+    "ar": "قفز بخطوة طويلة برجل واحدة"
+  },
+  "Single_Dumbbell_Raise": {
+    "en": "Single Dumbbell Raise",
+    "ar": "رفع دمبل واحد باليدين"
+  },
+  "Single_Leg_Butt_Kick": {
+    "en": "Single Leg Butt Kick",
+    "ar": "ركلة الأرداف برجل واحدة"
+  },
+  "Single_Leg_Glute_Bridge": {
+    "en": "Single Leg Glute Bridge",
+    "ar": "جسر الأرداف برجل واحدة"
+  },
+  "Single_Leg_Push-off": {
+    "en": "Single Leg Push-off",
+    "ar": "دفع الجسم لأعلى برجل واحدة"
+  },
+  "Sit-Up": {
+    "en": "Sit-Up",
+    "ar": "رفع الجذع من النوم"
+  },
+  "Sit_Squats": {
+    "en": "Sit Squats",
+    "ar": "سكوات من الجلوس"
+  },
+  "Skating": {
+    "en": "Skating",
+    "ar": "التزلج"
+  },
+  "Sled_Drag_-_Harness": {
+    "en": "Sled Drag - Harness",
+    "ar": "جر الزلاجة باستخدام الحزام"
+  },
+  "Sled_Overhead_Backward_Walk": {
+    "en": "Sled Overhead Backward Walk",
+    "ar": "المشي للخلف بجر الزلاجة والذراعان فوق الرأس"
+  },
+  "Sled_Overhead_Triceps_Extension": {
+    "en": "Sled Overhead Triceps Extension",
+    "ar": "تمديد ترايسبس فوق الرأس بجر الزلاجة"
+  },
+  "Sled_Push": {
+    "en": "Sled Push",
+    "ar": "دفع الزلاجة"
+  },
+  "Sled_Reverse_Flye": {
+    "en": "Sled Reverse Flye",
+    "ar": "رفرفة خلفية بجر الزلاجة"
+  },
+  "Sled_Row": {
+    "en": "Sled Row",
+    "ar": "تجديف بجر الزلاجة"
+  },
+  "Sledgehammer_Swings": {
+    "en": "Sledgehammer Swings",
+    "ar": "ضرب الإطار بالمطرقة الثقيلة"
+  },
+  "Smith_Incline_Shoulder_Raise": {
+    "en": "Smith Incline Shoulder Raise",
+    "ar": "رفع الكتفين على بنش مائل بجهاز سميث"
+  },
+  "Smith_Machine_Behind_the_Back_Shrug": {
+    "en": "Smith Machine Behind the Back Shrug",
+    "ar": "هز الكتفين خلف الظهر بجهاز سميث"
+  },
+  "Smith_Machine_Bench_Press": {
+    "en": "Smith Machine Bench Press",
+    "ar": "بنش بجهاز سميث"
+  },
+  "Smith_Machine_Bent_Over_Row": {
+    "en": "Smith Machine Bent Over Row",
+    "ar": "تجديف مع انحناء الجذع بجهاز سميث"
+  },
+  "Smith_Machine_Calf_Raise": {
+    "en": "Smith Machine Calf Raise",
+    "ar": "رفع السمانة بجهاز سميث"
+  },
+  "Smith_Machine_Close-Grip_Bench_Press": {
+    "en": "Smith Machine Close-Grip Bench Press",
+    "ar": "بنش بمسكة ضيقة بجهاز سميث"
+  },
+  "Smith_Machine_Decline_Press": {
+    "en": "Smith Machine Decline Press",
+    "ar": "ضغط صدر على بنش مائل لأسفل بجهاز سميث"
+  },
+  "Smith_Machine_Hang_Power_Clean": {
+    "en": "Smith Machine Hang Power Clean",
+    "ar": "باور كلين من التعليق بجهاز سميث"
+  },
+  "Smith_Machine_Hip_Raise": {
+    "en": "Smith Machine Hip Raise",
+    "ar": "رفع الحوض بجهاز سميث"
+  },
+  "Smith_Machine_Incline_Bench_Press": {
+    "en": "Smith Machine Incline Bench Press",
+    "ar": "بنش عالي بجهاز سميث"
+  },
+  "Smith_Machine_Leg_Press": {
+    "en": "Smith Machine Leg Press",
+    "ar": "ضغط الرجلين بجهاز سميث"
+  },
+  "Smith_Machine_One-Arm_Upright_Row": {
+    "en": "Smith Machine One-Arm Upright Row",
+    "ar": "سحب عمودي بدراع واحدة بجهاز سميث"
+  },
+  "Smith_Machine_Overhead_Shoulder_Press": {
+    "en": "Smith Machine Overhead Shoulder Press",
+    "ar": "ضغط كتف فوق الرأس بجهاز سميث"
+  },
+  "Smith_Machine_Pistol_Squat": {
+    "en": "Smith Machine Pistol Squat",
+    "ar": "سكوات المسدس بجهاز سميث"
+  },
+  "Smith_Machine_Reverse_Calf_Raises": {
+    "en": "Smith Machine Reverse Calf Raises",
+    "ar": "رفع مقدمة القدم للسمانة بجهاز سميث"
+  },
+  "Smith_Machine_Squat": {
+    "en": "Smith Machine Squat",
+    "ar": "سكوات بجهاز سميث"
+  },
+  "Smith_Machine_Stiff-Legged_Deadlift": {
+    "en": "Smith Machine Stiff-Legged Deadlift",
+    "ar": "رفعة ميتة برجلين شبه ممدودتين بجهاز سميث"
+  },
+  "Smith_Machine_Upright_Row": {
+    "en": "Smith Machine Upright Row",
+    "ar": "سحب عمودي بجهاز سميث"
+  },
+  "Smith_Single-Leg_Split_Squat": {
+    "en": "Smith Single-Leg Split Squat",
+    "ar": "سكوات انقسامي برجل واحدة بجهاز سميث"
+  },
+  "Snatch": {
+    "en": "Snatch",
+    "ar": "خطف"
+  },
+  "Snatch_Balance": {
+    "en": "Snatch Balance",
+    "ar": "توازن الخطف"
+  },
+  "Snatch_Deadlift": {
+    "en": "Snatch Deadlift",
+    "ar": "رفعة ميتة بمسكة الخطف"
+  },
+  "Snatch_Pull": {
+    "en": "Snatch Pull",
+    "ar": "سحب الخطف"
+  },
+  "Snatch_Shrug": {
+    "en": "Snatch Shrug",
+    "ar": "هز الكتفين بمسكة الخطف"
+  },
+  "Snatch_from_Blocks": {
+    "en": "Snatch from Blocks",
+    "ar": "خطف من البلوكات"
+  },
+  "Speed_Band_Overhead_Triceps": {
+    "en": "Speed Band Overhead Triceps",
+    "ar": "تمديد ترايسبس سريع فوق الرأس بشريط المقاومة"
+  },
+  "Speed_Box_Squat": {
+    "en": "Speed Box Squat",
+    "ar": "سكوات الصندوق السريع"
+  },
+  "Speed_Squats": {
+    "en": "Speed Squats",
+    "ar": "سكوات سريع"
+  },
+  "Spell_Caster": {
+    "en": "Spell Caster",
+    "ar": "تدوير الدمبل أمام الجسم"
+  },
+  "Spider_Crawl": {
+    "en": "Spider Crawl",
+    "ar": "زحف العنكبوت"
+  },
+  "Spider_Curl": {
+    "en": "Spider Curl",
+    "ar": "باي سبايدر"
+  },
+  "Spinal_Stretch": {
+    "en": "Spinal Stretch",
+    "ar": "إطالة العمود الفقري"
+  },
+  "Split_Clean": {
+    "en": "Split Clean",
+    "ar": "كلين مع فتح الرجلين"
+  },
+  "Split_Jerk": {
+    "en": "Split Jerk",
+    "ar": "نتر مع فتح الرجلين"
+  },
+  "Split_Jump": {
+    "en": "Split Jump",
+    "ar": "قفز مع تبديل الرجلين"
+  },
+  "Split_Snatch": {
+    "en": "Split Snatch",
+    "ar": "خطف مع فتح الرجلين"
+  },
+  "Split_Squat_with_Dumbbells": {
+    "en": "Split Squat with Dumbbells",
+    "ar": "سكوات انقسامي بالدمبل"
+  },
+  "Split_Squats": {
+    "en": "Split Squats",
+    "ar": "سكوات انقسامي"
+  },
+  "Squat_Jerk": {
+    "en": "Squat Jerk",
+    "ar": "نتر مع الهبوط إلى سكوات"
+  },
+  "Squat_with_Bands": {
+    "en": "Squat with Bands",
+    "ar": "سكوات مع أشرطة المقاومة"
+  },
+  "Squat_with_Chains": {
+    "en": "Squat with Chains",
+    "ar": "سكوات مع السلاسل"
+  },
+  "Squat_with_Plate_Movers": {
+    "en": "Squat with Plate Movers",
+    "ar": "سكوات مع تبديل الأقراص"
+  },
+  "Squats_-_With_Bands": {
+    "en": "Squats - With Bands",
+    "ar": "سكوات بشريط المقاومة"
+  },
+  "Stairmaster": {
+    "en": "Stairmaster",
+    "ar": "جهاز صعود الدرج"
+  },
+  "Standing_Alternating_Dumbbell_Press": {
+    "en": "Standing Alternating Dumbbell Press",
+    "ar": "ضغط كتف بالدمبل بالتبادل من الوقوف"
+  },
+  "Standing_Barbell_Calf_Raise": {
+    "en": "Standing Barbell Calf Raise",
+    "ar": "رفع السمانة بالبار من الوقوف"
+  },
+  "Standing_Barbell_Press_Behind_Neck": {
+    "en": "Standing Barbell Press Behind Neck",
+    "ar": "ضغط كتف بالبار خلف الرقبة من الوقوف"
+  },
+  "Standing_Bent-Over_One-Arm_Dumbbell_Triceps_Extension": {
+    "en": "Standing Bent-Over One-Arm Dumbbell Triceps Extension",
+    "ar": "تمديد ترايسبس بالدمبل بدراع واحدة مع الانحناء من الوقوف"
+  },
+  "Standing_Bent-Over_Two-Arm_Dumbbell_Triceps_Extension": {
+    "en": "Standing Bent-Over Two-Arm Dumbbell Triceps Extension",
+    "ar": "تمديد ترايسبس بالدمبلين مع الانحناء من الوقوف"
+  },
+  "Standing_Biceps_Cable_Curl": {
+    "en": "Standing Biceps Cable Curl",
+    "ar": "باي بالكابل من الوقوف"
+  },
+  "Standing_Biceps_Stretch": {
+    "en": "Standing Biceps Stretch",
+    "ar": "إطالة الباي من الوقوف"
+  },
+  "Standing_Bradford_Press": {
+    "en": "Standing Bradford Press",
+    "ar": "ضغط برادفورد من الوقوف"
+  },
+  "Standing_Cable_Chest_Press": {
+    "en": "Standing Cable Chest Press",
+    "ar": "ضغط صدر بالكابل من الوقوف"
+  },
+  "Standing_Cable_Lift": {
+    "en": "Standing Cable Lift",
+    "ar": "رفع الكابل قطريًا من الوقوف"
+  },
+  "Standing_Cable_Wood_Chop": {
+    "en": "Standing Cable Wood Chop",
+    "ar": "سحب الكابل قطريًا لأسفل من الوقوف"
+  },
+  "Standing_Calf_Raises": {
+    "en": "Standing Calf Raises",
+    "ar": "رفع السمانة من الوقوف"
+  },
+  "Standing_Concentration_Curl": {
+    "en": "Standing Concentration Curl",
+    "ar": "باي تركيز من الوقوف"
+  },
+  "Standing_Dumbbell_Calf_Raise": {
+    "en": "Standing Dumbbell Calf Raise",
+    "ar": "رفع السمانة بالدمبل من الوقوف"
+  },
+  "Standing_Dumbbell_Press": {
+    "en": "Standing Dumbbell Press",
+    "ar": "ضغط كتف بالدمبل من الوقوف"
+  },
+  "Standing_Dumbbell_Reverse_Curl": {
+    "en": "Standing Dumbbell Reverse Curl",
+    "ar": "باي بالدمبل بمسكة معكوسة من الوقوف"
+  },
+  "Standing_Dumbbell_Straight-Arm_Front_Delt_Raise_Above_Head": {
+    "en": "Standing Dumbbell Straight-Arm Front Delt Raise Above Head",
+    "ar": "رفرفة أمامية بالدمبل بذراع ممدودة فوق الرأس من الوقوف"
+  },
+  "Standing_Dumbbell_Triceps_Extension": {
+    "en": "Standing Dumbbell Triceps Extension",
+    "ar": "تمديد ترايسبس بالدمبل من الوقوف"
+  },
+  "Standing_Dumbbell_Upright_Row": {
+    "en": "Standing Dumbbell Upright Row",
+    "ar": "سحب عمودي بالدمبل من الوقوف"
+  },
+  "Standing_Elevated_Quad_Stretch": {
+    "en": "Standing Elevated Quad Stretch",
+    "ar": "إطالة أمامية الرجل على سطح مرتفع من الوقوف"
+  },
+  "Standing_Front_Barbell_Raise_Over_Head": {
+    "en": "Standing Front Barbell Raise Over Head",
+    "ar": "رفع البار أمامًا فوق الرأس من الوقوف"
+  },
+  "Standing_Gastrocnemius_Calf_Stretch": {
+    "en": "Standing Gastrocnemius Calf Stretch",
+    "ar": "إطالة السمانة من الوقوف"
+  },
+  "Standing_Hamstring_and_Calf_Stretch": {
+    "en": "Standing Hamstring and Calf Stretch",
+    "ar": "إطالة خلفية الرجل والسمانة من الوقوف"
+  },
+  "Standing_Hip_Circles": {
+    "en": "Standing Hip Circles",
+    "ar": "تدوير الورك من الوقوف"
+  },
+  "Standing_Hip_Flexors": {
+    "en": "Standing Hip Flexors",
+    "ar": "إطالة مثنيات الورك من الوقوف"
+  },
+  "Standing_Inner-Biceps_Curl": {
+    "en": "Standing Inner-Biceps Curl",
+    "ar": "باي للداخل من الوقوف"
+  },
+  "Standing_Lateral_Stretch": {
+    "en": "Standing Lateral Stretch",
+    "ar": "إطالة جانبية من الوقوف"
+  },
+  "Standing_Leg_Curl": {
+    "en": "Standing Leg Curl",
+    "ar": "ثني الرجل من الوقوف"
+  },
+  "Standing_Long_Jump": {
+    "en": "Standing Long Jump",
+    "ar": "وثب طويل من الثبات"
+  },
+  "Standing_Low-Pulley_Deltoid_Raise": {
+    "en": "Standing Low-Pulley Deltoid Raise",
+    "ar": "رفرفة كتف بالكابل السفلي من الوقوف"
+  },
+  "Standing_Low-Pulley_One-Arm_Triceps_Extension": {
+    "en": "Standing Low-Pulley One-Arm Triceps Extension",
+    "ar": "تمديد ترايسبس بدراع واحدة بالكابل السفلي من الوقوف"
+  },
+  "Standing_Military_Press": {
+    "en": "Standing Military Press",
+    "ar": "ضغط كتف عسكري من الوقوف"
+  },
+  "Standing_Olympic_Plate_Hand_Squeeze": {
+    "en": "Standing Olympic Plate Hand Squeeze",
+    "ar": "ضغط قرص الوزن باليدين من الوقوف"
+  },
+  "Standing_One-Arm_Cable_Curl": {
+    "en": "Standing One-Arm Cable Curl",
+    "ar": "باي بالكابل بدراع واحدة من الوقوف"
+  },
+  "Standing_One-Arm_Dumbbell_Curl_Over_Incline_Bench": {
+    "en": "Standing One-Arm Dumbbell Curl Over Incline Bench",
+    "ar": "باي بالدمبل بدراع واحدة مع إسنادها على بنش مائل"
+  },
+  "Standing_One-Arm_Dumbbell_Triceps_Extension": {
+    "en": "Standing One-Arm Dumbbell Triceps Extension",
+    "ar": "تمديد ترايسبس بالدمبل بدراع واحدة من الوقوف"
+  },
+  "Standing_Overhead_Barbell_Triceps_Extension": {
+    "en": "Standing Overhead Barbell Triceps Extension",
+    "ar": "تمديد ترايسبس بالبار فوق الرأس من الوقوف"
+  },
+  "Standing_Palm-In_One-Arm_Dumbbell_Press": {
+    "en": "Standing Palm-In One-Arm Dumbbell Press",
+    "ar": "ضغط كتف بالدمبل بدراع واحدة بمسكة محايدة من الوقوف"
+  },
+  "Standing_Palms-In_Dumbbell_Press": {
+    "en": "Standing Palms-In Dumbbell Press",
+    "ar": "ضغط كتف بالدمبل بمسكة محايدة من الوقوف"
+  },
+  "Standing_Palms-Up_Barbell_Behind_The_Back_Wrist_Curl": {
+    "en": "Standing Palms-Up Barbell Behind The Back Wrist Curl",
+    "ar": "ثني الرسغ بالبار خلف الظهر بمسكة سفلية من الوقوف"
+  },
+  "Standing_Pelvic_Tilt": {
+    "en": "Standing Pelvic Tilt",
+    "ar": "إمالة الحوض من الوقوف"
+  },
+  "Standing_Rope_Crunch": {
+    "en": "Standing Rope Crunch",
+    "ar": "كرانش بحبل الكابل من الوقوف"
+  },
+  "Standing_Soleus_And_Achilles_Stretch": {
+    "en": "Standing Soleus And Achilles Stretch",
+    "ar": "إطالة العضلة النعلية ووتر أخيل من الوقوف"
+  },
+  "Standing_Toe_Touches": {
+    "en": "Standing Toe Touches",
+    "ar": "لمس أصابع القدمين من الوقوف"
+  },
+  "Standing_Towel_Triceps_Extension": {
+    "en": "Standing Towel Triceps Extension",
+    "ar": "تمديد ترايسبس بالمنشفة من الوقوف"
+  },
+  "Standing_Two-Arm_Overhead_Throw": {
+    "en": "Standing Two-Arm Overhead Throw",
+    "ar": "رمي الكرة بالذراعين فوق الرأس من الوقوف"
+  },
+  "Star_Jump": {
+    "en": "Star Jump",
+    "ar": "قفزة النجمة"
+  },
+  "Step-up_with_Knee_Raise": {
+    "en": "Step-up with Knee Raise",
+    "ar": "صعود الدرجة مع رفع الركبة"
+  },
+  "Step_Mill": {
+    "en": "Step Mill",
+    "ar": "السلم المتحرك للتمرين"
+  },
+  "Stiff-Legged_Barbell_Deadlift": {
+    "en": "Stiff-Legged Barbell Deadlift",
+    "ar": "رفعة ميتة بالبار برجلين شبه ممدودتين"
+  },
+  "Stiff-Legged_Dumbbell_Deadlift": {
+    "en": "Stiff-Legged Dumbbell Deadlift",
+    "ar": "رفعة ميتة بالدمبل برجلين شبه ممدودتين"
+  },
+  "Stiff_Leg_Barbell_Good_Morning": {
+    "en": "Stiff Leg Barbell Good Morning",
+    "ar": "انحناء الجذع بالبار برجلين شبه ممدودتين"
+  },
+  "Stomach_Vacuum": {
+    "en": "Stomach Vacuum",
+    "ar": "سحب البطن للداخل"
+  },
+  "Straight-Arm_Dumbbell_Pullover": {
+    "en": "Straight-Arm Dumbbell Pullover",
+    "ar": "بول أوفر بالدمبل بدراعين ممدودتين"
+  },
+  "Straight-Arm_Pulldown": {
+    "en": "Straight-Arm Pulldown",
+    "ar": "سحب علوي بدراعين ممدودتين"
+  },
+  "Straight_Bar_Bench_Mid_Rows": {
+    "en": "Straight Bar Bench Mid Rows",
+    "ar": "تجديف بالبار المستقيم مع إسناد الجسم على البنش"
+  },
+  "Straight_Raises_on_Incline_Bench": {
+    "en": "Straight Raises on Incline Bench",
+    "ar": "رفع الرجلين مستقيمتين على بنش مائل"
+  },
+  "Stride_Jump_Crossover": {
+    "en": "Stride Jump Crossover",
+    "ar": "قفز متقاطع بخطوات طويلة"
+  },
+  "Sumo_Deadlift": {
+    "en": "Sumo Deadlift",
+    "ar": "رفعة ميتة سومو"
+  },
+  "Sumo_Deadlift_with_Bands": {
+    "en": "Sumo Deadlift with Bands",
+    "ar": "رفعة ميتة سومو مع أشرطة المقاومة"
+  },
+  "Sumo_Deadlift_with_Chains": {
+    "en": "Sumo Deadlift with Chains",
+    "ar": "رفعة ميتة سومو مع السلاسل"
+  },
+  "Superman": {
+    "en": "Superman",
+    "ar": "سوبرمان"
+  },
+  "Supine_Chest_Throw": {
+    "en": "Supine Chest Throw",
+    "ar": "رمي الكرة من الصدر من النوم على الظهر"
+  },
+  "Supine_One-Arm_Overhead_Throw": {
+    "en": "Supine One-Arm Overhead Throw",
+    "ar": "رمي الكرة بدراع واحدة فوق الرأس من النوم"
+  },
+  "Supine_Two-Arm_Overhead_Throw": {
+    "en": "Supine Two-Arm Overhead Throw",
+    "ar": "رمي الكرة بالذراعين فوق الرأس من النوم"
+  },
+  "Suspended_Fallout": {
+    "en": "Suspended Fallout",
+    "ar": "مد الجسم بأحزمة التعليق"
+  },
+  "Suspended_Push-Up": {
+    "en": "Suspended Push-Up",
+    "ar": "ضغط بأحزمة التعليق"
+  },
+  "Suspended_Reverse_Crunch": {
+    "en": "Suspended Reverse Crunch",
+    "ar": "كرانش عكسي بأحزمة التعليق"
+  },
+  "Suspended_Row": {
+    "en": "Suspended Row",
+    "ar": "تجديف بأحزمة التعليق"
+  },
+  "Suspended_Split_Squat": {
+    "en": "Suspended Split Squat",
+    "ar": "سكوات انقسامي بأحزمة التعليق"
+  },
+  "Svend_Press": {
+    "en": "Svend Press",
+    "ar": "ضغط سفند للصدر"
+  },
+  "T-Bar_Row_with_Handle": {
+    "en": "T-Bar Row with Handle",
+    "ar": "تجديف تي بار بمقبض"
+  },
+  "Tate_Press": {
+    "en": "Tate Press",
+    "ar": "ضغط تيت للترايسبس"
+  },
+  "The_Straddle": {
+    "en": "The Straddle",
+    "ar": "إطالة بفتح الرجلين"
+  },
+  "Thigh_Abductor": {
+    "en": "Thigh Abductor",
+    "ar": "فتح الفخذين على الجهاز"
+  },
+  "Thigh_Adductor": {
+    "en": "Thigh Adductor",
+    "ar": "ضم الفخذين على الجهاز"
+  },
+  "Tire_Flip": {
+    "en": "Tire Flip",
+    "ar": "قلب الإطار"
+  },
+  "Toe_Touchers": {
+    "en": "Toe Touchers",
+    "ar": "لمس أصابع القدمين من النوم"
+  },
+  "Torso_Rotation": {
+    "en": "Torso Rotation",
+    "ar": "تدوير الجذع"
+  },
+  "Trail_Running_Walking": {
+    "en": "Trail Running/Walking",
+    "ar": "الجري أو المشي على المسارات"
+  },
+  "Trap_Bar_Deadlift": {
+    "en": "Trap Bar Deadlift",
+    "ar": "رفعة ميتة بالبار السداسي"
+  },
+  "Tricep_Dumbbell_Kickback": {
+    "en": "Tricep Dumbbell Kickback",
+    "ar": "تمديد ترايسبس بالدمبل للخلف"
+  },
+  "Tricep_Side_Stretch": {
+    "en": "Tricep Side Stretch",
+    "ar": "إطالة الترايسبس جانبيًا"
+  },
+  "Triceps_Overhead_Extension_with_Rope": {
+    "en": "Triceps Overhead Extension with Rope",
+    "ar": "تمديد ترايسبس بالحبل فوق الرأس"
+  },
+  "Triceps_Pushdown": {
+    "en": "Triceps Pushdown",
+    "ar": "دفع ترايسبس بالكابل لأسفل"
+  },
+  "Triceps_Pushdown_-_Rope_Attachment": {
+    "en": "Triceps Pushdown - Rope Attachment",
+    "ar": "دفع ترايسبس بحبل الكابل لأسفل"
+  },
+  "Triceps_Pushdown_-_V-Bar_Attachment": {
+    "en": "Triceps Pushdown - V-Bar Attachment",
+    "ar": "دفع ترايسبس بمقبض الكابل المثلث لأسفل"
+  },
+  "Triceps_Stretch": {
+    "en": "Triceps Stretch",
+    "ar": "إطالة الترايسبس"
+  },
+  "Tuck_Crunch": {
+    "en": "Tuck Crunch",
+    "ar": "كرانش مع ضم الركبتين"
+  },
+  "Two-Arm_Dumbbell_Preacher_Curl": {
+    "en": "Two-Arm Dumbbell Preacher Curl",
+    "ar": "باي بريتشر بالدمبلين"
+  },
+  "Two-Arm_Kettlebell_Clean": {
+    "en": "Two-Arm Kettlebell Clean",
+    "ar": "كلين بالكيتل بيل بالذراعين"
+  },
+  "Two-Arm_Kettlebell_Jerk": {
+    "en": "Two-Arm Kettlebell Jerk",
+    "ar": "نتر بالكيتل بيل بالذراعين"
+  },
+  "Two-Arm_Kettlebell_Military_Press": {
+    "en": "Two-Arm Kettlebell Military Press",
+    "ar": "ضغط كتف عسكري بالكيتل بيل بالذراعين"
+  },
+  "Two-Arm_Kettlebell_Row": {
+    "en": "Two-Arm Kettlebell Row",
+    "ar": "تجديف بالكيتل بيل بالذراعين"
+  },
+  "Underhand_Cable_Pulldowns": {
+    "en": "Underhand Cable Pulldowns",
+    "ar": "سحب علوي بالكابل بمسكة معكوسة"
+  },
+  "Upper_Back-Leg_Grab": {
+    "en": "Upper Back-Leg Grab",
+    "ar": "إطالة أعلى الظهر مع الإمساك بالرجل"
+  },
+  "Upper_Back_Stretch": {
+    "en": "Upper Back Stretch",
+    "ar": "إطالة أعلى الظهر"
+  },
+  "Upright_Barbell_Row": {
+    "en": "Upright Barbell Row",
+    "ar": "سحب عمودي بالبار"
+  },
+  "Upright_Cable_Row": {
+    "en": "Upright Cable Row",
+    "ar": "سحب عمودي بالكابل"
+  },
+  "Upright_Row_-_With_Bands": {
+    "en": "Upright Row - With Bands",
+    "ar": "سحب عمودي بشريط المقاومة"
+  },
+  "Upward_Stretch": {
+    "en": "Upward Stretch",
+    "ar": "إطالة الجسم لأعلى"
+  },
+  "V-Bar_Pulldown": {
+    "en": "V-Bar Pulldown",
+    "ar": "سحب علوي بالمقبض المثلث"
+  },
+  "V-Bar_Pullup": {
+    "en": "V-Bar Pullup",
+    "ar": "عقلة بالمقبض المثلث"
+  },
+  "Vertical_Swing": {
+    "en": "Vertical Swing",
+    "ar": "أرجحة عمودية"
+  },
+  "Walking_Treadmill": {
+    "en": "Walking, Treadmill",
+    "ar": "المشي على جهاز المشي"
+  },
+  "Weighted_Ball_Hyperextension": {
+    "en": "Weighted Ball Hyperextension",
+    "ar": "تمديد الظهر بوزن على كرة التوازن"
+  },
+  "Weighted_Ball_Side_Bend": {
+    "en": "Weighted Ball Side Bend",
+    "ar": "ميل جانبي بوزن على كرة التوازن"
+  },
+  "Weighted_Bench_Dip": {
+    "en": "Weighted Bench Dip",
+    "ar": "متوازي على البنش مع وزن إضافي"
+  },
+  "Weighted_Crunches": {
+    "en": "Weighted Crunches",
+    "ar": "كرانش بأوزان"
+  },
+  "Weighted_Jump_Squat": {
+    "en": "Weighted Jump Squat",
+    "ar": "سكوات بالقفز مع أوزان"
+  },
+  "Weighted_Pull_Ups": {
+    "en": "Weighted Pull Ups",
+    "ar": "عقلة مع وزن إضافي"
+  },
+  "Weighted_Sissy_Squat": {
+    "en": "Weighted Sissy Squat",
+    "ar": "سيسي سكوات مع وزن إضافي"
+  },
+  "Weighted_Sit-Ups_-_With_Bands": {
+    "en": "Weighted Sit-Ups - With Bands",
+    "ar": "رفع الجذع بمقاومة شريط"
+  },
+  "Weighted_Squat": {
+    "en": "Weighted Squat",
+    "ar": "سكوات بأوزان"
+  },
+  "Wide-Grip_Barbell_Bench_Press": {
+    "en": "Wide-Grip Barbell Bench Press",
+    "ar": "بنش بالبار بمسكة واسعة"
+  },
+  "Wide-Grip_Decline_Barbell_Bench_Press": {
+    "en": "Wide-Grip Decline Barbell Bench Press",
+    "ar": "بنش بالبار بمسكة واسعة مقلوب"
+  },
+  "Wide-Grip_Decline_Barbell_Pullover": {
+    "en": "Wide-Grip Decline Barbell Pullover",
+    "ar": "بول أوفر بالبار بمسكة واسعة على بنش مائل لأسفل"
+  },
+  "Wide-Grip_Lat_Pulldown": {
+    "en": "Wide-Grip Lat Pulldown",
+    "ar": "سحب علوي بمسكة واسعة"
+  },
+  "Wide-Grip_Pulldown_Behind_The_Neck": {
+    "en": "Wide-Grip Pulldown Behind The Neck",
+    "ar": "سحب علوي خلف الرقبة بمسكة واسعة"
+  },
+  "Wide-Grip_Rear_Pull-Up": {
+    "en": "Wide-Grip Rear Pull-Up",
+    "ar": "عقلة خلف الرقبة بمسكة واسعة"
+  },
+  "Wide-Grip_Standing_Barbell_Curl": {
+    "en": "Wide-Grip Standing Barbell Curl",
+    "ar": "باي بالبار بمسكة واسعة من الوقوف"
+  },
+  "Wide_Stance_Barbell_Squat": {
+    "en": "Wide Stance Barbell Squat",
+    "ar": "سكوات بالبار بوقفة واسعة"
+  },
+  "Wide_Stance_Stiff_Legs": {
+    "en": "Wide Stance Stiff Legs",
+    "ar": "رفعة ميتة برجلين شبه ممدودتين ووقفة واسعة"
+  },
+  "Wind_Sprints": {
+    "en": "Wind Sprints",
+    "ar": "جري سريع على فترات"
+  },
+  "Windmills": {
+    "en": "Windmills",
+    "ar": "طاحونة الجذع"
+  },
+  "Worlds_Greatest_Stretch": {
+    "en": "World's Greatest Stretch",
+    "ar": "إطالة شاملة للجسم"
+  },
+  "Wrist_Circles": {
+    "en": "Wrist Circles",
+    "ar": "تدوير الرسغين"
+  },
+  "Wrist_Roller": {
+    "en": "Wrist Roller",
+    "ar": "لف حبل الوزن بالرسغين"
+  },
+  "Wrist_Rotations_with_Straight_Bar": {
+    "en": "Wrist Rotations with Straight Bar",
+    "ar": "تدوير الرسغين بالبار المستقيم"
+  },
+  "Yoke_Walk": {
+    "en": "Yoke Walk",
+    "ar": "المشي بحمل إطار اليوك"
+  },
+  "Zercher_Squats": {
+    "en": "Zercher Squats",
+    "ar": "سكوات زيرشر"
+  },
+  "Zottman_Curl": {
+    "en": "Zottman Curl",
+    "ar": "باي زوتمان"
+  },
+  "Zottman_Preacher_Curl": {
+    "en": "Zottman Preacher Curl",
+    "ar": "باي بريتشر بأسلوب زوتمان"
+  }
+}

@@ -1,0 +1,1842 @@
+[
+  {
+    "source_id": "eg-1",
+    "name": "White rice, cooked",
+    "name_ar": "أرز أبيض مطبوخ",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Cooked, no added oil",
+      "ar": "مطبوخ، من غير زيت"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 130.0,
+      "protein_per_100g": 2.7,
+      "carbs_per_100g": 28.2,
+      "fat_per_100g": 0.3
+    },
+    "sources": [
+      {
+        "fdc_id": "168878",
+        "url": "https://fdc.nal.usda.gov/food-details/168878/nutrients",
+        "description": "Rice, white, long-grain, regular, enriched, cooked",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-2",
+    "name": "Brown rice, cooked",
+    "name_ar": "أرز بني مطبوخ",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Cooked, no added oil",
+      "ar": "مطبوخ، من غير زيت"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 123.0,
+      "protein_per_100g": 2.7,
+      "carbs_per_100g": 25.6,
+      "fat_per_100g": 1.0
+    },
+    "sources": [
+      {
+        "fdc_id": "169704",
+        "url": "https://fdc.nal.usda.gov/food-details/169704/nutrients",
+        "description": "Rice, brown, long-grain, cooked (Includes foods for USDA's Food Distribution Program)",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-3",
+    "name": "Chicken breast, cooked",
+    "name_ar": "صدور دجاج مطبوخة",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Roasted breast, skinless meat only",
+      "ar": "صدر مشوي، لحم بس من غير جلد"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 165.0,
+      "protein_per_100g": 31.0,
+      "carbs_per_100g": 0.0,
+      "fat_per_100g": 3.6
+    },
+    "sources": [
+      {
+        "fdc_id": "171477",
+        "url": "https://fdc.nal.usda.gov/food-details/171477/nutrients",
+        "description": "Chicken, broilers or fryers, breast, meat only, cooked, roasted",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-4",
+    "name": "Chicken thigh, cooked",
+    "name_ar": "ورك دجاج مطبوخ",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Roasted thigh, skinless meat only",
+      "ar": "ورك مشوي، لحم بس من غير جلد"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 179.0,
+      "protein_per_100g": 24.8,
+      "carbs_per_100g": 0.0,
+      "fat_per_100g": 8.2
+    },
+    "sources": [
+      {
+        "fdc_id": "172388",
+        "url": "https://fdc.nal.usda.gov/food-details/172388/nutrients",
+        "description": "Chicken, broilers or fryers, thigh, meat only, cooked, roasted",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-5",
+    "name": "Lean beef, cooked",
+    "name_ar": "لحم بقري قليل الدهن مطبوخ",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Broiled ground beef, 90% lean / 10% fat",
+      "ar": "لحم مفروم مشوي، ٩٠٪ لحم و١٠٪ دهن"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 217.0,
+      "protein_per_100g": 26.1,
+      "carbs_per_100g": 0.0,
+      "fat_per_100g": 11.8
+    },
+    "sources": [
+      {
+        "fdc_id": "174031",
+        "url": "https://fdc.nal.usda.gov/food-details/174031/nutrients",
+        "description": "Beef, ground, 90% lean meat / 10% fat, patty, cooked, broiled",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-6",
+    "name": "Tuna in water, drained",
+    "name_ar": "تونة بالماء مصفاة",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Canned light tuna in water, drained, no salt",
+      "ar": "تونة لايت بالمياه، مصفّاة ومن غير ملح"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 116.0,
+      "protein_per_100g": 25.5,
+      "carbs_per_100g": 0.0,
+      "fat_per_100g": 0.8
+    },
+    "sources": [
+      {
+        "fdc_id": "171986",
+        "url": "https://fdc.nal.usda.gov/food-details/171986/nutrients",
+        "description": "Fish, tuna, light, canned in water, without salt, drained solids",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-7",
+    "name": "Sardines, canned",
+    "name_ar": "سردين معلب",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Atlantic sardines canned in oil, drained, edible bones included",
+      "ar": "سردين أطلسي معلب بالزيت ومصفّى، بالعظم اللي بيتاكل"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 208.0,
+      "protein_per_100g": 24.6,
+      "carbs_per_100g": 0.0,
+      "fat_per_100g": 11.5
+    },
+    "sources": [
+      {
+        "fdc_id": "175139",
+        "url": "https://fdc.nal.usda.gov/food-details/175139/nutrients",
+        "description": "Fish, sardine, Atlantic, canned in oil, drained solids with bone",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-8",
+    "name": "Tilapia, cooked",
+    "name_ar": "بلطي مطبوخ",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Cooked using dry heat, edible flesh only",
+      "ar": "مطبوخ بحرارة جافة، وزن اللحم اللي بيتاكل بس"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 128.0,
+      "protein_per_100g": 26.2,
+      "carbs_per_100g": 0.0,
+      "fat_per_100g": 2.7
+    },
+    "sources": [
+      {
+        "fdc_id": "175177",
+        "url": "https://fdc.nal.usda.gov/food-details/175177/nutrients",
+        "description": "Fish, tilapia, cooked, dry heat",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-9",
+    "name": "Salmon, cooked",
+    "name_ar": "سلمون مطبوخ",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Farmed Atlantic salmon, dry heat",
+      "ar": "سلمون أطلسي مستزرع، مشوي"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 206.0,
+      "protein_per_100g": 22.1,
+      "carbs_per_100g": 0.0,
+      "fat_per_100g": 12.4
+    },
+    "sources": [
+      {
+        "fdc_id": "175168",
+        "url": "https://fdc.nal.usda.gov/food-details/175168/nutrients",
+        "description": "Fish, salmon, Atlantic, farmed, cooked, dry heat",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-10",
+    "name": "Whole egg, boiled",
+    "name_ar": "بيض مسلوق",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Hard-boiled, peeled",
+      "ar": "مسلوق، من غير القشر"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 155.0,
+      "protein_per_100g": 12.6,
+      "carbs_per_100g": 1.1,
+      "fat_per_100g": 10.6
+    },
+    "sources": [
+      {
+        "fdc_id": "173424",
+        "url": "https://fdc.nal.usda.gov/food-details/173424/nutrients",
+        "description": "Egg, whole, cooked, hard-boiled",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-11",
+    "name": "Egg white, cooked",
+    "name_ar": "بياض بيض مطبوخ",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Cooked egg white, no added fat",
+      "ar": "بياض بيض مطبوخ، من غير دهون مضافة"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 52.0,
+      "protein_per_100g": 10.7,
+      "carbs_per_100g": 2.4,
+      "fat_per_100g": 0.0
+    },
+    "sources": [
+      {
+        "fdc_id": "2707289",
+        "url": "https://fdc.nal.usda.gov/food-details/2707289/nutrients",
+        "description": "Egg white omelet, scrambled, or fried, no added fat",
+        "dataset": "FNDDS 2021–2023, October 2024"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-12",
+    "name": "Fava beans, boiled",
+    "name_ar": "فول مسلوق بدون زيت",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Mature dry fava beans, boiled, no oil",
+      "ar": "فول ناشف بعد السلق، من غير زيت"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 110.0,
+      "protein_per_100g": 7.6,
+      "carbs_per_100g": 19.7,
+      "fat_per_100g": 0.4
+    },
+    "sources": [
+      {
+        "fdc_id": "173753",
+        "url": "https://fdc.nal.usda.gov/food-details/173753/nutrients",
+        "description": "Broadbeans (fava beans), mature seeds, cooked, boiled, without salt",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-13",
+    "name": "Ful medames, plain",
+    "name_ar": "فول مدمس سادة",
+    "basis_g": 100,
+    "kind": "proxy",
+    "preparation": {
+      "en": "Plain cooked mature fava beans, no oil",
+      "ar": "فول مدمس سادة، من غير زيت"
+    },
+    "note": {
+      "en": "Approximate substitute reference, not a measurement of this exact local product. Prefer its label or a weighed recipe.",
+      "ar": "بديل مرجعي تقريبي، مش قياس للصنف المحلي نفسه. استخدم ملصق المنتج أو وصفة موزونة لو متاحة."
+    },
+    "values": {
+      "kcal_per_100g": 110.0,
+      "protein_per_100g": 7.6,
+      "carbs_per_100g": 19.7,
+      "fat_per_100g": 0.4
+    },
+    "sources": [
+      {
+        "fdc_id": "173753",
+        "url": "https://fdc.nal.usda.gov/food-details/173753/nutrients",
+        "description": "Broadbeans (fava beans), mature seeds, cooked, boiled, without salt",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-14",
+    "name": "Falafel, fried",
+    "name_ar": "طعمية مقلية",
+    "basis_g": 100,
+    "kind": "proxy",
+    "preparation": {
+      "en": "Home-prepared fried falafel proxy",
+      "ar": "بديل مرجعي لفلافل مقلية بيتية"
+    },
+    "note": {
+      "en": "Approximate substitute reference, not a measurement of this exact local product. Prefer its label or a weighed recipe.",
+      "ar": "بديل مرجعي تقريبي، مش قياس للصنف المحلي نفسه. استخدم ملصق المنتج أو وصفة موزونة لو متاحة."
+    },
+    "values": {
+      "kcal_per_100g": 333.0,
+      "protein_per_100g": 13.3,
+      "carbs_per_100g": 31.8,
+      "fat_per_100g": 17.8
+    },
+    "sources": [
+      {
+        "fdc_id": "172455",
+        "url": "https://fdc.nal.usda.gov/food-details/172455/nutrients",
+        "description": "Falafel, home-prepared",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-15",
+    "name": "Lentils, cooked",
+    "name_ar": "عدس مطبوخ",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Boiled, no added oil",
+      "ar": "مسلوق، من غير زيت"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 116.0,
+      "protein_per_100g": 9.0,
+      "carbs_per_100g": 20.1,
+      "fat_per_100g": 0.4
+    },
+    "sources": [
+      {
+        "fdc_id": "172421",
+        "url": "https://fdc.nal.usda.gov/food-details/172421/nutrients",
+        "description": "Lentils, mature seeds, cooked, boiled, without salt",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-16",
+    "name": "Chickpeas, cooked",
+    "name_ar": "حمص مسلوق",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Boiled and drained, no oil",
+      "ar": "مسلوق ومصفّى، من غير زيت"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 164.0,
+      "protein_per_100g": 8.9,
+      "carbs_per_100g": 27.4,
+      "fat_per_100g": 2.6
+    },
+    "sources": [
+      {
+        "fdc_id": "173757",
+        "url": "https://fdc.nal.usda.gov/food-details/173757/nutrients",
+        "description": "Chickpeas (garbanzo beans, bengal gram), mature seeds, cooked, boiled, without salt",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-17",
+    "name": "White beans, cooked",
+    "name_ar": "فاصوليا بيضاء مطبوخة",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Boiled and drained, no oil",
+      "ar": "مسلوقة ومصفّاة، من غير زيت"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 139.0,
+      "protein_per_100g": 9.7,
+      "carbs_per_100g": 25.1,
+      "fat_per_100g": 0.4
+    },
+    "sources": [
+      {
+        "fdc_id": "175203",
+        "url": "https://fdc.nal.usda.gov/food-details/175203/nutrients",
+        "description": "Beans, white, mature seeds, cooked, boiled, without salt",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-18",
+    "name": "Baladi bread",
+    "name_ar": "عيش بلدي",
+    "basis_g": 100,
+    "kind": "proxy",
+    "preparation": {
+      "en": "Whole-wheat pita proxy, ready to eat",
+      "ar": "بديل مرجعي لعيش بيتا قمح كامل، جاهز للأكل"
+    },
+    "note": {
+      "en": "Approximate substitute reference, not a measurement of this exact local product. Prefer its label or a weighed recipe.",
+      "ar": "بديل مرجعي تقريبي، مش قياس للصنف المحلي نفسه. استخدم ملصق المنتج أو وصفة موزونة لو متاحة."
+    },
+    "values": {
+      "kcal_per_100g": 262.0,
+      "protein_per_100g": 9.8,
+      "carbs_per_100g": 55.9,
+      "fat_per_100g": 1.7
+    },
+    "sources": [
+      {
+        "fdc_id": "174916",
+        "url": "https://fdc.nal.usda.gov/food-details/174916/nutrients",
+        "description": "Bread, pita, whole-wheat",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-19",
+    "name": "Whole wheat bread",
+    "name_ar": "خبز قمح كامل",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Commercial whole-wheat bread, not toasted",
+      "ar": "خبز قمح كامل جاهز، قبل التحميص"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 252.0,
+      "protein_per_100g": 12.5,
+      "carbs_per_100g": 42.7,
+      "fat_per_100g": 3.5
+    },
+    "sources": [
+      {
+        "fdc_id": "172688",
+        "url": "https://fdc.nal.usda.gov/food-details/172688/nutrients",
+        "description": "Bread, whole-wheat, commercially prepared",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-20",
+    "name": "White toast",
+    "name_ar": "توست أبيض",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "White sliced bread, before toasting",
+      "ar": "توست أبيض قبل التحميص"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 266.0,
+      "protein_per_100g": 8.9,
+      "carbs_per_100g": 49.4,
+      "fat_per_100g": 3.3
+    },
+    "sources": [
+      {
+        "fdc_id": "174924",
+        "url": "https://fdc.nal.usda.gov/food-details/174924/nutrients",
+        "description": "Bread, white, commercially prepared (includes soft bread crumbs)",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-21",
+    "name": "Oats, dry",
+    "name_ar": "شوفان جاف",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Dry oats, before adding water or milk",
+      "ar": "شوفان جاف، قبل إضافة مياه أو لبن"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 389.0,
+      "protein_per_100g": 16.9,
+      "carbs_per_100g": 66.3,
+      "fat_per_100g": 6.9
+    },
+    "sources": [
+      {
+        "fdc_id": "169705",
+        "url": "https://fdc.nal.usda.gov/food-details/169705/nutrients",
+        "description": "Oats (Includes foods for USDA's Food Distribution Program)",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-22",
+    "name": "Pasta, cooked",
+    "name_ar": "مكرونة مسلوقة",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Cooked pasta, drained, no oil",
+      "ar": "مكرونة مسلوقة ومصفّاة، من غير زيت"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 158.0,
+      "protein_per_100g": 5.8,
+      "carbs_per_100g": 30.9,
+      "fat_per_100g": 0.9
+    },
+    "sources": [
+      {
+        "fdc_id": "169737",
+        "url": "https://fdc.nal.usda.gov/food-details/169737/nutrients",
+        "description": "Pasta, cooked, enriched, without added salt",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-23",
+    "name": "Potatoes, boiled",
+    "name_ar": "بطاطس مسلوقة",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Boiled in skin, flesh only",
+      "ar": "مسلوقة بقشرها، وزن اللحم من غير القشر"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 87.0,
+      "protein_per_100g": 1.9,
+      "carbs_per_100g": 20.1,
+      "fat_per_100g": 0.1
+    },
+    "sources": [
+      {
+        "fdc_id": "170438",
+        "url": "https://fdc.nal.usda.gov/food-details/170438/nutrients",
+        "description": "Potatoes, boiled, cooked in skin, flesh, without salt",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-24",
+    "name": "Sweet potato, cooked",
+    "name_ar": "بطاطا مطبوخة",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Baked in skin, flesh only",
+      "ar": "مشوية بقشرها، وزن اللحم من غير القشر"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 90.0,
+      "protein_per_100g": 2.0,
+      "carbs_per_100g": 20.7,
+      "fat_per_100g": 0.2
+    },
+    "sources": [
+      {
+        "fdc_id": "168483",
+        "url": "https://fdc.nal.usda.gov/food-details/168483/nutrients",
+        "description": "Sweet potato, cooked, baked in skin, flesh, without salt",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-25",
+    "name": "Bulgur, cooked",
+    "name_ar": "برغل مطبوخ",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Cooked bulgur",
+      "ar": "برغل بعد التسوية"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 83.0,
+      "protein_per_100g": 3.1,
+      "carbs_per_100g": 18.6,
+      "fat_per_100g": 0.2
+    },
+    "sources": [
+      {
+        "fdc_id": "170287",
+        "url": "https://fdc.nal.usda.gov/food-details/170287/nutrients",
+        "description": "Bulgur, cooked",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-26",
+    "name": "Quinoa, cooked",
+    "name_ar": "كينوا مطبوخة",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Cooked quinoa",
+      "ar": "كينوا بعد التسوية"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 120.0,
+      "protein_per_100g": 4.4,
+      "carbs_per_100g": 21.3,
+      "fat_per_100g": 1.9
+    },
+    "sources": [
+      {
+        "fdc_id": "168917",
+        "url": "https://fdc.nal.usda.gov/food-details/168917/nutrients",
+        "description": "Quinoa, cooked",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-27",
+    "name": "Cottage cheese",
+    "name_ar": "جبنة قريش",
+    "basis_g": 100,
+    "kind": "proxy",
+    "preparation": {
+      "en": "Cottage cheese, 1% milkfat proxy",
+      "ar": "بديل مرجعي لجبنة قريش قليلة الدسم، حوالي ١٪ دهن"
+    },
+    "note": {
+      "en": "Approximate substitute reference, not a measurement of this exact local product. Prefer its label or a weighed recipe.",
+      "ar": "بديل مرجعي تقريبي، مش قياس للصنف المحلي نفسه. استخدم ملصق المنتج أو وصفة موزونة لو متاحة."
+    },
+    "values": {
+      "kcal_per_100g": 72.0,
+      "protein_per_100g": 12.4,
+      "carbs_per_100g": 2.7,
+      "fat_per_100g": 1.0
+    },
+    "sources": [
+      {
+        "fdc_id": "173417",
+        "url": "https://fdc.nal.usda.gov/food-details/173417/nutrients",
+        "description": "Cheese, cottage, lowfat, 1% milkfat",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-28",
+    "name": "Feta cheese",
+    "name_ar": "جبنة فيتا",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Ready-to-eat feta cheese",
+      "ar": "فيتا جاهزة للأكل"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 265.0,
+      "protein_per_100g": 14.2,
+      "carbs_per_100g": 3.9,
+      "fat_per_100g": 21.5
+    },
+    "sources": [
+      {
+        "fdc_id": "173420",
+        "url": "https://fdc.nal.usda.gov/food-details/173420/nutrients",
+        "description": "Cheese, feta",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-29",
+    "name": "Low fat yogurt",
+    "name_ar": "زبادي قليل الدسم",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Plain low-fat yogurt, about 1.5% fat",
+      "ar": "زبادي سادة قليل الدسم، حوالي ١٫٥٪ دهن"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 63.0,
+      "protein_per_100g": 5.3,
+      "carbs_per_100g": 7.0,
+      "fat_per_100g": 1.6
+    },
+    "sources": [
+      {
+        "fdc_id": "170886",
+        "url": "https://fdc.nal.usda.gov/food-details/170886/nutrients",
+        "description": "Yogurt, plain, low fat",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-30",
+    "name": "Greek yogurt, plain",
+    "name_ar": "زبادي يوناني سادة",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Plain low-fat Greek yogurt, about 2% fat",
+      "ar": "زبادي يوناني سادة قليل الدسم، حوالي ٢٪ دهن"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 73.0,
+      "protein_per_100g": 10.0,
+      "carbs_per_100g": 3.9,
+      "fat_per_100g": 1.9
+    },
+    "sources": [
+      {
+        "fdc_id": "170903",
+        "url": "https://fdc.nal.usda.gov/food-details/170903/nutrients",
+        "description": "Yogurt, Greek, plain, lowfat",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-31",
+    "name": "Whole milk",
+    "name_ar": "حليب كامل الدسم",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Whole milk, 3.25% milkfat, weighed in grams",
+      "ar": "لبن كامل الدسم ٣٫٢٥٪، الوزن بالجرام"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 61.0,
+      "protein_per_100g": 3.2,
+      "carbs_per_100g": 4.8,
+      "fat_per_100g": 3.3
+    },
+    "sources": [
+      {
+        "fdc_id": "171265",
+        "url": "https://fdc.nal.usda.gov/food-details/171265/nutrients",
+        "description": "Milk, whole, 3.25% milkfat, with added vitamin D",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-32",
+    "name": "Skimmed milk",
+    "name_ar": "حليب خالي الدسم",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Skim milk, weighed in grams",
+      "ar": "لبن خالي الدسم، الوزن بالجرام"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 34.0,
+      "protein_per_100g": 3.4,
+      "carbs_per_100g": 5.0,
+      "fat_per_100g": 0.1
+    },
+    "sources": [
+      {
+        "fdc_id": "171269",
+        "url": "https://fdc.nal.usda.gov/food-details/171269/nutrients",
+        "description": "Milk, nonfat, fluid, with added vitamin A and vitamin D (fat free or skim)",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-33",
+    "name": "Laban, plain",
+    "name_ar": "لبن رايب سادة",
+    "basis_g": 100,
+    "kind": "proxy",
+    "preparation": {
+      "en": "Low-fat cultured buttermilk proxy, weighed in grams",
+      "ar": "بديل مرجعي للبن رايب قليل الدسم، الوزن بالجرام"
+    },
+    "note": {
+      "en": "Approximate substitute reference, not a measurement of this exact local product. Prefer its label or a weighed recipe.",
+      "ar": "بديل مرجعي تقريبي، مش قياس للصنف المحلي نفسه. استخدم ملصق المنتج أو وصفة موزونة لو متاحة."
+    },
+    "values": {
+      "kcal_per_100g": 40.0,
+      "protein_per_100g": 3.3,
+      "carbs_per_100g": 4.8,
+      "fat_per_100g": 1.1
+    },
+    "sources": [
+      {
+        "fdc_id": "170874",
+        "url": "https://fdc.nal.usda.gov/food-details/170874/nutrients",
+        "description": "Milk, buttermilk, fluid, cultured, lowfat",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-34",
+    "name": "Cheddar cheese",
+    "name_ar": "جبنة شيدر",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Regular cheddar cheese",
+      "ar": "شيدر عادية، مش قليلة الدسم"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 403.0,
+      "protein_per_100g": 22.9,
+      "carbs_per_100g": 3.4,
+      "fat_per_100g": 33.3
+    },
+    "sources": [
+      {
+        "fdc_id": "173414",
+        "url": "https://fdc.nal.usda.gov/food-details/173414/nutrients",
+        "description": "Cheese, cheddar (Includes foods for USDA's Food Distribution Program)",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-35",
+    "name": "Peanut butter",
+    "name_ar": "زبدة فول سوداني",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Smooth peanut butter, no salt",
+      "ar": "زبدة فول سوداني ناعمة، من غير ملح"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 598.0,
+      "protein_per_100g": 22.2,
+      "carbs_per_100g": 22.3,
+      "fat_per_100g": 51.4
+    },
+    "sources": [
+      {
+        "fdc_id": "172470",
+        "url": "https://fdc.nal.usda.gov/food-details/172470/nutrients",
+        "description": "Peanut butter, smooth style, without salt",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-36",
+    "name": "Peanuts",
+    "name_ar": "فول سوداني",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Raw shelled peanuts",
+      "ar": "سوداني نيّ، من غير القشر"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 567.0,
+      "protein_per_100g": 25.8,
+      "carbs_per_100g": 16.1,
+      "fat_per_100g": 49.2
+    },
+    "sources": [
+      {
+        "fdc_id": "172430",
+        "url": "https://fdc.nal.usda.gov/food-details/172430/nutrients",
+        "description": "Peanuts, all types, raw",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-37",
+    "name": "Almonds",
+    "name_ar": "لوز",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Plain almonds, unroasted",
+      "ar": "لوز سادة، مش محمّص"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 579.0,
+      "protein_per_100g": 21.2,
+      "carbs_per_100g": 21.6,
+      "fat_per_100g": 49.9
+    },
+    "sources": [
+      {
+        "fdc_id": "170567",
+        "url": "https://fdc.nal.usda.gov/food-details/170567/nutrients",
+        "description": "Nuts, almonds",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-38",
+    "name": "Walnuts",
+    "name_ar": "عين جمل",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Shelled English walnuts",
+      "ar": "عين جمل من غير القشر"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 654.0,
+      "protein_per_100g": 15.2,
+      "carbs_per_100g": 13.7,
+      "fat_per_100g": 65.2
+    },
+    "sources": [
+      {
+        "fdc_id": "170187",
+        "url": "https://fdc.nal.usda.gov/food-details/170187/nutrients",
+        "description": "Nuts, walnuts, english",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-39",
+    "name": "Tahini",
+    "name_ar": "طحينة",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Sesame paste from roasted kernels, not diluted sauce",
+      "ar": "معجون سمسم محمّص، مش سلطة طحينة مخففة"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 595.0,
+      "protein_per_100g": 17.0,
+      "carbs_per_100g": 21.2,
+      "fat_per_100g": 53.8
+    },
+    "sources": [
+      {
+        "fdc_id": "170189",
+        "url": "https://fdc.nal.usda.gov/food-details/170189/nutrients",
+        "description": "Seeds, sesame butter, tahini, from roasted and toasted kernels (most common type)",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-40",
+    "name": "Olive oil",
+    "name_ar": "زيت زيتون",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Olive oil, weighed in grams",
+      "ar": "زيت زيتون، الوزن بالجرام"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 884.0,
+      "protein_per_100g": 0.0,
+      "carbs_per_100g": 0.0,
+      "fat_per_100g": 100.0
+    },
+    "sources": [
+      {
+        "fdc_id": "171413",
+        "url": "https://fdc.nal.usda.gov/food-details/171413/nutrients",
+        "description": "Oil, olive, salad or cooking",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-41",
+    "name": "Butter",
+    "name_ar": "زبدة",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Unsalted butter",
+      "ar": "زبدة من غير ملح"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 717.0,
+      "protein_per_100g": 0.9,
+      "carbs_per_100g": 0.1,
+      "fat_per_100g": 81.1
+    },
+    "sources": [
+      {
+        "fdc_id": "173430",
+        "url": "https://fdc.nal.usda.gov/food-details/173430/nutrients",
+        "description": "Butter, without salt",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-42",
+    "name": "Banana",
+    "name_ar": "موز",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Raw edible fruit, peel removed",
+      "ar": "فاكهة نيّة، من غير القشر"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 89.0,
+      "protein_per_100g": 1.1,
+      "carbs_per_100g": 22.8,
+      "fat_per_100g": 0.3
+    },
+    "sources": [
+      {
+        "fdc_id": "173944",
+        "url": "https://fdc.nal.usda.gov/food-details/173944/nutrients",
+        "description": "Bananas, raw",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-43",
+    "name": "Apple",
+    "name_ar": "تفاح",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Raw apple with skin, core excluded",
+      "ar": "تفاح نيّ بالقشر، من غير القلب والبذور"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 52.0,
+      "protein_per_100g": 0.3,
+      "carbs_per_100g": 13.8,
+      "fat_per_100g": 0.2
+    },
+    "sources": [
+      {
+        "fdc_id": "171688",
+        "url": "https://fdc.nal.usda.gov/food-details/171688/nutrients",
+        "description": "Apples, raw, with skin (Includes foods for USDA's Food Distribution Program)",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-44",
+    "name": "Orange",
+    "name_ar": "برتقال",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Raw orange, peel removed",
+      "ar": "برتقال نيّ، من غير القشر"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 47.0,
+      "protein_per_100g": 0.9,
+      "carbs_per_100g": 11.8,
+      "fat_per_100g": 0.1
+    },
+    "sources": [
+      {
+        "fdc_id": "169097",
+        "url": "https://fdc.nal.usda.gov/food-details/169097/nutrients",
+        "description": "Oranges, raw, all commercial varieties",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-45",
+    "name": "Dates",
+    "name_ar": "بلح",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Medjool dates, pits removed; not fresh wet dates",
+      "ar": "تمر مجدول من غير النوى، مش البلح الطري"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 277.0,
+      "protein_per_100g": 1.8,
+      "carbs_per_100g": 75.0,
+      "fat_per_100g": 0.2
+    },
+    "sources": [
+      {
+        "fdc_id": "168191",
+        "url": "https://fdc.nal.usda.gov/food-details/168191/nutrients",
+        "description": "Dates, medjool",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-46",
+    "name": "Strawberries",
+    "name_ar": "فراولة",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Raw, leaves removed",
+      "ar": "نيّة، من غير الورق"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 32.0,
+      "protein_per_100g": 0.7,
+      "carbs_per_100g": 7.7,
+      "fat_per_100g": 0.3
+    },
+    "sources": [
+      {
+        "fdc_id": "167762",
+        "url": "https://fdc.nal.usda.gov/food-details/167762/nutrients",
+        "description": "Strawberries, raw",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-47",
+    "name": "Mango",
+    "name_ar": "مانجو",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Raw edible flesh, skin and stone removed",
+      "ar": "اللحم النيّ، من غير القشر والنواة"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 60.0,
+      "protein_per_100g": 0.8,
+      "carbs_per_100g": 15.0,
+      "fat_per_100g": 0.4
+    },
+    "sources": [
+      {
+        "fdc_id": "169910",
+        "url": "https://fdc.nal.usda.gov/food-details/169910/nutrients",
+        "description": "Mangos, raw",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-48",
+    "name": "Watermelon",
+    "name_ar": "بطيخ",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Raw flesh, rind excluded",
+      "ar": "اللحم النيّ، من غير القشر"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 30.0,
+      "protein_per_100g": 0.6,
+      "carbs_per_100g": 7.6,
+      "fat_per_100g": 0.2
+    },
+    "sources": [
+      {
+        "fdc_id": "167765",
+        "url": "https://fdc.nal.usda.gov/food-details/167765/nutrients",
+        "description": "Watermelon, raw",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-49",
+    "name": "Grapes",
+    "name_ar": "عنب",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Raw red or green grapes, stems excluded",
+      "ar": "عنب أحمر أو أخضر نيّ، من غير العناقيد"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 69.0,
+      "protein_per_100g": 0.7,
+      "carbs_per_100g": 18.1,
+      "fat_per_100g": 0.2
+    },
+    "sources": [
+      {
+        "fdc_id": "174683",
+        "url": "https://fdc.nal.usda.gov/food-details/174683/nutrients",
+        "description": "Grapes, red or green (European type, such as Thompson seedless), raw",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-50",
+    "name": "Cucumber",
+    "name_ar": "خيار",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Raw cucumber with peel",
+      "ar": "خيار نيّ بالقشر"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 15.0,
+      "protein_per_100g": 0.7,
+      "carbs_per_100g": 3.6,
+      "fat_per_100g": 0.1
+    },
+    "sources": [
+      {
+        "fdc_id": "168409",
+        "url": "https://fdc.nal.usda.gov/food-details/168409/nutrients",
+        "description": "Cucumber, with peel, raw",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-51",
+    "name": "Tomato",
+    "name_ar": "طماطم",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Raw ripe red tomato",
+      "ar": "طماطم حمرا نيّة"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 18.0,
+      "protein_per_100g": 0.9,
+      "carbs_per_100g": 3.9,
+      "fat_per_100g": 0.2
+    },
+    "sources": [
+      {
+        "fdc_id": "170457",
+        "url": "https://fdc.nal.usda.gov/food-details/170457/nutrients",
+        "description": "Tomatoes, red, ripe, raw, year round average",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-52",
+    "name": "Carrot",
+    "name_ar": "جزر",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Raw carrot, edible portion",
+      "ar": "جزر نيّ، الجزء اللي بيتاكل"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 41.0,
+      "protein_per_100g": 0.9,
+      "carbs_per_100g": 9.6,
+      "fat_per_100g": 0.2
+    },
+    "sources": [
+      {
+        "fdc_id": "170393",
+        "url": "https://fdc.nal.usda.gov/food-details/170393/nutrients",
+        "description": "Carrots, raw",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-53",
+    "name": "Broccoli, cooked",
+    "name_ar": "بروكلي مطبوخ",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Boiled and drained, no oil",
+      "ar": "مسلوق ومصفّى، من غير زيت"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 35.0,
+      "protein_per_100g": 2.4,
+      "carbs_per_100g": 7.2,
+      "fat_per_100g": 0.4
+    },
+    "sources": [
+      {
+        "fdc_id": "169967",
+        "url": "https://fdc.nal.usda.gov/food-details/169967/nutrients",
+        "description": "Broccoli, cooked, boiled, drained, without salt",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-54",
+    "name": "Spinach, cooked",
+    "name_ar": "سبانخ مطبوخة",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Boiled and drained, no oil",
+      "ar": "مسلوقة ومصفّاة، من غير زيت"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 23.0,
+      "protein_per_100g": 3.0,
+      "carbs_per_100g": 3.8,
+      "fat_per_100g": 0.3
+    },
+    "sources": [
+      {
+        "fdc_id": "168463",
+        "url": "https://fdc.nal.usda.gov/food-details/168463/nutrients",
+        "description": "Spinach, cooked, boiled, drained, without salt",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-55",
+    "name": "Zucchini, cooked",
+    "name_ar": "كوسة مطبوخة",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Boiled and drained with skin, no oil",
+      "ar": "مسلوقة ومصفّاة بالقشر، من غير زيت"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 15.0,
+      "protein_per_100g": 1.1,
+      "carbs_per_100g": 2.7,
+      "fat_per_100g": 0.4
+    },
+    "sources": [
+      {
+        "fdc_id": "169292",
+        "url": "https://fdc.nal.usda.gov/food-details/169292/nutrients",
+        "description": "Squash, summer, zucchini, includes skin, cooked, boiled, drained, without salt",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-56",
+    "name": "Green beans, cooked",
+    "name_ar": "فاصوليا خضراء مطبوخة",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Boiled and drained, no oil",
+      "ar": "مسلوقة ومصفّاة، من غير زيت"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 35.0,
+      "protein_per_100g": 1.9,
+      "carbs_per_100g": 7.9,
+      "fat_per_100g": 0.3
+    },
+    "sources": [
+      {
+        "fdc_id": "169141",
+        "url": "https://fdc.nal.usda.gov/food-details/169141/nutrients",
+        "description": "Beans, snap, green, cooked, boiled, drained, without salt",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-57",
+    "name": "Molokhia, plain",
+    "name_ar": "ملوخية سادة بدون تقلية",
+    "basis_g": 100,
+    "kind": "recipe",
+    "preparation": {
+      "en": "Example soup: 40 g cooked drained jute + 60 g water per 100 g",
+      "ar": "وصفة مثال: ٤٠ جم ورق ملوخية مطبوخ ومصفّى + ٦٠ جم مياه لكل ١٠٠ جم"
+    },
+    "note": {
+      "en": "Calculated for the stated example recipe only. Water, oil and final cooked yield change values; not a universal dish value.",
+      "ar": "حساب لوصفة المثال بس. المياه والزيت ووزن الناتج بيغيّروا القيم؛ مش رقم ثابت لكل طبق."
+    },
+    "values": {
+      "kcal_per_100g": 14.8,
+      "protein_per_100g": 1.5,
+      "carbs_per_100g": 2.9,
+      "fat_per_100g": 0.1
+    },
+    "sources": [
+      {
+        "fdc_id": "168420",
+        "url": "https://fdc.nal.usda.gov/food-details/168420/nutrients",
+        "description": "Jute, potherb, cooked, boiled, drained, without salt",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ],
+    "recipe": {
+      "final_yield_g": 500,
+      "ingredients": [
+        {
+          "fdc_id": "168420",
+          "grams": 200,
+          "name": "Jute, potherb, cooked, boiled, drained, without salt",
+          "name_ar": "ورق ملوخية مطبوخ ومصفّى"
+        },
+        {
+          "fdc_id": null,
+          "grams": 300,
+          "name": "Water",
+          "name_ar": "مياه"
+        }
+      ]
+    }
+  },
+  {
+    "source_id": "eg-58",
+    "name": "Honey",
+    "name_ar": "عسل",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "Plain honey",
+      "ar": "عسل سادة"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 304.0,
+      "protein_per_100g": 0.3,
+      "carbs_per_100g": 82.4,
+      "fat_per_100g": 0.0
+    },
+    "sources": [
+      {
+        "fdc_id": "169640",
+        "url": "https://fdc.nal.usda.gov/food-details/169640/nutrients",
+        "description": "Honey",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-59",
+    "name": "Sugar",
+    "name_ar": "سكر",
+    "basis_g": 100,
+    "kind": "reference",
+    "preparation": {
+      "en": "White granulated sugar",
+      "ar": "سكر أبيض حبيبات"
+    },
+    "note": {
+      "en": "Reference average; product and preparation can vary.",
+      "ar": "متوسط مرجعي؛ النوع وطريقة التحضير ممكن يغيّروا القيم."
+    },
+    "values": {
+      "kcal_per_100g": 387.0,
+      "protein_per_100g": 0.0,
+      "carbs_per_100g": 100.0,
+      "fat_per_100g": 0.0
+    },
+    "sources": [
+      {
+        "fdc_id": "169655",
+        "url": "https://fdc.nal.usda.gov/food-details/169655/nutrients",
+        "description": "Sugars, granulated",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ]
+  },
+  {
+    "source_id": "eg-60",
+    "name": "Koshari, typical",
+    "name_ar": "كشري (قيمة تقريبية)",
+    "basis_g": 100,
+    "kind": "recipe",
+    "preparation": {
+      "en": "Calculated example recipe; cooked final yield 1,000 g",
+      "ar": "وصفة مثال محسوبة؛ وزن الناتج النهائي بعد التسوية ١٠٠٠ جم"
+    },
+    "note": {
+      "en": "Calculated for the stated example recipe only. Water, oil and final cooked yield change values; not a universal dish value.",
+      "ar": "حساب لوصفة المثال بس. المياه والزيت ووزن الناتج بيغيّروا القيم؛ مش رقم ثابت لكل طبق."
+    },
+    "values": {
+      "kcal_per_100g": 138.9,
+      "protein_per_100g": 5.1,
+      "carbs_per_100g": 23.6,
+      "fat_per_100g": 2.7
+    },
+    "sources": [
+      {
+        "fdc_id": "168878",
+        "url": "https://fdc.nal.usda.gov/food-details/168878/nutrients",
+        "description": "Rice, white, long-grain, regular, enriched, cooked",
+        "dataset": "SR Legacy, April 2018"
+      },
+      {
+        "fdc_id": "169737",
+        "url": "https://fdc.nal.usda.gov/food-details/169737/nutrients",
+        "description": "Pasta, cooked, enriched, without added salt",
+        "dataset": "SR Legacy, April 2018"
+      },
+      {
+        "fdc_id": "172421",
+        "url": "https://fdc.nal.usda.gov/food-details/172421/nutrients",
+        "description": "Lentils, mature seeds, cooked, boiled, without salt",
+        "dataset": "SR Legacy, April 2018"
+      },
+      {
+        "fdc_id": "173757",
+        "url": "https://fdc.nal.usda.gov/food-details/173757/nutrients",
+        "description": "Chickpeas (garbanzo beans, bengal gram), mature seeds, cooked, boiled, without salt",
+        "dataset": "SR Legacy, April 2018"
+      },
+      {
+        "fdc_id": "170457",
+        "url": "https://fdc.nal.usda.gov/food-details/170457/nutrients",
+        "description": "Tomatoes, red, ripe, raw, year round average",
+        "dataset": "SR Legacy, April 2018"
+      },
+      {
+        "fdc_id": "171413",
+        "url": "https://fdc.nal.usda.gov/food-details/171413/nutrients",
+        "description": "Oil, olive, salad or cooking",
+        "dataset": "SR Legacy, April 2018"
+      },
+      {
+        "fdc_id": "170001",
+        "url": "https://fdc.nal.usda.gov/food-details/170001/nutrients",
+        "description": "Onions, cooked, boiled, drained, without salt",
+        "dataset": "SR Legacy, April 2018"
+      }
+    ],
+    "recipe": {
+      "final_yield_g": 1000,
+      "ingredients": [
+        {
+          "fdc_id": "168878",
+          "grams": 300,
+          "name": "Rice, white, long-grain, regular, enriched, cooked",
+          "name_ar": "أرز أبيض مطبوخ"
+        },
+        {
+          "fdc_id": "169737",
+          "grams": 250,
+          "name": "Pasta, cooked, enriched, without added salt",
+          "name_ar": "مكرونة مسلوقة"
+        },
+        {
+          "fdc_id": "172421",
+          "grams": 200,
+          "name": "Lentils, mature seeds, cooked, boiled, without salt",
+          "name_ar": "عدس مطبوخ"
+        },
+        {
+          "fdc_id": "173757",
+          "grams": 100,
+          "name": "Chickpeas (garbanzo beans, bengal gram), mature seeds, cooked, boiled, without salt",
+          "name_ar": "حمص مسلوق"
+        },
+        {
+          "fdc_id": "170457",
+          "grams": 100,
+          "name": "Tomatoes, red, ripe, raw, year round average",
+          "name_ar": "طماطم"
+        },
+        {
+          "fdc_id": "171413",
+          "grams": 20,
+          "name": "Oil, olive, salad or cooking",
+          "name_ar": "زيت زيتون"
+        },
+        {
+          "fdc_id": "170001",
+          "grams": 30,
+          "name": "Onions, cooked, boiled, drained, without salt",
+          "name_ar": "بصل مسلوق ومصفّى"
+        }
+      ]
+    }
+  }
+]
