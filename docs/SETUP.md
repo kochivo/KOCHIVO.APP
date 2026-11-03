@@ -4,6 +4,20 @@ The owner must update these templates in Supabase Authentication → Email
 Templates. Deploy T-054 first, then change the templates. Set Site URL to
 `https://kochivo.site` in production. No database migration is needed.
 
+Branded, ready-to-paste templates (logo, Arabic first with an English line)
+live in `docs/email-templates/`. Paste each file's full HTML into the matching
+Supabase template:
+
+| Supabase template | File | Subject |
+| --- | --- | --- |
+| Reset password | `reset-password.html` | غيّر كلمة السر · KOCHIVO |
+| Confirm signup | `confirm-signup.html` | أكّد إيميلك · KOCHIVO |
+| Magic link | `magic-link-code.html` | كود الدخول · KOCHIVO |
+| Change email address | `change-email.html` | تأكيد الإيميل الجديد · KOCHIVO |
+
+`_layout.txt` is the shared frame; edit it and regenerate rather than editing
+the four files by hand. The logo loads from `https://kochivo.site/brand/logo-primary.png`.
+
 ## Reset password
 
 Use this exact link instead of `{{ .ConfirmationURL }}`:
