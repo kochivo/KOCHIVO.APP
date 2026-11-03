@@ -6,6 +6,8 @@ language sql immutable set search_path = '' as $$
         or jsonb_typeof(val) <> 'string' or char_length(val #>> '{}') > 200)
     end;
 $$;
+revoke all on function public.valid_profile_social(jsonb) from public, anon;
+grant execute on function public.valid_profile_social(jsonb) to authenticated, service_role;
 
 
 

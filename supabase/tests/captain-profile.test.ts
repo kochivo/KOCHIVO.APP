@@ -17,11 +17,12 @@ it('allows own branding, prevents cross-captain edits and locks role and plan', 
     await expect(asUser(db, a, tx => tx.query(`update profiles set ${field} where id=$1`, [a]))).rejects.toThrow();
   }
 });
-it('exposes only public captain fields to their player', async () => {
+it('exposes only contact and public captain fields to their player', async () => {
   const { captain, player } = await createCaptainWithPlayer(db);
   await db.query(`update profiles set full_name='Ali', phone='+201012345678', bio='Coach' where id=$1`, [captain]);
   const result = await asUser(db, player, tx => tx.query('select * from public.my_captain_profile()'));
-  expect(result.rows).toEqual([{ full_name: 'Ali', bio: 'Coach', location: null, avatar_path: null, social: {} }]);
+  // Players could already see the captain phone before 0046; it stays as the WhatsApp fallback.
+  expect(result.rows).toEqual([{ full_name: 'Ali', phone: '+201012345678', bio: 'Coach', location: null, avatar_path: null, social: {} }]);
   expect((await asUser(db, player, tx => tx.query('select phone from profiles where id=$1', [captain]))).rows).toEqual([]);
   const other = await createUser(db, 'player');
   expect((await asUser(db, other, tx => tx.query('select * from public.my_captain_profile()'))).rows).toEqual([]);

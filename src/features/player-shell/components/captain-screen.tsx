@@ -29,8 +29,9 @@ export function CaptainScreen({ voiceNotes }: { voiceNotes?: ReactNode }) {
   const { data, status, retry } = useCaptainContext();
   const state = data ? accessState({ ...data, today: localDate(new Date()) }) : 'active';
   const social = Object.fromEntries(Object.entries(data?.social ?? {}).filter(([key, link]) =>
+    key in contactPatterns && typeof link === 'string' && contactPatterns[key as keyof typeof contactPatterns].test(link)));
+  // Captains who saved only a phone before profile links existed stay reachable on WhatsApp.
   const url = social.whatsapp ?? (data?.phone ? whatsappUrl({ phone: data.phone }) ?? undefined : undefined);
-  const url = social.whatsapp ?? (data?.phone ? whatsappUrl({ phone: data.phone }) : undefined);
   return <main className="mx-auto max-w-lg space-y-5 px-5 pt-6 pb-32">
     <header><h1 className="text-2xl font-extrabold">{t('coach')}</h1></header>
     {status === 'loading' ? <LoadingState variant="detail" /> : status === 'error' ?
