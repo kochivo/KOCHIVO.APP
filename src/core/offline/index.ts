@@ -6,4 +6,5 @@ export { startSync } from './runner';
 export { supabaseTransport } from './transport';
 export { useLiveQuery } from './use-live-query';
 export type { ProgramSnapshot, SnapshotDay, SnapshotExercise } from './db';
+export type { NutritionSnapshot, NutritionMeal, NutritionItem, NutritionAlternative, NutritionFood } from './db';
 export type { SyncTable, SyncRows, WorkoutSessionRow, SetLogRow, MealLogRow } from './tables';

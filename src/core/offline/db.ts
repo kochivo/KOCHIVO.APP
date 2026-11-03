@@ -48,6 +48,37 @@ export interface OutboxEntry {
   last_error?: string;
 }
 
+export interface NutritionFood {
+  name: string;
+  grams: number;
+  photo_path: string | null;
+  per100g: { kcal: number; protein: number; carbs: number; fat: number };
+}
+
+export interface NutritionAlternative extends NutritionFood { id: string }
+
+export interface NutritionItem extends NutritionFood {
+  id: string;
+  position: number;
+  alternatives: NutritionAlternative[];
+}
+
+export interface NutritionMeal {
+  id: string;
+  position: number;
+  name: string;
+  items: NutritionItem[];
+}
+
+export interface NutritionSnapshot {
+  id: 'active';
+  player_id: string;
+  plan_id: string;
+  title: string;
+  targets: { kcal: number | null; protein: number | null; carbs: number | null; fat: number | null };
+  meals: NutritionMeal[];
+}
+
 /**
  * On-device database. Feature caches (today's program snapshot, nutrition plan) are added
  * here as new versions — never change an existing version's schema, add version(n+1).
@@ -58,6 +89,7 @@ export class KochivoDB extends Dexie {
   meal_logs!: Table<MealLogRow, string>;
   outbox!: Table<OutboxEntry, number>;
   program_snapshot!: Table<ProgramSnapshot, string>;
+  nutrition_snapshot!: Table<NutritionSnapshot, string>;
 
   constructor(name = 'kochivo') {
     super(name);
@@ -68,6 +100,7 @@ export class KochivoDB extends Dexie {
       outbox: '++id, &[table+row_id], next_attempt_at',
     });
     this.version(2).stores({ program_snapshot: 'id' });
+    this.version(3).stores({ nutrition_snapshot: 'id' });
   }
 }
 
