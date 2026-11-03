@@ -24,6 +24,10 @@ Create or modify only these:
    - Sheets and dialogs scroll inside themselves (`overscroll-behavior: contain`), and the page behind does not scroll.
    - Touch targets are at least 48px. Gym steppers and done buttons are at least 56px.
    - Keyboards: the focused field stays visible when the soft keyboard opens (the login, renew, and check-in forms).
+   - The marketing header (`site-header.tsx`) wraps to three rows at 375px:
+     - On mobile, show the logo and "Start free" in one row, with the language switch, theme switch, and sign-in link in a compact menu or as icon buttons.
+     - On mobile, the language switch is one button that toggles to the other language (it shows "English" in Arabic and "العربية" in English).
+     - Desktop stays as it is.
 2. **Performance:**
    - Run `npm run build` and record first-load JS per route in `docs/PERFORMANCE.md`. Budget: marketing `/` ≤ 180 kB, player routes ≤ 220 kB, captain builder routes ≤ 260 kB (gzip, as Next reports).
    - `next/dynamic` for heavy client parts that are not visible at first paint: charts in progress, the PR confetti, the form-check camera, the exercise picker dialog, the Turnstile widget, admin tables.
