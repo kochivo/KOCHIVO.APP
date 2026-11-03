@@ -19,6 +19,12 @@ it('reports to the project DSN by default only in production builds', async () =
   expect((await load()).sentryDsn).toMatch(/^https:\/\/[\da-f]+@o\d+\.ingest\.de\.sentry\.io\/\d+$/);
 });
 
+it('uses the kochivo.site Turnstile key by default only in production builds', async () => {
+  vi.stubEnv('NEXT_PUBLIC_TURNSTILE_SITE_KEY', '');
+  vi.stubEnv('NODE_ENV', 'production');
+  expect((await load()).turnstileSiteKey).toBe('0x4AAAAAAFyOd8ufoia-1x4K');
+});
+
 it('lets a deployment override each value', async () => {
   vi.stubEnv('NEXT_PUBLIC_OWNER_WHATSAPP', '201000000001');
   vi.stubEnv('NEXT_PUBLIC_SENTRY_DSN', ' https://key@o1.ingest.sentry.io/1 ');

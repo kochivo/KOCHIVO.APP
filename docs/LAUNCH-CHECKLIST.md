@@ -26,9 +26,9 @@
 
 1. Cloudflare ← Turnstile ← Add site. الدومين `kochivo.site`.
 2. هتاخد مفتاحين:
-   - **Site key**: مش سري. ابعته لـ Claude، أو حطه في إعدادات الاستضافة باسم `NEXT_PUBLIC_TURNSTILE_SITE_KEY`.
-   - **Secret key**: سري. حطه بنفسك في Supabase ← Authentication ← Attack Protection ← Captcha (اختار Turnstile).
-3. من غير الخطوة دي الديمو شغال، بس من غير حماية من البوتات.
+   - **Site key**: اتحط في الكود خلاص (`0x4AAAAAAFyOd8ufoia-1x4K`)، ومش محتاج تحطه في الاستضافة.
+   - **Secret key**: سري. **ماتفعّلش Captcha في Supabase دلوقتي.** لو اتفعّل، Supabase هيطلب التحقق في الدخول والتسجيل ونسيت كلمة السر كمان، والصفحات دي لسه مافيهاش الـ widget، فهتقف. فعّله بس بعد ما Claude يضيف التحقق للصفحات دي.
+3. من غير تفعيل الـ secret، الديمو بيعرض التحقق بس Supabase مش بيراجعه.
 
 ## 3. الرفع (deploy)
 
