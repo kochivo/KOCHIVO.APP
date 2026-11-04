@@ -1,9 +1,11 @@
 import { createElement } from 'react';
 import type * as React from 'react';
+import type * as Templates from '@/features/templates';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { LocaleProvider } from '@/core/i18n/client';
-const state = vi.hoisted(() => ({ values: [] as unknown[], index: 0 }));
+vi.mock('server-only', () => ({}));
+const state = vi.hoisted(() => ({ values: [] as unknown[], index: 0, playerId: 'player' as string | null }));
 vi.mock('react', async original => {
  const react = await original<typeof React>();
  return { ...react, useState: (initial: unknown) => {
@@ -13,7 +15,7 @@ vi.mock('react', async original => {
 });
 vi.mock('next/navigation', () => ({ useRouter: () => ({ push() {}, refresh() {} }) }));
 vi.mock('@/ui/toast', () => ({ useToast: () => ({ success() {}, error() {} }) }));
-beforeEach(() => { state.values = []; state.index = 0; });
+beforeEach(() => { state.values = []; state.index = 0; state.playerId = 'player'; });
 const render = (element: React.ReactElement) => renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' }, element));
 import { PlayerPlans } from './components/player-plans';
 import { MealEditor } from './components/meal-editor';
@@ -23,8 +25,16 @@ import { ItemRow } from './components/item-row';
 vi.mock('./data/plan-io', () => ({ createPlan() {}, listPlayerPlans() {} }));
 vi.mock('./data/foods', () => ({ searchFoods() {} }));
 vi.mock('./data/custom-food', () => ({ deleteCustomFood() {} }));
-vi.mock('@/features/templates', () => ({ SaveTemplateButton: () => null }));
-vi.mock('./hooks/use-plan-draft', () => ({ usePlanDraft: () => ({ draft: { id: 'p', playerId: 'player', title: 'Plan', meals: [], targets: { kcal: 2000, protein: 150, carbs: 200, fat: 60 } }, update() {} }) }));
+vi.mock('@/features/templates', async original => ({ ...await original<typeof Templates>(), SaveTemplateButton: () => null }));
+vi.mock('./hooks/use-plan-draft', () => ({ usePlanDraft: () => ({ draft: { id: 'p', playerId: state.playerId, title: 'Plan', meals: [], targets: { kcal: 2000, protein: 150, carbs: 200, fat: 60 } }, update() {} }) }));
+it('hides player actions and saves a nutrition template', () => {
+ state.playerId = null;
+ const html = render(createElement(PlanBuilder, { planId: 'p' }));
+ expect(html).toContain('>Save template</button>');
+ expect(html).not.toContain('Activate for player');
+ expect(html).not.toContain('Save as template');
+ expect(html).toMatch(/href="\/captain\/templates"[^>]*>My templates<\/a>/);
+});
 it('links empty player nutrition plans to templates', () => {
  state.values = [[]];
  expect(render(createElement(PlayerPlans, { playerId: 'player' }))).toMatch(/href="\/captain\/templates"[^>]*>Or start from a template<\/a>/);

@@ -1,10 +1,10 @@
 vi.mock('server-only', () => ({}));
 vi.mock('next/headers', () => ({ cookies: async () => ({ get: () => undefined }) }));
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { assignTemplate, copyTemplate, deleteTemplate, listTemplatePlayers, listTemplates, renameTemplate, saveAsTemplate } from './data/templates';
+import { assignTemplate, copyTemplate, createTemplate, deleteTemplate, listTemplatePlayers, listTemplates, renameTemplate, saveAsTemplate } from './data/templates';
 
 const mocks = vi.hoisted(() => {
-  const query = { select: vi.fn(), eq: vi.fn(), in: vi.fn(), order: vi.fn(), single: vi.fn(), update: vi.fn(), delete: vi.fn() };
+  const query = { select: vi.fn(), eq: vi.fn(), in: vi.fn(), order: vi.fn(), single: vi.fn(), update: vi.fn(), delete: vi.fn(), insert: vi.fn() };
   const client = { auth: { getUser: vi.fn() }, from: vi.fn(), rpc: vi.fn() };
   return { query, client, roster: vi.fn(), revalidate: vi.fn() };
 });
@@ -41,6 +41,19 @@ describe('template validation', () => {
 });
 
 describe('template actions', () => {
+  it.each(['program', 'nutrition'] as const)('creates a blank %s template with no player', async kind => {
+    mocks.query.insert.mockResolvedValue({ error: null });
+    const result = await createTemplate({ kind });
+    expect(result.data).toMatch(/^[0-9a-f-]{36}$/);
+    expect(mocks.client.from).toHaveBeenLastCalledWith(kind === 'program' ? 'programs' : 'nutrition_plans');
+    expect(mocks.query.insert).toHaveBeenCalledWith(expect.objectContaining({
+      id: result.data, captain_id: 'captain', player_id: null, is_template: true, title: 'قالب جديد', status: 'draft',
+    }));
+  });
+  it('reports a failed blank template creation', async () => {
+    mocks.query.insert.mockResolvedValue({ error: { code: '42501' } });
+    expect(await createTemplate({ kind: 'program' })).toHaveProperty('error');
+  });
   it.each(['program', 'nutrition'] as const)('copies a %s template through copy_template', async kind => {
     expect(await copyTemplate({ kind, id, title: ' نسخة ' })).toEqual({ data: id });
     expect(mocks.client.rpc).toHaveBeenLastCalledWith('copy_template', { p_kind: kind, p_template: id, p_title: 'نسخة' });

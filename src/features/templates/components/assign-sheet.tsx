@@ -4,12 +4,12 @@ import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 
 import { useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Users } from 'lucide-react';
 import { Button, EmptyState } from '@/ui';
 import { LoadingState } from '@/ui/loading-state';
 import type { RosterPlayer } from '@/features/roster';
-import { assignTemplate, listTemplatePlayers } from '../data/templates';
+import { listTemplatePlayers } from '../data/templates';
+import { useTemplateAssignment } from '../hooks/use-template-assignment';
 import type { Template } from '../types';
 import { starterText } from '@/lib/starter-text';
 
@@ -17,14 +17,12 @@ export function AssignSheet({ template, onClose }: { template: Template; onClose
   const t = useT(messages);
   const locale = useLocale();
   const dialog = useRef<HTMLDialogElement>(null);
-  const router = useRouter();
   const [players, setPlayers] = useState<RosterPlayer[]>([]);
-  const [selected, setSelected] = useState('');
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
-  const [error, setError] = useState('');
-  const [busy, setBusy] = useState(false);
   const [attempt, setAttempt] = useState(0);
+  const assignment = useTemplateAssignment(template, players.map(player => player.playerId), onClose);
+  const { selected, done, failures, busy } = assignment;
   useEffect(() => { dialog.current?.showModal(); }, []);
   useEffect(() => {
     let current = true;
@@ -38,15 +36,6 @@ export function AssignSheet({ template, onClose }: { template: Template; onClose
     });
     return () => { current = false; };
   }, [attempt, t]);
-  async function assign() {
-    if (busy || !selected) return;
-    setBusy(true); setError('');
-    try {
-      const result = await assignTemplate({ kind: template.kind, templateId: template.id, playerId: selected });
-      if (result.error !== undefined) { setError(result.error); setBusy(false); return; }
-      router.push(`/captain/${template.kind === 'program' ? 'programs' : 'nutrition'}/${result.data}`);
-    } catch { setError(t('couldntAssignTemplateTryAgain')); setBusy(false); }
-  }
   return <dialog ref={dialog} aria-labelledby="assign-template-title"
     onCancel={event => { if (busy) event.preventDefault(); else onClose(); }}
     className="sheet fixed inset-0 m-auto max-h-[85dvh] w-[calc(100%_-_2rem)] max-w-lg overflow-y-auto rounded-card border border-line bg-surface p-6 text-ink">
@@ -58,17 +47,27 @@ export function AssignSheet({ template, onClose }: { template: Template; onClose
       </div> : players.length === 0 ? <EmptyState icon={Users} title={t('noPlayersYetAddAPlayerFirst')} body={t('chooseAPlayer')} action={{ label: t('openPlayers'), href: '/captain/players' }} /> :
         <fieldset disabled={busy} className="grid gap-2">
           <legend className="mb-2 text-sm text-muted">{t('chooseAPlayer')}</legend>
+          <label className="flex min-h-12 items-center gap-3 px-4">
+            <input type="checkbox" className="size-5 accent-lime" checked={assignment.allSelected} onChange={assignment.selectAll} />{t('selectAll')}
+          </label>
           {players.map(player => <label key={player.playerId} className="glass flex min-h-12 cursor-pointer items-center gap-3 rounded-control px-4 py-3">
-            <input type="radio" className="size-5 accent-lime" name="template-player" value={player.playerId} checked={selected === player.playerId}
-              onChange={() => { setSelected(player.playerId); setError(''); }} />
+            <input type="checkbox" className="size-5 accent-lime" value={player.playerId} disabled={done.includes(player.playerId)} checked={selected.includes(player.playerId) || done.includes(player.playerId)}
+              onChange={() => assignment.toggle(player.playerId)} />
             <span>{player.fullName}</span>
+            {done.includes(player.playerId) && <span className="ms-auto text-sm text-muted">{t('assigned')}</span>}
           </label>)}
         </fieldset>}
-      {error && <p role="alert" className="text-danger">{error}</p>}
+      {Object.keys(failures).length > 0 && <div role="alert" className="text-danger">
+        <p>{t('failedPlayers')}</p>
+        <ul>{players.filter(player => failures[player.playerId]).map(player => <li key={player.playerId}>
+          {player.fullName}: {failures[player.playerId]}
+        </li>)}</ul>
+        <Button variant="secondary" className="min-h-12" disabled={busy} onClick={() => void assignment.retry()}>{t('tryAgain')}</Button>
+      </div>}
       {busy && <p role="status">{t('assigningTemplate')}</p>}
       <div className="flex flex-wrap gap-2">
-        <Button variant={players.length ? 'primary' : 'secondary'} className="min-h-12" disabled={!selected || busy || loading || !!loadError} onClick={() => void assign()}>
-          {error ? t('tryAgain') : t('confirmAssignment')}
+        <Button variant={players.length ? 'primary' : 'secondary'} className="min-h-12" disabled={!selected.length || busy || loading || !!loadError} onClick={() => void assignment.assign()}>
+          {t('assignMany', { n: selected.length })}
         </Button>
         <Button variant="ghost" className="min-h-12" disabled={busy} onClick={onClose}>{t('cancel')}</Button>
       </div>

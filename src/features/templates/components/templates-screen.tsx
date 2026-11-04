@@ -1,20 +1,20 @@
 'use client';
 
 import { useLocale, useT } from '@/core/i18n/client';
-import { formatNumber } from '@/lib/format';
 import { messages } from '../messages';
 
 import { useEffect, useRef, useState } from 'react';
 import { uuidv7 } from '@/core/offline/ids';
 import { applyOptimistic } from '@/lib/optimistic';
-import { Copy, Eye, Files, Pencil, Trash2 } from 'lucide-react';
-import { Button, EmptyState } from '@/ui';
+import { Button } from '@/ui';
 import { copyTemplate, deleteTemplate, listTemplates, renameTemplate } from '../data/templates';
 import type { Template, TemplateKind } from '../types';
 import { AssignSheet } from './assign-sheet';
 import { PreviewSheet } from './preview-sheet';
 import { starterText } from '@/lib/starter-text';
-import { LoadingState } from '@/ui/loading-state';
+import { useRouter } from 'next/navigation';
+import { createTemplate } from '../data/templates';
+import { TemplateSection } from './template-section';
 import { useToast } from '@/ui/toast';
 import { messages as uiMessages } from '@/ui/messages';
 
@@ -25,6 +25,7 @@ export function TemplatesScreen() {
   const feedback = useT(uiMessages);
   const toast = useToast();
   const locale = useLocale();
+  const router = useRouter();
   const [templates, setTemplates] = useState<Template[]>([]);
   const [kind, setKind] = useState<TemplateKind>('program');
   const [selected, setSelected] = useState<Template | null>(null);
@@ -36,6 +37,18 @@ export function TemplatesScreen() {
   const inFlight = useRef(new Set<string>());
   const [deleted, setDeleted] = useState<string[]>([]);
   const [attempt, setAttempt] = useState(0);
+  const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState('');
+  async function create() {
+    if (!lock(['create'])) return;
+    setCreating(true); setCreateError('');
+    try {
+      const result = await createTemplate({ kind });
+      if (result.error !== undefined) { setCreateError(result.error); return; }
+      router.push(`/captain/${kind === 'program' ? 'programs' : 'nutrition'}/${result.data}`);
+    } catch { setCreateError(t('couldntSaveTemplateTryAgain')); }
+    finally { setCreating(false); unlock(['create']); }
+  }
   useEffect(() => {
     let current = true;
     listTemplates().then(result => {
@@ -104,7 +117,6 @@ export function TemplatesScreen() {
     finally { unlock(keys); }
   }
   const visible = templates.filter(template => template.kind === kind && !deleted.includes(keyOf(template)));
-  const starter = visible.find(template => template.starter && !busy.includes(keyOf(template)));
   return <div className="mx-auto grid max-w-5xl gap-6">
     <header className="space-y-2">
       <p className="font-display text-sm text-muted">{t('templates')}</p>
@@ -115,39 +127,14 @@ export function TemplatesScreen() {
       {(['program', 'nutrition'] as const).map(tab => <Button key={tab} variant="ghost" className={`min-h-12 ${kind === tab ? 'glass-strong font-bold' : 'text-muted'}`}
         aria-pressed={kind === tab} onClick={() => setKind(tab)}>{tab === 'program' ? t('workouts') : t('nutrition')}</Button>)}
     </div>
-    {loading ? <LoadingState variant="cards" /> : loadError ? <div role="alert" className="glass rounded-card p-5">{loadError}
-      <Button variant="ghost" className="min-h-12" onClick={() => { setLoading(true); setAttempt(value => value + 1); }}>{t('tryAgain')}</Button>
-    </div> : <>
-      {busy.length > 0 && <p role="status">{t('savingChanges')}</p>}
-      {!visible.some(template => !template.starter) && <EmptyState icon={Files} title={t('emptyTitle')} body={starter ? t('emptyBody') : t('noTemplatesYetOpenAPlayersProgram')}
-        action={starter ? { label: t('copyStarter'), onClick: () => void duplicate(starter) } : { label: t('openPlayers'), href: '/captain/players' }} />}
-      {visible.length > 0 && <ul className="grid gap-4 sm:grid-cols-2">
-        {visible.map(template => <li key={`${template.kind}-${template.id}`} className="glass flex flex-col gap-4 rounded-card p-5">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0 space-y-1.5">
-              <h2 className="break-words text-xl font-bold">{starterText(template.title, locale)}</h2>
-              {template.starter && <p className="w-fit rounded-full bg-lime-soft px-2.5 py-0.5 text-xs font-bold text-lime">{t('starterBadge')}</p>}
-            </div>
-            <span className="glass-strong shrink-0 rounded-control px-3 py-2 text-sm">{t(kind === 'program' ? 'dayCount' : 'mealCount', { n: template.count, count: formatNumber(template.count, locale) })}</span>
-          </div>
-          <div className="mt-auto flex flex-wrap items-center gap-2">
-            <Button variant="ghost" className="min-h-12" disabled={busy.includes(keyOf(template))} onClick={() => setPreviewing(template)}><Eye aria-hidden className="size-5" />{t('preview')}</Button>
-            <Button variant="secondary" className="min-h-12 flex-1" disabled={busy.includes(keyOf(template))} onClick={() => setSelected(template)}>{t('assignToPlayer')}</Button>
-            <Button variant="ghost" className="min-h-12" disabled={busy.includes(keyOf(template))} onClick={() => void duplicate(template)}><Copy aria-hidden className="size-5" />{t('copy')}</Button>
-            {!template.starter && <>
-              <Button variant="ghost" className="min-h-12 min-w-12" aria-label={t('rename', { v0: template.title })} disabled={busy.includes(keyOf(template))} onClick={() => {
-                const title = window.prompt(t('newTemplateName'), template.title);
-                if (title !== null) void edit({ template, title: title.trim() });
-              }}><Pencil aria-hidden className="size-5" /></Button>
-              <Button variant="ghost" className="min-h-12 min-w-12" aria-label={t('delete', { v0: template.title })} disabled={busy.includes(keyOf(template))} onClick={() => {
-                if (window.confirm(t('deleteTemplatePlayerCopiesWillStayUnchanged', { v0: template.title }))) void edit({ template });
-              }}><Trash2 aria-hidden className="size-5" /></Button>
-            </>}
-          </div>
-          {errors[keyOf(template)] && <p role="alert" className="text-sm text-danger">{errors[keyOf(template)]}</p>}
-        </li>)}
-      </ul>}
-    </>}
+    {busy.length > 0 && <p role="status">{t('savingChanges')}</p>}
+    {createError && <p role="alert" className="text-danger">{createError}</p>}
+    {[false, true].map(starter => <TemplateSection key={String(starter)} starter={starter}
+      templates={visible.filter(template => template.starter === starter)} loading={loading} error={loadError}
+      busy={busy} errors={errors} creating={creating}
+      onRetry={() => { setLoading(true); setAttempt(value => value + 1); }} onCreate={create}
+      onPreview={setPreviewing} onAssign={setSelected} onCopy={template => void duplicate(template)}
+      onRename={(template, title) => void edit({ template, title })} onDelete={template => void edit({ template })} />)}
     {previewing && <PreviewSheet template={previewing} onClose={() => setPreviewing(null)}
       onAssign={() => { setSelected(previewing); setPreviewing(null); }} />}
     {selected && <AssignSheet template={selected} onClose={() => setSelected(null)} />}

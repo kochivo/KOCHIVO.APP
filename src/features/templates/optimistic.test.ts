@@ -1,6 +1,6 @@
 import { beforeEach, expect, it, vi } from 'vitest';
-import { isValidElement } from 'react';
-import type { ReactElement } from 'react';
+import { cloneElement, isValidElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
 import type * as ReactModule from 'react';
 
 const hooks = vi.hoisted(() => ({
@@ -44,6 +44,8 @@ type Node = ReactElement<Record<string, unknown>>;
 function nodes(value: unknown): Node[] {
   if (Array.isArray(value)) return value.flatMap(nodes);
   if (!isValidElement<Record<string, unknown>>(value)) return [];
+  if (value.type === TemplateSection) return nodes(TemplateSection(value.props as ComponentProps<typeof TemplateSection>));
+  if (value.type === TemplateCard) return nodes(cloneElement(TemplateCard(value.props as ComponentProps<typeof TemplateCard>), { key: value.key }));
   return [value, ...nodes(value.props.children)];
 }
 function text(value: unknown): string {
@@ -63,6 +65,8 @@ beforeEach(() => {
 });
 
 import { TemplatesScreen } from './components/templates-screen';
+import { TemplateSection } from './components/template-section';
+import { TemplateCard } from './components/template-card';
 import { listTemplates, copyTemplate, renameTemplate, deleteTemplate } from './data/templates';
 import type { Template } from './types';
 import { uuidv7 } from '@/core/offline/ids';
@@ -103,7 +107,7 @@ it.each((['rename', 'delete', 'copy'] as const).flatMap(action => ['error', 'thr
   expect(nodes(other).some(node => node.props.disabled === false)).toBe(true);
   if (mode === 'error') request.resolve({ error: 'denied' }); else request.reject(new Error('network'));
   await settle();
-  expect(rows().map(row => text(nodes(row).find(node => node.type === 'h2')))).toEqual(['a', 'b']);
+  expect(rows().map(row => text(nodes(row).find(node => node.type === 'h3')))).toEqual(['a', 'b']);
   expect(nodes(render()).some(node => node.props.role === 'alert' && text(node).includes(mode === 'error' ? 'denied' : 'couldntSaveChangesTryAgain'))).toBe(true);
   vi.unstubAllGlobals();
 });
@@ -124,7 +128,7 @@ it('does not overwrite another successful rename when a deletion fails', async (
   (button(before[0] as Node, 'delete').props.onClick as () => void)();
   (button(before[1] as Node, 'rename').props.onClick as () => void)();
   await settle(); deletion.resolve({ error: 'denied' }); await settle();
-  expect(rows().map(row => text(nodes(row).find(node => node.type === 'h2')))).toEqual(['a', 'Renamed']);
+  expect(rows().map(row => text(nodes(row).find(node => node.type === 'h3')))).toEqual(['a', 'Renamed']);
   vi.unstubAllGlobals();
 });
 

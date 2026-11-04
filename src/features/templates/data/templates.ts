@@ -5,6 +5,8 @@ import { getT } from '@/core/i18n/server';
 import { messages } from '../messages';
 
 import { revalidatePath } from 'next/cache';
+import { unstable_rethrow } from 'next/navigation';
+import { uuidv7 } from '@/core/offline/ids';
 import { z } from 'zod';
 import { supabaseServer } from '@/core/supabase/server';
 import { isMissingRow, isPermissionDenied, readError } from '@/core/supabase/errors';
@@ -38,6 +40,22 @@ async function session() {
 }
 const tableFor = (kind: TemplateKind) => kind === 'program' ? 'programs' : 'nutrition_plans';
 
+export async function createTemplate(input: unknown): Promise<TemplateResult<string>> {
+  const t = await getT(messages);
+  const parsed = z.object({ kind: kindSchema }).strict().safeParse(input);
+  if (!parsed.success) return { error: t('checkTheTemplateTypeNameAndPlayer') };
+  try {
+    const { client, captain } = await session();
+    const id = uuidv7();
+    const result = await client.from(tableFor(parsed.data.kind)).insert({
+      id, captain_id: captain, player_id: null, is_template: true, title: t('blankTitle'), status: 'draft',
+    });
+    if (result.error) throw result.error;
+    revalidatePath('/captain/templates');
+    return { data: id };
+  } catch (error) { unstable_rethrow(error); return { error: errorMessage(error, t) }; }
+}
+
 export async function listTemplates(): Promise<TemplateResult<Template[]>> {
   const t = await getT(messages);
   try {
@@ -54,7 +72,7 @@ export async function listTemplates(): Promise<TemplateResult<Template[]>> {
         count: ('program_days' in row ? row.program_days[0]?.count : row.meals[0]?.count) ?? 0 })));
     }
     return { data: templates.sort((a, b) => b.created_at.localeCompare(a.created_at)) };
-  } catch (error) { return { error: errorMessage(error, t) }; }
+  } catch (error) { unstable_rethrow(error); return { error: errorMessage(error, t) }; }
 }
 
 export async function saveAsTemplate(input: unknown): Promise<TemplateResult<string>> {
@@ -71,7 +89,7 @@ export async function saveAsTemplate(input: unknown): Promise<TemplateResult<str
     if (!result.data) return { error: t('templateOrSourceNotFound') };
     revalidatePath('/captain/templates');
     return { data: result.data };
-  } catch (error) { return { error: errorMessage(error, t) }; }
+  } catch (error) { unstable_rethrow(error); return { error: errorMessage(error, t) }; }
 }
 
 export async function assignTemplate(input: unknown): Promise<TemplateResult<string>> {
@@ -89,7 +107,7 @@ export async function assignTemplate(input: unknown): Promise<TemplateResult<str
     revalidatePath(`/captain/players/${playerId}/${kind === 'program' ? 'programs' : 'nutrition'}`);
     revalidatePath('/captain');
     return { data: result.data };
-  } catch (error) { return { error: errorMessage(error, t) }; }
+  } catch (error) { unstable_rethrow(error); return { error: errorMessage(error, t) }; }
 }
 
 export async function copyTemplate(input: unknown): Promise<TemplateResult<string>> {
@@ -103,7 +121,7 @@ export async function copyTemplate(input: unknown): Promise<TemplateResult<strin
     if (result.error) throw result.error;
     revalidatePath('/captain/templates');
     return { data: result.data };
-  } catch (error) { return { error: errorMessage(error, t) }; }
+  } catch (error) { unstable_rethrow(error); return { error: errorMessage(error, t) }; }
 }
 
 export async function renameTemplate(input: unknown): Promise<TemplateResult<true>> {
@@ -119,7 +137,7 @@ export async function renameTemplate(input: unknown): Promise<TemplateResult<tru
     if (!result.data) return { error: t('templateOrSourceNotFound') };
     revalidatePath('/captain/templates');
     return { data: true };
-  } catch (error) { return { error: errorMessage(error, t) }; }
+  } catch (error) { unstable_rethrow(error); return { error: errorMessage(error, t) }; }
 }
 
 export async function deleteTemplate(input: unknown): Promise<TemplateResult<true>> {
@@ -135,7 +153,7 @@ export async function deleteTemplate(input: unknown): Promise<TemplateResult<tru
     if (!result.data) return { error: t('templateOrSourceNotFound') };
     revalidatePath('/captain/templates');
     return { data: true };
-  } catch (error) { return { error: errorMessage(error, t) }; }
+  } catch (error) { unstable_rethrow(error); return { error: errorMessage(error, t) }; }
 }
 
 export async function listTemplatePlayers(): Promise<TemplateResult<RosterPlayer[]>> {
@@ -144,5 +162,5 @@ export async function listTemplatePlayers(): Promise<TemplateResult<RosterPlayer
     await session();
     const result = await fetchRoster();
     return result.error !== undefined ? { error: result.error } : { data: result.players };
-  } catch (error) { return { error: errorMessage(error, t) }; }
+  } catch (error) { unstable_rethrow(error); return { error: errorMessage(error, t) }; }
 }

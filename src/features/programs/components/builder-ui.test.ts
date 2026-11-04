@@ -1,5 +1,6 @@
 import { createElement } from 'react';
 import type * as React from 'react';
+import type * as Templates from '@/features/templates';
 import type * as UI from '@/ui';
 import type * as Dialog from '@/ui/responsive-dialog';
 import { renderToStaticMarkup } from 'react-dom/server';
@@ -13,6 +14,7 @@ import { RestSheet } from './rest-sheet';
 import { ExerciseRow } from './exercise-row';
 import { convertToWeek } from '../weekly-draft';
 import type { DraftExercise, ProgramDraft } from '../types';
+vi.mock('server-only', () => ({}));
 
 const controls = vi.hoisted(() => ({ clicks: new Map<string, () => void>(), values: [] as unknown[], index: 0, fallback: '' }));
 vi.mock('react', async original => {
@@ -35,7 +37,7 @@ vi.mock('@/ui', async original => {
     IconButton: (props: React.ComponentProps<typeof ui.IconButton>) => { capture(props); return createElement(ui.IconButton, props); },
   };
 });
-vi.mock('@/features/templates', () => ({ SaveTemplateButton: () => null }));
+vi.mock('@/features/templates', async original => ({ ...await original<typeof Templates>(), SaveTemplateButton: () => null }));
 vi.mock('@/core/storage', () => ({ exerciseMediaUrl: (path: string) => `/media/${path}` }));
 vi.mock('@/ui/responsive-dialog', async original => {
   const ui = await original<typeof Dialog>();

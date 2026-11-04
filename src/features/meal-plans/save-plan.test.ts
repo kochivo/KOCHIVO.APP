@@ -10,6 +10,10 @@ const draft: PlanDraft = { id: '01900000-0000-7000-8000-000000000001',
   playerId: '01900000-0000-7000-8000-000000000002', title: 'Plan', status: 'draft',
   targets: { kcal: 2000, protein: 150, carbs: 225, fat: 56 }, meals: [] };
 beforeEach(() => vi.resetAllMocks());
+it('saves a template without a player', async () => {
+  rpc.mockResolvedValue({ error: null });
+  expect(await savePlan({ ...draft, playerId: null })).toEqual({ ok: true, data: undefined });
+});
 it('returns validation errors without writing', async () => {
   await expect(savePlan({ ...draft, title: '' })).resolves.toMatchObject({ ok: false, error: expect.any(String) });
   expect(rpc).not.toHaveBeenCalled();
