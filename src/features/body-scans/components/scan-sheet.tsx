@@ -41,7 +41,7 @@ export function ScanSheet({ onClose, onSaved }: { onClose: () => void; onSaved: 
     finally { setBusy(false); }
   }
   return <dialog ref={dialog} aria-labelledby="scan-sheet-title" onCancel={event => { if (busy) event.preventDefault(); else onClose(); }}
-    onClose={onClose} className="glass-strong fixed inset-x-0 top-auto bottom-0 m-0 max-h-[90dvh] w-full max-w-lg overflow-y-auto rounded-t-card p-5 text-ink backdrop:bg-overlay md:mx-auto">
+    onClose={onClose} className="sheet fixed inset-x-0 top-auto bottom-0 m-0 max-h-[90dvh] w-full max-w-lg overflow-y-auto rounded-t-card p-5 text-ink backdrop:bg-overlay md:mx-auto">
     <header className="mb-4 flex items-center justify-between"><h2 id="scan-sheet-title" className="text-xl font-bold">{t('add')}</h2>
       <Button variant="ghost" className="min-h-12 min-w-12" aria-label={t('close')} disabled={busy} onClick={onClose}><X aria-hidden /></Button></header>
     <form onSubmit={submit} className="space-y-4">
