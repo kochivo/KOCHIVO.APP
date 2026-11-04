@@ -32,7 +32,6 @@ it('renders English exercise names, rep ranges and nutrition units', () => {
   expect(program).toContain('3 sets');
   expect(program).toContain('8–12 reps');
   expect(program).toContain('Rest 60 seconds');
-  expect(program).toContain('© Gym visual');
   expect(program).not.toMatch(/[\u0600-\u06ff]/);
   const nutrition = renderToStaticMarkup(h(LocaleProvider, { locale: 'en' }, h(PreviewNutrition, {
     nutrition: { id: 'active', player_id: 'player', plan_id: 'plan', title: 'Meal plan',

@@ -53,7 +53,7 @@ These rules are mandatory. A diff that breaks one is rejected in review, even if
 - Every user-facing string lives in `messages.ts`; Arabic is Egyptian, English is short and plain, with no emoji and no inline UI text.
 - Icons come from `lucide-react`. Every icon-only button needs a translated `aria-label`.
 - Every list has an empty state, and every async view has loading and error states.
-- Exercise GIFs must show the attribution "© Gym visual" wherever the library is browsable (see `docs/LEGACY-AUDIT.md`).
+- The exercise GIF attribution "© Gym visual" lives only in the public site footer (owner decision 2026-11-05; see `docs/LEGACY-AUDIT.md`). Do not add it to app screens, and never remove the footer credit.
 
 ## 5. Code style
 

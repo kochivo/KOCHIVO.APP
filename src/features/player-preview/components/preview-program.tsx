@@ -34,7 +34,6 @@ export function PreviewProgram({ program }: { program: ProgramSnapshot | null })
         </p>}
         {exercise.notes && <p className="text-sm text-muted">{exercise.notes}</p>}
       </li>)}</ul>
-      {day.exercises.length > 0 && <p className="text-xs text-muted">{t('attribution')}</p>}
     </section>)}
   </section>;
 }

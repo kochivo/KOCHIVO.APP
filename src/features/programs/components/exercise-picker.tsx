@@ -105,7 +105,6 @@ export function ExercisePicker({ disabled, onAdd, usedExerciseIds = [] }: {
       {parts.map(([value, label]) => <Chip key={value} pressed={bodyPart === value}
         onClick={() => setBodyPart(value)}>{label}</Chip>)}
     </div>
-    <p className="text-xs text-muted">{t('attribution')}</p>
     {loadedKey !== key || result === null ? <LoadingState /> : result.error ?
       <ErrorState message={result.error} retryLabel={t('tryAgain')} onRetry={() => setRevision(value => value + 1)} /> : null}
         {loadedKey === key && result?.data && rows.length === 0 && <EmptyState icon={Search} title={t('noExerciseWithThisName')} body={t('searchInArabicOrEnglish')}

@@ -18,7 +18,6 @@ export function ExerciseHeader({ exercise, last }: { exercise: SnapshotExercise;
     {exercise.media_path && <figure className="shrink-0 text-center">
       <Image src={exerciseMediaUrl(exercise.media_path)} alt={name} width={84} height={84}
         unoptimized loading="eager" decoding="async" className="rounded-control motion-reduce:hidden" />
-      <figcaption className="mt-1 text-xs text-muted">{t('gymVisual')}</figcaption>
     </figure>}
     <div className="min-w-0 space-y-2">
       <h1 className="text-2xl font-extrabold"><bdi>{name}</bdi></h1>
