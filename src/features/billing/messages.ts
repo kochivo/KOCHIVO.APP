@@ -2,7 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
-    invitePlayer: "اعزم لاعب",
+    invitePlayer: "ضيف لاعب",
     'reminder': "يا {name}، اشتراكك مع الكابتن بيخلص {date}. تحب نجدد؟",
     'billing': "الدفعات",
     'intro': "جدّد للاعبينك وتابع باقتك",
