@@ -25,6 +25,7 @@ it.each([['/en/x?tab=one', '/x?tab=one'], ['/ar', '/'], ['/ar/offline', '/offlin
   'redirects a directly requested locale prefix %s to its canonical URL', async (path, destination) => {
     const response = await proxy(new NextRequest(`https://kochivo.site${path}`));
     expect(response.headers.get('location')).toBe(`https://kochivo.site${destination}`);
+    expect(response.cookies.get('kochivo.locale')?.value).toBe(path.slice(1, 3));
     expect(session.refresh).not.toHaveBeenCalled();
   },
 );
