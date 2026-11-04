@@ -24,13 +24,17 @@ export function PlayerPlans({ playerId }: { playerId: string }) {
   const [title, setTitle] = useState(t('newPlan'));
   useEffect(() => {
     let current = true;
-    listPlayerPlans(playerId).then(value => { if (current) { setPlans(value); setError(''); } })
+    listPlayerPlans(playerId).then(value => { if (current) { if (value.ok) { setPlans(value.data); setError(''); } else setError(value.error); } })
       .catch(() => { if (current) setError(t('couldntLoadPlansTryAgain')); });
     return () => { current = false; };
   }, [playerId, retry, t]);
   async function create() {
     setBusy(true); setError('');
-    try { router.push(`/captain/nutrition/${await createPlan(playerId, title)}`); }
+    try {
+      const result = await createPlan(playerId, title);
+      if (!result.ok) { setError(result.error); setBusy(false); return; }
+      router.push(`/captain/nutrition/${result.data}`);
+    }
     catch { setError(t('couldntCreateThePlanTryAgain')); setBusy(false); }
   }
   return <div className="mx-auto grid max-w-5xl gap-5">

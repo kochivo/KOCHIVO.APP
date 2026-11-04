@@ -66,7 +66,7 @@ export function ProgramBuilder({ programId, playerId }: { programId?: string; pl
     try {
       if (!await state.save()) return;
       const result = await activateProgram(state.draft.id);
-      if (result.error) setMessage(result.error);
+      if (!result.ok) setMessage(result.error);
       else { state.activated(); toast.success(t('programActivatedForPlayer')); }
     } catch { setMessage(t('couldntActivateTryAgain')); }
     finally { setPending(false); }

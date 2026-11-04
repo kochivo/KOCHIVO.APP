@@ -3,6 +3,8 @@
 import { getT } from '@/core/i18n/server';
 import { messages } from '../messages';
 
+import { ok, fail } from '@/lib/action-result';
+import type { ActionResult } from '@/lib/action-result';
 import { z } from 'zod';
 import { uuidv7 } from '@/core/offline/ids';
 import { planClient, toFood } from './client';
@@ -21,51 +23,52 @@ const draftSchema = z.object({
   })).max(100),
 });
 
-export async function createPlan(playerId: string, title: string): Promise<string> {
+export async function createPlan(playerId: string, title: string): Promise<ActionResult<string>> {
   const t = await getT(messages);
-  z.uuid().parse(playerId);
-  title = z.string().trim().min(1).max(80).parse(title);
+  if (!z.uuid().safeParse(playerId).success || !title.trim() || title.trim().length > 80) return fail(t('couldntCreateThePlanTryAgain'));
+  title = title.trim();
   const client = await planClient();
   const { data, error } = await client.auth.getUser();
-  if (error || !data.user) throw new Error(t('signInFirst'));
+  if (error || !data.user) return fail(t('signInFirst'));
   const id = uuidv7();
   const result = await client.from('nutrition_plans').insert({ id, player_id: playerId, captain_id: data.user.id, title });
-  if (result.error) throw new Error(t('couldntCreateThePlanTryAgain'));
-  return id;
+  if (result.error) return fail(t('couldntCreateThePlanTryAgain'));
+  return ok(id);
 }
-export async function listPlayerPlans(playerId: string): Promise<PlanSummary[]> {
+export async function listPlayerPlans(playerId: string): Promise<ActionResult<PlanSummary[]>> {
   const t = await getT(messages);
-  z.uuid().parse(playerId);
+  if (!z.uuid().safeParse(playerId).success) return fail(t('couldntLoadPlansTryAgain'));
   const client = await planClient();
   const { data, error } = await client.from('nutrition_plans').select('*').eq('player_id', playerId).order('created_at', { ascending: false });
-  if (error) throw new Error(t('couldntLoadPlansTryAgain'));
-  return (data ?? []).map(({ id, title, status }) => ({ id, title, status }));
+  if (error) return fail(t('couldntLoadPlansTryAgain'));
+  return ok((data ?? []).map(({ id, title, status }) => ({ id, title, status })));
 }
-export async function loadPlan(id: string): Promise<PlanDraft> {
+export async function loadPlan(id: string): Promise<ActionResult<PlanDraft>> {
   const t = await getT(messages);
-  z.uuid().parse(id);
+  if (!z.uuid().safeParse(id).success) return fail(t('planNotFound'));
   const client = await planClient();
   const { data: plan, error } = await client.from('nutrition_plans').select('*').eq('id', id).single();
   const user = await client.auth.getUser();
-  if (error || !plan || plan.captain_id !== user.data.user?.id || !plan.player_id) throw new Error(t('planNotFound'));
+  if (error || !plan || plan.captain_id !== user.data.user?.id || !plan.player_id) return fail(t('planNotFound'));
   const meals = await client.from('meals').select('*').eq('plan_id', id).order('position');
-  if (meals.error) throw new Error(t('couldntLoadMeals'));
+  if (meals.error) return fail(t('couldntLoadMeals'));
   const mealIds = (meals.data ?? []).map(meal => meal.id);
   const items = mealIds.length ? await client.from('meal_items').select('*').in('meal_id', mealIds).order('position') : { data: [], error: null };
-  if (items.error) throw new Error(t('couldntLoadFoods'));
+  if (items.error) return fail(t('couldntLoadFoods'));
   const itemIds = (items.data ?? []).map(item => item.id);
   const alts = itemIds.length ? await client.from('meal_item_alternatives').select('*').in('meal_item_id', itemIds) : { data: [], error: null };
-  if (alts.error) throw new Error(t('couldntLoadAlternatives'));
+  if (alts.error) return fail(t('couldntLoadAlternatives'));
   const foodIds = [...new Set([...(items.data ?? []), ...(alts.data ?? [])].map(item => item.food_id))];
   const foods = foodIds.length ? await client.from('foods').select('*').in('id', foodIds) : { data: [], error: null };
-  if (foods.error) throw new Error(t('couldntLoadFoods'));
+  if (foods.error) return fail(t('couldntLoadFoods'));
   const foodMap = new Map((foods.data ?? []).map(row => [row.id, toFood(row)]));
+  if (foodIds.some(id => !foodMap.has(id))) return fail(t('foodUnavailableTryAgain'));
   function food(id: string) {
     const result = foodMap.get(id);
-    if (!result) throw new Error(t('foodUnavailableTryAgain'));
+    if (!result) throw new Error('Missing validated food');
     return result;
   }
-  return { id, playerId: plan.player_id, title: plan.title, status: plan.status,
+  return ok({ id, playerId: plan.player_id, title: plan.title, status: plan.status,
     targets: { kcal: plan.target_kcal ?? 2000, protein: plan.target_protein ?? 150, carbs: plan.target_carbs ?? 225, fat: plan.target_fat ?? 56 },
     meals: (meals.data ?? []).map((meal, index) => ({ id: meal.id, name: meal.name, position: index + 1,
       items: (items.data ?? []).filter(item => item.meal_id === meal.id).map((item, index) => ({
@@ -73,14 +76,15 @@ export async function loadPlan(id: string): Promise<PlanDraft> {
         alternatives: (alts.data ?? []).filter(alt => alt.meal_item_id === item.id).map(alt => ({ id: alt.id, food: food(alt.food_id), grams: Number(alt.grams) })),
       })),
     })),
-  };
+  });
 }
-export async function savePlan(input: PlanDraft): Promise<void> {
+export async function savePlan(input: PlanDraft): Promise<ActionResult<void>> {
   const t = await getT(messages);
   const parsed = draftSchema.safeParse(input);
-  if (!parsed.success) throw new Error(t('checkThePlanNameMealsTargetsAnd'));
+  if (!parsed.success) return fail(t('checkThePlanNameMealsTargetsAnd'));
   const draft = parsed.data;
   const client = await planClient();
   const { error } = await client.rpc('save_nutrition_plan', { p_plan: draft.id, p_draft: draft });
-  if (error) throw new Error(t('couldntSaveTryAgain'));
+  if (error) return fail(t('couldntSaveTryAgain'));
+  return ok(undefined);
 }

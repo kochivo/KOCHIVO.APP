@@ -1,5 +1,7 @@
 'use server';
 
+import { ok, fail } from '@/lib/action-result';
+import type { ActionResult } from '@/lib/action-result';
 import { getT } from '@/core/i18n/server';
 import { messages } from '../messages';
 
@@ -61,11 +63,11 @@ export async function loadProgram(id: string): Promise<Result<ProgramDraft>> {
       !Array.isArray(settings) ? settings.repeatWeekly !== false : true, days: draftDays } };
   } catch (error) { unstable_rethrow(error); return { error: t('couldntOpenTheProgramTryAgain') }; }
 }
-export async function saveProgram(draft: ProgramDraft): Promise<Result<true>> {
+export async function saveProgram(draft: ProgramDraft): Promise<ActionResult<true>> {
   const t = await getT(messages);
   const failure = t('programWasntFullySavedTrySavingAgain');
   const parsed = draftSchema.safeParse(draft);
-  if (!parsed.success) return { error: t('checkTheProgramNameAndExerciseNumbers') };
+  if (!parsed.success) return fail(t('checkTheProgramNameAndExerciseNumbers'));
   const input = parsed.data;
   const dayIds = input.days.map(day => day.id);
   const rows = input.days.flatMap(day => day.exercises);
@@ -77,12 +79,12 @@ export async function saveProgram(draft: ProgramDraft): Promise<Result<true>> {
     input.days.some((day, i) => day.program_id !== input.id || day.position !== i + 1 ||
       (day.is_rest_day && (day.exercises.length > 0 || day.cardio.length > 0)) ||
       day.cardio.some((row, j) => row.day_id !== day.id || row.position !== j + 1) ||
-      day.exercises.some((row, j) => row.day_id !== day.id || row.position !== j + 1))) return { error: t('programOrderIsInvalid') };
+      day.exercises.some((row, j) => row.day_id !== day.id || row.position !== j + 1))) return fail(t('programOrderIsInvalid'));
   try {
     const { client } = await session();
     const result = await client.rpc('save_weekly_program', { p_draft: input });
-    return result.error ? { error: failure } : { data: true };
-  } catch (error) { unstable_rethrow(error); return { error: failure }; }
+    return result.error ? fail(failure) : ok(true as const);
+  } catch (error) { unstable_rethrow(error); return fail(failure); }
 }
 export async function createProgram(playerId: string, title: string): Promise<Result<string>> {
   const t = await getT(messages);

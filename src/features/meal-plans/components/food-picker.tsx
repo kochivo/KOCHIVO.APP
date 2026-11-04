@@ -23,7 +23,7 @@ export function FoodPicker({ onPick, alternative = false }: { onPick: (food: Foo
   const [filter, setFilter] = useState('all');
   const [grams, setGrams] = useState(100);
   const [result, setResult] = useState<{ foods: Food[]; catalogEmpty: boolean } | null>(null);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [retry, setRetry] = useState(0);
   const [creating, setCreating] = useState(false);
@@ -47,7 +47,8 @@ export function FoodPicker({ onPick, alternative = false }: { onPick: (food: Foo
     setResult(value => value && { ...value, foods: value.foods.filter(row => row.id !== food.id) });
     try {
       const result = await deleteCustomFood(food.id);
-      toast.success(t(result?.archived ? 'foodArchived' : 'foodDeleted'));
+      if (!result.ok) { showFood(food); toast.error(result.error); return; }
+      toast.success(t(result.data?.archived ? 'foodArchived' : 'foodDeleted'));
     }
     catch {
       showFood(food);
@@ -57,17 +58,19 @@ export function FoodPicker({ onPick, alternative = false }: { onPick: (food: Foo
   useEffect(() => {
     latestQuery.current = query;
     let current = true;
-    searchFoods({ query, limit: 30, mine: filter === 'mine' }).then(value => {
+    searchFoods({ query, limit: 30, mine: filter === 'mine' }).then(response => {
       if (current) {
+        if (!response.ok) { setError(response.error); setLoading(false); return; }
+        const value = response.data;
         const foods = value.foods.filter(food => !changes.current.has(food.id));
         const local = [...changes.current.values()].filter((food): food is Food => food !== null &&
           food.name.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()));
         setResult({ foods: [...local, ...foods], catalogEmpty: value.catalogEmpty && !local.length });
-        setLoading(false); setError(false);
+        setLoading(false); setError('');
       }
-    }).catch(() => { if (current) { setError(true); setLoading(false); } });
+    }).catch(() => { if (current) { setError(t('searchFailedTryAgain')); setLoading(false); } });
     return () => { current = false; };
-  }, [query, retry, filter]);
+  }, [query, retry, filter, t]);
   return <section aria-label={alternative ? t('chooseAnAlternative') : t('chooseAFood')} className="glass grid gap-3 rounded-card p-4">
     <Button id={openerId} variant="secondary" onClick={() => setCreating(true)}>{t('newFood')}</Button>
     <Segmented aria-label={t('searchFoods')} options={[{ value: 'all', label: t('allFoods') }, { value: 'mine', label: t('myFoods') }]}
@@ -76,7 +79,7 @@ export function FoodPicker({ onPick, alternative = false }: { onPick: (food: Foo
       className="mt-2 min-h-12 w-full rounded-control border border-line bg-surface px-3" /></label>
     {!alternative && <label>{t('grams')}<input type="number" min={5} max={2000} step={5} value={grams}
       onChange={event => setGrams(Number(event.target.value))} className="ms-3 min-h-12 w-28 rounded-control bg-surface px-3" /></label>}
-    {loading ? <LoadingState variant="list" /> : error ? <div role="alert">{t('searchFailed')} <Button variant="secondary" onClick={() => { setLoading(true); setRetry(n => n + 1); }}>{t('tryAgain')}</Button></div> : <>
+    {loading ? <LoadingState variant="list" /> : error ? <div role="alert">{error} <Button variant="secondary" onClick={() => { setLoading(true); setRetry(n => n + 1); }}>{t('tryAgain')}</Button></div> : <>
       {!result?.foods.length && <EmptyState tabIndex={-1} icon={Search} title={result?.catalogEmpty ? t('theFoodLibraryIsEmpty') : t('noFoodWithThisName')} body={result?.catalogEmpty ? t('catalogHint') : t('searchHint')}
         action={result?.catalogEmpty || filter === 'mine' ? { label: t('newFood'), onClick: () => setCreating(true) } :
           { label: t('clearSearch'), onClick: () => { setQuery(''); setFilter('all'); setLoading(true); setRetry(n => n + 1); } }} />}

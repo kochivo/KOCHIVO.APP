@@ -38,7 +38,7 @@ it('does not delete a photo before the replacement update succeeds', async () =>
   const old = `captain-food-photos/${captain}/old.jpg`;
   mocks.single.mockResolvedValueOnce({ data: { photo_path: old }, error: null })
     .mockResolvedValueOnce({ data: null, error: { code: '42501' } });
-  await expect(updateCustomFood(captain, { ...input, photoPath: `captain-food-photos/${captain}/abc.jpg` })).rejects.toThrow();
+  await expect(updateCustomFood(captain, { ...input, photoPath: `captain-food-photos/${captain}/abc.jpg` })).resolves.toMatchObject({ ok: false, error: expect.any(String) });
   expect(mocks.remove).not.toHaveBeenCalled();
 });
 it('removes the previous photo after replacement succeeds', async () => {
@@ -50,7 +50,7 @@ it('archives foods used in plans without removing the photo', async () => {
   vi.useFakeTimers(); vi.setSystemTime(new Date('2026-11-04T10:00:00Z'));
   try {
     mocks.single.mockResolvedValueOnce({ data: null, error: { code: '23503' } });
-    await expect(deleteCustomFood(captain)).resolves.toEqual({ archived: true });
+    await expect(deleteCustomFood(captain)).resolves.toEqual({ ok: true, data: { archived: true } });
     expect(mocks.update).toHaveBeenCalledWith({ archived_at: '2026-11-04T10:00:00.000Z' });
     expect(mocks.eq.mock.calls).toEqual([['id', captain], ['owner_id', captain], ['id', captain], ['owner_id', captain]]);
   } finally { vi.useRealTimers(); }
@@ -59,7 +59,7 @@ it('archives foods used in plans without removing the photo', async () => {
 it('does not claim success or remove a photo if archiving fails', async () => {
   mocks.single.mockResolvedValueOnce({ data: null, error: { code: '23503' } })
     .mockResolvedValueOnce({ data: null, error: { code: 'PGRST116' } });
-  await expect(deleteCustomFood(captain)).rejects.toThrow();
+  await expect(deleteCustomFood(captain)).resolves.toMatchObject({ ok: false, error: expect.any(String) });
   expect(mocks.remove).not.toHaveBeenCalled();
 });
 it('removes the photo after deleting a food', async () => {
@@ -73,12 +73,12 @@ describe('custom food server validation', () => {
     expect(mocks.insert).toHaveBeenCalledWith(expect.objectContaining({ owner_id: captain, source: 'captain',
       name_ar: 'Soup', name_en: null, kcal_per_100g: 133.3, protein_per_100g: 6.7,
       carbs_per_100g: 13.3, fat_per_100g: 3.3 }));
-    expect(food).toMatchObject({ custom: true, kcal: 133.3 });
+    expect(food).toMatchObject({ ok: true, data: { custom: true, kcal: 133.3 } });
   });
   it.each([{ name: '' }, { name: 'a'.repeat(61) }, { servingGrams: 4 }, { servingGrams: 2001 },
     { kcal: -1 }, { kcal: 5001 }, { kcal: 1350.01 }, { protein: -1 }, { carbs: 1001 },
     { fat: Infinity }, { servingGrams: NaN }, { servingGrams: 10, protein: 8, carbs: 2, fat: 1 }])('rejects invalid input %j before writing', async patch => {
-    await expect(createCustomFood({ ...input, ...patch })).rejects.toThrow();
+    await expect(createCustomFood({ ...input, ...patch })).resolves.toMatchObject({ ok: false, error: expect.any(String) });
     expect(mocks.insert).not.toHaveBeenCalled();
   });
   it('accepts the 900 kcal per 100g boundary', async () => {
@@ -86,7 +86,7 @@ describe('custom food server validation', () => {
     expect(mocks.insert).toHaveBeenCalledWith(expect.objectContaining({ kcal_per_100g: 900 }));
   });
   it('rejects a photo belonging to another captain', async () => {
-    await expect(createCustomFood({ ...input, photoPath: 'captain-food-photos/other/a.jpg' })).rejects.toThrow();
+    await expect(createCustomFood({ ...input, photoPath: 'captain-food-photos/other/a.jpg' })).resolves.toMatchObject({ ok: false, error: expect.any(String) });
     expect(mocks.insert).not.toHaveBeenCalled();
   });
 });

@@ -1,5 +1,7 @@
 'use server';
 
+import { ok, fail } from '@/lib/action-result';
+import type { ActionResult } from '@/lib/action-result';
 import { getT } from '@/core/i18n/server';
 import { messages } from '../messages';
 
@@ -7,13 +9,13 @@ import { planClient, toFood } from './client';
 import { escapeSearch } from '../types';
 import type { Food } from '../types';
 
-export async function searchFoods({ query, limit = 30, mine = false }: { query: string; limit?: number; mine?: boolean }): Promise<{ foods: Food[]; catalogEmpty: boolean }> {
+export async function searchFoods({ query, limit = 30, mine = false }: { query: string; limit?: number; mine?: boolean }): Promise<ActionResult<{ foods: Food[]; catalogEmpty: boolean }>> {
   const t = await getT(messages);
   const client = await planClient();
   let request = client.from('foods').select('*').is('archived_at', null).order('name_ar').limit(Math.max(1, Math.min(30, limit)));
   if (mine) {
     const { data, error } = await client.auth.getUser();
-    if (error || !data.user) throw new Error(t('signInFirst'));
+    if (error || !data.user) return fail(t('signInFirst'));
     request = request.eq('owner_id', data.user.id);
   }
   if (query.trim()) {
@@ -21,12 +23,12 @@ export async function searchFoods({ query, limit = 30, mine = false }: { query: 
     request = request.or(`name_ar.ilike."${pattern}",name_en.ilike."${pattern}"`);
   }
   const { data, error } = await request;
-  if (error) throw new Error(t('searchFailedTryAgain'));
+  if (error) return fail(t('searchFailedTryAgain'));
   let catalogEmpty = !mine && !query.trim() && !data?.length;
   if (!mine && query.trim() && !data?.length) {
     const catalog = await client.from('foods').select('id').is('archived_at', null).limit(1);
-    if (catalog.error) throw new Error(t('searchFailedTryAgain'));
+    if (catalog.error) return fail(t('searchFailedTryAgain'));
     catalogEmpty = !catalog.data?.length;
   }
-  return { foods: (data ?? []).map(toFood), catalogEmpty };
+  return ok({ foods: (data ?? []).map(toFood), catalogEmpty });
 }

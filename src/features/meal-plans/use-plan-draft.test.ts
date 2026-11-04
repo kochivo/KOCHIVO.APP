@@ -1,0 +1,71 @@
+import { beforeEach, expect, it, vi } from 'vitest';
+import type * as React from 'react';
+import { createT } from '@/core/i18n/messages';
+import { messages } from './messages';
+import { usePlanDraft as renderPlanDraft } from './hooks/use-plan-draft';
+import type { PlanDraft } from './types';
+
+const state = vi.hoisted(() => ({ values: [] as unknown[], index: 0,
+  save: vi.fn(), activate: vi.fn(), success: vi.fn() }));
+vi.mock('react', async original => ({ ...await original<typeof React>(), useEffect: () => {},
+  useState: (initial: unknown) => {
+    const index = state.index++;
+    if (!(index in state.values)) state.values[index] = initial;
+    return [state.values[index], (value: unknown) => {
+      state.values[index] = typeof value === 'function' ? value(state.values[index]) : value;
+    }];
+  },
+}));
+vi.mock('@/core/i18n/client', () => ({ useT: () => createT(messages, 'ar') }));
+vi.mock('@/ui/toast', () => ({ useToast: () => ({ success: state.success }) }));
+vi.mock('./data/plan-io', () => ({ savePlan: state.save, loadPlan: vi.fn() }));
+vi.mock('./data/activate', () => ({ activatePlan: state.activate }));
+const draft: PlanDraft = { id: 'plan', playerId: 'player', title: 'Plan', status: 'draft',
+  targets: { kcal: 2000, protein: 150, carbs: 225, fat: 56 }, meals: [{ id: 'meal', name: 'Meal', position: 1,
+    items: [{ id: 'item', position: 1, grams: 100, alternatives: [],
+      food: { id: 'food', name: 'Food', photo: null, custom: false, kcal: 100, protein: 10, carbs: 10, fat: 1 } }] }] };
+function RenderDraft() { return renderPlanDraft('plan'); }
+function render() { state.index = 0; return RenderDraft(); }
+beforeEach(() => {
+  vi.resetAllMocks(); state.values = [draft, '', '', false, false, 0, false];
+  state.save.mockResolvedValue({ ok: true, data: undefined });
+  state.activate.mockResolvedValue({ ok: true, data: undefined });
+});
+it('shows a generic translated error for a masked server exception', async () => {
+  state.save.mockRejectedValue(new Error('Minified React error #441'));
+  await render().persist();
+  expect(render().error).toBe(createT(messages, 'ar')('couldntSaveTryAgain'));
+  expect(state.success).not.toHaveBeenCalled();
+});
+it('shows a returned validation error and does not activate', async () => {
+  state.save.mockResolvedValue({ ok: false, error: 'validation' });
+  await render().persist(true);
+  expect(render().error).toBe('validation');
+  expect(state.activate).not.toHaveBeenCalled();
+});
+it('shows the returned activation error without changing draft status', async () => {
+  state.activate.mockResolvedValue({ ok: false, error: 'ضيف وجبة وأكلة الأول' });
+  await render().persist(true);
+  expect(render().error).toBe('ضيف وجبة وأكلة الأول');
+  expect(render().draft?.status).toBe('draft');
+  expect(state.success).not.toHaveBeenCalled();
+});
+it('preserves the server rule allowing activation when at least one meal has food', async () => {
+  state.values[0] = { ...draft, meals: [...draft.meals, { id: 'empty', name: 'Meal', position: 2, items: [] }] };
+  await render().persist(true);
+  expect(render().draft?.status).toBe('active');
+  expect(state.activate).toHaveBeenCalledWith('plan');
+  expect(state.success).toHaveBeenCalled();
+});
+it.each([{ meals: [] }, { meals: [{ id: 'empty', name: 'Meal', position: 1, items: [] }] }])(
+  'checks empty meals before saving or activating', async ({ meals }) => {
+    state.values[0] = { ...draft, meals };
+    await render().persist(true);
+    expect(render().error).toBe('ضيف وجبة وأكلة الأول');
+    expect(state.save).not.toHaveBeenCalled();
+    expect(state.activate).not.toHaveBeenCalled();
+    await render().retrySave();
+    expect(render().error).toBe('ضيف وجبة وأكلة الأول');
+    expect(state.save).not.toHaveBeenCalled();
+  },
+);
