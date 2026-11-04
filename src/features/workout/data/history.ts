@@ -36,7 +36,7 @@ export async function remoteHistory(client: SupabaseClient<AppDatabase>, playerI
   for (let offset = 0; ; offset += 500) {
     const end = allSessions ? offset + 499 : Math.min(offset + 499, limit - 1);
     const { data, error } = await client.from('workout_sessions')
-      .select('id,program_day_id,training_date,started_at,completed_at,client_updated_at')
+      .select('id,program_day_id,training_date,started_at,completed_at,client_updated_at,session_rpe,player_note')
       .eq('player_id', playerId).not('completed_at', 'is', null)
       .order('training_date', { ascending: false }).order('started_at', { ascending: false }).order('id', { ascending: false }).range(offset, end);
     if (error) throw error;

@@ -22,6 +22,9 @@ import { restAnnouncement } from '../rest';
 import { starterText } from '@/lib/starter-text';
 
 const PrBurst = dynamic(() => import('./pr-burst').then(module => module.PrBurst), { ssr: false });
+const SessionFeedback = dynamic(() => import('./session-feedback').then(module => module.SessionFeedback), {
+  ssr: false, loading: () => <LoadingState />,
+});
 const FormCheckButton = dynamic(() => import('./form-check-button').then(module => module.FormCheckButton), { ssr: false });
 const CoachReductionBanner = dynamic(() => import('@/features/readiness').then(module => module.CoachReductionBanner), { ssr: false });
 
@@ -53,11 +56,13 @@ export function FocusScreen({ dayId, playerId }: { dayId: string; playerId?: str
       : state.queue.length === 0 ? !state.day.cardio?.length && <EmptyState icon={Dumbbell} title={t('noExercisesForThisDay')} body={t('yourCoachIsPreparingYourWorkout')} action={{ label: t('messageCoach'), href: '/player/captain' }} /> : <>
         <p className="text-sm text-muted">{t('setProgress', { value0: formatNumber(state.progress, locale), value1: formatNumber(state.queue.length, locale) })}</p>
         <ProgressBar value={state.doneSets.length} max={state.queue.length} aria-label={t('setProgress', { value0: formatNumber(state.progress, locale), value1: formatNumber(state.queue.length, locale) })} />
-        {state.finished ? <DonePanel /> : current ? <>
+        {state.finished ? state.session ? <SessionFeedback key={state.session.id} sessionId={state.session.id}
+          hasFeedback={state.session.session_rpe != null || Boolean(state.session.player_note)} /> : <DonePanel /> : current ? <>
           <ExerciseHeader exercise={current.exercise} last={state.lastSession} />
           <SetDots exercise={current.exercise} currentIndex={current.setIndex} doneSets={state.doneSets}
             onEdit={state.edit} disabled={state.disabled} />
-          {rest.remaining > 0 ? <RestPanel remaining={rest.remaining} flashing={rest.flashing} onExtend={rest.extend} onSkip={rest.skip} /> : <>
+          {rest.remaining > 0 ? <RestPanel remaining={rest.remaining} total={rest.total} sound={rest.sound} onToggleSound={rest.toggleSound}
+            flashing={rest.flashing} onExtend={rest.extend} onSkip={rest.skip} /> : <>
             <SetControls state={state} />
           </>}
           {lastSet && <FormCheckButton exerciseId={lastSet.exercise_id} setLogId={lastSet.id} />}

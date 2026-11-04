@@ -2,6 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    sessionRpe: 'مجهود التمرين {n} / 10',
     unavailable: "اختار لاعب عشان تشوف خطته",
     openPlayers: "افتح اللاعبين",
     emptyBody: "ابدأ من قالب جاهز وكمّل الخطة قبل ما تفعّلها للاعب",
@@ -60,6 +61,7 @@ export const messages = defineMessages({
     'dash': "—",
   },
   en: {
+    sessionRpe: 'Session RPE {n} / 10',
     unavailable: "Choose a player to preview",
     openPlayers: "Open players",
     emptyBody: "Choose a template or finish the plan before activating it",

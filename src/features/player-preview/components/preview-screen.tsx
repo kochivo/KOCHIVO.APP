@@ -68,7 +68,7 @@ export function PreviewScreen({ result, today }: { result: Result; today: string
             </div>}
             {tab === 1 && <PreviewProgram program={data.program} />}
             {tab === 2 && <PreviewNutrition nutrition={data.nutrition} />}
-            {tab === 3 && <PreviewWeek week={data.week} today={today} />}
+            {tab === 3 && <PreviewWeek week={data.week} today={today} sessions={data.feedbackSessions} />}
           </>}
       </div>
     </PhoneFrame>

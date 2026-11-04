@@ -1,5 +1,6 @@
 export const messages = {
   ar: {
+    workout_feedback: 'فيه تقييم تمرين جديد محتاج تشوفه',
     title: 'إشعارات كوتشيفو',
     plan_assigned: 'اتعيّنلك برنامج {name}',
     nutrition_updated: 'اتحدّث نظامك الغذائي {name}',
@@ -9,6 +10,7 @@ export const messages = {
     workout_reminder: 'جاهز لتمرين النهارده؟ {name} مستنيك',
   },
   en: {
+    workout_feedback: 'New workout feedback needs your attention',
     title: 'KOCHIVO notifications',
     plan_assigned: 'Program assigned: {name}',
     nutrition_updated: 'Nutrition updated: {name}',

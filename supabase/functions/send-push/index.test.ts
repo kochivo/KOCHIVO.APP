@@ -10,7 +10,7 @@ const source = ts.transpileModule(readFileSync('supabase/functions/send-push/ind
   compilerOptions: { module: ts.ModuleKind.CommonJS, esModuleInterop: true, target: ts.ScriptTarget.ES2022 },
 }).outputText;
 
-function sender(status?: number, configured = true) {
+function sender(status?: number, configured = true, feedback = false) {
   const requests: { path: string; method: string; body?: string }[] = [];
   const sent: { endpoint: string; payload: string }[] = [];
   const errors: unknown[][] = [];
@@ -40,8 +40,10 @@ function sender(status?: number, configured = true) {
       requests.push({ path, method: init.method ?? 'GET', body: init.body as string | undefined });
       if (path === 'rpc/push_config') return Response.json(config);
       if (path.startsWith('notifications?')) return Response.json([
-        { id, user_id: id, type: 'workout_reminder', payload: { day_title: 'Legs' } },
+        feedback ? { id, user_id: id, type: 'workout_feedback', payload: { session_id: id, rpe: 9, has_note: true } }
+          : { id, user_id: id, type: 'workout_reminder', payload: { day_title: 'Legs' } },
       ]);
+      if (path.startsWith('workout_sessions?')) return Response.json([{ player_id: id }]);
       if (path.startsWith('push_subscriptions?user_id=')) return Response.json([
         { id, endpoint: 'https://push.example/private-endpoint', p256dh: 'key', auth: 'auth' },
       ]);
@@ -54,6 +56,14 @@ function sender(status?: number, configured = true) {
 }
 const request = (secret = 'hook-secret', notificationId = id) => new Request('https://functions.example/send-push', {
   method: 'POST', headers: { 'x-push-secret': secret }, body: JSON.stringify({ notification_id: notificationId }),
+});
+
+it('resolves feedback to a player URL without fetching the note', async () => {
+  const test = sender(undefined, true, true);
+  expect((await test.handle(request())).status).toBe(204);
+  expect(JSON.parse(test.sent[0]?.payload ?? '{}').url).toBe(`/ar/captain/players/${id}`);
+  expect(test.requests.find(row => row.path.startsWith('workout_sessions?'))?.path)
+    .toBe(`workout_sessions?id=eq.${id}&select=player_id&limit=1`);
 });
 
 it('rejects missing, wrong and unconfigured secrets before reading user data', async () => {

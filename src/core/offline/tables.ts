@@ -13,6 +13,9 @@ export interface WorkoutSessionRow {
   training_date: string;
   started_at: string;
   completed_at: string | null;
+  /** Optional for rows cached before session feedback was introduced. */
+  session_rpe?: number | null;
+  player_note?: string | null;
   client_updated_at: string;
 }
 

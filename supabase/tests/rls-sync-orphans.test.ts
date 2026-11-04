@@ -60,7 +60,7 @@ async function expectLogs(f: Awaited<ReturnType<typeof fixture>>, refs = {
   day: f.day as string | null, item: f.item as string | null, meal: f.meal as string | null,
 }) {
   expect(await stored('workout_sessions', f.session.id)).toEqual({
-    ...f.session, player_id: owner.player, program_day_id: refs.day,
+    ...f.session, player_id: owner.player, program_day_id: refs.day, session_rpe: null, player_note: null,
   });
   expect(await stored('set_logs', f.set.id)).toEqual({
     ...f.set, player_id: owner.player, program_exercise_id: refs.item,
