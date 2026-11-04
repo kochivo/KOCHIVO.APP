@@ -3,6 +3,7 @@ import { defineMessages } from '@/core/i18n/messages';
 export const messages = defineMessages({
   ar: {
     cardio: 'الكارديو', cardioDuration: '{count} دقيقة', low: 'خفيف', moderate: 'متوسط', high: 'عالي',
+    unsupportedAudio: 'الصوت ده مش بيشتغل على جهازك، حدّث iOS',
     inAppBrowserWarning: 'افتح الرابط في كروم أو سفاري عشان تسجيل الدخول يشتغل',
     copyLink: 'انسخ الرابط',
     linkCopied: 'الرابط اتنسخ',
@@ -37,6 +38,7 @@ export const messages = defineMessages({
   },
   en: {
     cardio: 'Cardio', cardioDuration: '{count} minutes', low: 'Low', moderate: 'Moderate', high: 'High',
+    unsupportedAudio: 'Your device cannot play this audio. Update iOS.',
     inAppBrowserWarning: 'Open this link in Chrome or Safari so sign-in works',
     copyLink: 'Copy link',
     linkCopied: 'Link copied',

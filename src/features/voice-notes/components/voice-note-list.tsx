@@ -19,7 +19,7 @@ export function VoiceNoteList({ notes, onPlay }: { notes: VoiceNote[]; onPlay?: 
           <time dateTime={note.createdAt}>{formatDateAr(localDate(new Date(note.createdAt)),{ day: 'numeric', month: 'long' }, locale)}</time>
           {!note.listenedAt && onPlay && <span className="rounded-full bg-lime-soft px-2 py-0.5 font-bold text-lime">{t('newNote')}</span>}
         </p>
-        <AudioPlayer src={note.url} durationSeconds={note.durationSeconds} playLabel={t('play')} pauseLabel={t('pause')}
+        <AudioPlayer src={note.url} mimeType={note.mimeType} durationSeconds={note.durationSeconds} playLabel={t('play')} pauseLabel={t('pause')}
           formatTime={clock} onPlay={() => onPlay?.(note)} onError={() => setBroken(note.id)} />
         {broken === note.id && <p role="alert" className="text-xs text-danger">{t('playFailed')}</p>}
       </li>)}

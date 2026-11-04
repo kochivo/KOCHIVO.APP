@@ -6,11 +6,12 @@ import { formatNumber } from '@/lib/format';
 import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { X } from 'lucide-react';
-import { supabaseBrowser } from '@/core/supabase/browser';
+import { loadSupabaseBrowser } from '@/core/supabase/lazy';
 import { localDate } from '@/lib/dates';
 import { Button, Chip, Stepper, TextField } from '@/ui';
 import { submitCheckIn } from '../data/checkins';
 import type { CheckIn } from '../data/checkins';
+import { poses } from '../gallery';
 
 export function CheckinSheet({ latest, open, onClose, onSent }: {
   latest?: CheckIn; open: boolean; onClose: () => void; onSent: () => void;
@@ -21,6 +22,7 @@ export function CheckinSheet({ latest, open, onClose, onSent }: {
   const dialog = useRef<HTMLDialogElement>(null);
   const [weight, setWeight] = useState(latest?.body_weight_kg ?? 75);
   const [waist, setWaist] = useState<number | null>(latest?.waist_cm ?? null);
+  const [bodyFat, setBodyFat] = useState(latest?.body_fat_pct?.toString() ?? '');
   const [notes, setNotes] = useState('');
   const [photos, setPhotos] = useState<({ file: File; preview: string } | null)[]>([null, null, null]);
   const previewUrls = useRef(new Set<string>());
@@ -51,13 +53,13 @@ export function CheckinSheet({ latest, open, onClose, onSent }: {
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (busy) return;
-    // photo_paths has no slot labels, so the front photo must always be first for before/after.
-    if (!photos[0] && photos.some(Boolean)) { setError(t('startWithAFrontPhoto')); return; }
     setBusy(true); setError(''); setProgress(0);
     try {
-      const result = await submitCheckIn(supabaseBrowser(), {
+      const result = await submitCheckIn(await loadSupabaseBrowser(), {
         today: localDate(new Date()), body_weight_kg: weight, waist_cm: waist, notes,
         photos: photos.flatMap((photo) => photo ? [photo.file] : []),
+        body_fat_pct: bodyFat === '' ? null : Number(bodyFat),
+        photo_poses: poses.filter((_, index) => photos[index] !== null),
         onProgress: (completed, total) => setProgress(Math.round(completed / total * 100)),
       }, t);
       if (result.error) {
@@ -78,6 +80,7 @@ export function CheckinSheet({ latest, open, onClose, onSent }: {
       </header>
       <fieldset disabled={busy} className="space-y-4">
         <Stepper label={t('weightKg')} value={weight} min={20} step={0.1} onChange={(value) => setWeight(Math.min(400, value))} format={(value) => formatNumber(Number(value.toFixed(1)), locale)} />
+        <TextField label={t('bodyFatOptional')} type="number" min={3} max={60} step={0.1} value={bodyFat} onChange={event => setBodyFat(event.target.value)} />
         <div className="flex items-center justify-between gap-2">
           <span>{t('waist')}</span>
           <Chip pressed={waist === null} onClick={() => setWaist(waist === null ? latest?.waist_cm ?? 90 : null)}>{t('none')}</Chip>

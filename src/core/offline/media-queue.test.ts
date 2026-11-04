@@ -124,10 +124,13 @@ describe('media queue', () => {
     old.version(3).stores({ nutrition_snapshot: 'id' });
     await old.open();
     for (const table of old.tables) await table.add({ id: table.name === 'outbox' ? 1 : 'saved' });
+    const existingTables = old.tables.map(table => table.name);
     old.close();
     await db.open();
-    expect(db.verno).toBe(4);
-    for (const table of db.tables.filter((table) => table.name !== 'media_queue')) expect(await table.count()).toBe(1);
+    expect(db.verno).toBe(5);
+    for (const name of existingTables) expect(await db.table(name).count()).toBe(1);
+    expect(await db.supplements.count()).toBe(0);
+    expect(await db.supplement_logs.count()).toBe(0);
     await enqueueMedia(db, entry(), 1000);
     expect(await mediaPending(db)).toBe(1);
   });

@@ -14,11 +14,13 @@ import { useToast } from '@/ui/toast';
 import { messages as uiMessages } from '@/ui/messages';
 import { voiceNoteTooLarge } from '@/lib/upload-guards';
 
-export function VoiceRecorder({ playerId, context, onSent }: { playerId: string; context?: VoiceContext; onSent?: (note: VoiceNote) => void }) {
+export function VoiceRecorder({ playerId, context, onSent, recorder }: { playerId: string; context?: VoiceContext; onSent?: (note: VoiceNote) => void;
+  recorder?: ReturnType<typeof useRecorder> }) {
   const t = useT(messages);
   const feedback = useT(uiMessages);
   const toast = useToast();
-  const { state, start, stop, reset } = useRecorder();
+  const internal = useRecorder();
+  const { state, start, stop, reset } = recorder ?? internal;
   const [sending, setSending] = useState(false);
   const send = async () => {
     if (state.status !== 'recorded') return;
@@ -39,14 +41,14 @@ export function VoiceRecorder({ playerId, context, onSent }: { playerId: string;
         <Square aria-hidden className="size-5 fill-current" />{t('stop')}
         <span role="status" className="ms-2 font-display tabular-nums" dir="ltr">{clock(state.seconds)} / {clock(MAX_VOICE_SECONDS)}</span>
       </Button> : state.status === 'recorded' ? <div className="space-y-3">
-        <AudioPlayer src={state.url} durationSeconds={state.seconds} playLabel={t('play')} pauseLabel={t('pause')} formatTime={clock} />
+        <AudioPlayer src={state.url} mimeType={state.blob.type} durationSeconds={state.seconds} playLabel={t('play')} pauseLabel={t('pause')} formatTime={clock} />
         <div className="grid grid-cols-2 gap-2">
           <Button variant="ghost" className="gap-2" onClick={reset} disabled={sending}><Trash2 aria-hidden className="size-5" />{t('discard')}</Button>
-          <Button variant="secondary" className="gap-2" onClick={() => void send()} disabled={sending}>
+          {!recorder && <Button variant="secondary" className="gap-2" onClick={() => void send()} disabled={sending}>
             <Send aria-hidden className="size-5" />{sending ? t('sending') : t('send')}
-          </Button>
+          </Button>}
         </div>
-      </div> : <Button variant="secondary" className="min-h-14 w-full gap-2" onClick={() => void start()}>
+      </div> : <Button variant="secondary" className="min-h-14 w-full gap-2" disabled={state.status === 'requesting'} onClick={() => void start()}>
         <Mic aria-hidden className="size-5 text-lime" />{t('record')}
       </Button>}
       {state.status === 'denied' && <p role="alert" className="text-sm text-warn">{t('micDenied')}</p>}

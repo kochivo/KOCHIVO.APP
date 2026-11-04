@@ -1,21 +1,22 @@
 import { getLocale, getT } from '@/core/i18n/server';
 import { messages } from '../messages';
 
-import Image from 'next/image';
 import { Scale } from 'lucide-react';
 import { EmptyState, GlassCard } from '@/ui';
 import { formatNumber } from '@/lib/format';
-import { formatDateAr } from '@/lib/dates';
-import { LineChart } from '@/features/progress';
+import { LineChart, ProgressGallery, photoPose, progressMessages } from '@/features/progress';
 import { weightPoints, weightSummary } from '../model';
 import type { ProfileCheckIn } from '../types';
 
 export async function ProgressTab({ checkIns, targetKg, playerId }: { checkIns: ProfileCheckIn[]; targetKg: number | null; playerId: string }) {
   const [t, locale] = await Promise.all([getT(messages), getLocale()]);
+  const p = await getT(progressMessages);
   const points = weightPoints(checkIns);
   const summary = weightSummary(points, targetKg);
   const signed = (value: number) => `${value > 0 ? '+' : ''}${formatNumber(value, locale)} ${t('kg')}`;
-  const photos = checkIns.filter((row) => row.photos.length);
+  const bodyFat = checkIns.flatMap(row => row.bodyFatPct == null ? [] : [{ date: row.weekStart, value: row.bodyFatPct }]);
+  const weeks = checkIns.map(row => ({ date: row.weekStart, weight: row.weightKg,
+    photos: row.photos.map((url, index) => ({ url, pose: photoPose(row.photoPoses?.[index]) })) }));
   const action = { label: t('remindPlayer'), href: `/captain/players/${playerId}?tab=checkins#voice-recorder-${playerId}` };
   return (
     <div className="space-y-4">
@@ -29,20 +30,12 @@ export async function ProgressTab({ checkIns, targetKg, playerId }: { checkIns: 
           <div className="glass-strong rounded-control p-3"><dt className="text-xs text-muted">{t('toTarget')}</dt>
             <dd className="font-display text-2xl font-extrabold" dir="ltr">{summary.toTarget === null ? t('dash') : signed(summary.toTarget)}</dd></div>
         </dl>
-        <LineChart points={points} title={t('weightTrend')} unit={t('kg')} />
+        <LineChart points={points} bodyFat={bodyFat} title={t('weightTrend')} unit={t('kg')} />
       </GlassCard> : <EmptyState icon={Scale} title={t('noWeightsTitle')} body={t('noWeightsBody')} action={action} />}
-      <GlassCard className="space-y-4 p-5">
-        <h2 className="text-lg font-bold">{t('photos')}</h2>
-        {photos.length ? <ul className="space-y-4">{photos.map((row) => {
-          const date = formatDateAr(row.weekStart, { day: 'numeric', month: 'long' }, locale);
-          return <li key={row.id} className="space-y-2">
-            <p className="text-sm text-muted">{t('week', { date })}</p>
-            <div className="grid grid-cols-3 gap-2">{row.photos.map((url) =>
-              <Image key={url} src={url} alt={t('photoAlt', { date })} width={320} height={427} unoptimized
-                className="aspect-3/4 h-auto w-full rounded-control object-cover" />)}</div>
-          </li>;
-        })}</ul> : <EmptyState icon={Scale} title={t('noPhotos')} body={t('noCheckinsBody')} action={action} />}
-      </GlassCard>
+      {!summary && bodyFat.length > 0 && <LineChart points={points} bodyFat={bodyFat} title={t('weightTrend')} unit={t('kg')} />}
+      {checkIns.some(row => row.photoError) && <p role="alert" className="text-danger">{p('couldntLoadPhotos')}</p>}
+      {weeks.some(week => week.photos.length) ? <ProgressGallery weeks={weeks} /> :
+        <EmptyState icon={Scale} title={t('noPhotos')} body={t('noCheckinsBody')} action={action} />}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, expect, it, vi } from 'vitest';
+import { beforeEach, expect, it, vi } from 'vitest';
 import { isValidElement } from 'react';
 import type { ReactElement } from 'react';
 import type * as ReactModule from 'react';
@@ -60,9 +60,8 @@ async function settle() { for (let i = 0; i < 12; i++) await Promise.resolve(); 
 beforeEach(() => {
   hooks.slots = []; hooks.cursor = 0; hooks.effects = [];
   vi.clearAllMocks();
-  vi.setSystemTime(new Date('2026-11-03T12:00:00Z'));
+  voice.state = { status: 'idle' };
 });
-afterEach(() => vi.useRealTimers());
 
 import { InboxScreen } from './components/inbox-screen';
 import { InboxRow } from './components/inbox-row';
@@ -70,12 +69,16 @@ import { ReplyBox } from './components/reply-box';
 import { listInbox, reviewItem } from './data/inbox';
 import type { InboxItem } from './types';
 vi.mock('./data/inbox', () => ({ listInbox: vi.fn(), reviewItem: vi.fn(), mediaUrls: vi.fn() }));
-vi.mock('@/features/voice-notes', () => ({ VoiceRecorder: () => null }));
+const voice = vi.hoisted(() => ({ state: { status: 'idle' } as { status: string; blob?: Blob; seconds?: number }, upload: vi.fn(), reset: vi.fn() }));
+vi.mock('@/features/voice-notes', () => ({ VoiceRecorder: () => null,
+  useRecorder: () => ({ state: voice.state, reset: voice.reset }), sendVoiceNote: voice.upload }));
+vi.mock('@/core/supabase/lazy', () => ({ loadSupabaseBrowser: async () => ({}) }));
 const items: InboxItem[] = ['a', 'b'].map(id => ({
   kind: 'form', id, player_id: 'p', player_name: id, created_at: '2026-11-03T12:00:00Z',
   reviewed_at: null, reply: null, exercise_name: 'Squat', note: null,
 }));
-function render() { hooks.cursor = 0; return InboxScreen(); }
+const now = () => new Date('2026-11-03T12:00:00Z');
+function render() { hooks.cursor = 0; return InboxScreen({ now }); }
 async function load(initial = items) {
   vi.mocked(listInbox).mockResolvedValue({ data: initial });
   render(); hooks.effects.splice(0).forEach(effect => effect()); await settle();
@@ -147,5 +150,62 @@ it('keeps a review failure visible when an earlier retry finishes later', async 
   expect(text(render())).toContain('denied');
   reload.resolve({ data: items }); await settle();
   expect(text(render())).toContain('denied');
+});
+
+it.each(['form', 'checkin'] as const)('uploads a voice-only %s reply before reviewing and keeps the dialog until saved', async kind => {
+  await load([{ ...items[0], kind } as InboxItem]); select(0);
+  voice.state = { status: 'recorded', blob: new Blob(['clip']), seconds: 12 };
+  const upload = deferred<{ id: string }>(); voice.upload.mockReturnValue(upload.promise);
+  vi.mocked(reviewItem).mockResolvedValue({ data: true });
+  const operation = send()('');
+  expect(nodes(render()).some(node => node.type === ReplyBox)).toBe(true);
+  expect(reviewItem).not.toHaveBeenCalled();
+  upload.resolve({ id: 'voice' }); await operation;
+  expect(voice.upload).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ context: { kind, id: 'a' }, recording: voice.state.blob }));
+  expect(reviewItem).toHaveBeenCalledWith({ kind, id: 'a', reply: '' });
+  expect(nodes(render()).some(node => node.type === ReplyBox)).toBe(false);
+});
+
+it('retains the dialog and clip after upload failure and retries without reviewing early', async () => {
+  await load(); select(0);
+  voice.state = { status: 'recorded', blob: new Blob(['clip']), seconds: 12 };
+  voice.upload.mockRejectedValueOnce(new Error('offline')).mockResolvedValueOnce({ id: 'voice' });
+  await send()('Reply');
+  expect(reviewItem).not.toHaveBeenCalled();
+  expect(voice.reset).not.toHaveBeenCalled();
+  expect(nodes(render()).some(node => node.type === ReplyBox)).toBe(true);
+  expect(text(render())).toContain('sendFailed');
+  vi.mocked(reviewItem).mockResolvedValue({ data: true });
+  await send()('Reply');
+  expect(voice.upload).toHaveBeenCalledTimes(2);
+});
+
+it('retries a failed review without uploading the saved clip twice', async () => {
+  await load(); select(0);
+  voice.state = { status: 'recorded', blob: new Blob(['clip']), seconds: 12 };
+  voice.upload.mockResolvedValue({ id: 'voice' });
+  vi.mocked(reviewItem).mockResolvedValueOnce({ error: 'denied' }).mockResolvedValueOnce({ data: true });
+  await send()('Reply');
+  expect(nodes(render()).some(node => node.type === ReplyBox)).toBe(true);
+  expect(voice.reset).not.toHaveBeenCalled();
+  await send()('Reply');
+  expect(voice.upload).toHaveBeenCalledTimes(1);
+});
+
+it('asks before discarding a clip and stays open when leaving is declined', async () => {
+  await load(); select(0);
+  voice.state = { status: 'recorded', blob: new Blob(['clip']), seconds: 12 };
+  const confirm = vi.fn().mockReturnValueOnce(false).mockReturnValueOnce(true);
+  vi.stubGlobal('window', { confirm });
+  try {
+    const close = () => nodes(render()).find(node => node.type === 'button' && node.props['aria-label'] === 'close')?.props.onClick as () => void;
+    close()();
+    expect(confirm).toHaveBeenCalledWith('unsentVoice');
+    expect(nodes(render()).some(node => node.type === ReplyBox)).toBe(true);
+    expect(voice.reset).not.toHaveBeenCalled();
+    close()();
+    expect(nodes(render()).some(node => node.type === ReplyBox)).toBe(false);
+    expect(voice.reset).toHaveBeenCalledTimes(1);
+  } finally { vi.unstubAllGlobals(); }
 });
 
