@@ -5,19 +5,16 @@ import { allergyOptions, injuryOptions, makeIntakeSchema, medicalOptions, toggle
 import { canAdvance, progress, stepOrder, toPayload } from './wizard';
 import type { Intake } from './data/intake-schema';
 import { saveIntakeAt } from './data/save-intake-internal';
-
 const saveIntake = (input: unknown) => saveIntakeAt(input, new Date('2026-06-01T12:00:00Z'));
 import { hasIntake } from './data/intake-status';
 import { fetchOnboardingStatus } from './data/onboarding-status';
 import { readIntakeDraft } from './hooks/use-intake-draft';
-
 const server = vi.hoisted(() => ({ claims: vi.fn(), upsert: vi.fn(), update: vi.fn(), row: vi.fn(), eq: vi.fn(), from: vi.fn() }));
 vi.mock('server-only', () => ({}));
 vi.mock('next/headers', () => ({ cookies: async () => ({ get: () => undefined }) }));
 vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => ({
   auth: { getClaims: server.claims }, from: server.from,
 }) }));
-
 const { intakeSchema, stepSchemas } = makeIntakeSchema(new Date('2026-06-01T12:00:00Z'));
 const samples = {
   basics: { full_name: 'Ali', birth_year: 1995, sex: 'male', height_cm: 175.5, weight_kg: 80, target_weight_kg: null },
@@ -25,13 +22,13 @@ const samples = {
   health: { injuries: ['knee'], medical: ['none'] },
   food: { allergies: ['lactose'], notes: 'وجع بسيط في الركبة' },
 } satisfies Record<string, Partial<Intake>>;
-
 describe('wizard navigation and payload', () => {
   const now = new Date('2026-06-01T12:00:00Z');
   const draft = { ...samples.basics, ...samples.schedule, ...samples.health, ...samples.food };
   it('orders the steps and reports their percentage', () => {
     expect(stepOrder).toEqual(['basics', 'schedule', 'health', 'food']);
     expect(stepOrder.map(progress)).toEqual([25, 50, 75, 100]);
+    expect(canAdvance('basics', {}, now)).toBe(false);
   });
   for (const step of ['basics', 'schedule', 'health', 'food'] as const) {
     it(`allows a valid ${step} independently of other steps`, () => {

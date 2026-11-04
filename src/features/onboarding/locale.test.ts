@@ -10,6 +10,19 @@ import { makeIntakeSchema } from './data/intake-schema';
 import { createT } from '@/core/i18n/messages';
 import { messages } from './messages';
 import { DayPicker } from './components/day-picker';
+import { IntakeMoment } from './components/intake-moment';
+
+it.each(['ar', 'en'] as const)('renders welcome and honest completion in %s', locale => {
+  const t = createT(messages, locale);
+  const render = (stage: 'welcome' | 'preparing' | 'success') => renderToStaticMarkup(
+    createElement(LocaleProvider, { locale }, createElement(IntakeMoment, { stage, captainName: 'Sam', onStart: () => undefined }))).replaceAll('&#x27;', "'");
+  expect(render('welcome')).toContain(t('coachIsWaiting'));
+  expect(render('welcome')).toContain('Sam');
+  expect(render('welcome')).toContain(t('letsStart'));
+  expect(render('preparing')).toContain(t('preparingYourPlan'));
+  expect(render('preparing')).not.toContain(t('coachWillSendYourPlan'));
+  expect(render('success')).toContain(t('coachWillSendYourPlan'));
+});
 
 it('renders onboarding in English', () => {
   const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' },

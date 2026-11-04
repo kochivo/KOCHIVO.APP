@@ -2,6 +2,10 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    coachIsWaiting: "الكابتن مستنيك",
+    letsStart: "يلا نبدأ",
+    preparingYourPlan: "بنجهّز خطتك…",
+    coachWillSendYourPlan: "تمام، الكابتن هيبعتلك خطتك",
     loadingYourDetails: "بنحمّل بياناتك",
     pageTitle: "نعرفك الأول",
     saturday: "السبت",
@@ -96,6 +100,10 @@ export const messages = defineMessages({
     maximum: "أكبر قيمة {value0}",
   },
   en: {
+    coachIsWaiting: "Your coach is waiting for you",
+    letsStart: "Let's start",
+    preparingYourPlan: "Preparing your plan…",
+    coachWillSendYourPlan: "Done, your coach will send you your plan",
     loadingYourDetails: "Loading your details",
     pageTitle: "Get started",
     saturday: "Saturday",
