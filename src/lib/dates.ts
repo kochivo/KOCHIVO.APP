@@ -16,6 +16,11 @@ export function daysBetween(from: string, to: string): number {
   return Math.round((Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / 86_400_000);
 }
 
+/** Weekly programs use Saturday = 0; intake keeps its original Sunday = 0 convention. */
+export function weeklyWeekday(date: string): number {
+  return (new Date(`${date}T12:00:00Z`).getUTCDay() + 1) % 7;
+}
+
 export function saturdayWeek(today: string): string[] {
   const anchor = new Date(`${today}T12:00:00Z`);
   const offset = (anchor.getUTCDay() + 1) % 7;

@@ -25,6 +25,9 @@ export interface SnapshotDay {
   position: number;
   title: string;
   exercises: SnapshotExercise[];
+  weekday?: number | null;
+  is_rest_day?: boolean;
+  cardio?: { id: string; day_id: string; position: number; kind: string; minutes: number; intensity: string; notes: string }[];
 }
 
 export interface ProgramSnapshot {
@@ -33,7 +36,8 @@ export interface ProgramSnapshot {
   program_id: string;
   title: string;
   notes: string | null;
-  settings: { advanced?: boolean };
+  settings: { advanced?: boolean; repeatWeekly?: boolean };
+  starts_on?: string;
   training_days: number[];
   days: SnapshotDay[];
 }

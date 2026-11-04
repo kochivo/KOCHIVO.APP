@@ -17,3 +17,4 @@ export { ErrorState } from './error-state';
 export { LoadingState } from './loading-state';
 export { SwitchTrack } from './switch-track';
 export { AudioPlayer } from './audio-player';
+export { CardioCards } from './cardio-cards';

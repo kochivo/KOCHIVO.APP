@@ -3,12 +3,12 @@ import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 import { formatNumber } from '@/lib/format';
 
-import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { ArrowRight, Check, Dumbbell } from 'lucide-react';
 import { localDate } from '@/lib/dates';
-import { Button, EmptyState, ErrorState, IconButton, LoadingState, ProgressBar, Stepper, SyncPill } from '@/ui';
+import { useCalendarClock } from '@/lib/use-calendar-clock';
+import { Button, CardioCards, EmptyState, ErrorState, IconButton, LoadingState, ProgressBar, Stepper, SyncPill } from '@/ui';
 import { useFocusSession } from '../hooks/use-focus-session';
 import { useWakeLock } from '../hooks/use-wake-lock';
 import { DonePanel } from './done-panel';
@@ -27,23 +27,8 @@ export function FocusScreen({ dayId, playerId }: { dayId: string; playerId?: str
   const t = useT(messages);
   const locale = useLocale();
   const router = useRouter();
-  const [today, setToday] = useState('');
-  const [online, setOnline] = useState(true);
-  useEffect(() => {
-    const update = () => { setToday(localDate(new Date())); setOnline(navigator.onLine); };
-    const resume = () => { if (document.visibilityState === 'visible') update(); };
-    update();
-    window.addEventListener('online', update);
-    window.addEventListener('offline', update);
-    window.addEventListener('focus', update);
-    document.addEventListener('visibilitychange', resume);
-    return () => {
-      window.removeEventListener('online', update);
-      window.removeEventListener('offline', update);
-      window.removeEventListener('focus', update);
-      document.removeEventListener('visibilitychange', resume);
-    };
-  }, []);
+  const { now, online } = useCalendarClock();
+  const today = now ? localDate(now) : '';
   useWakeLock();
   const state = useFocusSession(dayId, today, playerId);
   const { current, rest } = state;
@@ -59,9 +44,10 @@ export function FocusScreen({ dayId, playerId }: { dayId: string; playerId?: str
       <MediaStatus />
     </header>
     {state.error ? <ErrorState message={state.error} retryLabel={t('tryAgain')} onRetry={state.retry} /> :
-      state.loading ? <LoadingState /> : !state.day ?
+      state.loading ? <LoadingState /> : state.programFinished ?
+        <EmptyState icon={Dumbbell} title={t('programFinished')} body={t('renewProgram')} action={{ label: t('backToHome'), href: '/player' }} /> : !state.day ?
         <EmptyState icon={Dumbbell} title={t('thisWorkoutIsntInYourProgram')} body={t('goHomeToSeeYourCurrentWorkout')} action={{ label: t('backToHome'), href: '/player' }} />
-      : state.queue.length === 0 ? <EmptyState icon={Dumbbell} title={t('noExercisesForThisDay')} body={t('yourCoachIsPreparingYourWorkout')} action={{ label: t('messageCoach'), href: '/player/captain' }} /> : <>
+      : state.queue.length === 0 ? !state.day.cardio?.length && <EmptyState icon={Dumbbell} title={t('noExercisesForThisDay')} body={t('yourCoachIsPreparingYourWorkout')} action={{ label: t('messageCoach'), href: '/player/captain' }} /> : <>
         <p className="text-sm text-muted">{t('setProgress', { value0: formatNumber(state.progress, locale), value1: formatNumber(state.queue.length, locale) })}</p>
         <ProgressBar value={state.doneSets.length} max={state.queue.length} aria-label={t('setProgress', { value0: formatNumber(state.progress, locale), value1: formatNumber(state.queue.length, locale) })} />
         {state.finished ? <DonePanel /> : current ? <>
@@ -81,5 +67,6 @@ export function FocusScreen({ dayId, playerId }: { dayId: string; playerId?: str
           {state.next && <NextUp exercise={state.next.exercise} />}
         </> : <LoadingState />}
       </>}
+    {!state.error && !state.loading && state.day && <CardioCards blocks={state.day.cardio ?? []} />}
   </main>;
 }
