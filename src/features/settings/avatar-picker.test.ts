@@ -13,6 +13,7 @@ vi.mock('react', async original => ({ ...await original<typeof React>(),
   useRef: () => ({ current: { click: mock.click } }), useEffect: () => {},
 }));
 vi.mock('@/core/i18n/client', () => ({ useT: () => createT(messages, 'en') }));
+vi.mock('./data/captain-avatar', () => ({ captainAvatarUrl: async () => '' }));
 type Node = ReactElement<Record<string, unknown>>;
 function nodes(value: unknown): Node[] {
   if (Array.isArray(value)) return value.flatMap(nodes);

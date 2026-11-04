@@ -133,7 +133,7 @@ describe('fetchBilling', () => {
   });
   it('combines the roster, phones, last payments and the session captain plan', async () => {
     expect(await fetchBilling()).toEqual({ data: {
-      players: [{ playerId: 'player-1', fullName: 'علي', accessUntil: '2026-12-01', startedOn: '2026-10-01',
+      players: [{ playerId: 'player-1', fullName: 'علي', accessUntil: '2026-12-01', avatarUrl: null, startedOn: '2026-10-01',
         lastTrainingDate: '2026-11-03', programTitle: null, openTasks: 0, status: 'active', phone: '+201001234567', lastPayment: payment, due: 700 }],
       plan: { tier: 'champion', player_limit: 20, price_egp: 399 }, used: 1, subscriptionEnd: '2026-12-01T00:00:00Z',
       packages: [pkg], revenue: { thisMonth: 800, lastMonth: 200, dues: 700, owing: 1 },
