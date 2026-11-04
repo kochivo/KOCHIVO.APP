@@ -45,10 +45,20 @@ it('preserves unprefixed auth redirects and refreshed cookies', async () => {
   refreshed.cookies.set('session', 'fresh', { httpOnly: true, path: '/' });
   refreshed.headers.set('x-middleware-request-cookie', 'session=fresh');
   refreshed.headers.set('x-middleware-override-headers', 'cookie');
-  session.refresh.mockResolvedValueOnce(refreshed);
+  session.refresh.mockImplementationOnce(async (request: NextRequest) => {
+    request.cookies.set('session', 'fresh');
+    return refreshed;
+  });
   const response = await proxy(new NextRequest('https://kochivo.site/captain'));
   expect(response.cookies.get('session')).toMatchObject({ value: 'fresh', httpOnly: true });
   expect(response.headers.get('x-middleware-request-cookie')).toBe('session=fresh');
   expect(response.headers.get('x-middleware-rewrite')).toBe('https://kochivo.site/ar/captain');
   expect(response.headers.has('x-middleware-next')).toBe(false);
+});
+
+it('overwrites a forged captain path before forwarding it to the layout', async () => {
+  const response = await proxy(new NextRequest('https://kochivo.site/captain/pending', {
+    headers: { 'x-kochivo-path': '/captain' },
+  }));
+  expect(response.headers.get('x-middleware-request-x-kochivo-path')).toBe('/captain/pending');
 });

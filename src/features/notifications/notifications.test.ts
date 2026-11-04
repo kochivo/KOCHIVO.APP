@@ -27,6 +27,7 @@ it('does not decrement an already read row', async () => {
 });
 it('links each notification to its related screen', () => {
   expect(notificationHref(row)).toBe('/player');
+  expect(notificationHref({ ...row, type: 'captain_approved' })).toBe('/captain');
   expect(notificationHref({ ...row, type: 'workout_reminder' })).toBe('/player');
   expect(notificationHref({ ...row, type: 'nutrition_updated' })).toBe('/player/nutrition');
   expect(notificationHref({ ...row, type: 'player_inactive', payload: { name: 'Ali', player_id: 'p' } })).toBe('/captain/players/p');

@@ -173,7 +173,7 @@ describe('auth actions and callback', () => {
     mocks.cookie.get.mockReturnValue({ value: JSON.stringify({ intent: 'captain' }) });
     mocks.single.mockResolvedValue({ data: { role: 'player', role_confirmed: false }, error: null });
     const response = await handleAuthCallback(new NextRequest('http://localhost:3000/auth/callback?code=oauth-code'));
-    expect(response.headers.get('location')).toBe('http://localhost:3000/captain');
+    expect(response.headers.get('location')).toBe('http://localhost:3000/captain/pending');
     expect(mocks.rpc).toHaveBeenCalledWith('confirm_role', { p_role: 'captain' });
     expect(mocks.cookie.delete).toHaveBeenCalledWith('auth-intent');
   });
@@ -221,7 +221,7 @@ describe('session integration', () => {
     expect(response.headers.get('location')).toBe('http://localhost:3000/player');
     expect(mocks.auth.getClaims).toHaveBeenCalledTimes(1);
     expect(mocks.from).not.toHaveBeenCalled();
-    expect(mocks.rpc).toHaveBeenCalledExactlyOnceWith('my_route_profile');
+    expect(mocks.rpc).toHaveBeenCalledExactlyOnceWith('my_approval_route_profile');
   });
   it('fails closed on a profile query error', async () => {
     mocks.rpc.mockResolvedValueOnce({ data: null, error: { code: 'network_error' } });

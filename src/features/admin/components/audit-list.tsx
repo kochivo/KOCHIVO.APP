@@ -10,7 +10,8 @@ import type { AuditRow, CaptainRow } from '../types';
 
 export function AuditList({ rows, captains, error }: { rows: AuditRow[]; captains: CaptainRow[]; error: string | null }) {
   const t = useT(messages);
-  const labels = { activate_plan: t('activatePlan'), suspend: t('suspendAction'), unsuspend: t('unsuspendAction') };
+  const labels = { activate_plan: t('activatePlan'), suspend: t('suspendAction'), unsuspend: t('unsuspendAction'),
+    approve_captain: t('approveCaptain'), reject_captain: t('rejectCaptain') };
   const locale = useLocale();
   return <section className="glass rounded-card p-5" aria-labelledby="audit-title">
     <h2 id="audit-title" className="mb-5 text-xl font-bold">{t('audit')}</h2>

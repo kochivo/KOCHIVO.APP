@@ -13,7 +13,7 @@ const audit = { id: 'audit', admin_id: 'admin', target_id: 'captain', created_at
 vi.mock('server-only', () => ({}));
 vi.mock('next/headers', () => ({ cookies: async () => ({ get: () => undefined }) }));
 vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => ({ rpc: mocks.rpc, from: mocks.from }) }));
-vi.mock('next/navigation', () => ({ notFound: () => { throw new Error('NOT_FOUND'); } }));
+vi.mock('next/navigation', () => ({ notFound: () => { throw new Error('NOT_FOUND'); }, unstable_rethrow: vi.fn() }));
 
 beforeEach(() => {
   vi.resetAllMocks();
@@ -55,7 +55,7 @@ it.each([
   expect(await fetchAudit()).toMatchObject({ rows: [], error: expect.any(String) });
 });
 
-it.each(['activate_plan', 'suspend', 'unsuspend'])('preserves the %s audit action and JSON details', async action => {
+it.each(['activate_plan', 'suspend', 'unsuspend', 'approve_captain', 'reject_captain'])('preserves the %s audit action and JSON details', async action => {
   const row = { ...audit, action, details: { months: 1, reference: null, nested: { paid: true } } };
   mocks.result.data = [row];
   expect(await fetchAudit()).toEqual({ rows: [row], error: null });

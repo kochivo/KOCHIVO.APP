@@ -6,6 +6,7 @@ import { decideRoute } from '@/features/auth';
 
 export async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
+  request.headers.set('x-kochivo-path', path);
   const locale = parseLocale(request.cookies.get(LOCALE_COOKIE)?.value);
   const destination = request.nextUrl.clone();
   if (/^\/(ar|en)(\/|$)/.test(path)) {
@@ -22,7 +23,7 @@ export async function proxy(request: NextRequest) {
   if (response.headers.has('location')) return response;
   const headers = new Headers(response.headers);
   headers.delete('x-middleware-next');
-  const rewritten = NextResponse.rewrite(destination, { headers });
+  const rewritten = NextResponse.rewrite(destination, { headers, request: { headers: request.headers } });
   response.cookies.getAll().forEach(cookie => rewritten.cookies.set(cookie));
   return rewritten;
 }

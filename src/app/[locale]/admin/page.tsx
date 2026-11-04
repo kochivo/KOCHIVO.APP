@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { createT, parseLocale } from '@/core/i18n';
-import { AdminScreen, requireAdmin, fetchCaptains, fetchPlanTiers, fetchAudit, fetchKpis, messages } from '@/features/admin';
+import { AdminScreen, requireAdmin, fetchCaptains, fetchPlanTiers, fetchAudit, fetchKpis, fetchPendingCaptains, messages } from '@/features/admin';
 
 export const dynamic = 'force-dynamic';
 type RouteParams = Promise<{ locale: string }>;
@@ -15,10 +15,10 @@ async function AdminData({ searchParams }: { searchParams: Params }) {
   const search = params.search ?? '';
   const parsedOffset = Number(params.offset ?? 0);
   const offset = Number.isSafeInteger(parsedOffset) && parsedOffset >= 0 ? parsedOffset : 0;
-  const [captains, plans, audit, kpis] = await Promise.all([
-    fetchCaptains({ search, limit: 100, offset }), fetchPlanTiers(), fetchAudit(), fetchKpis(),
+  const [captains, plans, audit, kpis, requests] = await Promise.all([
+    fetchCaptains({ search, limit: 100, offset }), fetchPlanTiers(), fetchAudit(), fetchKpis(), fetchPendingCaptains(),
   ]);
-  return <AdminScreen captains={captains} plans={plans} audit={audit} kpis={kpis} search={search} offset={offset} />;
+  return <AdminScreen captains={captains} plans={plans} audit={audit} kpis={kpis} requests={requests} search={search} offset={offset} />;
 }
 
 export default async function AdminPage({ searchParams, params }: { searchParams: Params; params: RouteParams }) {

@@ -48,6 +48,7 @@ export async function handleAuthCallback(request: NextRequest) {
       const confirmation = await client.rpc('confirm_role', { p_role: intent });
       if (confirmation.error) throw confirmation.error;
       user.role = intent;
+      if (intent === 'captain') user.captainStatus = 'pending';
     }
     if (invite) {
       if (user.role === 'captain') return NextResponse.redirect(new URL(`/i/${invite}`, origin));

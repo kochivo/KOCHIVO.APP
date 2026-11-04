@@ -33,6 +33,7 @@ async function finishCaptainSignup(client: Awaited<ReturnType<typeof authClient>
     const { error } = await client.rpc('confirm_role', { p_role: 'captain' });
     if (error) throw error;
     user.role = 'captain';
+    user.captainStatus = 'pending';
   }
   (await cookies()).delete('auth-intent');
   return { redirect: homeFor(user) };

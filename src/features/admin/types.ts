@@ -12,7 +12,7 @@ export type CaptainRow = Omit<Database['public']['Functions']['admin_captains'][
 }
 export type PlanTier = Omit<Tables<'plan_tiers'>, 'tier'> & { tier: Tier };
 export type AuditRow = Omit<Tables<'admin_audit_log'>, 'action' | 'details'> & {
-  action: 'activate_plan' | 'suspend' | 'unsuspend';
+  action: 'activate_plan' | 'suspend' | 'unsuspend' | 'approve_captain' | 'reject_captain';
   details: Record<string, unknown>;
 }
 export type ActionResult = { error: string; success?: never } | { success: true; error?: never };

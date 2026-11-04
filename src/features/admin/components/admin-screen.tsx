@@ -18,6 +18,8 @@ import { SuspendDialog } from './suspend-dialog';
 import { Deferred } from '@/ui/deferred';
 import { signOutAdmin } from '../data/sign-out';
 import { clearDeviceRole } from '@/core/pwa/device-role';
+import { CaptainRequests } from './captain-requests';
+import type { PendingCaptain } from './captain-requests';
 
 const CaptainsTable = dynamic(() => import('./captains-table').then(module => module.CaptainsTable), {
   loading: () => <LoadingState className="min-h-96" />,
@@ -27,6 +29,7 @@ const AuditList = dynamic(() => import('./audit-list').then(module => module.Aud
 });
 
 interface Props {
+  requests?: { rows: PendingCaptain[]; error: string | null };
   captains: { rows: CaptainRow[]; error: string | null };
   audit: { rows: AuditRow[]; error: string | null };
   plans: { rows: PlanTier[]; error: string | null };
@@ -35,7 +38,7 @@ interface Props {
   kpis: { data: { captains: number; players: number; paid_captains: number } | null; error: string | null };
 }
 const filters: Array<'all' | CaptainState> = ['all', 'paid', 'free', 'expired', 'unconfirmed', 'suspended'];
-export function AdminScreen({ captains, audit, plans, search, offset, kpis }: Props) {
+export function AdminScreen({ captains, audit, plans, search, offset, kpis, requests }: Props) {
   const t = useT(messages);
   const locale = useLocale();
   const router = useRouter();
@@ -65,6 +68,7 @@ export function AdminScreen({ captains, audit, plans, search, offset, kpis }: Pr
         <ShieldCheck aria-hidden className="size-4" /> {t('adminOnly')}
       </span>
     </header>
+    {requests && <CaptainRequests rows={requests.rows} error={requests.error} />}
     {kpis.error ? <p role="alert" className="text-danger">{kpis.error}</p> : kpis.data && <KpiRow data={kpis.data} />}
     <section id="captain-management" tabIndex={-1} aria-label={t('manage')} className="space-y-5">
       <form className="flex gap-2" onSubmit={event => {

@@ -9,7 +9,7 @@ export function pushPayload(row: PushNotificationRow, locale: 'ar' | 'en' = 'ar'
     ? String(Reflect.get(payload, key)) : '';
   const name = field(row.type === 'workout_reminder' ? 'day_title' : 'name');
   const player = row.type === 'workout_feedback' ? row.player_id ?? '' : field('player_id');
-  const path = row.type === 'nutrition_updated' ? '/player/nutrition'
+  const path = row.type === 'captain_approved' ? '/captain' : row.type === 'nutrition_updated' ? '/player/nutrition'
     : row.type === 'plan_assigned' || row.type === 'workout_reminder' ? '/player'
       : row.type === 'join_requested' || !player ? '/captain/players' : `/captain/players/${encodeURIComponent(player)}`;
   return { title: messages[locale].title, body: messages[locale][row.type].replace('{name}', () => name),

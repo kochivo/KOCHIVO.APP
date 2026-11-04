@@ -20,6 +20,7 @@ import { AuditList } from './components/audit-list';
 import { ActivatePanel } from './components/activate-panel';
 import { AdminScreen } from './components/admin-screen';
 vi.mock('./data/sign-out', () => ({ signOutAdmin() {} }));
+vi.mock('./data/captain-reviews', () => ({ reviewCaptain() {} }));
 vi.mock('./data/set-suspended', () => ({ setSuspended() {} }));
 vi.mock('./data/activate-plan', () => ({ activatePlan() {} }));
 it('renders a translated sign-out submit button in the admin header', () => {

@@ -33,7 +33,7 @@ it.each([
     suspended_at: suspended ? '2026-11-03' : null, is_admin: admin }], error: null });
   const response = await refreshSession(new NextRequest(`https://kochivo.site${path}`), decideRoute);
   expect(response.headers.get('location')).toBe(redirect ? `https://kochivo.site${redirect}` : null);
-  expect(mocks.rpc).toHaveBeenCalledExactlyOnceWith('my_route_profile');
+  expect(mocks.rpc).toHaveBeenCalledExactlyOnceWith('my_approval_route_profile');
   expect(mocks.from).not.toHaveBeenCalled();
 });
 
@@ -56,6 +56,14 @@ it('fails closed on a routing RPC error', async () => {
   mocks.rpc.mockResolvedValue({ data: null, error: { message: 'unavailable' } });
   const response = await refreshSession(new NextRequest('https://kochivo.site/captain'), decideRoute);
   expect(response.headers.get('location')).toBe('https://kochivo.site/login');
+});
+
+it.each(['pending', 'rejected'] as const)('uses the %s status returned by the routing RPC', async captain_status => {
+  mocks.rpc.mockResolvedValue({ data: [{ role: 'captain', role_confirmed: true,
+    suspended_at: null, is_admin: false, captain_status }], error: null });
+  const response = await refreshSession(new NextRequest('https://kochivo.site/captain/players'), decideRoute);
+  expect(response.headers.get('location')).toBe('https://kochivo.site/captain/pending');
+  expect(mocks.from).not.toHaveBeenCalled();
 });
 
 it('does no DB work when verification fails even if a subject is returned', async () => {

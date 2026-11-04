@@ -47,12 +47,13 @@ const SUPABASE_STUB = `
 
 const MIGRATIONS_DIR = path.resolve(import.meta.dirname, '../migrations');
 
-export async function createTestDb(): Promise<PGlite> {
+export async function createTestDb(beforeMigration?: (file: string, db: PGlite) => Promise<void>): Promise<PGlite> {
   const db = new PGlite({ extensions: { pgcrypto } });
   await db.exec(TEST_CLOCK);
   await db.exec(SUPABASE_STUB);
   for (const file of fs.readdirSync(MIGRATIONS_DIR).filter((f) => f.endsWith('.sql')).sort()) {
     try {
+      await beforeMigration?.(file, db);
       const sql = fs.readFileSync(path.join(MIGRATIONS_DIR, file), 'utf8');
       await db.exec(sql.replace(/\bcurrent_date\b/gi, 'test_clock.today()'));
     } catch (error) {
@@ -70,6 +71,8 @@ export async function createUser(db: PGlite, role: 'captain' | 'player', name: s
   );
   const user = rows[0];
   if (!user) throw new Error('Creating an auth user returned no id');
+  // Domain fixtures represent existing, approved captains. Signup tests insert auth.users directly.
+  if (role === 'captain') await db.query(`update public.profiles set captain_status = 'approved' where id = $1`, [user.id]);
   return user.id;
 }
 

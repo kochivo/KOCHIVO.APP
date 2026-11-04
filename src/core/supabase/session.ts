@@ -4,7 +4,7 @@ import { publicEnv } from '@/core/config/env';
 import type { AppDatabase } from '@/types/app-database';
 
 type RouteDecision = (input: {
-  path: string; user: { role: 'captain' | 'player'; admin: boolean; roleConfirmed: boolean; suspended: boolean; anonymous?: boolean } | null; coach?: string;
+  path: string; user: { role: 'captain' | 'player'; admin: boolean; roleConfirmed: boolean; suspended: boolean; anonymous?: boolean; captainStatus?: 'pending' | 'approved' | 'rejected' } | null; coach?: string;
 }) => { redirect?: string };
 
 export async function refreshSession(request: NextRequest, decideRoute: RouteDecision): Promise<NextResponse> {
@@ -26,11 +26,12 @@ export async function refreshSession(request: NextRequest, decideRoute: RouteDec
   const { data, error } = await supabase.auth.getClaims();
   let user: Parameters<RouteDecision>[0]['user'] = null;
   if (!error && data?.claims.sub) {
-    const result = await supabase.rpc('my_route_profile');
+    const result = await supabase.rpc('my_approval_route_profile');
     const profile = result.data?.[0];
     if (!result.error && profile && (profile.role === 'captain' || profile.role === 'player')) {
       user = { role: profile.role, admin: profile.is_admin === true, roleConfirmed: profile.role_confirmed === true,
-        suspended: profile.suspended_at != null, anonymous: data.claims.is_anonymous === true };
+        suspended: profile.suspended_at != null, anonymous: data.claims.is_anonymous === true,
+        captainStatus: profile.captain_status };
     }
     if (!user && data.claims.is_anonymous === true) user = { role: 'player', admin: false, roleConfirmed: false, suspended: false, anonymous: true };
   }

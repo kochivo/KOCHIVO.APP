@@ -35,6 +35,7 @@ it('confirmation copies six workouts and four nutrition plans with complete hier
   expect(await counts(captain)).toEqual([{ workouts: 0, nutrition: 0 }]);
   await asUser(db, captain, tx => tx.query("select public.confirm_role('captain')"));
   expect(await counts(captain)).toEqual([{ workouts: 6, nutrition: 4 }]);
+  await db.query(`update public.profiles set captain_status = 'approved' where id = $1`, [captain]);
   const library = source('starter-templates') as {
     kind: string; days?: { exercises: unknown[] }[];
     meals?: { items: { alternatives: unknown[] }[] }[];
