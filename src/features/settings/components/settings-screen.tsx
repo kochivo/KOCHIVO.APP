@@ -13,7 +13,8 @@ import type { ReactNode } from 'react';
 import { ErrorState, LoadingState, ThemeSwitch } from '@/ui';
 import { loadSettings } from '../data/settings';
 import type { SettingsProfile } from '../schema';
-import { ProfileForm } from './profile-form';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { InviteMessageForm } from './invite-message-form';
 import { ExportCard } from './export-card';
@@ -24,12 +25,14 @@ import { TourReplay } from '@/ui/tour-replay';
 import { PushToggleCard } from '@/features/notifications';
 
 const CaptainProfileCard = dynamic(() => import('./captain-profile-card').then(module => module.CaptainProfileCard));
+const ProfileForm = dynamic(() => import('./profile-form').then(module => module.ProfileForm), { loading: () => <LoadingState variant="detail" /> });
 
 export function SettingsScreen({ signOut }: { signOut?: ReactNode }) {
   const t = useT(messages);
   const appearanceT = useT(appearanceMessages);
   const locale = useLocale();
   const router = useRouter();
+  const playerSettings = usePathname().startsWith('/player');
   const [language, setLanguage] = useState(locale);
   const [languageError, setLanguageError] = useState('');
   const [languagePending, setLanguagePending] = useState(false);
@@ -63,7 +66,11 @@ export function SettingsScreen({ signOut }: { signOut?: ReactNode }) {
     return () => { active = false; };
   }, [attempt, t]);
   return <div className="mx-auto max-w-3xl space-y-5">
+    {playerSettings && <Link href="/player" className="inline-flex min-h-12 items-center text-muted">{t('backToPlayer')}</Link>}
     <h1 className="text-2xl font-extrabold">{t('settings')}</h1>
+    {playerSettings && (loading ? <LoadingState variant="detail" /> : error ? <ErrorState message={error} retryLabel={t('tryAgain')} onRetry={() => {
+      setLoading(true); setError(''); setAttempt(value => value + 1);
+    }} /> : profile ? <ProfileForm profile={profile} /> : null)}
     <div>
       <div role="group" aria-label={appearanceT('language')} className="flex gap-1">
         {LOCALES.map(value => <button key={value} type="button" lang={value} aria-pressed={language === value}
@@ -77,10 +84,10 @@ export function SettingsScreen({ signOut }: { signOut?: ReactNode }) {
     <GlassToggle />
     <ThemeSwitch />
     <PushToggleCard />
-    {loading ? <LoadingState variant="detail" /> : error ? <ErrorState message={error} retryLabel={t('tryAgain')} onRetry={() => {
+    {loading ? (!playerSettings && <LoadingState variant="detail" />) : error ? (!playerSettings && <ErrorState message={error} retryLabel={t('tryAgain')} onRetry={() => {
       setLoading(true); setError(''); setAttempt((value) => value + 1);
-    }} /> : profile ? <>
-      {profile.role === 'captain' ? <CaptainProfileCard profile={profile} onSave={setProfile} /> : <ProfileForm profile={profile} />}
+    }} />) : profile ? <>
+      {profile.role === 'captain' && <CaptainProfileCard profile={profile} onSave={setProfile} />}
       <TourReplay role={profile.role} />
       {profile.role === 'captain' && <InviteMessageForm initialMessage={profile.invite_message} />}
       <ExportCard />

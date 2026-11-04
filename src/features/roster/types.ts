@@ -1,6 +1,7 @@
 export interface RosterPlayer {
   playerId: string;
   fullName: string;
+  avatarUrl?: string | null;
   accessUntil: string;
   startedOn: string;
   lastTrainingDate: string | null;

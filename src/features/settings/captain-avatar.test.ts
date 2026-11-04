@@ -1,12 +1,12 @@
 import { beforeEach, expect, it, vi } from 'vitest';
-import { saveCaptainWithAvatar } from './data/captain-avatar';
+import { saveCaptainWithAvatar, savePlayerWithAvatar } from './data/captain-avatar';
 import { createT } from '@/core/i18n/messages';
 import { messages } from './messages';
 
 const mock = vi.hoisted(() => ({ upload: vi.fn(), remove: vi.fn(), save: vi.fn(), compress: vi.fn() }));
 vi.mock('@/core/offline/ids', () => ({ uuidv7: () => 'new-avatar' }));
 vi.mock('@/lib/compress-image', () => ({ compressImage: mock.compress }));
-vi.mock('./data/settings', () => ({ saveCaptainProfile: mock.save }));
+vi.mock('./data/settings', () => ({ saveCaptainProfile: mock.save, saveProfile: mock.save }));
 vi.mock('@/core/supabase/lazy', () => ({ loadSupabaseBrowser: async () => ({
   auth: { getUser: async () => ({ data: { user: { id: 'captain' } } }) },
   storage: { from: () => ({ upload: mock.upload, remove: mock.remove }) },
@@ -36,4 +36,13 @@ it('never saves a rejected or oversized upload', async () => {
   mock.compress.mockResolvedValue(new Blob([new Uint8Array(524289)], { type: 'image/webp' }));
   await expect(saveCaptainWithAvatar(input, new File(['source'], 'photo.jpg'), t)).rejects.toThrow();
   expect(mock.upload).not.toHaveBeenCalled(); expect(mock.save).not.toHaveBeenCalled();
+});
+it('uses the same compressed upload transaction for a player profile', async () => {
+  await savePlayerWithAvatar({ full_name: 'Ali', phone: '' }, new File(['source'], 'photo.jpg'), t);
+  expect(mock.save).toHaveBeenCalledWith({ full_name: 'Ali', phone: '', avatar_path: 'captain/new-avatar.webp' });
+});
+it('saves player details without uploading when no photo is selected', async () => {
+  await savePlayerWithAvatar({ full_name: 'Ali', phone: '' }, null, t);
+  expect(mock.save).toHaveBeenCalledWith({ full_name: 'Ali', phone: '' });
+  expect(mock.upload).not.toHaveBeenCalled();
 });

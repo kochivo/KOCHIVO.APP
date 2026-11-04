@@ -5,6 +5,7 @@ import { formatNumber } from '@/lib/format';
 import { messages } from '../messages';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { Archive } from 'lucide-react';
 import { Button, GlassCard } from '@/ui';
 import { formatDateAr } from '@/lib/dates';
@@ -34,7 +35,8 @@ export function RosterRow({ player, today, error, onArchive }: {
   return (
     <GlassCard role="row" className="grid gap-4 p-4 lg:grid-cols-[1.3fr_1fr_1fr_1.2fr_1fr_3rem] lg:items-center lg:rounded-none lg:border-0 lg:border-t lg:border-line lg:bg-transparent lg:shadow-none lg:backdrop-blur-none">
       <div role="cell" className="flex min-w-0 items-center gap-3">
-        <span aria-hidden className="glass flex size-10 shrink-0 items-center justify-center rounded-control font-bold">{player.fullName.slice(0, 1)}</span>
+        {player.avatarUrl ? <Image src={player.avatarUrl} alt="" width={40} height={40} unoptimized className="size-10 shrink-0 rounded-control object-cover" /> :
+          <span aria-hidden className="glass flex size-10 shrink-0 items-center justify-center rounded-control font-bold">{player.fullName.slice(0, 1)}</span>}
         <Link href={`/captain/players/${player.playerId}`} className="flex min-h-12 min-w-0 items-center truncate font-bold hover:text-lime">{player.fullName}</Link>
         {player.openTasks > 0 && <span aria-label={t('taskCount', { n: player.openTasks, count: formatNumber(player.openTasks, locale) })} className="rounded-full bg-lime px-2 py-1 text-xs font-bold text-on-lime">{formatNumber(player.openTasks, locale)}</span>}
       </div>

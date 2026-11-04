@@ -6,6 +6,14 @@ import { LocaleProvider } from '@/core/i18n/client';
 
 vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh() {} }) }));
 vi.mock('./data/archive-player', () => ({ archivePlayer: vi.fn() }));
+it.each([null, 'https://example.com/storage/v1/object/public/captain-avatars/p/photo.webp'])('renders a photo or initials for %s', avatarUrl => {
+  const html = renderToStaticMarkup(createElement(RosterRow, {
+    onArchive: () => {}, today: '2026-11-03', player: { playerId: 'p', fullName: 'Ali', avatarUrl,
+      accessUntil: '2026-11-03', startedOn: '2026-10-01', lastTrainingDate: null, programTitle: null, openTasks: 0 },
+  }));
+  if (avatarUrl) expect(html).toContain(`src="${avatarUrl}"`);
+  else expect(html).toContain('>A</span>');
+});
 
 it('shows a date-only subscription without shifting its day', () => {
   const html = renderToStaticMarkup(createElement(RosterRow, {

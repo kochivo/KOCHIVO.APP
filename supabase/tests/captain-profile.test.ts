@@ -5,6 +5,18 @@ import { asUser, createCaptainWithPlayer, createTestDb, createUser } from './har
 let db: PGlite;
 beforeAll(async () => { db = await createTestDb(); await db.exec('grant update, delete on storage.objects to authenticated'); });
 afterAll(async () => { await db?.close(); });
+it('lets players upload only in their own avatar folder and captains read their photo and phone', async () => {
+  const { captain, player } = await createCaptainWithPlayer(db);
+  const path = `${player}/photo.webp`;
+  await asUser(db, player, tx => tx.query(`insert into storage.objects(bucket_id,name) values ('captain-avatars',$1)`, [path]));
+  await expect(asUser(db, player, tx => tx.query(`insert into storage.objects(bucket_id,name) values ('captain-avatars',$1)`, [`${captain}/foreign.webp`]))).rejects.toThrow();
+  await asUser(db, player, tx => tx.query(`update profiles set avatar_path=$2, phone=null where id=$1`, [player, path]));
+  await asUser(db, player, tx => tx.query(`update profiles set phone='+201012345678' where id=$1`, [player]));
+  expect((await asUser(db, captain, tx => tx.query('select avatar_path,phone from profiles where id=$1', [player]))).rows)
+    .toEqual([{ avatar_path: path, phone: '+201012345678' }]);
+  const other = await createUser(db, 'captain');
+  expect((await asUser(db, other, tx => tx.query('select avatar_path,phone from profiles where id=$1', [player]))).rows).toEqual([]);
+});
 
 it('allows own branding, prevents cross-captain edits and locks role and plan', async () => {
   const a = await createUser(db, 'captain');

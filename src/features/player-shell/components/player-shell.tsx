@@ -8,6 +8,8 @@ import { usePathname } from 'next/navigation';
 import { BottomNav } from '@/ui';
 import dynamic from 'next/dynamic';
 import { NotificationBell } from '@/features/notifications';
+import Link from 'next/link';
+import { Settings } from 'lucide-react';
 import { daysBetween, localDate } from '@/lib/dates';
 import { whatsappUrl } from '@/lib/whatsapp';
 import { accessState } from '../access';
@@ -43,7 +45,12 @@ export function PlayerShell({ children }: { children: ReactNode }) {
     <SyncRunner />
     {!workout && <RestMoodSync onChange={setRestMood} />}
     <div className={workout ? undefined : showsNav(pathname) ? 'pb-[calc(var(--nav-clearance)+1rem)]' : 'pt-[var(--safe-top)]'}>
-    {showsNav(pathname) && <div className="sticky top-0 z-30 bg-bg/70 pb-3 pt-[max(0.75rem,var(--safe-top))] backdrop-blur-md"><div className="mx-auto flex max-w-lg justify-end px-5"><NotificationBell /></div></div>}
+    {showsNav(pathname) && <div className="sticky top-0 z-30 bg-bg/70 pb-3 pt-[max(0.75rem,var(--safe-top))] backdrop-blur-md"><div className="mx-auto flex max-w-lg justify-end gap-2 px-5">
+      <Link href="/player/settings" aria-label={t('settings')} aria-current={pathname === '/player/settings' ? 'page' : undefined}
+        className={`flex min-h-12 min-w-12 items-center justify-center rounded-control ${pathname === '/player/settings' ? 'bg-lime-soft text-lime' : 'text-muted'}`}>
+        <Settings aria-hidden className="size-5" />
+      </Link><NotificationBell />
+    </div></div>}
     <div className="mx-auto max-w-lg space-y-3 px-5 pt-3" aria-live="polite">
       {!online && <p role="status" className="glass rounded-card p-4 text-sm">
         {t('youReOfflineYourLogsAre')}
