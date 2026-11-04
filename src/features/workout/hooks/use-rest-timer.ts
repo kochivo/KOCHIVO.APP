@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { extendRest, restRemaining } from '../rest';
 import { playRestChime, prepareRestChime } from '../rest-chime';
+import { triggerHaptic } from '@/lib/haptics';
 
 const storageKey = 'kochivo:rest-ends-at';
 const totalKey = 'kochivo:rest-total';
@@ -52,7 +53,7 @@ export function useRestTimer({ now = defaultNow, chime = playRestChime, prepare 
       setRemaining(seconds);
       if (deadline.current !== null && seconds === 0 && !notified.current) {
         notified.current = true;
-        try { navigator.vibrate?.([200, 100, 200]); } catch { /* Optional device capability. */ }
+        triggerHaptic('alarm');
         if (soundEnabled.current) { try { chime(); } catch { /* Optional audio. */ } }
         try { sessionStorage.removeItem(storageKey); sessionStorage.removeItem(totalKey); } catch { /* Optional storage. */ }
       }

@@ -17,6 +17,7 @@ import { useRestTimer } from './use-rest-timer';
 import { useBodyweight } from './use-bodyweight';
 import { validateSet } from '../set-validation';
 import { reducedSets, useTodayDecision } from '@/features/readiness';
+import { triggerHaptic } from '@/lib/haptics';
 
 const readCached = () => localDb().program_snapshot.get('active');
 const readPending = () => pendingCount(localDb());
@@ -86,13 +87,15 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
   // Recover a final set saved just before the tab closed, before completion was recorded.
   useEffect(() => {
     if (session && sets && queue.length > 0 && currentIndex === -1 && !session.completed_at) {
-      void finishSession(localDb(), session.id, Date.now()).catch(() => setError(t('setSavedTryAgainToFinishThe')));
+      void finishSession(localDb(), session.id, Date.now()).then(() => triggerHaptic('success'))
+        .catch(() => setError(t('setSavedTryAgainToFinishThe')));
     }
   }, [session, sets, queue.length, currentIndex, retryKey, t]);
   const complete = useCallback(async () => {
     if (!day || !current || !ready || saving.current || rest.remaining > 0) return;
     const result = validateSet({ weight, reps, bodyweight });
     if (result !== 'ok') {
+      triggerHaptic('heavy');
       setInvalid(previous => ({ key, result, attempt: (previous?.attempt ?? 0) + 1 }));
       return;
     }
@@ -104,6 +107,7 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
       const active = session ?? await startSession(localDb(), day, today, tappedAt);
       await logSet(localDb(), { session_id: active.id, program_exercise_id: current.exercise.id,
         exercise_id: current.exercise.exercise_id, set_index: current.setIndex, weight_kg: weight, reps }, tappedAt);
+      triggerHaptic('light');
       if (!edited) {
         // Celebration is best-effort and never holds the next set behind a history read.
         void (async () => {
