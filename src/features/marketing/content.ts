@@ -4,10 +4,11 @@ import { messages } from './messages';
 import { whatsappUrl as contactUrl } from '@/lib/whatsapp';
 import { publicConfig } from '@/lib/public-config';
 
-type Plan = { name: string; price: number; displayPrice: string; limit: number; limitLabel: string; hot: boolean; action: string };
+type Plan = { name: string; price: number; displayPrice: string; limit: number; limitLabel: string; hot: boolean; action: string; audience: string; checklist: string[] };
 type Detail = { t: string; d: string };
 
 export function getContent(t: Translator<typeof messages>) {
+  const checklist = [t('planTraining'), t('planTemplates'), t('planReadiness'), t('planOffline'), t('planMedia')];
   return {
   brand: t('brand'),
   seo: { title: t('kochivoAllYourPlayersInOne'), description: t('everyPlayerSTrainingMealsAnd') },
@@ -15,8 +16,10 @@ export function getContent(t: Translator<typeof messages>) {
   links: { signup: '/login?tab=signup', login: '/login', demo: '/demo' },
   nav: [{ href: '#how', label: t('howItWorks') }, { href: '#features', label: t('features') }, { href: '#pricing', label: t('plans') }, { href: '#faq', label: t('faq') }],
   login: t('signIn'), signup: t('startFree'), contact: t('chatOnWhatsApp'),
-  hero: { eyebrow: t('forOnlineCoaches'), lines: [t('yourNextStep'), t('starts'), t('here')], period: t('period'), label: t('sloganLabel'), arabic: t('yourNextStepStartsHere'), signup: t('startFreeUpTo5Players'), demo: t('tryTheDemo'), demoNote: t('aCoachWorkspaceWithSampleData'), invite: t('gotAPlayerInvite'), inviteNote: t('openTheInviteLinkYourCoach') },
-  preview: { player: t('playerView'), captain: t('coachView'), label: t('previewSampleData'), day: t('day2ChestAndTriceps'), exercise: t('barbellBenchPress'), weightLabel: t('weightKg'), weight: t('weight'), plus: t('plus'), minus: t('minus'), pr: t('newRecord'), record: t('previewRecord'), done: t('setDone'), radar: t('needsAttention'), heading: t('driftingPlayers'), send: t('messageOnWhatsApp'), waiting: t('videosWaitingForFeedback'), videos: t('videos') },
+  hero: { description: t('heroDescription'), eyebrow: t('forOnlineCoaches'), lines: [t('yourNextStep'), t('starts'), t('here')], period: t('period'), label: t('sloganLabel'), arabic: t('yourNextStepStartsHere'), signup: t('startFreeUpTo5Players'), demo: t('tryTheDemo'), demoNote: t('aCoachWorkspaceWithSampleData'), invite: t('gotAPlayerInvite'), inviteNote: t('openTheInviteLinkYourCoach') },
+  preview: { rest: t('restView'), restDay: t('restDay'), sleepQuestion: t('sleepQuestion'), sleepHours: t('sleepHours').split(/[,،]/), muscles: t('musclesLight'), water: t('waterStrip'), waterGlass: t('waterGlass'), player: t('playerView'), captain: t('coachView'), label: t('previewSampleData'), day: t('day2ChestAndTriceps'), exercise: t('barbellBenchPress'), weightLabel: t('weightKg'), weight: t('weight'), plus: t('plus'), minus: t('minus'), pr: t('newRecord'), record: t('previewRecord'), done: t('setDone'), radar: t('needsAttention'), heading: t('driftingPlayers'), send: t('messageOnWhatsApp'), waiting: t('videosWaitingForFeedback'), videos: t('videos') },
+  readiness: { label: t('newFeature'), title: t('readinessTitle'), description: t('readinessDescription'), score: t('readinessScore'), rings: t('readinessRings'), ringsDescription: t('ringsDescription'), ringLabels: t('ringLabels'), decision: t('todayDecision'), decisionDescription: t('decisionDescription'), original: t('originalSets'), suggested: t('suggestedSets'), apply: t('applyToday'), muscles: t('muscleAnalytics'), muscleDescription: t('muscleDescription'), pushPull: t('pushPull') },
+  progress: { title: t('eightWeekProgress'), exercise: t('barbellBenchPress'), weight: t('progressWeight'), record: t('newRecord'), sample: t('sampleData') },
   radar: [
     { name: t('karimAdel'), days: t('fourDays'), reason: t('noWorkoutLoggedSinceSaturday') },
     { name: t('mohamedTarek'), days: t('threeDays'), reason: t('weeklyCheckInOverdue') },
@@ -32,31 +35,37 @@ export function getContent(t: Translator<typeof messages>) {
   feed: [{ t: t('pushPlanAssignedToSara'), at: t('feedAssignedAt') }, { t: t('saraFinishedTodaySWorkout'), at: t('feedWorkoutAt') }, { t: t('saraSentASquatVideo'), at: t('feedVideoAt') }, { t: t('yourFeedbackLowerMoreSlowly'), at: t('feedFeedbackAt') }],
   featuresHeading: { label: t('forCoaches'), title: t('everythingYouNeedKeepItSimple') },
   features: [
-    { n: t('featureOne'), t: t('workoutBuilder'), d: t('supersetsReadyMadeTemplatesAndOver') },
-    { n: t('featureTwo'), t: t('flexibleMealPlans'), d: t('macrosUpdateAsYouBuildPlayers') },
-    { n: t('featureThree'), t: t('dropOffRadar'), d: t('spotPlayersWhoHavenTLogged') },
-    { n: t('featureFour'), t: t('oneInbox'), d: t('formVideosCheckInPhotosAnd') },
+    { icon: 'workout', t: t('workoutBuilder'), d: t('supersetsReadyMadeTemplatesAndOver') },
+    { icon: 'templates', t: t('templates'), d: t('templatesDescription') },
+    { icon: 'meals', t: t('flexibleMealPlans'), d: t('macrosUpdateAsYouBuildPlayers') },
+    { icon: 'supplements', t: t('supplements'), d: t('supplementsDescription') },
+    { icon: 'radar', t: t('dropOffRadar'), d: t('spotPlayersWhoHavenTLogged') },
+    { icon: 'inbox', t: t('oneInbox'), d: t('formVideosCheckInPhotosAnd') },
+    { icon: 'readiness', t: t('dailyReadiness'), d: t('dailyReadinessDescription') },
+    { icon: 'muscles', t: t('muscleAnalytics'), d: t('muscleFeatureDescription') },
   ],
-  playerHeading: { label: t('forPlayers'), title: [t('builtForTheGym'), t('oneHand')], description: t('freeForPlayersNoAppStore') },
+  playerHeading: { label: t('forPlayers'), title: t('playerDayTitle'), description: t('playerDayDescription') },
   // The board's timer claim contradicts ARCHITECTURE §9; leave it pending owner review.
   player: [
     { t: t('focusMode'), d: t('oneExerciseAtATimeBig') },
+    { t: t('dailyWater'), d: t('dailyWaterDescription') },
+    { t: t('workoutHistory'), d: t('workoutHistoryDescription') },
     { t: t('offline'), d: t('savedOnYourPhoneSyncedAutomatically') },
     { t: t('personalBest'), d: t('celebrateEveryNewRecordOnScreen') },
-    { t: t('recordAndSend'), d: t('uploadYourSetVideoWhileYou') },
     { t: t('feelsLikeAnApp'), d: t('addItToYourHomeScreen') },
   ] satisfies Detail[],
-  pricing: { label: t('plans'), title: t('roomForEveryPlayer'), description: t('noAutomaticBillingSubscribeOnWhatsApp'), note: t('noAutoRenewalActivateOnWhatsApp'), popular: t('mostPopular'), unit: t('egp'), monthly: t('egpMonth') },
+  pricing: { allFeatures: t('allPlanFeatures'), label: t('plans'), title: t('roomForEveryPlayer'), description: t('noAutomaticBillingSubscribeOnWhatsApp'), note: t('noAutoRenewalActivateOnWhatsApp'), popular: t('mostPopular'), unit: t('egp'), monthly: t('egpMonth') },
   // Prices confirmed by the owner on 2026-11-03. The DB plan limits must match these.
   plans: [
-    { name: t('planEntry'), price: 0, displayPrice: t('priceFree'), limit: 5, limitLabel: t('upTo5Players'), action: t('startFree'), hot: false },
-    { name: t('planChampion'), price: 399, displayPrice: t('priceChampion'), limit: 20, limitLabel: t('upTo20Players'), action: t('subscribe'), hot: false },
-    { name: t('planLegend'), price: 699, displayPrice: t('priceLegend'), limit: 40, limitLabel: t('upTo40Players'), action: t('subscribe'), hot: true },
-    { name: t('planEmpire'), price: 1499, displayPrice: t('priceEmpire'), limit: 100, limitLabel: t('upTo100Players'), action: t('subscribe'), hot: false },
+    { name: t('planEntry'), audience: t('entryAudience'), checklist, price: 0, displayPrice: t('priceFree'), limit: 5, limitLabel: t('upTo5Players'), action: t('startFree'), hot: false },
+    { name: t('planChampion'), audience: t('championAudience'), checklist, price: 399, displayPrice: t('priceChampion'), limit: 20, limitLabel: t('upTo20Players'), action: t('subscribe'), hot: false },
+    { name: t('planLegend'), audience: t('legendAudience'), checklist, price: 699, displayPrice: t('priceLegend'), limit: 40, limitLabel: t('upTo40Players'), action: t('subscribe'), hot: true },
+    { name: t('planEmpire'), audience: t('empireAudience'), checklist, price: 1499, displayPrice: t('priceEmpire'), limit: 100, limitLabel: t('upTo100Players'), action: t('subscribe'), hot: false },
   ] satisfies Plan[],
   whiteLabel: t('wantYourGymSNameAnd'),
   faqHeading: { label: t('faq'), title: t('beforeYouStart') },
   faq: [
+    { q: t('sleepFaq'), a: t('sleepAnswer') },
     { q: t('doPlayersPay'), a: t('noCoachesSubscribePlayersJoinFree') },
     { q: t('doesItWorkOffline'), a: t('yesWorkoutsAndMealsAreSaved') },
     { q: t('doINeedTheAppStore'), a: t('noOpenItInYourBrowser') },
