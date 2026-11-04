@@ -4,6 +4,7 @@ import { ageIn, parseTab, pickedLabels, trainingDayKeys, weightPoints, weightSum
 describe('player profile model', () => {
   it('falls back to the intake tab for unknown or repeated params', () => {
     expect(parseTab('progress')).toBe('progress');
+    expect(parseTab('analysis')).toBe('analysis');
     expect(parseTab('billing')).toBe('intake');
     expect(parseTab(['plan', 'checkins'])).toBe('intake');
     expect(parseTab(undefined)).toBe('intake');
