@@ -31,7 +31,7 @@ export function PlayerShell({ children }: { children: ReactNode }) {
     state === 'archived' ? t('yourCoachPausedYourCoaching') : null;
   return <MyCaptainContext.Provider value={captain}>
     <div className={workout ? undefined : showsNav(pathname) ? 'pb-[calc(var(--nav-clearance)+1rem)]' : 'pt-[var(--safe-top)]'}>
-    {showsNav(pathname) && <div className="sticky top-0 z-30 mx-auto flex max-w-lg justify-end bg-bg px-5 pb-3 pt-[max(0.75rem,var(--safe-top))]"><NotificationBell /></div>}
+    {showsNav(pathname) && <div className="sticky top-0 z-30 bg-bg/70 pb-3 pt-[max(0.75rem,var(--safe-top))] backdrop-blur-md"><div className="mx-auto flex max-w-lg justify-end px-5"><NotificationBell /></div></div>}
     <div className="mx-auto max-w-lg space-y-3 px-5 pt-3" aria-live="polite">
       {!online && <p role="status" className="glass rounded-card p-4 text-sm">
         {t('youReOfflineYourLogsAre')}
