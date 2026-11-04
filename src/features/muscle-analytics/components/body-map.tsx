@@ -1,8 +1,10 @@
 'use client';
 
+import { useId } from 'react';
 import { useT } from '@/core/i18n/client';
 import { cn } from '@/lib/cn';
-import { heatClass } from '../analytics/heat';
+import { heatIntensity } from '../analytics/heat';
+import { useMusclePopover } from '../hooks/use-muscle-popover';
 import { regions } from '../analytics/muscle-map';
 import type { Region } from '../analytics/muscle-map';
 import { messages } from '../analytics/messages';
@@ -27,10 +29,15 @@ const anchors: Record<Region, { x: number; y: number }> = {
 
 export function BodyMap({ volume }: { volume: Record<Region, number> }) {
   const t = useT(messages);
+  const id = useId();
+  const { card, selection, select, close } = useMusclePopover();
   const top = [...regions].filter(region => volume[region] > 0)
     .sort((a, b) => volume[b] - volume[a]).slice(0, 3)
     .map(region => t('regionSets', { muscle: t(`region.${region}`), sets: volume[region] })).join(t('separator')) || t('noRegions');
-  return <div className="mx-auto grid w-full max-w-md grid-cols-2 gap-5" dir="ltr">
+  return <div ref={card} className="relative" onPointerDown={event => {
+    if (event.target === event.currentTarget) close();
+  }}>
+    <div className="mx-auto grid w-full max-w-xs grid-cols-2 gap-5" dir="ltr">
     {(['front', 'back'] as const).map(view => {
       const paths = view === 'front' ? front : back;
       return <figure key={view} className="min-w-0">
@@ -38,18 +45,48 @@ export function BodyMap({ volume }: { volume: Record<Region, number> }) {
         <div className="relative" style={{ aspectRatio: '160 / 350' }}>
           <svg viewBox="0 0 160 350" role="img" aria-label={t('bodyLabel', { view: t(view), regions: top })}
             className="h-full w-full stroke-line/60" strokeWidth={1.5} strokeLinejoin="round" strokeLinecap="round">
+            <defs>
+              <filter id={`${id}-${view}-glow`} x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="3" /><feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge>
+              </filter>
+              {regions.map(region => <linearGradient key={region} id={`${id}-${view}-${region}`} x2="0" y2="1" className="text-lime">
+                <stop stopColor="currentColor" stopOpacity={heatIntensity(volume[region])} />
+                <stop offset="1" stopColor="currentColor" stopOpacity={heatIntensity(volume[region]) * .4} />
+              </linearGradient>)}
+            </defs>
             <path className="fill-surface" d="M67 19 Q80 11 93 19 L96 35 Q96 48 87 54 L89 62 L105 66 L101 74 L80 70 L59 74 L55 66 L71 62 L73 54 Q64 48 64 35 Z" />
-            {Object.entries(paths).map(([key, shapes]) => <g key={key} data-region={key}
-              className={cn(heatClass(volume[key as Region]), 'transition-[fill] duration-150 motion-reduce:transition-none')}>
+            {Object.entries(paths).map(([key, shapes]) => <g key={key} data-region={key} data-muscle-trigger
+              onClick={event => select(key as Region, event.clientX, event.clientY)}
+              fill={volume[key as Region] > 0 ? `url(#${id}-${view}-${key})` : 'currentColor'}
+              filter={volume[key as Region] > 0 ? `url(#${id}-${view}-glow)` : undefined}
+              className={cn(volume[key as Region] > 0 ? 'text-lime' : 'text-line', 'cursor-pointer transition-[fill] duration-150 motion-reduce:transition-none')}>
               {shapes.map((path, index) => <path key={index} d={path} />)}
             </g>)}
           </svg>
           {regions.filter(region => region in paths && volume[region] > 20).map(region => <span key={region}
             aria-hidden data-fatigue={region}
-            className="absolute size-2.5 animate-pulse rounded-full bg-danger ring-4 ring-danger/20 motion-reduce:animate-none"
+            className="pointer-events-none absolute size-2.5 animate-pulse rounded-full bg-danger ring-4 ring-danger/20 motion-reduce:animate-none"
             style={{ insetInlineStart: `${anchors[region].x}%`, top: `${anchors[region].y}%` }} />)}
         </div>
       </figure>;
     })}
+    </div>
+    <ul className="mt-3 grid grid-cols-3 gap-2">
+      {regions.map(region => <li key={region}><button type="button" data-muscle-trigger
+        aria-label={t('regionSets', { muscle: t(`region.${region}`), sets: volume[region] })}
+        aria-pressed={selection?.region === region} aria-controls={selection?.region === region ? `${id}-detail` : undefined}
+        onClick={event => {
+          const bounds = event.currentTarget.getBoundingClientRect();
+          select(region, bounds.x, bounds.y);
+        }}
+        className="glass min-h-12 w-full rounded-control px-2 py-1 text-xs text-ink focus-visible:outline-2 focus-visible:outline-lime">
+        {t(`region.${region}`)}<span className="ms-1 font-bold">{volume[region]}</span>
+      </button></li>)}
+    </ul>
+    {selection && <div id={`${id}-detail`} role="status"
+      className="glass-strong pointer-events-none absolute z-10 rounded-control p-3 text-sm font-bold text-ink shadow-lime-glow"
+      style={{ insetInlineStart: selection.x, top: selection.y, width: selection.width, maxHeight: 72 }} dir="ltr">
+      <bdi>{t('regionSets', { muscle: t(`region.${selection.region}`), sets: volume[selection.region] })}</bdi>
+    </div>}
   </div>;
 }

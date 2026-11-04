@@ -1,4 +1,5 @@
 export { readinessScore, reducedSets, suggestDecision } from './score';
+export { loadTodayReadiness } from './data/load-today-readiness';
 export type { Decision } from './score';
 export { waterGoalMl } from './water';
 export { useTodayDecision } from '@/core/offline/use-today-decision';

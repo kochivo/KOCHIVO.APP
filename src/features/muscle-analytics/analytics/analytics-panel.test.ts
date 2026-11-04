@@ -4,18 +4,19 @@ import type * as React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { createT } from '@/core/i18n/messages';
-import { messages } from './messages';
+import type { Messages } from '@/core/i18n/messages';
 import { weeklyVolume } from '../data/muscle-volume';
 import { AnalyticsPanel } from '../components/analytics-panel';
 import { WeekSlider } from '../components/week-slider';
 
 const state = vi.hoisted(() => ({ week: 4 }));
-vi.mock('react', async importOriginal => ({
-  ...await importOriginal<typeof React>(),
-  useId: () => 'analytics-week',
-  useState: () => [state.week, (value: number) => { state.week = value; }],
-}));
-vi.mock('@/core/i18n/client', () => ({ useT: () => createT(messages, 'en'), useLocale: () => 'en' }));
+vi.mock('react', async importOriginal => {
+  const react = await importOriginal<typeof React>();
+  return { ...react, useId: () => 'analytics-week',
+    useState: (initial: unknown) => initial === 4 ? [state.week, (value: number) => { state.week = value; }] : react.useState(initial),
+  };
+});
+vi.mock('@/core/i18n/client', () => ({ useT: (dictionary: Messages) => createT(dictionary, 'en'), useLocale: () => 'en' }));
 beforeEach(() => { state.week = 4; });
 const now = new Date('2026-11-04T10:00:00Z');
 function weeks(count = 21) {
@@ -41,16 +42,34 @@ it('shows a fatigue marker and accessible high-load row only above 20 sets', () 
 it('changes fills, balance and fatigue through the range input without fetching', () => {
   const data = weeks();
   const before = renderToStaticMarkup(createElement(AnalyticsPanel, { weeks: data }));
-  expect(before).toContain('data-region="chest" class="fill-lime shadow-lime-glow');
-  expect(before).toContain('Push/pull imbalance');
+  expect(before).toContain('data-region="chest"');
+  expect(before).toContain('fill="url(#analytics-week-front-chest)"');
+  expect(before).toContain('Pull, Legs: under 25%');
   const slider = nodes(AnalyticsPanel({ weeks: data })).find(node => node.type === WeekSlider);
   const input = nodes(WeekSlider(slider?.props as Parameters<typeof WeekSlider>[0])).find(node => node.type === 'input');
   (input?.props.onChange as (event: unknown) => void)({ currentTarget: { value: '1' } });
   const after = renderToStaticMarkup(createElement(AnalyticsPanel, { weeks: data }));
-  expect(after).toContain('data-region="chest" class="fill-none');
+  expect(after).toContain('fill="currentColor"');
   expect(after).toContain('No workout this week');
   expect(after).not.toContain('data-fatigue=');
-  expect(after).not.toContain('Push/pull imbalance');
+  expect(after).not.toContain('under 25%');
+});
+it('renders three named stats, three named balance segments and real muscle buttons in both views', () => {
+  for (const self of [false, true]) {
+    const html = renderToStaticMarkup(createElement(AnalyticsPanel, { weeks: weeks(12), self, readiness: 60 }));
+    expect(html).toContain('<dt');
+    expect(html).toContain('Weekly sets');
+    expect(html).toContain('Most worked muscle');
+    expect(html).toContain('Recovery');
+    expect(html).toContain('Average');
+    for (const [group, value] of [['Push', 100], ['Pull', 0], ['Legs', 0]]) {
+      expect(html).toContain(`role="img" aria-label="${group}: ${value}%"`);
+    }
+    expect(html).toContain('aria-label="chest: 12 sets"');
+    expect(html.match(/<button /g)).toHaveLength(6);
+    expect(html).not.toContain('role="button"');
+    expect(html).toContain('feGaussianBlur');
+  }
 });
 it('shows the overall empty state when all four weeks have no sets', () => {
   const html = renderToStaticMarkup(createElement(AnalyticsPanel, { weeks: weeks(0) }));

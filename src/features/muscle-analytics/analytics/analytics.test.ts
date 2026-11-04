@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { muscleMap } from './muscle-map';
 import { heatClass } from './heat';
-import { balance } from './balance';
 import { weeklyVolume } from '../data/muscle-volume';
 import type { VolumeRow } from '../data/muscle-volume';
 
@@ -75,11 +74,4 @@ it('uses the heat thresholds including the glow boundary', () => {
   expect(heatClass(6)).toBe('fill-lime');
   expect(heatClass(12)).toBe('fill-lime');
   expect(heatClass(13)).toContain('shadow-lime-glow');
-});
-it('calculates push/pull percentages and flags strictly above 60 percent', () => {
-  expect(balance(0, 0)).toEqual({ push: 0, pull: 0, imbalanced: false });
-  expect(balance(3, 2)).toEqual({ push: 60, pull: 40, imbalanced: false });
-  expect(balance(61, 39)).toEqual({ push: 61, pull: 39, imbalanced: true });
-  expect(balance(1, 2)).toEqual({ push: 33, pull: 67, imbalanced: true });
-  expect(balance(601, 399).imbalanced).toBe(true);
 });

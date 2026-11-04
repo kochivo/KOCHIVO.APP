@@ -1,7 +1,7 @@
 import { loadSupabaseBrowser } from '@/core/supabase/lazy';
 import { daysBetween, localDate, saturdayWeek } from '@/lib/dates';
-import { muscleMap, muscleSide } from '../analytics/muscle-map';
-import type { Region } from '../analytics/muscle-map';
+import { muscleMap, muscleSide, specificMuscle } from '../analytics/muscle-map';
+import type { MuscleVolume, Region } from '../analytics/muscle-map';
 
 export interface VolumeRow {
   completed_at: string;
@@ -15,6 +15,7 @@ export interface VolumeWeek {
   anterior: number;
   posterior: number;
   total: number;
+  muscles: MuscleVolume;
 }
 
 export function weeklyVolume(rows: readonly VolumeRow[], now: Date): VolumeWeek[] {
@@ -23,7 +24,7 @@ export function weeklyVolume(rows: readonly VolumeRow[], now: Date): VolumeWeek[
     const at = new Date(`${current}T12:00:00Z`);
     at.setUTCDate(at.getUTCDate() - (3 - index) * 7);
     return { start: localDate(at, 'UTC'), regions: { chest: 0, back: 0, shoulders: 0, arms: 0, abs: 0, legs: 0 },
-      anterior: 0, posterior: 0, total: 0 };
+      anterior: 0, posterior: 0, total: 0, muscles: {} as MuscleVolume };
   });
   const first = weeks[0];
   if (!first) return weeks;
@@ -36,6 +37,8 @@ export function weeklyVolume(rows: readonly VolumeRow[], now: Date): VolumeWeek[
     if (!week || !region) continue;
     week.regions[region] += 1;
     week.total += 1;
+    const muscle = specificMuscle(row.exercises.target, region);
+    week.muscles[muscle] = (week.muscles[muscle] ?? 0) + 1;
     const side = muscleSide(row.exercises.target, region);
     if (side) week[side] += 1;
   }
