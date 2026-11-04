@@ -10,12 +10,9 @@ import type { Tables } from '@/types/database';
 import type { AppDatabase } from '@/types/app-database';
 import { compressImage } from '../image';
 import { weekStart } from '../week';
-import type { ProgressDatabase } from './database';
 
 export type CheckIn = Pick<Tables<'check_ins'>,
-  'id' | 'player_id' | 'week_start' | 'body_weight_kg' | 'waist_cm' | 'notes' | 'photo_paths' | 'captain_reply' | 'reviewed_at'> & {
-    body_fat_pct: number | null; photo_poses: string[];
-  };
+  'id' | 'player_id' | 'week_start' | 'body_weight_kg' | 'waist_cm' | 'notes' | 'photo_paths' | 'captain_reply' | 'reviewed_at' | 'body_fat_pct' | 'photo_poses'>;
 export interface CheckInInput {
   today: string;
   body_weight_kg: number;
@@ -63,7 +60,7 @@ export async function submitCheckIn(client: SupabaseClient<AppDatabase>, input: 
       notes: input.notes, photo_paths: paths,
       body_fat_pct: input.body_fat_pct ?? null, photo_poses: input.photo_poses ?? [],
     };
-    const { error } = await (client as SupabaseClient<ProgressDatabase>).from('check_ins').insert(row);
+    const { error } = await client.from('check_ins').insert(row);
     if (error?.code === '23505') return { error: t('youveAlreadySentThisWeeksCheckin') };
     if (error) return { error: t('couldntSendTheCheckinTryAgain') };
     input.onProgress?.(input.photos.length + 1, input.photos.length + 1);

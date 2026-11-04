@@ -39,7 +39,7 @@ it('labels legacy photos without assuming a front pose', () => {
 it('keeps usable gallery photos and their poses when one historical file is missing', async () => {
   const result = await signGallery([{
     id: 'checkin', player_id: 'player', week_start: '2026-10-03', body_weight_kg: 80,
-    waist_cm: null, notes: null, body_fat_pct: null,
+    waist_cm: null, notes: null, body_fat_pct: null, captain_reply: null, reviewed_at: null,
     photo_paths: ['missing.jpg', 'side.jpg'], photo_poses: ['front', 'side'],
   }], async path => {
     if (path === 'missing.jpg') throw new Error('missing');
