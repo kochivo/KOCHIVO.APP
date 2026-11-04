@@ -1,4 +1,5 @@
 import Dexie, { type Table } from 'dexie';
+import type { SupplementLogRow, SupplementRow } from './tables';
 import type { MealLogRow, SetLogRow, SyncTable, WorkoutSessionRow } from './tables';
 
 export interface SnapshotExercise {
@@ -102,6 +103,8 @@ export interface NutritionSnapshot {
  * here as new versions — never change an existing version's schema, add version(n+1).
  */
 export class KochivoDB extends Dexie {
+  supplement_logs!: Table<SupplementLogRow, string>;
+  supplements!: Table<SupplementRow, string>;
   workout_sessions!: Table<WorkoutSessionRow, string>;
   set_logs!: Table<SetLogRow, string>;
   meal_logs!: Table<MealLogRow, string>;
@@ -121,6 +124,7 @@ export class KochivoDB extends Dexie {
     this.version(2).stores({ program_snapshot: 'id' });
     this.version(3).stores({ nutrition_snapshot: 'id' });
     this.version(4).stores({ media_queue: '++id, next_attempt_at' });
+    this.version(5).stores({ supplement_logs: 'id, &[supplement_id+log_date]', supplements: 'id, player_id' });
   }
 }
 

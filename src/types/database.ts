@@ -1,3 +1,5 @@
+import type { SupplementRow, SupplementLogRow } from '@/core/offline/tables';
+
 export type Json =
   | string
   | number
@@ -14,6 +16,18 @@ export type Database = {
   }
   public: {
     Tables: {
+      supplements: {
+        Row: SupplementRow
+        Insert: SupplementRow
+        Update: Partial<SupplementRow>
+        Relationships: []
+      }
+      supplement_logs: {
+        Row: SupplementLogRow & { player_id: string }
+        Insert: SupplementLogRow & { player_id?: string }
+        Update: Partial<SupplementLogRow>
+        Relationships: []
+      }
       coach_join_requests: {
         Row: { id: string; captain_id: string; player_id: string; created_at: string; status: 'pending' | 'accepted' | 'declined' }
         Insert: { id: string; captain_id: string; player_id: string }
@@ -1466,6 +1480,7 @@ export type Database = {
       }
       storage_owner: { Args: { p_name: string }; Returns: string }
       sync_meal_logs: { Args: { p_rows: Json }; Returns: undefined }
+      sync_supplement_logs: { Args: { p_rows: Json }; Returns: undefined }
       sync_set_logs: { Args: { p_rows: Json }; Returns: undefined }
       sync_workout_sessions: { Args: { p_rows: Json }; Returns: undefined }
       valid_intake_training_days: { Args: { days: number[] }; Returns: boolean }

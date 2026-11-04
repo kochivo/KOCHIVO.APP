@@ -10,6 +10,7 @@ import { eatenTotals, targetsOf } from '../macros';
 import { MacroRing } from './macro-ring';
 import { MealCard } from './meal-card';
 import { starterText } from '@/lib/starter-text';
+import { PlayerSupplements } from '@/features/supplements';
 
 export function NutritionScreen() {
   const t = useT(messages);
@@ -32,5 +33,6 @@ export function NutritionScreen() {
           <ul className="space-y-4" aria-label={t('todaysMealsList')}>{snapshot.meals.map((meal) => <li key={`${today}-${meal.id}`}><MealCard meal={meal} today={today} planTitle={snapshot.title}
             log={logs.find((row) => row.meal_id === meal.id)} /></li>)}</ul>
         </>}
+    <PlayerSupplements />
   </main>;
 }
