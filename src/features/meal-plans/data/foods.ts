@@ -14,9 +14,9 @@ export async function searchFoods({ query, limit = 30, mine = false }: { query: 
   const client = await planClient();
   let request = client.from('foods').select('*').is('archived_at', null).order('name_ar').limit(Math.max(1, Math.min(30, limit)));
   if (mine) {
-    const { data, error } = await client.auth.getUser();
-    if (error || !data.user) return fail(t('signInFirst'));
-    request = request.eq('owner_id', data.user.id);
+    const { data, error } = await client.auth.getClaims();
+    if (error || !data?.claims.sub) return fail(t('signInFirst'));
+    request = request.eq('owner_id', data.claims.sub);
   }
   if (query.trim()) {
     const pattern = `%${escapeSearch(query.trim().slice(0, 100))}%`;

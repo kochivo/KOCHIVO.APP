@@ -17,16 +17,17 @@ export async function fetchMyCaptain(): Promise<{ data: MyCaptain | null } | { e
   const t = await getT(messages);
   try {
     const client = await supabaseServer();
-    const { data: auth, error: authError } = await client.auth.getUser();
-    if (authError || !auth.user) return { error: t('signInAgain') };
-    const relation = await client.from('coach_clients')
+    const { data: auth, error: authError } = await client.auth.getClaims();
+    if (authError || !auth?.claims.sub) return { error: t('signInAgain') };
+    const [relation, captain] = await Promise.all([client.from('coach_clients')
       .select('access_until,archived_at,started_on,captain_id')
-      .eq('player_id', auth.user.id).order('archived_at', { ascending: true, nullsFirst: true })
-      .order('created_at', { ascending: false }).limit(1).maybeSingle();
+      .eq('player_id', auth.claims.sub).order('archived_at', { ascending: true, nullsFirst: true })
+      .order('created_at', { ascending: false }).limit(1).maybeSingle(),
+      client.rpc('my_captain_profile'),
+    ]);
     if (relation.error) return { error: t('couldnTLoadYourCoach') };
     if (!relation.data) return { data: null };
     const row = relation.data;
-    const captain = await client.rpc('my_captain_profile');
     if (captain.error) return { error: t('couldnTLoadYourCoach') };
     const publicProfile = captain.data?.[0];
     return { data: {

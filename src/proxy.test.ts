@@ -30,9 +30,9 @@ it.each([['/en/x?tab=one', '/x?tab=one'], ['/ar', '/'], ['/ar/offline', '/offlin
   },
 );
 
-it('rewrites offline without session work', async () => {
-  const response = await proxy(new NextRequest('https://kochivo.site/offline', { headers: { cookie: 'kochivo.locale=en' } }));
-  expect(response.headers.get('x-middleware-rewrite')).toBe('https://kochivo.site/en/offline');
+it.each(['/offline', '/privacy', '/terms'])('rewrites %s without session work', async path => {
+  const response = await proxy(new NextRequest(`https://kochivo.site${path}`, { headers: { cookie: 'kochivo.locale=en' } }));
+  expect(response.headers.get('x-middleware-rewrite')).toBe(`https://kochivo.site/en${path}`);
   expect(session.refresh).not.toHaveBeenCalled();
 });
 

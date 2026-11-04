@@ -16,7 +16,7 @@ import { fetchRadar } from './data/radar';
 const mocks = vi.hoisted(() => {
   const single = vi.fn();
   const query = { select: vi.fn(), eq: vi.fn(), is: vi.fn(), insert: vi.fn(), update: vi.fn(), single };
-  const client = { auth: { getUser: vi.fn() }, from: vi.fn(), rpc: vi.fn() };
+  const client = { auth: { getUser: vi.fn(), getClaims: vi.fn() }, from: vi.fn(), rpc: vi.fn() };
   return { query, client, revalidate: vi.fn() };
 });
 vi.mock('server-only', () => ({}));
@@ -25,6 +25,7 @@ vi.mock('next/cache', () => ({ revalidatePath: mocks.revalidate }));
 
 beforeEach(() => {
   vi.resetAllMocks();
+  mocks.client.auth.getClaims.mockResolvedValue({ data: { claims: { sub: 'captain-id' } }, error: null });
   mocks.client.auth.getUser.mockResolvedValue({ data: { user: { id: 'captain-id' } }, error: null });
   mocks.client.from.mockReturnValue(mocks.query);
   for (const method of ['select', 'eq', 'is', 'insert', 'update'] as const) mocks.query[method].mockReturnValue(mocks.query);

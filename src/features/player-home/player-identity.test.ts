@@ -8,8 +8,8 @@ vi.mock('@/core/supabase/server', () => ({ supabaseServer: mocks.server }));
 beforeEach(() => {
   vi.resetAllMocks();
   const query = { select: () => query, eq: () => query, maybeSingle: mocks.profile };
-  mocks.server.mockResolvedValue({ auth: { getUser: mocks.user }, from: () => query });
-  mocks.user.mockResolvedValue({ data: { user: { id: 'player' } } });
+  mocks.server.mockResolvedValue({ auth: { getClaims: mocks.user }, from: () => query });
+  mocks.user.mockResolvedValue({ data: { claims: { sub: 'player' } } });
 });
 
 it('maps the first name and keeps the authenticated identity', async () => {

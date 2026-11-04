@@ -30,9 +30,9 @@ function errorMessage(error: unknown, t: Translator<typeof messages>): string {
 async function session() {
   const t = await getT(messages);
   const client = await supabaseServer();
-  const user = await client.auth.getUser();
-  if (user.error || !user.data.user) throw new Error(t('signInFirst'));
-  const captain = user.data.user.id;
+  const user = await client.auth.getClaims();
+  if (user.error || !user.data?.claims.sub) throw new Error(t('signInFirst'));
+  const captain = user.data.claims.sub;
   const profile = await client.from('profiles').select('role').eq('id', captain).single();
   if (profile.error) throw profile.error;
   if (profile.data?.role !== 'captain') throw new Error(t('templatesAreForCoachesOnly'));
@@ -72,16 +72,17 @@ export async function listTemplates(): Promise<TemplateResult<Template[]>> {
   try {
     const { client, captain } = await session();
     const templates: Template[] = [];
-    for (const kind of kindSchema.options) {
+    const results = await Promise.all(kindSchema.options.map(async kind => {
       const rows = kind === 'program'
         ? await client.from('programs').select('id,title,created_at,is_starter,program_days(count)')
           .eq('captain_id', captain).eq('is_template', true).order('created_at', { ascending: false })
         : await client.from('nutrition_plans').select('id,title,created_at,is_starter,meals(count)')
           .eq('captain_id', captain).eq('is_template', true).order('created_at', { ascending: false });
       if (rows.error) throw rows.error;
-      templates.push(...rows.data.map(row => ({ id: row.id, title: row.title, created_at: row.created_at, kind, starter: row.is_starter,
-        count: ('program_days' in row ? row.program_days[0]?.count : row.meals[0]?.count) ?? 0 })));
-    }
+      return rows.data.map(row => ({ id: row.id, title: row.title, created_at: row.created_at, kind, starter: row.is_starter,
+        count: ('program_days' in row ? row.program_days[0]?.count : row.meals[0]?.count) ?? 0 }));
+    }));
+    templates.push(...results.flat());
     return { data: templates.sort((a, b) => b.created_at.localeCompare(a.created_at)) };
   } catch (error) { unstable_rethrow(error); return { error: errorMessage(error, t) }; }
 }

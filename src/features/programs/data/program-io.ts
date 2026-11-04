@@ -46,18 +46,21 @@ export async function loadProgram(id: string): Promise<Result<ProgramDraft>> {
     if (program.error) return { error: t('couldntOpenTheProgramTryAgain') };
     const days = await client.from('program_days').select('*').eq('program_id', id).order('position');
     if (days.error) return { error: t('couldntLoadDaysTryAgain') };
-    const draftDays: DraftDay[] = [];
-    for (const day of days.data) {
-      const rows = await client.from('program_exercises').select('*').eq('day_id', day.id).order('position');
-      if (rows.error) return { error: t('couldntLoadExercisesTryAgain') };
-      const cardio = await client.from('program_cardio').select('*').eq('day_id', day.id).order('position');
-      const blocks = z.array(cardioSchema).safeParse(cardio.data);
-      if (cardio.error || !blocks.success) return { error: t('couldntLoadExercisesTryAgain') };
-      const ids = rows.data.map(row => row.exercise_id);
-      const library = ids.length ? await client.from('exercises').select('*').in('id', ids) : { data: [], error: null };
-      if (library.error) return { error: t('couldntLoadTheExerciseLibraryTryAgain') };
-      draftDays.push({ ...day, cardio: blocks.data, exercises: rows.data.map(row => ({ ...row, library: library.data?.find(e => e.id === row.exercise_id) ?? null })) });
-    }
+    const dayIds = days.data.map(day => day.id);
+    const [rows, cardio] = await Promise.all([
+      dayIds.length ? client.from('program_exercises').select('*').in('day_id', dayIds).order('position') : { data: [], error: null },
+      dayIds.length ? client.from('program_cardio').select('*').in('day_id', dayIds).order('position') : { data: [], error: null },
+    ]);
+    const blocks = z.array(cardioSchema).safeParse(cardio.data);
+    if (rows.error || cardio.error || !blocks.success) return { error: t('couldntLoadExercisesTryAgain') };
+    const ids = [...new Set(rows.data.map(row => row.exercise_id))];
+    const library = ids.length ? await client.from('exercises').select('*').in('id', ids) : { data: [], error: null };
+    if (library.error) return { error: t('couldntLoadTheExerciseLibraryTryAgain') };
+    const draftDays: DraftDay[] = days.data.map(day => ({ ...day,
+      cardio: blocks.data.filter(block => block.day_id === day.id),
+      exercises: rows.data.filter(row => row.day_id === day.id)
+        .map(row => ({ ...row, library: library.data?.find(e => e.id === row.exercise_id) ?? null })),
+    }));
     const settings = program.data.settings;
     return { data: { ...program.data, repeatWeekly: typeof settings === 'object' && settings !== null &&
       !Array.isArray(settings) ? settings.repeatWeekly !== false : true, days: draftDays } };
