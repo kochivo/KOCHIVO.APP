@@ -8,6 +8,8 @@ it('gives every native sheet an opaque surface', () => {
   for (const file of files) {
     // The tour dialog is a spotlight canvas; its floating card is the sheet.
     if (file === path.join('ui', 'tour.tsx')) continue;
+    // The exercise lightbox is a media viewer: a blurred scrim around the enlarged GIF, which is the surface.
+    if (file === path.join('features', 'workout', 'components', 'exercise-lightbox.tsx')) continue;
     const source = readFileSync(path.join(root, file), 'utf8');
     const tag = source.search(/<(?:dialog|ResponsiveDialog)\b/);
     if (tag === -1) continue;
