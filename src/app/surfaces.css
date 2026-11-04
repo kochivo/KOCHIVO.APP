@@ -1,25 +1,45 @@
 @utility glass {
   @apply glass-surface;
-  --glass-blur-background: var(--glass-tint);
+  --glass-blur-background: var(--glass-fill);
   --glass-blur-filter: blur(24px);
-  border: 1px solid var(--glass-hairline);
-  box-shadow: inset 0 1px 0 var(--glass-highlight);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
 }
 @utility glass-raised {
   @apply glass-surface;
   --glass-blur-background: var(--glass-tint-raised);
   --glass-blur-filter: blur(12px);
-  border: 1px solid var(--glass-hairline);
-  box-shadow: inset 0 1px 0 var(--glass-highlight);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
 }
 @utility glass-strong {
   @apply glass-surface;
   --glass-blur-background: var(--glass-strong-tint);
   --glass-blur-filter: blur(24px);
   border: 1px solid var(--glass-strong-border);
-  box-shadow: inset 0 1px 0 var(--glass-strong-highlight);
+  box-shadow: var(--glass-strong-shadow);
 }
-/* Shared by all three utilities, including responsive variants such as lg:glass-strong. */
+@utility glass-featured {
+  @apply glass-strong;
+  :where(html:not([data-theme='light'])) & {
+    position: relative;
+    --glass-blur-background: var(--featured-fill);
+    border-color: transparent;
+    box-shadow: var(--featured-shadow);
+    &::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      padding: 1px;
+      border-radius: inherit;
+      background: var(--featured-edge);
+      mask: linear-gradient(var(--color-ink) 0 0) content-box, linear-gradient(var(--color-ink) 0 0);
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+  }
+}
+/* Shared by all glass levels, including responsive variants such as lg:glass-strong. */
 @utility glass-surface {
   background: var(--glass-solid-background, var(--glass-blur-background));
   -webkit-backdrop-filter: var(--glass-solid-filter, var(--glass-blur-filter));
@@ -27,7 +47,7 @@
 }
 html[data-glass='solid'] { --glass-solid-background: var(--color-surface); --glass-solid-filter: none; }
 /* Nested panels keep their contrast without asking the GPU to blur the same pixels again. */
-:is(.glass, .glass-strong, .glass-raised) :is(.glass, .glass-strong, .glass-raised) {
+:is(.glass, .glass-strong, .glass-raised, .glass-featured) :is(.glass, .glass-strong, .glass-raised, .glass-featured) {
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
@@ -36,4 +56,127 @@ html[data-glass='solid'] { --glass-solid-background: var(--color-surface); --gla
 }
 @media (prefers-reduced-transparency: reduce) {
   html { --glass-solid-background: var(--color-surface); --glass-solid-filter: none; }
+}
+@utility recessed {
+  :where(html:not([data-theme='light'])) & {
+    background: var(--recessed-fill);
+    border: 1px solid var(--recessed-border);
+    box-shadow: var(--recessed-shadow);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+/* Broad gradient falloffs provide the soft edge without an extra GPU blur layer. */
+@utility bg-aurora {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse at 50% 0%, var(--aurora-glow), transparent 100%) 50% 0% / 100% 40vh no-repeat,
+    radial-gradient(ellipse at 0% 100%, var(--orb-glow), transparent 75%) 0% 100% / 50% 60vh no-repeat,
+    radial-gradient(ellipse at 100% 100%, var(--orb-glow), transparent 75%) 100% 100% / 50% 60vh no-repeat,
+    var(--color-bg-deep);
+  pointer-events: none;
+}
+/* Disjoint glow regions cap the light behind muted text, including on short viewports. */
+/* The root Orbs primitive replaces the legacy mesh only in dark mode. */
+@layer base {
+  html:not([data-theme='light']) body::before { content: none; }
+}
+@layer utilities {
+  html:not([data-theme='light']) :is(.bg-glow, .mesh) { background: transparent; }
+}
+@utility primary-surface {
+  :where(html:not([data-theme='light'])) & {
+    background-image: var(--primary-fill);
+    --hover-lift: var(--primary-lift);
+    @media (hover: hover) and (pointer: fine) {
+      &.press:hover:not(:disabled) { transform: none; translate: 0 var(--primary-lift); }
+    }
+  }
+}
+@utility progress-surface {
+  :where(html:not([data-theme='light'])) & {
+    background-image: var(--progress-fill);
+    box-shadow: var(--progress-edge);
+  }
+}
+@utility progress-lime { @apply bg-lime progress-surface; }
+@utility progress-ring {
+  stroke: var(--color-lime);
+  html:not([data-theme='light']) & {
+    stroke: url(#kochivo-progress-lime);
+    filter: drop-shadow(var(--progress-ring-glow));
+  }
+}
+@utility progress-start { stop-color: var(--progress-start); }
+@utility progress-end { stop-color: var(--color-lime); }
+@utility selected-surface {
+  :where(html:not([data-theme='light'])) & { border-color: var(--selected-border); }
+}
+@utility decorative-icon {
+  html:not([data-theme='light']) & {
+    background: var(--color-surface-raised);
+    color: var(--color-muted);
+    --tw-ring-color: var(--color-line-soft);
+  }
+}
+@utility press-scale {
+  transition: transform 300ms ease-out;
+  &:active:not(:disabled) { transform: scale(var(--press-scale)); }
+}
+@utility hover-lift {
+  transition: all 300ms ease-out;
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      translate: 0 var(--hover-lift);
+      transform: none;
+      --glass-blur-background: var(--glass-hover-fill);
+    }
+  }
+}
+@utility press {
+  transition-property: transform, box-shadow, background-color, border-color, opacity;
+  transition-duration: 300ms;
+  transition-timing-function: ease-out;
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      transform: translateY(var(--hover-lift));
+      box-shadow: var(--press-glow-hover, 0 0 transparent), 0 10px 20px -12px color-mix(in srgb, var(--color-ink) 12%, transparent);
+    }
+  }
+  &:active:not(:disabled) { transform: scale(var(--press-scale)); }
+}
+@utility glow {
+  --press-glow: var(--shadow-lime-glow);
+  --press-glow-hover: var(--shadow-lime-glow-hover);
+  box-shadow: var(--press-glow);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) { box-shadow: var(--press-glow-hover), 0 10px 20px -12px color-mix(in srgb, var(--color-ink) 12%, transparent); }
+  }
+}
+/* No fill-mode: route wrappers must not retain a transform around fixed controls. */
+.empty-state-in { animation: surface-in var(--enter-duration) ease-out; }
+@utility enter { animation: surface-in var(--enter-duration) ease-out; }
+@utility shimmer {
+  background-image: linear-gradient(100deg, transparent 25%, var(--glass-highlight) 50%, transparent 75%);
+  background-size: 200% 100%;
+  animation: skeleton-sweep 1.6s ease-in-out infinite;
+}
+@keyframes skeleton-sweep { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+@layer utilities {
+  html:not([data-theme='light']) {
+    .enter { animation-delay: var(--enter-delay, 0ms); animation-fill-mode: backwards; }
+    .enter:has(.enter) { animation: none; }
+    .enter:nth-child(2) { --enter-delay: 40ms; }
+    .enter:nth-child(3) { --enter-delay: 80ms; }
+    .enter:nth-child(4) { --enter-delay: 120ms; }
+    .enter:nth-child(5) { --enter-delay: 160ms; }
+    .enter:nth-child(n+6) { --enter-delay: 200ms; }
+    .marketing-phone, .marketing-reveal, .marketing-slogan > span, .marketing-after, .marketing-beam, .shimmer { animation: none; }
+  }
+}
+@layer components {
+  html:not([data-theme='light']) .marketing-primary { @apply primary-surface glow; }
+  html:not([data-theme='light']) .marketing-eyebrow { color: var(--color-muted); }
 }

@@ -20,9 +20,9 @@ export function TextField({ label, hint, error, id, className, 'aria-describedby
         id={fieldId}
         aria-invalid={error ? true : props['aria-invalid']}
         aria-describedby={description || undefined}
-        className={cn('min-h-12 min-w-0 w-full rounded-control glass px-4 text-base text-start text-ink placeholder:text-muted disabled:opacity-40', error && 'border-danger', className)}
+        className={cn('min-h-12 min-w-0 w-full rounded-control glass recessed px-4 text-base text-start text-ink placeholder:text-faint disabled:opacity-40', error && 'border-danger', className)}
       />
-      {hint && <p id={`${fieldId}-hint`} className="text-sm text-muted">{hint}</p>}
+      {hint && <p id={`${fieldId}-hint`} className="text-sm text-faint">{hint}</p>}
       {error && <p role="alert" id={`${fieldId}-error`} className="text-sm text-danger">{error}</p>}
     </div>
   );

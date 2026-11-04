@@ -14,7 +14,6 @@ import { describe, expect, it, vi } from 'vitest';
 import { Skeleton, SkeletonText, SkeletonCard, SkeletonList } from './skeleton';
 import { createToastQueue, ToastProvider } from './toast';
 import { BottomNav, Chip, EmptyState, ErrorState, IconButton, LoadingState, ProgressBar, Segmented, SyncPill, TextField } from './index';
-
 describe('UI primitives', () => {
   it('sizes buttons responsively and supports desktop block actions', () => {
     expect(renderToStaticMarkup(createElement(Button))).toContain('w-full md:w-auto');
@@ -27,15 +26,17 @@ describe('UI primitives', () => {
     for (const size of ['md', 'lg'] as const) expect(renderToStaticMarkup(createElement(Stat, { size }, '125'))).toContain('tabular-nums');
   });
   it('offers responsive card padding', () => {
-    expect(renderToStaticMarkup(createElement(GlassCard))).toContain('p-4 md:p-6');
+    expect(renderToStaticMarkup(createElement(GlassCard))).toContain('p-card md:p-6');
     expect(renderToStaticMarkup(createElement(GlassCard, { padding: 'sm' }))).toContain('p-3 md:p-4');
     expect(renderToStaticMarkup(createElement(GlassCard))).not.toContain('hover-lift');
     expect(renderToStaticMarkup(createElement(GlassCard, { interactive: true }))).toContain('press hover-lift');
     expect(renderToStaticMarkup(createElement(GlassCard, { className: 'px-2 py-3' }))).not.toContain('md:p-6');
   });
   it('defines hover lift only for hover devices and removes reduced-motion translation', () => {
-    const css = readFileSync(new URL('../app/globals.css', import.meta.url), 'utf8');
-    expect(css).toMatch(/@utility hover-lift[\s\S]*?@media \(hover: hover\)[\s\S]*?translate: 0 -\.25rem/);
+    const css = readFileSync(new URL('../app/surfaces.css', import.meta.url), 'utf8')
+      + readFileSync(new URL('../app/globals.css', import.meta.url), 'utf8');
+    expect(css).toMatch(/@utility hover-lift[\s\S]*?@media \(hover: hover\) and \(pointer: fine\)[\s\S]*?translate: 0 var\(--hover-lift\)/);
+    expect(css).toContain('--hover-lift: -2px');
     expect(css.slice(css.lastIndexOf('@media (prefers-reduced-motion: reduce)'))).toContain('.hover-lift:hover');
   });
   it('keeps gym sizing by default and offers compact controls with full touch targets', () => {
@@ -60,6 +61,7 @@ describe('UI primitives', () => {
     expect(renderToStaticMarkup(createElement(SkeletonText, { lines: 4 })).match(/shimmer/g)).toHaveLength(4);
     expect(renderToStaticMarkup(createElement(SkeletonList, { rows: 2 })).match(/rounded-full/g)).toHaveLength(2);
   });
+
 
   it('caps the toast stack, preserves error roles and dismisses on schedule', () => {
     vi.useFakeTimers();
@@ -150,7 +152,7 @@ describe('UI primitives', () => {
     const tint = source.match(/--glass-strong-tint: rgb\((\d+) (\d+) (\d+) \/ ([\d.]+)\)/);
     if (!tint) throw new Error('Missing strong glass tint');
     const alpha = Number(tint[4]);
-    const glowAlpha = theme === 'light' ? .06 : .14;
+    const glowAlpha = theme === 'light' ? .06 : .11;
     const mesh = token('bg').map((channel, index) => channel * (1 - glowAlpha) + (token('lime')[index] ?? 0) * glowAlpha);
     const background = mesh.map((channel, index) => Number(tint[index + 1]) * alpha + channel * (1 - alpha));
     const luminance = (rgb: number[]) => rgb.reduce((sum, value, index) => {
@@ -177,7 +179,8 @@ describe('UI primitives', () => {
   });
 
   it('limits hover lift to fine pointers and disables motion for reduced motion', () => {
-    const css = readFileSync(new URL('../app/globals.css', import.meta.url), 'utf8');
+    const css = readFileSync(new URL('../app/surfaces.css', import.meta.url), 'utf8')
+      + readFileSync(new URL('../app/globals.css', import.meta.url), 'utf8');
     expect(css).toContain('@media (hover: hover) and (pointer: fine)');
     expect(css).toContain('transform, box-shadow, background-color, border-color, opacity');
     expect(css).toContain('0 0 0 1px color-mix(in srgb, var(--color-lime) 25%, transparent)');
@@ -185,7 +188,7 @@ describe('UI primitives', () => {
     expect(css).toContain('0 0 0 1px color-mix(in srgb, var(--color-lime) 35%, transparent)');
     expect(css).toContain('0 6px 18px color-mix(in srgb, var(--color-lime) 22%, transparent)');
     expect(css).toContain('box-shadow: var(--press-glow-hover, 0 0 transparent), 0 10px 20px -12px');
-    expect(css).toContain('.empty-state-in { animation: surface-in .28s ease-out; }');
+    expect(css).toContain('.empty-state-in { animation: surface-in var(--enter-duration) ease-out; }');
     const reduced = css.slice(css.lastIndexOf('@media (prefers-reduced-motion: reduce)'));
     for (const selector of ['.press', '.press-scale', '.enter', '.shimmer', '.toast-leave']) expect(reduced).toContain(selector);
     expect(reduced).toContain('animation: none');
@@ -197,7 +200,6 @@ describe('UI primitives', () => {
     const html = renderToStaticMarkup(createElement(ProgressBar, { value, max: 100 }));
     expect(html).toContain(`aria-valuenow="${expected}"`);
   });
-
   it('handles zero max without invalid percentages', () => {
     expect(renderToStaticMarkup(createElement(ProgressBar, { value: 5, max: 0 }))).toContain('aria-valuenow="0"');
   });
@@ -207,7 +209,6 @@ describe('UI primitives', () => {
     expect(html).toContain(text);
     expect(html).toContain('role="status"');
   });
-
   it('links field errors and hints while preserving external descriptions', () => {
     const html = renderToStaticMarkup(createElement(TextField, {
       id: 'email', label: 'الإيميل', error: 'راجع الإيميل', hint: 'إيميلك', dir: 'ltr', 'aria-describedby': 'extra',
@@ -217,7 +218,6 @@ describe('UI primitives', () => {
     expect(html).toContain('id="email-error"');
     expect(html).toContain('dir="ltr"');
   });
-
   it('marks exactly one segmented option checked', () => {
     const html = renderToStaticMarkup(createElement(Segmented, {
       value: 'day', onChange: () => {}, 'aria-label': 'الفترة',
@@ -226,7 +226,6 @@ describe('UI primitives', () => {
     expect(html.match(/aria-checked="true"/g)).toHaveLength(1);
     expect(html).toContain('role="radiogroup"');
   });
-
   it('marks only the active navigation item current', () => {
     const html = renderToStaticMarkup(createElement(BottomNav, { items: [
       { href: '/', label: 'الرئيسية', icon: Home, active: true },

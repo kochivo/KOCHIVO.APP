@@ -1,12 +1,13 @@
 import type { HTMLAttributes } from 'react';
 import { cn } from '@/lib/cn';
 
-type Level = 'base' | 'raised' | 'strong';
+type Level = 'base' | 'raised' | 'strong' | 'featured';
 
 const levels: Record<Level, string> = {
   base: 'glass',
   raised: 'glass-raised',
   strong: 'glass-strong',
+  featured: 'glass-featured',
 };
 
 export interface GlassCardProps extends HTMLAttributes<HTMLDivElement> {
@@ -18,5 +19,5 @@ export interface GlassCardProps extends HTMLAttributes<HTMLDivElement> {
 
 export function GlassCard({ level = 'base', interactive = false, padding = 'md', className, ...props }: GlassCardProps) {
   const hasPadding = /(?:^|\s)(?:[\w-]+:)*!?p(?:[xysebt])?-/.test(className ?? '');
-  return <div className={cn('enter rounded-card', !hasPadding && (padding === 'sm' ? 'p-3 md:p-4' : 'p-4 md:p-6'), interactive && 'press hover-lift', levels[level], className)} {...props} />;
+  return <div className={cn('enter rounded-card', !hasPadding && (padding === 'sm' ? 'p-3 md:p-4' : 'p-card md:p-6'), interactive && 'press hover-lift', levels[level], className)} {...props} />;
 }

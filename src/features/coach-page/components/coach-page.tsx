@@ -19,7 +19,7 @@ export async function CoachPage({ slug, requested = false }: { slug: string; req
   });
   return <main className="mesh flex min-h-dvh items-center justify-center p-6">
     <article className="glass-strong w-full max-w-xl space-y-6 rounded-card p-6 text-start md:p-10">
-      <p className="font-display text-sm font-bold tracking-widest text-lime">{t('brand')}</p>
+      <p className="font-display text-sm font-bold tracking-widest text-ink">{t('brand')}</p>
       {coach.avatar ? (
         // Already unoptimized, so next/image would only add client JS to this public page.
         // eslint-disable-next-line @next/next/no-img-element

@@ -14,7 +14,7 @@ const styles: Record<AlertKind, { icon: LucideIcon; tone: string }> = {
   expired: { icon: CalendarClock, tone: 'bg-danger-soft text-danger' },
   grace: { icon: CalendarClock, tone: 'bg-warn-soft text-warn' },
   dues: { icon: Wallet, tone: 'bg-warn-soft text-warn' },
-  review: { icon: ClipboardList, tone: 'bg-lime-soft text-lime' },
+  review: { icon: ClipboardList, tone: 'bg-surface-raised text-ink' },
   ending: { icon: BellRing, tone: 'bg-ink/5 text-ink' },
   noProgram: { icon: Dumbbell, tone: 'bg-ink/5 text-ink' },
 };

@@ -13,6 +13,6 @@ export async function PreviewCaptain() {
       <p className="text-xs text-muted">{row.reason}</p>
       <span className="self-start rounded-full bg-lime-soft px-3 py-1.5 text-xs font-bold text-lime">{content.preview.send}</span>
     </div>)}
-    <div className="glass mt-auto flex items-center justify-between rounded-[18px] p-3"><span className="text-xs font-bold">{content.preview.waiting}</span><span className="text-xl font-extrabold text-lime">{content.preview.videos}</span></div>
+    <div className="glass mt-auto flex items-center justify-between rounded-[18px] p-3"><span className="text-xs font-bold">{content.preview.waiting}</span><span className="text-xl font-extrabold text-ink">{content.preview.videos}</span></div>
   </div>;
 }

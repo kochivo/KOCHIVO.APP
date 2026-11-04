@@ -15,7 +15,7 @@ export function DemoHighlights() {
   return <section aria-labelledby="demo-highlights" className="glass hidden space-y-5 rounded-card p-6 lg:block">
     <h2 id="demo-highlights" className="text-xl font-bold">{t('insideTheDemo')}</h2>
     <ul className="space-y-4">{items.map(({ icon: Icon, key }) => <li key={key} className="flex items-start gap-3">
-      <span className="grid size-10 shrink-0 place-items-center rounded-control bg-lime/15 text-lime"><Icon aria-hidden className="size-5" /></span>
+        <span className="grid size-10 shrink-0 place-items-center rounded-control bg-surface-raised text-ink"><Icon aria-hidden className="size-5" /></span>
       <span className="pt-2">{t(key)}</span>
     </li>)}</ul>
   </section>;

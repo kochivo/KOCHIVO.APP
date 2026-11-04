@@ -8,7 +8,7 @@ export async function HowItWorks() {
   return <section id="how" className="marketing-wrap marketing-reveal marketing-section flex flex-wrap items-center gap-10">
     <div className="flex flex-[1_1_460px] flex-col gap-6">
       <p className="marketing-eyebrow">{content.how.label}</p><h2 className="marketing-heading">{content.how.title[0]}<br />{content.how.title[1]}</h2>
-      <ol className="flex flex-col gap-6">{content.steps.map(step => <li key={step.n} className="flex items-start gap-4"><span className="grid size-13 shrink-0 place-items-center rounded-control bg-lime font-display text-[22px] font-extrabold text-on-lime">{step.n}</span><div className="space-y-1.5"><h3 className="text-xl font-extrabold">{step.t}</h3><p className="text-[15px] leading-relaxed text-muted">{step.d}</p></div></li>)}</ol>
+      <ol className="flex flex-col gap-6">{content.steps.map(step => <li key={step.n} className="flex items-start gap-4"><span className="grid size-13 shrink-0 place-items-center rounded-control bg-surface-raised font-display text-[22px] font-extrabold text-ink">{step.n}</span><div className="space-y-1.5"><h3 className="text-xl font-extrabold">{step.t}</h3><p className="text-[15px] leading-relaxed text-muted">{step.d}</p></div></li>)}</ol>
     </div>
     <div className="glass-strong flex min-w-0 flex-[1_1_420px] flex-col gap-2.5 rounded-[32px] p-5 sm:p-6">
       <p className="text-xs text-muted">{content.how.today}</p>

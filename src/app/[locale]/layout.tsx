@@ -9,6 +9,7 @@ import { setRequestLocale } from '@/core/i18n/server';
 import { LOCALES, localeDir, parseLocale } from '@/core/i18n/locale';
 import { LocaleProvider } from '@/core/i18n/client';
 import { MobileViewport } from '@/ui/mobile-viewport';
+import { Orbs } from '@/ui/orbs';
 import { ToastProvider } from '@/ui/toast';
 import { InAppBrowserWarning } from '@/ui/in-app-browser-warning';
 import { siteMetadata } from './site-metadata';
@@ -46,6 +47,7 @@ export default async function RootLayout({ children, params }: {
     <html lang={locale} dir={localeDir(locale)} suppressHydrationWarning className={`${manrope.variable} ${alexandria.variable} ${changa.variable}`}>
       <head><script dangerouslySetInnerHTML={{ __html: themeBootScript + ';' + glassBootScript }} /></head>
       <body className="min-h-dvh">
+        <Orbs />
         <LocaleProvider locale={locale}>
           <ToastProvider><InAppBrowserWarning />{children}</ToastProvider>
           <MobileViewport />
