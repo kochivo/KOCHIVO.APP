@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { LOCALE_COOKIE, parseLocale } from '@/core/i18n/locale';
+import { LOCALE_COOKIE, LOCALE_COOKIE_OPTIONS, parseLocale } from '@/core/i18n/locale';
 import { refreshSession } from '@/core/supabase/session';
 import { decideRoute } from '@/features/auth';
 
@@ -10,7 +10,10 @@ export async function proxy(request: NextRequest) {
   const destination = request.nextUrl.clone();
   if (/^\/(ar|en)(\/|$)/.test(path)) {
     destination.pathname = path.slice(3) || '/';
-    return NextResponse.redirect(destination);
+    // A shared /en or /ar link must open in that language, not the visitor's previous one.
+    const redirect = NextResponse.redirect(destination);
+    redirect.cookies.set(LOCALE_COOKIE, path.slice(1, 3), LOCALE_COOKIE_OPTIONS);
+    return redirect;
   }
   destination.pathname = `/${locale}${path === '/' ? '' : path}`;
   if (path === '/offline') return NextResponse.rewrite(destination);

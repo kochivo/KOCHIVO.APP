@@ -16,7 +16,7 @@ const config = [
   ...nextTs,
   // Legacy references are read-only source material copied from the old project, not app code.
   {
-    ignores: ['.next/**', 'node_modules/**', 'assets-source/**', 'public/sw.js', 'docs/legacy/**', 'supabase/seed/source/legacy/**'],
+    ignores: ['.next/**', 'node_modules/**', 'assets-source/**', 'public/sw.js', 'docs/legacy/**', 'supabase/seed/source/legacy/**', 'playwright-report/**', 'test-results/**'],
   },
   {
     files: ['src/**/*.{ts,tsx}'],
