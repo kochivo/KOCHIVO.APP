@@ -11,6 +11,9 @@ export const messages = defineMessages({
     installing: "جاري التثبيت",
     installApp: "ثبّت التطبيق",
     notNow: "مش دلوقتي",
+    downloadApp: "تنزيل التطبيق",
+    installOnIphone: "نزّل KOCHIVO على الآيفون",
+    close: "اقفل",
   },
   en: {
     addKOCHIVOToYourPhone: "Add KOCHIVO to your phone",
@@ -22,5 +25,8 @@ export const messages = defineMessages({
     installing: "Installing",
     installApp: "Install app",
     notNow: "Not now",
+    downloadApp: "Download app",
+    installOnIphone: "Install KOCHIVO on iPhone",
+    close: "Close",
   },
 });

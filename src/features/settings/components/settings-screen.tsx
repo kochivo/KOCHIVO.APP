@@ -25,6 +25,7 @@ import { TourReplay } from '@/ui/tour-replay';
 import { PushToggleCard } from '@/features/notifications';
 
 const CaptainProfileCard = dynamic(() => import('./captain-profile-card').then(module => module.CaptainProfileCard));
+const InstallButton = dynamic(() => import('@/features/install').then(module => module.InstallButton), { ssr: false });
 const ProfileForm = dynamic(() => import('./profile-form').then(module => module.ProfileForm), { loading: () => <LoadingState variant="detail" /> });
 
 export function SettingsScreen({ signOut }: { signOut?: ReactNode }) {
@@ -83,6 +84,7 @@ export function SettingsScreen({ signOut }: { signOut?: ReactNode }) {
     </div>
     <GlassToggle />
     <ThemeSwitch />
+    <InstallButton role={playerSettings ? 'player' : 'captain'} />
     <PushToggleCard />
     {loading ? (!playerSettings && <LoadingState variant="detail" />) : error ? (!playerSettings && <ErrorState message={error} retryLabel={t('tryAgain')} onRetry={() => {
       setLoading(true); setError(''); setAttempt((value) => value + 1);
