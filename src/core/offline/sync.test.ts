@@ -52,6 +52,33 @@ describe('saveAndQueue', () => {
 });
 
 describe('flushOutbox', () => {
+  it('keeps failed and unsent batches across a fresh Dexie instance after partial success', async () => {
+    const rows = Array.from({ length: 101 }, (_, index) => session(uuidv7(1000 + index)));
+    for (const row of rows) await saveAndQueue(db, 'workout_sessions', row, 1000);
+    const accepted: string[] = [];
+    let batches = 0;
+    const result = await flushOutbox(db, async (_table, batch) => {
+      batches++;
+      if (batches === 2) throw new Error('connection lost');
+      accepted.push(...batch.map(row => row.id));
+    }, 5000);
+    expect(result).toEqual({ sent: 50, failed: 51 });
+    expect(accepted).toEqual(rows.slice(0, 50).map(row => row.id));
+    const name = db.name;
+    db.close();
+    db = new KochivoDB(name);
+    const pending = await db.outbox.toArray();
+    expect(pending.map(entry => entry.row_id)).toEqual(rows.slice(50).map(row => row.id));
+    expect(pending.slice(0, 50).every(entry => entry.attempts === 1 && entry.next_attempt_at === 7000)).toBe(true);
+    expect(pending.at(-1)?.attempts).toBe(0);
+    expect(await db.workout_sessions.count()).toBe(101);
+    expect(await flushOutbox(db, async (_table, batch) => {
+      accepted.push(...batch.map(row => row.id));
+    }, 7000)).toEqual({ sent: 51, failed: 0 });
+    expect(accepted.sort()).toEqual(rows.map(row => row.id).sort());
+    expect(await db.outbox.count()).toBe(0);
+  });
+
   it('sends sessions before sets and clears the queue on success', async () => {
     const s = session();
     await saveAndQueue(db, 'set_logs', setLog(s.id, 0), 1000);
