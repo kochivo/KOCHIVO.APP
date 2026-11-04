@@ -22,6 +22,7 @@ jobs:
       # Public values that ship to every browser; not secrets.
       NEXT_PUBLIC_SUPABASE_URL: https://hkgaercmtdmoksrhzcya.supabase.co
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_5XZ3UcX0qeI0RpgJ3kBcuQ_pqPEeZ3R
+      NEXT_PUBLIC_VAPID_PUBLIC_KEY: ''
       NEXT_TELEMETRY_DISABLED: 1
     steps:
       - uses: actions/checkout@v4

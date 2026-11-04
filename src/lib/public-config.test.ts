@@ -10,7 +10,8 @@ it('falls back to the owner number and no DSN when env is empty', async () => {
   vi.stubEnv('NEXT_PUBLIC_OWNER_WHATSAPP', ' ');
   vi.stubEnv('NEXT_PUBLIC_SENTRY_DSN', '');
   vi.stubEnv('NEXT_PUBLIC_TURNSTILE_SITE_KEY', ' ');
-  expect(await load()).toEqual({ ownerWhatsapp: '201100539306', sentryDsn: '', turnstileSiteKey: '' });
+  vi.stubEnv('NEXT_PUBLIC_VAPID_PUBLIC_KEY', ' ');
+  expect(await load()).toEqual({ ownerWhatsapp: '201100539306', sentryDsn: '', turnstileSiteKey: '', vapidPublicKey: '' });
 });
 
 it('reports to the project DSN by default only in production builds', async () => {
@@ -29,5 +30,6 @@ it('lets a deployment override each value', async () => {
   vi.stubEnv('NEXT_PUBLIC_OWNER_WHATSAPP', '201000000001');
   vi.stubEnv('NEXT_PUBLIC_SENTRY_DSN', ' https://key@o1.ingest.sentry.io/1 ');
   vi.stubEnv('NEXT_PUBLIC_TURNSTILE_SITE_KEY', ' site-key ');
-  expect(await load()).toEqual({ ownerWhatsapp: '201000000001', sentryDsn: 'https://key@o1.ingest.sentry.io/1', turnstileSiteKey: 'site-key' });
+  vi.stubEnv('NEXT_PUBLIC_VAPID_PUBLIC_KEY', ' public-vapid-key ');
+  expect(await load()).toEqual({ ownerWhatsapp: '201000000001', sentryDsn: 'https://key@o1.ingest.sentry.io/1', turnstileSiteKey: 'site-key', vapidPublicKey: 'public-vapid-key' });
 });

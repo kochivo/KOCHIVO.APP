@@ -34,8 +34,14 @@ export type Database = {
         Update: never
         Relationships: []
       }
+      push_subscriptions: {
+        Row: { id: string; user_id: string; endpoint: string; p256dh: string; auth: string; user_agent: string | null; created_at: string; last_success_at: string | null }
+        Insert: { id: string; user_id?: string; endpoint: string; p256dh: string; auth: string; user_agent?: string | null; created_at?: string; last_success_at?: string | null }
+        Update: { last_success_at?: string | null }
+        Relationships: [{ foreignKeyName: 'push_subscriptions_user_id_fkey'; columns: ['user_id']; isOneToOne: false; referencedRelation: 'profiles'; referencedColumns: ['id'] }]
+      }
       notifications: {
-        Row: { id: string; user_id: string; type: string; payload: Json; is_read: boolean; created_at: string }
+        Row: { id: string; user_id: string; type: 'plan_assigned' | 'nutrition_updated' | 'player_joined' | 'player_inactive' | 'join_requested' | 'workout_reminder'; payload: Json; is_read: boolean; created_at: string }
         Insert: never
         Update: { is_read?: boolean }
         Relationships: []
@@ -1514,6 +1520,8 @@ export type Database = {
         Args: { p_program: string; p_title: string }
         Returns: string
       }
+      push_config: { Args: never; Returns: Json }
+      queue_workout_reminders: { Args: { p_today?: string }; Returns: undefined }
       purge_deleted_accounts: { Args: never; Returns: number }
       redeem_invite: { Args: { p_code: string }; Returns: string }
       renew_player: {

@@ -1,0 +1,20 @@
+export const messages = {
+  ar: {
+    title: 'إشعارات كوتشيفو',
+    plan_assigned: 'اتعيّنلك برنامج {name}',
+    nutrition_updated: 'اتحدّث نظامك الغذائي {name}',
+    player_joined: '{name} انضم ليك',
+    player_inactive: '{name} متمرّنش بقاله 3 أيام أو أكتر',
+    join_requested: '{name} بعت طلب انضمام',
+    workout_reminder: 'جاهز لتمرين النهارده؟ {name} مستنيك',
+  },
+  en: {
+    title: 'KOCHIVO notifications',
+    plan_assigned: 'Program assigned: {name}',
+    nutrition_updated: 'Nutrition updated: {name}',
+    player_joined: '{name} joined you',
+    player_inactive: '{name} has not trained for 3 or more days',
+    join_requested: '{name} requested to join',
+    workout_reminder: 'Ready for today’s workout? {name} is waiting',
+  },
+} as const;

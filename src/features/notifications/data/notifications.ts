@@ -16,7 +16,8 @@ export async function latestNotifications(): Promise<Notification[]> {
   return (data ?? []).map(row => {
     const payload = row.payload && typeof row.payload === 'object' && !Array.isArray(row.payload) ? row.payload : {};
     return { ...row, type: row.type as NotificationType, payload: {
-      name: typeof payload.name === 'string' ? payload.name : '',
+      name: row.type === 'workout_reminder' && typeof payload.day_title === 'string'
+        ? payload.day_title : typeof payload.name === 'string' ? payload.name : '',
       player_id: typeof payload.player_id === 'string' ? payload.player_id : undefined,
       plan_id: typeof payload.plan_id === 'string' ? payload.plan_id : undefined,
     } };

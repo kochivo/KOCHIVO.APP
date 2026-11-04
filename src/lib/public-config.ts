@@ -1,6 +1,7 @@
 // These values ship to every browser, so they are not secrets. Defaults live here so the app
 // works without editing env files; a deployment can still override each one through its env var.
 export const publicConfig = {
+  vapidPublicKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY?.trim() || '',
   // The widget is registered for kochivo.site only, so local builds skip it unless the env sets one.
   turnstileSiteKey: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim()
     || (process.env.NODE_ENV === 'production' ? '0x4AAAAAAFyOd8ufoia-1x4K' : ''),

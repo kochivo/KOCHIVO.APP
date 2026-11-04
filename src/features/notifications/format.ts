@@ -1,7 +1,7 @@
 import type { Notification } from './types';
 
 export function notificationHref(row: Notification): string {
-  if (row.type === 'plan_assigned') return '/player';
+  if (row.type === 'plan_assigned' || row.type === 'workout_reminder') return '/player';
   if (row.type === 'nutrition_updated') return '/player/nutrition';
   return row.payload.player_id ? `/captain/players/${encodeURIComponent(row.payload.player_id)}` : '/captain/players';
 }
