@@ -12,6 +12,31 @@ All of this happens in **tokens and utilities**: `src/app/globals.css` `@theme`,
 - The **light theme stays as it is**; change only the dark values.
 - The brand lime stays `#b6e94f` (brand is fixed). Use it for the glow instead of the reviewer's sample `rgb(197 255 34)`.
 
+## Direction update (owner, 2026-11-04): luxury that is comfortable all day
+The owner wants it **luxury and premium, but easy on the eyes and calming**, because captains and players use it daily, often in a dark gym or at night. This **overrides** the pure black and pure white values below.
+- **No pure black or pure white.**
+  - Pure `#000` behind `#fff` text causes halation and eye strain, and smears on OLED when scrolling.
+  - Use a deep neutral graphite for `--color-bg`, close to `#0b0c0d`; `--color-bg-deep` close to `#070808`.
+  - Remove all green tint.
+- **Soft ink:**
+  - `--color-ink` is a warm off-white close to `#ededea` for headings and numbers.
+  - `--color-muted` is close to `#9a9ea3`, which must still pass AA on the bg.
+  - A third, quieter step, `--color-faint` (close to `#6b7076`), is only for hints and placeholders.
+- **Depth through light, not contrast:**
+  - Keep the faint lime orbs, but lower them to about 4% and keep them static (no animation at all).
+  - Cards keep the 1 px hairline at about 7% white and a soft drop shadow. The top inner highlight is at most 4% white.
+  - The glass fill steps are 2%, 3.5% and 5%, so hierarchy is subtle.
+- **Calm rhythm:**
+  - Use one radius family (cards 20 px, controls 14 px, chips full).
+  - Use generous spacing (cards `p-5`, `md:p-6`, gaps `gap-4`).
+  - Numbers use tabular figures.
+  - Hover lift is no more than 2 px. Transitions are 200–300 ms ease-out, and none under `prefers-reduced-motion`.
+- **Lime is a signal, not decoration:**
+  - Use it only for the single primary action, the active or selected state, progress completion and focus rings.
+  - The primary button glow is soft (`0 0 15px` lime at about 18%), and on hover it brightens a little but never pulses.
+- **Recessed inputs:** a fill about 35% darker than the card, a 1 px border at about 4% white and a soft inner shadow. The number inside is `--color-ink` at large size.
+- **Success and warn states** use the existing soft tokens; nothing gets saturated red or green backgrounds.
+
 ## Changes (dark theme)
 1. **Background:**
    - Set `--color-bg` to true black (about `#050505`) and `--color-bg-deep` to `#000`.
