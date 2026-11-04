@@ -4,9 +4,8 @@ import { messages } from '../messages';
 
 import { useCallback, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { CalendarCheck, Camera, Dumbbell, Scale } from 'lucide-react';
+import { CalendarCheck, Dumbbell, Scale } from 'lucide-react';
 import { localDb, useLiveQuery } from '@/core/offline';
-import { signedMediaUrl } from '@/core/storage';
 import { loadSupabaseBrowser } from '@/core/supabase/lazy';
 import { formatNumber } from '@/lib/format';
 import { localDate } from '@/lib/dates';
@@ -17,6 +16,7 @@ import { readStrength } from '../data/strength';
 import { mainLifts, topSets, trendDelta } from '../trends';
 import type { TrendPoint } from '../trends';
 import { weekStart } from '../week';
+import { PlayerGallery } from './player-gallery';
 const CheckinSheet = dynamic(() => import('./checkin-sheet').then(module => module.CheckinSheet), { ssr: false });
 const CheckinHistory = dynamic(() => import('./checkin-history').then(module => module.CheckinHistory), { ssr: false, loading: () => <LoadingState variant="list" /> });
 const LineChart = dynamic(() => import('./line-chart').then(module => module.LineChart), {
@@ -39,9 +39,6 @@ export function ProgressScreen() {
   const [selected, setSelected] = useState('');
   const [sheet, setSheet] = useState(false);
   const [sheetLoaded, setSheetLoaded] = useState(false);
-  const [photos, setPhotos] = useState<{ rows: CheckIn[]; before: string; after: string }>();
-  const [photoError, setPhotoError] = useState<CheckIn[]>();
-  const [photoRetry, setPhotoRetry] = useState(0);
   const onLocalError = useCallback(() => setLocalError(true), []);
   const query = useCallback(async () => {
     const snapshot = await localDb().program_snapshot.get('active');
@@ -70,26 +67,6 @@ export function ProgressScreen() {
     void load();
     return () => { cancelled = true; };
   }, [retryKey, t]);
-  useEffect(() => {
-    let cancelled = false;
-    // The check-in sheet only sends photos when the front one is set, so index 0 is the front.
-    const fronts = checkins?.filter((row) => row.photo_paths.length > 0) ?? [];
-    const first = fronts.at(-1)?.photo_paths[0];
-    const last = fronts[0]?.photo_paths[0];
-    if (!first || !last) return;
-    async function load(first: string, last: string, rows: CheckIn[]) {
-      try {
-        const client = await loadSupabaseBrowser();
-        const [before, after] = await Promise.all([
-          signedMediaUrl(client, 'checkin-photos', first),
-          signedMediaUrl(client, 'checkin-photos', last),
-        ]);
-        if (!cancelled) setPhotos({ rows, before, after });
-      } catch { if (!cancelled) setPhotoError(rows); }
-    }
-    void load(first, last, checkins ?? []);
-    return () => { cancelled = true; };
-  }, [checkins, photoRetry]);
   const lifts = mainLifts(strength?.sets ?? []);
   const active = lifts.includes(selected) ? selected : lifts[0] ?? '';
   const top = topSets(strength?.sets ?? [], active);
@@ -99,7 +76,7 @@ export function ProgressScreen() {
     { key: 'body_weight_kg', label: t('weight'), unit: t('kg') },
     { key: 'waist_cm', label: t('waist'), unit: t('cm') },
   ] as const;
-  const hasFronts = checkins?.some((row) => row.photo_paths.length > 0);
+  const bodyFat = checkins?.flatMap(row => row.body_fat_pct == null ? [] : [{ date: row.week_start, value: row.body_fat_pct }]) ?? [];
   const checkinAction = sent ? { label: t('messageCoach'), href: '/player/captain' } :
     { label: t('sendWeeklyCheckin'), onClick: () => { setSheetLoaded(true); setSheet(true); } };
   return <main className="mx-auto max-w-lg space-y-4 px-5 pt-6 pb-32">
@@ -126,23 +103,11 @@ export function ProgressScreen() {
             <h2 className="text-sm text-muted">{label}</h2>
             <p className="text-2xl font-extrabold">{points.length ? formatNumber(points.at(-1)?.value ?? 0, locale) : '—'} <span className="text-sm text-muted">{unit}</span></p>
             <p className="text-xs text-muted">{deltaLabel(points, unit)}</p>
-            {points.length ? <LineChart points={points} title={t('measureTrend', { value0: label })} unit={unit} /> : <EmptyState icon={Scale} title={t('noMeasurementsYet')} body={t('yourFirstCheckinIsYourStartingPoint')} action={checkinAction} />}
+            {points.length || (key === 'body_weight_kg' && bodyFat.length) ? <LineChart points={points} bodyFat={key === 'body_weight_kg' ? bodyFat : undefined} title={t('measureTrend', { value0: label })} unit={unit} /> : <EmptyState icon={Scale} title={t('noMeasurementsYet')} body={t('yourFirstCheckinIsYourStartingPoint')} action={checkinAction} />}
           </section>;
         })}
       </div>
-      <section className="glass space-y-3 rounded-card p-4">
-        <h2 className="font-bold">{t('beforeAndAfter')}</h2>
-        {photoError === checkins ? <ErrorState message={t('couldntLoadPhotos')} retryLabel={t('tryAgain')} onRetry={() => {
-          setPhotoError(undefined); setPhotos(undefined); setPhotoRetry((value) => value + 1);
-        }} /> : photos?.rows === checkins ?
-          <div className="grid grid-cols-2 gap-2">{([
-            [t('before'), photos.before], [t('after'), photos.after],
-          ] as const).map(([label, url]) => <figure key={label}>
-            {/* eslint-disable-next-line @next/next/no-img-element -- Signed private URLs must bypass the image optimizer cache. */}
-            <img src={url} alt={t('frontPhoto', { value0: label })} loading="lazy" decoding="async" width={480} height={640} referrerPolicy="no-referrer" className="aspect-[3/4] w-full rounded-control object-cover" onError={() => setPhotoError(checkins)} />
-            <figcaption className="pt-2 text-center text-sm text-muted">{label}</figcaption>
-          </figure>)}</div> : hasFronts ? <LoadingState /> : <EmptyState icon={Camera} title={t('comparisonPhotosArentAvailableYet')} body={t('yourFirstCheckinIsYourStartingPoint')} action={checkinAction} />}
-      </section></>}
+      <PlayerGallery checkins={checkins} /></>}
     </>}
     {sent && <p role="status" className="min-h-12 py-3 text-center text-muted">{t('sent')}</p>}
     {checkins && checkins.length > 0 && <CheckinHistory checkins={checkins} />}

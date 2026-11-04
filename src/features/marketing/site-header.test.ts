@@ -33,10 +33,12 @@ const menu = () => SiteMenu({ openLabel: 'Open menu', closeLabel: 'Close menu', 
 beforeEach(() => { hooks.open = false; hooks.effects = []; hooks.refs = []; });
 
 describe('marketing header', () => {
-  it('keeps mobile controls in one row and desktop controls behind md', async () => {
+  it('keeps mobile and tablet controls in one row and desktop links behind lg', async () => {
     const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' }, await SiteHeader()));
     expect(html).toContain('flex flex-nowrap items-center justify-between h-16');
-    expect(html).toContain('hidden md:flex');
+    expect(html).toContain('hidden lg:flex');
+    expect(html).not.toContain('md:flex');
+    expect(html).toContain('lg:hidden');
     expect(html).toContain('aria-expanded="false"');
     expect(html).toContain('aria-label="Open menu"');
     expect(html).not.toContain('flex-wrap');

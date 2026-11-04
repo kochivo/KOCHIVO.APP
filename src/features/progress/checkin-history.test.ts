@@ -27,7 +27,7 @@ import { CheckinHistory } from './components/checkin-history';
 import { VoiceNoteList } from '@/features/voice-notes';
 import { ErrorState, LoadingState } from '@/ui';
 const checkins: CheckIn[] = ['a', 'b', 'c'].map((id, i) => ({ id, player_id: 'player', week_start: '2026-10-31',
-  body_weight_kg: null, waist_cm: null, notes: null, photo_paths: [], reviewed_at: i < 2 ? hooks.now : null, captain_reply: i === 0 ? 'Keep going' : null }));
+  body_weight_kg: null, waist_cm: null, notes: null, photo_paths: [], body_fat_pct: null, photo_poses: [], reviewed_at: i < 2 ? hooks.now : null, captain_reply: i === 0 ? 'Keep going' : null }));
 const note = { id: 'n', url: 'signed', mimeType: 'audio/webm', durationSeconds: 12, contextId: 'a', listenedAt: null, createdAt: hooks.now };
 function nodes(value: unknown): ReactElement<Record<string, unknown>>[] {
   if (Array.isArray(value)) return value.flatMap(nodes);

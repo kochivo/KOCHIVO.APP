@@ -3,7 +3,7 @@ import { useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { localDb, pendingCount, useLiveQuery, type SetLogRow } from '@/core/offline';
+import { localDb, pendingCount, useLiveQuery, weeklyFinished, type SetLogRow } from '@/core/offline';
 import { useProgramSnapshot } from '@/features/player-home';
 import { finishSession, logSet, startSession } from '../data/log-set';
 import { performanceFor } from '../data/last-performance';
@@ -34,7 +34,8 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
   const onError = useCallback(() => setError(t('couldntReadTheWorkoutOnYourPhone')), [t]);
   const cached = useLiveQuery(readCached, onError, retryKey);
   const { snapshot, status, retry: refresh } = useProgramSnapshot(playerId ?? cached?.player_id, retryKey);
-  const day = snapshot?.days.find((item) => item.id === dayId);
+  const programFinished = Boolean(snapshot && today && weeklyFinished(snapshot, today));
+  const day = programFinished ? undefined : snapshot?.days.find((item) => item.id === dayId && !item.is_rest_day);
   const queue = useMemo(() => day ? buildQueue(day) : [], [day]);
   const rest = useRestTimer();
   const pending = useLiveQuery(readPending, onError, retryKey);
@@ -106,7 +107,7 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
       cooldown.current = setTimeout(() => { saving.current = false; setBusy(false); }, Math.max(0, 600 - (Date.now() - tappedAt)));
     }
   }, [day, today, session, current, ready, rest, edited, weight, reps, t]);
-  return { day, queue, current, doneSets, performance, lastSession: memory.last, weight, reps, rest, pending, pr, dismissPr,
+  return { day, programFinished, queue, current, doneSets, performance, lastSession: memory.last, weight, reps, rest, pending, pr, dismissPr,
     progress: edited ? queue.findIndex((step) => matches(edited, step.exercise.id, step.setIndex)) + 1 :
       currentIndex < 0 ? queue.length : currentIndex + 1,
     next: queue[(edited ? queue.findIndex((step) => matches(edited, step.exercise.id, step.setIndex)) : currentIndex) + 1],

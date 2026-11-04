@@ -20,6 +20,7 @@ import { BuilderHeader } from './builder-header';
 import { DayEditor } from './day-editor';
 import { starterText } from '@/lib/starter-text';
 import { useToast } from '@/ui/toast';
+import { convertToWeek, isWeekly, weekdayKeys } from '../weekly-draft';
 
 export function ProgramBuilder({ programId, playerId }: { programId?: string; playerId?: string }) {
   const t = useT(messages);
@@ -94,10 +95,19 @@ export function ProgramBuilder({ programId, playerId }: { programId?: string; pl
   const draft = state.draft;
   const day = draft.days.find(item => item.id === selectedDay) ?? draft.days[0];
   const busy = pending || state.saving;
+  const weekly = isWeekly(draft);
   return <div className="mx-auto max-w-screen-2xl space-y-6">
     <fieldset disabled={busy} className="min-w-0 space-y-6">
       <BuilderHeader draft={draft} dirty={state.dirty} busy={busy} onTitle={value => state.update(current => ({ ...current, title: value }))}
         onSave={() => void save()} onActivate={() => void activate()} />
+      {weekly ? <label className="flex min-h-12 items-center gap-3">
+        <input type="checkbox" className="size-6 accent-lime" checked={draft.repeatWeekly !== false}
+          onChange={event => state.update(current => ({ ...current, repeatWeekly: event.target.checked }))} />{t('repeatWeekly')}
+      </label> : <div className="space-y-2">
+        <Button variant="secondary" className="min-h-12" disabled={draft.days.length > 7}
+          onClick={() => state.update(current => convertToWeek(current, uuidv7))}>{t('convertWeek')}</Button>
+        {draft.days.length > 7 && <p className="text-sm text-muted">{t('convertLimit')}</p>}
+      </div>}
       {busy && <p role="status" className="text-muted">{t('savingAndUpdating')}</p>}
       {(message || state.error) && <div role="alert" className="text-danger"><p>{message || state.error}</p>
         <Button variant="ghost" className="min-h-12" onClick={() => void (message ? activate() : save())}>{t('tryAgain')}</Button>
@@ -110,15 +120,15 @@ export function ProgramBuilder({ programId, playerId }: { programId?: string; pl
           } }} />}
           <ul className="space-y-3">{draft.days.map((item, index) => <li key={item.id} className="space-y-2">
             <Button variant="ghost" aria-pressed={item.id === day?.id} className="min-h-12 w-full justify-start text-start" onClick={() => setSelectedDay(item.id)}>
-              {formatNumber(item.position, locale)} · {item.title ? starterText(item.title, locale) : t('newDay')}
+              {item.weekday != null ? t(weekdayKeys[item.weekday] ?? 'sat') : formatNumber(item.position, locale)} · {item.is_rest_day ? t('recovery') : item.title ? starterText(item.title, locale) : t('newDay')}
             </Button>
-            <div className="flex gap-2">
+            {!weekly && <div className="flex gap-2">
               <IconButton aria-label={t('moveDayUp', { v0: formatNumber(item.position, locale), v1: item.title })} disabled={index === 0} onClick={() => state.update(current => moveDay(current, item.id, -1))}><ArrowUp aria-hidden className="dir-icon size-5" /></IconButton>
               <IconButton aria-label={t('moveDayDown', { v0: formatNumber(item.position, locale), v1: item.title })} disabled={index === draft.days.length - 1} onClick={() => state.update(current => moveDay(current, item.id, 1))}><ArrowDown aria-hidden className="dir-icon size-5" /></IconButton>
               <IconButton aria-label={t('deleteDay', { v0: formatNumber(item.position, locale), v1: item.title })} onClick={() => state.update(current => removeDay(current, item.id))}><Trash2 aria-hidden className="size-5" /></IconButton>
-            </div>
+            </div>}
           </li>)}</ul>
-          {draft.days.length > 0 && <Button variant="secondary" className="min-h-12 w-full" onClick={() => {
+          {!weekly && draft.days.length > 0 && <Button variant="secondary" className="min-h-12 w-full" onClick={() => {
             const id = uuidv7(); state.update(current => addDay(current, id, t('newDay'))); setSelectedDay(id);
           }}>{t('addDay')}</Button>}
         </aside>

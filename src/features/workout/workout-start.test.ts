@@ -150,7 +150,7 @@ it('refreshes Cairo today on visible resume and focus, then removes its listener
     ...await original<typeof React>(),
     useState: (initial: unknown) => {
       const index = stateIndex++;
-      return [initial, (value: unknown) => { if (index === 0) dates.push(value); }];
+      return [initial, (value: unknown) => { if (index === 0) dates.push(value instanceof Date ? localDate(value) : value); }];
     },
     useEffect: (effect: () => void | (() => void)) => { effects.push(effect); },
   }));

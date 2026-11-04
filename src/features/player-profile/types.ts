@@ -19,10 +19,13 @@ export interface ProfileCheckIn {
   weekStart: string;
   weightKg: number | null;
   waistCm: number | null;
+  bodyFatPct?: number | null;
+  photoPoses?: string[];
+  photoError?: boolean;
   notes: string | null;
   reviewedAt: string | null;
   reply: string | null;
-  /** Signed for ten minutes; only the latest weeks are signed. */
+  /** Private URLs signed for ten minutes. */
   photos: string[];
 }
 

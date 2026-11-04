@@ -2,6 +2,8 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    weeklyRest: 'اليوم راحة.. استمتع بالاستشفاء', nextTraining: 'التمرين الجاي: {name} · {weekday}',
+    programFinished: 'الأسبوع خلص', renewProgram: 'الكابتن هيجدّد برنامجك عشان تكمّل',
     messageCoach: "ابعت للكابتن",
     'task.intake': "كمّل أسئلة البداية",
     'task.start': "ابدأ تمرين النهارده: {name}",
@@ -63,6 +65,8 @@ export const messages = defineMessages({
     weekDayLabel: "{value0} {value1}، {value2}",
   },
   en: {
+    weeklyRest: 'Rest today. Enjoy your recovery', nextTraining: 'Next training: {name} · {weekday}',
+    programFinished: 'Week finished', renewProgram: 'Your coach will renew your program',
     messageCoach: "Message your coach",
     'task.intake': "Finish your starter questions",
     'task.start': "Start today's workout: {name}",

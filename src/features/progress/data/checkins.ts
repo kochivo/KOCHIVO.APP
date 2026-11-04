@@ -4,7 +4,7 @@ import { messages } from '../messages';
 import type { Translator } from '@/core/i18n/messages';
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { uuidv7 } from '@/core/offline';
+import { uuidv7 } from '@/core/offline/ids';
 import { uploadPrivateMedia } from '@/core/storage';
 import type { Tables } from '@/types/database';
 import type { AppDatabase } from '@/types/app-database';
@@ -12,13 +12,15 @@ import { compressImage } from '../image';
 import { weekStart } from '../week';
 
 export type CheckIn = Pick<Tables<'check_ins'>,
-  'id' | 'player_id' | 'week_start' | 'body_weight_kg' | 'waist_cm' | 'notes' | 'photo_paths' | 'captain_reply' | 'reviewed_at'>;
+  'id' | 'player_id' | 'week_start' | 'body_weight_kg' | 'waist_cm' | 'notes' | 'photo_paths' | 'captain_reply' | 'reviewed_at' | 'body_fat_pct' | 'photo_poses'>;
 export interface CheckInInput {
   today: string;
   body_weight_kg: number;
   waist_cm: number | null;
   notes: string;
   photos: File[];
+  body_fat_pct?: number | null;
+  photo_poses?: string[];
   onProgress?: (completed: number, total: number) => void;
 }
 async function playerId(client: SupabaseClient<AppDatabase>, t: Translator<typeof messages>) {
@@ -30,8 +32,8 @@ async function playerId(client: SupabaseClient<AppDatabase>, t: Translator<typeo
 export async function listCheckIns(client: SupabaseClient<AppDatabase>, t: Translator<typeof messages> = createT(messages, 'ar')): Promise<CheckIn[]> {
   const id = await playerId(client, t);
   const { data, error } = await client.from('check_ins')
-    .select('id,player_id,week_start,body_weight_kg,waist_cm,notes,photo_paths,captain_reply,reviewed_at')
-    .eq('player_id', id).order('week_start', { ascending: false }).limit(26);
+    .select('id,player_id,week_start,body_weight_kg,waist_cm,notes,photo_paths,captain_reply,reviewed_at,body_fat_pct,photo_poses')
+    .eq('player_id', id).order('week_start', { ascending: false }).limit(26).returns<CheckIn[]>();
   if (error) throw new Error(t('couldntLoadYourCheckins'));
   return data ?? [];
 }
@@ -41,6 +43,9 @@ export async function submitCheckIn(client: SupabaseClient<AppDatabase>, input: 
   if (!Number.isFinite(input.body_weight_kg) || input.body_weight_kg < 20 || input.body_weight_kg > 400 ||
     (input.waist_cm !== null && (!Number.isFinite(input.waist_cm) || input.waist_cm < 30 || input.waist_cm > 300)) ||
     input.notes.length > 1000 || input.photos.length > 3) return { error: t('checkYourWeightMeasurementsAndPhotos') };
+  if ((input.body_fat_pct != null && (!Number.isFinite(input.body_fat_pct) || input.body_fat_pct < 3 || input.body_fat_pct > 60)) ||
+    (input.photo_poses?.length && (input.photo_poses.length !== input.photos.length ||
+      input.photo_poses.some(pose => !['front', 'side', 'back'].includes(pose))))) return { error: t('checkYourWeightMeasurementsAndPhotos') };
   try {
     const id = await playerId(client, t);
     const paths: string[] = [];
@@ -49,11 +54,13 @@ export async function submitCheckIn(client: SupabaseClient<AppDatabase>, input: 
       paths.push(await uploadPrivateMedia(client, 'checkin-photos', id, blob));
       input.onProgress?.(paths.length, input.photos.length + 1);
     }
-    const { error } = await client.from('check_ins').insert({
+    const row = {
       id: uuidv7(), player_id: id, week_start: weekStart(input.today),
       body_weight_kg: input.body_weight_kg, waist_cm: input.waist_cm,
       notes: input.notes, photo_paths: paths,
-    });
+      body_fat_pct: input.body_fat_pct ?? null, photo_poses: input.photo_poses ?? [],
+    };
+    const { error } = await client.from('check_ins').insert(row);
     if (error?.code === '23505') return { error: t('youveAlreadySentThisWeeksCheckin') };
     if (error) return { error: t('couldntSendTheCheckinTryAgain') };
     input.onProgress?.(input.photos.length + 1, input.photos.length + 1);
