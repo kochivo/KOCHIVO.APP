@@ -95,7 +95,7 @@ describe('captain and demo tenant isolation', () => {
 
 describe('player isolation', () => {
   it('hides sibling and other-tenant history and rejects forged ownership and sync IDs', async () => {
-    const tables = ['workout_sessions', 'set_logs', 'meal_logs', 'check_ins', 'form_checks', 'player_intake', 'voice_notes'];
+    const tables = ['workout_sessions', 'set_logs', 'meal_logs', 'check_ins', 'form_checks', 'player_intake', 'voice_notes', 'daily_checks', 'readiness_decisions'];
     for (const other of [sameCaptain, b]) {
       for (const target of other.targets.filter(t => tables.includes(t.table))) await denyCrud(a.player, target);
       const payload = [{ id: other.set, session_id: other.session, program_exercise_id: other.item,

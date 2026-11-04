@@ -23,6 +23,7 @@ import { starterText } from '@/lib/starter-text';
 
 const PrBurst = dynamic(() => import('./pr-burst').then(module => module.PrBurst), { ssr: false });
 const FormCheckButton = dynamic(() => import('./form-check-button').then(module => module.FormCheckButton), { ssr: false });
+const CoachReductionBanner = dynamic(() => import('@/features/readiness').then(module => module.CoachReductionBanner), { ssr: false });
 
 export function FocusScreen({ dayId, playerId }: { dayId: string; playerId?: string }) {
   const t = useT(messages);
@@ -44,6 +45,7 @@ export function FocusScreen({ dayId, playerId }: { dayId: string; playerId?: str
       <SyncPill state={!online ? 'offline' : state.pending === undefined || state.pending > 0 ? 'pending' : 'synced'} pending={state.pending} />
       <MediaStatus />
     </header>
+    {state.decision === 'reduce' && <CoachReductionBanner />}
     {state.error ? <ErrorState message={state.error} retryLabel={t('tryAgain')} onRetry={state.retry} /> :
       state.loading ? <LoadingState /> : state.programFinished ?
         <EmptyState icon={Dumbbell} title={t('programFinished')} body={t('renewProgram')} action={{ label: t('backToHome'), href: '/player' }} /> : !state.day ?

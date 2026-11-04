@@ -16,6 +16,7 @@ import { useLastSession } from './use-last-session';
 import { useRestTimer } from './use-rest-timer';
 import { useBodyweight } from './use-bodyweight';
 import { validateSet } from '../set-validation';
+import { reducedSets, useTodayDecision } from '@/features/readiness';
 
 const readCached = () => localDb().program_snapshot.get('active');
 const readPending = () => pendingCount(localDb());
@@ -38,7 +39,10 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
   const cached = useLiveQuery(readCached, onError, retryKey);
   const { snapshot, status, retry: refresh } = useProgramSnapshot(playerId ?? cached?.player_id, retryKey);
   const programFinished = Boolean(snapshot && today && weeklyFinished(snapshot, today));
-  const day = programFinished ? undefined : snapshot?.days.find((item) => item.id === dayId && !item.is_rest_day);
+  const decision = useTodayDecision(playerId ?? cached?.player_id, today);
+  const originalDay = programFinished ? undefined : snapshot?.days.find((item) => item.id === dayId && !item.is_rest_day);
+  const day = useMemo(() => decision === 'reduce' && originalDay ? { ...originalDay,
+    exercises: originalDay.exercises.map(exercise => ({ ...exercise, sets: reducedSets(exercise.sets) })) } : originalDay, [decision, originalDay]);
   const queue = useMemo(() => day ? buildQueue(day) : [], [day]);
   const rest = useRestTimer();
   const pending = useLiveQuery(readPending, onError, retryKey);
@@ -117,7 +121,7 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
       cooldown.current = setTimeout(() => { saving.current = false; setBusy(false); }, Math.max(0, 600 - (Date.now() - tappedAt)));
     }
   }, [day, today, session, current, ready, rest, edited, weight, reps, bodyweight, key, t]);
-  return { day, programFinished, queue, current, doneSets, performance, lastSession: memory.last, weight, reps, rest, pending, pr, dismissPr,
+  return { day, decision, programFinished, queue, current, doneSets, performance, lastSession: memory.last, weight, reps, rest, pending, pr, dismissPr,
     bodyweight, setBodyweight, invalid: invalid?.key === key ? invalid : null,
     progress: edited ? queue.findIndex((step) => matches(edited, step.exercise.id, step.setIndex)) + 1 :
       currentIndex < 0 ? queue.length : currentIndex + 1,
