@@ -9,7 +9,8 @@ import { SiteMenu } from './site-menu';
 export async function SiteHeader() {
   const t = await getT(messages);
   const content = getContent(t);
-  return <header className="sticky top-0 z-50 border-b border-line bg-bg/80 backdrop-blur-md">
+  return <header className="sticky top-0 z-50 border-b border-line bg-bg/80 pt-[var(--safe-top)] backdrop-blur-md"
+    style={{ backgroundImage: 'linear-gradient(to bottom, var(--color-bg) var(--safe-top), transparent var(--safe-top))' }}>
     <div className="marketing-wrap flex flex-nowrap items-center justify-between h-16 gap-2">
       <div className="shrink-0">
         <Image src="/brand/logo-primary.png" alt={content.brand} width={132} height={38} priority className="theme-dark-only h-auto w-28 lg:w-33" />

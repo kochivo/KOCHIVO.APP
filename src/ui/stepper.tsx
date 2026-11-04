@@ -42,7 +42,7 @@ export function Stepper({ label, size = 'gym', controlLabel = label, value, step
         >
           <Plus className={iconClass} aria-hidden />
         </button>
-        <output aria-label={controlLabel} aria-live="polite" className={compact ? 'recessed rounded-control tabular-nums text-ink min-w-0 text-lg font-bold' : 'recessed rounded-control tabular-nums text-ink min-w-0 text-4xl font-extrabold tracking-tight sm:text-6xl'}>
+        <output aria-label={controlLabel} aria-live="polite" className={compact ? 'recessed rounded-control tabular-nums text-ink min-w-0 text-lg font-bold' : 'recessed rounded-control tabular-nums text-ink min-w-0 text-4xl font-extrabold ltr:tracking-tight sm:text-6xl'}>
           <bdi>{format(value)}</bdi>
         </output>
         <button

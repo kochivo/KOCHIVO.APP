@@ -44,6 +44,8 @@
   --shadow-lime-glow-hover: inset 0 1px 0 rgb(255 255 255 / .3), 0 0 18px color-mix(in srgb, var(--color-lime) 32%, transparent);
 }
 :root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-start: env(safe-area-inset-left);
   --safe-end: env(safe-area-inset-right);
   --glass-tint: rgb(255 255 255 / 0.03);
@@ -159,8 +161,8 @@ html:not([data-theme='light']) .theme-light-only, html[data-theme='light'] .them
   }
   button, summary, [role='button'] { touch-action: manipulation; }
   button { min-block-size: 3rem; }
-  input, textarea, select { font-size: max(1rem, 16px) !important; min-inline-size: 0; scroll-margin-block: 5rem; }
-  html { scroll-padding-block: 5rem; }
+  input, textarea, select { font-size: max(1rem, 16px) !important; min-inline-size: 0; scroll-margin-block: calc(5rem + var(--safe-top)); }
+  html { scroll-padding-block: calc(5rem + var(--safe-top)); }
   html:has(dialog:modal), body:has(dialog:modal) { overflow: hidden; }
   dialog { overflow-y: auto; overscroll-behavior: contain; }
   /* Fixed pseudo-element instead of background-attachment:fixed (broken on iOS). */
@@ -183,8 +185,8 @@ html:not([data-theme='light']) .theme-light-only, html[data-theme='light'] .them
 /* Override sheet utility padding as well as browser defaults, including landscape notches. */
 dialog:modal {
   max-block-size: min(90dvh, calc(var(--visible-viewport-height, 100dvh) - 2rem));
-  padding-block-start: max(1.25rem, env(safe-area-inset-top));
-  padding-block-end: max(1.25rem, env(safe-area-inset-bottom));
+  padding-block-start: max(1.25rem, var(--safe-top));
+  padding-block-end: max(1.25rem, var(--safe-bottom));
   padding-inline-start: max(1.25rem, var(--safe-start));
   padding-inline-end: max(1.25rem, var(--safe-end));
 }
@@ -195,6 +197,7 @@ html[data-keyboard='open'] dialog:modal { inset-block-end: var(--keyboard-inset)
   .marketing-section { padding-block-start: clamp(4rem, 9vw, 7.5rem); }
   .marketing-heading { font-size: clamp(2rem, 4vw, 2.75rem); font-weight: 800; line-height: 1.3; }
   .marketing-eyebrow { color: var(--color-lime-ink); font-size: .75rem; font-weight: 700; letter-spacing: .2em; }
+  :lang(ar) .marketing-eyebrow, [dir='rtl'] .marketing-eyebrow { letter-spacing: 0; }
   .marketing-primary, .marketing-ghost { display: inline-flex; min-height: 3rem; align-items: center; justify-content: center; border-radius: var(--radius-control); font-family: var(--font-display); font-weight: 800; }
   .marketing-primary { background: var(--color-lime); color: var(--color-on-lime); box-shadow: 0 14px 36px -10px color-mix(in srgb, var(--color-lime) 35%, transparent); }
   .marketing-ghost:hover { background: color-mix(in srgb, var(--color-ink) 8%, transparent); }
@@ -216,7 +219,7 @@ html[data-keyboard='open'] dialog:modal { inset-block-end: var(--keyboard-inset)
 @keyframes marketing-float { 50% { transform: translateY(-6px); } }
 
 @media (max-width: 700px) {
-  .marketing-slogan { font-size: clamp(2.5rem, 13.34vw, 3.25rem); }
+  .marketing-slogan { font-size: clamp(2rem, 11.5vw, 3.25rem); }
 }
 
 @supports (animation-timeline: view()) {
@@ -224,13 +227,13 @@ html[data-keyboard='open'] dialog:modal { inset-block-end: var(--keyboard-inset)
 }
 
 /* Sits above the bottom nav and the sticky primary action, so a toast never covers either. */
-.toast-stack { inset-inline: 0; bottom: calc(10.5rem + env(safe-area-inset-bottom)); }
+.toast-stack { inset-inline: 0; bottom: calc(10.5rem + var(--safe-bottom)); }
 .toast-leave { animation: toast-fade 200ms ease-out forwards; }
 @keyframes toast-fade { to { opacity: 0; } }
 /* The marketing page keeps its own type scale. */
 body:not(:has(.marketing-wrap)) :is(h1, h2, h3) { font-weight: 700; color: var(--color-ink); }
 @layer base {
-  body:not(:has(.marketing-wrap)) :is(h2, h3) { @apply font-display text-base md:text-lg tracking-tight; }
+  body:not(:has(.marketing-wrap)) :is(h2, h3) { @apply font-display text-base md:text-lg ltr:tracking-tight; }
 }
 body:not(:has(.marketing-wrap)) .text-muted { font-weight: 500; }
 @keyframes surface-in { from { opacity: 0; transform: translateY(var(--enter-rise)); } to { opacity: 1; transform: none; } }

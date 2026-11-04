@@ -32,7 +32,7 @@ export function ForgotPasswordFlow() {
       if (!result.error) { setSent(true); setSentAt(Date.now()); setToken(''); setRecoveryReady(false); }
     });
   }
-  return <main className="mesh flex min-h-dvh items-center justify-center p-6">
+  return <main className="mesh flex min-h-dvh items-center justify-center p-6 pt-[max(1.5rem,var(--safe-top))]">
     <GlassCard level="strong" className="w-full max-w-md space-y-6 p-8">
       <h1 className="text-3xl font-extrabold">{sent ? t('checkYourEmail') : t('forgotPassword')}</h1>
       {sent ? <p role="status" className="break-words text-muted">{t('ifAnAccountExistsAReset')} <bdi>{email}</bdi></p>

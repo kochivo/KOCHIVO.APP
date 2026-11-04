@@ -29,7 +29,7 @@ export function PlayerInviteFlow({ code, callbackError = false }: { code: string
       .catch((error: unknown) => { if (active) setPreview({ error: authError(error, locale) }); });
     return () => { active = false; };
   }, [code, retry, locale]);
-  return <main className="mesh flex min-h-dvh items-center justify-center p-6">
+  return <main className="mesh flex min-h-dvh items-center justify-center p-6 pt-[max(1.5rem,var(--safe-top))]">
     <GlassCard level="strong" className="w-full max-w-md space-y-6 p-6">
       {!preview ? <LoadingState /> : preview.error ? <ErrorState message={preview.error} retryLabel={t('tryAgain')} onRetry={() => { setPreview(null); setRetry((value) => value + 1); }} /> : <>
         <GlassCard className="p-4"><p>{t('coachInvitation', { name: preview.captainName ?? '' })}</p></GlassCard>

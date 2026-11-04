@@ -33,6 +33,12 @@ const menu = () => SiteMenu({ openLabel: 'Open menu', closeLabel: 'Close menu', 
 beforeEach(() => { hooks.open = false; hooks.effects = []; hooks.refs = []; });
 
 describe('marketing header', () => {
+  it('keeps the status bar above the content row and inside the header background', async () => {
+    const header = find(await SiteHeader(), 'header');
+    expect(header.props.className).toContain('pt-[var(--safe-top)]');
+    expect(header.props.style).toEqual({ backgroundImage: 'linear-gradient(to bottom, var(--color-bg) var(--safe-top), transparent var(--safe-top))' });
+    expect(find(menu(), 'nav').props.className).toContain('h-[calc(100dvh-4rem-var(--safe-top))]');
+  });
   it('keeps mobile and tablet controls in one row and desktop links behind lg', async () => {
     const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' }, await SiteHeader()));
     expect(html).toContain('flex flex-nowrap items-center justify-between h-16');

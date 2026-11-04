@@ -20,6 +20,7 @@ export function PlayerShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const captain = useMyCaptain();
   const online = useOnline();
+  const workout = /\/player\/workout(?:\/|$)/.test(pathname);
   const today = localDate(new Date());
   const state = captain.data ? accessState({ ...captain.data, today }) : 'active';
   const url = whatsappUrl({ phone: captain.data?.phone ?? '' });
@@ -29,6 +30,7 @@ export function PlayerShell({ children }: { children: ReactNode }) {
     state === 'ended' ? t('yourSubscriptionEndedContactYourCoach') :
     state === 'archived' ? t('yourCoachPausedYourCoaching') : null;
   return <MyCaptainContext.Provider value={captain}>
+    <div className={workout ? undefined : 'pt-[var(--safe-top)]'}>
     {showsNav(pathname) && <div className="mx-auto flex max-w-lg justify-end px-5 pt-3"><NotificationBell /></div>}
     <div className="mx-auto max-w-lg space-y-3 px-5 pt-3" aria-live="polite">
       {!online && <p role="status" className="glass rounded-card p-4 text-sm">
@@ -44,6 +46,7 @@ export function PlayerShell({ children }: { children: ReactNode }) {
       </div>}
     </div>
     {children}
+    </div>
     {showsNav(pathname) && <InstallSheet />}
     {showsNav(pathname) && <BottomNav aria-label={t('navigation')} items={playerNav(pathname, locale)} />}
   </MyCaptainContext.Provider>;

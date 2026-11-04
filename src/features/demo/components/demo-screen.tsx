@@ -24,7 +24,7 @@ export function DemoScreen() {
     setToken(''); setError(t('completeTheVerificationAndTryAgain'));
   }, [t]);
   const siteKey = publicConfig.turnstileSiteKey;
-  return <main className="mx-auto grid min-h-dvh max-w-lg content-center items-center gap-6 p-6 lg:max-w-5xl lg:grid-cols-2">
+  return <main className="mx-auto grid min-h-dvh max-w-lg content-center items-center gap-6 p-6 pt-[max(1.5rem,var(--safe-top))] lg:max-w-5xl lg:grid-cols-2">
     <section className="glass-strong w-full space-y-5 rounded-card p-6">
       <LanguageSwitch />
       <h1 className="text-3xl font-extrabold">{t('tryTheDemo')}</h1>

@@ -19,7 +19,7 @@ export function ResetPasswordForm({ code, token_hash, type }: { code?: string; t
   const [invalidLink, setInvalidLink] = useState(false);
   const [requestingLink, setRequestingLink] = useState(false);
   if (requestingLink) return <ForgotPasswordFlow />;
-  return <main className="mesh flex min-h-dvh items-center justify-center p-6">
+  return <main className="mesh flex min-h-dvh items-center justify-center p-6 pt-[max(1.5rem,var(--safe-top))]">
     <GlassCard level="strong" className="w-full max-w-md space-y-6 p-8">
       <h1 className="text-3xl font-extrabold">{t('newPassword')}</h1>
       <p className="text-muted">{t('atLeast8CharactersWithA')}</p>

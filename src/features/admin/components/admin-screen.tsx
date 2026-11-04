@@ -53,7 +53,7 @@ export function AdminScreen({ captains, audit, plans, search, offset, kpis }: Pr
     setMessage(text); setSelected(null); setSuspending(null);
     startTransition(() => router.refresh());
   }
-  return <main dir={localeDir(locale)} className="mx-auto max-w-[1440px] space-y-7 px-4 py-8 text-start lg:px-8 lg:py-12">
+  return <main dir={localeDir(locale)} className="mx-auto max-w-[1440px] space-y-7 px-4 py-8 pt-[max(2rem,var(--safe-top))] text-start lg:px-8 lg:py-12 lg:pt-[max(3rem,var(--safe-top))]">
     <header className="flex flex-wrap items-center justify-between gap-4 border-b border-line pb-6">
       <h1 className="text-3xl font-extrabold lg:text-4xl">{t('admin')}</h1>
       <span className="flex items-center gap-2 rounded-control border border-line px-4 py-2 text-sm text-muted">
