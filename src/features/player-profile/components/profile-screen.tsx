@@ -12,7 +12,7 @@ import { CheckinsTab } from './checkins-tab';
 import { IntakeTab } from './intake-tab';
 import { PlanTab } from './plan-tab';
 import { ProgressTab } from './progress-tab';
-import { AnalyticsLoader } from './analytics-loader';
+import { AnalyticsLoader } from '@/features/muscle-analytics';
 
 interface Props {
   playerId: string;

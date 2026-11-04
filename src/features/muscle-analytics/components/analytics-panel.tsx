@@ -11,12 +11,12 @@ import { BalanceBar } from './balance-bar';
 import { BodyMap } from './body-map';
 import { WeekSlider } from './week-slider';
 
-export function AnalyticsPanel({ weeks }: { weeks: VolumeWeek[] }) {
+export function AnalyticsPanel({ weeks, self = false }: { weeks: VolumeWeek[]; self?: boolean }) {
   const [selected, setSelected] = useState(4);
   const t = useT(messages);
   const locale = useLocale();
   const week = weeks[selected - 1];
-  if (!week || !weeks.some(item => item.total > 0)) return <p className="text-muted">{t('empty')}</p>;
+  if (!week || !weeks.some(item => item.total > 0)) return <p className="text-muted">{t(self ? 'emptySelf' : 'empty')}</p>;
   const fatigue = regions.filter(region => week.regions[region] > 20);
   return <div className="space-y-6">
     <WeekSlider value={selected} onChange={setSelected} />

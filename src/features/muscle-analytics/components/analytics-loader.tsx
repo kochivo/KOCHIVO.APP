@@ -9,6 +9,7 @@ const AnalyticsTab = dynamic(() => import('./analytics-tab').then(module => modu
   loading: AnalyticsSkeleton,
 });
 
-export function AnalyticsLoader({ playerId }: { playerId: string }) {
-  return <AnalyticsTab playerId={playerId} />;
+/** `self` is the player viewing their own volume on the progress page. */
+export function AnalyticsLoader({ playerId, self = false }: { playerId: string; self?: boolean }) {
+  return <AnalyticsTab playerId={playerId} self={self} />;
 }

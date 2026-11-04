@@ -3,6 +3,7 @@ import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 
 import { useCallback, useEffect, useState } from 'react';
+import type { ReactNode } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { CalendarCheck, Dumbbell, Scale } from 'lucide-react';
@@ -24,7 +25,7 @@ const LineChart = dynamic(() => import('./line-chart').then(module => module.Lin
   ssr: false, loading: () => <div aria-hidden className="aspect-[350/155] w-full" />,
 });
 
-export function ProgressScreen() {
+export function ProgressScreen({ analytics }: { analytics?: ReactNode }) {
   const t = useT(messages);
   const locale = useLocale();
   function deltaLabel(points: TrendPoint[], unit: string) {
@@ -98,6 +99,7 @@ export function ProgressScreen() {
           {top.length ? <LineChart points={top} title={t('topWeightTrend')} unit={t('kg')} /> : <EmptyState icon={Dumbbell} title={t('noMeasurementsYet')} body={t('logYourFirstWorkoutToSeeYour')} action={{ label: t('firstWorkout'), href: '/player' }} />}
         </section>
       </>}
+    {analytics}
     {checkinError ? <ErrorState message={t('couldntLoadCheckinsCheckYourConnection')} retryLabel={t('tryAgain')} onRetry={() => setRetryKey((value) => value + 1)} /> : !checkins ? <LoadingState variant="cards" /> : <>
       {!checkins.length && <EmptyState icon={CalendarCheck} title={t('firstCheckin')} body={t('yourFirstCheckinIsYourStartingPoint')} action={{ label: t('sendWeeklyCheckin'), onClick: () => { setSheetLoaded(true); setSheet(true); } }} />}
       {checkins.length > 0 && <><div className="grid grid-cols-2 gap-3">

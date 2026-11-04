@@ -56,3 +56,7 @@ it('shows the overall empty state when all four weeks have no sets', () => {
   const html = renderToStaticMarkup(createElement(AnalyticsPanel, { weeks: weeks(0) }));
   expect(html).toContain("The player hasn&#x27;t logged any workouts yet");
 });
+it('speaks to the player on their own progress page', () => {
+  const html = renderToStaticMarkup(createElement(AnalyticsPanel, { weeks: weeks(0), self: true }));
+  expect(html).toContain('Log your first workout to see your muscle volume');
+});

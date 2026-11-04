@@ -8,7 +8,7 @@ import type { VolumeWeek } from '../data/muscle-volume';
 import { AnalyticsPanel } from './analytics-panel';
 import { AnalyticsSkeleton } from './analytics-skeleton';
 
-export function AnalyticsTab({ playerId }: { playerId: string }) {
+export function AnalyticsTab({ playerId, self = false }: { playerId: string; self?: boolean }) {
   const t = useT(messages);
   const [weeks, setWeeks] = useState<VolumeWeek[] | null>(null);
   const [failed, setFailed] = useState(false);
@@ -28,6 +28,6 @@ export function AnalyticsTab({ playerId }: { playerId: string }) {
     {failed ? <div className="space-y-3"><p role="alert" className="text-danger">{t('error')}</p>
       <button type="button" className="min-h-12 rounded-control bg-lime px-5 font-bold text-on-lime"
         onClick={() => { setFailed(false); setWeeks(null); setAttempt(value => value + 1); }}>{t('retry')}</button>
-    </div> : weeks ? <AnalyticsPanel weeks={weeks} /> : <AnalyticsSkeleton />}
+    </div> : weeks ? <AnalyticsPanel weeks={weeks} self={self} /> : <AnalyticsSkeleton />}
   </section>;
 }
