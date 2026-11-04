@@ -8,6 +8,7 @@ import { EmptyState, GlassCard } from '@/ui';
 import { formatNumber } from '@/lib/format';
 import { formatDateAr, localDate } from '@/lib/dates';
 import { starterText } from '@/lib/starter-text';
+import { CaptainSupplements } from '@/features/supplements';
 import type { PlayerProfile } from '../types';
 
 function PlanCard({ icon: Icon, heading, title, lines, href, action }: {
@@ -42,6 +43,7 @@ export async function PlanTab({ playerId, program, nutrition }: Pick<PlayerProfi
             t('macros', { protein: n(nutrition.protein), carbs: n(nutrition.carbs), fat: n(nutrition.fat) }), updated(nutrition.updatedAt)]} /> :
           <EmptyState icon={Salad} title={t('noNutritionTitle')} body={t('noNutritionBody')} action={{ label: t('writeNutrition'), href: `${base}/nutrition` }} />}
       </div>
+      <CaptainSupplements playerId={playerId} />
       <Link href={`${base}/preview`} className="inline-flex min-h-12 items-center gap-2 rounded-control px-4 text-sm font-bold hover:bg-ink/5">
         <Eye aria-hidden className="size-5" />{t('preview')}
       </Link>

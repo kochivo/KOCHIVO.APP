@@ -42,6 +42,7 @@ export interface MealLogRow {
 }
 
 export interface SyncRows {
+  supplement_logs: SupplementLogRow;
   workout_sessions: WorkoutSessionRow;
   set_logs: SetLogRow;
   meal_logs: MealLogRow;
@@ -50,4 +51,26 @@ export interface SyncRows {
 export type SyncTable = keyof SyncRows;
 
 /** Flush order respects foreign keys: a session must exist before its sets. */
-export const SYNC_ORDER: readonly SyncTable[] = ['workout_sessions', 'set_logs', 'meal_logs'];
+export const SYNC_ORDER: readonly SyncTable[] = ['workout_sessions', 'set_logs', 'meal_logs', 'supplement_logs'];
+
+export type SupplementLogRow = {
+  id: string;
+  supplement_id: string;
+  log_date: string;
+  taken_at: string | null;
+  deleted_at: string | null;
+  client_updated_at: string;
+}
+
+export type SupplementRow = {
+  id: string;
+  captain_id: string;
+  player_id: string;
+  name: string;
+  dose: string;
+  timing: 'morning' | 'pre_workout' | 'post_workout' | 'with_meal' | 'before_bed' | 'any';
+  notes: string;
+  position: number;
+  archived_at: string | null;
+  created_at: string;
+}
