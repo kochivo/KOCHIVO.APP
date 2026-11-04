@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useReducer, useRef, useState } from 'react';
+import { captureException } from '@sentry/nextjs';
 import { useT } from '@/core/i18n/client';
 import { SwitchTrack } from '@/ui';
 import { publicConfig } from '@/lib/public-config';
@@ -50,7 +51,11 @@ export function PushToggleCard() {
         const result = await subscribePush(publicConfig.vapidPublicKey);
         dispatch({ type: 'loaded', denied: result === 'denied', on: result === 'on' });
       }
-    } catch { dispatch({ type: 'failed' }); }
+    } catch (error) {
+      // The toggle only shows a generic error, so keep the real browser reason for diagnosis.
+      captureException(error, { tags: { feature: 'push' } });
+      dispatch({ type: 'failed' });
+    }
     finally { inFlight.current = false; }
   }
   const description = support === 'ios-install' ? 'install' : support === 'unsupported' ? 'unsupported'

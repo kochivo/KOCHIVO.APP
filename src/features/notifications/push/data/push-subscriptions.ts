@@ -15,11 +15,21 @@ export async function currentPushState(): Promise<boolean> {
   return subscription ? Boolean(await storedSubscription(subscription.endpoint)) : false;
 }
 
-async function readyWorker() {
-  // ready never rejects, so fail explicitly when registration/activation has not succeeded.
-  const registration = await navigator.serviceWorker.getRegistration();
-  if (!registration?.active) throw new Error('Service worker unavailable');
-  return navigator.serviceWorker.ready;
+async function readyWorker(): Promise<ServiceWorkerRegistration> {
+  // Android can open settings before the first worker registered or activated; ready never rejects, so bound the wait.
+  const registration = await navigator.serviceWorker.getRegistration()
+    ?? await navigator.serviceWorker.register?.('/sw.js', { scope: '/' }).catch(() => undefined);
+  if (!registration) throw new Error('Service worker unavailable');
+  if (registration.active) return navigator.serviceWorker.ready;
+  return Promise.race([navigator.serviceWorker.ready, new Promise<never>((_, reject) =>
+    setTimeout(() => reject(new Error('Service worker unavailable')), 10_000))]);
+}
+
+function sameKey(subscription: PushSubscription, key: Uint8Array): boolean {
+  const current = subscription.options?.applicationServerKey;
+  if (!current) return true;
+  const bytes = new Uint8Array(current);
+  return bytes.length === key.length && bytes.every((byte, index) => byte === key[index]);
 }
 
 async function storeSubscription(subscription: PushSubscription) {
@@ -40,10 +50,11 @@ export async function subscribePush(publicKey: string): Promise<'on' | 'denied'>
   const permission = await Notification.requestPermission();
   if (permission !== 'granted') return 'denied';
   const registration = await readyWorker();
-  const existing = await registration.pushManager.getSubscription();
-  const create = () => registration.pushManager.subscribe({
-    userVisibleOnly: true, applicationServerKey: base64UrlBytes(publicKey),
-  });
+  const key = base64UrlBytes(publicKey);
+  let existing = await registration.pushManager.getSubscription();
+  // Chrome rejects subscribe() while an endpoint made with another server key is still attached.
+  if (existing && !sameKey(existing, key)) { await existing.unsubscribe(); existing = null; }
+  const create = () => registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: key });
   let subscription = existing ?? await create();
   let created = !existing;
   try {

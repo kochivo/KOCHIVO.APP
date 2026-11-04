@@ -79,3 +79,22 @@ it('replaces an endpoint owned by a previous account instead of trapping the new
   expect(state.rows[0]?.endpoint).toBe('https://push.example/device-2');
   expect(await currentPushState()).toBe(true);
 });
+it('registers the worker when Android opens settings before it exists', async () => {
+  browser();
+  const worker = (navigator as unknown as { serviceWorker: Record<string, unknown> }).serviceWorker;
+  const ready = worker.ready;
+  const register = vi.fn(async () => ({ active: {} }));
+  vi.stubGlobal('navigator', { userAgent: 'test', serviceWorker: { getRegistration: async () => undefined, register, ready } });
+  expect(await subscribePush('AAEC')).toBe('on');
+  expect(register).toHaveBeenCalledWith('/sw.js', { scope: '/' });
+});
+it('replaces a browser subscription made with an old server key', async () => {
+  browser();
+  const old = { endpoint: 'https://push.example/old', options: { applicationServerKey: new Uint8Array([9, 9]).buffer },
+    toJSON: () => ({ endpoint: 'https://push.example/old', keys: { p256dh: 'key', auth: 'auth' } }),
+    unsubscribe: vi.fn(async () => { state.subscription = null; return true; }) };
+  state.subscription = old as unknown as typeof state.subscription;
+  expect(await subscribePush('AAEC')).toBe('on');
+  expect(old.unsubscribe).toHaveBeenCalled();
+  expect(state.rows[0]?.endpoint).toBe('https://push.example/device-1');
+});
