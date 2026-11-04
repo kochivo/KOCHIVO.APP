@@ -768,6 +768,45 @@ export type Database = {
         }
         Relationships: []
       }
+      body_scans: {
+        Row: {
+          id: string
+          player_id: string
+          scan_date: string
+          weight_kg: number | null
+          muscle_kg: number | null
+          fat_pct: number | null
+          file_path: string | null
+          created_at: string
+        }
+        Insert: {
+          id: string
+          player_id?: string
+          scan_date: string
+          weight_kg?: number | null
+          muscle_kg?: number | null
+          fat_pct?: number | null
+          file_path?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          player_id?: string
+          scan_date?: string
+          weight_kg?: number | null
+          muscle_kg?: number | null
+          fat_pct?: number | null
+          file_path?: string | null
+          created_at?: string
+        }
+        Relationships: [{
+          foreignKeyName: "body_scans_player_id_fkey"
+          columns: ["player_id"]
+          isOneToOne: false
+          referencedRelation: "profiles"
+          referencedColumns: ["id"]
+        }]
+      }
       player_intake: {
         Row: {
           allergies: string[]
