@@ -37,6 +37,31 @@ The owner wants it **luxury and premium, but easy on the eyes and calming**, bec
 - **Recessed inputs:** a fill about 35% darker than the card, a 1 px border at about 4% white and a soft inner shadow. The number inside is `--color-ink` at large size.
 - **Success and warn states** use the existing soft tokens; nothing gets saturated red or green backgrounds.
 
+## Direction update 2 (owner, 2026-11-04): luxury premium SaaS, alive, not muted
+The owner says the comfortable version must not feel muted or dull. People should **love opening it**, in the Linear / Vercel / Raycast tier. Keep the comfort rules above (graphite bg, off-white ink, no pure black or white), and add life with light and colour:
+- **Brighter base:**
+  - `--color-ink` is close to `#f4f4f1`.
+  - `--color-muted` is close to `#a6abb0`.
+  - The glass fill steps are 3%, 5% and 7%.
+  - Hairlines are about 9% white.
+- **Aurora:**
+  - A soft lime aurora sits at the top of every app shell: a wide radial ellipse at about 10–12% lime fading to transparent within about 40 vh.
+  - Two corner orbs at about 6–8%.
+  - All static. They are tokens or utilities (`bg-aurora`), defined once.
+- **Featured card** (`glass-featured`, used only for the one hero card per screen: today's workout, weekly adherence, the captain's KPI):
+  - a gradient hairline border from lime at about 45% in the top-start corner to white at about 8%
+  - an inner top glow
+  - a slightly stronger shadow
+- **Lime with energy:**
+  - The primary button gets a subtle vertical gradient (lime to a slightly deeper lime), an inner top highlight and the soft glow (`0 0 18px` lime at about 25%).
+  - On hover, the glow brightens and the button lifts 1 px.
+  - Progress bars and rings use a lime gradient with a tiny glow on the leading edge.
+  - Active chips get a lime fill at about 12% with a lime border at about 40%.
+- **One orchestrated entrance:** on first paint of a page, cards fade and rise 6 px with a 40 ms stagger, once, 300 ms ease-out. Nothing loops. Disable all of it under `prefers-reduced-motion`.
+- **Numbers as heroes:** big stats use the display font at a larger size with tabular figures. An optional small delta chip («+2.5 كجم») uses the success-soft tokens.
+- **Interactive feedback:** cards get a soft spotlight on hover (a radial highlight following the pointer is optional; a static top highlight brightening is enough), and a 0.98 press scale on touch for buttons.
+- Every value lives in tokens and utilities. Components only switch to `glass-featured` where it is the screen's hero card; for feature folders that other agents are editing, list the places instead of changing them.
+
 ## Changes (dark theme)
 1. **Background:**
    - Set `--color-bg` to true black (about `#050505`) and `--color-bg-deep` to `#000`.
