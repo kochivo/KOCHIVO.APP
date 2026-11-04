@@ -111,7 +111,7 @@ alter table public.admin_audit_log add constraint admin_audit_log_action_check
 alter table public.notifications drop constraint notifications_type_check;
 alter table public.notifications add constraint notifications_type_check check (type in
   ('plan_assigned','nutrition_updated','player_joined','player_inactive','join_requested',
-    'workout_reminder','workout_feedback','captain_approved'));
+    'workout_reminder','workout_feedback','sessions_used_up','captain_approved'));
 
 create function public.admin_pending_captains()
 returns table (id uuid, email text, full_name text, created_at timestamptz)

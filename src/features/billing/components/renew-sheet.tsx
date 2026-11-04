@@ -3,6 +3,7 @@ import { formatNumber } from '@/lib/format';
 import { formatDateAr } from '@/lib/dates';
 import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
+import { messages as ptMessages } from '../packages/messages';
 
 import { useEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
@@ -23,6 +24,7 @@ interface Props {
 
 export function RenewSheet({ name, accessUntil, today, packages, onClose, onSave }: Props) {
   const t = useT(messages);
+  const pt = useT(ptMessages);
   const locale = useLocale();
   const dialog = useRef<HTMLDialogElement>(null);
   const [packageId, setPackageId] = useState<string | null>(packages[0]?.id ?? null);
@@ -35,7 +37,7 @@ export function RenewSheet({ name, accessUntil, today, packages, onClose, onSave
   const value = amount.trim() === '' ? null : Number(amount);
   const price = chosen?.price_egp ?? null;
   const validAmount = value === null || (Number.isInteger(value) && value >= 0 && value <= 100000 && (price === null || value <= price));
-  const preview = validDays ? renewalPreview(accessUntil, today, days) : null;
+  const preview = validDays ? renewalPreview(accessUntil, today, days, chosen?.kind) : null;
   const left = remaining(price, value);
   useEffect(() => {
     const element = dialog.current;
@@ -64,6 +66,7 @@ export function RenewSheet({ name, accessUntil, today, packages, onClose, onSave
           <div className="flex flex-wrap gap-2">
             {packages.map((item) => <Chip key={item.id} pressed={packageId === item.id} onClick={() => pick(item.id)}>
               {item.name} · {t('amount', { amount: formatNumber(item.price_egp, locale) })}
+              {item.kind === 'sessions' && <> · {pt('sessionsLeft', { count: formatNumber(item.sessions ?? 0, locale) })}</>}
             </Chip>)}
             <Chip pressed={packageId === null} onClick={() => pick(null)}>{t('custom')}</Chip>
           </div>

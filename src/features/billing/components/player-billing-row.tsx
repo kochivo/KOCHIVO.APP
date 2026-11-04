@@ -17,6 +17,8 @@ import { RenewSheet } from './renew-sheet';
 import type { Renewal } from './renew-sheet';
 import { useToast } from '@/ui/toast';
 import { messages as uiMessages } from '@/ui/messages';
+import { BalanceBadges } from './balance-badges';
+import { ActivatePlayerButton } from './activate-player-button';
 
 const statuses = {
   active: { label: 'active', color: 'bg-lime-soft text-lime' },
@@ -52,7 +54,7 @@ export function PlayerBillingRow({ player, today, packages }: { player: BillingP
     const oldAccess = accessUntil;
     const oldPayment = lastPayment;
     const oldDue = due;
-    setAccessUntil(renewalPreview(accessUntil, today, days).end);
+    setAccessUntil(renewalPreview(accessUntil, today, days, chosen?.kind).end);
     setLastPayment({ created_at: today, amount_egp: renewal.amount, days });
     setDue(due + remaining(renewal.price ?? chosen?.price_egp ?? null, renewal.amount));
     setOpen(false);
@@ -96,8 +98,9 @@ export function PlayerBillingRow({ player, today, packages }: { player: BillingP
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h3 className="font-bold">{player.fullName}</h3>
         <div className="flex flex-wrap items-center gap-2">
+          <BalanceBadges {...player} />
           {due > 0 && <span className="rounded-control bg-warn-soft px-3 py-1 text-xs font-bold text-warn">{t('owes', { amount: formatNumber(due, locale) })}</span>}
-          <span className={`rounded-control px-3 py-1 text-xs ${status.color}`}>{t(status.label)}</span>
+          {!player.pending && !player.frozenAt && <span className={`rounded-control px-3 py-1 text-xs ${status.color}`}>{t(status.label)}</span>}
         </div>
       </div>
       <dl className="grid gap-3 text-sm sm:grid-cols-2">
@@ -108,10 +111,11 @@ export function PlayerBillingRow({ player, today, packages }: { player: BillingP
         </> : t('noPayments')}</dd></div>
       </dl>
       <div className="flex flex-wrap gap-2">
-        <Button variant="ghost" disabled={pending || refreshing} onClick={() => setOpen(true)} className="min-h-12">{pending || refreshing ? t('renewing') : t('renew')}</Button>
+        {!player.pending && <Button variant="ghost" disabled={pending || refreshing} onClick={() => setOpen(true)} className="min-h-12">{pending || refreshing ? t('renewing') : t('renew')}</Button>}
         {due > 0 && <Button variant="secondary" disabled={pending || refreshing} onClick={() => setCollecting(true)} className="min-h-12">{pending ? t('collecting') : t('collect')}</Button>}
         {reminder && <a href={reminder} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center rounded-control px-4 text-sm hover:bg-surface-raised">{t('remind')}</a>}
       </div>
+      {player.pending && <ActivatePlayerButton playerId={player.playerId} name={player.fullName} today={today} />}
       {error && <p role="alert" className="text-sm text-danger">{error}</p>}
       {open && <RenewSheet name={player.fullName} accessUntil={accessUntil} today={today} packages={packages} onClose={() => setOpen(false)} onSave={(renewal) => void save(renewal)} />}
       {collecting && <CollectSheet name={player.fullName} due={due} onClose={() => setCollecting(false)} onSave={(amount) => void collect(amount)} />}

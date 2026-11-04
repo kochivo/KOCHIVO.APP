@@ -16,6 +16,13 @@ export type Database = {
   }
   public: {
     Tables: {
+      session_deductions: {
+        Row: { session_id: string; link_id: string }
+        Insert: { session_id: string; link_id: string }
+        Update: { session_id?: string; link_id?: string }
+        Relationships: [{ foreignKeyName: 'session_deductions_link_id_fkey'; columns: ['link_id'];
+          isOneToOne: false; referencedRelation: 'coach_clients'; referencedColumns: ['id'] }]
+      }
       daily_checks: {
         Row: DailyCheckRow & { player_id: string }
         Insert: DailyCheckRow & { player_id?: string }
@@ -239,6 +246,9 @@ export type Database = {
       }
       coach_clients: {
         Row: {
+          sessions_left: number | null
+          frozen_at: string | null
+          pending: boolean
           access_until: string
           archived_at: string | null
           captain_id: string
@@ -250,6 +260,9 @@ export type Database = {
         }
         Insert: {
           access_until: string
+          sessions_left?: number | null
+          frozen_at?: string | null
+          pending?: boolean
           archived_at?: string | null
           captain_id: string
           created_at?: string
@@ -260,6 +273,9 @@ export type Database = {
         }
         Update: {
           access_until?: string
+          sessions_left?: number | null
+          frozen_at?: string | null
+          pending?: boolean
           archived_at?: string | null
           captain_id?: string
           created_at?: string
@@ -874,6 +890,8 @@ export type Database = {
       }
       captain_packages: {
         Row: {
+          kind: 'days' | 'sessions'
+          sessions: number | null
           archived_at: string | null
           captain_id: string
           created_at: string
@@ -887,6 +905,8 @@ export type Database = {
           captain_id: string
           created_at?: string
           days: number
+          kind?: 'days' | 'sessions'
+          sessions?: number | null
           id?: string
           name: string
           price_egp: number
@@ -896,6 +916,8 @@ export type Database = {
           captain_id?: string
           created_at?: string
           days?: number
+          kind?: 'days' | 'sessions'
+          sessions?: number | null
           id?: string
           name?: string
           price_egp?: number
@@ -967,6 +989,7 @@ export type Database = {
       }
       player_payments: {
         Row: {
+          notes: string | null
           amount_egp: number | null
           captain_id: string
           created_at: string
@@ -980,6 +1003,7 @@ export type Database = {
         }
         Insert: {
           amount_egp?: number | null
+          notes?: string | null
           captain_id: string
           created_at?: string
           days: number
@@ -992,6 +1016,7 @@ export type Database = {
         }
         Update: {
           amount_egp?: number | null
+          notes?: string | null
           captain_id?: string
           created_at?: string
           days?: number
@@ -1437,6 +1462,9 @@ export type Database = {
       }
     }
     Functions: {
+      activate_player: { Args: { p_link: string; p_package: string | null; p_kind: string; p_quantity: number;
+        p_price_egp: number; p_paid_egp: number; p_free_trial: boolean }; Returns: undefined }
+      set_player_frozen: { Args: { p_link: string; p_frozen: boolean }; Returns: undefined }
       my_route_profile: {
         Args: never;
         Returns: { role: 'captain' | 'player'; role_confirmed: boolean; suspended_at: string | null; is_admin: boolean }[];

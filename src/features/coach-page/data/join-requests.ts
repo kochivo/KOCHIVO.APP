@@ -17,11 +17,15 @@ export async function loadJoinRequests() {
 export async function resolveJoinRequest(id: string, status: 'accepted' | 'declined') {
   const t = await getT(messages);
   try {
-    const result = await (await supabaseServer()).rpc('resolve_coach_join_request', {
-      p_request: id, p_status: status, p_link_id: uuidv7(),
+    const linkId = uuidv7();
+    const client = await supabaseServer();
+    const result = await client.rpc('resolve_coach_join_request', {
+      p_request: id, p_status: status, p_link_id: linkId,
     });
     if (result.error) throw result.error;
     revalidatePath('/captain'); revalidatePath('/captain/players');
-    return { ok: true };
+    const request = await client.from('coach_join_requests').select('player_id').eq('id', id).single();
+    if (request.error) throw request.error;
+    return { ok: true, playerId: request.data.player_id };
   } catch (error) { unstable_rethrow(error); return { error: t('failure') }; }
 }

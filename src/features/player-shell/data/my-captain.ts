@@ -7,6 +7,7 @@ import { messages } from '../messages';
 import { supabaseServer } from '@/core/supabase/server';
 
 export interface MyCaptain {
+  pending?: boolean; frozenAt?: string | null;
   fullName: string; phone: string | null; accessUntil: string;
   archivedAt: string | null; startedOn: string | null;
   bio?: string | null; location?: string | null; avatarUrl?: string | null;
@@ -20,7 +21,7 @@ export async function fetchMyCaptain(): Promise<{ data: MyCaptain | null } | { e
     const { data: auth, error: authError } = await client.auth.getClaims();
     if (authError || !auth?.claims.sub) return { error: t('signInAgain') };
     const [relation, captain] = await Promise.all([client.from('coach_clients')
-      .select('access_until,archived_at,started_on,captain_id')
+      .select('access_until,archived_at,started_on,captain_id,pending,frozen_at')
       .eq('player_id', auth.claims.sub).order('archived_at', { ascending: true, nullsFirst: true })
       .order('created_at', { ascending: false }).limit(1).maybeSingle(),
       client.rpc('my_captain_profile'),
@@ -35,6 +36,7 @@ export async function fetchMyCaptain(): Promise<{ data: MyCaptain | null } | { e
       bio: publicProfile?.bio, location: publicProfile?.location, social: publicProfile?.social,
       avatarUrl: publicProfile?.avatar_path ? client.storage.from('captain-avatars').getPublicUrl(publicProfile.avatar_path).data.publicUrl : null,
       accessUntil: row.access_until, archivedAt: row.archived_at, startedOn: row.started_on,
+      pending: row.pending, frozenAt: row.frozen_at,
     } };
   } catch (error) { unstable_rethrow(error); return { error: t('couldnTLoadYourCoach') }; }
 }

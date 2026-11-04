@@ -3,6 +3,7 @@ import { defineMessages } from '@/core/i18n/messages';
 export const messages = defineMessages({
   ar: {
     captain_approved: 'حسابك اتفعّل، أهلاً بيك في KOCHIVO',
+    sessions_used_up: 'حصص اللاعب خلصت. راجع الاشتراك',
     workout_feedback: 'فيه تقييم تمرين جديد محتاج تشوفه',
     workout_reminder: 'جاهز لتمرين النهارده؟ {name} مستنيك',
     join_requested: '{name} بعت طلب انضمام',
@@ -16,6 +17,7 @@ export const messages = defineMessages({
   },
   en: {
     captain_approved: 'Your account is approved. Welcome to KOCHIVO',
+    sessions_used_up: 'Player sessions used up. Review the subscription',
     workout_feedback: 'New workout feedback needs your attention',
     workout_reminder: 'Ready for today’s workout? {name} is waiting',
     join_requested: '{name} requested to join',

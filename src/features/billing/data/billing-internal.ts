@@ -19,7 +19,7 @@ export async function fetchBillingAt(now: Date): Promise<BillingResult> {
     const [roster, tier, payments, packages, dues, paid, collected] = await Promise.all([
       fetchRoster(), client.rpc('current_tier', { p_captain: captainId }),
       client.rpc('captain_last_payments'),
-      client.from('captain_packages').select('id, name, price_egp, days').eq('captain_id', captainId)
+      client.from('captain_packages').select('id, name, price_egp, days, kind, sessions').eq('captain_id', captainId)
         .is('archived_at', null).order('created_at'),
       client.rpc('captain_dues'),
       client.from('player_payments').select('amount_egp, created_at').eq('captain_id', captainId).gte('created_at', since),
