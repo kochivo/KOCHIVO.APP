@@ -10,3 +10,4 @@ export { Pricing } from './components/pricing';
 export { Faq } from './components/faq';
 export { FinalCta } from './components/final-cta';
 export { SiteFooter } from './components/site-footer';
+export { InstalledAppRedirect, isInstalledApp } from './components/installed-app-redirect';

@@ -5,12 +5,13 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { PlayerShell } from '@/features/player-shell';
 
-const state = vi.hoisted(() => ({ path: '/player', rest: false, moodMounts: 0,
+const state = vi.hoisted(() => ({ path: '/player', rest: false, moodMounts: 0, syncMounts: 0,
   report: undefined as ((rest: boolean) => void) | undefined, effects: [] as (() => void)[], loaded: [] as string[] }));
 vi.mock('@/features/player-home', () => { state.loaded.push('mood'); return { RestMoodSync: () => null }; });
 vi.mock('next/dynamic', async original => {
   const { default: dynamic } = await original<{ default: typeof nextDynamic }>();
   return { default: (loader: Parameters<typeof dynamic>[0], options: Parameters<typeof dynamic>[1]) => {
+    if (String(loader).includes('SyncRunner')) return () => { state.syncMounts++; return null; };
     if (String(loader).includes('RestMoodSync')) return ({ onChange }: { onChange: (rest: boolean) => void }) => {
       state.moodMounts++; state.report = onChange; return null;
     };
@@ -30,7 +31,7 @@ vi.mock('./hooks/use-my-captain', () => ({
 }));
 vi.mock('./hooks/use-online', () => ({ useOnline: () => true }));
 
-beforeEach(() => { state.effects = []; state.path = '/player'; state.rest = false; state.moodMounts = 0; state.report = undefined; });
+beforeEach(() => { state.effects = []; state.path = '/player'; state.rest = false; state.moodMounts = 0; state.syncMounts = 0; state.report = undefined; });
 afterEach(() => vi.unstubAllGlobals());
 it('remembers player on mount without loading add-ons for the server render', () => {
   const setItem = vi.fn();
@@ -60,4 +61,10 @@ it('themes the whole shell on rest days and excludes workout focus', () => {
   state.path = '/player/workout/day';
   expect(renderToStaticMarkup(createElement(PlayerShell, null, null))).not.toContain('data-mood="rest"');
   expect(state.moodMounts).toBe(mounts);
+});
+
+it.each(['/player', '/player/nutrition', '/player/workout/day'])('runs background sync on %s, not only in workouts', path => {
+  state.path = path;
+  renderToStaticMarkup(createElement(PlayerShell, null, null));
+  expect(state.syncMounts).toBe(1);
 });

@@ -19,6 +19,7 @@ import { useDeviceRole } from '@/core/pwa/use-device-role';
 const FeedbackButton = dynamic(() => import('@/features/feedback').then(module => module.FeedbackButton), { ssr: false });
 const InstallSheet = dynamic(() => import('@/features/install').then(module => module.InstallSheet), { ssr: false });
 const RestMoodSync = dynamic(() => import('@/features/player-home').then(module => module.RestMoodSync), { ssr: false });
+const SyncRunner = dynamic(() => import('./sync-runner').then(module => module.SyncRunner), { ssr: false });
 
 export function PlayerShell({ children }: { children: ReactNode }) {
   useDeviceRole('player');
@@ -39,6 +40,7 @@ export function PlayerShell({ children }: { children: ReactNode }) {
     state === 'archived' ? t('yourCoachPausedYourCoaching') : null;
   return <MyCaptainContext.Provider value={captain}>
     <div data-mood={!workout && restMood ? 'rest' : undefined} className="min-h-dvh bg-bg text-ink transition-colors motion-reduce:transition-none">
+    <SyncRunner />
     {!workout && <RestMoodSync onChange={setRestMood} />}
     <div className={workout ? undefined : showsNav(pathname) ? 'pb-[calc(var(--nav-clearance)+1rem)]' : 'pt-[var(--safe-top)]'}>
     {showsNav(pathname) && <div className="sticky top-0 z-30 bg-bg/70 pb-3 pt-[max(0.75rem,var(--safe-top))] backdrop-blur-md"><div className="mx-auto flex max-w-lg justify-end px-5"><NotificationBell /></div></div>}

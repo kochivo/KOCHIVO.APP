@@ -4,7 +4,7 @@ import { parseLocale } from '@/core/i18n/locale';
 import { createT } from '@/core/i18n/messages';
 import {
   getContent, marketingMessages, SiteHeader, Hero, StatsStrip, HowItWorks, FeaturesGrid,
-  PlayerSection, Pricing, Faq, FinalCta, SiteFooter,
+  PlayerSection, Pricing, Faq, FinalCta, SiteFooter, InstalledAppRedirect,
 } from '@/features/marketing';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -29,6 +29,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   setRequestLocale(parseLocale((await params).locale));
   return <>
+    <InstalledAppRedirect />
     <SiteHeader />
     <main>
       <Hero />
