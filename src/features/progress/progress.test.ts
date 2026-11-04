@@ -25,7 +25,8 @@ function mockClient(code?: string) {
   const upload = vi.fn().mockResolvedValue({ error: null });
   const createSignedUrl = vi.fn().mockResolvedValue({ data: { signedUrl: 'signed' }, error: null });
   const insert = vi.fn().mockResolvedValue({ error: code ? { code } : null });
-  const limit = vi.fn().mockResolvedValue({ data: [], error: null });
+  const returns = vi.fn().mockResolvedValue({ data: [], error: null });
+  const limit = vi.fn(() => ({ returns }));
   const order = vi.fn(() => ({ limit }));
   const eq = vi.fn(() => ({ order }));
   const select = vi.fn(() => ({ eq }));
@@ -96,12 +97,14 @@ it('uploads before inserting a check-in, using the authenticated player and Satu
   const photo = new File(['photo'], 'private.png', { type: 'image/jpeg' });
   expect(await submitCheckIn(client, {
     today: '2026-11-03', body_weight_kg: 75, waist_cm: 90, notes: 'تمام', photos: [photo],
+    body_fat_pct: 18.5, photo_poses: ['side'],
   })).toEqual({ error: null });
   expect(upload.mock.invocationCallOrder[0]).toBeLessThan(insert.mock.invocationCallOrder[0] ?? 0);
   expect(insert).toHaveBeenCalledWith({
     id: '0194cc00-0000-7000-8000-000000000001', notes: 'تمام',
     player_id: 'player', week_start: '2026-10-31', body_weight_kg: 75, waist_cm: 90,
     photo_paths: ['player/0194cc00-0000-7000-8000-000000000001.jpg'],
+    body_fat_pct: 18.5, photo_poses: ['side'],
   });
 });
 it('lists only the authenticated player, newest first, capped at 26', async () => {
@@ -167,8 +170,13 @@ it('rejects invalid measurements and more than three photos before writing', asy
   const input = { today: '2026-11-03', body_weight_kg: 75, waist_cm: null, notes: '', photos: [] };
   expect((await submitCheckIn(client, { ...input, body_weight_kg: 401 })).error).toBeTruthy();
   expect((await submitCheckIn(client, { ...input, waist_cm: 29 })).error).toBeTruthy();
+  expect((await submitCheckIn(client, { ...input, body_fat_pct: 2.9 })).error).toBeTruthy();
+  expect((await submitCheckIn(client, { ...input, body_fat_pct: 60.1 })).error).toBeTruthy();
+  expect((await submitCheckIn(client, { ...input, body_fat_pct: NaN })).error).toBeTruthy();
+  expect((await submitCheckIn(client, { ...input, photo_poses: ['side'] })).error).toBeTruthy();
   expect((await submitCheckIn(client, { ...input, notes: 'x'.repeat(1001) })).error).toBeTruthy();
   const photo = new File(['photo'], 'photo.jpg', { type: 'image/jpeg' });
+  expect((await submitCheckIn(client, { ...input, photos: [photo], photo_poses: ['invalid'] })).error).toBeTruthy();
   expect((await submitCheckIn(client, { ...input, photos: [photo, photo, photo, photo] })).error).toBeTruthy();
   expect(insert).not.toHaveBeenCalled();
 });

@@ -10,7 +10,6 @@ vi.mock('@/core/i18n/server', async () => {
 });
 vi.mock('@/features/voice-notes', () => ({ CaptainVoiceNotes: () => null }));
 vi.mock('@/features/onboarding', () => ({ onboardingMessages: { ar: {}, en: {} }, allergyOptions: [], injuryOptions: [], medicalOptions: [] }));
-vi.mock('@/features/progress', () => ({ LineChart: () => null }));
 it('links missing intake to the player reminder recorder', async () => {
  const html = renderToStaticMarkup(await IntakeTab({ intake: null, today: '2026-11-03', playerId: 'p' }));
  expect(html).toContain('href="/captain/players/p?tab=checkins#voice-recorder-p"');

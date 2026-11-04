@@ -5,7 +5,9 @@ import { supabaseServer } from '@/core/supabase/server';
 import type { Tables } from '@/types/database';
 import type { PlayerProfile, ProfileResult } from '../types';
 
-const PHOTO_WEEKS = 6;
+type ProgressCheckIn = Pick<Tables<'check_ins'>, 'id' | 'week_start' | 'body_weight_kg' | 'waist_cm' | 'notes' | 'photo_paths' | 'reviewed_at' | 'captain_reply'> & {
+  body_fat_pct: number | null; photo_poses: string[];
+};
 
 export async function fetchPlayerProfile(playerId: string): Promise<ProfileResult> {
   if (!z.uuid().safeParse(playerId).success) return { data: null };
@@ -17,8 +19,8 @@ export async function fetchPlayerProfile(playerId: string): Promise<ProfileResul
     const [profile, intake, checks, program, nutrition] = await Promise.all([
       client.from('profiles').select('full_name').eq('id', playerId).maybeSingle(),
       client.from('player_intake').select('*').eq('player_id', playerId).maybeSingle(),
-      client.from('check_ins').select('id,week_start,body_weight_kg,waist_cm,notes,photo_paths,reviewed_at,captain_reply')
-        .eq('player_id', playerId).order('week_start', { ascending: false }).limit(26),
+      client.from('check_ins').select('id,week_start,body_weight_kg,waist_cm,notes,photo_paths,reviewed_at,captain_reply,body_fat_pct,photo_poses')
+        .eq('player_id', playerId).order('week_start', { ascending: false }).limit(26).returns<ProgressCheckIn[]>(),
       client.from('programs').select('id,title,updated_at,program_days(id,program_exercises(id))')
         .eq('player_id', playerId).eq('status', 'active').maybeSingle(),
       client.from('nutrition_plans').select('id,title,updated_at,target_kcal,target_protein,target_carbs,target_fat,meals(id)')
@@ -28,7 +30,7 @@ export async function fetchPlayerProfile(playerId: string): Promise<ProfileResul
     if (failed?.error) throw failed.error;
     if (!profile.data) return { data: null };
     const rows = checks.data ?? [];
-    const photoPaths = rows.slice(0, PHOTO_WEEKS).flatMap((row) => row.photo_paths.slice(0, 3));
+    const photoPaths = rows.flatMap((row) => row.photo_paths);
     const urls = await signPhotos(client, photoPaths);
     const data: PlayerProfile = {
       name: profile.data.full_name,
@@ -36,6 +38,9 @@ export async function fetchPlayerProfile(playerId: string): Promise<ProfileResul
       checkIns: rows.map((row) => ({
         id: row.id, weekStart: row.week_start, weightKg: row.body_weight_kg, waistCm: row.waist_cm, notes: row.notes,
         reviewedAt: row.reviewed_at, reply: row.captain_reply,
+        bodyFatPct: row.body_fat_pct,
+        photoPoses: row.photo_paths.flatMap((path, index) => urls.has(path) ? [row.photo_poses[index] ?? 'photo'] : []),
+        photoError: row.photo_paths.some(path => !urls.has(path)),
         photos: row.photo_paths.flatMap((path) => urls.get(path) ?? []),
       })),
       program: program.data ? { title: program.data.title, updatedAt: program.data.updated_at, days: program.data.program_days.length,
