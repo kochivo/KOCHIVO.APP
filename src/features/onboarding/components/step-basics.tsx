@@ -4,7 +4,7 @@ import { messages } from '../messages';
 import { formatNumber } from '@/lib/format';
 import { localDate } from '@/lib/dates';
 
-import { Chip, Stepper } from '@/ui';
+import { Chip, Stepper, TextField } from '@/ui';
 import type { StepProps } from '../wizard';
 
 export function StepBasics({ draft, update, errors, touch }: StepProps) {
@@ -14,6 +14,8 @@ export function StepBasics({ draft, update, errors, touch }: StepProps) {
   const year = Number(localDate(new Date()).slice(0, 4));
   return (
     <div className="space-y-5">
+      <TextField label={t('yourName')} autoComplete="name" maxLength={80} value={draft.full_name ?? ''}
+        onChange={(event) => update({ full_name: event.target.value })} onBlur={() => touch('full_name')} error={errors.full_name} />
       <fieldset className="space-y-2" onBlur={() => touch('sex')}>
         <legend className="mb-2 text-sm text-muted">{t('sex')}</legend>
         <div className="flex gap-2">

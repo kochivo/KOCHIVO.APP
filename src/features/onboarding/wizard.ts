@@ -25,7 +25,7 @@ function exclusive<Key extends string>(keys: Key[] = []): Key[] {
 
 export function toPayload(draft: IntakeDraft) {
   return {
-    birth_year: draft.birth_year, sex: draft.sex, height_cm: draft.height_cm,
+    full_name: draft.full_name?.trim(), birth_year: draft.birth_year, sex: draft.sex, height_cm: draft.height_cm,
     weight_kg: draft.weight_kg, target_weight_kg: draft.target_weight_kg ?? null,
     training_days: draft.training_days, session_minutes: draft.session_minutes, experience: draft.experience,
     injuries: exclusive(draft.injuries), medical: exclusive(draft.medical), allergies: exclusive(draft.allergies),

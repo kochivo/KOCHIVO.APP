@@ -11,7 +11,7 @@ import { hasIntake } from './data/intake-status';
 import { fetchOnboardingStatus } from './data/onboarding-status';
 import { readIntakeDraft } from './hooks/use-intake-draft';
 
-const server = vi.hoisted(() => ({ claims: vi.fn(), upsert: vi.fn(), row: vi.fn(), eq: vi.fn(), from: vi.fn() }));
+const server = vi.hoisted(() => ({ claims: vi.fn(), upsert: vi.fn(), update: vi.fn(), row: vi.fn(), eq: vi.fn(), from: vi.fn() }));
 vi.mock('server-only', () => ({}));
 vi.mock('next/headers', () => ({ cookies: async () => ({ get: () => undefined }) }));
 vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => ({
@@ -20,7 +20,7 @@ vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => ({
 
 const { intakeSchema, stepSchemas } = makeIntakeSchema(new Date('2026-06-01T12:00:00Z'));
 const samples = {
-  basics: { birth_year: 1995, sex: 'male', height_cm: 175.5, weight_kg: 80, target_weight_kg: null },
+  basics: { full_name: 'Ali', birth_year: 1995, sex: 'male', height_cm: 175.5, weight_kg: 80, target_weight_kg: null },
   schedule: { training_days: [0, 2, 4], session_minutes: 60, experience: 'new' },
   health: { injuries: ['knee'], medical: ['none'] },
   food: { allergies: ['lactose'], notes: 'وجع بسيط في الركبة' },
@@ -59,20 +59,23 @@ describe('wizard navigation and payload', () => {
 
 describe('intake server boundary', () => {
   const draft = { ...samples.basics, ...samples.schedule, ...samples.health, ...samples.food };
+  const { full_name: name, ...intake } = draft;
   beforeEach(() => {
     vi.resetAllMocks();
     server.claims.mockResolvedValue({ data: { claims: { sub: 'verified-player' } }, error: null });
     server.upsert.mockResolvedValue({ error: null });
     server.row.mockResolvedValue({ data: null, error: null });
     server.eq.mockReturnValue({ maybeSingle: server.row });
-    server.from.mockReturnValue({ upsert: server.upsert, select: () => ({ eq: server.eq }) });
+    server.update.mockReturnValue({ eq: async () => ({ error: null }) });
+    server.from.mockReturnValue({ upsert: server.upsert, update: server.update, select: () => ({ eq: server.eq }) });
   });
   it('validates before writing and uses only the verified caller identity', async () => {
     expect(await saveIntake({ ...draft, weight_kg: 301 })).toHaveProperty('error');
     expect(server.from).not.toHaveBeenCalled();
     expect(await saveIntake({ ...draft, player_id: 'forged-player' })).toEqual({});
     expect(server.from).toHaveBeenCalledWith('player_intake');
-    expect(server.upsert).toHaveBeenCalledWith({ ...draft, player_id: 'verified-player',
+    expect(server.update).toHaveBeenCalledWith({ full_name: name });
+    expect(server.upsert).toHaveBeenCalledWith({ ...intake, player_id: 'verified-player',
       completed_at: '2026-06-01T12:00:00.000Z' }, { onConflict: 'player_id' });
   });
   it('refuses anonymous writes and reports database and transport failures', async () => {
@@ -199,7 +202,7 @@ describe('wizard steps', () => {
   it('accepts inclusive bounds and all valid schedule options', () => {
     for (const birth_year of [1930, 2016]) {
       expect(stepSchemas.basics.safeParse({
-        birth_year, sex: 'female', height_cm: 100, weight_kg: 25, target_weight_kg: 300,
+        full_name: 'Mona', birth_year, sex: 'female', height_cm: 100, weight_kg: 25, target_weight_kg: 300,
       }).success).toBe(true);
     }
     expect(stepSchemas.basics.safeParse({
@@ -236,5 +239,13 @@ describe('wizard steps', () => {
     expect(next.safeParse({ ...samples.basics, birth_year: 2018 }).success).toBe(false);
     expect(next.safeParse({ ...samples.basics, birth_year: 1930 }).success).toBe(true);
     expect(next.safeParse({ ...samples.basics, birth_year: 1929 }).success).toBe(false);
+  });
+});
+
+describe('player name', () => {
+  it('requires a name of at least two characters', () => {
+    expect(stepSchemas.basics.safeParse({ ...samples.basics, full_name: ' ' }).success).toBe(false);
+    expect(stepSchemas.basics.safeParse({ ...samples.basics, full_name: 'A' }).success).toBe(false);
+    expect(stepSchemas.basics.safeParse({ ...samples.basics, full_name: ' Ali ' }).data?.full_name).toBe('Ali');
   });
 });

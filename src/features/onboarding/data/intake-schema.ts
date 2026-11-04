@@ -59,6 +59,7 @@ export function makeIntakeSchema(now: Date, t: Translator<typeof messages> = cre
 
   const stepSchemas = {
     basics: z.object({
+      full_name: z.string({ error: t('enterYourName') }).trim().min(2, { error: t('enterYourName') }).max(80, { error: t('maximum', { value0: 80 }) }),
       birth_year: measurement(1930, now.getUTCFullYear() - 10).int({ error: t('enterAWholeYear') }),
       sex: z.enum(['male', 'female'], { error: t('chooseMaleOrFemale') }),
       height_cm: measurement(100, 250),
