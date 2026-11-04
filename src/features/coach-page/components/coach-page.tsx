@@ -17,9 +17,9 @@ export async function CoachPage({ slug, requested = false }: { slug: string; req
     try { const url = new URL(href); return url.protocol === 'https:' ? [{ key, href: url.href }] : []; }
     catch { return []; }
   });
-  return <main className="mesh flex min-h-dvh items-center justify-center p-6">
+  return <main className="mesh flex min-h-dvh items-center justify-center p-6 pt-[max(1.5rem,var(--safe-top))]">
     <article className="glass-strong w-full max-w-xl space-y-6 rounded-card p-6 text-start md:p-10">
-      <p className="font-display text-sm font-bold tracking-widest text-ink">{t('brand')}</p>
+      <p className="font-display text-sm font-bold ltr:tracking-widest text-ink">{t('brand')}</p>
       {coach.avatar ? (
         // Already unoptimized, so next/image would only add client JS to this public page.
         // eslint-disable-next-line @next/next/no-img-element

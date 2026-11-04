@@ -14,7 +14,7 @@ export function CoachSignup({ coach, callbackError = false }: { coach: string; c
   const [error, setError] = useState(callbackError ? t('coachRequestFailed') : '');
   const [message, setMessage] = useState('');
   const [pending, start] = useTransition();
-  return <main className="mesh flex min-h-dvh items-center justify-center p-6">
+  return <main className="mesh flex min-h-dvh items-center justify-center p-6 pt-[max(1.5rem,var(--safe-top))]">
     <GlassCard level="strong" className="w-full max-w-md space-y-6 p-8">
       <LanguageSwitch /><h1 className="text-3xl font-bold">{t('playerSignup')}</h1>
       <p className="text-muted">{t('coachRequestHint')}</p>

@@ -47,7 +47,7 @@ export function SiteMenu({ children, openLabel, closeLabel }: {
       <Icon size={24} aria-hidden="true" />
     </button>
     <nav ref={panel} id={id} hidden={!open} aria-label={openLabel}
-      className="absolute inset-x-0 top-full z-50 h-[calc(100dvh-4rem)] overflow-y-auto border-t border-line bg-bg p-4 text-ink"
+      className="absolute inset-x-0 top-full z-50 h-[calc(100dvh-4rem-var(--safe-top))] overflow-y-auto border-t border-line bg-bg p-4 text-ink"
       onClick={event => {
         if ((event.target as HTMLElement).closest('a')) { setOpen(false); button.current?.focus(); }
       }}>

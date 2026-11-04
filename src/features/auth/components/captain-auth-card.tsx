@@ -22,7 +22,7 @@ export function CaptainAuthCard({ callbackError = false, initialMode = 'login' }
   const [codeEmail, setCodeEmail] = useState('');
   const [error, setError] = useState(callbackError ? t('signInFailedTryAgain') : '');
   const [pending, start] = useTransition();
-  return <main dir={localeDir(locale)} className="mesh flex min-h-dvh items-center justify-center p-6">
+  return <main dir={localeDir(locale)} className="mesh flex min-h-dvh items-center justify-center p-6 pt-[max(1.5rem,var(--safe-top))]">
     <GlassCard level="strong" className="w-full max-w-md space-y-6 p-8">
       <LanguageSwitch />
       <h1 className="text-3xl font-extrabold">{mode === 'login' ? t('welcomeCoach') : t('createYourCoachAccount')}</h1>
