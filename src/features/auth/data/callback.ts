@@ -33,10 +33,10 @@ export async function handleAuthCallback(request: NextRequest) {
     const code = request.nextUrl.searchParams.get('code');
     const tokenHash = request.nextUrl.searchParams.get('token_hash');
     const type = request.nextUrl.searchParams.get('type');
-    if (!code && !(tokenHash && type === 'signup')) throw new Error('Missing authorization code');
+    if (!code && !(tokenHash && (type === 'signup' || type === 'email'))) throw new Error('Missing authorization code');
     const client = await authClient();
-    const exchange = tokenHash && type === 'signup'
-      ? await client.auth.verifyOtp({ token_hash: tokenHash, type: 'signup' })
+    const exchange = tokenHash && (type === 'signup' || type === 'email')
+      ? await client.auth.verifyOtp({ token_hash: tokenHash, type })
       : await client.auth.exchangeCodeForSession(code ?? '');
     if (exchange.error) throw exchange.error;
     const user = await profile(client);
