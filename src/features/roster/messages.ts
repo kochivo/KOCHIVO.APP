@@ -98,7 +98,7 @@ export const messages = defineMessages({
     couldntLoadPlayersTryAgain: "مش قادرين نحمّل اللاعبين. جرّب تاني",
     coachInvitesYouToKOCHIVOOpenThis: "كابتن {v0} بيدعوك تبدأ معاه على كوتشيفو. افتح اللينك: {v1}",
     tasks: "المهام",
-    templates: "القوالب",
+    templates: "البرامج",
     // One name in the side bar, the phone bar and the page title; it fits five items on 360px.
     subscriptions: "الدفعات",
     settings: "الإعدادات",
@@ -206,7 +206,7 @@ export const messages = defineMessages({
     couldntLoadPlayersTryAgain: "Couldn't load players. Try again",
     coachInvitesYouToKOCHIVOOpenThis: "Coach {v0} invites you to KOCHIVO. Open this link: {v1}",
     tasks: "Tasks",
-    templates: "Templates",
+    templates: "Programs",
     subscriptions: "Billing",
     settings: "Settings",
     duration2: "{v0} {v1}",
