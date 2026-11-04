@@ -17,9 +17,9 @@ export function DayPicker({ value, onChange, error }: {
   return (
     <fieldset className="space-y-3">
       <legend className="text-sm text-muted">{t('daysYouCanTrain')}</legend>
-      <div className="flex flex-wrap gap-2">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
         {days.map((day) => (
-          <Chip key={day.value} pressed={value.includes(day.value)} className="min-h-12 px-5 text-base font-bold"
+          <Chip key={day.value} pressed={value.includes(day.value)} className={`glass min-h-16 min-w-0 rounded-card px-2 text-base font-bold ${value.includes(day.value) ? 'border-lime shadow-lime-glow' : ''}`}
             onClick={() => onChange(value.includes(day.value) ? value.filter((item) => item !== day.value) : [...value, day.value])}>
             {day.label}
           </Chip>

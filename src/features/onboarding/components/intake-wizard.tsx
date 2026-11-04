@@ -5,23 +5,35 @@ import { formatNumber } from '@/lib/format';
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
+import { useCaptainContext } from '@/features/player-shell';
 import { Button, ErrorState, LoadingState, ProgressBar } from '@/ui';
 import { makeIntakeSchema } from '../data/intake-schema';
 import type { Intake } from '../data/intake-schema';
 import { saveIntake } from '../data/save-intake';
 import { useIntakeDraft } from '../hooks/use-intake-draft';
-import { canAdvance, progress, stepOrder, toPayload } from '../wizard';
-import type { IntakeDraft } from '../wizard';
+import { canAdvance, completeIntake, progress, stepOrder, toPayload } from '../wizard';
+import type { CompletionStage, IntakeDraft } from '../wizard';
 import { StepBasics } from './step-basics';
 import { StepSchedule } from './step-schedule';
 import { StepHealth } from './step-health';
 import { StepFood } from './step-food';
 
-const screens = [StepBasics, StepSchedule, StepHealth, StepFood];
+const screens = { basics: StepBasics, schedule: StepSchedule, health: StepHealth, food: StepFood };
+const IntakeMoment = dynamic(() => import('./intake-moment').then(module => module.IntakeMoment), {
+  loading: MomentLoading,
+});
+
+function MomentLoading() {
+  const t = useT(messages);
+  return <LoadingState aria-label={t('loadingYourDetails')} />;
+}
 
 export function IntakeWizard({ statusError }: { statusError?: string }) {
   const t = useT(messages);
   const locale = useLocale();
+  const captain = useCaptainContext();
+  const [stage, setStage] = useState<'welcome' | 'steps' | CompletionStage>('welcome');
   const offlineMessage = t('youreOfflineYourAnswersAreSavedSend');
   const titles = [t('letsGetToKnowYou'), t('yourWeeklySchedule'), t('yourHealth'), t('food')];
   const { draft, update, clear, ready } = useIntakeDraft();
@@ -35,7 +47,7 @@ export function IntakeWizard({ statusError }: { statusError?: string }) {
   const heading = useRef<HTMLHeadingElement>(null);
   const router = useRouter();
   const step = stepOrder[index] ?? 'basics';
-  const Screen = screens[index] ?? StepBasics;
+  const Screen = screens[step];
   const validation = makeIntakeSchema(now, t).stepSchemas[step].safeParse(draft);
   const errors: Partial<Record<keyof Intake, string>> = {};
   if (!validation.success) {
@@ -56,7 +68,7 @@ export function IntakeWizard({ statusError }: { statusError?: string }) {
     };
   }, []);
 
-  useEffect(() => { heading.current?.focus(); }, [index, ready]);
+  useEffect(() => { heading.current?.focus(); }, [index, ready, stage]);
 
   function touch(field: keyof Intake) {
     setTouched((previous) => ({ ...previous, [field]: true }));
@@ -81,11 +93,12 @@ export function IntakeWizard({ statusError }: { statusError?: string }) {
     setBusy(true);
     setError('');
     try {
-      const result = await saveIntake(toPayload(draft));
+      const result = await completeIntake(() => saveIntake(toPayload(draft)), setStage, () => {
+        clear();
+        router.replace('/player');
+        router.refresh();
+      }, milliseconds => new Promise(resolve => window.setTimeout(resolve, milliseconds)));
       if (result.error) { setError(result.error); return; }
-      clear();
-      router.replace('/player');
-      router.refresh();
     } catch {
       setError(navigator.onLine ? t('couldntSendYourAnswersTryAgain') : offlineMessage);
     } finally {
@@ -96,9 +109,10 @@ export function IntakeWizard({ statusError }: { statusError?: string }) {
 
   if (statusError) return <ErrorState message={statusError} retryLabel={t('tryAgain')} onRetry={() => router.refresh()} />;
   if (!ready) return <LoadingState aria-label={t('loadingYourAnswers')} />;
+  if (stage !== 'steps') return <IntakeMoment stage={stage} captainName={captain.data?.fullName} onStart={() => setStage('steps')} />;
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-lg flex-col gap-6 px-5 pt-6 text-start">
-      <header className="space-y-3">
+      <header key={`heading-${step}`} className="enter space-y-3 motion-reduce:animate-none">
         <div className="flex flex-wrap justify-between gap-2 text-xs text-muted">
           <span>{t('stepProgress', { value0: formatNumber(index + 1, locale) })}</span>
           <span>{t('onlyYourCoachCanSeeYourAnswers')}</span>
@@ -106,7 +120,7 @@ export function IntakeWizard({ statusError }: { statusError?: string }) {
         <ProgressBar value={progress(step)} max={100} aria-label={t('stepProgress', { value0: formatNumber(index + 1, locale) })} />
         <h1 ref={heading} tabIndex={-1} className="text-3xl font-extrabold outline-none">{titles[index]}</h1>
       </header>
-      <fieldset disabled={busy} className="min-w-0 flex-1">
+      <fieldset key={step} disabled={busy} className="enter min-w-0 flex-1 motion-reduce:animate-none">
         <legend className="sr-only">{titles[index]}</legend>
         <Screen draft={draft} update={change} errors={errors} touch={touch} />
       </fieldset>
@@ -114,9 +128,10 @@ export function IntakeWizard({ statusError }: { statusError?: string }) {
         {offline && <p role="status" className="text-sm text-muted">{offlineMessage}</p>}
         {error && <p role="alert" className="text-sm text-danger">{error}</p>}
         <div className="flex gap-3">
-          <Button variant="ghost" size="lg" disabled={index === 0 || busy} onClick={() => setIndex(index - 1)}>{t('back')}</Button>
-          <Button size="lg" className="flex-1" disabled={busy || !canAdvance(step, draft, now)}
-            aria-busy={busy} onClick={next}>{busy ? t('sendingYourAnswers') : index === 3 ? t('sendToCoach') : t('next')}</Button>
+          <Button variant="ghost" size="lg" className="min-h-12" disabled={busy}
+            onClick={() => index === 0 ? setStage('welcome') : setIndex(index - 1)}>{t('back')}</Button>
+          <Button size="lg" className="min-h-12 flex-1" disabled={busy || !canAdvance(step, draft, now)}
+            aria-busy={busy} onClick={next}>{busy ? t('sendingYourAnswers') : index === stepOrder.length - 1 ? t('sendToCoach') : t('next')}</Button>
         </div>
       </footer>
     </main>

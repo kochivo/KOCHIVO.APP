@@ -6,6 +6,7 @@ import { localDate } from '@/lib/dates';
 
 import { Chip, Stepper, TextField } from '@/ui';
 import type { StepProps } from '../wizard';
+import { MetricSlider } from './metric-slider';
 
 export function StepBasics({ draft, update, errors, touch }: StepProps) {
   const t = useT(messages);
@@ -32,21 +33,17 @@ export function StepBasics({ draft, update, errors, touch }: StepProps) {
         {errors.birth_year && <p role="alert" className="text-sm text-danger">{errors.birth_year}</p>}
       </div>
       {([
-        { field: 'height_cm', label: t('heightCm'), value: 170, step: 1, min: 100 },
-        { field: 'weight_kg', label: t('currentWeightKg'), value: 75, step: 0.5, min: 25 },
-      ] as const).map(({ field, label, value, step, min }) => (
-        <div key={field} className="space-y-2" onBlur={() => touch(field)}>
-          <Stepper format={(value) => formatNumber(value, locale)} label={label} value={draft[field] ?? value} step={step} min={min}
-            onChange={(next) => update({ [field]: next })} />
-          {errors[field] && <p role="alert" className="text-sm text-danger">{errors[field]}</p>}
-        </div>
+        { field: 'height_cm', label: t('heightCm'), value: 170 },
+        { field: 'weight_kg', label: t('currentWeightKg'), value: 75 },
+      ] as const).map(({ field, label, value }) => (
+        <MetricSlider key={field} field={field} label={label} value={draft[field] ?? value}
+          onChange={next => update({ [field]: next })} onBlur={() => touch(field)} error={errors[field]} />
       ))}
       <fieldset className="space-y-3" onBlur={() => touch('target_weight_kg')}>
         <legend className="mb-2 text-sm text-muted">{t('targetWeightOptional')}</legend>
         <Chip pressed={draft.target_weight_kg == null} onClick={() => update({ target_weight_kg: null })}>{t('notSet')}</Chip>
-        <Stepper format={(value) => formatNumber(value, locale)} label={t('targetWeightKg')} value={draft.target_weight_kg ?? draft.weight_kg ?? 75}
-          step={0.5} min={25} onChange={(next) => update({ target_weight_kg: next })} />
-        {errors.target_weight_kg && <p role="alert" className="text-sm text-danger">{errors.target_weight_kg}</p>}
+        <MetricSlider field="target_weight_kg" label={t('targetWeightKg')} value={draft.target_weight_kg ?? draft.weight_kg ?? 75}
+          onChange={next => update({ target_weight_kg: next })} onBlur={() => touch('target_weight_kg')} error={errors.target_weight_kg} />
       </fieldset>
     </div>
   );
