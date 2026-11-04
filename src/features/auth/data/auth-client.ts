@@ -20,11 +20,12 @@ export async function profile(client: SupabaseClient<Database>): Promise<AuthUse
   const { data: claims, error } = await client.auth.getClaims();
   if (error) throw error;
   if (!claims?.claims.sub) return null;
-  const result = await client.from('profiles').select('role, role_confirmed').eq('id', claims.claims.sub).single();
+  const result = await client.from('profiles').select('role, role_confirmed, captain_status').eq('id', claims.claims.sub).single();
   if (result.error) throw result.error;
   const membership = await client.rpc('is_admin');
   if (membership.error) throw membership.error;
-  return { role: result.data.role, roleConfirmed: result.data.role_confirmed, admin: membership.data === true };
+  return { role: result.data.role, roleConfirmed: result.data.role_confirmed, admin: membership.data === true,
+    captainStatus: result.data.captain_status };
 }
 export async function runAction(work: () => Promise<ActionResult>): Promise<ActionResult> {
   try { return await work(); } catch (error) { unstable_rethrow(error); return { error: authError(error, await getLocale()) }; }

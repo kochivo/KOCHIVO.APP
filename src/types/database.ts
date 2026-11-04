@@ -1021,6 +1021,8 @@ export type Database = {
       }
       profiles: {
         Row: {
+          captain_status: 'pending' | 'approved' | 'rejected'
+          captain_reviewed_at: string | null
           public_slug: string | null
           bio: string | null
           location: string | null
@@ -1043,6 +1045,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          captain_status?: 'pending' | 'approved' | 'rejected'
+          captain_reviewed_at?: string | null
           bio?: string | null
           public_slug?: string | null
           location?: string | null
@@ -1065,6 +1069,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          captain_status?: 'pending' | 'approved' | 'rejected'
+          captain_reviewed_at?: string | null
           bio?: string | null
           public_slug?: string | null
           location?: string | null
@@ -1435,6 +1441,16 @@ export type Database = {
         Args: never;
         Returns: { role: 'captain' | 'player'; role_confirmed: boolean; suspended_at: string | null; is_admin: boolean }[];
       }
+      my_approval_route_profile: {
+        Args: never;
+        Returns: { role: 'captain' | 'player'; role_confirmed: boolean; suspended_at: string | null;
+          is_admin: boolean; captain_status: 'pending' | 'approved' | 'rejected' }[];
+      }
+      admin_pending_captains: {
+        Args: never;
+        Returns: { id: string; email: string | null; full_name: string; created_at: string }[];
+      }
+      admin_review_captain: { Args: { p_captain: string; p_status: string }; Returns: undefined }
       sync_daily_checks: { Args: { p_rows: Json }; Returns: undefined }
       save_weekly_program: {
         Args: { p_draft: Json }

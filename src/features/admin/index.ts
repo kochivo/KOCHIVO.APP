@@ -5,3 +5,4 @@ export { fetchAudit } from './data/audit';
 export { fetchKpis } from './data/kpis';
 
 export { messages } from './messages';
+export { fetchPendingCaptains } from './data/captain-reviews';

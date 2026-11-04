@@ -1,6 +1,12 @@
 import { expect, it } from 'vitest';
 import { pushPayload } from './payload';
 
+it.each(['ar', 'en'] as const)('links captain approval to their dashboard in %s', locale => {
+  const payload = pushPayload({ id: 'n', type: 'captain_approved', payload: {} }, locale);
+  expect(payload.url).toBe(`/${locale}/captain`);
+  expect(payload.body).toContain('KOCHIVO');
+});
+
 it.each(['ar', 'en'] as const)('links feedback to the resolved player without exposing the note in %s', locale => {
   const payload = pushPayload({ id: 'n', type: 'workout_feedback', player_id: 'p',
     payload: { session_id: 's', rpe: 9, has_note: true, player_note: 'private pain details' } }, locale);

@@ -23,6 +23,7 @@ beforeAll(async () => {
       protein_per_100g numeric, carbs_per_100g numeric, fat_per_100g numeric)`, [JSON.stringify(source('foods-starter'))]);
   captain = (await db.query<{ id: string }>('insert into auth.users (id) values (gen_random_uuid()) returning id')).rows[0]?.id ?? '';
   await as(tx => tx.query("select public.confirm_role('captain')"));
+  await db.query(`update public.profiles set captain_status = 'approved' where id = $1`, [captain]);
   program = await one('select id from public.programs where captain_id = $1 and is_starter limit 1');
   plan = await one('select id from public.nutrition_plans where captain_id = $1 and is_starter limit 1');
 });
@@ -66,6 +67,7 @@ it('copies a starter into an editable template of the captain', async () => {
 it('keeps another captain out of copy_template', async () => {
   const other = (await db.query<{ id: string }>('insert into auth.users (id) values (gen_random_uuid()) returning id')).rows[0]?.id ?? '';
   await asUser(db, other, tx => tx.query("select public.confirm_role('captain')"));
+  await db.query(`update public.profiles set captain_status = 'approved' where id = $1`, [other]);
   await expect(asUser(db, other, tx => tx.query('select public.copy_template($1, $2, $3)', ['program', program, 'x'])))
     .rejects.toMatchObject({ code: 'P0002' });
 });

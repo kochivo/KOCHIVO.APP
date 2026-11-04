@@ -2,6 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    captain_approved: 'حسابك اتفعّل، أهلاً بيك في KOCHIVO',
     workout_feedback: 'فيه تقييم تمرين جديد محتاج تشوفه',
     workout_reminder: 'جاهز لتمرين النهارده؟ {name} مستنيك',
     join_requested: '{name} بعت طلب انضمام',
@@ -14,6 +15,7 @@ export const messages = defineMessages({
     now: 'دلوقتي', minutes: 'من {n} دقيقة', hours: 'من {n} ساعة', days: 'من {n} يوم',
   },
   en: {
+    captain_approved: 'Your account is approved. Welcome to KOCHIVO',
     workout_feedback: 'New workout feedback needs your attention',
     workout_reminder: 'Ready for today’s workout? {name} is waiting',
     join_requested: '{name} requested to join',

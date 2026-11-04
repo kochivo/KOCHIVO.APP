@@ -2,6 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    approveCaptain: 'وافق على طلب كابتن', rejectCaptain: 'رفض طلب كابتن',
     signOut: 'تسجيل الخروج',
     paidShare: 'نسبة الكباتن على باقة مدفوعة',
     percentage: '{n}%',
@@ -95,6 +96,7 @@ export const messages = defineMessages({
     'dash': "—",
   },
   en: {
+    approveCaptain: 'Approved captain', rejectCaptain: 'Rejected captain',
     signOut: 'Sign out',
     paidShare: 'Captains on paid plans',
     percentage: '{n}%',

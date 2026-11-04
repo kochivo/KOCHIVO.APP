@@ -26,7 +26,7 @@ it('opens the signup code step when confirmation is required', async () => {
   expect(await signUpCaptain({ email, password: password.password, full_name: 'Coach' })).toHaveProperty('codeEmail', email);
 });
 it('verifies a signup code and confirms the captain role before continuing', async () => {
-  expect(await verifyCaptainCode({ email, token: '123456' })).toEqual({ redirect: '/captain' });
+  expect(await verifyCaptainCode({ email, token: '123456' })).toEqual({ redirect: '/captain/pending' });
   expect(auth.verifyOtp).toHaveBeenCalledWith({ email, token: '123456', type: 'signup' });
   expect(rpc).toHaveBeenCalledWith('confirm_role', { p_role: 'captain' });
 });
