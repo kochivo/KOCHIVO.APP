@@ -1,4 +1,5 @@
 export { Button } from './button';
+export { BrandMark } from './brand-mark';
 export { PageContainer } from './page-container';
 export { CardGrid } from './card-grid';
 export { Stat } from './stat';
