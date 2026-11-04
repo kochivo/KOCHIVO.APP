@@ -35,6 +35,15 @@ describe('shouldShowInstall', () => {
   it('never shows before a completed workout', () => {
     expect(shouldShowInstall({ ...eligible, finishedWorkouts: 0 })).toBe(false);
   });
+  it('allows captains without workouts and keeps the same dismissal rules', () => {
+    const captain = { ...eligible, role: 'captain' as const, finishedWorkouts: 0 };
+    expect(shouldShowInstall(captain)).toBe(true);
+    expect(shouldShowInstall({ ...captain, dismissals: 3 })).toBe(false);
+    expect(shouldShowInstall({ ...captain, lastDismissedAt: now - week + 1 })).toBe(false);
+    expect(shouldShowInstall({ ...captain, lastDismissedAt: now - week })).toBe(true);
+    expect(shouldShowInstall({ ...captain, platform: 'installed' })).toBe(false);
+    expect(shouldShowInstall({ ...captain, platform: 'unsupported' })).toBe(false);
+  });
   it.each(['installed', 'unsupported'] as const)('never shows on %s', (platform) => {
     expect(shouldShowInstall({ ...eligible, platform })).toBe(false);
   });

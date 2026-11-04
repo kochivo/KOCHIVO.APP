@@ -5,7 +5,7 @@ import { messages } from '../messages';
 import type { ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
 import { BottomNav } from '@/ui';
-import { InstallSheet } from '@/features/install';
+import dynamic from 'next/dynamic';
 import { NotificationBell } from '@/features/notifications';
 import { daysBetween, localDate } from '@/lib/dates';
 import { whatsappUrl } from '@/lib/whatsapp';
@@ -13,8 +13,13 @@ import { accessState } from '../access';
 import { playerNav, showsNav } from '../nav';
 import { MyCaptainContext, useMyCaptain } from '../hooks/use-my-captain';
 import { useOnline } from '../hooks/use-online';
+import { useDeviceRole } from '@/core/pwa/use-device-role';
+
+const FeedbackButton = dynamic(() => import('@/features/feedback').then(module => module.FeedbackButton), { ssr: false });
+const InstallSheet = dynamic(() => import('@/features/install').then(module => module.InstallSheet), { ssr: false });
 
 export function PlayerShell({ children }: { children: ReactNode }) {
+  useDeviceRole('player');
   const t = useT(messages);
   const locale = useLocale();
   const pathname = usePathname();
@@ -48,6 +53,7 @@ export function PlayerShell({ children }: { children: ReactNode }) {
     {children}
     </div>
     {showsNav(pathname) && <InstallSheet />}
+    {showsNav(pathname) && <FeedbackButton role="player" />}
     {showsNav(pathname) && <BottomNav aria-label={t('navigation')} items={playerNav(pathname, locale)} />}
   </MyCaptainContext.Provider>;
 }

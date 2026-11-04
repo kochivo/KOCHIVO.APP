@@ -1,6 +1,7 @@
 import type { Locale } from '@/core/i18n/locale';
 import { loadSupabaseBrowser } from '@/core/supabase/lazy';
 import { demoError, demoExpiry } from './demo-profile';
+import { clearDeviceRole } from '@/core/pwa/device-role';
 
 function staleSession(error: unknown): boolean {
   if (typeof error !== 'object' || error === null) return false;
@@ -32,6 +33,7 @@ export async function startDemo(
       if (signOut) {
         const result = await client.auth.signOut();
         if (result.error) return result.error;
+        clearDeviceRole();
       }
       const auth = captchaToken
         ? await client.auth.signInAnonymously({ options: { captchaToken } })

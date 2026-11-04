@@ -5,6 +5,7 @@ import type { ReactNode } from 'react';
 import { CaptainNav } from './captain-nav';
 import { NotificationBell } from '@/features/notifications';
 import { BrandMark } from '@/ui';
+import { CaptainDevice } from './captain-device';
 
 export async function CaptainShell({ children }: { children: ReactNode }) {
   const t = await getT(messages);
@@ -21,6 +22,7 @@ export async function CaptainShell({ children }: { children: ReactNode }) {
         </div>
         <main>{children}</main>
       </div>
+      <CaptainDevice />
     </div>
   );
 }

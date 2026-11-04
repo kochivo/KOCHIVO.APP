@@ -7,9 +7,9 @@ import { Check, Share, SquarePlus } from 'lucide-react';
 import { Button } from '@/ui';
 import { useInstallPrompt } from '../hooks/use-install-prompt';
 
-export function InstallSheet() {
+export function InstallSheet({ role = 'player' }: { role?: 'captain' | 'player' }) {
   const t = useT(messages);
-  const { visible, platform, dismiss, install, busy, error } = useInstallPrompt();
+  const { visible, platform, dismiss, install, busy, error } = useInstallPrompt(role);
   const titleId = useId();
   const dialog = useRef<HTMLDialogElement>(null);
 
