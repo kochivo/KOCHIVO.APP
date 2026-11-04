@@ -5,10 +5,10 @@ import { describe, expect, it } from 'vitest';
 import { Button, Stepper, TextField } from './index';
 
 describe('accessible shared controls', () => {
-  it('labels the stepper output and isolates its number', () => {
+  it('labels the stepper number and lets it be typed', () => {
     const html = renderToStaticMarkup(createElement(Stepper, { label: 'الوزن', value: 25, step: 1, onChange: () => {} }));
     expect(html).toContain('aria-label="الوزن"');
-    expect(html).toContain('<bdi>25</bdi>');
+    expect(html).toMatch(/<input[^>]*inputMode="decimal"[^>]*aria-label="الوزن"[^>]*value="25"/);
     expect(html).toContain('aria-label="زوّد الوزن"');
     expect(html).toContain('aria-label="قلّل الوزن"');
     expect(html).toContain('size-19');

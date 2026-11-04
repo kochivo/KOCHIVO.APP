@@ -49,7 +49,7 @@ describe('UI primitives', () => {
     expect(compact).not.toContain('glass-strong');
     expect(compact).toContain('text-lg font-bold');
     expect(compact.match(/min-h-12 min-w-12/g)).toHaveLength(2);
-    expect(compact).toContain('aria-live="polite"');
+    expect(compact).toMatch(/<input[^>]*inputMode="decimal"/);
   });
   it('renders translated skeleton status with content-shaped presets', () => {
     for (const component of [Skeleton, SkeletonText, SkeletonCard, SkeletonList]) {

@@ -37,16 +37,16 @@ export function RosterRow({ player, today, error, onArchive }: {
       <div role="cell" className="flex min-w-0 items-center gap-3">
         {player.avatarUrl ? <Image src={player.avatarUrl} alt="" width={40} height={40} unoptimized className="size-10 shrink-0 rounded-control object-cover" /> :
           <span aria-hidden className="glass flex size-10 shrink-0 items-center justify-center rounded-control font-bold">{player.fullName.slice(0, 1)}</span>}
-        <Link href={`/captain/players/${player.playerId}`} className="flex min-h-12 min-w-0 items-center truncate font-bold hover:text-lime">{player.fullName}</Link>
+        <Link href={`/captain/players/${player.playerId}`} prefetch={false} className="flex min-h-12 min-w-0 items-center truncate font-bold hover:text-lime">{player.fullName}</Link>
         {player.openTasks > 0 && <span aria-label={t('taskCount', { n: player.openTasks, count: formatNumber(player.openTasks, locale) })} className="rounded-full bg-lime px-2 py-1 text-xs font-bold text-on-lime">{formatNumber(player.openTasks, locale)}</span>}
       </div>
       <div role="cell"><span className={`inline-flex rounded-full px-3 py-1 text-xs font-bold ${tag.color}`}>{tag.label}</span></div>
       <div role="cell" className="text-sm text-muted"><span className="lg:hidden">{t('lastActivity')} </span>{lastSeenLabel(player.lastTrainingDate, today, locale)}</div>
       <div role="cell" className="min-w-0 break-words text-sm">{player.programTitle ? starterText(player.programTitle, locale) : t('noProgram')}
         <span className="flex flex-wrap gap-4">
-          <Link href={`/captain/players/${player.playerId}/programs`} className="flex min-h-12 items-center text-lime">{t('programs')}</Link>
-          <Link href={`/captain/players/${player.playerId}/nutrition`} className="flex min-h-12 items-center text-lime">{t('nutrition')}</Link>
-          <Link href={`/captain/players/${player.playerId}/preview`} className="flex min-h-12 items-center text-lime">{t('viewAsPlayer')}</Link>
+          <Link href={`/captain/players/${player.playerId}/programs`} prefetch={false} className="flex min-h-12 items-center text-lime">{t('programs')}</Link>
+          <Link href={`/captain/players/${player.playerId}/nutrition`} prefetch={false} className="flex min-h-12 items-center text-lime">{t('nutrition')}</Link>
+          <Link href={`/captain/players/${player.playerId}/preview`} prefetch={false} className="flex min-h-12 items-center text-lime">{t('viewAsPlayer')}</Link>
         </span>
       </div>
       <div role="cell" className="text-sm text-muted"><span className="lg:hidden">{t('accessUntil')} </span><time dateTime={player.accessUntil}>{formatDateAr(player.accessUntil, { day: 'numeric', month: 'long', year: 'numeric' }, locale)}</time></div>

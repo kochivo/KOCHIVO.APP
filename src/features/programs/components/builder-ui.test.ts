@@ -94,12 +94,12 @@ it('only deletes after confirmation in the overflow dialog', () => {
   expect(onDelete).toHaveBeenCalledOnce(); expect(move).not.toHaveBeenCalled();
 });
 
-it('changes reps mode without a keyboard or a silently invented range', () => {
+it('changes reps mode without a silently invented range, with only typeable stepper fields', () => {
   const onUpdate = vi.fn();
   const html = render(createElement(RepsSheet, { row, openerId: 'reps', onClose() {}, onUpdate }));
   expect(html.match(/size-19/g)).toHaveLength(4);
   expect(html).toContain('From'); expect(html).toContain('Up to');
-  expect(html).not.toContain('<input');
+  expect(html.match(/<input /g)).toHaveLength(html.match(/<input [^>]*inputMode="decimal"/g)?.length ?? -1);
   controls.clicks.get('Fixed number')?.();
   expect(onUpdate).toHaveBeenLastCalledWith({ reps_min: 8, reps_max: 8 });
   controls.clicks.get('To failure')?.();

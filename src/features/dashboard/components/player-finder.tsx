@@ -37,7 +37,7 @@ export function PlayerFinder({ players, recent }: { players: FinderPlayer[]; rec
         <p className="mb-2 text-xs font-bold text-muted">{searching ? t('allPlayers') : t('recent')}</p>
         {rows.length === 0 ? <EmptyState icon={Search} title={t('noMatch')} body={t('searchPlaceholder')} action={searching ? { label: t('clearSearch'), onClick: () => setQuery('') } : { label: t('goToPlayers'), href: '/captain/players' }} /> : <ul className="divide-y divide-line">
           {rows.map((player) => <li key={player.playerId}>
-            <Link href={`/captain/players/${player.playerId}`}className="flex min-h-14 items-center gap-3 py-2 hover:text-lime">
+            <Link href={`/captain/players/${player.playerId}`} prefetch={false} className="flex min-h-14 items-center gap-3 py-2 hover:text-lime">
               <span aria-hidden className="grid size-10 shrink-0 place-items-center rounded-full bg-ink/5 font-display font-extrabold">{player.fullName.trim().charAt(0)}</span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate font-bold">{player.fullName}</span>

@@ -16,7 +16,7 @@ it('names repeated exercise controls uniquely and keeps headings and an ordered 
   expect(html).toContain('<h3');
   expect(html.match(/grid gap-3 sm:grid-cols-3/g)).toHaveLength(2);
   expect(html).not.toContain('size-19');
-  expect(html.match(/<output /g)).toHaveLength(2);
+  expect(html.match(/<input [^>]*inputMode="decimal"/g)).toHaveLength(2);
   expect(html).toContain('border border-line p-4');
   expect(html).toContain('+ إضافة تمرين');
   expect(html).toContain('aria-label="اختيارات التمرين: بنش، 1"');

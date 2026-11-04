@@ -56,7 +56,7 @@ it('recesses text, number and time fields and both stepper sizes', () => {
   }
   for (const size of ['gym', 'compact'] as const) {
     const html = renderToStaticMarkup(createElement(Stepper, { label: 'Reps', size, value: 8, step: 1, onChange: () => {} }));
-    expect(html).toMatch(/<output[^>]*class="[^"]*\brecessed\b/);
+    expect(html).toMatch(/<input[^>]*class="[^"]*\brecessed\b/);
     expect(html).toContain('tabular-nums');
   }
 });
