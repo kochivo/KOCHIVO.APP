@@ -8,14 +8,17 @@ import { saveCaptainProfile } from './settings';
 
 export async function saveCaptainWithAvatar(input: CaptainProfileInput, file: File | null, t: Translator<typeof messages>) {
   if (!file) return saveCaptainProfile(input);
-  const blob = await compressImage(file, 256, 0.8, t, true, 'image/webp');
-  if (blob.type !== 'image/webp' || blob.size > 512 * 1024) throw new Error(t('photoFailed'));
+  // Safari cannot encode WebP, so iPhones fall back to JPEG (the bucket accepts both).
+  const blob = await compressImage(file, 256, 0.8, t, true, 'image/webp')
+    .catch(() => compressImage(file, 256, 0.8, t, true, 'image/jpeg'));
+  const extension = blob.type === 'image/webp' ? 'webp' : blob.type === 'image/jpeg' ? 'jpg' : null;
+  if (!extension || blob.size > 512 * 1024) throw new Error(t('photoFailed'));
   const client = await loadSupabaseBrowser();
   const auth = await client.auth.getUser();
   if (auth.error || !auth.data.user) throw new Error(t('photoFailed'));
-  const path = `${auth.data.user.id}/${uuidv7()}.webp`;
+  const path = `${auth.data.user.id}/${uuidv7()}.${extension}`;
   const bucket = client.storage.from('captain-avatars');
-  const upload = await bucket.upload(path, blob, { contentType: 'image/webp', upsert: false });
+  const upload = await bucket.upload(path, blob, { contentType: blob.type, upsert: false });
   if (upload.error) throw new Error(t('photoFailed'));
   try {
     const result = await saveCaptainProfile({ ...input, avatar_path: path });

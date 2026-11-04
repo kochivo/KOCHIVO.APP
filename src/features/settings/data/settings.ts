@@ -43,7 +43,7 @@ export async function saveCaptainProfile(input: unknown): Promise<Result<Setting
   try {
     const { client, id } = await ownSession();
     const path = parsed.data.avatar_path;
-    if (path && (!path.startsWith(`${id}/`) || !/^[-a-zA-Z0-9/]+\.webp$/.test(path))) return { error: failure };
+    if (path && (!path.startsWith(`${id}/`) || !/^[-a-zA-Z0-9/]+\.(?:webp|jpg)$/.test(path))) return { error: failure };
     const previous = await client.from('profiles').select('avatar_path').eq('id', id).single();
     if (previous.error) return { error: failure };
     const result = await client.from('profiles').update({ ...parsed.data,

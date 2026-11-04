@@ -37,3 +37,11 @@ it('never saves a rejected or oversized upload', async () => {
   await expect(saveCaptainWithAvatar(input, new File(['source'], 'photo.jpg'), t)).rejects.toThrow();
   expect(mock.upload).not.toHaveBeenCalled(); expect(mock.save).not.toHaveBeenCalled();
 });
+it('falls back to JPEG where the browser cannot encode WebP (iPhone Safari)', async () => {
+  mock.compress.mockRejectedValueOnce(new Error('unsupported')).mockResolvedValueOnce(new Blob(['photo'], { type: 'image/jpeg' }));
+  const file = new File(['source'], 'photo.jpg', { type: 'image/jpeg' });
+  await saveCaptainWithAvatar(input, file, t);
+  expect(mock.compress).toHaveBeenLastCalledWith(file, 256, 0.8, t, true, 'image/jpeg');
+  expect(mock.upload).toHaveBeenCalledWith('captain/new-avatar.jpg', expect.any(Blob), { contentType: 'image/jpeg', upsert: false });
+  expect(mock.save).toHaveBeenCalledWith({ ...input, avatar_path: 'captain/new-avatar.jpg' });
+});
