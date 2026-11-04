@@ -47,6 +47,15 @@ describe('activityWeek', () => {
 });
 
 describe('fetchPlayerPreview', () => {
+  it('retains completed feedback when its program day was deleted', async () => {
+    results.set('profiles', { data: { full_name: 'Ali' }, error: null });
+    const session = { id: 'orphan', program_day_id: null, training_date: '2026-11-03',
+      completed_at: '2026-11-03T10:00:00Z', session_rpe: 9, player_note: 'tired' };
+    results.set('workout_sessions', { data: [session], error: null });
+    const result = await fetchPlayerPreview(player, '2026-11-03');
+    expect(result.data?.sessions).toEqual([]);
+    expect(result.data?.feedbackSessions).toEqual([session]);
+  });
   it('validates UUID and actual calendar dates before creating a client', async () => {
     for (const [id, date] of [['bad', '2026-11-03'], [player, '2026-02-30'], [player, '03-11-2026']]) {
       expect(await fetchPlayerPreview(id ?? '', date ?? '')).toHaveProperty('error');

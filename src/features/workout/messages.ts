@@ -2,6 +2,9 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    feedbackTitle: 'التمرين كان عامل إيه؟', feedbackRpe: 'قيّم مجهودك من 1 لـ 10',
+    veryEasy: 'سهل جدًا', maxEffort: 'أقصى مجهود', feedbackNote: 'ملاحظة للكابتن (وجع، تعب…)',
+    feedbackSend: 'ابعت', feedbackError: 'مقدرناش نحفظ تقييمك. جرّب تاني', sound: 'صوت',
     bodyweight: 'وزن الجسم', enterWeightAndReps: 'حط الوزن والعدات الأول', enterReps: 'حط عدد العدات',
     historyTitle: 'سجل تماريني', seeHistory: 'شوف السجل', workouts: 'التمارين', exercises: 'الحركات',
     historyEmpty: 'لسه ماخلصتش تمرين', historyError: 'مقدرناش نحمّل سجل التمارين. جرّب تاني',
@@ -76,6 +79,9 @@ export const messages = defineMessages({
     setNumber: "مجموعة {value0}",
   },
   en: {
+    feedbackTitle: 'How was your workout?', feedbackRpe: 'Rate your effort from 1 to 10',
+    veryEasy: 'Very easy', maxEffort: 'Max effort', feedbackNote: 'Note for the coach: pain, tiredness…',
+    feedbackSend: 'Send', feedbackError: 'Could not save feedback. Try again', sound: 'Sound',
     bodyweight: 'Bodyweight', enterWeightAndReps: 'Enter the weight and reps first', enterReps: 'Enter the number of reps',
     historyTitle: 'My workout history', seeHistory: 'See the history', workouts: 'Workouts', exercises: 'Exercises',
     historyEmpty: "You haven't finished a workout yet", historyError: "Couldn't load workout history. Try again",

@@ -1,6 +1,14 @@
 import { expect, it } from 'vitest';
 import { pushPayload } from './payload';
 
+it.each(['ar', 'en'] as const)('links feedback to the resolved player without exposing the note in %s', locale => {
+  const payload = pushPayload({ id: 'n', type: 'workout_feedback', player_id: 'p',
+    payload: { session_id: 's', rpe: 9, has_note: true, player_note: 'private pain details' } }, locale);
+  expect(payload.url).toBe(`/${locale}/captain/players/p`);
+  expect(payload.body).not.toContain('private pain details');
+  expect(/[؀-ۿ]/.test(payload.body)).toBe(locale === 'ar');
+});
+
 it.each(['ar', 'en'] as const)('localizes every notification and links the correct screen in %s', locale => {
   const cases = [
     ['plan_assigned', '/player'], ['nutrition_updated', '/player/nutrition'],

@@ -2,6 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    workout_feedback: 'فيه تقييم تمرين جديد محتاج تشوفه',
     workout_reminder: 'جاهز لتمرين النهارده؟ {name} مستنيك',
     join_requested: '{name} بعت طلب انضمام',
     title: 'الإشعارات', close: 'اقفل الإشعارات', markAll: 'علّم الكل كمقروء',
@@ -13,6 +14,7 @@ export const messages = defineMessages({
     now: 'دلوقتي', minutes: 'من {n} دقيقة', hours: 'من {n} ساعة', days: 'من {n} يوم',
   },
   en: {
+    workout_feedback: 'New workout feedback needs your attention',
     workout_reminder: 'Ready for today’s workout? {name} is waiting',
     join_requested: '{name} requested to join',
     title: 'Notifications', close: 'Close notifications', markAll: 'Mark all as read',

@@ -50,6 +50,15 @@ Deno.serve(async request => {
     )).json();
     const notification = rows[0];
     if (!notification) return new Response(null, { status: 204 });
+    if (notification.type === 'workout_feedback') {
+      const data = notification.payload;
+      const sessionId = data && typeof data === 'object' && 'session_id' in data ? data.session_id : null;
+      if (typeof sessionId !== 'string') return new Response(null, { status: 400 });
+      const sessions: { player_id: string }[] = await (await rest(
+        `workout_sessions?id=eq.${encodeURIComponent(sessionId)}&select=player_id&limit=1`,
+      )).json();
+      notification.player_id = sessions[0]?.player_id;
+    }
     const subscriptions: SubscriptionRow[] = await (await rest(
       `push_subscriptions?user_id=eq.${encodeURIComponent(notification.user_id)}&select=id,endpoint,p256dh,auth`,
     )).json();

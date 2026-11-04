@@ -53,7 +53,7 @@ export type Database = {
         Relationships: [{ foreignKeyName: 'push_subscriptions_user_id_fkey'; columns: ['user_id']; isOneToOne: false; referencedRelation: 'profiles'; referencedColumns: ['id'] }]
       }
       notifications: {
-        Row: { id: string; user_id: string; type: 'plan_assigned' | 'nutrition_updated' | 'player_joined' | 'player_inactive' | 'join_requested' | 'workout_reminder'; payload: Json; is_read: boolean; created_at: string }
+        Row: { id: string; user_id: string; type: 'plan_assigned' | 'nutrition_updated' | 'player_joined' | 'player_inactive' | 'join_requested' | 'workout_reminder' | 'workout_feedback'; payload: Json; is_read: boolean; created_at: string }
         Insert: never
         Update: { is_read?: boolean }
         Relationships: []
@@ -1364,6 +1364,8 @@ export type Database = {
       }
       workout_sessions: {
         Row: {
+          session_rpe: number | null
+          player_note: string | null
           client_updated_at: string
           completed_at: string | null
           id: string
@@ -1374,6 +1376,8 @@ export type Database = {
           training_date: string
         }
         Insert: {
+          session_rpe?: number | null
+          player_note?: string | null
           client_updated_at: string
           completed_at?: string | null
           id: string
@@ -1384,6 +1388,8 @@ export type Database = {
           training_date: string
         }
         Update: {
+          session_rpe?: number | null
+          player_note?: string | null
           client_updated_at?: string
           completed_at?: string | null
           id?: string

@@ -1,4 +1,5 @@
 'use server';
+import { unstable_rethrow } from 'next/navigation';
 import { foodName } from '@/lib/display-name';
 import { getLocale } from '@/core/i18n/server';
 import { getT } from '@/core/i18n/server';
@@ -27,7 +28,7 @@ export async function fetchPlayerPreview(playerId: string, today: string) {
     start.setUTCDate(start.getUTCDate() - 6);
     const since = localDate(start);
     const food = 'name_ar,name_en,photo_path,kcal_per_100g,protein_per_100g,carbs_per_100g,fat_per_100g';
-    const sessionFields = 'id,program_day_id,training_date,started_at,completed_at,client_updated_at';
+    const sessionFields = 'id,program_day_id,training_date,started_at,completed_at,client_updated_at,session_rpe,player_note';
     const [program, intake, nutrition, profile, sessions, meals] = await Promise.all([
       client.from('programs').select('id,title,notes,settings,program_days(id,position,title,program_exercises(id,exercise_id,position,sets,reps_min,reps_max,rest_seconds,superset_group,rpe,tempo,notes,exercises(name_ar,name_en,media_path)))')
         .eq('player_id', playerId).eq('status', 'active').maybeSingle(),
@@ -49,7 +50,7 @@ export async function fetchPlayerPreview(playerId: string, today: string) {
       .order('completed_at', { ascending: false }).order('id', { ascending: false }).limit(1) : null;
     if (history?.error) return { error };
     const previewSessions = [...(sessions.data ?? []), ...(history?.data ?? [])]
-      .filter((row): row is WorkoutSessionRow => row.program_day_id !== null);
+      .filter((row): row is typeof row & WorkoutSessionRow => row.program_day_id !== null);
     return { data: { name: profile.data.full_name, program: snapshot,
       todayDay: snapshot ? pickTodayDay(snapshot, previewSessions, today) ?? null : null,
       nutrition: nutrition.data ? mapNutritionSnapshot({ ...nutrition.data, meals: nutrition.data.meals.map(meal => ({
@@ -62,6 +63,7 @@ export async function fetchPlayerPreview(playerId: string, today: string) {
       })) }, playerId) : null,
       sessions: previewSessions,
       week: activityWeek(today, sessions.data ?? [], meals.data ?? []),
+      ...(sessions.data?.length ? { feedbackSessions: sessions.data } : {}),
     } };
-  } catch { return { error }; }
+  } catch (caught) { unstable_rethrow(caught); return { error }; }
 }
