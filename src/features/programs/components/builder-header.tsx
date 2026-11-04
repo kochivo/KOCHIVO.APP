@@ -4,7 +4,7 @@ import { useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 
 import { Button, TextField } from '@/ui';
-import { SaveTemplateButton } from '@/features/templates';
+import { SaveTemplateButton, templateMessages } from '@/features/templates';
 import type { ProgramDraft } from '../types';
 
 export function BuilderHeader({ draft, dirty, busy, onTitle, onSave, onActivate }: {
@@ -12,6 +12,7 @@ export function BuilderHeader({ draft, dirty, busy, onTitle, onSave, onActivate 
   onTitle: (title: string) => void; onSave: () => void; onActivate: () => void;
 }) {
   const t = useT(messages);
+  const templateT = useT(templateMessages);
   const statuses = { draft: t('draft'), active: t('active'), archived: t('archived') };
   return <header className="flex flex-wrap items-end justify-between gap-4">
     <div className="min-w-0 flex-1 basis-full space-y-2 sm:basis-auto">
@@ -24,10 +25,10 @@ export function BuilderHeader({ draft, dirty, busy, onTitle, onSave, onActivate 
     </div>
     <div className="flex flex-wrap gap-2">
       {!dirty && !busy && draft.player_id && <SaveTemplateButton kind="program" id={draft.id} title={draft.title} />}
-      <Button variant="secondary" className="min-h-12" disabled={busy} onClick={onSave}>{t('save')}</Button>
-      <div className="sheet fixed start-[var(--safe-start)] end-[var(--safe-end)] bottom-[var(--nav-clearance)] z-20 h-[var(--builder-action-height)] p-3 lg:static lg:h-auto lg:border-0 lg:bg-transparent lg:p-0">
+      <Button variant={draft.player_id ? 'secondary' : 'primary'} className="min-h-12" disabled={busy} onClick={onSave}>{draft.player_id ? t('save') : templateT('saveTemplate')}</Button>
+      {draft.player_id && <div className="sheet fixed start-[var(--safe-start)] end-[var(--safe-end)] bottom-[var(--nav-clearance)] z-20 h-[var(--builder-action-height)] p-3 lg:static lg:h-auto lg:border-0 lg:bg-transparent lg:p-0">
         <Button className="min-h-12" disabled={busy} onClick={onActivate}>{t('activateForPlayer')}</Button>
-      </div>
+      </div>}
     </div>
   </header>;
 }

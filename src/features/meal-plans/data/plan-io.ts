@@ -14,7 +14,7 @@ const foodSchema = z.object({ id: z.uuid(), name: z.string(), photo: z.string().
   kcal: z.number().nonnegative(), protein: z.number().nonnegative(), carbs: z.number().nonnegative(), fat: z.number().nonnegative() });
 const alternative = z.object({ id: z.uuid(), food: foodSchema, grams: z.number().positive().max(99999.9) });
 const draftSchema = z.object({
-  id: z.uuid(), playerId: z.uuid(), title: z.string().trim().min(1).max(80),
+  id: z.uuid(), playerId: z.uuid().nullable(), title: z.string().trim().min(1).max(80),
   status: z.enum(['draft', 'active', 'archived']),
   targets: z.object({ kcal: z.number().int().min(800).max(8000), protein: z.number().int().min(0).max(32767),
     carbs: z.number().int().min(0).max(32767), fat: z.number().int().min(0).max(32767) }),
@@ -49,7 +49,7 @@ export async function loadPlan(id: string): Promise<ActionResult<PlanDraft>> {
   const client = await planClient();
   const { data: plan, error } = await client.from('nutrition_plans').select('*').eq('id', id).single();
   const user = await client.auth.getUser();
-  if (error || !plan || plan.captain_id !== user.data.user?.id || !plan.player_id) return fail(t('planNotFound'));
+  if (error || !plan || plan.captain_id !== user.data.user?.id) return fail(t('planNotFound'));
   const meals = await client.from('meals').select('*').eq('plan_id', id).order('position');
   if (meals.error) return fail(t('couldntLoadMeals'));
   const mealIds = (meals.data ?? []).map(meal => meal.id);

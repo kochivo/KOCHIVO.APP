@@ -11,6 +11,13 @@ vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => ({ rpc,
 const draft: ProgramDraft = { id: '01900000-0000-7000-8000-000000000001',
   player_id: '01900000-0000-7000-8000-000000000002', title: 'Program', status: 'draft', days: [] };
 beforeEach(() => vi.resetAllMocks());
+it('saves a template without a player', async () => {
+  rpc.mockResolvedValue({ error: null });
+  expect(await saveProgram({ ...draft, player_id: null })).toEqual({ ok: true, data: true });
+  expect(rpc).toHaveBeenCalledWith('save_weekly_program', { p_draft: {
+    id: draft.id, player_id: null, title: 'Program', days: [],
+  } });
+});
 it('returns a validation error without writing', async () => {
   await expect(saveProgram({ ...draft, title: '' })).resolves.toMatchObject({ ok: false, error: expect.any(String) });
   expect(rpc).not.toHaveBeenCalled();

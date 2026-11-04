@@ -1,8 +1,10 @@
 import { createElement } from 'react';
 import type * as React from 'react';
+import type * as Templates from '@/features/templates';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { LocaleProvider } from '@/core/i18n/client';
+vi.mock('server-only', () => ({}));
 const state = vi.hoisted(() => ({ values: [] as unknown[], index: 0 }));
 vi.mock('react', async original => {
  const react = await original<typeof React>();
@@ -18,7 +20,7 @@ const render = (element: React.ReactElement) => renderToStaticMarkup(createEleme
 import { ProgramBuilder } from './components/program-builder';
 import { DayEditor } from './components/day-editor';
 import { ExercisePicker } from './components/exercise-picker';
-vi.mock('@/features/templates', () => ({ SaveTemplateButton: () => null }));
+vi.mock('@/features/templates', async original => ({ ...await original<typeof Templates>(), SaveTemplateButton: () => null }));
 vi.mock('./data/program-io', () => ({ createProgram() {}, listPlayerPrograms() {} }));
 vi.mock('./data/activate', () => ({ activateProgram() {} }));
 vi.mock('./data/library', () => ({ searchExercises() {} }));
