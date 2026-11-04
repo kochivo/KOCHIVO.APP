@@ -1011,20 +1011,64 @@ export type Database = {
         }
         Relationships: []
       }
+      program_cardio: {
+        Row: {
+          id: string
+          day_id: string
+          position: number
+          kind: string
+          minutes: number
+          intensity: string
+          notes: string
+        }
+        Insert: {
+          id?: string
+          day_id: string
+          position: number
+          kind: string
+          minutes: number
+          intensity: string
+          notes?: string
+        }
+        Update: {
+          id?: string
+          day_id?: string
+          position?: number
+          kind?: string
+          minutes?: number
+          intensity?: string
+          notes?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "program_cardio_day_id_fkey"
+            columns: ["day_id"]
+            isOneToOne: false
+            referencedRelation: "program_days"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       program_days: {
         Row: {
+          weekday: number | null
+          is_rest_day: boolean
           id: string
           position: number
           program_id: string
           title: string
         }
         Insert: {
+          weekday?: number | null
+          is_rest_day?: boolean
           id?: string
           position: number
           program_id: string
           title?: string
         }
         Update: {
+          weekday?: number | null
+          is_rest_day?: boolean
           id?: string
           position?: number
           program_id?: string
@@ -1304,6 +1348,10 @@ export type Database = {
       }
     }
     Functions: {
+      save_weekly_program: {
+        Args: { p_draft: Json }
+        Returns: undefined
+      }
       coach_public_profile: { Args: { slug: string }; Returns: {
         id: string; full_name: string; bio: string | null; location: string | null; avatar_path: string | null;
         social: Partial<Record<'whatsapp' | 'instagram' | 'tiktok' | 'facebook' | 'youtube' | 'x', string>>

@@ -34,13 +34,17 @@ export function moveDay(draft: ProgramDraft, id: string, delta: -1 | 1): Program
   return { ...draft, days: move(draft.days, id, delta) };
 }
 export function addExercise(draft: ProgramDraft, dayId: string, library: LibraryExercise, id: string): ProgramDraft {
-  return editDay(draft, dayId, day => ({ ...day, exercises: positioned([...day.exercises, {
+  return editDay(draft, dayId, day => ({ ...day, is_rest_day: false, exercises: positioned([...day.exercises, {
     id, day_id: day.id, exercise_id: library.id, library, position: 0,
     sets: 3, reps_min: 8, reps_max: 12, rest_seconds: 90, superset_group: null,
   }]) }));
 }
 export function removeExercise(draft: ProgramDraft, dayId: string, id: string): ProgramDraft {
-  return editDay(draft, dayId, day => ({ ...day, exercises: cleanGroups(day.exercises.filter(row => row.id !== id)) }));
+  return editDay(draft, dayId, day => {
+    const exercises = cleanGroups(day.exercises.filter(row => row.id !== id));
+    return { ...day, exercises, is_rest_day: day.weekday != null && !exercises.length && !day.cardio?.length
+      ? true : day.is_rest_day };
+  });
 }
 export function moveExercise(draft: ProgramDraft, dayId: string, id: string, delta: -1 | 1): ProgramDraft {
   return editDay(draft, dayId, day => ({ ...day, exercises: move(day.exercises, id, delta) }));

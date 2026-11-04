@@ -1,6 +1,6 @@
 import type { MealLogRow, ProgramSnapshot, WorkoutSessionRow } from '@/core/offline';
 import { localDate, saturdayWeek } from '@/lib/dates';
-import { pickTodayDay } from './next-day';
+import { isWeeklyProgram, pickTodayDay } from './next-day';
 
 export interface PlayerTaskInput {
   today: string;
@@ -25,8 +25,10 @@ export function playerNextTask(input: PlayerTaskInput): PlayerTask {
   if (!input.intakeDone) return { kind: 'intake', href: '/player/onboarding' };
   const day = snapshot ? pickTodayDay(snapshot, sessions, today) : undefined;
   const session = sessions.find(session => session.training_date === today && session.program_day_id === day?.id);
-  const scheduled = snapshot && (!snapshot.training_days.length || snapshot.training_days.includes(new Date(`${today}T12:00:00Z`).getUTCDay()));
-  if (day && (scheduled || session) && !session?.completed_at) {
+  const weekly = snapshot ? isWeeklyProgram(snapshot) : false;
+  const scheduled = snapshot && (weekly ? Boolean(day && !day.is_rest_day) :
+    !snapshot.training_days.length || snapshot.training_days.includes(new Date(`${today}T12:00:00Z`).getUTCDay()));
+  if (day && !day.is_rest_day && (!weekly || day.exercises.length > 0) && (scheduled || session) && !session?.completed_at) {
     return { kind: session ? 'continue' : 'start', href: `/player/workout/${day.id}`, name: day.title };
   }
   const meal = [...input.meals].sort((a, b) => a.position - b.position || a.id.localeCompare(b.id))
@@ -38,7 +40,8 @@ export function playerNextTask(input: PlayerTaskInput): PlayerTask {
   if (note) return { kind: 'voice', id: note.id, href: '/player/captain' };
   const at = new Date(`${today}T12:00:00Z`);
   at.setUTCDate(at.getUTCDate() + 1);
-  const tomorrow = snapshot && (!snapshot.training_days.length || snapshot.training_days.includes(at.getUTCDay()))
-    ? pickTodayDay(snapshot, sessions, localDate(at, 'UTC'))?.title : undefined;
+  const next = snapshot ? pickTodayDay(snapshot, sessions, localDate(at, 'UTC')) : undefined;
+  const tomorrow = snapshot && (weekly ? next && !next.is_rest_day :
+    !snapshot.training_days.length || snapshot.training_days.includes(at.getUTCDay())) ? next?.title : undefined;
   return { kind: 'done', tomorrow };
 }

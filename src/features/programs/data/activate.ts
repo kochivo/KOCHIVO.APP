@@ -4,6 +4,7 @@ import { getT } from '@/core/i18n/server';
 import { messages } from '../messages';
 
 import { revalidatePath } from 'next/cache';
+import { unstable_rethrow } from 'next/navigation';
 import { z } from 'zod';
 import { supabaseServer } from '@/core/supabase/server';
 import { isPermissionDenied, readError } from '@/core/supabase/errors';
@@ -20,5 +21,5 @@ export async function activateProgram(id: string): Promise<Result<true>> {
     revalidatePath('/captain');
     revalidatePath('/player');
     return { data: true };
-  } catch { return { error: t('couldntActivateTryAgain') }; }
+  } catch (error) { unstable_rethrow(error); return { error: t('couldntActivateTryAgain') }; }
 }
