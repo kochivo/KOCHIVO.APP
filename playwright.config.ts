@@ -4,6 +4,7 @@ import type {} from './e2e/public.spec';
 import type {} from './e2e/demo-captain.spec';
 import type {} from './e2e/demo-player.spec';
 import type {} from './e2e/rtl.spec';
+import type {} from './e2e/journey.spec';
 
 export default defineConfig({
   testDir: 'e2e',
@@ -22,8 +23,9 @@ export default defineConfig({
     timezoneId: 'Africa/Cairo',
   },
   projects: [
-    { name: 'edge-mobile', use: { viewport: { width: 393, height: 851 }, isMobile: true, hasTouch: true } },
-    { name: 'edge-desktop', use: { viewport: { width: 1440, height: 900 } } },
+    { name: 'edge-mobile', testIgnore: 'journey.spec.ts', use: { viewport: { width: 393, height: 851 }, isMobile: true, hasTouch: true } },
+    { name: 'edge-desktop', testIgnore: 'journey.spec.ts', use: { viewport: { width: 1440, height: 900 } } },
+    { name: 'journey', testMatch: 'journey.spec.ts', retries: 0, use: { viewport: { width: 1440, height: 900 } } },
   ],
   webServer: {
     command: 'npm run start -- -p 3100',
