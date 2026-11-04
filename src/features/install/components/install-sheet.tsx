@@ -23,7 +23,7 @@ export function InstallSheet() {
   if (!visible) return null;
   return <dialog ref={dialog} role="dialog" aria-modal="true" aria-labelledby={titleId}
     onCancel={(event) => { event.preventDefault(); dismiss(); }}
-    className="glass-strong fixed start-4 end-4 bottom-28 top-auto m-0 mx-auto max-h-[70dvh] w-auto max-w-lg overflow-y-auto rounded-card p-6 text-start text-ink backdrop:bg-bg-deep/60">
+    className="sheet fixed start-4 end-4 bottom-28 top-auto m-0 mx-auto max-h-[70dvh] w-auto max-w-lg overflow-y-auto rounded-card p-6 text-start text-ink backdrop:bg-bg-deep/80">
     <h2 id={titleId} className="text-xl font-bold">{t('addKOCHIVOToYourPhone')}</h2>
     <p className="mt-2 text-sm text-muted">{t('worksOfflineAndOpensFaster')}</p>
     {platform === 'ios' && <ol className="mt-5 space-y-4 text-sm">

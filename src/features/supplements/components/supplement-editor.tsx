@@ -21,7 +21,7 @@ export function SupplementEditor({ initial, onSave, onClose }: {
     return () => { element?.close(); if (opener instanceof HTMLElement) opener.focus(); };
   }, []);
   return <dialog ref={dialog} aria-labelledby="supplement-editor-title" onCancel={event => { event.preventDefault(); if (!busy) onClose(); }}
-    className="glass-strong fixed inset-x-0 inset-y-auto bottom-0 m-0 max-h-[90dvh] w-full max-w-none overflow-y-auto rounded-t-card p-6 text-ink backdrop:bg-bg-deep/80 sm:inset-0 sm:m-auto sm:max-w-lg sm:rounded-card">
+    className="sheet fixed inset-x-0 inset-y-auto bottom-0 m-0 max-h-[90dvh] w-full max-w-none overflow-y-auto rounded-t-card p-6 text-ink backdrop:bg-bg-deep/80 sm:inset-0 sm:m-auto sm:max-w-lg sm:rounded-card">
     <form className="space-y-4" onSubmit={async event => {
       event.preventDefault();
       const form = new FormData(event.currentTarget);

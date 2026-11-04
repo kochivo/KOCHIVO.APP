@@ -154,7 +154,7 @@ export function InboxScreen({ now: clock = currentTime }: { now?: () => Date } =
           selected={selected?.id === item.id && selected.kind === item.kind} onSelect={() => { if (!inFlight.current.has(keyOf(item)) && leave()) setSelected({ ...item, reply: drafts[keyOf(item)] ?? item.reply }); }} /></li>)}</ul>
       </section>
       {selected && <ResponsiveDialog key={`${selected.kind}:${selected.id}`} openerId={`inbox-${selected.kind}-${selected.id}`} fallbackId="inbox-heading" aria-label={t('details', { name: selected.player_name })} onDismiss={() => { leave(); }}
-        className="glass-strong fixed inset-0 z-50 m-0 h-full max-h-dvh w-full max-w-none space-y-5 overflow-y-auto bg-bg p-5 text-ink backdrop:bg-bg/80 lg:static lg:z-auto lg:h-auto lg:rounded-card lg:p-6">
+        className="sheet fixed inset-0 z-50 m-0 h-full max-h-dvh w-full max-w-none space-y-5 overflow-y-auto bg-bg p-5 text-ink backdrop:bg-bg/80 lg:static lg:z-auto lg:h-auto lg:rounded-card lg:p-6">
         <header className="flex items-center justify-between gap-3"><h2 className="text-2xl font-bold">{selected.player_name}</h2>
           <button aria-label={t('close')} className="flex min-h-12 min-w-12 items-center justify-center" onClick={() => { leave(); }}><X aria-hidden="true" /></button></header>
         {error && <p role="alert" className="text-danger">{error}</p>}

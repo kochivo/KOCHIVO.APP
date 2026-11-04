@@ -31,7 +31,7 @@ export function NotificationDropdown({ openerId, notifications: n, onClose }: Pr
   }, [onClose, openerId]);
   return <ResponsiveDialog openerId={openerId} fallbackId={openerId} onDismiss={onClose}
     aria-labelledby={`${openerId}-title`}
-    className="glass-strong fixed inset-x-0 bottom-0 top-auto z-50 m-0 max-h-[80dvh] w-full max-w-none overflow-y-auto rounded-t-card border border-line p-4 text-ink backdrop:bg-surface/70 lg:absolute lg:inset-x-auto lg:end-0 lg:top-full lg:bottom-auto lg:mt-2 lg:w-96 lg:rounded-card">
+    className="sheet fixed inset-x-0 bottom-0 top-auto z-50 m-0 max-h-[80dvh] w-full max-w-none overflow-y-auto rounded-t-card border border-line p-4 text-ink backdrop:bg-bg-deep/80 lg:absolute lg:inset-x-auto lg:end-0 lg:top-full lg:bottom-auto lg:mt-2 lg:w-96 lg:rounded-card">
     <div ref={panel}>
       <header className="flex items-center justify-between gap-3">
         <h2 id={`${openerId}-title`} className="font-bold">{t('title')}</h2>

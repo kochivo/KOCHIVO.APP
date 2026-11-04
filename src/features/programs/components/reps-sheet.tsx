@@ -19,7 +19,7 @@ export function RepsSheet({ row, openerId, onClose, onUpdate }: {
   const change = (minimum: number, maximum: number) => onUpdate(clampReps(mode, minimum, maximum));
   return <ResponsiveDialog modal fallbackId={openerId} openerId={openerId} onDismiss={onClose}
     aria-label={t('reps')} dir={locale === 'ar' ? 'rtl' : 'ltr'}
-    className="glass-strong fixed inset-0 z-50 m-auto w-[calc(100%-2rem)] max-w-md space-y-4 rounded-card p-5 text-ink backdrop:bg-bg-deep/80">
+    className="sheet fixed inset-0 z-50 m-auto w-[calc(100%-2rem)] max-w-md space-y-4 rounded-card p-5 text-ink backdrop:bg-bg-deep/80">
     <div className="flex items-center justify-between gap-3"><h2>{t('reps')}</h2>
       <Button variant="secondary" onClick={onClose}>{t('closeEditor')}</Button></div>
     <div className="flex flex-wrap gap-2" role="group" aria-label={t('reps')}>

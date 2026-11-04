@@ -81,7 +81,7 @@ export function FormCheckButton({ exerciseId, setLogId }: { exerciseId: string; 
     {saved && <p role="status" className="text-sm text-muted">{t('savedItWillReachYourCoachWhen')}</p>}
     {error && !selection && <p role="alert" className="text-sm text-danger">{error}</p>}
     <dialog ref={sheet} aria-labelledby={titleId} onCancel={() => setSelection(null)}
-      className="glass-strong m-auto w-full max-w-sm rounded-card p-5 text-ink">
+      className="sheet m-auto w-full max-w-sm rounded-card p-5 text-ink">
       <form className="space-y-4" onSubmit={(event) => { event.preventDefault(); void save(); }}>
         <h2 id={titleId} className="font-bold">{t('formVideo')}</h2>
         <TextField label={t('noteForYourCoachOptional')} value={note} maxLength={500}

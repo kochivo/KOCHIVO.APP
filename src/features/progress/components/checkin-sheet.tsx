@@ -72,7 +72,7 @@ export function CheckinSheet({ latest, open, onClose, onSent }: {
   }
   return <dialog ref={dialog} aria-labelledby="checkin-title" onCancel={(event) => {
     event.preventDefault(); onClose();
-  }} className="fixed inset-0 m-auto max-h-[90dvh] w-full max-w-lg overflow-y-auto rounded-card border border-line bg-bg p-5 text-ink backdrop:bg-bg/80">
+  }} className="sheet fixed inset-0 m-auto max-h-[90dvh] w-full max-w-lg overflow-y-auto rounded-card border border-line bg-bg p-5 text-ink backdrop:bg-bg/80">
     <form onSubmit={submit} className="space-y-4">
       <header className="flex items-center justify-between">
         <h2 id="checkin-title" className="text-xl font-bold">{t('weeklyCheckin')}</h2>

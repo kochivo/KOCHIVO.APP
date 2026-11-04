@@ -96,7 +96,7 @@ export function ProgramBuilder({ programId, playerId }: { programId?: string; pl
   const day = draft.days.find(item => item.id === selectedDay) ?? draft.days[0];
   const busy = pending || state.saving;
   const weekly = isWeekly(draft);
-  return <div className="mx-auto max-w-screen-2xl space-y-6 pb-28 lg:pb-0">
+  return <div className="mx-auto max-w-screen-2xl space-y-6 pb-[var(--builder-action-height)] lg:pb-0">
     <fieldset disabled={busy} className="min-w-0 space-y-6">
       <BuilderHeader draft={draft} dirty={state.dirty} busy={busy} onTitle={value => state.update(current => ({ ...current, title: value }))}
         onSave={() => void save()} onActivate={() => void activate()} />

@@ -61,7 +61,7 @@ it('keeps one primary send action and a separate status and dirty message', () =
   expect(html.match(/primary-surface/g)).toHaveLength(1);
   expect(html).toContain('There are unsaved changes');
   expect(html).toContain('>Draft</span>');
-  expect(html).toContain('env(safe-area-inset-bottom)');
+  expect(html).toContain('bottom-[var(--nav-clearance)]');
   controls.clicks.get('Save without sending')?.();
   controls.clicks.get('Save and send to the player')?.();
   expect(onSave).toHaveBeenCalledOnce(); expect(onActivate).toHaveBeenCalledOnce();
