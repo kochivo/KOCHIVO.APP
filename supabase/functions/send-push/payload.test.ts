@@ -1,6 +1,13 @@
 import { expect, it } from 'vitest';
 import { pushPayload } from './payload';
 
+it.each(['ar', 'en'] as const)('localizes session exhaustion and links the player in %s', locale => {
+  const payload = pushPayload({ id: 'n', type: 'sessions_used_up', payload: { player_id: 'p' } }, locale);
+  expect(payload.url).toBe(`/${locale}/captain/players/p`);
+  expect(payload.body.length).toBeGreaterThan(0);
+  expect(/[\u0600-\u06ff]/.test(payload.body)).toBe(locale === 'ar');
+});
+
 it.each(['ar', 'en'] as const)('links feedback to the resolved player without exposing the note in %s', locale => {
   const payload = pushPayload({ id: 'n', type: 'workout_feedback', player_id: 'p',
     payload: { session_id: 's', rpe: 9, has_note: true, player_note: 'private pain details' } }, locale);

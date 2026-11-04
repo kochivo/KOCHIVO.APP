@@ -43,7 +43,7 @@ it('keeps requests isolated and pending until the owning captain accepts through
   const other = await createUser(db, 'captain');
   const id = await request(captain, player);
   expect((await db.query("select type from notifications where id=$1", [id])).rows).toEqual([{ type: 'join_requested' }]);
-  expect((await db.query('select id from coach_clients where player_id=$1', [player])).rows).toEqual([]);
+  expect((await db.query('select pending from coach_clients where player_id=$1', [player])).rows).toEqual([{ pending: true }]);
   await expect(request(captain, player)).rejects.toThrow();
   expect((await asUser(db, other, tx => tx.query('select * from coach_join_requests where id=$1', [id]))).rows).toEqual([]);
   await expect(asUser(db, other, tx => tx.query("select resolve_coach_join_request($1,'accepted',gen_random_uuid())", [id]))).rejects.toThrow();
@@ -52,17 +52,13 @@ it('keeps requests isolated and pending until the owning captain accepts through
   expect((await db.query('select captain_id, player_id from coach_clients where player_id=$1', [player])).rows).toEqual([{ captain_id: captain, player_id: player }]);
   expect((await db.query('select status from coach_join_requests where id=$1', [id])).rows).toEqual([{ status: 'accepted' }]);
 });
-it('rolls back acceptance when the plan is full and allows declining without a seat', async () => {
+it('enforces the seat limit when creating a pending player', async () => {
   const captain = await coach('full-coach');
   for (let n = 0; n < 5; n++) {
     const player = await createUser(db, 'player');
     await db.query('insert into coach_clients(captain_id,player_id,access_until) values ($1,$2,$3)', [captain, player, await dayOffset(db, 30)]);
   }
-  const id = await request(captain, await createUser(db, 'player'));
-  await expect(asUser(db, captain, tx => tx.query("select resolve_coach_join_request($1,'accepted',gen_random_uuid())", [id]))).rejects.toThrow(/5 active players/);
-  expect((await db.query('select status from coach_join_requests where id=$1', [id])).rows).toEqual([{ status: 'pending' }]);
-  await asUser(db, captain, tx => tx.query("select resolve_coach_join_request($1,'declined',gen_random_uuid())", [id]));
-  expect((await db.query('select status from coach_join_requests where id=$1', [id])).rows).toEqual([{ status: 'declined' }]);
+  await expect(request(captain, await createUser(db, 'player'))).rejects.toThrow(/5 active players/);
 });
 it('blocks forged requests, inactive players and direct status changes', async () => {
   const captain = await coach('guarded');

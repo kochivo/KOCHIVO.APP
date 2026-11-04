@@ -10,7 +10,11 @@ function addDays(date: string, days: number): string {
   return `${value.getUTCFullYear()}-${String(value.getUTCMonth() + 1).padStart(2, '0')}-${String(value.getUTCDate()).padStart(2, '0')}`;
 }
 
-export function renewalPreview(accessUntil: string, today: string, days: number) {
+export function renewalPreview(accessUntil: string, today: string, days: number, kind: 'days' | 'sessions' = 'days') {
+  if (kind === 'sessions') {
+    const validity = addDays(today, days);
+    return { start: today, end: accessUntil > validity ? accessUntil : validity };
+  }
   const next = addDays(accessUntil, 1);
   const start = next > today ? next : today;
   return { start, end: addDays(start, days - 1) };

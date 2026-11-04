@@ -2,6 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    sessions_used_up: 'حصص اللاعب خلصت. راجع الاشتراك',
     workout_feedback: 'فيه تقييم تمرين جديد محتاج تشوفه',
     workout_reminder: 'جاهز لتمرين النهارده؟ {name} مستنيك',
     join_requested: '{name} بعت طلب انضمام',
@@ -14,6 +15,7 @@ export const messages = defineMessages({
     now: 'دلوقتي', minutes: 'من {n} دقيقة', hours: 'من {n} ساعة', days: 'من {n} يوم',
   },
   en: {
+    sessions_used_up: 'Player sessions used up. Review the subscription',
     workout_feedback: 'New workout feedback needs your attention',
     workout_reminder: 'Ready for today’s workout? {name} is waiting',
     join_requested: '{name} requested to join',

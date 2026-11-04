@@ -3,6 +3,8 @@ import { getT } from '@/core/i18n/server';
 import { messages } from '../messages';
 
 import { revalidatePath } from 'next/cache';
+import { unstable_rethrow } from 'next/navigation';
+import { uuidv7 } from '@/core/offline/ids';
 import { z } from 'zod';
 import { isPermissionDenied, readError } from '@/core/supabase/errors';
 import { captainClient } from './client';
@@ -12,11 +14,14 @@ const packageInput = z.object({
   name: z.string().trim().min(1).max(60),
   price: z.number().int().min(0).max(100000),
   days: z.number().int().min(1).max(365),
+  kind: z.enum(['days', 'sessions']).default('days'),
+  sessions: z.number().int().min(1).max(200).nullable().default(null),
 }).strict();
 const archiveInput = z.object({ id: z.uuid() }).strict();
 const collectInput = z.object({ playerId: z.uuid(), amount: z.number().int().min(1).max(100000) }).strict();
 
 async function failure(error: unknown, fallback: string): Promise<{ error: string }> {
+  unstable_rethrow(error);
   const t = await getT(messages);
   if (isPermissionDenied(error)) return { error: t('denied') };
   if (readError(error).code === '22023') return { error: t('collectTooMuch') };
@@ -30,9 +35,9 @@ export async function createPackage(input: unknown): Promise<ActionResult<Packag
   if (!parsed.success) return { error: t('packageInvalid') };
   try {
     const { client, captainId } = await captainClient();
-    const { name, price, days } = parsed.data;
-    const result = await client.from('captain_packages').insert({ captain_id: captainId, name, price_egp: price, days })
-      .select('id, name, price_egp, days').single();
+    const { name, price, days, kind, sessions } = parsed.data;
+    const result = await client.from('captain_packages').insert({ id: uuidv7(), captain_id: captainId, name, price_egp: price, days, kind, sessions })
+      .select('id, name, price_egp, days, kind, sessions').single();
     if (result.error) throw result.error;
     revalidatePath('/captain/billing');
     return { data: result.data };

@@ -24,6 +24,8 @@ export function readCaptainCache(): MyCaptain | null {
         ['whatsapp', 'instagram', 'tiktok', 'facebook', 'youtube', 'x'].includes(key) && typeof value === 'string'));
     }
     return { fullName: row.fullName, phone: null, accessUntil: row.accessUntil,
+      ...(typeof row.pending === 'boolean' ? { pending: row.pending } : {}),
+      ...(typeof row.frozenAt === 'string' || row.frozenAt === null ? { frozenAt: row.frozenAt } : {}),
       archivedAt: row.archivedAt, startedOn: null, ...branding };
   } catch { return null; }
 }
@@ -31,8 +33,8 @@ export function readCaptainCache(): MyCaptain | null {
 export function writeCaptainCache(data: MyCaptain | null) {
   try {
     if (!data) { window.localStorage.removeItem(cacheKey); return; }
-    const { fullName, accessUntil, archivedAt, bio, location, avatarUrl, social } = data;
-    window.localStorage.setItem(cacheKey, JSON.stringify({ fullName, phone: null, accessUntil, archivedAt, bio, location, avatarUrl, social }));
+    const { fullName, accessUntil, archivedAt, bio, location, avatarUrl, social, pending, frozenAt } = data;
+    window.localStorage.setItem(cacheKey, JSON.stringify({ fullName, phone: null, accessUntil, archivedAt, bio, location, avatarUrl, social, pending, frozenAt }));
   } catch { /* Storage can be unavailable in private browsing. */ }
 }
 
@@ -47,13 +49,13 @@ export function useMyCaptain() {
     if (!navigator.onLine) {
       setData(cached); setStatus('ready'); return;
     }
-    setStatus('loading');
+    setStatus(current => current === 'ready' ? current : 'loading');
     try {
       const result = await fetchMyCaptain();
       if (request !== generation.current.value) return;
-      if ('error' in result) { setStatus('error'); return; }
+      if ('error' in result) { setStatus(current => current === 'ready' ? current : 'error'); return; }
       setData(result.data); writeCaptainCache(result.data); setStatus('ready');
-    } catch { if (request === generation.current.value) setStatus('error'); }
+    } catch { if (request === generation.current.value) setStatus(current => current === 'ready' ? current : 'error'); }
   }, []);
   useEffect(() => {
     const counter = generation.current;
@@ -63,10 +65,17 @@ export function useMyCaptain() {
     });
     window.addEventListener('online', retry);
     window.addEventListener('offline', retry);
+    window.addEventListener('focus', retry);
+    const refreshVisible = () => { if (!document.hidden && navigator.onLine) void retry(); };
+    document.addEventListener('visibilitychange', refreshVisible);
+    const interval = window.setInterval(refreshVisible, 30_000);
     return () => {
       counter.value++;
       window.removeEventListener('online', retry);
       window.removeEventListener('offline', retry);
+      window.removeEventListener('focus', retry);
+      document.removeEventListener('visibilitychange', refreshVisible);
+      window.clearInterval(interval);
     };
   }, [retry]);
   return { data, status, retry };

@@ -17,6 +17,7 @@ import { ProgressTab } from './progress-tab';
 import { AnalyticsLoader } from '@/features/muscle-analytics';
 import { ReadinessLoader } from './readiness-loader';
 import { BodyScansLoader } from '@/features/body-scans';
+import { BillingLoader } from './billing-loader';
 
 interface Props {
   playerId: string;
@@ -46,6 +47,7 @@ export async function ProfileScreen({ playerId, tab, today, data }: Props) {
           <h1 className="truncate text-3xl font-extrabold">{profile.name}</h1>
         </div>
       </header>
+      <BillingLoader playerId={playerId} name={profile.name} today={today} />
       {whatsapp && <a href={whatsapp} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center rounded-control border border-lime px-4 font-bold text-lime">{t('whatsappPlayer')}</a>}
       <nav aria-label={t('tabs')} className="glass flex gap-1 overflow-x-auto rounded-control p-1">
         {profileTabs.map((key) => <Link key={key} href={`?tab=${key}`} scroll={false} aria-current={key === tab ? 'page' : undefined}

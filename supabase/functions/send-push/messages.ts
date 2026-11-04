@@ -1,5 +1,6 @@
 export const messages = {
   ar: {
+    sessions_used_up: 'حصص اللاعب خلصت. راجع الاشتراك',
     workout_feedback: 'فيه تقييم تمرين جديد محتاج تشوفه',
     title: 'إشعارات كوتشيفو',
     plan_assigned: 'اتعيّنلك برنامج {name}',
@@ -10,6 +11,7 @@ export const messages = {
     workout_reminder: 'جاهز لتمرين النهارده؟ {name} مستنيك',
   },
   en: {
+    sessions_used_up: 'Player sessions used up. Review the subscription',
     workout_feedback: 'New workout feedback needs your attention',
     title: 'KOCHIVO notifications',
     plan_assigned: 'Program assigned: {name}',

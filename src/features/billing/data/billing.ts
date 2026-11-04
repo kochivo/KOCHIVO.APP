@@ -1,5 +1,6 @@
 'use server';
 import { getT } from '@/core/i18n/server';
+import { unstable_rethrow } from 'next/navigation';
 import { messages } from '../messages';
 
 import { fetchBillingAt } from './billing-internal';
@@ -33,7 +34,7 @@ export async function renewPlayer(input: RenewalInput): Promise<{ data: string; 
     if (result.error) return { error: isPermissionDenied(result.error) ? t('denied')
       : readError(result.error).code === '22023' ? invalid : failed };
     return result.data ? { data: result.data } : { error: failed };
-  } catch { return { error: failed }; }
+  } catch (error) { unstable_rethrow(error); return { error: failed }; }
 }
 
 export async function fetchBilling(): Promise<BillingResult> {

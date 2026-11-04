@@ -1,4 +1,8 @@
 export interface RosterPlayer {
+  linkId?: string;
+  pending?: boolean;
+  frozenAt?: string | null;
+  sessionsLeft?: number | null;
   playerId: string;
   fullName: string;
   avatarUrl?: string | null;
