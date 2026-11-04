@@ -47,10 +47,21 @@ export async function createTemplate(input: unknown): Promise<TemplateResult<str
   try {
     const { client, captain } = await session();
     const id = uuidv7();
-    const result = await client.from(tableFor(parsed.data.kind)).insert({
-      id, captain_id: captain, player_id: null, is_template: true, title: t('blankTitle'), status: 'draft',
-    });
+    const program = parsed.data.kind === 'program';
+    const row = { id, captain_id: captain, player_id: null, is_template: true, title: t('blankTitle'), status: 'draft' as const };
+    const result = program ?
+      await client.from('programs').insert({ ...row, settings: { repeatWeekly: true } }) :
+      await client.from('nutrition_plans').insert(row);
     if (result.error) throw result.error;
+    // Weekly like player programs, so each day can be marked as rest in the builder.
+    if (program) {
+      const days = await client.from('program_days').insert(Array.from({ length: 7 }, (_, weekday) => ({
+        id: uuidv7(), program_id: id, title: '', position: weekday + 1, weekday, is_rest_day: true })));
+      if (days.error) {
+        await client.from('programs').delete().eq('id', id);
+        throw days.error;
+      }
+    }
     revalidatePath('/captain/templates');
     return { data: id };
   } catch (error) { unstable_rethrow(error); return { error: errorMessage(error, t) }; }

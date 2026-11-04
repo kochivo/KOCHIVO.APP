@@ -45,10 +45,23 @@ describe('template actions', () => {
     mocks.query.insert.mockResolvedValue({ error: null });
     const result = await createTemplate({ kind });
     expect(result.data).toMatch(/^[0-9a-f-]{36}$/);
-    expect(mocks.client.from).toHaveBeenLastCalledWith(kind === 'program' ? 'programs' : 'nutrition_plans');
+    expect(mocks.client.from).toHaveBeenCalledWith(kind === 'program' ? 'programs' : 'nutrition_plans');
     expect(mocks.query.insert).toHaveBeenCalledWith(expect.objectContaining({
       id: result.data, captain_id: 'captain', player_id: null, is_template: true, title: 'قالب جديد', status: 'draft',
     }));
+  });
+  it('starts a program template as a seven-day week so rest days can be set', async () => {
+    mocks.query.insert.mockResolvedValue({ error: null });
+    const result = await createTemplate({ kind: 'program' });
+    expect(mocks.client.from).toHaveBeenCalledWith('program_days');
+    const days = mocks.query.insert.mock.calls[1]?.[0] as { weekday: number; is_rest_day: boolean; program_id: string }[];
+    expect(days.map(day => day.weekday)).toEqual([0, 1, 2, 3, 4, 5, 6]);
+    expect(days.every(day => day.is_rest_day && day.program_id === result.data)).toBe(true);
+  });
+  it('removes the template when its days cannot be created', async () => {
+    mocks.query.insert.mockResolvedValueOnce({ error: null }).mockResolvedValueOnce({ error: { code: '42501' } });
+    expect(await createTemplate({ kind: 'program' })).toHaveProperty('error');
+    expect(mocks.query.delete).toHaveBeenCalled();
   });
   it('reports a failed blank template creation', async () => {
     mocks.query.insert.mockResolvedValue({ error: { code: '42501' } });
