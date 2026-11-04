@@ -22,7 +22,7 @@ export function SiteMenu({ children, openLabel, closeLabel }: {
       if (event.target instanceof Node && !panel.current?.contains(event.target)
         && !button.current?.contains(event.target)) close();
     };
-    const desktop = matchMedia('(min-width: 48rem)');
+    const desktop = matchMedia('(min-width: 64rem)');
     const resize = () => {
       if (!desktop.matches) return;
       if (panel.current?.contains(document.activeElement) || document.activeElement === button.current) {
@@ -40,14 +40,14 @@ export function SiteMenu({ children, openLabel, closeLabel }: {
     };
   }, [open]);
   const Icon = open ? X : Menu;
-  return <div className="md:hidden">
+  return <div className="lg:hidden">
     <button ref={button} type="button" className="marketing-ghost min-h-12 min-w-12 text-ink"
       aria-label={open ? closeLabel : openLabel} aria-expanded={open} aria-controls={id}
       onClick={() => { setOpen(!open); if (open) button.current?.focus(); }}>
       <Icon size={24} aria-hidden="true" />
     </button>
     <nav ref={panel} id={id} hidden={!open} aria-label={openLabel}
-      className="glass-strong absolute inset-x-0 top-full max-h-[calc(100dvh-4rem)] overflow-y-auto border-b border-line p-4 text-ink"
+      className="absolute inset-x-0 top-full z-50 h-[calc(100dvh-4rem)] overflow-y-auto border-t border-line bg-bg p-4 text-ink"
       onClick={event => {
         if ((event.target as HTMLElement).closest('a')) { setOpen(false); button.current?.focus(); }
       }}>
