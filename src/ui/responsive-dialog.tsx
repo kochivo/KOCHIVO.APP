@@ -8,10 +8,11 @@ interface Props extends HTMLAttributes<HTMLDialogElement> {
   onDismiss: () => void;
   fallbackId: string;
   openerId?: string;
+  modal?: boolean;
 }
 
 /** Native modality keeps the mobile overlay inert without changing the desktop detail layout. */
-export function ResponsiveDialog({ onDismiss, fallbackId, openerId, className, ...props }: Props) {
+export function ResponsiveDialog({ onDismiss, fallbackId, openerId, modal = false, className, ...props }: Props) {
   const dialog = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     const element = dialog.current;
@@ -20,7 +21,7 @@ export function ResponsiveDialog({ onDismiss, fallbackId, openerId, className, .
     const desktop = window.matchMedia('(min-width: 64rem)');
     const show = () => {
       element.close();
-      if (desktop.matches) element.show();
+      if (desktop.matches && !modal) element.show();
       else element.showModal();
       element.querySelector<HTMLButtonElement>('button')?.focus();
     };
@@ -32,7 +33,7 @@ export function ResponsiveDialog({ onDismiss, fallbackId, openerId, className, .
       if (opener instanceof HTMLElement && opener.isConnected) opener.focus();
       else document.getElementById(fallbackId)?.focus();
     };
-  }, [fallbackId, openerId]);
+  }, [fallbackId, openerId, modal]);
   return <dialog {...props} className={cn('enter', className)} ref={dialog}
     onCancel={(event) => { event.preventDefault(); onDismiss(); }}
     onKeyDown={(event) => {
