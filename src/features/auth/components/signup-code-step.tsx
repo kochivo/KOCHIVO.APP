@@ -4,11 +4,18 @@ import { useLocale, useT } from '@/core/i18n/client';
 import { Button } from '@/ui';
 import { messages } from '../messages';
 import { callAuthAction } from '../data/client-action';
+import type { ActionResult } from '../data/auth-client';
 import { resendCaptainCode, verifyCaptainCode } from '../data/sign-up-captain';
 import { OtpInput } from './otp-input';
 import { ResendCodeButton } from './resend-code-button';
 
-export function SignupCodeStep({ email }: { email: string }) {
+const navigate = (redirect: string) => window.location.assign(redirect);
+
+export function SignupCodeStep({ email, verify = verifyCaptainCode, onDone = navigate }: {
+  email: string;
+  verify?: (input: { email: string; token: string }) => Promise<ActionResult>;
+  onDone?: (redirect: string) => void;
+}) {
   const t = useT(messages);
   const locale = useLocale();
   const [token, setToken] = useState('');
@@ -20,9 +27,9 @@ export function SignupCodeStep({ email }: { email: string }) {
     <form className="space-y-4" aria-busy={pending} onSubmit={event => {
       event.preventDefault();
       start(async () => {
-        const result = await callAuthAction(() => verifyCaptainCode({ email, token }), locale);
+        const result = await callAuthAction(() => verify({ email, token }), locale);
         setError(result.error ?? '');
-        if (result.redirect) window.location.assign(result.redirect);
+        if (result.redirect) onDone(result.redirect);
       });
     }}>
       <OtpInput value={token} onChange={setToken} disabled={pending} />

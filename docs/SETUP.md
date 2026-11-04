@@ -33,6 +33,7 @@ They display only `{{ .Token }}`. Do not add `{{ .ConfirmationURL }}` or
 `{{ .TokenHash }}` links to new emails.
 
 - **Confirm signup:** use [confirm-signup.html](email-templates/confirm-signup.html).
+  The template must contain only the code; old button links to `/auth/confirm` now work too.
   Captains enter the code on the signup screen, which verifies `type: 'signup'`,
   confirms the captain role, and continues through the existing onboarding path.
   New players also receive this template when signing in with email OTP.

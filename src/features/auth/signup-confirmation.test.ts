@@ -27,3 +27,15 @@ it('rejects an expired signup hash before looking up or changing the profile', a
   expect(new URL(response.headers.get('location') ?? '').pathname).toBe('/login');
   expect(profile).not.toHaveBeenCalled();
 });
+
+it('accepts an email hash without a PKCE exchange', async () => {
+  const response = await handleAuthCallback(new NextRequest('http://localhost:3000/auth/confirm?token_hash=email-hash&type=email'));
+  expect(response.headers.get('location')).toBe('http://localhost:3000/captain');
+  expect(verifyOtp).toHaveBeenCalledWith({ token_hash: 'email-hash', type: 'email' });
+});
+
+it('exposes the callback handler at both confirmation routes', async () => {
+  const callback = await import('@/app/[locale]/auth/callback/route');
+  const confirm = await import('@/app/[locale]/auth/confirm/route');
+  expect(confirm.GET).toBe(callback.GET);
+});

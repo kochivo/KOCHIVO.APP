@@ -30,6 +30,22 @@ export async function signUpPlayer(input: unknown, rawCoach: string, existing = 
       options: { data: { role: 'player', full_name },
         emailRedirectTo: `${await siteOrigin()}/auth/callback?coach=${coach}` } });
     if (result.error) throw result.error;
-    return result.data.session ? { redirect: await completeCoachRequest(client, coach) } : { message: t('confirmCoachRequest') };
+    return result.data.session ? { redirect: await completeCoachRequest(client, coach) }
+      : { codeEmail: parsed.data.email, message: t('confirmCoachRequest') };
+  });
+}
+
+export async function verifyPlayerCode(input: unknown, rawCoach: string) {
+  const t = await getT(messages);
+  return runAction(async () => {
+    const coach = coachSlug(rawCoach);
+    if (!coach) return { error: t('coachRequestFailed') };
+    const parsed = authSchemas(t).otpSchema.safeParse(input);
+    if (!parsed.success) return { error: parsed.error.issues[0]?.message };
+    const client = await authClient();
+    const { error } = await client.auth.verifyOtp({ ...parsed.data, type: 'signup' });
+    if (error) return { error: t(error.code === 'otp_expired' ? 'codeExpired' : 'codeWrong') };
+    // This also confirms an unconfirmed player role before creating the request.
+    return { redirect: await completeCoachRequest(client, coach) };
   });
 }
