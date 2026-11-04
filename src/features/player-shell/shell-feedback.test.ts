@@ -1,0 +1,37 @@
+import { createContext, createElement } from 'react';
+import type * as ReactModule from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { afterEach, beforeEach, expect, it, vi } from 'vitest';
+import { PlayerShell } from '@/features/player-shell';
+
+const state = vi.hoisted(() => ({ path: '/player', effects: [] as (() => void)[], loaded: [] as string[] }));
+vi.mock('react', async importOriginal => ({ ...await importOriginal<typeof ReactModule>(),
+  useEffect: (effect: () => void) => { state.effects.push(effect); },
+}));
+vi.mock('next/navigation', () => ({ usePathname: () => state.path }));
+vi.mock('@/features/notifications', () => ({ NotificationBell: () => null }));
+vi.mock('@/features/install', () => { state.loaded.push('install'); return { InstallSheet: () => null }; });
+vi.mock('@/features/feedback', () => { state.loaded.push('feedback'); return { FeedbackButton: () => null }; });
+vi.mock('./hooks/use-my-captain', () => ({
+  MyCaptainContext: createContext(null), useMyCaptain: () => ({ data: null }),
+}));
+vi.mock('./hooks/use-online', () => ({ useOnline: () => true }));
+
+beforeEach(() => { state.effects = []; state.path = '/player'; });
+afterEach(() => vi.unstubAllGlobals());
+it('remembers player on mount without loading add-ons for the server render', () => {
+  const setItem = vi.fn();
+  vi.stubGlobal('window', { localStorage: { setItem } });
+  const html = renderToStaticMarkup(createElement(PlayerShell, null, null));
+  expect(setItem).not.toHaveBeenCalled();
+  state.effects.forEach(effect => effect());
+  expect(setItem).toHaveBeenCalledWith('kochivo.role', 'player');
+  expect(html).not.toContain('aria-label="بلّغ عن مشكلة"');
+  expect(state.loaded).toEqual([]);
+});
+it.each(['/player/workout/day', '/player/onboarding'])('hides feedback and installation on %s', path => {
+  state.path = path;
+  const html = renderToStaticMarkup(createElement(PlayerShell, null, null));
+  expect(html).not.toContain('aria-label="بلّغ عن مشكلة"');
+  expect(state.loaded).toEqual([]);
+});

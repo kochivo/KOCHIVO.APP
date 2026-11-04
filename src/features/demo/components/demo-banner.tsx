@@ -8,6 +8,7 @@ import { messages } from '../messages';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { loadSupabaseBrowser } from '@/core/supabase/lazy';
+import { clearDeviceRole } from '@/core/pwa/device-role';
 
 export function DemoBanner({ hours }: { hours: number }) {
   const t = useT(messages);
@@ -25,6 +26,7 @@ export function DemoBanner({ hours }: { hours: number }) {
       try {
         const result = await (await loadSupabaseBrowser()).auth.signOut();
         if (result.error) throw result.error;
+        clearDeviceRole();
         router.push('/login?tab=signup');
         router.refresh();
       } catch { setError(t('couldnTLeaveTheDemoTry')); setPending(false); }

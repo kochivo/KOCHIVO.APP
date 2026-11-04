@@ -3,14 +3,32 @@
  * Player data lives in IndexedDB (src/core/offline), never in this cache.
  * Bump VERSION on any change to this file's caching rules.
  */
-const VERSION = 'v2';
+const VERSION = 'v3';
 const SHELL_CACHE = `kochivo-shell-${VERSION}`;
 const STATIC_CACHE = `kochivo-static-${VERSION}`;
 const OFFLINE_URL = '/offline';
 const PRECACHE = [OFFLINE_URL, '/manifest.webmanifest', '/icons/icon-192.png', '/brand/logo-compact.png'];
 
+async function cacheOffline() {
+  const shell = await caches.open(SHELL_CACHE);
+  await shell.addAll(PRECACHE);
+  try {
+    const response = await shell.match(OFFLINE_URL);
+    if (!response?.ok || response.redirected) return;
+    const html = await response.text();
+    const assets = new Set();
+    // Caching HTML alone does not fetch the scripts needed for client hydration.
+    for (const match of html.matchAll(/(?:src|href)=["'](\/_next\/static\/[^"']+)["']/g)) assets.add(match[1]);
+    const cache = await caches.open(STATIC_CACHE);
+    for (const asset of assets) {
+      const response = await fetch(asset);
+      if (response.ok && !response.redirected) await cache.put(asset, response);
+    }
+  } catch { /* Optional hydration assets must never block the shell install. */ }
+}
+
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(SHELL_CACHE).then((cache) => cache.addAll(PRECACHE)));
+  event.waitUntil(cacheOffline());
   self.skipWaiting();
 });
 

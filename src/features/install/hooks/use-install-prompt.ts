@@ -14,7 +14,7 @@ const empty: Dismissal = { dismissals: 0, lastDismissedAt: null };
 const key = 'kochivo.install';
 const countFinished = () => localDb().workout_sessions.filter((row) => row.completed_at !== null).count();
 
-export function useInstallPrompt() {
+export function useInstallPrompt(role: 'captain' | 'player' = 'player') {
   const [browser, setBrowser] = useState({ userAgent: '', maxTouchPoints: 0, standalone: false, ready: false });
   const [event, setEvent] = useState<PromptEvent | null>(null);
   const [history, setHistory] = useState(empty);
@@ -88,7 +88,7 @@ export function useInstallPrompt() {
     finally { setBusy(false); }
   };
   const platform = installPlatform({ ...browser, hasPromptEvent: event !== null });
-  const visible = browser.ready && shouldShowInstall({ finishedWorkouts: finishedWorkouts ?? 0,
+  const visible = browser.ready && shouldShowInstall({ role, finishedWorkouts: finishedWorkouts ?? 0,
     platform, ...history, now });
   return { visible, platform, dismiss, install, busy, error };
 }

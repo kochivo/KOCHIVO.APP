@@ -6,6 +6,8 @@ import { buildSecurityHeaders } from './src/lib/security-headers';
 const config: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  // SDK debug diagnostics are unused; error and feedback capture remain enabled.
+  compiler: { define: { __SENTRY_DEBUG__: false } },
   async headers() {
     let supabaseUrl: string | undefined;
     try {
