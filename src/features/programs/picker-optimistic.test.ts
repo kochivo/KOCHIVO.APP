@@ -1,5 +1,8 @@
 import type { ReactElement } from 'react';
 import type * as React from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { Chip } from '@/ui';
+import { Check } from 'lucide-react';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { ExercisePicker } from './components/exercise-picker';
 import { CustomExerciseSheet } from './components/custom-exercise-sheet';
@@ -31,7 +34,7 @@ vi.mock('./data/library', () => ({ searchExercises: vi.fn() }));
 vi.mock('./data/custom-exercise', () => ({ createCustomExercise: hooks.save, updateCustomExercise: hooks.save, deleteCustomExercise: hooks.remove }));
 
 type NodeProps = { children?: unknown; onClick?: () => void; onSave?: SheetProps['onSave']; exercise?: unknown;
-  disabled?: boolean;
+  disabled?: boolean; pressed?: boolean;
   onCancel?: (event: { preventDefault: () => void; stopPropagation: () => void }) => void };
 function elements(node: unknown): ReactElement<NodeProps>[] {
   if (Array.isArray(node)) return node.flatMap(elements);
@@ -116,4 +119,49 @@ it('blocks addition while deletion is pending and keeps the row on a delete fail
   expect(nodes.find(node => node.type === 'button')?.props.disabled).toBe(false);
   expect(nodes.some(node => node.props.children === 'Press')).toBe(true);
   expect(hooks.error).toHaveBeenCalledWith('In use');
+});
+
+const press: LibraryExercise = { id: 'press', name_ar: null, name_en: 'Press', body_part: 'chest', equipment: null, media_path: null };
+it('derives the check and added label from the current day ids', () => {
+  hooks.values[3] = { data: [press] };
+  expect(render(vi.fn()).some(node => node.props.children === 'add')).toBe(true);
+  const nodes = render(vi.fn(), ['press']);
+  expect(nodes.some(node => node.props.children === 'added')).toBe(true);
+  expect(nodes.some(node => node.type === Check)).toBe(true);
+  expect(nodes.find(node => node.type === 'button')?.props.disabled).toBe(false);
+});
+it('marks session additions immediately and adds another copy with a toast on every press', () => {
+  hooks.values[3] = { data: [press] };
+  const onAdd = vi.fn();
+  render(onAdd).find(node => node.type === 'button')?.props.onClick?.();
+  const nodes = render(onAdd);
+  expect(nodes.some(node => node.props.children === 'added')).toBe(true);
+  expect(nodes.some(node => node.type === Check)).toBe(true);
+  nodes.find(node => node.type === 'button')?.props.onClick?.();
+  expect(onAdd.mock.calls).toEqual([[press], [press]]);
+  expect(hooks.success.mock.calls).toEqual([['exerciseAdded'], ['exerciseAdded']]);
+});
+it('shows the active chip for All, a muscle, and My exercises', () => {
+  const onAdd = vi.fn();
+  const chip = (label: string) => {
+    const node = render(onAdd).find(item => item.props.children === label);
+    expect(node?.type).toBe(Chip);
+    if (!node) throw new Error(`Missing chip: ${label}`);
+    return node;
+  };
+  expect(chip('all').props.pressed).toBe(true);
+  expect(chip('chest').props.pressed).toBe(false);
+  chip('chest').props.onClick?.();
+  expect(chip('all').props.pressed).toBe(false);
+  expect(chip('chest').props.pressed).toBe(true);
+  expect(chip('myExercises').props.pressed).toBe(false);
+  chip('myExercises').props.onClick?.();
+  expect(chip('myExercises').props.pressed).toBe(true);
+  chip('all').props.onClick?.();
+  const all = chip('all');
+  expect(all.props.pressed).toBe(true);
+  const html = renderToStaticMarkup(Chip({ pressed: all.props.pressed === true }));
+  expect(html).toContain('aria-pressed="true"');
+  expect(html).toContain('selected-surface border-lime bg-lime-soft text-lime');
+  expect(html).toContain('min-h-12');
 });

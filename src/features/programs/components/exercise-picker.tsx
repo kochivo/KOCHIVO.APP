@@ -10,17 +10,17 @@ import type { CustomExerciseInput } from '../custom-exercises';
 import { createCustomExercise, updateCustomExercise, deleteCustomExercise } from '../data/custom-exercise';
 
 import { ExerciseImage } from '@/ui/exercise-image';
-import { Search } from 'lucide-react';
+import { Check, Search } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { exerciseMediaUrl } from '@/core/storage';
 import { exerciseName } from '@/lib/display-name';
-import { Button, EmptyState, ErrorState, LoadingState, TextField } from '@/ui';
+import { Button, Chip, EmptyState, ErrorState, LoadingState, TextField } from '@/ui';
 import { searchExercises } from '../data/library';
 import type { LibraryExercise, Result } from '../types';
 const CustomExerciseSheet = dynamic(() => import('./custom-exercise-sheet').then(module => module.CustomExerciseSheet), {
   ssr: false, loading: () => <LoadingState />,
 });
-export function ExercisePicker({ disabled, onAdd }: {
+export function ExercisePicker({ disabled, onAdd, usedExerciseIds = [] }: {
   disabled: boolean; onAdd: (exercise: LibraryExercise) => void; usedExerciseIds?: string[];
 }) {
   const t = useT(messages);
@@ -37,8 +37,23 @@ export function ExercisePicker({ disabled, onAdd }: {
   const [removed, setRemoved] = useState<string[]>([]);
   const [busy, setBusy] = useState<string[]>([]);
   const [deleting, setDeleting] = useState<string[]>([]);
+  const [sessionAdds, setSessionAdds] = useState<string[]>([]);
+  const addedIds = new Set([...usedExerciseIds, ...sessionAdds]);
   const pending = useRef(new Map<string, Promise<Result<LibraryExercise>>>());
   const toast = useToast();
+  const add = (exercise: LibraryExercise) => {
+    setSessionAdds(ids => ids.includes(exercise.id) ? ids : [...ids, exercise.id]);
+    const notify = (row: LibraryExercise) => {
+      onAdd(row);
+      toast.success(t('exerciseAdded', { name: exerciseName(row, locale) }));
+    };
+    const request = pending.current.get(exercise.id);
+    if (request) void request.then(saved => {
+      if (saved.data) notify(saved.data);
+      else setSessionAdds(ids => ids.filter(id => id !== exercise.id));
+    });
+    else notify(exercise);
+  };
   const key = JSON.stringify(mine ? [query, bodyPart, revision, mine] : [query, bodyPart, revision]);
   useEffect(() => {
     let current = true;
@@ -83,12 +98,12 @@ export function ExercisePicker({ disabled, onAdd }: {
   return <section aria-label={t('exerciseLibrary')} className="glass min-w-0 space-y-4 rounded-card p-4">
     <h2 className="font-bold">{t('exerciseLibrary')}</h2>
     <Button disabled={disabled} onClick={() => setSheet({ exercise: null })}>{t('newCustomExercise')}</Button>
-    <Button variant="ghost" aria-pressed={mine} onClick={() => setMine(value => !value)}>{t('myExercises')}</Button>
+    <Chip pressed={mine} onClick={() => setMine(value => !value)}>{t('myExercises')}</Chip>
     {sheet && <CustomExerciseSheet exercise={sheet.exercise} onClose={() => setSheet(null)} onSave={save} />}
     <TextField label={t('searchInArabicOrEnglish')} value={query} onChange={event => setQuery(event.target.value)} />
     <div className="flex flex-wrap gap-2" aria-label={t('bodyPart')}>
-      {parts.map(([value, label]) => <Button key={value} variant="ghost" className="min-h-12 border border-line" aria-pressed={bodyPart === value}
-        onClick={() => setBodyPart(value)}>{label}</Button>)}
+      {parts.map(([value, label]) => <Chip key={value} pressed={bodyPart === value}
+        onClick={() => setBodyPart(value)}>{label}</Chip>)}
     </div>
     <p className="text-xs text-muted">{t('attribution')}</p>
     {loadedKey !== key || result === null ? <LoadingState /> : result.error ?
@@ -96,15 +111,14 @@ export function ExercisePicker({ disabled, onAdd }: {
         {loadedKey === key && result?.data && rows.length === 0 && <EmptyState icon={Search} title={t('noExerciseWithThisName')} body={t('searchInArabicOrEnglish')}
           action={{ label: t('clearSearch'), onClick: () => { setQuery(''); setBodyPart(''); setMine(false); setRevision(value => value + 1); } }} />}
         <ul className="space-y-2">{rows.map(exercise => <li key={exercise.id}>
-          <button type="button" disabled={disabled || deleting.includes(exercise.id)} onClick={() => {
-            const request = pending.current.get(exercise.id);
-            if (request) void request.then(saved => { if (saved.data) onAdd(saved.data); });
-            else onAdd(exercise);
-          }}
+          <button type="button" disabled={disabled || deleting.includes(exercise.id)} onClick={() => add(exercise)}
             className="glass flex min-h-16 w-full items-center gap-3 rounded-control p-2 text-start disabled:opacity-40">
             {exercise.media_path && <ExerciseImage src={exerciseMediaUrl(exercise.media_path)} alt="" width={48} height={48} />}
             <span className="min-w-0 flex-1 break-words text-sm font-bold"><bdi>{exerciseName(exercise, locale)}</bdi></span>
-            <span className="text-xs text-muted">{t('add')}</span>
+            <span className="flex items-center gap-1 text-xs text-muted">
+              {addedIds.has(exercise.id) && <Check aria-hidden className="size-4 text-lime" />}
+              <span>{t(addedIds.has(exercise.id) ? 'added' : 'add')}</span>
+            </span>
           </button>
           {exercise.is_own && <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs text-muted">{t('ownExercise')}</span>
