@@ -6,15 +6,17 @@ export interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   hint?: string;
   error?: string;
+  /** Keeps the label for screen readers only, for self-explanatory fields like OTP boxes. */
+  hideLabel?: boolean;
 }
 
-export function TextField({ label, hint, error, id, className, 'aria-describedby': describedBy, ...props }: TextFieldProps) {
+export function TextField({ label, hint, error, id, className, hideLabel, 'aria-describedby': describedBy, ...props }: TextFieldProps) {
   const generatedId = useId();
   const fieldId = id ?? generatedId;
   const description = [describedBy, hint && `${fieldId}-hint`, error && `${fieldId}-error`].filter(Boolean).join(' ');
   return (
     <div className="flex flex-col gap-2 text-start">
-      <label htmlFor={fieldId} className="text-sm font-semibold">{label}</label>
+      <label htmlFor={fieldId} className={hideLabel ? 'sr-only' : 'text-sm font-semibold'}>{label}</label>
       <input
         {...props}
         id={fieldId}

@@ -23,7 +23,7 @@ it('translates every intake step, option and validation error in English', () =>
     createElement('div', null, ...[StepBasics, StepSchedule, StepHealth, StepFood].map((Screen, key) =>
       createElement(Screen, { key, draft: { medical: ['heart'] }, errors: {}, update: () => undefined, touch: () => undefined })))));
   expect(html).toContain('Milk');
-  expect(html).toContain('Birth year');
+  expect(html).toContain('Your age');
   expect(html).toContain('Consult a doctor');
   expect(html).not.toMatch(/[\u0600-\u06ff]/u);
   const result = makeIntakeSchema(new Date('2026-11-03T10:00:00Z'), createT(messages, 'en')).stepSchemas.basics.safeParse({});

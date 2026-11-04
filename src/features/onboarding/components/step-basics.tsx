@@ -2,6 +2,7 @@
 import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 import { formatNumber } from '@/lib/format';
+import { localDate } from '@/lib/dates';
 
 import { Chip, Stepper } from '@/ui';
 import type { StepProps } from '../wizard';
@@ -9,6 +10,8 @@ import type { StepProps } from '../wizard';
 export function StepBasics({ draft, update, errors, touch }: StepProps) {
   const t = useT(messages);
   const locale = useLocale();
+  // The intake still stores birth_year; players find their age easier to pick than a year.
+  const year = Number(localDate(new Date()).slice(0, 4));
   return (
     <div className="space-y-5">
       <fieldset className="space-y-2" onBlur={() => touch('sex')}>
@@ -21,8 +24,12 @@ export function StepBasics({ draft, update, errors, touch }: StepProps) {
         </div>
         {errors.sex && <p role="alert" className="text-sm text-danger">{errors.sex}</p>}
       </fieldset>
+      <div className="space-y-2" onBlur={() => touch('birth_year')}>
+        <Stepper format={(value) => formatNumber(value, locale)} label={t('age')} value={year - (draft.birth_year ?? year - 25)}
+          step={1} min={10} max={year - 1930} onChange={(age) => update({ birth_year: year - age })} />
+        {errors.birth_year && <p role="alert" className="text-sm text-danger">{errors.birth_year}</p>}
+      </div>
       {([
-        { field: 'birth_year', label: t('birthYear'), value: 1998, step: 1, min: 1930 },
         { field: 'height_cm', label: t('heightCm'), value: 170, step: 1, min: 100 },
         { field: 'weight_kg', label: t('currentWeightKg'), value: 75, step: 0.5, min: 25 },
       ] as const).map(({ field, label, value, step, min }) => (
