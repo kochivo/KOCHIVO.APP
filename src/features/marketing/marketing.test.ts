@@ -15,8 +15,41 @@ import { content } from './content';
 import { SiteHeader } from './components/site-header';
 import { Pricing } from './components/pricing';
 import { FinalCta } from './components/final-cta';
+import { createT } from '@/core/i18n/messages';
+import { messages } from './messages';
+import { getContent } from './content';
+import { StatsStrip } from './components/stats-strip';
 
 describe('public marketing page', () => {
+  it.each(['ar', 'en'] as const)('shows all features and equal plan inclusions in %s', language => {
+    const copy = getContent(createT(messages, language));
+    expect(copy.features).toHaveLength(8);
+    expect(copy.plans.map(plan => [plan.price, plan.limit])).toEqual([[0, 5], [399, 20], [699, 40], [1499, 100]]);
+    for (const plan of copy.plans) {
+      expect(plan.audience).toBeTruthy();
+      expect(plan.checklist).toHaveLength(5);
+      expect(plan.checklist).toEqual(copy.plans[0]?.checklist);
+    }
+    expect(copy.player.length).toBeLessThanOrEqual(6);
+    expect(copy.faq).toHaveLength(6);
+  });
+  it.each(['ar', 'en'] as const)('renders readiness, richer pricing and both player days in %s', async language => {
+    locale.value = language;
+    try {
+      const copy = getContent(createT(messages, language));
+      const html = (await Promise.all([StatsStrip(), Pricing(), Hero(), PlayerSection()]))
+        .map(element => renderToStaticMarkup(createElement(LocaleProvider, { locale: language }, element))).join('');
+      expect(html).toContain(`<h2 class="marketing-heading">${copy.readiness.title}</h2>`);
+      expect(html.indexOf('</dl></section>')).toBeLessThan(html.indexOf(copy.readiness.title));
+      expect(html).toContain(copy.pricing.allFeatures);
+      expect(html).toContain(copy.hero.description);
+      expect(html).toContain(copy.preview.restDay);
+      expect(html).toContain(copy.preview.water);
+      expect(html).toContain('data-mood="rest"');
+      expect(html).toContain(copy.progress.weight);
+      if (language === 'en') expect(html).not.toMatch(/[\u0600-\u06ff]/);
+    } finally { locale.value = 'ar'; }
+  });
   it.each(['ar', 'en'] as const)('routes auth and demo CTAs by label in %s', async language => {
     locale.value = language;
     try {
