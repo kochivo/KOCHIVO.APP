@@ -24,6 +24,12 @@ it('never changes a captain account or writes a request for it', async () => {
   await expect(completeCoachRequest(client as unknown as Parameters<typeof completeCoachRequest>[0], 'ahmed')).rejects.toThrow();
   expect(mock.insert).not.toHaveBeenCalled();
 });
+it.each(['captain', 'player'])('routes an admin %s home before creating a coach request', async role => {
+  mock.profile.mockResolvedValue({ role, roleConfirmed: false, admin: true });
+  expect(await completeCoachRequest(client as unknown as Parameters<typeof completeCoachRequest>[0], 'ahmed')).toBe('/admin');
+  expect(mock.rpc).not.toHaveBeenCalled();
+  expect(mock.insert).not.toHaveBeenCalled();
+});
 it('rejects invalid and missing coaches before creating a request', async () => {
   await expect(completeCoachRequest(client as unknown as Parameters<typeof completeCoachRequest>[0], 'admin')).rejects.toThrow();
   mock.rpc.mockResolvedValue({ data: [], error: null });

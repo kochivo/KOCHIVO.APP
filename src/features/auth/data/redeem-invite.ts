@@ -1,6 +1,7 @@
 'use server';
 import { getT } from '@/core/i18n/server';
 import { messages } from '../messages';
+import { homeFor } from '../routing';
 
 import { parseInviteCode } from '../invite-code';
 import { authClient, profile, runAction } from './auth-client';
@@ -12,6 +13,7 @@ export async function redeemInvite(input: string) {
     if (!code) return { error: t('inviteIsInvalidOrExpired') };
     const client = await authClient();
     const user = await profile(client);
+    if (user?.admin) return { redirect: homeFor(user) };
     if (user?.role === 'captain') return { error: t('thisIsACoachAccount') };
     if (!user) return { error: t('signInFirst') };
     if (!user.roleConfirmed) {

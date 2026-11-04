@@ -196,6 +196,6 @@ it('validates the flag and rounds remaining hours up, clamping expired demos', (
 });
 it('routes an anonymous session without a workspace to demo', () => {
   for (const path of ['/captain', '/player', '/captain/settings']) {
-    expect(decideRoute({ path, user: { role: 'player', roleConfirmed: false, anonymous: true } })).toEqual({ redirect: '/demo' });
+    expect(decideRoute({ path, user: { role: 'player', admin: false, roleConfirmed: false, anonymous: true } })).toEqual({ redirect: '/demo' });
   }
 });

@@ -22,7 +22,9 @@ export async function profile(client: SupabaseClient<Database>): Promise<AuthUse
   if (!claims?.claims.sub) return null;
   const result = await client.from('profiles').select('role, role_confirmed').eq('id', claims.claims.sub).single();
   if (result.error) throw result.error;
-  return { role: result.data.role, roleConfirmed: result.data.role_confirmed };
+  const membership = await client.rpc('is_admin');
+  if (membership.error) throw membership.error;
+  return { role: result.data.role, roleConfirmed: result.data.role_confirmed, admin: membership.data === true };
 }
 export async function runAction(work: () => Promise<ActionResult>): Promise<ActionResult> {
   try { return await work(); } catch (error) { unstable_rethrow(error); return { error: authError(error, await getLocale()) }; }

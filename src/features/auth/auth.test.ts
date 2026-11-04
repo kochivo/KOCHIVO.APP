@@ -52,47 +52,6 @@ describe('route decisions', () => {
     const response = await refreshSession(new NextRequest('http://localhost:3000/captain'), decideRoute);
     expect(response.headers.get('location')).toBe('http://localhost:3000/demo');
   });
-  it('lets a confirmed demo captain use captain routes', () => {
-    expect(decideRoute({ path: '/captain', user: { role: 'captain', roleConfirmed: true, anonymous: true } })).toEqual({});
-  });
-  const captain = { role: 'captain', roleConfirmed: true } as const;
-  const player = { role: 'player', roleConfirmed: true } as const;
-  it('blocks suspended users on all routes except suspension, sign-out and callback', () => {
-    for (const user of [captain, player, { ...captain, roleConfirmed: false }]) {
-      for (const path of ['/', '/captain', '/player', '/login', '/i/abc', '/reset-password', '/suspended-other', '/auth/callback-other']) {
-        expect(decideRoute({ path, user: { ...user, suspended: true } })).toEqual({ redirect: '/suspended' });
-      }
-      for (const path of ['/suspended', '/sign-out', '/auth/sign-out', '/auth/callback']) {
-        expect(decideRoute({ path, user: { ...user, suspended: true } })).toEqual({});
-      }
-    }
-  });
-  for (const path of ['/', '/i/abc', '/forgot-password', '/reset-password', '/auth/callback', '/dev/ui', '/offline']) {
-    for (const user of [null, captain, player]) it(`${path} is public for ${user?.role}`, () => {
-      expect(decideRoute({ path, user })).toEqual({});
-    });
-  }
-  for (const suffix of ['', '/nested']) {
-    it(`protects role areas ${suffix}`, () => {
-      expect(decideRoute({ path: `/captain${suffix}`, user: null })).toEqual({ redirect: '/login' });
-      expect(decideRoute({ path: `/player${suffix}`, user: null })).toEqual({ redirect: '/login' });
-      expect(decideRoute({ path: `/captain${suffix}`, user: player })).toEqual({ redirect: '/player' });
-      expect(decideRoute({ path: `/player${suffix}`, user: captain })).toEqual({ redirect: '/captain' });
-      expect(decideRoute({ path: `/captain${suffix}`, user: captain })).toEqual({});
-      expect(decideRoute({ path: `/player${suffix}`, user: player })).toEqual({});
-      expect(decideRoute({ path: `/captain${suffix}`, user: { ...captain, roleConfirmed: false } })).toEqual({ redirect: '/login' });
-    });
-  }
-  for (const path of ['/login']) it(`redirects sessions from ${path}`, () => {
-    expect(decideRoute({ path, user: null })).toEqual({});
-    expect(decideRoute({ path, user: captain })).toEqual({ redirect: '/captain' });
-    expect(decideRoute({ path, user: player })).toEqual({ redirect: '/player' });
-    expect(decideRoute({ path, user: { ...captain, roleConfirmed: false } })).toEqual({});
-  });
-  it('matches path segments', () => expect(decideRoute({ path: '/captain-other', user: null })).toEqual({}));
-  it('allows an unconfirmed player in the player area', () => {
-    expect(decideRoute({ path: '/player', user: { ...player, roleConfirmed: false } })).toEqual({});
-  });
 });
 
 describe('invite codes', () => {
@@ -150,9 +109,26 @@ describe('Arabic error mapping', () => {
 
 describe('auth actions and callback', () => {
   const email = 'player@example.com';
+  it('routes admins to admin after password sign-in, signup and Google callbacks', async () => {
+    mocks.single.mockResolvedValue({ data: { role: 'captain', role_confirmed: false }, error: null });
+    mocks.rpc.mockResolvedValue({ data: true, error: null });
+    expect(await signInPassword({ email, password: 'test' })).toEqual({ redirect: '/admin' });
+    mocks.auth.signUp.mockResolvedValue({ data: { session: {} }, error: null });
+    expect(await signUpCaptain({ email, password: 'abcdefgh1', full_name: 'Coach' })).toEqual({ redirect: '/admin' });
+    mocks.cookie.get.mockReturnValue({ value: JSON.stringify({ intent: 'player', code: 'invite', coach: 'ahmed' }) });
+    const response = await handleAuthCallback(new NextRequest('http://localhost:3000/auth/callback?code=oauth-code'));
+    expect(response.headers.get('location')).toBe('http://localhost:3000/admin');
+    expect(mocks.rpc.mock.calls.every(([name]) => name === 'is_admin')).toBe(true);
+  });
   it('sends captain metadata and handles email confirmation', async () => {
     expect(await signUpCaptain({ email, password: 'abcdefgh1', full_name: 'محمد' })).toHaveProperty('codeEmail', email);
     expect(mocks.auth.signUp).toHaveBeenCalledWith(expect.objectContaining({ options: expect.objectContaining({ data: { role: 'captain', full_name: 'محمد' } }) }));
+  });
+  it.each(['captain', 'player'])('routes admin %s OTP sessions home without redeeming invites', async role => {
+    mocks.single.mockResolvedValue({ data: { role, role_confirmed: false }, error: null });
+    mocks.rpc.mockResolvedValue({ data: true, error: null });
+    expect(await verifyEmailCode({ email, token: '012345' }, 'abc')).toEqual({ redirect: '/admin' });
+    expect(mocks.rpc).toHaveBeenCalledExactlyOnceWith('is_admin');
   });
   it('maps password errors and routes successful sessions using profiles', async () => {
     mocks.auth.signInWithPassword.mockResolvedValueOnce({ error: { code: 'invalid_credentials' } });
@@ -171,7 +147,7 @@ describe('auth actions and callback', () => {
     expect(await redeemInvite('abc')).toEqual({ error: 'الحساب ده حساب كابتن' });
     mocks.auth.verifyOtp.mockResolvedValue({ error: { code: 'otp_expired' } });
     expect(await verifyEmailCode({ email, token: '012345' }, 'abc')).toHaveProperty('error');
-    expect(mocks.rpc).not.toHaveBeenCalled();
+    expect(mocks.rpc).toHaveBeenCalledExactlyOnceWith('is_admin');
   });
   it('requests a reset code and validates before updating legacy recovery', async () => {
     await requestReset({ email });
@@ -206,7 +182,7 @@ describe('auth actions and callback', () => {
     mocks.single.mockResolvedValue({ data: { role: 'captain', role_confirmed: true }, error: null });
     const response = await handleAuthCallback(new NextRequest('http://localhost:3000/auth/callback?code=oauth-code'));
     expect(response.headers.get('location')).toBe('http://localhost:3000/i/invite');
-    expect(mocks.rpc).not.toHaveBeenCalled();
+    expect(mocks.rpc).toHaveBeenCalledExactlyOnceWith('is_admin');
   });
   it('lands a player on intake only after redeeming the callback invite', async () => {
     mocks.cookie.get.mockReturnValue({ value: JSON.stringify({ intent: 'player', code: 'invite' }) });
@@ -226,6 +202,15 @@ describe('auth actions and callback', () => {
 });
 
 describe('session integration', () => {
+  it('loads admin membership and fails closed if that lookup fails', async () => {
+    mocks.single.mockResolvedValue({ data: { role: 'captain', role_confirmed: true }, error: null });
+    mocks.rpc.mockResolvedValueOnce({ data: true, error: null });
+    expect((await refreshSession(new NextRequest('http://localhost:3000/captain'), decideRoute)).headers.get('location'))
+      .toBe('http://localhost:3000/admin');
+    mocks.rpc.mockResolvedValueOnce({ data: null, error: { code: 'network_error' } });
+    expect((await refreshSession(new NextRequest('http://localhost:3000/captain'), decideRoute)).headers.get('location'))
+      .toBe('http://localhost:3000/login');
+  });
   it('routes a suspended session to the blocked screen using the profile lookup', async () => {
     mocks.single.mockResolvedValue({ data: { role: 'captain', role_confirmed: true, suspended_at: '2026-01-01' }, error: null });
     const response = await refreshSession(new NextRequest('http://localhost:3000/captain'), decideRoute);

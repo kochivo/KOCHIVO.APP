@@ -4,11 +4,13 @@ import type { AppDatabase } from '@/types/app-database';
 import { uuidv7 } from '@/core/offline/ids';
 import { coachSlug } from '@/lib/coach-slug';
 import { profile } from './auth-client';
+import { homeFor } from '../routing';
 
 export async function completeCoachRequest(client: SupabaseClient<AppDatabase>, rawSlug: string) {
   const slug = coachSlug(rawSlug);
   if (!slug) throw new Error('invalid coach');
   const user = await profile(client);
+  if (user?.admin) return homeFor(user);
   if (!user || (user.role === 'captain' && user.roleConfirmed)) throw new Error('player required');
   if (!user.roleConfirmed) {
     const result = await client.rpc('confirm_role', { p_role: 'player' });
