@@ -96,7 +96,7 @@ export function Tour({ steps, onClose }: TourProps) {
     {geometry && <div aria-hidden className="pointer-events-none fixed rounded-control border-2 border-lime"
       style={{ ...geometry.ring, boxShadow: '0 0 0 100vmax color-mix(in srgb, var(--color-bg-deep) 80%, transparent)' }} />}
     {step && <div ref={card} tabIndex={-1} style={style}
-      className="enter glass-strong fixed start-4 end-4 bottom-[var(--tour-bottom,1rem)] max-h-[calc(100dvh-var(--tour-bottom,1rem)-2rem)] overflow-auto rounded-card p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] text-start outline-none sm:start-[var(--tour-start)] sm:end-auto sm:top-[var(--tour-top)] sm:bottom-auto sm:max-h-[75dvh] sm:w-88">
+      className="enter sheet fixed start-4 end-4 bottom-[var(--tour-bottom,1rem)] max-h-[calc(100dvh-var(--tour-bottom,1rem)-2rem)] overflow-auto rounded-card p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] text-start outline-none sm:start-[var(--tour-start)] sm:end-auto sm:top-[var(--tour-top)] sm:bottom-auto sm:max-h-[75dvh] sm:w-88">
       <p className="text-xs text-muted">{t('progress', { current: formatNumber((index ?? 0) + 1, locale), total: formatNumber(steps.length, locale) })}</p>
       <h2 id="tour-title" className="mt-2 text-xl font-bold">{step.title}</h2>
       <p id="tour-body" className="mt-2 text-sm text-muted">{step.body}</p>

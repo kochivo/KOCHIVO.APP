@@ -30,8 +30,8 @@ export function PlayerShell({ children }: { children: ReactNode }) {
     state === 'ended' ? t('yourSubscriptionEndedContactYourCoach') :
     state === 'archived' ? t('yourCoachPausedYourCoaching') : null;
   return <MyCaptainContext.Provider value={captain}>
-    <div className={workout ? undefined : 'pt-[var(--safe-top)]'}>
-    {showsNav(pathname) && <div className="mx-auto flex max-w-lg justify-end px-5 pt-3"><NotificationBell /></div>}
+    <div className={workout ? undefined : showsNav(pathname) ? 'pb-[calc(var(--nav-clearance)+1rem)]' : 'pt-[var(--safe-top)]'}>
+    {showsNav(pathname) && <div className="sticky top-0 z-30 mx-auto flex max-w-lg justify-end bg-bg px-5 pb-3 pt-[max(0.75rem,var(--safe-top))]"><NotificationBell /></div>}
     <div className="mx-auto max-w-lg space-y-3 px-5 pt-3" aria-live="polite">
       {!online && <p role="status" className="glass rounded-card p-4 text-sm">
         {t('youReOfflineYourLogsAre')}

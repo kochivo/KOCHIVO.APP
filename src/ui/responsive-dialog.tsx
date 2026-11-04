@@ -34,7 +34,7 @@ export function ResponsiveDialog({ onDismiss, fallbackId, openerId, modal = fals
       else document.getElementById(fallbackId)?.focus();
     };
   }, [fallbackId, openerId, modal]);
-  return <dialog {...props} className={cn('enter', className)} ref={dialog}
+  return <dialog {...props} className={cn('enter sheet', className)} ref={dialog}
     onCancel={(event) => { event.preventDefault(); onDismiss(); }}
     onKeyDown={(event) => {
       if (event.key === 'Escape') { event.preventDefault(); onDismiss(); }

@@ -2,19 +2,20 @@ import { getLocale, getT } from '@/core/i18n/server';
 import { messages } from '../messages';
 
 import Link from 'next/link';
-import { CalendarCheck } from 'lucide-react';
-import { EmptyState, GlassCard } from '@/ui';
+import { GlassCard } from '@/ui';
 import { formatNumber } from '@/lib/format';
 import { formatDateAr } from '@/lib/dates';
 import { CaptainVoiceNotes } from '@/features/voice-notes';
 import type { ProfileCheckIn } from '../types';
+import { RemindButton } from './remind-button';
+import { ReminderArrival } from './reminder-arrival';
 
 export async function CheckinsTab({ playerId, checkIns }: { playerId: string; checkIns: ProfileCheckIn[] }) {
   const [t, locale] = await Promise.all([getT(messages), getLocale()]);
   const n = (value: number | null, unit: string) => value === null ? t('dash') : `${formatNumber(value, locale)} ${unit}`;
   return (
     <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-      {checkIns.length === 0 ? <EmptyState icon={CalendarCheck} title={t('noCheckinsTitle')} body={t('noCheckinsBody')} action={{ label: t('remindPlayer'), href: `#voice-recorder-${playerId}` }} /> :
+      {checkIns.length === 0 ? <RemindButton playerId={playerId} kind="checkins" title={t('noCheckinsTitle')} body={t('noCheckinsBody')} label={t('remindPlayer')} /> :
         <ul className="space-y-3">{checkIns.map((row) => <li key={row.id}>
           <GlassCard className="space-y-3 p-5">
             <div className="flex flex-wrap items-center justify-between gap-2">
@@ -32,7 +33,7 @@ export async function CheckinsTab({ playerId, checkIns }: { playerId: string; ch
               !row.reviewedAt && <Link href="/captain/inbox" className="inline-flex min-h-12 items-center text-sm font-bold text-lime">{t('openInbox')}</Link>}
           </GlassCard>
         </li>)}</ul>}
-      <CaptainVoiceNotes playerId={playerId} />
+      <ReminderArrival playerId={playerId}><CaptainVoiceNotes playerId={playerId} /></ReminderArrival>
     </div>
   );
 }

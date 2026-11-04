@@ -9,19 +9,19 @@ vi.mock('@/core/i18n/server', async () => {
  return { getT: async (messages: Parameters<typeof createT>[0]) => createT(messages, 'en'), getLocale: async () => 'en' };
 });
 vi.mock('@/features/voice-notes', () => ({ CaptainVoiceNotes: () => null }));
+vi.mock('next/navigation', () => ({ useRouter: () => ({ push: vi.fn() }) }));
 vi.mock('@/features/onboarding', () => ({ onboardingMessages: { ar: {}, en: {} }, allergyOptions: [], injuryOptions: [], medicalOptions: [] }));
-it('links missing intake to the player reminder recorder', async () => {
+it('offers a reminder button for missing intake', async () => {
  const html = renderToStaticMarkup(await IntakeTab({ intake: null, today: '2026-11-03', playerId: 'p' }));
- expect(html).toContain('href="/captain/players/p?tab=checkins#voice-recorder-p"');
- expect(html).toContain('>Send a voice reminder</a>');
+ expect(html).toContain('>Send a voice reminder</button>');
 });
-it('links missing check-ins to the recorder on this tab', async () => {
+it('offers a reminder button for missing check-ins', async () => {
  const html = renderToStaticMarkup(await CheckinsTab({ playerId: 'p', checkIns: [] }));
- expect(html).toMatch(/href="#voice-recorder-p"[^>]*>Send a voice reminder<\/a>/);
+ expect(html).toContain('>Send a voice reminder</button>');
 });
-it('links missing weights and photos to a check-in reminder', async () => {
+it('offers reminder buttons for missing weights and photos', async () => {
  const html = renderToStaticMarkup(await ProgressTab({ checkIns: [], targetKg: null, playerId: 'p' }));
- expect(html.match(/href="\/captain\/players\/p\?tab=checkins#voice-recorder-p"/g)).toHaveLength(2);
+ expect(html.match(/>Send a voice reminder<\/button>/g)).toHaveLength(2);
 });
 it('links missing plans to the correct player builders', async () => {
  const html = renderToStaticMarkup(await PlanTab({ playerId: 'p', program: null, nutrition: null }));

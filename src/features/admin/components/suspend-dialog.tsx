@@ -18,7 +18,7 @@ export function SuspendDialog({ captain, onClose, onSuccess }: {
   useEffect(() => { ref.current?.showModal(); }, []);
   return <dialog ref={ref} aria-labelledby="suspend-title" aria-describedby="suspend-warning"
     onCancel={event => { event.preventDefault(); if (!pending) onClose(); }}
-    className="m-auto max-h-[90dvh] w-[calc(100%_-_2rem)] max-w-md overflow-y-auto rounded-card border border-line bg-surface p-6 text-ink backdrop:bg-bg-deep/80">
+    className="sheet m-auto max-h-[90dvh] w-[calc(100%_-_2rem)] max-w-md overflow-y-auto rounded-card border border-line bg-surface p-6 text-ink backdrop:bg-bg-deep/80">
     <h2 id="suspend-title" className="text-xl font-bold">{captain.suspended ? t('restoreTitle') : t('suspendTitle')}</h2>
     <p className="mt-2 break-words text-muted">{captain.full_name}</p>
     <p id="suspend-warning" className="my-4 text-warn">{t('warning')}</p>

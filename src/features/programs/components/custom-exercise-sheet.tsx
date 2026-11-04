@@ -27,7 +27,7 @@ export function CustomExerciseSheet({ exercise, onClose, onSave }: {
     return () => { element?.close(); if (opener instanceof HTMLElement && opener.isConnected) opener.focus(); };
   }, []);
   return <dialog ref={dialog} dir={locale === 'ar' ? 'rtl' : 'ltr'} aria-labelledby="custom-exercise-title"
-    className="glass-strong m-auto max-h-dvh w-full max-w-md overflow-y-auto rounded-card p-5 text-ink backdrop:bg-bg-deep/80"
+    className="sheet m-auto max-h-dvh w-full max-w-md overflow-y-auto rounded-card p-5 text-ink backdrop:bg-bg-deep/80"
     onCancel={event => { event.preventDefault(); event.stopPropagation(); onClose(); }}>
     <form noValidate className="space-y-4" onSubmit={event => {
       event.preventDefault();

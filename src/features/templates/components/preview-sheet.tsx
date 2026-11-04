@@ -35,7 +35,7 @@ export function PreviewSheet({ template, onAssign, onClose }: { template: Templa
   const title = starterText(template.title, locale);
   const emptyAction = { label: t('chooseAnother'), onClick: onClose };
   return <dialog ref={dialog} aria-labelledby="preview-template-title" onCancel={onClose} onClose={onClose}
-    className="fixed inset-0 m-auto max-h-[85dvh] w-[calc(100%_-_2rem)] max-w-lg overflow-y-auto rounded-card border border-line bg-surface p-6 text-ink">
+    className="sheet fixed inset-0 m-auto max-h-[85dvh] w-[calc(100%_-_2rem)] max-w-lg overflow-y-auto rounded-card border border-line bg-surface p-6 text-ink">
     <div className="grid gap-4">
       <h2 id="preview-template-title" className="text-xl font-bold">{t('previewTitle', { title })}</h2>
       {error ? <div role="alert" className="grid justify-items-start gap-2">{error}

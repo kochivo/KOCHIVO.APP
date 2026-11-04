@@ -1,13 +1,8 @@
 @import 'tailwindcss';
 @import './surfaces.css';
 [dir='ltr'] .dir-icon { transform: scaleX(-1); }
-/*
- * KOCHIVO design tokens — the only place colors are defined.
- * Brand source: brand/tokens/palette.css (2026-10-26). Extra shades below are derived from it.
- * Use the generated utilities (bg-surface, text-muted, border-line, bg-lime …), never raw hex in components.
- */
+/* KOCHIVO design tokens — colors come from brand/tokens/palette.css (2026-10-26); use utilities, never raw hex in components. */
 @theme {
-  /* brand */
   --color-bg: #0b0c0d;
   --color-surface: #141414;
   --color-line: #292929;
@@ -16,7 +11,6 @@
   --color-faint: #80858b;
   --color-lime: #b6e94f;
   --color-lime-ink: #b6e94f;
-  /* derived */
   --color-bg-deep: #070808;
   --color-surface-raised: #1c1c1c;
   --color-line-soft: rgb(242 242 238 / 0.06);
@@ -38,7 +32,6 @@
   --text-stat-wide: 2.5rem;
   --text-stat-large: 3rem;
   --text-stat-large-wide: 3.75rem;
-  /* minimum touch target from the PRD (48dp) */
   --spacing-touch: 3rem;
   --shadow-lime-glow: inset 0 1px 0 rgb(255 255 255 / .25), 0 0 18px color-mix(in srgb, var(--color-lime) 25%, transparent);
   --shadow-lime-glow-hover: inset 0 1px 0 rgb(255 255 255 / .3), 0 0 18px color-mix(in srgb, var(--color-lime) 32%, transparent);
@@ -48,6 +41,9 @@
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-start: env(safe-area-inset-left);
   --safe-end: env(safe-area-inset-right);
+  --nav-height: calc(4.5rem + 2px);
+  --nav-clearance: calc(var(--nav-height) + 1rem + var(--safe-bottom));
+  --builder-action-height: calc(4.5rem + 2px);
   --glass-tint: rgb(255 255 255 / 0.03);
   --glass-tint-raised: rgb(255 255 255 / 0.05);
   --glass-strong-tint: rgb(255 255 255 / 0.07);
@@ -137,6 +133,12 @@ html[data-theme='light'] {
   --mesh-bottom: #edf0e9;
 }
 html[data-theme='light'] .text-lime { color: var(--color-lime-ink); }
+@utility sheet {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
 @utility mesh {
   background: radial-gradient(ellipse at top, var(--mesh-glow), transparent 60%),
     linear-gradient(135deg, var(--mesh-top), var(--color-bg-deep));
@@ -167,6 +169,7 @@ html:not([data-theme='light']) .theme-light-only, html[data-theme='light'] .them
   html { scroll-padding-block: calc(5rem + var(--safe-top)); }
   html:has(dialog:modal), body:has(dialog:modal) { overflow: hidden; }
   dialog { overflow-y: auto; overscroll-behavior: contain; }
+  dialog::backdrop { background: color-mix(in srgb, var(--color-bg-deep) 80%, transparent); }
   /* Fixed pseudo-element instead of background-attachment:fixed (broken on iOS). */
   body::before {
     content: '';
@@ -193,7 +196,6 @@ dialog:modal {
   padding-inline-end: max(1.25rem, var(--safe-end));
 }
 html[data-keyboard='open'] dialog:modal { inset-block-end: var(--keyboard-inset); }
-/* Landing utilities use the existing theme and font metrics. */
 @layer components {
   .marketing-wrap { width: 100%; max-width: 1200px; margin-inline: auto; padding-inline: clamp(1rem, 4vw, 2rem); }
   .marketing-section { padding-block-start: clamp(4rem, 9vw, 7.5rem); }
@@ -214,20 +216,16 @@ html[data-keyboard='open'] dialog:modal { inset-block-end: var(--keyboard-inset)
   .marketing-beam { transform-origin: 100% 50%; animation: marketing-grow .8s cubic-bezier(.2,.8,.2,1) .45s both; }
   .marketing-phone { animation: marketing-float 6s ease-in-out infinite; }
 }
-
 @keyframes marketing-rise { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
 @keyframes marketing-sweep { 0% { background-position: 100% 0; } 45%, 60% { background-position: 0 0; } 100% { background-position: -100% 0; } }
 @keyframes marketing-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 @keyframes marketing-float { 50% { transform: translateY(-6px); } }
-
 @media (max-width: 700px) {
   .marketing-slogan { font-size: clamp(2rem, 11.5vw, 3.25rem); }
 }
-
 @supports (animation-timeline: view()) {
   .marketing-reveal { animation: marketing-rise linear both; animation-timeline: view(); animation-range: entry 0% entry 35%; }
 }
-
 /* Sits above the bottom nav and the sticky primary action, so a toast never covers either. */
 .toast-stack { inset-inline: 0; bottom: calc(10.5rem + var(--safe-bottom)); }
 .toast-leave { animation: toast-fade 200ms ease-out forwards; }

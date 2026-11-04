@@ -8,13 +8,13 @@ import { NotificationBell } from '@/features/notifications';
 export async function CaptainShell({ children }: { children: ReactNode }) {
   const t = await getT(messages);
   return (
-    <div className="mx-auto flex min-h-dvh max-w-screen-2xl gap-6 p-4 pt-[max(1rem,var(--safe-top))] lg:p-6 lg:pt-[max(1.5rem,var(--safe-top))]">
+    <div className="mx-auto flex min-h-dvh max-w-screen-2xl gap-6 px-4 pb-4 lg:px-6 lg:pb-6">
       <aside className="glass sticky top-[max(1.5rem,var(--safe-top))] contents h-[calc(100dvh-1.5rem-max(1.5rem,var(--safe-top)))] w-60 shrink-0 flex-col gap-6 rounded-card p-4 lg:flex">
         <Link href="/captain" className="hidden min-h-12 items-center px-3 font-display text-2xl font-extrabold lg:flex">{t('brand')}</Link>
         <CaptainNav />
       </aside>
-      <div className="min-w-0 flex-1 pb-28 lg:pb-0">
-        <div className="mb-6 flex items-center justify-between">
+      <div className="min-w-0 flex-1 pb-[calc(var(--nav-clearance)+1rem)] lg:pb-0">
+        <div className="sticky top-0 z-30 mb-6 flex items-center justify-between bg-bg pb-3 pt-[max(1rem,var(--safe-top))] lg:pt-[max(1.5rem,var(--safe-top))]">
           <Link href="/captain" className="flex min-h-12 items-center font-display text-xl font-extrabold lg:invisible">{t('brand')}</Link>
           <NotificationBell captain />
         </div>

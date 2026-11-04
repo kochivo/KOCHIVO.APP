@@ -60,7 +60,7 @@ export function CustomFoodSheet({ onClose, onSave, openerId, alternative = false
     { name: 'fat', label: t('fat2'), min: 0, max: 1000, value: food?.fat ?? 0 },
   ];
   return <ResponsiveDialog fallbackId={openerId} openerId={openerId} onDismiss={() => { if (!saving.current) onClose(); }}
-    aria-labelledby={titleId} className="glass-strong fixed inset-0 z-50 m-auto max-h-dvh w-full max-w-lg overflow-y-auto rounded-card p-5 text-ink">
+    aria-labelledby={titleId} className="sheet fixed inset-0 z-50 m-auto max-h-dvh w-full max-w-lg overflow-y-auto rounded-card p-5 text-ink">
     <div className="flex items-center justify-between gap-3">
       <h2 id={titleId} className="text-xl font-bold">{food ? t('editFood') : t('newFood')}</h2>
       <Button variant="ghost" disabled={busy} aria-label={t('close')} onClick={onClose}><X aria-hidden /></Button>

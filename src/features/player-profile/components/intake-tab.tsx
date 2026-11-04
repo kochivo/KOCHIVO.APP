@@ -2,12 +2,12 @@ import { getLocale, getT } from '@/core/i18n/server';
 import { messages } from '../messages';
 
 import type { ReactNode } from 'react';
-import { ClipboardList } from 'lucide-react';
-import { EmptyState, GlassCard } from '@/ui';
+import { GlassCard } from '@/ui';
 import { formatNumber } from '@/lib/format';
 import { allergyOptions, injuryOptions, medicalOptions, onboardingMessages } from '@/features/onboarding';
 import { ageIn, pickedLabels, trainingDayKeys } from '../model';
 import type { ProfileIntake } from '../types';
+import { RemindButton } from './remind-button';
 
 const experienceLabels = { new: 'justStarting', under_1y: 'lessThanAYear', '1_3y': 'message13Years', over_3y: 'over3Years' } as const;
 
@@ -17,7 +17,7 @@ function Fact({ label, children }: { label: string; children: ReactNode }) {
 
 export async function IntakeTab({ intake, today, playerId }: { intake: ProfileIntake | null; today: string; playerId: string }) {
   const [t, o, locale] = await Promise.all([getT(messages), getT(onboardingMessages), getLocale()]);
-  if (!intake) return <EmptyState icon={ClipboardList} title={t('noIntakeTitle')} body={t('noIntakeBody')} action={{ label: t('remindPlayer'), href: `/captain/players/${playerId}?tab=checkins#voice-recorder-${playerId}` }} />;
+  if (!intake) return <RemindButton playerId={playerId} kind="intake" title={t('noIntakeTitle')} body={t('noIntakeBody')} label={t('remindPlayer')} />;
   const n = (value: number) => formatNumber(value, locale);
   const list = (labels: string[]) => labels.length ? labels.join(t('listSeparator')) : t('nothing');
   const experience = experienceLabels[intake.experience as keyof typeof experienceLabels];
