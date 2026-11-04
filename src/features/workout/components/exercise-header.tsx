@@ -5,6 +5,7 @@ import { messages } from '../messages';
 import { formatNumber } from '@/lib/format';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import type { SnapshotExercise } from '@/core/offline';
 import { exerciseMediaUrl } from '@/core/storage';
 import type { LastSession } from '../data/last-performance';
@@ -25,6 +26,9 @@ export function ExerciseHeader({ exercise, last }: { exercise: SnapshotExercise;
         className="inline-flex min-h-12 items-center text-lime underline">{t('watchVideo')}</a>}
       {last?.sets.length ? <p className="text-sm text-muted">{t('lastTime')} <bdi dir="ltr">{last.sets.map((set) =>
         `${formatNumber(set.weight_kg ?? 0, locale)}×${formatNumber(set.reps ?? 0, locale)}`).join(' · ')}</bdi></p> : null}
+      <Link className="inline-flex min-h-12 items-center text-lime underline" href={`/player/history?exercise=${encodeURIComponent(exercise.exercise_id)}`}>
+        {t('seeHistory')}
+      </Link>
     </div>
   </section>;
 }

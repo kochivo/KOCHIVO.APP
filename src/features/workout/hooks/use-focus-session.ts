@@ -14,6 +14,8 @@ import { buildQueue } from '../queue';
 import { trainingDate } from '../training-date';
 import { useLastSession } from './use-last-session';
 import { useRestTimer } from './use-rest-timer';
+import { useBodyweight } from './use-bodyweight';
+import { validateSet } from '../set-validation';
 
 const readCached = () => localDb().program_snapshot.get('active');
 const readPending = () => pendingCount(localDb());
@@ -29,6 +31,7 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
   const [editing, setEditing] = useState<string | null>(null);
   const [draft, setDraft] = useState<{ key: string; weight: number; reps: number } | null>(null);
   const [busy, setBusy] = useState(false);
+  const [invalid, setInvalid] = useState<{ key: string; result: ReturnType<typeof validateSet>; attempt: number } | null>(null);
   const saving = useRef(false);
   const cooldown = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const onError = useCallback(() => setError(t('couldntReadTheWorkoutOnYourPhone')), [t]);
@@ -64,6 +67,7 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
   const current = edited ? queue.find((step) => matches(edited, step.exercise.id, step.setIndex)) : queue[currentIndex];
   const key = `${session?.id}:${current?.exercise.id}:${current?.setIndex}`;
   const exerciseId = String(current?.exercise.exercise_id ?? '');
+  const { bodyweight, setBodyweight } = useBodyweight(exerciseId);
   const historySessionId = session?.id ?? '';
   const memory = useLastSession(playerId ?? cached?.player_id, exerciseId, historySessionId, onError, retryKey);
   const performance = performanceFor(memory.last, current?.setIndex ?? 0);
@@ -71,7 +75,7 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
     row.set_index < (current?.setIndex ?? 0)).sort((a, b) => b.set_index - a.set_index)[0];
   // Last time's same set beats today's previous set: that is the number to match or beat.
   const prefill = edited ?? performance ?? previous ?? memory.last?.sets.at(-1);
-  const weight = Math.min(500, Math.max(0, draft?.key === key ? draft.weight : prefill?.weight_kg ?? 0));
+  const weight = bodyweight ? 0 : Math.min(500, Math.max(0, draft?.key === key ? draft.weight : prefill?.weight_kg ?? 0));
   const reps = Math.min(100, Math.max(0, draft?.key === key ? draft.reps : prefill?.reps ?? current?.exercise.reps_min ?? 0));
   const ready = Boolean(day && session !== undefined && sets && today && memory.ready);
   useEffect(() => () => { clearTimeout(cooldown.current); }, []);
@@ -83,6 +87,12 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
   }, [session, sets, queue.length, currentIndex, retryKey, t]);
   const complete = useCallback(async () => {
     if (!day || !current || !ready || saving.current || rest.remaining > 0) return;
+    const result = validateSet({ weight, reps, bodyweight });
+    if (result !== 'ok') {
+      setInvalid(previous => ({ key, result, attempt: (previous?.attempt ?? 0) + 1 }));
+      return;
+    }
+    setInvalid(null);
     saving.current = true;
     setBusy(true);
     const tappedAt = Date.now();
@@ -106,8 +116,9 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
     finally {
       cooldown.current = setTimeout(() => { saving.current = false; setBusy(false); }, Math.max(0, 600 - (Date.now() - tappedAt)));
     }
-  }, [day, today, session, current, ready, rest, edited, weight, reps, t]);
+  }, [day, today, session, current, ready, rest, edited, weight, reps, bodyweight, key, t]);
   return { day, programFinished, queue, current, doneSets, performance, lastSession: memory.last, weight, reps, rest, pending, pr, dismissPr,
+    bodyweight, setBodyweight, invalid: invalid?.key === key ? invalid : null,
     progress: edited ? queue.findIndex((step) => matches(edited, step.exercise.id, step.setIndex)) + 1 :
       currentIndex < 0 ? queue.length : currentIndex + 1,
     next: queue[(edited ? queue.findIndex((step) => matches(edited, step.exercise.id, step.setIndex)) : currentIndex) + 1],

@@ -5,10 +5,11 @@ import { formatNumber } from '@/lib/format';
 
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, Check, Dumbbell } from 'lucide-react';
+import { ArrowRight, Dumbbell } from 'lucide-react';
 import { localDate } from '@/lib/dates';
 import { useCalendarClock } from '@/lib/use-calendar-clock';
-import { Button, CardioCards, EmptyState, ErrorState, IconButton, LoadingState, ProgressBar, Stepper, SyncPill } from '@/ui';
+import { CardioCards, EmptyState, ErrorState, IconButton, LoadingState, ProgressBar, SyncPill } from '@/ui';
+import { SetControls } from './set-controls';
 import { useFocusSession } from '../hooks/use-focus-session';
 import { useWakeLock } from '../hooks/use-wake-lock';
 import { DonePanel } from './done-panel';
@@ -55,13 +56,7 @@ export function FocusScreen({ dayId, playerId }: { dayId: string; playerId?: str
           <SetDots exercise={current.exercise} currentIndex={current.setIndex} doneSets={state.doneSets}
             onEdit={state.edit} disabled={state.disabled} />
           {rest.remaining > 0 ? <RestPanel remaining={rest.remaining} flashing={rest.flashing} onExtend={rest.extend} onSkip={rest.skip} /> : <>
-            <Stepper format={(value) => formatNumber(value, locale)} label={t('weightKg')} value={state.weight} step={2.5} min={0} onChange={state.setWeight}
-              hint={state.performance?.weight_kg != null ? t('lastTimeWeight', { value: formatNumber(state.performance.weight_kg, locale) }) : undefined} />
-            <Stepper format={(value) => formatNumber(value, locale)} label={t('reps')} value={state.reps} step={1} min={0} onChange={state.setReps}
-              hint={state.performance?.reps != null ? t('lastTimeReps', { value: formatNumber(state.performance.reps, locale) }) : undefined} />
-            <Button size="xl" className="w-full" disabled={state.disabled} onClick={() => void state.complete()}>
-              <Check aria-hidden />{t('completeSet')}
-            </Button>
+            <SetControls state={state} />
           </>}
           {lastSet && <FormCheckButton exerciseId={lastSet.exercise_id} setLogId={lastSet.id} />}
           {state.next && <NextUp exercise={state.next.exercise} />}

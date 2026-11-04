@@ -17,5 +17,9 @@ it('opens a custom exercise video in a separate tab without embedding it', () =>
   expect(html).not.toContain('<iframe');
 });
 it('handles cached exercises without video and does not link unsafe URLs', () => {
-  for (const url of [undefined, null, '', 'javascript:alert(1)', 'http://example.com']) expect(render(url)).not.toContain('<a ');
+  for (const url of [undefined, null, '', 'javascript:alert(1)', 'http://example.com']) {
+    const html = render(url);
+    expect(html).not.toContain('Watch video');
+    expect(html).toContain('href="/player/history?exercise=exercise"');
+  }
 });
