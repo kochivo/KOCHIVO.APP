@@ -26,10 +26,13 @@ export function normalizeSocial(key: SocialKey, raw: string): string | null {
   } catch { return null; }
 }
 
-export function settingsSchemas(t: Translator<typeof messages> = createT(messages, 'ar')) {
+export function settingsSchemas(t: Translator<typeof messages> = createT(messages, 'ar'), player = false) {
   const profileSchema = z.object({
     full_name: z.string().trim().min(1, t('enterYourName')).max(80, t('nameMustBe80CharactersOr')),
-    phone: z.string().regex(/^\+[1-9][0-9]{7,14}$/, t('useAnInternationalNumberLike201012345678')),
+    phone: player ? z.union([z.literal('').transform(() => null), z.null(),
+      z.string().regex(/^\+[1-9][0-9]{7,14}$/, t('useAnInternationalNumberLike201012345678'))]) :
+      z.string().regex(/^\+[1-9][0-9]{7,14}$/, t('useAnInternationalNumberLike201012345678')),
+    avatar_path: z.string().max(200).nullable().optional(),
   });
 
   const inviteMessageSchema = z.object({

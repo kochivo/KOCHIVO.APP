@@ -1,12 +1,12 @@
 import { beforeEach, expect, it, vi } from 'vitest';
-import { saveCaptainWithAvatar } from './data/captain-avatar';
+import { saveCaptainWithAvatar, savePlayerWithAvatar } from './data/captain-avatar';
 import { createT } from '@/core/i18n/messages';
 import { messages } from './messages';
 
 const mock = vi.hoisted(() => ({ upload: vi.fn(), remove: vi.fn(), save: vi.fn(), compress: vi.fn() }));
 vi.mock('@/core/offline/ids', () => ({ uuidv7: () => 'new-avatar' }));
 vi.mock('@/lib/compress-image', () => ({ compressImage: mock.compress }));
-vi.mock('./data/settings', () => ({ saveCaptainProfile: mock.save }));
+vi.mock('./data/settings', () => ({ saveCaptainProfile: mock.save, saveProfile: mock.save }));
 vi.mock('@/core/supabase/lazy', () => ({ loadSupabaseBrowser: async () => ({
   auth: { getUser: async () => ({ data: { user: { id: 'captain' } } }) },
   storage: { from: () => ({ upload: mock.upload, remove: mock.remove }) },
@@ -44,4 +44,13 @@ it('falls back to JPEG where the browser cannot encode WebP (iPhone Safari)', as
   expect(mock.compress).toHaveBeenLastCalledWith(file, 256, 0.8, t, true, 'image/jpeg');
   expect(mock.upload).toHaveBeenCalledWith('captain/new-avatar.jpg', expect.any(Blob), { contentType: 'image/jpeg', upsert: false });
   expect(mock.save).toHaveBeenCalledWith({ ...input, avatar_path: 'captain/new-avatar.jpg' });
+});
+it('uses the same compressed upload transaction for a player profile', async () => {
+  await savePlayerWithAvatar({ full_name: 'Ali', phone: '' }, new File(['source'], 'photo.jpg'), t);
+  expect(mock.save).toHaveBeenCalledWith({ full_name: 'Ali', phone: '', avatar_path: 'captain/new-avatar.webp' });
+});
+it('saves player details without uploading when no photo is selected', async () => {
+  await savePlayerWithAvatar({ full_name: 'Ali', phone: '' }, null, t);
+  expect(mock.save).toHaveBeenCalledWith({ full_name: 'Ali', phone: '' });
+  expect(mock.upload).not.toHaveBeenCalled();
 });

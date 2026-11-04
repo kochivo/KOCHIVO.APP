@@ -191,13 +191,25 @@ describe('server actions and roster reads', () => {
     expect(await createInvite(30)).toEqual({ error: 'الدعوة متعملتش. جرّب تاني' });
   });
   it('maps roster RPC rows without accepting a player id', async () => {
+    mocks.query.select.mockReturnValueOnce({ in: async () => ({ data: [{ id: 'p', avatar_path: null }], error: null }) });
     mocks.client.rpc.mockResolvedValueOnce({ data: [{ player_id: 'p', full_name: 'علي', access_until: '2026-12-01', started_on: '2026-10-01', last_training_date: null, program_title: null, open_tasks: 2 }], error: null });
-    expect(await fetchRoster()).toEqual({ players: [{ playerId: 'p', fullName: 'علي', accessUntil: '2026-12-01', startedOn: '2026-10-01', lastTrainingDate: null, programTitle: null, openTasks: 2 }] });
+    expect(await fetchRoster()).toEqual({ players: [{ playerId: 'p', fullName: 'علي', avatarUrl: null, accessUntil: '2026-12-01', startedOn: '2026-10-01', lastTrainingDate: null, programTitle: null, openTasks: 2 }] });
     expect(mocks.client.rpc).toHaveBeenCalledWith('captain_roster');
     mocks.client.rpc.mockResolvedValueOnce({ data: null, error: { code: '500' } });
     expect(await fetchRoster()).toHaveProperty('error');
     mocks.client.rpc.mockRejectedValueOnce(new Error('offline'));
     expect(await fetchRoster()).toHaveProperty('error');
+  });
+  it('resolves roster avatar paths through the public avatar bucket', async () => {
+    mocks.client.rpc.mockResolvedValueOnce({ data: [{ player_id: 'p', full_name: 'Ali' }], error: null });
+    const inIds = vi.fn().mockResolvedValue({ data: [{ id: 'p', avatar_path: 'p/photo.webp' }], error: null });
+    mocks.query.select.mockReturnValueOnce({ in: inIds });
+    const getPublicUrl = vi.fn().mockReturnValue({ data: { publicUrl: 'https://example.com/p/photo.webp' } });
+    Object.assign(mocks.client, { storage: { from: () => ({ getPublicUrl }) } });
+    const result = await fetchRoster();
+    expect(result.players?.[0]?.avatarUrl).toBe('https://example.com/p/photo.webp');
+    expect(inIds).toHaveBeenCalledWith('id', ['p']);
+    expect(getPublicUrl).toHaveBeenCalledWith('p/photo.webp');
   });
   it('archives only the session captain active relationship and revalidates', async () => {
     const playerId = '018bfc00-0000-7000-8000-000000000001';

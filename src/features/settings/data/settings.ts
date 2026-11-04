@@ -61,12 +61,19 @@ export async function saveCaptainProfile(input: unknown): Promise<Result<Setting
 export async function saveProfile(input: unknown): Promise<Result<SettingsProfile>> {
   const t = await getT(messages);
   const failure = t('couldnTSaveChangesTryAgain');
-  const parsed = settingsSchemas(t).profileSchema.safeParse(input);
-  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? failure };
   try {
     const { client, id } = await ownSession();
+    const previous = await client.from('profiles').select('role,avatar_path').eq('id', id).single();
+    if (previous.error || !previous.data) return { error: failure };
+    const parsed = settingsSchemas(t, previous.data.role === 'player').profileSchema.safeParse(input);
+    if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? failure };
+    const path = parsed.data.avatar_path;
+    if (path && (!path.startsWith(`${id}/`) || !/^[-a-zA-Z0-9]+\/[-a-zA-Z0-9]+\.(webp|jpg)$/.test(path))) return { error: failure };
     const result = await client.from('profiles').update(parsed.data).eq('id', id).select('*').single();
     if (result.error || !result.data) return { error: failure };
+    if (path && previous.data.avatar_path?.startsWith(`${id}/`) && path !== previous.data.avatar_path) {
+      await client.storage.from('captain-avatars').remove([previous.data.avatar_path]).catch(() => undefined);
+    }
     return { data: result.data };
   } catch (error) { unstable_rethrow(error); return { error: failure }; }
 }

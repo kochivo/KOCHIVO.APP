@@ -31,6 +31,8 @@ export interface ProfileCheckIn {
 
 export interface PlayerProfile {
   name: string;
+  avatarUrl?: string | null;
+  phone?: string | null;
   intake: ProfileIntake | null;
   checkIns: ProfileCheckIn[];
   program: { title: string; updatedAt: string; days: number; exercises: number } | null;

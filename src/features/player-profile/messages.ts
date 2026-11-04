@@ -2,6 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    whatsappPlayer: 'كلّم اللاعب على واتساب',
     remindPlayer: "ابعت تذكير صوتي",
     profile: "ملف اللاعب",
     backToPlayers: "رجوع للاعبين",
@@ -71,6 +72,7 @@ export const messages = defineMessages({
     listSeparator: "، ",
   },
   en: {
+    whatsappPlayer: 'Message player on WhatsApp',
     remindPlayer: "Send a voice reminder",
     profile: "Player profile",
     backToPlayers: "Back to players",

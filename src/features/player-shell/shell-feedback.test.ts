@@ -33,6 +33,13 @@ vi.mock('./hooks/use-online', () => ({ useOnline: () => true }));
 
 beforeEach(() => { state.effects = []; state.path = '/player'; state.rest = false; state.moodMounts = 0; state.syncMounts = 0; state.report = undefined; });
 afterEach(() => vi.unstubAllGlobals());
+it.each(['/player', '/player/nutrition', '/player/progress', '/player/captain', '/player/settings'])('shows accessible settings on %s', path => {
+  state.path = path;
+  const html = renderToStaticMarkup(createElement(PlayerShell, null, null));
+  expect(html).toContain('href="/player/settings"');
+  expect(html).toContain('aria-label="الإعدادات"');
+  if (path === '/player/settings') expect(html).toMatch(/aria-current="page"/);
+});
 it('remembers player on mount without loading add-ons for the server render', () => {
   const setItem = vi.fn();
   vi.stubGlobal('window', { localStorage: { setItem } });

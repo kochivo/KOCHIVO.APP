@@ -16,4 +16,5 @@ it('shows branding and only safe nonempty contact links with new-tab protection'
   expect(html).toContain('href="https://instagram.com/ali" target="_blank" rel="noopener noreferrer"');
   expect(html).toContain('https://wa.me/201012345678');
   expect(html).not.toContain('javascript:'); expect(html).not.toContain('YouTube');
+  expect(html).not.toContain('/player/settings');
 });

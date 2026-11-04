@@ -2,6 +2,8 @@ import { getLocale, getT } from '@/core/i18n/server';
 import { messages } from '../messages';
 
 import Link from 'next/link';
+import Image from 'next/image';
+import { whatsappUrl } from '@/lib/whatsapp';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/cn';
@@ -31,16 +33,19 @@ export async function ProfileScreen({ playerId, tab, today, data }: Props) {
   if (result.error) return <section className="space-y-4">{back}<p role="alert" className="glass rounded-card p-5 text-danger">{t('loadFailed')}</p></section>;
   if (!result.data) notFound();
   const profile = result.data;
+  const whatsapp = profile.phone ? whatsappUrl({ phone: profile.phone }) : null;
   return (
     <section className="space-y-6">
       {back}
       <header className="flex items-center gap-4">
-        <span aria-hidden className="glass-strong grid size-16 shrink-0 place-items-center rounded-full font-display text-2xl font-extrabold">{profile.name.trim().charAt(0)}</span>
+        {profile.avatarUrl ? <Image src={profile.avatarUrl} alt="" width={64} height={64} unoptimized className="size-16 shrink-0 rounded-full object-cover" /> :
+          <span aria-hidden className="glass-strong grid size-16 shrink-0 place-items-center rounded-full font-display text-2xl font-extrabold">{profile.name.trim().charAt(0)}</span>}
         <div className="min-w-0">
           <p className="text-sm text-muted">{t('profile')}</p>
           <h1 className="truncate text-3xl font-extrabold">{profile.name}</h1>
         </div>
       </header>
+      {whatsapp && <a href={whatsapp} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center rounded-control border border-lime px-4 font-bold text-lime">{t('whatsappPlayer')}</a>}
       <nav aria-label={t('tabs')} className="glass flex gap-1 overflow-x-auto rounded-control p-1">
         {profileTabs.map((key) => <Link key={key} href={`?tab=${key}`} scroll={false} aria-current={key === tab ? 'page' : undefined}
           className={cn('flex min-h-12 flex-1 shrink-0 items-center justify-center whitespace-nowrap rounded-control px-4 text-sm font-bold transition-colors duration-150 motion-reduce:transition-none',

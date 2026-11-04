@@ -3,7 +3,6 @@ import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 
 import { MessageCircle } from 'lucide-react';
-import Link from 'next/link';
 import Image from 'next/image';
 import type { ReactNode } from 'react';
 import { Button, EmptyState, ErrorState, GlassCard, LoadingState } from '@/ui';
@@ -65,6 +64,5 @@ export function CaptainScreen({ voiceNotes }: { voiceNotes?: ReactNode }) {
           </a> : <Button disabled className="min-h-12 w-full">{t('yourCoachHasnTAddedA')}</Button>}
         </GlassCard>}
     {data && voiceNotes}
-    <Link href="/player/settings" className="glass flex min-h-12 items-center justify-center rounded-control px-4">{t('settings')}</Link>
   </main>;
 }

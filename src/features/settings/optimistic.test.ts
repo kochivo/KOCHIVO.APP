@@ -32,7 +32,7 @@ vi.mock('react', async original => ({
   use: () => hooks.data,
 }));
 vi.mock('@/core/i18n/client', () => ({ useT: () => hooks.t, useLocale: () => 'en' }));
-vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh: vi.fn() }) }));
+vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh: vi.fn() }), usePathname: () => '/captain/settings' }));
 vi.mock('@/features/demo', () => ({ useDemoExpiry: () => null }));
 type Node = ReactElement<Record<string, unknown>>;
 function nodes(value: unknown): Node[] {
