@@ -2,6 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    unsentVoice: 'فيه تسجيل لسه متبعتش. تخرج وتمسحه؟',
     photoHint: "افتح ملف اللاعب وابعتله تذكير يضيف صور في المتابعة الجاية",
     openPlayer: "افتح اللاعب",
     'voiceReply': "رد بصوتك",
@@ -78,6 +79,7 @@ export const messages = defineMessages({
     'dash': "—",
   },
   en: {
+    unsentVoice: 'You have an unsent recording. Leave and discard it?',
     photoHint: "Open the player profile to remind them to add photos next time",
     openPlayer: "Open player",
     'voiceReply': "Reply by voice",

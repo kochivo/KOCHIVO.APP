@@ -4,3 +4,5 @@ export { PlayerVoiceNotes } from './components/player-voice-notes';
 export { CaptainVoiceNotes } from './components/captain-voice-notes';
 export type { VoiceContext, VoiceNote } from './types';
 export { messages as voiceNoteMessages } from './messages';
+export { useRecorder } from './hooks/use-recorder';
+export { sendVoiceNote, listContextVoiceNotes, markListened } from './data/voice-notes';

@@ -10,4 +10,5 @@ export interface VoiceNote {
   listenedAt: string | null;
   createdAt: string;
   contextId: string | null;
+  mimeType?: string;
 }

@@ -158,6 +158,7 @@ export type Database = {
       }
       check_ins: {
         Row: {
+          body_fat_pct: number | null
           body_weight_kg: number | null
           captain_id: string
           captain_reply: string | null
@@ -165,12 +166,14 @@ export type Database = {
           id: string
           notes: string | null
           photo_paths: string[]
+          photo_poses: string[]
           player_id: string
           reviewed_at: string | null
           waist_cm: number | null
           week_start: string
         }
         Insert: {
+          body_fat_pct?: number | null
           body_weight_kg?: number | null
           captain_id: string
           captain_reply?: string | null
@@ -178,12 +181,14 @@ export type Database = {
           id?: string
           notes?: string | null
           photo_paths?: string[]
+          photo_poses?: string[]
           player_id?: string
           reviewed_at?: string | null
           waist_cm?: number | null
           week_start: string
         }
         Update: {
+          body_fat_pct?: number | null
           body_weight_kg?: number | null
           captain_id?: string
           captain_reply?: string | null
@@ -191,6 +196,7 @@ export type Database = {
           id?: string
           notes?: string | null
           photo_paths?: string[]
+          photo_poses?: string[]
           player_id?: string
           reviewed_at?: string | null
           waist_cm?: number | null

@@ -2,6 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    unsupportedAudio: 'الصوت ده مش بيشتغل على جهازك، حدّث iOS',
     inAppBrowserWarning: 'افتح الرابط في كروم أو سفاري عشان تسجيل الدخول يشتغل',
     copyLink: 'انسخ الرابط',
     linkCopied: 'الرابط اتنسخ',
@@ -35,6 +36,7 @@ export const messages = defineMessages({
     themeCycle: "شكل التطبيق: {current}، غيّر لـ{next}",
   },
   en: {
+    unsupportedAudio: 'Your device cannot play this audio. Update iOS.',
     inAppBrowserWarning: 'Open this link in Chrome or Safari so sign-in works',
     copyLink: 'Copy link',
     linkCopied: 'Link copied',
