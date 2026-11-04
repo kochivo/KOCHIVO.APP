@@ -16,17 +16,17 @@ it.each([
   ['unknown', 'التفعيل متعملش. جرّب تاني'],
 ])('preserves meal-plan activation error %s', async (code, message) => {
   rpc.mockResolvedValue({ error: { code } });
-  await expect(activatePlan(id)).rejects.toThrow(message);
+  await expect(activatePlan(id)).resolves.toEqual({ ok: false, error: message });
 });
 
 it('activates the selected plan', async () => {
   rpc.mockResolvedValue({ error: null });
-  await expect(activatePlan(id)).resolves.toBeUndefined();
+  await expect(activatePlan(id)).resolves.toEqual({ ok: true, data: undefined });
   expect(rpc).toHaveBeenCalledWith('activate_nutrition_plan', { p_plan: id });
 });
 
 it('preserves validation and transport exceptions', async () => {
-  await expect(activatePlan('bad')).rejects.toThrow('النظام مش موجود');
+  await expect(activatePlan('bad')).resolves.toEqual({ ok: false, error: 'النظام مش موجود' });
   expect(rpc).not.toHaveBeenCalled();
   rpc.mockRejectedValue(new Error('private'));
   await expect(activatePlan(id)).rejects.toThrow('private');

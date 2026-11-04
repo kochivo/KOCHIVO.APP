@@ -20,23 +20,28 @@ beforeEach(() => {
 });
 it('removes the uploaded object when the food insert fails', async () => {
   mocks.create.mockRejectedValue(new Error('insert failed'));
-  await expect(saveCustomFood(input, file, t)).rejects.toThrow();
+  await expect(saveCustomFood(input, file, t)).resolves.toMatchObject({ ok: false, error: expect.any(String) });
   const path = mocks.upload.mock.calls[0]?.[0];
   expect(path).toMatch(/^captain\/[\da-f-]+\.jpg$/);
   expect(mocks.remove).toHaveBeenCalledWith([path]);
 });
+it('removes the uploaded object and preserves a returned action error', async () => {
+  mocks.create.mockResolvedValue({ ok: false, error: t('invalidCustomFood') });
+  await expect(saveCustomFood(input, file, t)).resolves.toEqual({ ok: false, error: t('invalidCustomFood') });
+  expect(mocks.remove).toHaveBeenCalledWith([mocks.upload.mock.calls[0]?.[0]]);
+});
 it('saves without a photo and does not upload', async () => {
-  mocks.create.mockResolvedValue({ id: 'food' });
-  await expect(saveCustomFood(input, null, t)).resolves.toEqual({ id: 'food' });
+  mocks.create.mockResolvedValue({ ok: true, data: { id: 'food' } });
+  await expect(saveCustomFood(input, null, t)).resolves.toEqual({ ok: true, data: { id: 'food' } });
   expect(mocks.upload).not.toHaveBeenCalled();
 });
 it('does not insert after an upload error', async () => {
   mocks.upload.mockResolvedValue({ error: { message: 'failed' } });
-  await expect(saveCustomFood(input, file, t)).rejects.toThrow();
+  await expect(saveCustomFood(input, file, t)).resolves.toMatchObject({ ok: false, error: expect.any(String) });
   expect(mocks.create).not.toHaveBeenCalled();
 });
 it('stores the bucket-prefixed path and retains the successful upload', async () => {
-  mocks.create.mockResolvedValue({ id: 'food' });
+  mocks.create.mockResolvedValue({ ok: true, data: { id: 'food' } });
   await saveCustomFood(input, file, t);
   const key = mocks.upload.mock.calls[0]?.[0];
   expect(mocks.create).toHaveBeenCalledWith({ ...input, photoPath: `captain-food-photos/${key}` });
@@ -46,10 +51,10 @@ it('stores the bucket-prefixed path and retains the successful upload', async ()
 it('reports cleanup failure so the form can keep its values for retry', async () => {
   mocks.create.mockRejectedValue(new Error('insert failed'));
   mocks.remove.mockResolvedValue({ error: { message: 'delete failed' } });
-  await expect(saveCustomFood(input, file, t)).rejects.toThrow(t('photoCleanupFailed'));
+  await expect(saveCustomFood(input, file, t)).resolves.toEqual({ ok: false, error: t('photoCleanupFailed') });
 });
 it('cleans a replacement upload when an edit fails', async () => {
   mocks.update.mockRejectedValue(new Error('update failed'));
-  await expect(saveCustomFood(input, file, t, 'food')).rejects.toThrow('update failed');
+  await expect(saveCustomFood(input, file, t, 'food')).resolves.toEqual({ ok: false, error: t('couldntSaveTryAgain') });
   expect(mocks.remove).toHaveBeenCalledWith([mocks.upload.mock.calls[0]?.[0]]);
 });

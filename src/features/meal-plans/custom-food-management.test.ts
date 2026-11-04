@@ -61,8 +61,16 @@ it('keeps the food when deletion is cancelled', () => {
   expect(foods()).toEqual([food]);
   expect(state.remove).not.toHaveBeenCalled();
 });
+it('restores the food and shows a returned deletion error', async () => {
+  state.remove.mockResolvedValue({ ok: false, error: 'Cannot delete food' });
+  click('Delete food');
+  await Promise.resolve();
+  expect(foods()).toEqual([food]);
+  expect(state.error).toHaveBeenCalledWith('Cannot delete food');
+  expect(state.success).not.toHaveBeenCalled();
+});
 it('keeps archived food out of the picker and explains that plans are preserved', async () => {
-  state.remove.mockResolvedValue({ archived: true });
+  state.remove.mockResolvedValue({ ok: true, data: { archived: true } });
   click('Delete food');
   await Promise.resolve();
   expect(foods()).toEqual([]);

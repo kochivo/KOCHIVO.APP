@@ -22,7 +22,11 @@ export function usePlanDraft(planId: string) {
   useEffect(() => {
     let current = true;
     loadPlan(planId).then(value => {
-      if (current) { setDraft(value); setSaved(JSON.stringify(value)); setError(''); setLoading(false); }
+      if (current) {
+        if (value.ok) { setDraft(value.data); setSaved(JSON.stringify(value.data)); setError(''); }
+        else setError(value.error);
+        setLoading(false);
+      }
     }).catch(() => { if (current) { setError(t('couldntLoadThePlanTryAgain')); setLoading(false); } });
     return () => { current = false; };
   }, [planId, retry, t]);
@@ -38,17 +42,22 @@ export function usePlanDraft(planId: string) {
   async function persist(activate = false) {
     if (!draft || busy) return;
     setLastActivate(activate);
+    if (activate && !draft.meals.some(meal => meal.items.length > 0)) {
+      setError(t('addAMealAndFoodFirst')); return;
+    }
     setBusy(true); setError('');
     try {
-      await savePlan(draft);
+      const result = await savePlan(draft);
+      if (!result.ok) { setError(result.error); return; }
       setSaved(JSON.stringify(draft));
       if (activate) {
-        await activatePlan(draft.id);
+        const activation = await activatePlan(draft.id);
+        if (!activation.ok) { setError(activation.error); return; }
         const active = { ...draft, status: 'active' as const };
         setDraft(active); setSaved(JSON.stringify(active));
       }
       toast.success(activate ? t('planActivatedForPlayer') : t('planSaved'));
-    } catch (failure) { setError(failure instanceof Error ? failure.message : t('couldntSaveTryAgain')); }
+    } catch { setError(t('couldntSaveTryAgain')); }
     finally { setBusy(false); }
   }
   return { draft, dirty, error, loading, busy, update, persist, retrySave: () => persist(lastActivate),

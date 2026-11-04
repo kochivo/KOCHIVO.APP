@@ -46,7 +46,7 @@ export function useProgramDraft(id?: string) {
     setError('');
     try {
       const result = await saveProgram(draft);
-      if (result.error) { setError(result.error); setDirty(true); return false; }
+      if (!result.ok) { setError(result.error); setDirty(true); return false; }
       return true;
     } catch {
       setError(t('couldntSaveTryAgain')); setDirty(true); return false;

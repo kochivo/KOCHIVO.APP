@@ -17,20 +17,20 @@ it.each([
   ['unknown', 'التفعيل متعملش. جرّب تاني'],
 ])('preserves program activation error %s', async (code, error) => {
   mocks.rpc.mockResolvedValue({ error: { code } });
-  expect(await activateProgram(id)).toEqual({ error });
+  expect(await activateProgram(id)).toEqual({ ok: false, error });
   expect(mocks.revalidate).not.toHaveBeenCalled();
 });
 
 it('revalidates captain and player screens after activation', async () => {
   mocks.rpc.mockResolvedValue({ error: null });
-  expect(await activateProgram(id)).toEqual({ data: true });
+  expect(await activateProgram(id)).toEqual({ ok: true, data: true });
   expect(mocks.rpc).toHaveBeenCalledWith('activate_program', { p_program: id });
   expect(mocks.revalidate.mock.calls).toEqual([['/captain'], ['/player']]);
 });
 
 it('preserves validation and transport failure results', async () => {
-  expect(await activateProgram('bad')).toEqual({ error: 'البرنامج مش موجود' });
+  expect(await activateProgram('bad')).toEqual({ ok: false, error: 'البرنامج مش موجود' });
   expect(mocks.rpc).not.toHaveBeenCalled();
   mocks.rpc.mockRejectedValue(new Error('private'));
-  expect(await activateProgram(id)).toEqual({ error: 'التفعيل متعملش. جرّب تاني' });
+  expect(await activateProgram(id)).toEqual({ ok: false, error: 'التفعيل متعملش. جرّب تاني' });
 });

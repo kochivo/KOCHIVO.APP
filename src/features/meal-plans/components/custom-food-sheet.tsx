@@ -43,12 +43,12 @@ export function CustomFoodSheet({ onClose, onSave, openerId, alternative = false
       carbs: per100(value.data.carbs), fat: per100(value.data.fat) });
     try {
       const saved = await saveCustomFood(value.data, file, t, food?.id);
-      onSave(saved, value.data.servingGrams);
+      if (!saved.ok) { rollback?.(); setError(saved.error); toast.error(saved.error); return; }
+      onSave(saved.data, value.data.servingGrams);
       toast.success(t('customFoodSaved'));
-    } catch (cause) {
+    } catch {
       rollback?.();
-      const known = [t('photoFailed'), t('photoCleanupFailed'), t('imageIsTooLargeOrUnsupportedChoose'), t('chooseAnImage')];
-      setError(cause instanceof Error && known.includes(cause.message) ? cause.message : t('couldntSaveTryAgain'));
+      setError(t('couldntSaveTryAgain'));
       toast.error(t('couldntSaveTryAgain'));
     } finally { saving.current = false; setBusy(false); }
   }
