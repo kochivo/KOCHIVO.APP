@@ -1,6 +1,6 @@
 import type { TrendPoint } from '@/features/progress';
 
-export const profileTabs = ['intake', 'progress', 'plan', 'checkins'] as const;
+export const profileTabs = ['intake', 'progress', 'plan', 'checkins', 'analysis'] as const;
 export type ProfileTab = (typeof profileTabs)[number];
 
 export function parseTab(value: unknown): ProfileTab {
