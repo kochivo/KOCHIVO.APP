@@ -4,6 +4,7 @@ import { messages } from '../messages';
 
 import { useCallback, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 import { CalendarCheck, Dumbbell, Scale } from 'lucide-react';
 import { localDb, useLiveQuery } from '@/core/offline';
 import { loadSupabaseBrowser } from '@/core/supabase/lazy';
@@ -81,6 +82,9 @@ export function ProgressScreen() {
     { label: t('sendWeeklyCheckin'), onClick: () => { setSheetLoaded(true); setSheet(true); } };
   return <main className="mx-auto max-w-lg space-y-4 px-5 pt-6 pb-32">
     <header><h1 className="text-2xl font-extrabold">{t('yourProgress')}</h1></header>
+    <Link href="/player/history" className="glass flex min-h-12 items-center gap-3 rounded-card p-5 font-bold">
+      <Dumbbell aria-hidden className="text-lime" />{t('workoutHistory')}
+    </Link>
     {localError ? <ErrorState message={t('couldntLoadYourWorkouts')} retryLabel={t('tryAgain')} onRetry={() => {
       setLocalError(false); setRetryKey((value) => value + 1);
     }} /> : !strength ? <LoadingState /> : !lifts.length ?

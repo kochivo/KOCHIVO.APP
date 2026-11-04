@@ -2,6 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    workoutHistory: 'سجل تماريني',
     bodyFatOptional: "نسبة الدهون (اختياري)",
     bodyFat: "نسبة الدهون",
     photo: "صورة",
@@ -88,6 +89,7 @@ export const messages = defineMessages({
     frontPhoto: "صورة {value0} من قدام",
   },
   en: {
+    workoutHistory: 'My workout history',
     bodyFatOptional: "Body fat % (optional)",
     bodyFat: "Body fat",
     photo: "Photo",

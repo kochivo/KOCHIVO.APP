@@ -2,6 +2,13 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    bodyweight: 'وزن الجسم', enterWeightAndReps: 'حط الوزن والعدات الأول', enterReps: 'حط عدد العدات',
+    historyTitle: 'سجل تماريني', seeHistory: 'شوف السجل', workouts: 'التمارين', exercises: 'الحركات',
+    historyEmpty: 'لسه ماخلصتش تمرين', historyError: 'مقدرناش نحمّل سجل التمارين. جرّب تاني',
+    moreHistory: 'شوف أكتر', bestSet: 'أفضل مجموعة', chooseExercise: 'اختار حركة',
+    historySets: '{count} مجموعة', unknownExercise: 'حركة', unknownDay: 'تمرين',
+    historyPerformance: '{weight} كجم × {reps}', bodyweightPerformance: 'وزن الجسم × {reps}',
+    noExerciseHistory: 'لسه مفيش مجموعات للحركة دي', historyViews: 'عرض السجل',
     programFinished: 'الأسبوع خلص', renewProgram: 'الكابتن هيجدّد برنامجك عشان تكمّل',
     videoTooLong: 'الفيديو لازم يكون دقيقة أو أقل',
     videoMetadataFailed: 'مقدرناش نقرأ مدة الفيديو. اختار فيديو تاني',
@@ -68,6 +75,13 @@ export const messages = defineMessages({
     setNumber: "مجموعة {value0}",
   },
   en: {
+    bodyweight: 'Bodyweight', enterWeightAndReps: 'Enter the weight and reps first', enterReps: 'Enter the number of reps',
+    historyTitle: 'My workout history', seeHistory: 'See the history', workouts: 'Workouts', exercises: 'Exercises',
+    historyEmpty: "You haven't finished a workout yet", historyError: "Couldn't load workout history. Try again",
+    moreHistory: 'Show more', bestSet: 'Best set', chooseExercise: 'Choose an exercise',
+    historySets: '{count} sets', unknownExercise: 'Exercise', unknownDay: 'Workout',
+    historyPerformance: '{weight} kg × {reps}', bodyweightPerformance: 'Bodyweight × {reps}',
+    noExerciseHistory: 'No sets for this exercise yet', historyViews: 'History view',
     programFinished: 'Week finished', renewProgram: 'Your coach will renew your program',
     videoTooLong: 'Video must be 60 seconds or shorter',
     videoMetadataFailed: 'Could not read the video duration. Choose another video',

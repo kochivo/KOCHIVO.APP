@@ -44,6 +44,8 @@ beforeEach(async () => {
   vi.doMock('./hooks/use-rest-timer', () => ({
     useRestTimer: () => ({ remaining: 0, start: () => undefined }),
   }));
+  // These tests isolate session/date behavior; bodyweight is a valid first set without history.
+  vi.doMock('./hooks/use-bodyweight', () => ({ useBodyweight: () => ({ bodyweight: true, setBodyweight() {} }) }));
   await db.open();
 });
 
@@ -56,6 +58,7 @@ afterEach(async () => {
   vi.doUnmock('@/core/offline');
   vi.doUnmock('@/features/player-home');
   vi.doUnmock('./hooks/use-rest-timer');
+  vi.doUnmock('./hooks/use-bodyweight');
   vi.doUnmock('./hooks/use-focus-session');
   vi.doUnmock('./hooks/use-wake-lock');
   vi.doUnmock('next/navigation');
