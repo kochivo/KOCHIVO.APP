@@ -127,10 +127,11 @@ describe('media queue', () => {
     const existingTables = old.tables.map(table => table.name);
     old.close();
     await db.open();
-    expect(db.verno).toBe(5);
+    expect(db.verno).toBe(6);
     for (const name of existingTables) expect(await db.table(name).count()).toBe(1);
     expect(await db.supplements.count()).toBe(0);
     expect(await db.supplement_logs.count()).toBe(0);
+    expect(await db.daily_checks.count()).toBe(0);
     await enqueueMedia(db, entry(), 1000);
     expect(await mediaPending(db)).toBe(1);
   });

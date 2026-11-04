@@ -1,4 +1,4 @@
-import type { SupplementRow, SupplementLogRow } from '@/core/offline/tables';
+import type { DailyCheckRow, SupplementRow, SupplementLogRow } from '@/core/offline/tables';
 
 export type Json =
   | string
@@ -16,6 +16,18 @@ export type Database = {
   }
   public: {
     Tables: {
+      daily_checks: {
+        Row: DailyCheckRow & { player_id: string }
+        Insert: DailyCheckRow & { player_id?: string }
+        Update: Partial<Pick<DailyCheckRow, 'sleep_hours' | 'soreness' | 'water_ml' | 'client_updated_at' | 'deleted_at'>>
+        Relationships: []
+      }
+      readiness_decisions: {
+        Row: { id: string; captain_id: string; player_id: string; decision_date: string; decision: 'keep' | 'reduce' | 'rest'; created_at: string }
+        Insert: { id: string; captain_id: string; player_id: string; decision_date: string; decision: 'keep' | 'reduce' | 'rest'; created_at?: string }
+        Update: { decision?: 'keep' | 'reduce' | 'rest' }
+        Relationships: []
+      }
       supplements: {
         Row: SupplementRow
         Insert: SupplementRow
@@ -1374,6 +1386,7 @@ export type Database = {
       }
     }
     Functions: {
+      sync_daily_checks: { Args: { p_rows: Json }; Returns: undefined }
       save_weekly_program: {
         Args: { p_draft: Json }
         Returns: undefined

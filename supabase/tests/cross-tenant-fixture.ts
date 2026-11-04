@@ -21,6 +21,8 @@ export async function tenantFixture(db: PGlite, captain: string, player: string)
     return id;
   };
   targets.push({ table: 'profiles', key: 'id', id: player, edit: "full_name = 'Changed'" });
+  await add('daily_checks', { player_id: player, log_date: '2026-11-04', client_updated_at: TEST_NOW }, 'water_ml = 250');
+  await add('readiness_decisions', { captain_id: captain, player_id: player, decision_date: '2026-11-04', decision: 'keep' }, "decision = 'reduce'");
   const relationship = (await db.query<{ id: string }>(
     'select id from public.coach_clients where captain_id = $1 and player_id = $2', [captain, player],
   )).rows[0];
