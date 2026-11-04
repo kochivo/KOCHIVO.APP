@@ -19,11 +19,13 @@ it.each(['dark', 'light'])('keeps %s text readable on mesh, glass and solid surf
   };
   // Upper bound: the full page glow with the translucent surfaces composited over it.
   const light = theme === 'light';
-  const mesh = mix(token('lime'), token('bg'), light ? 0.06 : 0.14);
-  const glass = mix([255, 255, 255], mesh, light ? 0.6 : 0.02);
-  const backgrounds = [mesh, glass, mix([255, 255, 255], glass, light ? 0.85 : 0.04),
-    mix([255, 255, 255], mesh, light ? 0.95 : 0.05),
+  // Aurora and corner regions do not overlap: use the brighter aurora's full opacity.
+  const mesh = mix(token('lime'), token('bg'), light ? 0.06 : .11);
+  const glass = mix([255, 255, 255], mesh, light ? 0.6 : 0.03);
+  const backgrounds = [mesh, glass, mix([255, 255, 255], glass, light ? 0.85 : 0.05),
+    mix([255, 255, 255], mesh, light ? 0.95 : 0.07),
     token('bg'), token('bg-deep'), token('surface'), token('surface-raised')];
+  if (!light) backgrounds.push(mix(token('lime'), mix([255, 255, 255], mesh, .07), .08));
   const contrast = (a: number[], b: number[]) =>
     (Math.max(luminance(a), luminance(b)) + 0.05) / (Math.min(luminance(a), luminance(b)) + 0.05);
   for (const background of backgrounds) {

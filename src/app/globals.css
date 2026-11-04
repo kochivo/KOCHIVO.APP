@@ -8,16 +8,17 @@
  */
 @theme {
   /* brand */
-  --color-bg: #101418;
-  --color-surface: #1b2026;
-  --color-line: #2a3038;
-  --color-ink: #f2f2ee;
-  --color-muted: #b5bbc1;
+  --color-bg: #0b0c0d;
+  --color-surface: #141414;
+  --color-line: #292929;
+  --color-ink: #f4f4f1;
+  --color-muted: #a6abb0;
+  --color-faint: #80858b;
   --color-lime: #b6e94f;
   --color-lime-ink: #b6e94f;
   /* derived */
-  --color-bg-deep: #0b0e11;
-  --color-surface-raised: #222831;
+  --color-bg-deep: #070808;
+  --color-surface-raised: #1c1c1c;
   --color-line-soft: rgb(242 242 238 / 0.06);
   --color-on-lime: #101418;
   --color-lime-soft: rgb(182 233 79 / 0.12);
@@ -28,27 +29,62 @@
   --font-sans: var(--font-manrope), var(--font-alexandria), system-ui, sans-serif;
   /* headings, buttons and big labels: athletic display face; body text stays on the calmer sans */
   --font-display: var(--font-manrope), var(--font-changa), var(--font-alexandria), system-ui, sans-serif;
-  --radius-card: 1.5rem;
-  --radius-control: 1rem;
+  --radius-card: 1.25rem;
+  --radius-control: .875rem;
+  --radius-chip: 9999px;
+  --spacing-card: 1.25rem;
+  --spacing-card-gap: 1rem;
+  --text-stat: 2rem;
+  --text-stat-wide: 2.5rem;
+  --text-stat-large: 3rem;
+  --text-stat-large-wide: 3.75rem;
   /* minimum touch target from the PRD (48dp) */
   --spacing-touch: 3rem;
+  --shadow-lime-glow: inset 0 1px 0 rgb(255 255 255 / .25), 0 0 18px color-mix(in srgb, var(--color-lime) 25%, transparent);
+  --shadow-lime-glow-hover: inset 0 1px 0 rgb(255 255 255 / .3), 0 0 18px color-mix(in srgb, var(--color-lime) 32%, transparent);
 }
 :root {
   --safe-start: env(safe-area-inset-left);
   --safe-end: env(safe-area-inset-right);
-  --glass-tint: rgb(255 255 255 / 0.02);
-  --glass-tint-raised: rgb(255 255 255 / 0.04);
-  --glass-strong-tint: rgb(255 255 255 / 0.05);
-  --glass-hairline: rgb(255 255 255 / 0.08);
-  --glass-highlight: rgb(255 255 255 / 0.1);
-  --glass-strong-border: rgb(255 255 255 / 0.12);
-  --glass-strong-highlight: rgb(255 255 255 / 0.16);
-  --page-glow: rgb(182 233 79 / 0.14);
-  --mesh-glow: rgb(182 233 79 / 0.08);
-  --mesh-top: #17222e;
-  --mesh-bottom: #131c25;
+  --glass-tint: rgb(255 255 255 / 0.03);
+  --glass-tint-raised: rgb(255 255 255 / 0.05);
+  --glass-strong-tint: rgb(255 255 255 / 0.07);
+  --glass-hairline: rgb(255 255 255 / 0.09);
+  --glass-highlight: rgb(255 255 255 / 0.04);
+  --glass-strong-border: rgb(255 255 255 / 0.09);
+  --glass-strong-highlight: rgb(255 255 255 / 0.04);
+  --glass-fill: var(--glass-tint);
+  --glass-border: var(--glass-hairline);
+  --glass-shadow: inset 0 1px 0 var(--glass-highlight), 0 4px 24px -8px rgb(0 0 0 / 0.5);
+  --glass-strong-shadow: var(--glass-shadow);
+  --glass-hover-fill: radial-gradient(ellipse at top, var(--glass-highlight), transparent 70%), var(--glass-tint-raised);
+  --featured-angle: 135deg;
+  --featured-edge: linear-gradient(var(--featured-angle), color-mix(in srgb, var(--color-lime) 45%, transparent), rgb(255 255 255 / .08) 65%);
+  --featured-fill: radial-gradient(ellipse at top, color-mix(in srgb, var(--color-lime) 8%, transparent), transparent 65%), var(--glass-strong-tint);
+  --featured-shadow: inset 0 1px 0 var(--glass-highlight), 0 8px 32px -8px rgb(0 0 0 / .6);
+  --aurora-glow: color-mix(in srgb, var(--color-lime) 11%, transparent);
+  --orb-glow: color-mix(in srgb, var(--color-lime) 7%, transparent);
+  --primary-fill: linear-gradient(180deg, var(--color-lime), color-mix(in srgb, var(--color-lime) 90%, var(--color-bg)));
+  --progress-start: color-mix(in srgb, var(--color-lime) 80%, var(--color-bg));
+  --progress-fill: linear-gradient(90deg, var(--progress-start), var(--color-lime));
+  --progress-ring-glow: 0 0 2px color-mix(in srgb, var(--color-lime) 25%, transparent);
+  --progress-edge: 2px 0 5px color-mix(in srgb, var(--color-lime) 25%, transparent);
+  --selected-border: color-mix(in srgb, var(--color-lime) 40%, transparent);
+  --hover-lift: -2px;
+  --primary-lift: -1px;
+  --press-scale: .98;
+  --enter-rise: 6px;
+  --enter-duration: 300ms;
+  --recessed-fill: color-mix(in srgb, var(--color-bg-deep) 35%, transparent);
+  --recessed-border: rgb(255 255 255 / 0.04);
+  --recessed-shadow: inset 0 2px 6px rgb(0 0 0 / 0.5);
+  --page-glow: transparent;
+  --mesh-glow: transparent;
+  --mesh-top: #0b0c0d;
+  --mesh-bottom: #070808;
 }
 [dir='rtl'] { --safe-start: env(safe-area-inset-right); --safe-end: env(safe-area-inset-left); }
+[dir='rtl'] { --featured-angle: 225deg; --progress-edge: -2px 0 5px color-mix(in srgb, var(--color-lime) 25%, transparent); }
 html[data-theme='light'] {
   --color-bg: #f6f7f4;
   --color-bg-deep: #eceee8;
@@ -58,6 +94,16 @@ html[data-theme='light'] {
   --color-line-soft: rgb(18 22 26 / 0.08);
   --color-ink: #12161a;
   --color-muted: #535b63;
+  --color-faint: #535b63;
+  --radius-card: 1.5rem;
+  --radius-control: 1rem;
+  --radius-chip: 1rem;
+  --spacing-card: 1rem;
+  --spacing-card-gap: .75rem;
+  --text-stat: 1.5rem;
+  --text-stat-wide: 1.875rem;
+  --text-stat-large: 2.25rem;
+  --text-stat-large-wide: 3rem;
   --color-lime: #b6e94f;
   --color-lime-ink: #426c00;
   --color-on-lime: #101418;
@@ -73,6 +119,16 @@ html[data-theme='light'] {
   --glass-highlight: rgb(255 255 255 / 0.5);
   --glass-strong-border: rgb(18 22 26 / 0.12);
   --glass-strong-highlight: rgb(255 255 255 / 0.8);
+  --glass-shadow: inset 0 1px 0 var(--glass-highlight);
+  --glass-strong-shadow: inset 0 1px 0 var(--glass-strong-highlight);
+  --shadow-lime-glow: 0 0 0 1px color-mix(in srgb, var(--color-lime) 25%, transparent), 0 4px 14px color-mix(in srgb, var(--color-lime) 16%, transparent);
+  --shadow-lime-glow-hover: 0 0 0 1px color-mix(in srgb, var(--color-lime) 35%, transparent), 0 6px 18px color-mix(in srgb, var(--color-lime) 22%, transparent);
+  --glass-hover-fill: var(--glass-tint-raised);
+  --hover-lift: -.25rem;
+  --primary-lift: -.25rem;
+  --press-scale: .95;
+  --enter-rise: 8px;
+  --enter-duration: 280ms;
   --page-glow: rgb(182 233 79 / 0.06);
   --mesh-glow: rgb(182 233 79 / 0.08);
   --mesh-top: #e7ece2;
@@ -107,10 +163,7 @@ html:not([data-theme='light']) .theme-light-only, html[data-theme='light'] .them
   html { scroll-padding-block: 5rem; }
   html:has(dialog:modal), body:has(dialog:modal) { overflow: hidden; }
   dialog { overflow-y: auto; overscroll-behavior: contain; }
-  /*
-   * Dark mesh built only from brand hues: deep black, a steel-navy lifted from the surface tone,
-   * and one faint lime glow. Fixed pseudo-element instead of background-attachment:fixed (broken on iOS).
-   */
+  /* Fixed pseudo-element instead of background-attachment:fixed (broken on iOS). */
   body::before {
     content: '';
     position: fixed;
@@ -170,50 +223,6 @@ html[data-keyboard='open'] dialog:modal { inset-block-end: var(--keyboard-inset)
   .marketing-reveal { animation: marketing-rise linear both; animation-timeline: view(); animation-range: entry 0% entry 35%; }
 }
 
-@utility press-scale {
-  transition: transform 300ms ease-out;
-  &:active:not(:disabled) { transform: scale(.95); }
-}
-@utility hover-lift {
-  transition: all 300ms ease-out;
-  @media (hover: hover) {
-    &:hover:not(:disabled) {
-      translate: 0 -.25rem;
-      transform: none;
-      --glass-blur-background: var(--glass-tint-raised);
-    }
-  }
-}
-@utility press {
-  transition-property: transform, box-shadow, background-color, border-color, opacity;
-  transition-duration: 300ms;
-  transition-timing-function: ease-out;
-  @media (hover: hover) and (pointer: fine) {
-    &:hover:not(:disabled) {
-      transform: translateY(-.25rem);
-      box-shadow: var(--press-glow-hover, 0 0 transparent), 0 10px 20px -12px color-mix(in srgb, var(--color-ink) 12%, transparent);
-    }
-  }
-  &:active:not(:disabled) { transform: scale(.95); }
-}
-@utility glow {
-  --press-glow: 0 0 0 1px color-mix(in srgb, var(--color-lime) 25%, transparent), 0 4px 14px color-mix(in srgb, var(--color-lime) 16%, transparent);
-  --press-glow-hover: 0 0 0 1px color-mix(in srgb, var(--color-lime) 35%, transparent), 0 6px 18px color-mix(in srgb, var(--color-lime) 22%, transparent);
-  box-shadow: var(--press-glow);
-  @media (hover: hover) and (pointer: fine) {
-    &:hover:not(:disabled) { box-shadow: var(--press-glow-hover), 0 10px 20px -12px color-mix(in srgb, var(--color-ink) 12%, transparent); }
-  }
-}
-/* No retained transform: route wrappers must not become containing blocks for fixed controls. */
-/* Empty states fade in with opacity and transform only, so the browser never re-lays out the page. */
-.empty-state-in { animation: surface-in .28s ease-out; }
-@utility enter { animation: surface-in 280ms ease-out; }
-@utility shimmer {
-  background-image: linear-gradient(100deg, transparent 25%, var(--glass-highlight) 50%, transparent 75%);
-  background-size: 200% 100%;
-  animation: skeleton-sweep 1.6s ease-in-out infinite;
-}
-@keyframes skeleton-sweep { from { background-position: 200% 0; } to { background-position: -200% 0; } }
 /* Sits above the bottom nav and the sticky primary action, so a toast never covers either. */
 .toast-stack { inset-inline: 0; bottom: calc(10.5rem + env(safe-area-inset-bottom)); }
 .toast-leave { animation: toast-fade 200ms ease-out forwards; }
@@ -224,7 +233,7 @@ body:not(:has(.marketing-wrap)) :is(h1, h2, h3) { font-weight: 700; color: var(-
   body:not(:has(.marketing-wrap)) :is(h2, h3) { @apply font-display text-base md:text-lg tracking-tight; }
 }
 body:not(:has(.marketing-wrap)) .text-muted { font-weight: 500; }
-@keyframes surface-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes surface-in { from { opacity: 0; transform: translateY(var(--enter-rise)); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) {
   .marketing-slogan > span, .marketing-after, .marketing-beam, .marketing-phone, .marketing-reveal, .empty-state-in { animation: none; }
   .enter, .shimmer, .toast-leave { animation: none; }
@@ -234,5 +243,5 @@ body:not(:has(.marketing-wrap)) .text-muted { font-weight: 500; }
     scale: none;
     translate: none;
   }
-  .hover-lift, .hover-lift:hover, .hover-lift:active { transform: none; translate: none; transition-property: background-color, color, border-color; }
+  .hover-lift, .hover-lift:hover, .hover-lift:active { transform: none; translate: none; transition: none; }
 }

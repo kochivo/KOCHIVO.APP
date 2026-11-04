@@ -7,5 +7,5 @@ export interface StatProps extends HTMLAttributes<HTMLDivElement> {
 
 export function Stat({ size = 'md', className, ...props }: StatProps) {
   return <div className={cn('glass-strong rounded-control p-3 font-display font-bold tabular-nums',
-    size === 'lg' ? 'text-4xl md:text-5xl' : 'text-2xl md:text-3xl', className)} {...props} />;
+    size === 'lg' ? 'text-stat-large md:text-stat-large-wide' : 'text-stat md:text-stat-wide', className)} {...props} />;
 }

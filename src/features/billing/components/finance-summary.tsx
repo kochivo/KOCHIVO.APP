@@ -16,9 +16,9 @@ export function FinanceSummary({ revenue }: { revenue: Revenue }) {
     <section aria-labelledby="finance-heading" className="space-y-3">
       <h2 id="finance-heading" className="text-xl font-bold">{t('finance')}</h2>
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
-        <GlassCard level="strong" className="col-span-2 space-y-1 p-5 lg:col-span-1">
+        <GlassCard level="featured" className="col-span-2 space-y-1 p-5 lg:col-span-1">
           <p className="text-sm text-muted">{t('thisMonth')}</p>
-          <p className="font-display text-4xl font-extrabold text-lime">{money(revenue.thisMonth)}</p>
+          <p className="font-display text-4xl font-extrabold text-ink">{money(revenue.thisMonth)}</p>
           {change !== null && <p dir="auto" className="text-xs text-muted">{t('change', { change: `${change > 0 ? '+' : ''}${formatNumber(change, locale)}` })}</p>}
         </GlassCard>
         <GlassCard level="strong" className="space-y-1 p-5">

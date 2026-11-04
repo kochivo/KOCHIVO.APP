@@ -35,7 +35,7 @@ export async function DashboardScreen({ data, today, plan }: Props) {
 
   const stats = dashboardStats(players, today);
   const cards = [
-    { label: t('active'), value: stats.active, color: 'text-lime' },
+    { label: t('active'), value: stats.active, color: 'text-ink' },
     { label: t('late'), value: stats.late, color: 'text-warn' },
     { label: t('pendingTasks'), value: stats.tasks, color: 'text-ink' },
     { label: t('endingSoon'), value: stats.ending, color: 'text-danger' },

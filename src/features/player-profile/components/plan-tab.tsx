@@ -17,7 +17,7 @@ function PlanCard({ icon: Icon, heading, title, lines, href, action }: {
   return (
     <GlassCard className="flex flex-col gap-4 p-5">
       <div className="flex items-center gap-3">
-        <span aria-hidden className="grid size-11 place-items-center rounded-full bg-lime-soft text-lime"><Icon className="size-5" /></span>
+      <span aria-hidden className="grid size-11 place-items-center rounded-full bg-surface-raised text-ink"><Icon className="size-5" /></span>
         <h2 className="text-lg font-bold">{heading}</h2>
       </div>
       {title && <p className="text-xl font-extrabold">{title}</p>}

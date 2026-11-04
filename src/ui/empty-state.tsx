@@ -18,7 +18,7 @@ export interface EmptyStateProps extends Omit<HTMLAttributes<HTMLDivElement>, 't
 export function EmptyState({ icon: Icon, title, body, steps, action, secondary, className, ...props }: EmptyStateProps) {
   return (
     <div {...props} className={cn('glass enter flex flex-col items-center gap-4 rounded-card px-6 py-8 text-center', className)}>
-      <span aria-hidden className="grid size-16 place-items-center rounded-full bg-lime-soft text-lime ring-8 ring-lime-soft">
+      <span aria-hidden className="decorative-icon grid size-16 place-items-center rounded-full bg-lime-soft text-lime ring-8 ring-lime-soft">
         <Icon className="size-7" />
       </span>
       <div className="space-y-1.5">
@@ -32,7 +32,7 @@ export function EmptyState({ icon: Icon, title, body, steps, action, secondary, 
         </li>)}
       </ol>}
       {(action || secondary) && <div className="flex flex-wrap justify-center gap-2">
-        {action && (action.href !== undefined ? <Link href={action.href} className="press glow inline-flex min-h-12 items-center justify-center rounded-control bg-lime px-4 text-sm font-extrabold text-on-lime">{action.label}</Link> :
+        {action && (action.href !== undefined ? <Link href={action.href} className="press glow primary-surface inline-flex min-h-12 items-center justify-center rounded-control bg-lime px-4 text-sm font-extrabold text-on-lime">{action.label}</Link> :
           <Button className="min-h-12" onClick={action.onClick}>{action.label}</Button>)}
         {secondary && (secondary.href !== undefined ? <Link href={secondary.href} className="press inline-flex min-h-12 items-center justify-center rounded-control px-4 text-sm hover:bg-ink/5">{secondary.label}</Link> :
           <Button variant="ghost" className="min-h-12" onClick={secondary.onClick}>{secondary.label}</Button>)}

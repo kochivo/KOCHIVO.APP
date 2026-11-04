@@ -14,7 +14,7 @@ export function MacroRing({ eaten, target }: { eaten: Macros; target: Macros }) 
     <div className="relative size-32 shrink-0">
       <svg className="size-full -rotate-90" viewBox="0 0 116 116" aria-hidden="true">
         <circle cx="58" cy="58" r="50" fill="none" className="stroke-muted/20" strokeWidth="9" />
-        <circle cx="58" cy="58" r="50" fill="none" className="stroke-lime" strokeWidth="9"
+        <circle cx="58" cy="58" r="50" fill="none" className="progress-ring" strokeWidth="9"
           strokeLinecap="round" strokeDasharray={`${ratio(eaten.kcal, target.kcal) * 314.16} 314.16`} />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -30,7 +30,7 @@ export function MacroRing({ eaten, target }: { eaten: Macros; target: Macros }) 
         <div role="progressbar" aria-label={[t('protein'), t('carbs'), t('fat')][i]} aria-valuemin={0}
           aria-valuemax={100} aria-valuenow={Math.round(ratio(eaten[key], target[key]) * 100)}
           aria-valuetext={t('macroAmount', { value0: formatNumber(eaten[key], locale), value1: formatNumber(target[key], locale) })} className="h-1.5 overflow-hidden rounded-full bg-muted/20">
-          <div className="h-full rounded-full bg-lime" style={{ width: `${ratio(eaten[key], target[key]) * 100}%` }} />
+          <div className="h-full rounded-full progress-lime" style={{ width: `${ratio(eaten[key], target[key]) * 100}%` }} />
         </div>
       </div>)}
     </div>
