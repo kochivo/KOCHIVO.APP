@@ -4,8 +4,7 @@ import { parseLocale } from '@/core/i18n/locale';
 import { fetchWorkoutIdentity } from '@/features/workout';
 
 export default async function HistoryPage({ searchParams }: { searchParams: Promise<{ exercise?: string }> }) {
-  const playerId = await fetchWorkoutIdentity();
-  const { exercise } = await searchParams;
+  const [playerId, { exercise }] = await Promise.all([fetchWorkoutIdentity(), searchParams]);
   return <HistoryScreen playerId={playerId ?? ''} exerciseId={exercise} />;
 }
 

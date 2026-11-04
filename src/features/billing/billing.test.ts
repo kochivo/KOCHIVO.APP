@@ -34,11 +34,11 @@ describe('renewPlayer', () => {
   const input = { playerId: '11111111-1111-4111-8111-111111111111', days: 30, amount: null };
   beforeEach(() => {
     vi.resetAllMocks();
-    mocks.user.mockResolvedValue({ data: { user: { id: 'captain-session' } }, error: null });
+    mocks.user.mockResolvedValue({ data: { claims: { sub: 'captain-session' } }, error: null });
     mocks.profile.mockResolvedValue({ data: { role: 'captain' }, error: null });
     const query = { select: () => query, eq: () => query, single: mocks.profile };
     mocks.from.mockReturnValue(query);
-    mocks.server.mockResolvedValue({ auth: { getUser: mocks.user }, from: mocks.from, rpc: mocks.rpc });
+    mocks.server.mockResolvedValue({ auth: { getClaims: mocks.user }, from: mocks.from, rpc: mocks.rpc });
     mocks.rpc.mockResolvedValue({ data: '2026-12-10', error: null });
   });
   it.each([0, 366, 1.5, NaN])('rejects invalid days %s before network access', async (days) => {
@@ -108,7 +108,7 @@ describe('fetchBilling', () => {
     vi.resetAllMocks();
     phoneError = false;
     paymentError = false;
-    mocks.user.mockResolvedValue({ data: { user: { id: 'session-captain' } }, error: null });
+    mocks.user.mockResolvedValue({ data: { claims: { sub: 'session-captain' } }, error: null });
     mocks.rpc.mockImplementation(async (name: string) => ({
       error: name === 'captain_last_payments' && paymentError ? { code: '500' } : null,
       data: name === 'current_tier' ? 'champion' : name === 'captain_last_payments' ? [payment]
@@ -129,7 +129,7 @@ describe('fetchBilling', () => {
       };
       return query;
     });
-    mocks.server.mockResolvedValue({ auth: { getUser: mocks.user }, from: mocks.from, rpc: mocks.rpc });
+    mocks.server.mockResolvedValue({ auth: { getClaims: mocks.user }, from: mocks.from, rpc: mocks.rpc });
   });
   it('combines the roster, phones, last payments and the session captain plan', async () => {
     expect(await fetchBilling()).toEqual({ data: {
@@ -169,7 +169,7 @@ describe('fetchBilling', () => {
     expect(await fetchBilling()).toEqual({ error: 'مش قادرين نحمّل الدفعات. جرّب تاني' });
   });
   it('denies an anonymous session before loading billing', async () => {
-    mocks.user.mockResolvedValue({ data: { user: null }, error: null });
+    mocks.user.mockResolvedValue({ data: { claims: {} }, error: null });
     expect(await fetchBilling()).toHaveProperty('error');
     expect(mocks.rpc).not.toHaveBeenCalled();
   });

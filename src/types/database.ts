@@ -1386,6 +1386,10 @@ export type Database = {
       }
     }
     Functions: {
+      my_route_profile: {
+        Args: never;
+        Returns: { role: 'captain' | 'player'; role_confirmed: boolean; suspended_at: string | null; is_admin: boolean }[];
+      }
       sync_daily_checks: { Args: { p_rows: Json }; Returns: undefined }
       save_weekly_program: {
         Args: { p_draft: Json }

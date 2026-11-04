@@ -4,9 +4,9 @@ vi.mock('next/headers', () => ({ cookies: async () => ({ get: () => undefined })
 import { createCustomFood, updateCustomFood, deleteCustomFood } from './data/custom-food';
 import { searchFoods } from './data/foods';
 
-const mocks = vi.hoisted(() => ({ insert: vi.fn(), update: vi.fn(), delete: vi.fn(), remove: vi.fn(), eq: vi.fn(), is: vi.fn(), getUser: vi.fn(), single: vi.fn() }));
+const mocks = vi.hoisted(() => ({ insert: vi.fn(), update: vi.fn(), delete: vi.fn(), remove: vi.fn(), eq: vi.fn(), is: vi.fn(), getUser: vi.fn(), getClaims: vi.fn(), single: vi.fn() }));
 vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => ({
-  auth: { getUser: mocks.getUser },
+  auth: { getUser: mocks.getUser, getClaims: mocks.getClaims },
   storage: { from: () => ({ remove: mocks.remove }) },
   from: (table: string) => {
     const request = { select: () => request, order: () => request, limit: () => request,
@@ -26,6 +26,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   mocks.remove.mockResolvedValue({ error: null });
   mocks.getUser.mockResolvedValue({ data: { user: { id: captain } }, error: null });
+  mocks.getClaims.mockResolvedValue({ data: { claims: { sub: captain } }, error: null });
   mocks.single.mockResolvedValue({ data: { id: captain, owner_id: captain, name_ar: 'Soup', photo_path: null,
     kcal_per_100g: 133.3, protein_per_100g: 6.7, carbs_per_100g: 13.3, fat_per_100g: 3.3 }, error: null });
 });

@@ -16,6 +16,7 @@ type Result<T> = { data: T; error?: never } | { error: string; data?: never };
 
 async function ownSession() {
   const client = await supabaseServer();
+  // Account deletion, export and profile writes require a fresh Auth server check.
   const auth = await client.auth.getUser();
   if (auth.error || !auth.data.user) throw new Error('unauthenticated');
   return { client, id: auth.data.user.id };
@@ -24,7 +25,10 @@ async function ownSession() {
 export async function loadSettings(): Promise<Result<SettingsProfile>> {
   const t = await getT(messages);
   try {
-    const { client, id } = await ownSession();
+    const client = await supabaseServer();
+    const auth = await client.auth.getClaims();
+    if (auth.error || !auth.data?.claims.sub) return { error: t('couldnTLoadSettingsTryAgain') };
+    const id = auth.data.claims.sub;
     const result = await client.from('profiles').select('*').eq('id', id).single();
     if (result.error || !result.data) return { error: t('couldnTLoadSettingsTryAgain') };
     return { data: result.data };

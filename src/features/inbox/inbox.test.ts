@@ -7,7 +7,7 @@ import type { InboxItem } from './types';
 const mocks = vi.hoisted(() => {
   const query = { update: vi.fn(), eq: vi.fn(), select: vi.fn(), single: vi.fn() };
   const signing = { createSignedUrls: vi.fn() };
-  return { query, signing, client: { from: vi.fn(), auth: { getUser: vi.fn() }, storage: { from: vi.fn() } }, server: vi.fn() };
+  return { query, signing, client: { from: vi.fn(), auth: { getUser: vi.fn(), getClaims: vi.fn() }, storage: { from: vi.fn() } }, server: vi.fn() };
 });
 vi.mock('server-only', () => ({}));
 vi.mock('next/headers', () => ({ cookies: async () => ({ get: () => undefined }) }));
@@ -18,6 +18,7 @@ const reviewItem = (input: unknown) => reviewItemAt(input, now);
 beforeEach(() => {
   vi.resetAllMocks();
   mocks.server.mockResolvedValue(mocks.client);
+  mocks.client.auth.getClaims.mockResolvedValue({ data: { claims: { sub: 'captain' } }, error: null });
   mocks.client.auth.getUser.mockResolvedValue({ data: { user: { id: 'captain' } }, error: null });
   mocks.client.from.mockReturnValue(mocks.query);
   mocks.query.update.mockReturnValue(mocks.query);

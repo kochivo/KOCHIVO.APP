@@ -47,9 +47,11 @@ export async function loadPlan(id: string): Promise<ActionResult<PlanDraft>> {
   const t = await getT(messages);
   if (!z.uuid().safeParse(id).success) return fail(t('planNotFound'));
   const client = await planClient();
-  const { data: plan, error } = await client.from('nutrition_plans').select('*').eq('id', id).single();
-  const user = await client.auth.getUser();
-  if (error || !plan || plan.captain_id !== user.data.user?.id) return fail(t('planNotFound'));
+  const [{ data: plan, error }, user] = await Promise.all([
+    client.from('nutrition_plans').select('*').eq('id', id).single(),
+    client.auth.getClaims(),
+  ]);
+  if (error || !plan || user.error || plan.captain_id !== user.data?.claims.sub) return fail(t('planNotFound'));
   const meals = await client.from('meals').select('*').eq('plan_id', id).order('position');
   if (meals.error) return fail(t('couldntLoadMeals'));
   const mealIds = (meals.data ?? []).map(meal => meal.id);

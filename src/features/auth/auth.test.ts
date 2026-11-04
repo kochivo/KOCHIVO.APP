@@ -203,8 +203,7 @@ describe('auth actions and callback', () => {
 
 describe('session integration', () => {
   it('loads admin membership and fails closed if that lookup fails', async () => {
-    mocks.single.mockResolvedValue({ data: { role: 'captain', role_confirmed: true }, error: null });
-    mocks.rpc.mockResolvedValueOnce({ data: true, error: null });
+    mocks.rpc.mockResolvedValueOnce({ data: [{ role: 'captain', role_confirmed: true, suspended_at: null, is_admin: true }], error: null });
     expect((await refreshSession(new NextRequest('http://localhost:3000/captain'), decideRoute)).headers.get('location'))
       .toBe('http://localhost:3000/admin');
     mocks.rpc.mockResolvedValueOnce({ data: null, error: { code: 'network_error' } });
@@ -212,18 +211,20 @@ describe('session integration', () => {
       .toBe('http://localhost:3000/login');
   });
   it('routes a suspended session to the blocked screen using the profile lookup', async () => {
-    mocks.single.mockResolvedValue({ data: { role: 'captain', role_confirmed: true, suspended_at: '2026-01-01' }, error: null });
+    mocks.rpc.mockResolvedValueOnce({ data: [{ role: 'captain', role_confirmed: true, suspended_at: '2026-01-01', is_admin: false }], error: null });
     const response = await refreshSession(new NextRequest('http://localhost:3000/captain'), decideRoute);
     expect(response.headers.get('location')).toBe('http://localhost:3000/suspended');
   });
   it('reads the profile once and applies the injected role decision', async () => {
+    mocks.rpc.mockResolvedValueOnce({ data: [{ role: 'player', role_confirmed: true, suspended_at: null, is_admin: false }], error: null });
     const response = await refreshSession(new NextRequest('http://localhost:3000/captain'), decideRoute);
     expect(response.headers.get('location')).toBe('http://localhost:3000/player');
     expect(mocks.auth.getClaims).toHaveBeenCalledTimes(1);
-    expect(mocks.from).toHaveBeenCalledTimes(1);
+    expect(mocks.from).not.toHaveBeenCalled();
+    expect(mocks.rpc).toHaveBeenCalledExactlyOnceWith('my_route_profile');
   });
   it('fails closed on a profile query error', async () => {
-    mocks.single.mockResolvedValue({ data: null, error: { code: 'network_error' } });
+    mocks.rpc.mockResolvedValueOnce({ data: null, error: { code: 'network_error' } });
     const response = await refreshSession(new NextRequest('http://localhost:3000/captain'), decideRoute);
     expect(response.headers.get('location')).toBe('http://localhost:3000/login');
   });

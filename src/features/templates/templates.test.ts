@@ -5,7 +5,7 @@ import { assignTemplate, copyTemplate, createTemplate, deleteTemplate, listTempl
 
 const mocks = vi.hoisted(() => {
   const query = { select: vi.fn(), eq: vi.fn(), in: vi.fn(), order: vi.fn(), single: vi.fn(), update: vi.fn(), delete: vi.fn(), insert: vi.fn() };
-  const client = { auth: { getUser: vi.fn() }, from: vi.fn(), rpc: vi.fn() };
+  const client = { auth: { getClaims: vi.fn() }, from: vi.fn(), rpc: vi.fn() };
   return { query, client, roster: vi.fn(), revalidate: vi.fn() };
 });
 vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => mocks.client }));
@@ -15,7 +15,7 @@ const id = '01900000-0000-7000-8000-000000000001';
 const playerId = '01900000-0000-7000-8000-000000000002';
 beforeEach(() => {
   vi.resetAllMocks();
-  mocks.client.auth.getUser.mockResolvedValue({ data: { user: { id: 'captain' } }, error: null });
+  mocks.client.auth.getClaims.mockResolvedValue({ data: { claims: { sub: 'captain' } }, error: null });
   mocks.client.from.mockReturnValue(mocks.query);
   for (const method of ['select', 'eq', 'in', 'update', 'delete'] as const) mocks.query[method].mockReturnValue(mocks.query);
   mocks.query.single.mockResolvedValue({ data: { role: 'captain' }, error: null });
@@ -26,7 +26,7 @@ describe('template validation', () => {
   it.each(['', '   ', 'x'.repeat(81)])('rejects invalid title %s before accessing the client', async title => {
     expect(await saveAsTemplate({ kind: 'program', id, title })).toHaveProperty('error');
     expect(await renameTemplate({ kind: 'nutrition', id, title })).toHaveProperty('error');
-    expect(mocks.client.auth.getUser).not.toHaveBeenCalled();
+    expect(mocks.client.auth.getClaims).not.toHaveBeenCalled();
   });
   it('rejects invalid kinds, ids and injected captain ids', async () => {
     for (const value of [{ kind: 'other', id }, { kind: 'program', id: 'bad' }, { kind: 'program', id, captain_id: id }]) {
@@ -36,7 +36,7 @@ describe('template validation', () => {
     }
     expect(await assignTemplate({ kind: 'nutrition', templateId: id, playerId: 'bad' })).toHaveProperty('error');
     expect(await assignTemplate({ kind: 'other', templateId: id, playerId })).toHaveProperty('error');
-    expect(mocks.client.auth.getUser).not.toHaveBeenCalled();
+    expect(mocks.client.auth.getClaims).not.toHaveBeenCalled();
   });
 });
 
@@ -94,14 +94,14 @@ describe('template actions', () => {
     }
   });
   it('rejects signed-out and non-captain sessions', async () => {
-    mocks.client.auth.getUser.mockResolvedValueOnce({ data: { user: null }, error: null });
+    mocks.client.auth.getClaims.mockResolvedValueOnce({ data: { claims: {} }, error: null });
     expect(await listTemplates()).toEqual({ error: 'سجّل دخولك الأول' });
     mocks.query.single.mockResolvedValueOnce({ data: { role: 'player' }, error: null });
     expect(await deleteTemplate({ kind: 'program', id })).toEqual({ error: 'القوالب للكباتن بس' });
     expect(mocks.query.delete).not.toHaveBeenCalled();
   });
   it('handles network failures without leaking server errors', async () => {
-    mocks.client.auth.getUser.mockRejectedValue(new Error('secret'));
+    mocks.client.auth.getClaims.mockRejectedValue(new Error('secret'));
     expect(await listTemplates()).toEqual({ error: 'الطلب متنفذش. جرّب تاني' });
     expect(await renameTemplate({ kind: 'program', id, title: 'قالب' })).toHaveProperty('error');
     expect(await deleteTemplate({ kind: 'program', id })).toHaveProperty('error');
@@ -118,6 +118,19 @@ describe('template actions', () => {
     ] });
     expect(mocks.query.select).toHaveBeenCalledWith('id,title,created_at,is_starter,program_days(count)');
     expect(mocks.query.select).toHaveBeenCalledWith('id,title,created_at,is_starter,meals(count)');
+  });
+  it('starts nutrition templates while the program request is still pending', async () => {
+    let release = () => {};
+    const programs = new Promise<{ data: []; error: null }>(resolve => {
+      release = () => resolve({ data: [], error: null });
+    });
+    mocks.query.order.mockReturnValueOnce(programs).mockResolvedValueOnce({ data: [], error: null });
+    const loading = listTemplates();
+    try {
+      for (let step = 0; step < 20; step++) await Promise.resolve();
+      expect(mocks.client.from).toHaveBeenCalledWith('nutrition_plans');
+    } finally { release(); }
+    expect(await loading).toEqual({ data: [] });
   });
   it('returns an empty library and handles failed list queries', async () => {
     mocks.query.order.mockResolvedValue({ data: [], error: null });

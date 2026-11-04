@@ -16,7 +16,7 @@ export async function proxy(request: NextRequest) {
     return redirect;
   }
   destination.pathname = `/${locale}${path === '/' ? '' : path}`;
-  if (path === '/offline') return NextResponse.rewrite(destination);
+  if (['/offline', '/privacy', '/terms'].includes(path)) return NextResponse.rewrite(destination);
 
   const response = await refreshSession(request, decideRoute);
   if (response.headers.has('location')) return response;

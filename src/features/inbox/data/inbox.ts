@@ -8,6 +8,7 @@ import { reviewItemAt } from './inbox-internal';
 
 import 'server-only';
 import { z } from 'zod';
+import { unstable_rethrow } from 'next/navigation';
 import { inboxClient } from './client';
 import { mergeInbox } from '../merge';
 import type { InboxItem, Result } from '../types';
@@ -22,11 +23,11 @@ export async function listInbox(input: { status: 'open' | 'reviewed'; limit: 50 
   if (!parsed.success) return { error: t('chooseList') };
   try {
     const client = await inboxClient();
-    const auth = await client.auth.getUser();
-    if (auth.error || !auth.data.user) return { error: t('signIn') };
+    const auth = await client.auth.getClaims();
+    if (auth.error || !auth.data?.claims.sub) return { error: t('signIn') };
     const reviewed = parsed.data.status === 'reviewed';
-    const formRows = client.from('form_checks').select('*').eq('captain_id', auth.data.user.id);
-    const checkRows = client.from('check_ins').select('*').eq('captain_id', auth.data.user.id);
+    const formRows = client.from('form_checks').select('*').eq('captain_id', auth.data.claims.sub);
+    const checkRows = client.from('check_ins').select('*').eq('captain_id', auth.data.claims.sub);
     const formQuery = (reviewed ? formRows.not('reviewed_at', 'is', null) : formRows.is('reviewed_at', null))
       .order(reviewed ? 'reviewed_at' : 'created_at', { ascending: false }).order('id');
     const checkQuery = (reviewed ? checkRows.not('reviewed_at', 'is', null) : checkRows.is('reviewed_at', null))
@@ -54,7 +55,7 @@ export async function listInbox(input: { status: 'open' | 'reviewed'; limit: 50 
       data = data.filter((row) => ids.has(`${row.kind}:${row.id}`));
     }
     return { data };
-  } catch { return { error: t('loadFailed') }; }
+  } catch (error) { unstable_rethrow(error); return { error: t('loadFailed') }; }
 }
 
 export async function reviewItem(input: unknown): Promise<Result<true>> {
@@ -67,6 +68,7 @@ export async function mediaUrls(input: unknown): Promise<Result<string[]>> {
   if (!parsed.success) return { error: t('notFound') };
   try {
     const client = await inboxClient();
+    // Signing private media requires a fresh Auth server check.
     const auth = await client.auth.getUser();
     if (auth.error || !auth.data.user) return { error: t('signIn') };
     const row = await client.from(tableFor(parsed.data.kind)).select('*')
@@ -77,5 +79,5 @@ export async function mediaUrls(input: unknown): Promise<Result<string[]>> {
     const result = await client.storage.from(parsed.data.kind === 'form' ? 'form-videos' : 'checkin-photos').createSignedUrls(paths, 600);
     if (result.error || !result.data || result.data.some((file) => file.error || !file.signedUrl)) throw new Error();
     return { data: result.data.flatMap((file) => file.signedUrl ? [file.signedUrl] : []) };
-  } catch { return { error: t('mediaFailed') }; }
+  } catch (error) { unstable_rethrow(error); return { error: t('mediaFailed') }; }
 }

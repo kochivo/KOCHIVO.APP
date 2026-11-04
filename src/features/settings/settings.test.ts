@@ -2,18 +2,27 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { deletionDate } from './deletion';
 import { inviteMessageSchema, profileSchema } from './schema';
 import { buildExport, exportFileName } from './export';
-import { exportMyData, saveInviteMessage } from './data/settings';
+import { exportMyData, loadSettings, saveInviteMessage } from './data/settings';
 import { createElement } from 'react';
 import type * as React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 
-const mock = vi.hoisted(() => ({ from: vi.fn(), getUser: vi.fn() }));
+const mock = vi.hoisted(() => ({ from: vi.fn(), getUser: vi.fn(), getClaims: vi.fn() }));
 vi.mock('server-only', () => ({}));
 vi.mock('next/headers', () => ({ cookies: async () => ({ get: () => undefined }) }));
-vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => ({ auth: { getUser: mock.getUser }, from: mock.from }) }));
+vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => ({ auth: { getUser: mock.getUser, getClaims: mock.getClaims }, from: mock.from }) }));
 
 beforeEach(() => vi.clearAllMocks());
 describe('settings', () => {
+  it('loads settings from verified claims without a fresh user request', async () => {
+    mock.getClaims.mockResolvedValue({ data: { claims: { sub: 'player' } }, error: null });
+    const profile = { id: 'player', full_name: 'Ahmed' };
+    const eq = vi.fn(() => ({ single: async () => ({ data: profile, error: null }) }));
+    mock.from.mockReturnValue({ select: () => ({ eq }) });
+    expect(await loadSettings()).toEqual({ data: profile });
+    expect(eq).toHaveBeenCalledWith('id', 'player');
+    expect(mock.getUser).not.toHaveBeenCalled();
+  });
   it('validates names and the database E.164 phone rule', () => {
     expect(profileSchema.safeParse({ full_name: 'علي', phone: '+201012345678' }).success).toBe(true);
     for (const input of [{ full_name: '', phone: '+201012345678' }, { full_name: 'a'.repeat(81), phone: '+201012345678' },

@@ -6,7 +6,7 @@ vi.mock('server-only', () => ({}));
 vi.mock('@/core/supabase/server', () => ({ supabaseServer: server }));
 
 it('returns the session identity or allows a cached offline fallback', async () => {
-  server.mockResolvedValue({ auth: { getUser: async () => ({ data: { user: { id: 'player' } } }) } });
+  server.mockResolvedValue({ auth: { getClaims: async () => ({ data: { claims: { sub: 'player' } } }) } });
   expect(await fetchWorkoutIdentity()).toBe('player');
   server.mockRejectedValue(new Error('offline'));
   expect(await fetchWorkoutIdentity()).toBeUndefined();

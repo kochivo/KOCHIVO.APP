@@ -4,7 +4,7 @@ import { searchExercises } from './library';
 const mocks = vi.hoisted(() => ({ is: vi.fn(), eq: vi.fn() }));
 vi.mock('@/core/i18n/server', () => ({ getT: async () => (key: string) => key }));
 vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => ({
-  auth: { getUser: async () => ({ data: { user: { id: 'captain' } }, error: null }) },
+  auth: { getClaims: async () => ({ data: { claims: { sub: 'captain' } }, error: null }) },
   from: () => {
     const query = {
       select: () => query, order: () => query, or: () => query,
