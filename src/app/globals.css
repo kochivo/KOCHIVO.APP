@@ -146,7 +146,9 @@ html[data-theme='light'] .bg-ink.text-on-lime { color: var(--color-surface); }
 /* Theme-specific artwork, such as the logo whose letters are white in dark mode. */
 html:not([data-theme='light']) .theme-light-only, html[data-theme='light'] .theme-dark-only { display: none; }
 @layer base {
-  html { color-scheme: light dark; -webkit-tap-highlight-color: transparent; }
+  html { -webkit-tap-highlight-color: transparent; }
+  html:not([data-theme='light']) { color-scheme: dark; }
+  html[data-theme='light'] { color-scheme: light; }
   body {
     background: var(--color-bg-deep);
     color: var(--color-ink);

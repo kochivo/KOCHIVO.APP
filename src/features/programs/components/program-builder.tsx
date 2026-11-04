@@ -7,10 +7,9 @@ import { messages } from '../messages';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowDown, ArrowUp, Dumbbell, Trash2 } from 'lucide-react';
+import { Dumbbell } from 'lucide-react';
 import { uuidv7 } from '@/core/offline/ids';
-import { Button, EmptyState, ErrorState, IconButton, LoadingState, TextField } from '@/ui';
-import { addDay, moveDay, removeDay } from '../draft';
+import { Button, EmptyState, ErrorState, LoadingState, TextField } from '@/ui';
 import { validateForActivation } from '../summary';
 import { createProgram, listPlayerPrograms } from '../data/program-io';
 import { activateProgram } from '../data/activate';
@@ -20,7 +19,8 @@ import { BuilderHeader } from './builder-header';
 import { DayEditor } from './day-editor';
 import { starterText } from '@/lib/starter-text';
 import { useToast } from '@/ui/toast';
-import { convertToWeek, isWeekly, weekdayKeys } from '../weekly-draft';
+import { convertToWeek, isWeekly } from '../weekly-draft';
+import { BuilderNavigation } from './builder-navigation';
 
 export function ProgramBuilder({ programId, playerId }: { programId?: string; playerId?: string }) {
   const t = useT(messages);
@@ -96,14 +96,15 @@ export function ProgramBuilder({ programId, playerId }: { programId?: string; pl
   const day = draft.days.find(item => item.id === selectedDay) ?? draft.days[0];
   const busy = pending || state.saving;
   const weekly = isWeekly(draft);
-  return <div className="mx-auto max-w-screen-2xl space-y-6">
+  return <div className="mx-auto max-w-screen-2xl space-y-6 pb-28 lg:pb-0">
     <fieldset disabled={busy} className="min-w-0 space-y-6">
       <BuilderHeader draft={draft} dirty={state.dirty} busy={busy} onTitle={value => state.update(current => ({ ...current, title: value }))}
         onSave={() => void save()} onActivate={() => void activate()} />
       {weekly ? <label className="flex min-h-12 items-center gap-3">
         <input type="checkbox" className="size-6 accent-lime" checked={draft.repeatWeekly !== false}
           onChange={event => state.update(current => ({ ...current, repeatWeekly: event.target.checked }))} />{t('repeatWeekly')}
-      </label> : <div className="space-y-2">
+      </label> : <div className="glass space-y-3 rounded-card p-4">
+        <p className="text-sm text-muted">{t('rotationNotice')}</p>
         <Button variant="secondary" className="min-h-12" disabled={draft.days.length > 7}
           onClick={() => state.update(current => convertToWeek(current, uuidv7))}>{t('convertWeek')}</Button>
         {draft.days.length > 7 && <p className="text-sm text-muted">{t('convertLimit')}</p>}
@@ -113,27 +114,14 @@ export function ProgramBuilder({ programId, playerId }: { programId?: string; pl
         <Button variant="ghost" className="min-h-12" onClick={() => void (message ? activate() : save())}>{t('tryAgain')}</Button>
       </div>}
       <div className="grid items-start gap-5 lg:grid-cols-[15rem_minmax(0,1fr)]">
-        <aside aria-label={t('programDays')} className="glass space-y-3 rounded-card p-4">
-          <h2 className="font-bold">{t('programDays')}</h2>
-          {draft.days.length === 0 && <EmptyState icon={Dumbbell} title={t('addTheFirstDay')} body={t('emptyBody')} action={{ label: t('addDay'), onClick: () => {
-            const id = uuidv7(); state.update(current => addDay(current, id, t('newDay'))); setSelectedDay(id);
-          } }} />}
-          <ul className="space-y-3">{draft.days.map((item, index) => <li key={item.id} className="space-y-2">
-            <Button variant="ghost" aria-pressed={item.id === day?.id} className="min-h-12 w-full justify-start text-start" onClick={() => setSelectedDay(item.id)}>
-              {item.weekday != null ? t(weekdayKeys[item.weekday] ?? 'sat') : formatNumber(item.position, locale)} · {item.is_rest_day ? t('recovery') : item.title ? starterText(item.title, locale) : t('newDay')}
-            </Button>
-            {!weekly && <div className="flex gap-2">
-              <IconButton aria-label={t('moveDayUp', { v0: formatNumber(item.position, locale), v1: item.title })} disabled={index === 0} onClick={() => state.update(current => moveDay(current, item.id, -1))}><ArrowUp aria-hidden className="dir-icon size-5" /></IconButton>
-              <IconButton aria-label={t('moveDayDown', { v0: formatNumber(item.position, locale), v1: item.title })} disabled={index === draft.days.length - 1} onClick={() => state.update(current => moveDay(current, item.id, 1))}><ArrowDown aria-hidden className="dir-icon size-5" /></IconButton>
-              <IconButton aria-label={t('deleteDay', { v0: formatNumber(item.position, locale), v1: item.title })} onClick={() => state.update(current => removeDay(current, item.id))}><Trash2 aria-hidden className="size-5" /></IconButton>
-            </div>}
-          </li>)}</ul>
-          {!weekly && draft.days.length > 0 && <Button variant="secondary" className="min-h-12 w-full" onClick={() => {
-            const id = uuidv7(); state.update(current => addDay(current, id, t('newDay'))); setSelectedDay(id);
-          }}>{t('addDay')}</Button>}
-        </aside>
-        {day && <DayEditor key={day.id} day={day} update={state.update}
-          usedExerciseIds={draft.days.flatMap(item => item.exercises.map(row => row.exercise_id))} />}
+        <BuilderNavigation draft={draft} selectedId={day?.id} onSelect={setSelectedDay} update={state.update} />
+        <div className="min-w-0 space-y-4">
+          {!draft.days.some(item => item.exercises.length > 0) && <p className="glass rounded-control p-4 text-sm text-muted">
+            {t('firstSteps', { one: formatNumber(1, locale), two: formatNumber(2, locale), three: formatNumber(3, locale) })}
+          </p>}
+          {day && <DayEditor key={day.id} day={day} update={state.update} first={day.id === draft.days[0]?.id}
+            last={day.id === draft.days.at(-1)?.id} usedExerciseIds={draft.days.flatMap(item => item.exercises.map(row => row.exercise_id))} />}
+        </div>
       </div>
     </fieldset>
   </div>;

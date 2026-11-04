@@ -14,7 +14,7 @@ vi.mock('react', async original => ({
 }));
 afterEach(() => vi.unstubAllGlobals());
 
-it.each([false, true])('uses native mobile modality, desktop=%s, and restores the opener', desktop => {
+it.each([[false, false], [true, false], [false, true], [true, true]])('uses native modality, desktop=%s modal=%s, and restores the opener', (desktop, modal) => {
   class Element { isConnected = true; focus = vi.fn(); }
   const opener = new Element();
   const close = vi.fn();
@@ -26,10 +26,10 @@ it.each([false, true])('uses native mobile modality, desktop=%s, and restores th
   vi.stubGlobal('HTMLElement', Element);
   vi.stubGlobal('document', { activeElement: opener });
   vi.stubGlobal('window', { matchMedia: () => media });
-  ResponsiveDialog({ fallbackId: 'heading', onDismiss: () => {} });
+  ResponsiveDialog({ fallbackId: 'heading', modal, onDismiss: () => {} });
   const cleanup = lifecycle.effect?.();
-  expect(desktop ? show : showModal).toHaveBeenCalledOnce();
-  expect(desktop ? showModal : show).not.toHaveBeenCalled();
+  expect(desktop && !modal ? show : showModal).toHaveBeenCalledOnce();
+  expect(desktop && !modal ? showModal : show).not.toHaveBeenCalled();
   expect(focus).toHaveBeenCalledOnce();
   cleanup?.();
   expect(opener.focus).toHaveBeenCalledOnce();
