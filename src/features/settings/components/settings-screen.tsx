@@ -14,12 +14,15 @@ import { ErrorState, LoadingState, ThemeSwitch } from '@/ui';
 import { loadSettings } from '../data/settings';
 import type { SettingsProfile } from '../schema';
 import { ProfileForm } from './profile-form';
+import dynamic from 'next/dynamic';
 import { InviteMessageForm } from './invite-message-form';
 import { ExportCard } from './export-card';
 import { DeleteAccountCard } from './delete-account-card';
 import { GlassToggle } from './glass-toggle';
 import { demoExpiry, useDemoExpiry } from '@/features/demo';
 import { TourReplay } from '@/ui/tour-replay';
+
+const CaptainProfileCard = dynamic(() => import('./captain-profile-card').then(module => module.CaptainProfileCard));
 
 export function SettingsScreen({ signOut }: { signOut?: ReactNode }) {
   const t = useT(messages);
@@ -75,7 +78,7 @@ export function SettingsScreen({ signOut }: { signOut?: ReactNode }) {
     {loading ? <LoadingState variant="detail" /> : error ? <ErrorState message={error} retryLabel={t('tryAgain')} onRetry={() => {
       setLoading(true); setError(''); setAttempt((value) => value + 1);
     }} /> : profile ? <>
-      <ProfileForm profile={profile} />
+      {profile.role === 'captain' ? <CaptainProfileCard profile={profile} onSave={setProfile} /> : <ProfileForm profile={profile} />}
       <TourReplay role={profile.role} />
       {profile.role === 'captain' && <InviteMessageForm initialMessage={profile.invite_message} />}
       <ExportCard />

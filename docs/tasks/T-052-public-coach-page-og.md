@@ -1,6 +1,6 @@
 # T-052 — Public coach page, join link, and share previews
 
-**Phase:** 3 · **Depends on:** T-050 merged (it adds the profile fields: avatar, bio, location, social) · **Status:** blocked until T-050 merges
+**Phase:** 3 · **Depends on:** T-050 merged (it adds the profile fields: avatar, bio, location, social) · **Status:** ready
 
 ## 1. Public page `/c/[slug]`
 - `supabase/migrations/0049_coach_public_page.sql`:

@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { publicEnv } from '@/core/config/env';
 
 type RouteDecision = (input: {
-  path: string; user: { role: 'captain' | 'player'; roleConfirmed: boolean; suspended: boolean; anonymous?: boolean } | null;
+  path: string; user: { role: 'captain' | 'player'; roleConfirmed: boolean; suspended: boolean; anonymous?: boolean } | null; coach?: string;
 }) => { redirect?: string };
 
 export async function refreshSession(request: NextRequest, decideRoute: RouteDecision): Promise<NextResponse> {
@@ -31,7 +31,7 @@ export async function refreshSession(request: NextRequest, decideRoute: RouteDec
     }
     if (!user && data.claims.is_anonymous === true) user = { role: 'player', roleConfirmed: false, suspended: false, anonymous: true };
   }
-  const decision = decideRoute({ path: request.nextUrl.pathname, user });
+  const decision = decideRoute({ path: request.nextUrl.pathname, user, coach: request.nextUrl.searchParams.get('coach') ?? undefined });
   if (decision.redirect) {
     const target = request.nextUrl.clone();
     target.pathname = decision.redirect;

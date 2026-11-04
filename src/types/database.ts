@@ -14,6 +14,18 @@ export type Database = {
   }
   public: {
     Tables: {
+      coach_join_requests: {
+        Row: { id: string; captain_id: string; player_id: string; created_at: string; status: 'pending' | 'accepted' | 'declined' }
+        Insert: { id: string; captain_id: string; player_id: string }
+        Update: never
+        Relationships: []
+      }
+      notifications: {
+        Row: { id: string; user_id: string; type: string; payload: Json; is_read: boolean; created_at: string }
+        Insert: never
+        Update: { is_read?: boolean }
+        Relationships: []
+      }
       admin_audit_log: {
         Row: {
           action: string
@@ -932,6 +944,12 @@ export type Database = {
       }
       profiles: {
         Row: {
+          public_slug: string | null
+          bio: string | null
+          location: string | null
+          units: 'metric' | 'imperial'
+          avatar_path: string | null
+          social: Partial<Record<'whatsapp' | 'instagram' | 'tiktok' | 'facebook' | 'youtube' | 'x', string>>
           created_at: string
           deletion_requested_at: string | null
           demo_expires_at: string | null
@@ -948,6 +966,12 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          bio?: string | null
+          public_slug?: string | null
+          location?: string | null
+          units?: 'metric' | 'imperial'
+          avatar_path?: string | null
+          social?: Partial<Record<'whatsapp' | 'instagram' | 'tiktok' | 'facebook' | 'youtube' | 'x', string>>
           created_at?: string
           deletion_requested_at?: string | null
           demo_expires_at?: string | null
@@ -964,6 +988,12 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          bio?: string | null
+          public_slug?: string | null
+          location?: string | null
+          units?: 'metric' | 'imperial'
+          avatar_path?: string | null
+          social?: Partial<Record<'whatsapp' | 'instagram' | 'tiktok' | 'facebook' | 'youtube' | 'x', string>>
           created_at?: string
           deletion_requested_at?: string | null
           demo_expires_at?: string | null
@@ -1274,6 +1304,17 @@ export type Database = {
       }
     }
     Functions: {
+      coach_public_profile: { Args: { slug: string }; Returns: {
+        id: string; full_name: string; bio: string | null; location: string | null; avatar_path: string | null;
+        social: Partial<Record<'whatsapp' | 'instagram' | 'tiktok' | 'facebook' | 'youtube' | 'x', string>>
+      }[] }
+      pending_coach_join_requests: { Args: never; Returns: { id: string; full_name: string; created_at: string }[] }
+      resolve_coach_join_request: { Args: { p_request: string; p_status: string; p_link_id: string }; Returns: undefined }
+      refresh_inactive_alerts: { Args: never; Returns: undefined }
+      admin_notification_kpis: {
+        Args: never
+        Returns: { captains: number; players: number; paid_captains: number }[]
+      }
       activate_nutrition_plan: { Args: { p_plan: string }; Returns: undefined }
       activate_program: { Args: { p_program: string }; Returns: undefined }
       admin_activate_plan: {
@@ -1384,6 +1425,10 @@ export type Database = {
       is_captain_of: { Args: { p_player: string }; Returns: boolean }
       is_suspended: { Args: never; Returns: boolean }
       my_captain_id: { Args: never; Returns: string }
+      my_captain_profile: { Args: never; Returns: {
+        full_name: string; phone: string | null; bio: string | null; location: string | null; avatar_path: string | null;
+        social: Partial<Record<'whatsapp' | 'instagram' | 'tiktok' | 'facebook' | 'youtube' | 'x', string>>
+      }[] }
       nutrition_plan_to_template: {
         Args: { p_plan: string; p_title: string }
         Returns: string

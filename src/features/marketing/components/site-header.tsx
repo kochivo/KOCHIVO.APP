@@ -12,19 +12,18 @@ export async function SiteHeader() {
   return <header className="sticky top-0 z-50 border-b border-line bg-bg/80 backdrop-blur-md">
     <div className="marketing-wrap flex flex-nowrap items-center justify-between h-16 gap-2">
       <div className="shrink-0">
-        <Image src="/brand/logo-primary.png" alt={content.brand} width={132} height={38} priority className="theme-dark-only h-auto w-28 md:w-24 lg:w-33" />
-        <Image src="/brand/logo-primary-light.png" alt={content.brand} width={132} height={38} priority className="theme-light-only h-auto w-28 md:w-24 lg:w-33" />
+        <Image src="/brand/logo-primary.png" alt={content.brand} width={132} height={38} priority className="theme-dark-only h-auto w-28 lg:w-33" />
+        <Image src="/brand/logo-primary-light.png" alt={content.brand} width={132} height={38} priority className="theme-light-only h-auto w-28 lg:w-33" />
       </div>
-      <nav className="hidden md:flex min-w-0 items-center text-xs lg:gap-1 lg:text-sm">
-        {content.nav.map(item => <a className="marketing-ghost min-h-12 whitespace-nowrap px-1 lg:px-3" key={item.href} href={item.href}>{item.label}</a>)}
+      <nav className="hidden lg:flex min-w-0 items-center gap-1 text-sm">
+        {content.nav.map(item => <a className="marketing-ghost min-h-12 whitespace-nowrap px-3" key={item.href} href={item.href}>{item.label}</a>)}
       </nav>
-      <div className="hidden md:flex shrink-0 items-center text-xs font-bold lg:gap-1 lg:text-sm">
-        <div className="lg:hidden"><LanguageSwitch compact /></div>
-        <div className="hidden lg:block"><LanguageSwitch /></div>
+      <div className="hidden lg:flex shrink-0 items-center gap-1 text-sm font-bold">
+        <LanguageSwitch />
         <ThemeSwitch compact />
-        <a className="marketing-ghost min-h-12 min-w-12 whitespace-nowrap px-1 lg:px-3" href={content.links.login}>{content.login}</a>
+        <a className="marketing-ghost min-h-12 min-w-12 whitespace-nowrap px-3" href={content.links.login}>{content.login}</a>
       </div>
-      <a className="marketing-primary ms-auto min-h-12 shrink-0 whitespace-nowrap px-3 text-sm md:ms-0 lg:px-4" href={content.links.signup}>{content.signup}</a>
+      <a className="marketing-primary ms-auto min-h-12 shrink-0 whitespace-nowrap px-3 text-sm lg:ms-0 lg:px-4" href={content.links.signup}>{content.signup}</a>
       <SiteMenu openLabel={t('openMenu')} closeLabel={t('closeMenu')}>
         <div className="flex flex-col gap-1 text-sm font-bold">
           {content.nav.map(item => <a className="marketing-ghost min-h-12 justify-start px-3" key={item.href} href={item.href}>{item.label}</a>)}

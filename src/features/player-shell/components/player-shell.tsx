@@ -6,6 +6,7 @@ import type { ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
 import { BottomNav } from '@/ui';
 import { InstallSheet } from '@/features/install';
+import { NotificationBell } from '@/features/notifications';
 import { daysBetween, localDate } from '@/lib/dates';
 import { whatsappUrl } from '@/lib/whatsapp';
 import { accessState } from '../access';
@@ -28,6 +29,7 @@ export function PlayerShell({ children }: { children: ReactNode }) {
     state === 'ended' ? t('yourSubscriptionEndedContactYourCoach') :
     state === 'archived' ? t('yourCoachPausedYourCoaching') : null;
   return <MyCaptainContext.Provider value={captain}>
+    {showsNav(pathname) && <div className="mx-auto flex max-w-lg justify-end px-5 pt-3"><NotificationBell /></div>}
     <div className="mx-auto max-w-lg space-y-3 px-5 pt-3" aria-live="polite">
       {!online && <p role="status" className="glass rounded-card p-4 text-sm">
         {t('youReOfflineYourLogsAre')}

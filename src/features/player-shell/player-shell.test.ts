@@ -70,4 +70,10 @@ describe('captain cache', () => {
       fullName: 'كابتن', phone: null, accessUntil: '2026-11-06', archivedAt: null,
     }));
   });
+  it('keeps public branding offline and discards legacy private phone values', () => {
+    const data = { fullName: 'Ali', phone: '+201012345678', accessUntil: '2026-11-06', archivedAt: null,
+      bio: 'Coach', social: { instagram: 'https://instagram.com/ali' } };
+    vi.stubGlobal('window', { localStorage: { getItem: () => JSON.stringify(data) } });
+    expect(readCaptainCache()).toEqual({ ...data, phone: null, startedOn: null });
+  });
 });

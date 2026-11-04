@@ -1,0 +1,28 @@
+import { defineMessages } from '@/core/i18n/messages';
+
+export const messages = defineMessages({
+  ar: {
+    brand: 'KOCHIVO',
+    train: 'ابدأ التدريب معي', coachDescription: 'ابدأ التدريب مع {name} على كوتشيفو',
+    noBio: 'الكابتن لسه مضافش نبذة', noSocial: 'لسه مفيش روابط تواصل',
+    pending: 'طلبات الانضمام', empty: 'لسه مفيش طلبات انضمام', accept: 'اقبل', decline: 'ارفض',
+    failure: 'الطلب متعملش. راجع عدد لاعيبتك وجرّب تاني', loadFailure: 'مش قادرين نحمّل الصفحة. جرّب تاني',
+    loading: 'بنحمّل…', retry: 'جرّب تاني', sent: 'طلبك اتبعت للكابتن. مستنيين موافقته قبل ما تبدأ.',
+    signup: 'اعمل حساب لاعب', name: 'اسمك', email: 'الإيميل', password: 'كلمة السر',
+    submit: 'ابعت طلب انضمام', confirm: 'افتح رسالة التأكيد في إيميلك عشان نبعت طلبك للكابتن',
+    existing: 'عندك حساب؟ ادخل وابعت الطلب', signupHint: 'الطلب مش بيفتح مساحة الكابتن غير بعد موافقته.',
+    whatsapp: 'واتساب', instagram: 'إنستجرام', tiktok: 'تيك توك', facebook: 'فيسبوك', youtube: 'يوتيوب', x: 'إكس',
+  },
+  en: {
+    brand: 'KOCHIVO',
+    train: 'Start training with me', coachDescription: 'Train with {name} on KOCHIVO',
+    noBio: 'This coach has not added a bio yet', noSocial: 'No contact links yet',
+    pending: 'Join requests', empty: 'No join requests yet', accept: 'Accept', decline: 'Decline',
+    failure: 'Request failed. Check your player limit and try again', loadFailure: 'Could not load this page. Try again',
+    loading: 'Loading…', retry: 'Try again', sent: 'Your request was sent. Your coach must accept it before you can start.',
+    signup: 'Create a player account', name: 'Your name', email: 'Email', password: 'Password',
+    submit: 'Send join request', confirm: 'Open the confirmation email so we can send your request to the coach',
+    existing: 'Already have an account? Sign in and send request', signupHint: 'You get access after the coach accepts your request.',
+    whatsapp: 'WhatsApp', instagram: 'Instagram', tiktok: 'TikTok', facebook: 'Facebook', youtube: 'YouTube', x: 'X',
+  },
+});

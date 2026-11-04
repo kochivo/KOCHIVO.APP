@@ -13,7 +13,7 @@ import { weekStart } from '../week';
 import type { ProgressDatabase } from './database';
 
 export type CheckIn = Pick<Tables<'check_ins'>,
-  'id' | 'player_id' | 'week_start' | 'body_weight_kg' | 'waist_cm' | 'notes' | 'photo_paths'> & {
+  'id' | 'player_id' | 'week_start' | 'body_weight_kg' | 'waist_cm' | 'notes' | 'photo_paths' | 'captain_reply' | 'reviewed_at'> & {
     body_fat_pct: number | null; photo_poses: string[];
   };
 export interface CheckInInput {
@@ -35,7 +35,7 @@ async function playerId(client: SupabaseClient<AppDatabase>, t: Translator<typeo
 export async function listCheckIns(client: SupabaseClient<AppDatabase>, t: Translator<typeof messages> = createT(messages, 'ar')): Promise<CheckIn[]> {
   const id = await playerId(client, t);
   const { data, error } = await client.from('check_ins')
-    .select('id,player_id,week_start,body_weight_kg,waist_cm,notes,photo_paths,body_fat_pct,photo_poses')
+    .select('id,player_id,week_start,body_weight_kg,waist_cm,notes,photo_paths,captain_reply,reviewed_at,body_fat_pct,photo_poses')
     .eq('player_id', id).order('week_start', { ascending: false }).limit(26).returns<CheckIn[]>();
   if (error) throw new Error(t('couldntLoadYourCheckins'));
   return data ?? [];

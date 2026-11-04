@@ -1,4 +1,5 @@
 'use server';
+import { unstable_rethrow } from 'next/navigation';
 import { getT } from '@/core/i18n/server';
 import { messages } from '../messages';
 
@@ -27,7 +28,30 @@ export async function loadSettings(): Promise<Result<SettingsProfile>> {
     const result = await client.from('profiles').select('*').eq('id', id).single();
     if (result.error || !result.data) return { error: t('couldnTLoadSettingsTryAgain') };
     return { data: result.data };
-  } catch { return { error: t('couldnTLoadSettingsTryAgain') }; }
+  } catch (error) { unstable_rethrow(error); return { error: t('couldnTLoadSettingsTryAgain') }; }
+}
+
+export async function saveCaptainProfile(input: unknown): Promise<Result<SettingsProfile>> {
+  const t = await getT(messages);
+  const failure = t('couldnTSaveChangesTryAgain');
+  const parsed = settingsSchemas(t).captainProfileSchema.safeParse(input);
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? failure };
+  try {
+    const { client, id } = await ownSession();
+    const path = parsed.data.avatar_path;
+    if (path && (!path.startsWith(`${id}/`) || !/^[-a-zA-Z0-9/]+\.webp$/.test(path))) return { error: failure };
+    const previous = await client.from('profiles').select('avatar_path').eq('id', id).single();
+    if (previous.error) return { error: failure };
+    const result = await client.from('profiles').update({ ...parsed.data,
+      ...(parsed.data.public_slug !== undefined ? { public_slug: parsed.data.public_slug || null } : {}),
+    }).eq('id', id).eq('role', 'captain').select('*').single();
+    if (result.error || !result.data) return { error: failure };
+    if (path && previous.data.avatar_path && path !== previous.data.avatar_path) {
+      // Cleanup is best effort: a committed profile must never be reported as rolled back.
+      await client.storage.from('captain-avatars').remove([previous.data.avatar_path]).catch(() => undefined);
+    }
+    return { data: result.data as SettingsProfile };
+  } catch (error) { unstable_rethrow(error); return { error: failure }; }
 }
 
 export async function saveProfile(input: unknown): Promise<Result<SettingsProfile>> {
@@ -40,7 +64,7 @@ export async function saveProfile(input: unknown): Promise<Result<SettingsProfil
     const result = await client.from('profiles').update(parsed.data).eq('id', id).select('*').single();
     if (result.error || !result.data) return { error: failure };
     return { data: result.data };
-  } catch { return { error: failure }; }
+  } catch (error) { unstable_rethrow(error); return { error: failure }; }
 }
 
 export async function saveInviteMessage(input: unknown): Promise<Result<SettingsProfile>> {
@@ -56,7 +80,7 @@ export async function saveInviteMessage(input: unknown): Promise<Result<Settings
     const result = await client.from('profiles').update(parsed.data).eq('id', id).eq('role', 'captain').select('*').single();
     if (result.error || !result.data) return { error: failure };
     return { data: result.data };
-  } catch { return { error: failure }; }
+  } catch (error) { unstable_rethrow(error); return { error: failure }; }
 }
 
 export async function requestDeletion(): Promise<Result<string>> {
@@ -67,7 +91,7 @@ export async function requestDeletion(): Promise<Result<string>> {
     const result = await client.rpc('request_account_deletion');
     if (result.error || !result.data) return { error: failure };
     return { data: result.data };
-  } catch { return { error: failure }; }
+  } catch (error) { unstable_rethrow(error); return { error: failure }; }
 }
 
 export async function cancelDeletion(): Promise<Result<null>> {
@@ -77,7 +101,7 @@ export async function cancelDeletion(): Promise<Result<null>> {
     const { client } = await ownSession();
     const result = await client.rpc('cancel_account_deletion');
     return result.error ? { error: failure } : { data: null };
-  } catch { return { error: failure }; }
+  } catch (error) { unstable_rethrow(error); return { error: failure }; }
 }
 
 export async function exportMyData(): Promise<Result<{ profile: Row; rows: Record<string, Row[]> }>> {
@@ -105,5 +129,5 @@ export async function exportMyData(): Promise<Result<{ profile: Row; rows: Recor
       return [table, rows] as const;
     }));
     return { data: { profile: { ...profile.data }, rows: Object.fromEntries(entries) } };
-  } catch { return { error: t('couldnTDownloadYourDataTry') }; }
+  } catch (error) { unstable_rethrow(error); return { error: t('couldnTDownloadYourDataTry') }; }
 }
