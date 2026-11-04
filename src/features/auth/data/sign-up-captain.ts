@@ -2,6 +2,7 @@
 import { getT } from '@/core/i18n/server';
 import { cookies } from 'next/headers';
 import { messages } from '../messages';
+import { homeFor } from '../routing';
 
 import { authSchemas } from '../schemas';
 import { authClient, profile, runAction } from './auth-client';
@@ -28,13 +29,13 @@ export async function signUpCaptain(input: unknown) {
 async function finishCaptainSignup(client: Awaited<ReturnType<typeof authClient>>) {
   const user = await profile(client);
   if (!user) throw new Error('Missing profile');
-  if (!user.roleConfirmed) {
+  if (!user.admin && !user.roleConfirmed) {
     const { error } = await client.rpc('confirm_role', { p_role: 'captain' });
     if (error) throw error;
     user.role = 'captain';
   }
   (await cookies()).delete('auth-intent');
-  return { redirect: user.role === 'captain' ? '/captain' : '/player' };
+  return { redirect: homeFor(user) };
 }
 
 export async function verifyCaptainCode(input: unknown) {

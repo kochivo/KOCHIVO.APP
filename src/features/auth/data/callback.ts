@@ -8,6 +8,7 @@ import { authError } from '../errors';
 import { parseInviteCode } from '../invite-code';
 import { coachSlug } from '@/lib/coach-slug';
 import { completeCoachRequest } from './coach-request';
+import { homeFor } from '../routing';
 
 export async function handleAuthCallback(request: NextRequest) {
   // Behind the host's proxy request.url is the container address (0.0.0.0:8080), not the site.
@@ -41,6 +42,7 @@ export async function handleAuthCallback(request: NextRequest) {
     if (exchange.error) throw exchange.error;
     const user = await profile(client);
     if (!user) throw new Error('Missing profile');
+    if (user.admin) return NextResponse.redirect(new URL(homeFor(user), origin));
     if (!user.roleConfirmed) {
       if (!intent) return NextResponse.redirect(new URL('/login', origin));
       const confirmation = await client.rpc('confirm_role', { p_role: intent });
@@ -54,7 +56,7 @@ export async function handleAuthCallback(request: NextRequest) {
       return NextResponse.redirect(new URL('/player/onboarding', origin));
     }
     if (coach) return NextResponse.redirect(new URL(await completeCoachRequest(client, coach), origin));
-    return NextResponse.redirect(new URL(user.role === 'captain' ? '/captain' : '/player', origin));
+    return NextResponse.redirect(new URL(homeFor(user), origin));
   } catch (error) {
     unstable_rethrow(error);
     const target = new URL(invite ? `/i/${invite}` : '/login', origin);

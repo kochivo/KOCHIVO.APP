@@ -16,6 +16,7 @@ import { LoadingState } from '@/ui/loading-state';
 import { ActivatePanel } from './activate-panel';
 import { SuspendDialog } from './suspend-dialog';
 import { Deferred } from '@/ui/deferred';
+import { signOutAdmin } from '../data/sign-out';
 
 const CaptainsTable = dynamic(() => import('./captains-table').then(module => module.CaptainsTable), {
   loading: () => <LoadingState className="min-h-96" />,
@@ -56,6 +57,9 @@ export function AdminScreen({ captains, audit, plans, search, offset, kpis }: Pr
   return <main dir={localeDir(locale)} className="mx-auto max-w-[1440px] space-y-7 px-4 py-8 pt-[max(2rem,var(--safe-top))] text-start lg:px-8 lg:py-12 lg:pt-[max(3rem,var(--safe-top))]">
     <header className="flex flex-wrap items-center justify-between gap-4 border-b border-line pb-6">
       <h1 className="text-3xl font-extrabold lg:text-4xl">{t('admin')}</h1>
+      <form action={signOutAdmin}>
+        <Button type="submit" variant="danger" className="min-h-12">{t('signOut')}</Button>
+      </form>
       <span className="flex items-center gap-2 rounded-control border border-line px-4 py-2 text-sm text-muted">
         <ShieldCheck aria-hidden className="size-4" /> {t('adminOnly')}
       </span>

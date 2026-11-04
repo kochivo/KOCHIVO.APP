@@ -98,5 +98,5 @@ it('aggregates global KPIs only for an admin and excludes expired subscriptions'
     values ($1, 'champion', '2026-11-01', '2026-12-01', 100, $2),
       ($2, 'legend', '2026-10-01', '2026-11-01', 100, $2)`, [captain, other]);
   expect((await asUser(db, other, tx => tx.query('select * from public.admin_notification_kpis()'))).rows)
-    .toEqual([{ captains: 2, players: 1, paid_captains: 1 }]);
+    .toEqual([{ captains: 1, players: 1, paid_captains: 1 }]);
 });

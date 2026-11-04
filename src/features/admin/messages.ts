@@ -2,6 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    signOut: 'تسجيل الخروج',
     paidShare: 'نسبة الكباتن على باقة مدفوعة',
     percentage: '{n}%',
     clearSearch: "امسح البحث والفلاتر",
@@ -94,6 +95,7 @@ export const messages = defineMessages({
     'dash': "—",
   },
   en: {
+    signOut: 'Sign out',
     paidShare: 'Captains on paid plans',
     percentage: '{n}%',
     clearSearch: "Clear search and filters",
