@@ -19,6 +19,7 @@ import { mainLifts, topSets, trendDelta } from '../trends';
 import type { TrendPoint } from '../trends';
 import { weekStart } from '../week';
 import { PlayerGallery } from './player-gallery';
+import { BodyScansLoader } from '@/features/body-scans';
 const CheckinSheet = dynamic(() => import('./checkin-sheet').then(module => module.CheckinSheet), { ssr: false });
 const CheckinHistory = dynamic(() => import('./checkin-history').then(module => module.CheckinHistory), { ssr: false, loading: () => <LoadingState variant="list" /> });
 const LineChart = dynamic(() => import('./line-chart').then(module => module.LineChart), {
@@ -100,6 +101,7 @@ export function ProgressScreen({ analytics }: { analytics?: ReactNode }) {
         </section>
       </>}
     {analytics}
+    <BodyScansLoader />
     {checkinError ? <ErrorState message={t('couldntLoadCheckinsCheckYourConnection')} retryLabel={t('tryAgain')} onRetry={() => setRetryKey((value) => value + 1)} /> : !checkins ? <LoadingState variant="cards" /> : <>
       {!checkins.length && <EmptyState icon={CalendarCheck} title={t('firstCheckin')} body={t('yourFirstCheckinIsYourStartingPoint')} action={{ label: t('sendWeeklyCheckin'), onClick: () => { setSheetLoaded(true); setSheet(true); } }} />}
       {checkins.length > 0 && <><div className="grid grid-cols-2 gap-3">

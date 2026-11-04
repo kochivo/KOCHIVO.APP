@@ -16,6 +16,7 @@ import { PlanTab } from './plan-tab';
 import { ProgressTab } from './progress-tab';
 import { AnalyticsLoader } from '@/features/muscle-analytics';
 import { ReadinessLoader } from './readiness-loader';
+import { BodyScansLoader } from '@/features/body-scans';
 
 interface Props {
   playerId: string;
@@ -53,7 +54,7 @@ export async function ProfileScreen({ playerId, tab, today, data }: Props) {
       </nav>
       {tab === 'readiness' ? <ReadinessLoader playerId={playerId} today={today} /> : tab === 'analysis' ? <AnalyticsLoader key={playerId} playerId={playerId} /> :
         tab === 'intake' ? <IntakeTab playerId={playerId} intake={profile.intake} today={today} /> :
-          tab === 'progress' ? <ProgressTab playerId={playerId} checkIns={profile.checkIns} targetKg={profile.intake?.targetWeightKg ?? null} /> :
+          tab === 'progress' ? <><BodyScansLoader playerId={playerId} /><ProgressTab playerId={playerId} checkIns={profile.checkIns} targetKg={profile.intake?.targetWeightKg ?? null} /></> :
             tab === 'plan' ? <PlanTab playerId={playerId} program={profile.program} nutrition={profile.nutrition} /> :
               <CheckinsTab playerId={playerId} checkIns={profile.checkIns} />}
     </section>
