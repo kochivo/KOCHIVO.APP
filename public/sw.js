@@ -3,7 +3,7 @@
  * Player data lives in IndexedDB (src/core/offline), never in this cache.
  * Bump VERSION on any change to this file's caching rules.
  */
-const VERSION = 'v1';
+const VERSION = 'v2';
 const SHELL_CACHE = `kochivo-shell-${VERSION}`;
 const STATIC_CACHE = `kochivo-static-${VERSION}`;
 const OFFLINE_URL = '/offline';
@@ -57,4 +57,27 @@ self.addEventListener('fetch', (event) => {
       ),
     );
   }
+});
+
+self.addEventListener('push', (event) => {
+  if (!event.data) return;
+  let payload;
+  try { payload = event.data.json(); } catch { return; }
+  if (!payload || typeof payload.title !== 'string' || typeof payload.body !== 'string') return;
+  event.waitUntil(self.registration.showNotification(payload.title, {
+    body: payload.body, icon: '/icons/icon-192.png', badge: '/icons/icon-192.png',
+    tag: payload.tag, data: { url: payload.url },
+  }));
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  let url;
+  try { url = new URL(event.notification.data?.url, self.location.origin); } catch { return; }
+  if (url.origin !== self.location.origin) return;
+  event.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(async (windows) => {
+    const existing = windows.find(client => client.url === url.href);
+    if (existing) return existing.focus();
+    return self.clients.openWindow(url.href);
+  }));
 });

@@ -4,7 +4,8 @@ FROM node:22-alpine
 WORKDIR /app
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=8080 HOSTNAME=0.0.0.0 \
     NEXT_PUBLIC_SUPABASE_URL=https://hkgaercmtdmoksrhzcya.supabase.co \
-    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_5XZ3UcX0qeI0RpgJ3kBcuQ_pqPEeZ3R
+    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_5XZ3UcX0qeI0RpgJ3kBcuQ_pqPEeZ3R \
+    NEXT_PUBLIC_VAPID_PUBLIC_KEY=""
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev --no-audit --no-fund
 COPY --chown=node:node . .

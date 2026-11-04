@@ -21,6 +21,7 @@ import { DeleteAccountCard } from './delete-account-card';
 import { GlassToggle } from './glass-toggle';
 import { demoExpiry, useDemoExpiry } from '@/features/demo';
 import { TourReplay } from '@/ui/tour-replay';
+import { PushToggleCard } from '@/features/notifications';
 
 const CaptainProfileCard = dynamic(() => import('./captain-profile-card').then(module => module.CaptainProfileCard));
 
@@ -75,6 +76,7 @@ export function SettingsScreen({ signOut }: { signOut?: ReactNode }) {
     </div>
     <GlassToggle />
     <ThemeSwitch />
+    <PushToggleCard />
     {loading ? <LoadingState variant="detail" /> : error ? <ErrorState message={error} retryLabel={t('tryAgain')} onRetry={() => {
       setLoading(true); setError(''); setAttempt((value) => value + 1);
     }} /> : profile ? <>
