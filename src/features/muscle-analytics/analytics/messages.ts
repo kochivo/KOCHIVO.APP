@@ -19,7 +19,7 @@ export const messages = defineMessages({
     highLoad: 'حِمل عالي على {muscle}',
     front: 'قدّام', back: 'ورا',
     bodyLabel: '{view} — أكتر عضلات اتدرّبت: {regions}',
-    regionSets: '{muscle}: {sets} سِت',
+    regionSets: '{muscle}: {sets} مجموعة',
     separator: '، ',
     noRegions: 'مفيش',
     legend: 'عدد السِتات',

@@ -10,8 +10,9 @@ import type { VolumeWeek } from '../data/muscle-volume';
 import { BalanceBar } from './balance-bar';
 import { BodyMap } from './body-map';
 import { WeekSlider } from './week-slider';
+import { QuickStats } from './quick-stats';
 
-export function AnalyticsPanel({ weeks, self = false }: { weeks: VolumeWeek[]; self?: boolean }) {
+export function AnalyticsPanel({ weeks, self = false, readiness = null }: { weeks: VolumeWeek[]; self?: boolean; readiness?: number | null }) {
   const [selected, setSelected] = useState(4);
   const t = useT(messages);
   const locale = useLocale();
@@ -21,8 +22,11 @@ export function AnalyticsPanel({ weeks, self = false }: { weeks: VolumeWeek[]; s
   return <div className="space-y-6">
     <WeekSlider value={selected} onChange={setSelected} />
     <p className="text-xs text-muted">{t('weekDates', { date: formatDateAr(week.start, { day: 'numeric', month: 'short' }, locale) })}</p>
-    <BalanceBar anterior={week.anterior} posterior={week.posterior} />
-    <BodyMap volume={week.regions} />
+    <div className="grid gap-4 md:grid-cols-[1fr_280px]">
+      <div className="md:col-start-2 md:row-start-1"><QuickStats week={week} readiness={readiness} /></div>
+      <div className="glass min-w-0 rounded-card p-4 md:col-start-1 md:row-start-1"><BodyMap key={week.start} volume={week.regions} /></div>
+    </div>
+    <BalanceBar volume={week.muscles} />
     <div className="flex flex-wrap items-center justify-center gap-3 text-xs text-muted">
       <span>{t('legend')}</span>
       {([0, 1, 6, 13] as const).map(value => <span key={value} className="inline-flex items-center gap-1.5">

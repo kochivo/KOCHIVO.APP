@@ -2,23 +2,26 @@
 
 import { AlertTriangle } from 'lucide-react';
 import { useT } from '@/core/i18n/client';
-import { balance } from '../analytics/balance';
-import { messages } from '../analytics/messages';
+import { balance, groups } from '../analytics/balance';
+import type { MuscleVolume } from '../analytics/muscle-map';
+import { messages } from '../analytics/premium/messages';
 
-export function BalanceBar({ anterior, posterior }: { anterior: number; posterior: number }) {
+export function BalanceBar({ volume }: { volume: MuscleVolume }) {
   const t = useT(messages);
-  const { push, pull, imbalanced } = balance(anterior, posterior);
-  return <div className="space-y-3">
+  const values = balance(volume);
+  const colors = { push: 'bg-lime', pull: 'bg-lime/60', legs: 'bg-lime/30' };
+  return <div className="glass space-y-3 rounded-card p-4">
     <div className="flex justify-between text-sm font-bold">
-      <span>{t('push')} <span className="text-lime">{t('percent', { value: push })}</span></span>
-      <span>{t('pull')} <span className="text-muted">{t('percent', { value: pull })}</span></span>
+      {groups.map(group => <span key={group}>{t(group)} <span className="text-ink">{t('percent', { value: values[group] })}</span></span>)}
     </div>
-    <div aria-hidden className="flex h-2 overflow-hidden rounded-full bg-line">
-      <span className="h-full bg-lime transition-all duration-150 motion-reduce:transition-none" style={{ width: `${push}%` }} />
-      <span className="h-full bg-lime/25 transition-all duration-150 motion-reduce:transition-none" style={{ width: `${pull}%` }} />
+    <div className="flex h-3 overflow-hidden rounded-full bg-line shadow-lime-glow">
+      {groups.map(group => <span key={group} role="img" aria-label={t('balanceSegment', { group: t(group), value: values[group] })}
+        data-segment={group} className={`h-full ${colors[group]} transition-all duration-150 motion-reduce:transition-none`}
+        style={{ width: `${values[group]}%` }} />)}
     </div>
-    {imbalanced && <p className="glass flex items-center gap-2 rounded-control p-3 text-sm text-muted">
-      <AlertTriangle aria-hidden className="size-4 shrink-0 text-lime" />{t('imbalance')}
+    {values.core > 0 && <p className="text-sm text-muted">{t('regionSets', { muscle: t('muscle.core'), sets: values.core })}</p>}
+    {values.under.length > 0 && <p className="glass flex items-center gap-2 rounded-control p-3 text-sm text-muted">
+      <AlertTriangle aria-hidden className="size-4 shrink-0 text-lime" />{t('undertrained', { groups: values.under.map(group => t(group)).join(t('separator')) })}
     </p>}
   </div>;
 }
