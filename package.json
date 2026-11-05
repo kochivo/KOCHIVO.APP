@@ -16,7 +16,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "check": "npm run typecheck && npm run lint && npm run test"
+    "audit:release": "node scripts/release-audit.mjs",
+    "check": "npm run typecheck && npm run lint && npm run audit:release && npm run test"
   },
   "dependencies": {
     "@sentry/nextjs": "11.8.0",
