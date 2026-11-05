@@ -5,10 +5,8 @@ import { loadDemoProfile } from '../data/load-demo-profile';
 import { unstable_rethrow } from 'next/navigation';
 import { demoHours } from '../data/demo-profile';
 import { DemoProvider } from './demo-provider';
-import dynamic from 'next/dynamic';
+import { LazyDemoBanner } from './lazy-demo-banner';
 import { DemoProfileError } from './demo-profile-error';
-
-const DemoBanner = dynamic(() => import('./demo-banner').then(module => module.DemoBanner));
 
 interface Props { children: ReactNode; failOpen?: boolean }
 
@@ -18,7 +16,7 @@ async function DemoState({ children, failOpen }: Props) {
   if (!result) return failOpen ? children : <DemoProfileError />;
   if (!result.expiresAt) return children;
   return <DemoProvider expiresAt={result.expiresAt}>
-    {result.expiresAt && <DemoBanner role={result.role} hours={demoHours(result.expiresAt, new Date())} />}
+    {result.expiresAt && <LazyDemoBanner role={result.role} hours={demoHours(result.expiresAt, new Date())} />}
     {children}
   </DemoProvider>;
 }

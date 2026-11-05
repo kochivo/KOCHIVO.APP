@@ -5,7 +5,7 @@ import { DemoMode } from './components/demo-mode';
 const profile = vi.hoisted(() => vi.fn());
 vi.mock('./data/load-demo-profile', () => ({ loadDemoProfile: profile }));
 vi.mock('next/navigation', () => ({ unstable_rethrow: vi.fn() }));
-vi.mock('next/dynamic', () => ({ default: () => 'lazy-demo-banner' }));
+vi.mock('./components/lazy-demo-banner', () => ({ LazyDemoBanner: 'lazy-demo-banner' }));
 beforeEach(() => { vi.useFakeTimers(); vi.setSystemTime('2026-11-05T12:00:00Z'); });
 afterEach(() => vi.useRealTimers());
 
