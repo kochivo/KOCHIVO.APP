@@ -8,6 +8,7 @@ import type { Messages } from '@/core/i18n/messages';
 import { weeklyVolume } from '../data/muscle-volume';
 import { AnalyticsPanel } from '../components/analytics-panel';
 import { WeekSlider } from '../components/week-slider';
+import { BodyMap } from '../components/body-map';
 
 const state = vi.hoisted(() => ({ week: 4 }));
 vi.mock('react', async importOriginal => {
@@ -18,6 +19,19 @@ vi.mock('react', async importOriginal => {
 });
 vi.mock('@/core/i18n/client', () => ({ useT: (dictionary: Messages) => createT(dictionary, 'en'), useLocale: () => 'en' }));
 beforeEach(() => { state.week = 4; });
+it('lights only trained regions and never renders chest on the back', () => {
+  const html = renderToStaticMarkup(createElement(BodyMap, {
+    volume: { chest: 3, arms: 3, back: 0, shoulders: 0, abs: 0, legs: 0 },
+  }));
+  const figures = html.split('<figure').slice(1);
+  const active = (figure: string) => [...figure.matchAll(/<g[^>]*data-region="([^"]+)"[^>]*class="([^"]*)"/g)]
+    .filter(match => match[2]?.includes('text-lime')).map(match => match[1]);
+  expect(active(figures[0] ?? '')).toEqual(['chest', 'arms']);
+  expect(active(figures[1] ?? '')).toEqual(['arms']);
+  expect(figures[1]).not.toContain('data-region="chest"');
+  expect(html).toContain('stroke-bg-deep/40');
+  expect(html).toMatch(/<figcaption[^>]*class="[^"]*glass/);
+});
 const now = new Date('2026-11-04T10:00:00Z');
 function weeks(count = 21) {
   return weeklyVolume(Array.from({ length: count }, () => ({
