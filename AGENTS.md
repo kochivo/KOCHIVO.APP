@@ -69,6 +69,8 @@ These rules are mandatory. A diff that breaks one is rejected in review, even if
 
 ## 7. Tooling (Windows)
 
+Before publish, follow docs/RELEASE-CHECKLIST.md.
+
 - Edit files with your file-editing tools. **Never rewrite text files through PowerShell `Get-Content`/`Set-Content`**. It corrupts Arabic (this already happened once).
 - Before you finish, run:
   ```
