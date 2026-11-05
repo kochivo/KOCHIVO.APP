@@ -76,8 +76,7 @@ it('starts offline, queues sets and meals, completes and replays without duplica
   expect(ptWorkouts).toBeGreaterThan(0);
 });
 
-// BUG T-089-B-3: renew_player does not advance billing_started_at, so late old-package sessions consume the renewed balance.
-it.fails('late completion from before a renewed PT package leaves its new balance untouched', async () => {
+it('late completion from before a renewed PT package leaves its new balance untouched', async () => {
   const player = fleet.players.find(p => p.state === 'active' && p.kind === 'sessions');
   if (!player) throw new Error('Missing PT player');
   const id = await stableId('fleet-late', player.id);
@@ -94,6 +93,16 @@ it.fails('late completion from before a renewed PT package leaves its new balanc
   await asUser(db, player.id, tx => tx.query('select sync_workout_sessions($1)', [JSON.stringify([row])]));
   expect((await db.query('select sessions_left from coach_clients where id=$1', [player.link])).rows).toEqual([{ sessions_left: renewedBalance }]);
   expect((await db.query('select session_id from session_deductions where session_id=$1', [id])).rows).toEqual([]);
+  const fresh = await stableId('fleet-after-renewal', player.id);
+  const freshRow = { id: fresh, training_date: '2026-11-03', started_at: '2026-11-03T10:01:00Z',
+    completed_at: '2026-11-03T11:00:00Z', client_updated_at: '2026-11-03T11:00:00Z' };
+  for (let replay = 0; replay < 2; replay++) {
+    await asUser(db, player.id, tx => tx.query('select sync_workout_sessions($1)', [JSON.stringify([freshRow])]));
+  }
+  expect((await db.query('select sessions_left from coach_clients where id=$1', [player.link])).rows)
+    .toEqual([{ sessions_left: renewedBalance - 1 }]);
+  expect((await db.query('select session_id from session_deductions where session_id=$1', [fresh])).rows)
+    .toEqual([{ session_id: fresh }]);
 });
 
 it('a session from before the original billing period never consumes PT balance', async () => {

@@ -76,14 +76,14 @@ it.each([25, 26, 27, 28, 29])('blocks templates and hides the public page for un
   expect((await db.query('select * from coach_public_profile($1)', [`fleet-${index}`])).rows).toEqual([]);
 });
 
-// BUG T-089-A-2: inactivity refresh includes frozen and pending relationships before any training is expected.
-it.fails('does not send inactive-player alerts for frozen or unactivated packages', async () => {
+it('does not send inactive-player alerts for frozen, unactivated or expired packages', async () => {
   const captain = fleet.captains[19];
   if (!captain) throw new Error('Missing captain');
   await asUser(db, captain.id, tx => tx.query('select refresh_inactive_alerts()'));
   const alerts = await asUser(db, captain.id, tx => tx.query<{ player: string }>(
     "select payload->>'player_id' as player from notifications where type='player_inactive'"));
-  const excluded = captain.players.filter(p => p.state === 'frozen' || p.state === 'pending').map(p => p.id);
+  const excluded = captain.players.filter(p => p.state !== 'active').map(p => p.id);
   expect(excluded.length).toBeGreaterThan(0);
   expect(alerts.rows.filter(row => excluded.includes(row.player))).toEqual([]);
+  expect(alerts.rows.length).toBeGreaterThan(0);
 });
