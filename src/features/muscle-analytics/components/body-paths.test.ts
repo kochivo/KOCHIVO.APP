@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { bodyPaths, definitionLines, silhouette } from './body-paths';
+import { muscles } from '../analytics/muscle-map';
+
+const legMuscles = ['quads', 'adductors', 'abductors', 'glutes', 'hamstrings', 'calves'] as const;
 
 type Point = [number, number];
 
@@ -36,7 +39,7 @@ describe('body geometry', () => {
     ['front', 220, 50, 76, 23], ['back', 215, 49, 77, 24],
     ['front', 275, 50, 74, 21], ['back', 275, 50, 74, 21],
   ] as const)('fills the %s leg across its section at y=%i', (view, y, start, end, minimum) => {
-    const shapes = bodyPaths[view].legs.map(outline);
+    const shapes = legMuscles.flatMap(muscle => bodyPaths[view][muscle] ?? []).map(outline);
     const filled = Array.from({ length: end - start + 1 }, (_, i) => start + i)
       .filter(x => shapes.some(shape => contains(shape, x, y)));
     expect(filled.length).toBeGreaterThanOrEqual(minimum);
@@ -44,7 +47,7 @@ describe('body geometry', () => {
 
   it('keeps the knees neutral and every leg shape mirrored with integer coordinates', () => {
     for (const view of ['front', 'back'] as const) {
-      const paths = bodyPaths[view].legs;
+      const paths = legMuscles.flatMap(muscle => bodyPaths[view][muscle] ?? []);
       expect(paths.map(outline).some(shape => contains(shape, 64, 251))).toBe(false);
       for (let i = 0; i < paths.length; i += 2) {
         let coordinate = 0;
@@ -65,15 +68,12 @@ describe('body geometry', () => {
     }
   });
 
-  it('provides every visible region and excludes chest from the back', () => {
-    for (const region of ['chest', 'back', 'shoulders', 'arms', 'abs', 'legs'] as const) {
-      expect(bodyPaths.front[region].length).toBeGreaterThan(0);
+  it('provides every muscle and excludes chest and core from the back', () => {
+    for (const muscle of muscles) {
+      expect([...(bodyPaths.front[muscle] ?? []), ...(bodyPaths.back[muscle] ?? [])].length).toBeGreaterThan(0);
     }
-    for (const region of ['back', 'shoulders', 'arms', 'legs'] as const) {
-      expect(bodyPaths.back[region].length).toBeGreaterThan(0);
-    }
-    expect(bodyPaths.back.chest).toEqual([]);
-    expect(bodyPaths.back.abs).toEqual([]);
+    expect(bodyPaths.back.chest ?? []).toEqual([]);
+    expect(bodyPaths.back.core ?? []).toEqual([]);
   });
 
   it('contains non-empty SVG path data for muscles, definition and silhouette', () => {
@@ -81,6 +81,17 @@ describe('body geometry', () => {
       ...Object.values(bodyPaths).flatMap(view => Object.values(view).flat())];
     for (const path of paths) {
       expect(path).toMatch(/^M[\d\s,MLHVCSQTAZmlhvcsqtaz.e+\-]+$/);
+      expect(path.replace(/[MLQZ]|\s|\d/g, '')).toBe('');
+      for (const command of path.match(/[MLQZ][^MLQZ]*/g) ?? []) {
+        const values = command.slice(1).trim().split(/\s+/).filter(Boolean).map(Number);
+        expect(values).toHaveLength(command[0] === 'Z' ? 0 : command[0] === 'Q' ? 4 : 2);
+      }
+      for (const [x, y] of outline(path)) {
+        expect(x).toBeGreaterThanOrEqual(0);
+        expect(x).toBeLessThanOrEqual(160);
+        expect(y).toBeGreaterThanOrEqual(0);
+        expect(y).toBeLessThanOrEqual(350);
+      }
     }
   });
 });
