@@ -6,7 +6,7 @@ import { weekStart } from './week';
 import { mainLifts, topSets, trendDelta } from './trends';
 import { listCheckIns, submitCheckIn } from './data/checkins';
 import { compressImage } from './image';
-import { localDb } from '@/core/offline';
+import { localDb, setLocalUser } from '@/core/offline';
 import type * as Ids from '@/core/offline/ids';
 import { readStrength } from './data/strength';
 
@@ -181,6 +181,7 @@ it('rejects invalid measurements and more than three photos before writing', asy
   expect(insert).not.toHaveBeenCalled();
 });
 it('joins local sets to session dates and snapshot names, excluding deleted and orphan sets', async () => {
+  await setLocalUser('strength-player');
   const db = localDb();
   try {
     await db.workout_sessions.put({
@@ -206,5 +207,5 @@ it('joins local sets to session dates and snapshot names, excluding deleted and 
     });
     expect(result.names).toEqual({ bench: 'بنش' });
     expect(result.sets).toEqual([{ exercise_id: 'bench', training_date: '2026-11-03', weight_kg: 50, reps: 8 }]);
-  } finally { await db.delete(); }
+  } finally { await setLocalUser(null); await db.delete(); }
 });

@@ -1,4 +1,4 @@
-export { KochivoDB, localDb, type OutboxEntry, type MediaQueueEntry } from './db';
+export { KochivoDB, localDb, setLocalUser, type OutboxEntry, type MediaQueueEntry } from './db';
 export { refreshCachedSnapshot, type SnapshotRefreshResult } from './refresh-snapshot';
 export { enqueueMedia, mediaPending, flushMediaQueue, supabaseMediaTransport, type MediaTransport } from './media-queue';
 export { stableId, uuidv7 } from './ids';

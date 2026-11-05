@@ -3,7 +3,7 @@
  * Player data lives in IndexedDB (src/core/offline), never in this cache.
  * Bump VERSION on any change to this file's caching rules.
  */
-const VERSION = 'v3';
+const VERSION = 'v4';
 const SHELL_CACHE = `kochivo-shell-${VERSION}`;
 const STATIC_CACHE = `kochivo-static-${VERSION}`;
 const OFFLINE_URL = '/offline';
@@ -22,7 +22,15 @@ async function cacheOffline() {
     const cache = await caches.open(STATIC_CACHE);
     for (const asset of assets) {
       const response = await fetch(asset);
-      if (response.ok && !response.redirected) await cache.put(asset, response);
+      if (!response.ok || response.redirected) continue;
+      if (asset.endsWith('.js')) {
+        const script = await response.clone().text();
+        // Turbopack's lazy imports must also be available on a cold offline navigation.
+        for (const match of script.matchAll(/["'](?:\/_next\/)?(static\/(?:immutable\/)?chunks\/[a-zA-Z0-9_.~%-]+\.js)["']/g)) {
+          assets.add(`/_next/${match[1]}`);
+        }
+      }
+      await cache.put(asset, response);
     }
   } catch { /* Optional hydration assets must never block the shell install. */ }
 }
@@ -36,10 +44,22 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches
       .keys()
-      .then((keys) => Promise.all(keys.filter((k) => !k.endsWith(VERSION)).map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(keys.filter((k) => k.startsWith('kochivo-') && !k.endsWith(VERSION)).map((k) => caches.delete(k))))
       .then(() => self.clients.claim()),
   );
 });
+
+self.addEventListener('message', (event) => {
+  if (event.data?.type !== 'CLEAR_SHELL') return;
+  event.waitUntil(caches.keys().then(keys => Promise.all(
+    keys.filter(key => key.startsWith('kochivo-shell-')).map(key => caches.delete(key)),
+  )).then(() => cacheOffline()));
+});
+
+function publicPage(pathname) {
+  const path = pathname.replace(/^\/(ar|en)(?=\/|$)/, '') || '/';
+  return ['/', '/offline', '/login', '/privacy', '/terms'].includes(path);
+}
 
 self.addEventListener('fetch', (event) => {
   const { request } = event;
@@ -47,22 +67,25 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return; // Supabase & other APIs are never cached here.
 
-  // Pages: network first, fall back to last cached copy, then the offline page.
+  // Private HTML is never stored or read, even if an old cache contains it.
   if (request.mode === 'navigate') {
     event.respondWith(
       fetch(request)
-        .then((res) => {
-          const copy = res.clone();
-          caches.open(SHELL_CACHE).then((c) => c.put(request, copy));
+        .then(async (res) => {
+          if (publicPage(url.pathname) && res.ok && !res.redirected) {
+            const cache = await caches.open(SHELL_CACHE);
+            await cache.put(request, res.clone());
+          }
           return res;
         })
-        .catch(async () => (await caches.match(request)) || caches.match(OFFLINE_URL)),
+        .catch(async () => (publicPage(url.pathname) && await caches.match(request)) || caches.match(OFFLINE_URL)),
     );
     return;
   }
 
   // Hashed build assets, fonts, icons, exercise GIFs: cache first.
-  if (url.pathname.startsWith('/_next/static/') || /\.(png|gif|webp|svg|woff2)$/.test(url.pathname)) {
+  if (url.pathname.startsWith('/_next/static/') || /^(?:\/icons\/|\/brand\/|\/exercises\/)/.test(url.pathname)
+    && /\.(png|gif|webp|svg|woff2)$/.test(url.pathname)) {
     event.respondWith(
       caches.match(request).then(
         (hit) =>

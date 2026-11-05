@@ -3,11 +3,17 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { fetchMyCaptain } from '../data/my-captain';
 import type { MyCaptain } from '../data/my-captain';
+import { localDb } from '@/core/offline/db';
 
-const cacheKey = 'kochivo.my-captain';
+function captainCacheKey() {
+  try { return `kochivo.my-captain.${localDb().userId}`; }
+  catch { return null; }
+}
 
 export function readCaptainCache(): MyCaptain | null {
   try {
+    const cacheKey = captainCacheKey();
+    if (!cacheKey) return null;
     const value: unknown = JSON.parse(window.localStorage.getItem(cacheKey) ?? 'null');
     if (!value || typeof value !== 'object') return null;
     const row = value as Record<string, unknown>;
@@ -32,6 +38,8 @@ export function readCaptainCache(): MyCaptain | null {
 
 export function writeCaptainCache(data: MyCaptain | null) {
   try {
+    const cacheKey = captainCacheKey();
+    if (!cacheKey) return;
     if (!data) { window.localStorage.removeItem(cacheKey); return; }
     const { fullName, accessUntil, archivedAt, bio, location, avatarUrl, social, pending, frozenAt } = data;
     window.localStorage.setItem(cacheKey, JSON.stringify({ fullName, phone: null, accessUntil, archivedAt, bio, location, avatarUrl, social, pending, frozenAt }));
@@ -44,6 +52,7 @@ export function useMyCaptain() {
   const generation = useRef({ value: 0 });
   const retry = useCallback(async () => {
     const request = ++generation.current.value;
+    const ownerKey = captainCacheKey();
     const cached = readCaptainCache();
     setData((current) => current ?? cached);
     if (!navigator.onLine) {
@@ -52,7 +61,7 @@ export function useMyCaptain() {
     setStatus(current => current === 'ready' ? current : 'loading');
     try {
       const result = await fetchMyCaptain();
-      if (request !== generation.current.value) return;
+      if (request !== generation.current.value || ownerKey !== captainCacheKey()) return;
       if ('error' in result) { setStatus(current => current === 'ready' ? current : 'error'); return; }
       setData(result.data); writeCaptainCache(result.data); setStatus('ready');
     } catch { if (request === generation.current.value) setStatus(current => current === 'ready' ? current : 'error'); }

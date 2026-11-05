@@ -16,15 +16,16 @@ export async function mergeSupplementLogs(db: KochivoDB, logs: SupplementLogRow[
 
 export async function refreshSupplements() {
   if (!navigator.onLine) return;
+  const db = localDb();
   const client = await loadSupabaseBrowser();
   const { data: auth, error: authError } = await client.auth.getUser();
   if (authError || !auth.user) throw authError ?? new Error('Unauthenticated');
+  if (db.userId && db.userId !== auth.user.id) throw new Error('Local account changed');
   const [prescriptions, logs] = await Promise.all([
     client.from('supplements').select('*').eq('player_id', auth.user.id).is('archived_at', null).order('position'),
     client.from('supplement_logs').select('*').eq('player_id', auth.user.id),
   ]);
   if (prescriptions.error || logs.error) throw prescriptions.error ?? logs.error;
-  const db = localDb();
   await db.transaction('rw', db.supplements, async () => {
     await db.supplements.where('player_id').equals(auth.user.id).delete();
     await db.supplements.bulkPut(prescriptions.data as SupplementRow[]);

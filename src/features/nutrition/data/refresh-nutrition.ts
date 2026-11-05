@@ -16,5 +16,6 @@ export async function refreshNutrition(options: RefreshOptions = {}): Promise<'r
     }),
     db: () => options.db ?? localDb(),
     table: db => db.nutrition_snapshot,
+    accepts: (snapshot, db) => !db.userId || snapshot.player_id === db.userId,
   });
 }

@@ -5,6 +5,8 @@ import { useState, useTransition } from 'react';
 import { Button } from '@/ui';
 import { signOut } from '../data/sign-out';
 import { callAuthAction as runAuthAction } from '../data/client-action';
+import { signOutDevice } from '../data/device-sign-out';
+import { clearDeviceCache, closeDeviceDb, finalDeviceSync } from '../data/clear-device';
 
 export function SignOutButton({ variant, className }: { variant?: 'primary' | 'danger'; className?: string }) {
   const t = useT(messages);
@@ -13,7 +15,14 @@ export function SignOutButton({ variant, className }: { variant?: 'primary' | 'd
   const [pending, start] = useTransition();
   const [error, setError] = useState('');
   return <div><Button variant={variant} className={className} disabled={pending} onClick={() => start(async () => {
-    const result = await callAuthAction(signOut); setError(result.error ?? '');
+    let result: Awaited<ReturnType<typeof runAuthAction>> = {};
+    await signOutDevice({
+      push: async signal => (await import('@/features/notifications')).unsubscribeDevicePush(signal),
+      sync: finalDeviceSync,
+      auth: async () => { result = await callAuthAction(signOut); },
+      cache: clearDeviceCache, close: closeDeviceDb,
+    });
+    setError(result.error ?? '');
     if (result.redirect) window.location.assign(result.redirect);
   })}>{pending ? t('signingOut') : t('signOut')}</Button>{error && <p role="alert">{error}</p>}</div>;
 }

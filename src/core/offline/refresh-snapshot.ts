@@ -10,6 +10,7 @@ interface RefreshOptions<Snapshot, DB> {
   fetch: () => Promise<Snapshot | null>;
   db: () => DB;
   table: (db: DB) => SnapshotTable<Snapshot>;
+  accepts?: (snapshot: Snapshot, db: DB) => boolean;
 }
 
 export async function refreshCachedSnapshot<Snapshot, DB>(
@@ -17,8 +18,11 @@ export async function refreshCachedSnapshot<Snapshot, DB>(
 ): Promise<SnapshotRefreshResult> {
   if (!(options.online ?? navigator.onLine)) return 'offline';
   try {
+    // Capture the binding before network work, so a late response cannot enter another account's cache.
+    const db = options.db();
+    const table = options.table(db);
     const snapshot = await options.fetch();
-    const table = options.table(options.db());
+    if (snapshot && options.accepts && !options.accepts(snapshot, db)) return 'error';
     if (snapshot) await table.put(snapshot);
     else await table.delete('active');
     return snapshot ? 'ready' : 'empty';

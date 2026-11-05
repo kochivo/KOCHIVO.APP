@@ -4,13 +4,14 @@ import { runInNewContext } from 'node:vm';
 import ts from 'typescript';
 import { expect, it } from 'vitest';
 import { pushPayload } from './payload';
+import { allowedPushEndpoint } from './push-endpoint';
 
 const id = '00000000-0000-4000-8000-000000000001';
 const source = ts.transpileModule(readFileSync('supabase/functions/send-push/index.ts', 'utf8'), {
   compilerOptions: { module: ts.ModuleKind.CommonJS, esModuleInterop: true, target: ts.ScriptTarget.ES2022 },
 }).outputText;
 
-function sender(status?: number, configured = true, feedback = false) {
+function sender(status?: number, configured = true, feedback = false, endpoint = 'https://fcm.googleapis.com/private-endpoint') {
   const requests: { path: string; method: string; body?: string }[] = [];
   const sent: { endpoint: string; payload: string }[] = [];
   const errors: unknown[][] = [];
@@ -20,10 +21,11 @@ function sender(status?: number, configured = true, feedback = false) {
   class FixedDate extends Date { constructor() { super('2026-11-04T10:00:00Z'); } }
   runInNewContext(source, {
     exports: {}, Date: FixedDate, TextEncoder, crypto: webcrypto, Response,
-    console: { error: (...args: unknown[]) => errors.push(args) },
+    console: { error: (...args: unknown[]) => errors.push(args), warn: (...args: unknown[]) => errors.push(args) },
     require: (name: string) => {
       if (name === 'node:crypto') return { timingSafeEqual };
       if (name === './payload.ts') return { pushPayload };
+      if (name === './push-endpoint.ts') return { allowedPushEndpoint };
       if (name === 'npm:web-push@3.6.7') return { sendNotification: async (subscription: { endpoint: string }, payload: string) => {
         sent.push({ endpoint: subscription.endpoint, payload });
         if (status) throw { statusCode: status, endpoint: subscription.endpoint, body: 'private provider response' };
@@ -45,7 +47,7 @@ function sender(status?: number, configured = true, feedback = false) {
       ]);
       if (path.startsWith('workout_sessions?')) return Response.json([{ player_id: id }]);
       if (path.startsWith('push_subscriptions?user_id=')) return Response.json([
-        { id, endpoint: 'https://push.example/private-endpoint', p256dh: 'key', auth: 'auth' },
+        { id, endpoint, p256dh: 'key', auth: 'auth' },
       ]);
       if (path === `push_subscriptions?id=eq.${id}`) return new Response(null, { status: 204 });
       throw new Error('Unexpected data request');
@@ -56,6 +58,14 @@ function sender(status?: number, configured = true, feedback = false) {
 }
 const request = (secret = 'hook-secret', notificationId = id) => new Request('https://functions.example/send-push', {
   method: 'POST', headers: { 'x-push-secret': secret }, body: JSON.stringify({ notification_id: notificationId }),
+});
+
+it('never contacts endpoints outside the provider allow-list', async () => {
+  const test = sender(undefined, true, false, 'https://internal.example/private-endpoint');
+  expect((await test.handle(request())).status).toBe(204);
+  expect(test.sent).toEqual([]);
+  expect(test.requests.some(row => row.method === 'PATCH')).toBe(false);
+  expect(test.errors).toEqual([['Rejected push endpoint host']]);
 });
 
 it('resolves feedback to a player URL without fetching the note', async () => {

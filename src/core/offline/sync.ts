@@ -17,7 +17,14 @@ const BATCH_SIZE = 50;
  * with backoff and stops later tables in this run (their rows may depend on it).
  */
 export async function flushOutbox(db: KochivoDB, send: SyncTransport, now: number = Date.now()): Promise<FlushResult> {
-  const due = await db.outbox.where('next_attempt_at').belowOrEqual(now).toArray();
+  const candidates = await db.outbox.where('next_attempt_at').belowOrEqual(now).toArray();
+  const due: OutboxEntry[] = [];
+  for (const entry of candidates) {
+    if (db.userId && entry.owner_id !== db.userId) {
+      console.warn('Dropped outbox row with foreign or unknown owner', entry.table, entry.row_id);
+      if (entry.id !== undefined) await db.outbox.delete(entry.id);
+    } else due.push(entry);
+  }
   const result: FlushResult = { sent: 0, failed: 0 };
 
   for (const table of SYNC_ORDER) {

@@ -23,7 +23,7 @@ export function startSync(db: KochivoDB, send: SyncTransport): () => void {
       const client = await loadSupabaseBrowser();
       if (stopped) return;
       const { data, error } = await client.auth.getUser();
-      if (!stopped && !error && data.user) {
+      if (!stopped && !error && data.user && data.user.id === db.userId) {
         await flushMediaQueue(db, supabaseMediaTransport(client, data.user.id));
       }
     } catch {

@@ -3,11 +3,15 @@ import { runInNewContext } from 'node:vm';
 import { expect, it } from 'vitest';
 
 interface WorkerEvent {
+  data?: { type: string };
   request?: { method: string; url: string; mode: string };
   waitUntil: (promise: Promise<unknown>) => void;
   respondWith?: (promise: Promise<unknown>) => void;
 }
 type Options = {
+  cachedNavigation?: boolean;
+  lazyDependencies?: boolean;
+  navigationOnline?: boolean;
   ok?: boolean; redirected?: boolean; missing?: boolean;
   failure?: 'shell' | 'read' | 'parse' | 'open' | 'fetch' | 'put';
   assetOk?: boolean; assetRedirected?: boolean;
@@ -18,6 +22,7 @@ function worker(options: Options = {}) {
   const assets: string[] = [];
   const readPages: string[] = [];
   const fetched: string[] = [];
+  const deleted: string[] = [];
   const html = '<script src="/_next/static/chunks/offline.js"></script>'
     + '<link href="/_next/static/styles.css" rel="stylesheet">'
     + '<script src="https://external.test/script.js"></script>';
@@ -26,6 +31,8 @@ function worker(options: Options = {}) {
     self: { location: { origin: 'https://kochivo.test' }, skipWaiting() {},
       addEventListener: (name: string, handler: (event: WorkerEvent) => void) => { handlers[name] = handler; } },
     caches: {
+      keys: async () => ['kochivo-shell-v3', 'kochivo-shell-v4', 'kochivo-static-v4', 'other-app'],
+      delete: async (name: string) => { deleted.push(name); return true; },
       open: async (name: string) => {
         if (name.includes('static') && options.failure === 'open') throw new Error('cache unavailable');
         return {
@@ -50,15 +57,21 @@ function worker(options: Options = {}) {
           },
         };
       },
-      match: async (request: unknown) => typeof request === 'string' ? request : undefined,
+      match: async (request: unknown) => typeof request === 'string' ? request : options.cachedNavigation ? 'private HTML' : undefined,
     },
     fetch: async (request: unknown) => {
+      if (typeof request !== 'string' && options.navigationOnline) return {
+        ok: true, redirected: false, clone: () => ({ ok: true }),
+      };
       if (typeof request !== 'string' || options.failure === 'fetch') throw new Error('offline');
       fetched.push(request);
-      return { ok: options.assetOk ?? true, redirected: options.assetRedirected ?? false };
+      return { ok: options.assetOk ?? true, redirected: options.assetRedirected ?? false,
+        clone: () => ({ text: async () => options.lazyDependencies && request.endsWith('offline.js')
+          ? 'Promise.all(["static/chunks/workout.js","static/chunks/auth.js","static/immutable/chunks/vercel.js"])' : '' }),
+      };
     },
   });
-  return { handlers, pages, assets, readPages, fetched };
+  return { handlers, pages, assets, readPages, fetched, deleted };
 }
 
 async function install(instance: ReturnType<typeof worker>) {
@@ -79,12 +92,39 @@ it('precaches only the unprefixed offline page and its hydration assets', async 
   expect(fetched).toEqual(assets);
 });
 
+it('precaches lazy workout and auth scripts needed to open the offline shell', async () => {
+  const instance = worker({ lazyDependencies: true });
+  await install(instance);
+  expect(instance.assets).toContain('/_next/static/chunks/workout.js');
+  expect(instance.assets).toContain('/_next/static/chunks/auth.js');
+  expect(instance.assets).toContain('/_next/static/immutable/chunks/vercel.js');
+});
+
 it.each(['/captain', '/player', '/ar/captain', '/en/player'])('falls back to /offline for %s', async path => {
-  const { handlers } = worker();
+  const { handlers } = worker({ cachedNavigation: true });
   let pending = Promise.resolve<unknown>(undefined);
   handlers.fetch?.({ request: { method: 'GET', mode: 'navigate', url: `https://kochivo.test${path}` },
     waitUntil() {}, respondWith: promise => { pending = promise; } });
   expect(await pending).toBe('/offline');
+});
+
+it('purges shell caches on logout and restores only the public offline shell', async () => {
+  const instance = worker();
+  let pending = Promise.resolve<unknown>(undefined);
+  instance.handlers.message?.({ data: { type: 'CLEAR_SHELL' }, waitUntil: promise => { pending = promise; } });
+  await pending;
+  expect(instance.deleted).toEqual(['kochivo-shell-v3', 'kochivo-shell-v4']);
+  expect(instance.pages).toContain('/offline');
+  expect(instance.pages).not.toContain('/player');
+});
+
+it.each(['/captain', '/player', '/ar/captain/players', '/en/player/workout/day'])('never caches private HTML for %s', async path => {
+  const { handlers, assets } = worker({ navigationOnline: true });
+  let pending = Promise.resolve<unknown>(undefined);
+  handlers.fetch?.({ request: { method: 'GET', mode: 'navigate', url: `https://kochivo.test${path}` },
+    waitUntil() {}, respondWith: promise => { pending = promise; } });
+  await pending;
+  expect(assets).toEqual([]);
 });
 
 it.each<Options>([{ ok: false }, { redirected: true }, { missing: true }])('skips unusable HTML: %j', async options => {

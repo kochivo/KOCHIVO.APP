@@ -37,11 +37,33 @@ describe('refreshCachedSnapshot', () => {
       expect(await db.program_snapshot.get('active')).toBeUndefined();
     } finally { await db.delete(); }
   });
-  it('preserves the cache and does not open the database if fetching fails', async () => {
-    const db = vi.fn(() => { throw new Error('must not open'); });
-    expect(await refreshCachedSnapshot({ online: true, db, table: value => value,
+  it('preserves the cache if fetching fails', async () => {
+    const rows = [snapshot];
+    const table = { put: async () => { rows.splice(0); }, delete: async () => { rows.splice(0); } };
+    expect(await refreshCachedSnapshot({ online: true, db: () => table, table: value => value,
       fetch: async () => { throw new Error('network'); } })).toBe('error');
-    expect(db).not.toHaveBeenCalled();
+    expect(rows).toEqual([snapshot]);
+  });
+  it('never writes an old response into a newly bound account database', async () => {
+    const alice = new KochivoDB('refresh-alice');
+    const bob = new KochivoDB('refresh-bob');
+    let bound = alice;
+    try {
+      await refreshCachedSnapshot({ online: true, db: () => bound, table: db => db.program_snapshot,
+        fetch: async () => { bound = bob; return snapshot; } });
+      expect(await bob.program_snapshot.count()).toBe(0);
+      expect(await alice.program_snapshot.get('active')).toEqual(snapshot);
+    } finally { await alice.delete(); await bob.delete(); }
+  });
+  it('preserves local data when the fetched snapshot belongs to a different user', async () => {
+    const db = new KochivoDB('refresh-owner', 'alice');
+    try {
+      const original = { ...snapshot, player_id: 'alice' };
+      await db.program_snapshot.put(original);
+      expect(await refreshCachedSnapshot({ online: true, db: () => db, table: db => db.program_snapshot,
+        accepts: (value, db) => value.player_id === db.userId, fetch: async () => snapshot })).toBe('error');
+      expect(await db.program_snapshot.get('active')).toEqual(original);
+    } finally { await db.delete(); }
   });
   it.each(['open', 'put', 'delete'])('returns error on database %s failure', async failure => {
     const table = { put: async () => { throw new Error('disk'); }, delete: async () => { throw new Error('disk'); } };

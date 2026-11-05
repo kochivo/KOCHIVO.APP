@@ -43,6 +43,7 @@ export interface ProgramSnapshot {
 }
 
 export interface OutboxEntry {
+  owner_id?: string;
   id?: number;
   table: SyncTable;
   row_id: string;
@@ -118,7 +119,7 @@ export class KochivoDB extends Dexie {
   nutrition_snapshot!: Table<NutritionSnapshot, string>;
   media_queue!: Table<MediaQueueEntry, number>;
 
-  constructor(name = 'kochivo') {
+  constructor(name = 'kochivo', readonly userId?: string) {
     super(name);
     this.version(1).stores({
       workout_sessions: 'id, training_date',
@@ -135,8 +136,21 @@ export class KochivoDB extends Dexie {
 }
 
 let instance: KochivoDB | undefined;
+let currentUser: string | null = null;
+
+export async function setLocalUser(userId: string | null): Promise<void> {
+  if (currentUser === userId && instance) return;
+  instance?.close();
+  instance = undefined;
+  currentUser = userId;
+  if (!userId) return;
+  const db = new KochivoDB(`kochivo-${userId}`, userId);
+  instance = db;
+  const { migrateLegacyDb } = await import('./legacy-db');
+  await migrateLegacyDb(db, userId);
+}
 
 export function localDb(): KochivoDB {
-  instance ??= new KochivoDB();
+  if (!instance || !currentUser) throw new Error('Local user is not authenticated');
   return instance;
 }

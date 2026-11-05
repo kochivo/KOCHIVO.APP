@@ -58,7 +58,7 @@ it('allows own profile edits and push registration but guards review columns', a
       .rejects.toMatchObject({ code: '42501' });
   }
   await run(captain, `insert into public.push_subscriptions(id,endpoint,p256dh,auth)
-    values ('00000000-0000-7000-8000-000000000001','https://push.test/pending','key','auth')`);
+    values ('00000000-0000-7000-8000-000000000001','https://fcm.googleapis.com/pending','key','auth')`);
   expect((await run(captain, 'select id from public.push_subscriptions')).rows).toHaveLength(1);
 });
 it('restricts list and review to admins, including invalid targets and statuses', async () => {
