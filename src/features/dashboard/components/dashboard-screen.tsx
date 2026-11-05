@@ -21,8 +21,8 @@ interface Props {
 export async function DashboardScreen({ data, today, plan }: Props) {
   const [t, locale, [roster, firstName, dues]] = await Promise.all([getT(messages), getLocale(), data]);
   const header = <header className="flex flex-wrap items-end justify-between gap-4">
-    <div>
-      <h1 className="text-3xl font-extrabold">{firstName ? t('greeting', { name: firstName }) : t('greetingNoName')}</h1>
+    <div className="lg:min-w-0">
+      <h1 className="text-3xl font-extrabold lg:truncate">{firstName ? t('greeting', { name: firstName }) : t('greetingNoName')}</h1>
       <p className="mt-1 text-sm text-muted">{t('intro')}</p>
     </div>
     {plan}
@@ -47,13 +47,13 @@ export async function DashboardScreen({ data, today, plan }: Props) {
       {header}
       <NextTaskCard tasks={tasks} captainFirstName={firstName} />
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        {cards.map(({ label, value, color }) => <GlassCard key={label} level="strong" className="space-y-2 p-5">
+        {cards.map(({ label, value, color }) => <GlassCard key={label} level="strong" className="min-w-0 space-y-2 p-5">
           <p className="text-sm text-muted">{label}</p>
           <p className={`font-display text-4xl font-extrabold ${color}`}>{formatNumber(value, locale)}</p>
         </GlassCard>)}
       </div>
-      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-        <div className="space-y-6">
+      <div className="grid min-w-0 items-start gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+        <div className="min-w-0 space-y-6">
           <RadarCard today={today} showEmpty />
           <SmartAlerts alerts={buildAlerts(players, dues, today)} />
         </div>

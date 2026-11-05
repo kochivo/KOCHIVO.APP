@@ -11,8 +11,8 @@ import { HeaderInstall } from './header-install';
 export async function CaptainShell({ children }: { children: ReactNode }) {
   const t = await getT(messages);
   return (
-    <div className="mx-auto flex min-h-dvh max-w-screen-2xl gap-6 px-4 pb-4 lg:px-6 lg:pb-6">
-      <aside className="glass sticky top-[max(1.5rem,var(--safe-top))] contents h-[calc(100dvh-1.5rem-max(1.5rem,var(--safe-top)))] w-60 shrink-0 flex-col gap-6 rounded-card p-4 lg:flex">
+    <div className="mx-auto flex min-h-dvh w-full min-w-0 gap-6 px-4 pb-4 lg:px-0 lg:pb-6">
+      <aside className="glass sticky top-[max(1.5rem,var(--safe-top))] contents h-[calc(100dvh-1.5rem-max(1.5rem,var(--safe-top)))] w-60 lg:w-56 min-w-0 shrink-0 flex-col gap-6 rounded-card p-4 lg:flex">
         <Link href="/captain" className="hidden min-h-12 items-center gap-3 px-3 font-display text-2xl font-extrabold lg:flex"><BrandMark className="size-8" />{t('brand')}</Link>
         <CaptainNav />
       </aside>
@@ -21,7 +21,7 @@ export async function CaptainShell({ children }: { children: ReactNode }) {
           <Link href="/captain" aria-label={t('home')} className="flex min-h-12 items-center lg:invisible"><BrandMark className="size-8" /></Link>
           <div className="flex items-center gap-2"><HeaderInstall /><NotificationBell captain /></div>
         </div>
-        <main>{children}</main>
+        <main className="min-w-0">{children}</main>
       </div>
       <CaptainDevice />
     </div>
