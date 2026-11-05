@@ -31,7 +31,9 @@ it.each(['ar', 'en'] as const)('renders fleet counts and recovery actions in %s'
     else {
       expect(html).toMatch(new RegExp(`text-4xl[^>]*>${count}</p>`));
       expect(html).toContain('lg:grid-cols-4');
-      expect(html).toContain('xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]');
+      expect(html).toContain('lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]');
+      expect(html).toContain('min-w-0 space-y-6');
+      expect(html).toContain('min-w-0 space-y-4 p-5');
     }
   }
 });
