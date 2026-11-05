@@ -1597,6 +1597,7 @@ export type Database = {
         Returns: undefined
       }
       create_demo_workspace: { Args: never; Returns: undefined }
+      create_demo_player_workspace: { Args: never; Returns: undefined }
       current_tier: { Args: { p_captain: string }; Returns: string }
       invite_preview: {
         Args: { p_code: string }

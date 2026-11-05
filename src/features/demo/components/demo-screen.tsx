@@ -24,24 +24,30 @@ export function DemoScreen() {
     setToken(''); setError(t('completeTheVerificationAndTryAgain'));
   }, [t]);
   const siteKey = publicConfig.turnstileSiteKey;
+  const start = async (role: 'captain' | 'player') => {
+    setPending(true); setError('');
+    let failure: string | undefined;
+    try {
+      const { startDemo } = await import('../data/start-demo');
+      failure = await startDemo((path) => window.location.assign(path), token || undefined, locale, Date.now, role);
+    } catch { failure = t('theDemoIsUnavailableRightNow'); }
+    finally { setPending(false); }
+    if (failure) {
+      setError(failure); setToken(''); setAttempt((value) => value + 1); toast.error(failure);
+    }
+  };
   return <main className="mx-auto grid min-h-dvh max-w-lg content-center items-center gap-6 p-6 pt-[max(1.5rem,var(--safe-top))] lg:max-w-5xl lg:grid-cols-2">
     <section className="glass-strong w-full space-y-5 rounded-card p-6">
       <LanguageSwitch />
       <h1 className="text-3xl font-extrabold">{t('tryTheDemo')}</h1>
       <p className="text-muted">{t('exploreTheCoachWorkspaceWithSample')}</p>
       {siteKey && <TurnstileWidget key={attempt} siteKey={siteKey} onToken={setToken} onError={captchaError} />}
-      <Button className="min-h-12 w-full" disabled={pending || Boolean(siteKey && !token)} onClick={async () => {
-        setPending(true); setError('');
-        let failure: string | undefined;
-        try {
-          const { startDemo } = await import('../data/start-demo');
-          failure = await startDemo((path) => window.location.assign(path), token || undefined, locale);
-        } catch { failure = t('theDemoIsUnavailableRightNow'); }
-        finally { setPending(false); }
-        if (failure) {
-          setError(failure); setToken(''); setAttempt((value) => value + 1); toast.error(failure);
-        }
-      }}>{pending ? t('preparingTheDemo') : t('openDemo')}</Button>
+      <div className="flex flex-wrap gap-3">
+        <Button className="min-h-12 flex-1" disabled={pending || Boolean(siteKey && !token)}
+          onClick={() => start('captain')}>{pending ? t('preparingTheDemo') : t('openDemo')}</Button>
+        <Button variant="secondary" className="min-h-12 flex-1" disabled={pending || Boolean(siteKey && !token)}
+          onClick={() => start('player')}>{t('tryAsPlayer')}</Button>
+      </div>
       <p className="text-sm text-muted">{t('sampleAccountClearsAfter24Hours')}</p>
       {pending && <p role="status" className="text-sm text-muted">{t('preparingSampleData')}</p>}
       {error && <div role="alert" className="space-y-2 text-sm text-danger"><p>{error}</p>

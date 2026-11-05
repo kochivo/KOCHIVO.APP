@@ -2,6 +2,8 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    tryAsPlayer: "جرّب كلاعب",
+    playerDemo: "ديمو اللاعب · سجّل تمرينك وأكلك وجرّب المتابعة",
     "demoExpiry.zero": "وضع الديمو · انتهت المدة",
     "demoExpiry.one": "وضع الديمو · بيتمسح بعد ساعة",
     "demoExpiry.two": "وضع الديمو · بيتمسح بعد ساعتين",
@@ -23,9 +25,9 @@ export const messages = defineMessages({
     highlightRadar: "رادار بيوريك مين بطّل يتمرن قبل ما يمشي",
     highlightPrograms: "قوالب برامج وأكل جاهزة تديها لأي لاعب",
     highlightPreview: "معاينة لشاشة اللاعب زي ما هيشوفها على موبايله",
-    exploreTheCoachWorkspaceWithSample: "شوف لوحة الكابتن بلاعبين وبيانات تجريبية",
+    exploreTheCoachWorkspaceWithSample: "جرّب KOCHIVO ككابتن بلاعبين تجريبيين، أو كلاعب بيسجل تمرينه وأكله",
     preparingTheDemo: "جاري تجهيز الديمو",
-    openDemo: "ادخل الديمو",
+    openDemo: "جرّب ككابتن",
     sampleAccountClearsAfter24Hours: "حساب تجريبي بيتمسح بعد 24 ساعة",
     preparingSampleData: "بنجهّز البيانات التجريبية",
     verifyYouReHuman: "اتأكد إنك مش روبوت",
@@ -33,6 +35,8 @@ export const messages = defineMessages({
     theDemoIsUnavailableRightNow: "الديمو مش متاح دلوقتي",
   },
   en: {
+    tryAsPlayer: "Try it as a player",
+    playerDemo: "Player demo · log workouts, meals and daily checks",
     "demoExpiry.one": "Demo mode · clears in {count} hour",
     "demoExpiry.other": "Demo mode · clears in {count} hours",
     demoMode: "Demo mode",
@@ -50,9 +54,9 @@ export const messages = defineMessages({
     highlightRadar: "A radar that shows who stopped training before they leave",
     highlightPrograms: "Ready workout and meal templates to give any player",
     highlightPreview: "A preview of the player screen as they see it on their phone",
-    exploreTheCoachWorkspaceWithSample: "Explore the coach workspace with sample players and data",
+    exploreTheCoachWorkspaceWithSample: "Try KOCHIVO as a coach with sample players, or as a player logging workouts and meals",
     preparingTheDemo: "Preparing the demo",
-    openDemo: "Open demo",
+    openDemo: "Try it as a coach",
     sampleAccountClearsAfter24Hours: "Sample account. Clears after 24 hours",
     preparingSampleData: "Preparing sample data",
     verifyYouReHuman: "Verify you're human",

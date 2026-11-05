@@ -115,6 +115,20 @@ it('starts the workspace before navigating to captain', async () => {
   expect(navigate).toHaveBeenCalledWith('/captain');
   expect(mocks.client.rpc.mock.invocationCallOrder[0] ?? Infinity).toBeLessThan(navigate.mock.invocationCallOrder[0] ?? 0);
 });
+it('starts a player workspace and navigates to player', async () => {
+  const navigate = vi.fn();
+  expect(await startDemo(navigate, 'verified', 'en', () => 0, 'player')).toBeUndefined();
+  expect(mocks.client.auth.signInAnonymously).toHaveBeenCalledWith({ options: { captchaToken: 'verified' } });
+  expect(mocks.client.rpc).toHaveBeenCalledWith('create_demo_player_workspace');
+  expect(navigate).toHaveBeenCalledWith('/player');
+});
+it('offers a player choice behind the same verification', () => {
+  const player = render().find(node => node.type === Button && node.props.children === 'Try it as a player');
+  expect(player).toBeDefined();
+  expect(player?.props.disabled).toBe(true);
+  (widget()?.props.onToken as (token: string) => void)('verified');
+  expect(render().find(node => node.props.children === 'Try it as a player')?.props.disabled).toBe(false);
+});
 it('reuses an existing anonymous session on retry', async () => {
   mocks.client.auth.getSession.mockResolvedValue({ data: { session: { user: { is_anonymous: true } } } });
   mocks.client.rpc.mockResolvedValueOnce({ error: { message: 'network failure' } });

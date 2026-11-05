@@ -1,21 +1,26 @@
 import type { ReactNode } from 'react';
 import { Suspense } from 'react';
 import { LoadingState } from '@/ui';
-import { loadDemoExpiry } from '../data/load-demo-profile';
+import { loadDemoProfile } from '../data/load-demo-profile';
+import { unstable_rethrow } from 'next/navigation';
 import { demoHours } from '../data/demo-profile';
 import { DemoProvider } from './demo-provider';
-import { DemoBanner } from './demo-banner';
+import { LazyDemoBanner } from './lazy-demo-banner';
 import { DemoProfileError } from './demo-profile-error';
 
-async function DemoState({ children }: { children: ReactNode }) {
-  const result = await loadDemoExpiry().then((expiresAt) => ({ expiresAt })).catch(() => null);
-  if (!result) return <DemoProfileError />;
+interface Props { children: ReactNode; failOpen?: boolean }
+
+async function DemoState({ children, failOpen }: Props) {
+  const result = await loadDemoProfile().catch((error: unknown) => { unstable_rethrow(error); return null; });
+  // Real players must keep their app when the demo check fails; only demo workspaces need the banner.
+  if (!result) return failOpen ? children : <DemoProfileError />;
+  if (!result.expiresAt) return children;
   return <DemoProvider expiresAt={result.expiresAt}>
-    {result.expiresAt && <DemoBanner hours={demoHours(result.expiresAt, new Date())} />}
+    {result.expiresAt && <LazyDemoBanner role={result.role} hours={demoHours(result.expiresAt, new Date())} />}
     {children}
   </DemoProvider>;
 }
 
-export function DemoMode({ children }: { children: ReactNode }) {
-  return <Suspense fallback={<LoadingState />}><DemoState>{children}</DemoState></Suspense>;
+export function DemoMode({ children, failOpen }: Props) {
+  return <Suspense fallback={<LoadingState />}><DemoState failOpen={failOpen}>{children}</DemoState></Suspense>;
 }

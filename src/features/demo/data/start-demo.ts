@@ -12,6 +12,7 @@ function staleSession(error: unknown): boolean {
 
 export async function startDemo(
   navigate: (path: string) => void, captchaToken?: string, locale: Locale = 'ar', now: () => number = Date.now,
+  role: 'captain' | 'player' = 'captain',
 ): Promise<string | undefined> {
   try {
     const client = await loadSupabaseBrowser();
@@ -20,13 +21,13 @@ export async function startDemo(
     const session = data.session;
     let replace = Boolean(error || (session && !session.user.is_anonymous));
     if (session?.user.is_anonymous && !replace) {
-      const profile = await client.from('profiles').select('demo_expires_at').eq('id', session.user.id).maybeSingle();
+      const profile = await client.from('profiles').select('demo_expires_at,role').eq('id', session.user.id).maybeSingle();
       if (profile.error) {
         if (!staleSession(profile.error)) return demoError(profile.error, locale);
         replace = true;
       } else {
         const expiry = demoExpiry(profile.data);
-        replace = !profile.data || Boolean(expiry && Date.parse(expiry) <= now());
+        replace = !profile.data || Boolean(expiry && (Date.parse(expiry) <= now() || profile.data.role && profile.data.role !== role));
       }
     }
     const signIn = async (signOut: boolean) => {
@@ -45,13 +46,14 @@ export async function startDemo(
       if (failure) return demoError(failure, locale);
     }
     // A plain network retry must reuse a usable anonymous account instead of minting another.
-    let workspace = await client.rpc('create_demo_workspace');
+    const rpc = role === 'player' ? 'create_demo_player_workspace' : 'create_demo_workspace';
+    let workspace = await client.rpc(rpc);
     if (workspace.error && session?.user.is_anonymous && !replace && staleSession(workspace.error)) {
       const failure = await signIn(true);
       if (failure) return demoError(failure, locale);
-      workspace = await client.rpc('create_demo_workspace');
+      workspace = await client.rpc(rpc);
     }
     if (workspace.error) return demoError(workspace.error, locale);
-    navigate('/captain');
+    navigate(`/${role}`);
   } catch (error) { return demoError(error, locale); }
 }
