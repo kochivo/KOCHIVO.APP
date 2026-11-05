@@ -1046,6 +1046,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          captain_intake: Json | null
           captain_status: 'pending' | 'approved' | 'rejected'
           captain_reviewed_at: string | null
           public_slug: string | null
@@ -1071,6 +1072,7 @@ export type Database = {
         }
         Insert: {
           captain_status?: 'pending' | 'approved' | 'rejected'
+          captain_intake?: Json | null
           captain_reviewed_at?: string | null
           bio?: string | null
           public_slug?: string | null
@@ -1095,6 +1097,7 @@ export type Database = {
         }
         Update: {
           captain_status?: 'pending' | 'approved' | 'rejected'
+          captain_intake?: Json | null
           captain_reviewed_at?: string | null
           bio?: string | null
           public_slug?: string | null
@@ -1476,7 +1479,8 @@ export type Database = {
       }
       admin_pending_captains: {
         Args: never;
-        Returns: { id: string; email: string | null; full_name: string; created_at: string }[];
+        Returns: { id: string; email: string | null; full_name: string; created_at: string;
+          whatsapp: string | null; instagram: string | null; captain_intake: Json | null }[];
       }
       admin_review_captain: { Args: { p_captain: string; p_status: string }; Returns: undefined }
       sync_daily_checks: { Args: { p_rows: Json }; Returns: undefined }
