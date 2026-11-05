@@ -7,6 +7,7 @@ import type { PlanSummary } from './data/plan-summary';
 
 const state = vi.hoisted(() => ({ locale: 'en' as 'en' | 'ar', summary: null as PlanSummary | null }));
 vi.mock('./data/plan-summary', () => ({ fetchPlanSummary: async () => state.summary }));
+vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh() {} }) }));
 vi.mock('@/core/i18n/server', () => ({
   getLocale: async () => state.locale,
   getT: async () => createT(messages, state.locale),
@@ -27,9 +28,12 @@ it.each(['en', 'ar'] as const)('shows fleet usage for every tier in %s', async l
     }
   }
 });
-// BUG T-089-C-1: A failed plan-summary read silently removes the async indicator with no error state.
-it.fails('shows an error state when the summary loader cannot return a plan', async () => {
-  expect(await render()).toContain('role="alert"');
+it.each(['en', 'ar'] as const)('shows a retryable error when the summary loader cannot return a plan in %s', async locale => {
+  state.locale = locale;
+  const html = await render();
+  expect(html).toContain('role="alert"');
+  expect(html).toContain(locale === 'en' ? 'Try again' : 'جرّب تاني');
+  expect(html).toContain('<button');
 });
 it('reproduces 0 of 0 only with a synthetic zero limit, not with a missing summary', async () => {
   state.locale = 'ar';

@@ -10,6 +10,6 @@ export function BalanceBadges({ pending, frozenAt, sessionsLeft }: {
   return <span className="flex flex-wrap gap-2 text-xs font-bold">
     {pending && <span className="rounded-control bg-warn-soft px-3 py-1 text-warn">{t('pending')}</span>}
     {frozenAt && <span className="rounded-control bg-water/10 px-3 py-1 text-water">{t('frozen')}</span>}
-    {sessionsLeft !== null && sessionsLeft !== undefined && <span className="glass rounded-control px-3 py-1">{t('sessionsLeft', { count: formatNumber(sessionsLeft, locale) })}</span>}
+    {sessionsLeft !== null && sessionsLeft !== undefined && <span className="glass rounded-control px-3 py-1">{t('sessionsLeft', { n: sessionsLeft, count: formatNumber(sessionsLeft, locale) })}</span>}
   </span>;
 }

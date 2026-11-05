@@ -5,6 +5,10 @@ import { beforeEach, expect, it, vi } from 'vitest';
 import { LocaleProvider } from '@/core/i18n/client';
 import type { PlayerBalance } from './pt-types';
 import { BillingManagerCard } from './components/billing-manager-card';
+import { BalanceBadges } from './components/balance-badges';
+import { PackagesCard } from './components/packages-card';
+import { RenewSheet } from './components/renew-sheet';
+import type { Package } from './types';
 
 const state = vi.hoisted(() => ({ index: 0, values: [] as unknown[] }));
 vi.mock('react', async original => ({ ...await original<typeof React>(), useState: (initial: unknown) => {
@@ -14,6 +18,7 @@ vi.mock('react', async original => ({ ...await original<typeof React>(), useStat
 vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh() {} }) }));
 vi.mock('./data/pt-actions', () => ({ loadPlayerBalance: vi.fn(), activatePlayer: vi.fn(), setPlayerFrozen: vi.fn() }));
 vi.mock('./data/billing', () => ({ renewPlayer: vi.fn() }));
+vi.mock('./data/finance-actions', () => ({ archivePackage: vi.fn(), createPackage: vi.fn() }));
 beforeEach(() => { state.index = 0; state.values = []; });
 const balance: PlayerBalance = { id: 'link', access_until: '2026-12-05', sessions_left: null, frozen_at: null, pending: false };
 function render(locale: 'ar' | 'en', value?: PlayerBalance, error = '') {
@@ -44,7 +49,21 @@ it('has distinct loading and retryable error states', () => {
   expect(html).toContain('Read failed');
   expect(html).toContain('Try again');
 });
-// BUG T-089-C-3: The English balance uses plural sessions even when exactly one remains.
-it.fails('uses singular English for one remaining session', () => {
+it('uses singular English for one remaining session', () => {
   expect(render('en', { ...balance, sessions_left: 1 })).toContain('1 session left');
+});
+it.each([[1, 'فاضل حصة واحدة'], [2, 'فاضل حصتين'], [3, 'فاضل 3 حصص'], [10, 'فاضل 10 حصص']] as const)(
+  'uses Arabic session plurals for %s', (count, label) => {
+    expect(render('ar', { ...balance, sessions_left: count })).toContain(label);
+  });
+it.each([1, 2, 7])('renders session plurals across badges, packages and renewal for %s', count => {
+  const item: Package = { id: 'package', name: 'PT', price_egp: 100, days: 30, kind: 'sessions', sessions: count };
+  const views = [createElement(BalanceBadges, { sessionsLeft: count }),
+    createElement(PackagesCard, { packages: [item], onChange() {} }),
+    createElement(RenewSheet, { name: 'Ali', accessUntil: '2026-12-05', today: '2026-11-05', packages: [item], onClose() {}, onSave() {} })];
+  for (const view of views) {
+    state.index = 0; state.values = [];
+    expect(renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' }, view)))
+      .toContain(count === 1 ? '1 session left' : `${count} sessions left`);
+  }
 });
