@@ -2,6 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    unfreezeFirst: 'فكّ التجميد الأول',
     pending: 'مستني التفعيل', frozen: 'متجمّد',
     waiting: 'بياناتك وصلت للكابتن. مستني يوافق ويحدد الباقة.',
     frozenBody: 'الاشتراك متجمّد. أيامك وحصصك محفوظة. كلّم الكابتن عشان يفكّه.',
@@ -14,6 +15,7 @@ export const messages = defineMessages({
     retry: 'جرّب تاني', validity: 'الحصص المخصصة صالحة لمدة ٦٠ يوم',
   },
   en: {
+    unfreezeFirst: 'Unfreeze first',
     pending: 'Awaiting activation', frozen: 'Frozen',
     waiting: 'Your details reached the coach; waiting for approval and a package.',
     frozenBody: 'Subscription frozen; your days and sessions are saved. Contact the coach to unfreeze.',

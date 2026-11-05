@@ -63,6 +63,8 @@ beforeEach(() => {
 });
 
 import { PlayerBillingRow } from './components/player-billing-row';
+import { BillingManagerCard } from './components/billing-manager-card';
+import { loadPlayerBalance } from './data/pt-actions';
 import { RenewSheet } from './components/renew-sheet';
 import { CollectSheet } from './components/collect-sheet';
 import { renewPlayer } from './data/billing';
@@ -71,6 +73,7 @@ import type { BillingPlayer } from './types';
 import type { Renewal } from './components/renew-sheet';
 vi.mock('./data/billing', () => ({ renewPlayer: vi.fn() }));
 vi.mock('./data/finance-actions', () => ({ collectPayment: vi.fn() }));
+vi.mock('./data/pt-actions', () => ({ loadPlayerBalance: vi.fn(), activatePlayer: vi.fn(), setPlayerFrozen: vi.fn() }));
 const player: BillingPlayer = {
   playerId: 'p', fullName: 'Ali', accessUntil: '2026-11-03', startedOn: '2026-10-01',
   lastTrainingDate: null, programTitle: null, openTasks: 0, status: 'ending', phone: null,
@@ -78,6 +81,30 @@ const player: BillingPlayer = {
 };
 const packages = [{ id: 'package', name: 'Month', days: 30, price_egp: 500 }];
 function render() { hooks.cursor = 0; return PlayerBillingRow({ player, today: '2026-11-03', packages }); }
+it('disables frozen roster renewal and ignores a stale open dialog', () => {
+  click('renew');
+  const sheet = nodes(render()).find(node => node.type === RenewSheet);
+  player.frozenAt = '2026-11-03T10:00:00Z';
+  try {
+    const button = nodes(render()).find(node => text(node.props.children) === 'unfreezeFirst');
+    expect(button?.props.disabled).toBe(true);
+    expect(nodes(render()).some(node => node.type === RenewSheet)).toBe(false);
+    (sheet?.props.onSave as (value: Renewal) => void)({ days: 7, amount: null });
+    expect(renewPlayer).not.toHaveBeenCalled();
+  } finally { player.frozenAt = null; }
+});
+it('disables renewal in the frozen player billing manager', async () => {
+  vi.mocked(loadPlayerBalance).mockResolvedValue({ data: {
+    balance: { id: 'link', pending: false, sessions_left: 3, frozen_at: '2026-11-03T10:00:00Z', access_until: '2026-12-03' },
+    packages: [],
+  } });
+  const manager = () => { hooks.cursor = 0; return BillingManagerCard({ playerId: 'p', name: 'Ali', today: '2026-11-03' }); };
+  manager();
+  for (const effect of hooks.effects.splice(0)) effect();
+  await settle();
+  const button = nodes(manager()).find(node => text(node.props.children) === 'unfreezeFirst');
+  expect(button?.props.disabled).toBe(true);
+});
 function click(label: string) {
   const button = nodes(render()).find(node => text(node.props.children) === label && typeof node.props.onClick === 'function');
   expect(button).toBeDefined(); (button?.props.onClick as () => void)();

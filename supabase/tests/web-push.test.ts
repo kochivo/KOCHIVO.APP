@@ -3,12 +3,11 @@ import { afterAll, beforeAll, expect, it } from 'vitest';
 import { asUser, createCaptainWithPlayer, createTestDb, createUser } from './harness';
 
 let db: PGlite;
-let captain: string;
 let player: string;
 let other: string;
 beforeAll(async () => {
   db = await createTestDb();
-  ({ captain, player } = await createCaptainWithPlayer(db));
+  ({ player } = await createCaptainWithPlayer(db));
   other = await createUser(db, 'player');
 });
 afterAll(async () => { await db.close(); });
@@ -116,9 +115,9 @@ it('queues only active training days, skips logged/rest/legacy/suspended, and is
   let trainingPlayer = '';
   let trainingProgram = '';
   for (const fixture of fixtures) {
-    const user = await createUser(db, 'player');
+    const { captain: coach, player: user } = await createCaptainWithPlayer(db);
     const { rows } = await db.query<{ id: string }>(`insert into public.programs(captain_id,player_id,title,status)
-      values($1,$2,$3,$4) returning id`, [captain, user, fixture.title, fixture.status]);
+      values($1,$2,$3,$4) returning id`, [coach, user, fixture.title, fixture.status]);
     const program = rows[0]?.id;
     if (!program) throw new Error('Missing fixture program');
     await db.query(`insert into public.program_days(program_id,position,title,weekday,is_rest_day) values($1,0,$2,$3,$4)`,

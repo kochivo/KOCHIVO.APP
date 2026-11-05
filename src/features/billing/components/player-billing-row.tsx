@@ -47,7 +47,7 @@ export function PlayerBillingRow({ player, today, packages }: { player: BillingP
   const reminder = waLink(player.phone, reminderText(player.fullName, accessUntil, locale));
 
   async function save(renewal: Renewal) {
-    if (inFlight.current) return;
+    if (inFlight.current || player.frozenAt) return;
     inFlight.current = true;
     const chosen = packages.find((item) => item.id === renewal.packageId);
     const days = chosen?.days ?? renewal.days ?? 0;
@@ -111,13 +111,13 @@ export function PlayerBillingRow({ player, today, packages }: { player: BillingP
         </> : t('noPayments')}</dd></div>
       </dl>
       <div className="flex flex-wrap gap-2">
-        {!player.pending && <Button variant="ghost" disabled={pending || refreshing} onClick={() => setOpen(true)} className="min-h-12">{pending || refreshing ? t('renewing') : t('renew')}</Button>}
+        {!player.pending && <Button variant="ghost" disabled={pending || refreshing || Boolean(player.frozenAt)} onClick={() => setOpen(true)} className="min-h-12">{player.frozenAt ? t('unfreezeFirst') : pending || refreshing ? t('renewing') : t('renew')}</Button>}
         {due > 0 && <Button variant="secondary" disabled={pending || refreshing} onClick={() => setCollecting(true)} className="min-h-12">{pending ? t('collecting') : t('collect')}</Button>}
         {reminder && <a href={reminder} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center rounded-control px-4 text-sm hover:bg-surface-raised">{t('remind')}</a>}
       </div>
       {player.pending && <ActivatePlayerButton playerId={player.playerId} name={player.fullName} today={today} />}
       {error && <p role="alert" className="text-sm text-danger">{error}</p>}
-      {open && <RenewSheet name={player.fullName} accessUntil={accessUntil} today={today} packages={packages} onClose={() => setOpen(false)} onSave={(renewal) => void save(renewal)} />}
+      {open && !player.frozenAt && <RenewSheet name={player.fullName} accessUntil={accessUntil} today={today} packages={packages} onClose={() => setOpen(false)} onSave={(renewal) => void save(renewal)} />}
       {collecting && <CollectSheet name={player.fullName} due={due} onClose={() => setCollecting(false)} onSave={(amount) => void collect(amount)} />}
     </li>
   );

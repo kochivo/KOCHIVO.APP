@@ -60,6 +60,7 @@ it('activates time-based trials without dues and rejects repeat activation', asy
 });
 it('deducts completed sessions once across LWW retries and notifies at zero', async () => {
   await activate(captain, 'sessions', 1);
+  await db.query("update coach_clients set billing_started_at='2026-11-03T07:00:00Z' where id=$1", [link]);
   const row = { id: session, training_date: '2026-11-03', started_at: '2026-11-03T08:00:00Z',
     completed_at: '2026-11-03T09:00:00Z', client_updated_at: '2026-11-03T09:00:00Z' };
   for (const time of ['09', '10', '11']) await asUser(db, player, tx => tx.query('select sync_workout_sessions($1)',
