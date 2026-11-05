@@ -98,3 +98,13 @@ it('replaces a browser subscription made with an old server key', async () => {
   expect(old.unsubscribe).toHaveBeenCalled();
   expect(state.rows[0]?.endpoint).toBe('https://fcm.googleapis.com/device-1');
 });
+it('retries once when Safari drops the first subscribe request', async () => {
+  browser();
+  const manager = (await (navigator as unknown as { serviceWorker: { ready: Promise<{ pushManager: { subscribe: () => Promise<unknown> } }> } })
+    .serviceWorker.ready).pushManager;
+  const real = manager.subscribe;
+  manager.subscribe = vi.fn().mockRejectedValueOnce(new TypeError('Load failed')).mockImplementation(real);
+  expect(await subscribePush('AAEC')).toBe('on');
+  expect(manager.subscribe).toHaveBeenCalledTimes(2);
+  expect(state.rows).toHaveLength(1);
+});

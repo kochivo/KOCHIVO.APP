@@ -56,7 +56,13 @@ export async function subscribePush(publicKey: string): Promise<'on' | 'denied'>
   let existing = await registration.pushManager.getSubscription();
   // Chrome rejects subscribe() while an endpoint made with another server key is still attached.
   if (existing && !sameKey(existing, key)) { await existing.unsubscribe(); existing = null; }
-  const create = () => registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: key });
+  const options = { userVisibleOnly: true, applicationServerKey: key };
+  // Safari's push service can drop the first request right after an unsubscribe ("Load failed").
+  const create = () => registration.pushManager.subscribe(options)
+    .catch((error: unknown) => {
+      if (!(error instanceof TypeError)) throw error;
+      return registration.pushManager.subscribe(options);
+    });
   let subscription = existing ?? await create();
   let created = !existing;
   try {
