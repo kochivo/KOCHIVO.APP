@@ -72,3 +72,13 @@ it('does no DB work when verification fails even if a subject is returned', asyn
   expect(response.headers.get('location')).toBe('https://kochivo.site/login');
   expect(mocks.rpc).not.toHaveBeenCalled();
 });
+
+it('lets a Server Action through instead of redirecting it, as sign-out after approval', async () => {
+  mocks.rpc.mockResolvedValue({ data: [{ role: 'captain', role_confirmed: true, suspended_at: null, is_admin: false,
+    captain_status: 'approved' }], error: null });
+  const page = await refreshSession(new NextRequest('https://kochivo.site/captain/pending'), decideRoute);
+  expect(page.headers.get('location')).toBe('https://kochivo.site/captain');
+  const action = await refreshSession(new NextRequest('https://kochivo.site/captain/pending',
+    { method: 'POST', headers: { 'next-action': 'sign-out' } }), decideRoute);
+  expect(action.headers.get('location')).toBeNull();
+});

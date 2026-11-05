@@ -6,6 +6,7 @@ import { publicConfig } from '@/lib/public-config';
 import { whatsappUrl } from '@/lib/whatsapp';
 import { SignOutButton } from '@/features/auth';
 import { messages } from '../messages';
+import { ApprovalWatcher } from './approval-watcher';
 
 export async function CaptainPendingScreen({ status }: { status: 'pending' | 'rejected' }) {
   const t = await getT(messages);
@@ -20,6 +21,7 @@ export async function CaptainPendingScreen({ status }: { status: 'pending' | 're
       <p className="text-muted">{t(status)}</p>
       {status === 'rejected' && whatsapp && <a href={whatsapp}
         className="flex min-h-12 items-center justify-center rounded-control border border-line px-6 font-bold">{t('support')}</a>}
+      {status === 'pending' && <ApprovalWatcher />}
       <PushToggleCard />
       <SignOutButton variant="danger" className="min-h-12 w-full" />
     </section>

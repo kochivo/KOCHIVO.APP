@@ -11,6 +11,7 @@ vi.mock('@/core/i18n/server', () => ({ getLocale: async () => state.locale, getT
 vi.mock('@/features/notifications', () => ({ PushToggleCard: () => createElement('div', { 'data-push': true }) }));
 vi.mock('@/features/auth', async () => ({ SignOutButton: (await import('../auth/components/sign-out-button')).SignOutButton }));
 vi.mock('../auth/data/sign-out', () => ({ signOut: vi.fn() }));
+vi.mock('next/navigation', () => ({ useRouter: () => ({ replace() {} }) }));
 it.each(['ar', 'en'] as const)('renders pending and rejected states with sign-out and push in %s', async locale => {
   state.locale = locale;
   const render = async (status: 'pending' | 'rejected') => renderToStaticMarkup(createElement(LocaleProvider, { locale },

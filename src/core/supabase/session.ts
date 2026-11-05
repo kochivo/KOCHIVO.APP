@@ -36,7 +36,9 @@ export async function refreshSession(request: NextRequest, decideRoute: RouteDec
     if (!user && data.claims.is_anonymous === true) user = { role: 'player', admin: false, roleConfirmed: false, suspended: false, anonymous: true };
   }
   const decision = decideRoute({ path: request.nextUrl.pathname, user, coach: request.nextUrl.searchParams.get('coach') ?? undefined });
-  if (decision.redirect) {
+  // A redirected Server Action fails on the client (e.g. sign-out on /captain/pending right after approval).
+  // Actions authorize through RLS, and their re-render still runs the page guards.
+  if (decision.redirect && !request.headers.has('next-action')) {
     const target = request.nextUrl.clone();
     target.pathname = decision.redirect;
     target.search = '';
