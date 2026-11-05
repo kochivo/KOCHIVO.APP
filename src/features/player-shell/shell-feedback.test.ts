@@ -33,6 +33,13 @@ vi.mock('./hooks/use-online', () => ({ useOnline: () => true }));
 
 beforeEach(() => { state.effects = []; state.path = '/player'; state.rest = false; state.moodMounts = 0; state.syncMounts = 0; state.report = undefined; });
 afterEach(() => vi.unstubAllGlobals());
+it('keeps the player shell at its existing mobile-first width', () => {
+  const html = renderToStaticMarkup(createElement(PlayerShell, null, null));
+  expect(html).toContain('mx-auto flex max-w-lg justify-end gap-2 px-5');
+  expect(html).toContain('mx-auto max-w-lg space-y-3 px-5 pt-3');
+  expect(html).not.toContain('lg:max-w-[1600px]');
+});
+
 it.each(['/player', '/player/nutrition', '/player/progress', '/player/captain', '/player/settings'])('shows accessible settings on %s', path => {
   state.path = path;
   const html = renderToStaticMarkup(createElement(PlayerShell, null, null));

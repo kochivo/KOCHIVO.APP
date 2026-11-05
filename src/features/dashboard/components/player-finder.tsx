@@ -25,7 +25,7 @@ export function PlayerFinder({ players, recent }: { players: FinderPlayer[]; rec
   const rows = searching ? players.filter((player) => matchesPlayer(player, query)).slice(0, 6) : recent;
   const Chevron = locale === 'ar' ? ChevronLeft : ChevronRight;
   return (
-    <GlassCard role="region" aria-labelledby="finder-heading" className="space-y-4 p-5">
+    <GlassCard role="region" aria-labelledby="finder-heading" className="min-w-0 space-y-4 p-5">
       <h2 id="finder-heading" className="text-xl font-bold">{t('findPlayer')}</h2>
       <label className="glass-raised flex min-h-12 items-center gap-3 rounded-control px-4 focus-within:ring-2 focus-within:ring-lime">
         <Search aria-hidden className="size-5 shrink-0 text-muted" />

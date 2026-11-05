@@ -26,7 +26,7 @@ export function SmartAlerts({ alerts }: { alerts: SmartAlert[] }) {
   const [expanded, setExpanded] = useState(false);
   const shown = expanded ? alerts : alerts.slice(0, VISIBLE);
   return (
-    <GlassCard role="region" aria-labelledby="alerts-heading" className="space-y-4 p-5">
+    <GlassCard role="region" aria-labelledby="alerts-heading" className="min-w-0 space-y-4 p-5">
       <div>
         <h2 id="alerts-heading" className="text-xl font-bold">{t('smartAlerts')}</h2>
         <p className="text-sm text-muted">{t('alertsHint')}</p>
@@ -37,7 +37,7 @@ export function SmartAlerts({ alerts }: { alerts: SmartAlert[] }) {
           const count = formatNumber(alert.value, locale);
           return <li key={`${alert.kind}:${alert.playerId}`} className="glass-raised flex items-center gap-3 rounded-control p-3">
             <span aria-hidden className={`grid size-10 shrink-0 place-items-center rounded-full ${tone}`}><Icon className="size-5" /></span>
-            <p className="min-w-0 flex-1 text-sm">{t(`alert.${alert.kind}`, { name: alert.name, count, amount: count })}</p>
+            <p className="min-w-0 flex-1 text-sm lg:truncate">{t(`alert.${alert.kind}`, { name: alert.name, count, amount: count })}</p>
             <Link href={alert.href} prefetch={false} className="inline-flex min-h-12 shrink-0 items-center rounded-control px-3 text-sm font-bold text-lime hover:bg-ink/5">
               {t(`action.${alert.kind}`)}
             </Link>
