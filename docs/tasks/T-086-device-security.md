@@ -1,5 +1,19 @@
 # T-086 — Device and session security (QA audit 2026-11-05, items 1, 2, 3, 10)
 
+## Implementation notes
+- Local access requires `setLocalUser(userId)` before rendering player features; logout unbinds it.
+- Legacy `kochivo` data moves only when at least one program/nutrition snapshot exists and every
+  existing snapshot names the current user. Missing, foreign, or conflicting owners cause deletion.
+  Existing user-scoped rows take precedence over legacy rows. Migrated outbox entries receive the owner id.
+- Logout tries a final sync. Databases with pending outbox rows or media remain for that user's next login;
+  empty databases are deleted. The captain metadata cache is also keyed by user id.
+- Private navigations always fall back to the public `/offline` shell. It restores auth before opening
+  the scoped database and rendering cached workouts. The worker precaches the shell's lazy static scripts.
+  Offline entry accepts an expired persisted session only when its cookie user matches the remembered
+  authenticated owner; logout clears that binding. The offline shell also runs sync on reconnect.
+- Migration 0063 logs the actual rejected endpoint deletion count with `RAISE NOTICE` at apply time.
+  It recreates no functions and does not depend on 0064.
+
 **Phase:** V1 beta blocker · **Status:** ready
 
 ## Problems (all confirmed by the audit)

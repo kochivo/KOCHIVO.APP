@@ -18,12 +18,12 @@ const insert = (user: string, endpoint: string, owner = user) => asUser(db, user
    values(gen_random_uuid(),$1,$2,'key','auth') returning id`, [owner, endpoint]));
 
 it('isolates owner select/insert/delete and denies updates and anon', async () => {
-  await insert(player, 'https://push.example/owner');
+  await insert(player, 'https://fcm.googleapis.com/owner');
   expect((await asUser(db, player, tx => tx.query('select endpoint from public.push_subscriptions'))).rows)
-    .toEqual([{ endpoint: 'https://push.example/owner' }]);
+    .toEqual([{ endpoint: 'https://fcm.googleapis.com/owner' }]);
   expect((await asUser(db, other, tx => tx.query('select id from public.push_subscriptions'))).rows).toEqual([]);
   expect((await asUser(db, other, tx => tx.query('delete from public.push_subscriptions returning id'))).rows).toEqual([]);
-  await expect(insert(other, 'https://push.example/forged', player)).rejects.toMatchObject({ code: '42501' });
+  await expect(insert(other, 'https://fcm.googleapis.com/forged', player)).rejects.toMatchObject({ code: '42501' });
   await expect(asUser(db, player, tx => tx.query("update public.push_subscriptions set auth='changed'")))
     .rejects.toMatchObject({ code: '42501' });
   await expect(db.transaction(async tx => {
@@ -34,23 +34,23 @@ it('isolates owner select/insert/delete and denies updates and anon', async () =
 });
 
 it('caps subscriptions at ten and frees a slot on deletion', async () => {
-  for (let i = 0; i < 10; i++) await insert(other, `https://push.example/${i}`);
-  await expect(insert(other, 'https://push.example/11')).rejects.toMatchObject({ code: '23514' });
-  await asUser(db, other, tx => tx.query("delete from public.push_subscriptions where endpoint='https://push.example/0'"));
-  await insert(other, 'https://push.example/replacement');
+  for (let i = 0; i < 10; i++) await insert(other, `https://fcm.googleapis.com/${i}`);
+  await expect(insert(other, 'https://fcm.googleapis.com/11')).rejects.toMatchObject({ code: '23514' });
+  await asUser(db, other, tx => tx.query("delete from public.push_subscriptions where endpoint='https://fcm.googleapis.com/0'"));
+  await insert(other, 'https://fcm.googleapis.com/replacement');
 });
 
 it('validates endpoints, agent length, uniqueness and suspended owners', async () => {
-  await expect(insert(player, 'http://push.example/insecure')).rejects.toMatchObject({ code: '23514' });
+  await expect(insert(player, 'http://fcm.googleapis.com/insecure')).rejects.toMatchObject({ code: '23514' });
   await expect(insert(player, `https://${'a'.repeat(1000)}`)).rejects.toMatchObject({ code: '23514' });
-  await insert(player, 'https://push.example/unique');
-  await expect(insert(player, 'https://push.example/unique')).rejects.toMatchObject({ code: '23505' });
+  await insert(player, 'https://fcm.googleapis.com/unique');
+  await expect(insert(player, 'https://fcm.googleapis.com/unique')).rejects.toMatchObject({ code: '23505' });
   await expect(asUser(db, player, tx => tx.query(`insert into public.push_subscriptions(id,endpoint,p256dh,auth,user_agent)
-    values(gen_random_uuid(),'https://push.example/agent','key','auth',$1)`, ['a'.repeat(301)])))
+    values(gen_random_uuid(),'https://fcm.googleapis.com/agent','key','auth',$1)`, ['a'.repeat(301)])))
     .rejects.toMatchObject({ code: '23514' });
   await db.query('update public.profiles set suspended_at=now() where id=$1', [player]);
   expect((await asUser(db, player, tx => tx.query('select id from public.push_subscriptions'))).rows).toEqual([]);
-  await expect(insert(player, 'https://push.example/suspended')).rejects.toMatchObject({ code: '42501' });
+  await expect(insert(player, 'https://fcm.googleapis.com/suspended')).rejects.toMatchObject({ code: '42501' });
   await db.query('update public.profiles set suspended_at=null where id=$1', [player]);
 });
 

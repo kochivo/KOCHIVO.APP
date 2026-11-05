@@ -1,4 +1,5 @@
 export { FocusScreen } from './components/focus-entry';
+export { OfflineWorkout } from './components/offline-entry';
 export { HistoryScreen } from './components/history-entry';
 export { fetchWorkoutIdentity } from './data/workout-identity';
 

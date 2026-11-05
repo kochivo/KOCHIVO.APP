@@ -16,5 +16,6 @@ export async function refreshSnapshot(options: RefreshOptions = {}): Promise<'re
     }),
     db: () => options.db ?? localDb(),
     table: db => db.program_snapshot,
+    accepts: (snapshot, db) => !db.userId || snapshot.player_id === db.userId,
   });
 }

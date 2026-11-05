@@ -23,7 +23,7 @@ export async function saveAndQueue<T extends SyncTable>(
         last_error: undefined,
       });
     } else {
-      await db.outbox.add({ table, row_id: row.id, revision: 1, enqueued_at: now, attempts: 0, next_attempt_at: now });
+      await db.outbox.add({ owner_id: db.userId, table, row_id: row.id, revision: 1, enqueued_at: now, attempts: 0, next_attempt_at: now });
     }
   });
 }

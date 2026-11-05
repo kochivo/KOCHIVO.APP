@@ -2,6 +2,7 @@ import { getT } from '@/core/i18n/server';
 import { messages } from '@/ui/messages';
 import { parseLocale } from '@/core/i18n/locale';
 import { OfflineMessage } from '@/ui/offline-message';
+import { OfflineWorkout } from '@/features/workout';
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -16,5 +17,6 @@ export default async function OfflinePage({ params }: Props) {
   return <main className="flex min-h-dvh flex-col items-center justify-center gap-3 px-6 pt-[var(--safe-top)] text-center">
     <h1 className="text-2xl font-bold">{t('noConnectionRightNow')}</h1>
     <OfflineMessage />
+    <OfflineWorkout />
   </main>;
 }

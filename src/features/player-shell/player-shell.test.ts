@@ -1,11 +1,13 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { setLocalUser } from '@/core/offline/db';
 import { playerNav, showsNav } from './nav';
 import { accessState } from './access';
 import { whatsappUrl } from '@/lib/whatsapp';
 import { readCaptainCache, writeCaptainCache } from './hooks/use-my-captain';
 
 vi.mock('./data/my-captain', () => ({ fetchMyCaptain: vi.fn() }));
-afterEach(() => vi.unstubAllGlobals());
+beforeEach(async () => { await setLocalUser('cache-player'); });
+afterEach(async () => { await setLocalUser(null); vi.unstubAllGlobals(); });
 
 describe('player navigation', () => {
   it.each(['/player', '/player/nutrition', '/player/progress/x', '/player/captain'])(
@@ -66,7 +68,7 @@ describe('captain cache', () => {
     const setItem = vi.fn();
     vi.stubGlobal('window', { localStorage: { setItem } });
     writeCaptainCache({ fullName: 'كابتن', phone: null, accessUntil: '2026-11-06', archivedAt: null, startedOn: '2026-01-01' });
-    expect(setItem).toHaveBeenCalledWith('kochivo.my-captain', JSON.stringify({
+    expect(setItem).toHaveBeenCalledWith('kochivo.my-captain.cache-player', JSON.stringify({
       fullName: 'كابتن', phone: null, accessUntil: '2026-11-06', archivedAt: null,
     }));
   });

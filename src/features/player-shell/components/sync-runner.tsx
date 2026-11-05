@@ -10,7 +10,8 @@ export function SyncRunner() {
     let stopped = false;
     let stop: (() => void) | undefined;
     void loadSupabaseBrowser().then(client => {
-      if (!stopped) stop = startSync(localDb(), supabaseTransport(client));
+      const db = localDb();
+      if (!stopped && db.userId) stop = startSync(db, supabaseTransport(client, db.userId));
     }).catch(() => { console.error('Background sync could not start'); });
     return () => { stopped = true; stop?.(); };
   }, []);

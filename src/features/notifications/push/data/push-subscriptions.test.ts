@@ -24,9 +24,9 @@ function browser(permission: NotificationPermission = 'granted') {
   vi.stubGlobal('navigator', { userAgent: 'test', serviceWorker: { getRegistration: async () => ({ active: {} }), ready: Promise.resolve({ pushManager: {
     getSubscription: async () => state.subscription,
     subscribe: async () => {
-      const endpoint = `https://push.example/device-${++state.count}`;
+      const endpoint = `https://fcm.googleapis.com/device-${++state.count}`;
       state.subscription = { endpoint,
-        toJSON: () => ({ endpoint: 'https://push.example/device', keys: { p256dh: 'key', auth: 'auth' } }),
+        toJSON: () => ({ endpoint: 'https://fcm.googleapis.com/device', keys: { p256dh: 'key', auth: 'auth' } }),
         unsubscribe: async () => { state.subscription = null; return true; } };
       return state.subscription;
     },
@@ -76,7 +76,7 @@ it('replaces an endpoint owned by a previous account instead of trapping the new
   expect(await currentPushState()).toBe(false);
   expect(await subscribePush('AAEC')).toBe('on');
   expect(state.rows).toHaveLength(1);
-  expect(state.rows[0]?.endpoint).toBe('https://push.example/device-2');
+  expect(state.rows[0]?.endpoint).toBe('https://fcm.googleapis.com/device-2');
   expect(await currentPushState()).toBe(true);
 });
 it('registers the worker when Android opens settings before it exists', async () => {
@@ -90,11 +90,11 @@ it('registers the worker when Android opens settings before it exists', async ()
 });
 it('replaces a browser subscription made with an old server key', async () => {
   browser();
-  const old = { endpoint: 'https://push.example/old', options: { applicationServerKey: new Uint8Array([9, 9]).buffer },
-    toJSON: () => ({ endpoint: 'https://push.example/old', keys: { p256dh: 'key', auth: 'auth' } }),
+  const old = { endpoint: 'https://fcm.googleapis.com/old', options: { applicationServerKey: new Uint8Array([9, 9]).buffer },
+    toJSON: () => ({ endpoint: 'https://fcm.googleapis.com/old', keys: { p256dh: 'key', auth: 'auth' } }),
     unsubscribe: vi.fn(async () => { state.subscription = null; return true; }) };
   state.subscription = old as unknown as typeof state.subscription;
   expect(await subscribePush('AAEC')).toBe('on');
   expect(old.unsubscribe).toHaveBeenCalled();
-  expect(state.rows[0]?.endpoint).toBe('https://push.example/device-1');
+  expect(state.rows[0]?.endpoint).toBe('https://fcm.googleapis.com/device-1');
 });

@@ -1,6 +1,7 @@
 import { loadSupabaseBrowser } from '@/core/supabase/lazy';
 import { uuidv7 } from '@/core/offline/ids';
 import { base64UrlBytes } from '../push-support';
+import { allowedPushEndpoint } from '@/lib/push-endpoint';
 
 async function storedSubscription(endpoint: string) {
   const client = await loadSupabaseBrowser();
@@ -33,6 +34,7 @@ function sameKey(subscription: PushSubscription, key: Uint8Array): boolean {
 }
 
 async function storeSubscription(subscription: PushSubscription) {
+  if (!allowedPushEndpoint(subscription.endpoint)) throw new Error('Invalid push endpoint');
   if (await storedSubscription(subscription.endpoint)) return;
   const serialized = subscription.toJSON();
   const p256dh = serialized.keys?.p256dh;

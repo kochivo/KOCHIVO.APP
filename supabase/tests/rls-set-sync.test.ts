@@ -1,8 +1,8 @@
 import type { PGlite } from '@electric-sql/pglite';
-import { afterAll, beforeAll, expect, it } from 'vitest';
+import { afterAll, beforeAll, expect, it, vi } from 'vitest';
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '../../src/types/database';
-import { KochivoDB } from '../../src/core/offline/db';
+import { KochivoDB, setLocalUser } from '../../src/core/offline/db';
 import { flushOutbox } from '../../src/core/offline/sync';
 import { supabaseTransport } from '../../src/core/offline/transport';
 import { logSet } from '../../src/features/workout/data/log-set';
@@ -18,9 +18,10 @@ beforeAll(async () => {
   db = await createTestDb();
   const { captain, player } = await createCaptainWithPlayer(db);
   tenant = await tenantFixture(db, captain, player);
+  await setLocalUser(player);
   local = new KochivoDB('rls-set-sync');
 });
-afterAll(async () => { await local?.delete(); await db?.close(); });
+afterAll(async () => { await setLocalUser(null); await local?.delete(); await db?.close(); });
 
 function transport() {
   // Only the HTTP boundary is replaced: the real Supabase client and transport call real PostgreSQL.
@@ -33,7 +34,9 @@ function transport() {
       return new Response(null, { status: 204 });
     } },
   });
-  return supabaseTransport(client);
+  vi.spyOn(client.auth, 'getUser').mockResolvedValue({ data: { user: { id: tenant.player, aud: 'authenticated',
+    app_metadata: {}, user_metadata: {}, created_at: TEST_NOW } }, error: null });
+  return supabaseTransport(client, tenant.player);
 }
 
 it('replays a server commit after a lost acknowledgement and reload without duplicate sets', async () => {

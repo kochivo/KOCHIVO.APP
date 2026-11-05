@@ -1,4 +1,5 @@
 import webpush from 'npm:web-push@3.6.7';
+import { allowedPushEndpoint } from './push-endpoint.ts';
 import { timingSafeEqual } from 'node:crypto';
 import { pushPayload } from './payload.ts';
 import type { PushNotificationRow } from './payload.ts';
@@ -64,6 +65,10 @@ Deno.serve(async request => {
     )).json();
     const payload = JSON.stringify(pushPayload(notification));
     await Promise.all(subscriptions.map(async subscription => {
+      if (!allowedPushEndpoint(subscription.endpoint)) {
+        console.warn('Rejected push endpoint host');
+        return;
+      }
       try {
         await webpush.sendNotification({ endpoint: subscription.endpoint,
           keys: { p256dh: subscription.p256dh, auth: subscription.auth } }, payload, {
