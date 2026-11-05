@@ -66,7 +66,7 @@ export function RenewSheet({ name, accessUntil, today, packages, onClose, onSave
           <div className="flex flex-wrap gap-2">
             {packages.map((item) => <Chip key={item.id} pressed={packageId === item.id} onClick={() => pick(item.id)}>
               {item.name} · {t('amount', { amount: formatNumber(item.price_egp, locale) })}
-              {item.kind === 'sessions' && <> · {pt('sessionsLeft', { count: formatNumber(item.sessions ?? 0, locale) })}</>}
+              {item.kind === 'sessions' && <> · {pt('sessionsLeft', { n: item.sessions ?? 0, count: formatNumber(item.sessions ?? 0, locale) })}</>}
             </Chip>)}
             <Chip pressed={packageId === null} onClick={() => pick(null)}>{t('custom')}</Chip>
           </div>

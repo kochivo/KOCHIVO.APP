@@ -35,8 +35,7 @@ it('shows a retry instead of a fresh intake form when the read fails', async () 
   expect(html).toContain('Try again');
   expect(html).not.toContain('<form');
 });
-// BUG T-089-C-4: A captain cannot sign out from the initial intake gate.
-it.fails('offers sign-out before the captain submits intake', async () => {
+it('offers sign-out before the captain submits intake', async () => {
   state.locale = 'en'; state.intake = null; state.error = null;
   expect(await render('pending')).toContain('Sign out');
 });

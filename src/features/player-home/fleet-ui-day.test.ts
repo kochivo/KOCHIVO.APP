@@ -31,7 +31,15 @@ it('recognizes a scheduled rest day from the fixed Cairo date', () => {
   expect(isRestDay(snapshot, [], '2026-11-05')).toBe(false);
   expect(isRestDay(snapshot, [], '2026-11-06')).toBe(true);
 });
-// BUG T-089-C-2: A legitimate rest day with no exercises says the coach is still preparing it.
-it.fails('does not label an intentionally empty rest day as unprepared', () => {
+it('does not label an intentionally empty rest day as unprepared', () => {
   expect(render('en', true)).not.toContain('Your coach is preparing');
+});
+it.each(['ar', 'en'] as const)('offers recovery guidance on an empty rest day in %s', locale => {
+  expect(render(locale, true)).toContain(locale === 'en' ? 'Rest today. Enjoy your recovery' : 'اليوم راحة.. استمتع بالاستشفاء');
+});
+it('respects the program rest-day flag even without a schedule rest hint', () => {
+  const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' },
+    createElement(TodayCard, { day: { ...day, is_rest_day: true }, rest: false })));
+  expect(html).toContain('Rest today. Enjoy your recovery');
+  expect(html).not.toContain('Your coach is preparing');
 });

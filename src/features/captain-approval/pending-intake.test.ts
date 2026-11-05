@@ -7,6 +7,9 @@ import { messages } from './intake/messages';
 import { PendingIntake } from './components/pending-intake';
 
 const mocks = vi.hoisted(() => ({ load: vi.fn() }));
+vi.mock('server-only', () => ({}));
+vi.mock('@/features/auth/data/sign-out', () => ({ signOut: vi.fn() }));
+vi.mock('@/features/auth/data/clear-device', () => ({ clearDeviceCache: vi.fn(), closeDeviceDb: vi.fn(), finalDeviceSync: vi.fn() }));
 vi.mock('./data/intake', () => ({ loadIntake: mocks.load, saveIntake: vi.fn() }));
 vi.mock('@/core/i18n/server', () => ({ getT: async () => createT(messages, 'en') }));
 vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh() {} }) }));

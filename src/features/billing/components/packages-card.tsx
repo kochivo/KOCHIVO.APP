@@ -57,7 +57,7 @@ export function PackagesCard({ packages: initial, onChange }: { packages: Packag
       {packages.length === 0 && !adding ? <EmptyState icon={PackageIcon} title={t('noPackages')} body={t('packagesHint')} action={{ label: t('newPackage'), onClick: () => setAdding(true) }} /> : <ul className="space-y-2">{packages.map((item) => <li key={item.id} className="glass-raised flex min-h-12 items-center justify-between gap-3 rounded-control ps-4 pe-1">
         <div className="min-w-0 py-2"><p className="truncate font-bold">{item.name}</p>
           <p className="text-xs text-muted">{t('amount', { amount: formatNumber(item.price_egp, locale) })} · {t('days', { n: item.days, count: formatNumber(item.days, locale) })}
-            {item.kind === 'sessions' && <> · {pt('sessionsLeft', { count: formatNumber(item.sessions ?? 0, locale) })}</>}</p></div>
+            {item.kind === 'sessions' && <> · {pt('sessionsLeft', { n: item.sessions ?? 0, count: formatNumber(item.sessions ?? 0, locale) })}</>}</p></div>
         <Button variant="ghost" className="min-h-12 min-w-12 px-0" aria-label={t('archivePackage', { name: item.name })} onClick={() => void archive(item)}><X aria-hidden className="size-5" /></Button>
       </li>)}</ul>}
       {adding ? <form className="space-y-3" onSubmit={(event) => { event.preventDefault(); void add(); }}>
