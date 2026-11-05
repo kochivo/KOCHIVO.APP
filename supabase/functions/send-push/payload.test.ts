@@ -1,6 +1,23 @@
 import { expect, it } from 'vitest';
 import { pushPayload } from './payload';
 
+it.each(['ar', 'en'] as const)('formats both expiry reminders for each recipient in %s', locale => {
+  for (const type of ['subscription_expiring', 'subscription_expired'] as const) {
+    for (const captain of [true, false]) {
+      const result = pushPayload({ id: 'n', type,
+        payload: captain ? { name: 'Ali', player_id: 'p' } : { captain_name: 'Mona' } }, locale);
+      expect(result.url).toBe(`/${locale}${captain ? '/captain/players/p' : '/player'}`);
+      const expected = locale === 'ar'
+        ? captain ? type === 'subscription_expiring' ? 'اشتراك Ali هيخلص بعد 3 أيام' : 'اشتراك Ali خلص النهارده'
+          : type === 'subscription_expiring' ? 'اشتراكك مع كابتن Mona هيخلص بعد 3 أيام' : 'اشتراكك خلص النهارده، كلّم كابتنك'
+        : captain ? type === 'subscription_expiring' ? "Ali's subscription ends in 3 days" : "Ali's subscription ends today"
+          : type === 'subscription_expiring' ? 'Your subscription with captain Mona ends in 3 days' : 'Your subscription ends today, contact your captain';
+      expect(result.body).toBe(expected);
+      expect(result.tag).toBe('n');
+    }
+  }
+});
+
 it.each(['ar', 'en'] as const)('links captain approval to their dashboard in %s', locale => {
   const payload = pushPayload({ id: 'n', type: 'captain_approved', payload: {} }, locale);
   expect(payload.url).toBe(`/${locale}/captain`);
