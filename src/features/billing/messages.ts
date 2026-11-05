@@ -2,6 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    unfreezeFirst: 'فكّ التجميد الأول',
     invitePlayer: "ضيف لاعب",
     'reminder': "يا {name}، اشتراكك مع الكابتن بيخلص {date}. تحب نجدد؟",
     'billing': "الدفعات",
@@ -90,6 +91,7 @@ export const messages = defineMessages({
     'noDues': "مفيش مستحقات. كل اللاعبين دافعين",
   },
   en: {
+    unfreezeFirst: 'Unfreeze first',
     invitePlayer: "Invite a player",
     'reminder': "Hi {name}, your coaching subscription ends on {date}. Ready to renew?",
     'billing': "Billing",

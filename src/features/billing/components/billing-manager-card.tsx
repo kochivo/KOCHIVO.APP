@@ -44,7 +44,7 @@ export function BillingManagerCard({ playerId, name, today, autoActivate }: { pl
       {balance.frozen_at && <span className="rounded-control bg-water/10 px-3 py-1 text-water">{t('frozen')}</span>}
       <div className="flex flex-wrap gap-3">
         {balance.pending ? <Button disabled={busy} onClick={() => setSheet('activate')}>{t('activate')}</Button> : <>
-          <Button variant="secondary" disabled={busy} onClick={() => setSheet('renew')}>{t('renew')}</Button>
+          <Button variant="secondary" disabled={busy || Boolean(balance.frozen_at)} onClick={() => setSheet('renew')}>{t(balance.frozen_at ? 'unfreezeFirst' : 'renew')}</Button>
           <Button variant="ghost" disabled={busy} onClick={() => {
             if (window.confirm(t('confirm'))) void run(() => setPlayerFrozen(balance.id, !balance.frozen_at),
               { ...data, balance: { ...balance, frozen_at: balance.frozen_at ? null : `${today}T12:00:00Z` } });
@@ -54,7 +54,7 @@ export function BillingManagerCard({ playerId, name, today, autoActivate }: { pl
       {error && <p role="alert" className="text-danger">{error}</p>}
       {sheet === 'activate' && <ActivateSheet packages={data.packages} busy={busy} error={error} onClose={() => setSheet(null)}
         onSave={(input: Activation) => void run(() => activatePlayer(balance.id, input))} />}
-      {sheet === 'renew' && <RenewSheet name={name} accessUntil={balance.access_until} today={today} packages={data.packages}
+      {sheet === 'renew' && !balance.frozen_at && <RenewSheet name={name} accessUntil={balance.access_until} today={today} packages={data.packages}
         onClose={() => setSheet(null)} onSave={(input: Renewal) => { setSheet(null); void run(() => renewPlayer({ playerId, ...input })); }} />}
     </>}
   </section>;
