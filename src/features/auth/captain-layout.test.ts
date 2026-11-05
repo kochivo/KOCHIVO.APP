@@ -24,3 +24,7 @@ it('fails closed without a profile and propagates database errors', async () => 
   mocks.rpc.mockResolvedValueOnce({ data: null, error: new Error('network') });
   await expect(captainApproval()).rejects.toThrow('network');
 });
+it('sends a signed-out caller to login instead of crashing after sign-out', async () => {
+  mocks.rpc.mockResolvedValueOnce({ data: null, error: { code: '42501', message: 'permission denied' } });
+  await expect(captainApproval()).rejects.toThrow('redirect:/login');
+});

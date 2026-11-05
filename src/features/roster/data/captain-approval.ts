@@ -6,6 +6,8 @@ import { supabaseServer } from '@/core/supabase/server';
 export async function captainApproval() {
   const client = await supabaseServer();
   const { data, error } = await client.rpc('my_approval_route_profile');
+  // Signing out re-renders this layout without a session; the RPC is closed to anon.
+  if (error?.code === '42501') redirect('/login');
   if (error) throw error;
   const row = data?.[0];
   if (!row) redirect('/login');
