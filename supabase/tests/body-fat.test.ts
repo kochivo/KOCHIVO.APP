@@ -8,7 +8,7 @@ let captain: string;
 let other: string;
 beforeAll(async () => {
   db = await createTestDb();
-  ({ player, captain } = await createCaptainWithPlayer(db));
+  ({ player, captain } = await createCaptainWithPlayer(db, '2026-10-31'));
   ({ player: other } = await createCaptainWithPlayer(db));
 });
 afterAll(async () => { await db?.close(); });

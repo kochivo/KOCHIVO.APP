@@ -29,6 +29,8 @@ describe('private photo isolation', () => {
   it('A player’s captain can read their photo while another captain cannot.', async () => {
     const name = `${player}/read.jpg`;
     await upload(name);
+    await db.query(`insert into check_ins(player_id,week_start,photo_paths)
+      values ($1,'2026-11-03',$2)`, [player, [name]]);
     const read = (user: string) => asUser(db, user, (tx) => tx.query(
       `select name from storage.objects where bucket_id = 'checkin-photos' and name = $1`, [name],
     ));

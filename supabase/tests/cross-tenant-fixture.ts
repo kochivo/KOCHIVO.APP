@@ -46,7 +46,8 @@ export async function tenantFixture(db: PGlite, captain: string, player: string)
   const set = await add('set_logs', { player_id: player, session_id: session, program_exercise_id: item,
     exercise_id: exercise, set_index: 1, weight_kg: 60, reps: 8, completed_at: TEST_NOW, client_updated_at: TEST_NOW }, 'reps = 9');
   await add('meal_logs', { player_id: player, meal_id: meal, log_date: '2026-11-03', client_updated_at: TEST_NOW }, 'completed_at = now()');
-  const checkin = await add('check_ins', { player_id: player, captain_id: captain, week_start: '2026-11-01' }, "captain_reply = 'Changed'");
+  const checkin = await add('check_ins', { player_id: player, captain_id: captain, week_start: '2026-11-03',
+    photo_paths: [`${player}/photo.jpg`] }, "captain_reply = 'Changed'");
   const form = await add('form_checks', { player_id: player, captain_id: captain,
     exercise_id: exercise, set_log_id: set, video_path: `${player}/form.mp4` }, "captain_reply = 'Changed'");
   await add('player_intake', { player_id: player, birth_year: 2000, sex: 'male', height_cm: 180,

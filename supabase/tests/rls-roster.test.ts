@@ -22,7 +22,7 @@ describe('captain_roster', () => {
   });
 
   it('aggregates sessions and unreviewed tasks without multiplying counts', async () => {
-    const { captain, player } = await createCaptainWithPlayer(db);
+    const { captain, player } = await createCaptainWithPlayer(db, '2026-10-19');
     await db.query(`insert into public.workout_sessions (id, player_id, training_date, started_at, client_updated_at)
       values (gen_random_uuid(), $1, '2026-10-30', '2026-10-30', '2026-10-30'),
              (gen_random_uuid(), $1, '2026-11-02', '2026-11-02', '2026-11-02')`, [player]);

@@ -101,14 +101,14 @@ export async function dayOffset(db: PGlite, days: number): Promise<string> {
   return date.d;
 }
 
-export async function createCaptainWithPlayer(db: PGlite) {
+export async function createCaptainWithPlayer(db: PGlite, startedOn?: string) {
   const captain = await createUser(db, 'captain');
   const player = await createUser(db, 'player');
   const accessUntil = await dayOffset(db, 30);
   // Superuser stands in for redeem_invite: since 0015 captains cannot insert relationships.
   await db.query(
-    `insert into public.coach_clients (captain_id, player_id, access_until) values ($1, $2, $3)`,
-    [captain, player, accessUntil],
+    `insert into public.coach_clients (captain_id, player_id, access_until, started_on) values ($1, $2, $3, $4)`,
+    [captain, player, accessUntil, startedOn ?? await dayOffset(db, 0)],
   );
   return { captain, player };
 }

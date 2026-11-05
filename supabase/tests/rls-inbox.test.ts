@@ -11,7 +11,7 @@ const CHECKIN = '01900000-0000-8000-8000-000000000201';
 
 beforeAll(async () => {
   db = await createTestDb();
-  ({ captain, player } = await createCaptainWithPlayer(db));
+  ({ captain, player } = await createCaptainWithPlayer(db, '2026-11-02'));
   ({ captain: otherCaptain, player: otherPlayer } = await createCaptainWithPlayer(db));
 });
 

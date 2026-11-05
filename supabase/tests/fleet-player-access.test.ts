@@ -146,7 +146,8 @@ async function movePlayer() {
   const oldCaptain = fleet.captains[20], newCaptain = fleet.captains[10];
   if (!oldCaptain || !newCaptain) throw new Error('Missing move captains');
   const link = await fleetId('move-link', suffix);
-  await db.query("insert into coach_clients(id,captain_id,player_id,access_until) values ($1,$2,$3,'2026-12-03')", [link, oldCaptain.id, player]);
+  await db.query(`insert into coach_clients(id,captain_id,player_id,access_until,started_on)
+    values ($1,$2,$3,'2026-12-03','2026-11-01')`, [link, oldCaptain.id, player]);
   const c = await playerContent(db, { id: player, captain: oldCaptain.id, link, state: 'active', kind: 'days', joinedBy: 'invite' });
   const before = await fleetId('before-move', suffix), after = await fleetId('after-move', suffix);
   const sync = (id: string, date: string, time: string) => run(player, 'select sync_workout_sessions($1)', [JSON.stringify([
@@ -169,6 +170,9 @@ async function movePlayer() {
   const scan = await fleetId('move-scan', suffix);
   await run(player, "insert into body_scans(id,scan_date,weight_kg) values ($1,'2026-11-01',80)", [scan]);
   history.body_scans = scan;
+  for (const [table, id] of Object.entries(history)) {
+    expect((await run(oldCaptain.id, `select id from ${table} where id=$1`, [id])).rows).toEqual([{ id }]);
+  }
   await run(oldCaptain.id, 'update coach_clients set archived_at=now() where id=$1', [link]);
   const invite = await fleetId('move-invite', suffix);
   await run(newCaptain.id, `insert into coach_invites(id,captain_id,code,access_until)
@@ -176,6 +180,8 @@ async function movePlayer() {
   await run(player, 'select redeem_invite($1)', [`move-${suffix}`]);
   const newLink = await asUser(db, player, tx => tx.query<{ id: string }>('select id from coach_clients where archived_at is null'));
   await run(newCaptain.id, "select activate_player($1,null,'days',30,0,0,true)", [newLink.rows[0]?.id]);
+  expect((await run(player, 'select started_on from coach_clients where archived_at is null')).rows)
+    .toEqual([{ started_on: new Date('2026-11-03') }]);
   await sync(after, '2026-11-03', '2026-11-03T11:00:00Z');
   return { player, before, after, history, oldCaptain: oldCaptain.id, newCaptain: newCaptain.id };
 }
@@ -192,8 +198,7 @@ it('a move revokes the old captain while preserving player history', async () =>
 });
 
 for (const table of ['workout_sessions', 'set_logs', 'meal_logs', 'daily_checks', 'supplement_logs', 'body_scans']) {
-  // BUG T-089-B-2: current-captain read policies expose history without a relationship start boundary.
-  it.fails(`a new captain cannot read pre-move ${table}`, async () => {
+  it(`a new captain cannot read pre-move ${table}`, async () => {
     const moved = await movePlayer();
     expect((await run(moved.newCaptain, `select id from ${table} where id=$1`, [moved.history[table]])).rows).toEqual([]);
   });

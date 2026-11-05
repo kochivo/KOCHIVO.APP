@@ -33,7 +33,12 @@ beforeAll(async () => {
   await run(player, `insert into public.player_intake
     (player_id, birth_year, sex, height_cm, weight_kg, training_days, session_minutes, experience)
     values ($1, 2000, 'male', 180, 80, array[1,3]::smallint[], 60, 'new')`, [player]);
-  await run(player, `insert into public.check_ins (player_id, week_start) values ($1, test_clock.today())`, [player]);
+  await run(player, `insert into public.check_ins (player_id, week_start, photo_paths)
+    values ($1, test_clock.today(), $2)`, [player, [`${player}/photo.jpg`]]);
+  await db.query(`with exercise as (
+    insert into exercises(name_en,body_part) values ('Press','chest') returning id)
+    insert into form_checks(player_id,exercise_id,video_path)
+    select $1,id,$2 from exercise`, [player, `${player}/video.mp4`]);
   await run(player, `insert into storage.objects (bucket_id, name) values ('checkin-photos', $1)`, [`${player}/photo.jpg`]);
   await run(player, `insert into storage.objects (bucket_id, name) values ('form-videos', $1)`, [`${player}/video.mp4`]);
 });
