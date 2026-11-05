@@ -1,7 +1,7 @@
 import { afterEach, expect, it } from 'vitest';
 import Dexie from 'dexie';
 import { localDb, setLocalUser } from '@/core/offline/db';
-import { closeDeviceDb } from './clear-device';
+import { closeDeviceDb, finalDeviceSync } from './clear-device';
 
 afterEach(async () => { await setLocalUser(null); await Dexie.delete('kochivo-logout-player'); });
 
@@ -19,4 +19,9 @@ it.each([false, true])('closes local access and retains only pending databases: 
     await setLocalUser('logout-player');
     expect(await localDb().outbox.count()).toBe(1);
   }
+});
+
+it('signs a captain out without a local database', async () => {
+  await expect(finalDeviceSync()).resolves.toBeUndefined();
+  await expect(closeDeviceDb()).resolves.toBeUndefined();
 });

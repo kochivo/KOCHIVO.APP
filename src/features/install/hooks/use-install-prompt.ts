@@ -12,7 +12,12 @@ interface PromptEvent extends Event {
 interface Dismissal { dismissals: number; lastDismissedAt: number | null }
 const empty: Dismissal = { dismissals: 0, lastDismissedAt: null };
 const key = 'kochivo.install';
-const countFinished = () => localDb().workout_sessions.filter((row) => row.completed_at !== null).count();
+export const countFinished = async () => {
+  // Captains never bind a local workout database.
+  let db;
+  try { db = localDb(); } catch { return 0; }
+  return db.workout_sessions.filter((row) => row.completed_at !== null).count();
+};
 
 export function useInstallPrompt(role: 'captain' | 'player' = 'player') {
   const [browser, setBrowser] = useState({ userAgent: '', maxTouchPoints: 0, standalone: false, ready: false });

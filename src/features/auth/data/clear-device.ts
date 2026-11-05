@@ -14,7 +14,8 @@ export async function clearDeviceCache() {
 
 export async function finalDeviceSync() {
   const { localDb, flushOutbox, supabaseTransport } = await import('@/core/offline');
-  const db = localDb();
+  let db;
+  try { db = localDb(); } catch { return; }
   if (!navigator.onLine || !db.userId) return;
   const { loadSupabaseBrowser } = await import('@/core/supabase/lazy');
   await flushOutbox(db, supabaseTransport(await loadSupabaseBrowser(), db.userId));
