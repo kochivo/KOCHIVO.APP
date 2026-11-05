@@ -2,6 +2,8 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    tryAsPlayer: "جرّب كلاعب",
+    playerDemo: "ديمو اللاعب · سجّل تمرينك وأكلك وجرّب المتابعة",
     "demoExpiry.zero": "وضع الديمو · انتهت المدة",
     "demoExpiry.one": "وضع الديمو · بيتمسح بعد ساعة",
     "demoExpiry.two": "وضع الديمو · بيتمسح بعد ساعتين",
@@ -33,6 +35,8 @@ export const messages = defineMessages({
     theDemoIsUnavailableRightNow: "الديمو مش متاح دلوقتي",
   },
   en: {
+    tryAsPlayer: "Try it as a player",
+    playerDemo: "Player demo · log workouts, meals and daily checks",
     "demoExpiry.one": "Demo mode · clears in {count} hour",
     "demoExpiry.other": "Demo mode · clears in {count} hours",
     demoMode: "Demo mode",

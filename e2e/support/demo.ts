@@ -4,12 +4,10 @@ import { messages as demo } from '../../src/features/demo/messages';
 import { messages as dashboard } from '../../src/features/dashboard/messages';
 import { messages as roster } from '../../src/features/roster/messages';
 
-export const playerDemoUnavailable = 'The public demo only signs in a captain. Player preview is read-only; demo players cannot sign in. A public demo player mode is required to test real set logging and sync.';
-
-export async function startDemo(page: Page) {
+export async function startDemo(page: Page, role: 'captain' | 'player' = 'captain') {
   await page.goto('/ar/demo');
   await expect(page.getByRole('heading', { name: demo.ar.tryTheDemo })).toBeVisible();
-  const open = page.getByRole('button', { name: demo.ar.openDemo, exact: true });
+  const open = page.getByRole('button', { name: role === 'player' ? demo.ar.tryAsPlayer : demo.ar.openDemo, exact: true });
   const captcha = page.getByLabel(demo.ar.verifyYouReHuman, { exact: true });
   // The widget loads dynamically. Wait for either the widget or its unblocked action.
   await expect(async () => {
@@ -17,8 +15,8 @@ export async function startDemo(page: Page) {
   }).toPass({ timeout: 20_000 });
   test.skip(await captcha.count() > 0, 'Turnstile is configured on the demo. Automated tests must not solve or bypass it.');
   await open.click();
-  await expect(page).toHaveURL(/\/ar\/captain\/?$/);
-  await expect(page.getByText(dashboard.ar.intro, { exact: true })).toBeVisible();
+  await expect(page).toHaveURL(new RegExp(`/ar/${role}/?$`));
+  if (role === 'captain') await expect(page.getByText(dashboard.ar.intro, { exact: true })).toBeVisible();
   await expect(page.getByRole('complementary', { name: demo.ar.demoMode })).toBeVisible();
 }
 

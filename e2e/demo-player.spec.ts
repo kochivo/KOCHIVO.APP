@@ -4,13 +4,10 @@ import { formatNumber } from '../src/lib/format';
 import { messages as home } from '../src/features/player-home/messages';
 import { messages as workout } from '../src/features/workout/messages';
 import { messages as ui } from '../src/ui/messages';
-import { playerDemoUnavailable, startDemo } from './support/demo';
+import { startDemo } from './support/demo';
 
 test('demo player logs sets online and offline and syncs on reconnect', async ({ page, context }) => {
-  test.skip(true, playerDemoUnavailable);
-  // Replace this captain-only entry with a public player-demo entry when one exists.
-  await startDemo(page);
-  await page.goto('/ar/player');
+  await startDemo(page, 'player');
   await page.getByRole('link', { name: home.ar.startWorkout, exact: true }).click();
   const t = createT(workout, 'ar');
   const controls = createT(ui, 'ar');
