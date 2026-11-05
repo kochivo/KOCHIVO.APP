@@ -34,3 +34,10 @@ it.each(['installed', 'unsupported'])('hides when the app is %s', platform => {
   state.platform = platform;
   expect(render()).toBe('');
 });
+
+it('renders a labelled header icon that keeps the iPhone sheet', () => {
+  const html = renderToStaticMarkup(createElement(InstallButton, { icon: true }));
+  expect(html).toMatch(/<button[^>]*aria-label="تنزيل التطبيق"/);
+  expect(html).not.toContain('glass space-y-2');
+  expect(html).toMatch(/<dialog[^>]*class="sheet /);
+});

@@ -6,6 +6,7 @@ import { CaptainNav } from './captain-nav';
 import { NotificationBell } from '@/features/notifications';
 import { BrandMark } from '@/ui';
 import { CaptainDevice } from './captain-device';
+import { HeaderInstall } from './header-install';
 
 export async function CaptainShell({ children }: { children: ReactNode }) {
   const t = await getT(messages);
@@ -18,7 +19,7 @@ export async function CaptainShell({ children }: { children: ReactNode }) {
       <div className="min-w-0 flex-1 pb-[calc(var(--nav-clearance)+1rem)] lg:pb-0">
         <div className="sticky top-0 z-30 -mx-8 mb-6 flex items-center justify-between bg-bg/70 px-8 pb-3 backdrop-blur-md md:-mx-10 md:px-10 lg:pointer-events-none lg:mx-0 lg:mb-2 lg:bg-transparent lg:px-0 lg:pb-0 lg:backdrop-blur-none lg:[&>*]:pointer-events-auto pt-[max(1rem,var(--safe-top))] lg:pt-[max(1.5rem,var(--safe-top))]">
           <Link href="/captain" aria-label={t('home')} className="flex min-h-12 items-center lg:invisible"><BrandMark className="size-8" /></Link>
-          <NotificationBell captain />
+          <div className="flex items-center gap-2"><HeaderInstall /><NotificationBell captain /></div>
         </div>
         <main>{children}</main>
       </div>

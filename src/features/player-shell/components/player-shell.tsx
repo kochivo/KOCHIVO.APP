@@ -19,6 +19,7 @@ import { useOnline } from '../hooks/use-online';
 import { useDeviceRole } from '@/core/pwa/use-device-role';
 
 const FeedbackButton = dynamic(() => import('@/features/feedback').then(module => module.FeedbackButton), { ssr: false });
+const InstallButton = dynamic(() => import('@/features/install').then(module => module.InstallButton), { ssr: false });
 const InstallSheet = dynamic(() => import('@/features/install').then(module => module.InstallSheet), { ssr: false });
 const RestMoodSync = dynamic(() => import('@/features/player-home').then(module => module.RestMoodSync), { ssr: false });
 const SyncRunner = dynamic(() => import('./sync-runner').then(module => module.SyncRunner), { ssr: false });
@@ -52,7 +53,7 @@ export function PlayerShell({ children }: { children: ReactNode }) {
       <Link href="/player/settings" aria-label={t('settings')} aria-current={pathname === '/player/settings' ? 'page' : undefined}
         className={`flex min-h-12 min-w-12 items-center justify-center rounded-control ${pathname === '/player/settings' ? 'bg-lime-soft text-lime' : 'text-muted'}`}>
         <Settings aria-hidden className="size-5" />
-      </Link><NotificationBell />
+      </Link><InstallButton icon /><NotificationBell />
     </div></div>}
     <div className="mx-auto max-w-lg space-y-3 px-5 pt-3" aria-live="polite">
       {!online && <p role="status" className="glass rounded-card p-4 text-sm">
