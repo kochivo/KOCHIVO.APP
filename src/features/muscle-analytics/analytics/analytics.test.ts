@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { muscleMap } from './muscle-map';
-import { heatClass } from './heat';
+import { heatClass, heatIntensity, OVERLOAD_THRESHOLD } from './heat';
 import { weeklyVolume } from '../data/muscle-volume';
 import type { VolumeRow } from '../data/muscle-volume';
 
@@ -68,10 +68,13 @@ describe('weekly volume', () => {
 });
 
 it('uses the heat thresholds including the glow boundary', () => {
-  expect(heatClass(0)).toBe('fill-none');
-  expect(heatClass(1)).toBe('fill-lime/20');
-  expect(heatClass(5)).toBe('fill-lime/20');
-  expect(heatClass(6)).toBe('fill-lime');
-  expect(heatClass(12)).toBe('fill-lime');
-  expect(heatClass(13)).toContain('shadow-lime-glow');
+  for (const [sets, intensity, fill] of [
+    [0, 0, 'fill-line'], [1, .25, 'fill-lime/25'], [3, .25, 'fill-lime/25'],
+    [4, .45, 'fill-lime/45'], [7, .45, 'fill-lime/45'],
+    [8, .7, 'fill-lime/70'], [12, .7, 'fill-lime/70'], [13, 1, 'fill-lime'], [41, 1, 'fill-lime'],
+  ] as const) {
+    expect(heatIntensity(sets)).toBe(intensity);
+    expect(heatClass(sets)).toBe(fill);
+  }
+  expect(OVERLOAD_THRESHOLD).toBe(20);
 });

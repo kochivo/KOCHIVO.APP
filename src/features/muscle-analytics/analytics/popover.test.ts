@@ -30,8 +30,8 @@ it('opens by muscle, closes with Escape or an outside tap, and cleans up listene
     addEventListener: (name: string, handler: (event: unknown) => void) => listeners.set(name, handler),
     removeEventListener: (name: string) => listeners.delete(name),
   });
-  useMusclePopover().select('chest', 170, 130);
-  expect(harness.selection).toEqual({ region: 'chest', x: 52, y: 100, width: 240 });
+  useMusclePopover().select('hamstrings', 170, 130);
+  expect(harness.selection).toEqual({ key: 'hamstrings', kind: 'muscle', x: 52, y: 100, width: 240 });
   useMusclePopover();
   const cleanup = harness.effects.at(-1)?.();
   listeners.get('keydown')?.({ key: 'Enter' });
@@ -40,7 +40,8 @@ it('opens by muscle, closes with Escape or an outside tap, and cleans up listene
   expect(harness.selection).not.toBeNull();
   listeners.get('keydown')?.({ key: 'Escape' });
   expect(harness.selection).toBeNull();
-  useMusclePopover().select('legs', 170, 300);
+  useMusclePopover().select('legs', 170, 300, 'region');
+  expect(harness.selection).toEqual({ key: 'legs', kind: 'region', x: 52, y: 270, width: 240 });
   listeners.get('pointerdown')?.({ target: new Target(false) });
   expect(harness.selection).toBeNull();
   if (cleanup) cleanup();

@@ -18,7 +18,7 @@ export function QuickStats({ week, readiness }: { week: VolumeWeek; readiness: n
   return <dl className="grid grid-cols-3 gap-2 md:grid-cols-1 md:gap-3">
     {items.map(({ label, value, detail, Icon }) => <div key={label} className="glass-strong min-w-0 space-y-2 rounded-card p-3 md:p-4">
       <dt className="flex flex-wrap items-center gap-2 text-xs font-bold text-muted"><Icon aria-hidden className="size-4 shrink-0 text-lime" />{label}</dt>
-      <dd className="break-words font-display text-xl font-bold text-ink md:text-2xl">{value}</dd>
+      <dd className="break-normal hyphens-none text-balance font-display text-base font-bold text-ink md:text-2xl">{value}</dd>
       <dd className="text-xs text-muted">{detail}</dd>
     </div>)}
   </dl>;

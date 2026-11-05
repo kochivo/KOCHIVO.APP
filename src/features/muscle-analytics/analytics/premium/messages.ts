@@ -14,7 +14,7 @@ export const messages = defineMessages({
     'muscle.frontDelts': 'الكتف الأمامي', 'muscle.rearDelts': 'الكتف الخلفي',
     'muscle.biceps': 'الباي', 'muscle.triceps': 'التراي', 'muscle.forearms': 'الساعد',
     'muscle.core': 'البطن', 'muscle.quads': 'الرجل الأمامية', 'muscle.hamstrings': 'الرجل الخلفية',
-    'muscle.glutes': 'المؤخرة', 'muscle.calves': 'السمانة', 'muscle.adductors': 'العضلات الضامة',
+    'muscle.glutes': 'الجلوتس', 'muscle.calves': 'السمانة', 'muscle.adductors': 'العضلات الضامة',
     'muscle.abductors': 'عضلات الفخذ الخارجية',
   },
   en: {

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import type { Region } from '../analytics/muscle-map';
+import type { Muscle, Region } from '../analytics/muscle-map';
 
 export function clampChip(x: number, y: number, width: number, height: number) {
   const chipWidth = Math.min(240, Math.max(0, width - 16));
@@ -11,7 +11,9 @@ export function clampChip(x: number, y: number, width: number, height: number) {
 
 export function useMusclePopover() {
   const card = useRef<HTMLDivElement>(null);
-  const [selection, setSelection] = useState<{ region: Region; x: number; y: number; width: number } | null>(null);
+  const [selection, setSelection] = useState<{
+    key: Muscle | Region; kind: 'muscle' | 'region'; x: number; y: number; width: number;
+  } | null>(null);
   useEffect(() => {
     if (!selection) return;
     const outside = (event: PointerEvent) => {
@@ -25,9 +27,9 @@ export function useMusclePopover() {
       document.removeEventListener('keydown', escape);
     };
   }, [selection]);
-  const select = (region: Region, x: number, y: number) => {
+  const select = (key: Muscle | Region, x: number, y: number, kind: 'muscle' | 'region' = 'muscle') => {
     const bounds = card.current?.getBoundingClientRect();
-    if (bounds) setSelection({ region, ...clampChip(x - bounds.x, y - bounds.y, bounds.width, bounds.height) });
+    if (bounds) setSelection({ key, kind, ...clampChip(x - bounds.x, y - bounds.y, bounds.width, bounds.height) });
   };
   return { card, selection, select, close: () => setSelection(null) };
 }
