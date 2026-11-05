@@ -7,8 +7,11 @@ import { formatTimestampAr } from '@/lib/dates';
 import { Button } from '@/ui/button';
 import { reviewCaptain } from '../data/captain-reviews';
 import { messages } from '../approvals/messages';
+import type { Json } from '@/types/database';
+import { CaptainIntakeDetails } from './captain-intake-details';
 
-export type PendingCaptain = { id: string; email: string | null; full_name: string; created_at: string };
+export type PendingCaptain = { id: string; email: string | null; full_name: string; created_at: string;
+  whatsapp?: string | null; instagram?: string | null; captain_intake?: Json | null };
 export function CaptainRequests({ rows, error: loadError }: { rows: PendingCaptain[]; error: string | null }) {
   const t = useT(messages);
   const locale = useLocale();
@@ -58,6 +61,7 @@ export function CaptainRequests({ rows, error: loadError }: { rows: PendingCapta
             onClick={() => setRejecting(row.id)}>{t('reject')}</Button>
         </div>
       </div>
+      <CaptainIntakeDetails whatsapp={row.whatsapp} instagram={row.instagram} intake={row.captain_intake} />
       {rejecting === row.id && <div role="group" aria-label={t('confirm', { name: row.full_name })} className="space-y-3">
         <p>{t('confirm', { name: row.full_name })}</p>
         <Button variant="danger" disabled={pending} onClick={() => review(row, 'rejected')}>{t('reject')}</Button>

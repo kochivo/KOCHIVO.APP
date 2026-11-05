@@ -25,3 +25,14 @@ it('renders load errors with a retry action', () => {
   expect(html).toContain('role="alert"');
   expect(html).toContain('Try again');
 });
+it('shows contacts, translated answers and the missing intake state', () => {
+  const row = { id: 'c', full_name: 'Ali', email: null, created_at: '2026-11-03T22:30:00Z' };
+  expect(render([row])).toContain('Hasn&#x27;t filled in the details yet');
+  const html = render([{ ...row, whatsapp: '+201012345678', instagram: 'ali.coach',
+    captain_intake: { current_tool: 'other_app', main_challenge: 'tracking_progress', players_range: '11-50' } }]);
+  expect(html).toContain('href="https://wa.me/201012345678"');
+  expect(html).toContain('ali.coach');
+  expect(html).toContain('Another app');
+  expect(html).toContain('Tracking player progress');
+  expect(html).toContain('11-50');
+});
