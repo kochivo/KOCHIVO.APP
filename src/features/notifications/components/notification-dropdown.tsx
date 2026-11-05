@@ -7,7 +7,7 @@ import { X } from 'lucide-react';
 import { useT } from '@/core/i18n/client';
 import { ResponsiveDialog } from '@/ui/responsive-dialog';
 import { messages } from '../messages';
-import { notificationHref, relativeTime } from '../format';
+import { notificationHref, notificationIcon, notificationTextKey, relativeTime } from '../format';
 import type { useNotifications } from '../hooks/use-notifications';
 
 interface Props {
@@ -48,6 +48,7 @@ export function NotificationDropdown({ openerId, notifications: n, onClose }: Pr
         </div> : n.rows.length === 0 ? <p className="p-4 text-muted">{t('empty')}</p>
           : <ul className="divide-y divide-line">{n.rows.map(row => {
             const time = relativeTime(row.created_at, now);
+            const Icon = notificationIcon(row);
             return <li key={row.id}>
               <Link href={notificationHref(row)} aria-disabled={n.pending}
                 className={`block min-h-12 rounded-control p-3 text-start ${row.is_read ? 'text-muted' : 'font-semibold text-ink'}`}
@@ -60,7 +61,10 @@ export function NotificationDropdown({ openerId, notifications: n, onClose }: Pr
                     router.push(notificationHref(row));
                   }
                 }}>
-                <p>{t(row.type, { name: row.payload.name })}</p>
+                <p className="flex items-center gap-2">
+                  {Icon && <Icon aria-hidden className="size-5 shrink-0" />}
+                  {t(notificationTextKey(row), { name: row.payload.name || row.payload.captain_name || '' })}
+                </p>
                 <time dateTime={row.created_at} className="mt-1 block text-xs font-normal text-muted">{t(time.key, { n: time.n })}</time>
               </Link>
             </li>;

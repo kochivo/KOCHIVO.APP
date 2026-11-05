@@ -1,5 +1,9 @@
 export const messages = {
   ar: {
+    subscription_expiring: 'اشتراك {name} هيخلص بعد 3 أيام',
+    subscription_expired: 'اشتراك {name} خلص النهارده',
+    subscription_expiring_player: 'اشتراكك مع كابتن {name} هيخلص بعد 3 أيام',
+    subscription_expired_player: 'اشتراكك خلص النهارده، كلّم كابتنك',
     captain_approved: 'حسابك اتفعّل، أهلاً بيك في KOCHIVO',
     sessions_used_up: 'حصص اللاعب خلصت. راجع الاشتراك',
     workout_feedback: 'فيه تقييم تمرين جديد محتاج تشوفه',
@@ -12,6 +16,10 @@ export const messages = {
     workout_reminder: 'جاهز لتمرين النهارده؟ {name} مستنيك',
   },
   en: {
+    subscription_expiring: "{name}'s subscription ends in 3 days",
+    subscription_expired: "{name}'s subscription ends today",
+    subscription_expiring_player: 'Your subscription with captain {name} ends in 3 days',
+    subscription_expired_player: 'Your subscription ends today, contact your captain',
     captain_approved: 'Your account is approved. Welcome to KOCHIVO',
     sessions_used_up: 'Player sessions used up. Review the subscription',
     workout_feedback: 'New workout feedback needs your attention',
