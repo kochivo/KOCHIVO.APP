@@ -17,7 +17,7 @@ const reviewedAt = '2026-11-03T12:00:00Z';
 
 beforeAll(async () => {
   db = await createTestDb();
-  ({ captain, player } = await createCaptainWithPlayer(db));
+  ({ captain, player } = await createCaptainWithPlayer(db, '2026-11-02'));
   stranger = await createUser(db, 'player');
   admin = await createUser(db, 'captain');
   await makeAdmin(db, admin);

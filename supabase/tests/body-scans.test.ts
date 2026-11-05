@@ -16,7 +16,7 @@ const insert = (user: string, date = '2026-10-01', weight: number | null = 80, m
 beforeAll(async () => {
   db = await createTestDb();
   await db.exec('grant delete on storage.objects to authenticated');
-  ({ player, captain } = await createCaptainWithPlayer(db));
+  ({ player, captain } = await createCaptainWithPlayer(db, '2026-09-01'));
   other = await createUser(db, 'captain');
 });
 afterAll(async () => { await db?.close(); });
@@ -57,6 +57,7 @@ it('keeps documents private with owner insert/delete and active coach read only'
   const path = `${player}/${id()}.pdf`;
   const upload = (user: string, name: string) => sql(user, "insert into storage.objects(bucket_id,name) values ('body-scans',$1)", [name]);
   await upload(player, path);
+  await insert(player, '2026-10-03', 80, null, null, path);
   await expect(upload(captain, `${player}/${id()}.jpg`)).rejects.toThrow();
   await expect(upload(player, `${other}/${id()}.jpg`)).rejects.toThrow();
   const read = (user: string) => sql(user, "select * from storage.objects where bucket_id='body-scans'");
