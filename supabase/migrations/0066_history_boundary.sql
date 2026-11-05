@@ -1,8 +1,11 @@
 -- started_on is immutable (0015 guard) and survives renewals; seeded demo links backdate it with their history.
 -- coach_clients_one_active_captain already indexes this lookup by player_id.
+-- Demo workspaces seed sample history before their links start and never transfer players.
 create function public.captain_since(p_player uuid) returns timestamptz
 language sql stable security definer set search_path = '' as $$
-  select c.started_on::timestamp at time zone 'Africa/Cairo' from public.coach_clients c
+  select case when cp.demo_expires_at is not null then '-infinity'::timestamptz
+    else c.started_on::timestamp at time zone 'Africa/Cairo' end
+  from public.coach_clients c join public.profiles cp on cp.id = c.captain_id
   where c.player_id = p_player and c.captain_id = (select auth.uid())
     and c.archived_at is null and not (select public.is_suspended());
 $$;
@@ -33,9 +36,10 @@ alter policy readiness_decisions_read on public.readiness_decisions using (
   or (captain_id = (select auth.uid())
     and decision_date >= (public.captain_since(player_id) at time zone 'Africa/Cairo')::date));
 
+-- A player joining mid-week still owes that week's check-in, so compare the week's last day.
 alter policy check_ins_captain_select on public.check_ins using (
   captain_id = (select auth.uid())
-  and week_start >= (public.captain_since(player_id) at time zone 'Africa/Cairo')::date);
+  and week_start + 6 >= (public.captain_since(player_id) at time zone 'Africa/Cairo')::date);
 alter policy form_checks_captain_select on public.form_checks using (
   captain_id = (select auth.uid()) and created_at >= public.captain_since(player_id));
 
@@ -51,7 +55,7 @@ alter policy private_media_read on storage.objects using (
     or (bucket_id = 'checkin-photos' and exists (
       select 1 from public.check_ins c where name = any(c.photo_paths)
         and c.player_id = public.storage_owner(name)
-        and c.week_start >= (public.captain_since(c.player_id) at time zone 'Africa/Cairo')::date))
+        and c.week_start + 6 >= (public.captain_since(c.player_id) at time zone 'Africa/Cairo')::date))
     or (bucket_id = 'form-videos' and exists (
       select 1 from public.form_checks f where f.video_path = name
         and f.player_id = public.storage_owner(name)
