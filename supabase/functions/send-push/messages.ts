@@ -1,0 +1,26 @@
+export const messages = {
+  ar: {
+    captain_approved: 'حسابك اتفعّل، أهلاً بيك في KOCHIVO',
+    sessions_used_up: 'حصص اللاعب خلصت. راجع الاشتراك',
+    workout_feedback: 'فيه تقييم تمرين جديد محتاج تشوفه',
+    title: 'إشعارات كوتشيفو',
+    plan_assigned: 'اتعيّنلك برنامج {name}',
+    nutrition_updated: 'اتحدّث نظامك الغذائي {name}',
+    player_joined: '{name} انضم ليك',
+    player_inactive: '{name} متمرّنش بقاله 3 أيام أو أكتر',
+    join_requested: '{name} بعت طلب انضمام',
+    workout_reminder: 'جاهز لتمرين النهارده؟ {name} مستنيك',
+  },
+  en: {
+    captain_approved: 'Your account is approved. Welcome to KOCHIVO',
+    sessions_used_up: 'Player sessions used up. Review the subscription',
+    workout_feedback: 'New workout feedback needs your attention',
+    title: 'KOCHIVO notifications',
+    plan_assigned: 'Program assigned: {name}',
+    nutrition_updated: 'Nutrition updated: {name}',
+    player_joined: '{name} joined you',
+    player_inactive: '{name} has not trained for 3 or more days',
+    join_requested: '{name} requested to join',
+    workout_reminder: 'Ready for today’s workout? {name} is waiting',
+  },
+} as const;

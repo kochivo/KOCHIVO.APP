@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8">
+<title>الرئيسية</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300..900&amp;family=Changa:wght@500..800&amp;family=Manrope:wght@500;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#0B0E11}
+h1,h2,h3,button,.cta,.go,.display{font-family:Manrope,Changa,Alexandria,sans-serif}
+button{font-family:inherit;cursor:pointer}
+a{color:#B6E94F}a:hover{color:#d3f58f}
+.mesh{background:radial-gradient(30rem 24rem at 50% 42%,rgba(182,233,79,.10),transparent 60%),radial-gradient(30rem 30rem at -15% 10%,#17222e,transparent 65%),radial-gradient(26rem 24rem at 100% 100%,#131c25,transparent 70%),#0B0E11}
+.glass{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.10);backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.glass-strong{background:rgba(0,0,0,.40);border:1px solid rgba(255,255,255,.10);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px)}
+.navbar{background:rgba(16,20,24,.72);border:1px solid rgba(255,255,255,.10);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);box-shadow:0 18px 40px -12px rgba(0,0,0,.7)}
+.go{background:#B6E94F;color:#101418;text-decoration:none;box-shadow:0 0 0 6px rgba(182,233,79,.12),0 18px 44px -8px rgba(182,233,79,.65);animation:glow 2.4s ease-in-out infinite}
+.go:hover{color:#101418}
+@keyframes glow{50%{box-shadow:0 0 0 10px rgba(182,233,79,.06),0 18px 54px -6px rgba(182,233,79,.8)}}
+@media (prefers-reduced-motion: reduce){.go{animation:none}}
+</style>
+</helmet>
+<div dir="rtl" class="mesh" style="width: 390px; height: 844px; box-sizing: border-box; color: #F2F2EE; font-family: Manrope, Alexandria, sans-serif; position: relative; overflow: hidden">
+  <div style="display: flex; flex-direction: column; gap: 14px; padding: 22px 20px 110px">
+
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <span style="font-size: 11px; letter-spacing: 0.14em; color: #9AA0A6">TUESDAY · 3 NOV</span>
+        <h1 style="margin: 0; font-size: 24px; font-weight: 800">صباح الخير يا أحمد</h1>
+      </div>
+      <span role="status" class="glass" style="height: 32px; padding: 0 10px; border-radius: 16px; display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: #B6E94F">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"></path></svg>
+        متزامن
+      </span>
+    </div>
+
+    <div class="glass" style="border-radius: 24px; padding: 10px; display: flex; gap: 4px" aria-label="الأسبوع">
+      <sc-for list="{{ week }}" as="d" hint-placeholder-count="7">
+        <sc-if value="{{ d.today }}" hint-placeholder-val="{{ false }}">
+          <div style="flex: 1; height: 64px; border-radius: 16px; background: #F2F2EE; color: #101418; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px">
+            <span style="font-size: 10px; font-weight: 700">{{ d.name }}</span><span style="font-size: 17px; font-weight: 800">{{ d.n }}</span>
+          </div>
+        </sc-if>
+        <sc-if value="{{ d.done }}" hint-placeholder-val="{{ false }}">
+          <div style="flex: 1; height: 64px; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px">
+            <span style="font-size: 10px; color: #9AA0A6">{{ d.name }}</span><span style="font-size: 17px; font-weight: 800">{{ d.n }}</span>
+            <span style="width: 5px; height: 5px; border-radius: 3px; background: #B6E94F"></span>
+          </div>
+        </sc-if>
+        <sc-if value="{{ d.train }}" hint-placeholder-val="{{ false }}">
+          <div style="flex: 1; height: 64px; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px">
+            <span style="font-size: 10px; color: #9AA0A6">{{ d.name }}</span><span style="font-size: 17px; font-weight: 800">{{ d.n }}</span>
+            <span style="width: 5px; height: 5px; border-radius: 3px; border: 1px solid rgba(242,242,238,.6); box-sizing: border-box"></span>
+          </div>
+        </sc-if>
+        <sc-if value="{{ d.rest }}" hint-placeholder-val="{{ true }}">
+          <div style="flex: 1; height: 64px; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #9AA0A6">
+            <span style="font-size: 10px">{{ d.name }}</span><span style="font-size: 17px; font-weight: 500">{{ d.n }}</span>
+            <span style="width: 5px; height: 5px"></span>
+          </div>
+        </sc-if>
+      </sc-for>
+    </div>
+
+    <div class="glass-strong" style="border-radius: 32px; padding: 20px; display: flex; flex-direction: column; gap: 16px">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start">
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <span style="font-size: 11px; letter-spacing: 0.16em; color: #B6E94F">DAY 2 · تمرين النهارده</span>
+          <span style="font-size: 26px; font-weight: 800; line-height: 1.2">صدر وترايسبس</span>
+          <span style="font-size: 13px; color: #9AA0A6">5 تمارين · 18 سِت · حوالي 55 دقيقة</span>
+        </div>
+      </div>
+      <div style="display: flex; gap: 8px">
+        <img src="/_blob/919f5f22ecd90ea627037d134608f40a" alt="" style="width: 64px; height: 64px; border-radius: 16px; background: #fff; object-fit: cover">
+        <img src="/_blob/14a7a6e88645b1ae8582e0d11ee84650" alt="" style="width: 64px; height: 64px; border-radius: 16px; background: #fff; object-fit: cover">
+        <img src="/_blob/13455f37974e9af25f2b0b5ebbaad531" alt="" style="width: 64px; height: 64px; border-radius: 16px; background: #fff; object-fit: cover">
+        <span style="width: 64px; height: 64px; border-radius: 16px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.10); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; color: #9AA0A6">+2</span>
+      </div>
+      <a href="Main.dc.html" class="go" style="height: 76px; border-radius: 26px; display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 21px; font-weight: 800">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg>
+        ابدأ التمرين
+      </a>
+    </div>
+
+    <a href="PlayerNutrition.dc.html" class="glass" style="border-radius: 24px; padding: 16px; display: flex; flex-direction: column; gap: 12px; color: #F2F2EE; text-decoration: none">
+      <div style="display: flex; justify-content: space-between; align-items: baseline">
+        <span style="font-size: 15px; font-weight: 800">أكل النهارده</span>
+        <span style="font-size: 13px; color: #9AA0A6"><b style="color: #F2F2EE; font-size: 17px">1,240</b> / 2,900 سعرة</span>
+      </div>
+      <div style="display: flex; gap: 10px">
+        <sc-for list="{{ macros }}" as="m" hint-placeholder-count="3">
+          <div style="flex: 1; display: flex; flex-direction: column; gap: 6px">
+            <span style="font-size: 11px; color: #9AA0A6">{{ m.label }} · <b style="color: #F2F2EE">{{ m.v }}</b>/{{ m.t }}</span>
+            <svg width="100%" height="6" viewBox="0 0 100 6" preserveAspectRatio="none" aria-hidden="true">
+              <rect x="0" y="0" width="100" height="6" rx="3" fill="rgba(255,255,255,.08)"></rect>
+              <rect x="{{ m.x }}" y="0" width="{{ m.pct }}" height="6" rx="3" fill="#B6E94F"></rect>
+            </svg>
+          </div>
+        </sc-for>
+      </div>
+      <span style="font-size: 12px; color: #9AA0A6">الوجبة الجاية: الغدا · فراخ 200ج + رز 250ج</span>
+    </a>
+  </div>
+
+  <nav aria-label="التنقل" class="navbar" style="position: absolute; left: 16px; right: 16px; bottom: 18px; height: 72px; border-radius: 26px; display: flex; justify-content: space-around; align-items: center">
+    <a href="PlayerHome.dc.html" aria-current="page" style="width: 72px; height: 56px; border-radius: 18px; background: rgba(182,233,79,.14); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #B6E94F; text-decoration: none; font-size: 11px; font-weight: 700">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9H15v-6H9v6H3z"></path></svg>الرئيسية</a>
+    <a href="PlayerNutrition.dc.html" style="width: 72px; height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #9AA0A6; text-decoration: none; font-size: 11px">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><path d="M12 4v8l5 3"></path></svg>التغذية</a>
+    <a href="PlayerProgress.dc.html" style="width: 72px; height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #9AA0A6; text-decoration: none; font-size: 11px">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"></path><path d="M15 7h6v6"></path></svg>التطور</a>
+    <a href="#" style="width: 72px; height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #9AA0A6; text-decoration: none; font-size: 11px">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"></path></svg>الكابتن</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const days = [['سبت', 31, 'done'], ['حد', 1, 'rest'], ['اتنين', 2, 'done'], ['تلات', 3, 'today'], ['أربع', 4, 'rest'], ['خميس', 5, 'train'], ['جمعة', 6, 'rest']];
+    const bar = (label, v, t) => { const pct = Math.min(100, Math.round(v / t * 100)); return { label, v, t, pct, x: 100 - pct }; };
+    return {
+      week: days.map((d) => ({ name: d[0], n: d[1], today: d[2] === 'today', done: d[2] === 'done', train: d[2] === 'train', rest: d[2] === 'rest' })),
+      macros: [bar('بروتين', 72, 190), bar('كارب', 150, 360), bar('دهون', 38, 85)]
+    };
+  }
+}
+</script>
+</body>
+</html>

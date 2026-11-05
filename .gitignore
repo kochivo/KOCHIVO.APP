@@ -1,0 +1,25 @@
+node_modules/
+.next/
+out/
+coverage/
+test-results/
+playwright-report/
+playwright/.cache/
+*.tsbuildinfo
+next-env.d.ts
+
+# secrets
+.env
+.env.*
+!.env.example
+
+# large source media: uploaded to Storage by the seed script, never committed
+assets-source/
+
+.DS_Store
+Thumbs.db
+
+# Local review screenshots
+screenshots/
+
+.claude/scheduled_tasks.lock

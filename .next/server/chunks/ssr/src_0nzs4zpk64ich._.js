@@ -1,0 +1,3 @@
+module.exports=[97331,a=>{"use strict";var b=a.i(717749);a.S([b,"default,f"],97331)},336225,function(a){a.n(a.i(97331))},717749,a=>{"use strict";var b=a.i(907997),c=a.i(325033);a.s(["f",0,function(){return(0,b.jsxs)("div",{className:"enter mx-auto w-full min-w-0 max-w-screen-2xl space-y-5 p-4",children:[(0,b.jsx)(c.LoadingState,{variant:"cards",className:"min-h-40"}),(0,b.jsx)(c.LoadingState,{className:"min-h-96"})]})}])}];
+
+//# sourceMappingURL=src_0nzs4zpk64ich._.js.map

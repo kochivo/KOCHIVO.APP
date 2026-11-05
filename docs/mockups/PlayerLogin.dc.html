@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8">
+<title>دخول اللاعب</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300..900&amp;family=Changa:wght@500..800&amp;family=Manrope:wght@500;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#0B0E11}
+h1,h2,h3,button,.cta,.go,.display{font-family:Manrope,Changa,Alexandria,sans-serif}
+button,input{font-family:inherit}
+button{cursor:pointer}
+a{color:#B6E94F}a:hover{color:#d3f58f}
+.mesh{background:radial-gradient(28rem 24rem at 50% 8%,rgba(182,233,79,.13),transparent 60%),radial-gradient(30rem 30rem at -15% 60%,#17222e,transparent 65%),radial-gradient(26rem 24rem at 100% 110%,#131c25,transparent 70%),#0B0E11}
+.glass{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.10);backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.glass-strong{background:rgba(0,0,0,.40);border:1px solid rgba(255,255,255,.10);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px)}
+.cta{background:#B6E94F;color:#101418;box-shadow:0 12px 32px -10px rgba(182,233,79,.55)}
+.input{height:56px;width:100%;box-sizing:border-box;border-radius:18px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.35);color:#F2F2EE;padding:0 16px;font-size:16px;outline:none}
+.input:focus{border-color:#B6E94F;box-shadow:0 0 0 3px rgba(182,233,79,.18)}
+.otp{flex:1;height:60px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800}
+</style>
+</helmet>
+<div dir="rtl" class="mesh" style="width: 390px; height: 844px; box-sizing: border-box; color: #F2F2EE; font-family: Manrope, Alexandria, sans-serif; display: flex; flex-direction: column; padding: 28px 20px 24px; gap: 18px; overflow: hidden">
+  <div style="display: flex; justify-content: center"><img src="/_blob/a4c76c30a72e976839e1e233247010c5" alt="KOCHIVO" style="height: 28px; width: auto"></div>
+
+  <sc-if value="{{ s1 }}" hint-placeholder-val="{{ true }}">
+    <div class="glass" style="border-radius: 24px; padding: 16px; display: flex; align-items: center; gap: 14px; margin-top: 18px">
+      <span style="width: 52px; height: 52px; border-radius: 18px; background: #B6E94F; color: #101418; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; flex-shrink: 0">م</span>
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <span style="font-size: 11px; letter-spacing: .14em; color: #B6E94F">INVITE · دعوة</span>
+        <span style="font-size: 15px; font-weight: 800">كابتن محمد علي عايزك تبدأ معاه</span>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px">
+      <h1 style="margin: 0; font-size: 30px; font-weight: 800; line-height: 1.3">يلا نبدأ</h1>
+      <span style="font-size: 15px; color: #9AA0A6; line-height: 1.7">من غير كلمة سر. ادخل مرة واحدة وهتفضل داخل على الموبايل ده.</span>
+    </div>
+    <button class="glass" style="height: 60px; border-radius: 20px; color: #F2F2EE; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px">
+      <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="#F2F2EE" d="M21.6 12.2c0-.7-.1-1.4-.2-2H12v3.8h5.4a4.6 4.6 0 0 1-2 3v2.5h3.2c1.9-1.7 3-4.3 3-7.3z"></path><path fill="#F2F2EE" opacity=".75" d="M12 22c2.7 0 5-.9 6.6-2.4l-3.2-2.5c-.9.6-2 1-3.4 1-2.6 0-4.8-1.8-5.6-4.1H3.1v2.6A10 10 0 0 0 12 22z"></path><path fill="#F2F2EE" opacity=".5" d="M6.4 14c-.2-.6-.3-1.3-.3-2s.1-1.4.3-2V7.4H3.1a10 10 0 0 0 0 9.2z"></path><path fill="#F2F2EE" opacity=".9" d="M12 5.9c1.5 0 2.8.5 3.8 1.5l2.9-2.9A10 10 0 0 0 3.1 7.4L6.4 10C7.2 7.7 9.4 5.9 12 5.9z"></path></svg>
+      كمّل بـ Google
+    </button>
+    <div style="display: flex; align-items: center; gap: 12px; font-size: 12px; color: #9AA0A6"><span style="flex: 1; height: 1px; background: rgba(255,255,255,.10)"></span>أو<span style="flex: 1; height: 1px; background: rgba(255,255,255,.10)"></span></div>
+    <input class="input" type="email" dir="ltr" placeholder="ahmed@example.com" aria-label="الإيميل" style="text-align: right">
+    <div style="flex-grow: 1"></div>
+    <button onClick="{{ next }}" class="cta" style="height: 64px; border-radius: 22px; border: none; font-size: 18px; font-weight: 800">ابعتلي كود</button>
+    <span style="font-size: 13px; color: #9AA0A6; text-align: center">مفيش دعوة؟ اطلب اللينك من الكابتن بتاعك</span>
+  </sc-if>
+
+  <sc-if value="{{ s2 }}" hint-placeholder-val="{{ false }}">
+    <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 30px">
+      <h1 style="margin: 0; font-size: 28px; font-weight: 800">اكتب الكود</h1>
+      <span style="font-size: 15px; color: #9AA0A6; line-height: 1.7">بعتنا 6 أرقام على <b style="color: #F2F2EE" dir="ltr">ahmed@example.com</b></span>
+    </div>
+    <div dir="ltr" style="display: flex; gap: 8px">
+      <sc-for list="{{ boxes }}" as="b" hint-placeholder-count="6">
+        <sc-if value="{{ b.filled }}" hint-placeholder-val="{{ false }}"><span class="otp glass-strong" style="border-color: rgba(182,233,79,.6)">{{ b.d }}</span></sc-if>
+        <sc-if value="{{ b.empty }}" hint-placeholder-val="{{ true }}"><span class="otp glass" style="color: #9AA0A6">·</span></sc-if>
+      </sc-for>
+    </div>
+    <span style="font-size: 13px; color: #9AA0A6">الكود صالح 10 دقايق · <a href="#" style="font-weight: 700; text-decoration: none">ابعت تاني</a></span>
+    <div style="flex-grow: 1"></div>
+    <div dir="ltr" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px">
+      <sc-for list="{{ keys }}" as="k" hint-placeholder-count="9">
+        <button onClick="{{ k.press }}" class="glass" style="height: 56px; border-radius: 16px; color: #F2F2EE; font-size: 22px; font-weight: 700">{{ k.n }}</button>
+      </sc-for>
+    </div>
+    <button onClick="{{ back }}" class="glass" style="height: 48px; border-radius: 16px; color: #F2F2EE; font-size: 14px">غيّر الإيميل</button>
+  </sc-if>
+
+  <sc-if value="{{ s3 }}" hint-placeholder-val="{{ false }}">
+    <div style="flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; text-align: center">
+      <div class="glass" style="width: 112px; height: 112px; border-radius: 36px; display: flex; align-items: center; justify-content: center">
+        <img src="/_blob/4af20e0965e3d3ced8d1930625f7a561" alt="" style="width: 70px; height: 70px">
+      </div>
+      <span style="font-size: 11px; letter-spacing: .2em; color: #B6E94F">YOU'RE IN</span>
+      <h1 style="margin: 0; font-size: 28px; font-weight: 800">أهلاً يا أحمد</h1>
+      <span style="font-size: 15px; color: #9AA0A6; line-height: 1.7">بقيت مع كابتن محمد علي. برنامجك جاهز.</span>
+    </div>
+    <a href="PlayerHome.dc.html" class="cta" style="height: 64px; border-radius: 22px; font-size: 18px; font-weight: 800; display: flex; align-items: center; justify-content: center; text-decoration: none; color: #101418">افتح برنامجي</a>
+    <button onClick="{{ reset }}" class="glass" style="height: 44px; border-radius: 16px; color: #9AA0A6; font-size: 13px">ابدأ العرض من الأول</button>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { step: 1, code: '' }; }
+  renderVals() {
+    const s = this.state;
+    const press = (n) => () => {
+      const code = (s.code + n).slice(0, 6);
+      this.setState({ code, step: code.length === 6 ? 3 : 2 });
+    };
+    return {
+      s1: s.step === 1, s2: s.step === 2, s3: s.step === 3,
+      boxes: [0, 1, 2, 3, 4, 5].map((i) => ({ d: s.code[i] || '', filled: i < s.code.length, empty: i >= s.code.length })),
+      keys: [1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => ({ n, press: press(String(n)) })),
+      next: () => this.setState({ step: 2, code: '' }),
+      back: () => this.setState({ step: 1, code: '' }),
+      reset: () => this.setState({ step: 1, code: '' })
+    };
+  }
+}
+</script>
+</body>
+</html>

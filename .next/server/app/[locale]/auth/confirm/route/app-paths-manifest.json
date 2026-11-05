@@ -1,0 +1,3 @@
+{
+  "/[locale]/auth/confirm/route": "app/[locale]/auth/confirm/route.js"
+}

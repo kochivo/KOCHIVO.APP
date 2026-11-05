@@ -1,0 +1,25 @@
+{
+  "node": {
+    "40c6f6dba6f29760197fbd70f5d5c2bf4d02ed2a96": {
+      "workers": {
+        "app/[locale]/demo/page": {
+          "moduleId": 739803,
+          "async": false
+        }
+      },
+      "exportedName": "setLocale",
+      "filename": "src/core/i18n/set-locale.ts"
+    },
+    "00b9a0b5f9a46b8e31d5289dfa61a0083f738539be": {
+      "workers": {
+        "app/[locale]/demo/page": {
+          "moduleId": 739803,
+          "async": false
+        }
+      },
+      "exportedName": "loadDemoExpiry",
+      "filename": "src/features/demo/data/load-demo-profile.ts"
+    }
+  },
+  "edge": {}
+}

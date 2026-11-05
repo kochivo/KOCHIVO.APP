@@ -1,0 +1,120 @@
+[
+  {
+    "key": "beginner-full-body",
+    "title": "جسم كامل للمبتدئين",
+    "notes": "3 أيام وبينهم يوم راحة. ابدأ بوزن خفيف وزوّد بالتدريج.",
+    "kind": "workout",
+    "days": [
+      {"title":"اليوم الأول","exercises":[{"dataset_id":"0739","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0025","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0861","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0300","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0334","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":90}]},
+      {"title":"اليوم التاني","exercises":[{"dataset_id":"1760","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0662","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"2330","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0599","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0416","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":90}]},
+      {"title":"اليوم التالت","exercises":[{"dataset_id":"0739","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0025","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0293","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0300","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0201","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":90}]}
+    ]
+  },
+  {
+    "key": "upper-lower",
+    "title": "علوي وسفلي",
+    "notes": "4 أيام. يومين تمرين وبعدهم يوم راحة.",
+    "kind": "workout",
+    "days": [
+      {"title":"علوي أول","exercises":[{"dataset_id":"0025","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0861","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0426","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"2330","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0416","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0201","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90}]},
+      {"title":"سفلي أول","exercises":[{"dataset_id":"0739","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":120},{"dataset_id":"0300","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":120},{"dataset_id":"0585","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":120},{"dataset_id":"0599","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":120},{"dataset_id":"1373","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":120}]},
+      {"title":"علوي تاني","exercises":[{"dataset_id":"0662","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0293","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0334","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"2330","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0416","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0200","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90}]},
+      {"title":"سفلي تاني","exercises":[{"dataset_id":"1760","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":120},{"dataset_id":"0336","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":120},{"dataset_id":"0599","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":120},{"dataset_id":"0585","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":120},{"dataset_id":"1373","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":120}]}
+    ]
+  },
+  {
+    "key": "push-pull-legs",
+    "title": "دفع وسحب ورجل",
+    "notes": "6 أيام وبعدهم يوم راحة. سيب عدتين في قدرتك آخر كل مجموعة.",
+    "kind": "workout",
+    "days": [
+      {"title":"دفع أول","exercises":[{"dataset_id":"0025","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0426","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0334","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0201","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90}]},
+      {"title":"سحب أول","exercises":[{"dataset_id":"2330","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0861","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0378","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0416","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90}]},
+      {"title":"رجل أول","exercises":[{"dataset_id":"0739","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":120},{"dataset_id":"0300","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":120},{"dataset_id":"0599","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":120},{"dataset_id":"1373","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":120}]},
+      {"title":"دفع تاني","exercises":[{"dataset_id":"0662","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0426","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0334","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0200","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90}]},
+      {"title":"سحب تاني","exercises":[{"dataset_id":"2330","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0293","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0378","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0416","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90}]},
+      {"title":"رجل تاني","exercises":[{"dataset_id":"1760","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":120},{"dataset_id":"0336","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":120},{"dataset_id":"0599","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":120},{"dataset_id":"0585","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":120},{"dataset_id":"1373","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":120}]}
+    ]
+  },
+  {
+    "key": "fat-loss-circuits",
+    "title": "دايرة تمارين للتخسيس",
+    "notes": "3 أيام وبينهم راحة. العب التمارين ورا بعض، وارتاح 90 ثانية بين اللفات. الأكل المناسب مهم للتخسيس.",
+    "kind": "workout",
+    "days": [
+      {"title":"دايرة أولى","exercises":[{"dataset_id":"1760","sets":3,"reps_min":12,"reps_max":15,"rest_seconds":30,"superset_group":1},{"dataset_id":"0662","sets":3,"reps_min":12,"reps_max":15,"rest_seconds":30,"superset_group":1},{"dataset_id":"0293","sets":3,"reps_min":12,"reps_max":15,"rest_seconds":30,"superset_group":1},{"dataset_id":"0630","sets":3,"reps_min":12,"reps_max":15,"rest_seconds":90,"superset_group":1}]},
+      {"title":"دايرة تانية","exercises":[{"dataset_id":"0336","sets":3,"reps_min":12,"reps_max":15,"rest_seconds":30,"superset_group":1},{"dataset_id":"0426","sets":3,"reps_min":12,"reps_max":15,"rest_seconds":30,"superset_group":1},{"dataset_id":"0861","sets":3,"reps_min":12,"reps_max":15,"rest_seconds":30,"superset_group":1},{"dataset_id":"0630","sets":3,"reps_min":12,"reps_max":15,"rest_seconds":90,"superset_group":1}]},
+      {"title":"دايرة تالتة","exercises":[{"dataset_id":"1760","sets":3,"reps_min":12,"reps_max":15,"rest_seconds":30,"superset_group":1},{"dataset_id":"0662","sets":3,"reps_min":12,"reps_max":15,"rest_seconds":30,"superset_group":1},{"dataset_id":"2330","sets":3,"reps_min":12,"reps_max":15,"rest_seconds":30,"superset_group":1},{"dataset_id":"0630","sets":3,"reps_min":12,"reps_max":15,"rest_seconds":90,"superset_group":1}]}
+    ]
+  },
+  {
+    "key": "home-dumbbells",
+    "title": "في البيت بالدامبل",
+    "notes": "3 أيام وبينهم راحة. محتاج دامبل بس ومساحة فاضية على الأرض.",
+    "kind": "workout",
+    "days": [
+      {"title":"اليوم الأول","exercises":[{"dataset_id":"1760","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0293","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0426","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0416","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90}]},
+      {"title":"اليوم التاني","exercises":[{"dataset_id":"0336","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0300","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0334","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0423","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90}]},
+      {"title":"اليوم التالت","exercises":[{"dataset_id":"1760","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0293","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0426","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0378","sets":3,"reps_min":8,"reps_max":12,"rest_seconds":90}]}
+    ]
+  },
+  {
+    "key": "ramadan-workout",
+    "title": "رمضان بعد الفطار",
+    "notes": "4 حصص خفيفة بعد الفطار بساعتين. حوالي 25 دقيقة، وراحة أطول بين المجموعات. اشرب مية كويس.",
+    "kind": "workout",
+    "days": [
+      {"title":"علوي أول","exercises":[{"dataset_id":"0025","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":150},{"dataset_id":"0861","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":150},{"dataset_id":"0334","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":150}]},
+      {"title":"سفلي أول","exercises":[{"dataset_id":"0739","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":150},{"dataset_id":"0300","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":150},{"dataset_id":"1373","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":150}]},
+      {"title":"علوي تاني","exercises":[{"dataset_id":"0662","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":150},{"dataset_id":"2330","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":150},{"dataset_id":"0416","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":150}]},
+      {"title":"سفلي تاني","exercises":[{"dataset_id":"1760","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":150},{"dataset_id":"0599","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":150},{"dataset_id":"1373","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":150}]}
+    ]
+  },
+  {
+    "key": "cutting",
+    "title": "أكل للتنشيف",
+    "kind": "nutrition",
+    "targets": {"kcal":1939,"protein":162,"carbs":208,"fat":55},
+    "meals": [
+      {"name":"الفطار","items":[{"seed_key":"food_eggs-v1","grams":100,"alternatives":[]},{"seed_key":"food_baladi_bread-v1","grams":80,"alternatives":[]},{"seed_key":"food_cottage_cheese-v1","grams":150,"alternatives":[]},{"seed_key":"food_cucumber-v1","grams":150,"alternatives":[]}]},
+      {"name":"الغدا","items":[{"seed_key":"food_chicken_breast-v1","grams":180,"alternatives":[{"seed_key":"food_tilapia-v1","grams":232}]},{"seed_key":"food_white_rice-v1","grams":200,"alternatives":[{"seed_key":"food_potatoes-v1","grams":299}]},{"seed_key":"food_broccoli-v1","grams":200,"alternatives":[]},{"seed_key":"food_olive_oil-v1","grams":15,"alternatives":[]}]},
+      {"name":"سناك","items":[{"seed_key":"food_yogurt-v1","grams":200,"alternatives":[{"seed_key":"food_greek_yogurt-v1","grams":173}]},{"seed_key":"food_apple-v1","grams":180,"alternatives":[]},{"seed_key":"food_peanuts-v1","grams":25,"alternatives":[]}]},
+      {"name":"العشا","items":[{"seed_key":"food_tuna-v1","grams":120,"alternatives":[]},{"seed_key":"food_baladi_bread-v1","grams":60,"alternatives":[]},{"seed_key":"food_tomato-v1","grams":150,"alternatives":[]}]}
+    ]
+  },
+  {
+    "key": "maintenance",
+    "title": "أكل لتثبيت الوزن",
+    "kind": "nutrition",
+    "targets": {"kcal":2521,"protein":168,"carbs":287,"fat":83},
+    "meals": [
+      {"name":"الفطار","items":[{"seed_key":"food_oats-v1","grams":70,"alternatives":[]},{"seed_key":"food_whole_milk-v1","grams":250,"alternatives":[]},{"seed_key":"food_banana-v1","grams":120,"alternatives":[]},{"seed_key":"food_peanut_butter-v1","grams":20,"alternatives":[]}]},
+      {"name":"الغدا","items":[{"seed_key":"food_chicken_breast-v1","grams":200,"alternatives":[{"seed_key":"food_tilapia-v1","grams":258}]},{"seed_key":"food_white_rice-v1","grams":280,"alternatives":[{"seed_key":"food_potatoes-v1","grams":418}]},{"seed_key":"food_broccoli-v1","grams":200,"alternatives":[]},{"seed_key":"food_olive_oil-v1","grams":15,"alternatives":[]}]},
+      {"name":"سناك","items":[{"seed_key":"food_greek_yogurt-v1","grams":200,"alternatives":[{"seed_key":"food_yogurt-v1","grams":232}]},{"seed_key":"food_apple-v1","grams":180,"alternatives":[]},{"seed_key":"food_almonds-v1","grams":25,"alternatives":[]}]},
+      {"name":"العشا","items":[{"seed_key":"food_eggs-v1","grams":150,"alternatives":[]},{"seed_key":"food_baladi_bread-v1","grams":100,"alternatives":[]},{"seed_key":"food_cottage_cheese-v1","grams":100,"alternatives":[]},{"seed_key":"food_cucumber-v1","grams":150,"alternatives":[]}]}
+    ]
+  },
+  {
+    "key": "bulking",
+    "title": "أكل لزيادة العضلات",
+    "kind": "nutrition",
+    "targets": {"kcal":3138,"protein":184,"carbs":366,"fat":112},
+    "meals": [
+      {"name":"الفطار","items":[{"seed_key":"food_oats-v1","grams":90,"alternatives":[]},{"seed_key":"food_whole_milk-v1","grams":300,"alternatives":[]},{"seed_key":"food_banana-v1","grams":150,"alternatives":[]},{"seed_key":"food_peanut_butter-v1","grams":30,"alternatives":[]}]},
+      {"name":"الغدا","items":[{"seed_key":"food_lean_beef-v1","grams":200,"alternatives":[{"seed_key":"food_chicken_thigh-v1","grams":242}]},{"seed_key":"food_white_rice-v1","grams":350,"alternatives":[{"seed_key":"food_pasta-v1","grams":288}]},{"seed_key":"food_broccoli-v1","grams":200,"alternatives":[]},{"seed_key":"food_olive_oil-v1","grams":15,"alternatives":[]}]},
+      {"name":"سناك","items":[{"seed_key":"food_greek_yogurt-v1","grams":250,"alternatives":[]},{"seed_key":"food_dates-v1","grams":60,"alternatives":[]},{"seed_key":"food_peanuts-v1","grams":30,"alternatives":[]}]},
+      {"name":"العشا","items":[{"seed_key":"food_eggs-v1","grams":150,"alternatives":[]},{"seed_key":"food_baladi_bread-v1","grams":120,"alternatives":[]},{"seed_key":"food_cottage_cheese-v1","grams":150,"alternatives":[]},{"seed_key":"food_tomato-v1","grams":150,"alternatives":[]}]}
+    ]
+  },
+  {
+    "key": "ramadan-nutrition",
+    "title": "أكل رمضان",
+    "kind": "nutrition",
+    "targets": {"kcal":2275,"protein":162,"carbs":281,"fat":61},
+    "meals": [
+      {"name":"الفطار","items":[{"seed_key":"food_dates-v1","grams":30,"alternatives":[]},{"seed_key":"food_chicken_breast-v1","grams":200,"alternatives":[{"seed_key":"food_tilapia-v1","grams":258}]},{"seed_key":"food_white_rice-v1","grams":300,"alternatives":[{"seed_key":"food_potatoes-v1","grams":448}]},{"seed_key":"food_broccoli-v1","grams":200,"alternatives":[]},{"seed_key":"food_olive_oil-v1","grams":20,"alternatives":[]}]},
+      {"name":"سناك خفيف","items":[{"seed_key":"food_greek_yogurt-v1","grams":200,"alternatives":[{"seed_key":"food_yogurt-v1","grams":232}]},{"seed_key":"food_banana-v1","grams":120,"alternatives":[]},{"seed_key":"food_almonds-v1","grams":25,"alternatives":[]}]},
+      {"name":"السحور","items":[{"seed_key":"food_foul-v1","grams":200,"alternatives":[{"seed_key":"food_lentils-v1","grams":190}]},{"seed_key":"food_eggs-v1","grams":100,"alternatives":[]},{"seed_key":"food_baladi_bread-v1","grams":120,"alternatives":[]},{"seed_key":"food_cottage_cheese-v1","grams":150,"alternatives":[]},{"seed_key":"food_cucumber-v1","grams":200,"alternatives":[]}]}
+    ]
+  }
+]

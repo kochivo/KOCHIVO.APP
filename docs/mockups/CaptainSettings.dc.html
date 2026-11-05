@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8">
+<title>الإعدادات</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300..900&amp;family=Changa:wght@500..800&amp;family=Manrope:wght@500;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#0B0E11}
+h1,h2,h3,button,.cta,.display{font-family:Manrope,Changa,Alexandria,sans-serif}
+button,input,textarea{font-family:inherit}
+button{cursor:pointer}
+a{color:#B6E94F}
+.mesh{background:radial-gradient(60rem 30rem at 100% -10%,rgba(182,233,79,.08),transparent 60%),radial-gradient(50rem 50rem at -10% 40%,#17222e,transparent 65%),radial-gradient(40rem 30rem at 60% 110%,#131c25,transparent 70%),#0B0E11}
+.glass{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.10);backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.glass-strong{background:rgba(0,0,0,.40);border:1px solid rgba(255,255,255,.10);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px)}
+.cta{background:#B6E94F;color:#101418;border:none;box-shadow:0 10px 28px -10px rgba(182,233,79,.55)}
+.ghost{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#F2F2EE}
+.nav a{height:44px;padding:0 14px;border-radius:14px;color:#F2F2EE;text-decoration:none;display:flex;align-items:center;justify-content:space-between;font-size:14px}
+.nav a:hover{background:rgba(255,255,255,.05)}
+.nav a[aria-current]{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.10);color:#B6E94F;font-weight:700}
+.muted{color:#9AA0A6}
+.tag{height:26px;padding:0 10px;border-radius:13px;font-size:12px;display:inline-flex;align-items:center;background:rgba(255,255,255,.06);color:#9AA0A6}
+.input{height:50px;width:100%;box-sizing:border-box;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.35);color:#F2F2EE;padding:0 14px;font-size:14px;outline:none}
+.lbl{display:flex;flex-direction:column;gap:8px;font-size:13px;color:#9AA0A6}
+.sw{width:46px;height:28px;border-radius:14px;position:relative;flex-shrink:0}
+.sw::after{content:'';position:absolute;top:3px;width:22px;height:22px;border-radius:11px;background:#F2F2EE}
+.sw.on{background:#B6E94F}.sw.on::after{inset-inline-end:3px;background:#101418}
+.sw.off{background:rgba(255,255,255,.14)}.sw.off::after{inset-inline-start:3px}
+
+</style>
+</helmet>
+<div dir="rtl" class="mesh" style="min-height: 900px; box-sizing: border-box; color: #F2F2EE; font-family: Manrope, Alexandria, sans-serif; display: flex; flex-wrap: wrap; gap: 20px; padding: 20px">
+  <aside class="glass nav" style="flex: 1 0 232px; max-width: 100%; box-sizing: border-box; padding: 22px 14px; border-radius: 28px; display: flex; flex-direction: column; gap: 4px">
+    <img src="/_blob/a4c76c30a72e976839e1e233247010c5" alt="KOCHIVO" style="height: 28px; width: auto; align-self: flex-start; margin: 0 10px 22px">
+    <a href="CaptainClients.dc.html">اللاعبين</a>
+    <a href="CaptainBuilder.dc.html">البرامج</a>
+    <a href="CaptainNutrition.dc.html">الأنظمة الغذائية</a>
+    <a href="CaptainInbox.dc.html">صندوق المهام <span style="min-width: 24px; height: 22px; border-radius: 11px; background: #B6E94F; color: #101418; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center">5</span></a>
+    <a href="CaptainTemplates.dc.html">القوالب</a>
+    <a href="CaptainBilling.dc.html">الاشتراكات</a>
+    <a href="CaptainSettings.dc.html" aria-current="page">الإعدادات</a>
+  </aside>
+  <main style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; padding: 12px 8px; display: flex; flex-direction: column; gap: 20px">
+    <div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px">
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <span style="font-size: 11px; letter-spacing: 0.16em; color: #9AA0A6">SETTINGS</span>
+        <h1 style="margin: 0; font-size: 32px; font-weight: 800; letter-spacing: -0.5px">الإعدادات</h1>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 10px"><button class="cta" style="height: 46px; padding: 0 22px; border-radius: 16px; font-size: 14px; font-weight: 800">احفظ</button></div>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
+      <div style="flex: 999 1 520px; display: flex; flex-direction: column; gap: 16px">
+        <section class="glass" style="border-radius: 24px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+          <h2 style="margin: 0; font-size: 18px">بروفايلك</h2>
+          <div style="display: flex; align-items: center; gap: 14px">
+            <span style="width: 64px; height: 64px; border-radius: 20px; background: rgba(182,233,79,.14); color: #B6E94F; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 800">م</span>
+            <button class="ghost" style="height: 40px; padding: 0 14px; border-radius: 12px; font-size: 13px; font-weight: 700">غيّر الصورة</button>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px">
+            <label class="lbl">الاسم اللي بيظهر للاعبين<input class="input" value="كابتن محمد علي"></label>
+            <label class="lbl">رقم الواتساب<input class="input" dir="ltr" value="010 9876 5432" style="text-align: right"></label>
+          </div>
+          <label class="lbl">نبذة قصيرة<textarea class="input" style="height: 84px; padding: 12px 14px; resize: none">مدرب معتمد، تخصص تنشيف وتضخيم. 8 سنين خبرة.</textarea></label>
+        </section>
+        <section class="glass" style="border-radius: 24px; padding: 20px; display: flex; flex-direction: column; gap: 12px">
+          <h2 style="margin: 0; font-size: 18px">رسالة الدعوة</h2>
+          <span class="muted" style="font-size: 12px">دي الرسالة اللي بتتبعت على واتساب مع اللينك. {الاسم} بيتبدل باسم اللاعب.</span>
+          <textarea class="input" style="height: 84px; padding: 12px 14px; resize: none">أهلاً يا {الاسم}، أنا كابتن محمد. برنامجك جاهز على KOCHIVO، افتح اللينك وابدأ:</textarea>
+        </section>
+        <section class="glass" style="border-radius: 24px; padding: 20px; display: flex; flex-direction: column">
+          <h2 style="margin: 0 0 6px; font-size: 18px">التنبيهات</h2>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; border-top: 1px solid rgba(255,255,255,.06)">
+            <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px; font-weight: 700">فيديو أداء جديد</span><span class="muted" style="font-size: 12px">لما لاعب يبعتلك Form Check</span></div>
+            <span role="switch" aria-checked="true" aria-label="فيديو أداء جديد" class="sw on"></span>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; border-top: 1px solid rgba(255,255,255,.06)">
+            <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px; font-weight: 700">التحديث الأسبوعي</span><span class="muted" style="font-size: 12px">لما لاعب يبعت وزنه وصوره</span></div>
+            <span role="switch" aria-checked="true" aria-label="التحديث الأسبوعي" class="sw on"></span>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; border-top: 1px solid rgba(255,255,255,.06)">
+            <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px; font-weight: 700">رادار الانسحاب</span><span class="muted" style="font-size: 12px">ملخص كل يوم الساعة 9 الصبح</span></div>
+            <span role="switch" aria-checked="true" aria-label="رادار الانسحاب" class="sw on"></span>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; border-top: 1px solid rgba(255,255,255,.06)">
+            <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px; font-weight: 700">اشتراك قرّب يخلص</span><span class="muted" style="font-size: 12px">قبلها بـ 3 أيام</span></div>
+            <span role="switch" aria-checked="false" aria-label="اشتراك قرّب يخلص" class="sw off"></span>
+          </div>
+        </section>
+      </div>
+      <div style="flex: 1 1 300px; display: flex; flex-direction: column; gap: 16px">
+        <section class="glass" style="border-radius: 24px; padding: 20px; display: flex; flex-direction: column; gap: 10px">
+          <h2 style="margin: 0; font-size: 18px">الحساب</h2>
+          <div style="display: flex; justify-content: space-between; font-size: 14px"><span class="muted">الإيميل</span><span dir="ltr">coach@example.com</span></div>
+          <button class="ghost" style="height: 46px; border-radius: 14px; font-size: 14px; font-weight: 700">غيّر كلمة السر</button>
+          <button class="ghost" style="height: 46px; border-radius: 14px; font-size: 14px; font-weight: 700">اخرج من كل الأجهزة</button>
+        </section>
+        <section class="glass" style="border-radius: 24px; padding: 20px; display: flex; flex-direction: column; gap: 12px">
+          <div style="display: flex; justify-content: space-between; align-items: center"><h2 style="margin: 0; font-size: 18px">تطبيق باسمك</h2><span class="tag" style="background: rgba(182,233,79,.14); color: #B6E94F">EMPIRE</span></div>
+          <label class="lbl">اسم الجيم<input class="input" value="Iron House Gym"></label>
+          <div class="lbl">اللوجو
+            <div style="display: flex; align-items: center; gap: 10px"><span style="width: 52px; height: 52px; border-radius: 14px; background: #F2B544; color: #101418; display: flex; align-items: center; justify-content: center; font-weight: 800">IH</span><button class="ghost" style="height: 40px; padding: 0 14px; border-radius: 12px; font-size: 13px; font-weight: 700">ارفع لوجو · PNG مربع</button></div>
+          </div>
+          <div class="lbl">اللون الأساسي
+            <div style="display: flex; gap: 8px; flex-wrap: wrap">
+              <span aria-label="ليموني" style="width: 36px; height: 36px; border-radius: 12px; background: #B6E94F"></span>
+              <span aria-label="دهبي" style="width: 36px; height: 36px; border-radius: 12px; background: #F2B544; outline: 2px solid #F2F2EE; outline-offset: 2px"></span>
+              <span aria-label="سماوي" style="width: 36px; height: 36px; border-radius: 12px; background: #4FD1E9"></span>
+              <span aria-label="برتقاني" style="width: 36px; height: 36px; border-radius: 12px; background: #FF8A65"></span>
+              <span aria-label="بنفسجي فاتح" style="width: 36px; height: 36px; border-radius: 12px; background: #B79CFF"></span>
+              <span class="ghost" style="height: 36px; padding: 0 10px; border-radius: 12px; font-size: 12px; display: flex; align-items: center" dir="ltr">#F2B544</span>
+            </div>
+            <span style="font-size: 12px; color: #9AA0A6">الألوان الغامقة مرفوضة لأنها مش هتتقري على الخلفية السودا.</span>
+          </div>
+          <div class="glass-strong" style="border-radius: 18px; padding: 12px; display: flex; flex-direction: column; gap: 8px">
+            <span class="muted" style="font-size: 11px; letter-spacing: .12em">معاينة عند اللاعب</span>
+            <div style="display: flex; align-items: center; gap: 8px"><span style="width: 28px; height: 28px; border-radius: 8px; background: #F2B544; color: #101418; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center">IH</span><b style="font-size: 13px">Iron House Gym</b></div>
+            <span style="height: 44px; border-radius: 14px; background: #F2B544; color: #101418; font-weight: 800; font-size: 14px; display: flex; align-items: center; justify-content: center">ابدأ التمرين</span>
+          </div>
+          <span class="muted" style="font-size: 12px; line-height: 1.8">اللاعبين اللي هيثبتوا التطبيق بعد الحفظ هيلاقوه باسمك ولوجو الجيم. اللي ثبتوه قبل كده بيتحدثلهم أول ما يفتحوه.</span>
+        </section>
+        <section class="glass" style="border-radius: 24px; padding: 20px; display: flex; flex-direction: column; gap: 10px; border-color: rgba(255,138,101,.35)">
+          <h2 style="margin: 0; font-size: 18px; color: #FF8A65">منطقة خطر</h2>
+          <button class="ghost" style="height: 46px; border-radius: 14px; font-size: 14px; font-weight: 700">نزّل كل بياناتك</button>
+          <button class="ghost" style="height: 46px; border-radius: 14px; font-size: 14px; font-weight: 700; color: #FF8A65">امسح الحساب</button>
+          <span class="muted" style="font-size: 12px">المسح بيتطلب تأكيد بكلمة السر، وبيتنفذ بعد 7 أيام تقدر تلغيه فيهم.</span>
+        </section>
+      </div>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic { renderVals() { return {}; } }
+</script>
+</body>
+</html>

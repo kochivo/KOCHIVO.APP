@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8">
+<title>مصمم النظام الغذائي</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300..900&amp;family=Changa:wght@500..800&amp;family=Manrope:wght@500;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#0B0E11}
+h1,h2,h3,button,.cta,.go,.display{font-family:Manrope,Changa,Alexandria,sans-serif}
+button,input{font-family:inherit}
+button{cursor:pointer}
+a{color:#B6E94F}a:hover{color:#d3f58f}
+.mesh{background:radial-gradient(60rem 30rem at 100% -10%,rgba(182,233,79,.08),transparent 60%),radial-gradient(50rem 50rem at -10% 40%,#17222e,transparent 65%),radial-gradient(40rem 30rem at 60% 110%,#131c25,transparent 70%),#0B0E11}
+.glass{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.10);backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.glass-strong{background:rgba(0,0,0,.40);border:1px solid rgba(255,255,255,.10);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px)}
+.cta{background:#B6E94F;color:#101418;box-shadow:0 10px 28px -10px rgba(182,233,79,.55)}
+.nav a{height:44px;padding:0 14px;border-radius:14px;color:#F2F2EE;text-decoration:none;display:flex;align-items:center;justify-content:space-between;font-size:14px}
+.nav a:hover{background:rgba(255,255,255,.05)}
+.nav a[aria-current]{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.10);color:#B6E94F;font-weight:700}
+.field{height:38px;width:84px;box-sizing:border-box;border-radius:12px;border:1px solid rgba(255,255,255,.10);background:rgba(0,0,0,.35);color:#F2F2EE;text-align:center;font-size:14px;font-weight:700}
+</style>
+</helmet>
+<div dir="rtl" class="mesh" style="min-height: 900px; box-sizing: border-box; color: #F2F2EE; font-family: Manrope, Alexandria, sans-serif; display: flex; flex-wrap: wrap; gap: 20px; padding: 20px">
+
+  <aside class="glass nav" style="flex: 1 0 232px; max-width: 100%; box-sizing: border-box; padding: 22px 14px; border-radius: 28px; display: flex; flex-direction: column; gap: 4px">
+    <img src="/_blob/a4c76c30a72e976839e1e233247010c5" alt="KOCHIVO" style="height: 28px; width: auto; align-self: flex-start; margin: 0 10px 22px">
+    <a href="CaptainClients.dc.html">اللاعبين</a>
+    <a href="CaptainBuilder.dc.html">البرامج</a>
+    <a href="CaptainNutrition.dc.html" aria-current="page">الأنظمة الغذائية</a>
+    <a href="CaptainInbox.dc.html">صندوق المهام <span style="min-width: 24px; height: 22px; border-radius: 11px; background: #B6E94F; color: #101418; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center">5</span></a>
+    <a href="CaptainTemplates.dc.html">القوالب</a>
+    <a href="CaptainBilling.dc.html">الاشتراكات</a>
+    <a href="CaptainSettings.dc.html">الإعدادات</a>
+  </aside>
+
+  <main style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; padding: 12px 8px; display: flex; flex-direction: column; gap: 18px">
+    <div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px">
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <span style="font-size: 11px; letter-spacing: 0.16em; color: #9AA0A6">NUTRITION · لأحمد سمير</span>
+        <h1 style="margin: 0; font-size: 30px; font-weight: 800; letter-spacing: -0.5px">تضخيم نضيف · 2,900 سعرة</h1>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 10px">
+        <button class="glass" style="height: 46px; padding: 0 18px; border-radius: 16px; color: #F2F2EE; font-size: 14px">احفظ كقالب</button>
+        <button class="cta" style="height: 46px; padding: 0 20px; border-radius: 16px; border: none; font-size: 14px; font-weight: 800">ابعت للاعب</button>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-start">
+      <section aria-label="الوجبات" style="flex: 3 1 480px; min-width: 0; display: flex; flex-direction: column; gap: 14px">
+        <sc-for list="{{ meals }}" as="meal" hint-placeholder-count="2">
+          <div class="glass" style="padding: 16px; border-radius: 26px; display: flex; flex-direction: column; gap: 10px">
+            <div style="display: flex; align-items: baseline; justify-content: space-between">
+              <span style="font-size: 17px; font-weight: 800">{{ meal.name }}</span>
+              <span style="font-size: 12px; color: #9AA0A6">{{ meal.kcal }} سعرة</span>
+            </div>
+            <sc-for list="{{ meal.items }}" as="it" hint-placeholder-count="2">
+              <div style="display: flex; flex-direction: column; gap: 10px; padding: 10px; border-radius: 20px; background: rgba(0,0,0,.28); border: 1px solid rgba(255,255,255,.08)">
+                <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px">
+                  <img src="{{ it.img }}" alt="" style="width: 52px; height: 52px; border-radius: 14px; object-fit: cover">
+                  <span style="flex: 1 1 140px; font-size: 14px; font-weight: 800">{{ it.food }}</span>
+                  <input aria-label="الكمية" defaultValue="{{ it.g }}" class="field">
+                  <span style="font-size: 12px; color: #9AA0A6; min-width: 120px">P {{ it.p }} · C {{ it.c }} · F {{ it.f }}</span>
+                </div>
+                <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px">
+                  <span style="font-size: 11px; letter-spacing: 0.04em; color: #9AA0A6">بدائل مكافئة:</span>
+                  <sc-for list="{{ it.alts }}" as="alt" hint-placeholder-count="2">
+                    <span style="height: 30px; padding: 0 12px; border-radius: 15px; background: rgba(182,233,79,.12); border: 1px solid rgba(182,233,79,.28); color: #B6E94F; font-size: 12px; font-weight: 700; display: flex; align-items: center">{{ alt }}</span>
+                  </sc-for>
+                  <button style="height: 30px; padding: 0 12px; border-radius: 15px; border: 1px dashed rgba(255,255,255,.22); background: transparent; color: #9AA0A6; font-size: 12px">+ بديل</button>
+                </div>
+              </div>
+            </sc-for>
+            <button style="height: 42px; border-radius: 14px; border: 1px dashed rgba(255,255,255,.18); background: transparent; color: #9AA0A6; font-size: 13px">+ ضيف أكلة</button>
+          </div>
+        </sc-for>
+      </section>
+
+      <section aria-label="الماكروز" class="glass-strong" style="flex: 1 1 270px; min-width: 0; padding: 20px; border-radius: 26px; display: flex; flex-direction: column; gap: 16px">
+        <span style="font-size: 11px; letter-spacing: 0.16em; color: #9AA0A6">LIVE MACROS · بتتحدث وانت بتكتب</span>
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <span style="font-size: 40px; font-weight: 800; letter-spacing: -1.5px; line-height: 1">2,760 <span style="font-size: 14px; letter-spacing: 0; color: #9AA0A6; font-weight: 500">/ 2,900</span></span>
+          <span style="align-self: flex-start; height: 26px; padding: 0 10px; border-radius: 13px; background: rgba(242,181,68,.12); color: #F2B544; font-size: 12px; font-weight: 700; display: flex; align-items: center">ناقص 140 سعرة</span>
+        </div>
+        <sc-for list="{{ bars }}" as="b" hint-placeholder-count="3">
+          <div style="display: flex; flex-direction: column; gap: 6px">
+            <div style="display: flex; justify-content: space-between; font-size: 13px">
+              <span style="font-weight: 700">{{ b.label }}</span><span style="color: #9AA0A6">{{ b.v }} / {{ b.t }} ج</span>
+            </div>
+            <svg width="100%" height="8" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true">
+              <rect x="0" y="0" width="100" height="8" rx="4" fill="rgba(255,255,255,.08)"></rect>
+              <rect x="{{ b.x }}" y="0" width="{{ b.pct }}" height="8" rx="4" fill="#B6E94F"></rect>
+            </svg>
+          </div>
+        </sc-for>
+      </section>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const bar = (label, v, t) => { const pct = Math.min(100, Math.round(v / t * 100)); return { label, v, t, pct, x: 100 - pct }; };
+    return {
+      meals: [
+        { name: 'الفطار', kcal: 640, items: [
+          { food: 'شوفان', g: '80ج', p: 11, c: 54, f: 6, img: '/_blob/90f6af83ca4aae30a6a557e6a9275491', alts: ['توست أسمر 3', 'عيش بلدي 1'] },
+          { food: 'بيض كامل', g: '3', p: 18, c: 1, f: 15, img: '/_blob/18bc2d71b52e8705890787ae83371591', alts: ['قريش 150ج', 'فول 200ج'] }
+        ] },
+        { name: 'الغدا', kcal: 820, items: [
+          { food: 'صدور فراخ', g: '200ج', p: 62, c: 0, f: 7, img: '/_blob/ef1025f9bd9fb5d7bfe4266664151e15', alts: ['بلطي 260ج', 'لحمة 170ج'] },
+          { food: 'رز أبيض مطبوخ', g: '250ج', p: 7, c: 71, f: 1, img: '/_blob/d9a80955bbec8e4aa11dd2a7fd39d371', alts: ['مكرونة 205ج', 'بطاطس 420ج'] }
+        ] }
+      ],
+      bars: [bar('بروتين', 172, 190), bar('كارب', 330, 360), bar('دهون', 78, 85)]
+    };
+  }
+}
+</script>
+</body>
+</html>

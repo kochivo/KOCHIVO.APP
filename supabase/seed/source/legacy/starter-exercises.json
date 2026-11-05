@@ -1,0 +1,116 @@
+[
+ {
+  "id": "3142782e-6c5b-5902-af98-2648ae8f6512",
+  "source_id": "Barbell_Hip_Thrust",
+  "name": "Barbell Hip Thrust",
+  "name_ar": "دفع الحوض بالبار"
+ },
+ {
+  "id": "580616fc-3ca6-5ad2-a915-fd1246559f55",
+  "source_id": "Bodyweight_Squat",
+  "name": "Bodyweight Squat",
+  "name_ar": "سكوات بوزن الجسم"
+ },
+ {
+  "id": "11618f53-e38a-566b-a9cd-d8e994544eb4",
+  "source_id": "Dumbbell_Bench_Press",
+  "name": "Dumbbell Bench Press",
+  "name_ar": "بنش مستوي بالدمبل"
+ },
+ {
+  "id": "c8a0d0f5-971a-54ce-a87d-4be9dd506d11",
+  "source_id": "Dumbbell_Bicep_Curl",
+  "name": "Dumbbell Bicep Curl",
+  "name_ar": "باي بالدمبل"
+ },
+ {
+  "id": "39bdb661-f406-560c-a845-140f9e0be590",
+  "source_id": "Dumbbell_Floor_Press",
+  "name": "Dumbbell Floor Press",
+  "name_ar": "ضغط صدر أرضي بالدمبل"
+ },
+ {
+  "id": "c74ef282-66a3-5ab8-a4c6-fc7ba7ef36f6",
+  "source_id": "Dumbbell_Lunges",
+  "name": "Dumbbell Lunges",
+  "name_ar": "اندفاع بالدمبل"
+ },
+ {
+  "id": "d2fcd833-84c2-53c6-a05a-9b46a77e29cc",
+  "source_id": "Dumbbell_Shoulder_Press",
+  "name": "Dumbbell Shoulder Press",
+  "name_ar": "ضغط كتف بالدمبل"
+ },
+ {
+  "id": "e32fe9bc-2412-5c00-a149-299a20bcf2e7",
+  "source_id": "Goblet_Squat",
+  "name": "Goblet Squat",
+  "name_ar": "سكوات الكأس"
+ },
+ {
+  "id": "4c582211-4df9-56ac-a24f-7407f43a9b71",
+  "source_id": "Leg_Press",
+  "name": "Leg Press",
+  "name_ar": "ضغط الرجلين على الجهاز"
+ },
+ {
+  "id": "1f1f20dc-1b5f-5030-a6c5-1a75d96418ec",
+  "source_id": "Lying_Leg_Curls",
+  "name": "Lying Leg Curls",
+  "name_ar": "ثني الرجلين من النوم على الجهاز"
+ },
+ {
+  "id": "a3163652-0966-5dca-a925-24092c85188e",
+  "source_id": "Mountain_Climbers",
+  "name": "Mountain Climbers",
+  "name_ar": "متسلق الجبال"
+ },
+ {
+  "id": "d173e26d-ea8f-5a04-a4ff-0f314d77f8bc",
+  "source_id": "One-Arm_Dumbbell_Row",
+  "name": "One-Arm Dumbbell Row",
+  "name_ar": "تجديف بالدمبل بدراع واحدة"
+ },
+ {
+  "id": "f04eebb4-5457-5362-a6b2-2f733b1b360d",
+  "source_id": "Plank",
+  "name": "Plank",
+  "name_ar": "بلانك"
+ },
+ {
+  "id": "e0d9ccae-349f-598d-aab6-615a997cd921",
+  "source_id": "Pushups",
+  "name": "Pushups",
+  "name_ar": "ضغط أرضي"
+ },
+ {
+  "id": "4ab2a35d-80b1-5b65-a81c-5e02b0726644",
+  "source_id": "Romanian_Deadlift",
+  "name": "Romanian Deadlift",
+  "name_ar": "رفعة ميتة رومانية"
+ },
+ {
+  "id": "15937924-d9d1-56f5-a66c-7a6140f67d4f",
+  "source_id": "Side_Lateral_Raise",
+  "name": "Side Lateral Raise",
+  "name_ar": "رفرفة جانبي بالدمبل"
+ },
+ {
+  "id": "77fb135d-24bc-5563-a5c3-564ebb564052",
+  "source_id": "Standing_Calf_Raises",
+  "name": "Standing Calf Raises",
+  "name_ar": "رفع السمانة من الوقوف"
+ },
+ {
+  "id": "2a7e29e1-9a03-5e11-a373-598bf1fbdab9",
+  "source_id": "Triceps_Pushdown",
+  "name": "Triceps Pushdown",
+  "name_ar": "دفع ترايسبس بالكابل لأسفل"
+ },
+ {
+  "id": "1335b440-6f06-5447-ae4e-d3071734e0fc",
+  "source_id": "Wide-Grip_Lat_Pulldown",
+  "name": "Wide-Grip Lat Pulldown",
+  "name_ar": "سحب علوي بمسكة واسعة"
+ }
+]

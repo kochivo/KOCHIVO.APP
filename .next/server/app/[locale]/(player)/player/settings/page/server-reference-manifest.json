@@ -1,0 +1,315 @@
+{
+  "node": {
+    "00371597be08fcd9cb2bdbab3f891ec1bbca8e6c4d": {
+      "workers": {
+        "app/[locale]/(player)/player/settings/page": {
+          "moduleId": 741017,
+          "async": false
+        }
+      },
+      "exportedName": "fetchMyCaptain",
+      "filename": "src/features/player-shell/data/my-captain.ts"
+    },
+    "40b215d12f9068293e365cd338ba5e330b76022c4c": {
+      "workers": {
+        "app/[locale]/(player)/player/settings/page": {
+          "moduleId": 741017,
+          "async": false
+        }
+      },
+      "exportedName": "fetchTaskStatus",
+      "filename": "src/features/player-home/data/task-status.ts"
+    },
+    "60f4559f9f45bafead3cf4d4db29c409a0a7021f90": {
+      "workers": {
+        "app/[locale]/(player)/player/settings/page": {
+          "moduleId": 741017,
+          "async": false
+        }
+      },
+      "exportedName": "applyDecision",
+      "filename": "src/features/readiness/data/decisions.ts"
+    },
+    "0042fd7412e4f7e01a518aedcc7db94d76d5d2edc2": {
+      "workers": {
+        "app/[locale]/(player)/player/settings/page": {
+          "moduleId": 741017,
+          "async": false
+        }
+      },
+      "exportedName": "fetchPlayerIdentity",
+      "filename": "src/features/player-home/data/player-identity.ts"
+    },
+    "405eb5f9f4579adb2475e4fbc7d915999b56db2b7a": {
+      "workers": {
+        "app/[locale]/(player)/player/settings/page": {
+          "moduleId": 741017,
+          "async": false
+        }
+      },
+      "exportedName": "loadPlayerBalance",
+      "filename": "src/features/billing/data/pt-actions.ts"
+    },
+    "60e27eebf70ed613f4f8e32bc135af934214a7aa07": {
+      "workers": {
+        "app/[locale]/(player)/player/settings/page": {
+          "moduleId": 741017,
+          "async": false
+        }
+      },
+      "exportedName": "activatePlayer",
+      "filename": "src/features/billing/data/pt-actions.ts"
+    },
+    "602d3ef939990689e643e8d8b2103d4ebf3f32a0c7": {
+      "workers": {
+        "app/[locale]/(player)/player/settings/page": {
+          "moduleId": 741017,
+          "async": false
+        }
+      },
+      "exportedName": "setPlayerFrozen",
+      "filename": "src/features/billing/data/pt-actions.ts"
+    },
+    "408ad07555b0fe2c79a502c08bd65e5565335e153e": {
+      "workers": {
+        "app/[locale]/(player)/player/settings/page": {
+          "moduleId": 741017,
+          "async": false
+        }
+      },
+      "exportedName": "renewPlayer",
+      "filename": "src/features/billing/data/billing.ts"
+    },
+    "00ab88baaae82dc506683e67b9d7a7f6f0b0abc0ea": {
+      "workers": {
+        "app/[locale]/(player)/player/settings/page": {
+          "moduleId": 741017,
+          "async": false
+        }
+      },
+      "exportedName": "markTourSeen",
+      "filename": "src/features/product-tour/data/seen.ts"
+    },
+    "40c6f6dba6f29760197fbd70f5d5c2bf4d02ed2a96": {
+      "workers": {
+        "app/[locale]/(player)/player/settings/page": {
+          "moduleId": 741017,
+          "async": false
+        }
+      },
+      "exportedName": "setLocale",
+      "filename": "src/core/i18n/set-locale.ts"
+    },
+    "002e9e9bf85f197e1e7473c6c5cc44641712bace91": {
+      "workers": {
+        "app/[locale]/(player)/player/settings/page": {
+          "moduleId": 741017,
+          "async": false
+        }
+      },
+      "exportedName": "loadSettings",
+      "filename": "src/features/settings/data/settings.ts"
+    },
+    "4068e2cb68e25c702434c55e790c56514182ce13e1": {
+      "workers": {
+        "app/[locale]/(player)/player/settings/page": {
+          "moduleId": 741017,
+          "async": false
+        }
+      },
+      "exportedName": "saveInviteMessage",
+      "filename": "src/features/settings/data/settings.ts"
+    },
+    "003b71f9267e51912b647c8b402dcfe5bbdea82afb": {
+      "workers": {
+        "app/[locale]/(player)/player/settings/page": {
+          "moduleId": 741017,
+          "async": false
+        }
+      },
+      "exportedName": "exportMyData",
+      "filename": "src/features/settings/data/settings.ts"
+    },
+    "00b0b6bf7c2a817f9bafce007f048b459790311d00": {
+      "workers": {
+        "app/[locale]/(player)/player/settings/page": {
+          "moduleId": 741017,
+          "async": false
+        }
+      },
+      "exportedName": "cancelDeletion",
+      "filename": "src/features/settings/data/settings.ts"
+    },
+    "0023b8ff9fa0876a3b1f92c5f7762163a6d7be7217": {
+      "workers": {
+        "app/[locale]/(player)/player/settings/page": {
+          "moduleId": 741017,
+          "async": false
+        }
+      },
+      "exportedName": "requestDeletion",
+      "filename": "src/features/settings/data/settings.ts"
+    },
+    "40ae786082bc7dad02bb55a3bae47ff63f07d0986d": {
+      "workers": {
+        "app/[locale]/(player)/player/settings/page": {
+          "moduleId": 741017,
+          "async": false
+        }
+      },
+      "exportedName": "saveCaptainProfile",
+      "filename": "src/features/settings/data/settings.ts"
+    },
+    "40f8b85c93687052d754cad615e0db62e6d7db03db": {
+      "workers": {
+        "app/[locale]/(player)/player/settings/page": {
+          "moduleId": 741017,
+          "async": false
+        }
+      },
+      "exportedName": "saveProfile",
+      "filename": "src/features/settings/data/settings.ts"
+    },
+    "409d3908c2f9eb85a7ceacf181e250eab9b9f2f46b": {
+      "workers": {
+        "app/[locale]/(player)/player/settings/page": {
+          "moduleId": 741017,
+          "async": false
+        }
+      },
+      "exportedName": "signInPassword",
+      "filename": "src/features/auth/data/sign-in-password.ts"
+    },
+    "40819e6aef37f63ba457ba833d93d59ee07f2d0744": {
+      "workers": {
+        "app/[locale]/(player)/player/settings/page": {
+          "moduleId": 741017,
+          "async": false
+        }
+      },
+      "exportedName": "signUpCaptain",
+      "filename": "src/features/auth/data/sign-up-captain.ts"
+    },
+    "701dc93979ab0d794ec11a691590efefcde281eee1": {
+      "workers": {
+        "app/[locale]/(player)/player/settings/page": {
+          "moduleId": 741017,
+          "async": false
+        }
+      },
+      "exportedName": "signInGoogle",
+      "filename": "src/features/auth/data/sign-in-google.ts"
+    },
+    "404ed934cf34e518dbe3910733bb139c83da6d23e9": {
+      "workers": {
+        "app/[locale]/(player)/player/settings/page": {
+          "moduleId": 741017,
+          "async": false
+        }
+      },
+      "exportedName": "resendCaptainCode",
+      "filename": "src/features/auth/data/sign-up-captain.ts"
+    },
+    "406d7b51e2689cc48be3f06976e43b36e63b7b9b3f": {
+      "workers": {
+        "app/[locale]/(player)/player/settings/page": {
+          "moduleId": 741017,
+          "async": false
+        }
+      },
+      "exportedName": "verifyCaptainCode",
+      "filename": "src/features/auth/data/sign-up-captain.ts"
+    },
+    "70081c45a2a6b65038ba0e02343226493779cb6b1c": {
+      "workers": {
+        "app/[locale]/(player)/player/settings/page": {
+          "moduleId": 741017,
+          "async": false
+        }
+      },
+      "exportedName": "signUpPlayer",
+      "filename": "src/features/auth/data/sign-up-player.ts"
+    },
+    "60135283a30cfe128499d369811682de8aa4abbe31": {
+      "workers": {
+        "app/[locale]/(player)/player/settings/page": {
+          "moduleId": 741017,
+          "async": false
+        }
+      },
+      "exportedName": "verifyPlayerCode",
+      "filename": "src/features/auth/data/sign-up-player.ts"
+    },
+    "40eff1e7b792750bc143efd2d32149a827bbc1c8ce": {
+      "workers": {
+        "app/[locale]/(player)/player/settings/page": {
+          "moduleId": 741017,
+          "async": false
+        }
+      },
+      "exportedName": "requestReset",
+      "filename": "src/features/auth/data/request-reset.ts"
+    },
+    "6006f86db9062c788e6124c8ba37e3ff015185f367": {
+      "workers": {
+        "app/[locale]/(player)/player/settings/page": {
+          "moduleId": 741017,
+          "async": false
+        }
+      },
+      "exportedName": "updatePassword",
+      "filename": "src/features/auth/data/update-password.ts"
+    },
+    "4068333156ed3274df8f79c2f6b35459ffb052e3f0": {
+      "workers": {
+        "app/[locale]/(player)/player/settings/page": {
+          "moduleId": 741017,
+          "async": false
+        }
+      },
+      "exportedName": "invitePreview",
+      "filename": "src/features/auth/data/invite-preview.ts"
+    },
+    "40f4f5b71a9e57194432889c124be6729af0876860": {
+      "workers": {
+        "app/[locale]/(player)/player/settings/page": {
+          "moduleId": 741017,
+          "async": false
+        }
+      },
+      "exportedName": "redeemInvite",
+      "filename": "src/features/auth/data/redeem-invite.ts"
+    },
+    "406a84252cf2d8589135a39cab7fb3648b6302cdeb": {
+      "workers": {
+        "app/[locale]/(player)/player/settings/page": {
+          "moduleId": 741017,
+          "async": false
+        }
+      },
+      "exportedName": "sendEmailCode",
+      "filename": "src/features/auth/data/send-email-code.ts"
+    },
+    "60f0570758a7ecdaab2c8909d27a64c66075f855df": {
+      "workers": {
+        "app/[locale]/(player)/player/settings/page": {
+          "moduleId": 741017,
+          "async": false
+        }
+      },
+      "exportedName": "verifyEmailCode",
+      "filename": "src/features/auth/data/verify-email-code.ts"
+    },
+    "008cd0ee37e904292b0a185315473781a71de01e58": {
+      "workers": {
+        "app/[locale]/(player)/player/settings/page": {
+          "moduleId": 741017,
+          "async": false
+        }
+      },
+      "exportedName": "signOut",
+      "filename": "src/features/auth/data/sign-out.ts"
+    }
+  },
+  "edge": {}
+}

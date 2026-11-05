@@ -1,0 +1,39 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/[locale]/layout,_N_T_/[locale]/offline/layout,_N_T_/[locale]/offline/page,_N_T_/ar/offline"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/$d$locale/offline/__PAGE__"
+  ],
+  "prefetchHints": {
+    "hints": 64,
+    "slots": {
+      "children": {
+        "hints": 96,
+        "slots": {
+          "children": {
+            "hints": 96,
+            "slots": {
+              "children": {
+                "hints": 160,
+                "slots": null
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/c6e9bf282a3690a030e48ebe317d1f454bfc75e1763f55ecac86733435cf3b06/$/ar/offline",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/[locale]/offline/page"
+    },
+    "isFallback": false
+  }
+}

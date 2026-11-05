@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8">
+<title>KOCHIVO — الصفحة العامة</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300..900&amp;family=Changa:wght@500..800&amp;family=Manrope:wght@500;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#0B0E11}
+h1,h2,h3,button,.cta,.display{font-family:Manrope,Changa,Alexandria,sans-serif}
+button{cursor:pointer}
+a{color:#B6E94F}a:hover{color:#d3f58f}
+.mesh{background:radial-gradient(70rem 40rem at 15% -5%,rgba(182,233,79,.13),transparent 60%),radial-gradient(60rem 60rem at 110% 18%,#17222e,transparent 65%),radial-gradient(50rem 40rem at 0% 55%,#131c25,transparent 70%),radial-gradient(50rem 30rem at 80% 100%,rgba(182,233,79,.07),transparent 70%),#0B0E11}
+.glass{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.10);backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.glass-strong{background:rgba(0,0,0,.40);border:1px solid rgba(255,255,255,.10);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px)}
+.cta{background:#B6E94F;color:#101418;text-decoration:none;box-shadow:0 14px 36px -10px rgba(182,233,79,.6)}
+.cta:hover{color:#101418}
+.ghost{color:#F2F2EE;text-decoration:none}
+.ghost:hover{color:#F2F2EE;background:rgba(255,255,255,.08)}
+.wrap{max-width:1200px;margin:0 auto;padding:0 32px;box-sizing:border-box}
+.eyebrow{font-size:12px;letter-spacing:.2em;color:#B6E94F;font-weight:700}
+.muted{color:#9AA0A6}
+.slogan{font-family:Manrope,sans-serif;font-weight:800;font-size:84px;line-height:.95;letter-spacing:-3px;text-transform:uppercase}
+.slogan-outline{color:transparent;-webkit-text-stroke:2px #F2F2EE}
+.slogan-lime{color:#B6E94F;text-shadow:0 0 42px rgba(182,233,79,.35)}
+@media (max-width: 700px){.slogan{font-size:52px;letter-spacing:-2px}}
+/* motion: transform/opacity only, never on blurred surfaces */
+@keyframes rise{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
+@keyframes fadein{from{opacity:0;transform:scale(.98)}to{opacity:1;transform:none}}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes sweep{0%{background-position:100% 0}45%,60%{background-position:0 0}100%{background-position:-100% 0}}
+@keyframes float{50%{transform:translateY(-6px)}}
+.slogan>span{animation:rise .7s cubic-bezier(.2,.8,.2,1) both}
+.slogan>span:nth-child(2){animation-delay:.12s}
+.slogan>span:nth-child(3){animation-delay:.24s}
+.slogan-outline{background:linear-gradient(90deg,#F2F2EE 50%,transparent 50%) no-repeat;background-size:200% 100%;background-position:100% 0;-webkit-background-clip:text;background-clip:text}
+.slogan>.slogan-outline{animation:rise .7s cubic-bezier(.2,.8,.2,1) .12s both,sweep 1.6s ease-in-out 1.1s both}
+.beam{transform-origin:right;animation:grow .8s cubic-bezier(.2,.8,.2,1) .45s both}
+.after-slogan{animation:rise .7s cubic-bezier(.2,.8,.2,1) .5s both}
+.float{animation:float 6s ease-in-out infinite}
+.swap{animation:fadein .35s ease-out both}
+@supports (animation-timeline: view()){.reveal{animation:rise linear both;animation-timeline:view();animation-range:entry 0% entry 35%}}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important}}
+.seg{flex:1;height:40px;border-radius:12px;border:none;font-size:14px;font-weight:800}
+details{border-radius:20px}
+details summary{list-style:none;cursor:pointer;padding:20px 22px;font-size:17px;font-weight:800;display:flex;justify-content:space-between;align-items:center;font-family:Manrope,Changa,Alexandria,sans-serif}
+details summary::-webkit-details-marker{display:none}
+details summary::after{content:'+';color:#B6E94F;font-size:22px}
+details[open] summary::after{content:'−'}
+details p{margin:0;padding:0 22px 20px;color:#9AA0A6;font-size:15px;line-height:1.8}
+</style>
+</helmet>
+<div dir="rtl" class="mesh" style="min-height: 3600px; color: #F2F2EE; font-family: Manrope, Alexandria, sans-serif; padding-bottom: 40px">
+
+  <header class="wrap" style="padding-top: 24px">
+    <div class="glass" style="height: 68px; border-radius: 22px; padding: 0 12px 0 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px">
+      <img src="/_blob/a4c76c30a72e976839e1e233247010c5" alt="KOCHIVO" style="height: 26px; width: auto">
+      <nav style="display: flex; gap: 4px; font-size: 14px">
+        <a href="#how" class="ghost" style="padding: 10px 14px; border-radius: 12px">إزاي بيشتغل</a>
+        <a href="#features" class="ghost" style="padding: 10px 14px; border-radius: 12px">المميزات</a>
+        <a href="#pricing" class="ghost" style="padding: 10px 14px; border-radius: 12px">الباقات</a>
+        <a href="#faq" class="ghost" style="padding: 10px 14px; border-radius: 12px">أسئلة</a>
+      </nav>
+      <div style="display: flex; gap: 8px; align-items: center">
+        <a href="CaptainLogin.dc.html" class="ghost" style="height: 44px; padding: 0 16px; border-radius: 14px; display: flex; align-items: center; font-size: 14px; font-weight: 700">دخول</a>
+        <a href="CaptainLogin.dc.html" class="cta" style="height: 44px; padding: 0 18px; border-radius: 14px; display: flex; align-items: center; font-size: 14px; font-weight: 800">ابدأ مجاناً</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="wrap" style="padding-top: 88px; display: flex; flex-wrap: wrap; align-items: center; gap: 56px">
+    <div style="flex: 1 1 600px; display: flex; flex-direction: column; gap: 22px">
+      <span class="eyebrow">COACH BETTER · للكباتن الأونلاين</span>
+      <h1 dir="ltr" class="slogan" style="margin: 0; text-align: right">
+        <span style="display: block">YOUR NEXT</span>
+        <span class="slogan-outline" style="display: block">MOVE</span>
+        <span class="slogan-lime" style="display: block">STARTS HERE<span style="color: #F2F2EE">.</span></span>
+      </h1>
+      <div class="after-slogan" style="display: flex; align-items: center; gap: 14px">
+        <span class="beam" style="width: 56px; height: 4px; border-radius: 2px; background: #B6E94F; box-shadow: 0 0 18px rgba(182,233,79,.7)"></span>
+        <span class="display" style="font-size: 24px; font-weight: 700">خطوتك الجاية بتبدأ من هنا</span>
+      </div>
+      <p class="muted after-slogan" style="margin: 0; font-size: 18px; line-height: 1.8; max-width: 540px">كل لاعبينك، وبرنامج وأكل ومتابعة كل واحد، في مكان واحد. واللاعب بيسجّل في الجيم حتى لو النت فاصل.</p>
+      <div class="after-slogan" style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 6px">
+        <a href="CaptainLogin.dc.html" class="cta" style="height: 62px; padding: 0 30px; border-radius: 20px; display: flex; align-items: center; font-size: 18px; font-weight: 800">ابدأ مجاناً · لحد 5 لاعبين</a>
+        <a href="CaptainViewAsPlayer.dc.html" class="glass ghost" style="height: 62px; padding: 0 22px; border-radius: 20px; display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 700">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg>
+          جرّب الديمو بضغطة
+        </a>
+      </div>
+      <span class="muted after-slogan" style="font-size: 13px">الديمو من غير حساب، وبيتمسح لوحده بعد 24 ساعة · لاعب ومعاك دعوة؟ <a href="PlayerLogin.dc.html" style="font-weight: 700; text-decoration: none">ادخل من هنا</a></span>
+    </div>
+
+    <div style="flex: 0 1 340px; margin-inline: auto; display: flex; flex-direction: column; align-items: center; gap: 14px">
+      <div class="glass" style="display: flex; gap: 4px; padding: 4px; border-radius: 16px; width: 300px">
+        <sc-if value="{{ asPlayer }}" hint-placeholder-val="{{ true }}">
+          <button class="seg" style="background: #F2F2EE; color: #101418">شوف كلاعب</button>
+          <button onClick="{{ showCoach }}" class="seg" style="background: transparent; color: #F2F2EE">شوف ككابتن</button>
+        </sc-if>
+        <sc-if value="{{ asCoach }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ showPlayer }}" class="seg" style="background: transparent; color: #F2F2EE">شوف كلاعب</button>
+          <button class="seg" style="background: #F2F2EE; color: #101418">شوف ككابتن</button>
+        </sc-if>
+      </div>
+
+      <div class="float" style="width: 310px; height: 560px; border-radius: 48px; padding: 14px; box-sizing: border-box; background: rgba(10,13,16,.85); border: 1px solid rgba(255,255,255,.12); box-shadow: 0 40px 90px -30px rgba(0,0,0,.9)">
+        <sc-if value="{{ asPlayer }}" hint-placeholder-val="{{ true }}">
+          <div class="swap" style="height: 100%; border-radius: 36px; background: #0B0E11; padding: 20px 16px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px">
+            <span class="muted" style="font-size: 10px; letter-spacing: .14em">DAY 2 · صدر وترايسبس</span>
+            <div class="glass" style="border-radius: 20px; padding: 12px; display: flex; gap: 10px; align-items: center">
+              <img src="/_blob/919f5f22ecd90ea627037d134608f40a" alt="" style="width: 56px; height: 56px; border-radius: 14px; background: #fff; object-fit: cover">
+              <span class="display" style="font-size: 17px; font-weight: 800">بنش بريس بالبار</span>
+            </div>
+            <div class="glass" style="border-radius: 22px; padding: 14px; display: flex; flex-direction: column; align-items: center; gap: 4px">
+              <span class="muted" style="font-size: 10px; letter-spacing: .14em">WEIGHT · كجم</span>
+              <div style="display: flex; width: 100%; justify-content: space-between; align-items: center">
+                <span style="width: 52px; height: 52px; border-radius: 16px; background: rgba(255,255,255,.08); display: flex; align-items: center; justify-content: center; font-size: 26px">+</span>
+                <span style="font-size: 46px; font-weight: 800; letter-spacing: -2px">65</span>
+                <span style="width: 52px; height: 52px; border-radius: 16px; background: rgba(255,255,255,.08); display: flex; align-items: center; justify-content: center; font-size: 26px">−</span>
+              </div>
+            </div>
+            <div style="border-radius: 22px; padding: 14px; display: flex; flex-direction: column; align-items: center; gap: 4px; background: rgba(182,233,79,.12); border: 1px solid rgba(182,233,79,.5)">
+              <span style="font-size: 11px; letter-spacing: .14em; color: #B6E94F; font-weight: 700">NEW PR · رقم جديد</span>
+              <span class="display" style="font-size: 18px; font-weight: 800">65 كجم × 8 · +5 كجم</span>
+            </div>
+            <div style="flex-grow: 1"></div>
+            <span class="cta display" style="height: 56px; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800">تمّ السِت</span>
+          </div>
+        </sc-if>
+        <sc-if value="{{ asCoach }}" hint-placeholder-val="{{ false }}">
+          <div class="swap" style="height: 100%; border-radius: 36px; background: #0B0E11; padding: 20px 16px; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px">
+            <span class="muted" style="font-size: 10px; letter-spacing: .14em">RADAR · محتاجين متابعة</span>
+            <span class="display" style="font-size: 22px; font-weight: 800">3 لاعبين بيبعدوا</span>
+            <sc-for list="{{ radar }}" as="r" hint-placeholder-count="3">
+              <div class="glass" style="border-radius: 18px; padding: 12px; display: flex; flex-direction: column; gap: 6px">
+                <div style="display: flex; justify-content: space-between; align-items: center"><span style="font-size: 14px; font-weight: 800">{{ r.name }}</span><span style="font-size: 11px; font-weight: 700; color: #FF8A65">{{ r.days }}</span></div>
+                <span class="muted" style="font-size: 12px">{{ r.reason }}</span>
+                <span style="align-self: flex-start; height: 28px; padding: 0 12px; border-radius: 14px; background: rgba(182,233,79,.14); color: #B6E94F; font-size: 12px; font-weight: 700; display: flex; align-items: center">ابعتله على واتساب</span>
+              </div>
+            </sc-for>
+            <div style="flex-grow: 1"></div>
+            <div class="glass" style="border-radius: 18px; padding: 12px; display: flex; justify-content: space-between; align-items: center">
+              <span style="font-size: 13px; font-weight: 700">فيديوهات مستنية ردّك</span><span style="font-size: 20px; font-weight: 800; color: #B6E94F">2</span>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+      <span class="muted" style="font-size: 12px">معاينة توضيحية · بيانات مثال</span>
+    </div>
+  </section>
+
+  <section class="wrap reveal" style="padding-top: 64px">
+    <div class="glass" style="border-radius: 24px; padding: 22px 28px; display: flex; flex-wrap: wrap; justify-content: space-around; gap: 24px; text-align: center">
+      <sc-for list="{{ stats }}" as="s" hint-placeholder-count="4">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <span class="display" style="font-size: 32px; font-weight: 800; color: #B6E94F">{{ s.v }}</span>
+          <span class="muted" style="font-size: 13px">{{ s.l }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section id="how" class="wrap reveal" style="padding-top: 120px; display: flex; flex-wrap: wrap; gap: 40px; align-items: center">
+    <div style="flex: 1 1 460px; display: flex; flex-direction: column; gap: 24px">
+      <div style="display: flex; flex-direction: column; gap: 12px">
+        <span class="eyebrow">إزاي بيشتغل</span>
+        <h2 style="margin: 0; font-size: 44px; font-weight: 800; line-height: 1.3">من البرنامج للرد<br>في دقايق.</h2>
+      </div>
+      <sc-for list="{{ steps }}" as="st" hint-placeholder-count="3">
+        <div style="display: flex; gap: 16px; align-items: flex-start">
+          <span class="display" style="width: 52px; height: 52px; flex-shrink: 0; border-radius: 16px; background: #B6E94F; color: #101418; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800">{{ st.n }}</span>
+          <div style="display: flex; flex-direction: column; gap: 6px">
+            <span class="display" style="font-size: 21px; font-weight: 800">{{ st.t }}</span>
+            <span class="muted" style="font-size: 15px; line-height: 1.8">{{ st.d }}</span>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    <div class="glass-strong" style="flex: 1 1 420px; border-radius: 32px; padding: 26px; display: flex; flex-direction: column; gap: 10px">
+      <span class="muted" style="font-size: 11px; letter-spacing: .16em">TODAY · يوم كابتن عادي</span>
+      <sc-for list="{{ feed }}" as="f" hint-placeholder-count="4">
+        <div class="glass" style="border-radius: 18px; padding: 14px 16px; display: flex; gap: 12px; align-items: center">
+          <span style="width: 10px; height: 10px; border-radius: 5px; background: #B6E94F; flex-shrink: 0"></span>
+          <span style="flex-grow: 1; font-size: 14px; font-weight: 700">{{ f.t }}</span>
+          <span class="muted" style="font-size: 12px; direction: ltr">{{ f.at }}</span>
+        </div>
+      </sc-for>
+      <span class="muted" style="font-size: 12px">بيانات مثال</span>
+    </div>
+  </section>
+
+  <section id="features" class="wrap reveal" style="padding-top: 120px; display: flex; flex-direction: column; gap: 36px">
+    <div style="display: flex; flex-direction: column; gap: 12px; max-width: 640px">
+      <span class="eyebrow">للكابتن</span>
+      <h2 style="margin: 0; font-size: 44px; font-weight: 800; line-height: 1.3">كل اللي محتاجه. ومفيش حاجة زيادة.</h2>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px">
+      <sc-for list="{{ features }}" as="f" hint-placeholder-count="4">
+        <div class="glass" style="border-radius: 28px; padding: 26px; display: flex; flex-direction: column; gap: 14px; min-height: 220px">
+          <span class="display" style="width: 52px; height: 52px; border-radius: 16px; background: rgba(182,233,79,.12); border: 1px solid rgba(182,233,79,.3); display: flex; align-items: center; justify-content: center; color: #B6E94F; font-size: 18px; font-weight: 800">{{ f.n }}</span>
+          <span class="display" style="font-size: 22px; font-weight: 800">{{ f.t }}</span>
+          <span class="muted" style="font-size: 15px; line-height: 1.8">{{ f.d }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section id="players" class="wrap reveal" style="padding-top: 120px">
+    <div class="glass-strong" style="border-radius: 36px; padding: 48px; display: flex; flex-wrap: wrap; gap: 40px; align-items: center">
+      <div style="flex: 1 1 360px; display: flex; flex-direction: column; gap: 14px">
+        <span class="eyebrow">للاعب</span>
+        <h2 style="margin: 0; font-size: 42px; font-weight: 800; line-height: 1.3">معمول للجيم.<br>بإيد واحدة.</h2>
+        <p class="muted" style="margin: 0; font-size: 17px; line-height: 1.8">اللاعب مش بيدفع حاجة، ومش محتاج يحمّل من المتجر. بيفتح لينك الدعوة، وبيثبّته على الشاشة الرئيسية زي أي تطبيق.</p>
+      </div>
+      <div style="flex: 1 1 460px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px">
+        <sc-for list="{{ player }}" as="p" hint-placeholder-count="6">
+          <div class="glass" style="border-radius: 22px; padding: 18px; display: flex; flex-direction: column; gap: 6px">
+            <span class="display" style="font-size: 17px; font-weight: 800">{{ p.t }}</span>
+            <span class="muted" style="font-size: 13px; line-height: 1.7">{{ p.d }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <section id="pricing" class="wrap reveal" style="padding-top: 120px; display: flex; flex-direction: column; gap: 32px; align-items: center; text-align: center">
+    <div style="display: flex; flex-direction: column; gap: 12px; align-items: center">
+      <span class="eyebrow">الباقات</span>
+      <h2 style="margin: 0; font-size: 44px; font-weight: 800">على قد عدد لاعبينك</h2>
+      <span class="muted" style="font-size: 15px">من غير خصم ولا تجديد أوتوماتيك. بتشترك على واتساب، والتفعيل بيحصل بعد تأكيد الدفع.</span>
+    </div>
+    <div style="width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px; text-align: start">
+      <sc-for list="{{ plans }}" as="p" hint-placeholder-count="4">
+        <sc-if value="{{ p.hot }}" hint-placeholder-val="{{ false }}">
+          <div class="glass-strong" style="border-radius: 28px; padding: 26px; display: flex; flex-direction: column; gap: 14px; border-color: rgba(182,233,79,.6); box-shadow: 0 30px 70px -30px rgba(182,233,79,.4)">
+            <div style="display: flex; justify-content: space-between; align-items: center"><span class="display" style="font-size: 22px; font-weight: 800; letter-spacing: .04em">{{ p.name }}</span><span style="height: 26px; padding: 0 10px; border-radius: 13px; background: #B6E94F; color: #101418; font-size: 11px; font-weight: 800; display: flex; align-items: center">الأكتر طلباً</span></div>
+            <span style="font-size: 44px; font-weight: 800">{{ p.price }} <span class="muted" style="font-size: 14px; font-weight: 500">{{ p.unit }}</span></span>
+            <span style="font-size: 15px; font-weight: 700">لحد {{ p.limit }} لاعب</span>
+            <a href="CaptainLogin.dc.html" class="cta" style="height: 52px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-weight: 800; margin-top: auto">{{ p.action }}</a>
+          </div>
+        </sc-if>
+        <sc-if value="{{ p.plain }}" hint-placeholder-val="{{ true }}">
+          <div class="glass" style="border-radius: 28px; padding: 26px; display: flex; flex-direction: column; gap: 14px">
+            <span class="display" style="font-size: 22px; font-weight: 800; letter-spacing: .04em">{{ p.name }}</span>
+            <span style="font-size: 44px; font-weight: 800">{{ p.price }} <span class="muted" style="font-size: 14px; font-weight: 500">{{ p.unit }}</span></span>
+            <span style="font-size: 15px; font-weight: 700">لحد {{ p.limit }} لاعب</span>
+            <a href="CaptainLogin.dc.html" class="glass ghost" style="height: 52px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-weight: 800; margin-top: auto">{{ p.action }}</a>
+          </div>
+        </sc-if>
+      </sc-for>
+    </div>
+    <div class="glass" style="width: 100%; box-sizing: border-box; border-radius: 22px; padding: 18px 24px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; text-align: start">
+      <span style="font-size: 15px; font-weight: 700">عايز التطبيق باسم الجيم بتاعك ولوجوه؟</span>
+      <a href="#" class="ghost glass" style="height: 44px; padding: 0 18px; border-radius: 14px; display: flex; align-items: center; font-weight: 800">كلّمنا على واتساب</a>
+    </div>
+  </section>
+
+  <section id="faq" class="wrap reveal" style="padding-top: 120px; display: flex; flex-wrap: wrap; gap: 40px">
+    <div style="flex: 1 1 300px; display: flex; flex-direction: column; gap: 12px">
+      <span class="eyebrow">أسئلة</span>
+      <h2 style="margin: 0; font-size: 44px; font-weight: 800; line-height: 1.3">قبل ما تبدأ</h2>
+    </div>
+    <div style="flex: 2 1 560px; display: flex; flex-direction: column; gap: 10px">
+      <sc-for list="{{ faq }}" as="q" hint-placeholder-count="5">
+        <details class="glass"><summary>{{ q.q }}</summary><p>{{ q.a }}</p></details>
+      </sc-for>
+    </div>
+  </section>
+
+  <section class="wrap reveal" style="padding-top: 120px">
+    <div class="glass" style="border-radius: 36px; padding: 56px 40px; display: flex; flex-direction: column; align-items: center; gap: 20px; text-align: center">
+      <img src="/_blob/4af20e0965e3d3ced8d1930625f7a561" alt="" style="width: 64px; height: 64px">
+      <h2 style="margin: 0; font-size: 46px; font-weight: 800">ابدأ بأول لاعب النهارده</h2>
+      <a href="CaptainLogin.dc.html" class="cta" style="height: 62px; padding: 0 34px; border-radius: 20px; display: flex; align-items: center; font-size: 18px; font-weight: 800">اعمل حسابك كابتن</a>
+    </div>
+  </section>
+
+  <footer class="wrap" style="padding-top: 56px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; font-size: 13px">
+    <span class="muted">© 2026 KOCHIVO · رسوم التمارين المتحركة © <a href="https://gymvisual.com/">Gym visual</a></span>
+    <div style="display: flex; gap: 18px"><a href="#" class="muted" style="text-decoration: none">الخصوصية</a><a href="#" class="muted" style="text-decoration: none">الشروط</a><a href="#" class="muted" style="text-decoration: none">واتساب الدعم</a></div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3600}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { view: 'player' }; }
+  renderVals() {
+    const player = this.state.view === 'player';
+    return {
+      asPlayer: player, asCoach: !player,
+      showCoach: () => this.setState({ view: 'coach' }),
+      showPlayer: () => this.setState({ view: 'player' }),
+      radar: [
+        { name: 'كريم عادل', days: '4 أيام', reason: 'ماسجّلش تمرين من يوم السبت' },
+        { name: 'محمد طارق', days: '3 أيام', reason: 'التحديث الأسبوعي متأخر' },
+        { name: 'مصطفى علي', days: 'فاضل يومين', reason: 'الاشتراك قرب يخلص' }
+      ],
+      stats: [{ v: '1,300+', l: 'تمرين بحركة متحركة' }, { v: '60', l: 'أكلة مصرية بالماكروز' }, { v: '3 ضغطات', l: 'لأي مهمة يومية' }, { v: 'Offline', l: 'اللاعب بيسجّل من غير نت' }],
+      steps: [
+        { n: '1', t: 'جهّز البرنامج', d: 'ابدأ من قالب جاهز أو من الأول، ووزّعه على لاعب واحد أو عشرة في ضغطة.' },
+        { n: '2', t: 'اللاعب يسجّل', d: 'بيشوف تمرين النهارده ويسجّل الوزن والعدّات بإيد واحدة، حتى من غير نت.' },
+        { n: '3', t: 'إنت ترد', d: 'تعرف مين خلّص ومين بيبعد ومين مستني ردّك، وترد بضغطة.' }
+      ],
+      feed: [
+        { t: 'برنامج Push اتوزّع على سارة', at: '9:02' },
+        { t: 'سارة خلّصت تمرين النهارده', at: '10:15' },
+        { t: 'سارة بعتت فيديو سكوات', at: '10:16' },
+        { t: 'ردّيت عليها: نزّل أبطأ', at: '10:20' }
+      ],
+      features: [
+        { n: '01', t: 'مصمم البرامج', d: 'Supersets، وقوالب جاهزة، ومكتبة فيها أكتر من 1300 تمرين متحرك.' },
+        { n: '02', t: 'تغذية بالبدائل', d: 'الماكروز بتتحسب وانت بتكتب، واللاعب يبدّل الرز بالمكرونة والكمية بتتظبط لوحدها.' },
+        { n: '03', t: 'رادار الانسحاب', d: 'أي لاعب يعدّي عليه 3 أيام من غير تسجيل يظهرلك فوق قبل ما يفكّر يمشي.' },
+        { n: '04', t: 'صندوق مهام واحد', d: 'فيديوهات الأداء وصور التحديث الأسبوعي في مكان واحد، وفيه ردود سريعة جاهزة.' }
+      ],
+      player: [
+        { t: 'Focus Mode', d: 'تمرين واحد قدامك، وأزرار + و − كبيرة.' },
+        { t: 'من غير نت', d: 'بيتحفظ على الموبايل وبيتبعت لوحده.' },
+        { t: 'تايمر الراحة', d: 'مظبوط حتى لو قفلت الشاشة، والموبايل بيهتز.' },
+        { t: 'رقم قياسي جديد', d: 'احتفال على الشاشة كل ما تكسر رقمك.' },
+        { t: 'صوّر وابعت', d: 'فيديو السِت بيترفع وانت مكمّل.' },
+        { t: 'زي التطبيق', d: 'بيتثبّت على الشاشة الرئيسية في ثانيتين.' }
+      ],
+      plans: [
+        { name: 'ENTRY', price: '0', unit: 'ج.م', limit: 5, action: 'ابدأ مجاناً', hot: false, plain: true },
+        { name: 'CHAMPION', price: '399', unit: 'ج.م / شهر', limit: 20, action: 'اشترك', hot: false, plain: true },
+        { name: 'LEGEND', price: '699', unit: 'ج.م / شهر', limit: 40, action: 'اشترك', hot: true, plain: false },
+        { name: 'EMPIRE', price: '1,499', unit: 'ج.م / شهر', limit: 100, action: 'اشترك', hot: false, plain: true }
+      ],
+      faq: [
+        { q: 'اللاعب محتاج يدفع حاجة؟', a: 'لأ. الكابتن هو اللي بيشترك، واللاعب بيدخل ببلاش من لينك الدعوة.' },
+        { q: 'بيشتغل من غير نت؟', a: 'أيوه. التمرين والوجبات بيتسجّلوا على الموبايل، وبيتبعتوا لوحدهم أول ما النت يرجع.' },
+        { q: 'لازم أنزّله من المتجر؟', a: 'لأ. بيفتح من المتصفح، وتقدر تثبّته على الشاشة الرئيسية في أندرويد وآيفون.' },
+        { q: 'حد غيري يقدر يشوف لاعبيني؟', a: 'لأ. كل كابتن بيشوف لاعبينه بس، والحماية دي في قاعدة البيانات نفسها، مش في الشاشة بس.' },
+        { q: 'لو الاشتراك خلص أو عايز لاعبين أكتر؟', a: 'مفيش حاجة بتتمسح أبداً. اللاعب بيفضل شايف برنامجه 3 أيام بعد ما الاشتراك يخلص، وتاريخه محفوظ دايماً. ولو عايز تضيف لاعبين أكتر من باقتك، كبّر الباقة.' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

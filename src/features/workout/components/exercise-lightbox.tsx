@@ -1,0 +1,32 @@
+'use client';
+import { useT } from '@/core/i18n/client';
+import { messages } from '../messages';
+
+import { useRef } from 'react';
+import Image from 'next/image';
+import { Maximize2, X } from 'lucide-react';
+
+// A native dialog gives focus trapping, Escape/back-gesture closing and a top layer above the bottom nav for free.
+export function ExerciseLightbox({ src, name }: { src: string; name: string }) {
+  const t = useT(messages);
+  const dialog = useRef<HTMLDialogElement>(null);
+  const close = () => dialog.current?.close();
+  return <>
+    <button type="button" aria-label={t('enlargeExerciseImage', { name })} onClick={() => dialog.current?.showModal()}
+      className="relative block shrink-0 cursor-pointer rounded-control transition-transform hover:scale-105 motion-reduce:hidden motion-reduce:transition-none">
+      <Image src={src} alt="" width={84} height={84} unoptimized loading="eager" decoding="async" className="rounded-control" />
+      <span aria-hidden className="absolute bottom-1 end-1 grid size-6 place-items-center rounded-full bg-bg/75 text-ink">
+        <Maximize2 className="size-3.5" />
+      </span>
+    </button>
+    <dialog ref={dialog} aria-label={name} onClick={event => { if (event.target === event.currentTarget) close(); }}
+      className="m-0 h-dvh max-h-none w-dvw max-w-none bg-bg/80 p-4 text-ink backdrop-blur-md open:flex open:items-center open:justify-center open:animate-[surface-in_200ms_ease-out] motion-reduce:open:animate-none backdrop:bg-transparent">
+      <button type="button" aria-label={t('closeImage')} onClick={close}
+        className="glass absolute end-[max(1rem,var(--safe-end))] top-[max(1rem,var(--safe-top))] grid size-12 place-items-center rounded-full">
+        <X aria-hidden className="size-6" />
+      </button>
+      <Image src={src} alt={name} width={480} height={480} unoptimized decoding="async"
+        className="h-auto max-h-[80vh] w-auto max-w-full rounded-card border border-line object-contain" />
+    </dialog>
+  </>;
+}

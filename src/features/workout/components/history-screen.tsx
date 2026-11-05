@@ -1,0 +1,55 @@
+'use client';
+import { useState } from 'react';
+import Link from 'next/link';
+import { Dumbbell } from 'lucide-react';
+import { useLocale, useT } from '@/core/i18n/client';
+import { Button, Chip, EmptyState, ErrorState, LoadingState } from '@/ui';
+import { exerciseName } from '@/lib/display-name';
+import { bestSet } from '../data/history-grouping';
+import { useWorkoutHistory } from '../hooks/use-workout-history';
+import { messages } from '../messages';
+import { HistorySets } from './history-sets';
+import { HistoryWorkoutRow } from './history-workout';
+
+export function HistoryScreen({ playerId, exerciseId = '' }: { playerId: string; exerciseId?: string }) {
+  const t = useT(messages);
+  const locale = useLocale();
+  const [view, setView] = useState(exerciseId ? 'exercises' : 'workouts');
+  const [selected, setSelected] = useState(exerciseId);
+  const [limit, setLimit] = useState(20);
+  const history = useWorkoutHistory(playerId, limit, view === 'exercises');
+  const exercises = [...new Set(history.workouts.flatMap(row => row.exercises.map(exercise => exercise.id)))];
+  const active = selected || exercises[0] || '';
+  const workouts = view === 'exercises' ? history.workouts.filter(row => row.exercises.some(exercise => exercise.id === active)) : history.workouts;
+  const best = bestSet(workouts.flatMap(row => row.exercises.filter(exercise => exercise.id === active).flatMap(exercise => exercise.sets)));
+  return <main className="mx-auto max-w-lg space-y-4 px-5 pt-6 pb-32">
+    <Link href="/player/progress" className="inline-flex min-h-12 items-center text-lime">{t('back')}</Link>
+    <h1 className="text-2xl font-extrabold">{t('historyTitle')}</h1>
+    <div role="group" aria-label={t('historyViews')} className="glass flex gap-2 rounded-card p-2">
+      <Chip pressed={view === 'workouts'} onClick={() => setView('workouts')}>{t('workouts')}</Chip>
+      <Chip pressed={view === 'exercises'} onClick={() => setView('exercises')}>{t('exercises')}</Chip>
+    </div>
+    {history.error && <ErrorState message={t('historyError')} retryLabel={t('tryAgain')} onRetry={history.retry} />}
+    {history.loading ? <LoadingState /> : !history.workouts.length ?
+      <EmptyState icon={Dumbbell} title={t('historyEmpty')} body={t('goHomeToSeeYourCurrentWorkout')} action={{ label: t('backToHome'), href: '/player' }} /> : <>
+        {view === 'exercises' && <>
+          <label className="block space-y-2"><span>{t('chooseExercise')}</span>
+            <select className="glass min-h-12 w-full rounded-control px-3" value={active} onChange={event => { setSelected(event.target.value); setLimit(20); }}>
+              {!exercises.includes(active) && <option value={active}>{t('unknownExercise')}</option>}
+              {exercises.map(id => {
+                const name = history.names.find(row => row.id === id);
+                return <option key={id} value={id}>{name ? exerciseName(name, locale) : t('unknownExercise')}</option>;
+              })}
+            </select>
+          </label>
+          {best && <section className="glass-strong space-y-2 rounded-card p-4"><h2 className="font-bold">{t('bestSet')}</h2><HistorySets sets={[best]} /></section>}
+          {!workouts.length && <EmptyState icon={Dumbbell} title={t('noExerciseHistory')} body={t('goHomeToSeeYourCurrentWorkout')} action={{ label: t('backToHome'), href: '/player' }} />}
+        </>}
+        {workouts.slice(0, limit).map(workout => <HistoryWorkoutRow key={workout.id} workout={workout} names={history.names}
+          title={history.days.find(day => day.id === workout.program_day_id)?.title || t('unknownDay')}
+          exerciseId={view === 'exercises' ? active : undefined} />)}
+        {(workouts.length > limit || (view === 'workouts' && history.hasMore)) &&
+          <Button variant="secondary" className="w-full" onClick={() => setLimit(value => value + 20)}>{t('moreHistory')}</Button>}
+      </>}
+  </main>;
+}

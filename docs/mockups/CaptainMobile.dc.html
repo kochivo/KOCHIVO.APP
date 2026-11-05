@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8">
+<title>الكابتن — موبايل</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300..900&amp;family=Changa:wght@500..800&amp;family=Manrope:wght@500;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#0B0E11}
+h1,h2,h3,button,.cta,.display{font-family:Manrope,Changa,Alexandria,sans-serif}
+button,input,select{font-family:inherit}
+button{cursor:pointer}
+a{color:#B6E94F}
+.mesh{background:radial-gradient(30rem 24rem at 50% 30%,rgba(182,233,79,.09),transparent 60%),radial-gradient(30rem 30rem at -15% 10%,#17222e,transparent 65%),radial-gradient(26rem 24rem at 100% 100%,#131c25,transparent 70%),#0B0E11}
+.glass{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.10);backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.glass-strong{background:rgba(0,0,0,.40);border:1px solid rgba(255,255,255,.10);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px)}
+.navbar{background:rgba(16,20,24,.72);border:1px solid rgba(255,255,255,.10);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px)}
+.cta{background:#B6E94F;color:#101418;border:none;box-shadow:0 12px 32px -10px rgba(182,233,79,.55)}
+.ghost{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#F2F2EE}
+.input{height:54px;width:100%;box-sizing:border-box;border-radius:16px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.35);color:#F2F2EE;padding:0 16px;font-size:15px;outline:none}
+.input:focus{border-color:#B6E94F}
+.lbl{display:flex;flex-direction:column;gap:8px;font-size:13px;color:#9AA0A6}
+.chip{height:40px;padding:0 14px;border-radius:14px;font-size:13px;font-weight:700}
+</style>
+</helmet>
+<div dir="rtl" class="mesh" style="width: 390px; height: 844px; box-sizing: border-box; color: #F2F2EE; font-family: Manrope, Alexandria, sans-serif; position: relative; overflow: hidden">
+
+  <!-- 1) أول مرة: مفيش لاعبين -->
+  <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ true }}">
+    <div style="display: flex; flex-direction: column; gap: 18px; padding: 26px 20px 110px">
+      <img src="/_blob/a4c76c30a72e976839e1e233247010c5" alt="KOCHIVO" style="height: 22px; width: auto; align-self: flex-start">
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <span style="font-size: 11px; letter-spacing: .14em; color: #B6E94F; font-weight: 700">WELCOME · أهلاً يا كابتن</span>
+        <h1 style="margin: 0; font-size: 28px; font-weight: 800; line-height: 1.25">3 خطوات وأول لاعب يبدأ معاك</h1>
+      </div>
+      <div class="glass" style="border-radius: 24px; padding: 8px; display: flex; flex-direction: column">
+        <div style="display: flex; align-items: center; gap: 14px; padding: 14px">
+          <span style="width: 36px; height: 36px; flex-shrink: 0; border-radius: 12px; background: #B6E94F; color: #101418; display: flex; align-items: center; justify-content: center; font-weight: 800">1</span>
+          <div style="display: flex; flex-direction: column; gap: 2px"><b style="font-size: 15px">ضيف لاعب</b><span style="font-size: 12px; color: #9AA0A6">اسمه ورقمه بس</span></div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 14px; padding: 14px; border-top: 1px solid rgba(255,255,255,.06)">
+          <span class="ghost" style="width: 36px; height: 36px; flex-shrink: 0; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #9AA0A6">2</span>
+          <div style="display: flex; flex-direction: column; gap: 2px"><b style="font-size: 15px">اختار برنامج جاهز</b><span style="font-size: 12px; color: #9AA0A6">10 قوالب، وتقدر تعدّل عليها بعدين</span></div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 14px; padding: 14px; border-top: 1px solid rgba(255,255,255,.06)">
+          <span class="ghost" style="width: 36px; height: 36px; flex-shrink: 0; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #9AA0A6">3</span>
+          <div style="display: flex; flex-direction: column; gap: 2px"><b style="font-size: 15px">ابعتله الدعوة على واتساب</b><span style="font-size: 12px; color: #9AA0A6">يفتح اللينك ويبدأ على طول</span></div>
+        </div>
+      </div>
+      <button onClick="{{ toAdd }}" class="cta" style="height: 60px; border-radius: 20px; font-size: 17px; font-weight: 800">ضيف أول لاعب</button>
+      <a href="CaptainViewAsPlayer.dc.html" style="text-align: center; font-size: 13px; font-weight: 700; text-decoration: none">شوف التطبيق بعين اللاعب الأول</a>
+    </div>
+  </sc-if>
+
+  <!-- 2) إضافة لاعب -->
+  <sc-if value="{{ isAdd }}" hint-placeholder-val="{{ false }}">
+    <div style="display: flex; flex-direction: column; gap: 16px; padding: 22px 20px 24px">
+      <div style="display: flex; align-items: center; justify-content: space-between">
+        <h1 style="margin: 0; font-size: 22px; font-weight: 800">لاعب جديد</h1>
+        <button onClick="{{ toEmpty }}" aria-label="رجوع" class="glass" style="width: 48px; height: 48px; border-radius: 16px; color: #F2F2EE; display: flex; align-items: center; justify-content: center">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+        </button>
+      </div>
+      <label class="lbl">الاسم<input class="input" value="أحمد سمير"></label>
+      <label class="lbl">رقم الواتساب<input class="input" dir="ltr" inputmode="tel" value="010 1234 5678" style="text-align: right"></label>
+      <div class="lbl">الهدف
+        <div style="display: flex; gap: 8px; flex-wrap: wrap">
+          <button class="chip" style="background: #F2F2EE; color: #101418; border: none">تنشيف</button>
+          <button class="chip ghost">تضخيم</button>
+          <button class="chip ghost">لياقة</button>
+        </div>
+      </div>
+      <div class="lbl">البرنامج
+        <div class="glass" style="border-radius: 18px; padding: 14px; display: flex; align-items: center; justify-content: space-between">
+          <div style="display: flex; flex-direction: column; gap: 2px"><b style="font-size: 15px; color: #F2F2EE">Push Pull Legs · مبتدئ</b><span style="font-size: 12px">قالب جاهز · 3 أيام في الأسبوع</span></div>
+          <span style="font-size: 13px; font-weight: 700; color: #B6E94F">غيّر</span>
+        </div>
+      </div>
+      <span style="font-size: 12px; color: #9AA0A6">الأكل والقياسات تقدر تضيفهم بعد ما يدخل.</span>
+      <button onClick="{{ toInvite }}" class="cta" style="margin-top: auto; height: 60px; border-radius: 20px; font-size: 17px; font-weight: 800">كمّل للدعوة</button>
+    </div>
+  </sc-if>
+
+  <!-- 3) الدعوة -->
+  <sc-if value="{{ isInvite }}" hint-placeholder-val="{{ false }}">
+    <div style="display: flex; flex-direction: column; gap: 16px; padding: 22px 20px 24px">
+      <span style="font-size: 11px; letter-spacing: .14em; color: #B6E94F; font-weight: 700">INVITE · الدعوة جاهزة</span>
+      <h1 style="margin: 0; font-size: 24px; font-weight: 800; line-height: 1.3">ابعت لأحمد اللينك ده</h1>
+      <div class="glass-strong" style="border-radius: 24px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+        <span style="font-size: 14px; line-height: 1.7">أهلاً يا أحمد، أنا كابتن محمد. برنامجك جاهز على KOCHIVO، افتح اللينك وابدأ:</span>
+        <span dir="ltr" style="font-size: 15px; font-weight: 800; color: #B6E94F; text-align: right">kochivo.app/i/K7Q2-9MXA</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px; font-size: 12px; color: #9AA0A6">
+        <span>اللينك لأحمد بس، وبيشتغل مرة واحدة خلال 7 أيام.</span>
+        <span>هيدخل بـ Google أو بكود يوصله على الإيميل. من غير كلمة سر.</span>
+      </div>
+      <button onClick="{{ toHome }}" class="cta" style="margin-top: 8px; height: 60px; border-radius: 20px; font-size: 17px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 10px">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.5A8.4 8.4 0 1 1 21 11.5z"></path></svg>
+        ابعت على واتساب
+      </button>
+      <button onClick="{{ toHome }}" class="ghost" style="height: 52px; border-radius: 18px; font-size: 15px; font-weight: 700">انسخ اللينك</button>
+    </div>
+  </sc-if>
+
+  <!-- 4) رئيسية الكابتن -->
+  <sc-if value="{{ isHome }}" hint-placeholder-val="{{ false }}">
+    <div style="display: flex; flex-direction: column; gap: 14px; padding: 22px 20px 110px">
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <span style="font-size: 11px; letter-spacing: .14em; color: #9AA0A6">TUESDAY · 3 NOV</span>
+        <h1 style="margin: 0; font-size: 24px; font-weight: 800">صباح الخير يا كابتن</h1>
+      </div>
+      <div style="display: flex; gap: 10px">
+        <div class="glass-strong" style="flex: 1; border-radius: 20px; padding: 14px; display: flex; flex-direction: column; gap: 4px"><b class="display" style="font-size: 28px">7</b><span style="font-size: 12px; color: #9AA0A6">اتمرنوا النهارده</span></div>
+        <div class="glass-strong" style="flex: 1; border-radius: 20px; padding: 14px; display: flex; flex-direction: column; gap: 4px"><b class="display" style="font-size: 28px">4</b><span style="font-size: 12px; color: #9AA0A6">مستنيين ردك</span></div>
+        <div class="glass-strong" style="flex: 1; border-radius: 20px; padding: 14px; display: flex; flex-direction: column; gap: 4px"><b class="display" style="font-size: 28px; color: #F2B544">2</b><span style="font-size: 12px; color: #9AA0A6">في خطر</span></div>
+      </div>
+      <div class="glass" style="border-radius: 24px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+        <div style="display: flex; justify-content: space-between; align-items: center"><b style="font-size: 15px">رادار الانسحاب</b><span style="font-size: 12px; color: #9AA0A6">3 أيام من غير تسجيل</span></div>
+        <div style="display: flex; align-items: center; gap: 12px">
+          <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px"><b style="font-size: 14px">كريم عادل</b><span style="font-size: 12px; color: #F2B544">آخر تمرين من 5 أيام</span></div>
+          <button aria-label="كلّم كريم على واتساب" class="ghost" style="width: 48px; height: 48px; border-radius: 16px; display: flex; align-items: center; justify-content: center; color: #B6E94F"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.5A8.4 8.4 0 1 1 21 11.5z"></path></svg></button>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px; border-top: 1px solid rgba(255,255,255,.06); padding-top: 12px">
+          <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px"><b style="font-size: 14px">يوسف هشام</b><span style="font-size: 12px; color: #F2B544">مسجّلش أكل من 3 أيام</span></div>
+          <button aria-label="كلّم يوسف على واتساب" class="ghost" style="width: 48px; height: 48px; border-radius: 16px; display: flex; align-items: center; justify-content: center; color: #B6E94F"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.5A8.4 8.4 0 1 1 21 11.5z"></path></svg></button>
+        </div>
+      </div>
+      <div class="glass" style="border-radius: 20px; padding: 14px 16px; display: flex; align-items: center; gap: 12px">
+        <span style="width: 8px; height: 8px; border-radius: 4px; background: #F2B544"></span>
+        <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px"><b style="font-size: 14px">أحمد سمير</b><span style="font-size: 12px; color: #9AA0A6">الدعوة اتبعتت · لسه مدخلش</span></div>
+        <button onClick="{{ toInvite }}" class="ghost" style="height: 40px; padding: 0 12px; border-radius: 12px; font-size: 12px; font-weight: 700">ابعت تاني</button>
+      </div>
+      <button onClick="{{ toAdd }}" class="cta" style="height: 56px; border-radius: 18px; font-size: 16px; font-weight: 800">+ لاعب جديد</button>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ showNav }}" hint-placeholder-val="{{ true }}">
+    <nav class="navbar" style="position: absolute; bottom: 16px; left: 16px; right: 16px; height: 68px; border-radius: 24px; display: flex; align-items: center; justify-content: space-around; font-size: 11px">
+      <span style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: #B6E94F; font-weight: 700"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"></path></svg>الرئيسية</span>
+      <a href="CaptainClients.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: #9AA0A6; text-decoration: none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="8" r="4"></circle><path d="M2 21a7 7 0 0 1 14 0M17 4a4 4 0 0 1 0 8M22 21a7 7 0 0 0-4-6.3"></path></svg>اللاعبين</a>
+      <a href="CaptainBuilder.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: #9AA0A6; text-decoration: none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 5v14M18 5v14M3 9v6M21 9v6M6 12h12"></path></svg>البرامج</a>
+      <a href="CaptainInbox.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: #9AA0A6; text-decoration: none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12h-6l-2 3h-4l-2-3H2"></path><path d="M5.5 5h13L22 12v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6z"></path></svg>المهام</a>
+    </nav>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { step: 'empty' }; }
+  renderVals() {
+    const st = this.state.step;
+    const go = (step) => () => this.setState({ step });
+    return {
+      isEmpty: st === 'empty', isAdd: st === 'add', isInvite: st === 'invite', isHome: st === 'home',
+      showNav: st === 'empty' || st === 'home',
+      toEmpty: go('empty'), toAdd: go('add'), toInvite: go('invite'), toHome: go('home')
+    };
+  }
+}
+</script>
+</body>
+</html>

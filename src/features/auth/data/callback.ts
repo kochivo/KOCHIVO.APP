@@ -1,0 +1,68 @@
+import { getLocale } from '@/core/i18n/server';
+import { unstable_rethrow } from 'next/navigation';
+import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { authClient, profile, siteOrigin } from './auth-client';
+import { authError } from '../errors';
+import { parseInviteCode } from '../invite-code';
+import { coachSlug } from '@/lib/coach-slug';
+import { completeCoachRequest } from './coach-request';
+import { homeFor } from '../routing';
+
+export async function handleAuthCallback(request: NextRequest) {
+  // Behind the host's proxy request.url is the container address (0.0.0.0:8080), not the site.
+  const origin = await siteOrigin();
+  const jar = await cookies();
+  const raw = jar.get('auth-intent')?.value;
+  jar.delete('auth-intent');
+  let intent: 'captain' | 'player' | undefined;
+  let invite: string | null = null;
+  let coach = coachSlug(request.nextUrl.searchParams.get('coach'));
+  if (coach) intent = 'player';
+  try {
+    if (raw) {
+      const value: unknown = JSON.parse(raw);
+      if (value && typeof value === 'object' && 'intent' in value) {
+        if (value.intent === 'captain' || value.intent === 'player') intent = value.intent;
+        if ('code' in value && typeof value.code === 'string') invite = parseInviteCode(value.code);
+        if (!coach && 'coach' in value) coach = coachSlug(value.coach);
+      }
+    }
+    // An explicit coach signup must never redeem an unrelated, stale OAuth invite.
+    if (coach) { intent = 'player'; invite = null; }
+    const code = request.nextUrl.searchParams.get('code');
+    const tokenHash = request.nextUrl.searchParams.get('token_hash');
+    const type = request.nextUrl.searchParams.get('type');
+    if (!code && !(tokenHash && (type === 'signup' || type === 'email'))) throw new Error('Missing authorization code');
+    const client = await authClient();
+    const exchange = tokenHash && (type === 'signup' || type === 'email')
+      ? await client.auth.verifyOtp({ token_hash: tokenHash, type })
+      : await client.auth.exchangeCodeForSession(code ?? '');
+    if (exchange.error) throw exchange.error;
+    const user = await profile(client);
+    if (!user) throw new Error('Missing profile');
+    if (user.admin) return NextResponse.redirect(new URL(homeFor(user), origin));
+    if (!user.roleConfirmed) {
+      if (!intent) return NextResponse.redirect(new URL('/login', origin));
+      const confirmation = await client.rpc('confirm_role', { p_role: intent });
+      if (confirmation.error) throw confirmation.error;
+      user.role = intent;
+      if (intent === 'captain') user.captainStatus = 'pending';
+    }
+    if (invite) {
+      if (user.role === 'captain') return NextResponse.redirect(new URL(`/i/${invite}`, origin));
+      const redemption = await client.rpc('redeem_invite', { p_code: invite });
+      if (redemption.error) throw redemption.error;
+      return NextResponse.redirect(new URL('/player/onboarding', origin));
+    }
+    if (coach) return NextResponse.redirect(new URL(await completeCoachRequest(client, coach), origin));
+    return NextResponse.redirect(new URL(homeFor(user), origin));
+  } catch (error) {
+    unstable_rethrow(error);
+    const target = new URL(invite ? `/i/${invite}` : '/login', origin);
+    if (coach) { target.searchParams.set('coach', coach); target.searchParams.set('tab', 'signup'); }
+    target.searchParams.set('error', authError(error, await getLocale()));
+    return NextResponse.redirect(target);
+  }
+}
