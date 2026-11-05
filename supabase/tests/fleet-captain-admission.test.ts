@@ -53,16 +53,24 @@ it('creates and redeems an invite once, expires another and leaves failed redemp
   expect((await run(captain.id, 'select player_id from captain_roster()')).rows).toEqual([{ player_id: player }]);
 });
 
-// BUG T-089-A-1: invite redemption bypasses pending activation and grants immediate training access.
-it.fails('keeps an invited player pending until the captain activates their package', async () => {
+it('keeps an invited player pending until the captain activates their package', async () => {
   const captain = fleet.captains[10];
   if (!captain) throw new Error('Missing captain');
   const player = await fleetUser(db, 61001, 'player');
   await run(captain.id, `insert into coach_invites(captain_id,code,access_until)
     values($1,'activation-gate','2026-12-03')`, [captain.id]);
   await run(player, "select redeem_invite('activation-gate')");
-  const actual = await run(player, 'select pending,player_can_write() as can_write from coach_clients');
-  expect(actual.rows).toEqual([{ pending: true, can_write: false }]);
+  const actual = await run(player, 'select pending,access_until::text,player_can_write() as can_write from coach_clients');
+  expect(actual.rows).toEqual([{ pending: true, access_until: '2026-12-03', can_write: false }]);
+  const scan = fleetId(61002);
+  const write = () => run(player, "insert into body_scans(id,scan_date,weight_kg) values($1,'2026-11-03',80)", [scan]);
+  await expect(write()).rejects.toMatchObject({ code: '42501' });
+  const link = await asUser(db, player, tx => tx.query<{ id: string }>('select id from coach_clients'));
+  await run(captain.id, "select activate_player($1,null,'days',7,100,100,false)", [link.rows[0]?.id]);
+  expect((await run(player, 'select pending,access_until::text,player_can_write() as can_write from coach_clients')).rows)
+    .toEqual([{ pending: false, access_until: '2026-11-10', can_write: true }]);
+  await write();
+  expect((await run(player, 'select id from body_scans')).rows).toEqual([{ id: scan }]);
 });
 
 it('reserves join-request slots, accepts and declines them, and rejects another captain resolving them', async () => {

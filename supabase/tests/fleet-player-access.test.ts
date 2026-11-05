@@ -33,7 +33,7 @@ it('joins by invite and request; request content stays private until captain act
   await run(captain.id, `insert into coach_invites(id,captain_id,code,access_until)
     values ($1,$2,'fleet-new-invite','2026-12-03')`, [invite, captain.id]);
   await run(invited, "select redeem_invite('fleet-new-invite')");
-  expect((await run(invited, 'select captain_id,pending from coach_clients')).rows).toEqual([{ captain_id: captain.id, pending: false }]);
+  expect((await run(invited, 'select captain_id,pending from coach_clients')).rows).toEqual([{ captain_id: captain.id, pending: true }]);
   await expect(run(invited, "select redeem_invite('fleet-new-invite')")).rejects.toMatchObject({ code: 'P0002' });
 });
 
@@ -101,8 +101,7 @@ for (const state of ['pending', 'frozen', 'expired'] as const) {
       }
     }
   });
-  // BUG T-089-B-1: body_scans_owner checks identity but omits player_can_write for new scans.
-  it.fails(`${state} players cannot create new body scans`, async () => {
+  it(`${state} players cannot create new body scans`, async () => {
     const player = fleet.players.find(p => p.state === state);
     if (!player) throw new Error('Missing restricted player');
     const id = await fleetId('blocked-scan', state);
@@ -175,6 +174,8 @@ async function movePlayer() {
   await run(newCaptain.id, `insert into coach_invites(id,captain_id,code,access_until)
     values ($1,$2,$3,'2026-12-03')`, [invite, newCaptain.id, `move-${suffix}`]);
   await run(player, 'select redeem_invite($1)', [`move-${suffix}`]);
+  const newLink = await asUser(db, player, tx => tx.query<{ id: string }>('select id from coach_clients where archived_at is null'));
+  await run(newCaptain.id, "select activate_player($1,null,'days',30,0,0,true)", [newLink.rows[0]?.id]);
   await sync(after, '2026-11-03', '2026-11-03T11:00:00Z');
   return { player, before, after, history, oldCaptain: oldCaptain.id, newCaptain: newCaptain.id };
 }

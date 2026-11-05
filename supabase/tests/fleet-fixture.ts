@@ -62,8 +62,6 @@ export async function createFleet(db: PGlite) {
         await asUser(db, player, tx => tx.query(
           'insert into coach_join_requests(id,captain_id,player_id) values($1,$2,$3)', [linkId, id, player]));
       }
-      // Invites currently create active links (covered by T-089-A-1); normalize only fixture setup.
-      if (joinedBy === 'invite') await db.query('update coach_clients set pending=true where id=$1', [linkId]);
       const kind = (j + index) % 2 === 0 ? 'days' : 'sessions';
       const state = (['active', 'pending', 'frozen', 'expired'] as const)[j % 4] ?? 'active';
       if (state !== 'pending') {

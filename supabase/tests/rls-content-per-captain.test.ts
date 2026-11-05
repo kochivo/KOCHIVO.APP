@@ -92,7 +92,9 @@ describe('content access belongs to its captain (0027)', () => {
       `insert into public.coach_invites (captain_id, access_until)
        values ($1, test_clock.today() + 30) returning code`, [b],
     ));
-    await asUser(db, player, (tx) => tx.query('select public.redeem_invite($1)', [rows[0]?.code]));
+    const link = await asUser(db, player, (tx) => tx.query<{ id: string }>(
+      'select public.redeem_invite($1) as id', [rows[0]?.code]));
+    await asUser(db, b, (tx) => tx.query("select public.activate_player($1,null,'days',30,0,0,true)", [link.rows[0]?.id]));
     // Keep A active for the regression assertion; activating B first would mask SEC-02.
     await visible(player, f, false);
     await visible(a, f, true);
