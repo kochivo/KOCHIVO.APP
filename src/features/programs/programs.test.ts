@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { addDay, addExercise, moveDay, moveExercise, removeDay, removeExercise, renameDay, toggleSuperset, updateExercise } from './draft';
-import { daySummary, validateForActivation, escapeSearch } from './summary';
+import { daySummary, exerciseSummary, validateForActivation, escapeSearch } from './summary';
 import type { ProgramDraft, LibraryExercise } from './types';
 
 const exercise: LibraryExercise = { id: 'exercise', name_ar: 'بنش', name_en: 'Press', body_part: 'chest', equipment: null, media_path: null };
@@ -15,6 +15,19 @@ function positions(draft: ProgramDraft) {
   for (const day of draft.days) expect(day.exercises.map(e => e.position)).toEqual(day.exercises.map((_, i) => i + 1));
 }
 describe('program draft', () => {
+  it('defaults RIR to null and preserves the target through serialization and reordering', () => {
+    const draft = filled();
+    expect(draft.days[0]?.exercises[0]?.rir).toBeNull();
+    const edited = updateExercise(draft, 'day', 'a', { rir: 2 });
+    const restored: ProgramDraft = JSON.parse(JSON.stringify(edited));
+    const row = moveExercise(restored, 'day', 'a', 1).days[0]?.exercises[1];
+    if (!row) throw new Error('fixture');
+    expect(row.rir).toBe(2);
+    expect(exerciseSummary(row, 'en')).toBe('3 sets × 8–12 reps · rest 90 s · RIR 2');
+    expect(exerciseSummary({ ...row, rir: 0 }, 'ar')).toContain('RIR 0');
+    expect(exerciseSummary({ ...row, rir: null }, 'en')).toBe('3 sets × 8–12 reps · rest 90 s');
+    expect(updateExercise(edited, 'day', 'a', { rir: null }).days[0]?.exercises[0]?.rir).toBeNull();
+  });
   it('adds, renames, moves and removes days immutably', () => {
     const initial = empty();
     let d = addDay(addDay(initial, 'a'), 'b');

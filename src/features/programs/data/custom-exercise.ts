@@ -26,7 +26,7 @@ async function save(input: unknown, id: string, update: boolean): Promise<Result
     const { client, owner } = await captainClient();
     const value = parsed.data;
     const row = { name_ar: value.name, name_en: value.name, body_part: value.bodyPart,
-      target: value.target || null, video_url: value.videoUrl || null };
+      target: value.target || null, video_url: value.videoUrl || null, equipment: value.equipment };
     const request = update ? client.from('exercises').update(row).eq('id', id).eq('owner_id', owner)
       : client.from('exercises').insert({ ...row, id, owner_id: owner });
     const result = await request.select('*').single();

@@ -34,7 +34,9 @@ vi.mock('./data/library', () => ({ searchExercises: vi.fn() }));
 vi.mock('./data/custom-exercise', () => ({ createCustomExercise: hooks.save, updateCustomExercise: hooks.save, deleteCustomExercise: hooks.remove }));
 
 type NodeProps = { children?: unknown; onClick?: () => void; onSave?: SheetProps['onSave']; exercise?: unknown;
-  disabled?: boolean; pressed?: boolean;
+  disabled?: boolean; pressed?: boolean; value?: string;
+  onChange?: (event: { target: { value: string } }) => void;
+  onSubmit?: (event: { preventDefault: () => void }) => void;
   onCancel?: (event: { preventDefault: () => void; stopPropagation: () => void }) => void };
 function elements(node: unknown): ReactElement<NodeProps>[] {
   if (Array.isArray(node)) return node.flatMap(elements);
@@ -97,6 +99,33 @@ it('dismisses only the custom sheet when Escape is pressed', () => {
   expect(event.stopPropagation).toHaveBeenCalledOnce();
   expect(close).toHaveBeenCalledOnce();
 });
+it('hides and clears the machine when switching away from cardio', () => {
+  hooks.values = [];
+  const onSave = vi.fn();
+  const sheet = () => {
+    hooks.index = 0; hooks.refIndex = 0;
+    return elements(CustomExerciseSheet({ exercise: { id: 'cardio', name_ar: null, name_en: 'Walk',
+      body_part: 'cardio', equipment: 'treadmill', media_path: null }, onClose() {}, onSave }));
+  };
+  expect(sheet().filter(node => node.type === 'select')).toHaveLength(2);
+  expect(sheet().some(node => node.type === 'option' && node.props.value === 'stairmaster')).toBe(true);
+  sheet().find(node => node.type === 'select' && node.props.value === 'cardio')?.props.onChange?.({ target: { value: 'core' } });
+  expect(sheet().filter(node => node.type === 'select')).toHaveLength(1);
+  sheet().find(node => node.type === 'select')?.props.onChange?.({ target: { value: 'cardio' } });
+  expect(sheet().filter(node => node.type === 'select')[1]?.props.value).toBe('');
+  sheet().find(node => node.type === 'form')?.props.onSubmit?.({ preventDefault() {} });
+  expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ equipment: null }));
+});
+it.each([['glutes', 'upper legs', 'glutes'], ['core', 'waist', 'abs']])(
+  'keeps local library matches under the %s chip', (part, body_part, target) => {
+    const library = { id: 'library', name_ar: null, name_en: 'Library match', body_part, target, equipment: null, media_path: null };
+    const custom = { ...library, id: 'custom', name_en: 'Custom match', body_part: part };
+    hooks.values[7] = [library, custom];
+    render(vi.fn()).find(node => node.type === Chip && node.props.children === part)?.props.onClick?.();
+    const nodes = render(vi.fn());
+    expect(nodes.some(node => node.props.children === 'Library match')).toBe(true);
+    expect(nodes.some(node => node.props.children === 'Custom match')).toBe(true);
+  });
 it('removes an archived exercise from the picker even when the draft uses it', async () => {
   hooks.values[3] = { data: [{ id: 'used', name_ar: 'Press', name_en: 'Press', body_part: 'chest', is_own: true }] };
   const nodes = render(vi.fn(), ['used']);

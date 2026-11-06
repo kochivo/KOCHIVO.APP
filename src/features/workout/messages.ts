@@ -2,6 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    targetReps: 'العدات: {count}', toFailure: 'للفشل', targetRange: '{min}–{max}', rirSuffix: ' · RIR {count}',
     feedbackTitle: 'التمرين كان عامل إيه؟', feedbackRpe: 'قيّم مجهودك من 1 لـ 10',
     veryEasy: 'سهل جدًا', maxEffort: 'أقصى مجهود', feedbackNote: 'ملاحظة للكابتن (وجع، تعب…)',
     feedbackSend: 'ابعت', feedbackError: 'مقدرناش نحفظ تقييمك. جرّب تاني', sound: 'صوت',
@@ -79,6 +80,7 @@ export const messages = defineMessages({
     setNumber: "مجموعة {value0}",
   },
   en: {
+    targetReps: 'Reps: {count}', toFailure: 'To failure', targetRange: '{min}–{max}', rirSuffix: ' · RIR {count}',
     feedbackTitle: 'How was your workout?', feedbackRpe: 'Rate your effort from 1 to 10',
     veryEasy: 'Very easy', maxEffort: 'Max effort', feedbackNote: 'Note for the coach: pain, tiredness…',
     feedbackSend: 'Send', feedbackError: 'Could not save feedback. Try again', sound: 'Sound',

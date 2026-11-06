@@ -90,6 +90,12 @@ it('retains a custom video link in the offline workout snapshot', () => {
   expect(mapProgramSnapshot(response, [], 'player').days[0]?.exercises[0]?.video_url).toBe('https://example.com/video');
   expect(snapshot.days[0]?.exercises[0]?.video_url).toBeNull();
 });
+it.each([null, 0, 2, 5])('carries target RIR %s into the offline snapshot', rir => {
+  const response: ProgramResponse = { ...fixture, program_days: [{ id: 'day', position: 1, title: 'Day',
+    program_exercises: [{ ...exercise, rir }] }] };
+  expect(mapProgramSnapshot(response, [], 'player').days[0]?.exercises[0]?.rir).toBe(rir);
+  expect(snapshot.days[0]?.exercises[0]?.rir).toBeNull();
+});
 
 it('keeps the previous Dexie snapshot on failed refresh or offline', async () => {
   const db = new KochivoDB('player-home-refresh-test');

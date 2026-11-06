@@ -14,7 +14,8 @@ export function exerciseSummary(row: DraftExercise, locale: Locale): string {
     : row.reps_min === row.reps_max ? t('repCount', { n: count, count: number(count) })
       : t('rangeRepCount', { n: count, count: t('repsRange', { min: number(row.reps_min), max: number(count) }) });
   return t('prescription', { sets: t('setCount', { n: row.sets, count: number(row.sets) }), reps,
-    rest: t('restValue', { count: number(row.rest_seconds) }) });
+    rest: t('restValue', { count: number(row.rest_seconds) }) }) +
+    (row.rir == null ? '' : t('rirSuffix', { count: number(row.rir) }));
 }
 export function weekdayStatus(day: DraftDay, locale: Locale): string {
   const t = createT(messages, locale);

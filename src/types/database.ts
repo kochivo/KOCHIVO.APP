@@ -1240,6 +1240,7 @@ export type Database = {
           reps_min: number
           rest_seconds: number
           rpe: number | null
+          rir: number | null
           sets: number
           superset_group: number | null
           tempo: string | null
@@ -1254,6 +1255,7 @@ export type Database = {
           reps_min: number
           rest_seconds?: number
           rpe?: number | null
+          rir?: number | null
           sets: number
           superset_group?: number | null
           tempo?: string | null
@@ -1268,6 +1270,7 @@ export type Database = {
           reps_min?: number
           rest_seconds?: number
           rpe?: number | null
+          rir?: number | null
           sets?: number
           superset_group?: number | null
           tempo?: string | null

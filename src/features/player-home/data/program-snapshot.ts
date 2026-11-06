@@ -7,6 +7,7 @@ export type { ProgramSnapshot } from '@/core/offline';
 
 type ExerciseResponse = Pick<Tables<'program_exercises'>,
   'id' | 'exercise_id' | 'position' | 'sets' | 'reps_min' | 'reps_max' | 'rest_seconds' | 'superset_group' | 'rpe' | 'tempo' | 'notes'> & {
+  rir?: number | null;
   exercises: Pick<Tables<'exercises'>, 'name_ar' | 'name_en' | 'media_path'> & { video_url?: string | null } | null;
 };
 export type ProgramResponse = Pick<Tables<'programs'>, 'id' | 'title' | 'notes' | 'settings'> & {
@@ -28,7 +29,7 @@ export function mapProgramSnapshot(program: ProgramResponse, trainingDays: numbe
       weekday: day.weekday ?? null, is_rest_day: day.is_rest_day ?? false,
       cardio: [...(day.program_cardio ?? [])].sort((a, b) => a.position - b.position),
       exercises: [...day.program_exercises].sort((a, b) => a.position - b.position).map(({ exercises, ...exercise }) => ({
-        ...exercise, name_ar: exercises?.name_ar ?? null, name_en: exercises?.name_en ?? '',
+        ...exercise, rir: exercise.rir ?? null, name_ar: exercises?.name_ar ?? null, name_en: exercises?.name_en ?? '',
         media_path: exercises?.media_path ?? null,
         video_url: exercises?.video_url ?? null,
       })),
@@ -40,7 +41,7 @@ export async function fetchProgramSnapshot(client: SupabaseClient<Database>): Pr
   const { data: auth, error } = await client.auth.getUser();
   if (error || !auth.user) throw error ?? new Error('Missing session');
   const [program, intake] = await Promise.all([
-    client.from('programs').select('id,title,notes,settings,program_days(id,position,title,weekday,is_rest_day,program_cardio(*),program_exercises(id,exercise_id,position,sets,reps_min,reps_max,rest_seconds,superset_group,rpe,tempo,notes,exercises(name_ar,name_en,media_path,video_url)))')
+    client.from('programs').select('id,title,notes,settings,program_days(id,position,title,weekday,is_rest_day,program_cardio(*),program_exercises(id,exercise_id,position,sets,reps_min,reps_max,rest_seconds,superset_group,rpe,rir,tempo,notes,exercises(name_ar,name_en,media_path,video_url)))')
       .eq('player_id', auth.user.id).eq('status', 'active').maybeSingle(),
     client.from('player_intake').select('training_days').eq('player_id', auth.user.id).maybeSingle(),
   ]);

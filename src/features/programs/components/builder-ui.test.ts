@@ -11,6 +11,7 @@ import { BuilderNavigation } from './builder-navigation';
 import { BuilderMenu } from './builder-menu';
 import { RepsSheet } from './reps-sheet';
 import { RestSheet } from './rest-sheet';
+import { RirSheet } from './rir-sheet';
 import { ExerciseRow } from './exercise-row';
 import { convertToWeek } from '../weekly-draft';
 import type { DraftExercise, ProgramDraft } from '../types';
@@ -52,7 +53,7 @@ const render = (element: React.ReactElement, locale: 'ar' | 'en' = 'en') => {
   return renderToStaticMarkup(createElement(LocaleProvider, { locale }, element));
 };
 const row: DraftExercise = { id: 'a', day_id: 'day', exercise_id: 'bench', position: 1, sets: 3,
-  reps_min: 8, reps_max: 12, rest_seconds: 90, superset_group: null,
+  reps_min: 8, reps_max: 12, rest_seconds: 90, superset_group: null, rir: null,
   library: { id: 'bench', name_ar: 'بنش', name_en: 'Bench', body_part: 'chest', equipment: null, media_path: 'bench.gif' } };
 const draft: ProgramDraft = { id: 'p', player_id: 'player', status: 'draft', title: 'Plan',
   days: [{ id: 'day', program_id: 'p', title: 'Chest', position: 1, exercises: [row] }] };
@@ -115,6 +116,20 @@ it('uses preset rest chips and a gym stepper without a select', () => {
   expect(onChange).toHaveBeenCalledWith(120);
 });
 
+it('offers an optional RIR with every target from zero to five', () => {
+  const onChange = vi.fn();
+  const html = render(createElement(RirSheet, { value: 2, openerId: 'rir', onClose() {}, onChange }));
+  expect(html.match(/aria-pressed=/g)).toHaveLength(7);
+  expect(html).toContain('Reps left in the tank before failure');
+  controls.clicks.get('—')?.();
+  expect(onChange).toHaveBeenLastCalledWith(null);
+  controls.clicks.get('0')?.();
+  expect(onChange).toHaveBeenLastCalledWith(0);
+  expect(controls.fallback).toBe('rir');
+  expect(render(createElement(RirSheet, { value: null, openerId: 'rir', onClose() {}, onChange }), 'ar'))
+    .toContain('عدد العدات اللي تفضل في خزانك قبل الفشل');
+});
+
 it('shows media, order, summary and the superset connector in an uncluttered row', () => {
   const html = render(createElement(ExerciseRow, { row: { ...row, superset_group: 1 }, first: true, last: false,
     onLink() {}, onMove() {}, onDelete() {}, onUpdate() {} }));
@@ -122,5 +137,7 @@ it('shows media, order, summary and the superset connector in an uncluttered row
   expect(html).toContain('3 sets × 8–12 reps · rest 90 s');
   expect(html).toContain('border-s-lime'); expect(html).toContain('Superset');
   expect(html).toContain('Exercise options: Bench, 1');
+  expect(html).toContain('grid-cols-2'); expect(html).toContain('sm:grid-cols-4');
+  expect(html).toContain('aria-label="RIR: Bench, 1"');
   expect(html).not.toContain('Move up'); expect(html).not.toContain('checkbox');
 });

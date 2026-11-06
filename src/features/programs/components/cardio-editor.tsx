@@ -26,7 +26,7 @@ export function CardioEditor({ row, first, last, onChange, onMove, onDelete }: {
     </div>
     <TextField label={t('cardioKind')} value={row.kind} maxLength={40} list={listId}
       onChange={event => onChange({ ...row, kind: event.target.value })} />
-    <datalist id={listId}>{(['walk', 'run', 'bike', 'elliptical', 'rope'] as const).map(key => <option key={key} value={t(key)} />)}</datalist>
+    <datalist id={listId}>{(['walk', 'run', 'bike', 'elliptical', 'rope', 'treadmill', 'stairmaster'] as const).map(key => <option key={key} value={t(key)} />)}</datalist>
     <Stepper label={t('cardioMinutes')} value={row.minutes} min={1} step={1}
       format={value => formatNumber(value, locale)} onChange={minutes => onChange({ ...row, minutes: Math.min(300, minutes) })} />
     <fieldset className="space-y-2">

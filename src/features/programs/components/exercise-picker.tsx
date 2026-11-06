@@ -5,7 +5,7 @@ import { messages } from '../messages';
 import dynamic from 'next/dynamic';
 import { useToast } from '@/ui/toast';
 import { uuidv7 } from '@/core/offline/ids';
-import { bodyParts, bodyPartLabels, customExerciseSchema, optimisticExercise, prependExercise } from '../custom-exercises';
+import { bodyParts, bodyPartLabels, bodyPartFilter, customExerciseSchema, optimisticExercise, prependExercise } from '../custom-exercises';
 import type { CustomExerciseInput } from '../custom-exercises';
 import { createCustomExercise, updateCustomExercise, deleteCustomExercise } from '../data/custom-exercise';
 
@@ -92,8 +92,9 @@ export function ExercisePicker({ disabled, onAdd, usedExerciseIds = [] }: {
     } catch { toast.error(t('customExerciseDeleteFailed')); }
     finally { setBusy(ids => ids.filter(value => value !== id)); setDeleting(ids => ids.filter(value => value !== id)); }
   };
+  const filters = bodyPartFilter(bodyPart);
   const rows = [...local, ...(loadedKey === key ? result?.data ?? [] : []).filter(row => !local.some(item => item.id === row.id))]
-    .filter(row => !removed.includes(row.id) && (!mine || row.is_own) && (!bodyPart || row.body_part === bodyPart) &&
+    .filter(row => !removed.includes(row.id) && (!mine || row.is_own) && (!filters.length || filters.some(({ column, value }) => row[column] === value)) &&
       (!query.trim() || `${row.name_ar ?? ''} ${row.name_en}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase())));
   return <section aria-label={t('exerciseLibrary')} className="glass min-w-0 space-y-4 rounded-card p-4">
     <h2 className="font-bold">{t('exerciseLibrary')}</h2>

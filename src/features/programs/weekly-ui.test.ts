@@ -27,6 +27,8 @@ it('shows cardio suggestions, bounded minutes, notes and accessible intensity ch
   expect(html).toContain('+ Add cardio');
   expect(html).toContain('Cardio minutes');
   expect(html).toContain('value="Walking"');
+  expect(html).toContain('value="Treadmill"');
+  expect(html).toContain('value="Stairmaster"');
   expect(html.match(/type="radio"/g)).toHaveLength(3);
   expect(html).toContain('value="Easy"');
   expect(html).not.toMatch(/[\u0600-\u06ff]/);

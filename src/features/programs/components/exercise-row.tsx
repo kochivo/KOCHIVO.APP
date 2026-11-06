@@ -14,6 +14,7 @@ import { BuilderMenu } from './builder-menu';
 import { restText } from './builder-fields';
 import { RepsSheet } from './reps-sheet';
 import { RestSheet } from './rest-sheet';
+import { RirSheet } from './rir-sheet';
 
 export function ExerciseRow({ row, first, last, onLink, onMove, onDelete, onUpdate }: {
   row: DraftExercise; first: boolean; last: boolean; onLink: () => void;
@@ -22,12 +23,13 @@ export function ExerciseRow({ row, first, last, onLink, onMove, onDelete, onUpda
 }) {
   const t = useT(messages);
   const locale = useLocale();
-  const [sheet, setSheet] = useState<'reps' | 'rest' | null>(null);
+  const [sheet, setSheet] = useState<'reps' | 'rest' | 'rir' | null>(null);
   const name = (row.library && exerciseName(row.library, locale)) || t('exerciseUnavailable');
   const position = formatNumber(row.position, locale);
   const linked = row.superset_group !== null;
   const repsId = `reps-${row.id}`;
   const restId = `rest-${row.id}`;
+  const rirId = `rir-${row.id}`;
   const reps = row.reps_max === null ? t('failure') : row.reps_min === row.reps_max ? formatNumber(row.reps_min, locale)
     : t('repsRange', { min: formatNumber(row.reps_min, locale), max: formatNumber(row.reps_max, locale) });
   const field = 'recessed glass-strong flex min-h-28 min-w-0 flex-col items-center justify-center gap-3 rounded-control p-3 [&>div]:w-full [&_output]:text-2xl';
@@ -46,15 +48,19 @@ export function ExerciseRow({ row, first, last, onLink, onMove, onDelete, onUpda
           { label: t(linked ? 'unlink' : 'linkNext'), disabled: last && !linked, onClick: onLink },
         ]} />
     </div>
-    <div className="grid gap-3 sm:grid-cols-3">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
       <div className={field}><Stepper size="compact" label={t('sets')} controlLabel={t('sets2', { v0: name, v1: position })}
         format={value => formatNumber(value, locale)} value={row.sets} min={1} max={20} step={1} onChange={sets => onUpdate({ sets })} /></div>
       <button id={repsId} type="button" className={field} aria-haspopup="dialog" aria-label={`${t('reps')}: ${name}, ${position}`}
         onClick={() => setSheet('reps')}><span className="text-xs text-muted">{t('reps')}</span><bdi className="text-2xl font-bold tabular-nums">{reps}</bdi></button>
       <button id={restId} type="button" className={field} aria-haspopup="dialog" aria-label={`${t('rest')}: ${name}, ${position}`}
         onClick={() => setSheet('rest')}><span className="text-xs text-muted">{t('rest')}</span><bdi className="text-2xl font-bold tabular-nums">{restText(row.rest_seconds, locale)}</bdi></button>
+      <button id={rirId} type="button" className={field} aria-haspopup="dialog" aria-label={t('rirLabel', { name, position })}
+        onClick={() => setSheet('rir')}><span className="text-xs text-muted">{t('rir')}</span>
+        <bdi className="text-2xl font-bold tabular-nums">{row.rir == null ? t('noRir') : formatNumber(row.rir, locale)}</bdi></button>
     </div>
     {sheet === 'reps' && <RepsSheet row={row} openerId={repsId} onClose={() => setSheet(null)} onUpdate={onUpdate} />}
     {sheet === 'rest' && <RestSheet value={row.rest_seconds} openerId={restId} onClose={() => setSheet(null)} onChange={rest_seconds => onUpdate({ rest_seconds })} />}
+    {sheet === 'rir' && <RirSheet value={row.rir} openerId={rirId} onClose={() => setSheet(null)} onChange={rir => onUpdate({ rir })} />}
   </article>;
 }
