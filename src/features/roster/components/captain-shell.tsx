@@ -17,13 +17,13 @@ export async function CaptainShell({ children, sidebarFooter }: { children: Reac
         <CaptainNav />
         <div className="mt-auto hidden min-w-0 border-t border-line pt-4 lg:block">{sidebarFooter}</div>
       </aside>
-      <div className="min-w-0 flex-1 pb-[calc(var(--nav-clearance)+1rem)] lg:px-12 lg:pb-9 lg:pt-9">
+      <div className="min-w-0 flex-1 lg:px-12 lg:pb-9 lg:pt-9">
         <div className="mx-auto w-full min-w-0 max-w-[1640px]">
           <div className="sticky top-0 z-30 -mx-8 mb-6 flex items-center justify-between bg-bg/70 px-8 pb-3 backdrop-blur-md md:-mx-10 md:px-10 lg:pointer-events-none lg:mx-0 lg:mb-2 lg:bg-transparent lg:px-0 lg:pb-0 lg:backdrop-blur-none lg:[&>*]:pointer-events-auto pt-[max(1rem,var(--safe-top))] lg:pt-0">
             <Link href="/captain" aria-label={t('home')} className="flex min-h-12 items-center lg:invisible"><BrandMark className="size-8" /></Link>
             <div className="flex items-center gap-2"><HeaderInstall /><NotificationBell captain /></div>
           </div>
-          <main className="min-w-0">{children}</main>
+          <main className="min-w-0 pb-[var(--page-bottom-clearance)] lg:pb-0">{children}</main>
         </div>
       </div>
       <CaptainDevice />

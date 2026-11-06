@@ -48,6 +48,7 @@
   --safe-end: env(safe-area-inset-right);
   --nav-height: calc(4.5rem + 2px);
   --nav-clearance: calc(var(--nav-height) + 1rem + var(--safe-bottom));
+  --page-bottom-clearance: max(7rem, calc(var(--nav-clearance) + 1rem));
   --builder-action-height: calc(4.5rem + 2px);
   --glass-tint: rgb(255 255 255 / 0.03);
   --glass-tint-raised: rgb(255 255 255 / 0.05);

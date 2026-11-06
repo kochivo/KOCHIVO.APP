@@ -12,7 +12,7 @@ vi.mock('./components/captain-nav', () => ({ CaptainNav: () => null }));
 vi.mock('@/features/notifications', () => ({ NotificationBell: () => null }));
 
 it('uses one desktop gutter and a slim sidebar without capping the main column', async () => {
-  const html = renderToStaticMarkup(await CaptainShell({ children: null, sidebarFooter: 'Sidebar plan' }));
+  const html = renderToStaticMarkup(await CaptainShell({ children: 'Roster content', sidebarFooter: 'Sidebar plan' }));
   expect(html).toContain('w-full min-w-0');
   expect(html).toContain('px-4 pb-4');
   expect(html).toContain('lg:px-0');
@@ -25,7 +25,7 @@ it('uses one desktop gutter and a slim sidebar without capping the main column',
   expect(html).not.toContain('rounded-card');
   expect(html).not.toContain('max-w-screen-2xl');
   expect(html).toContain('min-w-0 flex-1');
-  expect(html).toContain('<main class="min-w-0">');
+  expect(html).toMatch(/<main\b[^>]*>Roster content<\/main>/);
 });
 
 it.each(['ar', 'en'] as const)('labels the mobile home link in %s and shows only the mark', async locale => {

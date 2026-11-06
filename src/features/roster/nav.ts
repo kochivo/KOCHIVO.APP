@@ -22,3 +22,10 @@ export function captainNav(pathname: string, t: Translator<typeof messages> = cr
         : pathname === link.href || pathname.startsWith(`${link.href}/`),
   }));
 }
+
+export function captainMobileNav(pathname: string, t: Translator<typeof messages> = createT(messages, 'ar')) {
+  const destinations = ['/captain', '/captain/players', '/captain/templates', '/captain/inbox'];
+  return captainNav(pathname, t)
+    .filter(item => destinations.includes(item.href))
+    .sort((a, b) => destinations.indexOf(a.href) - destinations.indexOf(b.href));
+}

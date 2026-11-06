@@ -48,7 +48,7 @@ export function PlayerShell({ children }: { children: ReactNode }) {
     <div data-mood={!workout && restMood ? 'rest' : undefined} className="min-h-dvh bg-bg text-ink transition-colors motion-reduce:transition-none">
     <SyncRunner />
     {!workout && <RestMoodSync onChange={setRestMood} />}
-    <div className={workout ? undefined : showsNav(pathname) ? 'pb-[calc(var(--nav-clearance)+1rem)]' : 'pt-[var(--safe-top)]'}>
+    <div className={workout ? undefined : showsNav(pathname) ? 'pb-[var(--page-bottom-clearance)]' : 'pt-[var(--safe-top)]'}>
     {showsNav(pathname) && <div className="sticky top-0 z-30 bg-bg/70 pb-3 pt-[max(0.75rem,var(--safe-top))] backdrop-blur-md"><div className="mx-auto flex max-w-lg justify-end gap-2 px-5">
       <Link href="/player/settings" aria-label={t('settings')} aria-current={pathname === '/player/settings' ? 'page' : undefined}
         className={`flex min-h-12 min-w-12 items-center justify-center rounded-control ${pathname === '/player/settings' ? 'bg-lime-soft text-lime' : 'text-muted'}`}>
