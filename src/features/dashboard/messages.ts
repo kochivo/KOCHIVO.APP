@@ -2,6 +2,13 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    startTitle: 'ابدأ مع أول لاعب في 3 خطوات',
+    startSubtitle: 'كل خطوة بتاخد دقيقة أو اتنين',
+    startInviteBody: 'اكتب اسمه، وابعتله لينك الدعوة على واتساب',
+    startProgram: 'اختار له برنامج',
+    startProgramBody: 'من قوالب البرامج الجاهزة، أو اعمل برنامجك',
+    startNutrition: 'حدد خطة الأكل',
+    startNutritionBody: 'السعرات والبروتين، واللاعب يسجّل أكله من الموبايل',
     clearSearch: "امسح البحث",
     noAlertsBody: "خد نظرة على اللاعبين وخطّط للخطوة الجاية",
     'task.invite': "ضيف أول لاعب ليك",
@@ -51,6 +58,13 @@ export const messages = defineMessages({
     noProgram: "من غير برنامج",
   },
   en: {
+    startTitle: 'Start with your first player in 3 steps',
+    startSubtitle: 'Each step takes a minute or two',
+    startInviteBody: 'Add their name and send the invite link on WhatsApp',
+    startProgram: 'Choose a program',
+    startProgramBody: 'Use a ready-made template or create your own',
+    startNutrition: 'Set a meal plan',
+    startNutritionBody: 'Set calories and protein. Your player logs meals on their phone',
     clearSearch: "Clear search",
     noAlertsBody: "Check on your players and plan their next step",
     'task.invite': "Add your first player",

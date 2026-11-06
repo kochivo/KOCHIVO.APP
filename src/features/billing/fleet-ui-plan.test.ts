@@ -1,19 +1,30 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, expect, it, vi } from 'vitest';
-import { createT } from '@/core/i18n/messages';
-import { messages } from './messages';
 import { PlanBadge } from './components/plan-badge';
+import { PlanSidebar } from './components/plan-sidebar';
 import type { PlanSummary } from './data/plan-summary';
 
 const state = vi.hoisted(() => ({ locale: 'en' as 'en' | 'ar', summary: null as PlanSummary | null }));
-vi.mock('./data/plan-summary', () => ({ fetchPlanSummary: async () => state.summary }));
 vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh() {} }) }));
-vi.mock('@/core/i18n/server', () => ({
-  getLocale: async () => state.locale,
-  getT: async () => createT(messages, state.locale),
-}));
 beforeEach(() => { state.locale = 'en'; state.summary = null; });
-const render = async () => renderToStaticMarkup(await PlanBadge());
+const planData = () => Promise.resolve<[PlanSummary | null, 'en' | 'ar']>([state.summary, state.locale]);
+const render = async () => renderToStaticMarkup(await PlanBadge({ data: planData() }));
+
+it.each([0, 3, 5, 7])('shows accessible sidebar usage for %i players with a bounded bar', async used => {
+  state.summary = { plan: { tier: 'entry', player_limit: 5, price_egp: 0 }, used };
+  const html = renderToStaticMarkup(await PlanSidebar({ data: planData() }));
+  expect(html).toContain('href="/captain/billing"');
+  expect(html).toContain(`${used} of 5 players`);
+  expect(html).toContain('role="progressbar"');
+  expect(html).toContain('aria-valuenow="' + Math.min(used, 5) + '"');
+  expect(html).toContain('aria-label="');
+  expect(html).toContain(used >= 5 ? 'bg-warn' : 'bg-lime');
+  expect(html).toContain(used >= 5 ? 'text-warn' : 'text-muted');
+  expect(html).toContain(`width:${Math.min(used / 5 * 100, 100)}%`);
+});
+it('keeps the sidebar plan error retryable', async () => {
+  expect(renderToStaticMarkup(await PlanSidebar({ data: planData() }))).toContain('role="alert"');
+});
 
 it.each(['en', 'ar'] as const)('shows fleet usage for every tier in %s', async locale => {
   state.locale = locale;
