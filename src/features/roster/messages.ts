@@ -2,6 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    accountMenu: 'حسابي',
     "previewTitle": "شوف كلاعب",
     "dayCount.zero": "{count} أيام",
     "subscriptionDays.few": "{count} أيام",
@@ -115,6 +116,7 @@ export const messages = defineMessages({
     daysAgo2: "من {v0} يوم",
   },
   en: {
+    accountMenu: 'Account',
     "previewTitle": "Player preview",
 
     "dayCount.one": "{count} day",

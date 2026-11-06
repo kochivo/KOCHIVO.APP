@@ -9,6 +9,7 @@ vi.mock('@/core/i18n/server', () => ({
   getT: () => createT(messages, state.locale),
 }));
 vi.mock('./components/captain-nav', () => ({ CaptainNav: () => null }));
+vi.mock('./components/captain-account-menu', () => ({ CaptainAccountMenu: () => null }));
 vi.mock('@/features/notifications', () => ({ NotificationBell: () => null }));
 
 it('uses one desktop gutter and a slim sidebar without capping the main column', async () => {
