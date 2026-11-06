@@ -40,7 +40,7 @@ export function StreakSheet({ stats, today, completedDates, isTrainingDay, onClo
         <span aria-hidden="true" className={`size-3 rounded-full border ${done ? 'border-ember bg-ember' : isTrainingDay(date) ? 'border-muted' : 'border-line'} ${date === today ? 'outline outline-1 outline-offset-4 outline-ember' : ''}`} />
       </div>;
     })}</div>
-    <dl className="grid grid-cols-3 divide-x divide-line rtl:divide-x-reverse">{rows.map(([label, value]) => <div key={label} className="space-y-2 px-2 text-center">
+    <dl className="grid grid-cols-3 divide-x divide-line">{rows.map(([label, value]) => <div key={label} className="space-y-2 px-2 text-center">
       <dt className="text-xs text-muted">{label}</dt><dd className="text-xl font-light tabular-nums">{value}</dd>
     </div>)}</dl>
   </ResponsiveDialog>;
