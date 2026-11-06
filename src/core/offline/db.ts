@@ -12,6 +12,8 @@ export interface SnapshotExercise {
   rest_seconds: number;
   superset_group: number | null;
   rpe: number | null;
+  /** Older cached prescriptions predate target RIR. */
+  rir?: number | null;
   tempo: string | null;
   notes: string | null;
   name_ar: string | null;

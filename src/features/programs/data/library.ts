@@ -6,6 +6,7 @@ import { messages } from '../messages';
 import { supabaseServer } from '@/core/supabase/server';
 import { unstable_rethrow } from 'next/navigation';
 import { escapeSearch } from '../summary';
+import { bodyPartFilter } from '../custom-exercises';
 import type { LibraryExercise, Result } from '../types';
 
 export async function searchExercises({ query, bodyPart, limit = 30, mine = false }: {
@@ -22,7 +23,9 @@ export async function searchExercises({ query, bodyPart, limit = 30, mine = fals
       .is('archived_at', null);
     if (mine) request = request.eq('owner_id', auth.data.claims.sub);
     if (query.trim()) request = request.or(`name_ar.ilike.${pattern},name_en.ilike.${pattern}`);
-    if (bodyPart) request = request.eq('body_part', bodyPart);
+    const filters = bodyPartFilter(bodyPart);
+    if (filters.length > 1) request = request.or(filters.map(({ column, value }) => `${column}.eq.${value}`).join(','));
+    else if (filters[0]) request = request.eq(filters[0].column, filters[0].value);
     const result = await request.order('name_en').limit(Math.min(limit, 30));
     return result.error ? { error: t('couldntLoadExercisesTryAgain') } : {
       data: result.data.map(row => ({ ...row, is_own: row.owner_id === auth.data.claims.sub })),

@@ -49,7 +49,8 @@ export function PreviewSheet({ template, onAssign, onClose }: { template: Templa
               {preview.kind === 'program'
                 ? preview.groups[index]?.items.map((item, i) => <li key={i} className="flex justify-between gap-3">
                   <span className="min-w-0 break-words">{exerciseName(item, locale)}</span>
-                  <span dir="ltr" className="shrink-0 text-muted">{n(item.sets)} × {item.reps}</span>
+                  <span dir="ltr" className="shrink-0 text-muted">{n(item.sets)} × {item.reps}
+                    {item.rir != null && t('rirSuffix', { count: n(item.rir) })}</span>
                 </li>)
                 : preview.groups[index]?.items.map((item, i) => <li key={i} className="flex justify-between gap-3">
                   <span className="min-w-0 break-words">{foodName(item, locale)}</span>

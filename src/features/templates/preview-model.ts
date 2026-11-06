@@ -2,7 +2,7 @@ import type { Tables } from '@/types/database';
 
 type Named = Pick<Tables<'exercises'>, 'name_ar' | 'name_en'>;
 export type ProgramRow = { program_days: (Pick<Tables<'program_days'>, 'position' | 'title'> & {
-  program_exercises: (Pick<Tables<'program_exercises'>, 'position' | 'sets' | 'reps_min' | 'reps_max'> & { exercises: Named | null })[];
+  program_exercises: (Pick<Tables<'program_exercises'>, 'position' | 'sets' | 'reps_min' | 'reps_max'> & { rir?: number | null; exercises: Named | null })[];
 })[] };
 export type PlanRow = { meals: (Pick<Tables<'meals'>, 'position' | 'name'> & {
   meal_items: (Pick<Tables<'meal_items'>, 'position' | 'grams'> & {
@@ -10,7 +10,7 @@ export type PlanRow = { meals: (Pick<Tables<'meals'>, 'position' | 'name'> & {
   })[];
 })[] };
 
-export type PreviewExercise = Named & { sets: number; reps: string };
+export type PreviewExercise = Named & { sets: number; reps: string; rir: number | null };
 export type PreviewFood = Named & { grams: number; kcal: number };
 export type TemplatePreview =
   | { kind: 'program'; groups: { title: string; items: PreviewExercise[] }[] }
@@ -27,7 +27,7 @@ export function programPreview(row: ProgramRow): TemplatePreview {
     title: day.title,
     items: byPosition(day.program_exercises).map(item => ({
       name_ar: item.exercises?.name_ar ?? null, name_en: item.exercises?.name_en ?? '',
-      sets: item.sets, reps: reps(item.reps_min, item.reps_max),
+      sets: item.sets, reps: reps(item.reps_min, item.reps_max), rir: item.rir ?? null,
     })),
   })) };
 }

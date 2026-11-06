@@ -36,7 +36,7 @@ export function moveDay(draft: ProgramDraft, id: string, delta: -1 | 1): Program
 export function addExercise(draft: ProgramDraft, dayId: string, library: LibraryExercise, id: string): ProgramDraft {
   return editDay(draft, dayId, day => ({ ...day, is_rest_day: false, exercises: positioned([...day.exercises, {
     id, day_id: day.id, exercise_id: library.id, library, position: 0,
-    sets: 3, reps_min: 8, reps_max: 12, rest_seconds: 90, superset_group: null,
+    sets: 3, reps_min: 8, reps_max: 12, rest_seconds: 90, superset_group: null, rir: null,
   }]) }));
 }
 export function removeExercise(draft: ProgramDraft, dayId: string, id: string): ProgramDraft {
@@ -73,6 +73,7 @@ export function updateExercise(draft: ProgramDraft, dayId: string, id: string, p
     next.reps_min = clamp(next.reps_min, 1, 100);
     next.reps_max = next.reps_max === null ? null : clamp(next.reps_max, next.reps_min, 32767);
     next.rest_seconds = clamp(Math.round(next.rest_seconds / 15) * 15, 0, 900);
+    next.rir = next.rir == null ? null : clamp(next.rir, 0, 5);
     return next;
   }) }));
 }

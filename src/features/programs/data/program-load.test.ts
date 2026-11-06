@@ -12,8 +12,8 @@ vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => ({
 it('batches days, overlaps exercises and cardio, and preserves each day order', async () => {
   let release = () => {};
   const rows = [
-    { id: 'e2', day_id: 'd2', exercise_id: 'library', position: 1 },
-    { id: 'e1', day_id: 'd1', exercise_id: 'library', position: 1 },
+    { id: 'e2', day_id: 'd2', exercise_id: 'library', position: 1, rir: 2 },
+    { id: 'e1', day_id: 'd1', exercise_id: 'library', position: 1, rir: null },
   ];
   const pending = new Promise<{ data: typeof rows; error: null }>(resolve => {
     release = () => resolve({ data: rows, error: null });
@@ -47,4 +47,5 @@ it('batches days, overlaps exercises and cardio, and preserves each day order', 
   expect(filters).toContainEqual(['program_cardio', 'day_id', ['d1', 'd2']]);
   expect(filters).toContainEqual(['exercises', 'id', ['library']]);
   expect(mocks.from).toHaveBeenCalledTimes(5);
+  expect(result.data?.days.map(day => day.exercises[0]?.rir)).toEqual([null, 2]);
 });

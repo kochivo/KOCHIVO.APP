@@ -33,7 +33,7 @@ it('rejects invalid inputs before accessing the database', async () => {
 it('inserts a captain-owned row with matching translated names and the optimistic ID', async () => {
   expect(await createCustomExercise(input, id)).toMatchObject({ data: { id, is_own: true } });
   expect(mocks.insert).toHaveBeenCalledWith({ id, owner_id: owner, name_ar: 'Press', name_en: 'Press',
-    body_part: 'chest', target: 'Pecs', video_url: 'https://example.com' });
+    body_part: 'chest', target: 'Pecs', video_url: 'https://example.com', equipment: null });
 });
 it.each(['player', 'suspended', 'missing'])('denies a %s caller', async role => {
   if (role === 'missing') mocks.user.mockResolvedValue({ data: { user: null }, error: null });
@@ -44,11 +44,19 @@ it.each(['player', 'suspended', 'missing'])('denies a %s caller', async role => 
 });
 it('scopes edits and deletes to the authenticated owner and clears optional fields', async () => {
   await updateCustomExercise(id, { name: 'Press', bodyPart: 'back' });
-  expect(mocks.update).toHaveBeenCalledWith({ name_ar: 'Press', name_en: 'Press', body_part: 'back', target: null, video_url: null });
+  expect(mocks.update).toHaveBeenCalledWith({ name_ar: 'Press', name_en: 'Press', body_part: 'back', target: null, video_url: null, equipment: null });
   expect(mocks.eq.mock.calls).toEqual([['id', id], ['owner_id', owner]]);
   mocks.eq.mockClear();
   expect(await deleteCustomExercise(id)).toEqual({ data: true });
   expect(mocks.eq.mock.calls).toEqual([['id', id], ['owner_id', owner]]);
+});
+it.each(['treadmill', 'stairmaster'])('persists %s equipment on insert and edit and clears it outside cardio', async equipment => {
+  await createCustomExercise({ ...input, bodyPart: 'cardio', equipment }, id);
+  expect(mocks.insert).toHaveBeenCalledWith(expect.objectContaining({ equipment }));
+  await updateCustomExercise(id, { ...input, bodyPart: 'cardio', equipment });
+  expect(mocks.update).toHaveBeenLastCalledWith(expect.objectContaining({ equipment }));
+  await updateCustomExercise(id, { ...input, equipment });
+  expect(mocks.update).toHaveBeenLastCalledWith(expect.objectContaining({ equipment: null }));
 });
 it('archives a referenced exercise with an owner-scoped update', async () => {
   vi.useFakeTimers(); vi.setSystemTime(new Date('2026-11-04T10:00:00Z'));

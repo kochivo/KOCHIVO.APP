@@ -7,13 +7,13 @@ describe('template preview', () => {
       { position: 2, title: 'Pull', program_exercises: [] },
       { position: 1, title: 'Push', program_exercises: [
         { position: 2, sets: 3, reps_min: 10, reps_max: 10, exercises: { name_ar: null, name_en: 'Dip' } },
-        { position: 1, sets: 4, reps_min: 8, reps_max: 12, exercises: { name_ar: 'بنش', name_en: 'Bench' } },
+        { position: 1, sets: 4, reps_min: 8, reps_max: 12, rir: 2, exercises: { name_ar: 'بنش', name_en: 'Bench' } },
       ] },
     ] });
     expect(preview.groups.map(group => group.title)).toEqual(['Push', 'Pull']);
     expect(preview.groups[0]?.items).toEqual([
-      { name_ar: 'بنش', name_en: 'Bench', sets: 4, reps: '8–12' },
-      { name_ar: null, name_en: 'Dip', sets: 3, reps: '10' },
+      { name_ar: 'بنش', name_en: 'Bench', sets: 4, reps: '8–12', rir: 2 },
+      { name_ar: null, name_en: 'Dip', sets: 3, reps: '10', rir: null },
     ]);
   });
   it('shows a single rep count when there is no range', () => {

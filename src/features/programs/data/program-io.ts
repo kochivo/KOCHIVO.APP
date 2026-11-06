@@ -22,6 +22,7 @@ const exerciseSchema = z.object({
   sets: z.number().int().min(1).max(20), reps_min: z.number().int().min(1).max(100),
   reps_max: z.number().int().min(1).max(32767).nullable(),
   rest_seconds: z.number().int().min(0).max(900).multipleOf(15),
+  rir: z.number().int().min(0).max(5).nullable().default(null),
 }).refine(row => row.reps_max === null || row.reps_max >= row.reps_min);
 const draftSchema = z.object({
   id: z.uuid(), player_id: z.uuid().nullable(), title: z.string().trim().min(1).max(80),

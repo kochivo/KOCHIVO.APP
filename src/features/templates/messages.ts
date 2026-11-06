@@ -2,6 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    rirSuffix: ' · RIR {count}',
     myTemplates: "قوالبي",
     kochivoTemplates: "قوالب KOCHIVO",
     newTemplate: "+ قالب جديد",
@@ -80,6 +81,7 @@ export const messages = defineMessages({
     copyOf: "{title} (نسخة)",
   },
   en: {
+    rirSuffix: ' · RIR {count}',
     myTemplates: "My templates",
     kochivoTemplates: "KOCHIVO templates",
     newTemplate: "+ New template",

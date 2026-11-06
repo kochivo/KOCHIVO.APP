@@ -17,6 +17,7 @@ export function CustomExerciseSheet({ exercise, onClose, onSave }: {
   const dialog = useRef<HTMLDialogElement>(null);
   const [name, setName] = useState(exercise?.name_ar ?? exercise?.name_en ?? '');
   const [bodyPart, setBodyPart] = useState(exercise?.body_part ?? bodyParts[0]);
+  const [equipment, setEquipment] = useState(exercise?.equipment ?? '');
   const [target, setTarget] = useState(exercise?.target ?? '');
   const [videoUrl, setVideoUrl] = useState(exercise?.video_url ?? '');
   const [errors, setErrors] = useState<Record<string, boolean>>({});
@@ -31,7 +32,7 @@ export function CustomExerciseSheet({ exercise, onClose, onSave }: {
     onCancel={event => { event.preventDefault(); event.stopPropagation(); onClose(); }}>
     <form noValidate className="space-y-4" onSubmit={event => {
       event.preventDefault();
-      const parsed = customExerciseSchema.safeParse({ name, bodyPart, target, videoUrl });
+      const parsed = customExerciseSchema.safeParse({ name, bodyPart, target, videoUrl, equipment: equipment || null });
       if (!parsed.success) {
         setErrors(Object.fromEntries(parsed.error.issues.map(issue => [String(issue.path[0]), true])));
         return;
@@ -42,13 +43,20 @@ export function CustomExerciseSheet({ exercise, onClose, onSave }: {
       <TextField label={t('customExerciseName')} value={name} onChange={event => setName(event.target.value)} maxLength={60}
         error={errors.name ? t('customNameError') : undefined} autoFocus />
       <label className="flex flex-col gap-2">{t('bodyPart')}
-        <select value={bodyPart} onChange={event => setBodyPart(event.target.value)} aria-invalid={errors.bodyPart || undefined}
+        <select value={bodyPart} onChange={event => { setBodyPart(event.target.value); setEquipment(''); }} aria-invalid={errors.bodyPart || undefined}
           aria-describedby={errors.bodyPart ? 'custom-body-error' : undefined}
           className="min-h-12 rounded-control border border-line bg-surface px-3 text-ink">
           {bodyParts.map(part => <option key={part} value={part}>{t(bodyPartLabels[part])}</option>)}
         </select>
       </label>
       {errors.bodyPart && <p id="custom-body-error" role="alert" className="text-danger">{t('customBodyError')}</p>}
+      {bodyPart === 'cardio' && <label className="flex flex-col gap-2">{t('machine')}
+        <select value={equipment} onChange={event => setEquipment(event.target.value)}
+          className="min-h-12 rounded-control border border-line bg-surface px-3 text-ink">
+          <option value="">{t('noMachine')}</option>
+          {(['treadmill', 'stairmaster'] as const).map(machine => <option key={machine} value={machine}>{t(machine)}</option>)}
+        </select>
+      </label>}
       <TextField label={t('customTarget')} value={target} onChange={event => setTarget(event.target.value)} maxLength={40}
         error={errors.target ? t('customTargetError') : undefined} />
       <TextField label={t('customVideo')} value={videoUrl} onChange={event => setVideoUrl(event.target.value)} type="url" maxLength={500}

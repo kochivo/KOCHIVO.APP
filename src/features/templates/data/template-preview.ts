@@ -24,7 +24,7 @@ export async function previewTemplate(input: unknown): Promise<TemplateResult<Te
     const captain = user.data.claims.sub;
     if (kind === 'program') {
       const row = await client.from('programs')
-        .select('program_days(position,title,program_exercises(position,sets,reps_min,reps_max,exercises(name_ar,name_en)))')
+        .select('program_days(position,title,program_exercises(position,sets,reps_min,reps_max,rir,exercises(name_ar,name_en)))')
         .eq('id', id).eq('captain_id', captain).eq('is_template', true).maybeSingle();
       if (row.error) throw row.error;
       return row.data ? { data: programPreview(row.data) } : { error: t('templateOrSourceNotFound') };

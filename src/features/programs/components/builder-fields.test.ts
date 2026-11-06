@@ -8,7 +8,7 @@ import type { DraftExercise, ProgramDraft } from '../types';
 import { clampReps, repsMode, restPresets, restText, toggleNextSuperset } from './builder-fields';
 
 const row: DraftExercise = { id: 'a', day_id: 'day', exercise_id: 'bench', position: 1,
-  sets: 3, reps_min: 8, reps_max: 12, rest_seconds: 90, superset_group: null, library: null };
+  sets: 3, reps_min: 8, reps_max: 12, rest_seconds: 90, superset_group: null, rir: null, library: null };
 
 describe('exercise prescriptions', () => {
   it('derives each reps mode and bounds both numbers without inventing a range', () => {

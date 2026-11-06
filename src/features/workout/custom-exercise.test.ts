@@ -23,3 +23,12 @@ it('handles cached exercises without video and does not link unsafe URLs', () =>
     expect(html).toContain('href="/player/history?exercise=exercise"');
   }
 });
+it.each(['ar', 'en'] as const)('shows target RIR beside the reps prescription in %s, including zero', locale => {
+  for (const rir of [undefined, null, 0, 2]) {
+    const html = renderToStaticMarkup(createElement(LocaleProvider, { locale },
+      createElement(ExerciseHeader, { exercise: { ...exercise, rir }, last: null })));
+    expect(html).toContain('8–12');
+    if (rir == null) expect(html).not.toContain('RIR');
+    else expect(html).toContain(`RIR ${rir}`);
+  }
+});
