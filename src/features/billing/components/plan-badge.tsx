@@ -1,13 +1,15 @@
 import Link from 'next/link';
-import { getLocale, getT } from '@/core/i18n/server';
+import { createT } from '@/core/i18n/messages';
+import type { Locale } from '@/core/i18n/locale';
 import { formatNumber } from '@/lib/format';
 import { messages } from '../messages';
-import { fetchPlanSummary } from '../data/plan-summary';
+import type { PlanSummary } from '../data/plan-summary';
 import { PlanBadgeError } from './plan-badge-error';
 
 // The captain's own plan lives on the billing page; this keeps it visible from the roster.
-export async function PlanBadge() {
-  const [summary, t, locale] = await Promise.all([fetchPlanSummary(), getT(messages), getLocale()]);
+export async function PlanBadge({ data }: { data: Promise<[PlanSummary | null, Locale]> }) {
+  const [summary, locale] = await data;
+  const t = createT(messages, locale);
   if (!summary) return <PlanBadgeError message={t('planLoadFailed')} retryLabel={t('retry')} />;
   const { plan, used } = summary;
   const tier = plan.tier === 'entry' || plan.tier === 'champion' || plan.tier === 'legend' || plan.tier === 'empire'

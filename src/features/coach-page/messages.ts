@@ -2,10 +2,15 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    pageLink: 'لينك صفحتك', pageLinkHint: 'أي حد يفتحه يقدر يطلب يتدرب معاك',
+    pageLinkPreview: 'kochivo.site/c/{slug}',
+    choosePageLink: 'اختار لينك لصفحتك من الإعدادات', openSettings: 'افتح الإعدادات',
+    linkLoadFailed: 'مش قادرين نحمّل لينك صفحتك. جرّب تاني',
+    copyLink: 'انسخ اللينك', copied: 'اتنسخ', copyFailed: 'مش قادرين ننسخ اللينك. انسخه يدويًا',
     brand: 'KOCHIVO',
     train: 'ابدأ التدريب معي', coachDescription: 'ابدأ التدريب مع {name} على كوتشيفو',
     noBio: 'الكابتن لسه مضافش نبذة', noSocial: 'لسه مفيش روابط تواصل',
-    pending: 'طلبات الانضمام', empty: 'لسه مفيش طلبات انضمام', accept: 'اقبل', decline: 'ارفض',
+    pending: 'طلبات الانضمام', empty: 'لسه مفيش طلبات. أول ما حد يطلب من لينك صفحتك هيظهر هنا', accept: 'اقبل', decline: 'ارفض',
     failure: 'الطلب متعملش. راجع عدد لاعيبتك وجرّب تاني', loadFailure: 'مش قادرين نحمّل الصفحة. جرّب تاني',
     loading: 'بنحمّل…', retry: 'جرّب تاني', sent: 'طلبك اتبعت للكابتن. مستنيين موافقته قبل ما تبدأ.',
     signup: 'اعمل حساب لاعب', name: 'اسمك', email: 'الإيميل', password: 'كلمة السر',
@@ -14,10 +19,15 @@ export const messages = defineMessages({
     whatsapp: 'واتساب', instagram: 'إنستجرام', tiktok: 'تيك توك', facebook: 'فيسبوك', youtube: 'يوتيوب', x: 'إكس',
   },
   en: {
+    pageLink: 'Your page link', pageLinkHint: 'Anyone with this link can ask to train with you',
+    pageLinkPreview: 'kochivo.site/c/{slug}',
+    choosePageLink: 'Choose your page link in settings', openSettings: 'Open settings',
+    linkLoadFailed: 'Could not load your page link. Try again',
+    copyLink: 'Copy link', copied: 'Copied', copyFailed: 'Could not copy the link. Copy it manually',
     brand: 'KOCHIVO',
     train: 'Start training with me', coachDescription: 'Train with {name} on KOCHIVO',
     noBio: 'This coach has not added a bio yet', noSocial: 'No contact links yet',
-    pending: 'Join requests', empty: 'No join requests yet', accept: 'Accept', decline: 'Decline',
+    pending: 'Join requests', empty: 'No requests yet. Requests from your page link will appear here', accept: 'Accept', decline: 'Decline',
     failure: 'Request failed. Check your player limit and try again', loadFailure: 'Could not load this page. Try again',
     loading: 'Loading…', retry: 'Try again', sent: 'Your request was sent. Your coach must accept it before you can start.',
     signup: 'Create a player account', name: 'Your name', email: 'Email', password: 'Password',

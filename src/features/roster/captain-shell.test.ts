@@ -12,10 +12,17 @@ vi.mock('./components/captain-nav', () => ({ CaptainNav: () => null }));
 vi.mock('@/features/notifications', () => ({ NotificationBell: () => null }));
 
 it('uses one desktop gutter and a slim sidebar without capping the main column', async () => {
-  const html = renderToStaticMarkup(await CaptainShell({ children: null }));
+  const html = renderToStaticMarkup(await CaptainShell({ children: null, sidebarFooter: 'Sidebar plan' }));
   expect(html).toContain('w-full min-w-0');
-  expect(html).toContain('px-4 pb-4 lg:px-0');
-  expect(html).toContain('w-60 lg:w-56');
+  expect(html).toContain('px-4 pb-4');
+  expect(html).toContain('lg:px-0');
+  expect(html).toContain('w-60');
+  expect(html).toContain('lg:sticky lg:top-0 lg:h-dvh');
+  expect(html).toContain('lg:border-e lg:border-line');
+  expect(html).toContain('mt-auto');
+  expect(html).toContain('Sidebar plan');
+  expect(html).toContain('max-w-[1640px]');
+  expect(html).not.toContain('rounded-card');
   expect(html).not.toContain('max-w-screen-2xl');
   expect(html).toContain('min-w-0 flex-1');
   expect(html).toContain('<main class="min-w-0">');

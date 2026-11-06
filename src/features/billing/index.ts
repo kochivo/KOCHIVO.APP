@@ -1,4 +1,6 @@
 export { messages } from './messages';
+export { PlanBadge } from './components/plan-badge';
+export { PlanSidebar } from './components/plan-sidebar';
 export { BalanceBadges } from './components/balance-badges';
 export { RosterBilling } from './components/roster-billing';
 export { ActivatePlayerButton } from './components/activate-player-button';
