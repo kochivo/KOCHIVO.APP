@@ -137,7 +137,7 @@ it('shows media, order, summary and the superset connector in an uncluttered row
   expect(html).toContain('3 sets × 8–12 reps · rest 90 s');
   expect(html).toContain('border-s-lime'); expect(html).toContain('Superset');
   expect(html).toContain('Exercise options: Bench, 1');
-  expect(html).toContain('grid-cols-2'); expect(html).toContain('sm:grid-cols-4');
+  expect(html).toContain('grid-cols-2'); expect(html).toContain('@md:grid-cols-4');
   expect(html).toContain('aria-label="RIR: Bench, 1"');
   expect(html).not.toContain('Move up'); expect(html).not.toContain('checkbox');
 });
