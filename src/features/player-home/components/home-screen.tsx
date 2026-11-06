@@ -86,6 +86,6 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
       </div>
       {failed && snapshot && <p className="text-sm text-muted">{t('lastUpdatedAWhileAgo')}</p>}
     </>}
-    <NutritionSlot />
+    <NutritionSlot date={selectedDate || undefined} />
   </main>;
 }
