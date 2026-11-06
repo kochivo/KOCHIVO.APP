@@ -37,7 +37,7 @@ export function ExerciseDrawer({ openerId, onClose, onAdd, usedExerciseIds }: {
   }, [locale, openerId]);
   return <dialog ref={dialog} dir={locale === 'ar' ? 'rtl' : 'ltr'} aria-label={t('exerciseLibrary')}
     style={{ maxBlockSize: '100dvh' }}
-    className="sheet fixed inset-y-0 end-0 start-auto m-0 h-dvh w-full max-w-md overflow-y-auto p-4 text-ink backdrop:bg-bg-deep/80"
+    className="sheet fixed inset-y-0 end-0 start-auto m-0 h-dvh w-full max-w-md scroll-pb-24 overflow-y-auto overscroll-contain p-4 text-ink backdrop:bg-bg-deep/80"
     onCancel={event => { event.preventDefault(); onClose(); }}
     onClick={event => {
       if (event.target !== event.currentTarget) return;

@@ -96,21 +96,21 @@ export function ExercisePicker({ disabled, onAdd, usedExerciseIds = [] }: {
   const rows = [...local, ...(loadedKey === key ? result?.data ?? [] : []).filter(row => !local.some(item => item.id === row.id))]
     .filter(row => !removed.includes(row.id) && (!mine || row.is_own) && (!filters.length || filters.some(({ column, value }) => row[column] === value)) &&
       (!query.trim() || `${row.name_ar ?? ''} ${row.name_en}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase())));
-  return <section aria-label={t('exerciseLibrary')} className="glass min-w-0 space-y-4 rounded-card p-4">
+  return <section aria-label={t('exerciseLibrary')} className="glass flex min-w-0 flex-col gap-y-4 rounded-card p-4">
     <h2 className="font-bold">{t('exerciseLibrary')}</h2>
     <Button disabled={disabled} onClick={() => setSheet({ exercise: null })}>{t('newCustomExercise')}</Button>
-    <Chip pressed={mine} onClick={() => setMine(value => !value)}>{t('myExercises')}</Chip>
+    <Chip className="self-start rounded-full" pressed={mine} onClick={() => setMine(value => !value)}>{t('myExercises')}</Chip>
     {sheet && <CustomExerciseSheet exercise={sheet.exercise} onClose={() => setSheet(null)} onSave={save} />}
-    <TextField label={t('searchInArabicOrEnglish')} value={query} onChange={event => setQuery(event.target.value)} />
-    <div className="flex flex-wrap gap-2" aria-label={t('bodyPart')}>
-      {parts.map(([value, label]) => <Chip key={value} pressed={bodyPart === value}
+    <TextField type="search" label={t('searchInArabicOrEnglish')} placeholder={t('searchPlaceholder')} value={query} onChange={event => setQuery(event.target.value)} />
+    <div className="flex min-w-0 gap-2 overflow-x-auto px-2 py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" role="group" aria-label={t('bodyPart')}>
+      {parts.map(([value, label]) => <Chip key={value} className="shrink-0 rounded-full whitespace-nowrap" pressed={bodyPart === value}
         onClick={() => setBodyPart(value)}>{label}</Chip>)}
     </div>
     {loadedKey !== key || result === null ? <LoadingState /> : result.error ?
       <ErrorState message={result.error} retryLabel={t('tryAgain')} onRetry={() => setRevision(value => value + 1)} /> : null}
         {loadedKey === key && result?.data && rows.length === 0 && <EmptyState icon={Search} title={t('noExerciseWithThisName')} body={t('searchInArabicOrEnglish')}
           action={{ label: t('clearSearch'), onClick: () => { setQuery(''); setBodyPart(''); setMine(false); setRevision(value => value + 1); } }} />}
-        <ul className="space-y-2">{rows.map(exercise => <li key={exercise.id}>
+        <ul className="space-y-3 pb-24">{rows.map(exercise => <li key={exercise.id}>
           <button type="button" disabled={disabled || deleting.includes(exercise.id)} onClick={() => add(exercise)}
             className="glass flex min-h-16 w-full items-center gap-3 rounded-control p-2 text-start disabled:opacity-40">
             {exercise.media_path && <ExerciseImage src={exerciseMediaUrl(exercise.media_path)} alt="" width={48} height={48} />}

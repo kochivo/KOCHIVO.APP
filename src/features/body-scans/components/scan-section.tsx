@@ -59,7 +59,7 @@ export function ScanSection({ playerId }: { playerId?: string }) {
         {warnings.regressing && <p role="status" className="glass rounded-card p-4 text-muted">{t('regressing')}</p>}
       </div>}
       {!scans.length ? <EmptyState icon={ScanLine} title={t('empty')} body={t('emptyBody')} /> : <>
-        {playerId && <h3 className="text-sm text-muted">{t('total')}</h3>}
+        {playerId && <h3 className="text-sm text-muted">{t('latestMeasurements')}</h3>}
         <ScanMetrics scans={scans} total={Boolean(playerId)} target={data.target} />
         {playerId ? <div className="grid grid-cols-2 gap-3">
           {[{ label: 'first', scan: scans[0] }, { label: 'latest', scan: scans.at(-1) }].map(({ label, scan }) => scan &&

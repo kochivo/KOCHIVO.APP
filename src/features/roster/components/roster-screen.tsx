@@ -9,11 +9,12 @@ import { use, useRef, useState, useTransition } from 'react';
 import { applyOptimistic } from '@/lib/optimistic';
 import { archivePlayer } from '../data/archive-player';
 import { useRouter } from 'next/navigation';
-import { Plus, UserPlus, Users } from 'lucide-react';
+import { Plus, Users } from 'lucide-react';
 import { Button, Chip, EmptyState, ErrorState, LoadingState, TextField } from '@/ui';
 import { playerStatus } from '../status';
 import type { RosterResult } from '../types';
 import { RosterRow } from './roster-row';
+import { PlayersEmptyState } from './players-empty-state';
 import dynamic from 'next/dynamic';
 import { useDemoExpiry } from '@/features/demo';
 
@@ -61,7 +62,7 @@ export function RosterScreen({ data, today, plan }: { data: Promise<[RosterResul
         <div className="flex flex-wrap items-center gap-3">{plan}{(players.length > 0 || result.error) && inviteButton}</div>
       </header>
       {pending ? <LoadingState variant="list" /> : result.error ? <ErrorState message={result.error} retryLabel={t('tryAgain')} onRetry={() => startTransition(() => router.refresh())} /> : players.length === 0 ? (
-        <EmptyState icon={UserPlus} title={demo ? t('noDemoDataYet') : t('noPlayersYetSendYourFirstInvite')} body={demo ? t('invitesAreDisabledInTheDemo') : t('startWithAnInviteLink')} steps={demo ? undefined : [t('stepInvite'), t('stepIntake'), t('stepAssign')]} action={{ label: demo ? t('invitesAreDisabledInTheDemo') : t('newPlayer'), onClick: () => setInviteOpen(true) }} />
+        <PlayersEmptyState demo={Boolean(demo)} onInvite={() => setInviteOpen(true)} />
       ) : <>
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div aria-label={t('filterPlayers')} className="flex flex-wrap gap-2">
