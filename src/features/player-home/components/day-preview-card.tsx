@@ -22,7 +22,7 @@ export function DayPreviewCard({ day, status, date }: DayPreview & { date: strin
   return <GlassCard level="featured" className="space-y-5 p-5">
     <div className="space-y-2">
       <p className="text-xs text-muted">{t(weekdays[weeklyWeekday(date)] ?? 'sat')}</p>
-      <span className="inline-flex rounded-chip border border-line px-3 py-1 text-sm text-muted">{t(badges[status])}</span>
+      {!rest && <span className="inline-flex rounded-chip border border-line px-3 py-1 text-sm text-muted">{t(badges[status])}</span>}
       <h2 className="text-3xl font-extrabold">{rest ? t('previewRestDay') : day ? starterText(day.title, locale) || t('workout') : t('notLogged')}</h2>
       {rest ? <p className="text-muted">{t('weeklyRest')}</p> : day && <p className="text-sm text-muted">
         {t('exerciseCount', { n: exercises.length, count: formatNumber(exercises.length, locale) })} · {t('setCount', { n: sets, count: formatNumber(sets, locale) })} · {t('minuteCount', { n: minutes, count: formatNumber(minutes, locale) })}

@@ -5,6 +5,13 @@ import { LocaleProvider } from '@/core/i18n/client';
 import type { ProgramSnapshot } from '@/core/offline';
 import { WeeklyRestCard } from './components/weekly-rest-card';
 import { TodayCard } from './components/today-card';
+import { readFileSync } from 'node:fs';
+
+it('keeps today tasks mounted while previewing', () => {
+  const source = readFileSync('src/features/player-home/components/home-screen.tsx', 'utf8');
+  expect(source).toContain('<div hidden={selectedDate !== today}');
+  expect(source).not.toContain('selectedDate === today && <div');
+});
 
 const snapshot: ProgramSnapshot = { id: 'active', player_id: 'player', program_id: 'p', title: 'Week',
   notes: null, settings: { repeatWeekly: false }, starts_on: '2026-10-31', training_days: [], days: [

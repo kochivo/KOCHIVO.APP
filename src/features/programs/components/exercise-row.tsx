@@ -48,7 +48,7 @@ export function ExerciseRow({ row, first, last, onLink, onMove, onDelete, onUpda
           { label: t(linked ? 'unlink' : 'linkNext'), disabled: last && !linked, onClick: onLink },
         ]} />
     </div>
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+    <div className="@container"><div className="grid grid-cols-2 gap-3 @md:grid-cols-4 [&_bdi]:whitespace-nowrap">
       <div className={field}><Stepper size="compact" label={t('sets')} controlLabel={t('sets2', { v0: name, v1: position })}
         format={value => formatNumber(value, locale)} value={row.sets} min={1} max={20} step={1} onChange={sets => onUpdate({ sets })} /></div>
       <button id={repsId} type="button" className={field} aria-haspopup="dialog" aria-label={`${t('reps')}: ${name}, ${position}`}
@@ -58,6 +58,7 @@ export function ExerciseRow({ row, first, last, onLink, onMove, onDelete, onUpda
       <button id={rirId} type="button" className={field} aria-haspopup="dialog" aria-label={t('rirLabel', { name, position })}
         onClick={() => setSheet('rir')}><span className="text-xs text-muted">{t('rir')}</span>
         <bdi className="text-2xl font-bold tabular-nums">{row.rir == null ? t('noRir') : formatNumber(row.rir, locale)}</bdi></button>
+    </div>
     </div>
     {sheet === 'reps' && <RepsSheet row={row} openerId={repsId} onClose={() => setSheet(null)} onUpdate={onUpdate} />}
     {sheet === 'rest' && <RestSheet value={row.rest_seconds} openerId={restId} onClose={() => setSheet(null)} onChange={rest_seconds => onUpdate({ rest_seconds })} />}

@@ -56,6 +56,8 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
   const tomorrow = snapshot && sessions ? pickTodayDay(snapshot, sessions, localDate(tomorrowAt, 'UTC')) : undefined;
   const tomorrowRest = snapshot && sessions ? isRestDay(snapshot, sessions, localDate(tomorrowAt, 'UTC')) : false;
   const failed = localError || status === 'error';
+  const nextWeekAt = new Date(`${today || '2000-01-01'}T12:00:00Z`);
+  nextWeekAt.setUTCDate(nextWeekAt.getUTCDate() + 7);
   return <main data-mood={rest ? 'rest' : undefined} data-tour-ready={Boolean(now && status !== 'loading' && (!snapshot || (sessions && weekSessions)))} className="mx-auto max-w-lg space-y-4 px-5 pt-6 pb-32">
     <header className="flex flex-wrap items-center justify-between gap-3">
       {now && <Greeting firstName={firstName} now={now} playerId={playerId} snapshot={snapshot} loading={status === 'loading'} />}
@@ -64,7 +66,7 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
     {failed && (!snapshot || localError) ? <ErrorState message={t('couldntLoadYourProgram')} retryLabel={t('tryAgain')} onRetry={() => {
       setLocalError(false); setRetryKey((value) => value + 1); void retry();
     }} /> : !now || status === 'loading' || (snapshot && (!sessions || !weekSessions)) ? <LoadingState variant="cards" /> : <>
-      {selectedDate === today && <div key={`readiness-${selectedDate}`} className="space-y-4 motion-safe:animate-[surface-in_180ms_ease-out] motion-reduce:animate-none">
+      <div hidden={selectedDate !== today} className="space-y-4">
       {rest ? <PlayerReadiness playerId={playerId} today={today} rest coachRest={decision === 'rest'}
         onDecisionChange={setDecision}
         tomorrowRest={Boolean(tomorrowRest)}
@@ -73,10 +75,10 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
         retryKey={retryKey} onRetry={() => setRetryKey(value => value + 1)} />
       <PlayerReadiness playerId={playerId} today={today} rest={false} onDecisionChange={setDecision} />
       </>}
-      </div>}
-      <WeekStrip today={today} selected={selectedDate} onSelect={date => setSelection({ today, date })} days={buildWeek(today, snapshot?.training_days ?? [],
+      </div>
+      <WeekStrip today={today} selected={selectedDate} nextDays={buildWeek(localDate(nextWeekAt, 'UTC'), snapshot?.training_days ?? [], [], locale, snapshot ?? undefined)} onSelect={date => setSelection({ today, date })} days={buildWeek(today, snapshot?.training_days ?? [],
         weekSessions?.filter((session) => snapshot?.days.some((day) => day.id === session.program_day_id)) ?? [], locale, snapshot ?? undefined)} />
-      <div key={selectedDate} className="motion-safe:animate-[surface-in_180ms_ease-out] motion-reduce:animate-none">
+      <div key={selectedDate} className={selectedDate !== today ? 'motion-safe:animate-[surface-in_180ms_ease-out] motion-reduce:animate-none' : undefined}>
       {selectedDate !== today ? <DayPreviewCard date={selectedDate} {...(snapshot ? previewFor(snapshot, sessions ?? [], selectedDate, today) : { day: undefined, status: 'rest' as const })} /> :
         snapshot && weekly && (!day || day.is_rest_day) ? <WeeklyRestCard snapshot={snapshot} today={today} /> :
         snapshot && day ? <TodayCard day={day} rest={Boolean(rest)} /> :

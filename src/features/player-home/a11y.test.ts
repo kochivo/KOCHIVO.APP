@@ -22,7 +22,9 @@ it('renders the week as a named native list with one current day', () => {
   expect(html).toContain('<ul');
   expect(html.match(/<li /g)).toHaveLength(7);
   expect(html.match(/aria-current="date"/g)).toHaveLength(1);
-  expect(html.match(/<button /g)).toHaveLength(7);
+  expect(html.match(/<button /g)).toHaveLength(9);
+  expect(html).toContain('aria-label="الأسبوع ده"');
+  expect(html).toContain('aria-label="الأسبوع الجاي"');
   expect(html.match(/aria-pressed="true"/g)).toHaveLength(1);
   expect(html.match(/aria-pressed="false"/g)).toHaveLength(6);
 });

@@ -50,7 +50,7 @@ it('renders read-only previews with status and cardio, and a calm rest state', (
   expect(render('upcoming')).toContain('Upcoming workout');
   expect(render('upcoming')).toContain('30 minutes');
   expect(render('upcoming')).not.toMatch(/href=|data-tour/);
-  expect(render('rest')).toContain('Rest day');
+  expect(render('rest').match(/Rest day/g)).toHaveLength(1);
   expect(render('rest')).not.toContain('Walk');
 });
 it('shows exercise names and prescribed sets and rep ranges without workout actions', () => {
