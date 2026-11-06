@@ -2,6 +2,7 @@ import { getT } from '@/core/i18n/server';
 import { messages } from '../messages';
 
 import 'server-only';
+import { unstable_rethrow } from 'next/navigation';
 
 import { localDate } from '@/lib/dates';
 import { uuidv7 } from '@/core/offline/ids';
@@ -34,5 +35,5 @@ export async function createInviteAt(days: unknown, now: Date): Promise<{ code: 
       return { error: t('couldntCreateTheInviteTryAgain') };
     }
     return { code: result.data.code };
-  } catch { return { error: t('couldntCreateTheInviteTryAgain') }; }
+  } catch (error) { unstable_rethrow(error); return { error: t('couldntCreateTheInviteTryAgain') }; }
 }

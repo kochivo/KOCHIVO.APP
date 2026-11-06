@@ -14,8 +14,10 @@ import { Button, Chip, EmptyState, ErrorState, LoadingState, TextField } from '@
 import { playerStatus } from '../status';
 import type { RosterResult } from '../types';
 import { RosterRow } from './roster-row';
-import { InviteSheet } from './invite-sheet';
+import dynamic from 'next/dynamic';
 import { useDemoExpiry } from '@/features/demo';
+
+const InviteSheet = dynamic(() => import('./invite-sheet').then(module => module.InviteSheet));
 
 export function RosterScreen({ data, today, plan }: { data: Promise<[RosterResult, string]>; today: string; plan?: ReactNode }) {
   const t = useT(messages);
