@@ -2,6 +2,8 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    upcomingWorkout: 'تمرين قادم', completedWorkout: 'مكتمل', notLogged: 'متسجلش', previewRestDay: 'يوم راحة',
+    previewPrescription: '{sets} × {reps}', previewRepRange: '{min}–{max}',
     streakTitle: 'سلسلة التمرين', streakClose: 'اقفل تفاصيل السلسلة', streakInitial: 'ك',
     streakStart: 'ابدأ النهارده', streakDays: '{count} يوم',
     streakWeek: '{done} من {planned} الأسبوع ده',
@@ -73,6 +75,8 @@ export const messages = defineMessages({
     weekDayLabel: "{value0} {value1}، {value2}",
   },
   en: {
+    upcomingWorkout: 'Upcoming workout', completedWorkout: 'Completed', notLogged: 'Not logged', previewRestDay: 'Rest day',
+    previewPrescription: '{sets} × {reps}', previewRepRange: '{min}–{max}',
     streakTitle: 'Training streak', streakClose: 'Close streak details', streakInitial: 'K',
     streakStart: 'Start today', streakDays: '{count} days',
     streakWeek: '{done} of {planned} this week',
