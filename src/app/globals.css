@@ -13,6 +13,7 @@
   --color-water: #60a5fa;
   --color-sleep: #b4a0f5;
   --color-sore: #f5ac78;
+  --color-ember: #c8936f;
   --color-lime: #b6e94f;
   --color-lime-ink: #b6e94f;
   --color-bg-deep: #070808;
@@ -139,6 +140,7 @@ html[data-glass='solid'] [data-mood='rest'] { --glass-solid-background: var(--co
 }
 [dir='rtl'] { --featured-angle: 225deg; --progress-edge: -2px 0 5px color-mix(in srgb, var(--color-lime) 25%, transparent); }
 html[data-theme='light'] {
+  --color-ember: #96613e;
   --color-bg: #f6f7f4;
   --color-bg-deep: #eceee8;
   --color-surface: #ffffff;

@@ -2,6 +2,14 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    streakTitle: 'سلسلة التمرين', streakClose: 'اقفل تفاصيل السلسلة', streakInitial: 'ك',
+    streakStart: 'ابدأ النهارده', streakDays: '{count} يوم',
+    streakWeek: '{done} من {planned} الأسبوع ده',
+    streakLabel: 'سلسلة التمرين: {count} يوم، {done} من {planned} الأسبوع ده',
+    streakConsecutive: 'يوم ورا بعض',
+    streakRestLine: 'أيام الراحة اللي في برنامجك مش بتكسر الرقم. بيتكسر بس لو فوّت يوم تمرين.',
+    streakThisWeek: 'الأسبوع ده', streakBest: 'أحسن رقم', streakMonth: 'الشهر ده',
+    streakRatio: '{done} من {planned}', streakLoading: 'بنحمّل سلسلة التمرين',
     weeklyRest: 'اليوم راحة.. استمتع بالاستشفاء', nextTraining: 'التمرين الجاي: {name} · {weekday}',
     programFinished: 'الأسبوع خلص', renewProgram: 'الكابتن هيجدّد برنامجك عشان تكمّل',
     messageCoach: "ابعت للكابتن",
@@ -65,6 +73,14 @@ export const messages = defineMessages({
     weekDayLabel: "{value0} {value1}، {value2}",
   },
   en: {
+    streakTitle: 'Training streak', streakClose: 'Close streak details', streakInitial: 'K',
+    streakStart: 'Start today', streakDays: '{count} days',
+    streakWeek: '{done} of {planned} this week',
+    streakLabel: 'Training streak: {count} days, {done} of {planned} this week',
+    streakConsecutive: 'days in a row',
+    streakRestLine: 'Rest days in your program keep your streak. Only a missed training day breaks it.',
+    streakThisWeek: 'This week', streakBest: 'Best streak', streakMonth: 'This month',
+    streakRatio: '{done} of {planned}', streakLoading: 'Loading training streak',
     weeklyRest: 'Rest today. Enjoy your recovery', nextTraining: 'Next training: {name} · {weekday}',
     programFinished: 'Week finished', renewProgram: 'Your coach will renew your program',
     messageCoach: "Message your coach",
