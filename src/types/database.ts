@@ -303,6 +303,15 @@ export type Database = {
       }
       coach_invites: {
         Row: {
+          player_name: string | null
+          whatsapp: string | null
+          package_id: string | null
+          kind: string | null
+          quantity: number | null
+          price_egp: number | null
+          paid_egp: number | null
+          free_trial: boolean | null
+          starts_on: string | null
           access_until: string
           captain_id: string
           code: string
@@ -313,6 +322,15 @@ export type Database = {
           redeemed_by: string | null
         }
         Insert: {
+          player_name?: string | null
+          whatsapp?: string | null
+          package_id?: string | null
+          kind?: string | null
+          quantity?: number | null
+          price_egp?: number | null
+          paid_egp?: number | null
+          free_trial?: boolean | null
+          starts_on?: string | null
           access_until: string
           captain_id: string
           code?: string
@@ -323,6 +341,15 @@ export type Database = {
           redeemed_by?: string | null
         }
         Update: {
+          player_name?: string | null
+          whatsapp?: string | null
+          package_id?: string | null
+          kind?: string | null
+          quantity?: number | null
+          price_egp?: number | null
+          paid_egp?: number | null
+          free_trial?: boolean | null
+          starts_on?: string | null
           access_until?: string
           captain_id?: string
           code?: string
@@ -338,6 +365,13 @@ export type Database = {
             columns: ["captain_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "coach_invites_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "captain_packages"
             referencedColumns: ["id"]
           },
           {
@@ -1467,6 +1501,9 @@ export type Database = {
     Functions: {
       activate_player: { Args: { p_link: string; p_package: string | null; p_kind: string; p_quantity: number;
         p_price_egp: number; p_paid_egp: number; p_free_trial: boolean }; Returns: undefined }
+      create_player_invite: { Args: { p_name: string; p_whatsapp: string | null; p_package: string | null;
+        p_kind: string; p_quantity: number; p_price_egp: number; p_paid_egp: number;
+        p_free_trial: boolean; p_starts_on: string }; Returns: string }
       set_player_frozen: { Args: { p_link: string; p_frozen: boolean }; Returns: undefined }
       my_route_profile: {
         Args: never;

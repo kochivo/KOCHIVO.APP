@@ -1,0 +1,38 @@
+import { defineMessages } from '@/core/i18n/messages';
+
+export const messages = defineMessages({
+  ar: {
+    title: 'ضيف لاعب', close: 'اقفل الدعوة', name: 'اسم اللاعب', whatsapp: 'رقم واتساب (اختياري)',
+    invalidWhatsapp: 'اكتب من 8 لـ 15 رقم بس', package: 'الباقة', custom: 'مدة وسعر مخصوص',
+    noPackages: 'لسه معندكش باقات.', packagesLink: 'اعمل باقة', kind: 'نوع المدة', days: 'أيام', sessions: 'حصص',
+    durationDays: '{count} يوم', durationSessions: '{count} حصة', quantity: 'العدد',
+    price: 'السعر', paid: 'المدفوع', discount: 'خصم {amount} ج', remaining: 'فاضل {amount} ج',
+    money: '{amount} ج', trial: 'تجربة مجانية', start: 'تاريخ البداية', ends: 'ينتهي يوم {date}',
+    create: 'اعمل لينك الدعوة', creating: 'بنجهّز اللينك…', loading: 'بنحمّل الباقات…', retry: 'جرّب تاني',
+    loadError: 'مش قادرين نحمّل الباقات. جرّب تاني', invalid: 'راجع بيانات الدعوة',
+    failed: 'الدعوة متعملتش. جرّب تاني', packageMissing: 'الباقة مش موجودة. اختار باقة تانية',
+    playerLimit: 'وصلت للحد الأقصى للاعبين', captainRequired: 'الدعوات للكباتن بس ومن غير ديمو',
+    demo: 'الدعوات مقفولة في الديمو', ready: 'لينك {name} جاهز',
+    readyHint: 'ابعته له، وأول ما يفتحه حسابه يشتغل على طول', period: 'من {from} لـ {to}',
+    link: 'لينك الدعوة', send: 'ابعته على واتساب', copy: 'انسخ اللينك', copied: 'اللينك اتنسخ',
+    copyFailed: 'النسخ مش متاح. حدّد اللينك وانسخه يدوي',
+    share: 'أنا كابتن {captain}، ده لينكك على كوتشيفو. افتحه وحسابك هيشتغل على طول: {link}',
+  },
+  en: {
+    title: 'Add player', close: 'Close invite', name: 'Player name', whatsapp: 'WhatsApp number (optional)',
+    invalidWhatsapp: 'Enter 8 to 15 digits only', package: 'Package', custom: 'Custom duration and price',
+    noPackages: 'No packages yet.', packagesLink: 'Create a package', kind: 'Duration type', days: 'Days', sessions: 'Sessions',
+    durationDays: '{count} days', durationSessions: '{count} sessions', quantity: 'Quantity',
+    price: 'Price', paid: 'Paid', discount: 'Discount: EGP {amount}', remaining: 'Remaining: EGP {amount}',
+    money: 'EGP {amount}', trial: 'Free trial', start: 'Start date', ends: 'Ends on {date}',
+    create: 'Create invite link', creating: 'Creating link…', loading: 'Loading packages…', retry: 'Try again',
+    loadError: "Couldn't load packages. Try again", invalid: 'Check the invite details',
+    failed: "Couldn't create the invite. Try again", packageMissing: 'Package not found. Choose another',
+    playerLimit: 'Player limit reached', captainRequired: 'Invites require a coach account outside the demo',
+    demo: 'Invites are disabled in the demo', ready: '{name}’s link is ready',
+    readyHint: 'Send it to them. Their account activates when they open it', period: 'From {from} to {to}',
+    link: 'Invite link', send: 'Send on WhatsApp', copy: 'Copy link', copied: 'Link copied',
+    copyFailed: 'Copy is unavailable. Select and copy the link',
+    share: "I'm Coach {captain}. Open your KOCHIVO link to activate your account: {link}",
+  },
+});
