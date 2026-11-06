@@ -25,7 +25,10 @@ describe('viewport safe areas', () => {
     'features/coach-page/components/coach-page.tsx',
     'app/[locale]/offline/page.tsx',
   ])('protects the top-level container in %s', path => {
-    expect(source(path)).toContain('var(--safe-top)');
+    if (path === 'features/roster/components/captain-shell.tsx') {
+      expect(source(path)).toContain('var(--captain-top-inset)');
+      expect(source('app/globals.css')).toContain('--captain-top-inset: max(3rem, var(--safe-top))');
+    } else expect(source(path)).toContain('var(--safe-top)');
   });
 
   it('leaves workout padding with the focus screen', () => {

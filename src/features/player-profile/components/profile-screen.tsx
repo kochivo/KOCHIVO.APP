@@ -6,8 +6,7 @@ import Image from 'next/image';
 import { whatsappUrl } from '@/lib/whatsapp';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
-import { cn } from '@/lib/cn';
-import { profileTabs } from '../model';
+import { ProfileTabs } from './profile-tabs';
 import type { ProfileTab } from '../model';
 import type { ProfileResult } from '../types';
 import { CheckinsTab } from './checkins-tab';
@@ -49,11 +48,7 @@ export async function ProfileScreen({ playerId, tab, today, data }: Props) {
       </header>
       <BillingLoader playerId={playerId} name={profile.name} today={today} />
       {whatsapp && <a href={whatsapp} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center rounded-control border border-lime px-4 font-bold text-lime">{t('whatsappPlayer')}</a>}
-      <nav aria-label={t('tabs')} className="glass flex gap-1 overflow-x-auto rounded-control p-1">
-        {profileTabs.map((key) => <Link key={key} href={`?tab=${key}`} scroll={false} aria-current={key === tab ? 'page' : undefined}
-          className={cn('flex min-h-12 flex-1 shrink-0 items-center justify-center whitespace-nowrap rounded-control px-4 text-sm font-bold transition-colors duration-150 motion-reduce:transition-none',
-            key === tab ? 'bg-lime text-on-lime' : 'text-muted hover:bg-ink/5 hover:text-ink')}>{t(`tab.${key}`)}</Link>)}
-      </nav>
+      <ProfileTabs tab={tab} t={t} />
       {tab === 'readiness' ? <ReadinessLoader playerId={playerId} today={today} /> : tab === 'analysis' ? <AnalyticsLoader key={playerId} playerId={playerId} /> :
         tab === 'intake' ? <IntakeTab playerId={playerId} intake={profile.intake} today={today} /> :
           tab === 'progress' ? <><BodyScansLoader playerId={playerId} /><ProgressTab playerId={playerId} checkIns={profile.checkIns} targetKg={profile.intake?.targetWeightKg ?? null} /></> :

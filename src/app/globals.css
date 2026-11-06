@@ -18,6 +18,7 @@
   --color-lime-ink: #b6e94f;
   --color-bg-deep: #070808;
   --color-surface-raised: #1c1c1c;
+  --color-exercise-media: #fff;
   --color-line-soft: rgb(242 242 238 / 0.06);
   --color-on-lime: #101418;
   --color-lime-soft: rgb(182 233 79 / 0.12);
@@ -49,6 +50,7 @@
   --nav-height: calc(4.5rem + 2px);
   --nav-clearance: calc(var(--nav-height) + 1rem + var(--safe-bottom));
   --page-bottom-clearance: max(7rem, calc(var(--nav-clearance) + 1rem));
+  --captain-top-inset: max(3rem, var(--safe-top));
   --builder-action-height: calc(4.5rem + 2px);
   --glass-tint: rgb(255 255 255 / 0.03);
   --glass-tint-raised: rgb(255 255 255 / 0.05);

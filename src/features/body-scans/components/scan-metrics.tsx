@@ -12,7 +12,7 @@ export function ScanMetrics({ scans, total, target }: { scans: Scan[]; total: bo
   const locale = useLocale();
   const deltas = total ? totalDelta(scans) : latestDelta(scans);
   const latest = scans.at(-1);
-  return <div className="grid grid-cols-3 gap-2">
+  return <div className="space-y-3"><div className="grid grid-cols-3 gap-2">
     {metrics.map(metric => {
       const delta = deltas[metric];
       const direction = trend(metric, delta, {
@@ -21,16 +21,16 @@ export function ScanMetrics({ scans, total, target }: { scans: Scan[]; total: bo
       });
       const Arrow = delta != null && delta < 0 ? ArrowDown : ArrowUp;
       const unit = t(metric === 'fat_pct' ? 'pct' : 'kg');
-      return <div key={metric} className="glass-strong min-w-0 space-y-2 rounded-card p-3">
-        <h3 className="text-sm text-muted">{t(metric)}</h3>
+      return <div key={metric} className="glass-strong min-w-0 space-y-2 rounded-card p-2 sm:p-3">
+        <h3 className="min-h-10 text-xs text-muted sm:text-sm">{t(metric)}</h3>
         <p className="text-2xl font-extrabold">{latest?.[metric] == null ? t('unknown') :
-          formatNumber(latest[metric], locale)} <span className="text-xs">{unit}</span></p>
-        {delta == null ? <p className="text-xs text-muted">{t('noDelta')}</p> : <div className={direction === 'good' ? 'text-lime' : 'text-muted'}>
+          formatNumber(latest[metric], locale)} <span className="block text-xs font-normal text-muted">{unit}</span></p>
+        {delta == null ? scans.length >= 2 && <p className="text-xs text-muted">{t('noDelta')}</p> : <div className={direction === 'good' ? 'text-lime' : 'text-muted'}>
           <p className="text-xs"><Arrow aria-hidden className="inline size-4" />{t('delta', {
             value: `${delta > 0 ? '+' : ''}${formatNumber(delta, locale)}`, unit, metric: t(metric),
           })}</p><p className="text-xs">{t(direction)}</p>
         </div>}
       </div>;
     })}
-  </div>;
+  </div>{scans.length < 2 && <p className="text-xs text-muted">{t('noDelta')}</p>}</div>;
 }

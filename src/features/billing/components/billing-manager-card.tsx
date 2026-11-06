@@ -42,10 +42,10 @@ export function BillingManagerCard({ playerId, name, today, autoActivate }: { pl
       : <p role="status">{t('loading')}</p> : <>
       <p className="text-xl font-bold">{balanceLabel(balance, today, locale)}</p>
       {balance.frozen_at && <span className="rounded-control bg-water/10 px-3 py-1 text-water">{t('frozen')}</span>}
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap gap-2">
         {balance.pending ? <Button disabled={busy} onClick={() => setSheet('activate')}>{t('activate')}</Button> : <>
-          <Button variant="secondary" className="font-bold text-lime-ink [--glass-border:var(--selected-border)]" disabled={busy || Boolean(balance.frozen_at)} onClick={() => setSheet('renew')}>{t(balance.frozen_at ? 'unfreezeFirst' : 'renew')}</Button>
-          <Button variant="ghost" className="text-muted hover:text-ink" disabled={busy} onClick={() => {
+          <Button className="w-auto flex-1" disabled={busy || Boolean(balance.frozen_at)} onClick={() => setSheet('renew')}>{t(balance.frozen_at ? 'unfreezeFirst' : 'renew')}</Button>
+          <Button variant="secondary" className="flex-1 text-muted hover:text-ink" disabled={busy} onClick={() => {
             if (window.confirm(t('confirm'))) void run(() => setPlayerFrozen(balance.id, !balance.frozen_at),
               { ...data, balance: { ...balance, frozen_at: balance.frozen_at ? null : `${today}T12:00:00Z` } });
           }}>{t(balance.frozen_at ? 'unfreeze' : 'freeze')}</Button>

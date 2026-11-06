@@ -101,7 +101,11 @@ export function ExercisePicker({ disabled, onAdd, usedExerciseIds = [] }: {
     <Button disabled={disabled} onClick={() => setSheet({ exercise: null })}>{t('newCustomExercise')}</Button>
     <Chip className="self-start rounded-full" pressed={mine} onClick={() => setMine(value => !value)}>{t('myExercises')}</Chip>
     {sheet && <CustomExerciseSheet exercise={sheet.exercise} onClose={() => setSheet(null)} onSave={save} />}
-    <TextField type="search" label={t('searchInArabicOrEnglish')} placeholder={t('searchPlaceholder')} value={query} onChange={event => setQuery(event.target.value)} />
+    <div className="relative">
+      <Search aria-hidden className="pointer-events-none absolute start-4 top-1/2 z-10 size-5 -translate-y-1/2 text-muted" />
+      <TextField type="search" hideLabel label={t('searchInArabicOrEnglish')} placeholder={t('searchPlaceholder')} value={query} onChange={event => setQuery(event.target.value)}
+        className="border border-line ps-11 [--glass-fill:var(--color-surface-raised)] [--recessed-fill:var(--color-surface-raised)] [--recessed-border:var(--color-line)]" />
+    </div>
     <div className="flex min-w-0 gap-2 overflow-x-auto px-2 py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" role="group" aria-label={t('bodyPart')}>
       {parts.map(([value, label]) => <Chip key={value} className="shrink-0 rounded-full whitespace-nowrap" pressed={bodyPart === value}
         onClick={() => setBodyPart(value)}>{label}</Chip>)}
@@ -113,7 +117,7 @@ export function ExercisePicker({ disabled, onAdd, usedExerciseIds = [] }: {
         <ul className="space-y-3 pb-24">{rows.map(exercise => <li key={exercise.id}>
           <button type="button" disabled={disabled || deleting.includes(exercise.id)} onClick={() => add(exercise)}
             className="glass flex min-h-16 w-full items-center gap-3 rounded-control p-2 text-start disabled:opacity-40">
-            {exercise.media_path && <ExerciseImage src={exerciseMediaUrl(exercise.media_path)} alt="" width={48} height={48} />}
+            {exercise.media_path && <span className="shrink-0 rounded-control bg-exercise-media p-1 [&>span]:bg-transparent"><ExerciseImage src={exerciseMediaUrl(exercise.media_path)} alt="" width={48} height={48} /></span>}
             <span className="min-w-0 flex-1 break-words text-sm font-bold"><bdi>{exerciseName(exercise, locale)}</bdi></span>
             <span className="flex items-center gap-1 text-xs text-muted">
               {addedIds.has(exercise.id) && <Check aria-hidden className="size-4 text-lime" />}

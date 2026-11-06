@@ -21,7 +21,7 @@ describe('current InBody metrics', () => {
     expect(primary(html, 'Weight')).toBe('90');
     expect(primary(html, 'Muscle mass')).toBe('35');
     expect(primary(html, 'Body fat')).toBe('25');
-    expect(html.match(/Two measurements needed to compare/g)).toHaveLength(3);
+    expect(html.match(/Two measurements needed to compare/g)).toHaveLength(1);
   });
 
   it('keeps latest measurements primary with two records and shows the comparison separately', () => {
