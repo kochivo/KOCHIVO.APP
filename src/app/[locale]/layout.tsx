@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import { SiteAnalytics } from '@/ui/site-analytics';
 import { Alexandria, Changa, Manrope } from 'next/font/google';
 import type { ReactNode } from 'react';
 import { RegisterServiceWorker } from '@/core/pwa/register-sw';
@@ -53,6 +54,7 @@ export default async function RootLayout({ children, params }: {
           <MobileViewport />
           <RegisterServiceWorker />
         </LocaleProvider>
+        <SiteAnalytics />
       </body>
     </html>
   );

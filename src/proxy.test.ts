@@ -1,6 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { beforeEach, expect, it, vi } from 'vitest';
-import { proxy } from './proxy';
+import { proxy, config } from './proxy';
+import { unstable_doesMiddlewareMatch } from 'next/experimental/testing/server';
+
+it.each(['/_vercel/insights/script.js', '/_vercel/insights/view', '/_vercel/insights/event'])('leaves analytics endpoint %s outside the auth/locale proxy', url => {
+  expect(unstable_doesMiddlewareMatch({ config, nextConfig: {}, url })).toBe(false);
+});
+
+it.each(['/captain', '/player', '/_vercel/insights-other'])('retains proxy protection for %s', url => {
+  expect(unstable_doesMiddlewareMatch({ config, nextConfig: {}, url })).toBe(true);
+});
 
 const session = vi.hoisted(() => ({ refresh: vi.fn(), decide: vi.fn() }));
 vi.mock('@/core/supabase/session', () => ({ refreshSession: session.refresh }));

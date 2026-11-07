@@ -29,6 +29,6 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Offline still needs a locale rewrite; only assets bypass the proxy entirely.
-  matcher: ['/((?!_next/static|_next/image|icons|brand|sw.js|manifest.webmanifest|.*\\.(?:png|gif|webp|svg)$).*)'],
+  // Offline still needs a locale rewrite; Vercel insights endpoints are platform-owned.
+  matcher: ['/((?!_vercel/insights(?:/|$)|_next/static|_next/image|icons|brand|sw.js|manifest.webmanifest|.*\\.(?:png|gif|webp|svg)$).*)'],
 };
