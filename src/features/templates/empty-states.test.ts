@@ -19,6 +19,7 @@ import { TemplatesScreen } from './components/templates-screen';
 import { AssignSheet } from './components/assign-sheet';
 import { PreviewSheet } from './components/preview-sheet';
 vi.mock('./data/templates', () => ({ listTemplates() {}, copyTemplate() {}, createTemplate() {}, deleteTemplate() {}, renameTemplate() {}, assignTemplate() {}, listTemplatePlayers() {} }));
+vi.mock('@/features/program-generator', () => ({ GenerateButton: () => null }));
 vi.mock('./data/template-preview', () => ({ previewTemplate() {} }));
 const template = { id: 't', title: 'Starter', kind: 'program' as const, starter: true, count: 1, created_at: '2026-11-03T10:00:00Z' };
 it('offers scrolling to ready templates when there are no personal templates', () => {

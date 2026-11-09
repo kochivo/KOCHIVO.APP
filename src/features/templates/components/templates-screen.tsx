@@ -17,6 +17,7 @@ import { createTemplate } from '../data/templates';
 import { TemplateSection } from './template-section';
 import { useToast } from '@/ui/toast';
 import { messages as uiMessages } from '@/ui/messages';
+import { GenerateButton } from '@/features/program-generator';
 
 type Edit = { template: Template; title: string } | { template: Template; title?: never };
 
@@ -128,6 +129,7 @@ export function TemplatesScreen() {
         aria-pressed={kind === tab} onClick={() => setKind(tab)}>{tab === 'program' ? t('workouts') : t('nutrition')}</Button>)}
     </div>
     {busy.length > 0 && <p role="status">{t('savingChanges')}</p>}
+    {kind === 'program' && <GenerateButton />}
     {createError && <p role="alert" className="text-danger">{createError}</p>}
     {[false, true].map(starter => <TemplateSection key={String(starter)} starter={starter}
       templates={visible.filter(template => template.starter === starter)} loading={loading} error={loadError}

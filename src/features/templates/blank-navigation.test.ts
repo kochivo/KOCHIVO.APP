@@ -24,6 +24,7 @@ vi.mock('@/core/i18n/client', () => ({ useT: () => createT(messages, 'en'), useL
 vi.mock('@/ui/toast', () => ({ useToast: () => ({ success() {} }) }));
 vi.mock('next/navigation', () => ({ useRouter: () => ({ push: state.push }) }));
 vi.mock('./data/templates', () => ({ createTemplate: state.create }));
+vi.mock('@/features/program-generator', () => ({ GenerateButton: () => null }));
 vi.mock('./data/template-preview', () => ({ previewTemplate: vi.fn() }));
 function render() {
   state.index = 0; state.refIndex = 0;

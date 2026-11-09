@@ -70,6 +70,7 @@ import { TemplateCard } from './components/template-card';
 import { listTemplates, copyTemplate, renameTemplate, deleteTemplate } from './data/templates';
 import type { Template } from './types';
 import { uuidv7 } from '@/core/offline/ids';
+vi.mock('@/features/program-generator', () => ({ GenerateButton: () => null }));
 vi.mock('./data/templates', () => ({
   listTemplates: vi.fn(), copyTemplate: vi.fn(), renameTemplate: vi.fn(), deleteTemplate: vi.fn(),
 }));
