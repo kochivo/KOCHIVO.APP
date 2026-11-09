@@ -14,6 +14,7 @@ import { useWeekSessions } from '../hooks/use-week-sessions';
 import { isWeeklyProgram, pickTodayDay } from '../next-day';
 import { buildWeek } from '../week';
 import { Greeting } from './greeting';
+import { RankChip } from '@/features/ranks';
 import { WeekStrip } from './week-strip';
 import { NextTaskSlot } from './next-task-slot';
 import { TodayCard } from './today-card';
@@ -61,6 +62,7 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
   return <main data-mood={rest ? 'rest' : undefined} data-tour-ready={Boolean(now && status !== 'loading' && (!snapshot || (sessions && weekSessions)))} className="mx-auto max-w-lg space-y-4 px-5 pt-6 pb-32">
     <header className="flex flex-wrap items-center justify-between gap-3">
       {now && <Greeting firstName={firstName} now={now} playerId={playerId} snapshot={snapshot} loading={status === 'loading'} />}
+      <RankChip />
       <SyncPill state={!online ? 'offline' : pending === undefined || pending > 0 ? 'pending' : 'synced'} pending={pending} />
     </header>
     {failed && (!snapshot || localError) ? <ErrorState message={t('couldntLoadYourProgram')} retryLabel={t('tryAgain')} onRetry={() => {
