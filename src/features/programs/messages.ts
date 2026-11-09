@@ -1,7 +1,7 @@
 import { defineMessages } from '@/core/i18n/messages';
 export const messages = defineMessages({
   ar: {
-    core: 'كور', glutes: 'جلوتس', machine: 'الجهاز', noMachine: 'من غير جهاز', treadmill: 'مشاية', stairmaster: 'جهاز السلم',
+    dragReorder: 'اسحب لترتيب: {name}، {position}', exerciseReordered: '{name} بقى رقم {position}', core: 'كور', glutes: 'جلوتس', machine: 'الجهاز', noMachine: 'من غير جهاز', treadmill: 'مشاية', stairmaster: 'جهاز السلم',
     rir: 'RIR', noRir: '—', rirLabel: 'RIR: {name}، {position}', rirSuffix: ' · RIR {count}', rirHint: 'عدد العدات اللي تفضل في خزانك قبل الفشل',
     exerciseOptions: 'اختيارات التمرين: {name}، {position}', dayOptions: 'اختيارات اليوم: {name}',
     linkNext: 'اربطه بالتمرين اللي بعده', unlink: 'فك الربط', closeEditor: 'تم',
@@ -135,7 +135,7 @@ export const messages = defineMessages({
     addADayWithAtLeastOne: "ضيف يوم فيه تمرين أو كارديو على الأقل",
   },
   en: {
-    core: 'Core', glutes: 'Glutes', machine: 'Machine', noMachine: 'None', treadmill: 'Treadmill', stairmaster: 'Stairmaster',
+    dragReorder: 'Drag to reorder: {name}, {position}', exerciseReordered: '{name} is now {position}', core: 'Core', glutes: 'Glutes', machine: 'Machine', noMachine: 'None', treadmill: 'Treadmill', stairmaster: 'Stairmaster',
     rir: 'RIR', noRir: '—', rirLabel: 'RIR: {name}, {position}', rirSuffix: ' · RIR {count}', rirHint: 'Reps left in the tank before failure',
     exerciseOptions: 'Exercise options: {name}, {position}', dayOptions: 'Day options: {name}',
     linkNext: 'Link to the next exercise', unlink: 'Unlink', closeEditor: 'Done',

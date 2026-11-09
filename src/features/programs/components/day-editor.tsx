@@ -2,13 +2,15 @@
 
 import { useLocale, useT } from '@/core/i18n/client';
 import { formatNumber } from '@/lib/format';
+import { exerciseName } from '@/lib/display-name';
 import { messages } from '../messages';
 
 import { useState } from 'react';
 import { Dumbbell, Moon, Plus } from 'lucide-react';
 import { uuidv7 } from '@/core/offline/ids';
 import { Button, EmptyState, TextField } from '@/ui';
-import { addExercise, moveDay, removeDay, moveExercise, removeExercise, renameDay, updateExercise } from '../draft';
+import { addExercise, moveDay, removeDay, moveExercise, reorderExercise, removeExercise, renameDay, updateExercise } from '../draft';
+import { useDragReorder } from '../hooks/use-drag-reorder';
 import { daySummary } from '../summary';
 import type { DraftDay, ProgramDraft } from '../types';
 import { ExerciseRow } from './exercise-row';
@@ -27,6 +29,16 @@ export function DayEditor({ day, update, usedExerciseIds, first = false, last = 
   const locale = useLocale();
   const [libraryOpen, setLibraryOpen] = useState(false);
   const [confirmRest, setConfirmRest] = useState(false);
+  const [announcement, setAnnouncement] = useState('');
+  const announce = (id: string, index: number) => {
+    const row = day.exercises.find(row => row.id === id);
+    const name = (row?.library && exerciseName(row.library, locale)) || t('exerciseUnavailable');
+    setAnnouncement(t('exerciseReordered', { name, position: formatNumber(index + 1, locale) }));
+  };
+  const { listRef, handleProps, rowStyle, draggingId } = useDragReorder(day.exercises.map(row => row.id), (id, index) => {
+    update(draft => reorderExercise(draft, day.id, id, index));
+    announce(id, index);
+  });
   const cardio = day.cardio ?? [];
   const rest = Boolean(day.is_rest_day);
   const openerId = `program-add-exercise-${day.id}`;
@@ -62,9 +74,16 @@ export function DayEditor({ day, update, usedExerciseIds, first = false, last = 
     <p className="glass-strong rounded-control p-4 text-sm">{t('exerciseCount', { n: summary.exercises, count: formatNumber(summary.exercises, locale) })} · {t('setCount', { n: summary.sets, count: formatNumber(summary.sets, locale) })} · {t('minuteCount', { n: summary.minutes, count: formatNumber(summary.minutes, locale) })}</p>
     {day.exercises.length === 0 && <EmptyState icon={Dumbbell} title={t('addTheFirstExercise')} body={t('emptyBody')}
       action={{ label: t('addExercise'), onClick: () => setLibraryOpen(true) }} />}
-    <ol className="space-y-4">{day.exercises.map((row, index) => <li key={row.id}><ExerciseRow row={row} first={index === 0} last={index === day.exercises.length - 1}
+    <p aria-live="polite" aria-atomic="true" className="sr-only">{announcement}</p>
+    <ol ref={listRef} className="space-y-4">{day.exercises.map((row, index) => <li key={row.id} style={rowStyle(index)}
+      className={draggingId === row.id ? 'select-none' : draggingId ? 'transition-transform duration-150 motion-reduce:transition-none' : ''}>
+      <ExerciseRow row={row} first={index === 0} last={index === day.exercises.length - 1}
+      dragProps={handleProps(row.id)} dragging={draggingId === row.id}
       onLink={() => update(draft => toggleNextSuperset(draft, day.id, row.id))}
-      onMove={delta => update(draft => moveExercise(draft, day.id, row.id, delta))}
+      onMove={delta => {
+        if (draggingId || index + delta < 0 || index + delta >= day.exercises.length) return;
+        update(draft => moveExercise(draft, day.id, row.id, delta)); announce(row.id, index + delta);
+      }}
       onDelete={() => update(draft => removeExercise(draft, day.id, row.id))}
       onUpdate={patch => update(draft => updateExercise(draft, day.id, row.id, patch))} /></li>)}</ol>
     {day.exercises.length > 0 && addButton}

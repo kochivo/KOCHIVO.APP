@@ -49,6 +49,18 @@ export function removeExercise(draft: ProgramDraft, dayId: string, id: string): 
 export function moveExercise(draft: ProgramDraft, dayId: string, id: string, delta: -1 | 1): ProgramDraft {
   return editDay(draft, dayId, day => ({ ...day, exercises: move(day.exercises, id, delta) }));
 }
+export function reorderExercise(draft: ProgramDraft, dayId: string, id: string, toIndex: number): ProgramDraft {
+  const day = draft.days.find(row => row.id === dayId);
+  const from = day?.exercises.findIndex(row => row.id === id) ?? -1;
+  if (!day || from < 0 || !Number.isFinite(toIndex)) return draft;
+  const to = Math.max(0, Math.min(day.exercises.length - 1, Math.trunc(toIndex)));
+  if (from === to) return draft;
+  const exercises = [...day.exercises];
+  const row = exercises.splice(from, 1)[0];
+  if (!row) return draft;
+  exercises.splice(to, 0, row);
+  return editDay(draft, dayId, current => ({ ...current, exercises: cleanGroups(exercises) }));
+}
 export function toggleSuperset(draft: ProgramDraft, dayId: string, ids: string[]): ProgramDraft {
   return editDay(draft, dayId, day => {
     const selected = day.exercises.filter(row => ids.includes(row.id));

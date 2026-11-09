@@ -39,10 +39,10 @@ it('groups personal templates first with separate counts and protects starters',
  expect(html.indexOf('id="my-templates"')).toBeLessThan(html.indexOf('id="kochivo-templates"'));
  const own = html.slice(html.indexOf('id="my-templates"'), html.indexOf('id="kochivo-templates"'));
  const starters = html.slice(html.indexOf('id="kochivo-templates"'));
- expect(own).toContain('My templates<span class="ms-3 text-muted">1</span>');
+ expect(own).toContain('<bdi>My templates</bdi><bdi class="text-muted">1</bdi>');
  expect(own).toContain('My strength'); expect(own).not.toContain('>Starter</h3>');
  expect(own).toContain('Rename My strength'); expect(own).not.toContain('Meal template');
- expect(starters).toContain('KOCHIVO templates<span class="ms-3 text-muted">1</span>');
+ expect(starters).toContain('<bdi>KOCHIVO templates</bdi><bdi class="text-muted">1</bdi>');
  expect(starters).toContain('>Starter</h3>'); expect(starters).not.toContain('aria-label="Rename');
 });
 it('shows loading and retry errors inside both sections', () => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { addDay, addExercise, moveDay, moveExercise, removeDay, removeExercise, renameDay, toggleSuperset, updateExercise } from './draft';
+import { addDay, addExercise, moveDay, moveExercise, reorderExercise, removeDay, removeExercise, renameDay, toggleSuperset, updateExercise } from './draft';
 import { daySummary, exerciseSummary, validateForActivation, escapeSearch } from './summary';
 import type { ProgramDraft, LibraryExercise } from './types';
 
@@ -15,6 +15,33 @@ function positions(draft: ProgramDraft) {
   for (const day of draft.days) expect(day.exercises.map(e => e.position)).toEqual(day.exercises.map((_, i) => i + 1));
 }
 describe('program draft', () => {
+  it('reorders directly, renumbers positions and leaves the original draft intact', () => {
+    const draft = filled();
+    const moved = reorderExercise(draft, 'day', 'a', 2);
+    expect(moved.days[0]?.exercises.map(row => row.id)).toEqual(['b', 'c', 'a']);
+    positions(moved);
+    expect(reorderExercise(draft, 'day', 'c', 0).days[0]?.exercises.map(row => row.id)).toEqual(['c', 'a', 'b']);
+    expect(draft.days[0]?.exercises.map(row => row.id)).toEqual(['a', 'b', 'c']);
+  });
+  it('ignores unchanged, unknown or invalid reorder destinations and clamps outside the list', () => {
+    const draft = filled();
+    expect(reorderExercise(draft, 'day', 'a', 0)).toBe(draft);
+    expect(reorderExercise(draft, 'day', 'missing', 1)).toBe(draft);
+    expect(reorderExercise(draft, 'missing', 'a', 1)).toBe(draft);
+    expect(reorderExercise(draft, 'day', 'a', NaN)).toBe(draft);
+    expect(reorderExercise(draft, 'day', 'a', 99).days[0]?.exercises.map(row => row.id)).toEqual(['b', 'c', 'a']);
+    expect(reorderExercise(draft, 'day', 'c', -9).days[0]?.exercises.map(row => row.id)).toEqual(['c', 'a', 'b']);
+  });
+  it('matches moveExercise when splitting a superset and clears only orphaned groups', () => {
+    const draft = toggleSuperset(filled(), 'day', ['a', 'b']);
+    const moved = reorderExercise(draft, 'day', 'b', 2);
+    expect(moved).toEqual(moveExercise(draft, 'day', 'b', 1));
+    expect(moved.days[0]?.exercises.map(row => row.superset_group)).toEqual([1, null, 1]);
+    const orphan: ProgramDraft = { ...draft, days: draft.days.map(day => ({ ...day,
+      exercises: day.exercises.filter(row => row.id !== 'b'),
+    })) };
+    expect(reorderExercise(orphan, 'day', 'a', 1).days[0]?.exercises.map(row => row.superset_group)).toEqual([null, null]);
+  });
   it('defaults RIR to null and preserves the target through serialization and reordering', () => {
     const draft = filled();
     expect(draft.days[0]?.exercises[0]?.rir).toBeNull();

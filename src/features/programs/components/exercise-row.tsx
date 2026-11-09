@@ -15,11 +15,14 @@ import { restText } from './builder-fields';
 import { RepsSheet } from './reps-sheet';
 import { RestSheet } from './rest-sheet';
 import { RirSheet } from './rir-sheet';
+import { DragHandle } from './drag-handle';
+import type { DragHandleProps } from '../hooks/use-drag-reorder';
 
-export function ExerciseRow({ row, first, last, onLink, onMove, onDelete, onUpdate }: {
+export function ExerciseRow({ row, first, last, onLink, onMove, onDelete, onUpdate, dragProps, dragging = false }: {
   row: DraftExercise; first: boolean; last: boolean; onLink: () => void;
   onMove: (delta: -1 | 1) => void; onDelete: () => void;
   onUpdate: (patch: ExercisePatch) => void;
+  dragProps?: DragHandleProps; dragging?: boolean;
 }) {
   const t = useT(messages);
   const locale = useLocale();
@@ -33,8 +36,11 @@ export function ExerciseRow({ row, first, last, onLink, onMove, onDelete, onUpda
   const reps = row.reps_max === null ? t('failure') : row.reps_min === row.reps_max ? formatNumber(row.reps_min, locale)
     : t('repsRange', { min: formatNumber(row.reps_min, locale), max: formatNumber(row.reps_max, locale) });
   const field = 'recessed glass-strong flex min-h-28 min-w-0 flex-col items-center justify-center gap-3 rounded-control p-3 [&>div]:w-full [&_output]:text-2xl';
-  return <article className={`glass space-y-4 rounded-card border border-line p-4 ${linked ? 'border-s-4 border-s-lime' : ''}`}>
+  return <article className={`${dragging ? 'glass-strong scale-[1.02] shadow-xl motion-reduce:scale-100' : 'glass'} space-y-4 rounded-card border border-line p-4 ${linked ? 'border-s-4 border-s-lime' : ''}`}>
     <div className="flex items-start gap-3">
+      <DragHandle name={name} position={position} dragProps={dragProps} onMove={delta => {
+        if (!dragging && !(delta === -1 ? first : last)) onMove(delta);
+      }} />
       {row.library?.media_path && <ExerciseImage src={exerciseMediaUrl(row.library.media_path)} alt="" width={48} height={48} />}
       <div className="min-w-0 flex-1 space-y-2">
         <h3 className="break-words font-bold"><span className="me-2 tabular-nums text-muted">{position}</span><bdi>{name}</bdi></h3>
