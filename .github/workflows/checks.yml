@@ -1,15 +1,17 @@
-# Checks every push to master. Vercel builds and deploys from master on its own (2026-11-05);
-# the old Hyperlift `deploy` branch is no longer published.
+# Push staging to run every check before publishing.
+# After checks pass, GitHub fast-forwards master to the tested commit.
+# Vercel deploys production from master; staging gets a preview.
+# A direct push to master skips checks and must not be used.
 name: Checks
 
 on:
   push:
-    branches: [master]
+    branches: [staging]
   workflow_dispatch:
 
 concurrency:
   group: deploy
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 permissions:
   contents: read
@@ -36,3 +38,28 @@ jobs:
       - run: npx vitest run --maxWorkers=2
       - run: npm run build
       - run: npx vitest run src/lib/perf-budget.test.ts
+
+  promote:
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/staging'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Fast-forward master to the tested commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin master
+          if ! git merge-base --is-ancestor origin/master "$GITHUB_SHA"; then
+            echo "::error::Cannot promote: merge or rebase staging on master, then push staging again."
+            exit 1
+          fi
+          if [ "$(git rev-parse origin/master)" = "$GITHUB_SHA" ]; then
+            echo "master already points at the tested commit; nothing to promote."
+            exit 0
+          fi
+          git push origin "$GITHUB_SHA:refs/heads/master"
