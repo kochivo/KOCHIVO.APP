@@ -8,6 +8,7 @@ import { KoFeed } from '@/features/ko-feed';
 import { KoAvatar } from './ko-avatar';
 import { KoMessage } from './ko-message';
 import { KoTyping } from './ko-typing';
+import { KoConfirm, createApproval } from './ko-confirm';
 import { contextFromPath } from '../context';
 import type { KoContext } from '../context';
 import { suggestionsFor } from '../suggestions';
@@ -33,7 +34,7 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
   const [draft, setDraft] = useState('');
   const [clip, setClip] = useState<Blob | null>(null);
   const [photo, setPhoto] = useState<File | null>(null);
-  const [approval, setApproval] = useState<string | null>(null);
+  const [approval, setApproval] = useState<ReturnType<typeof createApproval> | null>(null);
   const [history, setHistory] = useState<Entry[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -73,8 +74,10 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
     if (account) {
       body.set('locale', locale);
       const confirming = !clip && !photo && /^(?:(?:تمام\s+)?نف[ّ]?ذ|confirm|approve)[.!؟]?$/iu.test(prompt);
-      if (confirming && approval) body.set('token', approval);
-      if (!confirming) setApproval(null);
+      const token = confirming ? approval?.take(Date.now()) : null;
+      if (token) body.set('token', token);
+      approval?.clear();
+      setApproval(null);
       if (photo) body.set('photo', photo);
     } else body.set('role', role);
     if (clip) body.set('audio', clip, 'voice-note');
@@ -92,7 +95,7 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
         : result.kind === 'updated' || result.kind === 'read'
         ? t(result.kind === 'updated' ? 'chatUpdated' : 'chatRead', { sets: result.sets, reps: result.reps })
         : result.kind === 'clarify' ? result.question : t('chatUnsupported');
-      setApproval(result.kind === 'confirm' ? result.token : null);
+      setApproval(account && result.kind === 'confirm' ? createApproval(result.token, Date.now()) : null);
       setHistory(entries => [...entries, { speaker: 'user' as const, text: clip ? t('voiceNote') : photo ? `${t('mealPhoto')} ${prompt}`.trim() : prompt },
         { speaker: 'ko' as const, text: answer }].slice(-30));
       setDraft('');
@@ -122,6 +125,9 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
         ? role === 'captain' ? 'accountCaptain' : 'accountPlayer'
         : role === 'captain' ? 'chatCaptain' : 'chatPlayer')} />
       {history.map((entry, index) => <KoMessage key={index} {...entry} />)}
+      {account && approval && <KoConfirm approval={approval} busy={busy || recorder.status !== 'idle' || Boolean(clip || photo)}
+        onConfirm={() => { void submit(undefined, t('confirmAction')); }}
+        onCancel={() => { approval.clear(); setApproval(null); setHistory(entries => [...entries, { speaker: 'ko' as const, text: t('confirmCancelled') }].slice(-30)); }} />}
       {busy && <KoTyping />}
     </div>
     {suggestionsFor(role, context, sent).length > 0 && <div className="flex flex-wrap gap-2 px-4 pb-3" role="group" aria-label={t('suggestions')}>
@@ -164,7 +170,7 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
           {recording ? <Square aria-hidden className="size-4" /> : <Mic aria-hidden className="size-5" />}
         </button>}
         <button type="submit" aria-label={t('chatSend')} disabled={busy || recorder.status !== 'idle' || (!clip && !photo && !draft.trim())}
-          className="grid min-h-12 min-w-12 place-items-center rounded-full bg-lime text-on-lime disabled:opacity-50"><ArrowUp aria-hidden className="size-5" /></button>
+          className={`grid min-h-12 min-w-12 place-items-center rounded-full disabled:opacity-50 ${approval ? 'border border-line text-muted' : 'bg-lime text-on-lime'}`}><ArrowUp aria-hidden className="size-5" /></button>
       </div>
       {error && <p role="alert" className="mt-2 text-xs text-muted">{error}</p>}
       <p className="mt-2 text-xs text-muted">{t(account ? 'accountPrivacy' : 'chatPrivacy')}</p>

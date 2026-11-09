@@ -2,6 +2,8 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    confirmLabel: 'تأكيد الطلب', confirmAction: 'نفّذ', confirmCancel: 'إلغاء',
+    confirmCancelled: 'تمام، لغيته.', confirmExpired: 'الطلب ده خلص وقته. ابعته تاني.',
     'context.player': 'صفحة اللاعب', 'context.program': 'صفحة البرنامج', 'context.inbox': 'المهام',
     'context.nutrition': 'التغذية', 'context.home': 'الرئيسية', 'context.remove': 'شيل سياق الصفحة',
     suggestions: 'اقتراحات', 'suggest.today': 'إيه محتاجني النهارده؟', 'suggest.player': 'عامل إيه {name}؟',
@@ -35,6 +37,8 @@ export const messages = defineMessages({
     photoError: 'اختار صورة JPEG أو PNG أو WebP، حجمها 3 ميجابايت أو أقل.',
   },
   en: {
+    confirmLabel: 'Confirm request', confirmAction: 'Confirm', confirmCancel: 'Cancel',
+    confirmCancelled: 'Cancelled.', confirmExpired: 'This request expired. Send it again.',
     'context.player': 'Player page', 'context.program': 'Program page', 'context.inbox': 'Inbox',
     'context.nutrition': 'Nutrition', 'context.home': 'Home', 'context.remove': 'Remove page context',
     suggestions: 'Suggestions', 'suggest.today': 'What needs me today?', 'suggest.player': 'How is {name} doing?',
