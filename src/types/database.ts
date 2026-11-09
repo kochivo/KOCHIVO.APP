@@ -16,6 +16,20 @@ export type Database = {
   }
   public: {
     Tables: {
+      exercise_generator_tags: {
+        Row: {
+          exercise_id: string
+          pattern: 'squat' | 'hinge' | 'lunge' | 'h_push' | 'v_push' | 'h_pull' | 'v_pull' | 'chest_iso' | 'shoulder_iso' | 'biceps' | 'triceps' | 'legs_iso' | 'calves' | 'core'
+          kind: 'compound' | 'isolation'
+          equipment: 'gym' | 'dumbbells' | 'bodyweight'
+          stress: ('knee' | 'shoulder' | 'lower_back')[]
+          min_level: 'beginner' | 'intermediate' | 'advanced'
+        }
+        Insert: never
+        Update: never
+        Relationships: [{ foreignKeyName: 'exercise_generator_tags_exercise_id_fkey'; columns: ['exercise_id'];
+          isOneToOne: true; referencedRelation: 'exercises'; referencedColumns: ['id'] }]
+      }
       ko_dismissals: {
         Row: { user_id: string; key: string; until: string }
         Insert: { user_id?: string; key: string; until: string }
