@@ -1,4 +1,6 @@
 export { Button } from './button';
+export { RankBadge } from './rank-badge';
+export type { RankTier } from './rank-badge';
 export { BrandMark } from './brand-mark';
 export { PageContainer } from './page-container';
 export { CardGrid } from './card-grid';

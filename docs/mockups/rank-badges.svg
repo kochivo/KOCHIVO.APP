@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 140" width="640" height="140">
+<!-- Owner-approved luxury rank badges (2026-11-09). Each badge uses viewBox 0 0 120 130. -->
+<defs>
+<linearGradient id="gBr" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffd9b0"/><stop offset=".35" stop-color="#c47f45"/><stop offset=".65" stop-color="#6e3a17"/><stop offset="1" stop-color="#e0a26a"/></linearGradient>
+<linearGradient id="gSi" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".4" stop-color="#bfc5ce"/><stop offset=".7" stop-color="#6f7782"/><stop offset="1" stop-color="#eef1f4"/></linearGradient>
+<linearGradient id="gGo" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff4c2"/><stop offset=".35" stop-color="#e3b448"/><stop offset=".7" stop-color="#8f620e"/><stop offset="1" stop-color="#f6d77e"/></linearGradient>
+<linearGradient id="gPl" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f4f1ff"/><stop offset=".45" stop-color="#a99fd0"/><stop offset=".75" stop-color="#4b4470"/><stop offset="1" stop-color="#e4defc"/></linearGradient>
+<linearGradient id="gLi" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f1ffc4"/><stop offset=".5" stop-color="#c8f550"/><stop offset="1" stop-color="#5f8a10"/></linearGradient>
+<radialGradient id="fBr" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#4a2a16"/><stop offset="1" stop-color="#1a0d06"/></radialGradient>
+<radialGradient id="fSi" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#3a3f47"/><stop offset="1" stop-color="#121418"/></radialGradient>
+<radialGradient id="fGo" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#3d2e0c"/><stop offset="1" stop-color="#140f03"/></radialGradient>
+<radialGradient id="fOb" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#2c2840"/><stop offset="1" stop-color="#07060c"/></radialGradient>
+<radialGradient id="fCr" cx=".5" cy=".35" r=".8"><stop offset="0" stop-color="#1f2a0a"/><stop offset="1" stop-color="#050703"/></radialGradient>
+</defs>
+<!-- beginner: bronze octagon, one chevron -->
+<g transform="translate(0 5)">
+<path d="M41.6 17.7 L78.4 17.7 L104.3 43.6 L104.3 80.4 L78.4 106.3 L41.6 106.3 L15.7 80.4 L15.7 43.6 Z" fill="url(#gBr)"/>
+<path d="M45.5 26.9 L74.5 26.9 L95.1 47.5 L95.1 76.5 L74.5 97.1 L45.5 97.1 L24.9 76.5 L24.9 47.5 Z" fill="url(#fBr)" stroke="#ffd9b0" stroke-opacity=".35"/>
+<path d="M42 58 L60 71 L78 58" fill="none" stroke="url(#gBr)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<!-- champion: silver shield, two chevrons -->
+<g transform="translate(130 5)">
+<path d="M60 8 L102 22 V60 C102 90 84 110 60 120 C36 110 18 90 18 60 V22 Z" fill="url(#gSi)"/>
+<path d="M60 18 L92 29 V60 C92 84 78 100 60 109 C42 100 28 84 28 60 V29 Z" fill="url(#fSi)" stroke="#fff" stroke-opacity=".3"/>
+<path d="M42 48 L60 61 L78 48 M42 68 L60 81 L78 68" fill="none" stroke="url(#gSi)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<!-- elite: gold winged shield with star -->
+<g transform="translate(260 5)">
+<path d="M22 34 L0 26 L8 40 L0 48 L10 54 L4 64 L22 62 Z M98 34 L120 26 L112 40 L120 48 L110 54 L116 64 L98 62 Z" fill="url(#gGo)"/>
+<path d="M60 8 L102 22 V60 C102 90 84 110 60 120 C36 110 18 90 18 60 V22 Z" fill="url(#gGo)"/>
+<path d="M60 18 L92 29 V60 C92 84 78 100 60 109 C42 100 28 84 28 60 V29 Z" fill="url(#fGo)" stroke="#fff4c2" stroke-opacity=".35"/>
+<path d="M60 44 L64.5 55.9 L77.1 56.4 L67.2 64.3 L70.6 76.6 L60 69.6 L49.4 76.6 L52.8 64.3 L42.9 56.4 L55.5 55.9 Z" fill="url(#gGo)"/>
+<path d="M44 88 L60 96 L76 88" fill="none" stroke="url(#gGo)" stroke-width="4" stroke-linecap="round"/>
+</g>
+<!-- legend: obsidian medallion, platinum ring, gold laurel, platinum star -->
+<g transform="translate(390 5)">
+<circle cx="60" cy="64" r="46" fill="url(#gPl)"/>
+<circle cx="60" cy="64" r="41" fill="url(#fOb)"/>
+<g fill="url(#gGo)">
+<ellipse cx="40" cy="98.6" rx="3.2" ry="7" transform="rotate(120 40 98.6)"/><ellipse cx="27.2" cy="87" rx="3.2" ry="7" transform="rotate(145 27.2 87)"/><ellipse cx="20.6" cy="71" rx="3.2" ry="7" transform="rotate(170 20.6 71)"/><ellipse cx="21.4" cy="54" rx="3.2" ry="7" transform="rotate(195 21.4 54)"/><ellipse cx="29.4" cy="38" rx="3.2" ry="7" transform="rotate(220 29.4 38)"/>
+<ellipse cx="80" cy="98.6" rx="3.2" ry="7" transform="rotate(60 80 98.6)"/><ellipse cx="92.8" cy="87" rx="3.2" ry="7" transform="rotate(35 92.8 87)"/><ellipse cx="99.4" cy="71" rx="3.2" ry="7" transform="rotate(10 99.4 71)"/><ellipse cx="98.6" cy="54" rx="3.2" ry="7" transform="rotate(-15 98.6 54)"/><ellipse cx="90.6" cy="38" rx="3.2" ry="7" transform="rotate(-40 90.6 38)"/>
+</g>
+<path d="M60 46 L64.5 57.9 L77.1 58.4 L67.2 66.3 L70.6 78.6 L60 71.6 L49.4 78.6 L52.8 66.3 L42.9 58.4 L55.5 57.9 Z" fill="url(#gPl)"/>
+</g>
+<!-- crown: gold gem frame, obsidian face, gold crown, lime gems -->
+<g transform="translate(520 5)">
+<path d="M60 4 L104 30 L104 92 L60 122 L16 92 L16 30 Z" fill="url(#gGo)"/>
+<path d="M60 13 L96 35 L96 87 L60 112 L24 87 L24 35 Z" fill="url(#fCr)" stroke="#c8f550" stroke-opacity=".5"/>
+<path d="M35 80 L31 48 L47 62 L60 38 L73 62 L89 48 L85 80 Z" fill="url(#gGo)"/>
+<rect x="35" y="83" width="50" height="8" rx="2" fill="url(#gGo)"/>
+<path d="M60 60 L67 70 L60 80 L53 70 Z" fill="url(#gLi)"/>
+<circle cx="31" cy="48" r="3.5" fill="url(#gLi)"/><circle cx="89" cy="48" r="3.5" fill="url(#gLi)"/><circle cx="60" cy="38" r="4" fill="url(#gLi)"/>
+</g>
+</svg>

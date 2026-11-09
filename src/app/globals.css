@@ -3,6 +3,35 @@
 [dir='ltr'] .dir-icon { transform: scaleX(-1); }
 /* KOCHIVO design tokens — colors come from brand/tokens/palette.css (2026-10-26); use utilities, never raw hex in components. */
 @theme {
+  --color-bronze-1: #ffd9b0;
+  --color-bronze-2: #c47f45;
+  --color-bronze-3: #6e3a17;
+  --color-bronze-4: #e0a26a;
+  --color-silver-1: #ffffff;
+  --color-silver-2: #bfc5ce;
+  --color-silver-3: #6f7782;
+  --color-silver-4: #eef1f4;
+  --color-gold-1: #fff4c2;
+  --color-gold-2: #e3b448;
+  --color-gold-3: #8f620e;
+  --color-gold-4: #f6d77e;
+  --color-platinum-1: #f4f1ff;
+  --color-platinum-2: #a99fd0;
+  --color-platinum-3: #4b4470;
+  --color-platinum-4: #e4defc;
+  --color-crown-gem-1: #f1ffc4;
+  --color-crown-gem-2: #c8f550;
+  --color-crown-gem-3: #5f8a10;
+  --color-bronze-face-1: #4a2a16;
+  --color-bronze-face-2: #1a0d06;
+  --color-silver-face-1: #3a3f47;
+  --color-silver-face-2: #121418;
+  --color-gold-face-1: #3d2e0c;
+  --color-gold-face-2: #140f03;
+  --color-obsidian-1: #2c2840;
+  --color-obsidian-2: #07060c;
+  --color-crown-gem-face-1: #1f2a0a;
+  --color-crown-gem-face-2: #050703;
   --color-bg: #0b0c0d;
   --color-surface: #141414;
   --color-line: #292929;
@@ -277,6 +306,14 @@ html[data-keyboard='open'] dialog:modal { inset-block-end: var(--keyboard-inset)
   .marketing-phone { animation: marketing-float 6s ease-in-out infinite; }
 }
 @keyframes marketing-rise { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+.rank-shine { animation: rank-shine 4s ease-in-out infinite; pointer-events: none; }
+@keyframes rank-shine {
+  0%, 65% { transform: translateX(-30px) skewX(-20deg); }
+  100% { transform: translateX(240px) skewX(-20deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rank-shine { animation: none; opacity: 0; }
+}
 @keyframes marketing-sweep { 0% { background-position: 100% 0; } 45%, 60% { background-position: 0 0; } 100% { background-position: -100% 0; } }
 @keyframes marketing-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 @keyframes marketing-float { 50% { transform: translateY(-6px); } }
