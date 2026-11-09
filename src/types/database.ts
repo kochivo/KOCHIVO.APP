@@ -1570,9 +1570,12 @@ export type Database = {
       team_leaderboard: {
         Args: { p_month?: string }
         Returns: { player_id: string | null; display_name: string; lifetime: number;
-          tier: 'beginner' | 'champion' | 'elite' | 'legend'; monthly: number; is_crown: boolean; position: number }[]
+          tier: 'beginner' | 'champion' | 'elite' | 'legend'; monthly: number; is_crown: boolean; position: number;
+          adherence: number; done: number; planned: number }[]
       }
-      my_points: { Args: never; Returns: Json }
+      my_points: { Args: never; Returns: { lifetime: number; tier: string; monthly: number;
+        month_position: number | null; crown_gap: number; adherence: number; done: number;
+        planned: number; crown_needs_workouts: number; logs: Json[] } }
       request_exercise_swap: { Args: { p_program_exercise_id: string; p_to_exercise_id: string; p_injury: string }; Returns: string }
       decide_exercise_swap: { Args: { p_id: string; p_approve: boolean }; Returns: undefined }
       ko_feed: {

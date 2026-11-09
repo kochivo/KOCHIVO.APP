@@ -146,6 +146,7 @@ Create or modify only these:
 - Reviewer follow-up outside the allowed files: `supabase/functions/send-push/payload.ts` and its `messages.ts`, plus notification UI types/messages/loaders, do not yet support `rank_up`, `crown_taken`, `crown_lost`. SQL notifications are queued, but existing formatting/delivery needs those handlers.
 
 ## Review fixes
+- Crown scoring and the four-workout minimum are superseded by [T-139](T-139-crown-by-adherence.md).
 - Perfect weeks now count distinct training dates with counted workout awards only. An AFTER trigger on `points_log` rechecks normal completions, late-set flips and captain approvals; pending/rejected workouts never qualify.
 - InBody awards require `scan_date` in the current Africa/Cairo month; the monthly source key and original scan date are preserved.
 - Meal-award failures warn and preserve the successful photo reply, including RPC errors returned as data and rejected promises. Focused PGlite-backed route tests exercise both failure paths.

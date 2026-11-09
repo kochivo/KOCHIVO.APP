@@ -32,8 +32,16 @@ async function meals(who: string, count: number) {
     from generate_series(0,$3::int-1) i`, [who, captain, count, TEST_NOW]);
 }
 async function workout(who: string, points: number, at = TEST_NOW) {
+  const program = (await db.query<{ id: string }>(`insert into public.programs(captain_id,player_id,title,status)
+    values($1,$2,'Plan','active') returning id`, [captain, who])).rows[0]?.id;
+  await db.query(`insert into public.program_days(program_id,position,weekday) values($1,0,1)`, [program]);
+  const sessions = (await db.query<{ id: string }>(`insert into public.workout_sessions
+    (id,player_id,training_date,started_at,client_updated_at)
+    select gen_random_uuid(),$1,'2026-11-01'::date+i,$2,$2 from generate_series(0,3) i returning id`, [who, at])).rows;
+  for (const [i, session] of sessions.entries()) {
   await db.query(`insert into public.points_log(player_id,captain_id,kind,source_key,points,status,earned_on,created_at)
-    values ($1,$2,'workout','training',$3,'counted','2026-11-01',$4)`, [who, captain, points, at]);
+    values ($1,$2,'workout',$5,$3,'counted','2026-11-01',$4)`, [who, captain, i === 0 ? points - 3 : 1, at, session.id]);
+  }
 }
 
 it('keeps 25 meal checks in lifetime and logs without awarding a monthly crown', async () => {
@@ -42,24 +50,24 @@ it('keeps 25 meal checks in lifetime and logs without awarding a monthly crown',
     .toMatchObject({ lifetime: 25, monthly: 0, is_crown: false });
   expect((await crowns()).rows).toEqual([]);
   const result = (await mine()).rows[0]?.result;
-  expect(result).toMatchObject({ lifetime: 25, monthly: 0, crown_gap: 20 });
+  expect(result).toMatchObject({ lifetime: 25, monthly: 0, crown_gap: 1 });
   expect(result?.logs).toHaveLength(10);
   expect(result?.logs.every(r => r.kind === 'meal_check' && r.points === 1)).toBe(true);
   const ledger = await db.query('select id from public.points_log where player_id=$1', [player]);
   expect(ledger.rows).toHaveLength(25);
 });
 
-it('ranks 21 workout points ahead of 20 plus five meals in every monthly reader', async () => {
+it('breaks equal adherence by 21 workout points ahead of 20 plus five meals in every reader', async () => {
   await workout(player, 21);
   await workout(peer, 20);
   const before = (await crowns()).rows;
   await meals(peer, 5);
   expect((await board()).rows).toEqual([
-    expect.objectContaining({ player_id: player, monthly: 21, lifetime: 21, is_crown: true, position: 1 }),
-    expect.objectContaining({ player_id: peer, monthly: 20, lifetime: 25, is_crown: false, position: 2 }),
+    expect.objectContaining({ player_id: player, monthly: 50, lifetime: 21, is_crown: true, position: 1 }),
+    expect.objectContaining({ player_id: peer, monthly: 50, lifetime: 25, is_crown: false, position: 2 }),
   ]);
-  expect((await mine()).rows[0]?.result).toMatchObject({ monthly: 21, month_position: 1, crown_gap: 0 });
-  expect((await mine(peer)).rows[0]?.result).toMatchObject({ monthly: 20, month_position: 2, crown_gap: 2 });
+  expect((await mine()).rows[0]?.result).toMatchObject({ monthly: 50, month_position: 1, crown_gap: 0 });
+  expect((await mine(peer)).rows[0]?.result).toMatchObject({ monthly: 50, month_position: 2, crown_gap: 1 });
   expect((await crowns()).rows).toEqual(before);
 });
 
@@ -67,7 +75,7 @@ it('still awards rank_up when the meal RPC takes lifetime from 99 to 100', async
   await workout(player, 99);
   const before = (await crowns()).rows;
   await asUser(db, player, tx => tx.query('select public.award_meal_check()'));
-  expect((await mine()).rows[0]?.result).toMatchObject({ lifetime: 100, monthly: 99 });
+  expect((await mine()).rows[0]?.result).toMatchObject({ lifetime: 100, monthly: 50 });
   expect((await db.query(`select payload from public.notifications where user_id=$1 and type='rank_up'`, [player])).rows)
     .toEqual([{ payload: { tier: 'champion', lifetime: 100 } }]);
   expect((await crowns()).rows).toEqual(before);
@@ -79,7 +87,7 @@ it('does not move the earliest-total tie-break or notify a crown swap on a meal 
   const before = (await crowns()).rows;
   await asUser(db, player, tx => tx.query('select public.award_meal_check()'));
   expect((await board()).rows.map(r => [r.player_id, r.monthly, r.is_crown, r.position]))
-    .toEqual([[player, 20, true, 1], [peer, 20, false, 2]]);
+    .toEqual([[player, 50, true, 1], [peer, 50, false, 2]]);
   expect((await crowns()).rows).toEqual(before);
 });
 

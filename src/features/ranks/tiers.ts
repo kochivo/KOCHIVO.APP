@@ -6,7 +6,9 @@ export const TIERS = [
   { tier: 'elite', threshold: 300 },
   { tier: 'legend', threshold: 600 },
 ] as const;
-export const CROWN_MIN_MONTHLY = 20;
+export const CROWN_MIN_WORKOUTS = 4;
+/** @deprecated Use CROWN_MIN_WORKOUTS. Kept for the pending crown UI update. */
+export const CROWN_MIN_MONTHLY = CROWN_MIN_WORKOUTS;
 
 export function tierFor(lifetime: number): Tier {
   return TIERS.findLast(entry => lifetime >= entry.threshold)?.tier ?? 'beginner';

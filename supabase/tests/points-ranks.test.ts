@@ -22,16 +22,12 @@ beforeEach(async () => {
   peer = await createUser(db, 'player', 'Omar Private');
   outsider = (await createCaptainWithPlayer(db)).captain;
   await db.query(`update public.profiles set full_name='Ali Private' where id=$1`, [player]);
-  await db.query(`insert into public.coach_clients(captain_id,player_id,access_until)
-    values ($1,$2,'2026-12-01')`, [captain, peer]);
-  const p = await db.query<{ id: string }>(`insert into public.programs(captain_id,player_id,title,status)
-    values ($1,$2,'Plan','active') returning id`, [captain, player]);
+  await db.query(`insert into public.coach_clients(captain_id,player_id,access_until) values ($1,$2,'2026-12-01')`, [captain, peer]);
+  const p = await db.query<{ id: string }>(`insert into public.programs(captain_id,player_id,title,status) values ($1,$2,'Plan','active') returning id`, [captain, player]);
   day = (await db.query<{ id: string }>(`insert into public.program_days(program_id,position,title,weekday)
     values ($1,0,'Day',1) returning id`, [p.rows[0]?.id])).rows[0]?.id ?? '';
-  exercise = (await db.query<{ id: string }>(`insert into public.exercises(name_en,body_part)
-    values ('Lift','legs') returning id`)).rows[0]?.id ?? '';
-  await db.query(`insert into public.program_exercises(day_id,exercise_id,position,sets,reps_min,rest_seconds)
-    values ($1,$2,0,10,8,300)`, [day, exercise]);
+  exercise = (await db.query<{ id: string }>(`insert into public.exercises(name_en,body_part) values ('Lift','legs') returning id`)).rows[0]?.id ?? '';
+  await db.query(`insert into public.program_exercises(day_id,exercise_id,position,sets,reps_min,rest_seconds) values ($1,$2,0,10,8,300)`, [day, exercise]);
 });
 async function session(minutes = 60, sets = 6, planned: string | null = day, date = '2026-11-03', finish = true) {
   const id = (await db.query<{ id: string }>(`insert into public.workout_sessions
@@ -44,8 +40,7 @@ async function session(minutes = 60, sets = 6, planned: string | null = day, dat
   if (finish) await db.query(`update public.workout_sessions set completed_at=started_at+make_interval(mins=>$2) where id=$1`, [id, minutes]);
   return id;
 }
-const logs = () => db.query<{ id: string; kind: string; status: string; points: number }>(
-  'select id,kind,status,points from public.points_log where player_id=$1 order by kind', [player]);
+const logs = () => db.query<{ id: string; kind: string; status: string; points: number }>('select id,kind,status,points from public.points_log where player_id=$1 order by kind', [player]);
 const board = (caller = captain, month = '2026-11-01') => asUser(db, caller,
   tx => tx.query<{ player_id: string | null; display_name: string; monthly: number; is_crown: boolean; position: number }>(
     'select * from public.team_leaderboard($1)', [month]));
@@ -53,9 +48,7 @@ async function award(who: string, points: number, key: string, at = '2026-11-03T
   await db.query(`insert into public.points_log(player_id,captain_id,kind,source_key,points,status,earned_on,created_at)
     values ($1,$2,'perfect_week',$3,$4,'counted',$5,$6)`, [who, captain, key, points, earned, at]);
 }
-const decide = (id: string, approve = true, caller = captain) => asUser(db, caller,
-  tx => tx.query('select public.review_points($1,$2)', [id, approve]));
-
+const decide = (id: string, approve = true, caller = captain) => asUser(db, caller, tx => tx.query('select public.review_points($1,$2)', [id, approve]));
 it('awards a valid workout and perfect week once across resync and repeated completion', async () => {
   const id = await session();
   expect((await logs()).rows).toEqual(expect.arrayContaining([
@@ -195,11 +188,11 @@ it('allows linked captain review only once and preserves lifetime on rejection',
   await decide((await logs()).rows.find(r => r.kind === 'workout' && r.status === 'pending')?.id ?? '', false);
   expect((await db.query('select lifetime from public.player_points where player_id=$1', [player])).rows).toEqual(before);
 });
-it('sorts by monthly points then earliest reached total and resets the crown by month', async () => {
+it('breaks equal crown scores by raw points then earliest award and resets by month', async () => {
   await award(player, 20, 'first', '2026-11-01T09:00Z');
   await award(peer, 20, 'second', '2026-11-01T10:00Z');
   const rows = (await board()).rows;
-  expect(rows.map(r => [r.player_id, r.monthly, r.is_crown])).toEqual([[player, 20, true], [peer, 20, false]]);
+  expect(rows.map(r => [r.player_id, r.monthly, r.is_crown])).toEqual([[player, 0, false], [peer, 0, false]]);
   expect((await board(captain, '2026-12-01')).rows.every(r => r.monthly === 0 && !r.is_crown)).toBe(true);
   const privateRows = (await board(player)).rows;
   expect(privateRows.map(r => [r.player_id, r.display_name])).toEqual([[player, 'Ali'], [null, 'Omar']]);
@@ -209,20 +202,26 @@ it('notifies both holders on a crown swap and notifies lifetime tier crossings',
   await award(player, 19, 'nineteen');
   expect((await board()).rows.some(r => r.is_crown)).toBe(false);
   await award(player, 1, 'twenty');
+  for (const date of ['2026-11-01', '2026-11-02', '2026-11-03', '2026-11-04']) await session(60, 6, day, date);
+  await db.query(`insert into public.programs(captain_id,player_id,title,status) values($1,$2,'Peer plan','active')`, [captain, peer]);
+  await db.query(`insert into public.program_days(program_id,position,weekday) select id,0,1 from public.programs where player_id=$1`, [peer]);
+  await db.query(`insert into public.workout_sessions(id,player_id,training_date,started_at,client_updated_at)
+    select gen_random_uuid(),$1,'2026-11-01'::date+i,now(),now() from generate_series(0,4) i`, [peer]);
+  await db.query(`insert into public.points_log(player_id,captain_id,kind,source_key,points,status,earned_on)
+    select $1,$2,'workout',id::text,3,'counted','2026-11-03' from public.workout_sessions where player_id=$1`, [peer, captain]);
   await award(peer, 21, 'swap');
   await award(peer, 79, 'rank');
   expect((await db.query('select user_id,type from public.notifications where user_id in ($1,$2) and type in (\'crown_taken\',\'crown_lost\',\'rank_up\')', [player, peer])).rows)
     .toEqual(expect.arrayContaining([{ user_id: player, type: 'crown_taken' }, { user_id: player, type: 'crown_lost' },
       { user_id: peer, type: 'crown_taken' }, { user_id: peer, type: 'rank_up' }]));
   const mine = await asUser(db, player, tx => tx.query<{ result: { lifetime: number; crown_gap: number; logs: unknown[] } }>('select public.my_points() as result'));
-  expect(mine.rows[0]?.result).toMatchObject({ lifetime: 20, crown_gap: 81 });
+  expect(mine.rows[0]?.result).toMatchObject({ lifetime: 42, crown_gap: 14 });
   expect((await asUser(db, peer, tx => tx.query<{ result: { crown_gap: number } }>('select public.my_points() as result'))).rows[0]?.result.crown_gap).toBe(0);
 });
 it('returns only the last ten own logs and retains lifetime across team changes', async () => {
   for (let i = 0; i < 12; i++) await award(player, 1, `history-${i}`, `2026-11-03T10:${String(i).padStart(2, '0')}:00Z`);
   const mine = (await asUser(db, player, tx => tx.query<{ result: { logs: { source_key: string }[] } }>('select public.my_points() as result'))).rows[0]?.result;
-  expect(mine?.logs.map(r => r.source_key)).toEqual(['history-11', 'history-10', 'history-9', 'history-8', 'history-7',
-    'history-6', 'history-5', 'history-4', 'history-3', 'history-2']);
+  expect(mine?.logs.map(r => r.source_key)).toEqual(Array.from({ length: 10 }, (_, i) => `history-${11 - i}`));
   await db.query('update public.coach_clients set archived_at=now() where player_id=$1', [player]);
   await db.query(`insert into public.coach_clients(captain_id,player_id,access_until) values($1,$2,'2026-12-01')`, [outsider, player]);
   expect((await board(outsider)).rows.find(r => r.player_id === player)).toMatchObject({ lifetime: 12, monthly: 0 });
