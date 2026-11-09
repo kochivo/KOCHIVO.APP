@@ -22,13 +22,15 @@ export function ExerciseHeader({ exercise, last }: { exercise: SnapshotExercise;
         exercise.reps_min === exercise.reps_max ? formatNumber(exercise.reps_min, locale) :
           t('targetRange', { min: formatNumber(exercise.reps_min, locale), max: formatNumber(exercise.reps_max, locale) }) })}</bdi>
         {exercise.rir != null && <bdi>{t('rirSuffix', { count: formatNumber(exercise.rir, locale) })}</bdi>}</p>
-      {exercise.video_url?.startsWith('https://') && <a href={exercise.video_url} target="_blank" rel="noopener noreferrer"
-        className="inline-flex min-h-12 items-center text-lime underline">{t('watchVideo')}</a>}
       {last?.sets.length ? <p className="text-sm text-muted">{t('lastTime')} <bdi dir="ltr">{last.sets.map((set) =>
         `${formatNumber(set.weight_kg ?? 0, locale)}×${formatNumber(set.reps ?? 0, locale)}`).join(' · ')}</bdi></p> : null}
-      <Link className="inline-flex min-h-12 items-center text-lime underline" href={`/player/history?exercise=${encodeURIComponent(exercise.exercise_id)}`}>
-        {t('seeHistory')}
-      </Link>
+      <div className="flex flex-wrap items-center gap-x-6">
+        {exercise.video_url?.startsWith('https://') && <a href={exercise.video_url} target="_blank" rel="noopener noreferrer"
+          className="inline-flex min-h-12 items-center text-lime underline">{t('watchVideo')}</a>}
+        <Link className="inline-flex min-h-12 items-center text-lime underline" href={`/player/history?exercise=${encodeURIComponent(exercise.exercise_id)}`}>
+          {t('seeHistory')}
+        </Link>
+      </div>
     </div>
   </section>;
 }

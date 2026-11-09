@@ -21,8 +21,8 @@ export function TemplateSection({ starter, templates, loading, error, busy, erro
   const id = starter ? 'kochivo-templates' : 'my-templates';
   return <section id={id} aria-labelledby={`${id}-heading`} className="grid scroll-mt-6 gap-4">
     <header className="flex flex-wrap items-center justify-between gap-3">
-      <h2 id={`${id}-heading`} className="text-2xl font-bold">{t(starter ? 'kochivoTemplates' : 'myTemplates')}
-        <span className="ms-3 text-muted">{formatNumber(templates.length, locale)}</span>
+      <h2 id={`${id}-heading`} className="flex items-baseline gap-3 text-2xl font-bold"><bdi>{t(starter ? 'kochivoTemplates' : 'myTemplates')}</bdi>
+        <bdi className="text-muted">{formatNumber(templates.length, locale)}</bdi>
       </h2>
       {!starter && <Button className="min-h-12" disabled={creating || loading || !!error} onClick={onCreate}>{t('newTemplate')}</Button>}
     </header>
