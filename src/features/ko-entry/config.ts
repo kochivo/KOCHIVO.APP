@@ -1,0 +1,24 @@
+import 'server-only';
+import { supabaseServer } from '@/core/supabase/server';
+
+export function koAccountConfig() {
+  const { KO_ENABLED, KO_GEMINI_PAID, KO_ORIGIN, KO_APPROVAL_SECRET, KO_PILOT_USER_IDS, GOOGLE_GENERATIVE_AI_API_KEY } = process.env;
+  if (KO_ENABLED !== '1' || KO_GEMINI_PAID !== '1' || !KO_ORIGIN || !KO_APPROVAL_SECRET ||
+      KO_APPROVAL_SECRET.length < 32 || !KO_PILOT_USER_IDS || !GOOGLE_GENERATIVE_AI_API_KEY) return null;
+  try {
+    const origin = new URL(KO_ORIGIN);
+    if (origin.origin !== KO_ORIGIN || (process.env.NODE_ENV === 'production' && origin.protocol !== 'https:')) return null;
+    return { origin, secret: KO_APPROVAL_SECRET, key: GOOGLE_GENERATIVE_AI_API_KEY, pilots: new Set(KO_PILOT_USER_IDS.split(',').map(id => id.trim())) };
+  } catch {
+    return null;
+  }
+}
+
+export async function koPilotAvailable(): Promise<boolean> {
+  const config = koAccountConfig();
+  if (!config) return false;
+  const db = await supabaseServer();
+  const { data, error } = await db.auth.getClaims();
+  const id = data?.claims.sub;
+  return !error && Boolean(id && config.pilots.has(id) && data?.claims.is_anonymous !== true);
+}

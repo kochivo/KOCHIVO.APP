@@ -297,6 +297,16 @@ body:not(:has(.marketing-wrap)) :is(h1, h2, h3) { font-weight: 700; color: var(-
 }
 body:not(:has(.marketing-wrap)) .text-muted { font-weight: 500; }
 @keyframes surface-in { from { opacity: 0; transform: translateY(var(--enter-rise)); } to { opacity: 1; transform: none; } }
+@keyframes ko-breathe { 0%, 100% { transform: translateY(0); opacity: 1; } 50% { transform: translateY(-3px); opacity: .7; } }
+@keyframes ko-pop-in { from { opacity: 0; transform: translateY(8px) scale(.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes ko-rise { from { opacity: 0; transform: translateY(8px) scale(.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes ko-typing { 0%, 60%, 100% { opacity: .4; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-3px); } }
+[data-ko-panel] { transform-origin: 0% 100%; animation: ko-pop-in 200ms ease-out both; }
+[dir='rtl'] [data-ko-panel] { transform-origin: 100% 100%; }
+[data-ko-panel][data-closing='true'] { animation: ko-rise 150ms ease-in reverse both; }
+@media (prefers-reduced-motion: reduce) {
+  [data-ko-panel], [data-ko-panel][data-closing='true'] { animation: none; }
+}
 @media (prefers-reduced-motion: reduce) {
   .marketing-slogan > span, .marketing-after, .marketing-beam, .marketing-phone, .marketing-reveal, .empty-state-in { animation: none; }
   .enter, .shimmer, .toast-leave { animation: none; }

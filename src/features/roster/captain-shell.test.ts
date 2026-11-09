@@ -11,6 +11,7 @@ vi.mock('@/core/i18n/server', () => ({
 vi.mock('./components/captain-nav', () => ({ CaptainNav: () => null }));
 vi.mock('./components/captain-account-menu', () => ({ CaptainAccountMenu: () => null }));
 vi.mock('@/features/notifications', () => ({ NotificationBell: () => null }));
+vi.mock('@/features/ko-entry', () => ({ KoAccountLink: () => null }));
 
 it('uses one desktop gutter and a slim sidebar without capping the main column', async () => {
   const html = renderToStaticMarkup(await CaptainShell({ children: 'Roster content', sidebarFooter: 'Sidebar plan' }));

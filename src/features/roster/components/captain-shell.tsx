@@ -8,6 +8,7 @@ import { BrandMark } from '@/ui';
 import { CaptainDevice } from './captain-device';
 import { HeaderInstall } from './header-install';
 import { CaptainAccountMenu } from './captain-account-menu';
+import { KoAccountLink } from '@/features/ko-entry';
 
 export async function CaptainShell({ children, sidebarFooter }: { children: ReactNode; sidebarFooter?: ReactNode }) {
   const t = await getT(messages);
@@ -28,6 +29,7 @@ export async function CaptainShell({ children, sidebarFooter }: { children: Reac
         </div>
       </div>
       <CaptainDevice />
+      <KoAccountLink />
     </div>
   );
 }

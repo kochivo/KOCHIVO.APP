@@ -24,6 +24,8 @@ const InstallSheet = dynamic(() => import('@/features/install').then(module => m
 const RestMoodSync = dynamic(() => import('@/features/player-home').then(module => module.RestMoodSync), { ssr: false });
 const SyncRunner = dynamic(() => import('./sync-runner').then(module => module.SyncRunner), { ssr: false });
 const WaitingRoom = dynamic(() => import('@/features/billing').then(module => module.PlayerWaitingRoom), { ssr: false });
+const KoPreview = process.env.NODE_ENV === 'development'
+  ? dynamic(() => import('@/features/ko-preview').then(module => module.KoPreview), { ssr: false }) : () => null;
 
 export function PlayerShell({ children }: { children: ReactNode }) {
   useDeviceRole('player');
@@ -74,6 +76,7 @@ export function PlayerShell({ children }: { children: ReactNode }) {
     </div>
     {showsNav(pathname) && <InstallSheet />}
     {showsNav(pathname) && <FeedbackButton role="player" />}
+    {process.env.NODE_ENV === 'development' && showsNav(pathname) && <KoPreview role="player" />}
     {showsNav(pathname) && <BottomNav aria-label={t('navigation')} items={playerNav(pathname, locale)} />}
     </div>
   </MyCaptainContext.Provider>;

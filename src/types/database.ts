@@ -1663,6 +1663,10 @@ export type Database = {
       create_demo_workspace: { Args: never; Returns: undefined }
       create_demo_player_workspace: { Args: never; Returns: undefined }
       current_tier: { Args: { p_captain: string }; Returns: string }
+      ko_apply_action: {
+        Args: { p_token: string }
+        Returns: Json
+      }
       invite_preview: {
         Args: { p_code: string }
         Returns: {
