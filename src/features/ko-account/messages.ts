@@ -2,6 +2,10 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    swapNone: 'مفيش بديل آمن دلوقتي، كلّم الكابتن.',
+    swapChoices: 'بدل {name} ممكن: {options}. ابعتلي الرقم.',
+    swapOption: '{number}) {name}',
+    swapSent: 'بعت طلب التبديل للكابتن. استنى موافقته قبل ما تغيّر التمرين.',
     athlete: 'مش لاقي اللاعب ده عندك. ابعتلي اسمه كامل.',
     target: 'اللاعب: {name}',
     exerciseMissing: 'مش لاقي التمرين ده في خطتك. ابعتلي اسمه زي ما مكتوب في الخطة.',
@@ -33,6 +37,10 @@ export const messages = defineMessages({
     unclear: 'مش فاهمك أوي. قولّي عايز تعمل إيه ولمين.',
   },
   en: {
+    swapNone: 'No safe alternative is available. Ask your coach.',
+    swapChoices: 'Instead of {name}: {options}. Send the number.',
+    swapOption: '{number}) {name}',
+    swapSent: 'Swap request sent to your coach. Wait for approval before changing the exercise.',
     athlete: 'I could not identify one player on your roster. Include the full name in your request.',
     target: 'Player: {name}',
     exerciseMissing: 'That exercise is not in the current plan under that name. Use the name shown in the plan.',

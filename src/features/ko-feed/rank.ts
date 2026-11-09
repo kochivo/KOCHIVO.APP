@@ -1,6 +1,6 @@
 import type { KoFeedItem } from './types';
 
-const order: KoFeedItem['kind'][] = ['join_requested', 'expired', 'expiring', 'sessions_used_up', 'today_workout', 'my_expiring', 'inactive', 'no_program', 'no_nutrition', 'log_meal'];
+const order: KoFeedItem['kind'][] = ['swap_requested', 'join_requested', 'expired', 'expiring', 'sessions_used_up', 'today_workout', 'my_expiring', 'inactive', 'no_program', 'no_nutrition', 'log_meal'];
 export function rankFeed(rows: readonly KoFeedItem[]) {
   return [...rows].sort((a, b) => Number(b.severity === 'urgent') - Number(a.severity === 'urgent')
     || order.indexOf(a.kind) - order.indexOf(b.kind) || a.key.localeCompare(b.key));

@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 const actionSchema = z.strictObject({
   actor: z.uuid(), id: z.uuid(), player: z.uuid(), expires: z.number().int(),
-  kind: z.enum(['exercise', 'training', 'nutrition', 'renew', 'reminder']),
+  kind: z.enum(['exercise', 'training', 'nutrition', 'renew', 'reminder', 'swap_options']),
   label: z.string().max(160), payload: z.json(),
 });
 export type Approval = z.infer<typeof actionSchema>;

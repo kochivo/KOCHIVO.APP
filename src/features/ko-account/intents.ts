@@ -16,6 +16,8 @@ const meal = z.strictObject({
 });
 
 const tools = {
+  swap_exercise: { schema: z.strictObject({ exercise: name, injury: z.enum(['knee', 'shoulder', 'lower_back']) }),
+    description: 'Player requests replacing one exercise in their active program because of knee, shoulder or lower back pain. Use the named exercise and explicit injury only. Alternatives require captain approval.' },
   read_exercise: { schema: z.strictObject({ ...namedExercise, player: name.optional(), how: z.boolean().optional() }),
     description: 'Read exercise sets, reps and coach instructions from the current assigned training plan.' },
   update_exercise: { schema: z.strictObject({ ...target, ...namedExercise, sets: sets.optional(), reps: reps.optional() }),
@@ -43,7 +45,7 @@ type ToolName = keyof typeof tools;
 export type Intent = { [K in ToolName]: { kind: K; args: z.infer<(typeof tools)[K]['schema']> } }[ToolName];
 
 const captain = ['read_exercise', 'update_exercise', 'create_training', 'create_nutrition', 'renew_subscription', 'send_reminder', 'clarify'] as const;
-const player = ['read_exercise', 'read_nutrition', 'clarify'] as const;
+const player = ['read_exercise', 'read_nutrition', 'swap_exercise', 'clarify'] as const;
 
 type GeminiSchema = { type?: string; properties?: Record<string, GeminiSchema>; items?: GeminiSchema; required?: string[] };
 

@@ -11,6 +11,8 @@ import { commitApproval, executeIntent, say } from './execute';
 import { planIntent } from './intents';
 import { normalizeName } from './match';
 import { messages } from './messages';
+import { chooseSwap } from './swap';
+import type { AccountReply } from './execute';
 
 const maxImage = 3_000_000;
 const maxAudio = 1_000_000;
@@ -40,6 +42,14 @@ export async function resolveContext(actor: KoActor, raw: unknown) {
 }
 
 const reply = (data: object, status = 200) => Response.json(data, { status, headers: { 'Cache-Control': 'no-store' } });
+const swapCookie = 'ko_swap_options';
+function playerReply(result: AccountReply, secure: boolean) {
+  const token = result.kind === 'message' ? result.optionsToken : undefined;
+  const response = reply({ kind: result.kind, text: result.text });
+  // Keep options with the browser without changing the shared chat's captain confirmation flow.
+  response.headers.set('Set-Cookie', `${swapCookie}=${token ?? ''}; Path=/api/ko; HttpOnly; SameSite=Strict; Max-Age=${token ? 600 : 0}${secure ? '; Secure' : ''}`);
+  return response;
+}
 
 function rateLimited(actor: string, now: number) {
   const current = usage.get(actor);
@@ -80,14 +90,23 @@ export async function postKoAccountChat(request: Request) {
     if ((entry !== null && typeof entry !== 'string') || (typeof entry === 'string' && entry.length > 500) ||
         (audio !== null && photo !== null)) return reply({ error: 'invalid' }, 400);
     const text = typeof entry === 'string' ? entry.trim() : '';
+    if (actor.role === 'player' && !audio && !photo && /^[0-9٠-٩]+$/.test(text)) {
+      const cookie = request.headers.get('cookie')?.split(';').map(part => part.trim())
+        .find(part => part.startsWith(`${swapCookie}=`))?.slice(swapCookie.length + 1);
+      const signed = typeof token === 'string' ? token : cookie;
+      const action = signed ? verifyApproval(signed, actor.id, now, config.secret) : null;
+      const result = actor.role === 'player' && action?.kind === 'swap_options' && action.player === actor.id
+        ? await chooseSwap(actor, action.payload, text, locale) : say(t('expired'));
+      return playerReply(result, config.origin.protocol === 'https:');
+    }
     const command = normalizeName(text);
     const suggestions = createT(koPreviewMessages, locale);
     if (!audio && !photo && text === suggestions('suggest.meal') && actor.role === 'player')
-      return reply(await executeIntent(actor, { kind: 'read_nutrition', args: {} }, locale, config.secret, now));
+      return playerReply(await executeIntent(actor, { kind: 'read_nutrition', args: {} }, locale, config.secret, now), config.origin.protocol === 'https:');
     if (!audio && !photo && (command === 'نفذ' || command === 'تمام نفذ' || command === 'confirm' || command === 'approve')) {
       if (typeof token !== 'string' || actor.role !== 'captain') return reply(say(t('expired')));
       const action = verifyApproval(token, actor.id, now, config.secret);
-      if (!action) return reply(say(t('expired')));
+      if (!action || action.kind === 'swap_options') return reply(say(t('expired')));
       return reply(await commitApproval(actor, action, token, locale));
     }
 
@@ -103,7 +122,8 @@ export async function postKoAccountChat(request: Request) {
     }
     if (!text && !media) return reply({ error: 'invalid' }, 400);
     const intent = await planIntent(actor.role, { text, media }, config.key, request.signal, contextPlayer?.name);
-    return reply(intent ? await executeIntent(actor, intent, locale, config.secret, now, contextPlayer) : say(t('unclear')));
+    const result = intent ? await executeIntent(actor, intent, locale, config.secret, now, contextPlayer) : say(t('unclear'));
+    return actor.role === 'player' ? playerReply(result, config.origin.protocol === 'https:') : reply(result);
   } catch {
     return reply({ error: 'failed' }, 502);
   }

@@ -11,15 +11,24 @@ import type { Intent } from './intents';
 import { matchNamed } from './match';
 import { readMeal } from './meal';
 import { messages } from './messages';
+import { prepareSwap } from './swap';
 
 type Locale = 'ar' | 'en';
-export type AccountReply = { kind: 'message'; text: string } | { kind: 'confirm'; text: string; token: string };
+export type AccountReply = { kind: 'message'; text: string; optionsToken?: string } | { kind: 'confirm'; text: string; token: string };
 export const say = (text: string): AccountReply => ({ kind: 'message', text });
 const range = (min: number, max: number | null) => max !== null && max !== min ? `${min}–${max}` : String(min);
 
 export async function executeIntent(actor: KoActor, intent: Intent, locale: Locale, secret: string, now: number, contextPlayer?: { id: string; name: string }): Promise<AccountReply> {
   const t = createT(messages, locale);
   if (intent.kind === 'clarify') return say(intent.args.question);
+  if (intent.kind === 'swap_exercise') {
+    const result = await prepareSwap(actor, intent.args.exercise, intent.args.injury, locale);
+    if (!result.payload) return say(result.text);
+    return { kind: 'message', text: result.text, optionsToken: issueApproval({
+      actor: actor.id, player: actor.id, id: uuidv7(now), kind: 'swap_options', label: '',
+      expires: now + 600_000, payload: result.payload,
+    }, secret) };
+  }
   if (intent.kind === 'read_nutrition' || intent.kind === 'meal_photo') {
     if (actor.role !== 'player') return say(t('unclear'));
     const rows = await readMeal(actor, intent.args.meal, intent.args.foods, locale);

@@ -1,5 +1,6 @@
 import { createElement } from 'react';
 import type * as ReactModule from 'react';
+import type * as JsxRuntime from 'react/jsx-dev-runtime';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { LocaleProvider } from '@/core/i18n/client';
@@ -11,9 +12,25 @@ import { messages } from './messages';
 import { KoFeed } from './components/ko-feed';
 import { FeedCard, feedHref } from './components/feed-card';
 import type * as FeedStore from './hooks/use-ko-feed';
+import { decideSwap, decideSwapOptimistically } from './data/decide-swap';
+import type * as FeedLoader from './data/load-feed';
 
 const state = vi.hoisted(() => ({ rows: [] as KoFeedItem[], status: 'ready' as 'ready' | 'error' | 'loading', saveError: false }));
 const loads = vi.hoisted(() => ({ load: vi.fn() }));
+const swapRpc = vi.hoisted(() => vi.fn());
+const clicks = vi.hoisted(() => ({ capture: false, handlers: new Map<string, () => void>() }));
+vi.mock('react/jsx-dev-runtime', async original => {
+  const runtime = await original<typeof JsxRuntime>();
+  const jsxDEV: typeof runtime.jsxDEV = (type, props, key, isStatic, source, self) => {
+    if (clicks.capture && type === 'button' && props && typeof props === 'object') {
+      const button = props as { children?: unknown; onClick?: () => void };
+      if (typeof button.children === 'string' && button.onClick) clicks.handlers.set(button.children, button.onClick);
+    }
+    return runtime.jsxDEV(type, props, key, isStatic, source, self);
+  };
+  return { ...runtime, jsxDEV };
+});
+vi.mock('@/core/supabase/lazy', () => ({ loadSupabaseBrowser: async () => ({ rpc: swapRpc }) }));
 const previewView = vi.hoisted(() => ({ enabled: false, index: 0, reply: null as { text: string; token?: string } | null }));
 vi.mock('react', async original => {
   const react = await original<typeof ReactModule>();
@@ -24,10 +41,11 @@ vi.mock('react', async original => {
 });
 vi.mock('./data/load-feed', () => ({ loadFeed: loads.load }));
 vi.mock('./hooks/use-ko-feed', () => ({
+  refreshFeed: vi.fn(),
   useKoFeed: () => ({ ...state, refresh: vi.fn(), dismiss: vi.fn() }),
   useKoFeedCount: () => state.rows.filter(row => row.severity === 'urgent').length,
 }));
-beforeEach(() => { state.rows = []; state.status = 'ready'; state.saveError = false; previewView.enabled = false; });
+beforeEach(() => { state.rows = []; state.status = 'ready'; state.saveError = false; previewView.enabled = false; swapRpc.mockReset(); });
 
 const item = (variant: { kind: UrgentKind; severity: 'urgent' } | { kind: GenerateKind; severity: 'generate' }): KoFeedItem => ({
   key: `${variant.kind}:p:2026-11-03`, ...variant, player_id: 'p', player_name: 'Ali', data: {},
@@ -38,6 +56,58 @@ it('puts urgent items first without mutating the input', () => {
   expect(rows[0]?.kind).toBe('no_program');
   expect(groupFeed(rows).urgent).toHaveLength(2);
   expect(groupFeed(rows).generate).toHaveLength(1);
+});
+
+it.each(['ar', 'en'] as const)('renders swap approval and decline with localized names, injury and direction in %s', locale => {
+  const row = { ...item({ kind: 'swap_requested', severity: 'urgent' }), data: {
+    request_id: 'request', from: { ar: 'سكوات', en: 'Squat' }, to: { ar: 'بديل', en: 'Alternative' }, injury: 'knee',
+  } };
+  const t = createT(messages, locale);
+  const html = renderToStaticMarkup(createElement(LocaleProvider, { locale }, createElement(FeedCard, { item: row, onDismiss() {} })));
+  for (const label of [t('approve'), t('decline'), t('knee'), 'Ali', locale === 'ar' ? 'سكوات' : 'Squat']) expect(html).toContain(label);
+  expect(html).toContain(`dir="${locale === 'ar' ? 'rtl' : 'ltr'}"`);
+  expect(html).toContain('bg-lime');
+  expect(html).not.toContain(t('preview'));
+  expect(rankFeed([item({ kind: 'expired', severity: 'urgent' }), row])[0]?.kind).toBe('swap_requested');
+});
+
+it.each([true, false])('sends the captain decision %s and restores optimistic state on RPC failure', async approve => {
+  let hidden = false;
+  let fail: (error: Error) => void = () => {};
+  const pending = decideSwapOptimistically('request', approve, value => { hidden = value; },
+    () => new Promise<void>((_, reject) => { fail = reject; }));
+  expect(hidden).toBe(true);
+  fail(new Error('offline'));
+  expect(await pending).toBe(false);
+  expect(hidden).toBe(false);
+  swapRpc.mockResolvedValueOnce({ error: null });
+  expect(await decideSwapOptimistically('request', approve, value => { hidden = value; })).toBe(true);
+  expect(hidden).toBe(true);
+  expect(swapRpc).toHaveBeenLastCalledWith('decide_exercise_swap', { p_id: 'request', p_approve: approve });
+  swapRpc.mockResolvedValueOnce({ error: new Error('denied') });
+  await expect(decideSwap('request', approve)).rejects.toThrow('denied');
+});
+it.each([true, false])('wires the visible swap button to approval=%s', async approve => {
+  clicks.capture = true; clicks.handlers.clear();
+  const row = { ...item({ kind: 'swap_requested', severity: 'urgent' }), data: { request_id: 'request' } };
+  renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' }, createElement(FeedCard, { item: row, onDismiss() {} })));
+  clicks.capture = false;
+  const called = new Promise<void>(resolve => { swapRpc.mockImplementationOnce(async () => { resolve(); return { error: null }; }); });
+  const handler = clicks.handlers.get(approve ? 'Approve' : 'Decline');
+  expect(handler).toBeTypeOf('function');
+  handler?.();
+  await called;
+  expect(swapRpc).toHaveBeenLastCalledWith('decide_exercise_swap', { p_id: 'request', p_approve: approve });
+});
+
+it('accepts swap_requested through the real loader without relaxing other kind validation', async () => {
+  const loader = await vi.importActual<typeof FeedLoader>('./data/load-feed');
+  const row = { ...item({ kind: 'swap_requested', severity: 'urgent' }), player_id: '00000000-0000-7000-8000-000000000100',
+    data: { request_id: 'request', from: { en: 'Source' }, to: { en: 'Target' }, injury: 'knee' } };
+  swapRpc.mockResolvedValueOnce({ data: [row], error: null });
+  expect(await loader.loadFeed()).toEqual([row]);
+  swapRpc.mockResolvedValueOnce({ data: [{ ...row, kind: 'unknown' }], error: null });
+  await expect(loader.loadFeed()).rejects.toThrow();
 });
 
 it.each(['ar', 'en'] as const)('renders empty, loading, error, grouping and snooze labels in %s', locale => {

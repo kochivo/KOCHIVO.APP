@@ -1,5 +1,8 @@
 export const messages = {
   ar: {
+    swap_requested: '{name} طالب يبدّل تمرين', approve: 'وافق', decline: 'ارفض',
+    swapDetails: '{from} ← {to} — {injury}', knee: 'الركبة', shoulder: 'الكتف', lower_back: 'أسفل الضهر',
+    swapError: 'القرار متحفظش. حاول تاني.', swapPending: 'بحفظ القرار…',
     urgent: 'محتاجك دلوقتي', generate: 'جاهز للتجهيز', empty: 'مفيش حاجة مستعجلة. اسأل KO عن أي حاجة.',
     loading: 'بشوف إيه محتاجك…', error: 'مش قادر أجيب المطلوب دلوقتي.', retry: 'حاول تاني',
     showAll: 'اعرض الكل', dismiss: 'فكّرني كمان 24 ساعة', saveError: 'التأجيل متحفظش. حاول تاني.',
@@ -11,6 +14,9 @@ export const messages = {
     no_nutrition: '{name} محتاج خطة أكل', today_workout: 'تمرين النهارده مستنيك', my_expiring: 'اشتراكك قرب يخلص', log_meal: 'سجّل أكلك النهارده',
   },
   en: {
+    swap_requested: '{name} requests an exercise swap', approve: 'Approve', decline: 'Decline',
+    swapDetails: '{from} → {to} — {injury}', knee: 'Knee', shoulder: 'Shoulder', lower_back: 'Lower back',
+    swapError: 'Could not save the decision. Try again.', swapPending: 'Saving decision…',
     urgent: 'Urgent', generate: 'Ready to generate', empty: 'Nothing urgent. Ask KO anything.',
     loading: 'Checking what needs you…', error: 'Could not load your tasks.', retry: 'Try again',
     showAll: 'Show all', dismiss: 'Snooze for 24 hours', saveError: 'Snooze failed. Try again.',

@@ -16,6 +16,29 @@ export type Database = {
   }
   public: {
     Tables: {
+      exercise_swap_requests: {
+        Row: { id: string; player_id: string; captain_id: string; program_exercise_id: string;
+          from_exercise_id: string; to_exercise_id: string; injury: 'knee' | 'shoulder' | 'lower_back';
+          status: 'pending' | 'approved' | 'declined'; created_at: string; decided_at: string | null }
+        Insert: { id?: string; player_id: string; captain_id: string; program_exercise_id: string;
+          from_exercise_id: string; to_exercise_id: string; injury: 'knee' | 'shoulder' | 'lower_back';
+          status?: 'pending' | 'approved' | 'declined'; created_at?: string; decided_at?: string | null }
+        Update: { id?: string; player_id?: string; captain_id?: string; program_exercise_id?: string;
+          from_exercise_id?: string; to_exercise_id?: string; injury?: 'knee' | 'shoulder' | 'lower_back';
+          status?: 'pending' | 'approved' | 'declined'; created_at?: string; decided_at?: string | null }
+        Relationships: [
+          { foreignKeyName: 'exercise_swap_requests_player_id_fkey'; columns: ['player_id']; isOneToOne: false;
+            referencedRelation: 'profiles'; referencedColumns: ['id'] },
+          { foreignKeyName: 'exercise_swap_requests_captain_id_fkey'; columns: ['captain_id']; isOneToOne: false;
+            referencedRelation: 'profiles'; referencedColumns: ['id'] },
+          { foreignKeyName: 'exercise_swap_requests_program_exercise_id_fkey'; columns: ['program_exercise_id']; isOneToOne: false;
+            referencedRelation: 'program_exercises'; referencedColumns: ['id'] },
+          { foreignKeyName: 'exercise_swap_requests_from_exercise_id_fkey'; columns: ['from_exercise_id']; isOneToOne: false;
+            referencedRelation: 'exercises'; referencedColumns: ['id'] },
+          { foreignKeyName: 'exercise_swap_requests_to_exercise_id_fkey'; columns: ['to_exercise_id']; isOneToOne: false;
+            referencedRelation: 'exercises'; referencedColumns: ['id'] },
+        ]
+      }
       exercise_generator_tags: {
         Row: {
           exercise_id: string
@@ -1522,6 +1545,8 @@ export type Database = {
       }
     }
     Functions: {
+      request_exercise_swap: { Args: { p_program_exercise_id: string; p_to_exercise_id: string; p_injury: string }; Returns: string }
+      decide_exercise_swap: { Args: { p_id: string; p_approve: boolean }; Returns: undefined }
       ko_feed: {
         Args: Record<PropertyKey, never>
         Returns: { key: string; kind: string; severity: string; player_id: string; player_name: string; data: Json }[]
