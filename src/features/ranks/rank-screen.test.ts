@@ -15,7 +15,8 @@ import { LevelUpPanel } from './components/level-up-panel';
 import { RankChip } from './components/rank-chip';
 import type { MyPoints } from './data/load-my-points';
 
-const points: MyPoints = { lifetime: 99, tier: 'beginner', monthly: 12, month_position: 2, crown_gap: 9, logs: [] };
+const points: MyPoints = { lifetime: 99, tier: 'beginner', monthly: 55, month_position: 2, crown_gap: 9,
+  adherence: 50, done: 4, planned: 8, crown_needs_workouts: 0, logs: [] };
 const render = (child: ReactElement, locale: Locale = 'en') =>
   renderToStaticMarkup(createElement(LocaleProvider, { locale }, child));
 
@@ -59,24 +60,65 @@ describe('player ranks', () => {
     expect(html.match(/width="64"/g)).toHaveLength(4);
   });
 
-  it('distinguishes the crown holder and chaser, and explains the reset', () => {
-    expect(render(createElement(CrownRace, { points, holdsCrown: true }))).toContain('You hold the crown this month');
-    const html = render(createElement(CrownRace, { points, holdsCrown: false }));
-    expect(html).toContain('9 points to the crown');
-    expect(html).toContain('Resets on the 1st of each month');
-    expect(html).toContain('Position 2');
+  it.each(['ar', 'en'] as const)('shows adherence, workouts and the rule for the holder and chaser in %s', locale => {
+    for (const holdsCrown of [true, false]) {
+      const html = render(createElement(CrownRace, { points, holdsCrown }), locale);
+      expect(html).toContain(locale === 'ar' ? 'التزامك 50٪' : '50% of your plan');
+      expect(html).toContain(locale === 'ar' ? '4 من 8 تمرين الشهر ده' : '4 of 8 workouts this month');
+      expect(html).toContain(locale === 'ar' ? 'بحد أدنى 4 تمارين' : 'at least 4 workouts this month');
+      expect(html).toContain(locale === 'ar' ? 'الأرقام الجديدة والـInBody' : 'Records and InBody scans');
+      expect(html).toContain(locale === 'ar' ? 'السباق بيبدأ من جديد يوم 1' : 'Resets on the 1st');
+      expect(html).toContain('glass-strong');
+      expect(html).not.toContain(locale === 'ar' ? 'نقطة الشهر ده' : 'points this month');
+      if (holdsCrown) {
+        expect(html).toContain(locale === 'ar' ? 'التاج معاك الشهر ده' : 'You hold the crown this month');
+        expect(html).toContain(locale === 'ar' ? 'aria-label="التاج"' : 'aria-label="Crown"');
+        expect(html).not.toContain(locale === 'ar' ? 'فاضلك' : 'to the crown');
+      } else {
+        expect(html).toContain(locale === 'ar' ? 'فاضلك 9 درجة وتاخد التاج' : '9 to the crown');
+        expect(html).toContain(locale === 'ar' ? 'المركز 2' : 'Position 2');
+      }
+    }
+  });
+
+  it.each(['ar', 'en'] as const)('prioritizes missing workouts over the gap in %s', locale => {
+    for (const needed of [1, 2, 4]) {
+      const html = render(createElement(CrownRace, {
+        points: { ...points, done: 4 - needed, crown_needs_workouts: needed }, holdsCrown: false,
+      }), locale);
+      const english = needed === 1 ? '1 more workout to enter the crown race' : `${needed} more workouts to enter the crown race`;
+      const arabic = needed === 1 ? 'فاضلك تمرين واحد عشان تدخل سباق التاج' : `فاضلك ${needed} تمارين عشان تدخل سباق التاج`;
+      expect(html).toContain(locale === 'ar' ? arabic : english);
+      expect(html).toContain(locale === 'ar' ? 'المركز 2' : 'Position 2');
+      expect(html).not.toContain(locale === 'ar' ? 'درجة وتاخد التاج' : 'to the crown');
+    }
   });
 
   it('highlights only the own row and shows first names', () => {
     const html = render(createElement(TeamBoard, { rows: [
-      { player_id: null, display_name: 'Other Person', lifetime: 300, tier: 'elite', monthly: 30, is_crown: true, position: 1 },
-      { player_id: 'self', display_name: 'My Name', lifetime: 99, tier: 'beginner', monthly: 12, is_crown: false, position: 2 },
+      { player_id: null, display_name: 'Other Person', lifetime: 300, tier: 'elite', monthly: 88,
+        adherence: 75, done: 6, planned: 8, is_crown: true, position: 1 },
+      { player_id: 'self', display_name: 'My Name', lifetime: 99, tier: 'beginner', monthly: 55,
+        adherence: 50, done: 4, planned: 8, is_crown: false, position: 2 },
     ] }));
     expect(html).toContain('aria-current="true"');
     expect(html).toContain('bg-lime-soft');
     expect(html).toContain('>Other</span>');
     expect(html).not.toContain('Other Person');
     expect(html).toContain('aria-label="Crown"');
+    expect(html).toContain('75%'); expect(html).toContain('50%');
+    expect(html).not.toContain('88 points');
+  });
+
+  it.each(['ar', 'en'] as const)('shows team adherence and uses workouts for the empty state in %s', locale => {
+    const row = { player_id: null, display_name: 'Mona', lifetime: 300, tier: 'elite' as const,
+      monthly: 13, adherence: 0, done: 0, planned: 8, is_crown: false, position: 1 };
+    const empty = locale === 'ar' ? 'لسه محدش اتمرن الشهر ده' : 'Nobody has trained this month';
+    expect(render(createElement(TeamBoard, { rows: [] }), locale)).toContain(empty);
+    expect(render(createElement(TeamBoard, { rows: [row] }), locale)).toContain(empty);
+    const html = render(createElement(TeamBoard, { rows: [{ ...row, monthly: 0, adherence: 13, done: 1 }] }), locale);
+    expect(html).toContain(locale === 'ar' ? '13٪' : '13%');
+    expect(html).not.toContain(empty);
   });
 
   it('shows pending and rejected labels and formats earned dates', () => {
@@ -93,7 +135,7 @@ describe('player ranks', () => {
 
   it('shows empty states and both languages', () => {
     expect(render(createElement(PointsLog, { logs: [] }))).toContain('No points yet. Finish your first workout');
-    expect(render(createElement(TeamBoard, { rows: [] }))).toContain('Nobody has points this month');
+    expect(render(createElement(TeamBoard, { rows: [] }))).toContain('Nobody has trained this month');
     expect(render(createElement(CrownRace, { points: { ...points, month_position: null }, holdsCrown: false }))).toContain('Join a captain');
     expect(render(createElement(RankHero, { lifetime: 99 }), 'ar')).toContain('فاضلك 1 نقطة لرتبة بطل');
     expect(render(createElement(PointsLog, { logs: [] }), 'ar')).toContain('لسه ما كسبتش نقط. كمّل أول تمرين');

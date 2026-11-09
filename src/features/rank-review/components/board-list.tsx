@@ -17,7 +17,12 @@ export function BoardList({ rows, locale }: { rows: LeaderboardRow[]; locale: Lo
         <RankBadge tier={row.tier} size="sm" label={t(row.tier)} />
         <div className="min-w-0 flex-1"><p className="break-words font-bold">{row.display_name}</p>
           <p className="text-sm text-muted">{t('lifetime', { count: formatNumber(row.lifetime, locale) })}</p></div>
-        <p className="text-sm font-bold">{t('monthly', { count: formatNumber(row.monthly, locale) })}</p>
+        <div className="shrink-0 text-end text-sm tabular-nums">
+          <p className="font-bold">{t('percent', { n: formatNumber(row.adherence, locale) })}</p>
+          <p className="text-muted">{t('workouts', {
+            done: formatNumber(row.done, locale), planned: formatNumber(row.planned, locale),
+          })}</p>
+        </div>
       </Link>
     </li>)}
   </ol>;

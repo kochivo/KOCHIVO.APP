@@ -13,9 +13,7 @@ const points = z.object({
     earned_on: z.string(), created_at: z.string(), reviewed_at: z.string().nullable(),
   })).max(10),
 });
-type ParsedPoints = z.infer<typeof points>;
-type ProgressField = 'adherence' | 'done' | 'planned' | 'crown_needs_workouts';
-export type MyPoints = Omit<ParsedPoints, ProgressField> & Partial<Pick<ParsedPoints, ProgressField>>;
+export type MyPoints = z.infer<typeof points>;
 
 export async function loadMyPoints(): Promise<MyPoints> {
   const db = await loadSupabaseBrowser();

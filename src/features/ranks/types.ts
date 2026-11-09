@@ -6,9 +6,9 @@ export type LeaderboardRow = {
   lifetime: number;
   tier: Tier;
   monthly: number;
-  adherence?: number;
-  done?: number;
-  planned?: number;
+  adherence: number;
+  done: number;
+  planned: number;
   is_crown: boolean;
   position: number;
 };

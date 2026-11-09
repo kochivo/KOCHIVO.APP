@@ -14,7 +14,7 @@ import { combinePending } from './data/load-pending';
 import { decidePending } from './hooks/use-pending-points';
 
 const holder: LeaderboardRow = { player_id: 'player-1', display_name: 'Mona', lifetime: 120,
-  monthly: 24, tier: 'champion', is_crown: true, position: 1 };
+  monthly: 84, adherence: 75, done: 6, planned: 8, tier: 'champion', is_crown: true, position: 1 };
 const workout: PendingWorkout = { id: 'points-1', player_id: 'player-1', player_name: 'Mona',
   training_date: '2026-11-08', started_at: '2026-11-08T10:00:00Z', completed_at: '2026-11-08T10:12:00Z' };
 const noop = () => {};
@@ -80,17 +80,26 @@ describe('pending workout data and decisions', () => {
 });
 
 describe('captain ranking views', () => {
-  it('shows the crown holder or explains the minimum', () => {
-    const filled = renderToStaticMarkup(createElement(CrownCard, { holder, locale: 'en' }));
-    expect(filled).toContain('Mona'); expect(filled).toContain('24');
-    const empty = renderToStaticMarkup(createElement(CrownCard, { locale: 'en' }));
-    expect(empty).toContain('Nobody holds the crown yet this month');
-    expect(empty).toContain('20');
+  it.each(['ar', 'en'] as const)('shows holder adherence or explains the workout minimum in %s', locale => {
+    const filled = renderToStaticMarkup(createElement(CrownCard, { holder, locale }));
+    expect(filled).toContain('Mona');
+    expect(filled).toContain(locale === 'ar' ? 'التزام 75٪ · 6 من 8 تمرين' : '75% adherence · 6 of 8 workouts');
+    const empty = renderToStaticMarkup(createElement(CrownCard, { locale }));
+    expect(empty).toContain(locale === 'ar' ? 'لسه محدش أخد التاج الشهر ده' : 'Nobody holds the crown yet this month');
+    expect(empty).toContain(locale === 'ar' ? 'بحد أدنى 4 تمارين' : 'at least 4 workouts this month');
+    expect(empty).toContain(locale === 'ar' ? 'الأرقام الجديدة والـInBody' : 'Records and InBody scans');
+    expect((filled + empty).replace(/<[^>]*>/g, '')).not.toContain('20');
   });
-  it('links board rows to players and shows an empty roster', () => {
-    const html = renderToStaticMarkup(createElement(BoardList, { rows: [holder], locale: 'en' }));
+  it.each(['ar', 'en'] as const)('links rows and shows adherence, workouts and lifetime in %s', locale => {
+    const html = renderToStaticMarkup(createElement(BoardList, { rows: [{ ...holder,
+      display_name: 'Mona '.repeat(30) }], locale }));
     expect(html).toContain('href="/captain/players/player-1"');
-    expect(html).toContain('120'); expect(html).toContain('24');
+    expect(html).toContain(locale === 'ar' ? '120 نقطة إجمالي' : '120 lifetime points');
+    expect(html).toContain(locale === 'ar' ? '75٪' : '75%');
+    expect(html).toContain(locale === 'ar' ? '6 من 8' : '6 of 8');
+    expect(html).not.toContain(locale === 'ar' ? '84 نقطة' : '84 monthly points');
+    expect(html).toContain('min-h-12'); expect(html).toContain('break-words');
+    expect(html).toContain('shrink-0');
     expect(renderToStaticMarkup(createElement(BoardList, { rows: [], locale: 'ar' }))).toContain('لسه مفيش لاعيبة');
   });
   it('hides an empty pending list and translates both decisions', () => {

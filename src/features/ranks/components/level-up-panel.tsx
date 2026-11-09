@@ -11,7 +11,7 @@ export function LevelUpPanel({ tier, onClose }: { tier: Tier; onClose: () => voi
   const t = useT(messages);
   const title = useId();
   return <ResponsiveDialog modal fallbackId="rank-title" onDismiss={onClose} aria-labelledby={title}
-    className="glass-strong m-auto w-full max-w-sm rounded-card p-6 motion-reduce:animate-none motion-reduce:transition-none">
+    className="sheet m-auto w-full max-w-sm rounded-card border border-line p-6 text-ink backdrop:bg-bg-deep/80 motion-reduce:animate-none motion-reduce:transition-none">
     <div className="flex flex-col items-center gap-5 text-center">
       <RankBadge tier={tier} size="xl" label={t(tier)} />
       <h2 id={title} className="text-2xl font-extrabold">{t('celebration', { tier: t(tier) })}</h2>

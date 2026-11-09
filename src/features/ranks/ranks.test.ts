@@ -1,9 +1,8 @@
 import { expect, it } from 'vitest';
-import { CROWN_MIN_MONTHLY, CROWN_MIN_WORKOUTS, nextTier, tierFor } from './tiers';
+import { CROWN_MIN_WORKOUTS, nextTier, tierFor } from './tiers';
 
-it('requires four workouts and retains the compatibility alias', () => {
+it('requires four workouts', () => {
   expect(CROWN_MIN_WORKOUTS).toBe(4);
-  expect(CROWN_MIN_MONTHLY).toBe(CROWN_MIN_WORKOUTS);
 });
 
 it.each([
