@@ -16,6 +16,12 @@ export type Database = {
   }
   public: {
     Tables: {
+      ko_dismissals: {
+        Row: { user_id: string; key: string; until: string }
+        Insert: { user_id?: string; key: string; until: string }
+        Update: { until?: string }
+        Relationships: []
+      }
       session_deductions: {
         Row: { session_id: string; link_id: string }
         Insert: { session_id: string; link_id: string }
@@ -1502,6 +1508,10 @@ export type Database = {
       }
     }
     Functions: {
+      ko_feed: {
+        Args: Record<PropertyKey, never>
+        Returns: { key: string; kind: string; severity: string; player_id: string; player_name: string; data: Json }[]
+      }
       activate_player: { Args: { p_link: string; p_package: string | null; p_kind: string; p_quantity: number;
         p_price_egp: number; p_paid_egp: number; p_free_trial: boolean }; Returns: undefined }
       create_player_invite: { Args: { p_name: string; p_whatsapp: string | null; p_package: string | null;

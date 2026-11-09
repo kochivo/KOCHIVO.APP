@@ -1,0 +1,24 @@
+export const messages = {
+  ar: {
+    urgent: 'محتاجك دلوقتي', generate: 'جاهز للتجهيز', empty: 'مفيش حاجة مستعجلة. اسأل KO عن أي حاجة.',
+    loading: 'بشوف إيه محتاجك…', error: 'مش قادر أجيب المطلوب دلوقتي.', retry: 'حاول تاني',
+    showAll: 'اعرض الكل', dismiss: 'فكّرني كمان 24 ساعة', saveError: 'التأجيل متحفظش. حاول تاني.',
+    action: 'افتح', preview: 'راجع مع KO', days: 'عدد أيام التجديد', confirm: 'نفّذ', restart: 'ابدأ مراجعة جديدة',
+    renewPrompt: 'جدّد اشتراك {name} لمدة {days} يوم', reminderPrompt: 'ابعت تذكير تمرين لـ {name}',
+    badge: 'افتح KO، {count} مهام مستعجلة',
+    join_requested: '{name} مستني موافقتك', expiring: 'اشتراك {name} قرب يخلص', expired: 'اشتراك {name} خلص',
+    sessions_used_up: 'جلسات {name} خلصت', inactive: '{name} متمرّنش من 5 أيام', no_program: '{name} محتاج برنامج',
+    no_nutrition: '{name} محتاج خطة أكل', today_workout: 'تمرين النهارده مستنيك', my_expiring: 'اشتراكك قرب يخلص', log_meal: 'سجّل أكلك النهارده',
+  },
+  en: {
+    urgent: 'Urgent', generate: 'Ready to generate', empty: 'Nothing urgent. Ask KO anything.',
+    loading: 'Checking what needs you…', error: 'Could not load your tasks.', retry: 'Try again',
+    showAll: 'Show all', dismiss: 'Snooze for 24 hours', saveError: 'Snooze failed. Try again.',
+    action: 'Open', preview: 'Review with KO', days: 'Renewal days', confirm: 'Confirm', restart: 'Start a new review',
+    renewPrompt: 'Renew {name} subscription for {days} days', reminderPrompt: 'Send a workout reminder to {name}',
+    badge: 'Open KO, {count} urgent tasks',
+    join_requested: '{name} is waiting for approval', expiring: '{name} expires soon', expired: '{name} has expired',
+    sessions_used_up: '{name} has no sessions left', inactive: '{name} has not trained in 5 days', no_program: '{name} needs a program',
+    no_nutrition: '{name} needs a meal plan', today_workout: 'Your workout is waiting', my_expiring: 'Your access ends soon', log_meal: 'Log your meals today',
+  },
+};
