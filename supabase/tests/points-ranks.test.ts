@@ -227,7 +227,7 @@ it('returns only the last ten own logs and retains lifetime across team changes'
   await db.query(`insert into public.coach_clients(captain_id,player_id,access_until) values($1,$2,'2026-12-01')`, [outsider, player]);
   expect((await board(outsider)).rows.find(r => r.player_id === player)).toMatchObject({ lifetime: 12, monthly: 0 });
   await asUser(db, player, tx => tx.query('select public.award_meal_check()'));
-  expect((await board(outsider)).rows.find(r => r.player_id === player)).toMatchObject({ lifetime: 13, monthly: 1 });
+  expect((await board(outsider)).rows.find(r => r.player_id === player)).toMatchObject({ lifetime: 13, monthly: 0 });
 });
 it('blocks direct writes, anonymous RPCs and suspended callers, while allowing owner/captain reads', async () => {
   await award(player, 20, 'read');

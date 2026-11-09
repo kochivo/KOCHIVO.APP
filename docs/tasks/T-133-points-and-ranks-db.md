@@ -135,6 +135,7 @@ Create or modify only these:
 - Add typed data loaders and the single successful meal-photo award call; run both repository gates.
 
 ## Implementation notes
+- T-138 (`T-138-meal-points-out-of-crown.md`) excludes meal checks from the monthly crown while preserving lifetime rank and history.
 - 0081 adds the protected ledger/cache, server awards, review RPCs, private ranking helpers and notification inserts; no production migration was applied.
 - A set-log trigger rechecks offline sessions because sessions sync before sets. Late sets can clear an unreviewed set-count shortage; captain decisions stay final. Pre-launch sessions without an award are never backfilled.
 - Session locks serialize the three-PR cap; team advisory locks serialize crown comparisons before each counted row. UUID is the final tie-break when totals and timestamps match exactly.
