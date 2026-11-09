@@ -1,7 +1,11 @@
-import { CalendarClock, CircleAlert } from 'lucide-react';
+import { Award, CalendarClock, CircleAlert, Crown } from 'lucide-react';
 import type { Notification } from './types';
 
 export function notificationTextKey(row: Notification) {
+  if (row.type === 'rank_up') {
+    const tier = row.payload.tier;
+    return tier === 'champion' || tier === 'elite' || tier === 'legend' ? `rank_up_${tier}` as const : 'rank_up';
+  }
   if (!row.payload.player_id) {
     if (row.type === 'subscription_expiring') return 'subscription_expiring_player';
     if (row.type === 'subscription_expired') return 'subscription_expired_player';
@@ -10,12 +14,15 @@ export function notificationTextKey(row: Notification) {
 }
 
 export function notificationIcon(row: Notification) {
+  if (row.type === 'rank_up') return Award;
+  if (row.type === 'crown_taken' || row.type === 'crown_lost') return Crown;
   if (row.type === 'subscription_expiring') return CalendarClock;
   if (row.type === 'subscription_expired') return CircleAlert;
   return null;
 }
 
 export function notificationHref(row: Notification): string {
+  if (row.type === 'rank_up' || row.type === 'crown_taken' || row.type === 'crown_lost') return '/player/rank';
   if ((row.type === 'subscription_expiring' || row.type === 'subscription_expired') && !row.payload.player_id) return '/player';
   if (row.type === 'captain_approved') return '/captain';
   if (row.type === 'plan_assigned' || row.type === 'workout_reminder') return '/player';

@@ -1,9 +1,14 @@
-import { expect, it } from 'vitest';
-import { notificationHref, relativeTime } from './format';
+import { Award, Crown } from 'lucide-react';
+import { expect, it, vi } from 'vitest';
+import { notificationHref, notificationIcon, notificationTextKey, relativeTime } from './format';
+import { latestNotifications } from './data/notifications';
 import { markOptimistically } from './data/read-state';
 import { createT } from '@/core/i18n/messages';
 import { messages } from './messages';
 import type { Notification, ReadState } from './types';
+
+const { load } = vi.hoisted(() => ({ load: vi.fn() }));
+vi.mock('@/core/supabase/lazy', () => ({ loadSupabaseBrowser: load }));
 
 const row: Notification = { id: 'n', type: 'plan_assigned', payload: { name: 'Strength' }, is_read: false,
   created_at: '2026-11-03T08:00:00Z' };
@@ -45,4 +50,54 @@ it.each(['ar', 'en'] as const)('builds all notification text with payload values
     expect(t(type, { name: 'Ali' })).toContain('Ali');
     expect(t(type, { name: 'Ali' })).not.toContain('{');
   }
+});
+
+it.each([
+  ['champion', 'اترقيت! بقيت بطل', 'You ranked up to Champion'],
+  ['elite', 'اترقيت! بقيت نخبة', 'You ranked up to Elite'],
+  ['legend', 'اترقيت! بقيت أسطورة', 'You ranked up to Legend'],
+] as const)('localizes rank %s and links its award to the rank screen', (tier, ar, en) => {
+  const notification: Notification = { ...row, type: 'rank_up', payload: { tier } };
+  expect(notificationTextKey(notification)).toBe(`rank_up_${tier}`);
+  expect(createT(messages, 'ar')(notificationTextKey(notification))).toBe(ar);
+  expect(createT(messages, 'en')(notificationTextKey(notification))).toBe(en);
+  expect(notificationIcon(notification)).toBe(Award);
+  expect(notificationHref(notification)).toBe('/player/rank');
+});
+
+it.each([undefined, '', 'beginner', 'unknown', 'toString'])('uses generic rank text for tier %s', tier => {
+  const notification: Notification = { ...row, type: 'rank_up', payload: { tier } };
+  expect(notificationTextKey(notification)).toBe('rank_up');
+  expect(createT(messages, 'ar')(notificationTextKey(notification))).toBe('اترقيت لرتبة جديدة');
+  expect(createT(messages, 'en')(notificationTextKey(notification))).toBe('You reached a new rank');
+  expect(notificationIcon(notification)).toBe(Award);
+  expect(notificationHref(notification)).toBe('/player/rank');
+});
+
+it.each([
+  ['crown_taken', 'التاج بقى معاك. حافظ عليه', 'The crown is yours. Keep it'],
+  ['crown_lost', 'التاج اتاخد منك. رجّعه', 'You lost the crown. Take it back'],
+] as const)('localizes %s and links its crown to the rank screen', (type, ar, en) => {
+  const notification: Notification = { ...row, type, payload: {} };
+  expect(notificationTextKey(notification)).toBe(type);
+  expect(createT(messages, 'ar')(notificationTextKey(notification))).toBe(ar);
+  expect(createT(messages, 'en')(notificationTextKey(notification))).toBe(en);
+  expect(notificationIcon(notification)).toBe(Crown);
+  expect(notificationHref(notification)).toBe('/player/rank');
+});
+
+it('loads only known tiers from rank payloads', async () => {
+  const tiers = ['champion', 'elite', 'legend', 'beginner', 'toString', '', 3, null, undefined];
+  const data = tiers.map((tier, index) => ({ ...row, id: String(index), type: 'rank_up', payload: { tier, lifetime: 600 } }));
+  const query = { select: vi.fn(), order: vi.fn(), limit: vi.fn().mockResolvedValue({ data, error: null }) };
+  query.select.mockReturnValue(query);
+  query.order.mockReturnValue(query);
+  load.mockResolvedValue({ from: vi.fn().mockReturnValue(query) });
+  const rows = await latestNotifications();
+  expect(rows.map(notification => notification.payload.tier)).toEqual([
+    'champion', 'elite', 'legend', undefined, undefined, undefined, undefined, undefined, undefined,
+  ]);
+  expect(rows.map(notificationTextKey)).toEqual([
+    'rank_up_champion', 'rank_up_elite', 'rank_up_legend', 'rank_up', 'rank_up', 'rank_up', 'rank_up', 'rank_up', 'rank_up',
+  ]);
 });

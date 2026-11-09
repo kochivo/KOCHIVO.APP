@@ -61,3 +61,30 @@ it('defaults to Arabic and handles missing or invalid payload fields', () => {
   expect(payload.body).not.toContain('undefined');
   expect(pushPayload({ id: 'n', type: 'workout_reminder', payload: null }).url).toBe('/ar/player');
 });
+
+it.each(['ar', 'en'] as const)('localizes rank tiers and crowns in push payloads in %s', locale => {
+  const cases = [
+    ['rank_up', { tier: 'champion', lifetime: 100 }, 'اترقيت! بقيت بطل', 'You ranked up to Champion'],
+    ['rank_up', { tier: 'elite', lifetime: 300 }, 'اترقيت! بقيت نخبة', 'You ranked up to Elite'],
+    ['rank_up', { tier: 'legend', lifetime: 600 }, 'اترقيت! بقيت أسطورة', 'You ranked up to Legend'],
+    ['crown_taken', { captain_id: 'c', month: '2026-11-01' }, 'التاج بقى معاك. حافظ عليه', 'The crown is yours. Keep it'],
+    ['crown_lost', { captain_id: 'c', month: '2026-11-01' }, 'التاج اتاخد منك. رجّعه', 'You lost the crown. Take it back'],
+  ] as const;
+  for (const [type, payload, ar, en] of cases) {
+    expect(pushPayload({ id: 'rank-event', type, payload }, locale)).toEqual({
+      title: locale === 'ar' ? 'إشعارات كوتشيفو' : 'KOCHIVO notifications',
+      body: locale === 'ar' ? ar : en,
+      url: `/${locale}/player/rank`, tag: 'rank-event',
+    });
+  }
+});
+
+it.each(['ar', 'en'] as const)('uses generic push text for missing or invalid rank tiers in %s', locale => {
+  for (const payload of [null, {}, { tier: 'beginner' }, { tier: 'toString' }, { tier: '' }, { tier: 3 }, { tier: null }]) {
+    expect(pushPayload({ id: 'rank-event', type: 'rank_up', payload }, locale)).toEqual({
+      title: locale === 'ar' ? 'إشعارات كوتشيفو' : 'KOCHIVO notifications',
+      body: locale === 'ar' ? 'اترقيت لرتبة جديدة' : 'You reached a new rank',
+      url: `/${locale}/player/rank`, tag: 'rank-event',
+    });
+  }
+});

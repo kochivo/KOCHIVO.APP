@@ -30,6 +30,7 @@ export async function latestNotifications(): Promise<Notification[]> {
         : typeof payload.player_id === 'string' ? payload.player_id : undefined,
       plan_id: typeof payload.plan_id === 'string' ? payload.plan_id : undefined,
       captain_name: typeof payload.captain_name === 'string' ? payload.captain_name : undefined,
+      tier: payload.tier === 'champion' || payload.tier === 'elite' || payload.tier === 'legend' ? payload.tier : undefined,
     } };
   });
 }

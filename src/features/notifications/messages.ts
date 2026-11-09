@@ -2,6 +2,12 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    rank_up: 'اترقيت لرتبة جديدة',
+    rank_up_champion: 'اترقيت! بقيت بطل',
+    rank_up_elite: 'اترقيت! بقيت نخبة',
+    rank_up_legend: 'اترقيت! بقيت أسطورة',
+    crown_taken: 'التاج بقى معاك. حافظ عليه',
+    crown_lost: 'التاج اتاخد منك. رجّعه',
     subscription_expiring: 'اشتراك {name} هيخلص بعد 3 أيام',
     subscription_expired: 'اشتراك {name} خلص النهارده',
     subscription_expiring_player: 'اشتراكك مع كابتن {name} هيخلص بعد 3 أيام',
@@ -20,6 +26,12 @@ export const messages = defineMessages({
     now: 'دلوقتي', minutes: 'من {n} دقيقة', hours: 'من {n} ساعة', days: 'من {n} يوم',
   },
   en: {
+    rank_up: 'You reached a new rank',
+    rank_up_champion: 'You ranked up to Champion',
+    rank_up_elite: 'You ranked up to Elite',
+    rank_up_legend: 'You ranked up to Legend',
+    crown_taken: 'The crown is yours. Keep it',
+    crown_lost: 'You lost the crown. Take it back',
     subscription_expiring: "{name}'s subscription ends in 3 days",
     subscription_expired: "{name}'s subscription ends today",
     subscription_expiring_player: 'Your subscription with captain {name} ends in 3 days',
