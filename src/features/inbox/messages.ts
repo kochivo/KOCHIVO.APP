@@ -2,6 +2,14 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    attention: 'محتاج متابعة', routine: 'متابعة عادية', triageFilter: 'فلتر المتابعة',
+    caughtUp: 'خلصت كل المتابعات', sendNext: 'ابعت وافتح اللي بعده',
+    weight_flat: 'الوزن ثابت بقاله {weeks} أسبوع', weight_jump: 'الوزن اتغير {kg} كجم',
+    low_sleep: 'متوسط النوم {hours} ساعة، أقل من 6', high_soreness: 'متوسط الإجهاد {score} من 5',
+    no_logs: 'مفيش تسجيل يومي في آخر {days} أيام', note_present: 'اللاعب كاتب ملاحظات',
+    weightDelta: '{value} كجم من {date}', waistDelta: '{value} سم من {date}',
+    sleepAverage: 'متوسط النوم في 7 أيام', sorenessAverage: 'متوسط الإجهاد في 7 أيام',
+    hoursUnit: '{value} ساعة', sorenessUnit: '{value} من 5',
     unsentVoice: 'فيه تسجيل لسه متبعتش. تخرج وتمسحه؟',
     photoHint: "افتح ملف اللاعب وابعتله تذكير يضيف صور في المتابعة الجاية",
     openPlayer: "افتح اللاعب",
@@ -79,6 +87,14 @@ export const messages = defineMessages({
     'dash': "—",
   },
   en: {
+    attention: 'Needs attention', routine: 'Routine', triageFilter: 'Triage filter',
+    caughtUp: 'All caught up', sendNext: 'Send and next',
+    weight_flat: 'Weight flat for {weeks} weeks', weight_jump: 'Weight changed {kg} kg',
+    low_sleep: 'Average sleep {hours} h, under 6', high_soreness: 'Average soreness {score} of 5',
+    no_logs: 'No daily logs in {days} days', note_present: 'Player left notes',
+    weightDelta: '{value} kg since {date}', waistDelta: '{value} cm since {date}',
+    sleepAverage: '7-day sleep average', sorenessAverage: '7-day soreness average',
+    hoursUnit: '{value} h', sorenessUnit: '{value} of 5',
     unsentVoice: 'You have an unsent recording. Leave and discard it?',
     photoHint: "Open the player profile to remind them to add photos next time",
     openPlayer: "Open player",
