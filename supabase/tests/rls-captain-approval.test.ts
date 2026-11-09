@@ -19,6 +19,9 @@ beforeAll(async () => {
   player = await createUser(db, 'player');
   await makeAdmin(db, admin);
   await run(captain, `select public.confirm_role('captain')`);
+  await db.query('update auth.users set email_confirmed_at=now() where id=$1', [captain]);
+  await run(captain, 'update profiles set captain_intake=$1 where id=$2',
+    [{ current_tool: 'whatsapp_excel', main_challenge: 'time_on_tables', players_range: '1-10' }, captain]);
 });
 afterAll(async () => { await db?.close(); });
 

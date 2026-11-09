@@ -15,6 +15,7 @@ beforeAll(async () => {
   admin = await createUser(db, 'captain');
   await makeAdmin(db, admin);
   await db.query("update public.profiles set captain_status = 'pending' where id = $1", [captain]);
+  await db.query('update auth.users set email_confirmed_at=now() where id=$1', [captain]);
 });
 afterAll(async () => { await db?.close(); });
 it('lets a pending captain save their own intake and contact details', async () => {

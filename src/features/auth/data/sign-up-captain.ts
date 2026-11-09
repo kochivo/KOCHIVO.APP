@@ -2,6 +2,7 @@
 import { getT } from '@/core/i18n/server';
 import { cookies } from 'next/headers';
 import { messages } from '../messages';
+import { messages as signupMessages } from '../signup/messages';
 import { homeFor } from '../routing';
 
 import { authSchemas } from '../schemas';
@@ -19,6 +20,8 @@ export async function signUpCaptain(input: unknown) {
       data: { role: 'captain', full_name },
     } });
     if (error) throw error;
+    // Confirmed duplicates can return an obfuscated user without sending an email.
+    if (!data.session && data.user?.identities?.length === 0) return { error: t('trySigningInOrResettingYour') };
     (await cookies()).set('auth-intent', JSON.stringify({ intent: 'captain' }), {
       httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/', maxAge: 3600,
     });
@@ -29,6 +32,12 @@ export async function signUpCaptain(input: unknown) {
 async function finishCaptainSignup(client: Awaited<ReturnType<typeof authClient>>) {
   const user = await profile(client);
   if (!user) throw new Error('Missing profile');
+  if (!user.admin && user.roleConfirmed && user.role === 'player') {
+    const { error } = await client.auth.signOut({ scope: 'local' });
+    if (error) throw error;
+    (await cookies()).delete('auth-intent');
+    return { error: (await getT(signupMessages))('playerAccount') };
+  }
   if (!user.admin && !user.roleConfirmed) {
     const { error } = await client.rpc('confirm_role', { p_role: 'captain' });
     if (error) throw error;

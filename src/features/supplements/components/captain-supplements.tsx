@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { ArrowDown, ArrowUp } from 'lucide-react';
 import { useT } from '@/core/i18n';
 import type { SupplementRow } from '@/core/offline/tables';
@@ -8,7 +9,10 @@ import { messages } from '../messages';
 import { supplementAdherence } from '../model';
 import { archiveSupplement, fetchCaptainSupplements, reorderSupplements, saveSupplement } from '../data/captain';
 import type { SupplementDraft } from '../data/captain';
-import { SupplementEditor } from './supplement-editor';
+
+const SupplementEditor = dynamic(() => import('./supplement-editor').then(module => module.SupplementEditor), {
+  ssr: false, loading: () => <div aria-hidden className="glass min-h-24 animate-pulse rounded-card motion-reduce:animate-none" />,
+});
 
 export function CaptainSupplements({ playerId }: { playerId: string }) {
   const t = useT(messages);

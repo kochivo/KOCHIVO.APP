@@ -24,10 +24,11 @@ const InstallSheet = dynamic(() => import('@/features/install').then(module => m
 const RestMoodSync = dynamic(() => import('@/features/player-home').then(module => module.RestMoodSync), { ssr: false });
 const SyncRunner = dynamic(() => import('./sync-runner').then(module => module.SyncRunner), { ssr: false });
 const WaitingRoom = dynamic(() => import('@/features/billing').then(module => module.PlayerWaitingRoom), { ssr: false });
+const NoCaptainScreen = dynamic(() => import('./no-captain-screen').then(module => module.NoCaptainScreen), { ssr: false });
 const KoPreview = process.env.NODE_ENV === 'development'
   ? dynamic(() => import('@/features/ko-preview').then(module => module.KoPreview), { ssr: false }) : () => null;
 
-export function PlayerShell({ children }: { children: ReactNode }) {
+export function PlayerShell({ children, unassignedAction }: { children?: ReactNode; unassignedAction?: ReactNode }) {
   useDeviceRole('player');
   const t = useT(messages);
   const locale = useLocale();
@@ -46,6 +47,11 @@ export function PlayerShell({ children }: { children: ReactNode }) {
     t('subscriptionEndsIn', { n: left }) :
     state === 'ended' ? t('yourSubscriptionEndedContactYourCoach') :
     state === 'archived' ? t('yourCoachPausedYourCoaching') : null;
+  if (!captain.data && !/\/player\/settings(?:\/|$)/.test(pathname)) {
+    if (captain.status === 'loading') return <LoadingState variant="cards" />;
+    if (captain.status === 'error') return <ErrorState message={t('couldnTLoadYourCoach')} retryLabel={t('tryAgain')} onRetry={() => void captain.retry()} />;
+    if (captain.status === 'ready') return <NoCaptainScreen signOut={unassignedAction} onRetry={() => void captain.retry()} />;
+  }
   return <MyCaptainContext.Provider value={captain}>
     <div data-mood={!workout && restMood ? 'rest' : undefined} className="min-h-dvh bg-bg text-ink transition-colors motion-reduce:transition-none">
     <SyncRunner />

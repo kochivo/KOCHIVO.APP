@@ -30,6 +30,7 @@ export async function signUpPlayer(input: unknown, rawCoach: string, existing = 
       options: { data: { role: 'player', full_name },
         emailRedirectTo: `${await siteOrigin()}/auth/callback?coach=${coach}` } });
     if (result.error) throw result.error;
+    if (!result.data.session && result.data.user?.identities?.length === 0) return { error: t('trySigningInOrResettingYour') };
     return result.data.session ? { redirect: await completeCoachRequest(client, coach) }
       : { codeEmail: parsed.data.email, message: t('confirmCoachRequest') };
   });
