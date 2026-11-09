@@ -13,11 +13,12 @@ import type { KoExpression, KoRole } from '../policy';
 import { KoAvatar } from './ko-avatar';
 import { KoChat } from './ko-chat';
 
-export function KoPanel({ role, expression, onExpression, onClose, openerId, interactive = false, closing = false, onClosed }: {
+export function KoPanel({ role, expression, onExpression, onClose, openerId, interactive = false, account = false, closing = false, onClosed }: {
   role: KoRole; expression: KoExpression; onExpression: (value: KoExpression) => void; onClose: () => void; openerId: string; interactive?: boolean;
-  closing?: boolean; onClosed?: () => void;
+  account?: boolean; closing?: boolean; onClosed?: () => void;
 }) {
   const t = useT(messages);
+  interactive = account || interactive;
   const titleId = useId();
   const pathname = usePathname();
   const [dropped, setDropped] = useState(false);
@@ -39,12 +40,12 @@ export function KoPanel({ role, expression, onExpression, onClose, openerId, int
         <p className="text-xs text-muted">{t('subtitle')}</p></div>
       <button type="button" onClick={onClose} aria-label={t('close')} className="ms-auto grid min-h-12 min-w-12 place-items-center rounded-control text-muted hover:bg-ink/5 hover:text-ink"><X aria-hidden className="size-5" /></button>
     </header>
-    {context && <div className="flex items-center gap-2 border-b border-line px-4 text-sm text-muted">
+    {!account && context && <div className="flex items-center gap-2 border-b border-line px-4 text-sm text-muted">
       <span>{t(`context.${context.screen}`)}</span>
       <button type="button" aria-label={t('context.remove')} onClick={() => setDropped(true)} className="grid min-h-12 min-w-12 place-items-center"><X aria-hidden className="size-4" /></button>
     </div>}
     <KoFeed avatar={value => <KoAvatar expression={value} className="size-10" />} />
-    {interactive ? <KoChat role={role} context={context} onExpression={onExpression} /> : <div className="space-y-5 p-5">
+    {interactive ? <KoChat role={role} context={context} onExpression={onExpression} account={account} /> : <div className="space-y-5 p-5">
       <div className="text-center">
         <button type="button" aria-label={t('changeExpression')} onClick={() => onExpression(nextKoExpression(expression))} className="mx-auto block rounded-card hover:scale-105 motion-reduce:hover:scale-100">
           <KoAvatar expression={expression} className="size-32" />
