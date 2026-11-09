@@ -16,6 +16,26 @@ export type Database = {
   }
   public: {
     Tables: {
+      points_log: {
+        Row: { id: string; player_id: string; captain_id: string;
+          kind: 'workout' | 'pr' | 'perfect_week' | 'inbody' | 'meal_check'; source_key: string; points: number;
+          status: 'counted' | 'pending' | 'rejected'; earned_on: string; created_at: string; reviewed_at: string | null }
+        Insert: never
+        Update: never
+        Relationships: [
+          { foreignKeyName: 'points_log_player_id_fkey'; columns: ['player_id']; isOneToOne: false;
+            referencedRelation: 'profiles'; referencedColumns: ['id'] },
+          { foreignKeyName: 'points_log_captain_id_fkey'; columns: ['captain_id']; isOneToOne: false;
+            referencedRelation: 'profiles'; referencedColumns: ['id'] },
+        ]
+      }
+      player_points: {
+        Row: { player_id: string; lifetime: number; updated_at: string }
+        Insert: never
+        Update: never
+        Relationships: [{ foreignKeyName: 'player_points_player_id_fkey'; columns: ['player_id']; isOneToOne: true;
+          referencedRelation: 'profiles'; referencedColumns: ['id'] }]
+      }
       exercise_swap_requests: {
         Row: { id: string; player_id: string; captain_id: string; program_exercise_id: string;
           from_exercise_id: string; to_exercise_id: string; injury: 'knee' | 'shoulder' | 'lower_back';
@@ -1545,6 +1565,14 @@ export type Database = {
       }
     }
     Functions: {
+      award_meal_check: { Args: never; Returns: undefined }
+      review_points: { Args: { p_id: string; p_approve: boolean }; Returns: undefined }
+      team_leaderboard: {
+        Args: { p_month?: string }
+        Returns: { player_id: string | null; display_name: string; lifetime: number;
+          tier: 'beginner' | 'champion' | 'elite' | 'legend'; monthly: number; is_crown: boolean; position: number }[]
+      }
+      my_points: { Args: never; Returns: Json }
       request_exercise_swap: { Args: { p_program_exercise_id: string; p_to_exercise_id: string; p_injury: string }; Returns: string }
       decide_exercise_swap: { Args: { p_id: string; p_approve: boolean }; Returns: undefined }
       ko_feed: {

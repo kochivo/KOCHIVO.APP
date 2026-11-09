@@ -1,0 +1,21 @@
+import { z } from 'zod';
+import { loadSupabaseBrowser } from '@/core/supabase/lazy';
+
+const points = z.object({
+  lifetime: z.number().int().nonnegative(), tier: z.enum(['beginner', 'champion', 'elite', 'legend']),
+  monthly: z.number().int().nonnegative(), month_position: z.number().int().positive().nullable(),
+  crown_gap: z.number().int().nonnegative(), logs: z.array(z.object({
+    id: z.uuid(), player_id: z.uuid(), captain_id: z.uuid(),
+    kind: z.enum(['workout', 'pr', 'perfect_week', 'inbody', 'meal_check']), source_key: z.string(),
+    points: z.number().int().positive(), status: z.enum(['counted', 'pending', 'rejected']),
+    earned_on: z.string(), created_at: z.string(), reviewed_at: z.string().nullable(),
+  })).max(10),
+});
+export type MyPoints = z.infer<typeof points>;
+
+export async function loadMyPoints(): Promise<MyPoints> {
+  const db = await loadSupabaseBrowser();
+  const { data, error } = await db.rpc('my_points');
+  if (error) throw error;
+  return points.parse(data);
+}

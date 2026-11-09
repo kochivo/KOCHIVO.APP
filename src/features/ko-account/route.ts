@@ -123,6 +123,12 @@ export async function postKoAccountChat(request: Request) {
     if (!text && !media) return reply({ error: 'invalid' }, 400);
     const intent = await planIntent(actor.role, { text, media }, config.key, request.signal, contextPlayer?.name);
     const result = intent ? await executeIntent(actor, intent, locale, config.secret, now, contextPlayer) : say(t('unclear'));
+    if (photo && actor.role === 'player' && intent?.kind === 'meal_photo' && result.kind === 'message') {
+      try {
+        const { error } = await actor.db.rpc('award_meal_check');
+        if (error) console.warn('Meal points award failed');
+      } catch { console.warn('Meal points award failed'); }
+    }
     return actor.role === 'player' ? playerReply(result, config.origin.protocol === 'https:') : reply(result);
   } catch {
     return reply({ error: 'failed' }, 502);
