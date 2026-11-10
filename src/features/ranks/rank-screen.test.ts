@@ -13,6 +13,8 @@ import { PointsLog } from './components/points-log';
 import { RankScreen } from './components/rank-screen';
 import { LevelUpPanel } from './components/level-up-panel';
 import { RankChip } from './components/rank-chip';
+import { RankBadge } from '@/ui/rank-badge';
+import { recordLegendStars } from './hooks/use-level-up';
 import type { MyPoints } from './data/load-my-points';
 
 const points: MyPoints = { lifetime: 99, tier: 'beginner', monthly: 55, month_position: 2, crown_gap: 9,
@@ -21,6 +23,21 @@ const render = (child: ReactElement, locale: Locale = 'en') =>
   renderToStaticMarkup(createElement(LocaleProvider, { locale }, child));
 
 describe('player ranks', () => {
+  it('celebrates each star once per player and preserves the highest seen count', () => {
+    const values = new Map<string, string>();
+    const storage = { getItem: (key: string) => values.get(key) ?? null,
+      setItem: (key: string, value: string) => { values.set(key, value); } };
+    expect(recordLegendStars(storage, 'a', 1)).toBe(false);
+    storage.setItem(levelUpStorageKey('a'), 'legend');
+    expect(recordLegendStars(storage, 'a', 1)).toBe(false);
+    expect(recordLegendStars(storage, 'a', 2)).toBe(true);
+    expect(recordLegendStars(storage, 'a', 2)).toBe(false);
+    expect(recordLegendStars(storage, 'a', 1)).toBe(false);
+    expect(recordLegendStars(storage, 'a', 2)).toBe(false);
+    expect(recordLegendStars(storage, 'b', 2)).toBe(false);
+    storage.setItem(levelUpStorageKey('b'), 'legend');
+    expect(recordLegendStars(storage, 'b', 3)).toBe(true);
+  });
   it('renders the celebration dialog and a labelled home link', () => {
     const panel = render(createElement(LevelUpPanel, { tier: 'champion', onClose: () => {} }));
     expect(panel).toContain('<dialog');
@@ -46,12 +63,38 @@ describe('player ranks', () => {
   });
 
   it.each([[0, '100 points to Champion'], [99, '1 points to Champion'],
-    [100, '200 points to Elite'], [600, 'Top rank reached']] as const)('shows progress at %s', (lifetime, text) => {
+    [100, '200 points to Elite'], [600, '300 points to star 1']] as const)('shows progress at %s', (lifetime, text) => {
     const html = render(createElement(RankHero, { lifetime }));
     expect(html).toContain(text);
     expect(html).toContain(`>${lifetime}</p>`);
-    expect(html.includes('role="progressbar"')).toBe(lifetime !== 600);
+    expect(html).toContain('role="progressbar"');
     expect(html).toContain('width="140"');
+  });
+
+  it.each(['ar', 'en'] as const)('renders Legend stars throughout the rank UI in %s', locale => {
+    const label = locale === 'ar' ? 'أسطورة ★2' : 'Legend ★2';
+    const hero = render(createElement(RankHero, { lifetime: 1200 }), locale);
+    expect(hero).toContain(label);
+    expect(hero).toContain(locale === 'ar' ? 'فاضلك 300 نقطة على النجمة 3' : '300 points to star 3');
+    expect(hero).toContain('aria-valuenow="0"');
+    expect(render(createElement(RankJourney, { lifetime: 1200 }), locale)).toContain(
+      locale === 'ar' ? 'نجوم الأسطورة: كل 300 نقطة نجمة' : 'Legend stars: one every 300 points');
+    expect(render(createElement(RankChip, { points: { ...points, lifetime: 1200, tier: 'legend' } }), locale)).toContain(label);
+    expect(render(createElement(LevelUpPanel, { tier: 'legend', stars: 2, onClose: () => {} }), locale)).toContain(
+      locale === 'ar' ? 'نجمة جديدة! بقيت أسطورة ★2' : 'New star! Legend ★2');
+  });
+
+  it.each([0, 1, 5, 7])('renders %i decorative badge stars without changing the accessible label', stars => {
+    for (const locale of ['ar', 'en'] as const) {
+      const label = `${locale === 'ar' ? 'أسطورة' : 'Legend'} ★${stars}`;
+      const html = render(createElement(RankBadge, { tier: 'legend', stars, label }), locale);
+      expect(html).toContain(`aria-label="${label}"`);
+      if (stars) {
+        expect(html).toContain('aria-hidden="true"');
+        if (stars > 5) expect(html).toContain('★×7');
+        else expect(html.match(/lucide-star/g)).toHaveLength(stars);
+      } else expect(html).toBe(render(createElement(RankBadge, { tier: 'legend', label }), locale));
+    }
   });
 
   it.each([[0, 3], [100, 2], [300, 1], [600, 0]])('locks future tiers at %s', (lifetime, locked) => {

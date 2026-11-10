@@ -21,7 +21,8 @@ export function RankScreen({ data, status, onRetry, playerId }: {
   const loaded = useRankData(true, status === undefined && data === undefined);
   const active = data ?? loaded.data;
   const state = status ?? (data ? 'ready' : loaded.status);
-  const { celebration, dismiss } = useLevelUp(state === 'ready' && active ? tierFor(active.points.lifetime) : undefined, playerId);
+  const ready = state === 'ready' && active ? active.points.lifetime : undefined;
+  const { celebration, stars, dismiss } = useLevelUp(ready === undefined ? undefined : tierFor(ready), playerId, ready);
   return <main className="mx-auto max-w-lg space-y-4 px-5 pt-6 pb-32">
     <h1 id="rank-title" tabIndex={-1} className="text-2xl font-extrabold">{t('pageTitle')}</h1>
     {state === 'error' ? <ErrorState message={t('error')} retryLabel={t('retry')} onRetry={onRetry ?? loaded.retry} /> :
@@ -32,6 +33,6 @@ export function RankScreen({ data, status, onRetry, playerId }: {
         {active.points.month_position !== null && <TeamBoard rows={active.board} />}
         <PointsLog logs={active.points.logs} />
       </>}
-    {celebration && <LevelUpPanel tier={celebration} onClose={dismiss} />}
+    {celebration && <LevelUpPanel tier={celebration} stars={stars} onClose={dismiss} />}
   </main>;
 }

@@ -16,6 +16,7 @@ export function RankJourney({ lifetime }: { lifetime: number }) {
         <RankBadge tier={tier} size="md" locked={lifetime < threshold} label={t(tier)} />
         <span>{t(tier)}</span><span className="text-muted">{t('points', { n: formatNumber(threshold, locale) })}</span>
       </li>)}
+      <li className="col-span-4 text-center text-sm text-muted">{t('starJourney')}</li>
     </ol>
   </section>;
 }

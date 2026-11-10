@@ -1,6 +1,7 @@
 'use client';
 
 import { useId } from 'react';
+import { Star } from 'lucide-react';
 import { RankBadgeShapes } from './rank-badge-shapes';
 
 export type RankTier = 'beginner' | 'champion' | 'elite' | 'legend' | 'crown';
@@ -10,11 +11,12 @@ type RankBadgeProps = {
   size?: 'sm' | 'md' | 'lg' | 'xl';
   locked?: boolean;
   label: string;
+  stars?: number;
 };
 
 const widths = { sm: 40, md: 64, lg: 96, xl: 140 };
 
-export function RankBadge({ tier, size = 'md', locked = false, label }: RankBadgeProps) {
+export function RankBadge({ tier, size = 'md', locked = false, label, stars = 0 }: RankBadgeProps) {
   const id = useId();
   const width = widths[size];
   return (
@@ -87,6 +89,11 @@ export function RankBadge({ tier, size = 'md', locked = false, label }: RankBadg
           fill={`url(#${id}-shine)`} className="rank-shine"
           style={{ animationDuration: tier === 'crown' ? '3s' : '4s' }} />
       </g>
+      {tier === 'legend' && stars > 0 && <g aria-hidden="true" fill={`url(#${id}-gPl)`}>
+        {stars > 5 ? <text x="60" y="126" textAnchor="middle" fontSize="14">{`★×${stars}`}</text>
+          : Array.from({ length: stars }, (_, index) => <Star key={index}
+            x={60 - stars * 8 + index * 16} y="113" width="16" height="16" stroke="var(--color-platinum-1)" />)}
+      </g>}
     </svg>
   );
 }
