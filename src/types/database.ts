@@ -16,6 +16,18 @@ export type Database = {
   }
   public: {
     Tables: {
+      ko_waitlist: {
+        Row: { user_id: string; role: Database["public"]["Enums"]["user_role"]; created_at: string }
+        Insert: { user_id: string; role: Database["public"]["Enums"]["user_role"]; created_at?: string }
+        Update: { user_id?: string; role?: Database["public"]["Enums"]["user_role"]; created_at?: string }
+        Relationships: [{
+          foreignKeyName: "ko_waitlist_user_id_fkey"
+          columns: ["user_id"]
+          isOneToOne: true
+          referencedRelation: "profiles"
+          referencedColumns: ["id"]
+        }]
+      }
       crown_prizes: {
         Row: { captain_id: string; month: string; prize: string; updated_at: string }
         Insert: { captain_id: string; month: string; prize: string; updated_at?: string }

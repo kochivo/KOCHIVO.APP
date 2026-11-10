@@ -24,7 +24,7 @@ vi.mock('react', async original => {
   } };
 });
 vi.mock('server-only', () => ({}));
-vi.mock('./config', () => ({ koPilotAvailable: () => state.pilot }));
+vi.mock('./config', () => ({ koPilotAvailable: () => state.pilot, koTeaserEnabled: () => false }));
 vi.mock('next/headers', () => ({ headers: () => new Headers({ 'x-kochivo-path': state.path }), cookies: () => new Map() }));
 vi.mock('next/navigation', () => ({ usePathname: () => state.path }));
 vi.mock('@/features/ko-feed', () => ({

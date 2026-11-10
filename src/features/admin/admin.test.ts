@@ -8,6 +8,7 @@ import { setSuspended } from './data/set-suspended';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { KpiRow } from './components/kpi-row';
+import { KoWaitlistCount } from './components/ko-waitlist-count';
 import { CaptainsTable } from './components/captains-table';
 import type { CaptainRow } from './types';
 
@@ -82,6 +83,13 @@ describe('schemas', () => {
 });
 
 describe('global KPIs', () => {
+  it('renders only role counts for the KO waitlist, including zero', () => {
+    const html = renderToStaticMarkup(createElement(KoWaitlistCount, { initialCounts: { captain: 3, player: 0 } }));
+    expect(html).toContain('3</dd>');
+    expect(html).toContain('0</dd>');
+    expect(html).toContain('KO');
+    expect(html.match(/<dd/g)).toHaveLength(2);
+  });
   it('shows total captains, total players and the paid percentage', () => {
     const html = renderToStaticMarkup(createElement(KpiRow, { data: { captains: 200, players: 700, paid_captains: 50 } }));
     expect(html).toContain('200</dd>');

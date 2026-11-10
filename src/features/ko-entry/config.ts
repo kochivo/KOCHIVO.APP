@@ -1,6 +1,10 @@
 import 'server-only';
 import { supabaseServer } from '@/core/supabase/server';
 
+export function koTeaserEnabled(): boolean {
+  return process.env.KO_TEASER_ENABLED === '1';
+}
+
 export function koAccountConfig() {
   const { KO_ENABLED, KO_GEMINI_PAID, KO_ORIGIN, KO_APPROVAL_SECRET, KO_PILOT_USER_IDS, GOOGLE_GENERATIVE_AI_API_KEY } = process.env;
   if (KO_ENABLED !== '1' || KO_GEMINI_PAID !== '1' || !KO_ORIGIN || !KO_APPROVAL_SECRET ||

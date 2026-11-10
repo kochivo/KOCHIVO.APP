@@ -12,6 +12,7 @@ import { Button } from '@/ui/button';
 import { captainState, stateLabels } from '../format';
 import type { AuditRow, CaptainRow, CaptainState, PlanTier } from '../types';
 import { KpiRow } from './kpi-row';
+import { KoWaitlistCount } from './ko-waitlist-count';
 import { LoadingState } from '@/ui/loading-state';
 import { ActivatePanel } from './activate-panel';
 import { SuspendDialog } from './suspend-dialog';
@@ -69,6 +70,7 @@ export function AdminScreen({ captains, audit, plans, search, offset, kpis, requ
       </span>
     </header>
     {requests && <CaptainRequests rows={requests.rows} error={requests.error} />}
+    <KoWaitlistCount />
     {kpis.error ? <p role="alert" className="text-danger">{kpis.error}</p> : kpis.data && <KpiRow data={kpis.data} />}
     <section id="captain-management" tabIndex={-1} aria-label={t('manage')} className="space-y-5">
       <form className="flex gap-2" onSubmit={event => {
