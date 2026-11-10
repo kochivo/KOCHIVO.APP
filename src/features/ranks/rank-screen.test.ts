@@ -121,15 +121,17 @@ describe('player ranks', () => {
     expect(html).not.toContain(empty);
   });
 
-  it('shows pending and rejected labels and formats earned dates', () => {
-    const logs: MyPoints['logs'] = ['pending', 'rejected'].map((status, index) => ({
+  it.each(['ar', 'en'] as const)('labels uncounted points and strikes through only their values in %s', locale => {
+    const logs: MyPoints['logs'] = ['pending', 'rejected', 'counted'].map((status, index) => ({
       id: String(index), player_id: 'self', captain_id: 'coach', kind: 'inbody', source_key: 'scan',
-      points: 3, status: status as 'pending' | 'rejected', earned_on: '2026-11-09',
+      points: 3, status: status as 'pending' | 'rejected' | 'counted', earned_on: '2026-11-09',
       created_at: '2026-11-09T12:00:00Z', reviewed_at: null,
     }));
-    const html = render(createElement(PointsLog, { logs }));
-    expect(html).toContain('Waiting for captain review');
-    expect(html).toContain('Rejected');
+    const html = render(createElement(PointsLog, { logs }), locale);
+    expect(html).toContain(locale === 'ar' ? 'ما اتحسبش: التمرين قصير أو مجموعاته ناقصة' : 'Not counted: workout too short or sets missing');
+    expect(html).toContain(locale === 'ar' ? '>ما اتحسبش</p>' : '>Not counted</p>');
+    expect(html.match(/<span class="[^"]*line-through text-muted[^"]*">[^<]+<\/span>/g)).toHaveLength(2);
+    expect(html.match(/<span class="text-sm font-bold">[^<]+<\/span>/g)).toHaveLength(1);
     expect(html).toContain('dateTime="2026-11-09"');
   });
 

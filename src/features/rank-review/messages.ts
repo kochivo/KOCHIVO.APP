@@ -2,7 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
-    title: 'ترتيب الفريق', crown: 'تاج الفريق', player: 'لاعب',
+    title: 'ترتيب الفريق', crown: 'تاج الفريق',
     noCrown: 'لسه محدش أخد التاج الشهر ده',
     rule: 'التاج لأعلى التزام بالخطة، بحد أدنى {count} تمارين في الشهر. الأرقام الجديدة والـInBody بيزودوا درجتك.',
     adherence: 'التزام {n}٪ · {done} من {planned} تمرين', percent: '{n}٪', workouts: '{done} من {planned}',
@@ -10,15 +10,10 @@ export const messages = defineMessages({
     beginner: 'مبتدئ', champion: 'بطل', elite: 'نخبة', legend: 'أسطورة',
     empty: 'لسه مفيش لاعيبة', emptyBody: 'لما تضيف لاعيبة، ترتيبهم هيظهر هنا.',
     previous: 'الشهر اللي فات', next: 'الشهر اللي جاي',
-    pending: 'تمارين محتاجة مراجعتك', approve: 'احسبها', reject: 'ارفض',
-    confirm: 'ترفض التمرين؟ القرار نهائي ومش هتقدر تغيّره.',
-    duration: '{count} دقيقة', unknownDuration: 'مدة التمرين مش متاحة',
-    error: 'مش قادرين نحمّل الترتيب. جرّب تاني.', pendingError: 'مش قادرين نحمّل التمارين. جرّب تاني.',
-    decisionError: 'القرار متسجلش. التمرين رجع للقائمة، جرّب تاني.',
-    retry: 'جرّب تاني', pendingCount: '{count} للمراجعة',
+    error: 'مش قادرين نحمّل الترتيب. جرّب تاني.', retry: 'جرّب تاني',
   },
   en: {
-    title: 'Team ranking', crown: 'Team crown', player: 'Player',
+    title: 'Team ranking', crown: 'Team crown',
     noCrown: 'Nobody holds the crown yet this month',
     rule: 'The crown goes to the highest plan adherence, with at least {count} workouts this month. Records and InBody scans add to your score.',
     adherence: '{n}% adherence · {done} of {planned} workouts', percent: '{n}%', workouts: '{done} of {planned}',
@@ -26,11 +21,6 @@ export const messages = defineMessages({
     beginner: 'Beginner', champion: 'Champion', elite: 'Elite', legend: 'Legend',
     empty: 'No players yet', emptyBody: 'Add players to see their ranking here.',
     previous: 'Previous month', next: 'Next month',
-    pending: 'Workouts to review', approve: 'Count it', reject: 'Reject',
-    confirm: 'Reject this workout? This decision is final and cannot be changed.',
-    duration: '{count} minutes', unknownDuration: 'Workout duration unavailable',
-    error: 'Could not load the ranking. Try again.', pendingError: 'Could not load workouts. Try again.',
-    decisionError: 'Decision failed. The workout is back in the list. Try again.',
-    retry: 'Try again', pendingCount: '{count} to review',
+    error: 'Could not load the ranking. Try again.', retry: 'Try again',
   },
 });

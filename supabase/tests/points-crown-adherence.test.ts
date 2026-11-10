@@ -56,20 +56,41 @@ it('uses PR and InBody bonuses then raw points, excluding meals and perfect week
   await award(peer, 'inbody', 'scan', 5);
   expect((await board()).rows[0]).toMatchObject({ player_id: peer, monthly: 106 });
 });
-it('requires four distinct counted training dates and emits one swap on approval', async () => {
+it('requires four distinct counted training dates and emits one swap after late sets', async () => {
   await plan(player, [1]); await plan(peer, [1]); await days(player, 3);
   await workout(player, '2026-11-01');
   expect((await board()).rows.some(r => r.is_crown)).toBe(false);
   await days(peer, 4);
   await award(player, 'pr', 'bonus', 10);
-  const pending = await workout(player, '2026-11-04', 'pending');
+  const day = (await db.query<{ id: string }>(`select d.id from public.program_days d
+    join public.programs p on p.id=d.program_id where p.player_id=$1`, [player])).rows[0]?.id;
+  const exercise = (await db.query<{ id: string }>(`insert into public.exercises(name_en,body_part)
+    values('Lift','legs') returning id`)).rows[0]?.id;
+  await db.query(`insert into public.program_exercises(day_id,exercise_id,position,sets,reps_min,rest_seconds)
+    values($1,$2,0,10,8,60)`, [day, exercise]);
+  const baseline = (await db.query<{ id: string }>(`select id from public.workout_sessions
+    where player_id=$1 and training_date='2026-11-01' limit 1`, [player])).rows[0]?.id;
+  await db.query(`insert into public.set_logs(id,session_id,player_id,exercise_id,set_index,weight_kg,reps,completed_at,client_updated_at)
+    values(gen_random_uuid(),$1,$2,$3,0,50,8,'2026-11-01T08:05Z',now())`, [baseline, player, exercise]);
+  const session = (await db.query<{ id: string }>(`insert into public.workout_sessions
+    (id,player_id,program_day_id,training_date,started_at,completed_at,client_updated_at)
+    values(gen_random_uuid(),$1,$2,'2026-11-04','2026-11-04T08:00Z','2026-11-04T09:00Z',now()) returning id`, [player, day])).rows[0]?.id;
+  await db.query(`insert into public.set_logs(id,session_id,player_id,exercise_id,set_index,weight_kg,reps,completed_at,client_updated_at)
+    values(gen_random_uuid(),$1,$2,$3,0,60,8,'2026-11-04T08:05Z',now())`, [session, player, exercise]);
+  expect((await db.query(`select kind,status from public.points_log where source_key=$1 or source_key like $1||':%' order by kind`, [session])).rows)
+    .toEqual([{ kind: 'pr', status: 'pending' }, { kind: 'workout', status: 'pending' }]);
   await workout(player, '2026-11-05', 'rejected');
   expect((await board()).rows.find(r => r.player_id === player)?.done).toBe(3);
   await db.query(`delete from public.notifications where type in ('crown_taken','crown_lost')`);
-  await asUser(db, captain, tx => tx.query('select public.review_points($1,true)', [pending]));
+  await db.query(`insert into public.set_logs(id,session_id,player_id,exercise_id,set_index,weight_kg,reps,completed_at,client_updated_at)
+    select gen_random_uuid(),$1,$2,$3,i,60,8,'2026-11-04T08:05Z',now() from generate_series(1,5) i`, [session, player, exercise]);
+  expect((await db.query(`select kind,status from public.points_log where source_key=$1 or source_key like $1||':%' order by kind`, [session])).rows)
+    .toEqual([{ kind: 'pr', status: 'counted' }, { kind: 'workout', status: 'counted' }]);
   expect((await board()).rows[0]).toMatchObject({ player_id: player, done: 4, is_crown: true });
   expect((await db.query(`select user_id,type from public.notifications where type in ('crown_taken','crown_lost')`)).rows)
     .toEqual(expect.arrayContaining([{ user_id: player, type: 'crown_taken' }, { user_id: peer, type: 'crown_lost' }]));
+  expect((await db.query(`select id from public.notifications where type in ('crown_taken','crown_lost')`)).rows).toHaveLength(2);
+  await db.query(`update public.set_logs set client_updated_at=now() where session_id=$1`, [session]);
   expect((await db.query(`select id from public.notifications where type in ('crown_taken','crown_lost')`)).rows).toHaveLength(2);
 });
 it('floors late joiners at eight and returns holder and chaser progress', async () => {

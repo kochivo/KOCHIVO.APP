@@ -48,7 +48,10 @@ async function award(who: string, points: number, key: string, at = '2026-11-03T
   await db.query(`insert into public.points_log(player_id,captain_id,kind,source_key,points,status,earned_on,created_at)
     values ($1,$2,'perfect_week',$3,$4,'counted',$5,$6)`, [who, captain, key, points, earned, at]);
 }
-const decide = (id: string, approve = true, caller = captain) => asUser(db, caller, tx => tx.query('select public.review_points($1,$2)', [id, approve]));
+async function lateSets(id: string, start = 0) {
+  await db.query(`insert into public.set_logs(id,session_id,player_id,exercise_id,set_index,weight_kg,reps,completed_at,client_updated_at)
+    select gen_random_uuid(),$1,$2,$3,i,60,8,'2026-11-03T08:05Z',now() from generate_series($4::int,9) i`, [id, player, exercise, start]);
+}
 it('awards a valid workout and perfect week once across resync and repeated completion', async () => {
   const id = await session();
   expect((await logs()).rows).toEqual(expect.arrayContaining([
@@ -61,7 +64,7 @@ it('awards a valid workout and perfect week once across resync and repeated comp
   expect((await logs()).rows.filter(r => r.kind === 'perfect_week')).toHaveLength(1);
   expect((await logs()).rows.filter(r => r.kind === 'workout')).toHaveLength(2);
 });
-it.each([[19, 6], [25, 6], [60, 5]])('holds suspicious workouts for review (%i minutes, %i sets)', async (minutes, sets) => {
+it.each([[19, 6], [25, 6], [60, 5]])('does not count suspicious workouts (%i minutes, %i sets)', async (minutes, sets) => {
   await session(minutes, sets);
   expect((await logs()).rows.find(r => r.kind === 'workout')?.status).toBe('pending');
 });
@@ -69,15 +72,17 @@ it('uses only the twenty minute floor for unplanned sessions', async () => {
   await session(20, 0, null);
   expect((await logs()).rows).toContainEqual(expect.objectContaining({ kind: 'workout', status: 'counted' }));
 });
-it('excludes pending/rejected workouts and awards the week once when the final day is approved', async () => {
+it('excludes pending/rejected workouts and awards the week once when late sets clear the final day', async () => {
   await db.query(`insert into public.program_days(program_id,position,weekday)
     select program_id,1,2 from public.program_days where id=$1`, [day]);
-  for (const date of ['2026-11-01', '2026-11-02', '2026-11-03']) await session(1, 0, day, date);
+  const sessions = [];
+  for (const date of ['2026-11-01', '2026-11-02', '2026-11-03']) sessions.push(await session(60, 0, day, date));
   expect((await logs()).rows.filter(r => r.kind === 'perfect_week')).toHaveLength(0);
-  const pending = (await logs()).rows.filter(r => r.kind === 'workout');
-  await decide(pending[0]?.id ?? ''); await decide(pending[1]?.id ?? '', false);
+  await lateSets(sessions[0] ?? '');
+  // A historical rejection remains excluded after the manual RPC is removed.
+  await db.query(`update public.points_log set status='rejected',reviewed_at=now() where source_key=$1`, [sessions[1]]);
   expect((await logs()).rows.filter(r => r.kind === 'perfect_week')).toHaveLength(0);
-  await decide(pending[2]?.id ?? ''); await session(60, 6, day, '2026-11-04');
+  await lateSets(sessions[2] ?? ''); await session(60, 6, day, '2026-11-04');
   expect((await logs()).rows.filter(r => r.kind === 'perfect_week')).toEqual([expect.objectContaining({ points: 10, status: 'counted' })]);
 });
 it('counts two workouts on one date as one day and rechecks the week after late sets', async () => {
@@ -102,23 +107,23 @@ it('rechecks completed sessions when offline sets arrive after the session sync'
     expect.objectContaining({ points: 1, status: 'counted' }),
   ]);
 });
-it.each([true, false])('caps PRs at three and follows workout approval=%s', async approve => {
+it('caps PRs at three and counts them with their workout after late sets', async () => {
   await session();
   expect((await logs()).rows.filter(r => r.kind === 'pr')).toHaveLength(0);
   const ids = (await db.query<{ id: string }>(`insert into public.exercises(name_en,body_part)
     select 'PR '||i,'legs' from generate_series(1,4) i returning id`)).rows.map(r => r.id);
   const earlier = await session(60, 0, null, '2026-11-01');
-  const later = await session(10, 0, null, '2026-11-03', false);
+  const later = await session(60, 0, day, '2026-11-03', false);
   for (const [index, id] of ids.entries()) {
     await db.query(`insert into public.set_logs(id,session_id,player_id,exercise_id,set_index,weight_kg,reps,completed_at,client_updated_at)
       values (gen_random_uuid(),$1,$3,$4,$5,50,10,'2026-11-01T08:05Z',now()),
       (gen_random_uuid(),$2,$3,$4,$5,60,10,'2026-11-03T08:05Z',now())`, [earlier, later, player, id, index]);
   }
-  await db.query('update public.workout_sessions set completed_at=started_at+interval \'10 minutes\' where id=$1', [later]);
+  await db.query('update public.workout_sessions set completed_at=started_at+interval \'1 hour\' where id=$1', [later]);
   expect((await logs()).rows.filter(r => r.kind === 'pr')).toHaveLength(3);
   expect((await logs()).rows.filter(r => r.kind === 'pr').every(r => r.status === 'pending')).toBe(true);
-  await decide((await logs()).rows.find(r => r.kind === 'workout' && r.status === 'pending')?.id ?? '', approve);
-  expect((await logs()).rows.filter(r => r.kind === 'pr').every(r => r.status === (approve ? 'counted' : 'rejected'))).toBe(true);
+  await lateSets(later, 4);
+  expect((await logs()).rows.filter(r => r.kind === 'pr').every(r => r.status === 'counted')).toBe(true);
   await db.query('update public.workout_sessions set completed_at=null where id=$1', [later]);
   await db.query('update public.workout_sessions set completed_at=started_at+interval \'1 hour\' where id=$1', [later]);
   expect((await logs()).rows.filter(r => r.kind === 'pr')).toHaveLength(3);
@@ -134,17 +139,18 @@ it('does not backfill pre-launch sessions when their sets change', async () => {
 it('keeps rejection final when late sets would otherwise pass the checks', async () => {
   const id = await session(60, 0);
   const point = (await logs()).rows.find(r => r.kind === 'workout')?.id ?? '';
-  await decide(point, false);
+  await db.query(`update public.points_log set status='rejected',reviewed_at=now() where id=$1`, [point]);
   await db.query(`insert into public.set_logs(id,session_id,player_id,exercise_id,set_index,weight_kg,reps,completed_at,client_updated_at)
     select gen_random_uuid(),$1,$2,$3,i,60,8,'2026-11-03T08:05Z',now() from generate_series(0,5) i`, [id, player, exercise]);
   expect((await logs()).rows.find(r => r.id === point)?.status).toBe('rejected');
 });
-it('reviews a pending PR through its workout so the session decision stays consistent', async () => {
+it('clears a pending PR only when late sets clear its workout', async () => {
   await session(60, 6, day, '2026-11-01');
-  const id = await session(10, 0, null);
+  const id = await session(60, 0);
   await db.query(`insert into public.set_logs(id,session_id,player_id,exercise_id,set_index,weight_kg,reps,completed_at,client_updated_at)
     values(gen_random_uuid(),$1,$2,$3,0,60,10,'2026-11-03T08:05Z',now())`, [id, player, exercise]);
-  await decide((await logs()).rows.find(r => r.kind === 'pr')?.id ?? '');
+  expect((await logs()).rows.filter(r => r.kind === 'pr')).toEqual([expect.objectContaining({ status: 'pending' })]);
+  await lateSets(id, 1);
   expect((await logs()).rows.some(r => r.status === 'pending')).toBe(false);
 });
 it('ignores backdated InBody scans and awards only the current Cairo month once', async () => {
@@ -175,18 +181,6 @@ it.each(['returned', 'thrown'])('preserves a successful meal reply when the real
   const response = await postKoAccountChat(request);
   expect(response.status).toBe(200); expect(await response.json()).toMatchObject({ kind: 'message', text: expect.stringContaining('Rice') });
   expect(warn).toHaveBeenCalledWith('Meal points award failed'); expect((await logs()).rows).toHaveLength(0);
-});
-it('allows linked captain review only once and preserves lifetime on rejection', async () => {
-  await session(10);
-  const id = (await logs()).rows.find(r => r.kind === 'workout')?.id ?? '';
-  await expect(decide(id, true, player)).rejects.toThrow();
-  await expect(decide(id, true, outsider)).rejects.toThrow();
-  await decide(id);
-  await expect(decide(id)).rejects.toThrow();
-  const before = (await db.query('select lifetime from public.player_points where player_id=$1', [player])).rows;
-  await session(10);
-  await decide((await logs()).rows.find(r => r.kind === 'workout' && r.status === 'pending')?.id ?? '', false);
-  expect((await db.query('select lifetime from public.player_points where player_id=$1', [player])).rows).toEqual(before);
 });
 it('breaks equal crown scores by raw points then earliest award and resets by month', async () => {
   await award(player, 20, 'first', '2026-11-01T09:00Z');

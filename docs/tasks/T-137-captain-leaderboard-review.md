@@ -49,6 +49,7 @@ Do not touch `src/features/ranks/` (T-136 edits it in parallel). Import from `@/
 - A captain navigation entry (the nav is full; the players page link is the entry).
 
 ## Implementation notes
+- The review UI and pending count are removed by [T-142](T-142-automatic-ranks.md); ranks are fully automatic.
 - Added a thin client route composing the two hooks and a prop-driven screen; display components accept locale and data for static render tests.
 - Pending reads are scoped to the authenticated captain, paged newest first, and validated with Zod. Workout `source_key` is the session UUID as text, so profiles and sessions are fetched separately through their existing RLS and matched by player ID.
 - Reject uses the existing captain `window.confirm` pattern with a translated final-decision warning. Decisions remove the row immediately, restore it with an error on RPC failure, and reload the selected month's board on success. Decisions are serialized to avoid duplicate reviews and conflicting rollbacks.

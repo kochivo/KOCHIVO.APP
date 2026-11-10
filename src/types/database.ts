@@ -1566,7 +1566,6 @@ export type Database = {
     }
     Functions: {
       award_meal_check: { Args: never; Returns: undefined }
-      review_points: { Args: { p_id: string; p_approve: boolean }; Returns: undefined }
       team_leaderboard: {
         Args: { p_month?: string }
         Returns: { player_id: string | null; display_name: string; lifetime: number;
