@@ -16,6 +16,14 @@ const meal = z.strictObject({
 });
 
 const tools = {
+  my_progress: { schema: z.strictObject({}),
+    description: 'Player asks how am I doing / أنا ماشي كويس, progress, rank, lifetime points, monthly adherence or distance to the crown. Read only their own progress. For a workout not counted use why_not_counted instead.' },
+  why_not_counted: { schema: z.strictObject({}),
+    description: 'Player asks why a workout did not count / ليه التمرين ما اتحسبش. Explain the latest pending or rejected workout in the last 14 days using actual duration and logged sets. Not a general progress question.' },
+  player_summary: { schema: z.strictObject(target),
+    description: 'Captain reads one roster player: last workout, monthly done/planned and adherence, rank, open swaps and subscription end. Use the named player or omit player for the current screen context.' },
+  team_summary: { schema: z.strictObject({}),
+    description: 'Captain asks about the team, who is falling behind / مين واقع من لاعيبتي: inactive 7+ days, subscriptions ending within 7 days, crown leader and zero workouts this month. Read only the captain roster.' },
   swap_exercise: { schema: z.strictObject({ exercise: name, injury: z.enum(['knee', 'shoulder', 'lower_back']) }),
     description: 'Player requests replacing one exercise in their active program because of knee, shoulder or lower back pain. Use the named exercise and explicit injury only. Alternatives require captain approval.' },
   read_exercise: { schema: z.strictObject({ ...namedExercise, player: name.optional(), how: z.boolean().optional() }),
@@ -44,8 +52,8 @@ const tools = {
 type ToolName = keyof typeof tools;
 export type Intent = { [K in ToolName]: { kind: K; args: z.infer<(typeof tools)[K]['schema']> } }[ToolName];
 
-const captain = ['read_exercise', 'update_exercise', 'create_training', 'create_nutrition', 'renew_subscription', 'send_reminder', 'clarify'] as const;
-const player = ['read_exercise', 'read_nutrition', 'swap_exercise', 'clarify'] as const;
+const captain = ['player_summary', 'team_summary', 'read_exercise', 'update_exercise', 'create_training', 'create_nutrition', 'renew_subscription', 'send_reminder', 'clarify'] as const;
+const player = ['my_progress', 'why_not_counted', 'read_exercise', 'read_nutrition', 'swap_exercise', 'clarify'] as const;
 
 type GeminiSchema = { type?: string; properties?: Record<string, GeminiSchema>; items?: GeminiSchema; required?: string[] };
 
