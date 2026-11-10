@@ -1,6 +1,7 @@
 import 'server-only';
 import { z } from 'zod';
 import { createT } from '@/core/i18n/messages';
+import { localDate } from '@/lib/dates';
 import type { KoMedia } from '@/features/ko-agent';
 import { maxHistoryChars, parseHistory } from '@/features/ko-agent';
 import { koPreviewMessages } from '@/features/ko-preview';
@@ -12,6 +13,7 @@ import { commitApproval, executeIntent, say } from './execute';
 import { planIntent } from './intents';
 import { normalizeName } from './match';
 import { messages } from './messages';
+import { mealReceipt } from './meal-receipt';
 import { chooseSwap } from './swap';
 import type { AccountReply } from './execute';
 
@@ -126,10 +128,15 @@ export async function postKoAccountChat(request: Request) {
     const intent = await planIntent(actor.role, { text, media }, config.key, request.signal, contextPlayer?.name, history);
     const result = intent ? await executeIntent(actor, intent, locale, config.secret, now, contextPlayer) : say(t('unclear'));
     if (photo && actor.role === 'player' && intent?.kind === 'meal_photo' && result.kind === 'message') {
-      try {
-        const { error } = await actor.db.rpc('award_meal_check');
-        if (error) console.warn('Meal points award failed');
-      } catch { console.warn('Meal points award failed'); }
+      const secret = process.env.KO_MEAL_RECEIPT_SECRET;
+      if (!secret) console.warn('Meal points skipped: KO_MEAL_RECEIPT_SECRET is missing');
+      else {
+        try {
+          const day = localDate(new Date(now));
+          const { error } = await actor.db.rpc('award_meal_check', { p_day: day, p_receipt: mealReceipt(actor.id, day, secret) });
+          if (error) console.warn('Meal points award failed');
+        } catch { console.warn('Meal points award failed'); }
+      }
     }
     return actor.role === 'player' ? playerReply(result, config.origin.protocol === 'https:') : reply(result);
   } catch {

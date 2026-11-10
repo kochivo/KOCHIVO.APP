@@ -1599,7 +1599,7 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: { month: string; player_id: string | null; display_name: string; adherence: number; done: number; planned: number }[]
       }
-      award_meal_check: { Args: never; Returns: undefined }
+      award_meal_check: { Args: { p_day: string; p_receipt: string }; Returns: undefined }
       team_leaderboard: {
         Args: { p_month?: string }
         Returns: { player_id: string | null; display_name: string; lifetime: number;

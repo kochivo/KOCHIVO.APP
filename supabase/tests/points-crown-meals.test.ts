@@ -7,6 +7,8 @@ let captain: string, player: string, peer: string;
 beforeAll(async () => { db = await createTestDb(); });
 afterAll(async () => { await db.close(); });
 beforeEach(async () => {
+  await db.query(`insert into security_private.app_secrets(name,value) values ('meal_receipt','meal-receipt-test-secret')
+    on conflict (name) do update set value=excluded.value`);
   ({ captain, player } = await createCaptainWithPlayer(db));
   peer = await createUser(db, 'player');
   await db.query(`insert into public.coach_clients(captain_id,player_id,access_until)
@@ -26,6 +28,11 @@ const mine = (who = player) => asUser(db, who,
   tx => tx.query<{ result: Points }>('select public.my_points() as result'));
 const crowns = () => db.query(`select user_id,type from public.notifications
   where user_id in ($1,$2) and type in ('crown_taken','crown_lost')`, [player, peer]);
+async function mealAward() {
+  const { rows } = await db.query<{ receipt: string }>(`select
+    encode(extensions.hmac($1 || ':2026-11-03','meal-receipt-test-secret','sha256'),'hex') as receipt`, [player]);
+  return asUser(db, player, tx => tx.query("select public.award_meal_check('2026-11-03',$1)", [rows[0]?.receipt]));
+}
 async function meals(who: string, count: number) {
   await db.query(`insert into public.points_log(player_id,captain_id,kind,source_key,points,status,earned_on,created_at)
     select $1,$2,'meal_check',('2026-11-01'::date+i)::text,1,'counted','2026-11-01'::date+i,$4
@@ -74,7 +81,7 @@ it('breaks equal adherence by 21 workout points ahead of 20 plus five meals in e
 it('still awards rank_up when the meal RPC takes lifetime from 99 to 100', async () => {
   await workout(player, 99);
   const before = (await crowns()).rows;
-  await asUser(db, player, tx => tx.query('select public.award_meal_check()'));
+  await mealAward();
   expect((await mine()).rows[0]?.result).toMatchObject({ lifetime: 100, monthly: 50 });
   expect((await db.query(`select payload from public.notifications where user_id=$1 and type='rank_up'`, [player])).rows)
     .toEqual([{ payload: { tier: 'champion', lifetime: 100 } }]);
@@ -85,7 +92,7 @@ it('does not move the earliest-total tie-break or notify a crown swap on a meal 
   await workout(player, 20, '2026-11-01T08:00:00Z');
   await workout(peer, 20, '2026-11-01T09:00:00Z');
   const before = (await crowns()).rows;
-  await asUser(db, player, tx => tx.query('select public.award_meal_check()'));
+  await mealAward();
   expect((await board()).rows.map(r => [r.player_id, r.monthly, r.is_crown, r.position]))
     .toEqual([[player, 50, true, 1], [peer, 50, false, 2]]);
   expect((await crowns()).rows).toEqual(before);

@@ -11,3 +11,14 @@ Before every publish:
 7. Keep secrets out of chat, PRs, and commits.
 
 Optional owner setup (once, not done by this card): in GitHub settings, protect `master` so only the workflow can update it, if the plan allows it.
+
+Meal receipt owner setup (once, after migration 0088; do not put the value in the repository):
+generate a random 32-byte hex secret (for example, `openssl rand -hex 32`), set
+`KO_MEAL_RECEIPT_SECRET` in Vercel production, and insert the same value via the production SQL editor:
+
+```sql
+insert into security_private.app_secrets(name, value) values ('meal_receipt', '<secret>');
+```
+
+Redeploy production after setting the environment variable. Until both values are set and match,
+meal points are not awarded; meal analysis still works.

@@ -12,15 +12,15 @@ vi.mock('@/features/ko-account/intents', () => ({ planIntent: async () => ({ kin
 vi.mock('@/features/ko-entry', () => ({ koAccountConfig: () => ({
   origin: new URL('https://kochivo.test'), secret: 'points-test-secret-12345678901234567890', key: 'test', pilots: chat.pilots,
 }) }));
-afterEach(() => { vi.restoreAllMocks(); chat.pilots.clear(); });
-let db: PGlite;
-let captain: string, player: string, peer: string, outsider: string, day: string, exercise: string;
+afterEach(() => { vi.restoreAllMocks(); vi.unstubAllEnvs(); chat.pilots.clear(); });
+let db: PGlite, captain: string, player: string, peer: string, outsider: string, day: string, exercise: string;
 beforeAll(async () => { db = await createTestDb(); });
 afterAll(async () => { await db.close(); });
 beforeEach(async () => {
+  vi.stubEnv('KO_MEAL_RECEIPT_SECRET', 'meal-receipt-test-secret');
+  await db.query(`insert into security_private.app_secrets(name,value) values ('meal_receipt','meal-receipt-test-secret') on conflict (name) do update set value=excluded.value`);
   ({ captain, player } = await createCaptainWithPlayer(db));
-  peer = await createUser(db, 'player', 'Omar Private');
-  outsider = (await createCaptainWithPlayer(db)).captain;
+  peer = await createUser(db, 'player', 'Omar Private'); outsider = (await createCaptainWithPlayer(db)).captain;
   await db.query(`update public.profiles set full_name='Ali Private' where id=$1`, [player]);
   await db.query(`insert into public.coach_clients(captain_id,player_id,access_until) values ($1,$2,'2026-12-01')`, [captain, peer]);
   const p = await db.query<{ id: string }>(`insert into public.programs(captain_id,player_id,title,status) values ($1,$2,'Plan','active') returning id`, [captain, player]);
@@ -37,10 +37,14 @@ async function session(minutes = 60, sets = 6, planned: string | null = day, dat
   await db.query(`insert into public.set_logs(id,session_id,player_id,exercise_id,set_index,weight_kg,reps,completed_at,client_updated_at)
     select gen_random_uuid(),$1,$2,$3,i,50,8,$4::date+time '08:05',now() from generate_series(0,$5::int-1) i`,
   [id, player, exercise, date, sets]);
-  if (finish) await db.query(`update public.workout_sessions set completed_at=started_at+make_interval(mins=>$2) where id=$1`, [id, minutes]);
-  return id;
+  if (finish) await db.query(`update public.workout_sessions set completed_at=started_at+make_interval(mins=>$2) where id=$1`, [id, minutes]); return id;
 }
 const logs = () => db.query<{ id: string; kind: string; status: string; points: number }>('select id,kind,status,points from public.points_log where player_id=$1 order by kind', [player]);
+async function mealAward() {
+  const { rows } = await db.query<{ receipt: string }>(`select
+    encode(extensions.hmac($1 || ':2026-11-03','meal-receipt-test-secret','sha256'),'hex') as receipt`, [player]);
+  return asUser(db, player, tx => tx.query("select public.award_meal_check('2026-11-03',$1)", [rows[0]?.receipt]));
+}
 const board = (caller = captain, month = '2026-11-01') => asUser(db, caller,
   tx => tx.query<{ player_id: string | null; display_name: string; monthly: number; is_crown: boolean; position: number }>(
     'select * from public.team_leaderboard($1)', [month]));
@@ -88,8 +92,7 @@ it('excludes pending/rejected workouts and awards the week once when late sets c
 it('counts two workouts on one date as one day and rechecks the week after late sets', async () => {
   await db.query(`insert into public.program_days(program_id,position,weekday)
     select program_id,1,2 from public.program_days where id=$1`, [day]);
-  await session(); await session();
-  expect((await logs()).rows.filter(r => r.kind === 'perfect_week')).toHaveLength(0);
+  await session(); await session(); expect((await logs()).rows.filter(r => r.kind === 'perfect_week')).toHaveLength(0);
   const id = await session(60, 0, day, '2026-11-04');
   expect((await logs()).rows.filter(r => r.kind === 'perfect_week')).toHaveLength(0);
   await db.query(`insert into public.set_logs(id,session_id,player_id,exercise_id,set_index,reps,completed_at,client_updated_at)
@@ -137,8 +140,7 @@ it('does not backfill pre-launch sessions when their sets change', async () => {
   expect((await logs()).rows).toHaveLength(0);
 });
 it('keeps rejection final when late sets would otherwise pass the checks', async () => {
-  const id = await session(60, 0);
-  const point = (await logs()).rows.find(r => r.kind === 'workout')?.id ?? '';
+  const id = await session(60, 0), point = (await logs()).rows.find(r => r.kind === 'workout')?.id ?? '';
   await db.query(`update public.points_log set status='rejected',reviewed_at=now() where id=$1`, [point]);
   await db.query(`insert into public.set_logs(id,session_id,player_id,exercise_id,set_index,weight_kg,reps,completed_at,client_updated_at)
     select gen_random_uuid(),$1,$2,$3,i,60,8,'2026-11-03T08:05Z',now() from generate_series(0,5) i`, [id, player, exercise]);
@@ -160,17 +162,20 @@ it('ignores backdated InBody scans and awards only the current Cairo month once'
     values (gen_random_uuid(),$1,'2026-11-01',80),(gen_random_uuid(),$1,'2026-11-02',80)`, [player]);
   expect((await logs()).rows).toEqual([expect.objectContaining({ kind: 'inbody', points: 5 })]);
 });
-it('documents the allowed fallback: meal RPC remains callable without a photo, once per Cairo day', async () => {
-  for (let i = 0; i < 2; i++) await asUser(db, player, tx => tx.query('select public.award_meal_check()'));
+it('awards a signed meal receipt once per Cairo day', async () => {
+  for (let i = 0; i < 2; i++) await mealAward();
   expect((await logs()).rows.filter(r => r.kind === 'meal_check')).toHaveLength(1);
 });
-it.each(['returned', 'thrown'])('preserves a successful meal reply when the real award failure is %s', async mode => {
+it.each(['returned', 'thrown', 'success', 'missing'])('preserves a successful meal reply with award outcome %s', async mode => {
   vi.spyOn(Date, 'now').mockReturnValue(Date.parse(TEST_NOW));
   const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
-  await db.query('update public.profiles set suspended_at=now() where id=$1', [player]);
-  const rpc = async () => {
-    try { await asUser(db, player, tx => tx.query('select public.award_meal_check()')); return { error: null }; }
-    catch (error) { if (mode === 'thrown') throw error; return { error }; }
+  if (mode === 'missing') vi.stubEnv('KO_MEAL_RECEIPT_SECRET', '');
+  if (mode === 'returned' || mode === 'thrown') await db.query('update public.profiles set suspended_at=now() where id=$1', [player]);
+  const rpc = async (_name: string, args: { p_day: string; p_receipt: string }) => {
+    try {
+      await asUser(db, player, tx => tx.query('select public.award_meal_check($1::date,$2)', [args.p_day, args.p_receipt]));
+      return { error: null };
+    } catch (error) { if (mode === 'thrown') throw error; return { error }; }
   };
   const query = { select() { return this; }, eq() { return this; }, maybeSingle: async () => ({ data: null, error: null }) };
   chat.actor = { id: player, role: 'player', db: { rpc, from: () => query } } as unknown as KoActor;
@@ -180,7 +185,10 @@ it.each(['returned', 'thrown'])('preserves a successful meal reply when the real
     headers: { origin: 'https://kochivo.test', host: 'kochivo.test', 'content-length': '1000' } });
   const response = await postKoAccountChat(request);
   expect(response.status).toBe(200); expect(await response.json()).toMatchObject({ kind: 'message', text: expect.stringContaining('Rice') });
-  expect(warn).toHaveBeenCalledWith('Meal points award failed'); expect((await logs()).rows).toHaveLength(0);
+  expect((await logs()).rows).toHaveLength(mode === 'success' ? 1 : 0);
+  if (mode === 'success') expect(warn).not.toHaveBeenCalled();
+  else expect(warn).toHaveBeenCalledExactlyOnceWith(mode === 'missing'
+    ? 'Meal points skipped: KO_MEAL_RECEIPT_SECRET is missing' : 'Meal points award failed');
 });
 it('breaks equal crown scores by raw points then earliest award and resets by month', async () => {
   await award(player, 20, 'first', '2026-11-01T09:00Z');
@@ -193,8 +201,7 @@ it('breaks equal crown scores by raw points then earliest award and resets by mo
   expect((await board(outsider)).rows.some(r => r.player_id === player)).toBe(false);
 });
 it('notifies both holders on a crown swap and notifies lifetime tier crossings', async () => {
-  await award(player, 19, 'nineteen');
-  expect((await board()).rows.some(r => r.is_crown)).toBe(false);
+  await award(player, 19, 'nineteen'); expect((await board()).rows.some(r => r.is_crown)).toBe(false);
   await award(player, 1, 'twenty');
   for (const date of ['2026-11-01', '2026-11-02', '2026-11-03', '2026-11-04']) await session(60, 6, day, date);
   await db.query(`insert into public.programs(captain_id,player_id,title,status) values($1,$2,'Peer plan','active')`, [captain, peer]);
@@ -219,7 +226,7 @@ it('returns only the last ten own logs and retains lifetime across team changes'
   await db.query('update public.coach_clients set archived_at=now() where player_id=$1', [player]);
   await db.query(`insert into public.coach_clients(captain_id,player_id,access_until) values($1,$2,'2026-12-01')`, [outsider, player]);
   expect((await board(outsider)).rows.find(r => r.player_id === player)).toMatchObject({ lifetime: 12, monthly: 0 });
-  await asUser(db, player, tx => tx.query('select public.award_meal_check()'));
+  await mealAward();
   expect((await board(outsider)).rows.find(r => r.player_id === player)).toMatchObject({ lifetime: 13, monthly: 0 });
 });
 it('blocks direct writes, anonymous RPCs and suspended callers, while allowing owner/captain reads', async () => {
@@ -236,7 +243,7 @@ it('blocks direct writes, anonymous RPCs and suspended callers, while allowing o
   for (const table of ['points_log', 'player_points'])
     expect((await asUser(db, player, tx => tx.query(`select * from public.${table}`))).rows).toEqual([]);
   await expect(board(player)).rejects.toThrow();
-  await expect(asUser(db, player, tx => tx.query('select public.award_meal_check()'))).rejects.toThrow();
+  await expect(mealAward()).rejects.toMatchObject({ code: '42501' });
   await expect(asUser(db, player, tx => tx.query('select public.my_points()'))).rejects.toThrow();
   await db.query('update public.profiles set suspended_at=now() where id=$1', [captain]);
   await expect(board()).rejects.toThrow();
