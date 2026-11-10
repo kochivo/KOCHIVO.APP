@@ -1,5 +1,5 @@
 export { generateProgram, toProgramDraft } from './generate';
-export { GenerateButton } from './components/generate-button';
+export { GenerateButton } from './components/generate-entry';
 export { generatorBriefSchema } from './brief';
 export { swapOptions } from './swap-options';
 export type { GeneratorBrief } from './brief';

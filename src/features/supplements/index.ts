@@ -1,2 +1,2 @@
-export { PlayerSupplements } from './components/player-supplements';
+export { PlayerSupplements } from './components/player-supplements-entry';
 export { CaptainSupplements } from './components/captain-supplements';

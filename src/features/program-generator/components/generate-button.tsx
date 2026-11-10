@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Sparkles } from 'lucide-react';
 import { useLocale, useT } from '@/core/i18n/client';
-import { supabaseBrowser } from '@/core/supabase/browser';
+import { loadSupabaseBrowser } from '@/core/supabase/lazy';
 import { Button } from '@/ui';
 import { ResponsiveDialog } from '@/ui/responsive-dialog';
 import { injuries } from '../brief';
@@ -39,7 +39,8 @@ export function GenerateButton({ playerId, playerName, intake, profileError = fa
   useEffect(() => {
     if (!open || profileError || candidates !== null) return;
     let current = true;
-    loadCandidates(supabaseBrowser()).then(result => {
+    loadSupabaseBrowser().then(db => current ? loadCandidates(db) : null).then(result => {
+      if (!result) return;
       if (!current) return;
       if (result.error) setLoadError(true);
       else { setCandidates(result.data); setLoadError(false); }

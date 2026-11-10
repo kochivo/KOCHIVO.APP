@@ -5,7 +5,6 @@ import { dismissFeedItem, snoozeOptimistically } from '../data/dismiss';
 import { loadFeed } from '../data/load-feed';
 import type { KoFeedItem } from '../types';
 import { urgentCount } from '../rank';
-import { loadDigestExtras } from '../data/load-digest-extras';
 import type { DigestExtras } from '../digest';
 
 type State = { rows: KoFeedItem[]; status: 'loading' | 'ready' | 'error'; saveError: boolean; extras: DigestExtras | null };
@@ -63,7 +62,9 @@ export function useKoFeed(open = true, enabled = true, digest = false) {
     let active = true;
     const update = () => {
       if (document.visibilityState !== 'visible') return;
-      void loadDigestExtras().then(extras => { if (active) publish({ ...state, extras }); });
+      void import('../data/load-digest-extras').then(module => module.loadDigestExtras())
+        .then(extras => { if (active) publish({ ...state, extras }); })
+        .catch(() => { if (active) publish({ ...state, extras: null }); });
     };
     update();
     const timer = window.setInterval(update, 120_000);

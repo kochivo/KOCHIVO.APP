@@ -1,7 +1,7 @@
 import { getT } from '@/core/i18n/server';
 import { loadJoinRequests } from '../data/join-requests';
 import { messages } from '../messages';
-import { JoinRequestsList } from './join-requests-list';
+import { JoinRequestsList } from './join-requests-list-entry';
 import { Inbox } from 'lucide-react';
 
 export async function JoinRequests() {

@@ -1,4 +1,4 @@
-export { ProgressScreen } from './components/progress-screen';
+export { ProgressScreen } from './components/progress-entry';
 
 export { messages as progressMessages } from './messages';
 export { LineChart } from './components/line-chart';

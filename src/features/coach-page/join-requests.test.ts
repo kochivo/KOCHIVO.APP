@@ -1,5 +1,6 @@
-import { createElement } from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
+import { createElement, lazy } from 'react';
+import type { ComponentType } from 'react';
+import { renderToReadableStream } from 'react-dom/server';
 import { expect, it, vi } from 'vitest';
 import { LocaleProvider } from '@/core/i18n/client';
 import { createT } from '@/core/i18n/messages';
@@ -10,11 +11,14 @@ const state = vi.hoisted(() => ({ locale: 'en' as 'en' | 'ar', error: '', rows: 
 vi.mock('@/core/i18n/server', () => ({ getT: async () => createT(messages, state.locale) }));
 vi.mock('./data/join-requests', () => ({ loadJoinRequests: async () => ({ data: state.rows, error: state.error }) }));
 vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh() {} }) }));
-vi.mock('next/dynamic', () => ({ default: () => () => null }));
+vi.mock('next/dynamic', () => ({ default: (load: () => Promise<ComponentType<Record<string, unknown>>>) =>
+  lazy(async () => ({ default: await load() })) }));
 vi.mock('server-only', () => ({}));
 vi.mock('next/headers', () => ({ cookies: async () => ({ get: () => undefined }), headers: async () => new Headers() }));
 async function render() {
-  return renderToStaticMarkup(createElement(LocaleProvider, { locale: state.locale }, await JoinRequests()));
+  const stream = await renderToReadableStream(createElement(LocaleProvider, { locale: state.locale }, await JoinRequests()));
+  await stream.allReady;
+  return new Response(stream).text();
 }
 it.each(['en', 'ar'] as const)('explains where requests appear with an inbox empty state in %s', async locale => {
   state.locale = locale; state.rows = []; state.error = '';

@@ -255,3 +255,68 @@ The 360×740 and 390×844 browser/device matrix in both directions and themes ha
 keyboard panning, Android keyboard resize, landscape notches, long injected
 names, and authenticated screen scroll widths still need device/browser QA.
 No measured CLS/LCP/INP or physical low-end-device GPU timings are claimed.
+
+## T-155 — restore route budgets (2026-11-10)
+
+The table uses completed Turbopack builds and the gzip calculation in
+`src/lib/perf-budget.test.ts`. Before values were reproduced locally before
+implementation. Public feature imports remain through `index.ts`; small client
+entries split the screens that server barrels previously included merely to
+read a message, constant, or server loader. Default SSR is retained for auth,
+coach controls, generator, progress, supplements, and ranking entries. The
+already client-only intake and dev preview use the existing loading state;
+the floating KO widget uses no fallback, matching its existing launcher wrapper.
+
+| Route (without `/[locale]`) | Before gzip KiB | After gzip KiB | Budget KiB |
+| --- | ---: | ---: | ---: |
+| `/admin` | 262.34 | 195.19 | 200 |
+| `/c/[slug]` | 202.38 | 193.22 | 200 |
+| `/login` | 200.97 | 197.68 | 200 |
+| `/forgot-password` | 200.97 | 197.68 | 200 |
+| `/reset-password` | 200.97 | 197.68 | 200 |
+| `/i/[code]` | 200.97 | 197.68 | 200 |
+| `/suspended` | 200.97 | 197.68 | 200 |
+| `/captain/players/[playerId]/programs` | 415.86 | 291.84 | 310 |
+| `/captain/programs/[programId]` | 349.65 | 277.24 | 310 |
+| `/captain/nutrition/[planId]` | 342.35 | 270.32 | 310 |
+| `/captain/players/[playerId]/nutrition` | 342.35 | 270.32 | 310 |
+| `/captain/templates` | 334.16 | 260.47 | 310 |
+| `/captain/players/[playerId]` | 314.98 | 232.66 | 310 |
+| `/captain/players/[playerId]/preview` | 312.95 | 277.54 | 310 |
+| `/player` | 319.40 | 277.85 | 300 |
+| `/player/rank` | 319.40 | 277.85 | 300 |
+| `/player/progress` | 329.33 | 284.13 | 300 |
+| `/player/captain` | 324.54 | 283.01 | 300 |
+| `/player/settings` | 325.67 | 284.15 | 300 |
+| `/ko` | 328.58 | 198.95 | 200 |
+| `/dev/ko` | 253.11 | 181.02 | 200 |
+
+Supabase now loads through the existing singleton adapter inside the admin
+waitlist effect and generator's open-sheet effect. Late imports cannot start a
+query after cleanup. Rank and feed validators retain their exact Zod schemas in
+small modules imported when data is requested. Importing the full Zod namespace
+dynamically was avoided because that prevents pruning unused exports. The
+optional digest loader is deferred separately and catches chunk-load failures.
+
+The budget guard passes for every diagnostic route, not only this table. Its
+budgets and empty exceptions map are unchanged. Existing screen/data suites cover
+the deferred screens; `features/ranks/lazy-validation.test.ts` additionally proves
+that importing loaders does not initialize Zod and that requested data is still
+validated. No offline-write, schema, service-worker, Sentry, or font changes were
+made.
+
+Local Windows verification requires the documented native Vitest loader/thread
+fallback. Next's worker threads and TypeScript API checker were enabled only in
+a temporary process preload, with placeholder public Supabase build values;
+no repository configuration or environment files were changed. The release audit
+used the unchanged script with its `git ls-files -z` input captured by the shell,
+because Node child-process execution is denied here. Temporary helpers are
+removed from the final diff.
+
+Verification: production build exit 0; budget test **1 passed**; combined check
+passed TypeScript, ESLint, release audit (**1747 tracked files, 0 findings**),
+and Vitest (**437 test files, 3142 tests**). The combined command was
+`npm run check -- -- --configLoader native --pool threads --maxWorkers 2`,
+with the temporary audit-input preload described above. Independent review found
+no remaining important issues. Browser/device QA was not run for this import-only
+change.

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useLocale, useT } from '@/core/i18n/client';
-import { supabaseBrowser } from '@/core/supabase/browser';
+import { loadSupabaseBrowser } from '@/core/supabase/lazy';
 import { formatNumber } from '@/lib/format';
 import { messages } from '../messages';
 
@@ -19,7 +19,8 @@ export function KoWaitlistCount({ initialCounts }: { initialCounts?: Counts }) {
     async function load() {
       setFailed(false);
       try {
-        const db = supabaseBrowser();
+        const db = await loadSupabaseBrowser();
+        if (!active) return;
         const results = await Promise.all((['captain', 'player'] as const).map(role =>
           db.from('ko_waitlist').select('user_id', { count: 'exact', head: true }).eq('role', role)));
         if (results.some(result => result.error || result.count === null)) throw new Error('Waitlist count failed');

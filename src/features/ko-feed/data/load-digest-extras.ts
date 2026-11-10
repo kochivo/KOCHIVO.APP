@@ -1,4 +1,3 @@
-import { z } from 'zod';
 import { loadSupabaseBrowser } from '@/core/supabase/lazy';
 import { loadLeaderboard } from '@/features/ranks';
 import { localDate } from '@/lib/dates';
@@ -9,8 +8,6 @@ export function digestYesterday(now: Date): string {
   date.setUTCDate(date.getUTCDate() - 1);
   return localDate(date, 'UTC');
 }
-
-const event = z.object({ player_id: z.string(), source_key: z.string() });
 
 export async function loadDigestExtras(now: Date = new Date()): Promise<DigestExtras | null> {
   try {
@@ -23,7 +20,8 @@ export async function loadDigestExtras(now: Date = new Date()): Promise<DigestEx
         .eq('kind', 'pr').eq('status', 'counted').eq('earned_on', digestYesterday(now)).order('id'),
     ]);
     if (result.error) throw result.error;
-    const events = z.array(event).parse(result.data);
+    const { digestEvents } = await import('./feed-schemas');
+    const events = digestEvents.parse(result.data);
     if (!events.length) return { board, records: [] };
     const ids = [...new Set(events.map(row => row.source_key.split(':')[1]).filter((id): id is string => Boolean(id)))];
     const exercises = ids.length ? await db.from('exercises').select('id,name_ar,name_en').in('id', ids) : { data: [], error: null };

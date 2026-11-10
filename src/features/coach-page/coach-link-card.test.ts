@@ -1,5 +1,6 @@
-import { createElement } from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
+import { createElement, lazy } from 'react';
+import type { ComponentType } from 'react';
+import { renderToReadableStream } from 'react-dom/server';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { LocaleProvider } from '@/core/i18n/client';
 import { createT } from '@/core/i18n/messages';
@@ -7,6 +8,8 @@ import { CoachLinkCard } from './components/coach-link-card';
 
 const state = vi.hoisted(() => ({ slug: 'ali-coach' as string | null, fail: false, locale: 'en' as 'ar' | 'en' }));
 vi.mock('server-only', () => ({}));
+vi.mock('next/dynamic', () => ({ default: (load: () => Promise<ComponentType<Record<string, unknown>>>) =>
+  lazy(async () => ({ default: await load() })) }));
 vi.mock('next/navigation', () => ({ unstable_rethrow: () => {} }));
 vi.mock('@/core/i18n/server', () => ({ getT: async (dictionary: Parameters<typeof createT>[0]) => createT(dictionary, state.locale) }));
 vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => ({
@@ -27,7 +30,9 @@ vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => ({
 }) }));
 beforeEach(() => { state.slug = 'ali-coach'; state.fail = false; state.locale = 'en'; });
 async function render() {
-  return renderToStaticMarkup(createElement(LocaleProvider, { locale: state.locale }, await CoachLinkCard()));
+  const stream = await renderToReadableStream(createElement(LocaleProvider, { locale: state.locale }, await CoachLinkCard()));
+  await stream.allReady;
+  return new Response(stream).text();
 }
 it.each(['en', 'ar'] as const)('shows a valid LTR page link and copy status in %s', async locale => {
   state.locale = locale;

@@ -3,7 +3,7 @@ import { getT } from '@/core/i18n/server';
 import { GlassCard } from '@/ui';
 import { loadCaptainSlug } from '../data/captain-slug';
 import { messages } from '../messages';
-import { CopyLinkButton } from './copy-link-button';
+import { CopyLinkButton } from './copy-link-button-entry';
 
 export async function CoachLinkCard() {
   const [t, result] = await Promise.all([getT(messages), loadCaptainSlug()]);
