@@ -26,7 +26,7 @@ export async function executeIntent(actor: KoActor, intent: Intent, locale: Loca
       intent.kind === 'player_summary' || intent.kind === 'team_summary')
     return say(await readProgress(actor, intent, locale, now, contextPlayer));
   if (intent.kind === 'swap_exercise') {
-    const result = await prepareSwap(actor, intent.args.exercise, intent.args.injury, locale);
+    const result = await prepareSwap(actor, intent.args.exercise, intent.args.injury, locale, intent.args.reason);
     if (!result.payload) return say(result.text);
     return { kind: 'message', text: result.text, optionsToken: issueApproval({
       actor: actor.id, player: actor.id, id: uuidv7(now), kind: 'swap_options', label: '',

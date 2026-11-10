@@ -12,7 +12,14 @@ import { postKoAccountChat } from './route';
 import { executeIntent } from './execute';
 import { createT } from '@/core/i18n/messages';
 import { koPreviewMessages } from '@/features/ko-preview';
-
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { LocaleProvider } from '@/core/i18n/client';
+import { KoFeed } from '@/features/ko-feed';
+vi.mock('@/features/ko-feed/hooks/use-ko-feed', () => ({ refreshFeed: vi.fn(), useKoFeed: () => ({
+  status: 'ready', rows: [{ key: 'swap', kind: 'swap_requested', severity: 'urgent', player_name: 'Player',
+    data: { reason: 'discomfort', injury: null, from: { en: 'Bridge' }, to: { en: 'Alternative' } } }],
+}) }));
 const chat = vi.hoisted(() => ({ actor: null as KoActor | null, pilots: new Set<string>(), plan: vi.fn() }));
 vi.mock('./account', async original => ({ ...await original<typeof AccountModule>(), getKoActor: async () => chat.actor }));
 vi.mock('./meal', () => ({ readMeal: async () => [] }));
@@ -21,7 +28,6 @@ vi.mock('@/features/ko-entry', () => ({ koAccountConfig: () => ({
   origin: new URL('https://kochivo.test'), secret: 'swap-test-secret-12345678901234567890', key: 'test', pilots: chat.pilots,
 }) }));
 afterEach(() => { vi.restoreAllMocks(); chat.plan.mockReset(); chat.pilots.clear(); });
-
 const candidates = [
   { exercise_id: 'current', pattern: 'hinge', stress: ['lower_back'] },
   { exercise_id: 'unsafe', pattern: 'hinge', stress: ['knee'] },
@@ -36,7 +42,6 @@ it('returns at most three distinct safe alternatives in a stable order without c
   expect(swapOptions('missing', ['knee'], candidates)).toEqual([]);
   expect(swapOptions('current', ['knee', 'lower_back'], candidates).every(row => row.stress.length === 0)).toBe(true);
 });
-
 const player = '00000000-0000-7000-8000-000000000100';
 const programExercise = '00000000-0000-7000-8000-000000000101';
 const target = '00000000-0000-7000-8000-000000000102';
@@ -58,7 +63,6 @@ it('rejects malformed choices, out-of-range choices and captains before any requ
   expect(rpc).not.toHaveBeenCalled();
   await expect(prepareSwap({ ...actor, role: 'captain' }, 'Squat', 'knee', 'en')).resolves.toEqual(expect.objectContaining({ text: expect.any(String) }));
 });
-
 function withPlan(names: string[], tags: object[]) {
   const programQuery = { select: vi.fn().mockReturnThis(), eq: vi.fn().mockReturnThis(), maybeSingle: vi.fn().mockResolvedValue({
     data: { program_days: [{ title: 'Day', program_exercises: names.map(name => ({
@@ -92,12 +96,11 @@ it('handles missing, ambiguous and unsafe options without suggesting a change', 
 });
 it('parses only explicit injury swap requests in the player tool allowlist', () => {
   expect(parseIntent('swap_exercise', { exercise: 'Squat', injury: 'knee' }, ['swap_exercise']))
-    .toEqual({ kind: 'swap_exercise', args: { exercise: 'Squat', injury: 'knee' } });
+    .toEqual({ kind: 'swap_exercise', args: { exercise: 'Squat', reason: 'injury', injury: 'knee' } });
   expect(parseIntent('swap_exercise', { exercise: 'Squat', injury: 'elbow' }, ['swap_exercise'])).toBeNull();
   expect(parseIntent('swap_exercise', { exercise: 'Squat' }, ['swap_exercise'])).toBeNull();
   expect(parseIntent('swap_exercise', { exercise: 'Squat', injury: 'knee' }, ['read_exercise'])).toBeNull();
 });
-
 const secret = 'swap-test-secret-12345678901234567890';
 const now = 1_800_000_000_000;
 const optionsToken = (overrides: Partial<Approval> = {}) => issueApproval({
@@ -205,4 +208,43 @@ it('rate-limits numeric choices through the existing shared limiter', async () =
   for (let i = 0; i < 12; i++) expect((await postKoAccountChat(chatRequest('1'))).status).toBe(200);
   expect((await postKoAccountChat(chatRequest('1', undefined, optionsToken()))).status).toBe(429);
   expect(rpc).not.toHaveBeenCalled();
+});
+it.each(['injury', 'busy', 'discomfort'])('validates %s and requires a body part only for injury', reason => {
+  const parse = (injury?: string) => parseIntent('swap_exercise', { exercise: 'Bridge', reason, ...(injury && { injury }) }, ['swap_exercise']);
+  expect(Boolean(parse())).toBe(reason !== 'injury');
+  expect(parse('knee')?.args).toMatchObject({ reason });
+  expect(parse('elbow')).toBeNull();
+});
+it.each(['ar', 'en'] as const)('renders the discomfort captain reason in %s', locale => {
+  const html = renderToStaticMarkup(createElement(LocaleProvider, { locale }, createElement(KoFeed, { avatar: () => null })));
+  expect(html).toContain(locale === 'ar' ? 'مش مرتاح في التمرين' : 'Not comfortable with the exercise');
+});
+it.each(['ar', 'en'] as const)('lists only different equipment for the same muscle without any busy write in %s', async locale => {
+  const tags = [['current', 'gym', 'legs'], ['sameGear', 'gym', 'legs'], ['wrong', 'bodyweight', 'chest'],
+    ['a', 'bodyweight', 'legs'], ['b', 'dumbbells', 'legs'], ['c', 'bodyweight', 'legs'], ['d', 'dumbbells', 'legs']]
+    .map(([exercise_id, equipment, body_part]) => ({ exercise_id, equipment: 'gym', pattern: 'hinge', stress: [], exercises: { name_en: exercise_id, name_ar: null, body_part, equipment } }));
+  const { actor } = withPlan(['Bridge'], [...tags].reverse()); const rpc = vi.fn();
+  expect((await prepareSwap(actor, 'Bridge', undefined, locale, 'busy')).text).toContain('3) c');
+  const result = await executeIntent({ ...actor, db: { ...actor.db, rpc } } as unknown as KoActor,
+    { kind: 'swap_exercise', args: { exercise: 'Bridge', reason: 'busy', injury: 'knee' } }, locale, secret, now);
+  expect(result).toEqual({ kind: 'message', text: expect.stringContaining(locale === 'ar' ? 'ده لتمرين النهارده بس، الخطة زي ما هي' : 'Just for today; your plan stays the same') });
+  expect(result.text).toContain('1) a'); expect(result.text).toContain('3) c');
+  for (const excluded of ['sameGear', 'wrong', '4)', 'Send the number', 'ابعتلي الرقم']) expect(result.text).not.toContain(excluded);
+  await chooseSwap({ ...actor, db: { rpc } } as unknown as KoActor, { ...payload, reason: 'busy' }, '1', locale);
+  expect(rpc).not.toHaveBeenCalled();
+});
+it('carries discomfort through signed options to a captain request', async () => {
+  const { actor } = withPlan(['Bridge'], ['current', target].map(exercise_id => ({ exercise_id, pattern: 'hinge', stress: [], exercises: { name_en: 'Bridge', name_ar: null } })));
+  const rpc = vi.fn().mockResolvedValue({ error: null });
+  const result = await executeIntent(actor, { kind: 'swap_exercise', args: { exercise: 'Bridge', reason: 'discomfort' } }, 'en', secret, now);
+  expect(result.kind).toBe('message'); expect(result).toHaveProperty('optionsToken');
+  if (!('optionsToken' in result) || !result.optionsToken) throw new Error('Missing discomfort options');
+  const signed = verifyApproval(result.optionsToken, player, now, secret);
+  expect(signed?.payload).toMatchObject({ reason: 'discomfort' });
+  await chooseSwap({ ...actor, db: { rpc } } as unknown as KoActor, signed?.payload, '1', 'en');
+  expect(rpc).toHaveBeenCalledExactlyOnceWith('request_exercise_swap', { p_program_exercise_id: programExercise, p_to_exercise_id: target, p_injury: null, p_reason: 'discomfort' });
+});
+it('keeps empty busy advice read-only when equipment metadata is missing', async () => {
+  const result = await prepareSwap(withPlan(['Bridge'], [{ exercise_id: 'current', exercises: { body_part: 'legs', equipment: null } }]).actor, 'Bridge', undefined, 'en', 'busy');
+  expect(result).toEqual({ text: 'No alternative with different equipment is available. Ask your coach.\nJust for today; your plan stays the same' });
 });

@@ -7,14 +7,16 @@ import { messages } from './messages';
 
 const injurySchema = z.enum(['knee', 'shoulder', 'lower_back']);
 export const swapPayloadSchema = z.strictObject({
-  programExercise: z.uuid(), injury: injurySchema, options: z.array(z.uuid()).min(1).max(3),
-});
+  programExercise: z.uuid(), injury: injurySchema.optional(), options: z.array(z.uuid()).min(1).max(3),
+  reason: z.enum(['injury', 'discomfort']).default('injury'),
+}).refine(args => args.reason !== 'injury' || args.injury !== undefined);
 type Injury = z.infer<typeof injurySchema>;
 type Locale = 'ar' | 'en';
 
-export async function prepareSwap(actor: KoActor, exercise: string, injury: Injury, locale: Locale) {
+export async function prepareSwap(actor: KoActor, exercise: string, injury: Injury | undefined, locale: Locale,
+  reason: 'injury' | 'busy' | 'discomfort' = 'injury') {
   const t = createT(messages, locale);
-  if (actor.role !== 'player') return { text: t('unclear') };
+  if (actor.role !== 'player' || (reason === 'injury' && !injury)) return { text: t('unclear') };
   const program = await actor.db.from('programs')
     .select('program_days(title,program_exercises(id,exercise_id,exercises(name_ar,name_en)))')
     .eq('player_id', actor.id).eq('status', 'active').eq('is_template', false).maybeSingle();
@@ -31,16 +33,24 @@ export async function prepareSwap(actor: KoActor, exercise: string, injury: Inju
   const candidates = [];
   for (let offset = 0; ; offset += 500) {
     const page = await actor.db.from('exercise_generator_tags')
-      .select('exercise_id,pattern,stress,exercises!inner(name_ar,name_en)').order('exercise_id').range(offset, offset + 499);
+      .select('exercise_id,pattern,stress,exercises!inner(name_ar,name_en,body_part,equipment)').order('exercise_id').range(offset, offset + 499);
     if (page.error) throw page.error;
     candidates.push(...page.data);
     if (page.data.length < 500) break;
   }
-  const options = swapOptions(row.exercise_id, [injury], candidates);
-  if (!options.length) return { text: t('swapNone') };
-  return { text: t('swapChoices', { name: label(row), options: options.map((option, i) =>
-    t('swapOption', { number: i + 1, name: label(option.exercises) })).join('، ') }),
-  payload: { programExercise: row.id, injury, options: options.map(option => option.exercise_id) } };
+  const source = candidates.find(candidate => candidate.exercise_id === row.exercise_id);
+  const seen = new Set([row.exercise_id]);
+  const options = reason === 'busy' ? [...candidates].sort((a, b) => a.exercise_id.localeCompare(b.exercise_id)).filter(candidate => {
+    if (!source?.exercises.body_part || !source.exercises.equipment || !candidate.exercises.equipment || seen.has(candidate.exercise_id) ||
+      candidate.exercises.body_part !== source.exercises.body_part || candidate.exercises.equipment === source.exercises.equipment) return false;
+    seen.add(candidate.exercise_id);
+    return true;
+  }).slice(0, 3) : swapOptions(row.exercise_id, reason === 'injury' && injury ? [injury] : [], candidates);
+  if (!options.length) return { text: reason === 'busy' ? `${t('swapBusyNone')}\n${t('swapToday')}` : t('swapNone') };
+  const numbered = options.map((option, i) => t('swapOption', { number: i + 1, name: label(option.exercises) })).join('، ');
+  if (reason === 'busy') return { text: `${t('swapBusyChoices', { name: label(row), options: numbered })}\n${t('swapToday')}` };
+  return { text: t('swapChoices', { name: label(row), options: numbered }),
+  payload: { programExercise: row.id, ...(reason === 'injury' && injury ? { injury } : { reason }), options: options.map(option => option.exercise_id) } };
 }
 
 export async function chooseSwap(actor: KoActor, payload: unknown, text: string, locale: Locale) {
@@ -51,7 +61,8 @@ export async function chooseSwap(actor: KoActor, payload: unknown, text: string,
   const target = parsed.data.options[Number(choice) - 1];
   if (!target) return { kind: 'message' as const, text: t('expired') };
   const { error } = await actor.db.rpc('request_exercise_swap', {
-    p_program_exercise_id: parsed.data.programExercise, p_to_exercise_id: target, p_injury: parsed.data.injury,
+    p_program_exercise_id: parsed.data.programExercise, p_to_exercise_id: target, p_injury: parsed.data.injury ?? null,
+    ...(parsed.data.reason === 'discomfort' && { p_reason: 'discomfort', p_injury: null }),
   });
   if (error) throw error;
   return { kind: 'message' as const, text: t('swapSent') };

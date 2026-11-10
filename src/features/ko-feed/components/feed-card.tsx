@@ -41,7 +41,8 @@ export function FeedCard({ item, onDismiss }: { item: KoFeedItem; onDismiss: (ke
   const [decided, setDecided] = useState(false);
   const swap = item.kind === 'swap_requested';
   const injury = item.data.injury;
-  const injuryName = injury === 'knee' || injury === 'shoulder' || injury === 'lower_back' ? t(injury) : '';
+  const injuryName = item.data.reason === 'discomfort' ? t('discomfort')
+    : injury === 'knee' || injury === 'shoulder' || injury === 'lower_back' ? t(injury) : '';
   async function decide(approve: boolean) {
     if (busy || typeof item.data.request_id !== 'string') return;
     setBusy(true);

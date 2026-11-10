@@ -68,13 +68,16 @@ export type Database = {
       }
       exercise_swap_requests: {
         Row: { id: string; player_id: string; captain_id: string; program_exercise_id: string;
-          from_exercise_id: string; to_exercise_id: string; injury: 'knee' | 'shoulder' | 'lower_back';
+          from_exercise_id: string; to_exercise_id: string; injury: 'knee' | 'shoulder' | 'lower_back' | null;
+          reason: 'injury' | 'busy' | 'discomfort';
           status: 'pending' | 'approved' | 'declined'; created_at: string; decided_at: string | null }
         Insert: { id?: string; player_id: string; captain_id: string; program_exercise_id: string;
-          from_exercise_id: string; to_exercise_id: string; injury: 'knee' | 'shoulder' | 'lower_back';
+          from_exercise_id: string; to_exercise_id: string; injury?: 'knee' | 'shoulder' | 'lower_back' | null;
+          reason?: 'injury' | 'busy' | 'discomfort';
           status?: 'pending' | 'approved' | 'declined'; created_at?: string; decided_at?: string | null }
         Update: { id?: string; player_id?: string; captain_id?: string; program_exercise_id?: string;
-          from_exercise_id?: string; to_exercise_id?: string; injury?: 'knee' | 'shoulder' | 'lower_back';
+          from_exercise_id?: string; to_exercise_id?: string; injury?: 'knee' | 'shoulder' | 'lower_back' | null;
+          reason?: 'injury' | 'busy' | 'discomfort';
           status?: 'pending' | 'approved' | 'declined'; created_at?: string; decided_at?: string | null }
         Relationships: [
           { foreignKeyName: 'exercise_swap_requests_player_id_fkey'; columns: ['player_id']; isOneToOne: false;
@@ -1609,7 +1612,8 @@ export type Database = {
       my_points: { Args: never; Returns: { lifetime: number; tier: string; monthly: number;
         month_position: number | null; crown_gap: number; adherence: number; done: number;
         planned: number; crown_needs_workouts: number; logs: Json[] } }
-      request_exercise_swap: { Args: { p_program_exercise_id: string; p_to_exercise_id: string; p_injury: string }; Returns: string }
+      request_exercise_swap: { Args: { p_program_exercise_id: string; p_to_exercise_id: string;
+        p_injury?: string | null; p_reason?: string }; Returns: string }
       decide_exercise_swap: { Args: { p_id: string; p_approve: boolean }; Returns: undefined }
       ko_feed: {
         Args: Record<PropertyKey, never>

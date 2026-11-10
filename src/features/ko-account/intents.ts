@@ -24,8 +24,11 @@ const tools = {
     description: 'Captain reads one roster player: last workout, monthly done/planned and adherence, rank, open swaps and subscription end. Use the named player or omit player for the current screen context.' },
   team_summary: { schema: z.strictObject({}),
     description: 'Captain asks about the team, who is falling behind / مين واقع من لاعيبتي: inactive 7+ days, subscriptions ending within 7 days, crown leader and zero workouts this month. Read only the captain roster.' },
-  swap_exercise: { schema: z.strictObject({ exercise: name, injury: z.enum(['knee', 'shoulder', 'lower_back']) }),
-    description: 'Player requests replacing one exercise in their active program because of knee, shoulder or lower back pain. Use the named exercise and explicit injury only. Alternatives require captain approval.' },
+  swap_exercise: { schema: z.strictObject({ exercise: name,
+    reason: z.enum(['injury', 'busy', 'discomfort']).default('injury'),
+    injury: z.enum(['knee', 'shoulder', 'lower_back']).optional(),
+  }).refine(args => args.reason !== 'injury' || args.injury !== undefined, { path: ['injury'] }),
+    description: 'Player requests alternatives for a named exercise in their active program. Machine busy / taken / occupied → reason busy: read-only alternatives, no request or plan change. Doesn\'t feel right / uncomfortable without a body part → discomfort: captain approval for a permanent swap. Named knee, shoulder or lower back pain → injury with that explicit body part: captain approval. Other pain → clarify and suggest asking the captain. Never medical advice.' },
   read_exercise: { schema: z.strictObject({ ...namedExercise, player: name.optional(), how: z.boolean().optional() }),
     description: 'Read exercise sets, reps and coach instructions from the current assigned training plan.' },
   update_exercise: { schema: z.strictObject({ ...target, ...namedExercise, sets: sets.optional(), reps: reps.optional() }),
@@ -50,7 +53,7 @@ const tools = {
     description: 'Ask for the missing information, or explain that the operation is unavailable. Do not claim anything was saved or advise on medical issues.' },
 };
 type ToolName = keyof typeof tools;
-export type Intent = { [K in ToolName]: { kind: K; args: z.infer<(typeof tools)[K]['schema']> } }[ToolName];
+export type Intent = { [K in ToolName]: { kind: K; args: z.input<(typeof tools)[K]['schema']> } }[ToolName];
 
 const captain = ['player_summary', 'team_summary', 'read_exercise', 'update_exercise', 'create_training', 'create_nutrition', 'renew_subscription', 'send_reminder', 'clarify'] as const;
 const player = ['my_progress', 'why_not_counted', 'read_exercise', 'read_nutrition', 'swap_exercise', 'clarify'] as const;
