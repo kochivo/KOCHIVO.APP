@@ -3,7 +3,11 @@ import type { KochivoDB, OutboxEntry } from './db';
 import { SYNC_DEPENDENCIES, SYNC_ORDER, type SyncRows, type SyncTable } from './tables';
 
 /** Sends rows of one table to the server. Must be idempotent (server upserts by id). */
-export type SyncTransport = <T extends SyncTable>(table: T, rows: SyncRows[T][]) => Promise<void>;
+export type SyncTransport = {
+  <T extends SyncTable>(table: T, rows: SyncRows[T][]): Promise<void>;
+  /** Checked once per flush, only before the first nonempty send. */
+  beforeSend?: () => Promise<void>;
+};
 
 export interface FlushResult {
   sent: number;
@@ -16,6 +20,15 @@ const BATCH_SIZE = 50;
  * Sends due entries in FK order, isolating failures to their table and dependants.
  */
 export async function flushOutbox(db: KochivoDB, send: SyncTransport, now: number = Date.now()): Promise<FlushResult> {
+  let identityCheck: Promise<void> | undefined;
+  const sendChecked: SyncTransport = async (table, rows) => {
+    if (rows.length && send.beforeSend) {
+      // Keep a rejected check too: no later table may send under a failed identity.
+      identityCheck ??= Promise.resolve().then(() => send.beforeSend?.());
+      await identityCheck;
+    }
+    await send(table, rows);
+  };
   const candidates = await db.outbox.where('next_attempt_at').belowOrEqual(now).toArray();
   const due: OutboxEntry[] = [];
   for (const entry of candidates) {
@@ -32,7 +45,7 @@ export async function flushOutbox(db: KochivoDB, send: SyncTransport, now: numbe
     result.failed += candidates.length - entries.length;
     for (let i = 0; i < entries.length; i += BATCH_SIZE) {
       const batch = entries.slice(i, i + BATCH_SIZE);
-      const sent = await sendBatch(db, send, table, batch, now);
+      const sent = await sendBatch(db, sendChecked, table, batch, now);
       result.sent += sent;
       if (sent !== batch.length) {
         result.failed += entries.length - i - sent;
