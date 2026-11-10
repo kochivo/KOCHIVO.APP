@@ -55,6 +55,7 @@ export interface OutboxEntry {
   attempts: number;
   next_attempt_at: number;
   last_error?: string;
+  parked?: boolean;
 }
 
 export interface MediaQueueEntry {

@@ -3,6 +3,14 @@ import type { Database, Json } from '@/types/database';
 import type { SyncTransport } from './sync';
 import type { SyncRows, SyncTable } from './tables';
 
+export class SyncError extends Error {
+  readonly permanent: boolean;
+  constructor(readonly code: string, message: string) {
+    super(message);
+    this.permanent = code === '42501' || /^(22|23)/.test(code);
+  }
+}
+
 /**
  * Real transport: one RPC per table (sync_<table>), defined in the migrations.
  * The RPCs run as the caller (security invoker), so RLS still decides what is accepted,
@@ -18,6 +26,6 @@ export function supabaseTransport(supabase: SupabaseClient<Database>, owner: str
     // Sync rows are plain JSON-safe objects; spreading supplies Json's structural object type.
     const payload: Json = rows.map((row: SyncRows[SyncTable]) => ({ ...row }));
     const { error } = await supabase.rpc(`sync_${table}`, { p_rows: payload });
-    if (error) throw new Error(`${table}: ${error.message}`);
+    if (error) throw new SyncError(error.code, `${table}: ${error.message}`);
   };
 }

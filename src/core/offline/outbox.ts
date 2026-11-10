@@ -21,6 +21,7 @@ export async function saveAndQueue<T extends SyncTable>(
         next_attempt_at: now,
         attempts: 0,
         last_error: undefined,
+        parked: false,
       });
     } else {
       await db.outbox.add({ owner_id: db.userId, table, row_id: row.id, revision: 1, enqueued_at: now, attempts: 0, next_attempt_at: now });
@@ -38,4 +39,19 @@ export function announceOutboxWrite(): void {
 
 export async function pendingCount(db: KochivoDB): Promise<number> {
   return db.outbox.count();
+}
+
+export async function parkedCount(db: KochivoDB): Promise<number> {
+  return db.outbox.filter(entry => entry.parked === true && entry.owner_id === db.userId).count();
+}
+
+export async function retryParked(db: KochivoDB, now: number = Date.now()): Promise<void> {
+  await db.outbox.filter(entry => entry.parked === true && entry.owner_id === db.userId).modify(entry => {
+    entry.parked = false;
+    entry.attempts = 0;
+    entry.next_attempt_at = now;
+    entry.revision += 1;
+    delete entry.last_error;
+  });
+  announceOutboxWrite();
 }

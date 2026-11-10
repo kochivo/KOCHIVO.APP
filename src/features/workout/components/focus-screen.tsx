@@ -57,7 +57,7 @@ export function FocusScreen({ dayId, playerId }: { dayId: string; playerId?: str
     <header className="flex flex-wrap items-center gap-3">
       <IconButton aria-label={t('back')} onClick={() => router.push('/player')}><ArrowRight aria-hidden className="dir-icon" /></IconButton>
       <p className="min-w-0 flex-1 truncate font-bold">{state.day ? starterText(state.day.title, locale) : t('workout')}</p>
-      <SyncPill state={!online ? 'offline' : state.pending === undefined || state.pending > 0 ? 'pending' : 'synced'} pending={state.pending} />
+      <SyncPill state={!online ? 'offline' : state.parked && state.parked > 0 ? 'attention' : state.pending === undefined || state.pending > 0 ? 'pending' : 'synced'} pending={state.pending} onRetry={state.retrySync} />
       <MediaStatus />
     </header>
     {state.decision === 'reduce' && <CoachReductionBanner />}

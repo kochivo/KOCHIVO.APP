@@ -1,12 +1,13 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { localDb, pendingCount, useLiveQuery } from '@/core/offline';
+import { localDb, parkedCount, retryParked, pendingCount, useLiveQuery } from '@/core/offline';
 import { loadSupabaseBrowser } from '@/core/supabase/lazy';
 import { localDate } from '@/lib/dates';
 import { refreshNutrition } from '../data/refresh-nutrition';
 
 const readPending = () => pendingCount(localDb());
+const readParked = () => parkedCount(localDb());
 
 export function useNutritionSnapshot() {
   const [playerId, setPlayerId] = useState<string>();
@@ -24,6 +25,8 @@ export function useNutritionSnapshot() {
   const cached = useLiveQuery(read, onError, retryKey);
   const snapshot = cached?.player_id === playerId ? cached : null;
   const pending = useLiveQuery(readPending, onError, retryKey);
+  const parked = useLiveQuery(readParked, onError, retryKey);
+  const retrySync = () => { void retryParked(localDb()).catch(onError); };
   const refresh = useCallback(() => refreshNutrition().then((result) => {
     setStale(result === 'error' || result === 'offline');
     setSettled(true);
@@ -65,5 +68,5 @@ export function useNutritionSnapshot() {
   }, [refresh, onError]);
   const status = localError || (settled && stale && !snapshot) ? 'error' :
     cached === undefined || !today || (!settled && !snapshot) ? 'loading' : snapshot ? 'ready' : 'empty';
-  return { snapshot, status, stale: stale || !online, online, pending, today, retry, retryKey, onError };
+  return { snapshot, status, stale: stale || !online, online, pending, parked, retrySync, today, retry, retryKey, onError };
 }

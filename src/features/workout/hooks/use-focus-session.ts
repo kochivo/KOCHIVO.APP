@@ -3,7 +3,7 @@ import { useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { localDb, pendingCount, useLiveQuery, weeklyFinished, type SetLogRow } from '@/core/offline';
+import { localDb, parkedCount, retryParked, pendingCount, useLiveQuery, weeklyFinished, type SetLogRow } from '@/core/offline';
 import { useProgramSnapshot } from '@/features/player-home';
 import { finishSession, logSet, startSession } from '../data/log-set';
 import { performanceFor } from '../data/last-performance';
@@ -21,6 +21,7 @@ import { triggerHaptic } from '@/lib/haptics';
 
 const readCached = () => localDb().program_snapshot.get('active');
 const readPending = () => pendingCount(localDb());
+const readParked = () => parkedCount(localDb());
 const matches = (row: SetLogRow, exerciseId: string, index: number) =>
   row.program_exercise_id === exerciseId && row.set_index === index;
 
@@ -47,6 +48,7 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
   const queue = useMemo(() => day ? buildQueue(day) : [], [day]);
   const rest = useRestTimer();
   const pending = useLiveQuery(readPending, onError, retryKey);
+  const retrySync = () => { void retryParked(localDb()).catch(onError); };
   const readSession = useCallback(async () => {
     if (!day || !today) return null;
     const sessions = await localDb().workout_sessions.where('training_date').belowOrEqual(today).reverse()
@@ -125,7 +127,8 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
       cooldown.current = setTimeout(() => { saving.current = false; setBusy(false); }, Math.max(0, 600 - (Date.now() - tappedAt)));
     }
   }, [day, today, session, current, ready, rest, edited, weight, reps, bodyweight, key, t]);
-  return { day, session, decision, programFinished, queue, current, doneSets, performance, lastSession: memory.last, weight, reps, rest, pending, pr, dismissPr,
+  const parked = useLiveQuery(readParked, onError, retryKey);
+  return { day, session, decision, programFinished, queue, current, doneSets, performance, lastSession: memory.last, weight, reps, rest, pending, parked, retrySync, pr, dismissPr,
     bodyweight, setBodyweight, invalid: invalid?.key === key ? invalid : null,
     progress: edited ? queue.findIndex((step) => matches(edited, step.exercise.id, step.setIndex)) + 1 :
       currentIndex < 0 ? queue.length : currentIndex + 1,

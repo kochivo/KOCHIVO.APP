@@ -57,6 +57,12 @@ export type SyncTable = keyof SyncRows;
 /** Flush order respects foreign keys: a session must exist before its sets. */
 export const SYNC_ORDER: readonly SyncTable[] = ['workout_sessions', 'set_logs', 'meal_logs', 'supplement_logs', 'daily_checks'];
 
+export const SYNC_DEPENDENCIES: {
+  [T in SyncTable]?: readonly { parent: SyncTable; key: keyof SyncRows[T] }[];
+} = {
+  set_logs: [{ parent: 'workout_sessions', key: 'session_id' }],
+};
+
 export type DailyCheckRow = {
   id: string;
   log_date: string;

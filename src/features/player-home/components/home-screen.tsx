@@ -5,7 +5,7 @@ import { messages } from '../messages';
 import { useCallback, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Dumbbell } from 'lucide-react';
-import { localDb, pendingCount, useLiveQuery } from '@/core/offline';
+import { localDb, parkedCount, retryParked, pendingCount, useLiveQuery } from '@/core/offline';
 import { localDate } from '@/lib/dates';
 import { useCalendarClock } from '@/lib/use-calendar-clock';
 import { EmptyState, ErrorState, LoadingState, SyncPill } from '@/ui';
@@ -28,6 +28,7 @@ import { previewFor } from '../day-preview';
 import { DayPreviewCard } from './day-preview-card';
 
 const readPending = () => pendingCount(localDb());
+const readParked = () => parkedCount(localDb());
 const readSessions = () => localDb().workout_sessions.toArray();
 const PlayerReadiness = dynamic(() => import('@/features/readiness').then(module => module.PlayerReadiness), {
   ssr: false, loading: () => <LoadingState variant="detail" />,
@@ -42,6 +43,7 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
   const onError = useCallback(() => setLocalError(true), []);
   const { snapshot, status, retry } = useProgramSnapshot(playerId, retryKey);
   const pending = useLiveQuery(readPending, onError, retryKey);
+  const parked = useLiveQuery(readParked, onError, retryKey);
   const allSessions = useLiveQuery(readSessions, onError, retryKey);
   const sessions = allSessions?.filter((session) => snapshot?.days.some((day) => day.id === session.program_day_id));
   const today = now ? localDate(now) : '';
@@ -64,7 +66,8 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
     <header className="flex flex-wrap items-center justify-between gap-3">
       {now && <Greeting firstName={firstName} now={now} playerId={playerId} snapshot={snapshot} loading={status === 'loading'} />}
       {ranksEnabled() && <RankChip />}
-      <SyncPill state={!online ? 'offline' : pending === undefined || pending > 0 ? 'pending' : 'synced'} pending={pending} />
+      <SyncPill state={!online ? 'offline' : parked && parked > 0 ? 'attention' : pending === undefined || pending > 0 ? 'pending' : 'synced'} pending={pending}
+        onRetry={() => { void retryParked(localDb()).catch(onError); }} />
     </header>
     {failed && (!snapshot || localError) ? <ErrorState message={t('couldntLoadYourProgram')} retryLabel={t('tryAgain')} onRetry={() => {
       setLocalError(false); setRetryKey((value) => value + 1); void retry();

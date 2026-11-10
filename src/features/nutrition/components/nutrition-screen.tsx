@@ -15,13 +15,13 @@ import { PlayerSupplements } from '@/features/supplements';
 export function NutritionScreen() {
   const t = useT(messages);
   const locale = useLocale();
-  const { snapshot, status, stale, online, pending, today, retry, onError, retryKey } = useNutritionSnapshot();
+  const { snapshot, status, stale, online, pending, parked, retrySync, today, retry, onError, retryKey } = useNutritionSnapshot();
   const logs = useMealLogs(today, onError, retryKey);
   return <main className="mx-auto max-w-lg space-y-4 px-5 pt-6 pb-32">
     <header className="flex flex-wrap items-center justify-between gap-3">
       <div><h1 className="text-2xl font-extrabold">{t('todaysMeals')}</h1>
         {snapshot && <p className="text-sm text-muted">{starterText(snapshot.title, locale)}</p>}</div>
-      <SyncPill state={!online ? 'offline' : pending === undefined || pending > 0 ? 'pending' : 'synced'} pending={pending} />
+      <SyncPill state={!online ? 'offline' : parked && parked > 0 ? 'attention' : pending === undefined || pending > 0 ? 'pending' : 'synced'} pending={pending} onRetry={retrySync} />
     </header>
     {status === 'error' ? <ErrorState message={t('couldntLoadYourMealPlan')} retryLabel={t('tryAgain')} onRetry={retry} /> :
       status === 'loading' || logs === undefined ? <LoadingState variant="cards" /> : !snapshot || !snapshot.meals.length ?

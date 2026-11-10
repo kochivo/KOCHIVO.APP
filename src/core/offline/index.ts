@@ -2,7 +2,7 @@ export { KochivoDB, localDb, setLocalUser, type OutboxEntry, type MediaQueueEntr
 export { refreshCachedSnapshot, type SnapshotRefreshResult } from './refresh-snapshot';
 export { enqueueMedia, mediaPending, flushMediaQueue, supabaseMediaTransport, type MediaTransport } from './media-queue';
 export { stableId, uuidv7 } from './ids';
-export { saveAndQueue, pendingCount } from './outbox';
+export { saveAndQueue, pendingCount, parkedCount, retryParked } from './outbox';
 export { flushOutbox, type SyncTransport, type FlushResult } from './sync';
 export { startSync } from './runner';
 export { supabaseTransport } from './transport';
