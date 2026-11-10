@@ -2,6 +2,7 @@ import 'server-only';
 import { z } from 'zod';
 import { createT } from '@/core/i18n/messages';
 import type { KoMedia } from '@/features/ko-agent';
+import { maxHistoryChars, parseHistory } from '@/features/ko-agent';
 import { koPreviewMessages } from '@/features/ko-preview';
 import { getKoActor, resolvePlayer } from './account';
 import type { KoActor } from './account';
@@ -69,7 +70,7 @@ export async function postKoAccountChat(request: Request) {
     return reply({ error: 'unavailable' }, 404);
   }
   const size = Number(request.headers.get('content-length'));
-  if (!Number.isSafeInteger(size) || size <= 0 || size > maxImage + 70_000 ||
+  if (!Number.isSafeInteger(size) || size <= 0 || size > maxImage + 70_000 + maxHistoryChars * 4 ||
       !request.headers.get('content-type')?.startsWith('multipart/form-data;')) return reply({ error: 'invalid' }, 400);
 
   try {
@@ -85,6 +86,7 @@ export async function postKoAccountChat(request: Request) {
     const audio = form.get('audio');
     const photo = form.get('photo');
     const token = form.get('token');
+    const history = parseHistory(form.get('history'));
     const contextPlayer = await resolveContext(actor, form.get('context'));
     if (form.get('contextOnly') === '1') return reply({ name: contextPlayer?.name ?? null });
     if ((entry !== null && typeof entry !== 'string') || (typeof entry === 'string' && entry.length > 500) ||
@@ -121,7 +123,7 @@ export async function postKoAccountChat(request: Request) {
       media = { data: new Uint8Array(await file.arrayBuffer()), mimeType: type === 'audio/mp4' ? 'audio/m4a' : type };
     }
     if (!text && !media) return reply({ error: 'invalid' }, 400);
-    const intent = await planIntent(actor.role, { text, media }, config.key, request.signal, contextPlayer?.name);
+    const intent = await planIntent(actor.role, { text, media }, config.key, request.signal, contextPlayer?.name, history);
     const result = intent ? await executeIntent(actor, intent, locale, config.secret, now, contextPlayer) : say(t('unclear'));
     if (photo && actor.role === 'player' && intent?.kind === 'meal_photo' && result.kind === 'message') {
       try {

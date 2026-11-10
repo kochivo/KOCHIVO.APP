@@ -20,7 +20,7 @@ import type { KoExpression, KoRole } from '../policy';
 import type { KoReply } from '@/features/ko-agent';
 import type { AccountReply } from '@/features/ko-account';
 
-type Entry = { speaker: 'user' | 'ko'; text: string };
+type Entry = { speaker: 'user' | 'ko'; text: string; contextText?: string };
 
 export function KoChat({ role, onExpression, account = false, context: suppliedContext }: { role: KoRole; onExpression?: (value: KoExpression) => void; account?: boolean; context?: KoContext | null }) {
   const t = useT(messages);
@@ -72,6 +72,11 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
     const body = new FormData();
     if (context) body.set('context', JSON.stringify(context));
     if (account) {
+      // Keep this text-only projection local: the agent's public runtime API is server-only.
+      const turns = history.map(entry => ({ role: entry.speaker, text: entry.contextText ?? entry.text }))
+        .filter(entry => entry.text.length > 0).slice(-6).map(entry => ({ ...entry, text: entry.text.slice(0, 500) }));
+      while (turns.reduce((sum, turn) => sum + turn.text.length, 0) > 2000) turns.shift();
+      body.set('history', JSON.stringify(turns));
       body.set('locale', locale);
       const confirming = !clip && !photo && /^(?:(?:تمام\s+)?نف[ّ]?ذ|confirm|approve)[.!؟]?$/iu.test(prompt);
       const token = confirming ? approval?.take(Date.now()) : null;
@@ -96,7 +101,8 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
         ? t(result.kind === 'updated' ? 'chatUpdated' : 'chatRead', { sets: result.sets, reps: result.reps })
         : result.kind === 'clarify' ? result.question : t('chatUnsupported');
       setApproval(account && result.kind === 'confirm' ? createApproval(result.token, Date.now()) : null);
-      setHistory(entries => [...entries, { speaker: 'user' as const, text: clip ? t('voiceNote') : photo ? `${t('mealPhoto')} ${prompt}`.trim() : prompt },
+      setHistory(entries => [...entries, { speaker: 'user' as const, text: clip ? t('voiceNote') : photo ? `${t('mealPhoto')} ${prompt}`.trim() : prompt,
+        contextText: clip ? '' : prompt },
         { speaker: 'ko' as const, text: answer }].slice(-30));
       setDraft('');
       setClip(null);

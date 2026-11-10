@@ -9,7 +9,7 @@ import { KoConfirm, createApproval } from './components/ko-confirm';
 import { KoChat } from './components/ko-chat';
 import { createT } from '@/core/i18n/messages';
 
-const hooks = vi.hoisted(() => ({ active: false, cursor: 0, values: [] as unknown[], effects: [] as (() => void | (() => void))[], locale: 'ar' as 'ar' | 'en' }));
+const hooks = vi.hoisted(() => ({ active: false, cursor: 0, values: [] as unknown[], effects: [] as (() => void | (() => void))[], locale: 'ar' as 'ar' | 'en', setClip: undefined as ((clip: Blob) => void) | undefined }));
 vi.mock('react', async importOriginal => {
   const original = await importOriginal<typeof ReactModule>();
   return { ...original,
@@ -41,7 +41,10 @@ vi.mock('@/core/i18n/client', async importOriginal => {
   };
 });
 vi.mock('next/navigation', () => ({ usePathname: () => '/' }));
-vi.mock('./hooks/use-ko-recorder', () => ({ useKoRecorder: () => ({ status: 'idle' }) }));
+vi.mock('./hooks/use-ko-recorder', () => ({ useKoRecorder: (setClip: (clip: Blob) => void) => {
+  hooks.setClip = setClip;
+  return { status: 'idle' };
+} }));
 afterEach(() => { hooks.active = false; hooks.values = []; hooks.effects = []; vi.unstubAllGlobals(); vi.restoreAllMocks(); });
 
 function elements(node: ReactNode): { type: unknown; props: Record<string, unknown> }[] {
@@ -63,6 +66,40 @@ async function send(text: string) {
   const form = chat().find(element => element.type === 'form');
   await (form?.props.onSubmit as () => Promise<void>)();
 }
+
+it('sends only the six prior visible text entries in order within the history budget', async () => {
+  const requests: FormData[] = [];
+  vi.stubGlobal('fetch', async (_url: string, init: RequestInit) => {
+    requests.push(init.body as FormData);
+    return Response.json({ kind: 'message', text: 'Reply' });
+  });
+  for (const text of ['One', 'Two', 'Three', 'Four', 'Five']) await send(text);
+  expect(JSON.parse(String(requests[4]?.get('history')))).toEqual([
+    { role: 'user', text: 'Two' }, { role: 'ko', text: 'Reply' },
+    { role: 'user', text: 'Three' }, { role: 'ko', text: 'Reply' },
+    { role: 'user', text: 'Four' }, { role: 'ko', text: 'Reply' },
+  ]);
+  for (let i = 0; i < 4; i++) await send('x'.repeat(500));
+  const recent = JSON.parse(String(requests.at(-1)?.get('history'))) as { text: string }[];
+  expect(recent.reduce((sum, turn) => sum + turn.text.length, 0)).toBeLessThanOrEqual(2000);
+  hooks.values = [];
+  await send('New chat');
+  expect(requests.at(-1)?.get('history')).toBe('[]');
+});
+
+it('contributes only KO’s reply after a voice note without a visible transcript', async () => {
+  const requests: FormData[] = [];
+  vi.stubGlobal('fetch', async (_url: string, init: RequestInit) => {
+    requests.push(init.body as FormData);
+    return Response.json({ kind: 'message', text: 'Which day?' });
+  });
+  chat();
+  hooks.setClip?.(new Blob(['audio'], { type: 'audio/webm' }));
+  await (chat().find(element => element.type === 'form')?.props.onSubmit as () => Promise<void>)();
+  await send('Saturday');
+  expect(JSON.parse(String(requests[1]?.get('history')))).toEqual([{ role: 'ko', text: 'Which day?' }]);
+  expect(requests[1]?.has('audio')).toBe(false);
+});
 
 it.each(['ar', 'en'] as const)('shows only account confirmations and sends the signed form once (%s)', async locale => {
   hooks.locale = locale;
