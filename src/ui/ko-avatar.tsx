@@ -1,8 +1,11 @@
 import Image from 'next/image';
 import { cn } from '@/lib/cn';
-import type { KoExpression } from '../policy';
-import { koExpressions } from '../policy';
 
+export type KoExpression = 'welcome' | 'thinking' | 'cheer';
+
+export const koExpressions: readonly KoExpression[] = ['welcome', 'thinking', 'cheer'];
+
+// Lives in ui so light entry points (the KO teaser) can show KO without the ko-preview chat bundle.
 export function KoAvatar({ expression, className, motion = 'none' }: {
   expression: KoExpression; className?: string; motion?: 'idle' | 'none';
 }) {

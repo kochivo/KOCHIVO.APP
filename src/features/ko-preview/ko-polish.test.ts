@@ -9,7 +9,7 @@ import { planIntent } from '../ko-account/intents';
 import { selectKoTool } from '../ko-agent/gemini';
 import { koVoiceRule } from '@/features/ko-agent';
 import { messages } from './messages';
-import { KoAvatar } from './components/ko-avatar';
+import { KoAvatar } from '@/ui/ko-avatar';
 import { KoPanel } from './components/ko-panel';
 import { KoWidget } from './components/ko-widget';
 import { KoMessage } from './components/ko-message';

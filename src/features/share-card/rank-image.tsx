@@ -7,7 +7,7 @@ import { supabaseServer } from '@/core/supabase/server';
 import { getLocale } from '@/core/i18n/server';
 import { createT } from '@/core/i18n/messages';
 import type { Locale } from '@/core/i18n/locale';
-import { ranksMessages } from '@/features/ranks';
+// Value imports from @/features/ranks would pull its client screens into every route's OG image entry.
 import type { Tier } from '@/features/ranks';
 import { messages } from './messages';
 import { ogColors as colors } from './og-colors';
@@ -69,9 +69,8 @@ function ogShapes(nodes: ReactNode): ReactNode {
 
 async function rankImage(locale: Locale, fullName: string, captain: string, tier: Tier | 'crown') {
   const t = createT(messages, locale);
-  const ranks = createT(ranksMessages, locale);
   const name = fullName.trim().split(/\s+/)[0] || t('player');
-  const title = tier === 'crown' ? t('crown', { name }) : t('rank', { name, tier: ranks(tier) });
+  const title = tier === 'crown' ? t('crown', { name }) : t('rank', { name, tier: t(tier) });
   const font = await ogFont();
   return new ImageResponse(<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center',
     justifyContent: 'center', gap: 64, width: '100%', height: '100%', padding: 80,

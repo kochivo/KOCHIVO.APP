@@ -4,7 +4,7 @@ import { useId, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { X } from 'lucide-react';
 import { useT } from '@/core/i18n/client';
-import { KoAvatar } from '@/features/ko-preview';
+import { KoAvatar } from '@/ui/ko-avatar';
 import type { KoRole } from '@/features/ko-preview';
 import { ResponsiveDialog } from '@/ui/responsive-dialog';
 import type { KoTeaserPanel } from './ko-teaser-panel';

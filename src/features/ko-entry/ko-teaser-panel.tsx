@@ -4,7 +4,7 @@ import { useRef, useState } from 'react';
 import { Check, X } from 'lucide-react';
 import { useLocale, useT } from '@/core/i18n/client';
 import { localeDir } from '@/core/i18n/locale';
-import { KoAvatar } from '@/features/ko-preview';
+import { KoAvatar } from '@/ui/ko-avatar';
 import type { KoRole } from '@/features/ko-preview';
 import { ResponsiveDialog } from '@/ui/responsive-dialog';
 import { Button } from '@/ui/button';

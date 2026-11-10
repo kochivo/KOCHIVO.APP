@@ -2,7 +2,7 @@
 
 import { useT } from '@/core/i18n/client';
 import { messages } from '../messages';
-import { KoAvatar } from './ko-avatar';
+import { KoAvatar } from '@/ui/ko-avatar';
 
 export function KoTyping() {
   const t = useT(messages);

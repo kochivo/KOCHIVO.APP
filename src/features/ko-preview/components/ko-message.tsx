@@ -1,4 +1,4 @@
-import { KoAvatar } from './ko-avatar';
+import { KoAvatar } from '@/ui/ko-avatar';
 
 export function KoMessage({ speaker, text }: { speaker: 'ko' | 'user'; text: string }) {
   return <div className={`flex max-w-[90%] items-start gap-2 animate-[ko-rise_160ms_ease-out_both] motion-reduce:animate-none ${speaker === 'ko' ? 'self-start' : 'self-end'}`}>

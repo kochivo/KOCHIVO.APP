@@ -5,7 +5,7 @@ import type { FormEvent } from 'react';
 import { ArrowUp, Camera, Mic, Square, X } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { KoFeed } from '@/features/ko-feed';
-import { KoAvatar } from './ko-avatar';
+import { KoAvatar } from '@/ui/ko-avatar';
 import { KoMessage } from './ko-message';
 import { KoTyping } from './ko-typing';
 import { KoConfirm, createApproval } from './ko-confirm';

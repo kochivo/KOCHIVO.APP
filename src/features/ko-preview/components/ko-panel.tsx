@@ -10,7 +10,7 @@ import { messages } from '../messages';
 import { contextFromPath } from '../context';
 import { koExpressions, nextKoExpression } from '../policy';
 import type { KoExpression, KoRole } from '../policy';
-import { KoAvatar } from './ko-avatar';
+import { KoAvatar } from '@/ui/ko-avatar';
 import { KoChat } from './ko-chat';
 
 export function KoPanel({ role, expression, onExpression, onClose, openerId, interactive = false, account = false, closing = false, onClosed }: {

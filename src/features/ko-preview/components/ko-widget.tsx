@@ -8,7 +8,7 @@ import { ResponsiveDialog } from '@/ui/responsive-dialog';
 import { koFeedMessages, useKoFeedCount } from '@/features/ko-feed';
 import { messages } from '../messages';
 import type { KoExpression, KoRole } from '../policy';
-import { KoAvatar } from './ko-avatar';
+import { KoAvatar } from '@/ui/ko-avatar';
 import type { KoPanel } from './ko-panel';
 
 export function KoWidget({ role, interactive = false, account = false, panelMessages }: {
