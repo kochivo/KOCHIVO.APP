@@ -26,6 +26,14 @@ export async function saveAndQueue<T extends SyncTable>(
       await db.outbox.add({ owner_id: db.userId, table, row_id: row.id, revision: 1, enqueued_at: now, attempts: 0, next_attempt_at: now });
     }
   });
+  announceOutboxWrite();
+}
+
+/** Event the background sync listens for, so a save is sent at once instead of on the next 30s tick. */
+export const OUTBOX_WRITE_EVENT = 'kochivo:outbox-write';
+
+export function announceOutboxWrite(): void {
+  if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') window.dispatchEvent(new Event(OUTBOX_WRITE_EVENT));
 }
 
 export async function pendingCount(db: KochivoDB): Promise<number> {

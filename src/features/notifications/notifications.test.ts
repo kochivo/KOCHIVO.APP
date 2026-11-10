@@ -104,8 +104,9 @@ it.each([
 it('loads only known tiers from rank payloads', async () => {
   const tiers = ['champion', 'elite', 'legend', 'beginner', 'toString', '', 3, null, undefined];
   const data = tiers.map((tier, index) => ({ ...row, id: String(index), type: 'rank_up', payload: { tier, lifetime: 600 } }));
-  const query = { select: vi.fn(), order: vi.fn(), limit: vi.fn().mockResolvedValue({ data, error: null }) };
+  const query = { select: vi.fn(), not: vi.fn(), order: vi.fn(), limit: vi.fn().mockResolvedValue({ data, error: null }) };
   query.select.mockReturnValue(query);
+  query.not.mockReturnValue(query);
   query.order.mockReturnValue(query);
   load.mockResolvedValue({ from: vi.fn().mockReturnValue(query) });
   const rows = await latestNotifications();
@@ -120,12 +121,25 @@ it('loads only known tiers from rank payloads', async () => {
 it('preserves numeric crown gaps when loading stored notifications', async () => {
   const data = [{ ...row, type: 'crown_close', payload: { needs_workouts: 0, gap: 14 } },
     { ...row, type: 'crown_close', payload: { needs_workouts: '2', gap: null } }];
-  const query = { select: vi.fn(), order: vi.fn(), limit: vi.fn().mockResolvedValue({ data, error: null }) };
+  const query = { select: vi.fn(), not: vi.fn(), order: vi.fn(), limit: vi.fn().mockResolvedValue({ data, error: null }) };
   query.select.mockReturnValue(query);
+  query.not.mockReturnValue(query);
   query.order.mockReturnValue(query);
   load.mockResolvedValue({ from: vi.fn().mockReturnValue(query) });
   const rows = await latestNotifications();
   expect(rows[0]?.payload).toMatchObject({ needs_workouts: 0, gap: 14 });
   expect(rows[1]?.payload.needs_workouts).toBeUndefined();
   expect(rows[1]?.payload.gap).toBeUndefined();
+});
+
+it('filters rank and crown notifications out of the bell while ranks are hidden', async () => {
+  vi.stubEnv('NEXT_PUBLIC_RANKS_ENABLED', '');
+  const query = { select: vi.fn(), not: vi.fn(), order: vi.fn(), limit: vi.fn().mockResolvedValue({ data: [], error: null }) };
+  query.select.mockReturnValue(query);
+  query.not.mockReturnValue(query);
+  query.order.mockReturnValue(query);
+  load.mockResolvedValue({ from: vi.fn().mockReturnValue(query) });
+  await latestNotifications();
+  expect(query.not).toHaveBeenCalledWith('type', 'in', '(rank_up,crown_taken,crown_lost,crown_close,crown_defend)');
+  vi.unstubAllEnvs();
 });

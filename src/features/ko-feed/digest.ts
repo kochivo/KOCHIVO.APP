@@ -1,6 +1,7 @@
 import type { Locale } from '@/core/i18n/locale';
 import { createT } from '@/core/i18n/messages';
 import type { LeaderboardRow } from '@/features/ranks';
+import { ranksEnabled } from '@/lib/ranks-enabled';
 import { messages } from './messages';
 import type { KoFeedItem } from './types';
 
@@ -19,6 +20,6 @@ export function buildDigest(rows: KoFeedItem[], extras: DigestExtras | null, loc
   if (first && records.length === 1) lines.push(t('digestRecord', { name: first.player_name, exercise: first.exercise[locale] }));
   else if (records.length) lines.push(t('digestRecords', { n: records.length }));
   const crown = extras?.board.find(row => row.is_crown);
-  if (crown) lines.push(t('digestCrown', { name: crown.display_name, adherence: crown.adherence }));
+  if (crown && ranksEnabled()) lines.push(t('digestCrown', { name: crown.display_name, adherence: crown.adherence }));
   return lines.length ? lines : [t('digestClear')];
 }

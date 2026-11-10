@@ -3,6 +3,7 @@ import { useLocale, useT } from '@/core/i18n/client';
 import { nextTier, previewWorkoutPoints, ranksMessages, tierFor } from '@/features/ranks';
 import type { WorkoutPointsInput } from '@/features/ranks';
 import { formatNumber } from '@/lib/format';
+import { ranksEnabled } from '@/lib/ranks-enabled';
 import { messages } from '../messages';
 
 import Link from 'next/link';
@@ -12,7 +13,7 @@ export function DonePanel({ workout, lifetime }: { workout?: WorkoutPointsInput;
   const rankT = useT(ranksMessages);
   const locale = useLocale();
   const number = (value: number) => formatNumber(value, locale);
-  const preview = workout ? previewWorkoutPoints(workout) : undefined;
+  const preview = workout && ranksEnabled() ? previewWorkoutPoints(workout) : undefined;
   // Stars above Legend have their own wording on the rank screen; skip them here.
   const next = lifetime === undefined || tierFor(lifetime) === 'legend' ? undefined : nextTier(lifetime);
   let line: string | undefined;

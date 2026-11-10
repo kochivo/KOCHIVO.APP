@@ -1,9 +1,12 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { expect, it } from 'vitest';
+import { expect, it, vi } from 'vitest';
 import { LocaleProvider } from '@/core/i18n/client';
 import { DonePanel } from './components/done-panel';
 import { SessionFeedback } from './components/session-feedback';
+
+// These cases cover the points preview; the hidden-ranks case stubs its own value.
+vi.stubEnv('NEXT_PUBLIC_RANKS_ENABLED', '1');
 
 const workout = { startedAt: '2026-11-10T10:00:00Z', completedAt: '2026-11-10T10:20:00Z',
   loggedSets: 6, plannedSets: 10, plannedSeconds: 2000 };
@@ -36,3 +39,15 @@ for (const locale of ['ar', 'en'] as const) {
     expect(html).toContain(locale === 'ar' ? 'هيتحسب +3' : 'Expected: +3');
   });
 }
+
+it('shows no points line while ranks are hidden', () => {
+  vi.stubEnv('NEXT_PUBLIC_RANKS_ENABLED', '');
+  try {
+    const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' },
+      createElement(DonePanel, { workout, lifetime: 85 })));
+    expect(html).not.toContain('هيتحسب');
+    expect(html).not.toContain('نقطة');
+  } finally {
+    vi.stubEnv('NEXT_PUBLIC_RANKS_ENABLED', '1');
+  }
+});

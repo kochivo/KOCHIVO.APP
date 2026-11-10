@@ -4,6 +4,9 @@ import { expect, it, vi } from 'vitest';
 import { LocaleProvider } from '@/core/i18n/client';
 import type { LeaderboardRow } from '@/features/ranks';
 import { buildDigest } from './digest';
+
+// These cases cover the crown line; the hidden-ranks case stubs its own value.
+vi.stubEnv('NEXT_PUBLIC_RANKS_ENABLED', '1');
 import { KoDigest } from './components/ko-digest';
 import type { KoFeedItem } from './types';
 
@@ -77,4 +80,14 @@ it('reads only yesterday’s counted PRs for the captain across Cairo midnight',
   expect(await loadDigestExtras(now)).toEqual({ board: [crown], records: [{ player_name: 'Sara', exercise: { ar: 'سكوات', en: 'Squat' } }] });
   for (const pair of [['captain_id', 'captain'], ['kind', 'pr'], ['status', 'counted'], ['earned_on', '2026-11-09']])
     expect(query.eq).toHaveBeenCalledWith(...pair);
+});
+
+it('leaves the crown line out while ranks are hidden', () => {
+  vi.stubEnv('NEXT_PUBLIC_RANKS_ENABLED', '');
+  try {
+    const lines = buildDigest([row('inactive')], { board: [crown], records: [] }, 'en');
+    expect(lines.join(' ')).not.toContain('Sara');
+  } finally {
+    vi.stubEnv('NEXT_PUBLIC_RANKS_ENABLED', '1');
+  }
 });

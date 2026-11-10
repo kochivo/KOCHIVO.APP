@@ -36,6 +36,9 @@ vi.mock('next/og', async importOriginal => {
 });
 import { GET } from '@/app/[locale]/api/share/rank/route';
 
+// These cases cover the live route; the hidden-ranks case stubs its own value.
+vi.stubEnv('NEXT_PUBLIC_RANKS_ENABLED', '1');
+
 beforeEach(() => {
   state.user = true; state.role = 'player'; state.crown = false; state.fail = false; state.real = false;
   state.locale = 'en'; state.name = 'Ahmed Private'; state.tier = 'champion';
@@ -86,4 +89,15 @@ it.each(['beginner', 'champion', 'elite', 'legend', 'crown'])('renders a real %s
   expect([...bytes.slice(0, 8)]).toEqual([137, 80, 78, 71, 13, 10, 26, 10]);
   const view = new DataView(bytes.buffer);
   expect(view.getUint32(16)).toBe(1080); expect(view.getUint32(20)).toBe(1920);
+});
+
+it('answers 404 without reading anything while ranks are hidden', async () => {
+  vi.stubEnv('NEXT_PUBLIC_RANKS_ENABLED', '');
+  try {
+    const response = await GET(request());
+    expect(response.status).toBe(404);
+    expect(response.headers.get('Cache-Control')).toBe('private, no-store');
+  } finally {
+    vi.stubEnv('NEXT_PUBLIC_RANKS_ENABLED', '1');
+  }
 });

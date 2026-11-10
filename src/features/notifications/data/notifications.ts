@@ -1,17 +1,23 @@
 import { loadSupabaseBrowser } from '@/core/supabase/lazy';
 import type { Notification, NotificationType } from '../types';
+import { ranksEnabled } from '@/lib/ranks-enabled';
+
+// While ranks are hidden, their notifications stay in the table but never reach the bell.
+const RANK_TYPES = '(rank_up,crown_taken,crown_lost,crown_close,crown_defend)';
 
 export async function unreadCount(): Promise<number> {
   const client = await loadSupabaseBrowser();
-  const { count, error } = await client.from('notifications').select('id', { count: 'exact', head: true }).eq('is_read', false);
+  const base = client.from('notifications').select('id', { count: 'exact', head: true }).eq('is_read', false);
+  const { count, error } = await (ranksEnabled() ? base : base.not('type', 'in', RANK_TYPES));
   if (error) throw error;
   return count ?? 0;
 }
 
 export async function latestNotifications(): Promise<Notification[]> {
   const client = await loadSupabaseBrowser();
-  const { data, error } = await client.from('notifications').select('*').order('created_at', { ascending: false })
-    .order('id', { ascending: false }).limit(20);
+  const base = client.from('notifications').select('*');
+  const { data, error } = await (ranksEnabled() ? base : base.not('type', 'in', RANK_TYPES))
+    .order('created_at', { ascending: false }).order('id', { ascending: false }).limit(20);
   if (error) throw error;
   const sessionIds = (data ?? []).flatMap(row => {
     const payload = row.payload;
