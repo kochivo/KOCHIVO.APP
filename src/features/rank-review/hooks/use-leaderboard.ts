@@ -1,14 +1,18 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
-import { loadLeaderboard } from '@/features/ranks';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { loadCrownPrize, loadLeaderboard } from '@/features/ranks';
 import type { LeaderboardRow } from '@/features/ranks';
 import { currentMonth } from '../months';
+import { canEditPrize, persistPrize, saveCrownPrize } from '../data/save-crown-prize';
 
-export function useLeaderboard() {
-  const [now, setNow] = useState(() => new Date());
+export function useLeaderboard(initialNow = new Date()) {
+  const [now, setNow] = useState(() => initialNow);
   const [month, setMonth] = useState(() => currentMonth(now));
-  const [result, setResult] = useState<{ month: string; revision: number; rows?: LeaderboardRow[]; error: boolean }>();
+  const [result, setResult] = useState<{ month: string; revision: number; rows?: LeaderboardRow[];
+    prize?: string | null; error: boolean }>();
+  const [edits, setEdits] = useState<Record<string, { prize: string | null; saving: boolean; error: boolean }>>({});
+  const editVersion = useRef(0);
   const [revision, setRevision] = useState(0);
   const reload = useCallback(() => setRevision(value => value + 1), []);
   useEffect(() => {
@@ -18,11 +22,37 @@ export function useLeaderboard() {
   }, []);
   useEffect(() => {
     let cancelled = false;
-    void loadLeaderboard(month).then(value => {
-      if (!cancelled) setResult({ month, revision, rows: value, error: false });
+    const version = editVersion.current;
+    void Promise.all([loadLeaderboard(month), loadCrownPrize(month)]).then(([rows, prize]) => {
+      if (!cancelled) {
+        setResult({ month, revision, rows, prize, error: false });
+        setEdits(previous => {
+          if (version !== editVersion.current || previous[month]?.saving) return previous;
+          const next = { ...previous }; delete next[month]; return next;
+        });
+      }
     }).catch(() => { if (!cancelled) setResult({ month, revision, error: true }); });
     return () => { cancelled = true; };
   }, [month, revision]);
   const active = result?.month === month && result.revision === revision ? result : undefined;
-  return { now, month, rows: active?.rows, error: active?.error ?? false, setMonth, reload };
+  const currentEdit = edits[month];
+  const prize = currentEdit ? currentEdit.prize : active?.prize ?? null;
+  async function savePrize(value: string | null) {
+    if (!canEditPrize(month, now) || currentEdit?.saving) throw new Error('Prize cannot be edited');
+    editVersion.current += 1;
+    const show = (value: string | null, saving: boolean, error: boolean) =>
+      setEdits(previous => ({ ...previous, [month]: { prize: value, saving, error } }));
+    try {
+      await persistPrize(value, prize, next => show(next, true, false),
+        () => saveCrownPrize(month, value));
+      show(value, false, false);
+    } catch (error) {
+      show(prize, false, true);
+      throw error;
+    } finally {
+      editVersion.current += 1;
+    }
+  }
+  return { now, month, rows: active?.rows, error: active?.error ?? false, setMonth, reload,
+    prize, savePrize, prizeSaving: currentEdit?.saving ?? false, prizeError: currentEdit?.error ?? false };
 }

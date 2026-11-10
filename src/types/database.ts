@@ -16,6 +16,13 @@ export type Database = {
   }
   public: {
     Tables: {
+      crown_prizes: {
+        Row: { captain_id: string; month: string; prize: string; updated_at: string }
+        Insert: { captain_id: string; month: string; prize: string; updated_at?: string }
+        Update: { captain_id?: string; month?: string; prize?: string; updated_at?: string }
+        Relationships: [{ foreignKeyName: 'crown_prizes_captain_id_fkey'; columns: ['captain_id'];
+          isOneToOne: false; referencedRelation: 'profiles'; referencedColumns: ['id'] }]
+      }
       points_log: {
         Row: { id: string; player_id: string; captain_id: string;
           kind: 'workout' | 'pr' | 'perfect_week' | 'inbody' | 'meal_check'; source_key: string; points: number;

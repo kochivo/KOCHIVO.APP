@@ -2,6 +2,7 @@ export { TIERS, CROWN_MIN_WORKOUTS, tierFor, nextTier } from './tiers';
 export type { Tier, LeaderboardRow } from './types';
 export { loadLeaderboard } from './data/load-leaderboard';
 export { loadMyPoints } from './data/load-my-points';
+export { loadCrownPrize } from './data/load-crown-prize';
 export type { MyPoints } from './data/load-my-points';
 export { RankScreen } from './components/rank-screen';
 export { RankChip } from './components/rank-chip';

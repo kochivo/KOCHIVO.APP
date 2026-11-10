@@ -1,6 +1,6 @@
 'use client';
 
-import { Crown } from 'lucide-react';
+import { Crown, Gift } from 'lucide-react';
 import { useLocale, useT } from '@/core/i18n/client';
 import { formatNumber } from '@/lib/format';
 import { EmptyState, RankBadge } from '@/ui';
@@ -8,12 +8,17 @@ import type { MyPoints } from '../data/load-my-points';
 import { messages } from '../messages';
 import { CROWN_MIN_WORKOUTS } from '../tiers';
 
-export function CrownRace({ points, holdsCrown }: { points: MyPoints; holdsCrown: boolean }) {
+export function CrownRace({ points, holdsCrown }: {
+  points: MyPoints & { crown_prize?: string | null }; holdsCrown: boolean;
+}) {
   const t = useT(messages);
   const locale = useLocale();
   if (points.month_position === null) return <EmptyState icon={Crown} title={t('race')} body={t('noCaptain')} />;
   return <section className="glass-strong space-y-3 rounded-card p-5">
     <h2 className="font-bold">{t('race')}</h2>
+    {points.crown_prize && <p className="flex items-center gap-2 break-words">
+      <Gift aria-hidden="true" className="size-5 shrink-0" />{t('crownPrize', { prize: points.crown_prize })}
+    </p>}
     <p className="text-3xl font-bold tabular-nums">{t('adherence', { n: formatNumber(points.adherence, locale) })}</p>
     <p>{t('workouts', { done: formatNumber(points.done, locale), planned: formatNumber(points.planned, locale) })}</p>
     {holdsCrown ? <div className="flex items-center gap-4"><RankBadge tier="crown" label={t('crown')} />
