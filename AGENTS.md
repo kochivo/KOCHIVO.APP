@@ -18,12 +18,16 @@ These rules are mandatory. A diff that breaks one is rejected in review, even if
 - One exported React component per file. File names are kebab-case: `set-row.tsx`, `use-rest-timer.ts`.
 - Import direction: `app → features → (ui, core, lib)`.
   - `core/`, `ui/`, `lib/` never import from `features/`.
-  - Features import other features only through their `index.ts`. No deep imports.
+  - Features import other features only through their public entries. No deep imports.
+- `server.ts` is the second public feature entry, only for server-only exports; import it as `@/features/<name>/server`.
 - Routes in `src/app/` are thin. They read params, call a feature, and render it. No business logic there.
+- Client components rendered by other features or layouts are exported from the barrel as `-entry.tsx` wrappers.
+- Inside `core/` and `ui/`, server or shared code imports the leaf module, not the barrel.
 - Feature layout:
   ```
   src/features/<name>/
     index.ts          public API only
+    server.ts         server-only public API (when needed)
     components/       UI for this feature
     hooks/            client state
     data/             queries, mutations, and local-db access
@@ -90,3 +94,13 @@ Before publish, follow docs/RELEASE-CHECKLIST.md. Publishing goes through the `s
 ## Notes for reviewer
 - anything skipped, any doubt, anything out of scope you noticed
 ```
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+## This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

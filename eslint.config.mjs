@@ -3,12 +3,12 @@ import nextTs from 'eslint-config-next/typescript';
 
 // Architecture rules live here so they are enforced, not just documented (see docs/ARCHITECTURE.md §1, §3).
 const noFeatureImports = {
-  group: ['@/features/*', '@/features/**'],
+  group: ['@/features/*', '@/features/**', '**/features/**'],
   message: 'core/ui/lib must not depend on features.',
 };
 const noDeepFeatureImports = {
-  group: ['@/features/*/*', '@/features/*/**'],
-  message: "Import another feature only through its index: '@/features/<name>'.",
+  regex: '^@/features/[^/]+/(?!server$).+',
+  message: "Import another feature only through '@/features/<name>' or '@/features/<name>/server'.",
 };
 
 const config = [
@@ -37,7 +37,9 @@ const config = [
   },
   {
     files: ['src/app/**', 'src/features/**'],
-    rules: { 'no-restricted-imports': ['error', { patterns: [noDeepFeatureImports] }] },
+    rules: { 'no-restricted-imports': ['error', { patterns: [{
+      group: ['**/features/*/**', '!@/features/**'], message: noDeepFeatureImports.message,
+    }, noDeepFeatureImports] }] },
   },
   {
     files: ['**/*.test.ts', '**/*.test.tsx'],

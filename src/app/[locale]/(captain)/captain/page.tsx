@@ -1,7 +1,6 @@
 import { Suspense } from 'react';
 import { PlanBadge } from '@/features/billing';
-import { fetchDues } from '../../../../features/billing/data/dues';
-import { fetchPlanSummary } from '../../../../features/billing/data/plan-summary';
+import { fetchDues, fetchPlanSummary } from '@/features/billing/server';
 import { getLocale } from '@/core/i18n/server';
 import { DashboardScreen } from '@/features/dashboard';
 import { fetchCaptainFirstName, fetchRoster } from '@/features/roster';

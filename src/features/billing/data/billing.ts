@@ -3,12 +3,10 @@ import { getT } from '@/core/i18n/server';
 import { unstable_rethrow } from 'next/navigation';
 import { messages } from '../messages';
 
-import { fetchBillingAt } from './billing-internal';
-
 import { z } from 'zod';
 import { isPermissionDenied, readError } from '@/core/supabase/errors';
 import { captainClient } from './client';
-import type { BillingResult, RenewalInput } from '../types';
+import type { RenewalInput } from '../types';
 
 const money = z.number().int().min(0).max(100000);
 const renewal = z.object({
@@ -35,8 +33,4 @@ export async function renewPlayer(input: RenewalInput): Promise<{ data: string; 
       : readError(result.error).code === '22023' ? invalid : failed };
     return result.data ? { data: result.data } : { error: failed };
   } catch (error) { unstable_rethrow(error); return { error: failed }; }
-}
-
-export async function fetchBilling(): Promise<BillingResult> {
-  return fetchBillingAt(new Date());
 }

@@ -28,7 +28,7 @@
 ## 3. هيكل الفولدرات
 
 ```
-KOCHIVO-REBRAND/
+KOCHIVO/
 ├─ AGENTS.md              قواعد إلزامية لأي agent (Codex) بيكتب كود
 ├─ brand/                 الهوية الأصلية (مرجع بس، التطبيق مبيستوردش منه)
 ├─ docs/
@@ -42,25 +42,43 @@ KOCHIVO-REBRAND/
 ├─ public/                manifest + sw.js + icons
 ├─ src/
 │  ├─ app/                routes بس
-│  │  ├─ (auth)/          login
-│  │  ├─ (captain)/       لوحة الكابتن
-│  │  └─ (player)/        واجهة اللاعب
+│  │  ├─ [locale]/        المسارات العربية والإنجليزية
+│  │  │  ├─ (captain)/    لوحة الكابتن
+│  │  │  ├─ (player)/     واجهة اللاعب
+│  │  │  ├─ login/        تسجيل الدخول ومسارات الحساب بجانبه
+│  │  │  └─ c/[slug]/     صفحة الكابتن العامة
+│  │  └─ global-error.tsx حد الأخطاء العام
 │  ├─ core/               بنية تحتية، مبتعرفش حاجة عن الـ features
 │  │  ├─ config/          env متحقق منه بـ Zod
 │  │  ├─ supabase/        browser / server / proxy clients
 │  │  ├─ offline/         IndexedDB + outbox + sync engine
 │  │  ├─ i18n/            القواميس مقسّمة حسب الـ namespace
-│  │  └─ pwa/             تسجيل الـ service worker
-│  ├─ features/           كل feature: components/ data/ schemas.ts types.ts index.ts
-│  │  ├─ auth/  clients/  programs/  workout/
-│  │  └─ nutrition/  checkins/  inbox/  progress/
+│  │  ├─ pwa/             تسجيل الـ service worker
+│  │  └─ storage/         الصور والفيديوهات الخاصة
+│  ├─ features/           كل feature: components/ hooks/ data/ messages.ts index.ts (وserver.ts عند الحاجة)
+│  │  ├─ auth/  roster/  billing/  dashboard/  captain-approval/
+│  │  ├─ programs/  templates/  program-generator/  workout/
+│  │  ├─ nutrition/  meal-plans/  supplements/  inbox/  progress/
+│  │  ├─ player-shell/  player-home/  player-profile/  player-preview/
+│  │  ├─ onboarding/  readiness/  body-scans/  muscle-analytics/
+│  │  ├─ ranks/  rank-review/  notifications/  voice-notes/
+│  │  ├─ ko-account/  ko-agent/  ko-entry/  ko-feed/  ko-preview/
+│  │  ├─ admin/  coach-page/  marketing/  share-card/
+│  │  └─ demo/  feedback/  install/  product-tour/  settings/
 │  ├─ ui/                 primitives مشتركة (Button, Card, Stepper, Ring …)
 │  ├─ lib/                دوال pure (حساب الماكروز، التواريخ، cn)
 │  └─ types/database.ts   متولّد من Supabase
-└─ tests/                 e2e + rls
+├─ e2e/                   اختبارات المتصفح
+└─ scripts/               أدوات الإصدار والبيانات (اختبارات RLS في supabase/tests/)
 ```
 
-**قاعدة الاستيراد:** `app → features → (ui, core, lib)`. الـ `core` والـ `ui` والـ `lib` مبيستوردوش من `features`، والـ feature مبتستوردش من feature تانية إلا من `index.ts` بتاعها.
+**قاعدة الاستيراد:** `app → features → (ui, core, lib)`. الـ `core` والـ `ui` والـ `lib` مبيستوردوش من `features`، والـ feature مبتستوردش من feature تانية إلا من `index.ts` أو المدخل التاني `server.ts` لكود السيرفر بس، بالمسار `@/features/<name>/server`.
+
+ESLint بيمنع كمان المسارات النسبية اللي بتدخل جوه feature من `app`، وأي مسار نسبي للـ features من `core/ui/lib`.
+اختبار `src/lib/shared-surface-imports.test.ts` بيفحص الـ layouts والـ templates وصور المشاركة والـ shells:
+أي client component جاية من barrel لازم تمر بـ `-entry.tsx` أو `-loader.tsx`، أو تتحمّل بـ `next/dynamic` / `React.lazy` جوه السطح نفسه.
+داخل `core/` و`ui/`، كود السيرفر والكود المشترك بيستورد الـ leaf module بدل الـ barrel.
+مدخل `server.ts` بيستورد `server-only` وبيعيد تصدير modules بتستورد `server-only` هي كمان؛ مش ملف `use server` ومش بيحوّل الـ loaders لـ server actions.
 
 ## 4. نموذج البيانات (MVP)
 

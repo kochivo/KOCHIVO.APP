@@ -1,8 +1,7 @@
 import { createT, parseLocale } from '@/core/i18n';
 import { Suspense } from 'react';
-import { messages } from '@/features/billing';
-import { BillingScreen } from '../../../../../features/billing/components/billing-screen';
-import { fetchBilling } from '../../../../../features/billing/data/billing';
+import { messages, BillingScreen } from '@/features/billing';
+import { fetchBilling } from '@/features/billing/server';
 import { localDate } from '@/lib/dates';
 import { LoadingState } from '@/ui';
 

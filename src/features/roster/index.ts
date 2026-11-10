@@ -7,3 +7,4 @@ export type { PlayerStatus } from './status';
 export type { RosterPlayer, RosterResult } from './types';
 export { messages as rosterMessages } from './messages';
 export { captainApproval } from './data/captain-approval';
+export { RosterScreen } from './components/roster-screen-entry';

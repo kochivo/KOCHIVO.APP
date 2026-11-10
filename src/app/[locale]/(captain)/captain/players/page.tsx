@@ -1,6 +1,5 @@
 import { Suspense } from 'react';
-import { fetchCaptainFirstName, fetchRoster } from '@/features/roster';
-import { RosterScreen } from '../../../../../features/roster/components/roster-screen';
+import { fetchCaptainFirstName, fetchRoster, RosterScreen } from '@/features/roster';
 import { localDate } from '@/lib/dates';
 import { LoadingState } from '@/ui';
 import { JoinRequests } from '@/features/coach-page';

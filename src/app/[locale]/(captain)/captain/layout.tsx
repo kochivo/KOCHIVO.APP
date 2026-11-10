@@ -3,9 +3,9 @@ import { PageContainer } from '@/ui';
 import { CaptainShell, captainApproval } from '@/features/roster';
 import { DemoMode } from '@/features/demo';
 import { ProductTour } from '@/features/product-tour';
-import { PlanSidebar } from '../../../../features/billing/components/plan-sidebar';
+import { PlanSidebar } from '@/features/billing';
+import { fetchPlanSummary } from '@/features/billing/server';
 import { getLocale } from '@/core/i18n/server';
-import { fetchPlanSummary } from '../../../../features/billing/data/plan-summary';
 
 export default async function CaptainLayout({ children }: { children: ReactNode }) {
   const status = await captainApproval();

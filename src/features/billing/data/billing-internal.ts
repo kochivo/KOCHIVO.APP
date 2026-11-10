@@ -9,6 +9,10 @@ import { captainClient } from './client';
 import { revenueSince, summarizeRevenue } from '../finance';
 import type { BillingResult } from '../types';
 
+export async function fetchBilling(): Promise<BillingResult> {
+  return fetchBillingAt(new Date());
+}
+
 export async function fetchBillingAt(now: Date): Promise<BillingResult> {
   const t = await getT(messages);
   try {

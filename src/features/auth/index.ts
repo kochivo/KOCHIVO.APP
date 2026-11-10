@@ -6,6 +6,6 @@ export { CoachSignup } from './components/coach-signup-entry';
 export { ForgotPasswordFlow } from './components/forgot-password-flow-entry';
 export { ResetPasswordForm } from './components/reset-password-form-entry';
 export { PlayerInviteFlow } from './components/player-invite-flow-entry';
-export { SignOutButton } from './components/sign-out-button';
+export { SignOutButton } from './components/sign-out-button-entry';
 export { handleAuthCallback } from './data/callback';
 export { SuspendedScreen } from './components/suspended-screen';

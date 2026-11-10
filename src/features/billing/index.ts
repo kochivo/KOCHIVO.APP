@@ -6,3 +6,4 @@ export { RosterBilling } from './components/roster-billing';
 export { ActivatePlayerButton } from './components/activate-player-button';
 export { BillingManagerLoader } from './components/billing-manager-loader';
 export { PlayerWaitingRoom } from './components/player-waiting-room';
+export { BillingScreen } from './components/billing-screen-entry';
