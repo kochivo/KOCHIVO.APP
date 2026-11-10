@@ -28,6 +28,17 @@ export type Database = {
           referencedColumns: ["id"]
         }]
       }
+      crown_winners: {
+        Row: { captain_id: string; month: string; player_id: string; adherence: number; done: number; planned: number }
+        Insert: never
+        Update: never
+        Relationships: [
+          { foreignKeyName: 'crown_winners_captain_id_fkey'; columns: ['captain_id']; isOneToOne: false;
+            referencedRelation: 'profiles'; referencedColumns: ['id'] },
+          { foreignKeyName: 'crown_winners_player_id_fkey'; columns: ['player_id']; isOneToOne: false;
+            referencedRelation: 'profiles'; referencedColumns: ['id'] },
+        ]
+      }
       crown_prizes: {
         Row: { captain_id: string; month: string; prize: string; updated_at: string }
         Insert: { captain_id: string; month: string; prize: string; updated_at?: string }
@@ -1584,6 +1595,10 @@ export type Database = {
       }
     }
     Functions: {
+      crown_hall_of_fame: {
+        Args: Record<PropertyKey, never>
+        Returns: { month: string; player_id: string | null; display_name: string; adherence: number; done: number; planned: number }[]
+      }
       award_meal_check: { Args: never; Returns: undefined }
       team_leaderboard: {
         Args: { p_month?: string }

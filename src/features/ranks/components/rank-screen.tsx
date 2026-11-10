@@ -1,6 +1,6 @@
 'use client';
 
-import { useT } from '@/core/i18n/client';
+import { useLocale, useT } from '@/core/i18n/client';
 import { ErrorState, LoadingState } from '@/ui';
 import { messages } from '../messages';
 import { useRankData } from '../hooks/use-rank-data';
@@ -11,6 +11,7 @@ import { RankHero } from './rank-hero';
 import { RankJourney } from './rank-journey';
 import { CrownRace } from './crown-race';
 import { TeamBoard } from './team-board';
+import { HallOfFame } from './hall-of-fame';
 import { PointsLog } from './points-log';
 import { LevelUpPanel } from './level-up-panel';
 
@@ -18,6 +19,7 @@ export function RankScreen({ data, status, onRetry, playerId }: {
   data?: RankData; status?: RankStatus; onRetry?: () => void; playerId?: string;
 }) {
   const t = useT(messages);
+  const locale = useLocale();
   const loaded = useRankData(true, status === undefined && data === undefined);
   const active = data ?? loaded.data;
   const state = status ?? (data ? 'ready' : loaded.status);
@@ -32,6 +34,7 @@ export function RankScreen({ data, status, onRetry, playerId }: {
         <RankJourney lifetime={active.points.lifetime} />
         <CrownRace points={active.points} holdsCrown={holdsCrown} />
         {active.points.month_position !== null && <TeamBoard rows={active.board} />}
+        <HallOfFame locale={locale} rows={active.hall} error={active.hallError} onRetry={onRetry ?? loaded.retry} />
         <PointsLog logs={active.points.logs} />
       </>}
     {celebration && <LevelUpPanel tier={celebration} stars={stars} onClose={dismiss} />}

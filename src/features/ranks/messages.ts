@@ -2,6 +2,8 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    hallTitle: 'لوحة الشرف', hallEmpty: 'لسه محدش أخد التاج', hallDescription: 'الفايزين بالتاج في الشهور اللي فاتت',
+    hallAdherence: '{n}٪ التزام', hallError: 'مش قادرين نحمّل لوحة الشرف دلوقتي',
     workoutNext: 'فاضلك {n} نقطة على {tier}', crownPrize: 'جايزة التاج: {prize}',
     share: 'شارك', shareLoading: 'بنجهّز الصورة', shareError: 'مش قادرين نشارك الصورة. جرّب تاني',
     legendWithStars: 'أسطورة ★{n}', nextStar: 'فاضلك {n} نقطة على النجمة {next}',
@@ -21,6 +23,8 @@ export const messages = defineMessages({
     error: 'مش قادرين نحمّل رتبتك دلوقتي', retry: 'جرّب تاني',
   },
   en: {
+    hallTitle: 'Hall of fame', hallEmpty: 'No crown winners yet', hallDescription: 'Crown winners from past months',
+    hallAdherence: '{n}% adherence', hallError: 'Could not load the hall of fame',
     workoutNext: '{n} points to {tier}', crownPrize: 'Crown prize: {prize}',
     share: 'Share', shareLoading: 'Preparing image', shareError: 'Couldn’t share the image. Try again',
     legendWithStars: 'Legend ★{n}', nextStar: '{n} points to star {next}',

@@ -1,6 +1,9 @@
 export { TIERS, CROWN_MIN_WORKOUTS, tierFor, nextTier } from './tiers';
 export type { Tier, LeaderboardRow } from './types';
 export { loadLeaderboard } from './data/load-leaderboard';
+export { loadHallOfFame } from './data/load-hall-of-fame';
+export type { HallOfFameRow } from './data/load-hall-of-fame';
+export { HallOfFame } from './components/hall-of-fame';
 export { loadMyPoints } from './data/load-my-points';
 export { loadCrownPrize } from './data/load-crown-prize';
 export type { MyPoints } from './data/load-my-points';

@@ -1,8 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { loadCrownPrize, loadLeaderboard } from '@/features/ranks';
-import type { LeaderboardRow } from '@/features/ranks';
+import { loadCrownPrize, loadHallOfFame, loadLeaderboard } from '@/features/ranks';
+import type { HallOfFameRow, LeaderboardRow } from '@/features/ranks';
 import { currentMonth } from '../months';
 import { canEditPrize, persistPrize, saveCrownPrize } from '../data/save-crown-prize';
 
@@ -14,7 +14,14 @@ export function useLeaderboard(initialNow = new Date()) {
   const [edits, setEdits] = useState<Record<string, { prize: string | null; saving: boolean; error: boolean }>>({});
   const editVersion = useRef(0);
   const [revision, setRevision] = useState(0);
+  const [hall, setHall] = useState<{ revision: number; rows?: HallOfFameRow[]; error: boolean }>();
   const reload = useCallback(() => setRevision(value => value + 1), []);
+  useEffect(() => {
+    let cancelled = false;
+    void loadHallOfFame().then(rows => { if (!cancelled) setHall({ revision, rows, error: false }); })
+      .catch(() => { if (!cancelled) setHall({ revision, error: true }); });
+    return () => { cancelled = true; };
+  }, [revision]);
   useEffect(() => {
     const update = () => setNow(new Date());
     window.addEventListener('focus', update);
@@ -54,5 +61,6 @@ export function useLeaderboard(initialNow = new Date()) {
     }
   }
   return { now, month, rows: active?.rows, error: active?.error ?? false, setMonth, reload,
+    hall: hall?.revision === revision ? hall.rows : undefined, hallError: hall?.revision === revision && hall.error,
     prize, savePrize, prizeSaving: currentEdit?.saving ?? false, prizeError: currentEdit?.error ?? false };
 }

@@ -1,6 +1,7 @@
 import type { Locale } from '@/core/i18n/locale';
 import { createT } from '@/core/i18n/messages';
-import type { LeaderboardRow } from '@/features/ranks';
+import { HallOfFame } from '@/features/ranks';
+import type { HallOfFameRow, LeaderboardRow } from '@/features/ranks';
 import { ErrorState, LoadingState, PageContainer } from '@/ui';
 import { messages } from '../messages';
 import { BoardList } from './board-list';
@@ -13,6 +14,7 @@ import { currentMonth, nextMonth } from '../months';
 export function LeaderboardScreen({ locale, board }: {
   locale: Locale;
   board: { now?: Date; month: string; rows?: LeaderboardRow[]; error: boolean;
+    hall?: HallOfFameRow[]; hallError?: boolean;
     prize?: string | null; savePrize?: (value: string | null) => Promise<void>; prizeSaving?: boolean; prizeError?: boolean;
     setMonth: (month: string) => void; reload: () => void };
 }) {
@@ -31,5 +33,6 @@ export function LeaderboardScreen({ locale, board }: {
             saving={board.prizeSaving} error={board.prizeError} />}
         <BoardList rows={board.rows} locale={locale} />
       </>}
+    <HallOfFame locale={locale} rows={board.hall} error={board.hallError} onRetry={board.reload} />
   </div></PageContainer>;
 }

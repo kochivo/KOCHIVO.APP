@@ -25,6 +25,7 @@ vi.mock('react', () => ({
 }));
 const loads = vi.hoisted(() => new Map<string, Promise<string>>());
 vi.mock('@/features/ranks', () => ({
+  loadHallOfFame: async () => [],
   loadLeaderboard: async () => [], loadCrownPrize: (month: string) => loads.get(month) ?? Promise.resolve('Old prize'),
 }));
 const writes = vi.hoisted(() => new Map<string, { resolve: () => void; reject: () => void }>());
