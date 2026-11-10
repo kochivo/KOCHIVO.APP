@@ -6,3 +6,5 @@ export type { MyPoints } from './data/load-my-points';
 export { RankScreen } from './components/rank-screen';
 export { RankChip } from './components/rank-chip';
 export { messages as ranksMessages } from './messages';
+export { previewWorkoutPoints } from './points-preview';
+export type { WorkoutPointsInput } from './points-preview';

@@ -2,6 +2,10 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    expectedPoints: 'هيتحسب +{n} نقط على تمرينك',
+    pointsShort: 'التمرين ده مش هيتحسب في الرتبة: أقل من {n} دقيقة',
+    pointsSets: 'التمرين ده مش هيتحسب في الرتبة: سجّلت {logged} من {planned} مجموعة، محتاج {min} على الأقل',
+    pointsWithNext: '{points} · {next}',
     targetReps: 'العدات: {count}', toFailure: 'للفشل', targetRange: '{min}–{max}', rirSuffix: ' · RIR {count}',
     feedbackTitle: 'التمرين كان عامل إيه؟', feedbackRpe: 'قيّم مجهودك من 1 لـ 10',
     veryEasy: 'سهل جدًا', maxEffort: 'أقصى مجهود', feedbackNote: 'ملاحظة للكابتن (وجع، تعب…)',
@@ -80,6 +84,10 @@ export const messages = defineMessages({
     setNumber: "مجموعة {value0}",
   },
   en: {
+    expectedPoints: 'Expected: +{n} points for this workout',
+    pointsShort: "This workout won't count toward your rank: under {n} minutes",
+    pointsSets: "This workout won't count toward your rank: you logged {logged} of {planned} sets, {min} needed",
+    pointsWithNext: '{points} · {next}',
     targetReps: 'Reps: {count}', toFailure: 'To failure', targetRange: '{min}–{max}', rirSuffix: ' · RIR {count}',
     feedbackTitle: 'How was your workout?', feedbackRpe: 'Rate your effort from 1 to 10',
     veryEasy: 'Very easy', maxEffort: 'Max effort', feedbackNote: 'Note for the coach: pain, tiredness…',

@@ -8,8 +8,11 @@ import { Button } from '@/ui';
 import { messages } from '../messages';
 import { rpeValues, saveSessionFeedback } from '../data/session-feedback';
 import { DonePanel } from './done-panel';
+import type { WorkoutPointsInput } from '@/features/ranks';
 
-export function SessionFeedback({ sessionId, hasFeedback }: { sessionId: string; hasFeedback: boolean }) {
+export function SessionFeedback({ sessionId, hasFeedback, workout }: {
+  sessionId: string; hasFeedback: boolean; workout?: WorkoutPointsInput;
+}) {
   const t = useT(messages);
   const locale = useLocale();
   const [done, setDone] = useState(hasFeedback);
@@ -29,7 +32,7 @@ export function SessionFeedback({ sessionId, hasFeedback }: { sessionId: string;
     } catch { setError(true); }
     finally { saving.current = false; setBusy(false); }
   };
-  if (done) return <DonePanel />;
+  if (done) return <DonePanel workout={workout} />;
   return <section aria-labelledby="session-feedback-title" className="glass-strong space-y-5 rounded-card p-5">
     <h2 id="session-feedback-title" className="text-xl font-bold">{t('feedbackTitle')}</h2>
     <fieldset disabled={busy} className="space-y-3">

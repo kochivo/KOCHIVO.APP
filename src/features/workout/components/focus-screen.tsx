@@ -20,6 +20,9 @@ import { SetDots } from './set-dots';
 import { MediaStatus } from './media-status';
 import { restAnnouncement } from '../rest';
 import { starterText } from '@/lib/starter-text';
+import { localDb, useLiveQuery } from '@/core/offline';
+
+const readPlan = () => localDb().program_snapshot.get('active');
 
 const PrBurst = dynamic(() => import('./pr-burst').then(module => module.PrBurst), { ssr: false });
 const SessionFeedback = dynamic(() => import('./session-feedback').then(module => module.SessionFeedback), {
@@ -36,6 +39,15 @@ export function FocusScreen({ dayId, playerId }: { dayId: string; playerId?: str
   const today = now ? localDate(now) : '';
   useWakeLock();
   const state = useFocusSession(dayId, today, playerId);
+  const plan = useLiveQuery(readPlan);
+  // The server checks the assigned plan, including on a reduced readiness day.
+  const plannedDay = plan?.days.find(day => day.id === dayId) ?? (state.decision === 'reduce' ? undefined : state.day);
+  const workout = state.session?.completed_at && plannedDay ? {
+    startedAt: state.session.started_at, completedAt: state.session.completed_at,
+    loggedSets: state.doneSets.length,
+    plannedSets: plannedDay.exercises.reduce((total, exercise) => total + exercise.sets, 0),
+    plannedSeconds: plannedDay.exercises.reduce((total, exercise) => total + exercise.sets * (exercise.rest_seconds + 40), 0),
+  } : undefined;
   const { current, rest } = state;
   const lastSet = state.doneSets.filter((row) => row.program_exercise_id === current?.exercise.id)
     .sort((a, b) => b.completed_at.localeCompare(a.completed_at))[0];
@@ -57,7 +69,7 @@ export function FocusScreen({ dayId, playerId }: { dayId: string; playerId?: str
         <p className="text-sm text-muted">{t('setProgress', { value0: formatNumber(state.progress, locale), value1: formatNumber(state.queue.length, locale) })}</p>
         <ProgressBar value={state.doneSets.length} max={state.queue.length} aria-label={t('setProgress', { value0: formatNumber(state.progress, locale), value1: formatNumber(state.queue.length, locale) })} />
         {state.finished ? state.session ? <SessionFeedback key={state.session.id} sessionId={state.session.id}
-          hasFeedback={state.session.session_rpe != null || Boolean(state.session.player_note)} /> : <DonePanel /> : current ? <>
+          workout={workout} hasFeedback={state.session.session_rpe != null || Boolean(state.session.player_note)} /> : <DonePanel workout={workout} /> : current ? <>
           <ExerciseHeader exercise={current.exercise} last={state.lastSession} />
           <SetDots exercise={current.exercise} currentIndex={current.setIndex} doneSets={state.doneSets}
             onEdit={state.edit} disabled={state.disabled} />
