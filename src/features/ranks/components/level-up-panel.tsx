@@ -7,6 +7,7 @@ import { Button, RankBadge } from '@/ui';
 import { ResponsiveDialog } from '@/ui/responsive-dialog';
 import type { Tier } from '../types';
 import { messages } from '../messages';
+import { ShareRankButton } from './share-rank-button';
 
 export function LevelUpPanel({ tier, stars = 0, onClose }: { tier: Tier; stars?: number; onClose: () => void }) {
   const t = useT(messages);
@@ -20,6 +21,7 @@ export function LevelUpPanel({ tier, stars = 0, onClose }: { tier: Tier; stars?:
       <RankBadge tier={tier} stars={stars} size="xl" label={starred ? t('legendWithStars', { n }) : t(tier)} />
       <h2 id={title} className="text-2xl font-extrabold">{starred ? t('starCelebration', { n }) : t('celebration', { tier: t(tier) })}</h2>
       <Button className="min-h-12 w-full" onClick={onClose}>{t('continue')}</Button>
+      <ShareRankButton kind="rank" />
     </div>
   </ResponsiveDialog>;
 }

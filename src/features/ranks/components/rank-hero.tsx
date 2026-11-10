@@ -5,8 +5,9 @@ import { formatNumber } from '@/lib/format';
 import { ProgressBar, RankBadge } from '@/ui';
 import { messages } from '../messages';
 import { legendStars, LEGEND_STAR_STEP, nextTier, tierFor, TIERS } from '../tiers';
+import { ShareRankButton } from './share-rank-button';
 
-export function RankHero({ lifetime }: { lifetime: number }) {
+export function RankHero({ lifetime, holdsCrown = false }: { lifetime: number; holdsCrown?: boolean }) {
   const t = useT(messages);
   const locale = useLocale();
   const tier = tierFor(lifetime);
@@ -26,5 +27,6 @@ export function RankHero({ lifetime }: { lifetime: number }) {
     {next.needed > 0 && <ProgressBar className="w-full" value={lifetime - threshold}
       max={lifetime + next.needed - threshold} aria-label={label} />}
     <p className="text-sm">{label}</p>
+    <ShareRankButton kind={holdsCrown ? 'crown' : 'rank'} />
   </section>;
 }

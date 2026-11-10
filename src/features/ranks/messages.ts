@@ -3,6 +3,7 @@ import { defineMessages } from '@/core/i18n/messages';
 export const messages = defineMessages({
   ar: {
     workoutNext: 'فاضلك {n} نقطة على {tier}', crownPrize: 'جايزة التاج: {prize}',
+    share: 'شارك', shareLoading: 'بنجهّز الصورة', shareError: 'مش قادرين نشارك الصورة. جرّب تاني',
     legendWithStars: 'أسطورة ★{n}', nextStar: 'فاضلك {n} نقطة على النجمة {next}',
     starJourney: 'نجوم الأسطورة: كل 300 نقطة نجمة', starCelebration: 'نجمة جديدة! بقيت أسطورة ★{n}',
     pageTitle: 'رتبتك', beginner: 'مبتدئ', champion: 'بطل', elite: 'نخبة', legend: 'أسطورة', crown: 'التاج',
@@ -21,6 +22,7 @@ export const messages = defineMessages({
   },
   en: {
     workoutNext: '{n} points to {tier}', crownPrize: 'Crown prize: {prize}',
+    share: 'Share', shareLoading: 'Preparing image', shareError: 'Couldn’t share the image. Try again',
     legendWithStars: 'Legend ★{n}', nextStar: '{n} points to star {next}',
     starJourney: 'Legend stars: one every 300 points', starCelebration: 'New star! Legend ★{n}',
     pageTitle: 'Your rank', beginner: 'Beginner', champion: 'Champion', elite: 'Elite', legend: 'Legend', crown: 'Crown',
