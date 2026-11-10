@@ -1,5 +1,13 @@
 export const messages = {
   ar: {
+    digestTitle: 'ملخص النهارده', digestClear: 'النهارده كله تمام',
+    'digestInactive.one': 'لاعب واحد متمرّنش من 5 أيام', 'digestInactive.two': 'لاعبين متمرّنوش من 5 أيام',
+    'digestInactive.few': '{n} لاعيبة متمرّنوش من 5 أيام', 'digestInactive.other': '{n} لاعب متمرّنوش من 5 أيام',
+    'digestSubscriptions.one': 'اشتراك واحد بيخلص أو خلص', 'digestSubscriptions.two': 'اشتراكين بيخلصوا أو خلصوا',
+    'digestSubscriptions.few': '{n} اشتراكات بتخلص أو خلصت', 'digestSubscriptions.other': '{n} اشتراك بيخلص أو خلص',
+    digestRecord: '{name} كسر رقمه في {exercise} امبارح',
+    'digestRecords.two': 'رقمين جداد امبارح', 'digestRecords.few': '{n} أرقام جديدة امبارح', 'digestRecords.other': '{n} رقم جديد امبارح',
+    digestCrown: 'التاج مع {name} {adherence}٪',
     swap_requested: '{name} طالب يبدّل تمرين', approve: 'وافق', decline: 'ارفض',
     swapDetails: '{from} ← {to} — {injury}', knee: 'الركبة', shoulder: 'الكتف', lower_back: 'أسفل الضهر',
     swapError: 'القرار متحفظش. حاول تاني.', swapPending: 'بحفظ القرار…',
@@ -14,6 +22,12 @@ export const messages = {
     no_nutrition: '{name} محتاج خطة أكل', today_workout: 'تمرين النهارده مستنيك', my_expiring: 'اشتراكك قرب يخلص', log_meal: 'سجّل أكلك النهارده',
   },
   en: {
+    digestTitle: 'Today’s digest', digestClear: 'All clear today',
+    'digestInactive.one': '1 inactive player', 'digestInactive.other': '{n} inactive players',
+    'digestSubscriptions.one': '1 subscription ending or ended', 'digestSubscriptions.other': '{n} subscriptions ending or ended',
+    digestRecord: '{name} set a new record in {exercise} yesterday',
+    'digestRecords.one': '1 new record yesterday', 'digestRecords.other': '{n} new records yesterday',
+    digestCrown: 'Crown: {name}, {adherence}% adherence',
     swap_requested: '{name} requests an exercise swap', approve: 'Approve', decline: 'Decline',
     swapDetails: '{from} → {to} — {injury}', knee: 'Knee', shoulder: 'Shoulder', lower_back: 'Lower back',
     swapError: 'Could not save the decision. Try again.', swapPending: 'Saving decision…',

@@ -5,9 +5,11 @@ import { dismissFeedItem, snoozeOptimistically } from '../data/dismiss';
 import { loadFeed } from '../data/load-feed';
 import type { KoFeedItem } from '../types';
 import { urgentCount } from '../rank';
+import { loadDigestExtras } from '../data/load-digest-extras';
+import type { DigestExtras } from '../digest';
 
-type State = { rows: KoFeedItem[]; status: 'loading' | 'ready' | 'error'; saveError: boolean };
-const initial: State = { rows: [], status: 'loading', saveError: false };
+type State = { rows: KoFeedItem[]; status: 'loading' | 'ready' | 'error'; saveError: boolean; extras: DigestExtras | null };
+const initial: State = { rows: [], status: 'loading', saveError: false, extras: null };
 let state = initial;
 let version = 0;
 let request: Promise<void> | null = null;
@@ -53,9 +55,27 @@ export function watchFeed() {
       }
     };
 }
-export function useKoFeed(open = true, enabled = true) {
+export function useKoFeed(open = true, enabled = true, digest = false) {
   const data = useSyncExternalStore(subscribe, getFeedState, serverSnapshot);
   useEffect(() => enabled ? watchFeed() : undefined, [open, enabled]);
+  useEffect(() => {
+    if (!enabled || !digest) return;
+    let active = true;
+    const update = () => {
+      if (document.visibilityState !== 'visible') return;
+      void loadDigestExtras().then(extras => { if (active) publish({ ...state, extras }); });
+    };
+    update();
+    const timer = window.setInterval(update, 120_000);
+    window.addEventListener('focus', update);
+    document.addEventListener('visibilitychange', update);
+    return () => {
+      active = false;
+      window.clearInterval(timer);
+      window.removeEventListener('focus', update);
+      document.removeEventListener('visibilitychange', update);
+    };
+  }, [enabled, digest]);
   const dismiss = useCallback(async (key: string) => {
     if (hidden.has(key)) return;
     hidden.add(key);
