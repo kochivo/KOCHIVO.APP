@@ -31,6 +31,8 @@ export async function latestNotifications(): Promise<Notification[]> {
       plan_id: typeof payload.plan_id === 'string' ? payload.plan_id : undefined,
       captain_name: typeof payload.captain_name === 'string' ? payload.captain_name : undefined,
       tier: payload.tier === 'champion' || payload.tier === 'elite' || payload.tier === 'legend' ? payload.tier : undefined,
+      needs_workouts: typeof payload.needs_workouts === 'number' ? payload.needs_workouts : undefined,
+      gap: typeof payload.gap === 'number' ? payload.gap : undefined,
     } };
   });
 }

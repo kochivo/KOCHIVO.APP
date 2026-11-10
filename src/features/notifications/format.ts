@@ -2,6 +2,7 @@ import { Award, CalendarClock, CircleAlert, Crown } from 'lucide-react';
 import type { Notification } from './types';
 
 export function notificationTextKey(row: Notification) {
+  if (row.type === 'crown_close' && row.payload.needs_workouts === 0 && (row.payload.gap ?? 0)>0) return 'crown_close_points';
   if (row.type === 'rank_up') {
     const tier = row.payload.tier;
     return tier === 'champion' || tier === 'elite' || tier === 'legend' ? `rank_up_${tier}` as const : 'rank_up';
@@ -15,14 +16,15 @@ export function notificationTextKey(row: Notification) {
 
 export function notificationIcon(row: Notification) {
   if (row.type === 'rank_up') return Award;
-  if (row.type === 'crown_taken' || row.type === 'crown_lost') return Crown;
+  if (row.type === 'crown_taken' || row.type === 'crown_lost' || row.type === 'crown_close' || row.type === 'crown_defend') return Crown;
   if (row.type === 'subscription_expiring') return CalendarClock;
   if (row.type === 'subscription_expired') return CircleAlert;
   return null;
 }
 
 export function notificationHref(row: Notification): string {
-  if (row.type === 'rank_up' || row.type === 'crown_taken' || row.type === 'crown_lost') return '/player/rank';
+  if (row.type === 'rank_up' || row.type === 'crown_taken' || row.type === 'crown_lost'
+    || row.type === 'crown_close' || row.type === 'crown_defend') return '/player/rank';
   if ((row.type === 'subscription_expiring' || row.type === 'subscription_expired') && !row.payload.player_id) return '/player';
   if (row.type === 'captain_approved') return '/captain';
   if (row.type === 'plan_assigned' || row.type === 'workout_reminder') return '/player';

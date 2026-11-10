@@ -1763,6 +1763,7 @@ export type Database = {
       }
       push_config: { Args: never; Returns: Json }
       queue_workout_reminders: { Args: { p_today?: string }; Returns: undefined }
+      queue_crown_reminders: { Args: { p_today?: string }; Returns: undefined }
       purge_deleted_accounts: { Args: never; Returns: number }
       redeem_invite: { Args: { p_code: string }; Returns: string }
       renew_player: {

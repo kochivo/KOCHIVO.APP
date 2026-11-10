@@ -12,6 +12,21 @@ vi.mock('@/core/supabase/lazy', () => ({ loadSupabaseBrowser: load }));
 
 const row: Notification = { id: 'n', type: 'plan_assigned', payload: { name: 'Strength' }, is_read: false,
   created_at: '2026-11-03T08:00:00Z' };
+it.each(['ar', 'en'] as const)('formats crown reminders with workout or score gaps in %s', locale => {
+  const t = createT(messages, locale);
+  for (const [type, needs_workouts, gap, ar, en] of [
+    ['crown_close', 2, 14, 'التاج قريب! التمارين الناقصة: 2، وفاضل 3 أيام', 'The crown is close! Workouts still needed: 2, 3 days left'],
+    ['crown_close', 2, 0, 'التاج قريب! التمارين الناقصة: 2، وفاضل 3 أيام', 'The crown is close! Workouts still needed: 2, 3 days left'],
+    ['crown_close', 0, 0, 'التاج قريب! التمارين الناقصة: 0، وفاضل 3 أيام', 'The crown is close! Workouts still needed: 0, 3 days left'],
+    ['crown_close', 0, 14, 'التاج قريب! فاضلك 14 درجة', 'The crown is close! 14 points to go'],
+    ['crown_defend', 0, 0, 'حافظ على التاج: فاضل 3 أيام على آخر الشهر', 'Keep the crown: 3 days left this month'],
+  ] as const) {
+    const notice: Notification = { ...row, type, payload: { needs_workouts, gap } };
+    expect(t(notificationTextKey(notice), { n: needs_workouts, gap })).toBe(locale === 'ar' ? ar : en);
+    expect(notificationIcon(notice)).toBe(Crown);
+    expect(notificationHref(notice)).toBe('/player/rank');
+  }
+});
 it('marks one immediately and restores the count and rows after failure', async () => {
   const previous = { rows: [row], count: 5 };
   const states: ReadState[] = [];
@@ -100,4 +115,17 @@ it('loads only known tiers from rank payloads', async () => {
   expect(rows.map(notificationTextKey)).toEqual([
     'rank_up_champion', 'rank_up_elite', 'rank_up_legend', 'rank_up', 'rank_up', 'rank_up', 'rank_up', 'rank_up', 'rank_up',
   ]);
+});
+
+it('preserves numeric crown gaps when loading stored notifications', async () => {
+  const data = [{ ...row, type: 'crown_close', payload: { needs_workouts: 0, gap: 14 } },
+    { ...row, type: 'crown_close', payload: { needs_workouts: '2', gap: null } }];
+  const query = { select: vi.fn(), order: vi.fn(), limit: vi.fn().mockResolvedValue({ data, error: null }) };
+  query.select.mockReturnValue(query);
+  query.order.mockReturnValue(query);
+  load.mockResolvedValue({ from: vi.fn().mockReturnValue(query) });
+  const rows = await latestNotifications();
+  expect(rows[0]?.payload).toMatchObject({ needs_workouts: 0, gap: 14 });
+  expect(rows[1]?.payload.needs_workouts).toBeUndefined();
+  expect(rows[1]?.payload.gap).toBeUndefined();
 });

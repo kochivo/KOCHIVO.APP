@@ -1,6 +1,22 @@
 import { expect, it } from 'vitest';
 import { pushPayload } from './payload';
 
+it.each(['ar', 'en'] as const)('formats crown reminders and routes to rank in %s', locale => {
+  for (const [type, needs_workouts, gap, ar, en] of [
+    ['crown_close', 2, 0, 'التاج قريب! التمارين الناقصة: 2، وفاضل 3 أيام', 'The crown is close! Workouts still needed: 2, 3 days left'],
+    ['crown_close', 0, 0, 'التاج قريب! التمارين الناقصة: 0، وفاضل 3 أيام', 'The crown is close! Workouts still needed: 0, 3 days left'],
+    ['crown_close', 3, 51, 'التاج قريب! التمارين الناقصة: 3، وفاضل 3 أيام', 'The crown is close! Workouts still needed: 3, 3 days left'],
+    ['crown_close', 0, 14, 'التاج قريب! فاضلك 14 درجة', 'The crown is close! 14 points to go'],
+    ['crown_defend', 0, 0, 'حافظ على التاج: فاضل 3 أيام على آخر الشهر', 'Keep the crown: 3 days left this month'],
+  ] as const) {
+    const result = pushPayload({ id: 'crown', type, payload: { needs_workouts, gap } }, locale);
+    expect(result.body).toBe(locale === 'ar' ? ar : en);
+    expect(result.body).not.toContain('فاضلك 0 درجة');
+    expect(result.url).toBe(`/${locale}/player/rank`);
+    expect(result.tag).toBe('crown');
+  }
+});
+
 it.each(['ar', 'en'] as const)('formats both expiry reminders for each recipient in %s', locale => {
   for (const type of ['subscription_expiring', 'subscription_expired'] as const) {
     for (const captain of [true, false]) {

@@ -63,7 +63,8 @@ export function NotificationDropdown({ openerId, notifications: n, onClose }: Pr
                 }}>
                 <p className="flex items-center gap-2">
                   {Icon && <Icon aria-hidden className="size-5 shrink-0" />}
-                  {t(notificationTextKey(row), { name: row.payload.name || row.payload.captain_name || '' })}
+                  {t(notificationTextKey(row), { name: row.payload.name || row.payload.captain_name || '',
+                    n: row.payload.needs_workouts ?? 0, gap: row.payload.gap ?? 0 })}
                 </p>
                 <time dateTime={row.created_at} className="mt-1 block text-xs font-normal text-muted">{t(time.key, { n: time.n })}</time>
               </Link>
