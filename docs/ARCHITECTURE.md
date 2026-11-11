@@ -153,6 +153,11 @@ Dexie transaction ──► set_logs (local)  ──► liveQuery ──► UI �
 
 ## 7. التخزين
 
+Captain client islands use `useResource` from `@/core/resource` for shared in-memory reads, stale-while-revalidate,
+visibility-aware polling, retry, and optimistic mutations. Include every result-changing input in the key and
+keep loaders in the feature's `data/` folder; memoize the loader with `useCallback`. `clearResources()` runs
+before sign-out navigation. Server Component reads stay on the server, and offline player data stays in Dexie.
+
 - **الـ MVP:** Supabase Storage في buckets private بـ RLS (`checkin-photos` و`form-videos`)، والروابط signed.
 - **بعدين:** Cloudflare R2. الكود بيتعامل مع التخزين من خلال interface واحد (`core/storage`)، فالتغيير هيبقى في ملف واحد.
 

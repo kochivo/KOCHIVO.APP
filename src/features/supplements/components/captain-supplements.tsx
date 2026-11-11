@@ -1,13 +1,16 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
+import { useResource } from '@/core/resource';
+import { localDate } from '@/lib/dates';
 import dynamic from 'next/dynamic';
 import { ArrowDown, ArrowUp } from 'lucide-react';
 import { useT } from '@/core/i18n';
 import type { SupplementRow } from '@/core/offline/tables';
 import { messages } from '../messages';
 import { supplementAdherence } from '../model';
-import { archiveSupplement, fetchCaptainSupplements, reorderSupplements, saveSupplement } from '../data/captain';
+import { archiveSupplement, reorderSupplements, saveSupplement } from '../data/captain';
+import { loadSupplements } from '../data/load-supplements';
 import type { SupplementDraft } from '../data/captain';
 
 const SupplementEditor = dynamic(() => import('./supplement-editor').then(module => module.SupplementEditor), {
@@ -16,15 +19,14 @@ const SupplementEditor = dynamic(() => import('./supplement-editor').then(module
 
 export function CaptainSupplements({ playerId }: { playerId: string }) {
   const t = useT(messages);
-  const [data, setData] = useState<Awaited<ReturnType<typeof fetchCaptainSupplements>>>();
-  const [error, setError] = useState(false);
+  const today = localDate(new Date());
+  const load = useCallback((signal: AbortSignal) => loadSupplements(playerId, signal), [playerId]);
+  const { data, status, retry: refresh } = useResource(`supplements:${playerId}:${today}`, load);
+  const [saveError, setError] = useState(false);
+  const error = saveError || status === 'error';
   const [busy, setBusy] = useState(false);
   const [editing, setEditing] = useState<SupplementRow | null | undefined>();
-  const [now, setNow] = useState(0);
-  const refresh = useCallback(() => fetchCaptainSupplements(playerId)
-    .then(result => { setData(result); setNow(Date.now()); setError(false); })
-    .catch(() => setError(true)), [playerId]);
-  useEffect(() => { void refresh(); }, [refresh]);
+  const now = data?.now ?? 0;
   const mutate = async (work: () => Promise<void>) => {
     setBusy(true);
     setError(false);
@@ -40,7 +42,7 @@ export function CaptainSupplements({ playerId }: { playerId: string }) {
   return <section className="glass space-y-4 rounded-card p-5">
     <div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-xl font-bold">{t('title')}</h2>
       <button className="glass min-h-12 rounded-control px-4 font-bold" disabled={busy} onClick={() => setEditing(null)}>{t('add')}</button></div>
-    {error && <div role="alert"><p>{t('error')}</p><button className="min-h-12 px-4" onClick={() => void refresh()}>{t('retry')}</button></div>}
+    {error && <div role="alert"><p>{t('error')}</p><button className="min-h-12 px-4" onClick={() => { setError(false); void refresh(); }}>{t('retry')}</button></div>}
     {!data && !error && <p role="status">{t('loading')}</p>}
     {data && !data.rows.length && <p className="text-muted">{t('empty')}</p>}
     {data && data.rows.length > 0 && <p className="glass-strong rounded-control p-3 font-bold">{t('score', { percent: Math.round(supplementAdherence(data.logs, data.rows, 7, now) * 100) })}</p>}

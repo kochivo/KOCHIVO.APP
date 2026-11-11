@@ -17,6 +17,7 @@ vi.mock('react', async original => ({ ...await original<typeof ReactModule>(),
   useEffect: () => {}, useCallback: (callback: unknown) => callback,
 }));
 vi.mock('@/core/i18n', () => ({ useT: () => createT(messages, 'en') }));
+vi.mock('@/core/resource', () => ({ useResource: () => ({ data: undefined, status: 'idle', retry: async () => {} }) }));
 vi.mock('./data/captain', () => ({}));
 vi.mock('./components/supplement-editor', () => {
   state.imports++;

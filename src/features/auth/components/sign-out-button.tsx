@@ -3,6 +3,7 @@ import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 import { useState, useTransition } from 'react';
 import { Button } from '@/ui';
+import { clearResources } from '@/core/resource';
 import { signOut } from '../data/sign-out';
 import { callAuthAction as runAuthAction } from '../data/client-action';
 import { signOutDevice } from '../data/device-sign-out';
@@ -23,6 +24,7 @@ export function SignOutButton({ variant, className }: { variant?: 'primary' | 'd
       cache: clearDeviceCache, close: closeDeviceDb,
     });
     setError(result.error ?? '');
+    clearResources();
     if (result.redirect) window.location.assign(result.redirect);
   })}>{pending ? t('signingOut') : t('signOut')}</Button>{error && <p role="alert">{error}</p>}</div>;
 }

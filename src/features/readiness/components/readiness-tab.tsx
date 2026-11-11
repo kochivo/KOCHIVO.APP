@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback } from 'react';
+import { useResource } from '@/core/resource';
 import { Activity, Moon } from 'lucide-react';
 import { useT } from '@/core/i18n/client';
 import { EmptyState, ErrorState, LoadingState } from '@/ui';
-import { fetchCoachReadiness } from '../data/coach-readiness';
-import type { CoachReadiness } from '../data/coach-readiness';
+import { loadReadiness } from '../data/load-readiness';
 import { readinessScore } from '../score';
 import { messages } from '../messages';
 import { ScoreRings } from './score-rings';
@@ -14,16 +14,9 @@ import { WeekRings } from './week-rings';
 
 export function ReadinessTab({ playerId, today }: { playerId: string; today: string }) {
   const t = useT(messages);
-  const [data, setData] = useState<CoachReadiness | null>(null);
-  const [error, setError] = useState(false);
-  const [retry, setRetry] = useState(0);
-  useEffect(() => {
-    let cancelled = false;
-    void fetchCoachReadiness(playerId, today).then(value => { if (!cancelled) setData(value); })
-      .catch(() => { if (!cancelled) setError(true); });
-    return () => { cancelled = true; };
-  }, [playerId, today, retry]);
-  if (error) return <ErrorState message={t('error')} retryLabel={t('retry')} onRetry={() => { setError(false); setRetry(value => value + 1); }} />;
+  const load = useCallback((signal: AbortSignal) => loadReadiness(playerId, today, signal), [playerId, today]);
+  const { data, status, retry, mutate } = useResource(`readiness:${playerId}:${today}`, load);
+  if (status === 'error') return <ErrorState message={t('error')} retryLabel={t('retry')} onRetry={() => void retry()} />;
   if (!data) return <LoadingState variant="cards" />;
   const row = data.checks.find(row => row.log_date === today);
   const result = readinessScore({ sleepHours: row?.sleep_hours, soreness: row?.soreness, waterMl: row?.water_ml, waterGoalMl: data.goal });
@@ -37,8 +30,8 @@ export function ReadinessTab({ playerId, today }: { playerId: string; today: str
     {result?.flags.lowSleep && <p role="alert" className="flex items-center gap-2 text-danger"><Moon aria-hidden className="size-5" />{t('lowSleep')}</p>}
     {result?.flags.highSoreness && <p role="alert" className="flex items-center gap-2 text-danger"><Activity aria-hidden className="size-5" />{t('highSoreness')}</p>}
     <DecisionCard playerId={playerId} score={result?.score ?? null} exercises={data.exercises} applied={applied}
-      onApplied={decision => setData({ ...data, decisions: [...data.decisions.filter(row => row.decision_date !== today),
-        { id: '', captain_id: '', player_id: playerId, decision_date: today, decision, created_at: '' }] })} />
+      onApplied={decision => { void mutate(current => ({ ...(current ?? data), decisions: [...(current ?? data).decisions.filter(row => row.decision_date !== today),
+        { id: '', captain_id: '', player_id: playerId, decision_date: today, decision, created_at: '' }] }), async () => {}); }} />
     <WeekRings today={today} data={data} />
   </section>;
 }
