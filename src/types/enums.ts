@@ -1,4 +1,11 @@
 // CHECK-backed values are verified against migrated pg_constraint definitions.
+export const customFormKinds = ['checkin', 'onboarding', 'progress', 'injury', 'update', 'custom'] as const;
+export type CustomFormKind = typeof customFormKinds[number];
+export const customFormQuestionTypes = ['number', 'scale', 'choice', 'multi', 'text', 'photos', 'yesno'] as const;
+export type CustomFormQuestionType = typeof customFormQuestionTypes[number];
+export type CustomFormStatus = 'pending' | 'answered' | 'reviewed';
+export type CustomFormFactKey = 'weight' | 'targetWeight' | 'height' | 'age' | 'sex' | 'experience'
+  | 'trainingDays' | 'sessionMinutes' | 'injuries' | 'medical' | 'allergies' | 'waist' | 'note';
 export const captainStatuses = ['pending', 'approved', 'rejected'] as const;
 export type CaptainStatus = typeof captainStatuses[number];
 export const units = ['metric', 'imperial'] as const;

@@ -1,4 +1,5 @@
-// Generated from the live Supabase project. Do not edit; corrections go in app-database.ts.
+// Base generated from Supabase; custom-form tables regenerated from local PGlite (0091).
+// Do not edit; corrections go in app-database.ts.
 export type Json =
   | string
   | number
@@ -15,6 +16,207 @@ export type Database = {
   }
   public: {
     Tables: {
+      form_answers: {
+        Row: {
+          id: string
+          request_id: string
+          question_id: string
+          value: Json
+          photo_paths: string[]
+        }
+        Insert: {
+          id: string
+          request_id: string
+          question_id: string
+          value?: Json
+          photo_paths?: string[]
+        }
+        Update: {
+          id?: string
+          request_id?: string
+          question_id?: string
+          value?: Json
+          photo_paths?: string[]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "form_answers_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "form_questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "form_answers_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "form_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      form_questions: {
+        Row: {
+          id: string
+          form_id: string
+          position: number
+          label_ar: string
+          label_en: string
+          type: string
+          options: Json
+          required: boolean
+          maps_to: string | null
+          alert_on: Json | null
+        }
+        Insert: {
+          id: string
+          form_id: string
+          position: number
+          label_ar: string
+          label_en: string
+          type: string
+          options?: Json
+          required?: boolean
+          maps_to?: string | null
+          alert_on?: Json | null
+        }
+        Update: {
+          id?: string
+          form_id?: string
+          position?: number
+          label_ar?: string
+          label_en?: string
+          type?: string
+          options?: Json
+          required?: boolean
+          maps_to?: string | null
+          alert_on?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "form_questions_form_id_fkey"
+            columns: ["form_id"]
+            isOneToOne: false
+            referencedRelation: "forms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      form_requests: {
+        Row: {
+          id: string
+          form_id: string
+          player_id: string
+          captain_id: string
+          sent_at: string
+          due_at: string | null
+          reminded_at: string | null
+          answered_at: string | null
+          reviewed_at: string | null
+          captain_reply: string | null
+          status: string | null
+        }
+        Insert: {
+          id: string
+          form_id: string
+          player_id: string
+          captain_id: string
+          sent_at?: string
+          due_at?: string | null
+          reminded_at?: string | null
+          answered_at?: string | null
+          reviewed_at?: string | null
+          captain_reply?: string | null
+          status?: never
+        }
+        Update: {
+          id?: string
+          form_id?: string
+          player_id?: string
+          captain_id?: string
+          sent_at?: string
+          due_at?: string | null
+          reminded_at?: string | null
+          answered_at?: string | null
+          reviewed_at?: string | null
+          captain_reply?: string | null
+          status?: never
+        }
+        Relationships: [
+          {
+            foreignKeyName: "form_requests_captain_id_fkey"
+            columns: ["captain_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "form_requests_form_id_captain_id_fkey"
+            columns: ["form_id","captain_id"]
+            isOneToOne: false
+            referencedRelation: "forms"
+            referencedColumns: ["id","captain_id"]
+          },
+          {
+            foreignKeyName: "form_requests_form_id_fkey"
+            columns: ["form_id"]
+            isOneToOne: false
+            referencedRelation: "forms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "form_requests_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      forms: {
+        Row: {
+          id: string
+          captain_id: string
+          title: string
+          kind: string
+          schedule: Json | null
+          remind_after_hours: number | null
+          archived_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id: string
+          captain_id: string
+          title: string
+          kind: string
+          schedule?: Json | null
+          remind_after_hours?: number | null
+          archived_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          captain_id?: string
+          title?: string
+          kind?: string
+          schedule?: Json | null
+          remind_after_hours?: number | null
+          archived_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forms_captain_id_fkey"
+            columns: ["captain_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       admin_audit_log: {
         Row: {
           action: string

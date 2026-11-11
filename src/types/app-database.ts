@@ -3,6 +3,7 @@ import type {
   CaptainStatus, Units, SupplementTiming, NotificationType, PointKind, PointStatus,
   Injury, SwapReason, SwapStatus, MovementPattern, ExerciseKind, EquipmentKind,
   ExperienceLevel, ReadinessDecision, JoinStatus, PackageKind, RankTier,
+  CustomFormKind, CustomFormQuestionType, CustomFormStatus, CustomFormFactKey,
 } from './enums';
 
 export type Narrow<Row, Patch> = Omit<Row, keyof Patch> & Patch;
@@ -16,6 +17,9 @@ type Social = Partial<Record<'whatsapp' | 'instagram' | 'tiktok' | 'facebook' | 
 
 // Text CHECK constraints are verified by supabase/tests/type-narrowing.test.ts.
 type RowPatches = {
+  forms: { kind: CustomFormKind };
+  form_questions: { type: CustomFormQuestionType; maps_to: CustomFormFactKey | null };
+  form_requests: { status: CustomFormStatus };
   profiles: { captain_status: CaptainStatus; units: Units; social: Social };
   supplements: { timing: SupplementTiming };
   notifications: { type: NotificationType };
@@ -42,6 +46,13 @@ type DailyChecks = Public['Tables']['daily_checks'];
 type SupplementLogs = Public['Tables']['supplement_logs'];
 // Preserve the existing write contract; RLS remains the actual security boundary.
 type WritePatches = {
+  form_requests: {
+    Insert: Pick<Public['Tables']['form_requests']['Insert'], 'id' | 'form_id' | 'player_id' | 'captain_id' | 'sent_at' | 'due_at'>;
+    Update: Pick<Public['Tables']['form_requests']['Update'], 'due_at' | 'reminded_at' | 'reviewed_at' | 'captain_reply'>;
+  };
+  form_answers: {
+    Update: Pick<Public['Tables']['form_answers']['Update'], 'value' | 'photo_paths'>;
+  };
   crown_winners: ServerWritten;
   points_log: ServerWritten;
   player_points: ServerWritten;
