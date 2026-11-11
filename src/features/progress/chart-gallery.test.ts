@@ -1,4 +1,6 @@
 import { expect, it } from 'vitest';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { AppDatabase } from '@/types/app-database';
 import { scaleSeries } from './series';
 import { compareWeeks, photoPose } from './gallery';
 import type { GalleryWeek } from './gallery';
@@ -41,10 +43,10 @@ it('keeps usable gallery photos and their poses when one historical file is miss
     id: 'checkin', player_id: 'player', week_start: '2026-10-03', body_weight_kg: 80,
     waist_cm: null, notes: null, body_fat_pct: null, captain_reply: null, reviewed_at: null,
     photo_paths: ['missing.jpg', 'side.jpg'], photo_poses: ['front', 'side'],
-  }], async path => {
-    if (path === 'missing.jpg') throw new Error('missing');
-    return `signed/${path}`;
-  });
+  }], { storage: { from: () => ({ createSignedUrls: async () => ({ data: [
+    { path: 'missing.jpg', error: 'missing', signedUrl: '' },
+    { path: 'side.jpg', signedUrl: 'signed/side.jpg', error: null },
+  ], error: null }) }) } } as unknown as SupabaseClient<AppDatabase>);
   expect(result.failed).toBe(true);
   expect(result.weeks[0]?.photos).toEqual([{ url: 'signed/side.jpg', pose: 'side' }]);
 });

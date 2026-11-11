@@ -2,7 +2,6 @@
 import { useEffect, useState } from 'react';
 import { useT } from '@/core/i18n/client';
 import { loadSupabaseBrowser } from '@/core/supabase/lazy';
-import { signedMediaUrl } from '@/core/storage';
 import { ErrorState, LoadingState } from '@/ui';
 import { messages } from '../messages';
 import { signGallery } from '../data/gallery';
@@ -20,7 +19,7 @@ export function PlayerGallery({ checkins }: { checkins: CheckIn[] }) {
     async function load() {
       try {
         const client = await loadSupabaseBrowser();
-        const signed = await signGallery(checkins, path => signedMediaUrl(client, 'checkin-photos', path));
+        const signed = await signGallery(checkins, client);
         if (!cancelled) setResult({ rows: checkins, ...signed });
       } catch { if (!cancelled) setError(true); }
     }

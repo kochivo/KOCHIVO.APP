@@ -15,11 +15,14 @@ import type { InboxItem, Result } from '../types';
 
 const identity = z.object({ kind: z.enum(['form', 'checkin']), id: z.uuid() });
 const tableFor = (kind: InboxItem['kind']) => kind === 'form' ? 'form_checks' as const : 'check_ins' as const;
+const cursorSchema = z.object({ created_at: z.iso.datetime({ offset: true }), id: z.uuid() });
+type InboxCursor = z.infer<typeof cursorSchema>;
+const fraction = (at: string) => Number(`0.${at.match(/\.(\d+)/)?.[1] ?? '0'}`);
 
-export async function listInbox(input: { status: 'open' | 'reviewed'; limit: 50 }): Promise<Result<InboxItem[]>> {
+export async function listInbox(input: { status: 'open' | 'reviewed'; limit: 50; cursor?: InboxCursor }): Promise<Result<InboxItem[]> & { nextCursor?: InboxCursor | null }> {
   const t = await getT(messages);
   const locale = await getLocale();
-  const parsed = z.object({ status: z.enum(['open', 'reviewed']), limit: z.literal(50) }).safeParse(input);
+  const parsed = z.object({ status: z.enum(['open', 'reviewed']), limit: z.literal(50), cursor: cursorSchema.optional() }).safeParse(input);
   if (!parsed.success) return { error: t('chooseList') };
   try {
     const client = await inboxClient();
@@ -32,7 +35,13 @@ export async function listInbox(input: { status: 'open' | 'reviewed'; limit: 50 
       .order(reviewed ? 'reviewed_at' : 'created_at', { ascending: false }).order('id');
     const checkQuery = (reviewed ? checkRows.not('reviewed_at', 'is', null) : checkRows.is('reviewed_at', null))
       .order(reviewed ? 'reviewed_at' : 'created_at', { ascending: false }).order('id');
-    const [forms, checks] = await Promise.all([reviewed ? formQuery.limit(50) : formQuery, reviewed ? checkQuery.limit(50) : checkQuery]);
+    const cursor = !reviewed ? parsed.data.cursor : undefined;
+    if (cursor) {
+      const filter = `created_at.lt.${cursor.created_at},and(created_at.eq.${cursor.created_at},id.gt.${cursor.id})`;
+      formQuery.or(filter);
+      checkQuery.or(filter);
+    }
+    const [forms, checks] = await Promise.all([formQuery.limit(50), checkQuery.limit(50)]);
     if (forms.error || checks.error || !forms.data || !checks.data) throw new Error();
     const playerIds = [...new Set([...forms.data, ...checks.data].map((row) => row.player_id))];
     const exerciseIds = [...new Set(forms.data.map((row) => row.exercise_id))];
@@ -54,7 +63,13 @@ export async function listInbox(input: { status: 'open' | 'reviewed'; limit: 50 
       const ids = new Set([...data].sort((a, b) => Date.parse(b.reviewed_at ?? '') - Date.parse(a.reviewed_at ?? '') || a.id.localeCompare(b.id)).slice(0, 50).map((row) => `${row.kind}:${row.id}`));
       data = data.filter((row) => ids.has(`${row.kind}:${row.id}`));
     }
-    return { data };
+    if (reviewed) return { data };
+    // PostgreSQL keeps microseconds; Date.parse alone can move rows across a page boundary.
+    data.sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at)
+      || fraction(b.created_at) - fraction(a.created_at) || a.id.localeCompare(b.id));
+    data = data.slice(0, 50);
+    const last = data.at(-1);
+    return { data, nextCursor: data.length === 50 && last ? { created_at: last.created_at, id: last.id } : null };
   } catch (error) { unstable_rethrow(error); return { error: t('loadFailed') }; }
 }
 
