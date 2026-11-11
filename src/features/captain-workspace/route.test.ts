@@ -29,3 +29,16 @@ it('selects the workspace entry when the flag is on', async () => {
   expect(tree.type).toBe(WorkspaceEntry);
   expect(tree.props).toEqual({ playerId: 'player' });
 });
+it.each(['0', '1'])('keeps view=forms behind the existing workspace flag %s', async flag => {
+  vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', flag);
+  const input = { params, searchParams: Promise.resolve({ view: 'forms' }) };
+  const tree = await PlayerProgramsPage(input);
+  if (flag === '1') {
+    expect(tree.type).toBe(WorkspaceEntry);
+    expect(tree.props).toEqual({ playerId: 'player' });
+  } else {
+    const legacy = await PlayerProgramsPage({ params });
+    expect(tree).toEqual(legacy);
+    expect(renderToStaticMarkup(tree)).not.toContain('workspace');
+  }
+});

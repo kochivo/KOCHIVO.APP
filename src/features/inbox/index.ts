@@ -1,7 +1,7 @@
 export { InboxScreen } from './components/inbox-screen';
 
 export { messages } from './messages';
-export { listInbox, reviewItem } from './data/inbox';
+export { listInbox, mediaUrls, reviewItem } from './data/inbox';
 export { listTriageInputs } from './data/triage-inputs';
 export { triage, previousCheckins, inboxKey } from './triage';
 export type { TriageInputs } from './triage';

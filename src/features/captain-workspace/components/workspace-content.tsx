@@ -4,7 +4,7 @@ import { supabaseServer } from '@/core/supabase/server';
 import { loadPlayerFile } from '@/features/player-file';
 import { fetchPlayerProfile } from '@/features/player-profile';
 import { loadProgram, listPlayerPrograms } from '@/features/programs';
-import { WorkspaceHeader } from './workspace-header';
+import { WorkspaceViews } from '../forms/workspace-views';
 import { PlayerFileSlot } from './player-file-slot';
 import { WorkspacePlanEntry } from './workspace-plan-entry';
 import { WorkspaceState } from './workspace-state';
@@ -22,7 +22,7 @@ export async function WorkspaceContent({ playerId }: { playerId: string; today: 
   const current = programs.data?.find(program => program.status === 'active') ?? programs.data?.find(program => program.status === 'draft');
   const loaded = current ? await loadProgram(current.id) : null;
   return <div className="space-y-5 pb-40 lg:pb-0" dir={locale === 'ar' ? 'rtl' : 'ltr'}>
-    <WorkspaceHeader playerId={playerId} name={profile.data.name} locale={locale} />
+    <WorkspaceViews playerId={playerId} name={profile.data.name} locale={locale}>
     <div className="grid items-start gap-6 lg:grid-cols-[360px_minmax(0,1fr)]">
       <PlayerFileSlot player={profile.data} locale={locale} file={playerFile.file} error={playerFile.error} />
       {loaded?.data ? <WorkspacePlanEntry key={loaded.data.id} program={loaded.data} locale={locale}
@@ -30,5 +30,6 @@ export async function WorkspaceContent({ playerId }: { playerId: string; today: 
         <WorkspaceState kind={loaded?.error !== undefined ? 'error' : 'empty'} locale={locale} retryHref={retryHref} />}
     </div>
     <MobileActions locale={locale} />
+    </WorkspaceViews>
   </div>;
 }
