@@ -54,7 +54,7 @@ These rules are mandatory. A diff that breaks one is rejected in review, even if
   - Use logical properties only: `ms-`, `me-`, `ps-`, `pe-`, `start-`, `end-`, `text-start`.
   - Never use `ml-`, `mr-`, `pl-`, `pr-`, `left-`, `right-`, or `text-left`.
 - Touch targets are at least 48px (`min-h-12`). Gym controls (steppers, done buttons) are bigger.
-- Every user-facing string lives in `messages.ts`; Arabic is Egyptian, English is short and plain, with no emoji and no inline UI text.
+- Every user-facing string lives in `messages.ts`. Arabic has two styles: Egyptian (`ar`, the default and the fallback) and simple standard Arabic (`arStd`, see `docs/I18N-STYLE.md`; owner decision 2026-11-12). English is short and plain. No emoji, no inline UI text.
 - Icons come from `lucide-react`. Every icon-only button needs a translated `aria-label`.
 - Every list has an empty state, and every async view has loading and error states.
 - The exercise GIF attribution "© Gym visual" lives only in the public site footer (owner decision 2026-11-05; see `docs/LEGACY-AUDIT.md`). Do not add it to app screens, and never remove the footer credit.
