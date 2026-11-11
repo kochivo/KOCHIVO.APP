@@ -7,7 +7,7 @@ import { createT } from '@/core/i18n/messages';
 import { messages } from './messages';
 
 const mock = vi.hoisted(() => ({ getUser: vi.fn(), getClaims: vi.fn(), signup: vi.fn(), verifyOtp: vi.fn(), oauth: vi.fn(), exchange: vi.fn(),
-  insert: vi.fn(), single: vi.fn(), rpc: vi.fn(), cookie: { get: vi.fn(), set: vi.fn(), delete: vi.fn() } }));
+  insert: vi.fn(), single: vi.fn(), link: vi.fn(), pending: vi.fn(), rpc: vi.fn(), cookie: { get: vi.fn(), set: vi.fn(), delete: vi.fn() } }));
 vi.mock('server-only', () => ({}));
 vi.mock('@/core/offline/ids', () => ({ uuidv7: () => '01900000-0000-7000-8000-000000000001' }));
 vi.mock('@/core/i18n/server', () => ({ getT: async () => createT(messages, 'en'), getLocale: async () => 'en' }));
@@ -15,7 +15,13 @@ vi.mock('next/headers', () => ({ cookies: async () => mock.cookie, headers: asyn
 vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => ({
   auth: { getUser: mock.getUser, getClaims: mock.getClaims, signUp: mock.signup,
     verifyOtp: mock.verifyOtp, signInWithOAuth: mock.oauth, exchangeCodeForSession: mock.exchange },
-  rpc: mock.rpc, from: () => ({ insert: mock.insert, select: () => ({ eq: () => ({ single: mock.single }) }) }),
+  rpc: mock.rpc, from: (table: string) => {
+    const query = {
+      insert: mock.insert, select: () => query, eq: () => query, is: () => query, single: mock.single,
+      maybeSingle: table === 'coach_clients' ? mock.link : mock.pending,
+    };
+    return query;
+  },
 }) }));
 const input = { full_name: 'Ali', email: 'ali@example.com', password: 'password123' };
 beforeEach(() => {
@@ -24,6 +30,8 @@ beforeEach(() => {
   mock.getUser.mockResolvedValue({ data: { user: null }, error: null });
   mock.getClaims.mockResolvedValue({ data: { claims: { sub: 'player' } }, error: null });
   mock.single.mockResolvedValue({ data: { role: 'player', role_confirmed: true }, error: null });
+  mock.link.mockResolvedValue({ data: null, error: null });
+  mock.pending.mockResolvedValue({ data: null, error: null });
   mock.rpc.mockResolvedValue({ data: [{ id: 'captain' }], error: null });
   mock.signup.mockResolvedValue({ data: { session: null }, error: null });
   mock.oauth.mockResolvedValue({ data: { url: 'https://accounts.google.com/' }, error: null });

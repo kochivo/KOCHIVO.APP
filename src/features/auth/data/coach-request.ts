@@ -3,8 +3,17 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { AppDatabase } from '@/types/app-database';
 import { uuidv7 } from '@/core/offline/ids';
 import { coachSlug } from '@/lib/coach-slug';
+import { coachRequestValues } from '@/lib/coach-request-status';
+import type { CoachRequestStatus } from '@/lib/coach-request-status';
 import { profile } from './auth-client';
 import { homeFor } from '../routing';
+
+async function liveLinkStatus(client: SupabaseClient<AppDatabase>, playerId: string, captainId: string) {
+  const link = await client.from('coach_clients').select('captain_id')
+    .eq('player_id', playerId).is('archived_at', null).maybeSingle();
+  if (link.error) throw link.error;
+  return link.data ? (link.data.captain_id === captainId ? 'member' : 'linked') : undefined;
+}
 
 export async function completeCoachRequest(client: SupabaseClient<AppDatabase>, rawSlug: string) {
   const slug = coachSlug(rawSlug);
@@ -22,8 +31,18 @@ export async function completeCoachRequest(client: SupabaseClient<AppDatabase>, 
   if (!captain) throw new Error('coach unavailable');
   const auth = await client.auth.getUser();
   if (auth.error || !auth.data.user) throw new Error('unauthenticated');
-  const request = await client.from('coach_join_requests').insert({ id: uuidv7(), captain_id: captain.id, player_id: auth.data.user.id });
-  // Returning to the confirmation link is safe and must not create a second pending request.
-  if (request.error && request.error.code !== '23505') throw request.error;
-  return `/c/${slug}?requested=1`;
+  const playerId = auth.data.user.id;
+  const statusUrl = (status: CoachRequestStatus) => `/c/${slug}?requested=${coachRequestValues[status]}`;
+  const linked = await liveLinkStatus(client, playerId, captain.id);
+  if (linked) return statusUrl(linked);
+  const request = await client.from('coach_join_requests').insert({ id: uuidv7(), captain_id: captain.id, player_id: playerId });
+  if (!request.error) return statusUrl('sent');
+  if (request.error.code !== '23505') throw request.error;
+  const pending = await client.from('coach_join_requests').select('id')
+    .eq('player_id', playerId).eq('captain_id', captain.id).eq('status', 'pending').maybeSingle();
+  if (pending.error) throw pending.error;
+  if (pending.data) return statusUrl('sent');
+  const freshLink = await liveLinkStatus(client, playerId, captain.id);
+  if (freshLink) return statusUrl(freshLink);
+  throw request.error;
 }

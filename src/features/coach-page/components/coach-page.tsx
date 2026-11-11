@@ -2,11 +2,12 @@ import Link from 'next/link';
 import { MapPin } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { getT } from '@/core/i18n/server';
+import type { CoachRequestStatus } from '@/lib/coach-request-status';
 import { loadPublicCoach } from '../data/public-profile';
 import { coachSignupHref } from '../slug';
 import { messages } from '../messages';
 
-export async function CoachPage({ slug, requested = false }: { slug: string; requested?: boolean }) {
+export async function CoachPage({ slug, requested }: { slug: string; requested?: CoachRequestStatus }) {
   const t = await getT(messages);
   const coach = await loadPublicCoach(slug);
   if (!coach) notFound();
@@ -31,7 +32,10 @@ export async function CoachPage({ slug, requested = false }: { slug: string; req
       {links.length ? <ul className="flex flex-wrap gap-3">{links.map(({ key, href }) =>
         <li key={key}><a href={href} rel="noopener noreferrer" target="_blank" className="glass flex min-h-12 items-center rounded-control px-4">{t(key)}</a></li>)}</ul> :
         <p className="text-sm text-muted">{t('noSocial')}</p>}
-      {requested ? <p role="status" className="glass rounded-control p-4">{t('sent')}</p> :
+      {requested ? <div role="status" className="glass space-y-4 rounded-control p-4">
+        <p>{t(requested)}</p>
+        {requested === 'member' && <Link href="/player" className="flex min-h-12 items-center justify-center rounded-control bg-lime px-6 py-4 font-bold text-on-lime">{t('openApp')}</Link>}
+      </div> :
         <Link href={coachSignupHref(slug)} className="flex min-h-12 items-center justify-center rounded-control bg-lime px-6 py-4 font-bold text-on-lime">{t('train')}</Link>}
     </article>
   </main>;
