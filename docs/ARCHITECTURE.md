@@ -59,6 +59,7 @@ KOCHIVO/
 │  │  ├─ auth/  roster/  billing/  dashboard/  captain-approval/
 │  │  ├─ programs/  templates/  program-generator/  workout/
 │  │  ├─ captain-workspace/   flag-gated read-only captain training workspace (T-166)
+│  │  ├─ forms/               flag-gated server-rendered forms library, lazy builder and shared question renderer (T-177)
 │  │  ├─ nutrition/  meal-plans/  supplements/  inbox/  progress/
 │  │  ├─ player-shell/  player-home/  player-profile/  player-preview/
 │  │  ├─ onboarding/  readiness/  body-scans/  muscle-analytics/
