@@ -35,6 +35,27 @@ it('converts edits per 100g and restricts them to the caller', async () => {
   expect(mocks.update).toHaveBeenCalledWith(expect.objectContaining({ kcal_per_100g: 133.3, protein_per_100g: 6.7 }));
   expect(mocks.eq).toHaveBeenCalledWith('owner_id', captain);
 });
+it('persists bilingual names and household units through the existing writer', async () => {
+  const units = [{ key: 'slice', name_ar: 'شريحة', name_en: 'Slice', grams: 30 }];
+  await updateCustomFood(captain, { ...input, nameEn: 'Soup', units });
+  expect(mocks.update).toHaveBeenCalledWith(expect.objectContaining({ name_en: 'Soup', units }));
+});
+it('preserves the photo when copying a visible global food', async () => {
+  mocks.single.mockResolvedValueOnce({ data: { photo_path: 'food-media/rice.jpg' }, error: null });
+  await createCustomFood({ ...input, copyFrom: captain });
+  expect(mocks.insert).toHaveBeenCalledWith(expect.objectContaining({ photo_path: 'food-media/rice.jpg' }));
+  expect(mocks.is).toHaveBeenCalledWith('owner_id', null);
+});
+it('rejects global food updates when the ownership lookup finds no row', async () => {
+  mocks.single.mockResolvedValueOnce({ data: null, error: { code: 'PGRST116' } });
+  await expect(updateCustomFood(captain, input)).resolves.toMatchObject({ ok: false });
+  expect(mocks.update).not.toHaveBeenCalled();
+});
+it('does not archive a library deletion when a reference is added concurrently', async () => {
+  mocks.single.mockResolvedValueOnce({ data: null, error: { code: '23503' } });
+  await expect(deleteCustomFood(captain, true)).resolves.toMatchObject({ ok: false });
+  expect(mocks.update).not.toHaveBeenCalled();
+});
 it('does not delete a photo before the replacement update succeeds', async () => {
   const old = `captain-food-photos/${captain}/old.jpg`;
   mocks.single.mockResolvedValueOnce({ data: { photo_path: old }, error: null })

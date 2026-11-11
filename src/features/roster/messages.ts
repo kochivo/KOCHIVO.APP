@@ -2,6 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    library: 'المكتبة', foods: 'الأكلات', forms: 'الفورمز',
     accountMenu: 'حسابي',
     "previewTitle": "شوف كلاعب",
     "dayCount.zero": "{count} أيام",
@@ -116,6 +117,7 @@ export const messages = defineMessages({
     daysAgo2: "من {v0} يوم",
   },
   en: {
+    library: 'Library', foods: 'Foods', forms: 'Forms',
     accountMenu: 'Account',
     "previewTitle": "Player preview",
 

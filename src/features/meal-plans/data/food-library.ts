@@ -1,0 +1,97 @@
+'use server';
+
+import { z } from 'zod';
+import { getT } from '@/core/i18n/server';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { fail, ok } from '@/lib/action-result';
+import { escapeSearch } from '../types';
+import { messages } from '../components/library/messages';
+import { duplicateFood } from '../food-library-rules';
+import { foodFields } from './editor-fields';
+import { planClient, toFood } from './client';
+import { deleteCustomFood } from './custom-food';
+import type { FoodSegment, LibraryPage } from './library-types';
+import type { ActionResult } from '@/lib/action-result';
+
+const inputSchema = z.object({ query: z.string().max(100), segment: z.enum(['all', 'mine', 'global']), cursor: z.uuid().nullish() });
+
+export async function listLibraryFoods(input: { query: string; segment: FoodSegment; cursor?: string | null }): Promise<ActionResult<LibraryPage>> {
+  const t = await getT(messages);
+  const parsed = inputSchema.safeParse(input);
+  if (!captainWorkspaceEnabled() || !parsed.success) return fail(t('error'));
+  const client = await planClient();
+  const user = await client.auth.getUser();
+  if (!user.data.user) return fail(t('error'));
+  const owner = user.data.user.id;
+  const { query, segment, cursor } = parsed.data;
+  const filtered = () => {
+    let request = client.from('foods').select('*', { count: 'exact', head: true }).is('archived_at', null);
+    if (query.trim()) {
+      const pattern = `%${escapeSearch(query.trim())}%`;
+      request = request.or(`name_ar.ilike."${pattern}",name_en.ilike."${pattern}"`);
+    }
+    return request;
+  };
+  let request = client.from('foods').select('*').is('archived_at', null).order('id').limit(40);
+  if (cursor) request = request.gt('id', cursor);
+  if (segment === 'mine') request = request.eq('owner_id', owner);
+  if (segment === 'global') request = request.is('owner_id', null);
+  if (query.trim()) {
+    const pattern = `%${escapeSearch(query.trim())}%`;
+    request = request.or(`name_ar.ilike."${pattern}",name_en.ilike."${pattern}"`);
+  }
+  const [page, all, mine, global] = await Promise.all([
+    request, filtered(), filtered().eq('owner_id', owner), filtered().is('owner_id', null),
+  ]);
+  if (page.error || all.error || mine.error || global.error) return fail(t('error'));
+  const rows = page.data ?? [];
+  const usage = rows.length ? await client.from('foods').select('id,meal_items(count),meal_item_alternatives(count)').in('id', rows.map(row => row.id)) : null;
+  if (usage?.error) return fail(t('error'));
+  const counts = z.array(z.object({ id: z.string(), meal_items: z.array(z.object({ count: z.number() })),
+    meal_item_alternatives: z.array(z.object({ count: z.number() })).optional() })).safeParse(usage?.data ?? []);
+  if (!counts.success) return fail(t('error'));
+  return ok({ foods: rows.map(row => {
+    const count = counts.data.find(value => value.id === row.id);
+    return { ...toFood(row), ...foodFields(row),
+      uses: count?.meal_items[0]?.count ?? 0, alternativeUses: count?.meal_item_alternatives?.[0]?.count ?? 0 };
+  }),
+    cursor: rows.length === 40 ? rows.at(-1)?.id ?? null : null,
+    counts: { all: all.count ?? 0, mine: mine.count ?? 0, global: global.count ?? 0 } });
+}
+
+export async function deleteLibraryFood(id: string): Promise<ActionResult<void>> {
+  const t = await getT(messages);
+  if (!captainWorkspaceEnabled() || !z.uuid().safeParse(id).success) return fail(t('error'));
+  const client = await planClient();
+  const user = await client.auth.getUser();
+  if (!user.data.user) return fail(t('error'));
+  const food = await client.from('foods').select('owner_id').eq('id', id).single();
+  if (food.error || food.data?.owner_id !== user.data.user.id) return fail(t('readonly'));
+  const [usage, alternatives] = await Promise.all([
+    client.from('meal_items').select('id', { count: 'exact', head: true }).eq('food_id', id),
+    client.from('meal_item_alternatives').select('id', { count: 'exact', head: true }).eq('food_id', id),
+  ]);
+  if (usage.error || alternatives.error) return fail(t('error'));
+  const count = (usage.count ?? 0) + (alternatives.count ?? 0);
+  if (count) return fail(t('blocked', { count }));
+  const deleted = await deleteCustomFood(id, true);
+  return deleted.ok ? ok(undefined) : deleted;
+}
+
+export async function checkFoodDuplicate(name: string, nameEn: string, id?: string): Promise<ActionResult<boolean>> {
+  const t = await getT(messages);
+  if (!captainWorkspaceEnabled() || name.length > 60 || nameEn.length > 100) return fail(t('duplicateError'));
+  const client = await planClient();
+  // Normalize every visible name, in bounded batches, so matches outside the current page are included.
+  let cursor: string | undefined;
+  for (;;) {
+    let request = client.from('foods').select('id,name_ar,name_en').is('archived_at', null).order('id').limit(200);
+    if (cursor) request = request.gt('id', cursor);
+    const result = await request;
+    if (result.error) return fail(t('duplicateError'));
+    const rows = result.data ?? [];
+    if (duplicateFood(name, nameEn, rows.map(row => ({ id: row.id, name: row.name_ar, nameEn: row.name_en })), id)) return ok(true);
+    if (rows.length < 200) return ok(false);
+    cursor = rows.at(-1)?.id;
+  }
+}

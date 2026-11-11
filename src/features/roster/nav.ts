@@ -1,8 +1,9 @@
 import { createT } from '@/core/i18n/messages';
 import { messages } from './messages';
 import type { Translator } from '@/core/i18n/messages';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 
-import { CreditCard, Dumbbell, Inbox, LayoutDashboard, Settings, Users } from 'lucide-react';
+import { BookOpen, CreditCard, Dumbbell, Inbox, LayoutDashboard, Settings, Users } from 'lucide-react';
 
 export const captainLinks = [
   { href: '/captain', label: 'home' as const, icon: LayoutDashboard },
@@ -14,18 +15,27 @@ export const captainLinks = [
 ];
 
 export function captainNav(pathname: string, t: Translator<typeof messages> = createT(messages, 'ar')) {
-  return captainLinks.map((link) => ({
+  const links = captainLinks.map((link) => ({
     ...link, label: t(link.label),
     active: link.href === '/captain' ? pathname === '/captain'
       : link.href === '/captain/players'
         ? pathname === '/captain/players' || ['players', 'programs', 'nutrition'].some((section) => pathname.startsWith(`/captain/${section}/`))
         : pathname === link.href || pathname.startsWith(`${link.href}/`),
   }));
+  if (!captainWorkspaceEnabled()) return links;
+  links.splice(4, 0, ...(['foods', 'forms'] as const).map(section => ({
+    href: `/captain/library/${section}`, label: t(section), icon: BookOpen,
+    active: pathname === `/captain/library/${section}`,
+  })));
+  return links;
 }
 
 export function captainMobileNav(pathname: string, t: Translator<typeof messages> = createT(messages, 'ar')) {
   const destinations = ['/captain', '/captain/players', '/captain/templates', '/captain/inbox'];
+  if (captainWorkspaceEnabled()) destinations.splice(2, 1, '/captain/library/foods');
   return captainNav(pathname, t)
     .filter(item => destinations.includes(item.href))
+    .map(item => item.href === '/captain/library/foods'
+      ? { ...item, label: t('library'), active: pathname.startsWith('/captain/library/') } : item)
     .sort((a, b) => destinations.indexOf(a.href) - destinations.indexOf(b.href));
 }
