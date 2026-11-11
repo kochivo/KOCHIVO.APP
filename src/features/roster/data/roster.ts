@@ -2,11 +2,13 @@ import { getT } from '@/core/i18n/server';
 import { messages } from '../messages';
 
 import 'server-only';
+import { cache } from 'react';
+import { currentClaims } from '@/core/supabase/claims';
 import { unstable_rethrow } from 'next/navigation';
 import { rosterClient } from './client';
 import type { RosterResult } from '../types';
 
-export async function fetchRoster(): Promise<RosterResult> {
+export const fetchRoster = cache(async (): Promise<RosterResult> => {
   try {
     const client = await rosterClient();
     const { data, error } = await client.rpc('captain_roster');
@@ -34,14 +36,14 @@ export async function fetchRoster(): Promise<RosterResult> {
     unstable_rethrow(error);
     return { error: (await getT(messages))('couldntLoadPlayersTryAgain') };
   }
-}
+});
 
-export async function fetchCaptainFirstName(): Promise<string> {
+export const fetchCaptainFirstName = cache(async (): Promise<string> => {
   try {
     const client = await rosterClient();
-    const { data, error } = await client.auth.getClaims();
+    const { data, error } = await currentClaims();
     if (error || !data?.claims.sub) return '';
     const profile = await client.from('profiles').select('full_name').eq('id', data.claims.sub).single();
     return profile.data?.full_name.trim().split(/\s+/)[0] ?? '';
   } catch (error) { unstable_rethrow(error); return ''; }
-}
+});
