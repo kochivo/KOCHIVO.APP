@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '@/types/database';
+import type { AppDatabase } from '@/types/app-database';
 import { age, checkinSnapshot, intakeSnapshot, fitFacts, formHistory, loadPlayerFile, mergePlayerFile } from './index';
 import type { CheckinRow, IntakeRow, Snapshot } from './model';
 
@@ -103,7 +103,7 @@ function fakeClient(rows: {
       })); },
     };
     return query;
-  } } as unknown as SupabaseClient<Database>;
+  } } as unknown as SupabaseClient<AppDatabase>;
   return { client, calls };
 }
 

@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { localDate } from '@/lib/dates';
-import type { Database } from '@/types/database';
+import type { AppDatabase } from '@/types/app-database';
 import { checkinSnapshot, intakeSnapshot } from '../model';
 import type { PlayerFile } from '../model';
 import { formHistory, mergePlayerFile } from '../merge';
@@ -9,7 +9,7 @@ interface LoadOptions { checkinLimit?: number; now?: Date; lastViewedAt?: string
 
 /** Pass the caller's authenticated client: existing table RLS controls player access. */
 export async function loadPlayerFile(
-  client: SupabaseClient<Database>, playerId: string,
+  client: SupabaseClient<AppDatabase>, playerId: string,
   { checkinLimit = 12, now = new Date(), lastViewedAt }: LoadOptions = {},
 ): Promise<PlayerFile> {
   if (!Number.isSafeInteger(checkinLimit) || checkinLimit < 0) throw new RangeError('Invalid check-in limit');

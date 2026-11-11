@@ -1,9 +1,17 @@
 import { createT, parseLocale } from '@/core/i18n';
 import { mealPlanMessages } from '@/features/meal-plans';
-import { PlayerPlans } from '@/features/meal-plans';
+import { NutritionWorkspaceEntry, PlayerPlans } from '@/features/meal-plans';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 
-export default async function Page({ params }: { params: Promise<{ playerId: string; locale: string }> }) {
-  const { playerId } = await params;
+export default async function Page({ params, searchParams }: {
+  params: Promise<{ playerId: string; locale: string }>;
+  searchParams?: Promise<{ view?: string | string[] }>;
+}) {
+  const { playerId, locale } = await params;
+  if (captainWorkspaceEnabled()) {
+    const query = await searchParams;
+    return <NutritionWorkspaceEntry playerId={playerId} locale={parseLocale(locale)} view={query?.view === 'calc' ? 'calc' : 'plan'} />;
+  }
   return <PlayerPlans playerId={playerId} />;
 }
 
