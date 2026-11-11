@@ -42,6 +42,6 @@ export function sourceLabel(source: FormSource, locale: Locale): string {
   const date = new Date(source.at);
   const month = new Intl.DateTimeFormat(locale === 'ar' ? 'ar-EG' : 'en-GB', { month: 'short', timeZone: 'Africa/Cairo' }).format(date);
   const day = new Intl.DateTimeFormat('en-GB', { day: 'numeric', timeZone: 'Africa/Cairo' }).format(date);
-  return t('sourceDate', { source: t(source.kind === 'intake' ? 'intake' : source.kind === 'checkin' ? 'checkin' : 'form'),
+  return t('sourceDate', { source: source.title ?? t(source.kind === 'intake' ? 'intake' : source.kind === 'checkin' ? 'checkin' : 'form'),
     date: `${formatNumber(Number(day), locale)} ${month}` });
 }

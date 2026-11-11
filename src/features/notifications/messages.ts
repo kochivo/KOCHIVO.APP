@@ -2,6 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    form_requested: 'الكابتن مستني ردّك على {name}',
     rank_up: 'اترقيت لرتبة جديدة',
     rank_up_champion: 'اترقيت! بقيت بطل',
     rank_up_elite: 'اترقيت! بقيت نخبة',
@@ -29,6 +30,7 @@ export const messages = defineMessages({
     now: 'دلوقتي', minutes: 'من {n} دقيقة', hours: 'من {n} ساعة', days: 'من {n} يوم',
   },
   en: {
+    form_requested: 'Your captain is waiting for: {name}',
     rank_up: 'You reached a new rank',
     rank_up_champion: 'You ranked up to Champion',
     rank_up_elite: 'You ranked up to Elite',

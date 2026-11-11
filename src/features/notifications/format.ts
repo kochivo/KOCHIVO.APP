@@ -23,6 +23,8 @@ export function notificationIcon(row: Notification) {
 }
 
 export function notificationHref(row: Notification): string {
+  if (row.type === 'form_requested') return row.payload.request_id
+    ? `/player/forms/${encodeURIComponent(row.payload.request_id)}` : '/player';
   if (row.type === 'rank_up' || row.type === 'crown_taken' || row.type === 'crown_lost'
     || row.type === 'crown_close' || row.type === 'crown_defend') return '/player/rank';
   if ((row.type === 'subscription_expiring' || row.type === 'subscription_expired') && !row.payload.player_id) return '/player';

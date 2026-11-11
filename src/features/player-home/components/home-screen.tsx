@@ -26,6 +26,8 @@ import { isRestDay } from '../rest-day';
 import { starterText } from '@/lib/starter-text';
 import { previewFor } from '../day-preview';
 import { DayPreviewCard } from './day-preview-card';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { PendingForms } from '@/features/forms';
 
 const readPending = () => pendingCount(localDb());
 const readParked = () => parkedCount(localDb());
@@ -92,6 +94,7 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
       </div>
       {failed && snapshot && <p className="text-sm text-muted">{t('lastUpdatedAWhileAgo')}</p>}
     </>}
+    {captainWorkspaceEnabled() && <PendingForms locale={locale} />}
     <NutritionSlot date={selectedDate || undefined} />
   </main>;
 }

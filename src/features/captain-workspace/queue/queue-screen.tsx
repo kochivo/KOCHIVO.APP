@@ -50,11 +50,11 @@ export function QueueScreen() {
     {(resource.error || resource.moreError) && <QueueState locale={locale} kind="error" retry={resource.moreError ? resource.more : resource.retry} />}
     {!visible.length ? <QueueState locale={locale} kind="empty" /> : <ul aria-label={t('title')} className="space-y-3 lg:space-y-0">{visible.map(row =>
       <QueueRow key={`${row.kind}:${row.item.id}`} row={row} locale={locale}
-        flags={row.item.kind === 'renewal' ? [] : triage(row.item, data.triage.history, data.triage.dailyChecks, now).flags}
-        onReview={() => { if (!resource.pending && row.item.kind !== 'renewal') setSelected(row.item); }} />)}</ul>}
-    {(last?.cursor || last?.renewalCursor) && <button disabled={resource.pending || selected !== null} onClick={resource.more} className="glass min-h-12 w-full rounded-control px-6 text-lime disabled:opacity-50">{resource.pending ? t('loading') : t('loadMore')}</button>}
+        flags={row.item.kind === 'renewal' || row.item.kind === 'request' ? [] : triage(row.item, data.triage.history, data.triage.dailyChecks, now).flags}
+        onReview={() => { if (!resource.pending && row.item.kind !== 'renewal' && row.item.kind !== 'request') setSelected(row.item); }} />)}</ul>}
+    {(last?.cursor || last?.renewalCursor || last?.requestCursor) && <button disabled={resource.pending || selected !== null} onClick={resource.more} className="glass min-h-12 w-full rounded-control px-6 text-lime disabled:opacity-50">{resource.pending ? t('loading') : t('loadMore')}</button>}
     {selected && <Review key={`${selected.kind}:${selected.id}`} item={selected} inputs={data.triage} now={now} onClose={() => setSelected(null)} onReviewed={async (reviewed, commit, advance) => {
-      const next = advance ? nextOpenItem(items.filter((item): item is InboxItem => item.kind !== 'renewal'), selected,
+      const next = advance ? nextOpenItem(items.filter((item): item is InboxItem => item.kind !== 'renewal' && item.kind !== 'request'), selected,
         item => triage(item, data.triage.history, data.triage.dailyChecks, now)) : null;
       const ok = await resource.mutate(current => current ? { ...current, at: reviewed.reviewed_at ?? current.at,
         counts: { ...current.counts, needsReply: Math.max(0, current.counts.needsReply - 1),

@@ -4,7 +4,9 @@ import type { InboxItem } from '@/features/inbox';
 
 export type RenewalItem = { kind: 'renewal'; id: string; player_id: string; player_name: string;
   created_at: string; reviewed_at: null; reply: null; access_until: string };
-export type QueueItem = (InboxItem | RenewalItem) & { snapshot?: Snapshot };
+export type CustomFormItem = {kind:'request';id:string;player_id:string;player_name:string;title:string;
+  created_at:string;reviewed_at:string|null;reply:string|null;alert:boolean;snapshot:Snapshot};
+export type QueueItem = (InboxItem | RenewalItem | CustomFormItem) & { snapshot?: Snapshot };
 export type Change = { key: 'weight' | 'waist' | 'injury' | 'trainingDays' | 'noChange';
   style: 'neutral' | 'warn' | 'danger'; delta?: number };
 export function queueRow(item: QueueItem, previousSnapshot: Snapshot | undefined, now: Date) {
@@ -12,6 +14,7 @@ export function queueRow(item: QueueItem, previousSnapshot: Snapshot | undefined
   const snapshot = item.snapshot ?? (item.kind === 'checkin' ? checkinSnapshot(item) : undefined);
   const facts = snapshot ? mergePlayerFile([...(previousSnapshot ? [previousSnapshot] : []), snapshot], now) : {};
   const changes: Change[] = [];
+  if (item.kind === 'request' && item.alert) changes.push({key:'injury',style:'danger'});
   if (snapshot && previousSnapshot) {
     const injuries = snapshot.facts.injuries;
     if (injuries?.some(value => value !== 'none' && !previousSnapshot.facts.injuries?.includes(value)))
@@ -26,7 +29,7 @@ export function queueRow(item: QueueItem, previousSnapshot: Snapshot | undefined
     }
   }
   if (!changes.length) changes.push({ key: 'noChange', style: 'neutral' });
-  return { item, player: { id: item.player_id, name: item.player_name }, kind: item.kind, ageHours,
+  return { item, player: { id: item.player_id, name: item.player_name }, kind: item.kind === 'request' ? 'form' as const : item.kind, ageHours,
     late: !item.reviewed_at && ageHours > 24, changes: changes.slice(0, 3), newInjury: changes.some(change => change.key === 'injury') };
 }
 export type QueueRow = ReturnType<typeof queueRow>;

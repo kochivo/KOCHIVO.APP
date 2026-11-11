@@ -1,7 +1,8 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { localDate } from '@/lib/dates';
 import type { AppDatabase } from '@/types/app-database';
-import { checkinSnapshot, intakeSnapshot } from '../model';
+import { checkinSnapshot, intakeSnapshot, formSnapshot } from '../model';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import type { PlayerFile } from '../model';
 import { formHistory, mergePlayerFile } from '../merge';
 
@@ -26,5 +27,21 @@ export async function loadPlayerFile(
     ...(intake.data ?? []).map(row => intakeSnapshot(row, localDate(now))),
     ...(checkins.data ?? []).map(checkinSnapshot),
   ];
+  if (captainWorkspaceEnabled()) {
+    const requests = await client.from('form_requests').select('id,form_id,answered_at,forms!form_requests_form_id_fkey(title)')
+      .eq('player_id',playerId).not('answered_at','is',null)
+      .order('answered_at',{ascending:false}).order('id').limit(12);
+    if (requests.error) throw requests.error;
+    const ids = requests.data.map(r => r.id), formIds = [...new Set(requests.data.map(r => r.form_id))];
+    if (ids.length) {
+      const [answers,questions] = await Promise.all([
+        client.from('form_answers').select('request_id,question_id,value').in('request_id',ids).limit(1200),
+        client.from('form_questions').select('id,form_id,maps_to').in('form_id',formIds).not('maps_to','is',null).limit(1200),
+      ]);
+      if (answers.error || questions.error) throw answers.error ?? questions.error;
+      for (const r of requests.data) if (r.answered_at) snapshots.push(formSnapshot({id:r.id,answered_at:r.answered_at,title:r.forms?.title},
+        answers.data.filter(a => a.request_id === r.id),questions.data.filter(q => q.form_id === r.form_id)));
+    }
+  }
   return { facts: mergePlayerFile(snapshots, now, lastViewedAt), history: formHistory(snapshots) };
 }

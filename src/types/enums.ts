@@ -16,7 +16,7 @@ export const notificationTypes = [
   'plan_assigned', 'nutrition_updated', 'player_joined', 'player_inactive', 'join_requested',
   'workout_reminder', 'workout_feedback', 'sessions_used_up', 'captain_approved',
   'subscription_expiring', 'subscription_expired', 'rank_up', 'crown_taken', 'crown_lost',
-  'crown_close', 'crown_defend',
+  'crown_close', 'crown_defend', 'form_requested',
 ] as const;
 export type NotificationType = typeof notificationTypes[number];
 export const pointKinds = ['workout', 'pr', 'perfect_week', 'inbody', 'meal_check'] as const;

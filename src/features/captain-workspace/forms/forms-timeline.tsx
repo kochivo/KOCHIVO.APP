@@ -5,8 +5,8 @@ import type { PlayerForm } from './adapter';
 import { formDate, formSummary } from './format';
 import { messages } from './messages';
 
-export function FormsTimeline({ forms, selectedId, locale, onSelect, dueAt, disabled = false }: {
-  forms: PlayerForm[]; selectedId?: string; locale: Locale; onSelect: (form: PlayerForm) => void; dueAt?: string; disabled?: boolean;
+export function FormsTimeline({ forms, selectedId, locale, onSelect, dueAt, disabled = false, showLegacyReminder = true }: {
+  forms: PlayerForm[]; selectedId?: string; locale: Locale; onSelect: (form: PlayerForm) => void; dueAt?: string; disabled?: boolean;showLegacyReminder?:boolean;
 }) {
   const t = createT(messages, locale);
   return <div className="space-y-4">
@@ -16,8 +16,8 @@ export function FormsTimeline({ forms, selectedId, locale, onSelect, dueAt, disa
         <p className="text-sm text-muted">{t('everyWeek')}</p>
         {dueAt && <p className="text-sm text-muted">{t('due', { date: formDate(dueAt, locale) })}</p>}
       </div>
-      <span title={t('reminderHint')}><button type="button" disabled title={t('reminderHint')}
-        className="min-h-12 rounded-control px-3 text-sm text-muted disabled:opacity-50">{t('reminder')}</button></span>
+      {showLegacyReminder && <span title={t('reminderHint')}><button type="button" disabled title={t('reminderHint')}
+        className="min-h-12 rounded-control px-3 text-sm text-muted disabled:opacity-50">{t('reminder')}</button></span>}
     </div>
     {!forms.length ? <p role="status" className="p-6 text-muted">{t('empty')}</p> :
       <ol aria-label={t('title')} className="divide-y divide-line overflow-hidden rounded-card border border-line">

@@ -14,6 +14,8 @@ import { FormDetail } from './form-detail';
 import { FormsTimeline } from './forms-timeline';
 import { FormsState } from './forms-state';
 import { messages } from './messages';
+import { RequestManager } from '@/features/forms';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 
 export function FormsScreen({ playerId, locale, review, sign }: {
   playerId: string; locale: Locale; review: ReviewAction; sign: SignPhotos;
@@ -45,9 +47,10 @@ export function FormsScreen({ playerId, locale, review, sign }: {
     });
   };
   return <section aria-label={t('title')} className="space-y-4">
+    {captainWorkspaceEnabled() && <RequestManager playerId={playerId} locale={locale} />}
     {resource.status === 'error' && <FormsState kind="error" locale={locale} retry={() => void resource.retry()} />}
     <div className="grid items-start gap-6 lg:grid-cols-[minmax(280px,1fr)_minmax(0,1.8fr)]">
-      <FormsTimeline forms={resource.data} selectedId={selected?.snapshot.source.id} locale={locale} onSelect={select} disabled={reviewing} />
+      <FormsTimeline forms={resource.data} selectedId={selected?.snapshot.source.id} locale={locale} onSelect={select} disabled={reviewing} showLegacyReminder={!captainWorkspaceEnabled()} />
       {selected && <div className={selectedId ? 'min-w-0' : 'min-w-0 hidden lg:block'}>
         <FormDetail key={selected.snapshot.source.id} form={selected} playerId={playerId} locale={locale}
           mutate={mutate} review={review} sign={sign} />

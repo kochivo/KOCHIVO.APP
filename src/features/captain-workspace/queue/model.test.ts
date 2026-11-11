@@ -6,6 +6,12 @@ const item: QueueItem = { id: 'a', player_id: 'p', player_name: 'Ahmed', kind: '
   created_at: '2026-11-10T11:00:00Z', reviewed_at: null, reply: null,
   week_start: '2026-11-07', body_weight_kg: 81, waist_cm: 84, notes: null };
 const previous = { source: { kind: 'checkin', id: 'old', at: '2026-11-01T12:00:00Z' }, facts: { weight: 82, waist: 86 } };
+it('prioritizes an alerting custom form answer as danger like a new injury',() => {
+  const row = queueRow({kind:'request',id:'r',player_id:'p',player_name:'Ahmed',title:'Injury',
+    created_at:now.toISOString(),reviewed_at:null,reply:null,alert:true,
+    snapshot:{source:{kind:'form',id:'r',at:now.toISOString()},facts:{}}},undefined,now);
+  expect(row).toMatchObject({kind:'form',newInjury:true,changes:[{key:'injury',style:'danger'}]});
+});
 it('compares adapter facts, limits chips and measures waiting time with injected now', () => {
   expect(queueRow(item, previous, now)).toMatchObject({ ageHours: 25, late: true,
     player: { id: 'p', name: 'Ahmed' }, changes: [

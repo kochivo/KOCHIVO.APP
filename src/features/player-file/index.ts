@@ -1,4 +1,4 @@
-export { age, checkinSnapshot, fitFacts, intakeSnapshot } from './model';
+export { age, checkinSnapshot, fitFacts, intakeSnapshot, formSnapshot } from './model';
 export type { CheckinRow, FactKey, FactValues, FormHistoryEntry, FormSource, IntakeRow, PlayerFact, PlayerFacts, PlayerFile, Snapshot } from './model';
 export { formHistory, mergePlayerFile } from './merge';
 export { compareSnapshots } from './compare-snapshots';

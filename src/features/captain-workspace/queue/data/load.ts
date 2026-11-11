@@ -1,8 +1,10 @@
 import { loadQueuePage, loadQueueReviews, loadQueueTriage } from './page';
 import type { QueuePage } from './page';
-import type { InboxItem, TriageInputs } from '@/features/inbox';
+import type { TriageInputs } from '@/features/inbox';
+import type { QueueItem } from '../model';
 import { loadQueueCounts } from './counts';
-export interface QueueData { pages: QueuePage[]; reviews: InboxItem[]; triage: TriageInputs; counts: Awaited<ReturnType<typeof loadQueueCounts>>; at?: string }
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+export interface QueueData { pages: QueuePage[]; reviews: QueueItem[]; triage: TriageInputs; counts: Awaited<ReturnType<typeof loadQueueCounts>>; at?: string }
 export function mergeQueuePage(current: QueueData | undefined, result: QueueData): QueueData {
   if (!current) return result;
   if (current.pages[0]?.at !== result.pages[0]?.at) return current;
@@ -16,8 +18,9 @@ export async function loadQueue(): Promise<QueueData> {
 }
 export async function moreQueue(data: QueueData): Promise<QueueData> {
   const last = data.pages.at(-1);
-  if (!last || (!last.cursor && !last.renewalCursor)) return data;
+  if (!last || (!last.cursor && !last.renewalCursor && !last.requestCursor)) return data;
   const page = await loadQueuePage({ cursor: last.cursor ?? undefined, renewalCursor: last.renewalCursor ?? undefined,
+    ...(captainWorkspaceEnabled() ? {requestCursor:last.requestCursor ?? undefined,skipRequests:!last.requestCursor} : {}),
     skipInbox: !last.cursor, skipRenewals: !last.renewalCursor });
   const ids = [...new Set(page.items.filter(item => item.kind === 'checkin').map(item => item.player_id))];
   const extra = await loadQueueTriage(ids, page.at);

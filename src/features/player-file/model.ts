@@ -16,7 +16,7 @@ export interface FactValues {
   note: string | null;
 }
 export type FactKey = keyof FactValues;
-export type FormSource = { kind: 'intake' | 'checkin' | (string & Record<never, never>); id: string; at: string };
+export type FormSource = { kind: 'intake' | 'checkin' | (string & Record<never, never>); id: string; at: string; title?: string };
 export type PlayerFact<K extends FactKey = FactKey> = {
   key: K;
   value: FactValues[K];
@@ -60,6 +60,26 @@ export function checkinSnapshot(row: CheckinRow): Snapshot {
       ...(row.notes === null ? {} : { note: row.notes }),
     },
   };
+}
+
+export function formSnapshot(request: { id: string; answered_at: string; title?: string },
+  answers: readonly { question_id: string; value: unknown }[],
+  questions: readonly { id: string; maps_to: string | null }[]): Snapshot {
+  const facts: Partial<FactValues> = {};
+  for (const q of questions) {
+    const key = q.maps_to;
+    if (!key) continue;
+    const value = answers.find(a => a.question_id === q.id)?.value;
+    if (['weight','targetWeight','height','age','sessionMinutes','waist'].includes(key)
+      && typeof value === 'number' && Number.isFinite(value)) Object.assign(facts,{ [key]: value });
+    if (['sex','experience','note'].includes(key) && typeof value === 'string' && value.trim()) Object.assign(facts,{ [key]: value });
+    if (['injuries','medical','allergies'].includes(key) && Array.isArray(value) && value.every(v => typeof v === 'string'))
+      Object.assign(facts,{ [key]: [...value] });
+    if (key === 'trainingDays' && Array.isArray(value) && value.every(v => /^[0-6]$/.test(String(v))))
+      facts.trainingDays = [...new Set(value.map(Number))].sort((a,b) => a-b);
+  }
+  return { source: { kind: 'form', id: request.id, at: request.answered_at,
+    ...(request.title === undefined ? {} : { title: request.title }) }, facts };
 }
 
 export function fitFacts(facts: PlayerFacts) {

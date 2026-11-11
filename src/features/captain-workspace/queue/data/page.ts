@@ -11,15 +11,18 @@ import { messages } from '../messages';
 import type { QueueItem } from '../model';
 import type { Snapshot } from '@/features/player-file';
 import { cairoMidnight } from '../time';
+import { customFormRows } from './custom-forms';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 
 const cursorSchema = z.object({ created_at: z.iso.datetime({ offset: true }), id: z.uuid() });
 export type Cursor = z.infer<typeof cursorSchema>;
 export interface QueuePage { items: QueueItem[]; previous: Record<string, Snapshot>;
-  cursor: Cursor | null; renewalCursor: Cursor | null; at: string }
-export async function loadQueuePage(input: { cursor?: Cursor; renewalCursor?: Cursor; skipInbox?: boolean; skipRenewals?: boolean } = {}): Promise<QueuePage> {
+  cursor: Cursor | null; renewalCursor: Cursor | null; requestCursor?: Cursor | null; at: string }
+export async function loadQueuePage(input: { cursor?: Cursor; renewalCursor?: Cursor; requestCursor?:Cursor; skipRequests?:boolean; skipInbox?: boolean; skipRenewals?: boolean } = {}): Promise<QueuePage> {
   const t = await getT(messages);
   try {
     const parsed = z.object({ cursor: cursorSchema.optional(), renewalCursor: cursorSchema.optional(),
+      requestCursor:cursorSchema.optional(),skipRequests:z.boolean().optional(),
       skipInbox: z.boolean().optional(), skipRenewals: z.boolean().optional() }).parse(input);
     const now = new Date();
     const client = await supabaseServer();
@@ -36,12 +39,13 @@ export async function loadQueuePage(input: { cursor?: Cursor; renewalCursor?: Cu
       const c = parsed.renewalCursor;
       renewals.or(`created_at.lt.${c.created_at},and(created_at.eq.${c.created_at},id.gt.${c.id})`);
     }
-    const [open, ending] = await Promise.all([
+    const [open, ending,custom] = await Promise.all([
       parsed.skipInbox ? Promise.resolve({ data: [], error: undefined, nextCursor: null }) : listInbox({ status: 'open', limit: 50, cursor: parsed.cursor }),
       parsed.skipRenewals ? Promise.resolve({ data: [], error: null }) : renewals,
+      parsed.skipRequests ? Promise.resolve({items:[],cursor:null}) : customFormRows(client,captain,parsed.requestCursor),
     ]);
     if (open.error || ending.error) throw new Error();
-    const items: QueueItem[] = [...open.data ?? [], ...(ending.data ?? []).map(row => ({
+    const items: QueueItem[] = [...custom.items,...open.data ?? [], ...(ending.data ?? []).map(row => ({
       kind: 'renewal' as const, id: row.id, player_id: row.player_id, player_name: row.profiles?.full_name ?? t('player'),
       // Ending-soon items begin waiting on entry to the seven-day window, not on roster creation.
       created_at: new Date(cairoMidnight(row.access_until) - 7 * 86_400_000).toISOString(),
@@ -57,7 +61,7 @@ export async function loadQueuePage(input: { cursor?: Cursor; renewalCursor?: Cu
       if (result.data?.[0]) previous[item.id] = checkinSnapshot(result.data[0]);
     }));
     const last = ending.data?.at(-1);
-    return { items, previous, cursor: open.nextCursor ?? null,
+    return { items, previous, cursor: open.nextCursor ?? null,...(captainWorkspaceEnabled() ? {requestCursor:custom.cursor} : {}),
       renewalCursor: ending.data?.length === 50 && last ? { created_at: last.created_at, id: last.id } : null,
       at: now.toISOString() };
   } catch (error) { unstable_rethrow(error); throw new Error(t('error')); }
@@ -66,6 +70,13 @@ export async function loadQueuePage(input: { cursor?: Cursor; renewalCursor?: Cu
 export async function loadQueueReviews() {
   const result = await listInbox({ status: 'reviewed', limit: 50 });
   if (result.error) throw new Error(result.error);
+  if (captainWorkspaceEnabled()) {
+    const client = await supabaseServer();
+    const auth = await client.auth.getClaims();
+    if (auth.error || !auth.data?.claims.sub) throw new Error();
+    const custom = await customFormRows(client,auth.data.claims.sub,undefined,true);
+    return [...(result.data ?? []),...custom.items];
+  }
   return result.data ?? [];
 }
 

@@ -6,6 +6,7 @@ import { getT } from '@/core/i18n/server';
 import { messages } from '../messages';
 import { z } from 'zod';
 import { cairoMidnight, weekStart } from '../time';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 
 export async function loadQueueCounts(at: string) {
   const t = await getT(messages);
@@ -25,6 +26,13 @@ export async function loadQueueCounts(at: string) {
     if (results.some(result => result.error)) throw new Error(t('error'));
     return results.map(result => result.count ?? 0);
   }));
+  if (captainWorkspaceEnabled()) {
+    const base = () => client.from('form_requests').select('id',{count:'exact',head:true}).eq('captain_id',captain).not('answered_at','is',null).limit(1);
+    const results = await Promise.all([base().is('reviewed_at',null),base().is('reviewed_at',null).lt('answered_at',lateAt),
+      base().not('reviewed_at','is',null),base().gte('reviewed_at',weekAt).lte('reviewed_at',at)]);
+    if (results.some(r => r.error)) throw new Error(t('error'));
+    tables.push(results.map(r => r.count ?? 0));
+  }
   const renewal = () => client.from('coach_clients').select('id', { count: 'exact', head: true })
     .eq('captain_id', captain).is('archived_at', null).is('frozen_at', null).eq('pending', false)
     .gte('access_until', localDate(now)).lte('access_until', end).limit(1);
