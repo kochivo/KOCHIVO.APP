@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Captain workspace v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600&family=Changa:wght@500;600;700&family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+:root{--bg:#0b0c0d;--deep:#070808;--surface:#141414;--raised:#1c1c1c;--line:#292929;--soft:rgb(242 242 238/.06);--ink:#f4f4f1;--muted:#a6abb0;--faint:#80858b;--lime:#b6e94f;--on-lime:#101418;--lime-soft:rgb(182 233 79/.12);--warn:#f2b544;--warn-soft:rgb(242 181 68/.12);--calm:#c9d5ff;--sore:#f5ac78}
+*{box-sizing:border-box;margin:0}
+body{background:var(--deep);color:var(--ink);font-family:Manrope,Alexandria,system-ui,sans-serif;font-size:14px;min-height:100vh}
+.num{font-family:Manrope,sans-serif;font-variant-numeric:tabular-nums}
+.disp{font-family:Manrope,Changa,Alexandria,sans-serif}
+.app{display:grid;grid-template-columns:64px 1fr 320px;min-height:100vh}
+.rail{background:var(--bg);border-inline-end:1px solid var(--line);display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 0}
+.logo{width:38px;height:38px;border-radius:12px;background:var(--lime);color:var(--on-lime);display:grid;place-items:center;font-weight:800;margin-bottom:12px}
+.ri{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;color:var(--faint);font-size:20px}
+.ri.on{background:var(--lime-soft);color:var(--lime)}
+.main{min-width:0;display:flex;flex-direction:column}
+.top{display:flex;align-items:center;gap:14px;padding:14px 28px}
+.av{width:40px;height:40px;border-radius:50%;background:var(--raised);border:2px solid var(--lime);display:grid;place-items:center;font-weight:600;font-size:13px}
+.name{font-size:17px;font-weight:600}
+.meta{color:var(--muted);font-size:12px;margin-top:2px}
+.tabs{display:flex;gap:22px;margin-inline-start:28px;align-self:stretch;align-items:stretch}
+.tab{display:flex;align-items:center;color:var(--faint);font-size:13.5px;border-bottom:2px solid transparent;gap:6px}
+.tab.on{color:var(--ink);border-color:var(--lime)}
+.sp{flex:1}
+.k{display:flex;align-items:center;gap:8px;min-height:40px;padding:0 12px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--faint);font-size:13px;min-width:230px}
+.k kbd{margin-inline-start:auto;font-family:Manrope;font-size:11px;border:1px solid var(--line);border-radius:6px;padding:1px 6px}
+.btn{min-height:44px;padding:0 16px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--ink);display:inline-flex;align-items:center;gap:8px;font:inherit;cursor:pointer}
+.pri{background:var(--lime);color:var(--on-lime);border-color:var(--lime);font-weight:700}
+.hr{border-top:1px solid var(--line)}
+.plan{display:flex;align-items:center;gap:16px;padding:18px 28px 6px}
+.plan h1{font-size:26px;font-weight:700;letter-spacing:-.01em}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;font-size:12px;background:var(--surface);border:1px solid var(--line);color:var(--muted)}
+.pill.ok{background:var(--lime-soft);border-color:transparent;color:var(--lime)}
+.week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px;padding:14px 28px}
+.d{border-radius:18px;border:1px solid var(--line);background:var(--surface);padding:12px;display:flex;flex-direction:column;gap:8px;min-height:108px;cursor:pointer;position:relative}
+.d .w{font-size:11.5px;color:var(--faint);display:flex;justify-content:space-between}
+.d .t{font-weight:600;font-size:13.5px}
+.d .tags{display:flex;gap:4px;flex-wrap:wrap}
+.tg{font-size:10.5px;padding:2px 7px;border-radius:999px;background:var(--raised);color:var(--muted)}
+.d .bar{height:4px;border-radius:4px;background:var(--raised);margin-top:auto;overflow:hidden}
+.d .bar i{display:block;height:100%;background:var(--muted)}
+.d.on{border-color:var(--lime);background:linear-gradient(var(--lime-soft),var(--lime-soft)),var(--surface)}
+.d.on .bar i{background:var(--lime)}
+.d.rest{border-style:dashed;background:transparent;align-items:center;justify-content:center;color:var(--faint)}
+.d.add{border-style:dashed;background:transparent;align-items:center;justify-content:center;color:var(--lime)}
+.body{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px;padding:6px 28px 28px;flex:1}
+.dayh{display:flex;align-items:center;gap:10px;margin:8px 0 12px}
+.dayh h2{font-size:18px;font-weight:600}
+.ex{border:1px solid var(--line);border-radius:20px;background:var(--surface);margin-bottom:10px}
+.exh{display:flex;align-items:center;gap:14px;padding:12px 14px}
+.gif{width:64px;height:64px;border-radius:14px;background:#fff;display:grid;place-items:center;color:#1a1a1a;font-size:28px;flex:none}
+.exh .t{font-weight:600;font-size:15px}
+.exh .s{color:var(--faint);font-size:12px;margin-top:3px;display:flex;gap:6px;align-items:center}
+.trend{display:flex;align-items:end;gap:3px;height:28px;margin-inline-start:auto}
+.trend i{width:6px;border-radius:2px;background:var(--raised)}
+.trend i:last-child{background:var(--lime)}
+.sum{font-family:Manrope;font-weight:700;font-size:15px;color:var(--muted);min-width:96px;text-align:end}
+.tools{display:flex;gap:2px;color:var(--faint)}
+.tools i{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;font-size:17px}
+.sets{display:grid;grid-template-columns:28px repeat(4,minmax(0,1fr)) 92px;gap:6px 8px;padding:0 14px 14px;align-items:center}
+.sets .h{font-size:11px;color:var(--faint);padding:0 4px}
+.c{height:42px;border-radius:12px;background:var(--bg);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:Manrope;font-weight:700;font-size:14.5px}
+.c.f{border-color:var(--lime);box-shadow:0 0 0 3px var(--lime-soft)}
+.c.up{color:var(--lime)}
+.n{color:var(--faint);text-align:center;font-family:Manrope}
+.last{direction:ltr;text-align:center;font-family:Manrope;color:var(--faint);font-size:12.5px}
+.last b{color:var(--muted)}
+.ss{position:relative;padding-inline-start:16px}
+.ss::before{content:"";position:absolute;inset-inline-start:4px;top:18px;bottom:28px;border-inline-start:2px solid var(--calm);border-radius:2px}
+.sslabel{font-size:11.5px;color:var(--calm);display:flex;gap:6px;align-items:center;margin:4px 0 8px}
+.ko{display:flex;gap:10px;align-items:center;padding:8px 10px;margin:0 14px 14px;border-radius:14px;background:var(--lime-soft);font-size:12.5px;line-height:1.6}
+.ko b{font-family:Manrope}
+.kd{width:28px;height:28px;border-radius:50%;background:var(--lime);color:var(--on-lime);display:grid;place-items:center;font-weight:800;font-size:11px;flex:none}
+.ko .a{margin-inline-start:auto;display:flex;gap:6px}
+.mini{min-height:34px;padding:0 12px;border-radius:10px;font-size:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:12px}
+.mini.g{border-color:var(--lime);color:var(--lime);background:transparent}
+.addex{border:1px dashed var(--line);border-radius:20px;padding:16px;display:flex;align-items:center;gap:10px;color:var(--faint)}
+.addex kbd{font-family:Manrope;font-size:11px;border:1px solid var(--line);border-radius:6px;padding:1px 6px;margin-inline-start:auto}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:12px}
+.card h3{font-size:13.5px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.card h3 span{margin-inline-start:auto;font-size:11.5px;color:var(--faint);font-weight:400}
+.vol{display:grid;grid-template-columns:70px 1fr 34px;gap:8px;align-items:center;font-size:12.5px;margin-bottom:9px}
+.track{height:8px;border-radius:8px;background:var(--raised);position:relative}
+.track .z{position:absolute;top:-3px;bottom:-3px;border-inline:1px dashed #4a4a4a;background:rgb(255 255 255/.03)}
+.track .v{position:absolute;inset-block:0;inset-inline-start:0;border-radius:8px;background:var(--lime)}
+.track .v.lo{background:var(--warn)}
+.track .v.hi{background:var(--sore)}
+.vol .num{text-align:end;color:var(--muted)}
+.lg{display:flex;gap:12px;font-size:11px;color:var(--faint);margin-top:6px}
+.lg i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-inline-end:4px;vertical-align:0}
+.side{background:var(--bg);border-inline-start:1px solid var(--line);padding:18px;display:flex;flex-direction:column;gap:14px}
+.sh{display:flex;align-items:center;gap:8px;font-weight:600}
+.seg{display:flex;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:3px}
+.seg div{flex:1;text-align:center;padding:7px;border-radius:9px;font-size:12.5px;color:var(--faint)}
+.seg .on{background:var(--raised);color:var(--ink)}
+.stat{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.st{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px}
+.st .l{font-size:11.5px;color:var(--faint)}
+.st .v{font-family:Manrope;font-weight:800;font-size:20px;margin-top:4px}
+.st .v small{font-size:12px;color:var(--lime);font-weight:700}
+.spark{display:flex;align-items:end;gap:4px;height:44px;margin-top:8px}
+.spark i{flex:1;border-radius:3px;background:var(--raised)}
+.flag{display:flex;gap:8px;background:var(--warn-soft);color:var(--warn);border-radius:14px;padding:12px;font-size:12.5px;line-height:1.6}
+.qa{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;font-size:12.5px;line-height:1.7}
+.qa .q{color:var(--faint);font-size:11.5px}
+.prev{margin-top:auto;display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;color:var(--muted);font-size:13px}
+.prev i{font-size:20px;color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="rail">
+    <div class="logo">K</div>
+    <div class="ri"><i class="ti ti-layout-dashboard"></i></div>
+    <div class="ri on"><i class="ti ti-users"></i></div>
+    <div class="ri"><i class="ti ti-template"></i></div>
+    <div class="ri"><i class="ti ti-inbox"></i></div>
+    <div class="ri"><i class="ti ti-receipt-2"></i></div>
+    <div class="sp"></div>
+    <div class="ri"><i class="ti ti-settings"></i></div>
+  </nav>
+
+  <main class="main">
+    <div class="top">
+      <div class="av">أس</div>
+      <div><div class="name">أحمد سمير</div><div class="meta"><span class="num">82.4</span> كجم · فاضل <span class="num">18</span> يوم في الباقة</div></div>
+      <div class="tabs">
+        <div class="tab">نظرة عامة</div><div class="tab on">التمرين</div><div class="tab">التغذية</div>
+        <div class="tab">المتابعات <span class="pill num" style="padding:0 7px;background:var(--warn-soft);color:var(--warn);border:0">1</span></div>
+        <div class="tab">المدفوعات</div>
+      </div>
+      <div class="sp"></div>
+      <div class="k"><i class="ti ti-search"></i>ضيف تمرين أو دوّر…<kbd>Ctrl K</kbd></div>
+    </div>
+    <div class="hr"></div>
+
+    <div class="plan">
+      <div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px"><span class="pill ok"><i class="ti ti-circle-check"></i>شغالة</span><span class="pill"><i class="ti ti-history"></i>نسخة 3 · اتحفظ تلقائيًا</span></div>
+        <h1 class="disp">تضخيم · الأسبوع <span class="num">3</span> من <span class="num">8</span> <i class="ti ti-chevron-down" style="font-size:18px;color:var(--faint)"></i></h1>
+      </div>
+      <div class="sp"></div>
+      <button class="btn"><i class="ti ti-copy"></i>انسخ الأسبوع</button>
+      <button class="btn pri"><i class="ti ti-send"></i>ابعت التعديلات للاعب</button>
+    </div>
+
+    <div class="week">
+      <div class="d on"><div class="w"><span>السبت</span><span class="num">18 مج</span></div><div class="t">صدر وترايسبس</div><div class="tags"><span class="tg">صدر</span><span class="tg">ترايسبس</span></div><div class="bar"><i style="width:80%"></i></div></div>
+      <div class="d"><div class="w"><span>الأحد</span><span class="num">17 مج</span></div><div class="t">ظهر وبايسبس</div><div class="tags"><span class="tg">ظهر</span><span class="tg">بايسبس</span></div><div class="bar"><i style="width:75%"></i></div></div>
+      <div class="d rest"><i class="ti ti-zzz" style="font-size:20px"></i><span style="font-size:12px">الاتنين · راحة</span></div>
+      <div class="d"><div class="w"><span>التلات</span><span class="num">15 مج</span></div><div class="t">رجل</div><div class="tags"><span class="tg">فخذ</span><span class="tg">خلفية</span><span class="tg">سمانة</span></div><div class="bar"><i style="width:66%"></i></div></div>
+      <div class="d"><div class="w"><span>الأربع</span><span class="num">16 مج</span></div><div class="t">أكتاف وبطن</div><div class="tags"><span class="tg">أكتاف</span><span class="tg">بطن</span></div><div class="bar"><i style="width:70%"></i></div></div>
+      <div class="d rest"><i class="ti ti-zzz" style="font-size:20px"></i><span style="font-size:12px">الخميس · راحة</span></div>
+      <div class="d add"><i class="ti ti-plus" style="font-size:20px"></i><span style="font-size:12px">الجمعة · ضيف يوم</span></div>
+    </div>
+
+    <div class="body">
+      <section>
+        <div class="dayh"><h2>السبت · صدر وترايسبس</h2><span class="pill"><i class="ti ti-clock"></i><span class="num">~65</span> دقيقة</span><div class="sp"></div><span style="color:var(--faint);font-size:12.5px">ملاحظة اليوم <i class="ti ti-pencil"></i></span></div>
+
+        <div class="ex">
+          <div class="exh">
+            <i class="ti ti-grip-vertical" style="color:#444"></i>
+            <div class="gif"><i class="ti ti-barbell"></i></div>
+            <div><div class="t">بنش بريس بالبار</div><div class="s"><span>صدر</span>·<span>بار</span>·<span class="num">4</span> مجموعات</div></div>
+            <div class="trend" title="آخر 5 تمرينات"><i style="height:40%"></i><i style="height:52%"></i><i style="height:60%"></i><i style="height:60%"></i><i style="height:60%"></i></div>
+            <div class="tools"><i class="ti ti-replace"></i><i class="ti ti-dots"></i></div>
+          </div>
+          <div class="ko"><div class="kd">KO</div><span>ثبت على <b>80 × 10</b> آخر تمرينتين. زوّد <b>2.5</b> كجم؟</span><div class="a"><button class="mini">لأ</button><button class="mini g">زوّد</button></div></div>
+          <div class="sets">
+            <div class="h">#</div><div class="h">العدّات</div><div class="h">الوزن</div><div class="h">RIR</div><div class="h">الراحة</div><div class="h" style="text-align:center">آخر مرة</div>
+            <div class="n">1</div><div class="c">8-10</div><div class="c up">82.5</div><div class="c">2</div><div class="c">2:00</div><div class="last"><b>80</b> × 10</div>
+            <div class="n">2</div><div class="c">8-10</div><div class="c up f">82.5</div><div class="c">2</div><div class="c">2:00</div><div class="last"><b>80</b> × 10</div>
+            <div class="n">3</div><div class="c">8-10</div><div class="c up">82.5</div><div class="c">1</div><div class="c">2:00</div><div class="last"><b>80</b> × 9</div>
+            <div class="n">4</div><div class="c">12</div><div class="c">70</div><div class="c">0</div><div class="c">1:30</div><div class="last"><b>70</b> × 11</div>
+          </div>
+        </div>
+
+        <div class="ss">
+          <div class="sslabel"><i class="ti ti-link"></i>سوبر سِت · من غير راحة بينهم</div>
+          <div class="ex"><div class="exh"><i class="ti ti-grip-vertical" style="color:#444"></i><div class="gif" style="width:52px;height:52px"><i class="ti ti-stretching"></i></div><div><div class="t">إنكلاين دمبل</div><div class="s">صدر علوي · دمبل</div></div><div class="sp"></div><div class="sum num">3 × 10-12</div><div class="tools"><i class="ti ti-chevron-down"></i></div></div></div>
+          <div class="ex"><div class="exh"><i class="ti ti-grip-vertical" style="color:#444"></i><div class="gif" style="width:52px;height:52px"><i class="ti ti-arrows-cross"></i></div><div><div class="t">كيبل كروس أوفر</div><div class="s">صدر · كيبل</div></div><div class="sp"></div><div class="sum num">3 × 12-15</div><div class="tools"><i class="ti ti-chevron-down"></i></div></div></div>
+        </div>
+        <div class="ex"><div class="exh"><i class="ti ti-grip-vertical" style="color:#444"></i><div class="gif" style="width:52px;height:52px"><i class="ti ti-arrow-big-down-lines"></i></div><div><div class="t">ديبس</div><div class="s">ترايسبس · وزن الجسم</div></div><div class="sp"></div><div class="sum">3 × فشل</div><div class="tools"><i class="ti ti-chevron-down"></i></div></div></div>
+        <div class="addex"><i class="ti ti-plus"></i>ضيف تمرين: اكتب اسمه أو العضلة<kbd>Ctrl K</kbd></div>
+      </section>
+
+      <aside>
+        <div class="card">
+          <h3><i class="ti ti-chart-bar"></i>حجم الأسبوع لكل عضلة<span>مجموعات</span></h3>
+          <div class="vol"><span>صدر</span><div class="track"><div class="z" style="inset-inline-start:50%;width:40%"></div><div class="v" style="width:70%"></div></div><span class="num">14</span></div>
+          <div class="vol"><span>ظهر</span><div class="track"><div class="z" style="inset-inline-start:50%;width:40%"></div><div class="v" style="width:65%"></div></div><span class="num">13</span></div>
+          <div class="vol"><span>رجل</span><div class="track"><div class="z" style="inset-inline-start:50%;width:40%"></div><div class="v" style="width:60%"></div></div><span class="num">12</span></div>
+          <div class="vol"><span>أكتاف</span><div class="track"><div class="z" style="inset-inline-start:50%;width:40%"></div><div class="v" style="width:55%"></div></div><span class="num">11</span></div>
+          <div class="vol"><span>بايسبس</span><div class="track"><div class="z" style="inset-inline-start:50%;width:40%"></div><div class="v lo" style="width:30%"></div></div><span class="num">6</span></div>
+          <div class="vol"><span>ترايسبس</span><div class="track"><div class="z" style="inset-inline-start:50%;width:40%"></div><div class="v hi" style="width:100%"></div></div><span class="num">20+</span></div>
+          <div class="lg"><span><i style="background:var(--lime)"></i>مظبوط</span><span><i style="background:var(--warn)"></i>قليل</span><span><i style="background:var(--sore)"></i>كتير</span><span>المنطقة المظللة: 10-18</span></div>
+        </div>
+        <div class="card">
+          <h3><i class="ti ti-flame"></i>الأسبوع ده كان صعب؟<span>من تقييم اللاعب</span></h3>
+          <div class="spark"><i style="height:45%"></i><i style="height:55%"></i><i style="height:60%"></i><i style="height:72%;background:var(--lime)"></i></div>
+          <div class="lg"><span>أسبوع 1</span><span style="margin-inline-start:auto">أسبوع 3</span></div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <aside class="side">
+    <div class="sh"><i class="ti ti-user-search"></i>عن اللاعب</div>
+    <div class="seg"><div class="on">آخر متابعة</div><div>الفورم</div><div>ملاحظات</div></div>
+    <div class="stat">
+      <div class="st"><div class="l">الوزن</div><div class="v">82.4 <small>-0.6</small></div></div>
+      <div class="st"><div class="l">الالتزام</div><div class="v">92<small style="color:var(--muted)">%</small></div></div>
+      <div class="st"><div class="l">النوم</div><div class="v">6.5<small style="color:var(--muted)"> س</small></div></div>
+      <div class="st"><div class="l">الإجهاد</div><div class="v" style="color:var(--warn)">7<small style="color:var(--muted)">/10</small></div></div>
+    </div>
+    <div class="flag"><i class="ti ti-alert-triangle"></i><span>إصابة قديمة في الركبة الشمال. KO هينبّهك لو ضفت تمرين فيه قفز أو سكوات عميق.</span></div>
+    <div class="qa"><div class="q">كتب في آخر متابعة</div>"البنش بقى خفيف، والكتف اليمين مريح. النوم قليل الأسبوع ده عشان الشغل."</div>
+    <div class="prev"><i class="ti ti-device-mobile"></i>شوف التمرين بعين اللاعب<i class="ti ti-arrow-up-left" style="margin-inline-start:auto;font-size:16px;color:var(--faint)"></i></div>
+  </aside>
+</div>
+</body>
+</html>

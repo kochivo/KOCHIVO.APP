@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Captain workspace mobile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;500;600&family=Changa:wght@500;600;700&family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+:root{--deep:#070808;--glass:rgb(255 255 255/.03);--glass2:rgb(255 255 255/.055);--hair:rgb(242 242 238/.08);--hair2:rgb(242 242 238/.14);--ink:#f4f4f1;--muted:#a6abb0;--faint:#6f747a;--lime:#b6e94f;--on-lime:#101418;--lime-soft:rgb(182 233 79/.11);--warn:#f2b544;--warn-soft:rgb(242 181 68/.11);--calm:#c9d5ff;--calm-soft:rgb(201 213 255/.10)}
+*{box-sizing:border-box;margin:0}
+body{background:#030303;color:var(--ink);font-family:Alexandria,system-ui,sans-serif;font-size:14px;min-height:100vh;padding:32px 16px}
+.num{font-family:Manrope,sans-serif;font-variant-numeric:tabular-nums}
+.ltr{direction:ltr;display:inline-block}
+.stage{display:flex;gap:36px;justify-content:center;flex-wrap:wrap;align-items:flex-start}
+.cap{text-align:center;color:var(--faint);font-size:13px;margin-top:14px;max-width:360px;line-height:1.7}
+.cap b{color:var(--ink);font-weight:500;display:block;font-size:14px}
+.phone{width:360px;height:760px;border-radius:46px;border:10px solid #1b1b1b;background:radial-gradient(500px 260px at 70% -80px,rgb(182 233 79/.08),transparent 70%),var(--deep);overflow:hidden;position:relative;display:flex;flex-direction:column}
+.status{height:34px;display:flex;justify-content:space-between;align-items:center;padding:0 22px;font-family:Manrope;font-size:12px;color:var(--muted)}
+.scroll{flex:1;overflow:hidden;padding:0 16px}
+.bar{display:flex;align-items:center;gap:10px;height:52px}
+.ib{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;color:var(--muted);font-size:20px;background:var(--glass);border:1px solid var(--hair)}
+.save{font-size:11.5px;color:var(--faint);display:flex;gap:6px;align-items:center}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--lime)}
+.sp{flex:1}
+/* player strip */
+.who{display:flex;align-items:center;gap:12px;margin:6px 0 12px}
+.av{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#2a2d22,#141414);border:1px solid var(--hair2);display:grid;place-items:center;font-size:14px;flex:none}
+.who h1{font-family:Changa,Alexandria,sans-serif;font-size:19px;font-weight:600}
+.who p{font-size:12px;color:var(--faint);margin-top:2px}
+.facts{display:flex;gap:6px;overflow:hidden;margin-bottom:14px}
+.fact{flex:none;height:34px;padding:0 12px;border-radius:999px;background:var(--glass2);font-size:12px;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.fact.w{background:var(--warn-soft);color:var(--warn)}
+.fact.new{background:var(--calm-soft);color:var(--calm)}
+.fact .nb{font-size:10px;background:var(--calm);color:#111;border-radius:999px;padding:1px 6px}
+.plan{display:flex;align-items:flex-end;gap:10px;margin-bottom:12px}
+.plan .e{font-size:11.5px;color:var(--faint);margin-bottom:4px}
+.plan h2{font-family:Changa,Alexandria,sans-serif;font-size:26px;font-weight:600;line-height:1.1}
+.ring{width:42px;height:42px;border-radius:50%;background:conic-gradient(var(--lime) 0 80%,rgb(255 255 255/.08) 0);display:grid;place-items:center;flex:none}
+.ring b{width:34px;height:34px;border-radius:50%;background:#0b0c0c;display:grid;place-items:center;font-family:Manrope;font-size:11px}
+.week{display:flex;gap:6px;margin-bottom:12px}
+.d{flex:1;height:58px;border-radius:16px;border:1px solid var(--hair);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;color:var(--faint)}
+.d b{font-size:13px;color:var(--ink);font-weight:500}
+.d.on{background:var(--glass2);border-color:var(--lime)}
+.d.off{background:repeating-linear-gradient(135deg,transparent 0 6px,rgb(255 255 255/.03) 6px 12px);opacity:.6}
+.d.off b{color:var(--faint)}
+.alert{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:16px;background:var(--warn-soft);color:var(--warn);font-size:12px;line-height:1.6;margin-bottom:12px}
+.alert button{margin-inline-start:auto;flex:none;height:34px;padding:0 12px;border-radius:999px;border:0;background:var(--lime-soft);color:var(--lime);font:inherit;font-size:12px}
+.dayh{display:flex;align-items:baseline;gap:8px;margin:4px 0 10px}
+.dayh h3{font-family:Changa,Alexandria,sans-serif;font-size:17px;font-weight:600}
+.dayh span{font-size:12px;color:var(--faint)}
+.ex{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:20px;background:var(--glass);border:1px solid var(--hair);margin-bottom:8px}
+.gif{width:48px;height:48px;border-radius:14px;background:#fff;display:grid;place-items:center;color:#111;font-size:22px;flex:none}
+.ex .t{font-size:14px;font-weight:500}
+.ex .s{font-size:12px;color:var(--faint);margin-top:3px}
+.ex .s .up{color:var(--lime)}
+.ex i.chev{margin-inline-start:auto;color:var(--faint)}
+.fab{position:absolute;inset-inline:16px;bottom:18px;display:flex;gap:10px}
+.fab .add{flex:none;width:56px;height:56px;border-radius:18px;background:var(--glass2);border:1px solid var(--hair2);display:grid;place-items:center;font-size:22px}
+.fab .send{flex:1;height:56px;border-radius:18px;background:var(--lime);color:var(--on-lime);display:flex;align-items:center;justify-content:center;gap:8px;font-weight:600;box-shadow:0 12px 30px -14px rgb(182 233 79/.6)}
+/* sheet */
+.dim{position:absolute;inset:0;background:rgb(0 0 0/.55)}
+.sheet{position:absolute;inset-inline:0;bottom:0;top:70px;background:#101111;border-radius:30px 30px 0 0;border-top:1px solid var(--hair2);padding:10px 18px 18px;overflow:hidden}
+.grab{width:40px;height:5px;border-radius:5px;background:var(--hair2);margin:0 auto 14px}
+.sh{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.sh h2{font-family:Changa,Alexandria,sans-serif;font-size:20px;font-weight:600}
+.sub{font-size:12px;color:var(--faint);margin-bottom:14px}
+.seg{display:flex;background:var(--glass);border:1px solid var(--hair);border-radius:14px;padding:3px;margin-bottom:14px}
+.seg div{flex:1;text-align:center;height:40px;display:grid;place-items:center;border-radius:11px;font-size:12.5px;color:var(--faint)}
+.seg .on{background:var(--glass2);color:var(--ink)}
+.kv{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--hair)}
+.kv .k{font-size:12.5px;color:var(--faint);width:84px;flex:none}
+.kv .v{font-size:14px}
+.kv .src{margin-inline-start:auto;font-size:10.5px;color:var(--faint);text-align:end;line-height:1.5}
+.kv .src.new{color:var(--calm)}
+.was{font-size:11.5px;color:var(--faint);text-decoration:line-through;margin-inline-start:6px}
+.chg{color:var(--calm);font-size:11px;margin-inline-start:6px}
+.tl{position:relative;padding-inline-start:18px}
+.tl::before{content:"";position:absolute;inset-inline-start:5px;top:6px;bottom:6px;border-inline-start:1px solid var(--hair2)}
+.ti-dot{position:absolute;inset-inline-start:0;top:16px;width:11px;height:11px;border-radius:50%;background:#101111;border:2px solid var(--faint)}
+.form{position:relative;padding:12px 0;border-bottom:1px solid var(--hair)}
+.form.new .ti-dot{border-color:var(--calm);background:var(--calm)}
+.form .t{font-size:14px;font-weight:500;display:flex;gap:8px;align-items:center}
+.form .s{font-size:12px;color:var(--faint);margin-top:3px}
+.form .nb{font-size:10px;background:var(--calm);color:#111;border-radius:999px;padding:1px 7px}
+/* set editor */
+.exhead{display:flex;gap:12px;align-items:center;margin:4px 0 14px}
+.exhead .gif{width:64px;height:64px;border-radius:18px;font-size:28px}
+.exhead h2{font-size:18px;font-weight:500}
+.exhead p{font-size:12px;color:var(--faint);margin-top:3px}
+.ko{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:16px;background:var(--lime-soft);font-size:12px;line-height:1.6;margin-bottom:14px}
+.kd{width:28px;height:28px;border-radius:50%;background:var(--lime);color:var(--on-lime);display:grid;place-items:center;font-family:Manrope;font-weight:800;font-size:10px;flex:none}
+.set{border-radius:20px;background:var(--glass);border:1px solid var(--hair);padding:12px;margin-bottom:8px}
+.set.on{border-color:var(--lime);background:var(--glass2)}
+.set .top{display:flex;align-items:center;font-size:12px;color:var(--faint);margin-bottom:8px}
+.set .top .last{margin-inline-start:auto;direction:ltr;font-family:Manrope}
+.steps{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stp{display:flex;align-items:center;height:56px;border-radius:16px;background:rgb(0 0 0/.35);border:1px solid var(--hair)}
+.stp button{width:48px;height:100%;border:0;background:none;color:var(--muted);font-size:20px}
+.stp .v{flex:1;text-align:center;font-family:Manrope;font-weight:800;font-size:19px;line-height:1}
+.stp .v small{display:block;font-family:Alexandria;font-weight:400;font-size:10.5px;color:var(--faint);margin-top:3px}
+.stp .v.auto{color:var(--lime)}
+.mini{display:flex;gap:6px;margin-top:8px}
+.mini span{flex:1;height:36px;border-radius:12px;border:1px solid var(--hair);display:grid;place-items:center;font-size:12px;color:var(--muted)}
+.collapsed{display:flex;align-items:center;gap:10px;font-size:13px}
+.collapsed .r{margin-inline-start:auto;direction:ltr;font-family:Manrope;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="stage">
+
+  <!-- 1. plan screen -->
+  <div>
+    <div class="phone">
+      <div class="status"><span>9:41</span><span><i class="ti ti-wifi"></i> <i class="ti ti-battery-3"></i></span></div>
+      <div class="scroll">
+        <div class="bar"><div class="ib"><i class="ti ti-chevron-right"></i></div><div class="sp"></div><div class="save"><span class="dot"></span>اتحفظ</div><div class="ib"><i class="ti ti-dots"></i></div></div>
+        <div class="who"><div class="av">أس</div><div><h1>أحمد سمير</h1><p><span class="num">27</span> سنة · <span class="num">82.4</span> كجم ← <span class="num">86</span></p></div></div>
+        <div class="facts">
+          <span class="fact new"><i class="ti ti-point-filled"></i>الكتف اليمين<span class="nb">جديد</span></span>
+          <span class="fact w">الركبة الشمال</span>
+          <span class="fact num">60 د</span>
+          <span class="fact num">5 أيام</span>
+        </div>
+        <div class="plan"><div><div class="e">الأسبوع <span class="num">3</span> من <span class="num">8</span></div><h2>تضخيم</h2></div><div class="sp"></div><div class="ring"><b>4/5</b></div></div>
+        <div class="week">
+          <div class="d on">سبت<b>صدر</b></div><div class="d">حد<b>ظهر</b></div><div class="d off">اتنين<b>—</b></div><div class="d">تلات<b>رجل</b></div><div class="d">أربع<b>كتف</b></div><div class="d off">خميس<b>—</b></div><div class="d">جمعة<b>راحة</b></div>
+        </div>
+        <div class="alert"><i class="ti ti-alert-circle"></i><span>الكتف اليمين اتضاف في متابعة <span class="num">10</span> نوفمبر. الأوفرهيد بريس يوم الأربع ممكن يضايقه.</span><button>بدّله</button></div>
+        <div class="dayh"><h3>السبت · صدر وترايسبس</h3><span class="num">~65 د</span></div>
+        <div class="ex"><div class="gif"><i class="ti ti-barbell"></i></div><div><div class="t">بنش بريس بالبار</div><div class="s"><span class="ltr num">4 × 8-10</span> · <span class="up num">82.5 كجم ↑</span></div></div><i class="ti ti-chevron-left chev"></i></div>
+        <div class="ex"><div class="gif"><i class="ti ti-stretching"></i></div><div><div class="t">إنكلاين دمبل</div><div class="s"><span class="ltr num">3 × 10-12</span> · <span class="num">26 كجم</span></div></div><i class="ti ti-chevron-left chev"></i></div>
+        <div class="ex"><div class="gif"><i class="ti ti-arrows-cross"></i></div><div><div class="t">كيبل كروس أوفر</div><div class="s"><span class="ltr num">3 × 12-15</span> · <span class="num">15 كجم</span></div></div><i class="ti ti-chevron-left chev"></i></div>
+      </div>
+      <div class="fab"><div class="add"><i class="ti ti-plus"></i></div><div class="send"><i class="ti ti-send"></i>ابعت للاعب</div></div>
+    </div>
+    <p class="cap"><b>1. الخطة</b>بيانات اللاعب المهمة في سطر واحد فوق. الجديد من آخر فورم لونه أزرق، ولو أثّر على الخطة يطلع تنبيه بحل جاهز.</p>
+  </div>
+
+  <!-- 2. player file sheet -->
+  <div>
+    <div class="phone">
+      <div class="status"><span>9:41</span><span><i class="ti ti-wifi"></i> <i class="ti ti-battery-3"></i></span></div>
+      <div class="scroll" style="opacity:.35">
+        <div class="bar"><div class="ib"><i class="ti ti-chevron-right"></i></div></div>
+        <div class="who"><div class="av">أس</div><div><h1>أحمد سمير</h1></div></div>
+      </div>
+      <div class="dim"></div>
+      <div class="sheet">
+        <div class="grab"></div>
+        <div class="sh"><h2>ملف أحمد</h2><div class="sp"></div><div class="ib" style="width:38px;height:38px"><i class="ti ti-x"></i></div></div>
+        <p class="sub">آخر إجابة في كل حاجة، من كل الفورمز. جنب كل إجابة مصدرها.</p>
+        <div class="seg"><div class="on">آخر بيانات</div><div>كل الفورمز <span class="num">4</span></div></div>
+        <div class="kv"><span class="k">الوزن</span><span class="v num">82.4<span class="was">79</span></span><span class="src">متابعة<br><span class="num">10</span> نوفمبر</span></div>
+        <div class="kv"><span class="k">الإصابات</span><span class="v">الركبة الشمال، الكتف اليمين<span class="chg">+ الكتف</span></span><span class="src new">متابعة<br><span class="num">10</span> نوفمبر</span></div>
+        <div class="kv"><span class="k">الأيام</span><span class="v">سبت حد تلات أربع جمعة</span><span class="src">onboarding<br><span class="num">3</span> نوفمبر</span></div>
+        <div class="kv"><span class="k">وقت التمرينة</span><span class="v num">60 دقيقة</span><span class="src">onboarding<br><span class="num">3</span> نوفمبر</span></div>
+        <div class="kv"><span class="k">الحساسية</span><span class="v">اللبن</span><span class="src">onboarding<br><span class="num">3</span> نوفمبر</span></div>
+        <div class="kv"><span class="k">الخبرة</span><span class="v num">1-3 سنين</span><span class="src">onboarding<br><span class="num">3</span> نوفمبر</span></div>
+        <div class="kv" style="border:0;flex-direction:column;align-items:flex-start;gap:6px"><span class="k" style="width:auto">كتب آخر مرة</span><span class="v" style="font-size:13px;line-height:1.8;color:var(--muted)">"الكتف اليمين بيوجعني في الضغط فوق الراس. الباقي تمام."</span></div>
+      </div>
+    </div>
+    <p class="cap"><b>2. ملف اللاعب</b>بيتفتح من فوق بضغطة. بيجمع آخر إجابة من كل فورم، سواء onboarding أو متابعة أو أي فورم جديد، وجنبها مصدرها وتاريخها. القيمة القديمة بتبان مشطوبة.</p>
+  </div>
+
+  <!-- 3. form history -->
+  <div>
+    <div class="phone">
+      <div class="status"><span>9:41</span><span><i class="ti ti-wifi"></i> <i class="ti ti-battery-3"></i></span></div>
+      <div class="dim" style="background:rgb(0 0 0/.0)"></div>
+      <div class="sheet" style="top:46px">
+        <div class="grab"></div>
+        <div class="sh"><h2>ملف أحمد</h2></div>
+        <p class="sub">كل فورم بعته بالترتيب.</p>
+        <div class="seg"><div>آخر بيانات</div><div class="on">كل الفورمز <span class="num">4</span></div></div>
+        <div class="tl">
+          <div class="form new"><span class="ti-dot"></span><div class="t">متابعة أسبوعية<span class="nb">جديد</span></div><div class="s"><span class="num">10</span> نوفمبر · غيّر: الوزن، الإصابات</div></div>
+          <div class="form"><span class="ti-dot"></span><div class="t">فورم تقييم التمرين</div><div class="s"><span class="num">6</span> نوفمبر · فورم بعته الكابتن</div></div>
+          <div class="form"><span class="ti-dot"></span><div class="t">متابعة أسبوعية</div><div class="s"><span class="num">3</span> نوفمبر · مفيش تغيير مهم</div></div>
+          <div class="form"><span class="ti-dot"></span><div class="t">Onboarding</div><div class="s"><span class="num">3</span> نوفمبر · أول بيانات</div></div>
+        </div>
+        <div style="margin-top:16px;display:flex;gap:8px">
+          <div class="fact" style="height:44px;flex:1;justify-content:center"><i class="ti ti-send"></i>ابعت فورم جديد</div>
+        </div>
+      </div>
+    </div>
+    <p class="cap"><b>3. تاريخ الفورمز</b>كل فورم مكتوب جنبه هو غيّر إيه، فالكابتن مش محتاج يفتح كل واحد عشان يعرف الجديد.</p>
+  </div>
+
+  <!-- 4. set editor -->
+  <div>
+    <div class="phone">
+      <div class="status"><span>9:41</span><span><i class="ti ti-wifi"></i> <i class="ti ti-battery-3"></i></span></div>
+      <div class="scroll">
+        <div class="bar"><div class="ib"><i class="ti ti-chevron-right"></i></div><div class="sp"></div><div class="ib"><i class="ti ti-replace"></i></div><div class="ib"><i class="ti ti-dots"></i></div></div>
+        <div class="exhead"><div class="gif"><i class="ti ti-barbell"></i></div><div><h2>بنش بريس بالبار</h2><p>صدر · بار · آخر مرة <span class="ltr num">80 × 10</span></p></div></div>
+        <div class="ko"><div class="kd">KO</div><span>ثبت على <b class="num">80</b> كجم تمرينتين، فزوّدته <b class="num">2.5</b>. الأخضر اتظبط تلقائيًا.</span></div>
+        <div class="set on">
+          <div class="top">المجموعة <span class="num">&nbsp;1</span><span class="last">80 × 10</span></div>
+          <div class="steps">
+            <div class="stp"><button>+</button><div class="v num">8-10<small>عدّات</small></div><button>−</button></div>
+            <div class="stp"><button>+</button><div class="v num auto">82.5<small>كجم</small></div><button>−</button></div>
+          </div>
+          <div class="mini"><span>RIR <b class="num">&nbsp;2</b></span><span>راحة <b class="num">&nbsp;2:00</b></span></div>
+        </div>
+        <div class="set"><div class="collapsed"><span class="num" style="color:var(--faint)">2</span><span>مجموعة</span><span class="r">8-10 × <b style="color:var(--lime)">82.5</b></span></div></div>
+        <div class="set"><div class="collapsed"><span class="num" style="color:var(--faint)">3</span><span>مجموعة</span><span class="r">8-10 × <b style="color:var(--lime)">82.5</b></span></div></div>
+        <div class="set"><div class="collapsed"><span class="num" style="color:var(--faint)">4</span><span>مجموعة</span><span class="r">12 × 70</span></div></div>
+        <div class="set" style="border-style:dashed;text-align:center;color:var(--faint);font-size:13px">+ مجموعة · تتنسخ من اللي قبلها</div>
+      </div>
+    </div>
+    <p class="cap"><b>4. تعديل التمرين</b>أزرار + و − كبيرة تنفع في الجيم. مجموعة واحدة مفتوحة والباقي ملخّص في سطر، والمجموعة الجديدة بتتنسخ من اللي قبلها.</p>
+  </div>
+
+</div>
+</body>
+</html>
