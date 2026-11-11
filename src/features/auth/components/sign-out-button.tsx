@@ -12,7 +12,7 @@ import { clearDeviceCache, closeDeviceDb, finalDeviceSync } from '../data/clear-
 export function SignOutButton({ variant, className }: { variant?: 'primary' | 'danger'; className?: string }) {
   const t = useT(messages);
   const locale = useLocale();
-  const callAuthAction = (action: Parameters<typeof runAuthAction>[0]) => runAuthAction(action, locale);
+  const callAuthAction = (action: Parameters<typeof runAuthAction>[0]) => runAuthAction(action, locale, t);
   const [pending, start] = useTransition();
   const [error, setError] = useState('');
   return <div><Button variant={variant} className={className} disabled={pending} onClick={() => start(async () => {

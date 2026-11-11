@@ -1,6 +1,11 @@
 import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
+  get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? {
+    offlineGeneric: 'أنت غير متصل بالإنترنت.',
+    offlineCaptain: 'لا يوجد اتصال الآن. عند عودته يمكنك متابعة لاعبيك وتعديل البرامج.',
+    todaySWorkoutIsSavedOn: 'تمرين اليوم محفوظ على هاتفك وسيُرسل عند عودة الاتصال.',
+  } as const : undefined; },
   ar: {
     offlineGeneric: 'إنت مش متصل بالنت.',
     offlineCaptain: 'مفيش نت دلوقتي. أول ما يرجع هتقدر تتابع لاعيبتك وتعدّل البرامج.',

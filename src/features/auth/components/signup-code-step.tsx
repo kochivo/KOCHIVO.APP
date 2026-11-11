@@ -27,7 +27,7 @@ export function SignupCodeStep({ email, verify = verifyCaptainCode, onDone = nav
     <form className="space-y-4" aria-busy={pending} onSubmit={event => {
       event.preventDefault();
       start(async () => {
-        const result = await callAuthAction(() => verify({ email, token }), locale);
+        const result = await callAuthAction(() => verify({ email, token }), locale, t);
         setError(result.error ?? '');
         if (result.redirect) onDone(result.redirect);
       });
@@ -37,7 +37,7 @@ export function SignupCodeStep({ email, verify = verifyCaptainCode, onDone = nav
       <Button type="submit" size="lg" className="w-full" disabled={pending || token.length !== 6}>{pending ? t('oneMoment') : t('continue')}</Button>
     </form>
     <ResendCodeButton sentAt={sentAt} pending={pending} onResend={() => start(async () => {
-      const result = await callAuthAction(() => resendCaptainCode({ email }), locale);
+      const result = await callAuthAction(() => resendCaptainCode({ email }), locale, t);
       setError(result.error ?? '');
       if (!result.error) { setSentAt(Date.now()); setToken(''); }
     })} />

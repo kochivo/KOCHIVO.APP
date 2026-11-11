@@ -60,6 +60,7 @@ import { SettingsScreen } from './components/settings-screen';
 import { setLocale } from '@/core/i18n/set-locale';
 vi.mock('@/core/i18n/set-locale', () => ({ setLocale: vi.fn() }));
 vi.mock('./data/settings', () => ({ loadSettings: vi.fn() }));
+vi.mock('./data/language', () => ({ saveLanguage: vi.fn() }));
 vi.mock('./components/profile-form', () => ({ ProfileForm: () => null }));
 vi.mock('./components/invite-message-form', () => ({ InviteMessageForm: () => null }));
 vi.mock('./components/export-card', () => ({ ExportCard: () => null }));

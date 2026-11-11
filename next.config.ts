@@ -6,6 +6,8 @@ import { buildSecurityHeaders } from './src/lib/security-headers';
 const config: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  // Inline an unset flag as disabled so client dictionary branches can be removed.
+  env: { NEXT_PUBLIC_INTERNATIONAL: process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? '1' : '0' },
   // SDK debug diagnostics are unused; error and feedback capture remain enabled.
   compiler: { define: { __SENTRY_DEBUG__: false } },
   async headers() {

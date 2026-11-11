@@ -1,5 +1,5 @@
 'use server';
-import { getLocale, getT } from '@/core/i18n/server';
+import { getT } from '@/core/i18n/server';
 import { messages } from '../messages';
 
 import { parseInviteCode } from '../invite-code';
@@ -19,5 +19,5 @@ export async function invitePreview(input: string) {
     const preview = data?.[0];
     if (!preview?.valid) return { error: t('inviteIsInvalidOrExpired') };
     return { captainName: preview.captain_name ?? '', signedIn: !!user };
-  } catch (error) { return { error: authError(error, await getLocale()) }; }
+  } catch (error) { return { error: authError(error, t) }; }
 }

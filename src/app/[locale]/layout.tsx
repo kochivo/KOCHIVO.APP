@@ -6,9 +6,10 @@ import { RegisterServiceWorker } from '@/core/pwa/register-sw';
 import { glassBootScript } from '@/lib/glass-mode';
 import { themeBootScript } from '@/lib/theme-mode';
 import '../globals.css';
-import { setRequestLocale } from '@/core/i18n/server';
+import { getArabicStyle, setRequestLocale } from '@/core/i18n/server';
 import { LOCALES, localeDir, parseLocale } from '@/core/i18n/locale';
 import { LocaleProvider } from '@/core/i18n/client';
+import { internationalEnabled } from '@/lib/international-enabled';
 import { MobileViewport } from '@/ui/mobile-viewport';
 import { Orbs } from '@/ui/orbs';
 import { ToastProvider } from '@/ui/toast';
@@ -44,12 +45,13 @@ export default async function RootLayout({ children, params }: {
 }) {
   const locale = parseLocale((await params).locale);
   setRequestLocale(locale);
+  const style = internationalEnabled() ? await getArabicStyle() : 'egyptian';
   return (
     <html lang={locale} dir={localeDir(locale)} suppressHydrationWarning className={`${manrope.variable} ${alexandria.variable} ${changa.variable}`}>
       <head><script dangerouslySetInnerHTML={{ __html: themeBootScript + ';' + glassBootScript }} /></head>
       <body className="min-h-dvh">
         <Orbs />
-        <LocaleProvider locale={locale}>
+        <LocaleProvider locale={locale} style={style}>
           <ToastProvider><InAppBrowserWarning />{children}</ToastProvider>
           <MobileViewport />
           <RegisterServiceWorker />

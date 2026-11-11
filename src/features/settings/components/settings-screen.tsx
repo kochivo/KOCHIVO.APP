@@ -11,6 +11,9 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { ErrorState, LoadingState, ThemeSwitch } from '@/ui';
+import { LanguageSwitch } from '@/ui/language-switch';
+import { internationalEnabled } from '@/lib/international-enabled';
+import { saveLanguage } from '../data/language';
 import { loadSettings } from '../data/settings';
 import type { SettingsProfile } from '../schema';
 import Link from 'next/link';
@@ -72,7 +75,7 @@ export function SettingsScreen({ signOut }: { signOut?: ReactNode }) {
     {playerSettings && (loading ? <LoadingState variant="detail" /> : error ? <ErrorState message={error} retryLabel={t('tryAgain')} onRetry={() => {
       setLoading(true); setError(''); setAttempt(value => value + 1);
     }} /> : profile ? <ProfileForm profile={profile} /> : null)}
-    <div>
+    {internationalEnabled() ? <LanguageSwitch onChange={saveLanguage} /> : <div>
       <div role="group" aria-label={appearanceT('language')} className="flex gap-1">
         {LOCALES.map(value => <button key={value} type="button" lang={value} aria-pressed={language === value}
           disabled={languagePending} onClick={() => void changeLanguage(value)}
@@ -81,7 +84,7 @@ export function SettingsScreen({ signOut }: { signOut?: ReactNode }) {
         </button>)}
       </div>
       {languageError && <p role="alert" className="text-sm text-danger">{languageError}</p>}
-    </div>
+    </div>}
     <GlassToggle />
     <ThemeSwitch />
     <InstallButton role={playerSettings ? 'player' : 'captain'} />

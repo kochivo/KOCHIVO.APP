@@ -15,7 +15,7 @@ import { authError } from '../errors';
 export function PlayerInviteFlow({ code, callbackError = false }: { code: string; callbackError?: boolean }) {
   const t = useT(messages);
   const locale = useLocale();
-  const callAuthAction = (action: Parameters<typeof runAuthAction>[0]) => runAuthAction(action, locale);
+  const callAuthAction = (action: Parameters<typeof runAuthAction>[0]) => runAuthAction(action, locale, t);
   const [preview, setPreview] = useState<Awaited<ReturnType<typeof invitePreview>> | null>(null);
   const [retry, setRetry] = useState(0);
   const [email, setEmail] = useState('');
@@ -26,9 +26,9 @@ export function PlayerInviteFlow({ code, callbackError = false }: { code: string
   useEffect(() => {
     let active = true;
     invitePreview(code).then((result) => { if (active) setPreview(result); })
-      .catch((error: unknown) => { if (active) setPreview({ error: authError(error, locale) }); });
+      .catch((error: unknown) => { if (active) setPreview({ error: authError(error, t) }); });
     return () => { active = false; };
-  }, [code, retry, locale]);
+  }, [code, retry, t]);
   return <main className="mesh flex min-h-dvh items-center justify-center p-6 pt-[max(1.5rem,var(--safe-top))]">
     <GlassCard level="strong" className="w-full max-w-md space-y-6 p-6">
       {!preview ? <LoadingState /> : preview.error ? <ErrorState message={preview.error} retryLabel={t('tryAgain')} onRetry={() => { setPreview(null); setRetry((value) => value + 1); }} /> : <>

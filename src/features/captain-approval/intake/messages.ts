@@ -1,6 +1,15 @@
 import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
+  get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? {
+    title: 'عرّفنا بنفسك', description: 'أكمل هذه البيانات لنراجع طلبك ونتواصل معك.',
+    fullName: 'الاسم بالكامل', whatsapp: 'واتساب', instagram: 'إنستجرام (اختياري)',
+    current_tool: 'ماذا تستخدم حالياً لمتابعة لاعبيك؟', whatsapp_excel: 'واتساب وإكسيل', other_app: 'تطبيق آخر', just_starting: 'مبتدئ',
+    main_challenge: 'ما أكبر تحدٍ تواجهه؟', time_on_tables: 'الوقت المستغرق في الجداول', tracking_progress: 'متابعة تطور اللاعبين',
+    unprofessional_look: 'مظهر العمل غير احترافي', players_range: 'كم لاعباً لديك؟', '1-10': '1-10', '11-50': '11-50', '50+': '50+',
+    submit: 'إرسال الطلب', submitting: 'جاري الإرسال', invalid: 'راجع اسمك ورقم واتساب وإنستجرام واختر إجابة لكل سؤال.',
+    failed: 'تعذّر حفظ طلبك. حاول مجدداً.', loadFailed: 'تعذّر تحميل بياناتك. حاول مجدداً.', retry: 'حاول مجدداً', missing: 'لم يُكمل البيانات بعد', instagramLabel: 'إنستجرام',
+  } as const : undefined; },
   ar: {
     title: 'عرّفنا بيك', description: 'كمّل البيانات دي عشان نراجع طلبك ونتواصل معاك.',
     fullName: 'الاسم بالكامل', whatsapp: 'واتساب', instagram: 'إنستجرام (اختياري)',

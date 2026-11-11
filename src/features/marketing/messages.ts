@@ -1,6 +1,7 @@
 import { defineMessages } from '@/core/i18n/messages';
-
+import { arStd } from './standard/messages';
 export const messages = defineMessages({
+  get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
     heroDescription: "تمرين وأكل ومتابعة كل لاعبينك في مكان واحد، وتعرف لاعبك جاهز ولا لأ قبل ما يبدأ تمرينه.",
     restView: "يوم راحة", restDay: "النهارده يوم راحة", sleepQuestion: "نمت كام ساعة؟", sleepHours: "5،6،7،8،9", musclesLight: "عضلاتك: خفيف", waterStrip: "1.5 / 3 L",

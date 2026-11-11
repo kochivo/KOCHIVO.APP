@@ -1,6 +1,18 @@
 import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
+  get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? {
+    next: 'التالي', back: 'رجوع', skip: 'تخطّ الجولة', done: 'تم', replay: 'شاهد الجولة مجدداً', progress: 'خطوة {current} من {total}',
+    captainHomeTitle: 'ابدأ من هنا', captainHomeBody: 'ستجد هنا أهم خطوة تحتاج إلى تنفيذها الآن.',
+    inviteTitle: 'أضف أول لاعب', inviteBody: 'أرسل رابط الدعوة للاعب لينضم إليك ويُكمل بياناته.',
+    inboxTitle: 'راجع رسائل اللاعبين', inboxBody: 'ستجد هنا Check-in وفيديوهات الأداء التي تحتاج إلى ردّك.',
+    templatesTitle: 'جهّز برامجك', templatesBody: 'احفظ قوالب للتمرين والغذاء لاستخدامها مع لاعبين آخرين.',
+    billingTitle: 'تابع الاشتراكات', billingBody: 'شاهد مواعيد التجديد وسجّل الدفعات من هنا.',
+    workoutTitle: 'تمرين اليوم', workoutBody: 'شاهد تمرينك وابدأ عندما تكون جاهزاً.',
+    setTitle: 'سجّل كل مجموعة', setBody: 'افتح التمرين من هنا. اضبط الوزن والتكرارات ثم اضغط إنهاء المجموعة. يُحفظ تسجيلك حتى دون اتصال.',
+    nutritionTitle: 'غذاؤك في مكان واحد', nutritionBody: 'افتح التغذية لمشاهدة وجباتك وتسجيل ما أكلته.',
+    coachTitle: 'ابقَ على تواصل', coachBody: 'افتح صفحة الكابتن لمشاهدة بياناته والاستماع إلى رسائله الصوتية.',
+  } as const : undefined; },
   ar: {
     next: 'التالي', back: 'ارجع', skip: 'تخطّي الجولة', done: 'خلصنا', replay: 'شوف الجولة تاني',
     progress: 'خطوة {current} من {total}',

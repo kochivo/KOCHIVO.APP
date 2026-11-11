@@ -1,6 +1,8 @@
 import { defineMessages } from '@/core/i18n/messages';
+import { arStd } from './standard/messages';
 
 export const messages = defineMessages({
+  get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
     coachIsWaiting: "الكابتن مستنيك",
     letsStart: "يلا نبدأ",

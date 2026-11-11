@@ -9,7 +9,7 @@ import { callAuthAction as runAuthAction } from '../data/client-action';
 export function GoogleButton({ intent, code, coach }: { intent: 'captain' | 'player'; code?: string; coach?: string }) {
   const t = useT(messages);
   const locale = useLocale();
-  const callAuthAction = (action: Parameters<typeof runAuthAction>[0]) => runAuthAction(action, locale);
+  const callAuthAction = (action: Parameters<typeof runAuthAction>[0]) => runAuthAction(action, locale, t);
   const [pending, start] = useTransition();
   const [error, setError] = useState('');
   return <div className="space-y-2">

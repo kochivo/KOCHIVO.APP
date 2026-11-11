@@ -17,7 +17,7 @@ export function ForgotPasswordFlow() {
   const locale = useLocale();
   const router = useRouter();
   const toast = useToast();
-  const callAuthAction = (action: Parameters<typeof runAuthAction>[0]) => runAuthAction(action, locale);
+  const callAuthAction = (action: Parameters<typeof runAuthAction>[0]) => runAuthAction(action, locale, t);
   const [email, setEmail] = useState('');
   const [sent, setSent] = useState(false);
   const [sentAt, setSentAt] = useState(0);

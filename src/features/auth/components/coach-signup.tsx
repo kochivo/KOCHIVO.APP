@@ -26,7 +26,7 @@ export function CoachSignup({ coach, callbackError = false }: { coach: string; c
         event.preventDefault();
         const input = Object.fromEntries(new FormData(event.currentTarget));
         start(async () => {
-          const result = await callAuthAction(() => signUpPlayer(input, coach, existing), locale);
+          const result = await callAuthAction(() => signUpPlayer(input, coach, existing), locale, t);
           setError(result.error ?? ''); setMessage(result.message ?? '');
           if (result.codeEmail) setCodeEmail(result.codeEmail);
           if (result.redirect) window.location.assign(result.redirect);

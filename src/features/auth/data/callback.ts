@@ -1,4 +1,5 @@
-import { getLocale } from '@/core/i18n/server';
+import { getT } from '@/core/i18n/server';
+import { messages } from '../messages';
 import { unstable_rethrow } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
@@ -62,7 +63,7 @@ export async function handleAuthCallback(request: NextRequest) {
     unstable_rethrow(error);
     const target = new URL(invite ? `/i/${invite}` : '/login', origin);
     if (coach) { target.searchParams.set('coach', coach); target.searchParams.set('tab', 'signup'); }
-    target.searchParams.set('error', authError(error, await getLocale()));
+    target.searchParams.set('error', authError(error, await getT(messages)));
     return NextResponse.redirect(target);
   }
 }

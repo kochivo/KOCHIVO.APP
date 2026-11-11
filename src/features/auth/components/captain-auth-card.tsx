@@ -16,7 +16,7 @@ import { SignupCodeStep } from './signup-code-step';
 export function CaptainAuthCard({ callbackError = false, initialMode = 'login' }: { callbackError?: boolean; initialMode?: AuthMode }) {
   const t = useT(messages);
   const locale = useLocale();
-  const callAuthAction = (action: Parameters<typeof runAuthAction>[0]) => runAuthAction(action, locale);
+  const callAuthAction = (action: Parameters<typeof runAuthAction>[0]) => runAuthAction(action, locale, t);
   const [mode, setMode] = useState<string>(initialMode);
   const [message, setMessage] = useState('');
   const [codeEmail, setCodeEmail] = useState('');

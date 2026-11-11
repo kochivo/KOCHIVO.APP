@@ -18,8 +18,8 @@ function errorMessages(t: Translator<typeof messages>): Record<string, string> {
   P0002: t('inviteIsInvalidOrExpired'),
   '23505': t('yourAccountAlreadyHasACoach'),
 }; }
-export function authError(error: unknown, locale: Locale = 'ar'): string {
-  const t = createT(messages, locale);
+export function authError(error: unknown, locale: Locale | Translator<typeof messages> = 'ar'): string {
+  const t = typeof locale === 'function' ? locale : createT(messages, locale);
   const code = String(readError(error).code ?? '');
   return errorMessages(t)[code] ?? t('somethingWentWrongTryAgain');
 }
