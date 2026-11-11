@@ -49,10 +49,11 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
   const rest = useRestTimer();
   const pending = useLiveQuery(readPending, onError, retryKey);
   const retrySync = () => { void retryParked(localDb()).catch(onError); };
+  const sessionDayId = day?.id;
   const readSession = useCallback(async () => {
-    if (!day || !today) return null;
+    if (!sessionDayId || !today) return null;
     const sessions = await localDb().workout_sessions.where('training_date').belowOrEqual(today).reverse()
-      .filter((row) => row.program_day_id === day.id).limit(2).toArray();
+      .filter((row) => row.program_day_id === sessionDayId).limit(2).toArray();
     // A logged, unfinished workout survives midnight (including a reload), unless today's already started.
     const candidate = sessions.find((row) => row.training_date !== today);
     if (candidate && !sessions.some((row) => row.training_date === today)) {
@@ -61,12 +62,13 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
       if (trainingDate(today, candidate, Boolean(logged)) === candidate.training_date) return candidate;
     }
     return sessions.find((row) => row.training_date === today) ?? null;
-  }, [day, today]);
+  }, [sessionDayId, today]);
   const session = useLiveQuery(readSession, onError, retryKey);
   // The session is created with the first logged set, so merely opening the workout never
   // counts as training for the captain's roster or locks today's day rotation.
-  const readSets = useCallback(async () => session ?
-    localDb().set_logs.where('session_id').equals(session.id).filter((row) => row.deleted_at === null).toArray() : [], [session]);
+  const sessionId = session?.id;
+  const readSets = useCallback(async () => sessionId ?
+    localDb().set_logs.where('session_id').equals(sessionId).filter((row) => row.deleted_at === null).toArray() : [], [sessionId]);
   const sets = useLiveQuery(readSets, onError, retryKey);
   const doneSets = sets?.filter((row) => row.session_id === session?.id) ?? [];
   const currentIndex = queue.findIndex((step) => !doneSets.some((row) => matches(row, step.exercise.id, step.setIndex)));
