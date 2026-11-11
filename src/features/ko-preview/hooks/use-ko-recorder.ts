@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { koMaxAudio, koRecordMs } from '../agent-limits';
+import { koMaxAudio, koRecordMs } from '@/features/ko-core';
 
 type Capture = { stop: () => void; dispose: () => void };
 

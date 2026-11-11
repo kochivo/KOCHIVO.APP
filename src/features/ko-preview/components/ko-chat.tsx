@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { ArrowUp, Camera, Mic, Square, X } from 'lucide-react';
 import { usePathname } from 'next/navigation';
-import { KoFeed } from '@/features/ko-feed';
+import { KoFeed } from './ko-feed';
 import { KoAvatar } from '@/ui/ko-avatar';
 import { KoMessage } from './ko-message';
 import { KoTyping } from './ko-typing';
@@ -13,12 +13,12 @@ import { contextFromPath } from '../context';
 import type { KoContext } from '../context';
 import { suggestionsFor } from '../suggestions';
 import { useLocale, useT } from '@/core/i18n/client';
-import { koMaxText } from '../agent-limits';
+import { koMaxText } from '@/features/ko-core';
 import { useKoRecorder } from '../hooks/use-ko-recorder';
 import { messages } from '../messages';
 import type { KoExpression, KoRole } from '../policy';
-import type { KoReply } from '@/features/ko-agent';
-import type { AccountReply } from '@/features/ko-account';
+import type { KoReply } from '@/features/ko-core';
+import type { AccountReply } from '@/features/ko-core';
 
 type Entry = { speaker: 'user' | 'ko'; text: string; contextText?: string };
 

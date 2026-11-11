@@ -1,7 +1,7 @@
 import 'server-only';
 import { z } from 'zod';
 import { uuidv7 } from '@/core/offline/ids';
-import { koAudioTypes, koMaxAudio, koMaxText } from '@/features/ko-preview';
+import { koAudioTypes, koMaxAudio, koMaxText } from '@/features/ko-core';
 import { createDemoPlan, executeDemoTool, isKoDemoOrigin } from './demo-plan';
 import type { DemoPlan } from './demo-plan';
 import { selectKoTool } from './gemini';

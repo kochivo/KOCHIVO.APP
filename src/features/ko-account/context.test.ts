@@ -1,11 +1,11 @@
 import { afterEach, expect, it, vi } from 'vitest';
 vi.mock('server-only', () => ({}));
-import type { KoActor } from './account';
-import { postKoAccountChat, resolveContext } from './route';
-import { executeIntent } from './execute';
-import * as account from './account';
-import * as entry from '@/features/ko-entry';
-import { planIntent } from './intents';
+import type { KoActor } from './data/account';
+import { postKoAccountChat, resolveContext } from './data/route';
+import { executeIntent } from './data/execute';
+import * as account from './data/account';
+import * as entry from '@/features/ko-entry/server';
+import { planIntent } from './data/intents';
 
 afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 

@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { ClipboardList, Dumbbell, LockKeyhole, X } from 'lucide-react';
 import { useT } from '@/core/i18n/client';
 import { ResponsiveDialog } from '@/ui/responsive-dialog';
-import { KoFeed } from '@/features/ko-feed';
+import { KoFeed } from './ko-feed';
 import { messages } from '../messages';
 import { contextFromPath } from '../context';
 import { koExpressions, nextKoExpression } from '../policy';

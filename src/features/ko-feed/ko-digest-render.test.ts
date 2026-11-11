@@ -2,7 +2,7 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { expect, it, vi } from 'vitest';
 import { LocaleProvider } from '@/core/i18n/client';
-import { KoFeed } from './components/ko-feed';
+import { KoFeed } from '../ko-preview/components/ko-feed';
 
 const view = vi.hoisted(() => ({ path: '/en/captain', rows: [] }));
 vi.mock('next/navigation', () => ({ usePathname: () => view.path }));

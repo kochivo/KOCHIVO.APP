@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { KoRole } from '@/features/ko-preview';
+import type { KoRole } from '@/features/ko-core';
 import type { KoToolCall } from './demo-plan';
 import { koVoiceRule } from './voice';
 import { historyContents } from './history';

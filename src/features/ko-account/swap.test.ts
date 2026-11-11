@@ -1,30 +1,30 @@
 import { afterEach, expect, it, vi } from 'vitest';
 vi.mock('server-only', () => ({}));
 import { swapOptions } from '@/features/program-generator';
-import { parseIntent } from './intents';
-import { chooseSwap, prepareSwap } from './swap';
-import type { KoActor } from './account';
-import type * as AccountModule from './account';
-import type * as IntentsModule from './intents';
-import { issueApproval, verifyApproval } from './approval';
-import type { Approval } from './approval';
-import { postKoAccountChat } from './route';
-import { executeIntent } from './execute';
+import { parseIntent } from './data/intents';
+import { chooseSwap, prepareSwap } from './data/swap';
+import type { KoActor } from './data/account';
+import type * as AccountModule from './data/account';
+import type * as IntentsModule from './data/intents';
+import { issueApproval, verifyApproval } from './data/approval';
+import type { Approval } from './data/approval';
+import { postKoAccountChat } from './data/route';
+import { executeIntent } from './data/execute';
 import { createT } from '@/core/i18n/messages';
-import { koPreviewMessages } from '@/features/ko-preview';
+import { koPreviewMessages } from '@/features/ko-core';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { LocaleProvider } from '@/core/i18n/client';
-import { KoFeed } from '@/features/ko-feed';
+import { KoFeed } from '../ko-preview/components/ko-feed';
 vi.mock('@/features/ko-feed/hooks/use-ko-feed', () => ({ refreshFeed: vi.fn(), useKoFeed: () => ({
   status: 'ready', rows: [{ key: 'swap', kind: 'swap_requested', severity: 'urgent', player_name: 'Player',
     data: { reason: 'discomfort', injury: null, from: { en: 'Bridge' }, to: { en: 'Alternative' } } }],
 }) }));
 const chat = vi.hoisted(() => ({ actor: null as KoActor | null, pilots: new Set<string>(), plan: vi.fn() }));
-vi.mock('./account', async original => ({ ...await original<typeof AccountModule>(), getKoActor: async () => chat.actor }));
-vi.mock('./meal', () => ({ readMeal: async () => [] }));
-vi.mock('./intents', async original => ({ ...await original<typeof IntentsModule>(), planIntent: chat.plan }));
-vi.mock('@/features/ko-entry', () => ({ koAccountConfig: () => ({
+vi.mock('./data/account', async original => ({ ...await original<typeof AccountModule>(), getKoActor: async () => chat.actor }));
+vi.mock('./data/meal', () => ({ readMeal: async () => [] }));
+vi.mock('./data/intents', async original => ({ ...await original<typeof IntentsModule>(), planIntent: chat.plan }));
+vi.mock('@/features/ko-entry/server', () => ({ koAccountConfig: () => ({
   origin: new URL('https://kochivo.test'), secret: 'swap-test-secret-12345678901234567890', key: 'test', pilots: chat.pilots,
 }) }));
 afterEach(() => { vi.restoreAllMocks(); chat.plan.mockReset(); chat.pilots.clear(); });

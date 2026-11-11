@@ -1,3 +1,3 @@
-export { postKoAccountChat } from './route';
-export type { AccountReply } from './execute';
-export { getKoActor } from './account';
+export { postKoAccountChat } from './data/route';
+export type { AccountReply } from './data/execute';
+export { getKoActor } from './data/account';

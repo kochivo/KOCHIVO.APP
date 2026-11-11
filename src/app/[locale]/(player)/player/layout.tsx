@@ -3,7 +3,7 @@ import { PageContainer } from '@/ui';
 import { PlayerShell } from '@/features/player-shell';
 import { ProductTour } from '@/features/product-tour';
 import { DemoMode } from '@/features/demo';
-import { KoAccountLink } from '@/features/ko-entry';
+import { KoAccountLink } from '@/features/ko-preview/server';
 import { SignOutButton } from '@/features/auth';
 
 export default function PlayerLayout({ children }: { children: ReactNode }) {

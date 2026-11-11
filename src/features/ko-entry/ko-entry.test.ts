@@ -5,7 +5,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { LocaleProvider } from '@/core/i18n/client';
 import { createT } from '@/core/i18n/messages';
-import { KoAccountLink } from './ko-account-link';
+import { KoAccountLink } from '../ko-preview/components/ko-account-link';
 import { KoWidget } from '../ko-preview/components/ko-widget';
 import { KoPanel } from '../ko-preview/components/ko-panel';
 import { messages } from './messages';
@@ -24,10 +24,10 @@ vi.mock('react', async original => {
   } };
 });
 vi.mock('server-only', () => ({}));
-vi.mock('./config', () => ({ koPilotAvailable: () => state.pilot, koTeaserEnabled: () => false }));
+vi.mock('@/features/ko-entry/server', () => ({ koPilotAvailable: () => state.pilot, koTeaserEnabled: () => false }));
 vi.mock('next/headers', () => ({ headers: () => new Headers({ 'x-kochivo-path': state.path }), cookies: () => new Map() }));
 vi.mock('next/navigation', () => ({ usePathname: () => state.path }));
-vi.mock('@/features/ko-feed', () => ({
+vi.mock('../ko-preview/components/ko-feed', () => ({
   KoFeed: () => createElement('div', { 'data-feed': true }), useKoFeedCount: () => 0,
   koFeedMessages: { ar: { badge: '{count}' }, en: { badge: '{count}' } },
 }));
@@ -75,9 +75,9 @@ it.each(['ar', 'en'] as const)('renders account chat, feed and a launcher withou
 
 it('keeps the client wrapper private and panel and chat out of the launcher imports', () => {
   const read = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8');
-  expect(read('./ko-account-link.tsx')).toContain("import 'server-only'");
+  expect(read('../ko-preview/components/ko-account-link.tsx')).toContain("import 'server-only'");
   expect(read('./index.ts')).not.toContain('ko-account-widget');
-  expect(read('./ko-account-widget.tsx')).toMatch(/lazy\(/);
+  expect(read('../ko-preview/components/ko-account-widget.tsx')).toMatch(/lazy\(/);
   const widget = read('../ko-preview/components/ko-widget.tsx');
   expect(widget).toContain("import('./ko-panel')");
   // The urgent-count hook stays in the launcher so the badge shows before first open (T-123).

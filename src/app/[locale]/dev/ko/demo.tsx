@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { ClipboardList, Dumbbell, Home, TrendingUp } from 'lucide-react';
 import { useT } from '@/core/i18n/client';
 import { KoPreview, koPreviewMessages } from '@/features/ko-preview';
-import type { KoRole } from '@/features/ko-preview';
+import type { KoRole } from '@/features/ko-core';
 import { FeedbackButton } from '@/features/feedback';
 import { BrandMark, BottomNav, Segmented } from '@/ui';
 

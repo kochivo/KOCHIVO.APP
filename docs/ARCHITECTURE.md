@@ -62,7 +62,10 @@ KOCHIVO/
 │  │  ├─ player-shell/  player-home/  player-profile/  player-preview/
 │  │  ├─ onboarding/  readiness/  body-scans/  muscle-analytics/
 │  │  ├─ ranks/  rank-review/  notifications/  voice-notes/
-│  │  ├─ ko-account/  ko-agent/  ko-entry/  ko-feed/  ko-preview/
+│  │  ├─ ko-core/             shared server-safe KO policy, limits, messages and wire schemas
+│  │  ├─ ko-account/          data/ account queries, planning and route handler
+│  │  ├─ ko-agent/  ko-entry/  ko-feed/
+│  │  ├─ ko-preview/          components/ chat, feed, launcher and teaser UI; server.ts account link
 │  │  ├─ admin/  coach-page/  marketing/  share-card/
 │  │  └─ demo/  feedback/  install/  product-tour/  settings/
 │  ├─ ui/                 primitives مشتركة (Button, Card, Stepper, Ring …)

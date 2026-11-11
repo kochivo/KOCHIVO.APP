@@ -2,8 +2,9 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getT } from '@/core/i18n/server';
 import { getKoActor } from '@/features/ko-account';
-import { koPilotAvailable } from '@/features/ko-entry';
-import { KoChat, koPreviewMessages } from '@/features/ko-preview';
+import { koPilotAvailable } from '@/features/ko-entry/server';
+import { KoChat } from '@/features/ko-preview';
+import { koPreviewMessages } from '@/features/ko-core';
 
 export default async function KoPage() {
   if (!await koPilotAvailable()) notFound();

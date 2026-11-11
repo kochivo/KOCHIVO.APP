@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { matchNamed } from './match';
+import { matchNamed } from './data/match';
 
 const rows = [
   { name_ar: 'سكوات بالبار', name_en: 'Barbell squat' },

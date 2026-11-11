@@ -1,13 +1,11 @@
 import { z } from 'zod';
-import { koPreviewAllowed } from '@/features/ko-preview';
-import type { KoRole } from '@/features/ko-preview';
+import { koPreviewAllowed } from '@/features/ko-core';
+import type { KoRole } from '@/features/ko-core';
 
 export type DemoPlan = { sets: number; reps: number };
 export type KoToolCall = { name: string; args: unknown };
-export type KoReply =
-  | ({ kind: 'updated' | 'read' } & DemoPlan)
-  | { kind: 'clarify'; question: string }
-  | { kind: 'unsupported' };
+import type { KoReply } from '@/features/ko-core';
+export type { KoReply } from '@/features/ko-core';
 
 export function createDemoPlan(): DemoPlan {
   return { sets: 4, reps: 10 };

@@ -5,10 +5,10 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { LocaleProvider } from '@/core/i18n/client';
 import { createT } from '@/core/i18n/messages';
-import { KoAccountLink } from './ko-account-link';
+import { KoAccountLink } from '../ko-preview/components/ko-account-link';
 import { koTeaserEnabled } from './config';
-import { KoTeaser } from './ko-teaser';
-import { KoTeaserPanel } from './ko-teaser-panel';
+import { KoTeaser } from '../ko-preview/components/ko-teaser';
+import { KoTeaserPanel } from '../ko-preview/components/ko-teaser-panel';
 import { joinWaitlist } from './data/join-waitlist';
 import { messages } from './messages';
 

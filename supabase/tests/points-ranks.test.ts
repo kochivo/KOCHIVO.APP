@@ -1,15 +1,15 @@
 import type { PGlite } from '@electric-sql/pglite';
 import { afterAll, afterEach, beforeAll, beforeEach, expect, it, vi } from 'vitest';
 import { asUser, createCaptainWithPlayer, createTestDb, createUser, TEST_NOW } from './harness';
-import type { KoActor } from '@/features/ko-account/account';
-import { postKoAccountChat } from '@/features/ko-account/route';
+import type { KoActor } from '@/features/ko-account/data/account';
+import { postKoAccountChat } from '@/features/ko-account/data/route';
 vi.mock('server-only', () => ({}));
 const chat = vi.hoisted(() => ({ actor: null as KoActor | null, pilots: new Set<string>() }));
-vi.mock('@/features/ko-account/account', async original => ({
-  ...await original<typeof import('@/features/ko-account/account')>(), getKoActor: async () => chat.actor,
+vi.mock('@/features/ko-account/data/account', async original => ({
+  ...await original<typeof import('@/features/ko-account/data/account')>(), getKoActor: async () => chat.actor,
 }));
-vi.mock('@/features/ko-account/intents', () => ({ planIntent: async () => ({ kind: 'meal_photo', args: { foods: ['Rice'] } }) }));
-vi.mock('@/features/ko-entry', () => ({ koAccountConfig: () => ({
+vi.mock('@/features/ko-account/data/intents', () => ({ planIntent: async () => ({ kind: 'meal_photo', args: { foods: ['Rice'] } }) }));
+vi.mock('@/features/ko-entry/server', () => ({ koAccountConfig: () => ({
   origin: new URL('https://kochivo.test'), secret: 'points-test-secret-12345678901234567890', key: 'test', pilots: chat.pilots,
 }) }));
 afterEach(() => { vi.restoreAllMocks(); vi.unstubAllEnvs(); chat.pilots.clear(); });

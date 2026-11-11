@@ -5,7 +5,7 @@ import { afterEach, expect, it, vi } from 'vitest';
 vi.mock('server-only', () => ({}));
 import { LocaleProvider } from '@/core/i18n/client';
 import { messages as accountMessages } from '../ko-account/messages';
-import { planIntent } from '../ko-account/intents';
+import { planIntent } from '../ko-account/data/intents';
 import { selectKoTool } from '../ko-agent/gemini';
 import { koVoiceRule } from '@/features/ko-agent';
 import { messages } from './messages';

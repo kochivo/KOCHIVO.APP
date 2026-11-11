@@ -1,8 +1,8 @@
 import { expect, it, vi } from 'vitest';
 vi.mock('server-only', () => ({}));
-import type { KoActor } from './account';
-import { executeIntent } from './execute';
-import { planIntent } from './intents';
+import type { KoActor } from './data/account';
+import { executeIntent } from './data/execute';
+import { planIntent } from './data/intents';
 
 const now = Date.parse('2026-11-10T12:00:00Z');
 const roster = [{ player_id: 'ahmed', full_name: 'Ahmed', last_training_date: '2026-11-02',

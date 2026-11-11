@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest';
-import { issueApproval, verifyApproval } from './approval';
-import type { Approval } from './approval';
+import { issueApproval, verifyApproval } from './data/approval';
+import type { Approval } from './data/approval';
 
 const actor = '00000000-0000-7000-8000-000000000100';
 const action: Approval = {

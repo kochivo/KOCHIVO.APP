@@ -7,7 +7,7 @@ import { buildDigest } from './digest';
 
 // These cases cover the crown line; the hidden-ranks case stubs its own value.
 vi.stubEnv('NEXT_PUBLIC_RANKS_ENABLED', '1');
-import { KoDigest } from './components/ko-digest';
+import { KoDigest } from '../ko-preview/components/ko-digest';
 import type { KoFeedItem } from './types';
 
 const row = (kind: 'inactive' | 'expiring' | 'expired', id: string = kind): KoFeedItem => ({

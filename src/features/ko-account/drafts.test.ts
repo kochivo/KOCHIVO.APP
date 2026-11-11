@@ -1,6 +1,6 @@
 import { expect, it, vi } from 'vitest';
-import type { KoActor } from './account';
-import { buildDraft } from './drafts';
+import type { KoActor } from './data/account';
+import { buildDraft } from './data/drafts';
 
 function withCatalog(rows: object[]) {
   const query = { select: vi.fn().mockReturnThis(), is: vi.fn().mockReturnThis(),

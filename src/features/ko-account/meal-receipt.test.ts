@@ -1,5 +1,5 @@
 import { expect, it, vi } from 'vitest';
-import { mealReceipt } from './meal-receipt';
+import { mealReceipt } from './data/meal-receipt';
 
 vi.mock('server-only', () => ({}));
 

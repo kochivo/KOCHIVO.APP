@@ -1,5 +1,5 @@
 import { supabaseBrowser } from '@/core/supabase/browser';
-import type { KoRole } from '@/features/ko-preview';
+import type { KoRole } from '@/features/ko-core';
 
 export async function joinWaitlist(userId: string, role: KoRole): Promise<boolean> {
   try {
