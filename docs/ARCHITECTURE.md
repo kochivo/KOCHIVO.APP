@@ -84,6 +84,7 @@ ESLint بيمنع كمان المسارات النسبية اللي بتدخل �
 مدخل `server.ts` بيستورد `server-only` وبيعيد تصدير modules بتستورد `server-only` هي كمان؛ مش ملف `use server` ومش بيحوّل الـ loaders لـ server actions.
 
 ## 4. نموذج البيانات (MVP)
+`features/player-file` merges intake and bounded check-in snapshots into current sourced facts and form history; planning weekdays use Saturday = 0, and existing RLS controls reads.
 
 ```
 profiles ─┬─< coach_clients >─┬─ profiles
