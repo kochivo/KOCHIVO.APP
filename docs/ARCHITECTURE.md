@@ -58,6 +58,7 @@ KOCHIVO/
 │  ├─ features/           كل feature: components/ hooks/ data/ messages.ts index.ts (وserver.ts عند الحاجة)
 │  │  ├─ auth/  roster/  billing/  dashboard/  captain-approval/
 │  │  ├─ programs/  templates/  program-generator/  workout/
+│  │  ├─ captain-workspace/   flag-gated read-only captain training workspace (T-166)
 │  │  ├─ nutrition/  meal-plans/  supplements/  inbox/  progress/
 │  │  ├─ player-shell/  player-home/  player-profile/  player-preview/
 │  │  ├─ onboarding/  readiness/  body-scans/  muscle-analytics/
