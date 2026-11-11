@@ -1,7 +1,7 @@
 import type { PGlite } from '@electric-sql/pglite';
 import { afterAll, beforeAll, expect, it, vi } from 'vitest';
 import { createClient } from '@supabase/supabase-js';
-import type { Database } from '../../src/types/database';
+import type { AppDatabase as Database } from '../../src/types/app-database';
 import { KochivoDB, setLocalUser } from '../../src/core/offline/db';
 import { flushOutbox } from '../../src/core/offline/sync';
 import { supabaseTransport } from '../../src/core/offline/transport';

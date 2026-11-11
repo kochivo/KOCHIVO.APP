@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database, Json } from '@/types/database';
+import type { Json } from '@/types/database';
+import type { AppDatabase as Database } from '@/types/app-database';
 import type { SyncTransport } from './sync';
 import type { SyncRows, SyncTable } from './tables';
 

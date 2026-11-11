@@ -4,7 +4,8 @@ const t = createT(messages, 'ar');
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { NutritionFood, NutritionSnapshot } from '@/core/offline';
-import type { Database, Tables } from '@/types/database';
+import type { Tables } from '@/types/database';
+import type { AppDatabase as Database } from '@/types/app-database';
 
 type FoodResponse = Pick<Tables<'foods'>, 'name_ar' | 'photo_path' |
   'kcal_per_100g' | 'protein_per_100g' | 'carbs_per_100g' | 'fat_per_100g'>;

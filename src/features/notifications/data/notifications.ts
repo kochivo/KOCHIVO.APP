@@ -1,5 +1,5 @@
 import { loadSupabaseBrowser } from '@/core/supabase/lazy';
-import type { Notification, NotificationType } from '../types';
+import type { Notification } from '../types';
 import { ranksEnabled } from '@/lib/ranks-enabled';
 
 // While ranks are hidden, their notifications stay in the table but never reach the bell.
@@ -29,7 +29,7 @@ export async function latestNotifications(): Promise<Notification[]> {
   const players = new Map((sessions?.data ?? []).map(row => [row.id, row.player_id]));
   return (data ?? []).map(row => {
     const payload = row.payload && typeof row.payload === 'object' && !Array.isArray(row.payload) ? row.payload : {};
-    return { ...row, type: row.type as NotificationType, payload: {
+    return { ...row, type: row.type, payload: {
       name: row.type === 'workout_reminder' && typeof payload.day_title === 'string'
         ? payload.day_title : typeof payload.name === 'string' ? payload.name : '',
       player_id: row.type === 'workout_feedback' && typeof payload.session_id === 'string' ? players.get(payload.session_id)

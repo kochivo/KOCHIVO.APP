@@ -1,6 +1,6 @@
 import { localDb, type KochivoDB } from '@/core/offline';
 import { loadSupabaseBrowser } from '@/core/supabase/lazy';
-import type { SupplementRow, SupplementLogRow } from '@/core/offline/tables';
+import type { SupplementLogRow } from '@/core/offline/tables';
 import { supplementHistoryStart } from './captain';
 
 export async function mergeSupplementLogs(db: KochivoDB, logs: SupplementLogRow[], since?: string) {
@@ -37,7 +37,7 @@ export async function refreshSupplements(now = Date.now()) {
   if (prescriptions.error || logs.error) throw prescriptions.error ?? logs.error;
   await db.transaction('rw', db.supplements, async () => {
     await db.supplements.where('player_id').equals(auth.user.id).delete();
-    await db.supplements.bulkPut(prescriptions.data as SupplementRow[]);
+    await db.supplements.bulkPut(prescriptions.data);
   });
   await mergeSupplementLogs(db, logs.data, since);
 }

@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '@/types/database';
+import type { AppDatabase as Database } from '@/types/app-database';
 import type { Candidate } from '../pick';
 
 type LoadResult = { data: Candidate[]; error?: never } |

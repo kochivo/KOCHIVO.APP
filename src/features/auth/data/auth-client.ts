@@ -3,7 +3,7 @@ import 'server-only';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { headers } from 'next/headers';
 import { unstable_rethrow } from 'next/navigation';
-import type { Database } from '@/types/database';
+import type { AppDatabase as Database } from '@/types/app-database';
 import { authError } from '../errors';
 import type { AuthUser } from '../routing';
 

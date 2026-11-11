@@ -6,43 +6,26 @@
  * Must stay in step with supabase/migrations/0006_workout_logs.sql and 0007_nutrition.sql.
  */
 
-export interface WorkoutSessionRow {
-  id: string;
+import type { Tables } from '@/types/database';
+import type { Narrow } from '@/types/app-database';
+import type { SupplementTiming } from '@/types/enums';
+
+type LocalRow<Name extends 'workout_sessions' | 'set_logs' | 'meal_logs' | 'daily_checks' | 'supplement_logs'> =
+  Omit<Tables<Name>, 'player_id' | 'server_updated_at'>;
+
+// Local sessions retain their day; sync nulls deleted plan references on the server.
+export type WorkoutSessionRow = Narrow<LocalRow<'workout_sessions'>, {
   program_day_id: string;
-  /** YYYY-MM-DD in the player's timezone (see lib/dates.ts). */
-  training_date: string;
-  started_at: string;
-  completed_at: string | null;
-  /** Optional for rows cached before session feedback was introduced. */
-  session_rpe?: number | null;
-  player_note?: string | null;
-  client_updated_at: string;
-}
+  // Older cached rows predate session feedback.
+  session_rpe?: Tables<'workout_sessions'>['session_rpe'];
+  player_note?: Tables<'workout_sessions'>['player_note'];
+}>;
 
-export interface SetLogRow {
-  id: string;
-  session_id: string;
-  program_exercise_id: string;
-  /** Copied from the program so strength history survives program edits. */
-  exercise_id: string;
-  set_index: number;
-  weight_kg: number | null;
-  reps: number | null;
-  completed_at: string;
-  client_updated_at: string;
-  deleted_at: string | null;
-}
+// Local sets retain their plan exercise; sync nulls deleted plan references on the server.
+export type SetLogRow = Narrow<LocalRow<'set_logs'>, { program_exercise_id: string }>;
 
-export interface MealLogRow {
-  id: string;
-  meal_id: string;
-  log_date: string;
-  /** meal_item_id → meal_item_alternative_id chosen with the swap button. */
-  swaps: Record<string, string>;
-  completed_at: string | null;
-  client_updated_at: string;
-  deleted_at: string | null;
-}
+// Local meals retain their plan reference and store only item-to-alternative ids in swaps.
+export type MealLogRow = Narrow<LocalRow<'meal_logs'>, { meal_id: string; swaps: Record<string, string> }>;
 
 export interface SyncRows {
   daily_checks: DailyCheckRow;
@@ -63,34 +46,8 @@ export const SYNC_DEPENDENCIES: {
   set_logs: [{ parent: 'workout_sessions', key: 'session_id' }],
 };
 
-export type DailyCheckRow = {
-  id: string;
-  log_date: string;
-  sleep_hours: number | null;
-  soreness: number | null;
-  water_ml: number;
-  client_updated_at: string;
-  deleted_at: string | null;
-};
+export type DailyCheckRow = LocalRow<'daily_checks'>;
+export type SupplementLogRow = LocalRow<'supplement_logs'>;
 
-export type SupplementLogRow = {
-  id: string;
-  supplement_id: string;
-  log_date: string;
-  taken_at: string | null;
-  deleted_at: string | null;
-  client_updated_at: string;
-}
-
-export type SupplementRow = {
-  id: string;
-  captain_id: string;
-  player_id: string;
-  name: string;
-  dose: string;
-  timing: 'morning' | 'pre_workout' | 'post_workout' | 'with_meal' | 'before_bed' | 'any';
-  notes: string;
-  position: number;
-  archived_at: string | null;
-  created_at: string;
-}
+// The supplements timing CHECK restricts server text to these values.
+export type SupplementRow = Narrow<Tables<'supplements'>, { timing: SupplementTiming }>;

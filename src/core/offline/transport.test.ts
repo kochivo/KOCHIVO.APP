@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import Dexie from 'dexie';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
-import type { Database } from '@/types/database';
+import type { AppDatabase as Database } from '@/types/app-database';
 import { localDb, setLocalUser } from './db';
 import { saveAndQueue } from './outbox';
 import { flushOutbox } from './sync';

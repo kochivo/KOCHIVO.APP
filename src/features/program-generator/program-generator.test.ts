@@ -9,7 +9,7 @@ import { slotRecipes } from './splits';
 import type { GeneratorBrief } from './brief';
 import { loadCandidates } from './data/load-candidates';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '@/types/database';
+import type { AppDatabase as Database } from '@/types/app-database';
 
 const brief: GeneratorBrief = { goal: 'muscle', level: 'beginner', weekdays: [0, 2, 4],
   minutes: 60, equipment: 'gym', injuries: [], seed: 42 };

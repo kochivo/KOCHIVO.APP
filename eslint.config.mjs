@@ -16,7 +16,7 @@ const config = [
   ...nextTs,
   // Legacy references are read-only source material copied from the old project, not app code.
   {
-    ignores: ['.next/**', 'node_modules/**', 'assets-source/**', 'public/sw.js', 'docs/legacy/**', 'supabase/seed/source/legacy/**', 'playwright-report/**', 'test-results/**'],
+    ignores: ['src/types/database.ts', '.next/**', 'node_modules/**', 'assets-source/**', 'public/sw.js', 'docs/legacy/**', 'supabase/seed/source/legacy/**', 'playwright-report/**', 'test-results/**'],
   },
   {
     files: ['src/**/*.{ts,tsx}'],
@@ -26,10 +26,6 @@ const config = [
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/consistent-type-imports': 'error',
     },
-  },
-  {
-    files: ['src/types/database.ts'],
-    rules: { 'max-lines': 'off' },
   },
   {
     files: ['src/core/**', 'src/ui/**', 'src/lib/**'],

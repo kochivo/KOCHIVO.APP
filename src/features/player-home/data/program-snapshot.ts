@@ -1,7 +1,8 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { z } from 'zod';
 import type { ProgramSnapshot } from '@/core/offline';
-import type { Database, Tables } from '@/types/database';
+import type { Tables } from '@/types/database';
+import type { AppDatabase as Database } from '@/types/app-database';
 
 export type { ProgramSnapshot } from '@/core/offline';
 

@@ -1,5 +1,4 @@
-import type { DailyCheckRow, SupplementRow, SupplementLogRow } from '@/core/offline/tables';
-
+// Generated from the live Supabase project. Do not edit; corrections go in app-database.ts.
 export type Json =
   | string
   | number
@@ -16,151 +15,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      ko_waitlist: {
-        Row: { user_id: string; role: Database["public"]["Enums"]["user_role"]; created_at: string }
-        Insert: { user_id: string; role: Database["public"]["Enums"]["user_role"]; created_at?: string }
-        Update: { user_id?: string; role?: Database["public"]["Enums"]["user_role"]; created_at?: string }
-        Relationships: [{
-          foreignKeyName: "ko_waitlist_user_id_fkey"
-          columns: ["user_id"]
-          isOneToOne: true
-          referencedRelation: "profiles"
-          referencedColumns: ["id"]
-        }]
-      }
-      crown_winners: {
-        Row: { captain_id: string; month: string; player_id: string; adherence: number; done: number; planned: number }
-        Insert: never
-        Update: never
-        Relationships: [
-          { foreignKeyName: 'crown_winners_captain_id_fkey'; columns: ['captain_id']; isOneToOne: false;
-            referencedRelation: 'profiles'; referencedColumns: ['id'] },
-          { foreignKeyName: 'crown_winners_player_id_fkey'; columns: ['player_id']; isOneToOne: false;
-            referencedRelation: 'profiles'; referencedColumns: ['id'] },
-        ]
-      }
-      crown_prizes: {
-        Row: { captain_id: string; month: string; prize: string; updated_at: string }
-        Insert: { captain_id: string; month: string; prize: string; updated_at?: string }
-        Update: { captain_id?: string; month?: string; prize?: string; updated_at?: string }
-        Relationships: [{ foreignKeyName: 'crown_prizes_captain_id_fkey'; columns: ['captain_id'];
-          isOneToOne: false; referencedRelation: 'profiles'; referencedColumns: ['id'] }]
-      }
-      points_log: {
-        Row: { id: string; player_id: string; captain_id: string;
-          kind: 'workout' | 'pr' | 'perfect_week' | 'inbody' | 'meal_check'; source_key: string; points: number;
-          status: 'counted' | 'pending' | 'rejected'; earned_on: string; created_at: string; reviewed_at: string | null }
-        Insert: never
-        Update: never
-        Relationships: [
-          { foreignKeyName: 'points_log_player_id_fkey'; columns: ['player_id']; isOneToOne: false;
-            referencedRelation: 'profiles'; referencedColumns: ['id'] },
-          { foreignKeyName: 'points_log_captain_id_fkey'; columns: ['captain_id']; isOneToOne: false;
-            referencedRelation: 'profiles'; referencedColumns: ['id'] },
-        ]
-      }
-      player_points: {
-        Row: { player_id: string; lifetime: number; updated_at: string }
-        Insert: never
-        Update: never
-        Relationships: [{ foreignKeyName: 'player_points_player_id_fkey'; columns: ['player_id']; isOneToOne: true;
-          referencedRelation: 'profiles'; referencedColumns: ['id'] }]
-      }
-      exercise_swap_requests: {
-        Row: { id: string; player_id: string; captain_id: string; program_exercise_id: string;
-          from_exercise_id: string; to_exercise_id: string; injury: 'knee' | 'shoulder' | 'lower_back' | null;
-          reason: 'injury' | 'busy' | 'discomfort';
-          status: 'pending' | 'approved' | 'declined'; created_at: string; decided_at: string | null }
-        Insert: { id?: string; player_id: string; captain_id: string; program_exercise_id: string;
-          from_exercise_id: string; to_exercise_id: string; injury?: 'knee' | 'shoulder' | 'lower_back' | null;
-          reason?: 'injury' | 'busy' | 'discomfort';
-          status?: 'pending' | 'approved' | 'declined'; created_at?: string; decided_at?: string | null }
-        Update: { id?: string; player_id?: string; captain_id?: string; program_exercise_id?: string;
-          from_exercise_id?: string; to_exercise_id?: string; injury?: 'knee' | 'shoulder' | 'lower_back' | null;
-          reason?: 'injury' | 'busy' | 'discomfort';
-          status?: 'pending' | 'approved' | 'declined'; created_at?: string; decided_at?: string | null }
-        Relationships: [
-          { foreignKeyName: 'exercise_swap_requests_player_id_fkey'; columns: ['player_id']; isOneToOne: false;
-            referencedRelation: 'profiles'; referencedColumns: ['id'] },
-          { foreignKeyName: 'exercise_swap_requests_captain_id_fkey'; columns: ['captain_id']; isOneToOne: false;
-            referencedRelation: 'profiles'; referencedColumns: ['id'] },
-          { foreignKeyName: 'exercise_swap_requests_program_exercise_id_fkey'; columns: ['program_exercise_id']; isOneToOne: false;
-            referencedRelation: 'program_exercises'; referencedColumns: ['id'] },
-          { foreignKeyName: 'exercise_swap_requests_from_exercise_id_fkey'; columns: ['from_exercise_id']; isOneToOne: false;
-            referencedRelation: 'exercises'; referencedColumns: ['id'] },
-          { foreignKeyName: 'exercise_swap_requests_to_exercise_id_fkey'; columns: ['to_exercise_id']; isOneToOne: false;
-            referencedRelation: 'exercises'; referencedColumns: ['id'] },
-        ]
-      }
-      exercise_generator_tags: {
-        Row: {
-          exercise_id: string
-          pattern: 'squat' | 'hinge' | 'lunge' | 'h_push' | 'v_push' | 'h_pull' | 'v_pull' | 'chest_iso' | 'shoulder_iso' | 'biceps' | 'triceps' | 'legs_iso' | 'calves' | 'core'
-          kind: 'compound' | 'isolation'
-          equipment: 'gym' | 'dumbbells' | 'bodyweight'
-          stress: ('knee' | 'shoulder' | 'lower_back')[]
-          min_level: 'beginner' | 'intermediate' | 'advanced'
-        }
-        Insert: never
-        Update: never
-        Relationships: [{ foreignKeyName: 'exercise_generator_tags_exercise_id_fkey'; columns: ['exercise_id'];
-          isOneToOne: true; referencedRelation: 'exercises'; referencedColumns: ['id'] }]
-      }
-      ko_dismissals: {
-        Row: { user_id: string; key: string; until: string }
-        Insert: { user_id?: string; key: string; until: string }
-        Update: { until?: string }
-        Relationships: []
-      }
-      session_deductions: {
-        Row: { session_id: string; link_id: string }
-        Insert: { session_id: string; link_id: string }
-        Update: { session_id?: string; link_id?: string }
-        Relationships: [{ foreignKeyName: 'session_deductions_link_id_fkey'; columns: ['link_id'];
-          isOneToOne: false; referencedRelation: 'coach_clients'; referencedColumns: ['id'] }]
-      }
-      daily_checks: {
-        Row: DailyCheckRow & { player_id: string }
-        Insert: DailyCheckRow & { player_id?: string }
-        Update: Partial<Pick<DailyCheckRow, 'sleep_hours' | 'soreness' | 'water_ml' | 'client_updated_at' | 'deleted_at'>>
-        Relationships: []
-      }
-      readiness_decisions: {
-        Row: { id: string; captain_id: string; player_id: string; decision_date: string; decision: 'keep' | 'reduce' | 'rest'; created_at: string }
-        Insert: { id: string; captain_id: string; player_id: string; decision_date: string; decision: 'keep' | 'reduce' | 'rest'; created_at?: string }
-        Update: { decision?: 'keep' | 'reduce' | 'rest' }
-        Relationships: []
-      }
-      supplements: {
-        Row: SupplementRow
-        Insert: SupplementRow
-        Update: Partial<SupplementRow>
-        Relationships: []
-      }
-      supplement_logs: {
-        Row: SupplementLogRow & { player_id: string }
-        Insert: SupplementLogRow & { player_id?: string }
-        Update: Partial<SupplementLogRow>
-        Relationships: []
-      }
-      coach_join_requests: {
-        Row: { id: string; captain_id: string; player_id: string; created_at: string; status: 'pending' | 'accepted' | 'declined' }
-        Insert: { id: string; captain_id: string; player_id: string }
-        Update: never
-        Relationships: []
-      }
-      push_subscriptions: {
-        Row: { id: string; user_id: string; endpoint: string; p256dh: string; auth: string; user_agent: string | null; created_at: string; last_success_at: string | null }
-        Insert: { id: string; user_id?: string; endpoint: string; p256dh: string; auth: string; user_agent?: string | null; created_at?: string; last_success_at?: string | null }
-        Update: { last_success_at?: string | null }
-        Relationships: [{ foreignKeyName: 'push_subscriptions_user_id_fkey'; columns: ['user_id']; isOneToOne: false; referencedRelation: 'profiles'; referencedColumns: ['id'] }]
-      }
-      notifications: {
-        Row: { id: string; user_id: string; type: 'plan_assigned' | 'nutrition_updated' | 'player_joined' | 'player_inactive' | 'join_requested' | 'workout_reminder' | 'workout_feedback'; payload: Json; is_read: boolean; created_at: string }
-        Insert: never
-        Update: { is_read?: boolean }
-        Relationships: []
-      }
       admin_audit_log: {
         Row: {
           action: string
@@ -214,6 +68,91 @@ export type Database = {
             foreignKeyName: "admins_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      body_scans: {
+        Row: {
+          created_at: string
+          fat_pct: number | null
+          file_path: string | null
+          id: string
+          muscle_kg: number | null
+          player_id: string
+          scan_date: string
+          weight_kg: number | null
+        }
+        Insert: {
+          created_at?: string
+          fat_pct?: number | null
+          file_path?: string | null
+          id: string
+          muscle_kg?: number | null
+          player_id?: string
+          scan_date: string
+          weight_kg?: number | null
+        }
+        Update: {
+          created_at?: string
+          fat_pct?: number | null
+          file_path?: string | null
+          id?: string
+          muscle_kg?: number | null
+          player_id?: string
+          scan_date?: string
+          weight_kg?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "body_scans_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      captain_packages: {
+        Row: {
+          archived_at: string | null
+          captain_id: string
+          created_at: string
+          days: number
+          id: string
+          kind: string
+          name: string
+          price_egp: number
+          sessions: number | null
+        }
+        Insert: {
+          archived_at?: string | null
+          captain_id: string
+          created_at?: string
+          days: number
+          id?: string
+          kind?: string
+          name: string
+          price_egp: number
+          sessions?: number | null
+        }
+        Update: {
+          archived_at?: string | null
+          captain_id?: string
+          created_at?: string
+          days?: number
+          id?: string
+          kind?: string
+          name?: string
+          price_egp?: number
+          sessions?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "captain_packages_captain_id_fkey"
+            columns: ["captain_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -342,41 +281,44 @@ export type Database = {
       }
       coach_clients: {
         Row: {
-          sessions_left: number | null
-          frozen_at: string | null
-          pending: boolean
           access_until: string
           archived_at: string | null
+          billing_started_at: string
           captain_id: string
           created_at: string
+          frozen_at: string | null
           id: string
+          pending: boolean
           player_id: string
+          sessions_left: number | null
           started_on: string
           updated_at: string
         }
         Insert: {
           access_until: string
-          sessions_left?: number | null
-          frozen_at?: string | null
-          pending?: boolean
           archived_at?: string | null
+          billing_started_at?: string
           captain_id: string
           created_at?: string
+          frozen_at?: string | null
           id?: string
+          pending?: boolean
           player_id: string
+          sessions_left?: number | null
           started_on?: string
           updated_at?: string
         }
         Update: {
           access_until?: string
-          sessions_left?: number | null
-          frozen_at?: string | null
-          pending?: boolean
           archived_at?: string | null
+          billing_started_at?: string
           captain_id?: string
           created_at?: string
+          frozen_at?: string | null
           id?: string
+          pending?: boolean
           player_id?: string
+          sessions_left?: number | null
           started_on?: string
           updated_at?: string
         }
@@ -399,61 +341,61 @@ export type Database = {
       }
       coach_invites: {
         Row: {
-          player_name: string | null
-          whatsapp: string | null
-          package_id: string | null
-          kind: string | null
-          quantity: number | null
-          price_egp: number | null
-          paid_egp: number | null
-          free_trial: boolean | null
-          starts_on: string | null
           access_until: string
           captain_id: string
           code: string
           created_at: string
           expires_at: string
+          free_trial: boolean | null
           id: string
+          kind: string | null
+          package_id: string | null
+          paid_egp: number | null
+          player_name: string | null
+          price_egp: number | null
+          quantity: number | null
           redeemed_at: string | null
           redeemed_by: string | null
+          starts_on: string | null
+          whatsapp: string | null
         }
         Insert: {
-          player_name?: string | null
-          whatsapp?: string | null
-          package_id?: string | null
-          kind?: string | null
-          quantity?: number | null
-          price_egp?: number | null
-          paid_egp?: number | null
-          free_trial?: boolean | null
-          starts_on?: string | null
           access_until: string
           captain_id: string
           code?: string
           created_at?: string
           expires_at?: string
+          free_trial?: boolean | null
           id?: string
+          kind?: string | null
+          package_id?: string | null
+          paid_egp?: number | null
+          player_name?: string | null
+          price_egp?: number | null
+          quantity?: number | null
           redeemed_at?: string | null
           redeemed_by?: string | null
+          starts_on?: string | null
+          whatsapp?: string | null
         }
         Update: {
-          player_name?: string | null
-          whatsapp?: string | null
-          package_id?: string | null
-          kind?: string | null
-          quantity?: number | null
-          price_egp?: number | null
-          paid_egp?: number | null
-          free_trial?: boolean | null
-          starts_on?: string | null
           access_until?: string
           captain_id?: string
           code?: string
           created_at?: string
           expires_at?: string
+          free_trial?: boolean | null
           id?: string
+          kind?: string | null
+          package_id?: string | null
+          paid_egp?: number | null
+          player_name?: string | null
+          price_egp?: number | null
+          quantity?: number | null
           redeemed_at?: string | null
           redeemed_by?: string | null
+          starts_on?: string | null
+          whatsapp?: string | null
         }
         Relationships: [
           {
@@ -479,10 +421,273 @@ export type Database = {
           },
         ]
       }
+      coach_join_requests: {
+        Row: {
+          captain_id: string
+          created_at: string
+          id: string
+          player_id: string
+          status: string
+        }
+        Insert: {
+          captain_id: string
+          created_at?: string
+          id: string
+          player_id: string
+          status?: string
+        }
+        Update: {
+          captain_id?: string
+          created_at?: string
+          id?: string
+          player_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coach_join_requests_captain_id_fkey"
+            columns: ["captain_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "coach_join_requests_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      crown_prizes: {
+        Row: {
+          captain_id: string
+          month: string
+          prize: string
+          updated_at: string
+        }
+        Insert: {
+          captain_id: string
+          month: string
+          prize: string
+          updated_at?: string
+        }
+        Update: {
+          captain_id?: string
+          month?: string
+          prize?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crown_prizes_captain_id_fkey"
+            columns: ["captain_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      crown_winners: {
+        Row: {
+          adherence: number
+          captain_id: string
+          done: number
+          month: string
+          planned: number
+          player_id: string
+        }
+        Insert: {
+          adherence: number
+          captain_id: string
+          done: number
+          month: string
+          planned: number
+          player_id: string
+        }
+        Update: {
+          adherence?: number
+          captain_id?: string
+          done?: number
+          month?: string
+          planned?: number
+          player_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crown_winners_captain_id_fkey"
+            columns: ["captain_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crown_winners_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      daily_checks: {
+        Row: {
+          client_updated_at: string
+          deleted_at: string | null
+          id: string
+          log_date: string
+          player_id: string
+          sleep_hours: number | null
+          soreness: number | null
+          water_ml: number
+        }
+        Insert: {
+          client_updated_at: string
+          deleted_at?: string | null
+          id: string
+          log_date: string
+          player_id?: string
+          sleep_hours?: number | null
+          soreness?: number | null
+          water_ml?: number
+        }
+        Update: {
+          client_updated_at?: string
+          deleted_at?: string | null
+          id?: string
+          log_date?: string
+          player_id?: string
+          sleep_hours?: number | null
+          soreness?: number | null
+          water_ml?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daily_checks_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      exercise_generator_tags: {
+        Row: {
+          equipment: string
+          exercise_id: string
+          kind: string
+          min_level: string
+          pattern: string
+          stress: string[]
+        }
+        Insert: {
+          equipment: string
+          exercise_id: string
+          kind: string
+          min_level: string
+          pattern: string
+          stress?: string[]
+        }
+        Update: {
+          equipment?: string
+          exercise_id?: string
+          kind?: string
+          min_level?: string
+          pattern?: string
+          stress?: string[]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exercise_generator_tags_exercise_id_fkey"
+            columns: ["exercise_id"]
+            isOneToOne: true
+            referencedRelation: "exercises"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      exercise_swap_requests: {
+        Row: {
+          captain_id: string
+          created_at: string
+          decided_at: string | null
+          from_exercise_id: string
+          id: string
+          injury: string | null
+          player_id: string
+          program_exercise_id: string
+          reason: string
+          status: string
+          to_exercise_id: string
+        }
+        Insert: {
+          captain_id: string
+          created_at?: string
+          decided_at?: string | null
+          from_exercise_id: string
+          id?: string
+          injury?: string | null
+          player_id: string
+          program_exercise_id: string
+          reason?: string
+          status?: string
+          to_exercise_id: string
+        }
+        Update: {
+          captain_id?: string
+          created_at?: string
+          decided_at?: string | null
+          from_exercise_id?: string
+          id?: string
+          injury?: string | null
+          player_id?: string
+          program_exercise_id?: string
+          reason?: string
+          status?: string
+          to_exercise_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exercise_swap_requests_captain_id_fkey"
+            columns: ["captain_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "exercise_swap_requests_from_exercise_id_fkey"
+            columns: ["from_exercise_id"]
+            isOneToOne: false
+            referencedRelation: "exercises"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "exercise_swap_requests_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "exercise_swap_requests_program_exercise_id_fkey"
+            columns: ["program_exercise_id"]
+            isOneToOne: false
+            referencedRelation: "program_exercises"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "exercise_swap_requests_to_exercise_id_fkey"
+            columns: ["to_exercise_id"]
+            isOneToOne: false
+            referencedRelation: "exercises"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       exercises: {
         Row: {
           archived_at: string | null
-          video_url: string | null
           body_part: string
           created_at: string
           dataset_id: string | null
@@ -496,10 +701,10 @@ export type Database = {
           owner_id: string | null
           secondary_muscles: string[]
           target: string | null
+          video_url: string | null
         }
         Insert: {
           archived_at?: string | null
-          video_url?: string | null
           body_part: string
           created_at?: string
           dataset_id?: string | null
@@ -513,10 +718,10 @@ export type Database = {
           owner_id?: string | null
           secondary_muscles?: string[]
           target?: string | null
+          video_url?: string | null
         }
         Update: {
           archived_at?: string | null
-          video_url?: string | null
           body_part?: string
           created_at?: string
           dataset_id?: string | null
@@ -530,6 +735,7 @@ export type Database = {
           owner_id?: string | null
           secondary_muscles?: string[]
           target?: string | null
+          video_url?: string | null
         }
         Relationships: [
           {
@@ -661,6 +867,58 @@ export type Database = {
             columns: ["set_log_id"]
             isOneToOne: false
             referencedRelation: "set_logs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ko_dismissals: {
+        Row: {
+          key: string
+          until: string
+          user_id: string
+        }
+        Insert: {
+          key: string
+          until: string
+          user_id?: string
+        }
+        Update: {
+          key?: string
+          until?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ko_dismissals_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ko_waitlist: {
+        Row: {
+          created_at: string
+          role: Database["public"]["Enums"]["user_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          role: Database["public"]["Enums"]["user_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          role?: Database["public"]["Enums"]["user_role"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ko_waitlist_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -820,6 +1078,41 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          payload: Json
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          payload?: Json
+          type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          payload?: Json
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       nutrition_plans: {
         Row: {
           captain_id: string
@@ -893,6 +1186,55 @@ export type Database = {
           },
         ]
       }
+      payment_collections: {
+        Row: {
+          amount_egp: number
+          captain_id: string
+          created_at: string
+          id: string
+          payment_id: string
+          player_id: string
+        }
+        Insert: {
+          amount_egp: number
+          captain_id: string
+          created_at?: string
+          id?: string
+          payment_id: string
+          player_id: string
+        }
+        Update: {
+          amount_egp?: number
+          captain_id?: string
+          created_at?: string
+          id?: string
+          payment_id?: string
+          player_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_collections_captain_id_fkey"
+            columns: ["captain_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_collections_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "player_payments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_collections_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       plan_tiers: {
         Row: {
           player_limit: number
@@ -913,45 +1255,6 @@ export type Database = {
           tier?: string
         }
         Relationships: []
-      }
-      body_scans: {
-        Row: {
-          id: string
-          player_id: string
-          scan_date: string
-          weight_kg: number | null
-          muscle_kg: number | null
-          fat_pct: number | null
-          file_path: string | null
-          created_at: string
-        }
-        Insert: {
-          id: string
-          player_id?: string
-          scan_date: string
-          weight_kg?: number | null
-          muscle_kg?: number | null
-          fat_pct?: number | null
-          file_path?: string | null
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          player_id?: string
-          scan_date?: string
-          weight_kg?: number | null
-          muscle_kg?: number | null
-          fat_pct?: number | null
-          file_path?: string | null
-          created_at?: string
-        }
-        Relationships: [{
-          foreignKeyName: "body_scans_player_id_fkey"
-          columns: ["player_id"]
-          isOneToOne: false
-          referencedRelation: "profiles"
-          referencedColumns: ["id"]
-        }]
       }
       player_intake: {
         Row: {
@@ -1018,113 +1321,14 @@ export type Database = {
           },
         ]
       }
-      captain_packages: {
-        Row: {
-          kind: 'days' | 'sessions'
-          sessions: number | null
-          archived_at: string | null
-          captain_id: string
-          created_at: string
-          days: number
-          id: string
-          name: string
-          price_egp: number
-        }
-        Insert: {
-          archived_at?: string | null
-          captain_id: string
-          created_at?: string
-          days: number
-          kind?: 'days' | 'sessions'
-          sessions?: number | null
-          id?: string
-          name: string
-          price_egp: number
-        }
-        Update: {
-          archived_at?: string | null
-          captain_id?: string
-          created_at?: string
-          days?: number
-          kind?: 'days' | 'sessions'
-          sessions?: number | null
-          id?: string
-          name?: string
-          price_egp?: number
-        }
-        Relationships: []
-      }
-      voice_notes: {
-        Row: {
-          audio_path: string
-          captain_id: string
-          context_id: string | null
-          context_kind: string | null
-          created_at: string
-          duration_seconds: number
-          id: string
-          listened_at: string | null
-          player_id: string
-        }
-        Insert: {
-          audio_path: string
-          captain_id: string
-          context_id?: string | null
-          context_kind?: string | null
-          created_at?: string
-          duration_seconds: number
-          id: string
-          listened_at?: string | null
-          player_id: string
-        }
-        Update: {
-          audio_path?: string
-          captain_id?: string
-          context_id?: string | null
-          context_kind?: string | null
-          created_at?: string
-          duration_seconds?: number
-          id?: string
-          listened_at?: string | null
-          player_id?: string
-        }
-        Relationships: []
-      }
-      payment_collections: {
-        Row: {
-          amount_egp: number
-          captain_id: string
-          created_at: string
-          id: string
-          payment_id: string
-          player_id: string
-        }
-        Insert: {
-          amount_egp: number
-          captain_id: string
-          created_at?: string
-          id?: string
-          payment_id: string
-          player_id: string
-        }
-        Update: {
-          amount_egp?: number
-          captain_id?: string
-          created_at?: string
-          id?: string
-          payment_id?: string
-          player_id?: string
-        }
-        Relationships: []
-      }
       player_payments: {
         Row: {
-          notes: string | null
           amount_egp: number | null
           captain_id: string
           created_at: string
           days: number
           id: string
+          notes: string | null
           package_id: string | null
           period_end: string
           period_start: string
@@ -1133,11 +1337,11 @@ export type Database = {
         }
         Insert: {
           amount_egp?: number | null
-          notes?: string | null
           captain_id: string
           created_at?: string
           days: number
           id?: string
+          notes?: string | null
           package_id?: string | null
           period_end: string
           period_start: string
@@ -1146,11 +1350,11 @@ export type Database = {
         }
         Update: {
           amount_egp?: number | null
-          notes?: string | null
           captain_id?: string
           created_at?: string
           days?: number
           id?: string
+          notes?: string | null
           package_id?: string | null
           period_end?: string
           period_start?: string
@@ -1166,7 +1370,94 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "player_payments_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "captain_packages"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "player_payments_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      player_points: {
+        Row: {
+          lifetime: number
+          player_id: string
+          updated_at: string
+        }
+        Insert: {
+          lifetime?: number
+          player_id: string
+          updated_at?: string
+        }
+        Update: {
+          lifetime?: number
+          player_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "player_points_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      points_log: {
+        Row: {
+          captain_id: string
+          created_at: string
+          earned_on: string
+          id: string
+          kind: string
+          player_id: string
+          points: number
+          reviewed_at: string | null
+          source_key: string
+          status: string
+        }
+        Insert: {
+          captain_id: string
+          created_at?: string
+          earned_on: string
+          id?: string
+          kind: string
+          player_id: string
+          points: number
+          reviewed_at?: string | null
+          source_key: string
+          status: string
+        }
+        Update: {
+          captain_id?: string
+          created_at?: string
+          earned_on?: string
+          id?: string
+          kind?: string
+          player_id?: string
+          points?: number
+          reviewed_at?: string | null
+          source_key?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "points_log_captain_id_fkey"
+            columns: ["captain_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "points_log_player_id_fkey"
             columns: ["player_id"]
             isOneToOne: false
             referencedRelation: "profiles"
@@ -1176,109 +1467,109 @@ export type Database = {
       }
       profiles: {
         Row: {
-          captain_intake: Json | null
-          captain_status: 'pending' | 'approved' | 'rejected'
-          captain_reviewed_at: string | null
-          public_slug: string | null
-          bio: string | null
-          location: string | null
-          units: 'metric' | 'imperial'
           avatar_path: string | null
-          social: Partial<Record<'whatsapp' | 'instagram' | 'tiktok' | 'facebook' | 'youtube' | 'x', string>>
+          bio: string | null
+          captain_intake: Json | null
+          captain_reviewed_at: string | null
+          captain_status: string
           created_at: string
           deletion_requested_at: string | null
           demo_expires_at: string | null
           full_name: string
           id: string
           invite_message: string | null
+          location: string | null
           phone: string | null
           plan: Database["public"]["Enums"]["captain_plan"]
+          public_slug: string | null
           role: Database["public"]["Enums"]["user_role"]
           role_confirmed: boolean
+          social: Json
           suspended_at: string | null
           timezone: string
           tour_seen_at: string | null
+          units: string
           updated_at: string
         }
         Insert: {
-          captain_status?: 'pending' | 'approved' | 'rejected'
+          avatar_path?: string | null
+          bio?: string | null
           captain_intake?: Json | null
           captain_reviewed_at?: string | null
-          bio?: string | null
-          public_slug?: string | null
-          location?: string | null
-          units?: 'metric' | 'imperial'
-          avatar_path?: string | null
-          social?: Partial<Record<'whatsapp' | 'instagram' | 'tiktok' | 'facebook' | 'youtube' | 'x', string>>
+          captain_status?: string
           created_at?: string
           deletion_requested_at?: string | null
           demo_expires_at?: string | null
           full_name?: string
           id: string
           invite_message?: string | null
+          location?: string | null
           phone?: string | null
           plan?: Database["public"]["Enums"]["captain_plan"]
+          public_slug?: string | null
           role: Database["public"]["Enums"]["user_role"]
           role_confirmed?: boolean
+          social?: Json
           suspended_at?: string | null
           timezone?: string
           tour_seen_at?: string | null
+          units?: string
           updated_at?: string
         }
         Update: {
-          captain_status?: 'pending' | 'approved' | 'rejected'
+          avatar_path?: string | null
+          bio?: string | null
           captain_intake?: Json | null
           captain_reviewed_at?: string | null
-          bio?: string | null
-          public_slug?: string | null
-          location?: string | null
-          units?: 'metric' | 'imperial'
-          avatar_path?: string | null
-          social?: Partial<Record<'whatsapp' | 'instagram' | 'tiktok' | 'facebook' | 'youtube' | 'x', string>>
+          captain_status?: string
           created_at?: string
           deletion_requested_at?: string | null
           demo_expires_at?: string | null
           full_name?: string
           id?: string
           invite_message?: string | null
+          location?: string | null
           phone?: string | null
           plan?: Database["public"]["Enums"]["captain_plan"]
+          public_slug?: string | null
           role?: Database["public"]["Enums"]["user_role"]
           role_confirmed?: boolean
+          social?: Json
           suspended_at?: string | null
           timezone?: string
           tour_seen_at?: string | null
+          units?: string
           updated_at?: string
         }
         Relationships: []
       }
       program_cardio: {
         Row: {
-          id: string
           day_id: string
-          position: number
+          id: string
+          intensity: string
           kind: string
           minutes: number
-          intensity: string
           notes: string
+          position: number
         }
         Insert: {
-          id?: string
           day_id: string
-          position: number
+          id?: string
+          intensity: string
           kind: string
           minutes: number
-          intensity: string
           notes?: string
+          position: number
         }
         Update: {
-          id?: string
           day_id?: string
-          position?: number
+          id?: string
+          intensity?: string
           kind?: string
           minutes?: number
-          intensity?: string
           notes?: string
+          position?: number
         }
         Relationships: [
           {
@@ -1292,28 +1583,28 @@ export type Database = {
       }
       program_days: {
         Row: {
-          weekday: number | null
-          is_rest_day: boolean
           id: string
+          is_rest_day: boolean
           position: number
           program_id: string
           title: string
+          weekday: number | null
         }
         Insert: {
-          weekday?: number | null
-          is_rest_day?: boolean
           id?: string
+          is_rest_day?: boolean
           position: number
           program_id: string
           title?: string
+          weekday?: number | null
         }
         Update: {
-          weekday?: number | null
-          is_rest_day?: boolean
           id?: string
+          is_rest_day?: boolean
           position?: number
           program_id?: string
           title?: string
+          weekday?: number | null
         }
         Relationships: [
           {
@@ -1335,8 +1626,8 @@ export type Database = {
           reps_max: number | null
           reps_min: number
           rest_seconds: number
-          rpe: number | null
           rir: number | null
+          rpe: number | null
           sets: number
           superset_group: number | null
           tempo: string | null
@@ -1350,8 +1641,8 @@ export type Database = {
           reps_max?: number | null
           reps_min: number
           rest_seconds?: number
-          rpe?: number | null
           rir?: number | null
+          rpe?: number | null
           sets: number
           superset_group?: number | null
           tempo?: string | null
@@ -1365,8 +1656,8 @@ export type Database = {
           reps_max?: number | null
           reps_min?: number
           rest_seconds?: number
-          rpe?: number | null
           rir?: number | null
+          rpe?: number | null
           sets?: number
           superset_group?: number | null
           tempo?: string | null
@@ -1455,6 +1746,112 @@ export type Database = {
           },
         ]
       }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          last_success_at: string | null
+          p256dh: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id: string
+          last_success_at?: string | null
+          p256dh: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          last_success_at?: string | null
+          p256dh?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "push_subscriptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      readiness_decisions: {
+        Row: {
+          captain_id: string
+          created_at: string
+          decision: string
+          decision_date: string
+          id: string
+          player_id: string
+        }
+        Insert: {
+          captain_id: string
+          created_at?: string
+          decision: string
+          decision_date: string
+          id: string
+          player_id: string
+        }
+        Update: {
+          captain_id?: string
+          created_at?: string
+          decision?: string
+          decision_date?: string
+          id?: string
+          player_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "readiness_decisions_captain_id_fkey"
+            columns: ["captain_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "readiness_decisions_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      session_deductions: {
+        Row: {
+          link_id: string
+          session_id: string
+        }
+        Insert: {
+          link_id: string
+          session_id: string
+        }
+        Update: {
+          link_id?: string
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "session_deductions_link_id_fkey"
+            columns: ["link_id"]
+            isOneToOne: false
+            referencedRelation: "coach_clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       set_logs: {
         Row: {
           client_updated_at: string
@@ -1529,40 +1926,190 @@ export type Database = {
           },
         ]
       }
+      supplement_logs: {
+        Row: {
+          client_updated_at: string
+          deleted_at: string | null
+          id: string
+          log_date: string
+          player_id: string
+          supplement_id: string
+          taken_at: string | null
+        }
+        Insert: {
+          client_updated_at: string
+          deleted_at?: string | null
+          id: string
+          log_date: string
+          player_id?: string
+          supplement_id: string
+          taken_at?: string | null
+        }
+        Update: {
+          client_updated_at?: string
+          deleted_at?: string | null
+          id?: string
+          log_date?: string
+          player_id?: string
+          supplement_id?: string
+          taken_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "supplement_logs_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "supplement_logs_supplement_id_player_id_fkey"
+            columns: ["supplement_id", "player_id"]
+            isOneToOne: false
+            referencedRelation: "supplements"
+            referencedColumns: ["id", "player_id"]
+          },
+        ]
+      }
+      supplements: {
+        Row: {
+          archived_at: string | null
+          captain_id: string
+          created_at: string
+          dose: string
+          id: string
+          name: string
+          notes: string
+          player_id: string
+          position: number
+          timing: string
+        }
+        Insert: {
+          archived_at?: string | null
+          captain_id: string
+          created_at?: string
+          dose?: string
+          id: string
+          name: string
+          notes?: string
+          player_id: string
+          position?: number
+          timing: string
+        }
+        Update: {
+          archived_at?: string | null
+          captain_id?: string
+          created_at?: string
+          dose?: string
+          id?: string
+          name?: string
+          notes?: string
+          player_id?: string
+          position?: number
+          timing?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "supplements_captain_id_fkey"
+            columns: ["captain_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "supplements_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      voice_notes: {
+        Row: {
+          audio_path: string
+          captain_id: string
+          context_id: string | null
+          context_kind: string | null
+          created_at: string
+          duration_seconds: number
+          id: string
+          listened_at: string | null
+          player_id: string
+        }
+        Insert: {
+          audio_path: string
+          captain_id: string
+          context_id?: string | null
+          context_kind?: string | null
+          created_at?: string
+          duration_seconds: number
+          id: string
+          listened_at?: string | null
+          player_id: string
+        }
+        Update: {
+          audio_path?: string
+          captain_id?: string
+          context_id?: string | null
+          context_kind?: string | null
+          created_at?: string
+          duration_seconds?: number
+          id?: string
+          listened_at?: string | null
+          player_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "voice_notes_captain_id_fkey"
+            columns: ["captain_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "voice_notes_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       workout_sessions: {
         Row: {
-          session_rpe: number | null
-          player_note: string | null
           client_updated_at: string
           completed_at: string | null
           id: string
           player_id: string
+          player_note: string | null
           program_day_id: string | null
           server_updated_at: string
+          session_rpe: number | null
           started_at: string
           training_date: string
         }
         Insert: {
-          session_rpe?: number | null
-          player_note?: string | null
           client_updated_at: string
           completed_at?: string | null
           id: string
           player_id?: string
+          player_note?: string | null
           program_day_id?: string | null
           server_updated_at?: string
+          session_rpe?: number | null
           started_at: string
           training_date: string
         }
         Update: {
-          session_rpe?: number | null
-          player_note?: string | null
           client_updated_at?: string
           completed_at?: string | null
           id?: string
           player_id?: string
+          player_note?: string | null
           program_day_id?: string | null
           server_updated_at?: string
+          session_rpe?: number | null
           started_at?: string
           training_date?: string
         }
@@ -1598,65 +2145,19 @@ export type Database = {
       }
     }
     Functions: {
-      crown_hall_of_fame: {
-        Args: Record<PropertyKey, never>
-        Returns: { month: string; player_id: string | null; display_name: string; adherence: number; done: number; planned: number }[]
-      }
-      award_meal_check: { Args: { p_day: string; p_receipt: string }; Returns: undefined }
-      team_leaderboard: {
-        Args: { p_month?: string }
-        Returns: { player_id: string | null; display_name: string; lifetime: number;
-          tier: 'beginner' | 'champion' | 'elite' | 'legend'; monthly: number; is_crown: boolean; position: number;
-          adherence: number; done: number; planned: number }[]
-      }
-      my_points: { Args: never; Returns: { lifetime: number; tier: string; monthly: number;
-        month_position: number | null; crown_gap: number; adherence: number; done: number;
-        planned: number; crown_needs_workouts: number; logs: Json[] } }
-      request_exercise_swap: { Args: { p_program_exercise_id: string; p_to_exercise_id: string;
-        p_injury?: string | null; p_reason?: string }; Returns: string }
-      decide_exercise_swap: { Args: { p_id: string; p_approve: boolean }; Returns: undefined }
-      ko_feed: {
-        Args: Record<PropertyKey, never>
-        Returns: { key: string; kind: string; severity: string; player_id: string; player_name: string; data: Json }[]
-      }
-      activate_player: { Args: { p_link: string; p_package: string | null; p_kind: string; p_quantity: number;
-        p_price_egp: number; p_paid_egp: number; p_free_trial: boolean }; Returns: undefined }
-      create_player_invite: { Args: { p_name: string; p_whatsapp: string | null; p_package: string | null;
-        p_kind: string; p_quantity: number; p_price_egp: number; p_paid_egp: number;
-        p_free_trial: boolean; p_starts_on: string }; Returns: string }
-      set_player_frozen: { Args: { p_link: string; p_frozen: boolean }; Returns: undefined }
-      my_route_profile: {
-        Args: never;
-        Returns: { role: 'captain' | 'player'; role_confirmed: boolean; suspended_at: string | null; is_admin: boolean }[];
-      }
-      my_approval_route_profile: {
-        Args: never;
-        Returns: { role: 'captain' | 'player'; role_confirmed: boolean; suspended_at: string | null;
-          is_admin: boolean; captain_status: 'pending' | 'approved' | 'rejected' }[];
-      }
-      admin_pending_captains: {
-        Args: never;
-        Returns: { id: string; email: string | null; full_name: string; created_at: string;
-          whatsapp: string | null; instagram: string | null; captain_intake: Json | null }[];
-      }
-      admin_review_captain: { Args: { p_captain: string; p_status: string }; Returns: undefined }
-      sync_daily_checks: { Args: { p_rows: Json }; Returns: undefined }
-      save_weekly_program: {
-        Args: { p_draft: Json }
+      activate_nutrition_plan: { Args: { p_plan: string }; Returns: undefined }
+      activate_player: {
+        Args: {
+          p_free_trial: boolean
+          p_kind: string
+          p_link: string
+          p_package: string
+          p_paid_egp: number
+          p_price_egp: number
+          p_quantity: number
+        }
         Returns: undefined
       }
-      coach_public_profile: { Args: { slug: string }; Returns: {
-        id: string; full_name: string; bio: string | null; location: string | null; avatar_path: string | null;
-        social: Partial<Record<'whatsapp' | 'instagram' | 'tiktok' | 'facebook' | 'youtube' | 'x', string>>
-      }[] }
-      pending_coach_join_requests: { Args: never; Returns: { id: string; full_name: string; created_at: string }[] }
-      resolve_coach_join_request: { Args: { p_request: string; p_status: string; p_link_id: string }; Returns: undefined }
-      refresh_inactive_alerts: { Args: never; Returns: undefined }
-      admin_notification_kpis: {
-        Args: never
-        Returns: { captains: number; players: number; paid_captains: number }[]
-      }
-      activate_nutrition_plan: { Args: { p_plan: string }; Returns: undefined }
       activate_program: { Args: { p_program: string }; Returns: undefined }
       admin_activate_plan: {
         Args: {
@@ -1685,6 +2186,30 @@ export type Database = {
           tier_ends_at: string
         }[]
       }
+      admin_notification_kpis: {
+        Args: never
+        Returns: {
+          captains: number
+          paid_captains: number
+          players: number
+        }[]
+      }
+      admin_pending_captains: {
+        Args: never
+        Returns: {
+          captain_intake: Json
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          instagram: string
+          whatsapp: string
+        }[]
+      }
+      admin_review_captain: {
+        Args: { p_captain: string; p_status: string }
+        Returns: undefined
+      }
       admin_set_suspended: {
         Args: { p_reason: string; p_suspended: boolean; p_user: string }
         Returns: undefined
@@ -1693,13 +2218,13 @@ export type Database = {
         Args: { p_player: string; p_template: string }
         Returns: string
       }
-      copy_template: {
-        Args: { p_kind: string; p_template: string; p_title: string }
-        Returns: string
-      }
       assign_program_template: {
         Args: { p_player: string; p_template: string }
         Returns: string
+      }
+      award_meal_check: {
+        Args: { p_day: string; p_receipt: string }
+        Returns: undefined
       }
       can_edit_plan: { Args: { p_plan: string }; Returns: boolean }
       can_edit_program: { Args: { p_program: string }; Returns: boolean }
@@ -1718,11 +2243,10 @@ export type Database = {
       }
       captain_dues: {
         Args: never
-        Returns: { due_egp: number; player_id: string }[]
-      }
-      collect_player_payment: {
-        Args: { p_amount: number; p_player: string }
-        Returns: number
+        Returns: {
+          due_egp: number
+          player_id: string
+        }[]
       }
       captain_last_payments: {
         Args: never
@@ -1749,16 +2273,61 @@ export type Database = {
           started_on: string
         }[]
       }
+      captain_since: { Args: { p_player: string }; Returns: string }
+      coach_public_profile: {
+        Args: { slug: string }
+        Returns: {
+          avatar_path: string
+          bio: string
+          full_name: string
+          id: string
+          location: string
+          social: Json
+        }[]
+      }
+      collect_player_payment: {
+        Args: { p_amount: number; p_player: string }
+        Returns: number
+      }
       confirm_role: {
         Args: { p_role: Database["public"]["Enums"]["user_role"] }
         Returns: undefined
       }
-      create_demo_workspace: { Args: never; Returns: undefined }
+      copy_template: {
+        Args: { p_kind: string; p_template: string; p_title: string }
+        Returns: string
+      }
       create_demo_player_workspace: { Args: never; Returns: undefined }
+      create_demo_workspace: { Args: never; Returns: undefined }
+      create_player_invite: {
+        Args: {
+          p_free_trial: boolean
+          p_kind: string
+          p_name: string
+          p_package: string
+          p_paid_egp: number
+          p_price_egp: number
+          p_quantity: number
+          p_starts_on: string
+          p_whatsapp: string
+        }
+        Returns: string
+      }
+      crown_hall_of_fame: {
+        Args: never
+        Returns: {
+          adherence: number
+          display_name: string
+          done: number
+          month: string
+          planned: number
+          player_id: string
+        }[]
+      }
       current_tier: { Args: { p_captain: string }; Returns: string }
-      ko_apply_action: {
-        Args: { p_token: string }
-        Returns: Json
+      decide_exercise_swap: {
+        Args: { p_approve: boolean; p_id: string }
+        Returns: undefined
       }
       invite_preview: {
         Args: { p_code: string }
@@ -1767,14 +2336,54 @@ export type Database = {
           valid: boolean
         }[]
       }
+      is_account_suspended: { Args: never; Returns: boolean }
       is_admin: { Args: never; Returns: boolean }
       is_captain_of: { Args: { p_player: string }; Returns: boolean }
       is_suspended: { Args: never; Returns: boolean }
+      ko_apply_action: { Args: { p_token: string }; Returns: Json }
+      ko_feed: {
+        Args: never
+        Returns: {
+          data: Json
+          key: string
+          kind: string
+          player_id: string
+          player_name: string
+          severity: string
+        }[]
+      }
+      my_approval_route_profile: {
+        Args: never
+        Returns: {
+          captain_status: string
+          is_admin: boolean
+          role: Database["public"]["Enums"]["user_role"]
+          role_confirmed: boolean
+          suspended_at: string
+        }[]
+      }
       my_captain_id: { Args: never; Returns: string }
-      my_captain_profile: { Args: never; Returns: {
-        full_name: string; phone: string | null; bio: string | null; location: string | null; avatar_path: string | null;
-        social: Partial<Record<'whatsapp' | 'instagram' | 'tiktok' | 'facebook' | 'youtube' | 'x', string>>
-      }[] }
+      my_captain_profile: {
+        Args: never
+        Returns: {
+          avatar_path: string
+          bio: string
+          full_name: string
+          location: string
+          phone: string
+          social: Json
+        }[]
+      }
+      my_points: { Args: never; Returns: Json }
+      my_route_profile: {
+        Args: never
+        Returns: {
+          is_admin: boolean
+          role: Database["public"]["Enums"]["user_role"]
+          role_confirmed: boolean
+          suspended_at: string
+        }[]
+      }
       nutrition_plan_to_template: {
         Args: { p_plan: string; p_title: string }
         Returns: string
@@ -1783,6 +2392,14 @@ export type Database = {
       owns_program_day: { Args: { p_day: string }; Returns: boolean }
       owns_program_exercise: { Args: { p_item: string }; Returns: boolean }
       owns_session: { Args: { p_session: string }; Returns: boolean }
+      pending_coach_join_requests: {
+        Args: never
+        Returns: {
+          created_at: string
+          full_name: string
+          id: string
+        }[]
+      }
       plan_of_item: { Args: { p_item: string }; Returns: string }
       plan_of_meal: { Args: { p_meal: string }; Returns: string }
       player_can_read: { Args: never; Returns: boolean }
@@ -1792,27 +2409,75 @@ export type Database = {
         Args: { p_program: string; p_title: string }
         Returns: string
       }
-      push_config: { Args: never; Returns: Json }
-      queue_workout_reminders: { Args: { p_today?: string }; Returns: undefined }
-      queue_crown_reminders: { Args: { p_today?: string }; Returns: undefined }
       purge_deleted_accounts: { Args: never; Returns: number }
+      push_config: { Args: never; Returns: Json }
+      queue_crown_reminders: { Args: { p_today?: string }; Returns: undefined }
+      queue_expiry_reminders: { Args: { p_today?: string }; Returns: undefined }
+      queue_workout_reminders: {
+        Args: { p_today?: string }
+        Returns: undefined
+      }
       redeem_invite: { Args: { p_code: string }; Returns: string }
+      refresh_inactive_alerts: { Args: never; Returns: undefined }
       renew_player: {
-        Args: { p_amount?: number; p_days?: number; p_package?: string; p_player: string; p_price?: number }
+        Args: {
+          p_amount?: number
+          p_days?: number
+          p_package?: string
+          p_player: string
+          p_price?: number
+        }
         Returns: string
       }
       request_account_deletion: { Args: never; Returns: string }
+      request_exercise_swap: {
+        Args: {
+          p_injury?: string
+          p_program_exercise_id: string
+          p_reason?: string
+          p_to_exercise_id: string
+        }
+        Returns: string
+      }
       require_active_caller: { Args: never; Returns: boolean }
+      require_profile_caller: { Args: never; Returns: boolean }
+      resolve_coach_join_request: {
+        Args: { p_link_id: string; p_request: string; p_status: string }
+        Returns: undefined
+      }
       save_nutrition_plan: {
         Args: { p_draft: Json; p_plan: string }
         Returns: undefined
       }
+      save_weekly_program: { Args: { p_draft: Json }; Returns: undefined }
+      set_player_frozen: {
+        Args: { p_frozen: boolean; p_link: string }
+        Returns: undefined
+      }
       storage_owner: { Args: { p_name: string }; Returns: string }
+      sync_daily_checks: { Args: { p_rows: Json }; Returns: undefined }
       sync_meal_logs: { Args: { p_rows: Json }; Returns: undefined }
-      sync_supplement_logs: { Args: { p_rows: Json }; Returns: undefined }
       sync_set_logs: { Args: { p_rows: Json }; Returns: undefined }
+      sync_supplement_logs: { Args: { p_rows: Json }; Returns: undefined }
       sync_workout_sessions: { Args: { p_rows: Json }; Returns: undefined }
+      team_leaderboard: {
+        Args: { p_month?: string }
+        Returns: {
+          adherence: number
+          display_name: string
+          done: number
+          is_crown: boolean
+          lifetime: number
+          monthly: number
+          planned: number
+          player_id: string
+          position: number
+          tier: string
+        }[]
+      }
+      valid_captain_intake: { Args: { value: Json }; Returns: boolean }
       valid_intake_training_days: { Args: { days: number[] }; Returns: boolean }
+      valid_profile_social: { Args: { value: Json }; Returns: boolean }
     }
     Enums: {
       captain_plan: "free" | "pro"

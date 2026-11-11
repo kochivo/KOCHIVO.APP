@@ -54,7 +54,7 @@ export async function saveCaptainProfile(input: unknown): Promise<Result<Setting
       // Cleanup is best effort: a committed profile must never be reported as rolled back.
       await client.storage.from('captain-avatars').remove([previous.data.avatar_path]).catch(() => undefined);
     }
-    return { data: result.data as SettingsProfile };
+    return { data: result.data };
   } catch (error) { unstable_rethrow(error); return { error: failure }; }
 }
 
