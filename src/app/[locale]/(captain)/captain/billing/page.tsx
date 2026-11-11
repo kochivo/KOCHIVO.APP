@@ -1,3 +1,4 @@
+import { getTimezone } from '@/core/timezone/server';
 import { createT, parseLocale } from '@/core/i18n';
 import { Suspense } from 'react';
 import { messages, BillingScreen } from '@/features/billing';
@@ -10,6 +11,6 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return { title: createT(messages, parseLocale(locale))('billing') };
 }
 
-export default function BillingPage() {
-  return <Suspense fallback={<LoadingState variant="cards" />}><BillingScreen data={fetchBilling()} today={localDate(new Date())} /></Suspense>;
+export default async function BillingPage() {
+  return <Suspense fallback={<LoadingState variant="cards" />}><BillingScreen data={fetchBilling()} today={localDate(new Date(), await getTimezone())} /></Suspense>;
 }

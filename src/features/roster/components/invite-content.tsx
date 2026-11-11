@@ -1,4 +1,5 @@
 'use client';
+import { useTimezone } from '@/core/timezone/client';
 import { useEffect, useState, useTransition } from 'react';
 import { useT } from '@/core/i18n/client';
 import { localDate } from '@/lib/dates';
@@ -11,6 +12,7 @@ import { InviteForm } from './invite-form';
 import { InviteResult } from './invite-result';
 
 export function InviteContent({ captainFirstName }: { captainFirstName: string }) {
+  const timezone = useTimezone();
   const t = useT(messages);
   const [packages, setPackages] = useState<InvitePackage[] | null>(null);
   const [loadError, setLoadError] = useState('');
@@ -18,7 +20,7 @@ export function InviteContent({ captainFirstName }: { captainFirstName: string }
   const [error, setError] = useState('');
   const [pending, startTransition] = useTransition();
   const [result, setResult] = useState<{ code: string; input: PlayerInvite } | null>(null);
-  const [today] = useState(() => localDate(new Date()));
+  const [today] = useState(() => localDate(new Date(), timezone));
   useEffect(() => {
     let live = true;
     loadInvitePackages().then(response => {

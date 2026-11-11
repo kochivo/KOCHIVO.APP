@@ -1,4 +1,5 @@
 'use server';
+import { getTimezone } from '@/core/timezone/server';
 import 'server-only';
 import { supabaseServer } from '@/core/supabase/server';
 import { localDate } from '@/lib/dates';
@@ -15,9 +16,10 @@ export async function loadQueueCounts(at: string) {
   const auth = await client.auth.getClaims();
   if (auth.error || !auth.data?.claims.sub) throw new Error(t('error'));
   const captain = auth.data.claims.sub;
+  const timezone = await getTimezone();
   const lateAt = new Date(now.getTime() - 86_400_000).toISOString();
-  const weekAt = new Date(weekStart(now)).toISOString();
-  const end = localDate(new Date(now.getTime() + 7 * 86_400_000));
+  const weekAt = new Date(weekStart(now, timezone)).toISOString();
+  const end = localDate(new Date(now.getTime() + 7 * 86_400_000), timezone);
   const tables = await Promise.all((['check_ins', 'form_checks'] as const).map(async table => {
     const base = () => client.from(table).select('id', { count: 'exact', head: true }).eq('captain_id', captain).limit(1);
     const results = await Promise.all([base().is('reviewed_at', null),
@@ -35,10 +37,10 @@ export async function loadQueueCounts(at: string) {
   }
   const renewal = () => client.from('coach_clients').select('id', { count: 'exact', head: true })
     .eq('captain_id', captain).is('archived_at', null).is('frozen_at', null).eq('pending', false)
-    .gte('access_until', localDate(now)).lte('access_until', end).limit(1);
-  const cutoff = localDate(new Date(now.getTime() + 6 * 86_400_000));
+    .gte('access_until', localDate(now, timezone)).lte('access_until', end).limit(1);
+  const cutoff = localDate(new Date(now.getTime() + 6 * 86_400_000), timezone);
   const lateQuery = renewal();
-  if (now.getTime() > cairoMidnight(localDate(now))) lateQuery.lte('access_until', cutoff);
+  if (now.getTime() > cairoMidnight(localDate(now, timezone), timezone)) lateQuery.lte('access_until', cutoff);
   else lateQuery.lt('access_until', cutoff);
   const [renewals, lateRenewals] = await Promise.all([renewal(), lateQuery]);
   if (renewals.error || lateRenewals.error) throw new Error(t('error'));

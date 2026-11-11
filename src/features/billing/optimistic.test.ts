@@ -147,3 +147,4 @@ it('reconciles collection dues returned by the server', async () => {
   expect(text(render())).toContain('owes{"amount":"75"}');
 });
 
+vi.mock('@/core/timezone/client', () => ({ useTimezone: () => 'Africa/Cairo' }));

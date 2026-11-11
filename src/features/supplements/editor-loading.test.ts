@@ -59,3 +59,4 @@ it('loads the editor only after Add and keeps close and draft props intact', asy
   if (typeof close === 'function') close();
   expect(renderToStaticMarkup(render())).not.toContain('data-editor="open"');
 });
+vi.mock('@/core/timezone/client', () => ({ useTimezone: () => 'Africa/Cairo' }));

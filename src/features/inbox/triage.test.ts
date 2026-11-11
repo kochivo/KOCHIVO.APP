@@ -16,6 +16,7 @@ import { InboxScreen } from './components/inbox-screen';
 import { InboxRow } from './components/inbox-row';
 import { listInbox, reviewItem } from './data/inbox';
 import { listTriageInputs } from './data/triage-inputs';
+vi.mock('@/core/timezone/server', () => ({ getTimezone: async () => 'Africa/Cairo' }));
 vi.mock('./data/inbox', () => ({ listInbox: vi.fn(), reviewItem: vi.fn() }));
 vi.mock('./data/triage-inputs', () => ({ listTriageInputs: vi.fn(async () => ({ data: { history: [], dailyChecks: [] } })) }));
 vi.mock('@/ui/toast', () => ({ useToast: () => ({ success: () => {} }) }));

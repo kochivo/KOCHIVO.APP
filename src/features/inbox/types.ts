@@ -1,4 +1,5 @@
 interface InboxBase {
+  timezone?: string;
   id: string;
   player_id: string;
   player_name: string;

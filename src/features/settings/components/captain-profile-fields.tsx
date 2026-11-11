@@ -5,6 +5,8 @@ import { messages } from '../messages';
 import { timezones } from '../schema';
 import type { CaptainProfileInput } from '../schema';
 import { PublicSlugField } from './public-slug-field';
+import { internationalEnabled } from '@/lib/international-enabled';
+import { TimezoneFields } from './timezone-fields';
 
 export function CaptainProfileFields({ value, errors, onChange }: { value: CaptainProfileInput;
   errors: Record<string, string>; onChange: (value: CaptainProfileInput) => void }) {
@@ -23,7 +25,8 @@ export function CaptainProfileFields({ value, errors, onChange }: { value: Capta
     </div>
     <TextField label={t('location')} value={value.location} maxLength={80} placeholder={t('locationPlaceholder')}
       onChange={e => onChange({ ...value, location: e.target.value })} error={errors.location} className="bg-surface" />
-    <div className="space-y-2">
+    {internationalEnabled() ? <TimezoneFields timezone={value.timezone} auto={value.timezone_auto ?? true}
+      onChange={(timezone, timezone_auto) => onChange({ ...value, timezone, timezone_auto })} /> : <div className="space-y-2">
       <label htmlFor="captain-timezone" className="text-sm font-semibold">{t('timezone')}</label>
       <select id="captain-timezone" value={value.timezone} onChange={e => onChange({ ...value, timezone: e.target.value })}
         className={fieldClass} aria-describedby="timezone-hint timezone-error" aria-invalid={!!errors.timezone}>
@@ -31,7 +34,7 @@ export function CaptainProfileFields({ value, errors, onChange }: { value: Capta
       </select>
       <p id="timezone-hint" className="text-sm text-muted">{t('timezoneHint')}</p>
       <p id="timezone-error" role="alert" className="text-sm text-danger">{errors.timezone}</p>
-    </div>
+    </div>}
     <Segmented aria-label={t('units')} value={value.units} options={[
       { value: 'metric', label: t('metric') }, { value: 'imperial', label: t('imperial') },
     ]} onChange={units => { if (units === 'metric' || units === 'imperial') onChange({ ...value, units }); }} />

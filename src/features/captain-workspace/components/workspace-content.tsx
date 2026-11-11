@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import { TimezoneScope } from '@/core/timezone/timezone-scope';
 import { getLocale } from '@/core/i18n/server';
 import { supabaseServer } from '@/core/supabase/server';
 import { loadPlayerFile } from '@/features/player-file';
@@ -21,7 +22,7 @@ export async function WorkspaceContent({ playerId }: { playerId: string; today: 
   if (!profile.data) notFound();
   const current = programs.data?.find(program => program.status === 'active') ?? programs.data?.find(program => program.status === 'draft');
   const loaded = current ? await loadProgram(current.id) : null;
-  return <div className="space-y-5 pb-40 lg:pb-0" dir={locale === 'ar' ? 'rtl' : 'ltr'}>
+  return <TimezoneScope timezone={profile.data.timezone}><div className="space-y-5 pb-40 lg:pb-0" dir={locale === 'ar' ? 'rtl' : 'ltr'}>
     <WorkspaceViews playerId={playerId} name={profile.data.name} locale={locale}>
     <div className="grid items-start gap-6 lg:grid-cols-[360px_minmax(0,1fr)]">
       <PlayerFileSlot player={profile.data} locale={locale} file={playerFile.file} error={playerFile.error} />
@@ -31,5 +32,5 @@ export async function WorkspaceContent({ playerId }: { playerId: string; today: 
     </div>
     <MobileActions locale={locale} />
     </WorkspaceViews>
-  </div>;
+  </div></TimezoneScope>;
 }

@@ -1,4 +1,5 @@
 'use client';
+import { useTimezone } from '@/core/timezone/client';
 
 import { useRef, useState } from 'react';
 import type { Locale } from '@/core/i18n/locale';
@@ -17,6 +18,7 @@ export function FormDetail({ form, playerId, locale, mutate, review, sign }: {
   form: PlayerForm; playerId: string; locale: Locale; mutate: FormsMutation; review: ReviewAction; sign: SignPhotos;
 }) {
   const t = createT(messages, locale);
+  const timezone = useTimezone();
   const toast = useToast();
   const [reply, setReply] = useState(form.reply ?? '');
   const [sending, setSending] = useState(false);
@@ -37,9 +39,9 @@ export function FormDetail({ form, playerId, locale, mutate, review, sign }: {
   return <article id="player-form-detail" tabIndex={-1} className="glass-strong min-w-0 rounded-card p-6">
     <header className="mb-4 flex flex-wrap items-start justify-between gap-3">
       <div><h2 className="text-xl font-bold">{t(checkin ? 'checkin' : 'intake')}</h2>
-        <p className="mt-1 text-sm text-muted">{formDate(form.snapshot.source.at, locale)}</p></div>
+        <p className="mt-1 text-sm text-muted">{formDate(form.snapshot.source.at, locale, timezone)}</p></div>
       <span className="text-sm text-muted">{t(form.reviewedAt ? 'reviewed' : 'new')}</span>
-      {form.previous && <p className="w-full text-sm text-muted">{t('compare', { date: formDate(form.previous.source.at, locale) })}</p>}
+      {form.previous && <p className="w-full text-sm text-muted">{t('compare', { date: formDate(form.previous.source.at, locale, timezone) })}</p>}
     </header>
     <FormAnswers form={form} locale={locale} trainingHref={`/captain/players/${playerId}/programs`} />
     {checkin && <>

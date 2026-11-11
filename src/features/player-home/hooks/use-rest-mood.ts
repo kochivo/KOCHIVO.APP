@@ -1,4 +1,5 @@
 'use client';
+import { useTimezone } from '@/core/timezone/client';
 
 import { useCallback, useEffect } from 'react';
 import { localDb, useLiveQuery } from '@/core/offline';
@@ -12,10 +13,11 @@ const readSnapshot = () => localDb().program_snapshot.get('active');
 const readSessions = () => localDb().workout_sessions.toArray();
 
 export function useRestMood(enabled = true) {
+  const timezone = useTimezone();
   const { now } = useCalendarClock();
   const snapshot = useLiveQuery(readSnapshot);
   const sessions = useLiveQuery(readSessions);
-  const today = now ? localDate(now) : '';
+  const today = now ? localDate(now, timezone) : '';
   const decision = useTodayDecision(enabled ? snapshot?.player_id : undefined, today);
   const rest = enabled && (decision === 'rest' || Boolean(snapshot && sessions && today && isRestDay(snapshot, sessions, today)));
   useEffect(() => {

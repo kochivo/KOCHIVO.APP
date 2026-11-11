@@ -1,4 +1,5 @@
 'use server';
+import { getTimezone } from '@/core/timezone/server';
 import 'server-only';
 import { z } from 'zod';
 import { unstable_rethrow } from 'next/navigation';
@@ -29,11 +30,12 @@ export async function loadQueuePage(input: { cursor?: Cursor; renewalCursor?: Cu
     const auth = await client.auth.getClaims();
     if (auth.error || !auth.data?.claims.sub) throw new Error();
     const captain = auth.data.claims.sub;
+    const timezone = await getTimezone();
     const end = new Date(now.getTime() + 7 * 86_400_000);
     const renewals = client.from('coach_clients')
       .select('id,player_id,created_at,access_until,profiles!coach_clients_player_id_fkey(full_name)')
       .eq('captain_id', captain).is('archived_at', null).is('frozen_at', null).eq('pending', false)
-      .gte('access_until', localDate(now)).lte('access_until', localDate(end))
+      .gte('access_until', localDate(now, timezone)).lte('access_until', localDate(end, timezone))
       .order('created_at', { ascending: false }).order('id').limit(50);
     if (parsed.renewalCursor) {
       const c = parsed.renewalCursor;
@@ -48,7 +50,7 @@ export async function loadQueuePage(input: { cursor?: Cursor; renewalCursor?: Cu
     const items: QueueItem[] = [...custom.items,...open.data ?? [], ...(ending.data ?? []).map(row => ({
       kind: 'renewal' as const, id: row.id, player_id: row.player_id, player_name: row.profiles?.full_name ?? t('player'),
       // Ending-soon items begin waiting on entry to the seven-day window, not on roster creation.
-      created_at: new Date(cairoMidnight(row.access_until) - 7 * 86_400_000).toISOString(),
+      created_at: new Date(cairoMidnight(row.access_until, timezone) - 7 * 86_400_000).toISOString(),
       reviewed_at: null, reply: null, access_until: row.access_until,
     }))];
     const previous: Record<string, Snapshot> = {};

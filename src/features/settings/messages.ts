@@ -2,6 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    automaticTimezone: 'تلقائي',
     myProfile: 'بروفايلي', backToPlayer: 'رجوع للرئيسية', loadingPhoto: 'بنحمّل الصورة...',
     optionalWhatsapp: 'اختياري، بالصيغة الدولية زي +201012345678',
     publicSlug: 'لينك صفحتك العامة', publicPreview: 'kochivo.site/c/{slug}', copyLink: 'انسخ اللينك',
@@ -73,6 +74,7 @@ export const messages = defineMessages({
     couldnTDownloadYourDataTry: "مش قادرين ننزّل بياناتك. جرّب تاني",
   },
   en: {
+    automaticTimezone: 'Automatic',
     myProfile: 'My profile', backToPlayer: 'Back home', loadingPhoto: 'Loading photo...',
     optionalWhatsapp: 'Optional. International format, like +201012345678',
     publicSlug: 'Public page link', publicPreview: 'kochivo.site/c/{slug}', copyLink: 'Copy link',

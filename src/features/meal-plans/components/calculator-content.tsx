@@ -1,4 +1,6 @@
 import { createT } from '@/core/i18n';
+import { getPlayerTimezone } from '@/core/timezone/server';
+import { TimezoneScope } from '@/core/timezone/timezone-scope';
 import type { Locale } from '@/core/i18n';
 import { supabaseServer } from '@/core/supabase/server';
 import { loadPlayerFile } from '@/features/player-file';
@@ -23,5 +25,5 @@ export async function CalculatorContent({ playerId, locale }: { playerId: string
   if (!data) return <section role="alert" className="glass grid gap-3 rounded-card p-5">
       <p>{t('loadFailed')}</p><Link className="flex min-h-12 items-center" href={`/captain/players/${playerId}/nutrition?view=calc`}>{t('retry')}</Link>
     </section>;
-  return <CalculatorView playerId={playerId} file={data.file} plans={data.plans} />;
+  return <TimezoneScope timezone={await getPlayerTimezone(playerId)}><CalculatorView playerId={playerId} file={data.file} plans={data.plans} /></TimezoneScope>;
 }

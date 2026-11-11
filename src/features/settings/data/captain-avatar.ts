@@ -10,7 +10,7 @@ export async function saveCaptainWithAvatar(input: CaptainProfileInput, file: Fi
   return saveWithAvatar(input, file, t, saveCaptainProfile);
 }
 
-export async function savePlayerWithAvatar(input: { full_name: string; phone: string; avatar_path?: string | null }, file: File | null, t: Translator<typeof messages>) {
+export async function savePlayerWithAvatar(input: { full_name: string; phone: string; avatar_path?: string | null; timezone?: string; timezone_auto?: boolean }, file: File | null, t: Translator<typeof messages>) {
   return saveWithAvatar(input, file, t, saveProfile);
 }
 

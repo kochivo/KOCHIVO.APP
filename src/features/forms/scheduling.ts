@@ -1,13 +1,13 @@
-import { localDate } from '@/lib/dates';
+import { DEFAULT_TIMEZONE, localDate } from '@/lib/dates';
 import type { Schedule } from './types';
 
 type ScheduledForm = { id: string; captain_id: string; schedule: Schedule | null; archived_at: string | null };
 type Link = { captain_id: string; player_id: string; archived_at: string | null; frozen_at: string | null; pending: boolean; access_until: string; sessions_left?: number | null };
 type Sent = { form_id: string; player_id: string; sent_at: string; answered_at: string | null };
-export function dueRequests(forms: readonly ScheduledForm[], links: readonly Link[], lastSent: readonly Sent[], now: Date) {
-  const today = localDate(now);
+export function dueRequests(forms: readonly ScheduledForm[], links: readonly Link[], lastSent: readonly Sent[], now: Date, timezone = DEFAULT_TIMEZONE) {
+  const today = localDate(now, timezone);
   const date = new Date(`${today}T12:00:00Z`);
-  const hour = Number(new Intl.DateTimeFormat('en-GB', { timeZone: 'Africa/Cairo', hour: '2-digit', hourCycle: 'h23' }).format(now));
+  const hour = Number(new Intl.DateTimeFormat('en-GB', { timeZone: timezone, hour: '2-digit', hourCycle: 'h23' }).format(now));
   return forms.flatMap(form => {
     const s = form.schedule;
     if (!s || form.archived_at || hour < s.hour) return [];
@@ -21,7 +21,7 @@ export function dueRequests(forms: readonly ScheduledForm[], links: readonly Lin
     return links.filter(link => link.captain_id === form.captain_id && !link.archived_at && !link.frozen_at && !link.pending
       && link.access_until >= today && (link.sessions_left == null || link.sessions_left > 0)
       && !lastSent.some(r => r.form_id === form.id && r.player_id === link.player_id
-        && (r.answered_at === null || localDate(new Date(r.sent_at)) >= start)))
+        && (r.answered_at === null || localDate(new Date(r.sent_at), timezone) >= start)))
       .map(link => ({ form_id: form.id, player_id: link.player_id, captain_id: form.captain_id, sent_at: now.toISOString() }));
   });
 }

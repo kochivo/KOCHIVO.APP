@@ -1,4 +1,5 @@
 'use client';
+import { useTimezone } from '@/core/timezone/client';
 import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 import { formatNumber } from '@/lib/format';
@@ -17,6 +18,7 @@ export function CheckinSheet({ latest, open, onClose, onSent }: {
   latest?: CheckIn; open: boolean; onClose: () => void; onSent: () => void;
 }) {
   const t = useT(messages);
+  const timezone = useTimezone();
   const locale = useLocale();
   const positions = [t('front'), t('side'), t('back')];
   const dialog = useRef<HTMLDialogElement>(null);
@@ -56,7 +58,7 @@ export function CheckinSheet({ latest, open, onClose, onSent }: {
     setBusy(true); setError(''); setProgress(0);
     try {
       const result = await submitCheckIn(await loadSupabaseBrowser(), {
-        today: localDate(new Date()), body_weight_kg: weight, waist_cm: waist, notes,
+        today: localDate(new Date(), timezone), body_weight_kg: weight, waist_cm: waist, notes,
         photos: photos.flatMap((photo) => photo ? [photo.file] : []),
         body_fat_pct: bodyFat === '' ? null : Number(bodyFat),
         photo_poses: poses.filter((_, index) => photos[index] !== null),

@@ -6,8 +6,8 @@ import { messages } from '../messages';
 import { PlayerFileFact } from './player-file-fact';
 import { factLabel, factValue, sourceLabel, weekdays } from './player-file-format';
 
-export function PlayerFilePanel({ name, file, locale, initialWeight }: {
-  name: string; file: PlayerFile; locale: Locale; initialWeight?: number;
+export function PlayerFilePanel({ name, file, locale, initialWeight, timezone }: {
+  name: string; file: PlayerFile; locale: Locale; initialWeight?: number; timezone?: string;
 }) {
   const t = createT(messages, locale);
   const { facts, history } = file;
@@ -19,11 +19,11 @@ export function PlayerFilePanel({ name, file, locale, initialWeight }: {
   return <div className="space-y-5">
     <header className="space-y-3">
       <h1 className="break-words font-display text-2xl font-bold">{name}</h1>
-      <PlayerFileFact factKey="targetWeight" fact={facts.targetWeight} locale={locale} />
+      <PlayerFileFact factKey="targetWeight" fact={facts.targetWeight} locale={locale} timezone={timezone} />
     </header>
     {!Object.keys(facts).length && <p className="text-sm text-muted">{t('noFacts')}</p>}
     <div className="glass-strong grid grid-cols-3 gap-3 rounded-control p-3">
-      {(['weight', 'height', 'age'] as const).map(key => <PlayerFileFact key={key} factKey={key} fact={facts[key]} locale={locale} />)}
+      {(['weight', 'height', 'age'] as const).map(key => <PlayerFileFact key={key} factKey={key} fact={facts[key]} locale={locale} timezone={timezone} />)}
     </div>
     <section className="space-y-2" aria-label={t('goalProgress')}>
       <h2 className="text-xs text-muted">{t('goalProgress')}</h2>
@@ -39,19 +39,19 @@ export function PlayerFilePanel({ name, file, locale, initialWeight }: {
         </div>
       </>}
     </section>
-    <PlayerFileFact factKey="trainingDays" fact={facts.trainingDays} locale={locale}>
+    <PlayerFileFact factKey="trainingDays" fact={facts.trainingDays} locale={locale} timezone={timezone}>
       <ul className="flex gap-1">{weekdays.map((day, index) => <li key={day}
         aria-label={t('trainingDayLabel', { day: t(day), status: facts.trainingDays ? t(facts.trainingDays.value.includes(index) ? 'trainingDay' : 'rest') : t('unavailable') })}
         className={`flex min-h-9 min-w-0 flex-1 items-center justify-center rounded-control border text-xs ${facts.trainingDays?.value.includes(index) ? 'border-lime/30 bg-lime-soft text-lime' : 'border-line text-muted'}`}>
         {t(day)}</li>)}</ul>
     </PlayerFileFact>
     {(['sessionMinutes', 'injuries', 'medical', 'allergies', 'note'] as const).map(key =>
-      <PlayerFileFact key={key} factKey={key} fact={facts[key]} locale={locale} />)}
+      <PlayerFileFact key={key} factKey={key} fact={facts[key]} locale={locale} timezone={timezone} />)}
     <section className="space-y-3">
       <h2 className="font-bold">{t('history')}</h2>
       {history.length ? <ol className="space-y-4">{[...history].sort((a, b) => Date.parse(b.source.at) - Date.parse(a.source.at)).map(entry =>
         <li key={`${entry.source.kind}-${entry.source.id}`} className="space-y-1 text-sm">
-          <p>{sourceLabel(entry.source, locale)}</p>
+          <p>{sourceLabel(entry.source, locale, timezone)}</p>
           <p className="text-xs text-muted">{entry.first ? t('firstData') : entry.changed.length
             ? t('changedFacts', { facts: entry.changed.map(key => factLabel(key, locale)).join(' · ') }) : t('unchanged')}</p>
         </li>)}</ol> : <p className="text-sm text-muted">{t('noForms')}</p>}

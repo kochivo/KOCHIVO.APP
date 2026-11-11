@@ -1,3 +1,4 @@
+import { getTimezone } from '@/core/timezone/server';
 import 'server-only';
 import { unstable_rethrow } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
@@ -9,7 +10,7 @@ import { messages } from '../invites/messages';
 
 export async function createPlayerInviteAt(input: unknown, now: Date): Promise<{ code: string } | { error: string }> {
   const t = await getT(messages);
-  const parsed = playerInviteSchema(localDate(now)).safeParse(input);
+  const parsed = playerInviteSchema(localDate(now, await getTimezone())).safeParse(input);
   if (!parsed.success) return { error: t('invalid') };
   try {
     const client = await rosterClient();

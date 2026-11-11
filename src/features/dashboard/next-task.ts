@@ -26,7 +26,7 @@ export function captainNextTasks(players: RosterPlayer[], dues: Map<string, numb
   for (const alert of alerts.filter(alert => alert.kind === 'dues')) {
     tasks.push({ kind: 'dues', name: alert.name, href: alert.href });
   }
-  const late = ordered.filter(player => daysBetween(player.lastTrainingDate ?? player.startedOn, today) >= 7)
+  const late = ordered.filter(player => daysBetween(player.lastTrainingDate ?? player.startedOn, player.playerToday ?? today) >= 7)
     .sort((a, b) => (a.lastTrainingDate ?? a.startedOn).localeCompare(b.lastTrainingDate ?? b.startedOn)
       || a.playerId.localeCompare(b.playerId));
   for (const player of late) tasks.push({ kind: 'late', name: player.fullName, href: `/captain/players/${player.playerId}` });

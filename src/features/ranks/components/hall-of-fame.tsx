@@ -19,7 +19,7 @@ export function HallOfFame({ locale, rows, error = false, onRetry }: {
             <RankBadge tier="crown" size="sm" label={t('crown')} />
             <div className="min-w-0 flex-1">
               <time dateTime={row.month} className="text-sm text-muted">{new Intl.DateTimeFormat(
-                locale === 'ar' ? 'ar-EG-u-nu-latn' : 'en', { month: 'long', year: 'numeric', timeZone: 'Africa/Cairo' },
+                locale === 'ar' ? 'ar-EG-u-nu-latn' : 'en', { month: 'long', year: 'numeric', timeZone: 'UTC' },
               ).format(new Date(`${row.month}T12:00:00Z`))}</time>
               <p className="break-words font-semibold">{row.display_name}</p>
             </div>

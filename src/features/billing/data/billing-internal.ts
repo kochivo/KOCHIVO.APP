@@ -1,3 +1,4 @@
+import { getTimezone } from '@/core/timezone/server';
 import { getT } from '@/core/i18n/server';
 import { messages } from '../messages';
 import 'server-only';
@@ -18,7 +19,8 @@ export async function fetchBillingAt(now: Date): Promise<BillingResult> {
   try {
     const { client, captainId } = await captainClient();
     const timestamp = now.toISOString();
-    const today = localDate(now);
+    const timezone = await getTimezone();
+    const today = localDate(now, timezone);
     const since = revenueSince(today);
     const [roster, tier, payments, packages, dues, paid, collected] = await Promise.all([
       fetchRoster(), client.rpc('current_tier', { p_captain: captainId }),
@@ -49,7 +51,7 @@ export async function fetchBillingAt(now: Date): Promise<BillingResult> {
         lastPayment: paymentMap.get(player.playerId) ?? null, due: dueMap.get(player.playerId) ?? 0 })),
       plan: plan.data, used: roster.players.length, subscriptionEnd: subscription.data?.ends_at ?? null,
       packages: packages.data,
-      revenue: summarizeRevenue([...paid.data, ...collected.data], dues.data, today),
+      revenue: summarizeRevenue([...paid.data, ...collected.data], dues.data, today, timezone),
     } };
   } catch (error) {
     unstable_rethrow(error);

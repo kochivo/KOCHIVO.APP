@@ -30,6 +30,7 @@ export interface ProfileCheckIn {
 }
 
 export interface PlayerProfile {
+  timezone?: string;
   name: string;
   avatarUrl?: string | null;
   phone?: string | null;

@@ -1,4 +1,5 @@
 'use client';
+import { useTimezone } from '@/core/timezone/client';
 import { formatNumber } from '@/lib/format';
 import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
@@ -29,6 +30,7 @@ const statuses = {
 } as const;
 
 export function PlayerBillingRow({ player, today, packages }: { player: BillingPlayer; today: string; packages: Package[] }) {
+  const timezone = useTimezone();
   const t = useT(messages);
   const feedback = useT(uiMessages);
   const toast = useToast();
@@ -106,7 +108,7 @@ export function PlayerBillingRow({ player, today, packages }: { player: BillingP
       <dl className="grid gap-3 text-sm sm:grid-cols-2">
         <div><dt className="text-muted">{t('accessUntil')}</dt><dd aria-live="polite" className="mt-1"><time dateTime={accessUntil}>{formatDateAr(accessUntil, { day: 'numeric', month: 'long', year: 'numeric' }, locale)}</time></dd></div>
         <div><dt className="text-muted">{t('lastPayment')}</dt><dd className="mt-1">{lastPayment ? <>
-          <time dateTime={lastPayment.created_at}>{lastPayment.created_at.length === 10 ? formatDateAr(lastPayment.created_at, { day: 'numeric', month: 'long', year: 'numeric' }, locale) : formatTimestampAr(lastPayment.created_at, { day: 'numeric', month: 'long', year: 'numeric' }, locale)}</time>
+          <time dateTime={lastPayment.created_at}>{lastPayment.created_at.length === 10 ? formatDateAr(lastPayment.created_at, { day: 'numeric', month: 'long', year: 'numeric' }, locale) : formatTimestampAr(lastPayment.created_at, { day: 'numeric', month: 'long', year: 'numeric' }, locale, timezone)}</time>
           {' · '}{lastPayment.amount_egp === null ? t('noAmount') : t('amount', { amount: formatNumber(lastPayment.amount_egp, locale) })}{' · '}{t('days', { n: lastPayment.days, count: formatNumber(lastPayment.days, locale) })}
         </> : t('noPayments')}</dd></div>
       </dl>

@@ -1,4 +1,5 @@
 import { Repeat2 } from 'lucide-react';
+import { useTimezone } from '@/core/timezone/client';
 import type { Locale } from '@/core/i18n/locale';
 import { createT } from '@/core/i18n/messages';
 import type { PlayerForm } from './adapter';
@@ -9,12 +10,13 @@ export function FormsTimeline({ forms, selectedId, locale, onSelect, dueAt, disa
   forms: PlayerForm[]; selectedId?: string; locale: Locale; onSelect: (form: PlayerForm) => void; dueAt?: string; disabled?: boolean;showLegacyReminder?:boolean;
 }) {
   const t = createT(messages, locale);
+  const timezone = useTimezone();
   return <div className="space-y-4">
     <div className="flex items-center gap-3 rounded-card border border-line p-6">
       <Repeat2 aria-hidden strokeWidth={1.5} className="size-6 shrink-0 text-lime" />
       <div className="min-w-0 flex-1"><h2 className="font-bold">{t('weekly')}</h2>
         <p className="text-sm text-muted">{t('everyWeek')}</p>
-        {dueAt && <p className="text-sm text-muted">{t('due', { date: formDate(dueAt, locale) })}</p>}
+        {dueAt && <p className="text-sm text-muted">{t('due', { date: formDate(dueAt, locale, timezone) })}</p>}
       </div>
       {showLegacyReminder && <span title={t('reminderHint')}><button type="button" disabled title={t('reminderHint')}
         className="min-h-12 rounded-control px-3 text-sm text-muted disabled:opacity-50">{t('reminder')}</button></span>}
@@ -32,7 +34,7 @@ export function FormsTimeline({ forms, selectedId, locale, onSelect, dueAt, disa
                 <span className="font-bold">{t(source.kind === 'intake' ? 'intake' : 'checkin')}</span>
                 <span className={form.reviewedAt ? 'text-sm text-muted' : 'text-sm text-warn'}>{t(form.reviewedAt ? 'reviewed' : 'new')}</span>
               </span>
-              <span className="block text-sm text-muted">{formDate(source.at, locale)}</span>
+              <span className="block text-sm text-muted">{formDate(source.at, locale, timezone)}</span>
               <span title={summary} className="block truncate text-sm">{summary}</span>
             </button>
           </li>;

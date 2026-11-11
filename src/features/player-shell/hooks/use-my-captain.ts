@@ -4,6 +4,8 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState } f
 import { fetchMyCaptain } from '../data/my-captain';
 import type { MyCaptain } from '../data/my-captain';
 import { localDb } from '@/core/offline/db';
+import { internationalEnabled } from '@/lib/international-enabled';
+import { profileTimezone } from '@/lib/timezone';
 
 function captainCacheKey() {
   try { return `kochivo.my-captain.${localDb().userId}`; }
@@ -30,6 +32,7 @@ export function readCaptainCache(): MyCaptain | null {
         ['whatsapp', 'instagram', 'tiktok', 'facebook', 'youtube', 'x'].includes(key) && typeof value === 'string'));
     }
     return { fullName: row.fullName, phone: null, accessUntil: row.accessUntil,
+      ...(internationalEnabled() ? { timezone: profileTimezone(row.timezone) } : {}),
       ...(typeof row.pending === 'boolean' ? { pending: row.pending } : {}),
       ...(typeof row.frozenAt === 'string' || row.frozenAt === null ? { frozenAt: row.frozenAt } : {}),
       archivedAt: row.archivedAt, startedOn: null, ...branding };
@@ -42,7 +45,8 @@ export function writeCaptainCache(data: MyCaptain | null) {
     if (!cacheKey) return;
     if (!data) { window.localStorage.removeItem(cacheKey); return; }
     const { fullName, accessUntil, archivedAt, bio, location, avatarUrl, social, pending, frozenAt } = data;
-    window.localStorage.setItem(cacheKey, JSON.stringify({ fullName, phone: null, accessUntil, archivedAt, bio, location, avatarUrl, social, pending, frozenAt }));
+    window.localStorage.setItem(cacheKey, JSON.stringify({ fullName, phone: null, accessUntil, archivedAt, bio, location, avatarUrl, social, pending, frozenAt,
+      ...(internationalEnabled() ? { timezone: profileTimezone(data.timezone) } : {}) }));
   } catch { /* Storage can be unavailable in private browsing. */ }
 }
 

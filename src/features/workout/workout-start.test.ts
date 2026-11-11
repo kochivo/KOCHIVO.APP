@@ -23,6 +23,7 @@ beforeEach(async () => {
   vi.useFakeTimers({ now: afterMidnight, toFake: ['Date', 'setTimeout', 'clearTimeout'] });
   queries = [];
   values = [];
+  vi.doMock('@/core/timezone/client', () => ({ useTimezone: () => 'Africa/Cairo' }));
   vi.doMock('@/core/i18n/client', () => ({ useT: (messages: Parameters<typeof createT>[0]) => createT(messages, 'ar'), useLocale: () => 'ar' }));
   vi.doMock('react', () => ({
     useState: (initial: unknown) => [initial, () => undefined],
@@ -54,6 +55,7 @@ afterEach(async () => {
   vi.useRealTimers();
   await db.delete();
   vi.doUnmock('react');
+  vi.doUnmock('@/core/timezone/client');
   vi.doUnmock('@/core/i18n/client');
   vi.doUnmock('@/core/offline');
   vi.doUnmock('@/features/player-home');

@@ -20,7 +20,7 @@ const ScanSheet = dynamic(() => import('./scan-sheet').then(module => module.Sca
 export function ScanSection({ playerId }: { playerId?: string }) {
   const t = useT(messages);
   const locale = useLocale();
-  const [data, setData] = useState<{ scans: Scan[]; target: number | null }>();
+  const [data, setData] = useState<{ scans: Scan[]; target: number | null; timezone?: string }>();
   const [failed, setFailed] = useState(false);
   const [retry, setRetry] = useState(0);
   const [sheet, setSheet] = useState(false);
@@ -48,7 +48,7 @@ export function ScanSection({ playerId }: { playerId?: string }) {
     finally { setDeleting(false); }
   }
   const scans = data?.scans ?? [];
-  const warnings = now ? alerts(scans, now) : null;
+  const warnings = now ? alerts(scans, now, data?.timezone) : null;
   const date = (scan: Scan) => formatDateAr(scan.scan_date, { day: 'numeric', month: 'short', year: 'numeric' }, locale);
   return <section className="space-y-4" aria-label={t('title')}>
     <header className="flex flex-wrap items-center justify-between gap-2"><h2 className="text-xl font-bold">{t('title')}</h2>
@@ -82,7 +82,7 @@ export function ScanSection({ playerId }: { playerId?: string }) {
     </>}
     {error && <p role="alert" className="text-danger">{error}</p>}
     {sheet && <ScanSheet onClose={() => setSheet(false)} onSaved={scan => {
-      setData(current => ({ scans: [...(current?.scans ?? []), scan].sort((a, b) => a.scan_date.localeCompare(b.scan_date)), target: current?.target ?? null }));
+      setData(current => ({ scans: [...(current?.scans ?? []), scan].sort((a, b) => a.scan_date.localeCompare(b.scan_date)), target: current?.target ?? null, timezone: current?.timezone }));
       setNow(new Date()); setFailed(false); setSheet(false);
     }} />}
   </section>;

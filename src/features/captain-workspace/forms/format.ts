@@ -1,3 +1,4 @@
+import { actionTimezone } from '@/core/timezone/action-timezone';
 import { createT } from '@/core/i18n/messages';
 import type { Locale } from '@/core/i18n/locale';
 import { intlLocale } from '@/core/i18n/locale';
@@ -5,8 +6,8 @@ import { factLabel, factValue } from '../components/player-file-format';
 import type { PlayerForm } from './adapter';
 import { messages } from './messages';
 
-export function formDate(at: string, locale: Locale) {
-  return new Intl.DateTimeFormat(intlLocale(locale), { dateStyle: 'medium', timeZone: 'Africa/Cairo' }).format(new Date(at));
+export function formDate(at: string, locale: Locale, timezone = actionTimezone()) {
+  return new Intl.DateTimeFormat(intlLocale(locale), { dateStyle: 'medium', timeZone: timezone }).format(new Date(at));
 }
 export function formSummary(form: PlayerForm, locale: Locale) {
   const t = createT(messages, locale);

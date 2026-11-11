@@ -1,4 +1,4 @@
-import { daysBetween, localDate } from '@/lib/dates';
+import { DEFAULT_TIMEZONE, daysBetween, localDate } from '@/lib/dates';
 import type { InboxItem } from './types';
 
 export type CheckinHistory = Pick<Extract<InboxItem, { kind: 'checkin' }>,
@@ -12,8 +12,8 @@ export type TriageInputs = { history: CheckinHistory[]; dailyChecks: DailyCheck[
 export const emptyInputs: TriageInputs = { history: [], dailyChecks: [] };
 export const inboxKey = (item: InboxItem) => `${item.kind}:${item.id}`;
 
-export function dailyAverages(playerId: string, checks: DailyCheck[], now: Date) {
-  const today = localDate(now);
+export function dailyAverages(playerId: string, checks: DailyCheck[], now: Date, timezone = DEFAULT_TIMEZONE) {
+  const today = localDate(now, timezone);
   const rows = checks.filter(row => row.player_id === playerId && !row.deleted_at &&
     daysBetween(row.log_date, today) >= 0 && daysBetween(row.log_date, today) < 7);
   const average = (key: 'sleep_hours' | 'soreness') => {
@@ -28,7 +28,7 @@ export function previousCheckins(item: CheckinHistory, history: CheckinHistory[]
     .sort((a, b) => b.week_start.localeCompare(a.week_start) || a.id.localeCompare(b.id));
 }
 
-export function triage(item: InboxItem, history: CheckinHistory[], dailyChecks: DailyCheck[], now: Date): TriageResult {
+export function triage(item: InboxItem, history: CheckinHistory[], dailyChecks: DailyCheck[], now: Date, timezone = item.timezone ?? DEFAULT_TIMEZONE): TriageResult {
   const flags: TriageFlag[] = [];
   const add = (key: TriageFlag['key'], values: TriageFlag['values'] = {}) => flags.push({ key, values });
   if (item.kind === 'checkin') {
@@ -43,7 +43,7 @@ export function triage(item: InboxItem, history: CheckinHistory[], dailyChecks: 
       const delta = change(item.body_weight_kg, past[0].body_weight_kg);
       if (delta >= 2) add('weight_jump', { kg: delta });
     }
-    const averages = dailyAverages(item.player_id, dailyChecks, now);
+    const averages = dailyAverages(item.player_id, dailyChecks, now, timezone);
     if (averages.sleep !== null && averages.sleep < 6) add('low_sleep', { hours: averages.sleep });
     if (averages.soreness !== null && averages.soreness >= 4) add('high_soreness', { score: averages.soreness });
     if (!averages.count) add('no_logs', { days: 7 });

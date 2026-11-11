@@ -1,4 +1,5 @@
 'use client';
+import { useTimezone } from '@/core/timezone/client';
 import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 
@@ -9,6 +10,7 @@ import { cancelDeletion, requestDeletion } from '../data/settings';
 import { deletionDate } from '../deletion';
 
 export function DeleteAccountCard({ requestedAt }: { requestedAt: string | null }) {
+  const timezone = useTimezone();
   const t = useT(messages);
   const locale = useLocale();
   const [due, setDue] = useState<string | null>(() => requestedAt ? deletionDate(requestedAt) : null);
@@ -36,7 +38,7 @@ export function DeleteAccountCard({ requestedAt }: { requestedAt: string | null 
     {due ? <p role="status" className="glass-strong rounded-control p-4">
       {t('yourAccountWillBeDeletedOn')} <time dateTime={due}>{formatTimestampAr(due, {
         day: 'numeric', month: 'long', year: 'numeric',
-      }, locale)}</time>{t('youCanCancelBeforeThen')}
+      }, locale, timezone)}</time>{t('youCanCancelBeforeThen')}
     </p> : <>
       <p className="text-sm text-muted">{t('deletionIsPermanentAfter7Days')}</p>
       <TextField label={t('typeDELETEToConfirm')} value={confirmation} onChange={(event) => setConfirmation(event.target.value)} disabled={pending} autoComplete="off" />

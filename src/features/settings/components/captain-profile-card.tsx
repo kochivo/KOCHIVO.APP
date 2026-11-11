@@ -10,11 +10,15 @@ import { saveCaptainWithAvatar } from '../data/captain-avatar';
 import { AvatarPicker } from './avatar-picker';
 import { CaptainProfileFields } from './captain-profile-fields';
 import { SocialLinksFields } from './social-links-fields';
+import { DEFAULT_TIMEZONE } from '@/lib/dates';
+import { internationalEnabled } from '@/lib/international-enabled';
+import { TIMEZONE_CHANGED } from '@/core/timezone/timezone-provider';
 
 function values(profile: SettingsProfile): CaptainProfileInput {
   return { full_name: profile.full_name, bio: profile.bio ?? '', location: profile.location ?? '',
     public_slug: profile.public_slug ?? '',
-    timezone: profile.timezone ?? 'Africa/Cairo', units: profile.units ?? 'metric',
+    timezone: profile.timezone ?? DEFAULT_TIMEZONE, units: profile.units ?? 'metric',
+    ...(internationalEnabled() ? { timezone_auto: profile.timezone_auto ?? true } : {}),
     social: profile.social ?? {}, avatar_path: profile.avatar_path ?? null };
 }
 
@@ -39,6 +43,7 @@ export function CaptainProfileCard({ profile, onSave }: { profile: SettingsProfi
       const result = await saveCaptainWithAvatar(parsed.data, file, t);
       if (!result.data) throw new Error(result.error);
       setSaved(result.data); setValue(values(result.data)); setFile(null); onSave(result.data);
+      if (internationalEnabled()) window.dispatchEvent(new CustomEvent(TIMEZONE_CHANGED, { detail: result.data }));
       toast.success(t('saved'));
     } catch {
       onSave(saved); setValue(values(saved)); setFile(null);

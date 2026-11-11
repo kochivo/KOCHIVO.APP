@@ -1,20 +1,19 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { AppDatabase } from '@/types/app-database';
+import { actionTimezone } from '@/core/timezone/action-timezone';
+import { timezoneMidnight } from '@/lib/timezone';
 import { localDate } from '@/lib/dates';
 import type { Metrics } from '../types';
 
 export type Period = { start: string; end: string };
-function cairoMidnight(year: number, month: number): string {
+function cairoMidnight(year: number, month: number, timezone: string): string {
   const utc = Date.UTC(year, month, 1);
-  const parts = new Intl.DateTimeFormat('en', { timeZone: 'Africa/Cairo', timeZoneName: 'longOffset' }).formatToParts(utc);
-  const offset = parts.find(p => p.type === 'timeZoneName')?.value.match(/GMT([+-])(\d+):(\d+)/);
-  const minutes = offset ? (Number(offset[2]) * 60 + Number(offset[3])) * (offset[1] === '+' ? 1 : -1) : 0;
-  return new Date(utc - minutes * 60_000).toISOString();
+  return new Date(timezoneMidnight(localDate(new Date(utc), 'UTC'), timezone)).toISOString();
 }
-export function monthPeriod(now: Date): Period {
-  const date = localDate(now);
+export function monthPeriod(now: Date, timezone = actionTimezone()): Period {
+  const date = localDate(now, timezone);
   const year = Number(date.slice(0, 4)), month = Number(date.slice(5, 7));
-  return { start: cairoMidnight(year, month - 1), end: cairoMidnight(year, month) };
+  return { start: cairoMidnight(year, month - 1, timezone), end: cairoMidnight(year, month, timezone) };
 }
 export async function loadMetrics(client: SupabaseClient<AppDatabase>, captain: string, period: Period,
   formId?: string, signal?: AbortSignal): Promise<Metrics> {

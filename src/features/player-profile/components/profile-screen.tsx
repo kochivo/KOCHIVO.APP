@@ -1,3 +1,6 @@
+import { localDate } from '@/lib/dates';
+import { profileTimezone } from '@/lib/timezone';
+import { internationalEnabled } from '@/lib/international-enabled';
 import { getLocale, getT } from '@/core/i18n/server';
 import { messages } from '../messages';
 
@@ -34,6 +37,7 @@ export async function ProfileScreen({ playerId, tab, today, data }: Props) {
   if (result.error) return <section className="space-y-4">{back}<p role="alert" className="glass rounded-card p-5 text-danger">{t('loadFailed')}</p></section>;
   if (!result.data) notFound();
   const profile = result.data;
+  const playerToday = internationalEnabled() ? localDate(new Date(), profileTimezone(profile.timezone)) : today;
   const whatsapp = profile.phone ? whatsappUrl({ phone: profile.phone }) : null;
   return (
     <section className="space-y-6">
@@ -49,8 +53,8 @@ export async function ProfileScreen({ playerId, tab, today, data }: Props) {
       <BillingLoader playerId={playerId} name={profile.name} today={today} />
       {whatsapp && <a href={whatsapp} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center rounded-control border border-lime px-4 font-bold text-lime">{t('whatsappPlayer')}</a>}
       <ProfileTabs tab={tab} t={t} />
-      {tab === 'readiness' ? <ReadinessLoader playerId={playerId} today={today} /> : tab === 'analysis' ? <AnalyticsLoader key={playerId} playerId={playerId} /> :
-        tab === 'intake' ? <IntakeTab playerId={playerId} intake={profile.intake} today={today} /> :
+      {tab === 'readiness' ? <ReadinessLoader playerId={playerId} today={playerToday} /> : tab === 'analysis' ? <AnalyticsLoader key={playerId} playerId={playerId} /> :
+        tab === 'intake' ? <IntakeTab playerId={playerId} intake={profile.intake} today={playerToday} /> :
           tab === 'progress' ? <><BodyScansLoader playerId={playerId} /><ProgressTab playerId={playerId} checkIns={profile.checkIns} targetKg={profile.intake?.targetWeightKg ?? null} /></> :
             tab === 'plan' ? <PlanTab playerId={playerId} program={profile.program} nutrition={profile.nutrition} /> :
               <CheckinsTab playerId={playerId} checkIns={profile.checkIns} />}

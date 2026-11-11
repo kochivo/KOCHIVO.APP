@@ -1,5 +1,6 @@
 import { intlLocale } from '@/core/i18n/locale';
 import type { Locale } from '@/core/i18n/locale';
+import { isValidTimezone } from './timezone';
 
 export const DEFAULT_TIMEZONE = 'Africa/Cairo';
 
@@ -8,7 +9,7 @@ export const DEFAULT_TIMEZONE = 'Africa/Cairo';
  * Lesson from the legacy audit (K-09/K-10): never derive "today" from UTC.
  */
 export function localDate(at: Date, timeZone: string = DEFAULT_TIMEZONE): string {
-  return new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(at);
+  return new Intl.DateTimeFormat('en-CA', { timeZone: isValidTimezone(timeZone) ? timeZone : DEFAULT_TIMEZONE, year: 'numeric', month: '2-digit', day: '2-digit' }).format(at);
 }
 
 /** Whole days from `from` to `to` (both YYYY-MM-DD); negative when `to` is earlier. */
@@ -39,6 +40,6 @@ export function formatDateAr(date: string, options: Intl.DateTimeFormatOptions, 
     .format(new Date(`${date}T12:00:00Z`));
 }
 
-export function formatTimestampAr(iso: string, options: Intl.DateTimeFormatOptions, locale: Locale = 'ar'): string {
-  return new Intl.DateTimeFormat(intlLocale(locale), { ...options, numberingSystem, timeZone: DEFAULT_TIMEZONE }).format(new Date(iso));
+export function formatTimestampAr(iso: string, options: Intl.DateTimeFormatOptions, locale: Locale = 'ar', timeZone = DEFAULT_TIMEZONE): string {
+  return new Intl.DateTimeFormat(intlLocale(locale), { ...options, numberingSystem, timeZone: isValidTimezone(timeZone) ? timeZone : DEFAULT_TIMEZONE }).format(new Date(iso));
 }

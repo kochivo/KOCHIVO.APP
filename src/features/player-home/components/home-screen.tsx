@@ -1,4 +1,5 @@
 'use client';
+import { useTimezone } from '@/core/timezone/client';
 import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 
@@ -37,6 +38,7 @@ const PlayerReadiness = dynamic(() => import('@/features/readiness').then(module
 });
 
 export function HomeScreen({ firstName, playerId }: { firstName?: string; playerId?: string }) {
+  const timezone = useTimezone();
   const t = useT(messages);
   const locale = useLocale();
   const { now, online } = useCalendarClock();
@@ -48,7 +50,7 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
   const parked = useLiveQuery(readParked, onError, retryKey);
   const allSessions = useLiveQuery(readSessions, onError, retryKey);
   const sessions = allSessions?.filter((session) => snapshot?.days.some((day) => day.id === session.program_day_id));
-  const today = now ? localDate(now) : '';
+  const today = now ? localDate(now, timezone) : '';
   const [selection, setSelection] = useState({ today, date: today });
   const selectedDate = selection.today === today ? selection.date : today;
   if (selection.today !== today) setSelection({ today, date: today });

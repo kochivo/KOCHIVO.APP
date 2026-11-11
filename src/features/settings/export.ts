@@ -1,3 +1,4 @@
+import { actionTimezone } from '@/core/timezone/action-timezone';
 import { localDate } from '@/lib/dates';
 
 export function buildExport<P, R extends Record<string, unknown[]>>(
@@ -7,5 +8,5 @@ export function buildExport<P, R extends Record<string, unknown[]>>(
 }
 
 export function exportFileName(now: Date): string {
-  return `kochivo-data-${localDate(now)}.json`;
+  return `kochivo-data-${localDate(now, actionTimezone())}.json`;
 }

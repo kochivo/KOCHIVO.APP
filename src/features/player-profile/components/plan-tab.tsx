@@ -1,3 +1,4 @@
+import { getPlayerTimezone } from '@/core/timezone/server';
 import { getLocale, getT } from '@/core/i18n/server';
 import { messages } from '../messages';
 
@@ -29,8 +30,9 @@ function PlanCard({ icon: Icon, heading, title, lines, href, action }: {
 
 export async function PlanTab({ playerId, program, nutrition }: Pick<PlayerProfile, 'program' | 'nutrition'> & { playerId: string }) {
   const [t, locale] = await Promise.all([getT(messages), getLocale()]);
+  const timezone = await getPlayerTimezone(playerId);
   const n = (value: number | null) => value === null ? t('dash') : formatNumber(value, locale);
-  const updated = (iso: string) => t('updated', { date: formatDateAr(localDate(new Date(iso)), { day: 'numeric', month: 'long' }, locale) });
+  const updated = (iso: string) => t('updated', { date: formatDateAr(localDate(new Date(iso), timezone), { day: 'numeric', month: 'long' }, locale) });
   const base = `/captain/players/${playerId}`;
   return (
     <div className="space-y-4">

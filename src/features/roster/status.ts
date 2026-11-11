@@ -11,14 +11,15 @@ export interface StatusInput {
   startedOn: string;
   lastTrainingDate: string | null;
   today: string;
+  playerToday?: string;
 }
 
-export function playerStatus({ accessUntil, startedOn, lastTrainingDate, today }: StatusInput): PlayerStatus {
+export function playerStatus({ accessUntil, startedOn, lastTrainingDate, today, playerToday }: StatusInput): PlayerStatus {
   const overdue = daysBetween(accessUntil, today);
   if (overdue > 3) return 'expired';
   if (overdue > 0) return 'grace';
   if (overdue >= -7) return 'ending';
-  if (daysBetween(lastTrainingDate ?? startedOn, today) >= 4) return 'late';
+  if (daysBetween(lastTrainingDate ?? startedOn, playerToday ?? today) >= 4) return 'late';
   return 'active';
 }
 

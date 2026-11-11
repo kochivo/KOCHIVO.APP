@@ -1,4 +1,4 @@
-import { localDate } from '@/lib/dates';
+import { DEFAULT_TIMEZONE, localDate } from '@/lib/dates';
 import type { Revenue } from './types';
 
 type Money = { amount_egp: number | null; created_at: string };
@@ -17,13 +17,13 @@ export function revenueSince(today: string): string {
 }
 
 /** Money received counts in the Cairo month it was recorded, whether a renewal or a later installment. */
-export function summarizeRevenue(received: Money[], dues: { due_egp: number }[], today: string): Revenue {
+export function summarizeRevenue(received: Money[], dues: { due_egp: number }[], today: string, timezone = DEFAULT_TIMEZONE): Revenue {
   const current = monthOf(today);
   const last = previousMonth(current);
   let thisMonth = 0;
   let lastMonth = 0;
   for (const row of received) {
-    const month = monthOf(localDate(new Date(row.created_at)));
+    const month = monthOf(localDate(new Date(row.created_at), timezone));
     if (month === current) thisMonth += row.amount_egp ?? 0;
     else if (month === last) lastMonth += row.amount_egp ?? 0;
   }

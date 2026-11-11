@@ -3,13 +3,22 @@ import { coachSlug } from '@/lib/coach-slug';
 import { createT } from '@/core/i18n/messages';
 import type { Translator } from '@/core/i18n/messages';
 import { messages } from './messages';
+import { DEFAULT_TIMEZONE } from '@/lib/dates';
+import { internationalEnabled } from '@/lib/international-enabled';
+import { isValidTimezone } from '@/lib/timezone';
 
 export const socialKeys = ['whatsapp', 'instagram', 'tiktok', 'facebook', 'youtube', 'x'] as const;
 export type SocialKey = typeof socialKeys[number];
-export const timezones = Array.from(new Set(['Africa/Cairo', ...(typeof Intl.supportedValuesOf === 'function'
+export const timezones = Array.from(new Set([DEFAULT_TIMEZONE, ...(typeof Intl.supportedValuesOf === 'function'
   ? Intl.supportedValuesOf('timeZone') : ['UTC', 'Asia/Riyadh', 'Asia/Dubai', 'Europe/London', 'America/New_York'])]));
 const domains = { instagram: ['instagram.com'], tiktok: ['tiktok.com'], facebook: ['facebook.com', 'fb.com'],
   youtube: ['youtube.com', 'youtu.be'], x: ['x.com', 'twitter.com'] };
+function internationalInput(input: unknown, keys: string[]): unknown {
+  if (internationalEnabled() || !input || typeof input !== 'object' || Array.isArray(input)) return input;
+  const value: Record<string, unknown> = { ...input };
+  for (const key of keys) delete value[key];
+  return value;
+}
 export function normalizeSocial(key: SocialKey, raw: string): string | null {
   const value = raw.trim();
   if (!value) return '';
@@ -28,6 +37,8 @@ export function normalizeSocial(key: SocialKey, raw: string): string | null {
 
 export function settingsSchemas(t: Translator<typeof messages> = createT(messages, 'ar'), player = false) {
   const profileSchema = z.object({
+    timezone: z.string().refine(isValidTimezone, t('invalidTimezone')).optional(),
+    timezone_auto: z.boolean().optional(),
     full_name: z.string().trim().min(1, t('enterYourName')).max(80, t('nameMustBe80CharactersOr')),
     phone: player ? z.union([z.literal('').transform(() => null), z.null(),
       z.string().regex(/^\+[1-9][0-9]{7,14}$/, t('useAnInternationalNumberLike201012345678'))]) :
@@ -46,17 +57,22 @@ export function settingsSchemas(t: Translator<typeof messages> = createT(message
     return normalized;
   }).optional();
   const captainProfileSchema = z.object({
+    timezone_auto: z.boolean().optional(),
     public_slug: z.string().refine(value => value === '' || coachSlug(value) !== null, t('invalidSlug')).optional(),
     full_name: profileSchema.shape.full_name,
     bio: z.string().trim().max(280, t('bioTooLong')),
     location: z.string().trim().max(80, t('locationTooLong')),
-    timezone: z.string().refine(value => timezones.includes(value), t('invalidTimezone')),
+    timezone: z.string().refine(value => internationalEnabled() ? isValidTimezone(value) : timezones.includes(value), t('invalidTimezone')),
     units: z.enum(['metric', 'imperial'], { error: t('invalidUnits') }),
     social: z.object({ whatsapp: link('whatsapp'), instagram: link('instagram'), tiktok: link('tiktok'),
       facebook: link('facebook'), youtube: link('youtube'), x: link('x') }).strict(),
     avatar_path: z.string().max(200).nullable().optional(),
   });
-  return { profileSchema, inviteMessageSchema, captainProfileSchema };
+  return {
+    profileSchema: z.preprocess(input => internationalInput(input, ['timezone', 'timezone_auto']), profileSchema),
+    inviteMessageSchema,
+    captainProfileSchema: z.preprocess(input => internationalInput(input, ['timezone_auto']), captainProfileSchema),
+  };
 }
 
 export type CaptainProfileInput = z.infer<ReturnType<typeof settingsSchemas>['captainProfileSchema']>;
@@ -72,6 +88,7 @@ export type SettingsProfile = {
   invite_message: string | null;
   deletion_requested_at: string | null;
   timezone?: string;
+  timezone_auto?: boolean;
   bio?: string | null;
   location?: string | null;
   units?: 'metric' | 'imperial';

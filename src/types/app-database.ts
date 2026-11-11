@@ -77,6 +77,11 @@ type CorrectedWrites = {
   >;
 };
 type CorrectedTables = Omit<CorrectedRows, keyof WritePatches> & CorrectedWrites;
+type TimezoneProfiles = Narrow<CorrectedTables['profiles'], {
+  Row: CorrectedTables['profiles']['Row'] & { timezone_auto: boolean };
+  Insert: CorrectedTables['profiles']['Insert'] & { timezone_auto?: boolean };
+  Update: CorrectedTables['profiles']['Update'] & { timezone_auto?: boolean };
+}>;
 type Functions = Public['Functions'];
 type ProfileRow = Public['Tables']['profiles']['Row'];
 type ProfileLinks = Pick<ProfileRow, 'bio' | 'location' | 'avatar_path'> & { social: Social };
@@ -131,7 +136,8 @@ type FunctionPatches = {
 
 export type AppDatabase = Omit<Database, 'public'> & {
   public: Omit<Public, 'Tables' | 'Functions'> & {
-    Tables: Omit<Public['Tables'], keyof CorrectedTables | 'form_checks' | 'check_ins'> & CorrectedTables & {
+    Tables: Omit<Public['Tables'], keyof CorrectedTables | 'form_checks' | 'check_ins'> & Omit<CorrectedTables, 'profiles'> & {
+      profiles: TimezoneProfiles;
       form_checks: Omit<FormChecks, 'Insert'> & {
         // The inbox BEFORE INSERT trigger in 0008 overwrites captain_id.
         Insert: Omit<FormChecks['Insert'], 'captain_id'> & {
@@ -146,6 +152,7 @@ export type AppDatabase = Omit<Database, 'public'> & {
       };
     };
     Functions: Omit<Public['Functions'], keyof FunctionPatches | 'admin_activate_plan'> & FunctionPatches & {
+      my_captain_timezone: { Args: never; Returns: string | null };
       admin_activate_plan: Omit<ActivatePlan, 'Args'> & {
         // SQL accepts null here, but this argument has no default and must be sent.
         Args: Omit<ActivatePlan['Args'], 'p_payment_ref'> & { p_payment_ref: string | null };

@@ -1,3 +1,4 @@
+import { getTimezone } from '@/core/timezone/server';
 import { getT } from '@/core/i18n/server';
 import { messages } from '../messages';
 
@@ -21,7 +22,7 @@ export async function createInviteAt(days: unknown, now: Date): Promise<{ code: 
     const profile = await client.from('profiles').select('*').eq('id', data.user.id).single();
     if (profile.error || profile.data.role !== 'captain') return { error: t('onlyCoachesCanSendInvites') };
     if (demoExpiry(profile.data)) return { error: t('invitesAreDisabledInTheDemo') };
-    const today = localDate(now);
+    const today = localDate(now, await getTimezone());
     const end = new Date(`${today}T00:00:00Z`);
     end.setUTCDate(end.getUTCDate() + parsed.data);
     const result = await client.from('coach_invites').insert({

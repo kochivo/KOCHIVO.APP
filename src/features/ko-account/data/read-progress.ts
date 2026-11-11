@@ -1,3 +1,4 @@
+import { getTimezone } from '@/core/timezone/server';
 import 'server-only';
 import { createT } from '@/core/i18n/messages';
 import { TIERS, ranksMessages } from '@/features/ranks';
@@ -151,7 +152,7 @@ export async function readProgress(actor: KoActor, intent: ReadIntent, locale: L
   context?: { id: string; name: string }): Promise<string> {
   const playerTool = intent.kind === 'my_progress' || intent.kind === 'why_not_counted';
   if ((actor.role === 'player') !== playerTool) return createT(messages, locale)('unclear');
-  const today = localDate(new Date(now));
+  const today = localDate(new Date(now), await getTimezone());
   if (intent.kind === 'my_progress') return myProgress(actor, locale, today);
   if (intent.kind === 'why_not_counted') return whyNotCounted(actor, locale, today);
   return captainSummary(actor, intent, locale, today, context);

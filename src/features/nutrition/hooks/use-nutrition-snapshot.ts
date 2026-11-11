@@ -1,4 +1,5 @@
 'use client';
+import { useTimezone } from '@/core/timezone/client';
 
 import { useCallback, useEffect, useState } from 'react';
 import { localDb, parkedCount, retryParked, pendingCount, useLiveQuery } from '@/core/offline';
@@ -10,6 +11,7 @@ const readPending = () => pendingCount(localDb());
 const readParked = () => parkedCount(localDb());
 
 export function useNutritionSnapshot() {
+  const timezone = useTimezone();
   const [playerId, setPlayerId] = useState<string>();
   const [today, setToday] = useState('');
   const [online, setOnline] = useState(true);
@@ -49,7 +51,7 @@ export function useNutritionSnapshot() {
         setPlayerId(data.session?.user.id);
       }
     }).catch(() => { if (active) onError(); });
-    const update = () => { setToday(localDate(new Date())); setOnline(navigator.onLine); };
+    const update = () => { setToday(localDate(new Date(), timezone)); setOnline(navigator.onLine); };
     update();
     void refresh();
     const reconnect = () => { update(); void refresh(); };
@@ -65,7 +67,7 @@ export function useNutritionSnapshot() {
       window.removeEventListener('focus', update);
       document.removeEventListener('visibilitychange', update);
     };
-  }, [refresh, onError]);
+  }, [refresh, onError, timezone]);
   const status = localError || (settled && stale && !snapshot) ? 'error' :
     cached === undefined || !today || (!settled && !snapshot) ? 'loading' : snapshot ? 'ready' : 'empty';
   return { snapshot, status, stale: stale || !online, online, pending, parked, retrySync, today, retry, retryKey, onError };

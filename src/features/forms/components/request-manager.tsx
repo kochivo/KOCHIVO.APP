@@ -2,12 +2,14 @@
 import { useCallback,useRef,useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useResource } from '@/core/resource';
+import { useViewerTimezone } from '@/core/timezone/client';
 import type { Locale } from '@/core/i18n/locale';
 import { playerRequests,requestPicker,remindRequest,requestDetail } from '../data/request-actions';
 import { messages } from '../requests/messages';
 import { RequestPicker } from './request-picker';
 import { RequestReview } from './request-review';
 export function RequestManager({playerId,locale}:{playerId:string;locale:Locale}) {
+  const timezone = useViewerTimezone();
   const m = messages[locale],search = useSearchParams();
   const requested = search.get('requestId');
   const load = useCallback(async () => {
@@ -48,7 +50,7 @@ export function RequestManager({playerId,locale}:{playerId:string;locale:Locale}
     {(error || resource.status === 'error') && <div role="alert" className="text-danger"><p>{m.error}</p>
       <button className="min-h-12 text-lime" onClick={() => {setError(false);void resource.retry();}}>{m.retry}</button></div>}
     {!!data.pending.length && <ul className="glass divide-y divide-line rounded-card p-4">{data.pending.map(r => <li key={r.id} className="flex flex-wrap items-center justify-between gap-3">
-      <span>{r.forms?.title}{r.due_at && <span className="ms-3 text-xs text-muted">{new Intl.DateTimeFormat(locale,{timeZone:'Africa/Cairo'}).format(new Date(r.due_at))}</span>}</span><button disabled={sending || !!r.reminded_at} onClick={() => void remind(r.id)}
+      <span>{r.forms?.title}{r.due_at && <span className="ms-3 text-xs text-muted">{new Intl.DateTimeFormat(locale,{timeZone:timezone}).format(new Date(r.due_at))}</span>}</span><button disabled={sending || !!r.reminded_at} onClick={() => void remind(r.id)}
         className="min-h-12 px-4 text-lime disabled:text-muted">{r.reminded_at ? m.reminded : m.remind}</button></li>)}</ul>}
     {!data.requests.length && <p className="text-muted">{m.empty}</p>}
     <ul className="flex flex-wrap gap-3">{data.requests.filter(r => r.request.answered_at).map(r => <li key={r.request.id}>

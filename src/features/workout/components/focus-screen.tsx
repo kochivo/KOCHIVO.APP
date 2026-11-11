@@ -1,4 +1,5 @@
 'use client';
+import { useTimezone } from '@/core/timezone/client';
 import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 import { formatNumber } from '@/lib/format';
@@ -32,11 +33,12 @@ const FormCheckButton = dynamic(() => import('./form-check-button').then(module 
 const CoachReductionBanner = dynamic(() => import('@/features/readiness').then(module => module.CoachReductionBanner), { ssr: false });
 
 export function FocusScreen({ dayId, playerId }: { dayId: string; playerId?: string }) {
+  const timezone = useTimezone();
   const t = useT(messages);
   const locale = useLocale();
   const router = useRouter();
   const { now, online } = useCalendarClock();
-  const today = now ? localDate(now) : '';
+  const today = now ? localDate(now, timezone) : '';
   useWakeLock();
   const state = useFocusSession(dayId, today, playerId);
   const plan = useLiveQuery(readPlan);

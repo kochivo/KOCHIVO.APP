@@ -1,8 +1,9 @@
 'use client';
+import { useTimezone } from '@/core/timezone/client';
 import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 
-import { DEFAULT_TIMEZONE, localDate, formatDateAr } from '@/lib/dates';
+import { localDate, formatDateAr } from '@/lib/dates';
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import type { ProgramSnapshot } from '@/core/offline';
@@ -16,10 +17,11 @@ const StreakSheet = dynamic(() => import('./streak-sheet').then(module => module
 export function Greeting({ firstName, now, playerId, snapshot, loading = false }: {
   firstName?: string; now: Date; playerId?: string; snapshot?: ProgramSnapshot | null; loading?: boolean;
 }) {
+  const timezone = useTimezone();
   const t = useT(messages);
   const locale = useLocale();
-  const hour = Number(new Intl.DateTimeFormat('en-GB', { timeZone: DEFAULT_TIMEZONE, hour: 'numeric', hourCycle: 'h23' }).format(now));
-  const date = localDate(now);
+  const hour = Number(new Intl.DateTimeFormat('en-GB', { timeZone: timezone, hour: 'numeric', hourCycle: 'h23' }).format(now));
+  const date = localDate(now, timezone);
   const history = useStreakSessions(date, playerId);
   const [open, setOpen] = useState(false);
   const isTrainingDay = (day: string) => trainingDay(day, snapshot?.training_days ?? [], snapshot ?? undefined);

@@ -1,3 +1,4 @@
+import { getPlayerTimezone } from '@/core/timezone/server';
 import { createT, parseLocale } from '@/core/i18n';
 import { rosterMessages } from '@/features/roster';
 import { Suspense } from 'react';
@@ -8,7 +9,7 @@ import { localDate } from '@/lib/dates';
 export default async function PlayerPreviewPage({ params }: { params: Promise<{ playerId: string; locale: string }> }) {
   const { playerId, locale } = await params;
   const t = createT(previewMessages, parseLocale(locale));
-  const today = localDate(new Date());
+  const today = localDate(new Date(), await getPlayerTimezone(playerId));
   return <Suspense fallback={<p role="status" className="p-4 text-muted">{t('loading')}</p>}>
     {fetchPlayerPreview(playerId, today).then((result) => {
       if ('data' in result && result.data === null) notFound();

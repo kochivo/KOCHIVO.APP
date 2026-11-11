@@ -1,3 +1,4 @@
+import { actionTimezone } from '@/core/timezone/action-timezone';
 import { daysBetween, localDate } from '@/lib/dates';
 
 export const metrics = ['weight_kg', 'muscle_kg', 'fat_pct'] as const;
@@ -31,11 +32,11 @@ export function trend(metric: Metric, delta: number | null,
   return (metric === 'muscle_kg' ? delta > 0 : delta < 0) ? 'good' : 'bad';
 }
 
-export function alerts(scans: readonly ScanPoint[], now: Date) {
+export function alerts(scans: readonly ScanPoint[], now: Date, timezone = actionTimezone()) {
   const latest = scans.at(-1);
   const delta = latestDelta(scans);
   return {
-    overdue: !latest || daysBetween(latest.scan_date, localDate(now)) > 30,
+    overdue: !latest || daysBetween(latest.scan_date, localDate(now, timezone)) > 30,
     regressing: delta.fat_pct != null && (delta.fat_pct >= 1 ||
       (delta.fat_pct > 0 && delta.muscle_kg != null && delta.muscle_kg < 0)),
   };

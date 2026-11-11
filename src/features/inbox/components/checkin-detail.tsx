@@ -21,7 +21,7 @@ export function CheckinDetail({ item, history = [], dailyChecks = [], now }: {
   const locale = useLocale();
   const media = useInboxMedia(item);
   const previous = previousCheckins(item, history)[0];
-  const averages = now ? dailyAverages(item.player_id, dailyChecks, now) : null;
+  const averages = now ? dailyAverages(item.player_id, dailyChecks, now, item.timezone) : null;
   function delta(key: 'body_weight_kg' | 'waist_cm') {
     if (item[key] === null || previous?.[key] == null) return null;
     const value = new Intl.NumberFormat(intlLocale(locale), { numberingSystem: 'latn', signDisplay: 'always', maximumFractionDigits: 1 })

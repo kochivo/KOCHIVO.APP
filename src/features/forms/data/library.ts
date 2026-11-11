@@ -1,4 +1,5 @@
 import 'server-only';
+import { getTimezone } from '@/core/timezone/server';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { AppDatabase } from '@/types/app-database';
 import type { FormDraft, LibraryData, Question } from '../types';
@@ -25,7 +26,7 @@ export async function loadLibrary(client: SupabaseClient<AppDatabase>, captain: 
     }
     if (result.data.length < 100) break;
   }
-  const period = monthPeriod(now);
+  const period = monthPeriod(now, await getTimezone());
   const metrics = await loadMetrics(client, captain, period, undefined, signal);
   metrics.active = forms.length;
   const byForm: LibraryData['byForm'] = {};

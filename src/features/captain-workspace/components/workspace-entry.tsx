@@ -1,3 +1,4 @@
+import { getPlayerTimezone } from '@/core/timezone/server';
 import { Suspense } from 'react';
 import { getLocale } from '@/core/i18n/server';
 import { localDate } from '@/lib/dates';
@@ -7,6 +8,6 @@ import { WorkspaceState } from './workspace-state';
 export async function WorkspaceEntry({ playerId }: { playerId: string }) {
   const locale = await getLocale();
   return <Suspense fallback={<WorkspaceState kind="loading" locale={locale} />}>
-    <WorkspaceContent playerId={playerId} today={localDate(new Date())} />
+    <WorkspaceContent playerId={playerId} today={localDate(new Date(), await getPlayerTimezone(playerId))} />
   </Suspense>;
 }

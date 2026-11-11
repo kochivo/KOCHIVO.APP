@@ -1,4 +1,5 @@
 'use server';
+import { getPlayerTimezone } from '@/core/timezone/server';
 
 import { z } from 'zod';
 import { localDate } from '@/lib/dates';
@@ -10,7 +11,7 @@ export async function loadEditorContext(playerId: string) {
   if (!z.uuid().safeParse(playerId).success) throw new Error('Invalid player');
   const client = await planClient();
   const now = new Date();
-  const today = localDate(now);
+  const today = localDate(now, await getPlayerTimezone(playerId));
   const since = adherenceDays([], today, [])[0]?.date ?? today;
   const [file, profile, logs] = await Promise.all([
     loadPlayerFile(client, playerId, { now }),

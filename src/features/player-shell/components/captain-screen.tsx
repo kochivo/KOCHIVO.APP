@@ -1,4 +1,5 @@
 'use client';
+import { profileTimezone } from '@/lib/timezone';
 import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 
@@ -26,7 +27,7 @@ export function CaptainScreen({ voiceNotes }: { voiceNotes?: ReactNode }) {
   const labels = { active: t('subscriptionActive'), ending: t('subscriptionEndingSoon'), ended: t('subscriptionEnded'), archived: t('coachingPaused') };
   const formatDate = (date: string) => formatDateAr(date, { day: 'numeric', month: 'long', year: 'numeric' }, locale);
   const { data, status, retry } = useCaptainContext();
-  const state = data ? accessState({ ...data, today: localDate(new Date()) }) : 'active';
+  const state = data ? accessState({ ...data, today: localDate(new Date(), profileTimezone(data.timezone)) }) : 'active';
   const social = Object.fromEntries(Object.entries(data?.social ?? {}).filter(([key, link]) =>
     key in contactPatterns && typeof link === 'string' && contactPatterns[key as keyof typeof contactPatterns].test(link)));
   // Captains who saved only a phone before profile links existed stay reachable on WhatsApp.

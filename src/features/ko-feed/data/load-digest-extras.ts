@@ -1,10 +1,11 @@
+import { actionTimezone } from '@/core/timezone/action-timezone';
 import { loadSupabaseBrowser } from '@/core/supabase/lazy';
 import { loadLeaderboard } from '@/features/ranks';
 import { localDate } from '@/lib/dates';
 import type { DigestExtras } from '../digest';
 
-export function digestYesterday(now: Date): string {
-  const date = new Date(`${localDate(now)}T12:00:00Z`);
+export function digestYesterday(now: Date, timezone = actionTimezone()): string {
+  const date = new Date(`${localDate(now, timezone)}T12:00:00Z`);
   date.setUTCDate(date.getUTCDate() - 1);
   return localDate(date, 'UTC');
 }

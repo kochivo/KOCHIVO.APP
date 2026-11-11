@@ -1,4 +1,5 @@
 'use client';
+import { useTimezone } from '@/core/timezone/client';
 import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 import { formatNumber } from '@/lib/format';
@@ -9,10 +10,11 @@ import type { StepProps } from '../wizard';
 import { MetricSlider } from './metric-slider';
 
 export function StepBasics({ draft, update, errors, touch }: StepProps) {
+  const timezone = useTimezone();
   const t = useT(messages);
   const locale = useLocale();
   // The intake still stores birth_year; players find their age easier to pick than a year.
-  const year = Number(localDate(new Date()).slice(0, 4));
+  const year = Number(localDate(new Date(), timezone).slice(0, 4));
   return (
     <div className="space-y-5">
       <TextField label={t('yourName')} autoComplete="name" maxLength={80} value={draft.full_name ?? ''}

@@ -1,4 +1,5 @@
 'use client';
+import { useTimezone } from '@/core/timezone/client';
 import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 
@@ -27,6 +28,7 @@ const LineChart = dynamic(() => import('./line-chart').then(module => module.Lin
 });
 
 export function ProgressScreen({ analytics }: { analytics?: ReactNode }) {
+  const timezone = useTimezone();
   const t = useT(messages);
   const locale = useLocale();
   function deltaLabel(points: TrendPoint[], unit: string) {
@@ -49,7 +51,7 @@ export function ProgressScreen({ analytics }: { analytics?: ReactNode }) {
   }, [locale]);
   const strength = useLiveQuery(query, onLocalError, retryKey);
   useEffect(() => {
-    const update = () => setToday(localDate(new Date()));
+    const update = () => setToday(localDate(new Date(), timezone));
     update();
     window.addEventListener('focus', update);
     document.addEventListener('visibilitychange', update);
@@ -57,7 +59,7 @@ export function ProgressScreen({ analytics }: { analytics?: ReactNode }) {
       window.removeEventListener('focus', update);
       document.removeEventListener('visibilitychange', update);
     };
-  }, []);
+  }, [timezone]);
   useEffect(() => {
     let cancelled = false;
     async function load() {

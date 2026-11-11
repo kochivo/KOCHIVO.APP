@@ -1,3 +1,4 @@
+import { actionTimezone } from '@/core/timezone/action-timezone';
 import { saveAndQueue, stableId } from '@/core/offline';
 import type { KochivoDB } from '@/core/offline';
 import type { DailyCheckRow } from '@/core/offline/tables';
@@ -9,8 +10,8 @@ export async function readDailyCheck(db: KochivoDB, playerId: string, date: stri
 }
 
 export async function saveDailyCheck(db: KochivoDB, playerId: string,
-  patch: Partial<Pick<DailyCheckRow, 'sleep_hours' | 'soreness'>>, waterDelta: number, now: number) {
-  const date = localDate(new Date(now));
+  patch: Partial<Pick<DailyCheckRow, 'sleep_hours' | 'soreness'>>, waterDelta: number, now: number, timezone = actionTimezone()) {
+  const date = localDate(new Date(now), timezone);
   const id = await stableId('daily_check', playerId, date);
   // Serialize read/add/save so rapid taps and simultaneous question edits cannot lose water.
   return db.transaction('rw', db.daily_checks, db.outbox, async () => {

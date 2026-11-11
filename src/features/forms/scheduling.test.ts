@@ -37,3 +37,14 @@ it('reminds only unanswered, unreminded requests at the threshold', () => {
   for (const change of [{ answered_at: 'x' }, { reminded_at: 'x' }, { remind_after_hours: null }, { sent_at: '2026-11-02T10:01:00Z' }])
     expect(dueReminders([{ ...request, ...change }], now)).toEqual([]);
 });
+it('accepts an explicit timezone for day, hour and previous-period checks', () => {
+  const now = new Date('2026-11-03T08:00:00Z');
+  expect(dueRequests([form], [link], [], now, 'Asia/Dubai')).toHaveLength(1);
+  expect(dueRequests([form], [link], [], now)).toEqual([]);
+  const boundary = new Date('2026-11-02T00:30:00Z');
+  const sunday = { ...form, schedule: { every: 'week' as const, weekday: 0, hour: 19 } };
+  expect(dueRequests([sunday], [link], [], boundary, 'America/New_York')).toHaveLength(1);
+  const monday = { ...form, schedule: { every: 'week' as const, weekday: 1, hour: 0 } };
+  const previous = { form_id: 'f', player_id: 'p', sent_at: '2026-11-01T21:00:00Z', answered_at: '2026-11-01T22:00:00Z' };
+  expect(dueRequests([monday], [link], [previous], boundary, 'Asia/Dubai')).toEqual([]);
+});

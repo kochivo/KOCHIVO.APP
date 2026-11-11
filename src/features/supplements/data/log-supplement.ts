@@ -1,3 +1,4 @@
+import { actionTimezone } from '@/core/timezone/action-timezone';
 import { saveAndQueue, stableId, type KochivoDB } from '@/core/offline';
 import { localDate } from '@/lib/dates';
 
@@ -8,8 +9,8 @@ export async function setSupplementTaken(db: KochivoDB, supplementId: string, lo
     taken_at: taken ? timestamp : null, deleted_at: taken ? null : timestamp, client_updated_at: timestamp }, now);
 }
 
-export async function toggleTodaySupplement(db: KochivoDB, supplementId: string, now: number) {
-  const day = localDate(new Date(now));
+export async function toggleTodaySupplement(db: KochivoDB, supplementId: string, now: number, timezone = actionTimezone()) {
+  const day = localDate(new Date(now), timezone);
   const id = await stableId('supplement_log', supplementId, day);
   const current = await db.supplement_logs.get(id);
   await setSupplementTaken(db, supplementId, day, !current?.taken_at || !!current.deleted_at, now);

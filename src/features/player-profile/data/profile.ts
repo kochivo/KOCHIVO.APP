@@ -2,6 +2,8 @@ import 'server-only';
 import { unstable_rethrow } from 'next/navigation';
 import { z } from 'zod';
 import { supabaseServer } from '@/core/supabase/server';
+import { internationalEnabled } from '@/lib/international-enabled';
+import { profileTimezone } from '@/lib/timezone';
 import type { Tables } from '@/types/database';
 import type { PlayerProfile, ProfileResult } from '../types';
 
@@ -17,7 +19,7 @@ export async function fetchPlayerProfile(playerId: string): Promise<ProfileResul
     if (ownership.error) throw ownership.error;
     if (!ownership.data) return { data: null };
     const [profile, intake, checks, program, nutrition] = await Promise.all([
-      client.from('profiles').select('full_name,avatar_path,phone').eq('id', playerId).maybeSingle(),
+      client.from('profiles').select('full_name,avatar_path,phone,timezone').eq('id', playerId).maybeSingle(),
       client.from('player_intake').select('*').eq('player_id', playerId).maybeSingle(),
       client.from('check_ins').select('id,week_start,body_weight_kg,waist_cm,notes,photo_paths,reviewed_at,captain_reply,body_fat_pct,photo_poses')
         .eq('player_id', playerId).order('week_start', { ascending: false }).limit(26).returns<ProgressCheckIn[]>(),
@@ -34,6 +36,7 @@ export async function fetchPlayerProfile(playerId: string): Promise<ProfileResul
     const urls = await signPhotos(client, photoPaths);
     const data: PlayerProfile = {
       name: profile.data.full_name,
+      ...(internationalEnabled() ? { timezone: profileTimezone(profile.data.timezone) } : {}),
       avatarUrl: profile.data.avatar_path ? client.storage.from('captain-avatars').getPublicUrl(profile.data.avatar_path).data.publicUrl : null,
       phone: profile.data.phone,
       intake: intake.data ? intakeOf(intake.data) : null,

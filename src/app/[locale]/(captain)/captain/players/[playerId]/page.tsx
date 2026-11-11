@@ -1,3 +1,4 @@
+import { getTimezone } from '@/core/timezone/server';
 import { createT, parseLocale } from '@/core/i18n';
 import { localDate } from '@/lib/dates';
 import { fetchPlayerProfile, parseTab, playerProfileMessages, ProfileScreen } from '@/features/player-profile';
@@ -9,7 +10,7 @@ interface Props {
 
 export default async function PlayerProfilePage({ params, searchParams }: Props) {
   const [{ playerId }, { tab }] = await Promise.all([params, searchParams]);
-  return <ProfileScreen key={playerId} playerId={playerId} tab={parseTab(tab)} today={localDate(new Date())} data={fetchPlayerProfile(playerId)} />;
+  return <ProfileScreen key={playerId} playerId={playerId} tab={parseTab(tab)} today={localDate(new Date(), await getTimezone())} data={fetchPlayerProfile(playerId)} />;
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {

@@ -1,4 +1,5 @@
 'use client';
+import { useTimezone } from '@/core/timezone/client';
 import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useT } from '@/core/i18n/client';
@@ -9,6 +10,7 @@ import { BillingManagerLoader } from '@/features/billing';
 import { localDate } from '@/lib/dates';
 
 export function JoinRequestsList({ rows }: { rows: { id: string; full_name: string }[] }) {
+  const timezone = useTimezone();
   const t = useT(messages), router = useRouter();
   const [hidden, setHidden] = useState<string[]>([]);
   const [error, setError] = useState('');
@@ -28,7 +30,7 @@ export function JoinRequestsList({ rows }: { rows: { id: string; full_name: stri
     } finally { busy.current.delete(id); }
   }
   return <div className="space-y-3">
-    {selected && <BillingManagerLoader playerId={selected.id} name={selected.name} today={localDate(new Date())} autoActivate />}
+    {selected && <BillingManagerLoader playerId={selected.id} name={selected.name} today={localDate(new Date(), timezone)} autoActivate />}
     {error && <p role="alert" className="text-danger">{error}</p>}
     {visible.length ? <ul className="space-y-3">{visible.map(row => <li key={row.id} className="flex flex-wrap items-center justify-between gap-3">
       <span>{row.full_name}</span><div className="flex gap-2">

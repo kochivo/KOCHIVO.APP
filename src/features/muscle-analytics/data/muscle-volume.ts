@@ -1,5 +1,5 @@
 import { loadSupabaseBrowser } from '@/core/supabase/lazy';
-import { daysBetween, localDate, saturdayWeek } from '@/lib/dates';
+import { DEFAULT_TIMEZONE, daysBetween, localDate, saturdayWeek } from '@/lib/dates';
 import { muscleMap, muscleSide, specificMuscle } from '../analytics/muscle-map';
 import type { MuscleVolume, Region } from '../analytics/muscle-map';
 
@@ -18,8 +18,8 @@ export interface VolumeWeek {
   muscles: MuscleVolume;
 }
 
-export function weeklyVolume(rows: readonly VolumeRow[], now: Date): VolumeWeek[] {
-  const current = saturdayWeek(localDate(now))[0] ?? localDate(now);
+export function weeklyVolume(rows: readonly VolumeRow[], now: Date, timezone = DEFAULT_TIMEZONE): VolumeWeek[] {
+  const current = saturdayWeek(localDate(now, timezone))[0] ?? localDate(now, timezone);
   const weeks = Array.from({ length: 4 }, (_, index) => {
     const at = new Date(`${current}T12:00:00Z`);
     at.setUTCDate(at.getUTCDate() - (3 - index) * 7);
@@ -32,7 +32,7 @@ export function weeklyVolume(rows: readonly VolumeRow[], now: Date): VolumeWeek[
     if (row.deleted_at || row.reps === null || row.reps < 1 || !row.exercises) continue;
     const at = new Date(row.completed_at);
     if (!Number.isFinite(at.getTime()) || at > now) continue;
-    const week = weeks[Math.floor(daysBetween(first.start, localDate(at)) / 7)];
+    const week = weeks[Math.floor(daysBetween(first.start, localDate(at, timezone)) / 7)];
     const region = muscleMap(row.exercises.target, row.exercises.body_part);
     if (!week || !region) continue;
     week.regions[region] += 1;
@@ -45,9 +45,9 @@ export function weeklyVolume(rows: readonly VolumeRow[], now: Date): VolumeWeek[
   return weeks;
 }
 
-export async function fetchMuscleVolume(playerId: string, now: Date): Promise<VolumeWeek[]> {
+export async function fetchMuscleVolume(playerId: string, now: Date, timezone = DEFAULT_TIMEZONE): Promise<VolumeWeek[]> {
   const client = await loadSupabaseBrowser();
-  const first = weeklyVolume([], now)[0];
+  const first = weeklyVolume([], now, timezone)[0];
   if (!first) return [];
   // A wide UTC lower bound includes Cairo's midnight on either side of DST.
   const lower = new Date(`${first.start}T00:00:00Z`);
@@ -67,5 +67,5 @@ export async function fetchMuscleVolume(playerId: string, now: Date): Promise<Vo
     cursor = data.at(-1)?.id;
     if (data.length < 500) break;
   }
-  return weeklyVolume(rows, now);
+  return weeklyVolume(rows, now, timezone);
 }

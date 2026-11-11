@@ -46,7 +46,7 @@ export function RosterRow({ player, today, error, onArchive }: {
       <div role="cell" className="space-y-2"><RosterBilling playerId={player.playerId} name={player.fullName} today={today}
         pending={player.pending} frozenAt={player.frozenAt} sessionsLeft={player.sessionsLeft} />
         {!player.pending && !player.frozenAt && <span className={`inline-flex rounded-full px-3 py-1 text-xs font-bold ${tag.color}`}>{tag.label}</span>}</div>
-      <div role="cell" className="text-sm text-muted"><span className="lg:hidden">{t('lastActivity')} </span>{lastSeenLabel(player.lastTrainingDate, today, locale)}</div>
+      <div role="cell" className="text-sm text-muted"><span className="lg:hidden">{t('lastActivity')} </span>{lastSeenLabel(player.lastTrainingDate, player.playerToday ?? today, locale)}</div>
       <div role="cell" className="min-w-0 break-words text-sm">{player.programTitle ? starterText(player.programTitle, locale) : t('noProgram')}
         <span className="flex flex-wrap gap-4">
           <Link href={`/captain/players/${player.playerId}/programs`} prefetch={false} className="flex min-h-12 items-center text-lime">{t('programs')}</Link>

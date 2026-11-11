@@ -43,7 +43,7 @@ export async function DashboardScreen({ data, today, plan, joinRequests, coachLi
     { label: t('endingSoon'), value: stats.ending, color: 'text-danger' },
   ];
   const finder = (rows: typeof players) => rows.map((player) => ({ playerId: player.playerId, fullName: player.fullName,
-    programTitle: player.programTitle, lastSeen: lastSeenLabel(player.lastTrainingDate, today, locale) }));
+    programTitle: player.programTitle, lastSeen: lastSeenLabel(player.lastTrainingDate, player.playerToday ?? today, locale) }));
   return (
     <section data-tour-ready="true" className="space-y-6">
       {header}

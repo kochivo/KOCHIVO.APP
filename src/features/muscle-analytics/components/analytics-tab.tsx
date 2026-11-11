@@ -1,4 +1,5 @@
 'use client';
+import { useTimezone } from '@/core/timezone/client';
 
 import { useCallback } from 'react';
 import { useResource } from '@/core/resource';
@@ -10,8 +11,9 @@ import { AnalyticsPanel } from './analytics-panel';
 import { AnalyticsSkeleton } from './analytics-skeleton';
 
 export function AnalyticsTab({ playerId, self = false }: { playerId: string; self?: boolean }) {
+  const timezone = useTimezone();
   const t = useT(messages);
-  const today = localDate(new Date());
+  const today = localDate(new Date(), timezone);
   const load = useCallback((signal: AbortSignal) => loadAnalytics(playerId, today, self, signal), [playerId, today, self]);
   const { data, status, retry } = useResource(`analytics:${playerId}:${today}:${self}`, load);
   const weeks = data?.weeks, readiness = data?.readiness ?? null;

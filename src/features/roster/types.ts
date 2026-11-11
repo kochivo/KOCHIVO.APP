@@ -1,4 +1,6 @@
 export interface RosterPlayer {
+  timezone?: string;
+  playerToday?: string;
   linkId?: string;
   pending?: boolean;
   frozenAt?: string | null;

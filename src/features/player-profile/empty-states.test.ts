@@ -4,6 +4,7 @@ import { IntakeTab } from './components/intake-tab';
 import { CheckinsTab } from './components/checkins-tab';
 import { ProgressTab } from './components/progress-tab';
 import { PlanTab } from './components/plan-tab';
+vi.mock('@/core/timezone/server', () => ({ getPlayerTimezone: async () => 'Africa/Cairo' }));
 vi.mock('@/core/i18n/server', async () => {
  const { createT } = await import('@/core/i18n/messages');
  return { getT: async (messages: Parameters<typeof createT>[0]) => createT(messages, 'en'), getLocale: async () => 'en' };

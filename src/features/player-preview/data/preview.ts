@@ -26,7 +26,7 @@ export async function fetchPlayerPreview(playerId: string, today: string) {
     if (!ownership.data) return { data: null };
     const start = new Date(`${today}T12:00:00Z`);
     start.setUTCDate(start.getUTCDate() - 6);
-    const since = localDate(start);
+    const since = localDate(start, 'UTC');
     const food = 'name_ar,name_en,photo_path,kcal_per_100g,protein_per_100g,carbs_per_100g,fat_per_100g';
     const sessionFields = 'id,program_day_id,training_date,started_at,completed_at,client_updated_at,session_rpe,player_note';
     const [program, intake, nutrition, profile, sessions, meals] = await Promise.all([

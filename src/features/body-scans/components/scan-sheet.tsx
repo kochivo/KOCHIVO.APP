@@ -1,4 +1,5 @@
 'use client';
+import { useTimezone } from '@/core/timezone/client';
 
 import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
@@ -12,12 +13,13 @@ import { scanError } from '../errors';
 import type { Scan } from '../types';
 
 export function ScanSheet({ onClose, onSaved }: { onClose: () => void; onSaved: (scan: Scan) => void }) {
+  const timezone = useTimezone();
   const t = useT(messages);
   const dialog = useRef<HTMLDialogElement>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [online, setOnline] = useState(true);
-  const [today] = useState(() => localDate(new Date()));
+  const [today] = useState(() => localDate(new Date(), timezone));
   useEffect(() => {
     dialog.current?.showModal();
     const update = () => setOnline(navigator.onLine);

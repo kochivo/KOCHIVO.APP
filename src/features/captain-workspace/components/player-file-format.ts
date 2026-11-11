@@ -1,3 +1,4 @@
+import { actionTimezone } from '@/core/timezone/action-timezone';
 import { createT } from '@/core/i18n/messages';
 import type { Locale } from '@/core/i18n/locale';
 import type { FactKey, FactValues, FormSource } from '@/features/player-file';
@@ -37,11 +38,11 @@ export function factValue(key: FactKey, value: FactValues[FactKey] | undefined, 
   }
   return optionLabel(value, locale);
 }
-export function sourceLabel(source: FormSource, locale: Locale): string {
+export function sourceLabel(source: FormSource, locale: Locale, timezone = actionTimezone()): string {
   const t = createT(messages, locale);
   const date = new Date(source.at);
-  const month = new Intl.DateTimeFormat(locale === 'ar' ? 'ar-EG' : 'en-GB', { month: 'short', timeZone: 'Africa/Cairo' }).format(date);
-  const day = new Intl.DateTimeFormat('en-GB', { day: 'numeric', timeZone: 'Africa/Cairo' }).format(date);
+  const month = new Intl.DateTimeFormat(locale === 'ar' ? 'ar-EG' : 'en-GB', { month: 'short', timeZone: timezone }).format(date);
+  const day = new Intl.DateTimeFormat('en-GB', { day: 'numeric', timeZone: timezone }).format(date);
   return t('sourceDate', { source: source.title ?? t(source.kind === 'intake' ? 'intake' : source.kind === 'checkin' ? 'checkin' : 'form'),
     date: `${formatNumber(Number(day), locale)} ${month}` });
 }

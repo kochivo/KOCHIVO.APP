@@ -1,4 +1,6 @@
 'use server';
+import { internationalEnabled } from '@/lib/international-enabled';
+import { profileTimezone } from '@/lib/timezone';
 import { exerciseName } from '@/lib/display-name';
 import { getLocale } from '@/core/i18n/server';
 import { getT } from '@/core/i18n/server';
@@ -46,13 +48,14 @@ export async function listInbox(input: { status: 'open' | 'reviewed'; limit: 50;
     const playerIds = [...new Set([...forms.data, ...checks.data].map((row) => row.player_id))];
     const exerciseIds = [...new Set(forms.data.map((row) => row.exercise_id))];
     const [players, exercises] = await Promise.all([
-      playerIds.length ? client.from('profiles').select('id,full_name').in('id', playerIds) : Promise.resolve({ data: [], error: null }),
+      playerIds.length ? client.from('profiles').select('id,full_name,timezone').in('id', playerIds) : Promise.resolve({ data: [], error: null }),
       exerciseIds.length ? client.from('exercises').select('id,name_ar,name_en').in('id', exerciseIds) : Promise.resolve({ data: [], error: null }),
     ]);
     if (players.error || exercises.error) throw new Error();
     const base = (row: { id: string; player_id: string; created_at: string; reviewed_at: string | null; captain_reply: string | null }) => ({
       id: row.id, player_id: row.player_id, player_name: players.data?.find((p) => p.id === row.player_id)?.full_name ?? t('player'),
       created_at: row.created_at, reviewed_at: row.reviewed_at, reply: row.captain_reply,
+      ...(internationalEnabled() ? { timezone: profileTimezone(players.data?.find(p => p.id === row.player_id)?.timezone) } : {}),
     });
     let data = mergeInbox(forms.data.map((row) => ({ ...base(row), kind: 'form', note: row.note,
       exercise_name: exerciseName(exercises.data?.find((e) => e.id === row.exercise_id) ?? {}, locale) || t('exercise') })),

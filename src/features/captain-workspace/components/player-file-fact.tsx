@@ -5,8 +5,8 @@ import type { FactKey, PlayerFact } from '@/features/player-file';
 import { messages } from '../messages';
 import { factLabel, factValue, optionLabel, sourceLabel } from './player-file-format';
 
-export function PlayerFileFact({ factKey, fact, locale, children }: {
-  factKey: FactKey; fact?: PlayerFact; locale: Locale; children?: ReactNode;
+export function PlayerFileFact({ factKey, fact, locale, children, timezone }: {
+  factKey: FactKey; fact?: PlayerFact; locale: Locale; children?: ReactNode; timezone?: string;
 }) {
   const t = createT(messages, locale);
   const warning = factKey === 'injuries' || factKey === 'medical';
@@ -24,8 +24,8 @@ export function PlayerFileFact({ factKey, fact, locale, children }: {
       <bdi dir={typeof value === 'number' ? 'ltr' : 'auto'} className="block font-bold tabular-nums">{factValue(factKey, value, locale)}</bdi>)}
     {fact?.previous && <div className="text-xs text-muted" aria-label={t('previousFact')}>
       <bdi dir={typeof fact.previous.value === 'number' ? 'ltr' : 'auto'}><del>{factValue(factKey, fact.previous.value, locale)}</del></bdi>
-      <p>{sourceLabel(fact.previous.source, locale)}</p>
+      <p>{sourceLabel(fact.previous.source, locale, timezone)}</p>
     </div>}
-    {fact && <p className="text-xs text-muted">{sourceLabel(fact.source, locale)}</p>}
+    {fact && <p className="text-xs text-muted">{sourceLabel(fact.source, locale, timezone)}</p>}
   </div>;
 }

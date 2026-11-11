@@ -1,4 +1,5 @@
 'use client';
+import { useTimezone } from '@/core/timezone/client';
 
 import { useCallback, useEffect, useState } from 'react';
 import { localDb, stableId, useLiveQuery } from '@/core/offline';
@@ -7,6 +8,7 @@ import { readDailyCheck, saveDailyCheck } from '../data/daily-checks';
 import { refreshCheck } from '../data/refresh-check';
 
 export function useDailyCheck(playerId: string | undefined, today: string) {
+  const timezone = useTimezone();
   const [error, setError] = useState(false);
   const [retryKey, setRetryKey] = useState(0);
   const [savedKey, setSavedKey] = useState('');
@@ -34,7 +36,7 @@ export function useDailyCheck(playerId: string | undefined, today: string) {
   }, [playerId, today, retryKey]);
   const save = async (patch: Partial<Pick<DailyCheckRow, 'sleep_hours' | 'soreness'>>, water = 0) => {
     if (!playerId || !today) return;
-    try { await saveDailyCheck(localDb(), playerId, patch, water, Date.now()); setSavedKey(key); setError(false); }
+    try { await saveDailyCheck(localDb(), playerId, patch, water, Date.now(), timezone); setSavedKey(key); setError(false); }
     catch { setError(true); }
   };
   return { row, error, saved: savedKey === key, pending: value?.key === key && value.pending,

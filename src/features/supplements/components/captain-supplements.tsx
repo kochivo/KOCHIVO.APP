@@ -1,4 +1,5 @@
 'use client';
+import { useTimezone } from '@/core/timezone/client';
 
 import { useCallback, useState } from 'react';
 import { useResource } from '@/core/resource';
@@ -18,8 +19,9 @@ const SupplementEditor = dynamic(() => import('./supplement-editor').then(module
 });
 
 export function CaptainSupplements({ playerId }: { playerId: string }) {
+  const timezone = useTimezone();
   const t = useT(messages);
-  const today = localDate(new Date());
+  const today = localDate(new Date(), timezone);
   const load = useCallback((signal: AbortSignal) => loadSupplements(playerId, signal), [playerId]);
   const { data, status, retry: refresh } = useResource(`supplements:${playerId}:${today}`, load);
   const [saveError, setError] = useState(false);
@@ -45,11 +47,11 @@ export function CaptainSupplements({ playerId }: { playerId: string }) {
     {error && <div role="alert"><p>{t('error')}</p><button className="min-h-12 px-4" onClick={() => { setError(false); void refresh(); }}>{t('retry')}</button></div>}
     {!data && !error && <p role="status">{t('loading')}</p>}
     {data && !data.rows.length && <p className="text-muted">{t('empty')}</p>}
-    {data && data.rows.length > 0 && <p className="glass-strong rounded-control p-3 font-bold">{t('score', { percent: Math.round(supplementAdherence(data.logs, data.rows, 7, now) * 100) })}</p>}
+    {data && data.rows.length > 0 && <p className="glass-strong rounded-control p-3 font-bold">{t('score', { percent: Math.round(supplementAdherence(data.logs, data.rows, 7, now, data.timezone) * 100) })}</p>}
     {data?.rows.map((row, index) => <article key={row.id} className="glass space-y-3 rounded-card p-4">
       <div className="flex flex-wrap items-center gap-3"><h3 className="font-bold">{row.name}</h3><span>{row.dose}</span><span className="glass rounded-full px-3 py-1 text-sm">{t(row.timing)}</span></div>
       {row.notes && <p className="text-sm text-muted">{row.notes}</p>}
-      <p className="text-sm">{t('adherence', { count: Math.round(supplementAdherence(data.logs, [row], 7, now) * 7) })}</p>
+      <p className="text-sm">{t('adherence', { count: Math.round(supplementAdherence(data.logs, [row], 7, now, data.timezone) * 7) })}</p>
       <div className="flex flex-wrap gap-2">
         <button className="min-h-12 px-3" disabled={busy} onClick={() => setEditing(row)}>{t('edit')}</button>
         <button className="min-h-12 px-3" disabled={busy} onClick={() => void mutate(() => archiveSupplement(row.id, Date.now()))}>{t('archive')}</button>

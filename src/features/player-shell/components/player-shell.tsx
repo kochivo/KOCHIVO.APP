@@ -1,4 +1,5 @@
 'use client';
+import { profileTimezone } from '@/lib/timezone';
 import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 
@@ -37,7 +38,7 @@ export function PlayerShell({ children, unassignedAction }: { children?: ReactNo
   const online = useOnline();
   const workout = /\/player\/workout(?:\/|$)/.test(pathname);
   const [restMood, setRestMood] = useState(false);
-  const today = localDate(new Date());
+  const today = localDate(new Date(), profileTimezone(captain.data?.timezone));
   const state = captain.data ? accessState({ ...captain.data, today }) : 'active';
   const url = whatsappUrl({ phone: captain.data?.phone ?? '' });
   const left = captain.data ? daysBetween(today, captain.data.accessUntil) : 0;

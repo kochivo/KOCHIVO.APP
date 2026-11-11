@@ -1,3 +1,6 @@
+import { actionTimezone } from '@/core/timezone/action-timezone';
+import { readPlayerTimezone } from '@/core/timezone/player-timezone';
+import { internationalEnabled } from '@/lib/international-enabled';
 import { loadSupabaseBrowser } from '@/core/supabase/lazy';
 import { uuidv7 } from '@/core/offline/ids';
 import { signedMediaUrl } from '@/core/storage/private-media';
@@ -21,7 +24,8 @@ export async function listScans(playerId?: string) {
     client.from('player_intake').select('target_weight_kg').eq('player_id', owner).maybeSingle(),
   ]);
   if (rows.error || intake.error) throw new Error('Loading scans failed');
-  return { scans: rows.data, target: intake.data?.target_weight_kg ?? null };
+  return { scans: rows.data, target: intake.data?.target_weight_kg ?? null,
+    ...(internationalEnabled() ? { timezone: await readPlayerTimezone(client, owner) } : {}) };
 }
 
 export function validateScan(input: ScanInput, today: string): boolean {
@@ -45,7 +49,7 @@ export async function prepareScanFile(file: File, t: ScanTranslator): Promise<Bl
 
 export async function addScan(input: ScanInput, file: File | null, now: Date, t: ScanTranslator): Promise<Scan> {
   if (!navigator.onLine) throw new Error(t('offline'));
-  if (!validateScan(input, localDate(now))) throw new Error(t('invalid'));
+  if (!validateScan(input, localDate(now, actionTimezone()))) throw new Error(t('invalid'));
   const blob = file ? await prepareScanFile(file, t) : null;
   const client = await loadSupabaseBrowser();
   const auth = await client.auth.getUser();

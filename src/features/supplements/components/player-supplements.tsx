@@ -1,4 +1,5 @@
 'use client';
+import { useTimezone } from '@/core/timezone/client';
 
 import { useCallback, useEffect, useState } from 'react';
 import { Check } from 'lucide-react';
@@ -12,9 +13,10 @@ import { toggleTodaySupplement } from '../data/log-supplement';
 import { useSupplementPlayer } from '../hooks/use-supplement-player';
 
 export function PlayerSupplements() {
+  const timezone = useTimezone();
   const t = useT(messages);
   const [error, setError] = useState(false);
-  const [day, setDay] = useState(() => localDate(new Date()));
+  const [day, setDay] = useState(() => localDate(new Date(), timezone));
   const [pending, setPending] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [retryKey, setRetryKey] = useState(0);
@@ -25,8 +27,8 @@ export function PlayerSupplements() {
     logs: await localDb().supplement_logs.toArray() }), [playerId]);
   const data = useLiveQuery(read, onError, retryKey);
   const refresh = useCallback(() => {
-    void refreshSupplements().then(() => { setError(false); setDay(localDate(new Date())); }).catch(() => setError(true)).finally(() => setLoading(false));
-  }, []);
+    void refreshSupplements().then(() => { setError(false); setDay(localDate(new Date(), timezone)); }).catch(() => setError(true)).finally(() => setLoading(false));
+  }, [timezone]);
   useEffect(() => {
     refresh();
     window.addEventListener('online', refresh);
@@ -34,12 +36,12 @@ export function PlayerSupplements() {
     return () => { window.removeEventListener('online', refresh); window.removeEventListener('focus', refresh); };
   }, [refresh, playerId]);
   useEffect(() => {
-    const update = () => setDay(localDate(new Date()));
+    const update = () => setDay(localDate(new Date(), timezone));
     const timer = window.setInterval(update, 30000);
     window.addEventListener('focus', update);
     document.addEventListener('visibilitychange', update);
     return () => { window.clearInterval(timer); window.removeEventListener('focus', update); document.removeEventListener('visibilitychange', update); };
-  }, []);
+  }, [timezone]);
   const retry = () => { setRetryKey(value => value + 1); refresh(); };
   if (!data || data.playerId !== playerId || !playerId || (loading && !data.supplements.length)) return error
     ? <div role="alert"><p>{t('error')}</p><button className="min-h-12 px-4" onClick={retry}>{t('retry')}</button></div>
@@ -47,8 +49,8 @@ export function PlayerSupplements() {
   if (!data.supplements.length && !error) return null;
   const toggle = async (id: string, now: number) => {
     setPending(current => [...current, id]);
-    setDay(localDate(new Date(now)));
-    try { await toggleTodaySupplement(localDb(), id, now); }
+    setDay(localDate(new Date(now), timezone));
+    try { await toggleTodaySupplement(localDb(), id, now, timezone); }
     catch { setError(true); }
     finally { setPending(current => current.filter(value => value !== id)); }
   };

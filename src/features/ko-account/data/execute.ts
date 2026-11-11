@@ -1,3 +1,4 @@
+import { getTimezone } from '@/core/timezone/server';
 import { z } from 'zod';
 import { uuidv7 } from '@/core/offline/ids';
 import { createT } from '@/core/i18n/messages';
@@ -88,7 +89,7 @@ export async function executeIntent(actor: KoActor, intent: Intent, locale: Loca
     return preview('renew', { days: intent.args.days, previous: data.access_until },
       t('renew', { days: intent.args.days, previous: data.access_until }), player.name);
   }
-  return preview('reminder', { date: localDate(new Date(now)) }, t('reminder'), player.name);
+  return preview('reminder', { date: localDate(new Date(now), await getTimezone()) }, t('reminder'), player.name);
 }
 
 export async function commitApproval(actor: KoActor, action: Approval, token: string, locale: Locale): Promise<AccountReply> {

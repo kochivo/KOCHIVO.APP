@@ -1,3 +1,4 @@
+import { getTimezone } from '@/core/timezone/server';
 import 'server-only';
 import { z } from 'zod';
 import { createT } from '@/core/i18n/messages';
@@ -132,7 +133,7 @@ export async function postKoAccountChat(request: Request) {
       if (!secret) console.warn('Meal points skipped: KO_MEAL_RECEIPT_SECRET is missing');
       else {
         try {
-          const day = localDate(new Date(now));
+          const day = localDate(new Date(now), await getTimezone());
           const { error } = await actor.db.rpc('award_meal_check', { p_day: day, p_receipt: mealReceipt(actor.id, day, secret) });
           if (error) console.warn('Meal points award failed');
         } catch { console.warn('Meal points award failed'); }
