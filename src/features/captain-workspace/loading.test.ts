@@ -5,15 +5,18 @@ import { beforeEach, expect, it, vi } from 'vitest';
 import { WorkspaceContent } from './components/workspace-content';
 import { WorkspacePlanEntry } from './components/workspace-plan-entry';
 import { WorkspaceState } from './components/workspace-state';
+import { PlayerFileSlot } from './components/player-file-slot';
 
 const data = vi.hoisted(() => ({
-  profile: vi.fn(), list: vi.fn(), load: vi.fn(),
+  profile: vi.fn(), list: vi.fn(), load: vi.fn(), file: vi.fn(), client: {},
 }));
 const input = { playerId: 'player', today: '2026-11-11' };
 vi.mock('server-only', () => ({}));
 vi.mock('@/core/i18n/server', () => ({ getLocale: async () => 'en' }));
 vi.mock('@/features/player-profile', () => ({ fetchPlayerProfile: data.profile }));
 vi.mock('@/features/programs', () => ({ listPlayerPrograms: data.list, loadProgram: data.load }));
+vi.mock('@/features/player-file', () => ({ loadPlayerFile: data.file }));
+vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => data.client }));
 vi.mock('next/navigation', () => ({ notFound: () => { throw new Error('not-found'); } }));
 
 function find(tree: ReactElement, type: unknown): ReactElement<Record<string, unknown>> | undefined {
@@ -28,8 +31,19 @@ function find(tree: ReactElement, type: unknown): ReactElement<Record<string, un
 }
 beforeEach(() => {
   vi.clearAllMocks();
+  data.file.mockResolvedValue({ facts: {}, history: [] });
   data.profile.mockResolvedValue({ data: { name: 'Ahmed', intake: null } });
   data.load.mockImplementation(async id => ({ data: { id, title: id, days: [] } }));
+});
+it('uses the authenticated request client and isolates player-file failure from the plan', async () => {
+  data.file.mockRejectedValue(new Error('unavailable'));
+  data.list.mockResolvedValue({ data: [{ id: 'active', status: 'active' }] });
+  const tree = await WorkspaceContent(input);
+  expect(data.file).toHaveBeenCalledWith(data.client, 'player');
+  const slot = find(tree, PlayerFileSlot);
+  expect(slot?.props.error).toBe(true);
+  expect(renderToStaticMarkup(slot as ReactElement)).toContain('Could not load the player file');
+  expect(find(tree, WorkspacePlanEntry)?.props.program).toMatchObject({ id: 'active' });
 });
 it('prefers an active program over a newer draft', async () => {
   data.list.mockResolvedValue({ data: [{ id: 'new-draft', status: 'draft' }, { id: 'active', status: 'active' }] });

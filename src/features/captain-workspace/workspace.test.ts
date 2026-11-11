@@ -50,13 +50,17 @@ it.each(['ar', 'en'] as const)('renders translated loading, error, no-program an
   expect(emptyDay).toContain(locale === 'en' ? 'No training days yet' : 'لسه مفيش أيام تمرين');
 });
 it('renders intake facts and explicit unavailable values without inventing numbers', () => {
-  const html = renderToStaticMarkup(createElement(PlayerFileSlot, { locale: 'en', today: '2026-11-11',
-    player: { name: 'Ahmed', intake: { birthYear: 1999, weightKg: 82.4, targetWeightKg: 86 } },
+  const source = { kind: 'intake', id: 'i', at: '2026-11-03T12:00:00Z' };
+  const html = renderToStaticMarkup(createElement(PlayerFileSlot, { locale: 'en',
+    player: { name: 'Ahmed', intake: { weightKg: 82.4 } },
+    file: { facts: { age: { key: 'age', value: 27, source, isNew: false },
+      weight: { key: 'weight', value: 82.4, source, isNew: false },
+      targetWeight: { key: 'targetWeight', value: 86, source, isNew: false } }, history: [] },
   }));
   expect(html).toContain('27 years');
   expect(html).toContain('82.4 kg');
   expect(html).toContain('86 kg');
-  const missing = renderToStaticMarkup(createElement(PlayerFileSlot, { locale: 'en', today: '2026-11-11', player: { name: 'Ahmed', intake: null } }));
+  const missing = renderToStaticMarkup(createElement(PlayerFileSlot, { locale: 'en', player: { name: 'Ahmed', intake: null }, file: { facts: {}, history: [] } }));
   expect(missing).toContain('Not provided');
   expect(missing).not.toContain('0 kg');
 });
