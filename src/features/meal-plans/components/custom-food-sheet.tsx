@@ -12,9 +12,9 @@ import { customFoodSchema } from '../types';
 import type { Food } from '../types';
 import { saveCustomFood } from '../data/custom-food-photo';
 
-export function CustomFoodSheet({ onClose, onSave, openerId, alternative = false, food, onOptimistic }: {
+export function CustomFoodSheet({ onClose, onSave, openerId, alternative = false, food, onOptimistic, initialName }: {
   onClose: () => void; onSave: (food: Food, grams: number) => void; openerId: string; alternative?: boolean;
-  food?: Food; onOptimistic?: (food: Food) => () => void;
+  food?: Food; onOptimistic?: (food: Food) => () => void; initialName?: string;
 }) {
   const t = useT(messages);
   const toast = useToast();
@@ -67,7 +67,7 @@ export function CustomFoodSheet({ onClose, onSave, openerId, alternative = false
     </div>
     <form onSubmit={event => void submit(event)} className="mt-4 grid gap-4" aria-busy={busy}>
       <fieldset disabled={busy} className="grid gap-3">
-        <label className="grid gap-1">{t('foodName')}<input name="name" required maxLength={60} defaultValue={food?.name}
+        <label className="grid gap-1">{t('foodName')}<input name="name" required maxLength={60} defaultValue={food?.name ?? initialName?.slice(0, 60)}
           className="min-h-12 rounded-control border border-line bg-surface px-3" /></label>
         <p className="text-sm text-muted">{t('servingMacros')}</p>
         {fields.map(field => <label key={field.name} className="grid gap-1">{field.label}

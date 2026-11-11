@@ -12,14 +12,21 @@ import { foodPhotoUrl } from '@/core/storage/media-url';
 import { addAlternative, moveItem, removeAlternative, removeItem, setGrams } from '../draft';
 import { FoodPicker } from './food-picker';
 import type { MealItem, PlanDraft } from '../types';
+import type { PlayerFacts } from '@/features/player-file';
+import { flagFood } from '../food-flags';
+import { HouseholdQuantity } from './household-quantity';
+import { messages as editorMessages } from './editor/messages';
+import { flagLabels } from './editor/flag-labels';
 
-export function ItemRow({ item, first, last, update }: { item: MealItem; first: boolean; last: boolean; update: (change: (draft: PlanDraft) => PlanDraft) => void }) {
+export function ItemRow({ item, first, last, update, enhanced = false, facts = {} }: { item: MealItem; first: boolean; last: boolean; update: (change: (draft: PlanDraft) => PlanDraft) => void; enhanced?: boolean; facts?: PlayerFacts }) {
   const t = useT(messages);
+  const editorT = useT(editorMessages);
   const locale = useLocale();
   const [expanded, setExpanded] = useState(false);
   const [picking, setPicking] = useState(false);
   const macros = macrosFor(item.food, item.grams);
-  return <li className="glass-strong grid gap-3 rounded-card p-4">
+  const flags = enhanced ? flagFood(item.food, facts) : [];
+  return <li className={`glass-strong grid gap-3 rounded-card p-4${flags.length ? ' border border-danger text-danger' : ''}`}>
     <div className="flex flex-wrap items-center justify-between gap-2">
       {/* Public storage hosts vary by deployment and are not in the optimizer allowlist. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -31,8 +38,13 @@ export function ItemRow({ item, first, last, update }: { item: MealItem; first: 
         <Button variant="ghost" aria-label={t('deleteFood')} onClick={() => update(d => removeItem(d, item.id))}><Trash2 aria-hidden /></Button>
       </div>
     </div>
-    <Stepper label={t('gramsOf', { v0: item.food.name })} min={5} step={5} value={item.grams}
-      onChange={grams => update(d => setGrams(d, item.id, Math.min(2000, grams), t))} format={value => t('g', { v0: formatNumber(value, locale) })} />
+    {enhanced ? <HouseholdQuantity item={item} onChange={grams => update(d => setGrams(d, item.id, grams, t))} />
+      : <Stepper label={t('gramsOf', { v0: item.food.name })} min={5} step={5} value={item.grams}
+        onChange={grams => update(d => setGrams(d, item.id, Math.min(2000, grams), t))} format={value => t('g', { v0: formatNumber(value, locale) })} />}
+    {flags.length > 0 && <div role="note"><p>{editorT('conflict', { name: item.food.name, reason: flagLabels(flags, editorT) })}</p>
+      {item.alternatives.filter(alt => !flagFood(alt.food, facts).length && alt.grams >= 5 && alt.grams <= 2000).map(alt => <Button key={alt.id} variant="secondary" onClick={() => update(d => ({ ...d,
+        meals: d.meals.map(meal => ({ ...meal, items: meal.items.map(row => row.id === item.id ? { ...row, food: alt.food, grams: alt.grams, alternatives: row.alternatives.filter(value => value.id !== alt.id) } : row) })) }))}>{editorT('useAlternative', { name: alt.food.name })}</Button>)}
+    </div>}
     <p className="text-sm text-muted">{formatNumber(macros.kcal, locale)}  {t('kcalProtein')} {formatNumber(macros.protein, locale)}  {t('carbs')} {formatNumber(macros.carbs, locale)}  {t('fat')} {formatNumber(macros.fat, locale)}</p>
     <Button variant="secondary" aria-expanded={expanded} onClick={() => setExpanded(!expanded)}>{t('alternatives')}</Button>
     {expanded && <div className="grid gap-2">

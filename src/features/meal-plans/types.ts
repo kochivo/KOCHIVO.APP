@@ -1,7 +1,9 @@
 import type { Macros } from '@/lib/macros';
 import { z } from 'zod';
 
-export interface Food extends Macros { id: string; name: string; photo: string | null; custom: boolean }
+export interface FoodUnit { key: string; name_ar: string; name_en: string; grams: number }
+export type DayType = 'all' | 'training' | 'rest';
+export interface Food extends Macros { id: string; name: string; photo: string | null; custom: boolean; nameEn?: string | null; tags?: string[]; units?: FoodUnit[] }
 export const customFoodSchema = z.object({
   name: z.string().trim().min(1).max(60),
   servingGrams: z.number().min(5).max(2000),
@@ -16,7 +18,7 @@ export const customFoodSchema = z.object({
 export type CustomFoodInput = z.infer<typeof customFoodSchema>;
 export interface Alternative { id: string; food: Food; grams: number }
 export interface MealItem extends Alternative { position: number; alternatives: Alternative[] }
-export interface Meal { id: string; name: string; position: number; items: MealItem[] }
+export interface Meal { id: string; name: string; position: number; items: MealItem[]; dayType?: DayType }
 export interface PlanDraft {
   id: string; playerId: string | null; title: string; status: 'draft' | 'active' | 'archived';
   targets: Macros; meals: Meal[];

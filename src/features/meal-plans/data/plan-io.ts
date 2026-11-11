@@ -9,6 +9,8 @@ import { z } from 'zod';
 import { uuidv7 } from '@/core/offline/ids';
 import { planClient, toFood } from './client';
 import type { PlanDraft, PlanSummary } from '../types';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { mealDayType } from './editor-fields';
 
 const foodSchema = z.object({ id: z.uuid(), name: z.string(), photo: z.string().nullable(),
   kcal: z.number().nonnegative(), protein: z.number().nonnegative(), carbs: z.number().nonnegative(), fat: z.number().nonnegative() });
@@ -18,7 +20,7 @@ const draftSchema = z.object({
   status: z.enum(['draft', 'active', 'archived']),
   targets: z.object({ kcal: z.number().int().min(800).max(8000), protein: z.number().int().min(0).max(32767),
     carbs: z.number().int().min(0).max(32767), fat: z.number().int().min(0).max(32767) }),
-  meals: z.array(z.object({ id: z.uuid(), name: z.string().trim().min(1).max(40), position: z.number().int().positive(),
+  meals: z.array(z.object({ id: z.uuid(), name: z.string().trim().min(1).max(40), position: z.number().int().positive(), dayType: z.enum(['all', 'training', 'rest']).optional(),
     items: z.array(alternative.extend({ grams: z.number().min(5).max(2000), position: z.number().int().positive(), alternatives: z.array(alternative).max(100) })).max(100),
   })).max(100),
 });
@@ -73,6 +75,7 @@ export async function loadPlan(id: string): Promise<ActionResult<PlanDraft>> {
   return ok({ id, playerId: plan.player_id, title: plan.title, status: plan.status,
     targets: { kcal: plan.target_kcal ?? 2000, protein: plan.target_protein ?? 150, carbs: plan.target_carbs ?? 225, fat: plan.target_fat ?? 56 },
     meals: (meals.data ?? []).map((meal, index) => ({ id: meal.id, name: meal.name, position: index + 1,
+      ...(captainWorkspaceEnabled() ? { dayType: mealDayType(meal) } : {}),
       items: (items.data ?? []).filter(item => item.meal_id === meal.id).map((item, index) => ({
         id: item.id, food: food(item.food_id), grams: Number(item.grams), position: index + 1,
         alternatives: (alts.data ?? []).filter(alt => alt.meal_item_id === item.id).map(alt => ({ id: alt.id, food: food(alt.food_id), grams: Number(alt.grams) })),
@@ -86,7 +89,9 @@ export async function savePlan(input: PlanDraft): Promise<ActionResult<void>> {
   if (!parsed.success) return fail(t('checkThePlanNameMealsTargetsAnd'));
   const draft = parsed.data;
   const client = await planClient();
-  const { error } = await client.rpc('save_nutrition_plan', { p_plan: draft.id, p_draft: draft });
+  const args = { p_plan: draft.id, p_draft: draft,
+    ...(captainWorkspaceEnabled() ? { p_day_types: draft.meals.map(meal => ({ id: meal.id, dayType: meal.dayType ?? 'all' })) } : {}) };
+  const { error } = await client.rpc('save_nutrition_plan', args);
   if (error) return fail(t('couldntSaveTryAgain'));
   return ok(undefined);
 }

@@ -8,7 +8,7 @@ import { activatePlan } from '../data/activate';
 import type { PlanDraft } from '../types';
 import { useToast } from '@/ui/toast';
 
-export function usePlanDraft(planId: string) {
+export function usePlanDraft(planId: string, { clearErrorsOnEdit = false }: { clearErrorsOnEdit?: boolean } = {}) {
   const t = useT(messages);
   const toast = useToast();
   const [draft, setDraft] = useState<PlanDraft | null>(null);
@@ -37,6 +37,7 @@ export function usePlanDraft(planId: string) {
     return () => window.removeEventListener('beforeunload', warn);
   }, [dirty]);
   function update(change: (draft: PlanDraft) => PlanDraft) {
+    if (clearErrorsOnEdit) setError('');
     setDraft(previous => previous ? change(previous) : previous);
   }
   async function persist(activate = false) {

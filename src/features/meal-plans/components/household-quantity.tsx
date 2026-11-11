@@ -1,0 +1,28 @@
+'use client';
+import { useState } from 'react';
+import { useLocale, useT } from '@/core/i18n/client';
+import { Stepper } from '@/ui';
+import { formatNumber } from '@/lib/format';
+import type { MealItem } from '../types';
+import { unitGrams, unitQuantity } from '../editor-rules';
+import { messages } from './editor/messages';
+import { messages as planMessages } from '../messages';
+
+export function HouseholdQuantity({ item, onChange }: { item: MealItem; onChange: (grams: number) => void }) {
+  const t = useT(messages);
+  const planT = useT(planMessages);
+  const locale = useLocale();
+  const [key, setKey] = useState(item.food.units?.[0]?.key ?? '');
+  const unit = item.food.units?.find(unit => unit.key === key);
+  const name = unit ? locale === 'ar' ? unit.name_ar : unit.name_en : planT('grams');
+  return <div className="grid gap-2">
+    {!!item.food.units?.length && <label>{t('unit')}<select aria-label={t('unit')} value={key} onChange={event => setKey(event.target.value)} className="ms-2 min-h-12 rounded-control bg-surface px-3">
+      <option value="">{planT('grams')}</option>
+      {item.food.units.map(unit => <option key={unit.key} value={unit.key}>{locale === 'ar' ? unit.name_ar : unit.name_en}</option>)}
+    </select></label>}
+    <Stepper size="compact" label={t('quantity', { name: item.food.name })} value={unitQuantity(item.grams, unit)}
+      step={unit ? 1 : 5} min={5 / (unit?.grams ?? 1)} max={2000 / (unit?.grams ?? 1)}
+      onChange={value => onChange(Math.min(2000, Math.max(5, unitGrams(value, unit))))}
+      format={value => `${formatNumber(Math.round(value * 100) / 100, locale)} ${name}`} />
+  </div>;
+}

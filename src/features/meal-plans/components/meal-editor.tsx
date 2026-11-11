@@ -13,11 +13,15 @@ import { mealTotals } from '../totals';
 import { ItemRow } from './item-row';
 import { FoodPicker } from './food-picker';
 import type { Meal, PlanDraft } from '../types';
+import type { PlayerFacts } from '@/features/player-file';
+import { messages as editorMessages } from './editor/messages';
+import { moveVisibleMeal } from '../editor-rules';
 
 const CustomFoodSheet = dynamic(() => import('./custom-food-sheet').then(module => module.CustomFoodSheet));
 
-export function MealEditor({ meal, first, last, update }: { meal: Meal; first: boolean; last: boolean; update: (change: (draft: PlanDraft) => PlanDraft) => void }) {
+export function MealEditor({ meal, first, last, update, enhanced = false, facts = {}, day }: { meal: Meal; first: boolean; last: boolean; update: (change: (draft: PlanDraft) => PlanDraft) => void; enhanced?: boolean; facts?: PlayerFacts; day?: 'training' | 'rest' }) {
   const t = useT(messages);
+  const editorT = useT(editorMessages);
   const locale = useLocale();
   const [picking, setPicking] = useState(false);
   const [creating, setCreating] = useState(false);
@@ -27,15 +31,19 @@ export function MealEditor({ meal, first, last, update }: { meal: Meal; first: b
       <label>{t('mealName')}<input value={meal.name} maxLength={40} onChange={event => update(d => renameMeal(d, meal.id, event.target.value))}
         className="ms-2 min-h-12 rounded-control bg-surface px-3" /></label>
       <div className="flex gap-1">
-        <Button variant="ghost" disabled={first} aria-label={t('moveMealUp')} onClick={() => update(d => moveMeal(d, meal.id, -1))}><ArrowUp aria-hidden className="dir-icon" /></Button>
-        <Button variant="ghost" disabled={last} aria-label={t('moveMealDown')} onClick={() => update(d => moveMeal(d, meal.id, 1))}><ArrowDown aria-hidden className="dir-icon" /></Button>
+        <Button variant="ghost" disabled={first} aria-label={t('moveMealUp')} onClick={() => update(d => day ? moveVisibleMeal(d, meal.id, -1, day) : moveMeal(d, meal.id, -1))}><ArrowUp aria-hidden className="dir-icon" /></Button>
+        <Button variant="ghost" disabled={last} aria-label={t('moveMealDown')} onClick={() => update(d => day ? moveVisibleMeal(d, meal.id, 1, day) : moveMeal(d, meal.id, 1))}><ArrowDown aria-hidden className="dir-icon" /></Button>
         <Button variant="ghost" aria-label={t('deleteMeal')} onClick={() => update(d => removeMeal(d, meal.id))}><Trash2 aria-hidden /></Button>
       </div>
     </div>
+    {enhanced && <label>{editorT('dayType')}<select value={meal.dayType ?? 'all'} onChange={event => {
+      const value = event.target.value;
+      if (value === 'all' || value === 'training' || value === 'rest') update(d => ({ ...d, meals: d.meals.map(row => row.id === meal.id ? { ...row, dayType: value } : row) }));
+    }} className="ms-2 min-h-12 rounded-control bg-surface px-3">{(['all', 'training', 'rest'] as const).map(day => <option key={day} value={day}>{editorT(day)}</option>)}</select></label>}
     <p className="text-muted">{formatNumber(mealTotals(meal).kcal, locale)}  {t('kcal')}</p>
     {!meal.items.length && !picking && <EmptyState icon={Utensils} title={t('addTheFirstFood')} body={t('emptyBody')}
       action={{ label: t('addFood'), onClick: () => setPicking(true) }} />}
-    <ul className="grid gap-3">{meal.items.map((item, index) => <ItemRow key={item.id} item={item} first={index === 0} last={index === meal.items.length - 1} update={update} />)}</ul>
+    <ul className="grid gap-3">{meal.items.map((item, index) => <ItemRow key={item.id} item={item} first={index === 0} last={index === meal.items.length - 1} update={update} enhanced={enhanced} facts={facts} />)}</ul>
     <div className="flex flex-wrap gap-2">
       {(meal.items.length > 0 || picking) && <Button variant="secondary" onClick={() => setPicking(!picking)}>{picking ? t('closeSearch') : t('addFood')}</Button>}
       <Button id={openerId} variant="secondary" onClick={() => setCreating(true)}>{t('newFood')}</Button>
@@ -43,6 +51,6 @@ export function MealEditor({ meal, first, last, update }: { meal: Meal; first: b
     {creating && <CustomFoodSheet openerId={openerId} onClose={() => setCreating(false)} onSave={(food, grams) => {
       const id = uuidv7(); update(d => addItem(d, meal.id, food, grams, id, t)); setCreating(false); setPicking(false);
     }} />}
-    {picking && <FoodPicker onPick={(food, grams) => { const id = uuidv7(); update(d => addItem(d, meal.id, food, grams, id, t)); setPicking(false); }} />}
+    {picking && <FoodPicker inline={enhanced} onPick={(food, grams) => { const id = uuidv7(); update(d => addItem(d, meal.id, food, grams, id, t)); setPicking(false); }} />}
   </section>;
 }

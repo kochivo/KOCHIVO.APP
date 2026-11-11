@@ -24,8 +24,8 @@ const draft: PlanDraft = { id: 'plan', playerId: 'player', title: 'Plan', status
   targets: { kcal: 2000, protein: 150, carbs: 225, fat: 56 }, meals: [{ id: 'meal', name: 'Meal', position: 1,
     items: [{ id: 'item', position: 1, grams: 100, alternatives: [],
       food: { id: 'food', name: 'Food', photo: null, custom: false, kcal: 100, protein: 10, carbs: 10, fat: 1 } }] }] };
-function RenderDraft() { return renderPlanDraft('plan'); }
-function render() { state.index = 0; return RenderDraft(); }
+function RenderDraft(clearErrorsOnEdit = false) { return renderPlanDraft('plan', { clearErrorsOnEdit }); }
+function render(clearErrorsOnEdit = false) { state.index = 0; return RenderDraft(clearErrorsOnEdit); }
 beforeEach(() => {
   vi.resetAllMocks(); state.values = [draft, '', '', false, false, 0, false];
   state.save.mockResolvedValue({ ok: true, data: undefined });
@@ -69,3 +69,19 @@ it.each([{ meals: [] }, { meals: [{ id: 'empty', name: 'Meal', position: 1, item
     expect(state.save).not.toHaveBeenCalled();
   },
 );
+it('resumes enhanced autosave when a captain corrects a failed draft', async () => {
+  state.save.mockResolvedValueOnce({ ok: false, error: 'validation' });
+  await render(true).persist();
+  expect(render(true).error).toBe('validation');
+  render(true).update(value => ({ ...value, title: 'Corrected' }));
+  expect(render(true).error).toBe('');
+  expect(render(true).dirty).toBe(true);
+  await render(true).persist();
+  expect(state.save).toHaveBeenCalledTimes(2);
+  expect(render(true).dirty).toBe(false);
+});
+it('preserves legacy error behavior on edits', () => {
+  state.values[2] = 'validation';
+  render().update(value => ({ ...value, title: 'Corrected' }));
+  expect(render().error).toBe('validation');
+});

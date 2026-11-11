@@ -13,10 +13,12 @@ import { Button, EmptyState, Segmented } from '@/ui';
 import { LoadingState } from '@/ui/loading-state';
 import { searchFoods } from '../data/foods';
 import type { Food } from '../types';
+import { messages as editorMessages } from './editor/messages';
 const CustomFoodSheet = dynamic(() => import('./custom-food-sheet').then(module => module.CustomFoodSheet));
 
-export function FoodPicker({ onPick, alternative = false }: { onPick: (food: Food, grams: number) => void; alternative?: boolean }) {
+export function FoodPicker({ onPick, alternative = false, inline = false }: { onPick: (food: Food, grams: number) => void; alternative?: boolean; inline?: boolean }) {
   const t = useT(messages);
+  const editorT = useT(editorMessages);
   const locale = useLocale();
   const toast = useToast();
   const [query, setQuery] = useState('');
@@ -58,21 +60,21 @@ export function FoodPicker({ onPick, alternative = false }: { onPick: (food: Foo
   useEffect(() => {
     latestQuery.current = query;
     let current = true;
-    searchFoods({ query, limit: 30, mine: filter === 'mine' }).then(response => {
+    searchFoods({ query, limit: inline ? 20 : 30, mine: filter === 'mine' }).then(response => {
       if (current) {
         if (!response.ok) { setError(response.error); setLoading(false); return; }
         const value = response.data;
         const foods = value.foods.filter(food => !changes.current.has(food.id));
         const local = [...changes.current.values()].filter((food): food is Food => food !== null &&
           food.name.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()));
-        setResult({ foods: [...local, ...foods], catalogEmpty: value.catalogEmpty && !local.length });
+        setResult({ foods: [...local, ...foods].slice(0, inline ? 20 : 30), catalogEmpty: value.catalogEmpty && !local.length });
         setLoading(false); setError('');
       }
     }).catch(() => { if (current) { setError(t('searchFailedTryAgain')); setLoading(false); } });
     return () => { current = false; };
-  }, [query, retry, filter, t]);
+  }, [query, retry, filter, t, inline]);
   return <section aria-label={alternative ? t('chooseAnAlternative') : t('chooseAFood')} className="glass grid gap-3 rounded-card p-4">
-    <Button id={openerId} variant="secondary" onClick={() => setCreating(true)}>{t('newFood')}</Button>
+    {!inline && <Button id={openerId} variant="secondary" onClick={() => setCreating(true)}>{t('newFood')}</Button>}
     <Segmented aria-label={t('searchFoods')} options={[{ value: 'all', label: t('allFoods') }, { value: 'mine', label: t('myFoods') }]}
       value={filter} onChange={value => { if (value !== filter) { setFilter(value); setLoading(true); } }} />
     <label>{t('searchFoods')}<input value={query} onChange={event => { setQuery(event.target.value); setLoading(true); }}
@@ -89,7 +91,7 @@ export function FoodPicker({ onPick, alternative = false }: { onPick: (food: Foo
           {/* Public storage hosts vary by deployment and are not in the optimizer allowlist. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           {food.photo && <img src={foodPhotoUrl(food.photo)} alt="" width={48} height={48} loading="lazy" decoding="async" className="size-12 shrink-0 rounded-control object-cover" />}
-          <span><strong>{food.name}</strong>{food.custom && <span className="ms-2 rounded-control bg-surface px-2 text-xs text-muted">{t('mine')}</span>}<span className="block text-sm text-muted">{t('per100g')} {formatNumber(food.kcal, locale)}  {t('kcalProtein')} {formatNumber(food.protein, locale)}  {t('carbs')} {formatNumber(food.carbs, locale)}  {t('fat')} {formatNumber(food.fat, locale)}</span></span>
+          <span><strong>{food.name}</strong>{food.custom && <span className="ms-2 rounded-control bg-surface px-2 text-xs text-muted">{t(inline ? 'myFoods' : 'mine')}</span>}<span className="block text-sm text-muted">{t('per100g')} {formatNumber(food.kcal, locale)}  {t('kcalProtein')} {formatNumber(food.protein, locale)}  {t('carbs')} {formatNumber(food.carbs, locale)}  {t('fat')} {formatNumber(food.fat, locale)}</span></span>
         </button>
         {food.custom && <div className="flex gap-2">
           <Button variant="ghost" aria-label={t('editFood')} onClick={() => setEditing(food)}><Pencil aria-hidden /></Button>
@@ -97,8 +99,9 @@ export function FoodPicker({ onPick, alternative = false }: { onPick: (food: Foo
         </div>}
       </li>)}</ul>
     </>}
+    {inline && <Button id={openerId} variant="secondary" onClick={() => setCreating(true)}>{editorT('missing')}</Button>}
     {creationError && <p role="alert" className="text-danger">{creationError}</p>}
-    {creating && <CustomFoodSheet alternative={alternative} openerId={openerId} onClose={() => setCreating(false)} onSave={(food, amount) => {
+    {creating && <CustomFoodSheet initialName={inline ? query : undefined} alternative={alternative} openerId={openerId} onClose={() => setCreating(false)} onSave={(food, amount) => {
       if (alternative && food.kcal <= 0) { setCreationError(t('alternativeNeedsCalories')); setCreating(false); return; }
       showFood(food); setCreationError(''); onPick(food, amount); setCreating(false);
     }} />}
