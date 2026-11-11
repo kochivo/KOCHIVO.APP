@@ -1,0 +1,924 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Captain suite</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;500;600&family=Changa:wght@500;600;700&family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+:root{--deep:#070808;--glass:rgb(255 255 255/.025);--glass2:rgb(255 255 255/.045);--strong:rgb(255 255 255/.07);--hair:rgb(242 242 238/.07);--hair2:rgb(242 242 238/.12);--ink:#f4f4f1;--muted:#a6abb0;--faint:#6f747a;--lime:#b6e94f;--on-lime:#101418;--lime-soft:rgb(182 233 79/.10);--warn:#f2b544;--warn-soft:rgb(242 181 68/.10);--bad:#ff8a7a;--bad-soft:rgb(255 138 122/.10);--calm:#c9d5ff;--calm-soft:rgb(201 213 255/.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:radial-gradient(1100px 480px at 75% -200px,rgb(182 233 79/.07),transparent 70%),var(--deep);color:var(--ink);font-family:Alexandria,system-ui,sans-serif;font-size:14px;min-height:100vh}
+button,input,select{font:inherit;color:inherit}
+.num{font-family:Manrope,sans-serif;font-variant-numeric:tabular-nums}
+.ltr{direction:ltr;display:inline-block}
+.muted{color:var(--muted)}.faint{color:var(--faint)}.lime{color:var(--lime)}.warn{color:var(--warn)}.bad{color:var(--bad)}
+/* mockup switcher (not part of the product) */
+.demo{position:sticky;top:0;z-index:30;display:flex;gap:6px;align-items:center;padding:10px 16px;background:rgb(7 8 8/.92);backdrop-filter:blur(10px);border-bottom:1px dashed var(--hair2);overflow-x:auto;scrollbar-width:none}
+.demo b{font-size:11px;color:var(--faint);white-space:nowrap;margin-inline-end:6px}
+.demo button{white-space:nowrap;border:1px dashed var(--hair2);background:none;border-radius:999px;padding:6px 12px;font-size:12px;color:var(--muted);cursor:pointer}
+.demo button.on{border-style:solid;border-color:var(--lime);color:var(--lime)}
+/* shell */
+.shell{display:grid;grid-template-columns:232px minmax(0,1fr);min-height:calc(100vh - 49px)}
+.side{border-inline-end:1px solid var(--hair);padding:22px 14px;display:flex;flex-direction:column;gap:4px;position:sticky;top:49px;height:calc(100vh - 49px)}
+.brand{display:flex;align-items:center;gap:10px;padding:0 10px 22px}
+.logo{width:34px;height:34px;border-radius:11px;background:var(--lime);color:var(--on-lime);display:grid;place-items:center;font-family:Manrope;font-weight:800}
+.brand span{font-family:Manrope;font-weight:800;letter-spacing:.08em;font-size:13px}
+.nav{display:flex;align-items:center;gap:12px;min-height:46px;padding:0 12px;border-radius:14px;color:var(--muted);cursor:pointer}
+.nav i{font-size:19px}
+.nav.on{background:var(--glass2);color:var(--ink)}
+.nav .badge{margin-inline-start:auto;min-width:22px;height:22px;border-radius:999px;background:var(--lime);color:var(--on-lime);font:800 11px Manrope;display:grid;place-items:center;padding:0 6px}
+.navsub{padding-inline-start:44px;display:flex;flex-direction:column;gap:2px;margin-bottom:6px}
+.navsub a{font-size:12.5px;color:var(--faint);padding:7px 0;cursor:pointer}
+.navsub a.on{color:var(--lime)}
+.side .me{margin-top:auto;display:flex;align-items:center;gap:10px;padding:12px;border-radius:16px;background:var(--glass)}
+.main{padding:26px 36px 60px;min-width:0}
+.bnav{display:none}
+/* common */
+.screen{display:none}.screen.on{display:block}
+.head{display:flex;align-items:flex-end;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+.eyebrow{font-size:12px;color:var(--faint);margin-bottom:6px;display:flex;gap:6px;align-items:center}
+h1{font-family:Changa,Alexandria,sans-serif;font-size:32px;font-weight:600;line-height:1.1}
+h2{font-family:Changa,Alexandria,sans-serif;font-size:19px;font-weight:600}
+h3{font-size:14px;font-weight:500}
+.sp{flex:1}
+.btn{min-height:46px;padding:0 20px;border-radius:999px;border:1px solid var(--hair2);background:transparent;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;white-space:nowrap}
+.btn.sm{min-height:38px;padding:0 14px;font-size:12.5px}
+.pri{background:var(--lime);border-color:var(--lime);color:var(--on-lime);font-weight:600;box-shadow:0 10px 30px -12px rgb(182 233 79/.55)}
+.card{background:var(--glass);border:1px solid var(--hair);border-radius:24px}
+.pad{padding:20px}
+.strong{background:var(--strong);border-color:var(--hair2)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{min-height:36px;padding:0 14px;border-radius:999px;border:1px solid var(--hair);display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);cursor:pointer;white-space:nowrap}
+.chip.on{background:var(--ink);color:var(--deep);border-color:var(--ink)}
+.chip .n{font-family:Manrope;font-weight:800;font-size:11px;opacity:.7}
+.tag{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-size:11.5px;background:var(--glass2);color:var(--muted);white-space:nowrap}
+.tag.l{background:var(--lime-soft);color:var(--lime)}.tag.w{background:var(--warn-soft);color:var(--warn)}.tag.b{background:var(--bad-soft);color:var(--bad)}.tag.c{background:var(--calm-soft);color:var(--calm)}
+.search{display:flex;align-items:center;gap:10px;min-height:46px;padding:0 16px;border-radius:999px;background:var(--glass2);border:1px solid var(--hair);color:var(--faint);min-width:260px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.kpi{padding:16px 18px}
+.kpi .l{font-size:12px;color:var(--faint)}
+.kpi .v{font:800 26px Manrope;margin-top:6px;display:flex;align-items:baseline;gap:6px}
+.kpi .v small{font:500 12px Alexandria;color:var(--faint)}
+.kpi .d{font-size:11.5px;margin-top:4px}
+.av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#2a2d22,#141414);border:1px solid var(--hair2);display:grid;place-items:center;font-size:12px;flex:none}
+.bar{height:6px;border-radius:6px;background:rgb(255 255 255/.06);position:relative;overflow:hidden}
+.bar i{position:absolute;inset-block:0;inset-inline-start:0;border-radius:6px;background:var(--lime)}
+.why{margin-top:26px;border:1px dashed var(--hair2);border-radius:20px;padding:16px 20px;display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:12.5px;color:var(--muted);line-height:1.8}
+.why b{grid-row:span 4;color:var(--lime);font-size:12px;font-weight:500}
+.seg{display:inline-flex;padding:4px;border-radius:999px;background:var(--glass2);border:1px solid var(--hair)}
+.seg span{min-height:36px;padding:0 14px;border-radius:999px;display:inline-flex;align-items:center;font-size:12.5px;color:var(--faint);cursor:pointer}
+.seg span.on{background:var(--ink);color:var(--deep)}
+/* table rows */
+.rows .r{display:grid;align-items:center;gap:14px;padding:12px 18px;border-top:1px solid var(--hair);min-height:64px}
+.rows .r:first-child{border-top:0}
+.rows .hd{min-height:42px;font-size:11.5px;color:var(--faint)}
+.who{display:flex;align-items:center;gap:10px;min-width:0}
+.who b{font-weight:500;display:block}
+.who small{font-size:11.5px;color:var(--faint)}
+/* player header */
+.ph{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:6px}
+.ph .av{width:54px;height:54px;font-size:15px}
+.facts{display:flex;gap:6px;flex-wrap:wrap}
+.ptabs{display:flex;gap:4px;border-bottom:1px solid var(--hair);margin:16px 0 22px;overflow-x:auto;scrollbar-width:none}
+.ptabs a{padding:12px 16px;color:var(--faint);font-size:13.5px;white-space:nowrap;position:relative;cursor:pointer}
+.ptabs a.on{color:var(--ink)}
+.ptabs a.on::after{content:"";position:absolute;inset-inline:14px;bottom:-1px;height:2px;border-radius:2px;background:var(--lime)}
+.ptabs a .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--warn);margin-inline-start:6px;vertical-align:middle}
+.two{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:20px;align-items:start}
+.two.rev{grid-template-columns:380px minmax(0,1fr)}
+/* s1 queue */
+.q .r{grid-template-columns:minmax(170px,1.3fr) 1.2fr 1.6fr 110px 120px}
+.wait{font-size:12px;display:flex;align-items:center;gap:5px}
+/* s2 player forms */
+.tl{display:flex;flex-direction:column}
+.ti-item{display:flex;gap:12px;padding:14px 18px;border-top:1px solid var(--hair);cursor:pointer}
+.ti-item:first-child{border-top:0}
+.ti-item.on{background:var(--glass2)}
+.ti-ic{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:var(--glass2);flex:none;font-size:17px}
+.ti-ic.l{background:var(--lime-soft);color:var(--lime)}.ti-ic.w{background:var(--warn-soft);color:var(--warn)}
+.ti-item p{font-size:12px;color:var(--faint);margin-top:3px}
+.qa{display:grid;grid-template-columns:1fr auto;gap:4px 16px;padding:14px 0;border-top:1px solid var(--hair);align-items:center}
+.qa:first-of-type{border-top:0}
+.qa .q{font-size:12px;color:var(--faint)}
+.qa .a{font-size:15px;font-weight:500}
+.qa .ch{grid-row:span 2;text-align:end;font-size:12px}
+.photos{display:flex;gap:8px}
+.photos span{width:64px;height:84px;border-radius:12px;background:linear-gradient(160deg,#23251f,#121212);border:1px solid var(--hair)}
+.reply{display:flex;gap:8px;margin-top:16px}
+.reply .in{flex:1;min-height:46px;border-radius:999px;background:var(--glass2);border:1px solid var(--hair);display:flex;align-items:center;padding:0 16px;color:var(--faint);font-size:13px}
+/* s3 calculator */
+.inputs .f{display:flex;align-items:center;gap:10px;padding:13px 0;border-top:1px solid var(--hair)}
+.inputs .f:first-child{border-top:0}
+.inputs .f .k{flex:1;font-size:13px;color:var(--muted)}
+.inputs .f .v{font:800 16px Manrope}
+.inputs .f .v small{font:500 11px Alexandria;color:var(--faint)}
+.src{font-size:11px;color:var(--faint);display:flex;align-items:center;gap:4px}
+.goalseg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.goalseg div{border:1px solid var(--hair);border-radius:16px;padding:12px;text-align:center;font-size:13px;cursor:pointer}
+.goalseg div small{display:block;font-size:11px;color:var(--faint);margin-top:3px}
+.goalseg div.on{border-color:var(--lime);background:var(--lime-soft);color:var(--lime)}
+.big{display:grid;grid-template-columns:repeat(3,1fr);text-align:center}
+.big div{padding:20px 10px;border-inline-start:1px solid var(--hair)}
+.big div:first-child{border-inline-start:0}
+.big .l{font-size:12px;color:var(--faint)}
+.big .v{font:800 30px Manrope;margin-top:6px}
+.big .on .v{color:var(--lime);font-size:40px}
+.macro{display:grid;grid-template-columns:70px 1fr 90px;gap:12px;align-items:center;padding:12px 0}
+.macro .v{font:800 15px Manrope;text-align:end}
+.macro .v small{font:500 11px Alexandria;color:var(--faint);display:block}
+.cycle{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.cycle div{border-radius:16px;background:var(--glass2);padding:14px}
+.cycle .v{font:800 22px Manrope;margin-top:4px}
+/* s4 meal plan */
+.targets{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-bottom:16px}
+.targets>div{padding:16px 18px;border-inline-start:1px solid var(--hair)}
+.targets>div:first-child{border-inline-start:0}
+.targets .l{font-size:12px;color:var(--faint);display:flex;justify-content:space-between}
+.targets .v{font:800 20px Manrope;margin:6px 0 8px}
+.targets .v small{font:600 12px Manrope;color:var(--faint)}
+.meal{margin-bottom:12px}
+.mh{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--hair)}
+.mh .t{font-size:12px;color:var(--faint)}
+.mh .tot{margin-inline-start:auto;font:600 12px Manrope;color:var(--muted)}
+.it{display:grid;grid-template-columns:40px minmax(0,1fr) 120px 150px 30px;gap:12px;align-items:center;padding:10px 18px;border-top:1px solid var(--hair)}
+.it:first-of-type{border-top:0}
+.thumb{width:40px;height:40px;border-radius:12px;background:linear-gradient(140deg,#262920,#141414);border:1px solid var(--hair);display:grid;place-items:center;color:var(--faint)}
+.qty{display:flex;align-items:center;gap:6px;border:1px solid var(--hair);border-radius:999px;padding:4px;justify-content:space-between}
+.qty i{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--glass2);font-size:13px}
+.qty span{font:600 12.5px Manrope}
+.mm{font:600 11.5px Manrope;color:var(--faint);text-align:end}
+.mm b{color:var(--ink);font-size:13px}
+.add{display:flex;align-items:center;gap:10px;margin:8px 18px 14px;min-height:44px;padding:0 14px;border-radius:14px;border:1px dashed var(--hair2);color:var(--faint);font-size:13px}
+.drop{margin:0 18px 16px;border-radius:18px;background:#121413;border:1px solid var(--hair2);overflow:hidden}
+.drop .o{display:flex;align-items:center;gap:10px;padding:10px 14px;border-top:1px solid var(--hair);font-size:13px}
+.drop .o:first-child{border-top:0}
+.alerts .a{display:flex;gap:10px;padding:12px 14px;border-radius:16px;font-size:12.5px;line-height:1.7;margin-bottom:8px}
+/* s5 foods */
+.foods .r{grid-template-columns:minmax(200px,1.6fr) 70px 60px 60px 60px 1.1fr 100px}
+.form .fl{margin-bottom:14px}
+.form label{display:block;font-size:12px;color:var(--faint);margin-bottom:6px}
+.fi{min-height:46px;border-radius:14px;background:var(--glass2);border:1px solid var(--hair);display:flex;align-items:center;padding:0 14px;font-size:13.5px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.grid4 .fi{flex-direction:column;align-items:flex-start;justify-content:center;padding:8px 12px}
+.grid4 .fi small{font-size:10.5px;color:var(--faint)}
+.grid4 .fi b{font:800 15px Manrope}
+/* s6 forms library */
+.tpl{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.tp{padding:16px 18px;cursor:pointer}
+.tp.on{border-color:var(--lime);background:var(--lime-soft)}
+.tp .m{display:flex;gap:14px;margin-top:12px;font-size:11.5px;color:var(--faint)}
+.tp .m b{font:800 13px Manrope;color:var(--ink);display:block}
+.qq{display:flex;gap:12px;align-items:center;padding:12px 0;border-top:1px solid var(--hair)}
+.qq:first-of-type{border-top:0}
+.qq .g{color:var(--faint);cursor:grab}
+.qq .ty{width:34px;height:34px;border-radius:11px;background:var(--glass2);display:grid;place-items:center;flex:none}
+.qq .t{flex:1;min-width:0}
+.qq .t small{display:block;font-size:11px;color:var(--faint);margin-top:2px}
+.sched{display:flex;gap:10px;align-items:center;padding:14px;border-radius:16px;background:var(--glass2);margin-top:14px;font-size:12.5px}
+/* mobile */
+@media (max-width:1100px){.two,.two.rev{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:860px){
+ .shell{grid-template-columns:1fr}.side{display:none}
+ .main{padding:18px 16px 110px}
+ h1{font-size:25px}
+ .search{min-width:0;flex:1 1 100%}
+ .head .btn.pri{display:none}
+ .bnav{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;inset-inline:0;bottom:0;z-index:20;background:rgb(10 11 11/.94);backdrop-filter:blur(14px);border-top:1px solid var(--hair);padding:8px 6px calc(8px + env(safe-area-inset-bottom))}
+ .bnav a{min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10.5px;color:var(--faint)}
+ .bnav a i{font-size:21px}.bnav a.on{color:var(--lime)}
+ .fab{position:fixed;inset-inline-end:16px;bottom:86px;z-index:21;width:56px;height:56px;border-radius:50%;background:var(--lime);color:var(--on-lime);display:grid!important;place-items:center;font-size:24px;box-shadow:0 14px 30px -10px rgb(182 233 79/.6)}
+ .rows .hd{display:none}
+ .q .r{grid-template-columns:1fr auto;gap:8px}
+ .q .r>:nth-child(2){display:none}
+ .q .r>:nth-child(3){grid-column:1/-1;order:3}
+ .foods .r{grid-template-columns:1fr auto;gap:6px}
+ .foods .r>:nth-child(n+3):nth-child(-n+5),.foods .r>:nth-child(7){display:none}
+ .foods .r>:nth-child(6){grid-column:1/-1}
+ .it{grid-template-columns:40px minmax(0,1fr) auto;padding:10px 14px}
+ .it .mm{grid-column:2/-1;text-align:start}
+ .it .x{display:none}
+ .targets{grid-template-columns:repeat(2,1fr)}
+ .targets>div:nth-child(3){border-inline-start:0}
+ .targets>div:nth-child(n+3){border-top:1px solid var(--hair)}
+ .tpl{grid-template-columns:1fr}
+ .big .v{font-size:22px}.big .on .v{font-size:30px}
+ .why{grid-template-columns:1fr}.why b{grid-row:auto}
+}
+.fab{display:none}
+/* rest of system */
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.task{display:flex;align-items:center;gap:12px;padding:14px 18px;border-top:1px solid var(--hair)}
+.task:first-child{border-top:0}
+.task .ti-ic{width:40px;height:40px}
+.task .tx{flex:1;min-width:0}
+.task .tx small{display:block;font-size:12px;color:var(--faint);margin-top:2px}
+.roster .r{grid-template-columns:minmax(190px,1.4fr) 1fr 120px 130px 120px 110px}
+.spark{display:flex;align-items:flex-end;gap:3px;height:26px}
+.spark i{width:6px;border-radius:2px;background:var(--lime);opacity:.8}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px}
+.pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.chart{height:150px;position:relative;margin-top:10px}
+.chart svg{width:100%;height:100%;transform:scaleX(-1)}
+.ring2{width:84px;height:84px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--lime) 0 86%,rgb(255 255 255/.07) 0)}
+.ring2 b{width:68px;height:68px;border-radius:50%;background:#0d0e0f;display:grid;place-items:center;font:800 18px Manrope}
+.req{padding:18px}
+.req .facts{margin:12px 0}
+.pay .r{grid-template-columns:minmax(180px,1.4fr) 1fr 120px 120px 130px}
+.plan-c{padding:18px;display:flex;flex-direction:column;gap:10px}
+.plan-c .meta{display:flex;gap:12px;font-size:11.5px;color:var(--faint)}
+.podium{display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:12px;align-items:end}
+.podium .card{padding:18px;text-align:center}
+.podium .av{margin:0 auto 8px;width:52px;height:52px}
+.lb .r{grid-template-columns:40px minmax(180px,1fr) 120px 120px 100px}
+.set{display:flex;align-items:center;gap:14px;padding:16px 0;border-top:1px solid var(--hair)}
+.set:first-of-type{border-top:0}
+.set .tx{flex:1}
+.set .tx small{display:block;font-size:12px;color:var(--faint);margin-top:2px}
+.tog{width:46px;height:28px;border-radius:999px;background:var(--lime);position:relative;flex:none}
+.tog::after{content:"";position:absolute;top:3px;inset-inline-end:3px;width:22px;height:22px;border-radius:50%;background:var(--on-lime)}
+.tog.off{background:var(--glass2);border:1px solid var(--hair2)}
+.tog.off::after{inset-inline-end:auto;inset-inline-start:3px;background:var(--faint)}
+.public{border-radius:24px;overflow:hidden;border:1px solid var(--hair2)}
+.public .cover{height:110px;background:radial-gradient(400px 140px at 70% 0,rgb(182 233 79/.25),transparent),#101211}
+@media (max-width:1100px){.grid3{grid-template-columns:1fr}}
+@media (max-width:860px){
+ .roster .r,.pay .r{grid-template-columns:1fr auto;gap:8px}
+ .roster .r>:nth-child(n+3):nth-child(-n+5),.pay .r>:nth-child(2),.pay .r>:nth-child(4){display:none}
+ .lb .r{grid-template-columns:32px 1fr auto}.lb .r>:nth-child(4),.lb .r>:nth-child(5){display:none}
+ .podium .card{padding:12px 6px}
+}
+</style>
+</head>
+<body>
+
+<nav class="demo" aria-label="Mockup screens">
+  <b>Mockup · اختار شاشة</b>
+  <button data-s="s1">١ · الطلبات</button>
+  <button data-s="s2">٢ · فورمز اللاعب</button>
+  <button data-s="s3">٣ · حاسبة السعرات</button>
+  <button data-s="s4">٤ · خطة الأكل</button>
+  <button data-s="s5">٥ · مكتبة الأكلات</button>
+  <button data-s="s6">٦ · مكتبة الفورمز</button>
+  <b style="margin-inline-start:10px">باقي النظام</b>
+  <button data-s="s7">النهارده</button>
+  <button data-s="s8">اللاعبين</button>
+  <button data-s="s9">ملف لاعب</button>
+  <button data-s="s10">لاعبين جداد</button>
+  <button data-s="s11">المدفوعات</button>
+  <button data-s="s12">الخطط والتمارين</button>
+  <button data-s="s13">الترتيب</button>
+  <button data-s="s14">الإعدادات</button>
+  <a href="player-app.html" style="white-space:nowrap;border:1px solid var(--calm);color:var(--calm);border-radius:999px;padding:6px 12px;font-size:12px;text-decoration:none">تطبيق اللاعب ←</a>
+</nav>
+
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><div class="logo">K</div><span>KOCHIVO</span></div>
+    <a class="nav" data-go="s7" data-nav="s7"><i class="ti ti-sun"></i>النهارده</a>
+    <a class="nav" data-go="s1" data-nav="s1 s10"><i class="ti ti-inbox"></i>الطلبات<span class="badge">9</span></a>
+    <a class="nav" data-go="s8" data-nav="s8 s9 s2 s3 s4"><i class="ti ti-users"></i>اللاعبين</a>
+    <a class="nav" data-go="s12" data-nav="s5 s6 s12"><i class="ti ti-books"></i>المكتبة</a>
+    <div class="navsub"><a data-go="s12" data-nav="s12">الخطط والتمارين</a><a data-go="s5" data-nav="s5">الأكلات</a><a data-go="s6" data-nav="s6">الفورمز</a></div>
+    <a class="nav" data-go="s11" data-nav="s11"><i class="ti ti-wallet"></i>المدفوعات</a>
+    <a class="nav" data-go="s13" data-nav="s13"><i class="ti ti-trophy"></i>الترتيب</a>
+    <a class="nav" data-go="s14" data-nav="s14"><i class="ti ti-settings"></i>الإعدادات</a>
+    <div class="me"><div class="av">ك</div><div><b style="font-weight:500;font-size:13px">كابتن محمود</b><div class="faint" style="font-size:11px">٣٢ لاعب</div></div></div>
+  </aside>
+
+  <main class="main">
+
+<!-- ============ S1 QUEUE ============ -->
+<section class="screen" id="s1">
+  <div class="head">
+    <div><div class="eyebrow"><i class="ti ti-inbox"></i>كل اللي اتبعتلك من اللاعبين في مكان واحد</div><h1>الطلبات</h1></div>
+    <div class="sp"></div>
+    <div class="search"><i class="ti ti-search"></i>دوّر باسم لاعب أو فورم</div>
+  </div>
+  <div class="kpis">
+    <div class="card kpi strong"><div class="l">محتاج ردك</div><div class="v num lime">7</div><div class="d faint">٣ منهم فيهم تغيير مهم</div></div>
+    <div class="card kpi"><div class="l">متأخر أكتر من يوم</div><div class="v num warn">3</div><div class="d faint">أقدمهم من ٢ يوم</div></div>
+    <div class="card kpi"><div class="l">متوسط وقت ردك</div><div class="v num">5<small>ساعات</small></div><div class="d lime">أسرع من الأسبوع اللي فات بساعتين</div></div>
+    <div class="card kpi"><div class="l">اتراجع الأسبوع ده</div><div class="v num">13</div><div class="d faint">من ٢٠ وصلوا</div></div>
+  </div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;align-items:center">
+    <div class="chips">
+      <span class="chip on">محتاج ردك <span class="n">7</span></span>
+      <span class="chip">متأخر <span class="n">3</span></span>
+      <span class="chip">اتراجع <span class="n">13</span></span>
+      <span class="chip">الكل <span class="n">23</span></span>
+    </div>
+    <div class="sp"></div>
+    <div class="seg"><span class="on">الكل</span><span>فورمز</span><span>فيديوهات أداء</span><span>تجديد</span></div>
+  </div>
+  <div class="card rows q">
+    <div class="r hd"><span>اللاعب</span><span>النوع</span><span>اللي اتغيّر</span><span>مستني من</span><span></span></div>
+    <div class="r">
+      <div class="who"><div class="av">أس</div><div><b>أحمد سامي</b><small>تنشيف · الأسبوع ٦</small></div></div>
+      <div><span class="tag">Check-in أسبوعي</span></div>
+      <div class="chips"><span class="tag b"><i class="ti ti-alert-triangle"></i>إصابة جديدة: الركبة</span><span class="tag l"><span class="ltr num">−1.2 kg</span></span></div>
+      <div class="wait warn"><i class="ti ti-clock"></i><span class="num">26</span> ساعة</div>
+      <div><span class="btn sm pri">راجِع</span></div>
+    </div>
+    <div class="r">
+      <div class="who"><div class="av">مع</div><div><b>مريم عادل</b><small>ثبات · الأسبوع ١١</small></div></div>
+      <div><span class="tag">فيديو أداء · سكوات</span></div>
+      <div class="chips"><span class="tag c"><i class="ti ti-video"></i>٣ تكرارات · ٠:٤٢</span></div>
+      <div class="wait warn"><i class="ti ti-clock"></i><span class="num">31</span> ساعة</div>
+      <div><span class="btn sm">راجِع</span></div>
+    </div>
+    <div class="r">
+      <div class="who"><div class="av">كم</div><div><b>كريم مصطفى</b><small>تضخيم · الأسبوع ٢</small></div></div>
+      <div><span class="tag">تحديث البيانات</span></div>
+      <div class="chips"><span class="tag w">أيام التمرين: ٤ ← ٣</span><span class="tag">مدة التمرين ٤٥ د</span></div>
+      <div class="wait"><i class="ti ti-clock"></i><span class="num">5</span> ساعات</div>
+      <div><span class="btn sm">راجِع</span></div>
+    </div>
+    <div class="r">
+      <div class="who"><div class="av">سن</div><div><b>سارة نبيل</b><small>تنشيف · الأسبوع ١٢ من ١٢</small></div></div>
+      <div><span class="tag">تجديد خطة</span></div>
+      <div class="chips"><span class="tag l">نزلت <span class="ltr num">6.4 kg</span> في الخطة</span></div>
+      <div class="wait"><i class="ti ti-clock"></i><span class="num">3</span> ساعات</div>
+      <div><span class="btn sm">راجِع</span></div>
+    </div>
+    <div class="r">
+      <div class="who"><div class="av">يح</div><div><b>يوسف حسن</b><small>ثبات · الأسبوع ٤</small></div></div>
+      <div><span class="tag">Check-in أسبوعي</span></div>
+      <div class="chips"><span class="tag">مفيش تغيير</span><span class="tag">نوم ٦/١٠</span></div>
+      <div class="wait"><i class="ti ti-clock"></i>ساعة</div>
+      <div><span class="btn sm">راجِع</span></div>
+    </div>
+  </div>
+  <div class="why"><b>أحسن إزاي</b>
+    <span>مترتبة حسب الأهمية مش حسب التاريخ: الإصابة والتأخير فوق.</span>
+    <span>عمود «اللي اتغيّر» بيقولك الخلاصة من غير ما تفتح الفورم.</span>
+    <span>الفورمز والفيديوهات والتجديد في قايمة واحدة بدل ٣ أماكن.</span>
+    <span>بتشوف وقت ردك بيتحسن ولا لأ.</span>
+  </div>
+</section>
+
+<!-- ============ PLAYER HEADER (shared look, repeated per screen) ============ -->
+<template id="phead">
+  <div class="eyebrow"><span>اللاعبين</span><i class="ti ti-chevron-left"></i><span>أحمد سامي</span></div>
+  <div class="ph">
+    <div class="av">أس</div>
+    <div><h1 style="font-size:26px">أحمد سامي</h1>
+      <div class="facts" style="margin-top:6px"><span class="tag num">27 سنة</span><span class="tag"><span class="ltr num">178 cm</span></span><span class="tag"><span class="ltr num">82 → 76 kg</span></span><span class="tag">٤ أيام · ٦٠ د</span><span class="tag b">ركبة</span></div>
+    </div>
+    <div class="sp"></div>
+    <span class="btn sm"><i class="ti ti-message-circle"></i>رسالة</span>
+  </div>
+  <div class="ptabs"><a data-t="ov">نظرة عامة</a><a data-t="train">تمرين</a><a data-t="nut">تغذية</a><a data-t="forms">فورمز<span class="dot"></span></a><a>مدفوعات</a></div>
+</template>
+
+<!-- ============ S2 PLAYER FORMS ============ -->
+<section class="screen" id="s2" data-tab="forms">
+  <div class="phead"></div>
+  <div class="two rev">
+    <div>
+      <div class="card" style="margin-bottom:12px">
+        <div class="pad" style="display:flex;gap:12px;align-items:center">
+          <div class="ti-ic l"><i class="ti ti-repeat"></i></div>
+          <div style="flex:1"><h3>Check-in أسبوعي · تلقائي</h3><p class="faint" style="font-size:12px;margin-top:3px">كل جمعة ٩ الصبح · تذكير بعد ٢٤ ساعة</p></div>
+          <span class="tag l">شغال</span>
+        </div>
+      </div>
+      <div class="card tl">
+        <div class="ti-item"><div class="ti-ic w"><i class="ti ti-hourglass"></i></div><div style="flex:1"><h3>متابعة شهرية بالصور</h3><p>اتبعت من يومين · لسه مفتحهاش</p></div><span class="btn sm">فكّره</span></div>
+        <div class="ti-item on"><div class="ti-ic l"><i class="ti ti-check"></i></div><div style="flex:1"><h3>Check-in · الأسبوع ٦</h3><p>امبارح ١١:٢٠ م · فيه إصابة جديدة</p></div><span class="tag b">جديد</span></div>
+        <div class="ti-item"><div class="ti-ic"><i class="ti ti-check"></i></div><div style="flex:1"><h3>Check-in · الأسبوع ٥</h3><p>٢٨ أكتوبر · اتراجع</p></div><span class="tag num ltr">−0.8 kg</span></div>
+        <div class="ti-item"><div class="ti-ic"><i class="ti ti-check"></i></div><div style="flex:1"><h3>تحديث البيانات</h3><p>٢٠ أكتوبر · غيّر مدة التمرين</p></div></div>
+        <div class="ti-item"><div class="ti-ic"><i class="ti ti-flag"></i></div><div style="flex:1"><h3>بيانات البداية</h3><p>٢ أكتوبر · أول بيانات</p></div></div>
+      </div>
+    </div>
+    <div class="card pad">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><h2>Check-in · الأسبوع ٦</h2><div class="sp"></div><span class="faint" style="font-size:12px">مقارنة بالأسبوع ٥</span></div>
+      <div class="qa"><span class="q">الوزن الصبح</span><span class="a num"><span class="ltr">82.0 kg</span></span><span class="ch lime num ltr">−1.2</span></div>
+      <div class="qa"><span class="q">مقاس الوسط</span><span class="a num"><span class="ltr">88 cm</span></span><span class="ch lime num ltr">−1.5</span></div>
+      <div class="qa"><span class="q">التزمت بالأكل كام يوم؟</span><span class="a num">٦ من ٧</span><span class="ch faint">زي اللي فات</span></div>
+      <div class="qa"><span class="q">النوم</span><span class="a num">٧ / ١٠</span><span class="ch lime num">+1</span></div>
+      <div class="qa" style="background:var(--bad-soft);margin:6px -12px;padding:14px 12px;border-radius:14px;border:0"><span class="q bad">فيه ألم أو إصابة؟</span><span class="a">وجع في الركبة الشمال مع السكوات</span><span class="ch"><span class="btn sm">شوف التمارين</span></span></div>
+      <div class="qa"><span class="q">الصور</span><span class="ch"></span><div class="photos"><span></span><span></span><span></span></div></div>
+      <p class="src" style="margin-top:12px"><i class="ti ti-arrow-back-up"></i>الوزن والوسط والإصابة اتحدّثوا في ملف اللاعب لوحدهم</p>
+      <div class="reply"><div class="in">اكتب رد لأحمد…</div><span class="btn pri">اتراجع وابعت</span></div>
+    </div>
+  </div>
+  <div class="why"><b>أحسن إزاي</b>
+    <span>كل فورم بيقارن نفسه باللي قبله: سهم أخضر أو تحذير، من غير حسابات.</span>
+    <span>الإجابات بتحدّث ملف اللاعب (الوزن، الإصابات، الأيام) فالخطة تشوفها على طول.</span>
+    <span>الإصابة ليها زرار يوديك للتمارين اللي بتضغط على المكان ده.</span>
+    <span>الفورم التلقائي باين فوق، والمتأخر ليه «فكّره» بضغطة.</span>
+  </div>
+</section>
+
+<!-- ============ S3 CALCULATOR ============ -->
+<section class="screen" id="s3" data-tab="nut">
+  <div class="phead"></div>
+  <div style="margin-bottom:16px"><div class="seg"><span>الخطة</span><span class="on">الحسبة</span><span>سجل الأكل</span></div></div>
+  <div class="two rev">
+    <div class="card pad">
+      <div style="display:flex;align-items:center;margin-bottom:6px"><h2>بياناته</h2><div class="sp"></div><span class="src"><i class="ti ti-refresh"></i>من ملف اللاعب</span></div>
+      <div class="inputs">
+        <div class="f"><span class="k">الوزن</span><span class="src">Check-in امبارح</span><span class="v num ltr">82 <small>kg</small></span></div>
+        <div class="f"><span class="k">الطول</span><span class="src">بيانات البداية</span><span class="v num ltr">178 <small>cm</small></span></div>
+        <div class="f"><span class="k">السن · النوع</span><span class="v num">27 <small>· ذكر</small></span></div>
+        <div class="f"><span class="k">النشاط</span><span class="src">٤ أيام × ٦٠ د</span><span class="v num ltr">×1.55</span></div>
+        <div class="f"><span class="k">نسبة الدهون</span><span class="src">مش متسجلة</span><span class="btn sm">أضف</span></div>
+      </div>
+      <div class="goalseg"><div class="on">تنشيف<small class="num ltr">−0.5 kg/wk</small></div><div>ثبات<small>نفس الوزن</small></div><div>تضخيم<small class="num ltr">+0.25 kg/wk</small></div></div>
+      <p class="src" style="margin-top:14px"><i class="ti ti-info-circle"></i>المعادلة: Mifflin-St Jeor. لو سجّلت نسبة الدهون هنستخدم Katch-McArdle.</p>
+    </div>
+    <div>
+      <div class="card strong big" style="margin-bottom:12px">
+        <div><div class="l">الحرق وهو مرتاح</div><div class="v num">1,803</div></div>
+        <div><div class="l">الحرق اليومي</div><div class="v num">2,794</div></div>
+        <div class="on"><div class="l">هدفه</div><div class="v num">2,294</div></div>
+      </div>
+      <div class="card pad" style="margin-bottom:12px">
+        <div style="display:flex;align-items:center"><h2>الماكروز</h2><div class="sp"></div><span class="faint" style="font-size:12px">اسحب لتعديل النسبة</span></div>
+        <div class="macro"><span>بروتين</span><div class="bar"><i style="width:29%"></i></div><span class="v num">164g<small class="ltr">2 g/kg</small></span></div>
+        <div class="macro"><span>كارب</span><div class="bar"><i style="width:46%;background:var(--calm)"></i></div><span class="v num">266g<small>الباقي</small></span></div>
+        <div class="macro"><span>دهون</span><div class="bar"><i style="width:25%;background:var(--warn)"></i></div><span class="v num">64g<small class="ltr">25%</small></span></div>
+      </div>
+      <div class="card pad">
+        <h2>يوم تمرين ويوم راحة</h2>
+        <p class="faint" style="font-size:12px;margin-top:4px">نفس المتوسط في الأسبوع، كارب أكتر في أيام التمرين</p>
+        <div class="cycle"><div><span class="faint" style="font-size:12px">يوم تمرين · ٤ أيام</span><div class="v num">2,450</div></div><div><span class="faint" style="font-size:12px">يوم راحة · ٣ أيام</span><div class="v num">2,090</div></div></div>
+        <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap"><span class="btn pri" style="flex:1">طبّق على خطة الأكل</span><span class="btn">رقم واحد لكل الأيام</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="why"><b>أحسن إزاي</b>
+    <span>مفيش إدخال: كل رقم جاي من ملف اللاعب ومكتوب جنبه جه منين.</span>
+    <span>معامل النشاط محسوب من أيام ومدة تمرينه الحقيقية مش اختيار عشوائي.</span>
+    <span>يوم تمرين ويوم راحة بضغطة، والمتوسط الأسبوعي ثابت.</span>
+    <span>لما وزنه يتغيّر، بنقترح عليك الأرقام الجديدة ومتتغيّرش من غير موافقتك.</span>
+  </div>
+</section>
+
+<!-- ============ S4 MEAL PLAN ============ -->
+<section class="screen" id="s4" data-tab="nut">
+  <div class="phead"></div>
+  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px">
+    <div class="seg"><span class="on">الخطة</span><span>الحسبة</span><span>سجل الأكل</span></div>
+    <div class="sp"></div>
+    <span class="faint" style="font-size:12px;display:flex;gap:6px;align-items:center"><span style="width:6px;height:6px;border-radius:50%;background:var(--lime)"></span>اتحفظ</span>
+    <span class="btn pri">ابعت لأحمد</span>
+  </div>
+  <div class="card strong targets">
+    <div><div class="l"><span>سعرات</span><span class="lime">98%</span></div><div class="v num">2,251 <small>/ 2,450</small></div><div class="bar"><i style="width:92%"></i></div></div>
+    <div><div class="l"><span>بروتين</span><span class="lime">96%</span></div><div class="v num">158 <small>/ 164g</small></div><div class="bar"><i style="width:96%"></i></div></div>
+    <div><div class="l"><span>كارب</span><span class="faint">88%</span></div><div class="v num">259 <small>/ 295g</small></div><div class="bar"><i style="width:88%;background:var(--calm)"></i></div></div>
+    <div><div class="l"><span>دهون</span><span class="warn">+3g</span></div><div class="v num">67 <small>/ 64g</small></div><div class="bar"><i style="width:100%;background:var(--warn)"></i></div></div>
+  </div>
+  <div class="two">
+    <div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"><span class="chip on">يوم تمرين <span class="n">4</span></span><span class="chip">يوم راحة <span class="n">3</span></span><span class="chip"><i class="ti ti-copy"></i>انسخ من يوم التمرين</span></div>
+      <div class="card meal">
+        <div class="mh"><h3>الفطار</h3><span class="t num">7:30</span><span class="tot num">610 kcal · 42P</span></div>
+        <div class="it"><div class="thumb"><i class="ti ti-egg"></i></div><div><b style="font-weight:500">بيض مسلوق</b><div class="faint" style="font-size:11.5px">بدائل: بياض بيض · تونة</div></div><div class="qty"><i class="ti ti-minus"></i><span>3 حبات</span><i class="ti ti-plus"></i></div><div class="mm"><b>210</b> kcal · 18P</div><i class="ti ti-dots x faint"></i></div>
+        <div class="it"><div class="thumb"><i class="ti ti-bread"></i></div><div><b style="font-weight:500">عيش بلدي</b><div class="faint" style="font-size:11.5px">رغيف = 90 جم</div></div><div class="qty"><i class="ti ti-minus"></i><span>1 رغيف</span><i class="ti ti-plus"></i></div><div class="mm"><b>250</b> kcal · 8P</div><i class="ti ti-dots x faint"></i></div>
+        <div class="it"><div class="thumb"><i class="ti ti-cheese"></i></div><div><b style="font-weight:500">جبنة قريش</b><div class="faint" style="font-size:11.5px">أكلاتي</div></div><div class="qty"><i class="ti ti-minus"></i><span>150 g</span><i class="ti ti-plus"></i></div><div class="mm"><b>150</b> kcal · 16P</div><i class="ti ti-dots x faint"></i></div>
+        <div class="add"><i class="ti ti-plus"></i>أضف أكلة</div>
+      </div>
+      <div class="card meal">
+        <div class="mh"><h3>قبل التمرين</h3><span class="t num">5:00</span><span class="tot num">380 kcal · 22P</span></div>
+        <div class="it"><div class="thumb"><i class="ti ti-salad"></i></div><div><b style="font-weight:500">شوفان</b></div><div class="qty"><i class="ti ti-minus"></i><span>60 g</span><i class="ti ti-plus"></i></div><div class="mm"><b>230</b> kcal · 8P</div><i class="ti ti-dots x faint"></i></div>
+        <div class="it" style="background:var(--bad-soft)"><div class="thumb"><i class="ti ti-alert-triangle bad"></i></div><div><b style="font-weight:500">زبدة فول سوداني</b><div class="bad" style="font-size:11.5px">أحمد عنده حساسية من الفول السوداني</div></div><div class="qty"><i class="ti ti-minus"></i><span>15 g</span><i class="ti ti-plus"></i></div><div class="mm"><b>90</b> kcal · 4P</div><i class="ti ti-dots x faint"></i></div>
+        <div class="add" style="border-style:solid;color:var(--ink)"><i class="ti ti-search"></i>لبن<span class="sp"></span><span class="faint" style="font-size:11px">اكتب اسم الأكلة</span></div>
+        <div class="drop">
+          <div class="o"><div class="thumb"><i class="ti ti-milk"></i></div><span style="flex:1">لبن خالي الدسم</span><span class="mm">34 kcal / 100g</span></div>
+          <div class="o"><div class="thumb"><i class="ti ti-milk"></i></div><span style="flex:1">لبن رايب</span><span class="tag l">أكلاتي</span><span class="mm">62 / 100g</span></div>
+          <div class="o lime"><i class="ti ti-plus"></i>مش لاقيها؟ أضف «لبن» لأكلاتك</div>
+        </div>
+      </div>
+      <div class="card meal">
+        <div class="mh"><h3>الغدا</h3><span class="t num">2:00</span><span class="tot num">780 kcal · 58P</span><i class="ti ti-chevron-down faint"></i></div>
+      </div>
+      <div class="card meal">
+        <div class="mh"><h3>العشا</h3><span class="t num">10:00</span><span class="tot num">481 kcal · 36P</span><i class="ti ti-chevron-down faint"></i></div>
+      </div>
+      <span class="btn" style="width:100%;border-style:dashed"><i class="ti ti-plus"></i>وجبة جديدة</span>
+    </div>
+    <div class="card pad alerts" style="position:sticky;top:70px">
+      <h2 style="margin-bottom:12px">ملاحظات ذكية</h2>
+      <div class="a" style="background:var(--bad-soft);color:var(--bad)"><i class="ti ti-alert-triangle"></i><span>زبدة الفول السوداني ضد حساسيته. <u>بدّلها بزبدة لوز</u></span></div>
+      <div class="a" style="background:var(--warn-soft);color:var(--warn)"><i class="ti ti-scale"></i><span>ناقصه <span class="num">36g</span> كارب في يوم التمرين. <u>زوّد الشوفان لـ ٩٠ جم</u></span></div>
+      <div class="a" style="background:var(--glass2);color:var(--muted)"><i class="ti ti-clock"></i><span>آخر وجبة قبل النوم بساعة، زي ما طلب في بيانات البداية.</span></div>
+      <div style="border-top:1px solid var(--hair);margin-top:12px;padding-top:12px">
+        <div class="faint" style="font-size:12px;margin-bottom:8px">التزامه آخر ٧ أيام</div>
+        <div style="display:flex;gap:6px">
+          <span class="tag l" style="flex:1;justify-content:center">س</span><span class="tag l" style="flex:1;justify-content:center">ح</span><span class="tag l" style="flex:1;justify-content:center">ن</span><span class="tag w" style="flex:1;justify-content:center">ث</span><span class="tag l" style="flex:1;justify-content:center">ر</span><span class="tag l" style="flex:1;justify-content:center">خ</span><span class="tag" style="flex:1;justify-content:center">ج</span>
+        </div>
+      </div>
+      <span class="btn sm" style="width:100%;margin-top:14px"><i class="ti ti-template"></i>احفظها كقالب</span>
+    </div>
+  </div>
+  <div class="why"><b>أحسن إزاي</b>
+    <span>شريط الأهداف ثابت فوق ويتحدّث مع كل جرام، بالألوان: أخضر مظبوط، أصفر زيادة.</span>
+    <span>الحساسية والإصابات من ملف اللاعب بتتعلّم على الأكلة نفسها مع بديل جاهز.</span>
+    <span>الكميات بوحدات البيت (رغيف، حباية، كوباية) مش جرامات بس.</span>
+    <span>تدوّر وتضيف أكلة جديدة من جوه الوجبة، من غير ما تروح المكتبة.</span>
+  </div>
+</section>
+
+<!-- ============ S5 FOODS LIBRARY ============ -->
+<section class="screen" id="s5">
+  <div class="head">
+    <div><div class="eyebrow"><span>المكتبة</span><i class="ti ti-chevron-left"></i><span>الأكلات</span></div><h1>الأكلات</h1></div>
+    <div class="sp"></div>
+    <div class="search"><i class="ti ti-search"></i>دوّر بالعربي أو English</div>
+    <span class="btn pri"><i class="ti ti-plus"></i>أكلة جديدة</span>
+  </div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;align-items:center">
+    <div class="seg"><span class="on">الكل <span class="num">1,264</span></span><span>أكلاتي <span class="num">24</span></span><span>العامة</span></div>
+    <div class="chips"><span class="chip">بروتين</span><span class="chip">كارب</span><span class="chip">دهون</span><span class="chip">خضار وفاكهة</span><span class="chip">ألبان</span><span class="chip">أكل مصري</span><span class="chip">مكملات</span></div>
+  </div>
+  <div class="two">
+    <div class="card rows foods">
+      <div class="r hd"><span>الأكلة</span><span>سعرات</span><span>P</span><span>C</span><span>F</span><span>الوحدات</span><span>في خطط</span></div>
+      <div class="r"><div class="who"><div class="thumb"><i class="ti ti-bread"></i></div><div><b>عيش بلدي</b><small>Baladi bread · لكل 100 جم</small></div></div><span class="num">278</span><span class="num">9</span><span class="num">55</span><span class="num">1.2</span><div class="chips"><span class="tag">رغيف 90g</span><span class="tag">نص رغيف</span></div><span class="num faint">18</span></div>
+      <div class="r"><div class="who"><div class="thumb"><i class="ti ti-bowl"></i></div><div><b>فول مدمس</b><small>Foul medames</small></div></div><span class="num">110</span><span class="num">7.6</span><span class="num">15</span><span class="num">2.5</span><div class="chips"><span class="tag">طبق 200g</span></div><span class="num faint">11</span></div>
+      <div class="r" style="background:var(--glass2)"><div class="who"><div class="thumb"><i class="ti ti-cheese"></i></div><div><b>جبنة قريش <span class="tag l">أكلاتي</span></b><small>Cottage cheese</small></div></div><span class="num">98</span><span class="num">11</span><span class="num">3.4</span><span class="num">4.3</span><div class="chips"><span class="tag">علبة 250g</span></div><span class="num faint">9</span></div>
+      <div class="r"><div class="who"><div class="thumb"><i class="ti ti-meat"></i></div><div><b>صدور فراخ مشوية</b><small>Chicken breast</small></div></div><span class="num">165</span><span class="num">31</span><span class="num">0</span><span class="num">3.6</span><div class="chips"><span class="tag">صدر 150g</span></div><span class="num faint">27</span></div>
+      <div class="r"><div class="who"><div class="thumb"><i class="ti ti-bowl"></i></div><div><b>كشري</b><small>Koshary</small></div></div><span class="num">170</span><span class="num">5.5</span><span class="num">31</span><span class="num">3</span><div class="chips"><span class="tag">طبق وسط 350g</span></div><span class="num faint">2</span></div>
+      <div class="r"><div class="who"><div class="thumb"><i class="ti ti-egg"></i></div><div><b>بيض</b><small>Egg, whole</small></div></div><span class="num">143</span><span class="num">13</span><span class="num">0.7</span><span class="num">9.5</span><div class="chips"><span class="tag">حباية 50g</span></div><span class="num faint">22</span></div>
+    </div>
+    <div class="card pad form">
+      <div style="display:flex;align-items:center;margin-bottom:14px"><h2>جبنة قريش</h2><div class="sp"></div><span class="tag l">أكلاتي</span></div>
+      <div class="fl"><label>الاسم</label><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div class="fi">جبنة قريش</div><div class="fi" dir="ltr">Cottage cheese</div></div></div>
+      <div class="fl"><label>لكل 100 جم</label><div class="grid4"><div class="fi"><small>سعرات</small><b>98</b></div><div class="fi"><small>بروتين</small><b>11</b></div><div class="fi"><small>كارب</small><b>3.4</b></div><div class="fi"><small>دهون</small><b>4.3</b></div></div>
+        <p class="src" style="margin-top:8px;color:var(--lime)"><i class="ti ti-circle-check"></i>السعرات متطابقة مع الماكروز</p></div>
+      <div class="fl"><label>وحدات البيت</label><div class="chips"><span class="tag">علبة = 250g</span><span class="tag">معلقة كبيرة = 30g</span><span class="chip" style="min-height:30px"><i class="ti ti-plus"></i>وحدة</span></div></div>
+      <div class="fl"><label>بدائل مقترحة</label><div class="chips"><span class="tag">زبادي يوناني</span><span class="tag">جبنة لايت</span></div></div>
+      <div class="fl"><label>صورة</label><div class="fi" style="border-style:dashed;justify-content:center;color:var(--faint);min-height:72px"><i class="ti ti-photo-plus"></i>&nbsp;ارفع صورة</div></div>
+      <div style="display:flex;gap:8px"><span class="btn pri" style="flex:1">احفظ</span><span class="btn">ألغي</span></div>
+    </div>
+  </div>
+  <div class="why"><b>أحسن إزاي</b>
+    <span>أكل مصري جاهز بأسماء عربي وإنجليزي، والبحث شغال باللغتين.</span>
+    <span>وحدات البيت (رغيف، طبق، حباية) مع كل أكلة، واللاعب بيفهمها.</span>
+    <span>بنراجع السعرات مع الماكروز ونحذّرك لو الرقم غلط.</span>
+    <span>بتشوف كل أكلة مستخدمة في كام خطة قبل ما تعدّلها.</span>
+  </div>
+</section>
+
+<!-- ============ S6 FORMS LIBRARY ============ -->
+<section class="screen" id="s6">
+  <div class="head">
+    <div><div class="eyebrow"><span>المكتبة</span><i class="ti ti-chevron-left"></i><span>الفورمز</span></div><h1>الفورمز</h1></div>
+    <div class="sp"></div>
+    <span class="btn pri"><i class="ti ti-plus"></i>فورم جديد</span>
+  </div>
+  <div class="kpis">
+    <div class="card kpi"><div class="l">فورمز شغالة</div><div class="v num">5</div><div class="d faint">٢ منهم تلقائي</div></div>
+    <div class="card kpi"><div class="l">اتبعت الشهر ده</div><div class="v num">86</div><div class="d faint">لـ ٣٢ لاعب</div></div>
+    <div class="card kpi strong"><div class="l">نسبة الرد</div><div class="v num lime">91%</div><div class="d lime">+4% عن الشهر اللي فات</div></div>
+    <div class="card kpi"><div class="l">متوسط وقت الرد</div><div class="v num">9<small>ساعات</small></div><div class="d faint">من اللاعب</div></div>
+  </div>
+  <div class="two rev">
+    <div class="tpl">
+      <div class="card tp on"><h3>Check-in أسبوعي</h3><p class="faint" style="font-size:12px;margin-top:4px">تلقائي · كل جمعة</p><div class="m"><span><b>8</b>أسئلة</span><span><b>32</b>لاعب</span><span><b class="lime">94%</b>رد</span></div></div>
+      <div class="card tp"><h3>بيانات البداية</h3><p class="faint" style="font-size:12px;margin-top:4px">أول ما اللاعب يشترك</p><div class="m"><span><b>14</b>أسئلة</span><span><b>32</b>لاعب</span><span><b>100%</b>رد</span></div></div>
+      <div class="card tp"><h3>متابعة شهرية بالصور</h3><p class="faint" style="font-size:12px;margin-top:4px">تلقائي · أول كل شهر</p><div class="m"><span><b>5</b>أسئلة</span><span><b>28</b>لاعب</span><span><b class="warn">71%</b>رد</span></div></div>
+      <div class="card tp"><h3>تقرير إصابة</h3><p class="faint" style="font-size:12px;margin-top:4px">بالطلب</p><div class="m"><span><b>6</b>أسئلة</span><span><b>3</b>مرات</span><span><b>100%</b>رد</span></div></div>
+      <div class="card tp"><h3>تحديث البيانات</h3><p class="faint" style="font-size:12px;margin-top:4px">بالطلب</p><div class="m"><span><b>7</b>أسئلة</span><span><b>9</b>مرات</span><span><b>89%</b>رد</span></div></div>
+      <div class="card tp" style="border-style:dashed;display:grid;place-items:center;color:var(--faint)"><span><i class="ti ti-plus"></i> ابدأ من قالب جاهز</span></div>
+    </div>
+    <div class="card pad">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><h2>Check-in أسبوعي</h2><div class="sp"></div><span class="faint" style="font-size:12px">اتحفظ</span><span class="btn sm"><i class="ti ti-eye"></i>شوفه زي اللاعب</span></div>
+      <div class="qq"><i class="ti ti-grip-vertical g"></i><div class="ty"><i class="ti ti-scale"></i></div><div class="t">وزنك الصبح؟<small>رقم · kg · إجباري</small></div><span class="tag l"><i class="ti ti-arrow-back-up"></i>ملف اللاعب: الوزن</span></div>
+      <div class="qq"><i class="ti ti-grip-vertical g"></i><div class="ty"><i class="ti ti-ruler-measure"></i></div><div class="t">مقاس الوسط؟<small>رقم · cm</small></div><span class="tag l"><i class="ti ti-arrow-back-up"></i>ملف اللاعب: الوسط</span></div>
+      <div class="qq"><i class="ti ti-grip-vertical g"></i><div class="ty"><i class="ti ti-adjustments"></i></div><div class="t">نومك كان عامل إزاي؟<small>مقياس من ١ لـ ١٠</small></div><span class="tag">رسم بياني</span></div>
+      <div class="qq"><i class="ti ti-grip-vertical g"></i><div class="ty"><i class="ti ti-list-check"></i></div><div class="t">التزمت بالأكل كام يوم؟<small>اختيار من ٠ لـ ٧</small></div><span class="tag">رسم بياني</span></div>
+      <div class="qq"><i class="ti ti-grip-vertical g"></i><div class="ty"><i class="ti ti-first-aid-kit"></i></div><div class="t">فيه ألم أو إصابة؟<small>اختيار + نص لو «أيوه»</small></div><span class="tag b"><i class="ti ti-bell"></i>ينبّهك</span></div>
+      <div class="qq"><i class="ti ti-grip-vertical g"></i><div class="ty"><i class="ti ti-camera"></i></div><div class="t">صور التقدم<small>٣ صور · قدام، جنب، ضهر</small></div><span class="tag">معرض الصور</span></div>
+      <div class="add" style="margin:12px 0 0"><i class="ti ti-plus"></i>سؤال جديد · أو اختار من الأسئلة الجاهزة</div>
+      <div class="sched"><i class="ti ti-calendar-repeat lime"></i><span style="flex:1">بيتبعت <b>كل جمعة ٩ الصبح</b> · تذكير بعد <b>٢٤ ساعة</b></span><span class="btn sm">غيّر</span></div>
+    </div>
+  </div>
+  <div class="why"><b>أحسن إزاي</b>
+    <span>كل سؤال بيقولك إجابته رايحة فين: ملف اللاعب، رسم بياني، أو تنبيه ليك.</span>
+    <span>الفورمز التلقائية بتتبعت لوحدها وبتفكّر اللاعب لوحدها.</span>
+    <span>كل فورم معاه نسبة الرد، فتعرف أنهي فورم اللاعبين بيتهربوا منه.</span>
+    <span>«شوفه زي اللاعب» قبل ما تبعته.</span>
+  </div>
+</section>
+
+<!-- ============ S7 TODAY ============ -->
+<section class="screen" id="s7">
+  <div class="head">
+    <div><div class="eyebrow">الأربع ١١ نوفمبر</div><h1>صباح الخير يا كابتن محمود</h1></div>
+    <div class="sp"></div>
+    <div class="search"><i class="ti ti-search"></i>افتح لاعب بسرعة</div>
+  </div>
+  <div class="kpis">
+    <div class="card kpi strong"><div class="l">مستنيين ردك</div><div class="v num lime">9</div><div class="d faint">٧ طلبات · ٢ لاعبين جداد</div></div>
+    <div class="card kpi"><div class="l">لاعبين نشطين</div><div class="v num">32<small>من 40</small></div><div class="d faint">باقة LEGEND</div></div>
+    <div class="card kpi"><div class="l">التزام الأسبوع</div><div class="v num">84%</div><div class="d lime">+6% عن اللي فات</div></div>
+    <div class="card kpi"><div class="l">فلوس الشهر ده</div><div class="v num">18,400<small>ج</small></div><div class="d warn">٣ متأخرين في الدفع</div></div>
+  </div>
+  <div class="two">
+    <div class="card">
+      <div class="pad" style="padding-bottom:6px;display:flex;align-items:center"><h2>اعمل دول النهارده</h2><div class="sp"></div><span class="faint" style="font-size:12px">مترتبين حسب الأهمية</span></div>
+      <div class="task"><div class="ti-ic" style="background:var(--bad-soft);color:var(--bad)"><i class="ti ti-first-aid-kit"></i></div><div class="tx"><b style="font-weight:500">أحمد سامي اشتكى من ركبته</b><small>٣ تمارين في خطته بتضغط على الركبة</small></div><span class="btn sm pri">عدّل الخطة</span></div>
+      <div class="task"><div class="ti-ic w"><i class="ti ti-clock"></i></div><div class="tx"><b style="font-weight:500">٣ check-ins مستنيين أكتر من يوم</b><small>مريم · يوسف · نور</small></div><span class="btn sm">راجِعهم</span></div>
+      <div class="task"><div class="ti-ic l"><i class="ti ti-user-plus"></i></div><div class="tx"><b style="font-weight:500">٢ لاعبين عايزين يشتركوا معاك</b><small>جم من صفحتك العامة</small></div><span class="btn sm">شوفهم</span></div>
+      <div class="task"><div class="ti-ic w"><i class="ti ti-calendar-due"></i></div><div class="tx"><b style="font-weight:500">خطة سارة بتخلص بعد ٤ أيام</b><small>نزلت ٦.٤ كجم · التزام ٩١٪</small></div><span class="btn sm">جدّد</span></div>
+      <div class="task"><div class="ti-ic"><i class="ti ti-moon"></i></div><div class="tx"><b style="font-weight:500">كريم مسجّلش أي حاجة من ٣ أيام</b><small>آخر تمرين السبت</small></div><span class="btn sm">فكّره</span></div>
+      <div class="task"><div class="ti-ic"><i class="ti ti-cash"></i></div><div class="tx"><b style="font-weight:500">٣ اشتراكات متأخرة</b><small>إجمالي ٢,٤٠٠ ج</small></div><span class="btn sm">حصّل</span></div>
+    </div>
+    <div>
+      <div class="card pad" style="margin-bottom:12px">
+        <h2>تمارين النهارده</h2>
+        <p class="faint" style="font-size:12px;margin-top:4px">١٨ لاعب عندهم تمرين · ١١ خلّصوا</p>
+        <div class="bar" style="margin:14px 0 10px;height:8px"><i style="width:61%"></i></div>
+        <div style="display:flex;gap:-6px;margin-top:12px">
+          <div class="av">مع</div><div class="av" style="margin-inline-start:-10px">يح</div><div class="av" style="margin-inline-start:-10px">سن</div><div class="av" style="margin-inline-start:-10px">نر</div><div class="av" style="margin-inline-start:-10px;font-family:Manrope">+7</div>
+        </div>
+      </div>
+      <div class="card pad">
+        <h2>أحسن الأسبوع</h2>
+        <div class="task" style="padding-inline:0"><div class="av">سن</div><div class="tx"><b style="font-weight:500">سارة نبيل</b><small>٧ من ٧ أيام</small></div><span class="tag l"><i class="ti ti-flame"></i>٢١ يوم</span></div>
+        <div class="task" style="padding-inline:0"><div class="av">مع</div><div class="tx"><b style="font-weight:500">مريم عادل</b><small>رقم قياسي في الديدلفت</small></div><span class="tag c num ltr">90 kg</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="why"><b>أحسن إزاي</b>
+    <span>بدل أرقام كتير، قايمة «اعمل دول النهارده» مترتبة، وكل سطر قدامه الزرار اللي يحلّه.</span>
+    <span>بتجمع التمرين والأكل والفورمز والفلوس في مكان واحد.</span>
+    <span>بتشوف اللاعب اللي اختفى قبل ما يلغي اشتراكه.</span>
+    <span>بتحتفل بالإنجازات عشان تشجّع اللاعبين.</span>
+  </div>
+</section>
+
+<!-- ============ S8 ROSTER ============ -->
+<section class="screen" id="s8">
+  <div class="head">
+    <div><div class="eyebrow">٣٢ لاعب نشط من ٤٠ في باقتك</div><h1>اللاعبين</h1></div>
+    <div class="sp"></div>
+    <div class="search"><i class="ti ti-search"></i>دوّر باسم أو رقم</div>
+    <span class="btn pri"><i class="ti ti-link"></i>ادعي لاعب</span>
+  </div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;align-items:center">
+    <div class="chips">
+      <span class="chip on">الكل <span class="n">32</span></span>
+      <span class="chip">محتاج اهتمام <span class="n">5</span></span>
+      <span class="chip">من غير خطة <span class="n">2</span></span>
+      <span class="chip">خطته بتخلص <span class="n">3</span></span>
+      <span class="chip">متأخر في الدفع <span class="n">3</span></span>
+    </div>
+    <div class="sp"></div>
+    <div class="seg"><span class="on">الأهم الأول</span><span>الاسم</span><span>الأحدث</span></div>
+  </div>
+  <div class="card rows roster">
+    <div class="r hd"><span>اللاعب</span><span>الحالة</span><span>الالتزام</span><span>الوزن</span><span>الخطة</span><span>الدفع</span></div>
+    <div class="r"><div class="who"><div class="av">أس</div><div><b>أحمد سامي</b><small>تنشيف · ٤ أيام</small></div></div><div><span class="tag b"><i class="ti ti-first-aid-kit"></i>إصابة جديدة</span></div><div class="spark"><i style="height:60%"></i><i style="height:80%"></i><i style="height:70%"></i><i style="height:90%"></i><i style="height:85%"></i></div><span class="num ltr">82 → 76</span><span class="faint">أسبوع ٦ من ١٢</span><span class="pill lime">مدفوع</span></div>
+    <div class="r"><div class="who"><div class="av">كم</div><div><b>كريم مصطفى</b><small>تضخيم · ٣ أيام</small></div></div><div><span class="tag w"><i class="ti ti-moon"></i>غايب ٣ أيام</span></div><div class="spark"><i style="height:90%"></i><i style="height:70%"></i><i style="height:40%"></i><i style="height:15%;background:var(--warn)"></i><i style="height:10%;background:var(--warn)"></i></div><span class="num ltr">68 → 74</span><span class="faint">أسبوع ٢ من ١٢</span><span class="pill warn">متأخر ٥ أيام</span></div>
+    <div class="r"><div class="who"><div class="av">سن</div><div><b>سارة نبيل</b><small>تنشيف · ٥ أيام</small></div></div><div><span class="tag w"><i class="ti ti-calendar-due"></i>الخطة بتخلص</span></div><div class="spark"><i style="height:95%"></i><i style="height:100%"></i><i style="height:90%"></i><i style="height:100%"></i><i style="height:95%"></i></div><span class="num ltr">71 → 64.6</span><span class="faint">أسبوع ١٢ من ١٢</span><span class="pill lime">مدفوع</span></div>
+    <div class="r"><div class="who"><div class="av">مع</div><div><b>مريم عادل</b><small>ثبات · ٤ أيام</small></div></div><div><span class="tag l">ماشية تمام</span></div><div class="spark"><i style="height:80%"></i><i style="height:85%"></i><i style="height:90%"></i><i style="height:80%"></i><i style="height:88%"></i></div><span class="num ltr">60</span><span class="faint">أسبوع ١١</span><span class="pill lime">مدفوع</span></div>
+    <div class="r"><div class="who"><div class="av">نر</div><div><b>نور خالد</b><small>لسه مشترك</small></div></div><div><span class="tag c"><i class="ti ti-clipboard"></i>محتاج خطة</span></div><div class="faint">—</div><span class="num ltr">77 → 70</span><span><span class="btn sm">اعمل خطة</span></span><span class="pill lime">مدفوع</span></div>
+  </div>
+  <div class="why"><b>أحسن إزاي</b>
+    <span>الترتيب الافتراضي «الأهم الأول»: الإصابة والغياب والخطة اللي بتخلص فوق.</span>
+    <span>عمود الحالة بيقول المشكلة بكلمتين، مش محتاج تفتح كل لاعب.</span>
+    <span>الالتزام آخر ٥ أسابيع في رسم صغير.</span>
+    <span>الدفع في نفس السطر، فمش محتاج تروح صفحة تانية.</span>
+  </div>
+</section>
+
+<!-- ============ S9 PLAYER OVERVIEW ============ -->
+<section class="screen" id="s9" data-tab="ov">
+  <div class="phead"></div>
+  <div class="kpis">
+    <div class="card kpi strong"><div class="l">نزل لحد دلوقتي</div><div class="v num lime ltr">−4.4<small>kg</small></div><div class="d faint">فاضل ٦ كجم للهدف</div></div>
+    <div class="card kpi"><div class="l">التزام التمرين</div><div class="v num">92%</div><div class="d faint">٢٢ من ٢٤ تمرين</div></div>
+    <div class="card kpi"><div class="l">التزام الأكل</div><div class="v num">81%</div><div class="d warn">الخميس أضعف يوم</div></div>
+    <div class="card kpi"><div class="l">الاشتراك</div><div class="v num">27<small>يوم فاضل</small></div><div class="d faint">باقة ٣ شهور</div></div>
+  </div>
+  <div class="two">
+    <div class="card pad">
+      <div style="display:flex;align-items:center"><h2>الوزن</h2><div class="sp"></div><div class="seg"><span>شهر</span><span class="on">الخطة كلها</span></div></div>
+      <div class="chart"><svg viewBox="0 0 600 150" preserveAspectRatio="none"><line x1="0" y1="130" x2="600" y2="130" stroke="rgb(242 242 238/.07)"/><line x1="0" y1="20" x2="600" y2="140" stroke="rgb(242 242 238/.18)" stroke-dasharray="4 6"/><polyline fill="none" stroke="#b6e94f" stroke-width="3" points="0,22 100,35 200,52 300,58 400,74 500,86"/><circle cx="500" cy="86" r="6" fill="#b6e94f"/></svg></div>
+      <div style="display:flex;gap:16px;font-size:12px;margin-top:8px" class="faint"><span class="pill lime">وزنه الفعلي</span><span class="pill">المتوقع حسب الخطة</span><span class="sp"></span><span class="lime">ماشي أسرع من المتوقع</span></div>
+    </div>
+    <div class="card pad">
+      <h2 style="margin-bottom:6px">آخر حاجات</h2>
+      <div class="task" style="padding-inline:0"><div class="ti-ic" style="background:var(--bad-soft);color:var(--bad)"><i class="ti ti-first-aid-kit"></i></div><div class="tx">وجع في الركبة الشمال<small>Check-in · امبارح</small></div></div>
+      <div class="task" style="padding-inline:0"><div class="ti-ic l"><i class="ti ti-trophy"></i></div><div class="tx">رقم جديد: بنش <span class="num ltr">80 kg</span><small>تمرين الاتنين</small></div></div>
+      <div class="task" style="padding-inline:0"><div class="ti-ic"><i class="ti ti-video"></i></div><div class="tx">بعت فيديو سكوات<small>اتراجع · ٣ نوفمبر</small></div></div>
+      <div class="task" style="padding-inline:0"><div class="ti-ic"><i class="ti ti-camera"></i></div><div class="tx">صور الشهر<small>١ نوفمبر · <u>قارن بالبداية</u></small></div></div>
+    </div>
+  </div>
+  <div class="why"><b>أحسن إزاي</b>
+    <span>أول ما تفتح اللاعب تعرف «هو ماشي إزاي» في ٤ أرقام.</span>
+    <span>الوزن الفعلي جنب المتوقع، فتعرف لوحدك إذا كانت الخطة شغالة ولا محتاجة تعديل.</span>
+    <span>«آخر حاجات» بتجمع الفورمز والأرقام القياسية والفيديوهات في خط واحد.</span>
+    <span>التابات فوق هي نفس التابات في كل شاشات اللاعب.</span>
+  </div>
+</section>
+
+<!-- ============ S10 JOIN REQUESTS ============ -->
+<section class="screen" id="s10">
+  <div class="head">
+    <div><div class="eyebrow"><span>الطلبات</span><i class="ti ti-chevron-left"></i><span>لاعبين جداد</span></div><h1>عايزين يشتركوا معاك</h1></div>
+    <div class="sp"></div>
+    <span class="btn"><i class="ti ti-copy"></i>انسخ لينك صفحتك</span>
+  </div>
+  <div class="grid3">
+    <div class="card req">
+      <div class="who"><div class="av">نس</div><div><b>نادين سمير</b><small>من ساعتين · من صفحتك العامة</small></div></div>
+      <div class="facts"><span class="tag num">24 سنة</span><span class="tag"><span class="ltr num">165 cm · 68 kg</span></span><span class="tag">تنشيف</span><span class="tag">٣ أيام · ٤٥ د</span></div>
+      <p class="muted" style="font-size:12.5px;line-height:1.8">«عايزة أنزل ٦ كيلو قبل الفرح، ومعنديش وقت كتير»</p>
+      <div style="display:flex;gap:8px;margin-top:14px"><span class="btn pri" style="flex:1">اقبلها</span><span class="btn">اعتذر</span></div>
+      <p class="src" style="margin-top:10px"><i class="ti ti-info-circle"></i>هيبقى عندك ٣٣ من ٤٠</p>
+    </div>
+    <div class="card req">
+      <div class="who"><div class="av">عط</div><div><b>عمر طارق</b><small>امبارح · لينك دعوة</small></div></div>
+      <div class="facts"><span class="tag num">31 سنة</span><span class="tag"><span class="ltr num">182 cm · 95 kg</span></span><span class="tag">تنشيف</span><span class="tag b">ضهر</span></div>
+      <p class="muted" style="font-size:12.5px;line-height:1.8">«عندي انزلاق غضروفي خفيف»</p>
+      <div style="display:flex;gap:8px;margin-top:14px"><span class="btn pri" style="flex:1">اقبله</span><span class="btn">اعتذر</span></div>
+      <p class="src" style="margin-top:10px;color:var(--warn)"><i class="ti ti-alert-triangle"></i>عنده إصابة، هنفلتر التمارين لوحده</p>
+    </div>
+    <div class="card req" style="border-style:dashed;display:grid;place-items:center;text-align:center;color:var(--faint)">
+      <div><i class="ti ti-qrcode" style="font-size:40px"></i><p style="margin-top:10px;font-size:13px">شارك صفحتك أو الـ QR<br>واللاعبين يجولك هنا</p></div>
+    </div>
+  </div>
+  <div class="why"><b>أحسن إزاي</b>
+    <span>قبل ما تقبل بتشوف بياناته وهدفه وإصاباته.</span>
+    <span>بيقولك هيفضل عندك كام مكان في باقتك.</span>
+    <span>لو اللاعب عنده كابتن تاني، بيشوف رسالة واضحة ومش بيوصلك طلب (T-165).</span>
+    <span>القبول بيفتح ملف اللاعب على طول عشان تعمله الخطة.</span>
+  </div>
+</section>
+
+<!-- ============ S11 PAYMENTS ============ -->
+<section class="screen" id="s11">
+  <div class="head">
+    <div><div class="eyebrow">فلوس لاعبينك · نوفمبر</div><h1>المدفوعات</h1></div>
+    <div class="sp"></div>
+    <span class="btn pri"><i class="ti ti-cash"></i>سجّل دفعة</span>
+  </div>
+  <div class="kpis">
+    <div class="card kpi strong"><div class="l">اتحصّل الشهر ده</div><div class="v num lime">18,400<small>ج</small></div><div class="d faint">من ٢٠,٨٠٠ متوقع</div></div>
+    <div class="card kpi"><div class="l">متأخر</div><div class="v num warn">2,400<small>ج</small></div><div class="d faint">٣ لاعبين</div></div>
+    <div class="card kpi"><div class="l">بيجدّدوا الأسبوع ده</div><div class="v num">4</div><div class="d faint">٣,٢٠٠ ج</div></div>
+    <div class="card kpi"><div class="l">نسبة التجديد</div><div class="v num">88%</div><div class="d lime">+5% عن الربع اللي فات</div></div>
+  </div>
+  <div class="two">
+    <div class="card rows pay">
+      <div class="r hd"><span>اللاعب</span><span>الباقة</span><span>المبلغ</span><span>بيخلص</span><span></span></div>
+      <div class="r"><div class="who"><div class="av">كم</div><div><b>كريم مصطفى</b><small class="warn">متأخر ٥ أيام</small></div></div><span>شهري</span><span class="num">800 ج</span><span class="faint">٦ نوفمبر</span><span class="btn sm pri">حصّل</span></div>
+      <div class="r"><div class="who"><div class="av">هع</div><div><b>هنا علي</b><small class="warn">متأخرة يومين</small></div></div><span>شهري</span><span class="num">800 ج</span><span class="faint">٩ نوفمبر</span><span class="btn sm">حصّل</span></div>
+      <div class="r"><div class="who"><div class="av">سن</div><div><b>سارة نبيل</b><small>بتخلص بعد ٤ أيام</small></div></div><span>٣ شهور</span><span class="num">2,100 ج</span><span class="faint">١٥ نوفمبر</span><span class="btn sm">جدّد</span></div>
+      <div class="r"><div class="who"><div class="av">أس</div><div><b>أحمد سامي</b><small>مدفوع</small></div></div><span>٣ شهور</span><span class="num">2,100 ج</span><span class="faint">٨ ديسمبر</span><span class="pill lime">تمام</span></div>
+    </div>
+    <div>
+      <div class="card pad" style="margin-bottom:12px">
+        <h2>باقاتك للاعبين</h2>
+        <div class="task" style="padding-inline:0"><div class="tx">شهري<small>١٨ لاعب</small></div><span class="num">800 ج</span></div>
+        <div class="task" style="padding-inline:0"><div class="tx">٣ شهور<small>١٢ لاعب · وفّر ١٢٪</small></div><span class="num">2,100 ج</span></div>
+        <div class="task" style="padding-inline:0"><div class="tx">٦ شهور<small>٢ لاعب</small></div><span class="num">3,900 ج</span></div>
+        <span class="btn sm" style="width:100%;margin-top:8px"><i class="ti ti-plus"></i>باقة جديدة</span>
+      </div>
+      <div class="card pad">
+        <div style="display:flex;align-items:center;gap:8px"><h2>اشتراكك في KOCHIVO</h2><div class="sp"></div><span class="tag l">LEGEND</span></div>
+        <div class="bar" style="margin:14px 0 8px;height:8px"><i style="width:80%"></i></div>
+        <p class="faint" style="font-size:12px">٣٢ من ٤٠ لاعب · بيتجدد ١ ديسمبر</p>
+      </div>
+    </div>
+  </div>
+  <div class="why"><b>أحسن إزاي</b>
+    <span>المتأخر فوق، وجنبه زرار «حصّل» اللي بيبعت تذكير للاعب.</span>
+    <span>بتشوف المتوقع والمتحصّل ونسبة التجديد، يعني فلوس البيزنس كله.</span>
+    <span>باقاتك للاعبين واشتراكك في KOCHIVO في نفس الصفحة.</span>
+    <span>اللاعب المتأخر بيتعلّم كمان في صفحة اللاعبين والنهارده.</span>
+  </div>
+</section>
+
+<!-- ============ S12 PLANS & EXERCISES ============ -->
+<section class="screen" id="s12">
+  <div class="head">
+    <div><div class="eyebrow"><span>المكتبة</span><i class="ti ti-chevron-left"></i><span>الخطط والتمارين</span></div><h1>قوالب الخطط</h1></div>
+    <div class="sp"></div>
+    <div class="seg"><span class="on">قوالب الخطط</span><span>التمارين <span class="num">1,320</span></span></div>
+    <span class="btn pri"><i class="ti ti-plus"></i>قالب جديد</span>
+  </div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px"><div class="chips"><span class="chip on">الكل</span><span class="chip">تنشيف</span><span class="chip">تضخيم</span><span class="chip">مبتدئ</span><span class="chip">٣ أيام</span><span class="chip">٤ أيام</span><span class="chip">٥ أيام</span><span class="chip">من غير جيم</span></div></div>
+  <div class="grid3">
+    <div class="card plan-c"><div style="display:flex;align-items:center;gap:8px"><h3>Upper / Lower</h3><div class="sp"></div><span class="tag l">الأكتر استخدام</span></div><p class="faint" style="font-size:12px">٤ أيام · ٦٠ دقيقة · متوسط</p><div class="days" style="display:flex;gap:4px"><span class="tag l">س</span><span class="tag l">ح</span><span class="tag">ن</span><span class="tag l">ث</span><span class="tag l">ر</span><span class="tag">خ</span><span class="tag">ج</span></div><div class="meta"><span>١٤ لاعب</span><span>التزام ٨٨٪</span><span>متوسط نزول <span class="num ltr">0.6 kg/wk</span></span></div><span class="btn sm">طبّقه على لاعب</span></div>
+    <div class="card plan-c"><div style="display:flex;align-items:center;gap:8px"><h3>Full body للمبتدئين</h3></div><p class="faint" style="font-size:12px">٣ أيام · ٤٥ دقيقة · مبتدئ</p><div style="display:flex;gap:4px"><span class="tag l">س</span><span class="tag">ح</span><span class="tag l">ن</span><span class="tag">ث</span><span class="tag l">ر</span><span class="tag">خ</span><span class="tag">ج</span></div><div class="meta"><span>٨ لاعبين</span><span>التزام ٩١٪</span></div><span class="btn sm">طبّقه على لاعب</span></div>
+    <div class="card plan-c"><div style="display:flex;align-items:center;gap:8px"><h3>Push Pull Legs</h3></div><p class="faint" style="font-size:12px">٥ أيام · ٧٥ دقيقة · متقدم</p><div style="display:flex;gap:4px"><span class="tag l">س</span><span class="tag l">ح</span><span class="tag l">ن</span><span class="tag">ث</span><span class="tag l">ر</span><span class="tag l">خ</span><span class="tag">ج</span></div><div class="meta"><span>٤ لاعبين</span><span>التزام ٧٦٪</span></div><span class="btn sm">طبّقه على لاعب</span></div>
+  </div>
+  <div class="card pad" style="margin-top:12px;display:flex;align-items:center;gap:14px;background:var(--lime-soft);border-color:transparent">
+    <div class="ti-ic l" style="width:46px;height:46px"><i class="ti ti-sparkles"></i></div>
+    <div style="flex:1"><h3>اعمل خطة من بيانات اللاعب</h3><p class="muted" style="font-size:12.5px;margin-top:3px">بيختار الأيام والمدة وبيشيل التمارين اللي ضد إصاباته، وإنت بتراجع وتعدّل</p></div>
+    <span class="btn">جرّب مع نور خالد</span>
+  </div>
+  <div class="why"><b>أحسن إزاي</b>
+    <span>كل قالب بيقولك نتايجه الحقيقية: التزام ومتوسط نزول.</span>
+    <span>«طبّقه على لاعب» بيظبط الأيام على جدول اللاعب لوحده.</span>
+    <span>مولّد الخطة بيبدأ من ملف اللاعب، مش من الصفر.</span>
+    <span>التمارين في نفس المكتبة، بالصور وبالعربي.</span>
+  </div>
+</section>
+
+<!-- ============ S13 LEADERBOARD ============ -->
+<section class="screen" id="s13">
+  <div class="head">
+    <div><div class="eyebrow">نوفمبر · بيتقفل بعد ١٩ يوم</div><h1>الترتيب</h1></div>
+    <div class="sp"></div>
+    <div class="seg"><span class="on">الشهر</span><span>كل الوقت</span></div>
+    <span class="btn"><i class="ti ti-share"></i>شارك الترتيب</span>
+  </div>
+  <div class="podium" style="margin-bottom:16px">
+    <div class="card"><div class="av">مع</div><b style="font-weight:500">مريم عادل</b><div class="num faint" style="font-size:12px;margin-top:4px">1,940 نقطة</div><div class="tag" style="margin-top:8px">٢</div></div>
+    <div class="card strong" style="border-color:var(--lime)"><div class="av" style="border-color:var(--lime)">سن</div><b style="font-weight:500">سارة نبيل</b><div class="num lime" style="font-size:13px;margin-top:4px">2,310 نقطة</div><div class="tag l" style="margin-top:8px"><i class="ti ti-crown"></i>١</div></div>
+    <div class="card"><div class="av">أس</div><b style="font-weight:500">أحمد سامي</b><div class="num faint" style="font-size:12px;margin-top:4px">1,720 نقطة</div><div class="tag" style="margin-top:8px">٣</div></div>
+  </div>
+  <div class="card rows lb">
+    <div class="r hd"><span>#</span><span>اللاعب</span><span>النقاط</span><span>أيام متتالية</span><span>المستوى</span></div>
+    <div class="r"><span class="num faint">4</span><div class="who"><div class="av">يح</div><b>يوسف حسن</b></div><span class="num">1,580</span><span class="num">12</span><span class="tag">فضي</span></div>
+    <div class="r"><span class="num faint">5</span><div class="who"><div class="av">نر</div><b>نور خالد</b></div><span class="num">1,210</span><span class="num">6</span><span class="tag">برونزي</span></div>
+    <div class="r"><span class="num faint">6</span><div class="who"><div class="av">كم</div><b>كريم مصطفى</b></div><span class="num">940</span><span class="num warn">0</span><span class="tag">برونزي</span></div>
+  </div>
+  <div class="why"><b>أحسن إزاي</b>
+    <span>النقاط جاية من الالتزام الحقيقي (تمرين، أكل، فورمز)، مش من الوزن بس.</span>
+    <span>كل شهر بيبدأ من جديد، فاللاعب الجديد عنده فرصة.</span>
+    <span>«شارك الترتيب» بيعمل صورة جاهزة لستوري إنستجرام فيها اسمك.</span>
+    <span>بيوريك مين وقف عشان تكلّمه.</span>
+  </div>
+</section>
+
+<!-- ============ S14 SETTINGS ============ -->
+<section class="screen" id="s14">
+  <div class="head"><div><div class="eyebrow">حسابك وصفحتك</div><h1>الإعدادات</h1></div></div>
+  <div class="two rev">
+    <div class="public">
+      <div class="cover"></div>
+      <div class="pad" style="margin-top:-46px">
+        <div class="av" style="width:72px;height:72px;font-size:20px;border:3px solid var(--deep)">ك</div>
+        <h2 style="margin-top:10px">كابتن محمود</h2>
+        <p class="faint" style="font-size:12.5px;margin-top:4px">تنشيف وتضخيم · ٨ سنين خبرة · ٣٢ لاعب</p>
+        <div class="chips" style="margin:14px 0"><span class="tag l">نزلوا ١٤٠ كجم مع بعض</span><span class="tag"><i class="ti ti-star"></i>4.9</span></div>
+        <span class="btn pri" style="width:100%">اطلب تشترك</span>
+        <p class="src" style="margin-top:12px;justify-content:center"><i class="ti ti-world"></i><span class="ltr">kochivo.site/c/mahmoud</span></p>
+      </div>
+    </div>
+    <div class="card pad">
+      <h2 style="margin-bottom:4px">صفحتك العامة</h2>
+      <div class="set"><div class="tx">الصورة والاسم والنبذة<small>اللي اللاعبين بيشوفوه قبل ما يشتركوا</small></div><span class="btn sm">عدّل</span></div>
+      <div class="set"><div class="tx">صور قبل وبعد<small>بموافقة اللاعب بس</small></div><span class="btn sm">اختار</span></div>
+      <div class="set"><div class="tx">استقبل طلبات جديدة<small>لما تتقفل، الصفحة بتقول «مفيش أماكن دلوقتي»</small></div><span class="tog"></span></div>
+      <h2 style="margin:18px 0 4px">الإشعارات</h2>
+      <div class="set"><div class="tx">Check-in جديد<small>على الموبايل</small></div><span class="tog"></span></div>
+      <div class="set"><div class="tx">ملخص الصبح<small>كل يوم ٨ الصبح: «اعمل دول النهارده»</small></div><span class="tog"></span></div>
+      <div class="set"><div class="tx">اللاعب غاب ٣ أيام</div><span class="tog off"></span></div>
+      <h2 style="margin:18px 0 4px">الحساب</h2>
+      <div class="set"><div class="tx">اللغة<small>العربي</small></div><span class="btn sm">غيّر</span></div>
+      <div class="set"><div class="tx">الباقة<small>LEGEND · ٤٠ لاعب</small></div><span class="btn sm">رقّي</span></div>
+    </div>
+  </div>
+  <div class="why"><b>أحسن إزاي</b>
+    <span>بتعدّل صفحتك العامة وإنت شايف شكلها قدامك.</span>
+    <span>النتايج الحقيقية (الكيلوهات اللي نزلوها لاعبينك) بتبيع لك.</span>
+    <span>ملخص الصبح بيبدأ يومك من غير ما تفتح التطبيق.</span>
+    <span>قفل الطلبات بضغطة لما تكون مليان.</span>
+  </div>
+</section>
+
+  </main>
+</div>
+
+<nav class="bnav">
+  <a data-go="s7" data-nav="s7"><i class="ti ti-sun"></i>النهارده</a>
+  <a data-go="s1" data-nav="s1 s10"><i class="ti ti-inbox"></i>الطلبات</a>
+  <a data-go="s8" data-nav="s8 s9 s2 s3 s4"><i class="ti ti-users"></i>اللاعبين</a>
+  <a data-go="s12" data-nav="s5 s6 s12"><i class="ti ti-books"></i>المكتبة</a>
+  <a data-go="s14" data-nav="s11 s13 s14"><i class="ti ti-menu-2"></i>المزيد</a>
+</nav>
+
+<script>
+const tpl=document.getElementById('phead').innerHTML;
+document.querySelectorAll('.screen[data-tab]').forEach(s=>{
+  const h=s.querySelector('.phead');h.innerHTML=tpl;
+  h.querySelectorAll('.ptabs a').forEach(a=>{if(a.dataset.t===s.dataset.tab)a.classList.add('on');
+    if(a.dataset.t==='forms')a.onclick=()=>show('s2');if(a.dataset.t==='nut')a.onclick=()=>show('s4');
+    if(a.dataset.t==='ov')a.onclick=()=>show('s9');if(a.dataset.t==='train')a.onclick=()=>open('v4.html','_blank');});
+});
+document.querySelectorAll('#s3 .seg span,#s4 .seg span').forEach(sp=>{
+  if(sp.textContent==='الخطة')sp.onclick=()=>show('s4');if(sp.textContent==='الحسبة')sp.onclick=()=>show('s3');});
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));
+  document.querySelectorAll('.demo button').forEach(b=>b.classList.toggle('on',b.dataset.s===id));
+  document.querySelectorAll('[data-nav]').forEach(n=>n.classList.toggle('on',n.dataset.nav.split(' ').includes(id)));
+  history.replaceState(null,'','#'+id);scrollTo(0,0);
+}
+document.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>show(b.dataset.s));
+document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>show(b.dataset.go));
+show((location.hash||"#s7").slice(1));
+</script>
+</body>
+</html>

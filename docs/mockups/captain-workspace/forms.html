@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Forms and inbox mockups</title>
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;500;600&family=Changa:wght@500;600;700&family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+:root{--deep:#070808;--glass:rgb(255 255 255/.025);--glass2:rgb(255 255 255/.045);--hair:rgb(242 242 238/.07);--hair2:rgb(242 242 238/.12);--ink:#f4f4f1;--muted:#a6abb0;--faint:#6f747a;--lime:#b6e94f;--on-lime:#101418;--lime-soft:rgb(182 233 79/.10);--warn:#f2b544;--warn-soft:rgb(242 181 68/.10);--calm:#c9d5ff;--calm-soft:rgb(201 213 255/.10);--sore:#f5ac78;--water:#60a5fa}
+*{box-sizing:border-box;margin:0}
+body{background:#030303;color:var(--ink);font-family:Alexandria,system-ui,sans-serif;font-size:14px;padding:28px 24px 60px}
+.num{font-family:Manrope,sans-serif;font-variant-numeric:tabular-nums}
+.ltr{direction:ltr;display:inline-block}
+.label{max-width:1440px;margin:40px auto 12px;display:flex;align-items:baseline;gap:12px}
+.label h2{font-family:Changa,Alexandria,sans-serif;font-size:22px;font-weight:600}
+.label p{color:var(--faint);font-size:13px}
+.label .tag{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--lime-soft);color:var(--lime)}
+.label .tag.new{background:var(--calm-soft);color:var(--calm)}
+.screen{max-width:1440px;margin:0 auto;border-radius:28px;border:1px solid var(--hair);background:radial-gradient(900px 380px at 75% -160px,rgb(182 233 79/.06),transparent 70%),var(--deep);padding:0 32px 32px;overflow:hidden}
+.top{display:flex;align-items:center;gap:16px;height:70px}
+.logo{width:32px;height:32px;border-radius:10px;background:var(--lime);color:var(--on-lime);display:grid;place-items:center;font-family:Manrope;font-weight:800}
+.crumb{color:var(--faint);font-size:13px;display:flex;gap:8px;align-items:center}
+.crumb b{color:var(--ink);font-weight:500}
+.tabs{display:flex;gap:4px;margin-inline-start:20px}
+.tab{padding:8px 14px;border-radius:999px;color:var(--faint);font-size:13.5px}
+.tab.on{color:var(--ink);background:var(--glass2)}
+.sp{flex:1}
+.btn{height:46px;padding:0 20px;border-radius:999px;border:1px solid var(--hair2);background:transparent;color:var(--ink);display:inline-flex;align-items:center;gap:8px;font:inherit;cursor:pointer;white-space:nowrap}
+.pri{background:var(--lime);border-color:var(--lime);color:var(--on-lime);font-weight:600;box-shadow:0 10px 30px -12px rgb(182 233 79/.55)}
+.chip{height:36px;padding:0 14px;border-radius:999px;border:1px solid var(--hair2);background:transparent;color:var(--muted);font:inherit;font-size:12.5px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.chip.on{background:var(--glass2);color:var(--ink);border-color:var(--hair2)}
+.chip.g{background:var(--lime-soft);border-color:transparent;color:var(--lime)}
+.card{border-radius:24px;background:var(--glass);border:1px solid var(--hair);padding:20px}
+.card h3{font-size:15px;font-weight:500;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.card h3 .r{margin-inline-start:auto;font-size:12px;color:var(--faint);font-weight:400}
+.muted{color:var(--muted)}.faint{color:var(--faint)}
+.h1{font-family:Changa,Alexandria,sans-serif;font-size:34px;font-weight:600;line-height:1.1}
+.eyebrow{font-size:12px;color:var(--faint);margin-bottom:6px}
+.src{font-size:11px;color:var(--faint);display:inline-flex;gap:4px;align-items:center}
+.field{height:48px;border-radius:14px;background:rgb(0 0 0/.35);border:1px solid var(--hair);display:flex;align-items:center;padding:0 14px;gap:8px}
+.field.focus{border-color:var(--lime);box-shadow:0 0 0 4px var(--lime-soft)}
+.seg{display:flex;background:var(--glass);border:1px solid var(--hair);border-radius:14px;padding:3px}
+.seg div{flex:1;text-align:center;padding:9px 6px;border-radius:11px;font-size:12.5px;color:var(--faint)}
+.seg .on{background:var(--glass2);color:var(--ink)}
+.phone{width:340px;height:700px;border-radius:44px;border:10px solid #1b1b1b;background:var(--deep);overflow:hidden;padding:44px 16px 16px;position:relative;flex:none}
+
+.fb{display:grid;grid-template-columns:300px minmax(0,1fr) 340px;gap:20px;margin-top:6px}
+.fl{display:flex;flex-direction:column;gap:8px}
+.fi{border-radius:18px;border:1px solid var(--hair);padding:14px;display:flex;gap:12px;align-items:center}
+.fi.on{border-color:var(--lime);background:var(--lime-soft)}
+.fi .ic{width:38px;height:38px;border-radius:12px;background:var(--glass2);display:grid;place-items:center;color:var(--muted);font-size:18px;flex:none}
+.fi b{font-weight:500;display:block}
+.fi span{font-size:11.5px;color:var(--faint)}
+.fi .st{margin-inline-start:auto;font-size:11px;color:var(--lime)}
+.tpl{font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--hair);color:var(--faint)}
+.q{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;border:1px solid var(--hair);background:var(--glass);margin-bottom:8px}
+.q.on{border-color:var(--hair2);background:var(--glass2)}
+.q .g{color:#444}
+.q .n{font-family:Manrope;color:var(--faint);font-size:12px;width:18px}
+.q b{font-weight:500}
+.q .ty{margin-inline-start:auto;display:flex;gap:6px;align-items:center}
+.t2{font-size:11px;padding:3px 9px;border-radius:999px;background:var(--glass2);color:var(--muted);display:inline-flex;gap:4px;align-items:center}
+.t2.m{background:var(--lime-soft);color:var(--lime)}
+.req{color:var(--sore);font-size:16px}
+.sec{font-size:12px;color:var(--faint);margin:14px 4px 8px;display:flex;gap:8px;align-items:center}
+.sec::after{content:"";flex:1;border-top:1px solid var(--hair)}
+.opt{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.ot{border-radius:14px;border:1px solid var(--hair);padding:12px;display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted)}
+.ot.on{border-color:var(--lime);color:var(--lime);background:var(--lime-soft)}
+.lbl{font-size:12px;color:var(--faint);margin:16px 0 8px}
+.ok{display:flex;gap:8px;align-items:flex-start;padding:12px;border-radius:14px;background:var(--lime-soft);color:var(--lime);font-size:12.5px;line-height:1.6}
+.fr{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:24px;align-items:start}
+.rq{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:20px;border:1px solid var(--hair);background:var(--glass);margin-bottom:8px}
+.rq .ic{width:42px;height:42px;border-radius:13px;background:var(--glass2);display:grid;place-items:center;font-size:19px;color:var(--muted);flex:none}
+.rq b{font-weight:500;display:block}
+.rq span.s{font-size:12px;color:var(--faint)}
+.pill{margin-inline-start:auto;font-size:11.5px;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.pill.w{background:var(--warn-soft);color:var(--warn)}
+.pill.d{background:var(--lime-soft);color:var(--lime)}
+.pill.l{background:var(--glass2);color:var(--faint)}
+.sched{display:flex;gap:8px;margin-top:8px}
+.pv h4{font-family:Changa,Alexandria,sans-serif;font-size:20px;font-weight:600;margin-bottom:4px}
+.pq{border-radius:18px;border:1px solid var(--hair);padding:14px;margin-bottom:10px;background:var(--glass)}
+.pq .t{font-size:13.5px;margin-bottom:10px}
+.pq .in{height:48px;border-radius:14px;background:rgb(0 0 0/.35);border:1px solid var(--hair);display:flex;align-items:center;padding:0 14px;font-family:Manrope;font-weight:600;gap:6px}
+.pbar{height:4px;border-radius:4px;background:rgb(255 255 255/.06);margin:10px 0 14px}
+.pbar i{display:block;height:100%;width:35%;background:var(--lime);border-radius:4px}
+.pbtn{position:absolute;inset-inline:16px;bottom:18px;height:54px;border-radius:18px;background:var(--lime);color:var(--on-lime);display:flex;align-items:center;justify-content:center;font-weight:600}
+.ib{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row{display:grid;grid-template-columns:44px minmax(0,1.4fr) 150px 150px 130px 120px;gap:12px;align-items:center;padding:12px 16px;border-top:1px solid var(--hair)}
+.row.h{border:0;font-size:11.5px;color:var(--faint);background:var(--glass)}
+.av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#2a2d22,#141414);border:1px solid var(--hair2);display:grid;place-items:center;font-size:12px}
+.row b{font-weight:500;display:block}
+.row .s{font-size:12px;color:var(--faint)}
+.flag{font-size:11px;padding:2px 8px;border-radius:999px;background:var(--warn-soft);color:var(--warn);margin-inline-start:6px}
+.act{font-size:12px;padding:6px 12px;border-radius:999px;background:var(--calm-soft);color:var(--calm);display:inline-flex;gap:6px;align-items:center;white-space:nowrap}
+.tbl{border-radius:22px;border:1px solid var(--hair);overflow:hidden}
+.grp{font-size:12px;color:var(--faint);padding:14px 16px 6px;display:flex;gap:8px;align-items:center}
+</style>
+</head>
+<body>
+
+<div class="label"><h2>4. الفورمز المخصصة</h2><span class="tag new">جديد</span><p>الكابتن يعمل فورم بأسئلته، ويربط الأرقام بتطور اللاعب، ويحدد يحصل إيه بعد ما يتبعت.</p></div>
+<div class="screen">
+  <div class="top"><div class="logo">K</div><div class="crumb">الفورمز <i class="ti ti-chevron-left"></i> <b>تقييم التغذية</b></div><div class="sp"></div>
+    <span class="faint" style="font-size:12.5px;display:flex;gap:6px;align-items:center"><span style="width:6px;height:6px;border-radius:50%;background:var(--lime)"></span>اتحفظ تلقائيًا</span>
+    <button class="btn pri"><i class="ti ti-eye"></i>شوفه زي اللاعب</button></div>
+  <div class="fb">
+    <div class="fl">
+      <button class="btn" style="justify-content:center"><i class="ti ti-plus"></i>فورم جديد</button>
+      <div class="sec">فورمز Kochivo الأساسية</div>
+      <div class="fi"><div class="ic"><i class="ti ti-door-enter"></i></div><div><b>الـ onboarding</b><span>12 سؤال · كل لاعب جديد</span></div><span class="tpl">ثابت</span></div>
+      <div class="fi"><div class="ic"><i class="ti ti-calendar-week"></i></div><div><b>المتابعة الأسبوعية</b><span>وزن ووسط وصور وملاحظة</span></div><span class="tpl">ثابت</span></div>
+      <div class="sec">فورمزك</div>
+      <div class="fi on"><div class="ic"><i class="ti ti-salad"></i></div><div><b>تقييم التغذية</b><span>14 سؤال · اتعدل من دقيقة</span></div><span class="st">شغال</span></div>
+      <div class="fi"><div class="ic"><i class="ti ti-barbell"></i></div><div><b>تقييم التمرين</b><span>11 سؤال</span></div><span class="st">شغال</span></div>
+      <div class="fi"><div class="ic"><i class="ti ti-ruler-measure"></i></div><div><b>مقاسات شهرية</b><span>6 أسئلة</span></div><span class="st">شغال</span></div>
+      <div class="fi" style="border-style:dashed"><div class="ic"><i class="ti ti-copy"></i></div><div><b>ابدأ من قالب</b><span>مقاسات · نوم ومزاج · أكل</span></div></div>
+    </div>
+    <div>
+      <div class="eyebrow">14 سؤال · بيتبعت عربي وإنجليزي</div>
+      <div class="sec">المقاسات</div>
+      <div class="q"><i class="ti ti-grip-vertical g"></i><span class="n">1</span><b>وزنك النهارده</b><div class="ty"><span class="t2 m"><i class="ti ti-chart-line"></i>الوزن</span><span class="t2">رقم · كجم</span><span class="req">*</span></div></div>
+      <div class="q on"><i class="ti ti-grip-vertical g"></i><span class="n">2</span><b>محيط الوسط</b><div class="ty"><span class="t2 m"><i class="ti ti-chart-line"></i>الوسط</span><span class="t2">رقم · سم</span><span class="req">*</span></div></div>
+      <div class="q"><i class="ti ti-grip-vertical g"></i><span class="n">3</span><b>محيط الدراع</b><div class="ty"><span class="t2 m"><i class="ti ti-chart-line"></i>الدراع</span><span class="t2">رقم · سم</span></div></div>
+      <div class="q"><i class="ti ti-grip-vertical g"></i><span class="n">4</span><b>صورة من قدام</b><div class="ty"><span class="t2"><i class="ti ti-photo"></i>صورة</span><span class="req">*</span></div></div>
+      <div class="sec">الأكل</div>
+      <div class="q"><i class="ti ti-grip-vertical g"></i><span class="n">5</span><b>عندك حساسية من أي أكل؟</b><div class="ty"><span class="t2 m"><i class="ti ti-user"></i>ملف اللاعب</span><span class="t2">اختيار متعدد</span></div></div>
+      <div class="q"><i class="ti ti-grip-vertical g"></i><span class="n">6</span><b>بتاكل كام وجبة في اليوم؟</b><div class="ty"><span class="t2">اختيار واحد</span></div></div>
+      <div class="q" style="border-style:dashed;color:var(--faint)"><i class="ti ti-plus"></i>سؤال جديد</div>
+      <div class="sec">بعد ما اللاعب يبعته</div>
+      <div class="opt">
+        <div class="ot on"><i class="ti ti-salad"></i>مهمة: اعمل خطة أكل</div>
+        <div class="ot"><i class="ti ti-barbell"></i>مهمة: اعمل خطة تمرين</div>
+        <div class="ot"><i class="ti ti-inbox"></i>يتراجع في المهام بس</div>
+        <div class="ot"><i class="ti ti-bell-off"></i>مفيش حاجة</div>
+      </div>
+    </div>
+    <div class="card">
+      <h3><i class="ti ti-adjustments"></i>محيط الوسط</h3>
+      <div class="lbl">السؤال</div><div class="field">محيط الوسط</div>
+      <div class="lbl">بالإنجليزي</div><div class="field ltr" style="justify-content:flex-start">Waist circumference</div>
+      <div class="lbl">نوع الإجابة</div>
+      <div class="seg"><div>نص</div><div class="on">رقم</div><div>اختيار</div><div>صورة</div></div>
+      <div class="lbl">الوحدة والحدود</div>
+      <div style="display:flex;gap:8px"><div class="field" style="flex:1">سم</div><div class="field num" style="flex:1">30 - 300</div></div>
+      <div class="lbl">يتسجل في تطور اللاعب كـ</div>
+      <div class="field focus"><i class="ti ti-chart-line" style="color:var(--lime)"></i>محيط الوسط<span class="sp"></span><i class="ti ti-chevron-down faint"></i></div>
+      <div style="height:12px"></div>
+      <div class="ok"><i class="ti ti-check"></i><span>الإجابة هتظهر في رسم الوسط في صفحة التطور، وفي ملف اللاعب جنب الخطة.</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="label"><h2>5. طلب فورم من لاعب</h2><span class="tag new">جديد</span><p>من صفحة اللاعب: الكابتن يطلب فورم دلوقتي أو كل فترة، واللاعب يلاقيه في "مطلوب منك".</p></div>
+<div class="screen">
+  <div class="top"><div class="logo">K</div><div class="crumb">اللاعبين <i class="ti ti-chevron-left"></i> <b>أحمد سمير</b></div>
+    <nav class="tabs"><div class="tab">نظرة عامة</div><div class="tab">التمرين</div><div class="tab">التغذية</div><div class="tab on">الفورمز</div></nav><div class="sp"></div>
+    <button class="btn pri"><i class="ti ti-send"></i>اطلب فورم</button></div>
+  <div class="fr">
+    <div>
+      <div class="sec" style="margin-top:4px">مستني رد</div>
+      <div class="rq"><div class="ic"><i class="ti ti-salad"></i></div><div><b>تقييم التغذية</b><span class="s">اتطلب من يومين · فكّرناه مرة</span></div><span class="pill w">مستني</span><button class="chip"><i class="ti ti-bell"></i>فكّره</button><button class="chip"><i class="ti ti-x"></i>الغي</button></div>
+      <div class="rq"><div class="ic"><i class="ti ti-ruler-measure"></i></div><div><b>مقاسات شهرية</b><span class="s">بيتبعت أول كل شهر · الجاي 1 ديسمبر</span></div><span class="pill l"><i class="ti ti-repeat"></i> متكرر</span><button class="chip"><i class="ti ti-pencil"></i>عدّل</button></div>
+      <div class="sec">اتبعت</div>
+      <div class="rq"><div class="ic"><i class="ti ti-calendar-week"></i></div><div><b>متابعة أسبوعية</b><span class="s">10 نوفمبر · غيّر: الوزن، الإصابات</span></div><span class="pill d">اتراجع</span><i class="ti ti-chevron-left faint"></i></div>
+      <div class="rq"><div class="ic"><i class="ti ti-barbell"></i></div><div><b>تقييم التمرين</b><span class="s">6 نوفمبر · 11 إجابة</span></div><span class="pill d">اتراجع</span><i class="ti ti-chevron-left faint"></i></div>
+      <div class="rq"><div class="ic"><i class="ti ti-door-enter"></i></div><div><b>الـ onboarding</b><span class="s">3 نوفمبر · أول بيانات</span></div><span class="pill d">اتراجع</span><i class="ti ti-chevron-left faint"></i></div>
+    </div>
+    <div class="card">
+      <h3><i class="ti ti-send"></i>اطلب فورم من أحمد</h3>
+      <div class="lbl" style="margin-top:0">الفورم</div><div class="field"><i class="ti ti-salad faint"></i>تقييم التغذية<span class="sp"></span><i class="ti ti-chevron-down faint"></i></div>
+      <div class="lbl">إمتى</div>
+      <div class="seg"><div class="on">دلوقتي</div><div>مرة كمان</div><div>كل فترة</div></div>
+      <div class="lbl">رسالة مع الطلب (اختياري)</div><div class="field faint">محتاج أظبط خطتك الجديدة…</div>
+      <div style="height:16px"></div>
+      <button class="btn pri" style="width:100%;justify-content:center">ابعت الطلب</button>
+      <p class="faint" style="font-size:11.5px;margin-top:10px;line-height:1.6">هيوصل لأحمد إشعار، ولو ماردش في يومين نفكّره مرة لوحدنا.</p>
+    </div>
+  </div>
+  <div style="display:flex;gap:40px;align-items:flex-start;margin-top:28px">
+    <div class="phone">
+      <div class="pv"><h4>مطلوب منك</h4><p class="faint" style="font-size:12px;margin-bottom:14px">الكابتن مستني الفورم ده</p></div>
+      <div class="rq" style="padding:12px"><div class="ic"><i class="ti ti-salad"></i></div><div><b>تقييم التغذية</b><span class="s">14 سؤال · ~4 دقايق</span></div></div>
+      <p class="faint" style="font-size:12px;margin:6px 4px 16px;line-height:1.7">"محتاج أظبط خطتك الجديدة" · الكابتن</p>
+      <div class="pbtn">ابدأ</div>
+    </div>
+    <div class="phone">
+      <div style="display:flex;justify-content:space-between;font-size:12px" class="faint"><span>تقييم التغذية</span><span class="num">5 / 14</span></div>
+      <div class="pbar"><i></i></div>
+      <div class="pq"><div class="t">وزنك النهارده</div><div class="in">82.4<span class="faint" style="font-size:12px;font-weight:400">كجم</span></div><p class="faint" style="font-size:11px;margin-top:6px">آخر مرة 82.9</p></div>
+      <div class="pq"><div class="t">محيط الوسط</div><div class="in">86<span class="faint" style="font-size:12px;font-weight:400">سم</span></div></div>
+      <div class="pq"><div class="t">عندك حساسية من أي أكل؟</div><div style="display:flex;gap:6px;flex-wrap:wrap"><span class="chip on">اللبن</span><span class="chip">البيض</span><span class="chip">المكسرات</span><span class="chip">مفيش</span></div><p class="faint" style="font-size:11px;margin-top:8px">متعلّم من الـ onboarding. غيّره لو اتغيّر.</p></div>
+      <div class="pbtn">التالي</div>
+    </div>
+    <div style="max-width:380px;color:var(--faint);line-height:1.9;font-size:13px;padding-top:20px">
+      <b style="color:var(--ink);font-weight:500;display:block;margin-bottom:6px">عند اللاعب</b>
+      الفورم بيتعرض سؤال سؤال بشكل كبير يناسب الموبايل، وبيحفظ من غير نت.<br>
+      الأسئلة اللي ليها إجابة قبل كده بتبان متعلّمة، فاللاعب يأكد بس.<br>
+      الأرقام بتظهر جنبها آخر قيمة عشان يلاحظ الفرق.
+    </div>
+  </div>
+</div>
+
+<div class="label"><h2>6. صندوق المهام</h2><span class="tag">تحسين لموجود</span><p>نفس الصندوق الحالي، ومعاه بحث وفلاتر وأرشيف، والفورمز الجديدة بتظهر فيه كمهام.</p></div>
+<div class="screen">
+  <div class="top"><div class="logo">K</div><div class="crumb"><b>المهام</b></div><div class="sp"></div>
+    <div class="seg" style="width:300px"><div class="on">مفتوحة <span class="num">7</span></div><div>اتراجعت</div><div>الأرشيف</div></div></div>
+  <div class="ib">
+    <div class="filters">
+      <div class="field" style="width:320px;height:42px"><i class="ti ti-search faint"></i><span class="faint">دوّر باسم اللاعب…</span></div>
+      <button class="chip on"><i class="ti ti-filter"></i>الكل</button>
+      <button class="chip">متابعات</button><button class="chip">فيديوهات أداء</button><button class="chip">فورمز</button>
+      <span class="sp"></span>
+      <button class="chip"><i class="ti ti-alert-triangle"></i>محتاج اهتمام بس</button>
+    </div>
+    <div class="tbl">
+      <div class="row h"><span></span><span>اللاعب</span><span>النوع</span><span>المطلوب</span><span>وصل</span><span></span></div>
+      <div class="grp"><i class="ti ti-alert-triangle" style="color:var(--warn)"></i>محتاج اهتمام</div>
+      <div class="row"><div class="av">أس</div><div><b>أحمد سمير<span class="flag">إصابة جديدة</span></b><span class="s">الكتف اليمين · الوزن -0.6</span></div><span>متابعة أسبوعية</span><span class="act"><i class="ti ti-barbell"></i>راجع خطة التمرين</span><span class="faint num">من ساعة</span><button class="chip">افتح</button></div>
+      <div class="row"><div class="av">مع</div><div><b>محمود عادل<span class="flag">وقف التزام</span></b><span class="s">3 تمرينات فايتين</span></div><span>متابعة أسبوعية</span><span class="faint">رد عليه</span><span class="faint num">من 3 ساعات</span><button class="chip">افتح</button></div>
+      <div class="grp"><i class="ti ti-circle-check" style="color:var(--lime)"></i>عادي</div>
+      <div class="row"><div class="av">يه</div><div><b>يوسف هشام</b><span class="s">14 إجابة</span></div><span>تقييم التغذية</span><span class="act"><i class="ti ti-salad"></i>اعمل خطة أكل</span><span class="faint num">امبارح</span><button class="chip">افتح</button></div>
+      <div class="row"><div class="av">كر</div><div><b>كريم رضا</b><span class="s">سكوات · فيديو 22 ث</span></div><span>فيديو أداء</span><span class="faint">قيّم الأداء</span><span class="faint num">امبارح</span><button class="chip">افتح</button></div>
+    </div>
+    <p class="faint" style="font-size:12px"><i class="ti ti-info-circle"></i> اسحب أي مهمة للأرشيف لو مش محتاجة رد، وتقدر ترجّعها من تاب الأرشيف.</p>
+  </div>
+</div>
+</body>
+</html>

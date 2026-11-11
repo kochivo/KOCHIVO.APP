@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nutrition mockups</title>
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;500;600&family=Changa:wght@500;600;700&family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+:root{--deep:#070808;--glass:rgb(255 255 255/.025);--glass2:rgb(255 255 255/.045);--hair:rgb(242 242 238/.07);--hair2:rgb(242 242 238/.12);--ink:#f4f4f1;--muted:#a6abb0;--faint:#6f747a;--lime:#b6e94f;--on-lime:#101418;--lime-soft:rgb(182 233 79/.10);--warn:#f2b544;--warn-soft:rgb(242 181 68/.10);--calm:#c9d5ff;--calm-soft:rgb(201 213 255/.10);--sore:#f5ac78;--water:#60a5fa}
+*{box-sizing:border-box;margin:0}
+body{background:#030303;color:var(--ink);font-family:Alexandria,system-ui,sans-serif;font-size:14px;padding:28px 24px 60px}
+.num{font-family:Manrope,sans-serif;font-variant-numeric:tabular-nums}
+.ltr{direction:ltr;display:inline-block}
+.label{max-width:1440px;margin:40px auto 12px;display:flex;align-items:baseline;gap:12px}
+.label h2{font-family:Changa,Alexandria,sans-serif;font-size:22px;font-weight:600}
+.label p{color:var(--faint);font-size:13px}
+.label .tag{font-size:11.5px;padding:3px 10px;border-radius:999px;background:var(--lime-soft);color:var(--lime)}
+.label .tag.new{background:var(--calm-soft);color:var(--calm)}
+.screen{max-width:1440px;margin:0 auto;border-radius:28px;border:1px solid var(--hair);background:radial-gradient(900px 380px at 75% -160px,rgb(182 233 79/.06),transparent 70%),var(--deep);padding:0 32px 32px;overflow:hidden}
+.top{display:flex;align-items:center;gap:16px;height:70px}
+.logo{width:32px;height:32px;border-radius:10px;background:var(--lime);color:var(--on-lime);display:grid;place-items:center;font-family:Manrope;font-weight:800}
+.crumb{color:var(--faint);font-size:13px;display:flex;gap:8px;align-items:center}
+.crumb b{color:var(--ink);font-weight:500}
+.tabs{display:flex;gap:4px;margin-inline-start:20px}
+.tab{padding:8px 14px;border-radius:999px;color:var(--faint);font-size:13.5px}
+.tab.on{color:var(--ink);background:var(--glass2)}
+.sp{flex:1}
+.btn{height:46px;padding:0 20px;border-radius:999px;border:1px solid var(--hair2);background:transparent;color:var(--ink);display:inline-flex;align-items:center;gap:8px;font:inherit;cursor:pointer;white-space:nowrap}
+.pri{background:var(--lime);border-color:var(--lime);color:var(--on-lime);font-weight:600;box-shadow:0 10px 30px -12px rgb(182 233 79/.55)}
+.chip{height:36px;padding:0 14px;border-radius:999px;border:1px solid var(--hair2);background:transparent;color:var(--muted);font:inherit;font-size:12.5px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.chip.on{background:var(--glass2);color:var(--ink);border-color:var(--hair2)}
+.chip.g{background:var(--lime-soft);border-color:transparent;color:var(--lime)}
+.card{border-radius:24px;background:var(--glass);border:1px solid var(--hair);padding:20px}
+.card h3{font-size:15px;font-weight:500;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.card h3 .r{margin-inline-start:auto;font-size:12px;color:var(--faint);font-weight:400}
+.muted{color:var(--muted)}.faint{color:var(--faint)}
+.h1{font-family:Changa,Alexandria,sans-serif;font-size:34px;font-weight:600;line-height:1.1}
+.eyebrow{font-size:12px;color:var(--faint);margin-bottom:6px}
+.src{font-size:11px;color:var(--faint);display:inline-flex;gap:4px;align-items:center}
+.field{height:48px;border-radius:14px;background:rgb(0 0 0/.35);border:1px solid var(--hair);display:flex;align-items:center;padding:0 14px;gap:8px}
+.field.focus{border-color:var(--lime);box-shadow:0 0 0 4px var(--lime-soft)}
+.seg{display:flex;background:var(--glass);border:1px solid var(--hair);border-radius:14px;padding:3px}
+.seg div{flex:1;text-align:center;padding:9px 6px;border-radius:11px;font-size:12.5px;color:var(--faint)}
+.seg .on{background:var(--glass2);color:var(--ink)}
+.phone{width:340px;height:700px;border-radius:44px;border:10px solid #1b1b1b;background:var(--deep);overflow:hidden;padding:44px 16px 16px;position:relative;flex:none}
+
+.calc{display:grid;grid-template-columns:380px minmax(0,1fr);gap:24px;margin-top:6px}
+.kv{display:flex;align-items:center;padding:11px 0;border-bottom:1px solid var(--hair);gap:10px}
+.kv:last-child{border:0}
+.kv .k{color:var(--faint);font-size:12.5px;width:90px}
+.kv .v{font-family:Manrope;font-weight:600}
+.kv .src{margin-inline-start:auto}
+.goalseg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.gs{border-radius:18px;border:1px solid var(--hair);padding:14px;text-align:center}
+.gs b{display:block;font-size:14px;font-weight:500}
+.gs span{font-size:11.5px;color:var(--faint)}
+.gs.on{border-color:var(--lime);background:var(--lime-soft)}
+.gs.on b{color:var(--lime)}
+.ladder{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-radius:22px;border:1px solid var(--hair);overflow:hidden}
+.step{padding:18px 20px;border-inline-start:1px solid var(--hair)}
+.step:first-child{border:0}
+.step .l{font-size:12px;color:var(--faint)}
+.step .v{font-family:Manrope;font-weight:800;font-size:28px;margin-top:6px}
+.step .v small{font-size:13px;color:var(--faint);font-weight:600}
+.step .f{font-size:11.5px;color:var(--faint);margin-top:4px}
+.step.big{background:var(--glass2)}
+.step.big .v{color:var(--lime);font-size:40px}
+.macros{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+.mac{border-radius:20px;border:1px solid var(--hair);padding:16px}
+.mac .t{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted)}
+.mac .v{font-family:Manrope;font-weight:800;font-size:24px;margin:8px 0 10px}
+.mac .v small{font-size:12px;color:var(--faint)}
+.track{height:6px;border-radius:6px;background:rgb(255 255 255/.06);position:relative}
+.track i{position:absolute;inset-block:0;inset-inline-start:0;border-radius:6px}
+.mac .h{font-size:11.5px;color:var(--faint);margin-top:8px}
+.foods{display:grid;grid-template-columns:240px minmax(0,1fr);gap:24px}
+.cats{display:flex;flex-direction:column;gap:4px}
+.cat{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:14px;color:var(--muted);font-size:13.5px}
+.cat.on{background:var(--glass2);color:var(--ink)}
+.cat .n{margin-inline-start:auto;font-family:Manrope;font-size:12px;color:var(--faint)}
+.tbl{border-radius:22px;border:1px solid var(--hair);overflow:hidden}
+.tr{display:grid;grid-template-columns:56px minmax(0,1.6fr) 90px 90px 90px 90px 120px 70px;align-items:center;gap:10px;padding:10px 16px;border-top:1px solid var(--hair)}
+.tr.h{border:0;font-size:11.5px;color:var(--faint);padding-block:12px;background:var(--glass)}
+.ph{width:44px;height:44px;border-radius:12px;background:var(--glass2);display:grid;place-items:center;color:var(--faint);font-size:20px}
+.tr .n b{display:block;font-weight:500}
+.tr .n span{font-size:12px;color:var(--faint)}
+.tr .c{font-family:Manrope;font-weight:600;text-align:center}
+.own{font-size:11px;padding:2px 8px;border-radius:999px;background:var(--lime-soft);color:var(--lime)}
+.glob{font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--hair);color:var(--faint)}
+.acts{display:flex;gap:4px;color:var(--faint);justify-content:flex-end}
+.acts i{width:34px;height:34px;display:grid;place-items:center;border-radius:10px}
+.ned{display:grid;grid-template-columns:330px minmax(0,1fr);gap:24px;margin-top:6px}
+.ring{width:150px;height:150px;border-radius:50%;background:conic-gradient(var(--lime) 0 94%,rgb(255 255 255/.07) 0);display:grid;place-items:center;margin:4px auto 12px}
+.ring div{width:124px;height:124px;border-radius:50%;background:#0b0c0c;display:grid;place-items:center;text-align:center}
+.ring b{font-family:Manrope;font-weight:800;font-size:28px;display:block}
+.ring span{font-size:11.5px;color:var(--faint)}
+.mrow{display:grid;grid-template-columns:70px 1fr 74px;gap:10px;align-items:center;font-size:12.5px;margin-top:10px}
+.mrow .num{text-align:end}
+.daytype{display:flex;gap:8px;margin-bottom:16px}
+.dt{flex:1;border-radius:18px;border:1px solid var(--hair);padding:12px 14px}
+.dt b{display:block;font-weight:500}
+.dt span{font-size:11.5px;color:var(--faint)}
+.dt.on{border-color:var(--lime);background:var(--lime-soft)}
+.dt.on b{color:var(--lime)}
+.meal{border-radius:22px;border:1px solid var(--hair);background:var(--glass);margin-bottom:10px}
+.mh{display:flex;align-items:center;gap:12px;padding:14px 16px}
+.mh .t{font-weight:500;font-size:15px}
+.mh .s{font-size:12px;color:var(--faint)}
+.mh .kc{margin-inline-start:auto;font-family:Manrope;font-weight:700;color:var(--muted)}
+.it{display:grid;grid-template-columns:44px minmax(0,1fr) 110px 70px 70px 70px 60px 34px;gap:10px;align-items:center;padding:8px 16px;border-top:1px solid var(--hair)}
+.it .g{height:40px;border-radius:12px;background:rgb(0 0 0/.35);border:1px solid var(--hair);display:flex;align-items:center;justify-content:center;font-family:Manrope;font-weight:600}
+.it .g.focus{border-color:var(--lime);box-shadow:0 0 0 3px var(--lime-soft)}
+.it .m{text-align:center;font-family:Manrope;font-size:12.5px;color:var(--muted)}
+.it .k{text-align:center;font-family:Manrope;font-weight:700}
+.swap{font-size:11px;color:var(--calm);display:flex;align-items:center;gap:4px;margin-top:3px}
+.tip{display:flex;gap:10px;align-items:center;padding:12px 14px;border-radius:16px;background:var(--lime-soft);font-size:12.5px;line-height:1.6;margin-bottom:14px}
+.kd{width:28px;height:28px;border-radius:50%;background:var(--lime);color:var(--on-lime);display:grid;place-items:center;font-family:Manrope;font-weight:800;font-size:10px;flex:none}
+</style>
+</head>
+<body>
+
+<div class="label"><h2>1. حاسبة السعرات</h2><span class="tag">تحسين لموجود</span><p>بتتملي لوحدها من ملف اللاعب. الكابتن بيختار الهدف بس.</p></div>
+<div class="screen">
+  <div class="top"><div class="logo">K</div><div class="crumb">اللاعبين <i class="ti ti-chevron-left"></i> <b>أحمد سمير</b></div>
+    <nav class="tabs"><div class="tab">نظرة عامة</div><div class="tab">التمرين</div><div class="tab on">التغذية</div><div class="tab">المتابعات</div></nav><div class="sp"></div>
+    <button class="btn pri"><i class="ti ti-check"></i>استخدم الأرقام دي في الخطة</button></div>
+  <div class="calc">
+    <div class="card">
+      <h3><i class="ti ti-user"></i>من ملف أحمد<span class="r">بيتحدث لوحده</span></h3>
+      <div class="kv"><span class="k">النوع</span><span class="v">راجل</span><span class="src">onboarding</span></div>
+      <div class="kv"><span class="k">السن</span><span class="v num">27</span><span class="src">onboarding</span></div>
+      <div class="kv"><span class="k">الطول</span><span class="v num">178 سم</span><span class="src">onboarding</span></div>
+      <div class="kv"><span class="k">الوزن</span><span class="v num">82.4 كجم</span><span class="src" style="color:var(--calm)">متابعة 10 نوفمبر</span></div>
+      <div class="kv"><span class="k">النشاط</span><span class="v">5 أيام تمرين</span><span class="src">onboarding</span></div>
+      <div class="kv"><span class="k">نسبة الدهون</span><span class="v faint">مش متسجلة</span><span class="src"><i class="ti ti-plus"></i>ضيف</span></div>
+      <div style="margin-top:14px" class="seg"><div class="on">Mifflin-St Jeor</div><div>Katch-McArdle</div></div>
+      <p class="faint" style="font-size:11.5px;margin-top:8px;line-height:1.6">Katch-McArdle بيبقى أدق لو نسبة الدهون متسجلة.</p>
+    </div>
+    <div>
+      <div class="eyebrow">الهدف</div>
+      <div class="goalseg">
+        <div class="gs"><b>تنشيف</b><span class="num">-20%</span></div>
+        <div class="gs"><b>ثبات</b><span>نفس الحرق</span></div>
+        <div class="gs on"><b>تضخيم نظيف</b><span class="num">+10%</span></div>
+      </div>
+      <div style="height:16px"></div>
+      <div class="ladder">
+        <div class="step"><div class="l">الحرق الأساسي BMR</div><div class="v num">1,846 <small>kcal</small></div><div class="f">جسمه وهو مرتاح</div></div>
+        <div class="step"><div class="l">الحرق اليومي TDEE</div><div class="v num">2,861 <small>kcal</small></div><div class="f">× 1.55 · 5 أيام تمرين</div></div>
+        <div class="step big"><div class="l">هدف أحمد اليومي</div><div class="v num">3,150</div><div class="f">تضخيم نظيف +10% · اضغط تعدّل</div></div>
+      </div>
+      <div class="macros">
+        <div class="mac"><div class="t"><span>بروتين</span><span class="num">2 جم / كجم</span></div><div class="v num">165<small> جم</small></div><div class="track"><i style="width:21%;background:var(--lime)"></i></div><div class="h num">21% من السعرات</div></div>
+        <div class="mac"><div class="t"><span>دهون</span><span class="num">25%</span></div><div class="v num">88<small> جم</small></div><div class="track"><i style="width:25%;background:var(--sore)"></i></div><div class="h">مكمّل بالباقي بعد البروتين</div></div>
+        <div class="mac"><div class="t"><span>كارب</span><span>الباقي</span></div><div class="v num">425<small> جم</small></div><div class="track"><i style="width:54%;background:var(--water)"></i></div><div class="h num">54% من السعرات</div></div>
+      </div>
+      <p class="faint" style="font-size:12px;margin-top:14px"><i class="ti ti-info-circle"></i> المجموع دايمًا 100%. لو غيّرت البروتين، الكارب بيتظبط لوحده.</p>
+    </div>
+  </div>
+</div>
+
+<div class="label"><h2>2. أكلي</h2><span class="tag">تحسين لموجود</span><p>نفس جدول الأكل الحالي. صفحة تدير منها أكلك بدل ما تضيفه من جوه الخطة بس.</p></div>
+<div class="screen">
+  <div class="top"><div class="logo">K</div><div class="crumb">التغذية <i class="ti ti-chevron-left"></i> <b>الأكل</b></div><div class="sp"></div><button class="btn pri"><i class="ti ti-plus"></i>أكلة جديدة</button></div>
+  <div class="foods">
+    <div class="cats">
+      <div class="cat on"><i class="ti ti-apps"></i>الكل<span class="n">1,284</span></div>
+      <div class="cat"><i class="ti ti-star"></i>أكلي أنا<span class="n">37</span></div>
+      <div class="cat"><i class="ti ti-history"></i>استخدمته مؤخرًا<span class="n">22</span></div>
+      <div class="sp" style="height:10px"></div>
+      <div class="cat"><i class="ti ti-meat"></i>بروتين<span class="n">312</span></div>
+      <div class="cat"><i class="ti ti-bread"></i>نشويات<span class="n">268</span></div>
+      <div class="cat"><i class="ti ti-salad"></i>خضار وفاكهة<span class="n">241</span></div>
+      <div class="cat"><i class="ti ti-milk"></i>ألبان<span class="n">118</span></div>
+      <div class="cat"><i class="ti ti-droplet"></i>دهون ومكسرات<span class="n">96</span></div>
+      <div class="cat"><i class="ti ti-paper-bag"></i>منتجات جاهزة<span class="n">249</span></div>
+    </div>
+    <div>
+      <div style="display:flex;gap:10px;margin-bottom:14px">
+        <div class="field" style="flex:1"><i class="ti ti-search faint"></i><span>دومتي</span><span class="sp"></span><span class="faint num" style="font-size:11px">Ctrl K</span></div>
+        <button class="chip on"><i class="ti ti-sort-descending"></i>بروتين أعلى</button><button class="chip">أقل سعرات</button>
+      </div>
+      <div class="tbl">
+        <div class="tr h"><span></span><span>الأكلة</span><span style="text-align:center">سعرات</span><span style="text-align:center">بروتين</span><span style="text-align:center">كارب</span><span style="text-align:center">دهون</span><span>المصدر</span><span></span></div>
+        <div class="tr"><div class="ph"><i class="ti ti-cheese"></i></div><div class="n"><b>دومتي موتزاريلا لايت</b><span>Domty light mozzarella · لكل 100 جم</span></div><span class="c">189</span><span class="c" style="color:var(--lime)">22</span><span class="c">5</span><span class="c">9</span><span><span class="own">أكلي</span></span><div class="acts"><i class="ti ti-pencil"></i><i class="ti ti-trash"></i></div></div>
+        <div class="tr"><div class="ph"><i class="ti ti-bread"></i></div><div class="n"><b>دومتي باتيه جبنة</b><span>لكل قطعة 80 جم</span></div><span class="c">274</span><span class="c">8.5</span><span class="c">50</span><span class="c">4.5</span><span><span class="own">أكلي</span></span><div class="acts"><i class="ti ti-pencil"></i><i class="ti ti-trash"></i></div></div>
+        <div class="tr"><div class="ph"><i class="ti ti-milk"></i></div><div class="n"><b>دومتي جبنة فيتا</b><span>لكل 100 جم</span></div><span class="c">264</span><span class="c">14</span><span class="c">4</span><span class="c">21</span><span><span class="glob">Kochivo</span></span><div class="acts"><i class="ti ti-copy" title="انسخها لأكلي"></i></div></div>
+      </div>
+      <p class="faint" style="font-size:12px;margin-top:12px"><i class="ti ti-info-circle"></i> أكل Kochivo العام مايتعدلش، بس تقدر تنسخه لأكلك وتعدّل النسخة.</p>
+    </div>
+  </div>
+</div>
+
+<div class="label"><h2>3. محرّر خطة الأكل</h2><span class="tag">تحسين لموجود</span><p>نفس شكل شاشة التمرين الجديدة: ملف اللاعب على اليمين، وأيام كارب عالي وكارب واطي.</p></div>
+<div class="screen">
+  <div class="top"><div class="logo">K</div><div class="crumb">اللاعبين <i class="ti ti-chevron-left"></i> <b>أحمد سمير</b></div>
+    <nav class="tabs"><div class="tab">نظرة عامة</div><div class="tab">التمرين</div><div class="tab on">التغذية</div><div class="tab">المتابعات</div></nav><div class="sp"></div>
+    <span class="faint" style="font-size:12.5px;display:flex;gap:6px;align-items:center"><span style="width:6px;height:6px;border-radius:50%;background:var(--lime)"></span>اتحفظ تلقائيًا</span>
+    <button class="btn pri"><i class="ti ti-send"></i>ابعت للاعب</button></div>
+  <div class="ned">
+    <div class="card">
+      <div class="ring"><div><b class="num">2,960</b><span>من <span class="num">3,150</span> kcal</span></div></div>
+      <div class="mrow"><span>بروتين</span><div class="track"><i style="width:96%;background:var(--lime)"></i></div><span class="num">158 / 165</span></div>
+      <div class="mrow"><span>كارب</span><div class="track"><i style="width:91%;background:var(--water)"></i></div><span class="num">388 / 425</span></div>
+      <div class="mrow"><span>دهون</span><div class="track"><i style="width:97%;background:var(--sore)"></i></div><span class="num">85 / 88</span></div>
+      <div style="border-top:1px solid var(--hair);margin:16px 0 12px"></div>
+      <div class="eyebrow">من ملف أحمد</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px"><span class="chip" style="height:30px;background:var(--warn-soft);color:var(--warn);border:0">حساسية: اللبن</span><span class="chip" style="height:30px">5 وجبات</span><span class="chip" style="height:30px">بيتمرن العصر</span></div>
+    </div>
+    <div>
+      <div class="daytype">
+        <div class="dt on"><b>يوم تمرين · كارب عالي</b><span class="num">3,150 kcal · سبت حد تلات أربع جمعة</span></div>
+        <div class="dt"><b>يوم راحة · كارب واطي</b><span class="num">2,650 kcal · اتنين خميس</span></div>
+        <div class="dt" style="border-style:dashed;flex:0 0 140px;display:grid;place-items:center;color:var(--faint)"><span><i class="ti ti-plus"></i> نوع يوم</span></div>
+      </div>
+      <div class="tip"><div class="kd">KO</div><span>فيه <b>لبن</b> في الفطار وأحمد عنده حساسية منه. بدّله بـ <b>لبن لوز</b> بنفس السعرات؟</span><span class="sp"></span><button class="chip g">بدّله</button></div>
+      <div class="meal">
+        <div class="mh"><i class="ti ti-sunrise faint"></i><div><div class="t">الفطار</div><div class="s">8:00 ص</div></div><span class="kc num">720 kcal</span><i class="ti ti-chevron-up faint"></i></div>
+        <div class="it"><div class="ph" style="width:40px;height:40px"><i class="ti ti-egg"></i></div><div><b style="font-weight:500">بيض كامل</b><div class="swap"><i class="ti ti-arrows-exchange"></i>بديل: بياض بيض 200 جم</div></div><div class="g num focus">150 جم</div><span class="m num">ب 19</span><span class="m num">ك 1</span><span class="m num">د 15</span><span class="k num">215</span><i class="ti ti-dots faint"></i></div>
+        <div class="it"><div class="ph" style="width:40px;height:40px"><i class="ti ti-bowl"></i></div><div><b style="font-weight:500">شوفان</b><div class="swap"><i class="ti ti-arrows-exchange"></i>بديل: عيش بلدي 120 جم</div></div><div class="g num">80 جم</div><span class="m num">ب 11</span><span class="m num">ك 53</span><span class="m num">د 6</span><span class="k num">303</span><i class="ti ti-dots faint"></i></div>
+        <div class="it"><div class="ph" style="width:40px;height:40px;color:var(--warn)"><i class="ti ti-milk"></i></div><div><b style="font-weight:500">لبن كامل الدسم</b></div><div class="g num">300 مل</div><span class="m num">ب 10</span><span class="m num">ك 14</span><span class="m num">د 10</span><span class="k num">183</span><i class="ti ti-dots faint"></i></div>
+        <div class="it" style="color:var(--faint);font-size:13px"><i class="ti ti-plus" style="text-align:center"></i><span>ضيف أكلة · من أكلي أو أكل Kochivo</span></div>
+      </div>
+      <div class="meal"><div class="mh"><i class="ti ti-sun faint"></i><div><div class="t">الغدا</div><div class="s num">2:00 م · 4 أصناف</div></div><span class="kc num">980 kcal</span><i class="ti ti-chevron-down faint"></i></div></div>
+      <div class="meal"><div class="mh"><i class="ti ti-barbell faint"></i><div><div class="t">قبل التمرين</div><div class="s num">5:30 م · 2 صنف</div></div><span class="kc num">410 kcal</span><i class="ti ti-chevron-down faint"></i></div></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
