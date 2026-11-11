@@ -1,0 +1,28 @@
+export const messages = {
+  ar: {
+    title: 'الطلبات', subtitle: 'كل اللي اتبعتلك من اللاعبين في مكان واحد', search: 'دوّر باسم لاعب',
+    needsReply: 'محتاج ردك', late: 'متأخر أكتر من يوم', reviewed: 'اتراجع', all: 'الكل',
+    replyHours: 'متوسط وقت ردك', reviewedWeek: 'اتراجع الأسبوع ده', comparison: 'الفرق عن الأسبوع اللي فات: {value} ساعة',
+    sample: 'الأعداد لكل الطلبات؛ البحث في المحمّل بس، ومتوسط الرد من آخر ٥٠ مراجعة', unavailable: 'لسه مفيش بيانات',
+    checkin: 'متابعة أسبوعية', form: 'فيديو أداء', renewal: 'تجديد', player: 'اللاعب', kind: 'النوع', changes: 'اللي اتغيّر',
+    age: 'مستني من', hours: '{value} ساعة', review: 'راجِع', loadMore: 'حمّل أكتر',
+    loading: 'بنحمّل الطلبات', empty: 'مفيش طلبات هنا', emptyBody: 'جرّب فلتر تاني أو دوّر باسم مختلف',
+    error: 'مش قادرين نحمّل الطلبات. جرّب تاني', retry: 'جرّب تاني', close: 'اقفل المراجعة',
+    weight: 'الوزن {value} كجم', waist: 'الوسط {value} سم', injury: 'إصابة جديدة', trainingDays: 'أيام التمرين اتغيّرت',
+    noChange: 'مفيش تغيير', ending: 'الاشتراك قرب يخلص', voiceReply: 'رد صوتي', unsentVoice: 'فيه تسجيل لسه متبعتش. تسيبه؟',
+    reviewedReply: 'رد الكابتن', noReply: 'اتراجع من غير رد', sending: 'بنبعت الرد',
+  },
+  en: {
+    title: 'Requests', subtitle: 'Everything players send, in one queue', search: 'Search player name',
+    needsReply: 'Needs reply', late: 'Waiting over a day', reviewed: 'Reviewed', all: 'All',
+    replyHours: 'Average reply time', reviewedWeek: 'Reviewed this week', comparison: 'Change from the previous week: {value} hours',
+    sample: 'Counts cover all requests; search covers loaded rows, reply time uses the latest 50 reviews', unavailable: 'No data yet',
+    checkin: 'Weekly check-in', form: 'Form video', renewal: 'Renewal', player: 'Player', kind: 'Kind', changes: 'What changed',
+    age: 'Waiting', hours: '{value} hours', review: 'Review', loadMore: 'Load more',
+    loading: 'Loading requests', empty: 'No requests here', emptyBody: 'Try another filter or player name',
+    error: 'Could not load requests. Try again', retry: 'Try again', close: 'Close review',
+    weight: 'Weight {value} kg', waist: 'Waist {value} cm', injury: 'New injury', trainingDays: 'Training days changed',
+    noChange: 'No change', ending: 'Plan ending soon', voiceReply: 'Voice reply', unsentVoice: 'Leave this unsent recording?',
+    reviewedReply: 'Captain reply', noReply: 'Reviewed without a reply', sending: 'Sending reply',
+  },
+} as const;
