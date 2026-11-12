@@ -14,7 +14,7 @@ export function LibraryList({ data, locale, selected }: { data: LibraryData; loc
       metrics={data.byForm[form.id]} selected={selected === form.id} locale={locale} href={`${base}?edit=${form.id}`} />)}
     <section id="templates" className="space-y-3" aria-label={m.templates}>
       <h2 className="font-bold">{m.templates}</h2>
-      {templates.map(template => <FormCard key={template.kind} title={m.kinds[template.kind]}
+      {templates.filter(template => !template.key).map(template => <FormCard key={template.kind} title={m.kinds[template.kind]}
         count={template.questions.length} locale={locale} href={`${base}?template=${template.kind}`} />)}
     </section>
     {selected && <Link href={base} prefetch={false} className="block min-h-12 px-4 py-3">{m.close}</Link>}

@@ -14,7 +14,7 @@ import { FormDetail } from './form-detail';
 import { FormsTimeline } from './forms-timeline';
 import { FormsState } from './forms-state';
 import { messages } from './messages';
-import { RequestManager } from '@/features/forms';
+import { AssessmentScheduleEntry } from '@/features/forms';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 
 export function FormsScreen({ playerId, locale, review, sign }: {
@@ -35,7 +35,10 @@ export function FormsScreen({ playerId, locale, review, sign }: {
     try { return await resource.mutate(next, commit); }
     finally { setReviewing(false); }
   });
-  if (!resource.data) return <FormsState kind={resource.status === 'error' ? 'error' : 'loading'} locale={locale} retry={() => void resource.retry()} />;
+  if (!resource.data) {
+    const state = <FormsState kind={resource.status === 'error' ? 'error' : 'loading'} locale={locale} retry={() => void resource.retry()} />;
+    return captainWorkspaceEnabled() ? <section className="space-y-4"><AssessmentScheduleEntry playerId={playerId} locale={locale} />{state}</section> : state;
+  }
   const selected = resource.data.find(form => form.snapshot.source.id === selectedId) ?? resource.data[0];
   const select = (form: PlayerForm) => {
     if (lock.pending()) return;
@@ -47,7 +50,7 @@ export function FormsScreen({ playerId, locale, review, sign }: {
     });
   };
   return <section aria-label={t('title')} className="space-y-4">
-    {captainWorkspaceEnabled() && <RequestManager playerId={playerId} locale={locale} />}
+    {captainWorkspaceEnabled() && <AssessmentScheduleEntry playerId={playerId} locale={locale} />}
     {resource.status === 'error' && <FormsState kind="error" locale={locale} retry={() => void resource.retry()} />}
     <div className="grid items-start gap-6 lg:grid-cols-[minmax(280px,1fr)_minmax(0,1.8fr)]">
       <FormsTimeline forms={resource.data} selectedId={selected?.snapshot.source.id} locale={locale} onSelect={select} disabled={reviewing} showLegacyReminder={!captainWorkspaceEnabled()} />

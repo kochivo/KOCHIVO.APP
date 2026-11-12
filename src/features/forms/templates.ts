@@ -35,4 +35,7 @@ export const templates: [Template, ...Template[]] = [
     question('weight', 'number', 'weight'), question('targetWeight', 'number', 'targetWeight'),
     question('sessionMinutes', 'number', 'sessionMinutes'), question('note', 'text', 'note'),
   ]) },
+  { key: 'photos', kind: 'progress', schedule: null, questions: numbered([
+    question('photos', 'photos'), question('note', 'text', 'note'),
+  ]) },
 ];

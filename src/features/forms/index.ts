@@ -6,3 +6,4 @@ export { PendingFormsEntry as PendingForms } from './components/pending-forms-en
 export type { RequestData } from './request-types';
 export { matchesAlert } from './answers';
 export { RequestManagerEntry as RequestManager } from './components/request-manager-entry';
+export { AssessmentScheduleEntry } from './components/assessment-schedule-entry';

@@ -1,4 +1,5 @@
 import type { Database, Json } from './database';
+import type { AssessmentSchedulesTable } from './assessment-schedules';
 import type {
   CaptainStatus, Units, SupplementTiming, NotificationType, PointKind, PointStatus,
   Injury, SwapReason, SwapStatus, MovementPattern, ExerciseKind, EquipmentKind,
@@ -138,6 +139,7 @@ export type AppDatabase = Omit<Database, 'public'> & {
   public: Omit<Public, 'Tables' | 'Functions'> & {
     Tables: Omit<Public['Tables'], keyof CorrectedTables | 'form_checks' | 'check_ins'> & Omit<CorrectedTables, 'profiles'> & {
       profiles: TimezoneProfiles;
+      assessment_schedules: AssessmentSchedulesTable;
       form_checks: Omit<FormChecks, 'Insert'> & {
         // The inbox BEFORE INSERT trigger in 0008 overwrites captain_id.
         Insert: Omit<FormChecks['Insert'], 'captain_id'> & {
@@ -153,6 +155,7 @@ export type AppDatabase = Omit<Database, 'public'> & {
     };
     Functions: Omit<Public['Functions'], keyof FunctionPatches | 'admin_activate_plan'> & FunctionPatches & {
       my_captain_timezone: { Args: never; Returns: string | null };
+      assessment_schedule_counts: { Args: never; Returns: { schedule_id: string; player_id: string; sends: number }[] };
       admin_activate_plan: Omit<ActivatePlan, 'Args'> & {
         // SQL accepts null here, but this argument has no default and must be sent.
         Args: Omit<ActivatePlan['Args'], 'p_payment_ref'> & { p_payment_ref: string | null };

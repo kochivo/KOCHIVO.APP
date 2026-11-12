@@ -5,6 +5,7 @@ import { newQuestion, reorderQuestions, validateForm } from '../model';
 import type { FormDraft } from '../types';
 import { QuestionEditor } from './question-editor';
 import { ScheduleSection } from './schedule-section';
+import { SaveStatus } from '@/ui/save-status';
 
 const FormPreview = lazy(() => import('./form-preview').then(module => ({ default: module.FormPreview })));
 
@@ -16,8 +17,8 @@ export function FormBuilder({ form, locale, status, preview, onChange, onPreview
   return <section className="glass-strong min-w-0 rounded-card p-4 sm:p-6">
     <div className="flex flex-wrap items-center gap-3">
       <h2 className="me-auto text-xl font-bold">{form.title}</h2>
-      <span role="status" className="text-sm text-muted">{invalid ? m.invalid : m[status]}</span>
-      {status === 'saveError' && <button type="button" className="min-h-12 px-3" onClick={onRetry}>{m.retry}</button>}
+      {invalid ? <span role="status" className="text-sm text-muted">{m.invalid}</span>
+        : <SaveStatus locale={locale} status={status === 'saved' ? 'saved' : status === 'saveError' ? 'error' : 'saving'} onRetry={onRetry} />}
       {(invalid || status === 'saveError') && onDiscard && <button type="button" className="min-h-12 px-3" onClick={onDiscard}>{m.discard}</button>}
       <button type="button" className="glass min-h-12 rounded-control px-4" onClick={onPreview}>{preview ? m.back : m.preview}</button>
     </div>

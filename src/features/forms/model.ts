@@ -9,7 +9,7 @@ export const mappingTypes: Record<NonNullable<Question['maps_to']>, Question['ty
 };
 export function copyTemplate(template: Template, captain: string, id = uuidv7, locale: 'ar' | 'en' = 'ar'): FormDraft {
   const formId = id();
-  return { id: formId, captain_id: captain, title: messages[locale].kinds[template.kind], kind: template.kind,
+  return { id: formId, captain_id: captain, title: template.key === 'photos' ? messages[locale].photo : messages[locale].kinds[template.kind], kind: template.kind,
     schedule: template.schedule ? { ...template.schedule } : null, remind_after_hours: template.schedule ? 24 : null,
     questions: template.questions.map(q => ({ ...structuredClone(q), id: id(), form_id: formId })),
   };

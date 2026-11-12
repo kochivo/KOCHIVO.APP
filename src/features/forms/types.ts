@@ -13,6 +13,7 @@ export type FormDraft = {
   schedule: Schedule | null; remind_after_hours: number | null; questions: Question[];
 };
 export type Template = {
+  key?: 'photos';
   kind: Exclude<CustomFormKind, 'custom'>; schedule: Schedule | null;
   questions: Omit<Question, 'id' | 'form_id'>[];
 };

@@ -14,6 +14,6 @@ it('rejects the player route before data access when disabled',async () => {
 });
 it('gates the home card and workspace manager and keeps the answer flow lazy',() => {
   expect(readFileSync('src/features/player-home/components/home-screen.tsx','utf8')).toContain('captainWorkspaceEnabled() && <PendingForms');
-  expect(readFileSync('src/features/captain-workspace/forms/forms-screen.tsx','utf8')).toContain('captainWorkspaceEnabled() && <RequestManager');
+  expect(readFileSync('src/features/captain-workspace/forms/forms-screen.tsx','utf8')).toContain('captainWorkspaceEnabled() && <AssessmentScheduleEntry');
   expect(readFileSync('src/features/forms/components/answer-entry.tsx','utf8')).toContain('dynamic(');
 });
