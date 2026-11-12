@@ -4,6 +4,7 @@ import type * as Templates from '@/features/templates';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { LocaleProvider } from '@/core/i18n/client';
+import { emptyWarmup } from './warmup';
 vi.mock('server-only', () => ({}));
 const state = vi.hoisted(() => ({ values: [] as unknown[], index: 0 }));
 vi.mock('react', async original => {
@@ -36,7 +37,7 @@ it('offers adding the first day inside the empty state', () => {
  expect(html).toContain('>+ Add training day</button>');
 });
 it('offers the exercise library inside an empty day', () => {
- const html = render(createElement(DayEditor, { day: { id: 'd', program_id: 'p', title: 'Day', position: 1, exercises: [] }, update() {} }));
+ const html = render(createElement(DayEditor, { day: { id: 'd', program_id: 'p', title: 'Day', position: 1, exercises: [], warmup: emptyWarmup() }, update() {} }));
  expect(html).toContain('<h2 class="text-xl font-bold">Add the first exercise</h2>');
  expect(html).toContain('>+ Add exercise</button>');
 });

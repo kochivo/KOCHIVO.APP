@@ -8,6 +8,7 @@ import { DragHandle } from './components/drag-handle';
 import { DayEditor } from './components/day-editor';
 import { getTargetIndex, useDragReorder } from './hooks/use-drag-reorder';
 import type { DraftDay, ProgramDraft } from './types';
+import { emptyWarmup } from './warmup';
 
 const hooks = vi.hoisted(() => ({ active: false, index: 0, slots: [] as unknown[],
   effects: [] as (() => void | (() => void))[], buttons: new Map<string, React.ButtonHTMLAttributes<HTMLButtonElement>>() }));
@@ -69,7 +70,7 @@ it.each([
   expect(html).toContain('type="button"');
 });
 
-const day: DraftDay = { id: 'day', program_id: 'program', title: 'Day', position: 1,
+const day: DraftDay = { id: 'day', program_id: 'program', title: 'Day', position: 1, warmup: emptyWarmup(),
   exercises: ['a', 'b', 'c'].map((id, index) => ({ id, day_id: 'day', exercise_id: 'bench', position: index + 1,
     sets: 3, reps_min: 8, reps_max: 12, rest_seconds: 90, rir: null, superset_group: null,
     library: { id: 'bench', name_ar: 'بنش', name_en: 'Bench', body_part: 'chest', equipment: null, media_path: null },

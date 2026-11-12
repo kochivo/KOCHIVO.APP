@@ -45,7 +45,7 @@ export async function fetchProgramSnapshot(client: SupabaseClient<Database>): Pr
   if (error || !auth.user) throw error ?? new Error('Missing session');
   const exerciseFields = captainWorkspaceEnabled() ? 'name_ar,name_en,media_path,video_url,body_part' : 'name_ar,name_en,media_path,video_url';
   const [program, intake] = await Promise.all([
-    client.from('programs').select(`id,title,notes,settings,program_days(id,position,title,weekday,is_rest_day,program_cardio(*),program_exercises(id,exercise_id,position,sets,reps_min,reps_max,rest_seconds,superset_group,rpe,rir,tempo,notes,exercises(${exerciseFields})))`)
+    client.from('programs').select(`id,title,notes,settings,program_days(id,position,title,weekday,is_rest_day,warmup,program_cardio(*),program_exercises(id,exercise_id,position,sets,reps_min,reps_max,rest_seconds,superset_group,rpe,rir,tempo,notes,exercises(${exerciseFields})))`)
       .eq('player_id', auth.user.id).eq('status', 'active').returns<ProgramResponse[]>().maybeSingle(),
     client.from('player_intake').select('training_days').eq('player_id', auth.user.id).maybeSingle(),
   ]);

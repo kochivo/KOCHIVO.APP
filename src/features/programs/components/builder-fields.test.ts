@@ -5,6 +5,7 @@ import { messages } from '../messages';
 import { exerciseSummary, weekdayStatus } from '../summary';
 import { addDay, addExercise } from '../draft';
 import type { DraftExercise, ProgramDraft } from '../types';
+import { emptyWarmup } from '../warmup';
 import { clampReps, repsMode, restPresets, restText, toggleNextSuperset } from './builder-fields';
 
 const row: DraftExercise = { id: 'a', day_id: 'day', exercise_id: 'bench', position: 1,
@@ -47,7 +48,7 @@ it('uses Arabic plural categories for exercise, set and minute counts', () => {
 });
 
 it('shows rest or exercise count for a weekday', () => {
-  const day = { id: 'day', program_id: 'p', title: '', position: 1, exercises: [row] };
+  const day = { id: 'day', program_id: 'p', title: '', position: 1, exercises: [row], warmup: emptyWarmup() };
   expect(weekdayStatus(day, 'ar')).toBe('تمرين واحد');
   expect(weekdayStatus({ ...day, is_rest_day: true }, 'ar')).toBe('راحة');
   expect(weekdayStatus({ ...day, exercises: [row, row, row] }, 'en')).toBe('3 exercises');

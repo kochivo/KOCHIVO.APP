@@ -4,9 +4,10 @@ import { expect, it } from 'vitest';
 import { LocaleProvider } from '@/core/i18n/client';
 import { DayEditor } from './components/day-editor';
 import type { DraftDay } from './types';
+import { emptyWarmup } from './warmup';
 
 const day: DraftDay = { id: 'day', program_id: 'program', title: '', position: 1,
-  weekday: 0, is_rest_day: true, exercises: [], cardio: [] };
+  weekday: 0, is_rest_day: true, exercises: [], cardio: [], warmup: emptyWarmup() };
 const render = (value: DraftDay, locale: 'ar' | 'en') => renderToStaticMarkup(createElement(LocaleProvider,
   { locale }, createElement(DayEditor, { day: value, update() {} })));
 

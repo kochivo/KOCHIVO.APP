@@ -5,11 +5,12 @@ import { LocaleProvider } from '@/core/i18n/client';
 import { TrainingEditor } from './training-editor';
 import { TrainingFacts } from './training-facts';
 import type { ProgramDraft } from '@/features/programs';
+import { emptyWarmup } from '@/features/programs';
 import { messages } from './messages';
 
 vi.mock('server-only', () => ({}));
 const draft: ProgramDraft = { id: 'p', title: 'Plan', player_id: 'player', status: 'draft', days: [
-  { id: 'd', program_id: 'p', title: 'صدر وضهر', position: 1, exercises: [{
+  { id: 'd', program_id: 'p', title: 'صدر وضهر', position: 1, warmup: emptyWarmup(), exercises: [{
     id: 'e', day_id: 'd', exercise_id: 'x', position: 1, sets: 3, reps_min: 8, reps_max: 12,
     rest_seconds: 90, rir: 2, superset_group: null,
     library: { id: 'x', name_en: 'Bench Press', name_ar: 'بنش', body_part: 'chest', equipment: 'barbell', media_path: null },

@@ -1,4 +1,5 @@
 import { messages } from './messages';
+import { emptyWarmup } from './warmup';
 
 import type { DraftDay, DraftExercise, ExercisePatch, LibraryExercise, ProgramDraft } from './types';
 
@@ -22,7 +23,7 @@ function move<T extends { id: string; position: number }>(rows: T[], id: string,
   return positioned(copy);
 }
 export function addDay(draft: ProgramDraft, id: string, title: string = messages.ar.newDay): ProgramDraft {
-  return { ...draft, days: positioned([...draft.days, { id, program_id: draft.id, title, position: 0, exercises: [] }]) };
+  return { ...draft, days: positioned([...draft.days, { id, program_id: draft.id, title, position: 0, exercises: [], warmup: emptyWarmup() }]) };
 }
 export function removeDay(draft: ProgramDraft, id: string): ProgramDraft {
   return { ...draft, days: positioned(draft.days.filter(day => day.id !== id)) };

@@ -1791,6 +1791,7 @@ export type Database = {
           program_id: string
           title: string
           weekday: number | null
+          warmup: Json
         }
         Insert: {
           id?: string
@@ -1799,6 +1800,7 @@ export type Database = {
           program_id: string
           title?: string
           weekday?: number | null
+          warmup?: Json
         }
         Update: {
           id?: string
@@ -1807,6 +1809,7 @@ export type Database = {
           program_id?: string
           title?: string
           weekday?: number | null
+          warmup?: Json
         }
         Relationships: [
           {

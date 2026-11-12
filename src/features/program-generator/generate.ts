@@ -46,7 +46,7 @@ export function generateProgram(input: unknown, candidates: readonly Candidate[]
         ...(selected.pattern === pattern ? {} : { replacedPattern: pattern }) });
     }
     exercises.sort((a, b) => Number(kinds.get(a.exercise_id) === 'isolation') - Number(kinds.get(b.exercise_id) === 'isolation'));
-    days.push({ weekday, position: weekday + 1, title: '', is_rest_day: recipeIndex < 0, cardio: [],
+    days.push({ weekday, position: weekday + 1, title: '', is_rest_day: recipeIndex < 0, cardio: [], warmup: { items: [], ramp: false },
       exercises: exercises.map((row, index) => ({ ...row, position: index + 1 })) });
   }
   // The consuming UI supplies the translated program title before saving.

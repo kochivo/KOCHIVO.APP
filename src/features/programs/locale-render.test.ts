@@ -5,6 +5,7 @@ import type * as React from 'react';
 import type * as UI from '@/ui';
 import { LocaleProvider } from '@/core/i18n/client';
 import { DayEditor } from './components/day-editor';
+import { emptyWarmup } from './warmup';
 
 const hooks = vi.hoisted(() => ({ active: false, index: 0, values: [] as unknown[], open: undefined as (() => void) | undefined }));
 vi.mock('@/ui', async original => {
@@ -31,7 +32,7 @@ afterEach(() => { hooks.active = false; hooks.values = []; hooks.open = undefine
 
 it('renders the day editor in English', () => {
   const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' }, createElement(DayEditor, {
-    day: { id: 'day', program_id: 'program', title: 'Day 1', position: 1, exercises: [] }, update() {},
+    day: { id: 'day', program_id: 'program', title: 'Day 1', position: 1, exercises: [], warmup: emptyWarmup() }, update() {},
   })));
   expect(html).toContain('Day name');
   expect(html).toContain('+ Add exercise');
@@ -42,7 +43,7 @@ it('renders the day editor in English', () => {
 it('mounts the library drawer only after the add exercise action', () => {
   hooks.active = true;
   const editor = createElement(DayEditor, {
-    day: { id: 'day', program_id: 'program', title: 'Day 1', position: 1, exercises: [] }, update() {},
+    day: { id: 'day', program_id: 'program', title: 'Day 1', position: 1, exercises: [], warmup: emptyWarmup() }, update() {},
   });
   const render = () => { hooks.index = 0; return renderToStaticMarkup(editor); };
   expect(render()).not.toContain('role="dialog"');

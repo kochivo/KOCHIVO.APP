@@ -1,4 +1,5 @@
 import type { CardioRow, ProgramDraft } from './types';
+import { emptyWarmup } from './warmup';
 
 export const weekdayKeys = ['sat', 'sun', 'mon', 'tue', 'wed', 'thu', 'fri'] as const;
 export const isWeekly = (draft: ProgramDraft) => draft.days.some(day => day.weekday != null);
@@ -8,7 +9,7 @@ export function convertToWeek(draft: ProgramDraft, id: () => string): ProgramDra
   return { ...draft, repeatWeekly: true, days: weekdayKeys.map((_, weekday) => {
     const old = draft.days[weekday];
     return { id: old?.id ?? id(), program_id: draft.id, position: weekday + 1, title: old?.title ?? '',
-      exercises: old?.exercises ?? [], cardio: old?.cardio ?? [], weekday,
+      exercises: old?.exercises ?? [], cardio: old?.cardio ?? [], weekday, warmup: old?.warmup ?? emptyWarmup(),
       is_rest_day: !(old?.exercises.length || old?.cardio?.length) };
   }) };
 }

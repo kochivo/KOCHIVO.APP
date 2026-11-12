@@ -12,3 +12,6 @@ export { searchExercises } from './data/library';
 export { startTraining, trainingTemplates } from './data/training-start';
 export { useTrainingAutosave } from './hooks/use-training-autosave';
 export { useDragReorder } from './hooks/use-drag-reorder';
+export { dayWarmupSchema, warmupItemSchema, emptyWarmup, addWarmupItem, removeWarmupItem,
+  moveWarmupItem, setRamp, warmupMinutes, rampSets } from './warmup';
+export type { DayWarmup, WarmupItem } from './warmup';

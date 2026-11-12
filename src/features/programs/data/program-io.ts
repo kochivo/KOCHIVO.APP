@@ -11,6 +11,7 @@ import { supabaseServer } from '@/core/supabase/server';
 import { uuidv7 } from '@/core/offline/ids';
 import type { DraftDay, ProgramDraft, ProgramRow, Result } from '../types';
 import { convertToWeek } from '../weekly-draft';
+import { dayWarmupSchema } from '../warmup';
 
 const cardioSchema = z.object({ id: z.uuid(), day_id: z.uuid(), position: z.number().int().positive().max(32767),
   kind: z.string().trim().min(1).max(40), minutes: z.number().int().min(1).max(300),
@@ -29,7 +30,7 @@ const draftSchema = z.object({
   repeatWeekly: z.boolean().optional(),
   days: z.array(z.object({ id: z.uuid(), program_id: z.uuid(), title: z.string().max(60),
     weekday: z.number().int().min(0).max(6).nullable().optional(), is_rest_day: z.boolean().default(false),
-    cardio: z.array(cardioSchema).default([]),
+    cardio: z.array(cardioSchema).default([]), warmup: dayWarmupSchema,
     position: z.number().int().positive().max(32767), exercises: z.array(exerciseSchema) })),
 });
 async function session() {
@@ -58,6 +59,7 @@ export async function loadProgram(id: string): Promise<Result<ProgramDraft>> {
     const library = ids.length ? await client.from('exercises').select('*').in('id', ids) : { data: [], error: null };
     if (library.error) return { error: t('couldntLoadTheExerciseLibraryTryAgain') };
     const draftDays: DraftDay[] = days.data.map(day => ({ ...day,
+      warmup: dayWarmupSchema.parse(day.warmup),
       cardio: blocks.data.filter(block => block.day_id === day.id),
       exercises: rows.data.filter(row => row.day_id === day.id)
         .map(row => ({ ...row, library: library.data?.find(e => e.id === row.exercise_id) ?? null })),

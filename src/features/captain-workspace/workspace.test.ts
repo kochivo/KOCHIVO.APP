@@ -2,6 +2,7 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { expect, it, vi } from 'vitest';
 import type { DraftDay, ProgramDraft } from '@/features/programs';
+import { emptyWarmup } from '@/features/programs';
 import { WorkspacePlan } from './components/workspace-plan';
 import { WorkspaceState } from './components/workspace-state';
 import { PlayerFileSlot } from './components/player-file-slot';
@@ -11,7 +12,7 @@ import { ExerciseRow } from './components/exercise-row';
 vi.mock('server-only', () => ({}));
 const row = { id: 'e', day_id: 'd', exercise_id: 'x', position: 1, sets: 4, reps_min: 8,
   reps_max: 10, rest_seconds: 60, rir: null, superset_group: null, library: null };
-const trainingDay: DraftDay = { id: 'd', program_id: 'p', title: 'Chest', position: 1, weekday: 0, exercises: [row] };
+const trainingDay: DraftDay = { id: 'd', program_id: 'p', title: 'Chest', position: 1, weekday: 0, exercises: [row], warmup: emptyWarmup() };
 const program: ProgramDraft = { id: 'p', player_id: 'player', title: 'Plan', status: 'active', days: [trainingDay] };
 
 it('isolates the rep scheme LTR in Arabic and handles failure and equal reps', () => {

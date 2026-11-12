@@ -2,12 +2,13 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { expect, it, vi } from 'vitest';
 import type { DraftDay, ProgramDraft } from '@/features/programs';
+import { emptyWarmup } from '@/features/programs';
 import { weekCells } from './week-cells';
 import { WeekStrip } from './components/week-strip';
 
 vi.mock('server-only', () => ({}));
 const day = (id: string, position: number, weekday?: number): DraftDay => ({
-  id, program_id: 'p', title: id, position, weekday, exercises: [],
+  id, program_id: 'p', title: id, position, weekday, exercises: [], warmup: emptyWarmup(),
 });
 const program = (days: DraftDay[]): ProgramDraft => ({ id: 'p', player_id: 'player', title: 'Plan', status: 'active', days });
 

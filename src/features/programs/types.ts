@@ -1,4 +1,5 @@
 import type { Tables } from '@/types/database';
+import type { DayWarmup } from './warmup';
 
 export type ProgramStatus = Tables<'programs'>['status'];
 export type LibraryExercise = Pick<Tables<'exercises'>,
@@ -10,6 +11,7 @@ export type ExerciseRow = Pick<Tables<'program_exercises'>,
 export type DraftExercise = ExerciseRow & { library: LibraryExercise | null };
 export type CardioRow = Omit<Tables<'program_cardio'>, 'intensity'> & { intensity: 'low' | 'moderate' | 'high' };
 export type DraftDay = Pick<Tables<'program_days'>, 'id' | 'program_id' | 'title' | 'position'> & {
+  warmup: DayWarmup;
   weekday?: number | null; is_rest_day?: boolean; cardio?: CardioRow[]; exercises: DraftExercise[];
 };
 export type ProgramDraft = Pick<Tables<'programs'>, 'id' | 'player_id' | 'title' | 'status'> & {

@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Program Editor</title>
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;500;600&family=Changa:wght@500;600;700&family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--deep:#070808;--glass:rgb(255 255 255/.025);--glass2:rgb(255 255 255/.045);--strong:rgb(255 255 255/.07);--hair:rgb(242 242 238/.07);--hair2:rgb(242 242 238/.12);--ink:#f4f4f1;--muted:#a6abb0;--faint:#6f747a;--lime:#b6e94f;--on-lime:#101418;--lime-soft:rgb(182 233 79/.10);--warn:#f2b544;--warn-soft:rgb(242 181 68/.10);--bad:#ff8a7a}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:radial-gradient(1100px 480px at 75% -200px,rgb(182 233 79/.07),transparent 70%),var(--deep);color:var(--ink);font-family:Alexandria,system-ui,sans-serif;font-size:14px;min-height:100vh}
+button,input{font:inherit;color:inherit}
+.num{font-family:Manrope,sans-serif;font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}.faint{color:var(--faint)}.lime{color:var(--lime)}
+.demo{position:sticky;top:0;z-index:30;display:flex;gap:6px;align-items:center;padding:10px 16px;background:rgb(7 8 8/.92);backdrop-filter:blur(10px);border-bottom:1px dashed var(--hair2);overflow-x:auto}
+.demo b{font-size:11px;color:var(--faint);white-space:nowrap;margin-inline-end:6px}
+.demo button{white-space:nowrap;border:1px dashed var(--hair2);background:none;border-radius:999px;padding:6px 12px;font-size:12px;color:var(--muted);cursor:pointer}
+.demo button.on{border-style:solid;border-color:var(--lime);color:var(--lime)}
+.shell{display:grid;grid-template-columns:236px minmax(0,1fr);min-height:calc(100vh - 49px)}
+.side{border-inline-end:1px solid var(--hair);padding:22px 14px;display:flex;flex-direction:column;gap:2px;position:sticky;top:49px;height:calc(100vh - 49px)}
+.brand{display:flex;align-items:center;gap:10px;padding:0 10px 20px;font-family:Manrope;font-weight:800;letter-spacing:.08em;font-size:13px}
+.logo{width:34px;height:34px;border-radius:11px;background:var(--lime);color:var(--on-lime);display:grid;place-items:center}
+.nav{display:flex;align-items:center;gap:12px;min-height:44px;padding:0 12px;border-radius:14px;color:var(--muted);cursor:pointer}
+.nav i{font-size:19px}.nav.on{background:var(--glass2);color:var(--ink)}
+.navh{font-size:11px;color:var(--faint);padding:14px 12px 4px;letter-spacing:.02em}
+.main{padding:26px 36px 60px;min-width:0}
+.screen{display:none}.screen.on{display:block}
+h1{font-family:Changa,Alexandria,sans-serif;font-size:30px;font-weight:600;line-height:1.15}
+h2{font-family:Changa,Alexandria,sans-serif;font-size:19px;font-weight:600}
+.head{display:flex;align-items:center;gap:14px;margin-bottom:18px;flex-wrap:wrap}
+.sp{flex:1}
+.btn{min-height:46px;padding:0 20px;border-radius:999px;border:1px solid var(--hair2);background:transparent;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;white-space:nowrap}
+.btn.sm{min-height:38px;padding:0 14px;font-size:12.5px}
+.pri{background:var(--lime);border-color:var(--lime);color:var(--on-lime);font-weight:600}
+.card{background:var(--glass);border:1px solid var(--hair);border-radius:22px}
+.pad{padding:18px 20px}
+.strong{background:var(--strong);border-color:var(--hair2)}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--hair);margin-bottom:20px}
+.tabs span{padding:12px 16px;color:var(--faint);cursor:pointer;border-bottom:2px solid transparent}
+.tabs span.on{color:var(--ink);border-color:var(--lime)}
+.status{font-size:12px;color:var(--faint);display:inline-flex;align-items:center;gap:6px}
+.layout{display:grid;grid-template-columns:300px minmax(0,1fr);gap:18px;align-items:start}
+.facts{position:sticky;top:75px;display:flex;flex-direction:column;gap:12px}
+.fact{display:flex;justify-content:space-between;padding:10px 0;border-top:1px solid var(--hair);font-size:13px}
+.fact:first-of-type{border-top:0}
+.fact b{font-family:Manrope;font-weight:800}
+.choice{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+.choice .card{padding:20px;cursor:pointer}
+.choice .card.on{border-color:var(--lime);background:var(--lime-soft)}
+.choice i{font-size:24px;color:var(--lime)}
+.days{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.day{min-height:40px;padding:0 16px;border-radius:999px;border:1px solid var(--hair);display:inline-flex;align-items:center;gap:6px;color:var(--muted);cursor:pointer}
+.day.on{background:var(--ink);color:var(--deep);border-color:var(--ink)}
+.ex{display:grid;grid-template-columns:28px 1fr auto auto auto 34px;gap:12px;align-items:center;padding:12px 16px;border-top:1px solid var(--hair)}
+.ex:first-child{border-top:0}
+.ex .h{color:var(--faint);cursor:grab}
+.ex small{display:block;color:var(--faint);font-size:11.5px}
+.step{display:inline-flex;align-items:center;border:1px solid var(--hair2);border-radius:999px;overflow:hidden}
+.step button{width:34px;height:34px;background:none;border:0;cursor:pointer;color:var(--muted)}
+.step span{min-width:44px;text-align:center;font-family:Manrope;font-weight:800}
+.add{display:flex;align-items:center;gap:10px;padding:12px 16px;border-top:1px dashed var(--hair2);color:var(--faint)}
+.add input{flex:1;background:none;border:0;outline:0}
+.sugg{display:flex;gap:6px;flex-wrap:wrap;padding:0 16px 14px}
+.sugg span{font-size:12px;padding:6px 12px;border-radius:999px;background:var(--glass2);color:var(--muted);cursor:pointer}
+.targets{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.t{padding:14px 16px}
+.t .l{font-size:12px;color:var(--faint);display:flex;justify-content:space-between}
+.t .v{font:800 22px Manrope;margin:6px 0 8px}
+.t .v small{font:500 12px Alexandria;color:var(--faint)}
+.bar{height:6px;border-radius:6px;background:rgb(255 255 255/.06);position:relative;overflow:hidden}
+.bar i{position:absolute;inset-block:0;inset-inline-start:0;border-radius:6px;background:var(--lime)}
+.bar.over i{background:var(--warn)}
+.meal{margin-bottom:12px}
+.meal .mh{display:flex;align-items:center;gap:10px;padding:14px 18px}
+.meal .mh .k{margin-inline-start:auto;font-size:12px;color:var(--faint)}
+.food{display:grid;grid-template-columns:1fr 120px 70px 34px;gap:12px;align-items:center;padding:10px 18px;border-top:1px solid var(--hair);font-size:13px}
+.food small{color:var(--faint);font-size:11.5px}
+.qty{display:flex;align-items:center;gap:6px;border:1px solid var(--hair2);border-radius:12px;padding:4px 10px}
+.qty input{width:44px;background:none;border:0;outline:0;font-family:Manrope;font-weight:800;text-align:center}
+.x{color:var(--faint);cursor:pointer;text-align:center}
+.stepper{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.stepper span{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:var(--faint)}
+.stepper b{width:24px;height:24px;border-radius:50%;border:1px solid var(--hair2);display:grid;place-items:center;font:800 11px Manrope}
+.stepper .on{color:var(--ink)}.stepper .on b{background:var(--lime);color:var(--on-lime);border-color:var(--lime)}
+.week{display:flex;gap:6px}
+.week div{flex:1;text-align:center;font-size:11px;color:var(--faint)}
+.week i{display:block;width:10px;height:10px;border-radius:50%;margin:6px auto 0;border:1px solid var(--hair2)}
+.week i.f{background:var(--lime);border-color:var(--lime)}.week i.p{background:var(--faint);border-color:var(--faint)}
+.phone{width:380px;margin:0 auto;border:1px solid var(--hair2);border-radius:36px;padding:26px 20px;min-height:640px;background:var(--deep)}
+.note{margin-top:26px;border:1px dashed var(--hair2);border-radius:18px;padding:14px 18px;font-size:12.5px;color:var(--muted);line-height:1.9}
+.note b{color:var(--lime);font-weight:500}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media (max-width:1000px){.layout,.compare{grid-template-columns:1fr}.facts{position:static}.targets{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:760px){.shell{grid-template-columns:1fr}.side{display:none}.main{padding:18px 16px 60px}.choice{grid-template-columns:1fr}.ex{grid-template-columns:1fr auto 34px}.ex .h,.ex .hide{display:none}.food{grid-template-columns:1fr 100px 34px}.food .hide{display:none}.phone{width:100%}}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.row{display:flex;align-items:center;gap:12px;padding:14px 18px;border-top:1px solid var(--hair);min-height:64px}
+.row:first-child{border-top:0}
+.row small{display:block;color:var(--faint);font-size:11.5px}
+.row .end{margin-inline-start:auto;display:flex;align-items:center;gap:10px}
+.av{width:38px;height:38px;border-radius:50%;background:var(--glass2);border:1px solid var(--hair2);display:grid;place-items:center;font-size:12px;flex:none}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;font-size:11.5px;background:var(--glass2);color:var(--muted);white-space:nowrap}
+.pill.l{background:var(--lime-soft);color:var(--lime)}.pill.w{background:var(--warn-soft);color:var(--warn)}.pill.b{background:rgb(255 138 122/.1);color:var(--bad)}
+.ico{width:38px;height:38px;border-radius:12px;background:var(--glass2);display:grid;place-items:center;flex:none;font-size:18px}
+.split{display:grid;grid-template-columns:340px minmax(0,1fr);gap:16px;align-items:start}
+.photo{aspect-ratio:3/4;border-radius:16px;background:linear-gradient(160deg,#20231b,#0f100e);border:1px solid var(--hair);display:grid;place-items:center;color:var(--faint);font-size:12px}
+.vol{display:grid;grid-template-columns:70px 1fr 50px;gap:10px;align-items:center;font-size:12.5px;margin-top:10px}
+.dots{display:flex;gap:6px}.dots i{width:12px;height:12px;border-radius:50%;background:var(--glass2);border:1px solid var(--hair2)}
+.dots i.g{background:var(--lime);border-color:var(--lime)}.dots i.y{background:var(--warn);border-color:var(--warn)}.dots i.r{background:var(--bad);border-color:var(--bad)}
+.phones{display:flex;gap:26px;flex-wrap:wrap;justify-content:center}
+.phone{width:375px;border:1px solid var(--hair2);border-radius:38px;padding:22px 18px 0;min-height:760px;background:var(--deep);display:flex;flex-direction:column}
+.phone .body{flex:1}
+.pnav{display:flex;justify-content:space-around;border-top:1px solid var(--hair);margin:16px -18px 0;padding:10px 0 14px;font-size:11px;color:var(--faint)}
+.pnav span{display:flex;flex-direction:column;align-items:center;gap:3px}.pnav i{font-size:21px}.pnav .on{color:var(--lime)}
+.set{display:grid;grid-template-columns:30px 1fr 1fr 56px;gap:8px;align-items:center;margin-top:8px}
+.set .box{min-height:52px;border-radius:14px;border:1px solid var(--hair2);display:grid;place-items:center;font:800 18px Manrope}
+.set .done{min-height:52px;border-radius:14px;display:grid;place-items:center;font-size:22px;border:1px solid var(--hair2)}
+.set .done.on{background:var(--lime);color:var(--on-lime);border-color:var(--lime)}
+.check{width:26px;height:26px;border-radius:8px;border:1px solid var(--hair2);display:grid;place-items:center;flex:none}
+.check.on{background:var(--lime);border-color:var(--lime);color:var(--on-lime)}
+.chart{height:120px;display:flex;align-items:flex-end;gap:6px;margin-top:12px}
+.chart i{flex:1;background:var(--glass2);border-radius:6px 6px 0 0}.chart i.l{background:var(--lime)}
+.srch{display:flex;align-items:center;gap:8px;min-width:220px;min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--hair2);color:var(--faint);font-size:13px}
+@media (max-width:1000px){.grid2,.grid3,.split{grid-template-columns:1fr}}
+</style>
+<style>
+.gap{padding:34px 28px;border-bottom:1px dashed var(--hair2)}
+.gap>h2{font-size:24px;margin-bottom:4px}.gap>p{color:var(--muted);font-size:13px;margin-bottom:20px;max-width:760px;line-height:1.8}
+.pair{display:flex;gap:26px;flex-wrap:wrap;align-items:flex-start}
+.pair .phone{margin:0;min-height:0}
+.desk{flex:1;min-width:420px;max-width:720px}
+.lbl{font-size:11px;color:var(--faint);margin-bottom:8px}
+.sheet{border-top:1px solid var(--hair2);border-radius:26px 26px 0 0;background:var(--strong);padding:18px;margin:14px -20px -26px}
+.field{border:1px solid var(--hair2);border-radius:14px;padding:12px 14px;color:var(--faint);margin-bottom:10px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.end{margin-inline-start:auto;display:flex;gap:8px;align-items:center}
+/* Icon font is blocked in the artifact viewer; a dot keeps each icon's place and colour. */
+.ti{display:inline-block;width:.55em;height:.55em;border-radius:50%;background:currentColor;opacity:.8;vertical-align:middle}
+@media (max-width:760px){.main{padding-inline:16px!important}.gap{padding:26px 0}.desk{min-width:0;flex-basis:100%}.pair>div{width:100%}.phone{padding:22px 16px}.sheet{margin-inline:-16px}}
+</style>
+<style>
+.ed{display:grid;grid-template-columns:230px minmax(0,1fr);gap:16px;align-items:start}
+.dlist{display:flex;flex-direction:column;gap:8px;position:sticky;top:75px}
+.dl{padding:12px 14px;border-radius:16px;border:1px solid var(--hair);cursor:pointer}
+.dl b{display:block;font-weight:500}.dl small{color:var(--faint);font-size:11.5px}
+.dl.on{border-color:var(--lime);background:var(--lime-soft)}.dl.on b{color:var(--lime)}
+.dl.rest{border-style:dashed;color:var(--faint)}
+.blk{margin-bottom:14px}
+.bh{display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer}
+.bh .num{font-size:12px;color:var(--faint)}
+.bh .tag{font-size:11px;width:24px;height:24px;border-radius:8px;display:grid;place-items:center;font:800 12px Manrope;background:var(--glass2)}
+.blk.warm .bh .tag{background:var(--warn-soft);color:var(--warn)}
+.blk.main .bh .tag{background:var(--lime-soft);color:var(--lime)}
+.wi{display:grid;grid-template-columns:28px 1fr 120px 34px;gap:12px;align-items:center;padding:10px 18px;border-top:1px solid var(--hair);font-size:13px}
+.wi small{display:block;color:var(--faint);font-size:11.5px}
+.ramp{margin:4px 18px 14px;padding:12px 14px;border-radius:14px;background:var(--glass2);font-size:12.5px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.ramp .s{padding:4px 10px;border-radius:999px;border:1px solid var(--hair2);font-family:Manrope;font-weight:800;font-size:12px}
+.tog{width:38px;height:22px;border-radius:999px;background:var(--lime);position:relative;flex:none}
+.tog::after{content:"";position:absolute;top:3px;inset-inline-end:3px;width:16px;height:16px;border-radius:50%;background:var(--on-lime)}
+.tog.off{background:var(--glass2)}.tog.off::after{inset-inline-end:auto;inset-inline-start:3px;background:var(--faint)}
+.exr{border-top:1px solid var(--hair)}
+.exl{display:grid;grid-template-columns:22px 44px 1fr auto auto auto 28px;gap:12px;align-items:center;padding:12px 18px;cursor:pointer}
+.thumb{width:44px;height:44px;border-radius:12px;background:linear-gradient(160deg,#2a2e24,#141511);border:1px solid var(--hair2);display:grid;place-items:center;font-size:10px;color:var(--faint)}
+.exl small{display:block;color:var(--faint);font-size:11.5px}
+.cell{text-align:center;min-width:64px}.cell small{font-size:10.5px}
+.cell b{font:800 16px Manrope;direction:ltr;unicode-bidi:isolate}
+.exd{display:none;padding:4px 18px 18px}
+.exr.open .exd{display:block}
+.exr.open .exl{background:var(--glass)}
+.big{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
+.bx{border:1px solid var(--hair2);border-radius:16px;padding:12px;text-align:center;background:var(--strong)}
+.bx small{display:block;color:var(--faint);font-size:11.5px;margin-bottom:6px}
+.bx .step{border:0}.bx .step span{font-size:20px;direction:ltr;unicode-bidi:isolate}
+.bx.opt{border-style:dashed;background:none}
+.more{display:flex;gap:8px;flex-wrap:wrap}
+.ss{margin:0 18px;border-inline-start:3px solid var(--lime);border-radius:4px}
+.ssl{font-size:11px;color:var(--lime);padding:8px 18px 0}
+.hint{font-size:12px;color:var(--faint);padding:0 18px 12px}
+.why{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.why .card{padding:16px 18px;font-size:12.5px;line-height:1.9;color:var(--muted)}
+.why h3{font:600 15px Changa,Alexandria;color:var(--ink);margin-bottom:6px}
+.why .x{color:var(--bad);text-align:start}.why .ok{color:var(--lime)}
+.wp{display:flex;align-items:center;gap:10px;padding:12px 0;border-top:1px solid var(--hair);font-size:13px}
+.wp:first-child{border-top:0}
+@media (max-width:1000px){.ed,.why{grid-template-columns:1fr}.dlist{position:static;flex-direction:row;overflow-x:auto}.dl{min-width:140px}}
+@media (max-width:760px){.exl{grid-template-columns:44px 1fr auto 24px}.exl .hide{display:none}.big{grid-template-columns:1fr 1fr}.wi{grid-template-columns:1fr 100px 28px}.wi .h{display:none}}
+</style>
+</head>
+<body>
+<div class="demo"><b>Mockup · محرر التمارين الموحّد</b>
+<button class="on" data-s="ed">محرر الكابتن</button>
+<button data-s="ph">اللاعب بيشوف إيه</button>
+<button data-s="why">إيه اللي اتغيّر</button>
+</div>
+<div class="shell">
+<aside class="side">
+<div class="brand"><span class="logo">K</span>KOCHIVO</div>
+<div class="nav"><i class="ti"></i>الرئيسية</div>
+<div class="nav on"><i class="ti"></i>اللاعبين</div>
+<div class="nav"><i class="ti"></i>المهام</div>
+<div class="navh">التمرين</div>
+<div class="nav"><i class="ti"></i>البرامج الجاهزة</div>
+<div class="navh">الأكل</div>
+<div class="nav"><i class="ti"></i>الأنظمة الغذائية</div>
+<div class="nav"><i class="ti"></i>مكتبة الأكل</div>
+<div class="navh">المتابعة</div>
+<div class="nav"><i class="ti"></i>التقييمات</div>
+<div class="nav"><i class="ti"></i>الدفعات</div>
+<div class="nav"><i class="ti"></i>الإعدادات</div>
+</aside>
+<main class="main">
+
+<!-- ========== Captain editor ========== -->
+<section class="screen on" id="ed">
+<div class="head">
+<span class="av">A</span>
+<div><div class="faint" style="font-size:12px">اللاعبين ‹ علي رجب</div><h1>برنامج علي</h1></div>
+<span class="pill l">نشط · باقي 29 يوم</span>
+<span class="sp"></span>
+<span class="status"><i class="ti lime"></i>اتحفظ</span>
+<button class="btn sm">شوفه كلاعب</button>
+<button class="btn pri">ابعت للاعب</button>
+</div>
+<div class="tabs"><span>نظرة عامة</span><span class="on">التمرين</span><span>الأكل</span><span>التقييمات</span><span>المتابعات</span></div>
+
+<div class="ed">
+<div class="dlist">
+<div class="dl on"><b>دفع · صدر وكتف</b><small>السبت · 5 تمارين · 55 د</small></div>
+<div class="dl"><b>سحب · ضهر وباي</b><small>الاتنين · 5 تمارين · 50 د</small></div>
+<div class="dl"><b>رجل</b><small>الأربع · 4 تمارين · 60 د</small></div>
+<div class="dl rest">راحة باقي الأيام</div>
+<button class="btn sm">+ يوم</button>
+</div>
+
+<div>
+<div class="card pad strong" style="margin-bottom:14px;display:flex;gap:18px;align-items:center;flex-wrap:wrap">
+<div><div class="faint" style="font-size:12px">اسم اليوم</div><h2>دفع · صدر وكتف</h2></div>
+<span class="sp"></span>
+<div class="cell"><small class="faint">تسخين</small><br><b>8 د</b></div>
+<div class="cell"><small class="faint">تمارين</small><br><b>5</b></div>
+<div class="cell"><small class="faint">مجموعات</small><br><b>17</b></div>
+<div class="cell"><small class="faint">المدة</small><br><b>~55 د</b></div>
+</div>
+
+<!-- Warm-up -->
+<div class="card blk warm" id="warm">
+<div class="bh" data-t="warm"><span class="tag">1</span><h2>التسخين</h2><span class="num">3 حاجات · 8 دقايق</span><span class="sp"></span><span class="faint">▾</span></div>
+<div class="wb">
+<div class="hint">اختار جاهز أو اكتب بتاعك. اللاعب بيشوفه أول حاجة قبل التمارين.</div>
+<div class="sugg" id="wsug">
+<span data-w="عجلة خفيفة|5 دقايق">+ عجلة / مشاية 5 د</span>
+<span data-w="دوران كتف وأكواع|10 مرات لكل اتجاه">+ دوران مفاصل</span>
+<span data-w="مطاطة: فتح صدر|15 عدّة">+ مطاطة</span>
+<span data-w="نط حبل|2 دقيقة">+ نط حبل</span>
+<span data-w="قرفصاء بوزن الجسم|15 عدّة">+ قرفصاء خفيف</span>
+</div>
+<div id="wlist">
+<div class="wi"><span class="faint h">⋮⋮</span><div>عجلة خفيفة<small>نبض هادي، تقدر تتكلم</small></div><div class="qty"><input value="5"> د</div><span class="x">✕</span></div>
+<div class="wi"><span class="faint h">⋮⋮</span><div>دوران كتف وأكواع<small>لكل اتجاه</small></div><div class="qty"><input value="10"> مرة</div><span class="x">✕</span></div>
+<div class="wi"><span class="faint h">⋮⋮</span><div>مطاطة: فتح صدر</div><div class="qty"><input value="15"> عدّة</div><span class="x">✕</span></div>
+</div>
+<div class="ramp">
+<span class="tog"></span>
+<span>مجموعات تسخين قبل أول تمرين تقيل</span>
+<span class="s">50% × 10</span><span class="s">70% × 5</span><span class="s">85% × 2</span>
+<span class="faint" style="font-size:11.5px">من الوزن اللي اللاعب هيشيله</span>
+</div>
+</div>
+</div>
+
+<!-- Exercises -->
+<div class="card blk main">
+<div class="bh"><span class="tag">2</span><h2>التمارين</h2><span class="num">5 تمارين · 17 مجموعة</span><span class="sp"></span><span class="faint">▾</span></div>
+
+<div class="exr open" id="ex1">
+<div class="exl" data-x="ex1"><span class="faint">⋮⋮</span><span class="thumb">GIF</span><div>بنش برس بالبار<small>صدر · بار</small></div><div class="cell hide"><small class="faint">مجموعات</small><br><b>4</b></div><div class="cell hide"><small class="faint">عدّات</small><br><b>6–8</b></div><div class="cell hide"><small class="faint">راحة</small><br><b>2:00</b></div><span class="faint">▴</span></div>
+<div class="exd">
+<div class="big">
+<div class="bx"><small>المجموعات</small><div class="step"><button>−</button><span>4</span><button>+</button></div></div>
+<div class="bx"><small>العدّات</small><div class="step"><button>−</button><span>6–8</span><button>+</button></div></div>
+<div class="bx"><small>الراحة</small><div class="step"><button>−</button><span>2:00</span><button>+</button></div></div>
+<div class="bx opt"><small>الشدة (اختياري)</small><div class="faint" style="font-size:12.5px;padding-top:6px">يسيب 2 عدّة</div></div>
+</div>
+<div class="field">ملاحظة للاعب: نزّل البار ببطء على 3 عدّات</div>
+<div class="more"><button class="btn sm">بدائل</button><button class="btn sm">اربطه سوبرسِت</button><button class="btn sm">مجموعات مختلفة</button><span class="sp"></span><button class="btn sm" style="color:var(--bad)">شيل</button></div>
+</div>
+</div>
+
+<div class="exr"><div class="exl" data-x="e2"><span class="faint">⋮⋮</span><span class="thumb">GIF</span><div>ضغط دمبل مايل<small>صدر علوي · دمبل</small></div><div class="cell hide"><b>3</b></div><div class="cell hide"><b>8–12</b></div><div class="cell hide"><b>1:30</b></div><span class="faint">▾</span></div><div class="exd"></div></div>
+
+<div class="ssl">سوبرسِت · من غير راحة بينهم</div>
+<div class="ss">
+<div class="exr" style="border-top:0"><div class="exl"><span class="faint">⋮⋮</span><span class="thumb">GIF</span><div>رفرفة جانبي<small>كتف · دمبل</small></div><div class="cell hide"><b>3</b></div><div class="cell hide"><b>12–15</b></div><div class="cell hide"><b>—</b></div><span class="faint">▾</span></div></div>
+<div class="exr"><div class="exl"><span class="faint">⋮⋮</span><span class="thumb">GIF</span><div>ترايسبس كابل<small>ترايسبس · كابل</small></div><div class="cell hide"><b>3</b></div><div class="cell hide"><b>12–15</b></div><div class="cell hide"><b>1:00</b></div><span class="faint">▾</span></div></div>
+</div>
+
+<div class="exr"><div class="exl"><span class="faint">⋮⋮</span><span class="thumb">GIF</span><div>ضغط كتف بالدمبل<small>كتف · دمبل</small></div><div class="cell hide"><b>4</b></div><div class="cell hide"><b>8–10</b></div><div class="cell hide"><b>1:30</b></div><span class="faint">▾</span></div></div>
+
+<div class="add"><i class="ti"></i><input placeholder="دوّر على تمرين بالعربي أو الإنجليزي… (صدر، دمبل، bench)"></div>
+<div class="sugg"><span class="faint" style="background:none;padding-inline:0">مقترح لليوم ده:</span><span>+ تفتيح صدر بالكابل</span><span>+ متوازي</span><span>+ ضغط آرتشر</span></div>
+</div>
+
+<!-- Cardio -->
+<div class="card blk">
+<div class="bh"><span class="tag">3</span><h2>كارديو بعد التمرين</h2><span class="num">اختياري</span><span class="sp"></span><button class="btn sm">+ كارديو</button></div>
+</div>
+
+<div class="note"><b>ملاحظات للمراجعة:</b> نفس المحرر ده هو اللي بيفتح من صفحة اللاعب ومن "البرامج الجاهزة". الفرق الوحيد إن البرنامج الجاهز مالوش زرار "ابعت للاعب" وبيبقى مكانه "استخدمه للاعب". دوس على أي تمرين يفتح ويقفل. الأرقام بتتكتب من الشمال لليمين علشان "6–8" ما تتقلبش.</div>
+</div>
+</div>
+</section>
+
+<!-- ========== Player view ========== -->
+<section class="screen" id="ph">
+<div class="phones">
+<div class="phone"><div class="body">
+<div class="faint" style="font-size:12px">النهارده · السبت</div>
+<h1 style="font-size:26px">دفع · صدر وكتف</h1>
+<div class="muted" style="font-size:12.5px;margin:4px 0 16px">~55 دقيقة · 5 تمارين</div>
+<div class="card pad" style="border-color:rgb(242 181 68/.35);margin-bottom:12px">
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span class="pill w">1 · سخّن الأول</span><span class="sp"></span><span class="faint num" style="font-size:12px">8 د</span></div>
+<div class="wp"><span class="check on">✓</span>عجلة خفيفة<span class="sp"></span><span class="faint num">5 د</span></div>
+<div class="wp"><span class="check on">✓</span>دوران كتف وأكواع<span class="sp"></span><span class="faint num">10×</span></div>
+<div class="wp"><span class="check"></span>مطاطة: فتح صدر<span class="sp"></span><span class="faint num">15×</span></div>
+</div>
+<div class="card pad strong" style="margin-bottom:12px">
+<div style="display:flex;align-items:center;gap:8px"><span class="pill l">2 · التمارين</span></div>
+<div style="margin-top:10px;font-weight:500">بنش برس بالبار</div>
+<div class="faint" style="font-size:12px;margin-bottom:6px">تسخين: 50% × 10 · 70% × 5 · 85% × 2</div>
+<div class="set"><span class="faint num">1</span><div class="box">60</div><div class="box">8</div><div class="done">✓</div></div>
+<div class="set"><span class="faint num">2</span><div class="box">60</div><div class="box">—</div><div class="done">✓</div></div>
+</div>
+<button class="btn pri" style="width:100%">كمّل التسخين</button>
+</div>
+<div class="pnav"><span class="on"><i class="ti"></i>تمريني</span><span><i class="ti"></i>أكلي</span><span><i class="ti"></i>تقدمي</span><span><i class="ti"></i>أنا</span></div>
+</div>
+<div class="note" style="max-width:360px;margin-top:0">التسخين بيظهر للاعب <b>أول حاجة</b>، وكل بند فيه علامة صح. لو الكابتن شغّل "مجموعات تسخين"، اللاعب بيشوف الأوزان محسوبة من الوزن بتاعه. لو التسخين فاضي، الكارت ده مش بيظهر خالص.</div>
+</div>
+</section>
+
+<!-- ========== What changed ========== -->
+<section class="screen" id="why">
+<h1 style="margin-bottom:16px">محررين ← محرر واحد</h1>
+<div class="why">
+<div class="card"><h3>من محرر صفحة اللاعب</h3>
+<div class="ok">✓ الصف المضغوط (اسم · مجموعات · عدّات · راحة)</div>
+<div class="ok">✓ البحث والاقتراحات تحت التمارين</div>
+<div class="ok">✓ بيانات اللاعب جنب البرنامج</div>
+<div class="x">✕ "محفوظ" المكررة مرتين</div>
+<div class="x">✕ أيام اسمها "اليوم ١ · يوم"</div></div>
+<div class="card"><h3>من المحرر المستقل</h3>
+<div class="ok">✓ كروت كبيرة للمجموعات والعدّات والراحة (بتفتح لما تدوس على التمرين)</div>
+<div class="ok">✓ قايمة الأيام على الجنب</div>
+<div class="ok">✓ ملخص المدة والمجموعات</div>
+<div class="x">✕ RIR ظاهرة دايمًا ← بقت "الشدة (اختياري)"</div>
+<div class="x">✕ "+ إضافة" بعلامتين</div></div>
+<div class="card"><h3>جديد</h3>
+<div class="ok">✓ قسم التسخين بجاهز وبتاعك</div>
+<div class="ok">✓ مجموعات تسخين تلقائية بالنسب</div>
+<div class="ok">✓ أسماء تمارين بالعربي (الإنجليزي تحتها)</div>
+<div class="ok">✓ سوبرسِت باين بخط</div>
+<div class="ok">✓ زرار أساسي واحد: "ابعت للاعب"</div></div>
+</div>
+</section>
+
+</main>
+</div>
+<script>
+document.querySelectorAll('.demo button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.demo button').forEach(x=>x.classList.toggle('on',x===b));document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===b.dataset.s));scrollTo(0,0)});
+document.querySelectorAll('.exl').forEach(l=>l.onclick=()=>{const r=l.parentElement;if(!r.querySelector('.exd'))return;r.classList.toggle('open')});
+document.querySelector('[data-t=warm]').onclick=()=>{const w=document.querySelector('#warm .wb');w.style.display=w.style.display==='none'?'':'none'};
+document.querySelectorAll('#wsug span').forEach(s=>s.onclick=()=>{const [n,q]=s.dataset.w.split('|');const d=document.createElement('div');d.className='wi';d.innerHTML='<span class="faint h">⋮⋮</span><div>'+n+'</div><div class="qty"><input value="'+q.split(' ')[0]+'"> '+q.split(' ').slice(1).join(' ')+'</div><span class="x">✕</span>';document.getElementById('wlist').appendChild(d);s.remove()});
+document.addEventListener('click',e=>{if(e.target.classList.contains('x')&&e.target.closest('#wlist'))e.target.closest('.wi').remove()});
+document.querySelector('.ramp .tog').onclick=e=>e.currentTarget.classList.toggle('off');
+</script>
+</body>
+</html>

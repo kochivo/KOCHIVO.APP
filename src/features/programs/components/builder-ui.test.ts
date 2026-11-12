@@ -15,6 +15,7 @@ import { RirSheet } from './rir-sheet';
 import { ExerciseRow } from './exercise-row';
 import { convertToWeek } from '../weekly-draft';
 import type { DraftExercise, ProgramDraft } from '../types';
+import { emptyWarmup } from '../warmup';
 vi.mock('server-only', () => ({}));
 
 const controls = vi.hoisted(() => ({ clicks: new Map<string, () => void>(), values: [] as unknown[], index: 0, fallback: '' }));
@@ -56,7 +57,7 @@ const row: DraftExercise = { id: 'a', day_id: 'day', exercise_id: 'bench', posit
   reps_min: 8, reps_max: 12, rest_seconds: 90, superset_group: null, rir: null,
   library: { id: 'bench', name_ar: 'بنش', name_en: 'Bench', body_part: 'chest', equipment: null, media_path: 'bench.gif' } };
 const draft: ProgramDraft = { id: 'p', player_id: 'player', status: 'draft', title: 'Plan',
-  days: [{ id: 'day', program_id: 'p', title: 'Chest', position: 1, exercises: [row] }] };
+  days: [{ id: 'day', program_id: 'p', title: 'Chest', position: 1, exercises: [row], warmup: emptyWarmup() }] };
 
 it('keeps one primary send action and a separate status and dirty message', () => {
   const onSave = vi.fn(); const onActivate = vi.fn();
