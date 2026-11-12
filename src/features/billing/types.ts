@@ -2,7 +2,9 @@ import type { playerStatus, RosterPlayer } from '@/features/roster';
 import type { Database, Tables } from '@/types/database';
 
 // The generated RPC type marks amount_egp non-null, but renewals may be recorded without an amount.
-export type Payment = Omit<Database['public']['Functions']['captain_last_payments']['Returns'][number], 'amount_egp'> & { amount_egp: number | null };
+export type Payment = Omit<Database['public']['Functions']['captain_last_payments']['Returns'][number], 'amount_egp'> & {
+  amount_egp: number | null; package_id?: string | null; price_egp?: number | null;
+};
 export type Package = Pick<Tables<'captain_packages'>, 'id' | 'name' | 'price_egp' | 'days'> & {
   kind?: 'days' | 'sessions'; sessions?: number | null;
 };

@@ -54,3 +54,9 @@ it('saves player details without uploading when no photo is selected', async () 
   expect(mock.save).toHaveBeenCalledWith({ full_name: 'Ali', phone: '' });
   expect(mock.upload).not.toHaveBeenCalled();
 });
+it('preserves slug field errors while cleaning up an uncommitted avatar upload', async () => {
+  const result = { error: 'Taken', fieldErrors: { public_slug: 'Taken' } };
+  mock.save.mockResolvedValue(result);
+  expect(await saveCaptainWithAvatar(input, new File(['source'], 'photo.jpg'), t)).toEqual(result);
+  expect(mock.remove).toHaveBeenCalledWith(['captain/new-avatar.webp']);
+});

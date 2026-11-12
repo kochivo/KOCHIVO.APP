@@ -1,8 +1,8 @@
 export const arStd = {
-  usageTail: 'من {limit} لاعبين', currency: 'ج.م',
+  usageTail: 'من {limit} لاعب', currency: 'جنيه',
   previous: 'السابق', next: 'التالي',
-  plan: 'باقتك', usage: '{used} من {limit} لاعبين', upgrade: 'رقِّ الباقة', paid: 'المدفوع هذا الشهر',
-  dues: 'متأخر', endingWeek: 'ينتهي هذا الأسبوع', playerUnit: 'لاعب', money: '{amount} ج.م',
+  plan: 'اشتراكي', usage: '{used} من {limit} لاعب', upgrade: 'رقّي باقتك', paid: 'المدفوع هذا الشهر',
+  dues: 'متأخر', endingWeek: 'ينتهي هذا الأسبوع', playerUnit: 'لاعب', money: '{amount} جنيه',
   player: 'اللاعب', status: 'الحالة', until: 'حتى', last: 'آخر دفعة', active: 'نشط',
   ending: 'ينتهي بعد {n} أيام', overdue: 'متأخر {n} أيام', frozen: 'مجمّد', pending: 'بانتظار التفعيل',
   renew: 'جدّد', remind: 'ذكّره', record: 'سجّل دفعة', unfreeze: 'إلغاء التجميد', activate: 'فعّل',

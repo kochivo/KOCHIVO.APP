@@ -123,7 +123,8 @@ describe('fetchBilling', () => {
         order: () => query, limit: () => query, is: () => query,
         gte: (...args: unknown[]) => { filters(table, 'gte', ...args); return query; },
         then: (resolve: (value: unknown) => void) => resolve({ data: tables[table] ?? [], error: null }),
-        in: async () => ({ data: [{ id: 'player-1', phone: '+201001234567' }], error: phoneError ? { code: '500' } : null }),
+        in: async () => table === 'player_payments' ? { data: [{ id: payment.id, package_id: pkg.id, price_egp: pkg.price_egp }], error: null }
+          : { data: [{ id: 'player-1', phone: '+201001234567' }], error: phoneError ? { code: '500' } : null },
         single: async () => ({ data: table === 'profiles' ? { role: 'captain' } : { tier: 'champion', player_limit: 20, price_egp: 399 }, error: null }),
         maybeSingle: async () => ({ data: { ends_at: '2026-12-01T00:00:00Z' }, error: null }),
       };
@@ -150,6 +151,13 @@ describe('fetchBilling', () => {
     const result = await fetchBilling();
     expect(result.data?.players).toEqual([]);
     expect(result.data?.used).toBe(0);
+  });
+  it('loads the historical package reference and sale price for workspace rows', async () => {
+    vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
+    try {
+      const result = await fetchBilling();
+      expect(result.data?.players[0]?.lastPayment).toMatchObject({ id: payment.id, package_id: pkg.id, price_egp: 1500 });
+    } finally { vi.unstubAllEnvs(); }
   });
   it.each([1, 40])('uses one payment RPC for %s players and maps missing payments to null', async (count) => {
     mocks.rpc.mockImplementation(async (name: string) => ({ error: null,

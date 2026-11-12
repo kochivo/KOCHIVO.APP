@@ -3,6 +3,7 @@ export const arStd = {
   optionalWhatsapp: 'اختياري، بالصيغة الدولية مثل +201012345678', publicSlug: 'رابط صفحتك العامة',
   publicPreview: 'kochivo.site/c/{slug}', copyLink: 'انسخ الرابط', copied: 'تم نسخ الرابط', copyFailed: 'تعذّر النسخ. حاول مجدداً',
   invalidSlug: 'استخدم من 3 إلى 30 حرفاً إنجليزياً صغيراً أو رقماً أو شرطة. قد يكون هذا الاسم محجوزاً',
+  slugTaken: 'هذا الرابط محجوز، اختر رابطًا آخر',
   branding: 'الملف الشخصي والهوية', brandingHint: 'عرّف لاعبيك بنفسك وبطرق التواصل معك', bio: 'نبذة عنك',
   bioPlaceholder: 'مدرب عبر الإنترنت، متخصص في خسارة الدهون والقوة. 6 سنوات خبرة', location: 'المكان',
   locationPlaceholder: 'Cairo, Egypt', automaticTimezone: 'تلقائي', timezone: 'المنطقة الزمنية', timezoneHint: 'نستخدمها لضبط مواعيد الإشعارات والأيام المتتالية',

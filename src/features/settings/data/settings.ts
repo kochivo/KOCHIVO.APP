@@ -11,7 +11,8 @@ import type { SettingsProfile } from '../schema';
 type Row = Record<string, unknown>;
 type ExportTable = 'workout_sessions' | 'set_logs' | 'meal_logs' | 'check_ins' | 'form_checks' |
   'player_intake' | 'coach_clients' | 'programs' | 'nutrition_plans';
-type Result<T> = { data: T; error?: never } | { error: string; data?: never };
+type Result<T> = { data: T; error?: never; fieldErrors?: never } |
+  { error: string; data?: never; fieldErrors?: { public_slug: string } };
 
 
 async function ownSession() {
@@ -49,6 +50,10 @@ export async function saveCaptainProfile(input: unknown): Promise<Result<Setting
     const result = await client.from('profiles').update({ ...parsed.data,
       ...(parsed.data.public_slug !== undefined ? { public_slug: parsed.data.public_slug || null } : {}),
     }).eq('id', id).eq('role', 'captain').select('*').single();
+    if (result.error?.code === '23505' && result.error.message.includes('"profiles_public_slug_key"')) {
+      const error = t('slugTaken');
+      return { error, fieldErrors: { public_slug: error } };
+    }
     if (result.error || !result.data) return { error: failure };
     if (path && previous.data.avatar_path && path !== previous.data.avatar_path) {
       // Cleanup is best effort: a committed profile must never be reported as rolled back.

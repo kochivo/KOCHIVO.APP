@@ -8,6 +8,7 @@ import { Button } from '@/ui/button';
 import { ErrorState } from '@/ui/error-state';
 import { LoadingState } from '@/ui/loading-state';
 import { demoExpiry, useDemoExpiry } from '@/features/demo';
+import { SubscriptionEntry } from '@/features/billing';
 import { messages as legacyMessages } from '../messages';
 import { messages } from '../workspace/messages';
 import { deletionRequestedAt } from '../deletion';
@@ -44,6 +45,7 @@ export function CaptainSettings({ signOut }: { signOut?: ReactNode }) {
           <Button variant="secondary" className="mt-3 min-h-12 rounded-full" onClick={() => setPanel('profile')}>{t('edit')}</Button>
         </section>
         <WorkspacePreferences profile={profile} update={setEdited} />
+        <SubscriptionEntry />
         <section className={card}><h2 className={heading}>{t('invite')}</h2><p className="text-[13px] leading-[1.9] text-muted">{profile.invite_message || t('invitePreview')}</p>
           <Button variant="secondary" className="mt-3 min-h-12 rounded-full" onClick={() => setPanel('invite')}>{t('editInvite')}</Button></section>
         <section className={card}><h2 className={heading}>{t('account')}</h2><div>

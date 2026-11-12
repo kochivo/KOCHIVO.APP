@@ -32,6 +32,10 @@ async function saveWithAvatar<T extends { avatar_path?: string | null }>(
   if (upload.error) throw new Error(t('photoFailed'));
   try {
     const result = await save({ ...input, avatar_path: path });
+    if (result.fieldErrors) {
+      await bucket.remove([path]).catch(() => undefined);
+      return result;
+    }
     if (result.error) throw new Error(result.error);
     return result;
   } catch (error) {

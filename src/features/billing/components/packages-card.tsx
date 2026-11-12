@@ -10,12 +10,12 @@ import { Button, EmptyState, GlassCard, Segmented, Stepper, TextField } from '@/
 import { archivePackage, createPackage } from '../data/finance-actions';
 import type { Package } from '../types';
 
-export function PackagesCard({ packages: initial, onChange }: { packages: Package[]; onChange: (packages: Package[]) => void }) {
+export function PackagesCard({ packages: initial, onChange, initialAdding = false }: { packages: Package[]; onChange: (packages: Package[]) => void; initialAdding?: boolean }) {
   const t = useT(messages);
   const pt = useT(ptMessages);
   const locale = useLocale();
   const [packages, setPackages] = useState(initial);
-  const [adding, setAdding] = useState(false);
+  const [adding, setAdding] = useState(initialAdding);
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
   const [days, setDays] = useState('30');

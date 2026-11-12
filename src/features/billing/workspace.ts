@@ -1,6 +1,23 @@
 import { daysBetween } from '@/lib/dates';
 
 type Subscription = { accessUntil: string; due: number; pending?: boolean; frozenAt?: string | null; sessionsLeft?: number | null };
+export const paymentSegments = ['all', 'overdue', 'ending', 'paid'] as const;
+export type PaymentSegment = typeof paymentSegments[number];
+export function paymentSegment(player: Subscription, today: string): Exclude<PaymentSegment, 'all'> | null {
+  if (player.pending || player.frozenAt) return null;
+  const days = daysBetween(today, player.accessUntil);
+  if (player.due > 0 || (player.sessionsLeft == null && days < 0)) return 'overdue';
+  if (player.sessionsLeft === 0 || (player.sessionsLeft == null && days <= 7)) return 'ending';
+  return 'paid';
+}
+export function segmentCounts(players: Subscription[], today: string) {
+  const counts = { all: players.length, overdue: 0, ending: 0, paid: 0 };
+  for (const player of players) {
+    const segment = paymentSegment(player, today);
+    if (segment) counts[segment]++;
+  }
+  return counts;
+}
 export function billingState(player: Subscription, today: string) {
   const days = daysBetween(today, player.accessUntil);
   if (player.frozenAt) return { label: 'frozen', action: 'unfreeze', tone: 'text-muted bg-surface-raised', days: 0 } as const;

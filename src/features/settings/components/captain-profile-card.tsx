@@ -38,10 +38,14 @@ export function CaptainProfileCard({ profile, onSave, quiet = false }: { profile
     if (!parsed.success) {
       setErrors(Object.fromEntries(parsed.error.issues.map(issue => [issue.path.join('.'), issue.message]))); return;
     }
-    inFlight.current = true; setPending(true); setErrors({});
+    inFlight.current = true; setPending(true); setErrors({}); setStatus('');
     onSave({ ...saved, ...parsed.data });
     try {
       const result = await saveCaptainWithAvatar(parsed.data, file, t);
+      if (result.fieldErrors) {
+        // Restore the saved summary while keeping the form draft and selected photo for correction.
+        onSave(saved); setErrors(result.fieldErrors); return;
+      }
       if (!result.data) throw new Error(result.error);
       setSaved(result.data); setValue(values(result.data)); setFile(null); onSave(result.data);
       if (internationalEnabled()) window.dispatchEvent(new CustomEvent(TIMEZONE_CHANGED, { detail: result.data }));

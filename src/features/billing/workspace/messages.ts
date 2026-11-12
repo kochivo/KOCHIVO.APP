@@ -5,10 +5,10 @@ export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
-    usageTail: 'من {limit} لاعيبة', currency: 'ج.م',
+    usageTail: 'من {limit} لاعب', currency: 'جنيه',
     previous: 'اللي قبلها', next: 'اللي بعدها',
-    plan: 'باقتك', usage: '{used} من {limit} لاعيبة', upgrade: 'كبّر الباقة', paid: 'اتدفع الشهر ده',
-    dues: 'متأخر', endingWeek: 'هيخلص الأسبوع ده', playerUnit: 'لاعب', money: '{amount} ج.م',
+    plan: 'اشتراكي', usage: '{used} من {limit} لاعب', upgrade: 'رقّي باقتك', paid: 'اتدفع الشهر ده',
+    dues: 'متأخر', endingWeek: 'هيخلص الأسبوع ده', playerUnit: 'لاعب', money: '{amount} جنيه',
     player: 'اللاعب', status: 'الحالة', until: 'لحد', last: 'آخر دفع', active: 'نشط',
     ending: 'هيخلص بعد {n} أيام', overdue: 'متأخر {n} أيام', frozen: 'متجمد', pending: 'مستني التفعيل',
     renew: 'جدّد', remind: 'فكّره', record: 'سجّل دفع', unfreeze: 'فكّ التجميد', activate: 'فعّل',
@@ -19,7 +19,7 @@ export const messages = defineMessages({
   en: {
     usageTail: 'of {limit} players', currency: 'EGP',
     previous: 'Previous', next: 'Next',
-    plan: 'Your plan', usage: '{used} of {limit} players', upgrade: 'Upgrade plan', paid: 'Paid this month',
+    plan: 'My subscription', usage: '{used} of {limit} players', upgrade: 'Upgrade plan', paid: 'Paid this month',
     dues: 'Overdue', endingWeek: 'Ending this week', playerUnit: 'players', money: 'EGP {amount}',
     player: 'Player', status: 'Status', until: 'Until', last: 'Last payment', active: 'Active',
     ending: 'Ends in {n} days', overdue: '{n} days overdue', frozen: 'Frozen', pending: 'Awaiting activation',

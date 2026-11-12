@@ -5,8 +5,9 @@ import { formatNumber } from '@/lib/format';
 import { messages } from '../messages';
 import type { PlanSummary } from '../data/plan-summary';
 import { PlanBadgeError } from './plan-badge-error';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 
-// The captain's own plan lives on the billing page; this keeps it visible from the roster.
+// Keep the plan reachable from roster capacity warnings.
 export async function PlanBadge({ data }: { data: Promise<[PlanSummary | null, Locale]> }) {
   const [summary, locale] = await data;
   const t = createT(messages, locale);
@@ -15,7 +16,7 @@ export async function PlanBadge({ data }: { data: Promise<[PlanSummary | null, L
   const tier = plan.tier === 'entry' || plan.tier === 'champion' || plan.tier === 'legend' || plan.tier === 'empire'
     ? t(plan.tier) : plan.tier;
   const full = used >= plan.player_limit;
-  return <Link href="/captain/billing" className="glass inline-flex min-h-12 items-center gap-2 rounded-control px-4 text-sm font-bold">
+  return <Link href={captainWorkspaceEnabled() ? '/captain/settings' : '/captain/billing'} className="glass inline-flex min-h-12 items-center gap-2 rounded-control px-4 text-sm font-bold">
     <span>{t('myPlan')}: {tier}</span>
     <span aria-hidden className="text-muted">·</span>
     <span className={full ? 'text-warn' : 'text-muted'}>

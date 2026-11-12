@@ -40,3 +40,18 @@ it('does not roll back a committed profile when old avatar cleanup throws', asyn
   mock.remove.mockRejectedValue(new Error('storage unavailable'));
   expect((await saveCaptainProfile(input)).data?.full_name).toBe('Ali');
 });
+it('returns a slug field error for the production unique constraint failure', async () => {
+  mock.updated.mockResolvedValue({ error: { code: '23505',
+    message: 'duplicate key value violates unique constraint "profiles_public_slug_key"' } });
+  expect(await saveCaptainProfile({ ...input, public_slug: 'taken' })).toEqual({
+    error: 'This link is taken. Choose another link', fieldErrors: { public_slug: 'This link is taken. Choose another link' },
+  });
+  expect(mock.remove).not.toHaveBeenCalled();
+});
+it.each([
+  { code: '23505', message: 'duplicate key value violates unique constraint "profiles_other_key"' },
+  { code: '42501', message: 'profiles_public_slug_key' },
+])('keeps unrelated database failures generic: %s', async error => {
+  mock.updated.mockResolvedValue({ error });
+  expect(await saveCaptainProfile(input)).toEqual({ error: "Couldn't save changes. Try again" });
+});
