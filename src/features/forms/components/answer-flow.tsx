@@ -12,8 +12,14 @@ import { uploadAnswerPhotos } from '../data/answer-photos';
 import { messages } from '../requests/messages';
 import { QuestionField } from './question-field';
 import type { QuestionValue } from './question-field';
+import { useT } from '@/core/i18n/client';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { messages as v6Messages } from '../v6-messages';
+import { Camera, X } from 'lucide-react';
 
 export function AnswerFlow({data,locale}:{data:RequestData;locale:Locale}) {
+  const v6 = captainWorkspaceEnabled();
+  const v6t = useT(v6Messages);
   const m = messages[locale], key = `${data.request.player_id}:${data.request.id}`;
   const [draft,setDraft] = useState<AnswerDraft>(() => {
     const saved:AnswerDraft = {};
@@ -62,22 +68,36 @@ export function AnswerFlow({data,locale}:{data:RequestData;locale:Locale}) {
     <h1 className="text-2xl font-bold">{m.done}</h1><Link href={`/${locale}/player`} className="flex min-h-12 items-center text-lime">{m.home}</Link></section>;
   if (data.request.reviewed_at) return <p>{m.reviewed}</p>;
   if (!q) return <p>{m.unavailable}</p>;
-  return <section className="glass-strong space-y-5 rounded-card p-6" aria-busy={state === 'sending' || uploading}>
-    <h1 className="text-2xl font-bold">{data.title}</h1>
+  return <section className={v6 ? 'space-y-5' : 'glass-strong space-y-5 rounded-card p-6'} aria-busy={state === 'sending' || uploading}>
+    {v6 ? <header className="flex items-center gap-2 text-xs text-faint">
+      <Link href={`/${locale}/player`} aria-label={v6t('close')} className="grid min-h-12 min-w-12 place-items-center"><X aria-hidden className="size-5" /></Link>
+      <h1 className="min-w-0 flex-1">{data.title}</h1><span>{v6t('progress', { n: step + 1, total: data.questions.length })}</span>
+    </header> : <h1 className="text-2xl font-bold">{data.title}</h1>}
     <progress className="w-full accent-lime" value={step+1} max={data.questions.length} aria-label={data.title} />
     <form onSubmit={e => {e.preventDefault();void advance();}}>
       <fieldset disabled={state === 'sending' || uploading}>
-        <QuestionField key={q.id} question={{...q,required:q.type === 'photos' && draft[q.id]?.photo_paths.length ? false : q.required}}
-          locale={locale} value={draft[q.id]?.value ?? null} onChange={value => update(value)} onPhotos={files => void photos(files)} />
+        {v6 && q.type === 'photos' ? <div className="space-y-4">
+          <h2 className="font-display text-[22px] font-semibold">{locale === 'en' ? q.label_en : q.label_ar}</h2>
+          <div className="glass flex aspect-[3/4] flex-col items-center justify-center gap-4 rounded-card border border-line-soft p-5 text-muted">
+            <Camera aria-hidden className="size-8" /><p className="text-sm">{v6t('photo')}</p>
+            <label className="glass flex min-h-12 cursor-pointer items-center rounded-full border border-line-soft px-5">{v6t('camera')}
+              <input type="file" accept="image/*" capture="user" className="sr-only" aria-label={v6t('camera')} onChange={event => void photos(event.target.files)} /></label>
+            <label className="glass flex min-h-12 cursor-pointer items-center rounded-full border border-line-soft px-5">{v6t('gallery')}
+              <input type="file" accept="image/*" multiple className="sr-only" aria-label={v6t('gallery')} onChange={event => void photos(event.target.files)} /></label>
+          </div>
+        </div> : <QuestionField key={q.id} question={{...q,required:q.type === 'photos' && draft[q.id]?.photo_paths.length ? false : q.required}}
+          locale={locale} value={draft[q.id]?.value ?? null} onChange={value => update(value)} onPhotos={files => void photos(files)} />}
         {q.type === 'photos' && !!draft[q.id]?.photo_paths.length && <p className="text-sm text-muted">{m.savedPhotos}</p>}
         {uploading && <p role="status">{m.upload}</p>}
         {error && <p role="alert" className="py-3 text-danger">{error}</p>}
         <div className="mt-5 flex gap-3">
-          {step>0 && <button type="button" onClick={() => {setStep(step-1);setError('');}} className="min-h-12 px-5">{m.previous}</button>}
-          <button type="submit" className="min-h-12 flex-1 rounded-control bg-lime px-5 font-bold text-on-lime">
+          {(step>0 || v6) && <button type="button" onClick={() => {if (step > 0) setStep(step-1);setError('');}} disabled={v6 && step === 0}
+            className={v6 ? 'min-h-12 flex-1 rounded-full border border-line-soft px-5 disabled:opacity-40' : 'min-h-12 px-5'}>{v6 ? v6t('back') : m.previous}</button>}
+          <button type="submit" className={v6 ? 'min-h-12 flex-[2] rounded-full bg-lime px-5 font-semibold text-on-lime' : 'min-h-12 flex-1 rounded-control bg-lime px-5 font-bold text-on-lime'}>
             {state === 'sending' ? m.submitting : error ? m.retry : step === data.questions.length-1 ? m.finish : m.next}</button>
         </div>
       </fieldset>
     </form>
+    {v6 && <p className="text-center text-[11.5px] text-faint">{v6t('offline')}</p>}
   </section>;
 }

@@ -14,6 +14,8 @@ import { TeamBoard } from './team-board';
 import { HallOfFame } from './hall-of-fame';
 import { PointsLog } from './points-log';
 import { LevelUpPanel } from './level-up-panel';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { RankV6 } from './rank-v6';
 
 export function RankScreen({ data, status, onRetry, playerId }: {
   data?: RankData; status?: RankStatus; onRetry?: () => void; playerId?: string;
@@ -29,7 +31,8 @@ export function RankScreen({ data, status, onRetry, playerId }: {
   return <main className="mx-auto max-w-lg space-y-4 px-5 pt-6 pb-32">
     <h1 id="rank-title" tabIndex={-1} className="text-2xl font-extrabold">{t('pageTitle')}</h1>
     {state === 'error' ? <ErrorState message={t('error')} retryLabel={t('retry')} onRetry={onRetry ?? loaded.retry} /> :
-      state === 'loading' || !active ? <LoadingState variant="cards" /> : <>
+      state === 'loading' || !active ? <LoadingState variant="cards" /> : captainWorkspaceEnabled()
+        ? <RankV6 data={active} holdsCrown={holdsCrown} retry={onRetry ?? loaded.retry} /> : <>
         <RankHero lifetime={active.points.lifetime} holdsCrown={holdsCrown} />
         <RankJourney lifetime={active.points.lifetime} />
         <CrownRace points={active.points} holdsCrown={holdsCrown} />

@@ -9,6 +9,8 @@ import { waterGoalMl } from '../water';
 import { messages } from '../messages';
 import { WaterStrip } from './water-strip';
 import { ReadinessRow } from './readiness-row';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { MorningResult } from './morning-result';
 
 const RestHero = dynamic(() => import('./rest-hero').then(module => module.RestHero));
 const MorningQuestions = dynamic(() => import('./morning-questions').then(module => module.MorningQuestions));
@@ -26,6 +28,7 @@ export function DailyPanel({ playerId, today, rest, coachRest, tomorrow, tomorro
     {check.row === undefined ? <LoadingState variant="detail" /> : <>
       {rest ? <>
         <MorningQuestions row={check.row} onChange={patch => void check.save(patch)} disabled={!playerId} />
+        {captainWorkspaceEnabled() && <MorningResult row={check.row} goal={goal} />}
         <WaterGlass waterMl={check.row?.water_ml ?? 0} goal={goal} onAdd={() => void check.save({}, 250)} disabled={!playerId} />
         <p className="flex items-center gap-2 text-sm text-muted"><Activity aria-hidden className="size-5 text-sore" />{t('stretch')}</p>
         {tomorrowRest ? <p className="text-sm text-muted">{t('tomorrowRest')}</p> :

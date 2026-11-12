@@ -14,11 +14,13 @@ import { scanError } from '../errors';
 import type { Scan } from '../types';
 import { ScanMetrics } from './scan-metrics';
 import { ScanFile } from './scan-file';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 
 const ScanSheet = dynamic(() => import('./scan-sheet').then(module => module.ScanSheet), { ssr: false });
 
 export function ScanSection({ playerId }: { playerId?: string }) {
   const t = useT(messages);
+  const v6 = captainWorkspaceEnabled() && !playerId;
   const locale = useLocale();
   const [data, setData] = useState<{ scans: Scan[]; target: number | null; timezone?: string }>();
   const [failed, setFailed] = useState(false);
@@ -51,8 +53,12 @@ export function ScanSection({ playerId }: { playerId?: string }) {
   const warnings = now ? alerts(scans, now, data?.timezone) : null;
   const date = (scan: Scan) => formatDateAr(scan.scan_date, { day: 'numeric', month: 'short', year: 'numeric' }, locale);
   return <section className="space-y-4" aria-label={t('title')}>
-    <header className="flex flex-wrap items-center justify-between gap-2"><h2 className="text-xl font-bold">{t('title')}</h2>
-      {!playerId && <Button variant="secondary" className="min-h-12" onClick={() => setSheet(true)}>{t('add')}</Button>}</header>
+    {v6 && data && scans.length > 0 && !failed ? <div className="glass-strong space-y-4 rounded-card border border-line-soft p-5">
+      <header className="flex flex-wrap items-center justify-between gap-2"><h2 className="font-display text-[19px] font-semibold">{t('title')}</h2>
+        <Button variant="secondary" className="min-h-12 rounded-full" onClick={() => setSheet(true)}>{t('add')}</Button></header>
+      <ScanMetrics scans={scans} total={false} target={data.target} embedded />
+    </div> : <header className="flex flex-wrap items-center justify-between gap-2"><h2 className="text-xl font-bold">{t('title')}</h2>
+      {!playerId && <Button variant="secondary" className="min-h-12" onClick={() => setSheet(true)}>{t('add')}</Button>}</header>}
     {failed ? <ErrorState message={t('error')} retryLabel={t('retry')} onRetry={() => setRetry(value => value + 1)} /> : !data ? <LoadingState variant="cards" /> : <>
       {playerId && warnings && <div className="space-y-2">
         {warnings.overdue && <p className="glass rounded-card p-4 text-muted">{t('overdue')}</p>}
@@ -60,7 +66,7 @@ export function ScanSection({ playerId }: { playerId?: string }) {
       </div>}
       {!scans.length ? <EmptyState icon={ScanLine} title={t('empty')} body={t('emptyBody')} /> : <>
         {playerId && <h3 className="text-sm text-muted">{t('latestMeasurements')}</h3>}
-        <ScanMetrics scans={scans} total={Boolean(playerId)} target={data.target} />
+        {!v6 && <ScanMetrics scans={scans} total={Boolean(playerId)} target={data.target} />}
         {playerId ? <div className="grid grid-cols-2 gap-3">
           {[{ label: 'first', scan: scans[0] }, { label: 'latest', scan: scans.at(-1) }].map(({ label, scan }) => scan &&
             <div key={label} className="glass min-w-0 space-y-2 rounded-card p-3">

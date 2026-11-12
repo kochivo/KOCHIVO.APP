@@ -26,8 +26,10 @@ import { GlassToggle } from './glass-toggle';
 import { demoExpiry, useDemoExpiry } from '@/features/demo';
 import { TourReplay } from '@/ui/tour-replay';
 import { PushToggleCard } from '@/features/notifications';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 
 const CaptainProfileCard = dynamic(() => import('./captain-profile-card').then(module => module.CaptainProfileCard));
+const PlayerAccount = dynamic(() => import('./player-account').then(module => module.PlayerAccount), { loading: () => <LoadingState variant="detail" /> });
 const InstallButton = dynamic(() => import('@/features/install').then(module => module.InstallButton), { ssr: false });
 const ProfileForm = dynamic(() => import('./profile-form').then(module => module.ProfileForm), { loading: () => <LoadingState variant="detail" /> });
 
@@ -36,7 +38,8 @@ export function SettingsScreen({ signOut }: { signOut?: ReactNode }) {
   const appearanceT = useT(appearanceMessages);
   const locale = useLocale();
   const router = useRouter();
-  const playerSettings = usePathname().startsWith('/player');
+  const pathname = usePathname();
+  const playerSettings = captainWorkspaceEnabled() ? /^(?:\/(?:ar|en))?\/player(?:\/|$)/.test(pathname) : pathname.startsWith('/player');
   const [language, setLanguage] = useState(locale);
   const [languageError, setLanguageError] = useState('');
   const [languagePending, setLanguagePending] = useState(false);
@@ -69,6 +72,15 @@ export function SettingsScreen({ signOut }: { signOut?: ReactNode }) {
     });
     return () => { active = false; };
   }, [attempt, t]);
+  if (playerSettings && captainWorkspaceEnabled()) return <PlayerAccount profile={profile}
+    profileForm={loading ? <LoadingState variant="detail" /> : error ? <ErrorState message={error} retryLabel={t('tryAgain')} onRetry={() => {
+      setLoading(true); setError(''); setAttempt(value => value + 1);
+    }} /> : profile ? <ProfileForm profile={profile} /> : null}
+    install={<InstallButton role="player" />} signOut={signOut}>
+    <GlassToggle /><ThemeSwitch /><PushToggleCard />
+    {profile && <><TourReplay role={profile.role} /><ExportCard />
+      {!demo && !demoExpiry(profile) && <DeleteAccountCard requestedAt={profile.deletion_requested_at} />}</>}
+  </PlayerAccount>;
   return <div className="mx-auto max-w-3xl space-y-5">
     {playerSettings && <Link href="/player" className="inline-flex min-h-12 items-center text-muted">{t('backToPlayer')}</Link>}
     <h1 className="text-2xl font-extrabold">{t('settings')}</h1>

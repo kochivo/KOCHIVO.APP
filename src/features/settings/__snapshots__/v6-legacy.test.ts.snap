@@ -1,0 +1,20 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`preserves original account, notifications, assessment, supplements and intake option markup 1`] = `
+[
+  [
+    "2481084ef6fdd20747eeb74b011cd048e5d8dde60f3dbf2be341e8fd1f8f3702",
+    "3202baa820306039ce29aa5e0bb72bf839b272b3ef598a69aae9f7a55705ee06",
+    "3881103375b75d61bad2c811d80bca333b14a8ff30e796447a6d79de64fb1979",
+    "29757c79e4a078356f577d110e6b3b10473cdd59a19af923f0d6abea075c6401",
+    "2e2d4dd6971572363f538dc26d5a170ec35b8840bae172421d63d9a155e0cea5",
+  ],
+  [
+    "42c2cda19d2e5c571e5e87513854ee5a1a71df9a5cce4e07951754eb2c618453",
+    "274cf20993db5dec167b75bcd56cbddabc140b0fd23b926652e21ea56824e35e",
+    "cd9f843225b9a29fa66e79c6c6eb59b799c71af6a753df56f885c5438c00a0cd",
+    "2f1b6afcd1fc4158db01984f11bcd8f4f1dfa667958fff5bd114ea23947a7d0d",
+    "a7853004ca790e89763760f59ccb990459854405061be1ac94f6df738c8f0d07",
+  ],
+]
+`;

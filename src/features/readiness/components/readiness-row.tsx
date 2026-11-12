@@ -23,6 +23,6 @@ export function ReadinessRow({ row, goal, onChange }: {
       <p className="flex-1 text-sm">{row?.sleep_hours != null && row.soreness != null ? t('readiness', { n: score?.score ?? 0 }) : t('unanswered')}</p>
       <button id="readiness-edit" type="button" onClick={() => setOpen(true)} className="min-h-12 px-3 font-bold text-muted">{t('edit')}</button>
     </div>
-    {open && <QuestionsSheet row={row} onChange={onChange} onClose={() => setOpen(false)} />}
+    {open && <QuestionsSheet row={row} goal={goal} onChange={onChange} onClose={() => setOpen(false)} />}
   </>;
 }
