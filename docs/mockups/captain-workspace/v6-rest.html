@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KOCHIVO v6 rest</title>
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;500;600&family=Changa:wght@500;600;700&family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+:root{--deep:#070808;--glass:rgb(255 255 255/.025);--glass2:rgb(255 255 255/.045);--strong:rgb(255 255 255/.07);--hair:rgb(242 242 238/.07);--hair2:rgb(242 242 238/.12);--ink:#f4f4f1;--muted:#a6abb0;--faint:#6f747a;--lime:#b6e94f;--on-lime:#101418;--lime-soft:rgb(182 233 79/.10);--warn:#f2b544;--warn-soft:rgb(242 181 68/.10);--bad:#ff8a7a}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:radial-gradient(1100px 480px at 75% -200px,rgb(182 233 79/.07),transparent 70%),var(--deep);color:var(--ink);font-family:Alexandria,system-ui,sans-serif;font-size:14px;min-height:100vh}
+button,input{font:inherit;color:inherit}
+.num{font-family:Manrope,sans-serif;font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}.faint{color:var(--faint)}.lime{color:var(--lime)}
+.demo{position:sticky;top:0;z-index:30;display:flex;gap:6px;align-items:center;padding:10px 16px;background:rgb(7 8 8/.92);backdrop-filter:blur(10px);border-bottom:1px dashed var(--hair2);overflow-x:auto}
+.demo b{font-size:11px;color:var(--faint);white-space:nowrap;margin-inline-end:6px}
+.demo button{white-space:nowrap;border:1px dashed var(--hair2);background:none;border-radius:999px;padding:6px 12px;font-size:12px;color:var(--muted);cursor:pointer}
+.demo button.on{border-style:solid;border-color:var(--lime);color:var(--lime)}
+.shell{display:grid;grid-template-columns:236px minmax(0,1fr);min-height:calc(100vh - 49px)}
+.side{border-inline-end:1px solid var(--hair);padding:22px 14px;display:flex;flex-direction:column;gap:2px;position:sticky;top:49px;height:calc(100vh - 49px)}
+.brand{display:flex;align-items:center;gap:10px;padding:0 10px 20px;font-family:Manrope;font-weight:800;letter-spacing:.08em;font-size:13px}
+.logo{width:34px;height:34px;border-radius:11px;background:var(--lime);color:var(--on-lime);display:grid;place-items:center}
+.nav{display:flex;align-items:center;gap:12px;min-height:44px;padding:0 12px;border-radius:14px;color:var(--muted);cursor:pointer}
+.nav i{font-size:19px}.nav.on{background:var(--glass2);color:var(--ink)}
+.navh{font-size:11px;color:var(--faint);padding:14px 12px 4px;letter-spacing:.02em}
+.main{padding:26px 36px 60px;min-width:0}
+.screen{display:none}.screen.on{display:block}
+h1{font-family:Changa,Alexandria,sans-serif;font-size:30px;font-weight:600;line-height:1.15}
+h2{font-family:Changa,Alexandria,sans-serif;font-size:19px;font-weight:600}
+.head{display:flex;align-items:center;gap:14px;margin-bottom:18px;flex-wrap:wrap}
+.sp{flex:1}
+.btn{min-height:46px;padding:0 20px;border-radius:999px;border:1px solid var(--hair2);background:transparent;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;white-space:nowrap}
+.btn.sm{min-height:38px;padding:0 14px;font-size:12.5px}
+.pri{background:var(--lime);border-color:var(--lime);color:var(--on-lime);font-weight:600}
+.card{background:var(--glass);border:1px solid var(--hair);border-radius:22px}
+.pad{padding:18px 20px}
+.strong{background:var(--strong);border-color:var(--hair2)}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--hair);margin-bottom:20px}
+.tabs span{padding:12px 16px;color:var(--faint);cursor:pointer;border-bottom:2px solid transparent}
+.tabs span.on{color:var(--ink);border-color:var(--lime)}
+.status{font-size:12px;color:var(--faint);display:inline-flex;align-items:center;gap:6px}
+.layout{display:grid;grid-template-columns:300px minmax(0,1fr);gap:18px;align-items:start}
+.facts{position:sticky;top:75px;display:flex;flex-direction:column;gap:12px}
+.fact{display:flex;justify-content:space-between;padding:10px 0;border-top:1px solid var(--hair);font-size:13px}
+.fact:first-of-type{border-top:0}
+.fact b{font-family:Manrope;font-weight:800}
+.choice{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+.choice .card{padding:20px;cursor:pointer}
+.choice .card.on{border-color:var(--lime);background:var(--lime-soft)}
+.choice i{font-size:24px;color:var(--lime)}
+.days{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.day{min-height:40px;padding:0 16px;border-radius:999px;border:1px solid var(--hair);display:inline-flex;align-items:center;gap:6px;color:var(--muted);cursor:pointer}
+.day.on{background:var(--ink);color:var(--deep);border-color:var(--ink)}
+.ex{display:grid;grid-template-columns:28px 1fr auto auto auto 34px;gap:12px;align-items:center;padding:12px 16px;border-top:1px solid var(--hair)}
+.ex:first-child{border-top:0}
+.ex .h{color:var(--faint);cursor:grab}
+.ex small{display:block;color:var(--faint);font-size:11.5px}
+.step{display:inline-flex;align-items:center;border:1px solid var(--hair2);border-radius:999px;overflow:hidden}
+.step button{width:34px;height:34px;background:none;border:0;cursor:pointer;color:var(--muted)}
+.step span{min-width:44px;text-align:center;font-family:Manrope;font-weight:800}
+.add{display:flex;align-items:center;gap:10px;padding:12px 16px;border-top:1px dashed var(--hair2);color:var(--faint)}
+.add input{flex:1;background:none;border:0;outline:0}
+.sugg{display:flex;gap:6px;flex-wrap:wrap;padding:0 16px 14px}
+.sugg span{font-size:12px;padding:6px 12px;border-radius:999px;background:var(--glass2);color:var(--muted);cursor:pointer}
+.targets{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.t{padding:14px 16px}
+.t .l{font-size:12px;color:var(--faint);display:flex;justify-content:space-between}
+.t .v{font:800 22px Manrope;margin:6px 0 8px}
+.t .v small{font:500 12px Alexandria;color:var(--faint)}
+.bar{height:6px;border-radius:6px;background:rgb(255 255 255/.06);position:relative;overflow:hidden}
+.bar i{position:absolute;inset-block:0;inset-inline-start:0;border-radius:6px;background:var(--lime)}
+.bar.over i{background:var(--warn)}
+.meal{margin-bottom:12px}
+.meal .mh{display:flex;align-items:center;gap:10px;padding:14px 18px}
+.meal .mh .k{margin-inline-start:auto;font-size:12px;color:var(--faint)}
+.food{display:grid;grid-template-columns:1fr 120px 70px 34px;gap:12px;align-items:center;padding:10px 18px;border-top:1px solid var(--hair);font-size:13px}
+.food small{color:var(--faint);font-size:11.5px}
+.qty{display:flex;align-items:center;gap:6px;border:1px solid var(--hair2);border-radius:12px;padding:4px 10px}
+.qty input{width:44px;background:none;border:0;outline:0;font-family:Manrope;font-weight:800;text-align:center}
+.x{color:var(--faint);cursor:pointer;text-align:center}
+.stepper{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.stepper span{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:var(--faint)}
+.stepper b{width:24px;height:24px;border-radius:50%;border:1px solid var(--hair2);display:grid;place-items:center;font:800 11px Manrope}
+.stepper .on{color:var(--ink)}.stepper .on b{background:var(--lime);color:var(--on-lime);border-color:var(--lime)}
+.week{display:flex;gap:6px}
+.week div{flex:1;text-align:center;font-size:11px;color:var(--faint)}
+.week i{display:block;width:10px;height:10px;border-radius:50%;margin:6px auto 0;border:1px solid var(--hair2)}
+.week i.f{background:var(--lime);border-color:var(--lime)}.week i.p{background:var(--faint);border-color:var(--faint)}
+.phone{width:380px;margin:0 auto;border:1px solid var(--hair2);border-radius:36px;padding:26px 20px;min-height:640px;background:var(--deep)}
+.note{margin-top:26px;border:1px dashed var(--hair2);border-radius:18px;padding:14px 18px;font-size:12.5px;color:var(--muted);line-height:1.9}
+.note b{color:var(--lime);font-weight:500}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media (max-width:1000px){.layout,.compare{grid-template-columns:1fr}.facts{position:static}.targets{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:760px){.shell{grid-template-columns:1fr}.side{display:none}.main{padding:18px 16px 60px}.choice{grid-template-columns:1fr}.ex{grid-template-columns:1fr auto 34px}.ex .h,.ex .hide{display:none}.food{grid-template-columns:1fr 100px 34px}.food .hide{display:none}.phone{width:100%}}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.row{display:flex;align-items:center;gap:12px;padding:14px 18px;border-top:1px solid var(--hair);min-height:64px}
+.row:first-child{border-top:0}
+.row small{display:block;color:var(--faint);font-size:11.5px}
+.row .end{margin-inline-start:auto;display:flex;align-items:center;gap:10px}
+.av{width:38px;height:38px;border-radius:50%;background:var(--glass2);border:1px solid var(--hair2);display:grid;place-items:center;font-size:12px;flex:none}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;font-size:11.5px;background:var(--glass2);color:var(--muted);white-space:nowrap}
+.pill.l{background:var(--lime-soft);color:var(--lime)}.pill.w{background:var(--warn-soft);color:var(--warn)}.pill.b{background:rgb(255 138 122/.1);color:var(--bad)}
+.ico{width:38px;height:38px;border-radius:12px;background:var(--glass2);display:grid;place-items:center;flex:none;font-size:18px}
+.split{display:grid;grid-template-columns:340px minmax(0,1fr);gap:16px;align-items:start}
+.photo{aspect-ratio:3/4;border-radius:16px;background:linear-gradient(160deg,#20231b,#0f100e);border:1px solid var(--hair);display:grid;place-items:center;color:var(--faint);font-size:12px}
+.vol{display:grid;grid-template-columns:70px 1fr 50px;gap:10px;align-items:center;font-size:12.5px;margin-top:10px}
+.dots{display:flex;gap:6px}.dots i{width:12px;height:12px;border-radius:50%;background:var(--glass2);border:1px solid var(--hair2)}
+.dots i.g{background:var(--lime);border-color:var(--lime)}.dots i.y{background:var(--warn);border-color:var(--warn)}.dots i.r{background:var(--bad);border-color:var(--bad)}
+.phones{display:flex;gap:26px;flex-wrap:wrap;justify-content:center}
+.phone{width:375px;border:1px solid var(--hair2);border-radius:38px;padding:22px 18px 0;min-height:760px;background:var(--deep);display:flex;flex-direction:column}
+.phone .body{flex:1}
+.pnav{display:flex;justify-content:space-around;border-top:1px solid var(--hair);margin:16px -18px 0;padding:10px 0 14px;font-size:11px;color:var(--faint)}
+.pnav span{display:flex;flex-direction:column;align-items:center;gap:3px}.pnav i{font-size:21px}.pnav .on{color:var(--lime)}
+.set{display:grid;grid-template-columns:30px 1fr 1fr 56px;gap:8px;align-items:center;margin-top:8px}
+.set .box{min-height:52px;border-radius:14px;border:1px solid var(--hair2);display:grid;place-items:center;font:800 18px Manrope}
+.set .done{min-height:52px;border-radius:14px;display:grid;place-items:center;font-size:22px;border:1px solid var(--hair2)}
+.set .done.on{background:var(--lime);color:var(--on-lime);border-color:var(--lime)}
+.check{width:26px;height:26px;border-radius:8px;border:1px solid var(--hair2);display:grid;place-items:center;flex:none}
+.check.on{background:var(--lime);border-color:var(--lime);color:var(--on-lime)}
+.chart{height:120px;display:flex;align-items:flex-end;gap:6px;margin-top:12px}
+.chart i{flex:1;background:var(--glass2);border-radius:6px 6px 0 0}.chart i.l{background:var(--lime)}
+.srch{display:flex;align-items:center;gap:8px;min-width:220px;min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--hair2);color:var(--faint);font-size:13px}
+@media (max-width:1000px){.grid2,.grid3,.split{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="demo"><b>باقي الصفحات · للموافقة</b>
+  <button class="on" data-s="home">الرئيسية</button>
+  <button data-s="tasks">المهام</button>
+  <button data-s="follow">ملف اللاعب · المتابعات</button>
+  <button data-s="plans">خطط التمارين</button>
+  <button data-s="mealplans">الأنظمة الغذائية</button>
+  <button data-s="foods">مكتبة الأكلات</button>
+  <button data-s="billing">الدفعات</button>
+  <button data-s="settings">الإعدادات</button>
+  <button data-s="app">تطبيق اللاعب</button>
+  <button data-s="app2">تطبيق اللاعب ٢</button>
+</div>
+<div class="shell">
+<aside class="side">
+  <div class="brand"><span class="logo">K</span>KOCHIVO</div>
+  <div class="nav on" data-n="home"><i class="ti ti-layout-grid"></i>الرئيسية</div>
+  <div class="nav" data-n="follow"><i class="ti ti-users"></i>اللاعبين</div>
+  <div class="nav" data-n="tasks"><i class="ti ti-inbox"></i>المهام <span class="pill l num" style="margin-inline-start:auto">4</span></div>
+  <div class="navh">التمارين</div>
+  <div class="nav" data-n="plans"><i class="ti ti-barbell"></i>خطط التمارين</div>
+  <div class="navh">الأكل</div>
+  <div class="nav" data-n="mealplans"><i class="ti ti-salad"></i>الأنظمة الغذائية</div>
+  <div class="nav" data-n="foods"><i class="ti ti-apple"></i>مكتبة الأكلات</div>
+  <div class="navh">المتابعة</div>
+  <div class="nav" data-n="assess"><i class="ti ti-clipboard-check"></i>التقييمات</div>
+  <div style="height:10px"></div>
+  <div class="nav" data-n="billing"><i class="ti ti-credit-card"></i>الدفعات</div>
+  <div class="nav" data-n="settings"><i class="ti ti-settings"></i>الإعدادات</div>
+  <div style="margin-top:auto" class="card pad"><b style="font-weight:500">باقة البداية</b><div class="faint num" style="font-size:12px;margin:4px 0 8px">3 من 5 لاعيبة</div><div class="bar"><i style="width:60%"></i></div></div>
+</aside>
+<main class="main">
+
+<!-- Captain home -->
+<section class="screen on" id="home">
+  <div class="head"><div><div class="faint" style="font-size:12px">الخميس · 12 نوفمبر</div><h1>صباح الخير يا كابتن علي</h1></div><span class="sp"></span><button class="btn"><i class="ti ti-user-plus"></i>ضيف لاعب</button></div>
+  <div class="targets">
+    <div class="card t"><div class="l"><span>لاعيبة نشطين</span></div><div class="v num">3 <small>من 5</small></div></div>
+    <div class="card t"><div class="l"><span>التزام الأسبوع</span></div><div class="v num">74%</div><div class="bar"><i style="width:74%"></i></div></div>
+    <div class="card t"><div class="l"><span>متابعات مستنياك</span></div><div class="v num">2</div></div>
+    <div class="card t"><div class="l"><span>اتدفع الشهر ده</span></div><div class="v num">4,500 <small>ج.م</small></div></div>
+  </div>
+  <div class="grid2" style="grid-template-columns:1.4fr 1fr">
+    <div class="card"><div class="pad" style="padding-bottom:6px"><h2>اعمل إيه النهارده</h2></div>
+      <div class="row"><span class="ico lime"><i class="ti ti-message-check"></i></span><div>راجع 2 check-in<small>Ali Abdo · Omar Samir</small></div><div class="end"><button class="btn sm pri">ابدأ المراجعة</button></div></div>
+      <div class="row"><span class="ico" style="color:var(--warn)"><i class="ti ti-salad"></i></span><div>Ali Abdo مالوش نظام أكل<small>الأهداف جاهزة من بياناته</small></div><div class="end"><button class="btn sm">اعمل نظام</button></div></div>
+      <div class="row"><span class="ico" style="color:var(--warn)"><i class="ti ti-calendar-due"></i></span><div>اشتراك Mona هيخلص بعد 3 أيام<small>آخر دفع 12 أكتوبر</small></div><div class="end"><button class="btn sm">فكّرها</button></div></div>
+      <div class="row"><span class="ico" style="color:var(--bad)"><i class="ti ti-zzz"></i></span><div>Omar ماتمرنش من 7 أيام<small>آخر تمرين 5 نوفمبر</small></div><div class="end"><button class="btn sm">ابعتله</button></div></div>
+    </div>
+    <div class="card"><div class="pad" style="padding-bottom:6px"><h2>آخر حاجات حصلت</h2></div>
+      <div class="row"><span class="av">A</span><div>Ali خلّص اليوم الأول<small>من ساعة · 10 مجموعات</small></div></div>
+      <div class="row"><span class="av">M</span><div>Mona ردّت على المتابعة الأسبوعية<small>من 3 ساعات</small></div></div>
+      <div class="row"><span class="av">O</span><div>Omar سجّل وزن 84.2 كجم<small>امبارح</small></div></div>
+    </div>
+  </div>
+  <div class="note"><b>الفكرة:</b> أول ما تفتح تعرف تعمل إيه: قايمة مهام مرتبة بالأهم، كل واحدة بزرار واحد. الأرقام فوق مختصرة. أول مهمة بس هي الزرار الأساسي. لو لسه مفيش لاعيبة: كارت واحد «ضيف أول لاعب» بـ 3 خطوات.</div>
+</section>
+
+<!-- Tasks -->
+<section class="screen" id="tasks">
+  <div class="head"><h1>المهام</h1></div>
+  <div class="days"><span class="day on">الكل <b class="num" style="opacity:.6">4</b></span><span class="day">check-ins <b class="num" style="opacity:.6">2</b></span><span class="day">تقييمات <b class="num" style="opacity:.6">1</b></span><span class="day">طلبات انضمام <b class="num" style="opacity:.6">1</b></span></div>
+  <div class="split">
+    <div class="card">
+      <div class="row" style="background:var(--glass2)"><span class="av">A</span><div>Ali Abdo<small>check-in الأسبوع 1 · من ساعتين</small></div><div class="end"><span class="pill l">−1.2 كجم</span></div></div>
+      <div class="row"><span class="av">O</span><div>Omar Samir<small>check-in الأسبوع 3 · امبارح</small></div><div class="end"><span class="pill b">إجهاد عالي</span></div></div>
+      <div class="row"><span class="av">M</span><div>Mona Adel<small>قياسات الشهر · من 3 ساعات</small></div><div class="end"><span class="pill">تقييم</span></div></div>
+      <div class="row"><span class="av">K</span><div>Karim Nabil<small>عايز ينضم · من يوم</small></div><div class="end"><span class="pill l">طلب</span></div></div>
+    </div>
+    <div class="card pad">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><span class="av">A</span><div><h2>Ali Abdo · الأسبوع 1</h2><div class="faint" style="font-size:12px">اتبعت الخميس 10 الصبح</div></div><span class="sp"></span><button class="btn sm">افتح ملفه</button></div>
+      <div class="grid3" style="margin-bottom:14px"><div class="photo">قدام</div><div class="photo">جنب</div><div class="photo">ضهر</div></div>
+      <div class="card" style="margin-bottom:14px">
+        <div class="row" style="min-height:48px"><span class="muted">الوزن</span><div class="end"><b class="num">76.8</b><span class="pill l">−1.2 كجم</span></div></div>
+        <div class="row" style="min-height:48px"><span class="muted">الوسط</span><div class="end"><b class="num">84</b><span class="pill l">−1 سم</span></div></div>
+        <div class="row" style="min-height:48px"><span class="muted">النوم (متوسط 7 أيام)</span><div class="end"><b class="num">6.5 ساعة</b></div></div>
+        <div class="row" style="min-height:48px"><span class="muted">ملاحظته</span><div class="end"><span>«الركبة أحسن، بس الأكل صعب في الشغل»</span></div></div>
+      </div>
+      <div class="faint" style="font-size:12px;margin-bottom:8px">رد سريع</div>
+      <div class="days"><span class="day">شغل ممتاز</span><span class="day">ركّز على الأكل</span><span class="day">هعدّل البرنامج</span><span class="day"><i class="ti ti-microphone"></i>رد بصوتك</span></div>
+      <div class="srch" style="min-height:52px;border-radius:14px;margin:6px 0 14px">اكتب ردك…</div>
+      <button class="btn pri" style="width:100%">ابعت وافتح اللي بعده</button>
+    </div>
+  </div>
+  <div class="note"><b>الفكرة:</b> صندوق واحد لكل اللي محتاج رد: check-ins، تقييمات، طلبات انضمام. القايمة على الجنب والتفاصيل جنبها، وبعد ما ترد بيفتح اللي بعده على طول. اللي محتاج انتباه عليه علامة ملونة (وزن، إجهاد).</div>
+</section>
+
+<!-- Player file: follow-ups -->
+<section class="screen" id="follow">
+  <div class="head"><span class="av" style="width:52px;height:52px;font-size:18px">A</span><div><div class="faint" style="font-size:12px">اللاعبين ‹</div><h1>Ali Abdo</h1></div><span class="pill l">نشط</span><span class="sp"></span><span class="muted" style="font-size:13px">باقي 29 يوم</span><button class="btn sm">جدّد</button><button class="btn sm"><i class="ti ti-eye"></i>شوف كلاعب</button></div>
+  <div class="tabs"><span>نظرة عامة</span><span>التمرين</span><span>الأكل</span><span>التقييمات</span><span class="on">المتابعات</span></div>
+  <div class="grid2">
+    <div class="card"><div class="pad" style="padding-bottom:6px"><h2>الـ check-ins</h2></div>
+      <div class="row"><div>الأسبوع 1<small>12 نوفمبر</small></div><div class="end"><span class="num">76.8 كجم</span><span class="pill l">−1.2</span><span class="pill w">مستني ردك</span></div></div>
+      <div class="row"><div>البداية<small>5 نوفمبر</small></div><div class="end"><span class="num">78.0 كجم</span><span class="pill">اتردّ</span></div></div>
+    </div>
+    <div class="card pad"><h2>الجاهزية · آخر 7 أيام</h2>
+      <div class="vol"><span class="muted">النوم</span><div class="dots"><i class="g"></i><i class="g"></i><i class="y"></i><i class="g"></i><i class="r"></i><i class="g"></i><i class="g"></i></div><span></span></div>
+      <div class="vol"><span class="muted">الإجهاد</span><div class="dots"><i class="g"></i><i class="y"></i><i class="y"></i><i class="g"></i><i class="g"></i><i class="g"></i><i class="y"></i></div><span></span></div>
+      <div class="card" style="margin-top:14px;padding:12px 14px;display:flex;gap:10px;align-items:center"><i class="ti ti-bolt lime"></i><span>قرار النهارده: <b style="font-weight:500">كمّل زي الخطة</b></span><span class="sp"></span><span class="faint" style="font-size:12px">جاهزيته 8 من 10</span></div>
+    </div>
+  </div>
+  <div class="card pad" style="margin-top:14px"><div style="display:flex;align-items:center;flex-wrap:wrap;gap:10px"><h2>التحليل · حجم التمرين لكل عضلة</h2><span class="sp"></span><div class="days" style="margin:0"><span class="day on">الأسبوع ده</span><span class="day">آخر 4 أسابيع</span></div></div>
+    <div class="vol"><span>صدر</span><div class="bar"><i style="width:80%"></i></div><span class="num">10 مج</span></div>
+    <div class="vol"><span>ضهر</span><div class="bar"><i style="width:70%"></i></div><span class="num">9 مج</span></div>
+    <div class="vol"><span>رجل</span><div class="bar"><i style="width:55%"></i></div><span class="num">7 مج</span></div>
+    <div class="vol"><span>كتف</span><div class="bar over"><i style="width:25%"></i></div><span class="num">3 مج</span></div>
+    <p class="faint" style="font-size:12px;margin-top:12px">الكتف أقل من 6 مجموعات في الأسبوع</p>
+  </div>
+  <div class="note"><b>الفكرة:</b> «المتابعات» فيها كل اللي اللاعب بيبعته أو بيتحسب له: الـ check-ins، والجاهزية (نوم وإجهاد بنقط ملونة وقرار النهارده)، والتحليل (حجم التمرين لكل عضلة). نفس الكروت ونفس الخطوط زي باقي الملف.</div>
+</section>
+
+<!-- Workout plans library -->
+<section class="screen" id="plans">
+  <div class="head"><div><h1>خطط التمارين</h1><p class="muted" style="margin-top:4px">خططك الجاهزة. تستخدمها لأي لاعب وتعدّل عليها</p></div><span class="sp"></span><button class="btn pri"><i class="ti ti-plus"></i>خطة جديدة</button></div>
+  <div class="days" style="align-items:center"><span class="day on">الكل</span><span class="day">مبتدئ</span><span class="day">متوسط</span><span class="day">متقدم</span><span class="sp"></span><span class="srch"><i class="ti ti-search"></i>دوّر على خطة</span></div>
+  <div class="grid3">
+    <div class="card pad"><span class="pill">مبتدئ</span><h2 style="margin:10px 0 4px">جسم كامل للمبتدئين</h2><p class="faint" style="font-size:12.5px">3 أيام · 30 دقيقة · جيم كامل</p><div style="display:flex;align-items:center;margin-top:14px"><span class="muted" style="font-size:12px"><i class="ti ti-users"></i> مع 2 لاعيبة</span><span class="sp"></span><button class="btn sm">افتح</button></div></div>
+    <div class="card pad"><span class="pill">متوسط</span><h2 style="margin:10px 0 4px">Push Pull Legs</h2><p class="faint" style="font-size:12.5px">6 أيام · 60 دقيقة · جيم كامل</p><div style="display:flex;align-items:center;margin-top:14px"><span class="muted" style="font-size:12px"><i class="ti ti-users"></i> مع 1 لاعب</span><span class="sp"></span><button class="btn sm">افتح</button></div></div>
+    <div class="card pad"><span class="pill">مبتدئ</span><h2 style="margin:10px 0 4px">تمرين البيت</h2><p class="faint" style="font-size:12.5px">3 أيام · 25 دقيقة · من غير أجهزة</p><div style="display:flex;align-items:center;margin-top:14px"><span class="muted" style="font-size:12px"><i class="ti ti-users"></i> مش مستخدمة</span><span class="sp"></span><button class="btn sm">افتح</button></div></div>
+  </div>
+  <div class="note"><b>الفكرة:</b> «خطط التمارين» = البرامج الجاهزة بتاعتك (كانت اسمها البرامج). كل خطة كارت فيه المستوى والأيام والمدة وبيستخدمها كام لاعب. فتحها بيوديك لنفس محرر التمارين اللي في ملف اللاعب (شاشة ١).</div>
+</section>
+
+<!-- Meal plans library -->
+<section class="screen" id="mealplans">
+  <div class="head"><div><h1>الأنظمة الغذائية</h1><p class="muted" style="margin-top:4px">أنظمة جاهزة تبدأ منها نظام أي لاعب</p></div><span class="sp"></span><button class="btn pri"><i class="ti ti-plus"></i>نظام جديد</button></div>
+  <div class="card">
+    <div class="row"><span class="ico"><i class="ti ti-salad lime"></i></span><div>تنشيف 2000 سعر<small>4 وجبات · 150 بروتين · يوم تمرين ويوم راحة</small></div><div class="end"><span class="muted" style="font-size:12px">مع 2 لاعيبة</span><i class="ti ti-chevron-left faint"></i></div></div>
+    <div class="row"><span class="ico"><i class="ti ti-salad lime"></i></span><div>تضخيم 3000 سعر<small>5 وجبات · 180 بروتين</small></div><div class="end"><span class="muted" style="font-size:12px">مع 1 لاعب</span><i class="ti ti-chevron-left faint"></i></div></div>
+    <div class="row"><span class="ico"><i class="ti ti-salad lime"></i></span><div>أكل مصري بسيط<small>3 وجبات · فول، رز، فراخ</small></div><div class="end"><span class="muted" style="font-size:12px">مش مستخدم</span><i class="ti ti-chevron-left faint"></i></div></div>
+  </div>
+  <div class="note"><b>الفكرة:</b> نفس فكرة خطط التمارين بس للأكل. كل نظام سطر واحد واضح بالسعرات والبروتين وعدد الوجبات، وفتحه بيوديك لنفس محرر الأكل (شاشة ٢). مفيش كروت «نظام جديد» مكررة؛ لو فاضية بيظهر سطر «لسه معملتش نظام» وزرار.</div>
+</section>
+
+<!-- Foods library -->
+<section class="screen" id="foods">
+  <div class="head"><div><h1>مكتبة الأكلات</h1><p class="muted" style="margin-top:4px">أكلاتك والقيم الغذائية في مكان واحد</p></div><span class="sp"></span><button class="btn pri"><i class="ti ti-plus"></i>أكلة جديدة</button></div>
+  <div class="days" style="align-items:center"><span class="day on">الكل <b class="num" style="opacity:.6">60</b></span><span class="day">أكلاتي <b class="num" style="opacity:.6">0</b></span><span class="day">العامة <b class="num" style="opacity:.6">60</b></span><span class="sp"></span><span class="srch"><i class="ti ti-search"></i>دوّر بالعربي أو English</span></div>
+  <div class="card">
+    <div class="ex" style="grid-template-columns:1.6fr repeat(4,70px) 1fr 70px;min-height:44px;font-size:11.5px;color:var(--faint)"><span>الأكلة · لكل 100 جم</span><span>سعرات</span><span>بروتين</span><span>كارب</span><span>دهون</span><span>وحدات</span><span>في أنظمة</span></div>
+    <div class="ex" style="grid-template-columns:1.6fr repeat(4,70px) 1fr 70px"><div>فول مسلوق بدون زيت<small>العامة</small></div><span class="num">110</span><span class="num">7.6</span><span class="num">19.7</span><span class="num">0.4</span><span class="muted" style="font-size:12px">طبق صغير · 150 جم</span><span class="num muted">0</span></div>
+    <div class="ex" style="grid-template-columns:1.6fr repeat(4,70px) 1fr 70px"><div>زيت زيتون<small>العامة</small></div><span class="num">884</span><span class="num">0</span><span class="num">0</span><span class="num">100</span><span class="muted" style="font-size:12px">معلقة · 10 جم</span><span class="num muted">4</span></div>
+    <div class="ex" style="grid-template-columns:1.6fr repeat(4,70px) 1fr 70px"><div>زبادي يوناني سادة<small>العامة</small></div><span class="num">73</span><span class="num">10</span><span class="num">3.9</span><span class="num">1.9</span><span></span><span class="num muted">3</span></div>
+  </div>
+  <div class="note"><b>اللي اتغير:</b> «لكل 100 جم» بقت في عنوان العمود مرة واحدة بدل ما تتكرر في كل صف · الوحدات بتظهر بس لو موجودة (زي «معلقة · 10 جم»)، مفيش «مفيش وحدات» · الأرقام بخط واضح ومحاذية.</div>
+</section>
+
+<!-- Billing -->
+<section class="screen" id="billing">
+  <div class="head"><h1>الدفعات</h1></div>
+  <div class="grid2" style="grid-template-columns:1fr 1.6fr">
+    <div class="card pad strong"><div class="faint" style="font-size:12px">باقتك</div><h2 style="margin:6px 0">البداية</h2><div class="num" style="font-weight:800;font-size:22px">3 <small class="faint" style="font:500 12px Alexandria">من 5 لاعيبة</small></div><div class="bar" style="margin:10px 0 14px"><i style="width:60%"></i></div><button class="btn sm" style="width:100%">كبّر الباقة</button></div>
+    <div class="targets" style="grid-template-columns:repeat(3,1fr);margin:0">
+      <div class="card t"><div class="l"><span>اتدفع الشهر ده</span></div><div class="v num">4,500 <small>ج.م</small></div></div>
+      <div class="card t"><div class="l"><span>متأخر</span></div><div class="v num" style="color:var(--warn)">1,500 <small>ج.م</small></div></div>
+      <div class="card t"><div class="l"><span>هيخلص الأسبوع ده</span></div><div class="v num">1 <small>لاعب</small></div></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <div class="ex" style="grid-template-columns:1.4fr 1fr 1fr 1fr 150px;min-height:44px;font-size:11.5px;color:var(--faint)"><span>اللاعب</span><span>الحالة</span><span>لحد</span><span>آخر دفع</span><span></span></div>
+    <div class="ex" style="grid-template-columns:1.4fr 1fr 1fr 1fr 150px"><div style="display:flex;gap:10px;align-items:center"><span class="av">A</span>Ali Abdo</div><span><span class="pill l">نشط</span></span><span class="muted">11 ديسمبر</span><span class="num">1,500 ج.م</span><button class="btn sm">جدّد</button></div>
+    <div class="ex" style="grid-template-columns:1.4fr 1fr 1fr 1fr 150px"><div style="display:flex;gap:10px;align-items:center"><span class="av">M</span>Mona Adel</div><span><span class="pill w">هيخلص بعد 3 أيام</span></span><span class="muted">15 نوفمبر</span><span class="num">1,500 ج.م</span><button class="btn sm">فكّرها</button></div>
+    <div class="ex" style="grid-template-columns:1.4fr 1fr 1fr 1fr 150px"><div style="display:flex;gap:10px;align-items:center"><span class="av">O</span>Omar Samir</div><span><span class="pill b">متأخر 4 أيام</span></span><span class="muted">8 نوفمبر</span><span class="num">1,500 ج.م</span><button class="btn sm">سجّل دفع</button></div>
+  </div>
+  <div class="note"><b>الفكرة:</b> باقتك على جنب، والفلوس في 3 أرقام. تحت كل لاعب بحالته ملونة (نشط / هيخلص / متأخر) وزرار واحد مناسب لحالته: جدّد، فكّره، سجّل دفع.</div>
+</section>
+
+<!-- Settings -->
+<section class="screen" id="settings">
+  <div class="head"><h1>الإعدادات</h1></div>
+  <div class="grid2">
+    <div class="card pad"><h2 style="margin-bottom:8px">ملفك وصفحتك</h2>
+      <div class="fact"><span class="muted">الاسم</span><span>كابتن علي</span></div>
+      <div class="fact"><span class="muted">رابط صفحتك</span><span class="num">kochivo.site/c/ali</span></div>
+      <div class="fact"><span class="muted">واتساب</span><span class="num">+20 10 1234 5678</span></div>
+      <button class="btn sm" style="margin-top:12px">عدّل</button></div>
+    <div class="card pad"><h2 style="margin-bottom:12px">اللغة والتوقيت</h2>
+      <div class="faint" style="font-size:12px;margin-bottom:8px">اللغة</div>
+      <div class="days"><span class="day on">عربي مصري</span><span class="day">عربي فصحى</span><span class="day">English</span></div>
+      <div class="faint" style="font-size:12px;margin:8px 0">التوقيت</div>
+      <div class="days"><span class="day on">تلقائي · القاهرة</span><span class="day">اختار بنفسي</span></div>
+      <div class="faint" style="font-size:12px;margin:8px 0">الوحدات</div>
+      <div class="days"><span class="day on">كجم · سم</span><span class="day">lb · in</span></div></div>
+    <div class="card pad"><h2 style="margin-bottom:8px">رسالة الدعوة</h2><p class="muted" style="font-size:13px;line-height:1.9">«أهلًا! ده لينك تنضم بيه لفريقي على KOCHIVO…»</p><button class="btn sm" style="margin-top:12px">عدّل الرسالة</button></div>
+    <div class="card pad"><h2 style="margin-bottom:8px">حسابك</h2>
+      <div class="fact"><span class="muted">نزّل بياناتك</span><button class="btn sm">نزّل</button></div>
+      <div class="fact"><span class="muted">اخرج من الحساب</span><button class="btn sm">خروج</button></div>
+      <div class="fact"><span style="color:var(--bad)">امسح الحساب</span><button class="btn sm" style="color:var(--bad)">امسح</button></div></div>
+  </div>
+  <div class="note"><b>الفكرة:</b> 4 كروت بس، كل حاجة في مكانها. الاختيارات بتتحفظ لوحدها وبهدوء، والتعديل في نافذة صغيرة. مسح الحساب بالأحمر وفي الآخر.</div>
+</section>
+
+<!-- Player app -->
+<section class="screen" id="app">
+  <div class="phones">
+    <div class="phone"><div class="body">
+      <p class="faint" style="font-size:12px">الخميس · 12 نوفمبر</p><h2 style="font-size:24px;margin:2px 0 14px">صباح الخير يا Ali</h2>
+      <div class="card pad strong"><div class="faint" style="font-size:12px">تمرين النهارده</div><h2 style="font-size:22px;margin:4px 0">اليوم الأول · صدر وضهر</h2><p class="muted" style="font-size:12.5px">6 تمارين · 30 دقيقة</p><button class="btn pri" style="width:100%;margin-top:14px">ابدأ التمرين</button></div>
+      <div class="card pad" style="margin-top:10px;display:flex;align-items:center;gap:10px"><i class="ti ti-heartbeat lime"></i><span>جاوب على سؤالين الصبح</span><span class="sp"></span><i class="ti ti-chevron-left faint"></i></div>
+      <div class="grid2" style="margin-top:10px"><div class="card t"><div class="l"><span>الأكل</span></div><div class="v num">1 <small>/ 4 وجبات</small></div><div class="bar"><i style="width:25%"></i></div></div><div class="card t"><div class="l"><span>المية</span></div><div class="v num">1.5 <small>/ 3 L</small></div><div class="bar"><i style="width:50%"></i></div></div></div>
+      <div class="card pad" style="margin-top:10px"><div class="week"><div>سبت<i class="f"></i></div><div>حد<i class="f"></i></div><div>اتنين<i></i></div><div>تلات<i></i></div><div>أربع<i></i></div><div>خميس<i></i></div><div>جمعة<i></i></div></div></div>
+    </div><div class="pnav"><span class="on"><i class="ti ti-home"></i>الرئيسية</span><span><i class="ti ti-tools-kitchen-2"></i>الأكل</span><span><i class="ti ti-trending-up"></i>تطوري</span><span><i class="ti ti-message"></i>الكابتن</span></div></div>
+
+    <div class="phone"><div class="body">
+      <div style="display:flex;align-items:center;gap:8px"><i class="ti ti-arrow-right"></i><span class="faint" style="font-size:12px">اليوم الأول · 2 من 6</span><span class="sp"></span><span class="num lime">12:40</span></div>
+      <h2 style="font-size:22px;margin:12px 0 2px">Barbell Bench Press</h2><p class="faint" style="font-size:12px">صدر · 3 × 8–12 · راحة 90ث · آخر مرة 50 × 10</p>
+      <div class="photo" style="aspect-ratio:16/10;margin:12px 0">صورة التمرين</div>
+      <div class="set faint" style="font-size:11px"><span>#</span><span style="text-align:center">كجم</span><span style="text-align:center">عدات</span><span></span></div>
+      <div class="set"><span class="num faint">1</span><div class="box">50</div><div class="box">10</div><div class="done on"><i class="ti ti-check"></i></div></div>
+      <div class="set"><span class="num faint">2</span><div class="box">52.5</div><div class="box">9</div><div class="done on"><i class="ti ti-check"></i></div></div>
+      <div class="set"><span class="num faint">3</span><div class="box" style="border-color:var(--lime)">52.5</div><div class="box">—</div><div class="done"><i class="ti ti-check"></i></div></div>
+      <div class="card pad" style="margin-top:12px;display:flex;align-items:center"><span class="muted">راحة</span><span class="sp"></span><b class="num" style="font-size:22px">0:54</b></div>
+    </div><div class="pnav"><span class="on"><i class="ti ti-barbell"></i>التمرين</span><span><i class="ti ti-list"></i>الحركات</span><span><i class="ti ti-history"></i>السجل</span></div></div>
+
+    <div class="phone"><div class="body">
+      <h2 style="font-size:24px;margin:2px 0 14px">أكلك النهارده</h2>
+      <div class="grid2"><div class="card t strong"><div class="l"><span>سعرات</span></div><div class="v num">520 <small>/ 2,160</small></div><div class="bar"><i style="width:24%"></i></div></div><div class="card t strong"><div class="l"><span>بروتين</span></div><div class="v num">38 <small>/ 150</small></div><div class="bar"><i style="width:25%"></i></div></div></div>
+      <div class="card" style="margin-top:12px">
+        <div class="row"><span class="check on"><i class="ti ti-check"></i></span><div>الفطار<small>3 بيض · 60 جم شوفان</small></div><div class="end num faint">520</div></div>
+        <div class="row"><span class="check"></span><div>الغدا<small>200 جم فراخ · 250 جم رز</small></div><div class="end num faint">690</div></div>
+        <div class="row"><span class="check"></span><div>سناك<small>زبادي يوناني · موزة</small></div><div class="end num faint">250</div></div>
+        <div class="row"><span class="check"></span><div>العشا<small>تونة · سلطة</small></div><div class="end num faint">550</div></div>
+      </div>
+      <div class="card pad" style="margin-top:10px;font-size:12.5px"><b class="lime" style="font-weight:500">من الكابتن:</b> <span class="muted">اشرب مية كتير يوم التمرين</span></div>
+    </div><div class="pnav"><span><i class="ti ti-home"></i>الرئيسية</span><span class="on"><i class="ti ti-tools-kitchen-2"></i>الأكل</span><span><i class="ti ti-trending-up"></i>تطوري</span><span><i class="ti ti-message"></i>الكابتن</span></div></div>
+
+    <div class="phone"><div class="body">
+      <h2 style="font-size:24px;margin:2px 0 14px">تطورك</h2>
+      <div class="card pad strong"><div style="display:flex"><span class="muted">الوزن</span><span class="sp"></span><b class="num">76.8 كجم</b></div><div class="chart"><i style="height:90%"></i><i style="height:84%"></i><i style="height:80%"></i><i class="l" style="height:72%"></i></div><p class="faint" style="font-size:12px;margin-top:8px">نزلت 1.2 كجم من البداية · فاضل 0.5 للهدف</p></div>
+      <div class="card pad" style="margin-top:10px;display:flex;align-items:center;gap:10px"><i class="ti ti-clipboard-check lime"></i><div>المتابعة الأسبوعية<div class="faint" style="font-size:12px">مطلوبة النهارده · 7 أسئلة</div></div><span class="sp"></span><button class="btn sm pri">جاوب</button></div>
+      <div class="card pad" style="margin-top:10px;display:flex;align-items:center;gap:10px"><i class="ti ti-medal" style="color:var(--warn)"></i><div>مبتدئ<div class="faint" style="font-size:12px">فاضلك 140 نقطة على بطل</div></div><span class="sp"></span><i class="ti ti-chevron-left faint"></i></div>
+      <div class="card pad" style="margin-top:10px;display:flex;align-items:center;gap:10px"><i class="ti ti-history muted"></i><span>سجل تماريني</span><span class="sp"></span><i class="ti ti-chevron-left faint"></i></div>
+    </div><div class="pnav"><span><i class="ti ti-home"></i>الرئيسية</span><span><i class="ti ti-tools-kitchen-2"></i>الأكل</span><span class="on"><i class="ti ti-trending-up"></i>تطوري</span><span><i class="ti ti-message"></i>الكابتن</span></div></div>
+
+    <div class="phone"><div class="body">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><span class="av">ع</span><div><h2>كابتن علي</h2><div class="faint" style="font-size:12px">بيرد عادة خلال يوم</div></div></div>
+      <div class="card pad"><div class="faint" style="font-size:12px">رد على الأسبوع 1 · من ساعة</div><div style="display:flex;align-items:center;gap:10px;margin-top:10px"><button class="btn sm pri" style="width:46px;padding:0"><i class="ti ti-player-play"></i></button><div class="bar" style="flex:1"><i style="width:30%"></i></div><span class="num faint">0:42</span></div><p class="muted" style="font-size:12.5px;margin-top:10px">شغل ممتاز، ركّز على الأكل في الشغل</p></div>
+      <div class="card pad" style="margin-top:10px;display:flex;align-items:center;gap:10px"><i class="ti ti-clipboard-check lime"></i><div>قياسات الشهر<div class="faint" style="font-size:12px">مطلوبة 1 ديسمبر</div></div></div>
+      <div class="card pad" style="margin-top:10px"><div class="faint" style="font-size:12px;margin-bottom:8px">اسأل الكابتن</div><div style="display:flex;gap:8px"><span class="srch" style="flex:1;min-height:48px;border-radius:14px;min-width:0">اكتب سؤالك…</span><button class="btn" style="width:48px;padding:0"><i class="ti ti-microphone"></i></button></div></div>
+    </div><div class="pnav"><span><i class="ti ti-home"></i>الرئيسية</span><span><i class="ti ti-tools-kitchen-2"></i>الأكل</span><span><i class="ti ti-trending-up"></i>تطوري</span><span class="on"><i class="ti ti-message"></i>الكابتن</span></div></div>
+  </div>
+  <div class="note"><b>الفكرة:</b> تطبيق اللاعب بنفس الشكل. الرئيسية فيها حاجة واحدة أساسية (تمرين النهارده) والباقي مختصر. شاشة التمرين أزرار كبيرة تتداس بسهولة في الجيم. الأكل وجبات بعلامة صح. «تطوري» فيه الوزن والتقييم المطلوب والرتبة والسجل. «الكابتن» فيه ردوده الصوتية والتقييمات الجاية وتسأله.</div>
+</section>
+
+
+<!-- Player app, part 2 -->
+<section class="screen" id="app2">
+  <div class="phones">
+    <div class="phone"><div class="body">
+      <div style="display:flex;align-items:center"><span class="faint num" style="font-size:12px">2 من 6</span><span class="sp"></span><span class="faint" style="font-size:12px">تخطّى</span></div>
+      <div class="bar" style="margin:10px 0 22px"><i style="width:33%"></i></div>
+      <h2 style="font-size:24px">هدفك إيه؟</h2><p class="muted" style="font-size:12.5px;margin:6px 0 16px">الكابتن هيبني برنامجك على أساسه</p>
+      <div class="card pad" style="margin-bottom:8px;display:flex;gap:10px;align-items:center;border-color:var(--lime);background:var(--lime-soft)"><i class="ti ti-flame lime"></i>أنزل دهون</div>
+      <div class="card pad" style="margin-bottom:8px;display:flex;gap:10px;align-items:center"><i class="ti ti-barbell muted"></i>أبني عضل</div>
+      <div class="card pad" style="margin-bottom:8px;display:flex;gap:10px;align-items:center"><i class="ti ti-scale muted"></i>أحافظ على وزني</div>
+      <div class="card pad" style="margin-bottom:8px;display:flex;gap:10px;align-items:center"><i class="ti ti-run muted"></i>لياقة وصحة</div>
+      <button class="btn pri" style="width:100%;margin-top:14px">التالي</button>
+    </div><p class="faint" style="text-align:center;font-size:11.5px;padding:12px 0">أول مرة · تقييم البداية (6 خطوات قصيرة)</p></div>
+
+    <div class="phone"><div class="body">
+      <h2 style="font-size:22px;margin-bottom:4px">سؤالين الصبح</h2><p class="muted" style="font-size:12.5px;margin-bottom:16px">علشان الكابتن يعرف تتمرن النهارده إزاي</p>
+      <div class="card pad"><b style="font-weight:500">نمت كام ساعة؟</b>
+        <div class="days" style="margin:12px 0 0"><span class="day">4 أو أقل</span><span class="day">5</span><span class="day">6</span><span class="day on">7</span><span class="day">8</span><span class="day">9 أو أكتر</span></div></div>
+      <div class="card pad" style="margin-top:10px"><b style="font-weight:500">جسمك عامل إيه؟</b>
+        <div class="days" style="margin:12px 0 0"><span class="day">فريش</span><span class="day on">خفيف</span><span class="day">متوسط</span><span class="day">جامد</span><span class="day">مكسّر</span></div></div>
+      <div class="card pad strong" style="margin-top:10px;display:flex;align-items:center;gap:10px"><i class="ti ti-bolt lime"></i><div>جاهزيتك النهارده 8<div class="faint" style="font-size:12px">المقترح: كمّل زي الخطة</div></div></div>
+      <button class="btn pri" style="width:100%;margin-top:14px">تم</button>
+    </div><p class="faint" style="text-align:center;font-size:11.5px;padding:12px 0">الجاهزية · من الرئيسية</p></div>
+
+    <div class="phone"><div class="body" style="text-align:center">
+      <i class="ti ti-trophy lime" style="font-size:44px;display:block;margin-top:20px"></i>
+      <h2 style="font-size:26px;margin:10px 0 4px">خلّصت اليوم الأول</h2><p class="muted" style="font-size:12.5px">32 دقيقة · 10 مجموعات · 4,850 كجم</p>
+      <div class="grid2" style="margin:18px 0;text-align:start"><div class="card t strong"><div class="l"><span>نقط</span></div><div class="v num lime">+40</div></div><div class="card t strong"><div class="l"><span>رقم قياسي</span></div><div class="v num">2</div></div></div>
+      <div class="card pad" style="text-align:start"><b style="font-weight:500">التمرين كان عامل إيه؟</b><p class="faint" style="font-size:12px;margin:4px 0 10px">قيّم مجهودك من 1 لـ 10</p>
+        <div style="display:flex;gap:4px">
+          <span class="day" style="flex:1;justify-content:center;padding:0">5</span><span class="day" style="flex:1;justify-content:center;padding:0">6</span><span class="day on" style="flex:1;justify-content:center;padding:0">7</span><span class="day" style="flex:1;justify-content:center;padding:0">8</span><span class="day" style="flex:1;justify-content:center;padding:0">9</span><span class="day" style="flex:1;justify-content:center;padding:0">10</span></div>
+        <div style="display:flex;font-size:11px;margin-top:6px" class="faint"><span>سهل جدًا</span><span class="sp"></span><span>أقصى مجهود</span></div></div>
+      <button class="btn pri" style="width:100%;margin-top:14px">ابعت للكابتن</button>
+      <button class="btn" style="width:100%;margin-top:8px"><i class="ti ti-share"></i>شارك</button>
+    </div><p class="faint" style="text-align:center;font-size:11.5px;padding:12px 0">آخر التمرين</p></div>
+
+    <div class="phone"><div class="body">
+      <div style="display:flex;align-items:center;gap:8px"><i class="ti ti-x"></i><span class="faint" style="font-size:12px">المتابعة الأسبوعية</span><span class="sp"></span><span class="num faint" style="font-size:12px">3 من 7</span></div>
+      <div class="bar" style="margin:10px 0 22px"><i style="width:43%"></i></div>
+      <h2 style="font-size:22px">صوّر نفسك من قدام</h2><p class="muted" style="font-size:12.5px;margin:6px 0 14px">نفس المكان والنور كل أسبوع</p>
+      <div class="photo" style="aspect-ratio:3/4;font-size:13px"><span><i class="ti ti-camera" style="font-size:28px;display:block;text-align:center"></i>اضغط تصوّر أو تختار صورة</span></div>
+      <div style="display:flex;gap:8px;margin-top:14px"><button class="btn" style="flex:1">رجوع</button><button class="btn pri" style="flex:2">التالي</button></div>
+      <p class="faint" style="font-size:11.5px;text-align:center;margin-top:10px">إجاباتك بتتحفظ لو النت فصل</p>
+    </div><p class="faint" style="text-align:center;font-size:11.5px;padding:12px 0">جاوب تقييم · سؤال في كل صفحة</p></div>
+
+    <div class="phone"><div class="body">
+      <h2 style="font-size:24px;margin-bottom:14px">رتبتك</h2>
+      <div class="card pad strong" style="text-align:center"><i class="ti ti-shield-star" style="font-size:44px;color:var(--warn)"></i><h2 style="margin:6px 0 2px">مبتدئ</h2><p class="num faint" style="font-size:12px">360 نقطة · فاضلك 140 على بطل</p><div class="bar" style="margin-top:12px"><i style="width:72%"></i></div></div>
+      <div class="card" style="margin-top:10px"><div class="pad" style="padding-bottom:4px;display:flex;align-items:center"><b style="font-weight:500">سباق التاج الشهر ده</b><span class="sp"></span><span class="faint" style="font-size:11.5px">جايزة: شهر ببلاش</span></div>
+        <div class="row" style="min-height:52px"><span class="num lime">1</span><span class="av">M</span><div>Mona<small>التزامها 92%</small></div><div class="end"><i class="ti ti-crown" style="color:var(--warn)"></i></div></div>
+        <div class="row" style="min-height:52px;background:var(--glass2)"><span class="num">2</span><span class="av">A</span><div>إنت<small>التزامك 74%</small></div></div>
+        <div class="row" style="min-height:52px"><span class="num faint">3</span><span class="av">O</span><div>Omar<small>التزامه 41%</small></div></div></div>
+      <div class="card pad" style="margin-top:10px;display:flex;align-items:center;gap:10px"><i class="ti ti-award muted"></i><span>لوحة الشرف</span><span class="sp"></span><i class="ti ti-chevron-left faint"></i></div>
+    </div><p class="faint" style="text-align:center;font-size:11.5px;padding:12px 0">الرتبة والتاج · من «تطوري»</p></div>
+
+    <div class="phone"><div class="body">
+      <h2 style="font-size:24px;margin-bottom:14px">InBody والمكملات</h2>
+      <div class="card pad strong"><div style="display:flex;align-items:center"><b style="font-weight:500">تغيّرك مع InBody</b><span class="sp"></span><button class="btn sm">ضيف InBody</button></div>
+        <div class="grid3" style="margin-top:12px;gap:8px"><div><div class="faint" style="font-size:11px">الوزن</div><b class="num">76.8</b><div class="lime num" style="font-size:11px">−1.2</div></div><div><div class="faint" style="font-size:11px">كتلة العضل</div><b class="num">34.1</b><div class="lime num" style="font-size:11px">+0.3</div></div><div><div class="faint" style="font-size:11px">نسبة الدهون</div><b class="num">18%</b><div class="lime num" style="font-size:11px">−1.1</div></div></div>
+        <p class="faint" style="font-size:11.5px;margin-top:10px">آخر فحص 12 نوفمبر · أول فحص 5 نوفمبر</p></div>
+      <div class="card" style="margin-top:10px"><div class="pad" style="padding-bottom:4px"><b style="font-weight:500">مكملات النهارده</b></div>
+        <div class="row" style="min-height:56px"><span class="check on"><i class="ti ti-check"></i></span><div>كرياتين<small>5 جم · الصبح</small></div></div>
+        <div class="row" style="min-height:56px"><span class="check"></span><div>واي بروتين<small>سكوب · بعد التمرين</small></div></div>
+        <div class="row" style="min-height:56px"><span class="check"></span><div>أوميجا 3<small>كبسولة · مع الأكل</small></div></div></div>
+    </div><p class="faint" style="text-align:center;font-size:11.5px;padding:12px 0">InBody في «تطوري» · المكملات في «الأكل»</p></div>
+
+    <div class="phone"><div class="body">
+      <div style="display:flex;align-items:center;margin-bottom:14px"><h2 style="font-size:24px">الإشعارات</h2><span class="sp"></span><span class="faint" style="font-size:12px">علّم الكل كمقروء</span></div>
+      <div class="card">
+        <div class="row"><span class="ico lime"><i class="ti ti-microphone"></i></span><div>الكابتن ردّ عليك بصوته<small>من ساعة</small></div><div class="end"><span style="width:8px;height:8px;border-radius:50%;background:var(--lime)"></span></div></div>
+        <div class="row"><span class="ico lime"><i class="ti ti-barbell"></i></span><div>اتعيّنلك برنامج «جسم كامل للمبتدئين»<small>من يومين</small></div></div>
+        <div class="row"><span class="ico"><i class="ti ti-clipboard-check"></i></span><div>الكابتن مستني «المتابعة الأسبوعية»<small>من يومين</small></div></div>
+        <div class="row"><span class="ico" style="color:var(--warn)"><i class="ti ti-shield-star"></i></span><div>اترقيت لرتبة جديدة<small>من 3 أيام</small></div></div>
+      </div>
+    </div><p class="faint" style="text-align:center;font-size:11.5px;padding:12px 0">الإشعارات · من الجرس فوق</p></div>
+
+    <div class="phone"><div class="body">
+      <h2 style="font-size:24px;margin-bottom:14px">حسابي</h2>
+      <div class="card pad" style="display:flex;align-items:center;gap:12px"><span class="av" style="width:52px;height:52px;font-size:18px">A</span><div><b style="font-weight:500">Ali Abdo</b><div class="faint" style="font-size:12px">مع كابتن علي · باقي 29 يوم</div></div></div>
+      <div class="card pad" style="margin-top:10px"><div class="faint" style="font-size:12px;margin-bottom:8px">اللغة</div><div class="days"><span class="day on">مصري</span><span class="day">فصحى</span><span class="day">English</span></div>
+        <div class="faint" style="font-size:12px;margin:6px 0 8px">الوحدات</div><div class="days" style="margin:0"><span class="day on">كجم</span><span class="day">lb</span></div></div>
+      <div class="card" style="margin-top:10px">
+        <div class="row" style="min-height:52px"><i class="ti ti-bell muted"></i><span>تذكير التمرين</span><div class="end"><span class="faint" style="font-size:12px">6 بالليل</span></div></div>
+        <div class="row" style="min-height:52px"><i class="ti ti-download muted"></i><span>نزّل التطبيق على الموبايل</span></div>
+        <div class="row" style="min-height:52px"><i class="ti ti-logout muted"></i><span>خروج</span></div></div>
+      <div class="card pad" style="margin-top:10px;display:flex;align-items:center;gap:10px"><span class="ico lime"><i class="ti ti-sparkles"></i></span><div>KO مساعدك في الجيم<div class="faint" style="font-size:12px">قريبًا</div></div></div>
+    </div><p class="faint" style="text-align:center;font-size:11.5px;padding:12px 0">الإعدادات · من صورتك فوق</p></div>
+  </div>
+  <div class="note"><b>الشاشات دي كانت ناقصة:</b> أول مرة (تقييم البداية خطوة خطوة) · سؤالين الصبح · آخر التمرين (نقط، أرقام قياسية، تقييم المجهود، مشاركة) · الإجابة على تقييم (سؤال في كل صفحة، صور، بيتحفظ لو النت فصل) · الرتبة وسباق التاج · InBody والمكملات · الإشعارات · حسابي (اللغة، الوحدات، التذكير، KO قريبًا). وفي الرئيسية زودت فوق: علامة إن كل حاجة اتحفظت، وعدّاد الأسبوع.</div>
+</section>
+</main>
+</div>
+<script>
+const go=s=>{document.querySelectorAll('.demo button').forEach(x=>x.classList.toggle('on',x.dataset.s===s));document.querySelectorAll('.screen').forEach(x=>x.classList.toggle('on',x.id===s));document.querySelectorAll('.side .nav').forEach(n=>n.classList.toggle('on',n.dataset.n===s));scrollTo(0,0)};
+document.querySelectorAll('.demo button').forEach(b=>b.onclick=()=>go(b.dataset.s));
+document.querySelectorAll('.side .nav').forEach(n=>n.onclick=()=>{if(document.getElementById(n.dataset.n))go(n.dataset.n)});
+</script>
+</body>
+</html>

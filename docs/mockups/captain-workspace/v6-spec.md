@@ -63,3 +63,28 @@ Build them from the same parts, in the same order of importance:
 1. Run the app with `NEXT_PUBLIC_CAPTAIN_WORKSPACE=1` and the demo/test captain.
 2. Open the mockup screen and the real route side by side at **1440×900** and **390×844**.
 3. Same order of sections, same labels, same buttons, same primary action, same spacing rhythm. List any difference you could not avoid under "Notes for reviewer" with the reason.
+
+## Second mockup: `v6-rest.html` (owner-approved 2026-11-12)
+| Mockup screen | Card |
+|---|---|
+| الرئيسية, المهام | T-192 |
+| خطط التمارين, الأنظمة الغذائية, مكتبة الأكلات | T-193 |
+| الدفعات, الإعدادات | T-194 |
+| تطبيق اللاعب (الرئيسية، التمرين، الأكل، تطوري، الكابتن) | T-195 |
+| تطبيق اللاعب ٢ (أول مرة، سؤالين الصبح، آخر التمرين، جاوب تقييم، الرتبة، InBody والمكملات، الإشعارات، حسابي) | T-196 |
+| ملف اللاعب · المتابعات | T-188 |
+
+## Feature inventory (mandatory in every card)
+The owner's rule: **no existing feature may disappear**. Before changing a screen:
+1. List every feature, action, piece of data and state the current screen has (read the components, not only the UI).
+2. Put the list in the task card under "Feature inventory" with, for each item, where it lives in the new design (mockup element, or "built per v6-spec because not in mockup").
+3. If something truly cannot fit, stop and say so in Notes; do not drop it silently.
+
+## Backend and data rules (mandatory in every card)
+- Reuse existing tables, RPCs and queries. New schema only in a new numbered migration, additive only, with RLS and PGlite tests. Never apply migrations to production.
+- Player writes for sessions, sets and meal logs go through `saveAndQueue()`; offline must keep working (test it).
+- Every async view has loading, empty and error states; every mutation shows a real error and keeps the user's input.
+- No N+1 queries: one query per list; select only needed columns.
+- Ids: `stableId` / `uuidv7`. Dates: `localDate()` with an explicit timezone (T-182).
+- Flag: new captain/player UI renders only when `captainWorkspaceEnabled()`; flag off stays byte-identical (test), except bugs the card explicitly fixes.
+- Route first-load JS budgets must pass unchanged (lazy-load heavy parts).
