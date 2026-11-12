@@ -1,0 +1,48 @@
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { expect, it, vi } from 'vitest';
+import { LocaleProvider } from '@/core/i18n/client';
+import { TrainingEditor } from './training-editor';
+import { TrainingFacts } from './training-facts';
+import type { ProgramDraft } from '@/features/programs';
+import { messages } from './messages';
+
+vi.mock('server-only', () => ({}));
+const draft: ProgramDraft = { id: 'p', title: 'Plan', player_id: 'player', status: 'draft', days: [
+  { id: 'd', program_id: 'p', title: 'صدر وضهر', position: 1, exercises: [{
+    id: 'e', day_id: 'd', exercise_id: 'x', position: 1, sets: 3, reps_min: 8, reps_max: 12,
+    rest_seconds: 90, rir: 2, superset_group: null,
+    library: { id: 'x', name_en: 'Bench Press', name_ar: 'بنش', body_part: 'chest', equipment: 'barbell', media_path: null },
+  }] },
+] };
+it.each(['ar', 'en'] as const)('renders an inline editable plan with one send action in %s', locale => {
+  const html = renderToStaticMarkup(createElement(LocaleProvider, { locale }, createElement(TrainingEditor, {
+    playerId: 'player', initial: draft, programs: [],
+  })));
+  expect(html).toContain('Bench Press');
+  expect(html).toContain(locale === 'ar' ? 'اليوم ١ · صدر وضهر' : 'Day 1 · صدر وضهر');
+  expect(html).toContain(locale === 'ar' ? 'راحة 90ث' : 'Rest 90s');
+  expect(html).toContain(messages[locale].send);
+  expect(html).toContain(messages[locale].search);
+  expect(html).toContain('dir="ltr"');
+  expect(html).toContain('aria-label=');
+  expect(html).toContain('href="/captain/programs/p"');
+  expect(html).not.toContain(messages[locale].scratch);
+});
+it('starts with two optional choices and no forced template link', () => {
+  const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' }, createElement(TrainingEditor, {
+    playerId: 'player', initial: null, programs: [],
+  })));
+  for (const key of ['scratch', 'scratchBody', 'template', 'templateBody'] as const) expect(html).toContain(messages.ar[key]);
+  expect(html).not.toContain('href="/captain/templates"');
+});
+it('keeps missing facts explicit and preserves the sourced facts/history panel', () => {
+  const html = renderToStaticMarkup(createElement(TrainingFacts, {
+    profile: { name: 'Ali', intake: null, program: null, nutrition: null, checkIns: [] },
+    file: { facts: {}, history: [] }, locale: 'en',
+  }));
+  expect(html).toContain('Not provided');
+  expect(html).toContain('Assessment history');
+  expect(html).toContain('Goal progress');
+  expect(html).not.toContain('0 kg');
+});

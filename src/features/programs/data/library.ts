@@ -9,8 +9,8 @@ import { escapeSearch } from '../summary';
 import { bodyPartFilter } from '../custom-exercises';
 import type { LibraryExercise, Result } from '../types';
 
-export async function searchExercises({ query, bodyPart, limit = 30, mine = false }: {
-  query: string; bodyPart: string; limit?: 30; mine?: boolean;
+export async function searchExercises({ query, bodyPart, limit = 30, mine = false, bodyParts, metadata = false }: {
+  query: string; bodyPart: string; limit?: 30; mine?: boolean; bodyParts?: string[]; metadata?: boolean;
 }): Promise<Result<LibraryExercise[]>> {
   const t = await getT(messages);
   try {
@@ -22,7 +22,8 @@ export async function searchExercises({ query, bodyPart, limit = 30, mine = fals
     let request = client.from('exercises').select('id,name_ar,name_en,body_part,equipment,media_path,owner_id,target,video_url')
       .is('archived_at', null);
     if (mine) request = request.eq('owner_id', auth.data.claims.sub);
-    if (query.trim()) request = request.or(`name_ar.ilike.${pattern},name_en.ilike.${pattern}`);
+    if (query.trim()) request = request.or(`name_ar.ilike.${pattern},name_en.ilike.${pattern}${metadata ? `,body_part.ilike.${pattern},equipment.ilike.${pattern}` : ''}`);
+    if (bodyParts?.length) request = request.in('body_part', bodyParts.slice(0, 20));
     const filters = bodyPartFilter(bodyPart);
     if (filters.length > 1) request = request.or(filters.map(({ column, value }) => `${column}.eq.${value}`).join(','));
     else if (filters[0]) request = request.eq(filters[0].column, filters[0].value);

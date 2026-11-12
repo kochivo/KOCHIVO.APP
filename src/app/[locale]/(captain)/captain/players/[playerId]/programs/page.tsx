@@ -10,8 +10,8 @@ export default async function PlayerProgramsPage({ params, searchParams }: { par
   const { playerId } = await params;
   if (captainWorkspaceEnabled()) {
     if ((await searchParams)?.view === 'forms') redirect(`/captain/players/${playerId}/assessments`);
-    const { WorkspaceEntry } = await import('@/features/captain-workspace');
-    return <WorkspaceEntry playerId={playerId} />;
+    const { TrainingEntry } = await import('@/features/captain-workspace/server');
+    return <TrainingEntry playerId={playerId} />;
   }
   const profile = await fetchPlayerProfile(playerId);
   return <div className="space-y-6">

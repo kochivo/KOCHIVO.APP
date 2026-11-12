@@ -1,0 +1,47 @@
+import { defineMessages } from '@/core/i18n/messages';
+import { arStd } from './standard-messages';
+
+export const messages = defineMessages({
+  // The local env branch lets Next remove these strings from flag-off client builds.
+  get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
+  ar: {
+    facts: 'بياناته', goal: 'الهدف', weight: 'الوزن', heightAge: 'الطول · السن', experience: 'الخبرة',
+    trainingDays: 'أيام التمرين', duration: 'وقت التمرينة', injuries: 'إصابات', location: 'المكان',
+    lose: 'تنشيف', gain: 'زيادة عضل', maintain: 'تثبيت الوزن',
+    scratch: 'ابدأ من الصفر', scratchBody: 'ضيف الأيام والتمارين بنفسك', template: 'من خطة جاهزة',
+    templateBody: 'اختار خطة من خططك وعدّل عليها', day: 'يوم', dayChip: 'اليوم {number} · {title}',
+    search: 'دوّر على تمرين وضيفه… (bench, ضهر, كابل)', suggestions: 'مقترح ل{day}:',
+    rest: 'راحة {n}ث', send: 'ابعت للاعب', sent: 'اتبعت للاعب', newProgram: 'برنامج جديد',
+    rename: 'اسم اليوم', sets: 'مجموعات {name}', fewer: 'قلّل مجموعات {name}', more: 'زوّد مجموعات {name}',
+    remove: 'شيل {name}', reorder: 'رتّب {name} بالأسهم لفوق وتحت',
+    repsMin: 'أقل عدات {name}', repsMax: 'أكتر عدات {name}', restLabel: 'راحة {name} بالثواني',
+    loading: 'بيحمّل…', retry: 'جرّب تاني', error: 'مش قادر يحمّل البيانات. جرّب تاني',
+    noExercises: 'لسه مفيش تمارين. دوّر وضيف أول تمرين.', noResults: 'مفيش تمارين بالاسم ده',
+    noTemplates: 'لسه مفيش خطط جاهزة', noDays: 'ضيف يوم عشان تبدأ',
+    advanced: 'صور وإعدادات التمرين', details: 'تفاصيل بياناته وتاريخها', history: 'البرامج السابقة',
+    programName: 'اسم البرنامج', emptyPrograms: 'لسه مفيش برامج', add: '+ {name}', cancel: 'إلغاء',
+    fixedWeek: 'الأسبوع فيه ٧ أيام ثابتة. ابدأ برنامج جديد عشان تضيف أيام متتالية.',
+    moveUp: 'طلّع {name}', moveDown: 'نزّل {name}',
+    minutes: '{n} د',
+  },
+  en: {
+    facts: 'Player details', goal: 'Goal', weight: 'Weight', heightAge: 'Height · age', experience: 'Experience',
+    trainingDays: 'Training days', duration: 'Session length', injuries: 'Injuries', location: 'Location',
+    lose: 'Fat loss', gain: 'Build muscle', maintain: 'Maintain weight',
+    scratch: 'Start from scratch', scratchBody: 'Add days and exercises yourself', template: 'Use a template',
+    templateBody: 'Choose one of your plans and edit it', day: 'Day', dayChip: 'Day {number} · {title}',
+    search: 'Find an exercise to add… (bench, back, cable)', suggestions: 'Suggested for {day}:',
+    rest: 'Rest {n}s', send: 'Send to player', sent: 'Sent to player', newProgram: 'New program',
+    rename: 'Day name', sets: 'Sets for {name}', fewer: 'Fewer sets for {name}', more: 'More sets for {name}',
+    remove: 'Remove {name}', reorder: 'Reorder {name} using up and down arrows',
+    repsMin: 'Minimum reps for {name}', repsMax: 'Maximum reps for {name}', restLabel: 'Rest seconds for {name}',
+    loading: 'Loading…', retry: 'Try again', error: 'Could not load. Try again',
+    noExercises: 'No exercises yet. Search to add the first one.', noResults: 'No matching exercises',
+    noTemplates: 'No templates yet', noDays: 'Add a day to start',
+    advanced: 'Exercise images and settings', details: 'Player facts and history', history: 'Previous programs',
+    programName: 'Program name', emptyPrograms: 'No programs yet', add: '+ {name}', cancel: 'Cancel',
+    fixedWeek: 'This plan has seven fixed weekdays. Start a new program to add rotation days.',
+    moveUp: 'Move {name} up', moveDown: 'Move {name} down',
+    minutes: '{n} min',
+  },
+});

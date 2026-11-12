@@ -4,12 +4,12 @@ import { afterEach, expect, it, vi } from 'vitest';
 import PlayerProgramsPage from '@/app/[locale]/(captain)/captain/players/[playerId]/programs/page';
 import { ProgramBuilder } from '@/features/programs';
 import { GenerateButton } from '@/features/program-generator';
-import { WorkspaceEntry } from './index';
+import { TrainingEntry } from './server';
 
 vi.mock('@/features/programs', () => ({ ProgramBuilder: () => createElement('div', null, 'builder'), programMessages: {} }));
 vi.mock('@/features/program-generator', () => ({ GenerateButton: () => createElement('div', null, 'generator') }));
 vi.mock('@/features/player-profile', () => ({ fetchPlayerProfile: async () => ({ data: { name: 'Ahmed', intake: null } }) }));
-vi.mock('./index', () => ({ WorkspaceEntry: () => createElement('section', null, 'workspace') }));
+vi.mock('./server', () => ({ TrainingEntry: () => createElement('section', null, 'workspace') }));
 afterEach(() => vi.unstubAllEnvs());
 const params = Promise.resolve({ playerId: 'player', locale: 'en' });
 
@@ -26,7 +26,7 @@ it.each([undefined, '', '0', 'true'])('keeps the exact legacy component tree wit
 it('selects the workspace entry when the flag is on', async () => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
   const tree = await PlayerProgramsPage({ params });
-  expect(tree.type).toBe(WorkspaceEntry);
+  expect(tree.type).toBe(TrainingEntry);
   expect(tree.props).toEqual({ playerId: 'player' });
 });
 it.each(['0', '1'])('keeps view=forms behind the existing workspace flag %s', async flag => {
