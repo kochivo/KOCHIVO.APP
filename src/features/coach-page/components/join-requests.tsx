@@ -3,8 +3,10 @@ import { loadJoinRequests } from '../data/join-requests';
 import { messages } from '../messages';
 import { JoinRequestsList } from './join-requests-list-entry';
 import { Inbox } from 'lucide-react';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 
 export async function JoinRequests() {
+  if (captainWorkspaceEnabled()) return null;
   const t = await getT(messages);
   const result = await loadJoinRequests();
   return <section className="glass min-w-0 space-y-4 rounded-card p-5">

@@ -4,10 +4,12 @@ import { ProgramBuilder } from '@/features/programs';
 import { GenerateButton } from '@/features/program-generator';
 import { fetchPlayerProfile } from '@/features/player-profile';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { redirect } from 'next/navigation';
 
-export default async function PlayerProgramsPage({ params }: { params: Promise<{ playerId: string; locale: string }> }) {
+export default async function PlayerProgramsPage({ params, searchParams }: { params: Promise<{ playerId: string; locale: string }>; searchParams?: Promise<{ view?: string | string[] }> }) {
   const { playerId } = await params;
   if (captainWorkspaceEnabled()) {
+    if ((await searchParams)?.view === 'forms') redirect(`/captain/players/${playerId}/assessments`);
     const { WorkspaceEntry } = await import('@/features/captain-workspace');
     return <WorkspaceEntry playerId={playerId} />;
   }

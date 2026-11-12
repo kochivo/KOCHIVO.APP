@@ -9,7 +9,7 @@ import { messages } from '../messages';
 import { BillingManagerLoader } from '@/features/billing';
 import { localDate } from '@/lib/dates';
 
-export function JoinRequestsList({ rows }: { rows: { id: string; full_name: string }[] }) {
+export function JoinRequestsList({ rows, onResolved }: { rows: { id: string; full_name: string }[]; onResolved?: (id: string) => void }) {
   const timezone = useTimezone();
   const t = useT(messages), router = useRouter();
   const [hidden, setHidden] = useState<string[]>([]);
@@ -24,6 +24,7 @@ export function JoinRequestsList({ rows }: { rows: { id: string; full_name: stri
       const result = await resolveJoinRequest(id, status);
       if (result.error) throw new Error(result.error);
       if (status === 'accepted' && result.playerId) setSelected({ id: result.playerId, name: rows.find(row => row.id === id)?.full_name ?? '' });
+      onResolved?.(id);
       router.refresh();
     } catch {
       setHidden(previous => previous.filter(value => value !== id)); setError(t('failure'));

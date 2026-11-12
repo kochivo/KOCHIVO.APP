@@ -10,7 +10,10 @@ export default async function Page({ params, searchParams }: {
   const { playerId, locale } = await params;
   if (captainWorkspaceEnabled()) {
     const query = await searchParams;
-    return <NutritionWorkspaceEntry playerId={playerId} locale={parseLocale(locale)} view={query?.view === 'calc' ? 'calc' : 'plan'} />;
+    const { PlayerFileEntry } = await import('@/features/captain-workspace/server');
+    return <PlayerFileEntry playerId={playerId} tab="nutrition">
+      <NutritionWorkspaceEntry playerId={playerId} locale={parseLocale(locale)} view={query?.view === 'calc' ? 'calc' : 'plan'} />
+    </PlayerFileEntry>;
   }
   return <PlayerPlans playerId={playerId} />;
 }
