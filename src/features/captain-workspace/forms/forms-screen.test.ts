@@ -14,13 +14,13 @@ beforeEach(() => vi.clearAllMocks());
 it.each(['loading', 'error', 'empty'] as const)('renders the asynchronous %s state', kind => {
   mocks.resource.mockReturnValue({ data: kind === 'empty' ? [] : undefined, status: kind === 'empty' ? 'ready' : kind, retry: vi.fn() });
   const html = renderToStaticMarkup(createElement(FormsScreen, props));
-  expect(html).toContain(kind === 'loading' ? 'Loading forms' : kind === 'empty' ? 'No forms yet' : 'Could not load forms');
+  expect(html).toContain(kind === 'loading' ? 'Loading assessments' : kind === 'empty' ? 'No assessments yet' : 'Could not load assessments');
 });
 it('shows the newest detail on desktop and waits for a tap on phones', () => {
   mocks.resource.mockReturnValue({ data: [form], status: 'ready', mutate: vi.fn(), retry: vi.fn() });
   const html = renderToStaticMarkup(createElement(FormsScreen, props));
   expect(html).toContain('hidden lg:block');
-  expect(html).toContain('Select a form to see its answers');
+  expect(html).toContain('Select an assessment to see its answers');
   expect(html).toContain('player-form-detail');
   expect(html).toContain('82 kg');
 });

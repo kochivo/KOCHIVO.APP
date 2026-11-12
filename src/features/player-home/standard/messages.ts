@@ -1,4 +1,5 @@
 export const arStd = {
+  'task.waiting': 'المدرب يجهّز برنامجك', taskWaitingContext: 'سنرسل لك إشعاراً عندما يصبح جاهزاً',
   thisWeek: 'هذا الأسبوع', nextWeek: 'الأسبوع القادم', upcomingWorkout: 'تمرين قادم',
   completedWorkout: 'مكتمل', notLogged: 'لم يُسجّل', previewRestDay: 'يوم راحة',
   previewPrescription: '{sets} × {reps}', previewRepRange: '{min}–{max}',

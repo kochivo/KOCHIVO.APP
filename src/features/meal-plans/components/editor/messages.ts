@@ -5,6 +5,7 @@ export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
+    saving: 'بيتحفظ…', notSent: 'لسه مبعتش النظام للاعب',
     training: 'يوم تمرين', rest: 'يوم راحة', all: 'كل الأيام', cycles: 'فعّل أيام التمرين والراحة', copy: 'انسخ من يوم التمرين',
     send: 'ابعت لـ{name}', saved: 'اتحفظ', notes: 'ملاحظات تساعدك', clear: 'مفيش ملاحظات على الخطة',
     conflict: '{name}: راجع {reason}', gap: 'زوّد {name} بمقدار {grams} جرام عشان تكمل {macro}',
@@ -16,6 +17,7 @@ export const messages = defineMessages({
     soy: 'حساسية الصويا', sesame: 'حساسية السمسم', diabetes: 'السكر', bloodPressure: 'ضغط الدم',
   },
   en: {
+    saving: 'Saving…', notSent: 'This plan has not been sent to the player yet',
     training: 'Training day', rest: 'Rest day', all: 'Every day', cycles: 'Enable training and rest days', copy: 'Copy training day',
     send: 'Send to {name}', saved: 'Saved', notes: 'Smart notes', clear: 'No notes for this plan',
     conflict: '{name}: check {reason}', gap: 'Increase {name} by {grams} g to reach {macro}',

@@ -33,9 +33,30 @@ describe('player next task', () => {
   });
   it('requests this weeks check-in before the oldest unheard note', () => {
     const voiceNotes = [{ id: 'b', createdAt: '2026-11-02', listenedAt: null }, { id: 'a', createdAt: '2026-11-01', listenedAt: null }];
-    expect(playerNextTask({ ...base, checkInWeeks: ['2026-10-24'], voiceNotes }).kind).toBe('checkin');
+    expect(playerNextTask({ ...base, snapshot, sessions: [{ ...session, completed_at: session.started_at }], checkInWeeks: ['2026-10-24'], voiceNotes }).kind).toBe('checkin');
     expect(playerNextTask({ ...base, voiceNotes })).toMatchObject({ kind: 'voice', id: 'a' });
-    expect(playerNextTask({ ...base, voiceNotes: [{ ...voiceNotes[0], id: 'heard', createdAt: '2026-11-01', listenedAt: '2026-11-02' }] }).kind).toBe('done');
+    expect(playerNextTask({ ...base, voiceNotes: [{ ...voiceNotes[0], id: 'heard', createdAt: '2026-11-01', listenedAt: '2026-11-02' }] }).kind).toBe('waiting');
+  });
+  it('waits after intake when no plan or meals exist', () => {
+    expect(playerNextTask({ ...base, checkInWeeks: [] })).toEqual({ kind: 'waiting' });
+  });
+  it('requires a program and completed activity within the last seven calendar days for check-in', () => {
+    const rest = { ...snapshot, training_days: [4] };
+    const completed = { ...session, completed_at: session.started_at };
+    const input = { ...base, snapshot: rest, checkInWeeks: [] };
+    expect(playerNextTask(input).kind).toBe('done');
+    expect(playerNextTask({ ...input, sessions: [session] }).kind).toBe('continue');
+    expect(playerNextTask({ ...input, sessions: [completed] }).kind).toBe('checkin');
+    for (const training_date of ['2026-10-28', '2026-10-27', '2026-11-04']) {
+      expect(playerNextTask({ ...input, sessions: [{ ...completed, training_date }] }).kind)
+        .toBe(training_date === '2026-10-28' ? 'checkin' : 'done');
+    }
+    const log = { id: 'l', meal_id: 'm', log_date: base.today, completed_at: session.started_at,
+      client_updated_at: session.started_at, swaps: {}, deleted_at: null };
+    expect(playerNextTask({ ...input, mealLogs: [log] }).kind).toBe('checkin');
+    expect(playerNextTask({ ...input, mealLogs: [{ ...log, deleted_at: session.started_at }] }).kind).toBe('done');
+    expect(playerNextTask({ ...input, mealLogs: [{ ...log, completed_at: null }] }).kind).toBe('done');
+    expect(playerNextTask({ ...input, snapshot: null, meals: [{ id: 'm', name: 'Meal', position: 1 }], mealLogs: [log] }).kind).toBe('done');
   });
   it('rests on unscheduled days, but resumes a started workout', () => {
     const rest = { ...snapshot, training_days: [3] };

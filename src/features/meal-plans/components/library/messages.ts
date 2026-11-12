@@ -6,7 +6,7 @@ export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
-    forms: 'الفورمز',
+    forms: 'التقييمات',
     title: 'مكتبة الأكلات', subtitle: 'أكلاتك والقيم الغذائية في مكان واحد', search: 'دوّر بالعربي أو English',
     all: 'الكل', mine: 'أكلاتي', global: 'العامة', new: 'أكلة جديدة', food: 'الأكلة',
     kcal: 'سعرات', protein: 'بروتين', carbs: 'كارب', fat: 'دهون', units: 'الوحدات', usage: 'في خطط',
@@ -21,7 +21,7 @@ export const messages = defineMessages({
     confirmDelete: 'متأكد إنك عايز تمسح الأكلة؟', saving: 'بنحفظ…', duplicateError: 'مش قادرين نراجع الأسماء. جرّب تاني',
   },
   en: {
-    forms: 'Forms',
+    forms: 'Assessments',
     title: 'Foods library', subtitle: 'Your foods and nutrition in one place', search: 'Search Arabic or English',
     all: 'All', mine: 'My foods', global: 'Global', new: 'New food', food: 'Food',
     kcal: 'kcal', protein: 'Protein', carbs: 'Carbs', fat: 'Fat', units: 'Units', usage: 'In plans',

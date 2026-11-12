@@ -1,7 +1,11 @@
 export const arStd = {
   "library": "المكتبة",
-  "foods": "الأطعمة",
-  "forms": "النماذج",
+  "foods": "مكتبة الأطعمة",
+  "forms": "التقييمات",
+  "trainingPlans": "خطط التمارين",
+  "trainingGroup": "التمارين",
+  "foodGroup": "الطعام",
+  "followupGroup": "المتابعة",
   "accountMenu": "حسابي",
   "previewTitle": "اعرض كلاعب",
   "dayCount.zero": "{count} أيام",

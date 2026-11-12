@@ -1,5 +1,6 @@
 import { defineMessages } from '@/core/i18n/messages';
 import { arStd } from './standard/messages';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
@@ -97,10 +98,9 @@ export const messages = defineMessages({
     selectForSuperset: "اختار للمجموعة المركّبة",
     couldntLoadProgramsTryAgain: "البرامج متحمّلتش. جرّب تاني",
     couldntCreateTheProgramTryAgain: "البرنامج متعملش. جرّب تاني",
-    saved: "اتحفظ",
-    programActivatedForPlayer: "البرنامج اتفعّل للاعب",
+    saved: "اتحفظ", programActivatedForPlayer: "البرنامج اتفعّل للاعب",
     couldntActivateTryAgain: "التفعيل متعملش. جرّب تاني",
-    programs: "البرامج",
+    programs: captainWorkspaceEnabled() ? 'التمارين' : 'البرامج',
     newProgramName: "اسم البرنامج الجديد",
     newProgram: "برنامج جديد",
     creatingProgram: "جاري إنشاء البرنامج",
@@ -220,7 +220,7 @@ export const messages = defineMessages({
     saved: "Saved",
     programActivatedForPlayer: "Program activated for player",
     couldntActivateTryAgain: "Couldn't activate. Try again",
-    programs: 'Programs', newProgramName: 'New program name', newProgram: 'New program', creatingProgram: 'Creating program',
+    programs: captainWorkspaceEnabled() ? 'Training' : 'Programs', newProgramName: 'New program name', newProgram: 'New program', creatingProgram: 'Creating program',
     noProgramsForThisPlayerYet: 'No programs for this player yet', orStartFromTemplate: 'Or start from a template',
     programNotFound: 'Program not found', savingAndUpdating: 'Saving and updating', programDays: 'Program days',
     addTheFirstDay: 'Add the first day', newDay: 'New day',

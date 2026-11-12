@@ -1,5 +1,5 @@
 export const arStd = {
-  "forms": "النماذج",
+  "forms": "التقييمات",
   "title": "مكتبة الأطعمة",
   "subtitle": "أطعمتك والقيم الغذائية في مكان واحد",
   "search": "ابحث بالعربية أو English",

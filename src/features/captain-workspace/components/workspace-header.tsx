@@ -26,7 +26,7 @@ export function WorkspaceHeader({ playerId, name, locale, view = 'training' }: {
           className={`inline-flex min-h-12 items-center rounded-full px-3 text-sm ${label === view ? 'glass-strong font-bold' : 'text-muted'}`}>{label === 'forms' ? ft('forms') : t(label)}</Link>
       </li>)}</ul>
     </nav>
-    {view === 'training' && <><span data-workspace-slot="autosave" className="col-start-2 row-start-1 text-xs text-muted lg:ms-auto">{t('readOnly')}</span>
+    {view === 'training' && <>
     <button type="button" className="hidden min-h-12 items-center gap-2 rounded-full bg-lime px-5 font-bold text-on-lime lg:inline-flex">
       <Send aria-hidden strokeWidth={1.5} className="size-4" />{t('send')}
     </button></>}

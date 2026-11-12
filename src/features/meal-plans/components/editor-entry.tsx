@@ -50,11 +50,12 @@ export function EditorEntry({ planId }: { planId: string }) {
     <header className="flex flex-wrap items-center justify-between gap-3">
       <label>{planT('planName')}<input value={draft.title} maxLength={80} disabled={state.busy} onChange={event => update(value => ({ ...value, title: event.target.value }))}
         className="ms-2 min-h-12 rounded-control bg-surface px-3" /></label>
-      <p role="status">{state.busy ? planT('saving') : state.dirty ? planT('youHaveUnsavedChanges') : t('saved')}</p>
+      <div role="status" className="text-sm text-muted">{state.error ? <>
+        <span className="text-danger">{state.error}</span><Button variant="secondary" disabled={state.busy} onClick={() => void state.retrySave()}>{planT('tryAgain')}</Button>
+      </> : state.busy || state.dirty ? t('saving') : null}</div>
       <Button variant="secondary" disabled={state.busy} onClick={() => void state.persist()}>{planT('savePlan')}</Button>
       {playerId && <Button disabled={state.busy} onClick={() => void state.persist(true)}>{t('send', { name: context?.name ?? '' })}</Button>}
     </header>
-    {state.error && <div role="alert" className="text-danger">{state.error}<Button variant="secondary" onClick={() => void state.retrySave()}>{planT('tryAgain')}</Button></div>}
     <LiveTargets targets={targets} totals={planTotals({ ...draft, meals: visible })} />
     <fieldset disabled={state.busy} className="grid min-w-0 gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(16rem,1fr)]">
       <section className="grid content-start gap-4" aria-label={planT('meals')}>
@@ -68,7 +69,7 @@ export function EditorEntry({ planId }: { planId: string }) {
         <Button variant="secondary" onClick={add}>{planT('addMeal')}</Button>
       </section>
       <div className="grid content-start gap-4">
-        {context && <SmartNotesPanel meals={visible} planMeals={draft.meals} targets={targets} facts={context.facts} logs={context.logs} today={context.today}
+        {context && <SmartNotesPanel meals={visible} planMeals={draft.meals} targets={targets} facts={context.facts} logs={context.logs} today={context.today} sent={draft.status !== 'draft'}
           onIncrease={(id, grams) => update(value => {
             const item = value.meals.flatMap(meal => meal.items).find(item => item.id === id);
             return item ? setGrams(value, id, item.grams + grams, planT) : value;

@@ -6,7 +6,8 @@ export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
-    library: 'المكتبة', foods: 'الأكلات', forms: 'الفورمز',
+    library: 'المكتبة', foods: 'مكتبة الأكلات', forms: 'التقييمات',
+    trainingPlans: 'خطط التمارين', trainingGroup: 'التمارين', foodGroup: 'الأكل', followupGroup: 'المتابعة',
     accountMenu: 'حسابي',
     "previewTitle": "شوف كلاعب",
     "dayCount.zero": "{count} أيام",
@@ -121,7 +122,8 @@ export const messages = defineMessages({
     daysAgo2: "من {v0} يوم",
   },
   en: {
-    library: 'Library', foods: 'Foods', forms: 'Forms',
+    library: 'Library', foods: 'Food library', forms: 'Assessments',
+    trainingPlans: 'Training plans', trainingGroup: 'Training', foodGroup: 'Food', followupGroup: 'Follow-up',
     accountMenu: 'Account',
     "previewTitle": "Player preview",
 

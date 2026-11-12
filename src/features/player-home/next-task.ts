@@ -1,5 +1,5 @@
 import type { MealLogRow, ProgramSnapshot, WorkoutSessionRow } from '@/core/offline';
-import { localDate, saturdayWeek } from '@/lib/dates';
+import { daysBetween, localDate, saturdayWeek } from '@/lib/dates';
 import { isWeeklyProgram, pickTodayDay } from './next-day';
 
 export interface PlayerTaskInput {
@@ -13,7 +13,7 @@ export interface PlayerTaskInput {
   voiceNotes: { id: string; createdAt: string; listenedAt: string | null }[];
 }
 export interface PlayerTask {
-  kind: 'intake' | 'start' | 'continue' | 'meal' | 'checkin' | 'voice' | 'done';
+  kind: 'intake' | 'start' | 'continue' | 'meal' | 'checkin' | 'voice' | 'done' | 'waiting';
   href?: string;
   name?: string;
   id?: string;
@@ -34,10 +34,14 @@ export function playerNextTask(input: PlayerTaskInput): PlayerTask {
   const meal = [...input.meals].sort((a, b) => a.position - b.position || a.id.localeCompare(b.id))
     .find(meal => !input.mealLogs.some(log => log.meal_id === meal.id && log.log_date === today && log.completed_at && !log.deleted_at));
   if (meal) return { kind: 'meal', href: '/player/nutrition', name: meal.name };
-  if (!input.checkInWeeks.includes(saturdayWeek(today)[0] ?? today)) return { kind: 'checkin', href: '/player/progress' };
+  const recent = (date: string) => daysBetween(date, today) >= 0 && daysBetween(date, today) < 7;
+  const active = sessions.some(session => session.completed_at && recent(session.training_date)) ||
+    input.mealLogs.some(log => log.completed_at && !log.deleted_at && recent(log.log_date));
+  if (snapshot && active && !input.checkInWeeks.includes(saturdayWeek(today)[0] ?? today)) return { kind: 'checkin', href: '/player/progress' };
   const note = [...input.voiceNotes].filter(note => !note.listenedAt)
     .sort((a, b) => a.createdAt.localeCompare(b.createdAt) || a.id.localeCompare(b.id))[0];
   if (note) return { kind: 'voice', id: note.id, href: '/player/captain' };
+  if (!snapshot && !input.meals.length) return { kind: 'waiting' };
   const at = new Date(`${today}T12:00:00Z`);
   at.setUTCDate(at.getUTCDate() + 1);
   const next = snapshot ? pickTodayDay(snapshot, sessions, localDate(at, 'UTC')) : undefined;

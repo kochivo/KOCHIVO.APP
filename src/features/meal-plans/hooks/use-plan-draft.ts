@@ -57,7 +57,7 @@ export function usePlanDraft(planId: string, { clearErrorsOnEdit = false }: { cl
         const active = { ...draft, status: 'active' as const };
         setDraft(active); setSaved(JSON.stringify(active));
       }
-      toast.success(activate ? t('planActivatedForPlayer') : t('planSaved'));
+      if (activate) toast.success(t('planActivatedForPlayer'));
     } catch { setError(t('couldntSaveTryAgain')); }
     finally { setBusy(false); }
   }

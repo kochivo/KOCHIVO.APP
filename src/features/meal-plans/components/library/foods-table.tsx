@@ -24,7 +24,7 @@ export function FoodsTable({ foods, onSelect }: { foods: LibraryFood[]; onSelect
           </button></td>
           {(['kcal', 'protein', 'carbs', 'fat'] as const).map(key => <td key={key} className="p-3 tabular-nums">{food[key]}</td>)}
           <td className="p-3"><div className="flex min-w-28 flex-wrap gap-1">{food.units?.length ? food.units.map(unit => <span key={unit.key}
-            className="rounded-control border border-line px-2 py-1">{locale === 'en' ? unit.name_en : unit.name_ar} · {unit.grams}</span>) : t('noUnits')}</div></td>
+            className="rounded-control border border-line px-2 py-1">{locale === 'en' ? unit.name_en : unit.name_ar} · {unit.grams}</span>) : null}</div></td>
           <td className="p-3 tabular-nums text-muted">{food.uses}</td>
         </tr>;
       })}</tbody>

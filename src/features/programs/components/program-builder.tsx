@@ -55,7 +55,7 @@ export function ProgramBuilder({ programId, playerId }: { programId?: string; pl
   }
   async function save() {
     setMessage('');
-    if (await state.save()) toast.success(t('saved'));
+    await state.save();
   }
   async function activate() {
     if (!state.draft || pending || state.saving) return;

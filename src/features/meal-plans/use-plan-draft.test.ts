@@ -37,6 +37,14 @@ it('shows a generic translated error for a masked server exception', async () =>
   expect(render().error).toBe(createT(messages, 'ar')('couldntSaveTryAgain'));
   expect(state.success).not.toHaveBeenCalled();
 });
+it('saves a draft quietly without activating it', async () => {
+  await render().persist();
+  expect(state.save).toHaveBeenCalledWith(draft);
+  expect(render().dirty).toBe(false);
+  expect(render().error).toBe('');
+  expect(state.activate).not.toHaveBeenCalled();
+  expect(state.success).not.toHaveBeenCalled();
+});
 it('shows a returned validation error and does not activate', async () => {
   state.save.mockResolvedValue({ ok: false, error: 'validation' });
   await render().persist(true);
@@ -55,7 +63,7 @@ it('preserves the server rule allowing activation when at least one meal has foo
   await render().persist(true);
   expect(render().draft?.status).toBe('active');
   expect(state.activate).toHaveBeenCalledWith('plan');
-  expect(state.success).toHaveBeenCalled();
+  expect(state.success).toHaveBeenCalledWith(createT(messages, 'ar')('planActivatedForPlayer'));
 });
 it.each([{ meals: [] }, { meals: [{ id: 'empty', name: 'Meal', position: 1, items: [] }] }])(
   'checks empty meals before saving or activating', async ({ meals }) => {

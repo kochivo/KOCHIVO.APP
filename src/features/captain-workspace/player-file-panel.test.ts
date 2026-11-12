@@ -45,7 +45,7 @@ it('styles injuries and medical conditions as warnings and translates stored key
 it('isolates units in Arabic and handles absent facts and history', () => {
   expect(render([intake], 'ar')).toContain('dir="ltr"');
   const html = render([]);
-  expect(html).toContain('No forms yet');
+  expect(html).toContain('No assessments yet');
   expect(html).toContain('Not provided');
   expect(html).not.toContain('0 kg');
 });

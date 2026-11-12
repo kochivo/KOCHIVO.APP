@@ -1,6 +1,7 @@
 import { defineMessages } from '@/core/i18n/messages';
 import { arStd } from './standard/messages';
 import { koPreviewMessages } from '@/features/ko-core';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 
 export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
@@ -23,7 +24,7 @@ export const messages = defineMessages({
     'expression.welcome': 'ترحيب', 'expression.thinking': 'تفكير', 'expression.cheer': 'تشجيع',
     previewTitle: 'تجربة KO المحلية', previewDescription: 'جرّب شكل المساعد للكابتن واللاعب.',
     captainRole: 'الكابتن', playerRole: 'اللاعب', sampleTitle: 'مساحتك في Kochivo', sampleBody: 'KO موجود في طرف الشاشة، فوق شريط التنقل.',
-    players: 'اللاعبين', programs: 'البرامج', tasks: 'المهام', workout: 'تمرينك', food: 'أكلك', progress: 'تطورك',
+    players: 'اللاعبين', programs: captainWorkspaceEnabled() ? 'التمارين' : 'البرامج', tasks: 'المهام', workout: 'تمرينك', food: 'أكلك', progress: 'تطورك',
     chatTitle: 'شات KO المحلي', chatInput: 'اكتب رسالة لـ KO', chatSend: 'ابعت الرسالة', chatWorking: 'ثانية واحدة…',
     chatCaptain: 'جرّب تقول: خلّي بنش أحمد 3 مجموعات و8 عدّات. تقدر تكتب أو تبعت فويس.',
     chatPlayer: 'اسألني عن البنش في خطتك التجريبية. مثال: ألعب البنش كام مجموعة؟',
@@ -59,7 +60,7 @@ export const messages = defineMessages({
     'expression.welcome': 'Welcome', 'expression.thinking': 'Thinking', 'expression.cheer': 'Let’s go',
     previewTitle: 'Local KO preview', previewDescription: 'Explore the captain and player experience.',
     captainRole: 'Captain', playerRole: 'Player', sampleTitle: 'Your Kochivo workspace', sampleBody: 'KO sits in the corner, above the bottom navigation.',
-    players: 'Players', programs: 'Programs', tasks: 'Tasks', workout: 'Workout', food: 'Food', progress: 'Progress',
+    players: 'Players', programs: captainWorkspaceEnabled() ? 'Training' : 'Programs', tasks: 'Tasks', workout: 'Workout', food: 'Food', progress: 'Progress',
     chatTitle: 'Local KO chat', chatInput: 'Write a message to KO', chatSend: 'Send message', chatWorking: 'KO is working on your request…',
     chatCaptain: 'Try saying: Set Ahmed’s bench press to 3 sets of 8. Type or send a voice note.',
     chatPlayer: 'Ask about bench press in your demo plan. For example, how many bench sets should I do?',
