@@ -62,6 +62,7 @@ afterEach(async () => {
   vi.doUnmock('./hooks/use-rest-timer');
   vi.doUnmock('./hooks/use-bodyweight');
   vi.doUnmock('./hooks/use-focus-session');
+  vi.doUnmock('./hooks/use-warmup-session');
   vi.doUnmock('./hooks/use-wake-lock');
   vi.doUnmock('next/navigation');
   vi.unstubAllGlobals();
@@ -161,6 +162,9 @@ it('refreshes Cairo today on visible resume and focus, then removes its listener
   }));
   vi.doMock('./hooks/use-focus-session', () => ({
     useFocusSession: () => ({ rest: { remaining: 0, endsAt: null }, doneSets: [], loading: true }),
+  }));
+  vi.doMock('./hooks/use-warmup-session', () => ({
+    useWarmupSession: () => ({ loading: false, pending: false }),
   }));
   vi.doMock('./hooks/use-wake-lock', () => ({ useWakeLock: () => undefined }));
   vi.doMock('next/navigation', () => ({ useRouter: () => ({ push: () => undefined }) }));

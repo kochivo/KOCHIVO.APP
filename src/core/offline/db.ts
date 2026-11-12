@@ -29,6 +29,8 @@ export interface SnapshotDay {
   exercises: SnapshotExercise[];
   weekday?: number | null;
   is_rest_day?: boolean;
+  /** Absent in snapshots cached before player warm-ups. No indexed fields change. */
+  warmup?: { items: { id: string; name: string; amount: number; unit: 'min' | 'sec' | 'reps' | 'times'; note?: string }[]; ramp: boolean };
   cardio?: { id: string; day_id: string; position: number; kind: string; minutes: number; intensity: string; notes: string }[];
 }
 

@@ -4,6 +4,7 @@ import type { ProgramSnapshot } from '@/core/offline';
 import type { Tables } from '@/types/database';
 import type { AppDatabase as Database } from '@/types/app-database';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import type { DayWarmup } from '@/features/programs';
 
 export type { ProgramSnapshot } from '@/core/offline';
 
@@ -15,6 +16,7 @@ type ExerciseResponse = Pick<Tables<'program_exercises'>,
 export type ProgramResponse = Pick<Tables<'programs'>, 'id' | 'title' | 'notes' | 'settings'> & {
   program_days: (Pick<Tables<'program_days'>, 'id' | 'position' | 'title'> & {
     weekday?: number | null; is_rest_day?: boolean; program_cardio?: Tables<'program_cardio'>[];
+    warmup?: DayWarmup;
     program_exercises: ExerciseResponse[];
   })[];
 };
@@ -29,6 +31,7 @@ export function mapProgramSnapshot(program: ProgramResponse, trainingDays: numbe
     days: [...program.program_days].sort((a, b) => a.position - b.position).map((day) => ({
       id: day.id, position: day.position, title: day.title,
       weekday: day.weekday ?? null, is_rest_day: day.is_rest_day ?? false,
+      warmup: day.warmup ?? { items: [], ramp: false },
       cardio: [...(day.program_cardio ?? [])].sort((a, b) => a.position - b.position),
       exercises: [...day.program_exercises].sort((a, b) => a.position - b.position).map(({ exercises, ...exercise }) => ({
         ...exercise, rir: exercise.rir ?? null, name_ar: exercises?.name_ar ?? null, name_en: exercises?.name_en ?? '',
