@@ -5,6 +5,7 @@ import { useState, useTransition } from 'react';
 import { Button } from '@/ui';
 import { signInGoogle } from '../data/sign-in-google';
 import { callAuthAction as runAuthAction } from '../data/client-action';
+import { browserSelection } from '../package-selection';
 
 export function GoogleButton({ intent, code, coach }: { intent: 'captain' | 'player'; code?: string; coach?: string }) {
   const t = useT(messages);
@@ -14,7 +15,7 @@ export function GoogleButton({ intent, code, coach }: { intent: 'captain' | 'pla
   const [error, setError] = useState('');
   return <div className="space-y-2">
     <Button variant="secondary" size="lg" className="w-full" disabled={pending} onClick={() => start(async () => {
-      const result = await callAuthAction(() => signInGoogle(intent, code, coach));
+      const result = await callAuthAction(() => signInGoogle(intent, code, coach, coach ? browserSelection() : undefined));
       setError(result.error ?? '');
       if (result.redirect) window.location.assign(result.redirect);
     })}>{pending ? t('signingIn') : t('continueWithGoogle')}</Button>

@@ -12,6 +12,7 @@ import { SaveStatus } from '@/ui/save-status';
 import { messages } from './messages';
 import type { FileSummary, PlayerFileTab, Profile } from './types';
 import { FileBillingEntry } from './billing-entry';
+import { TierBadge } from '@/ui/tier-badge';
 
 export function FileHeader({ playerId, profile, summary, tab, locale, today, playerToday }: {
   playerId: string; profile: Profile; summary: FileSummary; tab: PlayerFileTab; locale: Locale; today: string; playerToday?: string;
@@ -27,7 +28,7 @@ export function FileHeader({ playerId, profile, summary, tab, locale, today, pla
       {profile.avatarUrl ? <Image src={profile.avatarUrl} alt="" width={52} height={52} unoptimized className="size-[52px] shrink-0 rounded-full object-cover" /> :
         <span aria-hidden className="glass-strong grid size-[52px] shrink-0 place-items-center rounded-full text-lg">{profile.name.charAt(0)}</span>}
       <div className="relative min-w-0 pt-5"><Link href="/captain/players" className="absolute -top-4 start-0 flex min-h-12 items-center whitespace-nowrap text-xs text-faint">{t('breadcrumb')}</Link>
-        <h1 className="break-words font-display text-[30px] font-semibold leading-tight">{profile.name}</h1></div>
+        <h1 className="flex flex-wrap items-center gap-2 break-words font-display text-[30px] font-semibold leading-tight">{profile.name}<TierBadge tier={summary.tier} /></h1></div>
       <span className={`rounded-full px-3 py-1 text-xs ${status === 'active' && !summary.subscription.pending && !summary.subscription.frozen_at ? 'bg-lime-soft text-lime' : 'bg-warn-soft text-warn'}`}>
         {summary.subscription.pending ? t('pending') : summary.subscription.frozen_at ? t('frozen') : rt(statusLabels[status])}</span>
       {summary.subscription.sessions_left !== null && <span className="text-xs text-muted">{t('sessions', { count: formatNumber(summary.subscription.sessions_left, locale) })}</span>}

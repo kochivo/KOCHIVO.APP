@@ -5,6 +5,7 @@ export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
+    renewal_requested: '{name} بعت طلب تجديد',
     form_requested: 'الكابتن مستني ردّك على {name}',
     rank_up: 'اترقيت لرتبة جديدة',
     rank_up_champion: 'اترقيت! بقيت بطل',
@@ -33,6 +34,7 @@ export const messages = defineMessages({
     now: 'دلوقتي', minutes: 'من {n} دقيقة', hours: 'من {n} ساعة', days: 'من {n} يوم',
   },
   en: {
+    renewal_requested: '{name} requested a renewal',
     form_requested: 'Your captain is waiting for: {name}',
     rank_up: 'You reached a new rank',
     rank_up_champion: 'You ranked up to Champion',

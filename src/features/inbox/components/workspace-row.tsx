@@ -9,6 +9,7 @@ import { checkinKpis, isOverdue } from '../workspace-followup';
 import { followupAge } from '../workspace-age';
 import { messages } from '../messages';
 import { workspaceMessages } from '../workspace-messages';
+import { TierBadge } from '@/ui/tier-badge';
 export function WorkspaceRow({ item, inputs, now, selected, onSelect, idPrefix = 'task' }: {
   item: WorkspaceItem; inputs: TriageInputs; now: Date; selected: boolean; onSelect: () => void; idPrefix?: string;
 }) {
@@ -24,6 +25,7 @@ export function WorkspaceRow({ item, inputs, now, selected, onSelect, idPrefix =
     {selected && <span className="absolute inset-y-0 start-0 w-[3px] bg-lime" aria-hidden />}
     <span aria-hidden className="glass grid size-[38px] place-items-center rounded-full border border-line text-xs">{item.player_name.slice(0, 1)}</span>
     <span className="min-w-0"><span className="flex flex-wrap items-center gap-2 text-sm font-medium">{item.player_name}
+      <TierBadge tier={item.tier} />
       {(flag || item.kind === 'assessment' && item.answers.some(answer => answer.alert)) && <span className="rounded-full bg-warn-soft px-2.5 py-1 text-[11.5px] text-warn">{flag ? flagT(flag.key, values) : t('assessmentAlert')}</span>}</span>
       <span className="mt-1 block truncate text-[11.5px] text-faint">{kind}{summary && ` · ${summary}`}</span></span>
     <span className={`text-end text-[11.5px] ${isOverdue(item, now) ? 'text-warn' : 'text-faint'}`}>{followupAge(item.created_at, now, locale, style)}</span>

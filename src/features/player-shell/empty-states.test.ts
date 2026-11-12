@@ -21,3 +21,4 @@ vi.mock('./hooks/use-my-captain', () => ({ useCaptainContext: () => ({ data: nul
 it('takes an unassigned player home for their next step', () => {
  expect(render(createElement(CaptainScreen))).toMatch(/href="\/player"[^>]*>Back to home<\/a>/);
 });
+vi.mock('server-only', () => ({}));

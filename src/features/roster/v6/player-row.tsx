@@ -11,6 +11,7 @@ import type { RosterMeta } from '../data/v6-roster';
 import { lastSeenLabel } from '../status';
 import { messages as legacyMessages } from '../messages';
 import { messages } from './messages';
+import { TierBadge } from '@/ui/tier-badge';
 
 export function PlayerRow({ player, today, meta, hasFood, error, onArchive }: {
   player: RosterPlayer; today: string; meta?: RosterMeta; hasFood: boolean; error?: string; onArchive: () => void;
@@ -24,7 +25,7 @@ export function PlayerRow({ player, today, meta, hasFood, error, onArchive }: {
       {player.avatarUrl ? <Image src={player.avatarUrl} alt="" width={40} height={40} unoptimized className="size-10 shrink-0 rounded-full object-cover" /> :
         <span aria-hidden className="glass-strong grid size-10 shrink-0 place-items-center rounded-full">{player.fullName.charAt(0)}</span>}
       <div className="min-w-0"><Link href={href} prefetch={false} className="block min-w-0 truncate font-medium after:absolute after:inset-0 after:min-h-12 hover:text-lime">{player.fullName}</Link>
-        <p className="text-xs text-faint">{goal} · {level}</p></div>
+        <p className="text-xs text-faint">{goal} · {level}</p></div><TierBadge tier={player.tier} />
       {player.openTasks > 0 && <span className="text-xs text-lime" aria-label={old('taskCount', { n: player.openTasks, count: formatNumber(player.openTasks, locale) })}>{formatNumber(player.openTasks, locale)}</span>}
     </div>
     <div role="cell" className="col-start-1 text-sm text-muted lg:col-auto"><span className="me-2 text-xs text-faint lg:hidden">{t('lastWorkout')}</span>{lastSeenLabel(player.lastTrainingDate, player.playerToday ?? today, locale)}</div>

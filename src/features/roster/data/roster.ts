@@ -10,6 +10,7 @@ import { currentClaims } from '@/core/supabase/claims';
 import { unstable_rethrow } from 'next/navigation';
 import { rosterClient } from './client';
 import type { RosterResult } from '../types';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 
 export const fetchRoster = cache(async (): Promise<RosterResult> => {
   try {
@@ -19,6 +20,9 @@ export const fetchRoster = cache(async (): Promise<RosterResult> => {
     const zones = new Map<string, string>();
     const avatars = new Map<string, string | null>();
     const links = new Map<string, { id: string; pending: boolean; frozen_at: string | null; sessions_left: number | null }>();
+    const tiers = captainWorkspaceEnabled() ? await client.rpc('captain_player_tiers') : null;
+    if (tiers?.error) throw tiers.error;
+    const tierMap = new Map(tiers?.data?.map(t => [t.player_id, t]));
     if (data.length) {
       const profiles = await client.from('profiles').select('id,avatar_path,timezone').in('id', data.map(row => row.player_id));
       if (profiles.error) throw profiles.error;
@@ -31,6 +35,7 @@ export const fetchRoster = cache(async (): Promise<RosterResult> => {
     }
     return { players: data.map((row) => ({
       playerId: row.player_id, fullName: row.full_name, accessUntil: row.access_until,
+      ...(captainWorkspaceEnabled() ? { tier: tierMap.get(row.player_id) ?? null } : {}),
       linkId: links.get(row.player_id)?.id, pending: links.get(row.player_id)?.pending,
       frozenAt: links.get(row.player_id)?.frozen_at, sessionsLeft: links.get(row.player_id)?.sessions_left,
       avatarUrl: avatars.get(row.player_id) ?? null,

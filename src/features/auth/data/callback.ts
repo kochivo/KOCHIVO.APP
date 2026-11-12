@@ -10,6 +10,7 @@ import { parseInviteCode } from '../invite-code';
 import { coachSlug } from '@/lib/coach-slug';
 import { completeCoachRequest } from './coach-request';
 import { homeFor } from '../routing';
+import { packageSelection, selectionQuery } from '../package-selection';
 
 export async function handleAuthCallback(request: NextRequest) {
   // Behind the host's proxy request.url is the container address (0.0.0.0:8080), not the site.
@@ -20,6 +21,7 @@ export async function handleAuthCallback(request: NextRequest) {
   let intent: 'captain' | 'player' | undefined;
   let invite: string | null = null;
   let coach = coachSlug(request.nextUrl.searchParams.get('coach'));
+  let selection = packageSelection(Object.fromEntries(request.nextUrl.searchParams));
   if (coach) intent = 'player';
   try {
     if (raw) {
@@ -28,6 +30,7 @@ export async function handleAuthCallback(request: NextRequest) {
         if (value.intent === 'captain' || value.intent === 'player') intent = value.intent;
         if ('code' in value && typeof value.code === 'string') invite = parseInviteCode(value.code);
         if (!coach && 'coach' in value) coach = coachSlug(value.coach);
+        if (!selection.package) selection = packageSelection(value);
       }
     }
     // An explicit coach signup must never redeem an unrelated, stale OAuth invite.
@@ -57,12 +60,15 @@ export async function handleAuthCallback(request: NextRequest) {
       if (redemption.error) throw redemption.error;
       return NextResponse.redirect(new URL('/player/onboarding', origin));
     }
-    if (coach) return NextResponse.redirect(new URL(await completeCoachRequest(client, coach), origin));
+    if (coach) return NextResponse.redirect(new URL(await completeCoachRequest(client, coach, selection), origin));
     return NextResponse.redirect(new URL(homeFor(user), origin));
   } catch (error) {
     unstable_rethrow(error);
     const target = new URL(invite ? `/i/${invite}` : '/login', origin);
-    if (coach) { target.searchParams.set('coach', coach); target.searchParams.set('tab', 'signup'); }
+    if (coach) {
+      target.searchParams.set('coach', coach); target.searchParams.set('tab', 'signup');
+      new URLSearchParams(selectionQuery(selection)).forEach((value, key) => target.searchParams.set(key, value));
+    }
     target.searchParams.set('error', authError(error, await getT(messages)));
     return NextResponse.redirect(target);
   }

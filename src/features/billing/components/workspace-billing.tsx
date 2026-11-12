@@ -17,6 +17,7 @@ import type { PaymentSegment } from '../workspace';
 import { WorkspaceBillingRow } from './workspace-billing-row';
 import { FinanceSummary } from './finance-summary';
 import { WorkspacePackages } from './workspace-packages';
+import { RequestsEntry } from '../choice/requests-entry';
 
 const Picker = dynamic(() => import('./payment-player-picker').then(m => m.PaymentPlayerPicker));
 const Detail = dynamic(() => import('./workspace-player-detail').then(m => m.WorkspacePlayerDetail));
@@ -39,6 +40,7 @@ export function WorkspaceBilling({ data, today }: { data: Promise<BillingResult>
           due: formatNumber(billing.revenue.dues, locale), n: formatNumber(billing.revenue.owing, locale), ending: formatNumber(endingThisWeek(billing.players, today), locale) })}</p></div>
       {billing.players.length > 0 && <Button className="min-h-12 rounded-full" onClick={() => setPicking(true)}>{t('record')}</Button>}
     </header>
+    <RequestsEntry />
     {pending ? <LoadingState variant="cards" /> : billing.players.length === 0 ? <div className="grid items-start gap-4 min-[1001px]:grid-cols-[minmax(0,1fr)_300px]">
       <div className="glass space-y-4 rounded-card border border-line-soft p-5"><p className="text-sm text-faint">{t('empty')}</p><Link href="/captain/players" className="inline-flex min-h-12 items-center rounded-full bg-lime px-5 font-bold text-on-lime">{t('invite')}</Link></div>
       <WorkspacePackages packages={packages} onChange={setPackages} />

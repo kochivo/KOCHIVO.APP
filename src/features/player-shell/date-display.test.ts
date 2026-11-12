@@ -17,3 +17,4 @@ it('keeps the full Arabic start and expiry dates', () => {
     expect(html).toContain('dateTime="2026-11-03">3 نوفمبر 2026</time>');
   } finally { vi.useRealTimers(); }
 });
+vi.mock('server-only', () => ({}));

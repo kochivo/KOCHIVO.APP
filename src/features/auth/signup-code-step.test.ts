@@ -58,7 +58,7 @@ it('opens the shared code step after player signup and supplies the coach verifi
   vi.mocked(verifyPlayerCode).mockResolvedValue({ error: 'Wrong code' });
   const verify = step?.props.verify as (input: unknown) => Promise<unknown>;
   expect(await verify({ email: 'ali@example.com', token: '123456' })).toEqual({ error: 'Wrong code' });
-  expect(verifyPlayerCode).toHaveBeenCalledWith({ email: 'ali@example.com', token: '123456' }, 'ahmed');
+  expect(verifyPlayerCode).toHaveBeenCalledWith({ email: 'ali@example.com', token: '123456' }, 'ahmed', {});
 });
 
 it('uses the supplied verification action and calls onDone with its redirect', async () => {

@@ -22,7 +22,8 @@ function render(requests: { id: string; full_name: string; created_at: string }[
   return renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' }, createElement(WorkspaceRoster, {
     today: '2026-11-12', data: Promise.resolve<[RosterResult, string]>([state.result, 'Captain']),
     RequestList: ({ rows }) => createElement('ul', null, rows.map(row => createElement('li', { key: row.id }, row.full_name))),
-    extras: error ? { error: true } : { free: 4, food: [], meta: {}, requests },
+    extras: error ? { error: true } : { free: 4, food: [], meta: {}, requests: requests.map(r => ({ ...r,
+      package_id: null, offer_id: null, package_days: null, package_sessions: null })) },
   })));
 }
 it('renders capacity, counted chips and an accessible full-row file link without old action links', () => {
@@ -55,3 +56,4 @@ it('retains the existing clear-search-and-filter action for an empty result', ()
   state.filter = 'needsProgram';
   expect(render()).toContain('امسح البحث والفلتر');
 });
+vi.mock('server-only', () => ({}));

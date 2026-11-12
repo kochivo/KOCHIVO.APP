@@ -57,3 +57,4 @@ it('keeps exact status totals on a partially loaded queue', () => {
   expect(html).toMatch(/>150<\/b>/);
   expect(html).not.toContain('خلصت كل المتابعات');
 });
+vi.mock('server-only', () => ({}));

@@ -9,7 +9,7 @@ import { messages } from '../messages';
 export async function loadJoinRequests() {
   const t = await getT(messages);
   try {
-    const result = await (await supabaseServer()).rpc('pending_coach_join_requests');
+    const result = await (await supabaseServer()).rpc('pending_coach_join_packages');
     if (result.error) throw result.error;
     return { data: result.data ?? [] };
   } catch (error) { unstable_rethrow(error); return { error: t('loadFailure') }; }

@@ -6,6 +6,7 @@ export type Profile = NonNullable<Awaited<ReturnType<typeof fetchPlayerProfile>>
 export type PlayerFileTab = 'overview' | 'training' | 'nutrition' | 'assessments' | 'checkins';
 export type Subscription = Pick<Tables<'coach_clients'>, 'access_until' | 'started_on' | 'pending' | 'frozen_at' | 'sessions_left'>;
 export interface FileSummary {
+  tier?: { name: string; color: string; is_featured?: boolean } | null;
   file: PlayerFile;
   subscription: Subscription;
   lastTraining: string | null;

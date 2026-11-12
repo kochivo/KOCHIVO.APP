@@ -4,7 +4,7 @@ import { messages } from '../messages';
 import 'server-only';
 import { unstable_rethrow } from 'next/navigation';
 
-import { fetchRoster, playerStatus } from '@/features/roster';
+import { fetchRoster, playerStatus } from '@/features/roster/server';
 import { localDate } from '@/lib/dates';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { captainClient } from './client';

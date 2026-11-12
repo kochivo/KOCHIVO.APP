@@ -18,3 +18,4 @@ it('shows branding and only safe nonempty contact links with new-tab protection'
   expect(html).not.toContain('javascript:'); expect(html).not.toContain('YouTube');
   expect(html).not.toContain('/player/settings');
 });
+vi.mock('server-only', () => ({}));

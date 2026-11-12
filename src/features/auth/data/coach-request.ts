@@ -7,6 +7,7 @@ import { coachRequestValues } from '@/lib/coach-request-status';
 import type { CoachRequestStatus } from '@/lib/coach-request-status';
 import { profile } from './auth-client';
 import { homeFor } from '../routing';
+import { packageSelection } from '../package-selection';
 
 async function liveLinkStatus(client: SupabaseClient<AppDatabase>, playerId: string, captainId: string) {
   const link = await client.from('coach_clients').select('captain_id')
@@ -15,7 +16,7 @@ async function liveLinkStatus(client: SupabaseClient<AppDatabase>, playerId: str
   return link.data ? (link.data.captain_id === captainId ? 'member' : 'linked') : undefined;
 }
 
-export async function completeCoachRequest(client: SupabaseClient<AppDatabase>, rawSlug: string) {
+export async function completeCoachRequest(client: SupabaseClient<AppDatabase>, rawSlug: string, input?: unknown) {
   const slug = coachSlug(rawSlug);
   if (!slug) throw new Error('invalid coach');
   const user = await profile(client);
@@ -35,7 +36,16 @@ export async function completeCoachRequest(client: SupabaseClient<AppDatabase>, 
   const statusUrl = (status: CoachRequestStatus) => `/c/${slug}?requested=${coachRequestValues[status]}`;
   const linked = await liveLinkStatus(client, playerId, captain.id);
   if (linked) return statusUrl(linked);
-  const request = await client.from('coach_join_requests').insert({ id: uuidv7(), captain_id: captain.id, player_id: playerId });
+  const selection = packageSelection(input);
+  const pkg = selection.package ? await client.from('captain_packages').select('id')
+    .eq('id', selection.package).eq('captain_id', captain.id).is('archived_at', null).maybeSingle() : null;
+  if (pkg?.error) throw pkg.error;
+  const offer = selection.offer && pkg?.data ? await client.from('captain_offers').select('id')
+    .eq('id', selection.offer).eq('captain_id', captain.id).maybeSingle() : null;
+  if (offer?.error) throw offer.error;
+  // The database trigger repeats applicability checks at insertion time without consuming capacity.
+  const request = await client.from('coach_join_requests').insert({ id: uuidv7(), captain_id: captain.id, player_id: playerId,
+    ...(pkg?.data ? { package_id: pkg.data.id, offer_id: offer?.data?.id ?? null } : {}) });
   if (!request.error) return statusUrl('sent');
   if (request.error.code !== '23505') throw request.error;
   const pending = await client.from('coach_join_requests').select('id')

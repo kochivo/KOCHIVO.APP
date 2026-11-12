@@ -6,11 +6,13 @@ import type { CoachRequestStatus } from '@/lib/coach-request-status';
 import { loadPublicCoach } from '../data/public-profile';
 import { coachSignupHref } from '../slug';
 import { messages } from '../messages';
+import { PublicPricing } from './public-pricing';
 
 export async function CoachPage({ slug, requested }: { slug: string; requested?: CoachRequestStatus }) {
   const t = await getT(messages);
   const coach = await loadPublicCoach(slug);
   if (!coach) notFound();
+  const pricing = await PublicPricing({ captainId: coach.id, name: coach.full_name, signup: coachSignupHref(slug) });
   const keys = ['whatsapp', 'instagram', 'tiktok', 'facebook', 'youtube', 'x'] as const;
   const links = keys.flatMap(key => {
     const href = coach.social[key];
@@ -18,7 +20,7 @@ export async function CoachPage({ slug, requested }: { slug: string; requested?:
     try { const url = new URL(href); return url.protocol === 'https:' ? [{ key, href: url.href }] : []; }
     catch { return []; }
   });
-  return <main className="mesh flex min-h-dvh items-center justify-center p-6 pt-[max(1.5rem,var(--safe-top))]">
+  return <main className="mesh flex min-h-dvh flex-col items-center justify-center gap-10 p-6 pt-[max(1.5rem,var(--safe-top))]">
     <article className="glass-strong w-full max-w-xl space-y-6 rounded-card p-6 text-start md:p-10">
       <p className="font-display text-sm font-bold ltr:tracking-widest text-ink">{t('brand')}</p>
       {coach.avatar ? (
@@ -36,7 +38,8 @@ export async function CoachPage({ slug, requested }: { slug: string; requested?:
         <p>{t(requested)}</p>
         {requested === 'member' && <Link href="/player" className="flex min-h-12 items-center justify-center rounded-control bg-lime px-6 py-4 font-bold text-on-lime">{t('openApp')}</Link>}
       </div> :
-        <Link href={coachSignupHref(slug)} className="flex min-h-12 items-center justify-center rounded-control bg-lime px-6 py-4 font-bold text-on-lime">{t('train')}</Link>}
+        <Link href={coachSignupHref(slug)} className={`flex min-h-12 items-center justify-center rounded-control px-6 py-4 font-bold ${pricing ? 'border border-line text-ink' : 'bg-lime text-on-lime'}`}>{t('train')}</Link>}
     </article>
+    {pricing}
   </main>;
 }

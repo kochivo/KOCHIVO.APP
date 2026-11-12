@@ -6,6 +6,7 @@ import { messages } from '../messages';
 import { MessageCircle } from 'lucide-react';
 import Image from 'next/image';
 import type { ReactNode } from 'react';
+import dynamic from 'next/dynamic';
 import { Button, EmptyState, ErrorState, GlassCard, LoadingState } from '@/ui';
 import { formatDateAr, localDate } from '@/lib/dates';
 import { accessState } from '../access';
@@ -15,6 +16,9 @@ import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { PlayerAssessments } from './player-assessments-entry';
 import { CaptainQuestion } from './captain-question';
 import { messages as v6Messages } from '../v6-messages';
+
+// Loaded on demand so the billing barrel stays out of the player route's first load.
+const Renewal = dynamic(() => import('@/features/billing').then(module => module.RenewalEntry));
 
 const contactPatterns = {
   whatsapp: /^https:\/\/wa\.me\/[1-9]\d{7,14}$/,
@@ -75,6 +79,7 @@ export function CaptainScreen({ voiceNotes }: { voiceNotes?: ReactNode }) {
       <div><h1 className="font-display text-[19px] font-semibold">{data.fullName}</h1><p className="mt-1 text-xs text-faint">{v6t('replyTime')}</p></div>
     </header> : <header><h1 className="text-2xl font-extrabold">{t('coach')}</h1></header>}
     {v6 && data ? <>{voiceNotes}<PlayerAssessments actionable={false} /><CaptainQuestion contactUrl={url} />
+      {!data.pending && !data.archivedAt && <Renewal />}
       <details className="glass rounded-card border border-line-soft p-4"><summary className="flex min-h-12 cursor-pointer items-center text-sm text-muted">{v6t('profile')}</summary>{profile}</details>
     </> : <>{profile}{data && voiceNotes}</>}
   </main>;

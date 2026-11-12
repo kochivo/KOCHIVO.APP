@@ -82,3 +82,4 @@ it.each(['/player', '/player/nutrition', '/player/workout/day'])('runs backgroun
   renderToStaticMarkup(createElement(PlayerShell, null, null));
   expect(state.syncMounts).toBe(1);
 });
+vi.mock('server-only', () => ({}));

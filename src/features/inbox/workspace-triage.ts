@@ -8,5 +8,6 @@ export function workspaceTriage(item: WorkspaceItem, inputs: TriageInputs, now: 
 export function orderWorkspaceTasks(items: WorkspaceItem[], inputs: TriageInputs, now: Date, group: 'all' | TriageResult['group']) {
   const result = (item: WorkspaceItem) => workspaceTriage(item, inputs, now);
   const filtered = items.filter(item => group === 'all' || result(item).group === group);
-  return orderTriage(filtered, result);
+  return orderTriage(filtered, result).sort((a, b) => Number(result(b).group === 'attention') - Number(result(a).group === 'attention')
+    || Number(Boolean(b.tier?.is_featured)) - Number(Boolean(a.tier?.is_featured)));
 }

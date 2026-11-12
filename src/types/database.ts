@@ -753,6 +753,8 @@ export type Database = {
       }
       coach_join_requests: {
         Row: {
+          package_id: string | null
+          offer_id: string | null
           captain_id: string
           created_at: string
           id: string
@@ -760,6 +762,8 @@ export type Database = {
           status: string
         }
         Insert: {
+          package_id?: string | null
+          offer_id?: string | null
           captain_id: string
           created_at?: string
           id: string
@@ -767,6 +771,8 @@ export type Database = {
           status?: string
         }
         Update: {
+          package_id?: string | null
+          offer_id?: string | null
           captain_id?: string
           created_at?: string
           id?: string
@@ -789,6 +795,20 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      player_renewal_requests: {
+        Row: {
+          id: string; player_id: string; captain_id: string; package_id: string; offer_id: string | null
+          status: string; created_at: string; updated_at: string; decided_at: string | null
+        }
+        Insert: {
+          id: string; player_id: string; captain_id: string; package_id: string; offer_id?: string | null
+          status?: string; created_at?: string; updated_at?: string; decided_at?: string | null
+        }
+        Update: {
+          status?: string; updated_at?: string; decided_at?: string | null
+        }
+        Relationships: []
       }
       crown_prizes: {
         Row: {
@@ -2510,6 +2530,17 @@ export type Database = {
       }
     }
     Functions: {
+      pending_coach_join_packages: {
+        Args: never
+        Returns: { id: string; full_name: string; created_at: string; package_id: string | null; offer_id: string | null;
+          package_days: number | null; package_sessions: number | null }[]
+      }
+      decide_player_renewal: { Args: { p_request: string; p_status: string }; Returns: boolean }
+      activate_join_package: { Args: { p_link: string; p_package: string; p_paid: number }; Returns: boolean }
+      captain_player_tiers: {
+        Args: never
+        Returns: { player_id: string; id: string; name: string; color: string; is_featured: boolean }[]
+      }
       activate_nutrition_plan: { Args: { p_plan: string }; Returns: undefined }
       activate_player: {
         Args: {

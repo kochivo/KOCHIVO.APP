@@ -10,7 +10,7 @@ export async function loadSummary(playerId: string, today: string): Promise<File
   const claims = await currentClaims();
   const captainId = claims.data?.claims.sub;
   if (claims.error || !captainId) throw new Error('Unauthenticated');
-  const [file, subscription, latest, week, requests] = await Promise.all([
+  const [file, subscription, latest, week, requests, tier] = await Promise.all([
     readPlayerFile(playerId),
     client.from('coach_clients').select('access_until,started_on,pending,frozen_at,sessions_left')
       .eq('captain_id', captainId).eq('player_id', playerId).is('archived_at', null).single(),
@@ -20,6 +20,8 @@ export async function loadSummary(playerId: string, today: string): Promise<File
       .gte('training_date', saturdayWeek(today)[0]).lte('training_date', today),
     client.from('form_requests').select('form_id,due_at,answered_at').eq('player_id', playerId).eq('captain_id', captainId)
       .order('sent_at', { ascending: false }).limit(50),
+    // Reading the RPC here keeps billing/server (and its client entries) out of every player-file route.
+    client.rpc('captain_player_tiers').eq('player_id', playerId).maybeSingle(),
   ]);
   if (subscription.error || !subscription.data || latest.error || week.error || requests.error)
     throw subscription.error ?? latest.error ?? week.error ?? requests.error ?? new Error('Subscription missing');
@@ -33,6 +35,6 @@ export async function loadSummary(playerId: string, today: string): Promise<File
     assessment = { title: form.data.title, next: current.answered_at ? null : current.due_at,
       last: rows.flatMap(row => row.answered_at ? [row.answered_at] : []).sort().at(-1) ?? null };
   }
-  return { file, subscription: subscription.data, lastTraining: latest.data?.[0]?.training_date ?? null,
+  return { file, tier: tier.data ?? null, subscription: subscription.data, lastTraining: latest.data?.[0]?.training_date ?? null,
     completedDays: new Set((week.data ?? []).map(row => row.training_date)).size, assessment };
 }

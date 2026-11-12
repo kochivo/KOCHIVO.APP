@@ -38,7 +38,7 @@ it('backfills only the tier reference and preserves every old package field', as
 });
 it('isolates owner writes, blocks players and other captains, and restricts suspended callers', async () => {
   for (const user of [player, other]) {
-    expect((await asUser(db, user, tx => tx.query('select id from captain_package_tiers'))).rows).toEqual([]);
+    expect((await asUser(db, user, tx => tx.query('select id from captain_package_tiers'))).rows).toEqual(user === player ? [{ id: tier }] : []);
     await expect(asUser(db, user, tx => tx.query(`insert into captain_package_tiers(id,captain_id,name)
       values ($1,$2,'Forbidden')`, [ids.tier, captain]))).rejects.toMatchObject({ code: '42501' });
     await expect(asUser(db, user, tx => tx.query(`insert into captain_offers(captain_id,name,kind,value,starts_at,ends_at)

@@ -7,15 +7,16 @@ import { messages } from '../packages/messages';
 import type { Activation } from '../pt-types';
 import type { Package } from '../types';
 
-export function ActivateSheet({ packages, busy = false, error, onClose, onSave }: {
-  packages: Package[]; busy?: boolean; error?: string; onClose: () => void; onSave: (input: Activation) => void;
+export function ActivateSheet({ packages, busy = false, error, onClose, onSave, selectedPackageId }: {
+  packages: Package[]; busy?: boolean; error?: string; onClose: () => void; onSave: (input: Activation) => void; selectedPackageId?: string;
 }) {
   const t = useT(messages);
   const dialog = useRef<HTMLDialogElement>(null);
-  const [kind, setKind] = useState<'days' | 'sessions'>('days');
-  const [quantity, setQuantity] = useState(30);
-  const [packageId, setPackageId] = useState<string | null>(null);
-  const [price, setPrice] = useState('0');
+  const selected = packages.find(p => p.id === selectedPackageId);
+  const [kind, setKind] = useState<'days' | 'sessions'>(selected?.kind ?? 'days');
+  const [quantity, setQuantity] = useState(selected ? selected.kind === 'sessions' ? selected.sessions ?? 1 : selected.days : 30);
+  const [packageId, setPackageId] = useState<string | null>(selected?.id ?? null);
+  const [price, setPrice] = useState(String(selected?.price_egp ?? 0));
   const [paid, setPaid] = useState('0');
   const [freeTrial, setFreeTrial] = useState(false);
   useEffect(() => { const node = dialog.current; node?.showModal(); return () => node?.close(); }, []);

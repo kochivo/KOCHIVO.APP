@@ -8,6 +8,7 @@ import { signUpPlayer, verifyPlayerCode } from '../data/sign-up-player';
 import { callAuthAction } from '../data/client-action';
 import { GoogleButton } from './google-button';
 import { SignupCodeStep } from './signup-code-step';
+import { browserSelection } from '../package-selection';
 
 export function CoachSignup({ coach, callbackError = false }: { coach: string; callbackError?: boolean }) {
   const t = useT(messages), locale = useLocale();
@@ -20,13 +21,13 @@ export function CoachSignup({ coach, callbackError = false }: { coach: string; c
     <GlassCard level="strong" className="w-full max-w-md space-y-6 p-8">
       <LanguageSwitch /><h1 className="text-3xl font-bold">{t('playerSignup')}</h1>
       <p className="text-muted">{t('coachRequestHint')}</p>
-      {codeEmail ? <SignupCodeStep email={codeEmail} verify={input => verifyPlayerCode(input, coach)} /> : <>
+      {codeEmail ? <SignupCodeStep email={codeEmail} verify={input => verifyPlayerCode(input, coach, browserSelection())} /> : <>
       <GoogleButton intent="player" coach={coach} />
       <form className="space-y-4" aria-busy={pending} onSubmit={event => {
         event.preventDefault();
         const input = Object.fromEntries(new FormData(event.currentTarget));
         start(async () => {
-          const result = await callAuthAction(() => signUpPlayer(input, coach, existing), locale, t);
+          const result = await callAuthAction(() => signUpPlayer(input, coach, existing, browserSelection()), locale, t);
           setError(result.error ?? ''); setMessage(result.message ?? '');
           if (result.codeEmail) setCodeEmail(result.codeEmail);
           if (result.redirect) window.location.assign(result.redirect);

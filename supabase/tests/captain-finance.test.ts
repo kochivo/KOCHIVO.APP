@@ -24,7 +24,9 @@ afterAll(async () => { await db?.close(); });
 describe('captain packages', () => {
   it('keeps packages private to their captain', async () => {
     expect((await as(other, 'select id from public.captain_packages')).rows).toEqual([]);
-    expect((await as(player, 'select id from public.captain_packages')).rows).toEqual([]);
+    // 0102: an active member reads their own captain's packages to choose a renewal; never another captain's.
+    expect((await as<{ id: string }>(player, 'select id from public.captain_packages')).rows.map(row => row.id)).toEqual([pkg]);
+    expect((await as(otherPlayer, 'select id from public.captain_packages where id = $1', [pkg])).rows).toEqual([]);
     await expect(as(other, `insert into public.captain_packages (captain_id, name, price_egp, days)
       values ($1, 'x', 1, 1)`, [captain])).rejects.toThrow();
     await expect(as(player, `insert into public.captain_packages (captain_id, name, price_egp, days)

@@ -1,4 +1,6 @@
 export { messages } from './messages';
+export { PricingEntry } from './choice/pricing-entry';
+export { RenewalEntry } from './choice/renewal-entry';
 export { PackageCatalog } from './tiers/catalog-entry';
 export { applicableOffers, bestOffer, finalPrice, monthlyEquivalent, savingsPercent, offerStatus, remainingSlots } from './pricing';
 export type { Offer, OfferContext } from './pricing';

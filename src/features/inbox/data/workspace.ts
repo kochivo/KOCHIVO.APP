@@ -24,7 +24,7 @@ export async function loadWorkspaceInbox(limit = 50, snapshotAt?: string): Promi
     const { client, captain } = await formsAccess();
     const at = snapshotAt === undefined ? new Date().toISOString() : z.iso.datetime().parse(snapshotAt);
     const lateAt = new Date(Date.parse(at) - 86_400_000).toISOString();
-    const [open, forms, joins, checksCount, videosCount, lateCounts, reviews] = await Promise.all([
+    const [open, forms, joins, checksCount, videosCount, lateCounts, reviews, tiers] = await Promise.all([
       listInbox({ status: 'open', limit: 50 }),
       client.from('form_requests').select(`id,player_id,answered_at,reviewed_at,captain_reply,
         profiles!form_requests_player_id_fkey(full_name),forms!form_requests_form_id_fkey(title),
@@ -40,8 +40,10 @@ export async function loadWorkspaceInbox(limit = 50, snapshotAt?: string): Promi
         return query.lt(table === 'form_requests' ? 'answered_at' : 'created_at', lateAt);
       })),
       loadWorkspaceReviews({ at }),
+      client.rpc('captain_player_tiers'),
     ]);
-    if (open.error || forms.error || joins.error || checksCount.error || videosCount.error || lateCounts.some(row => row.error)) throw new Error(t('loadFailed'));
+    if (open.error || forms.error || joins.error || checksCount.error || videosCount.error || tiers.error || lateCounts.some(row => row.error)) throw new Error(t('loadFailed'));
+    const tierMap = new Map(tiers.data.map(t => [t.player_id, t]));
     const checkins = open.data ?? [];
     let cursor = open.nextCursor;
     while (cursor && checkins.length < limit) {
@@ -63,6 +65,7 @@ export async function loadWorkspaceInbox(limit = 50, snapshotAt?: string): Promi
     if (extra.error) throw new Error(extra.error);
     return { items: [...checkins, ...assessments, ...reviews.items, ...joins.data.map(row => ({ kind: 'request' as const, id: row.id,
       player_name: row.full_name, created_at: row.created_at, reviewed_at: null }))]
+      .map(item => ({ ...item, tier: 'player_id' in item ? tierMap.get(item.player_id) ?? null : null }))
       .sort((a, b) => a.created_at.localeCompare(b.created_at) || a.id.localeCompare(b.id)),
     triage: extra.data ?? { history: [], dailyChecks: [] }, at, limit, weekAt: reviews.weekAt,
     oldest: [...(checksCount.data ?? []), ...(videosCount.data ?? []), ...assessments, ...joins.data].map(row => row.created_at).sort()[0] ?? null,
