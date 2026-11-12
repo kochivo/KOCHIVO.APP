@@ -10,7 +10,7 @@ export type TriageFlag = { key: 'weight_flat' | 'weight_jump' | 'low_sleep' | 'h
 export type TriageResult = { group: 'attention' | 'routine'; flags: TriageFlag[] };
 export type TriageInputs = { history: CheckinHistory[]; dailyChecks: DailyCheck[] };
 export const emptyInputs: TriageInputs = { history: [], dailyChecks: [] };
-export const inboxKey = (item: InboxItem) => `${item.kind}:${item.id}`;
+export const inboxKey = (item: { kind: string; id: string }) => `${item.kind}:${item.id}`;
 
 export function dailyAverages(playerId: string, checks: DailyCheck[], now: Date, timezone = DEFAULT_TIMEZONE) {
   const today = localDate(now, timezone);
@@ -52,7 +52,7 @@ export function triage(item: InboxItem, history: CheckinHistory[], dailyChecks: 
   return { group: flags.some(flag => flag.key !== 'note_present') ? 'attention' : 'routine', flags };
 }
 
-export function orderTriage<T extends InboxItem>(items: T[], result: (item: T) => TriageResult): T[] {
+export function orderTriage<T extends { kind: string; id: string; created_at: string }>(items: T[], result: (item: T) => TriageResult): T[] {
   return [...items].sort((a, b) => {
     const first = result(a), second = result(b);
     return Number(second.group === 'attention') - Number(first.group === 'attention') ||

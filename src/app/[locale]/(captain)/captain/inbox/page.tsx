@@ -9,8 +9,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 export default async function InboxPage() {
   if (captainWorkspaceEnabled()) {
-    const { QueueEntry } = await import('@/features/captain-workspace/server');
-    return <QueueEntry />;
+    const { WorkspaceInbox } = await import('@/features/inbox/server');
+    return <WorkspaceInbox />;
   }
   return <InboxScreen />;
 }

@@ -13,3 +13,4 @@ export { useUnsentVoiceGuard } from './hooks/use-unsent-voice-guard';
 export { FlagChip } from './components/flag-chip';
 export type { TriageFlag } from './triage';
 export { nextOpenItem } from './triage';
+export { ageLabel } from './merge';

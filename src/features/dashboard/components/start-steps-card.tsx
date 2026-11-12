@@ -4,7 +4,7 @@ import { formatNumber } from '@/lib/format';
 import { GlassCard } from '@/ui';
 import { messages } from '../messages';
 
-export async function StartStepsCard({ captainFirstName }: { captainFirstName: string }) {
+export async function StartStepsCard({ captainFirstName, title }: { captainFirstName: string; title?: string }) {
   const [t, locale] = await Promise.all([getT(messages), getLocale()]);
   const steps = [
     { title: t('task.invite'), body: t('startInviteBody') },
@@ -12,7 +12,7 @@ export async function StartStepsCard({ captainFirstName }: { captainFirstName: s
     { title: t('startNutrition'), body: t('startNutritionBody') },
   ];
   return <GlassCard data-tour="captain-home" level="strong" className="min-w-0 p-6">
-    <h2 className="text-2xl font-extrabold">{t('startTitle')}</h2>
+    <h2 className="text-2xl font-extrabold">{title ?? t('startTitle')}</h2>
     <p className="mt-2 text-sm text-muted">{t('startSubtitle')}</p>
     <ol className="mt-6 divide-y divide-line">
       {steps.map((step, index) => <li key={step.title} className="flex min-w-0 gap-4 py-5 first:pt-0 last:pb-0">
