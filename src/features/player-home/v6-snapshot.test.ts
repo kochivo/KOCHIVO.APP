@@ -1,4 +1,5 @@
 import { afterEach, expect, it, vi } from 'vitest';
+vi.mock('server-only', () => ({}));
 import { mapProgramSnapshot } from './data/program-snapshot';
 import type { ProgramResponse } from './data/program-snapshot';
 

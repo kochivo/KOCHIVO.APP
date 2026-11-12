@@ -3,6 +3,9 @@ import type { DailyCheckRow, SupplementLogRow, SupplementRow } from './tables';
 import type { MealLogRow, SetLogRow, SyncTable, WorkoutSessionRow } from './tables';
 
 export interface SnapshotExercise {
+  alternatives?: string[];
+  alternative_exercises?: { id: string; name_ar: string | null; name_en: string; media_path: string | null; video_url?: string | null }[];
+  set_plan?: { reps_min: number; reps_max: number | null; rir: number | null }[] | null;
   id: string;
   exercise_id: string;
   position: number;

@@ -1974,6 +1974,8 @@ export type Database = {
       }
       program_exercises: {
         Row: {
+          alternatives: string[]
+          set_plan: Json | null
           day_id: string
           exercise_id: string
           id: string
@@ -1989,6 +1991,8 @@ export type Database = {
           tempo: string | null
         }
         Insert: {
+          alternatives?: string[]
+          set_plan?: Json | null
           day_id: string
           exercise_id: string
           id?: string
@@ -2004,6 +2008,8 @@ export type Database = {
           tempo?: string | null
         }
         Update: {
+          alternatives?: string[]
+          set_plan?: Json | null
           day_id?: string
           exercise_id?: string
           id?: string

@@ -6,6 +6,8 @@ import { formatNumber } from '@/lib/format';
 import type { useFocusSession } from '../hooks/use-focus-session';
 import { messages } from '../messages';
 import { messages as v6Messages } from '../v6-messages';
+import { messages as alternativeMessages } from '../alternatives/messages';
+import { targetForSet } from '@/lib/set-plan';
 
 type SetRowsState = Pick<ReturnType<typeof useFocusSession>, 'current' | 'disabled' | 'doneSets' | 'invalid' |
   'weight' | 'reps' | 'bodyweight' | 'setWeight' | 'setReps' | 'setBodyweight' | 'complete' | 'edit'> & { rest: { remaining: number } };
@@ -13,6 +15,7 @@ type SetRowsState = Pick<ReturnType<typeof useFocusSession>, 'current' | 'disabl
 export function SetRows({ state }: { state: SetRowsState }) {
   const t = useT(messages);
   const v6t = useT(v6Messages);
+  const at = useT(alternativeMessages);
   const locale = useLocale();
   const invalidRef = useRef<HTMLInputElement>(null);
   useEffect(() => { if (state.invalid) invalidRef.current?.focus(); }, [state.invalid]);
@@ -27,7 +30,13 @@ export function SetRows({ state }: { state: SetRowsState }) {
       const setIndex = index + 1;
       const done = state.doneSets.find(row => row.program_exercise_id === current.exercise.id && row.set_index === setIndex);
       const active = setIndex === current.setIndex;
-      return <div key={setIndex} aria-current={active ? 'step' : undefined}
+      const target = targetForSet(current.exercise, index);
+      return <div key={setIndex} className="space-y-1">
+        {current.exercise.set_plan && <p className="text-xs text-muted"><bdi>{at('target', { reps: target.reps_max === null ? at('failure') :
+          target.reps_min === target.reps_max ? formatNumber(target.reps_min, locale) : at('range', {
+            min: formatNumber(target.reps_min, locale), max: formatNumber(target.reps_max, locale) }) })}
+          {target.rir !== null && at('rir', { n: formatNumber(target.rir, locale) })}</bdi></p>}
+        <div aria-current={active ? 'step' : undefined}
         className="grid grid-cols-[24px_minmax(0,1fr)_minmax(0,1fr)_56px] items-center gap-2">
         <span className="text-center font-display text-sm text-faint">{formatNumber(setIndex, locale)}</span>
         {active ? <>
@@ -50,7 +59,7 @@ export function SetRows({ state }: { state: SetRowsState }) {
           className={`flex min-h-14 min-w-14 items-center justify-center rounded-control border ${done || active ? 'border-lime bg-lime text-on-lime' : 'border-line-soft text-faint'}`}>
           <Check aria-hidden className="size-6" />
         </button>
-      </div>;
+      </div></div>;
     })}
     {state.invalid && <p role="alert" className="text-sm text-danger">{t(state.invalid.result === 'reps' ? 'enterReps' : 'enterWeightAndReps')}</p>}
     <button type="button" aria-pressed={state.bodyweight} onClick={() => state.setBodyweight(!state.bodyweight)}

@@ -2,6 +2,7 @@ import { createElement } from 'react';
 import type * as React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, expect, it, vi } from 'vitest';
+vi.mock('server-only', () => ({}));
 import { LocaleProvider } from '@/core/i18n/client';
 import type { SnapshotDay } from '@/core/offline';
 const state = vi.hoisted(() => ({ values: [] as unknown[], index: 0 }));

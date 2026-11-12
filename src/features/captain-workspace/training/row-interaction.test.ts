@@ -7,11 +7,13 @@ import type { DraftExercise } from '@/features/programs';
 import { TrainingExerciseRow } from './exercise-row';
 
 const state = vi.hoisted(() => ({ open: false }));
+vi.mock('server-only', () => ({}));
 vi.mock('react', async original => ({ ...await original<typeof React>(),
   useState: () => [state.open, (operation: (open: boolean) => boolean) => { state.open = operation(state.open); }],
 }));
 vi.mock('@/core/i18n/client', () => ({ useT: (messages: Parameters<typeof createT>[0]) => createT(messages, 'ar') }));
 const row: DraftExercise = { id: 'e', day_id: 'd', exercise_id: 'x', position: 1, sets: 4, reps_min: 6, reps_max: 8,
+  alternatives: [], set_plan: null,
   rest_seconds: 120, rir: 2, notes: 'Slow descent', superset_group: null,
   library: { id: 'x', name_ar: 'بنش', name_en: 'Bench', body_part: 'chest', equipment: 'barbell', media_path: null },
 };
@@ -35,4 +37,18 @@ it('opens notes and extra actions in place, saves a changed note, then closes ag
   const link = render().find(node => node.props.children === 'اربطه سوبرسِت');
   (link?.props.onClick as () => void)(); expect(props.onLink).toHaveBeenCalledOnce();
   toggle(); expect(render().find(node => node.type === 'textarea')).toBeUndefined();
+});
+
+it('adds the two mockup actions only behind the workspace flag and uses the existing patch callback', () => {
+  state.open = true;
+  const onPatch = vi.fn(), props = { row, onPatch, onRemove() {}, onMove() {}, onLink() {}, first: true, last: false, dragProps: {} };
+  vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '0');
+  expect(nodes(TrainingExerciseRow(props)).find(node => node.props.children === 'مجموعات مختلفة')).toBeUndefined();
+  vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
+  const result = nodes(TrainingExerciseRow(props));
+  const different = result.find(node => node.props.children === 'مجموعات مختلفة');
+  (different?.props.onClick as () => void)();
+  expect(onPatch).toHaveBeenCalledWith({ set_plan: Array.from({ length: 4 }, () => ({ reps_min: 6, reps_max: 8, rir: 2 })) });
+  expect(result.find(node => node.props.id === 'alternatives-e')).toBeDefined();
+  vi.unstubAllEnvs();
 });

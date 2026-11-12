@@ -1,5 +1,7 @@
 import { createT } from '@/core/i18n/messages';
+import type * as React from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+vi.mock('server-only', () => ({}));
 import { KochivoDB, stableId, type SnapshotDay, type SnapshotExercise } from '@/core/offline';
 import type * as Offline from '@/core/offline';
 import { buildQueue } from './queue';
@@ -15,7 +17,6 @@ import { DonePanel } from './components/done-panel';
 import { liveQuery } from 'dexie';
 import { detectPr } from './pr';
 import { prHistory } from './data/pr-history';
-
 describe('personal records', () => {
   const best = { weight_kg: 80, reps: 5 };
   it.each([
@@ -140,7 +141,6 @@ it('renders an accessible rest countdown with reduced-motion-safe flashing', () 
   expect(html).toContain('motion-safe:animate-pulse');
   expect(html).toContain('+30 ث');
 });
-
 it('renders empty sets and the local-save completion message', () => {
   expect(renderToStaticMarkup(createElement(SetDots, {
     exercise: { ...exercise('a', 1), sets: 0 }, currentIndex: 1, doneSets: [], onEdit: () => undefined,
@@ -150,21 +150,20 @@ it('renders empty sets and the local-save completion message', () => {
   expect(html).toContain('href="/player"');
   expect(html).toContain('اتسجّل على موبايلك');
 });
-
 it('restores rest after a lock, vibrates once, persists extensions and cleans up', async () => {
   vi.useFakeTimers({ now });
   const states: unknown[] = [];
   let stateIndex = 0;
   let mount: (() => (() => void)) | undefined;
   vi.doMock('@/core/i18n/client', () => ({ useT: (messages: Parameters<typeof createT>[0]) => createT(messages, 'ar'), useLocale: () => 'ar' }));
-  vi.doMock('react', () => ({
+  vi.doMock('react', async original => ({
+    ...await original<typeof React>(),
     useState: (initial: unknown) => {
       const index = stateIndex++;
       states[index] = initial;
       return [initial, (value: unknown) => { states[index] = value; }];
     },
-    useRef: (current: unknown) => ({ current }),
-    useCallback: <T,>(callback: T) => callback,
+    useRef: (current: unknown) => ({ current }), useCallback: <T,>(callback: T) => callback,
     useEffect: (effect: () => (() => void)) => { mount = effect; },
   }));
   const document = new EventTarget();
@@ -196,7 +195,6 @@ it('restores rest after a lock, vibrates once, persists extensions and cleans up
   expect(storage.size).toBe(0);
   cleanup?.();
   expect(vi.getTimerCount()).toBe(0);
-
   const firstLock = { released: false, release: vi.fn(async () => undefined) };
   const secondLock = { released: false, release: vi.fn(async () => undefined) };
   const request = vi.fn().mockResolvedValueOnce(firstLock).mockResolvedValueOnce(secondLock);
@@ -214,17 +212,15 @@ it('restores rest after a lock, vibrates once, persists extensions and cleans up
   release?.();
   expect(secondLock.release).toHaveBeenCalledTimes(1);
 });
-
 it('keeps the session live query read-only so a missing session can load', async () => {
   vi.resetModules();
   vi.doMock('@/core/i18n/client', () => ({ useT: (messages: Parameters<typeof createT>[0]) => createT(messages, 'ar'), useLocale: () => 'ar' }));
   const queries: (() => unknown)[] = [];
-  vi.doMock('react', () => ({
+  vi.doMock('react', async original => ({
+    ...await original<typeof React>(),
     useState: (initial: unknown) => [initial, () => undefined],
-    useRef: (current: unknown) => ({ current }),
-    useCallback: <T,>(callback: T) => callback,
-    useMemo: <T,>(callback: () => T) => callback(),
-    useEffect: () => undefined,
+    useRef: (current: unknown) => ({ current }), useCallback: <T,>(callback: T) => callback,
+    useMemo: <T,>(callback: () => T) => callback(), useEffect: () => undefined,
   }));
   vi.doMock('@/core/offline', async (original) => ({
     ...await original<typeof Offline>(), localDb: () => db,
@@ -238,8 +234,7 @@ it('keeps the session live query read-only so a missing session can load', async
   }));
   const { useFocusSession } = await import('./hooks/use-focus-session');
   expect(useFocusSession(day.id, '2026-11-03', 'player').loading).toBe(false);
-  const query = queries[2];
-  if (!query) throw new Error('Session query missing');
+  const query = queries[2]; if (!query) throw new Error('Session query missing');
   await db.open();
   const observable = liveQuery(query);
   let unsubscribe: () => void = () => undefined;

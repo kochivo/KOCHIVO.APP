@@ -1,5 +1,6 @@
 import type { Tables } from '@/types/database';
 import type { DayWarmup } from './warmup';
+import type { SetTarget } from './set-plan';
 
 export type ProgramStatus = Tables<'programs'>['status'];
 export type LibraryExercise = Pick<Tables<'exercises'>,
@@ -8,7 +9,8 @@ export type LibraryExercise = Pick<Tables<'exercises'>,
   };
 export type ExerciseRow = Pick<Tables<'program_exercises'>,
   'id' | 'day_id' | 'exercise_id' | 'position' | 'superset_group' | 'sets' | 'reps_min' | 'reps_max' | 'rest_seconds' | 'rir' | 'notes'>;
-export type DraftExercise = ExerciseRow & { library: LibraryExercise | null };
+export type DraftExercise = ExerciseRow & { library: LibraryExercise | null;
+  alternatives?: string[]; set_plan?: SetTarget[] | null; alternative_library?: LibraryExercise[] };
 export type CardioRow = Omit<Tables<'program_cardio'>, 'intensity'> & { intensity: 'low' | 'moderate' | 'high' };
 export type DraftDay = Pick<Tables<'program_days'>, 'id' | 'program_id' | 'title' | 'position'> & {
   warmup: DayWarmup;
@@ -18,5 +20,6 @@ export type ProgramDraft = Pick<Tables<'programs'>, 'id' | 'player_id' | 'title'
   days: DraftDay[]; settings?: Tables<'programs'>['settings']; repeatWeekly?: boolean;
 };
 export type ProgramRow = Pick<Tables<'programs'>, 'id' | 'player_id' | 'title' | 'status' | 'captain_id' | 'is_template'>;
-export type ExercisePatch = Partial<Pick<ExerciseRow, 'sets' | 'reps_min' | 'reps_max' | 'rest_seconds' | 'rir' | 'notes'>>;
+export type ExercisePatch = Partial<Pick<DraftExercise, 'sets' | 'reps_min' | 'reps_max' | 'rest_seconds' | 'rir' | 'notes' |
+  'alternatives' | 'set_plan' | 'alternative_library'>>;
 export type Result<T> = { data: T; error?: never } | { error: string; data?: never };

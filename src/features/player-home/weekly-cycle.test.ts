@@ -1,4 +1,5 @@
-import { expect, it } from 'vitest';
+import { expect, it, vi } from 'vitest';
+vi.mock('server-only', () => ({}));
 import type { ProgramSnapshot } from '@/core/offline';
 import { localDate, weeklyWeekday } from '@/lib/dates';
 import { nextTrainingDay, pickTodayDay, weeklyFinished } from './next-day';

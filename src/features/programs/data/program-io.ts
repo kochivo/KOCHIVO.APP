@@ -12,6 +12,7 @@ import { uuidv7 } from '@/core/offline/ids';
 import type { DraftDay, ProgramDraft, ProgramRow, Result } from '../types';
 import { convertToWeek } from '../weekly-draft';
 import { dayWarmupSchema } from '../warmup';
+import { setPlanSchema } from '../set-plan';
 
 const cardioSchema = z.object({ id: z.uuid(), day_id: z.uuid(), position: z.number().int().positive().max(32767),
   kind: z.string().trim().min(1).max(40), minutes: z.number().int().min(1).max(300),
@@ -25,7 +26,10 @@ const exerciseSchema = z.object({
   rest_seconds: z.number().int().min(0).max(900).multipleOf(15),
   rir: z.number().int().min(0).max(5).nullable().default(null),
   notes: z.string().trim().max(200).nullable().optional().transform(value => value || null),
-}).refine(row => row.reps_max === null || row.reps_max >= row.reps_min);
+  alternatives: z.array(z.uuid()).max(3).default([]), set_plan: setPlanSchema.nullable().default(null),
+}).refine(row => (row.reps_max === null || row.reps_max >= row.reps_min) &&
+  (row.set_plan === null || row.set_plan.length === row.sets) &&
+  new Set(row.alternatives).size === row.alternatives.length && !row.alternatives.includes(row.exercise_id));
 const draftSchema = z.object({
   id: z.uuid(), player_id: z.uuid().nullable(), title: z.string().trim().min(1).max(80),
   repeatWeekly: z.boolean().optional(),
@@ -56,14 +60,16 @@ export async function loadProgram(id: string): Promise<Result<ProgramDraft>> {
     ]);
     const blocks = z.array(cardioSchema).safeParse(cardio.data);
     if (rows.error || cardio.error || !blocks.success) return { error: t('couldntLoadExercisesTryAgain') };
-    const ids = [...new Set(rows.data.map(row => row.exercise_id))];
+    const ids = [...new Set(rows.data.flatMap(row => [row.exercise_id, ...(row.alternatives ?? [])]))];
     const library = ids.length ? await client.from('exercises').select('*').in('id', ids) : { data: [], error: null };
     if (library.error) return { error: t('couldntLoadTheExerciseLibraryTryAgain') };
     const draftDays: DraftDay[] = days.data.map(day => ({ ...day,
       warmup: dayWarmupSchema.parse(day.warmup),
       cardio: blocks.data.filter(block => block.day_id === day.id),
       exercises: rows.data.filter(row => row.day_id === day.id)
-        .map(row => ({ ...row, library: library.data?.find(e => e.id === row.exercise_id) ?? null })),
+        .map(row => ({ ...row, alternatives: row.alternatives ?? [], set_plan: setPlanSchema.nullable().parse(row.set_plan ?? null),
+          alternative_library: library.data?.filter(e => row.alternatives?.includes(e.id)) ?? [],
+          library: library.data?.find(e => e.id === row.exercise_id) ?? null })),
     }));
     const settings = program.data.settings;
     return { data: { ...program.data, repeatWeekly: typeof settings === 'object' && settings !== null &&

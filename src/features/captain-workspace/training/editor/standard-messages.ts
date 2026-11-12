@@ -1,4 +1,8 @@
 export const arStd = {
+    alternatives: 'بدائل', differentSets: 'مجموعات مختلفة', uniform: 'نفس التكرارات', setNumber: 'المجموعة {n}',
+    setMaximum: 'أقصى تكرارات للمجموعة {n}', setIntensity: 'شدة المجموعة {n}',
+    alternativesHint: 'اختر حتى ٣ بدائل. اضغط على البديل لحذفه.', alternativesEmpty: 'لا توجد بدائل بعد',
+    alternativeUnavailable: 'التمرين غير متاح', removeAlternative: 'احذف {name}',
     breadcrumb: 'اللاعبون ‹ {name}', title: 'برنامج {name}', active: 'نشط · متبقٍ {n} يوم', saved: 'تم الحفظ',
     saving: 'جارٍ الحفظ…', preview: 'شاهده كلاعب', assign: 'استخدمه للاعب', options: 'إعدادات البرنامج',
     day: '+ يوم', restDays: 'راحة في بقية الأيام', rail: 'أيام التمرين', dayLine: '{weekday} · {n} تمارين · {m} د', rotationLine: '{n} تمارين · {m} د',

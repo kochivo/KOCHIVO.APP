@@ -1,6 +1,7 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { expect, it, vi } from 'vitest';
+vi.mock('server-only', () => ({}));
 import { LocaleProvider } from '@/core/i18n/client';
 import type * as Offline from '@/core/offline';
 import type * as Readiness from '@/features/readiness';

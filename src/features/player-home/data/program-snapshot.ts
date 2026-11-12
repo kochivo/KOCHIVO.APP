@@ -5,12 +5,14 @@ import type { Tables } from '@/types/database';
 import type { AppDatabase as Database } from '@/types/app-database';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import type { DayWarmup } from '@/features/programs';
+import { setPlanSchema } from '@/lib/set-plan';
 
 export type { ProgramSnapshot } from '@/core/offline';
 
 type ExerciseResponse = Pick<Tables<'program_exercises'>,
   'id' | 'exercise_id' | 'position' | 'sets' | 'reps_min' | 'reps_max' | 'rest_seconds' | 'superset_group' | 'rpe' | 'tempo' | 'notes'> & {
   rir?: number | null;
+  alternatives?: string[]; set_plan?: Tables<'program_exercises'>['set_plan'];
   exercises: Pick<Tables<'exercises'>, 'name_ar' | 'name_en' | 'media_path'> & { video_url?: string | null; body_part?: string } | null;
 };
 export type ProgramResponse = Pick<Tables<'programs'>, 'id' | 'title' | 'notes' | 'settings'> & {
@@ -22,7 +24,8 @@ export type ProgramResponse = Pick<Tables<'programs'>, 'id' | 'title' | 'notes' 
 };
 const settingsSchema = z.object({ advanced: z.boolean().optional(), repeatWeekly: z.boolean().optional(),
   weeklyStartedOn: z.iso.date().optional() }).passthrough();
-export function mapProgramSnapshot(program: ProgramResponse, trainingDays: number[], playerId: string): ProgramSnapshot {
+type Alternative = NonNullable<ProgramSnapshot['days'][number]['exercises'][number]['alternative_exercises']>[number];
+export function mapProgramSnapshot(program: ProgramResponse, trainingDays: number[], playerId: string, alternatives: Alternative[] = []): ProgramSnapshot {
   const settings = settingsSchema.parse(program.settings);
   if (program.program_days.some(day => day.weekday != null)) settings.repeatWeekly ??= true;
   return {
@@ -33,8 +36,10 @@ export function mapProgramSnapshot(program: ProgramResponse, trainingDays: numbe
       weekday: day.weekday ?? null, is_rest_day: day.is_rest_day ?? false,
       warmup: day.warmup ?? { items: [], ramp: false },
       cardio: [...(day.program_cardio ?? [])].sort((a, b) => a.position - b.position),
-      exercises: [...day.program_exercises].sort((a, b) => a.position - b.position).map(({ exercises, ...exercise }) => ({
+      exercises: [...day.program_exercises].sort((a, b) => a.position - b.position).map(({ exercises, set_plan, ...exercise }) => ({
         ...exercise, rir: exercise.rir ?? null, name_ar: exercises?.name_ar ?? null, name_en: exercises?.name_en ?? '',
+        ...(set_plan ? { set_plan: setPlanSchema.parse(set_plan) } : {}),
+        ...(exercise.alternatives?.length ? { alternative_exercises: alternatives.filter(row => exercise.alternatives?.includes(row.id)) } : {}),
         media_path: exercises?.media_path ?? null,
         video_url: exercises?.video_url ?? null,
         ...(captainWorkspaceEnabled() ? { body_part: exercises?.body_part ?? null } : {}),
@@ -48,11 +53,16 @@ export async function fetchProgramSnapshot(client: SupabaseClient<Database>): Pr
   if (error || !auth.user) throw error ?? new Error('Missing session');
   const exerciseFields = captainWorkspaceEnabled() ? 'name_ar,name_en,media_path,video_url,body_part' : 'name_ar,name_en,media_path,video_url';
   const [program, intake] = await Promise.all([
-    client.from('programs').select(`id,title,notes,settings,program_days(id,position,title,weekday,is_rest_day,warmup,program_cardio(*),program_exercises(id,exercise_id,position,sets,reps_min,reps_max,rest_seconds,superset_group,rpe,rir,tempo,notes,exercises(${exerciseFields})))`)
+    client.from('programs').select(`id,title,notes,settings,program_days(id,position,title,weekday,is_rest_day,warmup,program_cardio(*),program_exercises(id,exercise_id,position,sets,reps_min,reps_max,rest_seconds,superset_group,rpe,rir,tempo,notes,alternatives,set_plan,exercises(${exerciseFields})))`)
       .eq('player_id', auth.user.id).eq('status', 'active').returns<ProgramResponse[]>().maybeSingle(),
     client.from('player_intake').select('training_days').eq('player_id', auth.user.id).maybeSingle(),
   ]);
   if (program.error) throw program.error;
   if (intake.error) throw intake.error;
-  return program.data ? mapProgramSnapshot(program.data, intake.data?.training_days ?? [], auth.user.id) : null;
+  if (!program.data) return null;
+  const ids = [...new Set(program.data.program_days.flatMap(day => day.program_exercises.flatMap(row => row.alternatives ?? [])))];
+  const alternatives = ids.length ? await client.from('exercises').select('id,name_ar,name_en,media_path,video_url').in('id', ids)
+    : { data: [], error: null };
+  if (alternatives.error) throw alternatives.error;
+  return mapProgramSnapshot(program.data, intake.data?.training_days ?? [], auth.user.id, alternatives.data ?? []);
 }

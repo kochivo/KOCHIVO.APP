@@ -1,5 +1,6 @@
 import { createT } from '@/core/i18n/messages';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
+vi.mock('server-only', () => ({}));
 import { KochivoDB, type SnapshotDay } from '@/core/offline';
 import type * as Offline from '@/core/offline';
 import type * as React from 'react';
@@ -25,7 +26,8 @@ beforeEach(async () => {
   values = [];
   vi.doMock('@/core/timezone/client', () => ({ useTimezone: () => 'Africa/Cairo' }));
   vi.doMock('@/core/i18n/client', () => ({ useT: (messages: Parameters<typeof createT>[0]) => createT(messages, 'ar'), useLocale: () => 'ar' }));
-  vi.doMock('react', () => ({
+  vi.doMock('react', async original => ({
+    ...await original<typeof React>(),
     useState: (initial: unknown) => [initial, () => undefined],
     useRef: (current: unknown) => ({ current }),
     useCallback: <T,>(callback: T) => callback,

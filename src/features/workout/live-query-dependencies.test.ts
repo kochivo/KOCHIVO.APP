@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
+vi.mock('server-only', () => ({}));
 import type * as React from 'react';
 import type * as Offline from '@/core/offline';
 import { KochivoDB } from '@/core/offline/db';

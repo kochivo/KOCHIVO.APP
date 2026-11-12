@@ -1,4 +1,6 @@
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
+vi.mock('server-only', () => ({}));
+vi.mock('next/image', () => ({ default: () => null }));
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { createT } from '@/core/i18n/messages';

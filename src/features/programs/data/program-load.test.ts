@@ -12,7 +12,8 @@ vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => ({
 it('batches days, overlaps exercises and cardio, and preserves each day order', async () => {
   let release = () => {};
   const rows = [
-    { id: 'e2', day_id: 'd2', exercise_id: 'library', position: 1, rir: 2 },
+    { id: 'e2', day_id: 'd2', exercise_id: 'library', position: 1, rir: 2, alternatives: ['alt'],
+      set_plan: [{ reps_min: 10, reps_max: 10, rir: 1 }] },
     { id: 'e1', day_id: 'd1', exercise_id: 'library', position: 1, rir: null },
   ];
   const pending = new Promise<{ data: typeof rows; error: null }>(resolve => {
@@ -21,7 +22,7 @@ it('batches days, overlaps exercises and cardio, and preserves each day order', 
   const results: Record<string, unknown> = {
     programs: { id: 'program', settings: {} },
     program_days: [{ id: 'd1', position: 1 }, { id: 'd2', position: 2 }],
-    program_cardio: [], exercises: [{ id: 'library', name_en: 'Squat' }],
+    program_cardio: [], exercises: [{ id: 'library', name_en: 'Squat' }, { id: 'alt', name_en: 'Press' }],
   };
   const filters: [string, string, unknown][] = [];
   mocks.from.mockImplementation((table: string) => {
@@ -45,7 +46,9 @@ it('batches days, overlaps exercises and cardio, and preserves each day order', 
     .toEqual([['d1', ['e1']], ['d2', ['e2']]]);
   expect(filters).toContainEqual(['program_exercises', 'day_id', ['d1', 'd2']]);
   expect(filters).toContainEqual(['program_cardio', 'day_id', ['d1', 'd2']]);
-  expect(filters).toContainEqual(['exercises', 'id', ['library']]);
+  expect(filters).toContainEqual(['exercises', 'id', ['library', 'alt']]);
   expect(mocks.from).toHaveBeenCalledTimes(5);
   expect(result.data?.days.map(day => day.exercises[0]?.rir)).toEqual([null, 2]);
+  expect(result.data?.days[1]?.exercises[0]).toMatchObject({ alternatives: ['alt'],
+    alternative_library: [{ id: 'alt', name_en: 'Press' }], set_plan: [{ reps_min: 10, reps_max: 10, rir: 1 }] });
 });

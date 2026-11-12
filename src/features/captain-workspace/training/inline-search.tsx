@@ -12,7 +12,10 @@ import { messages } from './messages';
 import { CustomExercise } from './custom-exercise';
 import { removeCustom } from './data/editor-actions';
 
-export function InlineSearch({ day, onAdd, onLibraryChange }: { day: DraftDay; onAdd: (row: LibraryExercise) => void; onLibraryChange: (row: LibraryExercise) => void }) {
+export function InlineSearch({ day, onAdd, onLibraryChange, excluded = [], disabled = false }: {
+  day: DraftDay; onAdd: (row: LibraryExercise) => void; onLibraryChange: (row: LibraryExercise) => void;
+  excluded?: string[]; disabled?: boolean;
+}) {
   const t = useT(messages), pt = useT(programMessages);
   const [query, setQuery] = useState(''), [debounced, setDebounced] = useState('');
   const [browsing, setBrowsing] = useState(false), [mine, setMine] = useState(false), [part, setPart] = useState('');
@@ -23,7 +26,8 @@ export function InlineSearch({ day, onAdd, onLibraryChange }: { day: DraftDay; o
   const existing = [...new Set(day.exercises.flatMap(row => row.library?.body_part ?? []))].sort().join('|');
   const suggest = useCallback(() => loadSuggestions(day.title, existing.split('|')), [day.title, existing]);
   const suggestions = useResource(`training-suggestions:${day.title}:${existing}`, suggest);
-  const rows = suggestedExercises(day.title, day.exercises.map(row => row.exercise_id), suggestions.data ?? [], existing.split('|'));
+  const rows = suggestedExercises(day.title, [...day.exercises.map(row => row.exercise_id), ...excluded], suggestions.data ?? [], existing.split('|'));
+  const results = search.data?.filter(row => !removed.includes(row.id) && !excluded.includes(row.id));
   return <div>
     <label className="flex min-h-16 items-center gap-2.5 border-t border-dashed border-line px-4 py-3 text-faint">
       <Search aria-hidden className="size-5 shrink-0" />
@@ -40,8 +44,8 @@ export function InlineSearch({ day, onAdd, onLibraryChange }: { day: DraftDay; o
     {(query.trim() || browsing) && <div className="max-h-64 overflow-y-auto px-4 pb-3">
       {search.error ? <p role="alert" className="text-danger">{t('error')}<button className="min-h-12 px-3" onClick={() => void search.retry()}>{t('retry')}</button></p> :
         !search.data || query !== debounced ? <p role="status" className="text-faint">{t('loading')}</p> :
-          search.data.filter(row => !removed.includes(row.id)).length ? search.data.filter(row => !removed.includes(row.id)).map(row => <div key={row.id}>
-            <button disabled={busy.includes(row.id)} className="flex min-h-12 w-full items-center border-t border-line-soft text-start" onClick={() => { onAdd(row); setQuery(''); }}><bdi>{t('add', { name: row.name_ar || row.name_en || t('noResults') })}</bdi></button>
+          results?.length ? results.map(row => <div key={row.id}>
+            <button disabled={disabled || busy.includes(row.id)} className="flex min-h-12 w-full items-center border-t border-line-soft text-start disabled:opacity-40" onClick={() => { onAdd(row); setQuery(''); }}><bdi>{t('add', { name: row.name_ar || row.name_en || t('noResults') })}</bdi></button>
             {row.is_own && <div className="flex flex-wrap items-center gap-2"><CustomExercise key={`${row.id}-${row.name_ar}`} exercise={row} onAdd={next => { onLibraryChange(next); void search.retry(); }} />
               <button disabled={busy.includes(row.id)} className="min-h-12 px-3 text-xs text-danger" onClick={() => { void (async () => { setBusy(ids => [...ids, row.id]); setError(''); try { const result = await removeCustom(row.id); if (result.error) setError(result.error); else setRemoved(ids => [...ids, row.id]); } catch { setError(t('error')); } finally { setBusy(ids => ids.filter(id => id !== row.id)); } })(); }}>{pt('deleteCustomExercise')}</button></div>}
           </div>) : <p className="text-faint">{t('noResults')}</p>}
@@ -50,7 +54,7 @@ export function InlineSearch({ day, onAdd, onLibraryChange }: { day: DraftDay; o
       <span>{t('suggestions', { day: day.title })}</span>
       {suggestions.error ? <p role="alert">{t('error')}<button className="min-h-12" onClick={() => void suggestions.retry()}>{t('retry')}</button></p> :
         !suggestions.data ? <span role="status">{t('loading')}</span> : rows.length ?
-          rows.map(row => <Chip key={row.id} pressed={false} className="border-transparent bg-surface/50 px-3 text-xs" onClick={() => onAdd(row)}>{t('add', { name: row.name_ar || row.name_en || t('noResults') })}</Chip>) : <span>{t('noResults')}</span>}
+          rows.map(row => <Chip key={row.id} disabled={disabled} pressed={false} className="border-transparent bg-surface/50 px-3 text-xs" onClick={() => onAdd(row)}>{t('add', { name: row.name_ar || row.name_en || t('noResults') })}</Chip>) : <span>{t('noResults')}</span>}
     </div>
   </div>;
 }

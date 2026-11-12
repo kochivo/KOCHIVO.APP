@@ -3,6 +3,10 @@ import { arStd } from './standard-messages';
 
 export const messages = defineMessages({
   ar: {
+    alternatives: 'بدائل', differentSets: 'مجموعات مختلفة', uniform: 'زي بعض', setNumber: 'مجموعة {n}',
+    setMaximum: 'أقصى عدّات للمجموعة {n}', setIntensity: 'شدة المجموعة {n}',
+    alternativesHint: 'اختار لحد ٣ بدائل. دوس على البديل عشان تشيله.', alternativesEmpty: 'لسه مفيش بدائل',
+    alternativeUnavailable: 'التمرين مش متاح', removeAlternative: 'شيل {name}',
     breadcrumb: 'اللاعبين ‹ {name}', title: 'برنامج {name}', active: 'نشط · باقي {n} يوم', saved: 'اتحفظ',
     saving: 'بيتحفظ…', preview: 'شوفه كلاعب', assign: 'استخدمه للاعب', options: 'إعدادات البرنامج',
     day: '+ يوم', restDays: 'راحة باقي الأيام', rail: 'أيام التمرين', dayLine: '{weekday} · {n} تمارين · {m} د', rotationLine: '{n} تمارين · {m} د',
@@ -32,6 +36,10 @@ export const messages = defineMessages({
   },
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   en: {
+    alternatives: 'Alternatives', differentSets: 'Different sets', uniform: 'Same for all', setNumber: 'Set {n}',
+    setMaximum: 'Maximum reps for set {n}', setIntensity: 'Intensity for set {n}',
+    alternativesHint: 'Choose up to 3 alternatives. Tap one to remove it.', alternativesEmpty: 'No alternatives yet',
+    alternativeUnavailable: 'Exercise unavailable', removeAlternative: 'Remove {name}',
     breadcrumb: 'Players ‹ {name}', title: '{name}’s program', active: 'Active · {n} days left', saved: 'Saved', saving: 'Saving…',
     preview: 'View as player', assign: 'Use for a player', options: 'Program settings', day: '+ Day', restDays: 'Rest on other days',
     rail: 'Training days', dayLine: '{weekday} · {n} exercises · {m} min', rotationLine: '{n} exercises · {m} min', dayName: 'Day name', warm: 'Warm-up', exercises: 'Exercises',

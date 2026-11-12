@@ -1,4 +1,6 @@
 import { expect, it, vi } from 'vitest';
+import type * as React from 'react';
+vi.mock('server-only', () => ({}));
 import type { ProgramSnapshot } from '@/core/offline';
 import type * as Offline from '@/core/offline';
 import { createT } from '@/core/i18n/messages';
@@ -6,7 +8,7 @@ import { useFocusSession } from './hooks/use-focus-session';
 
 const state = vi.hoisted(() => ({ snapshot: null as ProgramSnapshot | null }));
 vi.mock('@/core/i18n/client', () => ({ useT: (messages: Parameters<typeof createT>[0]) => createT(messages, 'en') }));
-vi.mock('react', () => ({ useState: (value: unknown) => [value, () => undefined],
+vi.mock('react', async original => ({ ...await original<typeof React>(), useState: (value: unknown) => [value, () => undefined],
   useRef: (current: unknown) => ({ current }), useEffect: () => undefined,
   useCallback: (callback: unknown) => callback, useMemo: (callback: () => unknown) => callback() }));
 vi.mock('@/core/offline', async original => ({ ...await original<typeof Offline>(), useLiveQuery: () => undefined }));

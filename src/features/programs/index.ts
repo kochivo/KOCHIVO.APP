@@ -15,3 +15,5 @@ export { useDragReorder } from './hooks/use-drag-reorder';
 export { dayWarmupSchema, warmupItemSchema, emptyWarmup, addWarmupItem, removeWarmupItem,
   moveWarmupItem, setRamp, warmupMinutes, rampSets } from './warmup';
 export type { DayWarmup, WarmupItem } from './warmup';
+export { uniformPlan, resizePlan, targetForSet, planLabel, setPlanSchema } from './set-plan';
+export type { SetTarget } from './set-plan';

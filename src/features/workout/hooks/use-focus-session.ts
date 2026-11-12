@@ -18,6 +18,9 @@ import { useBodyweight } from './use-bodyweight';
 import { validateSet } from '../set-validation';
 import { reducedSets, useTodayDecision } from '@/features/readiness';
 import { triggerHaptic } from '@/lib/haptics';
+import { targetForSet } from '@/lib/set-plan';
+import { alternativeStep, loggedStep } from '../data/exercise-choices';
+import { useExerciseChoices } from './use-exercise-choices';
 
 const readCached = () => localDb().program_snapshot.get('active');
 const readPending = () => pendingCount(localDb());
@@ -71,22 +74,29 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
     localDb().set_logs.where('session_id').equals(sessionId).filter((row) => row.deleted_at === null).toArray() : [], [sessionId]);
   const sets = useLiveQuery(readSets, onError, retryKey);
   const doneSets = sets?.filter((row) => row.session_id === session?.id) ?? [];
+  const hasAlternatives = Boolean(day?.exercises.some(row => row.alternatives?.length));
+  const choices = useExerciseChoices(hasAlternatives ? dayId : '', today, sessionId, onError, retryKey);
   const currentIndex = queue.findIndex((step) => !doneSets.some((row) => matches(row, step.exercise.id, step.setIndex)));
   const edited = doneSets.find((row) => row.id === editing);
-  const current = edited ? queue.find((step) => matches(edited, step.exercise.id, step.setIndex)) : queue[currentIndex];
-  const key = `${session?.id}:${current?.exercise.id}:${current?.setIndex}`;
+  const plannedCurrent = edited ? queue.find((step) => matches(edited, step.exercise.id, step.setIndex)) : queue[currentIndex];
+  const selectedId = edited?.exercise_id ?? choices.choices[plannedCurrent?.exercise.id ?? ''];
+  const current = edited ? loggedStep(plannedCurrent, edited.exercise_id, t('unknownExercise')) : alternativeStep(plannedCurrent, selectedId);
+  const key = `${session?.id}:${current?.exercise.id}:${current?.setIndex}:${current?.exercise.exercise_id}`;
   const exerciseId = String(current?.exercise.exercise_id ?? '');
   const { bodyweight, setBodyweight } = useBodyweight(exerciseId);
   const historySessionId = session?.id ?? '';
   const memory = useLastSession(playerId ?? cached?.player_id, exerciseId, historySessionId, onError, retryKey);
   const performance = performanceFor(memory.last, current?.setIndex ?? 0);
   const previous = doneSets.filter((row) => row.program_exercise_id === current?.exercise.id &&
+    row.exercise_id === exerciseId &&
     row.set_index < (current?.setIndex ?? 0)).sort((a, b) => b.set_index - a.set_index)[0];
   // Last time's same set beats today's previous set: that is the number to match or beat.
   const prefill = edited ?? performance ?? previous ?? memory.last?.sets.at(-1);
   const weight = bodyweight ? 0 : Math.min(500, Math.max(0, draft?.key === key ? draft.weight : prefill?.weight_kg ?? 0));
-  const reps = Math.min(100, Math.max(0, draft?.key === key ? draft.reps : prefill?.reps ?? current?.exercise.reps_min ?? 0));
-  const ready = Boolean(day && session !== undefined && sets && today && memory.ready);
+  const plannedReps = current?.exercise.set_plan ? targetForSet(current.exercise, current.setIndex - 1).reps_min : undefined;
+  const reps = Math.min(100, Math.max(0, draft?.key === key ? draft.reps : edited?.reps ?? performance?.reps ?? plannedReps ?? prefill?.reps ??
+    (current ? targetForSet(current.exercise, current.setIndex - 1).reps_min : 0)));
+  const ready = Boolean(day && session !== undefined && sets && today && memory.ready && (!hasAlternatives || choices.ready));
   useEffect(() => () => { clearTimeout(cooldown.current); }, []);
   // Recover a final set saved just before the tab closed, before completion was recorded.
   useEffect(() => {
@@ -136,12 +146,16 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
       currentIndex < 0 ? queue.length : currentIndex + 1,
     next: queue[(edited ? queue.findIndex((step) => matches(edited, step.exercise.id, step.setIndex)) : currentIndex) + 1],
     finished: Boolean(session?.completed_at) && currentIndex === -1,
-    loading: !today || status === 'loading' || Boolean(day && (session === undefined || sets === undefined)),
+    loading: !today || status === 'loading' || Boolean(day && (session === undefined || sets === undefined || (hasAlternatives && !choices.ready))),
     error: error ?? (status === 'error' && !snapshot ? t('couldntLoadYourProgram') : null),
     disabled: busy || !ready,
     setWeight: (value: number) => setDraft({ key, weight: Math.min(500, Math.max(0, value)), reps }),
     setReps: (value: number) => setDraft({ key, weight, reps: Math.min(100, Math.max(0, value)) }),
     edit: (row: SetLogRow) => { if (!saving.current) { rest.skip(); setDraft(null); setEditing(row.id); } },
     complete,
+    switchExercise: (id: string) => {
+      if (!plannedCurrent || saving.current || !choices.ready || edited || (id && !plannedCurrent.exercise.alternatives?.includes(id))) return;
+      choices.choose(plannedCurrent.exercise.id, id); setDraft(null); setInvalid(null);
+    },
     retry: () => { setError(null); setRetryKey((value) => value + 1); void refresh(); } };
 }

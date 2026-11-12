@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+vi.mock('server-only', () => ({}));
 import { KochivoDB, type WorkoutSessionRow } from '@/core/offline';
 import { mapProgramSnapshot, type ProgramResponse } from './data/program-snapshot';
 import { refreshSnapshot } from './data/refresh-snapshot';

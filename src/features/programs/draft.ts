@@ -1,5 +1,6 @@
 import { messages } from './messages';
 import { emptyWarmup } from './warmup';
+import { resizePlan } from './set-plan';
 
 import type { DraftDay, DraftExercise, ExercisePatch, LibraryExercise, ProgramDraft } from './types';
 
@@ -38,6 +39,7 @@ export function addExercise(draft: ProgramDraft, dayId: string, library: Library
   return editDay(draft, dayId, day => ({ ...day, is_rest_day: false, exercises: positioned([...day.exercises, {
     id, day_id: day.id, exercise_id: library.id, library, position: 0,
     sets: 3, reps_min: 8, reps_max: 12, rest_seconds: 90, superset_group: null, rir: null, notes: null,
+    alternatives: [], set_plan: null,
   }]) }));
 }
 export function removeExercise(draft: ProgramDraft, dayId: string, id: string): ProgramDraft {
@@ -83,6 +85,7 @@ export function updateExercise(draft: ProgramDraft, dayId: string, id: string, p
     if (row.id !== id) return row;
     const next = { ...row, ...patch };
     next.sets = clamp(next.sets, 1, 20);
+    if (next.set_plan) next.set_plan = resizePlan(next.set_plan, next.sets);
     next.reps_min = clamp(next.reps_min, 1, 100);
     next.reps_max = next.reps_max === null ? null : clamp(next.reps_max, next.reps_min, 32767);
     next.rest_seconds = clamp(Math.round(next.rest_seconds / 15) * 15, 0, 900);
