@@ -2,7 +2,9 @@ import { afterAll, describe, expect, it, vi } from 'vitest';
 import { relative, resolve } from 'node:path';
 import type { Messages } from './messages';
 
-const modules = import.meta.glob<{ messages: Messages }>('../../**/messages.ts', { eager: true });
+const modules = import.meta.glob<Record<string, unknown>>(
+  ['../../**/messages.ts', '../../**/*-messages.ts'], { eager: true },
+);
 vi.stubEnv('NEXT_PUBLIC_INTERNATIONAL', '1');
 afterAll(() => vi.unstubAllEnvs());
 const required = /^(ui\/|core\/|features\/(marketing|auth|onboarding|roster|captain-workspace|programs|templates|program-generator|meal-plans|inbox|billing|dashboard|coach-page|rank-review|captain-approval)\/)/;
@@ -18,12 +20,14 @@ function leaves(value: unknown, prefix = ''): Record<string, string> {
     Object.entries(leaves(child, prefix ? `${prefix}.${key}` : key))));
 }
 const placeholders = (text: string) => [...new Set(text.match(/\{\w+\}/g) ?? [])].sort();
-const rows = Object.entries(modules).filter(([, module]) => module.messages).map(([path, { messages }]) => {
+const rows = Object.entries(modules).flatMap(([path, module]) => Object.values(module)
+  .filter((value): value is Messages => !!value && typeof value === 'object' && 'ar' in value && 'en' in value)
+  .map((messages) => {
   const file = relative(resolve('src'), resolve(import.meta.dirname, path)).replaceAll('\\', '/');
   const translated = Object.keys(leaves(messages.arStd)).length;
   const total = Object.keys(leaves(messages.ar)).length;
   return { file, messages, translated, total, coverage: `${translated}/${total}` };
-});
+}));
 
 describe('standard Arabic coverage per messages file', () => {
   it('omits player standard dictionaries when the international flag is off', () => {

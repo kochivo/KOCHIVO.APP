@@ -1,6 +1,9 @@
 import { defineMessages } from '@/core/i18n/messages';
+import { arStd } from './v6-messages-standard';
 
 export const messages = defineMessages({
+  // The local env branch lets Next remove these strings from flag-off client builds.
+  get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: { title: 'حسابي', coach: 'مع كابتن {name} · باقي {n} يوم', language: 'اللغة',
     arabic: 'مصري', arabicEgyptian: 'مصري', arabicStandard: 'فصحى', english: 'English',
     units: 'الوحدات', metric: 'كجم', imperial: 'lb', reminder: 'تذكير التمرين',

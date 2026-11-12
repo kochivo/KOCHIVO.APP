@@ -1,6 +1,9 @@
 import { defineMessages } from '@/core/i18n/messages';
+import { arStd } from './v6-messages-standard';
 
 export const messages = defineMessages({
+  // The local env branch lets Next remove these strings from flag-off client builds.
+  get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: { title: 'تطورك', history: 'سجل تماريني', weight: 'الوزن', kg: 'كجم',
     lost: 'نزلت {value} كجم من البداية', gained: 'زِدت {value} كجم من البداية', remaining: 'فاضل {value} للهدف',
     nextRank: 'فاضلك {points} نقطة على {tier}', retry: 'جرّب تاني', rankFailed: 'مش قادرين نحمّل الرتبة',

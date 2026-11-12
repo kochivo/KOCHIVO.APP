@@ -1,5 +1,8 @@
 import { defineMessages } from '@/core/i18n/messages';
+import { arStd } from './workspace-messages-standard';
 export const workspaceMessages = defineMessages({
+  // The local env branch lets Next remove these strings from flag-off client builds.
+  get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
     yes: 'أيوه', no: 'لأ',
     title: 'المهام', all: 'الكل', checkin: 'check-ins', assessment: 'تقييمات', request: 'طلبات انضمام', form: 'فيديوهات',

@@ -1,6 +1,9 @@
 import { defineMessages } from '@/core/i18n/messages';
+import { arStd } from './v6-messages-standard';
 
 export const messages = defineMessages({
+  // The local env branch lets Next remove these strings from flag-off client builds.
+  get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: { today: 'أكلك النهارده', kcal: 'سعرات', protein: 'بروتين', coach: 'من الكابتن:',
     trainingDay: 'يوم تمرين', restDay: 'يوم راحة', dayTypeRetry: 'مش قادرين نحمّل نوع اليوم. جرّب تاني',
     details: 'تفاصيل الوجبة والبدائل', otherMacros: 'كارب {carbs} / {carbsTarget} جم · دهون {fat} / {fatTarget} جم' },
