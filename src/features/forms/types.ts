@@ -7,13 +7,15 @@ export type Question = {
   id: string; form_id: string; position: number; label_ar: string; label_en: string;
   type: CustomFormQuestionType; required: boolean; options: Option[];
   maps_to: CustomFormFactKey | null; alert_on: AlertRule | null;
+  show_chart?: boolean;
 };
 export type FormDraft = {
   id: string; captain_id: string; title: string; kind: CustomFormKind;
   schedule: Schedule | null; remind_after_hours: number | null; questions: Question[];
+  creation_key?: string;
 };
 export type Template = {
-  key?: 'photos';
+  key?: 'photos' | 'feedback';
   kind: Exclude<CustomFormKind, 'custom'>; schedule: Schedule | null;
   questions: Omit<Question, 'id' | 'form_id'>[];
 };

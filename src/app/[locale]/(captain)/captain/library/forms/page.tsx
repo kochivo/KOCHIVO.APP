@@ -2,7 +2,7 @@ import { parseLocale } from '@/core/i18n/locale';
 import { formsAccess, FormsLibraryPage } from '@/features/forms/server';
 
 export default async function FormsPage({ params, searchParams }: {
-  params: Promise<{ locale: string }>; searchParams?: Promise<{ edit?: string; template?: string }>;
+  params: Promise<{ locale: string }>; searchParams?: Promise<{ edit?: string; template?: string; draft?: string }>;
 }) {
   const { captain, client } = await formsAccess();
   const { locale } = await params;

@@ -57,6 +57,7 @@ export type Database = {
       }
       form_questions: {
         Row: {
+          show_chart: boolean
           id: string
           form_id: string
           position: number
@@ -69,6 +70,7 @@ export type Database = {
           alert_on: Json | null
         }
         Insert: {
+          show_chart?: boolean
           id: string
           form_id: string
           position: number
@@ -81,6 +83,7 @@ export type Database = {
           alert_on?: Json | null
         }
         Update: {
+          show_chart?: boolean
           id?: string
           form_id?: string
           position?: number

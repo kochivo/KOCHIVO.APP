@@ -1,25 +1,52 @@
-import type { Locale } from '@/core/i18n/locale';
-import { messages } from '../messages';
+import type { ArabicStyle, Locale } from '@/core/i18n/locale';
+import { createT } from '@/core/i18n/messages';
+import { formCopy } from '../form-copy';
+import { messages as redesign } from '../redesign/messages';
 import type { FormDraft } from '../types';
+import type { ScheduleContext } from '../schedule-context';
+import { recurrenceLabel } from '../assessment-summary';
+import { ThemedSelect } from './themed-select';
 
-export function ScheduleEditor({ form, locale, onChange }: { form: FormDraft; locale: Locale; onChange: (form: FormDraft) => void }) {
-  const m = messages[locale], s = form.schedule, input = 'min-h-12 w-full rounded-control border border-line bg-surface px-3';
-  return <fieldset className="glass mt-5 space-y-3 rounded-card p-4">
-    <legend className="font-bold">{m.schedule}</legend>
-    <div className="grid gap-3 sm:grid-cols-2">
-      <label>{m.every}<select className={input} value={s?.every ?? ''} onChange={e => onChange({ ...form,
-        schedule: e.target.value === 'week' ? { every: 'week', weekday: 5, hour: s?.hour ?? 9 }
-          : e.target.value === 'month' ? { every: 'month', day: 1, hour: s?.hour ?? 9 } : null })}>
-        <option value="">{m.noSchedule}</option><option value="week">{m.week}</option><option value="month">{m.month}</option>
-      </select></label>
-      {s && <>
-        <label>{m.day}{s.every === 'week' ? <select className={input} value={s.weekday} onChange={e => onChange({ ...form, schedule: { ...s, weekday: Number(e.target.value) } })}>
-          {m.weekdays.map((day, i) => <option key={day} value={i}>{day}</option>)}
-        </select> : <input className={input} type="number" min={1} max={31} value={s.day} onChange={e => onChange({ ...form, schedule: { ...s, day: e.target.valueAsNumber } })} />}</label>
-        <label>{m.hour}<input className={input} type="number" min={0} max={23} value={s.hour} onChange={e => onChange({ ...form, schedule: { ...s, hour: e.target.valueAsNumber } })} /></label>
-      </>}
-      <label>{m.reminder}<input className={input} type="number" min={1} max={32767} placeholder={m.noReminder} value={form.remind_after_hours ?? ''}
-        onChange={e => onChange({ ...form, remind_after_hours: e.target.value === '' ? null : e.target.valueAsNumber })} /></label>
+export function ScheduleEditor({ form, locale, onChange, players = 0, style, scheduleContext, canManage = true }: {
+  form: FormDraft; locale: Locale; onChange: (form: FormDraft) => void; players?: number; style?: ArabicStyle;
+  scheduleContext?: ScheduleContext; canManage?: boolean;
+}) {
+  const m = formCopy(locale, style), t = createT(redesign, locale, style), s = form.schedule;
+  function manage() {
+    const details = document.getElementById('schedules');
+    if (details instanceof HTMLDetailsElement) { details.open = true; details.scrollIntoView({ block: 'start' }); }
+  }
+  if (!s && scheduleContext?.schedules.length) return <div className="glass mb-[14px] rounded-card border border-line-soft px-5 py-4">
+    {scheduleContext.schedules.map(schedule => <p key={schedule.id} className="text-sm leading-[2.2] text-muted">
+      {t('sends')} {recurrenceLabel(schedule, locale)} · {schedule.player_id
+        ? t('forPlayer', { name: scheduleContext.players.find(p => p.id === schedule.player_id)?.name ?? '' }) : t('all')}
+      {schedule.paused_at && <> · {t('stopped')}</>}
+    </p>)}
+    <button type="button" disabled={!canManage} className="min-h-12 text-sm text-ink disabled:opacity-50" onClick={manage}>{t('schedule')}</button>
+  </div>;
+  const reminders = [{ value: '', label: t('noReminder') }, { value: '12', label: t('remind12') }, { value: '24', label: t('remind') }];
+  if (form.remind_after_hours && ![12, 24].includes(form.remind_after_hours)) reminders.push({ value: String(form.remind_after_hours), label: t('remindHours', { n: form.remind_after_hours }) });
+  return <div className="glass mb-[14px] rounded-card border border-line-soft px-5 py-4">
+    <div className="flex flex-wrap items-center gap-2 text-sm leading-[2.2]">
+      <span>{t('sends')}</span><ThemedSelect label={m.every} value={s?.every ?? ''}
+        options={[{ value: '', label: t('manual') }, { value: 'week', label: m.week }, { value: 'month', label: m.month }]}
+        onChange={value => onChange({ ...form, schedule: value === 'week' ? { every: 'week', weekday: 5, hour: s?.hour ?? 9 }
+          : value === 'month' ? { every: 'month', day: 1, hour: s?.hour ?? 9 } : null })} />
+      {s && <><span>{t('day')}</span><ThemedSelect label={m.day} value={String(s.every === 'week' ? s.weekday : s.day)}
+        options={s.every === 'week' ? m.weekdays.map((label, n) => ({ value: String(n), label }))
+          : Array.from({ length: 31 }, (_, n) => ({ value: String(n + 1), label: String(n + 1) }))}
+        onChange={value => onChange({ ...form, schedule: s.every === 'week' ? { ...s, weekday: Number(value) } : { ...s, day: Number(value) } })} /></>}
+      <span>{t('to')}</span><ThemedSelect label={t('to')} value="all" disabled={!canManage} options={[{ value: 'all', label: `${t('all')} (${players})` }, { value: 'players', label: t('schedule') }]}
+        onChange={value => {
+          if (value !== 'players') return;
+          manage();
+        }} />
+      <span>{t('unanswered')}</span><ThemedSelect label={m.reminder} value={String(form.remind_after_hours ?? '')} options={reminders}
+        onChange={value => onChange({ ...form, remind_after_hours: value ? Number(value) : null })} />
     </div>
-  </fieldset>;
+    {s && <details className="mt-1 text-xs text-faint"><summary className="min-h-12 cursor-pointer py-3">{t('details')}</summary>
+      <label className="flex flex-wrap items-center gap-3">{m.hour}<input aria-label={m.hour} className="min-h-12 w-24 rounded-control border border-line bg-transparent px-3"
+        type="number" min={0} max={23} value={s.hour} onChange={e => onChange({ ...form, schedule: { ...s, hour: e.target.valueAsNumber } })} /></label>
+    </details>}
+  </div>;
 }

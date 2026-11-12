@@ -15,8 +15,8 @@ const numbered = (questions: Template['questions']) => questions.map((q, positio
 export const templates: [Template, ...Template[]] = [
   { kind: 'checkin', schedule: { every: 'week', weekday: 5, hour: 9 }, questions: numbered([
     question('weight', 'number', 'weight'), question('waist', 'number', 'waist'),
-    question('sleep', 'scale'), question('adherence', 'number'),
-    question('injuries', 'multi', 'injuries', { operator: 'eq', value: 'pain' }),
+    question('sleep', 'scale', null, { operator: 'lt', value: 6 }), question('adherence', 'number'),
+    question('photos', 'photos'),
     question('note', 'text', 'note'),
   ]) },
   { kind: 'onboarding', schedule: null, questions: numbered([
@@ -37,5 +37,8 @@ export const templates: [Template, ...Template[]] = [
   ]) },
   { key: 'photos', kind: 'progress', schedule: null, questions: numbered([
     question('photos', 'photos'), question('note', 'text', 'note'),
+  ]) },
+  { key: 'feedback', kind: 'update', schedule: null, questions: numbered([
+    { ...question('note', 'text'), label_ar: messages.ar.feedbackQuestion, label_en: messages.en.feedbackQuestion },
   ]) },
 ];

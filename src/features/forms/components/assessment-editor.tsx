@@ -4,6 +4,7 @@ import { useRef, useState } from 'react';
 import { CalendarDays, Check, Plus } from 'lucide-react';
 import type { Locale } from '@/core/i18n/locale';
 import { createT } from '@/core/i18n/messages';
+import { useArabicStyle } from '@/core/i18n/client';
 import { Chip } from '@/ui/chip';
 import { Button } from '@/ui/button';
 import { SaveStatus } from '@/ui/save-status';
@@ -16,12 +17,13 @@ import type { AssessmentWorkspaceData } from '../data/assessment-workspace';
 import { assessmentSummary } from '../assessment-summary';
 import { messages } from '../assessments/messages';
 import { AssessmentFields } from './assessment-fields';
+import { ThemedSelect } from './themed-select';
 
 export function AssessmentEditor({ data, player, formId, initial, locale, onSave, onSaved, onCancel, now }: {
   data: AssessmentWorkspaceData; player?: string; formId?: string; initial?: AssessmentSchedule; locale: Locale;
   onSave: (s: AssessmentInput) => Promise<boolean>; onSaved: () => void; onCancel: () => void; now: Date;
 }) {
-  const t = createT(messages, locale);
+  const style = useArabicStyle(), t = createT(messages, locale, style);
   const [s, set] = useState<AssessmentInput>(() => initial ?? ({ id: uuidv7(), form_id: formId ?? data.forms[0]?.id ?? '',
     player_id: player ?? null, kind: 'week', every_days: null, weekday: 5, day: null, hour: 10, minute: 0,
     starts_on: localDate(now, data.players.find(p => p.id === player)?.timezone ?? DEFAULT_TIMEZONE), ends_on: null,
@@ -46,10 +48,10 @@ export function AssessmentEditor({ data, player, formId, initial, locale, onSave
         <Link prefetch={false} href={`/${locale}/captain/library/forms?template=checkin`} className="inline-flex min-h-12 items-center gap-2 rounded-full border border-line-soft px-4"><Plus aria-hidden className="size-4" />{t('new')}</Link>
       </div>
       {!data.forms.length && <p className="py-3 text-faint">{t('empty')}</p>}
-      {!player && <label className="mt-4 block text-xs text-muted">{t('target')}
-        <select className="ms-3 min-h-12 max-w-full rounded-control bg-surface px-3" value={s.player_id ?? ''} onChange={e => set({ ...s, player_id: e.target.value || null })}>
-          <option value="">{t('all')}</option>{data.players.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}</select></label>}
-      <AssessmentFields value={s} onChange={set} locale={locale} allowOnJoin={s.player_id === null || s.kind === 'on_join'} />
+      {!player && <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-muted"><span>{t('target')}</span>
+        <ThemedSelect label={t('target')} value={s.player_id ?? ''} onChange={value => set({ ...s, player_id: value || null })}
+          options={[{ value: '', label: t('all') }, ...data.players.map(p => ({ value: p.id, label: p.name }))]} /></div>}
+      <AssessmentFields value={s} onChange={set} locale={locale} style={style} allowOnJoin={s.player_id === null || s.kind === 'on_join'} />
       <p className="mt-3 text-xs text-faint">{selected ? t('timezone', { zone: selected.timezone }) : t('allTime')}</p>
       {valid && form && <p className="mt-4 flex items-center gap-3 rounded-card bg-lime-soft p-5 text-sm leading-7">
         <CalendarDays aria-hidden className="size-5 shrink-0 text-lime" />{assessmentSummary(s, selected?.name ?? null, form.title, locale, selected?.joined)}</p>}

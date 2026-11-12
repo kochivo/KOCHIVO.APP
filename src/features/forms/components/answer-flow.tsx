@@ -12,7 +12,7 @@ import { uploadAnswerPhotos } from '../data/answer-photos';
 import { messages } from '../requests/messages';
 import { QuestionField } from './question-field';
 import type { QuestionValue } from './question-field';
-import { useT } from '@/core/i18n/client';
+import { useArabicStyle, useT } from '@/core/i18n/client';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { messages as v6Messages } from '../v6-messages';
 import { Camera, X } from 'lucide-react';
@@ -20,6 +20,7 @@ import { Camera, X } from 'lucide-react';
 export function AnswerFlow({data,locale}:{data:RequestData;locale:Locale}) {
   const v6 = captainWorkspaceEnabled();
   const v6t = useT(v6Messages);
+  const style = useArabicStyle();
   const m = messages[locale], key = `${data.request.player_id}:${data.request.id}`;
   const [draft,setDraft] = useState<AnswerDraft>(() => {
     const saved:AnswerDraft = {};
@@ -77,7 +78,7 @@ export function AnswerFlow({data,locale}:{data:RequestData;locale:Locale}) {
     <form onSubmit={e => {e.preventDefault();void advance();}}>
       <fieldset disabled={state === 'sending' || uploading}>
         {v6 && q.type === 'photos' ? <div className="space-y-4">
-          <h2 className="font-display text-[22px] font-semibold">{locale === 'en' ? q.label_en : q.label_ar}</h2>
+          <h2 className="font-display text-[22px] font-semibold">{locale === 'en' ? q.label_en.trim() || q.label_ar : q.label_ar}</h2>
           <div className="glass flex aspect-[3/4] flex-col items-center justify-center gap-4 rounded-card border border-line-soft p-5 text-muted">
             <Camera aria-hidden className="size-8" /><p className="text-sm">{v6t('photo')}</p>
             <label className="glass flex min-h-12 cursor-pointer items-center rounded-full border border-line-soft px-5">{v6t('camera')}
@@ -86,7 +87,7 @@ export function AnswerFlow({data,locale}:{data:RequestData;locale:Locale}) {
               <input type="file" accept="image/*" multiple className="sr-only" aria-label={v6t('gallery')} onChange={event => void photos(event.target.files)} /></label>
           </div>
         </div> : <QuestionField key={q.id} question={{...q,required:q.type === 'photos' && draft[q.id]?.photo_paths.length ? false : q.required}}
-          locale={locale} value={draft[q.id]?.value ?? null} onChange={value => update(value)} onPhotos={files => void photos(files)} />}
+          locale={locale} style={style} value={draft[q.id]?.value ?? null} onChange={value => update(value)} onPhotos={files => void photos(files)} />}
         {q.type === 'photos' && !!draft[q.id]?.photo_paths.length && <p className="text-sm text-muted">{m.savedPhotos}</p>}
         {uploading && <p role="status">{m.upload}</p>}
         {error && <p role="alert" className="py-3 text-danger">{error}</p>}

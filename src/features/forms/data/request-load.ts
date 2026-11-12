@@ -27,7 +27,7 @@ export async function loadPlayerRequests(client: SupabaseClient<AppDatabase>, pl
   const questions: Question[] = [], answers: RequestData['answers'] = [];
   for (let offset = 0; ; offset += 500) {
     const [q,a] = await Promise.all([
-      client.from('form_questions').select('id,form_id,position,label_ar,label_en,type,required,options,maps_to,alert_on')
+      client.from('form_questions').select('id,form_id,position,label_ar,label_en,type,required,options,maps_to,alert_on,show_chart')
         .in('form_id',ids).order('position').order('id').range(offset,offset+499),
       client.from('form_answers').select('id,request_id,question_id,value,photo_paths').in('request_id',result.data.map(r => r.id))
         .order('id').range(offset,offset+499),

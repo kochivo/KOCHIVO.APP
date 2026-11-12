@@ -4,7 +4,7 @@ export const arStd = {
   period: 'هذا الشهر', questions: 'أسئلة', recipients: 'لاعب', edit: 'تعديل', preview: 'اعرض كما يراه اللاعب', back: 'العودة للتعديل',
   add: 'سؤال جديد', up: 'انقل السؤال للأعلى', down: 'انقل السؤال للأسفل', remove: 'احذف السؤال', removeOption: 'احذف الاختيار',
   formTitle: 'اسم التقييم', labelAr: 'السؤال بالعربية', labelEn: 'السؤال بالإنجليزية', type: 'نوع السؤال',
-  required: 'إلزامي', optionsAr: 'الاختيارات بالعربية، اختيار في كل سطر', optionsEn: 'الاختيارات بالإنجليزية، بالترتيب نفسه',
+  required: 'إلزامي', kg: 'كجم', cm: 'سم', optionsAr: 'الاختيارات بالعربية، اختيار في كل سطر', optionsEn: 'الاختيارات بالإنجليزية، بالترتيب نفسه',
   mapping: 'أين تُحفظ الإجابة؟', none: 'بدون', playerFile: 'ملف اللاعب:', chart: 'رسم بياني', alert: 'تنبيه',
   alertRule: 'التنبيه', alertValue: 'قيمة التنبيه', alertEqual: 'يساوي', alertAbove: 'أكبر من', alertBelow: 'أقل من',
   schedule: 'المواعيد', every: 'التكرار', week: 'كل أسبوع', month: 'كل شهر', day: 'اليوم', hour: 'الساعة بتوقيت القاهرة',
@@ -14,7 +14,7 @@ export const arStd = {
   empty: 'لا توجد تقييمات بعد. ابدأ من قالب جاهز.', emptyQuestions: 'أضف أول سؤال للتقييم.',
   invalid: 'راجع اسم التقييم والأسئلة والاختيارات والربط والمواعيد قبل الحفظ.',
   yes: 'نعم', no: 'لا', photo: 'صور التقدم', unanswered: 'لا توجد ردود بعد', close: 'أغلق',
-  pain: 'يوجد ألم أو حالة تحتاج إلى متابعة', noIssues: 'لا يوجد', newQuestionAr: 'سؤال جديد', newQuestionEn: 'New question',
+  pain: 'يوجد ألم أو حالة تحتاج إلى متابعة', noIssues: 'لا يوجد', newQuestionAr: 'سؤال جديد', newQuestionEn: 'New question', feedbackQuestion: 'ما رأيك في البرنامج؟',
   kinds: { checkin: 'Check-in أسبوعي', onboarding: 'تحديث بيانات البداية', progress: 'متابعة شهرية بالصور', injury: 'تقرير إصابة', update: 'تحديث البيانات' },
   types: { number: 'رقم', scale: 'مقياس من 1 إلى 10', choice: 'اختيار واحد', multi: 'اختيارات متعددة', text: 'نص', photos: 'صور', yesno: 'نعم أو لا' },
   facts: {

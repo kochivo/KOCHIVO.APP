@@ -26,7 +26,7 @@ it('adds a question through the builder action and moves a mapped question down'
   const props = () => ({ form, locale: 'en' as const, status: 'saved' as const, preview: false,
     onChange: (next: typeof form) => { form = next; }, onPreview() {}, onRetry() {} });
   const before = form.questions.length;
-  const add = buttons(FormBuilder(props())).find(b => b.props.children === messages.en.add);
+  const add = buttons(FormBuilder(props())).find(b => Array.isArray(b.props.children) && b.props.children.includes(messages.en.add));
   expect(add).toBeDefined(); add?.props.onClick();
   expect(form.questions).toHaveLength(before + 1);
   const firstId = form.questions[0]?.id;
@@ -46,10 +46,10 @@ it('renders mapping, chart and alert chips in the real question editor', () => {
     question, locale: 'en', index, count: form.questions.length,
     onChange() {}, onDelete() {}, onMove() {},
   })); };
-  expect(render(0)).toContain('Player file:');
+  expect(render(0)).toContain('Saved in player file:');
   expect(render(0)).toContain('Weight');
-  expect(render(0)).toContain('Chart');
-  expect(render(4)).toContain('Alerts you');
+  expect(render(0)).toContain('Show a chart in the player file');
+  expect(render(2)).toContain('Alerts you');
 });
 
 it('keeps a typed newline so a second choice can be entered normally', () => {

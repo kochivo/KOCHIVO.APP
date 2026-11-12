@@ -2,6 +2,7 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { formTestDatabase } from './test-database';
 import { copyTemplate, reorderQuestions } from './model';
 import { templates } from './templates';
+import { templateCopyForAction } from './template-copy';
 
 const access = vi.hoisted(() => ({ current: vi.fn() }));
 vi.mock('server-only', () => ({}));
@@ -11,6 +12,17 @@ let store: Awaited<ReturnType<typeof formTestDatabase>>;
 beforeEach(async () => { store = await formTestDatabase(); access.current.mockResolvedValue({ client: store.client, captain }); });
 afterEach(async () => { await store.db.close(); });
 const save = async (form: ReturnType<typeof copyTemplate>) => (await import('./data/save-form')).saveForm(form);
+
+it('saves optional English and chart preferences, and retries an explicit copy without creating another form', async () => {
+  const action = '00000000-0000-7000-8000-000000000201';
+  const form = await templateCopyForAction('checkin', captain, action, 'ar');
+  form.questions = form.questions.map(q => ({ ...q, label_en: '', show_chart: false }));
+  expect(await save(form), store.errors.join('\n')).toEqual({ ok: true });
+  expect(await save(form)).toEqual({ ok: true });
+  expect((await store.db.query('select id from forms')).rows).toHaveLength(1);
+  expect((await store.db.query('select label_en,show_chart from form_questions')).rows)
+    .toEqual(form.questions.map(() => ({ label_en: '', show_chart: false })));
+});
 
 it('persists schedules, options, alerts and stable question IDs through reorder and delete', async () => {
   let form = copyTemplate(templates[0], captain);

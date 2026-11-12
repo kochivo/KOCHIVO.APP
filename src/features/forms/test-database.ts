@@ -5,10 +5,11 @@ import type { AppDatabase } from '@/types/app-database';
 // A real Postgres transport keeps constraint/reorder tests independent of fluent-client mocks.
 export async function formTestDatabase() {
   const db = new PGlite();
-  await db.exec(`create table forms (id uuid primary key,captain_id uuid,title text,kind text,schedule jsonb,remind_after_hours smallint);
+  await db.exec(`create table forms (id uuid primary key,captain_id uuid,title text,kind text,schedule jsonb,remind_after_hours smallint,creation_key uuid);
     create table form_questions (id uuid primary key,form_id uuid references forms(id),position int,
-    label_ar text,label_en text,type text,required boolean,options jsonb,maps_to text,alert_on jsonb,unique(form_id,position));
+    label_ar text,label_en text,type text,required boolean,options jsonb,maps_to text,alert_on jsonb,show_chart boolean default true,unique(form_id,position));
     create table form_answers (id uuid primary key,question_id uuid references form_questions(id));`);
+  await db.exec('create unique index forms_creation_key on forms(captain_id,creation_key) where creation_key is not null');
   let failNextWrite = false;
   const errors: string[] = [];
   const client = createClient<AppDatabase>('https://test.invalid', 'test', { global: { fetch: async (input, init) => {

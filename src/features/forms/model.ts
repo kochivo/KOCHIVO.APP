@@ -16,7 +16,7 @@ export function copyTemplate(template: Template, captain: string, id = uuidv7, l
 }
 export function newQuestion(formId: string, position: number, id = uuidv7): Question {
   return { id: id(), form_id: formId, position, label_ar: messages.ar.newQuestionAr,
-    label_en: messages.en.newQuestionEn, type: 'text', required: false, options: [], maps_to: null, alert_on: null };
+    label_en: '', type: 'text', required: false, options: [], maps_to: null, alert_on: null };
 }
 export function reorderQuestions(questions: Question[], from: number, to: number): Question[] {
   if (from < 0 || to < 0 || from >= questions.length || to >= questions.length) return questions;
@@ -31,11 +31,12 @@ export function validateForm(form: FormDraft): string[] {
   if (!form.title.trim()) errors.push('title');
   if (!form.questions.length) errors.push('questions');
   for (const q of form.questions) {
-    if (!q.label_ar.trim() || !q.label_en.trim()) errors.push('label');
+    if (!q.label_ar.trim()) errors.push('label');
     if (q.maps_to && !mappingTypes[q.maps_to]?.includes(q.type)) errors.push('mapping');
-    if (['choice', 'multi'].includes(q.type) && (!q.options.length || q.options.some(o => !o.label_ar.trim() || !o.label_en.trim())
+    if (['choice', 'multi'].includes(q.type) && (!q.options.length || q.options.some(o => !o.label_ar.trim())
       || new Set(q.options.map(o => o.value)).size !== q.options.length)) errors.push('options');
-    if (q.alert_on && ((q.alert_on.operator !== 'eq' && (!['number', 'scale'].includes(q.type)
+    if (q.alert_on && (typeof q.alert_on.value === 'number' && !Number.isFinite(q.alert_on.value)
+      || (q.alert_on.operator !== 'eq' && (!['number', 'scale'].includes(q.type)
       || typeof q.alert_on.value !== 'number')) || q.alert_on.value === '')) errors.push('alert');
   }
   const s = form.schedule;

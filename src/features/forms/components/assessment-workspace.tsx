@@ -1,5 +1,6 @@
 'use client';
 import { useCallback, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useResource } from '@/core/resource';
 import type { Locale } from '@/core/i18n/locale';
 import { createT } from '@/core/i18n/messages';
@@ -13,6 +14,7 @@ import { RequestPicker } from './request-picker';
 import { RequestManager } from './request-manager';
 
 export function AssessmentWorkspace({ playerId, formId, locale }: { playerId?: string; formId?: string; locale: Locale }) {
+  const router = useRouter();
   const t = createT(messages, locale);
   const load = useCallback(() => assessmentWorkspace(playerId), [playerId]);
   const resource = useResource(`assessment-schedules:${playerId ?? 'all'}`, load);
@@ -44,7 +46,7 @@ export function AssessmentWorkspace({ playerId, formId, locale }: { playerId?: s
         : (current ?? previous).schedules.map(row => row.id === s.id ? { ...row, paused_at: s.paused_at ? null : now.toISOString() } : row) }),
       () => remove ? deleteAssessmentSchedule(s.id) : pauseAssessmentSchedule(s.id, !s.paused_at));
       if (!ok) setError(true);
-      else { if (editing?.id === s.id) { setEditing(undefined); setShowEditor(false); } void resource.retry(); }
+      else { if (editing?.id === s.id) { setEditing(undefined); setShowEditor(false); } void resource.retry(); if (formId) router.refresh(); }
     } catch { setError(true); }
     finally { lock.current = false; setBusy(false); }
   }
@@ -68,7 +70,7 @@ export function AssessmentWorkspace({ playerId, formId, locale }: { playerId?: s
           onSend={async (_row, commit) => { await commit(); return true; }} />}
         {showEditor ? <AssessmentEditor key={editing?.id ?? `new:${revision}`} data={data} player={playerId} formId={formId}
           initial={editing} locale={locale} now={now} onSave={save} onCancel={() => { setShowEditor(false); setEditing(undefined); }}
-          onSaved={() => { void resource.retry(); setEditing(undefined); setShowEditor(false); setRevision(r => r + 1); }} />
+          onSaved={() => { void resource.retry(); if (formId) router.refresh(); setEditing(undefined); setShowEditor(false); setRevision(r => r + 1); }} />
           : <button className="glass min-h-12 rounded-full px-5" onClick={() => setShowEditor(true)}>{t('schedule')}</button>}
       </div>
     </div>

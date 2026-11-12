@@ -1,16 +1,17 @@
-import type { Locale } from '@/core/i18n/locale';
+import type { ArabicStyle, Locale } from '@/core/i18n/locale';
 import { createT } from '@/core/i18n/messages';
 import { Chip } from '@/ui/chip';
 import type { AssessmentInput } from '../assessment-schema';
 import { messages } from '../assessments/messages';
 import { messages as formMessages } from '../messages';
+import { ThemedSelect } from './themed-select';
 
 const input = 'mt-2 min-h-12 w-full min-w-0 rounded-control border border-line-soft bg-surface px-3 font-display tabular-nums';
 const selected = 'aria-pressed:border-ink aria-pressed:bg-ink aria-pressed:text-bg-deep';
-export function AssessmentFields({ value: s, onChange, locale, allowOnJoin = true }: {
-  value: AssessmentInput; onChange: (s: AssessmentInput) => void; locale: Locale; allowOnJoin?: boolean;
+export function AssessmentFields({ value: s, onChange, locale, allowOnJoin = true, style }: {
+  value: AssessmentInput; onChange: (s: AssessmentInput) => void; locale: Locale; allowOnJoin?: boolean; style?: ArabicStyle;
 }) {
-  const t = createT(messages, locale);
+  const t = createT(messages, locale, style);
   const end = s.ends_on !== null ? 'date' : s.max_times !== null ? 'count' : 'forever';
   return <>
     <h2 className="mb-3 mt-[18px] font-display text-[19px] font-semibold">{t('when')}</h2>
@@ -23,10 +24,9 @@ export function AssessmentFields({ value: s, onChange, locale, allowOnJoin = tru
     <div className="my-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
       {s.kind === 'days' && <label className="glass rounded-card border border-line-soft p-4 text-xs text-muted">{t('every')}
         <input type="number" min={2} max={60} value={s.every_days ?? ''} className={input} onChange={e => onChange({ ...s, every_days: Number(e.target.value) })} />{t('daysUnit')}</label>}
-      {s.kind === 'week' && <label className="glass rounded-card border border-line-soft p-4 text-xs text-muted">{t('weekday')}
-        <select className={input} value={s.weekday ?? 5} onChange={e => onChange({ ...s, weekday: Number(e.target.value) })}>
-          {formMessages[locale].weekdays.map((day, n) => <option key={day} value={n}>{day}</option>)}
-        </select></label>}
+      {s.kind === 'week' && <div className="glass flex flex-wrap items-center gap-3 rounded-card border border-line-soft p-4 text-xs text-muted"><span>{t('weekday')}</span>
+        <ThemedSelect label={t('weekday')} value={String(s.weekday ?? 5)} onChange={value => onChange({ ...s, weekday: Number(value) })}
+          options={formMessages[locale].weekdays.map((label, n) => ({ label, value: String(n) }))} /></div>}
       {s.kind === 'month' && <label className="glass rounded-card border border-line-soft p-4 text-xs text-muted">{t('monthDay')}
         <input type="number" min={1} max={31} value={s.day ?? ''} className={input} onChange={e => onChange({ ...s, day: Number(e.target.value) })} /></label>}
       <label className="glass rounded-card border border-line-soft p-4 text-xs text-muted">{t('hour')}

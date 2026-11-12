@@ -8,6 +8,7 @@ import type { AssessmentWorkspaceData } from './data/assessment-workspace';
 import type { AssessmentLibraryData } from './data/assessment-library';
 import type { AssessmentSchedule } from '@/types/assessment-schedules';
 vi.mock('server-only', () => ({}));
+vi.mock('next/navigation', () => ({ useRouter: () => ({ push() {} }) }));
 const schedule: AssessmentSchedule = { id: 's', form_id: 'f', captain_id: 'c', player_id: 'p', kind: 'once',
   every_days: null, weekday: null, day: null, hour: 10, minute: 0, starts_on: '2026-11-14', ends_on: null,
   max_times: 1, remind_after_hours: null, paused_at: null, created_at: '2026-11-12T10:00Z', updated_at: '2026-11-12T10:00Z' };
@@ -34,9 +35,10 @@ it('keeps the four player recurrence choices and their matching end and reminder
 it('keeps existing all-player schedules and the four approved template links visible', () => {
   const library: AssessmentLibraryData = { ...data, forms: [{ id: 'f', captain_id: 'c', title: 'Weekly', kind: 'checkin',
     schedule: { every: 'week', weekday: 5, hour: 10 }, remind_after_hours: 24, questions: [] }],
-    metrics: { active: 1, sent: 4, answered: 3, recipients: 2, averageHours: 5 }, byForm: {}, pending: 1, answeredWeek: 3 };
+    metrics: { active: 1, sent: 4, answered: 3, recipients: 2, averageHours: 5 }, byForm: {}, pending: 1, answeredWeek: 3,
+    activity: { f: { waiting: 1, lastAnswer: null, sent: true } }, now: '2026-11-12T10:00Z', waitingReview: 1, timezone: 'Africa/Cairo' };
   const html = renderToStaticMarkup(createElement(AssessmentLibraryList, { data: library, locale: 'ar' }));
-  expect(html).toContain('كل اللاعيبة');
+  expect(html).toContain('لكل اللاعبين (1)');
   for (const key of ['checkin', 'progress', 'onboarding', 'photos']) expect(html).toContain(`?template=${key}`);
   expect(html).toContain('?edit=f');
 });

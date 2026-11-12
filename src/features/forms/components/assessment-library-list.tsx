@@ -1,49 +1,68 @@
 import Link from 'next/link';
-import { CalendarDays, ChevronLeft, Clock, Plus, Repeat, Users, Zap } from 'lucide-react';
-import type { Locale } from '@/core/i18n/locale';
+import { Ellipsis, Plus } from 'lucide-react';
+import type { ArabicStyle, Locale } from '@/core/i18n/locale';
 import { createT } from '@/core/i18n/messages';
 import type { AssessmentLibraryData } from '../data/assessment-library';
-import { assessmentTime, assessmentWeekday, recurrenceLabel } from '../assessment-summary';
-import { messages } from '../assessments/messages';
-import { messages as formMessages } from '../messages';
+import { assessmentWeekday, recurrenceLabel } from '../assessment-summary';
+import { messages } from '../redesign/messages';
+import { formCopy } from '../form-copy';
+import { messages as assessmentMessages } from '../assessments/messages';
+import { TemplateLinkEntry } from './template-link-entry';
+import { questionCaption } from '../question-caption';
 
-export function AssessmentLibraryList({ data, locale, selected }: { data: AssessmentLibraryData; locale: Locale; selected?: string }) {
-  const t = createT(messages, locale), base = `/${locale}/captain/library/forms`;
-  const links = [['checkin', t('weeklyTemplate')], ['progress', t('monthlyTemplate')], ['onboarding', t('intakeTemplate')], ['photos', t('photosTemplate')],
-    ['injury', formMessages[locale].kinds.injury], ['update', formMessages[locale].kinds.update]];
+export function AssessmentLibraryList({ data, locale, style }: { data: AssessmentLibraryData; locale: Locale; selected?: string; style?: ArabicStyle }) {
+  const t = createT(messages, locale, style), base = `/${locale}/captain/library/forms`;
+  const m = formCopy(locale, style);
+  const links = [['checkin', t('weekly')], ['progress', t('monthly')], ['onboarding', t('intake')],
+    ['injury', t('injury')], ['feedback', t('feedback')]];
   return <div className="min-w-0">
-    <div className="glass overflow-hidden rounded-card border border-line-soft">
-      {!data.forms.length && <p className="p-5 text-faint">{t('empty')}</p>}
+    <div className="grid gap-[14px] min-[1001px]:grid-cols-3">
+      {!data.forms.length && <p className="glass rounded-card border border-line-soft p-5 text-faint">{m.empty}</p>}
       {data.forms.map(f => {
-        const schedules = data.schedules.filter(s => s.form_id === f.id);
-        const s = schedules[0], m = data.byForm[f.id], rate = m?.sent ? Math.round(m.answered / m.sent * 100) : null;
-        const targetIds = new Set(schedules.flatMap(s => s.player_id ? [s.player_id] : []));
-        const target = f.schedule || schedules.some(s => !s.player_id) ? t('all') : targetIds.size === 1
-          ? data.players.find(p => targetIds.has(p.id))?.name ?? t('players', { n: 1 }) : t('players', { n: targetIds.size || m?.recipients || 0 });
-        const Icon = s?.kind === 'on_join' ? Zap : s?.kind === 'days' || s?.kind === 'once' ? Clock : f.schedule?.every === 'week' || s?.kind === 'week' ? Repeat : CalendarDays;
-        const label = f.schedule ? f.schedule.every === 'week'
-          ? t('repeatWeek', { day: assessmentWeekday(f.schedule.weekday, locale) })
-          : t('repeatMonth', { n: f.schedule.day }) : s ? recurrenceLabel(s, locale) : t('manual');
-        return <Link key={f.id} href={`${base}?edit=${f.id}`} prefetch={false} aria-current={selected === f.id ? 'page' : undefined}
-          className="grid min-h-[70px] grid-cols-[minmax(0,1fr)_24px] items-center gap-x-3 gap-y-2 border-b border-line-soft px-5 py-4 text-start last:border-0 min-[1200px]:grid-cols-[minmax(0,1fr)_150px_170px_120px_24px]">
-          <div className="min-w-0"><b className="break-words font-medium">{f.title}</b><small className="mt-1 block text-xs text-faint">
-            {t('questions', { n: f.questions.length })}{f.questions.length > 0 && <> · {f.questions.slice(0, 4).map(q => locale === 'ar' ? q.label_ar : q.label_en).join('، ')}</>}</small></div>
-          <span className="col-start-1 flex items-center gap-2 text-[12.5px] text-muted min-[1200px]:col-auto"><Users aria-hidden className="size-4 shrink-0" />{s?.kind === 'on_join' ? t('newPlayer') : target}</span>
-          <span className="col-start-1 flex items-center gap-2 text-[12.5px] min-[1200px]:col-auto"><Icon aria-hidden className="size-4 shrink-0 text-lime" />{label}
-            {!f.schedule && s && s.kind !== 'on_join' && <> · {assessmentTime(s, locale)}</>}{f.schedule?.every === 'week' && <> · {assessmentTime({ hour: f.schedule.hour, minute: 0 }, locale)}</>}
-            {schedules.length > (f.schedule ? 0 : 1) && <small className="text-faint">{t('moreSchedules', { n: schedules.length - (f.schedule ? 0 : 1) })}</small>}</span>
-          <span className="col-start-1 font-display font-extrabold tabular-nums text-muted min-[1200px]:col-auto">{rate === null ? formMessages[locale].unanswered : t('response', { n: rate })}</span>
-          <ChevronLeft aria-hidden className="col-start-2 row-start-1 size-5 text-faint ltr:rotate-180 min-[1200px]:col-auto" />
-        </Link>;
+        const schedules = data.schedules.filter(s => s.form_id === f.id), active = schedules.filter(s => !s.paused_at);
+        const s = active[0] ?? schedules[0], activity = data.activity[f.id];
+        const all = Boolean(f.schedule || schedules.some(s => !s.player_id));
+        const ids = new Set(schedules.flatMap(s => s.player_id ? [s.player_id] : []));
+        const target = all ? t('forAll', { n: data.players.length }) : ids.size === 1
+          ? t('forPlayer', { name: data.players.find(p => ids.has(p.id))?.name ?? '' }) : t('players', { n: ids.size });
+        const schedule = f.schedule ? f.schedule.every === 'week' ? t('weeklyDay', { day: assessmentWeekday(f.schedule.weekday, locale) })
+          : f.schedule.day === 1 ? t('firstMonth') : t('monthlyDay', { n: f.schedule.day }) : s ? recurrenceLabel(s, locale) : t('manual');
+        const last = activity?.lastAnswer;
+        const hours = last ? Math.max(0, Math.floor((Date.parse(data.now) - Date.parse(last)) / 3600000)) : 0;
+        const date = hours < 24 ? hours < 1 ? t('today') : hours === 1 ? t('hoursAgoOne') : hours === 2 ? t('hoursAgoTwo') : t('hoursAgo', { n: hours }) : hours < 48 ? t('yesterday')
+          : new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short', timeZone: data.timezone }).format(new Date(last ?? data.now));
+        return <article key={f.id} className="glass relative flex min-w-0 flex-col gap-[10px] rounded-card border border-line-soft px-5 py-[18px]">
+          <div className="flex items-center gap-2 text-[11.5px]">
+            <span className={`rounded-full px-[10px] py-[3px] ${f.schedule || active.length ? 'bg-lime-soft text-lime' : 'bg-surface text-muted'}`}>{t(f.schedule || active.length ? 'active' : 'stopped')}</span>
+            {activity && activity.waiting > 0 && <span className="ms-auto rounded-full bg-warn-soft px-[10px] py-[3px] text-warn">{t('waiting', { n: activity.waiting })}</span>}
+          </div>
+          <h2 className="font-display text-[18px] font-semibold"><Link href={`${base}?edit=${f.id}`} prefetch={false} className="before:absolute before:inset-0 before:rounded-card">{f.title}</Link></h2>
+          <div className="text-[12.5px] leading-[1.9] text-muted">
+            <p className="break-words">{t('questions', { n: f.questions.length, list: f.questions.map(q => questionCaption(q, f.kind, locale, style)).join('، ') })}</p>
+            <p>{schedule}{(all || ids.size > 0 || s?.kind === 'on_join') && <> · {s?.kind === 'on_join' ? t('onJoin') : target}</>}</p>
+            {schedules.length > (f.schedule ? 0 : 1) && <p className="text-xs text-faint">{createT(assessmentMessages, locale, style)('moreSchedules', { n: schedules.length - (f.schedule ? 0 : 1) })}</p>}
+          </div>
+          <footer className="mt-auto flex items-center gap-2 border-t border-line-soft pt-[10px] text-xs text-faint">
+            <span>{last ? t('lastAnswer', { date }) : t(activity?.sent ? 'noAnswer' : 'neverSent')}</span>
+            <details className="relative z-10 -my-[17px] ms-auto">
+              <summary aria-label={t('menu')} className="flex min-h-12 min-w-12 cursor-pointer list-none items-center justify-center rounded-full"><Ellipsis aria-hidden className="size-5" /></summary>
+              <div className="glass-strong absolute end-0 z-10 min-w-40 rounded-control border border-line p-2">
+                <Link href={`${base}?edit=${f.id}`} prefetch={false} className="flex min-h-12 items-center px-3">{t('edit')}</Link>
+                <Link href={`${base}?edit=${f.id}#schedules`} prefetch={false} className="flex min-h-12 items-center px-3">{t('schedule')}</Link>
+              </div>
+            </details>
+          </footer>
+        </article>;
       })}
     </div>
-    <section id="templates" className="mt-3" aria-label={formMessages[locale].templates}>
-      <h2 className="mb-2 text-xs text-faint">{formMessages[locale].templates}</h2>
-      <div className="flex flex-wrap gap-2">{links.slice(0,4).map(([kind, title]) => <Link key={kind} href={`${base}?template=${kind}`} prefetch={false}
-        className="inline-flex min-h-12 items-center gap-2 rounded-full border border-line-soft px-4 text-xs text-muted"><Plus aria-hidden className="size-4" />{title}</Link>)}</div>
-      <details className="mt-2 text-xs text-faint"><summary className="min-h-12 cursor-pointer py-3">{t('moreTemplates')}</summary>
-        <div className="flex flex-wrap gap-2">{links.slice(4).map(([kind, title]) => <Link key={kind} href={`${base}?template=${kind}`} prefetch={false}
-          className="inline-flex min-h-12 items-center rounded-full border border-line-soft px-4">{title}</Link>)}</div>
+    <section id="templates" className="mt-[22px]" aria-label={t('templates')}>
+      <h2 className="mb-[18px] text-xs text-faint">{t('templates')}</h2>
+      <div className="flex flex-wrap gap-2">{links.map(([kind, title]) => <TemplateLinkEntry key={kind} href={`${base}?template=${kind}`}>
+        <Plus aria-hidden className="size-4" />{title}
+      </TemplateLinkEntry>)}</div>
+      <details className="mt-2 text-xs text-faint"><summary className="min-h-12 cursor-pointer py-3">{createT(assessmentMessages, locale, style)('moreTemplates')}</summary>
+        <div className="flex flex-wrap gap-2"><TemplateLinkEntry href={`${base}?template=photos`}>{t('photos')}</TemplateLinkEntry>
+          <TemplateLinkEntry href={`${base}?template=update`}>{m.kinds.update}</TemplateLinkEntry></div>
       </details>
     </section>
   </div>;

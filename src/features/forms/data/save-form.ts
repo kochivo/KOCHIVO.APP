@@ -1,5 +1,7 @@
 'use server';
 import { z } from 'zod';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { FormsWriteDatabase } from './write-database';
 import { formsAccess } from './access';
 import { validateForm } from '../model';
 import type { FormDraft } from '../types';
@@ -7,10 +9,12 @@ import { scheduleSchema } from './validation';
 
 const draftSchema = z.object({
   id: z.uuid(), captain_id: z.uuid(), title: z.string().trim().min(1).max(300),
+  creation_key: z.uuid().optional(),
   kind: z.enum(['checkin','onboarding','progress','injury','update','custom']),
   schedule: scheduleSchema.nullable(), remind_after_hours: z.number().int().min(1).max(32767).nullable(),
   questions: z.array(z.object({ id: z.uuid(), form_id: z.uuid(), position: z.number().int().nonnegative(),
-    label_ar: z.string().trim().min(1).max(2000), label_en: z.string().trim().min(1).max(2000),
+    label_ar: z.string().trim().min(1).max(2000), label_en: z.string().trim().max(2000),
+    show_chart: z.boolean().default(true),
     type: z.enum(['number','scale','choice','multi','text','photos','yesno']), required: z.boolean(),
     options: z.array(z.object({ value: z.string(), label_ar: z.string(), label_en: z.string() })).max(100),
     maps_to: z.enum(['weight','targetWeight','height','age','sex','experience','trainingDays','sessionMinutes','injuries','medical','allergies','waist','note']).nullable(),
@@ -37,7 +41,8 @@ export async function saveForm(input: FormDraft): Promise<{ ok: boolean }> {
     if (used.error || used.count !== 0) return { ok: false };
   }
   const { questions, ...row } = form;
-  const parent = await client.from('forms').upsert(row).select('id').single();
+  const writeClient = client as unknown as SupabaseClient<FormsWriteDatabase>;
+  const parent = await writeClient.from('forms').upsert(row).select('id').single();
   if (parent.error) return { ok: false };
   // Preserve question IDs used by answers. Vacate unique positions before applying a reorder.
   const changedPositions = old.data.some(q => questions.findIndex(next => next.id === q.id) !== q.position);
