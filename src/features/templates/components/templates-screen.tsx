@@ -18,11 +18,13 @@ import { createTemplate } from '../data/templates';
 import { TemplateSection } from './template-section';
 import { useToast } from '@/ui/toast';
 import { messages as uiMessages } from '@/ui/messages';
-import { GenerateButton } from '@/features/program-generator';
+
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { LoadingState } from '@/ui/loading-state';
 import { templateEditorHref } from '../editor-href';
 
+// Loaded on demand so clients of the templates barrel (plan builders) do not ship the generator and zod.
+const GenerateButton = dynamic(() => import('@/features/program-generator').then(module => module.GenerateButton));
 const LibraryView = dynamic(() => import('./library-view').then(module => module.LibraryView), { loading: () => <LoadingState variant="cards" /> });
 
 type Edit = { template: Template; title: string } | { template: Template; title?: never };
