@@ -80,7 +80,7 @@ const player: BillingPlayer = {
   lastPayment: null, due: 200,
 };
 const packages = [{ id: 'package', name: 'Month', days: 30, price_egp: 500 }];
-function render() { hooks.cursor = 0; return PlayerBillingRow({ player, today: '2026-11-03', packages }); }
+function render(workspace = false) { hooks.cursor = 0; return PlayerBillingRow({ player, today: '2026-11-03', packages, workspace }); }
 it('disables frozen roster renewal and ignores a stale open dialog', () => {
   click('renew');
   const sheet = nodes(render()).find(node => node.type === RenewSheet);
@@ -145,6 +145,21 @@ it('reconciles collection dues returned by the server', async () => {
   expect(text(render())).toContain('owes{"amount":"100"}');
   request.resolve({ data: 75 }); await settle();
   expect(text(render())).toContain('owes{"amount":"75"}');
+});
+
+it.each(['renew', 'collect'])('retains the workspace %s sheet and input on a failed save', async action => {
+  const request = deferred<{ error: string }>();
+  if (action === 'renew') vi.mocked(renewPlayer).mockReturnValue(request.promise);
+  else vi.mocked(collectPayment).mockReturnValue(request.promise);
+  const findSheet = () => nodes(render(true)).find(node => node.type === (action === 'renew' ? RenewSheet : CollectSheet));
+  const button = nodes(render(true)).find(node => text(node.props.children) === action && typeof node.props.onClick === 'function');
+  (button?.props.onClick as () => void)();
+  const submit = findSheet()?.props.onSave as (value: Renewal | number) => void;
+  submit(action === 'renew' ? { days: 30, amount: 100 } : 100);
+  expect(findSheet()?.props.busy).toBe(true);
+  request.resolve({ error: 'denied' }); await settle();
+  expect(findSheet()?.props.error).toBe('denied');
+  expect(findSheet()?.props.busy).toBe(false);
 });
 
 vi.mock('@/core/timezone/client', () => ({ useTimezone: () => 'Africa/Cairo' }));

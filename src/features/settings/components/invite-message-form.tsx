@@ -6,7 +6,7 @@ import { useId, useState } from 'react';
 import { Button } from '@/ui';
 import { saveInviteMessage } from '../data/settings';
 
-export function InviteMessageForm({ initialMessage }: { initialMessage: string | null }) {
+export function InviteMessageForm({ initialMessage, onSave }: { initialMessage: string | null; onSave?: (profile: NonNullable<Awaited<ReturnType<typeof saveInviteMessage>>['data']>) => void }) {
   const t = useT(messages);
   const id = useId();
   const [message, setMessage] = useState('');
@@ -17,6 +17,7 @@ export function InviteMessageForm({ initialMessage }: { initialMessage: string |
     setPending(true); setMessage('');
     try {
       const result = await saveInviteMessage({ invite_message: form.get('invite_message') });
+      if (result.data) onSave?.(result.data);
       setMessage(result.error ?? t('saved'));
     } catch { setMessage(t('saveFailedTryAgain')); }
     finally { setPending(false); }

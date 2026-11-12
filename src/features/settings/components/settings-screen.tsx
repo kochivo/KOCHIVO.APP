@@ -19,7 +19,6 @@ import type { SettingsProfile } from '../schema';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import { InviteMessageForm } from './invite-message-form';
 import { ExportCard } from './export-card';
 import { DeleteAccountCard } from './delete-account-card';
 import { GlassToggle } from './glass-toggle';
@@ -29,6 +28,7 @@ import { PushToggleCard } from '@/features/notifications';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 
 const CaptainProfileCard = dynamic(() => import('./captain-profile-card').then(module => module.CaptainProfileCard));
+const InviteMessageForm = dynamic(() => import('./invite-message-form').then(module => module.InviteMessageForm));
 const PlayerAccount = dynamic(() => import('./player-account').then(module => module.PlayerAccount), { loading: () => <LoadingState variant="detail" /> });
 const InstallButton = dynamic(() => import('@/features/install').then(module => module.InstallButton), { ssr: false });
 const ProfileForm = dynamic(() => import('./profile-form').then(module => module.ProfileForm), { loading: () => <LoadingState variant="detail" /> });

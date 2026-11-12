@@ -20,9 +20,11 @@ interface Props {
   packages: Package[];
   onClose: () => void;
   onSave: (renewal: Renewal) => void;
+  busy?: boolean;
+  error?: string;
 }
 
-export function RenewSheet({ name, accessUntil, today, packages, onClose, onSave }: Props) {
+export function RenewSheet({ name, accessUntil, today, packages, onClose, onSave, busy, error }: Props) {
   const t = useT(messages);
   const pt = useT(ptMessages);
   const locale = useLocale();
@@ -59,8 +61,9 @@ export function RenewSheet({ name, accessUntil, today, packages, onClose, onSave
       </div>
       <form className="space-y-5" onSubmit={(event) => {
         event.preventDefault();
-        if (validDays && validAmount) onSave(chosen ? { days: null, amount: value, price, packageId: chosen.id } : { days, amount: value });
+        if (!busy && validDays && validAmount) onSave(chosen ? { days: null, amount: value, price, packageId: chosen.id } : { days, amount: value });
       }}>
+        {error && <p role="alert" className="text-sm text-danger">{error}</p>}
         {packages.length > 0 && <fieldset className="space-y-2">
           <legend className="mb-2 text-sm font-semibold">{t('choosePackage')}</legend>
           <div className="flex flex-wrap gap-2">
@@ -86,7 +89,7 @@ export function RenewSheet({ name, accessUntil, today, packages, onClose, onSave
             {left > 0 ? t('remainingAfter', { amount: formatNumber(left, locale) }) : t('paidInFull')}</p>}
         </div>
         {!validAmount && <p role="alert" className="text-danger">{price !== null && value !== null && value > price ? t('paidOverPrice') : t('amountHint')}</p>}
-        <Button type="submit" disabled={!validDays || !validAmount} className="min-h-12 w-full">{t('renew')}</Button>
+        <Button type="submit" disabled={!validDays || !validAmount || busy} className="min-h-12 w-full">{t('renew')}</Button>
       </form>
     </dialog>
   );

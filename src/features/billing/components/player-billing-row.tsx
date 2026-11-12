@@ -29,7 +29,7 @@ const statuses = {
   late: { label: 'late', color: 'bg-warn-soft text-warn' },
 } as const;
 
-export function PlayerBillingRow({ player, today, packages }: { player: BillingPlayer; today: string; packages: Package[] }) {
+export function PlayerBillingRow({ player, today, packages, initialAction, workspace = false }: { player: BillingPlayer; today: string; packages: Package[]; initialAction?: 'renew' | 'collect'; workspace?: boolean }) {
   const timezone = useTimezone();
   const t = useT(messages);
   const feedback = useT(uiMessages);
@@ -37,11 +37,12 @@ export function PlayerBillingRow({ player, today, packages }: { player: BillingP
   const locale = useLocale();
   const [accessUntil, setAccessUntil] = useState(player.accessUntil);
   const [lastPayment, setLastPayment] = useState<Pick<NonNullable<BillingPlayer['lastPayment']>, 'created_at' | 'amount_egp' | 'days'> | null>(player.lastPayment);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(initialAction === 'renew');
   const [due, setDue] = useState(player.due);
-  const [collecting, setCollecting] = useState(false);
+  const [collecting, setCollecting] = useState(initialAction === 'collect');
   const [pending, setPending] = useState(false);
   const inFlight = useRef(false);
+  const [collectionDue, setCollectionDue] = useState(player.due);
   const [refreshing, startRefresh] = useTransition();
   const [error, setError] = useState('');
   const router = useRouter();
@@ -59,7 +60,7 @@ export function PlayerBillingRow({ player, today, packages }: { player: BillingP
     setAccessUntil(renewalPreview(accessUntil, today, days, chosen?.kind).end);
     setLastPayment({ created_at: today, amount_egp: renewal.amount, days });
     setDue(due + remaining(renewal.price ?? chosen?.price_egp ?? null, renewal.amount));
-    setOpen(false);
+    if (!workspace) setOpen(false);
     setPending(true);
     setError('');
     function rollback(message: string) {
@@ -72,6 +73,7 @@ export function PlayerBillingRow({ player, today, packages }: { player: BillingP
       const result = await renewPlayer({ playerId: player.playerId, ...renewal });
       if (result.error || !result.data) rollback(result.error ?? t('renewFailed'));
       else {
+        setOpen(false);
         setAccessUntil(result.data);
         toast.success(feedback('playerRenewed'));
         startRefresh(() => router.refresh());
@@ -84,14 +86,15 @@ export function PlayerBillingRow({ player, today, packages }: { player: BillingP
     if (inFlight.current) return;
     inFlight.current = true;
     const oldDue = due;
+    setCollectionDue(due);
     setDue(due - amount);
-    setCollecting(false);
+    if (!workspace) setCollecting(false);
     setPending(true);
     setError('');
     try {
       const result = await collectPayment({ playerId: player.playerId, amount });
       if (result.error !== undefined) { setDue(oldDue); setError(result.error); }
-      else { setDue(result.data); toast.success(feedback('paymentRecorded')); startRefresh(() => router.refresh()); }
+      else { setCollecting(false); setDue(result.data); toast.success(feedback('paymentRecorded')); startRefresh(() => router.refresh()); }
     } catch { setDue(oldDue); setError(t('collectFailed')); } finally { inFlight.current = false; setPending(false); }
   }
 
@@ -119,8 +122,8 @@ export function PlayerBillingRow({ player, today, packages }: { player: BillingP
       </div>
       {player.pending && <ActivatePlayerButton playerId={player.playerId} name={player.fullName} today={today} />}
       {error && <p role="alert" className="text-sm text-danger">{error}</p>}
-      {open && !player.frozenAt && <RenewSheet name={player.fullName} accessUntil={accessUntil} today={today} packages={packages} onClose={() => setOpen(false)} onSave={(renewal) => void save(renewal)} />}
-      {collecting && <CollectSheet name={player.fullName} due={due} onClose={() => setCollecting(false)} onSave={(amount) => void collect(amount)} />}
+      {open && !player.frozenAt && <RenewSheet name={player.fullName} accessUntil={accessUntil} today={today} packages={packages} onClose={() => { if (!pending) setOpen(false); }} onSave={(renewal) => void save(renewal)} {...(workspace ? { busy: pending, error } : {})} />}
+      {collecting && <CollectSheet name={player.fullName} due={workspace && pending ? collectionDue : due} onClose={() => { if (!pending) setCollecting(false); }} onSave={(amount) => void collect(amount)} {...(workspace ? { busy: pending, error } : {})} />}
     </li>
   );
 }

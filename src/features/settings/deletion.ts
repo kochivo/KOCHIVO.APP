@@ -2,3 +2,7 @@
 export function deletionDate(requestedAt: string): string {
   return new Date(Date.parse(requestedAt) + 7 * 86_400_000).toISOString();
 }
+
+export function deletionRequestedAt(due: string): string {
+  return new Date(Date.parse(due) - 7 * 86_400_000).toISOString();
+}

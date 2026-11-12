@@ -12,9 +12,11 @@ interface Props {
   due: number;
   onClose: () => void;
   onSave: (amount: number) => void;
+  busy?: boolean;
+  error?: string;
 }
 
-export function CollectSheet({ name, due, onClose, onSave }: Props) {
+export function CollectSheet({ name, due, onClose, onSave, busy, error }: Props) {
   const t = useT(messages);
   const locale = useLocale();
   const dialog = useRef<HTMLDialogElement>(null);
@@ -33,14 +35,15 @@ export function CollectSheet({ name, due, onClose, onSave }: Props) {
         <h2 id="collect-heading" className="text-2xl font-extrabold">{t('collectTitle', { name })}</h2>
         <Button variant="ghost" aria-label={t('closeCollect')} onClick={onClose} className="min-h-12 min-w-12 px-0"><X aria-hidden className="size-5" /></Button>
       </div>
-      <form className="space-y-5" onSubmit={(event) => { event.preventDefault(); if (valid) onSave(value); }}>
+      <form className="space-y-5" onSubmit={(event) => { event.preventDefault(); if (valid && !busy) onSave(value); }}>
+        {error && <p role="alert" className="text-sm text-danger">{error}</p>}
         <TextField label={t('collectAmount')} type="number" inputMode="numeric" min={1} max={due} step={1} required autoFocus
           value={amount} onChange={(event) => setAmount(event.target.value)}
           hint={t('collectHint', { amount: formatNumber(due, locale) })} error={amount.trim() !== '' && !valid ? t('collectTooMuch') : undefined} />
         <p aria-live="polite" className="glass-strong rounded-control p-4 text-sm">
           {valid && value < due ? t('remainingAfter', { amount: formatNumber(due - value, locale) }) : t('paidInFull')}
         </p>
-        <Button type="submit" disabled={!valid} className="min-h-12 w-full">{t('collect')}</Button>
+        <Button type="submit" disabled={!valid || busy} className="min-h-12 w-full">{t('collect')}</Button>
       </form>
     </dialog>
   );

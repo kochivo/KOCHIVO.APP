@@ -12,7 +12,7 @@ import { ActivateSheet } from './activate-sheet';
 import { RenewSheet } from './renew-sheet';
 import type { Renewal } from './renew-sheet';
 
-export function BillingManagerCard({ playerId, name, today, autoActivate }: { playerId: string; name: string; today: string; autoActivate?: boolean }) {
+export function BillingManagerCard({ playerId, name, today, autoActivate, workspace = false }: { playerId: string; name: string; today: string; autoActivate?: boolean; workspace?: boolean }) {
   const t = useT(messages), locale = useLocale(), router = useRouter();
   const [data, setData] = useState<Awaited<ReturnType<typeof loadPlayerBalance>>['data']>();
   const [error, setError] = useState('');
@@ -55,7 +55,7 @@ export function BillingManagerCard({ playerId, name, today, autoActivate }: { pl
       {sheet === 'activate' && <ActivateSheet packages={data.packages} busy={busy} error={error} onClose={() => setSheet(null)}
         onSave={(input: Activation) => void run(() => activatePlayer(balance.id, input))} />}
       {sheet === 'renew' && !balance.frozen_at && <RenewSheet name={name} accessUntil={balance.access_until} today={today} packages={data.packages}
-        onClose={() => setSheet(null)} onSave={(input: Renewal) => { setSheet(null); void run(() => renewPlayer({ playerId, ...input })); }} />}
+        onClose={() => { if (!busy) setSheet(null); }} onSave={(input: Renewal) => { if (!workspace) setSheet(null); void run(() => renewPlayer({ playerId, ...input })); }} {...(workspace ? { busy, error } : {})} />}
     </>}
   </section>;
 }

@@ -22,13 +22,14 @@ function values(profile: SettingsProfile): CaptainProfileInput {
     social: profile.social ?? {}, avatar_path: profile.avatar_path ?? null };
 }
 
-export function CaptainProfileCard({ profile, onSave }: { profile: SettingsProfile; onSave: (profile: SettingsProfile) => void }) {
+export function CaptainProfileCard({ profile, onSave, quiet = false }: { profile: SettingsProfile; onSave: (profile: SettingsProfile) => void; quiet?: boolean }) {
   const t = useT(messages), toast = useToast();
   const [saved, setSaved] = useState(profile);
   const [value, setValue] = useState(() => values(profile));
   const [file, setFile] = useState<File | null>(null);
   const [pending, setPending] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [status, setStatus] = useState('');
   const inFlight = useRef(false);
   return <form noValidate className="glass-strong mx-auto max-w-2xl space-y-6 rounded-card p-4 md:p-8" onSubmit={async event => {
     event.preventDefault();
@@ -44,10 +45,11 @@ export function CaptainProfileCard({ profile, onSave }: { profile: SettingsProfi
       if (!result.data) throw new Error(result.error);
       setSaved(result.data); setValue(values(result.data)); setFile(null); onSave(result.data);
       if (internationalEnabled()) window.dispatchEvent(new CustomEvent(TIMEZONE_CHANGED, { detail: result.data }));
-      toast.success(t('saved'));
+      if (quiet) setStatus(t('saved')); else toast.success(t('saved'));
     } catch {
-      onSave(saved); setValue(values(saved)); setFile(null);
-      toast.error(t('rolledBack'));
+      onSave(saved);
+      if (quiet) setStatus(t('rolledBack'));
+      else { setValue(values(saved)); setFile(null); toast.error(t('rolledBack')); }
     } finally { inFlight.current = false; setPending(false); }
   }}>
     <header className="flex items-center gap-4">
@@ -64,5 +66,6 @@ export function CaptainProfileCard({ profile, onSave }: { profile: SettingsProfi
         setValue(values(saved)); setFile(null); setErrors({});
       }}>{t('cancel')}</Button>
     </footer>
+    {quiet && <p role="status" aria-live="polite">{pending ? t('saving') : status}</p>}
   </form>;
 }

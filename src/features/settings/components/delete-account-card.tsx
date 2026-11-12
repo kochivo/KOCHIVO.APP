@@ -9,7 +9,7 @@ import { formatTimestampAr } from '@/lib/dates';
 import { cancelDeletion, requestDeletion } from '../data/settings';
 import { deletionDate } from '../deletion';
 
-export function DeleteAccountCard({ requestedAt }: { requestedAt: string | null }) {
+export function DeleteAccountCard({ requestedAt, onChange }: { requestedAt: string | null; onChange?: (due: string | null) => void }) {
   const timezone = useTimezone();
   const t = useT(messages);
   const locale = useLocale();
@@ -24,11 +24,11 @@ export function DeleteAccountCard({ requestedAt }: { requestedAt: string | null 
       if (due) {
         const result = await cancelDeletion();
         if (result.error) setMessage(result.error);
-        else { setDue(null); setConfirmation(''); setMessage(t('deletionRequestCancelled')); }
+        else { setDue(null); setConfirmation(''); setMessage(t('deletionRequestCancelled')); onChange?.(null); }
       } else {
         const result = await requestDeletion();
         if (result.error) setMessage(result.error);
-        else if (result.data) { setDue(result.data); setConfirmation(''); }
+        else if (result.data) { setDue(result.data); setConfirmation(''); onChange?.(result.data); }
       }
     } catch { setMessage(t('requestFailedTryAgain')); }
     finally { setPending(false); }
