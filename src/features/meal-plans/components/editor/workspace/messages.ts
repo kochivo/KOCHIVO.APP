@@ -1,0 +1,46 @@
+import { defineMessages } from '@/core/i18n/messages';
+import { arStd } from './standard-messages';
+
+export const messages = defineMessages({
+  // The local env branch lets Next remove these strings from flag-off client builds.
+  get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
+  ar: {
+    breadcrumb: 'اللاعبين ‹ {name} ‹ الأكل', title: 'نظام أكل {name}', send: 'ابعت للاعب',
+    goals: 'الأهداف', meals: 'الوجبات', sendStep: 'ابعت',
+    calculated: 'الأهداف اتحسبت من بيانات {name}', missing: 'كمّل بيانات اللاعب عشان نحسب الأهداف',
+    facts: '{weight} كجم · {goal} · {days} أيام تمرين — تقدر تعدّل أي رقم',
+    cut: 'تنشيف', bulk: 'تضخيم', maintain: 'تثبيت', edit: 'عدّل الأهداف',
+    kcal: 'سعرات', protein: 'بروتين', carbs: 'كارب', fat: 'دهون', grams: 'جم',
+    training: 'يوم تمرين', rest: 'يوم راحة', restHint: 'يوم الراحة بيتنسخ من يوم التمرين وتعدّل عليه',
+    mealTotals: '{kcal} سعر · {protein} بروتين', per: 'لكل {unit} · {kcal} سعر', hundred: '100 جم',
+    search: 'ضيف أكلة من المكتبة… (فول، رز، فراخ)', addMeal: 'ضيف وجبة',
+    adherence: 'التزام آخر ٧ أيام', legend: 'مليانة = خلّص كل الوجبات · رمادي = جزء · فاضية = ولا حاجة',
+    notes: 'ملاحظات للاعب', notePlaceholder: 'اكتب ملاحظة تظهر للاعب فوق النظام… (اختياري)',
+    noteGap: 'إرسال الملاحظات للاعب مش متاح لسه', details: 'تفاصيل الوجبة والبدائل',
+    more: 'ملاحظات تساعدك وتعديل الأهداف يدويًا', library: 'أنظمة سابقة وقوالب',
+    newMeal: 'وجبة جديدة', quantity: 'كمية {name}', unit: 'وحدة الكمية', remove: 'شيل {name}',
+    retry: 'جرّب تاني', loadError: 'النظام متحمّلش. جرّب تاني', empty: 'ضيف أول وجبة عشان تبدأ',
+    breakfast: 'الفطار', lunch: 'الغدا', dinner: 'العشا', close: 'اقفل البحث',
+    sat: 'سبت', sun: 'حد', mon: 'اتنين', tue: 'تلات', wed: 'أربع', thu: 'خميس', fri: 'جمعة',
+    day: '{date}: {done} / {total}', unsent: 'لسه مبعتش النظام للاعب',
+  },
+  en: {
+    breadcrumb: 'Players ‹ {name} ‹ Food', title: '{name}’s meal plan', send: 'Send to player',
+    goals: 'Targets', meals: 'Meals', sendStep: 'Send', calculated: 'Targets calculated from {name}’s data',
+    missing: 'Complete player details to calculate targets', facts: '{weight} kg · {goal} · {days} training days — edit any number',
+    cut: 'Cut', bulk: 'Build muscle', maintain: 'Maintain', edit: 'Edit targets',
+    kcal: 'Calories', protein: 'Protein', carbs: 'Carbs', fat: 'Fat', grams: 'g',
+    training: 'Training day', rest: 'Rest day', restHint: 'Rest day copies training day so you can adjust it',
+    mealTotals: '{kcal} kcal · {protein} protein', per: 'Per {unit} · {kcal} kcal', hundred: '100 g',
+    search: 'Add food from the library… (beans, rice, chicken)', addMeal: 'Add meal',
+    adherence: 'Last 7 days', legend: 'Filled = all meals · gray = some · empty = none',
+    notes: 'Notes for player', notePlaceholder: 'Add a note above the plan… (optional)',
+    noteGap: 'Sending player notes is not available yet', details: 'Meal details and alternatives',
+    more: 'Smart notes and manual targets', library: 'Previous plans and templates',
+    newMeal: 'New meal', quantity: 'Quantity of {name}', unit: 'Portion unit', remove: 'Remove {name}',
+    retry: 'Try again', loadError: 'Could not load the plan. Try again', empty: 'Add your first meal to start',
+    breakfast: 'Breakfast', lunch: 'Lunch', dinner: 'Dinner', close: 'Close search',
+    sat: 'Sat', sun: 'Sun', mon: 'Mon', tue: 'Tue', wed: 'Wed', thu: 'Thu', fri: 'Fri',
+    day: '{date}: {done} / {total}', unsent: 'This plan has not been sent yet',
+  },
+});

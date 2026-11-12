@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { useT } from '@/core/i18n/client';
 import { uuidv7 } from '@/core/offline/ids';
 import { Button } from '@/ui';
@@ -16,6 +17,7 @@ import { SmartNotesPanel } from './smart-notes-panel';
 import { TargetsBar } from './targets-bar';
 import { messages } from './editor/messages';
 import { messages as planMessages } from '../messages';
+const PlayerEditor = dynamic(() => import('./editor/player-editor').then(module => module.PlayerEditor), { loading: () => <LoadingState variant="detail" /> });
 
 export function EditorEntry({ planId }: { planId: string }) {
   const t = useT(messages);
@@ -39,6 +41,7 @@ export function EditorEntry({ planId }: { planId: string }) {
   if (state.loading) return <LoadingState variant="detail" />;
   if (!draft) return <div role="alert">{state.error}<Button variant="secondary" onClick={state.reload}>{planT('tryAgain')}</Button></div>;
   if (playerId && !context) return contextError ? <div role="alert">{t('contextError')}<Button variant="secondary" onClick={() => setRetry(value => value + 1)}>{planT('tryAgain')}</Button></div> : <LoadingState variant="detail" />;
+  if (playerId && context) return <PlayerEditor key={draft.id} data={{ context, draft, plans: [], fresh: false }} />;
   const split = cycles || draft.meals.some(meal => meal.dayType && meal.dayType !== 'all');
   const visible = split ? dayMeals(draft.meals, day) : draft.meals;
   const targets = split ? dayTargets(draft.targets, context?.facts.trainingDays?.value.length ?? 0, day) : draft.targets;

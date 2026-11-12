@@ -8,18 +8,21 @@ import { activatePlan } from '../data/activate';
 import type { PlanDraft } from '../types';
 import { useToast } from '@/ui/toast';
 
-export function usePlanDraft(planId: string, { clearErrorsOnEdit = false }: { clearErrorsOnEdit?: boolean } = {}) {
+export function usePlanDraft(planId: string, { clearErrorsOnEdit = false, initialDraft, save = savePlan }: {
+  clearErrorsOnEdit?: boolean; initialDraft?: PlanDraft; save?: typeof savePlan;
+} = {}) {
   const t = useT(messages);
   const toast = useToast();
-  const [draft, setDraft] = useState<PlanDraft | null>(null);
-  const [saved, setSaved] = useState('');
+  const [draft, setDraft] = useState<PlanDraft | null>(initialDraft ?? null);
+  const [saved, setSaved] = useState(initialDraft ? JSON.stringify(initialDraft) : '');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!initialDraft);
   const [busy, setBusy] = useState(false);
   const [retry, setRetry] = useState(0);
   const [lastActivate, setLastActivate] = useState(false);
   const dirty = !!draft && JSON.stringify(draft) !== saved;
   useEffect(() => {
+    if (initialDraft) return;
     let current = true;
     loadPlan(planId).then(value => {
       if (current) {
@@ -29,7 +32,7 @@ export function usePlanDraft(planId: string, { clearErrorsOnEdit = false }: { cl
       }
     }).catch(() => { if (current) { setError(t('couldntLoadThePlanTryAgain')); setLoading(false); } });
     return () => { current = false; };
-  }, [planId, retry, t]);
+  }, [planId, retry, t, initialDraft]);
   useEffect(() => {
     if (!dirty) return;
     const warn = (event: BeforeUnloadEvent) => { event.preventDefault(); event.returnValue = ''; };
@@ -48,7 +51,7 @@ export function usePlanDraft(planId: string, { clearErrorsOnEdit = false }: { cl
     }
     setBusy(true); setError('');
     try {
-      const result = await savePlan(draft);
+      const result = await save(draft);
       if (!result.ok) { setError(result.error); return; }
       setSaved(JSON.stringify(draft));
       if (activate) {
