@@ -2,6 +2,8 @@ import { createHash } from 'node:crypto';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, expect, it, vi } from 'vitest';
+// CI sets a push key and public-config reads it at import time; pin it so the markup does not depend on the machine.
+vi.hoisted(() => { process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY = ''; });
 import { LocaleProvider } from '@/core/i18n/client';
 import { SettingsScreen } from './components/settings-screen';
 import { NotificationDropdown } from '../notifications/components/notification-dropdown';
