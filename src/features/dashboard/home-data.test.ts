@@ -2,8 +2,16 @@ import { beforeEach, expect, it, vi } from 'vitest';
 import type { WorkspaceItem } from '@/features/inbox/server';
 import type * as InboxServer from '@/features/inbox/server';
 
-const state = vi.hoisted(() => ({ items: [] as WorkspaceItem[], failed: false, calls: [] as unknown[][] }));
+const state = vi.hoisted(() => ({ items: [] as WorkspaceItem[], failed: false, calls: [] as unknown[][],
+  packages: [] as { id: string; full_name: string; created_at: string; package_id: string | null; offer_id: string | null; package_days: number | null; package_sessions: number | null }[],
+  packageFailure: 'none' as 'none' | 'error' | 'throw', rpcCalls: [] as string[] }));
 vi.mock('server-only', () => ({}));
+vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => ({ rpc: async (name: string) => {
+  state.rpcCalls.push(name);
+  if (state.packageFailure === 'throw') throw new Error('Offline');
+  return { data: state.packageFailure === 'error' ? null : state.packages,
+    error: state.packageFailure === 'error' ? { message: 'Unavailable' } : null };
+} }) }));
 vi.mock('@/features/inbox/server', async original => ({ ...await original<typeof InboxServer>(),
   loadWorkspaceInbox: async (...args: unknown[]) => {
     state.calls.push(args);
@@ -14,7 +22,7 @@ vi.mock('@/features/inbox/server', async original => ({ ...await original<typeof
   },
 }));
 const { loadHomeFollowup } = await import('./data/home-followup');
-beforeEach(() => { state.items = []; state.failed = false; state.calls = []; });
+beforeEach(() => { state.items = []; state.failed = false; state.calls = []; state.packages = []; state.packageFailure = 'none'; state.rpcCalls = []; });
 const now = new Date('2026-11-12T15:00:00Z');
 it('uses follow-up triage, excludes reviewed items and requests from replies, and keeps exact request timestamps', async () => {
   state.items = [
@@ -36,4 +44,20 @@ it('uses follow-up triage, excludes reviewed items and requests from replies, an
 it('propagates a failed follow-up read instead of returning an all-clear result', async () => {
   state.failed = true;
   await expect(loadHomeFollowup(now)).rejects.toThrow('Unavailable');
+});
+it('matches package data by request id instead of response order', async () => {
+  state.items = ['a', 'b'].map(id => ({ kind: 'request', id, player_name: id, created_at: '2026-11-12T12:00:00Z', reviewed_at: null }));
+  state.packages = [{ id: 'b', full_name: 'b', created_at: '2026-11-12T12:00:00Z', package_id: 'package',
+    offer_id: null, package_days: 90, package_sessions: null }];
+  const result = await loadHomeFollowup(now);
+  expect(result.requests).toEqual([
+    { id: 'a', name: 'a', at: '2026-11-12T12:00:00Z' },
+    { id: 'b', name: 'b', at: '2026-11-12T12:00:00Z', package: { days: 90, sessions: null } },
+  ]);
+  expect(state.rpcCalls).toEqual(['pending_coach_join_packages']);
+});
+it.each(['error', 'throw'] as const)('retains pending requests when the package RPC fails with %s', async failure => {
+  state.packageFailure = failure;
+  state.items = [{ kind: 'request', id: 'old', player_name: 'Old', created_at: '2026-11-12T12:00:00Z', reviewed_at: null }];
+  expect((await loadHomeFollowup(now)).requests).toEqual([{ id: 'old', name: 'Old', at: '2026-11-12T12:00:00Z' }]);
 });

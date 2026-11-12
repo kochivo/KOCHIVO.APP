@@ -22,4 +22,6 @@ export const arStd = {
   ageDay: 'منذ يوم', ageTwoDays: 'منذ يومين', ageDays: 'منذ {n} أيام', ageDaysMany: 'منذ {n} يومًا',
   rowDetail: '{kind} · {title} · {age}', rowAge: '{kind} · {age}',
   percent: '{value}%',
+  packageName: '{name} · {label}', packageMonth: 'شهر', packageMonths: '{count} أشهر',
+  packageDay: '{count} يوم', packageDays: '{count} يوم', packageSession: '{count} حصة', packageSessions: '{count} حصة',
 } as const;

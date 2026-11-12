@@ -43,3 +43,13 @@ it('gives the zero-player next-steps panel an empty state', async () => {
   expect(html).toContain('كل حاجة ماشية تمام');
   expect(html).not.toContain('<ul></ul>');
 });
+it('places the selected package next to the name and leaves old requests name-only', async () => {
+  const html = renderToStaticMarkup(await HomeSideCards({ ending: [], requests: [
+    { id: 'with', name: 'عمر خالد', at: '2026-11-12T12:00:00Z', package: { days: 90, sessions: null } },
+    { id: 'old', name: 'أحمد', at: '2026-11-12T12:00:00Z' },
+  ], now, timezone: 'Africa/Cairo' }));
+  expect(html).toContain('>عمر خالد · 3 شهور</p>');
+  expect(html).toContain('>أحمد</p>');
+  expect(html).not.toContain('أحمد ·');
+  expect(html).toContain('من 3 ساعات');
+});

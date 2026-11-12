@@ -27,6 +27,8 @@ export const homeMessages = defineMessages({
     ageDay: 'من يوم', ageTwoDays: 'من يومين', ageDays: 'من {n} أيام', ageDaysMany: 'من {n} يوم',
     rowDetail: '{kind} · {title} · {age}', rowAge: '{kind} · {age}',
     percent: '{value}%',
+    packageName: '{name} · {label}', packageMonth: 'شهر', packageMonths: '{count} شهور',
+    packageDay: '{count} يوم', packageDays: '{count} يوم', packageSession: '{count} حصة', packageSessions: '{count} حصة',
   },
   en: {
     morning: 'Good morning, Coach {name}', evening: 'Good evening, Coach {name}', date: '{weekday} · {date}',
@@ -52,5 +54,7 @@ export const homeMessages = defineMessages({
     ageDay: '1 day ago', ageTwoDays: '2 days ago', ageDays: '{n} days ago', ageDaysMany: '{n} days ago',
     rowDetail: '{kind} · {title} · {age}', rowAge: '{kind} · {age}',
     percent: '{value}%',
+    packageName: '{name} · {label}', packageMonth: '1 month', packageMonths: '{count} months',
+    packageDay: '{count} day', packageDays: '{count} days', packageSession: '{count} session', packageSessions: '{count} sessions',
   },
 });
