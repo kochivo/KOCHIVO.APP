@@ -3,7 +3,8 @@ import { messages } from './messages';
 import type { Translator } from '@/core/i18n/messages';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 
-import { BookOpen, CreditCard, Dumbbell, Inbox, LayoutDashboard, Settings, Users } from 'lucide-react';
+import { Apple, ClipboardCheck, CreditCard, Dumbbell, Inbox, LayoutDashboard, Salad, Settings, Users } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 
 export const captainLinks = [
   { href: '/captain', label: 'home' as const, icon: LayoutDashboard },
@@ -15,7 +16,7 @@ export const captainLinks = [
 ];
 
 export function captainNav(pathname: string, t: Translator<typeof messages> = createT(messages, 'ar')) {
-  const links: { href: string; label: string; icon: typeof BookOpen; active: boolean; group?: string }[] = captainLinks.map((link) => ({
+  const links: { href: string; label: string; icon: LucideIcon; active: boolean; group?: string }[] = captainLinks.map((link) => ({
     ...link, label: t(link.label),
     active: link.href === '/captain' ? pathname === '/captain'
       : link.href === '/captain/players'
@@ -23,14 +24,17 @@ export function captainNav(pathname: string, t: Translator<typeof messages> = cr
         : pathname === link.href || pathname.startsWith(`${link.href}/`),
   }));
   if (!captainWorkspaceEnabled()) return links;
+  for (const link of links) {
+    if (link.href === '/captain/players') link.label = t('workspacePlayers');
+    if (link.href === '/captain/inbox') link.label = t('followupGroup');
+  }
   links[3] = { ...links[3], href: '/captain/templates', label: t('trainingPlans'), icon: Dumbbell,
     active: pathname === '/captain/templates' || pathname.startsWith('/captain/templates/'), group: t('trainingGroup') };
-  links.splice(4, 0, { href: '/captain/library/meal-plans', label: t('mealPlans'), icon: BookOpen,
-    group: t('foodGroup'), active: pathname === '/captain/library/meal-plans' }, ...(['foods', 'forms'] as const).map(section => ({
-    href: `/captain/library/${section}`, label: t(section), icon: BookOpen,
-    group: t(section === 'foods' ? 'foodGroup' : 'followupGroup'),
-    active: pathname === `/captain/library/${section}`,
-  })));
+  links.splice(4, 0, { href: '/captain/library/meal-plans', label: t('mealPlans'), icon: Salad,
+    group: t('foodGroup'), active: pathname.startsWith('/captain/library/meal-plans') },
+  { href: '/captain/library/foods', label: t('foods'), icon: Apple, active: pathname.startsWith('/captain/library/foods') },
+  { href: '/captain/library/forms', label: t('forms'), icon: ClipboardCheck,
+    group: t('administrationGroup'), active: pathname.startsWith('/captain/library/forms') });
   return links;
 }
 

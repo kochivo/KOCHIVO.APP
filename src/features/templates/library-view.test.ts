@@ -4,6 +4,8 @@ import { expect, it } from 'vitest';
 import { LocaleProvider } from '@/core/i18n/client';
 import { LibraryView } from './components/library-view';
 import type { LibraryTemplate } from './library-types';
+import { messages } from './messages';
+import { createT } from '@/core/i18n/messages';
 
 const actions = () => ({ onOpen() {}, onPreview() {}, onAssign() {}, onCopy() {}, onRename() {}, onDelete() {}, onArchive() {} });
 function render(kind: 'program' | 'nutrition', templates: LibraryTemplate[], locale: 'ar' | 'en' = 'ar') {
@@ -31,4 +33,13 @@ it('renders meal rows with real protein and usage, with no inferred training met
   expect(html).toContain('3 meals · 150 protein · Training and rest days');
   expect(html).toContain('With 2 players');
   expect(html).not.toContain('30 minutes');
+});
+it('shows the load error and exactly one retry instruction', () => {
+  const t = createT(messages, 'ar');
+  const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' }, createElement(LibraryView, {
+    kind: 'program', templates: [], loading: false, error: t('couldntLoadTemplatesTryAgain'), createError: '',
+    creating: false, busy: [], errors: {}, onCreate() {}, onRetry() {}, actions,
+  })));
+  expect(html).toContain('القوالب متحملتش');
+  expect(html.match(/جرّب تاني/g)).toHaveLength(1);
 });

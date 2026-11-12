@@ -1,17 +1,24 @@
 'use client';
 
 import { useT } from '@/core/i18n/client';
-import { Fragment } from 'react';
+import { Fragment, useCallback } from 'react';
 import { messages } from '../messages';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { BottomNav } from '@/ui';
 import { captainMobileNav, captainNav } from '../nav';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { useResource } from '@/core/resource';
+import { fetchWaitingCount } from '../data/navigation-count';
 
-export function CaptainNav() {
+export function CaptainNav({ waitingCount = null }: { waitingCount?: number | null }) {
   const t = useT(messages);
   const pathname = usePathname();
+  const workspace = captainWorkspaceEnabled();
+  const load = useCallback(() => fetchWaitingCount(), []);
+  const count = useResource(workspace ? 'captain:waiting-count' : null, load, { pollMs: 30_000 });
+  const waiting = count.error ? null : count.data === undefined ? waitingCount : count.data;
   return (
     <>
       <nav aria-label={t('captainMenu')} className="hidden space-y-1 lg:block">
@@ -21,6 +28,9 @@ export function CaptainNav() {
           <Link href={href} data-tour={href} aria-current={active ? 'page' : undefined}
             className={`flex min-h-12 items-center gap-3 rounded-control px-3 text-sm ${active ? 'glass-raised font-bold text-lime' : 'text-muted hover:text-ink'}`}>
             <Icon aria-hidden className="size-5" />{label}
+            {workspace && href === '/captain/inbox' && (waiting === null
+              ? <span className="sr-only">{t('waitingUnavailable')}</span>
+              : <span aria-label={t('waitingCount', { count: waiting })} className="ms-auto rounded-full bg-lime/10 px-2 text-xs font-bold tabular-nums text-lime">{waiting}</span>)}
           </Link>
           </Fragment>
         ))}

@@ -39,7 +39,7 @@ export const arStd = {
   "saveAsTemplate": "احفظ كقالب",
   "savingTemplate": "جاري حفظ القالب",
   "templateSaved": "تم حفظ القالب",
-  "couldntLoadTemplatesTryAgain": "تعذّر تحميل القوالب. حاول مجدداً",
+  "couldntLoadTemplatesTryAgain": "تعذّر تحميل القوالب",
   "couldntSaveChangesTryAgain": "تعذّر حفظ التعديل. حاول مجدداً",
   "templates": "البرامج والقوالب",
   "yourTemplates": "قوالبك الجاهزة",

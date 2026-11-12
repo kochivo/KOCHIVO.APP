@@ -5,7 +5,7 @@ export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
-    report: 'بلّغ عن مشكلة', problem: 'إيه المشكلة؟', send: 'ابعت', sending: 'جاري الإرسال',
+    report: 'بلّغ عن مشكلة', problem: 'إيه المشكلة؟', send: 'ابعت', sending: 'بنبعت',
     thanks: 'وصلتنا، شكراً', failed: 'الإرسال فشل. جرّب تاني.',
     validation: 'اكتب من 5 لـ1000 حرف.', close: 'اقفل',
   },

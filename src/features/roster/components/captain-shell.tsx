@@ -9,15 +9,20 @@ import { CaptainDevice } from './captain-device';
 import { HeaderInstall } from './header-install';
 import { CaptainAccountMenu } from './captain-account-menu';
 import { KoAccountLink } from '@/features/ko-preview/server';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { fetchWaitingCount } from '../data/navigation-count';
 
 export async function CaptainShell({ children, sidebarFooter }: { children: ReactNode; sidebarFooter?: ReactNode }) {
   const t = await getT(messages);
+  const workspace = captainWorkspaceEnabled();
+  const waitingCount = workspace ? await fetchWaitingCount() : null;
   return (
     <div className="mx-auto flex min-h-dvh w-full min-w-0 gap-6 px-4 pb-4 pt-[var(--captain-top-inset)] lg:gap-0 lg:px-0 lg:pb-0 lg:pt-0">
       <aside className="contents w-60 min-w-0 shrink-0 flex-col gap-6 lg:sticky lg:top-0 lg:h-dvh lg:overflow-y-auto lg:border-e lg:border-line lg:bg-surface lg:p-4 lg:flex">
         <Link href="/captain" className="hidden min-h-12 items-center gap-3 px-3 font-display text-2xl font-extrabold lg:flex"><BrandMark className="size-8" />{t('brand')}</Link>
-        <CaptainNav />
+        <CaptainNav waitingCount={waitingCount} />
         <div className="mt-auto hidden min-w-0 border-t border-line pt-4 lg:block">{sidebarFooter}</div>
+        {workspace && <CaptainDevice />}
       </aside>
       <div className="min-w-0 flex-1 lg:px-12 lg:pb-9 lg:pt-9">
         <div className="mx-auto w-full min-w-0 max-w-[1640px]">
@@ -25,10 +30,11 @@ export async function CaptainShell({ children, sidebarFooter }: { children: Reac
             <Link href="/captain" aria-label={t('home')} className="flex min-h-12 items-center lg:invisible"><BrandMark className="size-8" /></Link>
             <div className="flex items-center gap-2"><HeaderInstall /><NotificationBell captain /><CaptainAccountMenu /></div>
           </div>
-          <main className="min-w-0 pb-[var(--page-bottom-clearance)] lg:pb-0">{children}</main>
+          <main className={workspace ? 'min-w-0 pb-[calc(var(--page-bottom-clearance)+4rem)] lg:pb-0'
+            : 'min-w-0 pb-[var(--page-bottom-clearance)] lg:pb-0'}>{children}</main>
         </div>
       </div>
-      <CaptainDevice />
+      {!workspace && <CaptainDevice />}
       <KoAccountLink />
     </div>
   );
