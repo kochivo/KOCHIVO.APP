@@ -1,0 +1,17 @@
+export const arStd = {
+  title: 'تطورك مع InBody', add: 'أضف InBody', history: 'الفحوصات السابقة', weight_kg: 'الوزن', muscle_kg: 'كتلة العضلات',
+  fat_pct: 'نسبة الدهون', kg: 'كجم', pct: '%', empty: 'لا توجد فحوصات InBody بعد', emptyBody: 'سجّل أول فحص لمتابعة تطورك.',
+  error: 'تعذّر تحميل الفحوصات. حاول مجدداً.', retry: 'حاول مجدداً', save: 'احفظ الفحص', saving: 'جاري حفظ الفحص',
+  close: 'أغلق', date: 'تاريخ الفحص', file: 'صورة أو PDF اختياري، حتى 5 ميجا',
+  offline: 'اتصل بالإنترنت لحفظ فحص أو حذفه.', invalid: 'اختر تاريخاً حتى اليوم، وسجّل قيمة واحدة على الأقل ضمن الحدود الموضحة.',
+  fileError: 'اختر صورة JPEG أو WebP أو ملف PDF حتى 5 ميجا.',
+  saveError: 'تعذّر حفظ الفحص. تحقق من الاتصال والتاريخ؛ لا يمكن تسجيل فحصين في اليوم نفسه.',
+  delete: 'احذف الفحص', confirm: 'هل تريد حذف الفحص وملفه؟', deleteError: 'تعذّر الحذف. حاول مجدداً.',
+  reveal: 'اضغط للعرض', hide: 'أخفِ الصورة', pdf: 'افتح ملف PDF', image: 'صورة فحص InBody',
+  fileLoadError: 'الملف غير متاح الآن.', noFile: 'لا يوجد ملف لهذا الفحص', overdue: 'تحتاج إلى فحص InBody جديد',
+  regressing: 'راجع الغذاء أو التمرين', first: 'أول فحص', latest: 'آخر فحص', total: 'التغيّر منذ أول فحص',
+  latestMeasurements: 'آخر قياسات مسجّلة', unknown: '—', noDelta: 'تحتاج إلى قياسين للمقارنة', delta: '{value} {unit} {metric}',
+  good: 'في الاتجاه المطلوب', bad: 'راجع هذا التغيّر مع الكابتن', neutral: 'تغيّر القياس', weightRange: '20–400 كجم',
+  muscleRange: '5–150 كجم', fatRange: '3–70%', chooseAnImage: 'اختر صورة', invalidImageSettings: 'إعدادات الصورة غير صحيحة',
+  imageIsTooLargeOrUnsupportedChoose: 'الصورة كبيرة أو غير مدعومة. اختر صورة أخرى.',
+} as const;

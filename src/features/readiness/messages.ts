@@ -1,6 +1,9 @@
 import { defineMessages } from '@/core/i18n/messages';
+import { arStd } from './standard/messages';
 
 export const messages = defineMessages({
+  // The local env branch lets Next remove these strings from flag-off client builds.
+  get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
     restTitle: 'النهارده يوم راحة', calmLine: 'خد نفس وادي جسمك فرصة يستريح',
     coachRest: 'الكابتن قال النهارده راحة نشطة', reduced: 'الكابتن خفف تمرين النهارده 20٪',

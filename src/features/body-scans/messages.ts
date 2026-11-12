@@ -1,6 +1,9 @@
 import { defineMessages } from '@/core/i18n/messages';
+import { arStd } from './standard/messages';
 
 export const messages = defineMessages({
+  // The local env branch lets Next remove these strings from flag-off client builds.
+  get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
     title: 'تغيّرك مع InBody', add: 'ضيف InBody', history: 'الفحوصات اللي فاتت',
     weight_kg: 'الوزن', muscle_kg: 'كتلة العضل', fat_pct: 'نسبة الدهون', kg: 'كجم', pct: '%',

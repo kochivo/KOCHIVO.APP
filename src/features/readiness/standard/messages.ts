@@ -1,0 +1,16 @@
+export const arStd = {
+  restTitle: 'اليوم يوم راحة', calmLine: 'خذ نفساً وامنح جسمك فرصة للراحة', coachRest: 'حدّد الكابتن اليوم للراحة النشطة',
+  reduced: 'خفّف الكابتن تمرين اليوم 20٪', sleep: 'كم ساعة نمت؟', soreness: 'كيف تشعر عضلاتك؟',
+  sleepPart: 'النوم', sorePart: 'الإجهاد', hours: '{n} ساعات', sleepLow: '4 أو أقل', sleepHigh: '9 أو أكثر',
+  sore1: 'مرتاح', sore2: 'خفيف', sore3: 'متوسط', sore4: 'شديد', sore5: 'شديد جداً', water: 'ماء اليوم',
+  litres: '{value} / {goal} لتر', waterValue: '{value} لتر', addWater: 'أضف 250 مل ماء', plus: '+',
+  waterHint: 'اشرب كوبين من الماء قبل التمرين بساعة', readiness: 'جاهزيتك اليوم {n}', unanswered: 'أجب عن سؤالَي الصباح',
+  edit: 'عدّل', questions: 'سؤالا الصباح', close: 'تم', sent: 'تم الإرسال للكابتن',
+  savedLocal: 'حُفظ على جهازك وسيُرسل للكابتن عند عودة الاتصال', stretch: 'يمكنك أداء بعض الإطالات الخفيفة',
+  tomorrow: 'تمرين الغد: {name}', tomorrowRest: 'غداً يوم راحة أيضاً', decision: 'قرار اليوم', keep: 'تابع حسب الخطة',
+  reduce: 'خفّف 20٪', rest: 'راحة نشطة', suggested: 'المقترح: {decision}', sets: '{original} مجموعات ← {suggested} مجموعات',
+  apply: 'طبّق القرار', applied: 'تم تطبيق القرار', override: 'غيّر القرار', lowSleep: 'النوم أقل من 5 ساعات',
+  highSoreness: 'إجهاد شديد: 4 أو أكثر', week: 'أسبوع الجاهزية', empty: 'لم يجب اللاعب عن أسئلة الصباح بعد',
+  error: 'تعذّر تحميل الجاهزية', saveError: 'تعذّر الحفظ. حاول مجدداً', retry: 'حاول مجدداً', score: 'درجة الجاهزية {n}',
+  dash: '—', training: 'تمرين', restDay: 'راحة',
+} as const;

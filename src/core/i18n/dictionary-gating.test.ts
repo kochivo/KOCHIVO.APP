@@ -6,6 +6,9 @@ const modules = import.meta.glob<{ messages: Messages }>([
   '../../features/auth/messages.ts', '../../features/auth/signup/messages.ts',
   '../../features/marketing/messages.ts', '../../features/onboarding/messages.ts',
   '../../features/captain-approval/intake/messages.ts',
+  '../../features/{roster,captain-workspace,programs,templates,program-generator,meal-plans,forms,inbox,billing,dashboard,settings,coach-page,ko-account,rank-review,captain-approval}/messages.ts',
+  '../../features/{roster,captain-workspace,meal-plans,forms,billing}/**/messages.ts',
+  '!../../features/**/standard/messages.ts',
 ], { eager: true });
 
 afterEach(() => vi.unstubAllEnvs());

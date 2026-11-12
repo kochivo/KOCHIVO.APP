@@ -1,6 +1,10 @@
 import { defineMessages } from '@/core/i18n/messages';
 
+import { arStd } from './standard/messages';
+
 export const messages = defineMessages({
+  // The local env branch lets Next remove these strings from flag-off client builds.
+  get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
     pageLink: 'لينك صفحتك', pageLinkHint: 'أي حد يفتحه يقدر يطلب يتدرب معاك',
     pageLinkPreview: 'kochivo.site/c/{slug}',

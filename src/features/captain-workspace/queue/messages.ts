@@ -1,4 +1,8 @@
+import { arStd } from './standard/messages';
+
 export const messages = {
+  // The local env branch lets Next remove these strings from flag-off client builds.
+  get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
     title: 'الطلبات', subtitle: 'كل اللي اتبعتلك من اللاعبين في مكان واحد', search: 'دوّر باسم لاعب',
     needsReply: 'محتاج ردك', late: 'متأخر أكتر من يوم', reviewed: 'اتراجع', all: 'الكل',

@@ -1,6 +1,9 @@
 import { defineMessages } from '@/core/i18n/messages';
+import { arStd } from './standard/messages';
 
 export const messages = defineMessages({
+  // The local env branch lets Next remove these strings from flag-off client builds.
+  get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
     soon: 'قريبًا', teaserOpen: 'KO جاي قريب', close: 'اقفل',
     title: 'أنا KO، مساعدك في الجيم', introduction: 'لسه بتدرّب، وقريب هكون معاك.',

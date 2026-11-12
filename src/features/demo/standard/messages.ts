@@ -1,0 +1,17 @@
+export const arStd = {
+  tryAsPlayer: 'جرّب كلاعب', playerDemo: 'تجربة اللاعب · سجّل تمرينك ووجباتك وجرّب Check-in',
+  'demoExpiry.zero': 'الوضع التجريبي · انتهت المدة', 'demoExpiry.one': 'الوضع التجريبي · يُحذف بعد ساعة',
+  'demoExpiry.two': 'الوضع التجريبي · يُحذف بعد ساعتين', 'demoExpiry.few': 'الوضع التجريبي · يُحذف بعد {count} ساعات',
+  'demoExpiry.many': 'الوضع التجريبي · يُحذف بعد {count} ساعة', 'demoExpiry.other': 'الوضع التجريبي · يُحذف بعد {count} ساعة',
+  demoMode: 'الوضع التجريبي', demoModeClearsIn: 'الوضع التجريبي · يُحذف بعد', hours: 'ساعة',
+  couldnTLeaveTheDemoTry: 'تعذّر الخروج من الوضع التجريبي. حاول مجدداً', signingOut: 'جاري الخروج',
+  createYourAccount: 'أنشئ حسابك', couldnTLoadYourAccount: 'تعذّر تحميل الحساب', tryAgain: 'حاول مجدداً',
+  completeTheVerificationAndTryAgain: 'أكمل التحقق من أنك لست روبوتاً وحاول مجدداً', tryTheDemo: 'جرّب التطبيق',
+  insideTheDemo: 'داخل التجربة', highlightRoster: '8 لاعبين بحالات مختلفة: نشط، متأخر، واشتراكه ينتهي قريباً',
+  highlightRadar: 'رادار يعرض اللاعبين الذين توقفوا عن التمرين قبل مغادرتهم',
+  highlightPrograms: 'قوالب برامج وخطط غذائية جاهزة لتعيينها لأي لاعب', highlightPreview: 'معاينة لشاشة اللاعب كما يراها على هاتفه',
+  exploreTheCoachWorkspaceWithSample: 'جرّب KOCHIVO ككابتن مع لاعبين تجريبيين، أو كلاعب يسجّل تمرينه ووجباته',
+  preparingTheDemo: 'جاري إعداد التجربة', openDemo: 'جرّب ككابتن', sampleAccountClearsAfter24Hours: 'حساب تجريبي يُحذف بعد 24 ساعة',
+  preparingSampleData: 'جاري إعداد البيانات التجريبية', verifyYouReHuman: 'تحقق من أنك لست روبوتاً',
+  theDemoIsBusyTryAgain: 'التجربة مشغولة الآن، حاول بعد قليل', theDemoIsUnavailableRightNow: 'التجربة غير متاحة الآن',
+} as const;

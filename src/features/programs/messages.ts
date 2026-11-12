@@ -1,5 +1,8 @@
 import { defineMessages } from '@/core/i18n/messages';
+import { arStd } from './standard/messages';
 export const messages = defineMessages({
+  // The local env branch lets Next remove these strings from flag-off client builds.
+  get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
     dragReorder: 'اسحب لترتيب: {name}، {position}', exerciseReordered: '{name} بقى رقم {position}', core: 'كور', glutes: 'جلوتس', machine: 'الجهاز', noMachine: 'من غير جهاز', treadmill: 'مشاية', stairmaster: 'جهاز السلم',
     rir: 'RIR', noRir: '—', rirLabel: 'RIR: {name}، {position}', rirSuffix: ' · RIR {count}', rirHint: 'عدد العدات اللي تفضل في خزانك قبل الفشل',
@@ -43,10 +46,7 @@ export const messages = defineMessages({
     "minuteCount.other": "حوالي {count} دقيقة",
     "secondCount.one": "{count} ثانية",
     "secondCount.other": "{count} ثانية",
-    draft: "مسودة",
-    active: "نشط",
-    archived: "مؤرشف",
-    programBuilder: "مصمم البرنامج",
+    draft: "مسودة", active: "نشط", archived: "مؤرشف", programBuilder: "مصمم البرنامج",
     programName: "اسم البرنامج",
     unsavedChanges: "في تغييرات مش متحفظة",
     save: "احفظ من غير ما تبعت",

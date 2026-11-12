@@ -1,0 +1,16 @@
+export const arStd = {
+  form_requested: 'ينتظر الكابتن ردّك على {name}', rank_up: 'ترقّيت إلى رتبة جديدة', rank_up_champion: 'ترقّيت! أصبحت بطلاً',
+  rank_up_elite: 'ترقّيت! أصبحت من النخبة', rank_up_legend: 'ترقّيت! أصبحت أسطورة', crown_taken: 'التاج معك. حافظ عليه',
+  crown_lost: 'فقدت التاج. استعده', crown_close: 'التاج قريب! التمارين المتبقية: {n}، وتبقّت 3 أيام',
+  crown_close_points: 'التاج قريب! تبقّت لك {gap} درجة', crown_defend: 'حافظ على التاج: تبقّت 3 أيام على نهاية الشهر',
+  subscription_expiring: 'ينتهي اشتراك {name} بعد 3 أيام', subscription_expired: 'انتهى اشتراك {name} اليوم',
+  subscription_expiring_player: 'ينتهي اشتراكك مع الكابتن {name} بعد 3 أيام',
+  subscription_expired_player: 'انتهى اشتراكك اليوم، تواصل مع الكابتن', captain_approved: 'تم تفعيل حسابك، مرحباً بك في KOCHIVO',
+  sessions_used_up: 'انتهت حصص اللاعب. راجع الاشتراك', workout_feedback: 'يوجد تقييم تمرين جديد للمراجعة',
+  workout_reminder: 'هل أنت جاهز لتمرين اليوم؟ {name} بانتظارك', join_requested: 'أرسل {name} طلب انضمام',
+  title: 'الإشعارات', close: 'أغلق الإشعارات', markAll: 'علّم الكل كمقروء', loading: 'جاري تحميل الإشعارات…',
+  empty: 'لا توجد إشعارات بعد', error: 'تعذّر تحميل الإشعارات. حاول مجدداً', retry: 'حاول مجدداً',
+  saveError: 'تعذّر تعليم الإشعار كمقروء. حاول مجدداً', plan_assigned: 'تم تعيين برنامج {name} لك',
+  nutrition_updated: 'تم تحديث خطتك الغذائية {name}', player_joined: 'انضم إليك {name}',
+  player_inactive: 'لم يتمرّن {name} منذ 3 أيام أو أكثر', now: 'الآن', minutes: 'منذ {n} دقيقة', hours: 'منذ {n} ساعة', days: 'منذ {n} يوم',
+} as const;

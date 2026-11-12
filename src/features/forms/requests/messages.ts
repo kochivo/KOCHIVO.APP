@@ -1,4 +1,8 @@
+import { arStd } from './standard/messages';
+
 export const messages = {
+  // The local env branch lets Next remove these strings from flag-off client builds.
+  get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: { send:'اطلب فورم', pick:'اختار فورم', due:'آخر ميعاد (اختياري)', cancel:'إلغاء', sending:'بنبعت', sent:'الفورم اتبعت',
     error:'الحفظ مكملش. إجاباتك لسه موجودة؛ اتأكد من النت وجرّب تاني.', retry:'جرّب تاني', loading:'بنحمّل الفورم',
     next:'التالي', previous:'السابق', finish:'ابعت الإجابات', submitting:'بنبعت إجاباتك', done:'إجاباتك اتبعتت للكابتن',

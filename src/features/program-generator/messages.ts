@@ -1,7 +1,11 @@
 import { defineMessages } from '@/core/i18n/messages';
 
 export const weekdays = ['sat', 'sun', 'mon', 'tue', 'wed', 'thu', 'fri'] as const;
+import { arStd } from './standard/messages';
+
 export const messages = defineMessages({
+  // The local env branch lets Next remove these strings from flag-off client builds.
+  get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
     entry: 'ولّد برنامج مع KO', brief: 'اختار تفاصيل البرنامج', generate: 'ولّد البرنامج', close: 'إغلاق',
     goal: 'الهدف', fat_loss: 'خسارة دهون', muscle: 'بناء عضلات', strength: 'قوة', general: 'لياقة عامة',
