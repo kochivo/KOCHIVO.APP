@@ -74,6 +74,25 @@ it('rejects malformed top-level shapes and accepts twelve items', async () => {
     [JSON.stringify({ items: Array.from({ length: 12 }, () => ({})), ramp: false }), program]);
 });
 
+it('round-trips exercise notes on insert, update and clearing to null', async () => {
+  const exercise = (await db.query<{ id: string }>("insert into public.exercises(name_en,body_part,equipment) values('Bench','chest','barbell') returning id")).rows[0]?.id;
+  expect(exercise).toBeTruthy();
+  const id = '019ab800-0000-7000-8000-000000000004';
+  const exerciseId = '019ab800-0000-7000-8000-000000000005';
+  const draft = { id: program, player_id: player, title: 'Notes', days: [{ id, program_id: program,
+    position: 1, title: 'Training', warmup: empty, cardio: [], exercises: [{ id: exerciseId, day_id: id,
+      exercise_id: exercise, position: 1, sets: 3, reps_min: 8, reps_max: 12, rest_seconds: 90,
+      rir: 2, superset_group: null, notes: 'نزّل البار ببطء على 3 عدّات' as string | null }] }] };
+  for (const notes of ['نزّل البار ببطء على 3 عدّات', 'Keep your back steady', null]) {
+    const row = draft.days[0]?.exercises[0];
+    if (!row) throw new Error('Missing fixture');
+    row.notes = notes;
+    await asUser(db, captain, tx => tx.query('select public.save_weekly_program($1)', [JSON.stringify(draft)]));
+    const read = await asUser(db, captain, tx => tx.query('select notes from public.program_exercises where id=$1', [exerciseId]));
+    expect(read.rows).toEqual([{ notes }]);
+  }
+});
+
 it('copies starter JSON through new captains and both demo workspace paths', async () => {
   await db.query(`update security_private.starter_templates set payload=jsonb_set(payload,'{days}',
     (select jsonb_agg(d || jsonb_build_object('warmup',$1::jsonb)) from jsonb_array_elements(payload->'days') d))

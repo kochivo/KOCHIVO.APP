@@ -39,6 +39,37 @@ Today the captain has two different editors for the same program: the player-fil
 
 ## Acceptance
 - [ ] Matches the mockup at 1440×900 and 390×844; differences listed.
-- [ ] Flag on: all three entry points render the same editor. Flag off: byte-identical.
-- [ ] Tests: warm-up add/remove/toggle through autosave, reps LTR rendering, Arabic-first names, expand/collapse, rest-day collapsing, template mode has no send.
+- [x] Flag on: all three entry points render the same editor. Flag off: byte-identical.
+- [x] Tests: warm-up add/remove/toggle through autosave, reps LTR rendering, Arabic-first names, expand/collapse, rest-day collapsing, template mode has no send.
 - [ ] `npm run check` and `npm run build` pass; summary lines pasted.
+
+## Implementation plan (reviewer notes extension approved)
+- [x] Add a failing SQL notes round-trip test; extend exercise notes types, validation and the guarded 0098 patch only.
+- [x] Test shared editor behavior: warm-up autosave operations, Arabic-first/LTR rows, expansion, rest grouping and template actions.
+- [x] Build training-local day rail/summary, warm-up, expandable exercise fields, week menu, cardio and library/assignment adapters using existing tables and RPCs.
+- [x] Route the standalone flag-on entry through the authorized server entry; retain the exact flag-off element.
+- [x] Run focused tests, full checks/build, and record environment limitations below.
+
+Backend inventory clarification: the old drawer adds library exercises; it does not persist exercise alternatives. Its reps/rest/RIR sheets edit the whole exercise, not individual sets. Unsupported alternatives/per-set actions must stay omitted, as requirement 5 specifies.
+
+## Implemented feature locations
+| Existing feature | Implementation in `training/` |
+|---|---|
+| Day add/rename/rest, fixed weekdays, repeat, conversion, move/delete confirmations | `day-rail.tsx`, `day-summary.tsx`, `week-menu.tsx`, `editor-draft.ts` |
+| Search, suggestions, custom exercise create/edit/delete/archive, owned/muscle filters, drag/arrow order, removal | `inline-search.tsx`, `custom-exercise.tsx`, `data/editor-actions.ts`, `day-exercises.tsx`, `exercise-row.tsx` |
+| Sets/reps/rest/RIR, failure, player notes | `exercise-fields.tsx`, `exercise-row.tsx`; approved notes type/schema/RPC extension |
+| Supersets, media; unsupported alternatives/per-set settings | `editor-draft.ts`, `exercise-row.tsx`; unsupported buttons omitted |
+| Cardio blocks, intensity/notes and order | `cardio-block.tsx`, `cardio-row.tsx` |
+| Autosave/retry, validation/send/activation, history/new program, save as template | `training-editor.tsx`, `editor-header.tsx`, `week-menu.tsx`; existing programs public autosave API |
+| Template autosave/manual save without activation; assignment | `template-entry.tsx`, `editor-header.tsx`, `assignment-sheet.tsx` (existing assignment RPC) |
+
+## Verification and mockup differences
+- Header, one live save status, day rail/summary, warm-up presets/free text/ramp, Arabic-first expandable rows/LTR reps, search/suggestions, supersets and optional cardio implemented with tokens and logical properties.
+- Retained facts, library management, failure/range controls, week settings and history add controls beyond the static example. Rotation days omit weekdays until converted, because no weekday is stored for them.
+- All touch controls remain at least 48px, including controls drawn smaller in the mockup.
+- Alternatives and per-set buttons omitted: no existing persistence capability. Warm-up duration follows the existing T-197 timed-item helper, not a guessed duration for rep-based items.
+- Live comparison at 1440×900 / 390×844 unavailable: `next dev` fails with `spawn EPERM`. Visual acceptance remains unchecked.
+- Notes SQL round-trip passed after first failing on a null persisted note. Focused editor/notes/route/dictionary suite: 14 files, 58 tests passed. Standalone demo suite: 13 tests passed.
+- Full fallback suite: 629 files / 4012 tests passed; three initial failures. Dictionary gating was corrected and passes focused verification; demo timeout passes alone. Performance-budget test references a missing generated `.next` chunk after the interrupted build, so the bundle budget remains unverified.
+- `npm run check`: typecheck/lint passed, release audit blocked by `spawnSync git EPERM`. `npm run build`: compiled successfully, TypeScript worker blocked by `spawn EPERM`. Direct fallback typecheck and lint passed.
+- Running the unchanged release-audit rules with the file list supplied by the shell also passed: `Release audit (shell file list): 2503 files, 0 findings`.

@@ -10,7 +10,7 @@ export const messages = defineMessages({
     lose: 'تنشيف', gain: 'زيادة عضل', maintain: 'تثبيت الوزن',
     scratch: 'ابدأ من الصفر', scratchBody: 'ضيف الأيام والتمارين بنفسك', template: 'من خطة جاهزة',
     templateBody: 'اختار خطة من خططك وعدّل عليها', day: 'يوم', dayChip: 'اليوم {number} · {title}',
-    search: 'دوّر على تمرين وضيفه… (bench, ضهر, كابل)', suggestions: 'مقترح ل{day}:',
+    search: 'دوّر على تمرين بالعربي أو الإنجليزي… (صدر، دمبل، bench)', suggestions: 'مقترح لليوم ده:',
     rest: 'راحة {n}ث', send: 'ابعت للاعب', sent: 'اتبعت للاعب', newProgram: 'برنامج جديد',
     rename: 'اسم اليوم', sets: 'مجموعات {name}', fewer: 'قلّل مجموعات {name}', more: 'زوّد مجموعات {name}',
     remove: 'شيل {name}', reorder: 'رتّب {name} بالأسهم لفوق وتحت',

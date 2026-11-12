@@ -17,7 +17,7 @@ it.each([null, 0, 2, 5])('keeps RIR %s in the save payload', async rir => {
   const dayId = '01900000-0000-7000-8000-000000000003';
   const row = { id: '01900000-0000-7000-8000-000000000004', day_id: dayId,
     exercise_id: '01900000-0000-7000-8000-000000000005', position: 1, sets: 3, reps_min: 8,
-    reps_max: 12, rest_seconds: 90, superset_group: null, rir, library: null };
+    reps_max: 12, rest_seconds: 90, superset_group: null, rir, notes: null, library: null };
   expect(await saveProgram({ ...draft, days: [{ id: dayId, program_id: draft.id, title: 'Day', position: 1,
     exercises: [row], warmup: emptyWarmup() }] })).toEqual({ ok: true, data: true });
   expect(rpc.mock.calls[0]?.[1].p_draft.days[0].exercises[0]).toMatchObject({ rir });
@@ -26,7 +26,7 @@ it.each([-1, 6, 2.5, NaN])('rejects invalid RIR %s before writing', async rir =>
   const dayId = '01900000-0000-7000-8000-000000000003';
   const row = { id: '01900000-0000-7000-8000-000000000004', day_id: dayId,
     exercise_id: '01900000-0000-7000-8000-000000000005', position: 1, sets: 3, reps_min: 8,
-    reps_max: 12, rest_seconds: 90, superset_group: null, rir, library: null };
+    reps_max: 12, rest_seconds: 90, superset_group: null, rir, notes: null, library: null };
   expect(await saveProgram({ ...draft, days: [{ id: dayId, program_id: draft.id, title: 'Day', position: 1,
     exercises: [row], warmup: emptyWarmup() }] })).toMatchObject({ ok: false });
   expect(rpc).not.toHaveBeenCalled();

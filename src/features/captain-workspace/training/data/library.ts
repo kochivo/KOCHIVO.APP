@@ -1,8 +1,8 @@
 import { searchExercises, trainingMuscles } from '@/features/programs';
 
-export async function loadTrainingSearch(query: string) {
+export async function loadTrainingSearch(query: string, bodyPart = '', mine = false) {
   const aliases: Record<string, string> = { ضهر: 'back', ظهر: 'back', صدر: 'chest', رجل: 'upper legs', كتف: 'shoulders', كابل: 'cable', دمبل: 'dumbbell', بار: 'barbell' };
-  const result = await searchExercises({ query: aliases[query.trim()] ?? query, bodyPart: '', metadata: true });
+  const result = await searchExercises({ query: aliases[query.trim()] ?? query, bodyPart, mine, metadata: true });
   if (!result.data) throw new Error(result.error);
   return result.data;
 }

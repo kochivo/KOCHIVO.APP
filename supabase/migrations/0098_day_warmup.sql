@@ -54,7 +54,23 @@ begin
     ('security_private.copy_starter_templates(uuid)',
       $old$coalesce((d.p ->> 'is_rest_day')::boolean,false));$old$,
       $new$coalesce((d.p ->> 'is_rest_day')::boolean,false),
-        coalesce(d.p -> 'warmup','{"items":[],"ramp":false}'::jsonb));$new$)
+        coalesce(d.p -> 'warmup','{"items":[],"ramp":false}'::jsonb));$new$),
+    ('public.save_weekly_program(jsonb)',
+      $old$insert into public.program_exercises(id,day_id,exercise_id,position,superset_group,sets,reps_min,reps_max,rest_seconds,rir)
+        values((e ->> 'id')::uuid,(d ->> 'id')::uuid,(e ->> 'exercise_id')::uuid,(e ->> 'position')::smallint,
+          (e ->> 'superset_group')::smallint,(e ->> 'sets')::smallint,(e ->> 'reps_min')::smallint,
+          (e ->> 'reps_max')::smallint,(e ->> 'rest_seconds')::smallint,(e ->> 'rir')::smallint)
+        on conflict(id) do update set day_id=excluded.day_id,exercise_id=excluded.exercise_id,position=excluded.position,
+          superset_group=excluded.superset_group,sets=excluded.sets,reps_min=excluded.reps_min,
+          reps_max=excluded.reps_max,rest_seconds=excluded.rest_seconds,rir=excluded.rir;$old$,
+      $new$insert into public.program_exercises(id,day_id,exercise_id,position,superset_group,sets,reps_min,reps_max,rest_seconds,rir,notes)
+        values((e ->> 'id')::uuid,(d ->> 'id')::uuid,(e ->> 'exercise_id')::uuid,(e ->> 'position')::smallint,
+          (e ->> 'superset_group')::smallint,(e ->> 'sets')::smallint,(e ->> 'reps_min')::smallint,
+          (e ->> 'reps_max')::smallint,(e ->> 'rest_seconds')::smallint,(e ->> 'rir')::smallint,
+          nullif(btrim(e ->> 'notes'),''))
+        on conflict(id) do update set day_id=excluded.day_id,exercise_id=excluded.exercise_id,position=excluded.position,
+          superset_group=excluded.superset_group,sets=excluded.sets,reps_min=excluded.reps_min,
+          reps_max=excluded.reps_max,rest_seconds=excluded.rest_seconds,rir=excluded.rir,notes=excluded.notes;$new$)
   ) as patches(signature, old_sql, new_sql)
   loop
     definition := pg_catalog.pg_get_functiondef(patch.signature::regprocedure);

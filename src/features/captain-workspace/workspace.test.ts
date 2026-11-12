@@ -11,7 +11,7 @@ import { ExerciseRow } from './components/exercise-row';
 
 vi.mock('server-only', () => ({}));
 const row = { id: 'e', day_id: 'd', exercise_id: 'x', position: 1, sets: 4, reps_min: 8,
-  reps_max: 10, rest_seconds: 60, rir: null, superset_group: null, library: null };
+  reps_max: 10, rest_seconds: 60, rir: null, notes: null, superset_group: null, library: null };
 const trainingDay: DraftDay = { id: 'd', program_id: 'p', title: 'Chest', position: 1, weekday: 0, exercises: [row], warmup: emptyWarmup() };
 const program: ProgramDraft = { id: 'p', player_id: 'player', title: 'Plan', status: 'active', days: [trainingDay] };
 

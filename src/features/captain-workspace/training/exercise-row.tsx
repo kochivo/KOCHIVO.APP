@@ -1,50 +1,48 @@
 'use client';
-
-import { ChevronDown, ChevronUp, GripVertical, Minus, Plus, X } from 'lucide-react';
+import { useState } from 'react';
+import { ArrowDown, ArrowUp, ChevronDown, ChevronUp, GripVertical, Dumbbell } from 'lucide-react';
 import type { CSSProperties, ButtonHTMLAttributes } from 'react';
 import { useT } from '@/core/i18n/client';
+import { exerciseMediaUrl } from '@/core/storage';
+import { ExerciseImage } from '@/ui/exercise-image';
 import type { DraftExercise } from '@/features/programs';
 import { exerciseLabel } from '../exercise-label';
 import { messages as workspaceMessages } from '../messages';
-import { messages } from './messages';
+import { messages as trainingMessages } from './messages';
+import { messages } from './editor/messages';
+import { ExerciseFields } from './exercise-fields';
 
-type Patch = { sets?: number; reps_min?: number; reps_max?: number; rest_seconds?: number };
-export function TrainingExerciseRow({ row, onPatch, onRemove, onMove, dragProps, style }: {
+export type Patch = Partial<Pick<DraftExercise, 'sets' | 'reps_min' | 'reps_max' | 'rest_seconds' | 'rir' | 'notes'>>;
+export function TrainingExerciseRow({ row, onPatch, onRemove, onMove, onLink, first, last, groupStart, dragProps, style }: {
   row: DraftExercise; onPatch: (patch: Patch) => void; onRemove: () => void; onMove: (delta: -1 | 1) => void;
-  dragProps: ButtonHTMLAttributes<HTMLButtonElement>; style?: CSSProperties;
+  onLink: () => void; first: boolean; last: boolean; groupStart?: boolean; dragProps: ButtonHTMLAttributes<HTMLButtonElement>; style?: CSSProperties;
 }) {
-  const t = useT(messages), wt = useT(workspaceMessages);
-  const name = row.library?.name_en || row.library?.name_ar || wt('exerciseUnavailable');
-  const input = 'min-h-12 w-10 bg-transparent text-center font-display font-extrabold tabular-nums';
-  return <li style={style} className="group grid min-h-16 grid-cols-[minmax(0,1fr)_auto_48px] items-center gap-2 border-t border-line-soft px-4 py-3 first:border-0 min-[761px]:@min-[600px]:grid-cols-[28px_minmax(0,1fr)_auto_auto_auto_48px] min-[761px]:@min-[600px]:gap-3">
-    <button {...dragProps} aria-label={t('reorder', { name })} className="hidden min-h-12 touch-none cursor-grab items-center justify-center text-faint min-[761px]:@min-[600px]:flex"
-      onKeyDown={event => { if (event.key === 'ArrowUp' || event.key === 'ArrowDown') { event.preventDefault(); onMove(event.key === 'ArrowUp' ? -1 : 1); } }}>
-      <GripVertical aria-hidden className="size-5" />
-    </button>
-    <div className="min-h-12 min-w-0" tabIndex={0} aria-label={t('reorder', { name })} onKeyDown={event => {
-      if (event.key === 'ArrowUp' || event.key === 'ArrowDown') { event.preventDefault(); onMove(event.key === 'ArrowUp' ? -1 : 1); }
-    }}><bdi className="block break-words text-sm">{name}</bdi>
-      <small className="block text-[11.5px] text-faint">{exerciseLabel(row.library?.body_part, wt)} · {exerciseLabel(row.library?.equipment, wt)}</small>
-      <div className="hidden group-focus-within:flex min-[761px]:@min-[600px]:hidden!">
-        <button aria-label={t('moveUp', { name })} className="grid min-h-12 min-w-12 place-items-center text-muted" onClick={() => onMove(-1)}><ChevronUp aria-hidden className="size-4" /></button>
-        <button aria-label={t('moveDown', { name })} className="grid min-h-12 min-w-12 place-items-center text-muted" onClick={() => onMove(1)}><ChevronDown aria-hidden className="size-4" /></button>
+  const t = useT(messages), wt = useT(workspaceMessages), tt = useT(trainingMessages), [open, setOpen] = useState(false);
+  const name = row.library?.name_ar || row.library?.name_en || wt('exerciseUnavailable');
+  const reps = row.reps_max === null ? t('failure') : row.reps_min === row.reps_max ? String(row.reps_min) : `${row.reps_min}–${row.reps_max}`;
+  const rest = `${Math.floor(row.rest_seconds / 60)}:${String(row.rest_seconds % 60).padStart(2, '0')}`;
+  return <li style={style} className={`border-t border-line-soft ${row.superset_group !== null ? 'mx-[18px] border-s-[3px] border-s-lime' : ''}`}>
+    {groupStart && <p className="px-[18px] pt-2 text-[11px] text-lime">{t('superset')}</p>}
+    <div className={`flex items-center gap-2 px-[18px] ${open ? 'bg-surface/30' : ''}`}>
+      <button {...dragProps} aria-label={tt('reorder', { name })} className="hidden min-h-12 min-w-12 touch-none items-center justify-center text-faint min-[761px]:flex"
+        onKeyDown={event => { if (event.key === 'ArrowUp' || event.key === 'ArrowDown') { event.preventDefault(); onMove(event.key === 'ArrowUp' ? -1 : 1); } }}><GripVertical aria-hidden className="size-4" /></button>
+      <button aria-expanded={open} aria-controls={`exercise-${row.id}`} onClick={() => setOpen(value => !value)} className="grid min-h-16 min-w-0 flex-1 grid-cols-[44px_minmax(0,1fr)_24px] items-center gap-3 py-3 text-start min-[761px]:grid-cols-[44px_minmax(0,1fr)_64px_64px_64px_24px]">
+        {row.library?.media_path ? <ExerciseImage src={exerciseMediaUrl(row.library.media_path)} alt="" width={44} height={44} className="size-11 rounded-xl border border-line object-cover" /> :
+          <span className="glass-strong grid size-11 place-items-center rounded-xl border border-line"><Dumbbell aria-hidden className="size-4 text-faint" /></span>}
+        <span className="min-w-0"><bdi className="block break-words text-sm">{name}</bdi>{row.library?.name_en && row.library.name_en !== name && <bdi className="block text-[11px] text-faint">{row.library.name_en}</bdi>}<small className="block text-[11.5px] text-faint">{exerciseLabel(row.library?.body_part, wt)} · {exerciseLabel(row.library?.equipment, wt)}</small></span>
+        {([['sets', row.sets], ['compactReps', reps], ['restLabel', rest]] as const).map(([key, value]) => <span key={key} className="hidden text-center min-[761px]:block"><small className="block text-[10.5px] text-faint">{t(key)}</small><b dir="ltr" className="block font-display text-base font-extrabold tabular-nums">{value}</b></span>)}
+        {open ? <ChevronUp aria-hidden className="size-4 text-faint" /> : <ChevronDown aria-hidden className="size-4 text-faint" />}
+      </button>
+    </div>
+    {open && <div id={`exercise-${row.id}`} className="space-y-3 px-[18px] pb-[18px] pt-1">
+      <ExerciseFields row={row} onPatch={onPatch} />
+      <textarea aria-label={t('note')} placeholder={t('note')} value={row.notes ?? ''} maxLength={200} rows={2} className="min-h-12 w-full rounded-control border border-line bg-transparent px-3.5 py-3 text-sm text-ink" onChange={event => onPatch({ notes: event.target.value || null })} />
+      <div className="flex flex-wrap items-center gap-2">
+        <button disabled={last && row.superset_group === null} className="min-h-12 rounded-full border border-line-soft px-3 text-xs disabled:opacity-40" onClick={onLink}>{t(row.superset_group === null ? 'link' : 'unlink')}</button>
+        <button disabled={first} aria-label={tt('moveUp', { name })} className="grid min-h-12 min-w-12 place-items-center rounded-full border border-line-soft disabled:opacity-40" onClick={() => onMove(-1)}><ArrowUp aria-hidden className="size-4" /></button>
+        <button disabled={last} aria-label={tt('moveDown', { name })} className="grid min-h-12 min-w-12 place-items-center rounded-full border border-line-soft disabled:opacity-40" onClick={() => onMove(1)}><ArrowDown aria-hidden className="size-4" /></button>
+        <button aria-label={tt('remove', { name })} className="ms-auto min-h-12 rounded-full border border-line-soft px-3 text-xs text-danger" onClick={onRemove}>{t('remove')}</button>
       </div>
-    </div>
-    <div role="group" aria-label={t('sets', { name })} className="inline-flex items-center overflow-hidden rounded-full border border-line">
-      <button disabled={row.sets <= 1} aria-label={t('fewer', { name })} onClick={() => onPatch({ sets: row.sets - 1 })} className="grid min-h-12 min-w-12 place-items-center text-muted disabled:opacity-30"><Minus aria-hidden className="size-3" /></button>
-      <span className="min-w-6 text-center font-display font-extrabold tabular-nums">{row.sets}</span>
-      <button disabled={row.sets >= 20} aria-label={t('more', { name })} onClick={() => onPatch({ sets: row.sets + 1 })} className="grid min-h-12 min-w-12 place-items-center text-muted disabled:opacity-30"><Plus aria-hidden className="size-3" /></button>
-    </div>
-    <div dir="ltr" className="hidden items-center min-[761px]:@min-[600px]:flex">
-      <input type="number" aria-label={t('repsMin', { name })} min={1} max={100} value={row.reps_min} className={input} onChange={event => onPatch({ reps_min: Number(event.target.value) })} />
-      <span aria-hidden>–</span>
-      {row.reps_max === null ? <span className="text-xs">{wt('failure')}</span> : <input type="number" aria-label={t('repsMax', { name })} min={row.reps_min} max={32767} value={row.reps_max} className={input} onChange={event => onPatch({ reps_max: Number(event.target.value) })} />}
-    </div>
-    <label className="relative hidden items-center text-xs text-faint min-[761px]:@min-[600px]:flex">
-      <span>{t('rest', { n: row.rest_seconds })}</span>
-      <input type="number" aria-label={t('restLabel', { name })} min={0} max={900} step={15} value={row.rest_seconds}
-        className="absolute inset-0 min-h-12 w-full cursor-text bg-surface text-center opacity-0 focus:opacity-100" onChange={event => onPatch({ rest_seconds: Number(event.target.value) })} />
-    </label>
-    <button aria-label={t('remove', { name })} onClick={onRemove} className="grid min-h-12 min-w-12 place-items-center text-faint"><X aria-hidden className="size-4" /></button>
+    </div>}
   </li>;
 }

@@ -4,7 +4,7 @@ export const arStd = {
   lose: 'خسارة الدهون', gain: 'بناء العضلات', maintain: 'تثبيت الوزن',
   scratch: 'ابدأ من الصفر', scratchBody: 'أضف الأيام والتمارين بنفسك', template: 'من خطة جاهزة',
   templateBody: 'اختر خطة من خططك وعدّل عليها', day: 'يوم', dayChip: 'اليوم {number} · {title}',
-  search: 'ابحث عن تمرين وأضفه… (bench، ظهر، كابل)', suggestions: 'مقترح لـ{day}:',
+  search: 'ابحث عن تمرين بالعربية أو الإنجليزية… (صدر، دمبل، bench)', suggestions: 'مقترح لهذا اليوم:',
   rest: 'راحة {n}ث', send: 'أرسل للاعب', sent: 'أُرسل للاعب', newProgram: 'برنامج جديد',
   rename: 'اسم اليوم', sets: 'مجموعات {name}', fewer: 'قلّل مجموعات {name}', more: 'زِد مجموعات {name}',
   remove: 'احذف {name}', reorder: 'رتّب {name} بالأسهم للأعلى والأسفل',

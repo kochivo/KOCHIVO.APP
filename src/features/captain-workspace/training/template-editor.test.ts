@@ -5,6 +5,8 @@ import { createT } from '@/core/i18n/messages';
 import type { ProgramDraft } from '@/features/programs';
 import type * as Programs from '@/features/programs';
 import { TrainingEditor } from './training-editor';
+import { WeekMenu } from './week-menu';
+import { EditorHeader } from './editor-header';
 
 vi.mock('server-only', () => ({}));
 vi.mock('react', async original => ({ ...await original<typeof React>(), useState: (initial: unknown) => [initial, vi.fn()] }));
@@ -21,21 +23,21 @@ function nodes(value: unknown): React.ReactElement<Record<string, unknown>>[] {
   return [value, ...nodes(value.props.children)];
 }
 beforeEach(() => { vi.clearAllMocks(); state.flush.mockResolvedValue(true); });
-it('keeps template edits in the shared quiet autosave queue', () => {
+it('passes template edits to the shared quiet autosave queue', () => {
   const tree = TrainingEditor({ mode: 'template', initial: draft, programs: [] });
-  const input = nodes(tree).find(node => node.type === 'input' && node.props.value === 'Template');
-  expect(input).toBeDefined();
-  const change = input?.props.onChange as (event: { target: { value: string } }) => void;
-  change({ target: { value: 'Renamed template' } });
+  const menu = nodes(tree).find(node => node.type === WeekMenu);
+  expect(menu).toBeDefined();
+  const update = menu?.props.update as (operation: (current: ProgramDraft) => ProgramDraft) => void;
+  update(current => ({ ...current, title: 'Renamed template' }));
   expect(state.update).toHaveBeenCalledOnce();
   const operation = state.update.mock.calls[0]?.[0] as (current: ProgramDraft) => ProgramDraft;
   expect(operation(draft)).toEqual({ ...draft, title: 'Renamed template' });
 });
 it('flushes template save without activating a player plan', async () => {
   const tree = TrainingEditor({ mode: 'template', initial: draft, programs: [] });
-  const save = nodes(tree).find(node => Array.isArray(node.props.children) && node.props.children.includes('Save template'));
+  const save = nodes(tree).find(node => node.type === EditorHeader);
   expect(save).toBeDefined();
-  const click = save?.props.onClick as () => void;
+  const click = save?.props.onRetry as () => void;
   click();
   expect(state.flush).toHaveBeenCalledOnce();
   expect(state.activate).not.toHaveBeenCalled();

@@ -54,7 +54,7 @@ const render = (element: React.ReactElement, locale: 'ar' | 'en' = 'en') => {
   return renderToStaticMarkup(createElement(LocaleProvider, { locale }, element));
 };
 const row: DraftExercise = { id: 'a', day_id: 'day', exercise_id: 'bench', position: 1, sets: 3,
-  reps_min: 8, reps_max: 12, rest_seconds: 90, superset_group: null, rir: null,
+  reps_min: 8, reps_max: 12, rest_seconds: 90, superset_group: null, rir: null, notes: null,
   library: { id: 'bench', name_ar: 'بنش', name_en: 'Bench', body_part: 'chest', equipment: null, media_path: 'bench.gif' } };
 const draft: ProgramDraft = { id: 'p', player_id: 'player', status: 'draft', title: 'Plan',
   days: [{ id: 'day', program_id: 'p', title: 'Chest', position: 1, exercises: [row], warmup: emptyWarmup() }] };

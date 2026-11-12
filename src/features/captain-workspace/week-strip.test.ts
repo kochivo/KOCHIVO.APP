@@ -23,7 +23,7 @@ it('keeps rotation days in position order without inventing a seven-day week', (
 });
 it('renders shared set/minute estimates, rest labels and the selected underline', () => {
   const training = { ...day('sat', 1, 0), exercises: [{ id: 'e', day_id: 'sat', exercise_id: 'x', position: 1,
-    sets: 4, reps_min: 8, reps_max: 10, rest_seconds: 60, rir: null, superset_group: null, library: null }] };
+    sets: 4, reps_min: 8, reps_max: 10, rest_seconds: 60, rir: null, notes: null, superset_group: null, library: null }] };
   const html = renderToStaticMarkup(createElement(WeekStrip, {
     cells: weekCells(program([training])), selectedId: 'sat', locale: 'en', onSelect() {},
   }));

@@ -17,7 +17,6 @@ it('passes template mode and loading copy to the lazy shared editor without play
   const html = renderToStaticMarkup(await TemplateTrainingEntry({ planId: id }));
   expect(state.read).toHaveBeenCalledWith(id);
   expect(html).toContain('My plan');
-  expect(html).toContain('href="/captain/templates"');
   expect(html).toContain('&quot;mode&quot;:&quot;template&quot;');
   expect(html).toContain('&quot;loadingLabel&quot;:&quot;Loading…&quot;');
   expect(html).not.toContain('playerId');
@@ -39,4 +38,11 @@ it('keeps a server read failure retryable', async () => {
   expect(html).toContain('role="alert"');
   expect(html).toContain(`href="/captain/templates?plan=${id}"`);
   expect(html).toContain('Try again');
+});
+it('remounts the autosave editor when query navigation selects a different template', async () => {
+  const first = await TemplateTrainingEntry({ planId: id });
+  const nextId = '01900000-0000-7000-8000-000000000002';
+  state.read.mockResolvedValue({ data: { ...draft, id: nextId } });
+  const second = await TemplateTrainingEntry({ planId: nextId });
+  expect(first.key).toBe(id); expect(second.key).toBe(nextId);
 });

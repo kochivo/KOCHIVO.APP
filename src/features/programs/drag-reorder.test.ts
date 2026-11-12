@@ -72,7 +72,7 @@ it.each([
 
 const day: DraftDay = { id: 'day', program_id: 'program', title: 'Day', position: 1, warmup: emptyWarmup(),
   exercises: ['a', 'b', 'c'].map((id, index) => ({ id, day_id: 'day', exercise_id: 'bench', position: index + 1,
-    sets: 3, reps_min: 8, reps_max: 12, rest_seconds: 90, rir: null, superset_group: null,
+    sets: 3, reps_min: 8, reps_max: 12, rest_seconds: 90, rir: null, notes: null, superset_group: null,
     library: { id: 'bench', name_ar: 'بنش', name_en: 'Bench', body_part: 'chest', equipment: null, media_path: null },
   })) };
 

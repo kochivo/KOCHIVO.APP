@@ -42,7 +42,7 @@ export function generateProgram(input: unknown, candidates: readonly Candidate[]
       used.add(selected.exercise_id);
       const reasons = selectionReasons(pattern, selected, brief, uninjured);
       exercises.push({ exercise_id: selected.exercise_id, library: selected.library, position: slot + 1,
-        superset_group: null, ...prescription(brief.goal, brief.level, selected.kind), reasons, alternatives,
+        superset_group: null, notes: null, ...prescription(brief.goal, brief.level, selected.kind), reasons, alternatives,
         ...(selected.pattern === pattern ? {} : { replacedPattern: pattern }) });
     }
     exercises.sort((a, b) => Number(kinds.get(a.exercise_id) === 'isolation') - Number(kinds.get(b.exercise_id) === 'isolation'));

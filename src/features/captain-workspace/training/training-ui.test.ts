@@ -12,7 +12,7 @@ vi.mock('server-only', () => ({}));
 const draft: ProgramDraft = { id: 'p', title: 'Plan', player_id: 'player', status: 'draft', days: [
   { id: 'd', program_id: 'p', title: 'صدر وضهر', position: 1, warmup: emptyWarmup(), exercises: [{
     id: 'e', day_id: 'd', exercise_id: 'x', position: 1, sets: 3, reps_min: 8, reps_max: 12,
-    rest_seconds: 90, rir: 2, superset_group: null,
+    rest_seconds: 90, rir: 2, notes: null, superset_group: null,
     library: { id: 'x', name_en: 'Bench Press', name_ar: 'بنش', body_part: 'chest', equipment: 'barbell', media_path: null },
   }] },
 ] };
@@ -21,13 +21,15 @@ it.each(['ar', 'en'] as const)('renders an inline editable plan with one send ac
     playerId: 'player', initial: draft, programs: [],
   })));
   expect(html).toContain('Bench Press');
-  expect(html).toContain(locale === 'ar' ? 'اليوم ١ · صدر وضهر' : 'Day 1 · صدر وضهر');
-  expect(html).toContain(locale === 'ar' ? 'راحة 90ث' : 'Rest 90s');
+  expect(html).toContain('صدر وضهر');
+  expect(html).not.toContain('اليوم ١ ·');
+  expect(html).toContain('1:30');
   expect(html).toContain(messages[locale].send);
+  if (locale === 'ar') { expect(html.match(/اتحفظ/g)).toHaveLength(1); expect(html).not.toContain('محفوظ'); }
   expect(html).toContain(messages[locale].search);
   expect(html).toContain('dir="ltr"');
   expect(html).toContain('aria-label=');
-  expect(html).toContain('href="/captain/programs/p"');
+  expect(html).toContain('href="/captain/players/player/preview"');
   expect(html).not.toContain(messages[locale].scratch);
 });
 it('starts with two optional choices and no forced template link', () => {
@@ -48,11 +50,9 @@ it.each(['ar', 'en'] as const)('uses the same inline controls with template save
   expect(html).not.toContain(messages[locale].facts);
   expect(html).toContain(messages[locale].search);
   expect(html).toContain('Bench Press');
-  for (const key of ['reorder', 'moveUp', 'moveDown', 'sets', 'remove'] as const) {
-    expect(html).toContain(messages[locale][key].replace('{name}', 'Bench Press'));
-  }
+  expect(html).toContain(messages[locale].reorder.replace('{name}', 'بنش'));
   expect(html).toContain(messages[locale].suggestions.replace('{day}', 'صدر وضهر'));
-  expect(html).toContain('href="/captain/programs/p"');
+  expect(html).toContain('href="/captain/templates"');
   expect(html.match(/primary-surface/g)).toHaveLength(1);
 });
 it('keeps missing facts explicit and preserves the sourced facts/history panel', () => {
