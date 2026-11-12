@@ -9,18 +9,23 @@ import { Package as PackageIcon, Plus, X } from 'lucide-react';
 import { Button, EmptyState, GlassCard, Segmented, Stepper, TextField } from '@/ui';
 import { archivePackage, createPackage } from '../data/finance-actions';
 import type { Package } from '../types';
+import type { CatalogPackage, Tier } from '../tiers/types';
 
-export function PackagesCard({ packages: initial, onChange, initialAdding = false }: { packages: Package[]; onChange: (packages: Package[]) => void; initialAdding?: boolean }) {
+export type PackageEditor = { item?: CatalogPackage; tierId: string; tiers: Tier[]; tierLabel: string; noTierLabel: string; saveLabel: string;
+  save: (value: { name: string; price: number; days: number; kind: 'days' | 'sessions'; sessions: number | null; tier_id: string | null }) => Promise<boolean> };
+
+export function PackagesCard({ packages: initial, onChange, initialAdding = false, editor }: { packages: Package[]; onChange: (packages: Package[]) => void; initialAdding?: boolean; editor?: PackageEditor }) {
   const t = useT(messages);
   const pt = useT(ptMessages);
   const locale = useLocale();
   const [packages, setPackages] = useState(initial);
   const [adding, setAdding] = useState(initialAdding);
-  const [name, setName] = useState('');
-  const [price, setPrice] = useState('');
-  const [days, setDays] = useState('30');
-  const [kind, setKind] = useState<'days' | 'sessions'>('days');
-  const [sessions, setSessions] = useState(12);
+  const [name, setName] = useState(editor?.item?.name ?? '');
+  const [price, setPrice] = useState(editor?.item ? String(editor.item.price_egp) : '');
+  const [days, setDays] = useState(String(editor?.item?.days ?? 30));
+  const [kind, setKind] = useState<'days' | 'sessions'>(editor?.item?.kind ?? 'days');
+  const [sessions, setSessions] = useState(editor?.item?.sessions ?? 12);
+  const [tierId, setTierId] = useState(editor?.item?.tier_id ?? editor?.tierId ?? '');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const values = { name: name.trim(), price: Number(price), days: Number(days), kind, sessions: kind === 'sessions' ? sessions : null };
@@ -33,6 +38,7 @@ export function PackagesCard({ packages: initial, onChange, initialAdding = fals
     if (!valid || busy) return;
     setBusy(true); setError('');
     try {
+      if (editor) { await editor.save({ ...values, tier_id: tierId || null }); return; }
       const result = await createPackage(values);
       if (result.error !== undefined) setError(result.error);
       else { update([...packages, result.data]); setName(''); setPrice(''); setDays('30'); setAdding(false); }
@@ -61,6 +67,9 @@ export function PackagesCard({ packages: initial, onChange, initialAdding = fals
         <Button variant="ghost" className="min-h-12 min-w-12 px-0" aria-label={t('archivePackage', { name: item.name })} onClick={() => void archive(item)}><X aria-hidden className="size-5" /></Button>
       </li>)}</ul>}
       {adding ? <form className="space-y-3" onSubmit={(event) => { event.preventDefault(); void add(); }}>
+        {editor && <label className="block text-xs text-faint">{editor.tierLabel}<select value={tierId} onChange={event => setTierId(event.target.value)} className="mt-2 min-h-12 w-full rounded-control border border-line bg-surface px-3 text-ink">
+          <option value="">{editor.noTierLabel}</option>{editor.tiers.map(tier => <option key={tier.id} value={tier.id}>{tier.name}</option>)}
+        </select></label>}
         <Segmented aria-label={pt('kind')} value={kind} options={[{ value: 'days', label: pt('byDays') }, { value: 'sessions', label: pt('bySessions') }]} onChange={value => setKind(value as 'days' | 'sessions')} />
         {kind === 'sessions' && <Stepper label={pt('quantity')} value={sessions} min={1} max={200} step={1} onChange={setSessions} />}
         <TextField label={t('packageName')} value={name} maxLength={60} required onChange={(event) => setName(event.target.value)} />
@@ -69,8 +78,8 @@ export function PackagesCard({ packages: initial, onChange, initialAdding = fals
           <TextField label={t('packageDays')} type="number" inputMode="numeric" min={1} max={365} step={1} required value={days} onChange={(event) => setDays(event.target.value)} />
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button type="submit" className="min-h-12 flex-1" disabled={!valid || busy}>{t('addPackage')}</Button>
-          <Button variant="ghost" className="min-h-12" disabled={busy} onClick={() => { setAdding(false); setError(''); }}>{t('closeCollect')}</Button>
+          <Button type="submit" className="min-h-12 flex-1" disabled={!valid || busy}>{editor?.item ? editor.saveLabel : t('addPackage')}</Button>
+          {!editor && <Button variant="ghost" className="min-h-12" disabled={busy} onClick={() => { setAdding(false); setError(''); }}>{t('closeCollect')}</Button>}
         </div>
       </form> : packages.length > 0 && <Button variant="secondary" className="min-h-12 w-full" onClick={() => setAdding(true)}><Plus aria-hidden className="size-5" />{t('newPackage')}</Button>}
       {error && <p role="alert" className="text-sm text-danger">{error}</p>}

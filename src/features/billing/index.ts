@@ -1,4 +1,5 @@
 export { messages } from './messages';
+export { PackageCatalog } from './tiers/catalog-entry';
 export { applicableOffers, bestOffer, finalPrice, monthlyEquivalent, savingsPercent, offerStatus, remainingSlots } from './pricing';
 export type { Offer, OfferContext } from './pricing';
 export { saveTier, saveOffer, setOfferPaused, setTierArchived, assignPackageTier } from './data/catalog-actions';

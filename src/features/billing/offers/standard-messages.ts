@@ -1,0 +1,17 @@
+export const arStd = {
+  newOffer: 'عرض جديد', addOffer: '+ عرض جديد', editOffer: 'عدّل العرض', edit: 'عدّل', pause: 'أوقفه', resume: 'استأنفه', breadcrumb: 'باقاتي والعروض ‹',
+  running: 'نشط', scheduled: 'مجدول', paused: 'متوقف', ended: 'انتهى', full: 'اكتمل العدد',
+  'remaining.one': 'بقي يوم', 'remaining.two': 'بقي يومان', 'remaining.other': 'بقي {n} أيام', startsOn: 'يبدأ {date}',
+  blackFriday: 'بلاك فرايداي', ramadan: 'رمضان', summer: 'الصيف', newYear: 'رأس السنة', scratch: 'من البداية',
+  preset: 'ابدأ من قالب', name: 'اسم العرض (يظهر للاعب)', kind: 'نوع العرض', percent: 'خصم نسبة', amount: 'خصم مبلغ', bonus_days: 'مدة هدية',
+  value: 'قيمة الخصم', giftValue: 'أيام الهدية', scope: 'يُطبق على', all: 'كل الباقات', packages: 'مدد معينة', tiers: 'فئة معينة',
+  dates: 'من وإلى', start: 'بداية العرض', end: 'نهاية العرض', audience: 'من يستفيد', newPlayers: 'اللاعبون الجدد', renewals: 'اللاعبون الذين يجددون',
+  limited: 'عدد محدود', limit: 'عدد الأماكن', launch: 'فعّل العرض', save: 'احفظ التغيير', cancel: 'إلغاء', preview: 'سيظهر في صفحتك هكذا:',
+  previewEnd: 'ينتهي العرض بعد {n} أيام', slots: 'بقي {n} مكان', gift: '+{n} يوم هدية',
+  note: 'ينتهي العرض تلقائيًا وتعود الأسعار الأصلية. تُسجل كل دفعة بالسعر الأصلي والعرض المطبق لتبقى التقارير دقيقة.',
+  noPreview: 'اختر باقة لمعاينة العرض', noAudience: 'اختر اللاعبين الجدد أو التجديد', badDates: 'يجب أن تكون النهاية بعد البداية',
+  noSelection: 'اختر فئة أو مدة للعرض', badValue: 'أدخل نسبة من 1 إلى 90 أو هدية حتى 365 يومًا، وعدد أماكن صحيحًا',
+  badName: 'أدخل اسم العرض (40 حرفًا كحد أقصى)', discount: 'خصم {value} على {scope}', giftDescription: 'مدة هدية {n} يوم · {scope}',
+  both: 'للجدد والتجديد', newOnly: 'للجدد', renewalOnly: 'للتجديد', usage: 'استُخدم {used} من {max}', unlimitedUsage: 'استُخدم {used}',
+  percentValue: '{n}%', amountValue: '−{n}', bonusValue: '+{n}', kindPercent: '%', kindAmount: '−500', kindGift: '+1 شهر', noOffers: 'لا توجد عروض بعد',
+} as const;
