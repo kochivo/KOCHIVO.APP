@@ -21,7 +21,7 @@ beforeEach(() => {
 });
 it('opens an automatically named draft without a database write', async () => {
   const result = await loadPlayerEditor(playerId);
-  expect(result.draft.title).toBe('نظام أكل Ali');
+  expect(result.draft.title).toBe('أكل Ali');
   expect(result.fresh).toBe(true);
   expect(mocks.upsert).not.toHaveBeenCalled();
 });
@@ -36,7 +36,7 @@ it('reuses a draft before the active plan and never replaces saved target overri
 it('inserts a plan idempotently on the first save, then uses the existing RPC save path', async () => {
   const { draft } = await loadPlayerEditor(playerId);
   expect(await savePlayerEditor(draft)).toEqual({ ok: true });
-  expect(mocks.upsert).toHaveBeenCalledWith(expect.objectContaining({ id: draft.id, title: 'نظام أكل Ali' }), { onConflict: 'id', ignoreDuplicates: true });
+  expect(mocks.upsert).toHaveBeenCalledWith(expect.objectContaining({ id: draft.id, title: 'أكل Ali' }), { onConflict: 'id', ignoreDuplicates: true });
   expect(mocks.save).toHaveBeenCalledWith(draft);
 });
 it('preserves input and stops on an insertion failure', async () => {
@@ -44,7 +44,7 @@ it('preserves input and stops on an insertion failure', async () => {
   mocks.upsert.mockResolvedValue({ error: { message: 'failure' } });
   expect((await savePlayerEditor(draft)).ok).toBe(false);
   expect(mocks.save).not.toHaveBeenCalled();
-  expect(draft.title).toBe('نظام أكل Ali');
+  expect(draft.title).toBe('أكل Ali');
 });
 it('rejects the workspace data path when the flag is disabled', async () => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '0');
@@ -61,5 +61,5 @@ it('creates an automatically named blank replacement without touching the active
   expect(result.ok).toBe(true);
   expect(mocks.list).not.toHaveBeenCalled();
   expect(mocks.load).not.toHaveBeenCalled();
-  expect(mocks.save).toHaveBeenCalledWith(expect.objectContaining({ playerId, title: 'نظام أكل Ali', status: 'draft', meals: [] }));
+  expect(mocks.save).toHaveBeenCalledWith(expect.objectContaining({ playerId, title: 'أكل Ali', status: 'draft', meals: [] }));
 });

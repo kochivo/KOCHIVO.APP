@@ -17,10 +17,13 @@ import { flagFood } from '../food-flags';
 import { HouseholdQuantity } from './household-quantity';
 import { messages as editorMessages } from './editor/messages';
 import { flagLabels } from './editor/flag-labels';
+import { missingNutrition } from './editor/nutrition-values';
+import { messages as workspaceMessages } from './editor/workspace/messages';
 
 export function ItemRow({ item, first, last, update, enhanced = false, facts = {} }: { item: MealItem; first: boolean; last: boolean; update: (change: (draft: PlanDraft) => PlanDraft) => void; enhanced?: boolean; facts?: PlayerFacts }) {
   const t = useT(messages);
   const editorT = useT(editorMessages);
+  const workspaceT = useT(workspaceMessages);
   const locale = useLocale();
   const [expanded, setExpanded] = useState(false);
   const [picking, setPicking] = useState(false);
@@ -45,7 +48,8 @@ export function ItemRow({ item, first, last, update, enhanced = false, facts = {
       {item.alternatives.filter(alt => !flagFood(alt.food, facts).length && alt.grams >= 5 && alt.grams <= 2000).map(alt => <Button key={alt.id} variant="secondary" onClick={() => update(d => ({ ...d,
         meals: d.meals.map(meal => ({ ...meal, items: meal.items.map(row => row.id === item.id ? { ...row, food: alt.food, grams: alt.grams, alternatives: row.alternatives.filter(value => value.id !== alt.id) } : row) })) }))}>{editorT('useAlternative', { name: alt.food.name })}</Button>)}
     </div>}
-    <p className="text-sm text-muted">{formatNumber(macros.kcal, locale)}  {t('kcalProtein')} {formatNumber(macros.protein, locale)}  {t('carbs')} {formatNumber(macros.carbs, locale)}  {t('fat')} {formatNumber(macros.fat, locale)}</p>
+    {enhanced && missingNutrition(item.food) ? <p className="text-sm text-warn">{workspaceT('unknown')} · {workspaceT('incomplete')}</p>
+      : <p className="text-sm text-muted">{formatNumber(macros.kcal, locale)}  {t('kcalProtein')} {formatNumber(macros.protein, locale)}  {t('carbs')} {formatNumber(macros.carbs, locale)}  {t('fat')} {formatNumber(macros.fat, locale)}</p>}
     <Button variant="secondary" aria-expanded={expanded} onClick={() => setExpanded(!expanded)}>{t('alternatives')}</Button>
     {expanded && <div className="grid gap-2">
       {!item.alternatives.length && !picking && <EmptyState icon={Utensils} title={t('noAlternativesYet')} body={t('searchHint')}

@@ -1,6 +1,7 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useId, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { Search } from 'lucide-react';
 import { useLocale, useT } from '@/core/i18n/client';
 import { useResource } from '@/core/resource';
@@ -10,12 +11,15 @@ import { searchFoods } from '../../data/foods';
 import type { Food } from '../../types';
 import { messages } from './workspace/messages';
 import { messages as planMessages } from '../../messages';
+const CustomFoodSheet = dynamic(() => import('../custom-food-sheet').then(module => module.CustomFoodSheet));
 
-export function FoodSearch({ onPick }: { onPick: (food: Food, grams: number) => void }) {
+export function FoodSearch({ onPick, meal }: { onPick: (food: Food, grams: number) => void; meal?: string }) {
   const t = useT(messages);
   const planT = useT(planMessages);
   const locale = useLocale();
   const [query, setQuery] = useState('');
+  const [creating, setCreating] = useState(false);
+  const openerId = useId();
   const term = query.trim();
   const load = useCallback(async () => {
     const result = await searchFoods({ query: term, limit: 20 });
@@ -24,10 +28,16 @@ export function FoodSearch({ onPick }: { onPick: (food: Food, grams: number) => 
   }, [term]);
   const resource = useResource(term ? `meal-editor:foods:${term}` : null, load);
   return <div className="border-t border-dashed border-line">
-    <label className="flex min-h-12 items-center gap-2.5 px-4 text-faint"><Search aria-hidden className="size-4 shrink-0" />
-      <input type="search" aria-label={t('search')} placeholder={t('search')} value={query} maxLength={100} onChange={event => setQuery(event.target.value)}
+    <div className="flex flex-wrap items-center gap-2 px-4">
+    <label className="flex min-h-12 min-w-0 flex-1 items-center gap-2.5 text-faint"><Search aria-hidden className="size-4 shrink-0" />
+      <input type="search" aria-label={t('search')} placeholder={meal ? t('mealSearch', { meal }) : t('search')} value={query} maxLength={100} onChange={event => setQuery(event.target.value)}
         className="min-h-12 min-w-0 flex-1 bg-transparent text-xs placeholder:text-faint" />
     </label>
+    <button id={openerId} type="button" className="min-h-12 text-xs text-muted" onClick={() => setCreating(true)}>{t('createFood')}</button>
+    </div>
+    {creating && <CustomFoodSheet openerId={openerId} initialName={query} onClose={() => setCreating(false)} onSave={(food, grams) => {
+      onPick(food, grams); setCreating(false); setQuery('');
+    }} />}
     {term && <div className="px-4 pb-3">
       {resource.status === 'loading' || resource.status === 'idle' ? <LoadingState variant="list" />
         : resource.error ? <div role="alert" className="text-sm text-danger">{planT('searchFailedTryAgain')}<Button variant="secondary" onClick={() => void resource.retry()}>{t('retry')}</Button></div>

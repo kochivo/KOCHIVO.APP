@@ -24,16 +24,16 @@ const data: Awaited<ReturnType<typeof loadPlayerEditor>> = {
 it.each(['ar', 'en'] as const)('renders the player editor in %s with one primary action and no name/save form', locale => {
   const html = renderToStaticMarkup(createElement(LocaleProvider, { locale }, createElement(PlayerEditor, { data })));
   expect(html).toContain(locale === 'ar' ? 'ابعت للاعب' : 'Send to player');
-  expect(html).toContain(locale === 'ar' ? 'نظام أكل Ali' : 'Ali’s meal plan');
+  expect(html).toContain(locale === 'ar' ? 'أكل Ali' : 'Ali’s meal plan');
   expect(html).not.toContain('value="Old name"');
-  expect(html).not.toContain('اتحفظ');
+  expect(html).toContain(locale === 'ar' ? 'اتحفظ' : 'Saved');
   expect(html).not.toContain('احفظ');
   expect(html.match(/primary-surface/g)).toHaveLength(1);
   expect(html).toContain('value="3"');
   expect(html).toContain('234');
   expect(html.match(/data-target=/g)).toHaveLength(4);
   expect(html.match(/data-adherence=/g)).toHaveLength(7);
-  expect(html).toContain('grid-cols-[minmax(0,1fr)_100px_48px]');
+  expect(html).toContain('grid-cols-[minmax(0,1fr)_150px_48px]');
   expect(html).toContain('type="search"');
   expect(html).toContain('disabled=""');
 });

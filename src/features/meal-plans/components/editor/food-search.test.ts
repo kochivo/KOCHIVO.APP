@@ -9,7 +9,7 @@ import type { Messages } from '@/core/i18n/messages';
 const state = vi.hoisted(() => ({ query: '', status: 'ready', data: { foods: [] as { id: string; name: string; nameEn: string }[], catalogEmpty: false },
   error: undefined as unknown, search: vi.fn(), load: undefined as undefined | (() => Promise<unknown>) }));
 vi.mock('react', async original => ({ ...await original<typeof React>(),
-  useState: () => [state.query, vi.fn()], useCallback: (fn: unknown) => fn,
+  useState: (initial: unknown) => [typeof initial === 'string' ? state.query : initial, vi.fn()], useCallback: (fn: unknown) => fn,
 }));
 vi.mock('@/core/i18n/client', () => ({ useT: (messages: Messages) => createT(messages, 'en'), useLocale: () => 'en' }));
 vi.mock('../../data/foods', () => ({ searchFoods: state.search }));
