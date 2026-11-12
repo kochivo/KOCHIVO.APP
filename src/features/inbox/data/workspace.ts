@@ -17,12 +17,12 @@ export async function loadWorkspaceReviews(input: { at: string; cursor?: ReviewC
   catch (error) { unstable_rethrow(error); throw new Error(t('loadFailed')); }
 }
 
-export async function loadWorkspaceInbox(limit = 50): Promise<WorkspaceInboxData> {
+export async function loadWorkspaceInbox(limit = 50, snapshotAt?: string): Promise<WorkspaceInboxData> {
   const t = await getT(workspaceMessages);
   try {
     z.number().int().min(50).max(500).parse(limit);
     const { client, captain } = await formsAccess();
-    const at = new Date().toISOString();
+    const at = snapshotAt === undefined ? new Date().toISOString() : z.iso.datetime().parse(snapshotAt);
     const lateAt = new Date(Date.parse(at) - 86_400_000).toISOString();
     const [open, forms, joins, checksCount, videosCount, lateCounts, reviews] = await Promise.all([
       listInbox({ status: 'open', limit: 50 }),

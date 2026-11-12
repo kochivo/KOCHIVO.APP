@@ -35,7 +35,7 @@ it('returns timezone-aware payments, weighted adherence and active meal-plan pla
   state.rows.player_payments = { error: null, data: [{ created_at: '2026-10-31T22:30:00Z', amount_egp: 150 }] };
   state.rows.nutrition_plans = { error: null, data: [{ player_id: 'a' }] };
   state.rows.programs = { error: null, data: [{ player_id: 'a', program_days: [{ id: 'd', is_rest_day: false }, { id: 'rest', is_rest_day: true }] }] };
-  state.rows.workout_sessions = { error: null, data: [{ player_id: 'a', program_day_id: 'd' }, { player_id: 'a', program_day_id: 'd' }] };
+  state.rows.workout_sessions = { error: null, data: [{ player_id: 'a', program_day_id: 'd', training_date: '2026-11-10' }, { player_id: 'a', program_day_id: 'd', training_date: '2026-11-10' }] };
   const result = await loadHomeSummary(new Date('2026-11-12T10:00:00Z'));
   expect(result).toMatchObject({ paid: 150, adherence: 100, limit: 5, today: '2026-11-12' });
   expect(result.mealPlanPlayers).toEqual(new Set(['a']));

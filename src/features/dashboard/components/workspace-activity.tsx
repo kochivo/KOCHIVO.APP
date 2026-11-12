@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { getLocale, getT } from '@/core/i18n/server';
-import { ageLabel } from '@/features/inbox';
+import { ageLabel } from '@/features/inbox/server';
 import { formatNumber } from '@/lib/format';
 import type { ActivityEvent } from '../data/workspace';
 import { workspaceMessages } from '../workspace-messages';

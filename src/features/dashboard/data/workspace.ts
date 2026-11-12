@@ -3,7 +3,8 @@ import { supabaseServer } from '@/core/supabase/server';
 import { getTimezone } from '@/core/timezone/server';
 import { localDate, saturdayWeek } from '@/lib/dates';
 import { fetchPlanSummary } from '@/features/billing/server';
-import { monthlyPayments, weeklyAdherence } from '../workspace-maths';
+import { monthlyPayments } from '../workspace-maths';
+import { weekComparison } from '../home/model';
 
 export interface ActivityEvent { id: string; playerId: string; name: string; kind: 'workout' | 'assessment' | 'weight'; at: string; title?: string; value?: number; sets?: number }
 export async function loadHomeActivity(captain: string) {
@@ -45,6 +46,9 @@ export async function loadHomeSummary(now: Date) {
   const timezone = await getTimezone();
   const today = localDate(now, timezone);
   const week = saturdayWeek(today);
+  const previous = new Date(`${week[0] ?? today}T12:00:00Z`);
+  previous.setUTCDate(previous.getUTCDate() - 7);
+  const previousStart = localDate(previous, 'UTC');
   // Broad UTC bounds include every timezone; calendar-month filtering below is exact.
   const first = new Date(`${today.slice(0, 7)}-01T00:00:00Z`);
   const start = new Date(first.getTime() - 86400000).toISOString();
@@ -53,18 +57,16 @@ export async function loadHomeSummary(now: Date) {
     client.from('player_payments').select('created_at,amount_egp').eq('captain_id', captain).gte('created_at', start).lt('created_at', end),
     client.from('nutrition_plans').select('player_id').eq('captain_id', captain).eq('status', 'active').eq('is_template', false),
     client.from('programs').select('player_id,program_days(id,weekday,is_rest_day)').eq('captain_id', captain).eq('status', 'active').eq('is_template', false),
-    client.from('workout_sessions').select('player_id,training_date,program_day_id').not('completed_at', 'is', null).gte('training_date', week[0]).lte('training_date', week[6]),
+    client.from('workout_sessions').select('player_id,training_date,program_day_id').not('completed_at', 'is', null).gte('training_date', previousStart).lte('training_date', week[6]),
     fetchPlanSummary(), loadHomeActivity(captain),
     client.rpc('captain_last_payments'),
     client.from('form_requests').select('player_id').eq('captain_id', captain).not('answered_at', 'is', null).is('reviewed_at', null),
   ]);
   if (payments.error || meals.error || programs.error || sessions.error || lastPayments.error || assessments.error) throw payments.error ?? meals.error ?? programs.error ?? sessions.error ?? lastPayments.error ?? assessments.error;
-  const adherence = weeklyAdherence(programs.data.map(program => ({
-    planned: program.program_days.filter(day => !day.is_rest_day).length,
-    done: new Set(sessions.data.filter(session => session.player_id === program.player_id &&
-      program.program_days.some(day => day.id === session.program_day_id)).map(session => session.program_day_id)).size,
-  })));
-  return { today, timezone, adherence, paid: monthlyPayments(payments.data, now, timezone),
+  const adherence = weekComparison(programs.data.map(program => ({ playerId: program.player_id,
+    days: program.program_days.filter(day => !day.is_rest_day).map(day => day.id) })),
+  sessions.data.map(session => ({ playerId: session.player_id, dayId: session.program_day_id, date: session.training_date })), today);
+  return { today, timezone, adherence: adherence.current, previousAdherence: adherence.previous, paid: monthlyPayments(payments.data, now, timezone),
     limit: plan?.plan.player_limit ?? null, mealPlanPlayers: new Set(meals.data.flatMap(row => row.player_id ? [row.player_id] : [])), activity,
     lastPayments: new Map(lastPayments.data.map(row => [row.player_id, localDate(new Date(row.created_at), timezone)])),
     assessments: assessments.data.reduce((counts, row) => counts.set(row.player_id, (counts.get(row.player_id) ?? 0) + 1), new Map<string, number>()) };
