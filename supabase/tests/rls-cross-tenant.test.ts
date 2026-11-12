@@ -157,7 +157,9 @@ describe('suspension', () => {
 it('keeps anon off all tables, private helpers inaccessible and the inbox subject to underlying RLS', async () => {
   expect((await db.query(`select n.nspname, c.relname from pg_class c join pg_namespace n on n.oid = c.relnamespace
     where n.nspname in ('public', 'security_private') and c.relkind in ('r', 'v')
-      and (has_table_privilege('anon', c.oid, 'SELECT,INSERT,UPDATE,DELETE')
+      and (has_table_privilege('anon', c.oid, 'INSERT,UPDATE,DELETE')
+        or (has_table_privilege('anon', c.oid, 'SELECT') and not (n.nspname = 'public'
+          and c.relname in ('captain_package_tiers', 'captain_offers', 'captain_packages')))
         or (n.nspname = 'security_private' and has_table_privilege('authenticated', c.oid, 'SELECT,INSERT,UPDATE,DELETE'))) `)).rows)
     .toEqual([]);
   expect((await db.query(`select p.proname from pg_proc p join pg_namespace n on n.oid = p.pronamespace
@@ -165,4 +167,61 @@ it('keeps anon off all tables, private helpers inaccessible and the inbox subjec
       or has_function_privilege('authenticated', p.oid, 'EXECUTE'))`)).rows).toEqual([]);
   expect((await db.query(`select reloptions from pg_class where oid = 'public.inbox_items'::regclass`)).rows)
     .toEqual([{ reloptions: ['security_invoker=true'] }]);
+});
+
+it('limits anonymous catalog reads to published active tiers/packages and running offers and denies all writes', async () => {
+  const anonymous = (sql: string, params: unknown[] = []) => db.transaction(async tx => {
+    await tx.exec('set local role anon'); return tx.query(sql, params);
+  });
+  const profile = (await db.query<{ public_slug: string | null; role_confirmed: boolean }>(
+    'select public_slug,role_confirmed from profiles where id=$1', [a.captain])).rows[0];
+  if (!profile) throw new Error('Missing catalog captain');
+  const tiers = (await db.query<{ id: string }>(`insert into captain_package_tiers(captain_id,name,archived_at)
+    values ($1,'Active',null),($1,'Archived',now()),($2,'Unpublished',null) returning id`, [a.captain, b.captain])).rows;
+  const packages = (await db.query<{ id: string }>(`insert into captain_packages(captain_id,name,price_egp,days,archived_at)
+    values ($1,'Active',1500,30,null),($1,'Archived',1500,30,now()),($2,'Unpublished',1500,30,null) returning id`,
+  [a.captain, b.captain])).rows;
+  const offers = (await db.query<{ id: string }>(`insert into captain_offers(captain_id,name,kind,value,starts_at,ends_at,paused_at,max_uses,used_count)
+    values ($1,'Running','percent',20,now()-interval '1 day',now()+interval '1 day',null,null,0),
+      ($1,'Paused','percent',20,now()-interval '1 day',now()+interval '1 day',now(),null,0),
+      ($1,'Ended','percent',20,now()-interval '2 days',now(),null,null,0),
+      ($1,'Full','percent',20,now()-interval '1 day',now()+interval '1 day',null,1,1),
+      ($1,'Scheduled','percent',20,now()+interval '1 day',now()+interval '2 days',null,null,0),
+      ($2,'Unpublished','percent',20,now()-interval '1 day',now()+interval '1 day',null,null,0) returning id`,
+  [a.captain, b.captain])).rows;
+  const tierIds = tiers.map(row => row.id), offerIds = offers.map(row => row.id);
+  const packageIds = packages.map(row => row.id);
+  try {
+    await db.query("update profiles set public_slug='t206-catalog',role_confirmed=true where id=$1", [a.captain]);
+    expect((await anonymous('select id from captain_package_tiers where id=any($1)', [tierIds])).rows).toEqual([tiers[0]]);
+    expect((await anonymous('select id from captain_offers where id=any($1)', [offerIds])).rows).toEqual([offers[0]]);
+    expect((await anonymous('select id from captain_packages where id=any($1)', [packageIds])).rows).toEqual([packages[0]]);
+    for (const table of ['captain_package_tiers', 'captain_offers', 'captain_packages']) {
+      for (const sql of [`insert into ${table} select * from ${table} where false`,
+        `update ${table} set name=name returning id`, `delete from ${table} returning id`]) {
+        await expect(anonymous(sql)).rejects.toMatchObject({ code: '42501' });
+      }
+    }
+    // Each condition independently mirrors the existing public coach-page policy.
+    for (const hidden of ["public_slug=null", "role_confirmed=false", "captain_status='pending'",
+      'suspended_at=now()', "demo_expires_at=now()+interval '1 day'"]) {
+      await db.query(`update profiles set ${hidden} where id=$1`, [a.captain]);
+      expect((await anonymous('select id from captain_package_tiers where id=any($1)', [tierIds])).rows).toEqual([]);
+      expect((await anonymous('select id from captain_offers where id=any($1)', [offerIds])).rows).toEqual([]);
+      expect((await anonymous('select id from captain_packages where id=any($1)', [packageIds])).rows).toEqual([]);
+      await db.query(`update profiles set public_slug='t206-catalog',role_confirmed=true,captain_status='approved',
+        suspended_at=null,demo_expires_at=null where id=$1`, [a.captain]);
+    }
+    await db.query('insert into admins(user_id) values ($1)', [a.captain]);
+    expect((await anonymous('select id from captain_package_tiers where id=any($1)', [tierIds])).rows).toEqual([]);
+    expect((await anonymous('select id from captain_offers where id=any($1)', [offerIds])).rows).toEqual([]);
+    expect((await anonymous('select id from captain_packages where id=any($1)', [packageIds])).rows).toEqual([]);
+    await db.query('delete from admins where user_id=$1', [a.captain]);
+  } finally {
+    await db.query('delete from captain_offers where id=any($1)', [offerIds]);
+    await db.query('delete from captain_packages where id=any($1)', [packageIds]);
+    await db.query('delete from captain_package_tiers where id=any($1)', [tierIds]);
+    await db.query('update profiles set public_slug=$2,role_confirmed=$3 where id=$1',
+      [a.captain, profile.public_slug, profile.role_confirmed]);
+  }
 });

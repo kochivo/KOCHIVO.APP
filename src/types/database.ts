@@ -316,6 +316,114 @@ export type Database = {
           },
         ]
       }
+      captain_package_tiers: {
+        Row: {
+          id: string
+          captain_id: string
+          name: string
+          description: string
+          color: string
+          position: number
+          features: Json
+          is_featured: boolean
+          archived_at: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          captain_id: string
+          name: string
+          description?: string
+          color?: string
+          position?: number
+          features?: Json
+          is_featured?: boolean
+          archived_at?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          captain_id?: string
+          name?: string
+          description?: string
+          color?: string
+          position?: number
+          features?: Json
+          is_featured?: boolean
+          archived_at?: string | null
+          created_at?: string
+        }
+        Relationships: [{
+          foreignKeyName: "captain_package_tiers_captain_id_fkey"
+          columns: ["captain_id"]
+          isOneToOne: false
+          referencedRelation: "profiles"
+          referencedColumns: ["id"]
+        }]
+      }
+      captain_offers: {
+        Row: {
+          id: string
+          captain_id: string
+          name: string
+          kind: string
+          value: number
+          scope: string
+          tier_ids: string[]
+          package_ids: string[]
+          starts_at: string
+          ends_at: string
+          for_new: boolean
+          for_renewals: boolean
+          max_uses: number | null
+          used_count: number
+          paused_at: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          captain_id: string
+          name: string
+          kind: string
+          value: number
+          scope?: string
+          tier_ids?: string[]
+          package_ids?: string[]
+          starts_at: string
+          ends_at: string
+          for_new?: boolean
+          for_renewals?: boolean
+          max_uses?: number | null
+          used_count?: number
+          paused_at?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          captain_id?: string
+          name?: string
+          kind?: string
+          value?: number
+          scope?: string
+          tier_ids?: string[]
+          package_ids?: string[]
+          starts_at?: string
+          ends_at?: string
+          for_new?: boolean
+          for_renewals?: boolean
+          max_uses?: number | null
+          used_count?: number
+          paused_at?: string | null
+          created_at?: string
+        }
+        Relationships: [{
+          foreignKeyName: "captain_offers_captain_id_fkey"
+          columns: ["captain_id"]
+          isOneToOne: false
+          referencedRelation: "profiles"
+          referencedColumns: ["id"]
+        }]
+      }
       captain_packages: {
         Row: {
           archived_at: string | null
@@ -327,6 +435,7 @@ export type Database = {
           name: string
           price_egp: number
           sessions: number | null
+          tier_id: string | null
         }
         Insert: {
           archived_at?: string | null
@@ -338,6 +447,7 @@ export type Database = {
           name: string
           price_egp: number
           sessions?: number | null
+          tier_id?: string | null
         }
         Update: {
           archived_at?: string | null
@@ -349,8 +459,23 @@ export type Database = {
           name?: string
           price_egp?: number
           sessions?: number | null
+          tier_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "captain_packages_tier_id_fkey"
+            columns: ["tier_id"]
+            isOneToOne: false
+            referencedRelation: "captain_package_tiers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "package_tier_owner"
+            columns: ["tier_id", "captain_id"]
+            isOneToOne: false
+            referencedRelation: "captain_package_tiers"
+            referencedColumns: ["id", "captain_id"]
+          },
           {
             foreignKeyName: "captain_packages_captain_id_fkey"
             columns: ["captain_id"]
@@ -1525,6 +1650,10 @@ export type Database = {
       }
       player_payments: {
         Row: {
+          tier_id: string | null
+          offer_id: string | null
+          list_price_egp: number | null
+          bonus_days: number | null
           amount_egp: number | null
           captain_id: string
           created_at: string
@@ -1538,6 +1667,10 @@ export type Database = {
           price_egp: number | null
         }
         Insert: {
+          tier_id?: string | null
+          offer_id?: string | null
+          list_price_egp?: number | null
+          bonus_days?: number | null
           amount_egp?: number | null
           captain_id: string
           created_at?: string
@@ -1551,6 +1684,10 @@ export type Database = {
           price_egp?: number | null
         }
         Update: {
+          tier_id?: string | null
+          offer_id?: string | null
+          list_price_egp?: number | null
+          bonus_days?: number | null
           amount_egp?: number | null
           captain_id?: string
           created_at?: string
@@ -1564,6 +1701,20 @@ export type Database = {
           price_egp?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "player_payments_tier_id_fkey"
+            columns: ["tier_id"]
+            isOneToOne: false
+            referencedRelation: "captain_package_tiers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "player_payments_offer_id_fkey"
+            columns: ["offer_id"]
+            isOneToOne: false
+            referencedRelation: "captain_offers"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "player_payments_captain_id_fkey"
             columns: ["captain_id"]

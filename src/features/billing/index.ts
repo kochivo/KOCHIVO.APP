@@ -1,4 +1,8 @@
 export { messages } from './messages';
+export { applicableOffers, bestOffer, finalPrice, monthlyEquivalent, savingsPercent, offerStatus, remainingSlots } from './pricing';
+export type { Offer, OfferContext } from './pricing';
+export { saveTier, saveOffer, setOfferPaused, setTierArchived, assignPackageTier } from './data/catalog-actions';
+export { activatePlayerWithOffer, renewPlayerWithOffer } from './data/offer-sales';
 export { PlanBadge } from './components/plan-badge';
 export { PlanSidebar } from './components/plan-sidebar';
 export { BalanceBadges } from './components/balance-badges';
