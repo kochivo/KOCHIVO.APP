@@ -9,7 +9,7 @@ import { formatDateAr, localDate } from '@/lib/dates';
 import { clock } from '../audio';
 import type { VoiceNote } from '../types';
 
-export function VoiceNoteList({ notes, onPlay }: { notes: VoiceNote[]; onPlay?: (note: VoiceNote) => void }) {
+export function VoiceNoteList({ notes, onPlay, replies }: { notes: VoiceNote[]; onPlay?: (note: VoiceNote) => void; replies?: Record<string, string> }) {
   const timezone = useTimezone();
   const t = useT(messages);
   const locale = useLocale();
@@ -23,6 +23,7 @@ export function VoiceNoteList({ notes, onPlay }: { notes: VoiceNote[]; onPlay?: 
         </p>
         <AudioPlayer src={note.url} mimeType={note.mimeType} durationSeconds={note.durationSeconds} playLabel={t('play')} pauseLabel={t('pause')}
           formatTime={clock} onPlay={() => onPlay?.(note)} onError={() => setBroken(note.id)} />
+        {note.contextId && replies?.[note.contextId] && <p className="whitespace-pre-wrap break-words pt-2 text-[12.5px] text-muted">{replies[note.contextId]}</p>}
         {broken === note.id && <p role="alert" className="text-xs text-danger">{t('playFailed')}</p>}
       </li>)}
     </ul>

@@ -11,6 +11,10 @@ import { formatDateAr, localDate } from '@/lib/dates';
 import { accessState } from '../access';
 import { useCaptainContext } from '../hooks/use-my-captain';
 import { whatsappUrl } from '@/lib/whatsapp';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { PlayerAssessments } from './player-assessments-entry';
+import { CaptainQuestion } from './captain-question';
+import { messages as v6Messages } from '../v6-messages';
 
 const contactPatterns = {
   whatsapp: /^https:\/\/wa\.me\/[1-9]\d{7,14}$/,
@@ -23,6 +27,8 @@ const contactPatterns = {
 
 export function CaptainScreen({ voiceNotes }: { voiceNotes?: ReactNode }) {
   const t = useT(messages);
+  const v6t = useT(v6Messages);
+  const v6 = captainWorkspaceEnabled();
   const locale = useLocale();
   const labels = { active: t('subscriptionActive'), ending: t('subscriptionEndingSoon'), ended: t('subscriptionEnded'), archived: t('coachingPaused') };
   const formatDate = (date: string) => formatDateAr(date, { day: 'numeric', month: 'long', year: 'numeric' }, locale);
@@ -32,9 +38,7 @@ export function CaptainScreen({ voiceNotes }: { voiceNotes?: ReactNode }) {
     key in contactPatterns && typeof link === 'string' && contactPatterns[key as keyof typeof contactPatterns].test(link)));
   // Captains who saved only a phone before profile links existed stay reachable on WhatsApp.
   const url = social.whatsapp ?? (data?.phone ? whatsappUrl({ phone: data.phone }) ?? undefined : undefined);
-  return <main className="mx-auto max-w-lg space-y-5 px-5 pt-6 pb-32">
-    <header><h1 className="text-2xl font-extrabold">{t('coach')}</h1></header>
-    {status === 'loading' ? <LoadingState variant="detail" /> : status === 'error' ?
+  const profile = status === 'loading' ? <LoadingState variant="detail" /> : status === 'error' ?
       <ErrorState message={t('couldnTLoadYourCoach')} retryLabel={t('tryAgain')} onRetry={() => void retry()} /> :
       !data ? <EmptyState icon={MessageCircle} title={t('youReNotWorkingWithA')} body={t('yourCoachSDetailsWillAppear')} action={{ label: t('backHome'), href: '/player' }} /> :
         <GlassCard className="space-y-5 p-6">
@@ -63,7 +67,15 @@ export function CaptainScreen({ voiceNotes }: { voiceNotes?: ReactNode }) {
             className="flex min-h-14 items-center justify-center gap-2 rounded-control bg-lime px-5 font-extrabold text-on-lime">
             <MessageCircle aria-hidden className="size-5" />{t('messageYourCoachOnWhatsApp')}
           </a> : <Button disabled className="min-h-12 w-full">{t('yourCoachHasnTAddedA')}</Button>}
-        </GlassCard>}
-    {data && voiceNotes}
+        </GlassCard>;
+  return <main className="mx-auto max-w-lg space-y-5 px-5 pt-6 pb-32">
+    {v6 && data ? <header className="flex items-center gap-3">
+      {data.avatarUrl ? <Image src={data.avatarUrl} alt="" width={48} height={48} unoptimized className="size-12 rounded-full object-cover" /> :
+        <span aria-hidden className="glass flex size-12 items-center justify-center rounded-full text-lg">{data.fullName.trim().slice(0, 1)}</span>}
+      <div><h1 className="font-display text-[19px] font-semibold">{data.fullName}</h1><p className="mt-1 text-xs text-faint">{v6t('replyTime')}</p></div>
+    </header> : <header><h1 className="text-2xl font-extrabold">{t('coach')}</h1></header>}
+    {v6 && data ? <>{voiceNotes}<PlayerAssessments actionable={false} /><CaptainQuestion contactUrl={url} />
+      <details className="glass rounded-card border border-line-soft p-4"><summary className="flex min-h-12 cursor-pointer items-center text-sm text-muted">{v6t('profile')}</summary>{profile}</details>
+    </> : <>{profile}{data && voiceNotes}</>}
   </main>;
 }

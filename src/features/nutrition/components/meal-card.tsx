@@ -12,9 +12,12 @@ import { Button, EmptyState, GlassCard } from '@/ui';
 import { setMealEaten } from '../data/log-meal';
 import { mealMacros } from '../macros';
 import { starterText } from '@/lib/starter-text';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { messages as v6Messages } from '../v6-messages';
 
 export function MealCard({ meal, log, today, planTitle }: { meal: NutritionMeal; log?: MealLogRow; today: string; planTitle?: string }) {
   const t = useT(messages);
+  const v6t = useT(v6Messages);
   const locale = useLocale();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(false);
@@ -39,7 +42,7 @@ export function MealCard({ meal, log, today, planTitle }: { meal: NutritionMeal;
     else delete nextSwaps[itemId];
     void save(eaten, nextSwaps, now);
   }
-  return <GlassCard className="space-y-4 p-4">
+  const details = <GlassCard className="space-y-4 p-4">
     <h2 className="text-lg font-bold">{starterText(meal.name, locale, planTitle)}</h2>
     {meal.items.length === 0 && <EmptyState icon={Utensils} title={t('thisMealIsBeingPrepared')} body={t('itWillAppearHereWhenReady')} action={{ label: t('messageCoach'), href: '/player/captain' }} />}
     <ul className="space-y-3">
@@ -62,4 +65,23 @@ export function MealCard({ meal, log, today, planTitle }: { meal: NutritionMeal;
     </Button>
     {error && <p role="alert" className="text-sm text-danger">{t('saveFailedTryAgain')}</p>}
   </GlassCard>;
+  if (!captainWorkspaceEnabled()) return details;
+  return <div className="p-4">
+    <div className="flex min-h-16 items-center gap-3">
+      <button type="button" disabled={busy || !meal.items.length} aria-label={t('mealEaten')}
+        aria-pressed={eaten} onClick={() => void save(!eaten, swaps, Date.now())}
+        className={`flex min-h-12 min-w-12 shrink-0 items-center justify-center rounded-control border ${eaten ? 'border-lime bg-lime text-on-lime' : 'border-line text-muted'}`}>
+        {eaten && <Check aria-hidden className="size-5" />}
+      </button>
+      <div className="min-w-0 flex-1"><h2 className="text-sm font-medium">{starterText(meal.name, locale, planTitle)}</h2>
+        <p className="mt-1 text-xs leading-6 text-faint">{meal.items.map(item => {
+          const chosen = item.alternatives.find(alt => alt.id === swaps[item.id]) ?? item;
+          return `${formatNumber(chosen.grams, locale)}${t('g')} ${chosen.name}`;
+        }).join(' · ')}</p>
+      </div>
+      <span className="font-display text-sm font-extrabold tabular-nums text-faint">{formatNumber(macros.kcal, locale)}</span>
+    </div>
+    {error && <p role="alert" className="text-sm text-danger">{t('saveFailedTryAgain')}</p>}
+    <details><summary className="flex min-h-12 cursor-pointer items-center text-xs text-muted">{v6t('details')}</summary>{details}</details>
+  </div>;
 }

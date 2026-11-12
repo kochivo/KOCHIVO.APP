@@ -9,8 +9,10 @@ import { loadSupabaseBrowser } from '@/core/supabase/lazy';
 import { listVoiceNotes, markListened } from '../data/voice-notes';
 import type { VoiceNote } from '../types';
 import { VoiceNoteList } from './voice-note-list';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { playerReplies } from '../data/player-replies';
 
-type Load = { status: 'loading' } | { status: 'error' } | { status: 'ready'; notes: VoiceNote[] };
+type Load = { status: 'loading' } | { status: 'error' } | { status: 'ready'; notes: VoiceNote[]; replies?: Record<string, string> };
 
 /** The signed-in player's notes from their captain. */
 export function PlayerVoiceNotes() {
@@ -21,7 +23,9 @@ export function PlayerVoiceNotes() {
       const client = await loadSupabaseBrowser();
       const auth = await client.auth.getUser();
       if (auth.error || !auth.data.user) throw new Error('Not signed in');
-      setLoad({ status: 'ready', notes: await listVoiceNotes(client, auth.data.user.id) });
+      const notes = await listVoiceNotes(client, auth.data.user.id);
+      const replies = captainWorkspaceEnabled() ? await playerReplies(client, notes.flatMap(note => note.contextId ? [note.contextId] : [])) : undefined;
+      setLoad({ status: 'ready', notes, replies });
     } catch (error) {
       console.warn('Loading voice notes failed', error);
       setLoad({ status: 'error' });
@@ -36,7 +40,7 @@ export function PlayerVoiceNotes() {
     if (note.listenedAt) return;
     const now = new Date();
     void loadSupabaseBrowser().then((client) => markListened(client, note.id, now));
-    setLoad((current) => current.status !== 'ready' ? current : { status: 'ready',
+    setLoad((current) => current.status !== 'ready' ? current : { ...current, status: 'ready',
       notes: current.notes.map((item) => item.id === note.id ? { ...item, listenedAt: now.toISOString() } : item) });
   };
   return (
@@ -45,7 +49,7 @@ export function PlayerVoiceNotes() {
       {load.status === 'loading' ? <LoadingState variant="list" /> : load.status === 'error' ?
         <ErrorState message={t('loadFailed')} retryLabel={t('retry')} onRetry={() => { setLoad({ status: 'loading' }); void fetchNotes(); }} /> :
         load.notes.length === 0 ? <EmptyState icon={Mic} title={t('noNotesTitle')} body={t('noNotesBody')} action={{ label: t('sendCheckin'), href: '/player/progress' }} /> :
-          <VoiceNoteList notes={load.notes} onPlay={played} />}
+          <VoiceNoteList notes={load.notes} onPlay={played} replies={load.replies} />}
     </GlassCard>
   );
 }

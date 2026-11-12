@@ -3,13 +3,14 @@ import { z } from 'zod';
 import type { ProgramSnapshot } from '@/core/offline';
 import type { Tables } from '@/types/database';
 import type { AppDatabase as Database } from '@/types/app-database';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 
 export type { ProgramSnapshot } from '@/core/offline';
 
 type ExerciseResponse = Pick<Tables<'program_exercises'>,
   'id' | 'exercise_id' | 'position' | 'sets' | 'reps_min' | 'reps_max' | 'rest_seconds' | 'superset_group' | 'rpe' | 'tempo' | 'notes'> & {
   rir?: number | null;
-  exercises: Pick<Tables<'exercises'>, 'name_ar' | 'name_en' | 'media_path'> & { video_url?: string | null } | null;
+  exercises: Pick<Tables<'exercises'>, 'name_ar' | 'name_en' | 'media_path'> & { video_url?: string | null; body_part?: string } | null;
 };
 export type ProgramResponse = Pick<Tables<'programs'>, 'id' | 'title' | 'notes' | 'settings'> & {
   program_days: (Pick<Tables<'program_days'>, 'id' | 'position' | 'title'> & {
@@ -33,6 +34,7 @@ export function mapProgramSnapshot(program: ProgramResponse, trainingDays: numbe
         ...exercise, rir: exercise.rir ?? null, name_ar: exercises?.name_ar ?? null, name_en: exercises?.name_en ?? '',
         media_path: exercises?.media_path ?? null,
         video_url: exercises?.video_url ?? null,
+        ...(captainWorkspaceEnabled() ? { body_part: exercises?.body_part ?? null } : {}),
       })),
     })),
   };
@@ -41,9 +43,10 @@ export function mapProgramSnapshot(program: ProgramResponse, trainingDays: numbe
 export async function fetchProgramSnapshot(client: SupabaseClient<Database>): Promise<ProgramSnapshot | null> {
   const { data: auth, error } = await client.auth.getUser();
   if (error || !auth.user) throw error ?? new Error('Missing session');
+  const exerciseFields = captainWorkspaceEnabled() ? 'name_ar,name_en,media_path,video_url,body_part' : 'name_ar,name_en,media_path,video_url';
   const [program, intake] = await Promise.all([
-    client.from('programs').select('id,title,notes,settings,program_days(id,position,title,weekday,is_rest_day,program_cardio(*),program_exercises(id,exercise_id,position,sets,reps_min,reps_max,rest_seconds,superset_group,rpe,rir,tempo,notes,exercises(name_ar,name_en,media_path,video_url)))')
-      .eq('player_id', auth.user.id).eq('status', 'active').maybeSingle(),
+    client.from('programs').select(`id,title,notes,settings,program_days(id,position,title,weekday,is_rest_day,program_cardio(*),program_exercises(id,exercise_id,position,sets,reps_min,reps_max,rest_seconds,superset_group,rpe,rir,tempo,notes,exercises(${exerciseFields})))`)
+      .eq('player_id', auth.user.id).eq('status', 'active').returns<ProgramResponse[]>().maybeSingle(),
     client.from('player_intake').select('training_days').eq('player_id', auth.user.id).maybeSingle(),
   ]);
   if (program.error) throw program.error;

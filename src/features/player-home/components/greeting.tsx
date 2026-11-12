@@ -11,6 +11,7 @@ import { useStreakSessions } from '../hooks/use-streak-sessions';
 import { computeStreak, trainingDay } from '../streak';
 import { StreakPill } from './streak-pill';
 import { AvatarRing } from './avatar-ring';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 
 const StreakSheet = dynamic(() => import('./streak-sheet').then(module => module.StreakSheet), { ssr: false });
 
@@ -30,7 +31,7 @@ export function Greeting({ firstName, now, playerId, snapshot, loading = false }
   const dayMonth = formatDateAr(date, { day: 'numeric', month: 'long' }, locale);
   return <div className="min-w-0 flex-1">
     <div className="flex items-center gap-3">
-    {stats && <AvatarRing initial={firstName?.slice(0, 1) || t('streakInitial')} done={stats.weekDone} planned={stats.weekPlanned} />}
+    {stats && !captainWorkspaceEnabled() && <AvatarRing initial={firstName?.slice(0, 1) || t('streakInitial')} done={stats.weekDone} planned={stats.weekPlanned} />}
     <div className="min-w-0 space-y-1">
     <p className="text-start text-xs text-muted"><bdi>{`${weekday} · ${dayMonth}`}</bdi></p>
     <h1 className="text-2xl font-extrabold">{hour < 12 ? t('goodMorning') : t('goodEvening')}{firstName ? t('namedGreeting', { value0: firstName }) : ''}</h1>

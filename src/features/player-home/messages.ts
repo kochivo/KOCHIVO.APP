@@ -5,6 +5,8 @@ export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
+    v6WorkoutToday: 'تمرين النهارده', v6Continue: 'كمّل التمرين', v6LogMeal: 'سجّل الوجبة', v6Answer: 'جاوب',
+    v6WorkoutSummary: '{exercises} تمارين · {minutes} دقيقة',
     'task.waiting': 'الكابتن بيجهزلك برنامجك',
     taskWaitingContext: 'هنبعتلك إشعار أول ما يبقى جاهز',
     thisWeek: 'الأسبوع ده', nextWeek: 'الأسبوع الجاي',
@@ -89,6 +91,8 @@ export const messages = defineMessages({
     weekDayLabel: "{value0} {value1}، {value2}",
   },
   en: {
+    v6WorkoutToday: 'Today’s workout', v6Continue: 'Continue workout', v6LogMeal: 'Log meal', v6Answer: 'Answer',
+    v6WorkoutSummary: '{exercises} exercises · {minutes} minutes',
     'task.waiting': 'Your captain is preparing your plan',
     taskWaitingContext: "We'll notify you when it's ready",
     thisWeek: 'This week', nextWeek: 'Next week',

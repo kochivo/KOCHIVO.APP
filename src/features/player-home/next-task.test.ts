@@ -11,6 +11,10 @@ const snapshot = { id: 'active' as const, player_id: 'p', program_id: 'program',
 const session = { id: 's', program_day_id: 'day', training_date: base.today, started_at: '2026-11-03T10:00:00Z',
   completed_at: null, client_updated_at: '2026-11-03T10:00:00Z' };
 describe('player next task', () => {
+  it('prioritizes a meal over starting a workout on a coached rest day', () => {
+    expect(playerNextTask({ ...base, snapshot, rest: true,
+      meals: [{ id: 'm', name: 'Lunch', position: 1 }] })).toMatchObject({ kind: 'meal', href: '/player/nutrition' });
+  });
   it('prioritizes intake over all other work', () => {
     expect(playerNextTask({ ...base, intakeDone: false, snapshot, meals: [{ id: 'm', name: 'Lunch', position: 1 }], checkInWeeks: [] }).kind).toBe('intake');
   });

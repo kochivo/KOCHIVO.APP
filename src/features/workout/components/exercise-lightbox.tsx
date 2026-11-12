@@ -7,14 +7,14 @@ import Image from 'next/image';
 import { Maximize2, X } from 'lucide-react';
 
 // A native dialog gives focus trapping, Escape/back-gesture closing and a top layer above the bottom nav for free.
-export function ExerciseLightbox({ src, name }: { src: string; name: string }) {
+export function ExerciseLightbox({ src, name, large = false }: { src: string; name: string; large?: boolean }) {
   const t = useT(messages);
   const dialog = useRef<HTMLDialogElement>(null);
   const close = () => dialog.current?.close();
   return <>
     <button type="button" aria-label={t('enlargeExerciseImage', { name })} onClick={() => dialog.current?.showModal()}
-      className="relative block shrink-0 cursor-pointer rounded-control transition-transform hover:scale-105 motion-reduce:hidden motion-reduce:transition-none">
-      <Image src={src} alt="" width={84} height={84} unoptimized loading="eager" decoding="async" className="rounded-control" />
+      className={large ? 'relative block aspect-[16/10] w-full cursor-pointer overflow-hidden rounded-card bg-ink motion-reduce:hidden' : 'relative block shrink-0 cursor-pointer rounded-control transition-transform hover:scale-105 motion-reduce:hidden motion-reduce:transition-none'}>
+      <Image src={src} alt="" width={large ? 480 : 84} height={large ? 300 : 84} unoptimized loading="eager" decoding="async" className={large ? 'size-full object-contain' : 'rounded-control'} />
       <span aria-hidden className="absolute bottom-1 end-1 grid size-6 place-items-center rounded-full bg-bg/75 text-ink">
         <Maximize2 className="size-3.5" />
       </span>

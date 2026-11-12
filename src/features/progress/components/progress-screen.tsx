@@ -21,6 +21,12 @@ import type { TrendPoint } from '../trends';
 import { weekStart } from '../week';
 import { PlayerGallery } from './player-gallery';
 import { BodyScansLoader } from '@/features/body-scans';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { ranksEnabled } from '@/lib/ranks-enabled';
+import { messages as v6Messages } from '../v6-messages';
+const WeightOverview = dynamic(() => import('./weight-overview').then(module => module.WeightOverview), { ssr: false });
+const RankOverview = dynamic(() => import('./rank-overview').then(module => module.RankOverview), { ssr: false });
+const PlayerAssessments = dynamic(() => import('@/features/player-shell').then(module => module.PlayerAssessments), { ssr: false });
 const CheckinSheet = dynamic(() => import('./checkin-sheet').then(module => module.CheckinSheet), { ssr: false });
 const CheckinHistory = dynamic(() => import('./checkin-history').then(module => module.CheckinHistory), { ssr: false, loading: () => <LoadingState variant="list" /> });
 const LineChart = dynamic(() => import('./line-chart').then(module => module.LineChart), {
@@ -30,6 +36,8 @@ const LineChart = dynamic(() => import('./line-chart').then(module => module.Lin
 export function ProgressScreen({ analytics }: { analytics?: ReactNode }) {
   const timezone = useTimezone();
   const t = useT(messages);
+  const v6t = useT(v6Messages);
+  const v6 = captainWorkspaceEnabled();
   const locale = useLocale();
   function deltaLabel(points: TrendPoint[], unit: string) {
     const delta = trendDelta(points);
@@ -85,9 +93,10 @@ export function ProgressScreen({ analytics }: { analytics?: ReactNode }) {
   const checkinAction = sent ? { label: t('messageCoach'), href: '/player/captain' } :
     { label: t('sendWeeklyCheckin'), onClick: () => { setSheetLoaded(true); setSheet(true); } };
   return <main className="mx-auto max-w-lg space-y-4 px-5 pt-6 pb-32">
-    <header><h1 className="text-2xl font-extrabold">{t('yourProgress')}</h1></header>
+    <header><h1 className="text-2xl font-extrabold">{v6 ? v6t('title') : t('yourProgress')}</h1></header>
+    {v6 && <><WeightOverview checkins={checkins} checkinError={checkinError} onRetry={() => setRetryKey(value => value + 1)} /><PlayerAssessments />{ranksEnabled() && <RankOverview />}</>}
     <Link href="/player/history" className="glass flex min-h-12 items-center gap-3 rounded-card p-5 font-bold">
-      <Dumbbell aria-hidden className="text-lime" />{t('workoutHistory')}
+      <Dumbbell aria-hidden className="text-lime" />{v6 ? v6t('history') : t('workoutHistory')}
     </Link>
     {localError ? <ErrorState message={t('couldntLoadYourWorkouts')} retryLabel={t('tryAgain')} onRetry={() => {
       setLocalError(false); setRetryKey((value) => value + 1);
@@ -121,7 +130,7 @@ export function ProgressScreen({ analytics }: { analytics?: ReactNode }) {
     </>}
     {sent && <p role="status" className="min-h-12 py-3 text-center text-muted">{t('sent')}</p>}
     {checkins && checkins.length > 0 && <CheckinHistory checkins={checkins} />}
-    {(checkins?.length !== 0 || checkinError) && <Button size="lg" className="w-full" aria-disabled={Boolean(sent)} disabled={!today || (!checkins && !checkinError)} onClick={() => { if (!sent) { setSheetLoaded(true); setSheet(true); } }}>{t('sendWeeklyCheckin')}</Button>}
+    {(checkins?.length !== 0 || checkinError) && <Button variant={v6 ? 'secondary' : 'primary'} size="lg" className="w-full" aria-disabled={Boolean(sent)} disabled={!today || (!checkins && !checkinError)} onClick={() => { if (!sent) { setSheetLoaded(true); setSheet(true); } }}>{t('sendWeeklyCheckin')}</Button>}
     {sheetLoaded && (checkins || checkinError) && <CheckinSheet latest={latest} open={sheet} onClose={() => setSheet(false)} onSent={() => {
       setSheet(false); setRetryKey((value) => value + 1);
     }} />}

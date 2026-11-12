@@ -29,6 +29,8 @@ import { previewFor } from '../day-preview';
 import { DayPreviewCard } from './day-preview-card';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { PendingForms } from '@/features/forms';
+import { HomeTiles } from './home-tiles';
+import { MorningRow } from './morning-row';
 
 const readPending = () => pendingCount(localDb());
 const readParked = () => parkedCount(localDb());
@@ -40,6 +42,7 @@ const PlayerReadiness = dynamic(() => import('@/features/readiness').then(module
 export function HomeScreen({ firstName, playerId }: { firstName?: string; playerId?: string }) {
   const timezone = useTimezone();
   const t = useT(messages);
+  const v6 = captainWorkspaceEnabled();
   const locale = useLocale();
   const { now, online } = useCalendarClock();
   const [localError, setLocalError] = useState(false);
@@ -77,7 +80,14 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
       setLocalError(false); setRetryKey((value) => value + 1); void retry();
     }} /> : !now || status === 'loading' || (snapshot && (!sessions || !weekSessions)) ? <LoadingState variant="cards" /> : <>
       <div hidden={selectedDate !== today} className="space-y-4">
-      {rest ? <PlayerReadiness playerId={playerId} today={today} rest coachRest={decision === 'rest'}
+      {v6 ? <>
+        <NextTaskSlot rest={rest} snapshot={snapshot ?? null} sessions={sessions ?? []} today={today} playerId={playerId}
+          retryKey={retryKey} onRetry={() => setRetryKey(value => value + 1)} />
+        <MorningRow><PlayerReadiness playerId={playerId} today={today} rest={rest} coachRest={decision === 'rest'}
+          onDecisionChange={setDecision} tomorrowRest={Boolean(tomorrowRest)}
+          tomorrow={tomorrow && !tomorrowRest && !tomorrow.is_rest_day ? starterText(tomorrow.title, locale) : undefined} /></MorningRow>
+        <HomeTiles today={today} playerId={playerId} />
+      </> : rest ? <PlayerReadiness playerId={playerId} today={today} rest coachRest={decision === 'rest'}
         onDecisionChange={setDecision}
         tomorrowRest={Boolean(tomorrowRest)}
         tomorrow={tomorrow && !tomorrowRest && !tomorrow.is_rest_day ? starterText(tomorrow.title, locale) : undefined} /> : <>

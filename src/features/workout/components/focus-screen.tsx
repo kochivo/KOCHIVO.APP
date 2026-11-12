@@ -22,6 +22,11 @@ import { MediaStatus } from './media-status';
 import { restAnnouncement } from '../rest';
 import { starterText } from '@/lib/starter-text';
 import { localDb, useLiveQuery } from '@/core/offline';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { SetRows } from './set-rows';
+import { messages as v6Messages } from '../v6-messages';
+import { WorkoutClock } from './workout-clock';
+import Link from 'next/link';
 
 const readPlan = () => localDb().program_snapshot.get('active');
 
@@ -35,6 +40,8 @@ const CoachReductionBanner = dynamic(() => import('@/features/readiness').then(m
 export function FocusScreen({ dayId, playerId }: { dayId: string; playerId?: string }) {
   const timezone = useTimezone();
   const t = useT(messages);
+  const v6t = useT(v6Messages);
+  const v6 = captainWorkspaceEnabled();
   const locale = useLocale();
   const router = useRouter();
   const { now, online } = useCalendarClock();
@@ -58,7 +65,10 @@ export function FocusScreen({ dayId, playerId }: { dayId: string; playerId?: str
     {state.pr && <PrBurst key={state.pr.id} pr={state.pr} onDismiss={state.dismissPr} />}
     <header className="flex flex-wrap items-center gap-3">
       <IconButton aria-label={t('back')} onClick={() => router.push('/player')}><ArrowRight aria-hidden className="dir-icon" /></IconButton>
-      <p className="min-w-0 flex-1 truncate font-bold">{state.day ? starterText(state.day.title, locale) : t('workout')}</p>
+      <p className="min-w-0 flex-1 truncate font-bold">{v6 && state.day ? v6t('progress', { day: starterText(state.day.title, locale),
+        current: formatNumber(Math.max(1, state.day.exercises.findIndex(exercise => exercise.id === current?.exercise.id) + 1), locale),
+        total: formatNumber(state.day.exercises.length, locale) }) : state.day ? starterText(state.day.title, locale) : t('workout')}</p>
+      {v6 && <WorkoutClock startedAt={state.session?.started_at} />}
       <SyncPill state={!online ? 'offline' : state.parked && state.parked > 0 ? 'attention' : state.pending === undefined || state.pending > 0 ? 'pending' : 'synced'} pending={state.pending} onRetry={state.retrySync} />
       <MediaStatus />
     </header>
@@ -73,16 +83,25 @@ export function FocusScreen({ dayId, playerId }: { dayId: string; playerId?: str
         {state.finished ? state.session ? <SessionFeedback key={state.session.id} sessionId={state.session.id}
           workout={workout} hasFeedback={state.session.session_rpe != null || Boolean(state.session.player_note)} /> : <DonePanel workout={workout} /> : current ? <>
           <ExerciseHeader exercise={current.exercise} last={state.lastSession} />
-          <SetDots exercise={current.exercise} currentIndex={current.setIndex} doneSets={state.doneSets}
-            onEdit={state.edit} disabled={state.disabled} />
+          {v6 ? <SetRows state={state} /> : <SetDots exercise={current.exercise} currentIndex={current.setIndex} doneSets={state.doneSets}
+            onEdit={state.edit} disabled={state.disabled} />}
           {rest.remaining > 0 ? <RestPanel remaining={rest.remaining} total={rest.total} sound={rest.sound} onToggleSound={rest.toggleSound}
             flashing={rest.flashing} onExtend={rest.extend} onSkip={rest.skip} /> : <>
-            <SetControls state={state} />
+            {v6 ? <details className="glass rounded-card p-4"><summary className="flex min-h-12 cursor-pointer items-center text-sm text-muted">{v6t('controls')}</summary><SetControls state={state} /></details> : <SetControls state={state} />}
           </>}
           {lastSet && <FormCheckButton exerciseId={lastSet.exercise_id} setLogId={lastSet.id} />}
           {state.next && <NextUp exercise={state.next.exercise} />}
         </> : <LoadingState />}
       </>}
     {!state.error && !state.loading && state.day && <CardioCards blocks={state.day.cardio ?? []} />}
+    {v6 && state.day && !state.finished && <div className="glass rounded-card border border-line-soft p-4">
+      <div className="flex min-h-12 items-center justify-between gap-3"><span className="text-lime">{v6t('workout')}</span>
+        <a href="#workout-exercises" className="flex min-h-12 items-center text-muted">{v6t('exercises')}</a>
+        <Link href="/player/history" className="flex min-h-12 items-center text-muted">{v6t('history')}</Link></div>
+      <details id="workout-exercises"><summary className="flex min-h-12 cursor-pointer items-center text-sm">{v6t('exercises')}</summary>
+        <ol className="divide-y divide-line-soft">{state.day.exercises.map(exercise => <li key={exercise.id} className="py-4 text-sm"><bdi>{exercise.name_en}</bdi>
+          {exercise.notes && <p className="mt-1 text-xs text-muted">{exercise.notes}</p>}</li>)}</ol>
+      </details>
+    </div>}
   </main>;
 }

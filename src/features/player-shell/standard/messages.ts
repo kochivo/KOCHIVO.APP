@@ -8,6 +8,7 @@ export const arStd = {
   'subscriptionEndsIn.many': 'ينتهي اشتراكك بعد {n} يوماً',
   'subscriptionEndsIn.other': 'ينتهي اشتراكك بعد {n} يوم',
   home: 'الرئيسية', nutrition: 'التغذية', progress: 'التطور', coach: 'الكابتن',
+  v6Food: 'الطعام', v6Progress: 'تطوري', v6Account: 'حسابي',
   subscriptionActive: 'اشتراكك نشط', subscriptionEndingSoon: 'ينتهي اشتراكك قريباً',
   subscriptionEnded: 'انتهى اشتراكك', coachingPaused: 'المتابعة متوقفة',
   couldnTLoadYourCoach: 'تعذّر تحميل بيانات الكابتن', tryAgain: 'حاول مجدداً',

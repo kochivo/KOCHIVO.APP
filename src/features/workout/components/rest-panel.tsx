@@ -5,6 +5,7 @@ import { messages } from '../messages';
 import { Button } from '@/ui';
 import { cn } from '@/lib/cn';
 import { formatRest } from '../rest';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 
 export function RestPanel({ remaining, total = remaining, sound = true, flashing, onExtend, onSkip, onToggleSound }: {
   remaining: number; total?: number; sound?: boolean; flashing: boolean;
@@ -12,6 +13,16 @@ export function RestPanel({ remaining, total = remaining, sound = true, flashing
 }) {
   const t = useT(messages);
   const locale = useLocale();
+  if (captainWorkspaceEnabled()) return <section className={cn('glass-strong space-y-3 rounded-card border border-line-soft p-5',
+    flashing && 'motion-safe:animate-pulse motion-safe:bg-lime-soft')}>
+    <div className="flex items-center justify-between gap-3"><h2 className="text-sm text-muted">{t('rest')}</h2>
+      <output aria-label={t('restTimeRemaining')} aria-live="off" className="font-display text-[22px] font-extrabold tabular-nums"><bdi>{formatRest(remaining, locale)}</bdi></output></div>
+    <div className="flex flex-wrap gap-2">
+      <Button variant="secondary" className="min-h-14 flex-1 rounded-full" onClick={onExtend}>{t('message30Sec')}</Button>
+      <Button variant="secondary" className="min-h-14 flex-1 rounded-full" onClick={onSkip}>{t('skip')}</Button>
+      <button type="button" aria-pressed={sound} onClick={onToggleSound} className="min-h-12 rounded-full border border-line-soft px-4 text-xs text-muted">{t('sound')}</button>
+    </div>
+  </section>;
   return <section className={cn('glass-strong flex flex-col items-center gap-5 rounded-card px-4 py-10',
     flashing && 'motion-safe:animate-pulse motion-safe:bg-lime-soft')}>
     <h2 className="text-sm text-muted">{t('rest')}</h2>

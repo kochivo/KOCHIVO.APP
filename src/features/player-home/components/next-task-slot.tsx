@@ -8,10 +8,13 @@ import { useTaskStatus } from '../hooks/use-task-status';
 import { playerNextTask } from '../next-task';
 import { messages } from '../messages';
 import { NextTaskCard } from './next-task-card';
+import { pickTodayDay } from '../next-day';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import Link from 'next/link';
 
-export function NextTaskSlot({ snapshot, sessions, today, playerId, retryKey, onRetry }: {
+export function NextTaskSlot({ snapshot, sessions, today, playerId, retryKey, onRetry, rest }: {
   snapshot: ProgramSnapshot | null; sessions: WorkoutSessionRow[]; today: string;
-  playerId?: string; retryKey: number; onRetry: () => void;
+  playerId?: string; retryKey: number; onRetry: () => void; rest?: boolean;
 }) {
   const t = useT(messages);
   const status = useTaskStatus(today, playerId, retryKey);
@@ -23,6 +26,10 @@ export function NextTaskSlot({ snapshot, sessions, today, playerId, retryKey, on
   // Offline at the gym the server read fails; skip the server-only rules so the workout and meal tasks still show.
   const remote = status.status === 'ready' ? status
     : { intakeDone: true, checkInWeeks: [saturdayWeek(today)[0] ?? today], voiceNotes: [] };
-  return <NextTaskCard task={playerNextTask({ today, snapshot, sessions, intakeDone: remote.intakeDone,
-    meals: nutrition.snapshot?.meals ?? [], mealLogs: logs, checkInWeeks: remote.checkInWeeks, voiceNotes: remote.voiceNotes })} />;
+  const task = playerNextTask({ today, snapshot, sessions, rest, intakeDone: remote.intakeDone,
+    meals: nutrition.snapshot?.meals ?? [], mealLogs: logs, checkInWeeks: remote.checkInWeeks, voiceNotes: remote.voiceNotes });
+  return <><NextTaskCard task={task} day={snapshot ? pickTodayDay(snapshot, sessions, today) : undefined} />
+    {captainWorkspaceEnabled() && task.kind !== 'voice' && remote.voiceNotes.some(note => !note.listenedAt) &&
+      <Link href="/player/captain" className="glass flex min-h-12 items-center rounded-card px-5 py-3 text-sm">{t('task.voice')}</Link>}
+  </>;
 }

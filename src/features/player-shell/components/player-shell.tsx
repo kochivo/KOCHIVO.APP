@@ -10,7 +10,8 @@ import { BottomNav, ErrorState, LoadingState } from '@/ui';
 import dynamic from 'next/dynamic';
 import { NotificationBell } from '@/features/notifications';
 import Link from 'next/link';
-import { Settings } from 'lucide-react';
+import { Settings, UserRound } from 'lucide-react';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { daysBetween, localDate } from '@/lib/dates';
 import { whatsappUrl } from '@/lib/whatsapp';
 import { accessState } from '../access';
@@ -32,6 +33,7 @@ const KoPreview = process.env.NODE_ENV === 'development'
 export function PlayerShell({ children, unassignedAction }: { children?: ReactNode; unassignedAction?: ReactNode }) {
   useDeviceRole('player');
   const t = useT(messages);
+  const v6 = captainWorkspaceEnabled();
   const locale = useLocale();
   const pathname = usePathname();
   const captain = useMyCaptain();
@@ -59,9 +61,9 @@ export function PlayerShell({ children, unassignedAction }: { children?: ReactNo
     {!workout && <RestMoodSync onChange={setRestMood} />}
     <div className={workout ? undefined : showsNav(pathname) ? 'pb-[var(--page-bottom-clearance)]' : 'pt-[var(--safe-top)]'}>
     {showsNav(pathname) && <div className="sticky top-0 z-30 bg-bg/70 pb-3 pt-[max(0.75rem,var(--safe-top))] backdrop-blur-md"><div className="mx-auto flex max-w-lg justify-end gap-2 px-5">
-      <Link href="/player/settings" aria-label={t('settings')} aria-current={pathname === '/player/settings' ? 'page' : undefined}
+      <Link href="/player/settings" aria-label={t(v6 ? 'v6Account' : 'settings')} aria-current={pathname === '/player/settings' ? 'page' : undefined}
         className={`flex min-h-12 min-w-12 items-center justify-center rounded-control ${pathname === '/player/settings' ? 'bg-lime-soft text-lime' : 'text-muted'}`}>
-        <Settings aria-hidden className="size-5" />
+        {v6 ? <UserRound aria-hidden className="size-5 rounded-full" /> : <Settings aria-hidden className="size-5" />}
       </Link><InstallButton icon /><NotificationBell />
     </div></div>}
     <div className="mx-auto max-w-lg space-y-3 px-5 pt-3" aria-live="polite">
@@ -84,7 +86,8 @@ export function PlayerShell({ children, unassignedAction }: { children?: ReactNo
     {showsNav(pathname) && <InstallSheet />}
     {showsNav(pathname) && <FeedbackButton role="player" />}
     {process.env.NODE_ENV === 'development' && showsNav(pathname) && <KoPreview role="player" />}
-    {showsNav(pathname) && <BottomNav aria-label={t('navigation')} items={playerNav(pathname, locale)} />}
+    {showsNav(pathname) && <BottomNav aria-label={t('navigation')} items={playerNav(pathname, locale)}
+      className={v6 ? 'start-0 end-0 bottom-0 rounded-none border-t border-line-soft bg-bg pb-[max(0.5rem,var(--safe-bottom))]' : undefined} />}
     </div>
   </MyCaptainContext.Provider>;
 }

@@ -1,4 +1,6 @@
 export const arStd = {
+  v6WorkoutToday: 'تمرين اليوم', v6Continue: 'أكمل التمرين', v6LogMeal: 'سجّل الوجبة', v6Answer: 'أجب',
+  v6WorkoutSummary: '{exercises} تمارين · {minutes} دقيقة',
   'task.waiting': 'المدرب يجهّز برنامجك', taskWaitingContext: 'سنرسل لك إشعاراً عندما يصبح جاهزاً',
   thisWeek: 'هذا الأسبوع', nextWeek: 'الأسبوع القادم', upcomingWorkout: 'تمرين قادم',
   completedWorkout: 'مكتمل', notLogged: 'لم يُسجّل', previewRestDay: 'يوم راحة',
