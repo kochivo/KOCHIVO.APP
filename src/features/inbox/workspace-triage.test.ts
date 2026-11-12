@@ -13,3 +13,8 @@ it('prioritizes attention over an older routine item and preserves all computed 
   expect(orderWorkspaceTasks([form, checkin], input, now, 'routine')).toEqual([form]);
   expect(orderWorkspaceTasks([form, checkin], input, now, 'attention')).toEqual([checkin]);
 });
+it('puts an assessment with a flagged answer in attention', () => {
+  const assessment: WorkspaceItem = { kind: 'assessment', id: 'a', player_id: 'a', player_name: 'Ali', title: 'Weekly',
+    created_at: now.toISOString(), reviewed_at: null, reply: null, answers: [{ id: 'q', label_ar: 'Pain', label_en: 'Pain', value: true, photoCount: 0, alert: true }] };
+  expect(workspaceTriage(assessment, input, now).group).toBe('attention');
+});

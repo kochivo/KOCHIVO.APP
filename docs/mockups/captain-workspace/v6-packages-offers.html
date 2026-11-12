@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Packages and Offers</title>
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;500;600&family=Changa:wght@500;600;700&family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--deep:#070808;--glass:rgb(255 255 255/.025);--glass2:rgb(255 255 255/.045);--strong:rgb(255 255 255/.07);--hair:rgb(242 242 238/.07);--hair2:rgb(242 242 238/.12);--ink:#f4f4f1;--muted:#a6abb0;--faint:#6f747a;--lime:#b6e94f;--on-lime:#101418;--lime-soft:rgb(182 233 79/.10);--warn:#f2b544;--warn-soft:rgb(242 181 68/.10);--bad:#ff8a7a}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:radial-gradient(1100px 480px at 75% -200px,rgb(182 233 79/.07),transparent 70%),var(--deep);color:var(--ink);font-family:Alexandria,system-ui,sans-serif;font-size:14px;min-height:100vh}
+button,input{font:inherit;color:inherit}
+.num{font-family:Manrope,sans-serif;font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}.faint{color:var(--faint)}.lime{color:var(--lime)}
+.demo{position:sticky;top:0;z-index:30;display:flex;gap:6px;align-items:center;padding:10px 16px;background:rgb(7 8 8/.92);backdrop-filter:blur(10px);border-bottom:1px dashed var(--hair2);overflow-x:auto}
+.demo b{font-size:11px;color:var(--faint);white-space:nowrap;margin-inline-end:6px}
+.demo button{white-space:nowrap;border:1px dashed var(--hair2);background:none;border-radius:999px;padding:6px 12px;font-size:12px;color:var(--muted);cursor:pointer}
+.demo button.on{border-style:solid;border-color:var(--lime);color:var(--lime)}
+.shell{display:grid;grid-template-columns:236px minmax(0,1fr);min-height:calc(100vh - 49px)}
+.side{border-inline-end:1px solid var(--hair);padding:22px 14px;display:flex;flex-direction:column;gap:2px;position:sticky;top:49px;height:calc(100vh - 49px)}
+.brand{display:flex;align-items:center;gap:10px;padding:0 10px 20px;font-family:Manrope;font-weight:800;letter-spacing:.08em;font-size:13px}
+.logo{width:34px;height:34px;border-radius:11px;background:var(--lime);color:var(--on-lime);display:grid;place-items:center}
+.nav{display:flex;align-items:center;gap:12px;min-height:44px;padding:0 12px;border-radius:14px;color:var(--muted);cursor:pointer}
+.nav i{font-size:19px}.nav.on{background:var(--glass2);color:var(--ink)}
+.navh{font-size:11px;color:var(--faint);padding:14px 12px 4px;letter-spacing:.02em}
+.main{padding:26px 36px 60px;min-width:0}
+.screen{display:none}.screen.on{display:block}
+h1{font-family:Changa,Alexandria,sans-serif;font-size:30px;font-weight:600;line-height:1.15}
+h2{font-family:Changa,Alexandria,sans-serif;font-size:19px;font-weight:600}
+.head{display:flex;align-items:center;gap:14px;margin-bottom:18px;flex-wrap:wrap}
+.sp{flex:1}
+.btn{min-height:46px;padding:0 20px;border-radius:999px;border:1px solid var(--hair2);background:transparent;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;white-space:nowrap}
+.btn.sm{min-height:38px;padding:0 14px;font-size:12.5px}
+.pri{background:var(--lime);border-color:var(--lime);color:var(--on-lime);font-weight:600}
+.card{background:var(--glass);border:1px solid var(--hair);border-radius:22px}
+.pad{padding:18px 20px}
+.strong{background:var(--strong);border-color:var(--hair2)}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--hair);margin-bottom:20px}
+.tabs span{padding:12px 16px;color:var(--faint);cursor:pointer;border-bottom:2px solid transparent}
+.tabs span.on{color:var(--ink);border-color:var(--lime)}
+.status{font-size:12px;color:var(--faint);display:inline-flex;align-items:center;gap:6px}
+.layout{display:grid;grid-template-columns:300px minmax(0,1fr);gap:18px;align-items:start}
+.facts{position:sticky;top:75px;display:flex;flex-direction:column;gap:12px}
+.fact{display:flex;justify-content:space-between;padding:10px 0;border-top:1px solid var(--hair);font-size:13px}
+.fact:first-of-type{border-top:0}
+.fact b{font-family:Manrope;font-weight:800}
+.choice{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+.choice .card{padding:20px;cursor:pointer}
+.choice .card.on{border-color:var(--lime);background:var(--lime-soft)}
+.choice i{font-size:24px;color:var(--lime)}
+.days{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.day{min-height:40px;padding:0 16px;border-radius:999px;border:1px solid var(--hair);display:inline-flex;align-items:center;gap:6px;color:var(--muted);cursor:pointer}
+.day.on{background:var(--ink);color:var(--deep);border-color:var(--ink)}
+.ex{display:grid;grid-template-columns:28px 1fr auto auto auto 34px;gap:12px;align-items:center;padding:12px 16px;border-top:1px solid var(--hair)}
+.ex:first-child{border-top:0}
+.ex .h{color:var(--faint);cursor:grab}
+.ex small{display:block;color:var(--faint);font-size:11.5px}
+.step{display:inline-flex;align-items:center;border:1px solid var(--hair2);border-radius:999px;overflow:hidden}
+.step button{width:34px;height:34px;background:none;border:0;cursor:pointer;color:var(--muted)}
+.step span{min-width:44px;text-align:center;font-family:Manrope;font-weight:800}
+.add{display:flex;align-items:center;gap:10px;padding:12px 16px;border-top:1px dashed var(--hair2);color:var(--faint)}
+.add input{flex:1;background:none;border:0;outline:0}
+.sugg{display:flex;gap:6px;flex-wrap:wrap;padding:0 16px 14px}
+.sugg span{font-size:12px;padding:6px 12px;border-radius:999px;background:var(--glass2);color:var(--muted);cursor:pointer}
+.targets{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.t{padding:14px 16px}
+.t .l{font-size:12px;color:var(--faint);display:flex;justify-content:space-between}
+.t .v{font:800 22px Manrope;margin:6px 0 8px}
+.t .v small{font:500 12px Alexandria;color:var(--faint)}
+.bar{height:6px;border-radius:6px;background:rgb(255 255 255/.06);position:relative;overflow:hidden}
+.bar i{position:absolute;inset-block:0;inset-inline-start:0;border-radius:6px;background:var(--lime)}
+.bar.over i{background:var(--warn)}
+.meal{margin-bottom:12px}
+.meal .mh{display:flex;align-items:center;gap:10px;padding:14px 18px}
+.meal .mh .k{margin-inline-start:auto;font-size:12px;color:var(--faint)}
+.food{display:grid;grid-template-columns:1fr 120px 70px 34px;gap:12px;align-items:center;padding:10px 18px;border-top:1px solid var(--hair);font-size:13px}
+.food small{color:var(--faint);font-size:11.5px}
+.qty{display:flex;align-items:center;gap:6px;border:1px solid var(--hair2);border-radius:12px;padding:4px 10px}
+.qty input{width:44px;background:none;border:0;outline:0;font-family:Manrope;font-weight:800;text-align:center}
+.x{color:var(--faint);cursor:pointer;text-align:center}
+.stepper{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.stepper span{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:var(--faint)}
+.stepper b{width:24px;height:24px;border-radius:50%;border:1px solid var(--hair2);display:grid;place-items:center;font:800 11px Manrope}
+.stepper .on{color:var(--ink)}.stepper .on b{background:var(--lime);color:var(--on-lime);border-color:var(--lime)}
+.week{display:flex;gap:6px}
+.week div{flex:1;text-align:center;font-size:11px;color:var(--faint)}
+.week i{display:block;width:10px;height:10px;border-radius:50%;margin:6px auto 0;border:1px solid var(--hair2)}
+.week i.f{background:var(--lime);border-color:var(--lime)}.week i.p{background:var(--faint);border-color:var(--faint)}
+.phone{width:380px;margin:0 auto;border:1px solid var(--hair2);border-radius:36px;padding:26px 20px;min-height:640px;background:var(--deep)}
+.note{margin-top:26px;border:1px dashed var(--hair2);border-radius:18px;padding:14px 18px;font-size:12.5px;color:var(--muted);line-height:1.9}
+.note b{color:var(--lime);font-weight:500}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media (max-width:1000px){.layout,.compare{grid-template-columns:1fr}.facts{position:static}.targets{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:760px){.shell{grid-template-columns:1fr}.side{display:none}.main{padding:18px 16px 60px}.choice{grid-template-columns:1fr}.ex{grid-template-columns:1fr auto 34px}.ex .h,.ex .hide{display:none}.food{grid-template-columns:1fr 100px 34px}.food .hide{display:none}.phone{width:100%}}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.row{display:flex;align-items:center;gap:12px;padding:14px 18px;border-top:1px solid var(--hair);min-height:64px}
+.row:first-child{border-top:0}
+.row small{display:block;color:var(--faint);font-size:11.5px}
+.row .end{margin-inline-start:auto;display:flex;align-items:center;gap:10px}
+.av{width:38px;height:38px;border-radius:50%;background:var(--glass2);border:1px solid var(--hair2);display:grid;place-items:center;font-size:12px;flex:none}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;font-size:11.5px;background:var(--glass2);color:var(--muted);white-space:nowrap}
+.pill.l{background:var(--lime-soft);color:var(--lime)}.pill.w{background:var(--warn-soft);color:var(--warn)}.pill.b{background:rgb(255 138 122/.1);color:var(--bad)}
+.ico{width:38px;height:38px;border-radius:12px;background:var(--glass2);display:grid;place-items:center;flex:none;font-size:18px}
+.split{display:grid;grid-template-columns:340px minmax(0,1fr);gap:16px;align-items:start}
+.photo{aspect-ratio:3/4;border-radius:16px;background:linear-gradient(160deg,#20231b,#0f100e);border:1px solid var(--hair);display:grid;place-items:center;color:var(--faint);font-size:12px}
+.vol{display:grid;grid-template-columns:70px 1fr 50px;gap:10px;align-items:center;font-size:12.5px;margin-top:10px}
+.dots{display:flex;gap:6px}.dots i{width:12px;height:12px;border-radius:50%;background:var(--glass2);border:1px solid var(--hair2)}
+.dots i.g{background:var(--lime);border-color:var(--lime)}.dots i.y{background:var(--warn);border-color:var(--warn)}.dots i.r{background:var(--bad);border-color:var(--bad)}
+.phones{display:flex;gap:26px;flex-wrap:wrap;justify-content:center}
+.phone{width:375px;border:1px solid var(--hair2);border-radius:38px;padding:22px 18px 0;min-height:760px;background:var(--deep);display:flex;flex-direction:column}
+.phone .body{flex:1}
+.pnav{display:flex;justify-content:space-around;border-top:1px solid var(--hair);margin:16px -18px 0;padding:10px 0 14px;font-size:11px;color:var(--faint)}
+.pnav span{display:flex;flex-direction:column;align-items:center;gap:3px}.pnav i{font-size:21px}.pnav .on{color:var(--lime)}
+.set{display:grid;grid-template-columns:30px 1fr 1fr 56px;gap:8px;align-items:center;margin-top:8px}
+.set .box{min-height:52px;border-radius:14px;border:1px solid var(--hair2);display:grid;place-items:center;font:800 18px Manrope}
+.set .done{min-height:52px;border-radius:14px;display:grid;place-items:center;font-size:22px;border:1px solid var(--hair2)}
+.set .done.on{background:var(--lime);color:var(--on-lime);border-color:var(--lime)}
+.check{width:26px;height:26px;border-radius:8px;border:1px solid var(--hair2);display:grid;place-items:center;flex:none}
+.check.on{background:var(--lime);border-color:var(--lime);color:var(--on-lime)}
+.chart{height:120px;display:flex;align-items:flex-end;gap:6px;margin-top:12px}
+.chart i{flex:1;background:var(--glass2);border-radius:6px 6px 0 0}.chart i.l{background:var(--lime)}
+.srch{display:flex;align-items:center;gap:8px;min-width:220px;min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--hair2);color:var(--faint);font-size:13px}
+@media (max-width:1000px){.grid2,.grid3,.split{grid-template-columns:1fr}}
+</style>
+<style>
+.gap{padding:34px 28px;border-bottom:1px dashed var(--hair2)}
+.gap>h2{font-size:24px;margin-bottom:4px}.gap>p{color:var(--muted);font-size:13px;margin-bottom:20px;max-width:760px;line-height:1.8}
+.pair{display:flex;gap:26px;flex-wrap:wrap;align-items:flex-start}
+.pair .phone{margin:0;min-height:0}
+.desk{flex:1;min-width:420px;max-width:720px}
+.lbl{font-size:11px;color:var(--faint);margin-bottom:8px}
+.sheet{border-top:1px solid var(--hair2);border-radius:26px 26px 0 0;background:var(--strong);padding:18px;margin:14px -20px -26px}
+.field{border:1px solid var(--hair2);border-radius:14px;padding:12px 14px;color:var(--faint);margin-bottom:10px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.end{margin-inline-start:auto;display:flex;gap:8px;align-items:center}
+/* Icon font is blocked in the artifact viewer; a dot keeps each icon's place and colour. */
+.ti{display:inline-block;width:.55em;height:.55em;border-radius:50%;background:currentColor;opacity:.8;vertical-align:middle}
+@media (max-width:760px){.main{padding-inline:16px!important}.gap{padding:26px 0}.desk{min-width:0;flex-basis:100%}.pair>div{width:100%}.phone{padding:22px 16px}.sheet{margin-inline:-16px}}
+</style>
+<style>
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;align-items:start}
+.tier{padding:0;overflow:hidden}
+.tier .th{padding:16px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--hair)}
+.dot{width:12px;height:12px;border-radius:50%;flex:none}
+.tier .feat{padding:12px 18px;font-size:12.5px;color:var(--muted);line-height:2;border-bottom:1px solid var(--hair)}
+.tier .feat div::before{content:"✓ ";color:var(--lime)}
+.dur{display:flex;align-items:center;gap:10px;padding:12px 18px;border-top:1px solid var(--hair);font-size:13px}
+.dur:first-of-type{border-top:0}
+.dur b{font:800 15px Manrope}
+.save{font-size:11px;padding:2px 8px;border-radius:999px;background:var(--lime-soft);color:var(--lime)}
+.tier .ft{padding:12px 18px;display:flex;gap:8px;align-items:center;border-top:1px solid var(--hair);font-size:12px;color:var(--faint)}
+.tier.new{border-style:dashed;display:grid;place-items:center;min-height:280px;color:var(--faint);cursor:pointer}
+.offer{display:flex;align-items:center;gap:14px;padding:14px 18px;flex-wrap:wrap}
+.offer .ic{width:42px;height:42px;border-radius:12px;background:var(--warn-soft);color:var(--warn);display:grid;place-items:center;font:800 13px Manrope}
+.ofg{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:start}
+.fld{margin-bottom:16px}.fld>label{display:block;font-size:12px;color:var(--faint);margin-bottom:8px}
+.inp{min-height:48px;border:1px solid var(--hair2);border-radius:14px;padding:0 14px;display:flex;align-items:center;gap:8px}
+.kinds{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.kinds span{border:1px solid var(--hair);border-radius:16px;padding:14px 10px;text-align:center;font-size:12.5px;color:var(--muted);cursor:pointer}
+.kinds span b{display:block;font:800 18px Manrope;color:var(--ink);margin-bottom:4px}
+.kinds span.on{border-color:var(--lime);background:var(--lime-soft);color:var(--lime)}
+.presets{display:flex;gap:8px;flex-wrap:wrap}
+.presets span{padding:9px 14px;border-radius:999px;border:1px dashed var(--hair2);font-size:12.5px;color:var(--muted);cursor:pointer}
+.presets span.on{border-style:solid;border-color:var(--warn);color:var(--warn)}
+.chk{display:flex;align-items:center;gap:10px;padding:10px 0;font-size:13px;border-top:1px solid var(--hair)}
+.chk:first-child{border-top:0}
+.pub{max-width:1060px;margin:0 auto}
+.banner{display:flex;align-items:center;gap:12px;padding:14px 18px;border-radius:18px;background:var(--warn-soft);border:1px solid rgb(242 181 68/.3);margin-bottom:18px;flex-wrap:wrap}
+.banner b{color:var(--warn)}
+.cd{font:800 14px Manrope;color:var(--warn);margin-inline-start:auto}
+.durs{display:flex;justify-content:center;margin-bottom:18px}
+.pcards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;align-items:stretch}
+.pc{padding:22px 20px;display:flex;flex-direction:column;gap:10px;position:relative}
+.pc.hot{border-color:var(--lime);background:linear-gradient(180deg,rgb(182 233 79/.08),transparent 60%),var(--glass)}
+.pc .badge{position:absolute;top:-11px;inset-inline-start:20px;font-size:11px;padding:3px 10px;border-radius:999px;background:var(--lime);color:var(--on-lime);font-weight:600}
+.price{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.price b{font:800 32px Manrope}
+.price s{color:var(--faint);font:600 15px Manrope}
+.price small{color:var(--faint)}
+.pc ul{list-style:none;font-size:13px;color:var(--muted);line-height:2.1;flex:1}
+.pc li::before{content:"✓ ";color:var(--lime)}
+.pc li.no{color:var(--faint)}.pc li.no::before{content:"— ";color:var(--faint)}
+.gift{font-size:12px;color:var(--warn)}
+.dm{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.dm .card{padding:16px 18px;font-size:12.5px;line-height:2;color:var(--muted)}
+.dm h3{font:600 15px Changa,Alexandria;color:var(--ink);margin-bottom:6px}
+.dm code{font-family:Manrope;font-size:11.5px;color:var(--lime)}
+@media (max-width:1000px){.tiers,.pcards,.ofg,.dm{grid-template-columns:1fr}}
+@media (max-width:760px){.kinds{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="demo"><b>Mockup · الباقات والعروض</b>
+<button class="on" data-s="tiers">باقاتي (الكابتن)</button>
+<button data-s="offer">عرض جديد</button>
+<button data-s="pub">اللاعب بيشوف إيه</button>
+<button data-s="data">إزاي هيتبني</button>
+</div>
+<div class="shell">
+<aside class="side">
+<div class="brand"><span class="logo">K</span>KOCHIVO</div>
+<div class="nav"><i class="ti"></i>الرئيسية</div>
+<div class="nav"><i class="ti"></i>اللاعبين</div>
+<div class="nav"><i class="ti"></i>المتابعة</div>
+<div class="navh">التمرين</div>
+<div class="nav"><i class="ti"></i>خطط التمارين</div>
+<div class="navh">الأكل</div>
+<div class="nav"><i class="ti"></i>الأنظمة الغذائية</div>
+<div class="nav"><i class="ti"></i>مكتبة الأكلات</div>
+<div class="navh">الإدارة</div>
+<div class="nav"><i class="ti"></i>التقييمات</div>
+<div class="nav on"><i class="ti"></i>الدفعات</div>
+<div class="nav"><i class="ti"></i>الإعدادات</div>
+</aside>
+<main class="main">
+
+<!-- TIERS -->
+<section class="screen on" id="tiers">
+<div class="head">
+<div><div class="faint" style="font-size:12px">الدفعات ‹</div><h1>باقاتي والعروض</h1><div class="muted" style="font-size:13px;margin-top:4px">اللي اللاعب بيختار منه لما ينضم أو يجدد · بيظهر في صفحتك العامة</div></div>
+<span class="sp"></span>
+<button class="btn sm">شوف صفحتي</button>
+<button class="btn pri">فئة جديدة</button>
+</div>
+
+<div class="card" style="margin-bottom:16px">
+<div class="offer">
+<span class="ic">20%</span>
+<div><b>بلاك فرايداي</b> <span class="pill w">شغال · باقي يومين</span><div class="faint" style="font-size:12px;margin-top:3px">خصم 20% على باقات 3 و6 شهور · للجداد والتجديد · استخدمه 7 من 20</div></div>
+<span class="sp"></span><button class="btn sm">عدّل</button><button class="btn sm">وقّفه</button>
+</div>
+<div class="offer" style="border-top:1px solid var(--hair)">
+<span class="ic" style="background:var(--glass2);color:var(--muted)">+1</span>
+<div><b>عرض رمضان</b> <span class="pill">متجدول · يبدأ 18 فبراير</span><div class="faint" style="font-size:12px;margin-top:3px">اشترك 3 شهور وخد شهر هدية · VIP بس</div></div>
+<span class="sp"></span><button class="btn sm">عدّل</button>
+</div>
+<div class="offer" style="border-top:1px dashed var(--hair2);color:var(--faint);cursor:pointer" onclick="document.querySelector('[data-s=offer]').click()">+ عرض جديد <span class="sp"></span><span class="pill">بلاك فرايداي</span><span class="pill">رمضان</span><span class="pill">الصيف</span><span class="pill">رأس السنة</span></div>
+</div>
+
+<div class="tiers">
+<div class="card tier">
+<div class="th"><span class="dot" style="background:var(--muted)"></span><h2 style="font-size:18px">Standard</h2><span class="sp"></span><span class="faint">⋯</span></div>
+<div class="feat"><div>برنامج تمرين ونظام أكل</div><div>متابعة أسبوعية</div><div>رد خلال 24 ساعة</div><div>فيديوهين أداء في الشهر</div></div>
+<div class="dur">شهر<span class="sp"></span><b>1,500</b> جنيه</div>
+<div class="dur">3 شهور<span class="save">وفّر 11%</span><span class="sp"></span><b>4,000</b> جنيه</div>
+<div class="dur">6 شهور<span class="save">وفّر 17%</span><span class="sp"></span><b>7,500</b> جنيه</div>
+<div class="ft">8 لاعيبة عليها<span class="sp"></span>+ مدة</div>
+</div>
+<div class="card tier" style="border-color:var(--lime)">
+<div class="th"><span class="dot" style="background:var(--lime)"></span><h2 style="font-size:18px">VIP</h2><span class="pill l">الأكثر طلبًا</span><span class="sp"></span><span class="faint">⋯</span></div>
+<div class="feat"><div>كل حاجة في Standard</div><div>رد خلال 6 ساعات</div><div>مكالمة فيديو كل أسبوع</div><div>فيديوهات أداء من غير حد</div><div>طلباته بتطلع فوق في المتابعة</div></div>
+<div class="dur">شهر<span class="sp"></span><b>2,500</b> جنيه</div>
+<div class="dur">3 شهور<span class="save">وفّر 13%</span><span class="sp"></span><b>6,500</b> جنيه</div>
+<div class="dur">6 شهور<span class="save">وفّر 20%</span><span class="sp"></span><b>12,000</b> جنيه</div>
+<div class="ft">4 لاعيبة عليها<span class="sp"></span>+ مدة</div>
+</div>
+<div class="card tier new">+ فئة جديدة<br><span style="font-size:12px">مثلًا: أونلاين بس، حصص في الجيم</span></div>
+</div>
+<div class="note"><b>الباقات القديمة</b> هتظهر تحت فئة اسمها "أساسي" لحد ما تنقلها أو تغيّر اسمها، ومش هيتغير أي حاجة للاعيبة اللي عليها. "وفّر 11%" بتتحسب لوحدها من سعر الشهر. "الأكثر طلبًا" إنت اللي بتختارها.</div>
+</section>
+
+<!-- OFFER -->
+<section class="screen" id="offer">
+<div class="head"><div><div class="faint" style="font-size:12px">باقاتي والعروض ‹</div><h1>عرض جديد</h1></div><span class="sp"></span><button class="btn sm">إلغاء</button><button class="btn pri">شغّل العرض</button></div>
+<div class="ofg">
+<div class="card pad">
+<div class="fld"><label>ابدأ من قالب</label><div class="presets"><span class="on">بلاك فرايداي</span><span>رمضان</span><span>الصيف</span><span>رأس السنة</span><span>من الأول</span></div></div>
+<div class="fld"><label>اسم العرض (بيظهر للاعب)</label><div class="inp">بلاك فرايداي</div></div>
+<div class="fld"><label>نوع العرض</label>
+<div class="kinds"><span class="on"><b>%</b>خصم نسبة</span><span><b>−500</b>خصم مبلغ</span><span><b>+1 شهر</b>مدة هدية</span></div></div>
+<div class="fld"><label>قيمة الخصم</label><div class="inp"><b class="num">20</b> %</div></div>
+<div class="fld"><label>على إيه</label><div class="presets"><span>كل الباقات</span><span class="on">مدد معينة: 3 و6 شهور</span><span>فئة معينة</span></div></div>
+<div class="fld"><label>من إمتى لإمتى</label><div class="grid2"><div class="inp">الجمعة 27 نوفمبر</div><div class="inp">الاتنين 30 نوفمبر · 11:59 م</div></div></div>
+<div class="fld"><label>مين يستفيد</label>
+<div class="chk"><span class="check on">✓</span>اللاعيبة الجداد</div>
+<div class="chk"><span class="check on">✓</span>اللاعيبة اللي بيجددوا</div>
+<div class="chk"><span class="check on">✓</span>عدد محدود: أول <b class="num" style="margin-inline:4px">20</b> بس</div>
+</div>
+</div>
+<div style="position:sticky;top:75px">
+<div class="lbl">هيظهر كده في صفحتك:</div>
+<div class="card pc hot" style="margin-top:12px"><span class="badge">بلاك فرايداي · −20%</span>
+<div class="faint" style="font-size:12px">VIP · 3 شهور</div>
+<div class="price"><b>5,200</b><small>جنيه</small><s>6,500</s></div>
+<div class="gift">العرض بيخلص بعد 3 أيام · فاضل 13 مكان</div>
+</div>
+<div class="note">لما العرض يخلص بيقفل لوحده والأسعار بترجع زي ما كانت. كل دفعة بتتسجل بالسعر الأصلي والعرض اللي اتطبق، علشان تقارير الفلوس تفضل مظبوطة.</div>
+</div>
+</div>
+</section>
+
+<!-- PUBLIC -->
+<section class="screen" id="pub">
+<div class="pub">
+<div class="banner"><b>بلاك فرايداي</b><span class="muted">خصم 20% على باقات 3 و6 شهور</span><span class="cd">2 يوم · 14 ساعة</span></div>
+<h1 style="text-align:center;margin-bottom:6px">اختار باقتك مع كابتن علي</h1>
+<div class="muted" style="text-align:center;font-size:13px;margin-bottom:16px">تقدر تغيّر باقتك وقت التجديد</div>
+<div class="durs"><div class="seg" style="display:inline-flex;border:1px solid var(--hair2);border-radius:999px;padding:4px;gap:4px" id="durs">
+<span data-d="1" class="btn sm" style="border:0">شهر</span><span data-d="3" class="btn sm pri" style="border:0">3 شهور</span><span data-d="6" class="btn sm" style="border:0">6 شهور</span></div></div>
+<div class="pcards">
+<div class="card pc"><h2>Standard</h2><div class="faint" style="font-size:12px">للي عايز يبدأ صح</div>
+<div class="price"><b data-p="1500,3200,6000">3,200</b><small>جنيه</small><s data-o="0,4000,7500">4,000</s></div>
+<div class="gift" data-g>شهرك بـ 1,067 جنيه بس</div>
+<ul><li>برنامج تمرين ونظام أكل</li><li>متابعة أسبوعية</li><li>رد خلال 24 ساعة</li><li>فيديوهين أداء في الشهر</li><li class="no">مكالمة فيديو</li></ul>
+<button class="btn">اختار Standard</button></div>
+<div class="card pc hot"><span class="badge">الأكثر طلبًا</span><h2>VIP</h2><div class="faint" style="font-size:12px">متابعة قريبة كل أسبوع</div>
+<div class="price"><b data-p="2500,5200,9600">5,200</b><small>جنيه</small><s data-o="0,6500,12000">6,500</s></div>
+<div class="gift" data-g>شهرك بـ 1,733 جنيه بس</div>
+<ul><li>كل حاجة في Standard</li><li>رد خلال 6 ساعات</li><li>مكالمة فيديو كل أسبوع</li><li>فيديوهات أداء من غير حد</li><li>أولوية في الرد</li></ul>
+<button class="btn pri">اختار VIP</button></div>
+<div class="card pc"><h2>أونلاين بس</h2><div class="faint" style="font-size:12px">برنامج من غير متابعة يومية</div>
+<div class="price"><b data-p="800,2100,3900">2,100</b><small>جنيه</small><s data-o="0,0,0" style="display:none"></s></div>
+<div class="gift" data-g style="color:var(--faint)">العرض مش على الفئة دي</div>
+<ul><li>برنامج تمرين ونظام أكل</li><li>متابعة كل أسبوعين</li><li class="no">رد سريع</li><li class="no">فيديوهات أداء</li><li class="no">مكالمة فيديو</li></ul>
+<button class="btn">اختار أونلاين بس</button></div>
+</div>
+<div class="note" style="text-align:center">نفس الكروت بتظهر للاعب في التطبيق وقت التجديد، والعرض بيظهر بس لو بينطبق عليه (جديد/بيجدد، والفئة والمدة).</div>
+</div>
+</section>
+
+<!-- DATA -->
+<section class="screen" id="data">
+<h1 style="margin-bottom:16px">إزاي هيتبني</h1>
+<div class="dm">
+<div class="card"><h3>الفئات</h3>
+جدول جديد <code>captain_package_tiers</code>: الاسم، الوصف، اللون، الترتيب، المميزات (قايمة)، "الأكثر طلبًا".<br>
+الباقات الموجودة <code>captain_packages</code> بيتضافلها <code>tier_id</code> بس. القديم يتحط تحت "أساسي".<br>
+<span class="lime">بيضيف بس، ومش بيمسح أو يغيّر داتا.</span></div>
+<div class="card"><h3>العروض</h3>
+جدول جديد <code>captain_offers</code>: الاسم، النوع (نسبة / مبلغ / مدة هدية)، القيمة، على إيه (الكل / فئة / مدد)، من وإلى، للجداد / للتجديد، الحد الأقصى، اتستخدم كام مرة.<br>
+الدفعة بيتسجل معاها السعر الأصلي + العرض اللي اتطبق.</div>
+<div class="card"><h3>اللي السيستم بينفّذه من الأول</h3>
+<span class="lime">✓</span> شارة الفئة جنب اسم اللاعب (VIP)<br>
+<span class="lime">✓</span> طلبات الـ VIP بتطلع فوق في المتابعة<br>
+<span class="lime">✓</span> العرض بيقفل لوحده في معاده أو لما العدد يخلص<br>
+<span class="faint">— باقي المميزات كلام بيتعرض، والكابتن هو اللي بيلتزم بيه. نزوّد التنفيذ بعدين على حسب الاستخدام.</span></div>
+</div>
+</section>
+
+</main>
+</div>
+<script>
+document.querySelectorAll('.demo button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.demo button').forEach(x=>x.classList.toggle('on',x===b));document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===b.dataset.s));scrollTo(0,0)});
+document.querySelectorAll('.presets,.kinds').forEach(g=>g.querySelectorAll('span').forEach(s=>s.onclick=()=>g.querySelectorAll('span').forEach(x=>x.classList.toggle('on',x===s))));
+const idx={1:0,3:1,6:2},fmt=n=>n.toLocaleString('en-US');
+document.querySelectorAll('#durs span').forEach(s=>s.onclick=()=>{document.querySelectorAll('#durs span').forEach(x=>x.classList.toggle('pri',x===s));const d=+s.dataset.d,i=idx[d];
+document.querySelectorAll('.pc').forEach(c=>{const b=c.querySelector('[data-p]');if(!b)return;const p=+b.dataset.p.split(',')[i];b.textContent=fmt(p);const o=c.querySelector('[data-o]'),ov=+o.dataset.o.split(',')[i];o.textContent=ov?fmt(ov):'';o.style.display=ov?'':'none';const g=c.querySelector('[data-g]');if(g&&!g.textContent.includes('مش'))g.textContent=d===1?'شهر واحد':'شهرك بـ '+fmt(Math.round(p/d))+' جنيه بس';});});
+</script>
+</body>
+</html>

@@ -3,29 +3,45 @@ import 'server-only';
 import { z } from 'zod';
 import { unstable_rethrow } from 'next/navigation';
 import { formsAccess } from '@/features/forms/server';
+import { matchesAlert } from '@/features/forms';
+import { loadFollowupHistory } from './followup-history';
 import { getT } from '@/core/i18n/server';
 import { workspaceMessages } from '../workspace-messages';
 import { listInbox } from './inbox';
 import { listTriageInputs } from './triage-inputs';
-import type { WorkspaceInboxData, AssessmentItem } from '../workspace-types';
+import type { WorkspaceInboxData, AssessmentItem, ReviewCursor } from '../workspace-types';
+
+export async function loadWorkspaceReviews(input: { at: string; cursor?: ReviewCursor }) {
+  const t = await getT(workspaceMessages);
+  try { return await loadFollowupHistory(input); }
+  catch (error) { unstable_rethrow(error); throw new Error(t('loadFailed')); }
+}
 
 export async function loadWorkspaceInbox(limit = 50): Promise<WorkspaceInboxData> {
   const t = await getT(workspaceMessages);
   try {
     z.number().int().min(50).max(500).parse(limit);
     const { client, captain } = await formsAccess();
-    const [open, forms, joins, checksCount, videosCount] = await Promise.all([
+    const at = new Date().toISOString();
+    const lateAt = new Date(Date.parse(at) - 86_400_000).toISOString();
+    const [open, forms, joins, checksCount, videosCount, lateCounts, reviews] = await Promise.all([
       listInbox({ status: 'open', limit: 50 }),
       client.from('form_requests').select(`id,player_id,answered_at,reviewed_at,captain_reply,
         profiles!form_requests_player_id_fkey(full_name),forms!form_requests_form_id_fkey(title),
-        form_answers(id,value,photo_paths,form_questions(label_ar,label_en,position,options))`, { count: 'exact' })
+        form_answers(id,value,photo_paths,form_questions(label_ar,label_en,position,options,alert_on))`, { count: 'exact' })
         .eq('captain_id', captain).not('answered_at', 'is', null).is('reviewed_at', null)
-        .order('answered_at', { ascending: false }).order('id').limit(limit),
+        .order('answered_at', { ascending: true }).order('id').limit(limit),
       client.rpc('pending_coach_join_requests'),
-      client.from('check_ins').select('id', { count: 'exact', head: true }).eq('captain_id', captain).is('reviewed_at', null),
-      client.from('form_checks').select('id', { count: 'exact', head: true }).eq('captain_id', captain).is('reviewed_at', null),
+      client.from('check_ins').select('created_at', { count: 'exact' }).eq('captain_id', captain).is('reviewed_at', null).order('created_at').limit(1),
+      client.from('form_checks').select('created_at', { count: 'exact' }).eq('captain_id', captain).is('reviewed_at', null).order('created_at').limit(1),
+      Promise.all((['check_ins', 'form_checks', 'form_requests'] as const).map(table => {
+        const query = client.from(table).select('id', { count: 'exact', head: true }).eq('captain_id', captain).is('reviewed_at', null);
+        if (table === 'form_requests') query.not('answered_at', 'is', null);
+        return query.lt(table === 'form_requests' ? 'answered_at' : 'created_at', lateAt);
+      })),
+      loadWorkspaceReviews({ at }),
     ]);
-    if (open.error || forms.error || joins.error || checksCount.error || videosCount.error) throw new Error(t('loadFailed'));
+    if (open.error || forms.error || joins.error || checksCount.error || videosCount.error || lateCounts.some(row => row.error)) throw new Error(t('loadFailed'));
     const checkins = open.data ?? [];
     let cursor = open.nextCursor;
     while (cursor && checkins.length < limit) {
@@ -39,16 +55,23 @@ export async function loadWorkspaceInbox(limit = 50): Promise<WorkspaceInboxData
       answers: [...row.form_answers].sort((a, b) => (a.form_questions?.position ?? 0) - (b.form_questions?.position ?? 0)).map(answer => ({
         id: answer.id, label_ar: answer.form_questions?.label_ar ?? '', label_en: answer.form_questions?.label_en ?? '',
         value: answer.value, photoCount: answer.photo_paths.length,
+        alert: matchesAlert(z.object({ operator: z.enum(['eq', 'gt', 'lt']), value: z.union([z.string(), z.number(), z.boolean()]) }).nullable().parse(answer.form_questions?.alert_on ?? null), answer.value),
         options: z.array(z.object({ value: z.string(), label_ar: z.string(), label_en: z.string() })).parse(answer.form_questions?.options ?? []),
       })),
     }] : []);
-    const at = new Date().toISOString();
-    const extra = await listTriageInputs([...new Set(checkins.filter(item => item.kind === 'checkin').map(item => item.player_id))], at);
+    const extra = await listTriageInputs([...new Set([...checkins, ...reviews.items].filter(item => item.kind === 'checkin').map(item => item.player_id))], at);
     if (extra.error) throw new Error(extra.error);
-    return { items: [...checkins, ...assessments, ...joins.data.map(row => ({ kind: 'request' as const, id: row.id,
+    return { items: [...checkins, ...assessments, ...reviews.items, ...joins.data.map(row => ({ kind: 'request' as const, id: row.id,
       player_name: row.full_name, created_at: row.created_at, reviewed_at: null }))]
       .sort((a, b) => a.created_at.localeCompare(b.created_at) || a.id.localeCompare(b.id)),
-    triage: extra.data ?? { history: [], dailyChecks: [] }, at, limit, more: Boolean(cursor) || (forms.count ?? 0) > forms.data.length,
+    triage: extra.data ?? { history: [], dailyChecks: [] }, at, limit, weekAt: reviews.weekAt,
+    oldest: [...(checksCount.data ?? []), ...(videosCount.data ?? []), ...assessments, ...joins.data].map(row => row.created_at).sort()[0] ?? null,
+    statusCounts: { completed: reviews.counts, overdue: {
+      checkin: lateCounts[0]?.count ?? 0, form: lateCounts[1]?.count ?? 0, assessment: lateCounts[2]?.count ?? 0,
+      request: joins.data.filter(row => row.created_at < lateAt).length,
+      all: lateCounts.reduce((sum, row) => sum + (row.count ?? 0), 0) + joins.data.filter(row => row.created_at < lateAt).length,
+    } },
+    reviews: { more: reviews.more, cursor: reviews.cursor, total: reviews.total }, more: Boolean(cursor) || (forms.count ?? 0) > forms.data.length,
     counts: { checkin: checksCount.count ?? 0, form: videosCount.count ?? 0, assessment: forms.count ?? 0, request: joins.data.length,
       all: (checksCount.count ?? 0) + (videosCount.count ?? 0) + (forms.count ?? 0) + joins.data.length } };
   } catch (error) { unstable_rethrow(error); throw new Error(t('loadFailed')); }
