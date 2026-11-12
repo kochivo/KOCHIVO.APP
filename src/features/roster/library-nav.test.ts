@@ -24,14 +24,18 @@ it('groups enabled navigation and keeps four mobile destinations', () => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
   const items = captainNav('/captain/library/forms');
   expect(items.map(item => item.label)).toEqual([
-    'الرئيسية', 'اللاعبين', 'المهام', 'خطط التمارين', 'مكتبة الأكلات', 'التقييمات', 'الدفعات', 'الإعدادات',
+    'الرئيسية', 'اللاعبين', 'المهام', 'خطط التمارين', 'الأنظمة الغذائية', 'مكتبة الأكلات', 'التقييمات', 'الدفعات', 'الإعدادات',
   ]);
-  expect(items.filter(item => item.group).map(item => item.group)).toEqual(['التمارين', 'الأكل', 'المتابعة']);
+  expect(items.filter(item => item.group).map(item => item.group)).toEqual(['التمارين', 'الأكل', 'الأكل', 'المتابعة']);
   expect(captainMobileNav('/captain').map(item => item.label)).toEqual(['الرئيسية', 'اللاعبين', 'التمارين', 'الأكل']);
 });
-it('includes foods and forms under the enabled library on desktop and phone', () => {
+it('includes meal plans, foods and forms under the enabled library and retains mobile food navigation', () => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
   expect(captainNav('/captain/library/foods').filter(item => item.href.includes('/library')).map(item => item.href))
-    .toEqual(['/captain/library/foods', '/captain/library/forms']);
+    .toEqual(['/captain/library/meal-plans', '/captain/library/foods', '/captain/library/forms']);
+  for (const locale of ['ar', 'en'] as const) {
+    const plan = captainNav('/captain/library/meal-plans', createT(messages, locale)).find(item => item.href === '/captain/library/meal-plans');
+    expect(plan).toMatchObject({ active: true, label: locale === 'ar' ? 'الأنظمة الغذائية' : 'Meal plans' });
+  }
   expect(captainMobileNav('/captain/library/foods').some(item => item.href === '/captain/library/foods')).toBe(true);
 });

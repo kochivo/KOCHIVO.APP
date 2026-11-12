@@ -9,6 +9,14 @@ export function normalizeFoodName(name: string): string {
     .replace(/[أإآٱ]/g, 'ا').replace(/ة/g, 'ه').trim().replace(/\s+/g, ' ').toLowerCase();
 }
 
+export function foodSearchPattern(query: string): string {
+  return [...normalizeFoodName(query)].map(character => {
+    if (character === ' ') return '\\s+';
+    const letter = character === 'ا' ? '[اأإآٱ]' : character === 'ه' ? '[هة]' : character.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return `${letter}[\u064B-\u065F\u0670\u0640]*`;
+  }).join('');
+}
+
 export function duplicateFood(name: string, nameEn: string, foods: { id: string; name: string; nameEn?: string | null }[], id?: string): boolean {
   const names = [name, nameEn].map(normalizeFoodName).filter(Boolean);
   return foods.some(food => food.id !== id && [food.name, food.nameEn ?? '']

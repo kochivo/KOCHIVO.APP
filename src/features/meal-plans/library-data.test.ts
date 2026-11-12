@@ -12,7 +12,7 @@ vi.mock('./data/client', () => ({
         select: (value: string) => { selection = value; state.calls.push(['select', table, value]); return q; },
         single: async () => ({ data: { owner_id: state.owner }, error: null }),
         then: (resolve: (value: unknown) => void) => resolve({ data: table === 'meal_items' ? []
-          : selection.includes('meal_items') ? state.rows.map(row => ({ ...(row as object), meal_items: [{ count: state.uses }], meal_item_alternatives: [{ count: state.alternatives }] })) : state.rows,
+          : selection.includes('meal_items') ? state.rows.map(row => ({ ...(row as object), meal_items: Array.from({ length: state.uses }, (_, i) => ({ meals: { plan_id: String(i) } })), meal_item_alternatives: Array.from({ length: state.alternatives }, () => ({ meal_items: { meals: { plan_id: 'alt' } } })) })) : state.rows,
           count: table === 'meal_items' ? state.uses : table === 'meal_item_alternatives' ? state.alternatives : state.rows.length, error: null }),
         is: (...args: unknown[]) => { state.calls.push(['is', ...args]); return q; },
         eq: (...args: unknown[]) => { state.calls.push(['eq', ...args]); return q; },
@@ -21,11 +21,13 @@ vi.mock('./data/client', () => ({
         in: (...args: unknown[]) => { state.calls.push(['in', ...args]); return q; },
         order: (...args: unknown[]) => { state.calls.push(['order', ...args]); return q; },
         limit: (...args: unknown[]) => { state.calls.push(['limit', ...args]); return q; },
+        overrideTypes: () => q,
       }; return q;
     },
   }),
 }));
 import { listLibraryFoods, deleteLibraryFood, checkFoodDuplicate } from './data/food-library';
+import { foodSearchPattern } from './food-library-rules';
 const id = '01900000-0000-7000-8000-000000000001';
 beforeEach(() => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
@@ -38,7 +40,9 @@ it('requests only 40 rows ordered by an exclusive id cursor, with escaped biling
   expect(state.calls).toContainEqual(['order', 'id']);
   expect(state.calls).toContainEqual(['eq', 'owner_id', 'owner']);
   const searches = state.calls.filter(call => call[0] === 'or');
-  expect(searches[0]?.[1]).toBe('name_ar.ilike."%a\\\\%\\\\_\\"%",name_en.ilike."%a\\\\%\\\\_\\"%"');
+  const pattern = foodSearchPattern('a%_"').replace(/[\\"]/g, character => `\\${character}`);
+  expect(searches).toHaveLength(4);
+  expect(searches[0]?.[1]).toBe(`name_ar.imatch."${pattern}",name_en.imatch."${pattern}"`);
 });
 it('gets usage counts for the entire page in one grouped request', async () => {
   state.rows = [{ id }]; state.uses = 7;

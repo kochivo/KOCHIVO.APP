@@ -4,14 +4,15 @@ import { z } from 'zod';
 import { getT } from '@/core/i18n/server';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { fail, ok } from '@/lib/action-result';
-import { escapeSearch } from '../types';
 import { messages } from '../components/library/messages';
-import { duplicateFood } from '../food-library-rules';
+import { duplicateFood, foodSearchPattern } from '../food-library-rules';
 import { foodFields } from './editor-fields';
 import { planClient, toFood } from './client';
+import type { FoodRow } from './client';
 import { deleteCustomFood } from './custom-food';
 import type { FoodSegment, LibraryPage } from './library-types';
 import type { ActionResult } from '@/lib/action-result';
+import { libraryUsage } from '../library-usage';
 
 const inputSchema = z.object({ query: z.string().max(100), segment: z.enum(['all', 'mine', 'global']), cursor: z.uuid().nullish() });
 
@@ -25,36 +26,29 @@ export async function listLibraryFoods(input: { query: string; segment: FoodSegm
   const owner = user.data.user.id;
   const { query, segment, cursor } = parsed.data;
   const filtered = () => {
-    let request = client.from('foods').select('*', { count: 'exact', head: true }).is('archived_at', null);
+    let request = client.from('foods').select('id', { count: 'exact', head: true }).is('archived_at', null);
     if (query.trim()) {
-      const pattern = `%${escapeSearch(query.trim())}%`;
-      request = request.or(`name_ar.ilike."${pattern}",name_en.ilike."${pattern}"`);
+      const pattern = foodSearchPattern(query).replace(/[\\"]/g, character => `\\${character}`);
+      request = request.or(`name_ar.imatch."${pattern}",name_en.imatch."${pattern}"`);
     }
     return request;
   };
-  let request = client.from('foods').select('*').is('archived_at', null).order('id').limit(40);
+  let request = client.from('foods').select('id,owner_id,name_ar,name_en,photo_path,kcal_per_100g,protein_per_100g,carbs_per_100g,fat_per_100g,units,tags,meal_items(meals(plan_id)),meal_item_alternatives(meal_items(meals(plan_id)))')
+    .is('archived_at', null).order('id').limit(40);
   if (cursor) request = request.gt('id', cursor);
   if (segment === 'mine') request = request.eq('owner_id', owner);
   if (segment === 'global') request = request.is('owner_id', null);
   if (query.trim()) {
-    const pattern = `%${escapeSearch(query.trim())}%`;
-    request = request.or(`name_ar.ilike."${pattern}",name_en.ilike."${pattern}"`);
+    const pattern = foodSearchPattern(query).replace(/[\\"]/g, character => `\\${character}`);
+    request = request.or(`name_ar.imatch."${pattern}",name_en.imatch."${pattern}"`);
   }
   const [page, all, mine, global] = await Promise.all([
-    request, filtered(), filtered().eq('owner_id', owner), filtered().is('owner_id', null),
+    // The generated schema predates units/tags; foodFields and libraryUsage validate their runtime shapes.
+    request.overrideTypes<FoodRow[], { merge: false }>(), filtered(), filtered().eq('owner_id', owner), filtered().is('owner_id', null),
   ]);
   if (page.error || all.error || mine.error || global.error) return fail(t('error'));
   const rows = page.data ?? [];
-  const usage = rows.length ? await client.from('foods').select('id,meal_items(count),meal_item_alternatives(count)').in('id', rows.map(row => row.id)) : null;
-  if (usage?.error) return fail(t('error'));
-  const counts = z.array(z.object({ id: z.string(), meal_items: z.array(z.object({ count: z.number() })),
-    meal_item_alternatives: z.array(z.object({ count: z.number() })).optional() })).safeParse(usage?.data ?? []);
-  if (!counts.success) return fail(t('error'));
-  return ok({ foods: rows.map(row => {
-    const count = counts.data.find(value => value.id === row.id);
-    return { ...toFood(row), ...foodFields(row),
-      uses: count?.meal_items[0]?.count ?? 0, alternativeUses: count?.meal_item_alternatives?.[0]?.count ?? 0 };
-  }),
+  return ok({ foods: rows.map(row => ({ ...toFood(row), ...foodFields(row), ...libraryUsage(row) })),
     cursor: rows.length === 40 ? rows.at(-1)?.id ?? null : null,
     counts: { all: all.count ?? 0, mine: mine.count ?? 0, global: global.count ?? 0 } });
 }

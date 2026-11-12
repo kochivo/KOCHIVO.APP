@@ -8,8 +8,8 @@ export const messages = defineMessages({
   ar: {
     forms: 'التقييمات',
     title: 'مكتبة الأكلات', subtitle: 'أكلاتك والقيم الغذائية في مكان واحد', search: 'دوّر بالعربي أو English',
-    all: 'الكل', mine: 'أكلاتي', global: 'العامة', new: 'أكلة جديدة', food: 'الأكلة',
-    kcal: 'سعرات', protein: 'بروتين', carbs: 'كارب', fat: 'دهون', units: 'الوحدات', usage: 'في خطط',
+    all: 'الكل', mine: 'أكلاتي', global: 'العامة', new: 'أكلة جديدة', food: 'الأكلة · لكل 100 جم',
+    kcal: 'سعرات', protein: 'بروتين', carbs: 'كارب', fat: 'دهون', units: 'وحدات', usage: 'في أنظمة',
     per100: 'لكل 100 جم', empty: 'مفيش أكلات بالبحث ده', loading: 'بنحمّل الأكلات…',
     error: 'مش قادرين نحمّل الأكلات. جرّب تاني', retry: 'جرّب تاني', next: 'التالي', first: 'أول صفحة',
     name: 'الاسم بالعربي', nameEn: 'الاسم بالإنجليزي', photo: 'صورة', save: 'احفظ', close: 'اقفل',
@@ -23,7 +23,7 @@ export const messages = defineMessages({
   en: {
     forms: 'Assessments',
     title: 'Foods library', subtitle: 'Your foods and nutrition in one place', search: 'Search Arabic or English',
-    all: 'All', mine: 'My foods', global: 'Global', new: 'New food', food: 'Food',
+    all: 'All', mine: 'My foods', global: 'Global', new: 'New food', food: 'Food · per 100 g',
     kcal: 'kcal', protein: 'Protein', carbs: 'Carbs', fat: 'Fat', units: 'Units', usage: 'In plans',
     per100: 'Per 100 g', empty: 'No foods match this search', loading: 'Loading foods…',
     error: 'Could not load foods. Try again', retry: 'Try again', next: 'Next', first: 'First page',

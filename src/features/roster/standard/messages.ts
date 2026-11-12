@@ -3,6 +3,7 @@ export const arStd = {
   "foods": "مكتبة الأطعمة",
   "forms": "التقييمات",
   "trainingPlans": "خطط التمارين",
+  "mealPlans": "الأنظمة الغذائية",
   "trainingGroup": "التمارين",
   "foodGroup": "الطعام",
   "followupGroup": "المتابعة",

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { Plus, Send } from 'lucide-react';
+import { Plus, Save, Send } from 'lucide-react';
 import { useLocale, useT } from '@/core/i18n/client';
 import { uuidv7 } from '@/core/offline/ids';
 import { Button } from '@/ui/button';
@@ -13,11 +13,16 @@ import type { ProgramDraft } from '@/features/programs';
 import { StartChoice } from './start-choice';
 import { DayExercises } from './day-exercises';
 import { messages } from './messages';
+import { messages as templateMessages } from './template-messages';
 
-export function TrainingEditor({ playerId, initial, programs }: {
-  playerId: string; initial: ProgramDraft | null; programs: { id: string; title: string; status: string }[];
-}) {
+type Props = { programs: { id: string; title: string; status: string }[] } & (
+  { mode?: 'player'; playerId: string; initial: ProgramDraft | null } |
+  { mode: 'template'; playerId?: never; initial: ProgramDraft }
+);
+
+export function TrainingEditor({ playerId, initial, programs, mode = 'player' }: Props) {
   const t = useT(messages), pt = useT(programMessages), locale = useLocale();
+  const tt = useT(templateMessages), template = mode === 'template';
   const state = useTrainingAutosave(initial);
   const [selected, setSelected] = useState(''), [choosing, setChoosing] = useState(!initial);
   const [templates, setTemplates] = useState(false), [pending, setPending] = useState(false), [error, setError] = useState('');
@@ -30,7 +35,7 @@ export function TrainingEditor({ playerId, initial, programs }: {
     setSent(false); state.update(operation);
   };
   async function start(templateId?: string) {
-    if (pending) return;
+    if (pending || !playerId || template) return;
     setPending(true); setError('');
     try {
       if (draft && !await state.flush()) return;
@@ -40,7 +45,7 @@ export function TrainingEditor({ playerId, initial, programs }: {
     } catch { setError(t('error')); } finally { setPending(false); }
   }
   async function send() {
-    if (!draft || pending) return;
+    if (!draft || pending || template) return;
     const errors = validateForActivation(draft, pt);
     setError(errors.join(' · '));
     if (errors.length) return;
@@ -55,8 +60,9 @@ export function TrainingEditor({ playerId, initial, programs }: {
   return <section className="@container min-w-0 space-y-[18px]">
     <header className="flex flex-wrap items-center justify-end gap-3">
       <SaveStatus status={state.status} locale={locale} onRetry={() => void state.flush()} />
-      {draft && !choosing && <button disabled={pending} className="min-h-12 text-xs text-muted" onClick={() => { setChoosing(true); setTemplates(false); }}>{t('newProgram')}</button>}
-      <Button className="min-h-12 w-auto! rounded-full!" disabled={!draft || pending || choosing} onClick={() => void send()}><Send aria-hidden className="size-4" />{t('send')}</Button>
+      {!template && draft && !choosing && <button disabled={pending} className="min-h-12 text-xs text-muted" onClick={() => { setChoosing(true); setTemplates(false); }}>{t('newProgram')}</button>}
+      {template ? <Button className="min-h-12 w-auto! rounded-full!" disabled={!draft || pending} onClick={() => void state.flush()}><Save aria-hidden className="size-4" />{tt('save')}</Button> :
+        <Button className="min-h-12 w-auto! rounded-full!" disabled={!draft || pending || choosing} onClick={() => void send()}><Send aria-hidden className="size-4" />{t('send')}</Button>}
     </header>
     {(error || state.error) && <p role="alert" className="text-sm text-danger">{error || state.error}</p>}
     {sent && <p role="status" className="text-xs text-faint">{t('sent')}</p>}
@@ -80,16 +86,16 @@ export function TrainingEditor({ playerId, initial, programs }: {
           <DayExercises key={day.id} day={day} update={update} />
         </> : <p className="glass rounded-card p-5 text-faint">{t('noDays')}</p>}
         <Link className="inline-flex min-h-12 items-center text-xs text-muted" href={`/captain/programs/${draft.id}`}>{t('advanced')}</Link>
-        <label className="flex flex-wrap items-center gap-3 text-xs text-muted">{t('programName')}
+        <label className="flex flex-wrap items-center gap-3 text-xs text-muted">{template ? tt('name') : t('programName')}
           <input value={draft.title} maxLength={80} className="min-h-12 min-w-0 flex-1 bg-transparent text-sm text-ink"
             onChange={event => update(current => ({ ...current, title: event.target.value }))} />
         </label>
       </fieldset>}
-    <details className="glass rounded-card border border-line-soft px-5 py-2">
+    {!template && <details className="glass rounded-card border border-line-soft px-5 py-2">
       <summary className="flex min-h-12 cursor-pointer items-center text-xs text-muted">{t('history')}</summary>
       {programs.length ? programs.map(row => <Link key={row.id} href={`/captain/programs/${row.id}`} className="flex min-h-12 items-center justify-between gap-3 border-t border-line-soft text-sm">
         <span>{row.title}</span><span className="text-faint">{pt(row.status === 'active' ? 'active' : row.status === 'archived' ? 'archived' : 'draft')}</span>
       </Link>) : <p className="py-3 text-faint">{t('emptyPrograms')}</p>}
-    </details>
+    </details>}
   </section>;
 }

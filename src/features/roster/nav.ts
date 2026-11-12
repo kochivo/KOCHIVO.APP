@@ -25,7 +25,8 @@ export function captainNav(pathname: string, t: Translator<typeof messages> = cr
   if (!captainWorkspaceEnabled()) return links;
   links[3] = { ...links[3], href: '/captain/templates', label: t('trainingPlans'), icon: Dumbbell,
     active: pathname === '/captain/templates' || pathname.startsWith('/captain/templates/'), group: t('trainingGroup') };
-  links.splice(4, 0, ...(['foods', 'forms'] as const).map(section => ({
+  links.splice(4, 0, { href: '/captain/library/meal-plans', label: t('mealPlans'), icon: BookOpen,
+    group: t('foodGroup'), active: pathname === '/captain/library/meal-plans' }, ...(['foods', 'forms'] as const).map(section => ({
     href: `/captain/library/${section}`, label: t(section), icon: BookOpen,
     group: t(section === 'foods' ? 'foodGroup' : 'followupGroup'),
     active: pathname === `/captain/library/${section}`,

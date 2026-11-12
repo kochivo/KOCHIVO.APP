@@ -36,6 +36,24 @@ it('starts with two optional choices and no forced template link', () => {
   for (const key of ['scratch', 'scratchBody', 'template', 'templateBody'] as const) expect(html).toContain(messages.ar[key]);
   expect(html).not.toContain('href="/captain/templates"');
 });
+it.each(['ar', 'en'] as const)('uses the same inline controls with template save and no player actions in %s', locale => {
+  const html = renderToStaticMarkup(createElement(LocaleProvider, { locale }, createElement(TrainingEditor, {
+    mode: 'template', initial: { ...draft, player_id: null }, programs: [],
+  })));
+  expect(html).toContain(locale === 'ar' ? 'احفظ القالب' : 'Save template');
+  expect(html).not.toContain(messages[locale].send);
+  expect(html).not.toContain(messages[locale].newProgram);
+  expect(html).not.toContain(messages[locale].history);
+  expect(html).not.toContain(messages[locale].facts);
+  expect(html).toContain(messages[locale].search);
+  expect(html).toContain('Bench Press');
+  for (const key of ['reorder', 'moveUp', 'moveDown', 'sets', 'remove'] as const) {
+    expect(html).toContain(messages[locale][key].replace('{name}', 'Bench Press'));
+  }
+  expect(html).toContain(messages[locale].suggestions.replace('{day}', 'صدر وضهر'));
+  expect(html).toContain('href="/captain/programs/p"');
+  expect(html.match(/primary-surface/g)).toHaveLength(1);
+});
 it('keeps missing facts explicit and preserves the sourced facts/history panel', () => {
   const html = renderToStaticMarkup(createElement(TrainingFacts, {
     profile: { name: 'Ali', intake: null, program: null, nutrition: null, checkIns: [] },

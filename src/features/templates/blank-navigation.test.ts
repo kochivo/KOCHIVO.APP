@@ -1,4 +1,4 @@
-import { beforeEach, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import type * as React from 'react';
 import { Children, isValidElement } from 'react';
 import { createT } from '@/core/i18n/messages';
@@ -36,8 +36,25 @@ function sections() {
     isValidElement<{ onCreate?: () => Promise<void> }>(child) && !!child.props.onCreate);
 }
 beforeEach(() => {
+  vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '0');
   vi.resetAllMocks(); state.refs = [];
   state.values = [[], 'program', null, null, false];
+});
+afterEach(() => vi.unstubAllEnvs());
+it('creates an enabled training template and opens the shared template editor', async () => {
+  vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
+  state.create.mockResolvedValue({ data: 'blank' });
+  await sections()[0]?.props.onCreate();
+  expect(state.push).toHaveBeenCalledWith('/captain/templates?plan=blank');
+  expect(state.create).toHaveBeenCalledWith({ kind: 'program' });
+});
+it('creates an enabled nutrition template and opens the shared nutrition editor', async () => {
+  vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
+  state.values[1] = 'nutrition';
+  state.create.mockResolvedValue({ data: 'meal-template' });
+  await sections()[0]?.props.onCreate();
+  expect(state.push).toHaveBeenCalledWith('/captain/nutrition/meal-template');
+  expect(state.create).toHaveBeenCalledWith({ kind: 'nutrition' });
 });
 it.each([['program', '/captain/programs/blank'], ['nutrition', '/captain/nutrition/blank']])(
   'creates a blank %s template and opens its builder', async (kind, url) => {
