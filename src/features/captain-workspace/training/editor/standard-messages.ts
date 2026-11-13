@@ -1,4 +1,8 @@
 export const arStd = {
+    warmFromMine: 'من تماريني', warmMine: 'تماريني', warmSearch: 'ابحث عن تمرين للإحماء',
+    warmAddExercise: 'أضف للإحماء · {name}', warmAdded: 'تمت الإضافة · {name}', warmLoading: 'جارٍ تحميل التمارين…',
+    warmSearchError: 'تعذر تحميل التمارين.', warmRetry: 'أعد المحاولة', warmNoResults: 'لا توجد تمارين مطابقة.',
+    warmMineEmpty: 'لم تضف تمارين خاصة بعد. أضفها من «+ تمرين خاص بك» في التمارين.',
     startFirst: 'ابدأ أول يوم تمرين', startHint: 'ابدأ بيوم تمرين وأضف الإحماء والتمارين.', emptyAssign: 'أضف تمريناً واحداً على الأقل أولاً', unknownDuration: '—',
     alternatives: 'بدائل', differentSets: 'مجموعات مختلفة', uniform: 'نفس التكرارات', setNumber: 'المجموعة {n}',
     setMaximum: 'أقصى تكرارات للمجموعة {n}', setIntensity: 'شدة المجموعة {n}',

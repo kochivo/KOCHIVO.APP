@@ -9,10 +9,12 @@ import { messages } from './editor/messages';
 import { editWarmup } from './editor-draft';
 import type { Update } from './editor-draft';
 import { WarmupRow } from './warmup-row';
+import { WarmupLibraryPicker } from './warmup-library-picker';
 
 export function WarmupBlock({ day, update }: { day: DraftDay; update: Update }) {
   const t = useT(messages), [open, setOpen] = useState(true), [name, setName] = useState('');
   const warmup = day.warmup;
+  const [libraryOpen, setLibraryOpen] = useState(false);
   const change = (operation: (current: DayWarmup) => DayWarmup) => update(draft => {
     const current = draft.days.find(row => row.id === day.id);
     return current ? editWarmup(draft, day.id, operation(current.warmup)) : draft;
@@ -49,7 +51,10 @@ export function WarmupBlock({ day, update }: { day: DraftDay; update: Update }) 
       <form className="flex flex-wrap gap-2 px-[18px] py-3" onSubmit={event => { event.preventDefault(); if (name.trim() && warmup.items.length < 12) { add({ name: name.trim(), amount: 1, unit: 'min' }); setName(''); } }}>
         <input aria-label={t('warmName')} placeholder={t('warmName')} maxLength={60} value={name} onChange={event => setName(event.target.value)} className="min-h-12 min-w-0 flex-1 rounded-control border border-line-soft bg-transparent px-3 text-sm" />
         <button disabled={!name.trim() || warmup.items.length >= 12} className="min-h-12 rounded-full border border-line-soft px-3 text-xs disabled:opacity-40">{t('addWarm')}</button>
+        <button type="button" aria-expanded={libraryOpen} aria-controls={`warmup-library-${day.id}`} className="min-h-12 rounded-full border border-line-soft px-3 text-xs" onClick={() => setLibraryOpen(value => !value)}>{t('warmFromMine')}</button>
       </form>
+      {libraryOpen && <div id={`warmup-library-${day.id}`}><WarmupLibraryPicker items={warmup.items} onAdd={item => change(current =>
+        current.items.length >= 12 || current.items.some(row => row.exerciseId === item.exerciseId) ? current : addWarmupItem(current, item))} /></div>}
       <div className="mx-[18px] mb-3.5 flex flex-wrap items-center gap-2.5 rounded-control bg-surface/50 px-3.5 py-3 text-xs">
         <label className="flex min-h-12 items-center gap-2.5"><input type="checkbox" role="switch" className="size-6 accent-lime" checked={warmup.ramp} onChange={event => change(current => setRamp(current, event.target.checked))} />{t('ramp')}</label>
         {warmup.ramp && <>{rampSets(null).map(row => <span key={row.percent} dir="ltr" className="rounded-full border border-line px-2.5 py-1 font-display font-extrabold">{t('rampPill', { percent: row.percent, reps: row.reps })}</span>)}<span className="text-faint">{t('rampHint')}</span></>}

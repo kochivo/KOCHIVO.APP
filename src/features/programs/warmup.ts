@@ -3,6 +3,7 @@ import { z } from 'zod';
 export const warmupItemSchema = z.object({
   id: z.uuid(), name: z.string().trim().min(1).max(60), amount: z.number().int().min(1).max(999),
   unit: z.enum(['min', 'sec', 'reps', 'times']), note: z.string().max(80).optional(),
+  exerciseId: z.uuid().optional(),
 });
 export type WarmupItem = z.infer<typeof warmupItemSchema>;
 export type DayWarmup = { items: WarmupItem[]; ramp: boolean };

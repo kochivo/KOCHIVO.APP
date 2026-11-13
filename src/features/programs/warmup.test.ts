@@ -36,6 +36,11 @@ it('defaults new days and preserves existing warm-up when converting a rotation 
 });
 
 describe('warm-up validation', () => {
+  it('preserves optional library IDs and legacy items and rejects invalid IDs', () => {
+    const linked = { ...first, exerciseId: dayId };
+    expect(dayWarmupSchema.parse({ items: [first, linked], ramp: false }).items).toEqual([first, linked]);
+    expect(dayWarmupSchema.safeParse({ items: [{ ...first, exerciseId: 'bad' }], ramp: false }).success).toBe(false);
+  });
   it('defaults only a missing legacy value and returns independent empty values', () => {
     expect(dayWarmupSchema.parse(undefined)).toEqual({ items: [], ramp: false });
     const a = emptyWarmup();
@@ -118,7 +123,7 @@ it('loads legacy days with a default and preserves validated warm-up data', asyn
 
 it('includes validated warm-up data in the RPC payload and rejects invalid items before writing', async () => {
   const day = { id: dayId, program_id: programId, title: 'Day', position: 1, exercises: [],
-    warmup: { items: [first], ramp: true } };
+    warmup: { items: [first, { ...second, exerciseId: dayId }], ramp: true } };
   const draft = { id: programId, player_id: null, title: 'Program', status: 'draft' as const, days: [day] };
   expect(await saveProgram(draft)).toEqual({ ok: true, data: true });
   expect(database.rpc).toHaveBeenCalledWith('save_weekly_program', { p_draft: {

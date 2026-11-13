@@ -3,6 +3,10 @@ import { arStd } from './standard-messages';
 
 export const messages = defineMessages({
   ar: {
+    warmFromMine: 'من تماريني', warmMine: 'تماريني', warmSearch: 'دور على تمرين للتسخين',
+    warmAddExercise: 'ضيف للتسخين · {name}', warmAdded: 'اتضاف · {name}', warmLoading: 'بنحمّل التمارين…',
+    warmSearchError: 'مش قادرين نحمّل التمارين.', warmRetry: 'جرّب تاني', warmNoResults: 'مفيش تمارين مطابقة.',
+    warmMineEmpty: 'لسه ماضفتش تمارين خاصة بيك. ضيفها من «+ تمرين خاص بيك» في التمارين.',
     startFirst: 'ابدأ أول يوم تمرين', startHint: 'ابدأ بيوم تمرين وضيف التسخين والتمارين.', emptyAssign: 'ضيف تمرين واحد على الأقل الأول', unknownDuration: '—',
     alternatives: 'بدائل', differentSets: 'مجموعات مختلفة', uniform: 'زي بعض', setNumber: 'مجموعة {n}',
     setMaximum: 'أقصى عدّات للمجموعة {n}', setIntensity: 'شدة المجموعة {n}',
@@ -37,6 +41,10 @@ export const messages = defineMessages({
   },
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   en: {
+    warmFromMine: 'From my exercises', warmMine: 'My exercises', warmSearch: 'Search warm-up exercises',
+    warmAddExercise: 'Add to warm-up · {name}', warmAdded: 'Added · {name}', warmLoading: 'Loading exercises…',
+    warmSearchError: 'Could not load exercises.', warmRetry: 'Retry', warmNoResults: 'No matching exercises.',
+    warmMineEmpty: 'No custom exercises yet. Add one with “+ My custom exercise” in exercises.',
     startFirst: 'Start the first training day', startHint: 'Start a training day and add warm-up and exercises.', emptyAssign: 'Add at least one exercise first', unknownDuration: '—',
     alternatives: 'Alternatives', differentSets: 'Different sets', uniform: 'Same for all', setNumber: 'Set {n}',
     setMaximum: 'Maximum reps for set {n}', setIntensity: 'Intensity for set {n}',
