@@ -2,7 +2,7 @@ import { parseLocale } from '@/core/i18n/locale';
 import { getT } from '@/core/i18n/server';
 import { progressMessages } from '@/features/progress';
 import { ProgressScreen } from '@/features/progress';
-import { fetchPlayerIdentity } from '@/features/player-home';
+import { fetchPlayerIdentity } from '@/features/player-home/server';
 import { AnalyticsLoader } from '@/features/muscle-analytics';
 
 export default async function ProgressPage() {

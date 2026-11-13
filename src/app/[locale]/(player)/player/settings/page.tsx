@@ -1,6 +1,6 @@
 import { parseLocale } from '@/core/i18n/locale';
 import { getT } from '@/core/i18n/server';
-import { playerHomeMessages } from '@/features/player-home';
+import { playerHomeMessages } from '@/features/player-home/server';
 import { SettingsScreen } from '@/features/settings';
 import { SignOutButton } from '@/features/auth';
 

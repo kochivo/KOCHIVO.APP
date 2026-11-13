@@ -3,7 +3,7 @@ import { parseLocale } from '@/core/i18n/locale';
 import { ranksEnabled } from '@/lib/ranks-enabled';
 import { getT } from '@/core/i18n/server';
 import { RankScreen, ranksMessages } from '@/features/ranks';
-import { fetchPlayerIdentity } from '@/features/player-home';
+import { fetchPlayerIdentity } from '@/features/player-home/server';
 
 export default async function RankPage() {
   if (!ranksEnabled()) notFound();
