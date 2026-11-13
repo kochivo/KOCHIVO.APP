@@ -12,12 +12,23 @@ import { PublicAbout } from './public-about';
 import { PublicSignup } from './public-signup';
 import { PublicDock } from './public-dock';
 import './public-page.css';
+import type { Translator } from '@/core/i18n/messages';
+import type { messages as sectionMessages } from '../sections/messages';
+import { PublicNumbers } from './public-numbers';
+import { PublicWaitlist, type WaitlistLabels } from './public-waitlist';
 
-export function PublicCoachLayout({ coach, slug, requested, t, pricing }: {
+function waitlistLabels(t?: Translator<typeof sectionMessages>): WaitlistLabels {
+  const keys = ['waitlist', 'waitlisted', 'member', 'failure', 'pending'] as const;
+  return Object.fromEntries(keys.map(key => [key, t ? t(key) : ''])) as WaitlistLabels;
+}
+
+export function PublicCoachLayout({ coach, slug, requested, t, pricing, sectionsT }: {
   coach: PublicCoach; slug: string; requested?: CoachRequestStatus; t: PublicT; pricing: ReactNode;
+  sectionsT?: Translator<typeof sectionMessages>;
 }) {
   const signup = coachSignupHref(slug);
   const whatsapp = httpsSocialUrl(coach.social.whatsapp);
+  const action = coach.page?.accepting === false ? <PublicWaitlist slug={slug} labels={waitlistLabels(sectionsT)} /> : <PublicSignup href={signup} label={t('requestJoin')} />;
   return <div className="public-coach min-h-dvh text-start">
     <header className="border-b border-line-soft">
       <div className="public-wrap flex min-h-20 items-center justify-between gap-6">
@@ -29,17 +40,17 @@ export function PublicCoachLayout({ coach, slug, requested, t, pricing }: {
       </div>
     </header>
     <main className="public-wrap">
-      <PublicHero coach={coach} signup={signup} whatsapp={whatsapp} requested={requested} t={t} />
-      <div data-slot="numbers" />
+      <PublicHero coach={coach} signup={signup} whatsapp={whatsapp} requested={requested} t={t} action={action} sectionsT={sectionsT} />
+      <div data-slot="numbers">{sectionsT && <PublicNumbers stats={coach.stats ?? null} years={coach.page?.years_experience ?? null} t={sectionsT} />}</div>
       <PublicSteps t={t} />
       {pricing}
       <PublicAppPreview t={t} />
-      <PublicAbout coach={coach} t={t} />
+      <PublicAbout coach={coach} t={t} sectionsT={sectionsT} />
       {!requested && <section className="public-close public-section relative isolate overflow-hidden">
         <span className="public-slash" aria-hidden="true" />
         <div className="glass-featured relative space-y-6 rounded-card p-8 md:p-12">
           <h2 className="public-heading">{t('readyTitle')}</h2><p className="max-w-lg text-muted">{t('readyBody')}</p>
-          <PublicSignup href={signup} label={t('requestJoin')} />
+          {action}
         </div>
       </section>}
     </main>
@@ -47,7 +58,7 @@ export function PublicCoachLayout({ coach, slug, requested, t, pricing }: {
       <Link href="/" className="inline-flex min-h-12 items-center">{t('madeOn')}</Link>
     </footer>
     {!requested && <PublicDock>
-      <PublicSignup href={signup} label={t('requestJoin')} />
+      {action}
       {whatsapp && <a href={whatsapp} aria-label={t('contactWhatsapp')} target="_blank" rel="noopener noreferrer" className="glass flex min-h-12 min-w-12 items-center justify-center rounded-full px-4">
         <MessageCircle aria-hidden strokeWidth={1.5} className="size-5" />
       </a>}

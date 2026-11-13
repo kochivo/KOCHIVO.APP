@@ -33,14 +33,27 @@ Fill the T-179 slots with T-180 data, as in `docs/mockups/landing/coach-page.htm
 5. **Pure helpers, unit tested:** `spotsLabel(spots, accepting)`, `statsCells(stats, years)`, and the specialty validation.
 
 ## Acceptance
-- [ ] Unit tests for the helpers.
-- [ ] Component tests for each section: present, empty, error and full.
+- [x] Unit tests for the helpers.
+- [x] Component tests for each section: present, empty, error and full.
 - [ ] Tests for the waitlist's three paths.
-- [ ] Settings tests.
-- [ ] A flag-off test: the public page and settings are unchanged.
+- [x] Settings tests.
+- [x] A flag-off test: the public page and settings are unchanged.
 - [ ] All gates pass. Report the `/c/[slug]` budget.
 
 ## Out of scope
 - Waitlist notifications.
 - Package changes.
 - Before/after photos, testimonials, and page view analytics.
+
+## Implementation notes
+
+- T-181 slots, parallel optional RPCs, authenticated waitlist insertion and member detection, and optimistic public page settings are implemented within the listed feature folders.
+- The signed-out waitlist action links to `/login?tab=signup&next=%2Fc%2F<slug>`. The existing auth flow does not consume `next`; completing that signup-and-return flow requires an auth change outside this card's Files list. Scope clarification is pending. Do not mark the waitlist acceptance complete until that integration is covered.
+- Verification uses `vitest --configLoader native --pool threads` to avoid sandbox process-spawn restrictions. The full check gate is blocked by `spawnSync git EPERM`; the production build cannot resolve `next/package.json` through the node_modules junction. The `/c/[slug]` bundle budget requires a reviewer build.
+- Reviewer (2026-11-13): the build failed because settings client components imported `validSpecialties`
+  through the coach-page barrel (which loads server code); it now lives in `src/lib/public-specialties.ts`,
+  mirroring the 0103 check. `/c/[slug]` was 201.3 KiB gzip (T-179 alone: 198.7); the waitlist now gets its
+  labels from the server and imports `KoInvite` from its leaf module, bringing it to 199.8 KiB.
+  `npm run check` passes (only the known `demo` load flake) and `npm run build` passes.
+  Open: the auth flow ignores `next`, so a signed-out visitor who signs up from the waitlist lands on the
+  normal start screen instead of returning to the coach page (needs an auth card).

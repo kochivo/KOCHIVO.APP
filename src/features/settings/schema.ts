@@ -80,6 +80,10 @@ export type CaptainProfileInput = z.infer<ReturnType<typeof settingsSchemas>['ca
 export const { profileSchema, inviteMessageSchema } = settingsSchemas();
 
 export type SettingsProfile = {
+  specialties?: string[];
+  years_experience?: number | null;
+  languages?: ('ar' | 'en')[];
+  show_public_stats?: boolean;
   public_slug?: string | null;
   id: string;
   role: 'captain' | 'player';

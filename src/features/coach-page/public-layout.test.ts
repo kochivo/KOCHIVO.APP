@@ -7,6 +7,8 @@ import { httpsSocialUrl } from './components/public-social-url';
 import { PublicCoachLayout } from './components/public-coach-layout';
 import { CoachPage } from './components/coach-page';
 import { LegacyCoachPage } from './components/legacy-coach-page';
+import { messages as sections } from './sections/messages';
+import { LocaleProvider } from '@/core/i18n/client';
 
 vi.mock('server-only', () => ({}));
 const flags = vi.hoisted(() => ({ enabled: false }));
@@ -70,4 +72,16 @@ it('provides Egyptian, standard Arabic and English public page copy', () => {
     expect(createT(messages, 'en')('requestJoin')).toBe('Request to join');
     expect(createT(messages, 'ar', 'standard')('bonusOfferLabel', { name: 'عرض', count: 7 })).toBe('عرض · 7 يوم هدية');
   } finally { vi.unstubAllEnvs(); }
+});
+it('fills the named slots with this captain’s data and replaces all three full-capacity actions', () => {
+  const page = { specialties: ['Strength'], years_experience: 8, languages: ['ar' as const],
+    show_public_stats: true, spots_left: 0, accepting: false };
+  const node = createElement(PublicCoachLayout, { coach: { ...coach, page,
+    stats: { players: 12, workouts_logged: 4210, adherence_pct: 87, member_since: 2020 } },
+    slug: 'ahmed', t, sectionsT: createT(sections, 'en'), pricing: null });
+  const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' }, node));
+  expect(html).toContain('Strength'); expect(html).toContain('4,210');
+  expect(html).toContain(sections.en.full); expect(html).toContain(sections.en.honesty);
+  expect(html.match(/Notify me when a spot opens/g)).toHaveLength(3);
+  expect(html).not.toContain('name="coach"');
 });

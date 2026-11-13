@@ -3,9 +3,15 @@ import type { CoachRequestStatus } from '@/lib/coach-request-status';
 import type { PublicCoach, PublicT } from './public-types';
 import { PublicSignup } from './public-signup';
 import { PublicRequestStatus } from './public-request-status';
+import type { ReactNode } from 'react';
+import type { Translator } from '@/core/i18n/messages';
+import type { messages } from '../sections/messages';
+import { PublicSpecialties } from './public-specialties';
+import { PublicSpots } from './public-spots';
 
-export function PublicHero({ coach, signup, whatsapp, requested, t }: {
+export function PublicHero({ coach, signup, whatsapp, requested, t, action, sectionsT }: {
   coach: PublicCoach; signup: string; whatsapp: string | null; requested?: CoachRequestStatus; t: PublicT;
+  action?: ReactNode; sectionsT?: Translator<typeof messages>;
 }) {
   const [first, ...rest] = coach.full_name.trim().split(/\s+/);
   const tagline = coach.bio?.trim().split(/\n\s*\n/)[0] || t('noBio');
@@ -19,14 +25,14 @@ export function PublicHero({ coach, signup, whatsapp, requested, t }: {
         <span className="block">{first}</span>{rest.length > 0 && <span className="block text-lime">{rest.join(' ')}</span>}
       </h1>
       <p className="max-w-xl whitespace-pre-wrap text-lg leading-relaxed text-muted">{tagline}</p>
-      <div data-slot="specialties" />
+      <div data-slot="specialties">{coach.page && <PublicSpecialties items={coach.page.specialties} />}</div>
       {requested ? <PublicRequestStatus requested={requested} t={t} /> : <div className="hidden flex-wrap items-center gap-3 md:flex">
-        <PublicSignup href={signup} label={t('requestJoin')} />
+        {action ?? <PublicSignup href={signup} label={t('requestJoin')} />}
         {whatsapp && <a href={whatsapp} target="_blank" rel="noopener noreferrer" className="glass inline-flex min-h-12 items-center gap-2 rounded-full px-6">
           <MessageCircle aria-hidden strokeWidth={1.5} className="size-5" />{t('contactWhatsapp')}
         </a>}
       </div>}
-      <div data-slot="spots" />
+      <div data-slot="spots">{coach.page && sectionsT && <PublicSpots spots={coach.page.spots_left} accepting={coach.page.accepting} t={sectionsT} />}</div>
     </div>
     <div className="relative isolate mx-auto w-full max-w-sm px-6 py-8">
       <span className="public-slash" aria-hidden="true" />

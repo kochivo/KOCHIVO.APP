@@ -23,6 +23,7 @@ const Invite = dynamic(() => import('./invite-message-form').then(m => m.InviteM
 const Export = dynamic(() => import('./export-card').then(m => m.ExportCard));
 const Delete = dynamic(() => import('./delete-account-card').then(m => m.DeleteAccountCard));
 const Options = dynamic(() => import('./workspace-options').then(m => m.WorkspaceOptions));
+const PublicPage = dynamic(() => import('./public-page-settings').then(m => m.PublicPageSettings), { loading: () => <LoadingState variant="detail" /> });
 type Panel = 'profile' | 'invite' | 'download' | 'delete' | 'more';
 const card = 'glass rounded-card border border-line-soft px-5 py-[18px]';
 const heading = 'mb-2 font-display text-[19px] font-semibold';
@@ -46,6 +47,7 @@ export function CaptainSettings({ signOut }: { signOut?: ReactNode }) {
         </section>
         <WorkspacePreferences profile={profile} update={setEdited} />
         <SubscriptionEntry />
+        <PublicPage profile={profile} onSave={setEdited} />
         <section className={card}><h2 className={heading}>{t('invite')}</h2><p className="text-[13px] leading-[1.9] text-muted">{profile.invite_message || t('invitePreview')}</p>
           <Button variant="secondary" className="mt-3 min-h-12 rounded-full" onClick={() => setPanel('invite')}>{t('editInvite')}</Button></section>
         <section className={card}><h2 className={heading}>{t('account')}</h2><div>
