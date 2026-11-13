@@ -1,5 +1,7 @@
 'use client';
 
+import { KoPlus } from '@/ui/icons/ko-plus';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { useCallback, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Plus, Search } from 'lucide-react';
@@ -15,6 +17,7 @@ import { LoadingState } from '@/ui/loading-state';
 const FoodDrawer = dynamic(() => import('./library/food-drawer').then(module => module.FoodDrawer));
 
 export function FoodsLibraryEntry() {
+  const PlusIcon = captainWorkspaceEnabled() ? KoPlus : Plus;
   const t = useT(messages);
   const [query, setQuery] = useState('');
   const [search, setSearch] = useState('');
@@ -31,7 +34,7 @@ export function FoodsLibraryEntry() {
     <header className="flex flex-wrap items-center gap-4">
       <div className="me-auto"><h1 className="font-display text-[30px] font-semibold leading-tight">{t('title')}</h1><p className="mt-1 text-sm text-muted">{t('subtitle')}</p></div>
       <button id="new-library-food" type="button" disabled={selected !== undefined} onClick={() => setSelected(null)}
-        className={`flex min-h-12 items-center gap-2 rounded-full px-5 font-semibold ${selected === undefined ? 'bg-lime text-on-lime' : 'glass text-muted'}`}><Plus aria-hidden className="size-5" />{t('new')}</button>
+        className={`flex min-h-12 items-center gap-2 rounded-full px-5 font-semibold ${selected === undefined ? 'bg-lime text-on-lime' : 'glass text-muted'}`}><PlusIcon aria-hidden className="size-5" />{t('new')}</button>
     </header>
     <div className="flex flex-wrap items-center gap-2">{(['all', 'mine', 'global'] as const).map(value => <Chip key={value}
       pressed={segment === value} onClick={() => { setSegment(value); setCursor(null); }}

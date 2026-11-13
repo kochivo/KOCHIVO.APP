@@ -1,3 +1,5 @@
+import { KoSend } from '@/ui/icons/ko-send';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import Link from 'next/link';
 import { ChevronRight, Send } from 'lucide-react';
 import { createT } from '@/core/i18n/messages';
@@ -6,6 +8,7 @@ import { messages } from '../messages';
 import { messages as formsMessages } from '../forms/messages';
 
 export function WorkspaceHeader({ playerId, name, locale, view = 'training' }: { playerId: string; name: string; locale: Locale; view?: 'training' | 'forms' }) {
+  const SendIcon = captainWorkspaceEnabled() ? KoSend : Send;
   const t = createT(messages, locale);
   const ft = createT(formsMessages, locale);
   const base = `/captain/players/${playerId}`;
@@ -28,7 +31,7 @@ export function WorkspaceHeader({ playerId, name, locale, view = 'training' }: {
     </nav>
     {view === 'training' && <>
     <button type="button" className="hidden min-h-12 items-center gap-2 rounded-full bg-lime px-5 font-bold text-on-lime lg:inline-flex">
-      <Send aria-hidden strokeWidth={1.5} className="size-4" />{t('send')}
+      <SendIcon aria-hidden strokeWidth={1.5} className="size-4" />{t('send')}
     </button></>}
   </header>;
 }

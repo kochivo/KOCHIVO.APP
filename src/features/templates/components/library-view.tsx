@@ -1,5 +1,7 @@
 'use client';
 
+import { KoPlus } from '@/ui/icons/ko-plus';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { useState } from 'react';
 import { Plus, Search } from 'lucide-react';
 import { useT } from '@/core/i18n/client';
@@ -20,6 +22,7 @@ export function LibraryView({ kind, templates, loading, error, createError, crea
   creating: boolean; busy: string[]; errors: Record<string, string>; onCreate: () => void; onRetry: () => void;
   actions: (template: LibraryTemplate) => Actions; tools?: ReactNode;
 }) {
+  const PlusIcon = captainWorkspaceEnabled() ? KoPlus : Plus;
   const t = useT(messages), tt = useT(templateMessages);
   const [query, setQuery] = useState(''), [level, setLevel] = useState('all'), [archived, setArchived] = useState(false);
   const training = kind === 'program';
@@ -28,7 +31,7 @@ export function LibraryView({ kind, templates, loading, error, createError, crea
     <header className="mb-[18px] flex flex-wrap items-center gap-3.5">
       <div className="me-auto"><h1 className="font-display text-[30px] font-semibold leading-tight">{t(training ? 'training' : 'nutrition')}</h1>
         <p className="mt-1 text-sm text-muted">{t(training ? 'trainingSub' : 'nutritionSub')}</p></div>
-      <Button disabled={creating || loading || !!error} className="min-h-12 rounded-full" onClick={onCreate}><Plus aria-hidden className="size-4" />{t(training ? 'newTraining' : 'newNutrition')}</Button>
+      <Button disabled={creating || loading || !!error} className="min-h-12 rounded-full" onClick={onCreate}><PlusIcon aria-hidden className="size-4" />{t(training ? 'newTraining' : 'newNutrition')}</Button>
     </header>
     {training && <div className="mb-3.5 flex flex-wrap items-center gap-2">
       {(['all', 'beginner', 'intermediate', 'advanced'] as const).map(value => <Chip key={value} pressed={level === value} className={level === value ? '!border-ink !bg-ink !text-bg-deep' : 'bg-transparent text-muted'} onClick={() => setLevel(value)}>{t(value)}</Chip>)}

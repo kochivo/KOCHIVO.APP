@@ -1,4 +1,7 @@
 'use client';
+import { KoMic } from '@/ui/icons/ko-mic';
+import { KoSend } from '@/ui/icons/ko-send';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { useState } from 'react';
 import { Mic, Send } from 'lucide-react';
 import { useT } from '@/core/i18n/client';
@@ -6,6 +9,8 @@ import { whatsappUrl } from '@/lib/whatsapp';
 import { messages } from '../question-messages';
 
 export function CaptainQuestion({ contactUrl }: { contactUrl?: string | null }) {
+  const MicIcon = captainWorkspaceEnabled() ? KoMic : Mic;
+  const SendIcon = captainWorkspaceEnabled() ? KoSend : Send;
   const t = useT(messages);
   const [text, setText] = useState('');
   const valid = contactUrl && /^https:\/\/wa\.me\/[1-9]\d{7,14}$/.test(contactUrl);
@@ -17,10 +22,10 @@ export function CaptainQuestion({ contactUrl }: { contactUrl?: string | null }) 
       <input value={text} maxLength={1000} onChange={event => setText(event.target.value)} placeholder={t('placeholder')}
         aria-label={t('ask')} className="glass min-h-12 min-w-0 flex-1 rounded-control border border-line-soft px-3 text-sm" />
       {questionUrl && text.trim() && <a href={questionUrl} target="_blank" rel="noopener noreferrer" aria-label={t('send')}
-        className="flex min-h-12 min-w-12 items-center justify-center rounded-control border border-line-soft"><Send aria-hidden className="size-5" /></a>}
+        className="flex min-h-12 min-w-12 items-center justify-center rounded-control border border-line-soft"><SendIcon aria-hidden className="size-5" /></a>}
       {valid ? <a href={contactUrl} target="_blank" rel="noopener noreferrer" aria-label={t('voice')}
-        className="flex min-h-12 min-w-12 items-center justify-center rounded-control border border-line-soft"><Mic aria-hidden className="size-5" /></a> :
-        <button type="button" disabled aria-label={t('voice')} className="flex min-h-12 min-w-12 items-center justify-center rounded-control border border-line-soft text-faint"><Mic aria-hidden className="size-5" /></button>}
+        className="flex min-h-12 min-w-12 items-center justify-center rounded-control border border-line-soft"><MicIcon aria-hidden className="size-5" /></a> :
+        <button type="button" disabled aria-label={t('voice')} className="flex min-h-12 min-w-12 items-center justify-center rounded-control border border-line-soft text-faint"><MicIcon aria-hidden className="size-5" /></button>}
     </div>
     <p className="text-xs text-faint">{t(valid ? 'whatsappHint' : 'noContact')}</p>
   </section>;

@@ -1,4 +1,5 @@
 'use client';
+import { KoCamera } from '@/ui/icons/ko-camera';
 import { useRef,useState } from 'react';
 import Link from 'next/link';
 import type { Locale } from '@/core/i18n/locale';
@@ -18,6 +19,7 @@ import { messages as v6Messages } from '../v6-messages';
 import { Camera, X } from 'lucide-react';
 
 export function AnswerFlow({data,locale}:{data:RequestData;locale:Locale}) {
+  const CameraIcon = captainWorkspaceEnabled() ? KoCamera : Camera;
   const v6 = captainWorkspaceEnabled();
   const v6t = useT(v6Messages);
   const style = useArabicStyle();
@@ -80,7 +82,7 @@ export function AnswerFlow({data,locale}:{data:RequestData;locale:Locale}) {
         {v6 && q.type === 'photos' ? <div className="space-y-4">
           <h2 className="font-display text-[22px] font-semibold">{locale === 'en' ? q.label_en.trim() || q.label_ar : q.label_ar}</h2>
           <div className="glass flex aspect-[3/4] flex-col items-center justify-center gap-4 rounded-card border border-line-soft p-5 text-muted">
-            <Camera aria-hidden className="size-8" /><p className="text-sm">{v6t('photo')}</p>
+            <CameraIcon aria-hidden className="size-8" /><p className="text-sm">{v6t('photo')}</p>
             <label className="glass flex min-h-12 cursor-pointer items-center rounded-full border border-line-soft px-5">{v6t('camera')}
               <input type="file" accept="image/*" capture="user" className="sr-only" aria-label={v6t('camera')} onChange={event => void photos(event.target.files)} /></label>
             <label className="glass flex min-h-12 cursor-pointer items-center rounded-full border border-line-soft px-5">{v6t('gallery')}

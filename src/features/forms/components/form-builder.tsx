@@ -1,3 +1,5 @@
+import { KoPlus } from '@/ui/icons/ko-plus';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import type { ArabicStyle, Locale } from '@/core/i18n/locale';
 import { lazy, Suspense } from 'react';
 import Link from 'next/link';
@@ -11,7 +13,7 @@ import { newQuestion, reorderQuestions, validateForm } from '../model';
 import type { FormDraft, Question } from '../types';
 import type { ScheduleContext } from '../schedule-context';
 import { QuestionEditor } from './question-editor';
-import { ScheduleEditor } from './schedule-editor';
+import { LibrarySchedulesEntry } from './library-schedules-entry';
 import { SaveStatus } from '@/ui/save-status';
 
 const FormPreview = lazy(() => import('./form-preview').then(module => ({ default: module.FormPreview })));
@@ -21,6 +23,7 @@ export function FormBuilder({ form, locale, status, preview, onChange, onPreview
   onChange: (form: FormDraft) => void; onPreview: () => void; onRetry: () => void; onDiscard?: () => void;
   scheduleContext?: ScheduleContext;
 }) {
+  const PlusIcon = captainWorkspaceEnabled() ? KoPlus : Plus;
   const m = formCopy(locale, style), t = createT(redesign, locale, style), invalid = validateForm(form).length > 0;
   function add(kind?: 'weight' | 'sleep' | 'energy' | 'photos' | 'note') {
     let q = newQuestion(form.id, form.questions.length);
@@ -50,7 +53,7 @@ export function FormBuilder({ form, locale, status, preview, onChange, onPreview
     </header>
     <div className={preview ? 'mx-auto max-w-md' : 'grid items-start gap-[18px] min-[1001px]:grid-cols-[minmax(0,1fr)_340px]'}>
       {!preview && <div className="min-w-0">
-        <ScheduleEditor form={form} locale={locale} onChange={onChange} players={players} style={style} scheduleContext={scheduleContext} canManage={status === 'saved' && scheduleContext?.ready !== false} />
+        <LibrarySchedulesEntry form={form} locale={locale} onChange={onChange} players={players} style={style} scheduleContext={scheduleContext} canManage={status === 'saved' && scheduleContext?.ready !== false} />
         {!form.questions.length && <p className="glass rounded-card p-5 text-faint">{m.emptyQuestions}</p>}
         {form.questions.map((q, index) => <QuestionEditor key={q.id} question={q} locale={locale} index={index} count={form.questions.length} style={style}
           onChange={question => onChange({ ...form, questions: form.questions.map(q => q.id === question.id ? question : q) })}
@@ -58,9 +61,9 @@ export function FormBuilder({ form, locale, status, preview, onChange, onPreview
           onMove={direction => onChange({ ...form, questions: reorderQuestions(form.questions, index, index + direction) })}
           onDuplicate={() => duplicate(q, index)} />)}
         <div className="glass flex flex-wrap items-center gap-[10px] rounded-card border border-dashed border-line px-[18px] py-3 text-faint">
-          <button type="button" className="me-auto flex min-h-12 items-center gap-2 text-sm" onClick={() => add()}><Plus aria-hidden className="size-4" />{m.add}</button>
+          <button type="button" className="me-auto flex min-h-12 items-center gap-2 text-sm" onClick={() => add()}><PlusIcon aria-hidden className="size-4" />{m.add}</button>
           {(['weight', 'sleep', 'energy', 'photos', 'note'] as const).map(kind => <button key={kind} type="button" onClick={() => add(kind)}
-            className="flex min-h-12 items-center gap-1 rounded-full bg-surface px-[10px] text-[11.5px] text-muted"><Plus aria-hidden className="size-3" />{t(kind === 'photos' ? 'progressPhotos' : kind)}</button>)}
+            className="flex min-h-12 items-center gap-1 rounded-full bg-surface px-[10px] text-[11.5px] text-muted"><PlusIcon aria-hidden className="size-3" />{t(kind === 'photos' ? 'progressPhotos' : kind)}</button>)}
         </div>
       </div>}
       <aside className="min-w-0 min-[1001px]:sticky min-[1001px]:top-[75px]">

@@ -1,4 +1,6 @@
 'use client';
+import { KoPlus } from '@/ui/icons/ko-plus';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import Link from 'next/link';
 import { useRef, useState } from 'react';
 import { CalendarDays, Check, Plus } from 'lucide-react';
@@ -23,6 +25,7 @@ export function AssessmentEditor({ data, player, formId, initial, locale, onSave
   data: AssessmentWorkspaceData; player?: string; formId?: string; initial?: AssessmentSchedule; locale: Locale;
   onSave: (s: AssessmentInput) => Promise<boolean>; onSaved: () => void; onCancel: () => void; now: Date;
 }) {
+  const PlusIcon = captainWorkspaceEnabled() ? KoPlus : Plus;
   const style = useArabicStyle(), t = createT(messages, locale, style);
   const [s, set] = useState<AssessmentInput>(() => initial ?? ({ id: uuidv7(), form_id: formId ?? data.forms[0]?.id ?? '',
     player_id: player ?? null, kind: 'week', every_days: null, weekday: 5, day: null, hour: 10, minute: 0,
@@ -45,7 +48,7 @@ export function AssessmentEditor({ data, player, formId, initial, locale, onSave
       <h2 className="mb-3 font-display text-[19px] font-semibold">{t('which')}</h2>
       <div className="flex flex-wrap gap-2">{data.forms.map(f => <Chip key={f.id} pressed={s.form_id === f.id}
         className="aria-pressed:border-ink aria-pressed:bg-ink aria-pressed:text-bg-deep" onClick={() => set({ ...s, form_id: f.id })}>{f.title}</Chip>)}
-        <Link prefetch={false} href={`/${locale}/captain/library/forms?template=checkin`} className="inline-flex min-h-12 items-center gap-2 rounded-full border border-line-soft px-4"><Plus aria-hidden className="size-4" />{t('new')}</Link>
+        <Link prefetch={false} href={`/${locale}/captain/library/forms?template=checkin`} className="inline-flex min-h-12 items-center gap-2 rounded-full border border-line-soft px-4"><PlusIcon aria-hidden className="size-4" />{t('new')}</Link>
       </div>
       {!data.forms.length && <p className="py-3 text-faint">{t('empty')}</p>}
       {!player && <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-muted"><span>{t('target')}</span>

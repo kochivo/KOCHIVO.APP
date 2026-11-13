@@ -1,4 +1,6 @@
 'use client';
+import { KoPlus } from '@/ui/icons/ko-plus';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { formatNumber } from '@/lib/format';
 import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
@@ -15,6 +17,7 @@ export type PackageEditor = { item?: CatalogPackage; tierId: string; tiers: Tier
   save: (value: { name: string; price: number; days: number; kind: 'days' | 'sessions'; sessions: number | null; tier_id: string | null }) => Promise<boolean> };
 
 export function PackagesCard({ packages: initial, onChange, initialAdding = false, editor }: { packages: Package[]; onChange: (packages: Package[]) => void; initialAdding?: boolean; editor?: PackageEditor }) {
+  const PlusIcon = captainWorkspaceEnabled() ? KoPlus : Plus;
   const t = useT(messages);
   const pt = useT(ptMessages);
   const locale = useLocale();
@@ -81,7 +84,7 @@ export function PackagesCard({ packages: initial, onChange, initialAdding = fals
           <Button type="submit" className="min-h-12 flex-1" disabled={!valid || busy}>{editor?.item ? editor.saveLabel : t('addPackage')}</Button>
           {!editor && <Button variant="ghost" className="min-h-12" disabled={busy} onClick={() => { setAdding(false); setError(''); }}>{t('closeCollect')}</Button>}
         </div>
-      </form> : packages.length > 0 && <Button variant="secondary" className="min-h-12 w-full" onClick={() => setAdding(true)}><Plus aria-hidden className="size-5" />{t('newPackage')}</Button>}
+      </form> : packages.length > 0 && <Button variant="secondary" className="min-h-12 w-full" onClick={() => setAdding(true)}><PlusIcon aria-hidden className="size-5" />{t('newPackage')}</Button>}
       {error && <p role="alert" className="text-sm text-danger">{error}</p>}
     </GlassCard>
   );

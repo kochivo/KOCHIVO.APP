@@ -1,4 +1,7 @@
 'use client';
+import { KoMic } from '@/ui/icons/ko-mic';
+import { KoSend } from '@/ui/icons/ko-send';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 
@@ -16,6 +19,8 @@ import { voiceNoteTooLarge } from '@/lib/upload-guards';
 
 export function VoiceRecorder({ playerId, context, onSent, recorder }: { playerId: string; context?: VoiceContext; onSent?: (note: VoiceNote) => void;
   recorder?: ReturnType<typeof useRecorder> }) {
+  const MicIcon = captainWorkspaceEnabled() ? KoMic : Mic;
+  const SendIcon = captainWorkspaceEnabled() ? KoSend : Send;
   const t = useT(messages);
   const feedback = useT(uiMessages);
   const toast = useToast();
@@ -45,11 +50,11 @@ export function VoiceRecorder({ playerId, context, onSent, recorder }: { playerI
         <div className="grid grid-cols-2 gap-2">
           <Button variant="ghost" className="gap-2" onClick={reset} disabled={sending}><Trash2 aria-hidden className="size-5" />{t('discard')}</Button>
           {!recorder && <Button variant="secondary" className="gap-2" onClick={() => void send()} disabled={sending}>
-            <Send aria-hidden className="size-5" />{sending ? t('sending') : t('send')}
+            <SendIcon aria-hidden className="size-5" />{sending ? t('sending') : t('send')}
           </Button>}
         </div>
       </div> : <Button variant="secondary" className="min-h-14 w-full gap-2" disabled={state.status === 'requesting'} onClick={() => void start()}>
-        <Mic aria-hidden className="size-5 text-lime" />{t('record')}
+        <MicIcon aria-hidden className="size-5 text-lime" />{t('record')}
       </Button>}
       {state.status === 'denied' && <p role="alert" className="text-sm text-warn">{t('micDenied')}</p>}
       {state.status === 'unsupported' && <p role="alert" className="text-sm text-warn">{t('unsupported')}</p>}

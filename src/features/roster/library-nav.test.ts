@@ -2,7 +2,7 @@ import { afterEach, expect, it, vi } from 'vitest';
 import { captainMobileNav, captainNav, captainLinks } from './nav';
 import { createT } from '@/core/i18n/messages';
 import { messages } from './messages';
-import { Apple, ClipboardCheck, CreditCard, Dumbbell, Inbox, LayoutDashboard, Salad, Settings, Users } from 'lucide-react';
+import { KoHome, KoPlayers, KoFollowup, KoTraining, KoMealPlans, KoFoods, KoForms, KoBilling, KoSettings } from '@/ui/icons';
 
 afterEach(() => vi.unstubAllEnvs());
 it('leaves the flag-off navigation unchanged', () => {
@@ -27,9 +27,9 @@ it('groups enabled navigation and keeps four mobile destinations', () => {
   expect(items.map(item => item.label)).toEqual([
     'الرئيسية', 'اللاعبين', 'المتابعة', 'خطط التمارين', 'الأنظمة الغذائية', 'مكتبة الأكلات', 'التقييمات', 'الدفعات', 'الإعدادات',
   ]);
-  expect(items.filter(item => item.group).map(item => item.group)).toEqual(['التمرين', 'الأكل', 'الإدارة']);
-  expect(items.map(item => item.icon)).toEqual([LayoutDashboard, Users, Inbox, Dumbbell, Salad, Apple, ClipboardCheck, CreditCard, Settings]);
-  expect(captainMobileNav('/captain').map(item => item.label)).toEqual(['الرئيسية', 'اللاعبين', 'التمرين', 'الأكل']);
+  expect(items.filter(item => item.group).map(item => item.group)).toEqual(['التمارين', 'الأكل', 'الإدارة']);
+  expect(items.map(item => item.icon)).toEqual([KoHome, KoPlayers, KoFollowup, KoTraining, KoMealPlans, KoFoods, KoForms, KoBilling, KoSettings]);
+  expect(captainMobileNav('/captain').map(item => item.label)).toEqual(['الرئيسية', 'اللاعبين', 'التمارين', 'الأكل']);
 });
 it('includes meal plans, foods and forms under the enabled library and retains mobile food navigation', () => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');

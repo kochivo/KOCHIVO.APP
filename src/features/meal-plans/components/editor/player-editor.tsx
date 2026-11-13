@@ -1,5 +1,7 @@
 'use client';
 
+import { KoSend } from '@/ui/icons/ko-send';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
@@ -38,6 +40,7 @@ const TargetsBar = dynamic(() => import('../targets-bar').then(module => module.
 const TargetCalculator = dynamic(() => import('./target-calculator').then(module => module.TargetCalculator));
 
 export function PlayerEditor({ data }: { data: Awaited<ReturnType<typeof loadPlayerEditor>> }) {
+  const SendIcon = captainWorkspaceEnabled() ? KoSend : Send;
   const t = useT(messages);
   const planT = useT(planMessages);
   const editorT = useT(editorMessages);
@@ -67,7 +70,7 @@ export function PlayerEditor({ data }: { data: Awaited<ReturnType<typeof loadPla
         <div><p className="text-xs text-faint">{t('breadcrumb', { name })}</p><h1 className="font-display text-[30px] font-semibold leading-tight">{t('title', { name: locale === 'ar' ? name.split(' ')[0] ?? name : name })}</h1></div></>}
       <div className="ms-auto">{!state.error && !state.busy && !state.dirty ? <span role="status" className="inline-flex items-center gap-2 text-xs text-faint"><CloudCheck aria-hidden className="size-4 text-lime" />{editorT('saved')}</span>
         : <SaveStatus locale={locale} status={state.error ? 'error' : 'saving'} onRetry={() => void state.retrySave()} />}</div>
-      <Button disabled={state.busy} className="min-h-12 rounded-full" onClick={() => void state.persist(!template)}><Send aria-hidden className="size-4" />{template ? planT('savePlan') : t('send')}</Button>
+      <Button disabled={state.busy} className="min-h-12 rounded-full" onClick={() => void state.persist(!template)}><SendIcon aria-hidden className="size-4" />{template ? planT('savePlan') : t('send')}</Button>
     </header>
     {state.error && <p role="alert" className="mb-3 text-sm text-danger">{state.error}</p>}
     {calculator && <TargetCalculator facts={facts} onApply={targets => { update(draft => ({ ...draft, targets })); setCalculator(false); }} />}

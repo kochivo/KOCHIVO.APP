@@ -43,7 +43,7 @@ it.each(['ar', 'en'] as const)('uses the same inline controls with template save
   const html = renderToStaticMarkup(createElement(LocaleProvider, { locale }, createElement(TrainingEditor, {
     mode: 'template', initial: { ...draft, player_id: null }, programs: [],
   })));
-  expect(html).toContain(locale === 'ar' ? 'احفظ القالب' : 'Save template');
+  expect(html).not.toContain(locale === 'ar' ? 'احفظ القالب' : 'Save template');
   expect(html).not.toContain(messages[locale].send);
   expect(html).not.toContain(messages[locale].newProgram);
   expect(html).not.toContain(messages[locale].history);
@@ -64,4 +64,26 @@ it('keeps missing facts explicit and preserves the sourced facts/history panel',
   expect(html).toContain('Assessment history');
   expect(html).toContain('Goal progress');
   expect(html).not.toContain('0 kg');
+});
+it('renders the all-rest start card with one primary action and an enabled assignment button', () => {
+  const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' }, createElement(TrainingEditor, {
+    mode: 'template', initial: { ...draft, player_id: null, days: draft.days.map(day => ({ ...day, exercises: [], is_rest_day: true })) }, programs: [],
+  })));
+  expect(html).toContain('ابدأ أول يوم تمرين');
+  expect(html.match(/primary-surface/g)).toHaveLength(1);
+  expect(html).not.toContain('احفظ القالب');
+  expect(html).not.toContain('aria-label="اسم اليوم"');
+  expect(html).toMatch(/<button[^>]*id="assign-program"[^>]*>/);
+  expect(html.match(/<button[^>]*id="assign-program"[^>]*>/)?.[0]).not.toMatch(/\sdisabled(?:=|\s|>)/);
+  expect(html).toContain('<rect x="13.5" y="12" width="7" height="8">');
+  expect(html.indexOf('id="week-menu"')).toBeLessThan(html.indexOf('</header>'));
+});
+it('opens an empty training template with warm-up and inline exercise search', () => {
+  const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' }, createElement(TrainingEditor, {
+    mode: 'template', initial: { ...draft, player_id: null, days: draft.days.map(day => ({ ...day, exercises: [], is_rest_day: false })) }, programs: [],
+  })));
+  expect(html).toContain('التسخين');
+  expect(html).toContain(messages.ar.search);
+  expect(html).not.toContain('ابدأ أول يوم تمرين');
+  expect(html).not.toContain('~0');
 });

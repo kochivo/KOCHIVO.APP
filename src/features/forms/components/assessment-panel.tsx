@@ -1,3 +1,5 @@
+import { KoSend } from '@/ui/icons/ko-send';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { Ellipsis, Send } from 'lucide-react';
 import type { Locale } from '@/core/i18n/locale';
 import { createT } from '@/core/i18n/messages';
@@ -15,6 +17,7 @@ export function AssessmentPanel({ data, player, locale, now, busy, onEdit, onPau
   onEdit: (s: AssessmentSchedule) => void; onPause: (s: AssessmentSchedule) => void;
   onDelete: (s: AssessmentSchedule) => void; onSend: () => void;
 }) {
+  const SendIcon = captainWorkspaceEnabled() ? KoSend : Send;
   const t = createT(messages, locale), person = data.players.find(p => p.id === player);
   const date = (value: string) => formatDateAr(value, { day: 'numeric', month: 'long' }, locale);
   return <aside className="glass-strong min-w-0 rounded-card border border-line-soft px-5 py-[18px] min-[1001px]:sticky min-[1001px]:top-4">
@@ -56,6 +59,6 @@ export function AssessmentPanel({ data, player, locale, now, busy, onEdit, onPau
       }
       return last?.answered_at ? <FactRow key={f.id} label={f.title}><span className="text-faint">{t('lastAnswer', { date: date(localDate(new Date(last.answered_at), person?.timezone ?? DEFAULT_TIMEZONE)) })}</span></FactRow> : null;
     })}</dl>
-    {player && <Button variant="secondary" onClick={onSend} className="mt-3 min-h-12 w-full rounded-full"><Send aria-hidden className="size-4" />{t('send')}</Button>}
+    {player && <Button variant="secondary" onClick={onSend} className="mt-3 min-h-12 w-full rounded-full"><SendIcon aria-hidden className="size-4" />{t('send')}</Button>}
   </aside>;
 }

@@ -1,5 +1,7 @@
 'use client';
 
+import { KoPlus } from '@/ui/icons/ko-plus';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { Plus, Trash2 } from 'lucide-react';
 import { useT } from '@/core/i18n/client';
 import { uuidv7 } from '@/core/offline/ids';
@@ -7,6 +9,7 @@ import type { FoodUnit } from '../../types';
 import { messages } from './messages';
 
 export function FoodUnits({ units, onChange, disabled }: { units: FoodUnit[]; onChange: (units: FoodUnit[]) => void; disabled: boolean }) {
+  const PlusIcon = captainWorkspaceEnabled() ? KoPlus : Plus;
   const t = useT(messages);
   function update(index: number, patch: Partial<FoodUnit>) {
     onChange(units.map((unit, i) => i === index ? { ...unit, ...patch } : unit));
@@ -23,6 +26,6 @@ export function FoodUnits({ units, onChange, disabled }: { units: FoodUnit[]; on
         onClick={() => onChange(units.filter((_, i) => i !== index))}><Trash2 aria-hidden className="size-5" /></button>}
     </div>)}
     {!disabled && <button type="button" disabled={units.length >= 20} className="flex min-h-12 items-center gap-2 text-lime"
-      onClick={() => onChange([...units, { key: uuidv7(), name_ar: '', name_en: '', grams: 100 }])}><Plus aria-hidden className="size-4" />{t('addUnit')}</button>}
+      onClick={() => onChange([...units, { key: uuidv7(), name_ar: '', name_en: '', grams: 100 }])}><PlusIcon aria-hidden className="size-4" />{t('addUnit')}</button>}
   </fieldset>;
 }

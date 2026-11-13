@@ -1,4 +1,6 @@
 'use client';
+import { KoInvite } from '@/ui/icons/ko-invite';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { use, useRef, useState, useTransition } from 'react';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
@@ -20,6 +22,7 @@ import { PlayerRow } from './player-row';
 const InviteSheet = dynamic(() => import('../components/invite-sheet').then(module => module.InviteSheet));
 
 export function WorkspaceRoster({ data, today, extras, RequestList }: WorkspaceRosterProps) {
+  const UserPlusIcon = captainWorkspaceEnabled() ? KoInvite : UserPlus;
   const [result, captainFirstName] = use(data);
   const t = useT(messages), old = useT(legacyMessages), locale = useLocale();
   const router = useRouter(), demo = useDemoExpiry();
@@ -57,7 +60,7 @@ export function WorkspaceRoster({ data, today, extras, RequestList }: WorkspaceR
     <header className="flex flex-wrap items-center justify-between gap-4">
       <div><h1 className="font-display text-[30px] font-semibold leading-tight">{t('players')}</h1>
         <p className="mt-1 text-sm text-muted">{extras.free !== undefined ? t('capacity', { active: n(players.length), free: n(extras.free + removed) }) : t('unknown')}</p></div>
-      <Button className="min-h-12 rounded-full" onClick={() => setInviteOpen(true)}><UserPlus aria-hidden className="size-5" />{t('add')}</Button>
+      <Button className="min-h-12 rounded-full" onClick={() => setInviteOpen(true)}><UserPlusIcon aria-hidden className="size-5" />{t('add')}</Button>
     </header>
     <div className="flex flex-wrap items-center gap-2">
       {(['active', 'needsProgram', 'late', 'ending'] as const).map(key => <Chip key={key} pressed={currentFilter === key}

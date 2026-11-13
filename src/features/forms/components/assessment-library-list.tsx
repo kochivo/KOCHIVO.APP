@@ -1,3 +1,5 @@
+import { KoPlus } from '@/ui/icons/ko-plus';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import Link from 'next/link';
 import { Ellipsis, Plus } from 'lucide-react';
 import type { ArabicStyle, Locale } from '@/core/i18n/locale';
@@ -11,6 +13,7 @@ import { TemplateLinkEntry } from './template-link-entry';
 import { questionCaption } from '../question-caption';
 
 export function AssessmentLibraryList({ data, locale, style }: { data: AssessmentLibraryData; locale: Locale; selected?: string; style?: ArabicStyle }) {
+  const PlusIcon = captainWorkspaceEnabled() ? KoPlus : Plus;
   const t = createT(messages, locale, style), base = `/${locale}/captain/library/forms`;
   const m = formCopy(locale, style);
   const links = [['checkin', t('weekly')], ['progress', t('monthly')], ['onboarding', t('intake')],
@@ -58,7 +61,7 @@ export function AssessmentLibraryList({ data, locale, style }: { data: Assessmen
     <section id="templates" className="mt-[22px]" aria-label={t('templates')}>
       <h2 className="mb-[18px] text-xs text-faint">{t('templates')}</h2>
       <div className="flex flex-wrap gap-2">{links.map(([kind, title]) => <TemplateLinkEntry key={kind} href={`${base}?template=${kind}`}>
-        <Plus aria-hidden className="size-4" />{title}
+        <PlusIcon aria-hidden className="size-4" />{title}
       </TemplateLinkEntry>)}</div>
       <details className="mt-2 text-xs text-faint"><summary className="min-h-12 cursor-pointer py-3">{createT(assessmentMessages, locale, style)('moreTemplates')}</summary>
         <div className="flex flex-wrap gap-2"><TemplateLinkEntry href={`${base}?template=photos`}>{t('photos')}</TemplateLinkEntry>

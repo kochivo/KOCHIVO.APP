@@ -27,10 +27,10 @@ export function CaptainNav({ waitingCount = null }: { waitingCount?: number | nu
           {group && <h2 className="px-3 pt-3 text-sm text-muted">{group}</h2>}
           <Link href={href} data-tour={href} aria-current={active ? 'page' : undefined}
             className={`flex min-h-12 items-center gap-3 rounded-control px-3 text-sm ${active ? 'glass-raised font-bold text-lime' : 'text-muted hover:text-ink'}`}>
-            <Icon aria-hidden className="size-5" />{label}
+            <Icon aria-hidden {...(workspace ? { active } : {})} className="size-5" />{label}
             {workspace && href === '/captain/inbox' && (waiting === null
               ? <span className="sr-only">{t('waitingUnavailable')}</span>
-              : <span aria-label={t('waitingCount', { count: waiting })} className="ms-auto rounded-full bg-lime/10 px-2 text-xs font-bold tabular-nums text-lime">{waiting}</span>)}
+              : waiting > 0 ? <span aria-label={t('waitingCount', { count: waiting })} className="ms-auto rounded-full bg-lime/10 px-2 text-xs font-bold tabular-nums text-lime">{waiting}</span> : null)}
           </Link>
           </Fragment>
         ))}

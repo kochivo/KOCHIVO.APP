@@ -1,6 +1,6 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { expect, it } from 'vitest';
+import { afterEach, expect, it, vi } from 'vitest';
 import { LocaleProvider } from '@/core/i18n/client';
 import { LibraryView } from './components/library-view';
 import type { LibraryTemplate } from './library-types';
@@ -8,6 +8,17 @@ import { messages } from './messages';
 import { createT } from '@/core/i18n/messages';
 
 const actions = () => ({ onOpen() {}, onPreview() {}, onAssign() {}, onCopy() {}, onRename() {}, onDelete() {}, onArchive() {} });
+afterEach(() => vi.unstubAllEnvs());
+it('uses the engraved add action only with the workspace flag', () => {
+  vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '0');
+  const legacy = render('program', []);
+  expect(legacy).toContain('lucide-plus');
+  expect(legacy).not.toContain('<pattern');
+  vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
+  const v6 = render('program', []);
+  expect(v6).not.toContain('lucide-plus');
+  expect(v6.match(/<pattern /g)).toHaveLength(1);
+});
 function render(kind: 'program' | 'nutrition', templates: LibraryTemplate[], locale: 'ar' | 'en' = 'ar') {
   return renderToStaticMarkup(createElement(LocaleProvider, { locale }, createElement(LibraryView, {
     kind, templates, loading: false, error: '', createError: '', creating: false, busy: [], errors: {},
