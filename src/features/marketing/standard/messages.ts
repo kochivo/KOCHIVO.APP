@@ -1,4 +1,5 @@
 export const arStd = {
+  tryTheDemo: 'جرّب الديمو', aCoachWorkspaceWithSampleData: 'مساحة مدرب ببيانات تجريبية',
   brand: 'KOCHIVO', title: 'كوتشيفو — كل لاعبيك في مكان واحد',
   openMenu: 'افتح القائمة', closeMenu: 'أغلق القائمة', forOnlineCoaches: 'للكباتن الأونلاين',
   day: 'يوم كابتن عادي', features: 'المميزات', plans: 'الباقات', faq: 'أسئلة', login: 'دخول', signup: 'ابدأ مجاناً',

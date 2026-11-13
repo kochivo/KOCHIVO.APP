@@ -18,10 +18,18 @@ T-218 rebuilt the homepage header to "logo and primary only" on phones, and in d
 5. **Rules:** tokens only, logical properties, every icon-only control has a translated `aria-label`, all strings in messages (`ar`, `arStd`, `en`), no emoji.
 
 ## Acceptance
-- [ ] Tests: the header renders the language switch, theme switch and «دخول» link; the hero renders the demo link to `/demo`.
+- [x] Tests: the header renders the language switch, theme switch and «دخول» link; the hero renders the demo link to `/demo`.
 - [ ] e2e: at a phone width the header shows the language switch, theme switch and «دخول», and the page does not scroll sideways.
 - [ ] `npm run check` and `npm run build` pass; `/` stays within the 200 KiB budget.
 
 ## Out of scope
 - Any other homepage section.
 - The installed-app welcome screens (T-220).
+
+## Implementation notes
+- Restored compact language/theme switches and sign-in at every width; signup stays desktop-only to reserve phone space for 48px controls. Reading progress and the slim header are preserved.
+- Restored the hero demo text link and short note in Egyptian Arabic, standard Arabic and English, alongside the invite line.
+- Marketing tests pass with `npx vitest run --configLoader native --pool threads src/features/marketing`: 4 files, 12 tests. The phone e2e now checks 360px width, controls, 48px targets, one row and no horizontal overflow.
+- Production route bundle sizes are unavailable: `npm run build` fails with `Could not find the Next.js package (next/package.json)` through the dependency junction. The `/` 200 KiB budget remains unverified. Playwright is blocked by `Error: spawn EPERM`.
+- `npm run check` passes typecheck and lint, then stops at the sandbox error `spawnSync git EPERM` in the release audit. The reviewer must rerun both full gates and the phone e2e outside this sandbox.
+- A full Vitest fallback using native config loading and worker threads was stopped after several minutes without results; only the focused marketing suite is verified.

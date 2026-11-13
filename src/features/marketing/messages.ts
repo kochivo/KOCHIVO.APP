@@ -6,6 +6,7 @@ export const messages = defineMessages({
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? { ...arStd, ...(landing.arStd ?? landing.ar) } : undefined; },
   ar: {
     ...landing.ar,
+    tryTheDemo: 'جرّب الديمو', aCoachWorkspaceWithSampleData: 'مساحة كابتن ببيانات تجريبية',
     brand: 'KOCHIVO', title: 'كوتشيفو — كل لاعبينك في مكان واحد',
     openMenu: 'افتح القائمة', closeMenu: 'اقفل القائمة', forOnlineCoaches: 'للكباتن الأونلاين',
     day: 'يوم كابتن عادي', features: 'المميزات', plans: 'الباقات', faq: 'أسئلة', login: 'دخول', signup: 'ابدأ مجاناً',
@@ -35,6 +36,7 @@ export const messages = defineMessages({
   },
   en: {
     ...landing.en,
+    tryTheDemo: 'Try the demo', aCoachWorkspaceWithSampleData: 'A coach workspace with sample data',
     brand: 'KOCHIVO', title: 'KOCHIVO — all your players in one place',
     openMenu: 'Open menu', closeMenu: 'Close menu', forOnlineCoaches: 'For online coaches',
     day: 'A coach’s day', features: 'Features', plans: 'Plans', faq: 'FAQ', login: 'Sign in', signup: 'Start free',

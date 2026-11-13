@@ -23,6 +23,11 @@ describe('T-218 landing', () => {
     const copy = getContent(createT(messages, language));
     const parts = await Promise.all([Hero(), Pricing(), Faq(), FeaturesGrid(), SiteFooter(), HowItWorks(), WhyKochivo(), FinalCta()]);
     const html = parts.map(part => renderToStaticMarkup(part)).join('');
+    const hero = renderToStaticMarkup(parts[0]);
+    expect(hero).toMatch(/<a\b[^>]*\bhref="\/demo"[^>]*>/);
+    expect(hero).toContain(copy.hero.tryDemo);
+    expect(hero).toContain(copy.hero.demoNote);
+    expect(hero).toContain('href="#day"');
     expect(html).toContain('YOUR NEXT MOVE STARTS HERE.');
     const heading = html.match(/<h1\b[^>]*>(.*?)<\/h1>/s)?.[1]?.replaceAll(/<[^>]*>/g, '').replaceAll(/\s+/g, ' ').trim();
     expect(heading).toBe('YOUR NEXT MOVE STARTS HERE.');

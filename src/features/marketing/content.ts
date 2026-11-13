@@ -9,7 +9,7 @@ export function getContent(t: Translator<typeof messages>) {
     brand: t('brand'), seo: { title: t('title'), description: t('landingDescription') },
     links: { signup: '/login?tab=signup', login: '/login' }, login: t('login'), signup: t('signup'),
     nav: [{ href: '#day', label: t('day') }, { href: '#features', label: t('features') }, { href: '#pricing', label: t('plans') }, { href: '#faq', label: t('faq') }],
-    hero: { eyebrow: t('kicker'), arabic: t('tagline'), description: t('landingDescription'), signup: t('signupHero'), demo: t('watch'), invite: t('invite'), inviteNote: t('inviteLink') },
+    hero: { eyebrow: t('kicker'), arabic: t('tagline'), description: t('landingDescription'), signup: t('signupHero'), demo: t('watch'), tryDemo: t('tryTheDemo'), demoNote: t('aCoachWorkspaceWithSampleData'), invite: t('invite'), inviteNote: t('inviteLink') },
     preview: { day: t('workoutDay'), exercise: t('exercise'), weight: t('weight'), plus: t('plus'), minus: t('minus'), pr: t('record'), done: t('done') },
     why: { label: t('why'), title: t('whyTitle'), before: t('before'), after: t('after'), beforeList: t('beforeList').split('|'), afterList: t('afterList').split('|') },
     sample: { label: t('sample'), needsYou: t('needsYou'), rows: t('captainRows').split('|'), actions: t('captainActions').split('|'), finished: t('finished'), count: t('finishedCount'), sets: t('sets').split('|'), initial: t('initialWeight'), notification: t('notification'), detail: t('notificationDetail'), workout: t('workoutDetail') },

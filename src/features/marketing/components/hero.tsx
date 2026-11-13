@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { getT } from '@/core/i18n/server';
 import { Button } from '@/ui';
 import { KoPlay } from '@/ui/icons';
@@ -20,7 +21,10 @@ export async function Hero() {
         <form action={content.links.login}><input type="hidden" name="tab" value="signup" /><Button type="submit" size="lg" className="ring-4 ring-bg-deep">{content.hero.signup}</Button></form>
         <a href="#day" className="glass inline-flex min-h-14 items-center gap-2 rounded-control px-5 font-bold"><KoPlay className="size-5" aria-hidden="true" />{content.hero.demo}</a>
       </div>
-      <p className="flex flex-wrap items-center gap-2 text-sm text-muted">{content.hero.invite}<a href={content.links.login} className="inline-flex min-h-12 items-center text-lime underline underline-offset-4">{content.hero.inviteNote}</a></p>
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted">
+        <p className="flex flex-wrap items-center gap-2">{content.hero.invite}<a href={content.links.login} className="inline-flex min-h-12 items-center text-lime underline underline-offset-4">{content.hero.inviteNote}</a></p>
+        <p className="flex flex-wrap items-center gap-2"><Link href="/demo" prefetch={false} className="inline-flex min-h-12 items-center text-lime underline underline-offset-4">{content.hero.tryDemo}</Link><span>{content.hero.demoNote}</span></p>
+      </div>
     </div>
     {await HeroPhones()}
   </section>;
