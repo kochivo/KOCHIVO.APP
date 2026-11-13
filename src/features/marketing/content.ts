@@ -1,83 +1,57 @@
 import { createT } from '@/core/i18n/messages';
 import type { Translator } from '@/core/i18n/messages';
-import { messages } from './messages';
 import { whatsappUrl as contactUrl } from '@/lib/whatsapp';
 import { publicConfig } from '@/lib/public-config';
-
-type Plan = { name: string; price: number; displayPrice: string; limit: number; limitLabel: string; hot: boolean; action: string; audience: string; checklist: string[] };
-type Detail = { t: string; d: string };
+import { messages } from './messages';
 
 export function getContent(t: Translator<typeof messages>) {
-  const checklist = [t('planTraining'), t('planTemplates'), t('planReadiness'), t('planOffline'), t('planMedia')];
   return {
-  brand: t('brand'),
-  seo: { title: t('kochivoAllYourPlayersInOne'), description: t('everyPlayerSTrainingMealsAnd') },
-  whatsappNumber: publicConfig.ownerWhatsapp,
-  links: { signup: '/login?tab=signup', login: '/login', demo: '/demo' },
-  nav: [{ href: '#how', label: t('howItWorks') }, { href: '#features', label: t('features') }, { href: '#pricing', label: t('plans') }, { href: '#faq', label: t('faq') }],
-  login: t('signIn'), signup: t('startFree'), contact: t('chatOnWhatsApp'),
-  hero: { description: t('heroDescription'), eyebrow: t('forOnlineCoaches'), lines: [t('yourNextStep'), t('starts'), t('here')], period: t('period'), label: t('sloganLabel'), arabic: t('yourNextStepStartsHere'), signup: t('startFreeUpTo5Players'), demo: t('tryTheDemo'), demoNote: t('aCoachWorkspaceWithSampleData'), invite: t('gotAPlayerInvite'), inviteNote: t('openTheInviteLinkYourCoach') },
-  preview: { rest: t('restView'), restDay: t('restDay'), sleepQuestion: t('sleepQuestion'), sleepHours: t('sleepHours').split(/[,،]/), muscles: t('musclesLight'), water: t('waterStrip'), waterGlass: t('waterGlass'), player: t('playerView'), captain: t('coachView'), label: t('previewSampleData'), day: t('day2ChestAndTriceps'), exercise: t('barbellBenchPress'), weightLabel: t('weightKg'), weight: t('weight'), plus: t('plus'), minus: t('minus'), pr: t('newRecord'), record: t('previewRecord'), done: t('setDone'), radar: t('needsAttention'), heading: t('driftingPlayers'), send: t('messageOnWhatsApp'), waiting: t('videosWaitingForFeedback'), videos: t('videos') },
-  readiness: { label: t('newFeature'), title: t('readinessTitle'), description: t('readinessDescription'), score: t('readinessScore'), rings: t('readinessRings'), ringsDescription: t('ringsDescription'), ringLabels: t('ringLabels'), decision: t('todayDecision'), decisionDescription: t('decisionDescription'), original: t('originalSets'), suggested: t('suggestedSets'), apply: t('applyToday'), muscles: t('muscleAnalytics'), muscleDescription: t('muscleDescription'), pushPull: t('pushPull') },
-  progress: { title: t('eightWeekProgress'), exercise: t('barbellBenchPress'), weight: t('progressWeight'), record: t('newRecord'), sample: t('sampleData') },
-  radar: [
-    { name: t('karimAdel'), days: t('fourDays'), reason: t('noWorkoutLoggedSinceSaturday') },
-    { name: t('mohamedTarek'), days: t('threeDays'), reason: t('weeklyCheckInOverdue') },
-    { name: t('mostafaAli'), days: t('twoDaysLeft'), reason: t('subscriptionEndingSoon') },
-  ],
-  stats: [{ v: t('exerciseCount'), l: t('animatedExercises') }, { v: t('foodCount'), l: t('egyptianFoodsWithMacros') }, { v: t('threeTaps'), l: t('forEverydayTasks') }, { v: t('offline'), l: t('playersCanLogOffline') }],
-  how: { label: t('howItWorks'), title: [t('fromPlanToFeedback'), t('inMinutes')], today: t('aCoachSDay'), example: t('sampleData') },
-  steps: [
-    { n: t('stepOne'), t: t('buildThePlan'), d: t('startWithATemplateOrBuild') },
-    { n: t('stepTwo'), t: t('playersLog'), d: t('todaySWorkoutWeightsAndReps') },
-    { n: t('stepThree'), t: t('youGiveFeedback'), d: t('seeWhoSDoneWhoS') },
-  ],
-  feed: [{ t: t('pushPlanAssignedToSara'), at: t('feedAssignedAt') }, { t: t('saraFinishedTodaySWorkout'), at: t('feedWorkoutAt') }, { t: t('saraSentASquatVideo'), at: t('feedVideoAt') }, { t: t('yourFeedbackLowerMoreSlowly'), at: t('feedFeedbackAt') }],
-  featuresHeading: { label: t('forCoaches'), title: t('everythingYouNeedKeepItSimple') },
-  features: [
-    { icon: 'workout', t: t('workoutBuilder'), d: t('supersetsReadyMadeTemplatesAndOver') },
-    { icon: 'templates', t: t('templates'), d: t('templatesDescription') },
-    { icon: 'meals', t: t('flexibleMealPlans'), d: t('macrosUpdateAsYouBuildPlayers') },
-    { icon: 'supplements', t: t('supplements'), d: t('supplementsDescription') },
-    { icon: 'radar', t: t('dropOffRadar'), d: t('spotPlayersWhoHavenTLogged') },
-    { icon: 'inbox', t: t('oneInbox'), d: t('formVideosCheckInPhotosAnd') },
-    { icon: 'readiness', t: t('dailyReadiness'), d: t('dailyReadinessDescription') },
-    { icon: 'muscles', t: t('muscleAnalytics'), d: t('muscleFeatureDescription') },
-  ],
-  playerHeading: { label: t('forPlayers'), title: t('playerDayTitle'), description: t('playerDayDescription') },
-  // The board's timer claim contradicts ARCHITECTURE §9; leave it pending owner review.
-  player: [
-    { t: t('focusMode'), d: t('oneExerciseAtATimeBig') },
-    { t: t('dailyWater'), d: t('dailyWaterDescription') },
-    { t: t('workoutHistory'), d: t('workoutHistoryDescription') },
-    { t: t('offline'), d: t('savedOnYourPhoneSyncedAutomatically') },
-    { t: t('personalBest'), d: t('celebrateEveryNewRecordOnScreen') },
-    { t: t('feelsLikeAnApp'), d: t('addItToYourHomeScreen') },
-  ] satisfies Detail[],
-  pricing: { allFeatures: t('allPlanFeatures'), label: t('plans'), title: t('roomForEveryPlayer'), description: t('noAutomaticBillingSubscribeOnWhatsApp'), note: t('noAutoRenewalActivateOnWhatsApp'), popular: t('mostPopular'), unit: t('egp'), monthly: t('egpMonth') },
-  // Prices confirmed by the owner on 2026-11-03. The DB plan limits must match these.
-  plans: [
-    { name: t('planEntry'), audience: t('entryAudience'), checklist, price: 0, displayPrice: t('priceFree'), limit: 5, limitLabel: t('upTo5Players'), action: t('startFree'), hot: false },
-    { name: t('planChampion'), audience: t('championAudience'), checklist, price: 399, displayPrice: t('priceChampion'), limit: 20, limitLabel: t('upTo20Players'), action: t('subscribe'), hot: false },
-    { name: t('planLegend'), audience: t('legendAudience'), checklist, price: 699, displayPrice: t('priceLegend'), limit: 40, limitLabel: t('upTo40Players'), action: t('subscribe'), hot: true },
-    { name: t('planEmpire'), audience: t('empireAudience'), checklist, price: 1499, displayPrice: t('priceEmpire'), limit: 100, limitLabel: t('upTo100Players'), action: t('subscribe'), hot: false },
-  ] satisfies Plan[],
-  whiteLabel: t('wantYourGymSNameAnd'),
-  faqHeading: { label: t('faq'), title: t('beforeYouStart') },
-  faq: [
-    { q: t('sleepFaq'), a: t('sleepAnswer') },
-    { q: t('doPlayersPay'), a: t('noCoachesSubscribePlayersJoinFree') },
-    { q: t('doesItWorkOffline'), a: t('yesWorkoutsAndMealsAreSaved') },
-    { q: t('doINeedTheAppStore'), a: t('noOpenItInYourBrowser') },
-    { q: t('canOtherCoachesSeeMyPlayers'), a: t('noEachCoachCanOnlyAccess') },
-    { q: t('whatIfASubscriptionEndsOr'), a: t('nothingIsDeletedPlayersKeepAccess') },
-  ],
-  final: { title: t('startWithYourFirstPlayerToday'), action: t('createYourCoachAccount') },
-  footer: { copyright: t('copyright'), credit: t('mediaCredit'), privacy: t('privacy'), terms: t('terms'), support: t('whatsappSupport') },
-} as const;
+    brand: t('brand'), seo: { title: t('title'), description: t('landingDescription') },
+    links: { signup: '/login?tab=signup', login: '/login' }, login: t('login'), signup: t('signup'),
+    nav: [{ href: '#day', label: t('day') }, { href: '#features', label: t('features') }, { href: '#pricing', label: t('plans') }, { href: '#faq', label: t('faq') }],
+    hero: { eyebrow: t('kicker'), arabic: t('tagline'), description: t('landingDescription'), signup: t('signupHero'), demo: t('watch'), invite: t('invite'), inviteNote: t('inviteLink') },
+    preview: { day: t('workoutDay'), exercise: t('exercise'), weight: t('weight'), plus: t('plus'), minus: t('minus'), pr: t('record'), done: t('done') },
+    why: { label: t('why'), title: t('whyTitle'), before: t('before'), after: t('after'), beforeList: t('beforeList').split('|'), afterList: t('afterList').split('|') },
+    sample: { label: t('sample'), needsYou: t('needsYou'), rows: t('captainRows').split('|'), actions: t('captainActions').split('|'), finished: t('finished'), count: t('finishedCount'), sets: t('sets').split('|'), initial: t('initialWeight'), notification: t('notification'), detail: t('notificationDetail'), workout: t('workoutDetail') },
+    how: { today: t('day'), title: [t('storyHeading'), t('storyHeadingEnd')] },
+    feed: [{ at: t('time1'), t: t('story1') }, { at: t('time2'), t: t('story2') }, { at: t('time3'), t: t('story3') }, { at: t('time4'), t: t('story4') }],
+    story: {
+      descriptions: [t('storyDescription1'), t('storyDescription2'), t('storyDescription3'), t('storyDescription4')],
+      titles: [t('assignTitle'), t('workoutTitle'), t('videoTitle'), t('chatTitle')],
+      players: t('samplePlayers').split('|'), assign: t('assignAction'), exercises: t('workoutRows').split('|'), sets: t('workoutSets').split('|'), logged: t('workoutLogged'), video: t('videoDetail'), question: t('question'), reply: t('reply'), sent: t('sent'),
+    },
+    soon: t('soon'), numbers: t('featureNumbers').split('|'),
+    stats: [{ v: t('exerciseCount'), l: t('animatedExercises'), count: 1300 }, { v: t('egyptianFood'), l: t('foodDetail'), count: 0 }, { v: t('threeTaps'), l: t('everyday'), count: 3 }],
+    featuresHeading: { label: t('everything'), title: t('nothingExtra') },
+    features: [
+      { icon: 'workout', t: t('builder'), d: t('builderDescription'), soon: false },
+      { icon: 'meals', t: t('meals'), d: t('mealsDescription'), soon: false },
+      { icon: 'inbox', t: t('inbox'), d: t('inboxDescription'), soon: false },
+      { icon: 'radar', t: t('radar'), d: t('radarDescription'), soon: false },
+      { icon: 'readiness', t: t('readinessFeature'), d: t('readinessDetail'), soon: false },
+      { icon: 'billing', t: t('billingFeature'), d: t('billingDescription'), soon: false },
+      { icon: 'assistant', t: t('assistant'), d: t('assistantDescription'), soon: true },
+      { icon: 'ranking', t: t('ranking'), d: t('rankingDescription'), soon: true },
+    ],
+    pricing: { label: t('plans'), title: t('pricingTitle'), description: t('choosePlan'), note: t('renewalNote'), popular: t('popular'), unit: t('currency'), monthly: t('monthly') },
+    // Each tier owns its inclusions so future extras can be changed independently.
+    plans: [
+      { name: t('entry'), audience: t('entryAudience'), price: 0, displayPrice: t('freePrice'), limit: 5, limitLabel: t('limit5'), action: t('signup'), hot: false,
+        checklist: [t('planTraining'), t('planTemplates'), t('planReadiness'), t('planMedia'), t('planBilling')] },
+      { name: t('champion'), audience: t('championAudience'), price: 399, displayPrice: t('championPrice'), limit: 20, limitLabel: t('limit20'), action: t('subscribe'), hot: false,
+        checklist: [t('planTraining'), t('planTemplates'), t('planReadiness'), t('planMedia'), t('planBilling')] },
+      { name: t('legend'), audience: t('legendAudience'), price: 699, displayPrice: t('legendPrice'), limit: 40, limitLabel: t('limit40'), action: t('subscribe'), hot: true,
+        checklist: [t('planTraining'), t('planTemplates'), t('planReadiness'), t('planMedia'), t('planBilling')] },
+      { name: t('empire'), audience: t('empireLine'), price: 1499, displayPrice: t('empirePrice'), limit: 100, limitLabel: t('limit100'), action: t('subscribe'), hot: false,
+        checklist: [t('planTraining'), t('planTemplates'), t('planReadiness'), t('planMedia'), t('planBilling')] },
+    ],
+    faqHeading: { label: t('faq'), title: t('faqTitle') },
+    faq: [{ q: t('faq1'), a: t('answer1') }, { q: t('faq2'), a: t('answer2') }, { q: t('faq3'), a: t('answer3') }, { q: t('faq4'), a: t('answer4') }],
+    final: { title: t('closingTitle'), note: t('closingNote'), action: t('createAccount') },
+    footer: { copyright: t('copyright'), credit: t('credit'), support: t('support'), privacy: t('privacy'), terms: t('terms') },
+  } as const;
 }
 
 export const content = getContent(createT(messages, 'ar'));
-
-// The configured marketing number contains digits, so a contact link is guaranteed.
-export const whatsappUrl = contactUrl({ phone: content.whatsappNumber })!;
+// Public config always supplies a digit-only contact number.
+export const whatsappUrl = contactUrl({ phone: publicConfig.ownerWhatsapp })!;

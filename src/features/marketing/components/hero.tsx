@@ -1,29 +1,27 @@
 import { getT } from '@/core/i18n/server';
+import { Button } from '@/ui';
+import { KoPlay } from '@/ui/icons';
 import { messages } from '../messages';
-import { Play, ChevronDown } from 'lucide-react';
 import { getContent } from '../content';
 import { Slogan } from './slogan';
-import { PreviewToggle } from './preview-toggle';
-import { PreviewPlayer } from './preview-player';
-import { PreviewCaptain } from './preview-captain';
-import { PreviewRest } from './preview-rest';
+import { HeroPhones } from './hero-phones';
+import styles from './landing.module.css';
 
 export async function Hero() {
-  const t = await getT(messages);
-  const content = getContent(t);
-  const [player, rest, captain, slogan] = await Promise.all([PreviewPlayer(), PreviewRest(), PreviewCaptain(), Slogan()]);
-  return <section className="marketing-wrap flex flex-wrap items-center gap-14 pt-16 lg:pt-22">
-    <div className="flex min-w-0 flex-[1_1_560px] flex-col gap-[22px]">
+  const content = getContent(await getT(messages));
+  return <section id="hero" data-hero className={`marketing-wrap ${styles.hero}`}>
+    <span data-slash aria-hidden="true" className={styles.slash} />
+    <div className={`relative z-10 flex min-w-0 flex-col gap-6 ${styles.heroCopy}`}>
       <p className="marketing-eyebrow">{content.hero.eyebrow}</p>
-      {slogan}
-      <p className="marketing-after max-w-[540px] text-lg leading-relaxed text-muted">{content.hero.description}</p>
-      <div className="marketing-after flex flex-wrap gap-3">
-        <a href={content.links.signup} className="marketing-primary min-h-16 px-7 text-lg">{content.hero.signup}</a>
-        <a href={content.links.demo} className="marketing-ghost glass min-h-16 gap-2 px-5"><Play size={18} aria-hidden="true" />{content.hero.demo}</a>
+      {await Slogan()}
+      <p className="font-display text-2xl font-bold">{content.hero.arabic}</p>
+      <p className="max-w-lg text-base leading-relaxed text-muted">{content.hero.description}</p>
+      <div className="flex flex-wrap gap-3">
+        <form action={content.links.login}><input type="hidden" name="tab" value="signup" /><Button type="submit" size="lg" className="ring-4 ring-bg-deep">{content.hero.signup}</Button></form>
+        <a href="#day" className="glass inline-flex min-h-14 items-center gap-2 rounded-control px-5 font-bold"><KoPlay className="size-5" aria-hidden="true" />{content.hero.demo}</a>
       </div>
-      <p className="text-sm text-muted">{content.hero.demoNote}</p>
-      <details className="group text-sm text-muted"><summary className="flex min-h-12 cursor-pointer items-center text-lime">{content.hero.invite}<ChevronDown aria-hidden className="ms-auto size-4 shrink-0 transition-transform group-open:rotate-180" /></summary><p className="py-2">{content.hero.inviteNote}</p></details>
+      <p className="flex flex-wrap items-center gap-2 text-sm text-muted">{content.hero.invite}<a href={content.links.login} className="inline-flex min-h-12 items-center text-lime underline underline-offset-4">{content.hero.inviteNote}</a></p>
     </div>
-    <PreviewToggle player={player} rest={rest} captain={captain} />
+    {await HeroPhones()}
   </section>;
 }

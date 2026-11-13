@@ -3,8 +3,8 @@ import { setRequestLocale } from '@/core/i18n/server';
 import { parseLocale } from '@/core/i18n/locale';
 import { createT } from '@/core/i18n/messages';
 import {
-  getContent, marketingMessages, SiteHeader, Hero, StatsStrip, HowItWorks, FeaturesGrid,
-  PlayerSection, Pricing, Faq, FinalCta, SiteFooter, InstalledAppRedirect,
+  getContent, marketingMessages, SiteHeader, Hero, WhyKochivo, HowItWorks, FeaturesGrid,
+  Pricing, Faq, FinalCta, SiteFooter, InstalledAppRedirect,
 } from '@/features/marketing';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -33,10 +33,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     <SiteHeader />
     <main>
       <Hero />
-      <StatsStrip />
+      <WhyKochivo />
       <HowItWorks />
       <FeaturesGrid />
-      <PlayerSection />
       <Pricing />
       <Faq />
       <FinalCta />

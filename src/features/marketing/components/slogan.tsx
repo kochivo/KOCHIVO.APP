@@ -1,22 +1,12 @@
 import { getT } from '@/core/i18n/server';
 import { messages } from '../messages';
-import { getContent } from '../content';
+import styles from './landing.module.css';
 
 export async function Slogan() {
   const t = await getT(messages);
-  const content = getContent(t);
-  return <>
-    {/* The slogan is an English brand mark in both locales, so it is always set left-to-right. */}
-    <h1 aria-label={content.hero.label} className="marketing-slogan" dir="ltr" lang="en">
-      <span className="block">{content.hero.lines[0]}</span>
-      <span className="marketing-outline block">{content.hero.lines[1]}</span>
-      <span className="block text-ink">{content.hero.lines[2]}<span className="text-ink">{content.hero.period}</span></span>
-    </h1>
-    <div className="marketing-after flex flex-col items-start gap-3">
-      <span aria-hidden="true" className="marketing-beam h-1 w-14 rounded bg-line" />
-      {/* The tagline translates the slogan; in English it would only repeat it. */}
-      {content.hero.arabic.toLowerCase() !== content.hero.label.toLowerCase()
-        && <p className="font-display text-2xl font-bold">{content.hero.arabic}</p>}
-    </div>
-  </>;
+  return <h1 aria-label={t('sloganLabel')} className={styles.slogan} dir="ltr" lang="en">
+    <span>{t('sloganFirst')}</span>{' '}
+    <span><span className="text-lime">{t('sloganMove')}</span>{' '}{t('sloganStarts')}</span>{' '}
+    <span>{t('sloganLast')}</span>
+  </h1>;
 }

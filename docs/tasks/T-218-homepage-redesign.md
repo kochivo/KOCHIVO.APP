@@ -1,6 +1,6 @@
 # T-218: Homepage redesign (owner-approved mockup, app style)
 
-**Phase:** Public pages (owner approval 2026-11-13) · **Depends on:** none · **Status:** ready
+**Phase:** Public pages (owner approval 2026-11-13) · **Depends on:** none · **Status:** implemented in working tree; final verification blocked by local tooling
 
 ## Goal
 Rebuild the KOCHIVO homepage (`src/app/[locale]/page.tsx`, `src/features/marketing/`) to match `docs/mockups/landing/kochivo-landing.html`. The page should feel modern and credible, never "AI-generated": real logo, real features only, light on phones.
@@ -31,11 +31,27 @@ The look is the app's own (owner decision 2026-11-13): `Button` from `@/ui`, `gl
 10. **Motion and weight:** one-time entrances and hover/press states only; nothing loops; no blur on large areas; `prefers-reduced-motion` turns all of it off. Client JS only in small islands (progress line, story observer, counters, parallax). Stay within the public route budget (200 KiB gzip) and report before/after.
 
 ## Acceptance
-- [ ] Tests: the slogan text is exact; no offline wording in any locale; no white-label strip; each plan renders its own feature list; LEGEND badge outside the price; «قريباً» on KO and ranking; the footer credit is present.
-- [ ] Reduced motion: no animation classes applied.
+- [x] Tests: the slogan text is exact; no offline wording in any locale; no white-label strip; each plan renders its own feature list; LEGEND badge outside the price; «قريباً» on KO and ranking; the footer credit is present.
+- [x] Reduced motion: no animation classes applied.
 - [ ] `npm run check` and `npm run build` pass; budgets reported.
+
+## Implementation and verification notes (2026-11-13)
+- The route now orders hero, before/after, pinned story, features with counters, pricing, FAQ and closing card. All sections render on the server; one small motion island enhances progress, story selection, entrances, counters, weight and fine-pointer parallax.
+- Marketing components use existing Button, glass surfaces, featured glass, fonts, tokens and KO icons. Removed the old preview switcher, readiness/player sections, mobile menu and white-label strip. Egyptian, standard Arabic and English copy lives in the marketing message files.
+- Focused verification: marketing plus dictionary coverage/gating tests passed (6 files, 109 tests). Motion tests inject frames and avoid timers/network. Typecheck and lint passed. Release-audit rules passed via a direct Git pipe: 2755 files, 0 findings.
+- Broader native/thread test attempts were interrupted after several minutes without a summary; no full-suite pass is claimed.
+- Required `npm run check` is blocked at release audit: `spawnSync git EPERM`. Default Vitest child-process/config loading is also blocked; native config loading with the thread pool runs successfully.
+- Required `npm run build` fails before compilation because the worktree's `node_modules` junction points outside the Turbopack root. A webpack diagnostic attempt also fails with `spawn EPERM`.
+- Public route gzip JS **before: unavailable; after: unavailable**. The same baseline build failure prevents a valid comparison or confirmation of the 200 KiB budget.
+- Browser launch for opening the HTML reference and visual review is blocked by `spawn EPERM`; the reference HTML source was reviewed. No visual verification is claimed.
+- Out-of-scope `e2e/public.spec.ts` still expects a mobile menu, contrary to this card's phone header. Its imported message keys are retained for type compatibility; the test needs updating in a separately scoped change.
+- Footer privacy and terms labels match the mockup as text; the repository has no public legal-page destinations to link them to.
 
 ## Out of scope
 - The coach public page (T-179, T-181).
 - New pricing data or plan changes.
 - Testimonials or any invented numbers.
+- Reviewer (2026-11-13): phones scrolled sideways (page 498px at 375px); the hero and story now clip
+  horizontal overflow, and under `md` the hero slash sits behind the phones so it never crosses the copy.
+  `e2e/public.spec.ts` now checks the phone header (logo and primary only) instead of the removed menu.
+  In the main checkout `npm run check` passes (only the known `demo` load flake, 13/13 alone) and `npm run build` passes.
