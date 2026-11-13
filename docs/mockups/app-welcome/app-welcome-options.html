@@ -1,0 +1,238 @@
+<title>KOCHIVO Welcome Options</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Alexandria:wght@400;500;700;800&display=swap">
+<style>
+/* Layout: three design directions stacked; each shows the welcome screen and the role screen side by side in phone frames. */
+:root {
+  --bg: #0b0c0d; --deep: #070808; --panel: #121314; --ink: #f2f1ec; --muted: #9a9c97; --faint: #5f615d;
+  --lime: #b6e94f; --on-lime: #101418; --lime-soft: rgb(182 233 79 / .12); --lime-line: rgb(182 233 79 / .45);
+  --glass: rgb(255 255 255 / .03); --glass-strong: rgb(255 255 255 / .06); --line: rgb(255 255 255 / .09);
+  --sans: 'Alexandria', 'Manrope', system-ui, sans-serif;
+  --latin: 'Manrope', system-ui, sans-serif;
+  color-scheme: dark;
+}
+html, body { background: var(--deep); color: var(--ink); }
+body { font-family: var(--sans); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 32px 56px; }
+.page { max-width: 1120px; margin-inline: auto; display: flex; flex-direction: column; gap: 56px; }
+.intro { display: flex; flex-direction: column; gap: 8px; max-width: 64ch; }
+.intro h1 { font: 800 clamp(1.5rem, 3vw, 2rem)/1.35 var(--sans); margin: 0; text-wrap: balance; }
+.intro p { margin: 0; color: var(--muted); line-height: 1.8; font-size: 15px; }
+
+section.opt { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 32px; align-items: start; border-top: 1px solid var(--line); padding-block-start: 32px; }
+.opt-head { display: flex; flex-direction: column; gap: 10px; position: sticky; top: calc(16px + env(safe-area-inset-top, 0px)); }
+.badge { align-self: flex-start; font: 800 13px/1 var(--latin); color: var(--on-lime); background: var(--lime); border-radius: 999px; padding: 6px 12px; }
+.opt-head h2 { margin: 0; font: 800 22px/1.4 var(--sans); }
+.opt-head p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.8; }
+.opt-head ul { margin: 0; padding-inline-start: 18px; color: var(--muted); font-size: 13.5px; line-height: 1.9; }
+.phones { display: flex; flex-wrap: wrap; gap: 24px; justify-content: center; }
+@media (max-width: 860px) { section.opt { grid-template-columns: 1fr; } .opt-head { position: static; } }
+
+.phone { width: 290px; max-width: 100%; aspect-ratio: 290 / 628; border-radius: 44px; padding: 8px; background: #1a1b1c; border: 1px solid var(--line); box-shadow: 0 28px 56px rgb(0 0 0 / .5); }
+.screen { position: relative; height: 100%; border-radius: 37px; overflow: hidden; background: var(--bg); display: flex; flex-direction: column; padding: 46px 18px 24px; isolation: isolate; }
+.island { position: absolute; top: 10px; left: 50%; translate: -50% 0; width: 84px; height: 23px; border-radius: 20px; background: #000; z-index: 5; }
+.status { position: absolute; inset: 14px 24px auto; display: flex; justify-content: space-between; font: 700 11.5px/1 var(--latin); direction: ltr; z-index: 5; }
+.grow { flex: 1; }
+.stack { display: flex; flex-direction: column; }
+.g6 { gap: 6px; } .g8 { gap: 8px; } .g10 { gap: 10px; } .g12 { gap: 12px; } .g16 { gap: 16px; } .g20 { gap: 20px; }
+.logo { height: 22px; width: auto; display: block; }
+.btn { min-height: 50px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font: 700 15px/1 var(--sans); border: 1px solid transparent; width: 100%; color: var(--ink); background: transparent; }
+.btn.pill { border-radius: 999px; }
+.btn-lime { background: var(--lime); color: var(--on-lime); }
+.btn-dark { background: #1b1c1d; border-color: var(--line); }
+.btn-ghost { color: var(--ink); }
+.kick { color: var(--lime); font-size: 12px; font-weight: 700; }
+.title { font: 800 30px/1.3 var(--sans); margin: 0; }
+.sub { color: var(--muted); font-size: 13px; line-height: 1.75; margin: 0; }
+.lang { display: flex; padding: 3px; border-radius: 999px; border: 1px solid var(--line); background: var(--glass); direction: ltr; }
+.lang span { min-width: 36px; min-height: 30px; display: grid; place-items: center; border-radius: 999px; color: var(--muted); font: 700 11.5px/1 var(--latin); }
+.lang span.on { background: var(--lime-soft); color: var(--lime); }
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.role { display: flex; align-items: center; gap: 12px; min-height: 84px; padding: 14px; border-radius: 20px; background: var(--glass); border: 1px solid var(--line); }
+.role.on { border-color: var(--lime-line); background: linear-gradient(180deg, rgb(182 233 79 / .06), rgb(255 255 255 / .02)); }
+.tile { flex: none; width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; border: 1px solid var(--line); background: var(--glass-strong); }
+.role.on .tile { border-color: var(--lime-line); color: var(--lime); }
+.rt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.rt strong { font: 700 16px/1.35 var(--sans); }
+.rt small { color: var(--muted); font-size: 12px; line-height: 1.5; }
+.chev { color: var(--lime); flex: none; }
+.legal { color: var(--faint); font-size: 11px; text-align: center; }
+.foot-link { text-align: center; color: var(--muted); font-size: 12.5px; }
+.foot-link b { color: var(--lime); font-weight: 700; }
+
+/* A: quiet, like the reference */
+.a .screen { background: #111213; }
+.a .brand { display: flex; align-items: center; gap: 10px; }
+
+/* B: brand sheet */
+.b .screen { padding: 0; }
+.b .art { position: relative; flex: 1; overflow: hidden; background: radial-gradient(120% 80% at 70% 20%, #1c2213, var(--bg) 70%); }
+.b .art .k { position: absolute; inset-inline-end: -40px; top: 70px; width: 120px; height: 300px; background: var(--lime); transform: skewX(-18deg); }
+.b .art .k2 { position: absolute; inset-inline-end: 110px; top: 150px; width: 40px; height: 220px; background: var(--ink); opacity: .9; transform: skewX(-18deg); }
+.b .art .logo { position: absolute; top: 52px; inset-inline-start: 18px; }
+.b .sheet { background: var(--panel); border-radius: 30px 30px 0 0; border-top: 1px solid var(--line); padding: 22px 18px 24px; display: flex; flex-direction: column; gap: 14px; margin-top: -26px; position: relative; }
+.b .handle { width: 40px; height: 4px; border-radius: 4px; background: var(--line); align-self: center; }
+.b .screen.list { padding: 46px 18px 24px; }
+
+/* C: one screen, choose then continue */
+.c .screen { background: var(--bg); }
+.c .hello { font: 800 26px/1.35 var(--sans); margin: 0; }
+.c .radio { width: 20px; height: 20px; border-radius: 999px; border: 2px solid var(--faint); flex: none; display: grid; place-items: center; }
+.c .role.on .radio { border-color: var(--lime); }
+.c .role.on .radio::after { content: ""; width: 10px; height: 10px; border-radius: 999px; background: var(--lime); }
+.c .field { min-height: 50px; border-radius: 14px; border: 1px solid var(--line); background: var(--glass-strong); display: flex; align-items: center; padding: 0 14px; direction: ltr; font: 600 14px/1 var(--latin); color: var(--muted); }
+.c .seg { display: flex; padding: 4px; border-radius: 14px; background: var(--glass); border: 1px solid var(--line); }
+.c .seg span { flex: 1; min-height: 38px; display: grid; place-items: center; border-radius: 10px; font-size: 13px; font-weight: 700; color: var(--muted); }
+.c .seg span.on { background: var(--glass-strong); color: var(--ink); border: 1px solid var(--line); }
+.or { display: flex; align-items: center; gap: 10px; color: var(--faint); font-size: 11.5px; }
+.or::before, .or::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.g-btn { min-height: 48px; border-radius: 14px; border: 1px solid var(--line); background: var(--glass); display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13.5px; font-weight: 700; }
+.cap { margin: 10px 0 0; color: var(--muted); font-size: 12.5px; text-align: center; }
+</style>
+
+<div class="page" dir="rtl">
+  <header class="intro">
+    <h1>شاشات التطبيق: 3 أشكال تختار منهم</h1>
+    <p>كل شكل فيه شاشة الترحيب وشاشة «إنت مين؟». التلاتة بنفس ألوان التطبيق، والفرق في الإحساس: هادي، أو براند قوي، أو أسرع بشاشة واحدة. شاشة الدخول (باسورد أو كود على الإيميل أو Google) موجودة في الشكل C، وهتبقى زيها في أي شكل تختاره.</p>
+  </header>
+
+  <!-- A -->
+  <section class="opt a">
+    <div class="opt-head">
+      <span class="badge">A</span>
+      <h2>هادي وبسيط</h2>
+      <p>أقرب حاجة للصورة اللي بعتها. خلفية سادة، الكلام تحت، زرارين، ومفيش زينة.</p>
+      <ul><li>عنوان عربي بدل السلوجن الكبير</li><li>اللوجو فوق جنب الكلام</li><li>الأزرار مستطيلة بزوايا ناعمة</li></ul>
+    </div>
+    <div class="phones">
+      <div>
+        <div class="phone"><div class="screen">
+          <div class="island"></div><div class="status"><span>1:08</span><span>100%</span></div>
+          <div class="grow"></div>
+          <div class="stack g16">
+            <div class="brand"><img class="logo" src="logo-primary.png" alt="KOCHIVO"></div>
+            <span class="kick">أهلاً</span>
+            <h3 class="title">اتمرّن مع كابتنك.</h3>
+            <p class="sub">البرنامج والأكل والمتابعة في مكان واحد.</p>
+          </div>
+          <div class="grow"></div>
+          <div class="stack g10">
+            <span class="btn btn-lime">يلا نبدأ</span>
+            <span class="btn btn-dark">سجّل دخولك</span>
+          </div>
+        </div></div>
+        <p class="cap">الترحيب</p>
+      </div>
+      <div>
+        <div class="phone"><div class="screen">
+          <div class="island"></div><div class="status"><span>1:08</span><span>100%</span></div>
+          <div class="topbar"><img class="logo" src="logo-primary.png" alt="KOCHIVO"><div class="lang"><span>EN</span><span class="on">ع</span></div></div>
+          <div class="stack g8" style="margin-block-start:30px">
+            <span class="kick">01 أهلاً</span>
+            <h3 class="title">إنت مين؟</h3>
+            <p class="sub">اختار طريقك عشان نجهّزلك التطبيق.</p>
+          </div>
+          <div class="stack g12" style="margin-block-start:20px">
+            <div class="role on"><span class="tile"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M8 12h8"/><rect x="16" y="7" width="3.5" height="10"/><rect x="4.5" y="7" width="3.5" height="10"/><path d="M2.5 10v4M21.5 10v4"/></svg></span><span class="rt"><strong>لاعب</strong><small>انضم لكابتنك بالدعوة أو الكود</small></span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></div>
+            <div class="role"><span class="tile"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="8" r="3.4"/><path d="M3.5 20v-1c0-3.1 2.4-5.3 5.5-5.3s5.5 2.2 5.5 5.3v1"/><path d="M15.5 4.9a3.2 3.2 0 0 1 0 6.2"/><path d="M17.5 13.9c1.9.6 3 2.3 3 4.6V20"/></svg></span><span class="rt"><strong>كابتن</strong><small>تابع لاعيبتك ونظّم شغلك</small></span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></div>
+          </div>
+          <div class="grow"></div>
+          <div class="stack g10"><span class="btn btn-dark">عندي حساب بالفعل</span><p class="foot-link">كابتن؟ <b>جرّب الديمو</b></p></div>
+        </div></div>
+        <p class="cap">إنت مين؟</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- B -->
+  <section class="opt b">
+    <div class="opt-head">
+      <span class="badge">B</span>
+      <h2>براند قوي</h2>
+      <p>نص الشاشة فوق للوجو وشرطة الـ K بتاعتنا كبيرة، والكلام والأزرار في لوحة طالعة من تحت زي تطبيقات الموبايل.</p>
+      <ul><li>بيحس إنه تطبيق مش موقع</li><li>السلوجن صغير فوق العنوان</li><li>أزرار دائرية زي باقي التطبيق</li></ul>
+    </div>
+    <div class="phones">
+      <div>
+        <div class="phone"><div class="screen">
+          <div class="island"></div><div class="status"><span>1:08</span><span>100%</span></div>
+          <div class="art"><img class="logo" src="logo-primary.png" alt="KOCHIVO"><span class="k" aria-hidden="true"></span><span class="k2" aria-hidden="true"></span></div>
+          <div class="sheet">
+            <span class="handle" aria-hidden="true"></span>
+            <span class="kick" dir="ltr" style="text-align:right;font-family:var(--latin)">YOUR NEXT MOVE STARTS HERE.</span>
+            <h3 class="title" style="font-size:26px">خطوتك الجاية بتبدأ من هنا.</h3>
+            <span class="btn pill btn-lime">يلا نبدأ</span>
+            <span class="btn pill btn-ghost">سجّل دخولك</span>
+          </div>
+        </div></div>
+        <p class="cap">الترحيب</p>
+      </div>
+      <div>
+        <div class="phone"><div class="screen list">
+          <div class="island"></div><div class="status"><span>1:08</span><span>100%</span></div>
+          <div class="topbar"><img class="logo" src="logo-primary.png" alt="KOCHIVO"><div class="lang"><span>EN</span><span class="on">ع</span></div></div>
+          <div class="stack g8" style="margin-block-start:30px">
+            <h3 class="title">إنت مين؟</h3>
+            <p class="sub">هنجهّزلك التطبيق على حسب اختيارك.</p>
+          </div>
+          <div class="stack g12" style="margin-block-start:20px">
+            <div class="role on" style="border-radius:999px;min-height:76px"><span class="tile" style="border-radius:999px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M8 12h8"/><rect x="16" y="7" width="3.5" height="10"/><rect x="4.5" y="7" width="3.5" height="10"/><path d="M2.5 10v4M21.5 10v4"/></svg></span><span class="rt"><strong>أنا لاعب</strong><small>معايا دعوة من كابتن</small></span></div>
+            <div class="role" style="border-radius:999px;min-height:76px"><span class="tile" style="border-radius:999px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="8" r="3.4"/><path d="M3.5 20v-1c0-3.1 2.4-5.3 5.5-5.3s5.5 2.2 5.5 5.3v1"/><path d="M15.5 4.9a3.2 3.2 0 0 1 0 6.2"/><path d="M17.5 13.9c1.9.6 3 2.3 3 4.6V20"/></svg></span><span class="rt"><strong>أنا كابتن</strong><small>عايز أتابع لاعيبتي</small></span></div>
+          </div>
+          <div class="grow"></div>
+          <div class="stack g10"><span class="btn pill btn-lime">كمّل</span><p class="foot-link">عندك حساب؟ <b>سجّل دخولك</b></p></div>
+        </div></div>
+        <p class="cap">إنت مين؟</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- C -->
+  <section class="opt c">
+    <div class="opt-head">
+      <span class="badge">C</span>
+      <h2>أسرع: شاشة واحدة</h2>
+      <p>مفيش شاشة ترحيب لوحدها. أول ما يفتح يختار لاعب أو كابتن ويكمّل على طول، واللي عنده حساب يدخل من نفس الشاشة.</p>
+      <ul><li>ضغطة أقل لكل حد</li><li>شاشة الدخول فيها: باسورد، أو كود على الإيميل، أو Google</li><li>كود الإيميل بيحل مشكلة اللاعب اللي معندوش باسورد</li></ul>
+    </div>
+    <div class="phones">
+      <div>
+        <div class="phone"><div class="screen">
+          <div class="island"></div><div class="status"><span>1:08</span><span>100%</span></div>
+          <div class="topbar"><img class="logo" src="logo-primary.png" alt="KOCHIVO"><div class="lang"><span>EN</span><span class="on">ع</span></div></div>
+          <div class="stack g8" style="margin-block-start:34px">
+            <h3 class="hello">أهلاً بيك في كوتشيفو</h3>
+            <p class="sub">اختار إنت مين عشان نبدأ.</p>
+          </div>
+          <div class="stack g12" style="margin-block-start:22px">
+            <div class="role on"><span class="radio" aria-hidden="true"></span><span class="rt"><strong>لاعب</strong><small>معاك دعوة أو كود من كابتنك</small></span><span class="tile"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M8 12h8"/><rect x="16" y="7" width="3.5" height="10"/><rect x="4.5" y="7" width="3.5" height="10"/><path d="M2.5 10v4M21.5 10v4"/></svg></span></div>
+            <div class="role"><span class="radio" aria-hidden="true"></span><span class="rt"><strong>كابتن</strong><small>تابع لاعيبتك ونظّم شغلك</small></span><span class="tile"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="8" r="3.4"/><path d="M3.5 20v-1c0-3.1 2.4-5.3 5.5-5.3s5.5 2.2 5.5 5.3v1"/><path d="M15.5 4.9a3.2 3.2 0 0 1 0 6.2"/><path d="M17.5 13.9c1.9.6 3 2.3 3 4.6V20"/></svg></span></div>
+          </div>
+          <div class="grow"></div>
+          <div class="stack g10"><span class="btn btn-lime">كمّل</span><span class="btn btn-dark">عندي حساب، سجّل دخولي</span></div>
+        </div></div>
+        <p class="cap">الشاشة الأولى</p>
+      </div>
+      <div>
+        <div class="phone"><div class="screen">
+          <div class="island"></div><div class="status"><span>1:08</span><span>100%</span></div>
+          <div class="topbar"><img class="logo" src="logo-primary.png" alt="KOCHIVO"><div class="lang"><span>EN</span><span class="on">ع</span></div></div>
+          <div class="stack g8" style="margin-block-start:28px">
+            <h3 class="hello">سجّل دخولك</h3>
+            <p class="sub">للاعب والكابتن.</p>
+          </div>
+          <div class="stack g12" style="margin-block-start:18px">
+            <div class="seg"><span class="on">كود على الإيميل</span><span>كلمة السر</span></div>
+            <div class="field">you@email.com</div>
+            <span class="btn btn-lime">ابعتلي كود</span>
+            <div class="or">أو</div>
+            <div class="g-btn"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 12h8" stroke="currentColor" stroke-width="2"/></svg>كمّل بـ Google</div>
+          </div>
+          <div class="grow"></div>
+          <p class="foot-link">لاعب جديد؟ <b>ادخل كود الدعوة</b></p>
+        </div></div>
+        <p class="cap">الدخول (هيبقى كده في أي شكل)</p>
+      </div>
+    </div>
+  </section>
+</div>

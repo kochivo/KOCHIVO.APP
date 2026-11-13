@@ -1,0 +1,183 @@
+<title>KOCHIVO App Welcome</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Alexandria:wght@400;500;700;800&display=swap">
+<style>
+/* Layout: three phone screens in order (welcome, who are you, invite code), each a real app screen in the KOCHIVO app style. */
+:root {
+  --bg: #0b0c0d; --deep: #070808; --ink: #f2f1ec; --muted: #9a9c97; --hatch: #c9c7bd;
+  --lime: #b6e94f; --on-lime: #101418; --lime-soft: rgb(182 233 79 / .12);
+  --glass: rgb(255 255 255 / .03); --glass-strong: rgb(255 255 255 / .06); --line: rgb(255 255 255 / .09);
+  --danger: #ff7a6b;
+  --sans: 'Manrope', 'Alexandria', system-ui, sans-serif;
+  --display: 'Manrope', 'Alexandria', system-ui, sans-serif;
+  color-scheme: dark;
+}
+html, body { background: var(--deep); color: var(--ink); }
+body { font-family: var(--sans); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 32px 48px; }
+.page { max-width: 1180px; margin-inline: auto; display: flex; flex-direction: column; gap: 28px; }
+.intro { display: flex; flex-direction: column; gap: 8px; max-width: 62ch; }
+.intro h1 { font: 800 clamp(1.5rem, 3vw, 2rem)/1.3 var(--display); margin: 0; text-wrap: balance; }
+.intro p { margin: 0; color: var(--muted); line-height: 1.7; font-size: 15px; }
+.row { display: flex; flex-wrap: wrap; gap: 28px; justify-content: center; }
+.col { display: flex; flex-direction: column; gap: 12px; align-items: center; min-width: 0; }
+.cap { color: var(--muted); font-size: 13px; text-align: center; max-width: 300px; line-height: 1.6; }
+.cap b { color: var(--ink); font-weight: 700; display: block; margin-bottom: 2px; }
+
+.phone { width: 320px; max-width: 100%; aspect-ratio: 320 / 690; border-radius: 46px; padding: 9px; background: #1a1b1c; border: 1px solid var(--line); box-shadow: 0 30px 60px rgb(0 0 0 / .5); }
+.screen { position: relative; height: 100%; border-radius: 38px; overflow: hidden; background: var(--bg); display: flex; flex-direction: column; padding: 44px 20px 26px; isolation: isolate; }
+.screen::before { content: ""; position: absolute; inset: -20% -30% auto auto; width: 90%; height: 55%; background: radial-gradient(closest-side, rgb(182 233 79 / .10), transparent); z-index: -1; }
+.status { position: absolute; inset: 14px 26px auto; display: flex; justify-content: space-between; font: 700 12px/1 var(--sans); direction: ltr; }
+.island { position: absolute; top: 10px; left: 50%; translate: -50% 0; width: 88px; height: 24px; border-radius: 20px; background: #000; }
+.logo { height: 26px; width: auto; display: block; }
+.kicker { color: var(--lime); font-size: 12px; font-weight: 700; letter-spacing: .02em; }
+.slogan { direction: ltr; text-align: right; font: 800 44px/.95 'Manrope', sans-serif; letter-spacing: -.045em; margin: 0; }
+.slogan span { display: block; }
+.slogan .m { color: var(--lime); }
+.ar-line { font: 700 18px/1.5 var(--display); margin: 0; }
+.sub { color: var(--muted); font-size: 13.5px; line-height: 1.7; margin: 0; }
+
+.btn { min-height: 52px; border-radius: 999px; display: flex; align-items: center; justify-content: center; gap: 8px; font: 800 15px/1 var(--display); border: 1px solid transparent; cursor: pointer; width: 100%; }
+.btn-lime { background: var(--lime); color: var(--on-lime); box-shadow: inset 0 1px 0 rgb(255 255 255 / .25), 0 0 18px rgb(182 233 79 / .25); }
+.btn-glass { background: var(--glass-strong); color: var(--ink); border-color: var(--line); }
+.btn:focus-visible, .role:focus-visible, .lang button:focus-visible, .back:focus-visible { outline: 2px solid var(--lime); outline-offset: 3px; }
+.slash { position: absolute; z-index: -1; inset-block-start: 22%; inset-inline-end: 18%; width: 54px; height: 46%; background: var(--lime); transform: skewX(-18deg); opacity: .9; }
+
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.lang { display: flex; padding: 3px; border-radius: 999px; border: 1px solid var(--line); background: var(--glass); direction: ltr; }
+.lang button { min-width: 40px; min-height: 34px; border-radius: 999px; border: 0; background: transparent; color: var(--muted); font: 700 12px/1 var(--sans); }
+.lang button[aria-pressed="true"] { background: var(--lime-soft); color: var(--lime); }
+.back { width: 40px; height: 40px; border-radius: 999px; border: 1px solid var(--line); background: var(--glass); color: var(--ink); display: grid; place-items: center; }
+.step { color: var(--lime); font-size: 12px; font-weight: 700; display: flex; gap: 6px; }
+.step span { direction: ltr; }
+h2.q { font: 800 32px/1.25 var(--display); margin: 0; }
+.roles { display: flex; flex-direction: column; gap: 12px; }
+.role { display: flex; align-items: center; gap: 14px; min-height: 92px; padding: 16px; border-radius: 22px; background: var(--glass); border: 1px solid var(--line); color: inherit; text-align: start; width: 100%; font: inherit; }
+.role.hot { background: linear-gradient(180deg, rgb(182 233 79 / .07), rgb(255 255 255 / .03)); border-color: rgb(182 233 79 / .45); }
+.tile { flex: none; width: 48px; height: 48px; border-radius: 15px; display: grid; place-items: center; border: 1px solid var(--line); background: var(--glass-strong); color: var(--ink); }
+.role.hot .tile { border-color: rgb(182 233 79 / .4); }
+.role-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.role-txt strong { font: 800 17px/1.3 var(--display); }
+.role-txt small { color: var(--muted); font-size: 12.5px; line-height: 1.5; }
+.chev { color: var(--lime); flex: none; }
+.demo { color: var(--muted); font-size: 13px; text-align: center; min-height: 40px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.demo a { color: var(--lime); font-weight: 700; text-decoration: none; }
+
+.field { display: flex; flex-direction: column; gap: 8px; }
+.field label { font-size: 13px; font-weight: 700; }
+.field .input { min-height: 54px; border-radius: 16px; border: 1px solid var(--line); background: var(--glass-strong); padding: 0 16px; display: flex; align-items: center; direction: ltr; justify-content: flex-start; font: 600 15px/1 var(--sans); color: var(--ink); }
+.field .input i { width: 2px; height: 20px; background: var(--lime); margin-inline-start: 2px; }
+.field .hint { color: var(--muted); font-size: 12px; }
+.note { border-radius: 18px; background: var(--glass); border: 1px solid var(--line); padding: 14px; display: flex; gap: 10px; align-items: flex-start; font-size: 12.5px; color: var(--muted); line-height: 1.6; }
+.note svg { flex: none; color: var(--lime); }
+.grow { flex: 1; }
+.stack { display: flex; flex-direction: column; }
+.g6 { gap: 6px; } .g10 { gap: 10px; } .g14 { gap: 14px; } .g20 { gap: 20px; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 10px 22px; justify-content: center; color: var(--muted); font-size: 13px; }
+.legend span { display: inline-flex; align-items: center; gap: 8px; }
+.legend i { width: 10px; height: 10px; border-radius: 3px; background: var(--lime); }
+@media (prefers-reduced-motion: no-preference) {
+  .phone { animation: rise .6s ease-out both; }
+  .col:nth-child(2) .phone { animation-delay: .08s; } .col:nth-child(3) .phone { animation-delay: .16s; }
+  @keyframes rise { from { translate: 0 10px; } to { translate: 0 0; } }
+}
+</style>
+
+<div class="page" dir="rtl">
+  <header class="intro">
+    <h1>شاشات التطبيق لما يتفتح من أيقونة الموبايل</h1>
+    <p>الشاشات دي بتظهر بس لما اللاعب أو الكابتن يفتح كوتشيفو من الأيقونة على الشاشة الرئيسية للموبايل. من المتصفح العادي الموقع زي ما هو. بنفس شكل التطبيق: الكروت الزجاج، والأزرار الدائرية، واللايم لون الأكشن الوحيد.</p>
+  </header>
+
+  <div class="row">
+    <!-- 1. Welcome -->
+    <div class="col">
+      <div class="phone"><div class="screen">
+        <div class="island"></div>
+        <div class="status"><span>1:08</span><span>100%</span></div>
+        <img class="logo" src="logo-primary.png" alt="KOCHIVO">
+        <span class="slash" aria-hidden="true"></span>
+        <div class="grow"></div>
+        <div class="stack g14">
+          <span class="kicker">أهلاً</span>
+          <h2 class="slogan" aria-label="YOUR NEXT MOVE STARTS HERE."><span>YOUR NEXT</span><span><b class="m">MOVE</b> STARTS</span><span>HERE.</span></h2>
+          <p class="ar-line">خطوتك الجاية بتبدأ من هنا</p>
+          <p class="sub">تمرينك وأكلك ومتابعتك مع الكابتن، في مكان واحد.</p>
+        </div>
+        <div class="stack g10" style="margin-block-start:28px">
+          <button class="btn btn-lime" type="button">يلا نبدأ</button>
+          <button class="btn btn-glass" type="button">سجّل دخولك</button>
+        </div>
+      </div></div>
+      <p class="cap"><b>1. الترحيب</b>أول ما يفتح التطبيق. «سجّل دخولك» للي عنده حساب لاعب أو كابتن.</p>
+    </div>
+
+    <!-- 2. Who are you -->
+    <div class="col">
+      <div class="phone"><div class="screen">
+        <div class="island"></div>
+        <div class="status"><span>1:08</span><span>100%</span></div>
+        <div class="topbar">
+          <img class="logo" src="logo-primary.png" alt="KOCHIVO">
+          <div class="lang" role="group" aria-label="اللغة"><button type="button" aria-pressed="false">EN</button><button type="button" aria-pressed="true">ع</button></div>
+        </div>
+        <div class="stack g20" style="margin-block-start:34px">
+          <div class="stack g10">
+            <span class="step"><span>01</span>أهلاً</span>
+            <h2 class="q">إنت مين؟</h2>
+            <p class="sub">اختار طريقك عشان نجهّزلك التطبيق.</p>
+          </div>
+          <div class="roles">
+            <button class="role hot" type="button">
+              <span class="tile"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><defs><pattern id="h1" width="2.2" height="2.2" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0v2.2" stroke="#b6e94f" stroke-width=".7"/></pattern></defs><path d="M8 12h8"/><rect x="16" y="7" width="3.5" height="10"/><path d="M2.5 10v4M21.5 10v4"/><rect x="4.5" y="7" width="3.5" height="10" fill="url(#h1)" stroke="#b6e94f" stroke-width=".8"/></svg></span>
+              <span class="role-txt"><strong>لاعب</strong><small>معاك دعوة أو كود من كابتنك</small></span>
+              <svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+            <button class="role" type="button">
+              <span class="tile"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><defs><pattern id="h2" width="2.2" height="2.2" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0v2.2" stroke="#c9c7bd" stroke-width=".7"/></pattern></defs><path d="M3.5 20v-1c0-3.1 2.4-5.3 5.5-5.3s5.5 2.2 5.5 5.3v1"/><path d="M15.5 4.9a3.2 3.2 0 0 1 0 6.2"/><path d="M17.5 13.9c1.9.6 3 2.3 3 4.6V20"/><circle cx="9" cy="8" r="3.4" fill="url(#h2)" stroke="#c9c7bd" stroke-width=".8"/></svg></span>
+              <span class="role-txt"><strong>كابتن</strong><small>تابع لاعيبتك ونظّم شغلك في مكان واحد</small></span>
+              <svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="grow"></div>
+        <div class="stack g6">
+          <button class="btn btn-glass" type="button">عندي حساب بالفعل</button>
+          <p class="demo">كابتن وعايز تشوف الأول؟ <a href="#">جرّب الديمو</a></p>
+        </div>
+      </div></div>
+      <p class="cap"><b>2. إنت مين؟</b>اللاعب يكمّل لكود الدعوة. الكابتن يروح لعمل حساب كابتن. اللغة من فوق.</p>
+    </div>
+
+    <!-- 3. Invite code -->
+    <div class="col">
+      <div class="phone"><div class="screen">
+        <div class="island"></div>
+        <div class="status"><span>1:08</span><span>100%</span></div>
+        <div class="topbar">
+          <button class="back" type="button" aria-label="رجوع"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+          <img class="logo" src="logo-primary.png" alt="KOCHIVO">
+        </div>
+        <div class="stack g20" style="margin-block-start:34px">
+          <div class="stack g10">
+            <span class="step"><span>02</span>لاعب</span>
+            <h2 class="q">ادخل كود الدعوة</h2>
+            <p class="sub">الكود أو اللينك اللي بعتهولك الكابتن.</p>
+          </div>
+          <div class="field">
+            <label for="code">كود الدعوة</label>
+            <div class="input" id="code">kochivo.site/i/aX7-k2Pq<i></i></div>
+            <span class="hint">ينفع تلصق اللينك كله، هناخد الكود منه.</span>
+          </div>
+          <div class="note"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg><span>مفيش كود؟ اطلبه من كابتنك.</span></div>
+        </div>
+        <div class="grow"></div>
+        <button class="btn btn-lime" type="button">كمّل</button>
+      </div></div>
+      <p class="cap"><b>3. كود الدعوة (للاعب)</b>بعد «كمّل» يفتح دعوة الكابتن على طول ويكمّل التسجيل.</p>
+    </div>
+  </div>
+
+  <div class="legend"><span><i></i>اللايم = الأكشن الأساسي في كل شاشة</span><span>بيانات الكود مثال</span></div>
+</div>
