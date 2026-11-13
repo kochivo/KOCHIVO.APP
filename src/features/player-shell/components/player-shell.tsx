@@ -87,7 +87,7 @@ export function PlayerShell({ children, unassignedAction }: { children?: ReactNo
     {showsNav(pathname) && <FeedbackButton role="player" />}
     {process.env.NODE_ENV === 'development' && showsNav(pathname) && <KoPreview role="player" />}
     {showsNav(pathname) && <BottomNav aria-label={t('navigation')} items={playerNav(pathname, locale)}
-      className={v6 ? 'start-0 end-0 bottom-0 rounded-none border-t border-line-soft bg-bg pb-[max(0.5rem,var(--safe-bottom))]' : undefined} />}
+      variant={v6 ? 'pill' : 'bar'} />}
     </div>
   </MyCaptainContext.Provider>;
 }
