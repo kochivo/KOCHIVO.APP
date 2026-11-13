@@ -1,0 +1,86 @@
+.screen {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  min-height: 100dvh;
+  flex-direction: column;
+  background: var(--color-bg);
+}
+.panel {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: 100%;
+  max-width: 30rem;
+  margin-inline: auto;
+}
+.art {
+  position: relative;
+  flex: 1;
+  min-height: 44dvh;
+  overflow: hidden;
+  padding: max(2rem, var(--safe-top)) 1.5rem 2rem;
+  background: radial-gradient(ellipse at 70% 20%, color-mix(in srgb, var(--color-lime) 9%, var(--color-bg)), var(--color-bg) 70%);
+}
+.slash, .slim {
+  position: absolute;
+  transform: skewX(-18deg);
+  pointer-events: none;
+}
+.slash {
+  inset-inline-end: -3.5rem;
+  inset-block-start: 6.5rem;
+  width: 10rem;
+  height: 26rem;
+  background: var(--color-lime);
+}
+.slim {
+  inset-inline-end: 10rem;
+  inset-block-start: 13rem;
+  width: 3.5rem;
+  height: 20rem;
+  background: var(--color-ivory);
+}
+.sheet {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-block-start: -1.75rem;
+  padding: 1.5rem 1.5rem max(1.5rem, var(--safe-bottom));
+  border-block-start: 1px solid var(--color-line-soft);
+  border-start-start-radius: 2rem;
+  border-start-end-radius: 2rem;
+  background: var(--color-surface);
+}
+.pill { border-radius: var(--radius-chip); }
+.role {
+  display: flex;
+  align-items: center;
+  gap: .875rem;
+  width: 100%;
+  min-height: 76px;
+  padding: .875rem;
+  border: 1px solid var(--color-line-soft);
+  border-radius: var(--radius-chip);
+  text-align: start;
+  background: var(--glass-tint);
+}
+.role[aria-checked='true'] {
+  border-color: color-mix(in srgb, var(--color-lime) 45%, transparent);
+  background: linear-gradient(var(--color-lime-soft), var(--glass-tint));
+}
+.tile {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 3rem;
+  height: 3rem;
+  border: 1px solid var(--color-line-soft);
+  border-radius: var(--radius-chip);
+  background: var(--glass-strong-tint);
+}
+.role[aria-checked='true'] .tile {
+  border-color: color-mix(in srgb, var(--color-lime) 45%, transparent);
+}
+.role[aria-checked='true'] .tile svg { color: var(--color-lime); }

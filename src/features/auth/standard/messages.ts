@@ -1,4 +1,7 @@
 export const arStd = {
+  loginTitle: 'سجّل الدخول', authBrand: 'KOCHIVO',
+  emailCodeChoice: 'رمز عبر البريد', loginMethod: 'طريقة الدخول', emailCodeNeutral: 'إذا كان لهذا البريد حساب، فسيصلك رمز',
+  loginEveryone: 'للاعب والكابتن.', newPlayerInvite: 'لاعب جديد؟ أدخل رمز الدعوة', loginOr: 'أو',
   playerSignup: 'أنشئ حساب لاعب', coachRequestHint: 'سنرسل طلباً للكابتن. يمكنك البدء بعد موافقته.',
   sendCoachRequest: 'أرسل طلب انضمام', confirmCoachRequest: 'افتح رسالة التأكيد في بريدك لإرسال طلبك للكابتن',
   coachRequestFailed: 'تعذّر إرسال الطلب. تأكد من استخدام حساب لاعب وحاول مجدداً',

@@ -6,12 +6,13 @@ import { messages } from '../messages';
 import Link from 'next/link';
 import { useState, useTransition } from 'react';
 import { Button, GlassCard, Segmented, TextField } from '@/ui';
-import { signInPassword } from '../data/sign-in-password';
 import { signUpCaptain } from '../data/sign-up-captain';
 import { GoogleButton } from './google-button';
 import { callAuthAction as runAuthAction } from '../data/client-action';
 import type { AuthMode } from '../auth-mode';
 import { SignupCodeStep } from './signup-code-step';
+import { LoginMethods } from './login-methods';
+import { AuthLogo } from './auth-logo';
 
 export function CaptainAuthCard({ callbackError = false, initialMode = 'login' }: { callbackError?: boolean; initialMode?: AuthMode }) {
   const t = useT(messages);
@@ -22,6 +23,20 @@ export function CaptainAuthCard({ callbackError = false, initialMode = 'login' }
   const [codeEmail, setCodeEmail] = useState('');
   const [error, setError] = useState(callbackError ? t('signInFailedTryAgain') : '');
   const [pending, start] = useTransition();
+  if (mode === 'login') return <main dir={localeDir(locale)} className="min-h-dvh bg-bg px-6 pb-[max(1.5rem,var(--safe-bottom))] pt-[max(1.5rem,var(--safe-top))]">
+    <div className="mx-auto flex min-h-[calc(100dvh-4rem)] w-full max-w-md flex-col gap-6">
+      <div className="flex flex-wrap items-center justify-between gap-3"><AuthLogo /><LanguageSwitch compact /></div>
+      <div className="space-y-2 pt-6"><h1 className="text-3xl font-extrabold">{t('loginTitle')}</h1><p className="text-sm text-muted">{t('loginEveryone')}</p></div>
+      {callbackError && <p role="alert" className="text-danger">{t('signInFailedTryAgain')}</p>}
+      <LoginMethods />
+      <div className="flex items-center gap-3 text-sm text-faint"><span className="h-px flex-1 bg-line" />{t('loginOr')}<span className="h-px flex-1 bg-line" /></div>
+      <GoogleButton intent="captain" />
+      <div className="mt-auto space-y-1 pt-6 text-center">
+        <Link href="/welcome#code" className="inline-flex min-h-12 items-center text-sm text-lime">{t('newPlayerInvite')}</Link>
+        <div><Button variant="ghost" onClick={() => setMode('signup')}>{t('createAccount')}</Button></div>
+      </div>
+    </div>
+  </main>;
   return <main dir={localeDir(locale)} className="mesh flex min-h-dvh items-center justify-center p-6 pt-[max(1.5rem,var(--safe-top))]">
     <GlassCard level="strong" className="w-full max-w-md space-y-6 p-8">
       <LanguageSwitch />
@@ -36,7 +51,7 @@ export function CaptainAuthCard({ callbackError = false, initialMode = 'login' }
         event.preventDefault();
         const input = Object.fromEntries(new FormData(event.currentTarget));
         start(async () => {
-          const result = await callAuthAction(() => mode === 'login' ? signInPassword(input) : signUpCaptain(input));
+          const result = await callAuthAction(() => signUpCaptain(input));
           setError(result.error ?? ''); setMessage(result.message ?? '');
           if (result.codeEmail) setCodeEmail(result.codeEmail);
           if (result.redirect) window.location.assign(result.redirect);

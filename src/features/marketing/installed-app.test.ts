@@ -1,6 +1,8 @@
-import { expect, it } from 'vitest';
+import { expect, it, vi } from 'vitest';
 import manifest from '@/app/manifest';
 import { isInstalledApp } from './components/installed-app-redirect';
+
+vi.mock('server-only', () => ({}));
 
 const win = (standaloneQuery: boolean, standalone?: boolean) => ({
   matchMedia: () => ({ matches: standaloneQuery }) as unknown as MediaQueryList,
@@ -13,6 +15,6 @@ it('detects the installed app on Android and iOS but not in a browser tab', () =
   expect(isInstalledApp(win(false))).toBe(false);
 });
 
-it('starts the installed app at login, which forwards signed-in users home', () => {
-  expect(manifest().start_url).toBe('/login');
+it('starts the installed app at welcome, which forwards signed-in users home', () => {
+  expect(manifest().start_url).toBe('/welcome');
 });

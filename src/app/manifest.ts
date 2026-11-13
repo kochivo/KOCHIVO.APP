@@ -8,8 +8,7 @@ export default function manifest(): MetadataRoute.Manifest {
     lang: 'ar',
     dir: 'rtl',
     id: '/',
-    // Opens straight into the app: /login sends a signed-in user to their home.
-    start_url: '/login',
+    start_url: '/welcome',
     scope: '/',
     display: 'standalone',
     orientation: 'portrait',

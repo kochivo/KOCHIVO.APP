@@ -6,6 +6,7 @@ import { CaptainAuthCard } from './components/captain-auth-card';
 import { LocaleProvider } from '@/core/i18n/client';
 
 vi.mock('./data/sign-in-password', () => ({ signInPassword: vi.fn() }));
+vi.mock('./data/sign-in-email-code', () => ({ sendSignInEmailCode: vi.fn(), verifySignInEmailCode: vi.fn() }));
 vi.mock('./data/sign-up-captain', () => ({ signUpCaptain: vi.fn() }));
 vi.mock('./data/sign-in-google', () => ({ signInGoogle: vi.fn() }));
 vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh() {} }) }));
@@ -13,7 +14,7 @@ vi.mock('@/core/i18n/set-locale', () => ({ setLocale: vi.fn() }));
 
 it('renders the login card in English with LTR direction', () => {
   const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' }, createElement(CaptainAuthCard)));
-  expect(html).toContain('Welcome, coach');
+  expect(html).toContain('For players and coaches.');
   expect(html).toContain('Sign in');
   expect(html).toContain('dir="ltr"');
   expect(html).not.toContain('أهلاً يا كابتن');
@@ -31,6 +32,8 @@ it('renders the signup form when asked to start there', () => {
   expect(signup).toContain('اعمل حسابك كابتن');
   expect(signup).toContain('name="full_name"');
   const login = renderToStaticMarkup(createElement(CaptainAuthCard, {}));
-  expect(login).toContain('أهلاً يا كابتن');
+  expect(login).toContain('للاعب والكابتن.');
+  expect(login).toContain('/welcome#code');
+  expect(login).toContain('name="password"');
   expect(login).not.toContain('name="full_name"');
 });

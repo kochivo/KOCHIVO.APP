@@ -5,6 +5,9 @@ export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
+    loginTitle: 'سجّل دخولك', authBrand: 'KOCHIVO',
+    emailCodeChoice: 'كود على الإيميل', loginMethod: 'طريقة الدخول', emailCodeNeutral: 'لو الإيميل ده عليه حساب، هيوصلك كود',
+    loginEveryone: 'للاعب والكابتن.', newPlayerInvite: 'لاعب جديد؟ ادخل كود الدعوة', loginOr: 'أو',
     playerSignup: 'اعمل حساب لاعب', coachRequestHint: 'هنبعت طلب للكابتن. هتبدأ بعد ما يوافق.',
     sendCoachRequest: 'ابعت طلب انضمام', confirmCoachRequest: 'افتح رسالة التأكيد في إيميلك عشان نبعت طلبك للكابتن',
     coachRequestFailed: 'طلب الانضمام متعملش. اتأكد إن عندك حساب لاعب وجرّب تاني',
@@ -99,6 +102,9 @@ export const messages = defineMessages({
     checkYourEmailToConfirmYour: "شوف إيميلك عشان تأكد حسابك وتدخل",
   },
   en: {
+    loginTitle: 'Sign in', authBrand: 'KOCHIVO',
+    emailCodeChoice: 'Email code', loginMethod: 'Sign-in method', emailCodeNeutral: 'If this email has an account, you will receive a code',
+    loginEveryone: 'For players and coaches.', newPlayerInvite: 'New player? Enter your invite code', loginOr: 'Or',
     playerSignup: 'Create a player account', coachRequestHint: 'We will send a request to the coach. You get access after they accept.',
     sendCoachRequest: 'Send join request', confirmCoachRequest: 'Open the confirmation email so we can send your request to the coach',
     coachRequestFailed: 'Could not send your request. Use a player account and try again',
