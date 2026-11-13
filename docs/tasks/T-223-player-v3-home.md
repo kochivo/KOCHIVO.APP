@@ -26,8 +26,10 @@ Rebuild `/player` (the v6 branch of `player-home/components/home-screen.tsx`) so
    - **Streak:** «مكمّل بقالك» / number in `sore` / «يوم ورا بعض», from the existing streak data, linking to `/player/history`.
    - **Week:** «الميدالية الجاية» / `done / planned` this week in gold / «تمارين الأسبوع», linking to `/player/rank`.
      - Use the existing week sessions. Medals themselves are T-228; until then this tile shows the weekly count only.
-4. **Captain row.** Captain avatar initial, «كابتن <name>», the latest voice note («رسالة صوتية · 0:24») or the latest captain reply text, and a play button.
-   - Hide the row when there is nothing from the captain.
+4. **Captain row.** Captain avatar initial, «كابتن <name>», the latest captain voice note («رسالة صوتية · 0:24»), and a play button that opens `/player/captain`.
+   - Load the notes with `listVoiceNotes` from `@/features/voice-notes`; it is now exported.
+   - No text replies here.
+   - Hide the row when the player has no voice note.
 
 ## Rest day (`11-rest.html`)
 The screen sits inside `data-mood='rest'`, as it does today. Header as above (no dot logic change).

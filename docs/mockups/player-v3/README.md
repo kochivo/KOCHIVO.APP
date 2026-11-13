@@ -37,7 +37,13 @@ The files are design-canvas exports. Read them as plain HTML with inline styles.
 | `#e3b448`, `#f6d77e`, `#3d2e0c` | `gold-2`, `gold-4`, `gold-face-1` |
 
 - A card border of `rgba(255,255,255,.07)` maps to `border-line-soft`.
-- If a color has no token, stop and list it under Notes. Do not invent one.
+- A tinted background or border that has no exact token uses an existing token with a Tailwind opacity modifier. Do not invent a new token and do not stop for it. Examples:
+  - the gold PR and assessment card (`#1f1806` bg, `rgba(227,180,72,.45)` border) is `bg-gold-2/10 border-gold-2/45`;
+  - the water chip (`#1d2a3d`) is `bg-water/15`;
+  - the captain avatar (`#26301a`) is `bg-lime-soft`;
+  - the streak chip (`#2a1d12`) is `bg-sore/15`;
+  - the gold badge (`#3d2e0c`) is `bg-gold-face-1`.
+- Stop only for a solid main color with no close token, and list it under Notes.
 
 **Rest day.** `data-mood='rest'` already turns the whole UI blue: `lime` becomes `calm`, and the background and surfaces turn navy. `11-rest.html` shows exactly that result. Do not add new rest colors; use the tokens and the mood does the rest.
 
