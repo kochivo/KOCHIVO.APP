@@ -7,14 +7,14 @@ import type { ScheduleContext } from '../schedule-context';
 import { recurrenceLabel } from '../assessment-summary';
 import { ThemedSelect } from './themed-select';
 
-export function ScheduleEditor({ form, locale, onChange, players = 0, style, scheduleContext, canManage = true }: {
+export function ScheduleEditor({ form, locale, onChange, players = 0, style, scheduleContext, canManage = true, onManage }: {
   form: FormDraft; locale: Locale; onChange: (form: FormDraft) => void; players?: number; style?: ArabicStyle;
   scheduleContext?: ScheduleContext; canManage?: boolean;
+  onManage?: () => void;
 }) {
   const m = formCopy(locale, style), t = createT(redesign, locale, style), s = form.schedule;
   function manage() {
-    const details = document.getElementById('schedules');
-    if (details instanceof HTMLDetailsElement) { details.open = true; details.scrollIntoView({ block: 'start' }); }
+    if (canManage) onManage?.();
   }
   if (!s && scheduleContext?.schedules.length) return <div className="glass mb-[14px] rounded-card border border-line-soft px-5 py-4">
     {scheduleContext.schedules.map(schedule => <p key={schedule.id} className="text-sm leading-[2.2] text-muted">
@@ -29,14 +29,16 @@ export function ScheduleEditor({ form, locale, onChange, players = 0, style, sch
   return <div className="glass mb-[14px] rounded-card border border-line-soft px-5 py-4">
     <div className="flex flex-wrap items-center gap-2 text-sm leading-[2.2]">
       <span>{t('sends')}</span><ThemedSelect label={m.every} value={s?.every ?? ''}
-        options={[{ value: '', label: t('manual') }, { value: 'week', label: m.week }, { value: 'month', label: m.month }]}
-        onChange={value => onChange({ ...form, schedule: value === 'week' ? { every: 'week', weekday: 5, hour: s?.hour ?? 9 }
-          : value === 'month' ? { every: 'month', day: 1, hour: s?.hour ?? 9 } : null })} />
+        options={[{ value: '', label: t('manual') }, { value: 'week', label: m.week }, { value: 'month', label: m.month },
+          ...(canManage ? [{ value: 'advanced', label: t('schedule') }] : [])]}
+        onChange={value => { if (value === 'advanced') { manage(); return; }
+          onChange({ ...form, schedule: value === 'week' ? { every: 'week', weekday: 5, hour: s?.hour ?? 9 }
+            : value === 'month' ? { every: 'month', day: 1, hour: s?.hour ?? 9 } : null }); }} />
       {s && <><span>{t('day')}</span><ThemedSelect label={m.day} value={String(s.every === 'week' ? s.weekday : s.day)}
         options={s.every === 'week' ? m.weekdays.map((label, n) => ({ value: String(n), label }))
           : Array.from({ length: 31 }, (_, n) => ({ value: String(n + 1), label: String(n + 1) }))}
         onChange={value => onChange({ ...form, schedule: s.every === 'week' ? { ...s, weekday: Number(value) } : { ...s, day: Number(value) } })} /></>}
-      <span>{t('to')}</span><ThemedSelect label={t('to')} value="all" disabled={!canManage} options={[{ value: 'all', label: `${t('all')} (${players})` }, { value: 'players', label: t('schedule') }]}
+      <span>{t('to')}</span><ThemedSelect label={t('to')} value="all" disabled={!canManage} options={[{ value: 'all', label: `${t('all')} (${players})` }, { value: 'players', label: t('specificPlayers') }]}
         onChange={value => {
           if (value !== 'players') return;
           manage();
@@ -44,6 +46,7 @@ export function ScheduleEditor({ form, locale, onChange, players = 0, style, sch
       <span>{t('unanswered')}</span><ThemedSelect label={m.reminder} value={String(form.remind_after_hours ?? '')} options={reminders}
         onChange={value => onChange({ ...form, remind_after_hours: value ? Number(value) : null })} />
     </div>
+    <button type="button" disabled={!canManage} className="min-h-12 text-xs text-faint disabled:opacity-50" onClick={manage}>{t('schedule')}</button>
     {s && <details className="mt-1 text-xs text-faint"><summary className="min-h-12 cursor-pointer py-3">{t('details')}</summary>
       <label className="flex flex-wrap items-center gap-3">{m.hour}<input aria-label={m.hour} className="min-h-12 w-24 rounded-control border border-line bg-transparent px-3"
         type="number" min={0} max={23} value={s.hour} onChange={e => onChange({ ...form, schedule: { ...s, hour: e.target.valueAsNumber } })} /></label>

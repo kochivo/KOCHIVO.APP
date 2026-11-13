@@ -1,15 +1,24 @@
 'use client';
-import { useState } from 'react';
-import type { Locale } from '@/core/i18n/locale';
-import { useT } from '@/core/i18n/client';
+import { useId, useState } from 'react';
+import type { ComponentProps } from 'react';
+import { createT } from '@/core/i18n/messages';
+import { ResponsiveDialog } from '@/ui/responsive-dialog';
 import { messages } from '../redesign/messages';
 import { AssessmentScheduleEntry } from './assessment-schedule-entry';
+import { ScheduleEditor } from './schedule-editor';
 
-export function LibrarySchedulesEntry({ formId, locale, ready = true }: { formId: string; locale: Locale; ready?: boolean }) {
-  const [open, setOpen] = useState(false), t = useT(messages);
-  return <details className="glass rounded-card border border-line-soft p-5" id="schedules" onToggle={e => setOpen(e.currentTarget.open)}>
-    <summary aria-disabled={!ready || undefined} onClick={e => { if (!ready) e.preventDefault(); }}
-      className="min-h-12 cursor-pointer py-3 text-muted aria-disabled:cursor-default aria-disabled:opacity-50">{t('schedule')}</summary>
-    {open && <AssessmentScheduleEntry formId={formId} locale={locale} />}
-  </details>;
+export function LibrarySchedulesEntry(props: ComponentProps<typeof ScheduleEditor>) {
+  const [open, setOpen] = useState(false), id = useId();
+  const t = createT(messages, props.locale, props.style);
+  return <div id={id} tabIndex={-1}>
+    <ScheduleEditor {...props} onManage={() => setOpen(true)} />
+    {open && <ResponsiveDialog modal fallbackId={id} onDismiss={() => setOpen(false)} aria-label={t('schedule')}
+      className="sheet fixed inset-0 m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-5xl overflow-auto rounded-card border border-line p-5 text-ink">
+      <header className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <h2 className="font-display text-lg">{t('schedule')}</h2>
+        <button type="button" className="min-h-12 rounded-full border border-line px-5" onClick={() => setOpen(false)}>{t('close')}</button>
+      </header>
+      <AssessmentScheduleEntry formId={props.form.id} locale={props.locale} />
+    </ResponsiveDialog>}
+  </div>;
 }

@@ -16,7 +16,6 @@ import { FormsLibraryEntry } from './forms-library-entry';
 import { AssessmentLibraryList } from './assessment-library-list';
 import { AssessmentLibraryMetrics } from './assessment-library-metrics';
 import { TemplateLinkEntry } from './template-link-entry';
-import { LibrarySchedulesEntry } from './library-schedules-entry';
 
 export async function FormsLibraryPage({ captain, client, locale, query, now = new Date() }: {
   captain: string; client: SupabaseClient<AppDatabase>; locale: Locale;
@@ -49,6 +48,5 @@ export async function FormsLibraryPage({ captain, client, locale, query, now = n
       <AssessmentLibraryList data={data} locale={locale} style={style} />
     </FormsLibraryEntry>
     {!form && <AssessmentLibraryMetrics data={data} locale={locale} style={style} />}
-    {form && <LibrarySchedulesEntry formId={form.id} locale={locale} ready={data.forms.some(f => f.id === form.id)} />}
   </div>;
 }

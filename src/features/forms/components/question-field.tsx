@@ -2,6 +2,9 @@
 import type { ArabicStyle, Locale } from '@/core/i18n/locale';
 import { formCopy } from '../form-copy';
 import type { Question } from '../types';
+import { Camera } from 'lucide-react';
+import { createT } from '@/core/i18n/messages';
+import { messages as v6Messages } from '../v6-messages';
 
 export type QuestionValue = string | number | boolean | string[] | null;
 export function QuestionField({ question: q, locale, value = null, readOnly = false, onChange, onPhotos, preview = false, style }: {
@@ -11,6 +14,7 @@ export function QuestionField({ question: q, locale, value = null, readOnly = fa
   onChange?: (value: QuestionValue) => void; onPhotos?: (files: FileList | null) => void;
 }) {
   const m = formCopy(locale, style), label = locale === 'ar' ? q.label_ar : q.label_en.trim() || q.label_ar;
+  const v6t = createT(v6Messages, locale, style);
   const input = `min-h-12 w-full rounded-control border border-line bg-surface px-3 text-ink${preview ? ' min-w-0 font-display' : ''}`;
   const numberField = <input type="number" aria-label={label} className={input}
     min={q.type === 'scale' ? 1 : undefined} max={q.type === 'scale' ? 10 : undefined}
@@ -18,7 +22,7 @@ export function QuestionField({ question: q, locale, value = null, readOnly = fa
     onChange={e => onChange?.(e.target.value === '' ? null : e.target.valueAsNumber)} />;
   return <fieldset className={preview ? 'mb-[10px] min-w-0 space-y-2 rounded-[16px] border border-line-soft px-[14px] pb-3 text-[13px]' : 'space-y-3 border-b border-line py-4'} disabled={readOnly}>
     <legend className={preview ? 'float-start w-full pt-3 font-normal' : 'pt-3 font-bold'}>{label}{q.required && !preview && <span className="ms-2 text-muted">{m.required}</span>}</legend>
-    {q.type === 'text' && <textarea aria-label={label} className={input} value={typeof value === 'string' ? value : ''}
+    {q.type === 'text' && <textarea aria-label={label} className={`${input}${preview ? ' resize-none' : ''}`} value={typeof value === 'string' ? value : ''}
       required={q.required} onChange={e => onChange?.(e.target.value)} />}
     {q.type === 'scale' && preview ? <div className="grid grid-cols-5 gap-1">{Array.from({ length: 10 }, (_, i) => i + 1).map(n => <button key={n} type="button" aria-pressed={value === n}
       className="min-h-12 min-w-12 rounded-control bg-surface font-display text-xs text-faint aria-pressed:bg-lime aria-pressed:text-on-lime" onClick={() => onChange?.(n)}>{n}</button>)}</div>
@@ -39,7 +43,13 @@ export function QuestionField({ question: q, locale, value = null, readOnly = fa
       <label key={String(answer)} className="glass flex min-h-12 items-center gap-3 rounded-control px-4">
         <input type="radio" name={q.id} required={q.required} checked={value === answer} onChange={() => onChange?.(answer)} />{answer ? m.yes : m.no}
       </label>)}</div>}
-    {q.type === 'photos' && <input type="file" accept="image/*" multiple required={q.required} aria-label={label} className={input}
-      onChange={e => onPhotos?.(e.target.files)} />}
+    {q.type === 'photos' && (preview ? <div className="glass flex aspect-[3/4] flex-col items-center justify-center gap-4 rounded-card border border-line-soft p-5 text-muted">
+      <Camera aria-hidden className="size-8" /><p className="text-sm">{v6t('photo')}</p>
+      <label className="glass flex min-h-12 cursor-pointer items-center rounded-full border border-line-soft px-5">{v6t('camera')}
+        <input type="file" accept="image/*" capture="user" className="sr-only" aria-label={v6t('camera')} onChange={event => onPhotos?.(event.target.files)} /></label>
+      <label className="glass flex min-h-12 cursor-pointer items-center rounded-full border border-line-soft px-5">{v6t('gallery')}
+        <input type="file" accept="image/*" multiple className="sr-only" aria-label={v6t('gallery')} onChange={event => onPhotos?.(event.target.files)} /></label>
+    </div> : <input type="file" accept="image/*" multiple required={q.required} aria-label={label} className={input}
+      onChange={e => onPhotos?.(e.target.files)} />)}
   </fieldset>;
 }
