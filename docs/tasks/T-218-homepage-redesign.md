@@ -5,7 +5,7 @@
 ## Goal
 Rebuild the KOCHIVO homepage (`src/app/[locale]/page.tsx`, `src/features/marketing/`) to match `docs/mockups/landing/kochivo-landing.html`. The page should feel modern and credible, never "AI-generated": real logo, real features only, light on phones.
 
-The look is the app's own (owner decision 2026-11-13): `Button` from `@/ui`, `glass` cards with the hairline and `rounded-card`, the featured glass for the highlighted plan, the page glow the app uses, the existing fonts and tokens. No new visual language.
+The look is the app's own (owner decision 2026-11-13): `Button` from `@/ui`, `glass` cards with the hairline and `rounded-card`, the featured glass for the highlighted plan, the page glow the app uses, the existing fonts and tokens. No new visual language. The one brand accent kept is the lime skewed slash from the logo, in the hero, behind the pinned story phone and the closing card (owner decision 2026-11-13); it is decorative (`aria-hidden`) and cuts in once. The hero's lime CTA keeps a dark ring so it never blends into the slash.
 
 ## Files
 - `src/features/marketing/` (components, `content.ts`, `messages.ts`, tests). Replace or remove sections as listed below; keep `site-header`, `site-footer`, `installed-app-redirect`, `faq` and `pricing` files, reshaped.

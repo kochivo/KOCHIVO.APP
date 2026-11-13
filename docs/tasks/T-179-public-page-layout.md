@@ -3,7 +3,7 @@
 **Phase:** Public page (owner approval 2026-11-11; design v2 approved 2026-11-13) · **Depends on:** T-166 (the flag) · **Status:** ready
 
 ## Goal
-The approved design is `docs/mockups/landing/coach-page.html`. Match its layout and content. Its look is the app's own (owner decision 2026-11-13: public pages use the same style as the app): `Button` from `@/ui` (pill/rounded, lime primary), `glass` cards with the hairline border and `rounded-card`, the featured glass for the highlighted package, the page glow the app already uses, and the existing fonts. No new visual language, no skewed slashes. One-time entrance motion only. The older `docs/mockups/captain-workspace/public-page.html` is superseded.
+The approved design is `docs/mockups/landing/coach-page.html`. Match its layout and content. Its look is the app's own (owner decision 2026-11-13: public pages use the same style as the app): `Button` from `@/ui` (pill/rounded, lime primary), `glass` cards with the hairline border and `rounded-card`, the featured glass for the highlighted package, the page glow the app already uses, and the existing fonts. No new visual language. The one brand accent kept from the mockup is the lime skewed slash from the logo, behind the hero portrait and the closing card (owner decision 2026-11-13); it is decorative (`aria-hidden`) and cuts in once. One-time entrance motion only. The older `docs/mockups/captain-workspace/public-page.html` is superseded.
 
 Rebuild `/c/[slug]` as a short page that tells a visitor in ten seconds who the captain is, what they do, what it costs and how to start. This card uses only data that already exists:
 - `loadPublicCoach`: name, bio, location, avatar, social;
