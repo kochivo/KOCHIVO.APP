@@ -32,7 +32,7 @@ export function TrainingExerciseRow({ row, onPatch, onRemove, onMove, onLink, fi
   return <li style={style} className={`border-t border-line-soft ${row.superset_group !== null ? 'mx-[18px] border-s-[3px] border-s-lime' : ''}`}>
     {groupStart && <p className="px-[18px] pt-2 text-[11px] text-lime">{t('superset')}</p>}
     <div className={`flex items-center gap-2 px-[18px] ${open ? 'bg-surface/30' : ''}`}>
-      <button {...dragProps} aria-label={tt('reorder', { name })} className="hidden min-h-12 min-w-12 touch-none items-center justify-center text-faint min-[761px]:flex"
+        <button {...dragProps} aria-label={tt('reorder', { name })} className="hidden min-h-12 min-w-12 touch-none items-center justify-center rounded-full border border-line-soft text-muted min-[761px]:flex"
         onKeyDown={event => { if (event.key === 'ArrowUp' || event.key === 'ArrowDown') { event.preventDefault(); onMove(event.key === 'ArrowUp' ? -1 : 1); } }}><GripVertical aria-hidden className="size-4" /></button>
       <button aria-expanded={open} aria-controls={`exercise-${row.id}`} onClick={() => setOpen(value => !value)} className="grid min-h-16 min-w-0 flex-1 grid-cols-[44px_minmax(0,1fr)_24px] items-center gap-3 py-3 text-start min-[761px]:grid-cols-[44px_minmax(0,1fr)_64px_64px_64px_24px]">
         {row.library?.media_path ? <ExerciseImage src={exerciseMediaUrl(row.library.media_path)} alt="" width={44} height={44} className="size-11 rounded-xl border border-line object-cover" /> :

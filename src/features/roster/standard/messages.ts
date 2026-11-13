@@ -6,7 +6,7 @@ export const arStd = {
   "forms": "التقييمات",
   "trainingPlans": "خطط التمارين",
   "mealPlans": "الأنظمة الغذائية",
-  "trainingGroup": "التمرين",
+  "trainingGroup": "التمارين",
   "foodGroup": "الأكل",
   "followupGroup": "المتابعة",
   "accountMenu": "حسابي",

@@ -7,6 +7,7 @@ import { messages } from '../messages';
 import { revalidatePath } from 'next/cache';
 import { unstable_rethrow } from 'next/navigation';
 import { uuidv7 } from '@/core/offline/ids';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { z } from 'zod';
 import { supabaseServer } from '@/core/supabase/server';
 import { isMissingRow, isPermissionDenied, readError } from '@/core/supabase/errors';
@@ -56,7 +57,7 @@ export async function createTemplate(input: unknown): Promise<TemplateResult<str
     // Weekly like player programs, so each day can be marked as rest in the builder.
     if (program) {
       const days = await client.from('program_days').insert(Array.from({ length: 7 }, (_, weekday) => ({
-        id: uuidv7(), program_id: id, title: '', position: weekday + 1, weekday, is_rest_day: true })));
+        id: uuidv7(), program_id: id, title: '', position: weekday + 1, weekday, is_rest_day: !captainWorkspaceEnabled() || weekday !== 0 })));
       if (days.error) {
         await client.from('programs').delete().eq('id', id);
         throw days.error;

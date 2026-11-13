@@ -10,7 +10,7 @@ export const messages = defineMessages({
     waitingCount: '{count} متابعة مستنياك', waitingUnavailable: 'عدد المتابعات مش متاح دلوقتي',
     mealPlans: 'الأنظمة الغذائية',
     library: 'المكتبة', foods: 'مكتبة الأكلات', forms: 'التقييمات',
-    trainingPlans: 'خطط التمارين', trainingGroup: 'التمرين', foodGroup: 'الأكل', followupGroup: 'المتابعة',
+    trainingPlans: 'خطط التمارين', trainingGroup: 'التمارين', foodGroup: 'الأكل', followupGroup: 'المتابعة',
     accountMenu: 'حسابي',
     "previewTitle": "شوف كلاعب",
     "dayCount.zero": "{count} أيام",

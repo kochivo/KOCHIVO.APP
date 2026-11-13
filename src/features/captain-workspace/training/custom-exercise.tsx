@@ -32,7 +32,7 @@ export function CustomExercise({ onAdd, exercise }: { onAdd: (row: LibraryExerci
           <button type="submit" className="min-h-12 rounded-full border border-line px-4">{t('create')}</button>
         </fieldset>
         {busy && <p role="status">{tt('loading')}</p>}{error && <p role="alert" className="text-danger">{error}</p>}
-        <button type="button" disabled={busy} className="min-h-12 px-4" onClick={() => setOpen(false)}>{t('close')}</button>
+      <button type="button" disabled={busy} className="min-h-12 rounded-full border border-line px-4" onClick={() => setOpen(false)}>{t('close')}</button>
       </form>
     </ResponsiveDialog>}
   </div>;

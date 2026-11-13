@@ -16,7 +16,7 @@ export function AlternativesSheet({ row, onPatch, onClose }: {
   return <ResponsiveDialog modal openerId={opener} fallbackId={opener} onDismiss={onClose} aria-label={t('alternatives')}
     className="sheet fixed inset-0 z-50 m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-lg space-y-3 overflow-y-auto rounded-card p-5 text-ink backdrop:bg-bg-deep/80">
     <div className="flex items-center justify-between gap-3"><h2 className="font-display text-[19px]">{t('alternatives')}</h2>
-      <button className="min-h-12 px-3" onClick={onClose}>{t('close')}</button></div>
+      <button className="min-h-12 rounded-full border border-line px-3" onClick={onClose}>{t('close')}</button></div>
     <p className="text-xs text-faint">{t('alternativesHint')}</p>
     <div className="flex flex-wrap gap-2">{selected.length ? selected.map(id => {
       const library = row.alternative_library?.find(item => item.id === id);

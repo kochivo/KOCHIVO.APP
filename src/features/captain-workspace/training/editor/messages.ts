@@ -3,13 +3,14 @@ import { arStd } from './standard-messages';
 
 export const messages = defineMessages({
   ar: {
+    startFirst: 'ابدأ أول يوم تمرين', startHint: 'ابدأ بيوم تمرين وضيف التسخين والتمارين.', emptyAssign: 'ضيف تمرين واحد على الأقل الأول', unknownDuration: '—',
     alternatives: 'بدائل', differentSets: 'مجموعات مختلفة', uniform: 'زي بعض', setNumber: 'مجموعة {n}',
     setMaximum: 'أقصى عدّات للمجموعة {n}', setIntensity: 'شدة المجموعة {n}',
     alternativesHint: 'اختار لحد ٣ بدائل. دوس على البديل عشان تشيله.', alternativesEmpty: 'لسه مفيش بدائل',
     alternativeUnavailable: 'التمرين مش متاح', removeAlternative: 'شيل {name}',
     breadcrumb: 'اللاعبين ‹ {name}', title: 'برنامج {name}', active: 'نشط · باقي {n} يوم', saved: 'اتحفظ',
-    saving: 'بيتحفظ…', preview: 'شوفه كلاعب', assign: 'استخدمه للاعب', options: 'إعدادات البرنامج',
-    day: '+ يوم', restDays: 'راحة باقي الأيام', rail: 'أيام التمرين', dayLine: '{weekday} · {n} تمارين · {m} د', rotationLine: '{n} تمارين · {m} د',
+    saving: 'بيتحفظ…', preview: 'شوفه كلاعب', assign: 'استخدمه للاعب', options: 'خيارات',
+    day: '+ يوم', restDays: 'راحة باقي الأيام', rail: 'أيام التمرين', dayLine: '{weekday} · {n} تمارين · {m}', rotationLine: '{n} تمارين · {m}',
     dayName: 'اسم اليوم', warm: 'تسخين', exercises: 'تمارين', sets: 'مجموعات', duration: 'المدة', minutes: '{n} د',
     warmTitle: 'التسخين', warmCount: '{n} حاجات · {m} دقايق',
     warmHint: 'اختار جاهز أو اكتب بتاعك. اللاعب بيشوفه أول حاجة قبل التمارين.',
@@ -36,13 +37,14 @@ export const messages = defineMessages({
   },
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   en: {
+    startFirst: 'Start the first training day', startHint: 'Start a training day and add warm-up and exercises.', emptyAssign: 'Add at least one exercise first', unknownDuration: '—',
     alternatives: 'Alternatives', differentSets: 'Different sets', uniform: 'Same for all', setNumber: 'Set {n}',
     setMaximum: 'Maximum reps for set {n}', setIntensity: 'Intensity for set {n}',
     alternativesHint: 'Choose up to 3 alternatives. Tap one to remove it.', alternativesEmpty: 'No alternatives yet',
     alternativeUnavailable: 'Exercise unavailable', removeAlternative: 'Remove {name}',
     breadcrumb: 'Players ‹ {name}', title: '{name}’s program', active: 'Active · {n} days left', saved: 'Saved', saving: 'Saving…',
-    preview: 'View as player', assign: 'Use for a player', options: 'Program settings', day: '+ Day', restDays: 'Rest on other days',
-    rail: 'Training days', dayLine: '{weekday} · {n} exercises · {m} min', rotationLine: '{n} exercises · {m} min', dayName: 'Day name', warm: 'Warm-up', exercises: 'Exercises',
+    preview: 'View as player', assign: 'Use for a player', options: 'Options', day: '+ Day', restDays: 'Rest on other days',
+    rail: 'Training days', dayLine: '{weekday} · {n} exercises · {m}', rotationLine: '{n} exercises · {m}', dayName: 'Day name', warm: 'Warm-up', exercises: 'Exercises',
     sets: 'Sets', duration: 'Duration', minutes: '{n} min', warmTitle: 'Warm-up', warmCount: '{n} items · {m} minutes',
     warmHint: 'Choose a preset or add your own. Players see this before exercises.',
     bikeChip: '+ Bike / walk 5 min', jointsChip: '+ Joint rotations', bandChip: '+ Band', ropeChip: '+ Jump rope', squatChip: '+ Light squats',

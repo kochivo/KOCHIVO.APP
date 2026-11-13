@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import type { ReactNode } from 'react';
+import { Dumbbell } from 'lucide-react';
+import { Button } from '@/ui/button';
 import { useT } from '@/core/i18n/client';
 import { activateProgram, startTraining, useTrainingAutosave, validateForActivation, programMessages } from '@/features/programs';
 import type { ProgramDraft } from '@/features/programs';
@@ -33,6 +35,7 @@ export function TrainingEditor({ playerId, playerName, remainingDays, facts, ini
   const [sent, setSent] = useState(false);
   const [assigning, setAssigning] = useState(false);
   const draft = state.draft;
+  const allRest = template && draft && draft.days.length > 0 && draft.days.every(row => row.is_rest_day);
   const day = draft?.days.find(row => row.id === selected) ?? draft?.days.find(row => !row.is_rest_day) ?? draft?.days[0];
   const update = (operation: (current: ProgramDraft) => ProgramDraft) => {
     if (pending) return;
@@ -63,22 +66,30 @@ export function TrainingEditor({ playerId, playerName, remainingDays, facts, ini
   }
   return <section className="@container min-w-0 space-y-[18px]">
     <EditorHeader playerId={playerId} playerName={playerName} remainingDays={draft?.status === 'active' ? remainingDays : undefined} template={template} title={draft?.title}
-      status={state.status} busy={pending} disabled={!draft || choosing} onSend={() => void send()} onRetry={() => void state.flush()}
-      onAssign={() => { void (async () => { setPending(true); try { if (await state.flush()) setAssigning(true); } finally { setPending(false); } })(); }} />
+      starting={Boolean(allRest)} status={state.status} busy={pending} disabled={!draft || choosing} onSend={() => void send()} onRetry={() => void state.flush()}
+      onAssign={() => {
+        if (!draft?.days.some(row => row.exercises.length)) { setError(et('emptyAssign')); return; }
+        setError('');
+        void (async () => { setPending(true); try { if (await state.flush()) setAssigning(true); } finally { setPending(false); } })();
+      }}>
+      {draft && !choosing && <fieldset disabled={pending}><WeekMenu key={`${draft.id}-${day?.id ?? ''}`} draft={draft} day={day} update={update} saved={state.status === 'saved'} onNew={template ? undefined : () => { setChoosing(true); setTemplates(false); }} /></fieldset>}
+    </EditorHeader>
     {(error || state.error) && <p role="alert" className="text-sm text-danger">{error || state.error}</p>}
     {sent && <p role="status" className="text-xs text-faint">{t('sent')}</p>}
     {pending && <p role="status" className="text-xs text-faint">{t('loading')}</p>}
     {choosing ? <><StartChoice templates={templates} onTemplates={() => setTemplates(value => !value)} onStart={id => void start(id)} busy={pending} />
-      {draft && <button disabled={pending} className="min-h-12 text-xs text-muted" onClick={() => setChoosing(false)}>{t('cancel')}</button>}</> :
+      {draft && <Button variant="secondary" disabled={pending} className="min-h-12" onClick={() => setChoosing(false)}>{t('cancel')}</Button>}</> :
       draft && <fieldset disabled={pending} className="min-w-0 space-y-3.5">
-        <div className="flex justify-end"><WeekMenu key={`${draft.id}-${day?.id ?? ''}`} draft={draft} day={day} update={update} saved={state.status === 'saved'} onNew={template ? undefined : () => { setChoosing(true); setTemplates(false); }} /></div>
         <div className={facts ? 'grid min-w-0 items-start gap-[18px] min-[1400px]:grid-cols-[260px_minmax(0,1fr)]' : ''}>
           {facts}
           <div className="grid min-w-0 items-start gap-4 min-[1001px]:grid-cols-[230px_minmax(0,1fr)]">
             <DayRail draft={draft} selectedId={day?.id} onSelect={setSelected} update={update} />
-            <div className="min-w-0 space-y-3.5">{day ? <>
+            <div className="min-w-0 space-y-3.5">{allRest ? <div className="glass-strong space-y-3 rounded-card p-5">
+              <p className="text-sm text-muted">{et('startHint')}</p>
+              <Button disabled={pending} onClick={() => { const first = draft.days[0]; if (first) { update(current => restDay(current, first.id, false)); setSelected(first.id); } }}><Dumbbell aria-hidden className="size-4" />{et('startFirst')}</Button>
+            </div> : day ? <>
               <DaySummary day={day} update={update} />
-              {day.is_rest_day ? <div className="glass rounded-card border border-dashed border-line-soft p-5 text-faint"><p>{et('rest')}</p><button className="min-h-12 text-sm" onClick={() => update(current => restDay(current, day.id, false))}>{et('restore')}</button></div> : <>
+              {day.is_rest_day ? <div className="glass space-y-3 rounded-card border border-dashed border-line-soft p-5 text-faint"><p>{et('rest')}</p><Button variant="secondary" className="min-h-12" onClick={() => update(current => restDay(current, day.id, false))}><Dumbbell aria-hidden className="size-4" />{et('restore')}</Button></div> : <>
                 <WarmupBlock key={`warmup-${day.id}`} day={day} update={update} />
                 <DayExercises key={day.id} day={day} update={update} />
                 <CardioBlock day={day} update={update} />

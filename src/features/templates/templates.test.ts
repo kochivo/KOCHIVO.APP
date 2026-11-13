@@ -1,6 +1,6 @@
 vi.mock('server-only', () => ({}));
 vi.mock('next/headers', () => ({ cookies: async () => ({ get: () => undefined }) }));
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { assignTemplate, copyTemplate, createTemplate, deleteTemplate, listTemplatePlayers, listTemplates, renameTemplate, saveAsTemplate } from './data/templates';
 
 const mocks = vi.hoisted(() => {
@@ -13,6 +13,7 @@ vi.mock('@/features/roster', () => ({ fetchRoster: mocks.roster }));
 vi.mock('next/cache', () => ({ revalidatePath: mocks.revalidate }));
 const id = '01900000-0000-7000-8000-000000000001';
 const playerId = '01900000-0000-7000-8000-000000000002';
+afterEach(() => vi.unstubAllEnvs());
 beforeEach(() => {
   vi.resetAllMocks();
   mocks.client.auth.getClaims.mockResolvedValue({ data: { claims: { sub: 'captain' } }, error: null });
@@ -51,12 +52,21 @@ describe('template actions', () => {
     }));
   });
   it('starts a program template as a seven-day week so rest days can be set', async () => {
+    vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '0');
     mocks.query.insert.mockResolvedValue({ error: null });
     const result = await createTemplate({ kind: 'program' });
     expect(mocks.client.from).toHaveBeenCalledWith('program_days');
     const days = mocks.query.insert.mock.calls[1]?.[0] as { weekday: number; is_rest_day: boolean; program_id: string }[];
     expect(days.map(day => day.weekday)).toEqual([0, 1, 2, 3, 4, 5, 6]);
     expect(days.every(day => day.is_rest_day && day.program_id === result.data)).toBe(true);
+  });
+  it('starts workspace templates with Saturday ready for training', async () => {
+    vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
+    mocks.query.insert.mockResolvedValue({ error: null });
+    await createTemplate({ kind: 'program' });
+    const days = mocks.query.insert.mock.calls[1]?.[0] as { weekday: number; is_rest_day: boolean }[];
+    expect(days.map(day => day.is_rest_day)).toEqual([false, true, true, true, true, true, true]);
+    expect(days[0]?.weekday).toBe(0);
   });
   it('removes the template when its days cannot be created', async () => {
     mocks.query.insert.mockResolvedValueOnce({ error: null }).mockResolvedValueOnce({ error: { code: '42501' } });

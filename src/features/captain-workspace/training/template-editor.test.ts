@@ -9,9 +9,9 @@ import { WeekMenu } from './week-menu';
 import { EditorHeader } from './editor-header';
 
 vi.mock('server-only', () => ({}));
-vi.mock('react', async original => ({ ...await original<typeof React>(), useState: (initial: unknown) => [initial, vi.fn()] }));
+vi.mock('react', async original => ({ ...await original<typeof React>(), useState: (initial: unknown) => [initial, state.set] }));
 vi.mock('@/core/i18n/client', () => ({ useLocale: () => 'en', useT: (messages: Parameters<typeof createT>[0]) => createT(messages, 'en') }));
-const state = vi.hoisted(() => ({ update: vi.fn(), flush: vi.fn(), activate: vi.fn() }));
+const state = vi.hoisted(() => ({ update: vi.fn(), flush: vi.fn(), activate: vi.fn(), set: vi.fn() }));
 const draft: ProgramDraft = { id: 'template', player_id: null, title: 'Template', status: 'draft', days: [] };
 vi.mock('@/features/programs', async original => ({ ...await original<typeof Programs>(),
   activateProgram: state.activate,
@@ -23,6 +23,22 @@ function nodes(value: unknown): React.ReactElement<Record<string, unknown>>[] {
   return [value, ...nodes(value.props.children)];
 }
 beforeEach(() => { vi.clearAllMocks(); state.flush.mockResolvedValue(true); });
+it('blocks empty assignment with an inline message before saving or opening the sheet', () => {
+  const header = nodes(TrainingEditor({ mode: 'template', initial: draft, programs: [] })).find(node => node.type === EditorHeader);
+  (header?.props.onAssign as () => void)();
+  expect(state.set).toHaveBeenCalledWith('Add at least one exercise first');
+  expect(state.flush).not.toHaveBeenCalled();
+});
+it('offers one start card that restores and selects the first day', () => {
+  const rest = { ...draft, days: [{ id: 'first', program_id: draft.id, title: '', position: 1, is_rest_day: true, warmup: { items: [], ramp: false }, exercises: [] }] };
+  const tree = nodes(TrainingEditor({ mode: 'template', initial: rest, programs: [] }));
+  const start = tree.find(node => Array.isArray(node.props.children) && node.props.children.includes('Start the first training day') && typeof node.props.onClick === 'function');
+  expect(start).toBeDefined();
+  (start?.props.onClick as () => void)();
+  const operation = state.update.mock.calls[0]?.[0] as (current: ProgramDraft) => ProgramDraft;
+  expect(operation(rest).days[0]?.is_rest_day).toBe(false);
+  expect(state.set).toHaveBeenCalledWith('first');
+});
 it('passes template edits to the shared quiet autosave queue', () => {
   const tree = TrainingEditor({ mode: 'template', initial: draft, programs: [] });
   const menu = nodes(tree).find(node => node.type === WeekMenu);

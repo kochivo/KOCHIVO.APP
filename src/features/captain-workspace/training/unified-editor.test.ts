@@ -9,6 +9,7 @@ import { WarmupBlock } from './warmup-block';
 import { TrainingExerciseRow } from './exercise-row';
 import { DayRail } from './day-rail';
 import { ExerciseFields } from './exercise-fields';
+import { DaySummary } from './day-summary';
 
 vi.mock('server-only', () => ({}));
 const day: DraftDay = { id: 'd', program_id: 'p', title: 'دفع · صدر وكتف', position: 1, warmup: emptyWarmup(), exercises: [{
@@ -22,6 +23,18 @@ const draft: ProgramDraft = { id: 'p', player_id: 'player', title: 'Plan', statu
 function render(child: React.ReactNode) {
   return renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' }, child));
 }
+it('keeps the selected rest day visible before the collapsed rest group', () => {
+  const html = render(createElement(DayRail, { draft, selectedId: 'r1', onSelect: vi.fn(), update: vi.fn() }));
+  expect(html).toMatch(/aria-pressed="true"/);
+});
+it('hides rest-day stats and uses dashes for empty training durations', () => {
+  const empty = { ...day, exercises: [] };
+  const rest = render(createElement(DaySummary, { day: { ...empty, is_rest_day: true }, update: vi.fn() }));
+  expect(rest).not.toContain('المدة');
+  const html = render(createElement(DaySummary, { day: empty, update: vi.fn() }));
+  expect(html).toContain('—');
+  expect(html).not.toContain('~0');
+});
 it('keeps warm-up edits in the program snapshot without mutating the initial draft', () => {
   let current = editWarmup(draft, 'd', { items: [{ id: '019ab800-0000-7000-8000-000000000001', name: 'Walk', amount: 5, unit: 'min' }], ramp: true });
   expect(current.days[0]?.warmup.items).toHaveLength(1);
