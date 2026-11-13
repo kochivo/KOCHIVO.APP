@@ -55,5 +55,6 @@ Fill the T-179 slots with T-180 data, as in `docs/mockups/landing/coach-page.htm
   mirroring the 0103 check. `/c/[slug]` was 201.3 KiB gzip (T-179 alone: 198.7); the waitlist now gets its
   labels from the server and imports `KoInvite` from its leaf module, bringing it to 199.8 KiB.
   `npm run check` passes (only the known `demo` load flake) and `npm run build` passes.
-  Open: the auth flow ignores `next`, so a signed-out visitor who signs up from the waitlist lands on the
-  normal start screen instead of returning to the coach page (needs an auth card).
+  Signed-out waitlist (owner OK 2026-11-13): the button sends the visitor through the existing coach signup link;
+  after signup, a full captain puts them on the waitlist instead of sending a join request, and the page shows
+  the new `waitlisted` request state (`?requested=waitlist`).

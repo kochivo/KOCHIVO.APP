@@ -15,7 +15,7 @@ beforeEach(() => { vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1'); mock.user =
   mock.insert.mockReset().mockImplementation(async () => ({ error: mock.error })); });
 it('sends signed-out visitors to signup with a return URL without inserting', async () => {
   const result = await joinWaitlist('ali');
-  expect(result).toEqual({ redirect: '/login?tab=signup&next=%2Fc%2Fali' });
+  expect(result).toEqual({ redirect: '/login?tab=signup&coach=ali' });
   expect(mock.insert).not.toHaveBeenCalled();
 });
 it('inserts only the authenticated player and treats duplicate taps as success', async () => {

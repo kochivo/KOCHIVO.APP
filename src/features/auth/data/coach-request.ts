@@ -4,6 +4,7 @@ import type { AppDatabase } from '@/types/app-database';
 import { uuidv7 } from '@/core/offline/ids';
 import { coachSlug } from '@/lib/coach-slug';
 import { coachRequestValues } from '@/lib/coach-request-status';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import type { CoachRequestStatus } from '@/lib/coach-request-status';
 import { profile } from './auth-client';
 import { homeFor } from '../routing';
@@ -14,6 +15,16 @@ async function liveLinkStatus(client: SupabaseClient<AppDatabase>, playerId: str
     .eq('player_id', playerId).is('archived_at', null).maybeSingle();
   if (link.error) throw link.error;
   return link.data ? (link.data.captain_id === captainId ? 'member' : 'linked') : undefined;
+}
+
+// A full captain cannot take a join request; the page offers the waitlist instead, so signup lands there.
+async function joinWaitlistWhenFull(client: SupabaseClient<AppDatabase>, slug: string, captainId: string, playerId: string) {
+  if (!captainWorkspaceEnabled()) return false;
+  const page = await client.rpc('coach_public_page', { slug });
+  if (page.error || page.data?.[0]?.accepting !== false) return false;
+  const row = await client.from('coach_waitlist').insert({ id: uuidv7(), captain_id: captainId, player_id: playerId });
+  if (row.error && row.error.code !== '23505') throw row.error;
+  return true;
 }
 
 export async function completeCoachRequest(client: SupabaseClient<AppDatabase>, rawSlug: string, input?: unknown) {
@@ -36,6 +47,7 @@ export async function completeCoachRequest(client: SupabaseClient<AppDatabase>, 
   const statusUrl = (status: CoachRequestStatus) => `/c/${slug}?requested=${coachRequestValues[status]}`;
   const linked = await liveLinkStatus(client, playerId, captain.id);
   if (linked) return statusUrl(linked);
+  if (await joinWaitlistWhenFull(client, slug, captain.id, playerId)) return statusUrl('waitlisted');
   const selection = packageSelection(input);
   const pkg = selection.package ? await client.from('captain_packages').select('id')
     .eq('id', selection.package).eq('captain_id', captain.id).is('archived_at', null).maybeSingle() : null;

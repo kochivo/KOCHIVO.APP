@@ -17,8 +17,8 @@ function render() { return PublicWaitlist({ slug: 'ali', labels }); }
 async function tap() { render().props.children[0].props.onClick(); await hooks.task; }
 it('navigates signed-out visitors to the returned signup URL', async () => {
   const assign = vi.fn(); vi.stubGlobal('window', { location: { assign } });
-  vi.mocked(joinWaitlist).mockResolvedValue({ redirect: '/login?tab=signup&next=%2Fc%2Fali' });
-  await tap(); expect(assign).toHaveBeenCalledWith('/login?tab=signup&next=%2Fc%2Fali');
+  vi.mocked(joinWaitlist).mockResolvedValue({ redirect: '/login?tab=signup&coach=ali' });
+  await tap(); expect(assign).toHaveBeenCalledWith('/login?tab=signup&coach=ali');
   vi.unstubAllGlobals();
 });
 it('keeps repeat taps idempotent and displays membership and retry errors', async () => {

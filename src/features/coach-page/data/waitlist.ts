@@ -3,7 +3,7 @@ import { unstable_rethrow } from 'next/navigation';
 import { supabaseServer } from '@/core/supabase/server';
 import { uuidv7 } from '@/core/offline/ids';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
-import { coachSlug } from '../slug';
+import { coachSignupHref, coachSlug } from '../slug';
 
 export async function joinWaitlist(rawSlug: string): Promise<{
   status?: 'waitlisted' | 'member' | 'failure'; redirect?: string;
@@ -14,7 +14,8 @@ export async function joinWaitlist(rawSlug: string): Promise<{
     const client = await supabaseServer();
     const auth = await client.auth.getUser();
     if (auth.error) throw auth.error;
-    if (!auth.data.user) return { redirect: `/login?tab=signup&next=${encodeURIComponent(`/c/${slug}`)}` };
+    // Signing up through the coach link lands back on this page and joins the waitlist when it is full.
+    if (!auth.data.user) return { redirect: coachSignupHref(slug) };
     const [coach, page] = await Promise.all([
       client.rpc('coach_public_profile', { slug }), client.rpc('coach_public_page', { slug }),
     ]);

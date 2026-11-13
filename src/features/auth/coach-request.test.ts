@@ -1,4 +1,4 @@
-import { beforeEach, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { completeCoachRequest } from './data/coach-request';
 const mock = vi.hoisted(() => ({ profile: vi.fn(), rpc: vi.fn(), insert: vi.fn(), getUser: vi.fn(), link: vi.fn(), pending: vi.fn() }));
 vi.mock('server-only', () => ({}));
@@ -95,4 +95,36 @@ it('rejects invalid and missing coaches before creating a request', async () => 
   mock.rpc.mockResolvedValue({ data: [], error: null });
   await expect(completeCoachRequest(client as unknown as Parameters<typeof completeCoachRequest>[0], 'missing')).rejects.toThrow();
   expect(mock.insert).not.toHaveBeenCalled();
+});
+
+describe('when the captain is full', () => {
+  beforeEach(() => {
+    vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
+    mock.profile.mockResolvedValue({ role: 'player', roleConfirmed: true });
+    mock.rpc.mockImplementation((name: string) => Promise.resolve(name === 'coach_public_page'
+      ? { data: [{ accepting: false }], error: null } : { data: [{ id: 'captain-id' }], error: null }));
+  });
+  afterEach(() => { vi.unstubAllEnvs(); });
+
+  it('joins the waitlist instead of sending a join request', async () => {
+    expect(await complete()).toBe('/c/ahmed?requested=waitlist');
+    expect(mock.insert).toHaveBeenCalledWith({ id: '01900000-0000-7000-8000-000000000001', captain_id: 'captain-id', player_id: 'player-id' });
+    expect(calls).toContainEqual(['from', 'coach_waitlist']);
+    expect(calls).not.toContainEqual(['from', 'coach_join_requests']);
+  });
+
+  it('treats a repeat signup as already waitlisted', async () => {
+    mock.insert.mockResolvedValue({ error: { code: '23505' } });
+    expect(await complete()).toBe('/c/ahmed?requested=waitlist');
+  });
+
+  it('keeps the join request when the captain has room or the flag is off', async () => {
+    mock.rpc.mockImplementation((name: string) => Promise.resolve(name === 'coach_public_page'
+      ? { data: [{ accepting: true }], error: null } : { data: [{ id: 'captain-id' }], error: null }));
+    expect(await complete()).toBe('/c/ahmed?requested=1');
+    vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '0');
+    calls.length = 0;
+    expect(await complete()).toBe('/c/ahmed?requested=1');
+    expect(calls).not.toContainEqual(['from', 'coach_waitlist']);
+  });
 });
