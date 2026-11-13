@@ -7,6 +7,7 @@ import { fail, ok } from '@/lib/action-result';
 import { messages } from '../components/library/messages';
 import { duplicateFood, foodSearchPattern } from '../food-library-rules';
 import { foodFields } from './editor-fields';
+import { FOOD_LIBRARY_SELECT } from './food-library-columns';
 import { planClient, toFood } from './client';
 import type { FoodRow } from './client';
 import { deleteCustomFood } from './custom-food';
@@ -33,7 +34,7 @@ export async function listLibraryFoods(input: { query: string; segment: FoodSegm
     }
     return request;
   };
-  let request = client.from('foods').select('id,owner_id,name_ar,name_en,photo_path,kcal_per_100g,protein_per_100g,carbs_per_100g,fat_per_100g,units,tags,meal_items(meals(plan_id)),meal_item_alternatives(meal_items(meals(plan_id)))')
+  let request = client.from('foods').select(FOOD_LIBRARY_SELECT)
     .is('archived_at', null).order('id').limit(40);
   if (cursor) request = request.gt('id', cursor);
   if (segment === 'mine') request = request.eq('owner_id', owner);
@@ -43,7 +44,7 @@ export async function listLibraryFoods(input: { query: string; segment: FoodSegm
     request = request.or(`name_ar.imatch."${pattern}",name_en.imatch."${pattern}"`);
   }
   const [page, all, mine, global] = await Promise.all([
-    // The generated schema predates units/tags; foodFields and libraryUsage validate their runtime shapes.
+    // The generated schema predates units; foodFields and libraryUsage validate their runtime shapes.
     request.overrideTypes<FoodRow[], { merge: false }>(), filtered(), filtered().eq('owner_id', owner), filtered().is('owner_id', null),
   ]);
   if (page.error || all.error || mine.error || global.error) return fail(t('error'));
