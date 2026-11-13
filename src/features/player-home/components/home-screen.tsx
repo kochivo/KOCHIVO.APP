@@ -29,7 +29,6 @@ import { starterText } from '@/lib/starter-text';
 import { previewFor } from '../day-preview';
 import { DayPreviewCard } from './day-preview-card';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
-import { PendingForms } from '@/features/forms';
 import { MorningRow } from './morning-row';
 
 const readPending = () => pendingCount(localDb());
@@ -40,6 +39,9 @@ const PlayerReadiness = dynamic(() => import('@/features/readiness').then(module
 });
 const V3Home = dynamic(() => import('./v3-home').then(module => module.V3Home), {
   loading: () => <LoadingState variant="cards" />,
+});
+const PendingForms = dynamic(() => import('@/features/player-shell').then(module => module.PlayerAssessments), {
+  ssr: false, loading: () => <LoadingState variant="detail" />,
 });
 
 export function HomeScreen({ firstName, playerId }: { firstName?: string; playerId?: string }) {
@@ -120,7 +122,7 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
       </div>
       {failed && snapshot && <p className="text-sm text-muted">{t('lastUpdatedAWhileAgo')}</p>}
     </>}
-    {captainWorkspaceEnabled() && <PendingForms locale={locale} />}
+    {captainWorkspaceEnabled() && <PendingForms layout="home" />}
     <NutritionSlot date={selectedDate || undefined} />
   </main>;
 }

@@ -132,7 +132,7 @@ export function ProgressScreen({ analytics }: { analytics?: ReactNode }) {
           {top.length ? <LineChart points={top} title={t('topWeightTrend')} unit={t('kg')} /> : <EmptyState icon={Dumbbell} title={t('noMeasurementsYet')} body={t('logYourFirstWorkoutToSeeYour')} action={{ label: t('firstWorkout'), href: '/player' }} />}
         </section>
       </>)}
-    {v6 && <><WeightOverview checkins={checkins} checkinError={checkinError} onRetry={() => setRetryKey(value => value + 1)} /><PlayerAssessments />{ranksEnabled() && <RankOverview />}</>}
+    {v6 && <><WeightOverview checkins={checkins} checkinError={checkinError} onRetry={() => setRetryKey(value => value + 1)} /><PlayerAssessments layout="link" />{ranksEnabled() && <RankOverview />}</>}
     {analytics}
     <BodyScansLoader />
     {checkinError ? <ErrorState message={t('couldntLoadCheckinsCheckYourConnection')} retryLabel={t('tryAgain')} onRetry={() => setRetryKey((value) => value + 1)} /> : !checkins ? <LoadingState variant="cards" /> : <>

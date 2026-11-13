@@ -4,3 +4,6 @@ export { SyncRunner } from './components/sync-runner';
 export { CaptainScreen } from './components/captain-screen-entry';
 export { useCaptainContext } from './hooks/use-my-captain';
 export { PlayerAssessments } from './components/player-assessments-entry';
+export { CaptainProfileScreen } from './components/captain-profile-screen-entry';
+export { AssessmentsScreen } from './components/assessments-screen-entry';
+export { messages as playerPagesMessages } from './pages-messages';
