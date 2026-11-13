@@ -23,6 +23,8 @@ export function notificationIcon(row: Notification) {
 }
 
 export function notificationHref(row: Notification): string {
+  if (row.type === 'chat_message') return row.user_id === row.payload.player_id ? '/player/captain'
+    : row.payload.player_id ? `/captain/players/${encodeURIComponent(row.payload.player_id)}/chat` : '/captain/players';
   if (row.type === 'form_requested') return row.payload.request_id
     ? `/player/forms/${encodeURIComponent(row.payload.request_id)}` : '/player';
   if (row.type === 'rank_up' || row.type === 'crown_taken' || row.type === 'crown_lost'

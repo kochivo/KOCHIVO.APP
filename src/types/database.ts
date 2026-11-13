@@ -2461,6 +2461,49 @@ export type Database = {
           },
         ]
       }
+      chat_messages: {
+        Row: {
+          id: string
+          captain_id: string
+          player_id: string
+          sender_id: string
+          body: string | null
+          audio_path: string | null
+          duration_seconds: number | null
+          read_at: string | null
+          created_at: string
+        }
+        Insert: {
+          id: string
+          captain_id: string
+          player_id: string
+          sender_id: string
+          body?: string | null
+          audio_path?: string | null
+          duration_seconds?: number | null
+          read_at?: string | null
+          created_at?: string
+        }
+        Update: {
+          read_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_captain_id_fkey"
+            columns: ["captain_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_messages_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       voice_notes: {
         Row: {
           audio_path: string

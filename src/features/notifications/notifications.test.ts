@@ -12,6 +12,12 @@ vi.mock('@/core/supabase/lazy', () => ({ loadSupabaseBrowser: load }));
 
 const row: Notification = { id: 'n', type: 'plan_assigned', payload: { name: 'Strength' }, is_read: false,
   created_at: '2026-11-03T08:00:00Z' };
+it('links a chat notification according to its recipient and formats the sender', () => {
+  const notice: Notification = { ...row, type: 'chat_message', user_id: 'player', payload: { name: 'Ali', player_id: 'player' } };
+  expect(notificationHref(notice)).toBe('/player/captain');
+  expect(notificationHref({ ...notice, user_id: 'captain' })).toBe('/captain/players/player/chat');
+  for (const locale of ['ar', 'en'] as const) expect(createT(messages, locale)(notificationTextKey(notice), { name: 'Ali' })).toContain('Ali');
+});
 it.each(['ar', 'en'] as const)('formats crown reminders with workout or score gaps in %s', locale => {
   const t = createT(messages, locale);
   for (const [type, needs_workouts, gap, ar, en] of [

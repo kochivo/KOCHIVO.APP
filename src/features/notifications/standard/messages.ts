@@ -1,4 +1,5 @@
 export const arStd = {
+  chat_message: 'أرسل إليك {name} رسالة',
   renewal_requested: '{name} أرسل طلب تجديد',
   form_requested: 'ينتظر الكابتن ردّك على {name}', rank_up: 'ترقّيت إلى رتبة جديدة', rank_up_champion: 'ترقّيت! أصبحت بطلاً',
   rank_up_elite: 'ترقّيت! أصبحت من النخبة', rank_up_legend: 'ترقّيت! أصبحت أسطورة', crown_taken: 'التاج معك. حافظ عليه',
