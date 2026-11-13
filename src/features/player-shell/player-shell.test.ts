@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { setLocalUser } from '@/core/offline/db';
-import { playerNav, showsNav } from './nav';
+import { playerNav, showsFeedback, showsNav } from './nav';
 import { accessState } from './access';
 import { whatsappUrl } from '@/lib/whatsapp';
 import { readCaptainCache, writeCaptainCache } from './hooks/use-my-captain';
@@ -24,6 +24,12 @@ describe('player navigation', () => {
   it.each([['/player/workout/day', false], ['/player/onboarding', false], ['/player', true]] as const)(
     'nav visibility for %s', (path, visible) => expect(showsNav(path)).toBe(visible),
   );
+  it('hides the floating feedback button only on the v3 chat', () => {
+    expect(showsFeedback('/player/captain', true)).toBe(false);
+    expect(showsFeedback('/player/captain', false)).toBe(true);
+    expect(showsFeedback('/player/captain/profile', true)).toBe(true);
+    expect(showsFeedback('/player/workout/day', true)).toBe(false);
+  });
 });
 
 describe('subscription access', () => {

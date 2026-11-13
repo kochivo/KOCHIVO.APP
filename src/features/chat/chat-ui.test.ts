@@ -1,0 +1,23 @@
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { expect, it, vi } from 'vitest';
+import { LocaleProvider } from '@/core/i18n/client';
+import { ChatThread } from './components/chat-thread';
+import type { ChatThreadItem } from './types';
+
+vi.mock('@/lib/use-calendar-clock', () => ({ useCalendarClock: () => ({ now: new Date('2026-11-13T10:00:00Z') }) }));
+const base: ChatThreadItem = { id: 'a', playerId: 'p', captainId: 'c', senderId: 'p', body: 'hello', audioPath: null,
+  durationSeconds: null, readAt: '2026-11-13T09:00:00Z', createdAt: '2026-11-12T08:00:00Z', source: 'chat', kind: 'text', mine: true, status: 'sent' };
+const render = (items: ChatThreadItem[]) => renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' }, createElement(ChatThread, { items, viewer: 'player' })));
+it('renders own and incoming bubbles, dates and read receipt only on last read own item', () => {
+  const html = render([base, { ...base, id: 'b', mine: false, senderId: 'c', createdAt: '2026-11-13T08:00:00Z' }]);
+  expect(html).toContain('rounded-ee-[6px]');
+  expect(html).toContain('rounded-es-[6px]');
+  expect(html).toContain('أمس');
+  expect(html).toContain('النهارده');
+  expect(html.match(/>اتقرت</g)).toHaveLength(1);
+});
+it('renders failed send retry and an empty thread', () => {
+  expect(render([{ ...base, status: 'failed' }])).toContain('ما اتبعتتش · جرّب تاني');
+  expect(render([])).toContain('ابدأ الكلام مع الكابتن');
+});

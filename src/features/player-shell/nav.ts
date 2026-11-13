@@ -28,6 +28,11 @@ export function playerNav(pathname: string, locale: Locale = 'ar') {
   return items.map((item) => ({ ...item, active: item.href === active }));
 }
 
+// The v3 chat composer sits where the floating feedback button would, covering the mic.
+export function showsFeedback(pathname: string, v6: boolean) {
+  return showsNav(pathname) && !(v6 && pathname === '/player/captain');
+}
+
 export function showsNav(pathname: string) {
   return pathname !== '/player/onboarding' && !pathname.startsWith('/player/onboarding/') &&
     pathname !== '/player/workout' && !pathname.startsWith('/player/workout/');

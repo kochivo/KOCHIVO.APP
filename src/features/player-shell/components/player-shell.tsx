@@ -16,7 +16,7 @@ import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { daysBetween, localDate } from '@/lib/dates';
 import { whatsappUrl } from '@/lib/whatsapp';
 import { accessState } from '../access';
-import { playerNav, showsNav } from '../nav';
+import { playerNav, showsFeedback, showsNav } from '../nav';
 import { MyCaptainContext, useMyCaptain } from '../hooks/use-my-captain';
 import { useOnline } from '../hooks/use-online';
 import { useDeviceRole } from '@/core/pwa/use-device-role';
@@ -85,7 +85,7 @@ export function PlayerShell({ children, unassignedAction }: { children?: ReactNo
       training && blocked ? <WaitingRoom frozen={Boolean(captain.data?.frozenAt)} /> : children}
     </div>
     {showsNav(pathname) && <InstallSheet />}
-    {showsNav(pathname) && <FeedbackButton role="player" />}
+    {showsFeedback(pathname, v6) && <FeedbackButton role="player" />}
     {process.env.NODE_ENV === 'development' && showsNav(pathname) && <KoPreview role="player" />}
     {showsNav(pathname) && (v6 ? <PillNav aria-label={t('navigation')} items={playerNav(pathname, locale)} /> :
       <BottomNav aria-label={t('navigation')} items={playerNav(pathname, locale)} />)}

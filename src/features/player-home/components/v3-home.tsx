@@ -6,7 +6,6 @@ import { useLocale, useT } from '@/core/i18n/client';
 import { useCaptainContext } from '@/features/player-shell';
 import { NotificationBell } from '@/features/notifications';
 import { KoPlus } from '@/ui/icons/ko-plus';
-import { ErrorState, LoadingState } from '@/ui';
 import { useStreakSessions } from '../hooks/use-streak-sessions';
 import { computeStreak, shiftDate, trainingDay } from '../streak';
 import { isWeeklyProgram, pickTodayDay } from '../next-day';
@@ -18,7 +17,6 @@ import { HomeHero } from './home-hero';
 import { HomeTiles } from './home-tiles';
 import { TomorrowCard } from './tomorrow-card';
 import { CaptainRow } from './captain-row';
-import { useHomeVoiceNotes } from './use-home-voice-notes';
 
 export function V3Home({ weightKg, now, today, firstName, playerId, snapshot, day, rest, sessions, weekSessions, onPreview }: {
   weightKg?: number; now: Date; today: string; firstName?: string; playerId?: string; snapshot?: ProgramSnapshot | null;
@@ -31,8 +29,6 @@ export function V3Home({ weightKg, now, today, firstName, playerId, snapshot, da
   const trains = (date: string) => trainingDay(date, snapshot?.training_days ?? [], snapshot ?? undefined);
   const stats = history ? computeStreak({ today, ...history, isTrainingDay: trains }) : null;
   const captain = useCaptainContext();
-  const voice = useHomeVoiceNotes(playerId);
-  const notes = [...voice.notes].sort((a, b) => b.createdAt.localeCompare(a.createdAt) || b.id.localeCompare(a.id));
   const tomorrow = shiftDate(today, 1);
   const tomorrowDay = snapshot ? pickTodayDay(snapshot, sessions, tomorrow) : undefined;
   const tomorrowRest = Boolean(snapshot && (isRestDay(snapshot, sessions, tomorrow) ||
@@ -48,8 +44,6 @@ export function V3Home({ weightKg, now, today, firstName, playerId, snapshot, da
       onWater={() => onPreview(today)} />
     {rest ? <Link href="/player/nutrition" className="flex h-[62px] items-center justify-center gap-2.5 rounded-full bg-lime text-lg font-black text-on-lime">
       <KoPlus aria-hidden className="size-[22px] text-on-lime! [&_*]:text-on-lime!" />{t('homeLogFood')}
-    </Link> : <CaptainRow name={captain.data?.fullName} note={notes[0]} unheard={notes.some(note => !note.listenedAt)} />}
-    {voice.status === 'loading' ? <LoadingState variant="detail" /> : voice.status === 'error' &&
-      <ErrorState message={t('homeVoiceError')} retryLabel={t('tryAgain')} onRetry={voice.retry} />}
+    </Link> : <CaptainRow name={captain.data?.fullName} playerId={playerId} captainId={captain.data?.captainId} />}
   </section>;
 }

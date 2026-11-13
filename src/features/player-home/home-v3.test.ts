@@ -16,9 +16,13 @@ const state = vi.hoisted(() => ({
   notes: [] as VoiceNote[], history: { accountStart: '2026-11-07', completedDates: ['2026-11-09'] },
   meals: [] as NutritionMeal[], logs: [] as MealLogRow[],
 }));
-vi.mock('./components/use-home-voice-notes', () => ({ useHomeVoiceNotes: () => ({ status: 'ready', notes: state.notes, retry() {} }) }));
+vi.mock('@/core/resource', () => ({ useResource: () => ({ status: 'ready', data: {
+  latest: state.notes.toSorted((a, b) => b.createdAt.localeCompare(a.createdAt))[0]
+    ? { ...state.notes.toSorted((a, b) => b.createdAt.localeCompare(a.createdAt))[0], body: null, voice: true } : null,
+  unread: state.notes.some(note => !note.listenedAt),
+}, retry() {} }) }));
 vi.mock('./hooks/use-streak-sessions', () => ({ useStreakSessions: () => state.history }));
-vi.mock('@/features/player-shell', () => ({ useCaptainContext: () => ({ data: { fullName: 'محمود' }, status: 'ready', retry() {} }) }));
+vi.mock('@/features/player-shell', () => ({ useCaptainContext: () => ({ data: { fullName: 'محمود', captainId: 'c' }, status: 'ready', retry() {} }) }));
 vi.mock('@/core/offline', async original => ({ ...await original<typeof Offline>(), useLiveQuery: () => ({ water_ml: 1250 }) }));
 vi.mock('@/features/nutrition', async original => ({
   ...await original<typeof Nutrition>(),

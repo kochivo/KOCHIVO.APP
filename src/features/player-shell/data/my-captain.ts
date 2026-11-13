@@ -9,6 +9,7 @@ import { internationalEnabled } from '@/lib/international-enabled';
 import { profileTimezone } from '@/lib/timezone';
 
 export interface MyCaptain {
+  captainId?: string;
   timezone?: string;
   pending?: boolean; frozenAt?: string | null;
   fullName: string; phone: string | null; accessUntil: string;
@@ -36,6 +37,7 @@ export async function fetchMyCaptain(): Promise<{ data: MyCaptain | null } | { e
     if (captain.error || timezone?.error) return { error: t('couldnTLoadYourCoach') };
     const publicProfile = captain.data?.[0];
     return { data: {
+      captainId: row.captain_id,
       fullName: publicProfile?.full_name ?? t('coach'), phone: publicProfile?.phone ?? null,
       ...(internationalEnabled() ? { timezone: profileTimezone(timezone?.data) } : {}),
       bio: publicProfile?.bio, location: publicProfile?.location, social: publicProfile?.social,

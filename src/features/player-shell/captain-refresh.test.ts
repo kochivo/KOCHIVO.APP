@@ -1,6 +1,6 @@
 import type * as React from 'react';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
-import { useMyCaptain } from './hooks/use-my-captain';
+import { readCaptainCache, useMyCaptain, writeCaptainCache } from './hooks/use-my-captain';
 import { fetchMyCaptain } from './data/my-captain';
 
 const state = vi.hoisted(() => ({ slots: [] as unknown[], cursor: 0, effects: [] as (() => void | (() => void))[] }));
@@ -22,6 +22,7 @@ vi.mock('react', async original => ({
   useEffect: (effect: () => void | (() => void)) => state.effects.push(effect),
 }));
 vi.mock('./data/my-captain', () => ({ fetchMyCaptain: vi.fn() }));
+vi.mock('@/core/offline/db', () => ({ localDb: () => ({ userId: 'p' }) }));
 const captain = { fullName: 'Coach', phone: null, accessUntil: '2026-11-20', archivedAt: null, startedOn: null, pending: true };
 const CaptainHarness = () => useMyCaptain();
 const render = () => { state.cursor = 0; return CaptainHarness(); };
@@ -35,6 +36,16 @@ beforeEach(() => {
   vi.stubGlobal('document', { hidden: false, addEventListener: vi.fn(), removeEventListener: vi.fn() });
 });
 afterEach(() => { vi.unstubAllGlobals(); });
+
+it('roundtrips the captain id in cache and accepts caches written before chat', () => {
+  let saved = '';
+  vi.stubGlobal('window', { localStorage: { getItem: () => saved, setItem: (_key: string, value: string) => { saved = value; } } });
+  writeCaptainCache({ ...captain, captainId: 'captain-id' });
+  expect(readCaptainCache()?.captainId).toBe('captain-id');
+  saved = JSON.stringify(captain);
+  expect(readCaptainCache()?.fullName).toBe('Coach');
+  expect(readCaptainCache()?.captainId).toBeUndefined();
+});
 
 it('preserves loaded access state when a background refresh fails', async () => {
   vi.mocked(fetchMyCaptain).mockResolvedValue({ data: captain });
