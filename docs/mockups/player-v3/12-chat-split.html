@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>الكابتن: شات وصفحات منفصلة</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300..900&family=Manrope:wght@500;700;800&display=swap">
+<style>
+:root{--bg:#0a0b0c;--surface:#141516;--raised:#1b1c1e;--line:#26282a;--soft:rgba(255,255,255,.07);--ink:#f4f4f1;--muted:#a6abb0;--faint:#80858b;--lime:#b6e94f;--onlime:#101418;--gold:#e3b448;--goldbg:#1f1806;--goldline:rgba(227,180,72,.45);--limesoft:#26301a;--warn:#f5ac78}
+*{box-sizing:border-box}
+body{margin:0;background:#050506;color:var(--ink);font-family:Alexandria,Manrope,sans-serif}
+.page{display:flex;flex-wrap:wrap;gap:40px 28px;justify-content:center;padding:32px 16px 64px}
+.intro{width:100%;max-width:1100px;margin:0 auto;padding:0 16px}
+.intro h1{font-size:22px;margin:0 0 6px}
+.intro p{color:var(--muted);margin:0;font-size:14px;line-height:1.8}
+figure{margin:0;display:flex;flex-direction:column;gap:10px;align-items:center}
+figcaption{font-size:13px;color:var(--muted);text-align:center;max-width:390px;line-height:1.7}
+figcaption b{color:var(--ink);display:block;font-size:15px}
+.phone{width:390px;height:844px;position:relative;overflow:hidden;background:var(--bg);border-radius:36px;border:1px solid var(--line)}
+.col{display:flex;flex-direction:column;gap:12px;padding:16px 18px 0}
+.num{font-family:Manrope;font-weight:800}
+.card{border-radius:22px;background:var(--surface);border:1px solid var(--soft);padding:16px}
+.back{width:48px;height:48px;border-radius:24px;background:var(--raised);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nav{position:absolute;inset-inline:16px;bottom:16px;height:68px;border-radius:34px;background:var(--raised);border:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-around;align-items:center;padding:0 6px}
+.nav i{width:52px;height:52px;border-radius:26px;color:var(--muted);display:flex;align-items:center;justify-content:center}
+.nav .on{width:auto;padding:0 16px;background:var(--ink);color:var(--onlime);gap:8px;font-style:normal;font-size:13px;font-weight:800}
+.bubble-in{align-self:flex-start;max-width:82%;border-radius:22px 22px 22px 6px;padding:12px 14px;background:var(--raised);font-size:14px;line-height:1.6}
+.bubble-out{align-self:flex-end;max-width:82%;border-radius:22px 22px 6px 22px;padding:12px 14px;background:var(--lime);color:var(--onlime);font-size:14px;line-height:1.6;font-weight:600}
+.meta{font-size:10px;font-family:Manrope;opacity:.7;display:flex;gap:4px;align-items:center;margin-top:4px}
+.voice{display:flex;align-items:center;gap:10px;padding:10px 12px}
+.play{width:44px;height:44px;border-radius:22px;border:0;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.day{align-self:center;font-size:11px;color:var(--faint)}
+.composer{position:absolute;inset-inline:16px;bottom:96px;display:flex;gap:8px;align-items:center}
+.input{flex:1;min-width:0;min-height:52px;border-radius:26px;border:1px solid rgba(255,255,255,.10);background:var(--surface);color:var(--muted);padding:0 16px;font-size:14px;display:flex;align-items:center}
+.round{width:52px;height:52px;border-radius:26px;background:var(--raised);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.chip{display:inline-flex;align-items:center;border-radius:999px;padding:6px 12px;font-size:12px}
+.row{display:flex;align-items:center;gap:12px}
+.btn-lime{min-height:56px;border-radius:28px;background:var(--lime);color:var(--onlime);font-weight:900;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-out{min-height:52px;border-radius:26px;border:1px solid var(--soft);color:var(--ink);font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px}
+.label{font-size:12px;color:var(--faint)}
+.bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.bar span{display:block;height:100%;background:var(--lime);border-radius:4px}
+.tabs{display:flex;gap:6px;overflow:hidden}
+.tabs span{border-radius:999px;padding:8px 14px;font-size:13px;border:1px solid var(--soft);color:var(--muted);white-space:nowrap}
+.tabs .on{background:var(--ink);color:var(--onlime);border-color:transparent;font-weight:800}
+</style>
+</head>
+<body>
+<div class="intro">
+  <h1>الكابتن: شات حقيقي + صفحة الكابتن + تقييماتي</h1>
+  <p>اختياراتك: البيانات والاشتراك في صفحة الكابتن، والتقييمات في صفحة لوحدها، والشات كتابة وفويس للاتنين، والرسايل بتتحدث لوحدها ومعاها إشعار. كل الأرقام والأسماء هنا مثال بس.</p>
+</div>
+<div class="page">
+
+<!-- A: player chat -->
+<figure>
+<div class="phone" dir="rtl">
+  <div class="col">
+    <header class="row" style="gap:12px">
+      <span style="width:52px;height:52px;border-radius:26px;background:var(--limesoft);color:var(--lime);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:20px">م</span>
+      <div style="display:flex;flex-direction:column;gap:2px;flex:1">
+        <h1 style="margin:0;font-size:20px;font-weight:900">كابتن محمود</h1>
+        <span style="font-size:12px;color:var(--muted)">كابتنك من 3 شهور · دوس لبياناته واشتراكك</span>
+      </div>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a6abb0" stroke-width="2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg>
+    </header>
+
+    <div style="border-radius:22px;padding:12px 14px;background:var(--goldbg);border:1px solid var(--goldline);display:flex;align-items:center;gap:12px">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e3b448" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h8v4H8zM6 5H4v16h16V5h-2M8 12h8M8 16h5"/></svg>
+      <span style="flex:1;display:flex;flex-direction:column;gap:2px"><b style="font-size:14px">عندك تقييم مطلوب</b><span style="font-size:12px;color:var(--muted)">بيفتح صفحة تقييماتي</span></span>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a6abb0" stroke-width="2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:10px;padding-top:4px">
+      <span class="day">النهارده</span>
+      <div class="bubble-in voice">
+        <span class="play" style="background:var(--lime);color:var(--onlime)"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
+        <svg width="120" height="26" viewBox="0 0 120 26"><g fill="#80858b"><rect x="0" y="9" width="4" height="8" rx="2"/><rect x="9" y="5" width="4" height="16" rx="2"/><rect x="18" y="1" width="4" height="24" rx="2"/><rect x="27" y="7" width="4" height="12" rx="2"/><rect x="36" y="3" width="4" height="20" rx="2"/><rect x="45" y="9" width="4" height="8" rx="2"/><rect x="54" y="5" width="4" height="16" rx="2"/><rect x="63" y="10" width="4" height="6" rx="2"/><rect x="72" y="2" width="4" height="22" rx="2"/><rect x="81" y="7" width="4" height="12" rx="2"/><rect x="90" y="11" width="4" height="4" rx="2"/><rect x="99" y="5" width="4" height="16" rx="2"/><rect x="108" y="8" width="4" height="10" rx="2"/></g></svg>
+        <span class="num" style="font-size:12px;color:var(--muted)" dir="ltr">0:24</span>
+      </div>
+      <div class="bubble-in">زوّد 2.5 كيلو في البنش النهارده، ولو آخر مجموعة تقيلة خليها 6.<div class="meta" dir="ltr">9:41</div></div>
+      <div class="bubble-out">تمام يا كابتن<div class="meta" dir="ltr" style="justify-content:flex-end">9:43 <svg width="16" height="12" viewBox="0 0 24 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M2 8l4 4 8-9M10 12l2 1 8-10"/></svg></div></div>
+      <div class="bubble-out voice" style="padding:10px 12px">
+        <span class="play" style="background:var(--onlime);color:var(--lime)"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
+        <svg width="100" height="26" viewBox="0 0 100 26"><g fill="#101418" opacity=".55"><rect x="0" y="9" width="4" height="8" rx="2"/><rect x="9" y="3" width="4" height="20" rx="2"/><rect x="18" y="7" width="4" height="12" rx="2"/><rect x="27" y="1" width="4" height="24" rx="2"/><rect x="36" y="9" width="4" height="8" rx="2"/><rect x="45" y="5" width="4" height="16" rx="2"/><rect x="54" y="10" width="4" height="6" rx="2"/><rect x="63" y="4" width="4" height="18" rx="2"/><rect x="72" y="8" width="4" height="10" rx="2"/><rect x="81" y="11" width="4" height="4" rx="2"/><rect x="90" y="6" width="4" height="14" rx="2"/></g></svg>
+        <span class="num" style="font-size:12px" dir="ltr">0:11</span>
+      </div>
+      <span style="align-self:flex-end;font-size:11px;color:var(--faint)">اتقرت</span>
+    </div>
+  </div>
+  <div class="composer">
+    <div class="input">اكتب للكابتن</div>
+    <span class="round"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f4f4f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span>
+  </div>
+  <nav class="nav">
+    <i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9h-6v-6H9v6H3z"/></svg></i>
+    <i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 11h16a8 8 0 0 1-16 0zM12 3v4M8 5v2M16 5v2"/></svg></i>
+    <i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></i>
+    <i class="on"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg>الكابتن</i>
+  </nav>
+</div>
+<figcaption><b>1. الشات (تاب الكابتن)</b>الرسايل بتتبعت جوه الأبلكيشن. الكابتن بيبعت كتابة وفويس، واللاعب كمان. لو دوست على اسم الكابتن يفتح صفحته. كارت التقييم بيوديك على «تقييماتي». فيه علامتين صح و«اتقرت» تحت آخر رسالة الكابتن شافها.</figcaption>
+</figure>
+
+<!-- B: typing + recording states -->
+<figure>
+<div class="phone" dir="rtl">
+  <div class="col">
+    <header class="row">
+      <span style="width:52px;height:52px;border-radius:26px;background:var(--limesoft);color:var(--lime);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:20px">م</span>
+      <div style="display:flex;flex-direction:column;gap:2px;flex:1"><h1 style="margin:0;font-size:20px;font-weight:900">كابتن محمود</h1><span style="font-size:12px;color:var(--muted)">كابتنك من 3 شهور · دوس لبياناته واشتراكك</span></div>
+    </header>
+    <div style="display:flex;flex-direction:column;gap:10px;padding-top:6px">
+      <span class="day">أمس</span>
+      <div class="bubble-in">الوزن نازل كويس، كمّل على نفس الأكل.<div class="meta" dir="ltr">8:10</div></div>
+      <div class="bubble-out">الركبة وجعاني شوية في السكوات<div class="meta" dir="ltr" style="justify-content:flex-end">8:15 <svg width="16" height="12" viewBox="0 0 24 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M2 8l4 4 8-9"/></svg></div></div>
+      <div style="align-self:center;margin-top:24px;font-size:12px;color:var(--faint)">مثال لشكل خانة الكتابة في حالاتها</div>
+    </div>
+  </div>
+  <div style="position:absolute;inset-inline:16px;bottom:236px;display:flex;flex-direction:column;gap:6px">
+    <span class="label">لما يكتب: زرار الإرسال يظهر بدل المايك</span>
+    <div style="display:flex;gap:8px;align-items:center">
+      <div class="input" style="color:var(--ink)">هبدّل السكوات بإيه؟</div>
+      <span class="round" style="background:var(--lime)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#101418" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4L3 11l7 3 3 7z"/></svg></span>
+    </div>
+  </div>
+  <div style="position:absolute;inset-inline:16px;bottom:96px;display:flex;flex-direction:column;gap:6px">
+    <span class="label">وهو بيسجّل: الحد الأقصى دقيقتين</span>
+    <div style="display:flex;gap:8px;align-items:center">
+      <span class="round" aria-label="الغي"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a6abb0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg></span>
+      <div class="input" style="color:var(--ink);gap:10px"><span style="width:10px;height:10px;border-radius:5px;background:#ef6b5b"></span><span class="num" dir="ltr">0:07</span><span style="color:var(--muted);font-size:13px">بيسجّل…</span></div>
+      <span class="round" style="background:var(--lime)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#101418" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4L3 11l7 3 3 7z"/></svg></span>
+    </div>
+  </div>
+  <nav class="nav">
+    <i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9h-6v-6H9v6H3z"/></svg></i>
+    <i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 11h16a8 8 0 0 1-16 0zM12 3v4M8 5v2M16 5v2"/></svg></i>
+    <i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></i>
+    <i class="on"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg>الكابتن</i>
+  </nav>
+</div>
+<figcaption><b>2. الكتابة والتسجيل</b>لما اللاعب يكتب، المايك بيتحول لزرار إرسال ليموني. ولما يسجّل فويس بيظهر عداد وزرار يلغي بيه وزرار يبعت. الحد الأقصى دقيقتين زي فويس الكابتن.</figcaption>
+</figure>
+
+<!-- C: captain + subscription page -->
+<figure>
+<div class="phone" dir="rtl">
+  <div class="col">
+    <header class="row">
+      <span class="back"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f4f4f1" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></span>
+      <h1 style="margin:0;font-size:20px;font-weight:900">الكابتن واشتراكك</h1>
+    </header>
+    <div class="card" style="display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center;padding:20px">
+      <span style="width:80px;height:80px;border-radius:40px;background:var(--limesoft);color:var(--lime);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:30px">م</span>
+      <div><b style="font-size:20px">كابتن محمود</b><div style="font-size:12px;color:var(--muted);margin-top:4px">مدينة نصر، القاهرة</div></div>
+      <p style="margin:0;font-size:13px;line-height:1.7;color:var(--muted)">مدرب قوة وتغذية من 8 سنين. بركّز على التضخيم والتنشيف من غير ما تخسر قوتك.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+        <span class="chip" style="border:1px solid var(--soft)">انستجرام</span><span class="chip" style="border:1px solid var(--soft)">تيك توك</span><span class="chip" style="border:1px solid var(--soft)">يوتيوب</span>
+      </div>
+    </div>
+    <div class="card" style="display:flex;flex-direction:column;gap:12px">
+      <div class="row" style="justify-content:space-between"><b style="font-size:15px">اشتراكك</b><span class="chip" style="background:var(--limesoft);color:var(--lime)">شغّال</span></div>
+      <div class="row" style="justify-content:space-between;font-size:13px;color:var(--muted)"><span>عضو من 4 أغسطس 2026</span><span>لحد 4 ديسمبر 2026</span></div>
+      <div class="bar"><span style="width:82%"></span></div>
+      <span style="font-size:12px;color:var(--muted)">فاضل <b class="num" style="color:var(--ink)">21</b> يوم</span>
+    </div>
+    <div class="card" style="display:flex;flex-direction:column;gap:12px">
+      <b style="font-size:15px">جدد باقتك</b>
+      <span style="font-size:13px;color:var(--muted);line-height:1.6">اختار الباقة وابعت للكابتن طلب التجديد. نفس باقات الكابتن الموجودة دلوقتي.</span>
+      <span class="btn-lime">جدد باقتك</span>
+    </div>
+    <span class="btn-out"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg>كلّم الكابتن على واتساب</span>
+  </div>
+  <nav class="nav">
+    <i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9h-6v-6H9v6H3z"/></svg></i>
+    <i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 11h16a8 8 0 0 1-16 0zM12 3v4M8 5v2M16 5v2"/></svg></i>
+    <i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></i>
+    <i class="on"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg>الكابتن</i>
+  </nav>
+</div>
+<figcaption><b>3. صفحة «الكابتن واشتراكك»</b>بتفتح لما تدوس على اسم الكابتن في الشات. فيها نبذته والسوشيال، ومدة الاشتراك والأيام اللي فاضلة، وزرار «جدد باقتك» (وده الزرار الليموني الوحيد في الصفحة)، وتحته واتساب.</figcaption>
+</figure>
+
+<!-- D: assessments page -->
+<figure>
+<div class="phone" dir="rtl">
+  <div class="col">
+    <header class="row">
+      <span class="back"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f4f4f1" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></span>
+      <h1 style="margin:0;font-size:20px;font-weight:900">تقييماتي</h1>
+    </header>
+    <span class="label">مطلوب منك</span>
+    <div style="border-radius:22px;padding:16px;background:var(--goldbg);border:1px solid var(--goldline);display:flex;flex-direction:column;gap:12px">
+      <div class="row">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e3b448" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h8v4H8zM6 5H4v16h16V5h-2M8 12h8M8 16h5"/></svg>
+        <span style="flex:1;display:flex;flex-direction:column;gap:2px"><b style="font-size:15px">قياسات الشهر</b><span style="font-size:12px;color:var(--muted)">الوزن، الوسط، صور الجسم · مطلوب لحد الخميس</span></span>
+      </div>
+      <span class="btn-lime">سجّل التقييم</span>
+    </div>
+    <div style="border-radius:22px;padding:14px 16px;background:var(--surface);border:1px solid var(--goldline);display:flex;align-items:center;gap:12px">
+      <span style="flex:1;display:flex;flex-direction:column;gap:2px"><b style="font-size:14px">اختبار قوة: أقصى عدات ضغط</b><span style="font-size:12px;color:var(--muted)">مطلوب لحد السبت</span></span>
+      <span class="chip" style="border:1px solid var(--soft)">سجّل</span>
+    </div>
+    <span class="label" style="margin-top:6px">اللي سجلته قبل كده</span>
+    <div class="card" style="padding:0">
+      <div class="row" style="padding:14px 16px;border-bottom:1px solid var(--soft)"><span style="flex:1;display:flex;flex-direction:column;gap:2px"><b style="font-size:14px">قياسات الشهر</b><span style="font-size:12px;color:var(--muted)">4 أكتوبر 2026</span></span><span class="num" style="font-size:14px">82.4 <span style="font-size:11px;color:var(--muted)">كجم</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a6abb0" stroke-width="2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></div>
+      <div class="row" style="padding:14px 16px;border-bottom:1px solid var(--soft)"><span style="flex:1;display:flex;flex-direction:column;gap:2px"><b style="font-size:14px">اختبار قوة: أقصى عدات ضغط</b><span style="font-size:12px;color:var(--muted)">20 سبتمبر 2026</span></span><span class="num" style="font-size:14px">32 <span style="font-size:11px;color:var(--muted)">عدة</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a6abb0" stroke-width="2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></div>
+      <div class="row" style="padding:14px 16px"><span style="flex:1;display:flex;flex-direction:column;gap:2px"><b style="font-size:14px">قياسات الشهر</b><span style="font-size:12px;color:var(--muted)">4 سبتمبر 2026</span></span><span class="num" style="font-size:14px">84.1 <span style="font-size:11px;color:var(--muted)">كجم</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a6abb0" stroke-width="2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></div>
+    </div>
+  </div>
+  <nav class="nav">
+    <i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9h-6v-6H9v6H3z"/></svg></i>
+    <i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 11h16a8 8 0 0 1-16 0zM12 3v4M8 5v2M16 5v2"/></svg></i>
+    <i class="on"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>التطور</i>
+    <i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg></i>
+  </nav>
+</div>
+<figcaption><b>4. صفحة «تقييماتي»</b>فوق التقييمات المطلوبة، وأقرب واحد منها عليه زرار ليموني يسجّله على طول. تحت التقييمات القديمة، ولو دوست على أي واحد يفتح تفاصيله. بتوصلها من سطر ثابت في صفحة التطور، ومن كارت في الرئيسية والشات لما يبقى فيه تقييم مطلوب.</figcaption>
+</figure>
+
+<!-- E: captain side -->
+<figure>
+<div class="phone" dir="rtl">
+  <div class="col">
+    <header class="row">
+      <span class="back"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f4f4f1" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></span>
+      <span style="width:44px;height:44px;border-radius:22px;background:var(--raised);display:flex;align-items:center;justify-content:center;font-weight:900">أ</span>
+      <div style="display:flex;flex-direction:column;gap:2px;flex:1"><b style="font-size:17px">أحمد سامي</b><span style="font-size:12px;color:var(--muted)">اشتراك شغّال · فاضل 21 يوم</span></div>
+    </header>
+    <div class="tabs"><span>البرنامج</span><span>الأكل</span><span>التقييمات</span><span class="on">الشات · 2</span></div>
+    <div style="display:flex;flex-direction:column;gap:10px;padding-top:4px">
+      <span class="day">النهارده</span>
+      <div class="bubble-out" style="background:var(--raised);color:var(--ink);font-weight:400">زوّد 2.5 كيلو في البنش النهارده، ولو آخر مجموعة تقيلة خليها 6.<div class="meta" dir="ltr" style="justify-content:flex-end">9:41 <svg width="16" height="12" viewBox="0 0 24 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M2 8l4 4 8-9M10 12l2 1 8-10"/></svg></div></div>
+      <div class="bubble-in" style="background:var(--surface);border:1px solid var(--soft)">تمام يا كابتن<div class="meta" dir="ltr">9:43</div></div>
+      <div class="bubble-in voice" style="background:var(--surface);border:1px solid var(--soft)">
+        <span class="play" style="background:var(--lime);color:var(--onlime)"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
+        <svg width="100" height="26" viewBox="0 0 100 26"><g fill="#80858b"><rect x="0" y="9" width="4" height="8" rx="2"/><rect x="9" y="3" width="4" height="20" rx="2"/><rect x="18" y="7" width="4" height="12" rx="2"/><rect x="27" y="1" width="4" height="24" rx="2"/><rect x="36" y="9" width="4" height="8" rx="2"/><rect x="45" y="5" width="4" height="16" rx="2"/><rect x="54" y="10" width="4" height="6" rx="2"/><rect x="63" y="4" width="4" height="18" rx="2"/><rect x="72" y="8" width="4" height="10" rx="2"/><rect x="81" y="11" width="4" height="4" rx="2"/><rect x="90" y="6" width="4" height="14" rx="2"/></g></svg>
+        <span class="num" style="font-size:12px;color:var(--muted)" dir="ltr">0:11</span>
+      </div>
+      <div style="margin-top:14px;border-top:1px solid var(--soft);padding-top:12px">
+        <span class="label">قايمة اللاعبين: الرسايل الجديدة بتبان جنب الاسم</span>
+        <div class="row" style="margin-top:8px;padding:12px 14px;border-radius:18px;background:var(--surface);border:1px solid var(--soft)">
+          <span style="width:40px;height:40px;border-radius:20px;background:var(--raised);display:flex;align-items:center;justify-content:center;font-weight:900">أ</span>
+          <span style="flex:1;display:flex;flex-direction:column;gap:2px"><b style="font-size:14px">أحمد سامي</b><span style="font-size:12px;color:var(--muted)">رسالة صوتية · 9:44</span></span>
+          <span class="num" style="min-width:24px;height:24px;border-radius:12px;background:var(--lime);color:var(--onlime);font-size:12px;display:flex;align-items:center;justify-content:center">2</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="composer" style="bottom:24px">
+    <div class="input">اكتب لأحمد</div>
+    <span class="round"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f4f4f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span>
+  </div>
+</div>
+<figcaption><b>5. جهة الكابتن</b>تاب «الشات» جوه ملف كل لاعب، وجنبه عدد الرسايل الجديدة، والكابتن يرد بكتابة أو فويس من نفس المكان. في قايمة اللاعبين بتظهر دايرة ليموني فيها عدد الرسايل اللي لسه ما اتقرتش.</figcaption>
+</figure>
+
+</div>
+</body>
+</html>
