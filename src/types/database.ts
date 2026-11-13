@@ -1,4 +1,4 @@
-// Base generated from Supabase; custom-form tables regenerated from local PGlite (0091).
+// Base generated from Supabase; additive public-page data regenerated from local PGlite (0103).
 // Do not edit; corrections go in app-database.ts.
 export type Json =
   | string
@@ -16,6 +16,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      coach_waitlist: {
+        Row: {
+          captain_id: string
+          created_at: string
+          id: string
+          notified_at: string | null
+          player_id: string
+        }
+        Insert: {
+          captain_id: string
+          created_at?: string
+          id: string
+          notified_at?: string | null
+          player_id: string
+        }
+        Update: {
+          captain_id?: string
+          created_at?: string
+          id?: string
+          notified_at?: string | null
+          player_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coach_waitlist_captain_id_fkey"
+            columns: ["captain_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "coach_waitlist_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       form_answers: {
         Row: {
           id: string
@@ -1843,6 +1882,10 @@ export type Database = {
       }
       profiles: {
         Row: {
+          languages: string[]
+          show_public_stats: boolean
+          specialties: string[]
+          years_experience: number | null
           avatar_path: string | null
           bio: string | null
           captain_intake: Json | null
@@ -1868,6 +1911,10 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          languages?: string[]
+          show_public_stats?: boolean
+          specialties?: string[]
+          years_experience?: number | null
           avatar_path?: string | null
           bio?: string | null
           captain_intake?: Json | null
@@ -1893,6 +1940,10 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          languages?: string[]
+          show_public_stats?: boolean
+          specialties?: string[]
+          years_experience?: number | null
           avatar_path?: string | null
           bio?: string | null
           captain_intake?: Json | null
@@ -2530,6 +2581,33 @@ export type Database = {
       }
     }
     Functions: {
+      leave_coach_waitlist: {
+        Args: { p_id: string }
+        Returns: undefined
+      }
+      can_join_coach_waitlist: {
+        Args: { p_captain: string }
+        Returns: boolean
+      }
+      coach_public_page: {
+        Args: { slug: string }
+        Returns: {
+          specialties: string[]
+          years_experience: number
+          languages: string[]
+          show_public_stats: boolean
+          spots_left: number
+          accepting: boolean
+        }[]
+      }
+      coach_public_stats: {
+        Args: { slug: string }
+        Returns: Json
+      }
+      valid_public_specialties: {
+        Args: { items: string[] }
+        Returns: boolean
+      }
       pending_coach_join_packages: {
         Args: never
         Returns: { id: string; full_name: string; created_at: string; package_id: string | null; offer_id: string | null;

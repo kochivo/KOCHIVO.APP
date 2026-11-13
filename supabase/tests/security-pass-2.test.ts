@@ -57,7 +57,7 @@ describe('Pass 2 database boundaries', () => {
       select p.proname as name from pg_proc p join pg_namespace n on n.oid = p.pronamespace
       where n.nspname = 'public' and has_function_privilege('anon', p.oid, 'EXECUTE')
       order by p.proname`);
-    expect(result.rows).toEqual([{ name: 'coach_public_profile' }, { name: 'invite_preview' }, { name: 'package_catalog_published' }]);
+    expect(result.rows).toEqual([{ name: 'coach_public_page' }, { name: 'coach_public_profile' }, { name: 'coach_public_stats' }, { name: 'invite_preview' }, { name: 'package_catalog_published' }]);
   });
 
   it('keeps all public definers on an empty search path and sync RPCs as invokers', async () => {

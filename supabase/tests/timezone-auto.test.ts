@@ -15,7 +15,7 @@ beforeAll(async () => {
 });
 afterAll(async () => { await db?.close(); });
 it('defaults to automatic without rewriting any existing profile fields', async () => {
-  expect((await db.query("select to_jsonb(p)-'timezone_auto'-'arabic_style' as row from profiles p where id=$1", [existing])).rows).toEqual(before);
+  expect((await db.query("select to_jsonb(p)-'timezone_auto'-'arabic_style'-array['specialties','years_experience','languages','show_public_stats'] as row from profiles p where id=$1", [existing])).rows).toEqual(before);
   expect((await db.query('select timezone_auto from profiles where id=$1', [existing])).rows).toEqual([{ timezone_auto: true }]);
   const fresh = await createUser(db, 'player');
   expect((await db.query('select timezone_auto from profiles where id=$1', [fresh])).rows).toEqual([{ timezone_auto: true }]);

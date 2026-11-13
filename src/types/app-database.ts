@@ -5,6 +5,7 @@ import type {
   Injury, SwapReason, SwapStatus, MovementPattern, ExerciseKind, EquipmentKind,
   ExperienceLevel, ReadinessDecision, JoinStatus, PackageKind, RankTier,
   CustomFormKind, CustomFormQuestionType, CustomFormStatus, CustomFormFactKey,
+  PublicProfileLanguage,
 } from './enums';
 
 export type Narrow<Row, Patch> = Omit<Row, keyof Patch> & Patch;
@@ -21,7 +22,7 @@ type RowPatches = {
   forms: { kind: CustomFormKind };
   form_questions: { type: CustomFormQuestionType; maps_to: CustomFormFactKey | null };
   form_requests: { status: CustomFormStatus };
-  profiles: { captain_status: CaptainStatus; units: Units; social: Social };
+  profiles: { captain_status: CaptainStatus; units: Units; social: Social; languages: PublicProfileLanguage[] };
   supplements: { timing: SupplementTiming };
   notifications: { type: NotificationType };
   points_log: { kind: PointKind; status: PointStatus };
@@ -59,6 +60,10 @@ type WritePatches = {
   player_points: ServerWritten;
   exercise_generator_tags: ServerWritten;
   coach_join_requests: { Update: never };
+  coach_waitlist: {
+    Insert: Pick<Public['Tables']['coach_waitlist']['Insert'], 'id' | 'captain_id' | 'player_id'>;
+    Update: never;
+  };
   notifications: { Insert: never };
   daily_checks: {
     // The database fills player_id from auth.uid().
@@ -87,6 +92,15 @@ type Functions = Public['Functions'];
 type ProfileRow = Public['Tables']['profiles']['Row'];
 type ProfileLinks = Pick<ProfileRow, 'bio' | 'location' | 'avatar_path'> & { social: Social };
 type FunctionPatches = {
+  // RPC return metadata omits column nullability and the JSON aggregate's shape.
+  coach_public_page: Narrow<Functions['coach_public_page'], {
+    Returns: Narrow<Functions['coach_public_page']['Returns'][number], {
+      years_experience: number | null; languages: PublicProfileLanguage[];
+    }>[];
+  }>;
+  coach_public_stats: Narrow<Functions['coach_public_stats'], {
+    Returns: { players: number; workouts_logged: number; adherence_pct: number; member_since: number } | null;
+  }>;
   // Privacy projections intentionally hide ids for other players.
   crown_hall_of_fame: Narrow<Functions['crown_hall_of_fame'], {
     Returns: Narrow<Functions['crown_hall_of_fame']['Returns'][number], { player_id: string | null }>[];

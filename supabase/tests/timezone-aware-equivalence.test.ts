@@ -108,7 +108,8 @@ it('preserves existing function OIDs, signatures, result types, security modes a
 
 it('does not rewrite existing profiles, relationships or workout history during migration', async () => {
   let owner = '', before: unknown[] = [];
-  const sql = `select to_jsonb(c) as link,to_jsonb(p) as profile,to_jsonb(s) as session
+  // Later additive profile columns (0103) are not part of the 0097 snapshot.
+  const sql = `select to_jsonb(c) as link,to_jsonb(p)-array['specialties','years_experience','languages','show_public_stats'] as profile,to_jsonb(s) as session
     from coach_clients c join profiles p on p.id=c.player_id
     join workout_sessions s on s.player_id=p.id where c.captain_id=$1`;
   const upgraded = await createTestDb(async (file, database) => {
