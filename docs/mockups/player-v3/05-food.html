@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8">
+<title>الأكل</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300..900&amp;family=Manrope:wght@500;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#0a0b0c}
+a{color:#b6e94f}a:hover{color:#d3f58f}
+button{font-family:inherit;cursor:pointer}
+</style>
+</helmet>
+<div dir="rtl" style="width: 390px; height: 844px; box-sizing: border-box; position: relative; overflow: hidden; color: #f4f4f1; font-family: Alexandria, Manrope, sans-serif; background: #0a0b0c">
+  <div style="display: flex; flex-direction: column; gap: 12px; padding: 18px 18px 104px">
+    <h1 style="margin: 0; font-size: 26px; font-weight: 900">أكلك النهارده</h1>
+
+    <section style="border-radius: 28px; padding: 18px; background: #141516; border: 1px solid rgba(255,255,255,.07); display: flex; flex-direction: column; gap: 14px" aria-label="السعرات">
+      <div style="display: flex; align-items: baseline; gap: 8px">
+        <span style="font-family: Manrope; font-size: 44px; font-weight: 800; line-height: 1">1,660</span>
+        <span style="font-size: 14px; color: #a6abb0">سعرة فاضلة من 2,900</span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+        <div style="display: flex; flex-direction: column; gap: 6px"><span style="font-size: 12px; color: #a6abb0">بروتين</span><span style="height: 8px; border-radius: 4px; background: #26282a; display: block"><span style="display: block; width: 38%; height: 100%; border-radius: 4px; background: #b6e94f"></span></span><span style="font-family: Manrope; font-size: 13px; font-weight: 700">72<span style="color: #a6abb0">/190</span></span></div>
+        <div style="display: flex; flex-direction: column; gap: 6px"><span style="font-size: 12px; color: #a6abb0">كارب</span><span style="height: 8px; border-radius: 4px; background: #26282a; display: block"><span style="display: block; width: 42%; height: 100%; border-radius: 4px; background: #f4f4f1"></span></span><span style="font-family: Manrope; font-size: 13px; font-weight: 700">150<span style="color: #a6abb0">/360</span></span></div>
+        <div style="display: flex; flex-direction: column; gap: 6px"><span style="font-size: 12px; color: #a6abb0">دهون</span><span style="height: 8px; border-radius: 4px; background: #26282a; display: block"><span style="display: block; width: 49%; height: 100%; border-radius: 4px; background: #f5ac78"></span></span><span style="font-family: Manrope; font-size: 13px; font-weight: 700">38<span style="color: #a6abb0">/78</span></span></div>
+      </div>
+    </section>
+
+    <ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px" aria-label="الوجبات">
+      <li style="border-radius: 22px; padding: 10px 12px; background: #141516; border: 1px solid rgba(255,255,255,.07); display: flex; align-items: center; gap: 12px">
+        <span style="width: 48px; height: 48px; border-radius: 24px; background: #b6e94f; color: #101418; display: flex; align-items: center; justify-content: center; flex-shrink: 0" role="img" aria-label="اتاكلت"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"></path></svg></span>
+        <span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><b style="font-size: 15px">الفطار</b><span style="font-size: 12px; color: #a6abb0">3 بيض · عيش بلدي · جبنة</span></span>
+      </li>
+      <li style="border-radius: 22px; padding: 10px 12px; background: #141516; border: 1px solid rgba(182,233,79,.5); display: flex; align-items: center; gap: 12px">
+        <button type="button" aria-label="كلت الغدا" style="width: 48px; height: 48px; border-radius: 24px; border: 2px solid #b6e94f; background: transparent; flex-shrink: 0"></button>
+        <span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><b style="font-size: 15px">الغدا <span style="font-size: 12px; color: #b6e94f; font-weight: 700">· دلوقتي</span></b><span style="font-size: 12px; color: #a6abb0">فراخ 200 ج · رز 250 ج · سلطة</span></span>
+      </li>
+      <li style="border-radius: 22px; padding: 10px 12px; background: #141516; border: 1px solid rgba(255,255,255,.07); display: flex; align-items: center; gap: 12px">
+        <button type="button" aria-label="كلت العشا" style="width: 48px; height: 48px; border-radius: 24px; border: 2px solid #3a3c3f; background: transparent; flex-shrink: 0"></button>
+        <span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><b style="font-size: 15px">العشا</b><span style="font-size: 12px; color: #a6abb0">تونة · بطاطس</span></span>
+      </li>
+    </ol>
+
+    <div style="border-radius: 22px; padding: 10px 12px; background: #141516; border: 1px solid rgba(255,255,255,.07); display: flex; align-items: center; gap: 12px">
+      <span style="flex: 1; font-size: 14px">الميه <b style="font-family: Manrope; color: #60a5fa">5</b><span style="color: #a6abb0"> / 8 كوبايات</span></span>
+      <button type="button" aria-label="زوّد كوباية ميه" style="width: 48px; height: 48px; border-radius: 24px; border: 0; background: #1d2a3d; color: #60a5fa; font-size: 24px; font-weight: 700">+</button>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+      <button type="button" style="min-height: 56px; border-radius: 28px; border: 1px solid rgba(255,255,255,.12); background: transparent; color: #f4f4f1; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"></path><circle cx="12" cy="13" r="3.5"></circle></svg>صوّر أكلتك</button>
+      <button type="button" style="min-height: 56px; border-radius: 28px; border: 1px solid rgba(255,255,255,.12); background: transparent; color: #f4f4f1; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg>اكتب اللي كلته</button>
+    </div>
+  </div>
+
+  <nav aria-label="التنقل" style="position: absolute; inset-inline: 16px; bottom: 16px; height: 68px; border-radius: 34px; background: #1b1c1e; border: 1px solid rgba(255,255,255,.08); display: flex; justify-content: space-around; align-items: center; padding: 0 6px">
+    <a href="V3Home.dc.html" aria-label="الرئيسية" style="width: 52px; height: 52px; border-radius: 26px; color: #a6abb0; display: flex; align-items: center; justify-content: center">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9h-6v-6H9v6H3z"></path></svg></a>
+    <a href="V3Food.dc.html" aria-current="page" style="height: 52px; padding: 0 16px; border-radius: 26px; background: #f4f4f1; color: #101418; display: flex; align-items: center; gap: 8px; text-decoration: none; font-size: 13px; font-weight: 800">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 11h16a8 8 0 0 1-16 0zM12 3v4M8 5v2M16 5v2"></path></svg>الأكل</a>
+    <a href="V3Progress.dc.html" aria-label="التطور" style="width: 52px; height: 52px; border-radius: 26px; color: #a6abb0; display: flex; align-items: center; justify-content: center">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"></path><path d="M15 7h6v6"></path></svg></a>
+    <a href="V3Captain.dc.html" aria-label="الكابتن" style="width: 52px; height: 52px; border-radius: 26px; color: #a6abb0; display: flex; align-items: center; justify-content: center">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"></path></svg></a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
