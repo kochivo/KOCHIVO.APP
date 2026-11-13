@@ -20,13 +20,20 @@ const summary: FileSummary = { file: { facts: {}, history: [] }, completedDays: 
 const input = { playerId: 'p', profile, summary, locale: 'ar' as const, today: '2026-11-12' };
 const render = (element: React.ReactElement) => renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' }, element));
 
-it('orders all five real route tabs and renders header renewal and preview', () => {
+it('orders all six real route tabs and renders header renewal and preview', () => {
   const html = render(createElement(FileHeader, { ...input, tab: 'overview' }));
   const hrefs = [...html.matchAll(/<li><a[^>]*href="([^"]+)"/g)].map(match => match[1]);
-  expect(hrefs).toEqual(['/captain/players/p', '/captain/players/p/programs', '/captain/players/p/nutrition', '/captain/players/p/assessments', '/captain/players/p/checkins']);
+  expect(hrefs).toEqual(['/captain/players/p', '/captain/players/p/programs', '/captain/players/p/nutrition', '/captain/players/p/assessments', '/captain/players/p/chat', '/captain/players/p/checkins']);
   expect(html.match(/aria-current="page"/g)).toHaveLength(1);
   expect(html).toContain('جدّد'); expect(html).toContain('باقي 29 يوم');
   expect(html).toContain('href="/captain/players/p/preview"');
+});
+it('shows the unread count only when positive on the chat tab', () => {
+  const html = render(createElement(FileHeader, { ...input, tab: 'chat', unreadCount: 2 }));
+  expect(html).toContain('الشات · 2');
+  const empty = render(createElement(FileHeader, { ...input, tab: 'chat', unreadCount: 0 }));
+  expect(empty).toContain('>الشات</a>');
+  expect(empty).not.toContain('الشات ·');
 });
 it('renders one primary missing card, then none when every section exists', () => {
   let html = render(createElement(StatusCards, input));

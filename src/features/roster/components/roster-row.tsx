@@ -8,7 +8,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Archive } from 'lucide-react';
 import { Button, GlassCard } from '@/ui';
-import { formatDateAr } from '@/lib/dates';
+import { DEFAULT_TIMEZONE, formatDateAr } from '@/lib/dates';
 import { lastSeenLabel, playerStatus } from '../status';
 import type { RosterPlayer } from '../types';
 import { starterText } from '@/lib/starter-text';
@@ -31,6 +31,8 @@ export function RosterRow({ player, today, error, onArchive }: {
   expired: { label: t('expired'), color: 'bg-danger-soft text-danger' },
 };
   const tag = tags[playerStatus({ ...player, today })];
+  const chat = player.chat;
+  const chatTime = chat?.createdAt ? new Intl.DateTimeFormat('en-GB', { hour: 'numeric', minute: '2-digit', hourCycle: 'h23', timeZone: player.timezone ?? DEFAULT_TIMEZONE }).format(new Date(chat.createdAt)).replace(/^0/, '') : '';
   function archive() {
     if (!window.confirm(t('archiveTheyllBeRemovedFromThePlayer', { v0: player.fullName }))) return;
     onArchive();
@@ -40,7 +42,15 @@ export function RosterRow({ player, today, error, onArchive }: {
       <div role="cell" className="flex min-w-0 items-center gap-3">
         {player.avatarUrl ? <Image src={player.avatarUrl} alt="" width={40} height={40} unoptimized className="size-10 shrink-0 rounded-control object-cover" /> :
           <span aria-hidden className="glass flex size-10 shrink-0 items-center justify-center rounded-control font-bold">{player.fullName.slice(0, 1)}</span>}
-        <Link href={`/captain/players/${player.playerId}`} prefetch={false} className="flex min-h-12 min-w-0 items-center truncate font-bold hover:text-lime">{player.fullName}</Link>
+        <div className="min-w-0 flex-1">
+          <Link href={`/captain/players/${player.playerId}`} prefetch={false} className="flex min-h-12 min-w-0 items-center truncate font-bold hover:text-lime">{player.fullName}</Link>
+          {chat?.createdAt && <Link href={`/captain/players/${player.playerId}/chat`} prefetch={false} className="flex min-h-12 items-center text-xs text-muted">
+            <span className="truncate">{chat.voice ? t('chatVoice', { time: chatTime }) : chat.body?.split(/\r?\n/)[0]}</span>
+          </Link>}
+        </div>
+        {(chat?.unread ?? 0) > 0 && <Link href={`/captain/players/${player.playerId}/chat`} prefetch={false}
+          aria-label={t('chatUnread', { count: formatNumber(chat?.unread ?? 0, locale) })}
+          className="inline-flex min-h-12 min-w-12 items-center justify-center rounded-full bg-lime px-2 font-display text-xs font-extrabold text-on-lime">{formatNumber(chat?.unread ?? 0, locale)}</Link>}
         {player.openTasks > 0 && <span aria-label={t('taskCount', { n: player.openTasks, count: formatNumber(player.openTasks, locale) })} className="rounded-full bg-lime px-2 py-1 text-xs font-bold text-on-lime">{formatNumber(player.openTasks, locale)}</span>}
       </div>
       <div role="cell" className="space-y-2"><RosterBilling playerId={player.playerId} name={player.fullName} today={today}

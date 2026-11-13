@@ -1,4 +1,5 @@
 export const arStd = {
+  chat: 'المحادثة', chatCount: 'المحادثة · {count}',
   players: 'اللاعبون', breadcrumb: 'اللاعبون ‹', tabs: 'ملف اللاعب', overview: 'نظرة عامة', training: 'التمرين',
   nutrition: 'الطعام', assessments: 'التقييمات', checkins: 'المتابعات', active: 'نشط', renew: 'جدّد', preview: 'اعرض كلاعب',
   days: 'متبقٍ {count} يوم', facts: 'بياناته', progress: 'التطور', goal: 'الهدف', body: 'الوزن · الطول · العمر',

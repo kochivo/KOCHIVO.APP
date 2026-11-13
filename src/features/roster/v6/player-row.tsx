@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Ellipsis, Eye, Archive, Salad } from 'lucide-react';
 import { useLocale, useT } from '@/core/i18n/client';
-import { daysBetween, formatDateAr } from '@/lib/dates';
+import { DEFAULT_TIMEZONE, daysBetween, formatDateAr } from '@/lib/dates';
 import { formatNumber } from '@/lib/format';
 import { starterText } from '@/lib/starter-text';
 import type { RosterPlayer } from '../types';
@@ -24,12 +24,21 @@ export function PlayerRow({ player, today, meta, hasFood, error, onArchive }: {
   const href = `/captain/players/${player.playerId}`;
   const goal = meta && meta.target !== null ? t(meta.target < meta.weight ? 'lose' : meta.target > meta.weight ? 'gain' : 'maintain') : t('unknown');
   const level = meta ? t(meta.experience === 'new' ? 'new' : meta.experience === 'under_1y' ? 'under_1y' : 'experienced') : t('unknown');
+  const chat = player.chat;
+  const chatTime = chat?.createdAt ? new Intl.DateTimeFormat('en-GB', { hour: 'numeric', minute: '2-digit', hourCycle: 'h23', timeZone: player.timezone ?? DEFAULT_TIMEZONE }).format(new Date(chat.createdAt)).replace(/^0/, '') : '';
   return <div role="row" className="relative isolate grid min-h-[72px] cursor-pointer grid-cols-[minmax(0,1fr)_3rem] items-center gap-x-4 gap-y-3 border-t border-line-soft px-5 py-3 hover:bg-ink/5 lg:grid-cols-[1.4fr_1fr_1fr_1fr_3rem]">
     <div role="cell" className="flex min-w-0 items-center gap-2.5">
       {player.avatarUrl ? <Image src={player.avatarUrl} alt="" width={40} height={40} unoptimized className="size-10 shrink-0 rounded-full object-cover" /> :
         <span aria-hidden className="glass-strong grid size-10 shrink-0 place-items-center rounded-full">{player.fullName.charAt(0)}</span>}
       <div className="min-w-0"><Link href={href} prefetch={false} className="block min-w-0 truncate font-medium after:absolute after:inset-0 after:min-h-12 hover:text-lime">{player.fullName}</Link>
-        <p className="text-xs text-faint">{goal} · {level}</p></div><TierBadge tier={player.tier} />
+        <p className="text-xs text-faint">{goal} · {level}</p>
+        {chat?.createdAt && <Link href={`${href}/chat`} prefetch={false} className="relative z-10 flex min-h-12 items-center text-xs text-muted">
+          <span className="truncate">{chat.voice ? old('chatVoice', { time: chatTime }) : chat.body?.split(/\r?\n/)[0]}</span>
+        </Link>}
+      </div><TierBadge tier={player.tier} />
+      {(chat?.unread ?? 0) > 0 && <Link href={`${href}/chat`} prefetch={false}
+        aria-label={old('chatUnread', { count: formatNumber(chat?.unread ?? 0, locale) })}
+        className="relative z-10 inline-flex min-h-12 min-w-12 items-center justify-center rounded-full bg-lime px-2 font-display text-xs font-extrabold text-on-lime">{formatNumber(chat?.unread ?? 0, locale)}</Link>}
       {player.openTasks > 0 && <span className="text-xs text-lime" aria-label={old('taskCount', { n: player.openTasks, count: formatNumber(player.openTasks, locale) })}>{formatNumber(player.openTasks, locale)}</span>}
     </div>
     <div role="cell" className="col-start-1 text-sm text-muted lg:col-auto"><span className="me-2 text-xs text-faint lg:hidden">{t('lastWorkout')}</span>{lastSeenLabel(player.lastTrainingDate, player.playerToday ?? today, locale)}</div>

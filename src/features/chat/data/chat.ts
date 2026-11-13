@@ -79,11 +79,4 @@ export async function markRead(client: Client, ids: readonly string[], now = new
   if (error) throw error;
 }
 
-export async function unreadCounts(client: Client, captainId: string): Promise<Record<string, number>> {
-  const { data, error } = await client.from('chat_messages').select('player_id').eq('captain_id', captainId)
-    .neq('sender_id', captainId).is('read_at', null);
-  if (error) throw error;
-  const counts: Record<string, number> = {};
-  for (const row of data ?? []) counts[row.player_id] = (counts[row.player_id] ?? 0) + 1;
-  return counts;
-}
+export { unreadCounts } from './unread-counts';

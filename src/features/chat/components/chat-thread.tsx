@@ -24,7 +24,7 @@ export function ChatThread({ items, viewer, onRetry, onVoicePlay }: {
   const lastRead = items.findLast(item => item.mine && item.readAt && item.status === 'sent')?.id;
   const tail = items.at(-1)?.id;
   useEffect(() => { bottom.current?.scrollIntoView({ block: 'end' }); }, [tail]);
-  return <div className="pb-40">
+  return <div className={viewer === 'captain' ? 'pb-28 lg:pb-4' : 'pb-40'}>
     {!items.length && <p className="py-8 text-center text-sm text-muted">{t(viewer === 'player' ? 'empty' : 'emptyCaptain')}</p>}
     <ol aria-label={t('thread')} className="flex flex-col gap-2.5 pt-1">
       {items.map((item, index) => {
@@ -32,17 +32,18 @@ export function ChatThread({ items, viewer, onRetry, onVoicePlay }: {
         const previous = items[index - 1];
         const day = now ? threadDay(item.createdAt, now, timezone) : date;
         const own = item.mine;
+        const lime = own && viewer === 'player';
         return <Fragment key={item.id}>
           {(!previous || localDate(new Date(previous.createdAt), timezone) !== date) && <li className="self-center text-[11px] text-faint">
             <time dateTime={date}>{day === 'today' || day === 'yesterday' ? t(day) : formatDateAr(date, { day: 'numeric', month: 'long', year: 'numeric' }, locale)}</time>
           </li>}
           <li className={`flex max-w-[82%] flex-col gap-1 ${own ? 'self-end' : 'self-start'}`}>
-            <div className={`rounded-[22px] text-sm leading-[1.6] ${own ? 'rounded-ee-[6px] bg-lime font-semibold text-on-lime' : 'rounded-es-[6px] bg-surface-raised text-ink'} ${item.kind === 'text' ? 'px-3.5 py-3' : 'px-3 py-2.5'}`}>
+            <div className={`rounded-[22px] text-sm leading-[1.6] ${own ? 'rounded-ee-[6px]' : 'rounded-es-[6px]'} ${lime ? 'bg-lime font-semibold text-on-lime' : viewer === 'captain' && !own ? 'border border-line-soft bg-surface text-ink' : 'bg-surface-raised text-ink'} ${item.kind === 'text' ? 'px-3.5 py-3' : 'px-3 py-2.5'}`}>
               {item.kind === 'text' ? <p className="whitespace-pre-wrap break-words">{item.body}</p> : <div className="relative w-[240px] max-w-full">
                 <AudioPlayer src={item.url ?? ''} durationSeconds={item.durationSeconds ?? 0} playLabel={voiceT('play')} pauseLabel={voiceT('pause')}
                   formatTime={clock} onPlay={() => onVoicePlay?.(item)} onError={() => setBroken(item.id)}
-                  className={`gap-2.5! rounded-none! border-0! bg-transparent! p-0! shadow-none! [&_[role=progressbar]]:opacity-0 [&>span]:font-display [&>span]:text-xs [&>button]:rounded-full ${own ? '[&>button]:bg-on-lime [&>button]:text-lime [&>span]:text-on-lime' : ''}`} />
-                <svg aria-hidden viewBox="0 0 120 26" className={`pointer-events-none absolute start-[58px] top-[11px] h-[26px] w-[calc(100%-105px)] ${own ? 'fill-on-lime/55' : 'fill-faint'}`}>
+                  className={`gap-2.5! rounded-none! border-0! bg-transparent! p-0! shadow-none! [&_[role=progressbar]]:opacity-0 [&>span]:font-display [&>span]:text-xs [&>button]:rounded-full ${lime ? '[&>button]:bg-on-lime [&>button]:text-lime [&>span]:text-on-lime' : ''}`} />
+                <svg aria-hidden viewBox="0 0 120 26" className={`pointer-events-none absolute start-[58px] top-[11px] h-[26px] w-[calc(100%-105px)] ${lime ? 'fill-on-lime/55' : 'fill-faint'}`}>
                   {heights.map((height, i) => <rect key={i} x={i * 9} y={(26 - height) / 2} width={4} height={height} rx={2} />)}
                 </svg>
               </div>}

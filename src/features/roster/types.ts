@@ -1,4 +1,5 @@
 export interface RosterPlayer {
+  chat?: { unread: number; body?: string | null; voice?: boolean; createdAt?: string };
   tier?: { name: string; color: string; is_featured?: boolean } | null;
   timezone?: string;
   playerToday?: string;

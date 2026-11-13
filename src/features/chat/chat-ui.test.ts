@@ -21,3 +21,12 @@ it('renders failed send retry and an empty thread', () => {
   expect(render([{ ...base, status: 'failed' }])).toContain('ما اتبعتتش · جرّب تاني');
   expect(render([])).toContain('ابدأ الكلام مع الكابتن');
 });
+it('renders the captain empty state', () => {
+  const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' }, createElement(ChatThread, { items: [], viewer: 'captain' })));
+  expect(html).toContain('لسه مفيش رسايل');
+});
+it('uses the workspace surfaces for captain bubbles', () => {
+  const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' }, createElement(ChatThread, { items: [base], viewer: 'captain' })));
+  expect(html).toContain('bg-surface-raised text-ink');
+  expect(html).not.toContain('bg-lime font-semibold text-on-lime');
+});

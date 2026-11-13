@@ -14,8 +14,8 @@ import type { FileSummary, PlayerFileTab, Profile } from './types';
 import { FileBillingEntry } from './billing-entry';
 import { TierBadge } from '@/ui/tier-badge';
 
-export function FileHeader({ playerId, profile, summary, tab, locale, today, playerToday }: {
-  playerId: string; profile: Profile; summary: FileSummary; tab: PlayerFileTab; locale: Locale; today: string; playerToday?: string;
+export function FileHeader({ playerId, profile, summary, tab, locale, today, playerToday, unreadCount = 0 }: {
+  playerId: string; profile: Profile; summary: FileSummary; tab: PlayerFileTab; locale: Locale; today: string; playerToday?: string; unreadCount?: number;
 }) {
   const t = createT(messages, locale), rt = createT(rosterMessages, locale);
   const base = `/captain/players/${playerId}`;
@@ -40,7 +40,7 @@ export function FileHeader({ playerId, profile, summary, tab, locale, today, pla
     </header>
     <UnderlineTabs label={t('tabs')} items={([
       ['overview', base], ['training', `${base}/programs`], ['nutrition', `${base}/nutrition`],
-      ['assessments', `${base}/assessments`], ['checkins', `${base}/checkins`],
-    ] as const).map(([key, href]) => ({ href, label: t(key), active: tab === key }))} />
+      ['assessments', `${base}/assessments`], ['chat', `${base}/chat`], ['checkins', `${base}/checkins`],
+    ] as const).map(([key, href]) => ({ href, label: key === 'chat' && unreadCount > 0 ? t('chatCount', { count: formatNumber(unreadCount, locale) }) : t(key), active: tab === key }))} />
   </>;
 }

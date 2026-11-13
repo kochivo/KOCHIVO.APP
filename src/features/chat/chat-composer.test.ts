@@ -16,6 +16,12 @@ vi.mock('react', async original => ({ ...await original<object>(),
 const props = { viewer: 'player' as const, onSendText: vi.fn(async () => true), onSendVoice: vi.fn(async () => true) };
 const render = () => renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' }, createElement(ChatComposer, props)));
 beforeEach(() => { text.value = ''; recorder.state = { status: 'idle' }; vi.clearAllMocks(); });
+it('addresses the captain composer to the player first name and places it in the desktop column', () => {
+  const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' },
+    createElement(ChatComposer, { ...props, viewer: 'captain', playerName: '  أحمد سامي ' })));
+  expect(html).toContain('placeholder="اكتب لأحمد"');
+  expect(html).toContain('lg:static');
+});
 it('switches from mic to send for nonempty text and limits input to 1000', () => {
   expect(render()).toContain('aria-label="سجّل رسالة صوتية"');
   expect(render()).toContain('maxLength="1000"');

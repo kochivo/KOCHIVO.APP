@@ -11,6 +11,7 @@ import { unstable_rethrow } from 'next/navigation';
 import { rosterClient } from './client';
 import type { RosterResult } from '../types';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { loadRosterChat } from './roster-chat';
 
 export const fetchRoster = cache(async (): Promise<RosterResult> => {
   try {
@@ -23,7 +24,15 @@ export const fetchRoster = cache(async (): Promise<RosterResult> => {
     const tiers = captainWorkspaceEnabled() ? await client.rpc('captain_player_tiers') : null;
     if (tiers?.error) throw tiers.error;
     const tierMap = new Map(tiers?.data?.map(t => [t.player_id, t]));
+    let chat: Awaited<ReturnType<typeof loadRosterChat>> = {};
     if (data.length) {
+      if (captainWorkspaceEnabled()) {
+        const claims = await currentClaims();
+        if (claims.error || !claims.data?.claims.sub) throw new Error('Unauthenticated');
+        // Chat is secondary: a chat failure must never take the whole roster down.
+        chat = await loadRosterChat(client, claims.data.claims.sub, data.map(row => row.player_id))
+          .catch((error: unknown) => { console.warn('Roster chat unavailable', error); return {}; });
+      }
       const profiles = await client.from('profiles').select('id,avatar_path,timezone').in('id', data.map(row => row.player_id));
       if (profiles.error) throw profiles.error;
       for (const profile of profiles.data ?? []) avatars.set(profile.id, profile.avatar_path ?
@@ -35,6 +44,7 @@ export const fetchRoster = cache(async (): Promise<RosterResult> => {
     }
     return { players: data.map((row) => ({
       playerId: row.player_id, fullName: row.full_name, accessUntil: row.access_until,
+      ...(captainWorkspaceEnabled() ? { chat: chat[row.player_id] } : {}),
       ...(captainWorkspaceEnabled() ? { tier: tierMap.get(row.player_id) ?? null } : {}),
       linkId: links.get(row.player_id)?.id, pending: links.get(row.player_id)?.pending,
       frozenAt: links.get(row.player_id)?.frozen_at, sessionsLeft: links.get(row.player_id)?.sessions_left,

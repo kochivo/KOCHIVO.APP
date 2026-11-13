@@ -5,6 +5,7 @@ export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
+    chat: 'الشات', chatCount: 'الشات · {count}',
     players: 'اللاعبين', breadcrumb: 'اللاعبين ‹', tabs: 'ملف اللاعب', overview: 'نظرة عامة', training: 'التمرين',
     nutrition: 'الأكل', assessments: 'التقييمات', checkins: 'المتابعات', active: 'نشط', renew: 'جدّد', preview: 'شوف كلاعب',
     days: 'باقي {count} يوم', facts: 'بياناته', progress: 'التطور', goal: 'الهدف', body: 'الوزن · الطول · السن',
@@ -30,6 +31,7 @@ export const messages = defineMessages({
     macros: 'بروتين {protein} · كارب {carbs} · دهون {fat}', updated: 'آخر تعديل {date}',
   },
   en: {
+    chat: 'Chat', chatCount: 'Chat · {count}',
     players: 'Players', breadcrumb: 'Players ‹', tabs: 'Player file', overview: 'Overview', training: 'Training',
     nutrition: 'Food', assessments: 'Assessments', checkins: 'Check-ins', active: 'Active', renew: 'Renew', preview: 'View as player',
     days: '{count} days left', facts: 'Player details', progress: 'Progress', goal: 'Goal', body: 'Weight · height · age',

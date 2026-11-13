@@ -6,6 +6,7 @@ export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
+    chatUnread: '{count} رسايل جديدة', chatVoice: 'رسالة صوتية · {time}',
     workspacePlayers: 'اللاعبين', administrationGroup: 'الإدارة',
     waitingCount: '{count} متابعة مستنياك', waitingUnavailable: 'عدد المتابعات مش متاح دلوقتي',
     mealPlans: 'الأنظمة الغذائية',
@@ -125,6 +126,7 @@ export const messages = defineMessages({
     daysAgo2: "من {v0} يوم",
   },
   en: {
+    chatUnread: '{count} unread messages', chatVoice: 'Voice message · {time}',
     workspacePlayers: 'Players', administrationGroup: 'Management',
     waitingCount: '{count} waiting follow-ups', waitingUnavailable: 'Follow-up count is unavailable',
     mealPlans: 'Meal plans',

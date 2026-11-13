@@ -1,4 +1,5 @@
 export const arStd = {
+  chatUnread: '{count} رسائل جديدة', chatVoice: 'رسالة صوتية · {time}',
   workspacePlayers: 'اللاعبين', administrationGroup: 'الإدارة',
   waitingCount: '{count} متابعة بانتظارك', waitingUnavailable: 'عدد المتابعات غير متاح الآن',
   "library": "المكتبة",

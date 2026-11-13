@@ -120,11 +120,12 @@ describe('fetchBilling', () => {
         eq: (...args: unknown[]) => { filters(table, 'eq', ...args); return query; },
         lte: (...args: unknown[]) => { filters(table, 'lte', ...args); return query; },
         gt: (...args: unknown[]) => { filters(table, 'gt', ...args); return query; },
-        order: () => query, limit: () => query, is: () => query,
+        order: () => query, limit: () => query, is: () => query, neq: () => query, range: () => query,
         gte: (...args: unknown[]) => { filters(table, 'gte', ...args); return query; },
         then: (resolve: (value: unknown) => void) => resolve({ data: tables[table] ?? [], error: null }),
-        in: async () => table === 'player_payments' ? { data: [{ id: payment.id, package_id: pkg.id, price_egp: pkg.price_egp }], error: null }
-          : { data: [{ id: 'player-1', phone: '+201001234567' }], error: phoneError ? { code: '500' } : null },
+        in: () => table === 'chat_messages' ? query : Promise.resolve(table === 'player_payments'
+          ? { data: [{ id: payment.id, package_id: pkg.id, price_egp: pkg.price_egp }], error: null }
+          : { data: [{ id: 'player-1', phone: '+201001234567' }], error: phoneError ? { code: '500' } : null }),
         single: async () => ({ data: table === 'profiles' ? { role: 'captain' } : { tier: 'champion', player_limit: 20, price_egp: 399 }, error: null }),
         maybeSingle: async () => ({ data: { ends_at: '2026-12-01T00:00:00Z' }, error: null }),
       };

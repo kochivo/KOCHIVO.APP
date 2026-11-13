@@ -7,9 +7,9 @@ import { useRecorder, voiceNoteMessages } from '@/features/voice-notes';
 import type { VoiceInput } from '../types';
 import { messages } from '../messages';
 
-export function ChatComposer({ viewer, onSendText, onSendVoice, disabled = false }: {
+export function ChatComposer({ viewer, onSendText, onSendVoice, disabled = false, playerName }: {
   viewer: 'player' | 'captain'; onSendText: (body: string) => Promise<boolean>;
-  onSendVoice: (voice: Pick<VoiceInput, 'blob' | 'mimeType' | 'durationSeconds'>) => Promise<boolean>; disabled?: boolean;
+  onSendVoice: (voice: Pick<VoiceInput, 'blob' | 'mimeType' | 'durationSeconds'>) => Promise<boolean>; disabled?: boolean; playerName?: string;
 }) {
   const t = useT(messages), voiceT = useT(voiceNoteMessages);
   const recorder = useRecorder();
@@ -19,7 +19,8 @@ export function ChatComposer({ viewer, onSendText, onSendVoice, disabled = false
   const sendAfterStop = useRef(false);
   const sending = useRef(false);
   const voice = state.status === 'recording' || state.status === 'recorded';
-  const placeholder = t(viewer === 'player' ? 'placeholder' : 'playerPlaceholder');
+  const firstName = playerName?.trim().split(/\s+/)[0];
+  const placeholder = viewer === 'captain' && firstName ? t('namedPlaceholder', { name: firstName }) : t(viewer === 'player' ? 'placeholder' : 'playerPlaceholder');
   const sendRecording = async () => {
     if (state.status !== 'recorded' || sending.current) return;
     sending.current = true;
@@ -45,7 +46,7 @@ export function ChatComposer({ viewer, onSendText, onSendVoice, disabled = false
     setText('');
     await onSendText(body);
   };
-  return <div className={`fixed start-4 end-4 z-30 mx-auto max-w-lg ${viewer === 'player' ? 'bottom-24' : 'bottom-6'}`}>
+  return <div className={`fixed start-4 end-4 z-30 mx-auto max-w-lg ${viewer === 'player' ? 'bottom-24' : 'bottom-6 lg:static lg:mx-0 lg:max-w-none'}`}>
     {(state.status === 'denied' || state.status === 'unsupported') && <p role="alert" className="mb-2 rounded-full bg-surface px-4 py-2 text-xs text-danger">{voiceT(state.status === 'denied' ? 'micDenied' : 'unsupported')}</p>}
     <form onSubmit={event => { event.preventDefault(); void send(); }} className="flex items-center gap-2">
       {voice && <button type="button" disabled={busy} aria-label={t('discard')} onClick={() => { sendAfterStop.current = false; recorder.reset(); }}

@@ -5,6 +5,7 @@ import ProfilePage from '@/app/[locale]/(captain)/captain/players/[playerId]/pag
 import FoodPage from '@/app/[locale]/(captain)/captain/players/[playerId]/nutrition/page';
 import AssessmentsPage from '@/app/[locale]/(captain)/captain/players/[playerId]/assessments/page';
 import CheckinsPage from '@/app/[locale]/(captain)/captain/players/[playerId]/checkins/page';
+import ChatPage from '@/app/[locale]/(captain)/captain/players/[playerId]/chat/page';
 import { ProfileScreen, fetchPlayerProfile, parseTab } from '@/features/player-profile';
 import { PlayerPlans } from '@/features/meal-plans';
 import { PlayerFileEntry } from '../server';
@@ -40,11 +41,16 @@ it('routes flag-on profile and food to the same player shell', async () => {
   const food = await FoodPage({ params, searchParams: Promise.resolve({ view: 'calc' }) });
   expect(food.type).toBe(PlayerFileEntry); expect(food.props.tab).toBe('nutrition');
 });
-it.each([AssessmentsPage, CheckinsPage])('gates a new tab route and opens the file only with the flag enabled', async Page => {
+it.each([AssessmentsPage, CheckinsPage, ChatPage])('gates a new tab route and opens the file only with the flag enabled', async Page => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '0');
   await expect(Page({ params })).rejects.toThrow();
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
   expect((await Page({ params })).type).toBe(PlayerFileEntry);
+});
+it('resolves the chat notification destination to the chat tab', async () => {
+  vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
+  const page = await ChatPage({ params });
+  expect(page.props).toEqual({ playerId: 'p', tab: 'chat' });
 });
 it('retains the old reminder arrival URL through the new check-ins route', async () => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
