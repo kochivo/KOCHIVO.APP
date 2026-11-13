@@ -33,7 +33,7 @@ export const messages = defineMessages({
     convertLimit: 'التحويل محتاج ٧ أيام أو أقل', rest: 'يوم راحة', restore: 'خلّيه يوم تمرين',
     deleteDay: 'شيل اليوم', up: 'طلّع', down: 'نزّل', addTraining: 'ضيف يوم تمرين',
     overview: 'نظرة عامة', training: 'التمرين', nutrition: 'الأكل', assessments: 'التقييمات', checkins: 'المتابعات',
-    tabs: 'ملف اللاعب', saveTemplate: 'احفظ القالب', assignTitle: 'استخدمه للاعب', playersEmpty: 'لسه مفيش لاعبين',
+    tabs: 'ملف اللاعب', saveTemplate: 'احفظ القالب', templateSaved: 'اتحفظ القالب', assignTitle: 'استخدمه للاعب', playersEmpty: 'لسه مفيش لاعبين',
   },
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   en: {
@@ -63,6 +63,6 @@ export const messages = defineMessages({
     repeat: 'Repeat weekly', convert: 'Convert to fixed week', rotation: 'Days repeat in order', convertLimit: 'Use seven days or fewer to convert',
     rest: 'Rest day', restore: 'Make training day', deleteDay: 'Remove day', up: 'Move up', down: 'Move down', addTraining: 'Add training day',
     overview: 'Overview', training: 'Training', nutrition: 'Nutrition', assessments: 'Assessments', checkins: 'Check-ins', tabs: 'Player file',
-    saveTemplate: 'Save template', assignTitle: 'Use for a player', playersEmpty: 'No players yet',
+    saveTemplate: 'Save template', templateSaved: 'Template saved', assignTitle: 'Use for a player', playersEmpty: 'No players yet',
   },
 });

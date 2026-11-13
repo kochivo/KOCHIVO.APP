@@ -28,5 +28,5 @@ export const arStd = {
     convertLimit: 'التحويل يتطلب ٧ أيام أو أقل', rest: 'يوم راحة', restore: 'اجعله يوم تمرين',
     deleteDay: 'احذف اليوم', up: 'للأعلى', down: 'للأسفل', addTraining: 'أضف يوم تمرين',
     overview: 'نظرة عامة', training: 'التمرين', nutrition: 'الأكل', assessments: 'التقييمات', checkins: 'المتابعات',
-    tabs: 'ملف اللاعب', saveTemplate: 'احفظ القالب', assignTitle: 'استخدمه للاعب', playersEmpty: 'لا يوجد لاعبون بعد',
+    tabs: 'ملف اللاعب', saveTemplate: 'احفظ القالب', templateSaved: 'تم حفظ القالب', assignTitle: 'استخدمه للاعب', playersEmpty: 'لا يوجد لاعبون بعد',
   } as const;

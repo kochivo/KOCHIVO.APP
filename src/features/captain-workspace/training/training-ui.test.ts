@@ -43,7 +43,7 @@ it.each(['ar', 'en'] as const)('uses the same inline controls with template save
   const html = renderToStaticMarkup(createElement(LocaleProvider, { locale }, createElement(TrainingEditor, {
     mode: 'template', initial: { ...draft, player_id: null }, programs: [],
   })));
-  expect(html).not.toContain(locale === 'ar' ? 'احفظ القالب' : 'Save template');
+  expect(html).toContain(locale === 'ar' ? 'احفظ القالب' : 'Save template');
   expect(html).not.toContain(messages[locale].send);
   expect(html).not.toContain(messages[locale].newProgram);
   expect(html).not.toContain(messages[locale].history);
@@ -71,7 +71,7 @@ it('renders the all-rest start card with one primary action and an enabled assig
   })));
   expect(html).toContain('ابدأ أول يوم تمرين');
   expect(html.match(/primary-surface/g)).toHaveLength(1);
-  expect(html).not.toContain('احفظ القالب');
+  expect(html).toContain('احفظ القالب');
   expect(html).not.toContain('aria-label="اسم اليوم"');
   expect(html).toMatch(/<button[^>]*id="assign-program"[^>]*>/);
   expect(html.match(/<button[^>]*id="assign-program"[^>]*>/)?.[0]).not.toMatch(/\sdisabled(?:=|\s|>)/);

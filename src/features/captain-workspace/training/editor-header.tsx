@@ -3,7 +3,8 @@ import { KoSend } from '@/ui/icons/ko-send';
 import { KoTemplate } from '@/ui/icons/ko-template';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import Link from 'next/link';
-import { CloudCheck, CloudUpload, Send } from 'lucide-react';
+import { Check, CloudCheck, CloudUpload, Send } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { useT } from '@/core/i18n/client';
 import { Button } from '@/ui/button';
@@ -19,6 +20,10 @@ export function EditorHeader({ playerId, playerName, remainingDays, template, ti
 }) {
   const SendIcon = captainWorkspaceEnabled() ? KoSend : Send;
   const t = useT(messages), tt = useT(trainingMessages), base = `/captain/players/${playerId}`;
+  // Autosave already runs; the button reassures captains and confirms the save they asked for.
+  const [asked, setAsked] = useState(false);
+  const confirmed = asked && status === 'saved' && !busy;
+  useEffect(() => { if (!confirmed) return; const timer = setTimeout(() => setAsked(false), 2500); return () => clearTimeout(timer); }, [confirmed]);
   return <>
     <header className="flex flex-wrap items-center gap-3">
       <span aria-hidden className="glass-strong grid size-[52px] shrink-0 place-items-center rounded-full text-lg">{template ? <KoTemplate className="size-6" /> : (playerName || title || '').charAt(0)}</span>
@@ -29,6 +34,8 @@ export function EditorHeader({ playerId, playerName, remainingDays, template, ti
         {status === 'error' ? <button className="min-h-12 rounded-full border border-line px-3 text-danger" onClick={onRetry}>{tt('retry')}</button> : t(status === 'saved' ? 'saved' : 'saving')}</span>
       {children}
       {!template && playerId && <Link prefetch={false} className="glass inline-flex min-h-12 items-center rounded-full border border-line-soft px-4 text-sm" href={`${base}/preview`}>{t('preview')}</Link>}
+      {template && <Button variant="secondary" disabled={disabled || busy} className="min-h-12 w-auto! rounded-full!" aria-live="polite"
+        onClick={() => { setAsked(true); onRetry(); }}>{confirmed && <Check aria-hidden className="size-4 text-lime" />}{t(confirmed ? 'templateSaved' : 'saveTemplate')}</Button>}
       <Button variant={starting ? 'secondary' : 'primary'} id={template ? 'assign-program' : undefined} disabled={disabled || busy} className="min-h-12 w-auto! rounded-full!" onClick={template ? onAssign : onSend}>{!template && <SendIcon aria-hidden className="size-4" />}{template ? t('assign') : tt('send')}</Button>
     </header>
     {!template && playerId && <UnderlineTabs label={t('tabs')} items={([
