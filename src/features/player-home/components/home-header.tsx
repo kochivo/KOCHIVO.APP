@@ -1,12 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { Bell } from 'lucide-react';
+import type { ReactNode } from 'react';
 import { useT } from '@/core/i18n/client';
 import { useTimezone } from '@/core/timezone/client';
 import { messages } from '../messages';
 
-export function HomeHeader({ firstName, now, unheard }: { firstName?: string; now: Date; unheard: boolean }) {
+export function HomeHeader({ firstName, now, bell }: { firstName?: string; now: Date; bell?: ReactNode }) {
   const t = useT(messages);
   const timezone = useTimezone();
   const hour = Number(new Intl.DateTimeFormat('en-GB', { timeZone: timezone, hour: 'numeric', hourCycle: 'h23' }).format(now));
@@ -19,10 +19,6 @@ export function HomeHeader({ firstName, now, unheard }: { firstName?: string; no
       <span className="text-[13px] text-muted">{t(hour < 12 ? 'goodMorning' : 'goodEvening')}</span>
       <h1 className="text-[22px] font-extrabold! [font-family:inherit]">{firstName || t('pageTitle')}</h1>
     </div>
-    <Link href="/player/captain" aria-label={t(unheard ? 'homeUnheard' : 'homeCaptainMessages')}
-      className="relative flex size-12 shrink-0 items-center justify-center rounded-full bg-surface-raised text-ink">
-      <Bell aria-hidden className="size-[22px]" />
-      {unheard && <span data-unheard aria-hidden className="absolute end-3 top-[11px] size-[9px] rounded-full border-2 border-surface-raised bg-lime" />}
-    </Link>
+    {bell}
   </header>;
 }

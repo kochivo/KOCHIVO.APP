@@ -10,9 +10,10 @@ import { starterText } from '@/lib/starter-text';
 import { messages } from '../messages';
 import { estimateMinutes, warmupDuration } from './today-card';
 
-export function HomeHero({ day, rest, streak }: { day?: SnapshotDay; rest: boolean; streak?: number }) {
+export function HomeHero({ day, rest, streak, finished = false }: { day?: SnapshotDay; rest: boolean; streak?: number; finished?: boolean }) {
   const t = useT(messages);
   const locale = useLocale();
+  if (!rest && !day && finished) return <FinishedHero title={t('programFinished')} body={t('renewProgram')} />;
   if (!rest && !day) return null;
   const minutes = day ? estimateMinutes(day.exercises) + warmupDuration(day) +
     (day.cardio ?? []).reduce((sum, block) => sum + block.minutes, 0) : 0;
@@ -42,5 +43,14 @@ export function HomeHero({ day, rest, streak }: { day?: SnapshotDay; rest: boole
         <KoPlay aria-hidden className="size-[22px] text-on-lime! [&_*]:text-on-lime!" />{t('homeStart')}
       </Link>}
     </>}
+  </section>;
+}
+
+// The program ran out: same hero frame, no action, the captain renews it.
+function FinishedHero({ title, body }: { title: string; body: string }) {
+  return <section aria-label={title} className="relative flex flex-col gap-3 overflow-hidden rounded-[28px] border border-line-soft bg-surface p-5">
+    <div aria-hidden className="absolute -end-[30px] -top-10 h-[220px] w-[90px] -skew-x-[18deg] bg-lime opacity-90" />
+    <h2 className="relative pe-20 text-[30px]! leading-[1.15] font-black! [font-family:inherit]!">{title}</h2>
+    <p className="relative pe-20 text-sm leading-[1.7] text-ink">{body}</p>
   </section>;
 }

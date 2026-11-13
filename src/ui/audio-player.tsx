@@ -4,7 +4,6 @@ import { useCallback, useRef, useState } from 'react';
 import { useT } from '@/core/i18n/client';
 import { messages } from './messages';
 import { cn } from '@/lib/cn';
-import { IconButton } from './icon-button';
 import { ProgressBar } from './progress-bar';
 
 export interface AudioPlayerProps {
@@ -39,9 +38,10 @@ export function AudioPlayer({ src, mimeType, durationSeconds, playLabel, pauseLa
   return (
     <div className={cn('glass-strong flex items-center gap-3 rounded-control p-2 pe-4', className)}>
       {unsupported ? <p role="status" className="p-2 text-sm text-warn">{t('unsupportedAudio')}</p> : <>
-      <IconButton aria-label={playing ? pauseLabel : playLabel} onClick={toggle} className="bg-lime text-on-lime hover:bg-lime">
+      {/* Not IconButton: its glass background outranks bg-lime in the cascade. */}
+      <button type="button" aria-label={playing ? pauseLabel : playLabel} onClick={toggle} className="press inline-flex size-12 shrink-0 items-center justify-center rounded-control bg-lime text-on-lime">
         {playing ? <Pause aria-hidden className="size-5 fill-current" /> : <Play aria-hidden className="size-5 fill-current" />}
-      </IconButton>
+      </button>
       <ProgressBar value={position} max={durationSeconds} className="flex-1" aria-label={playLabel} />
       <span className="font-display text-sm tabular-nums text-muted" dir="ltr">{formatTime(playing || position > 0 ? position : durationSeconds)}</span>
       </>}

@@ -60,8 +60,8 @@ export function PlayerShell({ children, unassignedAction }: { children?: ReactNo
     <div data-mood={!workout && restMood ? 'rest' : undefined} className="min-h-dvh bg-bg text-ink transition-colors motion-reduce:transition-none">
     <SyncRunner />
     {!workout && <RestMoodSync onChange={setRestMood} />}
-    <div className={workout ? undefined : showsNav(pathname) ? 'pb-[var(--page-bottom-clearance)]' : 'pt-[var(--safe-top)]'}>
-    {showsNav(pathname) && <div className="sticky top-0 z-30 bg-bg/70 pb-3 pt-[max(0.75rem,var(--safe-top))] backdrop-blur-md"><div className="mx-auto flex max-w-lg justify-end gap-2 px-5">
+    <div className={workout ? undefined : showsNav(pathname) ? (v6 ? 'pt-[var(--safe-top)] pb-[var(--page-bottom-clearance)]' : 'pb-[var(--page-bottom-clearance)]') : 'pt-[var(--safe-top)]'}>
+    {showsNav(pathname) && !v6 && <div className="sticky top-0 z-30 bg-bg/70 pb-3 pt-[max(0.75rem,var(--safe-top))] backdrop-blur-md"><div className="mx-auto flex max-w-lg justify-end gap-2 px-5">
       <Link href="/player/settings" aria-label={t(v6 ? 'v6Account' : 'settings')} aria-current={pathname === '/player/settings' ? 'page' : undefined}
         className={`${v6 ? 'glass border border-line-soft ' : ''}flex min-h-12 min-w-12 items-center justify-center rounded-control ${pathname === '/player/settings' ? 'bg-lime-soft text-lime' : 'text-muted'}`}>
         {v6 ? <UserRound aria-hidden className="size-5 rounded-full" /> : <Settings aria-hidden className="size-5" />}

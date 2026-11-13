@@ -12,8 +12,8 @@ import { dayNutrition } from '../day-nutrition';
 import { messages } from '../messages';
 import { waterGlasses } from './home-metrics';
 
-export function HomeTiles({ today, playerId, rest, streak, done, planned, onWater }: {
-  today: string; playerId?: string; rest?: boolean; streak?: number; done: number; planned: number;
+export function HomeTiles({ weightKg, today, playerId, rest, streak, done, planned, onWater }: {
+  weightKg?: number; today: string; playerId?: string; rest?: boolean; streak?: number; done: number; planned: number;
   onWater?: () => void;
 }) {
   const t = useT(messages);
@@ -33,7 +33,7 @@ export function HomeTiles({ today, playerId, rest, streak, done, planned, onWate
   const percent = summary && summary.targetKcal > 0 ? Math.min(100, Math.max(0, Math.round((summary.eatenKcal ?? 0) / summary.targetKcal * 100))) : 0;
   const next = nutrition.snapshot?.meals.find(meal => !logs.some(log => log.meal_id === meal.id &&
     log.log_date === today && log.completed_at && !log.deleted_at));
-  const water = waterGlasses(row?.water_ml ?? 0, waterGoalMl());
+  const water = waterGlasses(row?.water_ml ?? 0, waterGoalMl(weightKg));
   const tile = 'glass-strong flex min-w-0 flex-col rounded-[24px] border-line-soft! bg-surface! p-4 text-ink shadow-none backdrop-blur-none';
   return <div className="grid grid-cols-2 gap-3">
     <Link href="/player/nutrition" className={`${tile} min-h-[136px] gap-2.5`}>
@@ -53,8 +53,8 @@ export function HomeTiles({ today, playerId, rest, streak, done, planned, onWate
       <span className="font-[family-name:var(--font-manrope)] text-[30px] font-extrabold text-water">
         {formatNumber(water.done, locale)}<span className="text-base font-normal text-muted">{t('homeRatio', { done: '', planned: formatNumber(water.planned, locale) })}</span>
       </span>
-      <span className="flex gap-1" aria-hidden>{Array.from({ length: 8 }, (_, index) =>
-        <span key={index} className={`h-2 flex-1 rounded ${index < Math.floor(Math.min(1, water.done / (water.planned || 1)) * 8) ? 'bg-water' : 'bg-line'}`} />)}</span>
+      <span className="flex gap-1" aria-hidden>{Array.from({ length: water.planned }, (_, index) =>
+        <span key={index} className={`h-2 flex-1 rounded ${index < water.done ? 'bg-water' : 'bg-line'}`} />)}</span>
       <span className="text-xs text-muted">{t('homeGlasses')}</span>
     </a>
     {!rest && <>

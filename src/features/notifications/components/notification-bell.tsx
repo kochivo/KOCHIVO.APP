@@ -13,7 +13,7 @@ const NotificationDropdown = dynamic(() => import('./notification-dropdown').the
   loading: () => <LoadingState />,
 });
 
-export function NotificationBell({ captain = false }: { captain?: boolean }) {
+export function NotificationBell({ captain = false, round = false }: { captain?: boolean; round?: boolean }) {
   const t = useT(messages);
   const id = useId();
   const pathname = usePathname();
@@ -30,7 +30,7 @@ export function NotificationBell({ captain = false }: { captain?: boolean }) {
   }, [captain, pathname, refresh]);
   return <div className="relative">
     <button id={id} type="button" aria-label={t('title')} aria-haspopup="dialog" aria-expanded={open}
-      onClick={() => setOpen(value => !value)} className="relative flex min-h-12 min-w-12 items-center justify-center rounded-control border border-line">
+      onClick={() => setOpen(value => !value)} className={round ? 'relative flex size-12 items-center justify-center rounded-full bg-surface-raised text-ink' : 'relative flex min-h-12 min-w-12 items-center justify-center rounded-control border border-line'}>
       <Bell className="size-5" aria-hidden />
       {notifications.count > 0 && <span aria-hidden className="absolute end-2 top-2 size-2 rounded-full bg-lime shadow-sm shadow-lime/30" />}
     </button>

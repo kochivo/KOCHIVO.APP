@@ -23,6 +23,7 @@ import { TodayCard } from './today-card';
 import { NutritionSlot } from './nutrition-slot';
 import { WeeklyRestCard } from './weekly-rest-card';
 import type { Decision } from '@/features/readiness';
+import { usePlayerWeight } from '../hooks/use-player-weight';
 import { isRestDay } from '../rest-day';
 import { starterText } from '@/lib/starter-text';
 import { previewFor } from '../day-preview';
@@ -51,6 +52,7 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
   const [retryKey, setRetryKey] = useState(0);
   const onError = useCallback(() => setLocalError(true), []);
   const { snapshot, status, retry } = useProgramSnapshot(playerId, retryKey);
+  const weightKg = usePlayerWeight(playerId);
   const pending = useLiveQuery(readPending, onError, retryKey);
   const parked = useLiveQuery(readParked, onError, retryKey);
   const allSessions = useLiveQuery(readSessions, onError, retryKey);
@@ -87,7 +89,7 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
       setLocalError(false); setRetryKey((value) => value + 1); void retry();
     }} /> : !now || status === 'loading' || (snapshot && (!sessions || !weekSessions)) ? <LoadingState variant="cards" /> : <>
       {v6 && <>
-        <V3Home now={now} today={today} firstName={firstName} playerId={playerId} snapshot={snapshot} day={day}
+        <V3Home weightKg={weightKg} now={now} today={today} firstName={firstName} playerId={playerId} snapshot={snapshot} day={day}
           rest={rest} sessions={sessions ?? []} weekSessions={weekSessions ?? []} onPreview={date => setSelection({ today, date })} />
         <p className="mt-6 text-[13px] text-muted">{t('homeMore')}</p>
         {statusHeader}
@@ -96,16 +98,16 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
       {v6 ? <>
         <NextTaskSlot rest={rest} snapshot={snapshot ?? null} sessions={sessions ?? []} today={today} playerId={playerId}
           retryKey={retryKey} onRetry={() => setRetryKey(value => value + 1)} />
-        <MorningRow><PlayerReadiness playerId={playerId} today={today} rest={rest} coachRest={decision === 'rest'}
+        <MorningRow><PlayerReadiness weightKg={weightKg} playerId={playerId} today={today} rest={rest} coachRest={decision === 'rest'}
           onDecisionChange={setDecision} tomorrowRest={Boolean(tomorrowRest)}
           tomorrow={tomorrow && !tomorrowRest && !tomorrow.is_rest_day ? starterText(tomorrow.title, locale) : undefined} /></MorningRow>
-      </> : rest ? <PlayerReadiness playerId={playerId} today={today} rest coachRest={decision === 'rest'}
+      </> : rest ? <PlayerReadiness weightKg={weightKg} playerId={playerId} today={today} rest coachRest={decision === 'rest'}
         onDecisionChange={setDecision}
         tomorrowRest={Boolean(tomorrowRest)}
         tomorrow={tomorrow && !tomorrowRest && !tomorrow.is_rest_day ? starterText(tomorrow.title, locale) : undefined} /> : <>
       <NextTaskSlot snapshot={snapshot ?? null} sessions={sessions ?? []} today={today} playerId={playerId}
         retryKey={retryKey} onRetry={() => setRetryKey(value => value + 1)} />
-      <PlayerReadiness playerId={playerId} today={today} rest={false} onDecisionChange={setDecision} />
+      <PlayerReadiness weightKg={weightKg} playerId={playerId} today={today} rest={false} onDecisionChange={setDecision} />
       </>}
       </div>
       <WeekStrip today={today} selected={selectedDate} nextDays={buildWeek(localDate(nextWeekAt, 'UTC'), snapshot?.training_days ?? [], [], locale, snapshot ?? undefined)} onSelect={date => setSelection({ today, date })} days={buildWeek(today, snapshot?.training_days ?? [],
