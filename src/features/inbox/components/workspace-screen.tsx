@@ -1,4 +1,5 @@
 'use client';
+import { Button } from '@/ui/button';
 import { useCallback, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import dynamic from 'next/dynamic';
@@ -98,7 +99,7 @@ export function WorkspaceScreen({ joinRequests }: { joinRequests: Record<string,
     <WorkspaceControls summary={summary} counts={counts} kind={kind} status={status} search={search}
       onKind={value => { if (leave()) setKind(value); }} onStatus={value => { if (leave()) setStatus(value); }} onSearch={value => { if (leave()) setSearch(value); }} />
     {search.trim() && (data?.more || weekCount > metrics.reviewedWeek) && <p className="text-xs text-faint">{t('searchPartial')}</p>}
-    {Boolean(resource.error) && <div role="alert" className="glass rounded-card p-5 text-danger">{t('loadFailed')}<button className="min-h-12 px-3" onClick={() => { if (!sendLock.current && !historyLock.current && guard.current()) void resource.retry(); }}>{t('retry')}</button></div>}
+    {Boolean(resource.error) && <div role="alert" className="glass rounded-card p-5 text-danger">{t('loadFailed')}<Button variant="secondary" className="min-h-12 px-3" onClick={() => { if (!sendLock.current && !historyLock.current && guard.current()) void resource.retry(); }}>{t('retry')}</Button></div>}
     {!data ? !resource.error && <LoadingState variant="list" aria-label={t('loading')} /> : <>
       {caughtUp && !selected ? <WorkspaceEmpty count={weekCount} hours={hours} /> : <div className="grid items-start gap-4 lg:grid-cols-[360px_minmax(0,1fr)]">
         <WorkspaceList attention={view.attention} routine={view.routine} selected={selected} inputs={data.triage} now={now} onSelect={item => { if (leave()) { setRequestNodes(value => ({ ...value, ...joinRequests })); setSelected(item); } }} />

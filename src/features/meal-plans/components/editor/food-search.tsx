@@ -2,7 +2,7 @@
 
 import { useCallback, useId, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { Search } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import { useLocale, useT } from '@/core/i18n/client';
 import { useResource } from '@/core/resource';
 import { Button } from '@/ui/button';
@@ -33,7 +33,7 @@ export function FoodSearch({ onPick, meal }: { onPick: (food: Food, grams: numbe
       <input type="search" aria-label={t('search')} placeholder={meal ? t('mealSearch', { meal }) : t('search')} value={query} maxLength={100} onChange={event => setQuery(event.target.value)}
         className="min-h-12 min-w-0 flex-1 bg-transparent text-xs placeholder:text-faint" />
     </label>
-    <button id={openerId} type="button" className="min-h-12 text-xs text-muted" onClick={() => setCreating(true)}>{t('createFood')}</button>
+    <Button variant="secondary" id={openerId} type="button" className="min-h-12 text-xs" onClick={() => setCreating(true)}><Plus aria-hidden className="size-4" />{t('createFood')}</Button>
     </div>
     {creating && <CustomFoodSheet openerId={openerId} initialName={query} onClose={() => setCreating(false)} onSave={(food, grams) => {
       onPick(food, grams); setCreating(false); setQuery('');
@@ -43,10 +43,10 @@ export function FoodSearch({ onPick, meal }: { onPick: (food: Food, grams: numbe
         : resource.error ? <div role="alert" className="text-sm text-danger">{planT('searchFailedTryAgain')}<Button variant="secondary" onClick={() => void resource.retry()}>{t('retry')}</Button></div>
         : !resource.data?.foods.length ? <p className="text-xs text-faint">{planT(resource.data?.catalogEmpty ? 'theFoodLibraryIsEmpty' : 'noFoodWithThisName')}</p>
         : <ul className="max-h-72 overflow-y-auto">{resource.data.foods.map(food => <li key={food.id}>
-          <button type="button" className="min-h-12 w-full border-t border-line-soft px-3 text-start text-sm" onClick={() => {
+          <Button variant="secondary" type="button" className="min-h-12 w-full border-t border-line-soft px-3 text-start text-sm" onClick={() => {
             const grams = food.units?.[0]?.grams ?? 100;
             onPick(food, grams >= 5 && grams <= 2000 ? grams : 100); setQuery('');
-          }}>{locale === 'en' ? food.nameEn || food.name : food.name}</button>
+          }}><Plus aria-hidden className="size-4 shrink-0" />{locale === 'en' ? food.nameEn || food.name : food.name}</Button>
         </li>)}</ul>}
     </div>}
   </div>;

@@ -1,4 +1,6 @@
 'use client';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { Button } from '@/ui/button';
 import { formatNumber } from '@/lib/format';
 import { formatDateAr } from '@/lib/dates';
 import { useLocale, useT } from '@/core/i18n/client';
@@ -40,7 +42,7 @@ export function CheckinDetail({ item, history = [], dailyChecks = [], now }: {
     </dl>
     <p className="whitespace-pre-wrap text-muted">{item.notes || t('noNotes')}</p>
     {media.loading ? <LoadingState variant="cards" aria-label={t('loadingPhotos')} /> : media.error ?
-      <div role="alert"><p>{t('photosFailed')}</p><button className="min-h-12 px-4" onClick={media.retry}>{t('retry')}</button></div> :
+      <div role="alert"><p>{t('photosFailed')}</p>{captainWorkspaceEnabled() ? <Button variant="secondary" className="min-h-12 px-4" onClick={media.retry}>{t('retry')}</Button> : <button className="min-h-12 px-4" onClick={media.retry}>{t('retry')}</button>}</div> :
       media.urls.length ? <div className="grid gap-3 sm:grid-cols-3">{media.urls.slice(0, 3).map((url, index) =>
         <Image key={url} src={url} alt={t('photo', { n: formatNumber(index + 1, locale) })} width={480} height={640} unoptimized onError={media.failed} className="h-auto w-full rounded-control object-contain" />)}</div> :
           <EmptyState icon={Camera} title={t('noPhotos')} body={t('photoHint')} action={{ label: t('openPlayer'), href: `/captain/players/${item.player_id}?tab=checkins` }} />}

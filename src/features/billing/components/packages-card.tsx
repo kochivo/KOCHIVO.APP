@@ -1,4 +1,6 @@
 'use client';
+import { IconButton } from '@/ui/icon-button';
+
 import { KoPlus } from '@/ui/icons/ko-plus';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { formatNumber } from '@/lib/format';
@@ -8,7 +10,8 @@ import { messages as ptMessages } from '../packages/messages';
 
 import { useState } from 'react';
 import { Package as PackageIcon, Plus, X } from 'lucide-react';
-import { Button, EmptyState, GlassCard, Segmented, Stepper, TextField } from '@/ui';
+import { Button } from '@/ui/button';
+import { EmptyState, GlassCard, Segmented, Stepper, TextField } from '@/ui';
 import { archivePackage, createPackage } from '../data/finance-actions';
 import type { Package } from '../types';
 import type { CatalogPackage, Tier } from '../tiers/types';
@@ -67,7 +70,7 @@ export function PackagesCard({ packages: initial, onChange, initialAdding = fals
         <div className="min-w-0 py-2"><p className="truncate font-bold">{item.name}</p>
           <p className="text-xs text-muted">{t('amount', { amount: formatNumber(item.price_egp, locale) })} · {t('days', { n: item.days, count: formatNumber(item.days, locale) })}
             {item.kind === 'sessions' && <> · {pt('sessionsLeft', { n: item.sessions ?? 0, count: formatNumber(item.sessions ?? 0, locale) })}</>}</p></div>
-        <Button variant="ghost" className="min-h-12 min-w-12 px-0" aria-label={t('archivePackage', { name: item.name })} onClick={() => void archive(item)}><X aria-hidden className="size-5" /></Button>
+        {captainWorkspaceEnabled() ? <IconButton className="min-h-12 min-w-12 border border-danger/40 px-0 text-danger!" aria-label={t('archivePackage', { name: item.name })} onClick={() => void archive(item)}><X aria-hidden className="size-5" /></IconButton> : <Button variant="ghost" className="min-h-12 min-w-12 px-0" aria-label={t('archivePackage', { name: item.name })} onClick={() => void archive(item)}><X aria-hidden className="size-5" /></Button>}
       </li>)}</ul>}
       {adding ? <form className="space-y-3" onSubmit={(event) => { event.preventDefault(); void add(); }}>
         {editor && <label className="block text-xs text-faint">{editor.tierLabel}<select value={tierId} onChange={event => setTierId(event.target.value)} className="mt-2 min-h-12 w-full rounded-control border border-line bg-surface px-3 text-ink">
@@ -82,7 +85,7 @@ export function PackagesCard({ packages: initial, onChange, initialAdding = fals
         </div>
         <div className="flex flex-wrap gap-2">
           <Button type="submit" className="min-h-12 flex-1" disabled={!valid || busy}>{editor?.item ? editor.saveLabel : t('addPackage')}</Button>
-          {!editor && <Button variant="ghost" className="min-h-12" disabled={busy} onClick={() => { setAdding(false); setError(''); }}>{t('closeCollect')}</Button>}
+          {!editor && <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} className="min-h-12" disabled={busy} onClick={() => { setAdding(false); setError(''); }}>{t('closeCollect')}</Button>}
         </div>
       </form> : packages.length > 0 && <Button variant="secondary" className="min-h-12 w-full" onClick={() => setAdding(true)}><PlusIcon aria-hidden className="size-5" />{t('newPackage')}</Button>}
       {error && <p role="alert" className="text-sm text-danger">{error}</p>}

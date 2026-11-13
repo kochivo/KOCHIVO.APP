@@ -19,7 +19,7 @@ export function InstallButton({ role = 'player', icon = false }: { role?: 'capta
   return <div className={icon ? 'contents' : 'glass space-y-2 rounded-card p-4'}>
     {icon ? <IconButton aria-label={t('downloadApp')} title={t('downloadApp')} disabled={busy} onClick={open}>
       <Download aria-hidden className="size-5" />
-    </IconButton> : <Button variant="ghost" className="w-full gap-2" disabled={busy} onClick={open}>
+    </IconButton> : <Button variant="secondary" className="w-full gap-2" disabled={busy} onClick={open}>
       <Download aria-hidden className="size-5" />{busy ? t('installing') : t('downloadApp')}
     </Button>}
     {error && <p role="alert" className={icon ? 'sr-only' : 'text-sm text-danger'}>{t('installationFailedTryAgain')}</p>}
@@ -28,7 +28,7 @@ export function InstallButton({ role = 'player', icon = false }: { role?: 'capta
       className="sheet fixed inset-x-0 top-auto bottom-0 m-0 w-full max-w-lg rounded-t-card p-6 text-start text-ink backdrop:bg-bg-deep/80 md:mx-auto">
       <h2 id={titleId} className="text-xl font-bold">{t('installOnIphone')}</h2>
       <IosSteps />
-      <Button variant="ghost" className="mt-5 w-full" onClick={() => dialog.current?.close()}>{t('close')}</Button>
+      <Button variant="secondary" className="mt-5 w-full" onClick={() => dialog.current?.close()}>{t('close')}</Button>
     </dialog>}
   </div>;
 }

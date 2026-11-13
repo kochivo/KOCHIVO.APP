@@ -44,7 +44,7 @@ export function FeedbackSheet({ role, onClose }: { role: DeviceRole; onClose: ()
       {error && <p id={errorId} role="alert" className="text-sm text-danger">{t(error)}</p>}
       <div className="flex flex-wrap gap-3">
         <Button type="submit" disabled={pending}>{t(pending ? 'sending' : 'send')}</Button>
-        <Button variant="ghost" disabled={pending} onClick={onClose}>{t('close')}</Button>
+        <Button variant="secondary" disabled={pending} onClick={onClose}>{t('close')}</Button>
       </div>
     </form>
   </dialog>;

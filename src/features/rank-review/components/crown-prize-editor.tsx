@@ -1,5 +1,7 @@
 'use client';
 
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { Button } from '@/ui/button';
 import { useId, useState } from 'react';
 import type { Locale } from '@/core/i18n/locale';
 import { createT } from '@/core/i18n/messages';
@@ -34,13 +36,15 @@ export function CrownPrizeEditor({ locale, prize, onSave, saving = false, error 
       {invalid && <p id={`${id}-error`} role="alert" className="text-sm text-danger">{t('prizeLength')}</p>}
       <div className="flex gap-3">
         <button type="submit" disabled={saving} className="min-h-12 rounded-control bg-lime px-4 font-bold text-on-lime">{t('savePrize')}</button>
-        <button type="button" disabled={saving} onClick={() => { setOpen(false); setInvalid(false); }}
-          className="min-h-12 rounded-control px-4">{t('cancelPrize')}</button>
+        {captainWorkspaceEnabled() ? <Button variant="secondary" type="button" disabled={saving} onClick={() => { setOpen(false); setInvalid(false); }}
+          className="min-h-12 rounded-control px-4">{t('cancelPrize')}</Button> : <button type="button" disabled={saving} onClick={() => { setOpen(false); setInvalid(false); }}
+          className="min-h-12 rounded-control px-4">{t('cancelPrize')}</button>}
       </div>
     </form> : <div className="flex flex-wrap items-center gap-3">
       {prize && <p className="min-w-0 flex-1 break-words">{t('prize', { prize })}</p>}
-      <button type="button" disabled={saving} onClick={() => { setDraft(prize ?? ''); setOpen(true); }}
-        className="min-h-12 rounded-control px-4 font-bold text-lime">{t(prize ? 'editPrize' : 'setPrize')}</button>
+      {captainWorkspaceEnabled() ? <Button variant="secondary" type="button" disabled={saving} onClick={() => { setDraft(prize ?? ''); setOpen(true); }}
+        className="min-h-12 rounded-control px-4 font-bold text-ink">{t(prize ? 'editPrize' : 'setPrize')}</Button> : <button type="button" disabled={saving} onClick={() => { setDraft(prize ?? ''); setOpen(true); }}
+        className="min-h-12 rounded-control px-4 font-bold text-lime">{t(prize ? 'editPrize' : 'setPrize')}</button>}
     </div>}
     {error && <p role="alert" className="text-sm text-danger">{t('prizeError')}</p>}
   </section>;

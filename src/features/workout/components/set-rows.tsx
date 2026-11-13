@@ -8,6 +8,7 @@ import { messages } from '../messages';
 import { messages as v6Messages } from '../v6-messages';
 import { messages as alternativeMessages } from '../alternatives/messages';
 import { targetForSet } from '@/lib/set-plan';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 
 type SetRowsState = Pick<ReturnType<typeof useFocusSession>, 'current' | 'disabled' | 'doneSets' | 'invalid' |
   'weight' | 'reps' | 'bodyweight' | 'setWeight' | 'setReps' | 'setBodyweight' | 'complete' | 'edit'> & { rest: { remaining: number } };
@@ -17,6 +18,7 @@ export function SetRows({ state }: { state: SetRowsState }) {
   const v6t = useT(v6Messages);
   const at = useT(alternativeMessages);
   const locale = useLocale();
+  const v6 = captainWorkspaceEnabled();
   const invalidRef = useRef<HTMLInputElement>(null);
   useEffect(() => { if (state.invalid) invalidRef.current?.focus(); }, [state.invalid]);
   if (!state.current) return null;
@@ -56,7 +58,7 @@ export function SetRows({ state }: { state: SetRowsState }) {
         <button type="button" disabled={active ? blocked : !done || state.disabled}
           aria-label={active ? t('completeSet') : t('editSet', { value0: formatNumber(setIndex, locale) })}
           aria-pressed={Boolean(done)} onClick={() => { if (active) void state.complete(); else if (done) state.edit(done); }}
-          className={`flex min-h-14 min-w-14 items-center justify-center rounded-control border ${done || active ? 'border-lime bg-lime text-on-lime' : 'border-line-soft text-faint'}`}>
+          className={`flex min-h-14 min-w-14 items-center justify-center rounded-control border ${v6 ? active ? 'border-lime bg-lime text-on-lime' : 'glass border-line-soft text-ink' : done || active ? 'border-lime bg-lime text-on-lime' : 'border-line-soft text-faint'}`}>
           <Check aria-hidden className="size-6" />
         </button>
       </div></div>;

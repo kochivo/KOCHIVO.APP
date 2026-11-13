@@ -1,4 +1,5 @@
 'use client';
+import { Button } from '@/ui/button';
 
 import { useEffect, useReducer, useRef, useState } from 'react';
 import { captureException } from '@sentry/nextjs';
@@ -72,8 +73,8 @@ export function PushToggleCard() {
     </p>
     {error && <div role="alert" className="mt-2 text-sm text-danger">
       <p>{t('error')}</p>
-      <button type="button" disabled={pending} onClick={() => setAttempt(value => value + 1)}
-        className="min-h-12 text-lime">{t('retry')}</button>
+      <Button variant="secondary" type="button" disabled={pending} onClick={() => setAttempt(value => value + 1)}
+        className="min-h-12 text-lime">{t('retry')}</Button>
     </div>}
   </section>;
 }

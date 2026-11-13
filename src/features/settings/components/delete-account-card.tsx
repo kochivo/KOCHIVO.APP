@@ -43,7 +43,7 @@ export function DeleteAccountCard({ requestedAt, onChange }: { requestedAt: stri
       <p className="text-sm text-muted">{t('deletionIsPermanentAfter7Days')}</p>
       <TextField label={t('typeDELETEToConfirm')} value={confirmation} onChange={(event) => setConfirmation(event.target.value)} disabled={pending} autoComplete="off" />
     </>}
-    <Button variant="ghost" className="min-h-12 text-danger!" disabled={pending || (!due && confirmation !== t('delete'))}
+    <Button variant="secondary" className="min-h-12 border border-danger/40 text-danger!" disabled={pending || (!due && confirmation !== t('delete'))}
       onClick={() => void submit()}>{pending ? t('processing') : due ? t('cancelDeletion') : t('deleteAccount')}</Button>
     <p role="status" aria-live="polite">{message}</p>
   </section>;

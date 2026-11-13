@@ -1,10 +1,11 @@
 import { createElement } from 'react';
 import type { ComponentProps } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { expect, it, vi } from 'vitest';
+import { afterEach, expect, it, vi } from 'vitest';
 import { LocaleProvider } from '@/core/i18n/client';
 import { SetRows } from './components/set-rows';
 vi.mock('server-only', () => ({}));
+afterEach(() => vi.unstubAllEnvs());
 
 const state: ComponentProps<typeof SetRows>['state'] = {
   current: { exercise: { id: 'p', exercise_id: 'e', name_ar: 'بنش', name_en: 'Bench press', position: 1,
@@ -17,6 +18,15 @@ const state: ComponentProps<typeof SetRows>['state'] = {
 };
 const render = (patch: Partial<typeof state> = {}) => renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' },
   createElement(SetRows, { state: { ...state, ...patch } })));
+
+it('reserves filled lime for the active set and surfaces completed-set editing', () => {
+  vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
+  const html = render();
+  expect(html.match(/<button[^>]*bg-lime /g)).toHaveLength(1);
+  const edit = html.match(/<button[^>]*aria-label="Edit set 1"[^>]*>/)?.[0];
+  expect(edit).toContain('glass');
+  expect(edit).not.toContain('bg-lime');
+});
 
 it('offers editing completed sets and big numeric controls only for the current set', () => {
   const html = render();
@@ -43,4 +53,9 @@ it('shows each set target and its RIR while old cached snapshots keep uniform ro
   expect(html).toContain('Target: 12'); expect(html).toContain('Target: 10');
   expect(html).toContain('Leave 2 reps'); expect(html).toContain('Target: To failure');
   expect(render()).not.toContain('Target:');
+});
+
+it('preserves legacy completed and active set styling with the flag off', () => {
+  vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '0');
+  expect(render().match(/<button[^>]*bg-lime /g)).toHaveLength(2);
 });

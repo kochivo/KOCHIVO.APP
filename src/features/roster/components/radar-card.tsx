@@ -1,12 +1,14 @@
 'use client';
 
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { useLocale, useT } from '@/core/i18n/client';
 import { formatNumber } from '@/lib/format';
 import { messages } from '../messages';
 
 import { useEffect, useState } from 'react';
 import { CheckCheck } from 'lucide-react';
-import { Button, EmptyState, GlassCard } from '@/ui';
+import { Button } from '@/ui/button';
+import { EmptyState, GlassCard } from '@/ui';
 import { LoadingState } from '@/ui/loading-state';
 import { fetchRadar } from '../data/radar';
 import { radarReasonLabel, radarWhatsappUrl } from '../radar';
@@ -52,14 +54,14 @@ export function RadarCard({ today, showEmpty = false }: { today: string; showEmp
               </div>
               {href ? (
                 <a href={href} target="_blank" rel="noopener noreferrer" aria-label={t('message', { v0: player.full_name })}
-                  className="inline-flex min-h-12 shrink-0 items-center justify-center rounded-control px-4 text-sm text-ink hover:bg-surface-raised">{t('message2')}</a>
-              ) : <Button variant="ghost" disabled className="min-h-12 shrink-0" aria-label={t('messageNoPhoneNumber', { v0: player.full_name })}>{t('message2')}</Button>}
+                  className={captainWorkspaceEnabled() ? 'glass inline-flex min-h-12 shrink-0 items-center justify-center rounded-full border border-line px-4 text-sm text-ink hover:bg-surface-raised' : 'inline-flex min-h-12 shrink-0 items-center justify-center rounded-control px-4 text-sm text-ink hover:bg-surface-raised'}>{t('message2')}</a>
+              ) : <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} disabled className="min-h-12 shrink-0" aria-label={t('messageNoPhoneNumber', { v0: player.full_name })}>{t('message2')}</Button>}
             </li>
           );
         })}
       </ul>
       {!expanded && players.length > 5 && (
-        <Button variant="ghost" className="min-h-12" aria-expanded={expanded} onClick={() => setExpanded(true)}>{t('showAll')}</Button>
+        <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} className="min-h-12" aria-expanded={expanded} onClick={() => setExpanded(true)}>{t('showAll')}</Button>
       )}
     </GlassCard>
   );

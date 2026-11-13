@@ -1,6 +1,6 @@
 import { getT } from '@/core/i18n/server';
 import { messages } from '../messages';
-import { Play } from 'lucide-react';
+import { Play, ChevronDown } from 'lucide-react';
 import { getContent } from '../content';
 import { Slogan } from './slogan';
 import { PreviewToggle } from './preview-toggle';
@@ -22,7 +22,7 @@ export async function Hero() {
         <a href={content.links.demo} className="marketing-ghost glass min-h-16 gap-2 px-5"><Play size={18} aria-hidden="true" />{content.hero.demo}</a>
       </div>
       <p className="text-sm text-muted">{content.hero.demoNote}</p>
-      <details className="text-sm text-muted"><summary className="flex min-h-12 cursor-pointer items-center text-lime">{content.hero.invite}</summary><p className="py-2">{content.hero.inviteNote}</p></details>
+      <details className="group text-sm text-muted"><summary className="flex min-h-12 cursor-pointer items-center text-lime">{content.hero.invite}<ChevronDown aria-hidden className="ms-auto size-4 shrink-0 transition-transform group-open:rotate-180" /></summary><p className="py-2">{content.hero.inviteNote}</p></details>
     </div>
     <PreviewToggle player={player} rest={rest} captain={captain} />
   </section>;

@@ -1,4 +1,5 @@
 'use client';
+import { IconButton } from '@/ui/icon-button';
 import dynamic from 'next/dynamic';
 import { useState } from 'react';
 import { useT } from '@/core/i18n/client';
@@ -19,7 +20,7 @@ export function FileBillingEntry({ playerId, name, today }: { playerId: string; 
     {open && <ResponsiveDialog modal fallbackId="file-renew" onDismiss={() => setOpen(false)} aria-labelledby="file-billing-title"
       className="sheet fixed inset-0 m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-card border border-line-soft bg-surface p-5 text-ink backdrop:bg-bg-deep/80">
       <div className="mb-4 flex items-center justify-between gap-3"><h2 id="file-billing-title" className="font-display text-[19px] font-semibold">{t('billing')}</h2>
-        <Button variant="ghost" aria-label={t('close')} onClick={() => setOpen(false)} className="min-h-12 min-w-12 rounded-full p-0"><X aria-hidden className="size-5" /></Button></div>
+        <IconButton aria-label={t('close')} onClick={() => setOpen(false)} className="min-h-12 min-w-12 rounded-full p-0"><X aria-hidden className="size-5" /></IconButton></div>
       <Billing playerId={playerId} name={name} today={today} />
     </ResponsiveDialog>}
   </>;

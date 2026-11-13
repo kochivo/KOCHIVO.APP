@@ -1,4 +1,5 @@
 'use client';
+import { Button } from '@/ui/button';
 import { useRef,useState } from 'react';
 import type { Locale } from '@/core/i18n/locale';
 import { uuidv7 } from '@/core/offline/ids';
@@ -34,7 +35,7 @@ export function RequestPicker({forms,playerId,locale,onSent,onCancel,onSend,now 
       <label className="block">{m.due}<input type="date" min={localDate(now,timezone)} value={due} onChange={e => setDue(e.target.value)} className="ms-3 min-h-12 rounded-control bg-surface p-3" /></label>
       {state === 'error' && <p role="alert" className="text-danger">{m.error}</p>}
       <div className="flex gap-3"><button disabled={!form} className="min-h-12 rounded-control bg-lime-soft px-5 font-bold text-lime">{state === 'sending' ? m.sending : m.send}</button>
-        <button type="button" onClick={onCancel} className="min-h-12 px-5">{m.cancel}</button></div>
+        <Button variant="secondary" type="button" onClick={onCancel} className="min-h-12 px-5">{m.cancel}</Button></div>
     </fieldset>
   </form>;
 }

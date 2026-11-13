@@ -1,5 +1,7 @@
 'use client';
 
+import { Button } from '@/ui/button';
+import { IconButton } from '@/ui/icon-button';
 import { useId, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { X } from 'lucide-react';
@@ -76,11 +78,11 @@ export function FoodDrawer({ food, onClose, onSaved, onMutation }: {
   }
   const input = 'min-h-12 w-full rounded-control border border-line bg-surface px-3';
   const photo = food?.photo ? foodPhotoUrl(food.photo) : null;
-  return <ResponsiveDialog fallbackId="new-library-food" onDismiss={() => { if (!busy) onClose(); }} aria-labelledby={title}
-    className="sheet fixed inset-x-0 bottom-0 top-auto z-50 max-h-[90dvh] w-full overflow-y-auto rounded-t-card p-5 text-ink lg:inset-x-auto lg:inset-y-0 lg:end-0 lg:m-0 lg:h-dvh lg:max-h-dvh lg:w-[26rem] lg:rounded-none lg:border-s lg:border-line">
+  return <ResponsiveDialog modal fallbackId="new-library-food" onDismiss={() => { if (!busy) onClose(); }} aria-labelledby={title}
+    className="sheet fixed inset-x-0 bottom-0 top-auto z-50 max-h-[90dvh] w-full overflow-y-auto rounded-t-card p-5 text-ink lg:inset-x-auto lg:inset-y-4 lg:end-0 lg:m-0 lg:h-auto lg:max-h-[90dvh] lg:w-[26rem] lg:rounded-none lg:border-s lg:border-line">
     <div className="flex items-center justify-between gap-3">
       <h2 id={title} className="text-xl font-bold">{food?.name ?? t('new')}</h2>
-      <button type="button" disabled={busy} className="min-h-12 min-w-12" aria-label={t('close')} onClick={onClose}><X aria-hidden /></button>
+      <IconButton type="button" disabled={busy} className="min-h-12 min-w-12" aria-label={t('close')} onClick={onClose}><X aria-hidden /></IconButton>
     </div>
     {readonly && <p className="my-3 text-muted">{t('readonly')}</p>}
     <form onSubmit={event => void submit(event)} className="mt-4 grid gap-4" aria-busy={busy}>
@@ -106,7 +108,7 @@ export function FoodDrawer({ food, onClose, onSaved, onMutation }: {
         : <button type="submit" disabled={busy} className="min-h-12 rounded-control bg-lime px-4 font-bold text-on-lime">{t('save')}</button>}
       {id && <>
         {uses > 0 && <p className="text-muted">{t('blocked', { count: uses })}</p>}
-        <button type="button" disabled={busy || uses > 0} className="min-h-12 text-danger disabled:opacity-50" onClick={() => void remove()}>{t('delete')}</button>
+        <Button variant="secondary" type="button" disabled={busy || uses > 0} className="min-h-12 border border-danger/40 text-danger! disabled:opacity-50" onClick={() => void remove()}>{t('delete')}</Button>
       </>}
     </form>
   </ResponsiveDialog>;

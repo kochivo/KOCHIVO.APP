@@ -1,5 +1,7 @@
 'use client';
 
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { IconButton } from '@/ui/icon-button';
 import { useId, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { X } from 'lucide-react';
@@ -38,7 +40,7 @@ export function KoTeaser({ role, userId, joined: initialJoined, readFailed = fal
       openerId={openerId} onClose={() => setOpen(false)} onJoined={() => setJoined(true)} />
       : <ResponsiveDialog modal aria-label={t('teaserOpen')} fallbackId={openerId} openerId={openerId} onDismiss={() => setOpen(false)}
         className="sheet fixed inset-auto start-[max(1rem,var(--safe-start))] bottom-[calc(var(--nav-clearance)+4.5rem)] z-50 m-0 w-96 max-w-[calc(100vw-2rem)] rounded-card border border-line p-5 text-start text-ink lg:bottom-24">
-        <button type="button" aria-label={t('close')} onClick={() => setOpen(false)} className="ms-auto grid min-h-12 min-w-12 place-items-center"><X aria-hidden className="size-5" /></button>
+        {captainWorkspaceEnabled() ? <IconButton type="button" aria-label={t('close')} onClick={() => setOpen(false)} className="ms-auto grid min-h-12 min-w-12 place-items-center"><X aria-hidden className="size-5" /></IconButton> : <button type="button" aria-label={t('close')} onClick={() => setOpen(false)} className="ms-auto grid min-h-12 min-w-12 place-items-center"><X aria-hidden className="size-5" /></button>}
         {panel.failed ? <>
           <p role="alert">{t('loadError')}</p>
           <button type="button" onClick={() => void loadPanel()} className="mt-3 min-h-12 rounded-control bg-lime px-4 text-on-lime">{t('retry')}</button>

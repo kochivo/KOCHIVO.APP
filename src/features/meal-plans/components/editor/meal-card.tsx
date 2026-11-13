@@ -1,5 +1,6 @@
 'use client';
 
+import { IconButton } from '@/ui/icon-button';
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Ellipsis } from 'lucide-react';
@@ -31,7 +32,7 @@ export function MealCard({ meal, update, facts, day, first, last }: {
       <h2 className="font-display text-[19px] font-semibold">{meal.name}</h2>
       <span className="ms-auto text-xs text-faint">{t('mealTotals', { kcal: formatNumber(Math.round(totals.kcal), locale), protein: formatNumber(Math.round(totals.protein), locale) })}</span>
       {incomplete && <span className="text-xs text-warn">{t('incomplete')}</span>}
-      <button type="button" aria-label={t('details')} aria-expanded={details} onClick={() => setDetails(!details)} className="grid min-h-12 min-w-12 place-items-center text-faint"><Ellipsis aria-hidden className="size-4" /></button>
+      <IconButton type="button" aria-label={t('details')} aria-expanded={details} onClick={() => setDetails(!details)} className="grid min-h-12 min-w-12 place-items-center text-ink"><Ellipsis aria-hidden className="size-4" /></IconButton>
     </div>
     {!meal.items.length && <p className="px-[18px] pb-3 text-xs text-faint">{planT('addTheFirstFood')}</p>}
     <ul>{meal.items.map(item => <FoodRow key={item.id} item={item} update={update} />)}</ul>

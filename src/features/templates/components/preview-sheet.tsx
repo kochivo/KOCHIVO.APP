@@ -1,12 +1,14 @@
 'use client';
 
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { useLocale, useT } from '@/core/i18n/client';
 import { formatNumber } from '@/lib/format';
 import { messages } from '../messages';
 
 import { useEffect, useRef, useState } from 'react';
 import { Files } from 'lucide-react';
-import { Button, EmptyState } from '@/ui';
+import { Button } from '@/ui/button';
+import { EmptyState } from '@/ui';
 import { LoadingState } from '@/ui/loading-state';
 import { exerciseName, foodName } from '@/lib/display-name';
 import { starterText } from '@/lib/starter-text';
@@ -39,7 +41,7 @@ export function PreviewSheet({ template, onAssign, onClose }: { template: Templa
     <div className="grid gap-4">
       <h2 id="preview-template-title" className="text-xl font-bold">{t('previewTitle', { title })}</h2>
       {error ? <div role="alert" className="grid justify-items-start gap-2">{error}
-        <Button variant="ghost" className="min-h-12" onClick={() => { setError(''); setPreview(null); setAttempt(value => value + 1); }}>{t('tryAgain')}</Button>
+        <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} className="min-h-12" onClick={() => { setError(''); setPreview(null); setAttempt(value => value + 1); }}>{t('tryAgain')}</Button>
       </div> : !preview ? <LoadingState variant="detail" />
         : preview.groups.length === 0 ? <EmptyState icon={Files} title={t('nothingHereYet')} body={t('templateIsEmptyAddDaysOrMeals')} action={emptyAction} /> : <>
           {preview.kind === 'nutrition' && <p className="glass-strong w-fit rounded-control px-3 py-2 text-sm font-bold">{t('totalKcal', { kcal: n(preview.kcal) })}</p>}
@@ -61,7 +63,7 @@ export function PreviewSheet({ template, onAssign, onClose }: { template: Templa
         </>}
       <div className="flex flex-wrap gap-2">
         <Button variant={preview?.groups.length ? 'primary' : 'secondary'} className="min-h-12" disabled={!preview || preview.groups.length === 0} onClick={onAssign}>{t('assignToPlayer')}</Button>
-        <Button variant="ghost" className="min-h-12" onClick={onClose}>{t('close')}</Button>
+        <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} className="min-h-12" onClick={onClose}>{t('close')}</Button>
       </div>
     </div>
   </dialog>;

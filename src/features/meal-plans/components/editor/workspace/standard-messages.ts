@@ -2,7 +2,7 @@ export const arStd = {
   calorieUnit: 'سعرة', gramUnit: 'جرام', unitLabel: '{name} ({grams} جم)',
   macros: '{protein} بروتين · {carbs} كربوهيدرات · {fat} دهون لكل 100 جم',
   missingValues: 'لا توجد قيم غذائية', complete: 'أكملها', countHint: 'ليُحسب هذا الطعام', unknown: '؟', incomplete: 'المجموع غير مكتمل القيم الغذائية',
-  createFood: '+ طعام جديد غير موجود في المكتبة', mealSearch: 'أضف طعاماً إلى {meal}… (دجاج، أرز)',
+  createFood: 'طعام جديد غير موجود في المكتبة', mealSearch: 'أضف طعاماً إلى {meal}… (دجاج، أرز)',
   playerFacts: 'بيانات {name}', goal: 'الهدف', weight: 'الوزن', ageHeight: 'العمر · الطول', weekly: 'الالتزام هذا الأسبوع',
   weightValue: '{weight} كجم', ageHeightValue: '{age} سنة · {height} سم', weeklyValue: '{done} من 7',
   muscle: 'زيادة عضل', restDifference: 'يوم الراحة أقل بـ{kcal} سعرة من الكربوهيدرات',

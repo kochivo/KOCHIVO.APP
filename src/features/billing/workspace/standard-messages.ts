@@ -1,7 +1,7 @@
 export const arStd = {
-  usageTail: 'من {limit} لاعب', currency: 'جنيه',
+  'usageTail.one': 'من {limit} لاعب', 'usageTail.two': 'من {limit} لاعبين', 'usageTail.few': 'من {limit} لاعبين', 'usageTail.other': 'من {limit} لاعب', currency: 'جنيه',
   previous: 'السابق', next: 'التالي',
-  plan: 'اشتراكي', usage: '{used} من {limit} لاعب', upgrade: 'رقّي باقتك', paid: 'المدفوع هذا الشهر',
+  plan: 'اشتراكي', 'usage.one': '{used} من {limit} لاعب', 'usage.two': '{used} من {limit} لاعبين', 'usage.few': '{used} من {limit} لاعبين', 'usage.other': '{used} من {limit} لاعب', upgrade: 'رقّي باقتك', paid: 'المدفوع هذا الشهر',
   dues: 'متأخر', endingWeek: 'ينتهي هذا الأسبوع', playerUnit: 'لاعب', money: '{amount} جنيه',
   player: 'اللاعب', status: 'الحالة', until: 'حتى', last: 'آخر دفعة', active: 'نشط',
   ending: 'ينتهي بعد {n} أيام', overdue: 'متأخر {n} أيام', frozen: 'مجمّد', pending: 'بانتظار التفعيل',

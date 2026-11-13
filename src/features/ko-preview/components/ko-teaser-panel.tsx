@@ -1,5 +1,7 @@
 'use client';
 
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { IconButton } from '@/ui/icon-button';
 import { useRef, useState } from 'react';
 import { Check, X } from 'lucide-react';
 import { useLocale, useT } from '@/core/i18n/client';
@@ -32,10 +34,13 @@ export function KoTeaserPanel({ role, userId, joined: initialJoined, readFailed 
   return <ResponsiveDialog modal dir={localeDir(locale)} aria-labelledby={`${openerId}-title`}
     fallbackId={openerId} openerId={openerId} onDismiss={onClose}
     className="sheet fixed inset-auto start-[max(1rem,var(--safe-start))] bottom-[calc(var(--nav-clearance)+4.5rem)] z-50 m-0 max-h-[75dvh] w-96 max-w-[calc(100vw-2rem)] overflow-y-auto rounded-card border border-line p-5 text-start text-ink shadow-xl lg:bottom-24">
-    <button type="button" onClick={onClose} aria-label={t('close')}
+    {captainWorkspaceEnabled() ? <IconButton type="button" onClick={onClose} aria-label={t('close')}
       className="ms-auto grid min-h-12 min-w-12 place-items-center rounded-control hover:bg-surface-raised">
       <X aria-hidden className="size-5" />
-    </button>
+    </IconButton> : <button type="button" onClick={onClose} aria-label={t('close')}
+      className="ms-auto grid min-h-12 min-w-12 place-items-center rounded-control hover:bg-surface-raised">
+      <X aria-hidden className="size-5" />
+    </button>}
     <KoAvatar expression="welcome" className="mx-auto size-24" />
     <h2 id={`${openerId}-title`} className="mt-3 text-xl font-extrabold">{t('title')}</h2>
     <p className="mt-2 text-sm text-muted">{t('introduction')}</p>

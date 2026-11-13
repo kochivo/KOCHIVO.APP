@@ -3,6 +3,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { Inbox } from 'lucide-react';
 import { expect, it } from 'vitest';
 import { EmptyState } from './empty-state';
+import { secondaryButtonClass } from './secondary-button-class';
 
 it('renders link actions as accessible links, including secondary actions', () => {
   const html = renderToStaticMarkup(createElement(EmptyState, {
@@ -23,4 +24,25 @@ it('keeps callback actions as buttons', () => {
   }));
   expect(html).toContain('>Clear search</button>');
   expect(html).not.toContain('<a ');
+});
+
+it('gives secondary links a persistent surface and a full touch target', () => {
+  const html = renderToStaticMarkup(createElement(EmptyState, {
+    icon: Inbox, title: 'No matches', body: 'Try again', secondary: { label: 'Help', href: '/help' },
+  }));
+  expect(html).toContain('href="/help"');
+  expect(html).toContain(`class="${secondaryButtonClass}"`);
+  expect(html).toContain('glass');
+  expect(html).toContain('min-h-12');
+  expect(html).not.toContain('bg-transparent');
+});
+
+it.each(['link', 'button'])('surfaces the secondary %s action', kind => {
+  const html = renderToStaticMarkup(createElement(EmptyState, {
+    icon: Inbox, title: 'No matches', body: 'Try again',
+    secondary: kind === 'link' ? { label: 'Help', href: '/help' } : { label: 'Help', onClick() {} },
+  }));
+  const control = html.match(/<(?:a|button)[^>]*>Help<\/(?:a|button)>/)?.[0];
+  expect(control).toContain('glass');
+  expect(control).not.toContain('bg-transparent');
 });

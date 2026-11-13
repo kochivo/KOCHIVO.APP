@@ -3,7 +3,7 @@ import { use, useState, useTransition } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Search } from 'lucide-react';
+import { ChevronDown, Search } from 'lucide-react';
 import { useLocale, useT } from '@/core/i18n/client';
 import { formatNumber } from '@/lib/format';
 import { Button } from '@/ui/button';
@@ -37,7 +37,7 @@ export function WorkspaceBilling({ data, today }: { data: Promise<BillingResult>
     <header className="flex flex-wrap items-center justify-between gap-4">
       <div><h1 id="billing-heading" tabIndex={-1} className="font-display text-[30px] font-semibold leading-tight">{legacy('billing')}</h1>
         <p className="mt-1 text-[13px] text-muted">{t('summary', { paid: formatNumber(billing.revenue.thisMonth, locale),
-          due: formatNumber(billing.revenue.dues, locale), n: formatNumber(billing.revenue.owing, locale), ending: formatNumber(endingThisWeek(billing.players, today), locale) })}</p></div>
+          due: formatNumber(billing.revenue.dues, locale), n: billing.revenue.owing, count: formatNumber(billing.revenue.owing, locale), ending: formatNumber(endingThisWeek(billing.players, today), locale) })}</p></div>
       {billing.players.length > 0 && <Button className="min-h-12 rounded-full" onClick={() => setPicking(true)}>{t('record')}</Button>}
     </header>
     <RequestsEntry />
@@ -65,7 +65,7 @@ export function WorkspaceBilling({ data, today }: { data: Promise<BillingResult>
         </section>
         <WorkspacePackages packages={packages} onChange={setPackages} />
       </div>
-      <details className="glass rounded-card border border-line-soft px-5 py-[18px]"><summary className="flex min-h-12 cursor-pointer items-center text-sm text-muted">{t('details')}</summary><FinanceSummary revenue={billing.revenue} /></details>
+      <details className="group/finance glass rounded-card border border-line-soft px-5 py-[18px]"><summary className="flex min-h-12 cursor-pointer items-center gap-2 text-sm text-muted">{t('details')}<ChevronDown aria-hidden className="ms-auto size-4 group-open/finance:rotate-180" /></summary><FinanceSummary revenue={billing.revenue} /></details>
     </>}
     {picking && <Picker players={billing.players} onClose={() => setPicking(false)} onChoose={player => { setPicking(false); setSelectedId(player.playerId); }} />}
     {selected && <Detail key={`${selected.playerId}:${selected.accessUntil}:${selected.lastPayment?.id}:${selected.due}:${selected.frozenAt}`} player={selected} today={today} packages={packages} initialAction={selected.pending ? 'activate' : selected.due > 0 ? 'collect' : 'renew'} onClose={() => setSelectedId(null)} />}

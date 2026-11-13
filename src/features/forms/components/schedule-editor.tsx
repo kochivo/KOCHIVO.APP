@@ -1,3 +1,4 @@
+import { Button } from '@/ui/button';
 import type { ArabicStyle, Locale } from '@/core/i18n/locale';
 import { createT } from '@/core/i18n/messages';
 import { formCopy } from '../form-copy';
@@ -22,7 +23,7 @@ export function ScheduleEditor({ form, locale, onChange, players = 0, style, sch
         ? t('forPlayer', { name: scheduleContext.players.find(p => p.id === schedule.player_id)?.name ?? '' }) : t('all')}
       {schedule.paused_at && <> · {t('stopped')}</>}
     </p>)}
-    <button type="button" disabled={!canManage} className="min-h-12 text-sm text-ink disabled:opacity-50" onClick={manage}>{t('schedule')}</button>
+    <Button variant="secondary" type="button" disabled={!canManage} className="min-h-12 text-sm text-ink disabled:opacity-50" onClick={manage}>{t('schedule')}</Button>
   </div>;
   const reminders = [{ value: '', label: t('noReminder') }, { value: '12', label: t('remind12') }, { value: '24', label: t('remind') }];
   if (form.remind_after_hours && ![12, 24].includes(form.remind_after_hours)) reminders.push({ value: String(form.remind_after_hours), label: t('remindHours', { n: form.remind_after_hours }) });
@@ -46,7 +47,7 @@ export function ScheduleEditor({ form, locale, onChange, players = 0, style, sch
       <span>{t('unanswered')}</span><ThemedSelect label={m.reminder} value={String(form.remind_after_hours ?? '')} options={reminders}
         onChange={value => onChange({ ...form, remind_after_hours: value ? Number(value) : null })} />
     </div>
-    <button type="button" disabled={!canManage} className="min-h-12 text-xs text-faint disabled:opacity-50" onClick={manage}>{t('schedule')}</button>
+    <Button variant="secondary" type="button" disabled={!canManage} className="min-h-12 text-xs text-faint disabled:opacity-50" onClick={manage}>{t('schedule')}</Button>
     {s && <details className="mt-1 text-xs text-faint"><summary className="min-h-12 cursor-pointer py-3">{t('details')}</summary>
       <label className="flex flex-wrap items-center gap-3">{m.hour}<input aria-label={m.hour} className="min-h-12 w-24 rounded-control border border-line bg-transparent px-3"
         type="number" min={0} max={23} value={s.hour} onChange={e => onChange({ ...form, schedule: { ...s, hour: e.target.valueAsNumber } })} /></label>

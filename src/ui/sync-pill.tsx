@@ -1,4 +1,5 @@
 'use client';
+import { Button } from './button';
 import { useT } from '@/core/i18n/client';
 import { messages } from './messages';
 
@@ -25,6 +26,6 @@ export function SyncPill({ state, pending = 0, onRetry }: SyncPillProps) {
   const text = state === 'attention' ? t('syncAttention') : state === 'synced' ? t('synced') : state === 'offline' ? t('offline') : t('saved', { pending });
   return <span role="status" className={cn('inline-flex flex-wrap items-center gap-2 rounded-control px-3 py-2 text-sm', variants[state])}>
     <Icon aria-hidden className="size-4" />{text}
-    {state === 'attention' && <button type="button" className="min-h-12 min-w-12 rounded-control px-3 text-lime" onClick={onRetry}>{t('tryAgain')}</button>}
+    {state === 'attention' && <Button variant="secondary" type="button" className="min-h-12 min-w-12 rounded-control px-3 text-lime" onClick={onRetry}>{t('tryAgain')}</Button>}
   </span>;
 }

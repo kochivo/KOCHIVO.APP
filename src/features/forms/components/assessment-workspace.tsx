@@ -1,4 +1,5 @@
 'use client';
+import { Button } from '@/ui/button';
 import { useCallback, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useResource } from '@/core/resource';
@@ -52,14 +53,14 @@ export function AssessmentWorkspace({ playerId, formId, locale }: { playerId?: s
   }
   if (!resource.data) return <section className="glass rounded-card p-5" role={resource.status === 'error' ? 'alert' : 'status'}>
     <p>{t(resource.status === 'error' ? 'error' : 'loading')}</p>
-    {resource.status === 'error' && <button className="min-h-12 px-4" onClick={() => void resource.retry()}>{t('retry')}</button>}
+    {resource.status === 'error' && <Button variant="secondary" className="min-h-12 px-4" onClick={() => void resource.retry()}>{t('retry')}</Button>}
   </section>;
   const data = formId ? { ...resource.data, schedules: resource.data.schedules.filter(s => s.form_id === formId) } : resource.data;
   const name = data.players.find(p => p.id === playerId)?.name;
   return <section className="space-y-[18px]">
     {playerId && <h1 className="font-display text-[30px] font-semibold leading-tight">{t('scheduleFor', { name: name ?? '' })}</h1>}
     {(error || resource.status === 'error') && <p role="alert" className="text-danger">{t('saveError')}
-      <button className="ms-3 min-h-12 px-3" onClick={() => void resource.retry()}>{t('retry')}</button></p>}
+      <Button variant="secondary" className="ms-3 min-h-12 px-3" onClick={() => void resource.retry()}>{t('retry')}</Button></p>}
     <div className="grid items-start gap-[18px] min-[1001px]:grid-cols-[300px_minmax(0,1fr)]">
       <AssessmentPanel data={data} player={playerId} locale={locale} now={now} busy={busy}
         onEdit={s => { setEditing(s); setShowEditor(true); }} onPause={s => void mutate(s, false)}

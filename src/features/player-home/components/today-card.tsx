@@ -6,7 +6,8 @@ import { formatNumber } from '@/lib/format';
 import Link from 'next/link';
 import type { SnapshotDay } from '@/core/offline';
 import { Dumbbell } from 'lucide-react';
-import { CardioCards, EmptyState, GlassCard } from '@/ui';
+import { EmptyState, GlassCard } from '@/ui';
+import { CardioCards } from '@/ui/cardio-cards';
 import { starterText } from '@/lib/starter-text';
 import { messages as warmupMessages } from '../warmup/messages';
 

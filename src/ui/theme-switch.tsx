@@ -38,7 +38,7 @@ export function ThemeSwitch({ compact = false }: { compact?: boolean }) {
     const index = options.findIndex(option => option.value === value);
     const next = options[(index + 1) % options.length] ?? options[0];
     const Icon = value === 'light' ? Sun : value === 'dark' ? Moon : Monitor;
-    return <button type="button" className="marketing-ghost min-h-12 min-w-12"
+    return <button type="button" className="marketing-ghost min-h-12 min-w-12 rounded-full border border-line"
       aria-label={t('themeCycle', { current: options[index]?.label ?? t('themeSystem'), next: next.label })}
       onClick={() => select(next.value)}><Icon size={20} aria-hidden="true" /></button>;
   }

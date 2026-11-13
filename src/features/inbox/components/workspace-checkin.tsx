@@ -1,4 +1,5 @@
 'use client';
+import { Button } from '@/ui/button';
 import Image from 'next/image';
 import { useLocale, useT } from '@/core/i18n/client';
 import { formatNumber } from '@/lib/format';
@@ -24,7 +25,7 @@ export function WorkspaceCheckin({ item, inputs, now }: { item: Extract<InboxIte
         <dd className="min-w-0 whitespace-pre-wrap break-words text-end">{item.notes || t('noNotes')}</dd></div>
     </dl>
     <div className="px-5 py-3.5">{media.loading ? <LoadingState variant="cards" aria-label={t('loading')} /> : media.error ? <div role="alert"><p>{t('photosFailed')}</p>
-      <button className="min-h-12 px-4" onClick={media.retry}>{t('retry')}</button></div> : media.urls.length ?
+      <Button variant="secondary" className="min-h-12 px-4" onClick={media.retry}>{t('retry')}</Button></div> : media.urls.length ?
       <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">{media.urls.slice(0, 3).map((url, index) => <a key={url} href={url} target="_blank" rel="noreferrer" className="min-h-12">
         <Image src={url} alt={t((['front', 'side', 'rear'] as const)[index] ?? 'front')} width={240} height={320} unoptimized onError={media.failed}
           className="aspect-[3/4] w-full rounded-2xl border border-line-soft object-cover" /></a>)}</div> : <p className="text-sm text-faint">{t('noPhotos')}</p>}</div>

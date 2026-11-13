@@ -1,8 +1,10 @@
 'use client';
 
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { useLocale, useT } from '@/core/i18n/client';
 import { formatNumber } from '@/lib/format';
-import { Button, Chip } from '@/ui';
+import { Button } from '@/ui/button';
+import { Chip } from '@/ui';
 import { goals, levels, equipmentTiers, injuries, generatorBriefSchema } from '../brief';
 import type { GeneratorBrief } from '../brief';
 import { messages, weekdays } from '../messages';
@@ -49,7 +51,7 @@ export function BriefSheet({ brief, playerName, profileWarning = false, onChange
     </fieldset>
     <div className="flex flex-wrap gap-2">
       <Button className="min-h-12" type="submit" disabled={!generatorBriefSchema.safeParse(brief).success}>{t('generate')}</Button>
-      <Button className="min-h-12" variant="ghost" onClick={onClose}>{t('close')}</Button>
+      <Button className="min-h-12" variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} onClick={onClose}>{t('close')}</Button>
     </div>
   </form>;
 }

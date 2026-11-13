@@ -23,7 +23,7 @@ export async function CalculatorContent({ playerId, locale }: { playerId: string
     data = undefined;
   }
   if (!data) return <section role="alert" className="glass grid gap-3 rounded-card p-5">
-      <p>{t('loadFailed')}</p><Link className="flex min-h-12 items-center" href={`/captain/players/${playerId}/nutrition?view=calc`}>{t('retry')}</Link>
+      <p>{t('loadFailed')}</p><Link className="glass inline-flex min-h-12 items-center rounded-full border border-line px-4" href={`/captain/players/${playerId}/nutrition?view=calc`}>{t('retry')}</Link>
     </section>;
   return <TimezoneScope timezone={await getPlayerTimezone(playerId)}><CalculatorView playerId={playerId} file={data.file} plans={data.plans} /></TimezoneScope>;
 }

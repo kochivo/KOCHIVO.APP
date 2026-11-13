@@ -1,4 +1,5 @@
 'use client';
+import { Button } from '@/ui/button';
 import { useLocale, useT } from '@/core/i18n/client';
 import { emptyWarmup, warmupMinutes } from '@/features/programs';
 import { formatNumber } from '@/lib/format';
@@ -42,8 +43,8 @@ export function WarmupWorkout({ state, today, progress }: {
       <button type="button" disabled={progress.loading || progress.error} onClick={() => {
         document.querySelector<HTMLInputElement>('#warmup-checklist input:not(:checked)')?.focus();
       }} className="flex min-h-12 w-full items-center justify-center rounded-full bg-lime px-5 font-semibold text-on-lime disabled:opacity-50">{t('continue')}</button>
-      <button type="button" disabled={progress.loading || progress.error} onClick={progress.skip}
-        className="min-h-12 w-full rounded-full px-5 text-sm text-muted">{t('skip')}</button>
+      <Button variant="secondary" type="button" disabled={progress.loading || progress.error} onClick={progress.skip}
+        className="min-h-12 w-full rounded-full px-5 text-sm text-muted">{t('skip')}</Button>
     </>
   </div>;
 }

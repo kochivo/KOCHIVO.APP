@@ -5,7 +5,7 @@ import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { CloudCheck, Send } from 'lucide-react';
+import { ChevronDown, CloudCheck, Send } from 'lucide-react';
 import { useLocale, useT } from '@/core/i18n/client';
 import { uuidv7 } from '@/core/offline/ids';
 import { Button } from '@/ui/button';
@@ -100,7 +100,7 @@ export function PlayerEditor({ data }: { data: Awaited<ReturnType<typeof loadPla
           <textarea disabled aria-label={t('notes')} placeholder={t('notePlaceholder')} className="min-h-12 w-full resize-none bg-transparent text-[12.5px] placeholder:text-faint" />
           <p className="text-xs text-faint">{t('noteGap')}</p></section>
       </div>}
-      <details className="mt-[18px] text-muted" onToggle={event => setMore(event.currentTarget.open)}><summary className="flex min-h-12 cursor-pointer items-center">{t('more')}</summary>
+      <details className="group mt-[18px] text-muted" onToggle={event => setMore(event.currentTarget.open)}><summary className="flex min-h-12 cursor-pointer items-center">{t('more')}<ChevronDown aria-hidden className="ms-auto size-4 transition-transform group-open:rotate-180" /></summary>
         <p className="text-xs text-faint">{automaticTargets(facts) ? t('calculated', { name }) : t('missing')}</p>
         <p className="text-xs text-faint">{t('facts', { weight: facts.weight ? formatNumber(facts.weight.value, locale) : '—', goal: t(goal), days: formatNumber(facts.trainingDays?.value.length ?? 0, locale) })}</p>
         <Button variant="secondary" aria-expanded={calculator} disabled={state.busy} onClick={() => setCalculator(!calculator)} className="min-h-12 rounded-full">{t('edit')}</Button>
@@ -113,11 +113,11 @@ export function PlayerEditor({ data }: { data: Awaited<ReturnType<typeof loadPla
     </fieldset>
     {!template && <PlayerFactsCard name={name} facts={facts} meals={draft.meals} logs={context.logs} today={context.today} sent={draft.status !== 'draft'} />}
     </div>
-    {!template && <details className="mt-3 text-muted"><summary className="flex min-h-12 cursor-pointer items-center">{t('library')}</summary>
+    {!template && <details className="group mt-3 text-muted"><summary className="flex min-h-12 cursor-pointer items-center">{t('library')}<ChevronDown aria-hidden className="ms-auto size-4 transition-transform group-open:rotate-180" /></summary>
       {!data.plans.length && <p className="text-xs text-faint">{planT('noPlansYetCreateANewOne')}</p>}
-      <ul>{data.plans.map(plan => <li key={plan.id}><Link className="flex min-h-12 items-center gap-3" href={`/captain/nutrition/${plan.id}`}>{plan.title}<span className="text-xs text-faint">{plan.status === 'active' ? planT('active') : plan.status === 'archived' ? planT('archived') : planT('draft')}</span></Link></li>)}</ul>
+      <ul>{data.plans.map(plan => <li key={plan.id}><Link className="flex min-h-12 items-center gap-3 text-lime hover:underline focus-visible:underline" href={`/captain/nutrition/${plan.id}`}>{plan.title}<span className="text-xs text-faint">{plan.status === 'active' ? planT('active') : plan.status === 'archived' ? planT('archived') : planT('draft')}</span></Link></li>)}</ul>
       {draft.playerId && <NewPlanButton playerId={draft.playerId} disabled={state.busy || state.dirty} />}
-      <Link href="/captain/templates" className="flex min-h-12 items-center">{t('library')}</Link>
+      <Link href="/captain/templates" className="glass inline-flex min-h-12 items-center rounded-full border border-line px-4">{t('library')}</Link>
     </details>}
   </div>;
 }

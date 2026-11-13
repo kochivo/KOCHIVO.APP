@@ -27,7 +27,7 @@ export function CaptainsTable({ rows, selected, onActivate, onSuspend, onReset }
   </>;
   const controls = (row: CaptainRow) => <div className="flex flex-wrap gap-2">
     <Button variant="secondary" className={selected === row.id ? 'border-lime text-lime' : ''} onClick={() => onActivate(row)}>{t('activate')}</Button>
-    <Button variant="ghost" onClick={() => onSuspend(row)}>{row.suspended ? t('restore') : t('suspend')}</Button>
+    <Button variant="secondary" className={row.suspended ? undefined : 'border border-danger/40 text-danger'} onClick={() => onSuspend(row)}>{row.suspended ? t('restore') : t('suspend')}</Button>
   </div>;
   if (!rows.length) return <EmptyState icon={Users} title={t('noCaptains')} body={t('emptyHint')} action={onReset ? { label: t('clearSearch'), onClick: onReset } : { label: t('clearSearch'), href: '/admin' }} />;
   return <>

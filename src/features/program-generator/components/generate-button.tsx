@@ -1,11 +1,12 @@
 'use client';
 
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Sparkles } from 'lucide-react';
 import { useLocale, useT } from '@/core/i18n/client';
 import { loadSupabaseBrowser } from '@/core/supabase/lazy';
-import { Button } from '@/ui';
+import { Button } from '@/ui/button';
 import { ResponsiveDialog } from '@/ui/responsive-dialog';
 import { injuries } from '../brief';
 import { loadCandidates } from '../data/load-candidates';
@@ -74,14 +75,14 @@ export function GenerateButton({ playerId, playerName, intake, profileError = fa
         <h2 id="generator-heading" className="text-xl font-bold">{t('brief')}</h2>
         <p role="alert" className="text-danger">{t('profileLoadError')}</p>
         <Button variant="secondary" className="min-h-12" onClick={() => router.refresh()}>{t('retry')}</Button>
-        <Button variant="ghost" className="min-h-12" onClick={() => setOpen(false)}>{t('close')}</Button>
+        <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} className="min-h-12" onClick={() => setOpen(false)}>{t('close')}</Button>
       </div> : candidates === null || candidates.length === 0 ? <div className="space-y-4">
         <h2 id="generator-heading" className="text-xl font-bold">{t('brief')}</h2>
         {loadError ? <p role="alert" className="text-danger">{t('loadError')}</p> :
           <p role="status">{t(candidates === null ? 'loading' : 'empty')}</p>}
         {(loadError || candidates?.length === 0) && <Button variant="secondary" className="min-h-12"
           onClick={() => { setCandidates(null); setLoadError(false); setAttempt(value => value + 1); }}>{t('retry')}</Button>}
-        <Button variant="ghost" className="min-h-12" onClick={() => setOpen(false)}>{t('close')}</Button>
+        <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} className="min-h-12" onClick={() => setOpen(false)}>{t('close')}</Button>
       </div> : !state.program ? <div className="space-y-4">
         <BriefSheet brief={state.brief} playerName={playerName} profileWarning={profileWarning} onChange={state.setBrief}
           onGenerate={state.generate} onClose={() => setOpen(false)} />
@@ -100,16 +101,16 @@ export function GenerateButton({ playerId, playerName, intake, profileError = fa
           <div className="flex flex-wrap gap-2">
             <Button variant="secondary" className="min-h-12" onClick={() => regenerate(true)}>{t('keepSwaps')}</Button>
             <Button variant="secondary" className="min-h-12" onClick={() => regenerate(false)}>{t('discardSwaps')}</Button>
-            <Button variant="ghost" className="min-h-12" onClick={() => setConfirm(false)}>{t('cancel')}</Button>
+            <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} className="min-h-12" onClick={() => setConfirm(false)}>{t('cancel')}</Button>
           </div>
         </div> : <Button variant="secondary" className="min-h-12" onClick={() => state.swaps.length ? setConfirm(true) : regenerate(false)}>{t('regenerate')}</Button>}
         <div className="flex flex-wrap gap-2">
           <Button className="min-h-12" disabled={confirm} onClick={() => void save(profileWarning ? 'edit' : playerId ? 'assign' : 'template')}>
             {t(profileWarning ? 'edit' : playerId ? 'assign' : 'template', { name: playerName || t('player') })}
           </Button>
-          {!profileWarning && <Button variant="ghost" className="min-h-12" disabled={confirm} onClick={() => void save('edit')}>{t('edit')}</Button>}
-          <Button variant="ghost" className="min-h-12" onClick={() => { state.edit(); setConfirm(false); setSaveError(''); }}>{t('back')}</Button>
-          <Button variant="ghost" className="min-h-12" onClick={() => { setOpen(false); setConfirm(false); }}>{t('close')}</Button>
+          {!profileWarning && <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} className="min-h-12" disabled={confirm} onClick={() => void save('edit')}>{t('edit')}</Button>}
+          <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} className="min-h-12" onClick={() => { state.edit(); setConfirm(false); setSaveError(''); }}>{t('back')}</Button>
+          <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} className="min-h-12" onClick={() => { setOpen(false); setConfirm(false); }}>{t('close')}</Button>
         </div>
         {slot && <SwapSheet alternatives={alternativesFor(state.program, slot.weekday, slot.position, candidates)}
           onClose={() => setSlot(null)} onSelect={id => { state.swap(slot.weekday, slot.position, id); setSlot(null); }} />}

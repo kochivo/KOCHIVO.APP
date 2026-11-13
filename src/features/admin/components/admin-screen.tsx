@@ -114,9 +114,9 @@ export function AdminScreen({ captains, audit, plans, search, offset, kpis, requ
           </div>}
         </div>
         <nav aria-label={t('pages')} className="flex items-center justify-between gap-2">
-          <Button variant="ghost" disabled={pending || offset === 0} onClick={() => navigate(search, Math.max(0, offset - 100))}>{t('previous')}</Button>
+          <Button variant="secondary" disabled={pending || offset === 0} onClick={() => navigate(search, Math.max(0, offset - 100))}>{t('previous')}</Button>
           <span className="text-sm text-muted">{t('page', { n: formatNumber(Math.floor(offset / 100) + 1, locale) })}</span>
-          <Button variant="ghost" disabled={pending || captains.rows.length < 100} onClick={() => navigate(search, offset + 100)}>{t('next')}</Button>
+          <Button variant="secondary" disabled={pending || captains.rows.length < 100} onClick={() => navigate(search, offset + 100)}>{t('next')}</Button>
         </nav>
       </>}
     </section>

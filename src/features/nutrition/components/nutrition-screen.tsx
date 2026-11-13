@@ -32,10 +32,10 @@ export function NutritionScreen() {
       status === 'loading' || logs === undefined ? <LoadingState variant="cards" /> : !snapshot || !snapshot.meals.length ?
         <EmptyState icon={Utensils} title={t('yourCoachIsPreparingYourMealPlan')} body={t('itWillAppearHereWhenReady')} action={{ label: t('messageCoach'), href: '/player/captain' }} /> : <>
           {stale && <div className="flex items-center justify-between gap-2 text-sm text-muted">
-            <p>{t('lastUpdatedAWhileAgo')}</p><Button variant="ghost" onClick={retry}>{t('tryAgain')}</Button>
+            <p>{t('lastUpdatedAWhileAgo')}</p><Button variant={v6 ? 'secondary' : 'ghost'} onClick={retry}>{t('tryAgain')}</Button>
           </div>}
           {v6 ? <MacroTiles eaten={eatenTotals(snapshot, logs, today)} target={targetsOf(snapshot)} /> : <MacroRing eaten={eatenTotals(snapshot, logs, today)} target={targetsOf(snapshot)} />}
-          <ul className={v6 ? 'glass divide-y divide-line-soft overflow-hidden rounded-card border border-line-soft' : 'space-y-4'} aria-label={t('todaysMealsList')}>{snapshot.meals.map((meal) => <li key={`${today}-${meal.id}`}><MealCard meal={meal} today={today} planTitle={snapshot.title}
+          <ul className={v6 ? 'glass divide-y divide-line-soft overflow-hidden rounded-card border border-line-soft' : 'space-y-4'} aria-label={t('todaysMealsList')}>{snapshot.meals.map((meal) => <li key={`${today}-${meal.id}`}><MealCard meal={meal} today={today} planTitle={snapshot.title} primary={meal.id === snapshot.meals.find(candidate => candidate.items.length > 0 && !logs.some(row => row.meal_id === candidate.id && row.completed_at && !row.deleted_at))?.id}
             log={logs.find((row) => row.meal_id === meal.id)} /></li>)}</ul>
         </>}
     <PlayerSupplements />

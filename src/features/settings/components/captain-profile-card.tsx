@@ -66,7 +66,7 @@ export function CaptainProfileCard({ profile, onSave, quiet = false }: { profile
     </fieldset>
     <footer className="flex flex-col gap-3 sm:flex-row">
       <Button type="submit" disabled={pending}>{pending ? t('saving') : t('saveChanges')}</Button>
-      <Button type="button" variant="ghost" disabled={pending} onClick={() => {
+      <Button type="button" variant="secondary" disabled={pending} onClick={() => {
         setValue(values(saved)); setFile(null); setErrors({});
       }}>{t('cancel')}</Button>
     </footer>

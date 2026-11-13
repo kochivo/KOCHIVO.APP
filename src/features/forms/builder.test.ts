@@ -8,11 +8,12 @@ import { copyTemplate } from './model';
 import { templates } from './templates';
 import { messages } from './messages';
 import { QuestionRules } from './components/question-rules';
+import { Button } from '@/ui/button';
 
 function buttons(node: ReactNode): ReactElement<{ onClick: () => void; children?: ReactNode; 'aria-label'?: string }>[] {
   if (Array.isArray(node)) return node.flatMap(buttons);
   if (!isValidElement<{ children?: ReactNode }>(node)) return [];
-  const own = node.type === 'button' ? [node as ReturnType<typeof buttons>[number]] : [];
+  const own = node.type === 'button' || node.type === Button ? [node as ReturnType<typeof buttons>[number]] : [];
   return [...own, ...buttons(node.props.children)];
 }
 function editor(node: ReactNode): ReactElement<Parameters<typeof QuestionEditor>[0]> | undefined {

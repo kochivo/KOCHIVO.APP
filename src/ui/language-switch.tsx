@@ -18,9 +18,9 @@ export function LanguageSwitch({ compact = false, onChange }: {
   const [pending, start] = useTransition();
   const [error, setError] = useState(false);
   return <div>
-    <div role="group" aria-label={t('language')} className="flex gap-1">
+    <div role="group" aria-label={t('language')} className="glass inline-flex flex-wrap gap-1 rounded-control border border-line-soft p-1">
       {languageOptions().filter(value => !compact || value.locale !== locale || (value.style && value.style !== style)).map(value => <button key={value.label} type="button" lang={value.locale}
-        aria-pressed={compact ? undefined : locale === value.locale && (!value.style || value.style === style)} disabled={pending} className="min-h-12 rounded-control px-3 text-sm text-muted aria-pressed:bg-surface-raised aria-pressed:font-bold aria-pressed:text-ink disabled:opacity-40"
+        aria-pressed={compact ? undefined : locale === value.locale && (!value.style || value.style === style)} disabled={pending} className="min-h-12 border border-line-soft rounded-control px-3 text-sm text-muted aria-pressed:bg-surface-raised aria-pressed:font-bold aria-pressed:text-ink disabled:opacity-40"
         onClick={() => {
           if (value.locale === locale && (!value.style || value.style === style)) return;
           setError(false);

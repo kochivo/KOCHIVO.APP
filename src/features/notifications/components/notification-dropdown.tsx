@@ -1,4 +1,6 @@
 'use client';
+import { IconButton } from '@/ui/icon-button';
+import { Button } from '@/ui/button';
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
@@ -38,18 +40,23 @@ export function NotificationDropdown({ openerId, notifications: n, onClose }: Pr
     <div ref={panel}>
       <header className={v6 ? 'flex flex-wrap items-center justify-between gap-3' : 'flex items-center justify-between gap-3'}>
         <h2 id={`${openerId}-title`} className={v6 ? 'font-display text-2xl font-semibold' : 'font-bold'}>{t('title')}</h2>
-        {v6 && <button type="button" disabled={n.pending || n.count === 0} onClick={() => void n.read()}
-          className="min-h-12 text-xs text-faint disabled:opacity-50">{t('markAll')}</button>}
-        <button type="button" aria-label={t('close')} onClick={onClose} className="flex min-h-12 min-w-12 items-center justify-center">
+        {v6 && <Button variant="secondary" type="button" disabled={n.pending || n.count === 0} onClick={() => void n.read()}
+          className="min-h-12 text-xs text-faint disabled:opacity-50">{t('markAll')}</Button>}
+        {captainWorkspaceEnabled() ? <IconButton type="button" aria-label={t('close')} onClick={onClose} className="flex min-h-12 min-w-12 items-center justify-center">
           <X aria-hidden className="size-5" />
-        </button>
+        </IconButton> : <button type="button" aria-label={t('close')} onClick={onClose} className="flex min-h-12 min-w-12 items-center justify-center">
+          <X aria-hidden className="size-5" />
+        </button>}
       </header>
-      {!v6 && <button type="button" disabled={n.pending || n.count === 0} onClick={() => void n.read()}
-        className="min-h-12 text-sm font-bold text-lime disabled:opacity-50">{t('markAll')}</button>}
+      {!v6 && (captainWorkspaceEnabled() ? <Button variant="secondary" type="button" disabled={n.pending || n.count === 0} onClick={() => void n.read()}
+        className="min-h-12 text-sm font-bold text-lime disabled:opacity-50">{t('markAll')}</Button> :
+        <button type="button" disabled={n.pending || n.count === 0} onClick={() => void n.read()}
+          className="min-h-12 text-sm font-bold text-lime disabled:opacity-50">{t('markAll')}</button>)}
       {n.saveError && <p role="alert" className="text-sm text-danger">{t('saveError')}</p>}
       {n.status === 'loading' ? <p role="status" className="p-4 text-muted">{t('loading')}</p>
         : n.status === 'error' ? <div role="alert" className="p-4">
-          <p>{t('error')}</p><button type="button" onClick={() => void n.refresh()} className="min-h-12 text-lime">{t('retry')}</button>
+          <p>{t('error')}</p>{captainWorkspaceEnabled() ? <Button variant="secondary" type="button" onClick={() => void n.refresh()} className="min-h-12 text-lime">{t('retry')}</Button> :
+            <button type="button" onClick={() => void n.refresh()} className="min-h-12 text-lime">{t('retry')}</button>}
         </div> : n.rows.length === 0 ? <p className="p-4 text-muted">{t('empty')}</p>
           : <ul className={v6 ? 'glass divide-y divide-line-soft overflow-hidden rounded-card border border-line-soft' : 'divide-y divide-line'}>{n.rows.map(row => {
             const time = relativeTime(row.created_at, now);

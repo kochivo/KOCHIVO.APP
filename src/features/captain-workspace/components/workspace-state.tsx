@@ -10,7 +10,7 @@ export function WorkspaceState({ kind, locale, retryHref }: {
   if (kind === 'loading') return <p role="status" className="glass-strong min-h-24 rounded-card p-6 text-muted">{t('loading')}</p>;
   if (kind === 'error') return <div role="alert" className="glass space-y-3 rounded-card p-6">
     <p className="text-danger">{t('error')}</p>
-    {retryHref && <a href={retryHref} className="inline-flex min-h-12 items-center rounded-control px-4 text-muted">{t('retry')}</a>}
+    {retryHref && <a href={retryHref} className="glass inline-flex min-h-12 items-center rounded-full border border-line px-4 text-ink">{t('retry')}</a>}
   </div>;
   return <section className="glass space-y-3 rounded-card p-6">
     <h2 className="text-xl font-bold">{t('noProgram')}</h2>

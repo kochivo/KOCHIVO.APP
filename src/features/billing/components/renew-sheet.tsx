@@ -1,4 +1,7 @@
 'use client';
+import { IconButton } from '@/ui/icon-button';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+
 import { formatNumber } from '@/lib/format';
 import { formatDateAr } from '@/lib/dates';
 import { useLocale, useT } from '@/core/i18n/client';
@@ -7,7 +10,8 @@ import { messages as ptMessages } from '../packages/messages';
 
 import { useEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
-import { Button, Chip, Segmented, TextField } from '@/ui';
+import { Button } from '@/ui/button';
+import { Chip, Segmented, TextField } from '@/ui';
 import { remaining } from '../finance';
 import { renewalPreview } from '../renew';
 import type { Package, RenewalInput } from '../types';
@@ -57,7 +61,7 @@ export function RenewSheet({ name, accessUntil, today, packages, onClose, onSave
       className="sheet fixed inset-x-0 bottom-0 top-auto m-0 max-h-[90dvh] w-full max-w-none overflow-y-auto rounded-t-card border border-line bg-surface p-6 text-ink backdrop:bg-bg-deep/80 sm:inset-0 sm:m-auto sm:max-w-lg sm:rounded-card">
       <div className="mb-6 flex items-center justify-between gap-4">
         <h2 id="renew-heading" className="text-2xl font-extrabold">{t('renewTitle', { name })}</h2>
-        <Button variant="ghost" aria-label={t('close')} onClick={onClose} className="min-h-12 min-w-12 px-0"><X aria-hidden className="size-5" /></Button>
+        {captainWorkspaceEnabled() ? <IconButton aria-label={t('close')} onClick={onClose} className="min-h-12 min-w-12 px-0"><X aria-hidden className="size-5" /></IconButton> : <Button variant="ghost" aria-label={t('close')} onClick={onClose} className="min-h-12 min-w-12 px-0"><X aria-hidden className="size-5" /></Button>}
       </div>
       <form className="space-y-5" onSubmit={(event) => {
         event.preventDefault();

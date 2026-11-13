@@ -1,5 +1,6 @@
 'use client';
 
+import { Button } from '@/ui/button';
 import { KoPlus } from '@/ui/icons/ko-plus';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { useCallback, useState } from 'react';
@@ -49,11 +50,11 @@ export function FoodsLibraryEntry() {
       </form>
     </div>
     {(resource.status === 'loading' || resource.status === 'idle') && <div role="status"><span className="sr-only">{t('loading')}</span><LoadingState variant="list" /></div>}
-    {Boolean(resource.error) && <div role="alert"><p>{t('error')}</p><button type="button" className="min-h-12 text-lime" onClick={() => void resource.retry()}>{t('retry')}</button></div>}
+    {Boolean(resource.error) && <div role="alert"><p>{t('error')}</p><Button variant="secondary" type="button" className="min-h-12 text-ink" onClick={() => void resource.retry()}>{t('retry')}</Button></div>}
     {resource.data && <FoodsTable foods={resource.data.foods} onSelect={setSelected} />}
     <div className="flex gap-3">
-      {cursor && <button type="button" className="min-h-12 px-4" onClick={() => setCursor(null)}>{t('first')}</button>}
-      {resource.data?.cursor && <button type="button" className="min-h-12 px-4" disabled={resource.status === 'loading'} onClick={() => setCursor(resource.data?.cursor ?? null)}>{t('next')}</button>}
+      {cursor && <Button variant="secondary" type="button" className="min-h-12 px-4" onClick={() => setCursor(null)}>{t('first')}</Button>}
+      {resource.data?.cursor && <Button variant="secondary" type="button" className="min-h-12 px-4" disabled={resource.status === 'loading'} onClick={() => setCursor(resource.data?.cursor ?? null)}>{t('next')}</Button>}
     </div>
     {selected !== undefined && <FoodDrawer key={selected?.id ?? 'new'} food={selected} onClose={() => setSelected(undefined)}
       onMutation={(next, commit) => resource.mutate(current => {

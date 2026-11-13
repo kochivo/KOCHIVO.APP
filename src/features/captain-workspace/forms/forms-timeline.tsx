@@ -1,3 +1,4 @@
+import { Button } from '@/ui/button';
 import { Repeat2 } from 'lucide-react';
 import { useTimezone } from '@/core/timezone/client';
 import type { Locale } from '@/core/i18n/locale';
@@ -18,8 +19,8 @@ export function FormsTimeline({ forms, selectedId, locale, onSelect, dueAt, disa
         <p className="text-sm text-muted">{t('everyWeek')}</p>
         {dueAt && <p className="text-sm text-muted">{t('due', { date: formDate(dueAt, locale, timezone) })}</p>}
       </div>
-      {showLegacyReminder && <span title={t('reminderHint')}><button type="button" disabled title={t('reminderHint')}
-        className="min-h-12 rounded-control px-3 text-sm text-muted disabled:opacity-50">{t('reminder')}</button></span>}
+      {showLegacyReminder && <span title={t('reminderHint')}><Button variant="secondary" type="button" disabled title={t('reminderHint')}
+        className="min-h-12 rounded-control px-3 text-sm text-muted disabled:opacity-50">{t('reminder')}</Button></span>}
     </div>
     {!forms.length ? <p role="status" className="p-6 text-muted">{t('empty')}</p> :
       <ol aria-label={t('title')} className="divide-y divide-line overflow-hidden rounded-card border border-line">

@@ -1,4 +1,5 @@
 'use client';
+import { Button } from './button';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { CSSProperties, KeyboardEvent } from 'react';
@@ -101,8 +102,8 @@ export function Tour({ steps, onClose }: TourProps) {
       <h2 id="tour-title" className="mt-2 text-xl font-bold">{step.title}</h2>
       <p id="tour-body" className="mt-2 text-sm text-muted">{step.body}</p>
       <div className="mt-4 flex flex-wrap gap-2">
-        <button className="min-h-12 rounded-control px-3 text-sm text-muted" onClick={onClose}>{t('skip')}</button>
-        <button className="ms-auto min-h-12 rounded-control px-3 text-sm disabled:opacity-40" disabled={previous === null} onClick={() => index !== null && move(index, -1)}>{t('back')}</button>
+        <Button variant="secondary" className="min-h-12 rounded-control px-3 text-sm text-muted" onClick={onClose}>{t('skip')}</Button>
+        <Button variant="secondary" className="ms-auto min-h-12 rounded-control px-3 text-sm disabled:opacity-40" disabled={previous === null} onClick={() => index !== null && move(index, -1)}>{t('back')}</Button>
         <button className="min-h-12 rounded-control bg-lime px-4 font-bold text-on-lime" onClick={() => index !== null && move(index, 1)}>{t(next === null ? 'done' : 'next')}</button>
       </div>
     </div>}

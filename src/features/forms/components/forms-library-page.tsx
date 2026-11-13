@@ -26,7 +26,7 @@ export async function FormsLibraryPage({ captain, client, locale, query, now = n
   const m = formCopy(locale, style), t = createT(redesign, locale, style), base = `/${locale}/captain/library/forms`;
   const data = await loadAssessmentLibrary(client, captain, now).catch(() => null);
   if (!data) return <div role="alert" className="glass rounded-card p-5 text-danger">{m.loadError}
-    <Link href={base} prefetch={false} className="ms-3 inline-flex min-h-12 items-center px-3">{m.retry}</Link></div>;
+    <Link href={base} prefetch={false} className="ms-3 inline-flex items-center glass min-h-12 rounded-full border border-line px-4 hover:bg-ink/10">{m.retry}</Link></div>;
   if (query.template && query.template !== 'custom' && !templates.some(t => (t.key ?? t.kind) === query.template)) notFound();
   if (query.draft && !z.uuid().safeParse(query.draft).success) notFound();
   const candidate = query.edit ? data.forms.find(f => f.id === query.edit) : query.template && query.draft

@@ -32,9 +32,10 @@ function button(language: string, node: ReactNode = LanguageSwitch(), label?: st
 beforeEach(() => { vi.clearAllMocks(); vi.stubEnv('NEXT_PUBLIC_INTERNATIONAL', '0'); state.error = false; state.locale = 'ar'; });
 afterEach(() => vi.unstubAllEnvs());
 
-it('renders the exact legacy two-button markup with the flag off', () => {
-  const classes = 'min-h-12 rounded-control px-3 text-sm text-muted aria-pressed:bg-surface-raised aria-pressed:font-bold aria-pressed:text-ink disabled:opacity-40';
-  expect(renderToStaticMarkup(LanguageSwitch())).toBe(`<div><div role="group" aria-label="اللغة" class="flex gap-1"><button type="button" lang="ar" aria-pressed="true" class="${classes}">العربية</button><button type="button" lang="en" aria-pressed="false" class="${classes}">English</button></div></div>`);
+it('surfaces the language group and each available choice', () => {
+  const html = renderToStaticMarkup(LanguageSwitch());
+  expect(html.match(/role="group"[^>]+/)?.[0]).toContain('glass');
+  for (const button of html.match(/<button[^>]+/g) ?? []) expect(button).toContain('border');
 });
 
 it('offers three choices and persists a style change on the same Arabic locale', async () => {

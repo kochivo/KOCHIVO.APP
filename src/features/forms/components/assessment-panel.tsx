@@ -1,3 +1,4 @@
+import { IconButton } from '@/ui/icon-button';
 import { KoSend } from '@/ui/icons/ko-send';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { Ellipsis, Send } from 'lucide-react';
@@ -37,13 +38,13 @@ export function AssessmentPanel({ data, player, locale, now, busy, onEdit, onPau
         ? t('lastAnswer', { date: date(localDate(new Date(last.answered_at), recipient?.timezone ?? DEFAULT_TIMEZONE)) }) : t('ended');
       return <div key={s.id} className="border-b border-line-soft py-2 last:border-0">
         <div className="flex items-center gap-1"><dl className="min-w-0 flex-1"><FactRow label={title}><span className={s.paused_at ? 'text-faint' : 'text-lime'}>{status}</span></FactRow></dl>
-          <details className="relative"><summary aria-label={t('edit')} className="flex min-h-12 min-w-12 cursor-pointer list-none items-center justify-center"><Ellipsis aria-hidden className="size-4" /></summary>
-            <div className="glass-strong absolute end-0 z-10 min-w-40 rounded-card border border-line-soft p-2">
-              <Button variant="ghost" disabled={busy} onClick={() => onEdit(s)} className="min-h-12 w-full text-xs">{t('edit')}</Button>
-              <Button variant="ghost" disabled={busy} onClick={() => onPause(s)} className="min-h-12 w-full text-xs">{t(s.paused_at ? 'resume' : 'pause')}</Button>
-              <Button variant="ghost" disabled={busy} onClick={() => onDelete(s)} className="min-h-12 w-full text-xs">{t('delete')}</Button>
+          <div className="relative"><IconButton aria-label={t('edit')} popoverTarget={`schedule-menu-${s.id}`}><Ellipsis aria-hidden className="size-4" /></IconButton>
+            <div id={`schedule-menu-${s.id}`} popover="auto" className="glass-strong fixed m-0 min-w-40 rounded-card border border-line-soft p-2 [inset:auto] [position-area:block-end_span-inline-start]">
+              <Button variant="secondary" disabled={busy} onClick={() => onEdit(s)} className="min-h-12 w-full text-xs">{t('edit')}</Button>
+              <Button variant="secondary" disabled={busy} onClick={() => onPause(s)} className="min-h-12 w-full text-xs">{t(s.paused_at ? 'resume' : 'pause')}</Button>
+              <Button variant="secondary" disabled={busy} onClick={() => onDelete(s)} className="min-h-12 w-full border border-danger/40 text-xs text-danger!">{t('delete')}</Button>
             </div>
-          </details>
+          </div>
         </div>
         <p className="text-xs text-faint">{recurrenceLabel(s, locale)} · {s.player_id ? recipient?.name : t('all')}</p>
       </div>;

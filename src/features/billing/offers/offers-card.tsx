@@ -26,8 +26,8 @@ export function OffersCard({ catalog, now, busy, onEdit, onPause, onNew }: {
       </div>;
     }) : <p className="px-[18px] py-3 text-xs text-faint">{t('noOffers')}</p>}
     <div className="flex flex-wrap items-center gap-2 border-t border-dashed border-line px-[18px] py-2 text-faint">
-      <button disabled={busy} onClick={() => onNew()} className="min-h-12 me-auto text-sm">{t('addOffer')}</button>
-      {presets.slice(0, 4).map(preset => <button key={preset} disabled={busy} onClick={() => onNew(preset)} className="min-h-12 rounded-full px-2.5 text-[11.5px]">{t(preset)}</button>)}
+      <Button variant="secondary" disabled={busy} onClick={() => onNew()} className="min-h-12 me-auto text-sm">{t('addOffer')}</Button>
+      {presets.slice(0, 4).map(preset => <Button variant="secondary" key={preset} disabled={busy} onClick={() => onNew(preset)} className="min-h-12 rounded-full px-2.5 text-[11.5px]">{t(preset)}</Button>)}
     </div>
   </section>;
 }

@@ -1,12 +1,13 @@
 'use client';
 
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { useState } from 'react';
 import { ArrowLeftRight } from 'lucide-react';
 import { useLocale, useT } from '@/core/i18n/client';
 import { exerciseMediaUrl } from '@/core/storage';
 import { exerciseName } from '@/lib/display-name';
 import { formatNumber } from '@/lib/format';
-import { Button } from '@/ui';
+import { Button } from '@/ui/button';
 import { ExerciseImage } from '@/ui/exercise-image';
 import { ResponsiveDialog } from '@/ui/responsive-dialog';
 import type { GeneratedExercise as Exercise } from '../generate';
@@ -22,12 +23,17 @@ export function GeneratedExercise({ row, onSwap }: { row: Exercise; onSwap: () =
   const summary = t('prescription', { sets: n(row.sets), min: n(row.reps_min), max: n(row.reps_max ?? row.reps_min), rest: n(row.rest_seconds) });
   const reasons = row.reasons.filter(reason => reason === 'captain_favorite' || reason.startsWith('injury_safe_') || reason.startsWith('replaced_for_')).slice(0, 2);
   return <article className="glass flex items-center gap-3 rounded-control p-3">
-    <button type="button" className="min-h-12 flex-1 space-y-2 text-start" aria-haspopup="dialog" onClick={() => setDetails(true)}>
+    {captainWorkspaceEnabled() ? <Button variant="secondary" type="button" className="min-h-12 flex-1 flex-col items-start! space-y-2 text-start" aria-haspopup="dialog" onClick={() => setDetails(true)}>
       <span className="block font-bold"><bdi>{name}</bdi></span>
       <span className="block text-sm tabular-nums text-muted">{summary}</span>
       {reasons.length > 0 && <span className="flex flex-wrap gap-2">{reasons.map(reason =>
         <span key={reason} className="glass-strong rounded-chip px-3 py-1 text-xs">{t(reason)}</span>)}</span>}
-    </button>
+    </Button> : <button type="button" className="min-h-12 flex-1 space-y-2 text-start" aria-haspopup="dialog" onClick={() => setDetails(true)}>
+      <span className="block font-bold"><bdi>{name}</bdi></span>
+      <span className="block text-sm tabular-nums text-muted">{summary}</span>
+      {reasons.length > 0 && <span className="flex flex-wrap gap-2">{reasons.map(reason =>
+        <span key={reason} className="glass-strong rounded-chip px-3 py-1 text-xs">{t(reason)}</span>)}</span>}
+    </button>}
     <Button variant="secondary" className="min-h-12 min-w-12" aria-label={t('swap')} onClick={onSwap}>
       <ArrowLeftRight aria-hidden className="size-5" />
     </Button>

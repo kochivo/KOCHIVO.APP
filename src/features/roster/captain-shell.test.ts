@@ -39,6 +39,7 @@ it('supplies the full waiting count and places desktop feedback inside the sideb
   state.count.mockResolvedValue(8);
   const html = renderToStaticMarkup(await CaptainShell({ children: 'Content' }));
   expect(html).toContain('data-waiting="8"');
+  expect(html).toContain('lg:static');
   expect(html).toMatch(/<aside\b[\s\S]*data-feedback[\s\S]*<\/aside>/);
   expect(html).toContain('pb-[calc(var(--page-bottom-clearance)+4rem)]');
   vi.unstubAllEnvs();

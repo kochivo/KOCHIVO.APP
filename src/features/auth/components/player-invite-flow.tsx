@@ -52,7 +52,7 @@ export function PlayerInviteFlow({ code, callbackError = false }: { code: string
               : <TextField label={t('email')} type="email" autoComplete="email" dir="ltr" value={email} onChange={(event) => setEmail(event.target.value)} required disabled={pending} />}
             <Button type="submit" size="lg" className="w-full" disabled={pending || (sent && token.length !== 6)}>{pending ? t('oneMoment') : sent ? t('continue') : t('sendMeACode')}</Button>
           </form>
-          {sent && <Button variant="ghost" disabled={pending} onClick={() => { setSent(false); setToken(''); }}>{t('changeEmailOrSendAgain')}</Button>}
+          {sent && <Button variant="secondary" disabled={pending} onClick={() => { setSent(false); setToken(''); }}>{t('changeEmailOrSendAgain')}</Button>}
         </>}
         {error && <p role="alert" className="text-danger">{error}</p>}
       </>}

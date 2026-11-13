@@ -1,4 +1,7 @@
 'use client';
+import { Button } from '@/ui/button';
+import { IconButton } from '@/ui/icon-button';
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Ellipsis, Eye, Archive, Salad } from 'lucide-react';
@@ -17,6 +20,7 @@ export function PlayerRow({ player, today, meta, hasFood, error, onArchive }: {
   player: RosterPlayer; today: string; meta?: RosterMeta; hasFood: boolean; error?: string; onArchive: () => void;
 }) {
   const t = useT(messages), old = useT(legacyMessages), locale = useLocale();
+  const [open, setOpen] = useState(false);
   const href = `/captain/players/${player.playerId}`;
   const goal = meta && meta.target !== null ? t(meta.target < meta.weight ? 'lose' : meta.target > meta.weight ? 'gain' : 'maintain') : t('unknown');
   const level = meta ? t(meta.experience === 'new' ? 'new' : meta.experience === 'under_1y' ? 'under_1y' : 'experienced') : t('unknown');
@@ -38,14 +42,14 @@ export function PlayerRow({ player, today, meta, hasFood, error, onArchive }: {
       </time>
     </div>
     <div role="cell" className="relative z-10 col-start-2 row-start-1 lg:col-auto lg:row-auto">
-      <details className="relative" onClick={event => event.stopPropagation()}>
-        <summary aria-label={t('menu', { name: player.fullName })} className="grid min-h-12 min-w-12 list-none place-items-center rounded-full hover:bg-ink/10 [&::-webkit-details-marker]:hidden"><Ellipsis aria-hidden className="size-5" /></summary>
-        <div className="glass-strong absolute end-0 z-20 w-48 rounded-card border border-line-soft p-2 shadow-xl">
-          <Link href={`${href}/preview`} prefetch={false} className="flex min-h-12 items-center gap-2 rounded-full px-3 text-sm hover:bg-ink/5"><Eye aria-hidden className="size-4" />{t('preview')}</Link>
-          <button type="button" onClick={() => { if (window.confirm(old('archiveTheyllBeRemovedFromThePlayer', { v0: player.fullName }))) onArchive(); }}
-            className="flex min-h-12 w-full items-center gap-2 rounded-full px-3 text-sm hover:bg-ink/5"><Archive aria-hidden className="size-4" />{t('archive')}</button>
+      <div className="relative" onClick={event => event.stopPropagation()}>
+        <IconButton aria-label={t('menu', { name: player.fullName })} aria-expanded={open} onClick={() => setOpen(!open)}><Ellipsis aria-hidden className="size-5" /></IconButton>
+        <div hidden={!open} className="glass-strong absolute end-0 z-20 w-48 rounded-card border border-line-soft p-2 shadow-xl">
+          <Link href={`${href}/preview`} prefetch={false} className="glass flex min-h-12 items-center gap-2 rounded-full border border-line px-3 text-sm hover:bg-ink/5"><Eye aria-hidden className="size-4" />{t('preview')}</Link>
+          <Button variant="secondary" type="button" onClick={() => { if (window.confirm(old('archiveTheyllBeRemovedFromThePlayer', { v0: player.fullName }))) onArchive(); }}
+            className="flex min-h-12 w-full items-center gap-2 rounded-full border border-danger/40 px-3 text-sm text-danger! hover:bg-ink/5"><Archive aria-hidden className="size-4" />{t('archive')}</Button>
         </div>
-      </details>
+      </div>
     </div>
     {error && <p role="alert" className="col-span-full text-sm text-danger">{error}</p>}
   </div>;

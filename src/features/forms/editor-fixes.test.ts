@@ -29,10 +29,13 @@ it.each([false, true])('keeps options inside a 390px viewport and flips above a 
   const placement = selectPosition({ x: 320, top: 680, bottom: 728, width: 62 }, 390, 760, rtl);
   expect(placement.start).toBeGreaterThanOrEqual(8);
   expect(placement.start + placement.width).toBeLessThanOrEqual(382);
-  expect(placement.top).toBe(388);
-  expect(placement.height).toBe(288);
+  expect(placement.top).toBeUndefined();
+  expect(placement.bottom).toBe(84);
+  expect(760 - (placement.bottom ?? 0) - 104).toBe(572);
+  expect(760 - (placement.bottom ?? 0)).toBe(676);
+  expect(placement.maxBlockSize).toBe(288);
   const high = selectPosition({ x: 0, top: 8, bottom: 56, width: 400 }, 390, 760, rtl);
-  expect(high).toEqual({ start: 8, top: 60, width: 374, height: 288 });
+  expect(high).toEqual({ start: 8, top: 60, bottom: undefined, width: 374, maxBlockSize: 288 });
 });
 
 it.each(['egyptian', 'standard'] as const)('previews photos with translated camera/gallery controls (%s)', style => {

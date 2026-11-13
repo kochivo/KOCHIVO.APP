@@ -1,4 +1,5 @@
 'use client';
+import { Button } from '@/ui/button';
 
 import { useEffect, useState } from 'react';
 import { useLocale, useT } from '@/core/i18n/client';
@@ -34,7 +35,7 @@ export function KoWaitlistCount({ initialCounts }: { initialCounts?: Counts }) {
     <h2 className="text-lg font-bold">{t('koWaitlist')}</h2>
     {failed ? <div role="alert">
       <p className="text-danger">{t('failed')}</p>
-      <button type="button" onClick={() => setAttempt(value => value + 1)} className="min-h-12 underline">{t('retry')}</button>
+      <Button variant="secondary" type="button" onClick={() => setAttempt(value => value + 1)} className="min-h-12 underline">{t('retry')}</Button>
     </div> : counts ? <dl className="grid grid-cols-2 gap-3">
       {(['captain', 'player'] as const).map(role => <div key={role} className="glass-strong rounded-card p-5">
         <dt className="text-sm text-muted">{t(role === 'captain' ? 'koWaitlistCaptains' : 'koWaitlistPlayers')}</dt>

@@ -1,5 +1,7 @@
 'use client';
 
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { IconButton } from '@/ui/icon-button';
 import { useLocale, useT } from '@/core/i18n/client';
 import { formatNumber } from '@/lib/format';
 import { messages } from '../messages';
@@ -9,7 +11,8 @@ import { foodPhotoUrl } from '@/core/storage/media-url';
 import { Pencil, Search, Trash2 } from 'lucide-react';
 import { useToast } from '@/ui/toast';
 import { deleteCustomFood } from '../data/custom-food';
-import { Button, EmptyState, Segmented } from '@/ui';
+import { Button } from '@/ui/button';
+import { EmptyState, Segmented } from '@/ui';
 import { LoadingState } from '@/ui/loading-state';
 import { searchFoods } from '../data/foods';
 import type { Food } from '../types';
@@ -94,8 +97,8 @@ export function FoodPicker({ onPick, alternative = false, inline = false }: { on
           <span><strong>{food.name}</strong>{food.custom && <span className="ms-2 rounded-control bg-surface px-2 text-xs text-muted">{t(inline ? 'myFoods' : 'mine')}</span>}<span className="block text-sm text-muted">{t('per100g')} {formatNumber(food.kcal, locale)}  {t('kcalProtein')} {formatNumber(food.protein, locale)}  {t('carbs')} {formatNumber(food.carbs, locale)}  {t('fat')} {formatNumber(food.fat, locale)}</span></span>
         </button>
         {food.custom && <div className="flex gap-2">
-          <Button variant="ghost" aria-label={t('editFood')} onClick={() => setEditing(food)}><Pencil aria-hidden /></Button>
-          <Button variant="ghost" aria-label={t('deleteFood')} onClick={() => void remove(food)}><Trash2 aria-hidden /></Button>
+          {captainWorkspaceEnabled() ? <IconButton aria-label={t('editFood')} onClick={() => setEditing(food)}><Pencil aria-hidden /></IconButton> : <Button variant="ghost" aria-label={t('editFood')} onClick={() => setEditing(food)}><Pencil aria-hidden /></Button>}
+          {captainWorkspaceEnabled() ? <IconButton className="border border-danger/40 text-danger!" aria-label={t('deleteFood')} onClick={() => void remove(food)}><Trash2 aria-hidden /></IconButton> : <Button variant="ghost" aria-label={t('deleteFood')} onClick={() => void remove(food)}><Trash2 aria-hidden /></Button>}
         </div>}
       </li>)}</ul>
     </>}

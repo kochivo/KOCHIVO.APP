@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { Menu, X } from 'lucide-react';
+import { IconButton } from '@/ui/icon-button';
 
 export function SiteMenu({ children, openLabel, closeLabel }: {
   children: ReactNode; openLabel: string; closeLabel: string;
@@ -26,7 +27,7 @@ export function SiteMenu({ children, openLabel, closeLabel }: {
     const resize = () => {
       if (!desktop.matches) return;
       if (panel.current?.contains(document.activeElement) || document.activeElement === button.current) {
-        button.current?.closest('header')?.querySelector<HTMLElement>('a.marketing-primary')?.focus();
+        button.current?.closest('header')?.querySelector<HTMLElement>('a[data-signup]')?.focus();
       }
       setOpen(false);
     };
@@ -41,11 +42,11 @@ export function SiteMenu({ children, openLabel, closeLabel }: {
   }, [open]);
   const Icon = open ? X : Menu;
   return <div className="lg:hidden">
-    <button ref={button} type="button" className="marketing-ghost min-h-12 min-w-12 text-ink"
+    <IconButton ref={button} type="button" className="marketing-ghost min-h-12 min-w-12 rounded-control border border-line text-ink"
       aria-label={open ? closeLabel : openLabel} aria-expanded={open} aria-controls={id}
       onClick={() => { setOpen(!open); if (open) button.current?.focus(); }}>
       <Icon size={24} aria-hidden="true" />
-    </button>
+    </IconButton>
     <nav ref={panel} id={id} hidden={!open} aria-label={openLabel}
       className="absolute inset-x-0 top-full z-50 h-[calc(100dvh-4rem-var(--safe-top))] overflow-y-auto border-t border-line bg-bg p-4 text-ink"
       onClick={event => {

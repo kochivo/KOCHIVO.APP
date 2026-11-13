@@ -27,7 +27,7 @@ export function OfferScreen({ offer, preset, catalog, now, onClose }: { offer?: 
   }
   if (!catalog.data) return null;
   return <form onSubmit={event => { event.preventDefault(); void save(); }}>
-    <header className="mb-[18px] flex flex-wrap items-center gap-3.5"><div className="me-auto"><button type="button" disabled={catalog.busy} onClick={onClose} className="min-h-12 text-xs text-faint">{t('breadcrumb')}</button><h1 className="font-display text-[30px] font-semibold leading-tight">{t(offer ? 'editOffer' : 'newOffer')}</h1></div>
+    <header className="mb-[18px] flex flex-wrap items-center gap-3.5"><div className="me-auto"><button type="button" disabled={catalog.busy} onClick={onClose} className="min-h-12 text-xs text-lime hover:underline focus-visible:underline">{t('breadcrumb')}</button><h1 className="font-display text-[30px] font-semibold leading-tight">{t(offer ? 'editOffer' : 'newOffer')}</h1></div>
       <Button variant="secondary" className="min-h-12 rounded-full" disabled={catalog.busy} onClick={onClose}>{t('cancel')}</Button>
       <Button type="submit" className="min-h-12 rounded-full" disabled={catalog.busy}>{t(offer ? 'save' : 'launch')}</Button>
     </header>

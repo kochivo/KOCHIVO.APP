@@ -1,4 +1,5 @@
 'use client';
+import { IconButton } from '@/ui/icon-button';
 import { X } from 'lucide-react';
 import { useLocale, useT } from '@/core/i18n/client';
 import { ResponsiveDialog } from '@/ui/responsive-dialog';
@@ -24,7 +25,7 @@ export function StreakSheet({ stats, today, completedDates, isTrainingDay, onClo
     } }}>
     <div className="flex items-center justify-between">
       <h2 id="streak-title">{t('streakTitle')}</h2>
-      <button type="button" onClick={onClose} aria-label={t('streakClose')} className="grid min-h-12 min-w-12 place-items-center rounded-full"><X aria-hidden="true" size={20} /></button>
+      <IconButton type="button" onClick={onClose} aria-label={t('streakClose')} className="grid min-h-12 min-w-12 place-items-center rounded-full"><X aria-hidden="true" size={20} /></IconButton>
     </div>
     <div className="glass-strong mx-auto grid size-[168px] place-items-center rounded-full">
       <div className="col-start-1 row-start-1"><StreakRing done={stats.weekDone} planned={stats.weekPlanned} size={168} stroke={3} /></div>

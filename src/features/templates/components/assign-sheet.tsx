@@ -1,11 +1,13 @@
 'use client';
 
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 
 import { useEffect, useRef, useState } from 'react';
 import { Users } from 'lucide-react';
-import { Button, EmptyState } from '@/ui';
+import { Button } from '@/ui/button';
+import { EmptyState } from '@/ui';
 import { LoadingState } from '@/ui/loading-state';
 import type { RosterPlayer } from '@/features/roster';
 import { listTemplatePlayers } from '../data/templates';
@@ -43,7 +45,7 @@ export function AssignSheet({ template, onClose }: { template: Template; onClose
       <h2 id="assign-template-title" className="text-xl font-bold">{t('assignTitle', { title: starterText(template.title, locale) })}</h2>
       <p className="text-sm text-muted">{t('theyllGetASeparateCopyTheirActive')}</p>
       {loading ? <LoadingState variant="list" /> : loadError ? <div role="alert">{loadError}
-        <Button variant="ghost" className="min-h-12" onClick={() => { setLoading(true); setAttempt(value => value + 1); }}>{t('tryAgain')}</Button>
+        <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} className="min-h-12" onClick={() => { setLoading(true); setAttempt(value => value + 1); }}>{t('tryAgain')}</Button>
       </div> : players.length === 0 ? <EmptyState icon={Users} title={t('noPlayersYetAddAPlayerFirst')} body={t('chooseAPlayer')} action={{ label: t('openPlayers'), href: '/captain/players' }} /> :
         <fieldset disabled={busy} className="grid gap-2">
           <legend className="mb-2 text-sm text-muted">{t('chooseAPlayer')}</legend>
@@ -69,7 +71,7 @@ export function AssignSheet({ template, onClose }: { template: Template; onClose
         <Button variant={players.length ? 'primary' : 'secondary'} className="min-h-12" disabled={!selected.length || busy || loading || !!loadError} onClick={() => void assignment.assign()}>
           {t('assignMany', { n: selected.length })}
         </Button>
-        <Button variant="ghost" className="min-h-12" disabled={busy} onClick={onClose}>{t('cancel')}</Button>
+        <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} className="min-h-12" disabled={busy} onClick={onClose}>{t('cancel')}</Button>
       </div>
     </div>
   </dialog>;

@@ -1,8 +1,9 @@
 'use client';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { useState } from 'react';
 import { Check } from 'lucide-react';
 import { useLocale, useT } from '@/core/i18n/client';
-import { Button } from '@/ui';
+import { Button } from '@/ui/button';
 import { formatDateAr } from '@/lib/dates';
 import { formatNumber } from '@/lib/format';
 import { inviteUrl } from '../invite';
@@ -40,7 +41,7 @@ export function InviteResult({ input, pkg, code, captainFirstName }: {
     <label className="block space-y-2"><span>{t('link')}</span><input readOnly dir="ltr" value={url} onFocus={event => event.currentTarget.select()}
       className="min-h-12 w-full rounded-control border border-line bg-bg px-3 text-ink" /></label>
     <a href={share} target="_blank" rel="noopener noreferrer" className="flex min-h-12 items-center justify-center rounded-control bg-lime px-4 font-bold text-on-lime">{t('send')}</a>
-    <Button variant="ghost" className="min-h-12 w-full" onClick={copy}>{t('copy')}</Button>
+    <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} className="min-h-12 w-full" onClick={copy}>{t('copy')}</Button>
     <p role="status" className="text-sm text-muted">{status}</p>
   </div>;
 }

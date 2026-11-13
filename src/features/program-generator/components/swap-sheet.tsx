@@ -1,8 +1,9 @@
 'use client';
 
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { useLocale, useT } from '@/core/i18n/client';
 import { exerciseName } from '@/lib/display-name';
-import { Button } from '@/ui';
+import { Button } from '@/ui/button';
 import { ResponsiveDialog } from '@/ui/responsive-dialog';
 import type { Candidate } from '../pick';
 import { messages } from '../messages';
@@ -27,6 +28,6 @@ export function SwapSheet({ alternatives, onSelect, onClose }: {
         <bdi>{(row.library && exerciseName(row.library, locale)) || t('unavailable')}</bdi>
       </Button>
     </li>)}</ul>}
-    <Button variant="ghost" className="min-h-12" onClick={onClose}>{t('close')}</Button>
+    <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} className="min-h-12" onClick={onClose}>{t('close')}</Button>
   </ResponsiveDialog>;
 }

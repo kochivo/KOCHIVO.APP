@@ -34,8 +34,8 @@ export function EmptyState({ icon: Icon, title, body, steps, action, secondary, 
       {(action || secondary) && <div className="flex flex-wrap justify-center gap-2">
         {action && (action.href !== undefined ? <Link href={action.href} className="press glow primary-surface inline-flex min-h-12 items-center justify-center rounded-control bg-lime px-4 text-sm font-extrabold text-on-lime">{action.label}</Link> :
           <Button className="min-h-12" onClick={action.onClick}>{action.label}</Button>)}
-        {secondary && (secondary.href !== undefined ? <Link href={secondary.href} className="press inline-flex min-h-12 items-center justify-center rounded-control px-4 text-sm hover:bg-ink/5">{secondary.label}</Link> :
-          <Button variant="ghost" className="min-h-12" onClick={secondary.onClick}>{secondary.label}</Button>)}
+        {secondary && (secondary.href !== undefined ? <Link href={secondary.href} className="glass press hover-lift inline-flex min-h-12 items-center justify-center gap-2 rounded-control px-4 text-sm text-ink hover:bg-ink/10 disabled:opacity-40">{secondary.label}</Link> :
+          <Button variant="secondary" className="min-h-12" onClick={secondary.onClick}>{secondary.label}</Button>)}
       </div>}
     </div>
   );

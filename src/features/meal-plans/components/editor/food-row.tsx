@@ -1,5 +1,6 @@
 'use client';
 
+import { IconButton } from '@/ui/icon-button';
 import { useId, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { ChevronDown, X } from 'lucide-react';
@@ -57,7 +58,7 @@ export function FoodRow({ item, update }: { item: MealItem; update: (change: (dr
       </span>
     </div>
     <span className={`hidden font-display font-extrabold tabular-nums min-[761px]:block ${missing ? 'text-warn' : ''}`}>{missing ? t('unknown') : formatNumber(Math.round(macrosFor(item.food, item.grams).kcal), locale)}{!missing && <small className="block text-[11.5px] font-normal text-faint">{t('calorieUnit')}</small>}</span>
-    <button type="button" aria-label={t('remove', { name })} className="grid min-h-12 min-w-12 place-items-center text-faint" onClick={() => update(draft => removeItem(draft, item.id))}><X aria-hidden className="size-4" /></button>
+    <IconButton type="button" aria-label={t('remove', { name })} className="border border-danger/40 text-danger! grid min-h-12 min-w-12 place-items-center text-ink" onClick={() => update(draft => removeItem(draft, item.id))}><X aria-hidden className="size-4" /></IconButton>
     {error && <p role="alert" className="col-span-full text-danger">{error}</p>}
     {editing && <CustomFoodSheet food={item.food} openerId={openerId} onClose={() => setEditing(false)} onSave={food => {
       update(draft => ({ ...draft, meals: draft.meals.map(meal => ({ ...meal, items: meal.items.map(row => ({ ...row,

@@ -26,7 +26,7 @@ export async function CaptainShell({ children, sidebarFooter }: { children: Reac
       </aside>
       <div className="min-w-0 flex-1 lg:px-12 lg:pb-9 lg:pt-9">
         <div className="mx-auto w-full min-w-0 max-w-[1640px]">
-          <div className="sticky top-[var(--captain-top-inset)] z-30 -mx-8 mb-6 flex items-center justify-between bg-bg/70 px-8 pb-3 backdrop-blur-md md:-mx-10 md:px-10 lg:pointer-events-none lg:top-0 lg:mx-0 lg:mb-2 lg:bg-transparent lg:px-0 lg:pb-0 lg:backdrop-blur-none lg:[&>*]:pointer-events-auto">
+          <div className={`sticky top-[var(--captain-top-inset)] z-30 -mx-8 mb-6 flex items-center justify-between bg-bg/70 px-8 pb-3 backdrop-blur-md md:-mx-10 md:px-10 lg:pointer-events-none lg:top-0 lg:mx-0 lg:mb-2 lg:bg-transparent lg:px-0 lg:pb-0 lg:backdrop-blur-none lg:[&>*]:pointer-events-auto${workspace ? ' lg:static' : ''}`}>
             <Link href="/captain" aria-label={t('home')} className="flex min-h-12 items-center lg:invisible"><BrandMark className="size-8" /></Link>
             <div className="flex items-center gap-2"><HeaderInstall /><NotificationBell captain /><CaptainAccountMenu /></div>
           </div>

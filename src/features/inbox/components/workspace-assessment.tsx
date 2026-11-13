@@ -1,4 +1,5 @@
 'use client';
+import { Button } from '@/ui/button';
 import Image from 'next/image';
 import { useCallback, useState } from 'react';
 import { useResource } from '@/core/resource';
@@ -31,7 +32,7 @@ export function WorkspaceAssessment({ item }: { item: AssessmentItem }) {
         <span className="whitespace-pre-wrap">{assessmentAnswer(answer.value, answer.options ?? [], locale, t('yes'), t('no')) || t('dash')}</span>
       </WorkspaceFact>)}
     </dl>}
-    {item.answers.some(answer => answer.photoCount > 0) && (media.error || failed ? <div role="alert">{t('photosFailed')}<button className="min-h-12 px-3" onClick={retry}>{t('retry')}</button></div> :
+    {item.answers.some(answer => answer.photoCount > 0) && (media.error || failed ? <div role="alert">{t('photosFailed')}<Button variant="secondary" className="min-h-12 px-3" onClick={retry}>{t('retry')}</Button></div> :
       !media.data ? <p role="status">{t('loading')}</p> : <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">{media.data.map((photo, index) =>
         <a key={photo.url} href={photo.url} target="_blank" rel="noreferrer" className="min-h-12"><Image src={photo.url} alt={t('photo', { count: formatNumber(index + 1, locale) })}
           width={240} height={320} unoptimized onError={imageFailed} className="aspect-[3/4] w-full rounded-2xl border border-line-soft object-cover" /></a>)}</div>)}

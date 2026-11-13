@@ -31,7 +31,7 @@ export function ProgressGallery({ weeks, onPhotoError }: { weeks: readonly Galle
   return <section className="glass space-y-4 rounded-card p-4">
     <h2 className="font-bold">{t('gallery')}</h2>
     {!ordered.length ? <p className="text-muted">{t('comparisonPhotosArentAvailableYet')}</p> : <>
-      <Button variant="ghost" aria-pressed={comparing} onClick={() => setComparing(value => !value)}>{t('compare')}</Button>
+      <Button variant="secondary" aria-pressed={comparing} onClick={() => setComparing(value => !value)}>{t('compare')}</Button>
       {imageError && <p role="alert" className="text-danger">{t('couldntLoadPhotos')}</p>}
       {comparing && <div className="space-y-3">
         <div className="grid gap-3 sm:grid-cols-3">

@@ -1,5 +1,7 @@
 'use client';
 
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { IconButton } from '@/ui/icon-button';
 import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { ArrowUp, Camera, Mic, Square, X } from 'lucide-react';
@@ -123,7 +125,7 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
   return <div data-ko-chat>
     {account && context && <div className="flex items-center gap-2 border-b border-line px-4 text-sm text-muted">
       <span>{t(`context.${context.screen}`)}</span>
-      <button type="button" aria-label={t('context.remove')} onClick={() => setDropped(true)} className="grid min-h-12 min-w-12 place-items-center"><X aria-hidden className="size-4" /></button>
+      {captainWorkspaceEnabled() ? <IconButton type="button" aria-label={t('context.remove')} onClick={() => setDropped(true)} className="grid min-h-12 min-w-12 place-items-center"><X aria-hidden className="size-4" /></IconButton> : <button type="button" aria-label={t('context.remove')} onClick={() => setDropped(true)} className="grid min-h-12 min-w-12 place-items-center"><X aria-hidden className="size-4" /></button>}
     </div>}
     {showFeed && <KoFeed avatar={value => <KoAvatar expression={value} className="size-10" />} />}
     <div ref={log} role="log" aria-label={t(account ? 'accountChatTitle' : 'chatTitle')} className="flex max-h-60 min-h-32 flex-col gap-3 overflow-y-auto p-4 text-sm">
@@ -156,13 +158,14 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
         }} />}
       {photo && <div className="mb-2 flex items-center justify-between gap-2 rounded-control border border-line ps-3 text-sm">
         <span>{t('photoReady')}</span>
-        <button type="button" disabled={busy} aria-label={t('discardPhoto')} onClick={() => setPhoto(null)}
-          className="grid min-h-12 min-w-12 place-items-center text-muted"><X aria-hidden className="size-4" /></button>
+        {captainWorkspaceEnabled() ? <IconButton type="button" disabled={busy} aria-label={t('discardPhoto')} onClick={() => setPhoto(null)}
+          className="border border-danger/40 text-danger! grid min-h-12 min-w-12 place-items-center text-ink"><X aria-hidden className="size-4" /></IconButton> : <button type="button" disabled={busy} aria-label={t('discardPhoto')} onClick={() => setPhoto(null)}
+          className="grid min-h-12 min-w-12 place-items-center text-muted"><X aria-hidden className="size-4" /></button>}
       </div>}
       <div className="flex items-center gap-2">
         {clip ? <div className="flex min-w-0 flex-1 items-center justify-between gap-2 rounded-control bg-bg ps-3 text-sm">
           <span>{t('voiceReady')}</span>
-          <button type="button" disabled={busy} aria-label={t('discardVoice')} onClick={() => setClip(null)} className="grid min-h-12 min-w-12 place-items-center text-muted"><X aria-hidden className="size-4" /></button>
+          {captainWorkspaceEnabled() ? <IconButton type="button" disabled={busy} aria-label={t('discardVoice')} onClick={() => setClip(null)} className="border border-danger/40 text-danger! grid min-h-12 min-w-12 place-items-center text-ink"><X aria-hidden className="size-4" /></IconButton> : <button type="button" disabled={busy} aria-label={t('discardVoice')} onClick={() => setClip(null)} className="grid min-h-12 min-w-12 place-items-center text-muted"><X aria-hidden className="size-4" /></button>}
         </div> : <input dir="auto" value={draft} maxLength={koMaxText} onChange={event => setDraft(event.target.value)}
           aria-label={t('chatInput')} placeholder={t(recording ? 'voiceRecording' : 'chatInput')} disabled={busy || recorder.status !== 'idle'}
           className="min-h-12 min-w-0 flex-1 rounded-full border border-line bg-bg px-4 text-base outline-offset-2 placeholder:text-muted" />}
@@ -176,7 +179,7 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
           {recording ? <Square aria-hidden className="size-4" /> : <Mic aria-hidden className="size-5" />}
         </button>}
         <button type="submit" aria-label={t('chatSend')} disabled={busy || recorder.status !== 'idle' || (!clip && !photo && !draft.trim())}
-          className={`grid min-h-12 min-w-12 place-items-center rounded-full disabled:opacity-50 ${approval ? 'border border-line text-muted' : 'bg-lime text-on-lime'}`}><ArrowUp aria-hidden className="size-5" /></button>
+          className={`grid min-h-12 min-w-12 place-items-center rounded-full disabled:opacity-50 ${captainWorkspaceEnabled() ? 'glass border border-line text-muted' : approval ? 'border border-line text-muted' : 'bg-lime text-on-lime'}`}><ArrowUp aria-hidden className="size-5" /></button>
       </div>
       {error && <p role="alert" className="mt-2 text-xs text-muted">{error}</p>}
       <p className="mt-2 text-xs text-muted">{t(account ? 'accountPrivacy' : 'chatPrivacy')}</p>

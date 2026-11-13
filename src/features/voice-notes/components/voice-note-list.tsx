@@ -4,7 +4,7 @@ import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 
 import { useState } from 'react';
-import { AudioPlayer } from '@/ui';
+import { AudioPlayer } from '@/ui/audio-player';
 import { formatDateAr, localDate } from '@/lib/dates';
 import { clock } from '../audio';
 import type { VoiceNote } from '../types';

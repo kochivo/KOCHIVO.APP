@@ -1,4 +1,6 @@
 'use client';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { Button } from '@/ui/button';
 import { formatNumber } from '@/lib/format';
 import { localeDir } from '@/core/i18n/locale';
 import { useLocale, useT } from '@/core/i18n/client';
@@ -40,11 +42,11 @@ export function PreviewScreen({ result, today }: { result: Result; today: string
       <p className="shrink-0 p-3 text-center text-xs text-muted">{t('readOnly')}</p>
       <nav aria-label={t('sections')} className="grid shrink-0 grid-cols-4 gap-1 border-b border-line pb-2">
         {tabs.map((label, index) => <button type="button" key={label} aria-current={tab === index ? 'page' : undefined}
-          onClick={() => setTab(index)} className={`min-h-12 rounded-control text-xs ${tab === index ? 'bg-lime-soft font-bold text-lime' : 'text-muted'}`}>{label}</button>)}
+          onClick={() => setTab(index)} className={`min-h-12 rounded-control text-xs ${tab === index ? 'bg-lime-soft font-bold text-lime' : captainWorkspaceEnabled() ? 'glass border border-line text-ink' : 'text-muted'}`}>{label}</button>)}
       </nav>
       <div className="min-h-0 flex-1 overflow-y-auto p-3">
           {pending ? <p role="status">{t('loading')}</p> : result.error ? <div role="alert" className="space-y-3">
-            <p>{result.error}</p><button type="button" className="min-h-12 text-lime" onClick={() => startTransition(() => router.refresh())}>{t('retry')}</button>
+            <p>{result.error}</p>{captainWorkspaceEnabled() ? <Button variant="secondary" type="button" className="min-h-12 text-ink" onClick={() => startTransition(() => router.refresh())}>{t('retry')}</Button> : <button type="button" className="min-h-12 text-lime" onClick={() => startTransition(() => router.refresh())}>{t('retry')}</button>}
           </div> : !data ? <EmptyState icon={Users} title={t('unavailable')} body={t('emptyBody')} action={{ label: t('openPlayers'), href: '/captain/players' }} /> : <>
             {tab === 0 && <div className="space-y-4">
               <p className="font-bold">{t('hello', { name: data.name })}</p>

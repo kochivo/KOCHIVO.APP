@@ -35,7 +35,7 @@ export function ActivatePanel({ captain, plans, onClose, onSuccess }: Props) {
   return <aside aria-labelledby="activation-title" className="glass-strong rounded-card p-5 lg:sticky lg:top-6">
     <div className="mb-5 flex items-center justify-between gap-2">
       <h2 id="activation-title" className="text-xl font-bold">{t('activatePlan')}</h2>
-      <Button variant="ghost" onClick={onClose} disabled={pending}>{t('cancel')}</Button>
+      <Button variant="secondary" onClick={onClose} disabled={pending}>{t('cancel')}</Button>
     </div>
     <p className="mb-5 break-words text-muted">{captain.full_name}</p>
     <form onSubmit={event => { event.preventDefault(); submit(); }}>

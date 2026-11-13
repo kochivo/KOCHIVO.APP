@@ -31,7 +31,7 @@ export function ExportCard() {
   return <section className="glass space-y-4 rounded-card p-6">
     <h2 className="text-lg font-bold">{t('downloadYourData')}</h2>
     <p className="text-sm text-muted">{t('oneFileWithYourDataPhotos')}</p>
-    <Button variant="ghost" className="min-h-12" disabled={pending} onClick={() => void download()}>
+    <Button variant="secondary" className="min-h-12" disabled={pending} onClick={() => void download()}>
       {pending ? t('preparingYourData') : t('downloadYourData')}
     </Button>
     <p role="status" aria-live="polite">{message}</p>

@@ -1,5 +1,8 @@
 'use client';
 
+import { Button } from '@/ui/button';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { IconButton } from '@/ui/icon-button';
 import { useState } from 'react';
 import Link from 'next/link';
 import { CircleAlert, Sparkles, X } from 'lucide-react';
@@ -30,7 +33,7 @@ export function feedHref(item: KoFeedItem, locale: string) {
   }
 }
 
-export function FeedCard({ item, onDismiss }: { item: KoFeedItem; onDismiss: (key: string) => void }) {
+export function FeedCard({ item, onDismiss, primary = true }: { item: KoFeedItem; onDismiss: (key: string) => void; primary?: boolean }) {
   const t = useT(messages);
   const locale = useLocale();
   const [review, setReview] = useState(false);
@@ -76,14 +79,15 @@ export function FeedCard({ item, onDismiss }: { item: KoFeedItem; onDismiss: (ke
     <div className="flex items-center gap-2">
       <span className={`grid size-8 shrink-0 place-items-center rounded-control ${item.severity === 'urgent' ? 'bg-danger-soft text-danger' : 'bg-lime-soft text-lime-ink'}`}><Icon aria-hidden className="size-4" /></span>
       <p className="min-w-0 flex-1 text-sm">{t(item.kind, { name: item.player_name })}</p>
-      <button type="button" aria-label={t('dismiss')} onClick={() => onDismiss(item.key)} className="grid min-h-12 min-w-12 place-items-center rounded-control text-muted"><X aria-hidden className="size-4" /></button>
+      {captainWorkspaceEnabled() ? <IconButton type="button" aria-label={t('dismiss')} onClick={() => onDismiss(item.key)} className="grid min-h-12 min-w-12 place-items-center rounded-control text-ink"><X aria-hidden className="size-4" /></IconButton> : <button type="button" aria-label={t('dismiss')} onClick={() => onDismiss(item.key)} className="grid min-h-12 min-w-12 place-items-center rounded-control text-muted"><X aria-hidden className="size-4" /></button>}
     </div>
     {swap && <div className="mt-2 space-y-2">
       <p dir={locale === 'ar' ? 'rtl' : 'ltr'} className="text-sm">{t('swapDetails', {
         from: exerciseName(item.data.from, locale), to: exerciseName(item.data.to, locale), injury: injuryName,
       })}</p>
       <div className="flex gap-2">
-        <button type="button" disabled={busy} onClick={() => void decide(true)} className="min-h-12 flex-1 rounded-control bg-lime text-on-lime disabled:opacity-50">{t('approve')}</button>
+        {captainWorkspaceEnabled() ? <Button variant={primary ? 'primary' : 'secondary'} disabled={busy} onClick={() => void decide(true)} className="min-h-12 flex-1">{t('approve')}</Button>
+          : <button type="button" disabled={busy} onClick={() => void decide(true)} className="min-h-12 flex-1 rounded-control bg-lime text-on-lime disabled:opacity-50">{t('approve')}</button>}
         <button type="button" disabled={busy} onClick={() => void decide(false)} className="min-h-12 flex-1 rounded-control border border-line disabled:opacity-50">{t('decline')}</button>
       </div>
       {error && <p role="alert" className="text-sm text-danger">{t('swapError')}</p>}

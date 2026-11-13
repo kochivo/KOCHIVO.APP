@@ -7,7 +7,7 @@ import { Button, Chip, Stepper } from '@/ui';
 import type { useFocusSession } from '../hooks/use-focus-session';
 import { messages } from '../messages';
 
-export function SetControls({ state }: { state: ReturnType<typeof useFocusSession> }) {
+export function SetControls({ state, secondary = false }: { state: ReturnType<typeof useFocusSession>; secondary?: boolean }) {
   const t = useT(messages);
   const locale = useLocale();
   const weightRef = useRef<HTMLDivElement>(null);
@@ -32,7 +32,7 @@ export function SetControls({ state }: { state: ReturnType<typeof useFocusSessio
         hint={state.performance?.reps != null ? t('lastTimeReps', { value: formatNumber(state.performance.reps, locale) }) : undefined} />
     </div>
     {state.invalid && <p id="set-error" role="alert" className="text-danger">{t(issue === 'reps' ? 'enterReps' : 'enterWeightAndReps')}</p>}
-    <Button size="xl" className="w-full" disabled={state.disabled} onClick={() => void state.complete()}>
+    <Button variant={secondary ? 'secondary' : 'primary'} size="xl" className="w-full" disabled={state.disabled} onClick={() => void state.complete()}>
       <Check aria-hidden />{t('completeSet')}
     </Button>
   </>;

@@ -1,5 +1,7 @@
 'use client';
 
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { Button } from '@/ui/button';
 import { useEffect, useRef, useState } from 'react';
 import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
@@ -34,10 +36,11 @@ export function KoConfirm({ approval, busy, onConfirm, onCancel, now = Date.now 
   }, [approval, now]);
   return <div role="group" aria-label={t('confirmLabel')} dir={locale === 'ar' ? 'rtl' : 'ltr'} className="flex flex-wrap gap-2">
     {expired ? <p className="text-muted">{t('confirmExpired')}</p> : <>
-      <button ref={confirm} type="button" disabled={busy} className="min-h-12 rounded-control bg-lime px-4 text-on-lime disabled:opacity-50"
+      <button ref={confirm} type="button" disabled={busy} className={captainWorkspaceEnabled() ? 'glass min-h-12 rounded-control border border-line px-4 text-ink disabled:opacity-50' : 'min-h-12 rounded-control bg-lime px-4 text-on-lime disabled:opacity-50'}
         onClick={() => { if (locked.current || approval.expired(now())) { setExpired(approval.expired(now())); return; } locked.current = true; onConfirm(); }}>{t('confirmAction')}</button>
-      <button type="button" disabled={busy} className="min-h-12 rounded-control px-4 text-muted disabled:opacity-50"
-        onClick={() => { if (locked.current) return; locked.current = true; approval.clear(); onCancel(); }}>{t('confirmCancel')}</button>
+      {captainWorkspaceEnabled() ? <Button variant="secondary" type="button" disabled={busy} className="min-h-12 rounded-control px-4 text-muted disabled:opacity-50"
+        onClick={() => { if (locked.current) return; locked.current = true; approval.clear(); onCancel(); }}>{t('confirmCancel')}</Button> : <button type="button" disabled={busy} className="min-h-12 rounded-control px-4 text-muted disabled:opacity-50"
+        onClick={() => { if (locked.current) return; locked.current = true; approval.clear(); onCancel(); }}>{t('confirmCancel')}</button>}
     </>}
   </div>;
 }

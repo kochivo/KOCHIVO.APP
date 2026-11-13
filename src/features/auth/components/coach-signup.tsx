@@ -42,7 +42,7 @@ export function CoachSignup({ coach, callbackError = false }: { coach: string; c
           <Button type="submit" className="w-full">{pending ? t('oneMoment') : t('sendCoachRequest')}</Button>
         </fieldset>
       </form>
-      <Button variant="ghost" disabled={pending} onClick={() => setExisting(value => !value)}>{existing ? t('createAccount') : t('signIn')}</Button>
+      <Button variant="secondary" disabled={pending} onClick={() => setExisting(value => !value)}>{existing ? t('createAccount') : t('signIn')}</Button>
       </>}
     </GlassCard>
   </main>;

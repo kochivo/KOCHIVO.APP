@@ -19,6 +19,8 @@ export const arStd = {
   "price.one": "{price} جنيه / شهر · حتى {count} لاعب",
   "price.other": "{price} جنيه / شهر · حتى {count} لاعب",
   "usage.one": "{used} من {count} لاعب",
+  "usage.two": "{used} من {count} لاعبين",
+  "usage.few": "{used} من {count} لاعبين",
   "usage.other": "{used} من {count} لاعب",
   "usedPlayers": "عدد اللاعبين المستخدم من الباقة",
   "paidUntil": "باقتك مدفوعة حتى",

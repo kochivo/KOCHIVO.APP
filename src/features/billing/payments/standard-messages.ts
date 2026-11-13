@@ -1,5 +1,8 @@
 export const arStd = {
-    summary: 'المدفوع هذا الشهر {paid} جنيه · متأخر {due} جنيه من {n} لاعبين · {ending} سيجددون هذا الأسبوع',
+    'summary.one': 'المدفوع هذا الشهر {paid} جنيه · متأخر {due} جنيه من {count} لاعب · {ending} سيجددون هذا الأسبوع',
+    'summary.two': 'المدفوع هذا الشهر {paid} جنيه · متأخر {due} جنيه من {count} لاعبين · {ending} سيجددون هذا الأسبوع',
+    'summary.few': 'المدفوع هذا الشهر {paid} جنيه · متأخر {due} جنيه من {count} لاعبين · {ending} سيجددون هذا الأسبوع',
+    'summary.other': 'المدفوع هذا الشهر {paid} جنيه · متأخر {due} جنيه من {count} لاعب · {ending} سيجددون هذا الأسبوع',
     record: 'سجّل دفعة', all: 'الكل', overdue: 'متأخر', ending: 'ينتهي قريبًا', paid: 'دافع',
     search: 'ابحث عن لاعب', player: 'اللاعب', package: 'الباقة', last: 'آخر دفعة', renewal: 'التجديد',
     remind: 'ذكّره', received: 'تم الدفع', packages: 'باقاتك', packagesHint: 'الباقات التي يختار منها اللاعب عند الانضمام',

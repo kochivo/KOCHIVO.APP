@@ -1,4 +1,5 @@
 'use client';
+import { Button } from '@/ui/button';
 import { useCallback,useRef,useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useResource } from '@/core/resource';
@@ -37,7 +38,7 @@ export function RequestManager({playerId,locale}:{playerId:string;locale:Locale}
     finally {busy.current = false;setSending(false);}
   }
   if (!resource.data) return <section role="status">{resource.status === 'error' ? m.error : m.loading}
-    {resource.status === 'error' && <button className="min-h-12 px-4 text-lime" onClick={() => void resource.retry()}>{m.retry}</button>}</section>;
+    {resource.status === 'error' && <Button variant="secondary" className="min-h-12 px-4" onClick={() => void resource.retry()}>{m.retry}</Button>}</section>;
   const data = resource.data, detail = data.requests.find(r => r.request.id === selected);
   return <section className="space-y-4" aria-label={m.pending}>
     <button onClick={() => {setPicking(true);setSent(false);}} className="min-h-12 rounded-control bg-lime-soft px-5 font-bold text-lime">{m.send}</button>
@@ -48,10 +49,10 @@ export function RequestManager({playerId,locale}:{playerId:string;locale:Locale}
       },...(current ?? data).pending]}),commit)}
       onSent={() => {setPicking(false);setSent(true);void resource.retry();}} />}
     {(error || resource.status === 'error') && <div role="alert" className="text-danger"><p>{m.error}</p>
-      <button className="min-h-12 text-lime" onClick={() => {setError(false);void resource.retry();}}>{m.retry}</button></div>}
+      <Button variant="secondary" className="min-h-12" onClick={() => {setError(false);void resource.retry();}}>{m.retry}</Button></div>}
     {!!data.pending.length && <ul className="glass divide-y divide-line rounded-card p-4">{data.pending.map(r => <li key={r.id} className="flex flex-wrap items-center justify-between gap-3">
-      <span>{r.forms?.title}{r.due_at && <span className="ms-3 text-xs text-muted">{new Intl.DateTimeFormat(locale,{timeZone:timezone}).format(new Date(r.due_at))}</span>}</span><button disabled={sending || !!r.reminded_at} onClick={() => void remind(r.id)}
-        className="min-h-12 px-4 text-lime disabled:text-muted">{r.reminded_at ? m.reminded : m.remind}</button></li>)}</ul>}
+      <span>{r.forms?.title}{r.due_at && <span className="ms-3 text-xs text-muted">{new Intl.DateTimeFormat(locale,{timeZone:timezone}).format(new Date(r.due_at))}</span>}</span><Button variant="secondary" disabled={sending || !!r.reminded_at} onClick={() => void remind(r.id)}
+        className="min-h-12 px-4">{r.reminded_at ? m.reminded : m.remind}</Button></li>)}</ul>}
     {!data.requests.length && <p className="text-muted">{m.empty}</p>}
     <ul className="flex flex-wrap gap-3">{data.requests.filter(r => r.request.answered_at).map(r => <li key={r.request.id}>
       <button aria-pressed={selected === r.request.id} onClick={() => setSelection({query:requested,id:r.request.id})} className="glass min-h-12 rounded-control px-4 text-start">{r.title}</button></li>)}</ul>

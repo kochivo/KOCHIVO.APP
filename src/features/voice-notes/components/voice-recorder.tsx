@@ -7,7 +7,8 @@ import { messages } from '../messages';
 
 import { useState } from 'react';
 import { Mic, Send, Square, Trash2 } from 'lucide-react';
-import { AudioPlayer, Button } from '@/ui';
+import { Button } from '@/ui/button';
+import { AudioPlayer } from '@/ui/audio-player';
 import { loadSupabaseBrowser } from '@/core/supabase/lazy';
 import { MAX_VOICE_SECONDS, clock } from '../audio';
 import { sendVoiceNote } from '../data/voice-notes';
@@ -48,7 +49,7 @@ export function VoiceRecorder({ playerId, context, onSent, recorder }: { playerI
       </Button> : state.status === 'recorded' ? <div className="space-y-3">
         <AudioPlayer src={state.url} mimeType={state.blob.type} durationSeconds={state.seconds} playLabel={t('play')} pauseLabel={t('pause')} formatTime={clock} />
         <div className="grid grid-cols-2 gap-2">
-          <Button variant="ghost" className="gap-2" onClick={reset} disabled={sending}><Trash2 aria-hidden className="size-5" />{t('discard')}</Button>
+          <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} className={captainWorkspaceEnabled() ? 'gap-2 border border-danger/40 text-danger!' : 'gap-2'} onClick={reset} disabled={sending}><Trash2 aria-hidden className="size-5" />{t('discard')}</Button>
           {!recorder && <Button variant="secondary" className="gap-2" onClick={() => void send()} disabled={sending}>
             <SendIcon aria-hidden className="size-5" />{sending ? t('sending') : t('send')}
           </Button>}

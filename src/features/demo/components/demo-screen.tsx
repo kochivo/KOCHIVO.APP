@@ -51,7 +51,7 @@ export function DemoScreen() {
       <p className="text-sm text-muted">{t('sampleAccountClearsAfter24Hours')}</p>
       {pending && <p role="status" className="text-sm text-muted">{t('preparingSampleData')}</p>}
       {error && <div role="alert" className="space-y-2 text-sm text-danger"><p>{error}</p>
-        <Button variant="ghost" className="min-h-12" disabled={pending} onClick={() => {
+        <Button variant="secondary" className="min-h-12" disabled={pending} onClick={() => {
           setError(''); setToken(''); setAttempt((value) => value + 1);
         }}>{t('tryAgain')}</Button>
       </div>}

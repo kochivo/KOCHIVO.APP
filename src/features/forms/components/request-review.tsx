@@ -1,4 +1,5 @@
 'use client';
+import { Button } from '@/ui/button';
 import { useRef,useState } from 'react';
 import type { Locale } from '@/core/i18n/locale';
 import { loadSupabaseBrowser } from '@/core/supabase/lazy';
@@ -38,8 +39,8 @@ export function RequestReview({data,locale,onReviewed}:{data:RequestData;locale:
           || Array.isArray(value) && value.every(v => typeof v === 'string') ? value : null;
         return <div key={q.id}><QuestionField question={q} locale={locale} value={safe} readOnly />
           {a?.photo_paths.map(path => <div key={path}>{photos[path]
-            ? <a href={photos[path]} target="_blank" rel="noreferrer" className="flex min-h-12 items-center text-lime">{m.photo}</a>
-            : <button type="button" className="min-h-12 text-lime" onClick={() => void sign(path)}>{m.photo}</button>}</div>)}</div>;
+            ? <a href={photos[path]} target="_blank" rel="noreferrer" className="glass inline-flex min-h-12 items-center rounded-full border border-line px-4 hover:bg-ink/10">{m.photo}</a>
+            : <Button variant="secondary" type="button" className="min-h-12" onClick={() => void sign(path)}>{m.photo}</Button>}</div>)}</div>;
       })}
       {data.request.reviewed_at ? <p>{m.reviewed} · {data.request.captain_reply}</p> :
         <form onSubmit={e => {e.preventDefault();void review();}} className="space-y-3">

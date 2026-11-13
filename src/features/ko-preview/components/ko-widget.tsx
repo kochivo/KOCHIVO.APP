@@ -1,5 +1,7 @@
 'use client';
 
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { IconButton } from '@/ui/icon-button';
 import { useCallback, useEffect, useId, useState } from 'react';
 import Link from 'next/link';
 import { Hammer, X } from 'lucide-react';
@@ -67,7 +69,7 @@ export function KoWidget({ role, interactive = false, account = false, panelMess
       openerId={openerId} interactive={interactive} account={account} />
       : <ResponsiveDialog data-ko-panel aria-label={t('accountChatTitle')} fallbackId={openerId} openerId={openerId} onDismiss={close}
         className="sheet fixed inset-auto start-[max(1rem,var(--safe-start))] bottom-[calc(var(--nav-clearance)+4.5rem)] z-50 m-0 w-96 max-w-[calc(100vw-2rem)] rounded-card border border-line p-4 text-start text-ink lg:bottom-24">
-        <button type="button" onClick={close} aria-label={t('close')} className="ms-auto grid min-h-12 min-w-12 place-items-center"><X aria-hidden className="size-5" /></button>
+        {captainWorkspaceEnabled() ? <IconButton type="button" onClick={close} aria-label={t('close')} className="ms-auto grid min-h-12 min-w-12 place-items-center"><X aria-hidden className="size-5" /></IconButton> : <button type="button" onClick={close} aria-label={t('close')} className="ms-auto grid min-h-12 min-w-12 place-items-center"><X aria-hidden className="size-5" /></button>}
         {panel.failed ? <>
           <p role="alert">{panelMessages?.error ?? t('chatError')}</p>
           <button type="button" onClick={() => void loadPanel()} className="mt-3 min-h-12 rounded-control bg-lime px-4 text-on-lime">{panelMessages?.retry ?? t('open')}</button>

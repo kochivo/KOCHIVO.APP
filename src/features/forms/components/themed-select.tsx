@@ -13,8 +13,9 @@ export function ThemedSelect({ label, value, options, onChange, disabled = false
     if (!button || !panel) return;
     const rtl = getComputedStyle(button).direction === 'rtl';
     const placement = selectPosition(button.getBoundingClientRect(), window.innerWidth, window.innerHeight, rtl);
-    Object.assign(panel.style, { insetBlockStart: `${placement.top}px`, insetInlineStart: `${placement.start}px`,
-      width: `${placement.width}px`, maxHeight: `${placement.height}px` });
+    Object.assign(panel.style, { insetBlockStart: placement.top === undefined ? 'auto' : `${placement.top}px`,
+      insetBlockEnd: placement.bottom === undefined ? 'auto' : `${placement.bottom}px`, insetInlineStart: `${placement.start}px`,
+      width: `${placement.width}px`, maxBlockSize: `${placement.maxBlockSize}px` });
   }
   useEffect(() => {
     const update = () => { if (list.current?.matches(':popover-open')) position(); };

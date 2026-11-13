@@ -13,6 +13,18 @@ it('renders an accessible empty state and pending count', () => {
   expect(render([])).toContain('Captain requests');
   expect(render([])).toContain('0');
 });
+it('reserves filled lime for the first pending approval', () => {
+  const html = render(['Ali', 'Mona', 'Omar'].map((full_name, index) => ({
+    id: String(index), full_name, email: null, created_at: '2026-11-03T10:00:00Z',
+  })));
+  const approvals = html.match(/<button[^>]*aria-label="Approve [^"]*"[^>]*>/g) ?? [];
+  expect(approvals).toHaveLength(3);
+  expect(approvals[0]).toContain('bg-lime');
+  for (const button of approvals.slice(1)) {
+    expect(button).toContain('glass');
+    expect(button).not.toContain('bg-lime');
+  }
+});
 it('labels approve and reject per captain and formats signup dates', () => {
   const html = render([{ id: 'c', full_name: 'Ali', email: 'ali@example.com', created_at: '2026-11-03T22:30:00Z' }]);
   expect(html).toContain('aria-label="Approve Ali"');

@@ -40,7 +40,7 @@ export function SuspendDialog({ captain, onClose, onSuccess }: {
       {error && <p role="alert" className="mt-3 text-danger">{error}</p>}
       <div className="mt-5 flex gap-2">
         <Button type="submit" disabled={pending}>{pending ? t('saving') : captain.suspended ? t('restoreAccount') : t('suspendAccount')}</Button>
-        <Button variant="ghost" disabled={pending} onClick={onClose}>{t('cancel')}</Button>
+        <Button variant="secondary" disabled={pending} onClick={onClose}>{t('cancel')}</Button>
       </div>
     </form>
   </dialog>;

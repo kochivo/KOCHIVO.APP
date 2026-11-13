@@ -57,17 +57,17 @@ export function IntakeV6({ statusError }: { statusError?: string }) {
   return <main className="mx-auto flex min-h-dvh max-w-lg flex-col gap-5 px-5 py-6">
     <header className="space-y-3"><div className="flex items-center justify-between text-xs text-faint">
       <span aria-live="polite">{progress}</span>
-      {optionalQuestions.includes(field) && <button type="button" disabled={busy} className="min-h-12 px-3" onClick={() => {
+      {optionalQuestions.includes(field) && <Button variant="secondary" type="button" disabled={busy} className="min-h-12 px-3" onClick={() => {
         update({ [field]: field === 'target_weight_kg' ? null : field === 'notes' ? '' : [] });
         if (index < questions.length - 1) setIndex(index + 1);
         else void next({ ...draft, notes: '' });
-      }}>{v6t('skip')}</button>}</div>
+      }}>{v6t('skip')}</Button>}</div>
       <ProgressBar value={index + 1} max={questions.length} aria-label={progress} /></header>
     <fieldset disabled={busy} className="min-w-0 flex-1"><IntakeQuestion key={field} field={field} draft={draft} update={patch => { update(patch); setError(''); }} year={now.getUTCFullYear()} /></fieldset>
     <p className="text-xs text-muted">{t('onlyYourCoachCanSeeYourAnswers')}</p>
     {error && <p role="alert" className="text-sm text-danger">{error}</p>}
     <footer className="space-y-2"><Button className="min-h-12 w-full rounded-full" disabled={busy || !valid} onClick={() => void next()}>
       {busy ? t('sendingYourAnswers') : index === questions.length - 1 ? t('sendToCoach') : t('next')}</Button>
-      <Button variant="ghost" className="min-h-12 w-full rounded-full" disabled={busy} onClick={() => index ? setIndex(index - 1) : setStage('welcome')}>{t('back')}</Button></footer>
+      <Button variant="secondary" className="min-h-12 w-full rounded-full" disabled={busy} onClick={() => index ? setIndex(index - 1) : setStage('welcome')}>{t('back')}</Button></footer>
   </main>;
 }

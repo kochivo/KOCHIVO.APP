@@ -17,6 +17,7 @@ import { useArabicStyle, useT } from '@/core/i18n/client';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { messages as v6Messages } from '../v6-messages';
 import { Camera, X } from 'lucide-react';
+import { secondaryButtonClass } from '@/ui/secondary-button-class';
 
 export function AnswerFlow({data,locale}:{data:RequestData;locale:Locale}) {
   const CameraIcon = captainWorkspaceEnabled() ? KoCamera : Camera;
@@ -73,7 +74,7 @@ export function AnswerFlow({data,locale}:{data:RequestData;locale:Locale}) {
   if (!q) return <p>{m.unavailable}</p>;
   return <section className={v6 ? 'space-y-5' : 'glass-strong space-y-5 rounded-card p-6'} aria-busy={state === 'sending' || uploading}>
     {v6 ? <header className="flex items-center gap-2 text-xs text-faint">
-      <Link href={`/${locale}/player`} aria-label={v6t('close')} className="grid min-h-12 min-w-12 place-items-center"><X aria-hidden className="size-5" /></Link>
+      <Link href={`/${locale}/player`} aria-label={v6t('close')} className={secondaryButtonClass}><X aria-hidden className="size-5" /></Link>
       <h1 className="min-w-0 flex-1">{data.title}</h1><span>{v6t('progress', { n: step + 1, total: data.questions.length })}</span>
     </header> : <h1 className="text-2xl font-bold">{data.title}</h1>}
     <progress className="w-full accent-lime" value={step+1} max={data.questions.length} aria-label={data.title} />

@@ -1,4 +1,5 @@
 'use client';
+import { IconButton } from '@/ui/icon-button';
 import { useTimezone } from '@/core/timezone/client';
 import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
@@ -78,7 +79,7 @@ export function CheckinSheet({ latest, open, onClose, onSent }: {
     <form onSubmit={submit} className="space-y-4">
       <header className="flex items-center justify-between">
         <h2 id="checkin-title" className="text-xl font-bold">{t('weeklyCheckin')}</h2>
-        <Button variant="ghost" aria-label={t('closeCheckin')} onClick={onClose}><X aria-hidden /></Button>
+        <IconButton aria-label={t('closeCheckin')} onClick={onClose}><X aria-hidden /></IconButton>
       </header>
       <fieldset disabled={busy} className="space-y-4">
         <Stepper label={t('weightKg')} value={weight} min={20} step={0.1} onChange={(value) => setWeight(Math.min(400, value))} format={(value) => formatNumber(Number(value.toFixed(1)), locale)} />
@@ -104,7 +105,7 @@ export function CheckinSheet({ latest, open, onClose, onSent }: {
             {photos[index] && <>
               {/* eslint-disable-next-line @next/next/no-img-element -- In-memory file preview. */}
               <img src={photos[index].preview} alt={t('previewPosition', { value0: position })} loading="lazy" decoding="async" width={480} height={640} className="aspect-[3/4] w-full rounded-control object-cover" />
-              <Button variant="ghost" className="w-full" aria-label={t('removePhoto', { value0: position })} onClick={() => changePhoto(index, null)}><X aria-hidden className="size-5" /></Button>
+              <IconButton className="w-full" aria-label={t('removePhoto', { value0: position })} onClick={() => changePhoto(index, null)}><X aria-hidden className="size-5" /></IconButton>
             </>}
           </div>)}
         </div>

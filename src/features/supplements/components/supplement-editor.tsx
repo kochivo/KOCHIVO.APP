@@ -1,5 +1,7 @@
 'use client';
 
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { Button } from '@/ui/button';
 import { useEffect, useRef, useState } from 'react';
 import { useT } from '@/core/i18n';
 import type { SupplementRow } from '@/core/offline/tables';
@@ -39,7 +41,7 @@ export function SupplementEditor({ initial, onSave, onClose }: {
       <label className="block">{t('notes')}<textarea name="notes" maxLength={300} defaultValue={initial?.notes} className="glass mt-1 min-h-24 w-full rounded-control p-3" /></label>
       {error && <p role="alert">{t('error')}</p>}
       <div className="flex gap-3"><button type="submit" disabled={busy} className="min-h-12 rounded-control bg-lime px-6 font-bold text-on-lime">{t('save')}</button>
-        <button type="button" disabled={busy} className="min-h-12 px-4" onClick={onClose}>{t('cancel')}</button></div>
+        {captainWorkspaceEnabled() ? <Button variant="secondary" type="button" disabled={busy} className="min-h-12 px-4" onClick={onClose}>{t('cancel')}</Button> : <button type="button" disabled={busy} className="min-h-12 px-4" onClick={onClose}>{t('cancel')}</button>}</div>
     </form>
   </dialog>;
 }

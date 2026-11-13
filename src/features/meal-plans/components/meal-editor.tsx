@@ -1,12 +1,15 @@
 'use client';
 
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { IconButton } from '@/ui/icon-button';
 import { useLocale, useT } from '@/core/i18n/client';
 import { formatNumber } from '@/lib/format';
 import { messages } from '../messages';
 import { useId, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { ArrowDown, ArrowUp, Trash2, Utensils } from 'lucide-react';
-import { Button, EmptyState } from '@/ui';
+import { Button } from '@/ui/button';
+import { EmptyState } from '@/ui';
 import { uuidv7 } from '@/core/offline/ids';
 import { addItem, moveMeal, removeMeal, renameMeal } from '../draft';
 import { mealTotals } from '../totals';
@@ -31,9 +34,9 @@ export function MealEditor({ meal, first, last, update, enhanced = false, facts 
       <label>{t('mealName')}<input value={meal.name} maxLength={40} onChange={event => update(d => renameMeal(d, meal.id, event.target.value))}
         className="ms-2 min-h-12 rounded-control bg-surface px-3" /></label>
       <div className="flex gap-1">
-        <Button variant="ghost" disabled={first} aria-label={t('moveMealUp')} onClick={() => update(d => day ? moveVisibleMeal(d, meal.id, -1, day) : moveMeal(d, meal.id, -1))}><ArrowUp aria-hidden className="dir-icon" /></Button>
-        <Button variant="ghost" disabled={last} aria-label={t('moveMealDown')} onClick={() => update(d => day ? moveVisibleMeal(d, meal.id, 1, day) : moveMeal(d, meal.id, 1))}><ArrowDown aria-hidden className="dir-icon" /></Button>
-        <Button variant="ghost" aria-label={t('deleteMeal')} onClick={() => update(d => removeMeal(d, meal.id))}><Trash2 aria-hidden /></Button>
+        {captainWorkspaceEnabled() ? <IconButton disabled={first} aria-label={t('moveMealUp')} onClick={() => update(d => day ? moveVisibleMeal(d, meal.id, -1, day) : moveMeal(d, meal.id, -1))}><ArrowUp aria-hidden className="dir-icon" /></IconButton> : <Button variant="ghost" disabled={first} aria-label={t('moveMealUp')} onClick={() => update(d => day ? moveVisibleMeal(d, meal.id, -1, day) : moveMeal(d, meal.id, -1))}><ArrowUp aria-hidden className="dir-icon" /></Button>}
+        {captainWorkspaceEnabled() ? <IconButton disabled={last} aria-label={t('moveMealDown')} onClick={() => update(d => day ? moveVisibleMeal(d, meal.id, 1, day) : moveMeal(d, meal.id, 1))}><ArrowDown aria-hidden className="dir-icon" /></IconButton> : <Button variant="ghost" disabled={last} aria-label={t('moveMealDown')} onClick={() => update(d => day ? moveVisibleMeal(d, meal.id, 1, day) : moveMeal(d, meal.id, 1))}><ArrowDown aria-hidden className="dir-icon" /></Button>}
+        {captainWorkspaceEnabled() ? <IconButton className="border border-danger/40 text-danger!" aria-label={t('deleteMeal')} onClick={() => update(d => removeMeal(d, meal.id))}><Trash2 aria-hidden /></IconButton> : <Button variant="ghost" aria-label={t('deleteMeal')} onClick={() => update(d => removeMeal(d, meal.id))}><Trash2 aria-hidden /></Button>}
       </div>
     </div>
     {enhanced && <label>{editorT('dayType')}<select value={meal.dayType ?? 'all'} onChange={event => {

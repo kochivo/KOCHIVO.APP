@@ -36,7 +36,7 @@ export function JoinRequestsList({ rows, onResolved }: { rows: { id: string; ful
     {visible.length ? <ul className="space-y-3">{visible.map(row => <li key={row.id} className="flex flex-wrap items-center justify-between gap-3">
       <span>{row.full_name}</span><div className="flex gap-2">
         <Button variant="secondary" onClick={() => void resolve(row.id, 'accepted')}>{t('accept')}</Button>
-        <Button variant="ghost" onClick={() => void resolve(row.id, 'declined')}>{t('decline')}</Button>
+        <Button variant="secondary" className="border border-danger/40 text-danger" onClick={() => void resolve(row.id, 'declined')}>{t('decline')}</Button>
       </div>
     </li>)}</ul> : <p className="text-sm text-muted">{t('empty')}</p>}
   </div>;

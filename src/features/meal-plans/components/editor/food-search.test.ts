@@ -31,6 +31,12 @@ it('shows localized library results and keeps the search text', () => {
   expect(render()).toContain('Egg');
   expect(render()).toContain('value="egg"');
 });
+it('surfaces food creation and library results with add icons', () => {
+  state.data.foods = [{ id: 'egg', name: 'بيض', nameEn: 'Egg' }];
+  const html = render();
+  expect(html.match(/<button[^>]*class="[^"]*glass[^>]*>/g)).toHaveLength(2);
+  expect(html.match(/lucide-plus/g)).toHaveLength(2);
+});
 it.each(['loading', 'error', 'empty'] as const)('has a %s state', kind => {
   state.status = kind === 'empty' ? 'ready' : kind;
   state.error = kind === 'error' ? new Error('failure') : undefined;

@@ -17,6 +17,6 @@ export function LibraryList({ data, locale, selected }: { data: LibraryData; loc
       {templates.filter(template => !template.key).map(template => <FormCard key={template.kind} title={m.kinds[template.kind]}
         count={template.questions.length} locale={locale} href={`${base}?template=${template.kind}`} />)}
     </section>
-    {selected && <Link href={base} prefetch={false} className="block min-h-12 px-4 py-3">{m.close}</Link>}
+    {selected && <Link href={base} prefetch={false} className="block py-3 glass min-h-12 rounded-full border border-line px-4 hover:bg-ink/10">{m.close}</Link>}
   </aside>;
 }

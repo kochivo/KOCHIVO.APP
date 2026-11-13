@@ -1,10 +1,11 @@
 'use client';
 
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 
 import { useState } from 'react';
-import { Button } from '@/ui';
+import { Button } from '@/ui/button';
 import { saveAsTemplate } from '../data/templates';
 import type { TemplateKind } from '../types';
 import { useToast } from '@/ui/toast';
@@ -26,13 +27,13 @@ export function SaveTemplateButton({ kind, id, title }: { kind: TemplateKind; id
     finally { setBusy(false); }
   }
   return <div className="grid gap-1">
-    <Button variant="ghost" className="min-h-12" disabled={busy} onClick={() => {
+    <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} className="min-h-12" disabled={busy} onClick={() => {
       const name = window.prompt(t('templateName'), title);
       if (name !== null) void save(name);
     }}>{t('saveAsTemplate')}</Button>
     {busy && <p role="status" className="text-sm text-muted">{t('savingTemplate')}</p>}
     {error && <div role="alert" className="text-sm text-danger">{error}
-      <Button variant="ghost" className="min-h-12" disabled={busy} onClick={() => void save(lastTitle)}>{t('tryAgain')}</Button>
+      <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} className="min-h-12" disabled={busy} onClick={() => void save(lastTitle)}>{t('tryAgain')}</Button>
     </div>}
   </div>;
 }

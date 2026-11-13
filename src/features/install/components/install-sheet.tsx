@@ -32,7 +32,7 @@ export function InstallSheet({ role = 'player' }: { role?: 'captain' | 'player' 
       {platform === 'android' && <Button disabled={busy} onClick={() => void install()}>
         {busy ? t('installing') : t('installApp')}
       </Button>}
-      <Button variant="ghost" onClick={dismiss}>{t('notNow')}</Button>
+      <Button variant="secondary" onClick={dismiss}>{t('notNow')}</Button>
     </div>
   </dialog>;
 }

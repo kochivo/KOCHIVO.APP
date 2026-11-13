@@ -19,7 +19,7 @@ export async function HomeSideCards({ ending, requests, now, timezone, joinReque
       <h2 className="mb-1.5 font-display text-base font-semibold">{t('ending')}</h2>
       <ul className="divide-y divide-line-soft">{ending.map(player => {
         const days = daysBetween(localDate(now, player.timezone ?? timezone), player.accessUntil);
-        return <li key={player.playerId}><Link href="/captain/billing" className="flex min-h-12 items-center justify-between gap-3 py-2.5 text-[13px]">
+        return <li key={player.playerId}><Link href="/captain/billing" className="glass flex min-h-12 items-center justify-between gap-3 rounded-full border border-line px-4 py-2.5 text-[13px]">
           <span>{player.fullName}</span><span className="shrink-0 text-faint">{days === 0 ? t('endsToday') : days === 1 ? t('afterOne') : days === 2 ? t('afterTwo') : t('after', { n: days })}</span>
         </Link></li>;
       })}</ul>

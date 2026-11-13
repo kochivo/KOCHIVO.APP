@@ -23,7 +23,7 @@ export function CheckinList({ playerId, profile, locale }: { playerId: string; p
         <dl><FactRow label={t('weight')}>{n(row.weightKg, t('kg'))}</FactRow><FactRow label={t('waist')}>{n(row.waistCm, t('cm'))}</FactRow></dl>
         {row.notes?.trim() && <p className="whitespace-pre-wrap text-sm text-muted">{row.notes}</p>}
         {row.reply ? <p className="glass rounded-control p-3 text-sm"><b>{t('yourReply')}: </b>{row.reply}</p> :
-          !row.reviewedAt && <Link href="/captain/inbox" className="inline-flex min-h-12 items-center text-sm text-lime">{t('openInbox')}</Link>}
+          !row.reviewedAt && <Link href="/captain/inbox" className="glass inline-flex min-h-12 items-center rounded-full border border-line px-4 text-sm text-ink">{t('openInbox')}</Link>}
       </li>)}</ul> : <FileReminder playerId={playerId} locale={locale} title={t('noCheckinsTitle')} body={t('noCheckinsBody')} />}
     </section>
     <FileVoiceEntry playerId={playerId} />

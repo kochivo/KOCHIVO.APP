@@ -1,4 +1,5 @@
 'use client';
+import { Button } from '@/ui/button';
 
 import dynamic from 'next/dynamic';
 import { useState } from 'react';
@@ -21,7 +22,7 @@ export function ReadinessRow({ row, goal, onChange }: {
     <div className="glass flex items-center gap-3 rounded-card px-4 py-2">
       <HeartPulse aria-hidden className="size-5 text-muted" />
       <p className="flex-1 text-sm">{row?.sleep_hours != null && row.soreness != null ? t('readiness', { n: score?.score ?? 0 }) : t('unanswered')}</p>
-      <button id="readiness-edit" type="button" onClick={() => setOpen(true)} className="min-h-12 px-3 font-bold text-muted">{t('edit')}</button>
+      <Button variant="secondary" id="readiness-edit" type="button" onClick={() => setOpen(true)} className="min-h-12 px-3 font-bold text-muted">{t('edit')}</Button>
     </div>
     {open && <QuestionsSheet row={row} goal={goal} onChange={onChange} onClose={() => setOpen(false)} />}
   </>;

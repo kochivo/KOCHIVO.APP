@@ -1,3 +1,4 @@
+import { IconButton } from '@/ui/icon-button';
 import { KoPlus } from '@/ui/icons/ko-plus';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import Link from 'next/link';
@@ -47,13 +48,13 @@ export function AssessmentLibraryList({ data, locale, style }: { data: Assessmen
           </div>
           <footer className="mt-auto flex items-center gap-2 border-t border-line-soft pt-[10px] text-xs text-faint">
             <span>{last ? t('lastAnswer', { date }) : t(activity?.sent ? 'noAnswer' : 'neverSent')}</span>
-            <details className="relative z-10 -my-[17px] ms-auto">
-              <summary aria-label={t('menu')} className="flex min-h-12 min-w-12 cursor-pointer list-none items-center justify-center rounded-full"><Ellipsis aria-hidden className="size-5" /></summary>
-              <div className="glass-strong absolute end-0 z-10 min-w-40 rounded-control border border-line p-2">
-                <Link href={`${base}?edit=${f.id}`} prefetch={false} className="flex min-h-12 items-center px-3">{t('edit')}</Link>
-                <Link href={`${base}?edit=${f.id}#schedules`} prefetch={false} className="flex min-h-12 items-center px-3">{t('schedule')}</Link>
+            <div className="relative z-10 -my-[17px] ms-auto">
+              <IconButton aria-label={t('menu')} popoverTarget={`assessment-menu-${f.id}`}><Ellipsis aria-hidden className="size-5" /></IconButton>
+              <div id={`assessment-menu-${f.id}`} popover="auto" className="glass-strong fixed m-0 min-w-40 rounded-control border border-line p-2 [inset:auto] [position-area:block-end_span-inline-start]">
+                <Link href={`${base}?edit=${f.id}`} prefetch={false} className="glass flex min-h-12 items-center rounded-full border border-line px-3 hover:bg-ink/10">{t('edit')}</Link>
+                <Link href={`${base}?edit=${f.id}#schedules`} prefetch={false} className="glass mt-1 flex min-h-12 items-center rounded-full border border-line px-3 hover:bg-ink/10">{t('schedule')}</Link>
               </div>
-            </details>
+            </div>
           </footer>
         </article>;
       })}

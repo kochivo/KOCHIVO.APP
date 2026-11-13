@@ -9,6 +9,7 @@ import { enqueueMedia, localDb } from '@/core/offline';
 import { Button, TextField } from '@/ui';
 import { formVideoError } from '@/lib/upload-guards';
 import { readVideoDuration } from '@/lib/video-duration';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 
 const ALLOWED = ['video/mp4', 'video/quicktime', 'video/webm'];
 const MAX_BYTES = 50 * 1024 * 1024;
@@ -72,7 +73,7 @@ export function FormCheckButton({ exerciseId, setLogId }: { exerciseId: string; 
   }
 
   return <div className="space-y-2">
-    <Button variant="ghost" className="min-h-12" disabled={busy} aria-label={t('recordForm')} onClick={() => input.current?.click()}>
+    <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} className="min-h-12" disabled={busy} aria-label={t('recordForm')} onClick={() => input.current?.click()}>
       <Video aria-hidden />{t('recordForm')}
     </Button>
     <input ref={input} type="file" accept="video/*" capture="environment" className="hidden"
@@ -89,7 +90,7 @@ export function FormCheckButton({ exerciseId, setLogId }: { exerciseId: string; 
         {error && <p role="alert" className="text-sm text-danger">{error}</p>}
         <div className="flex flex-wrap gap-2">
           <Button type="submit" className="min-h-12" disabled={busy}>{busy ? t('saving') : t('sendToCoach')}</Button>
-          <Button variant="ghost" className="min-h-12" disabled={busy}
+          <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} className="min-h-12" disabled={busy}
             onClick={() => { sheet.current?.close(); setSelection(null); }}>{t('continueWorkout')}</Button>
         </div>
       </form>

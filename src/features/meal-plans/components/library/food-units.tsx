@@ -1,5 +1,7 @@
 'use client';
 
+import { Button } from '@/ui/button';
+import { IconButton } from '@/ui/icon-button';
 import { KoPlus } from '@/ui/icons/ko-plus';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { Plus, Trash2 } from 'lucide-react';
@@ -22,10 +24,10 @@ export function FoodUnits({ units, onChange, disabled }: { units: FoodUnit[]; on
       <label>{t('unitAr')}<input className={input} required maxLength={60} value={unit.name_ar} onChange={e => update(index, { name_ar: e.target.value })} /></label>
       <label>{t('unitEn')}<input className={input} required maxLength={60} value={unit.name_en} onChange={e => update(index, { name_en: e.target.value })} /></label>
       <label>{t('grams')}<input className={input} required type="number" min={0.1} max={10000} step="0.1" value={unit.grams} onChange={e => update(index, { grams: Number(e.target.value) })} /></label>
-      {!disabled && <button type="button" className="min-h-12 justify-self-end px-3" aria-label={t('removeUnit')}
-        onClick={() => onChange(units.filter((_, i) => i !== index))}><Trash2 aria-hidden className="size-5" /></button>}
+      {!disabled && <IconButton type="button" className="border border-danger/40 text-danger! min-h-12 justify-self-end px-3" aria-label={t('removeUnit')}
+        onClick={() => onChange(units.filter((_, i) => i !== index))}><Trash2 aria-hidden className="size-5" /></IconButton>}
     </div>)}
-    {!disabled && <button type="button" disabled={units.length >= 20} className="flex min-h-12 items-center gap-2 text-lime"
-      onClick={() => onChange([...units, { key: uuidv7(), name_ar: '', name_en: '', grams: 100 }])}><PlusIcon aria-hidden className="size-4" />{t('addUnit')}</button>}
+    {!disabled && <Button variant="secondary" type="button" disabled={units.length >= 20} className="flex min-h-12 items-center gap-2 text-ink"
+      onClick={() => onChange([...units, { key: uuidv7(), name_ar: '', name_en: '', grams: 100 }])}><PlusIcon aria-hidden className="size-4" />{t('addUnit')}</Button>}
   </fieldset>;
 }

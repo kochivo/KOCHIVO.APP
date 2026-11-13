@@ -3,7 +3,7 @@ import { profileTimezone } from '@/lib/timezone';
 import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 
-import { MessageCircle } from 'lucide-react';
+import { MessageCircle, ChevronDown } from 'lucide-react';
 import Image from 'next/image';
 import type { ReactNode } from 'react';
 import dynamic from 'next/dynamic';
@@ -80,7 +80,7 @@ export function CaptainScreen({ voiceNotes }: { voiceNotes?: ReactNode }) {
     </header> : <header><h1 className="text-2xl font-extrabold">{t('coach')}</h1></header>}
     {v6 && data ? <>{voiceNotes}<PlayerAssessments actionable={false} /><CaptainQuestion contactUrl={url} />
       {!data.pending && !data.archivedAt && <Renewal />}
-      <details className="glass rounded-card border border-line-soft p-4"><summary className="flex min-h-12 cursor-pointer items-center text-sm text-muted">{v6t('profile')}</summary>{profile}</details>
+      <details className="group glass rounded-card border border-line-soft p-4"><summary className="flex min-h-12 cursor-pointer items-center text-sm text-muted">{v6t('profile')}<ChevronDown aria-hidden className="ms-auto size-4 shrink-0 transition-transform group-open:rotate-180" /></summary>{profile}</details>
     </> : <>{profile}{data && voiceNotes}</>}
   </main>;
 }

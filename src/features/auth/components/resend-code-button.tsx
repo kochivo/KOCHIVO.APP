@@ -18,7 +18,7 @@ export function ResendCodeButton({ sentAt, pending, onResend, now = systemNow }:
     const timer = window.setTimeout(() => refresh(value => value + 1), 1000);
     return () => window.clearTimeout(timer);
   }, [remaining, sentAt]);
-  return <Button type="button" variant="ghost" className="min-h-12 w-full" disabled={pending || remaining > 0}
+  return <Button type="button" variant="secondary" className="min-h-12 w-full" disabled={pending || remaining > 0}
     onClick={() => { if (!resendRemaining(sentAt, now)) onResend(); }}>
     {remaining ? t('resendAfter', { n: remaining }) : t('resendCode')}
   </Button>;

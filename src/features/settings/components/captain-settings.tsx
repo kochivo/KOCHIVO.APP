@@ -52,7 +52,7 @@ export function CaptainSettings({ signOut }: { signOut?: ReactNode }) {
           <WorkspaceFact label={t('download')}><Button variant="secondary" className="min-h-12 rounded-full" onClick={() => setPanel('download')}>{t('downloadAction')}</Button></WorkspaceFact>
           <WorkspaceFact label={t('signOut')}>{signOut}</WorkspaceFact>
           {!demo && !demoExpiry(profile) && <WorkspaceFact label={t('delete')} danger><Button variant="secondary" className="min-h-12 rounded-full text-danger" onClick={() => setPanel('delete')}>{t('deleteAction')}</Button></WorkspaceFact>}
-        </div><Button variant="ghost" className="mt-2 min-h-12 rounded-full text-muted" onClick={() => setPanel('more')}>{t('more')}</Button></section>
+        </div><Button variant="secondary" className="mt-2 min-h-12 rounded-full text-muted" onClick={() => setPanel('more')}>{t('more')}</Button></section>
       </div>
       {panel && <WorkspaceSheet title={t(panel)} onClose={() => setPanel(null)}>
         {panel === 'profile' && <Profile profile={profile} onSave={setEdited} quiet />}

@@ -1,4 +1,5 @@
 'use client';
+import { Button } from '@/ui/button';
 import { useTimezone } from '@/core/timezone/client';
 
 import { useCallback, useEffect, useState } from 'react';
@@ -46,7 +47,7 @@ export function PlayerSupplements() {
   }, [timezone]);
   const retry = () => { setRetryKey(value => value + 1); refresh(); };
   if (!data || data.playerId !== playerId || !playerId || (loading && !data.supplements.length)) return error
-    ? <div role="alert"><p>{t('error')}</p><button className="min-h-12 px-4" onClick={retry}>{t('retry')}</button></div>
+    ? <div role="alert"><p>{t('error')}</p>{captainWorkspaceEnabled() ? <Button variant="secondary" className="min-h-12 px-4" onClick={retry}>{t('retry')}</Button> : <button className="min-h-12 px-4" onClick={retry}>{t('retry')}</button>}</div>
     : <p role="status">{t('loading')}</p>;
   if (!data.supplements.length && !error) return v6 ? <section className="glass rounded-card border border-line-soft p-5">
     <h2 className="font-display text-[19px] font-semibold">{t('today')}</h2><p className="mt-3 text-sm text-faint">{t('empty')}</p></section> : null;
@@ -59,7 +60,7 @@ export function PlayerSupplements() {
   };
   if (v6) return <section className="glass overflow-hidden rounded-card border border-line-soft">
     <h2 className="px-5 pt-[18px] pb-1 font-display text-[19px] font-semibold">{t('today')}</h2>
-    {error && <div role="alert" className="px-5"><p>{t('error')}</p><button className="min-h-12 text-lime" onClick={retry}>{t('retry')}</button></div>}
+    {error && <div role="alert" className="px-5"><p>{t('error')}</p>{captainWorkspaceEnabled() ? <Button variant="secondary" className="min-h-12 text-ink" onClick={retry}>{t('retry')}</Button> : <button className="min-h-12 text-lime" onClick={retry}>{t('retry')}</button>}</div>}
     {groupByTiming(data.supplements).flatMap(group => group.items.map(item => {
       const taken = data.logs.some(log => log.supplement_id === item.id && log.log_date === day && log.taken_at && !log.deleted_at);
       return <button key={item.id} aria-label={t('tick', { name: item.name })} aria-pressed={taken} disabled={pending.includes(item.id)}
@@ -73,7 +74,7 @@ export function PlayerSupplements() {
   </section>;
   return <section className="glass space-y-4 rounded-card p-5">
     <h2 className="text-xl font-bold">{t('today')}</h2>
-    {error && <div role="alert"><p>{t('error')}</p><button className="min-h-12 px-4" onClick={retry}>{t('retry')}</button></div>}
+    {error && <div role="alert"><p>{t('error')}</p>{captainWorkspaceEnabled() ? <Button variant="secondary" className="min-h-12 px-4" onClick={retry}>{t('retry')}</Button> : <button className="min-h-12 px-4" onClick={retry}>{t('retry')}</button>}</div>}
     {groupByTiming(data.supplements).map(group => <div key={group.timing} className="space-y-2">
       <h3 className="text-sm text-muted">{t(group.timing)}</h3>
       {group.items.map(item => {

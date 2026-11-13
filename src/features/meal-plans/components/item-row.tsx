@@ -1,11 +1,14 @@
 'use client';
 
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { IconButton } from '@/ui/icon-button';
 import { useLocale, useT } from '@/core/i18n/client';
 import { formatNumber } from '@/lib/format';
 import { messages } from '../messages';
 import { useState } from 'react';
 import { ArrowDown, ArrowUp, Trash2, Utensils } from 'lucide-react';
-import { Button, EmptyState, Stepper } from '@/ui';
+import { Button } from '@/ui/button';
+import { EmptyState, Stepper } from '@/ui';
 import { uuidv7 } from '@/core/offline/ids';
 import { macrosFor } from '@/lib/macros';
 import { foodPhotoUrl } from '@/core/storage/media-url';
@@ -36,9 +39,9 @@ export function ItemRow({ item, first, last, update, enhanced = false, facts = {
       {item.food.photo && <img src={foodPhotoUrl(item.food.photo)} alt="" width={48} height={48} loading="lazy" decoding="async" className="size-12 rounded-control object-cover" />}
       <h3 className="font-bold">{item.food.name}</h3>
       <div className="flex gap-1">
-        <Button variant="ghost" disabled={first} aria-label={t('moveFoodUp')} onClick={() => update(d => moveItem(d, item.id, -1))}><ArrowUp aria-hidden className="dir-icon" /></Button>
-        <Button variant="ghost" disabled={last} aria-label={t('moveFoodDown')} onClick={() => update(d => moveItem(d, item.id, 1))}><ArrowDown aria-hidden className="dir-icon" /></Button>
-        <Button variant="ghost" aria-label={t('deleteFood')} onClick={() => update(d => removeItem(d, item.id))}><Trash2 aria-hidden /></Button>
+        {captainWorkspaceEnabled() ? <IconButton disabled={first} aria-label={t('moveFoodUp')} onClick={() => update(d => moveItem(d, item.id, -1))}><ArrowUp aria-hidden className="dir-icon" /></IconButton> : <Button variant="ghost" disabled={first} aria-label={t('moveFoodUp')} onClick={() => update(d => moveItem(d, item.id, -1))}><ArrowUp aria-hidden className="dir-icon" /></Button>}
+        {captainWorkspaceEnabled() ? <IconButton disabled={last} aria-label={t('moveFoodDown')} onClick={() => update(d => moveItem(d, item.id, 1))}><ArrowDown aria-hidden className="dir-icon" /></IconButton> : <Button variant="ghost" disabled={last} aria-label={t('moveFoodDown')} onClick={() => update(d => moveItem(d, item.id, 1))}><ArrowDown aria-hidden className="dir-icon" /></Button>}
+        {captainWorkspaceEnabled() ? <IconButton className="border border-danger/40 text-danger!" aria-label={t('deleteFood')} onClick={() => update(d => removeItem(d, item.id))}><Trash2 aria-hidden /></IconButton> : <Button variant="ghost" aria-label={t('deleteFood')} onClick={() => update(d => removeItem(d, item.id))}><Trash2 aria-hidden /></Button>}
       </div>
     </div>
     {enhanced ? <HouseholdQuantity item={item} onChange={grams => update(d => setGrams(d, item.id, grams, t))} />
@@ -56,7 +59,7 @@ export function ItemRow({ item, first, last, update, enhanced = false, facts = {
         action={{ label: t('addAlternative'), onClick: () => setPicking(true) }} />}
       <ul>{item.alternatives.map(alt => <li key={alt.id} className="flex items-center justify-between gap-2">
         <span>{alt.food.name} · {formatNumber(alt.grams, locale)}{t('gSameCalories')}</span>
-        <Button variant="ghost" aria-label={t('deleteAlternative', { v0: alt.food.name })} onClick={() => update(d => removeAlternative(d, item.id, alt.id))}><Trash2 aria-hidden /></Button>
+        {captainWorkspaceEnabled() ? <IconButton className="border border-danger/40 text-danger!" aria-label={t('deleteAlternative', { v0: alt.food.name })} onClick={() => update(d => removeAlternative(d, item.id, alt.id))}><Trash2 aria-hidden /></IconButton> : <Button variant="ghost" aria-label={t('deleteAlternative', { v0: alt.food.name })} onClick={() => update(d => removeAlternative(d, item.id, alt.id))}><Trash2 aria-hidden /></Button>}
       </li>)}</ul>
       {(item.alternatives.length > 0 || picking) && <Button variant="secondary" onClick={() => setPicking(!picking)}>{picking ? t('closeSearch') : t('addAlternative')}</Button>}
       {picking && <FoodPicker alternative onPick={food => { const id = uuidv7(); update(d => addAlternative(d, item.id, food, id)); setPicking(false); }} />}

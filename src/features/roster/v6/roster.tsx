@@ -77,7 +77,7 @@ export function WorkspaceRoster({ data, today, extras, RequestList }: WorkspaceR
       </label>
     </div>
     {failed ? <div role="alert" className="glass rounded-card border border-line-soft p-5">
-      <p className="text-danger">{result.error || t('error')}</p><Button variant="ghost" className="rounded-full" onClick={retry}>{t('retry')}</Button>
+      <p className="text-danger">{result.error || t('error')}</p><Button variant="secondary" className="rounded-full" onClick={retry}>{t('retry')}</Button>
     </div> : pending ? <div role="status" aria-label={t('loading')} className="glass rounded-card border border-line-soft">
       {[0, 1, 2].map(key => <div key={key} className="h-[72px] animate-pulse border-t border-line-soft bg-ink/5 first:border-0" />)}
     </div> : currentFilter === 'requests' ? <div className="glass rounded-card border border-line-soft p-5">

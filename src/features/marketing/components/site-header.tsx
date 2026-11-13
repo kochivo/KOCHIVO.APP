@@ -22,13 +22,13 @@ export async function SiteHeader() {
       <div className="hidden lg:flex shrink-0 items-center gap-1 text-sm font-bold">
         <LanguageSwitch />
         <ThemeSwitch compact />
-        <a className="marketing-ghost min-h-12 min-w-12 whitespace-nowrap px-3" href={content.links.login}>{content.login}</a>
+        <a className="marketing-ghost border border-line min-h-12 min-w-12 whitespace-nowrap px-3" href={content.links.login}>{content.login}</a>
       </div>
-      <a className="marketing-primary ms-auto min-h-12 shrink-0 whitespace-nowrap px-3 text-sm lg:ms-0 lg:px-4" href={content.links.signup}>{content.signup}</a>
+      <a data-signup className="marketing-ghost border border-line ms-auto min-h-12 shrink-0 whitespace-nowrap px-3 text-sm lg:ms-0 lg:px-4" href={content.links.signup}>{content.signup}</a>
       <SiteMenu openLabel={t('openMenu')} closeLabel={t('closeMenu')}>
         <div className="flex flex-col gap-1 text-sm font-bold">
           {content.nav.map(item => <a className="marketing-ghost min-h-12 justify-start px-3" key={item.href} href={item.href}>{item.label}</a>)}
-          <a className="marketing-ghost min-h-12 justify-start px-3" href={content.links.login}>{content.login}</a>
+          <a className="marketing-ghost border border-line min-h-12 justify-start px-3" href={content.links.login}>{content.login}</a>
           <div className="flex items-center justify-between gap-2 border-t border-line pt-2">
             <LanguageSwitch /><ThemeSwitch compact />
           </div>

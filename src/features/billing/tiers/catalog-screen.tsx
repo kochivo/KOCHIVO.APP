@@ -44,7 +44,7 @@ export function CatalogScreen() {
   if (panel?.kind === 'offer') return <OfferScreen catalog={catalog} now={now} offer={panel.offer} preset={panel.preset} onClose={close} />;
   return <section className="space-y-4" aria-busy={catalog.busy}>
     <header className="mb-[18px] flex flex-wrap items-center gap-3.5"><div className="me-auto">
-      <Link href="/captain/billing" className="inline-flex min-h-12 items-center text-xs text-faint">{t('breadcrumb')}</Link>
+      <Link href="/captain/billing" className="inline-flex min-h-12 items-center text-xs text-lime hover:underline focus-visible:underline">{t('breadcrumb')}</Link>
       <h1 id="catalog-heading" tabIndex={-1} className="font-display text-[30px] font-semibold leading-tight">{t('title')}</h1>
       <p className="mt-1 text-[13px] text-muted">{t('intro')}</p></div>
       {data.publicSlug ? <Link href={`/c/${encodeURIComponent(data.publicSlug)}`} className="inline-flex min-h-12 items-center rounded-full border border-line px-3.5 text-[12.5px]">{t('publicPage')}</Link>
@@ -54,13 +54,13 @@ export function CatalogScreen() {
     {(catalog.error || catalog.status === 'error') && <div role="alert" className="flex flex-wrap items-center gap-3 text-sm text-danger">{catalog.error || t('loadFailed')}<Button variant="secondary" onClick={() => void catalog.retry()}>{t('retry')}</Button></div>}
     <OffersCard catalog={data} now={now} busy={catalog.busy} onEdit={offer => setPanel({ kind: 'offer', offer })} onNew={preset => setPanel({ kind: 'offer', preset })}
       onPause={offer => void catalog.change(current => ({ ...current, offers: current.offers.map(row => row.id === offer.id ? { ...row, paused_at: row.paused_at ? null : now.toISOString() } : row) }), () => setOfferPaused(offer.id, offer.paused_at === null))} />
-    {!tiers.length && <p className="glass rounded-card border border-line-soft p-5 text-sm text-faint">{t('empty')}</p>}
+    {!tiers.length && <div className="glass space-y-3 rounded-card border border-line-soft p-5 text-sm text-faint"><p>{t('empty')}</p><Button variant="secondary" className="min-h-12 rounded-full" disabled={catalog.busy} onClick={() => setPanel({ kind: 'tier' })}>{t('addTier')}</Button></div>}
     <div className="grid items-start gap-3.5 min-[1001px]:grid-cols-3">
       {tiers.map(tier => <TierCard key={tier.id} tier={tier} packages={data.packages.filter(item => item.tier_id === tier.id).sort((a, b) => a.days - b.days)} count={data.counts[tier.id] ?? 0} busy={catalog.busy}
         onEdit={() => setPanel({ kind: 'tier', tier })} onPackage={item => setPanel({ kind: 'package', tierId: tier.id, item })}
         onMove={offset => void move(tier, offset)} onFeature={() => void catalog.change(current => ({ ...current, tiers: current.tiers.map(row => ({ ...row, is_featured: row.id === tier.id && !tier.is_featured })) }), () => changeTierStatus(tier.id, tier.is_featured ? 'unfeature' : 'feature'))}
         onArchive={() => void catalog.change(current => ({ ...current, tiers: current.tiers.filter(row => row.id !== tier.id) }), () => changeTierStatus(tier.id, 'archive'))} />)}
-      <button className="glass flex min-h-[280px] flex-col items-center justify-center gap-2 rounded-card border border-dashed border-line text-faint" disabled={catalog.busy} onClick={() => setPanel({ kind: 'tier' })}>{t('addTier')}<span className="text-xs">{t('example')}</span></button>
+      {tiers.length > 0 && <button className="glass flex min-h-[280px] flex-col items-center justify-center gap-2 rounded-card border border-dashed border-line text-faint" disabled={catalog.busy} onClick={() => setPanel({ kind: 'tier' })}>{t('addTier')}<span className="text-xs">{t('example')}</span></button>}
     </div>
     <UnassignedPackages packages={data.packages.filter(item => !tiers.some(tier => tier.id === item.tier_id))} busy={catalog.busy} onEdit={item => setPanel({ kind: 'package', tierId: '', item })} />
     {tiers.some(tier => tier.name === 'أساسي') && <p className="mt-[26px] rounded-[18px] border border-dashed border-line px-[18px] py-3.5 text-[12.5px] leading-[1.9] text-muted">{t('oldNote')}</p>}

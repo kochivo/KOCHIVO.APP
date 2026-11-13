@@ -26,6 +26,8 @@ export const messages = defineMessages({
     'price.one': "{price} جنيه / شهر · لحد {count} لاعب",
     'price.other': "{price} جنيه / شهر · لحد {count} لاعب",
     'usage.one': "{used} من {count} لاعب",
+    'usage.two': "{used} من {count} لاعبين",
+    'usage.few': "{used} من {count} لاعبين",
     'usage.other': "{used} من {count} لاعب",
     'usedPlayers': "اللاعبين المستخدمين من الباقة",
     'paidUntil': "باقتك مدفوعة لحد",

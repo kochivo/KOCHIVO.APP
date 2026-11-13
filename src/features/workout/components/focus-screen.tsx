@@ -6,10 +6,11 @@ import { formatNumber } from '@/lib/format';
 
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, Dumbbell } from 'lucide-react';
+import { ArrowRight, Dumbbell, ChevronDown } from 'lucide-react';
 import { localDate } from '@/lib/dates';
 import { useCalendarClock } from '@/lib/use-calendar-clock';
-import { CardioCards, EmptyState, ErrorState, IconButton, LoadingState, ProgressBar, SyncPill } from '@/ui';
+import { EmptyState, ErrorState, IconButton, LoadingState, ProgressBar, SyncPill } from '@/ui';
+import { CardioCards } from '@/ui/cardio-cards';
 import { useFocusSession } from '../hooks/use-focus-session';
 import { useWakeLock } from '../hooks/use-wake-lock';
 import { DonePanel } from './done-panel';
@@ -96,9 +97,9 @@ export function FocusScreen({ dayId, playerId }: { dayId: string; playerId?: str
     {!state.error && !state.loading && state.day && <CardioCards blocks={state.day.cardio ?? []} />}
     {v6 && state.day && !state.finished && !warmupView && <div className="glass rounded-card border border-line-soft p-4">
       <div className="flex min-h-12 items-center justify-between gap-3"><span className="text-lime">{v6t('workout')}</span>
-        <a href="#workout-exercises" className="flex min-h-12 items-center text-muted">{v6t('exercises')}</a>
-        <Link href="/player/history" className="flex min-h-12 items-center text-muted">{v6t('history')}</Link></div>
-      <details id="workout-exercises"><summary className="flex min-h-12 cursor-pointer items-center text-sm">{v6t('exercises')}</summary>
+        <a href="#workout-exercises" className="flex min-h-12 items-center text-lime hover:underline focus-visible:underline">{v6t('exercises')}</a>
+        <Link href="/player/history" className="flex min-h-12 items-center text-lime hover:underline focus-visible:underline">{v6t('history')}</Link></div>
+      <details className="group" id="workout-exercises"><summary className="flex min-h-12 cursor-pointer items-center text-sm">{v6t('exercises')}<ChevronDown aria-hidden className="ms-auto size-4 shrink-0 transition-transform group-open:rotate-180" /></summary>
         <ol className="divide-y divide-line-soft">{state.day.exercises.map(exercise => <li key={exercise.id} className="py-4 text-sm"><bdi>{exercise.name_en}</bdi>
           {exercise.notes && <p className="mt-1 text-xs text-muted">{exercise.notes}</p>}</li>)}</ol>
       </details>

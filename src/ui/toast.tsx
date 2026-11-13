@@ -93,7 +93,7 @@ export function ToastProvider({ children, queue: injected }: { children?: ReactN
         className={`glass-strong pointer-events-auto flex items-center gap-3 rounded-control p-3 text-ink ${item.leaving ? 'toast-leave' : 'enter'}`}>
         <p className="min-w-0 flex-1 break-words font-medium">{item.text}</p>
         <button type="button" aria-label={t('closeNotification')} onClick={() => queue.dismiss(item.id)}
-          className="press flex min-h-12 min-w-12 items-center justify-center rounded-control text-muted">
+          className="glass press flex min-h-12 min-w-12 items-center justify-center rounded-control text-muted">
           <X aria-hidden="true" className="size-5" />
         </button>
       </div>)}

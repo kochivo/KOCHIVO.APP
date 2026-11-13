@@ -36,7 +36,7 @@ export async function CoachPage({ slug, requested }: { slug: string; requested?:
         <p className="text-sm text-muted">{t('noSocial')}</p>}
       {requested ? <div role="status" className="glass space-y-4 rounded-control p-4">
         <p>{t(requested)}</p>
-        {requested === 'member' && <Link href="/player" className="flex min-h-12 items-center justify-center rounded-control bg-lime px-6 py-4 font-bold text-on-lime">{t('openApp')}</Link>}
+        {requested === 'member' && <Link href="/player" className="flex min-h-12 items-center justify-center rounded-control glass border border-line px-6 py-4 font-bold text-ink">{t('openApp')}</Link>}
       </div> :
         <Link href={coachSignupHref(slug)} className={`flex min-h-12 items-center justify-center rounded-control px-6 py-4 font-bold ${pricing ? 'border border-line text-ink' : 'bg-lime text-on-lime'}`}>{t('train')}</Link>}
     </article>

@@ -1,8 +1,12 @@
 'use client';
+import { IconButton } from '@/ui/icon-button';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+
 import { useEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
 import { useT } from '@/core/i18n/client';
-import { Button, Chip, Segmented, Stepper, TextField } from '@/ui';
+import { Button } from '@/ui/button';
+import { Chip, Segmented, Stepper, TextField } from '@/ui';
 import { messages } from '../packages/messages';
 import type { Activation } from '../pt-types';
 import type { Package } from '../types';
@@ -32,7 +36,7 @@ export function ActivateSheet({ packages, busy = false, error, onClose, onSave, 
   return <dialog ref={dialog} aria-labelledby="activate-title" onCancel={event => { event.preventDefault(); if (!busy) onClose(); }}
     className="sheet fixed inset-x-0 bottom-0 top-auto m-0 max-h-[90dvh] w-full max-w-none overflow-y-auto rounded-t-card border border-line p-6 text-ink backdrop:bg-bg-deep/80 sm:inset-0 sm:m-auto sm:max-w-lg sm:rounded-card">
     <header className="flex items-center justify-between gap-3"><h2 id="activate-title" className="text-2xl font-bold">{t('activate')}</h2>
-      <Button variant="ghost" aria-label={t('close')} disabled={busy} onClick={onClose} className="min-h-12 min-w-12"><X aria-hidden /></Button></header>
+      {captainWorkspaceEnabled() ? <IconButton aria-label={t('close')} disabled={busy} onClick={onClose} className="min-h-12 min-w-12"><X aria-hidden /></IconButton> : <Button variant="ghost" aria-label={t('close')} disabled={busy} onClick={onClose} className="min-h-12 min-w-12"><X aria-hidden /></Button>}</header>
     <form className="mt-5 space-y-4" onSubmit={event => { event.preventDefault(); if (valid && !busy) onSave({ kind, quantity, packageId, price: Number(price), paid: Number(paid), freeTrial }); }}>
       <label className="block space-y-2"><span>{t('package')}</span><select aria-label={t('package')} value={packageId ?? ''} onChange={event => pick(event.target.value)} className="min-h-12 w-full rounded-control border border-line bg-surface p-3">
         <option value="">{t('custom')}</option>{packages.map(pkg => <option key={pkg.id} value={pkg.id}>{pkg.name}</option>)}</select></label>

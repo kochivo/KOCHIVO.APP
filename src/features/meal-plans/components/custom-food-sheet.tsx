@@ -1,10 +1,12 @@
 'use client';
 
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { IconButton } from '@/ui/icon-button';
 import { useEffect, useId, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { X } from 'lucide-react';
 import { useT } from '@/core/i18n/client';
-import { Button } from '@/ui';
+import { Button } from '@/ui/button';
 import { ResponsiveDialog } from '@/ui/responsive-dialog';
 import { useToast } from '@/ui/toast';
 import { messages } from '../messages';
@@ -59,11 +61,11 @@ export function CustomFoodSheet({ onClose, onSave, openerId, alternative = false
     { name: 'carbs', label: t('carbs2'), min: 0, max: 1000, value: food?.carbs ?? 0 },
     { name: 'fat', label: t('fat2'), min: 0, max: 1000, value: food?.fat ?? 0 },
   ];
-  return <ResponsiveDialog fallbackId={openerId} openerId={openerId} onDismiss={() => { if (!saving.current) onClose(); }}
-    aria-labelledby={titleId} className="sheet fixed inset-0 z-50 m-auto max-h-dvh w-full max-w-lg overflow-y-auto rounded-card p-5 text-ink">
+  return <ResponsiveDialog modal fallbackId={openerId} openerId={openerId} onDismiss={() => { if (!saving.current) onClose(); }}
+    aria-labelledby={titleId} className="sheet fixed inset-0 z-50 m-auto max-h-[90dvh] w-full max-w-lg overflow-y-auto rounded-card p-5 text-ink">
     <div className="flex items-center justify-between gap-3">
       <h2 id={titleId} className="text-xl font-bold">{food ? t('editFood') : t('newFood')}</h2>
-      <Button variant="ghost" disabled={busy} aria-label={t('close')} onClick={onClose}><X aria-hidden /></Button>
+      {captainWorkspaceEnabled() ? <IconButton disabled={busy} aria-label={t('close')} onClick={onClose}><X aria-hidden /></IconButton> : <Button variant="ghost" disabled={busy} aria-label={t('close')} onClick={onClose}><X aria-hidden /></Button>}
     </div>
     <form onSubmit={event => void submit(event)} className="mt-4 grid gap-4" aria-busy={busy}>
       <fieldset disabled={busy} className="grid gap-3">

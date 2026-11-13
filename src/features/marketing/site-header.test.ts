@@ -4,6 +4,7 @@ import type * as React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { LocaleProvider } from '@/core/i18n/client';
+import { IconButton } from '@/ui/icon-button';
 
 const hooks = vi.hoisted(() => ({ open: false, effects: [] as (() => void | (() => void))[], refs: [] as unknown[] }));
 vi.mock('react', async importOriginal => ({
@@ -21,7 +22,7 @@ import { SiteMenu } from './components/site-menu';
 
 function find(node: ReactNode, type: string): ReactElement<Record<string, unknown>> {
   if (isValidElement<{ children?: ReactNode }>(node)) {
-    if (node.type === type) return node as ReactElement<Record<string, unknown>>;
+    if (node.type === type || type === 'button' && node.type === IconButton) return node as ReactElement<Record<string, unknown>>;
     for (const child of [node.props.children].flat()) {
       try { return find(child, type); } catch { /* Search the next sibling. */ }
     }
@@ -47,7 +48,9 @@ describe('marketing header', () => {
     expect(html).toContain('lg:hidden');
     expect(html).toContain('aria-expanded="false"');
     expect(html).toContain('aria-label="Open menu"');
-    expect(html).not.toContain('flex-wrap');
+    const header = find(await SiteHeader(), 'header');
+    const row = header.props.children as ReactElement<{ className: string }>;
+    expect(row.props.className.split(' ')).not.toContain('flex-wrap');
   });
   it('toggles the panel with an accessible button', () => {
     const button = find(menu(), 'button');

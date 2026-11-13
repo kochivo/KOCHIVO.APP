@@ -50,7 +50,7 @@ export function LineChart({ points, bodyFat = [], title, unit }: {
       return last ? <p key={series.label} className={series.className}>{series.label}: {formatNumber(last.value, locale)} {series.unit}</p> : null;
     })}</div>
     <p id={`${id}-summary`} className="sr-only">{series.flatMap(series => series.points.map(point => `${series.label}: ${date(point.date)}: ${formatNumber(point.value, locale)} ${series.unit}`)).join(t('separator'))}</p>
-    <Button variant="ghost" aria-expanded={table} aria-controls={`${id}-table`} onClick={() => setTable(value => !value)}>{t(table ? 'hideTable' : 'showTable')}</Button>
+    <Button variant="secondary" aria-expanded={table} aria-controls={`${id}-table`} onClick={() => setTable(value => !value)}>{t(table ? 'hideTable' : 'showTable')}</Button>
     <div id={`${id}-table`} hidden={!table} className="overflow-x-auto">
       <table className="w-full text-start text-sm">
         <caption className="sr-only">{title}</caption>

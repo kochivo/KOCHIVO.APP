@@ -53,10 +53,11 @@ it('marks target totals incomplete and puts custom food creation inside the one 
   expect(html).toContain('data-over="true"');
   const search = render(createElement(FoodSearch, { onPick() {} }));
   expect(search.match(/type="search"/g)).toHaveLength(1);
-  expect(search).toContain('+ New food outside the library');
+  expect(search).toContain('New food outside the library');
+  expect(search).toContain('lucide-plus');
   const details = render(createElement(MealEditor, { meal: { ...meal, items: [] }, first: true, last: true, update() {}, enhanced: true, hideAdd: true }));
   expect(details).not.toContain('Add food');
-  expect(details).not.toContain('+ New food');
+  expect(details).not.toContain('New food outside the library');
   expect(details).not.toContain('type="search"');
 });
 it('excludes unknown foods from known subtotals while marking the whole day incomplete', () => {

@@ -81,7 +81,7 @@ export function ScanSection({ playerId }: { playerId?: string }) {
                 <dt className="text-muted">{t(metric)}</dt><dd>{scan[metric] == null ? t('unknown') : formatNumber(scan[metric], locale)} {t(metric === 'fat_pct' ? 'pct' : 'kg')}</dd>
               </div>)}</dl>
               <ScanFile path={scan.file_path} />
-              <Button variant="ghost" className="min-h-12 text-muted" disabled={deleting} onClick={() => void remove(scan)}>{t('delete')}</Button>
+              <Button variant="secondary" className="min-h-12 border border-danger/40 text-danger" disabled={deleting} onClick={() => void remove(scan)}>{t('delete')}</Button>
             </li>)}
           </ol></>}
       </>}

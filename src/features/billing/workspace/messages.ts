@@ -5,9 +5,9 @@ export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
-    usageTail: 'من {limit} لاعب', currency: 'جنيه',
+    'usageTail.one': 'من {limit} لاعب', 'usageTail.two': 'من {limit} لاعبين', 'usageTail.few': 'من {limit} لاعبين', 'usageTail.other': 'من {limit} لاعب', currency: 'جنيه',
     previous: 'اللي قبلها', next: 'اللي بعدها',
-    plan: 'اشتراكي', usage: '{used} من {limit} لاعب', upgrade: 'رقّي باقتك', paid: 'اتدفع الشهر ده',
+    plan: 'اشتراكي', 'usage.one': '{used} من {limit} لاعب', 'usage.two': '{used} من {limit} لاعبين', 'usage.few': '{used} من {limit} لاعبين', 'usage.other': '{used} من {limit} لاعب', upgrade: 'رقّي باقتك', paid: 'اتدفع الشهر ده',
     dues: 'متأخر', endingWeek: 'هيخلص الأسبوع ده', playerUnit: 'لاعب', money: '{amount} جنيه',
     player: 'اللاعب', status: 'الحالة', until: 'لحد', last: 'آخر دفع', active: 'نشط',
     ending: 'هيخلص بعد {n} أيام', overdue: 'متأخر {n} أيام', frozen: 'متجمد', pending: 'مستني التفعيل',
@@ -17,9 +17,9 @@ export const messages = defineMessages({
     collection: 'دفعة', renewal: 'تجديد', more: 'تفاصيل الباقة', noPhone: 'ضيف رقم واتساب من ملف اللاعب عشان تفكّره',
   },
   en: {
-    usageTail: 'of {limit} players', currency: 'EGP',
+    'usageTail.one': 'of {limit} player', 'usageTail.other': 'of {limit} players', currency: 'EGP',
     previous: 'Previous', next: 'Next',
-    plan: 'My subscription', usage: '{used} of {limit} players', upgrade: 'Upgrade plan', paid: 'Paid this month',
+    plan: 'My subscription', 'usage.one': '{used} of {limit} player', 'usage.other': '{used} of {limit} players', upgrade: 'Upgrade plan', paid: 'Paid this month',
     dues: 'Overdue', endingWeek: 'Ending this week', playerUnit: 'players', money: 'EGP {amount}',
     player: 'Player', status: 'Status', until: 'Until', last: 'Last payment', active: 'Active',
     ending: 'Ends in {n} days', overdue: '{n} days overdue', frozen: 'Frozen', pending: 'Awaiting activation',

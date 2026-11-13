@@ -1,5 +1,8 @@
 'use client';
 
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { IconButton } from '@/ui/icon-button';
+import { Button } from '@/ui/button';
 import { useId, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { ClipboardList, Dumbbell, LockKeyhole, X } from 'lucide-react';
@@ -38,18 +41,21 @@ export function KoPanel({ role, expression, onExpression, onClose, openerId, int
       <span className="relative size-10 shrink-0"><KoAvatar expression={expression} className="size-10" /><span aria-hidden className="absolute bottom-0 end-0 size-2 rounded-full bg-lime ring-2 ring-surface" /></span>
       <div><span id={interactive ? titleId : undefined} className="font-display text-xl font-extrabold">{t('name')}</span>
         <p className="text-xs text-muted">{t('subtitle')}</p></div>
-      <button type="button" onClick={onClose} aria-label={t('close')} className="ms-auto grid min-h-12 min-w-12 place-items-center rounded-control text-muted hover:bg-ink/5 hover:text-ink"><X aria-hidden className="size-5" /></button>
+      {captainWorkspaceEnabled() ? <IconButton type="button" onClick={onClose} aria-label={t('close')} className="ms-auto grid min-h-12 min-w-12 place-items-center rounded-control text-ink hover:bg-ink/5 hover:text-ink"><X aria-hidden className="size-5" /></IconButton> : <button type="button" onClick={onClose} aria-label={t('close')} className="ms-auto grid min-h-12 min-w-12 place-items-center rounded-control text-muted hover:bg-ink/5 hover:text-ink"><X aria-hidden className="size-5" /></button>}
     </header>
     {!account && context && <div className="flex items-center gap-2 border-b border-line px-4 text-sm text-muted">
       <span>{t(`context.${context.screen}`)}</span>
-      <button type="button" aria-label={t('context.remove')} onClick={() => setDropped(true)} className="grid min-h-12 min-w-12 place-items-center"><X aria-hidden className="size-4" /></button>
+      {captainWorkspaceEnabled() ? <IconButton type="button" aria-label={t('context.remove')} onClick={() => setDropped(true)} className="grid min-h-12 min-w-12 place-items-center"><X aria-hidden className="size-4" /></IconButton> : <button type="button" aria-label={t('context.remove')} onClick={() => setDropped(true)} className="grid min-h-12 min-w-12 place-items-center"><X aria-hidden className="size-4" /></button>}
     </div>}
     <KoFeed avatar={value => <KoAvatar expression={value} className="size-10" />} />
     {interactive ? <KoChat role={role} context={context} onExpression={onExpression} account={account} /> : <div className="space-y-5 p-5">
       <div className="text-center">
-        <button type="button" aria-label={t('changeExpression')} onClick={() => onExpression(nextKoExpression(expression))} className="mx-auto block rounded-card hover:scale-105 motion-reduce:hover:scale-100">
+        {captainWorkspaceEnabled() ? <Button variant="secondary" aria-label={t('changeExpression')} onClick={() => onExpression(nextKoExpression(expression))} className="mx-auto min-h-12 flex-col gap-2 rounded-card border border-line p-3 hover:scale-105 motion-reduce:hover:scale-100">
           <KoAvatar expression={expression} className="size-32" />
-        </button>
+          <span className="text-sm">{t('changeExpression')}</span>
+        </Button> : <button type="button" aria-label={t('changeExpression')} onClick={() => onExpression(nextKoExpression(expression))} className="mx-auto block rounded-card hover:scale-105 motion-reduce:hover:scale-100">
+          <KoAvatar expression={expression} className="size-32" />
+        </button>}
         <h2 id={titleId} className="mt-3 text-xl font-extrabold">{t('title')}</h2>
         <p className="mt-2 text-sm text-muted">{t('intro')}</p>
       </div>

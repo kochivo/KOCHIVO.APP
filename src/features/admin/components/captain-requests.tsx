@@ -44,9 +44,9 @@ export function CaptainRequests({ rows, error: loadError }: { rows: PendingCapta
     </header>
     {pending && <p role="status" className="text-muted">{t('loading')}</p>}
     {(error || loadError) && <div role="alert" className="text-danger"><p>{error || loadError}</p>
-      <Button variant="ghost" disabled={pending} onClick={() => start(() => router.refresh())}>{t('retry')}</Button>
+      <Button variant="secondary" disabled={pending} onClick={() => start(() => router.refresh())}>{t('retry')}</Button>
     </div>}
-    {!loadError && (visible.length ? <ul className="divide-y divide-line">{visible.map(row => <li key={row.id} className="space-y-3 py-4">
+    {!loadError && (visible.length ? <ul className="divide-y divide-line">{visible.map((row, index) => <li key={row.id} className="space-y-3 py-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="min-w-0"><p className="break-words font-bold">{row.full_name}</p>
           <p className="break-all text-sm text-muted">{row.email ?? t('noEmail')}</p>
@@ -55,7 +55,7 @@ export function CaptainRequests({ rows, error: loadError }: { rows: PendingCapta
           </time>
         </div>
         <div className="flex gap-2">
-          <Button className="min-h-12" aria-label={t('approveName', { name: row.full_name })} disabled={pending}
+          <Button variant={index === 0 ? 'primary' : 'secondary'} className="min-h-12" aria-label={t('approveName', { name: row.full_name })} disabled={pending}
             onClick={() => review(row, 'approved')}>{t('approve')}</Button>
           <Button variant="danger" className="min-h-12" aria-label={t('rejectName', { name: row.full_name })} disabled={pending}
             onClick={() => setRejecting(row.id)}>{t('reject')}</Button>
@@ -65,7 +65,7 @@ export function CaptainRequests({ rows, error: loadError }: { rows: PendingCapta
       {rejecting === row.id && <div role="group" aria-label={t('confirm', { name: row.full_name })} className="space-y-3">
         <p>{t('confirm', { name: row.full_name })}</p>
         <Button variant="danger" disabled={pending} onClick={() => review(row, 'rejected')}>{t('reject')}</Button>
-        <Button variant="ghost" disabled={pending} onClick={() => setRejecting(null)}>{t('cancel')}</Button>
+        <Button variant="secondary" disabled={pending} onClick={() => setRejecting(null)}>{t('cancel')}</Button>
       </div>}
     </li>)}</ul> : <p className="py-6 text-muted">{t('empty')}</p>)}
   </section>;

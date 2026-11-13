@@ -4,6 +4,7 @@ import type * as ReactModule from 'react';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { createT } from '@/core/i18n/messages';
 import { Tour } from './tour';
+import { Button } from './button';
 
 const state = vi.hoisted(() => ({ index: 0 as number | null, locale: 'en' as 'ar' | 'en',
   states: 0, refs: 0, visible: ['home', 'inbox'], focused: 0,
@@ -34,7 +35,7 @@ function render(onClose = vi.fn()) {
 function buttons(node: ReactNode): ReactElement<{ onClick: () => void; disabled?: boolean; children: string }>[] {
   return Children.toArray(node).flatMap(child => {
     if (!isValidElement<{ children?: ReactNode }>(child)) return [];
-    if (child.type === 'button') return [child as ReactElement<{ onClick: () => void; children: string }>];
+    if (child.type === 'button' || child.type === Button) return [child as ReactElement<{ onClick: () => void; children: string }>];
     return buttons(child.props.children);
   });
 }

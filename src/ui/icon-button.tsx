@@ -1,8 +1,9 @@
-import type { ButtonHTMLAttributes } from 'react';
+import type { ButtonHTMLAttributes, Ref } from 'react';
 import { cn } from '@/lib/cn';
 
 export interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   'aria-label': string;
+  ref?: Ref<HTMLButtonElement>;
 }
 
 export function IconButton({ className, type = 'button', ...props }: IconButtonProps) {

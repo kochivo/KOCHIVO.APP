@@ -31,8 +31,8 @@ export function QuestionEditor({ question: q, locale, index, count, onChange, on
     </summary>
     <div className="px-[18px] pb-[18px]">
       <input aria-label={m.labelAr} dir="rtl" className={input} value={q.label_ar} onChange={e => onChange({ ...q, label_ar: e.target.value })} />
-      <details className="mb-[14px] text-xs text-faint">
-        <summary className="min-h-12 cursor-pointer list-none py-3">{t('optionalEnglish')}</summary>
+      <details className="group/english mb-[14px] text-xs text-faint">
+        <summary className="flex min-h-12 cursor-pointer list-none items-center gap-2 py-3">{t('optionalEnglish')}<ChevronDown aria-hidden className="ms-auto size-4 shrink-0 group-open/english:rotate-180" /></summary>
         <input aria-label={m.labelEn} dir="ltr" className={input} value={q.label_en} onChange={e => onChange({ ...q, label_en: e.target.value })} />
       </details>
       <p className="mb-2 text-xs text-faint">{t('answerWith')}</p>
