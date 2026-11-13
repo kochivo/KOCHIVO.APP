@@ -9,13 +9,25 @@ import { messages } from '../messages';
 import { scaleSeries } from '../series';
 import type { TrendPoint } from '../trends';
 
-export function LineChart({ points, bodyFat = [], title, unit }: {
-  points: readonly TrendPoint[]; bodyFat?: readonly TrendPoint[]; title: string; unit: string;
+export function LineChart({ points, bodyFat = [], title, unit, compact }: {
+  points: readonly TrendPoint[]; bodyFat?: readonly TrendPoint[]; title: string; unit: string; compact?: 'water' | 'lime';
 }) {
   const t = useT(messages);
   const locale = useLocale();
   const id = useId();
   const [table, setTable] = useState(false);
+  if (compact && points.length) {
+    const height = compact === 'water' ? 70 : 80;
+    const values = points.map(point => point.value);
+    const min = Math.min(...values);
+    const span = Math.max(...values) - min || 1;
+    const coordinates = points.map((point, index) => ({ x: points.length === 1 ? 160 : 5 + index * 310 / (points.length - 1), y: height - 10 - (point.value - min) / span * (height - 20) }));
+    const end = coordinates.at(-1);
+    return <svg width="100%" height={height} viewBox={`0 0 320 ${height}`} preserveAspectRatio="none" role="img" aria-label={`${title}: ${points.map(point => `${point.date}: ${formatNumber(point.value, locale)} ${unit}`).join(t('separator'))}`} className={compact === 'water' ? 'text-water' : 'text-lime'}>
+      <polyline points={coordinates.map(point => `${point.x},${point.y}`).join(' ')} fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+      {end && <circle cx={end.x} cy={end.y} r="5" fill="currentColor" />}
+    </svg>;
+  }
   const weeks = [...new Set([...points, ...bodyFat].map(point => point.date))].sort();
   if (!weeks.length) return <EmptyState icon={Scale} title={t('noMeasurementsYet')} body={t('yourFirstCheckinIsYourStartingPoint')} action={{ label: t('sendWeeklyCheckin'), href: '/player/progress' }} />;
   const series = [

@@ -24,6 +24,8 @@ import { BodyScansLoader } from '@/features/body-scans';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { ranksEnabled } from '@/lib/ranks-enabled';
 import { messages as v6Messages } from '../v6-messages';
+import { ProgressV3 } from './progress-v3';
+import { readRemoteSessionIds } from './progress-session-count';
 const WeightOverview = dynamic(() => import('./weight-overview').then(module => module.WeightOverview), { ssr: false });
 const RankOverview = dynamic(() => import('./rank-overview').then(module => module.RankOverview), { ssr: false });
 const PlayerAssessments = dynamic(() => import('@/features/player-shell').then(module => module.PlayerAssessments), { ssr: false });
@@ -52,12 +54,31 @@ export function ProgressScreen({ analytics }: { analytics?: ReactNode }) {
   const [selected, setSelected] = useState('');
   const [sheet, setSheet] = useState(false);
   const [sheetLoaded, setSheetLoaded] = useState(false);
+  const [remoteSessionIds, setRemoteSessionIds] = useState<string[]>();
+  const [countError, setCountError] = useState(false);
+  const onCountError = useCallback(() => setCountError(true), []);
   const onLocalError = useCallback(() => setLocalError(true), []);
   const query = useCallback(async () => {
     const snapshot = await localDb().program_snapshot.get('active');
     return readStrength(snapshot ?? null, locale);
   }, [locale]);
   const strength = useLiveQuery(query, onLocalError, retryKey);
+  const readCount = useCallback(async () => (await localDb().workout_sessions.toArray()).filter(row => row.completed_at).map(row => row.id), []);
+  const localSessionIds = useLiveQuery(readCount, onCountError, retryKey);
+  const sessionCount = Array.isArray(localSessionIds) ? new Set([...(remoteSessionIds ?? []), ...localSessionIds]).size : undefined;
+  useEffect(() => {
+    if (!v6) return;
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const ids = await readRemoteSessionIds();
+        if (!cancelled) { setRemoteSessionIds(ids); setCountError(false); }
+      } catch { if (!cancelled) setCountError(true); }
+    };
+    void load();
+    window.addEventListener('online', load);
+    return () => { cancelled = true; window.removeEventListener('online', load); };
+  }, [v6, retryKey]);
   useEffect(() => {
     const update = () => setToday(localDate(new Date(), timezone));
     update();
@@ -92,13 +113,13 @@ export function ProgressScreen({ analytics }: { analytics?: ReactNode }) {
   const bodyFat = checkins?.flatMap(row => row.body_fat_pct == null ? [] : [{ date: row.week_start, value: row.body_fat_pct }]) ?? [];
   const checkinAction = sent ? { label: t('messageCoach'), href: '/player/captain' } :
     { label: t('sendWeeklyCheckin'), onClick: () => { setSheetLoaded(true); setSheet(true); } };
-  return <main className="mx-auto max-w-lg space-y-4 px-5 pt-6 pb-32">
-    <header><h1 className="text-2xl font-extrabold">{v6 ? v6t('title') : t('yourProgress')}</h1></header>
-    {v6 && <><WeightOverview checkins={checkins} checkinError={checkinError} onRetry={() => setRetryKey(value => value + 1)} /><PlayerAssessments />{ranksEnabled() && <RankOverview />}</>}
-    <Link href="/player/history" className="glass flex min-h-12 items-center gap-3 rounded-card p-5 font-bold">
+  return <main className={v6 ? 'mx-auto max-w-lg space-y-3 px-[18px] pt-[18px] pb-[104px]' : 'mx-auto max-w-lg space-y-4 px-5 pt-6 pb-32'}>
+    {v6 ? <ProgressV3 today={today} checkins={checkins} strength={strength} count={sessionCount} checkinError={checkinError} strengthError={localError} retry={() => { setLocalError(false); setRetryKey(value => value + 1); }} onLog={() => { setSheetLoaded(true); setSheet(true); }} /> : <header><h1 className="text-2xl font-extrabold">{t('yourProgress')}</h1></header>}
+    {v6 && countError && <ErrorState message={t('couldntLoadYourWorkouts')} retryLabel={t('tryAgain')} onRetry={() => setRetryKey(value => value + 1)} />}
+    {!v6 && <Link href="/player/history" className="glass flex min-h-12 items-center gap-3 rounded-card p-5 font-bold">
       <Dumbbell aria-hidden className="text-lime" />{v6 ? v6t('history') : t('workoutHistory')}
-    </Link>
-    {localError ? <ErrorState message={t('couldntLoadYourWorkouts')} retryLabel={t('tryAgain')} onRetry={() => {
+    </Link>}
+    {!v6 && (localError ? <ErrorState message={t('couldntLoadYourWorkouts')} retryLabel={t('tryAgain')} onRetry={() => {
       setLocalError(false); setRetryKey((value) => value + 1);
     }} /> : !strength ? <LoadingState /> : !lifts.length ?
       <EmptyState icon={Dumbbell} title={t('workoutsTitle')} body={t('logYourFirstWorkoutToSeeYour')} action={{ label: t('firstWorkout'), href: '/player' }} /> : <>
@@ -110,7 +131,8 @@ export function ProgressScreen({ analytics }: { analytics?: ReactNode }) {
           {top.length > 0 && <p className="text-5xl font-extrabold">{formatNumber(top.at(-1)?.value ?? 0, locale)} <span className="text-sm text-muted">{t('kg')}</span></p>}
           {top.length ? <LineChart points={top} title={t('topWeightTrend')} unit={t('kg')} /> : <EmptyState icon={Dumbbell} title={t('noMeasurementsYet')} body={t('logYourFirstWorkoutToSeeYour')} action={{ label: t('firstWorkout'), href: '/player' }} />}
         </section>
-      </>}
+      </>)}
+    {v6 && <><WeightOverview checkins={checkins} checkinError={checkinError} onRetry={() => setRetryKey(value => value + 1)} /><PlayerAssessments />{ranksEnabled() && <RankOverview />}</>}
     {analytics}
     <BodyScansLoader />
     {checkinError ? <ErrorState message={t('couldntLoadCheckinsCheckYourConnection')} retryLabel={t('tryAgain')} onRetry={() => setRetryKey((value) => value + 1)} /> : !checkins ? <LoadingState variant="cards" /> : <>

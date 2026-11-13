@@ -4,22 +4,54 @@ import { formatDateAr as formatDate } from '@/lib/dates';
 import { formatNumber } from '@/lib/format';
 import { exerciseName } from '@/lib/display-name';
 import { starterText } from '@/lib/starter-text';
-import type { HistoryWorkout } from '../data/history-grouping';
+import type { HistorySet, HistoryWorkout } from '../data/history-grouping';
+import { bestSet } from '../data/history-grouping';
+import { detectPr } from '../pr';
 import type { HistoryName } from '../data/history';
 import { messages } from '../messages';
+import { messages as v3Messages } from '../history-v3-messages';
 import { HistorySets } from './history-sets';
 
-export function HistoryWorkoutRow({ workout, title, names, exerciseId }: {
-  workout: HistoryWorkout; title: string; names: HistoryName[]; exerciseId?: string;
+export function sessionPrIds(workouts: readonly HistoryWorkout[]) {
+  const sets = workouts.flatMap(workout => workout.exercises.flatMap(exercise => exercise.sets))
+    .filter(set => !set.deleted_at).sort((a, b) => a.completed_at.localeCompare(b.completed_at));
+  const best = new Map<string, HistorySet>();
+  const records = new Set<string>();
+  for (let start = 0; start < sets.length;) {
+    let end = start + 1;
+    while (end < sets.length && sets[end]?.completed_at === sets[start]?.completed_at) end++;
+    // Equal timestamps cannot establish a previous performance for one another.
+    const batch = sets.slice(start, end);
+    for (const set of batch) {
+      const previous = best.get(set.exercise_id);
+      if (detectPr(previous ? [previous] : [], set)) records.add(set.session_id);
+    }
+    for (const set of batch) {
+      if (set.weight_kg === null || set.reps === null || set.reps < 1) continue;
+      const previous = best.get(set.exercise_id);
+      const next = bestSet(previous ? [previous, set] : [set]);
+      if (next) best.set(set.exercise_id, next);
+    }
+    start = end;
+  }
+  return records;
+}
+
+export function HistoryWorkoutRow({ workout, title, names, exerciseId, v3 = false, hasPr = false }: {
+  workout: HistoryWorkout; title: string; names: HistoryName[]; exerciseId?: string; v3?: boolean; hasPr?: boolean;
 }) {
   const t = useT(messages);
+  const v3t = useT(v3Messages);
   const locale = useLocale();
   const exercises = exerciseId ? workout.exercises.filter(row => row.id === exerciseId) : workout.exercises;
-  return <details className="glass rounded-card p-4" open={exerciseId ? true : undefined}>
-    <summary className="min-h-12 cursor-pointer space-y-1">
+  const minutes = Math.max(0, Math.round((Date.parse(workout.completed_at ?? workout.started_at) - Date.parse(workout.started_at)) / 60000));
+  const monthKey = (['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'] as const)[Number(workout.training_date.slice(5, 7)) - 1] ?? 'jan';
+  return <details className={v3 ? 'rounded-[22px] border border-line-soft bg-surface px-3.5 py-3' : 'glass rounded-card p-4'} open={exerciseId ? true : undefined}>
+    <summary className={v3 ? 'flex min-h-12 cursor-pointer list-none items-center gap-3 [&::-webkit-details-marker]:hidden' : 'min-h-12 cursor-pointer space-y-1'}>
+      {v3 ? <><span className="flex size-12 shrink-0 flex-col items-center justify-center rounded-2xl bg-surface-raised"><b className="font-display text-base">{formatDate(workout.training_date, { day: 'numeric' }, locale)}</b><span className="text-[10px] text-muted">{v3t(monthKey)}</span></span><span className="flex flex-1 flex-col gap-0.5"><b className="text-sm"><bdi>{starterText(title, locale)}</bdi></b><span className="text-xs text-muted">{v3t('summary', { min: formatNumber(minutes, locale), sets: formatNumber(workout.setCount, locale) })}</span></span>{hasPr && <span className="rounded-[10px] bg-gold-face-1 px-2 py-1 text-[11px] font-extrabold text-gold-4">{v3t('pr')}</span>}</> : <>
       <span className="block font-bold">{formatDate(workout.training_date, { day: 'numeric', month: 'short', year: 'numeric' }, locale)}</span>
       <span className="text-sm text-muted"><bdi>{starterText(title, locale)}</bdi>{' · '}
-        {t('historySets', { count: formatNumber(exercises.reduce((count, exercise) => count + exercise.sets.length, 0), locale) })}</span>
+        {t('historySets', { count: formatNumber(exercises.reduce((count, exercise) => count + exercise.sets.length, 0), locale) })}</span></>}
     </summary>
     <div className="mt-3 space-y-4">{exercises.length ? exercises.map(exercise => {
       const name = names.find(row => row.id === exercise.id);

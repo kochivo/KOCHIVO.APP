@@ -196,4 +196,5 @@ it('refreshes Cairo today on visible resume and focus, then removes its listener
   window.dispatchEvent(new Event('offline'));
   document.dispatchEvent(new Event('visibilitychange'));
   expect(dates).toHaveLength(3);
-});
+  // Imports the whole v3 focus screen; a loaded full-suite run needs more than the global 20 s.
+}, 60_000);
