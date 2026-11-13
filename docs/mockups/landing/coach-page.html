@@ -1,0 +1,377 @@
+<title>Coach Page</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600&family=Changa:wght@600;800&family=Manrope:wght@700;800&display=swap">
+<style>
+/* A captain's own page: the visitor should know who, for what, how much and how to start within ten seconds. Same floor, slash and type as the KOCHIVO homepage, but the captain is the hero, not the product. */
+:root {
+  --floor: #0c0d0e; --floor-2: #141618; --plate: #1c1f22; --edge: #2b2f33;
+  --chalk: #f2f3ee; --dust: #9ca2a8; --lime: #b6e94f; --ink-on-lime: #0e1206; --warn: #ff9a73; --calm: #9db2ff; --wa: #25d366;
+  --f-poster: "Changa", "Alexandria", system-ui, sans-serif; --f-body: "Alexandria", system-ui, sans-serif; --f-num: "Manrope", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box }
+body { margin: 0; background: var(--floor); color: var(--chalk); font-family: var(--f-body); font-size: 16px; line-height: 1.7; overflow-x: clip }
+.wrap { max-width: 1120px; margin-inline: auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)) }
+h1, h2, h3, p { margin: 0 } h1, h2 { text-wrap: balance }
+h2 { font: 800 clamp(1.9rem, 4.4vw, 3.1rem)/1.1 var(--f-poster) }
+h3 { font: 600 1.1rem/1.4 var(--f-body) }
+.num { font-family: var(--f-num); direction: ltr; unicode-bidi: isolate; font-variant-numeric: tabular-nums }
+section { position: relative; padding-block: clamp(56px, 8vw, 104px) }
+.tick { font: 600 .82rem var(--f-body); color: var(--lime); display: flex; align-items: center; gap: .7rem; margin-bottom: .9rem }
+.tick::before { content: ""; width: 26px; height: 4px; background: var(--lime); transform: skewX(-40deg) }
+.dust { color: var(--dust) }
+.btn { position: relative; overflow: hidden; display: inline-flex; align-items: center; justify-content: center; gap: .6rem; min-height: 3.4rem; padding-inline: 1.7rem; font: 800 1rem var(--f-poster); text-decoration: none; border: 0; cursor: pointer; color: inherit; clip-path: polygon(14px 0, 100% 0, calc(100% - 14px) 100%, 0 100%); transition: transform .2s ease, background-color .2s ease }
+.btn:hover { transform: translateY(-2px) } .btn:active { transform: translateY(1px) scale(.97) }
+.btn:focus-visible, a:focus-visible, summary:focus-visible { outline: 3px solid var(--calm); outline-offset: 4px }
+.btn-lime { background: var(--lime); color: var(--ink-on-lime) } .btn-lime:hover { background: #c8f56a }
+.btn-lime::after { content: ""; position: absolute; inset: -20% auto -20% -60%; width: 40%; background: rgb(255 255 255 / .45); transform: skewX(-42deg); transition: inset-inline-start .55s ease; pointer-events: none }
+.btn-lime:hover::after { inset-inline-start: 130% }
+.btn-plate { background: var(--plate); color: var(--chalk) } .btn-plate:hover { background: var(--edge) }
+.btn svg { width: 20px; height: 20px; fill: currentColor; flex: none }
+.wa-ic { color: var(--wa) }
+
+/* Top: tiny, the captain's page is not a KOCHIVO ad */
+.top { border-bottom: 1px solid var(--edge) }
+.top .wrap { display: flex; align-items: center; justify-content: space-between; min-height: 60px; font-size: .86rem }
+.top img { height: 24px; width: auto; display: block }
+.top a { color: var(--dust); text-decoration: none } .top a:hover { color: var(--chalk) }
+
+/* Hero */
+.hero { padding-block: clamp(40px, 6vw, 80px) clamp(40px, 6vw, 72px); overflow: hidden }
+.slash { position: absolute; z-index: 0; background: var(--lime); transform: skewX(-42deg); animation: cut .9s cubic-bezier(.7,0,.2,1) both }
+@keyframes cut { from { transform: skewX(-42deg) scaleY(0) } }
+.hero .slash { width: clamp(70px, 10vw, 150px); height: 140%; top: -20%; inset-inline-end: 12% }
+.hero .slash.thin { width: clamp(12px, 1.6vw, 22px); inset-inline-end: 27%; background: var(--plate); animation-delay: .12s }
+.hero-grid { position: relative; z-index: 1; display: grid; grid-template-columns: 1.25fr .85fr; gap: clamp(28px, 5vw, 64px); align-items: center }
+.hero-grid > * { min-width: 0 }
+.who { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap }
+.verified { display: inline-flex; align-items: center; gap: .35rem; font-size: .8rem; color: var(--lime); padding: .2rem .7rem; border: 1px solid rgb(182 233 79 / .4); border-radius: 99px }
+.verified svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round }
+.place { color: var(--dust); font-size: .9rem; display: inline-flex; align-items: center; gap: .35rem }
+.place svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2 }
+.hero h1 { margin-top: 1.1rem; font: 800 clamp(2.8rem, 7.4vw, 5.6rem)/.95 var(--f-poster) }
+.hero h1 .hl { color: var(--lime) }
+.tagline { margin-top: 1.2rem; font-size: clamp(1.08rem, 1.8vw, 1.3rem); max-width: 40ch; color: var(--chalk) }
+.chips { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.3rem }
+.chip { font-size: .84rem; padding: .35rem .9rem; background: var(--plate); border: 1px solid var(--edge); clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%); transition: background-color .2s, color .2s }
+.chip:hover { background: var(--lime); color: var(--ink-on-lime) }
+.cta { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: 1.9rem }
+.spots { margin-top: 1.1rem; display: inline-flex; align-items: center; gap: .6rem; font-size: .92rem }
+.spots b { font-weight: 600 }
+.bar { display: inline-flex; gap: 3px } .bar i { width: 8px; height: 14px; background: var(--edge); transform: skewX(-30deg) } .bar i.on { background: var(--lime) }
+
+/* Portrait card */
+.portrait { position: relative; aspect-ratio: 4 / 5; max-width: 380px; width: 100%; justify-self: center; background: linear-gradient(160deg, var(--plate), var(--floor-2)); border: 1px solid var(--edge); clip-path: polygon(0 0, 100% 0, 100% 88%, 86% 100%, 0 100%); display: grid; place-items: center; overflow: hidden }
+.portrait .ini { font: 800 clamp(6rem, 14vw, 9rem)/1 var(--f-poster); color: var(--lime); opacity: .95 }
+.portrait .cap { position: absolute; inset-inline: 0; bottom: 0; padding: 1rem 1.2rem; background: linear-gradient(transparent, rgb(12 13 14 / .92)); font-size: .82rem; color: var(--dust) }
+.portrait .cap strong { display: block; color: var(--chalk); font: 800 1.05rem var(--f-poster) }
+.portrait::before { content: ""; position: absolute; width: 38%; height: 140%; background: rgb(182 233 79 / .08); transform: skewX(-42deg); inset-inline-start: 18% }
+.example { display: block; margin-top: .6rem; text-align: center; font-size: .74rem; color: var(--dust) }
+
+/* Proof: numbers from the app, not from the captain */
+.proof { border-block: 1px solid var(--edge); background: var(--floor-2) }
+.proof .wrap { display: grid; grid-template-columns: repeat(4, 1fr) }
+.proof .cell { padding: 1.5rem 1.2rem; border-inline-start: 1px solid var(--edge); transition: background-color .25s }
+.proof .cell:first-child { border-inline-start: 0 }
+.proof .cell:hover { background: var(--plate) }
+.proof strong { display: block; font: 800 clamp(1.7rem, 3.4vw, 2.5rem)/1.1 var(--f-num) }
+.proof strong small { font-size: .55em; color: var(--lime) }
+.proof span { color: var(--dust); font-size: .86rem } .proof strong span { color: inherit; font-size: inherit }
+.proof .honest { grid-column: 1 / -1; border-top: 1px solid var(--edge); padding: .8rem 0; font-size: .8rem; color: var(--dust); display: flex; align-items: center; gap: .5rem }
+.proof .honest img { height: 14px; width: auto }
+@media (max-width: 760px) { .proof .wrap { grid-template-columns: 1fr 1fr } .proof .cell:nth-child(3) { border-inline-start: 0 } .proof .cell:nth-child(n+3):not(.honest) { border-top: 1px solid var(--edge) } }
+
+/* Steps */
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: clamp(28px, 4vw, 44px); counter-reset: s }
+.steps li { list-style: none; position: relative; padding: 1.6rem 1.4rem; background: var(--floor-2); border: 1px solid var(--edge); display: grid; gap: .5rem; align-content: start; transition: border-color .25s, transform .25s }
+.steps li:hover { border-color: var(--lime); transform: translateY(-3px) }
+.steps li::before { counter-increment: s; content: "0" counter(s); font: 800 2.4rem/1 var(--f-num); color: var(--lime) }
+.steps p { color: var(--dust); font-size: .95rem }
+ol.steps { padding: 0; margin-inline: 0; margin-bottom: 0 }
+@media (max-width: 760px) { .steps { grid-template-columns: 1fr } }
+
+/* Packages */
+.packs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: clamp(28px, 4vw, 44px); align-items: stretch }
+.pack { background: var(--floor-2); border: 1px solid var(--edge); padding: 1.6rem 1.4rem; display: flex; flex-direction: column; transition: transform .25s, border-color .25s }
+.pack:hover { transform: translateY(-4px); border-color: var(--dust) }
+.pack-top { display: flex; justify-content: space-between; align-items: center; gap: .5rem }
+.pack h3 { font: 800 1.2rem var(--f-poster) }
+.badge { background: var(--ink-on-lime); color: var(--lime); font: 800 .72rem var(--f-poster); padding: .3rem .8rem; clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%) }
+.amt { margin-top: .7rem; font: 800 2.6rem/1.1 var(--f-num) } .amt small { font: 400 .86rem var(--f-body); color: var(--dust) }
+.save { font-size: .84rem; color: var(--lime); min-height: 1.4em }
+.feat { list-style: none; margin: 1.1rem 0 1.4rem; padding: 1.1rem 0 0; border-top: 1px solid var(--edge); display: grid; gap: .55rem; font-size: .92rem }
+.feat li { display: grid; grid-template-columns: 1.2rem 1fr; gap: .3rem } .feat li::before { content: "✓"; color: var(--lime); font-weight: 800 }
+.pack .btn { margin-top: auto }
+.pack.hot { background: var(--lime); color: var(--ink-on-lime); border-color: var(--lime) }
+.pack.hot .amt small, .pack.hot .save { color: rgb(14 18 6 / .7) }
+.pack.hot .feat { border-color: rgb(14 18 6 / .2) } .pack.hot .feat li::before { color: var(--ink-on-lime) }
+.pack.hot .btn { background: var(--ink-on-lime); color: var(--lime) }
+.pay { margin-top: 1rem; font-size: .86rem; color: var(--dust) }
+@media (max-width: 860px) { .packs { grid-template-columns: 1fr } }
+
+/* App preview */
+.app-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 5vw, 72px); align-items: center }
+.app-grid > * { min-width: 0 }
+.app-list { list-style: none; margin: 1.4rem 0 0; padding: 0; display: grid; gap: .9rem }
+.app-list li { display: grid; grid-template-columns: 44px 1fr; gap: .9rem; align-items: start }
+.app-list .ic { width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid var(--edge); border-radius: 12px; transition: color .3s, border-color .3s }
+.app-list li:hover .ic { color: var(--lime); border-color: var(--lime) }
+.app-list svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round }
+.app-list p { color: var(--dust); font-size: .93rem }
+.stage { position: relative; height: 470px; display: grid; place-items: center }
+.stage .slash { width: 110px; height: 100%; top: 0; inset-inline-start: 34%; animation: none; opacity: .9 }
+.phone { position: relative; z-index: 1; width: 240px; height: 460px; border-radius: 38px; padding: 8px; background: #2a2e32; box-shadow: 0 50px 80px -30px #000; transform: rotate(-3deg) }
+.phone-in { height: 100%; border-radius: 31px; background: #0a0b0c; overflow: hidden; padding: 1.1rem .95rem; display: grid; gap: .6rem; align-content: start; font-size: .8rem }
+.notch { width: 70px; height: 20px; border-radius: 99px; background: #000; justify-self: center; margin-top: -.45rem }
+.m { color: var(--dust); font-size: .72rem }
+.sets { display: grid; gap: .35rem }
+.sets div { display: flex; justify-content: space-between; padding: .5rem .7rem; border-radius: 10px; background: var(--floor-2); font-size: .76rem }
+.sets .ok { color: var(--lime) }
+.meal { padding: .6rem .7rem; border-radius: 12px; background: var(--floor-2); display: grid; gap: .3rem }
+.meal .mac { display: flex; gap: .4rem; font-size: .66rem } .meal .mac span { padding: .1rem .45rem; border-radius: 99px; background: var(--plate) }
+.done { background: var(--lime); color: var(--ink-on-lime); border-radius: 14px; text-align: center; padding: .7rem; font: 800 .88rem var(--f-poster) }
+
+/* About */
+.about { display: grid; grid-template-columns: 1.2fr .8fr; gap: clamp(28px, 5vw, 72px) }
+.about > * { min-width: 0 }
+.about .bio { display: grid; gap: 1rem; font-size: 1.04rem; color: #d5d8d2; max-width: 58ch }
+.facts { display: grid; gap: 0; border-top: 1px solid var(--edge); align-content: start }
+.facts div { display: flex; justify-content: space-between; gap: 1rem; padding: .95rem 0; border-bottom: 1px solid var(--edge); font-size: .95rem }
+.facts dt { color: var(--dust) } .facts dd { margin: 0; font-weight: 600 }
+.social { display: flex; gap: .6rem; margin-top: 1.3rem }
+.social a { width: 48px; height: 48px; display: grid; place-items: center; border: 1px solid var(--edge); color: var(--chalk); transition: border-color .2s, color .2s, transform .2s; clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%) }
+.social a:hover { color: var(--lime); border-color: var(--lime); transform: translateY(-2px) }
+.social svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round }
+@media (max-width: 860px) { .hero-grid, .app-grid, .about { grid-template-columns: 1fr } .portrait { max-width: 280px } .stage { height: 420px } .hero .slash { top: auto; bottom: -6%; height: 48%; inset-inline-end: 30% } .hero .slash.thin { inset-inline-end: 52% } }
+
+/* Close */
+.close { background: var(--lime); color: var(--ink-on-lime); overflow: hidden }
+.close .slash { background: var(--ink-on-lime); width: clamp(50px, 8vw, 110px); height: 160%; top: -30%; inset-inline-end: 8%; animation: none }
+.close .wrap { position: relative; z-index: 1; display: grid; gap: 1.2rem; justify-items: start }
+.close h2 { font-size: clamp(2.2rem, 6vw, 4.4rem); max-width: 14ch }
+.close p { color: rgb(14 18 6 / .75); max-width: 44ch }
+.close .btn { background: var(--ink-on-lime); color: var(--lime) }
+footer { padding-block: 28px 110px; color: var(--dust); font-size: .82rem }
+footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; align-items: center }
+footer a { color: var(--dust); display: inline-flex; align-items: center; gap: .45rem; text-decoration: none } footer img { height: 18px; width: auto }
+@media (min-width: 761px) { footer { padding-bottom: 28px } }
+
+/* Phone: one fixed action bar, the hero buttons step aside */
+.dock { display: none }
+@media (max-width: 760px) {
+  .hero .cta { display: none }
+  .dock { display: flex; gap: .6rem; position: fixed; inset-inline: 0; bottom: 0; z-index: 30; padding: .7rem max(16px, env(safe-area-inset-right, 0px)) calc(.7rem + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); background: rgb(12 13 14 / .96); border-top: 1px solid var(--edge); transform: translateY(110%); transition: transform .35s cubic-bezier(.2,.7,.2,1) }
+  .dock.show { transform: none }
+  .dock .btn-lime { flex: 1 } .dock .btn-plate { padding-inline: 1.1rem }
+}
+
+.js .rise.wait { opacity: .001; transform: translateY(26px) }
+.js .rise { transition: opacity .7s ease, transform .7s cubic-bezier(.2,.7,.2,1) }
+.hero h1 .l { display: block; animation: line .8s cubic-bezier(.2,.7,.2,1) both } .hero h1 .l + .l { animation-delay: .1s }
+@keyframes line { from { transform: translateY(50%); clip-path: inset(0 0 100% 0) } to { clip-path: inset(0 0 0 0) } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important } .js .rise.wait { opacity: 1; transform: none } .dock { transform: none } }
+
+/* App skin (owner decision 2026-11-13): public pages speak the app's language. Same tokens as globals.css: pill buttons, glass cards with a hairline, rounded corners, the faint lime glow behind the page. No big slashes. */
+:root { --glass: rgb(255 255 255 / .03); --glass-raised: rgb(255 255 255 / .05); --hair: rgb(255 255 255 / .09); --r-card: 1.5rem; --r-ctl: 1rem; --glass-shadow: inset 0 1px 0 rgb(255 255 255 / .04), 0 4px 24px -8px rgb(0 0 0 / .5); --lime-glow: inset 0 1px 0 rgb(255 255 255 / .25), 0 0 18px rgb(182 233 79 / .25) }
+body { background: #070808 }
+body::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(50rem 32rem at 100% -10%, rgb(182 233 79 / .07), transparent 60%), radial-gradient(40rem 36rem at 0% 110%, rgb(182 233 79 / .04), transparent 70%), #070808 }
+.slash { display: none !important }
+.btn { clip-path: none; border-radius: 9999px; min-height: 3.25rem }
+.btn-lime, .close .btn { box-shadow: var(--lime-glow) }
+.btn-lime:hover { box-shadow: inset 0 1px 0 rgb(255 255 255 / .3), 0 0 18px rgb(182 233 79 / .32) }
+.btn-lime::after, .plan.hot .btn::after { display: none }
+.btn-plate { background: var(--glass-raised); border: 1px solid var(--hair) } .btn-plate:hover { background: rgb(255 255 255 / .08) }
+.tick::before { width: 8px; height: 8px; border-radius: 50%; transform: none }
+.chip, .badge, .soon-tag, .tag { clip-path: none; border-radius: 9999px }
+.glassy, .plan, .pack, .steps li, .toast, .score, .proof .wrap, .portrait, .social a, .split > div { background: var(--glass); border: 1px solid var(--hair); border-radius: var(--r-card); box-shadow: var(--glass-shadow) }
+.social a { border-radius: 9999px }
+.bar i { transform: none; border-radius: 3px }
+.rail i { transform: none; border-radius: 4px }
+
+.top { border-bottom-color: var(--hair) }
+.portrait { clip-path: none }
+.portrait::before { display: none }
+.verified { border-color: rgb(182 233 79 / .4) }
+.proof { border: 0; background: none; padding-block: 8px }
+.proof .wrap { overflow: hidden; padding: 0 } .proof .cell:first-child { padding-inline-start: 1.2rem } .proof .honest { padding-inline: 1.2rem } .proof .cell:hover { background: var(--glass-raised) }
+.steps li:hover, .pack:hover { border-color: rgb(182 233 79 / .35) }
+.app-list .ic { border-radius: 9999px }
+.pack.hot { background: radial-gradient(ellipse at top, rgb(182 233 79 / .08), transparent 65%), rgb(255 255 255 / .07); color: var(--chalk); border-color: rgb(182 233 79 / .45) }
+.pack.hot .amt { color: var(--lime) } .pack.hot .amt small, .pack.hot .save { color: var(--dust) } .pack.hot .save { color: var(--lime) }
+.pack.hot .feat { border-color: var(--hair) } .pack.hot .feat li::before { color: var(--lime) }
+.pack.hot .btn { background: var(--lime); color: var(--ink-on-lime); box-shadow: var(--lime-glow) }
+.badge { background: var(--lime); color: var(--ink-on-lime) }
+.facts { border-top: 0; background: var(--glass); border: 1px solid var(--hair); border-radius: var(--r-card); padding-inline: 1.2rem } .facts div:last-child { border-bottom: 0 } .facts div { border-bottom-color: var(--hair) }
+.close { background: none; color: var(--chalk); padding-block: clamp(32px, 5vw, 64px) }
+.close .wrap { padding: clamp(32px, 5vw, 56px); background: radial-gradient(ellipse at top, rgb(182 233 79 / .1), transparent 65%), rgb(255 255 255 / .06); border: 1px solid rgb(182 233 79 / .45); border-radius: var(--r-card); max-width: calc(1120px - 32px) }
+@media (max-width: 1152px) { .close .wrap { margin-inline: 16px } }
+.close p { color: var(--dust) } .close .btn { background: var(--lime); color: var(--ink-on-lime) }
+.dock { background: rgb(7 8 8 / .92); border-top-color: var(--hair) }
+.dock .btn-plate { padding-inline: 1rem }
+</style>
+
+<header class="top" dir="rtl" lang="ar"><div class="wrap">
+  <a href="#" aria-label="KOCHIVO"><img src="logo-primary.png" alt="KOCHIVO" width="85" height="24"></a>
+  <a href="#">دخول اللاعبين</a>
+</div></header>
+
+<main dir="rtl" lang="ar">
+  <section class="hero">
+    <span class="slash" aria-hidden="true"></span><span class="slash thin" aria-hidden="true"></span>
+    <div class="wrap hero-grid">
+      <div>
+        <div class="who">
+          <span class="verified"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>كابتن موثّق على كوتشيفو</span>
+          <span class="place"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>القاهرة · أونلاين</span>
+        </div>
+        <h1><span class="l">كابتن</span><span class="l hl">محمود</span></h1>
+        <p class="tagline">بساعدك تنزل وزن أو تبني عضل بخطة على مقاسك، ومتابعة كل أسبوع لحد ما توصل.</p>
+        <div class="chips"><span class="chip">تنشيف</span><span class="chip">تضخيم</span><span class="chip">مبتدئين</span><span class="chip">إصابات الركبة والضهر</span></div>
+        <div class="cta">
+          <a class="btn btn-lime" href="#packs">اطلب تشترك</a>
+          <a class="btn btn-plate" href="#"><svg class="wa-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.5 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-3.9-4.7-4.1-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .5l-.3.5-.4.5c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l2 .9c.3.1.5.2.5.3.1.1.1.7-.1 1.3z"/></svg>كلّمني واتساب</a>
+        </div>
+        <p class="spots"><span class="bar" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i></span><b>فاضل 4 أماكن</b><span class="dust">الشهر ده</span></p>
+      </div>
+      <div>
+        <div class="portrait" role="img" aria-label="صورة الكابتن">
+          <span class="ini">م</span>
+          <span class="cap"><strong>كابتن محمود سامي</strong>مدرب معتمد · 8 سنين خبرة</span>
+        </div>
+        <span class="example">بيانات مثال · الصورة الحقيقية بتيجي من حساب الكابتن</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="proof">
+    <div class="wrap">
+      <div class="cell"><strong class="num" data-to="38">38</strong><span>لاعب بيتمرن معاه دلوقتي</span></div>
+      <div class="cell"><strong class="num"><span data-to="4210">4,210</span></strong><span>تمرين اتسجّل في التطبيق</span></div>
+      <div class="cell"><strong class="num"><span data-to="87">87</span><small>%</small></strong><span>متوسط التزام لاعيبته</span></div>
+      <div class="cell"><strong class="num" data-to="8">8</strong><span>سنين خبرة</span></div>
+      <p class="honest"><img src="logo-primary.png" alt="" width="50" height="14">الأرقام بتتحسب من تطبيق كوتشيفو نفسه، مش مكتوبة بإيد الكابتن.</p>
+    </div>
+  </div>
+
+  <section>
+    <div class="wrap">
+      <p class="tick rise">من أول يوم</p>
+      <h2 class="rise">هنشتغل مع بعض إزاي.</h2>
+      <ol class="steps rise">
+        <li><h3>اطلب تشترك</h3><p>اختار الباقة وابعت الطلب. هرد عليك في نفس اليوم.</p></li>
+        <li><h3>قولّي عن نفسك</h3><p>استمارة قصيرة: هدفك، وزنك، إصاباتك، ووقتك في الأسبوع.</p></li>
+        <li><h3>استلم خطتك</h3><p>البرنامج ونظام الأكل يوصلوك في التطبيق، ونتابع كل أسبوع.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="packs" style="padding-top:0">
+    <div class="wrap">
+      <p class="tick rise">الباقات</p>
+      <h2 class="rise">اختار اللي يناسبك.</h2>
+      <div class="packs rise">
+        <div class="pack"><div class="pack-top"><h3>شهر</h3></div><span class="amt num">900 <small>ج</small></span><span class="save"></span>
+          <ul class="feat"><li>برنامج تمرين على مقاسك</li><li>نظام أكل بالبدائل</li><li>متابعة كل أسبوع</li></ul><a class="btn btn-plate" href="#">اطلب الباقة</a></div>
+        <div class="pack hot"><div class="pack-top"><h3>3 شهور</h3><span class="badge">الأكثر طلباً</span></div><span class="amt num">2,400 <small>ج</small></span><span class="save">بتوفّر 300 ج</span>
+          <ul class="feat"><li>كل اللي في الشهر</li><li>تعديل الخطة كل أسبوعين</li><li>تحليل فيديوهات الأداء</li><li>رد على الرسايل في نفس اليوم</li></ul><a class="btn" href="#">اطلب الباقة</a></div>
+        <div class="pack"><div class="pack-top"><h3>6 شهور</h3></div><span class="amt num">4,500 <small>ج</small></span><span class="save">بتوفّر 900 ج</span>
+          <ul class="feat"><li>كل اللي في 3 شهور</li><li>مكالمة متابعة كل شهر</li><li>خطة صيانة بعد ما توصل</li></ul><a class="btn btn-plate" href="#">اطلب الباقة</a></div>
+      </div>
+      <p class="pay">الدفع كاش أو تحويل بعد ما الكابتن يقبل طلبك.</p>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap app-grid">
+      <div>
+        <p class="tick rise">التطبيق</p>
+        <h2 class="rise">كل حاجة في تطبيق واحد.</h2>
+        <ul class="app-list rise">
+          <li><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7v10M3 9v6M18 7v10M21 9v6M6 12h12"/></svg></span><div><h3>تمرينك بحركته</h3><p>كل تمرين بفيديو قصير، وبتسجّل الوزن والعدّات بإيد واحدة.</p></div></li>
+          <li><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16a8 8 0 0 1-16 0zM9 8c0-2 1-3 3-4"/></svg></span><div><h3>أكلك بالبدائل</h3><p>مش عاجبك الرز؟ بدّله بالمكرونة والكمية بتتظبط لوحدها.</p></div></li>
+          <li><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg></span><div><h3>الكابتن معاك</h3><p>ابعت فيديو أو رسالة صوتية، والرد يوصلك في التطبيق.</p></div></li>
+        </ul>
+      </div>
+      <div class="stage rise" aria-label="شكل التطبيق، بيانات مثال">
+        <span class="slash" aria-hidden="true"></span>
+        <div class="phone"><div class="phone-in">
+          <span class="notch"></span>
+          <span class="m">النهارده · اليوم 2</span>
+          <strong style="font-size:.95rem">صدر وترايسبس</strong>
+          <div class="sets"><div><span>بنش بريس</span><span class="ok">4/4 ✓</span></div><div><span>دمبل مايل</span><span class="ok">3/3 ✓</span></div><div><span>ترايسبس بالحبل</span><span class="m">0/3</span></div></div>
+          <span class="m" style="margin-top:.3rem">الغدا</span>
+          <div class="meal"><strong style="font-size:.8rem">فراخ مشوية ورز</strong><div class="mac"><span class="num">P 42</span><span class="num">C 60</span><span class="num">F 12</span></div></div>
+          <div class="done">كمّل التمرين</div>
+        </div></div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap about">
+      <div>
+        <p class="tick rise">عنّي</p>
+        <h2 class="rise">محمود سامي.</h2>
+        <div class="bio rise" style="margin-top:1.2rem">
+          <p>بدأت تدريب من 8 سنين في جيم في مدينة نصر، ومن 4 سنين بدرّب أونلاين لاعيبة في مصر والخليج.</p>
+          <p>أغلب لاعيبتي ناس شغالة ووقتها ضيق، فبعمل خطة تمشي مع يومك، مش العكس. ولو عندك إصابة قديمة في الركبة أو الضهر، بنبني حواليها.</p>
+        </div>
+      </div>
+      <div class="rise">
+        <dl class="facts">
+          <div><dt>الخبرة</dt><dd>8 سنين</dd></div>
+          <div><dt>اللغات</dt><dd>عربي · إنجليزي</dd></div>
+          <div><dt>المكان</dt><dd>القاهرة · أونلاين</dd></div>
+        </dl>
+        <div class="social">
+          <a href="#" aria-label="إنستجرام"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/></svg></a>
+          <a href="#" aria-label="تيك توك"><svg viewBox="0 0 24 24"><path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5M14 3c.5 3 2.5 4.5 5 4.5"/></svg></a>
+          <a href="#" aria-label="يوتيوب"><svg viewBox="0 0 24 24"><rect x="2.5" y="5.5" width="19" height="13" rx="4"/><path d="M10 9.5l5 2.5-5 2.5z"/></svg></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="close">
+    <span class="slash" aria-hidden="true"></span>
+    <div class="wrap">
+      <h2>جاهز نبدأ؟</h2>
+      <p>ابعت طلبك دلوقتي، وهرد عليك النهارده. فاضل 4 أماكن الشهر ده.</p>
+      <a class="btn" href="#packs">اطلب تشترك</a>
+    </div>
+  </section>
+</main>
+
+<footer dir="rtl" lang="ar"><div class="wrap">
+  <a href="#"><span>الصفحة دي معمولة على</span><img src="logo-primary.png" alt="KOCHIVO" width="64" height="18"></a>
+  <span>الخصوصية · الشروط</span>
+</div></footer>
+
+<div class="dock" dir="rtl" lang="ar">
+  <a class="btn btn-lime" href="#packs">اطلب تشترك</a>
+  <a class="btn btn-plate" href="#" aria-label="كلّمني واتساب"><svg class="wa-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2z"/></svg></a>
+</div>
+
+<script>
+const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+if ('IntersectionObserver' in window) {
+  if (!calm) {
+    document.documentElement.classList.add('js');
+    const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.remove('wait'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px' });
+    document.querySelectorAll('.rise').forEach(el => { if (el.getBoundingClientRect().top > innerHeight) { el.classList.add('wait'); io.observe(el); } });
+    const counter = new IntersectionObserver(es => es.forEach(e => {
+      if (!e.isIntersecting) return; counter.unobserve(e.target);
+      const el = e.target, to = +el.dataset.to, t0 = performance.now();
+      const tick = t => { const k = Math.min(1, (t - t0) / 1100); el.textContent = Math.round(to * (1 - Math.pow(1 - k, 3))).toLocaleString('en-US'); if (k < 1) requestAnimationFrame(tick); };
+      requestAnimationFrame(tick);
+    }), { threshold: .6 });
+    document.querySelectorAll('[data-to]').forEach(el => { el.textContent = '0'; counter.observe(el); });
+  }
+  // The phone action bar appears once the hero's own buttons scroll away.
+  const dock = document.querySelector('.dock');
+  new IntersectionObserver(([e]) => dock.classList.toggle('show', !e.isIntersecting)).observe(document.querySelector('.hero h1'));
+}
+</script>
