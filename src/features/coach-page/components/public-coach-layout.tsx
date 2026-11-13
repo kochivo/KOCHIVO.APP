@@ -1,0 +1,56 @@
+import type { ReactNode } from 'react';
+import Link from 'next/link';
+import { MessageCircle } from 'lucide-react';
+import type { CoachRequestStatus } from '@/lib/coach-request-status';
+import { coachSignupHref } from '../slug';
+import type { PublicCoach, PublicT } from './public-types';
+import { httpsSocialUrl } from './public-social-url';
+import { PublicHero } from './public-hero';
+import { PublicSteps } from './public-steps';
+import { PublicAppPreview } from './public-app-preview';
+import { PublicAbout } from './public-about';
+import { PublicSignup } from './public-signup';
+import { PublicDock } from './public-dock';
+import './public-page.css';
+
+export function PublicCoachLayout({ coach, slug, requested, t, pricing }: {
+  coach: PublicCoach; slug: string; requested?: CoachRequestStatus; t: PublicT; pricing: ReactNode;
+}) {
+  const signup = coachSignupHref(slug);
+  const whatsapp = httpsSocialUrl(coach.social.whatsapp);
+  return <div className="public-coach min-h-dvh text-start">
+    <header className="border-b border-line-soft">
+      <div className="public-wrap flex min-h-20 items-center justify-between gap-6">
+        <Link href="/" aria-label={t('brand')} className="inline-flex min-h-12 items-center">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/brand/logo-primary.png" alt={t('brand')} width={85} height={24} />
+        </Link>
+        <Link href="/login" className="inline-flex min-h-12 items-center text-sm text-muted hover:text-ink">{t('playerLogin')}</Link>
+      </div>
+    </header>
+    <main className="public-wrap">
+      <PublicHero coach={coach} signup={signup} whatsapp={whatsapp} requested={requested} t={t} />
+      <div data-slot="numbers" />
+      <PublicSteps t={t} />
+      {pricing}
+      <PublicAppPreview t={t} />
+      <PublicAbout coach={coach} t={t} />
+      {!requested && <section className="public-close public-section relative isolate overflow-hidden">
+        <span className="public-slash" aria-hidden="true" />
+        <div className="glass-featured relative space-y-6 rounded-card p-8 md:p-12">
+          <h2 className="public-heading">{t('readyTitle')}</h2><p className="max-w-lg text-muted">{t('readyBody')}</p>
+          <PublicSignup href={signup} label={t('requestJoin')} />
+        </div>
+      </section>}
+    </main>
+    <footer className="public-wrap pb-[calc(7rem+var(--safe-bottom))] pt-8 text-sm text-muted md:pb-8">
+      <Link href="/" className="inline-flex min-h-12 items-center">{t('madeOn')}</Link>
+    </footer>
+    {!requested && <PublicDock>
+      <PublicSignup href={signup} label={t('requestJoin')} />
+      {whatsapp && <a href={whatsapp} aria-label={t('contactWhatsapp')} target="_blank" rel="noopener noreferrer" className="glass flex min-h-12 min-w-12 items-center justify-center rounded-full px-4">
+        <MessageCircle aria-hidden strokeWidth={1.5} className="size-5" />
+      </a>}
+    </PublicDock>}
+  </div>;
+}

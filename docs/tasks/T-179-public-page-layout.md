@@ -45,11 +45,23 @@ The page is behind `captainWorkspaceEnabled()`. When the flag is off, the page r
 8. **Rules.** Tokens only, logical properties, all strings in messages (`ar`, `arStd`, `en`), no emoji.
 
 ## Acceptance
-- [ ] A flag-off test: today's component tree is unchanged.
-- [ ] Tests for the WhatsApp helper (https only), each request state, a missing bio, a missing avatar, missing socials, no published catalog, and one featured tier.
+- [x] A flag-off test: today's component tree is unchanged.
+- [x] Tests for the WhatsApp helper (https only), each request state, a missing bio, a missing avatar, missing socials, no published catalog, and one featured tier.
 - [ ] All gates pass.
 
 ## Out of scope
 - New data (T-180): specialties, stats, years, languages, spots, waitlist (T-181).
 - The OG image route.
 - Any migration.
+
+## Implementation review notes (2026-11-13)
+- The legacy render tree is preserved behind the disabled flag. A literal environment guard also allows the new client islands to be removed from flag-off builds.
+- New sections are server-rendered; the mobile dock and duration buttons are small client islands. Published day-based packages keep their duration choices and billing offer calculations. Request states suppress signup actions throughout the new layout.
+- The specialties, spots, numbers and facts slots remain empty for T-181. No response-time or availability promises are invented.
+- Focused verification: `8 passed` coach-page test files, `41 passed` tests, using `--configLoader native --pool threads`. Including the safe-area regression suite: `9 passed` files, `55 passed` tests. The full alternate run had `702 passed` files and `4403 passed` tests, plus one skipped test and a safe-area failure; that failure was fixed and verified by the targeted rerun. Repository typecheck and lint passed during the gate run. Release rules, including new files, reported `Release audit: 2767 files, 0 findings` through a shell pipeline.
+- `npm run check` is blocked in the release audit by `spawnSync git EPERM`; the default Vitest loader also encounters child-process restrictions. `npm run build` fails before compilation with `Could not find the Next.js package (next/package.json)`: this worktree's `node_modules` resolves outside the Turbopack root. A webpack attempt encounters `spawn EPERM`.
+- `/c/[slug]` first-load JS: before unavailable; after (flag off) unavailable; after (flag on) unavailable. Both baseline and modified production builds fail before producing route bundles, so the 200 KiB gzip budget and flag-off size equality remain unverified.
+- Browser rendering of the reference and implementation remains unverified: the browser access host is unavailable, and native Edge access was not approved. The reference HTML and styles were read directly.
+- Reviewer (2026-11-13): in the main checkout `npm run check` passes (only the known `demo` load flake)
+  and `npm run build` passes. Flag-off render checked locally on `/ar/c/aly` (legacy page, no sideways scroll).
+  The flag-on page is still to be checked visually on staging.
