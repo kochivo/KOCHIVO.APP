@@ -18,7 +18,8 @@ export function LibraryCard({ onOpen, error, ...props }: ComponentProps<typeof L
   const summary = training ? [t('days', { days: number(template.count) }),
     template.minutes ? t('minutes', { minutes: number(template.minutes) }) : '', template.place ? t(template.place) : ''].filter(Boolean).join(' · ')
     : [t('meals', { meals: number(template.count) }), template.protein != null ? t('protein', { protein: number(template.protein) }) : '', template.split ? t('split') : ''].filter(Boolean).join(' · ');
-  return <li className={training ? 'glass rounded-card border border-line-soft px-5 py-[18px]' : 'flex flex-wrap items-center gap-3 border-t border-line-soft px-5 py-3 first:border-t-0'}>
+  // Lift the card whose menu is open above its siblings; each glass card is its own stacking layer.
+  return <li className={training ? 'glass relative rounded-card border border-line-soft px-5 py-[18px] has-[details[open]]:z-20' : 'relative flex flex-wrap items-center gap-3 border-t border-line-soft px-5 py-3 first:border-t-0 has-[details[open]]:z-20'}>
     {training ? <>
       {template.level && <span className="rounded-full border border-line-soft px-2.5 py-1 text-xs text-muted">{t(template.level)}</span>}
       <h2 className="mb-1 mt-2.5 break-words font-display text-[19px] font-semibold">{starterText(template.title, locale)}</h2>

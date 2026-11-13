@@ -56,7 +56,9 @@ it('surfaces library actions and marks destructive actions', () => {
     template: { id: 't', title: 'Plan', kind: 'program', count: 1, created_at: '', starter: false, uses: 0 },
     busy: false, onPreview() {}, onAssign() {}, onCopy() {}, onRename() {}, onDelete() {}, onArchive() {},
   }));
-  expect(control(html, 'Preview')).toContain('glass');
+  // Items sit on one solid panel; glass items inside glass lose their blur and let rows show through.
+  expect(html).toContain('bg-surface-raised');
+  expect(control(html, 'Preview')).not.toContain('glass');
   expect(html).toContain('border-danger');
 });
 it('surfaces the follow-up prize action', () => {

@@ -3,7 +3,7 @@ import { defineMessages } from '@/core/i18n/messages';
 export const messages = defineMessages({
   ar: {
     subline: 'الأسئلة اللي اللاعبين بيجاوبوها كل فترة · {n} تقييمات شغالة · {m} إجابات مستنياك',
-    active: 'شغال', stopped: 'متوقف', waiting: '{n} مستنيين', questions: '{n} أسئلة: {list}',
+    active: 'شغال', stopped: 'متوقف', waiting: '{n} مستنيين', 'questions.one': 'سؤال واحد: {list}', 'questions.two': 'سؤالين: {list}', 'questions.few': '{n} أسئلة: {list}', 'questions.other': '{n} سؤال: {list}',
     all: 'كل اللاعبين', forAll: 'لكل اللاعبين ({n})', players: '{n} لاعبين', forPlayer: 'لـ {name}',
     lastAnswer: 'آخر إجابة {date}', neverSent: 'مش مبعوت لحد دلوقتي', noAnswer: 'لسه مفيش إجابات',
     yesterday: 'امبارح', hoursAgo: 'من {n} ساعات', hoursAgoOne: 'من ساعة', hoursAgoTwo: 'من ساعتين', today: 'النهارده',
@@ -27,7 +27,7 @@ export const messages = defineMessages({
   },
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? {
     subline: 'الأسئلة التي يجيب عنها اللاعبون دوريًا · {n} تقييمات نشطة · {m} إجابات بانتظارك',
-    active: 'نشط', stopped: 'متوقف', waiting: '{n} بانتظارك', questions: '{n} أسئلة: {list}',
+    active: 'نشط', stopped: 'متوقف', waiting: '{n} بانتظارك', 'questions.one': 'سؤال واحد: {list}', 'questions.two': 'سؤالان: {list}', 'questions.few': '{n} أسئلة: {list}', 'questions.other': '{n} سؤال: {list}',
     all: 'كل اللاعبين', forAll: 'لكل اللاعبين ({n})', players: '{n} لاعبين', forPlayer: 'لـ {name}',
     lastAnswer: 'آخر إجابة {date}', neverSent: 'لم يُرسل بعد', noAnswer: 'لا توجد إجابات بعد',
     yesterday: 'أمس', hoursAgo: 'منذ {n} ساعات', hoursAgoOne: 'منذ ساعة', hoursAgoTwo: 'منذ ساعتين', today: 'اليوم',
@@ -51,7 +51,7 @@ export const messages = defineMessages({
   } as const : undefined; },
   en: {
     subline: 'Questions your players answer regularly · {n} active assessments · {m} answers to review',
-    active: 'Active', stopped: 'Stopped', waiting: '{n} waiting', questions: '{n} questions: {list}',
+    active: 'Active', stopped: 'Stopped', waiting: '{n} waiting', 'questions.one': '1 question: {list}', 'questions.other': '{n} questions: {list}',
     all: 'All players', forAll: 'All players ({n})', players: '{n} players', forPlayer: 'For {name}',
     lastAnswer: 'Last answer {date}', neverSent: 'Not sent yet', noAnswer: 'No answers yet',
     yesterday: 'yesterday', hoursAgo: '{n} hours ago', hoursAgoOne: 'an hour ago', hoursAgoTwo: 'two hours ago', today: 'today',
