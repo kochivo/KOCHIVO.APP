@@ -32,6 +32,7 @@ const InviteMessageForm = dynamic(() => import('./invite-message-form').then(mod
 const PlayerAccount = dynamic(() => import('./player-account').then(module => module.PlayerAccount), { loading: () => <LoadingState variant="detail" /> });
 const InstallButton = dynamic(() => import('@/features/install').then(module => module.InstallButton), { ssr: false });
 const ProfileForm = dynamic(() => import('./profile-form').then(module => module.ProfileForm), { loading: () => <LoadingState variant="detail" /> });
+const PlayerProfileEditor = dynamic(() => import('./player-profile-editor').then(module => module.PlayerProfileEditor), { loading: () => <LoadingState variant="detail" /> });
 
 export function SettingsScreen({ signOut }: { signOut?: ReactNode }) {
   const t = useT(messages);
@@ -72,12 +73,12 @@ export function SettingsScreen({ signOut }: { signOut?: ReactNode }) {
     });
     return () => { active = false; };
   }, [attempt, t]);
-  if (playerSettings && captainWorkspaceEnabled()) return <PlayerAccount profile={profile}
+  if (playerSettings && captainWorkspaceEnabled()) return <PlayerAccount profile={profile} onProfileSave={setProfile}
     profileForm={loading ? <LoadingState variant="detail" /> : error ? <ErrorState message={error} retryLabel={t('tryAgain')} onRetry={() => {
       setLoading(true); setError(''); setAttempt(value => value + 1);
-    }} /> : profile ? <ProfileForm profile={profile} /> : null}
+    }} /> : profile ? <PlayerProfileEditor profile={profile} onSave={setProfile} /> : null}
     install={<InstallButton role="player" />} signOut={signOut}>
-    <GlassToggle /><ThemeSwitch /><PushToggleCard />
+    <GlassToggle /><ThemeSwitch />
     {profile && <><TourReplay role={profile.role} /><ExportCard />
       {!demo && !demoExpiry(profile) && <DeleteAccountCard requestedAt={profile.deletion_requested_at} />}</>}
   </PlayerAccount>;

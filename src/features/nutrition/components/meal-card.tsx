@@ -5,7 +5,7 @@ import { formatNumber } from '@/lib/format';
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { Check, Utensils, ChevronDown } from 'lucide-react';
+import { Check, Utensils } from 'lucide-react';
 import { localDb, type MealLogRow, type NutritionMeal } from '@/core/offline';
 import { foodPhotoUrl } from '@/core/storage/media-url';
 import { Button, EmptyState, GlassCard } from '@/ui';
@@ -21,8 +21,9 @@ export function MealCard({ meal, log, today, planTitle, primary = false }: { mea
   const locale = useLocale();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(false);
+  const [open, setOpen] = useState(false);
   const swaps = log?.swaps ?? {};
-  const eaten = Boolean(log?.completed_at);
+  const eaten = Boolean(log?.completed_at && !log.deleted_at && log.log_date === today);
   const macros = mealMacros(meal, swaps);
   async function save(nextEaten: boolean, nextSwaps: Record<string, string>, now: number) {
     setBusy(true);
@@ -67,22 +68,24 @@ export function MealCard({ meal, log, today, planTitle, primary = false }: { mea
     {error && <p role="alert" className="text-sm text-danger">{t('saveFailedTryAgain')}</p>}
   </GlassCard>;
   if (!v6) return details;
-  return <div className="p-4">
-    <div className="flex min-h-16 items-center gap-3">
-      <Button variant={!eaten && primary ? 'primary' : 'secondary'} type="button" disabled={busy || !meal.items.length} aria-label={t('mealEaten')}
-        aria-pressed={eaten} onClick={() => void save(!eaten, swaps, Date.now())}
-        className="min-h-12 w-12! shrink-0 border border-line px-0!">
-        {eaten && <Check aria-hidden className="size-5" />}
-      </Button>
-      <div className="min-w-0 flex-1"><h2 className="text-sm font-medium">{starterText(meal.name, locale, planTitle)}</h2>
-        <p className="mt-1 text-xs leading-6 text-faint">{meal.items.map(item => {
+  const name = starterText(meal.name, locale, planTitle);
+  return <div className={`rounded-[22px] border bg-surface px-3 py-2.5 ${primary && !eaten ? 'border-lime/50' : 'border-line-soft'}`}>
+    <div className="flex items-center gap-3">
+      {eaten ? <span role="img" aria-label={v6t('eaten')} className="flex size-12 shrink-0 items-center justify-center rounded-full bg-lime text-on-lime">
+        <Check aria-hidden className="size-[22px]" strokeWidth={3} />
+      </span> : <button type="button" disabled={busy || !meal.items.length} aria-label={v6t('eatMeal', { meal: name })}
+        onClick={() => void save(true, swaps, Date.now())}
+        className={`size-12 shrink-0 rounded-full border-2 bg-transparent disabled:opacity-50 ${primary ? 'border-lime' : 'border-line'}`} />}
+      <button type="button" aria-label={v6t('details')} aria-expanded={open} onClick={() => setOpen(value => !value)}
+        className="flex min-h-12 min-w-0 flex-1 flex-col justify-center gap-0.5 font-sans text-start">
+        <span className="text-[15px] font-bold">{name} {primary && !eaten && <span className="text-xs font-bold text-lime">{v6t('now')}</span>}</span>
+        <span className="w-full truncate text-xs text-muted">{meal.items.length ? meal.items.map(item => {
           const chosen = item.alternatives.find(alt => alt.id === swaps[item.id]) ?? item;
-          return `${formatNumber(chosen.grams, locale)}${t('g')} ${chosen.name}`;
-        }).join(' · ')}</p>
-      </div>
-      <span className="font-display text-sm font-extrabold tabular-nums text-faint">{formatNumber(macros.kcal, locale)}</span>
+          return `${chosen.name} ${formatNumber(chosen.grams, locale)}${t('g')}`;
+        }).join(' · ') : t('thisMealIsBeingPrepared')}</span>
+      </button>
     </div>
     {error && <p role="alert" className="text-sm text-danger">{t('saveFailedTryAgain')}</p>}
-    <details className="group"><summary className="flex min-h-12 cursor-pointer items-center text-xs text-muted">{v6t('details')}<ChevronDown aria-hidden className="ms-auto size-4 shrink-0 transition-transform group-open:rotate-180" /></summary>{details}</details>
+    {open && <div className="mt-3">{details}</div>}
   </div>;
 }

@@ -13,7 +13,7 @@ import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 type SetRowsState = Pick<ReturnType<typeof useFocusSession>, 'current' | 'disabled' | 'doneSets' | 'invalid' |
   'weight' | 'reps' | 'bodyweight' | 'setWeight' | 'setReps' | 'setBodyweight' | 'complete' | 'edit'> & { rest: { remaining: number } };
 
-export function SetRows({ state }: { state: SetRowsState }) {
+export function SetRows({ state, secondary = false }: { state: SetRowsState; secondary?: boolean }) {
   const t = useT(messages);
   const v6t = useT(v6Messages);
   const at = useT(alternativeMessages);
@@ -58,7 +58,7 @@ export function SetRows({ state }: { state: SetRowsState }) {
         <button type="button" disabled={active ? blocked : !done || state.disabled}
           aria-label={active ? t('completeSet') : t('editSet', { value0: formatNumber(setIndex, locale) })}
           aria-pressed={Boolean(done)} onClick={() => { if (active) void state.complete(); else if (done) state.edit(done); }}
-          className={`flex min-h-14 min-w-14 items-center justify-center rounded-control border ${v6 ? active ? 'border-lime bg-lime text-on-lime' : 'glass border-line-soft text-ink' : done || active ? 'border-lime bg-lime text-on-lime' : 'border-line-soft text-faint'}`}>
+          className={`flex min-h-14 min-w-14 items-center justify-center rounded-control border ${secondary ? 'border-line-soft text-ink' : v6 ? active ? 'border-lime bg-lime text-on-lime' : 'glass border-line-soft text-ink' : done || active ? 'border-lime bg-lime text-on-lime' : 'border-line-soft text-faint'}`}>
           <Check aria-hidden className="size-6" />
         </button>
       </div></div>;

@@ -34,7 +34,7 @@ export function Greeting({ firstName, now, playerId, snapshot, loading = false }
     {stats && !captainWorkspaceEnabled() && <AvatarRing initial={firstName?.slice(0, 1) || t('streakInitial')} done={stats.weekDone} planned={stats.weekPlanned} />}
     <div className="min-w-0 space-y-1">
     <p className="text-start text-xs text-muted"><bdi>{`${weekday} · ${dayMonth}`}</bdi></p>
-    <h1 className="text-2xl font-extrabold">{hour < 12 ? t('goodMorning') : t('goodEvening')}{firstName ? t('namedGreeting', { value0: firstName }) : ''}</h1>
+    {!captainWorkspaceEnabled() && <h1 className="text-2xl font-extrabold">{hour < 12 ? t('goodMorning') : t('goodEvening')}{firstName ? t('namedGreeting', { value0: firstName }) : ''}</h1>}
     </div></div>
     {playerId && (history === undefined || loading) ? <div className="flex min-h-12 items-center" role="status" aria-label={t('streakLoading')}><span className="h-[26px] w-56 animate-pulse rounded-full border border-ink/10 bg-ink/5 motion-reduce:animate-none" /></div> :
       stats && <StreakPill stats={stats} onOpen={() => setOpen(true)} />}

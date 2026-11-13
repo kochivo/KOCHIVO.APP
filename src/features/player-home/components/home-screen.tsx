@@ -29,7 +29,6 @@ import { previewFor } from '../day-preview';
 import { DayPreviewCard } from './day-preview-card';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { PendingForms } from '@/features/forms';
-import { HomeTiles } from './home-tiles';
 import { MorningRow } from './morning-row';
 
 const readPending = () => pendingCount(localDb());
@@ -37,6 +36,9 @@ const readParked = () => parkedCount(localDb());
 const readSessions = () => localDb().workout_sessions.toArray();
 const PlayerReadiness = dynamic(() => import('@/features/readiness').then(module => module.PlayerReadiness), {
   ssr: false, loading: () => <LoadingState variant="detail" />,
+});
+const V3Home = dynamic(() => import('./v3-home').then(module => module.V3Home), {
+  loading: () => <LoadingState variant="cards" />,
 });
 
 export function HomeScreen({ firstName, playerId }: { firstName?: string; playerId?: string }) {
@@ -69,16 +71,27 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
   const failed = localError || status === 'error';
   const nextWeekAt = new Date(`${today || '2000-01-01'}T12:00:00Z`);
   nextWeekAt.setUTCDate(nextWeekAt.getUTCDate() + 7);
-  return <main data-mood={rest ? 'rest' : undefined} data-tour-ready={Boolean(now && status !== 'loading' && (!snapshot || (sessions && weekSessions)))} className="mx-auto max-w-lg space-y-4 px-5 pt-6 pb-32">
-    <header className="flex flex-wrap items-center justify-between gap-3">
+  const preview = snapshot && today ? v6 && rest && selectedDate === localDate(tomorrowAt, 'UTC')
+    ? { day: tomorrow, status: tomorrowRest || tomorrow?.is_rest_day || (weekly && !tomorrow) ? 'rest' as const : 'upcoming' as const }
+    : previewFor(snapshot, sessions ?? [], selectedDate, today) : { day: undefined, status: 'rest' as const };
+  const statusHeader = <header className="flex flex-wrap items-center justify-between gap-3">
       {now && <Greeting firstName={firstName} now={now} playerId={playerId} snapshot={snapshot} loading={status === 'loading'} />}
       {ranksEnabled() && <RankChip />}
       <SyncPill state={!online ? 'offline' : parked && parked > 0 ? 'attention' : pending === undefined || pending > 0 ? 'pending' : 'synced'} pending={pending}
         onRetry={() => { void retryParked(localDb()).catch(onError); }} />
-    </header>
+    </header>;
+  return <main data-mood={rest ? 'rest' : undefined} data-tour-ready={Boolean(now && status !== 'loading' && (!snapshot || (sessions && weekSessions)))}
+    className={v6 ? 'mx-auto flex max-w-lg flex-col gap-3 bg-bg px-[18px] pt-[18px] pb-[104px] [font-family:var(--font-alexandria),var(--font-manrope),sans-serif]' : 'mx-auto max-w-lg space-y-4 px-5 pt-6 pb-32'}>
+    {!v6 && statusHeader}
     {failed && (!snapshot || localError) ? <ErrorState message={t('couldntLoadYourProgram')} retryLabel={t('tryAgain')} onRetry={() => {
       setLocalError(false); setRetryKey((value) => value + 1); void retry();
     }} /> : !now || status === 'loading' || (snapshot && (!sessions || !weekSessions)) ? <LoadingState variant="cards" /> : <>
+      {v6 && <>
+        <V3Home now={now} today={today} firstName={firstName} playerId={playerId} snapshot={snapshot} day={day}
+          rest={rest} sessions={sessions ?? []} weekSessions={weekSessions ?? []} onPreview={date => setSelection({ today, date })} />
+        <p className="mt-6 text-[13px] text-muted">{t('homeMore')}</p>
+        {statusHeader}
+      </>}
       <div hidden={selectedDate !== today} className="space-y-4">
       {v6 ? <>
         <NextTaskSlot rest={rest} snapshot={snapshot ?? null} sessions={sessions ?? []} today={today} playerId={playerId}
@@ -86,7 +99,6 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
         <MorningRow><PlayerReadiness playerId={playerId} today={today} rest={rest} coachRest={decision === 'rest'}
           onDecisionChange={setDecision} tomorrowRest={Boolean(tomorrowRest)}
           tomorrow={tomorrow && !tomorrowRest && !tomorrow.is_rest_day ? starterText(tomorrow.title, locale) : undefined} /></MorningRow>
-        <HomeTiles today={today} playerId={playerId} />
       </> : rest ? <PlayerReadiness playerId={playerId} today={today} rest coachRest={decision === 'rest'}
         onDecisionChange={setDecision}
         tomorrowRest={Boolean(tomorrowRest)}
@@ -98,8 +110,8 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
       </div>
       <WeekStrip today={today} selected={selectedDate} nextDays={buildWeek(localDate(nextWeekAt, 'UTC'), snapshot?.training_days ?? [], [], locale, snapshot ?? undefined)} onSelect={date => setSelection({ today, date })} days={buildWeek(today, snapshot?.training_days ?? [],
         weekSessions?.filter((session) => snapshot?.days.some((day) => day.id === session.program_day_id)) ?? [], locale, snapshot ?? undefined)} />
-      <div key={selectedDate} className={selectedDate !== today ? 'motion-safe:animate-[surface-in_180ms_ease-out] motion-reduce:animate-none' : undefined}>
-      {selectedDate !== today ? <DayPreviewCard date={selectedDate} {...(snapshot ? previewFor(snapshot, sessions ?? [], selectedDate, today) : { day: undefined, status: 'rest' as const })} /> :
+      <div id="home-day-preview" key={selectedDate} className={selectedDate !== today ? 'motion-safe:animate-[surface-in_180ms_ease-out] motion-reduce:animate-none' : undefined}>
+      {selectedDate !== today ? <DayPreviewCard date={selectedDate} {...preview} /> :
         snapshot && weekly && (!day || day.is_rest_day) ? <WeeklyRestCard snapshot={snapshot} today={today} /> :
         snapshot && day ? <TodayCard day={day} rest={Boolean(rest)} /> :
         <EmptyState icon={Dumbbell} title={t('yourProgramIsBeingPrepared')} body={t('yourCoachIsPreparingYourProgramIt')} secondary={{ label: t('messageCoach'), href: '/player/captain' }} />}

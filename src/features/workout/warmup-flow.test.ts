@@ -63,15 +63,16 @@ it('shows the warm-up before the exercises and gates logging until completion or
     expect(continued).toContain('role="progressbar"');
   }
 });
-it.each([false, true])('restores the v6 workout clock, exercise list and history after warm-up (skipped: %s)', skipped => {
+it.each([false, true])('keeps the v3 overview, checklist and history until explicitly started (skipped: %s)', skipped => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
   if (!state.day) throw new Error('Fixture missing');
   state.day.warmup = { items: [{ id: 'a', name: 'عجلة خفيفة', amount: 5, unit: 'min' }], ramp: true };
   Object.assign(progress, { pending: false, skipped, checked: skipped ? [] : ['a'] });
   const html = render();
   expect(html).toContain('من غير نت');
-  expect(html).toContain('role="progressbar"');
+  expect(html).toContain('ابدأ التمرين');
+  expect(html).toContain('1 · التسخين');
   expect(html).toContain('id="workout-exercises"');
   expect(html).toContain('href="/player/history"');
-  expect(html).toContain('<bdi>0:00</bdi>');
+  expect(html).not.toContain('خلصت المجموعة');
 });

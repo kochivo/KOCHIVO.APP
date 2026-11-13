@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useLocale } from '@/core/i18n/client';
 import { formatRest } from '../rest';
 
-export function WorkoutClock({ startedAt }: { startedAt?: string }) {
+export function WorkoutClock({ startedAt, quiet = false }: { startedAt?: string; quiet?: boolean }) {
   const locale = useLocale();
   const [seconds, setSeconds] = useState(0);
   useEffect(() => {
@@ -13,5 +13,5 @@ export function WorkoutClock({ startedAt }: { startedAt?: string }) {
     window.addEventListener('focus', update);
     return () => { window.clearInterval(timer); window.removeEventListener('focus', update); };
   }, [startedAt]);
-  return <span className="font-display font-extrabold tabular-nums text-lime"><bdi>{formatRest(seconds, locale)}</bdi></span>;
+  return <span className={quiet ? 'font-display text-[13px] text-muted tabular-nums' : 'font-display font-extrabold tabular-nums text-lime'}><bdi>{formatRest(seconds, locale)}</bdi></span>;
 }

@@ -8,12 +8,15 @@ import { AudioPlayer } from '@/ui/audio-player';
 import { formatDateAr, localDate } from '@/lib/dates';
 import { clock } from '../audio';
 import type { VoiceNote } from '../types';
+import type { ThreadItem } from '../player-thread';
+import { CaptainThread } from './captain-thread';
 
-export function VoiceNoteList({ notes, onPlay, replies }: { notes: VoiceNote[]; onPlay?: (note: VoiceNote) => void; replies?: Record<string, string> }) {
+export function VoiceNoteList({ notes, onPlay, replies, thread }: { notes: VoiceNote[]; onPlay?: (note: VoiceNote) => void; replies?: Record<string, string>; thread?: ThreadItem[] }) {
   const timezone = useTimezone();
   const t = useT(messages);
   const locale = useLocale();
   const [broken, setBroken] = useState<string | null>(null);
+  if (thread) return <CaptainThread items={thread} onPlay={onPlay} />;
   return (
     <ul className="space-y-3">
       {notes.map((note) => <li key={note.id} className="space-y-1">

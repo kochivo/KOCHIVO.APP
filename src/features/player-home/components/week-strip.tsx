@@ -22,7 +22,7 @@ export function WeekStrip({ days, nextDays = days, today, selected = today, onSe
   if (paging.today !== today) setPaging({ today, next: false });
   const next = paging.today === today && paging.next;
   const states = { done: t('workoutDone'), today: t('today'), train: t('workout'), rest: t('rest') };
-  if (captainWorkspaceEnabled()) return <GlassCard className="border border-line-soft p-4">
+  if (captainWorkspaceEnabled()) return <section className="rounded-[24px] border border-line-soft bg-surface p-4">
     <ul className="flex gap-1" aria-label={t('week')}>{(next ? nextDays : days).map(day => <li key={day.date} className="min-w-0 flex-1">
       <Button variant="secondary" type="button" onClick={() => onSelect?.(day.date)} aria-pressed={day.date === selected}
         aria-current={day.date === today ? 'date' : undefined}
@@ -39,7 +39,7 @@ export function WeekStrip({ days, nextDays = days, today, selected = today, onSe
         <IconButton className="min-h-12 min-w-12" aria-label={t('nextWeek')} disabled={next} onClick={() => setPaging({ today, next: true })}><ChevronRight aria-hidden className="mx-auto rtl:rotate-180" /></IconButton>
       </div>
     </details>
-  </GlassCard>;
+  </section>;
   return <GlassCard className="p-2"><div className="flex justify-between">
     <button type="button" className="min-h-12 min-w-12" aria-label={t('thisWeek')} disabled={!next} onClick={() => { setPaging({ today, next: false }); onSelect?.(today); }}><ChevronLeft aria-hidden className="mx-auto rtl:rotate-180" /></button>
     <button type="button" className="min-h-12 min-w-12" aria-label={t('nextWeek')} disabled={next} onClick={() => setPaging({ today, next: true })}><ChevronRight aria-hidden className="mx-auto rtl:rotate-180" /></button>

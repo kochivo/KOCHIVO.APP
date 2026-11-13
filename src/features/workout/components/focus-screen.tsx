@@ -26,6 +26,7 @@ import { messages as warmupMessages } from '../warmup/messages';
 import { messages as v6Messages } from '../v6-messages';
 import { WorkoutClock } from './workout-clock';
 import Link from 'next/link';
+import { PlayerWorkoutV3 } from './player-workout-v3';
 
 const readPlan = () => localDb().program_snapshot.get('active');
 
@@ -65,6 +66,9 @@ export function FocusScreen({ dayId, playerId }: { dayId: string; playerId?: str
   const warmupProgress = useWarmupSession(warmup.items.length ? dayId : '', today, state.session?.id, warmup);
   const warmupView = warmup.items.length > 0 && (warmupProgress.loading || warmupProgress.pending) &&
     !state.finished && !state.loading && !state.error && !state.programFinished;
+  if (v6 && state.day && state.queue.length > 0 && !state.programFinished) {
+    return <PlayerWorkoutV3 key={`${dayId}:${today}`} state={state} progress={warmupProgress} workout={workout} online={online} playerId={playerId ?? plan?.player_id} />;
+  }
   return <main className={warmupView ? 'mx-auto flex min-h-dvh max-w-lg flex-col gap-3 bg-bg-deep px-[18px] pt-[max(22px,env(safe-area-inset-top))]'
     : 'mx-auto max-w-lg space-y-4 px-5 pt-[max(1.5rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))]'}>
     <p role="status" aria-live="polite" aria-atomic="true" className="sr-only">{restAnnouncement(rest.remaining, rest.endsAt !== null, t)}</p>

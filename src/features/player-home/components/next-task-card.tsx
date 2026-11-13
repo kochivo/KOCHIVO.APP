@@ -17,7 +17,7 @@ export function NextTaskCard({ task, day }: { task: PlayerTask; day?: SnapshotDa
   const wt = useT(warmupMessages);
   const locale = useLocale();
   const view = taskPresentation(task);
-  if (captainWorkspaceEnabled()) return <GlassCard level="strong" data-tour={view.workout ? 'player-workout' : undefined} className="space-y-3 border border-line-soft p-5">
+  if (captainWorkspaceEnabled()) return <section className="space-y-3 rounded-[24px] border border-line-soft bg-surface p-5">
     <p className="text-xs text-faint">{t(view.heading, { name: starterText(task.name ?? '', locale) })}</p>
     {view.workout && <h2 className="font-display text-[22px] font-semibold">{starterText(task.name ?? '', locale)}</h2>}
     <p className="text-[12.5px] text-muted">{view.workout && day ? t('v6WorkoutSummary', {
@@ -26,9 +26,9 @@ export function NextTaskCard({ task, day }: { task: PlayerTask; day?: SnapshotDa
     }) : task.tomorrow ? t('taskTomorrow', { name: starterText(task.tomorrow, locale) }) :
       t(task.kind === 'waiting' ? 'taskWaitingContext' : task.kind === 'done' ? 'taskDoneContext' : 'taskContext')}</p>
     {view.workout && day && warmupDuration(day) > 0 && <p className="text-xs text-warn">{wt('time', { minutes: formatNumber(warmupDuration(day), locale) })}</p>}
-    {task.href && view.action && <Link href={task.href} data-tour={view.workout ? 'workout-start' : undefined}
-      className="flex min-h-12 items-center justify-center rounded-full bg-lime px-5 font-semibold text-on-lime">{t(view.action)}</Link>}
-  </GlassCard>;
+    {task.href && view.action && <Link href={task.href}
+      className="flex min-h-12 items-center justify-center rounded-full border border-line-soft px-5 font-semibold text-ink">{t(view.action)}</Link>}
+  </section>;
   return <GlassCard data-tour={task.kind === 'start' || task.kind === 'continue' ? 'player-workout' : undefined} level="strong" className="space-y-4 p-6">
     <h2 className="text-3xl font-extrabold">{t(`task.${task.kind}`, { name: starterText(task.name ?? '', locale) })}</h2>
     <p className="text-sm text-muted">{task.tomorrow ? t('taskTomorrow', { name: starterText(task.tomorrow, locale) }) :

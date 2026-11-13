@@ -16,18 +16,18 @@ import { exerciseMuscle } from '../exercise-muscle';
 const muscleKeys = { chest: 'chest', back: 'back', waist: 'waist', 'upper arms': 'upperArms', 'lower arms': 'lowerArms',
   'upper legs': 'upperLegs', 'lower legs': 'lowerLegs', shoulders: 'shoulders', cardio: 'cardio' } as const;
 
-export function ExerciseHeader({ exercise, last }: { exercise: SnapshotExercise; last: LastSession | null }) {
+export function ExerciseHeader({ exercise, last, detailsOnly = false }: { exercise: SnapshotExercise; last: LastSession | null; detailsOnly?: boolean }) {
   const t = useT(messages);
   const v6t = useT(v6Messages);
   const locale = useLocale();
   const v6 = captainWorkspaceEnabled();
-  const name = v6 ? exercise.name_en : exerciseName(exercise, locale);
+  const name = exerciseName(exercise, locale);
   const muscle = exerciseMuscle(exercise);
   const muscleKey = muscle && Object.hasOwn(muscleKeys, muscle) ? muscleKeys[muscle as keyof typeof muscleKeys] : null;
   return <section className={v6 ? 'space-y-3' : 'glass-strong flex items-center gap-4 rounded-card p-4'}>
     {!v6 && exercise.media_path && <ExerciseLightbox src={exerciseMediaUrl(exercise.media_path)} name={name} />}
     <div className="min-w-0 space-y-2">
-      <h1 className="text-2xl font-extrabold"><bdi>{name}</bdi></h1>
+      {!detailsOnly && <h1 className="text-2xl font-extrabold"><bdi>{name}</bdi></h1>}
       {v6 && <p className="text-xs text-faint">{muscleKey ? <>{v6t(muscleKey)} · </> : muscle ? <>{muscle} · </> : null}<bdi>{v6t('prescription', { sets: formatNumber(exercise.sets, locale),
         reps: exercise.reps_max === null ? t('toFailure') : `${formatNumber(exercise.reps_min, locale)}–${formatNumber(exercise.reps_max, locale)}` })}</bdi> · {v6t('rest', { seconds: formatNumber(exercise.rest_seconds, locale) })}</p>}
       <p className="text-sm text-muted"><bdi>{t('targetReps', { count: exercise.reps_max === null ? t('toFailure') :
@@ -44,7 +44,7 @@ export function ExerciseHeader({ exercise, last }: { exercise: SnapshotExercise;
         </Link>
       </div>
     </div>
-    {v6 && exercise.media_path && <ExerciseLightbox src={exerciseMediaUrl(exercise.media_path)} name={name} large />}
-    {v6 && exercise.notes && <p className="glass rounded-card p-4 text-sm text-muted">{exercise.notes}</p>}
+    {v6 && !detailsOnly && exercise.media_path && <ExerciseLightbox src={exerciseMediaUrl(exercise.media_path)} name={name} large />}
+    {v6 && !detailsOnly && exercise.notes && <p className="glass rounded-card p-4 text-sm text-muted">{exercise.notes}</p>}
   </section>;
 }

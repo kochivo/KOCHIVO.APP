@@ -16,6 +16,9 @@ import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { PlayerAssessments } from './player-assessments-entry';
 import { CaptainQuestion } from './captain-question';
 import { messages as v6Messages } from '../v6-messages';
+import { messages as captainMessages } from '../captain-messages';
+import { CaptainHeading } from './captain-heading';
+import { CaptainPendingAssessment } from './captain-pending-assessment';
 
 // Loaded on demand so the billing barrel stays out of the player route's first load.
 const Renewal = dynamic(() => import('@/features/billing').then(module => module.RenewalEntry));
@@ -32,6 +35,7 @@ const contactPatterns = {
 export function CaptainScreen({ voiceNotes }: { voiceNotes?: ReactNode }) {
   const t = useT(messages);
   const v6t = useT(v6Messages);
+  const captainT = useT(captainMessages);
   const v6 = captainWorkspaceEnabled();
   const locale = useLocale();
   const labels = { active: t('subscriptionActive'), ending: t('subscriptionEndingSoon'), ended: t('subscriptionEnded'), archived: t('coachingPaused') };
@@ -72,15 +76,12 @@ export function CaptainScreen({ voiceNotes }: { voiceNotes?: ReactNode }) {
             <MessageCircle aria-hidden className="size-5" />{t('messageYourCoachOnWhatsApp')}
           </a> : <Button disabled className="min-h-12 w-full">{t('yourCoachHasnTAddedA')}</Button>}
         </GlassCard>;
-  return <main className="mx-auto max-w-lg space-y-5 px-5 pt-6 pb-32">
-    {v6 && data ? <header className="flex items-center gap-3">
-      {data.avatarUrl ? <Image src={data.avatarUrl} alt="" width={48} height={48} unoptimized className="size-12 rounded-full object-cover" /> :
-        <span aria-hidden className="glass flex size-12 items-center justify-center rounded-full text-lg">{data.fullName.trim().slice(0, 1)}</span>}
-      <div><h1 className="font-display text-[19px] font-semibold">{data.fullName}</h1><p className="mt-1 text-xs text-faint">{v6t('replyTime')}</p></div>
-    </header> : <header><h1 className="text-2xl font-extrabold">{t('coach')}</h1></header>}
-    {v6 && data ? <>{voiceNotes}<PlayerAssessments actionable={false} /><CaptainQuestion contactUrl={url} />
+  return <main className={v6 ? 'mx-auto max-w-lg space-y-3 px-[18px] pt-4 pb-52' : 'mx-auto max-w-lg space-y-5 px-5 pt-6 pb-32'}>
+    {v6 && data ? <CaptainHeading captain={data} /> : <header><h1 className="text-2xl font-extrabold">{t('coach')}</h1></header>}
+    {v6 && data ? <><CaptainPendingAssessment />{voiceNotes}<CaptainQuestion contactUrl={url} />
+      <details className="rounded-[22px] border border-line-soft bg-surface p-4"><summary className="min-h-12 cursor-pointer text-sm text-muted">{captainT('assessments')}</summary><PlayerAssessments actionable={false} /></details>
       {!data.pending && !data.archivedAt && <Renewal />}
-      <details className="group glass rounded-card border border-line-soft p-4"><summary className="flex min-h-12 cursor-pointer items-center text-sm text-muted">{v6t('profile')}<ChevronDown aria-hidden className="ms-auto size-4 shrink-0 transition-transform group-open:rotate-180" /></summary>{profile}</details>
+      <details className="group rounded-[22px] border border-line-soft bg-surface p-4 [&_a]:border [&_a]:border-line-soft [&_a]:bg-transparent [&_a]:text-muted"><summary className="flex min-h-12 cursor-pointer items-center text-sm text-muted">{v6t('profile')}<ChevronDown aria-hidden className="ms-auto size-4 shrink-0 transition-transform group-open:rotate-180" /></summary>{profile}</details>
     </> : <>{profile}{data && voiceNotes}</>}
   </main>;
 }

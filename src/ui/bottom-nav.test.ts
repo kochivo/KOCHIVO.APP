@@ -3,6 +3,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { Home } from 'lucide-react';
 import { expect, it, vi } from 'vitest';
 import { BottomNav } from './bottom-nav';
+import { PillNav } from './pill-nav';
 import type * as LinkModule from 'next/link';
 import { KoHome } from './icons/ko-home';
 
@@ -18,7 +19,7 @@ const pillItems = [
 ];
 
 it('shows only the active pill label and names inactive links accessibly', () => {
-  const html = renderToStaticMarkup(createElement(BottomNav, { variant: 'pill', items: pillItems }));
+  const html = renderToStaticMarkup(createElement(PillNav, { items: pillItems }));
   expect(html.match(/aria-current="page"/g)).toHaveLength(1);
   expect(html).toContain('>Home</span>');
   expect(html).not.toContain('>Food</span>');
@@ -31,7 +32,7 @@ it('shows only the active pill label and names inactive links accessibly', () =>
 
 it('uses mood-aware tokens and safe-area spacing inside a rest frame', () => {
   const html = renderToStaticMarkup(createElement('div', { 'data-mood': 'rest' },
-    createElement(BottomNav, { variant: 'pill', items: pillItems })));
+    createElement(PillNav, { items: pillItems })));
   expect(html).toContain('bg-surface-raised');
   expect(html).toContain('bg-ink text-bg');
   expect(html).toContain('bottom-[calc(1rem+var(--safe-bottom))]');
@@ -41,7 +42,7 @@ it('uses mood-aware tokens and safe-area spacing inside a rest frame', () => {
 
 it('preserves the default bar markup when bar is explicitly selected', () => {
   const implicit = renderToStaticMarkup(createElement(BottomNav, { items: pillItems }));
-  const explicit = renderToStaticMarkup(createElement(BottomNav, { variant: 'bar', items: pillItems }));
+  const explicit = renderToStaticMarkup(createElement(BottomNav, { items: pillItems }));
   expect(explicit).toBe(implicit);
   expect(implicit).toContain('group/nav sheet fixed');
   expect(implicit).toContain('rounded-control px-0.5 py-2');
@@ -50,7 +51,7 @@ it('preserves the default bar markup when bar is explicitly selected', () => {
 
 it('keeps pending navigation feedback in pill links', () => {
   status.pending = true;
-  const html = renderToStaticMarkup(createElement(BottomNav, { variant: 'pill', items: pillItems }));
+  const html = renderToStaticMarkup(createElement(PillNav, { items: pillItems }));
   status.pending = false;
   expect(html).toContain('data-pending="true"');
   expect(html).toContain('animate-pulse');

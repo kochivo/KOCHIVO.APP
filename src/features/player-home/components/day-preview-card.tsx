@@ -9,6 +9,7 @@ import { CardioCards } from '@/ui/cardio-cards';
 import type { DayPreview } from '../day-preview';
 import { messages } from '../messages';
 import { estimateMinutes } from './today-card';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 
 const weekdays = ['sat', 'sun', 'mon', 'tue', 'wed', 'thu', 'fri'] as const;
 const badges = { upcoming: 'upcomingWorkout', completed: 'completedWorkout', missed: 'notLogged', rest: 'previewRestDay' } as const;
@@ -20,7 +21,7 @@ export function DayPreviewCard({ day, status, date }: DayPreview & { date: strin
   const exercises = day?.exercises ?? [];
   const sets = exercises.reduce((total, exercise) => total + exercise.sets, 0);
   const minutes = estimateMinutes(exercises) + (day?.cardio ?? []).reduce((total, block) => total + block.minutes, 0);
-  return <GlassCard level="featured" className="space-y-5 p-5">
+  const content = <>
     <div className="space-y-2">
       <p className="text-xs text-muted">{t(weekdays[weeklyWeekday(date)] ?? 'sat')}</p>
       {!rest && <span className="inline-flex rounded-chip border border-line px-3 py-1 text-sm text-muted">{t(badges[status])}</span>}
@@ -39,5 +40,7 @@ export function DayPreviewCard({ day, status, date }: DayPreview & { date: strin
       </li>)}</ul> : !day.cardio?.length && <p className="text-muted">{t('yourCoachIsPreparingTodaysExercises')}</p>}
       <CardioCards blocks={day.cardio ?? []} />
     </>}
-  </GlassCard>;
+  </>;
+  return captainWorkspaceEnabled() ? <section className="space-y-5 rounded-[24px] border border-line-soft bg-surface p-5">{content}</section>
+    : <GlassCard level="featured" className="space-y-5 p-5">{content}</GlassCard>;
 }

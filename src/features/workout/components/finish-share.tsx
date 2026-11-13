@@ -5,9 +5,13 @@ import { Share2 } from 'lucide-react';
 import { useT } from '@/core/i18n/client';
 import { ranksEnabled } from '@/lib/ranks-enabled';
 import { messages } from '../finish-messages';
+import { messages as workoutMessages } from '../messages';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 
 export function FinishShare() {
   const t = useT(messages);
+  const wt = useT(workoutMessages);
+  const v3 = captainWorkspaceEnabled();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(false);
   async function share() {
@@ -26,10 +30,10 @@ export function FinishShare() {
     } catch (cause) { if (!(cause instanceof Error && cause.name === 'AbortError')) setError(true); }
     finally { setBusy(false); }
   }
-  if (!ranksEnabled()) return null;
+  if (!ranksEnabled()) return v3 ? <button type="button" disabled className="min-h-[52px] w-full rounded-full border border-line-soft text-sm font-bold text-muted">{wt('v3Share')} · {wt('v3Soon')}</button> : null;
   return <div className="space-y-2"><button type="button" disabled={busy} onClick={() => void share()}
-    className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-line-soft px-5">
-    <Share2 aria-hidden className="size-5" />{t('share')}</button>
+    className="flex min-h-[52px] w-full items-center justify-center gap-2 rounded-full border border-line-soft px-5 text-sm font-bold">
+    {!v3 && <Share2 aria-hidden className="size-5" />}{v3 ? wt('v3Share') : t('share')}</button>
     {error && <p role="alert" className="text-sm text-danger">{t('shareError')}</p>}
   </div>;
 }

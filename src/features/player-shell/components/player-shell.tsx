@@ -7,6 +7,7 @@ import type { ReactNode } from 'react';
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { BottomNav, ErrorState, LoadingState } from '@/ui';
+import { PillNav } from '@/ui/pill-nav';
 import dynamic from 'next/dynamic';
 import { NotificationBell } from '@/features/notifications';
 import Link from 'next/link';
@@ -86,8 +87,8 @@ export function PlayerShell({ children, unassignedAction }: { children?: ReactNo
     {showsNav(pathname) && <InstallSheet />}
     {showsNav(pathname) && <FeedbackButton role="player" />}
     {process.env.NODE_ENV === 'development' && showsNav(pathname) && <KoPreview role="player" />}
-    {showsNav(pathname) && <BottomNav aria-label={t('navigation')} items={playerNav(pathname, locale)}
-      variant={v6 ? 'pill' : 'bar'} />}
+    {showsNav(pathname) && (v6 ? <PillNav aria-label={t('navigation')} items={playerNav(pathname, locale)} /> :
+      <BottomNav aria-label={t('navigation')} items={playerNav(pathname, locale)} />)}
     </div>
   </MyCaptainContext.Provider>;
 }

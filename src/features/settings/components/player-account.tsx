@@ -1,42 +1,54 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { Bell, Sparkles, ChevronDown } from 'lucide-react';
+import Link from 'next/link';
+import { ChevronRight, Sparkles } from 'lucide-react';
 import { useT } from '@/core/i18n/client';
-import { useTimezone } from '@/core/timezone/client';
 import { useCaptainContext } from '@/features/player-shell';
-import { daysBetween, localDate } from '@/lib/dates';
-import { useCalendarClock } from '@/lib/use-calendar-clock';
+import { useProgramSnapshot } from '@/features/player-home';
+import { internationalEnabled } from '@/lib/international-enabled';
 import type { SettingsProfile } from '../schema';
-import { messages } from '../v6-messages';
+import { messages } from '../player-messages';
+import { messages as v6Messages } from '../v6-messages';
 import { PlayerPreferences } from './player-preferences';
+import { PlayerIdentity } from './player-identity';
+import { PlayerStatTiles } from './player-stat-tiles';
+import { ProfileWriteContext, useProfileWriter } from '../hooks/use-profile-write';
 
-export function PlayerAccount({ profile, profileForm, children, install, signOut }: {
-  profile: SettingsProfile | null; profileForm: ReactNode; children: ReactNode; install: ReactNode; signOut: ReactNode;
+export function PlayerAccount({ profile, profileForm, children, install, signOut, onProfileSave }: {
+  profile: SettingsProfile | null; profileForm: ReactNode; children?: ReactNode; install: ReactNode; signOut: ReactNode;
+  onProfileSave: (profile: SettingsProfile) => void;
 }) {
   const t = useT(messages);
+  const v6t = useT(v6Messages);
   const captain = useCaptainContext();
-  const timezone = useTimezone();
-  const { now } = useCalendarClock();
-  const days = now && captain.data ? Math.max(0, daysBetween(localDate(now, timezone), captain.data.accessUntil)) : null;
-  return <main className="mx-auto max-w-lg space-y-3">
-    <h1 className="mb-4 font-display text-2xl font-semibold">{t('title')}</h1>
-    {profile ? <details className="group glass rounded-card border border-line-soft p-5">
-      <summary className="flex min-h-12 cursor-pointer items-center gap-3">
-        <span className="glass grid size-[52px] shrink-0 place-items-center rounded-full border border-line-soft text-lg">{profile?.full_name.slice(0, 1)}</span>
-        <span><span className="block">{profile?.full_name}</span>
-          {captain.data && days !== null && <span className="mt-1 block text-xs text-faint">{t('coach', { name: captain.data.fullName, n: days })}</span>}</span>
-      <ChevronDown aria-hidden className="ms-auto size-4 shrink-0 transition-transform group-open:rotate-180" /></summary><div className="mt-4">{profileForm}</div>
-    </details> : profileForm}
-    {profile && <PlayerPreferences units={profile.units ?? 'metric'} />}
-    <section className="glass divide-y divide-line-soft rounded-card border border-line-soft">
-      <div className="flex min-h-16 items-center gap-3 px-5 py-3"><Bell aria-hidden className="size-5 text-muted" />
-        <div><p>{t('reminder')}</p><p className="mt-1 text-xs text-faint">{t('reminderInfo')}</p></div></div>
-      <div className="p-3">{install}</div><div className="p-3" aria-label={t('logout')}>{signOut}</div>
+  const { snapshot } = useProgramSnapshot(profile?.id);
+  const writer = useProfileWriter();
+  const current = profile;
+  return <ProfileWriteContext value={writer}><main className="mx-auto -mt-2.5 -ms-0.5 -me-0.5 max-w-lg space-y-3 pb-6">
+    <header className="flex items-center gap-3">
+      <Link href="/player" aria-label={t('back')} className="flex size-12 shrink-0 items-center justify-center rounded-full bg-surface-raised">
+        <ChevronRight aria-hidden className="dir-icon size-5" />
+      </Link><h1 className="font-sans text-[22px] font-black!">{t('title')}</h1>
+    </header>
+    {current ? <>
+      <PlayerIdentity profile={current} captainName={captain.data?.fullName} accessUntil={captain.data?.accessUntil}
+        plan={snapshot?.title} onSave={onProfileSave} />
+      <PlayerStatTiles playerId={current.id} snapshot={snapshot} />
+      <PlayerPreferences units={current.units ?? 'metric'} />
+    </> : profileForm}
+    <section aria-label={t('more')} className="overflow-hidden rounded-[24px] border border-line-soft bg-surface">
+      <details className="group"><summary className="flex min-h-[60px] cursor-pointer items-center px-4 text-sm">{t('more')}</summary>
+        <div className="divide-y divide-line-soft border-t border-line-soft [&>div]:min-h-[60px]">
+          {current && internationalEnabled() && <PlayerPreferences units={current.units ?? 'metric'} styleOnly />}
+          {current && <details><summary className="flex min-h-[60px] cursor-pointer items-center px-4 text-sm">{t('edit')}</summary><div className="p-3">{profileForm}</div></details>}
+          <div className="min-h-[60px] p-3">{install}</div>
+          <div className="divide-y divide-line-soft [&>div]:px-4 [&>div]:py-3 [&>section]:rounded-none [&>section]:border-0 [&>section]:bg-transparent [&>section]:p-4 [&>section]:shadow-none [&>button]:min-h-[60px] [&>button]:rounded-none [&>button]:bg-transparent [&>button]:px-4 [&>button]:py-3 [&>button]:shadow-none">{children}</div>
+          <div className="flex min-h-[60px] items-center gap-3 px-4 py-3"><Sparkles aria-hidden className="size-6 shrink-0 text-lime" />
+            <span><span className="block text-sm">{v6t('ko')}</span><span className="text-xs text-muted">{t('soon')}</span></span></div>
+        </div>
+      </details>
     </section>
-    <section className="glass flex items-center gap-3 rounded-card border border-line-soft p-5">
-      <Sparkles aria-hidden className="size-6 text-lime" /><div><p>{t('ko')}</p><p className="mt-1 text-xs text-faint">{t('soon')}</p></div>
-    </section>
-    <details className="group glass rounded-card border border-line-soft p-5"><summary className="min-h-12 cursor-pointer">{t('more')}</summary><div className="space-y-4">{children}</div></details>
-  </main>;
+    <div aria-label={t('logout')} className="[&_button]:min-h-[52px] [&_button]:w-full [&_button]:rounded-full [&_button]:border-0! [&_button]:bg-transparent! [&_button]:font-sans [&_button]:text-sm [&_button]:font-bold [&_button]:text-muted! [&_button]:shadow-none!">{signOut}</div>
+  </main></ProfileWriteContext>;
 }

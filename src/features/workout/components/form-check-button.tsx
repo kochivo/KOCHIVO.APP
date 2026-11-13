@@ -89,7 +89,7 @@ export function FormCheckButton({ exerciseId, setLogId }: { exerciseId: string; 
           onChange={(event) => setNote(event.target.value)} disabled={busy} />
         {error && <p role="alert" className="text-sm text-danger">{error}</p>}
         <div className="flex flex-wrap gap-2">
-          <Button type="submit" className="min-h-12" disabled={busy}>{busy ? t('saving') : t('sendToCoach')}</Button>
+          <Button type="submit" variant={captainWorkspaceEnabled() ? 'secondary' : 'primary'} className="min-h-12" disabled={busy}>{busy ? t('saving') : t('sendToCoach')}</Button>
           <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} className="min-h-12" disabled={busy}
             onClick={() => { sheet.current?.close(); setSelection(null); }}>{t('continueWorkout')}</Button>
         </div>
