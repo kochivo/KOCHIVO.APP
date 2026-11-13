@@ -171,7 +171,8 @@ it('the 51st workspace in the fixed clock hour fails atomically and old receipts
     where captain_id = (select captain_id from security_private.demo_workspaces limit 1)`);
   await demo(blocked);
   expect(await count('security_private.demo_workspaces')).toBe(51);
-});
+  // Seeds 50 full demo workspaces; shared CI runners need more than the global 20 s.
+}, 90_000);
 
 it('keeps ownership and the rate receipt when the captain is deleted before expiry', async () => {
   const user = (await db.query<{ captain_id: string }>(
