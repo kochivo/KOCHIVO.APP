@@ -9,6 +9,8 @@ import { saveForm } from '../data/save-form';
 import { useAutosave } from '../hooks/use-autosave';
 import { FormBuilder } from './form-builder';
 import { saveDraft } from '../hooks/save-draft';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { V11FormBuilder } from './v11-form-builder';
 
 export function EditorSession({ initial, locale, onBusy, players = 0, scheduleContext }: {
   initial: FormDraft; locale: Locale; onBusy: (busy: boolean) => void; players?: number; scheduleContext?: ScheduleContext;
@@ -27,7 +29,8 @@ export function EditorSession({ initial, locale, onBusy, players = 0, scheduleCo
   }), [locale, router]);
   const autosave = useAutosave(form, save, !initial.creation_key);
   useEffect(() => { onBusy(autosave.status !== 'saved'); }, [autosave.status, onBusy]);
-  return <FormBuilder form={form} locale={locale} status={autosave.status} preview={preview}
+  const Builder = captainWorkspaceEnabled() ? V11FormBuilder : FormBuilder;
+  return <Builder form={form} locale={locale} status={autosave.status} preview={preview}
     onChange={setForm} onPreview={() => setPreview(!preview)} onRetry={autosave.retry}
     onDiscard={() => setForm(saved)} players={players} style={style} scheduleContext={scheduleContext} />;
 }

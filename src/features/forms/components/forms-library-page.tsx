@@ -16,6 +16,12 @@ import { FormsLibraryEntry } from './forms-library-entry';
 import { AssessmentLibraryList } from './assessment-library-list';
 import { AssessmentLibraryMetrics } from './assessment-library-metrics';
 import { TemplateLinkEntry } from './template-link-entry';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { PageBarTitle } from '@/ui/page-bar-title';
+import { PageBarActions } from '@/ui/page-bar-actions';
+import { workspaceMessages } from '../messages';
+import { V11LibraryList } from './v11-library-list';
+import { KoPlus } from '@/ui/icons/ko-plus';
 
 export async function FormsLibraryPage({ captain, client, locale, query, now = new Date() }: {
   captain: string; client: SupabaseClient<AppDatabase>; locale: Locale;
@@ -23,6 +29,7 @@ export async function FormsLibraryPage({ captain, client, locale, query, now = n
   now?: Date;
 }) {
   const style = await getArabicStyle();
+  const workspace = captainWorkspaceEnabled(), w = createT(workspaceMessages, locale, style);
   const m = formCopy(locale, style), t = createT(redesign, locale, style), base = `/${locale}/captain/library/forms`;
   const data = await loadAssessmentLibrary(client, captain, now).catch(() => null);
   if (!data) return <div role="alert" className="glass rounded-card p-5 text-danger">{m.loadError}
@@ -35,7 +42,8 @@ export async function FormsLibraryPage({ captain, client, locale, query, now = n
   if (query.edit && !form) notFound();
   const active = data.forms.filter(f => f.schedule || data.schedules.some(s => s.form_id === f.id && !s.paused_at)).length;
   return <div dir={locale === 'ar' ? 'rtl' : 'ltr'} className="space-y-[18px]">
-    {!form && <header className="flex flex-wrap items-center gap-[14px]">
+    {!form && workspace && <><PageBarTitle title={w('title')} /><PageBarActions><TemplateLinkEntry href={`${base}?template=custom`} primary><KoPlus aria-hidden className="size-4" />{w('newForm')}</TemplateLinkEntry></PageBarActions></>}
+    {!form && !workspace && <header className="flex flex-wrap items-center gap-[14px]">
       <div className="me-auto"><h1 className="font-display text-[30px] font-semibold leading-tight">{m.title}</h1>
         <p className="mt-1 text-[13px] text-muted">{t('subline', { n: active, m: data.waitingReview })}</p></div>
       <TemplateLinkEntry href={`${base}?template=custom`} primary>{m.newForm}</TemplateLinkEntry>
@@ -45,8 +53,8 @@ export async function FormsLibraryPage({ captain, client, locale, query, now = n
     </TemplateLinkEntry>}
     <FormsLibraryEntry key={form?.id ?? 'list'} form={form ?? null} locale={locale} players={data.players.length}
       scheduleContext={{ schedules: data.schedules.filter(s => s.form_id === form?.id), players: data.players, ready: data.forms.some(f => f.id === form?.id) }}>
-      <AssessmentLibraryList data={data} locale={locale} style={style} />
+      {workspace ? <V11LibraryList data={data} locale={locale} style={style} /> : <AssessmentLibraryList data={data} locale={locale} style={style} />}
     </FormsLibraryEntry>
-    {!form && <AssessmentLibraryMetrics data={data} locale={locale} style={style} />}
+    {!form && !workspace && <AssessmentLibraryMetrics data={data} locale={locale} style={style} />}
   </div>;
 }

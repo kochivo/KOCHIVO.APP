@@ -1,5 +1,20 @@
 import { arStd } from './standard/messages';
 
+const workspaceStd = { title: 'النماذج', newForm: 'نموذج جديد', start: 'ابدأ من قالب أو من الصفر', responses: 'الردود', active: 'نشط', stopped: 'متوقف', manual: 'يدوي',
+    save: 'احفظ', back: 'رجوع', add: 'أضف سؤالًا', settings: 'الإعدادات', kind: 'النوع', sends: 'يُرسل', reminder: 'تذكير عند عدم الرد', to: 'إلى', preview: 'كما يراه اللاعب', next: 'التالي', front: 'أمام', side: 'جانب', write: 'اكتب هنا…',
+    number: 'رقم', text: 'كتابة', choice: 'اختيار', scale: 'تقييم 1–10', photos: 'صور', multi: 'اختيارات متعددة', yesno: 'نعم أو لا' } as const;
+
+export const workspaceMessages = {
+  ar: { title: 'الفورمات', newForm: 'فورم جديد', start: 'ابدأ من قالب أو من الصفر', responses: 'الردود', active: 'شغال', stopped: 'متوقف', manual: 'يدوي',
+    save: 'احفظ', back: 'رجوع', add: 'ضيف سؤال', settings: 'الإعدادات', kind: 'النوع', sends: 'بيتبعت', reminder: 'تذكير لو مردش', to: 'لمين', preview: 'زي ما اللاعب هيشوفه', next: 'التالي', front: 'قدام', side: 'جنب', write: 'اكتب هنا…',
+    number: 'رقم', text: 'كتابة', choice: 'اختيار', scale: 'تقييم 1–10', photos: 'صور', multi: 'اختيارات متعددة', yesno: 'أيوه أو لأ' },
+  // Same flag guard as the player dictionaries, so flag-off builds drop these strings.
+  get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? workspaceStd : undefined; },
+  en: { title: 'Forms', newForm: 'New form', start: 'Start from a template or from scratch', responses: 'Responses', active: 'Active', stopped: 'Paused', manual: 'Manual',
+    save: 'Save', back: 'Back', add: 'Add question', settings: 'Settings', kind: 'Type', sends: 'Sent', reminder: 'Remind if unanswered', to: 'For', preview: 'As the player sees it', next: 'Next', front: 'Front', side: 'Side', write: 'Write here…',
+    number: 'Number', text: 'Text', choice: 'Choice', scale: 'Rating 1–10', photos: 'Photos', multi: 'Multiple choice', yesno: 'Yes or no' },
+} as const;
+
 export const messages = {
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
