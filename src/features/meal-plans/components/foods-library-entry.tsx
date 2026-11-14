@@ -14,11 +14,15 @@ import { messages } from './library/messages';
 import { FoodsTable } from './library/foods-table';
 import { Chip } from '@/ui/chip';
 import { LoadingState } from '@/ui/loading-state';
+import { PageBarTitle } from '@/ui/page-bar-title';
+import { PageBarActions } from '@/ui/page-bar-actions';
+import { V11FoodsTable } from './v11-foods-table';
 
 const FoodDrawer = dynamic(() => import('./library/food-drawer').then(module => module.FoodDrawer));
 
 export function FoodsLibraryEntry() {
-  const PlusIcon = captainWorkspaceEnabled() ? KoPlus : Plus;
+  const workspace = captainWorkspaceEnabled();
+  const PlusIcon = workspace ? KoPlus : Plus;
   const t = useT(messages);
   const [query, setQuery] = useState('');
   const [search, setSearch] = useState('');
@@ -31,16 +35,17 @@ export function FoodsLibraryEntry() {
     return result.data;
   }, [search, segment, cursor]);
   const resource = useResource(`foods-library:${JSON.stringify([search, segment, cursor])}`, load);
+  const newButton = <button id="new-library-food" type="button" disabled={selected !== undefined} onClick={() => setSelected(null)}
+    className={`flex min-h-12 items-center gap-2 rounded-full px-5 font-semibold ${selected === undefined ? 'bg-lime text-on-lime' : 'glass text-muted'}`}><PlusIcon aria-hidden className="size-5" />{t('new')}</button>;
   return <section className="grid gap-5">
-    <header className="flex flex-wrap items-center gap-4">
+    {workspace ? <><PageBarTitle title={t('title')} /><PageBarActions>{newButton}</PageBarActions></> : <header className="flex flex-wrap items-center gap-4">
       <div className="me-auto"><h1 className="font-display text-[30px] font-semibold leading-tight">{t('title')}</h1><p className="mt-1 text-sm text-muted">{t('subtitle')}</p></div>
-      <button id="new-library-food" type="button" disabled={selected !== undefined} onClick={() => setSelected(null)}
-        className={`flex min-h-12 items-center gap-2 rounded-full px-5 font-semibold ${selected === undefined ? 'bg-lime text-on-lime' : 'glass text-muted'}`}><PlusIcon aria-hidden className="size-5" />{t('new')}</button>
-    </header>
-    <div className="flex flex-wrap items-center gap-2">{(['all', 'mine', 'global'] as const).map(value => <Chip key={value}
+      {newButton}
+    </header>}
+    <div className="flex flex-wrap items-center gap-2">{(workspace ? ['all', 'mine'] as const : ['all', 'mine', 'global'] as const).map(value => <Chip key={value}
       pressed={segment === value} onClick={() => { setSegment(value); setCursor(null); }}
-      className={segment === value ? '!border-ink !bg-ink !text-bg-deep' : 'bg-transparent text-muted'}>
-      {t(value)} <b className="ms-1 font-display tabular-nums opacity-60">{resource.data?.counts[value] ?? ''}</b>
+      className={segment === value ? workspace ? 'min-h-12 !border-transparent !bg-lime/10 !text-lime' : '!border-ink !bg-ink !text-bg-deep' : 'min-h-12 bg-transparent text-muted'}>
+      {t(value)} {!workspace && <b className="ms-1 font-display tabular-nums opacity-60">{resource.data?.counts[value] ?? ''}</b>}
     </Chip>)}
       <form className="ms-auto flex w-full items-center gap-2 rounded-full border border-line-soft px-3 sm:w-auto" onSubmit={event => {
         event.preventDefault(); setCursor(null); setSearch(query.trim());
@@ -51,7 +56,7 @@ export function FoodsLibraryEntry() {
     </div>
     {(resource.status === 'loading' || resource.status === 'idle') && <div role="status"><span className="sr-only">{t('loading')}</span><LoadingState variant="list" /></div>}
     {Boolean(resource.error) && <div role="alert"><p>{t('error')}</p><Button variant="secondary" type="button" className="min-h-12 text-ink" onClick={() => void resource.retry()}>{t('retry')}</Button></div>}
-    {resource.data && <FoodsTable foods={resource.data.foods} onSelect={setSelected} />}
+    {resource.data && (workspace ? <V11FoodsTable foods={resource.data.foods} onSelect={setSelected} /> : <FoodsTable foods={resource.data.foods} onSelect={setSelected} />)}
     <div className="flex gap-3">
       {cursor && <Button variant="secondary" type="button" className="min-h-12 px-4" onClick={() => setCursor(null)}>{t('first')}</Button>}
       {resource.data?.cursor && <Button variant="secondary" type="button" className="min-h-12 px-4" disabled={resource.status === 'loading'} onClick={() => setCursor(resource.data?.cursor ?? null)}>{t('next')}</Button>}

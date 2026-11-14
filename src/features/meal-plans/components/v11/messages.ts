@@ -1,0 +1,28 @@
+import { defineMessages } from '@/core/i18n/messages';
+
+export const messages = defineMessages({
+  ar: { player: 'اللاعب', choosePlayer: 'اختار لاعب', noPlayers: 'مفيش لاعبين', noPlans: 'لسه مفيش أنظمة. اعمل نظام جديد', close: 'اقفل', plans: 'الأنظمة الغذائية', assign: 'ادّي نظام للاعب', newPlan: 'نظام جديد',
+    newHint: 'حط الهدف والسعرات، وضيف الأكلات', usage: '{n} لاعبين عليه', split: 'يوم تمرين ويوم راحة',
+    save: 'احفظ', back: 'رجوع', training: 'يوم تمرين', rest: 'يوم راحة',
+    target: 'من {n} سعر', remaining: 'فاضل {n}', over: 'زيادة', protein: 'بروتين', carbs: 'كارب', fat: 'دهون',
+    add: 'ضيف أكلة', selected: 'هتتضاف هنا', foods: 'مكتبة الأكلات', open: 'افتحها', search: 'دور على أكلة…',
+    all: 'الكل', mine: 'أكلاتي', newFood: 'أكلة جديدة', food: 'الأكلة', unit: 'الوحدة', kcal: 'سعرات',
+    edit: 'عدّل الأكلة', empty: 'مفيش أكلات بالبحث ده', grams: '{n}ج', calories: '{n} سعر',
+    macros: 'ب {p} · ك {c} · د {f}', loading: 'بنحمّل…', error: 'مش قادرين نحمّل. جرّب تاني', retry: 'جرّب تاني' },
+  get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? { player: 'اللاعب', choosePlayer: 'اختر لاعبًا', noPlayers: 'لا يوجد لاعبون', noPlans: 'لا توجد أنظمة. أنشئ نظامًا جديدًا', close: 'أغلق', plans: 'الأنظمة الغذائية', assign: 'عيّن نظامًا للاعب', newPlan: 'نظام جديد',
+    newHint: 'حدّد الهدف والسعرات، وأضف الأكلات', usage: '{n} لاعبين عليه', split: 'يوم تمرين ويوم راحة',
+    save: 'احفظ', back: 'رجوع', training: 'يوم تمرين', rest: 'يوم راحة',
+    target: 'من {n} سعرة', remaining: 'متبقّي {n}', over: 'زيادة', protein: 'بروتين', carbs: 'كارب', fat: 'دهون',
+    add: 'أضف أكلة', selected: 'ستُضاف هنا', foods: 'مكتبة الأكلات', open: 'افتحها', search: 'ابحث عن أكلة…',
+    all: 'الكل', mine: 'أكلاتي', newFood: 'أكلة جديدة', food: 'الأكلة', unit: 'الوحدة', kcal: 'سعرات',
+    edit: 'عدّل الأكلة', empty: 'لا توجد أكلات بهذا البحث', grams: '{n}ج', calories: '{n} سعرة',
+    macros: 'ب {p} · ك {c} · د {f}', loading: 'جارٍ التحميل…', error: 'تعذّر التحميل. حاول مجددًا', retry: 'حاول مجددًا' } as const : undefined; },
+  en: { player: 'Player', choosePlayer: 'Choose a player', noPlayers: 'No players', noPlans: 'No plans yet. Create a new one', close: 'Close', plans: 'Meal plans', assign: 'Assign a plan', newPlan: 'New plan',
+    newHint: 'Set targets and calories, then add foods', usage: '{n} players', split: 'Training and rest days',
+    save: 'Save', back: 'Back', training: 'Training day', rest: 'Rest day',
+    target: 'Of {n} kcal', remaining: '{n} remaining', over: 'Over target', protein: 'Protein', carbs: 'Carbs', fat: 'Fat',
+    add: 'Add food', selected: 'Adds here', foods: 'Foods library', open: 'Open', search: 'Search foods…',
+    all: 'All', mine: 'My foods', newFood: 'New food', food: 'Food', unit: 'Unit', kcal: 'kcal',
+    edit: 'Edit food', empty: 'No foods match this search', grams: '{n}g', calories: '{n} kcal',
+    macros: 'P {p} · C {c} · F {f}', loading: 'Loading…', error: 'Could not load. Try again', retry: 'Try again' },
+});
