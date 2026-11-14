@@ -2,6 +2,33 @@ import { defineMessages } from '@/core/i18n/messages';
 
 import { arStd } from './standard/messages';
 
+export const foodFormMessages = defineMessages({
+  ar: {
+    title: 'أكلة جديدة', subtitle: 'هتظهر في مكتبتك وفي أنظمة لاعيبتك', cancel: 'إلغاء', save: 'احفظ الأكلة',
+    identity: 'الاسم والصورة', nameAr: 'بالعربي', nameEn: 'بالإنجليزي', nutrition: 'القيم الغذائية', per100: 'لكل 100 جرام',
+    units: 'وحدات القياس', unitsHint: 'عشان اللاعب ميوزنش كل مرة', addUnit: 'ضيف وحدة', emptyUnits: 'ضيف وحدة زي صباع، طبق أو معلقة',
+    unitName: 'اسم الوحدة', unitGrams: 'وزن الوحدة بالجرام', removeUnit: 'امسح الوحدة', preview: 'كده هتظهر في النظام',
+    portion: '{name} ({grams} جرام)', grams100: '100 جرام', ok: 'السعرات مظبوطة', warn: 'الماكروز بتطلع {calculated} سعر، وانت كاتب {kcal}. راجع الأرقام',
+    saved: 'اتحفظت {name} في مكتبتك', kcal: '{value} سعر',
+  },
+  arStd: {
+    title: 'أكلة جديدة', subtitle: 'ستظهر في مكتبتك وفي أنظمة لاعبيك', cancel: 'إلغاء', save: 'احفظ الأكلة',
+    identity: 'الاسم والصورة', nameAr: 'بالعربية', nameEn: 'بالإنجليزية', nutrition: 'القيم الغذائية', per100: 'لكل 100 جرام',
+    units: 'وحدات القياس', unitsHint: 'حتى لا يحتاج اللاعب للوزن كل مرة', addUnit: 'أضف وحدة', emptyUnits: 'أضف وحدة مثل قطعة، طبق أو ملعقة',
+    unitName: 'اسم الوحدة', unitGrams: 'وزن الوحدة بالجرام', removeUnit: 'احذف الوحدة', preview: 'هكذا ستظهر في النظام',
+    portion: '{name} ({grams} جرام)', grams100: '100 جرام', ok: 'السعرات متوافقة', warn: 'الماكروز تعطي {calculated} سعرة، وأنت كتبت {kcal}. راجع الأرقام',
+    saved: 'تم حفظ {name} في مكتبتك', kcal: '{value} سعرة',
+  },
+  en: {
+    title: 'New food', subtitle: 'Available in your library and player plans', cancel: 'Cancel', save: 'Save food',
+    identity: 'Name and photo', nameAr: 'Arabic name', nameEn: 'English name', nutrition: 'Nutrition', per100: 'Per 100 grams',
+    units: 'Household units', unitsHint: 'So players do not need to weigh every portion', addUnit: 'Add unit', emptyUnits: 'Add a unit such as a piece, plate or spoon',
+    unitName: 'Unit name', unitGrams: 'Unit weight in grams', removeUnit: 'Remove unit', preview: 'Preview in plan',
+    portion: '{name} ({grams} g)', grams100: '100 g', ok: 'Calories match', warn: 'Macros give {calculated} kcal; you entered {kcal}. Check the values',
+    saved: 'Saved {name} to your library', kcal: '{value} kcal',
+  },
+});
+
 export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },

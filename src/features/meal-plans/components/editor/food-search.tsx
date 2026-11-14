@@ -1,17 +1,19 @@
 'use client';
 
-import { useCallback, useId, useState } from 'react';
+import { useCallback, useId, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Plus, Search } from 'lucide-react';
 import { useLocale, useT } from '@/core/i18n/client';
 import { useResource } from '@/core/resource';
 import { Button } from '@/ui/button';
 import { LoadingState } from '@/ui/loading-state';
+import { ResponsiveDialog } from '@/ui/responsive-dialog';
 import { searchFoods } from '../../data/foods';
 import type { Food } from '../../types';
 import { messages } from './workspace/messages';
 import { messages as planMessages } from '../../messages';
-const CustomFoodSheet = dynamic(() => import('../custom-food-sheet').then(module => module.CustomFoodSheet));
+const FoodForm = dynamic(() => import('../food-form').then(module => module.FoodForm),
+  { loading: () => <LoadingState variant="detail" /> });
 
 export function FoodSearch({ onPick, meal }: { onPick: (food: Food, grams: number) => void; meal?: string }) {
   const t = useT(messages);
@@ -20,6 +22,7 @@ export function FoodSearch({ onPick, meal }: { onPick: (food: Food, grams: numbe
   const [query, setQuery] = useState('');
   const [creating, setCreating] = useState(false);
   const openerId = useId();
+  const formBusy = useRef(false);
   const term = query.trim();
   const load = useCallback(async () => {
     const result = await searchFoods({ query: term, limit: 20 });
@@ -35,9 +38,13 @@ export function FoodSearch({ onPick, meal }: { onPick: (food: Food, grams: numbe
     </label>
     <Button variant="secondary" id={openerId} type="button" className="min-h-12 text-xs" onClick={() => setCreating(true)}><Plus aria-hidden className="size-4" />{t('createFood')}</Button>
     </div>
-    {creating && <CustomFoodSheet openerId={openerId} initialName={query} onClose={() => setCreating(false)} onSave={(food, grams) => {
-      onPick(food, grams); setCreating(false); setQuery('');
-    }} />}
+    {creating && <ResponsiveDialog modal openerId={openerId} fallbackId={openerId} aria-label={planT('newFood')}
+      onDismiss={() => { if (!formBusy.current) setCreating(false); }}
+      className="sheet fixed inset-0 m-0 h-dvh max-h-none w-full max-w-none overflow-y-auto p-4 text-ink sm:p-6">
+      <FoodForm initialName={query} onCancel={() => setCreating(false)} onBusyChange={busy => { formBusy.current = busy; }} onSaved={(food, grams) => {
+        onPick(food, grams >= 5 && grams <= 2000 ? grams : 100); setCreating(false); setQuery('');
+      }} />
+    </ResponsiveDialog>}
     {term && <div className="px-4 pb-3">
       {resource.status === 'loading' || resource.status === 'idle' ? <LoadingState variant="list" />
         : resource.error ? <div role="alert" className="text-sm text-danger">{planT('searchFailedTryAgain')}<Button variant="secondary" onClick={() => void resource.retry()}>{t('retry')}</Button></div>

@@ -3,3 +3,4 @@ export { PlayerPlans } from './components/player-plans';
 export { messages as mealPlanMessages } from './messages';
 export { NutritionWorkspaceEntry } from './components/nutrition-workspace-entry';
 export { FoodsLibraryEntry } from './components/foods-library-entry';
+export { FoodFormEntry } from './components/food-form-entry';
