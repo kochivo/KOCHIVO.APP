@@ -320,3 +320,11 @@ and Vitest (**437 test files, 3142 tests**). The combined command was
 with the temporary audit-input preload described above. Independent review found
 no remaining important issues. Browser/device QA was not run for this import-only
 change.
+
+## Budget exception — `/c/[slug]` (2026-11-14)
+
+The public coach page measured 199.84 KiB before the captain v11 work and
+199.94 KiB locally after it; the CI build measured just over 200 KiB. The
+growth came from shared code, not the page itself. Owner decision 2026-11-14:
+allow this route up to **205 KiB** in `src/lib/perf-budget.test.ts` so the
+release can ship, and trim the page back under 200 in a follow-up card.
