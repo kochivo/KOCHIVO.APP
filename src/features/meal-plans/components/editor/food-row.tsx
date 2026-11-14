@@ -30,8 +30,8 @@ export function FoodRow({ item, update }: { item: MealItem; update: (change: (dr
   const unitName = unit ? t('unitLabel', { name: locale === 'en' ? unit.name_en : unit.name_ar, grams: formatNumber(unit.grams, locale) }) : t('gramUnit');
   const name = locale === 'en' ? item.food.nameEn || item.food.name : item.food.name;
   const missing = missingNutrition(item.food);
-  return <li data-incomplete={missing} className={`grid grid-cols-[minmax(0,1fr)_150px_48px] items-center gap-2 border-t border-line-soft px-[18px] py-2.5 text-[13px] min-[761px]:grid-cols-[40px_minmax(0,1fr)_minmax(170px,auto)_64px_48px] min-[761px]:gap-3 ${missing ? 'bg-warn/10' : ''}`}>
-    <span className="hidden size-10 overflow-hidden rounded-xl border border-line bg-surface min-[761px]:block">
+  return <li data-incomplete={missing} className={`grid grid-cols-[minmax(6rem,1fr)_minmax(7.5rem,150px)_48px] items-center gap-2 border-t border-line-soft px-[18px] py-2.5 text-[13px] @[36rem]:grid-cols-[40px_minmax(8rem,1fr)_minmax(150px,190px)_64px_48px] @[36rem]:gap-3 ${missing ? 'bg-warn/10' : ''}`}>
+    <span className="hidden size-10 overflow-hidden rounded-xl border border-line bg-surface @[36rem]:block">
       {/* Food storage hosts vary by deployment. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       {item.food.photo && <img src={foodPhotoUrl(item.food.photo)} alt="" width={40} height={40} loading="lazy" className="size-10 object-cover" />}
@@ -57,7 +57,7 @@ export function FoodRow({ item, update }: { item: MealItem; update: (change: (dr
         </select>}
       </span>
     </div>
-    <span className={`hidden font-display font-extrabold tabular-nums min-[761px]:block ${missing ? 'text-warn' : ''}`}>{missing ? t('unknown') : formatNumber(Math.round(macrosFor(item.food, item.grams).kcal), locale)}{!missing && <small className="block text-[11.5px] font-normal text-faint">{t('calorieUnit')}</small>}</span>
+    <span className={`hidden font-display font-extrabold tabular-nums @[36rem]:block ${missing ? 'text-warn' : ''}`}>{missing ? t('unknown') : formatNumber(Math.round(macrosFor(item.food, item.grams).kcal), locale)}{!missing && <small className="block text-[11.5px] font-normal text-faint">{t('calorieUnit')}</small>}</span>
     <IconButton type="button" aria-label={t('remove', { name })} className="border border-danger/40 text-danger! grid min-h-12 min-w-12 place-items-center text-ink" onClick={() => update(draft => removeItem(draft, item.id))}><X aria-hidden className="size-4" /></IconButton>
     {error && <p role="alert" className="col-span-full text-danger">{error}</p>}
     {editing && <CustomFoodSheet food={item.food} openerId={openerId} onClose={() => setEditing(false)} onSave={food => {

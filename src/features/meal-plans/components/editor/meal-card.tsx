@@ -35,7 +35,7 @@ export function MealCard({ meal, update, facts, day, first, last }: {
       <IconButton type="button" aria-label={t('details')} aria-expanded={details} onClick={() => setDetails(!details)} className="grid min-h-12 min-w-12 place-items-center text-ink"><Ellipsis aria-hidden className="size-4" /></IconButton>
     </div>
     {!meal.items.length && <p className="px-[18px] pb-3 text-xs text-faint">{planT('addTheFirstFood')}</p>}
-    <ul>{meal.items.map(item => <FoodRow key={item.id} item={item} update={update} />)}</ul>
+    <ul className="@container">{meal.items.map(item => <FoodRow key={item.id} item={item} update={update} />)}</ul>
     <FoodSearch meal={meal.name} onPick={(food, grams) => update(draft => addItem(draft, meal.id, food, grams, uuidv7(), planT))} />
     {details && <MealEditor meal={meal} update={update} facts={facts} enhanced day={day} first={first} last={last} hideAdd />}
   </section>;

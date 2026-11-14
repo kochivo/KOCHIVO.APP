@@ -33,7 +33,7 @@ it.each(['ar', 'en'] as const)('renders the player editor in %s with one primary
   expect(html).toContain('234');
   expect(html.match(/data-target=/g)).toHaveLength(4);
   expect(html.match(/data-adherence=/g)).toHaveLength(7);
-  expect(html).toContain('grid-cols-[minmax(0,1fr)_150px_48px]');
+  expect(html).toContain('grid-cols-[minmax(6rem,1fr)_minmax(7.5rem,150px)_48px]');
   expect(html).toContain('type="search"');
   expect(html).toContain('disabled=""');
 });
