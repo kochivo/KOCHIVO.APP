@@ -1,5 +1,5 @@
 import { createT, parseLocale } from '@/core/i18n';
-import { programMessages } from '@/features/programs';
+import { programMessages } from '@/features/programs/server';
 import { ProgramBuilder } from '@/features/programs';
 import { GenerateButton } from '@/features/program-generator';
 import { fetchPlayerProfile } from '@/features/player-profile';

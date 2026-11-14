@@ -1,6 +1,7 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, expect, it, vi } from 'vitest';
+vi.mock('server-only', () => ({}));
 import Page from '@/app/[locale]/(captain)/captain/programs/[programId]/page';
 import { ProgramBuilder } from '@/features/programs';
 import { ProgramTrainingEntry } from '../server';

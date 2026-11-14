@@ -45,7 +45,7 @@ export async function fetchPlayerProfile(playerId: string): Promise<ProfileResul
         reviewedAt: row.reviewed_at, reply: row.captain_reply,
         bodyFatPct: row.body_fat_pct,
         photoPoses: row.photo_paths.flatMap((path, index) => urls.has(path) ? [row.photo_poses[index] ?? 'photo'] : []),
-        photoError: row.photo_paths.some(path => !urls.has(path)),
+        photoError: row.photo_paths.some(path => !urls.has(path)), photoCount: row.photo_paths.length,
         photos: row.photo_paths.flatMap((path) => urls.get(path) ?? []),
       })),
       program: program.data ? { title: program.data.title, updatedAt: program.data.updated_at, days: program.data.program_days.length,

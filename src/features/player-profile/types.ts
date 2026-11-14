@@ -15,6 +15,7 @@ export interface ProfileIntake {
 }
 
 export interface ProfileCheckIn {
+  photoCount?: number;
   id: string;
   weekStart: string;
   weightKg: number | null;

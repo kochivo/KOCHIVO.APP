@@ -1,6 +1,7 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, expect, it, vi } from 'vitest';
+vi.mock('server-only', () => ({}));
 import PlayerProgramsPage from '@/app/[locale]/(captain)/captain/players/[playerId]/programs/page';
 import { ProgramBuilder } from '@/features/programs';
 import { GenerateButton } from '@/features/program-generator';

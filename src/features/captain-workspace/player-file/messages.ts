@@ -6,8 +6,8 @@ export const messages = defineMessages({
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
     chat: 'الشات', chatCount: 'الشات · {count}',
-    players: 'اللاعبين', breadcrumb: 'اللاعبين ‹', tabs: 'ملف اللاعب', overview: 'نظرة عامة', training: 'التمرين',
-    nutrition: 'الأكل', assessments: 'التقييمات', checkins: 'المتابعات', active: 'نشط', renew: 'جدّد', preview: 'شوف كلاعب',
+    players: 'اللاعبين', breadcrumb: 'اللاعبين ‹', tabs: 'ملف اللاعب', overview: 'نظرة عامة', training: 'البرنامج',
+    nutrition: 'الأكل', assessments: 'التقييمات', checkins: 'المتابعات الأسبوعية', active: 'نشط', renew: 'جدّد', preview: 'شوف زي اللاعب',
     days: 'باقي {count} يوم', facts: 'بياناته', progress: 'التطور', goal: 'الهدف', body: 'الوزن · الطول · السن',
     experience: 'الخبرة', trainingDays: 'أيام التمرين', health: 'إصابات · حالات طبية · حساسية',
     weight: 'الوزن', adherence: 'الالتزام', thisWeek: 'الأسبوع ده', kg: 'كجم', targetRemaining: '{count} كجم للهدف',

@@ -1,0 +1,34 @@
+import { defineMessages } from '@/core/i18n/messages';
+
+export const v11Messages = defineMessages({
+  ar: {
+    adherence: 'التزام التمرين', adherenceText: '{done} من {planned} الأسبوع ده', lastRpe: 'آخر RPE {value}',
+    foodToday: 'أكل النهارده', measurements: 'القياسات', weight: 'الوزن', bodyFat: 'نسبة الدهون', squat: 'سكوات أقصى',
+    photos: 'صور المتابعة', all: 'كلها', lastWorkout: 'آخر تمرين', noWorkout: 'مفيش تمرين لسه',
+    protein: 'بروتين', carbs: 'كارب', fat: 'دهون', calories: 'من {target} سعر النهارده',
+    message: 'رسالة', back: 'رجوع', archive: 'أرشف اللاعب', more: 'خيارات اللاعب',
+    open: 'افتح', photoCount: '{count} صور', new: 'جديدة', noMeasurements: 'مفيش قياسات لسه',
+    logged: 'اتسجل', notYet: 'لسه', changePlan: 'غيّر النظام', changeProgram: 'غيّر البرنامج', edit: 'عدّل',
+    rest: 'راحة {seconds} ثانية', newAssessment: 'تقييم جديد', close: 'اقفل',
+  },
+  arStd: {
+    adherence: 'الالتزام بالتمرين', adherenceText: '{done} من {planned} هذا الأسبوع', lastRpe: 'آخر RPE {value}',
+    foodToday: 'طعام اليوم', measurements: 'القياسات', weight: 'الوزن', bodyFat: 'نسبة الدهون', squat: 'أفضل سكوات',
+    photos: 'صور المتابعة', all: 'الكل', lastWorkout: 'آخر تمرين', noWorkout: 'لا توجد تمارين بعد',
+    protein: 'بروتين', carbs: 'كربوهيدرات', fat: 'دهون', calories: 'من {target} سعرة اليوم',
+    message: 'رسالة', back: 'رجوع', archive: 'أرشف اللاعب', more: 'خيارات اللاعب',
+    open: 'افتح', photoCount: '{count} صور', new: 'جديدة', noMeasurements: 'لا توجد قياسات بعد',
+    logged: 'تم التسجيل', notYet: 'لم يُسجّل بعد', changePlan: 'غيّر النظام', changeProgram: 'غيّر البرنامج', edit: 'عدّل',
+    rest: 'راحة {seconds} ثانية', newAssessment: 'تقييم جديد', close: 'إغلاق',
+  },
+  en: {
+    adherence: 'Training adherence', adherenceText: '{done} of {planned} this week', lastRpe: 'Last RPE {value}',
+    foodToday: 'Today’s food', measurements: 'Measurements', weight: 'Weight', bodyFat: 'Body fat', squat: 'Best squat',
+    photos: 'Check-in photos', all: 'All', lastWorkout: 'Last workout', noWorkout: 'No workouts yet',
+    protein: 'Protein', carbs: 'Carbs', fat: 'Fat', calories: 'of {target} kcal today',
+    message: 'Message', back: 'Back', archive: 'Archive player', more: 'Player options',
+    open: 'Open', photoCount: '{count} photos', new: 'New', noMeasurements: 'No measurements yet',
+    logged: 'Logged', notYet: 'Not yet', changePlan: 'Change plan', changeProgram: 'Change program', edit: 'Edit',
+    rest: 'Rest {seconds} seconds', newAssessment: 'New assessment', close: 'Close',
+  },
+});

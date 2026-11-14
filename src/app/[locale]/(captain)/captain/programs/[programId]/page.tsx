@@ -1,5 +1,5 @@
 import { createT, parseLocale } from '@/core/i18n';
-import { programMessages } from '@/features/programs';
+import { programMessages } from '@/features/programs/server';
 import { ProgramBuilder } from '@/features/programs';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { ProgramTrainingEntry } from '@/features/captain-workspace/server';

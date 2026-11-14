@@ -6,12 +6,16 @@ import { StatusCards } from './status-cards';
 import { FileHeader } from './file-header';
 import { ProgressSummary } from './progress-summary';
 import type { FileSummary, Profile } from './types';
+import type { ReactNode } from 'react';
 
 vi.mock('server-only', () => ({}));
-vi.mock('@/features/roster', async () => {
+vi.mock('@/ui/page-bar-title', () => ({ PageBarTitle: ({ title, subtitle }: { title: string; subtitle: string }) => createElement('h1', null, title, subtitle) }));
+vi.mock('@/ui/page-bar-actions', () => ({ PageBarActions: ({ children }: { children: ReactNode }) => children }));
+vi.mock('./archive-menu', () => ({ ArchiveMenu: () => null }));
+vi.mock('@/features/roster/server', async () => {
   const { lastSeenLabel, playerStatus } = await import('@/features/roster/status');
   const { messages } = await import('@/features/roster/messages');
-  return { lastSeenLabel, playerStatus, rosterMessages: messages };
+  return { lastSeenLabel, playerStatus, rosterMessages: messages, archivePlayer: vi.fn() };
 });
 vi.mock('next/dynamic', () => ({ default: () => () => null }));
 const profile: Profile = { name: 'Ali', intake: null, checkIns: [], program: null, nutrition: null };
@@ -20,12 +24,12 @@ const summary: FileSummary = { file: { facts: {}, history: [] }, completedDays: 
 const input = { playerId: 'p', profile, summary, locale: 'ar' as const, today: '2026-11-12' };
 const render = (element: React.ReactElement) => renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' }, element));
 
-it('orders all six real route tabs and renders header renewal and preview', () => {
+it('orders all six real route tabs and renders the player header actions', () => {
   const html = render(createElement(FileHeader, { ...input, tab: 'overview' }));
   const hrefs = [...html.matchAll(/<li><a[^>]*href="([^"]+)"/g)].map(match => match[1]);
-  expect(hrefs).toEqual(['/captain/players/p', '/captain/players/p/programs', '/captain/players/p/nutrition', '/captain/players/p/assessments', '/captain/players/p/chat', '/captain/players/p/checkins']);
+  expect(hrefs).toEqual(['/captain/players/p', '/captain/players/p/programs', '/captain/players/p/nutrition', '/captain/players/p/checkins', '/captain/players/p/assessments', '/captain/players/p/chat']);
   expect(html.match(/aria-current="page"/g)).toHaveLength(1);
-  expect(html).toContain('جدّد'); expect(html).toContain('باقي 29 يوم');
+  expect(html).toContain('رسالة'); expect(html).toContain('باقي 29 يوم');
   expect(html).toContain('href="/captain/players/p/preview"');
 });
 it('shows the unread count only when positive on the chat tab', () => {
