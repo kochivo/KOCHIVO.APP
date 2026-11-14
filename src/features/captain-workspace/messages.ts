@@ -2,6 +2,27 @@ import { defineMessages } from '@/core/i18n/messages';
 
 import { arStd } from './standard/messages';
 
+export const exerciseDetailMessages = defineMessages({
+  ar: { muscles: 'العضلات', primary: 'الأساسية', secondary: 'المساعدة', tool: 'الأداة',
+    video: 'فيديو يوتيوب بتاعك', back: 'رجوع', add: 'ضيفه لبرنامج',
+    choose: 'اختار البرنامج واليوم', program: 'البرنامج', day: 'اليوم',
+    empty: 'لسه مفيش برامج', noDays: 'لسه مفيش أيام تمرين', saved: 'اتضاف التمرين',
+    loading: 'بنحمّل البرامج', error: 'مش قادرين نحمّل البرامج. جرّب تاني.',
+    saving: 'بنضيف التمرين', saveError: 'الإضافة متعملتش. جرّب تاني.', cancel: 'إلغاء', retry: 'جرّب تاني' },
+  arStd: { muscles: 'العضلات', primary: 'الأساسية', secondary: 'المساعدة', tool: 'الأداة',
+    video: 'فيديو يوتيوب الخاص بك', back: 'رجوع', add: 'أضفه لبرنامج',
+    choose: 'اختر البرنامج واليوم', program: 'البرنامج', day: 'اليوم',
+    empty: 'لا توجد برامج بعد', noDays: 'لا توجد أيام تمرين بعد', saved: 'أُضيف التمرين',
+    loading: 'جارٍ تحميل البرامج', error: 'تعذّر تحميل البرامج. حاول مجددًا.',
+    saving: 'جارٍ إضافة التمرين', saveError: 'تعذّرت الإضافة. حاول مجددًا.', cancel: 'إلغاء', retry: 'حاول مجددًا' },
+  en: { muscles: 'Muscles', primary: 'Primary', secondary: 'Secondary', tool: 'Equipment',
+    video: 'Your YouTube video', back: 'Back', add: 'Add to program',
+    choose: 'Choose a program and day', program: 'Program', day: 'Day',
+    empty: 'No programs yet', noDays: 'No training days yet', saved: 'Exercise added',
+    loading: 'Loading programs', error: 'Could not load programs. Try again.',
+    saving: 'Adding exercise', saveError: 'Could not add exercise. Try again.', cancel: 'Cancel', retry: 'Try again' },
+});
+
 export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },

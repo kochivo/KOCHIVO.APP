@@ -65,7 +65,7 @@ it('falls back to English instructions and offers editing only for owned rows', 
       onClose: () => {},
     }));
     expect(html).toContain('Keep your back straight.');
-    expect(html).toContain('glutes');
+    expect(html).toContain('مؤخرة');
     expect(html.includes('/captain/library/exercises/exercise/edit')).toBe(own);
   }
 });

@@ -3,8 +3,15 @@ import { arStd } from './standard/messages';
 
 export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
-  get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
+  get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? { ...arStd,
+    workspaceUnset: 'غير مسجل', workspaceEdit: 'تعديل',
+    workspacePage: 'صفحتك', workspaceView: 'شاهدها', workspaceCopy: 'انسخ', workspaceCaptain: 'كابتن {name}',
+    workspaceBio: 'النبذة', workspaceLanguageTime: 'اللغة والوقت', workspaceAutomatic: '(تلقائي)',
+  } as const : undefined; },
   ar: {
+    workspaceUnset: 'مش متسجل', workspaceEdit: 'عدّل',
+    workspacePage: 'صفحتك', workspaceView: 'شوفها', workspaceCopy: 'انسخ', workspaceCaptain: 'كابتن {name}',
+    workspaceBio: 'النبذة', workspaceLanguageTime: 'اللغة والوقت', workspaceAutomatic: '(تلقائي)',
     automaticTimezone: 'تلقائي',
     myProfile: 'بروفايلي', backToPlayer: 'رجوع للرئيسية', loadingPhoto: 'بنحمّل الصورة...',
     optionalWhatsapp: 'اختياري، بالصيغة الدولية زي +201012345678',
@@ -78,6 +85,9 @@ export const messages = defineMessages({
     couldnTDownloadYourDataTry: "مش قادرين ننزّل بياناتك. جرّب تاني",
   },
   en: {
+    workspaceUnset: 'Not recorded', workspaceEdit: 'Edit',
+    workspacePage: 'Your page', workspaceView: 'View', workspaceCopy: 'Copy', workspaceCaptain: 'Captain {name}',
+    workspaceBio: 'Bio', workspaceLanguageTime: 'Language and time', workspaceAutomatic: '(automatic)',
     automaticTimezone: 'Automatic',
     myProfile: 'My profile', backToPlayer: 'Back home', loadingPhoto: 'Loading photo...',
     optionalWhatsapp: 'Optional. International format, like +201012345678',

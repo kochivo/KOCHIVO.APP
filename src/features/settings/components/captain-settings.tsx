@@ -7,6 +7,7 @@ import { useResource } from '@/core/resource';
 import { Button } from '@/ui/button';
 import { ErrorState } from '@/ui/error-state';
 import { LoadingState } from '@/ui/loading-state';
+import { PageBarTitle } from '@/ui/page-bar-title';
 import { demoExpiry, useDemoExpiry } from '@/features/demo';
 import { SubscriptionEntry } from '@/features/billing';
 import { messages as legacyMessages } from '../messages';
@@ -17,6 +18,8 @@ import type { SettingsProfile } from '../schema';
 import { WorkspaceFact } from './workspace-fact';
 import { WorkspaceSheet } from './workspace-sheet';
 import { WorkspacePreferences } from './workspace-preferences';
+import { WorkspacePageCard } from './workspace-page-card';
+import { WorkspaceLanguageCard } from './workspace-language-card';
 
 const Profile = dynamic(() => import('./captain-profile-card').then(m => m.CaptainProfileCard), { loading: () => <LoadingState variant="detail" /> });
 const Invite = dynamic(() => import('./invite-message-form').then(m => m.InviteMessageForm));
@@ -35,22 +38,22 @@ export function CaptainSettings({ signOut }: { signOut?: ReactNode }) {
   const profile = resource.data;
   const setEdited = (next: SettingsProfile) => { void resource.mutate(() => next, async () => {}); };
   return <section className="space-y-[18px]">
-    <h1 id="settings-heading" tabIndex={-1} className="font-display text-[30px] font-semibold leading-tight">{legacy('settings')}</h1>
+    <PageBarTitle title={legacy('settings')} />
     {!profile ? resource.error ? <ErrorState message={legacy('couldnTLoadSettings')} retryLabel={t('retry')} onRetry={() => void resource.retry()} />
       : <LoadingState variant="detail" /> : <>
-      <div className="grid items-start gap-3.5 min-[1001px]:grid-cols-2">
-        <section className={card}><h2 className={heading}>{t('profile')}</h2>
-          <div><WorkspaceFact label={t('name')}>{profile.full_name}</WorkspaceFact>
-            <WorkspaceFact label={t('page')}><span dir="ltr" className="break-all font-display">{profile.public_slug ? legacy('publicPreview', { slug: profile.public_slug }) : t('unset')}</span></WorkspaceFact>
-            <WorkspaceFact label={t('whatsapp')}><span dir="ltr" className="font-display">{profile.social?.whatsapp?.replace('https://wa.me/', '+') || profile.phone || t('unset')}</span></WorkspaceFact></div>
-          <Button variant="secondary" className="mt-3 min-h-12 rounded-full" onClick={() => setPanel('profile')}>{t('edit')}</Button>
-        </section>
+      <div className="grid items-start gap-3 min-[760px]:grid-cols-2">
+        <WorkspacePageCard profile={profile} edit={() => setPanel('profile')} />
+        <WorkspaceLanguageCard profile={profile} />
+      </div>
+      <div className="grid items-start gap-3.5 min-[760px]:grid-cols-2">
         <WorkspacePreferences profile={profile} update={setEdited} />
         <SubscriptionEntry />
         <PublicPage profile={profile} onSave={setEdited} />
-        <section className={card}><h2 className={heading}>{t('invite')}</h2><p className="text-[13px] leading-[1.9] text-muted">{profile.invite_message || t('invitePreview')}</p>
+        <section className={card}><h2 className={heading}>{t('invite')}</h2><p className="text-[13px] leading-[1.9] text-muted">{profile.invite_message || t('unset')}</p>
           <Button variant="secondary" className="mt-3 min-h-12 rounded-full" onClick={() => setPanel('invite')}>{t('editInvite')}</Button></section>
         <section className={card}><h2 className={heading}>{t('account')}</h2><div>
+          <WorkspaceFact label={t('profile')}><Button variant="secondary" className="min-h-12 rounded-full" onClick={() => setPanel('profile')}>{t('edit')}</Button></WorkspaceFact>
+          <WorkspaceFact label={t('whatsapp')}><span dir="ltr">{profile.social?.whatsapp?.replace('https://wa.me/', '+') || profile.phone || t('unset')}</span></WorkspaceFact>
           <WorkspaceFact label={t('download')}><Button variant="secondary" className="min-h-12 rounded-full" onClick={() => setPanel('download')}>{t('downloadAction')}</Button></WorkspaceFact>
           <WorkspaceFact label={t('signOut')}>{signOut}</WorkspaceFact>
           {!demo && !demoExpiry(profile) && <WorkspaceFact label={t('delete')} danger><Button variant="secondary" className="min-h-12 rounded-full text-danger" onClick={() => setPanel('delete')}>{t('deleteAction')}</Button></WorkspaceFact>}
