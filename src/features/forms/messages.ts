@@ -1,16 +1,25 @@
 import { arStd } from './standard/messages';
 
-const workspaceStd = { title: 'النماذج', newForm: 'نموذج جديد', start: 'ابدأ من قالب أو من الصفر', responses: 'الردود', active: 'نشط', stopped: 'متوقف', manual: 'يدوي',
+const workspaceStd = { title: 'التقييمات', newForm: 'تقييم جديد', start: 'ابدأ من قالب أو من الصفر', responses: 'الردود', active: 'نشط', stopped: 'متوقف', manual: 'يدوي',
+    editSettings: 'عدّل', manualSummary: 'ترسله يدويًا لأي لاعب', scheduledSummary: 'يُرسل {schedule} {audience}', pausedSummary: 'متوقف: {schedule}', allRecipients: 'لكل اللاعبين',
+    scratch: 'من الصفر', scratchDescription: 'أنشئ تقييمًا بأسئلتك', photosTemplate: 'صور التقدم', feedbackTemplate: 'رأي اللاعب',
+    checkin: 'تابع الوزن والنوم والالتزام', onboarding: 'اجمع بيانات اللاعب الأساسية', progress: 'قارن القياسات وصور التقدم', injury: 'تابع الإصابات والألم', update: 'حدّث بيانات اللاعب وأهدافه', photosDescription: 'اجمع صور التقدم وملاحظاته', feedback: 'اعرف رأي اللاعب في البرنامج',
     save: 'احفظ', back: 'رجوع', add: 'أضف سؤالًا', settings: 'الإعدادات', kind: 'النوع', sends: 'يُرسل', reminder: 'تذكير عند عدم الرد', to: 'إلى', preview: 'كما يراه اللاعب', next: 'التالي', front: 'أمام', side: 'جانب', write: 'اكتب هنا…',
     number: 'رقم', text: 'كتابة', choice: 'اختيار', scale: 'تقييم 1–10', photos: 'صور', multi: 'اختيارات متعددة', yesno: 'نعم أو لا' } as const;
 
 export const workspaceMessages = {
-  ar: { title: 'الفورمات', newForm: 'فورم جديد', start: 'ابدأ من قالب أو من الصفر', responses: 'الردود', active: 'شغال', stopped: 'متوقف', manual: 'يدوي',
+  ar: { title: 'التقييمات', newForm: 'تقييم جديد', start: 'ابدأ من قالب أو من الصفر', responses: 'الردود', active: 'شغال', stopped: 'متوقف', manual: 'يدوي',
+    editSettings: 'عدّل', manualSummary: 'بتبعته بإيدك لأي لاعب', scheduledSummary: 'بيتبعت {schedule} {audience}', pausedSummary: 'متوقف: {schedule}', allRecipients: 'لكل اللاعبين',
+    scratch: 'من الصفر', scratchDescription: 'اعمل تقييم بأسئلتك', photosTemplate: 'صور التطور', feedbackTemplate: 'رأي اللاعب',
+    checkin: 'تابع الوزن والنوم والالتزام', onboarding: 'اجمع بيانات اللاعب الأساسية', progress: 'قارن القياسات وصور التطور', injury: 'تابع الإصابات والألم', update: 'حدّث بيانات اللاعب وأهدافه', photosDescription: 'اجمع صور التطور وملاحظاته', feedback: 'اعرف رأي اللاعب في البرنامج',
     save: 'احفظ', back: 'رجوع', add: 'ضيف سؤال', settings: 'الإعدادات', kind: 'النوع', sends: 'بيتبعت', reminder: 'تذكير لو مردش', to: 'لمين', preview: 'زي ما اللاعب هيشوفه', next: 'التالي', front: 'قدام', side: 'جنب', write: 'اكتب هنا…',
     number: 'رقم', text: 'كتابة', choice: 'اختيار', scale: 'تقييم 1–10', photos: 'صور', multi: 'اختيارات متعددة', yesno: 'أيوه أو لأ' },
   // Same flag guard as the player dictionaries, so flag-off builds drop these strings.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? workspaceStd : undefined; },
-  en: { title: 'Forms', newForm: 'New form', start: 'Start from a template or from scratch', responses: 'Responses', active: 'Active', stopped: 'Paused', manual: 'Manual',
+  en: { title: 'Assessments', newForm: 'New assessment', start: 'Start from a template or from scratch', responses: 'Responses', active: 'Active', stopped: 'Paused', manual: 'Manual',
+    editSettings: 'Edit', manualSummary: 'Send manually to any player', scheduledSummary: 'Sent {schedule} {audience}', pausedSummary: 'Paused: {schedule}', allRecipients: 'to all players',
+    scratch: 'From scratch', scratchDescription: 'Create an assessment with your questions', photosTemplate: 'Progress photos', feedbackTemplate: 'Player feedback',
+    checkin: 'Track weight, sleep and adherence', onboarding: 'Collect starting player details', progress: 'Compare measurements and progress photos', injury: 'Follow up on injuries and pain', update: 'Update player details and goals', photosDescription: 'Collect progress photos and notes', feedback: 'Hear what the player thinks of the program',
     save: 'Save', back: 'Back', add: 'Add question', settings: 'Settings', kind: 'Type', sends: 'Sent', reminder: 'Remind if unanswered', to: 'For', preview: 'As the player sees it', next: 'Next', front: 'Front', side: 'Side', write: 'Write here…',
     number: 'Number', text: 'Text', choice: 'Choice', scale: 'Rating 1–10', photos: 'Photos', multi: 'Multiple choice', yesno: 'Yes or no' },
 } as const;
@@ -36,7 +45,7 @@ export const messages = {
     yes: 'أيوه', no: 'لأ', photo: 'صور تطور', unanswered: 'لسه مفيش ردود', close: 'اقفل', pain: 'فيه ألم أو حالة محتاجة متابعة', noIssues: 'مفيش',
     newQuestionAr: 'سؤال جديد', newQuestionEn: 'New question', feedbackQuestion: 'رأيك في البرنامج؟',
     kinds: { checkin: 'المتابعة الأسبوعية', onboarding: 'تقييم البداية', progress: 'قياسات الشهر', injury: 'تقرير إصابة', update: 'تحديث البيانات' },
-    types: { number: 'رقم', scale: 'مقياس من 1 لـ 10', choice: 'اختيار واحد', multi: 'اختيارات متعددة', text: 'نص', photos: 'صور', yesno: 'أيوه أو لأ' },
+    types: { number: 'رقم', scale: 'تقييم 1–10', choice: 'اختيار', multi: 'اختيارات متعددة', text: 'كتابة', photos: 'صور', yesno: 'أيوه أو لأ' },
     facts: { weight: 'الوزن', targetWeight: 'الوزن المستهدف', height: 'الطول', age: 'السن', sex: 'النوع', experience: 'الخبرة', trainingDays: 'أيام التمرين', sessionMinutes: 'مدة التمرين', injuries: 'الإصابات', medical: 'الحالة الصحية', allergies: 'الحساسية', waist: 'مقاس الوسط', note: 'ملاحظات' },
     labels: { weight: 'وزنك الصبح؟', waist: 'مقاس الوسط؟', sleep: 'نومك كان عامل إزاي؟', adherence: 'التزمت بالأكل كام يوم؟', injuries: 'عندك إصابات؟', photos: 'صور التقدم', note: 'عايز تقول للكابتن حاجة؟', height: 'طولك كام؟', age: 'سنك كام؟', targetWeight: 'الوزن اللي عايز توصله؟', sessionMinutes: 'عندك كام دقيقة للتمرين؟', medical: 'حالتك الصحية؟', allergies: 'عندك حساسية من إيه؟' },
     weekdays: ['الحد', 'الاتنين', 'التلات', 'الأربع', 'الخميس', 'الجمعة', 'السبت'],
@@ -59,7 +68,7 @@ export const messages = {
     yes: 'Yes', no: 'No', photo: 'Progress photos', unanswered: 'No responses yet', close: 'Close', pain: 'Pain or a condition to review', noIssues: 'None',
     newQuestionAr: 'سؤال جديد', newQuestionEn: 'New question', feedbackQuestion: 'What do you think of the program?',
     kinds: { checkin: 'Weekly assessment', onboarding: 'Starting assessment', progress: 'Monthly measurements', injury: 'Injury assessment', update: 'Data update' },
-    types: { number: 'Number', scale: 'Scale from 1 to 10', choice: 'Single choice', multi: 'Multiple choice', text: 'Text', photos: 'Photos', yesno: 'Yes or no' },
+    types: { number: 'Number', scale: 'Rating 1–10', choice: 'Choice', multi: 'Multiple choice', text: 'Text', photos: 'Photos', yesno: 'Yes or no' },
     facts: { weight: 'Weight', targetWeight: 'Target weight', height: 'Height', age: 'Age', sex: 'Sex', experience: 'Experience', trainingDays: 'Training days', sessionMinutes: 'Session minutes', injuries: 'Injuries', medical: 'Medical conditions', allergies: 'Allergies', waist: 'Waist', note: 'Notes' },
     labels: { weight: 'Morning weight?', waist: 'Waist measurement?', sleep: 'How was your sleep?', adherence: 'How many days did you follow your meal plan?', injuries: 'Any injuries?', photos: 'Progress photos', note: 'Anything for your captain?', height: 'Your height?', age: 'Your age?', targetWeight: 'Your target weight?', sessionMinutes: 'Minutes available to train?', medical: 'Medical conditions?', allergies: 'Any allergies?' },
     weekdays: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],

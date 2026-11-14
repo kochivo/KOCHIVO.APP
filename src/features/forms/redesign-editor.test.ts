@@ -37,7 +37,7 @@ it('starts collapsed and summarizes units, profile mapping and the stored alert'
   expect(html).toContain('كجم');
   expect(html).toContain('بيتسجل في ملف اللاعب: الوزن');
   expect(questionSummary({ ...q, type: 'scale', maps_to: null, alert_on: { operator: 'lt', value: 6 } }, 'ar'))
-    .toContain('مقياس 1–10 · بينبّهك لو أقل من 6');
+    .toContain('تقييم 1–10 · بينبّهك لو أقل من 6');
 });
 
 it('edits an alert sentence without resetting the threshold and matches its stored rule', () => {

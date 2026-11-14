@@ -2,6 +2,7 @@ import type { DialogHTMLAttributes, ReactElement } from 'react';
 import type * as ReactModule from 'react';
 import { afterEach, expect, it, vi } from 'vitest';
 import { ResponsiveDialog } from './responsive-dialog';
+vi.mock('@/core/i18n/client', () => ({ useT: () => () => 'Close dialog' }));
 
 const lifecycle = vi.hoisted(() => ({
   element: {} as object,

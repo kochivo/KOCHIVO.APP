@@ -16,7 +16,7 @@ export const arStd = {
   yes: 'نعم', no: 'لا', photo: 'صور التقدم', unanswered: 'لا توجد ردود بعد', close: 'أغلق',
   pain: 'يوجد ألم أو حالة تحتاج إلى متابعة', noIssues: 'لا يوجد', newQuestionAr: 'سؤال جديد', newQuestionEn: 'New question', feedbackQuestion: 'ما رأيك في البرنامج؟',
   kinds: { checkin: 'Check-in أسبوعي', onboarding: 'تحديث بيانات البداية', progress: 'متابعة شهرية بالصور', injury: 'تقرير إصابة', update: 'تحديث البيانات' },
-  types: { number: 'رقم', scale: 'مقياس من 1 إلى 10', choice: 'اختيار واحد', multi: 'اختيارات متعددة', text: 'نص', photos: 'صور', yesno: 'نعم أو لا' },
+  types: { number: 'رقم', scale: 'تقييم 1–10', choice: 'اختيار', multi: 'اختيارات متعددة', text: 'كتابة', photos: 'صور', yesno: 'نعم أو لا' },
   facts: {
     weight: 'الوزن', targetWeight: 'الوزن المستهدف', height: 'الطول', age: 'العمر', sex: 'الجنس', experience: 'الخبرة',
     trainingDays: 'أيام التمرين', sessionMinutes: 'مدة التمرين', injuries: 'الإصابات', medical: 'الحالة الصحية',

@@ -2,6 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? {
+    closeDialog: 'أغلق النافذة',
     beginner: 'مبتدئ', champion: 'بطل', elite: 'نخبة', legend: 'أسطورة', crown: 'التاج',
     cardio: 'الكارديو', cardioDuration: '{count} دقيقة', low: 'خفيف', moderate: 'متوسط', high: 'عالٍ',
     unsupportedAudio: 'لا يمكن لجهازك تشغيل هذا الصوت. حدّث iOS', inAppBrowserWarning: 'افتح الرابط في كروم أو سفاري ليعمل تسجيل الدخول',
@@ -14,6 +15,7 @@ export const messages = defineMessages({
     themeCycle: 'مظهر التطبيق: {current}، غيّر إلى {next}',
   } as const : undefined; },
   ar: {
+    closeDialog: 'اقفل النافذة',
     beginner: 'مبتدئ', champion: 'بطل', elite: 'نخبة', legend: 'أسطورة', crown: 'التاج',
     cardio: 'الكارديو', cardioDuration: '{count} دقيقة', low: 'خفيف', moderate: 'متوسط', high: 'عالي',
     unsupportedAudio: 'الصوت ده مش بيشتغل على جهازك، حدّث iOS',
@@ -50,6 +52,7 @@ export const messages = defineMessages({
     themeCycle: "شكل التطبيق: {current}، غيّر لـ{next}",
   },
   en: {
+    closeDialog: 'Close dialog',
     beginner: 'Beginner', champion: 'Champion', elite: 'Elite', legend: 'Legend', crown: 'Crown',
     cardio: 'Cardio', cardioDuration: '{count} minutes', low: 'Low', moderate: 'Moderate', high: 'High',
     unsupportedAudio: 'Your device cannot play this audio. Update iOS.',

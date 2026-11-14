@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ClipboardList } from 'lucide-react';
+import { ChevronLeft, ClipboardList } from 'lucide-react';
 import { KoPlus } from '@/ui/icons/ko-plus';
 import type { ArabicStyle, Locale } from '@/core/i18n/locale';
 import { createT } from '@/core/i18n/messages';
@@ -7,11 +7,12 @@ import { workspaceMessages } from '../messages';
 import { formCopy } from '../form-copy';
 import { assessmentWeekday, recurrenceLabel } from '../assessment-summary';
 import type { AssessmentLibraryData } from '../data/assessment-library';
-import { TemplateLinkEntry } from './template-link-entry';
+import { V11TemplateChooser } from './v11-template-chooser';
+import { questionCount } from '../question-count';
 
 export function V11LibraryList({ data, locale, style }: { data: AssessmentLibraryData; locale: Locale; style?: ArabicStyle }) {
   const t = createT(workspaceMessages, locale, style), m = formCopy(locale, style), base = `/${locale}/captain/library/forms`;
-  return <div className="grid gap-3 min-[761px]:grid-cols-3">
+  return <><div className="grid gap-3 min-[761px]:grid-cols-3">
     {!data.forms.length && <p className="glass rounded-card p-5 text-muted">{m.empty}</p>}
     {data.forms.map(form => {
       const schedules = data.schedules.filter(s => s.form_id === form.id), active = schedules.find(s => !s.paused_at);
@@ -19,16 +20,16 @@ export function V11LibraryList({ data, locale, style }: { data: AssessmentLibrar
         : schedules[0] ? recurrenceLabel(active ?? schedules[0], locale) : t('manual');
       const status = form.schedule || active ? 'active' : schedules.length ? 'stopped' : 'manual';
       const metrics = data.byForm[form.id];
-      return <Link key={form.id} href={`${base}?edit=${form.id}`} prefetch={false} className="glass flex min-h-12 min-w-0 flex-col gap-2 rounded-card border border-line-soft p-4 text-start">
+      return <Link key={form.id} href={`${base}?edit=${form.id}`} prefetch={false} className="glass press flex min-h-12 min-w-0 cursor-pointer flex-col gap-2 rounded-card border border-line-soft p-4 text-start hover:bg-ink/10 focus-visible:ring-2 focus-visible:ring-lime">
         <div className="flex items-center gap-2"><span className="grid size-9 shrink-0 place-items-center rounded-control bg-surface"><ClipboardList aria-hidden className="size-4" /></span>
           <b className="min-w-0 break-words text-sm">{form.title}</b><span className={`ms-auto shrink-0 rounded-full px-2 py-1 text-[11px] ${status === 'active' ? 'bg-lime-soft text-lime' : 'bg-surface text-muted'}`}>{t(status)}</span></div>
-        <small className="text-muted">{form.kind === 'custom' ? t('manual') : m.kinds[form.kind]} · {schedule} · {form.questions.length} {m.questions}</small>
-        <div className="mt-1 flex items-center justify-between text-xs"><span className="text-muted">{t('responses')}</span><b dir="ltr">{metrics?.answered ?? 0}/{metrics?.sent ?? 0}</b></div>
+        <small className="text-muted">{form.kind === 'custom' ? t('manual') : m.kinds[form.kind]} · {schedule} · {questionCount(form.questions.length, locale, style)}</small>
+        <div className="mt-1 flex items-center gap-2 text-xs"><span className="text-muted">{t('responses')}</span><b className="ms-auto" dir="ltr">{metrics?.answered ?? 0}/{metrics?.sent ?? 0}</b><ChevronLeft aria-hidden className="dir-icon size-4" /></div>
       </Link>;
     })}
     <section className="glass flex min-h-32 flex-col items-center justify-center gap-1 rounded-card border border-line-soft p-4">
-      <TemplateLinkEntry href={`${base}?template=custom`}><KoPlus aria-hidden className="size-5 text-lime" /><span className="text-lime">{t('newForm')}</span></TemplateLinkEntry>
+      <button type="button" popoverTarget="assessment-templates" className="glass press flex min-h-12 cursor-pointer items-center gap-2 rounded-full border border-line px-4 hover:bg-ink/10 focus-visible:ring-2 focus-visible:ring-lime"><KoPlus aria-hidden className="size-5" /><span>{t('newForm')}</span></button>
       <small className="text-muted">{t('start')}</small>
     </section>
-  </div>;
+  </div><V11TemplateChooser locale={locale} style={style} /></>;
 }

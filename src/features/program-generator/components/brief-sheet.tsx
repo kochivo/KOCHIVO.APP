@@ -1,6 +1,7 @@
 'use client';
 
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { X } from 'lucide-react';
 import { useLocale, useT } from '@/core/i18n/client';
 import { formatNumber } from '@/lib/format';
 import { Button } from '@/ui/button';
@@ -19,7 +20,14 @@ export function BriefSheet({ brief, playerName, profileWarning = false, onChange
     ? brief.weekdays.filter(value => value !== day) : [...brief.weekdays, day].sort((a, b) => a - b) });
   return <form dir={locale === 'ar' ? 'rtl' : 'ltr'} className="space-y-5"
     onSubmit={event => { event.preventDefault(); if (generatorBriefSchema.safeParse(brief).success) onGenerate(); }}>
-    <h2 id="generator-heading" className="text-2xl font-bold">{t('brief')}</h2>
+    <header className={captainWorkspaceEnabled() ? 'captain-dialog-header flex items-center justify-between gap-4' : undefined}>
+      <h2 id="generator-heading" className="text-2xl font-bold">{t('brief')}</h2>
+      {captainWorkspaceEnabled() && <button type="button" onClick={onClose} aria-label={t('close')}
+        className="press flex min-h-12 min-w-12 cursor-pointer items-center justify-center rounded-control border border-line bg-surface-raised focus-visible:ring-2 focus-visible:ring-lime">
+        <X aria-hidden className="size-5" />
+      </button>}
+    </header>
+    <div className={captainWorkspaceEnabled() ? 'captain-dialog-body space-y-5' : 'space-y-5'}>
     {playerName && <p className="font-bold"><bdi>{playerName}</bdi></p>}
     {profileWarning && <p role="note" className="text-sm text-muted">{t('profileWarning')}</p>}
     <fieldset className="space-y-2"><legend className="mb-2 font-bold">{t('goal')}</legend>
@@ -49,9 +57,10 @@ export function BriefSheet({ brief, playerName, profileWarning = false, onChange
           injuries: brief.injuries.includes(injury) ? brief.injuries.filter(value => value !== injury) : [...brief.injuries, injury] })}>{t(injury)}</Chip>)}
       </div>
     </fieldset>
-    <div className="flex flex-wrap gap-2">
-      <Button className="min-h-12" type="submit" disabled={!generatorBriefSchema.safeParse(brief).success}>{t('generate')}</Button>
-      <Button className="min-h-12" variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} onClick={onClose}>{t('close')}</Button>
     </div>
+    <footer className={captainWorkspaceEnabled() ? 'captain-dialog-footer flex flex-wrap gap-2' : 'flex flex-wrap gap-2'}>
+      <Button className="min-h-12" type="submit" disabled={!generatorBriefSchema.safeParse(brief).success}>{t('generate')}</Button>
+      {!captainWorkspaceEnabled() && <Button className="min-h-12" variant="ghost" onClick={onClose}>{t('close')}</Button>}
+    </footer>
   </form>;
 }

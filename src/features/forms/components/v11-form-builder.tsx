@@ -15,6 +15,7 @@ import { QuestionEditor } from './question-editor';
 import { V11FormSettings } from './v11-form-settings';
 import { V11QuestionPreview } from './v11-question-preview';
 import { questionTypeLabel } from './v11-question-type';
+import { questionCount } from '../question-count';
 
 const icons = { number: Hash, text: Type, choice: List, multi: List, yesno: List, scale: Star, photos: Image };
 
@@ -32,7 +33,7 @@ export function V11FormBuilder({ form, locale, style, status, onChange, onRetry,
     onChange({ ...form, questions: [...form.questions, question] }); setSelected(question.id);
   }
   return <section className="min-w-0">
-    <PageBarTitle title={form.title} subtitle={`${form.questions.length} ${m.questions} · ${t('sends')} ${schedule}`} />
+    <PageBarTitle title={form.title} subtitle={`${questionCount(form.questions.length, locale, style)} · ${t('sends')} ${schedule}`} />
     <PageBarActions><Link href={`/${locale}/captain/library/forms`} prefetch={false} className="flex min-h-12 items-center px-3 text-sm">{t('back')}</Link>
       <button type="button" disabled={status === 'saving' || validateForm(form).length > 0} onClick={onRetry} className="min-h-12 rounded-full bg-lime px-5 text-sm font-semibold text-on-lime disabled:opacity-50">{status === 'saving' ? m.saving : t('save')}</button></PageBarActions>
     {status === 'saveError' && <p role="alert" className="mb-3 text-danger">{m.saveError}<button type="button" className="min-h-12 px-3" onClick={onRetry}>{m.retry}</button>

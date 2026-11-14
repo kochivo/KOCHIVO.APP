@@ -210,6 +210,35 @@ html:not([data-theme='light']) [data-area='captain'] {
   @media (hover: hover) and (pointer: fine) { .primary-surface:hover:not(:disabled) { box-shadow: var(--shadow-lime-glow-hover); } }
 }
 html[data-glass='solid']:not([data-theme='light']) [data-area='captain'] :is(.glass-strong, .glass-featured)::before { content: none; }
+html:not([data-theme='light']) [data-area='captain'] {
+  :is(dialog, [role='dialog'], .sheet) {
+    background: linear-gradient(var(--glass-strong-tint), var(--glass-strong-tint)), var(--color-surface);
+    border: 1px solid var(--glass-strong-border); border-radius: 24px; box-shadow: var(--glass-strong-shadow);
+    scrollbar-width: thin; scrollbar-color: var(--color-line) var(--color-bg-deep);
+    -webkit-backdrop-filter: none; backdrop-filter: none;
+    &::before {
+      content: ''; position: absolute; inset: 0; padding: 1px; border-radius: inherit;
+      background: var(--featured-edge); pointer-events: none;
+      mask: linear-gradient(var(--color-ink) 0 0) content-box, linear-gradient(var(--color-ink) 0 0); mask-composite: exclude;
+    }
+    * { scrollbar-width: thin; scrollbar-color: var(--color-line) var(--color-bg-deep); }
+  }
+  dialog::backdrop { background: color-mix(in srgb, var(--color-bg-deep) 80%, transparent); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
+  .captain-dialog-header, .captain-dialog-footer { position: sticky; z-index: 1; background: var(--color-surface); padding-block: 1rem; }
+  .captain-dialog-header { inset-block-start: 0; border-block-end: 1px solid var(--color-line); }
+  .captain-dialog-footer { inset-block-end: 0; border-block-start: 1px solid var(--color-line); }
+  .captain-dialog-body { overflow-y: auto; max-block-size: 60dvh; padding-block: 1rem; }
+  .captain-chip {
+    position: relative; isolation: isolate; cursor: pointer; border-color: transparent; background: transparent;
+    font-size: 13px; outline-offset: 2px;
+    &::before { content: ''; position: absolute; z-index: -1; inset: 5px 0; border: 1px solid var(--color-line); border-radius: inherit; background: var(--glass-highlight); }
+    &[aria-pressed='true']::before { background: var(--color-lime-soft); border-color: var(--selected-border); }
+    &:focus-visible { outline: 2px solid var(--color-lime); }
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  html:not([data-theme='light']) [data-area='captain'] dialog::backdrop { -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   html:not([data-theme='light']) [data-area='captain'] :is(.glass-strong, .glass-featured)::before { content: none; }
 }

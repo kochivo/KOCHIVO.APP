@@ -2,9 +2,17 @@ import { afterEach, expect, it, vi } from 'vitest';
 import { captainMobileNav, captainNav, captainLinks } from './nav';
 import { createT } from '@/core/i18n/messages';
 import { messages } from './messages';
+import { frameMessages } from './components/captain-frame-messages';
 import { KoHome, KoPlayers, KoFollowup, KoTraining, KoMealPlans, KoFoods, KoForms, KoBilling, KoSettings } from '@/ui/icons';
 
 afterEach(() => vi.unstubAllEnvs());
+it('names assessments consistently in the captain frame and search labels', () => {
+  vi.stubEnv('NEXT_PUBLIC_INTERNATIONAL', '1');
+  for (const style of ['egyptian', 'standard'] as const) {
+    expect(createT(frameMessages, 'ar', style)('forms')).toBe('التقييمات');
+  }
+  expect(createT(frameMessages, 'en')('forms')).toBe('Assessments');
+});
 it('leaves the flag-off navigation unchanged', () => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '0');
   expect(captainNav('/captain').map(item => item.href)).toEqual(captainLinks.map(item => item.href));
