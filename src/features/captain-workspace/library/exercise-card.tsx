@@ -2,7 +2,6 @@
 
 import { useT } from '@/core/i18n/client';
 import { exerciseMediaUrl } from '@/core/storage';
-import { trainingMuscles } from '@/features/programs';
 import type { LibraryExercise } from '@/features/programs';
 import { ExerciseImage } from '@/ui/exercise-image';
 import { messages } from './messages';
@@ -11,8 +10,18 @@ export const muscleTabs = ['all', 'legs', 'chest', 'back', 'shoulders', 'arms', 
 export type MuscleTab = typeof muscleTabs[number];
 export const equipmentChips = ['barbell', 'dumbbell', 'machine', 'cable', 'bodyweight'] as const;
 
+// Same labels as trainingMuscles in programs (a test keeps them equal); a fixed table keeps the
+// programs barrel and its editor UI out of this client bundle.
+const tabBodyParts: Record<Exclude<MuscleTab, 'all'>, string[]> = {
+  legs: ['upper legs', 'lower legs', 'legs', 'leg', 'رجل', 'أرجل'],
+  chest: ['chest', 'صدر'], back: ['back', 'ضهر', 'ظهر'],
+  shoulders: ['shoulders', 'shoulder', 'كتف'],
+  arms: ['upper arms', 'lower arms', 'arms', 'ذراع', 'باي', 'تراي'],
+  abs: ['waist', 'abs', 'core', 'بطن', 'كور'], cardio: ['cardio'],
+};
+
 export function muscleBodyParts(tab: MuscleTab): string[] {
-  return tab === 'all' ? [] : trainingMuscles(tab, [tab]);
+  return tab === 'all' ? [] : [...tabBodyParts[tab]];
 }
 
 export function exerciseTitle(exercise: LibraryExercise): string {

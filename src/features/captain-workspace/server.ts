@@ -4,3 +4,4 @@ export { PlayerFileEntry } from './player-file/file-entry';
 export { TrainingEntry } from './training/training-entry';
 export { TemplateTrainingEntry } from './training/template-entry';
 export { ProgramTrainingEntry } from './training/program-entry';
+export { WorkspaceEntry } from './components/workspace-entry';

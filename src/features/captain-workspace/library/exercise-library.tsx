@@ -1,11 +1,11 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { Search } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { useT } from '@/core/i18n/client';
 import { useResource } from '@/core/resource';
-import { searchExercises } from '@/features/programs';
 import type { LibraryExercise } from '@/features/programs';
 import { Button } from '@/ui/button';
 import { Chip } from '@/ui/chip';
@@ -13,13 +13,16 @@ import { KoPlus } from '@/ui/icons/ko-plus';
 import { LoadingState } from '@/ui/loading-state';
 import { ExerciseCard, equipmentChips, muscleBodyParts, muscleTabs } from './exercise-card';
 import type { MuscleTab } from './exercise-card';
-import { ExerciseDetail } from './exercise-detail';
+import { searchLibraryExercises } from './data/search';
 import { messages } from './messages';
+
+// The detail sheet opens only on tap, so it stays out of the first load.
+const ExerciseDetail = dynamic(() => import('./exercise-detail').then(module => module.ExerciseDetail));
 
 type Filters = { query: string; muscle: MuscleTab; equipment: typeof equipmentChips[number] | ''; mine: boolean; page: number };
 const initialFilters: Filters = { query: '', muscle: 'all', equipment: '', mine: false, page: 0 };
 
-export function exerciseSearchOptions(filters: Filters): Parameters<typeof searchExercises>[0] {
+export function exerciseSearchOptions(filters: Filters): Parameters<typeof searchLibraryExercises>[0] {
   const equipment = filters.equipment === 'machine' ? ['machine', 'leverage machine', 'smith machine', 'sled machine'] :
     filters.equipment === 'bodyweight' ? ['bodyweight', 'body weight'] : filters.equipment ? [filters.equipment] : [];
   return { query: filters.query, bodyPart: '', bodyParts: muscleBodyParts(filters.muscle), equipment,
@@ -37,7 +40,7 @@ export function ExerciseLibrary() {
   const [selected, setSelected] = useState<LibraryExercise | null>(null);
   const { query: search, muscle, equipment, mine, page } = filters;
   const load = useCallback(async () => {
-    const result = await searchExercises(exerciseSearchOptions({ query: search, muscle, equipment, mine, page }));
+    const result = await searchLibraryExercises(exerciseSearchOptions({ query: search, muscle, equipment, mine, page }));
     if (result.error || !result.data) throw new Error(t('error'));
     return { data: result.data, total: result.total ?? 0 };
   }, [search, muscle, equipment, mine, page, t]);

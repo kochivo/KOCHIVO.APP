@@ -126,3 +126,10 @@ it('loads the first bounded page through the public search API and keeps failure
   mocks.search.mockResolvedValueOnce({ error: 'private' });
   await expect(load()).rejects.toThrow('مش قادرين نحمّل التمارين');
 });
+
+it('keeps the fixed muscle table equal to the programs mapping', async () => {
+  const { trainingMuscles } = await import('@/features/programs');
+  for (const tab of ['legs', 'chest', 'back', 'shoulders', 'arms', 'abs', 'cardio'] as const) {
+    expect(muscleBodyParts(tab)).toEqual(trainingMuscles(tab, [tab]));
+  }
+});
