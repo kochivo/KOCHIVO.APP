@@ -170,7 +170,10 @@ it('refreshes Cairo today on visible resume and focus, then removes its listener
   }));
   vi.doMock('./hooks/use-wake-lock', () => ({ useWakeLock: () => undefined }));
   vi.doMock('next/navigation', () => ({ useRouter: () => ({ push: () => undefined }) }));
+  // A faked setTimeout can starve the module loader under a loaded full-suite run, so import on real timers.
+  vi.useRealTimers();
   const { FocusScreen } = await import('./components/focus-screen');
+  vi.useFakeTimers({ now: afterMidnight, toFake: ['Date', 'setTimeout', 'clearTimeout'] });
   const window = new EventTarget();
   const document = Object.assign(new EventTarget(), { visibilityState: 'visible' });
   vi.stubGlobal('window', window);
