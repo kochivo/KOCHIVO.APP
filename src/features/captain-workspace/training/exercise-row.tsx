@@ -5,7 +5,7 @@ import type { CSSProperties, ButtonHTMLAttributes } from 'react';
 import { useT } from '@/core/i18n/client';
 import { exerciseMediaUrl } from '@/core/storage';
 import { ExerciseImage } from '@/ui/exercise-image';
-import type { DraftExercise } from '@/features/programs';
+import type { DraftExercise, LibraryExercise } from '@/features/programs';
 import { exerciseLabel } from '../exercise-label';
 import { messages as workspaceMessages } from '../messages';
 import { messages as trainingMessages } from './messages';
@@ -14,14 +14,17 @@ import { ExerciseFields } from './exercise-fields';
 import { planLabel, uniformPlan } from '@/features/programs';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import dynamic from 'next/dynamic';
+import { InjuryNote } from './injury-note';
+import type { TaggedExercise } from './fit-checks';
 
 const AlternativesSheet = dynamic(() => import('./alternatives-sheet').then(module => module.AlternativesSheet));
 
 export type Patch = Partial<Pick<DraftExercise, 'sets' | 'reps_min' | 'reps_max' | 'rest_seconds' | 'rir' | 'notes' |
   'alternatives' | 'set_plan' | 'alternative_library'>>;
-export function TrainingExerciseRow({ row, onPatch, onRemove, onMove, onLink, first, last, groupStart, dragProps, style }: {
+export function TrainingExerciseRow({ row, onPatch, onRemove, onMove, onLink, first, last, groupStart, dragProps, style, injuries = [], candidates = [], onReplace }: {
   row: DraftExercise; onPatch: (patch: Patch) => void; onRemove: () => void; onMove: (delta: -1 | 1) => void;
   onLink: () => void; first: boolean; last: boolean; groupStart?: boolean; dragProps: ButtonHTMLAttributes<HTMLButtonElement>; style?: CSSProperties;
+  injuries?: readonly string[]; candidates?: readonly TaggedExercise[]; onReplace?: (library: LibraryExercise) => void;
 }) {
   const t = useT(messages), wt = useT(workspaceMessages), tt = useT(trainingMessages), [open, setOpen] = useState(false);
   const [alternativesOpen, setAlternativesOpen] = useState(false);
@@ -42,6 +45,7 @@ export function TrainingExerciseRow({ row, onPatch, onRemove, onMove, onLink, fi
         {open ? <ChevronUp aria-hidden className="size-4 text-faint" /> : <ChevronDown aria-hidden className="size-4 text-faint" />}
       </button>
     </div>
+    {onReplace && <InjuryNote exerciseId={row.exercise_id} injuries={injuries} candidates={candidates} onReplace={onReplace} />}
     {open && <div id={`exercise-${row.id}`} className="space-y-3 px-[18px] pb-[18px] pt-1">
       <ExerciseFields row={row} onPatch={onPatch} />
       <textarea aria-label={t('note')} placeholder={t('note')} value={row.notes ?? ''} maxLength={200} rows={2} className="min-h-12 w-full rounded-control border border-line bg-transparent px-3.5 py-3 text-sm text-ink" onChange={event => onPatch({ notes: event.target.value || null })} />

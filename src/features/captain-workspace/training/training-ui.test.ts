@@ -55,14 +55,14 @@ it.each(['ar', 'en'] as const)('uses the same inline controls with template save
   expect(html).toContain('href="/captain/templates"');
   expect(html.match(/primary-surface/g)).toHaveLength(1);
 });
-it('keeps missing facts explicit and preserves the sourced facts/history panel', () => {
+it('keeps missing intake explicit and hides fit checks', () => {
   const html = renderToStaticMarkup(createElement(TrainingFacts, {
-    profile: { name: 'Ali', intake: null, program: null, nutrition: null, checkIns: [] },
+    profile: { name: 'Ali', intake: null },
     file: { facts: {}, history: [] }, locale: 'en',
+    draft, fatPct: null, candidates: [], today: '2026-11-14',
   }));
-  expect(html).toContain('Not provided');
-  expect(html).toContain('Assessment history');
-  expect(html).toContain('Goal progress');
+  expect(html).toContain('The player has not completed their intake');
+  expect(html).not.toContain('data-fit-check');
   expect(html).not.toContain('0 kg');
 });
 it('renders the all-rest start card with one primary action and an enabled assignment button', () => {

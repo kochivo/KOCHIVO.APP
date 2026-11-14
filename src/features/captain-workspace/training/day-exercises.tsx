@@ -11,8 +11,13 @@ import { messages } from './messages';
 import { messages as editorMessages } from './editor/messages';
 import { linkNext } from './editor-draft';
 import { CustomExercise } from './custom-exercise';
+import { replaceInjuryExercise } from './fit-checks';
+import type { TaggedExercise } from './fit-checks';
 
-export function DayExercises({ day, update }: { day: DraftDay; update: (operation: (draft: ProgramDraft) => ProgramDraft) => void }) {
+export function DayExercises({ day, update, injuries = [], candidates = [] }: {
+  day: DraftDay; update: (operation: (draft: ProgramDraft) => ProgramDraft) => void;
+  injuries?: readonly string[]; candidates?: readonly TaggedExercise[];
+}) {
   const t = useT(messages), pt = useT(programMessages), et = useT(editorMessages);
   const [announcement, setAnnouncement] = useState('');
   const move = (id: string, index: number) => {
@@ -27,6 +32,8 @@ export function DayExercises({ day, update }: { day: DraftDay; update: (operatio
     {!day.exercises.length && <p className="p-5 text-sm text-faint">{t('noExercises')}</p>}
     <p aria-live="polite" aria-atomic="true" className="sr-only">{announcement}</p>
     <ol ref={listRef}>{day.exercises.map((row, index) => <TrainingExerciseRow key={row.id} row={row}
+      injuries={injuries} candidates={candidates}
+      onReplace={library => update(draft => replaceInjuryExercise(draft, day.id, row.id, library))}
       first={index === 0} last={index === day.exercises.length - 1} onLink={() => update(draft => linkNext(draft, day.id, row.id))}
       groupStart={row.superset_group !== null && row.superset_group !== day.exercises[index - 1]?.superset_group}
       dragProps={handleProps(row.id)} style={rowStyle(index)}

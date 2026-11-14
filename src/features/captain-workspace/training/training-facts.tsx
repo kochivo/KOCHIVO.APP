@@ -1,38 +1,89 @@
+'use client';
+
+import Link from 'next/link';
+import { useState } from 'react';
+import { Check, ChevronDown, TriangleAlert } from 'lucide-react';
 import { createT } from '@/core/i18n/messages';
+import { useArabicStyle } from '@/core/i18n/client';
 import type { Locale } from '@/core/i18n/locale';
 import type { PlayerFile } from '@/features/player-file';
-import { FactRow } from '@/ui/fact-row';
+import type { DraftDay, ProgramDraft } from '@/features/programs';
 import { formatNumber } from '@/lib/format';
-import { factValue, optionLabel } from '../components/player-file-format';
-import { PlayerFilePanel } from '../components/player-file-panel';
+import { factValue, optionLabel, weekdays } from '../components/player-file-format';
+import { messages as workspaceMessages } from '../messages';
 import type { Profile } from '../player-file/types';
+import { checkDays, checkMinutes, injuryCount, selectedMinutes } from './fit-checks';
+import type { TrainingContext } from './fit-checks';
 import { messages } from './messages';
 
-export function TrainingFacts({ profile, file, locale }: { profile: Profile; file: PlayerFile; locale: Locale }) {
-  const t = createT(messages, locale);
-  const { facts } = file;
-  const target = facts.targetWeight?.value, initial = profile.intake?.weightKg;
-  const goal = target == null || initial === undefined ? factValue('targetWeight', undefined, locale)
-    : t(target < initial ? 'lose' : target > initial ? 'gain' : 'maintain');
-  const injuries = facts.injuries?.value.filter(value => value !== 'none') ?? [];
-  const n = (value: number | undefined) => value === undefined ? factValue('age', undefined, locale) : formatNumber(value, locale);
-  return <aside className="min-w-0 space-y-3 min-[1001px]:sticky min-[1001px]:top-[75px]">
-    <section className="glass-strong rounded-card border border-line-soft px-5 py-[18px]">
-      <h2 className="mb-2 font-display text-[19px] font-semibold">{t('facts')}</h2>
-      <dl>
-        <FactRow label={t('goal')}>{goal}</FactRow>
-        <FactRow label={t('weight')}><bdi className="font-display font-extrabold">{factValue('weight', facts.weight?.value, locale)}</bdi></FactRow>
-        <FactRow label={t('heightAge')}><bdi className="font-display font-extrabold">{n(facts.height?.value)} · {n(facts.age?.value)}</bdi></FactRow>
-        <FactRow label={t('experience')}>{facts.experience ? optionLabel(facts.experience.value, locale) : factValue('experience', undefined, locale)}</FactRow>
-        <FactRow label={t('trainingDays')}>{factValue('trainingDays', facts.trainingDays?.value, locale)}</FactRow>
-        <FactRow label={t('duration')}><bdi className="font-display font-extrabold">{facts.sessionMinutes ? t('minutes', { n: n(facts.sessionMinutes.value) }) : factValue('sessionMinutes', undefined, locale)}</bdi></FactRow>
-        <FactRow label={t('injuries')}><span className={injuries.length ? 'text-warn' : 'text-faint'}>{factValue('injuries', facts.injuries?.value, locale)}</span></FactRow>
-        <FactRow label={t('location')}>{factValue('note', undefined, locale)}</FactRow>
+export type TrainingPlayerFacts = TrainingContext & { profile: Pick<Profile, 'name' | 'intake'>; file: PlayerFile; today: string };
+type Props = TrainingPlayerFacts & { locale: Locale; draft: ProgramDraft; day?: DraftDay };
+
+export function TrainingFacts({ profile, file, locale, draft, day, fatPct, candidates, today }: Props) {
+  const [expanded, setExpanded] = useState(false);
+  const style = useArabicStyle();
+  const t = createT(messages, locale, style), wt = createT(workspaceMessages, locale, style);
+  if (!draft.player_id) return null;
+  const intake = profile.intake;
+  if (!intake) return <section className="glass-strong rounded-card border border-line-soft p-5">
+    <h2 className="font-display text-lg font-semibold">{profile.name}</h2>
+    <p className="text-sm text-muted">{t('missingIntake')}</p>
+    <Link href={`/captain/players/${draft.player_id}`} className="inline-flex min-h-12 items-center text-sm text-lime">{t('fullFile')}</Link>
+  </section>;
+  const injuries = intake.injuries.filter(value => value !== 'none');
+  const allergies = intake.allergies.filter(value => value !== 'none');
+  const weight = file.facts.weight?.value ?? intake.weightKg;
+  const target = file.facts.targetWeight?.value ?? intake.targetWeightKg;
+  const goal = target === null ? factValue('targetWeight', undefined, locale)
+    : t(target < intake.weightKg ? 'lose' : target > intake.weightKg ? 'gain' : 'maintain');
+  const n = (value: number) => formatNumber(value, locale);
+  const minutes = day ? selectedMinutes(day) : null;
+  const risk = injuryCount(day?.exercises.map(row => candidates.find(item => item.exercise_id === row.exercise_id)?.stress) ?? [], injuries);
+  const count = draft.days.filter(item => !item.is_rest_day).length;
+  const checks = [
+    { key: 'days', ok: checkDays(count, intake.trainingDays), text: t('daysFit', { program: n(count), available: n(intake.trainingDays.length) }) },
+    { key: 'minutes', ok: minutes !== null && checkMinutes(minutes, intake.sessionMinutes), text: minutes === null ? t('unknownEstimate')
+      : t('minutesFit', { estimated: n(minutes), available: n(intake.sessionMinutes) }) },
+    { key: 'injuries', ok: risk === 0, text: risk ? t('injuryFit', { n: n(risk) }) : t('injuryClear') },
+  ];
+  return <section className="glass-strong min-w-0 rounded-card border border-line-soft p-5">
+    <div className="flex flex-wrap items-center gap-3">
+      <div className="min-w-0 flex-1">
+        <h2 className="font-display text-lg font-semibold">{profile.name}</h2>
+        <p className="text-xs text-muted">{factValue('age', Number(today.slice(0, 4)) - intake.birthYear, locale)} · {optionLabel(intake.sex, locale)} · {optionLabel(intake.experience, locale)}</p>
+        <p className="mt-1 text-sm md:hidden"><bdi>{factValue('weight', weight, locale)} → {factValue('targetWeight', target, locale)}</bdi></p>
+      </div>
+      {injuries.map(injury => <span key={injury} className="rounded-full bg-warn/10 px-3 py-1 text-xs text-warn">{optionLabel(injury, locale)}</span>)}
+      <Link href={`/captain/players/${draft.player_id}`} className="inline-flex min-h-12 items-center text-sm text-lime">{t('fullFile')}</Link>
+      <button type="button" aria-expanded={expanded} aria-controls={`player-facts-${draft.id}`} aria-label={t(expanded ? 'collapseFacts' : 'expandFacts')}
+        onClick={() => setExpanded(value => !value)} className="grid min-h-12 min-w-12 place-items-center rounded-full border border-line-soft md:hidden">
+        <ChevronDown aria-hidden className={`size-4 ${expanded ? 'rotate-180' : ''}`} />
+      </button>
+    </div>
+    <div id={`player-facts-${draft.id}`} className={`${expanded ? 'block' : 'hidden'} space-y-4 pt-4 md:block`}>
+      <dl className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        {([
+          ['height', factValue('height', intake.heightCm, locale)], ['weight', factValue('weight', weight, locale)],
+          ['target', factValue('targetWeight', target, locale)], ['bodyFat', fatPct === null ? wt('unavailable') : t('fatValue', { n: n(fatPct) })],
+        ] as const).map(([key, value]) => <div key={key}><dt className="text-xs text-muted">{t(key)}</dt>
+          <dd className="mt-1 font-display text-xl font-extrabold"><bdi>{value}</bdi></dd></div>)}
       </dl>
-    </section>
-    <details className="glass rounded-card border border-line-soft px-5 py-2">
-      <summary className="flex min-h-12 cursor-pointer items-center text-xs text-muted">{t('details')}</summary>
-      <PlayerFilePanel name={profile.name} file={file} locale={locale} initialWeight={initial} timezone={profile.timezone} />
-    </details>
-  </aside>;
+      <p className="text-sm"><span className="text-muted">{t('goal')}</span> · {goal}</p>
+      <div className="flex flex-wrap items-center gap-2 text-xs">
+        <span className="text-muted">{t('trainingDays')}</span>
+        {weekdays.map((key, index) => <span key={key} data-training-day={index} className={`rounded-full border px-2.5 py-1.5 ${intake.trainingDays.includes((index + 6) % 7) ? 'border-lime/30 bg-lime-soft text-lime' : 'border-line-soft text-faint'}`}>{wt(key)}</span>)}
+        <span className="text-muted">{t('duration')} · {t('minutes', { n: n(intake.sessionMinutes) })}</span>
+      </div>
+      <dl className="space-y-2 text-sm">
+        {!injuries.length && <div><dt className="inline text-muted">{t('injuries')}</dt><dd className="ms-2 inline">{t('noInjuries')}</dd></div>}
+        <div><dt className="inline text-muted">{t('allergies')}</dt><dd className="ms-2 inline">{allergies.length ? allergies.map(value => optionLabel(value, locale)).join(' · ') : t('noAllergies')}</dd></div>
+        <div><dt className="text-muted">{t('intakeNotes')}</dt><dd className="whitespace-pre-wrap break-words">{intake.notes || t('noNotes')}</dd></div>
+      </dl>
+      <div aria-live="polite" className="flex flex-wrap gap-2 border-t border-line-soft pt-3">
+        {checks.map(check => <span key={check.key} data-fit-check={check.key} className={`inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-xs ${check.ok ? 'bg-lime-soft text-lime' : 'bg-warn/10 text-warn'}`}>
+          {check.ok ? <Check aria-hidden className="size-3.5" /> : <TriangleAlert aria-hidden className="size-3.5" />}{check.text}
+        </span>)}
+      </div>
+    </div>
+  </section>;
 }

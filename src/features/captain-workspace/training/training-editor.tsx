@@ -2,10 +2,9 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import type { ReactNode } from 'react';
 import { Dumbbell } from 'lucide-react';
 import { Button } from '@/ui/button';
-import { useT } from '@/core/i18n/client';
+import { useLocale, useT } from '@/core/i18n/client';
 import { activateProgram, startTraining, useTrainingAutosave, validateForActivation, programMessages } from '@/features/programs';
 import type { ProgramDraft } from '@/features/programs';
 import { StartChoice } from './start-choice';
@@ -20,14 +19,17 @@ import { EditorHeader } from './editor-header';
 import { AssignmentSheet } from './assignment-sheet';
 import { messages as editorMessages } from './editor/messages';
 import { restDay } from './editor-draft';
+import { TrainingFacts } from './training-facts';
+import type { TrainingPlayerFacts } from './training-facts';
 
-type Props = { programs: { id: string; title: string; status: string }[]; playerName?: string; remainingDays?: number; facts?: ReactNode } & (
+type Props = { programs: { id: string; title: string; status: string }[]; playerName?: string; remainingDays?: number; playerFacts?: TrainingPlayerFacts } & (
   { mode?: 'player'; playerId: string; initial: ProgramDraft | null } |
   { mode: 'template'; playerId?: never; initial: ProgramDraft }
 );
 
-export function TrainingEditor({ playerId, playerName, remainingDays, facts, initial, programs, mode = 'player' }: Props) {
+export function TrainingEditor({ playerId, playerName, remainingDays, playerFacts, initial, programs, mode = 'player' }: Props) {
   const t = useT(messages), pt = useT(programMessages), et = useT(editorMessages);
+  const locale = useLocale();
   const template = mode === 'template';
   const state = useTrainingAutosave(initial);
   const [selected, setSelected] = useState(''), [choosing, setChoosing] = useState(!initial);
@@ -80,23 +82,26 @@ export function TrainingEditor({ playerId, playerName, remainingDays, facts, ini
     {choosing ? <><StartChoice templates={templates} onTemplates={() => setTemplates(value => !value)} onStart={id => void start(id)} busy={pending} />
       {draft && <Button variant="secondary" disabled={pending} className="min-h-12" onClick={() => setChoosing(false)}>{t('cancel')}</Button>}</> :
       draft && <fieldset disabled={pending} className="min-w-0 space-y-3.5">
-        <div className={facts ? 'grid min-w-0 items-start gap-[18px] min-[1400px]:grid-cols-[260px_minmax(0,1fr)]' : ''}>
-          {facts}
-          <div className="grid min-w-0 items-start gap-4 min-[1001px]:grid-cols-[230px_minmax(0,1fr)]">
+          <div className={!template && draft.player_id
+            ? 'min-w-0 space-y-3.5 [&>nav]:static [&>nav]:flex-row [&>nav]:overflow-x-auto'
+            : 'grid min-w-0 items-start gap-4 min-[1001px]:grid-cols-[230px_minmax(0,1fr)]'}>
             <DayRail draft={draft} selectedId={day?.id} onSelect={setSelected} update={update} />
-            <div className="min-w-0 space-y-3.5">{allRest ? <div className="glass-strong space-y-3 rounded-card p-5">
+            <div className="min-w-0 space-y-3.5">
+              {!template && playerFacts && <TrainingFacts {...playerFacts} locale={locale} draft={draft} day={day} />}
+              {allRest ? <div className="glass-strong space-y-3 rounded-card p-5">
               <p className="text-sm text-muted">{et('startHint')}</p>
               <Button disabled={pending} onClick={() => { const first = draft.days[0]; if (first) { update(current => restDay(current, first.id, false)); setSelected(first.id); } }}><Dumbbell aria-hidden className="size-4" />{et('startFirst')}</Button>
             </div> : day ? <>
               <DaySummary day={day} update={update} />
               {day.is_rest_day ? <div className="glass space-y-3 rounded-card border border-dashed border-line-soft p-5 text-faint"><p>{et('rest')}</p><Button variant="secondary" className="min-h-12" onClick={() => update(current => restDay(current, day.id, false))}><Dumbbell aria-hidden className="size-4" />{et('restore')}</Button></div> : <>
                 <WarmupBlock key={`warmup-${day.id}`} day={day} update={update} />
-                <DayExercises key={day.id} day={day} update={update} />
+                <DayExercises key={day.id} day={day} update={update}
+                  injuries={!template && draft.player_id ? playerFacts?.profile.intake?.injuries : undefined}
+                  candidates={!template && draft.player_id ? playerFacts?.candidates : undefined} />
                 <CardioBlock day={day} update={update} />
               </>}
             </> : <p className="glass rounded-card p-5 text-faint">{t('noDays')}</p>}</div>
           </div>
-        </div>
       </fieldset>}
     {template && assigning && draft && <AssignmentSheet programId={draft.id} onClose={() => setAssigning(false)} />}
     {!template && <details className="glass rounded-card border border-line-soft px-5 py-2">
