@@ -339,20 +339,21 @@ KiB and measured 311.3 KiB after it. They may grow to **315 KiB** in
 Measured with a full Turbopack build (fonts served from a local copy of the
 Google Fonts CSS because fonts.googleapis.com was unreachable).
 
-## Budget exception — player program tab (2026-11-14)
+## Bundle bleed fix (2026-11-14)
 
-`/captain/players/[playerId]/programs` holds two views in one route: the v11
-program tab (T-243) and the legacy builder used when the workspace flag is
-off. The bundler counts both. With the player-file header added it measured
-317.0 KiB, so this one route may grow to **320 KiB**. The program editor
-route stays at 315 (measured 308.9).
-
-Found while fixing it: a feature's `server.ts` or `index.ts` re-export pulls
-every client component it can reach into each route that imports it, even
-the ones the route never renders.
-- `src/features/captain-workspace/package.json` sets `"sideEffects": false`
-  so unused re-exports are dropped (tasks 275.9 → 242.7 KiB, templates
-  272.2 → 242.3).
+A feature's `server.ts` or `index.ts` re-export pulled every client component
+it could reach into each route that imported it, even ones the route never
+renders.
+- `src/features/captain-workspace/package.json` and
+  `src/features/notifications/package.json` set `"sideEffects": false` so
+  unused re-exports are dropped. Tasks went from 275.9 to 242.7 KiB and
+  templates from 272.2 to 242.3.
+- The notifications page components no longer add about 5 KiB to every route.
 - Server loaders in other features read nutrition, ranks and program helpers
   through those features' `server.ts` (server-only leaves), not their UI
   barrels.
+- `/captain/players/[playerId]/programs` measured 314.1 KiB, so it keeps the
+  315 limit of the program builder routes.
+
+Before adding a client component to a barrel that layouts or shells import,
+check whether that feature needs the same `sideEffects` flag.
