@@ -8,6 +8,7 @@ export const messages = defineMessages({
     workspaceTitle: 'الترتيب', thisMonth: 'هذا الشهر', allTime: 'كل الوقت',
     bronzeTag: 'BRONZE', silverTag: 'SILVER', goldTag: 'GOLD', platinumTag: 'PLATINUM',
     workoutPoints: '{count} تمرين · {points} نقطة', points: '{points} نقطة',
+    soonTitle: 'الترتيب قريبًا', soonBody: 'نقاط لاعبيك بتتحسب من دلوقتي. أول ما الترتيب يفتح هتلاقي كل حاجة جاهزة هنا.',
   } as const : undefined; },
   ar: {
     workspaceTitle: 'الترتيب', thisMonth: 'الشهر ده', allTime: 'كل الوقت',
@@ -25,6 +26,7 @@ export const messages = defineMessages({
     empty: 'لسه مفيش لاعيبة', emptyBody: 'لما تضيف لاعيبة، ترتيبهم هيظهر هنا.',
     previous: 'الشهر اللي فات', next: 'الشهر اللي جاي',
     error: 'مش قادرين نحمّل الترتيب. جرّب تاني.', retry: 'جرّب تاني',
+    soonTitle: 'الترتيب قريب', soonBody: 'نقط لاعيبتك بتتحسب من دلوقتي. أول ما الترتيب يفتح هتلاقي كل حاجة جاهزة هنا.',
   },
   en: {
     workspaceTitle: 'Ranking', thisMonth: 'This month', allTime: 'All time',
@@ -42,5 +44,6 @@ export const messages = defineMessages({
     empty: 'No players yet', emptyBody: 'Add players to see their ranking here.',
     previous: 'Previous month', next: 'Next month',
     error: 'Could not load the ranking. Try again.', retry: 'Try again',
+    soonTitle: 'Ranking is coming soon', soonBody: 'Your players are already earning points. When ranking opens, everything will be ready here.',
   },
 });
