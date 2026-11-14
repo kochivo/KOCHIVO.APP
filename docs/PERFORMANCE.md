@@ -357,3 +357,11 @@ renders.
 
 Before adding a client component to a barrel that layouts or shells import,
 check whether that feature needs the same `sideEffects` flag.
+
+## Login and welcome ceiling (2026-11-14)
+
+After T-252 (automatic language), `/[locale]/login` and `/[locale]/welcome` measured 199.93 KiB locally and 200.003 KiB in CI. CI measures slightly more because its public env values differ. T-252 removed client code overall, so the extra bytes come from chunk splitting, not from a new feature.
+
+Both routes now have a ceiling of 201 KiB in `src/lib/perf-budget.test.ts`.
+
+Follow-up: trim the public pages back under 200 KiB, then drop this exception and the `/c/[slug]` one. A good place to start is the shared `src/ui/messages.ts` dictionary: it is duplicated into 16 chunks, and the compact language switch needs only four of its strings.
