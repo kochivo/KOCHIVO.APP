@@ -25,7 +25,7 @@ export function endingPlayers(players: RosterPlayer[], now: Date, timezone: stri
     return !player.pending && !player.frozenAt && days >= 0 && days <= 7;
   }).sort((a, b) => a.accessUntil.localeCompare(b.accessUntil) || a.playerId.localeCompare(b.playerId));
 }
-export function homeNeeds(reviews: ReviewRow[], players: RosterPlayer[], now: Date, timezone: string): NeedRow[] {
+export function homeNeeds(reviews: ReviewRow[], players: RosterPlayer[], now: Date, timezone: string, limit = 4): NeedRow[] {
   const absent: AbsentRow[] = players.flatMap(player => {
     const today = localDate(now, player.timezone ?? timezone);
     const days = daysBetween(player.lastTrainingDate ?? player.startedOn, today);
@@ -33,6 +33,7 @@ export function homeNeeds(reviews: ReviewRow[], players: RosterPlayer[], now: Da
       && !reviews.some(row => row.playerId === player.playerId) ? [{ id: player.playerId, playerId: player.playerId,
         name: player.fullName, kind: 'absent' as const, days, lastTrainingDate: player.lastTrainingDate }] : [];
   }).sort((a, b) => b.days - a.days || a.playerId.localeCompare(b.playerId));
+  if (limit !== 4) return [...reviews, ...absent].slice(0, limit);
   return [...reviews.slice(0, absent.length ? 3 : 4), ...absent.slice(0, Math.max(1, 4 - reviews.length))].slice(0, 4);
 }
 export function weekComparison(programs: { playerId: string | null; days: string[] }[], sessions: { playerId: string; dayId: string | null; date: string }[], today: string) {
