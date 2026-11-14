@@ -10,18 +10,21 @@ import { useEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
 import { Button } from '@/ui/button';
 import { TextField } from '@/ui';
+import type { PaymentMethod } from '../payment-methods';
+import { ManualPaymentMethod } from './manual-payment-method';
 
 interface Props {
   name: string;
   due: number;
   onClose: () => void;
-  onSave: (amount: number) => void;
+  onSave: (amount: number, method?: PaymentMethod | null) => void;
   busy?: boolean;
   error?: string;
 }
 
 export function CollectSheet({ name, due, onClose, onSave, busy, error }: Props) {
   const t = useT(messages);
+  const [method, setMethod] = useState<PaymentMethod | null>(null);
   const locale = useLocale();
   const dialog = useRef<HTMLDialogElement>(null);
   const [amount, setAmount] = useState(String(due));
@@ -39,7 +42,8 @@ export function CollectSheet({ name, due, onClose, onSave, busy, error }: Props)
         <h2 id="collect-heading" className="text-2xl font-extrabold">{t('collectTitle', { name })}</h2>
         {captainWorkspaceEnabled() ? <IconButton aria-label={t('closeCollect')} onClick={onClose} className="min-h-12 min-w-12 px-0"><X aria-hidden className="size-5" /></IconButton> : <Button variant="ghost" aria-label={t('closeCollect')} onClick={onClose} className="min-h-12 min-w-12 px-0"><X aria-hidden className="size-5" /></Button>}
       </div>
-      <form className="space-y-5" onSubmit={(event) => { event.preventDefault(); if (valid && !busy) onSave(value); }}>
+      <form className="space-y-5" onSubmit={(event) => { event.preventDefault(); if (valid && !busy) onSave(value, method); }}>
+        <ManualPaymentMethod value={method} onChange={setMethod} />
         {error && <p role="alert" className="text-sm text-danger">{error}</p>}
         <TextField label={t('collectAmount')} type="number" inputMode="numeric" min={1} max={due} step={1} required autoFocus
           value={amount} onChange={(event) => setAmount(event.target.value)}

@@ -9,6 +9,8 @@ import { z } from 'zod';
 import { isPermissionDenied, readError } from '@/core/supabase/errors';
 import { captainClient } from './client';
 import type { ActionResult, Package } from '../types';
+import { paymentMethod } from '../payment-methods';
+import { paymentMethodClient } from './payment-method-client';
 
 const packageInput = z.object({
   name: z.string().trim().min(1).max(60),
@@ -18,7 +20,7 @@ const packageInput = z.object({
   sessions: z.number().int().min(1).max(200).nullable().default(null),
 }).strict();
 const archiveInput = z.object({ id: z.uuid() }).strict();
-const collectInput = z.object({ playerId: z.uuid(), amount: z.number().int().min(1).max(100000) }).strict();
+const collectInput = z.object({ playerId: z.uuid(), amount: z.number().int().min(1).max(100000), method: paymentMethod.nullable().default(null) }).strict();
 
 async function failure(error: unknown, fallback: string): Promise<{ error: string }> {
   unstable_rethrow(error);
@@ -65,7 +67,9 @@ export async function collectPayment(input: unknown): Promise<ActionResult<numbe
   if (!parsed.success) return { error: t('amountHint') };
   try {
     const { client } = await captainClient();
-    const result = await client.rpc('collect_player_payment', { p_player: parsed.data.playerId, p_amount: parsed.data.amount });
+    const result = parsed.data.method ? await paymentMethodClient(client).rpc('collect_payment_with_method', {
+      p_player: parsed.data.playerId, p_amount: parsed.data.amount, p_method: parsed.data.method,
+    }) : await client.rpc('collect_player_payment', { p_player: parsed.data.playerId, p_amount: parsed.data.amount });
     if (result.error) throw result.error;
     revalidatePath('/captain/billing');
     return { data: result.data };

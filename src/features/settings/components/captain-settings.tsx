@@ -22,6 +22,7 @@ import { WorkspacePageCard } from './workspace-page-card';
 import { WorkspaceLanguageCard } from './workspace-language-card';
 
 const Profile = dynamic(() => import('./captain-profile-card').then(m => m.CaptainProfileCard), { loading: () => <LoadingState variant="detail" /> });
+const PaymentMethods = dynamic(() => import('./payment-methods-card').then(m => m.PaymentMethodsCard), { loading: () => <LoadingState variant="detail" /> });
 const Invite = dynamic(() => import('./invite-message-form').then(m => m.InviteMessageForm));
 const Export = dynamic(() => import('./export-card').then(m => m.ExportCard));
 const Delete = dynamic(() => import('./delete-account-card').then(m => m.DeleteAccountCard));
@@ -48,6 +49,7 @@ export function CaptainSettings({ signOut }: { signOut?: ReactNode }) {
       <div className="grid items-start gap-3.5 min-[760px]:grid-cols-2">
         <WorkspacePreferences profile={profile} update={setEdited} />
         <SubscriptionEntry />
+        <PaymentMethods />
         <PublicPage profile={profile} onSave={setEdited} />
         <section className={card}><h2 className={heading}>{t('invite')}</h2><p className="text-[13px] leading-[1.9] text-muted">{profile.invite_message || t('unset')}</p>
           <Button variant="secondary" className="mt-3 min-h-12 rounded-full" onClick={() => setPanel('invite')}>{t('editInvite')}</Button></section>

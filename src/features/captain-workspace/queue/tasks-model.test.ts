@@ -16,8 +16,18 @@ it('classifies all six kinds and orders videos, absence, check-ins, swaps, renew
     player('renew', { accessUntil: '2026-11-21' }), player('program', { programTitle: null })],
   [{ id: 'swap', player_id: 'a', created_at: '2026-11-01T10:00:00Z', from: 'Squat', to: 'Press' }], now, 'Africa/Cairo');
   expect(tasks.map(task => task.id)).toEqual(['video:old', 'video:new', 'absent:absent', 'checkin:check', 'swap:swap', 'renew:renew', 'program:program']);
-  expect(taskCounts(tasks)).toEqual({ all: 7, video: 2, absent: 1, checkin: 1, swap: 1, renew: 1, program: 1 });
+  expect(taskCounts(tasks)).toEqual({ all: 7, video: 2, absent: 1, checkin: 1, swap: 1, renew: 1, program: 1, receipt: 0 });
   expect(filterTasks(tasks, 'video').map(task => task.id)).toEqual(['video:old', 'video:new']);
+});
+it('includes receipts for expired players, supports their filter and keeps them after contact', () => {
+  const tasks = buildTasks([], [player('a', { accessUntil: '2026-10-01' })], [], now, 'Africa/Cairo', [
+    { id: 'receipt-1', player_id: 'a', created_at: '2026-11-13T10:00:00Z' },
+    { id: 'receipt-2', player_id: 'outsider', created_at: '2026-11-12T10:00:00Z' },
+  ]);
+  expect(tasks.map(task => [task.id, task.kind])).toEqual([['receipt:receipt-1', 'receipt']]);
+  expect(taskCounts(tasks).receipt).toBe(1);
+  expect(filterTasks(tasks, 'receipt')).toEqual(tasks);
+  expect(contactedTasks(tasks, { a: '2026-11-14T11:00:00Z' }, 'Africa/Cairo')).toEqual(tasks);
 });
 it('excludes reviewed items, four-day absences, eight-day renewals and inactive roster players', () => {
   const tasks = buildTasks([{ ...video('done', '2026-11-01T10:00:00Z'), reviewed_at: '2026-11-02T10:00:00Z' }], [

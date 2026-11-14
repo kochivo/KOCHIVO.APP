@@ -9,12 +9,14 @@ import { LoadingState } from '@/ui/loading-state';
 import { messages, workspaceMessages } from '../messages';
 import { messages as paymentMessages } from '../payments/messages';
 import type { BillingPlayer, Package } from '../types';
+import { messages as methodMessages } from '../methods/messages';
 
 const Detail = dynamic(() => import('./workspace-player-detail').then(module => module.WorkspacePlayerDetail), { loading: () => <LoadingState variant="detail" /> });
 const Picker = dynamic(() => import('./payment-player-picker').then(module => module.PaymentPlayerPicker), { loading: () => <LoadingState variant="detail" /> });
 export function WorkspacePaymentsTable({ players, packages, today }: { players: BillingPlayer[]; packages: Package[]; today: string }) {
   const t = useT(workspaceMessages), legacy = useT(messages), locale = useLocale(), timezone = useTimezone();
   const payment = useT(paymentMessages);
+  const methodT = useT(methodMessages);
   const [picking, setPicking] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [action, setAction] = useState<'history' | 'activate' | 'collect' | 'renew'>('history');
@@ -25,10 +27,12 @@ export function WorkspacePaymentsTable({ players, packages, today }: { players: 
       {players.length > 0 && <button onClick={() => setPicking(true)} className="glass min-h-12 rounded-full border border-line px-4 text-sm">{payment('record')}</button>}</header>
     {paid.length ? <table className="w-full text-start text-[13px]"><caption className="pb-3 text-start text-xs text-faint">{t('latest')}</caption><thead><tr className="text-xs text-faint">
       <th className="py-3 text-start font-normal">{t('player')}</th><th className="py-3 text-start font-normal">{t('amount')}</th>
+      <th className="py-3 text-start font-normal">{methodT('method')}</th>
       <th className="hidden py-3 text-start font-normal min-[761px]:table-cell">{t('date')}</th><th className="py-3 text-start font-normal">{t('status')}</th>
     </tr></thead><tbody>{paid.map(player => <tr key={player.playerId} className="border-t border-line-soft">
       <td className="py-1 pe-2"><button onClick={() => { setAction('history'); setSelectedId(player.playerId); }} className="min-h-12 text-start">{player.fullName}</button></td>
       <td className="py-3 pe-2 font-display tabular-nums">{player.lastPayment?.amount_egp == null ? legacy('noAmount') : formatNumber(player.lastPayment.amount_egp, locale)}</td>
+      <td className="py-3 pe-2 text-muted">{methodT(player.lastPayment?.method ?? 'unset')}</td>
       <td className="hidden py-3 pe-2 text-muted min-[761px]:table-cell">{player.lastPayment && formatTimestampAr(player.lastPayment.created_at, { day: 'numeric', month: 'long' }, locale, timezone)}</td>
       <td className="py-3"><span className={`inline-flex rounded-full px-2.5 py-1 text-xs ${(player.lastPayment?.amount_egp ?? 0) > 0 ? 'bg-lime-soft text-lime' : 'bg-surface-raised text-muted'}`}>{t((player.lastPayment?.amount_egp ?? 0) > 0 ? 'confirmed' : 'renewalOnly')}</span></td>
     </tr>)}</tbody></table> : <p className="py-3 text-sm text-faint">{legacy('noPayments')}</p>}

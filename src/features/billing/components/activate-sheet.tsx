@@ -10,11 +10,14 @@ import { Chip, Segmented, Stepper, TextField } from '@/ui';
 import { messages } from '../packages/messages';
 import type { Activation } from '../pt-types';
 import type { Package } from '../types';
+import type { PaymentMethod } from '../payment-methods';
+import { ManualPaymentMethod } from './manual-payment-method';
 
 export function ActivateSheet({ packages, busy = false, error, onClose, onSave, selectedPackageId }: {
   packages: Package[]; busy?: boolean; error?: string; onClose: () => void; onSave: (input: Activation) => void; selectedPackageId?: string;
 }) {
   const t = useT(messages);
+  const [method, setMethod] = useState<PaymentMethod | null>(null);
   const dialog = useRef<HTMLDialogElement>(null);
   const selected = packages.find(p => p.id === selectedPackageId);
   const [kind, setKind] = useState<'days' | 'sessions'>(selected?.kind ?? 'days');
@@ -37,7 +40,8 @@ export function ActivateSheet({ packages, busy = false, error, onClose, onSave, 
     className="sheet fixed inset-x-0 bottom-0 top-auto m-0 max-h-[90dvh] w-full max-w-none overflow-y-auto rounded-t-card border border-line p-6 text-ink backdrop:bg-bg-deep/80 sm:inset-0 sm:m-auto sm:max-w-lg sm:rounded-card">
     <header className="flex items-center justify-between gap-3"><h2 id="activate-title" className="text-2xl font-bold">{t('activate')}</h2>
       {captainWorkspaceEnabled() ? <IconButton aria-label={t('close')} disabled={busy} onClick={onClose} className="min-h-12 min-w-12"><X aria-hidden /></IconButton> : <Button variant="ghost" aria-label={t('close')} disabled={busy} onClick={onClose} className="min-h-12 min-w-12"><X aria-hidden /></Button>}</header>
-    <form className="mt-5 space-y-4" onSubmit={event => { event.preventDefault(); if (valid && !busy) onSave({ kind, quantity, packageId, price: Number(price), paid: Number(paid), freeTrial }); }}>
+    <form className="mt-5 space-y-4" onSubmit={event => { event.preventDefault(); if (valid && !busy) onSave({ kind, quantity, packageId, price: Number(price), paid: Number(paid), freeTrial, method }); }}>
+      <ManualPaymentMethod value={method} onChange={setMethod} />
       <label className="block space-y-2"><span>{t('package')}</span><select aria-label={t('package')} value={packageId ?? ''} onChange={event => pick(event.target.value)} className="min-h-12 w-full rounded-control border border-line bg-surface p-3">
         <option value="">{t('custom')}</option>{packages.map(pkg => <option key={pkg.id} value={pkg.id}>{pkg.name}</option>)}</select></label>
       <Segmented aria-label={t('kind')} value={kind} options={[{ value: 'days', label: t('byDays') }, { value: 'sessions', label: t('bySessions') }]}

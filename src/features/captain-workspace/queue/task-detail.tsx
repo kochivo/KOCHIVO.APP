@@ -24,6 +24,8 @@ export function TaskDetail({ task, pending, onBack, onSend }: { task: CaptainTas
     </header>
     {task.item && <Media key={task.id} item={task.item} />}
     <p className="my-2.5 whitespace-pre-wrap text-sm leading-8 text-muted">{taskText(task, t)}</p>
-    <Compose key={task.id} disabled={pending} onSend={onSend} />
+    {task.kind === 'receipt' ? <Link href={`/${locale}/captain/billing#receipt-${task.id.slice('receipt:'.length)}`}
+      className="glass inline-flex min-h-12 items-center rounded-control border border-line px-4 text-sm">{t('receiptAction')}</Link>
+      : <Compose key={task.id} disabled={pending} onSend={onSend} />}
   </section>;
 }

@@ -9,10 +9,13 @@ import type { Activation, PlayerBalance } from '../pt-types';
 import type { ActionResult, Package } from '../types';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { finalPrice, applicableOffers } from '../pricing';
+import { paymentMethod } from '../payment-methods';
+import { paymentMethodClient } from './payment-method-client';
 
 const activation = z.object({ packageId: z.uuid().nullable(), kind: z.enum(['days', 'sessions']),
   quantity: z.number().int().min(1).max(365), price: z.number().int().min(0).max(100000),
   paid: z.number().int().min(0).max(100000), freeTrial: z.boolean(),
+  method: paymentMethod.nullable().default(null),
 }).refine(v => v.paid <= v.price && (v.kind !== 'sessions' || v.quantity <= 200));
 
 export async function loadPlayerBalance(playerId: string): Promise<ActionResult<{ balance: PlayerBalance; packages: Package[]; selectedPackageId?: string }>> {
@@ -54,7 +57,10 @@ export async function activatePlayer(link: string, input: Activation): Promise<A
     const { client } = await captainClient();
     const v = parsed.data;
     const useCatalog = captainWorkspaceEnabled() && v.packageId !== null && !v.freeTrial;
-    const result = useCatalog && v.packageId ? await client.rpc('activate_join_package', { p_link: link, p_package: v.packageId, p_paid: v.paid }) : await client.rpc('activate_player', { p_link: link, p_package: v.packageId, p_kind: v.kind,
+    const result = v.method ? await paymentMethodClient(client).rpc('activate_player_with_method', {
+      p_link: link, p_package: v.packageId, p_kind: v.kind, p_quantity: v.quantity, p_price: v.price,
+      p_paid: v.paid, p_trial: v.freeTrial, p_catalog: useCatalog, p_method: v.method,
+    }) : useCatalog && v.packageId ? await client.rpc('activate_join_package', { p_link: link, p_package: v.packageId, p_paid: v.paid }) : await client.rpc('activate_player', { p_link: link, p_package: v.packageId, p_kind: v.kind,
       p_quantity: v.quantity, p_price_egp: v.price, p_paid_egp: v.paid, p_free_trial: v.freeTrial });
     if (result.error) throw result.error;
     revalidatePath('/captain/players'); revalidatePath('/captain/billing'); revalidatePath('/player');

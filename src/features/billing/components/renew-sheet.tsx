@@ -15,6 +15,8 @@ import { Chip, Segmented, TextField } from '@/ui';
 import { remaining } from '../finance';
 import { renewalPreview } from '../renew';
 import type { Package, RenewalInput } from '../types';
+import type { PaymentMethod } from '../payment-methods';
+import { ManualPaymentMethod } from './manual-payment-method';
 
 export type Renewal = Omit<RenewalInput, 'playerId'>;
 interface Props {
@@ -30,6 +32,7 @@ interface Props {
 
 export function RenewSheet({ name, accessUntil, today, packages, onClose, onSave, busy, error }: Props) {
   const t = useT(messages);
+  const [method, setMethod] = useState<PaymentMethod | null>(null);
   const pt = useT(ptMessages);
   const locale = useLocale();
   const dialog = useRef<HTMLDialogElement>(null);
@@ -65,9 +68,10 @@ export function RenewSheet({ name, accessUntil, today, packages, onClose, onSave
       </div>
       <form className="space-y-5" onSubmit={(event) => {
         event.preventDefault();
-        if (!busy && validDays && validAmount) onSave(chosen ? { days: null, amount: value, price, packageId: chosen.id } : { days, amount: value });
+        if (!busy && validDays && validAmount) onSave(chosen ? { days: null, amount: value, price, packageId: chosen.id, method } : { days, amount: value, method });
       }}>
         {error && <p role="alert" className="text-sm text-danger">{error}</p>}
+        <ManualPaymentMethod value={method} onChange={setMethod} />
         {packages.length > 0 && <fieldset className="space-y-2">
           <legend className="mb-2 text-sm font-semibold">{t('choosePackage')}</legend>
           <div className="flex flex-wrap gap-2">

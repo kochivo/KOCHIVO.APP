@@ -33,6 +33,7 @@ export const messages = {
 
 export const taskMessages = {
   ar: {
+    receipt: 'إيصالات الدفع', receiptAction: 'راجع الإيصال', receiptText: 'إيصال دفع مستني مراجعتك',
     title: 'المهام', subtitle: 'كل اللي مستني منك، مترتب بالأهم', all: 'الكل', video: 'فيديوهات',
     checkin: 'متابعات', absent: 'غياب', swap: 'تبديل', renew: 'تجديد', program: 'بدون برنامج',
     videoTag: 'فيديو أداء', checkinTag: 'متابعة أسبوعية', swapTag: 'طلب تبديل',
@@ -48,6 +49,7 @@ export const taskMessages = {
     stop: 'وقّف التسجيل', discard: 'امسح التسجيل', voiceError: 'مش قادرين نفتح الميكروفون', recording: 'جاري التسجيل',
   },
   arStd: {
+    receipt: 'إيصالات الدفع', receiptAction: 'راجع الإيصال', receiptText: 'إيصال دفع بانتظار مراجعتك',
     title: 'المهام', subtitle: 'كل ما ينتظر منك، مرتّب حسب الأهمية', all: 'الكل', video: 'فيديوهات',
     checkin: 'متابعات', absent: 'غياب', swap: 'تبديل', renew: 'تجديد', program: 'بدون برنامج',
     videoTag: 'فيديو أداء', checkinTag: 'متابعة أسبوعية', swapTag: 'طلب تبديل',
@@ -63,6 +65,7 @@ export const taskMessages = {
     stop: 'أوقف التسجيل', discard: 'احذف التسجيل', voiceError: 'تعذّر فتح الميكروفون', recording: 'جارٍ التسجيل',
   },
   en: {
+    receipt: 'Payment receipts', receiptAction: 'Review receipt', receiptText: 'Payment receipt awaiting review',
     title: 'Tasks', subtitle: 'Everything waiting for you, in priority order', all: 'All', video: 'Videos',
     checkin: 'Check-ins', absent: 'Absent', swap: 'Swaps', renew: 'Renewals', program: 'No program',
     videoTag: 'Form video', checkinTag: 'Weekly check-in', swapTag: 'Swap request',

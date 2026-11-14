@@ -1,6 +1,7 @@
 'use client';
 import { use, useCallback, useRef, useState, useTransition } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { useLocale, useT } from '@/core/i18n/client';
 import { useResource } from '@/core/resource';
@@ -18,6 +19,7 @@ import type { BillingResult } from '../types';
 import { expiringSoon, subscriptionTiles } from './workspace-billing-summary';
 import { WorkspaceBillingTiles } from './workspace-billing-tiles';
 import { WorkspacePaymentsTable } from './workspace-payments-table';
+const CaptainReceipts = dynamic(() => import('../receipts/captain-receipts').then(module => module.CaptainReceipts));
 
 export function WorkspaceBilling({ data, today }: { data: Promise<BillingResult>; today: string }) {
   const result = use(data), t = useT(workspaceMessages), legacy = useT(messages), locale = useLocale(), router = useRouter();
@@ -52,6 +54,7 @@ export function WorkspaceBilling({ data, today }: { data: Promise<BillingResult>
       <Link href="/captain/billing/packages" className="glass inline-flex min-h-12 items-center rounded-full border border-line px-4 text-[13px]">{t('catalog')}</Link>
     </PageBarActions>
     <WorkspaceBillingTiles values={{ ...values, pending: rows ? rows.length : null }} />
+    <CaptainReceipts />
     {notice && <p role="status" className="glass rounded-control p-3 text-sm text-lime">{notice}</p>}
     {error && <p role="alert" className="text-sm text-danger">{error}</p>}
     <div className="grid items-start gap-3.5 min-[761px]:grid-cols-2">

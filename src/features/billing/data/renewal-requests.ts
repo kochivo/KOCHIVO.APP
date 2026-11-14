@@ -9,6 +9,9 @@ import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { messages } from '../choice/messages';
 import { captainClient } from './client';
 import { fetchPackageCatalog } from './catalog-read';
+import { paymentMethod } from '../payment-methods';
+import { paymentMethodClient } from './payment-method-client';
+import { fetchPendingPaymentReceipts } from './receipt-read';
 
 async function playerContext() {
   if (!captainWorkspaceEnabled()) throw new Error('Workspace disabled');
@@ -27,23 +30,24 @@ async function failure(error: unknown): Promise<{ error: string; data?: never; o
 export async function loadRenewalChoice() {
   try {
     const { client, playerId, captainId } = await playerContext();
-    const [catalog, requests, profile] = await Promise.all([
+    const [catalog, requests, profile, methods] = await Promise.all([
       fetchPackageCatalog(captainId),
       client.from('player_renewal_requests').select('id').eq('player_id', playerId).eq('captain_id', captainId).eq('status', 'pending').maybeSingle(),
       client.rpc('my_captain_profile'),
+      paymentMethodClient(client).from('captain_payment_methods').select('method,account_detail,position').eq('captain_id', captainId).order('position').order('method'),
     ]);
-    if (requests.error || profile.error) throw requests.error ?? profile.error;
+    if (requests.error || profile.error || methods.error) throw requests.error ?? profile.error ?? methods.error;
     return { error: undefined, data: { catalog: { ...catalog, tiers: catalog.tiers.map(tier => ({ ...tier,
       features: Array.isArray(tier.features) ? tier.features.filter((v): v is string => typeof v === 'string') : [] })) },
-    name: profile.data?.[0]?.full_name ?? '', pending: requests.data?.id ?? null, now: new Date().toISOString() } };
+    methods: methods.data, name: profile.data?.[0]?.full_name ?? '', pending: requests.data?.id ?? null, now: new Date().toISOString() } };
   } catch (error) { return failure(error); }
 }
 export async function requestPlayerRenewal(input: unknown) {
   try {
-    const selected = z.object({ packageId: z.uuid(), offerId: z.uuid().nullable() }).strict().parse(input);
+    const selected = z.object({ packageId: z.uuid(), offerId: z.uuid().nullable(), method: paymentMethod.nullable().default(null) }).strict().parse(input);
     const { client, playerId, captainId } = await playerContext();
-    const result = await client.from('player_renewal_requests').insert({ id: uuidv7(), player_id: playerId,
-      captain_id: captainId, package_id: selected.packageId, offer_id: selected.offerId });
+    const result = await paymentMethodClient(client).from('player_renewal_requests').insert({ id: uuidv7(), player_id: playerId,
+      captain_id: captainId, package_id: selected.packageId, offer_id: selected.offerId, method: selected.method });
     if (result.error) throw result.error;
     revalidatePath('/captain/players');
     return { ok: true, error: undefined };
@@ -56,6 +60,9 @@ export async function listRenewalRequests(playerId?: string) {
     if (playerId) query = query.eq('player_id', z.uuid().parse(playerId));
     const requests = await query;
     if (requests.error) throw requests.error;
+    const receipts = await fetchPendingPaymentReceipts();
+    const receiptRequests = new Set(receipts.map(row => row.renewal_request_id));
+    requests.data = requests.data.filter(row => !receiptRequests.has(row.id));
     const [players, packages] = await Promise.all([
       client.from('profiles').select('id,full_name').in('id', requests.data.map(r => r.player_id)),
       client.from('captain_packages').select('id,name,price_egp').in('id', requests.data.map(r => r.package_id)),
@@ -70,7 +77,7 @@ export async function decideRenewalRequest(id: string, status: 'approved' | 'dec
     z.uuid().parse(id);
     z.enum(['approved', 'declined', 'cancelled']).parse(status);
     const client = await supabaseServer();
-    const result = await client.rpc('decide_player_renewal', { p_request: id, p_status: status });
+    const result = await paymentMethodClient(client).rpc('decide_renewal_with_method', { p_request: id, p_status: status });
     if (result.error) throw result.error;
     revalidatePath('/captain/players'); revalidatePath('/captain/billing'); revalidatePath('/player');
     return { ok: true, fallback: result.data, error: undefined };

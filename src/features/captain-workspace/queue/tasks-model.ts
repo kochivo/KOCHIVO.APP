@@ -3,15 +3,16 @@ import type { RosterPlayer } from '@/features/roster';
 import { daysBetween, localDate } from '@/lib/dates';
 import type { QueueItem } from './model';
 
-export type TaskKind = 'video' | 'absent' | 'checkin' | 'swap' | 'renew' | 'program';
+export type TaskKind = 'video' | 'absent' | 'checkin' | 'swap' | 'renew' | 'program' | 'receipt';
 export type TaskFilter = 'all' | TaskKind;
 export type SwapTask = { id: string; player_id: string; created_at: string; from: string; to: string };
 export type CaptainTask = { id: string; kind: TaskKind; playerId: string; name: string; at: string;
   avatar?: string | null; text?: string | null; timezone?: string; days?: number; neverTrained?: boolean; item?: InboxItem; swap?: SwapTask };
-const priority: TaskKind[] = ['video', 'absent', 'checkin', 'swap', 'renew', 'program'];
-export const taskTabs: TaskFilter[] = ['all', 'video', 'checkin', 'absent', 'swap', 'renew', 'program'];
+const priority: TaskKind[] = ['video', 'receipt', 'absent', 'checkin', 'swap', 'renew', 'program'];
+export const taskTabs: TaskFilter[] = ['all', 'video', 'checkin', 'receipt', 'absent', 'swap', 'renew', 'program'];
+type ReceiptTask = { id: string; player_id: string; created_at: string };
 
-export function buildTasks(items: QueueItem[], players: RosterPlayer[], swaps: SwapTask[], now: Date, timezone: string): CaptainTask[] {
+export function buildTasks(items: QueueItem[], players: RosterPlayer[], swaps: SwapTask[], now: Date, timezone: string, receipts: ReceiptTask[] = []): CaptainTask[] {
   const roster = new Map(players.map(player => [player.playerId, player]));
   const tasks: CaptainTask[] = items.flatMap(item => {
     if (item.reviewed_at || (item.kind !== 'form' && item.kind !== 'checkin')) return [];
@@ -36,6 +37,11 @@ export function buildTasks(items: QueueItem[], players: RosterPlayer[], swaps: S
     if (player) tasks.push({ id: `swap:${swap.id}`, kind: 'swap', playerId: player.playerId, name: player.fullName,
       at: swap.created_at, avatar: player.avatarUrl, swap });
   }
+  for (const receipt of receipts) {
+    const player = roster.get(receipt.player_id);
+    if (player) tasks.push({ id: `receipt:${receipt.id}`, kind: 'receipt', playerId: player.playerId,
+      name: player.fullName, avatar: player.avatarUrl, at: receipt.created_at });
+  }
   return tasks.sort((a, b) => priority.indexOf(a.kind) - priority.indexOf(b.kind)
     || Date.parse(a.at) - Date.parse(b.at) || a.at.localeCompare(b.at) || a.id.localeCompare(b.id));
 }
@@ -50,7 +56,7 @@ export function contactedTasks(tasks: CaptainTask[], contacts: Record<string, st
 }
 export const filterTasks = (tasks: CaptainTask[], filter: TaskFilter) => tasks.filter(task => filter === 'all' || task.kind === filter);
 export function taskCounts(tasks: CaptainTask[]): Record<TaskFilter, number> {
-  const counts = { all: tasks.length, video: 0, absent: 0, checkin: 0, swap: 0, renew: 0, program: 0 };
+  const counts = { all: tasks.length, video: 0, absent: 0, checkin: 0, swap: 0, renew: 0, program: 0, receipt: 0 };
   for (const task of tasks) counts[task.kind]++;
   return counts;
 }

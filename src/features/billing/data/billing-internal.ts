@@ -10,6 +10,7 @@ import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { captainClient } from './client';
 import { revenueSince, summarizeRevenue } from '../finance';
 import type { BillingResult } from '../types';
+import { paymentMethodClient } from './payment-method-client';
 
 export async function fetchBilling(): Promise<BillingResult> {
   return fetchBillingAt(new Date());
@@ -40,7 +41,7 @@ export async function fetchBillingAt(now: Date): Promise<BillingResult> {
       client.from('plan_tiers').select('tier, price_egp, player_limit').eq('tier', tier.data).single(),
       client.from('captain_subscriptions').select('ends_at').eq('captain_id', captainId).eq('tier', tier.data)
         .lte('starts_at', timestamp).gt('ends_at', timestamp).order('ends_at', { ascending: false }).limit(1).maybeSingle(),
-      captainWorkspaceEnabled() && paymentIds.length ? client.from('player_payments').select('id, package_id, price_egp')
+      captainWorkspaceEnabled() && paymentIds.length ? paymentMethodClient(client).from('player_payments').select('id, package_id, price_egp, method')
         .eq('captain_id', captainId).in('id', paymentIds) : { data: [], error: null },
     ]);
     if (phones.error || plan.error || !plan.data || subscription.error || payments.error

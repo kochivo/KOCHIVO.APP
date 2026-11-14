@@ -4,6 +4,7 @@ import { messages } from '../messages';
 
 import { use, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { Users } from 'lucide-react';
 import { EmptyState, ErrorState, LoadingState } from '@/ui';
 import type { BillingResult } from '../types';
@@ -11,6 +12,7 @@ import { FinanceSummary } from './finance-summary';
 import { PackagesCard } from './packages-card';
 import { PlanCard } from './plan-card';
 import { PlayerBillingRow } from './player-billing-row';
+const CaptainReceipts = dynamic(() => import('../receipts/captain-receipts').then(module => module.CaptainReceipts));
 
 export function BillingScreen({ data, today }: { data: Promise<BillingResult>; today: string }) {
   const t = useT(messages);
@@ -21,6 +23,7 @@ export function BillingScreen({ data, today }: { data: Promise<BillingResult>; t
   return (
     <section className="space-y-6">
       <header><h1 className="text-3xl font-extrabold">{t('billing')}</h1><p className="mt-2 text-sm text-muted">{t('intro')}</p></header>
+      <CaptainReceipts />
       {pending ? <LoadingState variant="cards" /> : result.error || !result.data ? <ErrorState message={result.error ?? t('loadFailed')} retryLabel={t('retry')} onRetry={() => startTransition(() => router.refresh())} />
         : <><FinanceSummary revenue={result.data.revenue} /><div className="grid items-start gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
           <section className="space-y-4" aria-labelledby="billing-players">

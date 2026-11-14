@@ -44,6 +44,7 @@ export function TasksScreen() {
   }
   async function action(task: CaptainTask) {
     if (!data || busy.current) return;
+    if (task.kind === 'receipt') { router.push(`/${locale}/captain/billing#receipt-${task.id.slice('receipt:'.length)}`); return; }
     if (task.kind === 'video') { open(task); return; }
     if (task.kind === 'checkin' && task.item) { open(task); setReview(task.item); return; }
     if (task.kind === 'program') {

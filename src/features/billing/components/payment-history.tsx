@@ -10,9 +10,11 @@ import { loadPaymentHistory } from '../data/history';
 import type { HistoryCursor } from '../data/history';
 import { messages } from '../workspace/messages';
 import { messages as legacyMessages } from '../messages';
+import { messages as methodMessages } from '../methods/messages';
 
 export function PaymentHistory({ playerId }: { playerId: string }) {
   const t = useT(messages), legacy = useT(legacyMessages), locale = useLocale(), timezone = useTimezone();
+  const methodT = useT(methodMessages);
   const [page, setPage] = useState(0);
   const [cursors, setCursors] = useState<HistoryCursor[]>([{ payments: 0, collections: 0 }]);
   const cursor = cursors[page] ?? { payments: 0, collections: 0 };
@@ -26,6 +28,7 @@ export function PaymentHistory({ playerId }: { playerId: string }) {
         : <ul>{rows.map(row => <li key={`${row.kind}:${row.id}`} className="space-y-2 border-t border-line-soft py-3 first:border-t-0">
           <div className="flex flex-wrap justify-between gap-2"><span>{t(row.kind)}</span><span className="font-display font-extrabold">{row.amount_egp === null ? legacy('noAmount') : t('money', { amount: formatNumber(row.amount_egp, locale) })}</span></div>
           <p className="text-xs text-muted">{formatTimestampAr(row.created_at, { day: 'numeric', month: 'long', year: 'numeric' }, locale, timezone)}</p>
+          <p className="text-xs text-muted">{methodT('method')}: {methodT(row.method ?? 'unset')}</p>
           {row.kind === 'renewal' && <p className="text-xs text-faint">{row.period_start} · {row.period_end}</p>}
           {row.notes && <p className="text-sm text-muted">{t('notes')}: {row.notes}</p>}
         </li>)}</ul>}

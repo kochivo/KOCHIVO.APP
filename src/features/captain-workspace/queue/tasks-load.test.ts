@@ -9,6 +9,7 @@ vi.mock('@/features/roster/server', () => ({ fetchRoster: async () => ({ players
   playerId: 'p', fullName: 'Player', accessUntil: '2026-12-01', startedOn: '2026-11-01',
   lastTrainingDate: '2026-11-14', programTitle: 'Plan', openTasks: 0,
 }] }) }));
+vi.mock('@/features/billing/server', () => ({ fetchPendingPaymentReceipts: async () => [] }));
 vi.mock('./data/page', () => ({
   loadQueuePage: async () => state.pages[state.reads++],
   loadQueueTriage: async () => ({ history: [], dailyChecks: [] }),

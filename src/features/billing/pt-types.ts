@@ -1,3 +1,5 @@
+import type { PaymentMethod } from './payment-methods';
+
 export interface PlayerBalance {
   id: string;
   access_until: string;
@@ -12,4 +14,5 @@ export interface Activation {
   price: number;
   paid: number;
   freeTrial: boolean;
+  method?: PaymentMethod | null;
 }

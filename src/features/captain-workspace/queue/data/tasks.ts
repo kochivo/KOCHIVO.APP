@@ -4,14 +4,15 @@ import { supabaseServer } from '@/core/supabase/server';
 import { getTimezone } from '@/core/timezone/server';
 import { getLocale } from '@/core/i18n/server';
 import { fetchRoster } from '@/features/roster/server';
+import { fetchPendingPaymentReceipts } from '@/features/billing/server';
 import { exerciseName } from '@/lib/display-name';
 import { buildTasks, contactedTasks } from '../tasks-model';
 import type { SwapTask } from '../tasks-model';
 import { loadQueuePage, loadQueueTriage } from './page';
 
 export async function loadTasks() {
-  const [roster, first, timezone, locale, client] = await Promise.all([
-    fetchRoster(), loadQueuePage({ skipRequests: true }), getTimezone(), getLocale(), supabaseServer(),
+  const [roster, first, timezone, locale, client, receipts] = await Promise.all([
+    fetchRoster(), loadQueuePage({ skipRequests: true }), getTimezone(), getLocale(), supabaseServer(), fetchPendingPaymentReceipts(),
   ]);
   if (roster.error || !roster.players) throw new Error(roster.error);
   const auth = await client.auth.getClaims();
@@ -35,7 +36,7 @@ export async function loadTasks() {
     if (result.data.length < 500) break;
   }
   const triage = await loadQueueTriage([...new Set(items.filter(item => item.kind === 'checkin').map(item => item.player_id))], first.at);
-  const tasks = buildTasks(items, roster.players, swaps, new Date(first.at), timezone);
+  const tasks = buildTasks(items, roster.players, swaps, new Date(first.at), timezone, receipts);
   const contacts: Record<string, string> = {};
   await Promise.all([...new Set(tasks.filter(task => task.kind === 'absent' || task.kind === 'renew').map(task => task.playerId))].map(async playerId => {
     const result = await client.from('chat_messages').select('created_at').eq('captain_id', captainId)

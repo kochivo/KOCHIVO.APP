@@ -70,3 +70,14 @@ it.each([null, 0, 800])('does not call unpaid renewals confirmed payments: %s', 
   expect(html.includes('Confirmed')).toBe(amount !== null && amount > 0);
   expect(html.includes('Renewed without payment')).toBe(amount === null || amount === 0);
 });
+
+it.each(['instapay', null] as const)('shows a recorded payment method or the legacy dash: %s', method => {
+  const player = { playerId: 'p', fullName: 'Ali', accessUntil: '2026-12-01', status: 'active' as const,
+    phone: null, due: 0, startedOn: '2026-10-01', lastTrainingDate: null, programTitle: null, openTasks: 0,
+    lastPayment: { id: 'payment', captain_id: 'captain', player_id: 'p', period_start: '2026-11-13', period_end: '2026-12-13',
+      days: 30, amount_egp: 800, method, created_at: '2026-11-13T12:00:00Z' } };
+  const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' },
+    createElement(WorkspacePaymentsTable, { players: [player], packages: [], today: '2026-11-14' })));
+  expect(html).toContain('Payment method');
+  expect(html).toContain(method ? '>InstaPay</td>' : '>—</td>');
+});

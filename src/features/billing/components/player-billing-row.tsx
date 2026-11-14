@@ -16,6 +16,7 @@ import type { BillingPlayer, Package } from '../types';
 import { CollectSheet } from './collect-sheet';
 import { RenewSheet } from './renew-sheet';
 import type { Renewal } from './renew-sheet';
+import type { PaymentMethod } from '../payment-methods';
 import { useToast } from '@/ui/toast';
 import { messages as uiMessages } from '@/ui/messages';
 import { BalanceBadges } from './balance-badges';
@@ -82,7 +83,7 @@ export function PlayerBillingRow({ player, today, packages, initialAction, works
       rollback(t('renewFailed'));
     } finally { inFlight.current = false; setPending(false); }
   }
-  async function collect(amount: number) {
+  async function collect(amount: number, method?: PaymentMethod | null) {
     if (inFlight.current) return;
     inFlight.current = true;
     const oldDue = due;
@@ -92,7 +93,7 @@ export function PlayerBillingRow({ player, today, packages, initialAction, works
     setPending(true);
     setError('');
     try {
-      const result = await collectPayment({ playerId: player.playerId, amount });
+      const result = await collectPayment({ playerId: player.playerId, amount, method });
       if (result.error !== undefined) { setDue(oldDue); setError(result.error); }
       else { setCollecting(false); setDue(result.data); toast.success(feedback('paymentRecorded')); startRefresh(() => router.refresh()); }
     } catch { setDue(oldDue); setError(t('collectFailed')); } finally { inFlight.current = false; setPending(false); }
@@ -123,7 +124,7 @@ export function PlayerBillingRow({ player, today, packages, initialAction, works
       {player.pending && <ActivatePlayerButton playerId={player.playerId} name={player.fullName} today={today} />}
       {error && <p role="alert" className="text-sm text-danger">{error}</p>}
       {open && !player.frozenAt && <RenewSheet name={player.fullName} accessUntil={accessUntil} today={today} packages={packages} onClose={() => { if (!pending) setOpen(false); }} onSave={(renewal) => void save(renewal)} {...(workspace ? { busy: pending, error } : {})} />}
-      {collecting && <CollectSheet name={player.fullName} due={workspace && pending ? collectionDue : due} onClose={() => { if (!pending) setCollecting(false); }} onSave={(amount) => void collect(amount)} {...(workspace ? { busy: pending, error } : {})} />}
+      {collecting && <CollectSheet name={player.fullName} due={workspace && pending ? collectionDue : due} onClose={() => { if (!pending) setCollecting(false); }} onSave={(amount, method) => void collect(amount, method)} {...(workspace ? { busy: pending, error } : {})} />}
     </li>
   );
 }

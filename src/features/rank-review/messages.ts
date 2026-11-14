@@ -8,7 +8,7 @@ export const messages = defineMessages({
     workspaceTitle: 'الترتيب', thisMonth: 'هذا الشهر', allTime: 'كل الوقت',
     bronzeTag: 'BRONZE', silverTag: 'SILVER', goldTag: 'GOLD', platinumTag: 'PLATINUM',
     workoutPoints: '{count} تمرين · {points} نقطة', points: '{points} نقطة',
-    soonTitle: 'الترتيب قريبًا', soonBody: 'نقاط لاعبيك بتتحسب من دلوقتي. أول ما الترتيب يفتح هتلاقي كل حاجة جاهزة هنا.',
+    soonTitle: 'الترتيب قريبًا', soonBody: 'تُحتسب نقاط لاعبيك من الآن. عندما يُفتح الترتيب ستجد كل شيء جاهزًا هنا.',
   } as const : undefined; },
   ar: {
     workspaceTitle: 'الترتيب', thisMonth: 'الشهر ده', allTime: 'كل الوقت',
