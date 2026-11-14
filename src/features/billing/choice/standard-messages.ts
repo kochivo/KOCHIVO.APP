@@ -1,4 +1,5 @@
 export const arStd = {
+  year: 'سنة',
   title: 'اختر باقتك مع كابتن {name}', hint: 'يمكنك تغيير باقتك عند التجديد', popular: 'الأكثر طلبًا',
   currency: 'جنيه', monthly: 'شهرك بـ {price} جنيه فقط', excluded: 'العرض لا يشمل هذه الفئة', choose: 'اختر {tier}',
   days: '{count} يوم', months: '{count} شهور', month: 'شهر', remaining: '{days} يوم · {hours} ساعة', ended: 'انتهى العرض',

@@ -24,6 +24,7 @@ import { loadPlayerRequests } from '@/features/forms/server';
 import { AssessmentCards } from './assessment-cards';
 import { NewAssessmentEntry } from './new-assessment-entry';
 import { AssessmentReviewEntry } from './assessment-review-entry';
+import { MoneyOwedEntry } from '../money-owed/money-owed-entry';
 
 export async function FileContent({ playerId, tab, locale, children }: {
   playerId: string; tab: PlayerFileTab; locale: Locale; children?: ReactNode;
@@ -54,6 +55,7 @@ export async function FileContent({ playerId, tab, locale, children }: {
   catch (error) { unstable_rethrow(error); return <FileState error locale={locale} href={href} />; }
   return <TimezoneScope timezone={timezone}><section className="min-w-0 space-y-3">
     <FileHeader playerId={playerId} profile={profile} summary={summary} tab={tab} locale={locale} today={captainToday} playerToday={today} unreadCount={counts[playerId] ?? 0} />
+    {tab === 'overview' && <MoneyOwedEntry mode="player" playerId={playerId} />}
     {tab === 'overview' && activity ? <PlayerOverview playerId={playerId} profile={profile} summary={summary} locale={locale} today={today} activity={activity} /> :
       tab === 'chat' ? <FileChatEntry playerId={playerId} captainId={captainId} playerName={profile.name} /> :
       tab === 'checkins' ? <PlayerCheckins playerId={playerId} profile={profile} today={today} locale={locale} /> :

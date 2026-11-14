@@ -21,6 +21,7 @@ import { HomeTaskList } from '../home/home-task-list';
 import { HomeWeekChart } from '../home/home-week-chart';
 import { HomeConfirmations } from '../home/home-confirmations';
 import { WorkspaceError } from './workspace-error';
+import { MoneyOwedEntry } from '@/features/captain-workspace/server';
 
 async function readHome<T>(read: Promise<T>) {
   try { return await read; } catch (error) { unstable_rethrow(error); return null; }
@@ -55,6 +56,7 @@ export async function WorkspaceHome({ data, now = new Date() }: {
       <HomeHero tasks={tasks} count={count} completed={summary.completedTasks} />
       <HomeTiles adherence={summary.adherence} previous={summary.previousAdherence} trained={training.trained} active={training.active}
         pending={count} paid={summary.paid} progress={taskProgress(summary.completedTasks, count)} />
+      <MoneyOwedEntry mode="home" />
       {!contacts && <WorkspaceError />}
       <div className="grid items-start gap-3 min-[1000px]:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
         <HomeTaskList tasks={tasks} count={count} contacts={contacts ?? new Map()} />

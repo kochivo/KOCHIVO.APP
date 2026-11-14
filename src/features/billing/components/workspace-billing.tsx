@@ -1,5 +1,6 @@
 'use client';
 import { use, useCallback, useRef, useState, useTransition } from 'react';
+import type { ReactNode } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
@@ -21,7 +22,7 @@ import { WorkspaceBillingTiles } from './workspace-billing-tiles';
 import { WorkspacePaymentsTable } from './workspace-payments-table';
 const CaptainReceipts = dynamic(() => import('../receipts/captain-receipts').then(module => module.CaptainReceipts));
 
-export function WorkspaceBilling({ data, today }: { data: Promise<BillingResult>; today: string }) {
+export function WorkspaceBilling({ data, today, moneyOwed }: { data: Promise<BillingResult>; today: string; moneyOwed?: ReactNode }) {
   const result = use(data), t = useT(workspaceMessages), legacy = useT(messages), locale = useLocale(), router = useRouter();
   const toast = useToast(), lock = useRef(false);
   const load = useCallback(() => listRenewalRequests(), []);
@@ -54,6 +55,7 @@ export function WorkspaceBilling({ data, today }: { data: Promise<BillingResult>
       <Link href="/captain/billing/packages" className="glass inline-flex min-h-12 items-center rounded-full border border-line px-4 text-[13px]">{t('catalog')}</Link>
     </PageBarActions>
     <WorkspaceBillingTiles values={{ ...values, pending: rows ? rows.length : null }} />
+    {moneyOwed}
     <CaptainReceipts />
     {notice && <p role="status" className="glass rounded-control p-3 text-sm text-lime">{notice}</p>}
     {error && <p role="alert" className="text-sm text-danger">{error}</p>}

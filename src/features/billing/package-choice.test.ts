@@ -1,8 +1,30 @@
 import { describe, expect, it } from 'vitest';
-import { pricingCards, pricingDurations, pricingBanner, countdown } from './package-choice';
+import { pricingCards, pricingDurations, pricingBanner, countdown, durationLabel, firstUnusedDuration, duplicateDuration } from './package-choice';
+import { createT } from '@/core/i18n/messages';
+import { messages } from './tiers/messages';
 import { catalogFixture } from './tiers/catalog-fixture';
 
 const now = new Date('2026-11-28T00:00:00Z');
+it('chooses the first unused preset in the selected tier, excluding the edited row', () => {
+  expect(firstUnusedDuration(catalogFixture.packages, 'vip')).toBe(180);
+  expect(firstUnusedDuration(catalogFixture.packages, 'vip', 'month')).toBe(30);
+  expect(firstUnusedDuration(catalogFixture.packages, 'other')).toBe(30);
+  const base = catalogFixture.packages[0];
+  if (!base) throw new Error('Missing package fixture');
+  const full = [30, 90, 180, 365].map(days => ({ ...base, id: String(days), days }));
+  expect(firstUnusedDuration(full, 'vip')).toBeNull();
+});
+it('labels real durations consistently', () => {
+  const t = createT(messages, 'ar');
+  expect([30, 90, 180, 365, 45].map(days => durationLabel(days, t, 'ar'))).toEqual(['شهر', '٣ شهور', '٦ شهور', 'سنة', '٤٥ يوم']);
+});
+it('detects same-kind lengths only within the selected tier and excludes itself', () => {
+  const item = catalogFixture.packages[0];
+  if (!item) throw new Error('Missing package fixture');
+  expect(duplicateDuration(catalogFixture.packages, { ...item, id: 'new' })).toBe(true);
+  expect(duplicateDuration(catalogFixture.packages, item)).toBe(false);
+  expect(duplicateDuration(catalogFixture.packages, { ...item, id: 'new', tier_id: 'other' })).toBe(false);
+});
 describe('package choice', () => {
   it('prefers a live banner over historical sales and hides paused or unrelated sales', () => {
     const sale = catalogFixture.offers[0];

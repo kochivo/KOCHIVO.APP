@@ -4,6 +4,9 @@ import { arStd } from './standard-messages';
 export const messages = defineMessages({
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
+    year: 'سنة', customDuration: 'مدة تانية', durationChoice: 'المدة', editDuration: 'عدّل',
+    duplicateDuration: 'المدة دي موجودة في الفئة. عدّل سعرها بدل ما تضيف واحدة تانية',
+    duplicateWarning: 'مدتين بنفس الطول، اللاعب هيشوف واحدة بس',
     title: 'باقاتي والعروض', breadcrumb: 'الدفعات ‹', intro: 'اللي اللاعب بيختار منه لما ينضم أو يجدد · بيظهر في صفحتك العامة',
     publicPage: 'شوف صفحتي', newTier: 'باقة جديدة', addTier: '+ باقة جديدة', example: 'مثلًا: أونلاين بس، حصص في الجيم',
     featured: 'الأكثر طلبًا', menu: 'اختيارات {name}', rename: 'غيّر الاسم', editFeatures: 'عدّل المميزات',
@@ -17,6 +20,9 @@ export const messages = defineMessages({
     tier: 'الباقة', noTier: 'من غير باقة', editPackage: 'عدّل الباقة', archivePackage: 'أرشف الباقة', manage: 'إدارة الباقات والعروض', invalid: 'اكتب اسم الباقة ومميزات أقصر (10 بالكتير)',
   },
   en: {
+    year: '1 year', customDuration: 'Other duration', durationChoice: 'Duration', editDuration: 'Edit',
+    duplicateDuration: 'This duration already exists in the tier. Edit its price instead of adding another.',
+    duplicateWarning: 'Two durations have the same length. Players will only see one.',
     title: 'My packages and offers', breadcrumb: 'Payments ‹', intro: 'Players choose these when joining or renewing · Shown on your public page',
     publicPage: 'View my page', newTier: 'New package', addTier: '+ New package', example: 'For example: online only, gym sessions',
     featured: 'Most popular', menu: 'Options for {name}', rename: 'Rename', editFeatures: 'Edit features',

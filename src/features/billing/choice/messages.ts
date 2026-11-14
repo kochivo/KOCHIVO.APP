@@ -3,6 +3,7 @@ import { arStd } from './standard-messages';
 export const messages = defineMessages({
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
+    year: 'سنة',
     title: 'اختار باقتك مع كابتن {name}', hint: 'تقدر تغيّر باقتك وقت التجديد', popular: 'الأكثر طلبًا',
     currency: 'جنيه', monthly: 'شهرك بـ {price} جنيه بس', excluded: 'العرض مش على الفئة دي', choose: 'اختار {tier}',
     days: '{count} يوم', months: '{count} شهور', month: 'شهر', remaining: '{days} يوم · {hours} ساعة', ended: 'العرض خلص',
@@ -15,6 +16,7 @@ export const messages = defineMessages({
     bonusOffer: '{value} يوم هدية على باقات {durations}', durationSeparator: ' و',
   },
   en: {
+    year: '1 year',
     title: 'Choose your plan with Captain {name}', hint: 'You can change your plan when you renew', popular: 'Most popular',
     currency: 'EGP', monthly: 'Only EGP {price} per month', excluded: 'Offer does not cover this tier', choose: 'Choose {tier}',
     days: '{count} days', months: '{count} months', month: '1 month', remaining: '{days} days · {hours} hours', ended: 'Offer ended',

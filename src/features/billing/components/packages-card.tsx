@@ -7,6 +7,8 @@ import { formatNumber } from '@/lib/format';
 import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 import { messages as ptMessages } from '../packages/messages';
+import { messages as durationMessages } from '../tiers/messages';
+import { duplicateDuration, durationLabel, durationPresets, firstUnusedDuration } from '../package-choice';
 
 import { useState } from 'react';
 import { Package as PackageIcon, Plus, X } from 'lucide-react';
@@ -16,28 +18,32 @@ import { archivePackage, createPackage } from '../data/finance-actions';
 import type { Package } from '../types';
 import type { CatalogPackage, Tier } from '../tiers/types';
 
-export type PackageEditor = { item?: CatalogPackage; tierId: string; tiers: Tier[]; tierLabel: string; noTierLabel: string; saveLabel: string;
+export type PackageEditor = { item?: CatalogPackage; tierId: string; packages: CatalogPackage[]; tiers: Tier[]; tierLabel: string; noTierLabel: string; saveLabel: string;
   save: (value: { name: string; price: number; days: number; kind: 'days' | 'sessions'; sessions: number | null; tier_id: string | null }) => Promise<boolean> };
 
 export function PackagesCard({ packages: initial, onChange, initialAdding = false, editor }: { packages: Package[]; onChange: (packages: Package[]) => void; initialAdding?: boolean; editor?: PackageEditor }) {
   const PlusIcon = captainWorkspaceEnabled() ? KoPlus : Plus;
   const t = useT(messages);
   const pt = useT(ptMessages);
+  const dt = useT(durationMessages);
   const locale = useLocale();
   const [packages, setPackages] = useState(initial);
   const [adding, setAdding] = useState(initialAdding);
   const [name, setName] = useState(editor?.item?.name ?? '');
   const [price, setPrice] = useState(editor?.item ? String(editor.item.price_egp) : '');
-  const [days, setDays] = useState(String(editor?.item?.days ?? 30));
+  const initialDays = editor?.item?.days ?? (editor ? firstUnusedDuration(editor.packages, editor.tierId) : 30);
+  const [days, setDays] = useState(String(initialDays ?? 1));
+  const [custom, setCustom] = useState(initialDays === null || !durationPresets.some(value => value === initialDays));
   const [kind, setKind] = useState<'days' | 'sessions'>(editor?.item?.kind ?? 'days');
   const [sessions, setSessions] = useState(editor?.item?.sessions ?? 12);
   const [tierId, setTierId] = useState(editor?.item?.tier_id ?? editor?.tierId ?? '');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const values = { name: name.trim(), price: Number(price), days: Number(days), kind, sessions: kind === 'sessions' ? sessions : null };
+  const duplicate = editor && duplicateDuration(editor.packages, { ...values, id: editor.item?.id, tier_id: tierId || null });
   const valid = values.name.length > 0 && values.name.length <= 60 && price.trim() !== ''
     && Number.isInteger(values.price) && values.price >= 0 && values.price <= 100000
-    && Number.isInteger(values.days) && values.days >= 1 && values.days <= 365;
+    && Number.isInteger(values.days) && values.days >= 1 && values.days <= 365 && !duplicate;
   function update(next: Package[]) { setPackages(next); onChange(next); }
 
   async function add() {
@@ -73,15 +79,35 @@ export function PackagesCard({ packages: initial, onChange, initialAdding = fals
         {captainWorkspaceEnabled() ? <IconButton className="min-h-12 min-w-12 border border-danger/40 px-0 text-danger!" aria-label={t('archivePackage', { name: item.name })} onClick={() => void archive(item)}><X aria-hidden className="size-5" /></IconButton> : <Button variant="ghost" className="min-h-12 min-w-12 px-0" aria-label={t('archivePackage', { name: item.name })} onClick={() => void archive(item)}><X aria-hidden className="size-5" /></Button>}
       </li>)}</ul>}
       {adding ? <form className="space-y-3" onSubmit={(event) => { event.preventDefault(); void add(); }}>
-        {editor && <label className="block text-xs text-faint">{editor.tierLabel}<select value={tierId} onChange={event => setTierId(event.target.value)} className="mt-2 min-h-12 w-full rounded-control border border-line bg-surface px-3 text-ink">
+        {editor && <label className="block text-xs text-faint">{editor.tierLabel}<select value={tierId} onChange={event => {
+          const nextTier = event.target.value;
+          setTierId(nextTier);
+          if (!editor.item) {
+            const next = firstUnusedDuration(editor.packages, nextTier);
+            setDays(String(next ?? 1)); setCustom(next === null);
+          }
+        }} className="mt-2 min-h-12 w-full rounded-control border border-line bg-surface px-3 text-ink">
           <option value="">{editor.noTierLabel}</option>{editor.tiers.map(tier => <option key={tier.id} value={tier.id}>{tier.name}</option>)}
         </select></label>}
         <Segmented aria-label={pt('kind')} value={kind} options={[{ value: 'days', label: pt('byDays') }, { value: 'sessions', label: pt('bySessions') }]} onChange={value => setKind(value as 'days' | 'sessions')} />
         {kind === 'sessions' && <Stepper label={pt('quantity')} value={sessions} min={1} max={200} step={1} onChange={setSessions} />}
+        {editor && kind === 'days' && <div className="glass flex flex-wrap gap-1 rounded-control p-1" role="group" aria-label={dt('durationChoice')}>
+          {durationPresets.map(value => {
+            const used = duplicateDuration(editor.packages, { id: editor.item?.id, tier_id: tierId || null, kind: 'days', days: value, sessions: null });
+            return <button key={value} type="button" disabled={used} aria-pressed={!custom && Number(days) === value}
+              aria-describedby={used ? 'duration-used' : undefined} title={used ? dt('duplicateDuration') : undefined}
+              className={`press min-h-12 cursor-pointer rounded-control border border-line px-3 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime disabled:opacity-40 ${!custom && Number(days) === value ? 'glass-raised font-bold' : 'text-muted'}`}
+              onClick={() => { setDays(String(value)); setCustom(false); }}>{durationLabel(value, dt, locale)}</button>;
+          })}
+          <button type="button" aria-pressed={custom} onClick={() => setCustom(true)} className={`press min-h-12 cursor-pointer rounded-control border border-line px-3 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime ${custom ? 'glass-raised font-bold' : 'text-muted'}`}>{dt('customDuration')}</button>
+        </div>}
+        {editor && <p id="duration-used" role={duplicate ? 'alert' : undefined} className={`text-xs ${duplicate ? 'text-danger' : 'text-muted'}`}>
+          {(duplicate || kind === 'days' && durationPresets.some(value => duplicateDuration(editor.packages, { id: editor.item?.id, tier_id: tierId || null, kind: 'days', days: value, sessions: null }))) && dt('duplicateDuration')}
+        </p>}
         <TextField label={t('packageName')} value={name} maxLength={60} required onChange={(event) => setName(event.target.value)} />
         <div className="grid grid-cols-2 gap-3">
           <TextField label={t('packagePrice')} type="number" inputMode="numeric" min={0} max={100000} step={1} required value={price} onChange={(event) => setPrice(event.target.value)} />
-          <TextField label={t('packageDays')} type="number" inputMode="numeric" min={1} max={365} step={1} required value={days} onChange={(event) => setDays(event.target.value)} />
+          {(!editor || kind === 'sessions' || custom) && <TextField label={t('packageDays')} type="number" inputMode="numeric" min={1} max={365} step={1} required value={days} onChange={(event) => setDays(event.target.value)} />}
         </div>
         <div className="flex flex-wrap gap-2">
           <Button type="submit" className="min-h-12 flex-1" disabled={!valid || busy}>{editor?.item ? editor.saveLabel : t('addPackage')}</Button>

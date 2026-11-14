@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Check, Minus } from 'lucide-react';
 import { useLocale, useT } from '@/core/i18n/client';
 import { formatNumber } from '@/lib/format';
-import { countdown, pricingBanner, pricingCards, pricingDurations } from '../package-choice';
+import { countdown, pricingBanner, pricingCards, pricingDurations, durationLabel as sharedDurationLabel } from '../package-choice';
 import type { PricingCatalog } from '../package-choice';
 import { messages } from './messages';
 
@@ -24,8 +24,7 @@ export function PricingCards({ catalog, name, now, signup, isRenewal = false, on
   const covered = banner ? [...new Set(catalog.packages.filter(p => p.kind === 'days' && (banner.scope === 'all'
     || (banner.scope === 'packages' && banner.package_ids.includes(p.id))
     || (banner.scope === 'tiers' && p.tier_id !== null && banner.tier_ids.includes(p.tier_id)))).map(p => p.days))].sort((a, b) => a - b) : [];
-  const durationLabel = (duration: number) => duration === 30 ? t('month')
-    : t(duration % 30 === 0 ? 'months' : 'days', { count: formatNumber(duration % 30 === 0 ? duration / 30 : duration, locale) });
+  const durationLabel = (duration: number) => sharedDurationLabel(duration, t, locale);
   return <section className="mx-auto w-full max-w-[1060px] space-y-[18px]">
     {banner && time && <div role="status" className="flex flex-wrap items-center gap-3 rounded-[18px] border border-warn/30 bg-warn-soft px-[18px] py-3.5">
       <b className="text-warn">{banner.name}</b>

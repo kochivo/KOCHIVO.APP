@@ -16,7 +16,7 @@ export function PackageSheet({ item, tierId, catalog, onClose }: { item?: Catalo
   return <ResponsiveDialog modal fallbackId="catalog-heading" onDismiss={() => { if (!catalog.busy) onClose(); }} aria-labelledby="package-title"
     className="sheet fixed inset-0 m-auto max-h-[90dvh] w-[calc(100%-32px)] max-w-lg overflow-y-auto rounded-card border border-line bg-surface p-5 text-ink backdrop:bg-bg-deep/80">
     <h2 id="package-title" className="mb-4 font-display text-[19px]">{t(item ? 'editPackage' : 'addDuration')}</h2>
-    <PackagesCard packages={[]} onChange={() => {}} initialAdding editor={{ item, tierId, tiers: catalog.data.tiers, tierLabel: t('tier'), noTierLabel: t('noTier'), saveLabel: t('save'), save: async fields => {
+    <PackagesCard packages={[]} onChange={() => {}} initialAdding editor={{ item, tierId, packages: catalog.data.packages, tiers: catalog.data.tiers, tierLabel: t('tier'), noTierLabel: t('noTier'), saveLabel: t('save'), save: async fields => {
       const optimistic: CatalogPackage = { id: item?.id ?? uuidv7(), name: fields.name, price_egp: fields.price, days: fields.days, kind: fields.kind, sessions: fields.sessions, tier_id: fields.tier_id };
       const ok = await catalog.change(current => ({ ...current, packages: item ? current.packages.map(row => row.id === item.id ? optimistic : row) : [...current.packages, optimistic] }), () => saveCatalogPackage({ ...fields, ...(item ? { id: item.id } : {}) }));
       if (ok) onClose();

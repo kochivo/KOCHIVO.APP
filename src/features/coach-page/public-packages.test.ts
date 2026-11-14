@@ -57,6 +57,17 @@ it('uses regular prices when an offer has expired', () => {
   expect(html).toContain('>1,000</b>');
   expect(html).not.toContain('name="offer"');
 });
+it('keeps the oldest duration price when later rows duplicate its length', () => {
+  // The catalog loader orders equal durations by their chronological UUIDs.
+  const oldest = catalog.packages[0];
+  if (!oldest) throw new Error('Missing package');
+  const html = render({ ...catalog, offers: [], packages: [oldest,
+    { ...oldest, id: 'later', price_egp: 500 }, { ...oldest, id: 'latest', price_egp: 2000 }] });
+  expect(html).toContain('name="package" value="month"');
+  expect(html).toContain('>1,000</b>');
+  expect(html).not.toContain('name="package" value="later"');
+  expect(html).not.toContain('name="package" value="latest"');
+});
 it('retains every published duration and selects the middle duration for the featured tier', () => {
   const html = render({ ...catalog, packages: [...catalog.packages,
     { ...catalog.packages[0], id: 'quarter', days: 90, price_egp: 2400 } as Catalog['packages'][number],

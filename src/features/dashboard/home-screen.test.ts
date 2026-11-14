@@ -12,6 +12,7 @@ import type { ReviewRow } from './home/model';
 import { WorkspaceHome } from './components/workspace-home';
 
 vi.mock('server-only', () => ({}));
+vi.mock('@/features/captain-workspace/server', () => ({ MoneyOwedEntry: () => createElement('div', { 'data-money-owed': true }) }));
 vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh() {} }), usePathname: () => '/captain', unstable_rethrow: () => {} }));
 vi.mock('@/core/timezone/server', () => ({ getTimezone: async () => 'Africa/Cairo' }));
 vi.mock('@/core/i18n/server', () => ({ getLocale: async () => 'ar', getArabicStyle: async () => 'egyptian',
@@ -61,6 +62,7 @@ it('passes the greeting, date and existing lime invite into the shared frame slo
 });
 it('renders four real tiles, the weekly chart and join empty state', async () => {
   const html = await render([player]);
+  expect(html).toContain('data-money-owed');
   expect(html).toContain('+6%');
   expect(html).toContain('جنيه الشهر ده');
   expect(html).toContain('اتمرنوا النهارده');

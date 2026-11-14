@@ -5,6 +5,7 @@ import { Check, Ellipsis } from 'lucide-react';
 import { useLocale, useT } from '@/core/i18n/client';
 import { formatNumber } from '@/lib/format';
 import { savingsPercent } from '../pricing';
+import { duplicateDuration, durationLabel } from '../package-choice';
 import { messages } from './messages';
 import type { CatalogPackage, Tier } from './types';
 
@@ -40,9 +41,12 @@ export function TierCard({ tier, packages, count, busy, onEdit, onFeature, onMov
     {packages.length ? packages.map(item => {
       const saving = item.kind === 'days' ? savingsPercent(month, item.price_egp, item.days) : 0;
       return <Button variant="secondary" key={item.id} disabled={busy} onClick={() => onPackage(item)} className="flex min-h-12 w-full flex-wrap items-center gap-2.5 border-t border-line-soft px-[18px] py-3 text-start text-[13px] first:border-0">
-        <span>{item.kind === 'sessions' ? item.name : item.days === 30 ? t('month') : item.days % 30 === 0 ? t('months', { n: item.days / 30 }) : t('days', { n: item.days })}</span>
+        <span>{item.kind === 'sessions' ? item.name : durationLabel(item.days, t, locale)}
+          {duplicateDuration(packages, item) && <span className="block text-xs text-warn">{t('duplicateWarning')}</span>}
+        </span>
         {saving > 0 && <span className="rounded-full bg-lime-soft px-2 py-0.5 text-[11px] text-lime">{t('savePercent', { n: saving })}</span>}
         <b className="ms-auto font-display text-[15px] font-extrabold tabular-nums">{formatNumber(item.price_egp, locale)}</b>{t('currency')}
+        {duplicateDuration(packages, item) && <span className="underline">{t('editDuration')}</span>}
       </Button>;
     }) : <p className="px-[18px] py-3 text-xs text-faint">{t('noDurations')}</p>}
     <footer className="flex items-center gap-2 border-t border-line-soft px-[18px] text-xs text-faint">

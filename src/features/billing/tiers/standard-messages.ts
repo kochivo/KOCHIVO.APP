@@ -1,4 +1,7 @@
 export const arStd = {
+  year: 'سنة', customDuration: 'مدة أخرى', durationChoice: 'المدة', editDuration: 'عدّل',
+  duplicateDuration: 'هذه المدة موجودة في الفئة. عدّل سعرها بدلًا من إضافة مدة أخرى',
+  duplicateWarning: 'مدتان بالطول نفسه، سيرى اللاعب واحدة فقط',
   title: 'باقاتي والعروض', breadcrumb: 'الدفعات ‹', intro: 'الباقات التي يختارها اللاعب عند الانضمام أو التجديد · تظهر في صفحتك العامة',
   publicPage: 'اعرض صفحتي', newTier: 'باقة جديدة', addTier: '+ باقة جديدة', example: 'مثلًا: أونلاين فقط، حصص في النادي',
   featured: 'الأكثر طلبًا', menu: 'خيارات {name}', rename: 'غيّر الاسم', editFeatures: 'عدّل المميزات', feature: 'اجعلها الأكثر طلبًا',

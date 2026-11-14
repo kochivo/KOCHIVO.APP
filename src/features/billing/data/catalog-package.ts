@@ -6,6 +6,7 @@ import { uuidv7 } from '@/core/offline/ids';
 import { getT } from '@/core/i18n/server';
 import { captainClient } from './client';
 import { messages } from '../messages';
+import { messages as durationMessages } from '../tiers/messages';
 import type { CatalogPackage } from '../tiers/types';
 import type { ActionResult } from '../types';
 
@@ -20,6 +21,17 @@ export async function saveCatalogPackage(input: unknown): Promise<ActionResult<C
   try {
     const { client, captainId } = await captainClient();
     const { id, price, ...fields } = parsed.data;
+    if (fields.tier_id) {
+      const length = fields.kind === 'days' ? fields.days : fields.sessions;
+      if (length === null) return { error: t('packageInvalid') };
+      let duplicate = client.from('captain_packages').select('id').eq('captain_id', captainId)
+        .eq('tier_id', fields.tier_id).is('archived_at', null).eq('kind', fields.kind)
+        .eq(fields.kind === 'days' ? 'days' : 'sessions', length);
+      if (id) duplicate = duplicate.neq('id', id);
+      const existing = await duplicate;
+      if (existing.error) throw existing.error;
+      if (existing.data.length) return { error: (await getT(durationMessages))('duplicateDuration') };
+    }
     const table = client.from('captain_packages');
     const row = { ...fields, price_egp: price };
     const query = id ? table.update(row).eq('id', id).eq('captain_id', captainId)
