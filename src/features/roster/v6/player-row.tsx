@@ -1,65 +1,49 @@
 'use client';
-import { Button } from '@/ui/button';
-import { IconButton } from '@/ui/icon-button';
-import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Ellipsis, Eye, Archive, Salad } from 'lucide-react';
 import { useLocale, useT } from '@/core/i18n/client';
-import { DEFAULT_TIMEZONE, daysBetween, formatDateAr } from '@/lib/dates';
+import { daysBetween } from '@/lib/dates';
 import { formatNumber } from '@/lib/format';
-import { starterText } from '@/lib/starter-text';
 import type { RosterPlayer } from '../types';
 import type { RosterMeta } from '../data/v6-roster';
-import { lastSeenLabel } from '../status';
-import { messages as legacyMessages } from '../messages';
 import { messages } from './messages';
-import { TierBadge } from '@/ui/tier-badge';
+import { playerStatus } from './model';
+import type { PlayerActivity } from './model';
+import { WeekDots } from './week-dots';
 
-export function PlayerRow({ player, today, meta, hasFood, error, onArchive }: {
-  player: RosterPlayer; today: string; meta?: RosterMeta; hasFood: boolean; error?: string; onArchive: () => void;
+export function PlayerRow({ player, today, meta, activity, mobile = false }: {
+  player: RosterPlayer; today: string; meta?: RosterMeta; activity?: PlayerActivity; mobile?: boolean;
 }) {
-  const t = useT(messages), old = useT(legacyMessages), locale = useLocale();
-  const [open, setOpen] = useState(false);
+  const t = useT(messages), locale = useLocale();
+  const n = (value: number) => formatNumber(value, locale);
+  const days = Math.max(0, daysBetween(today, player.accessUntil));
+  const status = playerStatus(player, today, activity?.video);
+  const goal = meta && meta.target !== null ? t(meta.target < meta.weight ? 'lose' : meta.target > meta.weight ? 'gain' : 'maintain') : null;
+  const avatarClass = `shrink-0 ${mobile ? 'size-[42px] rounded-[13px] text-[15px]' : 'size-[38px] rounded-xl text-sm'}`;
+  const avatar = player.avatarUrl ? <Image src={player.avatarUrl} alt="" width={42} height={42} unoptimized
+    className={`${avatarClass} object-cover`} /> :
+    <span aria-hidden className={`glass-strong grid place-items-center font-bold text-lime ${avatarClass}`}>{player.fullName.charAt(0)}</span>;
+  const pill = <span className={`inline-flex h-6 shrink-0 items-center whitespace-nowrap rounded-full border px-2.5 text-[11.5px] font-medium ${
+    status.tone === 'warn' ? 'border-warn/20 bg-warn/10 text-warn' : status.tone === 'calm' ? 'border-calm/20 bg-calm/10 text-calm' :
+      status.tone === 'lime' ? 'border-lime/20 bg-lime/10 text-lime' : 'border-line bg-ink/5 text-muted'}`}>
+    {t(status.key === 'good' ? 'okay' : status.key, { count: n(status.count) })}</span>;
+  const dots = activity ? <WeekDots today={player.playerToday ?? today} startedOn={player.startedOn} activity={activity} /> : null;
   const href = `/captain/players/${player.playerId}`;
-  const goal = meta && meta.target !== null ? t(meta.target < meta.weight ? 'lose' : meta.target > meta.weight ? 'gain' : 'maintain') : t('unknown');
-  const level = meta ? t(meta.experience === 'new' ? 'new' : meta.experience === 'under_1y' ? 'under_1y' : 'experienced') : t('unknown');
-  const chat = player.chat;
-  const chatTime = chat?.createdAt ? new Intl.DateTimeFormat('en-GB', { hour: 'numeric', minute: '2-digit', hourCycle: 'h23', timeZone: player.timezone ?? DEFAULT_TIMEZONE }).format(new Date(chat.createdAt)).replace(/^0/, '') : '';
-  return <div role="row" className="relative isolate grid min-h-[72px] cursor-pointer grid-cols-[minmax(0,1fr)_3rem] items-center gap-x-4 gap-y-3 border-t border-line-soft px-5 py-3 hover:bg-ink/5 lg:grid-cols-[1.4fr_1fr_1fr_1fr_3rem]">
-    <div role="cell" className="flex min-w-0 items-center gap-2.5">
-      {player.avatarUrl ? <Image src={player.avatarUrl} alt="" width={40} height={40} unoptimized className="size-10 shrink-0 rounded-full object-cover" /> :
-        <span aria-hidden className="glass-strong grid size-10 shrink-0 place-items-center rounded-full">{player.fullName.charAt(0)}</span>}
-      <div className="min-w-0"><Link href={href} prefetch={false} className="block min-w-0 truncate font-medium after:absolute after:inset-0 after:min-h-12 hover:text-lime">{player.fullName}</Link>
-        <p className="text-xs text-faint">{goal} · {level}</p>
-        {chat?.createdAt && <Link href={`${href}/chat`} prefetch={false} className="relative z-10 flex min-h-12 items-center text-xs text-muted">
-          <span className="truncate">{chat.voice ? old('chatVoice', { time: chatTime }) : chat.body?.split(/\r?\n/)[0]}</span>
-        </Link>}
-      </div><TierBadge tier={player.tier} />
-      {(chat?.unread ?? 0) > 0 && <Link href={`${href}/chat`} prefetch={false}
-        aria-label={old('chatUnread', { count: formatNumber(chat?.unread ?? 0, locale) })}
-        className="relative z-10 inline-flex min-h-12 min-w-12 items-center justify-center rounded-full bg-lime px-2 font-display text-xs font-extrabold text-on-lime">{formatNumber(chat?.unread ?? 0, locale)}</Link>}
-      {player.openTasks > 0 && <span className="text-xs text-lime" aria-label={old('taskCount', { n: player.openTasks, count: formatNumber(player.openTasks, locale) })}>{formatNumber(player.openTasks, locale)}</span>}
-    </div>
-    <div role="cell" className="col-start-1 text-sm text-muted lg:col-auto"><span className="me-2 text-xs text-faint lg:hidden">{t('lastWorkout')}</span>{lastSeenLabel(player.lastTrainingDate, player.playerToday ?? today, locale)}</div>
-    <div role="cell" className="col-start-1 min-w-0 break-words lg:col-auto"><span className="text-[13px]">{player.programTitle ? starterText(player.programTitle, locale) : t('noProgram')}</span>
-      {!hasFood && <p className="mt-1 flex items-center gap-1 text-xs text-faint"><Salad aria-hidden className="size-3" />{t('noFood')}</p>}
-    </div>
-    <div role="cell" className="col-start-1 text-sm text-muted lg:col-auto">
-      <time dateTime={player.accessUntil} title={formatDateAr(player.accessUntil, { day: 'numeric', month: 'long', year: 'numeric' }, locale)}>
-        {t('days', { count: formatNumber(daysBetween(today, player.accessUntil), locale) })}
-      </time>
-    </div>
-    <div role="cell" className="relative z-10 col-start-2 row-start-1 lg:col-auto lg:row-auto">
-      <div className="relative" onClick={event => event.stopPropagation()}>
-        <IconButton aria-label={t('menu', { name: player.fullName })} aria-expanded={open} onClick={() => setOpen(!open)}><Ellipsis aria-hidden className="size-5" /></IconButton>
-        <div hidden={!open} className="glass-strong absolute end-0 z-20 w-48 rounded-card border border-line-soft p-2 shadow-xl">
-          <Link href={`${href}/preview`} prefetch={false} className="glass flex min-h-12 items-center gap-2 rounded-full border border-line px-3 text-sm hover:bg-ink/5"><Eye aria-hidden className="size-4" />{t('preview')}</Link>
-          <Button variant="secondary" type="button" onClick={() => { if (window.confirm(old('archiveTheyllBeRemovedFromThePlayer', { v0: player.fullName }))) onArchive(); }}
-            className="flex min-h-12 w-full items-center gap-2 rounded-full border border-danger/40 px-3 text-sm text-danger! hover:bg-ink/5"><Archive aria-hidden className="size-4" />{t('archive')}</Button>
-        </div>
-      </div>
-    </div>
-    {error && <p role="alert" className="col-span-full text-sm text-danger">{error}</p>}
-  </div>;
+  if (mobile) return <Link href={href} prefetch={false}
+    className="glass flex min-h-12 items-center gap-3 rounded-[16px] p-3 text-start focus-visible:outline-2 focus-visible:outline-lime">
+    {avatar}<div className="min-w-0 flex-1"><b className="block truncate text-sm">{player.fullName}</b>
+      <small className="block text-xs text-muted">{goal ? `${goal} · ` : ''}{t('days', { count: n(days) })}</small>
+      <div className="mt-1.5">{dots}</div></div>{pill}
+  </Link>;
+  return <tr className="relative cursor-pointer border-b border-line-soft text-[13.5px] last:border-0 hover:bg-ink/5">
+    <td className="px-2.5 py-2"><div className="flex items-center gap-2.5">{avatar}<div className="min-w-0">
+      <Link href={href} prefetch={false} className="block font-semibold after:absolute after:inset-0 after:min-h-12 focus-visible:text-lime">{player.fullName}</Link>
+      {goal && <small className="block text-xs text-muted">{goal}</small>}</div>
+      {activity?.rank && <span className="shrink-0 rounded-full bg-warn/10 px-[7px] py-0.5 text-[9.5px] font-extrabold text-warn">{t(activity.rank)}</span>}</div></td>
+    <td className="px-2.5 py-2">{dots}</td>
+    <td className="px-2.5 py-2 tabular-nums">{meta ? n(meta.weight) : t('unknown')}</td>
+    <td className="px-2.5 py-2 tabular-nums">{activity?.rpe != null ? n(activity.rpe) : t('unknown')}</td>
+    <td className={`px-2.5 py-2 tabular-nums ${days <= 3 ? 'text-warn' : ''}`}>{t('dayCount', { count: n(days) })}</td>
+    <td className="px-2.5 py-2">{pill}</td>
+  </tr>;
 }

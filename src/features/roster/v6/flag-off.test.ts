@@ -7,6 +7,7 @@ import { RosterScreen as LegacyRoster } from '../components/roster-screen';
 import { RosterScreen } from '../components/roster-screen-entry';
 import type { RosterResult } from '../types';
 import { loadRosterExtras } from '../data/v6-roster';
+import { loadActivity } from './data/load-activity';
 
 const state = vi.hoisted(() => ({ result: { players: [] } as RosterResult }));
 vi.mock('react', async original => ({ ...await original<typeof React>(), use: () => [state.result, 'Ali'] }));
@@ -19,6 +20,7 @@ vi.mock('@/features/demo', () => ({ useDemoExpiry: () => null }));
 vi.mock('@/features/coach-page', () => ({ JoinRequestsList: () => null }));
 vi.mock('../data/archive-player', () => ({ archivePlayer: vi.fn() }));
 vi.mock('../data/v6-roster', () => ({ loadRosterExtras: vi.fn() }));
+vi.mock('./data/load-activity', () => ({ loadActivity: vi.fn() }));
 afterEach(() => vi.unstubAllEnvs());
 it.each([undefined, '', '0', 'true'])('keeps roster HTML byte-identical and skips v6 reads for flag %s', async flag => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', flag);
@@ -32,4 +34,5 @@ it.each([undefined, '', '0', 'true'])('keeps roster HTML byte-identical and skip
     }
   }
   expect(loadRosterExtras).not.toHaveBeenCalled();
+  expect(loadActivity).not.toHaveBeenCalled();
 });

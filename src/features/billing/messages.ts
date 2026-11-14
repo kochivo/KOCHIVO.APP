@@ -2,6 +2,42 @@ import { defineMessages } from '@/core/i18n/messages';
 
 import { arStd } from './standard/messages';
 
+export const workspaceMessages = defineMessages({
+  ar: {
+    title: 'الاشتراكات والدفعات', catalog: 'الباقات والعروض', income: 'دخل الشهر', pending: 'مستني تأكيد',
+    ending: 'بيخلص الأسبوع ده', active: 'اشتراك شغال', soon: 'بيخلص قريب', all: 'كل الدفعات',
+    confirm: 'وافق', confirmed: 'اتأكدت', saved: 'اتوافق على طلب تجديد {name}',
+    renewalRequest: 'طلب تجديد · {package}', renewalOnly: 'تجديد من غير دفعة',
+    fallback: 'اتقبل الطلب. العرض خلص؛ راجع تفاصيل الاشتراك', after: 'بعد {n} يوم',
+    noRequests: 'مفيش دفعات مستنية تأكيد', noExpiring: 'مفيش اشتراكات بتخلص قريب',
+    player: 'اللاعب', amount: 'المبلغ', date: 'التاريخ', status: 'الحالة', latest: 'آخر دفعة لكل لاعب؛ اضغط اسمه لكل الدفعات',
+    newPackage: 'باقة جديدة', edit: 'عدّل', featured: 'مميزة', offers: 'العروض', newOffer: '+ عرض جديد',
+    back: 'رجوع', percent: '%', bonus: '+',
+  },
+  arStd: {
+    title: 'الاشتراكات والدفعات', catalog: 'الباقات والعروض', income: 'دخل الشهر', pending: 'بانتظار التأكيد',
+    ending: 'تنتهي هذا الأسبوع', active: 'اشتراك نشط', soon: 'تنتهي قريبًا', all: 'كل الدفعات',
+    confirm: 'وافق', confirmed: 'مؤكدة', saved: 'تمت الموافقة على طلب تجديد {name}',
+    renewalRequest: 'طلب تجديد · {package}', renewalOnly: 'تجديد دون دفعة',
+    fallback: 'تم قبول الطلب. انتهى العرض؛ راجع تفاصيل الاشتراك', after: 'بعد {n} يوم',
+    noRequests: 'لا توجد دفعات بانتظار التأكيد', noExpiring: 'لا توجد اشتراكات تنتهي قريبًا',
+    player: 'اللاعب', amount: 'المبلغ', date: 'التاريخ', status: 'الحالة', latest: 'آخر دفعة لكل لاعب؛ اضغط اسمه لعرض كل الدفعات',
+    newPackage: 'باقة جديدة', edit: 'عدّل', featured: 'مميزة', offers: 'العروض', newOffer: '+ عرض جديد',
+    back: 'رجوع', percent: '%', bonus: '+',
+  },
+  en: {
+    title: 'Subscriptions and payments', catalog: 'Packages and offers', income: 'Monthly income', pending: 'Awaiting confirmation',
+    ending: 'Ending this week', active: 'Active subscriptions', soon: 'Ending soon', all: 'All payments',
+    confirm: 'Approve', confirmed: 'Confirmed', saved: '{name}’s renewal request approved',
+    renewalRequest: 'Renewal request · {package}', renewalOnly: 'Renewed without payment',
+    fallback: 'Request approved. The offer expired; review the subscription', after: 'In {n} days',
+    noRequests: 'No payments awaiting confirmation', noExpiring: 'No subscriptions ending soon',
+    player: 'Player', amount: 'Amount', date: 'Date', status: 'Status', latest: 'Latest payment per player; select a name for all payments',
+    newPackage: 'New package', edit: 'Edit', featured: 'Featured', offers: 'Offers', newOffer: '+ New offer',
+    back: 'Back', percent: '%', bonus: '+',
+  },
+});
+
 export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },

@@ -29,16 +29,16 @@ it('links a positive unread badge to chat and keeps the task badge distinct', ()
 it('shows the voice preview with its time', () => {
   expect(render({ unread: 1, voice: true, createdAt: '2026-11-13T07:44:00Z' })).toContain('رسالة صوتية · 9:44');
 });
-it('shows the badge and preview on the workspace roster while retaining the player facts', () => {
+it('opens the player file from the workspace roster without the legacy chat preview', () => {
   const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' }, createElement(PlayerRow, {
     player: { ...player, chat: { unread: 2, body: 'وصلت الرسالة\nسطر تاني', createdAt: '2026-11-13T07:44:00Z' } },
-    today: '2026-11-13', hasFood: true, onArchive: () => undefined,
+    today: '2026-11-13',
   })));
-  expect(html).toContain('aria-label="2 رسايل جديدة"');
-  expect(html).toContain('href="/captain/players/p/chat"');
-  expect(html).toContain('وصلت الرسالة');
+  expect(html).toContain('href="/captain/players/p"');
+  expect(html).not.toContain('href="/captain/players/p/chat"');
+  expect(html).not.toContain('وصلت الرسالة');
   expect(html).not.toContain('سطر تاني');
-  expect(html).toContain('مهام مستنياك');
+  expect(html).toContain('محتاج برنامج');
 });
 it('loads one counts query for the whole roster and associates the latest preview with each player', async () => {
   const requests: URL[] = [];

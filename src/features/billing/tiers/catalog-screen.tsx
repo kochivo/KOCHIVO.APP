@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useT } from '@/core/i18n/client';
 import { useCalendarClock } from '@/lib/use-calendar-clock';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { Button } from '@/ui/button';
 import { LoadingState } from '@/ui/loading-state';
 import { ErrorState } from '@/ui/error-state';
@@ -17,6 +18,7 @@ import { useCatalog } from './use-catalog';
 import { UnassignedPackages } from './unassigned-packages';
 import { tierOperation } from './tier-operations';
 import type { CatalogOffer, CatalogPackage, Tier } from './types';
+import { WorkspaceCatalog } from '../components/workspace-catalog';
 
 const TierSheet = dynamic(() => import('./tier-sheet').then(module => module.TierSheet), { loading: () => <LoadingState variant="cards" /> });
 const PackageSheet = dynamic(() => import('./package-sheet').then(module => module.PackageSheet), { loading: () => <LoadingState variant="cards" /> });
@@ -24,6 +26,9 @@ const OfferScreen = dynamic(() => import('../offers/offer-screen').then(module =
 type Panel = { kind: 'tier'; tier?: Tier } | { kind: 'package'; tierId: string; item?: CatalogPackage }
   | { kind: 'offer'; offer?: CatalogOffer; preset?: Preset };
 export function CatalogScreen() {
+  return captainWorkspaceEnabled() ? <WorkspaceCatalog /> : <LegacyCatalogScreen />;
+}
+function LegacyCatalogScreen() {
   const catalog = useCatalog(), t = useT(messages);
   const [initialNow] = useState(() => new Date());
   const clock = useCalendarClock(), now = clock.now ?? initialNow;

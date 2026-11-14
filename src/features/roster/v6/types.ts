@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react';
 import type { RosterResult } from '../types';
 import type { loadRosterExtras } from '../data/v6-roster';
+import type { Activity } from './model';
 
 export interface RequestListProps {
   rows: { id: string; full_name: string }[];
@@ -11,4 +12,5 @@ export interface WorkspaceRosterProps {
   today: string;
   extras: Awaited<ReturnType<typeof loadRosterExtras>>;
   RequestList: ComponentType<RequestListProps>;
+  details?: { activity: Activity } | { error: true };
 }

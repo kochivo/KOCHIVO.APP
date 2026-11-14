@@ -1,7 +1,7 @@
-'use client';
-import dynamic from 'next/dynamic';
-import { LoadingState } from '@/ui/loading-state';
+import { RosterLoader } from './roster-loader';
+import { loadActivity } from './data/load-activity';
+import type { WorkspaceRosterProps } from './types';
 
-export const WorkspaceRosterEntry = dynamic(() => import('./roster').then(module => module.WorkspaceRoster), {
-  loading: () => <LoadingState variant="list" />,
-});
+export async function WorkspaceRosterEntry(props: WorkspaceRosterProps) {
+  return <RosterLoader {...props} details={await loadActivity(props.today)} />;
+}
