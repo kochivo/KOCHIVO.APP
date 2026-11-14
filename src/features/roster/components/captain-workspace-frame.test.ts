@@ -27,8 +27,8 @@ it('renders grouped navigation, real captain identity and the existing plan foot
   const html = render(await CaptainWorkspaceFrame({ children: 'Page content', sidebarFooter: 'Current plan' }));
   for (const text of ['شغلي', 'لاعبيني', 'مكتبتي', 'حسابي', 'Actual captain', 'Current plan', 'Page content', 'دور على لاعب أو صفحة', 'Ctrl K']) expect(html).toContain(text);
   expect(html).toContain('1 لاعب');
-  expect(html).not.toContain('href="/captain/tasks"');
-  expect(html).not.toContain('href="/captain/join-requests"');
+  expect(html).toContain('href="/captain/tasks"');
+  expect(html).toContain('href="/captain/join"');
   expect(html).not.toContain('href="/captain/notifications"');
   expect(html).toContain('min-[760px]');
   expect(html).toContain('captain-more');
@@ -54,6 +54,7 @@ it('puts only remaining destinations into grouped mobile tiles', () => {
   const html = render(createElement(CaptainNavGroups, { active: 'players', counts, tiles: true }));
   expect(html).toContain('grid-cols-3');
   expect(html).toContain('href="/captain/billing"');
+  expect(html).toContain('href="/captain/join"');
   expect(html).not.toContain('href="/captain/players"');
   expect(html).not.toContain('href="/captain/inbox"');
 });
@@ -70,6 +71,6 @@ it('searches real players and available pages and reports player load failure', 
   const html = render(createElement(CaptainSearchPalette, { players: [{ id: 'p1', name: 'Actual player' }], onClose: () => {} }));
   expect(html).toContain('href="/captain/players/p1"');
   expect(html).toContain('Actual player');
-  expect(html).not.toContain('/captain/tasks');
+  expect(html).toContain('/captain/tasks');
   expect(render(createElement(CaptainSearchPalette, { players: null, onClose: () => {} }))).toContain('البيانات مش متاحة دلوقتي');
 });

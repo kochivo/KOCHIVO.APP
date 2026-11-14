@@ -3,15 +3,21 @@ import { useTimezone } from '@/core/timezone/client';
 import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useT } from '@/core/i18n/client';
-import { Button } from '@/ui';
+import { Button } from '@/ui/button';
+import { useToast } from '@/ui/toast';
 import { resolveJoinRequest } from '../data/join-requests';
 import { messages } from '../messages';
 import { BillingManagerLoader } from '@/features/billing';
 import { localDate } from '@/lib/dates';
+import { WorkspaceJoinCard } from './workspace-join-card';
+import type { JoinRequestRow } from './workspace-join-card';
 
-export function JoinRequestsList({ rows, onResolved }: { rows: { id: string; full_name: string }[]; onResolved?: (id: string) => void }) {
+export function JoinRequestsList({ rows, onResolved, workspace = false, now = 0 }: {
+  rows: JoinRequestRow[]; onResolved?: (id: string) => void; workspace?: boolean; now?: number;
+}) {
   const timezone = useTimezone();
   const t = useT(messages), router = useRouter();
+  const toast = useToast();
   const [hidden, setHidden] = useState<string[]>([]);
   const [error, setError] = useState('');
   const [selected, setSelected] = useState<{ id: string; name: string } | null>(null);
@@ -24,6 +30,7 @@ export function JoinRequestsList({ rows, onResolved }: { rows: { id: string; ful
       const result = await resolveJoinRequest(id, status);
       if (result.error) throw new Error(result.error);
       if (status === 'accepted' && result.playerId) setSelected({ id: result.playerId, name: rows.find(row => row.id === id)?.full_name ?? '' });
+      if (workspace && status === 'accepted') toast.success(t('joinAccepted', { name: rows.find(row => row.id === id)?.full_name ?? '' }));
       onResolved?.(id);
       router.refresh();
     } catch {
@@ -33,11 +40,13 @@ export function JoinRequestsList({ rows, onResolved }: { rows: { id: string; ful
   return <div className="space-y-3">
     {selected && <BillingManagerLoader playerId={selected.id} name={selected.name} today={localDate(new Date(), timezone)} autoActivate />}
     {error && <p role="alert" className="text-danger">{error}</p>}
-    {visible.length ? <ul className="space-y-3">{visible.map(row => <li key={row.id} className="flex flex-wrap items-center justify-between gap-3">
+    {visible.length ? <ul className={workspace ? 'grid grid-cols-1 gap-3.5 min-[760px]:grid-cols-2' : 'space-y-3'}>{visible.map(row => workspace
+      ? <WorkspaceJoinCard key={row.id} row={row} now={now} onResolve={(id, status) => void resolve(id, status)} />
+      : <li key={row.id} className="flex flex-wrap items-center justify-between gap-3">
       <span>{row.full_name}</span><div className="flex gap-2">
         <Button variant="secondary" onClick={() => void resolve(row.id, 'accepted')}>{t('accept')}</Button>
         <Button variant="secondary" className="border border-danger/40 text-danger" onClick={() => void resolve(row.id, 'declined')}>{t('decline')}</Button>
       </div>
-    </li>)}</ul> : <p className="text-sm text-muted">{t('empty')}</p>}
+    </li>)}</ul> : <p className={workspace ? 'glass rounded-card p-5 text-sm text-muted' : 'text-sm text-muted'}>{t('empty')}</p>}
   </div>;
 }

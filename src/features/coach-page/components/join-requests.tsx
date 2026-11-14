@@ -4,8 +4,10 @@ import { messages } from '../messages';
 import { JoinRequestsList } from './join-requests-list-entry';
 import { Inbox } from 'lucide-react';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { WorkspaceJoinPage } from './workspace-join-page';
 
-export async function JoinRequests() {
+export async function JoinRequests({ page = false }: { page?: boolean } = {}) {
+  if (page) return <WorkspaceJoinPage />;
   if (captainWorkspaceEnabled()) return null;
   const t = await getT(messages);
   const result = await loadJoinRequests();

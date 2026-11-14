@@ -5,6 +5,8 @@ import { arStd } from './standard/messages';
 export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? { ...arStd,
+    copyJoinLink: 'انسخ رابط الانضمام', requestSent: 'أرسل الطلب', newRequest: 'جديد',
+    joinAccepted: 'تم قبول {name}',
     playerLogin: "دخول اللاعبين",
     verified: "كابتن موثّق على كوتشيفو",
     requestJoin: "اطلب الانضمام",
@@ -54,6 +56,8 @@ export const messages = defineMessages({
     madeOn: "هذه الصفحة مصمّمة على KOCHIVO",
   } as const : undefined; },
   ar: {
+    copyJoinLink: 'انسخ لينك الانضمام', requestSent: 'بعت الطلب', newRequest: 'جديد',
+    joinAccepted: 'اتقبل {name}',
     playerLogin: "دخول اللاعبين",
     verified: "كابتن موثّق على كوتشيفو",
     requestJoin: "اطلب تشترك",
@@ -121,6 +125,8 @@ export const messages = defineMessages({
     whatsapp: 'واتساب', instagram: 'إنستجرام', tiktok: 'تيك توك', facebook: 'فيسبوك', youtube: 'يوتيوب', x: 'إكس',
   },
   en: {
+    copyJoinLink: 'Copy join link', requestSent: 'Request sent', newRequest: 'New',
+    joinAccepted: '{name} accepted',
     playerLogin: "Player login",
     verified: "Verified coach on KOCHIVO",
     requestJoin: "Request to join",

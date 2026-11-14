@@ -13,10 +13,10 @@ import { KoSettings } from '@/ui/icons/ko-settings';
 
 export const frameItems = [
   { id: 'home', href: '/captain', group: 'work', icon: KoHome, available: true, mobile: true },
-  { id: 'tasks', href: '/captain/tasks', group: 'work', icon: KoFollowup, available: false, mobile: true },
+  { id: 'tasks', href: '/captain/tasks', group: 'work', icon: KoFollowup, available: true, mobile: true },
   { id: 'inbox', href: '/captain/inbox', group: 'work', icon: KoCaptainChat, available: true, mobile: true },
   { id: 'players', href: '/captain/players', group: 'team', icon: KoPlayers, available: true, mobile: true },
-  { id: 'join', href: '/captain/join-requests', group: 'team', icon: KoInvite, available: false, mobile: false },
+  { id: 'join', href: '/captain/join', group: 'team', icon: KoInvite, available: true, mobile: false },
   { id: 'ranks', href: '/captain/leaderboard', group: 'team', icon: KoProgress, available: true, mobile: false },
   { id: 'billing', href: '/captain/billing', group: 'team', icon: KoBilling, available: true, mobile: false },
   { id: 'programs', href: '/captain/templates', group: 'library', icon: KoTraining, available: true, mobile: false },

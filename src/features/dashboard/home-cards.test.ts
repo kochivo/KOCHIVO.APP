@@ -6,11 +6,21 @@ import { LocaleProvider } from '@/core/i18n/client';
 import { HomeNeeds } from './home/home-needs';
 import { HomeSideCards } from './home/home-side-cards';
 import { HomeTasks } from './home/home-tasks';
+import { HomeConfirmations } from './home/home-confirmations';
 
 vi.mock('server-only', () => ({}));
 vi.mock('@/core/i18n/server', () => ({ getLocale: async () => 'ar', getArabicStyle: async () => 'egyptian',
   getT: async (dictionary: Parameters<typeof createT>[0]) => createT(dictionary, 'ar') }));
 const now = new Date('2026-11-12T15:00:00Z');
+it('links join confirmations to the join page with names and count, preserving the payment link', async () => {
+  const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' }, await HomeConfirmations({
+    requests: [{ id: 'r1', name: 'عمر خالد' }, { id: 'r2', name: 'مريم سعيد' }],
+    payments: [{ id: 'p1', name: 'أحمد' }], paymentsFailed: false,
+  })));
+  expect(html).toMatch(/<a[^>]*href="\/captain\/join"[^>]*>[\s\S]*عمر خالد[\s\S]*مريم سعيد[\s\S]*>2<\/span><\/a>/);
+  expect(html).toContain('href="/captain/billing"');
+  expect(html).not.toContain('home-join-requests');
+});
 it('keeps the form-video category beside its exercise and age', async () => {
   const html = renderToStaticMarkup(await HomeNeeds({ rows: [{ kind: 'form', id: 'f', playerId: 'p', name: 'كريم',
     title: 'Squat 100 kg', at: '2026-11-12T12:00:00Z', flags: [] }], now, failed: false, contacts: new Map() }));

@@ -7,16 +7,17 @@ it('maps independent counts without treating unavailable data as zero', () => {
   expect(frameCounts({ tasks: 0, chats: {}, joins: 0 }).inbox).toBe(0);
 });
 
-it('hides destinations that have no route yet', () => {
+it('shows every destination that has a route', () => {
   const available = frameItems.filter(item => item.available).map(item => item.id);
-  expect(available).not.toContain('tasks');
-  expect(available).not.toContain('join');
+  expect(available).toContain('tasks');
+  expect(available).toContain('join');
 });
 
 it.each([
   ['/captain/players/id/programs', 'players'], ['/captain/programs/id', 'programs'],
   ['/captain/nutrition/id', 'plans'], ['/captain/library/exercises/id/edit', 'exercises'],
   ['/captain/billing/packages', 'billing'], ['/captain/notifications', 'home'],
+  ['/captain/join', 'join'],
 ])('maps %s to the mockup parent %s', (path, parent) => {
   expect(frameParent(path)).toBe(parent);
 });
