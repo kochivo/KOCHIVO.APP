@@ -3,8 +3,9 @@ import { arStd } from './standard/messages';
 
 export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
-  get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
+  get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? { ...arStd, workspaceMarkAll: 'علّم الكل مقروء' } : undefined; },
   ar: {
+    workspaceMarkAll: 'علّم الكل مقروء',
     chat_message: '{name} بعتلك رسالة',
     renewal_requested: '{name} بعت طلب تجديد',
     form_requested: 'الكابتن مستني ردّك على {name}',
@@ -35,6 +36,7 @@ export const messages = defineMessages({
     now: 'دلوقتي', minutes: 'من {n} دقيقة', hours: 'من {n} ساعة', days: 'من {n} يوم',
   },
   en: {
+    workspaceMarkAll: 'Mark all as read',
     chat_message: '{name} sent you a message',
     renewal_requested: '{name} requested a renewal',
     form_requested: 'Your captain is waiting for: {name}',
