@@ -1,14 +1,17 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Dumbbell } from 'lucide-react';
 import { Button } from '@/ui/button';
 import { useLocale, useT } from '@/core/i18n/client';
 import { activateProgram, startTraining, useTrainingAutosave, validateForActivation, programMessages } from '@/features/programs';
 import type { ProgramDraft } from '@/features/programs';
 import { StartChoice } from './start-choice';
-import { DayExercises } from './day-exercises';
+import { applyCustomExercise, DayExercises } from './day-exercises';
+import { completeCustomExerciseReturn } from './custom-exercise';
+import { uuidv7 } from '@/core/offline/ids';
 import { messages } from './messages';
 import { DayRail } from './day-rail';
 import { DaySummary } from './day-summary';
@@ -32,11 +35,44 @@ export function TrainingEditor({ playerId, playerName, remainingDays, playerFact
   const locale = useLocale();
   const template = mode === 'template';
   const state = useTrainingAutosave(initial);
-  const [selected, setSelected] = useState(''), [choosing, setChoosing] = useState(!initial);
+  const search = useSearchParams(), pathname = usePathname(), router = useRouter();
+  const returnProgram = search.get('exerciseProgram') ?? '', returnDay = search.get('exerciseDay') ?? '';
+  const returnId = search.get('customExercise') ?? '', returnMode = search.get('customExerciseMode') ?? '';
+  const [selected, setSelected] = useState(returnProgram === initial?.id ? returnDay : ''), [choosing, setChoosing] = useState(!initial);
   const [templates, setTemplates] = useState(false), [pending, setPending] = useState(false), [error, setError] = useState('');
   const [sent, setSent] = useState(false);
   const [assigning, setAssigning] = useState(false);
+  const [returnError, setReturnError] = useState('');
+  const handlingReturn = useRef('');
   const draft = state.draft;
+  const { update: updateDraft, flush: flushDraft } = state;
+  const draftId = draft?.id;
+  const acceptReturn = useCallback(async () => {
+    const key = `${returnProgram}:${returnDay}:${returnId}:${returnMode}`;
+    if (!returnId || draftId !== returnProgram || !returnDay || !['add', 'edit'].includes(returnMode) || handlingReturn.current === key) return;
+    handlingReturn.current = key;
+    setPending(true); setReturnError('');
+    try {
+      const saved = await completeCustomExerciseReturn(returnId, library => {
+        // A read may finish after the captain has left this editor.
+        if (window.location.pathname !== pathname || new URLSearchParams(window.location.search).get('customExercise') !== returnId) throw new Error('navigation');
+        updateDraft(current => applyCustomExercise(current, returnProgram, returnDay, library, returnMode, uuidv7()));
+      }, flushDraft);
+      if (!saved) throw new Error('save');
+      setSelected(returnDay);
+      if (window.location.pathname === pathname) {
+        const next = new URLSearchParams(search);
+        next.delete('customExercise'); next.delete('customExerciseMode');
+        router.replace(`${pathname}?${next}`, { scroll: false });
+      }
+    } catch { handlingReturn.current = ''; setReturnError(t('error')); }
+    finally { setPending(false); }
+  }, [draftId, returnProgram, returnDay, returnId, returnMode, pathname, search, router, updateDraft, flushDraft, t]);
+  useEffect(() => {
+    let active = true;
+    void Promise.resolve().then(() => { if (active) void acceptReturn(); });
+    return () => { active = false; };
+  }, [acceptReturn]);
   const allRest = template && draft && draft.days.length > 0 && draft.days.every(row => row.is_rest_day);
   const day = draft?.days.find(row => row.id === selected) ?? draft?.days.find(row => !row.is_rest_day) ?? draft?.days[0];
   const update = (operation: (current: ProgramDraft) => ProgramDraft) => {
@@ -77,6 +113,8 @@ export function TrainingEditor({ playerId, playerName, remainingDays, playerFact
       {draft && !choosing && <fieldset disabled={pending}><WeekMenu key={`${draft.id}-${day?.id ?? ''}`} draft={draft} day={day} update={update} saved={state.status === 'saved'} onNew={template ? undefined : () => { setChoosing(true); setTemplates(false); }} /></fieldset>}
     </EditorHeader>
     {(error || state.error) && <p role="alert" className="text-sm text-danger">{error || state.error}</p>}
+    {returnError && <div role="alert" className="text-sm text-danger"><p>{returnError}</p>
+      <Button variant="secondary" disabled={pending} onClick={() => void acceptReturn()}>{t('retry')}</Button></div>}
     {sent && <p role="status" className="text-xs text-faint">{t('sent')}</p>}
     {pending && <p role="status" className="text-xs text-faint">{t('loading')}</p>}
     {choosing ? <><StartChoice templates={templates} onTemplates={() => setTemplates(value => !value)} onStart={id => void start(id)} busy={pending} />
@@ -95,7 +133,7 @@ export function TrainingEditor({ playerId, playerName, remainingDays, playerFact
               <DaySummary day={day} update={update} />
               {day.is_rest_day ? <div className="glass space-y-3 rounded-card border border-dashed border-line-soft p-5 text-faint"><p>{et('rest')}</p><Button variant="secondary" className="min-h-12" onClick={() => update(current => restDay(current, day.id, false))}><Dumbbell aria-hidden className="size-4" />{et('restore')}</Button></div> : <>
                 <WarmupBlock key={`warmup-${day.id}`} day={day} update={update} />
-                <DayExercises key={day.id} day={day} update={update}
+                <DayExercises key={day.id} day={day} update={update} flush={state.flush}
                   injuries={!template && draft.player_id ? playerFacts?.profile.intake?.injuries : undefined}
                   candidates={!template && draft.player_id ? playerFacts?.candidates : undefined} />
                 <CardioBlock day={day} update={update} />

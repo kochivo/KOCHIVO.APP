@@ -1,5 +1,6 @@
 import { isValidElement } from 'react';
 import type * as React from 'react';
+import type * as Navigation from 'next/navigation';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { createT } from '@/core/i18n/messages';
 import type { ProgramDraft } from '@/features/programs';
@@ -9,7 +10,13 @@ import { WeekMenu } from './week-menu';
 import { EditorHeader } from './editor-header';
 
 vi.mock('server-only', () => ({}));
-vi.mock('react', async original => ({ ...await original<typeof React>(), useState: (initial: unknown) => [initial, state.set] }));
+vi.mock('react', async original => ({ ...await original<typeof React>(), useState: (initial: unknown) => [initial, state.set],
+  useCallback: (callback: unknown) => callback, useRef: (initial: unknown) => ({ current: initial }), useEffect: () => {},
+}));
+vi.mock('next/navigation', async original => ({ ...await original<typeof Navigation>(),
+  useSearchParams: () => new URLSearchParams(), usePathname: () => '/captain/templates/p/edit',
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn() }),
+}));
 vi.mock('@/core/i18n/client', () => ({ useLocale: () => 'en', useT: (messages: Parameters<typeof createT>[0]) => createT(messages, 'en') }));
 const state = vi.hoisted(() => ({ update: vi.fn(), flush: vi.fn(), activate: vi.fn(), set: vi.fn() }));
 const draft: ProgramDraft = { id: 'template', player_id: null, title: 'Template', status: 'draft', days: [] };

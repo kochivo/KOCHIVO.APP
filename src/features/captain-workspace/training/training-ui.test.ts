@@ -1,6 +1,7 @@
 import { createElement } from 'react';
+import type * as Navigation from 'next/navigation';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { expect, it, vi } from 'vitest';
+import { beforeEach, expect, it, vi } from 'vitest';
 import { LocaleProvider } from '@/core/i18n/client';
 import { TrainingEditor } from './training-editor';
 import { TrainingFacts } from './training-facts';
@@ -9,6 +10,14 @@ import { emptyWarmup } from '@/features/programs';
 import { messages } from './messages';
 
 vi.mock('server-only', () => ({}));
+const navigation = vi.hoisted(() => ({ query: '' }));
+vi.mock('next/navigation', async importOriginal => ({
+  ...await importOriginal<typeof Navigation>(),
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn() }),
+  usePathname: () => '/captain/programs/p',
+  useSearchParams: () => new URLSearchParams(navigation.query),
+}));
+beforeEach(() => { navigation.query = ''; });
 const draft: ProgramDraft = { id: 'p', title: 'Plan', player_id: 'player', status: 'draft', days: [
   { id: 'd', program_id: 'p', title: 'صدر وضهر', position: 1, warmup: emptyWarmup(), exercises: [{
     id: 'e', day_id: 'd', exercise_id: 'x', position: 1, sets: 3, reps_min: 8, reps_max: 12,
@@ -86,4 +95,16 @@ it('opens an empty training template with warm-up and inline exercise search', (
   expect(html).toContain(messages.ar.search);
   expect(html).not.toContain('ابدأ أول يوم تمرين');
   expect(html).not.toContain('~0');
+});
+it('restores the selected day from the exercise return and carries it in the new exercise link', () => {
+  navigation.query = 'exerciseProgram=p&exerciseDay=second';
+  const html = renderToStaticMarkup(createElement(TrainingEditor, {
+    playerId: 'player', programs: [], initial: { ...draft, days: [...draft.days, {
+      ...draft.days[0], id: 'second', program_id: 'p', title: 'Selected day', position: 2, warmup: emptyWarmup(), exercises: [],
+    }] },
+  }));
+  expect(html).toContain('value="Selected day"');
+  expect(html).not.toContain('Bench Press');
+  expect(decodeURIComponent(html)).toContain('exerciseDay=second');
+  expect(html).toContain('/captain/library/exercises/new?returnTo=');
 });

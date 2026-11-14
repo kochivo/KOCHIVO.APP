@@ -1,39 +1,64 @@
 'use client';
-import { useState } from 'react';
-import { useT } from '@/core/i18n/client';
-import { ResponsiveDialog } from '@/ui/responsive-dialog';
-import type { LibraryExercise } from '@/features/programs';
-import { programMessages } from '@/features/programs';
-import { saveCustom } from './data/editor-actions';
-import { messages } from './editor/messages';
-import { messages as trainingMessages } from './messages';
 
-export function CustomExercise({ onAdd, exercise }: { onAdd: (row: LibraryExercise) => void; exercise?: LibraryExercise }) {
-  const t = useT(messages), tt = useT(trainingMessages), pt = useT(programMessages);
-  const [open, setOpen] = useState(false), [busy, setBusy] = useState(false), [error, setError] = useState('');
-  const [values, setValues] = useState({ name: exercise?.name_ar || exercise?.name_en || '', bodyPart: exercise?.body_part || 'chest', equipment: exercise?.equipment || '', target: exercise?.target || '', video: exercise?.video_url || '' });
-  const opener = `custom-exercise-${exercise?.id ?? 'new'}`;
+import Link from 'next/link';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { createContext, useContext, useRef, useState } from 'react';
+import { useT } from '@/core/i18n/client';
+import type { LibraryExercise } from '@/features/programs';
+import { loadLibraryExercise } from './data/editor-actions';
+import { messages } from '../library/messages';
+
+export const CustomExerciseNavigation = createContext<{
+  programId: string; dayId: string; flush: () => Promise<boolean>;
+} | null>(null);
+
+export function exerciseReturnPath(returnTo?: string): string {
+  const fallback = '/captain/library/exercises';
+  if (!returnTo || !/^\/(?:ar\/|en\/)?captain\//.test(returnTo) || /[\\\r\n]/.test(returnTo)) return fallback;
+  const url = new URL(returnTo, 'https://kochivo.invalid');
+  return url.origin === 'https://kochivo.invalid' && /^\/(?:ar\/|en\/)?captain\//.test(url.pathname)
+    ? url.pathname + url.search : fallback;
+}
+
+export function customExerciseHref(returnTo: string, programId: string, dayId: string, exerciseId?: string) {
+  const url = new URL(exerciseReturnPath(returnTo), 'https://kochivo.invalid');
+  url.searchParams.delete('customExercise'); url.searchParams.delete('customExerciseMode');
+  url.searchParams.set('exerciseProgram', programId); url.searchParams.set('exerciseDay', dayId);
+  return `/captain/library/exercises/${exerciseId ? `${encodeURIComponent(exerciseId)}/edit` : 'new'}?${new URLSearchParams({ returnTo: url.pathname + url.search })}`;
+}
+
+export async function prepareCustomExerciseNavigation(flush: () => Promise<boolean>, navigate: () => void) {
+  if (!await flush()) return false;
+  navigate(); return true;
+}
+
+export async function completeCustomExerciseReturn(id: string, apply: (row: LibraryExercise) => void, flush: () => Promise<boolean>) {
+  const result = await loadLibraryExercise(id);
+  if (result.error !== undefined || !result.data?.is_own) throw new Error('exercise');
+  apply(result.data);
+  return flush();
+}
+
+export function CustomExercise({ exercise }: { onAdd?: (row: LibraryExercise) => void; exercise?: LibraryExercise }) {
+  const t = useT(messages), context = useContext(CustomExerciseNavigation);
+  const pathname = usePathname(), search = useSearchParams(), router = useRouter();
+  const [busy, setBusy] = useState(false), [error, setError] = useState('');
+  const navigating = useRef(false);
+  const href = customExerciseHref(`${pathname}?${search}`, context?.programId ?? '', context?.dayId ?? '', exercise?.id);
   return <div className="px-[18px] pb-3">
-    <button id={opener} className="min-h-12 rounded-full border border-line-soft px-3 text-xs text-muted" onClick={() => setOpen(true)}>{exercise ? pt('editCustomExercise') : t('custom')}</button>
-    {open && <ResponsiveDialog modal openerId={opener} fallbackId={opener} aria-label={t('custom')} onDismiss={() => { if (!busy) setOpen(false); }} className="sheet fixed inset-0 z-50 m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-md overflow-y-auto rounded-card p-5 text-ink backdrop:bg-bg-deep/80">
-      <form className="space-y-3" onSubmit={async event => {
-        event.preventDefault(); if (busy) return; setBusy(true); setError('');
-        try { const result = await saveCustom(values, exercise?.id); if (result.error !== undefined) setError(result.error);
-          else { onAdd(result.data); setOpen(false); if (!exercise) setValues({ name: '', bodyPart: 'chest', equipment: '', target: '', video: '' }); }
-        } catch { setError(tt('error')); } finally { setBusy(false); }
-      }}><h2 className="font-display text-[19px]">{t('custom')}</h2>
-        <fieldset disabled={busy} className="space-y-3">
-          {(['name', 'target', 'video'] as const).map(key => <label key={key} className="block text-xs text-faint">{t(key === 'name' ? 'customName' : key)}
-            <input required={key === 'name'} type={key === 'video' ? 'url' : 'text'} maxLength={key === 'name' ? 60 : key === 'target' ? 40 : 500} value={values[key]} onChange={event => setValues({ ...values, [key]: event.target.value })} className="block min-h-12 w-full rounded-control border border-line bg-transparent px-3 text-sm text-ink" /></label>)}
-          <label className="block text-xs text-faint">{t('bodyPart')}<select value={values.bodyPart} onChange={event => setValues({ ...values, bodyPart: event.target.value })} className="block min-h-12 w-full bg-surface text-ink">
-            {(['chest', 'back', 'upper legs', 'lower legs', 'shoulders', 'upper arms', 'lower arms', 'waist', 'core', 'glutes', 'cardio', 'neck'] as const).map((part, index) => <option key={part} value={part}>{pt((['chest', 'back', 'thighs', 'calves', 'shoulders', 'upperArms', 'forearms', 'abs', 'core', 'glutes', 'cardio', 'neck'] as const)[index] ?? 'chest')}</option>)}
-          </select></label>
-          {values.bodyPart === 'cardio' && <label className="block text-xs text-faint">{t('equipment')}<select value={values.equipment} onChange={event => setValues({ ...values, equipment: event.target.value })} className="block min-h-12 w-full bg-surface text-ink"><option value="">{pt('noMachine')}</option><option value="treadmill">{pt('treadmill')}</option><option value="stairmaster">{pt('stairmaster')}</option></select></label>}
-          <button type="submit" className="min-h-12 rounded-full border border-line px-4">{t('create')}</button>
-        </fieldset>
-        {busy && <p role="status">{tt('loading')}</p>}{error && <p role="alert" className="text-danger">{error}</p>}
-      <button type="button" disabled={busy} className="min-h-12 rounded-full border border-line px-4" onClick={() => setOpen(false)}>{t('close')}</button>
-      </form>
-    </ResponsiveDialog>}
+    <Link id={`custom-exercise-${exercise?.id ?? 'new'}`} href={href} aria-disabled={busy} aria-busy={busy}
+      className="inline-flex min-h-12 items-center rounded-full border border-line-soft px-3 text-xs text-muted"
+      onClick={event => {
+        event.preventDefault(); if (navigating.current) return;
+        navigating.current = true; setBusy(true); setError('');
+        void (async () => {
+          try {
+            if (!await prepareCustomExerciseNavigation(context?.flush ?? (async () => true), () => router.push(href))) setError(t('saveError'));
+          } catch { setError(t('saveError')); }
+          finally { navigating.current = false; setBusy(false); }
+        })();
+      }}>{t(exercise ? 'edit' : 'custom')}</Link>
+    {busy && <p role="status" className="text-sm text-muted">{t('saving')}</p>}
+    {error && <p role="alert" className="text-sm text-danger">{error}</p>}
   </div>;
 }

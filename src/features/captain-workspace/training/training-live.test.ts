@@ -1,7 +1,10 @@
 import { isValidElement } from 'react';
 import type { ReactElement } from 'react';
 import type * as React from 'react';
-import { beforeEach, expect, it, vi } from 'vitest';
+import type * as Navigation from 'next/navigation';
+import type * as EditorActions from './data/editor-actions';
+import type * as Ids from '@/core/offline/ids';
+import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { createT } from '@/core/i18n/messages';
 import type { ProgramDraft } from '@/features/programs';
 import type * as Programs from '@/features/programs';
@@ -13,10 +16,20 @@ import { DayExercises } from './day-exercises';
 import { TrainingExerciseRow } from './exercise-row';
 import { InjuryNote } from './injury-note';
 import { DaySummary } from './day-summary';
+import { loadLibraryExercise } from './data/editor-actions';
 
-const state = vi.hoisted(() => ({ cursor: 0, values: [] as unknown[], draft: null as ProgramDraft | null }));
+const state = vi.hoisted(() => ({ cursor: 0, values: [] as unknown[], draft: null as ProgramDraft | null,
+  effects: [] as (() => void | (() => void))[], query: '', replace: vi.fn(), saved: null as ProgramDraft | null }));
 vi.mock('server-only', () => ({}));
+vi.mock('./data/editor-actions', async original => ({ ...await original<typeof EditorActions>(), loadLibraryExercise: vi.fn() }));
+vi.mock('@/core/offline/ids', async original => ({ ...await original<typeof Ids>(), uuidv7: () => '01900000-0000-7000-8000-000000000002' }));
+vi.mock('next/navigation', async original => ({ ...await original<typeof Navigation>(),
+  useSearchParams: () => new URLSearchParams(state.query), usePathname: () => '/captain/programs/p',
+  useRouter: () => ({ push: vi.fn(), replace: state.replace }),
+}));
 vi.mock('react', async original => ({ ...await original<typeof React>(),
+  useCallback: (callback: unknown) => callback, useRef: (initial: unknown) => ({ current: initial }),
+  useEffect: (effect: () => void | (() => void)) => { state.effects.push(effect); },
   useState: (initial: unknown) => {
     const index = state.cursor++;
     if (!(index in state.values)) state.values[index] = initial;
@@ -29,7 +42,7 @@ vi.mock('@/core/i18n/client', () => ({ useLocale: () => 'en', useArabicStyle: ()
   useT: (dictionary: Parameters<typeof createT>[0]) => createT(dictionary, 'en'),
 }));
 vi.mock('@/features/programs', async original => ({ ...await original<typeof Programs>(),
-  useTrainingAutosave: () => ({ draft: state.draft, status: 'saved', error: '',
+  useTrainingAutosave: () => ({ draft: state.draft, status: 'saved', error: '', flush: async () => { state.saved = state.draft; return true; },
     update: (operation: (draft: ProgramDraft) => ProgramDraft) => { if (state.draft) state.draft = operation(state.draft); },
   }),
   useDragReorder: () => ({ listRef: null, handleProps: () => ({}), rowStyle: () => ({}) }),
@@ -65,7 +78,8 @@ function getProps<T>(tree: ReactElement<Record<string, unknown>>[], component: (
   if (!node) throw new Error('Missing component');
   return node.props as T;
 }
-beforeEach(() => { state.cursor = 0; state.values = []; state.draft = draft; });
+beforeEach(() => { vi.clearAllMocks(); state.cursor = 0; state.values = []; state.draft = draft; state.effects = []; state.query = ''; state.saved = null; });
+afterEach(() => vi.unstubAllGlobals());
 it('passes the live selected day and updated draft into the panel', () => {
   let tree = editor();
   expect(getProps(tree, TrainingFacts).day?.id).toBe('one');
@@ -114,4 +128,17 @@ it('does not pass player facts or injury data into template screens', () => {
   expect(tree.some(node => node.type === TrainingFacts)).toBe(false);
   expect(getProps(tree, DayExercises).injuries).toBeUndefined();
   expect(getProps(tree, DayExercises).candidates).toBeUndefined();
+});
+it('consumes the return query into the selected day, saves it, then removes the one-time parameters', async () => {
+  state.query = 'exerciseProgram=p&exerciseDay=two&customExercise=new&customExerciseMode=add';
+  vi.stubGlobal('window', { location: { pathname: '/captain/programs/p', search: `?${state.query}` } });
+  vi.mocked(loadLibraryExercise).mockResolvedValue({ data: { ...library, id: 'new', is_own: true, owner_id: 'captain',
+    target: null, video_url: null, secondary_muscles: [], instructions_ar: [], archived_at: null } });
+  const navigated = new Promise<string>(resolve => { state.replace.mockImplementation(resolve); });
+  editor();
+  state.effects[0]?.();
+  expect(await navigated).toBe('/captain/programs/p?exerciseProgram=p&exerciseDay=two');
+  expect(state.saved?.days[0]?.exercises).toHaveLength(1);
+  expect(state.saved?.days[1]?.exercises).toHaveLength(2);
+  expect(state.saved?.days[1]?.exercises[1]).toMatchObject({ exercise_id: 'new', day_id: 'two' });
 });
