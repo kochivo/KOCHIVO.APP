@@ -2,19 +2,18 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? {
-    arabicEgyptian: 'عربي مصري', arabicStandard: 'عربي فصحى', beginner: 'مبتدئ', champion: 'بطل', elite: 'نخبة', legend: 'أسطورة', crown: 'التاج',
+    beginner: 'مبتدئ', champion: 'بطل', elite: 'نخبة', legend: 'أسطورة', crown: 'التاج',
     cardio: 'الكارديو', cardioDuration: '{count} دقيقة', low: 'خفيف', moderate: 'متوسط', high: 'عالٍ',
     unsupportedAudio: 'لا يمكن لجهازك تشغيل هذا الصوت. حدّث iOS', inAppBrowserWarning: 'افتح الرابط في كروم أو سفاري ليعمل تسجيل الدخول',
     copyLink: 'انسخ الرابط', linkCopied: 'تم نسخ الرابط', linkCopyFailed: 'تعذّر نسخ الرابط. انسخه من شريط العنوان', closeNotification: 'أغلق الإشعار',
     reviewSent: 'تم إرسال المراجعة', playerRenewed: 'تم تجديد اشتراك اللاعب', paymentRecorded: 'تم تسجيل الدفعة', templateCopied: 'تم نسخ القالب',
     voiceNoteSent: 'تم إرسال الرسالة الصوتية', loading: 'جاري التحميل', increase: 'زد {controlLabel}', decrease: 'قلّل {controlLabel}', synced: 'متزامن',
     syncAttention: 'توجد تسجيلات لم تُرسل', offline: 'دون اتصال', saved: 'محفوظ · {pending}', offlineTitle: 'لا يوجد اتصال', noConnectionRightNow: 'لا يوجد اتصال الآن',
-    somethingWentWrong: 'حدثت مشكلة', tryAgainToContinue: 'حاول مجدداً للمتابعة.', tryAgain: 'حاول مجدداً', arabic: 'العربية', english: 'English', language: 'اللغة',
+    somethingWentWrong: 'حدثت مشكلة', tryAgainToContinue: 'حاول مجدداً للمتابعة.', tryAgain: 'حاول مجدداً', arabic: 'عربي', english: 'English', language: 'اللغة',
     languageFailed: 'تعذّر تغيير اللغة. حاول مجدداً', theme: 'مظهر التطبيق', themeSystem: 'الجهاز', themeLight: 'فاتح', themeDark: 'داكن',
     themeCycle: 'مظهر التطبيق: {current}، غيّر إلى {next}',
   } as const : undefined; },
   ar: {
-    arabicEgyptian: 'عربي مصري', arabicStandard: 'عربي فصحى',
     beginner: 'مبتدئ', champion: 'بطل', elite: 'نخبة', legend: 'أسطورة', crown: 'التاج',
     cardio: 'الكارديو', cardioDuration: '{count} دقيقة', low: 'خفيف', moderate: 'متوسط', high: 'عالي',
     unsupportedAudio: 'الصوت ده مش بيشتغل على جهازك، حدّث iOS',
@@ -40,7 +39,7 @@ export const messages = defineMessages({
     somethingWentWrong: "حصلت مشكلة",
     tryAgainToContinue: "جرّب تاني عشان نكمّل.",
     tryAgain: "جرّب تاني",
-    arabic: "العربية",
+    arabic: 'عربي',
     english: "English",
     language: "اللغة",
     languageFailed: "مش قادرين نغيّر اللغة. جرّب تاني",
@@ -51,7 +50,6 @@ export const messages = defineMessages({
     themeCycle: "شكل التطبيق: {current}، غيّر لـ{next}",
   },
   en: {
-    arabicEgyptian: 'عربي مصري', arabicStandard: 'عربي فصحى',
     beginner: 'Beginner', champion: 'Champion', elite: 'Elite', legend: 'Legend', crown: 'Crown',
     cardio: 'Cardio', cardioDuration: '{count} minutes', low: 'Low', moderate: 'Moderate', high: 'High',
     unsupportedAudio: 'Your device cannot play this audio. Update iOS.',
@@ -77,7 +75,7 @@ export const messages = defineMessages({
     somethingWentWrong: "Something went wrong",
     tryAgainToContinue: "Try again to continue.",
     tryAgain: "Try again",
-    arabic: "العربية",
+    arabic: 'عربي',
     english: "English",
     language: "Language",
     languageFailed: "Couldn't change language. Try again",

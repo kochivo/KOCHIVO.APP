@@ -23,7 +23,7 @@ describe('Arabic styles', () => {
     vi.stubEnv('NEXT_PUBLIC_INTERNATIONAL', '0');
     const m = defineMessages({ ar: { now: 'دلوقتي' }, en: { now: 'Now' }, arStd: { now: 'الآن' } });
     expect(createT(m, 'ar', 'standard')('now')).toBe('دلوقتي');
-    expect(resolveArabicStyle({ cookie: 'standard' })).toBe('egyptian');
+    expect(resolveArabicStyle({ deviceTimezone: 'Africa/Cairo' })).toBe('egyptian');
   });
   it('uses all six Arabic plural categories in the standard dictionary', () => {
     vi.stubEnv('NEXT_PUBLIC_INTERNATIONAL', '1');
@@ -45,14 +45,12 @@ describe('Arabic styles', () => {
     // @ts-expect-error Standard Arabic cannot add a placeholder.
     defineMessages({ ar: { hi: 'أهلاً' }, en: { hi: 'Hi' }, arStd: { hi: 'مرحباً {name}' } });
   });
-  it('prioritizes manual choices before profile and device defaults', () => {
+  it('uses only timezone and browser hints for Arabic style', () => {
     vi.stubEnv('NEXT_PUBLIC_INTERNATIONAL', '1');
-    expect(resolveArabicStyle({ cookie: 'standard', profile: 'egyptian', profileTimezone: 'Africa/Cairo' })).toBe('standard');
-    expect(resolveArabicStyle({ profile: 'egyptian', deviceTimezone: 'Asia/Riyadh' })).toBe('egyptian');
     for (const options of [{ profileTimezone: 'Africa/Cairo' }, { deviceTimezone: 'Africa/Cairo' }, { language: 'ar-EG' }]) {
       expect(resolveArabicStyle(options)).toBe('egyptian');
     }
     expect(resolveArabicStyle({ deviceTimezone: 'Asia/Riyadh', language: 'ar-SA' })).toBe('standard');
-    expect(resolveArabicStyle({ cookie: 'invalid' })).toBe('standard');
+    expect(resolveArabicStyle()).toBe('standard');
   });
 });

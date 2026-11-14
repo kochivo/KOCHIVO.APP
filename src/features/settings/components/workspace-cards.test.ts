@@ -38,12 +38,13 @@ it.each([true, false, undefined])('shows automatic time only when explicitly sto
   const html = renderToStaticMarkup(createElement(WorkspaceLanguageCard, { profile: { ...profile, timezone_auto: automatic } }));
   expect(html.includes('(تلقائي)')).toBe(automatic === true);
   expect(html).toContain('القاهرة');
-  expect(html).toContain('عربي مصري');
+  expect(html).toContain('عربي');
+  expect(html).not.toContain('مصري');
 });
 
-it('renders standard Arabic and English summaries', () => {
+it('shows only Arabic or English, never an Arabic style', () => {
   vi.stubEnv('NEXT_PUBLIC_INTERNATIONAL', '1');
-  for (const [locale, style, expected] of [['ar', 'standard', 'عربي فصحى'], ['en', 'egyptian', 'Language and time']] as const) {
+  for (const [locale, style, expected] of [['ar', 'standard', 'عربي'], ['en', 'egyptian', 'English']] as const) {
     expect(renderToStaticMarkup(createElement(LocaleProvider, { locale, style }, createElement(WorkspaceLanguageCard, { profile })))).toContain(expected);
   }
 });

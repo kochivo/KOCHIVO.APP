@@ -1,7 +1,7 @@
 import 'server-only';
 import { cookies, headers } from 'next/headers';
 import { cache } from 'react';
-import { ARABIC_STYLE_COOKIE, LOCALE_COOKIE, parseArabicStyle, parseLocale, resolveArabicStyle } from './locale';
+import { LOCALE_COOKIE, parseLocale, resolveArabicStyle } from './locale';
 import type { Locale } from './locale';
 import { createT } from './messages';
 import type { Messages } from './messages';
@@ -33,17 +33,15 @@ const loadArabicProfile = cache(async () => {
   const auth = await client.auth.getClaims();
   if (auth.error || !auth.data?.claims.sub) return undefined;
   const languageClient = client as unknown as SupabaseClient<ArabicStyleDatabase>;
-  const result = await languageClient.from('profiles').select('arabic_style,timezone').eq('id', auth.data.claims.sub).maybeSingle();
+  const result = await languageClient.from('profiles').select('timezone').eq('id', auth.data.claims.sub).maybeSingle();
   return result.data ?? undefined;
 });
 
-export async function getArabicStyle(profile?: { arabic_style?: unknown; timezone?: string | null }) {
+export async function getArabicStyle(profile?: { timezone?: string | null }) {
   if (!internationalEnabled()) return 'egyptian';
   const jar = await cookies();
-  const manual = parseArabicStyle(jar.get(ARABIC_STYLE_COOKIE)?.value);
-  if (manual) return manual;
   const selected = profile ?? await loadArabicProfile();
   const language = devicePreference(jar.get('kochivo.language')?.value) ?? (await headers()).get('accept-language')?.split(',')[0]?.split(';')[0];
-  return resolveArabicStyle({ profile: selected?.arabic_style, profileTimezone: selected?.timezone,
+  return resolveArabicStyle({ profileTimezone: selected?.timezone,
     deviceTimezone: devicePreference(jar.get('kochivo.timezone')?.value), language });
 }

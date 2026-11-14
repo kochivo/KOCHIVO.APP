@@ -51,17 +51,17 @@ beforeEach(() => {
   state.claims.mockResolvedValue({ data: { claims: { sub: 'owner' } } });
 });
 afterEach(() => vi.unstubAllEnvs());
-it('renders client copy in the cookie style on the first server render', async () => {
+it('ignores the stale cookie and renders the automatic Cairo style', async () => {
   state.cookie = 'standard';
   const provider = await layoutProvider();
-  expect(provider.props.style).toBe('standard');
-  expect(renderToStaticMarkup(provider)).toBe('<p>الآن</p>');
-  expect(state.claims).not.toHaveBeenCalled();
+  expect(provider.props.style).toBe('egyptian');
+  expect(renderToStaticMarkup(provider)).toBe('<p>دلوقتي</p>');
+  expect(state.claims).toHaveBeenCalled();
 });
-it('passes the saved profile style when there is no manual cookie', async () => {
+it('passes the automatic Cairo style despite a saved profile style', async () => {
   const provider = await layoutProvider();
-  expect(provider.props.style).toBe('standard');
-  expect(renderToStaticMarkup(provider)).toBe('<p>الآن</p>');
+  expect(provider.props.style).toBe('egyptian');
+  expect(renderToStaticMarkup(provider)).toBe('<p>دلوقتي</p>');
 });
 it('preserves the legacy provider markup byte for byte with the flag off', async () => {
   vi.stubEnv('NEXT_PUBLIC_INTERNATIONAL', '0'); state.cookie = 'standard';

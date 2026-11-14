@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { useArabicStyle, useLocale, useT } from '@/core/i18n/client';
+import { useLocale, useT } from '@/core/i18n/client';
 import { languageOptions } from '@/core/i18n/language-options';
 import type { LanguageChoice } from '@/core/i18n/language-options';
 import { setLocale } from '@/core/i18n/set-locale';
@@ -12,22 +12,20 @@ export function LanguageSwitch({ compact = false, onChange }: {
   compact?: boolean; onChange?: (choice: LanguageChoice) => Promise<void>;
 } = {}) {
   const locale = useLocale();
-  const style = useArabicStyle();
   const t = useT(messages);
   const router = useRouter();
   const [pending, start] = useTransition();
   const [error, setError] = useState(false);
   return <div>
     <div role="group" aria-label={t('language')} className="glass inline-flex flex-wrap gap-1 rounded-control border border-line-soft p-1">
-      {languageOptions().filter(value => !compact || value.locale !== locale || (value.style && value.style !== style)).map(value => <button key={value.label} type="button" lang={value.locale}
-        aria-pressed={compact ? undefined : locale === value.locale && (!value.style || value.style === style)} disabled={pending} className="min-h-12 border border-line-soft rounded-control px-3 text-sm text-muted aria-pressed:bg-surface-raised aria-pressed:font-bold aria-pressed:text-ink disabled:opacity-40"
+      {languageOptions().filter(value => !compact || value.locale !== locale).map(value => <button key={value.label} type="button" lang={value.locale}
+        aria-pressed={compact ? undefined : locale === value.locale} disabled={pending} className="min-h-12 border border-line-soft rounded-control px-3 text-sm text-muted aria-pressed:bg-surface-raised aria-pressed:font-bold aria-pressed:text-ink disabled:opacity-40"
         onClick={() => {
-          if (value.locale === locale && (!value.style || value.style === style)) return;
+          if (value.locale === locale) return;
           setError(false);
           start(async () => {
             try {
               if (onChange) await onChange(value);
-              else if (value.style) await setLocale(value.locale, value.style);
               else await setLocale(value.locale);
               router.refresh();
             }

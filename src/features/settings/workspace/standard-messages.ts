@@ -1,6 +1,6 @@
 export const arStd = {
   profile: 'ملفك وصفحتك', name: 'الاسم', page: 'رابط صفحتك', whatsapp: 'واتساب', edit: 'تعديل',
-  arabic: 'العربية', preferences: 'اللغة والتوقيت', language: 'اللغة', egyptian: 'عربي مصري', standard: 'عربي فصحى', english: 'English',
+  arabic: 'عربي', preferences: 'اللغة والتوقيت', language: 'اللغة', english: 'English',
   timezone: 'التوقيت', auto: 'تلقائي · {zone}', cairo: 'القاهرة', manual: 'اختر بنفسك', units: 'الوحدات',
   metric: 'كجم · سم', imperial: 'lb · in', invite: 'رسالة الدعوة', editInvite: 'عدّل الرسالة',
   invitePreview: '«مرحباً! هذا رابط للانضمام إلى فريقي على KOCHIVO…»', account: 'حسابك',

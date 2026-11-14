@@ -23,21 +23,27 @@ beforeEach(() => {
   state.maybeSingle.mockImplementation(async () => ({ data: { arabic_style: state.style, timezone: state.timezone } }));
 });
 afterEach(() => vi.unstubAllEnvs());
-it('renders a manual cookie on the server without looking up the profile', async () => {
+it('ignores a stale standard cookie for a Cairo device', async () => {
   state.jar.set('kochivo.arabic', 'standard');
+  state.jar.set('kochivo.timezone', 'Africa%2FCairo');
   const { getT } = await import('./server');
   const t = await getT({ ar: { now: 'دلوقتي' }, en: { now: 'Now' }, arStd: { now: 'الآن' } }, 'ar');
-  expect(t('now')).toBe('الآن'); expect(state.getClaims).not.toHaveBeenCalled();
+  expect(t('now')).toBe('دلوقتي');
 });
-it('uses the profile choice before automatic timezone defaults', async () => {
+it('ignores a profile style and uses its Cairo timezone', async () => {
   state.style = 'standard'; state.timezone = 'Africa/Cairo';
   const { getArabicStyle } = await import('./server');
-  expect(await getArabicStyle()).toBe('standard');
+  expect(await getArabicStyle()).toBe('egyptian');
 });
 it('uses device hints when the profile has no choice', async () => {
   state.jar.set('kochivo.timezone', 'Africa%2FCairo');
   const { getArabicStyle } = await import('./server');
   expect(await getArabicStyle()).toBe('egyptian');
+});
+it('ignores a saved Egyptian profile style in Riyadh', async () => {
+  state.style = 'egyptian';
+  const { getArabicStyle } = await import('./server');
+  expect(await getArabicStyle()).toBe('standard');
 });
 it('uses the Arabic Egypt request language before device hints are available', async () => {
   state.language = 'ar-EG,ar;q=0.9';

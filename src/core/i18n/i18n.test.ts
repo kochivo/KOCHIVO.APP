@@ -61,5 +61,6 @@ describe('locale foundation', () => {
     expect(jar.set).not.toHaveBeenCalled();
     expect(await setLocale('en')).toBeUndefined();
     expect(jar.set).toHaveBeenCalledWith('kochivo.locale', 'en', expect.objectContaining({ maxAge: 31536000, sameSite: 'lax', path: '/' }));
+    expect(jar.set).toHaveBeenCalledTimes(1);
   });
 });

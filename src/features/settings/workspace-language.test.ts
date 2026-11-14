@@ -21,9 +21,9 @@ it('keeps Arabic and English, without standard Arabic, when the international fl
   expect(html).not.toContain('عربي فصحى');
 });
 
-it('offers Egyptian, standard Arabic and English when the international flag is on', async () => {
+it('offers only Arabic and English when the international flag is on', async () => {
   const html = await chips('1');
-  expect(html).toContain('عربي مصري');
-  expect(html).toContain('عربي فصحى');
+  expect(html).toContain('>عربي<');
+  expect(html).not.toContain('عربي فصحى');
   expect(html).toContain('>English<');
 });

@@ -37,10 +37,8 @@ it('saves English through the existing language action and refreshes the locale'
   expect(state.language).toHaveBeenCalledExactlyOnceWith({ locale: 'en', label: 'english' });
   expect(state.refresh).toHaveBeenCalledOnce();
 });
-it('keeps standard Arabic selectable in More', async () => {
-  const control = buttons(PlayerPreferences({ units: 'metric', styleOnly: true })).find(button => button.props.children === 'فصحى');
-  await control?.props.onClick?.();
-  expect(state.language).toHaveBeenCalledExactlyOnceWith({ locale: 'ar', style: 'standard', label: 'arabicStandard' });
+it('does not offer a manual Arabic style in More', () => {
+  expect(buttons(PlayerPreferences({ units: 'metric', styleOnly: true }))).toHaveLength(0);
 });
 it('saves imperial units optimistically and rolls back a failed write', async () => {
   state.units.mockRejectedValue(new Error('offline'));

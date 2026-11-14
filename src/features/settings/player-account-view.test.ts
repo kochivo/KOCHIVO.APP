@@ -28,8 +28,9 @@ it('binds identity, plan, subscription and existing rank, retaining editing and 
       createElement(TourReplay, { key: 'tour', role: 'player' }), createElement('button', { key: 'export' }, 'Export data'),
       createElement('button', { key: 'delete' }, 'Delete account')])));
   for (const content of ['Actual player', 'Real captain', 'Actual plan', '15 ديسمبر', 'بطل', 'يوم ورا بعض',
-    'اللغة', 'الشكل', 'فكّرني بالتمرين', 'الوزن بـ', 'ازاي تستخدم التطبيق', 'المزيد', 'فصحى',
+    'اللغة', 'الشكل', 'فكّرني بالتمرين', 'الوزن بـ', 'ازاي تستخدم التطبيق', 'المزيد', 'عربي', 'English',
     'Profile and timezone editor', 'Install app', 'Export data', 'Delete account', 'Sign out', 'KO']) expect(html).toContain(content);
+  expect(html).not.toContain('فصحى');
   expect(html).toContain('aria-label="غيّر صورة البروفايل"');
   expect(html).toContain('href="/player"');
 });

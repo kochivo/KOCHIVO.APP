@@ -1,21 +1,11 @@
-import { internationalEnabled } from '@/lib/international-enabled';
-
 export type Locale = 'ar' | 'en';
 export type ArabicStyle = 'egyptian' | 'standard';
-export const ARABIC_STYLE_COOKIE = 'kochivo.arabic';
-
-export function parseArabicStyle(value: unknown): ArabicStyle | undefined {
-  return value === 'egyptian' || value === 'standard' ? value : undefined;
-}
-
 export function resolveArabicStyle(options: {
-  cookie?: unknown; profile?: unknown; profileTimezone?: string | null;
+  profileTimezone?: string | null;
   deviceTimezone?: string; language?: string;
 } = {}): ArabicStyle {
-  if (!internationalEnabled()) return 'egyptian';
-  return parseArabicStyle(options.cookie) ?? parseArabicStyle(options.profile) ??
-    (options.profileTimezone === 'Africa/Cairo' || options.deviceTimezone === 'Africa/Cairo' ||
-      options.language?.toLowerCase() === 'ar-eg' ? 'egyptian' : 'standard');
+  return options.profileTimezone === 'Africa/Cairo' || options.deviceTimezone === 'Africa/Cairo' ||
+    options.language?.toLowerCase() === 'ar-eg' ? 'egyptian' : 'standard';
 }
 export const LOCALES = ['ar', 'en'] as const;
 export const DEFAULT_LOCALE: Locale = 'ar';

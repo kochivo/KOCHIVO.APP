@@ -34,18 +34,19 @@ afterEach(() => vi.unstubAllEnvs());
 
 it('surfaces the language group and each available choice', () => {
   const html = renderToStaticMarkup(LanguageSwitch());
+  expect(html.match(/<button/g)).toHaveLength(2);
   expect(html.match(/role="group"[^>]+/)?.[0]).toContain('glass');
   for (const button of html.match(/<button[^>]+/g) ?? []) expect(button).toContain('border');
 });
 
-it('offers three choices and persists a style change on the same Arabic locale', async () => {
+it('offers exactly Arabic and English with the flag enabled', async () => {
   vi.stubEnv('NEXT_PUBLIC_INTERNATIONAL', '1'); state.setLocale.mockResolvedValue(undefined);
   const node = LanguageSwitch();
   const html = renderToStaticMarkup(node);
-  expect(html.match(/<button/g)).toHaveLength(3);
-  expect(html).toContain('عربي مصري'); expect(html).toContain('عربي فصحى');
-  button('ar', node, 'عربي فصحى')?.(); await state.work;
-  expect(state.setLocale).toHaveBeenCalledWith('ar', 'standard');
+  expect(html.match(/<button/g)).toHaveLength(2);
+  expect(html).toContain('عربي'); expect(html).toContain('English');
+  button('en', node)?.(); await state.work;
+  expect(state.setLocale).toHaveBeenCalledWith('en');
   expect(state.refresh).toHaveBeenCalledOnce();
 });
 
@@ -87,6 +88,6 @@ it('offers Arabic from the English compact header', () => {
   state.locale = 'en';
   const html = renderToStaticMarkup(LanguageSwitch({ compact: true }));
   expect(html.match(/<button/g)).toHaveLength(1);
-  expect(html).toContain('العربية');
+  expect(html).toContain('عربي');
   expect(html).not.toContain('aria-pressed=');
 });

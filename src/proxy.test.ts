@@ -19,6 +19,33 @@ beforeEach(() => {
   session.refresh.mockImplementation(async (request: NextRequest) => NextResponse.next({ request }));
 });
 
+it.each(['/', '/privacy', '/offline', '/captain'])('persists the detected first-visit locale on %s', async path => {
+  const response = await proxy(new NextRequest(`https://kochivo.site${path}`, {
+    headers: { 'accept-language': 'en-US,ar;q=0.9', 'x-vercel-ip-country': 'EG' },
+  }));
+  expect(response.cookies.get('kochivo.locale')).toMatchObject({ value: 'en', maxAge: 31536000, sameSite: 'lax', path: '/' });
+  expect(response.headers.get('x-middleware-rewrite')).toBe(`https://kochivo.site/en${path === '/' ? '' : path}`);
+});
+
+it('never replaces an existing cookie with detection', async () => {
+  const response = await proxy(new NextRequest('https://kochivo.site/', {
+    headers: { cookie: 'kochivo.locale=ar', 'accept-language': 'en-US', 'x-vercel-ip-country': 'US' },
+  }));
+  expect(response.cookies.get('kochivo.locale')).toBeUndefined();
+  expect(response.headers.get('x-middleware-rewrite')).toBe('https://kochivo.site/ar');
+});
+
+it('lets a shared English link replace a saved Arabic choice', async () => {
+  const response = await proxy(new NextRequest('https://kochivo.site/en', { headers: { cookie: 'kochivo.locale=ar' } }));
+  expect(response.cookies.get('kochivo.locale')?.value).toBe('en');
+});
+
+it('persists detection on an auth redirect', async () => {
+  session.refresh.mockResolvedValueOnce(NextResponse.redirect('https://kochivo.site/login'));
+  const response = await proxy(new NextRequest('https://kochivo.site/captain', { headers: { 'accept-language': 'en' } }));
+  expect(response.cookies.get('kochivo.locale')?.value).toBe('en');
+});
+
 it.each([
   ['/', undefined, '/ar'], ['/demo', 'en', '/en/demo'], ['/x?tab=one', 'invalid', '/ar/x?tab=one'],
 ])('rewrites %s with cookie %s without changing the public URL', async (path, locale, destination) => {

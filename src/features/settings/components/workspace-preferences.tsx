@@ -1,7 +1,7 @@
 'use client';
 import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useArabicStyle, useLocale, useT } from '@/core/i18n/client';
+import { useLocale, useT } from '@/core/i18n/client';
 import { languageOptions } from '@/core/i18n/language-options';
 import type { LanguageChoice } from '@/core/i18n/language-options';
 import { deviceTimezone } from '@/lib/timezone';
@@ -18,8 +18,8 @@ import { WorkspaceSaveStatus } from './workspace-save-status';
 
 const chip = 'min-h-12 rounded-full border border-line-soft px-4 text-[13px] text-muted aria-pressed:border-ink aria-pressed:bg-ink aria-pressed:text-bg-deep disabled:opacity-40';
 export function WorkspacePreferences({ profile, update }: { profile: SettingsProfile; update: (value: SettingsProfile) => void }) {
-  const t = useT(messages), locale = useLocale(), style = useArabicStyle(), router = useRouter();
-  const [language, setLanguage] = useState({ locale, style });
+  const t = useT(messages), locale = useLocale(), router = useRouter();
+  const [language, setLanguage] = useState({ locale });
   const [state, setState] = useState<SaveState>('saved');
   const [error, setError] = useState('');
   const lock = useRef(false), retry = useRef<() => void>(() => {});
@@ -38,7 +38,7 @@ export function WorkspacePreferences({ profile, update }: { profile: SettingsPro
   }
   function chooseLanguage(choice: LanguageChoice) {
     void run(async () => {
-      await savePreference(language, { locale: choice.locale, style: choice.style ?? language.style }, setLanguage, setState, async () => {
+      await savePreference(language, { locale: choice.locale }, setLanguage, setState, async () => {
         await saveLanguage(choice); return {};
       });
       router.refresh();
@@ -52,8 +52,8 @@ export function WorkspacePreferences({ profile, update }: { profile: SettingsPro
       <legend className="mb-2 text-xs text-faint">{t('language')}</legend>
       <div className="mb-3 flex flex-wrap gap-2">{options.map(choice => <button key={choice.label} type="button"
         className={chip}
-        aria-pressed={language.locale === choice.locale && (!choice.style || language.style === choice.style)}
-        onClick={() => chooseLanguage(choice)}>{t(choice.locale === 'en' ? 'english' : choice.style === 'standard' ? 'standard' : choice.style ? 'egyptian' : 'arabic')}</button>)}</div>
+        aria-pressed={language.locale === choice.locale}
+        onClick={() => chooseLanguage(choice)}>{t(choice.label)}</button>)}</div>
       <p className="text-xs text-faint">{t('timezone')}</p>
       <div className="flex flex-wrap gap-2"><button type="button" className={chip} aria-pressed={auto}
         onClick={() => preference({ timezone_auto: true, timezone: deviceTimezone() })}>{t('auto', { zone: zone === DEFAULT_TIMEZONE ? t('cairo') : zone })}</button>
