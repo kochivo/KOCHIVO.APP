@@ -4,8 +4,15 @@ import { arStd } from './standard/messages';
 
 export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
-  get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
+  get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? { ...arStd,
+    workspaceTitle: 'الترتيب', thisMonth: 'هذا الشهر', allTime: 'كل الوقت',
+    bronzeTag: 'BRONZE', silverTag: 'SILVER', goldTag: 'GOLD', platinumTag: 'PLATINUM',
+    workoutPoints: '{count} تمرين · {points} نقطة', points: '{points} نقطة',
+  } as const : undefined; },
   ar: {
+    workspaceTitle: 'الترتيب', thisMonth: 'الشهر ده', allTime: 'كل الوقت',
+    bronzeTag: 'BRONZE', silverTag: 'SILVER', goldTag: 'GOLD', platinumTag: 'PLATINUM',
+    workoutPoints: '{count} تمرين · {points} نقطة', points: '{points} نقطة',
     setPrize: 'حط جايزة للتاج الشهر ده', prize: 'جايزة التاج: {prize}', editPrize: 'عدّل الجايزة',
     prizeLabel: 'جايزة التاج', prizeCounter: '{count} / 120', savePrize: 'حفظ', cancelPrize: 'إلغاء',
     prizeError: 'مش قادرين نحفظ الجايزة. جرّب تاني.', prizeLength: 'اكتب من حرفين لـ120 حرف، أو سيبها فاضية عشان تمسح الجايزة.',
@@ -20,6 +27,9 @@ export const messages = defineMessages({
     error: 'مش قادرين نحمّل الترتيب. جرّب تاني.', retry: 'جرّب تاني',
   },
   en: {
+    workspaceTitle: 'Ranking', thisMonth: 'This month', allTime: 'All time',
+    bronzeTag: 'BRONZE', silverTag: 'SILVER', goldTag: 'GOLD', platinumTag: 'PLATINUM',
+    workoutPoints: '{count} workouts · {points} points', points: '{points} points',
     setPrize: "Set a prize for this month's crown", prize: 'Crown prize: {prize}', editPrize: 'Edit prize',
     prizeLabel: 'Crown prize', prizeCounter: '{count} / 120', savePrize: 'Save', cancelPrize: 'Cancel',
     prizeError: 'Could not save the prize. Try again.', prizeLength: 'Use 2 to 120 characters, or leave blank to remove the prize.',

@@ -12,6 +12,7 @@ import { MonthSwitch } from './month-switch';
 import { CrownPrizeEditor } from './crown-prize-editor';
 import { canEditPrize } from '../data/save-crown-prize';
 import { currentMonth, nextMonth } from '../months';
+import { WorkspaceLeaderboard } from './workspace-leaderboard';
 
 export function LeaderboardScreen({ locale, board }: {
   locale: Locale;
@@ -21,6 +22,7 @@ export function LeaderboardScreen({ locale, board }: {
     setMonth: (month: string) => void; reload: () => void };
 }) {
   const t = createT(messages, locale);
+  if (captainWorkspaceEnabled()) return <WorkspaceLeaderboard locale={locale} board={board} />;
   return <PageContainer><div className="space-y-5">
     <h1 className="text-2xl font-bold">{t('title')}</h1>
     {board.now && board.month && <MonthSwitch locale={locale} now={board.now} month={board.month} onChange={board.setMonth} />}
