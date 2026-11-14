@@ -1,4 +1,5 @@
 import 'server-only';
+export { TasksEntry } from './queue/tasks-entry';
 export { QueueEntry } from './queue/queue-entry';
 export { PlayerFileEntry } from './player-file/file-entry';
 export { TrainingEntry } from './training/training-entry';
