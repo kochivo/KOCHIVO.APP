@@ -25,16 +25,16 @@ it('groups enabled navigation and keeps four mobile destinations', () => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
   const items = captainNav('/captain/library/forms');
   expect(items.map(item => item.label)).toEqual([
-    'الرئيسية', 'اللاعبين', 'المتابعة', 'خطط التمارين', 'الأنظمة الغذائية', 'مكتبة الأكلات', 'التقييمات', 'الدفعات', 'الإعدادات',
+    'الرئيسية', 'اللاعبين', 'المتابعة', 'خطط التمارين', 'مكتبة التمارين', 'الأنظمة الغذائية', 'مكتبة الأكلات', 'التقييمات', 'الدفعات', 'الإعدادات',
   ]);
   expect(items.filter(item => item.group).map(item => item.group)).toEqual(['التمارين', 'الأكل', 'الإدارة']);
-  expect(items.map(item => item.icon)).toEqual([KoHome, KoPlayers, KoFollowup, KoTraining, KoMealPlans, KoFoods, KoForms, KoBilling, KoSettings]);
+  expect(items.map(item => item.icon)).toEqual([KoHome, KoPlayers, KoFollowup, KoTraining, KoTraining, KoMealPlans, KoFoods, KoForms, KoBilling, KoSettings]);
   expect(captainMobileNav('/captain').map(item => item.label)).toEqual(['الرئيسية', 'اللاعبين', 'التمارين', 'الأكل']);
 });
 it('includes meal plans, foods and forms under the enabled library and retains mobile food navigation', () => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
   expect(captainNav('/captain/library/foods').filter(item => item.href.includes('/library')).map(item => item.href))
-    .toEqual(['/captain/library/meal-plans', '/captain/library/foods', '/captain/library/forms']);
+    .toEqual(['/captain/library/exercises', '/captain/library/meal-plans', '/captain/library/foods', '/captain/library/forms']);
   for (const locale of ['ar', 'en'] as const) {
     const plan = captainNav('/captain/library/meal-plans', createT(messages, locale)).find(item => item.href === '/captain/library/meal-plans');
     expect(plan).toMatchObject({ active: true, label: locale === 'ar' ? 'الأنظمة الغذائية' : 'Meal plans' });
@@ -44,8 +44,8 @@ it('includes meal plans, foods and forms under the enabled library and retains m
 it('uses the same approved Arabic names in both styles on every captain route', () => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
   vi.stubEnv('NEXT_PUBLIC_INTERNATIONAL', '1');
-  const expected = ['الرئيسية', 'اللاعبين', 'المتابعة', 'خطط التمارين', 'الأنظمة الغذائية', 'مكتبة الأكلات', 'التقييمات', 'الدفعات', 'الإعدادات'];
-  const routes = ['/captain', '/captain/players', '/captain/inbox', '/captain/templates', '/captain/library/meal-plans',
+  const expected = ['الرئيسية', 'اللاعبين', 'المتابعة', 'خطط التمارين', 'مكتبة التمارين', 'الأنظمة الغذائية', 'مكتبة الأكلات', 'التقييمات', 'الدفعات', 'الإعدادات'];
+  const routes = ['/captain', '/captain/players', '/captain/inbox', '/captain/templates', '/captain/library/exercises', '/captain/library/meal-plans',
     '/captain/library/foods', '/captain/library/forms', '/captain/billing', '/captain/settings'];
   for (const style of ['egyptian', 'standard'] as const) {
     for (const route of routes) {
@@ -55,6 +55,15 @@ it('uses the same approved Arabic names in both styles on every captain route', 
     }
   }
   expect(captainNav('/captain', createT(messages, 'en')).map(item => item.label)).toEqual([
-    'Home', 'Players', 'Follow-up', 'Training plans', 'Meal plans', 'Food library', 'Assessments', 'Billing', 'Settings',
+    'Home', 'Players', 'Follow-up', 'Training plans', 'Exercise library', 'Meal plans', 'Food library', 'Assessments', 'Billing', 'Settings',
   ]);
+});
+
+it('places exercises between training plans and meal plans and activates nested exercise routes', () => {
+  vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
+  const items = captainNav('/captain/library/exercises/new');
+  expect(items.slice(3, 6).map(item => item.href)).toEqual([
+    '/captain/templates', '/captain/library/exercises', '/captain/library/meal-plans',
+  ]);
+  expect(items.filter(item => item.active).map(item => item.href)).toEqual(['/captain/library/exercises']);
 });

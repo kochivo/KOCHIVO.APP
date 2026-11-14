@@ -6,6 +6,7 @@ export type ProgramStatus = Tables<'programs'>['status'];
 export type LibraryExercise = Pick<Tables<'exercises'>,
   'id' | 'name_ar' | 'name_en' | 'body_part' | 'equipment' | 'media_path'> & {
     owner_id?: string | null; target?: string | null; video_url?: string | null; is_own?: boolean;
+    archived_at?: string | null; instructions_ar?: string[] | null; instructions_en?: string[]; secondary_muscles?: string[];
   };
 export type ExerciseRow = Pick<Tables<'program_exercises'>,
   'id' | 'day_id' | 'exercise_id' | 'position' | 'superset_group' | 'sets' | 'reps_min' | 'reps_max' | 'rest_seconds' | 'rir' | 'notes'>;

@@ -42,7 +42,9 @@ export function captainNav(pathname: string, t: Translator<typeof messages> = cr
   }
   links[3] = { ...links[3], href: '/captain/templates', label: t('trainingPlans'), icon: KoTraining,
     active: pathname === '/captain/templates' || pathname.startsWith('/captain/templates/'), group: t('trainingGroup') };
-  links.splice(4, 0, { href: '/captain/library/meal-plans', label: t('mealPlans'), icon: KoMealPlans, engraved: true,
+  links.splice(4, 0, { href: '/captain/library/exercises', label: t('exercises'), icon: KoTraining, engraved: true,
+    active: pathname.startsWith('/captain/library/exercises') },
+  { href: '/captain/library/meal-plans', label: t('mealPlans'), icon: KoMealPlans, engraved: true,
     group: t('foodGroup'), active: pathname.startsWith('/captain/library/meal-plans') },
   { href: '/captain/library/foods', label: t('foods'), icon: KoFoods, engraved: true, active: pathname.startsWith('/captain/library/foods') },
   { href: '/captain/library/forms', label: t('forms'), icon: KoForms, engraved: true,

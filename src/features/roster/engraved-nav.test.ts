@@ -21,7 +21,7 @@ it('keeps every legacy captain icon and its markup when the flag is off', () => 
 it('uses engraved icons for all desktop and mobile captain destinations', () => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
   const desktop = captainNav('/captain/library/forms');
-  expect(desktop).toHaveLength(9);
+  expect(desktop).toHaveLength(10);
   for (const item of [...desktop, ...captainMobileNav('/captain')]) {
     expect(renderToStaticMarkup(createElement(item.icon))).toContain('<pattern');
   }
