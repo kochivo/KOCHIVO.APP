@@ -1,10 +1,10 @@
 import { beforeEach, expect, it, vi } from 'vitest';
-import { loadCaptainFrame } from './captain-frame-data';
+import { loadCaptainFrame, loadCaptainFrameCounts } from './captain-frame-data';
 
-const state = vi.hoisted(() => ({ roster: vi.fn(), waiting: vi.fn(), chats: vi.fn(), joins: vi.fn(), profile: vi.fn() }));
+const state = vi.hoisted(() => ({ claims: vi.fn(), roster: vi.fn(), waiting: vi.fn(), chats: vi.fn(), joins: vi.fn(), profile: vi.fn() }));
 vi.mock('server-only', () => ({}));
 vi.mock('next/navigation', () => ({ unstable_rethrow: () => {} }));
-vi.mock('@/core/supabase/claims', () => ({ currentClaims: async () => ({ data: { claims: { sub: 'captain-id' } } }) }));
+vi.mock('@/core/supabase/claims', () => ({ currentClaims: state.claims }));
 vi.mock('../data/roster', () => ({ fetchRoster: state.roster }));
 vi.mock('../data/navigation-count', () => ({ fetchWaitingCount: state.waiting }));
 vi.mock('@/features/chat/server', () => ({ unreadCounts: state.chats }));
@@ -14,6 +14,7 @@ vi.mock('../data/client', () => ({ rosterClient: async () => ({
 }) }));
 
 beforeEach(() => {
+  state.claims.mockResolvedValue({ data: { claims: { sub: 'captain-id' } } });
   state.roster.mockResolvedValue({ players: [{ playerId: 'player-id', fullName: 'Real player' }] });
   state.waiting.mockResolvedValue(9);
   state.chats.mockResolvedValue({ 'player-id': 3, other: 2 });
@@ -42,4 +43,10 @@ it('does not turn failed chat, roster or profile reads into fictional zero value
 it('does not guess the task count when join counts fail', async () => {
   state.joins.mockResolvedValue({ data: null, error: new Error('Unavailable') });
   expect((await loadCaptainFrame()).counts).toMatchObject({ tasks: null, join: null });
+});
+
+it('returns unknown counts instead of throwing when the session has expired', async () => {
+  state.claims.mockResolvedValue({ data: null, error: new Error('Auth session missing') });
+  await expect(loadCaptainFrameCounts()).resolves.toEqual({ tasks: null, inbox: null, join: null, billing: null });
+  expect(state.waiting).not.toHaveBeenCalled();
 });

@@ -16,7 +16,8 @@ export async function loadCaptainFrameCounts() {
   const client = await rosterClient();
   const auth = await currentClaims();
   const captain = auth.data?.claims.sub;
-  if (auth.error || !captain) throw new Error('Unauthenticated');
+  // The nav polls this every 30s; an expired session is expected there, not a server error.
+  if (auth.error || !captain) return frameCounts({ tasks: null, chats: null, joins: null });
   const [waiting, chats, joins] = await Promise.all([
     fetchWaitingCount(), safe(unreadCounts(client, captain)),
     client.rpc('pending_coach_join_requests'),
