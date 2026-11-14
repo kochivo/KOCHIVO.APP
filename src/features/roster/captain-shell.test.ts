@@ -14,6 +14,8 @@ vi.mock('./components/captain-nav', () => ({ CaptainNav: ({ waitingCount }: { wa
   createElement('span', { 'data-waiting': waitingCount ?? 'unavailable' }) }));
 vi.mock('./components/captain-device', () => ({ CaptainDevice: () => createElement('button', { 'data-feedback': true }, 'Feedback') }));
 vi.mock('./components/captain-account-menu', () => ({ CaptainAccountMenu: () => null }));
+vi.mock('./components/captain-workspace-frame', () => ({ CaptainWorkspaceFrame: ({ children, sidebarFooter }: { children: React.ReactNode; sidebarFooter?: React.ReactNode }) =>
+  createElement('div', { 'data-workspace-frame': true }, sidebarFooter, children) }));
 vi.mock('@/features/notifications', () => ({ NotificationBell: () => null }));
 vi.mock('@/features/ko-preview/server', () => ({ KoAccountLink: () => null }));
 
@@ -34,23 +36,14 @@ it('uses one desktop gutter and a slim sidebar without capping the main column',
   expect(html).toMatch(/<main\b[^>]*>Roster content<\/main>/);
 });
 
-it('supplies the full waiting count and places desktop feedback inside the sidebar', async () => {
+it('uses the isolated workspace frame and preserves the plan footer', async () => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
   state.count.mockResolvedValue(8);
-  const html = renderToStaticMarkup(await CaptainShell({ children: 'Content' }));
-  expect(html).toContain('data-waiting="8"');
-  expect(html).toContain('lg:static');
-  expect(html).toMatch(/<aside\b[\s\S]*data-feedback[\s\S]*<\/aside>/);
-  expect(html).toContain('pb-[calc(var(--page-bottom-clearance)+4rem)]');
-  vi.unstubAllEnvs();
-});
-
-it('keeps an unavailable count distinct from an empty inbox', async () => {
-  vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
-  state.count.mockResolvedValue(null);
-  expect(renderToStaticMarkup(await CaptainShell({ children: null }))).toContain('data-waiting="unavailable"');
-  state.count.mockResolvedValue(0);
-  expect(renderToStaticMarkup(await CaptainShell({ children: null }))).toContain('data-waiting="0"');
+  const html = renderToStaticMarkup(await CaptainShell({ children: 'Content', sidebarFooter: 'Plan footer' }));
+  expect(html).toContain('data-workspace-frame="true"');
+  expect(html).toContain('Plan footer');
+  expect(html).toContain('Content');
+  expect(html).not.toContain('data-waiting');
   vi.unstubAllEnvs();
 });
 

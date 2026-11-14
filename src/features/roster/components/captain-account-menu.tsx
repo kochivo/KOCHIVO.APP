@@ -1,30 +1,33 @@
 'use client';
 
-import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
-import { useId, useRef } from 'react';
-import Link from 'next/link';
-import { ChevronDown, CreditCard, Settings, UserRound } from 'lucide-react';
-import { useT } from '@/core/i18n';
-import { messages } from '../messages';
+import { useId, useRef, useState } from 'react';
+import type { ReactNode } from 'react';
+import dynamic from 'next/dynamic';
+import { ChevronDown, UserRound } from 'lucide-react';
+import { useT } from '@/core/i18n/client';
+import { LoadingState } from '@/ui/loading-state';
+import { accountMessages } from './captain-account-messages';
 
-export function CaptainAccountMenu() {
-  const t = useT(messages);
+const CaptainAccountContent = dynamic(() => import('./captain-account-content').then(module => module.CaptainAccountContent), {
+  loading: () => <LoadingState />,
+});
+
+export function CaptainAccountMenu({ children, placement = 'header', onNavigate }: {
+  children?: ReactNode; placement?: 'header' | 'sidebar' | 'sheet'; onNavigate?: () => void;
+}) {
+  const t = useT(accountMessages);
+  const [loaded, setLoaded] = useState(false);
   const id = useId();
   const panel = useRef<HTMLDivElement>(null);
-  const close = () => panel.current?.hidePopover();
-  return <div className="lg:hidden">
-    <button type="button" popoverTarget={id} className="press glass flex min-h-12 items-center gap-2 rounded-control px-3 text-sm font-bold text-ink">
-      <UserRound className="size-5" aria-hidden="true" />{t('accountMenu')}<ChevronDown className="size-4 text-muted" aria-hidden="true" />
+  const close = () => { panel.current?.hidePopover(); onNavigate?.(); };
+  const position = placement === 'sidebar' ? 'start-4 bottom-20' : placement === 'sheet' ? 'end-4 bottom-8' : 'end-4 top-[calc(var(--captain-top-inset)+3.5rem)] lg:hidden';
+  return <div className={placement === 'header' ? 'lg:hidden' : 'w-full'}>
+    <button type="button" popoverTarget={id} onClick={() => setLoaded(true)} className={`press glass flex min-h-12 items-center gap-2 rounded-control px-3 text-start text-sm font-bold text-ink ${placement === 'header' ? '' : 'w-full border border-line py-2.5'}`}>
+      {children ?? <><UserRound className="size-5" aria-hidden="true" />{t('accountMenu')}</>}
+      <ChevronDown className="ms-auto size-4 shrink-0 text-muted" aria-hidden="true" />
     </button>
-    <div ref={panel} id={id} popover="auto" className="sheet fixed inset-auto end-4 top-[calc(var(--captain-top-inset)+3.5rem)] m-0 w-60 max-w-[calc(100vw-2rem)] rounded-card border border-line p-2 text-ink shadow-xl lg:hidden">
-      <nav aria-label={t('accountMenu')} className="flex flex-col gap-1">
-        <Link href="/captain/settings" onClick={close} className={captainWorkspaceEnabled() ? 'press glass flex min-h-12 items-center gap-3 rounded-full border border-line px-3 text-sm font-bold hover:bg-ink/10 focus-visible:outline-2 focus-visible:outline-lime' : 'press flex min-h-12 items-center gap-3 rounded-control px-3 text-sm font-bold hover:bg-lime-soft focus-visible:outline-2 focus-visible:outline-lime'}>
-          <Settings className="size-5 text-muted" aria-hidden="true" />{t('settings')}
-        </Link>
-        <Link href="/captain/billing" onClick={close} className={captainWorkspaceEnabled() ? 'press glass flex min-h-12 items-center gap-3 rounded-full border border-line px-3 text-sm font-bold hover:bg-ink/10 focus-visible:outline-2 focus-visible:outline-lime' : 'press flex min-h-12 items-center gap-3 rounded-control px-3 text-sm font-bold hover:bg-lime-soft focus-visible:outline-2 focus-visible:outline-lime'}>
-          <CreditCard className="size-5 text-muted" aria-hidden="true" />{t('subscriptions')}
-        </Link>
-      </nav>
+    <div ref={panel} id={id} popover="auto" className={`sheet fixed inset-auto m-0 w-60 max-w-[calc(100vw-2rem)] rounded-card border border-line p-2 text-ink shadow-xl ${position}`}>
+      {loaded && <CaptainAccountContent onNavigate={close} />}
     </div>
   </div>;
 }

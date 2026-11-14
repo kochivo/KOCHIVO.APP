@@ -4,6 +4,7 @@ import { Children, isValidElement } from 'react';
 import { SiteAnalytics } from '@/ui/site-analytics';
 
 const locale = vi.hoisted(() => ({ set: vi.fn() }));
+vi.mock('server-only', () => ({}));
 vi.mock('next/font/google', () => ({
   Manrope: () => ({ variable: 'manrope' }), Alexandria: () => ({ variable: 'alexandria' }), Changa: () => ({ variable: 'changa' }),
 }));

@@ -12,7 +12,8 @@ describe('viewport safe areas', () => {
   });
 
   it.each([
-    'features/roster/components/captain-shell.tsx',
+    'features/roster/components/captain-legacy-shell.tsx',
+    'features/roster/components/captain-workspace-frame.tsx',
     'features/player-shell/components/player-shell.tsx',
     'features/auth/components/captain-auth-card.tsx',
     'features/auth/components/coach-signup.tsx',
@@ -25,7 +26,7 @@ describe('viewport safe areas', () => {
     'features/coach-page/components/coach-page.tsx',
     'app/[locale]/offline/page.tsx',
   ])('protects the top-level container in %s', path => {
-    if (path === 'features/roster/components/captain-shell.tsx') {
+    if (path === 'features/roster/components/captain-legacy-shell.tsx') {
       expect(source(path)).toContain('var(--captain-top-inset)');
       expect(source('app/globals.css')).toContain('--captain-top-inset: max(3rem, var(--safe-top))');
     } else expect(source(path)).toContain('var(--safe-top)');

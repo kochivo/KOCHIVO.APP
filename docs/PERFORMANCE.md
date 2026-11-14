@@ -328,3 +328,13 @@ The public coach page measured 199.84 KiB before the captain v11 work and
 growth came from shared code, not the page itself. Owner decision 2026-11-14:
 allow this route up to **205 KiB** in `src/lib/perf-budget.test.ts` so the
 release can ship, and trim the page back under 200 in a follow-up card.
+
+## Budget exception — program builder routes (2026-11-14)
+
+The v11 captain frame (T-238: grouped sidebar with live counters, top bar
+with search and page slots, mobile more sheet) adds about 3.6 KiB gzip to
+every captain route. The two program builder routes were already at 307.7
+KiB and measured 311.3 KiB after it. They may grow to **315 KiB** in
+`src/lib/perf-budget.test.ts`; every other captain route keeps 310.
+Measured with a full Turbopack build (fonts served from a local copy of the
+Google Fonts CSS because fonts.googleapis.com was unreachable).

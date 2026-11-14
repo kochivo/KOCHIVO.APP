@@ -6,7 +6,7 @@ import { afterEach, expect, it, vi } from 'vitest';
 import { LocaleProvider } from '@/core/i18n/client';
 import { CustomFoodSheet } from './components/custom-food-sheet';
 import { WorkspaceError } from '../dashboard/components/workspace-error';
-import { CaptainAccountMenu } from '../roster/components/captain-account-menu';
+import { CaptainAccountContent } from '../roster/components/captain-account-content';
 import { FileState } from '../captain-workspace/player-file/file-state';
 import { LibraryMenu } from '../templates/components/library-menu';
 import { CrownPrizeEditor } from '../rank-review/components/crown-prize-editor';
@@ -45,7 +45,7 @@ it('surfaces the captain home retry', () => {
   expect(control(render(createElement(WorkspaceError)), 'Try again')).toContain('glass');
 });
 it('surfaces both roster account destinations', () => {
-  const html = render(createElement(CaptainAccountMenu));
+  const html = render(createElement(CaptainAccountContent, { onNavigate: () => undefined }));
   for (const href of ['settings', 'billing']) expect(html.match(new RegExp('<a[^>]*href="/captain/' + href + '"[^>]*>'))?.[0]).toContain('glass');
 });
 it('surfaces the player file retry', () => {

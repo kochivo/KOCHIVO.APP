@@ -4,7 +4,7 @@ import { Alexandria, Changa, Manrope } from 'next/font/google';
 import type { ReactNode } from 'react';
 import { RegisterServiceWorker } from '@/core/pwa/register-sw';
 import { glassBootScript } from '@/lib/glass-mode';
-import { themeBootScript } from '@/lib/theme-mode';
+import { themeBootScript } from '@/lib/theme-boot-script';
 import '../globals.css';
 import { getArabicStyle, setRequestLocale } from '@/core/i18n/server';
 import { LOCALES, localeDir, parseLocale } from '@/core/i18n/locale';
