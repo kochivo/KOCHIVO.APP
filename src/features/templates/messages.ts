@@ -4,8 +4,21 @@ import { arStd } from './standard/messages';
 
 export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
-  get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
+  get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? { ...arStd,
+    programsTitle: 'برامج التمرين', programAskKo: 'اطلب من KO', programForPlayer: 'برنامج للاعب',
+    programNew: 'برنامج جديد', programMine: 'برامجي', programReady: 'جاهزة من KOCHIVO', programAssigned: 'مطبّقة مع لاعبين',
+    programPlayers: '{count} لاعبين', programDays: '{count} أيام', programEdit: 'عدّل',
+    programNewHint: 'من الصفر، من برنامج جاهز، أو ينشئه KO', programDayLetters: 'س ح ن ث ر خ ج',
+    programTrainingDays: 'أيام التمرين', programTrainingDay: '{day}: تمرين', programRestDay: '{day}: راحة',
+    programEmpty: 'لا توجد برامج هنا بعد',
+  } as const : undefined; },
   ar: {
+    programsTitle: 'برامج التمرين', programAskKo: 'اطلب من KO', programForPlayer: 'برنامج للاعب',
+    programNew: 'برنامج جديد', programMine: 'برامجي', programReady: 'جاهزة من KOCHIVO', programAssigned: 'شغالة مع لاعبين',
+    programPlayers: '{count} لاعبين', programDays: '{count} أيام', programEdit: 'عدّل',
+    programNewHint: 'من الصفر، من برنامج جاهز، أو KO يعمله', programDayLetters: 'س ح ن ث ر خ ج',
+    programTrainingDays: 'أيام التمرين', programTrainingDay: '{day}: تمرين', programRestDay: '{day}: راحة',
+    programEmpty: 'لسه مفيش برامج هنا',
     rirSuffix: ' · RIR {count}',
     myTemplates: "قوالبي",
     kochivoTemplates: "قوالب KOCHIVO",
@@ -85,6 +98,12 @@ export const messages = defineMessages({
     copyOf: "{title} (نسخة)",
   },
   en: {
+    programsTitle: 'Training programs', programAskKo: 'Ask KO', programForPlayer: 'Program for a player',
+    programNew: 'New program', programMine: 'My programs', programReady: 'Ready from KOCHIVO', programAssigned: 'With players',
+    programPlayers: '{count} players', programDays: '{count} days', programEdit: 'Edit',
+    programNewHint: 'Start fresh, use a template, or ask KO', programDayLetters: 'Sa Su Mo Tu We Th Fr',
+    programTrainingDays: 'Training days', programTrainingDay: '{day}: training', programRestDay: '{day}: rest',
+    programEmpty: 'No programs here yet',
     rirSuffix: ' · RIR {count}',
     myTemplates: "My templates",
     kochivoTemplates: "KOCHIVO templates",

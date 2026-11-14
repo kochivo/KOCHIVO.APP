@@ -61,7 +61,8 @@ export function TemplatesScreen({ libraryKind = 'program' }: { libraryKind?: Tem
   }
   useEffect(() => {
     let current = true;
-    (libraryType ? import('../data/library').then(module => module.listLibraryTemplates(libraryType)) : listTemplates()).then(result => {
+    (libraryType === 'program' ? import('./workspace-program-reads').then(module => module.readWorkspacePrograms()) :
+      libraryType ? import('../data/library').then(module => module.listLibraryTemplates(libraryType)) : listTemplates()).then(result => {
       if (!current) return;
       if (result.error !== undefined) setLoadError(result.error);
       else { setTemplates(result.data); setLoadError(''); }
@@ -105,7 +106,7 @@ export function TemplatesScreen({ libraryKind = 'program' }: { libraryKind?: Tem
       setErrors(current => ({ ...current, [key]: failure }));
     } finally { setDeleted(current => current.filter(item => item !== key)); unlock([key]); }
   }
-  async function duplicate(template: Template) {
+  async function duplicate(template: Template, openEditor = false) {
     const placeholder = { ...template, id: uuidv7(), starter: false, uses: 0, archived: false,
       title: t('copyOf', { title: starterText(template.title, locale) }).slice(0, 80) };
     const keys = [keyOf(template), keyOf(placeholder)];
@@ -113,7 +114,7 @@ export function TemplatesScreen({ libraryKind = 'program' }: { libraryKind?: Tem
     setErrors(current => ({ ...current, [keyOf(template)]: '' }));
     let failure = t('couldntSaveChangesTryAgain');
     try {
-      await applyOptimistic(template, {
+      const id = await applyOptimistic(template, {
         apply: () => setTemplates(current => [placeholder, ...current]),
         rollback: () => setTemplates(current => current.filter(item => item.id !== placeholder.id)),
         reconcile: id => setTemplates(current => current.map(item => item.id === placeholder.id ? { ...item, id } : item)),
@@ -123,6 +124,7 @@ export function TemplatesScreen({ libraryKind = 'program' }: { libraryKind?: Tem
         return result.data;
       });
       toast.success(feedback('templateCopied'));
+      if (openEditor) router.push(templateEditorHref(template.kind, id, true));
     } catch { setErrors(current => ({ ...current, [keyOf(template)]: failure })); }
     finally { unlock(keys); }
   }
@@ -147,12 +149,12 @@ export function TemplatesScreen({ libraryKind = 'program' }: { libraryKind?: Tem
       loading={loading} error={loadError} createError={createError} creating={creating} busy={busy} errors={errors}
       onCreate={create} onRetry={() => { setLoading(true); setAttempt(value => value + 1); }}
       tools={kind === 'program' ? <GenerateButton /> : undefined} actions={template => ({
-        onOpen: () => template.starter ? setPreviewing(template) : router.push(templateEditorHref(kind, template.id, true)),
+        onOpen: () => template.starter ? kind === 'program' ? duplicate(template, true) : setPreviewing(template) : router.push(templateEditorHref(kind, template.id, true)),
         onPreview: () => setPreviewing(template), onAssign: () => setSelected(template), onCopy: () => void duplicate(template),
         onRename: title => void edit({ template, title }), onDelete: () => void edit({ template }), onArchive: () => void archive(template),
       })} />
     {previewing && <PreviewSheet template={previewing} onClose={() => setPreviewing(null)} onAssign={() => { setSelected(previewing); setPreviewing(null); }} />}
-    {selected && <AssignSheet template={selected} onClose={() => setSelected(null)} />}
+    {selected && <AssignSheet template={selected} onClose={() => { setSelected(null); setAttempt(value => value + 1); }} />}
   </>;
   return <div className="mx-auto grid max-w-5xl gap-6">
     <header className="space-y-2">

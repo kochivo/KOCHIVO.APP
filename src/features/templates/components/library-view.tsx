@@ -12,21 +12,24 @@ import { messages } from '../library-messages';
 import { messages as templateMessages } from '../messages';
 import { filterTemplates } from '../library-model';
 import { LibraryCard } from './library-card';
+import { WorkspaceProgramsView } from './workspace-programs-view';
 import type { LibraryTemplate } from '../library-types';
 import type { TemplateKind } from '../types';
 import type { ComponentProps, ReactNode } from 'react';
 
 type Actions = Omit<ComponentProps<typeof LibraryCard>, 'template' | 'busy' | 'error'>;
-export function LibraryView({ kind, templates, loading, error, createError, creating, busy, errors, onCreate, onRetry, actions, tools }: {
+export function LibraryView(props: {
   kind: TemplateKind; templates: LibraryTemplate[]; loading: boolean; error: string; createError: string;
   creating: boolean; busy: string[]; errors: Record<string, string>; onCreate: () => void; onRetry: () => void;
   actions: (template: LibraryTemplate) => Actions; tools?: ReactNode;
 }) {
+  const { kind, templates, loading, error, createError, creating, busy, errors, onCreate, onRetry, actions, tools } = props;
   const PlusIcon = captainWorkspaceEnabled() ? KoPlus : Plus;
   const t = useT(messages), tt = useT(templateMessages);
   const [query, setQuery] = useState(''), [level, setLevel] = useState('all'), [archived, setArchived] = useState(false);
   const training = kind === 'program';
   const visible = filterTemplates(templates.filter(row => !!row.archived === archived), query, level);
+  if (training && captainWorkspaceEnabled()) return <WorkspaceProgramsView {...props} />;
   return <div className="min-w-0">
     <header className="mb-[18px] flex flex-wrap items-center gap-3.5">
       <div className="me-auto"><h1 className="font-display text-[30px] font-semibold leading-tight">{t(training ? 'training' : 'nutrition')}</h1>

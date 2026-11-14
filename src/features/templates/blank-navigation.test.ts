@@ -2,10 +2,11 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import type * as React from 'react';
 import { Children, isValidElement } from 'react';
 import { createT } from '@/core/i18n/messages';
-import { messages } from './messages';
+import type { messages } from './messages';
 import { TemplatesScreen } from './components/templates-screen';
+import type { Template } from './types';
 
-const state = vi.hoisted(() => ({ values: [] as unknown[], index: 0, create: vi.fn(), push: vi.fn(),
+const state = vi.hoisted(() => ({ values: [] as unknown[], index: 0, create: vi.fn(), copy: vi.fn(), push: vi.fn(),
   refs: [] as { current: unknown }[], refIndex: 0 }));
 vi.mock('react', async original => ({ ...await original<typeof React>(), useEffect() {},
   useRef: (initial: unknown) => {
@@ -20,10 +21,11 @@ vi.mock('react', async original => ({ ...await original<typeof React>(), useEffe
     }];
   },
 }));
-vi.mock('@/core/i18n/client', () => ({ useT: () => createT(messages, 'en'), useLocale: () => 'en' }));
+vi.mock('@/core/i18n/client', () => ({ useT: (dictionary: typeof messages) => createT(dictionary, 'en'), useLocale: () => 'en' }));
 vi.mock('@/ui/toast', () => ({ useToast: () => ({ success() {} }) }));
 vi.mock('next/navigation', () => ({ useRouter: () => ({ push: state.push }) }));
-vi.mock('./data/templates', () => ({ createTemplate: state.create }));
+vi.mock('./data/templates', () => ({ createTemplate: state.create, copyTemplate: state.copy }));
+vi.mock('@/core/offline/ids', () => ({ uuidv7: () => 'copy-placeholder' }));
 vi.mock('@/features/program-generator', () => ({ GenerateButton: () => null }));
 vi.mock('./data/template-preview', () => ({ previewTemplate: vi.fn() }));
 function render() {
@@ -55,6 +57,17 @@ it('creates an enabled nutrition template and opens the shared nutrition editor'
   await sections()[0]?.props.onCreate();
   expect(state.push).toHaveBeenCalledWith('/captain/nutrition/meal-template');
   expect(state.create).toHaveBeenCalledWith({ kind: 'nutrition' });
+});
+it('edits a ready program by opening an owned copy in the shared builder', async () => {
+  vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
+  state.copy.mockResolvedValue({ data: 'editable-copy' });
+  const template: Template = { id: 'ready', kind: 'program', title: 'Strength', starter: true, count: 3, created_at: '2026-11-14' };
+  type View = { actions: (row: Template) => { onOpen: () => Promise<void> } };
+  const view = Children.toArray(render().props.children as React.ReactNode).find((child): child is React.ReactElement<View> =>
+    isValidElement<View>(child) && typeof child.props.actions === 'function');
+  await view?.props.actions(template).onOpen();
+  expect(state.copy).toHaveBeenCalledWith({ kind: 'program', id: 'ready', title: 'Strength (copy)' });
+  expect(state.push).toHaveBeenCalledWith('/captain/templates?plan=editable-copy');
 });
 it.each([['program', '/captain/programs/blank'], ['nutrition', '/captain/nutrition/blank']])(
   'creates a blank %s template and opens its builder', async (kind, url) => {
