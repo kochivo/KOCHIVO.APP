@@ -166,6 +166,11 @@
   --mesh-bottom: var(--color-bg-deep);
   color-scheme: dark;
 }
+html:not([data-theme='light']) [data-area='captain'] {
+  --glass-fill: color-mix(in srgb, var(--color-ink) 4%, transparent);
+  --glass-strong-tint: color-mix(in srgb, var(--color-ink) 6.5%, var(--color-surface));
+  --featured-edge: linear-gradient(var(--featured-angle), color-mix(in srgb, var(--color-silver-1) 22%, transparent), transparent 30%, transparent 70%, color-mix(in srgb, var(--color-lime) 12%, transparent));
+}
 html[data-glass='solid'] [data-mood='rest'] { --glass-solid-background: var(--color-surface); }
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   [data-mood='rest'] { --glass-solid-background: var(--color-surface); }

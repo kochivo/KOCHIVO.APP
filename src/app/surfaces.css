@@ -180,3 +180,39 @@ html[data-glass='solid'] { --glass-solid-background: var(--color-surface); --gla
   html:not([data-theme='light']) .marketing-primary { @apply primary-surface glow; }
   html:not([data-theme='light']) .marketing-eyebrow { color: var(--color-muted); }
 }
+/* Captain workspace: static lights avoid compositor work on weak phones. */
+html:not([data-theme='light']):has([data-area='captain']) .bg-aurora {
+  background:
+    radial-gradient(ellipse at 15% 0%, color-mix(in srgb, var(--color-lime) 16%, transparent), transparent 100%) 50% 0% / 100% 40vh no-repeat,
+    radial-gradient(ellipse at 100% 100%, color-mix(in srgb, var(--color-lime) 12%, transparent), transparent 75%) 100% 100% / 50% 60vh no-repeat,
+    radial-gradient(ellipse at 0% 100%, color-mix(in srgb, var(--color-calm) 12%, transparent), transparent 75%) 0% 100% / 50% 60vh no-repeat,
+    var(--color-bg-deep);
+  &::after {
+    content: ''; position: absolute; inset: 0;
+    background-image: linear-gradient(var(--captain-grid) 1px, transparent 1px), linear-gradient(90deg, var(--captain-grid) 1px, transparent 1px);
+    --captain-grid: color-mix(in srgb, var(--color-silver-1) 2.5%, transparent);
+    background-size: 44px 44px;
+    mask: radial-gradient(ellipse at 50% 15%, var(--color-ink), transparent 75%);
+  }
+}
+html[dir='ltr']:not([data-theme='light']):has([data-area='captain']) .bg-aurora { scale: -1 1; }
+html:not([data-theme='light']) [data-area='captain'] {
+  :is(.glass, .glass-strong, .glass-featured, .glass-raised, .glass-surface, .lg\:glass-strong) { --glass-blur-filter: none; }
+  :is(aside, nav, dialog, [role='dialog'], .sheet) { --glass-blur-filter: blur(24px); }
+  :is(.glass-strong, .glass-featured):not(.absolute, .fixed, .sticky) { position: relative; }
+  :is(.glass-strong, .glass-featured)::before {
+    content: ''; position: absolute; inset: -1px; padding: 1px; border-radius: inherit;
+    background: var(--featured-edge); pointer-events: none;
+    mask: linear-gradient(var(--color-ink) 0 0) content-box, linear-gradient(var(--color-ink) 0 0);
+    mask-composite: exclude;
+  }
+  .primary-surface { --press-glow-hover: var(--shadow-lime-glow-hover); box-shadow: var(--shadow-lime-glow); }
+  @media (hover: hover) and (pointer: fine) { .primary-surface:hover:not(:disabled) { box-shadow: var(--shadow-lime-glow-hover); } }
+}
+html[data-glass='solid']:not([data-theme='light']) [data-area='captain'] :is(.glass-strong, .glass-featured)::before { content: none; }
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  html:not([data-theme='light']) [data-area='captain'] :is(.glass-strong, .glass-featured)::before { content: none; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  html:not([data-theme='light']) [data-area='captain'] :is(.glass-strong, .glass-featured)::before { content: none; }
+}
