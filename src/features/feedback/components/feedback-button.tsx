@@ -17,7 +17,7 @@ export function FeedbackButton({ role }: { role: DeviceRole }) {
   const [open, setOpen] = useState(false);
   const docked = role === 'captain' && captainWorkspaceEnabled();
   return <>
-    <button type="button" aria-label={t('report')} onClick={() => setOpen(true)}
+    <button type="button" data-floating-fab aria-label={t('report')} onClick={() => setOpen(true)}
       className={docked ? 'glass fixed end-4 bottom-[calc(var(--nav-clearance)+0.5rem)] z-30 flex min-h-12 min-w-12 items-center justify-center gap-2 rounded-full text-muted lg:static lg:shrink-0 lg:px-3'
         : 'glass fixed end-4 bottom-[calc(var(--nav-clearance)+0.5rem)] z-30 flex min-h-12 min-w-12 items-center justify-center rounded-full text-muted lg:bottom-6'}>
       <MessageSquareWarning aria-hidden="true" className="size-5" />

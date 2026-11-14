@@ -32,7 +32,7 @@ export function CaptainTopBar({ players, bell, install }: { players: CaptainFram
   const title = path.startsWith('/captain/players/') ? 'player' : path === '/captain/billing/packages' ? 'packages' : frameParent(path);
   return <>
     <div className="glass mb-3 flex min-h-16 flex-wrap items-center gap-2 rounded-control border border-line px-2 py-2">
-      <div key={`title:${path}`} className="min-w-0 flex-1 ps-1.5">
+      <div key={`title:${path}`} data-top-bar-title className="min-w-0 grow basis-48 ps-1.5">
         <div id={pageBarTargets.title} data-page-bar-title className="peer empty:hidden" />
         <h2 className="text-base font-semibold peer-[:not(:empty)]:hidden">{t(title)}</h2>
       </div>

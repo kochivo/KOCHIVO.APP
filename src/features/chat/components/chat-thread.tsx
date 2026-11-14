@@ -24,7 +24,7 @@ export function ChatThread({ items, viewer, onRetry, onVoicePlay }: {
   const lastRead = items.findLast(item => item.mine && item.readAt && item.status === 'sent')?.id;
   const tail = items.at(-1)?.id;
   useEffect(() => { bottom.current?.scrollIntoView({ block: 'end' }); }, [tail]);
-  return <div className={viewer === 'captain' ? 'pb-28 lg:pb-4' : 'pb-40'}>
+  return <div className={viewer === 'captain' ? 'pb-[calc(var(--nav-clearance)+5rem)] min-[760px]:pb-28 lg:pb-4' : 'pb-40'}>
     {!items.length && <p className="py-8 text-center text-sm text-muted">{t(viewer === 'player' ? 'empty' : 'emptyCaptain')}</p>}
     <ol aria-label={t('thread')} className="flex flex-col gap-2.5 pt-1">
       {items.map((item, index) => {

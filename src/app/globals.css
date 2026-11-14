@@ -337,6 +337,10 @@ html[data-keyboard='open'] dialog:modal { inset-block-end: var(--keyboard-inset)
 /* Sits above the bottom nav and the sticky primary action, so a toast never covers either. */
 .toast-stack { inset-inline: 0; bottom: calc(10.5rem + var(--safe-bottom)); }
 .toast-leave { animation: toast-fade 200ms ease-out forwards; }
+/* On small screens the fixed chat composer owns the bottom edge; floating buttons would cover it. */
+@media (max-width: 1023.98px) {
+  body:has([data-chat-composer]) [data-floating-fab] { display: none; }
+}
 @keyframes toast-fade { to { opacity: 0; } }
 /* The marketing page keeps its own type scale. */
 body:not(:has(.marketing-wrap)) :is(h1, h2, h3) { font-weight: 700; color: var(--color-ink); }
