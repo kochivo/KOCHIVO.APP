@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KO الجديد</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700&family=Changa:wght@500;600;700;800&family=Manrope:wght@500;700;800&display=swap">
+<style>
+:root {
+  --bg: #0b0c0d; --deep: #070808; --surface: #141515; --raised: #1c1d1d;
+  --line: #292a2a; --soft: rgba(242,242,238,.07); --glass: rgba(255,255,255,.035); --glass-line: rgba(255,255,255,.09);
+  --ink: #f4f4f1; --muted: #a6abb0; --faint: #7d8288; --warn: #f2b544; --danger: #ff6b6b;
+  --lime: #b6e94f; --lime-dim: rgba(182,233,79,.13); --on-lime: #101418;
+  --display: "Manrope", "Changa", "Alexandria", system-ui, sans-serif;
+  --text: "Manrope", "Alexandria", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--text); font-size: 14.5px; line-height: 1.6; }
+.page { max-width: 1240px; margin: 0 auto; padding: 40px 16px 90px; }
+h1, h2, h3 { margin: 0; font-family: var(--display); text-wrap: balance; }
+h1 { font-size: clamp(28px, 4.4vw, 44px); font-weight: 800; line-height: 1.2; }
+h2 { font-size: 24px; font-weight: 800; }
+h3 { font-size: 15.5px; font-weight: 700; }
+p { margin: 0; }
+.lede { color: var(--muted); max-width: 70ch; margin-top: 12px; }
+.hero { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; align-items: center; }
+.hero img { width: 170px; height: 170px; object-fit: contain; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.toc a { color: var(--ink); text-decoration: none; border: 1px solid var(--glass-line); background: var(--glass); border-radius: 999px; padding: 8px 16px; min-height: 44px; display: inline-flex; align-items: center; }
+section { margin-top: 64px; display: grid; gap: 18px; }
+.head p { color: var(--muted); max-width: 76ch; margin-top: 6px; }
+.small { font-size: 12.5px; } .muted { color: var(--muted); } .faint { color: var(--faint); } .lime { color: var(--lime); } .warn { color: var(--warn); } .danger { color: var(--danger); }
+.num { font-family: "Manrope", sans-serif; font-weight: 800; font-variant-numeric: tabular-nums; direction: ltr; unicode-bidi: isolate; }
+.glass { background: var(--glass); border: 1px solid var(--glass-line); border-radius: 18px; }
+.card { padding: 12px 14px; display: grid; gap: 8px; }
+.btn { min-height: 48px; border-radius: 999px; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 800; font-size: 14px; border: 1px solid transparent; font-family: var(--display); padding-inline: 16px; }
+.btn.primary { background: var(--lime); color: var(--on-lime); box-shadow: inset 0 1px 0 rgba(255,255,255,.45); }
+.btn.secondary { background: var(--glass); border-color: var(--glass-line); color: var(--ink); }
+.btn.sm { min-height: 44px; font-size: 13px; padding-inline: 14px; }
+.btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.chip { border: 1px solid var(--glass-line); background: var(--glass); border-radius: 999px; padding: 2px 10px; font-size: 12px; color: var(--muted); white-space: nowrap; display: inline-flex; align-items: center; min-height: 28px; }
+.chip.on { color: var(--lime); border-color: rgba(182,233,79,.45); background: var(--lime-dim); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.phones { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; align-items: start; }
+.pw { display: grid; gap: 10px; min-width: 0; }
+.pw > p { color: var(--muted); font-size: 13px; }
+.phone { border: 1px solid var(--line); border-radius: 34px; background: var(--bg); padding: 14px 12px 16px; display: grid; gap: 10px; width: 100%; max-width: 360px; justify-self: center; overflow: hidden; position: relative; min-height: 740px; align-content: start; }
+.phone::before { content: ""; position: absolute; inset: -25% -40% auto auto; width: 300px; height: 300px; border-radius: 50%; background: radial-gradient(circle, rgba(182,233,79,.12), transparent 65%); pointer-events: none; }
+.status { display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; color: var(--faint); padding: 2px 8px 0; direction: ltr; }
+.top { display: flex; align-items: center; gap: 10px; }
+.top img { width: 42px; height: 42px; object-fit: contain; }
+.top .end { margin-inline-start: auto; }
+.online { font-size: 11.5px; color: var(--lime); }
+
+.msg { max-width: 88%; padding: 10px 13px; border-radius: 18px; font-size: 13.5px; line-height: 1.65; }
+.me { justify-self: start; background: var(--raised); border: 1px solid var(--line); border-start-start-radius: 6px; }
+.ko { justify-self: end; background: rgba(182,233,79,.07); border: 1px solid rgba(182,233,79,.22); border-start-end-radius: 6px; display: grid; gap: 8px; max-width: 94%; }
+.ko b { color: var(--lime); }
+.src { display: flex; flex-wrap: wrap; gap: 4px; }
+.src span { font-size: 11px; color: var(--faint); border: 1px dashed var(--line); border-radius: 8px; padding: 0 6px; }
+.act { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; display: grid; gap: 8px; }
+.act .row { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.act .row .end { margin-inline-start: auto; }
+.act.done { border-color: rgba(182,233,79,.45); }
+.tick { width: 22px; height: 22px; border-radius: 50%; background: var(--lime); color: var(--on-lime); display: grid; place-items: center; font-size: 13px; font-weight: 800; flex: none; }
+.input { display: flex; align-items: center; gap: 8px; margin-top: auto; padding: 6px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); }
+.input span { flex: 1; color: var(--faint); font-size: 13px; padding-inline: 10px; }
+.input i { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--glass); border: 1px solid var(--glass-line); font-style: normal; }
+.input i.go { background: var(--lime); color: var(--on-lime); }
+
+/* voice */
+.wave { display: flex; gap: 4px; align-items: center; justify-content: center; height: 60px; }
+.wave i { width: 5px; border-radius: 4px; background: var(--lime); opacity: .85; }
+.mic { width: 84px; height: 84px; border-radius: 50%; background: var(--lime); color: var(--on-lime); display: grid; place-items: center; justify-self: center; box-shadow: 0 0 0 10px rgba(182,233,79,.14), 0 0 0 22px rgba(182,233,79,.06); }
+.heard { text-align: center; font-size: 16px; font-weight: 700; }
+.parsed { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; text-align: center; }
+.parsed div { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); border-radius: 16px; padding: 10px 6px; display: grid; }
+.parsed .num { font-size: 26px; }
+
+/* meal photo */
+.photo { height: 170px; border-radius: 18px; border: 1px solid var(--line); position: relative; overflow: hidden; background:
+  radial-gradient(circle at 30% 40%, #c98b3b 0 22%, transparent 23%),
+  radial-gradient(circle at 66% 38%, #e9e2c8 0 20%, transparent 21%),
+  radial-gradient(circle at 52% 70%, #6f8b3a 0 16%, transparent 17%),
+  radial-gradient(circle at 50% 52%, #2a2a28 0 46%, #1a1a19 47%); }
+.tag { position: absolute; font-size: 11px; background: rgba(7,8,8,.8); border: 1px solid var(--glass-line); border-radius: 8px; padding: 1px 7px; }
+.portion { display: grid; gap: 6px; }
+.portion div { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 9px 12px; }
+.portion b { font-size: 13.5px; color: var(--ink); }
+.portion span { font-size: 12px; color: var(--muted); }
+.portion .k { grid-row: 1 / 3; grid-column: 2; align-self: center; color: var(--lime); font-weight: 800; font-size: 13px; }
+.meter { display: grid; gap: 4px; }
+.prog { height: 8px; border-radius: 99px; background: var(--deep); border: 1px solid var(--soft); overflow: hidden; display: flex; }
+.prog i { display: block; height: 100%; background: var(--lime); }
+.prog i.add { background: rgba(182,233,79,.4); }
+
+/* captain */
+.brief { padding: 14px; display: grid; gap: 10px; border-color: rgba(182,233,79,.25); background: radial-gradient(circle at 90% 0%, rgba(182,233,79,.1), transparent 55%), var(--glass); }
+.item { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 10px; align-items: start; padding: 10px 12px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); }
+.item .ic { width: 36px; height: 36px; border-radius: 12px; display: grid; place-items: center; font-weight: 800; font-size: 13px; }
+.ic.w { background: rgba(242,181,68,.15); color: var(--warn); } .ic.d { background: rgba(255,107,107,.15); color: var(--danger); } .ic.l { background: var(--lime-dim); color: var(--lime); }
+.item .btn { margin-top: 6px; }
+.up { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 10px; padding: 10px 12px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); align-items: center; }
+.up .chg { font-size: 13px; }
+.up .chg .num { color: var(--lime); }
+.check { width: 44px; height: 44px; border-radius: 14px; border: 1px solid rgba(182,233,79,.45); background: var(--lime-dim); display: grid; place-items: center; color: var(--lime); font-weight: 800; grid-row: 1 / 3; grid-column: 2; }
+.draft { border: 1px dashed rgba(182,233,79,.45); border-radius: 16px; padding: 12px 14px; font-size: 13.5px; line-height: 1.7; background: rgba(182,233,79,.04); }
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; text-align: center; }
+.stats div { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 8px 4px; display: grid; }
+.stats .num { font-size: 18px; }
+
+/* rules */
+.rules { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.rule { padding: 16px; display: grid; gap: 6px; align-content: start; }
+.rule b { font-family: var(--display); font-size: 15px; }
+.rule span { color: var(--muted); font-size: 13px; }
+.decide { border: 1px solid rgba(242,181,68,.35); background: rgba(242,181,68,.07); border-radius: 16px; padding: 14px 16px; display: grid; gap: 8px; font-size: 13.5px; }
+.decide b { color: var(--warn); }
+@media (max-width: 1060px) { .phones, .rules { grid-template-columns: 1fr; } .hero { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main class="page">
+  <div class="hero">
+    <div>
+      <p class="small faint">KOCHIVO · KO الجديد · نسخة 1</p>
+      <h1>KO بيفهم، وبيعمل، وبيسأل قبل ما ينفّذ</h1>
+      <p class="lede">مساعد بالمصري للاعب والكابتن. بيرد من بيانات اللاعب الحقيقية، وبيعمل أكتر من حاجة في رسالة واحدة، وبيسمع الصوت ويشوف الصور. وكل حاجة بتغيّر بيانات لازم تتأكد بزرار.</p>
+      <nav class="toc" aria-label="أقسام"><a href="#player">KO مع اللاعب</a><a href="#captain">KO مع الكابتن</a><a href="#trust">قواعد KO</a></nav>
+    </div>
+    <img src="welcome.png" alt="KO">
+  </div>
+
+  <section aria-labelledby="player">
+    <div class="head"><h2 id="player">KO مع اللاعب</h2><p>بيكلم اللاعب كأنه مدرب جنبه: فاهم برنامجه وأكله وأرقامه، ومش بيرد رد محفوظ.</p></div>
+    <div class="phones">
+      <div class="pw">
+        <div class="phone">
+          <div class="status"><span>17:01</span><span>KOCHIVO</span></div>
+          <div class="top"><img src="welcome.png" alt=""><div><h3>KO</h3><span class="online">متاح</span></div></div>
+          <div class="msg me">أنا تعبان النهارده ونمت 5 ساعات بس. أعمل إيه في تمرين الرجل؟ وسجّلي إني شربت 2 لتر ماية</div>
+          <div class="msg ko">
+            <span>طبيعي تحس كده بعد 5 ساعات نوم. آخر مرة في الرجل رفعت <b class="num">100</b> كجم سكوات، فالنهارده خليها <b class="num">85</b> كجم بنفس العدات، وشيل آخر مجموعة لو حسيت إنك تقيل.</span>
+            <div class="src"><span>نومك النهارده</span><span>آخر تمرين رجل</span><span>برنامج الكابتن</span></div>
+            <div class="act">
+              <div class="row"><span>1. تخفيف تمرين النهارده 15%</span></div>
+              <div class="btns"><span class="btn primary sm">نفّذ</span><span class="btn secondary sm">لا</span></div>
+            </div>
+            <div class="act done">
+              <div class="row"><span class="tick">✓</span><span>2. سجّلت <span class="num">2</span> لتر ماية</span><span class="end small faint">تراجع</span></div>
+            </div>
+          </div>
+          <div class="msg me">تمام نفّذ</div>
+          <div class="msg ko"><span>اتعدّل. الكابتن هيشوف إنك خففت النهارده بسبب النوم.</span></div>
+          <div class="input"><span>اكتب لـ KO...</span><i><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></i><i class="go">↑</i></div>
+        </div>
+        <p>ردّ طبيعي من أرقامه الحقيقية، وتحته المصادر اللي اعتمد عليها. طلبين في رسالة واحدة، وكل واحد له زرار.</p>
+      </div>
+      <div class="pw">
+        <div class="phone">
+          <div class="status"><span>17:01</span><span>KOCHIVO</span></div>
+          <div class="top"><h3>بنش بريس</h3><span class="chip on end">المجموعة 2 من 4</span></div>
+          <div class="glass card" style="text-align:center"><span class="small faint">سجّل بصوتك</span>
+            <div class="wave" aria-hidden="true"><i style="height:18px"></i><i style="height:34px"></i><i style="height:52px"></i><i style="height:28px"></i><i style="height:44px"></i><i style="height:22px"></i><i style="height:38px"></i><i style="height:50px"></i><i style="height:24px"></i><i style="height:14px"></i></div>
+            <span class="mic" aria-hidden="true"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span>
+          </div>
+          <span class="heard">«بنش 80 كيلو 8 عدات، كانت تقيلة»</span>
+          <div class="parsed"><div><span class="small faint">الوزن</span><span class="num">80</span></div><div><span class="small faint">العدات</span><span class="num">8</span></div><div><span class="small faint">المجهود</span><span class="num">9/10</span></div></div>
+          <div class="msg ko" style="max-width:100%"><span>اتسجلت. ده أعلى وزن ليك في البنش بـ <b class="num">8</b> عدات. المجموعة الجاية خليها <b class="num">77.5</b> عشان تكمّل العدات.</span></div>
+          <div class="btns"><span class="btn primary">تمام</span><span class="btn secondary">عدّل</span></div>
+          <span class="small faint" style="text-align:center">بيشتغل من غير نت كمان، والتسجيل بيتبعت لما النت يرجع.</span>
+        </div>
+        <p>في نص التمرين، من غير ما يكتب: يقول الوزن والعدات بصوته، وKO يملا المجموعة ويقترح التالية.</p>
+      </div>
+      <div class="pw">
+        <div class="phone">
+          <div class="status"><span>17:01</span><span>KOCHIVO</span></div>
+          <div class="top"><img src="thinking.png" alt=""><div><h3>KO</h3><span class="online">بيشوف الصورة</span></div></div>
+          <div class="photo"><span class="tag" style="top:28%;inset-inline-end:18%">فراخ بانيه</span><span class="tag" style="top:24%;inset-inline-start:16%">رز أبيض</span><span class="tag" style="bottom:16%;inset-inline-start:40%">سلطة</span></div>
+          <div class="msg me">عزومة عند ماما. آكل قد إيه من ده؟</div>
+          <div class="msg ko" style="max-width:100%">
+            <span>فاضلك النهارده <b class="num">780</b> سعرة و<b class="num">55</b> جم بروتين. كُل كده:</span>
+            <div class="portion">
+              <div><b>فراخ بانيه</b><span>قطعتين متوسطين</span><span class="k">~ 420</span></div>
+              <div><b>رز</b><span>نص كوباية</span><span class="k">~ 200</span></div>
+              <div><b>سلطة</b><span>براحتك</span><span class="k">~ 60</span></div>
+            </div>
+            <div class="meter"><div class="row small" style="display:flex"><span>يومك بعد الأكلة دي</span><span class="num" style="margin-inline-start:auto">2,320 / 2,400</span></div><div class="prog"><i style="width:64%"></i><i class="add" style="width:30%"></i></div></div>
+            <span class="small faint">الأرقام تقريبية من الصورة. مش نصيحة طبية.</span>
+          </div>
+          <div class="btns"><span class="btn primary">سجّلها في أكلي</span><span class="btn secondary">مش هاكلها</span></div>
+        </div>
+        <p>أي أكلة حتى لو مش في القايمة: KO يشوفها، ويقوله ياكل قد إيه على حسب اللي فاضله من خطة الكابتن.</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="captain">
+    <div class="head"><h2 id="captain">KO مع الكابتن</h2><p>بيوفّر على الكابتن ساعات: بيقوله مين محتاج إيه النهارده، وبيقترح، والكابتن يوافق بضغطة.</p></div>
+    <div class="phones">
+      <div class="pw">
+        <div class="phone">
+          <div class="status"><span>08:30</span><span>KOCHIVO</span></div>
+          <div class="top"><img src="welcome.png" alt=""><div><h3>صباح الخير يا كابتن</h3><span class="small faint">ملخص KO · <span class="num">4</span> حاجات النهارده</span></div></div>
+          <div class="glass brief">
+            <div class="item"><span class="ic d">!</span><div><b>أحمد سمير مابيتمرنش من 9 أيام</b><div class="small muted">آخر مرة قال إن الشغل زحمة.</div><span class="btn secondary sm">ابعتله رسالة KO كاتبها</span></div></div>
+            <div class="item"><span class="ic w">ج</span><div><b>3 لاعبين اشتراكهم خلص</b><div class="small muted">إجمالي <span class="num">2,400</span> جنيه.</div><span class="btn secondary sm">فكّرهم كلهم</span></div></div>
+            <div class="item"><span class="ic l">↑</span><div><b>5 لاعبين جاهزين يزوّدوا أوزان</b><div class="small muted">عدّوا العدات المطلوبة مرتين ورا بعض.</div><span class="btn secondary sm">راجع الاقتراحات</span></div></div>
+            <div class="item"><span class="ic w">م</span><div><b>متابعتين أسبوعيتين مستنيين ردّك</b><div class="small muted">KO كتبلك مسودة لكل واحدة.</div><span class="btn secondary sm">افتح المسودات</span></div></div>
+          </div>
+          <div class="input"><span>اسأل KO عن فريقك...</span><i><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></i><i class="go">↑</i></div>
+        </div>
+        <p>ملخص الصبح: مش أرقام وخلاص. كل سطر جنبه الخطوة اللي الكابتن يعملها.</p>
+      </div>
+      <div class="pw">
+        <div class="phone">
+          <div class="status"><span>08:31</span><span>KOCHIVO</span></div>
+          <div class="top"><h3>اقتراحات زيادة الأوزان</h3><span class="chip on end">5</span></div>
+          <div class="up"><div><b>منى عادل · هيب ثرست</b><div class="chg">60 ← <span class="num">65</span> كجم</div><div class="small faint">عملت 12 عدة في آخر مرتين</div></div><span class="check">✓</span></div>
+          <div class="up"><div><b>كريم · بنش بريس</b><div class="chg">80 ← <span class="num">82.5</span> كجم</div><div class="small faint">8 عدات بمجهود 8 من 10</div></div><span class="check">✓</span></div>
+          <div class="up"><div><b>سلمى · رومانيان ديدلفت</b><div class="chg">50 ← <span class="num">55</span> كجم</div><div class="small faint">10 عدات مرتين</div></div><span class="check">✓</span></div>
+          <div class="up"><div><b>يوسف · سكوات</b><div class="chg">100 ← <span class="num">102.5</span> كجم</div><div class="small faint">6 عدات بسهولة</div></div><span class="check">✓</span></div>
+          <div class="up" style="opacity:.7"><div><b>أحمد · ضهر</b><div class="small warn">مش هيزوّد: اشتكى من وجع في الكتف</div></div></div>
+          <span class="btn primary" style="margin-top:auto">وافق على الـ 4</span>
+          <span class="small faint" style="text-align:center">مفيش حاجة بتتغير في البرنامج غير لما توافق.</span>
+        </div>
+        <p>KO بيقرأ تمارين كل لاعب ويقترح الزيادة. اللي عنده وجع مش بيتقترحله. والكابتن يوافق على الكل بضغطة.</p>
+      </div>
+      <div class="pw">
+        <div class="phone">
+          <div class="status"><span>08:33</span><span>KOCHIVO</span></div>
+          <div class="top"><h3>متابعة منى · الأسبوع 6</h3></div>
+          <div class="stats"><div><span class="small faint">الوزن</span><span class="num">-0.8</span></div><div><span class="small faint">التمرين</span><span class="num">4/4</span></div><div><span class="small faint">الأكل</span><span class="num">86%</span></div></div>
+          <div class="glass card"><span class="small faint">كتبت منى</span><span>«حاسة إني بقيت أقوى بس الوزن نازل ببطء»</span></div>
+          <span class="lbl small faint">مسودة KO</span>
+          <div class="draft">برافو يا منى، 4 تمارين من 4 الأسبوع ده. نزلتي 0.8 كيلو، وده المعدل الصح عشان العضل يفضل. والهيب ثرست زاد 5 كيلو في شهر. هنكمّل كده، وهزوّدلك 100 جرام فراخ في الغدا عشان البروتين.</div>
+          <div class="btns"><span class="btn primary">ابعت</span><span class="btn secondary">عدّل</span></div>
+          <span class="small faint" style="text-align:center">بيكتب بأسلوبك: KO بيتعلم من ردودك القديمة.</span>
+        </div>
+        <p>رد المتابعة الأسبوعية جاهز من أرقامها الحقيقية. الكابتن يبعته زي ما هو أو يعدّل.</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="trust">
+    <div class="head"><h2 id="trust">قواعد KO</h2><p>عشان الكابتن يثق فيه واللاعب مايتلخبطش.</p></div>
+    <div class="rules">
+      <div class="glass rule"><b>بيسأل قبل ما ينفّذ</b><span>أي حاجة بتغيّر برنامج أو أكل أو فلوس ليها زرار تأكيد، ومعاها «تراجع».</span></div>
+      <div class="glass rule"><b>بيقول جاب الكلام منين</b><span>تحت كل رد المصادر: النوم، وآخر تمرين، وخطة الكابتن.</span></div>
+      <div class="glass rule"><b>الكابتن هو المرجع</b><span>KO مابيغيّرش قرار الكابتن. بيقترح، والكابتن يوافق.</span></div>
+      <div class="glass rule"><b>مش دكتور</b><span>الوجع والأدوية والحالات الصحية: يوقف ويقول «كلّم دكتور» ويبلّغ الكابتن.</span></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="decide">
+      <b>قرارات ليك</b>
+      <span><b>1.</b> نبدأ بإننا نقيس KO الحالي على 100 رسالة بالمصري قبل أي تحسين؟ اقتراحي آه، عشان نعرف إن كل تحسين فرق فعلًا.</span>
+      <span><b>2.</b> ترتيب الشغل: الردود الطبيعية وكذا طلب في رسالة، وبعدها التسجيل بالصوت، وبعدها صورة الأكل، وبعدها أدوات الكابتن. موافق؟</span>
+      <span><b>3.</b> صورة الأكل: KO يدي أرقام تقريبية للسعرات والكميات (ده تغيير عن دلوقتي، KO ممنوع يقدّر)؟ اقتراحي آه، مع كلمة «تقريبية» دايمًا.</span>
+    </div>
+  </section>
+</main>
+</body>
+</html>
