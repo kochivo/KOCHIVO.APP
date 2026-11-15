@@ -8,5 +8,7 @@ export function playerInviteSchema(today: string) {
     packageId: z.uuid().nullable(), kind: z.enum(['days', 'sessions']), quantity: z.number().int().min(1).max(365),
     price: z.number().int().min(0).max(100000), paid: z.number().int().min(0).max(100000), freeTrial: z.boolean(),
     startsOn: z.iso.date().refine(v => v >= shiftInviteDate(today, -30) && v <= shiftInviteDate(today, 60)),
+    formIds: z.array(z.uuid()).max(5).refine(ids => new Set(ids).size === ids.length).optional(),
+    gate: z.boolean().optional(),
   }).refine(v => v.paid <= v.price && (v.kind !== 'sessions' || v.quantity <= 200));
 }

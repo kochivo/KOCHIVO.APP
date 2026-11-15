@@ -10,24 +10,22 @@ import { applyOptimistic } from '@/lib/optimistic';
 import { archivePlayer } from '../data/archive-player';
 import { useRouter } from 'next/navigation';
 import { Plus, Users } from 'lucide-react';
-import { Button, Chip, EmptyState, ErrorState, LoadingState, TextField } from '@/ui';
+import { Chip, EmptyState, ErrorState, LoadingState, TextField } from '@/ui';
 import { playerStatus } from '../status';
 import type { RosterResult } from '../types';
 import { RosterRow } from './roster-row';
 import { PlayersEmptyState } from './players-empty-state';
-import dynamic from 'next/dynamic';
+import Link from 'next/link';
 import { useDemoExpiry } from '@/features/demo';
 
-const InviteSheet = dynamic(() => import('./invite-sheet').then(module => module.InviteSheet));
 
 export function RosterScreen({ data, today, plan }: { data: Promise<[RosterResult, string]>; today: string; plan?: ReactNode }) {
   const t = useT(messages);
   const locale = useLocale();
   const demo = useDemoExpiry();
-  const [result, captainFirstName] = use(data);
+  const [result] = use(data);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
-  const [inviteOpen, setInviteOpen] = useState(false);
   const [pending, startTransition] = useTransition();
   const router = useRouter();
   const [archived, setArchived] = useState<Record<string, boolean>>({});
@@ -54,7 +52,7 @@ export function RosterScreen({ data, today, plan }: { data: Promise<[RosterResul
   const statuses = players.map((player) => ({ player, status: playerStatus({ ...player, today }) }));
   const visible = statuses.filter(({ player, status }) => (filter === 'all' || status === filter)
     && player.fullName.includes(search.trim()));
-  const inviteButton = <Button onClick={() => setInviteOpen(true)} className="min-h-12"><Plus aria-hidden className="size-5" />{demo ? t('invitesAreDisabledInTheDemo') : t('newPlayer')}</Button>;
+  const inviteButton = <Link href="/captain/players/new" className="press inline-flex min-h-12 cursor-pointer items-center gap-2 rounded-control bg-lime px-4 font-bold text-on-lime focus-visible:ring-2 focus-visible:ring-lime"><Plus aria-hidden className="size-5" />{demo ? t('invitesAreDisabledInTheDemo') : t('newPlayer')}</Link>;
   return (
     <section className="space-y-6">
       <header className="flex flex-wrap items-end justify-between gap-4">
@@ -62,7 +60,7 @@ export function RosterScreen({ data, today, plan }: { data: Promise<[RosterResul
         <div className="flex flex-wrap items-center gap-3">{plan}{(players.length > 0 || result.error) && inviteButton}</div>
       </header>
       {pending ? <LoadingState variant="list" /> : result.error ? <ErrorState message={result.error} retryLabel={t('tryAgain')} onRetry={() => startTransition(() => router.refresh())} /> : players.length === 0 ? (
-        <PlayersEmptyState demo={Boolean(demo)} onInvite={() => setInviteOpen(true)} />
+        <PlayersEmptyState demo={Boolean(demo)} onInvite={() => router.push('/captain/players/new')} />
       ) : <>
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div aria-label={t('filterPlayers')} className="flex flex-wrap gap-2">
@@ -79,7 +77,6 @@ export function RosterScreen({ data, today, plan }: { data: Promise<[RosterResul
           </div>
         )}
       </>}
-      {inviteOpen && <InviteSheet captainFirstName={captainFirstName} onClose={() => setInviteOpen(false)} />}
     </section>
   );
 }

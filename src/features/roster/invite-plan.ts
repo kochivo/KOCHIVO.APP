@@ -7,7 +7,7 @@ export interface InvitePlan {
   packageId: string | null; kind: 'days' | 'sessions'; quantity: number;
   price: number; paid: number; freeTrial: boolean; startsOn: string;
 }
-export interface PlayerInvite extends InvitePlan { name: string; whatsapp: string }
+export interface PlayerInvite extends InvitePlan { name: string; whatsapp: string; formIds?: string[]; gate?: boolean }
 
 export function defaultInvitePlan(pkg: InvitePackage | undefined, today: string): InvitePlan {
   return { packageId: pkg?.id ?? null, kind: pkg?.kind ?? 'days',

@@ -7,6 +7,7 @@ import { localDate } from '@/lib/dates';
 import { rosterClient } from './client';
 import { playerInviteSchema } from '../invite-schema';
 import { messages } from '../invites/messages';
+import { inviteRpc } from './invite-rpc';
 
 export async function createPlayerInviteAt(input: unknown, now: Date): Promise<{ code: string } | { error: string }> {
   const t = await getT(messages);
@@ -15,9 +16,12 @@ export async function createPlayerInviteAt(input: unknown, now: Date): Promise<{
   try {
     const client = await rosterClient();
     const v = parsed.data;
-    const result = await client.rpc('create_player_invite', { p_name: v.name, p_whatsapp: v.whatsapp ?? null,
+    const args = { p_name: v.name, p_whatsapp: v.whatsapp ?? null,
       p_package: v.packageId, p_kind: v.kind, p_quantity: v.quantity, p_price_egp: v.price,
-      p_paid_egp: v.paid, p_free_trial: v.freeTrial, p_starts_on: v.startsOn });
+      p_paid_egp: v.paid, p_free_trial: v.freeTrial, p_starts_on: v.startsOn };
+    const result = v.formIds?.length ? await inviteRpc(client).rpc('create_player_invite_v2', {
+      ...args, p_form_ids: v.formIds, p_gate: v.gate ?? true,
+    }) : await client.rpc('create_player_invite', args);
     if (result.error) {
       const code = result.error.code;
       const key = code === 'P0001' ? 'playerLimit' : code === 'P0002' ? 'packageMissing'

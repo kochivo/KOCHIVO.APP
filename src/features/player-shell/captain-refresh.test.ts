@@ -40,11 +40,13 @@ afterEach(() => { vi.unstubAllGlobals(); });
 it('roundtrips the captain id in cache and accepts caches written before chat', () => {
   let saved = '';
   vi.stubGlobal('window', { localStorage: { getItem: () => saved, setItem: (_key: string, value: string) => { saved = value; } } });
-  writeCaptainCache({ ...captain, captainId: 'captain-id' });
+  writeCaptainCache({ ...captain, captainId: 'captain-id', startFormsPending: true });
   expect(readCaptainCache()?.captainId).toBe('captain-id');
+  expect(readCaptainCache()?.startFormsPending).toBe(true);
   saved = JSON.stringify(captain);
   expect(readCaptainCache()?.fullName).toBe('Coach');
   expect(readCaptainCache()?.captainId).toBeUndefined();
+  expect(readCaptainCache()?.startFormsPending).toBeUndefined();
 });
 
 it('preserves loaded access state when a background refresh fails', async () => {

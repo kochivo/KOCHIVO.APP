@@ -1,6 +1,6 @@
 'use client';
 import { use, useState, useTransition } from 'react';
-import dynamic from 'next/dynamic';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { KoInvite } from '@/ui/icons/ko-invite';
 import { useLocale, useT } from '@/core/i18n/client';
@@ -14,16 +14,14 @@ import type { Tab } from './model';
 import { messages } from './messages';
 import { PlayerRow } from './player-row';
 
-const InviteSheet = dynamic(() => import('../components/invite-sheet').then(module => module.InviteSheet));
 const emptyKeys = { all: 'emptyAll', needsYou: 'emptyNeedsYou', good: 'emptyGood', newPlayers: 'emptyNewPlayers',
   ending: 'emptyEnding', stopped: 'emptyStopped' } as const;
 
 export function WorkspaceRoster({ data, today, extras, details }: WorkspaceRosterProps) {
-  const [result, captainFirstName] = use(data);
+  const [result] = use(data);
   const t = useT(messages), locale = useLocale();
   const router = useRouter();
   const [filter, setFilter] = useState<Tab>('all');
-  const [inviteOpen, setInviteOpen] = useState(false);
   const [pending, startTransition] = useTransition();
   const activity = details && 'activity' in details ? details.activity : {};
   const players = withOpenTasks(result.players ?? [], activity);
@@ -33,7 +31,7 @@ export function WorkspaceRoster({ data, today, extras, details }: WorkspaceRoste
   return <section className="space-y-4">
     <PageBarTitle title={failed ? t('players') : t('playersCount', { count: formatNumber(players.length, locale) })} />
     <PageBarActions>
-      <Button className="min-h-12 w-auto! shrink-0 rounded-[10px] text-xs" onClick={() => setInviteOpen(true)}><KoInvite aria-hidden className="size-4" />{t('add')}</Button>
+      <Link href="/captain/players/new" className="press inline-flex min-h-12 shrink-0 cursor-pointer items-center gap-2 rounded-[10px] bg-lime px-4 text-xs font-semibold text-on-lime focus-visible:ring-2 focus-visible:ring-lime"><KoInvite aria-hidden className="size-4" />{t('add')}</Link>
     </PageBarActions>
     <div className="flex w-max max-w-full gap-1 overflow-x-auto rounded-full border border-line bg-bg-deep/25 p-[3px]" aria-label={t('players')}>
       {tabs.map(tab => <button key={tab} type="button" aria-pressed={filter === tab} onClick={() => setFilter(tab)}
@@ -54,6 +52,5 @@ export function WorkspaceRoster({ data, today, extras, details }: WorkspaceRoste
             meta={extras.meta?.[player.playerId]} activity={activity[player.playerId]} />)}</tbody>
         </table></div>
       </>}
-    {inviteOpen && <InviteSheet captainFirstName={captainFirstName} onClose={() => setInviteOpen(false)} />}
   </section>;
 }

@@ -62,7 +62,6 @@ import { RosterRow } from './components/roster-row';
 import { archivePlayer } from './data/archive-player';
 import type { RosterPlayer } from './types';
 vi.mock('./data/archive-player', () => ({ archivePlayer: vi.fn() }));
-vi.mock('./components/invite-sheet', () => ({ InviteSheet: () => null }));
 const players: RosterPlayer[] = ['a', 'b'].map(playerId => ({
   playerId, fullName: playerId, accessUntil: '2026-12-03', startedOn: '2026-10-01',
   lastTrainingDate: null, programTitle: null, openTasks: 0,

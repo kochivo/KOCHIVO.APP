@@ -1,4 +1,5 @@
 export { CaptainShell } from './components/captain-shell';
+export { createPlayerInvite } from './data/create-player-invite';
 export { RadarCard } from './components/radar-card';
 export { InviteButton } from './components/invite-button';
 export { fetchRoster, fetchCaptainFirstName } from './data/roster';

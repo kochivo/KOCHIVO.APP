@@ -12,6 +12,7 @@ export interface MyCaptain {
   captainId?: string;
   timezone?: string;
   pending?: boolean; frozenAt?: string | null;
+  startFormsPending?: boolean;
   fullName: string; phone: string | null; accessUntil: string;
   archivedAt: string | null; startedOn: string | null;
   bio?: string | null; location?: string | null; avatarUrl?: string | null;
@@ -35,6 +36,9 @@ export async function fetchMyCaptain(): Promise<{ data: MyCaptain | null } | { e
     if (!relation.data) return { data: null };
     const row = relation.data;
     if (captain.error || timezone?.error) return { error: t('couldnTLoadYourCoach') };
+    const startForms = await client.from('form_requests').select('id').eq('player_id', auth.claims.sub)
+      .eq('blocks_access', true).is('answered_at', null).limit(1);
+    if (startForms.error) return { error: t('couldnTLoadYourCoach') };
     const publicProfile = captain.data?.[0];
     return { data: {
       captainId: row.captain_id,
@@ -44,6 +48,7 @@ export async function fetchMyCaptain(): Promise<{ data: MyCaptain | null } | { e
       avatarUrl: publicProfile?.avatar_path ? client.storage.from('captain-avatars').getPublicUrl(publicProfile.avatar_path).data.publicUrl : null,
       accessUntil: row.access_until, archivedAt: row.archived_at, startedOn: row.started_on,
       pending: row.pending, frozenAt: row.frozen_at,
+      startFormsPending: startForms.data.length > 0,
     } };
   } catch (error) { unstable_rethrow(error); return { error: t('couldnTLoadYourCoach') }; }
 }

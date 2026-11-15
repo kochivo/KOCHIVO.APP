@@ -1,17 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import dynamic from 'next/dynamic';
-import { Button } from '@/ui';
+import Link from 'next/link';
+import { cn } from '@/lib/cn';
+import { KoInvite } from '@/ui/icons/ko-invite';
 
-// The sheet and its form load on first tap, so no captain route pays for them up front.
-const InviteSheet = dynamic(() => import('./invite-sheet').then(module => module.InviteSheet));
-
-/** Opens the roster's invite sheet from other screens, so every invite goes through one server action. */
-export function InviteButton({ captainFirstName, label, className }: { captainFirstName: string; label: string; className?: string }) {
-  const [open, setOpen] = useState(false);
-  return <>
-    <Button data-tour="invite-player" className={className} onClick={() => setOpen(true)}>{label}</Button>
-    {open && <InviteSheet captainFirstName={captainFirstName} onClose={() => setOpen(false)} />}
-  </>;
+export function InviteButton({ label, className }: { captainFirstName: string; label: string; className?: string }) {
+  return <Link href="/captain/players/new" data-tour="invite-player" className={cn('press inline-flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-control bg-lime px-4 text-sm font-bold text-on-lime focus-visible:ring-2 focus-visible:ring-lime', className)}><KoInvite aria-hidden className="size-5" />{label}</Link>;
 }

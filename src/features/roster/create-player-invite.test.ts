@@ -39,3 +39,15 @@ it('handles network failure and exposes a server action', async () => {
   expect(await createPlayerInviteAt(input, now)).toEqual({ error: 'الدعوة متعملتش. جرّب تاني' });
   expect(await createPlayerInvite({})).toEqual({ error: 'راجع بيانات الدعوة' });
 });
+it('sends selected assessments and the explicit gate choice through v2', async () => {
+  mocks.rpc.mockResolvedValue({ data: 'code', error: null });
+  const formIds = ['00000000-0000-7000-8000-000000000001'];
+  expect(await createPlayerInviteAt({ ...input, formIds, gate: false }, now)).toEqual({ code: 'code' });
+  expect(mocks.rpc).toHaveBeenCalledWith('create_player_invite_v2', expect.objectContaining({ p_form_ids: formIds, p_gate: false }));
+});
+it('rejects duplicate and excessive assessment ids before creating an invite', async () => {
+  const id = '00000000-0000-7000-8000-000000000001';
+  for (const formIds of [[id,id], Array.from({ length: 6 }, () => id)])
+    expect(await createPlayerInviteAt({ ...input, formIds }, now)).toEqual({ error: 'راجع بيانات الدعوة' });
+  expect(mocks.rpc).not.toHaveBeenCalled();
+});

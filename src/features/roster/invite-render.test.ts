@@ -1,10 +1,11 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { expect, it } from 'vitest';
+import { expect, it, vi } from 'vitest';
 import { LocaleProvider } from '@/core/i18n/client';
 import { InviteForm } from './components/invite-form';
 import { InviteResult } from './components/invite-result';
 import type { InvitePackage, PlayerInvite } from './invite-plan';
+vi.mock('server-only', () => ({}));
 
 const pkg: InvitePackage = { id: 'p', name: 'Monthly', kind: 'days', days: 30, sessions: null, price_egp: 500 };
 const input: PlayerInvite = { name: 'Ali', whatsapp: '01001234567', packageId: 'p', kind: 'days', quantity: 30,
@@ -34,6 +35,6 @@ it.each(['ar', 'en'] as const)('renders summary and correct share destinations i
     expect(url.searchParams.get('text')).toContain('Omar');
     expect(url.searchParams.get('text')).toContain('https://kochivo.site/i/abc');
     expect(html).toContain('Monthly'); expect(html).toContain('Ali');
-    expect(html).toContain('400'); expect(html).toContain('150'); expect(html).toContain('250');
+    expect(html).toContain('type="button"'); expect(html).toContain('readOnly=""');
   }
 });

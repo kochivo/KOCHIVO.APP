@@ -1,4 +1,5 @@
 export { messages } from './messages';
+export { durationLabel, durationPresets } from './package-choice';
 export { methodKeys } from './method-keys';
 export type { AcceptedMethod, PaymentMethod } from './payment-methods';
 export { loadPaymentMethods } from './data/payment-methods';

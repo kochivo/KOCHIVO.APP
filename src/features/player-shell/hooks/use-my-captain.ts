@@ -24,6 +24,7 @@ export function readCaptainCache(): MyCaptain | null {
       (row.phone !== null && typeof row.phone !== 'string') ||
       (row.archivedAt !== null && typeof row.archivedAt !== 'string')) return null;
     const branding: Partial<MyCaptain> = {};
+    if (typeof row.startFormsPending === 'boolean') branding.startFormsPending = row.startFormsPending;
     if (typeof row.captainId === 'string') branding.captainId = row.captainId;
     for (const key of ['bio', 'location', 'avatarUrl'] as const) {
       if (typeof row[key] === 'string' || row[key] === null) branding[key] = row[key];
@@ -45,8 +46,8 @@ export function writeCaptainCache(data: MyCaptain | null) {
     const cacheKey = captainCacheKey();
     if (!cacheKey) return;
     if (!data) { window.localStorage.removeItem(cacheKey); return; }
-    const { captainId, fullName, accessUntil, archivedAt, bio, location, avatarUrl, social, pending, frozenAt } = data;
-    window.localStorage.setItem(cacheKey, JSON.stringify({ captainId, fullName, phone: null, accessUntil, archivedAt, bio, location, avatarUrl, social, pending, frozenAt,
+    const { captainId, fullName, accessUntil, archivedAt, bio, location, avatarUrl, social, pending, frozenAt, startFormsPending } = data;
+    window.localStorage.setItem(cacheKey, JSON.stringify({ captainId, fullName, phone: null, accessUntil, archivedAt, bio, location, avatarUrl, social, pending, frozenAt, startFormsPending,
       ...(internationalEnabled() ? { timezone: profileTimezone(data.timezone) } : {}) }));
   } catch { /* Storage can be unavailable in private browsing. */ }
 }

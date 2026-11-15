@@ -36,7 +36,8 @@ it.each(['ar', 'en'] as const)('renders fleet counts and recovery actions in %s'
       expect(html).toContain('lg:grid-cols-4');
       expect(html.match(/text-4xl/g)).toHaveLength(4);
       expect(html.match(/text-4xl[^>]*>0<\/p>/g)).toHaveLength(4);
-      expect(html.match(/<button[^>]*bg-lime/g)).toHaveLength(1);
+      expect(html.match(/<a[^>]*bg-lime/g)).toHaveLength(1);
+      expect(html).toContain('href="/captain/players/new"');
       expect(html).toContain('data-tour="captain-home"');
       expect(html).toContain('lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]');
       const steps = [...html.matchAll(/<li\b[\s\S]*?<\/li>/g)].map(match => match[0]);

@@ -16,6 +16,7 @@ import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { daysBetween, localDate } from '@/lib/dates';
 import { whatsappUrl } from '@/lib/whatsapp';
 import { accessState } from '../access';
+import { gateApplies } from '../start-gate';
 import { playerNav, showsFeedback, showsNav } from '../nav';
 import { MyCaptainContext, useMyCaptain } from '../hooks/use-my-captain';
 import { useOnline } from '../hooks/use-online';
@@ -27,6 +28,7 @@ const InstallSheet = dynamic(() => import('@/features/install').then(module => m
 const RestMoodSync = dynamic(() => import('@/features/player-home').then(module => module.RestMoodSync), { ssr: false });
 const SyncRunner = dynamic(() => import('./sync-runner').then(module => module.SyncRunner), { ssr: false });
 const WaitingRoom = dynamic(() => import('@/features/billing').then(module => module.PlayerWaitingRoom), { ssr: false });
+const StartGateBoundary = dynamic(() => import('./start-gate-boundary').then(module => module.StartGateBoundary), { loading: () => <LoadingState variant="cards" />, ssr: false });
 const NoCaptainScreen = dynamic(() => import('./no-captain-screen').then(module => module.NoCaptainScreen), { ssr: false });
 const KoPreview = process.env.NODE_ENV === 'development'
   ? dynamic(() => import('@/features/ko-preview').then(module => module.KoPreview), { ssr: false }) : () => null;
@@ -82,7 +84,8 @@ export function PlayerShell({ children, unassignedAction }: { children?: ReactNo
     </div>
     {training && captain.status === 'loading' ? <LoadingState variant="cards" /> :
       training && captain.status === 'error' ? <ErrorState message={t('couldnTLoadYourCoach')} retryLabel={t('tryAgain')} onRetry={() => void captain.retry()} /> :
-      training && blocked ? <WaitingRoom frozen={Boolean(captain.data?.frozenAt)} /> : children}
+      training && blocked ? <WaitingRoom frozen={Boolean(captain.data?.frozenAt)} /> :
+      captain.data?.startFormsPending && gateApplies(pathname) ? <StartGateBoundary key={pathname} captain={captain.data.fullName}>{children}</StartGateBoundary> : children}
     </div>
     {showsNav(pathname) && <InstallSheet />}
     {showsFeedback(pathname, v6) && <FeedbackButton role="player" />}

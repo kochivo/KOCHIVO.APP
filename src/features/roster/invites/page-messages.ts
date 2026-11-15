@@ -1,0 +1,34 @@
+import { defineMessages } from '@/core/i18n/messages';
+import { arStd } from './standard/page-messages';
+
+export const messages = defineMessages({
+  get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
+  ar: {
+    players: 'اللاعبين', back: 'رجوع', cancel: 'إلغاء', subtitle: 'هنعملك لينك تبعته للاعب يفتح بيه حسابه',
+    gatedReady: 'ابعته له، هيلاقي التقييمات قدامه أول ما يفتح حسابه', detailsAndPayment: 'البيانات والباقة',
+    details: 'بيانات اللاعب', payment: 'الباقة والدفع', paymentHint: 'من باقاتك، أو مدة وسعر مخصوص',
+    before: 'قبل ما يبدأ', beforeHint: 'تقييمات يملاها أول ما يفتح حسابه', optional: 'اختياري',
+    gate: 'لازم يملاها قبل ما يدخل', gateHint: 'البرنامج والأكل هيفضلوا مقفولين لحد ما يبعت الردود. هيوصلك تنبيه أول ما يخلص.',
+    questions: '{n} سؤال', preview: 'معاينة', newForm: 'تقييم جديد', noForms: 'لسه معندكش تقييمات.', firstForm: 'اعمل أول تقييم',
+    formsError: 'مش قادرين نحمّل التقييمات. جرّب تاني', formLimit: 'اختار لحد 5 تقييمات',
+    newPlayer: 'لاعب جديد', from: 'من', to: 'لحد', owed: 'فاضل عليه', flow: 'أول ما يفتح اللينك',
+    account: 'يعمل حسابه', fill: 'يملا {n} تقييم', program: 'يشوف البرنامج', edit: 'عدّل', next: 'كمّل',
+    another: 'ضيف لاعب تاني', assessmentCount: '{n} تقييم قبل ما يبدأ', optionalCount: '{n} تقييم اختياري',
+    phoneHint: 'اختياري. لو كتبته هنفتحلك واتساب على طول.', discount: 'خصم',
+    month: 'شهر', months: '{n} شهور', days: '{n} يوم', year: 'سنة', customDuration: 'مدة تانية',
+  },
+  en: {
+    players: 'Players', back: 'Back', cancel: 'Cancel', subtitle: 'Create a link for your player to open their account',
+    gatedReady: 'Send it to them. They will answer the assessments when they open their account', detailsAndPayment: 'Details and package',
+    details: 'Player details', payment: 'Package and payment', paymentHint: 'Choose a package or a custom duration and price',
+    before: 'Before they start', beforeHint: 'Assessments to answer when they open their account', optional: 'Optional',
+    gate: 'Required before entering', gateHint: 'Training and food stay locked until they submit. You will be notified when they finish.',
+    questions: '{n} questions', preview: 'Preview', newForm: 'New assessment', noForms: 'No assessments yet.', firstForm: 'Create your first assessment',
+    formsError: 'Could not load assessments. Try again', formLimit: 'Choose up to 5 assessments',
+    newPlayer: 'New player', from: 'From', to: 'Until', owed: 'Still owed', flow: 'When they open the link',
+    account: 'Create account', fill: 'Answer {n} assessments', program: 'View program', edit: 'Edit', next: 'Continue',
+    another: 'Add another player', assessmentCount: '{n} assessments before starting', optionalCount: '{n} optional assessments',
+    phoneHint: 'Optional. Add it to open WhatsApp directly.', discount: 'Discount',
+    month: 'Month', months: '{n} months', days: '{n} days', year: '1 year', customDuration: 'Other duration',
+  },
+});

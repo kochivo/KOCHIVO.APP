@@ -1,4 +1,5 @@
 export { FormsLibraryEntry } from './components/forms-library-entry';
+export { FormPreviewEntry } from './components/form-preview-entry';
 export type { QuestionValue } from './components/question-field';
 export type { Question, Option, AlertRule, FormDraft, Schedule } from './types';
 export { PendingFormsEntry as PendingForms } from './components/pending-forms-entry';

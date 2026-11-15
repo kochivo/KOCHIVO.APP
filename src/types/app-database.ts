@@ -21,7 +21,7 @@ type Social = Partial<Record<'whatsapp' | 'instagram' | 'tiktok' | 'facebook' | 
 type RowPatches = {
   forms: { kind: CustomFormKind };
   form_questions: { type: CustomFormQuestionType; maps_to: CustomFormFactKey | null };
-  form_requests: { status: CustomFormStatus };
+  form_requests: { status: CustomFormStatus; blocks_access: boolean };
   profiles: { captain_status: CaptainStatus; units: Units; social: Social; languages: PublicProfileLanguage[] };
   supplements: { timing: SupplementTiming };
   notifications: { type: NotificationType };

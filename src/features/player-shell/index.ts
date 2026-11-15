@@ -1,4 +1,5 @@
 export { PlayerShell } from './components/player-shell-entry';
+export { loadStartGate } from './data/start-gate';
 export { LocalUserBoundary } from './components/local-user-boundary';
 export { SyncRunner } from './components/sync-runner';
 export { CaptainScreen } from './components/captain-screen-entry';
