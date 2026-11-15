@@ -1,6 +1,8 @@
 import type { ComponentProps } from 'react';
-import { useState } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { useId, useState } from 'react';
+import { Bell, Pencil } from 'lucide-react';
+import { ResponsiveDialog } from '@/ui/responsive-dialog';
+import { editorButton } from './v11-question-controls';
 import { createT } from '@/core/i18n/messages';
 import { workspaceMessages } from '../messages';
 import { formCopy } from '../form-copy';
@@ -9,9 +11,9 @@ import { messages as redesign } from '../redesign/messages';
 import { LibrarySchedulesEntry } from './library-schedules-entry';
 import { Button } from '@/ui/button';
 
-export function V11FormSettings(props: ComponentProps<typeof LibrarySchedulesEntry> & { schedule: string }) {
+export function V11FormSettings(props: ComponentProps<typeof LibrarySchedulesEntry>) {
   const { form, locale, style, scheduleContext } = props;
-  const [editing, setEditing] = useState(false);
+  const [editing, setEditing] = useState(false), id = useId();
   const t = createT(workspaceMessages, locale, style), r = createT(redesign, locale, style), m = formCopy(locale, style);
   const schedules = scheduleContext?.schedules ?? [];
   const timing = form.schedule ? `${form.schedule.every === 'week' ? r('weeklyDay', { day: assessmentWeekday(form.schedule.weekday, locale) }) : r('monthlyDay', { n: form.schedule.day })} · ${assessmentTime({ hour: form.schedule.hour, minute: 0 }, locale)}` : '';
@@ -22,14 +24,19 @@ export function V11FormSettings(props: ComponentProps<typeof LibrarySchedulesEnt
       return s.paused_at ? t('pausedSummary', { schedule: line }) : line;
     }).join(' · ') : t('manualSummary');
   const reminders = [form.remind_after_hours, ...schedules.map(s => s.remind_after_hours)].filter((hours): hours is number => Boolean(hours));
-  return <section className="glass rounded-card border border-line-soft p-4"><h2 className="mb-3 text-sm font-semibold">{t('settings')}</h2>
-    <p className="text-sm text-muted">{summary}{reminders.length > 0 && ` · ${reminders.map(n => r('remindHours', { n })).join(' · ')}`}</p>
-    <Button type="button" aria-expanded={editing} onClick={() => setEditing(!editing)} variant={'secondary'} block={false} className={"press mt-3 flex min-h-12 cursor-pointer items-center gap-2 px-4 text-sm focus-visible:ring-2 focus-visible:ring-lime"}>{t('editSettings')}<ChevronDown aria-hidden className={`size-4 transition-transform ${editing ? 'rotate-180' : ''}`} /></Button>
-    {editing && <div className="mt-3">
+  return <section id={id} tabIndex={-1} className="glass flex items-center gap-3 rounded-control border border-line-soft px-3 py-2">
+    <Bell aria-hidden className="size-5 shrink-0 text-muted" />
+    <p className="min-w-0 flex-1 text-sm text-muted">{summary}{reminders.length > 0 && <small className="block">{reminders.map(n => r('remindHours', { n })).join(' · ')}</small>}</p>
+    <button type="button" aria-haspopup="dialog" onClick={() => setEditing(true)} className={editorButton}><Pencil aria-hidden className="size-4" />{t('editSettings')}</button>
+    {editing && <ResponsiveDialog modal fallbackId={id} title={t('settings')} onDismiss={() => setEditing(false)} onClose={() => setEditing(false)}
+      className="sheet fixed inset-0 m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-2xl rounded-card border border-line p-5 text-ink"
+      footer={<Button onClick={() => setEditing(false)} block={false} className="px-5">{m.close}</Button>}>
+      <div className="[&_button]:cursor-pointer [&_button]:active:scale-[.98] [&_button:focus-visible]:ring-2 [&_button:focus-visible]:ring-lime [&_summary]:cursor-pointer [&_summary]:active:scale-[.98] [&_summary:focus-visible]:ring-2 [&_summary:focus-visible]:ring-lime">
       <label className="mb-3 block text-xs text-muted">{m.formTitle}<input value={form.title} onChange={e => props.onChange({ ...form, title: e.target.value })} className="mt-2 min-h-12 w-full rounded-control border border-line bg-transparent px-3 text-sm text-ink" /></label>
       <label className="flex min-h-12 items-center justify-between gap-3 text-xs text-muted">{t('kind')}<select value={form.kind} onChange={e => props.onChange({ ...form, kind: e.target.value as typeof form.kind })} className="min-h-12 max-w-full rounded-control bg-surface px-3 text-ink">
         {Object.entries(m.kinds).map(([kind, label]) => <option key={kind} value={kind}>{label}</option>)}<option value="custom">{t('manual')}</option></select></label>
       <LibrarySchedulesEntry {...props} />
-    </div>}
+      </div>
+    </ResponsiveDialog>}
   </section>;
 }

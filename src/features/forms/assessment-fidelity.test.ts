@@ -56,16 +56,17 @@ it('opens every existing template with its questions and schedule', async () => 
 
 it('summarizes manual settings once with a visible edit button', () => {
   const form = { ...copyTemplate(templates[0], 'captain', () => 'form'), schedule: null };
-  const html = renderToStaticMarkup(createElement(V11FormSettings, { form, locale: 'ar', schedule: 'يدوي', onChange() {} }));
+  const html = renderToStaticMarkup(createElement(V11FormSettings, { form, locale: 'ar', onChange() {} }));
   expect(html).toContain('بتبعته بإيدك لأي لاعب');
-  expect(html).toMatch(/<button[^>]*aria-expanded="false"[^>]*>عدّل/);
+  expect(html).toMatch(/<button[^>]*aria-haspopup="dialog"/);
+  expect(html).toContain('عدّل');
   expect(html).not.toContain('يدوي');
   expect(html).not.toContain('<dl>');
 });
 
 it('summarizes a weekly template using its stored time', () => {
   const form = copyTemplate(templates[0], 'captain', () => 'form');
-  const html = renderToStaticMarkup(createElement(V11FormSettings, { form, locale: 'ar', schedule: 'كل أسبوع الجمعة · 9:00', onChange() {} }));
+  const html = renderToStaticMarkup(createElement(V11FormSettings, { form, locale: 'ar', onChange() {} }));
   expect(html).toContain('كل جمعة');
   expect(html).toContain('9');
   expect(html).toContain('كل اللاعبين');

@@ -1,6 +1,6 @@
 import { arStd } from './standard/messages';
 
-const workspaceStd = { title: 'التقييمات', newForm: 'تقييم جديد', start: 'ابدأ من قالب أو من الصفر', responses: 'الردود', active: 'نشط', stopped: 'متوقف', manual: 'يدوي',
+const workspaceStd = { questionSettings: 'إعدادات السؤال', addOption: '+ اختيار', emptyOptions: 'أضف أول اختيار.', selectQuestion: 'افتح سؤالًا لمعاينته.', title: 'التقييمات', newForm: 'تقييم جديد', start: 'ابدأ من قالب أو من الصفر', responses: 'الردود', active: 'نشط', stopped: 'متوقف', manual: 'يدوي',
     editSettings: 'عدّل', manualSummary: 'ترسله يدويًا لأي لاعب', scheduledSummary: 'يُرسل {schedule} {audience}', pausedSummary: 'متوقف: {schedule}', allRecipients: 'لكل اللاعبين',
     scratch: 'من الصفر', scratchDescription: 'أنشئ تقييمًا بأسئلتك', photosTemplate: 'صور التقدم', feedbackTemplate: 'رأي اللاعب',
     checkin: 'تابع الوزن والنوم والالتزام', onboarding: 'اجمع بيانات اللاعب الأساسية', progress: 'قارن القياسات وصور التقدم', injury: 'تابع الإصابات والألم', update: 'حدّث بيانات اللاعب وأهدافه', photosDescription: 'اجمع صور التقدم وملاحظاته', feedback: 'اعرف رأي اللاعب في البرنامج',
@@ -8,7 +8,7 @@ const workspaceStd = { title: 'التقييمات', newForm: 'تقييم جدي�
     number: 'رقم', text: 'كتابة', choice: 'اختيار', scale: 'تقييم 1–10', photos: 'صور', multi: 'اختيارات متعددة', yesno: 'نعم أو لا' } as const;
 
 export const workspaceMessages = {
-  ar: { title: 'التقييمات', newForm: 'تقييم جديد', start: 'ابدأ من قالب أو من الصفر', responses: 'الردود', active: 'شغال', stopped: 'متوقف', manual: 'يدوي',
+  ar: { questionSettings: 'إعدادات السؤال', addOption: '+ اختيار', emptyOptions: 'ضيف أول اختيار.', selectQuestion: 'افتح سؤال عشان تشوفه.', title: 'التقييمات', newForm: 'تقييم جديد', start: 'ابدأ من قالب أو من الصفر', responses: 'الردود', active: 'شغال', stopped: 'متوقف', manual: 'يدوي',
     editSettings: 'عدّل', manualSummary: 'بتبعته بإيدك لأي لاعب', scheduledSummary: 'بيتبعت {schedule} {audience}', pausedSummary: 'متوقف: {schedule}', allRecipients: 'لكل اللاعبين',
     scratch: 'من الصفر', scratchDescription: 'اعمل تقييم بأسئلتك', photosTemplate: 'صور التطور', feedbackTemplate: 'رأي اللاعب',
     checkin: 'تابع الوزن والنوم والالتزام', onboarding: 'اجمع بيانات اللاعب الأساسية', progress: 'قارن القياسات وصور التطور', injury: 'تابع الإصابات والألم', update: 'حدّث بيانات اللاعب وأهدافه', photosDescription: 'اجمع صور التطور وملاحظاته', feedback: 'اعرف رأي اللاعب في البرنامج',
@@ -16,7 +16,7 @@ export const workspaceMessages = {
     number: 'رقم', text: 'كتابة', choice: 'اختيار', scale: 'تقييم 1–10', photos: 'صور', multi: 'اختيارات متعددة', yesno: 'أيوه أو لأ' },
   // Same flag guard as the player dictionaries, so flag-off builds drop these strings.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? workspaceStd : undefined; },
-  en: { title: 'Assessments', newForm: 'New assessment', start: 'Start from a template or from scratch', responses: 'Responses', active: 'Active', stopped: 'Paused', manual: 'Manual',
+  en: { questionSettings: 'Question settings', addOption: '+ Choice', emptyOptions: 'Add the first choice.', selectQuestion: 'Open a question to preview it.', title: 'Assessments', newForm: 'New assessment', start: 'Start from a template or from scratch', responses: 'Responses', active: 'Active', stopped: 'Paused', manual: 'Manual',
     editSettings: 'Edit', manualSummary: 'Send manually to any player', scheduledSummary: 'Sent {schedule} {audience}', pausedSummary: 'Paused: {schedule}', allRecipients: 'to all players',
     scratch: 'From scratch', scratchDescription: 'Create an assessment with your questions', photosTemplate: 'Progress photos', feedbackTemplate: 'Player feedback',
     checkin: 'Track weight, sleep and adherence', onboarding: 'Collect starting player details', progress: 'Compare measurements and progress photos', injury: 'Follow up on injuries and pain', update: 'Update player details and goals', photosDescription: 'Collect progress photos and notes', feedback: 'Hear what the player thinks of the program',
