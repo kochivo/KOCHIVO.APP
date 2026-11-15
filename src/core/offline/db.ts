@@ -81,6 +81,8 @@ export interface MediaQueueEntry {
 }
 
 export interface NutritionFood {
+  unit?: string | null;
+  units?: { key: string; name_ar: string; name_en: string; grams: number }[];
   name: string;
   grams: number;
   photo_path: string | null;
@@ -96,6 +98,8 @@ export interface NutritionItem extends NutritionFood {
 }
 
 export interface NutritionMeal {
+  day_type?: 'all' | 'training' | 'rest';
+  time_of_day?: string | null;
   id: string;
   position: number;
   name: string;

@@ -11,6 +11,7 @@ import { foodPhotoUrl } from '@/core/storage/media-url';
 import { Button, EmptyState, GlassCard } from '@/ui';
 import { setMealEaten } from '../data/log-meal';
 import { mealMacros } from '../macros';
+import { formatPortion } from '../format-portion';
 import { starterText } from '@/lib/starter-text';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { messages as v6Messages } from '../v6-messages';
@@ -53,6 +54,7 @@ export function MealCard({ meal, log, today, planTitle, primary = false }: { mea
   const v6 = captainWorkspaceEnabled();
   const details = <GlassCard className="space-y-card-gap p-card">
     <h2 className="text-lg font-bold">{starterText(meal.name, locale, planTitle)}</h2>
+    {meal.time_of_day && <time className="text-xs text-muted" dateTime={meal.time_of_day}><bdi>{meal.time_of_day.slice(0, 5)}</bdi></time>}
     {meal.items.length === 0 && <EmptyState icon={Utensils} title={t('thisMealIsBeingPrepared')} body={t('itWillAppearHereWhenReady')} action={{ label: t('messageCoach'), href: '/player/captain' }} />}
     <ul className="space-y-stack">
       {meal.items.map((item) => {
@@ -61,7 +63,7 @@ export function MealCard({ meal, log, today, planTitle, primary = false }: { mea
           {chosen.photo_path ? <Image src={foodPhotoUrl(chosen.photo_path)} alt={chosen.name} width={60} height={60}
             unoptimized className="size-15 shrink-0 rounded-control object-cover" /> :
             <span aria-hidden="true" className="glass flex size-15 shrink-0 items-center justify-center rounded-control text-muted">{chosen.name.charAt(0)}</span>}
-          <span className="min-w-0 flex-1 text-sm font-bold">{chosen.name} · {formatNumber(chosen.grams, locale)}{t('g')}</span>
+          <span className="min-w-0 flex-1 text-sm font-bold">{chosen.name} · {formatPortion(chosen, locale, t('g'))}</span>
           {item.alternatives.length > 0 && <Button className="min-h-12" variant={v6 ? 'secondary' : 'ghost'} disabled={busy}
             aria-label={t('swapFood', { value0: chosen.name })} onClick={() => swap(item.id, Date.now())}>{t('swap')}</Button>}
         </li>;
@@ -86,9 +88,10 @@ export function MealCard({ meal, log, today, planTitle, primary = false }: { mea
       <button type="button" aria-label={v6t('details')} aria-expanded={open} onClick={() => setOpen(value => !value)}
         className="flex min-h-12 min-w-0 flex-1 flex-col justify-center gap-inline font-sans text-start">
         <span className="text-md font-bold">{name} {primary && !eaten && <span className="text-xs font-bold text-lime">{v6t('now')}</span>}</span>
+        {meal.time_of_day && <time className="text-xs text-muted" dateTime={meal.time_of_day}><bdi>{meal.time_of_day.slice(0, 5)}</bdi></time>}
         <span className="w-full truncate text-xs text-muted">{meal.items.length ? meal.items.map(item => {
           const chosen = item.alternatives.find(alt => alt.id === swaps[item.id]) ?? item;
-          return `${chosen.name} ${formatNumber(chosen.grams, locale)}${t('g')}`;
+          return `${chosen.name} ${formatPortion(chosen, locale, t('g'))}`;
         }).join(' · ') : t('thisMealIsBeingPrepared')}</span>
       </button>
     </div>
