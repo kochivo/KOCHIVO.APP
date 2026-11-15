@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>لوحة الإدارة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#0b0d0a; --ink:#f3f2ec; --muted:#9a9c94; --faint:#6d7068; --lime:#c8f550; --on-lime:#10140a; --line:rgba(255,255,255,.08); --amber:#f2b84b; --calm:#7fd4c1; --danger:#ff7a6b; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:radial-gradient(110% 50% at 85% 0%, #1d2610 0%, var(--bg) 55%); color:var(--ink); font-family:'Alexandria',system-ui,sans-serif; min-height:100vh; }
+  .num, .en { font-family:'Manrope',sans-serif; }
+  .num { direction:ltr; unicode-bidi:isolate; }
+  .spark, .chart { direction:ltr; }
+  .wrap { max-width:1440px; margin-inline:auto; padding:20px 24px 48px; display:grid; gap:20px; }
+  .glass { background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02)); border:1px solid var(--line); border-radius:22px; }
+  .strong { background:linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,255,255,.04)); }
+  .sub { font-size:12.5px; color:var(--muted); line-height:1.7; }
+  .faint { color:var(--faint); }
+  .row { display:flex; align-items:center; gap:10px; }
+  .between { justify-content:space-between; }
+  .chip { font:600 11.5px 'Alexandria'; padding:5px 10px; border-radius:999px; border:1px solid var(--line); background:rgba(255,255,255,.04); white-space:nowrap; }
+  .chip.lime { background:rgba(200,245,80,.12); border-color:rgba(200,245,80,.35); color:var(--lime); }
+  .chip.amber { background:rgba(242,184,75,.12); border-color:rgba(242,184,75,.35); color:var(--amber); }
+  .chip.calm { background:rgba(127,212,193,.1); border-color:rgba(127,212,193,.3); color:var(--calm); }
+  .chip.danger { background:rgba(255,122,107,.1); border-color:rgba(255,122,107,.3); color:var(--danger); }
+  .btn { min-height:44px; border-radius:999px; border:1px solid var(--line); background:rgba(255,255,255,.06); color:var(--ink); font:600 13.5px 'Alexandria'; padding:0 16px; display:inline-flex; align-items:center; gap:8px; cursor:pointer; white-space:nowrap; }
+  .btn.primary { background:var(--lime); color:var(--on-lime); border:0; box-shadow:0 8px 24px rgba(200,245,80,.22); font-weight:700; }
+  .btn.sm { min-height:36px; padding:0 12px; font-size:12.5px; }
+  .tag { position:absolute; inset-block-start:-9px; inset-inline-end:14px; font:600 10.5px 'Alexandria'; padding:2px 8px; border-radius:999px; background:#22261c; border:1px solid var(--line); color:var(--muted); }
+  .tag.new { color:var(--calm); border-color:rgba(127,212,193,.35); }
+  .rel { position:relative; }
+  svg { width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; flex-shrink:0; }
+
+  /* top bar */
+  .top { padding:12px 14px 12px 18px; display:flex; align-items:center; gap:14px; }
+  .logo { font:800 20px 'Manrope'; letter-spacing:-.02em; }
+  .logo b { color:var(--lime); }
+  .search { flex:1; max-width:520px; min-height:44px; border-radius:999px; border:1px solid var(--line); background:rgba(0,0,0,.25); display:flex; align-items:center; gap:10px; padding:0 16px; color:var(--faint); font-size:13px; }
+  .kbd { margin-inline-start:auto; font:700 11px 'Manrope'; border:1px solid var(--line); border-radius:6px; padding:2px 6px; }
+
+  /* action strip */
+  .actions { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+  .act { padding:16px; display:grid; gap:8px; }
+  .act .n { font:800 34px/1 'Manrope'; }
+  .act.hot { border-color:rgba(200,245,80,.35); background:linear-gradient(180deg,rgba(200,245,80,.10),rgba(200,245,80,.02)); }
+  .act.hot .n { color:var(--lime); }
+
+  /* kpis */
+  .kpis { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; }
+  .kpi { padding:16px; display:grid; gap:6px; }
+  .kpi .v { font:800 30px/1.1 'Manrope'; letter-spacing:-.02em; }
+  .delta { font:700 12px 'Manrope'; color:var(--lime); }
+  .delta.down { color:var(--danger); }
+  .spark { height:28px; display:flex; align-items:flex-end; gap:3px; }
+  .spark i { flex:1; background:rgba(200,245,80,.35); border-radius:3px; }
+
+  /* main grid */
+  .main { display:grid; grid-template-columns:minmax(0,1fr) 380px; gap:20px; align-items:start; }
+  .card { padding:18px; display:grid; gap:14px; }
+  h2 { font:700 17px 'Alexandria'; }
+  h3 { font:700 14.5px 'Alexandria'; }
+
+  .tabs { display:flex; gap:6px; flex-wrap:wrap; }
+  .tab { min-height:38px; border-radius:999px; border:1px solid var(--line); padding:0 14px; display:inline-flex; align-items:center; gap:8px; font-size:12.5px; color:var(--muted); }
+  .tab b { font:800 11px 'Manrope'; background:rgba(255,255,255,.07); border-radius:999px; padding:2px 7px; color:var(--ink); }
+  .tab.on { background:rgba(200,245,80,.12); border-color:rgba(200,245,80,.4); color:var(--lime); }
+
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th { text-align:start; font-weight:500; color:var(--faint); font-size:12px; padding:10px 12px; border-bottom:1px solid var(--line); }
+  td { padding:12px; border-bottom:1px solid var(--line); vertical-align:middle; }
+  tr.sel td { background:rgba(200,245,80,.05); }
+  tr.sel td:first-child { box-shadow:inset -3px 0 0 var(--lime); }
+  .who { display:flex; align-items:center; gap:10px; }
+  .av { width:36px; height:36px; border-radius:12px; background:rgba(127,212,193,.14); color:var(--calm); display:grid; place-items:center; font-weight:700; flex-shrink:0; }
+  .who small { display:block; color:var(--faint); font:600 11.5px 'Manrope'; }
+  .bar { height:6px; border-radius:99px; background:rgba(255,255,255,.07); overflow:hidden; width:110px; margin-top:6px; }
+  .bar i { display:block; height:100%; background:var(--lime); border-radius:99px; }
+  .bar.warn i { background:var(--amber); }
+
+  /* drawer */
+  .drawer { padding:18px; display:grid; gap:14px; position:sticky; top:20px; }
+  .kv { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+  .kv div { border:1px solid var(--line); border-radius:14px; padding:10px; }
+  .kv b { display:block; font:800 18px 'Manrope'; margin-top:4px; }
+  .seg { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; }
+  .seg span { border:1px solid var(--line); border-radius:12px; padding:9px 4px; text-align:center; font-size:12px; }
+  .seg span.on { border-color:var(--lime); color:var(--lime); background:rgba(200,245,80,.08); }
+  .seg small { display:block; font:700 11px 'Manrope'; color:var(--faint); margin-top:2px; }
+  .months { display:flex; gap:6px; }
+  .months span { flex:1; text-align:center; border:1px solid var(--line); border-radius:12px; padding:9px 0; font:700 13px 'Manrope'; }
+  .months span.on { border-color:var(--lime); color:var(--lime); }
+  .total { display:flex; justify-content:space-between; align-items:center; padding:12px 14px; border-radius:14px; background:rgba(0,0,0,.25); }
+  .total b { font:800 22px 'Manrope'; color:var(--lime); }
+  .tl { display:grid; gap:10px; }
+  .tl div { display:grid; grid-template-columns:10px 1fr auto; gap:10px; align-items:start; font-size:12.5px; }
+  .tl i { width:8px; height:8px; border-radius:50%; background:var(--lime); margin-top:6px; }
+  .tl i.g { background:var(--faint); }
+
+  /* side widgets */
+  .side { display:grid; gap:20px; }
+  .donut { display:flex; align-items:center; gap:18px; }
+  .legend { display:grid; gap:8px; font-size:12.5px; flex:1; }
+  .legend span { display:flex; align-items:center; gap:8px; }
+  .legend i { width:10px; height:10px; border-radius:3px; }
+  .legend b { margin-inline-start:auto; font:700 12.5px 'Manrope'; }
+  .health div { display:flex; align-items:center; gap:10px; font-size:12.5px; padding:8px 0; border-bottom:1px solid var(--line); }
+  .health div:last-child { border:0; }
+  .dot { width:8px; height:8px; border-radius:50%; background:var(--lime); box-shadow:0 0 0 4px rgba(200,245,80,.12); }
+  .dot.a { background:var(--amber); box-shadow:0 0 0 4px rgba(242,184,75,.12); }
+
+  .chart { display:flex; align-items:flex-end; gap:5px; height:120px; padding-top:8px; }
+  .chart i { flex:1; border-radius:5px 5px 2px 2px; background:linear-gradient(180deg,rgba(200,245,80,.75),rgba(200,245,80,.18)); }
+  .chart i.p { background:linear-gradient(180deg,rgba(127,212,193,.7),rgba(127,212,193,.15)); }
+
+  .req { display:grid; gap:10px; }
+  .req > div { display:flex; align-items:center; gap:10px; padding:10px; border:1px solid var(--line); border-radius:16px; }
+
+  .legend-top { display:flex; gap:14px; flex-wrap:wrap; font-size:12px; color:var(--muted); }
+  .legend-top span { display:inline-flex; align-items:center; gap:6px; }
+
+  @media (max-width: 1100px) {
+    .main { grid-template-columns:1fr; }
+    .kpis { grid-template-columns:repeat(3,1fr); }
+    .drawer { position:static; }
+  }
+  @media (max-width: 720px) {
+    .wrap { padding:12px 12px 32px; gap:14px; }
+    .actions { grid-template-columns:repeat(2,1fr); gap:10px; }
+    .kpis { grid-template-columns:repeat(2,1fr); gap:10px; }
+    .kpis .kpi:first-child { grid-column:span 2; }
+    .search { display:none; }
+    .top .btn.hide-sm { display:none; }
+    .desk { display:none; }
+    .cards { display:grid; gap:10px; }
+  }
+  @media (min-width: 721px) { .cards { display:none; } }
+  .mcard { border:1px solid var(--line); border-radius:18px; padding:12px; display:grid; gap:10px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="legend-top"><span><span class="chip">موجود</span> بيانات عندنا النهارده</span><span><span class="chip calm">جديد</span> محتاج قراءة أو دالة جديدة في الداتابيز (من غير جداول جديدة)</span></div>
+
+  <!-- 1. Top bar -->
+  <header class="glass top">
+    <div class="logo en">K<b>O</b>CHIVO</div>
+    <span class="chip">الإدارة</span>
+    <div class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>دوّر على كابتن بالاسم أو الإيميل أو الموبايل<span class="kbd">Ctrl K</span></div>
+    <div class="row" style="margin-inline-start:auto">
+      <button class="btn hide-sm"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 21h16"/></svg>تصدير CSV</button>
+      <button class="btn">خروج</button>
+    </div>
+  </header>
+
+  <!-- 2. Needs action today -->
+  <section class="actions">
+    <div class="glass act hot rel"><span class="tag">موجود</span>
+      <div class="row between"><h3>طلبات كباتن جديدة</h3><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6m3-3h-6"/></svg></div>
+      <span class="n">3</span><span class="sub">مستنيين موافقتك. أقدم طلب من يومين.</span>
+    </div>
+    <div class="glass act rel"><span class="tag new">جديد</span>
+      <div class="row between"><h3>باقات بتخلص خلال 7 أيام</h3><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+      <span class="n" style="color:var(--amber)">5</span><span class="sub">ابعتلهم تذكير على واتساب قبل ما تقف.</span>
+    </div>
+    <div class="glass act rel"><span class="tag">موجود</span>
+      <div class="row between"><h3>فوق حد اللاعبين</h3><svg viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div>
+      <span class="n">2</span><span class="sub">فرصة ترقية لباقة أكبر.</span>
+    </div>
+    <div class="glass act rel"><span class="tag new">جديد</span>
+      <div class="row between"><h3>كباتن ساكتين</h3><svg viewBox="0 0 24 24"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg></div>
+      <span class="n">4</span><span class="sub">دافعين ومفتحوش التطبيق من 7 أيام.</span>
+    </div>
+  </section>
+
+  <!-- 3. KPIs -->
+  <section class="kpis">
+    <div class="glass strong kpi rel"><span class="tag new">جديد</span>
+      <span class="sub">الدخل الشهري من الباقات</span>
+      <span class="v">18,940 <small class="sub">ج</small></span>
+      <span class="delta">+2,097 ج عن الشهر اللي فات</span>
+      <div class="spark"><i style="height:30%"></i><i style="height:38%"></i><i style="height:35%"></i><i style="height:52%"></i><i style="height:60%"></i><i style="height:58%"></i><i style="height:72%"></i><i style="height:80%"></i><i style="height:100%"></i></div>
+    </div>
+    <div class="glass kpi rel"><span class="tag">موجود</span><span class="sub">الكباتن المسجلين</span><span class="v">128</span><span class="delta">+9 الأسبوع ده</span></div>
+    <div class="glass kpi rel"><span class="tag">موجود</span><span class="sub">على باقة مدفوعة</span><span class="v">34<small class="sub"> · 27%</small></span><span class="delta">+3 الأسبوع ده</span></div>
+    <div class="glass kpi rel"><span class="tag">موجود</span><span class="sub">اللاعبين</span><span class="v">1,412</span><span class="delta">+86 الأسبوع ده</span></div>
+    <div class="glass kpi rel"><span class="tag new">جديد</span><span class="sub">كباتن فتحوا التطبيق آخر 7 أيام</span><span class="v">71</span><span class="delta down">-4 عن الأسبوع اللي فات</span></div>
+  </section>
+
+  <div class="main">
+    <div style="display:grid; gap:20px; min-width:0">
+
+      <!-- 4. Growth chart -->
+      <section class="glass card rel"><span class="tag new">جديد</span>
+        <div class="row between"><h2>التسجيلات آخر 30 يوم</h2><div class="row"><span class="chip lime">كباتن</span><span class="chip calm">لاعبين</span></div></div>
+        <div class="chart">
+          <i style="height:20%"></i><i class="p" style="height:45%"></i><i style="height:30%"></i><i class="p" style="height:60%"></i><i style="height:15%"></i><i class="p" style="height:40%"></i><i style="height:35%"></i><i class="p" style="height:70%"></i><i style="height:25%"></i><i class="p" style="height:55%"></i><i style="height:40%"></i><i class="p" style="height:80%"></i><i style="height:30%"></i><i class="p" style="height:62%"></i><i style="height:50%"></i><i class="p" style="height:90%"></i><i style="height:45%"></i><i class="p" style="height:75%"></i><i style="height:60%"></i><i class="p" style="height:100%"></i>
+        </div>
+        <span class="sub">أكتر يوم: الخميس 12 نوفمبر، 6 كباتن و41 لاعب.</span>
+      </section>
+
+      <!-- 5. Captains -->
+      <section class="glass card rel"><span class="tag">موجود + تحسينات</span>
+        <div class="row between" style="flex-wrap:wrap; gap:12px"><h2>الكباتن</h2>
+          <div class="tabs">
+            <span class="tab on">الكل <b>128</b></span><span class="tab">مدفوع <b>34</b></span><span class="tab">مجاني <b>81</b></span><span class="tab">بتخلص قريب <b>5</b></span><span class="tab">خلصت <b>6</b></span><span class="tab">إيميل مش متأكد <b>4</b></span><span class="tab">موقوف <b>3</b></span>
+          </div>
+        </div>
+        <div class="desk" style="overflow-x:auto">
+        <table>
+          <thead><tr><th>الكابتن</th><th>الباقة</th><th>اللاعبين</th><th>آخر دخول</th><th>تنتهي</th><th>الحالة</th><th></th></tr></thead>
+          <tbody>
+            <tr class="sel"><td><div class="who"><span class="av">م</span><div>محمود سامي<small>mahmoud@…</small></div></div></td><td><span class="chip lime en">LEGEND</span></td><td><span class="num">38 / 40</span><div class="bar warn"><i style="width:95%"></i></div></td><td>النهارده</td><td><span class="chip amber">بعد 3 أيام</span></td><td><span class="chip lime">مدفوع</span></td><td><button class="btn sm primary">جدّد</button></td></tr>
+            <tr><td><div class="who"><span class="av">ي</span><div>يوسف عادل<small>youssef@…</small></div></div></td><td><span class="chip en">CHAMPION</span></td><td><span class="num">23 / 20</span><div class="bar warn"><i style="width:100%"></i></div></td><td>امبارح</td><td>12 ديسمبر</td><td><span class="chip danger">فوق الحد</span></td><td><button class="btn sm">رقّي</button></td></tr>
+            <tr><td><div class="who"><span class="av">ن</span><div>نور حسن<small>nour@…</small></div></div></td><td><span class="chip en">ENTRY</span></td><td><span class="num">4 / 5</span><div class="bar"><i style="width:80%"></i></div></td><td>من 3 أيام</td><td>—</td><td><span class="chip">مجاني</span></td><td><button class="btn sm">فعّل</button></td></tr>
+            <tr><td><div class="who"><span class="av">ك</span><div>كريم طارق<small>karim@…</small></div></div></td><td><span class="chip en">EMPIRE</span></td><td><span class="num">61 / 100</span><div class="bar"><i style="width:61%"></i></div></td><td>من 9 أيام</td><td>3 يناير</td><td><span class="chip amber">ساكت</span></td><td><button class="btn sm">واتساب</button></td></tr>
+            <tr><td><div class="who"><span class="av">س</span><div>سارة علي<small>sara@…</small></div></div></td><td><span class="chip en">CHAMPION</span></td><td><span class="num">0 / 20</span><div class="bar"><i style="width:0"></i></div></td><td>من 21 يوم</td><td>—</td><td><span class="chip danger">موقوف</span></td><td><button class="btn sm">رجّع</button></td></tr>
+          </tbody>
+        </table>
+        </div>
+        <div class="cards">
+          <div class="mcard"><div class="row between"><div class="who"><span class="av">م</span><div>محمود سامي<small>LEGEND · 38 / 40</small></div></div><span class="chip amber">بعد 3 أيام</span></div><div class="row between"><span class="sub">آخر دخول النهارده</span><button class="btn sm primary">جدّد</button></div></div>
+          <div class="mcard"><div class="row between"><div class="who"><span class="av">ي</span><div>يوسف عادل<small>CHAMPION · 23 / 20</small></div></div><span class="chip danger">فوق الحد</span></div><div class="row between"><span class="sub">آخر دخول امبارح</span><button class="btn sm">رقّي</button></div></div>
+          <div class="mcard"><div class="row between"><div class="who"><span class="av">ك</span><div>كريم طارق<small>EMPIRE · 61 / 100</small></div></div><span class="chip amber">ساكت</span></div><div class="row between"><span class="sub">آخر دخول من 9 أيام</span><button class="btn sm">واتساب</button></div></div>
+        </div>
+        <div class="row between"><span class="sub">عرض 1–5 من 128</span><div class="row"><button class="btn sm">السابق</button><button class="btn sm">التالي</button></div></div>
+      </section>
+
+      <!-- 6. Audit -->
+      <section class="glass card rel"><span class="tag">موجود</span>
+        <h2>سجل العمليات</h2>
+        <div class="tl">
+          <div><i></i><span>فعّلت <b>LEGEND</b> لمحمود سامي، 3 شهور، مرجع InstaPay 88213</span><span class="sub">من ساعة</span></div>
+          <div><i></i><span>وافقت على طلب نور حسن</span><span class="sub">النهارده 10:12</span></div>
+          <div><i class="g"></i><span>وقفت حساب سارة علي: «مش بيدفع»</span><span class="sub">امبارح</span></div>
+        </div>
+      </section>
+    </div>
+
+    <!-- side -->
+    <aside class="side">
+      <!-- 7. Captain drawer -->
+      <section class="glass strong drawer rel"><span class="tag">موجود + تحسينات</span>
+        <div class="row between"><div class="who"><span class="av">م</span><div><h3>محمود سامي</h3><small>mahmoud@… · 010…</small></div></div><button class="btn sm" aria-label="اقفل">✕</button></div>
+        <div class="kv"><div><span class="sub">لاعبين</span><b>38</b></div><div><span class="sub">عملوا تمرين الأسبوع ده</span><b>29</b></div><div><span class="sub">دفع لحد دلوقتي</span><b>4,194</b></div></div>
+        <h3>جدّد أو غيّر الباقة</h3>
+        <div class="seg"><span><span class="en">ENTRY</span><small>0</small></span><span><span class="en">CHAMPION</span><small>399</small></span><span class="on"><span class="en">LEGEND</span><small>699</small></span><span><span class="en">EMPIRE</span><small>1,499</small></span></div>
+        <div class="months"><span>1</span><span class="on">3</span><span>6</span><span>12</span></div>
+        <div class="search" style="display:flex; max-width:none">مرجع الدفع (InstaPay / فودافون كاش)</div>
+        <div class="total"><span class="sub">699 × 3 شهور · تبدأ بعد آخر يوم في الباقة الحالية</span><b>2,097 ج</b></div>
+        <button class="btn primary" style="justify-content:center">فعّل LEGEND لـ 3 شهور</button>
+        <div class="row"><button class="btn sm" style="flex:1; justify-content:center">رسالة واتساب جاهزة</button><button class="btn sm" style="flex:1; justify-content:center; color:var(--danger)">إيقاف الحساب</button></div>
+        <h3>تاريخه</h3>
+        <div class="tl">
+          <div><i></i><span>LEGEND · 3 شهور</span><span class="sub">أغسطس</span></div>
+          <div><i></i><span>CHAMPION · شهر</span><span class="sub">يوليو</span></div>
+          <div><i class="g"></i><span>سجّل مجاني</span><span class="sub">يونيو</span></div>
+        </div>
+      </section>
+
+      <!-- 8. Requests -->
+      <section class="glass card rel"><span class="tag">موجود</span>
+        <div class="row between"><h2>طلبات الانضمام</h2><span class="chip lime">3</span></div>
+        <div class="req">
+          <div><span class="av">ع</span><div style="flex:1"><b style="font-size:13px">عمر خالد</b><div class="sub">جيم في المعادي · 15 لاعب</div></div><button class="btn sm primary">وافق</button><button class="btn sm">ارفض</button></div>
+          <div><span class="av">ه</span><div style="flex:1"><b style="font-size:13px">هبة محمد</b><div class="sub">أونلاين · 8 لاعبين</div></div><button class="btn sm primary">وافق</button><button class="btn sm">ارفض</button></div>
+        </div>
+      </section>
+
+      <!-- 9. Plan mix -->
+      <section class="glass card rel"><span class="tag new">جديد</span>
+        <h2>توزيع الباقات</h2>
+        <div class="donut">
+          <svg viewBox="0 0 42 42" style="width:110px;height:110px;stroke-width:6"><circle cx="21" cy="21" r="15.9" stroke="rgba(255,255,255,.08)"/><circle cx="21" cy="21" r="15.9" stroke="#c8f550" stroke-dasharray="14 86" stroke-dashoffset="25"/><circle cx="21" cy="21" r="15.9" stroke="#7fd4c1" stroke-dasharray="9 91" stroke-dashoffset="11"/><circle cx="21" cy="21" r="15.9" stroke="#f2b84b" stroke-dasharray="4 96" stroke-dashoffset="2"/></svg>
+          <div class="legend"><span><i style="background:rgba(255,255,255,.2)"></i>ENTRY<b>94</b></span><span><i style="background:#c8f550"></i>LEGEND<b>18</b></span><span><i style="background:#7fd4c1"></i>CHAMPION<b>11</b></span><span><i style="background:#f2b84b"></i>EMPIRE<b>5</b></span></div>
+        </div>
+      </section>
+
+      <!-- 10. KO waitlist + health -->
+      <section class="glass card rel"><span class="tag">موجود</span>
+        <h2>قائمة انتظار KO</h2>
+        <div class="kv" style="grid-template-columns:1fr 1fr"><div><span class="sub">كباتن</span><b>42</b></div><div><span class="sub">لاعبين</span><b>317</b></div></div>
+      </section>
+      <section class="glass card health rel"><span class="tag new">جديد</span>
+        <h2>صحة النظام</h2>
+        <div><span class="dot"></span>المهام المجدولة: 10 شغالة، مفيش فشل</div>
+        <div><span class="dot"></span>آخر نسخة على الموقع: من ساعتين</div>
+        <div><span class="dot a"></span>حماية الباسوردات المسربة مش متفعلة</div>
+        <div><span class="dot"></span>حسابات مستنية تتمسح: 0</div>
+      </section>
+    </aside>
+  </div>
+</div>
+</body>
+</html>
