@@ -30,6 +30,8 @@ section { margin-top: 60px; display: grid; gap: 18px; }
 .num { font-family: "Manrope", system-ui, sans-serif; font-variant-numeric: tabular-nums; font-weight: 800; direction: ltr; unicode-bidi: isolate; }
 .muted { color: var(--muted); } .faint { color: var(--faint); } .lime { color: var(--lime); } .warn { color: var(--warn); }
 .small { font-size: 12.5px; }
+/* LTR numbers inside RTL rows: their own inline-end is the row's far side. */
+.earn .p.num, .row .v.num { margin-inline-start: 0; margin-inline-end: auto; }
 .medal { display: block; width: 100%; height: auto; overflow: visible; }
 .glass { background: var(--glass); border: 1px solid var(--glass-line); border-radius: 22px; }
 
@@ -124,6 +126,18 @@ section { margin-top: 60px; display: grid; gap: 18px; }
 .file-head { display: flex; align-items: center; gap: 12px; }
 .avatar { width: 52px; height: 52px; border-radius: 16px; background: var(--raised); display: grid; place-items: center; font-weight: 800; font-family: var(--display); }
 
+.sets { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.set { padding: 16px; display: grid; gap: 10px; }
+.set p { color: var(--muted); font-size: 13px; }
+.set-row { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.set-row div { display: grid; justify-items: center; gap: 2px; text-align: center; font-size: 11.5px; color: var(--muted); }
+.set-row .m { width: 100%; max-width: 64px; }
+.lifts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.lift { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 12px; display: grid; justify-items: center; gap: 2px; text-align: center; }
+.lift .m { width: 70px; }
+.lift b { font-family: var(--display); }
+.lift span { font-size: 12px; color: var(--faint); }
+.lift .prog { width: 100%; margin-top: 4px; }
 .decide { border: 1px solid rgba(242,181,68,.35); background: rgba(242,181,68,.07); border-radius: 16px; padding: 14px 16px; display: grid; gap: 8px; font-size: 13.5px; }
 .decide b { color: var(--warn); }
 table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -132,7 +146,8 @@ th { color: var(--faint); font-weight: 600; }
 
 @media (max-width: 1100px) { .phones { grid-template-columns: repeat(2, minmax(0, 1fr)); } .how { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 760px) {
-  .phones, .rules, .cap { grid-template-columns: 1fr; }
+  .phones, .rules, .cap, .sets { grid-template-columns: 1fr; }
+  .lifts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .how { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .ladder { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
@@ -166,6 +181,22 @@ th { color: var(--faint); font-weight: 600; }
     <div class="ladder" id="ladderRow"></div>
   </section>
 
+  <section aria-labelledby="sets">
+    <div class="head"><h2 id="sets">ميداليات لكل حاجة</h2><p>جنب الرتبة، فيه ميداليات لكل نوع إنجاز. كل مجموعة ليها رسمة ثابتة جوه الميدالية، والمعدن بيعلى كل ما اللاعب يتقدّم فيها. كل البيانات دي موجودة عندنا دلوقتي.</p></div>
+    <div class="sets">
+      <div class="glass set"><h3>الالتزام</h3><div class="set-row" data-set="flame" data-labels="أول تمرين,10 تمارين,50,100,250" data-tiers="0,1,2,3,5"></div><p>عدد التمارين اللي خلّصها من أول يوم.</p></div>
+      <div class="glass set"><h3>الأسبوع الكامل</h3><div class="set-row" data-set="calendar" data-labels="أسبوع,4 أسابيع,12,26,52" data-tiers="1,2,3,4,6"></div><p>عدد الأسابيع اللي خلّص فيها كل أيام تمرينه.</p></div>
+      <div class="glass set"><h3>الأرقام الجديدة</h3><div class="set-row" data-set="bolt" data-labels="أول رقم,10 أرقام,25,50,100" data-tiers="0,1,2,3,5"></div><p>كل مرة يكسر رقمه في أي تمرين.</p></div>
+      <div class="glass set"><h3>التاج</h3><div class="set-row" data-set="crown" data-labels="أول تاج,3 تيجان,6,3 ورا بعض,12" data-tiers="3,4,5,5,6"></div><p>كل شهر ياخد فيه تاج الفريق.</p></div>
+    </div>
+    <div class="glass set" style="gap:14px">
+      <h3>رتبة لكل تمرين (القوة)</h3>
+      <p>كل تمرين أساسي ليه رتبة لوحده، على حسب أتقل وزن شاله نسبةً لوزن جسمه. كده اللي وزنه خفيف واللي وزنه تقيل بيتقاسوا بالعدل.</p>
+      <div class="lifts" id="lifts"></div>
+      <p class="small faint">مثال لبنش برس لاعب وزنه 80 كجم: برونز 40 كجم، فضة 60، ذهب 80، بلاتين 100، ماس 120. الأرقام دي بتتظبط لكل تمرين، والسكوات والديدلفت أعلى من البنش.</p>
+    </div>
+  </section>
+
   <section aria-labelledby="player">
     <div class="head"><h2 id="player">عند اللاعب</h2><p>أربع شاشات: صفحة رتبتي، وإزاي يجيب نقط، وآخر التمرين، ولحظة ما يطلع رتبة.</p></div>
     <div class="phones">
@@ -191,6 +222,12 @@ th { color: var(--faint); font-weight: 600; }
           </div>
           <div class="sect"><h3>ميداليات الرتبة</h3><span class="small faint">3 من 7</span></div>
           <div class="grid3" id="rankGrid"></div>
+          <div class="sect"><h3>ميدالياتك التانية</h3><span class="small faint">6 من 24</span></div>
+          <div class="grid3">
+            <div class="tile"><div class="m" data-medal="1" data-emblem="flame"></div><b>10 تمارين</b><span>اتاخدت</span></div>
+            <div class="tile"><div class="m" data-medal="2" data-emblem="calendar"></div><b>4 أسابيع</b><span>اتاخدت</span></div>
+            <div class="tile"><div class="m" data-medal="3" data-emblem="dumbbell"></div><b>سكوات ذهب</b><span>اتاخدت</span></div>
+          </div>
           <button class="btn secondary" type="button">إزاي أجيب نقط</button>
         </div>
         <p>أول حاجة يشوفها: رتبته، وناقصه قد إيه على اللي بعدها بالنقط وبالوقت، وترتيبه في سباق التاج دلوقتي.</p>
@@ -307,7 +344,7 @@ th { color: var(--faint); font-weight: 600; }
     <div class="decide" id="decide">
       <b>قرارات ليك</b>
       <span><b>1.</b> الرتب السبعة بالنقط دي (0، 100، 200، 300، 400، 600، 900)؟ اقتراحي آه. لاعب ملتزم يطلع رتبة كل شهر أو اتنين، فمايزهقش.</span>
-      <span><b>2.</b> نعمل الرتبة الأول، وبعدين مجموعات الميداليات التانية (الالتزام، الأسابيع الكاملة، الأرقام، التاج) في خطوة تانية؟ اقتراحي آه، عشان تنزل أسرع ونتأكد منها.</span>
+      <span><b>2.</b> الميداليات كلها (الالتزام، الأسابيع الكاملة، الأرقام، التاج، ورتبة لكل تمرين) تنزل مع بعض؟ اقتراحي نقسمها خطوتين: الرتبة والأربع مجموعات الأول، ورتبة كل تمرين بعدها على طول، لأنها محتاجة نظبط أرقام كل تمرين.</span>
       <span><b>3.</b> الكابتن يوصله إشعار لما لاعب يطلع رتبة؟ اقتراحي آه، عشان يشجعه.</span>
     </div>
   </section>
@@ -324,9 +361,17 @@ th { color: var(--faint); font-weight: 600; }
     { a: '#d5e2ff', b: '#4d62e0', c: '#1a2163', gem: '#b9f3ff', gem2: '#5fb7ff' },
     { a: '#f1ffd0', b: '#8fc23a', c: '#24340c', gem: '#b6e94f', gem2: '#5f8f1c' }
   ];
-  var STAR = 'M60 44l4.6 10.4 11.4 1.1-8.6 7.6 2.5 11.2L60 68.6l-9.9 5.7 2.5-11.2-8.6-7.6 11.4-1.1Z';
+  var EMBLEMS = {
+    star: 'M60 44l4.6 10.4 11.4 1.1-8.6 7.6 2.5 11.2L60 68.6l-9.9 5.7 2.5-11.2-8.6-7.6 11.4-1.1Z',
+    flame: 'M60 42c4 7 11 10 11 20a11 11 0 0 1-22 0c0-5 3-8 5-10 0 4 2 6 4 6 0-6 0-11 2-16Z',
+    bolt: 'M63 42 50 62h9l-3 16 14-21h-9Z',
+    crown: 'M46 70 44 50l9 7 7-11 7 11 9-7-2 20Z',
+    calendar: 'M48 50h24v22H48ZM48 56h24M54 46v6M66 46v6',
+    dumbbell: 'M46 54v12M51 50v20M69 50v20M74 54v12M51 60h18'
+  };
   var uid = 0;
-  function medal(t) {
+  function medal(t, emblem) {
+    var STAR = EMBLEMS[emblem] || EMBLEMS.star, line = emblem === 'calendar' || emblem === 'dumbbell';
     var p = TIERS[t], id = 'm' + (uid++), shield = t >= 3;
     var frame = shield ? 'M60 16 96 29v29c0 23-16 39-36 47C40 97 24 81 24 58V29Z' : 'M60 16 96 36v42L60 98 24 78V36Z';
     var inner = shield ? 'M60 25 87 35v23c0 18-12 30-27 37-15-7-27-19-27-37V35Z' : 'M60 25 88 40v32L60 88 32 72V40Z';
@@ -345,7 +390,8 @@ th { color: var(--faint); font-weight: 600; }
     s += '<path d="' + frame + '" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1" transform="translate(60 57) scale(.94) translate(-60 -57)"/>';
     s += '<path d="' + inner + '" fill="url(#' + id + 'i)"/>';
     s += '<path d="M60 31 82 43v26L60 83 38 69V43Z" fill="url(#' + id + 'g)" opacity=".22"/>';
-    s += '<path d="' + STAR + '" fill="url(#' + id + 'g)" stroke="' + p.gem2 + '" stroke-width="1"/>';
+    s += line ? '<path d="' + STAR + '" fill="none" stroke="url(#' + id + 'g)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>'
+      : '<path d="' + STAR + '" fill="url(#' + id + 'g)" stroke="' + p.gem2 + '" stroke-width="1"/>';
     return s + '<path d="M60 18 92 36" stroke="rgba(255,255,255,.35)" stroke-width="1.6" stroke-linecap="round"/></svg>';
   }
   var names = ['حديد', 'برونز', 'فضة', 'ذهب', 'بلاتين', 'ماس', 'أسطورة'];
@@ -360,7 +406,15 @@ th { color: var(--faint); font-weight: 600; }
   var grid = tile(0, 'have', 'اتاخدت') + tile(1, 'have', 'اتاخدت') + tile(2, 'have', 'اتاخدت') + tile(3, 'next', '54٪') + tile(4, 'lock', '400 نقطة') + tile(5, 'lock', '600 نقطة');
   document.getElementById('rankGrid').innerHTML = grid;
   document.getElementById('dimGrid').innerHTML = grid;
-  document.querySelectorAll('[data-medal]').forEach(function (el) { el.innerHTML = medal(+el.getAttribute('data-medal')); });
+  document.querySelectorAll('[data-medal]').forEach(function (el) { el.innerHTML = medal(+el.getAttribute('data-medal'), el.getAttribute('data-emblem')); });
+  document.querySelectorAll('[data-set]').forEach(function (row) {
+    var em = row.getAttribute('data-set'), labels = row.getAttribute('data-labels').split(','), tiers = row.getAttribute('data-tiers').split(',');
+    row.innerHTML = labels.map(function (l, i) { return '<div><span class="m">' + medal(+tiers[i], em) + '</span>' + l + '</div>'; }).join('');
+  });
+  var lifts = [['بنش برس', 2, 'فضة · 62.5 كجم', 13], ['سكوات', 3, 'ذهب · 95 كجم', 40], ['ديدلفت', 2, 'فضة · 100 كجم', 70], ['ضغط كتف', 1, 'برونز · 35 كجم', 50]];
+  document.getElementById('lifts').innerHTML = lifts.map(function (l) {
+    return '<div class="lift"><div class="m">' + medal(l[1], 'dumbbell') + '</div><b>' + l[0] + '</b><span>' + l[2] + '</span><div class="prog"><i style="width:' + l[3] + '%"></i></div><span>' + (l[3] >= 60 ? 'قرّب على اللي بعدها' : 'في السكة للي بعدها') + '</span></div>';
+  }).join('');
   var rays = '';
   for (var i = 0; i < 12; i++) rays += '<path d="M100 100 L96 0 L104 0Z" transform="rotate(' + (i * 30) + ' 100 100)"/>';
   document.getElementById('rayG').innerHTML = rays;
