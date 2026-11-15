@@ -19,6 +19,7 @@ vi.mock('@/features/player-profile', async () => ({
 vi.mock('@/features/meal-plans', () => ({ PlayerPlans: () => createElement('section', null, 'plans'),
   NutritionWorkspaceEntry: () => createElement('div', null, 'nutrition workspace'), mealPlanMessages: {},
 }));
+vi.mock('@/features/meal-plans/server', () => ({ NutritionWorkspaceEntry: () => createElement('div', null, 'nutrition workspace') }));
 vi.mock('../server', () => ({ PlayerFileEntry: () => createElement('section', null, 'player file') }));
 beforeEach(() => { vi.useFakeTimers(); vi.setSystemTime(new Date('2026-11-12T10:00:00Z')); });
 afterEach(() => { vi.useRealTimers(); vi.unstubAllEnvs(); });

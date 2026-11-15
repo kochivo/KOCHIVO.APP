@@ -11,6 +11,8 @@ import type { IntakeDraft } from '../wizard';
 import { ChipGroup } from './chip-group';
 import { DayPicker } from './day-picker';
 import { MetricSlider } from './metric-slider';
+import dynamic from 'next/dynamic';
+const BudgetField = dynamic(() => import('@/features/meal-plans').then(module => module.BudgetField));
 
 export function IntakeQuestion({ field, draft, update, year }: {
   field: Field; draft: IntakeDraft; update: (patch: IntakeDraft) => void; year: number;
@@ -47,7 +49,7 @@ export function IntakeQuestion({ field, draft, update, year }: {
     {field === 'medical' && <><ChipGroup label={label} options={medicalOptions} value={draft.medical ?? []} onChange={medical => update({ medical })} />
       {draft.medical?.some(value => value !== 'none') && <p className="text-sm text-muted">{t('yourCoachWillReviewThisBeforePlanning')}</p>}</>}
     {field === 'allergies' && <ChipGroup label={label} options={allergyOptions} value={draft.allergies ?? []} onChange={allergies => update({ allergies })} />}
-    {field === 'notes' && <><TextField label={label} value={draft.notes ?? ''} maxLength={500} placeholder={t('forExampleIWorkNightShifts')}
+    {field === 'notes' && <><BudgetField value={draft.food_budget_monthly_egp} onChange={food_budget_monthly_egp => update({ food_budget_monthly_egp })} /><TextField label={label} value={draft.notes ?? ''} maxLength={500} placeholder={t('forExampleIWorkNightShifts')}
       onChange={event => update({ notes: Array.from(event.target.value).slice(0, 500).join('') })} />
       <p className="text-xs text-muted">{formatNumber(Array.from(draft.notes ?? '').length, locale)} {t('of500Characters')}</p></>}
   </div>;

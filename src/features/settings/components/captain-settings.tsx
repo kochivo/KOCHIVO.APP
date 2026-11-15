@@ -10,6 +10,7 @@ import { LoadingState } from '@/ui/loading-state';
 import { PageBarTitle } from '@/ui/page-bar-title';
 import { demoExpiry, useDemoExpiry } from '@/features/demo';
 import { SubscriptionEntry } from '@/features/billing';
+const FoodPricesEntry = dynamic(() => import('@/features/meal-plans').then(module => module.FoodPricesEntry));
 import { messages as legacyMessages } from '../messages';
 import { messages } from '../workspace/messages';
 import { deletionRequestedAt } from '../deletion';
@@ -50,6 +51,7 @@ export function CaptainSettings({ signOut }: { signOut?: ReactNode }) {
         <WorkspacePreferences profile={profile} update={setEdited} />
         <SubscriptionEntry />
         <PaymentMethods />
+        <FoodPricesEntry />
         <PublicPage profile={profile} onSave={setEdited} />
         <section className={card}><h2 className={heading}>{t('invite')}</h2><p className="text-row leading-[1.9] text-muted">{profile.invite_message || t('unset')}</p>
           <Button variant="secondary" className="mt-stack min-h-12 rounded-full" onClick={() => setPanel('invite')}>{t('editInvite')}</Button></section>

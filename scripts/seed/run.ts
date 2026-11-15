@@ -7,6 +7,7 @@ import { mapFood } from './map-food.ts';
 import { mergeArabicNames } from './merge-names.ts';
 import { z } from 'zod';
 import { uploadFile } from './upload.ts';
+import { estimatedPricesSchema, mapFoodPrices } from './map-food-prices.ts';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const print = (message: string) => process.stdout.write(`${message}\n`);
@@ -51,6 +52,7 @@ async function main() {
   const exercises = mergeArabicNames(validate(exerciseEntries, gifs, mapExercise, 'exercises'),
     proposals, { minConfidence: 'medium' });
   const foods = validate(foodEntries, photos, mapFood, 'foods');
+  const estimatedPrices = estimatedPricesSchema.parse(await readEntries('food-prices-egp.json'));
   const ids = exercises.map((row) => row.dataset_id);
   if (new Set(ids).size !== ids.length) failures.push('Duplicate exercise dataset_id.');
   const foodKeys = foods.map((row) => row.seed_key);
@@ -102,6 +104,20 @@ async function main() {
   }
   print(`Processed ${completed}/${files.length} files.`);
   if (failures.length) throw new Error(`Failed files:\n${failures.join('\n')}`);
+  const catalog = await client.from('foods').select('id,seed_key').is('owner_id', null).not('seed_key', 'is', null);
+  if (catalog.error) throw new Error('Could not resolve food price seed keys.');
+  const prices = mapFoodPrices(estimatedPrices, catalog.data ?? []);
+  for (const row of prices.rows) {
+    const existing = await client.from('food_prices').select('food_id').eq('food_id', row.food_id).is('owner_id', null).maybeSingle();
+    if (existing.error) throw new Error('Could not read food price.');
+    // Estimates never overwrite an owner-reviewed price on repeated seed runs.
+    if (!existing.data) {
+      const result = await client.from('food_prices').insert(row);
+      if (result.error) throw new Error('Could not seed food price.');
+    }
+  }
+  print(`${prices.rows.length} estimated prices loaded. Owner confirmation required before production.`);
+  if (prices.missing.length) print(`Price estimates awaiting catalog foods: ${prices.missing.join(', ')}`);
 }
 
 main().catch((error: unknown) => {

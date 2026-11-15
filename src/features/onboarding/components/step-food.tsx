@@ -7,12 +7,15 @@ import { TextField } from '@/ui';
 import { allergyOptions } from '../data/intake-schema';
 import { ChipGroup } from './chip-group';
 import type { StepProps } from '../wizard';
+import dynamic from 'next/dynamic';
+const BudgetField = dynamic(() => import('@/features/meal-plans').then(module => module.BudgetField));
 
 export function StepFood({ draft, update, errors, touch }: StepProps) {
   const t = useT(messages);
   const locale = useLocale();
   return (
     <div className="space-y-section">
+      <BudgetField value={draft.food_budget_monthly_egp} onChange={food_budget_monthly_egp => update({ food_budget_monthly_egp })} error={errors.food_budget_monthly_egp} />
       <div onBlur={() => touch('allergies')}>
         <ChipGroup label={t('anyFoodAllergies')} options={allergyOptions} value={draft.allergies ?? []}
           onChange={(allergies) => update({ allergies })} error={errors.allergies} />

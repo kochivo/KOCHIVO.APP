@@ -7,3 +7,4 @@ export type { NutritionResponse } from './data/nutrition-snapshot';
 export { itemMacros, mealMacros } from './macros';
 
 export { messages as nutritionMessages } from './messages';
+export { ShoppingEntry } from './components/shopping-entry';

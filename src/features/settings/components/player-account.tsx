@@ -6,6 +6,8 @@ import { ChevronRight, Sparkles } from 'lucide-react';
 import { useT } from '@/core/i18n/client';
 import { useCaptainContext } from '@/features/player-shell';
 import { useProgramSnapshot } from '@/features/player-home';
+import dynamic from 'next/dynamic';
+const PlayerBudgetEntry = dynamic(() => import('@/features/meal-plans').then(module => module.PlayerBudgetEntry));
 import { internationalEnabled } from '@/lib/international-enabled';
 import type { SettingsProfile } from '../schema';
 import { messages } from '../player-messages';
@@ -36,6 +38,7 @@ export function PlayerAccount({ profile, profileForm, children, install, signOut
         plan={snapshot?.title} onSave={onProfileSave} />
       <PlayerStatTiles playerId={current.id} snapshot={snapshot} />
       <PlayerPreferences units={current.units ?? 'metric'} />
+      <PlayerBudgetEntry />
     </> : profileForm}
     <section aria-label={t('more')} className="overflow-hidden rounded-[24px] border border-line-soft bg-surface">
       <details className="group"><summary className="flex min-h-[60px] cursor-pointer items-center px-page-x text-sm">{t('more')}</summary>

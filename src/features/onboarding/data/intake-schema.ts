@@ -75,6 +75,8 @@ export function makeIntakeSchema(now: Date, t: Translator<typeof messages> = cre
     }),
     health: z.object({ injuries: chipSchema(injuryOptions), medical: chipSchema(medicalOptions) }),
     food: z.object({
+      food_budget_monthly_egp: z.preprocess(value => value === '' || value == null ? null : value,
+        measurement(300, 100000).int().nullable()).optional(),
       allergies: chipSchema(allergyOptions),
       notes: z.string({ error: t('enterYourNotes') })
         .refine((text) => Array.from(text).length <= 500, { error: t('notesMustBe500CharactersOrFewer') }).nullable(),

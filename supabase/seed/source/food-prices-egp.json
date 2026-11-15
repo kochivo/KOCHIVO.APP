@@ -1,0 +1,19 @@
+[
+  { "seed_key": "food_eggs-v1", "unit": "piece", "unit_grams": 50, "price_egp": 6, "estimate": true },
+  { "seed_key": "food_foul-v1", "unit": "pack", "unit_grams": 400, "price_egp": 25, "estimate": true },
+  { "seed_key": "food_lentils-v1", "unit": "kg", "unit_grams": 1000, "price_egp": 40, "estimate": true },
+  { "seed_key": "food_chicken_breast-v1", "unit": "kg", "unit_grams": 1000, "price_egp": 300, "estimate": true },
+  { "seed_key": "food_chicken_liver-v1", "unit": "kg", "unit_grams": 1000, "price_egp": 140, "estimate": true },
+  { "seed_key": "food_tuna-v1", "unit": "pack", "unit_grams": 140, "price_egp": 55, "estimate": true },
+  { "seed_key": "food_white_rice-v1", "unit": "kg", "unit_grams": 1000, "price_egp": 15, "estimate": true },
+  { "seed_key": "food_baladi_bread-v1", "unit": "piece", "unit_grams": 90, "price_egp": 3, "estimate": true },
+  { "seed_key": "food_oats-v1", "unit": "pack", "unit_grams": 500, "price_egp": 65, "estimate": true },
+  { "seed_key": "food_whole_milk-v1", "unit": "pack", "unit_grams": 1000, "price_egp": 45, "estimate": true },
+  { "seed_key": "food_yogurt-v1", "unit": "pack", "unit_grams": 105, "price_egp": 10, "estimate": true },
+  { "seed_key": "food_potatoes-v1", "unit": "kg", "unit_grams": 1000, "price_egp": 25, "estimate": true },
+  { "seed_key": "food_banana-v1", "unit": "kg", "unit_grams": 1000, "price_egp": 35, "estimate": true },
+  { "seed_key": "food_peanut_butter-v1", "unit": "pack", "unit_grams": 350, "price_egp": 100, "estimate": true },
+  { "seed_key": "food_feta-v1", "unit": "pack", "unit_grams": 250, "price_egp": 45, "estimate": true },
+  { "seed_key": "food_pasta-v1", "unit": "kg", "unit_grams": 1000, "price_egp": 20, "estimate": true },
+  { "seed_key": "food_frozen_chicken-v1", "unit": "kg", "unit_grams": 1000, "price_egp": 160, "estimate": true }
+]

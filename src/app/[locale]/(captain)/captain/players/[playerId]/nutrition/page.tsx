@@ -1,6 +1,7 @@
 import { createT, parseLocale } from '@/core/i18n';
 import { mealPlanMessages } from '@/features/meal-plans';
-import { NutritionWorkspaceEntry, PlayerPlans } from '@/features/meal-plans';
+import { PlayerPlans } from '@/features/meal-plans';
+import { NutritionWorkspaceEntry } from '@/features/meal-plans/server';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 
 export default async function Page({ params, searchParams }: {

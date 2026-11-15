@@ -17,6 +17,8 @@ import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { messages as v6Messages } from '../v6-messages';
 import { useToast } from '@/ui/toast';
 import { messages as successMessages } from '../success/messages';
+import dynamic from 'next/dynamic';
+const MealBudget = dynamic(() => import('./meal-budget').then(module => module.MealBudget));
 
 export function MealCard({ meal, log, today, planTitle, primary = false }: { meal: NutritionMeal; log?: MealLogRow; today: string; planTitle?: string; primary?: boolean }) {
   const t = useT(messages);
@@ -54,6 +56,7 @@ export function MealCard({ meal, log, today, planTitle, primary = false }: { mea
   const v6 = captainWorkspaceEnabled();
   const details = <GlassCard className="space-y-card-gap p-card">
     <h2 className="text-lg font-bold">{starterText(meal.name, locale, planTitle)}</h2>
+    <MealBudget meal={meal} swaps={swaps} />
     {meal.time_of_day && <time className="text-xs text-muted" dateTime={meal.time_of_day}><bdi>{meal.time_of_day.slice(0, 5)}</bdi></time>}
     {meal.items.length === 0 && <EmptyState icon={Utensils} title={t('thisMealIsBeingPrepared')} body={t('itWillAppearHereWhenReady')} action={{ label: t('messageCoach'), href: '/player/captain' }} />}
     <ul className="space-y-stack">
@@ -88,6 +91,7 @@ export function MealCard({ meal, log, today, planTitle, primary = false }: { mea
       <button type="button" aria-label={v6t('details')} aria-expanded={open} onClick={() => setOpen(value => !value)}
         className="flex min-h-12 min-w-0 flex-1 flex-col justify-center gap-inline font-sans text-start">
         <span className="text-md font-bold">{name} {primary && !eaten && <span className="text-xs font-bold text-lime">{v6t('now')}</span>}</span>
+        <MealBudget meal={meal} swaps={swaps} />
         {meal.time_of_day && <time className="text-xs text-muted" dateTime={meal.time_of_day}><bdi>{meal.time_of_day.slice(0, 5)}</bdi></time>}
         <span className="w-full truncate text-xs text-muted">{meal.items.length ? meal.items.map(item => {
           const chosen = item.alternatives.find(alt => alt.id === swaps[item.id]) ?? item;

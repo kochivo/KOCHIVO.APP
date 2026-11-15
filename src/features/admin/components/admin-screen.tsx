@@ -16,6 +16,7 @@ import type { AuditRow, CaptainRow, PlanTier } from '../types';
 import type { AdminDashboard, AdminCaptainActivity } from '../dashboard-types';
 import type { PendingCaptain } from './captain-requests';
 import { AdminTopbar } from './admin-topbar';
+const FoodPricesEntry = dynamic(() => import('@/features/meal-plans').then(module => module.FoodPricesEntry));
 import { ActionStrip } from './action-strip';
 import { DashboardKpis } from './dashboard-kpis';
 import { CaptainTabs } from './captain-tabs';
@@ -120,6 +121,7 @@ export function AdminScreen({ captains, audit, plans, search, offset, kpis, requ
         </div>
         {data && <PlanMix mix={data.planMix} />}
         <KoWaitlistCount />
+        <FoodPricesEntry platform />
         {data && <SystemHealth health={data.health} />}
       </aside>
     </div>

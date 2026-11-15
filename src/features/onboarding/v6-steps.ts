@@ -8,5 +8,6 @@ export const questions = [
 export type IntakeQuestion = typeof questions[number];
 export const optionalQuestions: readonly IntakeQuestion[] = ['target_weight_kg', 'injuries', 'medical', 'allergies', 'notes'];
 export function questionValid(field: IntakeQuestion, draft: IntakeDraft, now: Date) {
+  if (field === 'notes' && !makeIntakeSchema(now).intakeSchema.shape.food_budget_monthly_egp.safeParse(draft.food_budget_monthly_egp).success) return false;
   return makeIntakeSchema(now).intakeSchema.shape[field].safeParse(draft[field]).success;
 }

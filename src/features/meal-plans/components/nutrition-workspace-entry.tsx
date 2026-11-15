@@ -1,3 +1,4 @@
+import 'server-only';
 import { Suspense } from 'react';
 import { RowLink } from '@/ui/row-link';
 import { createT } from '@/core/i18n';

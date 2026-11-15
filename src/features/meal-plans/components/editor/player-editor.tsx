@@ -38,6 +38,7 @@ import { NewPlanButton } from './new-plan-button';
 import type { PlanDraft } from '../../types';
 import { messages as editorMessages } from './messages';
 import { PlayerFactsCard } from './player-facts';
+import { messages as budgetMessages } from '../../budget/messages';
 
 async function saveTemplate(draft: PlanDraft) {
   const { savePlan } = await import('../../data/plan-io');
@@ -47,6 +48,7 @@ async function saveTemplate(draft: PlanDraft) {
 const SmartNotesPanel = dynamic(() => import('../smart-notes-panel').then(module => module.SmartNotesPanel));
 const TargetsBar = dynamic(() => import('../targets-bar').then(module => module.TargetsBar));
 const TargetCalculator = dynamic(() => import('./target-calculator').then(module => module.TargetCalculator));
+const BudgetSheet = dynamic(() => import('../budget-sheet').then(module => module.BudgetSheet));
 
 export function PlayerEditor({ data, editableMealNames = false }: { data: Awaited<ReturnType<typeof loadPlayerEditor>>; editableMealNames?: boolean }) {
   const SendIcon = captainWorkspaceEnabled() ? KoSend : Send;
@@ -54,6 +56,7 @@ export function PlayerEditor({ data, editableMealNames = false }: { data: Awaite
   const rt = useT(redesignMessages);
   const planT = useT(planMessages);
   const editorT = useT(editorMessages);
+  const budgetT = useT(budgetMessages);
   const locale = useLocale();
   const template = !data.draft.playerId;
   const state = usePlanDraft(data.draft.id, { initialDraft: data.draft, clearErrorsOnEdit: true, save: template ? saveTemplate : savePlayerEditor, playerName: data.context.name });
@@ -61,6 +64,7 @@ export function PlayerEditor({ data, editableMealNames = false }: { data: Awaite
   const [day, setDay] = useState<'training' | 'rest'>('training');
   const [more, setMore] = useState(false);
   const [calculator, setCalculator] = useState(false);
+  const [budgetOpen, setBudgetOpen] = useState(false);
   const { draft, update } = state;
   if (!draft) return null;
   const { context } = data;
@@ -83,6 +87,8 @@ export function PlayerEditor({ data, editableMealNames = false }: { data: Awaite
       <Button disabled={state.busy} className="min-h-12 rounded-full" onClick={() => void state.persist(!template, true)}><SendIcon aria-hidden className="size-4" />{template ? planT('savePlan') : t('send')}</Button>
     </header>
     {state.error && <p role="alert" className="mb-stack text-sm text-danger">{state.error}</p>}
+    {!template && <Button id="budget-plan-open" variant="secondary" disabled={state.busy} onClick={() => setBudgetOpen(true)}>{budgetT('title')}</Button>}
+    {budgetOpen && <BudgetSheet draft={draft} targets={targets} dayType={split ? day : 'all'} onClose={() => setBudgetOpen(false)} onApply={next => update(() => next)} />}
     {calculator && <TargetCalculator facts={facts} onApply={targets => { update(draft => ({ ...draft, targets })); setCalculator(false); }} />}
     <MealTargets totals={totals} targets={draft.targets} onChange={targets => update(draft => ({ ...draft, targets }))} />
     <WaterTarget value={draft.waterTargetMl} weightKg={facts.weight?.value} disabled={state.busy}

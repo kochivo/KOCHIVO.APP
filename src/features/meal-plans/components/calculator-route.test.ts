@@ -1,10 +1,12 @@
 import { createElement } from 'react';
 import { afterEach, expect, it, vi } from 'vitest';
 import Page from '@/app/[locale]/(captain)/captain/players/[playerId]/nutrition/page';
-import { NutritionWorkspaceEntry, PlayerPlans } from '../index';
+import { PlayerPlans } from '../index';
+import { NutritionWorkspaceEntry } from '../server';
 import { PlayerFileEntry } from '@/features/captain-workspace/server';
 
 vi.mock('../index', () => ({ PlayerPlans: () => null, NutritionWorkspaceEntry: () => null, mealPlanMessages: {} }));
+vi.mock('../server', () => ({ NutritionWorkspaceEntry: () => null }));
 vi.mock('@/features/captain-workspace/server', () => ({ PlayerFileEntry: () => null }));
 afterEach(() => vi.unstubAllEnvs());
 const params = Promise.resolve({ playerId: 'player', locale: 'en' });

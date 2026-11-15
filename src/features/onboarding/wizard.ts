@@ -60,5 +60,6 @@ export function toPayload(draft: IntakeDraft) {
     training_days: draft.training_days, session_minutes: draft.session_minutes, experience: draft.experience,
     injuries: exclusive(draft.injuries), medical: exclusive(draft.medical), allergies: exclusive(draft.allergies),
     notes: draft.notes?.trim() || null,
+    food_budget_monthly_egp: draft.food_budget_monthly_egp ?? null,
   };
 }

@@ -1,6 +1,14 @@
 export { PlanBuilderEntry as PlanBuilder } from './components/plan-builder-entry';
 export { PlayerPlans } from './components/player-plans';
 export { messages as mealPlanMessages } from './messages';
-export { NutritionWorkspaceEntry } from './components/nutrition-workspace-entry';
 export { FoodsLibraryEntry } from './components/foods-library-entry';
 export { FoodFormEntry } from './components/food-form-entry';
+export { BudgetFieldEntry as BudgetField } from './components/budget-field-entry';
+export { BudgetPriceEntry as BudgetPrice } from './components/budget-price-entry';
+export { FoodPricesEntry } from './components/food-prices-entry';
+export { PlayerBudgetEntry } from './components/player-budget-entry';
+export { ShoppingListEntry as ShoppingList } from './components/shopping-list-entry';
+export { budgetPlan, cheaperSwap, weeklyShoppingList } from './budget-plan';
+export type { BudgetFood, BudgetDay, BudgetItem } from './budget-plan';
+export { useFoodPrices } from './hooks/use-food-prices';
+export { messages as foodBudgetMessages } from './budget/messages';

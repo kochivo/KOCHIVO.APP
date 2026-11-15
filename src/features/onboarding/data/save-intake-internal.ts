@@ -5,6 +5,7 @@ import 'server-only';
 
 import { supabaseServer } from '@/core/supabase/server';
 import { makeIntakeSchema } from './intake-schema';
+import type { TablesInsert } from '@/types/database';
 
 export async function saveIntakeAt(input: unknown, now: Date): Promise<{ error?: string }> {
   const t = await getT(messages);
@@ -18,9 +19,11 @@ export async function saveIntakeAt(input: unknown, now: Date): Promise<{ error?:
     const { full_name, ...intake } = parsed.data;
     const { error: nameError } = await client.from('profiles').update({ full_name }).eq('id', data.claims.sub);
     if (nameError) return { error: t('couldntSendYourAnswersTryAgain') };
-    const { error } = await client.from('player_intake').upsert({
+    // Preserve the validated additive field while generated types await regeneration.
+    const payload: TablesInsert<'player_intake'> = {
       ...intake, player_id: data.claims.sub, completed_at: now.toISOString(),
-    }, { onConflict: 'player_id' });
+    };
+    const { error } = await client.from('player_intake').upsert(payload, { onConflict: 'player_id' });
     if (error) return { error: t('couldntSendYourAnswersTryAgain') };
     return {};
   } catch {
