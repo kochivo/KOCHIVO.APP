@@ -15,7 +15,7 @@ it('renders all four sizes and skip as accessible opening actions', () => {
   for (const size of ['1–5', '6–20', '21–40', '40+']) expect(html).toContain(size);
   expect(html.match(/<button/g)).toHaveLength(5);
 });
-it.each(['inbox', 'players', 'player', 'programs', 'food', 'assess', 'money', 'add'] as Page[])('renders the %s view with local fixtures', page => {
+it.each(['tasks', 'inbox', 'players', 'player', 'programs', 'food', 'assess', 'money', 'add'] as Page[])('renders the %s view with local fixtures', page => {
   const state = { ...initialState(0), intro: false, page };
   const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' }, createElement(CaptainViews, { state, dispatch: () => undefined, act: () => undefined, now: () => 1000 })));
   expect(html.length).toBeGreaterThan(200);

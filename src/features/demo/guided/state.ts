@@ -22,7 +22,8 @@ export type Action =
   | { type: 'go'; page: Page; now: number }
   | { type: 'phone'; tab: PhoneTab; now: number }
   | { type: 'patch'; patch: Partial<Pick<DemoState, 'guide' | 'view' | 'kg' | 'reps' | 'restUntil' | 'day' | 'chat' | 'name' | 'pkg' | 'gate' | 'initial' | 'photos'>> }
-  | { type: 'eat'; index: number };
+  | { type: 'eat'; index: number }
+  | { type: 'edit-set'; index: number; kg: number; reps: number };
 
 function move(state: DemoState, index: number, now: number): DemoState {
   const step = Math.max(0, Math.min(12, index));
@@ -37,6 +38,7 @@ export function reduceDemo(state: DemoState, action: Action): DemoState {
   if (action.type === 'start') return { ...initialState(action.now), n: action.n, intro: false };
   if (action.type === 'next' || action.type === 'prev') return move(state, state.step + (action.type === 'next' ? 1 : -1), action.now);
   if (action.type === 'patch') return { ...state, ...action.patch };
+  if (action.type === 'edit-set') return { ...state, sets: state.sets.map((set, index) => index === action.index ? [action.kg, action.reps] : set) };
   if (action.type === 'eat') return { ...state, eaten: state.eaten.map((v, i) => i === action.index ? !v : v), did: [...new Set([...state.did, `eat:${action.index}`])] };
   if (action.type === 'phone') return { ...state, tab: action.tab, unread: action.tab === 'coach' ? 0 : state.unread, did: [...new Set([...state.did, `ptab:${action.tab}`])] };
   if (action.type === 'go') return reduceDemo({ ...state, page: action.page }, { type: 'event', event: `go:${action.page}`, now: action.now });

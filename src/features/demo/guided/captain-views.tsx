@@ -6,10 +6,12 @@ import { Meals } from './meals';
 import { Assessment } from './assessment';
 import { Money } from './money';
 import { Invite } from './invite';
+import { Tasks } from './tasks';
 import type { PaneProps } from './types';
 
 export function CaptainViews(props: PaneProps) {
   switch (props.state.page) {
+    case 'tasks': return <Tasks {...props} />;
     case 'inbox': return <Chat {...props} />;
     case 'players': return <Roster {...props} />;
     case 'player': return <PlayerFile {...props} />;

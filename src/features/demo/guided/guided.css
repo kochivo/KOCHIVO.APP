@@ -1,13 +1,15 @@
 .demo-target { outline: 2px solid var(--color-lime); outline-offset: 5px; scroll-margin-block: 6rem 50dvh; }
 .demo-step-number { color: transparent; -webkit-text-stroke: 1px var(--color-lime); line-height: 1; font-family: var(--font-changa), sans-serif; }
-.demo-stage { display: grid; grid-template-columns: minmax(0, 1fr) 318px; gap: var(--demo-section); }
-.demo-resume { inset-inline-start: var(--demo-page-x); inset-block-end: calc(var(--demo-page-x) + var(--safe-bottom, 0px)); }
+.demo-stage { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: var(--demo-section); }
+/* Floats over the sidebar footer, so it needs an opaque surface to stay readable. */
+.demo-resume { inset-inline-start: var(--demo-page-x); inset-block-end: calc(var(--demo-page-x) + var(--safe-bottom, 0px)); background: var(--color-surface-raised); box-shadow: var(--glass-shadow); }
 .demo-shell[data-guide-state='min'] .demo-stage, .demo-shell[data-guide-state='closed'] .demo-stage {
   padding-block-end: calc(var(--spacing-touch) + var(--spacing-card-gap) + var(--demo-page-x) + var(--safe-bottom, 0px));
 }
-.demo-captain { display: grid; grid-template-columns: 212px minmax(0, 1fr); height: calc(100dvh - 124px); min-height: 640px; }
+.demo-captain { position: relative; display: grid; grid-template-columns: 212px minmax(0, 1fr); height: calc(100dvh - 124px); min-height: 640px; }
 .demo-captain-side { flex-direction: column; min-block-size: 0; overflow: auto; }
-.demo-captain-main { grid-template-columns: minmax(0, 1fr); min-block-size: 0; overflow: auto; scrollbar-width: thin; }
+/* Shared cards must overflow the frame vertically rather than shrink their implicit grid rows. */
+.demo-captain-main { grid-template-columns: minmax(0, 1fr); grid-auto-rows: max-content; min-block-size: 0; overflow: auto; scrollbar-width: thin; }
 .demo-shell .demo-sidebar-item { inline-size: 100%; border: 0; background: transparent; box-shadow: none; color: var(--color-muted); }
 .demo-shell .demo-sidebar-item:hover { background: var(--color-surface-raised); color: var(--color-ink); }
 .demo-shell .demo-sidebar-item[aria-current='page'] { background: var(--color-lime-soft); color: var(--color-lime); box-shadow: inset 0 0 0 1px var(--color-line); }
@@ -23,13 +25,16 @@
 .demo-shell .demo-view-option[aria-pressed='true'] { background: var(--color-surface-raised); }
 .demo-player-column { position: sticky; inset-block-start: 84px; }
 /* The landing device uses the same token bezel, inset screen and notch treatment. */
-.demo-phone { inline-size: 300px; block-size: 620px; border-radius: 3rem; padding: var(--demo-stack); border: 1px solid var(--color-line); background: linear-gradient(145deg, var(--color-muted), var(--color-surface), var(--color-bg-deep)); box-shadow: var(--glass-shadow); overflow: hidden; }
+.demo-phone { inline-size: 342px; block-size: 620px; border-radius: 3rem; padding: var(--demo-stack); border: 1px solid var(--color-line); background: linear-gradient(145deg, var(--color-muted), var(--color-surface), var(--color-bg-deep)); box-shadow: var(--glass-shadow); overflow: hidden; }
 .demo-phone-screen { position: relative; display: flex; flex-direction: column; block-size: 100%; min-block-size: 0; overflow: hidden; border-radius: 2.5rem; }
 .demo-phone-status { display: flex; flex: none; align-items: center; justify-content: space-between; min-block-size: 44px; padding-inline: var(--demo-page-x); }
 .demo-phone-notch { position: absolute; inset-inline-start: 50%; inset-block-start: 8px; translate: -50% 0; inline-size: 92px; block-size: 26px; border-radius: var(--radius-control); background: var(--color-bg-deep); }
 .demo-phone-content { display: flex; flex-direction: column; gap: var(--demo-stack); overflow-y: auto; scrollbar-width: none; overscroll-behavior-block: contain; }
 .demo-phone-content > * { flex-shrink: 0; }
 .demo-phone-tabs { flex: none; }
+.demo-phone-tabs > nav { position: static; margin: 0; max-inline-size: none; }
+.demo-chat-thread > div { padding-block-end: 0; }
+.demo-more { position: absolute; inset-inline: var(--spacing-stack); inset-block-end: var(--page-bottom-clearance); z-index: 40; max-block-size: 50%; overflow: auto; }
 .demo-guide { inline-size: 360px; inset-inline-start: var(--demo-page-x); inset-block-end: var(--demo-page-x); max-block-size: 80dvh; }
 .demo-guide header b { font-size: var(--text-md, .9375rem); font-weight: 800; }
 .demo-guide > p { font-size: var(--text-md, .9375rem); }
@@ -71,21 +76,21 @@
   .demo-shell, .demo-intro { --demo-page-x: 1.5rem; --demo-stack: .75rem; --demo-section: 2rem; }
 }
 @media (min-width: 1200px) { .demo-shell .demo-search { display: inline-flex; } }
-@media (980px <= width <= 1180px) {
-  .demo-stage { grid-template-columns: minmax(0, 1fr) 300px; }
-  .demo-phone { inline-size: 282px; block-size: 584px; }
-}
 @media (width < 980px) {
   .demo-stage { display: block; }
   .demo-stage[data-view='captain'] > .demo-player-column, .demo-stage[data-view='player'] > .demo-captain-column { display: none; }
   .demo-shell .demo-stage { padding-block-end: 50dvh; }
   .demo-desktop-actions, .demo-fixture-pill, .demo-pane-caption, .demo-captain-card { display: none; }
   .demo-view-switch { display: flex; }
-  .demo-captain { display: flex; flex-direction: column; height: auto; min-height: 0; }
-  .demo-captain-side { flex-direction: row; overflow-x: auto; }
+  .demo-captain { min-height: 640px; }
   .demo-shell .demo-sidebar-item { inline-size: auto; }
-  .demo-captain-main { overflow: visible; }
   .demo-player-column { position: static; }
-  .demo-phone { inline-size: min(100%, 300px); block-size: 600px; }
+  .demo-phone { inline-size: min(100%, 342px); block-size: 600px; }
   .demo-guide { inset-inline: var(--demo-page-x); inset-block-start: auto; inset-block-end: max(var(--demo-stack), var(--safe-bottom, 0px)); inline-size: auto; max-inline-size: 460px; margin-inline: auto; max-block-size: 47dvh; }
+}
+@media (width < 760px) {
+  .demo-captain { display: flex; flex-direction: column; }
+  .demo-captain-side { display: contents; }
+  .demo-captain-side > nav { position: absolute; inset-inline: var(--spacing-stack); inset-block-end: var(--spacing-stack); }
+  .demo-captain-main { padding-block-end: var(--page-bottom-clearance); }
 }

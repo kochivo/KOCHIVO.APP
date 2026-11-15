@@ -19,23 +19,26 @@ const noop = () => undefined;
 const render = (node: ReactNode) => renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' }, node));
 const props = () => ({ state: reduceDemo(initialState(0), { type: 'start', n: 20, now: 0 }), dispatch: noop, act: noop, now });
 
-it('formats home tile values and gives each status its own numeric emphasis', () => {
+it('renders the real home hero, four ring tiles and money owed from reducer state', () => {
   const html = render(createElement(CaptainHome, props()));
-  expect(html).toMatch(/class="demo-tile-value text-warn">1,500<\/b>/);
-  expect(html).toMatch(/class="demo-tile-value text-muted">2<\/b>/);
-  expect(html).toMatch(/class="demo-tile-value text-lime">4<\/b>/);
+  expect(html).toContain('data-home-hero');
+  expect(html).toContain('data-home-tiles');
+  expect(html).toContain('16/20');
+  expect(html).toContain('1,500');
+  expect(html).toContain('4 مهام');
   const updated = render(createElement(CaptainHome, { ...props(), state: { ...props().state, paid: true, renewed: true } }));
-  expect(updated).toMatch(/class="demo-tile-value text-warn">500<\/b>/);
-  expect(updated).toMatch(/class="demo-tile-value text-muted">1<\/b>/);
+  expect(updated).toContain('>500</b>');
+  expect(updated).toContain('2 مهام');
+  expect(updated).not.toContain('>1,500</b>');
 });
-it('keeps compact workout cards and real steppers together with the done action', () => {
+it('renders production set rows with logged sets, editable inputs and the pulse source', () => {
   const html = render(createElement(Workout, props()));
   expect(html).toContain('demo-workout');
   expect(html).toContain('demo-exercise-preview');
-  expect(html).toContain('demo-workout-steppers');
-  expect(html.match(/class="demo-set-row /g)).toHaveLength(2);
-  expect(html).toContain('aria-label="كجم"');
-  expect(html).toContain('aria-label="عدة"');
+  expect(html.match(/aria-pressed="true"/g)).toHaveLength(2);
+  expect(html).toContain('value="65"');
+  expect(html).toContain('value="8"');
+  expect(html).toContain('aria-current="step"');
   expect(html).toContain('data-demo-source="set"');
   expect(html).not.toContain('min-h-24');
 });
@@ -63,9 +66,9 @@ it('keeps the device status, scrollable content and tabs in the phone frame', ()
   expect(phone).toContain('6:42');
   expect(phone).toContain('5G');
   expect(phone.indexOf('data-phone-content')).toBeLessThan(phone.indexOf('data-phone-tabs'));
-  expect(phone).toContain('تمت المجموعة');
-  expect(phone).toContain('<b>60 × 10</b>');
-  expect(phone).not.toContain('<b dir="ltr">60 × 10</b>');
+  expect(phone).toContain('data-demo-source="set"');
+  expect(phone).toContain('>60</span>');
+  expect(phone).toContain('>62.5</span>');
 });
 it('puts each initial feed time at the end of its own row', () => {
   const home = render(createElement(CaptainHome, props()));

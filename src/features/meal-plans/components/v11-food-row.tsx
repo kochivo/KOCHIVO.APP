@@ -4,7 +4,7 @@ import { useId, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { X } from 'lucide-react';
 import { useLocale, useT } from '@/core/i18n/client';
-import { foodPhotoUrl } from '@/core/storage/media-url';
+import { V11FoodRowView } from './v11-food-row-view';
 import { macrosFor } from '@/lib/macros';
 import type { MealItem, PlanDraft } from '../types';
 import { removeItem, setGrams } from '../draft';
@@ -27,13 +27,8 @@ export function V11FoodRow({ item, update }: { item: MealItem; update: (change: 
   const validUnit = item.food.units?.some(value => value.key === unit) ? unit : null;
   const factor = unitGrams(item.food, validUnit);
   const values = macrosFor(item.food, item.grams);
-  return <li className="flex min-w-0 flex-wrap items-center gap-inline border-t border-line-soft px-page-x py-stack text-xs">
-    <span className="size-9 shrink-0 overflow-hidden rounded-lg bg-surface">
-      {/* Food storage hosts vary by deployment. */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      {item.food.photo && <img src={foodPhotoUrl(item.food.photo)} alt="" width={36} height={36} loading="lazy" className="size-9 object-cover" />}
-    </span>
-    <div className="min-w-0 flex-1"><b>{locale === 'en' ? item.food.nameEn || item.food.name : item.food.name}</b><p className="mt-inline text-muted">{t('grams', { n: item.grams })} · {t('macros', { p: values.protein, c: values.carbs, f: values.fat })}</p></div>
+  return <V11FoodRowView name={locale === 'en' ? item.food.nameEn || item.food.name : item.food.name} photo={item.food.photo}
+    detail={`${t('grams', { n: item.grams })} · ${t('macros', { p: values.protein, c: values.carbs, f: values.fat })}`}>
     <input type="number" aria-label={pt('gramsOf', { v0: item.food.name })} min={5 / factor} max={2000 / factor} step="any" value={Number((item.grams / factor).toFixed(4))} onChange={event => {
       const amount = event.target.valueAsNumber;
       const grams = Number.isFinite(amount) && amount >= 0 ? portionGrams(item.food, amount, validUnit) : NaN;
@@ -49,5 +44,5 @@ export function V11FoodRow({ item, update }: { item: MealItem; update: (change: 
     <IconButton aria-label={pt('deleteFood')} onClick={() => update(draft => removeItem(draft, item.id))}><X aria-hidden className="size-4" /></IconButton>
     {alternatives && <AlternativesSheet item={item} update={update} openerId={openerId} onClose={() => setAlternatives(false)} />}
     {error && <p role="alert" className="w-full text-danger">{error}</p>}
-  </li>;
+  </V11FoodRowView>;
 }

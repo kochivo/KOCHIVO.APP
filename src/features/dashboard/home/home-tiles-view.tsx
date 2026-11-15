@@ -1,0 +1,32 @@
+import type { Locale } from '@/core/i18n/locale';
+import type { Translator } from '@/core/i18n/messages';
+import Link from 'next/link';
+import { formatNumber } from '@/lib/format';
+import type { homeMessages, homeV11Messages } from './messages';
+import { HomeRing } from './home-ring';
+
+export function HomeTilesView({ t, locale, onSelect, old, adherence, previous, trained, active, pending, paid, progress, incomeGoal, responsiveTo = 'viewport' }: { t: Translator<typeof homeV11Messages>; locale: Locale; onSelect?: (href: string) => void; old: Translator<typeof homeMessages>;
+  adherence: number; previous: number; trained: number; active: number; pending: number; paid: number; progress: number;
+  incomeGoal?: number | null;
+  responsiveTo?: 'viewport' | 'container';
+}) {
+  const number = (value: number) => formatNumber(value, locale);
+  const delta = adherence - previous;
+  const tiles = [
+    { label: old('adherence'), value: old('percent', { value: number(adherence) }), ring: adherence / 100, tone: 'text-lime',
+      delta: `${delta > 0 ? '+' : ''}${number(delta)}%` },
+    { label: t('trained'), value: `${number(trained)}/${number(active)}`, ring: active ? trained / active : 0, tone: 'text-lime' },
+    { label: t('waitingTasks'), value: number(pending), ring: 1 - progress, tone: 'text-danger', href: '/captain/tasks' },
+    { label: t('revenue'), value: number(paid), ring: incomeGoal && incomeGoal > 0 ? paid / incomeGoal : 0, tone: 'text-calm', href: '/captain/billing' },
+  ];
+  const className = 'glass-strong flex min-h-12 min-w-0 items-center gap-stack rounded-card p-stack text-start min-[760px]:p-card';
+  const grid = <div data-home-tiles className={`grid grid-cols-2 gap-stack ${responsiveTo === 'container' ? '@min-[1000px]/home-tiles:grid-cols-4' : 'min-[1000px]:grid-cols-4'}`}>{tiles.map(tile => {
+    const content = <>{tile.ring !== undefined && <HomeRing value={tile.ring} tone={tile.tone} />}
+      <div className="min-w-0"><b className="block font-display text-xl leading-tight font-extrabold tracking-[-.02em] tabular-nums min-[760px]:text-2xl">{tile.value}</b>
+        <small className={responsiveTo === 'container' ? 'wrap-normal text-xs text-muted' : 'text-xs text-muted'}>{tile.label}</small></div>
+      {tile.delta && <span className={`ms-auto hidden self-start text-micro font-bold min-[1100px]:block ${delta < 0 ? 'text-danger' : 'text-lime'}`}>{tile.delta}</span>}</>;
+    return tile.href ? <Link prefetch={onSelect ? false : undefined} onClick={onSelect ? event => { event.preventDefault(); onSelect((event.currentTarget.getAttribute('href') ?? '').replace(/^#/, '')); } : undefined} key={tile.label} href={onSelect ? `#${tile.href}` : tile.href} className={className}>{content}</Link> : <div key={tile.label} className={className}>{content}</div>;
+  })}</div>;
+  return responsiveTo === 'container' ? <div className="@container/home-tiles">{grid}</div> : grid;
+}
+

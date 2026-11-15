@@ -6,19 +6,22 @@ import { frameMessages } from './captain-frame-messages';
 import { frameGroups, frameItems } from './captain-frame-model';
 import type { FrameCounts, FrameId } from './captain-frame-model';
 
-export function CaptainNavGroups({ active, counts, tiles = false, onNavigate }: {
-  active: FrameId; counts: FrameCounts; tiles?: boolean; onNavigate?: () => void;
+export function CaptainNavGroups({ active, counts, tiles = false, onNavigate, onSelect, available }: {
+  active: FrameId; counts: FrameCounts; tiles?: boolean; onNavigate?: () => void; onSelect?: (id: FrameId) => void; available?: readonly FrameId[];
 }) {
   const t = useT(frameMessages);
   return <nav aria-label={t('more')}>
     {frameGroups.map(group => {
-      const items = frameItems.filter(item => item.available && item.group === group && (!tiles || !item.mobile));
+      const items = frameItems.filter(item => item.available && item.group === group && (!tiles || !item.mobile) && (!available || available.includes(item.id)));
       return items.length ? <div key={group}>
         <h2 className="px-inline pb-inline pt-stack text-micro text-faint">{t(group)}</h2>
         <div className={tiles ? 'grid grid-cols-3 gap-inline' : 'space-y-inline'}>
           {items.map(({ id, href, icon: Icon }) => {
             const count = id in counts ? counts[id as keyof FrameCounts] : undefined;
-            return <Link key={id} href={href} onClick={onNavigate} aria-current={active === id ? 'page' : undefined}
+            return <Link prefetch={onSelect ? false : undefined} key={id} href={onSelect ? `#${href}` : href} onClick={event => {
+              onNavigate?.();
+              if (onSelect) { event.preventDefault(); onSelect(id); }
+            }} aria-current={active === id ? 'page' : undefined}
               className={`relative flex min-h-12 gap-stack rounded-control px-stack text-row ${tiles ? 'glass min-h-[72px] flex-col items-center justify-center py-stack text-center' : 'items-center'} ${active === id ? 'glass-strong font-semibold text-ink' : 'text-muted hover:bg-surface-raised hover:text-ink'}`}>
               <Icon active={active === id} className={`size-5 shrink-0 ${tiles || active === id ? 'text-lime' : ''}`} aria-hidden />
               {t(id)}

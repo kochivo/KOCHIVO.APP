@@ -4,6 +4,14 @@ import { steps } from './steps';
 import { canPulse, insideClips } from './pulse';
 
 describe('guided demo', () => {
+  it('edits a logged set without appending a new set or completing a tour action', () => {
+    const state = initialState(0);
+    const updated = reduceDemo(state, { type: 'edit-set', index: 0, kg: 70, reps: 9 });
+    expect(updated.sets).toEqual([[70, 9], [62.5, 8]]);
+    expect(updated.did).toEqual([]);
+    expect(state.sets[0]).toEqual([60, 10]);
+    expect(reduceDemo(state, { type: 'edit-set', index: -1, kg: 70, reps: 9 })).toEqual(state);
+  });
   it.each([[5, 4, 0], [20, 16, 1], [40, 31, 2], [100, 78, 3], [18, 14, 1]])('scales %i players and selects their plan', (n, trained, plan) => {
     expect(scaled(n)).toEqual({ players: n, trained });
     expect(planIndex(n)).toBe(plan);

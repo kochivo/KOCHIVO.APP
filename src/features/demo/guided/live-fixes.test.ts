@@ -12,7 +12,7 @@ it.each(['ar', 'en'] as const)('keeps every demo row action compact in %s', loca
     const html = renderToStaticMarkup(createElement(LocaleProvider, { locale }, createElement(view, {
       state: initialState(0), dispatch() {}, act() {}, now: () => 0,
     })));
-    const actions = html.match(/<span class="shrink-0">[\s\S]*?<\/button><\/span>/g) ?? [];
+    const actions = html.match(/<span class="shrink-0">[\s\S]*?<\/button><\/span>|<a\b[^>]*class="[^"]*shrink-0[^"]*"[^>]*>/g) ?? [];
     expect(actions.length).toBeGreaterThan(0);
     for (const action of actions) expect(action).not.toContain('w-full');
   }

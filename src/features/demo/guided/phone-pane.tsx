@@ -1,6 +1,8 @@
-import { useT } from '@/core/i18n/client';
-import { Button } from '@/ui/button';
-import { KoTraining, KoPlayerFood, KoCaptainChat, KoProgress } from '@/ui/icons';
+import { useLocale, useT } from '@/core/i18n/client';
+/* eslint-disable no-restricted-imports -- T-288 shares the real player shell presentation. */
+import { PlayerTabsView } from '@/features/player-shell/components/player-tabs-view';
+import { messages as shellMessages } from '@/features/player-shell/messages';
+/* eslint-enable no-restricted-imports */
 import { guidedMessages } from './messages';
 import { Workout } from './workout';
 import { PhoneFood } from './phone-food';
@@ -8,9 +10,9 @@ import { PhoneMe } from './phone-me';
 import { Chat } from './chat';
 import type { PaneProps } from './types';
 
-const tabs = [['workout', KoTraining], ['food', KoPlayerFood], ['coach', KoCaptainChat], ['me', KoProgress]] as const;
+const paths = { workout: '/player', food: '/player/nutrition', coach: '/player/captain', me: '/player/progress' } as const;
 export function PhonePane(props: PaneProps) {
-  const { state, dispatch, now } = props, t = useT(guidedMessages);
+  const { state, dispatch, now } = props, t = useT(guidedMessages), shell = useT(shellMessages), locale = useLocale();
   return <section className="demo-player-column min-w-0" aria-label={t('phoneTitle')}>
     <p className="demo-pane-caption mb-stack text-xs text-muted"><b>{t('phoneTitle')}</b> · {t('player')}</p>
     <div className="demo-phone mx-auto" data-phone-frame>
@@ -22,9 +24,11 @@ export function PhonePane(props: PaneProps) {
         {state.tab === 'workout' && <Workout {...props} />}{state.tab === 'food' && <PhoneFood {...props} />}
         {state.tab === 'coach' && <Chat {...props} phone />}{state.tab === 'me' && <PhoneMe {...props} />}
       </div>
-      <nav data-phone-tabs className="demo-phone-tabs glass grid shrink-0 grid-cols-4 gap-inline p-stack" aria-label={t('player')}>
-        {tabs.map(([tab, Icon]) => <Button key={tab} variant="secondary" className="min-w-0 flex-col px-0 text-micro" data-demo-target={tab === 'coach' ? 'coach-tab' : undefined} aria-current={state.tab === tab ? 'page' : undefined} onClick={() => dispatch({ type: 'phone', tab, now: now() })}><Icon className="size-5" /><span>{t(tab)}</span>{tab === 'coach' && state.unread > 0 && <b className="rounded-full bg-lime px-inline text-on-lime">{state.unread}</b>}</Button>)}
-      </nav>
+      <div data-phone-tabs data-demo-target="coach-tab" className="demo-phone-tabs shrink-0">
+        <PlayerTabsView pathname={paths[state.tab]} locale={locale} label={shell('navigation')}
+          onSelect={href => { const tab = (Object.entries(paths).find(([, path]) => path === href)?.[0] ?? 'workout') as keyof typeof paths;
+            dispatch({ type: 'phone', tab, now: now() }); }} />
+      </div>
       </div>
     </div>
   </section>;
