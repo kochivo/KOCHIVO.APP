@@ -63,21 +63,21 @@ export function PlayerShell({ children, unassignedAction }: { children?: ReactNo
     <SyncRunner />
     {!workout && <RestMoodSync onChange={setRestMood} />}
     <div className={workout ? undefined : showsNav(pathname) ? (v6 ? 'pt-[var(--safe-top)] pb-[var(--page-bottom-clearance)]' : 'pb-[var(--page-bottom-clearance)]') : 'pt-[var(--safe-top)]'}>
-    {showsNav(pathname) && !v6 && <div className="sticky top-0 z-30 bg-bg/70 pb-3 pt-[max(0.75rem,var(--safe-top))] backdrop-blur-md"><div className="mx-auto flex max-w-lg justify-end gap-2 px-5">
+    {showsNav(pathname) && !v6 && <div className="sticky top-0 z-30 bg-bg/70 pb-stack pt-[max(0.75rem,var(--safe-top))] backdrop-blur-md"><div className="mx-auto flex max-w-lg justify-end gap-inline px-page-x">
       <Link href="/player/settings" aria-label={t(v6 ? 'v6Account' : 'settings')} aria-current={pathname === '/player/settings' ? 'page' : undefined}
         className={`${v6 ? 'glass border border-line-soft ' : ''}flex min-h-12 min-w-12 items-center justify-center rounded-control ${pathname === '/player/settings' ? 'bg-lime-soft text-lime' : 'text-muted'}`}>
         {v6 ? <UserRound aria-hidden className="size-5 rounded-full" /> : <Settings aria-hidden className="size-5" />}
       </Link><InstallButton icon /><NotificationBell />
     </div></div>}
-    <div className="mx-auto max-w-lg space-y-3 px-5 pt-3" aria-live="polite">
-      {!online && <p role="status" className="glass rounded-card p-4 text-sm">
+    <div className="mx-auto max-w-lg space-y-stack px-page-x pt-stack" aria-live="polite">
+      {!online && <p role="status" className="glass rounded-card p-card text-sm">
         {t('youReOfflineYourLogsAre')}
       </p>}
-      {message && <div role="status" className="rounded-card border border-warn bg-warn-soft p-4 text-sm">
+      {message && <div role="status" className="rounded-card border border-warn bg-warn-soft p-card text-sm">
         <p>{message}</p>
         {(state === 'ended' || state === 'archived') && url &&
           <a href={url} target="_blank" rel="noopener noreferrer" aria-label={t('messageYourCoachOnWhatsApp')}
-            className="mt-2 flex min-h-12 items-center justify-center rounded-control border border-lime px-4 font-bold text-lime">
+            className="mt-inline flex min-h-12 items-center justify-center rounded-control border border-lime px-page-x font-bold text-lime">
             {t('messageYourCoachOnWhatsApp')}
           </a>}
       </div>}

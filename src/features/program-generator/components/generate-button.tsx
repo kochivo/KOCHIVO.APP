@@ -74,24 +74,24 @@ export function GenerateButton({ playerId, playerName, intake, profileError = fa
       footer={framedBrief ? <Button type="submit" form="generator-brief" disabled={!generatorBriefSchema.safeParse(state.brief).success}>{t('generate')}</Button> : undefined}
       onDismiss={() => { if (!locked.current) { setOpen(false); setConfirm(false); setSlot(null); } }}
       aria-labelledby={framedBrief ? undefined : 'generator-heading'} dir={locale === 'en' ? 'ltr' : 'rtl'}
-      className="sheet fixed inset-0 m-auto max-h-[90dvh] w-[calc(100%_-_2rem)] max-w-3xl overflow-y-auto rounded-card border border-line bg-surface p-5 text-ink sm:p-6">
-      {profileError ? <div className="space-y-4">
+      className="sheet fixed inset-0 m-auto max-h-[90dvh] w-[calc(100%_-_2rem)] max-w-3xl overflow-y-auto rounded-card border border-line bg-surface p-card text-ink sm:p-section">
+      {profileError ? <div className="space-y-card-gap">
         <h2 id="generator-heading" className="text-xl font-bold">{t('brief')}</h2>
         <p role="alert" className="text-danger">{t('profileLoadError')}</p>
         <Button variant="secondary" className="min-h-12" onClick={() => router.refresh()}>{t('retry')}</Button>
         <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} className="min-h-12" onClick={() => setOpen(false)}>{t('close')}</Button>
-      </div> : candidates === null || candidates.length === 0 ? <div className="space-y-4">
+      </div> : candidates === null || candidates.length === 0 ? <div className="space-y-card-gap">
         <h2 id="generator-heading" className="text-xl font-bold">{t('brief')}</h2>
         {loadError ? <p role="alert" className="text-danger">{t('loadError')}</p> :
           <p role="status">{t(candidates === null ? 'loading' : 'empty')}</p>}
         {(loadError || candidates?.length === 0) && <Button variant="secondary" className="min-h-12"
           onClick={() => { setCandidates(null); setLoadError(false); setAttempt(value => value + 1); }}>{t('retry')}</Button>}
         <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} className="min-h-12" onClick={() => setOpen(false)}>{t('close')}</Button>
-      </div> : !state.program ? <div className="space-y-4">
+      </div> : !state.program ? <div className="space-y-card-gap">
         <BriefSheet brief={state.brief} playerName={playerName} profileWarning={profileWarning} inDialog={framedBrief} onChange={state.setBrief}
           onGenerate={state.generate} onClose={() => setOpen(false)} />
         {state.error && <p role="alert" className="text-danger">{t('unfilled')}</p>}
-      </div> : <fieldset disabled={saving} className="min-w-0 space-y-5">
+      </div> : <fieldset disabled={saving} className="min-w-0 space-y-card-gap">
         <h2 id="generator-heading" tabIndex={-1} className="text-2xl font-bold">{t('week')}</h2>
         {playerName && <p><bdi>{playerName}</bdi></p>}
         <p className="text-sm text-muted">{t('draftNotice')}</p>
@@ -100,15 +100,15 @@ export function GenerateButton({ playerId, playerName, intake, profileError = fa
         {state.error && <p role="alert" className="text-danger">{t('unfilled')}</p>}
         {saveError && <p role="alert" className="text-danger">{saveError}</p>}
         {saving && <p role="status">{t('saving')}</p>}
-        {confirm ? <div role="group" aria-label={t('regenerate')} className="glass-strong space-y-3 rounded-card p-4">
+        {confirm ? <div role="group" aria-label={t('regenerate')} className="glass-strong space-y-stack rounded-card p-card">
           <p>{t('regeneratePrompt')}</p>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-inline">
             <Button variant="secondary" className="min-h-12" onClick={() => regenerate(true)}>{t('keepSwaps')}</Button>
             <Button variant="secondary" className="min-h-12" onClick={() => regenerate(false)}>{t('discardSwaps')}</Button>
             <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} className="min-h-12" onClick={() => setConfirm(false)}>{t('cancel')}</Button>
           </div>
         </div> : <Button variant="secondary" className="min-h-12" onClick={() => state.swaps.length ? setConfirm(true) : regenerate(false)}>{t('regenerate')}</Button>}
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-inline">
           <Button className="min-h-12" disabled={confirm} onClick={() => void save(profileWarning ? 'edit' : playerId ? 'assign' : 'template')}>
             {t(profileWarning ? 'edit' : playerId ? 'assign' : 'template', { name: playerName || t('player') })}
           </Button>

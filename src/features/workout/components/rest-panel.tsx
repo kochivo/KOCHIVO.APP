@@ -13,17 +13,17 @@ export function RestPanel({ remaining, total = remaining, sound = true, flashing
 }) {
   const t = useT(messages);
   const locale = useLocale();
-  if (captainWorkspaceEnabled()) return <section className={cn('glass-strong space-y-3 rounded-card border border-line-soft p-5',
+  if (captainWorkspaceEnabled()) return <section className={cn('glass-strong space-y-stack rounded-card border border-line-soft p-card',
     flashing && 'motion-safe:animate-pulse motion-safe:bg-lime-soft')}>
-    <div className="flex items-center justify-between gap-3"><h2 className="text-sm text-muted">{t('rest')}</h2>
-      <output aria-label={t('restTimeRemaining')} aria-live="off" className="font-display text-[22px] font-extrabold tabular-nums"><bdi>{formatRest(remaining, locale)}</bdi></output></div>
-    <div className="flex flex-wrap gap-2">
+    <div className="flex items-center justify-between gap-stack"><h2 className="text-sm text-muted">{t('rest')}</h2>
+      <output aria-label={t('restTimeRemaining')} aria-live="off" className="font-display text-h font-extrabold tabular-nums"><bdi>{formatRest(remaining, locale)}</bdi></output></div>
+    <div className="flex flex-wrap gap-inline">
       <Button variant="secondary" className="min-h-14 flex-1 rounded-full" onClick={onExtend}>{t('message30Sec')}</Button>
       <Button variant="secondary" className="min-h-14 flex-1 rounded-full" onClick={onSkip}>{t('skip')}</Button>
-      <button type="button" aria-pressed={sound} onClick={onToggleSound} className="min-h-12 rounded-full border border-line-soft px-4 text-xs text-muted">{t('sound')}</button>
+      <button type="button" aria-pressed={sound} onClick={onToggleSound} className="min-h-12 rounded-full border border-line-soft px-page-x text-xs text-muted">{t('sound')}</button>
     </div>
   </section>;
-  return <section className={cn('glass-strong flex flex-col items-center gap-5 rounded-card px-4 py-10',
+  return <section className={cn('glass-strong flex flex-col items-center gap-card-gap rounded-card px-page-x py-section',
     flashing && 'motion-safe:animate-pulse motion-safe:bg-lime-soft')}>
     <h2 className="text-sm text-muted">{t('rest')}</h2>
     <div className="relative grid size-64 place-items-center">
@@ -36,11 +36,11 @@ export function RestPanel({ remaining, total = remaining, sound = true, flashing
       <output aria-label={t('restTimeRemaining')} aria-live="off" className="text-6xl font-extrabold tabular-nums"><bdi>{formatRest(remaining, locale)}</bdi></output>
     </div>
     <p className="text-center text-sm text-muted">{t('yourPhoneWillVibrateAndTheScreen')}</p>
-    <div className="flex gap-3">
+    <div className="flex gap-stack">
       <Button variant="secondary" size="lg" className="min-h-16" onClick={onExtend}>{t('message30Sec')}</Button>
       <Button variant="secondary" size="lg" className="min-h-16" onClick={onSkip}>{t('skip')}</Button>
     </div>
     <button type="button" aria-pressed={sound} onClick={onToggleSound}
-      className={cn('min-h-12 min-w-12 rounded-control border px-3 text-sm', sound ? 'border-lime text-lime' : 'border-line text-muted')}>{t('sound')}</button>
+      className={cn('min-h-12 min-w-12 rounded-control border px-stack text-sm', sound ? 'border-lime text-lime' : 'border-line text-muted')}>{t('sound')}</button>
   </section>;
 }

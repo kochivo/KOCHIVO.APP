@@ -37,31 +37,31 @@ export function PreviewSheet({ template, onAssign, onClose }: { template: Templa
   const title = starterText(template.title, locale);
   const emptyAction = { label: t('chooseAnother'), onClick: onClose };
   return <dialog ref={dialog} aria-labelledby="preview-template-title" onCancel={onClose} onClose={onClose}
-    className="sheet fixed inset-0 m-auto max-h-[85dvh] w-[calc(100%_-_2rem)] max-w-lg overflow-y-auto rounded-card border border-line bg-surface p-6 text-ink">
-    <div className="grid gap-4">
+    className="sheet fixed inset-0 m-auto max-h-[85dvh] w-[calc(100%_-_2rem)] max-w-lg overflow-y-auto rounded-card border border-line bg-surface p-section text-ink">
+    <div className="grid gap-card-gap">
       <h2 id="preview-template-title" className="text-xl font-bold">{t('previewTitle', { title })}</h2>
-      {error ? <div role="alert" className="grid justify-items-start gap-2">{error}
+      {error ? <div role="alert" className="grid justify-items-start gap-inline">{error}
         <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} className="min-h-12" onClick={() => { setError(''); setPreview(null); setAttempt(value => value + 1); }}>{t('tryAgain')}</Button>
       </div> : !preview ? <LoadingState variant="detail" />
         : preview.groups.length === 0 ? <EmptyState icon={Files} title={t('nothingHereYet')} body={t('templateIsEmptyAddDaysOrMeals')} action={emptyAction} /> : <>
-          {preview.kind === 'nutrition' && <p className="glass-strong w-fit rounded-control px-3 py-2 text-sm font-bold">{t('totalKcal', { kcal: n(preview.kcal) })}</p>}
-          {preview.groups.map((group, index) => <section key={index} className="glass grid gap-2 rounded-card p-4">
+          {preview.kind === 'nutrition' && <p className="glass-strong w-fit rounded-control px-stack py-inline text-sm font-bold">{t('totalKcal', { kcal: n(preview.kcal) })}</p>}
+          {preview.groups.map((group, index) => <section key={index} className="glass grid gap-inline rounded-card p-card">
             <h3 className="font-bold">{starterText(group.title, locale, template.title)}</h3>
-            {group.items.length === 0 ? <EmptyState icon={Files} title={t('nothingHereYet')} body={t('templateIsEmptyAddDaysOrMeals')} action={emptyAction} /> : <ul className="grid gap-1.5 text-sm">
+            {group.items.length === 0 ? <EmptyState icon={Files} title={t('nothingHereYet')} body={t('templateIsEmptyAddDaysOrMeals')} action={emptyAction} /> : <ul className="grid gap-inline text-sm">
               {preview.kind === 'program'
-                ? preview.groups[index]?.items.map((item, i) => <li key={i} className="flex justify-between gap-3">
+                ? preview.groups[index]?.items.map((item, i) => <li key={i} className="flex justify-between gap-stack">
                   <span className="min-w-0 break-words">{exerciseName(item, locale)}</span>
                   <span dir="ltr" className="shrink-0 text-muted">{n(item.sets)} × {item.reps}
                     {item.rir != null && t('rirSuffix', { count: n(item.rir) })}</span>
                 </li>)
-                : preview.groups[index]?.items.map((item, i) => <li key={i} className="flex justify-between gap-3">
+                : preview.groups[index]?.items.map((item, i) => <li key={i} className="flex justify-between gap-stack">
                   <span className="min-w-0 break-words">{foodName(item, locale)}</span>
                   <span className="shrink-0 text-muted">{t('gramsKcal', { grams: n(item.grams), kcal: n(item.kcal) })}</span>
                 </li>)}
             </ul>}
           </section>)}
         </>}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-inline">
         <Button variant={preview?.groups.length ? 'primary' : 'secondary'} className="min-h-12" disabled={!preview || preview.groups.length === 0} onClick={onAssign}>{t('assignToPlayer')}</Button>
         <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} className="min-h-12" onClick={onClose}>{t('close')}</Button>
       </div>

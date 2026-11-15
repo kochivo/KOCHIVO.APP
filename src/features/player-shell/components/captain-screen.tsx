@@ -18,7 +18,7 @@ export function CaptainScreen({ voiceNotes }: { voiceNotes?: ReactNode }) {
   const { data, retry } = useCaptainContext();
   const playerId = v6 && data?.captainId ? localDb().userId : undefined;
   const profile = <CaptainProfileCard />;
-  return <main className={v6 ? 'mx-auto max-w-lg space-y-3 px-[18px] pt-4 pb-52' : 'mx-auto max-w-lg space-y-5 px-5 pt-6 pb-32'}>
+  return <main className={v6 ? 'mx-auto max-w-lg space-y-stack px-page-x pt-card pb-52' : 'mx-auto max-w-lg space-y-card-gap px-page-x pt-section pb-32'}>
     {v6 && data ? <CaptainHeading captain={data} /> : <header><h1 className="text-2xl font-extrabold">{t('coach')}</h1></header>}
     {v6 && data ? <><CaptainPendingAssessment />
       {data.captainId && playerId ? <PlayerChat key={data.captainId} playerId={playerId} captainId={data.captainId} /> :

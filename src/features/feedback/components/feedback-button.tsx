@@ -10,7 +10,7 @@ import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { Button } from '@/ui/button';
 
 const FeedbackSheet = dynamic(() => import('./feedback-sheet').then(module => module.FeedbackSheet), {
-  ssr: false, loading: () => <LoadingState className="sheet fixed bottom-6 end-4 z-40 rounded-card p-6" />,
+  ssr: false, loading: () => <LoadingState className="sheet fixed bottom-6 end-4 z-40 rounded-card p-section" />,
 });
 
 export function FeedbackButton({ role }: { role: DeviceRole }) {
@@ -19,7 +19,7 @@ export function FeedbackButton({ role }: { role: DeviceRole }) {
   const docked = role === 'captain' && captainWorkspaceEnabled();
   return <>
     <Button type="button" data-floating-fab aria-label={t('report')} onClick={() => setOpen(true)}
-      variant={(docked) ? 'secondary' : 'secondary'} block={false} className={docked ? "fixed end-4 bottom-[calc(var(--nav-clearance)+0.5rem)] z-30 flex min-h-12 min-w-12 items-center justify-center gap-2 text-muted lg:static lg:shrink-0 lg:px-3"
+      variant={(docked) ? 'secondary' : 'secondary'} block={false} className={docked ? "fixed end-4 bottom-[calc(var(--nav-clearance)+0.5rem)] z-30 flex min-h-12 min-w-12 items-center justify-center gap-inline text-muted lg:static lg:shrink-0 lg:px-stack"
         : "fixed end-4 bottom-[calc(var(--nav-clearance)+0.5rem)] z-30 flex min-h-12 min-w-12 items-center justify-center text-muted lg:bottom-6"}>
       <MessageSquareWarning aria-hidden="true" className="size-5" />
       {docked && <span className="hidden text-xs lg:inline">{t('report')}</span>}

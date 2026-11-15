@@ -75,24 +75,24 @@ export function CheckinSheet({ latest, open, onClose, onSent }: {
   }
   return <dialog ref={dialog} aria-labelledby="checkin-title" onCancel={(event) => {
     event.preventDefault(); onClose();
-  }} className="sheet fixed inset-0 m-auto max-h-[90dvh] w-full max-w-lg overflow-y-auto rounded-card border border-line bg-bg p-5 text-ink backdrop:bg-bg/80">
-    <form onSubmit={submit} className="space-y-4">
+  }} className="sheet fixed inset-0 m-auto max-h-[90dvh] w-full max-w-lg overflow-y-auto rounded-card border border-line bg-bg p-card text-ink backdrop:bg-bg/80">
+    <form onSubmit={submit} className="space-y-card-gap">
       <header className="flex items-center justify-between">
         <h2 id="checkin-title" className="text-xl font-bold">{t('weeklyCheckin')}</h2>
         <IconButton aria-label={t('closeCheckin')} onClick={onClose}><X aria-hidden /></IconButton>
       </header>
-      <fieldset disabled={busy} className="space-y-4">
+      <fieldset disabled={busy} className="space-y-card-gap">
         <Stepper label={t('weightKg')} value={weight} min={20} step={0.1} onChange={(value) => setWeight(Math.min(400, value))} format={(value) => formatNumber(Number(value.toFixed(1)), locale)} />
         <TextField label={t('bodyFatOptional')} type="number" min={3} max={60} step={0.1} value={bodyFat} onChange={event => setBodyFat(event.target.value)} />
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center justify-between gap-inline">
           <span>{t('waist')}</span>
           <Chip pressed={waist === null} onClick={() => setWaist(waist === null ? latest?.waist_cm ?? 90 : null)}>{t('none')}</Chip>
         </div>
         {waist !== null && <Stepper label={t('waistCm')} value={waist} min={30} step={0.5} onChange={(value) => setWaist(Math.min(300, value))} format={(value) => formatNumber(Number(value.toFixed(1)), locale)} />}
         <TextField label={t('whatWouldYouLikeToTellYour')} value={notes} maxLength={1000} onChange={(event) => setNotes(event.target.value)} hint={`${formatNumber(notes.length, locale)} / ${formatNumber(1000, locale)}`} />
         <p className="text-sm text-muted">{t('upTo3PhotosPrivateToYou')}</p>
-        <div className="grid grid-cols-3 gap-2">
-          {positions.map((position, index) => <div key={position} className="glass space-y-2 rounded-control p-2">
+        <div className="grid grid-cols-3 gap-inline">
+          {positions.map((position, index) => <div key={position} className="glass space-y-inline rounded-control p-inline">
             <label className="flex min-h-12 cursor-pointer items-center justify-center rounded-control text-sm has-focus-visible:outline-2 has-focus-visible:outline-lime has-focus-visible:outline-offset-2">
               {position}
               <input aria-label={t('photoPosition', { value0: position })} type="file" accept="image/*" capture="environment" className="sr-only" onChange={(event) => {
@@ -111,7 +111,7 @@ export function CheckinSheet({ latest, open, onClose, onSent }: {
         </div>
       </fieldset>
       {error && <p role="alert" className="text-sm text-danger">{error}</p>}
-      {busy && <div role="status" className="space-y-2"><p>{t('sending')} {formatNumber(progress, locale)}{t('percent')}</p><progress aria-label={t('uploadProgress')} value={progress} max={100} className="w-full accent-lime" /></div>}
+      {busy && <div role="status" className="space-y-inline"><p>{t('sending')} {formatNumber(progress, locale)}{t('percent')}</p><progress aria-label={t('uploadProgress')} value={progress} max={100} className="w-full accent-lime" /></div>}
       <Button type="submit" size="lg" disabled={busy} className="w-full">{busy ? t('sending') : t('sendCheckin')}</Button>
     </form>
   </dialog>;

@@ -19,22 +19,22 @@ export function OverviewActivity({ profile, activity, playerId, locale }: { prof
   const selected = first ? first === last ? [first] : [first, last].filter(item => item !== undefined) : [];
   const exercises = new Map<string, FileActivity['sets']>();
   for (const set of activity.sets) exercises.set(set.exercise_id, [...(exercises.get(set.exercise_id) ?? []), set]);
-  return <div className="grid gap-3 min-[760px]:grid-cols-2">
-    <section className="glass rounded-card border border-line-soft p-3.5">
-      <div className="mb-3 flex items-center justify-between"><h2 className="text-sm font-semibold">{t('photos')}</h2><Link href={`/captain/players/${playerId}/checkins`} className={`${clickableClass} inline-flex min-h-12 items-center text-xs text-lime`}>{t('all')}</Link></div>
-      {selected.length ? <div className="grid grid-cols-2 gap-2">{selected.map(photo => <figure key={photo.date}>
+  return <div className="grid gap-stack min-[760px]:grid-cols-2">
+    <section className="glass rounded-card border border-line-soft p-card">
+      <div className="mb-stack flex items-center justify-between"><h2 className="text-sm font-semibold">{t('photos')}</h2><Link href={`/captain/players/${playerId}/checkins`} className={`${clickableClass} inline-flex min-h-12 items-center text-xs text-lime`}>{t('all')}</Link></div>
+      {selected.length ? <div className="grid grid-cols-2 gap-inline">{selected.map(photo => <figure key={photo.date}>
         <Image src={photo.url} alt={t('photos')} width={240} height={320} unoptimized className="aspect-[3/4] w-full rounded-control object-cover" />
-        <figcaption className="mt-2 text-xs text-muted">{formatDateAr(photo.date, { day: 'numeric', month: 'long' }, locale)}</figcaption>
+        <figcaption className="mt-inline text-xs text-muted">{formatDateAr(photo.date, { day: 'numeric', month: 'long' }, locale)}</figcaption>
       </figure>)}</div> : <p className="text-sm text-muted">{ft('noPhotos')}</p>}
     </section>
-    <section className="glass rounded-card border border-line-soft p-3.5">
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><h2 className="text-sm font-semibold">{t('lastWorkout')}</h2>
+    <section className="glass rounded-card border border-line-soft p-card">
+      <div className="mb-stack flex flex-wrap items-center justify-between gap-inline"><h2 className="text-sm font-semibold">{t('lastWorkout')}</h2>
         {activity.last && <span className="text-xs text-lime">{activity.last.program_days?.title} · {formatDateAr(activity.last.training_date, { day: 'numeric', month: 'long' }, locale)}</span>}
       </div>
-      {exercises.size ? [...exercises].map(([id, sets]) => <div key={id} className="flex items-center gap-3 border-t border-line-soft py-3 first:border-0">
+      {exercises.size ? [...exercises].map(([id, sets]) => <div key={id} className="flex items-center gap-stack border-t border-line-soft py-stack first:border-0">
         {sets[0]?.exercises?.media_path && <ExerciseImage src={exerciseMediaUrl(sets[0].exercises.media_path)} alt="" width={44} height={44} />}
         <div className="min-w-0 flex-1"><h3 className="text-sm">{locale === 'en' ? sets[0]?.exercises?.name_en : sets[0]?.exercises?.name_ar}</h3>
-          <p className="mt-1 text-xs text-muted"><bdi>{formatNumber(sets.length, locale)} × {sets.map(set => set.reps === null ? '' : formatNumber(set.reps, locale)).join(' / ')}</bdi>
+          <p className="mt-inline text-xs text-muted"><bdi>{formatNumber(sets.length, locale)} × {sets.map(set => set.reps === null ? '' : formatNumber(set.reps, locale)).join(' / ')}</bdi>
             {sets.some(set => set.weight_kg !== null) && <> · <bdi>{sets.flatMap(set => set.weight_kg === null ? [] : formatNumber(set.weight_kg, locale)).join(' / ')}</bdi> {ft('kg')}</>}
           </p></div>
       </div>) : <p className="text-sm text-muted">{t('noWorkout')}</p>}

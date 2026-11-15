@@ -9,7 +9,7 @@ import { accountMessages } from './captain-account-messages';
 export function CaptainAccountContent({ onNavigate }: { onNavigate: () => void }) {
   const t = useT(accountMessages);
   const linkClass = buttonClass({ variant: 'secondary', block: false });
-  return <nav aria-label={t('accountMenu')} className="flex flex-col gap-1">
+  return <nav aria-label={t('accountMenu')} className="flex flex-col gap-inline">
     <Link href="/captain/settings" onClick={onNavigate} className={linkClass}>
       <Settings className="size-5 text-muted" aria-hidden="true" />{t('settings')}
     </Link>

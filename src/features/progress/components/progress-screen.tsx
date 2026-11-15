@@ -114,20 +114,20 @@ export function ProgressScreen({ analytics }: { analytics?: ReactNode }) {
   const bodyFat = checkins?.flatMap(row => row.body_fat_pct == null ? [] : [{ date: row.week_start, value: row.body_fat_pct }]) ?? [];
   const checkinAction = sent ? { label: t('messageCoach'), href: '/player/captain' } :
     { label: t('sendWeeklyCheckin'), onClick: () => { setSheetLoaded(true); setSheet(true); } };
-  return <main className={v6 ? 'mx-auto max-w-lg space-y-3 px-[18px] pt-[18px] pb-[104px]' : 'mx-auto max-w-lg space-y-4 px-5 pt-6 pb-32'}>
+  return <main className={v6 ? 'mx-auto max-w-lg space-y-stack px-page-x pt-card pb-[104px]' : 'mx-auto max-w-lg space-y-card-gap px-page-x pt-section pb-32'}>
     {v6 ? <ProgressV3 today={today} checkins={checkins} strength={strength} count={sessionCount} checkinError={checkinError} strengthError={localError} retry={() => { setLocalError(false); setRetryKey(value => value + 1); }} onLog={() => { setSheetLoaded(true); setSheet(true); }} /> : <header><h1 className="text-2xl font-extrabold">{t('yourProgress')}</h1></header>}
     {v6 && countError && <ErrorState message={t('couldntLoadYourWorkouts')} retryLabel={t('tryAgain')} onRetry={() => setRetryKey(value => value + 1)} />}
-    {!v6 && <Link href="/player/history" className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-12 items-center gap-3 p-5 font-bold" })}>
+    {!v6 && <Link href="/player/history" className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-12 items-center gap-stack p-card font-bold" })}>
       <Dumbbell aria-hidden className="text-lime" />{v6 ? v6t('history') : t('workoutHistory')}
     </Link>}
     {!v6 && (localError ? <ErrorState message={t('couldntLoadYourWorkouts')} retryLabel={t('tryAgain')} onRetry={() => {
       setLocalError(false); setRetryKey((value) => value + 1);
     }} /> : !strength ? <LoadingState /> : !lifts.length ?
       <EmptyState icon={Dumbbell} title={t('workoutsTitle')} body={t('logYourFirstWorkoutToSeeYour')} action={{ label: t('firstWorkout'), href: '/player' }} /> : <>
-        <div className="glass flex flex-wrap gap-2 rounded-control p-2" aria-label={t('mainLifts')}>
+        <div className="glass flex flex-wrap gap-inline rounded-control p-inline" aria-label={t('mainLifts')}>
           {lifts.map((lift, index) => <Chip key={lift} pressed={lift === active} onClick={() => setSelected(lift)}>{strength.names[lift] || t('exerciseNumber', { value0: formatNumber(index + 1, locale) })}</Chip>)}
         </div>
-        <section className="glass-strong space-y-2 rounded-card p-5">
+        <section className="glass-strong space-y-inline rounded-card p-card">
           <h2 className="text-sm text-muted">{t('topWeight')}</h2>
           {top.length > 0 && <p className="text-5xl font-extrabold">{formatNumber(top.at(-1)?.value ?? 0, locale)} <span className="text-sm text-muted">{t('kg')}</span></p>}
           {top.length ? <LineChart points={top} title={t('topWeightTrend')} unit={t('kg')} /> : <EmptyState icon={Dumbbell} title={t('noMeasurementsYet')} body={t('logYourFirstWorkoutToSeeYour')} action={{ label: t('firstWorkout'), href: '/player' }} />}
@@ -138,10 +138,10 @@ export function ProgressScreen({ analytics }: { analytics?: ReactNode }) {
     <BodyScansLoader />
     {checkinError ? <ErrorState message={t('couldntLoadCheckinsCheckYourConnection')} retryLabel={t('tryAgain')} onRetry={() => setRetryKey((value) => value + 1)} /> : !checkins ? <LoadingState variant="cards" /> : <>
       {!checkins.length && <EmptyState icon={CalendarCheck} title={t('firstCheckin')} body={t('yourFirstCheckinIsYourStartingPoint')} action={{ label: t('sendWeeklyCheckin'), onClick: () => { setSheetLoaded(true); setSheet(true); } }} />}
-      {checkins.length > 0 && <><div className="grid grid-cols-2 gap-3">
+      {checkins.length > 0 && <><div className="grid grid-cols-2 gap-stack">
         {measures.map(({ key, label, unit }) => {
           const points = checkins.flatMap((row) => row[key] === null ? [] : [{ date: row.week_start, value: row[key] }]).reverse();
-          return <section key={key} className="glass-strong space-y-2 rounded-card p-4">
+          return <section key={key} className="glass-strong space-y-inline rounded-card p-card">
             <h2 className="text-sm text-muted">{label}</h2>
             <p className="text-2xl font-extrabold">{points.length ? formatNumber(points.at(-1)?.value ?? 0, locale) : '—'} <span className="text-sm text-muted">{unit}</span></p>
             <p className="text-xs text-muted">{deltaLabel(points, unit)}</p>
@@ -151,7 +151,7 @@ export function ProgressScreen({ analytics }: { analytics?: ReactNode }) {
       </div>
       <PlayerGallery checkins={checkins} /></>}
     </>}
-    {sent && <p role="status" className="min-h-12 py-3 text-center text-muted">{t('sent')}</p>}
+    {sent && <p role="status" className="min-h-12 py-stack text-center text-muted">{t('sent')}</p>}
     {checkins && checkins.length > 0 && <CheckinHistory checkins={checkins} />}
     {(checkins?.length !== 0 || checkinError) && <Button variant={v6 ? 'secondary' : 'primary'} size="lg" className="w-full" aria-disabled={Boolean(sent)} disabled={!today || (!checkins && !checkinError)} onClick={() => { if (!sent) { setSheetLoaded(true); setSheet(true); } }}>{t('sendWeeklyCheckin')}</Button>}
     {sheetLoaded && (checkins || checkinError) && <CheckinSheet latest={latest} open={sheet} onClose={() => setSheet(false)} onSent={() => {

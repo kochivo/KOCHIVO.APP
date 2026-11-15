@@ -24,9 +24,9 @@ export function ExerciseHeader({ exercise, last, detailsOnly = false }: { exerci
   const name = exerciseName(exercise, locale);
   const muscle = exerciseMuscle(exercise);
   const muscleKey = muscle && Object.hasOwn(muscleKeys, muscle) ? muscleKeys[muscle as keyof typeof muscleKeys] : null;
-  return <section className={v6 ? 'space-y-3' : 'glass-strong flex items-center gap-4 rounded-card p-4'}>
+  return <section className={v6 ? 'space-y-stack' : 'glass-strong flex items-center gap-card-gap rounded-card p-card'}>
     {!v6 && exercise.media_path && <ExerciseLightbox src={exerciseMediaUrl(exercise.media_path)} name={name} />}
-    <div className="min-w-0 space-y-2">
+    <div className="min-w-0 space-y-inline">
       {!detailsOnly && <h1 className="text-2xl font-extrabold"><bdi>{name}</bdi></h1>}
       {v6 && <p className="text-xs text-faint">{muscleKey ? <>{v6t(muscleKey)} · </> : muscle ? <>{muscle} · </> : null}<bdi>{v6t('prescription', { sets: formatNumber(exercise.sets, locale),
         reps: exercise.reps_max === null ? t('toFailure') : `${formatNumber(exercise.reps_min, locale)}–${formatNumber(exercise.reps_max, locale)}` })}</bdi> · {v6t('rest', { seconds: formatNumber(exercise.rest_seconds, locale) })}</p>}
@@ -36,7 +36,7 @@ export function ExerciseHeader({ exercise, last, detailsOnly = false }: { exerci
         {exercise.rir != null && <bdi>{t('rirSuffix', { count: formatNumber(exercise.rir, locale) })}</bdi>}</p>
       {last?.sets.length ? <p className="text-sm text-muted">{t('lastTime')} <bdi dir="ltr">{last.sets.map((set) =>
         `${formatNumber(set.weight_kg ?? 0, locale)}×${formatNumber(set.reps ?? 0, locale)}`).join(' · ')}</bdi></p> : null}
-      <div className="flex flex-wrap items-center gap-x-6">
+      <div className="flex flex-wrap items-center gap-x-section">
         {exercise.video_url?.startsWith('https://') && <a href={exercise.video_url} target="_blank" rel="noopener noreferrer"
           className="inline-flex min-h-12 items-center text-lime underline">{t('watchVideo')}</a>}
         <Link className="inline-flex min-h-12 items-center text-lime underline" href={`/player/history?exercise=${encodeURIComponent(exercise.exercise_id)}`}>
@@ -45,6 +45,6 @@ export function ExerciseHeader({ exercise, last, detailsOnly = false }: { exerci
       </div>
     </div>
     {v6 && !detailsOnly && exercise.media_path && <ExerciseLightbox src={exerciseMediaUrl(exercise.media_path)} name={name} large />}
-    {v6 && !detailsOnly && exercise.notes && <p className="glass rounded-card p-4 text-sm text-muted">{exercise.notes}</p>}
+    {v6 && !detailsOnly && exercise.notes && <p className="glass rounded-card p-card text-sm text-muted">{exercise.notes}</p>}
   </section>;
 }

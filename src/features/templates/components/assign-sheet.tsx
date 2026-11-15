@@ -40,19 +40,19 @@ export function AssignSheet({ template, onClose }: { template: Template; onClose
   }, [attempt, t]);
   return <dialog ref={dialog} aria-labelledby="assign-template-title"
     onCancel={event => { if (busy) event.preventDefault(); else onClose(); }}
-    className="sheet fixed inset-0 m-auto max-h-[85dvh] w-[calc(100%_-_2rem)] max-w-lg overflow-y-auto rounded-card border border-line bg-surface p-6 text-ink">
-    <div className="grid gap-4">
+    className="sheet fixed inset-0 m-auto max-h-[85dvh] w-[calc(100%_-_2rem)] max-w-lg overflow-y-auto rounded-card border border-line bg-surface p-section text-ink">
+    <div className="grid gap-card-gap">
       <h2 id="assign-template-title" className="text-xl font-bold">{t('assignTitle', { title: starterText(template.title, locale) })}</h2>
       <p className="text-sm text-muted">{t('theyllGetASeparateCopyTheirActive')}</p>
       {loading ? <LoadingState variant="list" /> : loadError ? <div role="alert">{loadError}
         <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} className="min-h-12" onClick={() => { setLoading(true); setAttempt(value => value + 1); }}>{t('tryAgain')}</Button>
       </div> : players.length === 0 ? <EmptyState icon={Users} title={t('noPlayersYetAddAPlayerFirst')} body={t('chooseAPlayer')} action={{ label: t('openPlayers'), href: '/captain/players' }} /> :
-        <fieldset disabled={busy} className="grid gap-2">
-          <legend className="mb-2 text-sm text-muted">{t('chooseAPlayer')}</legend>
-          <label className="flex min-h-12 items-center gap-3 px-4">
+        <fieldset disabled={busy} className="grid gap-inline">
+          <legend className="mb-inline text-sm text-muted">{t('chooseAPlayer')}</legend>
+          <label className="flex min-h-12 items-center gap-stack px-page-x">
             <input type="checkbox" className="size-5 accent-lime" checked={assignment.allSelected} onChange={assignment.selectAll} />{t('selectAll')}
           </label>
-          {players.map(player => <label key={player.playerId} className="glass flex min-h-12 cursor-pointer items-center gap-3 rounded-control px-4 py-3">
+          {players.map(player => <label key={player.playerId} className="glass flex min-h-12 cursor-pointer items-center gap-stack rounded-control px-page-x py-stack">
             <input type="checkbox" className="size-5 accent-lime" value={player.playerId} disabled={done.includes(player.playerId)} checked={selected.includes(player.playerId) || done.includes(player.playerId)}
               onChange={() => assignment.toggle(player.playerId)} />
             <span>{player.fullName}</span>
@@ -67,7 +67,7 @@ export function AssignSheet({ template, onClose }: { template: Template; onClose
         <Button variant="secondary" className="min-h-12" disabled={busy} onClick={() => void assignment.retry()}>{t('tryAgain')}</Button>
       </div>}
       {busy && <p role="status">{t('assigningTemplate')}</p>}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-inline">
         <Button variant={players.length ? 'primary' : 'secondary'} className="min-h-12" disabled={!selected.length || busy || loading || !!loadError} onClick={() => void assignment.assign()}>
           {t('assignMany', { n: selected.length })}
         </Button>

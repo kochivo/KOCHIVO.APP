@@ -61,17 +61,17 @@ export function PushToggleCard() {
   }
   const description = support === 'ios-install' ? 'install' : support === 'unsupported' ? 'unsupported'
     : denied ? 'denied' : on ? 'on' : 'off';
-  return <section className="glass rounded-card p-6" aria-busy={pending}>
+  return <section className="glass rounded-card p-section" aria-busy={pending}>
     <button type="button" role="switch" aria-checked={on} aria-describedby="push-description"
       disabled={pending || support !== 'supported' || (error && !on)}
       onClick={() => void toggle()}
-      className="flex min-h-12 w-full items-center justify-between gap-4 text-start disabled:opacity-50">
+      className="flex min-h-12 w-full items-center justify-between gap-card-gap text-start disabled:opacity-50">
       <span className="font-bold">{t('title')}</span><SwitchTrack on={on} />
     </button>
-    <p id="push-description" role="status" className="mt-2 text-sm text-muted">
+    <p id="push-description" role="status" className="mt-inline text-sm text-muted">
       {t(pending ? status === 'saving' ? 'saving' : 'loading' : description)}
     </p>
-    {error && <div role="alert" className="mt-2 text-sm text-danger">
+    {error && <div role="alert" className="mt-inline text-sm text-danger">
       <p>{t('error')}</p>
       <Button variant="secondary" type="button" disabled={pending} onClick={() => setAttempt(value => value + 1)}
         className="min-h-12 text-lime">{t('retry')}</Button>

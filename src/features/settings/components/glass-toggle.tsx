@@ -18,7 +18,7 @@ export function GlassToggle({ workspace = false }: { workspace?: boolean } = {})
   const t = useT(messages);
   const solid = useSyncExternalStore(subscribe, snapshot, serverSnapshot);
   return <button type="button" role="switch" aria-checked={solid}
-    className={`${workspace ? clickableClass + ' ' : ''}glass flex min-h-12 w-full cursor-pointer items-center justify-between gap-4 rounded-card p-6 text-start`}
+    className={`${workspace ? clickableClass + ' ' : ''}glass flex min-h-12 w-full cursor-pointer items-center justify-between gap-card-gap rounded-card p-section text-start`}
     onClick={() => {
       const mode = snapshot() ? 'blur' : 'solid';
       document.documentElement.dataset.glass = mode;

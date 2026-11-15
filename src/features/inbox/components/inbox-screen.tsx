@@ -154,41 +154,41 @@ export function InboxScreen({ now: clock = currentTime }: { now?: () => Date } =
     ? triage(item, inputs?.history ?? [], inputs?.dailyChecks ?? [], now) : { group: 'routine', flags: [] };
   const visible = orderTriage(displayed.filter(item => (filter === 'all' || item.kind === filter) &&
     (groupFilter === 'all' || resultFor(item).group === groupFilter)), resultFor);
-  return <div className="mx-auto max-w-6xl space-y-6">
-    <header className="flex flex-wrap items-center justify-between gap-4">
+  return <div className="mx-auto max-w-6xl space-y-section">
+    <header className="flex flex-wrap items-center justify-between gap-card-gap">
       <h1 id="inbox-heading" tabIndex={-1} className="text-3xl font-extrabold">{t('inbox')} <span className="text-lime">{count === null ? t('dash') : formatNumber(count, locale)}</span></h1>
-      <div className="glass flex rounded-control p-1" aria-label={t('status')}>
+      <div className="glass flex rounded-control p-inline" aria-label={t('status')}>
         {(['open', 'reviewed'] as const).map((tab) => <button key={tab} aria-pressed={status === tab}
-          className={`min-h-12 rounded-control px-5 ${status === tab ? 'bg-surface-raised text-lime' : 'text-muted'}`}
+          className={`min-h-12 rounded-control px-page-x ${status === tab ? 'bg-surface-raised text-lime' : 'text-muted'}`}
           onClick={() => switchTo(tab)}>{tab === 'open' ? t('open') : t('reviewed')}</button>)}
       </div>
     </header>
-    <div className="flex flex-wrap gap-2" aria-label={t('type')}>
+    <div className="flex flex-wrap gap-inline" aria-label={t('type')}>
       {(['all', 'form', 'checkin'] as const).map((kind) => <button key={kind} aria-pressed={filter === kind}
-        className={`glass min-h-12 rounded-full px-5 ${filter === kind ? 'text-lime' : 'text-muted'}`}
+        className={`glass min-h-12 rounded-full px-page-x ${filter === kind ? 'text-lime' : 'text-muted'}`}
         onClick={() => { if (leave()) setFilter(kind); }}>{kind === 'all' ? t('all') : kind === 'form' ? t('videos') : t('checkins')}</button>)}
     </div>
-    {error && <div role="alert" className="glass rounded-card p-4 text-danger">{error}<button onClick={() => { setLoading(true); setError(''); setLoadError(''); void load(); }} className="ms-3 min-h-12 px-4 text-ink">{t('retry')}</button></div>}
+    {error && <div role="alert" className="glass rounded-card p-card text-danger">{error}<button onClick={() => { setLoading(true); setError(''); setLoadError(''); void load(); }} className="ms-stack min-h-12 px-page-x text-ink">{t('retry')}</button></div>}
     {pending.length > 0 && <p role="status" className="text-muted">{t('sending')}</p>}
-    {caughtUp && <p role="status" tabIndex={-1} ref={node => node?.focus()} className="glass-strong rounded-card p-5">{t('caughtUp')}</p>}
-    {loading && !displayed.length ? <LoadingState variant="list" aria-label={t('loading')} /> : <div className="grid items-start gap-5 lg:grid-cols-2">
-      <section aria-label={t('inbox')} className="space-y-3">
+    {caughtUp && <p role="status" tabIndex={-1} ref={node => node?.focus()} className="glass-strong rounded-card p-card">{t('caughtUp')}</p>}
+    {loading && !displayed.length ? <LoadingState variant="list" aria-label={t('loading')} /> : <div className="grid items-start gap-card-gap lg:grid-cols-2">
+      <section aria-label={t('inbox')} className="space-y-stack">
         {!visible.length && !error && !loading && (displayed.length ? <EmptyState icon={ListFilter} title={t('noType')} body={t('noTypeBody')} action={{ label: t('showAll'), onClick: () => { setFilter('all'); setGroupFilter('all'); } }} />
           : status === 'open' ? <EmptyState icon={CheckCheck} title={t('noPending')} body={t('noPendingBody')} steps={[t('stepForm'), t('stepCheckin')]} action={{ label: t('showReviewed'), onClick: () => switchTo('reviewed') }} />
           : <EmptyState icon={History} title={t('noReviewed')} body={t('noReviewedBody')} action={{ label: t('showOpen'), onClick: () => switchTo('open') }} />)}
         <InboxGroups filter={groupFilter} loading={loading && !inputs} onFilter={value => { if (leave()) setGroupFilter(value); }}>{now ? visible.map((item) => <li data-group={resultFor(item).group} key={inboxKey(item)} inert={pending.includes(keyOf(item))} aria-busy={pending.includes(keyOf(item))}><InboxRow item={item} now={now}
           selected={selected?.id === item.id && selected.kind === item.kind} onSelect={() => { if (!inFlight.current.has(keyOf(item)) && leave()) setSelected({ ...item, reply: drafts[keyOf(item)] ?? item.reply }); }} />
-          <div className="mt-2 flex flex-wrap gap-2">{resultFor(item).flags.map(flag => <FlagChip key={flag.key} flag={flag} />)}</div></li>) : []}</InboxGroups>
+          <div className="mt-inline flex flex-wrap gap-inline">{resultFor(item).flags.map(flag => <FlagChip key={flag.key} flag={flag} />)}</div></li>) : []}</InboxGroups>
       </section>
       {selected && <ResponsiveDialog key={`${selected.kind}:${selected.id}`} openerId={`inbox-${selected.kind}-${selected.id}`} fallbackId="inbox-heading" aria-label={t('details', { name: selected.player_name })} onDismiss={() => { leave(); }}
-        className="sheet fixed inset-0 z-50 m-0 h-full max-h-dvh w-full max-w-none space-y-5 overflow-y-auto bg-bg p-5 text-ink backdrop:bg-bg/80 lg:static lg:z-auto lg:h-auto lg:rounded-card lg:p-6">
-        <header className="flex items-center justify-between gap-3"><h2 className="text-2xl font-bold">{selected.player_name}</h2>
+        className="sheet fixed inset-0 z-50 m-0 h-full max-h-dvh w-full max-w-none space-y-card-gap overflow-y-auto bg-bg p-card text-ink backdrop:bg-bg/80 lg:static lg:z-auto lg:h-auto lg:rounded-card lg:p-section">
+        <header className="flex items-center justify-between gap-stack"><h2 className="text-2xl font-bold">{selected.player_name}</h2>
           <button aria-label={t('close')} className="flex min-h-12 min-w-12 items-center justify-center" onClick={() => { leave(); }}><X aria-hidden="true" /></button></header>
         {error && <p role="alert" className="text-danger">{error}</p>}
         {selected.kind === 'form' ? <FormCheckDetail key={`form:${selected.id}`} item={selected} /> : <CheckinDetail key={`checkin:${selected.id}`} item={selected} history={inputs?.history} dailyChecks={inputs?.dailyChecks} now={now ?? undefined} />}
-        {selected.reviewed_at ? <div className="glass rounded-card p-4"><p className="text-muted">{t('reviewed')}</p><p className="whitespace-pre-wrap">{selected.reply || t('noReply')}</p></div> :
+        {selected.reviewed_at ? <div className="glass rounded-card p-card"><p className="text-muted">{t('reviewed')}</p><p className="whitespace-pre-wrap">{selected.reply || t('noReply')}</p></div> :
           <ReplyBox key={`${selected.kind}:${selected.id}`} item={selected} onSend={send} onSendNext={inputs ? reply => send(reply, true) : undefined} disabled={pending.includes(keyOf(selected)) || recording} />}
-        {!selected.reviewed_at && <section aria-labelledby="inbox-voice" className="space-y-3">
+        {!selected.reviewed_at && <section aria-labelledby="inbox-voice" className="space-y-stack">
           <h3 id="inbox-voice" className="font-bold">{t('voiceReply')}</h3>
           <fieldset disabled={pending.includes(keyOf(selected)) || Boolean(uploaded)}>
             <VoiceRecorder key={`voice:${selected.kind}:${selected.id}`} playerId={selected.player_id} recorder={recorder} />

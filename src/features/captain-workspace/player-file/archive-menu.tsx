@@ -16,8 +16,8 @@ export function ArchiveMenu({ playerId, confirmText, archivingText, errorText, a
   const [pending, startTransition] = useTransition(), [error, setError] = useState('');
   return <details className="group relative">
     <summary aria-label={t('more')} className={`${rowLinkClass} glass flex min-h-12 min-w-12 list-none items-center justify-center rounded-full`}><MoreHorizontal aria-hidden className="size-5" /><DisclosureChevron className="size-4" /></summary>
-    <div className="glass-strong absolute end-0 z-20 mt-2 w-56 rounded-control border border-line p-2">
-      <button disabled={pending} className={`${rowLinkClass} min-h-12 w-full px-3 text-start text-sm disabled:opacity-50`} onClick={() => {
+    <div className="glass-strong absolute end-0 z-20 mt-inline w-56 rounded-control border border-line p-inline">
+      <button disabled={pending} className={`${rowLinkClass} min-h-12 w-full px-stack text-start text-sm disabled:opacity-50`} onClick={() => {
         if (!window.confirm(confirmText)) return;
         setError('');
         startTransition(async () => {
@@ -28,7 +28,7 @@ export function ArchiveMenu({ playerId, confirmText, archivingText, errorText, a
           } catch { setError(errorText); }
         });
       }}>{pending ? archivingText : t('archive')}</button>
-      {error && <p role="alert" className="p-2 text-xs text-danger">{error}</p>}
+      {error && <p role="alert" className="p-inline text-xs text-danger">{error}</p>}
     </div>
   </details>;
 }

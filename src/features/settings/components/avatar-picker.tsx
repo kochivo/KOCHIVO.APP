@@ -47,7 +47,7 @@ export function AvatarPicker({ name, path, file, pending, onChange }: {
       <input ref={upload} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" aria-label={t('uploadAvatar')}
         onChange={event => { setError(''); onChange(event.target.files?.[0] ?? null); }} />
     </div>
-    {loading && <p role="status" className="mt-4 text-sm text-muted">{t('loadingPhoto')}</p>}
-    {(error || avatar.error) && <p role="alert" className="mt-4 text-sm text-danger">{error || avatar.error}</p>}
+    {loading && <p role="status" className="mt-card-gap text-sm text-muted">{t('loadingPhoto')}</p>}
+    {(error || avatar.error) && <p role="alert" className="mt-card-gap text-sm text-danger">{error || avatar.error}</p>}
   </div>;
 }

@@ -29,18 +29,18 @@ it('preserves the pre-T-195 flag-off markup in Arabic and English', () => {
   expect(results).toMatchInlineSnapshot(`
     [
       {
-        "exercise": "73438a1c26a2e4677591b756ce8fb3b4457eb8649095d19dcbf3ae0c33ed886d",
+        "exercise": "bdbb6cc1f5c8f0d943898c79d6660b952623cf8022eaba85aa54762445d0c7ba",
         "locale": "ar",
-        "meal": "55e6fcb40472bbef681b4bda6d98e98c1905b84dae78ed71a0678d8c91d671e4",
-        "rest": "7895548b3dbef521756896ffd47e5dcaa4a4de2c441616cbe393738244f06f32",
-        "task": "d43ebdd350fcaa58421e1ba70611c4ad536de39c9f644d535752e3f3e871f063",
+        "meal": "1d6bea68b108627be540474d0dcd0b70df3022dc9924a052f58938a8787c293b",
+        "rest": "b37724e3c81c386a2e0f5dbfb510c6bf6ca172ff6375648762931dd144f83417",
+        "task": "13ca054607169af5b9eed0efc98a3b4abf6e97497340623f9e081f5d1feca3ac",
       },
       {
-        "exercise": "242e6c4f7a5d9f7bfb3a7fe5310bc155481e1dbd22525b5190903517e189d16d",
+        "exercise": "d99080cdafdd96e0677499db04b9b34b09a048d920f10005c9700553d26112c4",
         "locale": "en",
-        "meal": "7d627f8dcd68e07723ed67b2209edb750281c763d3eee3bcd3ada393d745723c",
-        "rest": "f15bb7d4050ccdd68343a8fe9e441c3036b8df361e25041917be0a15cad81f1a",
-        "task": "e3380f6fa7e60ff7366b114033900d8528477fcae1da8deab3c4cecc5fa908c9",
+        "meal": "493387202c47a98e09a55b43707da30d43a12f0bf4d9b2efa07fb859a906b81c",
+        "rest": "604313a4028732290e9a9c29c79ea1dc1357e2dd92b8ff1027bc650c208a9f8b",
+        "task": "df68b219ae6c532dc92d86a492a445b82198befde169c84da58d4c6ba7d02f81",
       },
     ]
   `);

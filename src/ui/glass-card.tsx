@@ -19,5 +19,5 @@ export interface GlassCardProps extends HTMLAttributes<HTMLDivElement> {
 
 export function GlassCard({ level = 'base', interactive = false, padding = 'md', className, ...props }: GlassCardProps) {
   const hasPadding = /(?:^|\s)(?:[\w-]+:)*!?p(?:[xysebt])?-/.test(className ?? '');
-  return <div className={cn('enter rounded-card', !hasPadding && (padding === 'sm' ? 'p-3 md:p-4' : 'p-card md:p-6'), interactive && 'press hover-lift', levels[level], className)} {...props} />;
+  return <div className={cn('enter rounded-card', !hasPadding && (padding === 'sm' ? 'p-card-gap' : 'p-card'), interactive && 'press hover-lift', levels[level], className)} {...props} />;
 }

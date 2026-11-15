@@ -30,7 +30,7 @@ export function CaptainVoiceNotes({ playerId }: { playerId: string }) {
   }, [fetchNotes]);
   const sent = (note: VoiceNote) => setLoad((current) => ({ status: 'ready', notes: [note, ...(current.status === 'ready' ? current.notes : [])] }));
   return (
-    <GlassCard role="region" aria-labelledby="captain-voice-heading" className="space-y-4 p-5">
+    <GlassCard role="region" aria-labelledby="captain-voice-heading" className="space-y-card-gap p-card">
       <h2 id="captain-voice-heading" className="text-lg font-bold">{t('voiceNotes')}</h2>
       <div id={`voice-recorder-${playerId}`} tabIndex={-1}><VoiceRecorder playerId={playerId} onSent={sent} /></div>
       {load.status === 'loading' ? <LoadingState variant="list" /> : load.status === 'error' ?

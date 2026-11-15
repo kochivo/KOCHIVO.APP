@@ -18,10 +18,10 @@ export async function PlanSidebar({ data }: { data: Promise<[PlanSummary | null,
   const full = used >= plan.player_limit;
   const usage = t('usage', { used: formatNumber(used, locale), n: plan.player_limit, count: formatNumber(plan.player_limit, locale) });
   const percent = plan.player_limit > 0 ? Math.min(100, Math.max(0, used / plan.player_limit * 100)) : 100;
-  if (captainWorkspaceEnabled()) return <Link href="/captain/settings" className={buttonClass({ variant: 'secondary', block: false, className: "block min-h-12 px-4 py-3 text-xs" })}>
+  if (captainWorkspaceEnabled()) return <Link href="/captain/settings" className={buttonClass({ variant: 'secondary', block: false, className: "block min-h-12 px-page-x py-stack text-xs" })}>
     {tier}<span aria-hidden> · </span>{usage}
   </Link>;
-  return <Link href="/captain/billing" className="block min-h-12 min-w-0 space-y-2 rounded-control px-3 py-2 text-sm">
+  return <Link href="/captain/billing" className="block min-h-12 min-w-0 space-y-inline rounded-control px-stack py-inline text-sm">
     <p className="font-bold">{t('myPlan')}: {tier}</p>
     <p className={full ? 'text-warn' : 'text-muted'}>{usage}</p>
     <div role="progressbar" aria-label={usage} aria-valuemin={0} aria-valuemax={plan.player_limit}

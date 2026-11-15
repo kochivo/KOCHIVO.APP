@@ -14,9 +14,9 @@ const variants: Record<Variant, string> = {
 };
 
 const sizes: Record<Size, string> = {
-  sm: 'control-sm min-h-10 px-3 text-sm',
-  md: 'control-md min-h-12 px-4 text-sm',
-  lg: 'control-lg min-h-14 px-5 text-base',
+  sm: 'control-sm min-h-12! px-control text-sm',
+  md: 'control-md min-h-12 px-control text-sm',
+  lg: 'control-lg min-h-14 px-control text-base',
 };
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -28,9 +28,9 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 // The unlayered .control rule owns the radius, so only padding and font size need de-duplicating.
 export function buttonClass({ variant = 'primary', size = 'md', block, className = '' }: Pick<ButtonProps, 'variant' | 'size' | 'block' | 'className'> = {}) {
-  const own = / !?px?-/.test(' ' + className), ownText = / !?text-(xs|sm|base|lg|\d?xl|\[)/.test(' ' + className);
+  const own = / !?px?-/.test(' ' + className), ownText = / !?text-(micro|xs|row|sm|md|title|h|stat[\w-]*|base|lg|\d?xl|\[)/.test(' ' + className);
   const sizing = sizes[size].replace(/px-\S+/, own ? '' : '$&').replace(/text-\S+/, ownText ? '' : '$&');
-  return cn('control press inline-flex items-center justify-center gap-2 rounded-control disabled:opacity-40',
+  return cn('control press inline-flex items-center justify-center gap-inline rounded-control disabled:opacity-40',
     block ? 'w-full' : block === undefined && variant === 'primary' && 'w-full md:w-auto', variants[variant], sizing, className);
 }
 

@@ -19,13 +19,13 @@ export function CoachSignup({ coach, callbackError = false }: { coach: string; c
   const [message, setMessage] = useState('');
   const [codeEmail, setCodeEmail] = useState('');
   const [pending, start] = useTransition();
-  return <main className="mesh flex min-h-dvh items-center justify-center p-6 pt-[max(1.5rem,var(--safe-top))]">
-    <GlassCard level="strong" className="w-full max-w-md space-y-6 p-8">
+  return <main className="mesh flex min-h-dvh items-center justify-center p-section pt-[max(1.5rem,var(--safe-top))]">
+    <GlassCard level="strong" className="w-full max-w-md space-y-section p-section">
       <LanguageSwitch /><h1 className="text-3xl font-bold">{t('playerSignup')}</h1>
       <p className="text-muted">{t('coachRequestHint')}</p>
       {codeEmail ? <SignupCodeStep email={codeEmail} verify={input => verifyPlayerCode(input, coach, browserSelection())} /> : <>
       <GoogleButton intent="player" coach={coach} />
-      <form className="space-y-4" aria-busy={pending} onSubmit={event => {
+      <form className="space-y-card-gap" aria-busy={pending} onSubmit={event => {
         event.preventDefault();
         const input = Object.fromEntries(new FormData(event.currentTarget));
         start(async () => {
@@ -35,7 +35,7 @@ export function CoachSignup({ coach, callbackError = false }: { coach: string; c
           if (result.redirect) window.location.assign(result.redirect);
         });
       }}>
-        <fieldset disabled={pending} className="space-y-4">
+        <fieldset disabled={pending} className="space-y-card-gap">
           {!existing && <TextField label={t('yourName')} name="full_name" autoComplete="name" maxLength={80} required />}
           <TextField label={t('email')} name="email" type="email" autoComplete="email" dir="ltr" required />
           <TextField label={t('password')} name="password" type="password" autoComplete={existing ? 'current-password' : 'new-password'} required />

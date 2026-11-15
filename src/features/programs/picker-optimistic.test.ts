@@ -193,5 +193,5 @@ it('shows the active chip for All, a muscle, and My exercises', () => {
   const html = renderToStaticMarkup(Chip({ pressed: all.props.pressed === true }));
   expect(html).toContain('aria-pressed="true"');
   expect(html).toContain('selected-surface border-lime bg-lime-soft text-lime');
-  expect(html).toContain('min-h-12');
+  expect(html).toContain('h-chip');
 });

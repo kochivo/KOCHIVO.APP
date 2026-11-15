@@ -13,5 +13,5 @@ export function WorkoutClock({ startedAt, quiet = false }: { startedAt?: string;
     window.addEventListener('focus', update);
     return () => { window.clearInterval(timer); window.removeEventListener('focus', update); };
   }, [startedAt]);
-  return <span className={quiet ? 'font-display text-[13px] text-muted tabular-nums' : 'font-display font-extrabold tabular-nums text-lime'}><bdi>{formatRest(seconds, locale)}</bdi></span>;
+  return <span className={quiet ? 'font-display text-row text-muted tabular-nums' : 'font-display font-extrabold tabular-nums text-lime'}><bdi>{formatRest(seconds, locale)}</bdi></span>;
 }

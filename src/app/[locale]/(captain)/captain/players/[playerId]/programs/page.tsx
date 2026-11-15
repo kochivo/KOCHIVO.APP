@@ -14,7 +14,7 @@ export default async function PlayerProgramsPage({ params, searchParams }: { par
     return <TrainingEntry playerId={playerId} />;
   }
   const profile = await fetchPlayerProfile(playerId);
-  return <div className="space-y-6">
+  return <div className="space-y-section">
     <div className="mx-auto max-w-5xl"><GenerateButton key={`${playerId}-${!!profile.data}`} playerId={playerId} profileError={!profile.data}
       playerName={profile.data?.name} intake={profile.data?.intake} /></div>
     <ProgramBuilder key={playerId} playerId={playerId} />

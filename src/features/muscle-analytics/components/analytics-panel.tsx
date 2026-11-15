@@ -21,24 +21,24 @@ export function AnalyticsPanel({ weeks, self = false, readiness = null }: { week
   const week = weeks[selected - 1];
   if (!week || !weeks.some(item => item.total > 0)) return <p className="text-muted">{t(self ? 'emptySelf' : 'empty')}</p>;
   const fatigue = muscles.filter(muscle => (week.muscles[muscle] ?? 0) > OVERLOAD_THRESHOLD);
-  return <div className="space-y-6">
+  return <div className="space-y-section">
     <WeekSlider value={selected} onChange={setSelected} />
     <p className="text-xs text-muted">{t('weekDates', { date: formatDateAr(week.start, { day: 'numeric', month: 'short' }, locale) })}</p>
-    <div className="grid gap-4 md:grid-cols-[1fr_280px]">
+    <div className="grid gap-card-gap md:grid-cols-[1fr_280px]">
       <div className="md:col-start-2 md:row-start-1"><QuickStats week={week} readiness={readiness} /></div>
-      <div className="glass min-w-0 rounded-card p-4 md:col-start-1 md:row-start-1">
+      <div className="glass min-w-0 rounded-card p-card md:col-start-1 md:row-start-1">
         <BodyMap key={week.start} volume={week.regions} muscles={week.muscles} total={week.total} />
       </div>
     </div>
     <BalanceBar volume={week.muscles} />
-    <div className="flex flex-wrap items-center justify-center gap-3 text-xs text-muted">
+    <div className="flex flex-wrap items-center justify-center gap-stack text-xs text-muted">
       <span>{t('legend')}</span>
-      {HEAT_STEPS.map(value => <span key={value} className="inline-flex items-center gap-1.5">
+      {HEAT_STEPS.map(value => <span key={value} className="inline-flex items-center gap-inline">
         <svg aria-hidden viewBox="0 0 16 16" className="size-3 stroke-line"><rect x="1" y="1" width="14" height="14" rx="4" className={heatClass(value)} /></svg>
         {t(`heat${value}`)}
       </span>)}
     </div>
-    <div aria-live="polite" className="space-y-2">
+    <div aria-live="polite" className="space-y-inline">
       {week.total === 0 && <p className="text-sm text-muted">{t('emptyWeek')}</p>}
       {fatigue.map(muscle => <p key={muscle} className="text-sm text-danger">
         {t('highLoad', { muscle: mt(`muscle.${muscle}`) })}

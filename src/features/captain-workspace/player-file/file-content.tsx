@@ -53,13 +53,13 @@ export async function FileContent({ playerId, tab, locale, children }: {
     if (tab === 'assessments') assessments = await loadPlayerRequests(await supabaseServer(), playerId);
   }
   catch (error) { unstable_rethrow(error); return <FileState error locale={locale} href={href} />; }
-  return <TimezoneScope timezone={timezone}><section className="min-w-0 space-y-3">
+  return <TimezoneScope timezone={timezone}><section className="min-w-0 space-y-stack">
     <FileHeader playerId={playerId} profile={profile} summary={summary} tab={tab} locale={locale} today={captainToday} playerToday={today} unreadCount={counts[playerId] ?? 0} />
     {tab === 'overview' && <MoneyOwedEntry mode="player" playerId={playerId} />}
     {tab === 'overview' && activity ? <PlayerOverview playerId={playerId} profile={profile} summary={summary} locale={locale} today={today} activity={activity} /> :
       tab === 'chat' ? <FileChatEntry playerId={playerId} captainId={captainId} playerName={profile.name} /> :
       tab === 'checkins' ? <PlayerCheckins playerId={playerId} profile={profile} today={today} locale={locale} /> :
-        tab === 'assessments' ? <div className="grid gap-3 min-[760px]:grid-cols-2">
+        tab === 'assessments' ? <div className="grid gap-stack min-[760px]:grid-cols-2">
           <AssessmentCards requests={assessments ?? []} locale={locale} timezone={timezone} playerId={playerId} /><NewAssessmentEntry playerId={playerId} locale={locale} />
           <AssessmentReviewEntry playerId={playerId} locale={locale} />
         </div> :

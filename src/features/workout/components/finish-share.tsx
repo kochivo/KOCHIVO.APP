@@ -32,8 +32,8 @@ export function FinishShare() {
     finally { setBusy(false); }
   }
   if (!ranksEnabled()) return v3 ? <Button type="button" disabled variant={'secondary'} block={false} className={"min-h-[52px] w-full text-sm font-bold text-muted"}>{wt('v3Share')} · {wt('v3Soon')}</Button> : null;
-  return <div className="space-y-2"><Button type="button" disabled={busy} onClick={() => void share()}
-    variant={'secondary'} block={false} className={"flex min-h-[52px] w-full items-center justify-center gap-2 px-5 text-sm font-bold"}>
+  return <div className="space-y-inline"><Button type="button" disabled={busy} onClick={() => void share()}
+    variant={'secondary'} block={false} className={"flex min-h-[52px] w-full items-center justify-center gap-inline px-page-x text-sm font-bold"}>
     {!v3 && <Share2 aria-hidden className="size-5" />}{v3 ? wt('v3Share') : t('share')}</Button>
     {error && <p role="alert" className="text-sm text-danger">{t('shareError')}</p>}
   </div>;

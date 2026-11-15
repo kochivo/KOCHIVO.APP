@@ -1,5 +1,5 @@
 import { LoadingState } from '@/ui';
 
 export default function Loading() {
-  return <LoadingState variant="detail" className="p-5 pb-32" />;
+  return <LoadingState variant="detail" className="p-card pb-32" />;
 }

@@ -15,14 +15,14 @@ export function TeamBoard({ rows }: { rows: LeaderboardRow[] }) {
   const v6 = captainWorkspaceEnabled();
   const locale = useLocale();
   if (!rows.some(row => row.done > 0)) return <EmptyState icon={Users} title={t('board')} body={t('emptyBoard')} />;
-  return <section className={v6 ? '' : 'glass space-y-3 rounded-card p-4'}>
+  return <section className={v6 ? '' : 'glass space-y-stack rounded-card p-card'}>
     {!v6 && <h2 className="font-bold">{t('board')}</h2>}
-    <ol className={v6 ? 'divide-y divide-line-soft' : 'space-y-2'}>{rows.map(row => <li key={row.position} aria-current={row.player_id !== null ? 'true' : undefined}
-      className={v6 ? `flex min-h-16 items-center gap-3 px-5 py-3 ${row.player_id !== null ? 'bg-surface-raised' : ''}` : `flex items-center gap-3 rounded-control p-3 ${row.player_id !== null ? 'bg-lime-soft' : ''}`}>
+    <ol className={v6 ? 'divide-y divide-line-soft' : 'space-y-inline'}>{rows.map(row => <li key={row.position} aria-current={row.player_id !== null ? 'true' : undefined}
+      className={v6 ? `flex min-h-16 items-center gap-stack px-page-x py-stack ${row.player_id !== null ? 'bg-surface-raised' : ''}` : `flex items-center gap-stack rounded-control p-stack ${row.player_id !== null ? 'bg-lime-soft' : ''}`}>
       <span className="tabular-nums">{formatNumber(row.position, locale)}</span>
       <RankBadge tier={row.is_crown ? 'crown' : row.tier} size="sm" label={t(row.is_crown ? 'crown' : row.tier)} />
       {v6 ? <div className="min-w-0 flex-1"><p className="truncate">{row.player_id !== null ? v6t('you') : row.display_name.trim().split(/\s+/)[0]}</p>
-        <p className="mt-1 text-[11.5px] text-faint">{v6t(row.player_id !== null ? 'adherence' : 'others', { n: formatNumber(row.adherence, locale) })}</p></div>
+        <p className="mt-inline text-micro text-faint">{v6t(row.player_id !== null ? 'adherence' : 'others', { n: formatNumber(row.adherence, locale) })}</p></div>
         : <><span className="min-w-0 flex-1 truncate">{row.display_name.trim().split(/\s+/)[0]}</span>
           <span className="shrink-0 text-sm">{t('percent', { n: formatNumber(row.adherence, locale) })}</span></>}
     </li>)}</ol>

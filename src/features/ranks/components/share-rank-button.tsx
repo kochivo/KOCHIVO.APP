@@ -39,7 +39,7 @@ export function ShareRankButton({ kind, disabled = false }: { kind: 'rank' | 'cr
       setLoading(false);
     }
   }
-  return <div className="space-y-2">
+  return <div className="space-y-inline">
     <Button variant="secondary" className="min-h-12" disabled={disabled || loading} aria-busy={loading} onClick={() => void share()}>
       <Share2 size={20} aria-hidden="true" />{t(loading ? 'shareLoading' : 'share')}
     </Button>

@@ -6,7 +6,7 @@ import { SignOutButton } from '@/features/auth';
 
 export default function SettingsPage() {
   // The captain layout already provides <main>; the player shell does not.
-  return <main className="px-5 pt-6 pb-32"><SettingsScreen signOut={<SignOutButton variant="danger" className="min-h-12 w-full" />} /></main>;
+  return <main className="px-page-x pt-section pb-32"><SettingsScreen signOut={<SignOutButton variant="danger" className="min-h-12 w-full" />} /></main>;
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {

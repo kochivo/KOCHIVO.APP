@@ -46,9 +46,9 @@ export function CustomExercise({ exercise }: { onAdd?: (row: LibraryExercise) =>
   const [busy, setBusy] = useState(false), [error, setError] = useState('');
   const navigating = useRef(false);
   const href = customExerciseHref(`${pathname}?${search}`, context?.programId ?? '', context?.dayId ?? '', exercise?.id);
-  return <div className="px-[18px] pb-3">
+  return <div className="px-page-x pb-stack">
     <Link id={`custom-exercise-${exercise?.id ?? 'new'}`} href={href} aria-disabled={busy} aria-busy={busy}
-      className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-3 text-xs text-muted" })}
+      className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-stack text-xs text-muted" })}
       onClick={event => {
         event.preventDefault(); if (navigating.current) return;
         navigating.current = true; setBusy(true); setError('');

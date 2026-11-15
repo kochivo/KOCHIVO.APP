@@ -21,14 +21,14 @@ export function BuilderNavigation({ draft, selectedId, onSelect, update }: {
   const add = () => {
     const id = uuidv7(); update(current => addDay(current, id, t('newDay'))); onSelect(id);
   };
-  return <aside aria-label={t('programDays')} className="glass min-w-0 space-y-3 rounded-card p-4">
+  return <aside aria-label={t('programDays')} className="glass min-w-0 space-y-stack rounded-card p-card">
     <h2 id="program-days-heading" tabIndex={-1} className="font-bold">{t('programDays')}</h2>
     {draft.days.length === 0 && <EmptyState icon={Dumbbell} title={t('addTheFirstDay')} body={t('emptyBody')}
       action={{ label: t('addDay'), onClick: add }} />}
-    <ul className="flex gap-2 overflow-x-auto pb-2 lg:flex-col lg:overflow-visible lg:pb-0">
+    <ul className="flex gap-inline overflow-x-auto pb-inline lg:flex-col lg:overflow-visible lg:pb-0">
       {draft.days.map(item => <li key={item.id} className="shrink-0 lg:shrink">
         <Chip pressed={item.id === selectedId} onClick={() => onSelect(item.id)}
-          className="flex min-h-16 w-full flex-col items-start justify-center gap-1 py-3 text-start">
+          className="flex min-h-16 w-full flex-col items-start justify-center gap-inline py-stack text-start">
           <span className="min-w-0 max-w-64 break-words font-bold lg:max-w-full">{item.weekday != null ? t(weekdayKeys[item.weekday] ?? 'sat')
             : `${formatNumber(item.position, locale)} · ${item.title ? starterText(item.title, locale) : t('newDay')}`}</span>
           <span className="text-xs tabular-nums">{weekdayStatus(item, locale)}</span>

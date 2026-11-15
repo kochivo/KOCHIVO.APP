@@ -41,13 +41,13 @@ export function WorkoutSet({ state }: { state: ReturnType<typeof useFocusSession
     .sort((a, b) => b.completed_at.localeCompare(a.completed_at))[0];
   const target = current.exercise.set_plan ? { ...current.exercise, ...targetForSet(current.exercise, current.setIndex - 1) } : current.exercise;
   return <>
-    <div className="flex min-h-[calc(100dvh-160px)] flex-col gap-3.5">
+    <div className="flex min-h-[calc(100dvh-160px)] flex-col gap-card-gap">
       {current.exercise.media_path && <ExerciseLightbox src={exerciseMediaUrl(current.exercise.media_path)} name={name} focus />}
-      <div className="flex flex-col gap-1"><h1 style={{ fontFamily: 'inherit', fontWeight: 900 }} className="text-2xl leading-normal"><bdi>{name}</bdi></h1>
-        <p className="text-[13px] text-muted">{t('v3Set', { current: formatNumber(current.setIndex, locale), total: formatNumber(current.exercise.sets, locale) })}
+      <div className="flex flex-col gap-inline"><h1 style={{ fontFamily: 'inherit', fontWeight: 900 }} className="text-2xl leading-normal"><bdi>{name}</bdi></h1>
+        <p className="text-row text-muted">{t('v3Set', { current: formatNumber(current.setIndex, locale), total: formatNumber(current.exercise.sets, locale) })}
           {current.exercise.notes && t('v3Coach', { note: current.exercise.notes })}</p>
       </div>
-      <div className="grid grid-cols-2 gap-2.5">
+      <div className="grid grid-cols-2 gap-stack">
         <WorkoutValue key={`${exerciseId}:${current.setIndex}:weight`} kind="weight" value={state.weight} disabled={blocked || state.bodyweight}
           invalid={state.invalid?.result === 'weight' || state.invalid?.result === 'both'} onChange={state.setWeight} />
         <WorkoutValue key={`${exerciseId}:${current.setIndex}:reps`} kind="reps" value={state.reps} disabled={blocked}
@@ -58,20 +58,20 @@ export function WorkoutSet({ state }: { state: ReturnType<typeof useFocusSession
       {historyFailed && <button type="button" className="min-h-12 text-xs text-muted" onClick={() => { setHistoryFailed(false); setAttempt(value => value + 1); }}>{t('tryAgain')}</button>}
       {state.invalid && <p id="set-error" role="alert" className="text-danger">{t(state.invalid.result === 'reps' ? 'enterReps' : 'enterWeightAndReps')}</p>}
       <Button type="button" style={{ fontFamily: 'inherit' }} disabled={blocked} onClick={() => void state.complete()}
-        variant={'primary'} block={false} className={"mt-auto flex min-h-[68px] w-full items-center justify-center gap-2.5 text-xl font-black disabled:opacity-50"}>
+        variant={'primary'} block={false} className={"mt-auto flex min-h-[68px] w-full items-center justify-center gap-stack text-xl font-black disabled:opacity-50"}>
         <KoTraining aria-hidden className="size-6" />{t(state.progress === state.queue.length ? 'v3CompleteWorkout' : 'v3CompleteSet')}
       </Button>
       {state.rest.remaining > 0 && <RestPanel remaining={state.rest.remaining} total={state.rest.total} sound={state.rest.sound} onToggleSound={state.rest.toggleSound}
         flashing={state.rest.flashing} onExtend={state.rest.extend} onSkip={state.rest.skip} />}
     </div>
     <SetDots exercise={current.exercise} currentIndex={current.setIndex} doneSets={state.doneSets} onEdit={state.edit} disabled={state.disabled} />
-    <details className="rounded-[24px] border border-line-soft bg-surface p-4">
+    <details className="rounded-[24px] border border-line-soft bg-surface p-card">
       <summary className="flex min-h-12 cursor-pointer items-center text-muted">{t('v3Details')}</summary>
-      <div className="space-y-3">
+      <div className="space-y-stack">
         <ExerciseHeader exercise={target} last={state.lastSession} detailsOnly />
         {current.exercise.set_plan && <SetRows state={state} secondary />}
         {!current.exercise.set_plan && <button type="button" aria-pressed={state.bodyweight} disabled={blocked} onClick={() => state.setBodyweight(!state.bodyweight)}
-          className="min-h-12 rounded-full border border-line-soft px-4 text-xs text-muted">{t('bodyweight')}</button>}
+          className="min-h-12 rounded-full border border-line-soft px-page-x text-xs text-muted">{t('bodyweight')}</button>}
       </div>
     </details>
     {Boolean(current.exercise.alternatives?.length) && <ExerciseAlternatives exercise={current.exercise} disabled={state.disabled} onChoose={state.switchExercise} />}

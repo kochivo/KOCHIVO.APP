@@ -44,20 +44,20 @@ export function CaptainSupplements({ playerId }: { playerId: string }) {
     setEditing(undefined);
     await refresh();
   };
-  return <section className="glass space-y-4 rounded-card p-5">
-    <div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-xl font-bold">{t('title')}</h2>
-      <Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-4 font-bold"} disabled={busy} onClick={() => setEditing(null)}>{t('add')}</Button></div>
-    {error && <div role="alert"><p>{t('error')}</p>{captainWorkspaceEnabled() ? <Button variant="secondary" className="min-h-12 px-4" onClick={() => { setError(false); void refresh(); }}>{t('retry')}</Button> : <button className="min-h-12 px-4" onClick={() => { setError(false); void refresh(); }}>{t('retry')}</button>}</div>}
+  return <section className="glass space-y-card-gap rounded-card p-card">
+    <div className="flex flex-wrap items-center justify-between gap-stack"><h2 className="text-xl font-bold">{t('title')}</h2>
+      <Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-page-x font-bold"} disabled={busy} onClick={() => setEditing(null)}>{t('add')}</Button></div>
+    {error && <div role="alert"><p>{t('error')}</p>{captainWorkspaceEnabled() ? <Button variant="secondary" className="min-h-12 px-page-x" onClick={() => { setError(false); void refresh(); }}>{t('retry')}</Button> : <button className="min-h-12 px-page-x" onClick={() => { setError(false); void refresh(); }}>{t('retry')}</button>}</div>}
     {!data && !error && <p role="status">{t('loading')}</p>}
     {data && !data.rows.length && <p className="text-muted">{t('empty')}</p>}
-    {data && data.rows.length > 0 && <p className="glass-strong rounded-control p-3 font-bold">{t('score', { percent: Math.round(supplementAdherence(data.logs, data.rows, 7, now, data.timezone) * 100) })}</p>}
-    {data?.rows.map((row, index) => <article key={row.id} className="glass space-y-3 rounded-card p-4">
-      <div className="flex flex-wrap items-center gap-3"><h3 className="font-bold">{row.name}</h3><span>{row.dose}</span><span className="glass rounded-full px-3 py-1 text-sm">{t(row.timing)}</span></div>
+    {data && data.rows.length > 0 && <p className="glass-strong rounded-control p-stack font-bold">{t('score', { percent: Math.round(supplementAdherence(data.logs, data.rows, 7, now, data.timezone) * 100) })}</p>}
+    {data?.rows.map((row, index) => <article key={row.id} className="glass space-y-stack rounded-card p-card">
+      <div className="flex flex-wrap items-center gap-stack"><h3 className="font-bold">{row.name}</h3><span>{row.dose}</span><span className="glass rounded-full px-stack py-inline text-sm">{t(row.timing)}</span></div>
       {row.notes && <p className="text-sm text-muted">{row.notes}</p>}
       <p className="text-sm">{t('adherence', { count: Math.round(supplementAdherence(data.logs, [row], 7, now, data.timezone) * 7) })}</p>
-      <div className="flex flex-wrap gap-2">
-        {captainWorkspaceEnabled() ? <Button variant="secondary" className="min-h-12 px-3" disabled={busy} onClick={() => setEditing(row)}>{t('edit')}</Button> : <button className="min-h-12 px-3" disabled={busy} onClick={() => setEditing(row)}>{t('edit')}</button>}
-        {captainWorkspaceEnabled() ? <Button variant="secondary" className="min-h-12 border border-danger/40 px-3 text-danger!" disabled={busy} onClick={() => void mutate(() => archiveSupplement(row.id, Date.now()))}>{t('archive')}</Button> : <button className="min-h-12 px-3" disabled={busy} onClick={() => void mutate(() => archiveSupplement(row.id, Date.now()))}>{t('archive')}</button>}
+      <div className="flex flex-wrap gap-inline">
+        {captainWorkspaceEnabled() ? <Button variant="secondary" className="min-h-12 px-stack" disabled={busy} onClick={() => setEditing(row)}>{t('edit')}</Button> : <button className="min-h-12 px-stack" disabled={busy} onClick={() => setEditing(row)}>{t('edit')}</button>}
+        {captainWorkspaceEnabled() ? <Button variant="secondary" className="min-h-12 border border-danger/40 px-stack text-danger!" disabled={busy} onClick={() => void mutate(() => archiveSupplement(row.id, Date.now()))}>{t('archive')}</Button> : <button className="min-h-12 px-stack" disabled={busy} onClick={() => void mutate(() => archiveSupplement(row.id, Date.now()))}>{t('archive')}</button>}
         {captainWorkspaceEnabled() ? <IconButton className="grid min-h-12 min-w-12 place-items-center" aria-label={t('up')} disabled={busy || index === 0} onClick={() => void mutate(() => reorderSupplements(data.rows, index, -1))}><ArrowUp aria-hidden className="size-5" /></IconButton> : <button className="grid min-h-12 min-w-12 place-items-center" aria-label={t('up')} disabled={busy || index === 0} onClick={() => void mutate(() => reorderSupplements(data.rows, index, -1))}><ArrowUp aria-hidden className="size-5" /></button>}
         {captainWorkspaceEnabled() ? <IconButton className="grid min-h-12 min-w-12 place-items-center" aria-label={t('down')} disabled={busy || index === data.rows.length - 1} onClick={() => void mutate(() => reorderSupplements(data.rows, index, 1))}><ArrowDown aria-hidden className="size-5" /></IconButton> : <button className="grid min-h-12 min-w-12 place-items-center" aria-label={t('down')} disabled={busy || index === data.rows.length - 1} onClick={() => void mutate(() => reorderSupplements(data.rows, index, 1))}><ArrowDown aria-hidden className="size-5" /></button>}
       </div>

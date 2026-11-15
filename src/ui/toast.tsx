@@ -90,13 +90,13 @@ export function ToastProvider({ children, queue: injected }: { children?: ReactN
     update();
     return () => observer.disconnect();
   }, []);
-  const stack = <div className="toast-stack pointer-events-none fixed z-50 mx-auto grid w-full max-w-md gap-2 px-4">
+  const stack = <div className="toast-stack pointer-events-none fixed z-50 mx-auto grid w-full max-w-md gap-inline px-page-x">
       {items.map(item => <div key={item.id} role={item.kind === 'error' ? 'alert' : 'status'}
         aria-live={item.kind === 'success' ? 'polite' : undefined} aria-atomic="true"
         onMouseEnter={() => queue.pause(item.id, 'hover')} onMouseLeave={() => queue.resume(item.id, 'hover')}
         onFocus={() => queue.pause(item.id, 'focus')}
         onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) queue.resume(item.id, 'focus'); }}
-        className={`glass-strong pointer-events-auto flex items-center gap-3 rounded-control p-3 text-ink ${item.leaving ? 'toast-leave' : 'toast-enter'}`}>
+        className={`glass-strong pointer-events-auto flex items-center gap-stack rounded-control p-stack text-ink ${item.leaving ? 'toast-leave' : 'toast-enter'}`}>
         <span className={`flex size-9 shrink-0 items-center justify-center rounded-control ${item.kind === 'error' ? 'bg-danger-soft text-danger' : 'bg-lime-soft text-lime'}`}><Suspense fallback={null}><ToastIcon name={item.icon} /></Suspense></span>
         <div className="min-w-0 flex-1"><p className="break-words font-semibold">{item.text}</p>
           {item.detail && <p className="truncate text-sm text-muted">{item.detail}</p>}</div>

@@ -17,18 +17,18 @@ export function TomorrowCard({ day, date, rest, onPreview }: {
     (day.cardio ?? []).reduce((sum, block) => sum + block.minutes, 0) : 0;
   const content = <>
     <span className="flex size-12 shrink-0 flex-col items-center justify-center rounded-2xl bg-surface-raised">
-      <span className="text-[10px] text-muted">{t('homeTomorrow')}</span>
+      <span className="text-micro text-muted">{t('homeTomorrow')}</span>
       <b className="font-[family-name:var(--font-manrope)] text-base">{formatNumber(Number(date.slice(-2)), locale)}</b>
     </span>
-    <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-      <b className="text-[15px]">{rest ? t('homeTomorrowRest') : day ? starterText(day.title, locale) : t('homeNoTomorrow')}</b>
+    <span className="flex min-w-0 flex-1 flex-col gap-inline">
+      <b className="text-md">{rest ? t('homeTomorrowRest') : day ? starterText(day.title, locale) : t('homeNoTomorrow')}</b>
       {!rest && day && <span className="text-xs text-muted">{t('exerciseCount', { n: day.exercises.length, count: formatNumber(day.exercises.length, locale) })}
         {minutes > 0 && <> · {t('homeMinutes', { count: formatNumber(minutes, locale) })}</>}
       </span>}
     </span>
     {!rest && day && <ChevronLeft aria-hidden className="size-[18px] text-muted ltr:rotate-180" />}
   </>;
-  const className = 'flex items-center gap-3 rounded-[24px] border border-line-soft bg-surface px-4 py-3.5 text-ink';
+  const className = 'flex items-center gap-stack rounded-[24px] border border-line-soft bg-surface px-page-x py-card text-ink';
   return !rest && day ? <a href="#home-day-preview" onClick={() => onPreview(date)} className={className}>{content}</a>
     : <div className={className}>{content}</div>;
 }

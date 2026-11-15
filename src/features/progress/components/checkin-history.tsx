@@ -37,12 +37,12 @@ export function CheckinHistory({ checkins, now = currentTime }: { checkins: Chec
       ...current.groups, [note.contextId]: (current.groups[note.contextId] ?? []).map(row => row.id === note.id ? { ...row, listenedAt: listenedAt.toISOString() } : row),
     } });
   }, [now]);
-  return <section className="space-y-3" aria-label={t('checkinHistory')}>
+  return <section className="space-y-stack" aria-label={t('checkinHistory')}>
     <h2 className="font-bold">{t('checkinHistory')}</h2>
     {!checkins.length && <p className="text-muted">{t('firstCheckin')}</p>}
     {load.status === 'loading' && <LoadingState variant="list" />}
     {load.status === 'error' && <ErrorState message={t('voiceLoadFailed')} retryLabel={t('tryAgain')} onRetry={() => setRetry(value => value + 1)} />}
-    <ul className="space-y-3">{checkins.map(row => <li key={row.id} className="glass space-y-3 rounded-card p-4">
+    <ul className="space-y-stack">{checkins.map(row => <li key={row.id} className="glass space-y-stack rounded-card p-card">
       <time dateTime={row.week_start} className="text-sm text-muted">{formatDateAr(row.week_start, { day: 'numeric', month: 'long' }, locale)}</time>
       <p className="whitespace-pre-wrap">{row.reviewed_at ? row.captain_reply || t('voiceReply') : t('noReplyYet')}</p>
       {row.reviewed_at && load.status === 'ready' && ((load.groups[row.id]?.length ?? 0) > 0 ?

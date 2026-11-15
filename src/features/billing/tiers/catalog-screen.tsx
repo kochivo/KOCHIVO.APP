@@ -48,28 +48,28 @@ function LegacyCatalogScreen() {
       () => tierOperation(reordered.map((row, position) => ({ before: row, after: { ...row, position } })), saveTier, async () => ({ data: true }), t('failure')));
   }
   if (panel?.kind === 'offer') return <OfferScreen catalog={catalog} now={now} offer={panel.offer} preset={panel.preset} onClose={close} />;
-  return <section className="space-y-4" aria-busy={catalog.busy}>
-    <header className="mb-[18px] flex flex-wrap items-center gap-3.5"><div className="me-auto">
+  return <section className="space-y-card-gap" aria-busy={catalog.busy}>
+    <header className="mb-card-gap flex flex-wrap items-center gap-card-gap"><div className="me-auto">
       <Link href="/captain/billing" className="inline-flex min-h-12 items-center text-xs text-lime hover:underline focus-visible:underline">{t('breadcrumb')}</Link>
-      <h1 id="catalog-heading" tabIndex={-1} className="font-display text-[30px] font-semibold leading-tight">{t('title')}</h1>
-      <p className="mt-1 text-[13px] text-muted">{t('intro')}</p></div>
-      {data.publicSlug ? <Link href={`/c/${encodeURIComponent(data.publicSlug)}`} className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-3.5 text-[12.5px]" })}>{t('publicPage')}</Link>
+      <h1 id="catalog-heading" tabIndex={-1} className="font-display text-stat font-semibold leading-tight">{t('title')}</h1>
+      <p className="mt-inline text-row text-muted">{t('intro')}</p></div>
+      {data.publicSlug ? <Link href={`/c/${encodeURIComponent(data.publicSlug)}`} className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-card text-xs" })}>{t('publicPage')}</Link>
         : <Button variant="secondary" className="min-h-12 rounded-full" disabled>{t('publicPage')}</Button>}
       <Button className="min-h-12 rounded-full" disabled={catalog.busy} onClick={() => setPanel({ kind: 'tier' })}>{t('newTier')}</Button>
     </header>
-    {(catalog.error || catalog.status === 'error') && <div role="alert" className="flex flex-wrap items-center gap-3 text-sm text-danger">{catalog.error || t('loadFailed')}<Button variant="secondary" onClick={() => void catalog.retry()}>{t('retry')}</Button></div>}
+    {(catalog.error || catalog.status === 'error') && <div role="alert" className="flex flex-wrap items-center gap-stack text-sm text-danger">{catalog.error || t('loadFailed')}<Button variant="secondary" onClick={() => void catalog.retry()}>{t('retry')}</Button></div>}
     <OffersCard catalog={data} now={now} busy={catalog.busy} onEdit={offer => setPanel({ kind: 'offer', offer })} onNew={preset => setPanel({ kind: 'offer', preset })}
       onPause={offer => void catalog.change(current => ({ ...current, offers: current.offers.map(row => row.id === offer.id ? { ...row, paused_at: row.paused_at ? null : now.toISOString() } : row) }), () => setOfferPaused(offer.id, offer.paused_at === null))} />
-    {!tiers.length && <div className="glass space-y-3 rounded-card border border-line-soft p-5 text-sm text-faint"><p>{t('empty')}</p><Button variant="secondary" className="min-h-12 rounded-full" disabled={catalog.busy} onClick={() => setPanel({ kind: 'tier' })}>{t('addTier')}</Button></div>}
-    <div className="grid items-start gap-3.5 min-[1001px]:grid-cols-3">
+    {!tiers.length && <div className="glass space-y-stack rounded-card border border-line-soft p-card text-sm text-faint"><p>{t('empty')}</p><Button variant="secondary" className="min-h-12 rounded-full" disabled={catalog.busy} onClick={() => setPanel({ kind: 'tier' })}>{t('addTier')}</Button></div>}
+    <div className="grid items-start gap-card-gap min-[1001px]:grid-cols-3">
       {tiers.map(tier => <TierCard key={tier.id} tier={tier} packages={data.packages.filter(item => item.tier_id === tier.id).sort((a, b) => a.days - b.days)} count={data.counts[tier.id] ?? 0} busy={catalog.busy}
         onEdit={() => setPanel({ kind: 'tier', tier })} onPackage={item => setPanel({ kind: 'package', tierId: tier.id, item })}
         onMove={offset => void move(tier, offset)} onFeature={() => void catalog.change(current => ({ ...current, tiers: current.tiers.map(row => ({ ...row, is_featured: row.id === tier.id && !tier.is_featured })) }), () => changeTierStatus(tier.id, tier.is_featured ? 'unfeature' : 'feature'))}
         onArchive={() => void catalog.change(current => ({ ...current, tiers: current.tiers.filter(row => row.id !== tier.id) }), () => changeTierStatus(tier.id, 'archive'))} />)}
-      {tiers.length > 0 && <Button type="submit" variant={'secondary'} block={false} className={"flex min-h-[280px] flex-col items-center justify-center gap-2 border-dashed text-faint"} disabled={catalog.busy} onClick={() => setPanel({ kind: 'tier' })}>{t('addTier')}<span className="text-xs">{t('example')}</span></Button>}
+      {tiers.length > 0 && <Button type="submit" variant={'secondary'} block={false} className={"flex min-h-[280px] flex-col items-center justify-center gap-inline border-dashed text-faint"} disabled={catalog.busy} onClick={() => setPanel({ kind: 'tier' })}>{t('addTier')}<span className="text-xs">{t('example')}</span></Button>}
     </div>
     <UnassignedPackages packages={data.packages.filter(item => !tiers.some(tier => tier.id === item.tier_id))} busy={catalog.busy} onEdit={item => setPanel({ kind: 'package', tierId: '', item })} />
-    {tiers.some(tier => tier.name === 'أساسي') && <p className="mt-[26px] rounded-[18px] border border-dashed border-line px-[18px] py-3.5 text-[12.5px] leading-[1.9] text-muted">{t('oldNote')}</p>}
+    {tiers.some(tier => tier.name === 'أساسي') && <p className="mt-section rounded-[18px] border border-dashed border-line px-page-x py-card text-xs leading-[1.9] text-muted">{t('oldNote')}</p>}
     {panel?.kind === 'tier' && <TierSheet catalog={catalog} tier={panel.tier} onClose={close} />}
     {panel?.kind === 'package' && <PackageSheet catalog={catalog} item={panel.item} tierId={panel.tierId} onClose={close} />}
   </section>;

@@ -38,7 +38,7 @@ export function ScanFile({ path }: { path: string | null }) {
   </div>;
   if (failed) return <div><p role="alert" className="text-muted">{t('fileLoadError')}</p>
     <Button variant="secondary" className="min-h-12" onClick={() => { setFailed(false); setUrl(''); setRetry(value => value + 1); }}>{t('retry')}</Button></div>;
-  return <div className="space-y-2 overflow-hidden rounded-control">
+  return <div className="space-y-inline overflow-hidden rounded-control">
     {url ? <Image src={url} alt={revealed ? t('image') : ''} width={400} height={300} unoptimized
       onError={() => setFailed(true)} className={`h-48 w-full object-contain ${revealed ? '' : 'blur-xl'}`} /> : <LoadingState />}
     <Button variant="secondary" className="min-h-12 w-full" disabled={!url} aria-pressed={revealed}

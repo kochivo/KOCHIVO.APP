@@ -7,11 +7,11 @@ import { Button } from '@/ui/button';
 
 export function FoodActions() {
   const t = useT(messages);
-  return <div className="grid grid-cols-2 gap-2">
+  return <div className="grid grid-cols-2 gap-inline">
     {(['photo', 'writeFood'] as const).map(key => <Button key={key} type="button" disabled
-      variant={'secondary'} block={false} className={"flex min-h-14 flex-wrap items-center justify-center gap-2 bg-transparent px-2 py-2 font-sans text-sm font-bold text-ink"}>
+      variant={'secondary'} block={false} className={"flex min-h-14 flex-wrap items-center justify-center gap-inline bg-transparent px-inline py-inline font-sans text-sm font-bold text-ink"}>
       {key === 'photo' ? <KoCamera aria-hidden className="size-5" /> : <Pencil aria-hidden className="size-5" />}
-      {t(key)}<span className="text-[10px] font-normal text-muted">{t('soon')}</span>
+      {t(key)}<span className="text-micro font-normal text-muted">{t('soon')}</span>
     </Button>)}
   </div>;
 }

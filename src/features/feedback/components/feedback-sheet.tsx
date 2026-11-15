@@ -25,9 +25,9 @@ export function FeedbackSheet({ role, onClose }: { role: DeviceRole; onClose: ()
   }, []);
   return <dialog ref={dialog} aria-labelledby={titleId} aria-modal="true"
     onCancel={event => { event.preventDefault(); if (!inFlight.current) onClose(); }}
-    className="sheet fixed start-4 end-4 bottom-6 top-auto z-40 m-0 mx-auto max-h-[85dvh] w-auto max-w-lg overflow-y-auto rounded-card p-6 text-start text-ink backdrop:bg-bg-deep/80">
+    className="sheet fixed start-4 end-4 bottom-6 top-auto z-40 m-0 mx-auto max-h-[85dvh] w-auto max-w-lg overflow-y-auto rounded-card p-section text-start text-ink backdrop:bg-bg-deep/80">
     <h2 id={titleId} className="text-xl font-bold">{t('report')}</h2>
-    <form noValidate className="mt-4 space-y-4" aria-busy={pending} onSubmit={async event => {
+    <form noValidate className="mt-card-gap space-y-card-gap" aria-busy={pending} onSubmit={async event => {
       event.preventDefault();
       if (inFlight.current) return;
       inFlight.current = true; setPending(true); setError(null);
@@ -40,9 +40,9 @@ export function FeedbackSheet({ role, onClose }: { role: DeviceRole; onClose: ()
       <textarea id={inputId} value={message} onChange={event => setMessage(event.target.value)} rows={5}
         minLength={5} maxLength={1000} required disabled={pending} aria-invalid={Boolean(error)}
         aria-describedby={error ? errorId : undefined}
-        className="min-h-12 w-full rounded-control border border-line bg-surface p-3 text-ink" />
+        className="min-h-12 w-full rounded-control border border-line bg-surface p-stack text-ink" />
       {error && <p id={errorId} role="alert" className="text-sm text-danger">{t(error)}</p>}
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap gap-stack">
         <Button type="submit" disabled={pending}>{t(pending ? 'sending' : 'send')}</Button>
         <Button variant="secondary" disabled={pending} onClick={onClose}>{t('close')}</Button>
       </div>

@@ -22,7 +22,7 @@ export function DailyPanel({ playerId, today, rest, coachRest, tomorrow, tomorro
   const t = useT(messages);
   const check = useDailyCheck(playerId, today);
   const goal = waterGoalMl(weightKg);
-  return <div className="space-y-4">
+  return <div className="space-y-card-gap">
     {rest && <RestHero coachRest={coachRest} />}
     {check.error && <ErrorState message={t('saveError')} retryLabel={t('retry')} onRetry={check.retry} />}
     {check.row === undefined ? <LoadingState variant="detail" /> : <>
@@ -30,7 +30,7 @@ export function DailyPanel({ playerId, today, rest, coachRest, tomorrow, tomorro
         <MorningQuestions row={check.row} onChange={patch => void check.save(patch)} disabled={!playerId} />
         {captainWorkspaceEnabled() && <MorningResult row={check.row} goal={goal} />}
         <WaterGlass waterMl={check.row?.water_ml ?? 0} goal={goal} onAdd={() => void check.save({}, 250)} disabled={!playerId} />
-        <p className="flex items-center gap-2 text-sm text-muted"><Activity aria-hidden className="size-5 text-sore" />{t('stretch')}</p>
+        <p className="flex items-center gap-inline text-sm text-muted"><Activity aria-hidden className="size-5 text-sore" />{t('stretch')}</p>
         {tomorrowRest ? <p className="text-sm text-muted">{t('tomorrowRest')}</p> :
           tomorrow && <p className="text-sm text-muted">{t('tomorrow', { name: tomorrow })}</p>}
       </> : <>

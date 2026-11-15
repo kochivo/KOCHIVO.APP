@@ -19,19 +19,19 @@ export function TemplateSection({ starter, templates, loading, error, busy, erro
   const t = useT(messages);
   const locale = useLocale();
   const id = starter ? 'kochivo-templates' : 'my-templates';
-  return <section id={id} aria-labelledby={`${id}-heading`} className="grid scroll-mt-6 gap-4">
-    <header className="flex flex-wrap items-center justify-between gap-3">
-      <h2 id={`${id}-heading`} className="flex items-baseline gap-3 text-2xl font-bold"><bdi>{t(starter ? 'kochivoTemplates' : 'myTemplates')}</bdi>
+  return <section id={id} aria-labelledby={`${id}-heading`} className="grid scroll-mt-6 gap-card-gap">
+    <header className="flex flex-wrap items-center justify-between gap-stack">
+      <h2 id={`${id}-heading`} className="flex items-baseline gap-stack text-2xl font-bold"><bdi>{t(starter ? 'kochivoTemplates' : 'myTemplates')}</bdi>
         <bdi className="text-muted">{formatNumber(templates.length, locale)}</bdi>
       </h2>
       {!starter && <Button className="min-h-12" disabled={creating || loading || !!error} onClick={onCreate}>{t('newTemplate')}</Button>}
     </header>
-    {loading ? <LoadingState variant="cards" /> : error ? <div role="alert" className="glass rounded-card p-5">{error}
+    {loading ? <LoadingState variant="cards" /> : error ? <div role="alert" className="glass rounded-card p-card">{error}
       <Button variant="ghost" className="min-h-12" onClick={onRetry}>{t('tryAgain')}</Button>
-    </div> : templates.length === 0 ? <div className="grid gap-2">
+    </div> : templates.length === 0 ? <div className="grid gap-inline">
       <EmptyState icon={Files} title={t(starter ? 'emptyStarters' : 'emptyTitle')} body={t(starter ? 'nothingHereYet' : 'emptyBody')} />
-      {!starter && <a className="inline-flex min-h-12 items-center justify-center rounded-control px-4 text-muted" href="#kochivo-templates">{t('copyStarter')}</a>}
-    </div> : <ul className="grid gap-4 sm:grid-cols-2">
+      {!starter && <a className="inline-flex min-h-12 items-center justify-center rounded-control px-page-x text-muted" href="#kochivo-templates">{t('copyStarter')}</a>}
+    </div> : <ul className="grid gap-card-gap sm:grid-cols-2">
       {templates.map(template => {
         const key = `${template.kind}-${template.id}`;
         return <TemplateCard key={key} template={template} busy={busy.includes(key)} error={errors[key]}

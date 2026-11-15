@@ -26,11 +26,11 @@ describe('UI primitives', () => {
     for (const size of ['md', 'lg'] as const) expect(renderToStaticMarkup(createElement(Stat, { size }, '125'))).toContain('tabular-nums');
   });
   it('offers responsive card padding', () => {
-    expect(renderToStaticMarkup(createElement(GlassCard))).toContain('p-card md:p-6');
-    expect(renderToStaticMarkup(createElement(GlassCard, { padding: 'sm' }))).toContain('p-3 md:p-4');
+    expect(renderToStaticMarkup(createElement(GlassCard))).toContain('p-card');
+    expect(renderToStaticMarkup(createElement(GlassCard, { padding: 'sm' }))).toContain('p-card-gap');
     expect(renderToStaticMarkup(createElement(GlassCard))).not.toContain('hover-lift');
     expect(renderToStaticMarkup(createElement(GlassCard, { interactive: true }))).toContain('press hover-lift');
-    expect(renderToStaticMarkup(createElement(GlassCard, { className: 'px-2 py-3' }))).not.toContain('md:p-6');
+    expect(renderToStaticMarkup(createElement(GlassCard, { className: 'px-inline py-stack' }))).not.toContain('p-card');
   });
   it('defines hover lift only for hover devices and removes reduced-motion translation', () => {
     const css = readFileSync(new URL('../app/surfaces.css', import.meta.url), 'utf8')

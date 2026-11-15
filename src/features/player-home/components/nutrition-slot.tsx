@@ -41,8 +41,8 @@ export function NutritionSlot({ date }: { date?: string }) {
             meals: t('mealCount', { n: summary.mealsTotal, count: total }) })}</p>
         {stale && <p className="text-muted">{t('lastUpdatedAWhileAgo')}</p>}
     </>;
-  const card = v3 ? <section className="space-y-2 rounded-[24px] border border-line-soft bg-surface p-5 text-sm">{content}</section>
-    : <GlassCard className="space-y-2 p-5 text-sm">{content}</GlassCard>;
+  const card = v3 ? <section className="space-y-inline rounded-[24px] border border-line-soft bg-surface p-card text-sm">{content}</section>
+    : <GlassCard className="space-y-inline p-card text-sm">{content}</GlassCard>;
   return <div key={selectedDate} className={summary.kind !== 'today' ? 'motion-safe:animate-[surface-in_180ms_ease-out] motion-reduce:animate-none' : undefined}>
     {summary.kind === 'today' ? <Link href="/player/nutrition" className="block min-h-12 rounded-card">{card}</Link> : card}
   </div>;

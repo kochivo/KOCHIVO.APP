@@ -17,19 +17,19 @@ export function WarmupLibraryPicker({ items, onAdd }: { items: WarmupItem[]; onA
   useEffect(() => { const timer = setTimeout(() => setDebounced(query), 250); return () => clearTimeout(timer); }, [query]);
   const load = useCallback(() => loadTrainingSearch(debounced, '', mine), [debounced, mine]);
   const search = useResource(`training-search:${debounced}::${mine}`, load);
-  return <div className="mx-[18px] mb-3 rounded-control border border-line-soft p-3">
+  return <div className="mx-card-gap mb-stack rounded-control border border-line-soft p-stack">
     <input aria-label={t('warmSearch')} placeholder={t('warmSearch')} value={query} onChange={event => setQuery(event.target.value)}
-      className={`${editableFieldClass} min-h-12 w-full rounded-control border border-line-soft bg-surface px-3 text-sm`} />
-    <label className="flex min-h-12 items-center gap-2 text-xs text-muted"><input type="checkbox" checked={mine}
+      className={`${editableFieldClass} min-h-12 w-full rounded-control border border-line-soft bg-surface px-stack text-sm`} />
+    <label className="flex min-h-12 items-center gap-inline text-xs text-muted"><input type="checkbox" checked={mine}
       onChange={event => setMine(event.target.checked)} className={`${editableFieldClass} size-5 accent-lime`} />{t('warmMine')}</label>
     <div className="max-h-64 overflow-y-auto">
-      {search.error ? <p role="alert" className="text-xs text-danger">{t('warmSearchError')}<Button type="button" variant={'secondary'} block={false} className={"min-h-12 px-3"} onClick={() => void search.retry()}>{t('warmRetry')}</Button></p> :
+      {search.error ? <p role="alert" className="text-xs text-danger">{t('warmSearchError')}<Button type="button" variant={'secondary'} block={false} className={"min-h-12 px-stack"} onClick={() => void search.retry()}>{t('warmRetry')}</Button></p> :
         !search.data || query !== debounced ? <p role="status" className="text-xs text-faint">{t('warmLoading')}</p> :
           search.data.length ? search.data.map(row => {
             const name = ((locale === 'en' ? row.name_en || row.name_ar : row.name_ar || row.name_en) || '').trim().slice(0, 60);
             const added = items.some(item => item.exerciseId === row.id), disabled = added || items.length >= 12;
             return <Button key={row.id} type="button" disabled={disabled} aria-label={t(added ? 'warmAdded' : 'warmAddExercise', { name })}
-              variant={'secondary'} block={false} className={"my-2 flex min-h-12 w-full items-center px-3 text-start text-sm disabled:opacity-40"}
+              variant={'secondary'} block={false} className={"my-inline flex min-h-12 w-full items-center px-stack text-start text-sm disabled:opacity-40"}
               onClick={() => { if (!disabled) onAdd({ id: uuidv7(), name, amount: 10, unit: 'reps', exerciseId: row.id }); }}>
               <bdi>{added ? t('warmAdded', { name }) : name}</bdi>
             </Button>;

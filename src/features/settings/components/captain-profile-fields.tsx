@@ -13,12 +13,12 @@ import { TimezoneFields } from './timezone-fields';
 export function CaptainProfileFields({ value, errors, onChange }: { value: CaptainProfileInput;
   errors: Record<string, string>; onChange: (value: CaptainProfileInput) => void }) {
   const t = useT(messages);
-  const fieldClass = 'min-h-12 w-full rounded-control border border-line bg-surface px-4 py-3 text-start focus-visible:ring-2 focus-visible:ring-lime';
-  return <div className="space-y-4">
+  const fieldClass = 'min-h-12 w-full rounded-control border border-line bg-surface px-page-x py-stack text-start focus-visible:ring-2 focus-visible:ring-lime';
+  return <div className="space-y-card-gap">
     <PublicSlugField value={value.public_slug ?? ''} error={errors.public_slug} onChange={public_slug => onChange({ ...value, public_slug })} />
     <TextField label={t('fullName')} value={value.full_name} autoComplete="name" maxLength={80}
       onChange={e => onChange({ ...value, full_name: e.target.value })} error={errors.full_name} className="bg-surface" />
-    <div className="space-y-2">
+    <div className="space-y-inline">
       <label htmlFor="captain-bio" className="text-sm font-semibold">{t('bio')}</label>
       <textarea id="captain-bio" value={value.bio} maxLength={280} rows={3} placeholder={t('bioPlaceholder')}
         onChange={e => onChange({ ...value, bio: e.target.value })} className={captainWorkspaceEnabled() ? `${editableFieldClass} ${fieldClass}` : fieldClass}
@@ -28,7 +28,7 @@ export function CaptainProfileFields({ value, errors, onChange }: { value: Capta
     <TextField label={t('location')} value={value.location} maxLength={80} placeholder={t('locationPlaceholder')}
       onChange={e => onChange({ ...value, location: e.target.value })} error={errors.location} className="bg-surface" />
     {internationalEnabled() ? <TimezoneFields timezone={value.timezone} auto={value.timezone_auto ?? true}
-      onChange={(timezone, timezone_auto) => onChange({ ...value, timezone, timezone_auto })} /> : <div className="space-y-2">
+      onChange={(timezone, timezone_auto) => onChange({ ...value, timezone, timezone_auto })} /> : <div className="space-y-inline">
       <label htmlFor="captain-timezone" className="text-sm font-semibold">{t('timezone')}</label>
       <select id="captain-timezone" value={value.timezone} onChange={e => onChange({ ...value, timezone: e.target.value })}
         className={captainWorkspaceEnabled() ? `${editableFieldClass} ${fieldClass}` : fieldClass} aria-describedby="timezone-hint timezone-error" aria-invalid={!!errors.timezone}>

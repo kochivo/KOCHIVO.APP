@@ -12,10 +12,10 @@ export function Disclosure({ label, children, className, open, onToggle, ...prop
   const [expanded, setExpanded] = useState(open ?? false);
   return <details {...props} open={open} className={cn('group rounded-control border border-line bg-surface', className)}
     onToggle={event => { setExpanded(event.currentTarget.open); onToggle?.(event); }}>
-    <summary aria-expanded={open ?? expanded} className={cn(rowLinkClass, 'flex list-none items-center gap-3 px-4 py-3 [&::-webkit-details-marker]:hidden')}>
+    <summary aria-expanded={open ?? expanded} className={cn(rowLinkClass, 'flex list-none items-center gap-stack px-page-x py-stack [&::-webkit-details-marker]:hidden')}>
       <span className="flex-1">{label}</span>
       <DisclosureChevron expanded={open ?? expanded} />
     </summary>
-    <div className="px-4 pb-4">{children}</div>
+    <div className="px-page-x pb-card">{children}</div>
   </details>;
 }

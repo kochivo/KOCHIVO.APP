@@ -45,7 +45,7 @@ export function ResponsiveDialog({ onDismiss, fallbackId, openerId, modal = fals
     onKeyDown={(event) => {
       if (event.key === 'Escape') { event.preventDefault(); onDismiss(); }
     }}>
-    {(title || onClose) && <header className="captain-dialog-header flex items-center justify-between gap-4">
+    {(title || onClose) && <header className="captain-dialog-header flex items-center justify-between gap-card-gap">
       {title && <h2 className="text-2xl font-bold">{title}</h2>}
       <button type="button" onClick={onClose ?? onDismiss} aria-label={t('closeDialog')}
         className="press ms-auto flex min-h-12 min-w-12 cursor-pointer items-center justify-center rounded-control border border-line bg-surface-raised focus-visible:ring-2 focus-visible:ring-lime">

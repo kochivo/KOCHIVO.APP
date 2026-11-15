@@ -17,7 +17,7 @@ export async function PlanBadge({ data }: { data: Promise<[PlanSummary | null, L
   const tier = plan.tier === 'entry' || plan.tier === 'champion' || plan.tier === 'legend' || plan.tier === 'empire'
     ? t(plan.tier) : plan.tier;
   const full = used >= plan.player_limit;
-  return <Link href={captainWorkspaceEnabled() ? '/captain/settings' : '/captain/billing'} className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center gap-2 px-4 text-sm font-bold" })}>
+  return <Link href={captainWorkspaceEnabled() ? '/captain/settings' : '/captain/billing'} className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center gap-inline px-page-x text-sm font-bold" })}>
     <span>{t('myPlan')}: {tier}</span>
     <span aria-hidden className="text-muted">·</span>
     <span className={full ? 'text-warn' : 'text-muted'}>

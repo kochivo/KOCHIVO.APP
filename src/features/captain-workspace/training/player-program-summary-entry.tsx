@@ -6,7 +6,7 @@ import type { PlayerProgramSummary } from './player-program-summary';
 import { messages } from './player-program-messages';
 
 function Loading() {
-  return <p role="status" className="glass rounded-card p-4">{useT(messages)('loading')}</p>;
+  return <p role="status" className="glass rounded-card p-card">{useT(messages)('loading')}</p>;
 }
 
 // Split inside a client boundary; server-side dynamic imports do not split client code.

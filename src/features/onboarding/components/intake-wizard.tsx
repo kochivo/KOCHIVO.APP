@@ -111,9 +111,9 @@ export function IntakeWizard({ statusError }: { statusError?: string }) {
   if (!ready) return <LoadingState aria-label={t('loadingYourAnswers')} />;
   if (stage !== 'steps') return <IntakeMoment stage={stage} captainName={captain.data?.fullName} onStart={() => setStage('steps')} />;
   return (
-    <main className="mx-auto flex min-h-dvh w-full max-w-lg flex-col gap-6 px-5 pt-6 text-start">
-      <header key={`heading-${step}`} className="enter space-y-3 motion-reduce:animate-none">
-        <div className="flex flex-wrap justify-between gap-2 text-xs text-muted">
+    <main className="mx-auto flex min-h-dvh w-full max-w-lg flex-col gap-section px-page-x pt-section text-start">
+      <header key={`heading-${step}`} className="enter space-y-stack motion-reduce:animate-none">
+        <div className="flex flex-wrap justify-between gap-inline text-xs text-muted">
           <span>{t('stepProgress', { value0: formatNumber(index + 1, locale) })}</span>
           <span>{t('onlyYourCoachCanSeeYourAnswers')}</span>
         </div>
@@ -124,10 +124,10 @@ export function IntakeWizard({ statusError }: { statusError?: string }) {
         <legend className="sr-only">{titles[index]}</legend>
         <Screen draft={draft} update={change} errors={errors} touch={touch} />
       </fieldset>
-      <footer className="glass-strong sticky bottom-0 space-y-3 rounded-t-card p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+      <footer className="glass-strong sticky bottom-0 space-y-stack rounded-t-card p-card pb-[max(1rem,env(safe-area-inset-bottom))]">
         {offline && <p role="status" className="text-sm text-muted">{offlineMessage}</p>}
         {error && <p role="alert" className="text-sm text-danger">{error}</p>}
-        <div className="flex gap-3">
+        <div className="flex gap-stack">
           <Button variant="ghost" size="lg" className="min-h-12" disabled={busy}
             onClick={() => index === 0 ? setStage('welcome') : setIndex(index - 1)}>{t('back')}</Button>
           <Button size="lg" className="min-h-12 flex-1" disabled={busy || !canAdvance(step, draft, now)}

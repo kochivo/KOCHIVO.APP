@@ -25,15 +25,15 @@ export function WorkspaceAssessment({ item }: { item: AssessmentItem }) {
   const imageFailed = () => {
     if (!refreshed) { setRefreshed(true); void media.retry(); } else setFailed(true);
   };
-  return <section className="space-y-3.5">
-    <h3 className="font-display text-[19px] font-semibold">{item.title}</h3>
+  return <section className="space-y-card-gap">
+    <h3 className="font-display text-title font-semibold">{item.title}</h3>
     {!item.answers.length ? <p className="text-faint">{t('noAnswers')}</p> : <dl>
       {item.answers.map(answer => <WorkspaceFact key={answer.id} flagged={answer.alert} label={locale === 'en' ? answer.label_en || answer.label_ar : answer.label_ar}>
         <span className="whitespace-pre-wrap">{assessmentAnswer(answer.value, answer.options ?? [], locale, t('yes'), t('no')) || t('dash')}</span>
       </WorkspaceFact>)}
     </dl>}
-    {item.answers.some(answer => answer.photoCount > 0) && (media.error || failed ? <div role="alert">{t('photosFailed')}<Button variant="secondary" className="min-h-12 px-3" onClick={retry}>{t('retry')}</Button></div> :
-      !media.data ? <p role="status">{t('loading')}</p> : <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">{media.data.map((photo, index) =>
+    {item.answers.some(answer => answer.photoCount > 0) && (media.error || failed ? <div role="alert">{t('photosFailed')}<Button variant="secondary" className="min-h-12 px-stack" onClick={retry}>{t('retry')}</Button></div> :
+      !media.data ? <p role="status">{t('loading')}</p> : <div className="grid grid-cols-2 gap-stack sm:grid-cols-3">{media.data.map((photo, index) =>
         <a key={photo.url} href={photo.url} target="_blank" rel="noreferrer" className="min-h-12"><Image src={photo.url} alt={t('photo', { count: formatNumber(index + 1, locale) })}
           width={240} height={320} unoptimized onError={imageFailed} className="aspect-[3/4] w-full rounded-2xl border border-line-soft object-cover" /></a>)}</div>)}
   </section>;

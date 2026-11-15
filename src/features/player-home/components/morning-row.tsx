@@ -7,10 +7,10 @@ import { messages } from '../v6-messages';
 export function MorningRow({ children }: { children: ReactNode }) {
   const t = useT(messages);
   return <details id="home-morning" className="rounded-[24px] border border-line-soft bg-surface">
-    <summary className="flex min-h-16 cursor-pointer list-none items-center gap-3 px-5 py-3 text-sm">
+    <summary className="flex min-h-16 cursor-pointer list-none items-center gap-stack px-page-x py-stack text-sm">
       <Activity aria-hidden className="size-5 text-lime" /><span className="flex-1">{t('morning')}</span>
       <ChevronLeft aria-hidden className="size-4 text-faint ltr:rotate-180" />
     </summary>
-    <div className="space-y-3 px-4 pb-4">{children}</div>
+    <div className="space-y-stack px-page-x pb-card">{children}</div>
   </details>;
 }

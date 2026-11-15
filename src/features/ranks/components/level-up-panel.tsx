@@ -16,8 +16,8 @@ export function LevelUpPanel({ tier, stars = 0, onClose }: { tier: Tier; stars?:
   const starred = tier === 'legend' && stars > 0;
   const title = useId();
   return <ResponsiveDialog modal fallbackId="rank-title" onDismiss={onClose} aria-labelledby={title}
-    className="sheet m-auto w-full max-w-sm rounded-card border border-line p-6 text-ink backdrop:bg-bg-deep/80 motion-reduce:animate-none motion-reduce:transition-none">
-    <div className="flex flex-col items-center gap-5 text-center">
+    className="sheet m-auto w-full max-w-sm rounded-card border border-line p-section text-ink backdrop:bg-bg-deep/80 motion-reduce:animate-none motion-reduce:transition-none">
+    <div className="flex flex-col items-center gap-card-gap text-center">
       <RankBadge tier={tier} stars={stars} size="xl" label={starred ? t('legendWithStars', { n }) : t(tier)} />
       <h2 id={title} className="text-2xl font-extrabold">{starred ? t('starCelebration', { n }) : t('celebration', { tier: t(tier) })}</h2>
       <Button className="min-h-12 w-full" onClick={onClose}>{t('continue')}</Button>

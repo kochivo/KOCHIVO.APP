@@ -12,8 +12,8 @@ export async function PlayerFormPage({locale,requestId}:{locale:Locale;requestId
   if (!z.uuid().safeParse(requestId).success) notFound();
   const data = await loadRequest(client,requestId).catch(() => null);
   const m = messages[locale];
-  if (!data) return <main className="p-6"><p role="alert">{m.unavailable}</p>
+  if (!data) return <main className="p-section"><p role="alert">{m.unavailable}</p>
     <Link href={`/${locale}/player/forms/${requestId}`} className="flex min-h-12 items-center text-lime">{m.retry}</Link></main>;
   if (data.request.player_id !== player) notFound();
-  return <main className="mx-auto max-w-lg p-5 pb-32"><AnswerEntry data={data} locale={locale} /></main>;
+  return <main className="mx-auto max-w-lg p-card pb-32"><AnswerEntry data={data} locale={locale} /></main>;
 }

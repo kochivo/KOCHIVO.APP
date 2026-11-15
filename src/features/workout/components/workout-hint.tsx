@@ -12,7 +12,7 @@ export function WorkoutHint({ last, history, weight, reps }: {
   const t = useT(messages);
   const record = detectPr(history, { weight_kg: weight, reps });
   if (!last && !record) return null;
-  return <div className="flex flex-wrap items-center justify-center gap-2 text-xs text-muted">
+  return <div className="flex flex-wrap items-center justify-center gap-inline text-xs text-muted">
     {last && <>{t('v3Previous')} <bdi dir="ltr" className="font-display font-bold text-ink">
       {formatNumber(last.weight_kg ?? 0, locale)} × {formatNumber(last.reps ?? 0, locale)}</bdi></>}
     {record && <span className="font-bold text-gold-2">{t('v3PrHint')}</span>}

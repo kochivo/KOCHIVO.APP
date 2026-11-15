@@ -30,12 +30,12 @@ export function IntakeQuestion({ field, draft, update, year }: {
         { value: 'new', label: t('justStarting') }, { value: 'under_1y', label: t('lessThanAYear') },
         { value: '1_3y', label: t('message13Years') }, { value: 'over_3y', label: t('over3Years') },
       ] : [];
-  return <div className="space-y-4">
+  return <div className="space-y-card-gap">
     <h1 ref={heading} tabIndex={-1} className="font-display text-2xl font-semibold outline-none">{label}</h1>
-    {!!choices.length && <div role="group" aria-label={label} className="space-y-2">{choices.map(choice =>
+    {!!choices.length && <div role="group" aria-label={label} className="space-y-inline">{choices.map(choice =>
       <button type="button" key={choice.value} aria-pressed={draft[field] === choice.value}
         onClick={() => update({ [field]: choice.value })}
-        className={`flex min-h-16 w-full items-center rounded-card border px-5 py-[18px] text-start ${draft[field] === choice.value ? 'border-lime bg-lime-soft' : 'glass border-line-soft text-muted'}`}>{choice.label}</button>)}</div>}
+        className={`flex min-h-16 w-full items-center rounded-card border px-page-x py-page-y text-start ${draft[field] === choice.value ? 'border-lime bg-lime-soft' : 'glass border-line-soft text-muted'}`}>{choice.label}</button>)}</div>}
     {field === 'full_name' && <TextField label={label} autoComplete="name" maxLength={80} value={draft.full_name ?? ''}
       onChange={event => update({ full_name: event.target.value })} />}
     {field === 'birth_year' && <Stepper label={label} step={1} min={10} max={year - 1930} value={year - (draft.birth_year ?? year - 25)}

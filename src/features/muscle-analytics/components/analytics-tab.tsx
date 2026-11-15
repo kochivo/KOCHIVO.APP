@@ -19,11 +19,11 @@ export function AnalyticsTab({ playerId, self = false }: { playerId: string; sel
   const { data, status, retry } = useResource(`analytics:${playerId}:${today}:${self}`, load);
   const weeks = data?.weeks, readiness = data?.readiness ?? null;
   const failed = status === 'error';
-  return <section className="glass-strong space-y-5 rounded-card p-5 sm:p-6" aria-busy={!weeks && !failed}>
-    <header className="space-y-1"><h2 className="font-display text-xl font-bold">{t('title')}</h2>
+  return <section className="glass-strong space-y-card-gap rounded-card p-card sm:p-section" aria-busy={!weeks && !failed}>
+    <header className="space-y-inline"><h2 className="font-display text-xl font-bold">{t('title')}</h2>
       <p className="text-sm text-muted">{t('subtitle')}</p></header>
-    {failed ? <div className="space-y-3"><p role="alert" className="text-danger">{t('error')}</p>
-      <Button type="button" variant={'primary'} block={false} className={"min-h-12 px-5 font-bold"}
+    {failed ? <div className="space-y-stack"><p role="alert" className="text-danger">{t('error')}</p>
+      <Button type="button" variant={'primary'} block={false} className={"min-h-12 px-page-x font-bold"}
         onClick={() => void retry()}>{t('retry')}</Button>
     </div> : weeks ? <AnalyticsPanel key={playerId} weeks={weeks} self={self} readiness={readiness} /> : <AnalyticsSkeleton />}
   </section>;

@@ -26,16 +26,16 @@ export function PaymentMethodRow({ method, initial, position, onSaved }: {
     } catch { setEnabled(stored.enabled); setDetail(stored.detail); setError(true); }
     finally { setBusy(false); }
   }
-  return <div className="space-y-2 border-t border-line-soft py-3 first:border-t-0" aria-busy={busy}>
-    <div className="flex items-center justify-between gap-3">
+  return <div className="space-y-inline border-t border-line-soft py-stack first:border-t-0" aria-busy={busy}>
+    <div className="flex items-center justify-between gap-stack">
       <label htmlFor={`method-${method}`} className="flex min-h-12 flex-1 items-center text-sm">{t(method)}</label>
       {enabled && method !== 'cash' && <input aria-label={t('account')} dir="ltr" maxLength={80} required disabled={busy} value={detail}
-        className={captainWorkspaceEnabled() ? `${editableFieldClass} glass min-h-12 min-w-0 flex-1 rounded-control border border-line px-2 text-start font-display text-xs tabular-nums` : "glass min-h-12 min-w-0 flex-1 rounded-control border border-line px-2 text-start font-display text-xs tabular-nums"}
+        className={captainWorkspaceEnabled() ? `${editableFieldClass} glass min-h-12 min-w-0 flex-1 rounded-control border border-line px-inline text-start font-display text-xs tabular-nums` : "glass min-h-12 min-w-0 flex-1 rounded-control border border-line px-inline text-start font-display text-xs tabular-nums"}
         onChange={event => setDetail(event.target.value)} onBlur={() => { if (detail !== stored.detail || enabled !== stored.enabled) void persist(true); }} />}
       <button id={`method-${method}`} type="button" role="switch" aria-checked={enabled} aria-label={t(method)} disabled={busy}
         className={captainWorkspaceEnabled() ? `${clickableClass} flex min-h-12 min-w-12 items-center justify-center` : "flex min-h-12 min-w-12 items-center justify-center"} onClick={() => {
           const next = !enabled; setEnabled(next); void persist(next);
-        }}><span className={`flex h-6 w-11 items-center rounded-full border border-line p-1 ${enabled ? 'bg-lime-soft' : 'bg-surface-raised'}`}>
+        }}><span className={`flex h-6 w-11 items-center rounded-full border border-line p-inline ${enabled ? 'bg-lime-soft' : 'bg-surface-raised'}`}>
           <span className={`size-4 rounded-full ${enabled ? 'ms-auto bg-lime' : 'bg-muted'}`} />
         </span></button>
     </div>

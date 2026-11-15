@@ -47,10 +47,10 @@ export function PlayerSupplements() {
   }, [timezone]);
   const retry = () => { setRetryKey(value => value + 1); refresh(); };
   if (!data || data.playerId !== playerId || !playerId || (loading && !data.supplements.length)) return error
-    ? <div role="alert"><p>{t('error')}</p>{captainWorkspaceEnabled() ? <Button variant="secondary" className="min-h-12 px-4" onClick={retry}>{t('retry')}</Button> : <button className="min-h-12 px-4" onClick={retry}>{t('retry')}</button>}</div>
+    ? <div role="alert"><p>{t('error')}</p>{captainWorkspaceEnabled() ? <Button variant="secondary" className="min-h-12 px-page-x" onClick={retry}>{t('retry')}</Button> : <button className="min-h-12 px-page-x" onClick={retry}>{t('retry')}</button>}</div>
     : <p role="status">{t('loading')}</p>;
-  if (!data.supplements.length && !error) return v6 ? <section className="glass rounded-card border border-line-soft p-5">
-    <h2 className="font-display text-[19px] font-semibold">{t('today')}</h2><p className="mt-3 text-sm text-faint">{t('empty')}</p></section> : null;
+  if (!data.supplements.length && !error) return v6 ? <section className="glass rounded-card border border-line-soft p-card">
+    <h2 className="font-display text-title font-semibold">{t('today')}</h2><p className="mt-stack text-sm text-faint">{t('empty')}</p></section> : null;
   const toggle = async (id: string, now: number) => {
     setPending(current => [...current, id]);
     setDay(localDate(new Date(now), timezone));
@@ -59,28 +59,28 @@ export function PlayerSupplements() {
     finally { setPending(current => current.filter(value => value !== id)); }
   };
   if (v6) return <section className="glass overflow-hidden rounded-card border border-line-soft">
-    <h2 className="px-5 pt-[18px] pb-1 font-display text-[19px] font-semibold">{t('today')}</h2>
-    {error && <div role="alert" className="px-5"><p>{t('error')}</p>{captainWorkspaceEnabled() ? <Button variant="secondary" className="min-h-12 text-ink" onClick={retry}>{t('retry')}</Button> : <button className="min-h-12 text-lime" onClick={retry}>{t('retry')}</button>}</div>}
+    <h2 className="px-page-x pt-card pb-inline font-display text-title font-semibold">{t('today')}</h2>
+    {error && <div role="alert" className="px-page-x"><p>{t('error')}</p>{captainWorkspaceEnabled() ? <Button variant="secondary" className="min-h-12 text-ink" onClick={retry}>{t('retry')}</Button> : <button className="min-h-12 text-lime" onClick={retry}>{t('retry')}</button>}</div>}
     {groupByTiming(data.supplements).flatMap(group => group.items.map(item => {
       const taken = data.logs.some(log => log.supplement_id === item.id && log.log_date === day && log.taken_at && !log.deleted_at);
       return <button key={item.id} aria-label={t('tick', { name: item.name })} aria-pressed={taken} disabled={pending.includes(item.id)}
-        onClick={() => void toggle(item.id, Date.now())} className="flex min-h-16 w-full items-center gap-3 border-t border-line-soft px-5 py-3 text-start">
+        onClick={() => void toggle(item.id, Date.now())} className="flex min-h-16 w-full items-center gap-stack border-t border-line-soft px-page-x py-stack text-start">
         <span className={`grid size-8 shrink-0 place-items-center rounded-lg border ${taken ? 'border-lime bg-lime text-on-lime' : 'border-line'}`}>
           {taken && <Check aria-hidden className="size-5" />}</span>
-        <span className="min-w-0"><span className="block">{item.name}</span><span className="mt-1 block text-[11.5px] text-faint">{item.dose} · {t(group.timing)}</span>
+        <span className="min-w-0"><span className="block">{item.name}</span><span className="mt-inline block text-micro text-faint">{item.dose} · {t(group.timing)}</span>
           {item.notes && <span className="block text-xs text-muted">{item.notes}</span>}</span>
       </button>;
     }))}
   </section>;
-  return <section className="glass space-y-4 rounded-card p-5">
+  return <section className="glass space-y-card-gap rounded-card p-card">
     <h2 className="text-xl font-bold">{t('today')}</h2>
-    {error && <div role="alert"><p>{t('error')}</p>{captainWorkspaceEnabled() ? <Button variant="secondary" className="min-h-12 px-4" onClick={retry}>{t('retry')}</Button> : <button className="min-h-12 px-4" onClick={retry}>{t('retry')}</button>}</div>}
-    {groupByTiming(data.supplements).map(group => <div key={group.timing} className="space-y-2">
+    {error && <div role="alert"><p>{t('error')}</p>{captainWorkspaceEnabled() ? <Button variant="secondary" className="min-h-12 px-page-x" onClick={retry}>{t('retry')}</Button> : <button className="min-h-12 px-page-x" onClick={retry}>{t('retry')}</button>}</div>}
+    {groupByTiming(data.supplements).map(group => <div key={group.timing} className="space-y-inline">
       <h3 className="text-sm text-muted">{t(group.timing)}</h3>
       {group.items.map(item => {
         const taken = data.logs.some(log => log.supplement_id === item.id && log.log_date === day && log.taken_at && !log.deleted_at);
         return <button key={item.id} aria-label={t('tick', { name: item.name })} aria-pressed={taken} disabled={pending.includes(item.id)}
-          onClick={() => void toggle(item.id, Date.now())} className="glass-strong flex min-h-14 w-full items-center gap-4 rounded-control p-4 text-start">
+          onClick={() => void toggle(item.id, Date.now())} className="glass-strong flex min-h-14 w-full items-center gap-card-gap rounded-control p-card text-start">
           <span className={`grid size-14 shrink-0 place-items-center rounded-control ${taken ? 'bg-lime text-on-lime' : 'glass'}`}><Check aria-hidden className={taken ? 'size-6' : 'size-6 opacity-20'} /></span>
           <span><span className="block font-bold">{item.name}</span><span className="block text-sm text-muted">{item.dose}</span>{item.notes && <span className="block text-sm">{item.notes}</span>}</span>
         </button>;

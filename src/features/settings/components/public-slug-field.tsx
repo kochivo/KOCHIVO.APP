@@ -8,7 +8,7 @@ import { messages } from '../messages';
 export function PublicSlugField({ value, error, onChange }: { value: string; error?: string; onChange: (value: string) => void }) {
   const t = useT(messages);
   const [status, setStatus] = useState('');
-  return <div className="space-y-2">
+  return <div className="space-y-inline">
     <TextField label={t('publicSlug')} value={value} maxLength={30} dir="ltr" error={error}
       onChange={event => { onChange(event.target.value); setStatus(''); }} />
     <p dir="ltr" className="break-all text-sm text-muted">{t('publicPreview', { slug: value })}</p>

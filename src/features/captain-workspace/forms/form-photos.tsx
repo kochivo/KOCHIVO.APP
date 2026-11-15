@@ -32,12 +32,12 @@ export function FormPhotos({ id, playerId, count, locale, sign }: {
     if (action === 'error') setFailedImage(true);
     else if (action === 'refresh') refresh();
   };
-  return <section aria-label={t('photos')} className="space-y-3 border-t border-line py-4">
+  return <section aria-label={t('photos')} className="space-y-stack border-t border-line py-page-y">
     <h3 className="text-sm text-muted">{t('photos')}</h3>
     {!count ? <p className="text-sm text-muted">{t('noPhotos')}</p> : media.status === 'error' || failedImage ?
-      <div role="alert"><p>{t('photosFailed')}</p><Button variant="secondary" type="button" className="min-h-12 px-4" onClick={retry}>{t('retry')}</Button></div> :
+      <div role="alert"><p>{t('photosFailed')}</p><Button variant="secondary" type="button" className="min-h-12 px-page-x" onClick={retry}>{t('retry')}</Button></div> :
       !media.data ? <p role="status" className="text-sm text-muted">{t('photosLoading')}</p> :
-        <div className="grid grid-cols-3 gap-3">{media.data.map((url, index, batch) =>
+        <div className="grid grid-cols-3 gap-stack">{media.data.map((url, index, batch) =>
           <a key={`${version}:${url}`} href={url} target="_blank" rel="noreferrer" className="min-h-12 overflow-hidden rounded-control">
             <Image src={url} alt={t('photo', { count: formatNumber(index + 1, locale) })} width={160} height={200}
               unoptimized className="h-auto w-full object-contain" onError={() => failed(batch)} />

@@ -11,8 +11,8 @@ export function PlanContext({ profile, locale, kind, timezone }: { profile: Prof
   const plan = kind === 'training' ? profile.program : profile.nutrition;
   if (!plan) return null;
   const n = (value: number | null) => value === null ? t('unavailable') : formatNumber(value, locale);
-  return <section className="glass rounded-card border border-line-soft px-5 py-[18px]">
-    <h2 className="font-display text-[19px] font-semibold">{t('currentPlan')}</h2>
+  return <section className="glass rounded-card border border-line-soft px-page-x py-page-y">
+    <h2 className="font-display text-title font-semibold">{t('currentPlan')}</h2>
     <dl>
       {kind === 'training' && profile.program && <FactRow label={t('training')}>{pt('programSummary', { days: n(profile.program.days), exercises: n(profile.program.exercises) })}</FactRow>}
       {kind === 'nutrition' && profile.nutrition && <>

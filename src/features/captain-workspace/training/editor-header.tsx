@@ -27,15 +27,15 @@ export function EditorHeader({ playerId, playerName, remainingDays, template, ti
   const confirmed = asked && status === 'saved' && !busy;
   useEffect(() => { if (!confirmed) return; const timer = setTimeout(() => setAsked(false), 2500); return () => clearTimeout(timer); }, [confirmed]);
   return <>
-    <header className="flex flex-wrap items-center gap-3">
+    <header className="flex flex-wrap items-center gap-stack">
       <span aria-hidden className="glass-strong grid size-[52px] shrink-0 place-items-center rounded-full text-lg">{template ? <KoTemplate className="size-6" /> : (playerName || title || '').charAt(0)}</span>
-      <div className="relative me-auto min-w-0 pt-5"><Link href={template ? '/captain/templates' : '/captain/players'} className={`${clickableClass} absolute -top-4 start-0 flex min-h-12 items-center gap-1 whitespace-nowrap text-xs text-muted`}>{template ? title : t('breadcrumb', { name: playerName ?? '' })}<RowChevron className="size-3.5" /></Link>
-        <h1 className="break-words font-display text-[30px] font-semibold leading-tight">{template ? title : t('title', { name: playerName?.trim().split(/\s+/)[0] ?? '' })}</h1></div>
-      {!template && remainingDays !== undefined && <span className="rounded-full bg-lime-soft px-3 py-1 text-xs text-lime">{t('active', { n: Math.max(0, remainingDays) })}</span>}
-      <span role="status" aria-live="polite" className="inline-flex min-h-12 items-center gap-2 text-xs text-faint">{status === 'saved' ? <CloudCheck aria-hidden className="size-4 text-lime" /> : <CloudUpload aria-hidden className="size-4" />}
-        {status === 'error' ? <Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-3 text-danger"} onClick={onRetry}>{tt('retry')}</Button> : t(status === 'saved' ? 'saved' : 'saving')}</span>
+      <div className="relative me-auto min-w-0 pt-card"><Link href={template ? '/captain/templates' : '/captain/players'} className={`${clickableClass} absolute -top-4 start-0 flex min-h-12 items-center gap-inline whitespace-nowrap text-xs text-muted`}>{template ? title : t('breadcrumb', { name: playerName ?? '' })}<RowChevron className="size-3.5" /></Link>
+        <h1 className="break-words font-display text-stat font-semibold leading-tight">{template ? title : t('title', { name: playerName?.trim().split(/\s+/)[0] ?? '' })}</h1></div>
+      {!template && remainingDays !== undefined && <span className="rounded-full bg-lime-soft px-stack py-inline text-xs text-lime">{t('active', { n: Math.max(0, remainingDays) })}</span>}
+      <span role="status" aria-live="polite" className="inline-flex min-h-12 items-center gap-inline text-xs text-faint">{status === 'saved' ? <CloudCheck aria-hidden className="size-4 text-lime" /> : <CloudUpload aria-hidden className="size-4" />}
+        {status === 'error' ? <Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-stack text-danger"} onClick={onRetry}>{tt('retry')}</Button> : t(status === 'saved' ? 'saved' : 'saving')}</span>
       {children}
-      {!template && playerId && <Link prefetch={false} className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-4 text-sm" })} href={`${base}/preview`}>{t('preview')}</Link>}
+      {!template && playerId && <Link prefetch={false} className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-page-x text-sm" })} href={`${base}/preview`}>{t('preview')}</Link>}
       {template && <Button variant="secondary" disabled={disabled || busy} className="min-h-12 w-auto! rounded-full!" aria-live="polite"
         onClick={() => { setAsked(true); onRetry(); }}>{confirmed && <Check aria-hidden className="size-4 text-lime" />}{t(confirmed ? 'templateSaved' : 'saveTemplate')}</Button>}
       <Button variant={starting ? 'secondary' : 'primary'} id={template ? 'assign-program' : undefined} disabled={disabled || busy} className="min-h-12 w-auto! rounded-full!" onClick={template ? onAssign : onSend}>{!template && <SendIcon aria-hidden className="size-4" />}{template ? t('assign') : tt('send')}</Button>

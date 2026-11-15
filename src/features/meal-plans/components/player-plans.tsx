@@ -38,17 +38,17 @@ export function PlayerPlans({ playerId }: { playerId: string }) {
     }
     catch { setError(t('couldntCreateThePlanTryAgain')); setBusy(false); }
   }
-  return <div className="mx-auto grid max-w-5xl gap-5">
+  return <div className="mx-auto grid max-w-5xl gap-card-gap">
     <h1 className="text-3xl font-bold">{t('mealPlans')}</h1>
-    <div className="glass grid gap-3 rounded-card p-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
-      <label className="grid min-w-0 gap-2 text-sm font-semibold">{t('planName')}<input value={title} maxLength={80} onChange={event => setTitle(event.target.value)} className="min-h-12 rounded-control bg-surface px-3 text-base font-normal" /></label>
+    <div className="glass grid gap-stack rounded-card p-card sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+      <label className="grid min-w-0 gap-inline text-sm font-semibold">{t('planName')}<input value={title} maxLength={80} onChange={event => setTitle(event.target.value)} className="min-h-12 rounded-control bg-surface px-stack text-base font-normal" /></label>
       <Button variant="secondary" disabled={busy || !title.trim()} onClick={() => void create()}>{t('newPlan')}</Button>
     </div>
     {busy && <p role="status">{t('creatingPlan')}</p>}
     {error && <div role="alert">{error}<Button variant="secondary" onClick={() => setRetry(n => n + 1)}>{t('tryAgain')}</Button></div>}
     {!plans && !error && <LoadingState variant="cards" />}
     {plans?.length === 0 && <EmptyState icon={Utensils} title={t('noPlansYetCreateANewOne')} body={t('emptyBody')} action={{ label: t('orStartFromTemplate'), href: '/captain/templates' }} />}
-    <ul className="grid gap-3 lg:grid-cols-2">{plans?.map(plan => <li key={plan.id}><Link href={`/captain/nutrition/${plan.id}`} className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-12 items-center justify-between gap-3 p-4" })}>
+    <ul className="grid gap-stack lg:grid-cols-2">{plans?.map(plan => <li key={plan.id}><Link href={`/captain/nutrition/${plan.id}`} className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-12 items-center justify-between gap-stack p-card" })}>
       <span>{starterText(plan.title, locale)}</span><span className="text-muted">{statuses[plan.status]}</span>
     </Link></li>)}</ul>
   </div>;

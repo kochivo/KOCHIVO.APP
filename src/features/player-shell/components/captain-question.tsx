@@ -20,11 +20,11 @@ export function CaptainQuestion({ contactUrl }: { contactUrl?: string | null }) 
   const phone = valid ? contactUrl.split('/').at(-1) : undefined;
   const questionUrl = phone ? whatsappUrl({ phone, text: text.trim() }) : null;
   const control = v3 ? 'flex size-[52px] shrink-0 items-center justify-center rounded-full bg-surface-raised' : 'flex min-h-12 min-w-12 items-center justify-center rounded-control border border-line-soft';
-  return <section className={v3 ? 'fixed start-4 end-4 bottom-[96px] z-40 mx-auto max-w-[480px] space-y-1' : 'glass space-y-3 rounded-card border border-line-soft p-5'}>
+  return <section className={v3 ? 'fixed start-4 end-4 bottom-[96px] z-40 mx-auto max-w-[480px] space-y-inline' : 'glass space-y-stack rounded-card border border-line-soft p-card'}>
     {!v3 && <h2 className="text-xs text-faint">{t('ask')}</h2>}
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-inline">
       <input value={text} maxLength={1000} onChange={event => setText(event.target.value)} placeholder={v3 ? captainT('placeholder') : t('placeholder')}
-        aria-label={v3 ? captainT('placeholder') : t('ask')} className={v3 ? 'min-h-[52px] min-w-0 flex-1 rounded-full border border-line-soft bg-surface px-4 text-sm' : 'glass min-h-12 min-w-0 flex-1 rounded-control border border-line-soft px-3 text-sm'} />
+        aria-label={v3 ? captainT('placeholder') : t('ask')} className={v3 ? 'min-h-[52px] min-w-0 flex-1 rounded-full border border-line-soft bg-surface px-page-x text-sm' : 'glass min-h-12 min-w-0 flex-1 rounded-control border border-line-soft px-stack text-sm'} />
       {questionUrl && text.trim() && <a href={questionUrl} target="_blank" rel="noopener noreferrer" aria-label={t('send')}
         className={control}><SendIcon aria-hidden className="size-5" /></a>}
       {valid ? <a href={contactUrl} target="_blank" rel="noopener noreferrer" aria-label={t('voice')}

@@ -27,7 +27,7 @@ export function TrainingFacts({ profile, file, locale, draft, day, fatPct, candi
   const t = createT(messages, locale, style), wt = createT(workspaceMessages, locale, style);
   if (!draft.player_id) return null;
   const intake = profile.intake;
-  if (!intake) return <section className="glass-strong rounded-card border border-line-soft p-5">
+  if (!intake) return <section className="glass-strong rounded-card border border-line-soft p-card">
     <h2 className="font-display text-lg font-semibold">{profile.name}</h2>
     <p className="text-sm text-muted">{t('missingIntake')}</p>
     <RowLink href={`/captain/players/${draft.player_id}`}>{t('fullFile')}</RowLink>
@@ -48,41 +48,41 @@ export function TrainingFacts({ profile, file, locale, draft, day, fatPct, candi
       : t('minutesFit', { estimated: n(minutes), available: n(intake.sessionMinutes) }) },
     { key: 'injuries', ok: risk === 0, text: risk ? t('injuryFit', { n: n(risk) }) : t('injuryClear') },
   ];
-  return <section className="glass-strong min-w-0 rounded-card border border-line-soft p-5">
-    <div className="flex flex-wrap items-center gap-3">
+  return <section className="glass-strong min-w-0 rounded-card border border-line-soft p-card">
+    <div className="flex flex-wrap items-center gap-stack">
       <div className="min-w-0 flex-1">
         <h2 className="font-display text-lg font-semibold">{profile.name}</h2>
         <p className="text-xs text-muted">{factValue('age', Number(today.slice(0, 4)) - intake.birthYear, locale)} · {optionLabel(intake.sex, locale)} · {optionLabel(intake.experience, locale)}</p>
-        <p className="mt-1 text-sm md:hidden"><bdi>{factValue('weight', weight, locale)} → {factValue('targetWeight', target, locale)}</bdi></p>
+        <p className="mt-inline text-sm md:hidden"><bdi>{factValue('weight', weight, locale)} → {factValue('targetWeight', target, locale)}</bdi></p>
       </div>
-      {injuries.map(injury => <span key={injury} className="rounded-full bg-warn/10 px-3 py-1 text-xs text-warn">{optionLabel(injury, locale)}</span>)}
+      {injuries.map(injury => <span key={injury} className="rounded-full bg-warn/10 px-stack py-inline text-xs text-warn">{optionLabel(injury, locale)}</span>)}
       <RowLink href={`/captain/players/${draft.player_id}`}>{t('fullFile')}</RowLink>
       <Button type="button" aria-expanded={expanded} aria-controls={`player-facts-${draft.id}`} aria-label={t(expanded ? 'collapseFacts' : 'expandFacts')}
         onClick={() => setExpanded(value => !value)} variant={'secondary'} block={false} className={"grid min-h-12 min-w-12 place-items-center md:hidden"}>
         <ChevronDown aria-hidden className={`size-4 ${expanded ? 'rotate-180' : ''}`} />
       </Button>
     </div>
-    <div id={`player-facts-${draft.id}`} className={`${expanded ? 'block' : 'hidden'} space-y-4 pt-4 md:block`}>
-      <dl className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+    <div id={`player-facts-${draft.id}`} className={`${expanded ? 'block' : 'hidden'} space-y-card-gap pt-card md:block`}>
+      <dl className="grid grid-cols-2 gap-card-gap sm:grid-cols-4">
         {([
           ['height', factValue('height', intake.heightCm, locale)], ['weight', factValue('weight', weight, locale)],
           ['target', factValue('targetWeight', target, locale)], ['bodyFat', fatPct === null ? wt('unavailable') : t('fatValue', { n: n(fatPct) })],
         ] as const).map(([key, value]) => <div key={key}><dt className="text-xs text-muted">{t(key)}</dt>
-          <dd className="mt-1 font-display text-xl font-extrabold"><bdi>{value}</bdi></dd></div>)}
+          <dd className="mt-inline font-display text-xl font-extrabold"><bdi>{value}</bdi></dd></div>)}
       </dl>
       <p className="text-sm"><span className="text-muted">{t('goal')}</span> · {goal}</p>
-      <div className="flex flex-wrap items-center gap-2 text-xs">
+      <div className="flex flex-wrap items-center gap-inline text-xs">
         <span className="text-muted">{t('trainingDays')}</span>
-        {weekdays.map((key, index) => <span key={key} data-training-day={index} className={`rounded-full border px-2.5 py-1.5 ${intake.trainingDays.includes((index + 6) % 7) ? 'border-lime/30 bg-lime-soft text-lime' : 'border-line-soft text-faint'}`}>{wt(key)}</span>)}
+        {weekdays.map((key, index) => <span key={key} data-training-day={index} className={`rounded-full border px-stack py-inline ${intake.trainingDays.includes((index + 6) % 7) ? 'border-lime/30 bg-lime-soft text-lime' : 'border-line-soft text-faint'}`}>{wt(key)}</span>)}
         <span className="text-muted">{t('duration')} · {t('minutes', { n: n(intake.sessionMinutes) })}</span>
       </div>
-      <dl className="space-y-2 text-sm">
-        {!injuries.length && <div><dt className="inline text-muted">{t('injuries')}</dt><dd className="ms-2 inline">{t('noInjuries')}</dd></div>}
-        <div><dt className="inline text-muted">{t('allergies')}</dt><dd className="ms-2 inline">{allergies.length ? allergies.map(value => optionLabel(value, locale)).join(' · ') : t('noAllergies')}</dd></div>
+      <dl className="space-y-inline text-sm">
+        {!injuries.length && <div><dt className="inline text-muted">{t('injuries')}</dt><dd className="ms-inline inline">{t('noInjuries')}</dd></div>}
+        <div><dt className="inline text-muted">{t('allergies')}</dt><dd className="ms-inline inline">{allergies.length ? allergies.map(value => optionLabel(value, locale)).join(' · ') : t('noAllergies')}</dd></div>
         <div><dt className="text-muted">{t('intakeNotes')}</dt><dd className="whitespace-pre-wrap break-words">{intake.notes || t('noNotes')}</dd></div>
       </dl>
-      <div aria-live="polite" className="flex flex-wrap gap-2 border-t border-line-soft pt-3">
-        {checks.map(check => <span key={check.key} data-fit-check={check.key} className={`inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-xs ${check.ok ? 'bg-lime-soft text-lime' : 'bg-warn/10 text-warn'}`}>
+      <div aria-live="polite" className="flex flex-wrap gap-inline border-t border-line-soft pt-stack">
+        {checks.map(check => <span key={check.key} data-fit-check={check.key} className={`inline-flex items-center gap-inline rounded-full px-stack py-inline text-xs ${check.ok ? 'bg-lime-soft text-lime' : 'bg-warn/10 text-warn'}`}>
           {check.ok ? <Check aria-hidden className="size-3.5" /> : <TriangleAlert aria-hidden className="size-3.5" />}{check.text}
         </span>)}
       </div>

@@ -52,7 +52,7 @@ export function PlayerVoiceNotes() {
   const thread = load.status === 'ready' && v3 ? captainThread(load.notes, load.replies ?? []) : undefined;
   const Wrapper = v3 ? 'section' : GlassCard;
   return (
-    <Wrapper role="region" aria-labelledby="voice-heading" className={v3 ? 'space-y-2.5' : 'space-y-4 p-5'}>
+    <Wrapper role="region" aria-labelledby="voice-heading" className={v3 ? 'space-y-stack' : 'space-y-card-gap p-card'}>
       <h2 id="voice-heading" className={v3 ? 'sr-only' : 'text-xl font-bold'}>{t('fromCoach')}</h2>
       {load.status === 'ready' && load.repliesFailed && <ErrorState message={threadT('repliesFailed')} retryLabel={t('retry')} onRetry={() => void fetchNotes()} />}
       {load.status === 'loading' ? <LoadingState variant="list" /> : load.status === 'error' ?

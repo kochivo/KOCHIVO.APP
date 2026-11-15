@@ -27,14 +27,14 @@ export function OfferScreen({ offer, preset, catalog, now, onClose }: { offer?: 
   }
   if (!catalog.data) return null;
   return <form onSubmit={event => { event.preventDefault(); void save(); }}>
-    <header className="mb-[18px] flex flex-wrap items-center gap-3.5"><div className="me-auto"><button type="button" disabled={catalog.busy} onClick={onClose} className="min-h-12 text-xs text-lime hover:underline focus-visible:underline">{t('breadcrumb')}</button><h1 className="font-display text-[30px] font-semibold leading-tight">{t(offer ? 'editOffer' : 'newOffer')}</h1></div>
+    <header className="mb-card-gap flex flex-wrap items-center gap-card-gap"><div className="me-auto"><button type="button" disabled={catalog.busy} onClick={onClose} className="min-h-12 text-xs text-lime hover:underline focus-visible:underline">{t('breadcrumb')}</button><h1 className="font-display text-stat font-semibold leading-tight">{t(offer ? 'editOffer' : 'newOffer')}</h1></div>
       <Button variant="secondary" className="min-h-12 rounded-full" disabled={catalog.busy} onClick={onClose}>{t('cancel')}</Button>
       <Button type="submit" className="min-h-12 rounded-full" disabled={catalog.busy}>{t(offer ? 'save' : 'launch')}</Button>
     </header>
-    {(error || catalog.error) && <p role="alert" className="mb-4 text-sm text-danger">{error || catalog.error}</p>}
-    <div className="grid items-start gap-[18px] min-[1001px]:grid-cols-[minmax(0,1fr)_340px]">
-      <fieldset disabled={catalog.busy} className="glass min-w-0 space-y-4 rounded-card border border-line-soft px-5 py-[18px]">
-        <div><p className="mb-2 text-xs text-faint">{t('preset')}</p><div className="flex flex-wrap gap-2">{presets.map(value => <button key={value} type="button" aria-pressed={activePreset === value} className="min-h-12 rounded-full border border-dashed border-line px-3.5 text-[12.5px] text-muted aria-pressed:border-warn aria-pressed:text-warn" onClick={() => {
+    {(error || catalog.error) && <p role="alert" className="mb-card-gap text-sm text-danger">{error || catalog.error}</p>}
+    <div className="grid items-start gap-card-gap min-[1001px]:grid-cols-[minmax(0,1fr)_340px]">
+      <fieldset disabled={catalog.busy} className="glass min-w-0 space-y-card-gap rounded-card border border-line-soft px-page-x py-page-y">
+        <div><p className="mb-inline text-xs text-faint">{t('preset')}</p><div className="flex flex-wrap gap-inline">{presets.map(value => <button key={value} type="button" aria-pressed={activePreset === value} className="min-h-12 rounded-full border border-dashed border-line px-card text-xs text-muted aria-pressed:border-warn aria-pressed:text-warn" onClick={() => {
           setPreset(value); setDraft(current => ({ ...current, name: value === 'scratch' ? '' : t(value), ...presetDates(value, now, zone) }));
         }}>{t(value)}</button>)}</div></div>
         <OfferFields draft={draft} onChange={setDraft} catalog={catalog.data} />

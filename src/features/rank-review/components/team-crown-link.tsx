@@ -12,7 +12,7 @@ export function TeamCrownLink({ locale: suppliedLocale }: { locale?: Locale }) {
   const activeLocale = useLocale();
   const locale = suppliedLocale ?? activeLocale;
   const t = createT(messages, locale);
-  return <Link href="/captain/leaderboard" className={buttonClass({ variant: 'secondary', block: false, className: "mb-4 flex min-h-12 items-center gap-3 p-3" })}>
+  return <Link href="/captain/leaderboard" className={buttonClass({ variant: 'secondary', block: false, className: "mb-card-gap flex min-h-12 items-center gap-stack p-stack" })}>
     <RankBadge tier="crown" size="sm" label={t('crown')} />
     <span className="flex-1 font-bold">{t('title')}</span>
   </Link>;

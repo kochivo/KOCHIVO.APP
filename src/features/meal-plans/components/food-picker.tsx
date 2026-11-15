@@ -76,27 +76,27 @@ export function FoodPicker({ onPick, alternative = false, inline = false }: { on
     }).catch(() => { if (current) { setError(t('searchFailedTryAgain')); setLoading(false); } });
     return () => { current = false; };
   }, [query, retry, filter, t, inline]);
-  return <section aria-label={alternative ? t('chooseAnAlternative') : t('chooseAFood')} className="glass grid gap-3 rounded-card p-4">
+  return <section aria-label={alternative ? t('chooseAnAlternative') : t('chooseAFood')} className="glass grid gap-stack rounded-card p-card">
     {!inline && <Button id={openerId} variant="secondary" onClick={() => setCreating(true)}>{t('newFood')}</Button>}
     <Segmented aria-label={t('searchFoods')} options={[{ value: 'all', label: t('allFoods') }, { value: 'mine', label: t('myFoods') }]}
       value={filter} onChange={value => { if (value !== filter) { setFilter(value); setLoading(true); } }} />
     <label>{t('searchFoods')}<input value={query} onChange={event => { setQuery(event.target.value); setLoading(true); }}
-      className="mt-2 min-h-12 w-full rounded-control border border-line bg-surface px-3" /></label>
+      className="mt-inline min-h-12 w-full rounded-control border border-line bg-surface px-stack" /></label>
     {!alternative && <label>{t('grams')}<input type="number" min={5} max={2000} step={5} value={grams}
-      onChange={event => setGrams(Number(event.target.value))} className="ms-3 min-h-12 w-28 rounded-control bg-surface px-3" /></label>}
+      onChange={event => setGrams(Number(event.target.value))} className="ms-stack min-h-12 w-28 rounded-control bg-surface px-stack" /></label>}
     {loading ? <LoadingState variant="list" /> : error ? <div role="alert">{error} <Button variant="secondary" onClick={() => { setLoading(true); setRetry(n => n + 1); }}>{t('tryAgain')}</Button></div> : <>
       {!result?.foods.length && <EmptyState tabIndex={-1} icon={Search} title={result?.catalogEmpty ? t('theFoodLibraryIsEmpty') : t('noFoodWithThisName')} body={result?.catalogEmpty ? t('catalogHint') : t('searchHint')}
         action={result?.catalogEmpty || filter === 'mine' ? { label: t('newFood'), onClick: () => setCreating(true) } :
           { label: t('clearSearch'), onClick: () => { setQuery(''); setFilter('all'); setLoading(true); setRetry(n => n + 1); } }} />}
-      <ul className="grid max-h-96 gap-2 overflow-y-auto">{result?.foods.map(food => <li key={food.id}>
+      <ul className="grid max-h-96 gap-inline overflow-y-auto">{result?.foods.map(food => <li key={food.id}>
         <Button type="button" disabled={(!alternative && (!Number.isFinite(grams) || grams < 5 || grams > 2000 || grams % 5 !== 0)) || (alternative && food.kcal <= 0)}
-          onClick={() => onPick(food, grams)} variant={'secondary'} block={false} className={"flex min-h-12 w-full items-center gap-3 p-3 text-start disabled:opacity-40"}>
+          onClick={() => onPick(food, grams)} variant={'secondary'} block={false} className={"flex min-h-12 w-full items-center gap-stack p-stack text-start disabled:opacity-40"}>
           {/* Public storage hosts vary by deployment and are not in the optimizer allowlist. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           {food.photo && <img src={foodPhotoUrl(food.photo)} alt="" width={48} height={48} loading="lazy" decoding="async" className="size-12 shrink-0 rounded-control object-cover" />}
-          <span><strong>{food.name}</strong>{food.custom && <span className="ms-2 rounded-control bg-surface px-2 text-xs text-muted">{t(inline ? 'myFoods' : 'mine')}</span>}<span className="block text-sm text-muted">{t('per100g')} {formatNumber(food.kcal, locale)}  {t('kcalProtein')} {formatNumber(food.protein, locale)}  {t('carbs')} {formatNumber(food.carbs, locale)}  {t('fat')} {formatNumber(food.fat, locale)}</span></span>
+          <span><strong>{food.name}</strong>{food.custom && <span className="ms-inline rounded-control bg-surface px-inline text-xs text-muted">{t(inline ? 'myFoods' : 'mine')}</span>}<span className="block text-sm text-muted">{t('per100g')} {formatNumber(food.kcal, locale)}  {t('kcalProtein')} {formatNumber(food.protein, locale)}  {t('carbs')} {formatNumber(food.carbs, locale)}  {t('fat')} {formatNumber(food.fat, locale)}</span></span>
         </Button>
-        {food.custom && <div className="flex gap-2">
+        {food.custom && <div className="flex gap-inline">
           {captainWorkspaceEnabled() ? <IconButton aria-label={t('editFood')} onClick={() => setEditing(food)}><Pencil aria-hidden /></IconButton> : <Button variant="ghost" aria-label={t('editFood')} onClick={() => setEditing(food)}><Pencil aria-hidden /></Button>}
           {captainWorkspaceEnabled() ? <IconButton className="border border-danger/40 text-danger!" aria-label={t('deleteFood')} onClick={() => void remove(food)}><Trash2 aria-hidden /></IconButton> : <Button variant="ghost" aria-label={t('deleteFood')} onClick={() => void remove(food)}><Trash2 aria-hidden /></Button>}
         </div>}

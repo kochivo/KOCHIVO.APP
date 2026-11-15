@@ -8,11 +8,11 @@ import { messages } from '../public-page/messages';
 
 export function PublicSpecialtyEditor({ items, onChange }: { items: string[]; onChange: (items: string[]) => void }) {
   const t = useT(messages), [draft, setDraft] = useState('');
-  return <div className="space-y-3">
+  return <div className="space-y-stack">
     <p className="text-sm text-muted">{t('hint')}</p>
-    {items.length > 0 && <ul className="flex flex-wrap gap-2">{items.map((item, index) => <li key={`${index}-${item}`}>
+    {items.length > 0 && <ul className="flex flex-wrap gap-inline">{items.map((item, index) => <li key={`${index}-${item}`}>
       <Button type="button" aria-label={t('remove', { name: item })} onClick={() => onChange(items.filter((_, i) => i !== index))}
-        variant={'secondary'} block={false} className={"min-h-12 px-4"}>{item}</Button>
+        variant={'secondary'} block={false} className={"min-h-12 px-page-x"}>{item}</Button>
     </li>)}</ul>}
     <TextField label={t('specialties')} value={draft} maxLength={30} onChange={event => setDraft(event.target.value)} />
     <Button type="button" variant="secondary" disabled={!draft.trim() || !validSpecialties([...items, draft])}

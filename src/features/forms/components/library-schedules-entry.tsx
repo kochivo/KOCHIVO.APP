@@ -14,10 +14,10 @@ export function LibrarySchedulesEntry(props: ComponentProps<typeof ScheduleEdito
   return <div id={id} tabIndex={-1}>
     <ScheduleEditor {...props} onManage={() => setOpen(true)} />
     {open && <ResponsiveDialog modal fallbackId={id} onDismiss={() => setOpen(false)} aria-label={t('schedule')}
-      className="sheet fixed inset-0 m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-5xl overflow-auto rounded-card border border-line p-5 text-ink">
-      <header className="mb-4 flex flex-wrap items-center justify-between gap-3">
+      className="sheet fixed inset-0 m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-5xl overflow-auto rounded-card border border-line p-card text-ink">
+      <header className="mb-card-gap flex flex-wrap items-center justify-between gap-stack">
         <h2 className="font-display text-lg">{t('schedule')}</h2>
-        <Button type="button" variant={'secondary'} block={false} className={"min-h-12 px-5"} onClick={() => setOpen(false)}>{t('close')}</Button>
+        <Button type="button" variant={'secondary'} block={false} className={"min-h-12 px-page-x"} onClick={() => setOpen(false)}>{t('close')}</Button>
       </header>
       <AssessmentScheduleEntry formId={props.form.id} locale={props.locale} />
     </ResponsiveDialog>}

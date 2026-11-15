@@ -29,12 +29,12 @@ export function AssignmentSheet({ programId, programTitle = '', onClose }: { pro
     setFailures(next); setBusy(false); router.refresh();
     if (!Object.keys(next).length) onClose();
   }
-  return <ResponsiveDialog modal openerId="assign-program" fallbackId="assign-program" aria-label={t('assignTitle')} onDismiss={() => { if (!busy) onClose(); }} className="sheet fixed inset-0 z-50 m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-md space-y-3 overflow-y-auto rounded-card p-5 text-ink backdrop:bg-bg-deep/80">
-    <h2 className="font-display text-[19px]">{t('assignTitle')}</h2>
-      {players.error ? <p role="alert">{tt('error')}<Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-3"} onClick={() => void players.retry()}>{tt('retry')}</Button></p> : !players.data ? <p role="status">{tt('loading')}</p> : players.data.length ?
-      <fieldset disabled={busy}>{players.data.map(player => <label key={player.playerId} className="flex min-h-12 items-center gap-3 border-t border-line-soft"><input type="checkbox" disabled={done.includes(player.playerId)} checked={selected.includes(player.playerId)} className={`${editableFieldClass} size-5 accent-lime`} onChange={event => setSelected(current => event.target.checked ? [...current, player.playerId] : current.filter(id => id !== player.playerId))} />{player.fullName}{failures[player.playerId] && <span role="alert" className="text-xs text-danger">{failures[player.playerId]}</span>}</label>)}</fieldset> : <p className="text-faint">{t('playersEmpty')}</p>}
+  return <ResponsiveDialog modal openerId="assign-program" fallbackId="assign-program" aria-label={t('assignTitle')} onDismiss={() => { if (!busy) onClose(); }} className="sheet fixed inset-0 z-50 m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-md space-y-stack overflow-y-auto rounded-card p-card text-ink backdrop:bg-bg-deep/80">
+    <h2 className="font-display text-title">{t('assignTitle')}</h2>
+      {players.error ? <p role="alert">{tt('error')}<Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-stack"} onClick={() => void players.retry()}>{tt('retry')}</Button></p> : !players.data ? <p role="status">{tt('loading')}</p> : players.data.length ?
+      <fieldset disabled={busy}>{players.data.map(player => <label key={player.playerId} className="flex min-h-12 items-center gap-stack border-t border-line-soft"><input type="checkbox" disabled={done.includes(player.playerId)} checked={selected.includes(player.playerId)} className={`${editableFieldClass} size-5 accent-lime`} onChange={event => setSelected(current => event.target.checked ? [...current, player.playerId] : current.filter(id => id !== player.playerId))} />{player.fullName}{failures[player.playerId] && <span role="alert" className="text-xs text-danger">{failures[player.playerId]}</span>}</label>)}</fieldset> : <p className="text-faint">{t('playersEmpty')}</p>}
     {busy && <p role="status">{tt('loading')}</p>}
-    <Button disabled={busy || !selected.some(id => !done.includes(id))} type="submit" variant={'secondary'} block={false} className={"min-h-12 px-4 disabled:opacity-40"} onClick={() => void assign()}>{t('assign')}</Button>
-      <Button disabled={busy} type="submit" variant={'secondary'} block={false} className={"min-h-12 px-3"} onClick={onClose}>{t('close')}</Button>
+    <Button disabled={busy || !selected.some(id => !done.includes(id))} type="submit" variant={'secondary'} block={false} className={"min-h-12 px-page-x disabled:opacity-40"} onClick={() => void assign()}>{t('assign')}</Button>
+      <Button disabled={busy} type="submit" variant={'secondary'} block={false} className={"min-h-12 px-stack"} onClick={onClose}>{t('close')}</Button>
   </ResponsiveDialog>;
 }

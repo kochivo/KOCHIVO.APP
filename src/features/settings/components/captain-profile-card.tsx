@@ -31,7 +31,7 @@ export function CaptainProfileCard({ profile, onSave, quiet = false }: { profile
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState('');
   const inFlight = useRef(false);
-  return <form noValidate className="glass-strong mx-auto max-w-2xl space-y-6 rounded-card p-4 md:p-8" onSubmit={async event => {
+  return <form noValidate className="glass-strong mx-auto max-w-2xl space-y-section rounded-card p-card md:p-section" onSubmit={async event => {
     event.preventDefault();
     if (inFlight.current) return;
     const parsed = settingsSchemas(t).captainProfileSchema.safeParse(value);
@@ -56,15 +56,15 @@ export function CaptainProfileCard({ profile, onSave, quiet = false }: { profile
       else { setValue(values(saved)); setFile(null); toast.error(t('rolledBack')); }
     } finally { inFlight.current = false; setPending(false); }
   }}>
-    <header className="flex items-center gap-4">
+    <header className="flex items-center gap-card-gap">
       <AvatarPicker name={value.full_name} path={saved.avatar_path} file={file} pending={pending} onChange={setFile} />
       <div><h2 className="text-xl font-bold">{t('branding')}</h2><p className="text-sm text-muted">{t('brandingHint')}</p></div>
     </header>
-    <fieldset disabled={pending} className="space-y-6">
+    <fieldset disabled={pending} className="space-y-section">
       <CaptainProfileFields value={value} errors={errors} onChange={setValue} />
       <SocialLinksFields value={value.social} errors={errors} onChange={(key, link) => setValue({ ...value, social: { ...value.social, [key]: link } })} />
     </fieldset>
-    <footer className="flex flex-col gap-3 sm:flex-row">
+    <footer className="flex flex-col gap-stack sm:flex-row">
       <Button type="submit" disabled={pending}>{pending ? t('saving') : t('saveChanges')}</Button>
       <Button type="button" variant="secondary" disabled={pending} onClick={() => {
         setValue(values(saved)); setFile(null); setErrors({});

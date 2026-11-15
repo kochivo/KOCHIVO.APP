@@ -34,12 +34,12 @@ export function ForgotPasswordFlow() {
       if (!result.error) { setSent(true); setSentAt(Date.now()); setToken(''); setRecoveryReady(false); }
     });
   }
-  return <main className="mesh flex min-h-dvh items-center justify-center p-6 pt-[max(1.5rem,var(--safe-top))]">
-    <GlassCard level="strong" className="w-full max-w-md space-y-6 p-8">
+  return <main className="mesh flex min-h-dvh items-center justify-center p-section pt-[max(1.5rem,var(--safe-top))]">
+    <GlassCard level="strong" className="w-full max-w-md space-y-section p-section">
       <h1 className="text-3xl font-extrabold">{sent ? t('checkYourEmail') : t('forgotPassword')}</h1>
       {sent ? <p role="status" className="break-words text-muted">{t('ifAnAccountExistsAReset')} <bdi>{email}</bdi></p>
         : <p className="text-muted">{t('enterYourEmailToGetA')}</p>}
-      <form className="space-y-4" aria-busy={pending} onSubmit={(event) => {
+      <form className="space-y-card-gap" aria-busy={pending} onSubmit={(event) => {
         event.preventDefault();
         if (!sent) { send(); return; }
         const input = Object.fromEntries(new FormData(event.currentTarget));

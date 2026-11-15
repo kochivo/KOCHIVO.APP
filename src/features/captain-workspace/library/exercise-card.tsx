@@ -39,15 +39,15 @@ export function ExerciseCard({ exercise, onSelect }: {
     (value === 'bodyweight' && exercise.equipment === 'body weight') ||
     (value === 'machine' && ['leverage machine', 'smith machine', 'sled machine'].includes(exercise.equipment ?? '')));
   return <Button type="button" onClick={() => onSelect(exercise)}
-    variant={'secondary'} block={false} className={"flex min-h-12 w-full flex-col gap-2 p-4 text-start hover:border-lime focus-visible:outline-2 focus-visible:outline-lime"}>
+    variant={'secondary'} block={false} className={"flex min-h-12 w-full flex-col gap-inline p-card text-start hover:border-lime focus-visible:outline-2 focus-visible:outline-lime"}>
     {exercise.media_path ? <ExerciseImage src={exerciseMediaUrl(exercise.media_path)} alt="" width={320} height={220} fullWidth className="bg-exercise-media" /> :
-      <span className="flex aspect-[16/11] w-full items-center justify-center rounded-control bg-surface-raised p-3 text-sm text-muted">{t('noMedia')}</span>}
-    <b className="mt-1 break-words"><bdi>{exerciseTitle(exercise)}</bdi></b>
+      <span className="flex aspect-[16/11] w-full items-center justify-center rounded-control bg-surface-raised p-stack text-sm text-muted">{t('noMedia')}</span>}
+    <b className="mt-inline break-words"><bdi>{exerciseTitle(exercise)}</bdi></b>
     <small dir="ltr" className="text-start text-muted">{exercise.name_en}</small>
-    <span className="mt-auto flex flex-wrap gap-2 pt-2 text-xs">
-      <span className="rounded-full bg-surface-raised px-2 py-1">{muscle ? t(muscle) : exercise.body_part || t('missing')}</span>
-      <span className="rounded-full bg-surface-raised px-2 py-1">{equipment ? t(equipment) : exercise.equipment || t('missing')}</span>
-      {exercise.is_own && <span className="rounded-full bg-lime/10 px-2 py-1 text-lime">{t('own')}</span>}
+    <span className="mt-auto flex flex-wrap gap-inline pt-inline text-xs">
+      <span className="rounded-full bg-surface-raised px-inline py-inline">{muscle ? t(muscle) : exercise.body_part || t('missing')}</span>
+      <span className="rounded-full bg-surface-raised px-inline py-inline">{equipment ? t(equipment) : exercise.equipment || t('missing')}</span>
+      {exercise.is_own && <span className="rounded-full bg-lime/10 px-inline py-inline text-lime">{t('own')}</span>}
       <RowChevron className="ms-auto" />
     </span>
   </Button>;

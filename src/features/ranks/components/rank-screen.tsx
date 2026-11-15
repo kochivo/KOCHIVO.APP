@@ -28,7 +28,7 @@ export function RankScreen({ data, status, onRetry, playerId }: {
   const ready = state === 'ready' && active ? active.points.lifetime : undefined;
   const { celebration, stars, dismiss } = useLevelUp(ready === undefined ? undefined : tierFor(ready), playerId, ready);
   const holdsCrown = active?.board.some(row => row.player_id !== null && row.is_crown) ?? false;
-  return <main className="mx-auto max-w-lg space-y-4 px-5 pt-6 pb-32">
+  return <main className="mx-auto max-w-lg space-y-card-gap px-page-x pt-section pb-32">
     <h1 id="rank-title" tabIndex={-1} className="text-2xl font-extrabold">{t('pageTitle')}</h1>
     {state === 'error' ? <ErrorState message={t('error')} retryLabel={t('retry')} onRetry={onRetry ?? loaded.retry} /> :
       state === 'loading' || !active ? <LoadingState variant="cards" /> : captainWorkspaceEnabled()

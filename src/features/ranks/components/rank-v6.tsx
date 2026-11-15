@@ -19,16 +19,16 @@ export function RankV6({ data, holdsCrown, retry }: { data: RankData; holdsCrown
   return <>
     <RankHero lifetime={data.points.lifetime} holdsCrown={holdsCrown} />
     <section className="glass overflow-hidden rounded-card border border-line-soft">
-      <header className="flex flex-wrap items-center justify-between gap-2 px-5 pt-[18px] pb-1">
-        <h2 className="font-display text-[19px] font-semibold">{t('race')}</h2>
-        {data.points.crown_prize && <p className="text-[11.5px] text-faint">{v6t('prize', { prize: data.points.crown_prize })}</p>}
+      <header className="flex flex-wrap items-center justify-between gap-inline px-page-x pt-card pb-inline">
+        <h2 className="font-display text-title font-semibold">{t('race')}</h2>
+        {data.points.crown_prize && <p className="text-micro text-faint">{v6t('prize', { prize: data.points.crown_prize })}</p>}
       </header><TeamBoard rows={data.board} />
     </section>
-    <details className="glass rounded-card border border-line-soft px-5 py-1"><summary className="flex min-h-16 cursor-pointer items-center gap-3">
+    <details className="glass rounded-card border border-line-soft px-page-x py-inline"><summary className="flex min-h-16 cursor-pointer items-center gap-stack">
       <Award aria-hidden className="size-5 text-muted" /><span className="flex-1">{t('hallTitle')}</span><ChevronLeft aria-hidden className="size-4 text-faint dir-icon" />
-    </summary><div className="pb-4"><HallOfFame locale={locale} rows={data.hall} error={data.hallError} onRetry={retry} /></div></details>
-    <details className="glass rounded-card border border-line-soft p-5"><summary className="min-h-12 cursor-pointer">{v6t('details')}</summary><CrownRace points={data.points} holdsCrown={holdsCrown} /></details>
-    <details className="glass rounded-card border border-line-soft p-5"><summary className="min-h-12 cursor-pointer">{t('journey')}</summary><RankJourney lifetime={data.points.lifetime} /></details>
-    <details className="glass rounded-card border border-line-soft p-5"><summary className="min-h-12 cursor-pointer">{t('log')}</summary><PointsLog logs={data.points.logs} /></details>
+    </summary><div className="pb-card"><HallOfFame locale={locale} rows={data.hall} error={data.hallError} onRetry={retry} /></div></details>
+    <details className="glass rounded-card border border-line-soft p-card"><summary className="min-h-12 cursor-pointer">{v6t('details')}</summary><CrownRace points={data.points} holdsCrown={holdsCrown} /></details>
+    <details className="glass rounded-card border border-line-soft p-card"><summary className="min-h-12 cursor-pointer">{t('journey')}</summary><RankJourney lifetime={data.points.lifetime} /></details>
+    <details className="glass rounded-card border border-line-soft p-card"><summary className="min-h-12 cursor-pointer">{t('log')}</summary><PointsLog logs={data.points.logs} /></details>
   </>;
 }

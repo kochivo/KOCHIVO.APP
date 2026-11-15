@@ -57,12 +57,12 @@ export function InviteContent({ captainFirstName, assessments = [] }: { captainF
       } catch { setError(t('failed')); }
     });
   }
-  if (demo) return <p className="glass rounded-card p-5 text-muted">{t('demo')}</p>;
-  if (assessments === null) return <div className="glass space-y-3 rounded-card p-5"><p role="alert">{p('formsError')}</p><Button variant="secondary" onClick={() => router.refresh()}>{t('retry')}</Button></div>;
-  if (loadError) return <div className="space-y-3"><p role="alert" className="text-danger">{loadError}</p>
+  if (demo) return <p className="glass rounded-card p-card text-muted">{t('demo')}</p>;
+  if (assessments === null) return <div className="glass space-y-stack rounded-card p-card"><p role="alert">{p('formsError')}</p><Button variant="secondary" onClick={() => router.refresh()}>{t('retry')}</Button></div>;
+  if (loadError) return <div className="space-y-stack"><p role="alert" className="text-danger">{loadError}</p>
     <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} onClick={() => { setLoadError(''); setAttempt(value => value + 1); }}>{t('retry')}</Button></div>;
   if (!packages) return <p role="status" className="text-muted">{t('loading')}</p>;
-  if (result) return <div className="mx-auto max-w-xl space-y-5"><Link href="/captain/players" className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-4" })}>{p('players')}</Link>
+  if (result) return <div className="mx-auto max-w-xl space-y-card-gap"><Link href="/captain/players" className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-page-x" })}>{p('players')}</Link>
     <InviteResult {...result} pkg={packages.find(pkg => pkg.id === result.input.packageId)} captainFirstName={captainFirstName} onAnother={() => setResult(null)} /></div>;
   return <InviteForm packages={packages} forms={assessments} today={today} busy={pending} error={error} onSave={save} />;
 }

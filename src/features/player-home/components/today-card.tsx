@@ -36,7 +36,7 @@ export function TodayCard({ day, rest }: { day: SnapshotDay; rest: boolean }) {
   const sets = day.exercises.reduce((total, exercise) => total + exercise.sets, 0);
   const contact = { label: t('messageCoach'), href: '/player/captain' };
   const content = <>
-    <div className="space-y-2">
+    <div className="space-y-inline">
       <p className="text-xs text-muted">{day.weekday != null ? t(weekdays[day.weekday] ?? 'sat') : t('dayHeading', { position: formatNumber(day.position, locale) })}</p>
       <h2 className="text-3xl font-extrabold">{resting ? t('restDay') : starterText(day.title, locale) || t('todaysWorkout')}</h2>
       {resting && <p className="text-muted">{t('weeklyRest')}</p>}
@@ -45,11 +45,11 @@ export function TodayCard({ day, rest }: { day: SnapshotDay; rest: boolean }) {
     </div>
     {day.exercises.length === 0 ? !resting && !day.cardio?.length && <EmptyState icon={Dumbbell} title={t('yourProgramIsBeingPrepared')} body={t('yourCoachIsPreparingTodaysExercises')}
       action={v3 ? undefined : contact} secondary={v3 ? contact : undefined} /> :
-    <Link data-tour={v3 ? undefined : 'workout-start'} href={`/player/workout/${day.id}`} className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-12 items-center justify-center px-4 font-bold text-muted hover:text-ink" })}>
+    <Link data-tour={v3 ? undefined : 'workout-start'} href={`/player/workout/${day.id}`} className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-12 items-center justify-center px-page-x font-bold text-muted hover:text-ink" })}>
       {resting ? t('trainAnyway') : t('startWorkout')}
     </Link>}
     <CardioCards blocks={day.cardio ?? []} />
   </>;
-  return v3 ? <section className="space-y-5 rounded-[24px] border border-line-soft bg-surface p-5">{content}</section>
-    : <GlassCard data-tour="player-workout" level="featured" className="space-y-5 p-5">{content}</GlassCard>;
+  return v3 ? <section className="space-y-card-gap rounded-[24px] border border-line-soft bg-surface p-card">{content}</section>
+    : <GlassCard data-tour="player-workout" level="featured" className="space-y-card-gap p-card">{content}</GlassCard>;
 }

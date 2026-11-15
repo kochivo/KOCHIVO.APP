@@ -9,8 +9,8 @@ export function WorkspaceBillingTiles({ values }: { values: Omit<ReturnType<type
     { key: 'income', tone: 'text-calm' }, { key: 'pending', tone: 'text-warn' },
     { key: 'ending', tone: 'text-warn' }, { key: 'active', tone: 'text-lime' },
   ] as const;
-  return <div className="grid grid-cols-2 gap-4 min-[761px]:grid-cols-4">
-    {tiles.map(({ key, tone }) => <div key={key} className="glass-strong flex min-w-0 items-center gap-3 rounded-card border border-line-soft p-[18px]">
+  return <div className="grid grid-cols-2 gap-card-gap min-[761px]:grid-cols-4">
+    {tiles.map(({ key, tone }) => <div key={key} className="glass-strong flex min-w-0 items-center gap-stack rounded-card border border-line-soft p-card">
       <svg aria-hidden viewBox="0 0 40 40" className={`size-9 shrink-0 -rotate-90 min-[761px]:size-11 ${tone}`}>
         <circle cx="20" cy="20" r="16" fill="none" className="stroke-line" strokeWidth="3" />
         <circle cx="20" cy="20" r="16" fill="none" stroke="currentColor" strokeWidth="3" pathLength="1" strokeDasharray={values[key] ? '1 0' : '0 1'} />

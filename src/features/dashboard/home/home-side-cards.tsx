@@ -15,25 +15,25 @@ export async function HomeSideCards({ ending, requests, now, timezone, joinReque
   ending: RosterPlayer[]; requests: Awaited<ReturnType<typeof loadHomeFollowup>>['requests']; now: Date; timezone: string; joinRequests?: ReactNode;
 }) {
   const [t, locale] = await Promise.all([getT(homeMessages), getLocale()]);
-  return <aside className="min-w-0 space-y-3">
-    {ending.length > 0 && <section className="glass rounded-card border border-line-soft px-5 py-[18px]">
-      <h2 className="mb-1.5 font-display text-base font-semibold">{t('ending')}</h2>
+  return <aside className="min-w-0 space-y-stack">
+    {ending.length > 0 && <section className="glass rounded-card border border-line-soft px-page-x py-page-y">
+      <h2 className="mb-inline font-display text-base font-semibold">{t('ending')}</h2>
       <ul className="divide-y divide-line-soft">{ending.map(player => {
         const days = daysBetween(localDate(now, player.timezone ?? timezone), player.accessUntil);
-        return <li key={player.playerId}><Link href="/captain/billing" className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-12 items-center justify-between gap-3 px-4 py-2.5 text-[13px]" })}>
+        return <li key={player.playerId}><Link href="/captain/billing" className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-12 items-center justify-between gap-stack px-page-x py-stack text-row" })}>
           <span>{player.fullName}</span><span className="shrink-0 text-faint">{days === 0 ? t('endsToday') : days === 1 ? t('afterOne') : days === 2 ? t('afterTwo') : t('after', { n: days })}</span>
         </Link></li>;
       })}</ul>
     </section>}
-    {requests.length > 0 && <section className="glass rounded-card border border-line-soft px-5 py-[18px]">
-      <h2 className="mb-1.5 font-display text-base font-semibold">{t('join')}</h2>
+    {requests.length > 0 && <section className="glass rounded-card border border-line-soft px-page-x py-page-y">
+      <h2 className="mb-inline font-display text-base font-semibold">{t('join')}</h2>
       <ul className="divide-y divide-line-soft">{requests.map(request => {
         const label = joinPackageLabel(request.package, locale, t);
-        return <li key={request.id} className="flex min-h-16 items-center gap-3 text-[13px]">
-          <div className="min-w-0 flex-1"><p className="break-words">{label ? t('packageName', { name: request.name, label }) : request.name}</p><p className="mt-1 text-[11.5px] text-faint">{homeAge(request.at, now, t)}</p></div>
+        return <li key={request.id} className="flex min-h-16 items-center gap-stack text-row">
+          <div className="min-w-0 flex-1"><p className="break-words">{label ? t('packageName', { name: request.name, label }) : request.name}</p><p className="mt-inline text-micro text-faint">{homeAge(request.at, now, t)}</p></div>
           {joinRequests ? <HomePanelEntry id={`join-${request.id}`} title={t('join')} content={joinRequests}
-            className="inline-flex min-h-12 shrink-0 items-center rounded-full border border-line px-3.5 text-[12.5px]">{t('view')}</HomePanelEntry>
-            : <Link className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 shrink-0 items-center px-3.5 text-[12.5px]" })} href="/captain/inbox">{t('view')}</Link>}
+            className="inline-flex min-h-12 shrink-0 items-center rounded-full border border-line px-card text-xs">{t('view')}</HomePanelEntry>
+            : <Link className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 shrink-0 items-center px-card text-xs" })} href="/captain/inbox">{t('view')}</Link>}
         </li>;
       })}</ul>
     </section>}

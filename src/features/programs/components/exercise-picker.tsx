@@ -98,7 +98,7 @@ export function ExercisePicker({ disabled, onAdd, usedExerciseIds = [], dayTitle
   const rows = [...local, ...(loadedKey === key ? result?.data ?? [] : []).filter(row => !local.some(item => item.id === row.id))]
     .filter(row => !removed.includes(row.id) && (!mine || row.is_own) && (!filters.length || filters.some(({ column, value }) => row[column] === value)) &&
       (!query.trim() || `${row.name_ar ?? ''} ${row.name_en}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase())));
-  return <section aria-label={t('exerciseLibrary')} className="glass flex min-w-0 flex-col gap-y-4 rounded-card p-4">
+  return <section aria-label={t('exerciseLibrary')} className="glass flex min-w-0 flex-col gap-y-card-gap rounded-card p-card">
     <h2 className="font-bold">{t('exerciseLibrary')}</h2>
     <Button disabled={disabled} onClick={() => setSheet({ exercise: null })}>{t('newCustomExercise')}</Button>
     <Chip className="self-start rounded-full" pressed={mine} onClick={() => setMine(value => !value)}>{t('myExercises')}</Chip>
@@ -106,9 +106,9 @@ export function ExercisePicker({ disabled, onAdd, usedExerciseIds = [], dayTitle
     <div className="relative">
       <Search aria-hidden className="pointer-events-none absolute start-4 top-1/2 z-10 size-5 -translate-y-1/2 text-muted" />
       <TextField type="search" hideLabel label={t('searchInArabicOrEnglish')} placeholder={t('searchPlaceholder')} value={query} onChange={event => setQuery(event.target.value)}
-        className="border border-line ps-11 [--glass-fill:var(--color-surface-raised)] [--recessed-fill:var(--color-surface-raised)] [--recessed-border:var(--color-line)]" />
+        className="border border-line ps-touch [--glass-fill:var(--color-surface-raised)] [--recessed-fill:var(--color-surface-raised)] [--recessed-border:var(--color-line)]" />
     </div>
-    <div className="flex min-w-0 gap-2 overflow-x-auto px-2 py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" role="group" aria-label={t('bodyPart')}>
+    <div className="flex min-w-0 gap-inline overflow-x-auto px-inline py-inline [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" role="group" aria-label={t('bodyPart')}>
       {parts.map(([value, label]) => <Chip key={value} className="shrink-0 rounded-full whitespace-nowrap" pressed={bodyPart === value}
         onClick={() => setBodyPart(value)}>{label}</Chip>)}
     </div>
@@ -116,17 +116,17 @@ export function ExercisePicker({ disabled, onAdd, usedExerciseIds = [], dayTitle
       <ErrorState message={result.error} retryLabel={t('tryAgain')} onRetry={() => setRevision(value => value + 1)} /> : null}
         {loadedKey === key && result?.data && rows.length === 0 && <EmptyState icon={Search} title={t('noExerciseWithThisName')} body={t('searchInArabicOrEnglish')}
           action={{ label: t('clearSearch'), onClick: () => { setQuery(''); setBodyPart(''); setMine(false); setRevision(value => value + 1); } }} />}
-        <ul className="space-y-3 pb-24">{rows.map(exercise => <li key={exercise.id}>
+        <ul className="space-y-stack pb-24">{rows.map(exercise => <li key={exercise.id}>
           <Button type="button" disabled={disabled || deleting.includes(exercise.id)} onClick={() => add(exercise)}
-            variant={'secondary'} block={false} className={"flex min-h-16 w-full items-center gap-3 p-2 text-start disabled:opacity-40"}>
-            {exercise.media_path && <span className="shrink-0 rounded-control bg-exercise-media p-1 [&>span]:bg-transparent"><ExerciseImage src={exerciseMediaUrl(exercise.media_path)} alt="" width={48} height={48} /></span>}
+            variant={'secondary'} block={false} className={"flex min-h-16 w-full items-center gap-stack p-inline text-start disabled:opacity-40"}>
+            {exercise.media_path && <span className="shrink-0 rounded-control bg-exercise-media p-inline [&>span]:bg-transparent"><ExerciseImage src={exerciseMediaUrl(exercise.media_path)} alt="" width={48} height={48} /></span>}
             <span className="min-w-0 flex-1 break-words text-sm font-bold"><bdi>{exerciseName(exercise, locale)}</bdi></span>
-            <span className="flex items-center gap-1 text-xs text-muted">
+            <span className="flex items-center gap-inline text-xs text-muted">
               {addedIds.has(exercise.id) && <Check aria-hidden className="size-4 text-lime" />}
               <span>{t(addedIds.has(exercise.id) ? 'added' : 'add')}</span>
             </span>
           </Button>
-          {exercise.is_own && <div className="flex flex-wrap items-center gap-2">
+          {exercise.is_own && <div className="flex flex-wrap items-center gap-inline">
             <span className="text-xs text-muted">{t('ownExercise')}</span>
             {busy.includes(exercise.id) && !deleting.includes(exercise.id) && <span role="status" className="text-xs text-muted">{t('customExerciseSaving')}</span>}
             <Button variant="ghost" disabled={disabled || busy.includes(exercise.id)} onClick={() => setSheet({ exercise })}>{t('editCustomExercise')}</Button>

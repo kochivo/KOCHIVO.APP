@@ -10,8 +10,8 @@ import type { KoFeedItem } from '@/features/ko-feed';
 export function KoDigest({ rows, extras, avatar }: { rows: KoFeedItem[]; extras: DigestExtras | null; avatar: ReactNode }) {
   const locale = useLocale();
   const t = useT(messages);
-  return <section aria-label={t('digestTitle')} className="glass-strong flex items-start gap-3 rounded-card p-4 text-start">
+  return <section aria-label={t('digestTitle')} className="glass-strong flex items-start gap-stack rounded-card p-card text-start">
     <span className="shrink-0">{avatar}</span>
-    <ul className="space-y-2 text-sm">{buildDigest(rows, extras, locale).map((line, index) => <li key={index}>{line}</li>)}</ul>
+    <ul className="space-y-inline text-sm">{buildDigest(rows, extras, locale).map((line, index) => <li key={index}>{line}</li>)}</ul>
   </section>;
 }

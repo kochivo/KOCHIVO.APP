@@ -69,24 +69,24 @@ export function WelcomeFlow() {
           <p className="text-start text-sm font-bold text-lime"><bdi dir="ltr">{t('welcomeSlogan')}</bdi></p>
           <h1 ref={heading} tabIndex={-1} className="text-3xl font-extrabold leading-snug outline-none">{t('welcomeLine')}</h1>
           <Button size="lg" block className={styles.pill} onClick={() => act('start')}><KoPlay aria-hidden="true" />{t('welcomeStart')}</Button>
-          <Link href={welcomeAction('login')} className="flex min-h-14 items-center justify-center rounded-full px-5 font-bold">{t('welcomeLogin')}</Link>
+          <Link href={welcomeAction('login')} className="flex min-h-14 items-center justify-center rounded-full px-page-x font-bold">{t('welcomeLogin')}</Link>
         </div>
       </> : <>
-        <div className="flex flex-1 flex-col gap-6 px-6 pb-[max(1.5rem,var(--safe-bottom))] pt-[max(1.5rem,var(--safe-top))]">
-        <div className="flex flex-wrap items-center justify-between gap-3"><AuthLogo /><LanguageSwitch compact /></div>
+        <div className="flex flex-1 flex-col gap-section px-page-x pb-[max(1.5rem,var(--safe-bottom))] pt-[max(1.5rem,var(--safe-top))]">
+        <div className="flex flex-wrap items-center justify-between gap-stack"><AuthLogo /><LanguageSwitch compact /></div>
         <Button variant="ghost" className="self-start" onClick={() => window.history.back()}><ChevronLeft aria-hidden="true" className="rtl:rotate-180" />{t('welcomeBack')}</Button>
         <h1 ref={heading} tabIndex={-1} className="text-3xl font-extrabold outline-none">{t(step === 2 ? 'welcomeWho' : 'welcomeCode')}</h1>
         {step === 2 ? <>
           <p className="text-muted">{t('welcomeChoose')}</p>
-          <div role="radiogroup" aria-label={t('welcomeWho')} className="space-y-3">
+          <div role="radiogroup" aria-label={t('welcomeWho')} className="space-y-stack">
             <WelcomeRoleCard player selected={role === 'player'} title={t('welcomePlayer')} description={t('welcomePlayerHint')} onClick={() => setRole('player')} onSelect={setRole} />
             <WelcomeRoleCard selected={role === 'captain'} title={t('welcomeCaptain')} description={t('welcomeCaptainHint')} onClick={() => setRole('captain')} onSelect={setRole} />
           </div>
-          <div className="mt-auto space-y-3 pt-6">
+          <div className="mt-auto space-y-stack pt-section">
             <Button size="lg" block className={styles.pill} onClick={() => act(role)}><KoPlay aria-hidden="true" />{t('continue')}</Button>
-            <p className="flex flex-wrap items-center justify-center gap-1 text-sm text-muted">{t('welcomeAccount')}<Link href={welcomeAction('login')} className="inline-flex min-h-12 items-center font-bold text-lime">{t('welcomeLogin')}</Link></p>
+            <p className="flex flex-wrap items-center justify-center gap-inline text-sm text-muted">{t('welcomeAccount')}<Link href={welcomeAction('login')} className="inline-flex min-h-12 items-center font-bold text-lime">{t('welcomeLogin')}</Link></p>
           </div>
-        </> : <form className="space-y-6" onSubmit={event => {
+        </> : <form className="space-y-section" onSubmit={event => {
           event.preventDefault();
           const destination = inviteDestination(code);
           if (destination) window.location.assign(destination);

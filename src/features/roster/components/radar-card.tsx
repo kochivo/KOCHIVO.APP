@@ -36,8 +36,8 @@ export function RadarCard({ today, showEmpty = false }: { today: string; showEmp
   if (players.length === 0) return showEmpty ? <EmptyState className="glass-strong" icon={CheckCheck} title={t('dropoutRadar')} body={t('radarAllClear')} action={{ label: t('players'), href: '/captain/players' }} /> : null;
 
   return (
-    <GlassCard level="strong" className="space-y-3 border-warn/40 p-5">
-      <h2 className="flex items-center gap-2 text-lg font-bold">
+    <GlassCard level="strong" className="space-y-stack border-warn/40 p-card">
+      <h2 className="flex items-center gap-inline text-lg font-bold">
         <span aria-hidden className="size-2 rounded-full bg-warn motion-safe:animate-pulse" />
         {t('dropoutRadar')} <span className="text-warn">{formatNumber(players.length, locale)}</span>
       </h2>
@@ -45,7 +45,7 @@ export function RadarCard({ today, showEmpty = false }: { today: string; showEmp
         {(expanded ? players : players.slice(0, 5)).map((player) => {
           const href = radarWhatsappUrl(player, locale);
           return (
-            <li key={player.player_id} className="flex items-center justify-between gap-3 py-3">
+            <li key={player.player_id} className="flex items-center justify-between gap-stack py-stack">
               <div className="min-w-0">
                 <p className="break-words font-bold">{player.full_name}</p>
                 <p className="text-sm text-muted">
@@ -55,7 +55,7 @@ export function RadarCard({ today, showEmpty = false }: { today: string; showEmp
               </div>
               {href ? (
                 <a href={href} target="_blank" rel="noopener noreferrer" aria-label={t('message', { v0: player.full_name })}
-                  className={buttonClass({ variant: (captainWorkspaceEnabled()) ? 'secondary' : 'secondary', block: false, className: captainWorkspaceEnabled() ? "inline-flex min-h-12 shrink-0 items-center justify-center px-4 text-sm text-ink hover:bg-surface-raised" : "inline-flex min-h-12 shrink-0 items-center justify-center px-4 text-sm text-ink hover:bg-surface-raised" })}>{t('message2')}</a>
+                  className={buttonClass({ variant: (captainWorkspaceEnabled()) ? 'secondary' : 'secondary', block: false, className: captainWorkspaceEnabled() ? "inline-flex min-h-12 shrink-0 items-center justify-center px-page-x text-sm text-ink hover:bg-surface-raised" : "inline-flex min-h-12 shrink-0 items-center justify-center px-page-x text-sm text-ink hover:bg-surface-raised" })}>{t('message2')}</a>
               ) : <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} disabled className="min-h-12 shrink-0" aria-label={t('messageNoPhoneNumber', { v0: player.full_name })}>{t('message2')}</Button>}
             </li>
           );

@@ -38,18 +38,18 @@ export function FoodsLibraryEntry() {
   }, [search, segment, cursor]);
   const resource = useResource(`foods-library:${JSON.stringify([search, segment, cursor])}`, load);
   const newButton = <Button id="new-library-food" type="button" disabled={selected !== undefined} onClick={() => setSelected(null)}
-    variant={(selected === undefined) ? 'primary' : 'secondary'} block={false} className={`flex min-h-12 items-center gap-2 px-5 font-semibold ${selected === undefined ? "" : "text-muted"} `}><PlusIcon aria-hidden className="size-5" />{t('new')}</Button>;
-  return <section className="grid gap-5">
-    {workspace ? <><PageBarTitle title={t('title')} /><PageBarActions>{newButton}</PageBarActions></> : <header className="flex flex-wrap items-center gap-4">
-      <div className="me-auto"><h1 className="font-display text-[30px] font-semibold leading-tight">{t('title')}</h1><p className="mt-1 text-sm text-muted">{t('subtitle')}</p></div>
+    variant={(selected === undefined) ? 'primary' : 'secondary'} block={false} className={`flex min-h-12 items-center gap-inline px-page-x font-semibold ${selected === undefined ? "" : "text-muted"} `}><PlusIcon aria-hidden className="size-5" />{t('new')}</Button>;
+  return <section className="grid gap-card-gap">
+    {workspace ? <><PageBarTitle title={t('title')} /><PageBarActions>{newButton}</PageBarActions></> : <header className="flex flex-wrap items-center gap-card-gap">
+      <div className="me-auto"><h1 className="font-display text-stat font-semibold leading-tight">{t('title')}</h1><p className="mt-inline text-sm text-muted">{t('subtitle')}</p></div>
       {newButton}
     </header>}
-    <div className="flex flex-wrap items-center gap-2">{(workspace ? ['all', 'mine'] as const : ['all', 'mine', 'global'] as const).map(value => <Chip key={value}
+    <div className="flex flex-wrap items-center gap-inline">{(workspace ? ['all', 'mine'] as const : ['all', 'mine', 'global'] as const).map(value => <Chip key={value}
       pressed={segment === value} onClick={() => { setSegment(value); setCursor(null); }}
       className={segment === value ? workspace ? 'min-h-12 !border-transparent !bg-lime/10 !text-lime' : '!border-ink !bg-ink !text-bg-deep' : 'min-h-12 bg-transparent text-muted'}>
-      {t(value)} {!workspace && <b className="ms-1 font-display tabular-nums opacity-60">{resource.data?.counts[value] ?? ''}</b>}
+      {t(value)} {!workspace && <b className="ms-inline font-display tabular-nums opacity-60">{resource.data?.counts[value] ?? ''}</b>}
     </Chip>)}
-      <form className="ms-auto flex w-full items-center gap-2 rounded-full border border-line-soft px-3 sm:w-auto" onSubmit={event => {
+      <form className="ms-auto flex w-full items-center gap-inline rounded-full border border-line-soft px-stack sm:w-auto" onSubmit={event => {
         event.preventDefault(); setCursor(null); setSearch(query.trim());
       }}>
         <input maxLength={100} className={captainWorkspaceEnabled() ? `${editableFieldClass} min-h-12 min-w-0 flex-1 bg-surface text-xs` : "min-h-12 min-w-0 flex-1 bg-transparent text-xs"} aria-label={t('search')} placeholder={t('search')} value={query} onChange={e => setQuery(e.target.value)} />
@@ -59,9 +59,9 @@ export function FoodsLibraryEntry() {
     {(resource.status === 'loading' || resource.status === 'idle') && <div role="status"><span className="sr-only">{t('loading')}</span><LoadingState variant="list" /></div>}
     {Boolean(resource.error) && <div role="alert"><p>{t('error')}</p><Button variant="secondary" type="button" className="min-h-12 text-ink" onClick={() => void resource.retry()}>{t('retry')}</Button></div>}
     {resource.data && (workspace ? <V11FoodsTable foods={resource.data.foods} onSelect={setSelected} /> : <FoodsTable foods={resource.data.foods} onSelect={setSelected} />)}
-    <div className="flex gap-3">
-      {cursor && <Button variant="secondary" type="button" className="min-h-12 px-4" onClick={() => setCursor(null)}>{t('first')}</Button>}
-      {resource.data?.cursor && <Button variant="secondary" type="button" className="min-h-12 px-4" disabled={resource.status === 'loading'} onClick={() => setCursor(resource.data?.cursor ?? null)}>{t('next')}</Button>}
+    <div className="flex gap-stack">
+      {cursor && <Button variant="secondary" type="button" className="min-h-12 px-page-x" onClick={() => setCursor(null)}>{t('first')}</Button>}
+      {resource.data?.cursor && <Button variant="secondary" type="button" className="min-h-12 px-page-x" disabled={resource.status === 'loading'} onClick={() => setCursor(resource.data?.cursor ?? null)}>{t('next')}</Button>}
     </div>
     {selected !== undefined && <FoodDrawer key={selected?.id ?? 'new'} food={selected} onClose={() => setSelected(undefined)}
       onMutation={(next, commit) => resource.mutate(current => {

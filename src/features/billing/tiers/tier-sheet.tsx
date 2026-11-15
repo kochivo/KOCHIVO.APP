@@ -29,17 +29,17 @@ export function TierSheet({ tier, catalog, onClose }: { tier?: Tier; catalog: Re
     }
   }
   return <ResponsiveDialog modal fallbackId="catalog-heading" onDismiss={() => { if (!catalog.busy) onClose(); }} aria-labelledby="tier-title"
-    className="sheet fixed inset-0 m-auto max-h-[90dvh] w-[calc(100%-32px)] max-w-lg overflow-y-auto rounded-card border border-line bg-surface p-5 text-ink backdrop:bg-bg-deep/80">
-    <form className="space-y-4" onSubmit={event => { event.preventDefault(); void save(); }}>
-      <h2 id="tier-title" className="font-display text-[19px]">{t(tier ? 'editFeatures' : 'newTier')}</h2>
+    className="sheet fixed inset-0 m-auto max-h-[90dvh] w-[calc(100%-32px)] max-w-lg overflow-y-auto rounded-card border border-line bg-surface p-card text-ink backdrop:bg-bg-deep/80">
+    <form className="space-y-card-gap" onSubmit={event => { event.preventDefault(); void save(); }}>
+      <h2 id="tier-title" className="font-display text-title">{t(tier ? 'editFeatures' : 'newTier')}</h2>
       <TextField label={t('name')} required maxLength={40} value={name} onChange={event => setName(event.target.value)} />
       <TextField label={t('description')} maxLength={80} value={description} onChange={event => setDescription(event.target.value)} />
-      <label className="block text-xs text-faint">{t('features')}<textarea className="mt-2 min-h-36 w-full rounded-control border border-line bg-surface p-3 text-ink" value={features} onChange={event => setFeatures(event.target.value)} /></label>
-      <label className="block text-xs text-faint">{t('color')}<select value={color} onChange={event => setColor(event.target.value)} className="mt-2 min-h-12 w-full rounded-control border border-line bg-surface px-3 text-ink">
+      <label className="block text-xs text-faint">{t('features')}<textarea className="mt-inline min-h-36 w-full rounded-control border border-line bg-surface p-stack text-ink" value={features} onChange={event => setFeatures(event.target.value)} /></label>
+      <label className="block text-xs text-faint">{t('color')}<select value={color} onChange={event => setColor(event.target.value)} className="mt-inline min-h-12 w-full rounded-control border border-line bg-surface px-stack text-ink">
         {(['muted', 'lime', 'warn', 'danger'] as const).map(value => <option key={value} value={value}>{t(value)}</option>)}
       </select></label>
       {(error || catalog.error) && <p role="alert" className="text-sm text-danger">{error || catalog.error}</p>}
-      <div className="flex gap-2"><Button type="submit" disabled={catalog.busy}>{t('save')}</Button><Button variant="secondary" disabled={catalog.busy} onClick={onClose}>{t('cancel')}</Button></div>
+      <div className="flex gap-inline"><Button type="submit" disabled={catalog.busy}>{t('save')}</Button><Button variant="secondary" disabled={catalog.busy} onClick={onClose}>{t('cancel')}</Button></div>
     </form>
   </ResponsiveDialog>;
 }

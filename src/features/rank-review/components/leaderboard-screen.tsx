@@ -23,12 +23,12 @@ export function LeaderboardScreen({ locale, board }: {
 }) {
   const t = createT(messages, locale);
   if (captainWorkspaceEnabled()) return <WorkspaceLeaderboard locale={locale} board={board} />;
-  return <PageContainer><div className="space-y-5">
+  return <PageContainer><div className="space-y-card-gap">
     <h1 className="text-2xl font-bold">{t('title')}</h1>
     {board.now && board.month && <MonthSwitch locale={locale} now={board.now} month={board.month} onChange={board.setMonth} />}
     {board.now && board.savePrize && board.month === currentMonth(board.now) &&
-      (captainWorkspaceEnabled() ? <Button variant="secondary" type="button" className="min-h-12 rounded-xl px-4 text-ink"
-        onClick={() => board.setMonth(nextMonth(board.month))}>{t('next')}</Button> : <button type="button" className="min-h-12 rounded-xl px-4 text-lime"
+      (captainWorkspaceEnabled() ? <Button variant="secondary" type="button" className="min-h-12 rounded-xl px-page-x text-ink"
+        onClick={() => board.setMonth(nextMonth(board.month))}>{t('next')}</Button> : <button type="button" className="min-h-12 rounded-xl px-page-x text-lime"
         onClick={() => board.setMonth(nextMonth(board.month))}>{t('next')}</button>)}
     {board.error ? <ErrorState message={t('error')} retryLabel={t('retry')} onRetry={board.reload} />
       : !board.rows ? <LoadingState variant="cards" /> : <>

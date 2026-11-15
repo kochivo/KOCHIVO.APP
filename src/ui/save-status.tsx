@@ -9,7 +9,7 @@ export function SaveStatus({ status, locale, onRetry }: {
 }) {
   const t = createT(messages, locale);
   const Icon = status === 'saved' ? CloudCheck : status === 'saving' ? CloudUpload : CloudAlert;
-  return <span role={status === 'error' ? 'alert' : 'status'} className={`inline-flex items-center gap-2 text-xs ${status === 'error' ? 'text-danger' : 'text-faint'}`}>
+  return <span role={status === 'error' ? 'alert' : 'status'} className={`inline-flex items-center gap-inline text-xs ${status === 'error' ? 'text-danger' : 'text-faint'}`}>
     <Icon aria-hidden className="size-4" />{t(status)}
     {status === 'error' && onRetry && <Button variant="secondary" className="min-h-12 rounded-full" onClick={onRetry}>{t('retry')}</Button>}
   </span>;

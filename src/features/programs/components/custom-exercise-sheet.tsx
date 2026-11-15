@@ -28,9 +28,9 @@ export function CustomExerciseSheet({ exercise, onClose, onSave }: {
     return () => { element?.close(); if (opener instanceof HTMLElement && opener.isConnected) opener.focus(); };
   }, []);
   return <dialog ref={dialog} dir={locale === 'ar' ? 'rtl' : 'ltr'} aria-labelledby="custom-exercise-title"
-    className="sheet m-auto max-h-dvh w-full max-w-md overflow-y-auto rounded-card p-5 text-ink backdrop:bg-bg-deep/80"
+    className="sheet m-auto max-h-dvh w-full max-w-md overflow-y-auto rounded-card p-card text-ink backdrop:bg-bg-deep/80"
     onCancel={event => { event.preventDefault(); event.stopPropagation(); onClose(); }}>
-    <form noValidate className="space-y-4" onSubmit={event => {
+    <form noValidate className="space-y-card-gap" onSubmit={event => {
       event.preventDefault();
       const parsed = customExerciseSchema.safeParse({ name, bodyPart, target, videoUrl, equipment: equipment || null });
       if (!parsed.success) {
@@ -42,17 +42,17 @@ export function CustomExerciseSheet({ exercise, onClose, onSave }: {
       <h2 id="custom-exercise-title" className="text-xl font-bold">{t(exercise ? 'editCustomExercise' : 'newCustomExercise')}</h2>
       <TextField label={t('customExerciseName')} value={name} onChange={event => setName(event.target.value)} maxLength={60}
         error={errors.name ? t('customNameError') : undefined} autoFocus />
-      <label className="flex flex-col gap-2">{t('bodyPart')}
+      <label className="flex flex-col gap-inline">{t('bodyPart')}
         <select value={bodyPart} onChange={event => { setBodyPart(event.target.value); setEquipment(''); }} aria-invalid={errors.bodyPart || undefined}
           aria-describedby={errors.bodyPart ? 'custom-body-error' : undefined}
-          className="min-h-12 rounded-control border border-line bg-surface px-3 text-ink">
+          className="min-h-12 rounded-control border border-line bg-surface px-stack text-ink">
           {bodyParts.map(part => <option key={part} value={part}>{t(bodyPartLabels[part])}</option>)}
         </select>
       </label>
       {errors.bodyPart && <p id="custom-body-error" role="alert" className="text-danger">{t('customBodyError')}</p>}
-      {bodyPart === 'cardio' && <label className="flex flex-col gap-2">{t('machine')}
+      {bodyPart === 'cardio' && <label className="flex flex-col gap-inline">{t('machine')}
         <select value={equipment} onChange={event => setEquipment(event.target.value)}
-          className="min-h-12 rounded-control border border-line bg-surface px-3 text-ink">
+          className="min-h-12 rounded-control border border-line bg-surface px-stack text-ink">
           <option value="">{t('noMachine')}</option>
           {(['treadmill', 'stairmaster'] as const).map(machine => <option key={machine} value={machine}>{t(machine)}</option>)}
         </select>
@@ -61,7 +61,7 @@ export function CustomExerciseSheet({ exercise, onClose, onSave }: {
         error={errors.target ? t('customTargetError') : undefined} />
       <TextField label={t('customVideo')} value={videoUrl} onChange={event => setVideoUrl(event.target.value)} type="url" maxLength={500}
         error={errors.videoUrl ? t('customVideoError') : undefined} />
-      <div className="flex gap-3">
+      <div className="flex gap-stack">
         <Button type="submit">{t('saveCustomExercise')}</Button>
         <Button variant="ghost" onClick={onClose}>{t('cancelCustomExercise')}</Button>
       </div>

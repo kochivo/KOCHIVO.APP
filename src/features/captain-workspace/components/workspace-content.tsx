@@ -26,7 +26,7 @@ export async function WorkspaceContent({ playerId, embedded, profileData, fileDa
   const current = programs.data?.find(program => program.status === 'active') ?? programs.data?.find(program => program.status === 'draft');
   const loaded = current ? await loadProgram(current.id) : null;
   const content = <>
-    <div className="grid items-start gap-6 lg:grid-cols-[360px_minmax(0,1fr)]">
+    <div className="grid items-start gap-section lg:grid-cols-[360px_minmax(0,1fr)]">
       <PlayerFileSlot player={profile.data} locale={locale} file={playerFile.file} error={playerFile.error} />
       {loaded?.data ? <WorkspacePlanEntry key={loaded.data.id} program={loaded.data} locale={locale}
         fallback={<WorkspaceState kind="loading" locale={locale} />} /> :
@@ -34,7 +34,7 @@ export async function WorkspaceContent({ playerId, embedded, profileData, fileDa
     </div>
     <MobileActions locale={locale} />
   </>;
-  return <TimezoneScope timezone={profile.data.timezone}><div className="space-y-5 pb-40 lg:pb-0" dir={locale === 'ar' ? 'rtl' : 'ltr'}>
+  return <TimezoneScope timezone={profile.data.timezone}><div className="space-y-card-gap pb-40 lg:pb-0" dir={locale === 'ar' ? 'rtl' : 'ltr'}>
     {embedded ? content : <WorkspaceViews playerId={playerId} name={profile.data.name} locale={locale}>{content}</WorkspaceViews>}
   </div></TimezoneScope>;
 }

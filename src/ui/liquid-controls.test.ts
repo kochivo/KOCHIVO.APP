@@ -24,12 +24,12 @@ it('shares variants, sizes and width between buttons and links', () => {
 });
 
 it('preserves caller padding and type size without competing defaults', () => {
-  const html = renderToStaticMarkup(createElement(Button, { className: 'px-2 text-xs min-h-16' }));
-  expect(html).toContain('px-2 text-xs min-h-16');
-  expect(html).not.toContain('px-4');
+  const html = renderToStaticMarkup(createElement(Button, { className: 'px-inline text-xs min-h-16' }));
+  expect(html).toContain('px-inline text-xs min-h-16');
+  expect(html).not.toContain('px-page-x');
   expect(html).not.toContain('text-sm');
   const icon = renderToStaticMarkup(createElement(IconButton, { 'aria-label': 'Open' }));
-  expect(icon).toContain('p-0'); expect(icon).not.toContain('px-4');
+  expect(icon).toContain('p-0'); expect(icon).not.toContain('px-page-x');
 });
 
 it('queues rich successes alongside strings and pauses their remaining lifetime', () => {

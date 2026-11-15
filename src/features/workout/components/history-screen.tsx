@@ -41,20 +41,20 @@ export function HistoryScreen({ playerId, exerciseId = '' }: { playerId: string;
   const workouts = view === 'exercises' ? history.workouts.filter(row => row.exercises.some(exercise => exercise.id === active)) : history.workouts;
   const best = bestSet(workouts.flatMap(row => row.exercises.filter(exercise => exercise.id === active).flatMap(exercise => exercise.sets)));
   const records = useMemo(() => v3 ? sessionPrIds(history.workouts) : new Set<string>(), [v3, history.workouts]);
-  const views = <div role="group" aria-label={t('historyViews')} className="glass flex gap-2 rounded-card p-2">
+  const views = <div role="group" aria-label={t('historyViews')} className="glass flex gap-inline rounded-card p-inline">
       <Chip pressed={view === 'workouts'} onClick={() => setView('workouts')}>{t('workouts')}</Chip>
       <Chip pressed={view === 'exercises'} onClick={() => setView('exercises')}>{t('exercises')}</Chip>
     </div>;
-  return <main className={v3 ? 'mx-auto max-w-lg space-y-3 px-[18px] pt-4 pb-24' : 'mx-auto max-w-lg space-y-4 px-5 pt-6 pb-32'}>
-    {v3 ? <header className="flex items-center gap-3"><Link href="/player/progress" aria-label={v3t('back')} className="flex size-12 items-center justify-center rounded-full bg-surface-raised"><ChevronRight size={20} aria-hidden className="ltr:rotate-180" /></Link><h1 className="text-[22px] font-black">{v3t('title')}</h1></header> : <><Link href="/player/progress" className="inline-flex min-h-12 items-center text-lime">{t('back')}</Link><h1 className="text-2xl font-extrabold">{t('historyTitle')}</h1></>}
+  return <main className={v3 ? 'mx-auto max-w-lg space-y-stack px-page-x pt-card pb-24' : 'mx-auto max-w-lg space-y-card-gap px-page-x pt-section pb-32'}>
+    {v3 ? <header className="flex items-center gap-stack"><Link href="/player/progress" aria-label={v3t('back')} className="flex size-12 items-center justify-center rounded-full bg-surface-raised"><ChevronRight size={20} aria-hidden className="ltr:rotate-180" /></Link><h1 className="text-h font-black">{v3t('title')}</h1></header> : <><Link href="/player/progress" className="inline-flex min-h-12 items-center text-lime">{t('back')}</Link><h1 className="text-2xl font-extrabold">{t('historyTitle')}</h1></>}
     {v3 && today && !history.loading && <HistoryCalendar today={today} trained={history.workouts.map(row => row.training_date)} snapshot={history.error ? undefined : snapshot} />}
     {!v3 && views}
     {history.error && <ErrorState message={t('historyError')} retryLabel={t('tryAgain')} onRetry={history.retry} />}
     {history.loading ? <LoadingState /> : !history.workouts.length ?
       <EmptyState icon={Dumbbell} title={t('historyEmpty')} body={t('goHomeToSeeYourCurrentWorkout')} action={{ label: t('backToHome'), href: '/player' }} /> : <>
         {view === 'exercises' && <>
-          <label className="block space-y-2"><span>{t('chooseExercise')}</span>
-            <select className="glass min-h-12 w-full rounded-control px-3" value={active} onChange={event => { setSelected(event.target.value); setLimit(20); }}>
+          <label className="block space-y-inline"><span>{t('chooseExercise')}</span>
+            <select className="glass min-h-12 w-full rounded-control px-stack" value={active} onChange={event => { setSelected(event.target.value); setLimit(20); }}>
               {!exercises.includes(active) && <option value={active}>{t('unknownExercise')}</option>}
               {exercises.map(id => {
                 const name = history.names.find(row => row.id === id);
@@ -62,10 +62,10 @@ export function HistoryScreen({ playerId, exerciseId = '' }: { playerId: string;
               })}
             </select>
           </label>
-          {best && <section className="glass-strong space-y-2 rounded-card p-4"><h2 className="font-bold">{t('bestSet')}</h2><HistorySets sets={[best]} /></section>}
+          {best && <section className="glass-strong space-y-inline rounded-card p-card"><h2 className="font-bold">{t('bestSet')}</h2><HistorySets sets={[best]} /></section>}
           {!workouts.length && <EmptyState icon={Dumbbell} title={t('noExerciseHistory')} body={t('goHomeToSeeYourCurrentWorkout')} action={{ label: t('backToHome'), href: '/player' }} />}
         </>}
-        <ol aria-label={v3t('sessions')} className="space-y-2">{workouts.slice(0, limit).map(workout => <li key={workout.id}><HistoryWorkoutRow workout={workout} names={history.names} v3={v3} hasPr={records.has(workout.id)}
+        <ol aria-label={v3t('sessions')} className="space-y-inline">{workouts.slice(0, limit).map(workout => <li key={workout.id}><HistoryWorkoutRow workout={workout} names={history.names} v3={v3} hasPr={records.has(workout.id)}
           title={history.days.find(day => day.id === workout.program_day_id)?.title || t('unknownDay')}
           exerciseId={view === 'exercises' ? active : undefined} /></li>)}</ol>
         {(workouts.length > limit || (view === 'workouts' && history.hasMore)) &&

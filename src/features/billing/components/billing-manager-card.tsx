@@ -42,13 +42,13 @@ export function BillingManagerCard({ playerId, name, today, autoActivate, worksp
     finally { lock.current = false; setBusy(false); }
   }
   const balance = data?.balance;
-  return <section className="glass-strong space-y-3 rounded-card p-5" aria-busy={busy}>
+  return <section className="glass-strong space-y-stack rounded-card p-card" aria-busy={busy}>
     {notice && <p role="status" className="text-warn">{notice}</p>}
     {!balance ? error ? <><p role="alert" className="text-danger">{error}</p><Button variant="secondary" onClick={() => void load()}>{t('retry')}</Button></>
       : <p role="status">{t('loading')}</p> : <>
       <p className="text-xl font-bold">{balanceLabel(balance, today, locale)}</p>
-      {balance.frozen_at && <span className="rounded-control bg-water/10 px-3 py-1 text-water">{t('frozen')}</span>}
-      <div className="flex flex-wrap gap-2">
+      {balance.frozen_at && <span className="rounded-control bg-water/10 px-stack py-inline text-water">{t('frozen')}</span>}
+      <div className="flex flex-wrap gap-inline">
         {balance.pending ? <Button disabled={busy} onClick={() => setSheet('activate')}>{t('activate')}</Button> : <>
           <Button className="w-auto flex-1" disabled={busy || Boolean(balance.frozen_at)} onClick={() => setSheet('renew')}>{t(balance.frozen_at ? 'unfreezeFirst' : 'renew')}</Button>
           <Button variant="secondary" className="flex-1 text-muted hover:text-ink" disabled={busy} onClick={() => {

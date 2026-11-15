@@ -23,8 +23,8 @@ export async function CalculatorContent({ playerId, locale }: { playerId: string
   } catch {
     data = undefined;
   }
-  if (!data) return <section role="alert" className="glass grid gap-3 rounded-card p-5">
-      <p>{t('loadFailed')}</p><Link className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-4" })} href={`/captain/players/${playerId}/nutrition?view=calc`}>{t('retry')}</Link>
+  if (!data) return <section role="alert" className="glass grid gap-stack rounded-card p-card">
+      <p>{t('loadFailed')}</p><Link className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-page-x" })} href={`/captain/players/${playerId}/nutrition?view=calc`}>{t('retry')}</Link>
     </section>;
   return <TimezoneScope timezone={await getPlayerTimezone(playerId)}><CalculatorView playerId={playerId} file={data.file} plans={data.plans} /></TimezoneScope>;
 }

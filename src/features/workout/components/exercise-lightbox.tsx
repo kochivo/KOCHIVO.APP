@@ -23,7 +23,7 @@ export function ExerciseLightbox({ src, name, large = false, thumbnail = false, 
       </span>
     </button>
     <dialog ref={dialog} aria-label={name} onClick={event => { if (event.target === event.currentTarget) close(); }}
-      className="m-0 h-dvh max-h-none w-dvw max-w-none bg-bg/80 p-4 text-ink backdrop-blur-md open:flex open:items-center open:justify-center open:animate-[surface-in_200ms_ease-out] motion-reduce:open:animate-none backdrop:bg-transparent">
+      className="m-0 h-dvh max-h-none w-dvw max-w-none bg-bg/80 p-card text-ink backdrop-blur-md open:flex open:items-center open:justify-center open:animate-[surface-in_200ms_ease-out] motion-reduce:open:animate-none backdrop:bg-transparent">
       <Button type="button" aria-label={t('closeImage')} onClick={close}
         variant={'secondary'} block={false} className={"absolute end-[max(1rem,var(--safe-end))] top-[max(1rem,var(--safe-top))] grid size-12 place-items-center"}>
         <X aria-hidden className="size-6" />

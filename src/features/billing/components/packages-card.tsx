@@ -76,18 +76,18 @@ export function PackagesCard({ packages: initial, onChange, initialAdding = fals
   }
 
   return (
-    <GlassCard role="region" className="space-y-4 p-5" aria-labelledby="packages-heading">
-      <div className="space-y-1">
+    <GlassCard role="region" className="space-y-card-gap p-card" aria-labelledby="packages-heading">
+      <div className="space-y-inline">
         <h2 id="packages-heading" className="text-xl font-bold">{t('packages')}</h2>
         <p className="text-sm text-muted">{t('packagesHint')}</p>
       </div>
-      {packages.length === 0 && !adding ? <EmptyState icon={PackageIcon} title={t('noPackages')} body={t('packagesHint')} action={{ label: t('newPackage'), onClick: () => setAdding(true) }} /> : <ul className="space-y-2">{packages.map((item) => <li key={item.id} className="glass-raised flex min-h-12 items-center justify-between gap-3 rounded-control ps-4 pe-1">
-        <div className="min-w-0 py-2"><p className="truncate font-bold">{item.name}</p>
+      {packages.length === 0 && !adding ? <EmptyState icon={PackageIcon} title={t('noPackages')} body={t('packagesHint')} action={{ label: t('newPackage'), onClick: () => setAdding(true) }} /> : <ul className="space-y-inline">{packages.map((item) => <li key={item.id} className="glass-raised flex min-h-12 items-center justify-between gap-stack rounded-control ps-card pe-inline">
+        <div className="min-w-0 py-inline"><p className="truncate font-bold">{item.name}</p>
           <p className="text-xs text-muted">{t('amount', { amount: formatNumber(item.price_egp, locale) })} · {t('days', { n: item.days, count: formatNumber(item.days, locale) })}
             {item.kind === 'sessions' && <> · {pt('sessionsLeft', { n: item.sessions ?? 0, count: formatNumber(item.sessions ?? 0, locale) })}</>}</p></div>
         {captainWorkspaceEnabled() ? <IconButton className="min-h-12 min-w-12 border border-danger/40 px-0 text-danger!" aria-label={t('archivePackage', { name: item.name })} onClick={() => void archive(item)}><X aria-hidden className="size-5" /></IconButton> : <Button variant="ghost" className="min-h-12 min-w-12 px-0" aria-label={t('archivePackage', { name: item.name })} onClick={() => void archive(item)}><X aria-hidden className="size-5" /></Button>}
       </li>)}</ul>}
-      {adding ? <form className="space-y-3" onSubmit={(event) => { event.preventDefault(); void add(); }}>
+      {adding ? <form className="space-y-stack" onSubmit={(event) => { event.preventDefault(); void add(); }}>
         {editor && <label className="block text-xs text-faint">{editor.tierLabel}<select value={tierId} onChange={event => {
           const nextTier = event.target.value;
           setTierId(nextTier);
@@ -95,30 +95,30 @@ export function PackagesCard({ packages: initial, onChange, initialAdding = fals
             const next = firstUnusedDuration(editor.packages, nextTier);
             setDays(String(next ?? 1)); setCustom(next === null);
           }
-        }} className={captainWorkspaceEnabled() ? `${editableFieldClass} mt-2 min-h-12 w-full rounded-control border border-line bg-surface px-3 text-ink` : "mt-2 min-h-12 w-full rounded-control border border-line bg-surface px-3 text-ink"}>
+        }} className={captainWorkspaceEnabled() ? `${editableFieldClass} mt-inline min-h-12 w-full rounded-control border border-line bg-surface px-stack text-ink` : "mt-inline min-h-12 w-full rounded-control border border-line bg-surface px-stack text-ink"}>
           <option value="">{editor.noTierLabel}</option>{editor.tiers.map(tier => <option key={tier.id} value={tier.id}>{tier.name}</option>)}
         </select></label>}
         <Segmented aria-label={pt('kind')} value={kind} options={[{ value: 'days', label: pt('byDays') }, { value: 'sessions', label: pt('bySessions') }]} onChange={value => setKind(value as 'days' | 'sessions')} />
         {kind === 'sessions' && <Stepper label={pt('quantity')} value={sessions} min={1} max={200} step={1} onChange={setSessions} />}
-        {editor && kind === 'days' && <div className="glass flex flex-wrap gap-1 rounded-control p-1" role="group" aria-label={dt('durationChoice')}>
+        {editor && kind === 'days' && <div className="glass flex flex-wrap gap-inline rounded-control p-inline" role="group" aria-label={dt('durationChoice')}>
           {durationPresets.map(value => {
             const used = duplicateDuration(editor.packages, { id: editor.item?.id, tier_id: tierId || null, kind: 'days', days: value, sessions: null });
             return <button key={value} type="button" disabled={used} aria-pressed={!custom && Number(days) === value}
               aria-describedby={used ? 'duration-used' : undefined} title={used ? dt('duplicateDuration') : undefined}
-              className={captainWorkspaceEnabled() ? `${clickableClass} press min-h-12 cursor-pointer rounded-control border border-line px-3 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime disabled:opacity-40 ${!custom && Number(days) === value ? 'glass-raised font-bold' : 'text-muted'}` : `press min-h-12 cursor-pointer rounded-control border border-line px-3 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime disabled:opacity-40 ${!custom && Number(days) === value ? 'glass-raised font-bold' : 'text-muted'}`}
+              className={captainWorkspaceEnabled() ? `${clickableClass} press min-h-12 cursor-pointer rounded-control border border-line px-stack text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime disabled:opacity-40 ${!custom && Number(days) === value ? 'glass-raised font-bold' : 'text-muted'}` : `press min-h-12 cursor-pointer rounded-control border border-line px-stack text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime disabled:opacity-40 ${!custom && Number(days) === value ? 'glass-raised font-bold' : 'text-muted'}`}
               onClick={() => { setDays(String(value)); setCustom(false); }}>{durationLabel(value, dt, locale)}</button>;
           })}
-          <button type="button" aria-pressed={custom} onClick={() => setCustom(true)} className={captainWorkspaceEnabled() ? `${clickableClass} press min-h-12 cursor-pointer rounded-control border border-line px-3 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime ${custom ? 'glass-raised font-bold' : 'text-muted'}` : `press min-h-12 cursor-pointer rounded-control border border-line px-3 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime ${custom ? 'glass-raised font-bold' : 'text-muted'}`}>{dt('customDuration')}</button>
+          <button type="button" aria-pressed={custom} onClick={() => setCustom(true)} className={captainWorkspaceEnabled() ? `${clickableClass} press min-h-12 cursor-pointer rounded-control border border-line px-stack text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime ${custom ? 'glass-raised font-bold' : 'text-muted'}` : `press min-h-12 cursor-pointer rounded-control border border-line px-stack text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime ${custom ? 'glass-raised font-bold' : 'text-muted'}`}>{dt('customDuration')}</button>
         </div>}
         {editor && <p id="duration-used" role={duplicate ? 'alert' : undefined} className={`text-xs ${duplicate ? 'text-danger' : 'text-muted'}`}>
           {(duplicate || kind === 'days' && durationPresets.some(value => duplicateDuration(editor.packages, { id: editor.item?.id, tier_id: tierId || null, kind: 'days', days: value, sessions: null }))) && dt('duplicateDuration')}
         </p>}
         <TextField label={t('packageName')} value={name} maxLength={60} required onChange={(event) => setName(event.target.value)} />
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-stack">
           <TextField label={t('packagePrice')} type="number" inputMode="numeric" min={0} max={100000} step={1} required value={price} onChange={(event) => setPrice(event.target.value)} />
           {(!editor || kind === 'sessions' || custom) && <TextField label={t('packageDays')} type="number" inputMode="numeric" min={1} max={365} step={1} required value={days} onChange={(event) => setDays(event.target.value)} />}
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-inline">
           <Button type="submit" className="min-h-12 flex-1" disabled={!valid || busy}>{editor?.item ? editor.saveLabel : t('addPackage')}</Button>
           {!editor && <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} className="min-h-12" disabled={busy} onClick={() => { setAdding(false); setError(''); }}>{t('closeCollect')}</Button>}
         </div>

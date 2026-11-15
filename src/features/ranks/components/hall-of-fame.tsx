@@ -10,12 +10,12 @@ export function HallOfFame({ locale, rows, error = false, onRetry }: {
   locale: Locale; rows?: HallOfFameRow[]; error?: boolean; onRetry: () => void;
 }) {
   const t = createT(messages, locale);
-  return <section className="space-y-3" aria-label={t('hallTitle')}>
+  return <section className="space-y-stack" aria-label={t('hallTitle')}>
     <h2 className="font-bold">{t('hallTitle')}</h2>
     {error ? <ErrorState message={t('hallError')} retryLabel={t('retry')} onRetry={onRetry} />
       : !rows ? <LoadingState variant="cards" />
         : !rows.length ? <EmptyState icon={Crown} title={t('hallEmpty')} body={t('hallDescription')} />
-          : <ol className="space-y-3">{rows.map(row => <li key={row.month} className="flex items-center gap-3">
+          : <ol className="space-y-stack">{rows.map(row => <li key={row.month} className="flex items-center gap-stack">
             <RankBadge tier="crown" size="sm" label={t('crown')} />
             <div className="min-w-0 flex-1">
               <time dateTime={row.month} className="text-sm text-muted">{new Intl.DateTimeFormat(

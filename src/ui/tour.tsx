@@ -97,14 +97,14 @@ export function Tour({ steps, onClose }: TourProps) {
     {geometry && <div aria-hidden className="pointer-events-none fixed rounded-control border-2 border-lime"
       style={{ ...geometry.ring, boxShadow: '0 0 0 100vmax color-mix(in srgb, var(--color-bg-deep) 80%, transparent)' }} />}
     {step && <div ref={card} tabIndex={-1} style={style}
-      className="enter sheet fixed start-4 end-4 bottom-[var(--tour-bottom,1rem)] max-h-[calc(100dvh-var(--tour-bottom,1rem)-2rem)] overflow-auto rounded-card p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] text-start outline-none sm:start-[var(--tour-start)] sm:end-auto sm:top-[var(--tour-top)] sm:bottom-auto sm:max-h-[75dvh] sm:w-88">
+      className="enter sheet fixed start-4 end-4 bottom-[var(--tour-bottom,1rem)] max-h-[calc(100dvh-var(--tour-bottom,1rem)-2rem)] overflow-auto rounded-card p-card pb-[max(1.25rem,env(safe-area-inset-bottom))] text-start outline-none sm:start-[var(--tour-start)] sm:end-auto sm:top-[var(--tour-top)] sm:bottom-auto sm:max-h-[75dvh] sm:w-88">
       <p className="text-xs text-muted">{t('progress', { current: formatNumber((index ?? 0) + 1, locale), total: formatNumber(steps.length, locale) })}</p>
-      <h2 id="tour-title" className="mt-2 text-xl font-bold">{step.title}</h2>
-      <p id="tour-body" className="mt-2 text-sm text-muted">{step.body}</p>
-      <div className="mt-4 flex flex-wrap gap-2">
-        <Button variant="secondary" className="min-h-12 rounded-control px-3 text-sm text-muted" onClick={onClose}>{t('skip')}</Button>
-        <Button variant="secondary" className="ms-auto min-h-12 rounded-control px-3 text-sm disabled:opacity-40" disabled={previous === null} onClick={() => index !== null && move(index, -1)}>{t('back')}</Button>
-        <button className="min-h-12 rounded-control bg-lime px-4 font-bold text-on-lime" onClick={() => index !== null && move(index, 1)}>{t(next === null ? 'done' : 'next')}</button>
+      <h2 id="tour-title" className="mt-inline text-xl font-bold">{step.title}</h2>
+      <p id="tour-body" className="mt-inline text-sm text-muted">{step.body}</p>
+      <div className="mt-card-gap flex flex-wrap gap-inline">
+        <Button variant="secondary" className="min-h-12 rounded-control px-stack text-sm text-muted" onClick={onClose}>{t('skip')}</Button>
+        <Button variant="secondary" className="ms-auto min-h-12 rounded-control px-stack text-sm disabled:opacity-40" disabled={previous === null} onClick={() => index !== null && move(index, -1)}>{t('back')}</Button>
+        <button className="min-h-12 rounded-control bg-lime px-page-x font-bold text-on-lime" onClick={() => index !== null && move(index, 1)}>{t(next === null ? 'done' : 'next')}</button>
       </div>
     </div>}
   </dialog>;

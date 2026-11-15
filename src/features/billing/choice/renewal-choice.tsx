@@ -29,20 +29,20 @@ export function RenewalChoice() {
     } catch { setError(t('error')); }
     finally { setBusy(false); }
   }
-  const retry = <Button type="button" onClick={() => void resource.retry()} variant={'secondary'} block={false} className={"min-h-12 px-5"}>{t('retry')}</Button>;
-  if (resource.error || result?.error) return <div role="alert" className="glass rounded-card p-5">{t('error')}{retry}</div>;
-  if (!result?.data) return <p role="status" className="glass rounded-card p-5 text-faint">{t('loading')}</p>;
+  const retry = <Button type="button" onClick={() => void resource.retry()} variant={'secondary'} block={false} className={"min-h-12 px-page-x"}>{t('retry')}</Button>;
+  if (resource.error || result?.error) return <div role="alert" className="glass rounded-card p-card">{t('error')}{retry}</div>;
+  if (!result?.data) return <p role="status" className="glass rounded-card p-card text-faint">{t('loading')}</p>;
   const data = result.data;
-  return <section className="glass space-y-3 rounded-card border border-line-soft p-5">
+  return <section className="glass space-y-stack rounded-card border border-line-soft p-card">
     {sent && <p role="status" className="text-lime">{t('sent')}</p>}
     {error && <p role="alert" className="text-danger">{error}</p>}
     {data.pending ? <><p>{t('pending')}</p><Button type="button" disabled={busy || !receipts.data?.data ||
-      (receipts.data.data.receipt?.status === 'pending' && receipts.data.data.receipt.renewal_request_id === data.pending)} variant={'secondary'} block={false} className={"min-h-12 px-5"} onClick={async () => {
+      (receipts.data.data.receipt?.status === 'pending' && receipts.data.data.receipt.renewal_request_id === data.pending)} variant={'secondary'} block={false} className={"min-h-12 px-page-x"} onClick={async () => {
       setBusy(true); setError('');
       try { const response = await decideRenewalRequest(data.pending ?? '', 'cancelled');
         if (response.error) setError(response.error); else { setSent(false); await resource.retry(); }
       } catch { setError(t('error')); } finally { setBusy(false); }
-    }}>{t('cancel')}</Button></> : <Button type="button" variant={'secondary'} block={false} className={"min-h-12 px-5"} onClick={() => setOpen(!open)}>{t(open ? 'back' : 'renew')}</Button>}
+    }}>{t('cancel')}</Button></> : <Button type="button" variant={'secondary'} block={false} className={"min-h-12 px-page-x"} onClick={() => setOpen(!open)}>{t(open ? 'back' : 'renew')}</Button>}
     {open && !data.pending && <><PaymentMethodPicker methods={data.methods} value={method} onChange={setMethod} />
       <PricingCards catalog={data.catalog} name={data.name} now={data.now} isRenewal busy={busy} onChoose={(pkg, offer) => void submit(pkg, offer)} /></>}
     <PlayerReceipt renewalId={data.pending} />

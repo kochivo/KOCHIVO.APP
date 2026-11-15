@@ -11,5 +11,5 @@ it('keeps the units heading and leaves foods without units blank', () => {
   })));
   expect(html).toContain('>Units</th>');
   expect(html).not.toContain('No units');
-  expect(html).toContain('flex-wrap gap-1"></div></td>');
+  expect(html).toContain('flex-wrap gap-inline"></div></td>');
 });

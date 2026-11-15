@@ -16,7 +16,7 @@ export function WeekStrip({ cells, selectedId, onSelect, locale }: {
         const summary = cell.day && daySummary(cell.day);
         return <li key={cell.id} className="min-w-12 flex-1 lg:min-w-24">
           <button type="button" aria-pressed={cell.id === selectedId} onClick={() => onSelect(cell.id)}
-            className={`flex min-h-24 w-full min-w-0 flex-col items-center justify-center gap-1 border-b-2 px-1 py-3 text-center text-xs lg:items-start lg:px-3 ${cell.id === selectedId ? 'glass-strong border-b-lime' : 'border-b-transparent'} ${cell.rest ? 'text-muted' : 'text-ink'}`}>
+            className={`flex min-h-24 w-full min-w-0 flex-col items-center justify-center gap-inline border-b-2 px-inline py-stack text-center text-xs lg:items-start lg:px-stack ${cell.id === selectedId ? 'glass-strong border-b-lime' : 'border-b-transparent'} ${cell.rest ? 'text-muted' : 'text-ink'}`}>
             <span className="text-muted">{cell.weekday ? t(cell.weekday) : t('day', { count: formatNumber(cell.day?.position ?? 0, locale) })}</span>
             <span className="line-clamp-2 break-words font-bold">{cell.rest ? t('rest') : cell.day?.title ? starterText(cell.day.title, locale) : t('training')}</span>
             {summary && <span className="text-muted">

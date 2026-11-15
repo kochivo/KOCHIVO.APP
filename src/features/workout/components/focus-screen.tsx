@@ -69,11 +69,11 @@ export function FocusScreen({ dayId, playerId }: { dayId: string; playerId?: str
   if (v6 && state.day && state.queue.length > 0 && !state.programFinished) {
     return <PlayerWorkoutV3 key={`${dayId}:${today}`} state={state} progress={warmupProgress} workout={workout} online={online} playerId={playerId ?? plan?.player_id} />;
   }
-  return <main className={warmupView ? 'mx-auto flex min-h-dvh max-w-lg flex-col gap-3 bg-bg-deep px-[18px] pt-[max(22px,env(safe-area-inset-top))]'
-    : 'mx-auto max-w-lg space-y-4 px-5 pt-[max(1.5rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))]'}>
+  return <main className={warmupView ? 'mx-auto flex min-h-dvh max-w-lg flex-col gap-stack bg-bg-deep px-page-x pt-[max(22px,env(safe-area-inset-top))]'
+    : 'mx-auto max-w-lg space-y-card-gap px-page-x pt-[max(1.5rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))]'}>
     <p role="status" aria-live="polite" aria-atomic="true" className="sr-only">{restAnnouncement(rest.remaining, rest.endsAt !== null, t)}</p>
     {state.pr && <PrBurst key={state.pr.id} pr={state.pr} onDismiss={state.dismissPr} />}
-    {!warmupView && <header className="flex flex-wrap items-center gap-3">
+    {!warmupView && <header className="flex flex-wrap items-center gap-stack">
       <IconButton aria-label={t('back')} onClick={() => router.push('/player')}><ArrowRight aria-hidden className="dir-icon" /></IconButton>
       <p className="min-w-0 flex-1 truncate font-bold">{v6 && state.day ? v6t('progress', { day: starterText(state.day.title, locale),
         current: formatNumber(Math.max(1, state.day.exercises.findIndex(exercise => exercise.id === current?.exercise.id) + 1), locale),
@@ -93,19 +93,19 @@ export function FocusScreen({ dayId, playerId }: { dayId: string; playerId?: str
         {state.finished ? state.session ? <SessionFeedback key={state.session.id} sessionId={state.session.id}
           workout={workout} hasFeedback={state.session.session_rpe != null || Boolean(state.session.player_note)} /> : <DonePanel workout={workout} /> : current ?
           warmupView ? <WarmupWorkout state={state} today={today} progress={warmupProgress} /> : hasWarmup ?
-            <section className="glass-strong space-y-3 rounded-[22px] border border-line-soft px-5 py-[18px]">
-              <span className="inline-flex rounded-full bg-lime-soft px-2.5 py-1 text-xs text-lime">{warmupT('exercises', { step: formatNumber(2, locale) })}</span>
+            <section className="glass-strong space-y-stack rounded-[22px] border border-line-soft px-page-x py-page-y">
+              <span className="inline-flex rounded-full bg-lime-soft px-stack py-inline text-xs text-lime">{warmupT('exercises', { step: formatNumber(2, locale) })}</span>
               <WorkoutExercise state={state} />
             </section> : <WorkoutExercise state={state} /> : <LoadingState />}
       </>}
     {!state.error && !state.loading && state.day && <CardioCards blocks={state.day.cardio ?? []} />}
-    {v6 && state.day && !state.finished && !warmupView && <div className="glass rounded-card border border-line-soft p-4">
-      <div className="flex min-h-12 items-center justify-between gap-3"><span className="text-lime">{v6t('workout')}</span>
+    {v6 && state.day && !state.finished && !warmupView && <div className="glass rounded-card border border-line-soft p-card">
+      <div className="flex min-h-12 items-center justify-between gap-stack"><span className="text-lime">{v6t('workout')}</span>
         <a href="#workout-exercises" className="flex min-h-12 items-center text-lime hover:underline focus-visible:underline">{v6t('exercises')}</a>
         <Link href="/player/history" className="flex min-h-12 items-center text-lime hover:underline focus-visible:underline">{v6t('history')}</Link></div>
       <details className="group" id="workout-exercises"><summary className="flex min-h-12 cursor-pointer items-center text-sm">{v6t('exercises')}<ChevronDown aria-hidden className="ms-auto size-4 shrink-0 transition-transform group-open:rotate-180" /></summary>
-        <ol className="divide-y divide-line-soft">{state.day.exercises.map(exercise => <li key={exercise.id} className="py-4 text-sm"><bdi>{exercise.name_en}</bdi>
-          {exercise.notes && <p className="mt-1 text-xs text-muted">{exercise.notes}</p>}</li>)}</ol>
+        <ol className="divide-y divide-line-soft">{state.day.exercises.map(exercise => <li key={exercise.id} className="py-page-y text-sm"><bdi>{exercise.name_en}</bdi>
+          {exercise.notes && <p className="mt-inline text-xs text-muted">{exercise.notes}</p>}</li>)}</ol>
       </details>
     </div>}
     {warmupView && <WarmupNav />}

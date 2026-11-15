@@ -37,15 +37,15 @@ export function PlayerWorkoutV3({ state, progress, workout, online, playerId }: 
   if (!state.day) return null;
   const index = state.day.exercises.findIndex(exercise => exercise.id === state.current?.exercise.id);
   // PlayerShell already contributes 12px above workout routes.
-  return <main style={{ fontFamily: 'var(--font-alexandria), var(--font-manrope), sans-serif' }} className={`mx-auto flex min-h-[calc(100dvh-12px)] max-w-lg flex-col gap-3.5 bg-bg px-[18px] pt-[max(4px,calc(env(safe-area-inset-top)_-_12px))] ${inFocus || state.finished ? 'pb-6' : 'pb-[120px]'}`}>
+  return <main style={{ fontFamily: 'var(--font-alexandria), var(--font-manrope), sans-serif' }} className={`mx-auto flex min-h-[calc(100dvh-12px)] max-w-lg flex-col gap-card-gap bg-bg px-page-x pt-[max(4px,calc(env(safe-area-inset-top)_-_12px))] ${inFocus || state.finished ? 'pb-section' : 'pb-[120px]'}`}>
     <p role="status" aria-live="polite" aria-atomic="true" className="sr-only">{restAnnouncement(state.rest.remaining, state.rest.endsAt !== null, t)}</p>
     {state.pr && <PrBurst key={state.pr.id} pr={state.pr} onDismiss={state.dismissPr} />}
     {state.error ? <ErrorState message={state.error} retryLabel={t('tryAgain')} onRetry={state.retry} /> : state.loading ? <LoadingState /> :
       state.finished ? state.session ? <SessionFeedback key={state.session.id} sessionId={state.session.id} workout={workout}
       hasFeedback={state.session.session_rpe != null || Boolean(state.session.player_note)} /> : <DonePanel workout={workout} /> : inFocus ? <>
-      <header className="flex items-center gap-2.5">
+      <header className="flex items-center gap-stack">
         <button type="button" aria-label={t('v3Close')} onClick={() => setStarted(false)} className="flex size-12 shrink-0 items-center justify-center rounded-full bg-surface-raised"><X aria-hidden className="size-5" /></button>
-        <div role="img" aria-label={t('v3ExerciseProgress', { current: formatNumber(index + 1, locale), total: formatNumber(state.day.exercises.length, locale) })} className="flex flex-1 gap-1">
+        <div role="img" aria-label={t('v3ExerciseProgress', { current: formatNumber(index + 1, locale), total: formatNumber(state.day.exercises.length, locale) })} className="flex flex-1 gap-inline">
           {state.day.exercises.map((exercise, position) => <span key={exercise.id} className={`h-1.5 flex-1 rounded-[3px] ${position <= index ? 'bg-lime' : 'bg-line'}`} />)}
         </div>
         <WorkoutClock startedAt={startedAt ?? state.session?.started_at} quiet />
@@ -55,7 +55,7 @@ export function PlayerWorkoutV3({ state, progress, workout, online, playerId }: 
       onStart={() => { if (state.day?.warmup?.items.length && progress.pending) progress.skip(); setStartedAt(previous => previous ?? state.session?.started_at ?? new Date().toISOString()); setStarted(true); }} />}
     {state.decision === 'reduce' && <CoachReductionBanner />}
     {!state.loading && !state.error && <CardioCards blocks={state.day.cardio ?? []} />}
-    <div className="flex flex-wrap items-center gap-3">
+    <div className="flex flex-wrap items-center gap-stack">
       <SyncPill state={!online ? 'offline' : state.parked && state.parked > 0 ? 'attention' : state.pending === undefined || state.pending > 0 ? 'pending' : 'synced'} pending={state.pending} onRetry={state.retrySync} />
       <MediaStatus />
       <Link href="/player/history" className="flex min-h-12 items-center text-sm text-muted underline">{t('seeHistory')}</Link>

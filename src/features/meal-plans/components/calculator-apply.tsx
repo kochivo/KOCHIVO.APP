@@ -35,10 +35,10 @@ export function CalculatorApply({ playerId, plans, targets }: { playerId: string
     } catch { setApplied(previous); setError(true); }
     finally { setBusy(false); }
   }
-  if (!plans.length) return <Link className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-12 items-center p-4" })} href={`/captain/players/${playerId}/nutrition`}>{t('noPlans')}</Link>;
-  return <section className="grid gap-3">
-    <label className="grid gap-2">{t('choosePlan')}<select value={planId} disabled={busy}
-      onChange={event => { setPlanId(event.target.value); setError(false); }} className="min-h-12 rounded-control bg-surface px-3">
+  if (!plans.length) return <Link className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-12 items-center p-card" })} href={`/captain/players/${playerId}/nutrition`}>{t('noPlans')}</Link>;
+  return <section className="grid gap-stack">
+    <label className="grid gap-inline">{t('choosePlan')}<select value={planId} disabled={busy}
+      onChange={event => { setPlanId(event.target.value); setError(false); }} className="min-h-12 rounded-control bg-surface px-stack">
       {plans.map(plan => <option key={plan.id} value={plan.id}>{plan.title}</option>)}
     </select></label>
     <p className="text-sm text-muted">{t('averageOnly')}</p>

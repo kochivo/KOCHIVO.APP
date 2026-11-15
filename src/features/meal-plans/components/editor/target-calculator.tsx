@@ -19,14 +19,14 @@ export function TargetCalculator({ facts, onApply }: { facts: PlayerFacts; onApp
   const [rate, setRate] = useState(goal === 'bulk' ? .25 : .5);
   const [split, setSplit] = useState(true);
   const result = calculatorResult(values, goal, rate);
-  return <section className="glass mb-[18px] grid gap-5 rounded-card border border-line-soft p-5 min-[1001px]:grid-cols-2">
-    <div className="grid content-start gap-4"><CalculatorInputs facts={facts} values={values} onChange={setValues} />
-      <fieldset><legend>{t('goal')}</legend><div className="mt-2 flex flex-wrap gap-2">{(['cut', 'maintain', 'bulk'] as const).map(value =>
+  return <section className="glass mb-card-gap grid gap-card-gap rounded-card border border-line-soft p-card min-[1001px]:grid-cols-2">
+    <div className="grid content-start gap-card-gap"><CalculatorInputs facts={facts} values={values} onChange={setValues} />
+      <fieldset><legend>{t('goal')}</legend><div className="mt-inline flex flex-wrap gap-inline">{(['cut', 'maintain', 'bulk'] as const).map(value =>
         <Button key={value} variant="secondary" aria-pressed={value === goal} onClick={() => { setGoal(value); setRate(value === 'bulk' ? .25 : .5); }}>{t(value)}</Button>)}</div></fieldset>
-      {goal !== 'maintain' && <label className="grid gap-2">{t('rate')}<input type="number" min={0} max={2} step={.05} value={Number.isNaN(rate) ? '' : rate}
-        onChange={event => setRate(event.target.valueAsNumber)} className={`${editableFieldClass} min-h-12 rounded-control bg-surface px-3`} /></label>}
+      {goal !== 'maintain' && <label className="grid gap-inline">{t('rate')}<input type="number" min={0} max={2} step={.05} value={Number.isNaN(rate) ? '' : rate}
+        onChange={event => setRate(event.target.valueAsNumber)} className={`${editableFieldClass} min-h-12 rounded-control bg-surface px-stack`} /></label>}
     </div>
-    <div className="grid content-start gap-4">{result && values.weightKg !== undefined && values.trainingDays !== undefined
+    <div className="grid content-start gap-card-gap">{result && values.weightKg !== undefined && values.trainingDays !== undefined
       ? <CalculatorResults result={result.energy} weightKg={values.weightKg} trainingDays={values.trainingDays} split={split} onSplit={setSplit} />
       : <p role="status">{t('invalid')}</p>}
       <Button variant="secondary" disabled={!result} onClick={() => { if (result) onApply(result.targets); }}>{t('apply')}</Button>

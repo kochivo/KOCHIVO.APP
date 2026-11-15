@@ -14,11 +14,11 @@ export function ReplyBox({ item, onSend, onSendNext, disabled = false }: {
   const t = useT(messages);
   const locale = useLocale();
   const [reply, setReply] = useState(item.reply ?? '');
-  return <form className="space-y-4" onSubmit={(event) => { event.preventDefault(); if (!disabled) (onSendNext ?? onSend)(reply); }}>
-    <div className="flex flex-wrap gap-2">{quickReplies(item.kind, locale).map((text) =>
-      <Button type="button" disabled={disabled} key={text} variant={'secondary'} block={false} className={"min-h-12 px-4 text-sm"} onClick={() => setReply(text)}>{text}</Button>)}</div>
+  return <form className="space-y-card-gap" onSubmit={(event) => { event.preventDefault(); if (!disabled) (onSendNext ?? onSend)(reply); }}>
+    <div className="flex flex-wrap gap-inline">{quickReplies(item.kind, locale).map((text) =>
+      <Button type="button" disabled={disabled} key={text} variant={'secondary'} block={false} className={"min-h-12 px-page-x text-sm"} onClick={() => setReply(text)}>{text}</Button>)}</div>
     <TextField disabled={disabled} label={t('reply')} value={reply} onChange={(event) => setReply(event.target.value)} maxLength={1000} hint={t('replyHint')} />
-    <Button type="submit" disabled={disabled} variant={'primary'} block={false} className={"min-h-12 w-full px-6 font-bold disabled:opacity-50"}>{disabled ? t('sending') : onSendNext ? t('sendNext') : t('send')}</Button>
-    {onSendNext && <Button type="button" disabled={disabled} onClick={() => onSend(reply)} variant={'secondary'} block={false} className={"min-h-12 w-full px-6 disabled:opacity-50"}>{t('send')}</Button>}
+    <Button type="submit" disabled={disabled} variant={'primary'} block={false} className={"min-h-12 w-full px-page-x font-bold disabled:opacity-50"}>{disabled ? t('sending') : onSendNext ? t('sendNext') : t('send')}</Button>
+    {onSendNext && <Button type="button" disabled={disabled} onClick={() => onSend(reply)} variant={'secondary'} block={false} className={"min-h-12 w-full px-page-x disabled:opacity-50"}>{t('send')}</Button>}
   </form>;
 }

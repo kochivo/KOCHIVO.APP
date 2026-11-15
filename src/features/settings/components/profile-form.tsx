@@ -22,7 +22,7 @@ export function ProfileForm({ profile }: { profile: SettingsProfile }) {
   const [zone, setZone] = useState({ timezone: profile.timezone ?? DEFAULT_TIMEZONE, timezone_auto: profile.timezone_auto ?? true });
   const [file, setFile] = useState<File | null>(null);
   const inFlight = useRef(false);
-  return <form className="glass space-y-4 rounded-card p-6" onSubmit={async (event) => {
+  return <form className="glass space-y-card-gap rounded-card p-section" onSubmit={async (event) => {
     event.preventDefault();
     if (inFlight.current) return;
     inFlight.current = true;

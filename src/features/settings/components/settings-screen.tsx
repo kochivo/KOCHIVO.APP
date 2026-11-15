@@ -82,17 +82,17 @@ export function SettingsScreen({ signOut }: { signOut?: ReactNode }) {
     {profile && <><TourReplay role={profile.role} /><ExportCard />
       {!demo && !demoExpiry(profile) && <DeleteAccountCard requestedAt={profile.deletion_requested_at} />}</>}
   </PlayerAccount>;
-  return <div className="mx-auto max-w-3xl space-y-5">
+  return <div className="mx-auto max-w-3xl space-y-card-gap">
     {playerSettings && <Link href="/player" className="inline-flex min-h-12 items-center text-muted">{t('backToPlayer')}</Link>}
     <h1 className="text-2xl font-extrabold">{t('settings')}</h1>
     {playerSettings && (loading ? <LoadingState variant="detail" /> : error ? <ErrorState message={error} retryLabel={t('tryAgain')} onRetry={() => {
       setLoading(true); setError(''); setAttempt(value => value + 1);
     }} /> : profile ? <ProfileForm profile={profile} /> : null)}
     {internationalEnabled() ? <LanguageSwitch onChange={saveLanguage} /> : <div>
-      <div role="group" aria-label={appearanceT('language')} className="flex gap-1">
+      <div role="group" aria-label={appearanceT('language')} className="flex gap-inline">
         {LOCALES.map(value => <button key={value} type="button" lang={value} aria-pressed={language === value}
           disabled={languagePending} onClick={() => void changeLanguage(value)}
-          className="min-h-12 rounded-control px-3 text-sm text-muted aria-pressed:bg-surface-raised aria-pressed:font-bold aria-pressed:text-ink disabled:opacity-40">
+          className="min-h-12 rounded-control px-stack text-sm text-muted aria-pressed:bg-surface-raised aria-pressed:font-bold aria-pressed:text-ink disabled:opacity-40">
           {appearanceT(value === 'ar' ? 'arabic' : 'english')}
         </button>)}
       </div>

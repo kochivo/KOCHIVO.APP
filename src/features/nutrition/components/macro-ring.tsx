@@ -10,7 +10,7 @@ const ratio = (value: number, target: number) => target > 0 ? Math.min(1, Math.m
 export function MacroRing({ eaten, target }: { eaten: Macros; target: Macros }) {
   const t = useT(messages);
   const locale = useLocale();
-  return <section className="glass-strong flex items-center gap-5 rounded-card p-5" aria-label={t('todaysNutrition')}>
+  return <section className="glass-strong flex items-center gap-card-gap rounded-card p-card" aria-label={t('todaysNutrition')}>
     <div className="relative size-32 shrink-0">
       <svg className="size-full -rotate-90" viewBox="0 0 116 116" aria-hidden="true">
         <circle cx="58" cy="58" r="50" fill="none" className="stroke-muted/20" strokeWidth="9" />
@@ -22,9 +22,9 @@ export function MacroRing({ eaten, target }: { eaten: Macros; target: Macros }) 
         <span className="text-xs text-muted"><bdi>/ {formatNumber(target.kcal, locale)}</bdi> {t('kcal')}</span>
       </div>
     </div>
-    <div className="min-w-0 flex-1 space-y-4">
-      {(['protein', 'carbs', 'fat'] as const).map((key, i) => <div key={key} className="space-y-1">
-        <div className="flex flex-wrap justify-between gap-1 text-xs">
+    <div className="min-w-0 flex-1 space-y-card-gap">
+      {(['protein', 'carbs', 'fat'] as const).map((key, i) => <div key={key} className="space-y-inline">
+        <div className="flex flex-wrap justify-between gap-inline text-xs">
           <span>{[t('protein'), t('carbs'), t('fat')][i]}</span><span className="text-muted">{formatNumber(eaten[key], locale)} / {formatNumber(target[key], locale)}{t('g')}</span>
         </div>
         <div role="progressbar" aria-label={[t('protein'), t('carbs'), t('fat')][i]} aria-valuemin={0}

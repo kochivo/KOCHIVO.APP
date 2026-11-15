@@ -16,7 +16,7 @@ export function QuestionRules({ question: q, locale, onChange, style }: {
   question: Question; locale: Locale; style?: ArabicStyle; onChange: (question: Question) => void;
 }) {
   const m = formCopy(locale, style), t = createT(redesign, locale, style);
-  const input = 'min-h-12 min-w-0 rounded-control border border-line bg-transparent px-3';
+  const input = 'min-h-12 min-w-0 rounded-control border border-line bg-transparent px-stack';
   const facts = Object.keys(mappingTypes) as CustomFormFactKey[], numeric = q.type === 'number' || q.type === 'scale';
   function options(text: string, language: 'ar' | 'en') {
     const lines = text.split('\n'), length = Math.max(lines.length, q.options.length);
@@ -26,13 +26,13 @@ export function QuestionRules({ question: q, locale, onChange, style }: {
     })) });
   }
   return <div>
-    {['choice','multi'].includes(q.type) && <div className="my-3 grid gap-3 sm:grid-cols-2">
-      <label className="text-xs text-muted">{m.optionsAr}<textarea className={captainWorkspaceEnabled() ? `${editableFieldClass} ${input} mt-2 w-full` : `${input} mt-2 w-full`} value={q.options.map(o => o.label_ar).join('\n')} onChange={e => options(e.target.value, 'ar')} /></label>
-      <label className="text-xs text-muted">{m.optionsEn}<textarea className={captainWorkspaceEnabled() ? `${editableFieldClass} ${input} mt-2 w-full` : `${input} mt-2 w-full`} value={q.options.map(o => o.label_en).join('\n')} onChange={e => options(e.target.value, 'en')} /></label>
+    {['choice','multi'].includes(q.type) && <div className="my-stack grid gap-stack sm:grid-cols-2">
+      <label className="text-xs text-muted">{m.optionsAr}<textarea className={captainWorkspaceEnabled() ? `${editableFieldClass} ${input} mt-inline w-full` : `${input} mt-inline w-full`} value={q.options.map(o => o.label_ar).join('\n')} onChange={e => options(e.target.value, 'ar')} /></label>
+      <label className="text-xs text-muted">{m.optionsEn}<textarea className={captainWorkspaceEnabled() ? `${editableFieldClass} ${input} mt-inline w-full` : `${input} mt-inline w-full`} value={q.options.map(o => o.label_en).join('\n')} onChange={e => options(e.target.value, 'en')} /></label>
       {q.options.map((option, i) => <Button variant="secondary" key={option.value} type="button" className="min-h-12 border border-danger/40 text-danger!"
         onClick={() => onChange({ ...q, options: q.options.filter((_, index) => index !== i) })}>{m.removeOption} {i + 1}</Button>)}
     </div>}
-    <div className="flex flex-wrap items-center gap-2 border-t border-line-soft py-3 text-[13px]">
+    <div className="flex flex-wrap items-center gap-inline border-t border-line-soft py-stack text-row">
       <span>{t('profile')}</span><ThemedSelect label={t('profile')} value={q.maps_to ?? ''}
         options={[{ value: '', label: m.none }, ...facts.filter(f => mappingTypes[f].includes(q.type)).map(value => ({ value, label: m.facts[value] }))]}
         onChange={value => onChange({ ...q, maps_to: facts.find(f => f === value) ?? null })} />
@@ -40,7 +40,7 @@ export function QuestionRules({ question: q, locale, onChange, style }: {
     <QuestionToggle label={t('alert')} checked={q.alert_on !== null} disabled={q.type === 'photos'}
       onChange={enabled => onChange({ ...q, alert_on: enabled ? { operator: numeric ? 'lt' : 'eq',
         value: numeric ? 6 : q.type === 'yesno' ? true : q.options[0]?.value ?? '' } : null })} />
-    {q.alert_on && <div className="flex flex-wrap items-center gap-2 rounded-[14px] bg-warn-soft px-3 py-[10px] text-[13px] text-warn">
+    {q.alert_on && <div className="flex flex-wrap items-center gap-inline rounded-[14px] bg-warn-soft px-stack py-stack text-row text-warn">
       <span>{t('alertSentence')}</span><ThemedSelect label={m.alertRule} value={q.alert_on.operator}
         options={[{ value: 'eq', label: m.alertEqual }, ...(numeric ? [{ value: 'lt', label: m.alertBelow }, { value: 'gt', label: m.alertAbove }] : [])]}
         onChange={value => { if (q.alert_on && (value === 'eq' || value === 'lt' || value === 'gt')) onChange({ ...q, alert_on: { ...q.alert_on, operator: value } }); }} />
@@ -48,7 +48,7 @@ export function QuestionRules({ question: q, locale, onChange, style }: {
         options={q.type === 'yesno' ? [{ value: 'true', label: m.yes }, { value: 'false', label: m.no }]
           : q.options.map(o => ({ value: o.value, label: locale === 'ar' ? o.label_ar : o.label_en || o.label_ar }))}
         onChange={value => q.alert_on && onChange({ ...q, alert_on: { ...q.alert_on, value: q.type === 'yesno' ? value === 'true' : value } })} />
-        : <input aria-label={m.alertValue} placeholder={t('alertPlaceholder')} className={captainWorkspaceEnabled() ? `${editableFieldClass} min-h-12 rounded-control border border-line bg-surface px-3 min-w-28 w-28 text-ink` : "min-h-12 rounded-control border border-line bg-surface px-3 min-w-28 w-28 text-ink"} type={numeric ? 'number' : 'text'} value={String(q.alert_on.value)}
+        : <input aria-label={m.alertValue} placeholder={t('alertPlaceholder')} className={captainWorkspaceEnabled() ? `${editableFieldClass} min-h-12 rounded-control border border-line bg-surface px-stack min-w-28 w-28 text-ink` : "min-h-12 rounded-control border border-line bg-surface px-stack min-w-28 w-28 text-ink"} type={numeric ? 'number' : 'text'} value={String(q.alert_on.value)}
           onChange={e => q.alert_on && onChange({ ...q, alert_on: { ...q.alert_on, value: numeric ? e.target.valueAsNumber : e.target.value } })} />}
       <span>{t('alertHint')}</span>
     </div>}

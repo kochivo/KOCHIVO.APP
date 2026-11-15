@@ -62,21 +62,21 @@ export function CustomFoodSheet({ onClose, onSave, openerId, alternative = false
     { name: 'fat', label: t('fat2'), min: 0, max: 1000, value: food?.fat ?? 0 },
   ];
   return <ResponsiveDialog modal fallbackId={openerId} openerId={openerId} onDismiss={() => { if (!saving.current) onClose(); }}
-    aria-labelledby={titleId} className="sheet fixed inset-0 z-50 m-auto max-h-[90dvh] w-full max-w-lg overflow-y-auto rounded-card p-5 text-ink">
-    <div className="flex items-center justify-between gap-3">
+    aria-labelledby={titleId} className="sheet fixed inset-0 z-50 m-auto max-h-[90dvh] w-full max-w-lg overflow-y-auto rounded-card p-card text-ink">
+    <div className="flex items-center justify-between gap-stack">
       <h2 id={titleId} className="text-xl font-bold">{food ? t('editFood') : t('newFood')}</h2>
       {captainWorkspaceEnabled() ? <IconButton disabled={busy} aria-label={t('close')} onClick={onClose}><X aria-hidden /></IconButton> : <Button variant="ghost" disabled={busy} aria-label={t('close')} onClick={onClose}><X aria-hidden /></Button>}
     </div>
-    <form onSubmit={event => void submit(event)} className="mt-4 grid gap-4" aria-busy={busy}>
-      <fieldset disabled={busy} className="grid gap-3">
-        <label className="grid gap-1">{t('foodName')}<input name="name" required maxLength={60} defaultValue={food?.name ?? initialName?.slice(0, 60)}
-          className="min-h-12 rounded-control border border-line bg-surface px-3" /></label>
+    <form onSubmit={event => void submit(event)} className="mt-card-gap grid gap-card-gap" aria-busy={busy}>
+      <fieldset disabled={busy} className="grid gap-stack">
+        <label className="grid gap-inline">{t('foodName')}<input name="name" required maxLength={60} defaultValue={food?.name ?? initialName?.slice(0, 60)}
+          className="min-h-12 rounded-control border border-line bg-surface px-stack" /></label>
         <p className="text-sm text-muted">{t('servingMacros')}</p>
-        {fields.map(field => <label key={field.name} className="grid gap-1">{field.label}
+        {fields.map(field => <label key={field.name} className="grid gap-inline">{field.label}
           <input name={field.name} type="number" required min={field.min} max={field.max} step="0.1" defaultValue={field.value}
-            className="min-h-12 rounded-control border border-line bg-surface px-3" />
+            className="min-h-12 rounded-control border border-line bg-surface px-stack" />
         </label>)}
-        <label className="grid gap-1">{t('optionalPhoto')}<input type="file" accept="image/*" className="min-h-12"
+        <label className="grid gap-inline">{t('optionalPhoto')}<input type="file" accept="image/*" className="min-h-12"
           onChange={event => {
             const next = event.target.files?.[0] ?? null;
             setFile(next); setPreview(next ? URL.createObjectURL(next) : '');

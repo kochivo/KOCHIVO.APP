@@ -15,18 +15,18 @@ export function InboxGroups({ children, filter, onFilter, loading = false }: {
   loading?: boolean;
 }) {
   const t = useT(messages);
-  return <div className="space-y-4">
-    <div role="group" aria-label={t('triageFilter')} className="flex flex-wrap gap-2">
+  return <div className="space-y-card-gap">
+    <div role="group" aria-label={t('triageFilter')} className="flex flex-wrap gap-inline">
       {(['all', 'attention', 'routine'] as const).map(group => <button key={group} type="button"
         aria-pressed={filter === group} onClick={() => onFilter(group)}
-        className={`glass min-h-12 rounded-full px-4 ${filter === group ? 'text-lime' : 'text-muted'}`}>{t(group)}</button>)}
+        className={`glass min-h-12 rounded-full px-page-x ${filter === group ? 'text-lime' : 'text-muted'}`}>{t(group)}</button>)}
     </div>
     {loading ? <LoadingState variant="list" aria-label={t('loading')} /> :
       (['attention', 'routine'] as const).filter(group => filter === 'all' || filter === group).map(group => {
       const rows = children.filter(child => child.props['data-group'] === group);
-      return <section key={group} aria-label={t(group)} className="space-y-3">
+      return <section key={group} aria-label={t(group)} className="space-y-stack">
         <h2 className="text-xl font-bold">{t(group)}</h2>
-        {rows.length ? <ul className="space-y-3">{rows}</ul> :
+        {rows.length ? <ul className="space-y-stack">{rows}</ul> :
           <EmptyState icon={CheckCheck} title={t('caughtUp')} body={t('noPendingBody')} />}
       </section>;
     })}

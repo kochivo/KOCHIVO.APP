@@ -9,7 +9,7 @@ import type { StepProps } from '../wizard';
 export function StepHealth({ draft, update, errors, touch }: StepProps) {
   const t = useT(messages);
   return (
-    <div className="space-y-6">
+    <div className="space-y-section">
       <div onBlur={() => touch('injuries')}>
         <ChipGroup label={t('anyInjuriesOrPain')} options={injuryOptions} value={draft.injuries ?? []}
           onChange={(injuries) => update({ injuries })} error={errors.injuries} />

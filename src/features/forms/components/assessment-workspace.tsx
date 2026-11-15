@@ -51,32 +51,32 @@ export function AssessmentWorkspace({ playerId, formId, locale }: { playerId?: s
     } catch { setError(true); }
     finally { lock.current = false; setBusy(false); }
   }
-  if (!resource.data) return <section className="glass rounded-card p-5" role={resource.status === 'error' ? 'alert' : 'status'}>
+  if (!resource.data) return <section className="glass rounded-card p-card" role={resource.status === 'error' ? 'alert' : 'status'}>
     <p>{t(resource.status === 'error' ? 'error' : 'loading')}</p>
-    {resource.status === 'error' && <Button variant="secondary" className="min-h-12 px-4" onClick={() => void resource.retry()}>{t('retry')}</Button>}
+    {resource.status === 'error' && <Button variant="secondary" className="min-h-12 px-page-x" onClick={() => void resource.retry()}>{t('retry')}</Button>}
   </section>;
   const data = formId ? { ...resource.data, schedules: resource.data.schedules.filter(s => s.form_id === formId) } : resource.data;
   const name = data.players.find(p => p.id === playerId)?.name;
-  return <section className="space-y-[18px]">
-    {playerId && <h1 className="font-display text-[30px] font-semibold leading-tight">{t('scheduleFor', { name: name ?? '' })}</h1>}
+  return <section className="space-y-card-gap">
+    {playerId && <h1 className="font-display text-stat font-semibold leading-tight">{t('scheduleFor', { name: name ?? '' })}</h1>}
     {(error || resource.status === 'error') && <p role="alert" className="text-danger">{t('saveError')}
-      <Button variant="secondary" className="ms-3 min-h-12 px-3" onClick={() => void resource.retry()}>{t('retry')}</Button></p>}
-    <div className="grid items-start gap-[18px] min-[1001px]:grid-cols-[300px_minmax(0,1fr)]">
+      <Button variant="secondary" className="ms-stack min-h-12 px-stack" onClick={() => void resource.retry()}>{t('retry')}</Button></p>}
+    <div className="grid items-start gap-card-gap min-[1001px]:grid-cols-[300px_minmax(0,1fr)]">
       <AssessmentPanel data={data} player={playerId} locale={locale} now={now} busy={busy}
         onEdit={s => { setEditing(s); setShowEditor(true); }} onPause={s => void mutate(s, false)}
         onDelete={s => void mutate(s, true)} onSend={() => setManual(true)} />
-      <div className="min-w-0 space-y-4">
+      <div className="min-w-0 space-y-card-gap">
         {manual && playerId && <RequestPicker forms={data.forms} playerId={playerId} locale={locale} now={now}
           onCancel={() => setManual(false)} onSent={() => { setManual(false); setRevision(r => r + 1); void resource.retry(); }}
           onSend={async (_row, commit) => { await commit(); return true; }} />}
         {showEditor ? <AssessmentEditor key={editing?.id ?? `new:${revision}`} data={data} player={playerId} formId={formId}
           initial={editing} locale={locale} now={now} onSave={save} onCancel={() => { setShowEditor(false); setEditing(undefined); }}
           onSaved={() => { void resource.retry(); if (formId) router.refresh(); setEditing(undefined); setShowEditor(false); setRevision(r => r + 1); }} />
-          : <Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-5"} onClick={() => setShowEditor(true)}>{t('schedule')}</Button>}
+          : <Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-page-x"} onClick={() => setShowEditor(true)}>{t('schedule')}</Button>}
       </div>
     </div>
-    {playerId && <details className="glass rounded-card border border-line-soft p-5" open={undefined}>
-      <summary className="min-h-12 cursor-pointer font-display text-[19px] font-semibold">{t('history')}</summary>
+    {playerId && <details className="glass rounded-card border border-line-soft p-card" open={undefined}>
+      <summary className="min-h-12 cursor-pointer font-display text-title font-semibold">{t('history')}</summary>
       <RequestManager key={revision} playerId={playerId} locale={locale} />
     </details>}
   </section>;

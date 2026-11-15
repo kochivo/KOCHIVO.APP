@@ -46,28 +46,28 @@ export function FinishHero({ sessionId, workout, extras = false }: { sessionId: 
   const summary = useLiveQuery(read, useCallback(() => setFailed(true), []), attempt);
   const preview = workout && ranksEnabled() ? previewWorkoutPoints(workout) : undefined;
   const number = (value: number) => formatNumber(value, locale);
-  if (extras) return summary ? <details className="rounded-[22px] border border-line-soft bg-surface p-4">
+  if (extras) return summary ? <details className="rounded-[22px] border border-line-soft bg-surface p-card">
     <summary className="min-h-12 cursor-pointer text-muted">{wt('v3Details')}</summary>
-    <p className="mb-3 text-sm">{summary.day ? starterText(summary.day, locale) : t('title')}</p>
-      <div className="grid grid-cols-2 gap-3 text-start">
-        {preview?.counted && <div className="glass-strong rounded-card border border-line-soft p-4"><p className="text-xs text-faint">{t('points')}</p><p className="mt-2 font-display text-[22px] font-extrabold text-lime">+{number(preview.points)}</p></div>}
-        <div className="glass-strong rounded-card border border-line-soft p-4"><p className="text-xs text-faint">{t('records')}</p><p className="mt-2 font-display text-[22px] font-extrabold">{number(summary.records)}</p></div>
+    <p className="mb-stack text-sm">{summary.day ? starterText(summary.day, locale) : t('title')}</p>
+      <div className="grid grid-cols-2 gap-stack text-start">
+        {preview?.counted && <div className="glass-strong rounded-card border border-line-soft p-card"><p className="text-xs text-faint">{t('points')}</p><p className="mt-inline font-display text-h font-extrabold text-lime">+{number(preview.points)}</p></div>}
+        <div className="glass-strong rounded-card border border-line-soft p-card"><p className="text-xs text-faint">{t('records')}</p><p className="mt-inline font-display text-h font-extrabold">{number(summary.records)}</p></div>
       </div>
   </details> : null;
-  return <div className="relative flex flex-col gap-3.5 pt-[134px]">
+  return <div className="relative flex flex-col gap-card-gap pt-[134px]">
     <div aria-hidden className="pointer-events-none absolute -top-24 start-[192px] h-[360px] w-[120px] -skew-x-[18deg] bg-lime" />
     <div aria-hidden className="pointer-events-none absolute -top-24 start-[150px] h-[360px] w-[26px] -skew-x-[18deg] bg-ivory" />
     <div aria-hidden className="pointer-events-none absolute -inset-x-[18px] -top-4 h-[300px] bg-gradient-to-b from-bg/0 from-20% to-bg to-85%" />
-    <div className="relative flex flex-col gap-1.5">
+    <div className="relative flex flex-col gap-inline">
       <span className="text-sm font-bold text-lime">{wt('v3Done')}</span>
       <h1 style={{ fontFamily: 'inherit', fontWeight: 900 }} className="text-4xl leading-normal">{firstName ? wt('v3Congrats', { name: firstName }) : wt('v3CongratsFallback')}</h1>
     </div>
     {summary ? <>
-      <div className="relative grid grid-cols-3 gap-2">
+      <div className="relative grid grid-cols-3 gap-inline">
         {[{ value: number(summary.minutes), label: wt('v3Minute') }, { value: number(summary.sets), label: wt('v3Sets') },
           { value: volumeInTons(summary.volume, locale), label: wt('v3Volume'), unit: wt('v3Ton') }].map(stat =>
-          <div key={stat.label} className="glass-strong flex flex-col gap-0.5 rounded-[20px] border border-line-soft p-3">
-            <span className="font-display text-2xl font-extrabold tabular-nums">{stat.value}{stat.unit && <span className="text-[13px]">{stat.unit}</span>}</span>
+          <div key={stat.label} className="glass-strong flex flex-col gap-inline rounded-[20px] border border-line-soft p-stack">
+            <span className="font-display text-2xl font-extrabold tabular-nums">{stat.value}{stat.unit && <span className="text-row">{stat.unit}</span>}</span>
             <span className="text-xs text-muted">{stat.label}</span>
           </div>)}
       </div>

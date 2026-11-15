@@ -72,7 +72,7 @@ export function FormCheckButton({ exerciseId, setLogId }: { exerciseId: string; 
     }
   }
 
-  return <div className="space-y-2">
+  return <div className="space-y-inline">
     <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} className="min-h-12" disabled={busy} aria-label={t('recordForm')} onClick={() => input.current?.click()}>
       <Video aria-hidden />{t('recordForm')}
     </Button>
@@ -82,13 +82,13 @@ export function FormCheckButton({ exerciseId, setLogId }: { exerciseId: string; 
     {saved && <p role="status" className="text-sm text-muted">{t('savedItWillReachYourCoachWhen')}</p>}
     {error && !selection && <p role="alert" className="text-sm text-danger">{error}</p>}
     <dialog ref={sheet} aria-labelledby={titleId} onCancel={() => setSelection(null)}
-      className="sheet m-auto w-full max-w-sm rounded-card p-5 text-ink">
-      <form className="space-y-4" onSubmit={(event) => { event.preventDefault(); void save(); }}>
+      className="sheet m-auto w-full max-w-sm rounded-card p-card text-ink">
+      <form className="space-y-card-gap" onSubmit={(event) => { event.preventDefault(); void save(); }}>
         <h2 id={titleId} className="font-bold">{t('formVideo')}</h2>
         <TextField label={t('noteForYourCoachOptional')} value={note} maxLength={500}
           onChange={(event) => setNote(event.target.value)} disabled={busy} />
         {error && <p role="alert" className="text-sm text-danger">{error}</p>}
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-inline">
           <Button type="submit" variant={captainWorkspaceEnabled() ? 'secondary' : 'primary'} className="min-h-12" disabled={busy}>{busy ? t('saving') : t('sendToCoach')}</Button>
           <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} className="min-h-12" disabled={busy}
             onClick={() => { sheet.current?.close(); setSelection(null); }}>{t('continueWorkout')}</Button>

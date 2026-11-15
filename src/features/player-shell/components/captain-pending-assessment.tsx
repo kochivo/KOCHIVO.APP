@@ -23,9 +23,9 @@ export function CaptainPendingAssessment() {
   if (!request) return null;
   return <Link href={`/${locale}/player/assessments`} prefetch={false}
     title={request.questionCount === null ? undefined : t('estimated', { n: request.questionCount, min: Math.max(1, Math.ceil(request.questionCount / 3)) })}
-    className="flex min-h-16 items-center gap-3 rounded-[22px] border border-gold-2/45 bg-gold-2/10 px-3.5 py-3 text-ink">
+    className="flex min-h-16 items-center gap-stack rounded-[22px] border border-gold-2/45 bg-gold-2/10 px-card py-stack text-ink">
     <ClipboardList aria-hidden className="size-6 shrink-0 text-gold-2" />
-    <span className="flex min-w-0 flex-1 flex-col gap-0.5"><b className="text-sm">{chatT('pending')}</b>
+    <span className="flex min-w-0 flex-1 flex-col gap-inline"><b className="text-sm">{chatT('pending')}</b>
       <span className="text-xs text-muted">{chatT('assessments')}</span></span>
     <ChevronLeft aria-hidden className="dir-icon size-[18px] shrink-0 text-muted" />
   </Link>;

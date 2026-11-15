@@ -59,7 +59,7 @@ describe('T-284 landing', () => {
       expect(block).toContain('var(--font-alexandria)');
     }
     expect(preview).toMatch(/\.compactSet \[data-preview-done\]\s*\{[^}]*font: 800 1rem/);
-    expect(preview).toMatch(/\.compactSet \.record\s*\{[^}]*font-size: \.75rem[^}]*color: var\(--color-lime-ink\)/);
+    expect(preview).toMatch(/\.compactSet \.record\s*\{[^}]*font-size: var\(--text-xs\)[^}]*color: var\(--color-lime-ink\)/);
   });
   it('renders the v10 product sections and animated final slogan', async () => {
     const html = (await Promise.all([Hero(), FeaturesGrid(), FinalCta()])).map(part => renderToStaticMarkup(part)).join('');

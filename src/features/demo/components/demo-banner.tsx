@@ -17,7 +17,7 @@ export function DemoBanner({ hours, role = 'captain' }: { hours: number; role?: 
   const router = useRouter();
   const [error, setError] = useState('');
   const [pending, setPending] = useState(false);
-  return <aside className="glass-strong mb-4 flex flex-wrap items-center justify-between gap-x-4 rounded-control px-4 text-sm" aria-label={t('demoMode')}>
+  return <aside className="glass-strong mb-card-gap flex flex-wrap items-center justify-between gap-x-card-gap rounded-control px-page-x text-sm" aria-label={t('demoMode')}>
     <LanguageSwitch />
     {role === 'player' && <p>{t('playerDemo')}</p>}
     <p>{t('demoExpiry', { n: hours, count: formatNumber(hours, locale) })}</p>
@@ -39,6 +39,6 @@ export function DemoBanner({ hours, role = 'captain' }: { hours: number; role?: 
         router.refresh();
       } catch { setError(t('couldnTLeaveTheDemoTry')); setPending(false); }
     }}>{pending ? t('signingOut') : t('createYourAccount')}</Link>
-    {error && <p role="alert" className="w-full pb-3 text-danger">{error}</p>}
+    {error && <p role="alert" className="w-full pb-stack text-danger">{error}</p>}
   </aside>;
 }

@@ -35,17 +35,17 @@ export function ExerciseRow({ row, first, last, onLink, onMove, onDelete, onUpda
   const rirId = `rir-${row.id}`;
   const reps = row.reps_max === null ? t('failure') : row.reps_min === row.reps_max ? formatNumber(row.reps_min, locale)
     : t('repsRange', { min: formatNumber(row.reps_min, locale), max: formatNumber(row.reps_max, locale) });
-  const field = 'recessed glass-strong flex min-h-28 min-w-0 flex-col items-center justify-center gap-3 rounded-control p-3 [&>div]:w-full [&_output]:text-2xl';
-  return <article className={`${dragging ? 'glass-strong scale-[1.02] shadow-xl motion-reduce:scale-100' : 'glass'} space-y-4 rounded-card border border-line p-4 ${linked ? 'border-s-4 border-s-lime' : ''}`}>
-    <div className="flex items-start gap-3">
+  const field = 'recessed glass-strong flex min-h-28 min-w-0 flex-col items-center justify-center gap-stack rounded-control p-stack [&>div]:w-full [&_output]:text-2xl';
+  return <article className={`${dragging ? 'glass-strong scale-[1.02] shadow-xl motion-reduce:scale-100' : 'glass'} space-y-card-gap rounded-card border border-line p-card ${linked ? 'border-s-4 border-s-lime' : ''}`}>
+    <div className="flex items-start gap-stack">
       <DragHandle name={name} position={position} dragProps={dragProps} onMove={delta => {
         if (!dragging && !(delta === -1 ? first : last)) onMove(delta);
       }} />
       {row.library?.media_path && <ExerciseImage src={exerciseMediaUrl(row.library.media_path)} alt="" width={48} height={48} />}
-      <div className="min-w-0 flex-1 space-y-2">
-        <h3 className="break-words font-bold"><span className="me-2 tabular-nums text-muted">{position}</span><bdi>{name}</bdi></h3>
+      <div className="min-w-0 flex-1 space-y-inline">
+        <h3 className="break-words font-bold"><span className="me-inline tabular-nums text-muted">{position}</span><bdi>{name}</bdi></h3>
         <p className="text-sm tabular-nums text-muted">{exerciseSummary(row, locale)}</p>
-        {linked && <span className="glass-raised inline-flex rounded-chip px-3 py-1 text-xs">{t('superset')}</span>}
+        {linked && <span className="glass-raised inline-flex rounded-chip px-stack py-inline text-xs">{t('superset')}</span>}
       </div>
       <BuilderMenu id={`exercise-menu-${row.id}`} fallbackId={`day-title-${row.day_id}`} label={t('exerciseOptions', { name, position })} name={name} onDelete={onDelete}
         actions={[
@@ -54,7 +54,7 @@ export function ExerciseRow({ row, first, last, onLink, onMove, onDelete, onUpda
           { label: t(linked ? 'unlink' : 'linkNext'), disabled: last && !linked, onClick: onLink },
         ]} />
     </div>
-    <div className="@container"><div className="grid grid-cols-2 gap-3 @md:grid-cols-4 [&_bdi]:whitespace-nowrap">
+    <div className="@container"><div className="grid grid-cols-2 gap-stack @md:grid-cols-4 [&_bdi]:whitespace-nowrap">
       <div className={field}><Stepper size="compact" label={t('sets')} controlLabel={t('sets2', { v0: name, v1: position })}
         format={value => formatNumber(value, locale)} value={row.sets} min={1} max={20} step={1} onChange={sets => onUpdate({ sets })} /></div>
       <button id={repsId} type="button" className={field} aria-haspopup="dialog" aria-label={`${t('reps')}: ${name}, ${position}`}

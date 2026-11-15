@@ -18,22 +18,22 @@ export function PublicTierCards({ catalog, signup, requested, t, now, days }: {
     return [{ tier, pkg, offer, price: finalPrice(pkg.price_egp, offer) }];
   }).slice(0, 3);
   if (!cards.length) return null;
-  return <div className="grid items-stretch gap-6 md:grid-cols-3">{cards.map(({ tier, pkg, offer, price }) => {
+  return <div className="grid items-stretch gap-section md:grid-cols-3">{cards.map(({ tier, pkg, offer, price }) => {
       const features = Array.isArray(tier.features) ? tier.features.filter((f): f is string => typeof f === 'string') : [];
       const href = `${signup}&package=${encodeURIComponent(pkg.id)}${offer ? `&offer=${encodeURIComponent(offer.id)}` : ''}`;
-      return <article key={tier.id} className={`${tier.is_featured ? 'glass-featured' : 'glass'} flex flex-col gap-5 rounded-card p-6`}>
-        <div className="flex flex-wrap items-center gap-3"><h3 className="text-xl font-bold">{tier.name}</h3>
-          {tier.is_featured && <span className="rounded-full bg-lime px-3 py-1 text-xs font-bold text-on-lime">{t('popular')}</span>}
+      return <article key={tier.id} className={`${tier.is_featured ? 'glass-featured' : 'glass'} flex flex-col gap-card-gap rounded-card p-section`}>
+        <div className="flex flex-wrap items-center gap-stack"><h3 className="text-xl font-bold">{tier.name}</h3>
+          {tier.is_featured && <span className="rounded-full bg-lime px-stack py-inline text-xs font-bold text-on-lime">{t('popular')}</span>}
         </div>
         {tier.description && <p className="text-sm text-muted">{tier.description}</p>}
-        <div className="glass-strong rounded-control p-4">
-          <p className="flex flex-wrap items-baseline gap-2"><b className="font-display text-4xl font-extrabold tabular-nums">{formatNumber(price)}</b><span className="text-sm text-muted">{t('currency')}</span>
+        <div className="glass-strong rounded-control p-card">
+          <p className="flex flex-wrap items-baseline gap-inline"><b className="font-display text-4xl font-extrabold tabular-nums">{formatNumber(price)}</b><span className="text-sm text-muted">{t('currency')}</span>
             {price < pkg.price_egp && <s className="text-sm text-muted">{formatNumber(pkg.price_egp)}</s>}
-          </p><p className="mt-2 text-sm text-muted">{t('packageDays', { count: formatNumber(pkg.days) })}</p>
+          </p><p className="mt-inline text-sm text-muted">{t('packageDays', { count: formatNumber(pkg.days) })}</p>
         </div>
         {offer && <p className="text-sm text-lime">{offer.kind === 'bonus_days' ? t('bonusOfferLabel', { name: offer.name, count: formatNumber(offer.value) }) : offer.name}</p>}
-        {features.length > 0 && <ul className="flex-1 space-y-3 border-t border-line-soft pt-5 text-sm text-muted">{features.map((feature, index) =>
-          <li key={`${index}-${feature}`} className="flex items-start gap-2"><Check aria-hidden strokeWidth={1.5} className="mt-0.5 size-4 shrink-0 text-lime" />{feature}</li>)}</ul>}
+        {features.length > 0 && <ul className="flex-1 space-y-stack border-t border-line-soft pt-card text-sm text-muted">{features.map((feature, index) =>
+          <li key={`${index}-${feature}`} className="flex items-start gap-inline"><Check aria-hidden strokeWidth={1.5} className="mt-inline size-4 shrink-0 text-lime" />{feature}</li>)}</ul>}
         {!requested && <div className="mt-auto"><PublicSignup href={href} label={t('requestPackage')} secondary /></div>}
       </article>;
     })}</div>;

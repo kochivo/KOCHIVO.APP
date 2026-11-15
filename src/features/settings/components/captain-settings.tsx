@@ -29,8 +29,8 @@ const Delete = dynamic(() => import('./delete-account-card').then(m => m.DeleteA
 const Options = dynamic(() => import('./workspace-options').then(m => m.WorkspaceOptions));
 const PublicPage = dynamic(() => import('./public-page-settings').then(m => m.PublicPageSettings), { loading: () => <LoadingState variant="detail" /> });
 type Panel = 'profile' | 'invite' | 'download' | 'delete' | 'more';
-const card = 'glass rounded-card border border-line-soft px-5 py-[18px]';
-const heading = 'mb-2 font-display text-[19px] font-semibold';
+const card = 'glass rounded-card border border-line-soft px-page-x py-page-y';
+const heading = 'mb-inline font-display text-title font-semibold';
 export function CaptainSettings({ signOut }: { signOut?: ReactNode }) {
   const t = useT(messages), legacy = useT(legacyMessages), demo = useDemoExpiry();
   const loader = useCallback(() => loadCaptainSettings(), []);
@@ -38,28 +38,28 @@ export function CaptainSettings({ signOut }: { signOut?: ReactNode }) {
   const [panel, setPanel] = useState<Panel | null>(null);
   const profile = resource.data;
   const setEdited = (next: SettingsProfile) => { void resource.mutate(() => next, async () => {}); };
-  return <section className="space-y-[18px]">
+  return <section className="space-y-card-gap">
     <PageBarTitle title={legacy('settings')} />
     {!profile ? resource.error ? <ErrorState message={legacy('couldnTLoadSettings')} retryLabel={t('retry')} onRetry={() => void resource.retry()} />
       : <LoadingState variant="detail" /> : <>
-      <div className="grid items-start gap-3 min-[760px]:grid-cols-2">
+      <div className="grid items-start gap-stack min-[760px]:grid-cols-2">
         <WorkspacePageCard profile={profile} edit={() => setPanel('profile')} />
         <WorkspaceLanguageCard profile={profile} />
       </div>
-      <div className="grid items-start gap-3.5 min-[760px]:grid-cols-2">
+      <div className="grid items-start gap-card-gap min-[760px]:grid-cols-2">
         <WorkspacePreferences profile={profile} update={setEdited} />
         <SubscriptionEntry />
         <PaymentMethods />
         <PublicPage profile={profile} onSave={setEdited} />
-        <section className={card}><h2 className={heading}>{t('invite')}</h2><p className="text-[13px] leading-[1.9] text-muted">{profile.invite_message || t('unset')}</p>
-          <Button variant="secondary" className="mt-3 min-h-12 rounded-full" onClick={() => setPanel('invite')}>{t('editInvite')}</Button></section>
+        <section className={card}><h2 className={heading}>{t('invite')}</h2><p className="text-row leading-[1.9] text-muted">{profile.invite_message || t('unset')}</p>
+          <Button variant="secondary" className="mt-stack min-h-12 rounded-full" onClick={() => setPanel('invite')}>{t('editInvite')}</Button></section>
         <section className={card}><h2 className={heading}>{t('account')}</h2><div>
           <WorkspaceFact label={t('profile')}><Button variant="secondary" className="min-h-12 rounded-full" onClick={() => setPanel('profile')}>{t('edit')}</Button></WorkspaceFact>
           <WorkspaceFact label={t('whatsapp')}><span dir="ltr">{profile.social?.whatsapp?.replace('https://wa.me/', '+') || profile.phone || t('unset')}</span></WorkspaceFact>
           <WorkspaceFact label={t('download')}><Button variant="secondary" className="min-h-12 rounded-full" onClick={() => setPanel('download')}>{t('downloadAction')}</Button></WorkspaceFact>
           <WorkspaceFact label={t('signOut')}>{signOut}</WorkspaceFact>
           {!demo && !demoExpiry(profile) && <WorkspaceFact label={t('delete')} danger><Button variant="secondary" className="min-h-12 rounded-full text-danger" onClick={() => setPanel('delete')}>{t('deleteAction')}</Button></WorkspaceFact>}
-        </div><Button variant="secondary" className="mt-2 min-h-12 rounded-full text-muted" onClick={() => setPanel('more')}>{t('more')}</Button></section>
+        </div><Button variant="secondary" className="mt-inline min-h-12 rounded-full text-muted" onClick={() => setPanel('more')}>{t('more')}</Button></section>
       </div>
       {panel && <WorkspaceSheet title={t(panel)} onClose={() => setPanel(null)}>
         {panel === 'profile' && <Profile profile={profile} onSave={setEdited} quiet />}

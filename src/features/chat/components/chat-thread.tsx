@@ -24,9 +24,9 @@ export function ChatThread({ items, viewer, onRetry, onVoicePlay }: {
   const lastRead = items.findLast(item => item.mine && item.readAt && item.status === 'sent')?.id;
   const tail = items.at(-1)?.id;
   useEffect(() => { bottom.current?.scrollIntoView({ block: 'end' }); }, [tail]);
-  return <div className={viewer === 'captain' ? 'pb-[calc(var(--nav-clearance)+5rem)] min-[760px]:pb-28 lg:pb-4' : 'pb-40'}>
-    {!items.length && <p className="py-8 text-center text-sm text-muted">{t(viewer === 'player' ? 'empty' : 'emptyCaptain')}</p>}
-    <ol aria-label={t('thread')} className="flex flex-col gap-2.5 pt-1">
+  return <div className={viewer === 'captain' ? 'pb-[calc(var(--nav-clearance)+5rem)] min-[760px]:pb-28 lg:pb-card' : 'pb-40'}>
+    {!items.length && <p className="py-page-y text-center text-sm text-muted">{t(viewer === 'player' ? 'empty' : 'emptyCaptain')}</p>}
+    <ol aria-label={t('thread')} className="flex flex-col gap-stack pt-inline">
       {items.map((item, index) => {
         const date = localDate(new Date(item.createdAt), timezone);
         const previous = items[index - 1];
@@ -34,20 +34,20 @@ export function ChatThread({ items, viewer, onRetry, onVoicePlay }: {
         const own = item.mine;
         const lime = own && viewer === 'player';
         return <Fragment key={item.id}>
-          {(!previous || localDate(new Date(previous.createdAt), timezone) !== date) && <li className="self-center text-[11px] text-faint">
+          {(!previous || localDate(new Date(previous.createdAt), timezone) !== date) && <li className="self-center text-micro text-faint">
             <time dateTime={date}>{day === 'today' || day === 'yesterday' ? t(day) : formatDateAr(date, { day: 'numeric', month: 'long', year: 'numeric' }, locale)}</time>
           </li>}
-          <li className={`flex max-w-[82%] flex-col gap-1 ${own ? 'self-end' : 'self-start'}`}>
-            <div className={`rounded-[22px] text-sm leading-[1.6] ${own ? 'rounded-ee-[6px]' : 'rounded-es-[6px]'} ${lime ? 'bg-lime font-semibold text-on-lime' : viewer === 'captain' && !own ? 'border border-line-soft bg-surface text-ink' : 'bg-surface-raised text-ink'} ${item.kind === 'text' ? 'px-3.5 py-3' : 'px-3 py-2.5'}`}>
+          <li className={`flex max-w-[82%] flex-col gap-inline ${own ? 'self-end' : 'self-start'}`}>
+            <div className={`rounded-[22px] text-sm leading-[1.6] ${own ? 'rounded-ee-[6px]' : 'rounded-es-[6px]'} ${lime ? 'bg-lime font-semibold text-on-lime' : viewer === 'captain' && !own ? 'border border-line-soft bg-surface text-ink' : 'bg-surface-raised text-ink'} ${item.kind === 'text' ? 'px-card py-stack' : 'px-stack py-stack'}`}>
               {item.kind === 'text' ? <p className="whitespace-pre-wrap break-words">{item.body}</p> : <div className="relative w-[240px] max-w-full">
                 <AudioPlayer src={item.url ?? ''} durationSeconds={item.durationSeconds ?? 0} playLabel={voiceT('play')} pauseLabel={voiceT('pause')}
                   formatTime={clock} onPlay={() => onVoicePlay?.(item)} onError={() => setBroken(item.id)}
-                  className={`gap-2.5! rounded-none! border-0! bg-transparent! p-0! shadow-none! [&_[role=progressbar]]:opacity-0 [&>span]:font-display [&>span]:text-xs [&>button]:rounded-full ${lime ? '[&>button]:bg-on-lime [&>button]:text-lime [&>span]:text-on-lime' : ''}`} />
+                  className={`gap-stack! rounded-none! border-0! bg-transparent! p-0! shadow-none! [&_[role=progressbar]]:opacity-0 [&>span]:font-display [&>span]:text-xs [&>button]:rounded-full ${lime ? '[&>button]:bg-on-lime [&>button]:text-lime [&>span]:text-on-lime' : ''}`} />
                 <svg aria-hidden viewBox="0 0 120 26" className={`pointer-events-none absolute start-[58px] top-[11px] h-[26px] w-[calc(100%-105px)] ${lime ? 'fill-on-lime/55' : 'fill-faint'}`}>
                   {heights.map((height, i) => <rect key={i} x={i * 9} y={(26 - height) / 2} width={4} height={height} rx={2} />)}
                 </svg>
               </div>}
-              <div dir="ltr" className={`mt-1 flex items-center gap-1 font-display text-[10px] opacity-70 ${own ? 'justify-end' : ''}`}>
+              <div dir="ltr" className={`mt-inline flex items-center gap-inline font-display text-micro opacity-70 ${own ? 'justify-end' : ''}`}>
                 <time dateTime={item.createdAt}>{new Intl.DateTimeFormat('en-GB', { hour: 'numeric', minute: '2-digit', timeZone: timezone }).format(new Date(item.createdAt))}</time>
                 {own && item.status === 'sent' && (item.readAt ? <CheckCheck aria-label={t('read')} className="size-4" /> : <Check aria-label={t('sent')} className="size-4" />)}
                 {own && item.status === 'sending' && <span>{t('sending')}</span>}
@@ -55,7 +55,7 @@ export function ChatThread({ items, viewer, onRetry, onVoicePlay }: {
             </div>
             {broken === item.id && <p role="alert" className="text-xs text-danger">{voiceT('playFailed')}</p>}
             {item.status === 'failed' && <button type="button" onClick={() => onRetry?.(item.id)} className="min-h-12 text-start text-xs text-danger">{t('failed')}</button>}
-            {lastRead === item.id && <span className="self-end text-[11px] text-faint">{t('read')}</span>}
+            {lastRead === item.id && <span className="self-end text-micro text-faint">{t('read')}</span>}
           </li>
         </Fragment>;
       })}

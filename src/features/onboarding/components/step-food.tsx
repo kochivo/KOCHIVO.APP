@@ -12,7 +12,7 @@ export function StepFood({ draft, update, errors, touch }: StepProps) {
   const t = useT(messages);
   const locale = useLocale();
   return (
-    <div className="space-y-6">
+    <div className="space-y-section">
       <div onBlur={() => touch('allergies')}>
         <ChipGroup label={t('anyFoodAllergies')} options={allergyOptions} value={draft.allergies ?? []}
           onChange={(allergies) => update({ allergies })} error={errors.allergies} />

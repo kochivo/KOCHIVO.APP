@@ -16,10 +16,10 @@ export function RestConfirmation({ onConfirm, onCancel }: { onConfirm: () => voi
     return () => { element?.close(); if (opener instanceof HTMLElement && opener.isConnected) opener.focus(); };
   }, []);
   return <dialog ref={dialog} aria-label={t('clearForRest')} dir={locale === 'ar' ? 'rtl' : 'ltr'}
-    className="sheet m-auto max-w-md space-y-4 rounded-card p-5 text-ink backdrop:bg-bg-deep/80"
+    className="sheet m-auto max-w-md space-y-card-gap rounded-card p-card text-ink backdrop:bg-bg-deep/80"
     onCancel={event => { event.preventDefault(); onCancel(); }}>
     <p>{t('clearForRest')}</p>
-    <div className="flex flex-wrap gap-3">
+    <div className="flex flex-wrap gap-stack">
       <Button variant="ghost" className="min-h-12" autoFocus onClick={onCancel}>{t('cancelRest')}</Button>
       <Button variant="secondary" className="min-h-12" onClick={onConfirm}>{t('confirmRest')}</Button>
     </div>

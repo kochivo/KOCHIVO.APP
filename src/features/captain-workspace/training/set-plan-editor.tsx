@@ -9,8 +9,8 @@ import { Button } from '@/ui/button';
 export function SetPlanEditor({ plan, onChange }: { plan: SetTarget[]; onChange: (plan: SetTarget[] | null) => void }) {
   const t = useT(messages);
   const update = (index: number, patch: Partial<SetTarget>) => onChange(plan.map((row, i) => i === index ? { ...row, ...patch } : row));
-  return <div className="space-y-3">
-    {plan.map((row, index) => <div key={index} className="border-b border-line-soft pb-2">
+  return <div className="space-y-stack">
+    {plan.map((row, index) => <div key={index} className="border-b border-line-soft pb-inline">
       <Stepper size="compact" label={t('setNumber', { n: index + 1 })} value={row.reps_min} min={1} max={100} step={1}
         format={minimum => row.reps_max === null ? t('failure') : row.reps_max === minimum ? String(minimum) : `${minimum}–${row.reps_max}`}
         onChange={value => { const reps_min = Math.round(value); update(index, { reps_min, reps_max: row.reps_max === null ? null : Math.max(reps_min, row.reps_max) }); }} />
@@ -22,6 +22,6 @@ export function SetPlanEditor({ plan, onChange }: { plan: SetTarget[]; onChange:
         <option value="">{t('noRir')}</option>{[0, 1, 2, 3, 4, 5].map(n => <option key={n} value={n}>{t('rir', { n })}</option>)}
       </select>
     </div>)}
-    <Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-3 text-xs"} onClick={() => onChange(null)}>{t('uniform')}</Button>
+    <Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-stack text-xs"} onClick={() => onChange(null)}>{t('uniform')}</Button>
   </div>;
 }

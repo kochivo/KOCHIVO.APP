@@ -13,7 +13,7 @@ export function InviteMessageForm({ initialMessage, onSave }: { initialMessage: 
   const id = useId();
   const [message, setMessage] = useState('');
   const [pending, setPending] = useState(false);
-  return <form className="glass space-y-4 rounded-card p-6" onSubmit={async (event) => {
+  return <form className="glass space-y-card-gap rounded-card p-section" onSubmit={async (event) => {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     setPending(true); setMessage('');
@@ -27,7 +27,7 @@ export function InviteMessageForm({ initialMessage, onSave }: { initialMessage: 
     <h2 className="text-lg font-bold">{t('inviteMessage')}</h2>
     <label htmlFor={id} className="block text-sm text-muted">{t('defaultInviteMessageUpTo500')}</label>
     <textarea id={id} name="invite_message" maxLength={500} defaultValue={initialMessage ?? ''} disabled={pending}
-      className={captainWorkspaceEnabled() ? `${editableFieldClass} min-h-32 w-full rounded-control border border-line bg-surface p-4 text-start text-ink` : "min-h-32 w-full rounded-control border border-line bg-surface p-4 text-start text-ink"} />
+      className={captainWorkspaceEnabled() ? `${editableFieldClass} min-h-32 w-full rounded-control border border-line bg-surface p-card text-start text-ink` : "min-h-32 w-full rounded-control border border-line bg-surface p-card text-start text-ink"} />
     <Button type="submit" variant="secondary" className="min-h-12" disabled={pending}>{pending ? t('saving') : t('save')}</Button>
     <p role="status" aria-live="polite">{message}</p>
   </form>;

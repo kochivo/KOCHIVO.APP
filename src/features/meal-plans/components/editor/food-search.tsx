@@ -38,8 +38,8 @@ export function FoodSearch({ onPick, meal }: { onPick: (food: Food, grams: numbe
   const resource = useResource(open ? `meal-editor:foods:${term}` : null, load);
   return <div className="border-t border-dashed border-line">
     <Button variant="secondary" className="w-full border border-dashed border-lime/40 text-lime" aria-expanded={open} onClick={() => setOpen(!open)}><Plus aria-hidden className="size-4" />{meal ? rt('addTo', { meal }) : t('search')}<DisclosureChevron expanded={open} /></Button>
-    {open && <div className="flex flex-wrap items-center gap-2 px-4">
-    <label className="flex min-h-12 min-w-0 flex-1 items-center gap-2.5 text-faint"><Search aria-hidden className="size-4 shrink-0" />
+    {open && <div className="flex flex-wrap items-center gap-inline px-page-x">
+    <label className="flex min-h-12 min-w-0 flex-1 items-center gap-stack text-faint"><Search aria-hidden className="size-4 shrink-0" />
       <input type="search" aria-label={t('search')} placeholder={meal ? t('mealSearch', { meal }) : t('search')} value={query} maxLength={100} onChange={event => setQuery(event.target.value)}
         className={`${editableFieldClass} min-h-12 min-w-0 flex-1 bg-surface text-xs placeholder:text-faint`} />
     </label>
@@ -47,17 +47,17 @@ export function FoodSearch({ onPick, meal }: { onPick: (food: Food, grams: numbe
     </div>}
     {creating && <ResponsiveDialog modal openerId={openerId} fallbackId={openerId} aria-label={planT('newFood')}
       onDismiss={() => { if (!formBusy.current) setCreating(false); }}
-      className="sheet fixed inset-0 m-0 h-dvh max-h-none w-full max-w-none overflow-y-auto p-4 text-ink sm:p-6">
+      className="sheet fixed inset-0 m-0 h-dvh max-h-none w-full max-w-none overflow-y-auto p-card text-ink sm:p-section">
       <FoodForm initialName={query} onCancel={() => setCreating(false)} onBusyChange={busy => { formBusy.current = busy; }} onSaved={(food, grams) => {
         onPick(food, grams >= 5 && grams <= 2000 ? grams : 100); setCreating(false); setQuery('');
       }} />
     </ResponsiveDialog>}
-    {open && <div className="px-4 pb-3">
+    {open && <div className="px-page-x pb-stack">
       {resource.status === 'loading' || resource.status === 'idle' ? <LoadingState variant="list" />
         : resource.error ? <div role="alert" className="text-sm text-danger">{planT('searchFailedTryAgain')}<Button variant="secondary" onClick={() => void resource.retry()}>{t('retry')}</Button></div>
         : !resource.data?.foods.length ? <p className="text-xs text-faint">{planT(resource.data?.catalogEmpty ? 'theFoodLibraryIsEmpty' : 'noFoodWithThisName')}</p>
         : <ul className="deferred-rows max-h-72 overflow-y-auto">{resource.data.foods.map(food => <li key={food.id}>
-          <Button variant="secondary" type="button" className="min-h-12 w-full border-t border-line-soft px-3 text-start text-sm" onClick={() => {
+          <Button variant="secondary" type="button" className="min-h-12 w-full border-t border-line-soft px-stack text-start text-sm" onClick={() => {
             const portion = defaultPortion(food);
             onPick(food, portion.grams, portion.unit); setQuery(''); setOpen(false);
           }}><span className="min-w-0 flex-1">{locale === 'en' ? food.nameEn || food.name : food.name}<DefaultPortion food={food} /></span><span>{rt('add')}</span></Button>

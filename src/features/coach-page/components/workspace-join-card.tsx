@@ -17,15 +17,15 @@ export function WorkspaceJoinCard({ row, now, onResolve }: {
   const divisor = unit === 'day' ? 86400000 : unit === 'hour' ? 3600000 : 60000;
   const relative = Number.isFinite(elapsed) ? new Intl.RelativeTimeFormat(locale, { numeric: 'auto' })
     .format(-Math.floor(elapsed / divisor), unit) : null;
-  return <li className="glass min-w-0 rounded-card p-[18px]">
-    <div className="mb-3 flex items-center gap-2.5">
+  return <li className="glass min-w-0 rounded-card p-card">
+    <div className="mb-stack flex items-center gap-stack">
       <span aria-hidden className="flex size-10 shrink-0 items-center justify-center rounded-full border border-line bg-surface-raised font-bold">{row.full_name.trim().slice(0, 1)}</span>
       <div className="min-w-0 flex-1"><b className="block break-words">{row.full_name}</b>
         {relative && <small className="text-muted">{t('requestSent')} <time dateTime={row.created_at}>{relative}</time></small>}
       </div>
-      <span className="rounded-full border border-calm/30 bg-calm/10 px-2.5 py-1 text-xs font-bold text-calm">{t('newRequest')}</span>
+      <span className="rounded-full border border-calm/30 bg-calm/10 px-stack py-inline text-xs font-bold text-calm">{t('newRequest')}</span>
     </div>
-    <div className="mt-3 flex gap-2">
+    <div className="mt-stack flex gap-inline">
       <Button className="min-h-12 flex-1" onClick={() => onResolve(row.id, 'accepted')}><KoInvite aria-hidden className="size-4" />{t('accept')}</Button>
       <Button variant="secondary" className="min-h-12" onClick={() => onResolve(row.id, 'declined')}><X aria-hidden className="size-4" />{t('decline')}</Button>
     </div>

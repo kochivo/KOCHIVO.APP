@@ -16,32 +16,32 @@ export function QuestionEditor({ question: q, locale, index, count, onChange, on
   onChange: (q: Question) => void; onDelete: () => void; onMove: (direction: number) => void; onDuplicate?: () => void;
 }) {
   const m = formCopy(locale, style), t = createT(redesign, locale, style);
-  const input = 'min-h-12 w-full rounded-control border border-line bg-transparent px-[14px] text-[15px]';
+  const input = 'min-h-12 w-full rounded-control border border-line bg-transparent px-card text-md';
   const choice = q.type === 'choice' || q.type === 'multi' || q.type === 'yesno';
   function changeType(type: Question['type']) {
     if (type === q.type) return;
     onChange({ ...q, type, maps_to: q.maps_to && mappingTypes[q.maps_to].includes(type) ? q.maps_to : null, alert_on: null });
   }
-  return <details className="group glass mb-3 min-w-0 rounded-card border border-line-soft open:border-line">
-    <summary className="flex min-h-12 cursor-pointer list-none items-center gap-3 px-[18px] py-[14px]">
+  return <details className="group glass mb-stack min-w-0 rounded-card border border-line-soft open:border-line">
+    <summary className="flex min-h-12 cursor-pointer list-none items-center gap-stack px-page-x py-card">
       <span className="grid size-7 shrink-0 place-items-center rounded-[9px] bg-surface font-display text-xs font-extrabold">{index + 1}</span>
       <span className="min-w-0 flex-1"><b className="block break-words font-medium">{locale === 'ar' ? q.label_ar : q.label_en || q.label_ar}</b>
-        <small className="block text-[11.5px] text-faint">{questionSummary(q, locale, style)}</small></span>
-      {q.required && <span className="rounded-full bg-surface px-[10px] py-[3px] text-[11.5px] text-muted">{m.required}</span>}
+        <small className="block text-micro text-faint">{questionSummary(q, locale, style)}</small></span>
+      {q.required && <span className="rounded-full bg-surface px-stack py-inline text-micro text-muted">{m.required}</span>}
       <ChevronDown aria-hidden className="size-4 shrink-0 text-faint group-open:rotate-180" />
     </summary>
-    <div className="px-[18px] pb-[18px]">
+    <div className="px-page-x pb-card">
       <input aria-label={m.labelAr} dir="rtl" className={input} value={q.label_ar} onChange={e => onChange({ ...q, label_ar: e.target.value })} />
-      <details className="group/english mb-[14px] text-xs text-faint">
-        <summary className="flex min-h-12 cursor-pointer list-none items-center gap-2 py-3">{t('optionalEnglish')}<ChevronDown aria-hidden className="ms-auto size-4 shrink-0 group-open/english:rotate-180" /></summary>
+      <details className="group/english mb-card-gap text-xs text-faint">
+        <summary className="flex min-h-12 cursor-pointer list-none items-center gap-inline py-stack">{t('optionalEnglish')}<ChevronDown aria-hidden className="ms-auto size-4 shrink-0 group-open/english:rotate-180" /></summary>
         <input aria-label={m.labelEn} dir="ltr" className={input} value={q.label_en} onChange={e => onChange({ ...q, label_en: e.target.value })} />
       </details>
-      <p className="mb-2 text-xs text-faint">{t('answerWith')}</p>
-      <div className="mb-4 grid grid-cols-3 gap-2 min-[761px]:grid-cols-5">
+      <p className="mb-inline text-xs text-faint">{t('answerWith')}</p>
+      <div className="mb-card-gap grid grid-cols-3 gap-inline min-[761px]:grid-cols-5">
         {(['number', 'scale', 'choice', 'text', 'photos'] as const).map(type => <button type="button" key={type}
           aria-pressed={q.type === type || type === 'choice' && choice} onClick={() => { if (type !== 'choice' || !choice) changeType(type); }}
-          className="min-h-16 rounded-[14px] border border-line-soft px-[6px] py-[10px] text-xs text-muted aria-pressed:border-lime aria-pressed:bg-lime-soft aria-pressed:text-lime">
-          <span className="mb-[2px] block font-display text-[15px] font-extrabold text-ink">
+          className="min-h-16 rounded-[14px] border border-line-soft px-inline py-stack text-xs text-muted aria-pressed:border-lime aria-pressed:bg-lime-soft aria-pressed:text-lime">
+          <span className="mb-inline block font-display text-md font-extrabold text-ink">
             {type === 'choice' ? <CircleDot aria-hidden className="mx-auto size-5" /> : type === 'photos' ? <ImageIcon aria-hidden className="mx-auto size-5" />
               : t(type === 'number' ? 'numberSymbol' : type === 'scale' ? 'scaleSymbol' : 'textSymbol')}
           </span>{t(type === 'photos' ? 'photo' : type)}
@@ -54,11 +54,11 @@ export function QuestionEditor({ question: q, locale, index, count, onChange, on
       {(q.type === 'number' || q.type === 'scale') && <QuestionToggle label={t('chart')} checked={q.show_chart !== false}
         onChange={show_chart => onChange({ ...q, show_chart })} />}
       <QuestionRules question={q} locale={locale} style={style} onChange={onChange} />
-      <div className="mt-[10px] flex flex-wrap justify-end gap-2">
+      <div className="mt-stack flex flex-wrap justify-end gap-inline">
         <Button type="button" variant={'secondary'} block={false} className={"min-h-12 min-w-12"} aria-label={m.up} disabled={index === 0} onClick={() => onMove(-1)}><ArrowUp aria-hidden className="mx-auto size-4" /></Button>
         <Button type="button" variant={'secondary'} block={false} className={"min-h-12 min-w-12"} aria-label={m.down} disabled={index === count - 1} onClick={() => onMove(1)}><ArrowDown aria-hidden className="mx-auto size-4" /></Button>
-        <Button type="button" variant={'secondary'} block={false} className={"min-h-12 px-[14px] text-[12.5px]"} onClick={onDuplicate}>{t('duplicate')}</Button>
-        <Button type="button" variant={'secondary'} block={false} className={"min-h-12 px-[14px] text-[12.5px] text-danger"} onClick={onDelete}>{t('remove')}</Button>
+        <Button type="button" variant={'secondary'} block={false} className={"min-h-12 px-card text-xs"} onClick={onDuplicate}>{t('duplicate')}</Button>
+        <Button type="button" variant={'secondary'} block={false} className={"min-h-12 px-card text-xs text-danger"} onClick={onDelete}>{t('remove')}</Button>
       </div>
     </div>
   </details>;

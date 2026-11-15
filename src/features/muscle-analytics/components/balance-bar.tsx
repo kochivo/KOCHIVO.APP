@@ -10,7 +10,7 @@ export function BalanceBar({ volume }: { volume: MuscleVolume }) {
   const t = useT(messages);
   const values = balance(volume);
   const colors = { push: 'bg-lime', pull: 'bg-lime/60', legs: 'bg-lime/30' };
-  return <div className="glass space-y-3 rounded-card p-4">
+  return <div className="glass space-y-stack rounded-card p-card">
     <div className="flex justify-between text-sm font-bold">
       {groups.map(group => <span key={group}>{t(group)} <span className="text-ink">{t('percent', { value: values[group] })}</span></span>)}
     </div>
@@ -20,7 +20,7 @@ export function BalanceBar({ volume }: { volume: MuscleVolume }) {
         style={{ width: `${values[group]}%` }} />)}
     </div>
     {values.core > 0 && <p className="text-sm text-muted">{t('regionSets', { muscle: t('muscle.core'), sets: values.core })}</p>}
-    {values.under.length > 0 && <p className="glass flex items-center gap-2 rounded-control p-3 text-sm text-muted">
+    {values.under.length > 0 && <p className="glass flex items-center gap-inline rounded-control p-stack text-sm text-muted">
       <AlertTriangle aria-hidden className="size-4 shrink-0 text-lime" />{t('undertrained', { groups: values.under.map(group => t(group)).join(t('separator')) })}
     </p>}
   </div>;

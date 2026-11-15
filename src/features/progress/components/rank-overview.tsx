@@ -20,10 +20,10 @@ export function RankOverview() {
   if (result.status === 'error') return <ErrorState message={t('rankFailed')} retryLabel={t('retry')} onRetry={() => void result.retry()} />;
   if (!result.data) return <LoadingState variant="detail" />;
   const next = nextTier(result.data.lifetime);
-  return <Link href="/player/rank" className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-16 items-center gap-3 p-5" })}>
+  return <Link href="/player/rank" className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-16 items-center gap-stack p-card" })}>
     <Medal aria-hidden className="size-5 shrink-0 text-warn" />
     <div className="min-w-0 flex-1"><p className="text-sm">{ranks(tierFor(result.data.lifetime))}</p>
-      <p className="mt-1 text-xs text-faint">{t('nextRank', { points: formatNumber(next.needed, locale), tier: ranks(next.tier) })}</p></div>
+      <p className="mt-inline text-xs text-faint">{t('nextRank', { points: formatNumber(next.needed, locale), tier: ranks(next.tier) })}</p></div>
     <ChevronLeft aria-hidden className="size-4 text-faint ltr:rotate-180" />
   </Link>;
 }

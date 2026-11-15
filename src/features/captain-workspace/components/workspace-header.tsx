@@ -18,20 +18,20 @@ export function WorkspaceHeader({ playerId, name, locale, view = 'training' }: {
     ['checkins', `${base}?tab=checkins`],
     ['forms', `${base}/programs?view=forms`],
   ] as const;
-  return <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 border-b border-line pb-4 lg:flex lg:flex-wrap lg:gap-4">
-    <nav aria-label={t('breadcrumb')} className="flex min-w-0 items-center gap-2 text-sm">
+  return <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-stack border-b border-line pb-card lg:flex lg:flex-wrap lg:gap-card-gap">
+    <nav aria-label={t('breadcrumb')} className="flex min-w-0 items-center gap-inline text-sm">
       <Link href="/captain/players" className="inline-flex min-h-12 shrink-0 items-center text-lime hover:underline focus-visible:underline">{t('players')}</Link>
       <ChevronRight aria-hidden strokeWidth={1.5} className="size-4 shrink-0 rtl:rotate-180" />
       <span className="truncate font-bold">{name}</span>
     </nav>
     <nav aria-label={t('tabs')} className="col-span-2 row-start-2 min-w-0 overflow-x-auto">
-      <ul className="flex gap-1">{tabs.map(([label, href]) => <li key={label} className="shrink-0">
+      <ul className="flex gap-inline">{tabs.map(([label, href]) => <li key={label} className="shrink-0">
         <Link href={href} aria-current={label === view ? 'page' : undefined}
-          className={`inline-flex min-h-12 items-center rounded-full px-3 text-sm ${label === view ? 'glass-strong font-bold' : 'glass border border-line text-ink'}`}>{label === 'forms' ? ft('forms') : t(label)}</Link>
+          className={`inline-flex min-h-12 items-center rounded-full px-stack text-sm ${label === view ? 'glass-strong font-bold' : 'glass border border-line text-ink'}`}>{label === 'forms' ? ft('forms') : t(label)}</Link>
       </li>)}</ul>
     </nav>
     {view === 'training' && <>
-    <Button type="button" variant={'primary'} block={false} className={"hidden min-h-12 items-center gap-2 px-5 font-bold lg:inline-flex"}>
+    <Button type="button" variant={'primary'} block={false} className={"hidden min-h-12 items-center gap-inline px-page-x font-bold lg:inline-flex"}>
       <SendIcon aria-hidden strokeWidth={1.5} className="size-4" />{t('send')}
     </Button></>}
   </header>;

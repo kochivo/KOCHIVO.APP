@@ -20,7 +20,7 @@ export function MetricSlider({ field, label, value, onChange, onBlur, error }: {
   const { min, max, step } = metricBounds[field];
   const change = (next: number) => onChange(clampMetric(field, next));
   return (
-    <div className="space-y-2" onBlur={onBlur}>
+    <div className="space-y-inline" onBlur={onBlur}>
       <Stepper label={label} value={value} min={min} max={max} step={step}
         format={next => formatNumber(next, locale)} onChange={change} />
       <input type="range" aria-label={label} aria-valuetext={formatNumber(value, locale)}

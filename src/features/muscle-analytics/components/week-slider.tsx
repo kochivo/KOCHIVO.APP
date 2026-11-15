@@ -7,8 +7,8 @@ import { messages } from '../analytics/messages';
 export function WeekSlider({ value, onChange }: { value: number; onChange: (week: number) => void }) {
   const t = useT(messages);
   const id = useId();
-  return <div className="space-y-1">
-    <label htmlFor={id} className="flex justify-between gap-3 text-sm font-bold">
+  return <div className="space-y-inline">
+    <label htmlFor={id} className="flex justify-between gap-stack text-sm font-bold">
       <span>{t('weekRange')}</span><span className="text-lime">{t('week', { number: value })}</span>
     </label>
     <input id={id} type="range" min={1} max={4} step={1} value={value}

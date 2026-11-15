@@ -40,16 +40,16 @@ export async function MealLibraryPage() {
   if (!captainWorkspaceEnabled()) notFound();
   const t = await getT(messages);
   const data = await readPlanCards().catch(() => null);
-  if (!data) return <section className="grid gap-4"><V11NewPlan /><p role="alert">{t('error')}</p><Link href="/captain/library/meal-plans" className={buttonClass({ variant: 'secondary', block: false })}>{t('retry')}</Link></section>;
+  if (!data) return <section className="grid gap-card-gap"><V11NewPlan /><p role="alert">{t('error')}</p><Link href="/captain/library/meal-plans" className={buttonClass({ variant: 'secondary', block: false })}>{t('retry')}</Link></section>;
   const { plans, usage } = data;
-    return <section className="grid gap-4"><V11NewPlan plans={plans.map(plan => ({ id: plan.id, title: plan.title, calories: plan.target_kcal ?? undefined }))} />
-      <div className="grid gap-4 min-[761px]:grid-cols-3">
-        {plans.map(plan => <Link key={plan.id} href={`/captain/nutrition/${plan.id}`} className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-[120px] min-w-0 items-center gap-3.5 p-5" })}>
+    return <section className="grid gap-card-gap"><V11NewPlan plans={plans.map(plan => ({ id: plan.id, title: plan.title, calories: plan.target_kcal ?? undefined }))} />
+      <div className="grid gap-card-gap min-[761px]:grid-cols-3">
+        {plans.map(plan => <Link key={plan.id} href={`/captain/nutrition/${plan.id}`} className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-[120px] min-w-0 items-center gap-card-gap p-card" })}>
           {plan.target_kcal !== null && <V11Ring small value={String(plan.target_kcal)} />}
-          <div className="min-w-0"><b>{plan.title}</b><div className="my-2 flex flex-wrap gap-2 text-xs text-muted">
+          <div className="min-w-0"><b>{plan.title}</b><div className="my-inline flex flex-wrap gap-inline text-xs text-muted">
             {(['protein', 'carbs', 'fat'] as const).map(key => {
               const value = key === 'protein' ? plan.target_protein : key === 'carbs' ? plan.target_carbs : plan.target_fat;
-              return value !== null && <span key={key} className="inline-flex items-center gap-1"><i className={`size-1.5 rounded-full ${key === 'protein' ? 'bg-lime' : key === 'carbs' ? 'bg-calm' : 'bg-warn'}`} />{t(key)} <b>{t('grams', { n: value })}</b></span>;
+              return value !== null && <span key={key} className="inline-flex items-center gap-inline"><i className={`size-1.5 rounded-full ${key === 'protein' ? 'bg-lime' : key === 'carbs' ? 'bg-calm' : 'bg-warn'}`} />{t(key)} <b>{t('grams', { n: value })}</b></span>;
             })}
           </div><small className="text-muted">{t('usage', { n: usage.get(plan.id)?.size ?? 0 })}{plan.meals.some(meal => mealDayType(meal) === 'training') && plan.meals.some(meal => mealDayType(meal) === 'rest') && <> · {t('split')}</>}</small></div>
           <RowChevron className="ms-auto" />

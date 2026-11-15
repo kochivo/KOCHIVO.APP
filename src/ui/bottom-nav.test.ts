@@ -45,7 +45,7 @@ it('preserves the default bar markup when bar is explicitly selected', () => {
   const explicit = renderToStaticMarkup(createElement(BottomNav, { items: pillItems }));
   expect(explicit).toBe(implicit);
   expect(implicit).toContain('group/nav sheet fixed');
-  expect(implicit).toContain('rounded-control px-0.5 py-2');
+  expect(implicit).toContain('rounded-control px-inline py-inline');
   expect(implicit).toContain('>Food</span>');
 });
 

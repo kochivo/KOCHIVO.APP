@@ -10,10 +10,10 @@ export function CaptainNotificationsStateEntry({ kind, retry }: {
   const t = useT(messages);
   return <>
     <PageBarTitle title={t('title')} />
-    <div className="glass rounded-[18px] p-5" role={kind === 'error' ? 'alert' : 'status'}>
+    <div className="glass rounded-[18px] p-card" role={kind === 'error' ? 'alert' : 'status'}>
       <p className="text-sm text-muted">{t(kind)}</p>
       {kind === 'error' && <button type="button" onClick={retry}
-        className="mt-3 min-h-12 rounded-control px-4 text-lime">{t('retry')}</button>}
+        className="mt-stack min-h-12 rounded-control px-page-x text-lime">{t('retry')}</button>}
     </div>
   </>;
 }

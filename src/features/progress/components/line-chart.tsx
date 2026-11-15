@@ -35,7 +35,7 @@ export function LineChart({ points, bodyFat = [], title, unit, compact }: {
     { points: scaleSeries(bodyFat, weeks, locale === 'ar'), label: t('bodyFat'), unit: t('percent'), className: 'text-muted' },
   ];
   const date = (value: string) => formatDateAr(value, { day: 'numeric', month: 'long', year: 'numeric' }, locale);
-  return <div className="glass space-y-3 rounded-control p-3">
+  return <div className="glass space-y-stack rounded-control p-stack">
     <svg viewBox="0 0 350 160" role="img" aria-labelledby={`${id}-title`} aria-describedby={`${id}-summary`} className="w-full">
       <title id={`${id}-title`}>{title}</title>
       <line x1="25" x2="325" y1="125" y2="125" stroke="currentColor" className="text-line" />
@@ -57,7 +57,7 @@ export function LineChart({ points, bodyFat = [], title, unit, compact }: {
         return <text key={week} x={locale === 'ar' ? 350 - x : x} y="148" textAnchor="middle" fill="currentColor" className="text-muted text-xs">{t('weekLabel', { count: formatNumber(index + 1, locale) })}</text>;
       })}
     </svg>
-    <div className="flex flex-wrap gap-3 text-sm">{series.map(series => {
+    <div className="flex flex-wrap gap-stack text-sm">{series.map(series => {
       const last = series.points.at(-1);
       return last ? <p key={series.label} className={series.className}>{series.label}: {formatNumber(last.value, locale)} {series.unit}</p> : null;
     })}</div>

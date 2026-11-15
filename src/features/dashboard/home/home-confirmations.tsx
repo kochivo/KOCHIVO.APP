@@ -8,21 +8,21 @@ export async function HomeConfirmations({ requests, payments, paymentsFailed }: 
   requests: { id: string; name: string }[]; payments: { id: string; name: string }[]; paymentsFailed: boolean;
 }) {
   const [t, locale] = await Promise.all([getT(homeV11Messages), getLocale()]);
-  return <section className="glass min-w-0 rounded-[18px] p-[18px]">
-    <h2 className="mb-2.5 text-[15px] font-semibold">{t('confirmation')}</h2>
-    {paymentsFailed ? <p role="alert" className="px-2 py-4 text-sm text-danger">{t('paymentsFailed')}</p> : payments.length ?
-      <Link href="/captain/billing" className="flex min-h-[58px] items-center gap-3 rounded-xl p-2.5 text-start">
+  return <section className="glass min-w-0 rounded-[18px] p-card">
+    <h2 className="mb-stack text-md font-semibold">{t('confirmation')}</h2>
+    {paymentsFailed ? <p role="alert" className="px-inline py-page-y text-sm text-danger">{t('paymentsFailed')}</p> : payments.length ?
+      <Link href="/captain/billing" className="flex min-h-[58px] items-center gap-stack rounded-xl p-stack text-start">
         <span className="grid size-[38px] shrink-0 place-items-center rounded-xl border border-line bg-surface-raised"><Banknote className="size-4" aria-hidden /></span>
         <div className="min-w-0 flex-1"><b className="block text-sm font-semibold">{t('pendingPayments', { n: payments.length, count: formatNumber(payments.length, locale) })}</b>
           <small className="block truncate text-xs text-muted">{payments.map(row => row.name).join(t('joinNames'))}</small></div>
-        <span className="rounded-full bg-lime-soft px-2.5 py-1 text-xs font-medium text-lime">{formatNumber(payments.length, locale)}</span>
-      </Link> : <p className="px-2 py-4 text-sm text-muted">{t('noPayments')}</p>}
+        <span className="rounded-full bg-lime-soft px-stack py-inline text-xs font-medium text-lime">{formatNumber(payments.length, locale)}</span>
+      </Link> : <p className="px-inline py-page-y text-sm text-muted">{t('noPayments')}</p>}
     {requests.length ? <Link href="/captain/join"
-      className="flex min-h-[58px] w-full items-center gap-3 rounded-xl p-2.5 text-start">
+      className="flex min-h-[58px] w-full items-center gap-stack rounded-xl p-stack text-start">
       <span className="grid size-[38px] shrink-0 place-items-center rounded-xl border border-line bg-surface-raised"><UserPlus className="size-4" aria-hidden /></span>
       <div className="min-w-0 flex-1"><b className="block text-sm font-semibold">{t('requests', { count: formatNumber(requests.length, locale) })}</b>
         <small className="block truncate text-xs text-muted">{requests.map(row => row.name).join(t('joinNames'))}</small></div>
-      <span className="rounded-full bg-lime-soft px-2.5 py-1 text-xs font-medium text-lime">{formatNumber(requests.length, locale)}</span>
-    </Link> : <p className="px-2 py-4 text-sm text-muted">{t('noRequests')}</p>}
+      <span className="rounded-full bg-lime-soft px-stack py-inline text-xs font-medium text-lime">{formatNumber(requests.length, locale)}</span>
+    </Link> : <p className="px-inline py-page-y text-sm text-muted">{t('noRequests')}</p>}
   </section>;
 }

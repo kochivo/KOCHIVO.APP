@@ -15,10 +15,10 @@ it('names repeated exercise controls uniquely and keeps headings and an ordered 
   expect(html).toContain('<ol');
   expect(html).toContain('<h2');
   expect(html).toContain('<h3');
-  expect(html.match(/grid grid-cols-2 gap-3 @md:grid-cols-4/g)).toHaveLength(2);
+  expect(html.match(/grid grid-cols-2 gap-stack @md:grid-cols-4/g)).toHaveLength(2);
   expect(html).not.toContain('size-19');
   expect(html.match(/<input [^>]*inputMode="decimal"/g)).toHaveLength(2);
-  expect(html).toContain('border border-line p-4');
+  expect(html).toContain('border border-line p-card');
   expect(html).toContain('+ إضافة تمرين');
   expect(html).toContain('aria-label="اختيارات التمرين: بنش، 1"');
   expect(html).toContain('aria-label="اختيارات التمرين: بنش، 2"');

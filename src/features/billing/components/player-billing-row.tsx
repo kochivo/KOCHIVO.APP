@@ -102,26 +102,26 @@ export function PlayerBillingRow({ player, today, packages, initialAction, works
   }
 
   return (
-    <li className="glass space-y-4 rounded-card p-5" aria-busy={pending || refreshing}>
-      <div className="flex flex-wrap items-center justify-between gap-3">
+    <li className="glass space-y-card-gap rounded-card p-card" aria-busy={pending || refreshing}>
+      <div className="flex flex-wrap items-center justify-between gap-stack">
         <h3 className="font-bold">{player.fullName}</h3>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-inline">
           <BalanceBadges {...player} />
-          {due > 0 && <span className="rounded-control bg-warn-soft px-3 py-1 text-xs font-bold text-warn">{t('owes', { amount: formatNumber(due, locale) })}</span>}
-          {!player.pending && !player.frozenAt && <span className={`rounded-control px-3 py-1 text-xs ${status.color}`}>{t(status.label)}</span>}
+          {due > 0 && <span className="rounded-control bg-warn-soft px-stack py-inline text-xs font-bold text-warn">{t('owes', { amount: formatNumber(due, locale) })}</span>}
+          {!player.pending && !player.frozenAt && <span className={`rounded-control px-stack py-inline text-xs ${status.color}`}>{t(status.label)}</span>}
         </div>
       </div>
-      <dl className="grid gap-3 text-sm sm:grid-cols-2">
-        <div><dt className="text-muted">{t('accessUntil')}</dt><dd aria-live="polite" className="mt-1"><time dateTime={accessUntil}>{formatDateAr(accessUntil, { day: 'numeric', month: 'long', year: 'numeric' }, locale)}</time></dd></div>
-        <div><dt className="text-muted">{t('lastPayment')}</dt><dd className="mt-1">{lastPayment ? <>
+      <dl className="grid gap-stack text-sm sm:grid-cols-2">
+        <div><dt className="text-muted">{t('accessUntil')}</dt><dd aria-live="polite" className="mt-inline"><time dateTime={accessUntil}>{formatDateAr(accessUntil, { day: 'numeric', month: 'long', year: 'numeric' }, locale)}</time></dd></div>
+        <div><dt className="text-muted">{t('lastPayment')}</dt><dd className="mt-inline">{lastPayment ? <>
           <time dateTime={lastPayment.created_at}>{lastPayment.created_at.length === 10 ? formatDateAr(lastPayment.created_at, { day: 'numeric', month: 'long', year: 'numeric' }, locale) : formatTimestampAr(lastPayment.created_at, { day: 'numeric', month: 'long', year: 'numeric' }, locale, timezone)}</time>
           {' · '}{lastPayment.amount_egp === null ? t('noAmount') : t('amount', { amount: formatNumber(lastPayment.amount_egp, locale) })}{' · '}{t('days', { n: lastPayment.days, count: formatNumber(lastPayment.days, locale) })}
         </> : t('noPayments')}</dd></div>
       </dl>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-inline">
         {!player.pending && <Button variant="ghost" disabled={pending || refreshing || Boolean(player.frozenAt)} onClick={() => setOpen(true)} className="min-h-12">{player.frozenAt ? t('unfreezeFirst') : pending || refreshing ? t('renewing') : t('renew')}</Button>}
         {due > 0 && <Button variant="secondary" disabled={pending || refreshing} onClick={() => setCollecting(true)} className="min-h-12">{pending ? t('collecting') : t('collect')}</Button>}
-        {reminder && <a href={reminder} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center rounded-control px-4 text-sm hover:bg-surface-raised">{t('remind')}</a>}
+        {reminder && <a href={reminder} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center rounded-control px-page-x text-sm hover:bg-surface-raised">{t('remind')}</a>}
       </div>
       {player.pending && <ActivatePlayerButton playerId={player.playerId} name={player.fullName} today={today} />}
       {error && <p role="alert" className="text-sm text-danger">{error}</p>}

@@ -15,7 +15,7 @@ export async function FeaturesGrid() {
   const screens = [
     await PreviewRows({ count: 3 }),
     await SetPreview({ compact: true }),
-    <div className="flex flex-col gap-2" key="chat"><div className={preview.message}>{t('question')}</div>{await VoicePreview({ short: true })}<div className={preview.message}>{t('slower')}</div></div>,
+    <div className="flex flex-col gap-inline" key="chat"><div className={preview.message}>{t('question')}</div>{await VoicePreview({ short: true })}<div className={preview.message}>{t('slower')}</div></div>,
     <div className={styles.swap} key="swap"><div>{t('rice')}<b>{t('riceAmount')}</b></div><span><ArrowDownUp size={16} aria-hidden="true" /></span><div>{t('pasta')}<b>{t('pastaAmount')}</b></div></div>,
     <div className={styles.invite} key="invite"><span className={`${preview.avatar} ${preview.lime}`}>{t('wsInitials').split('|')[3]}</span><div><b>{t('inviteReady')}</b><small>{t('invitePackage')}</small></div><code dir="ltr">{t('inviteUrl')}<Copy size={15} aria-hidden="true" /></code><span><MessageCircle size={16} aria-hidden="true" />{t('sendWhatsapp')}</span></div>,
   ];

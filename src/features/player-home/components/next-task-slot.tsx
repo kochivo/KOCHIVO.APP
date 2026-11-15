@@ -31,6 +31,6 @@ export function NextTaskSlot({ snapshot, sessions, today, playerId, retryKey, on
     meals: nutrition.snapshot?.meals ?? [], mealLogs: logs, checkInWeeks: remote.checkInWeeks, voiceNotes: remote.voiceNotes });
   return <><NextTaskCard task={task} day={snapshot ? pickTodayDay(snapshot, sessions, today) : undefined} />
     {captainWorkspaceEnabled() && task.kind !== 'voice' && remote.voiceNotes.some(note => !note.listenedAt) &&
-      <Link href="/player/captain" className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-12 items-center px-5 py-3 text-sm" })}>{t('task.voice')}</Link>}
+      <Link href="/player/captain" className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-12 items-center px-page-x py-stack text-sm" })}>{t('task.voice')}</Link>}
   </>;
 }

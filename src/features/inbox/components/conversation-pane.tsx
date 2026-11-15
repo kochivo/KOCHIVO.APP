@@ -26,13 +26,13 @@ export function ConversationPane({ player, captainId, at, onBack, onGuard, onUpd
   const latest = latestSentMessage(thread.items);
   useEffect(() => { if (thread.status === 'ready' && !thread.readError) onUpdate(player.playerId, latest); }, [latest, thread.status, thread.readError, onUpdate, player.playerId]);
   const days = Math.max(0, Math.ceil((Date.parse(player.accessUntil) - Date.parse(at)) / 86400000));
-  return <section className="glass flex min-h-[470px] min-w-0 flex-col gap-2.5 rounded-card border border-line-soft p-[18px]">
-    <header className="flex items-center gap-2.5 border-b border-line pb-2.5">
+  return <section className="glass flex min-h-[470px] min-w-0 flex-col gap-stack rounded-card border border-line-soft p-card">
+    <header className="flex items-center gap-stack border-b border-line pb-stack">
       <button type="button" aria-label={t('back')} onClick={onBack} className={`${secondaryButtonClass} grid min-h-12 min-w-12 place-items-center min-[760px]:hidden`}><ArrowRight aria-hidden className="size-4 ltr:rotate-180" /></button>
       <ConversationAvatar name={player.fullName} url={player.avatarUrl} />
-      <div className="min-w-0 flex-1"><h2 className="text-[13px] font-semibold">{player.fullName}</h2>
-        {Number.isFinite(days) && <p className="text-[11.5px] text-muted">{t('remaining', { n: formatNumber(days, locale) })}</p>}</div>
-      <Link href={`/captain/players/${player.playerId}`} className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-3.5 text-[11.5px]" })}>{t('profile')}</Link>
+      <div className="min-w-0 flex-1"><h2 className="text-row font-semibold">{player.fullName}</h2>
+        {Number.isFinite(days) && <p className="text-micro text-muted">{t('remaining', { n: formatNumber(days, locale) })}</p>}</div>
+      <Link href={`/captain/players/${player.playerId}`} className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-card text-micro" })}>{t('profile')}</Link>
     </header>
     {thread.status === 'loading' ? <div className="flex-1"><LoadingState variant="detail" aria-label={t('loading')} /></div> : <>
       {(thread.status === 'error' || thread.readError) && <ErrorState message={t('error')} retryLabel={t('retry')} onRetry={() => void thread.refresh()} />}

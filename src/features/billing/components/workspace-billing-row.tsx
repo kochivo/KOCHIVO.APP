@@ -48,21 +48,21 @@ export function WorkspaceBillingRow({ player, today, packages }: { player: Billi
       : state.action === 'record' ? player.due > 0 ? 'collect' : 'renew' : 'history');
   }
   return <li className="border-t border-line-soft">
-    <div className="grid min-h-16 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-[18px] py-3 min-[761px]:grid-cols-[1.4fr_1fr_1fr_1fr_150px]">
-      <Button variant="secondary" type="button" aria-label={`${t('history')}: ${player.fullName}`} className="flex min-h-12 min-w-0 justify-start items-center gap-2.5 text-start" onClick={() => setDetail('history')}>
+    <div className="grid min-h-16 grid-cols-[minmax(0,1fr)_auto] items-center gap-stack px-page-x py-stack min-[761px]:grid-cols-[1.4fr_1fr_1fr_1fr_150px]">
+      <Button variant="secondary" type="button" aria-label={`${t('history')}: ${player.fullName}`} className="flex min-h-12 min-w-0 justify-start items-center gap-stack text-start" onClick={() => setDetail('history')}>
         <span aria-hidden className="grid size-[38px] shrink-0 place-items-center rounded-full border border-line bg-surface-raised text-xs">{player.fullName.slice(0, 1)}</span>
         <span className="break-words text-sm">{player.fullName}</span><RowChevron className="ms-auto" /></Button>
-      <span className="hidden text-[13px] text-muted min-[761px]:block">{chosen?.name ?? (player.lastPayment ? legacy('days', { n: player.lastPayment.days, count: formatNumber(player.lastPayment.days, locale) }) : legacy('noPayments'))}{price != null && price > 0 && <> · {formatNumber(price, locale)} {t('currency')}</>}</span>
-      <span className="hidden text-[13px] text-faint min-[761px]:block">{player.lastPayment ? <time dateTime={player.lastPayment.created_at}>{formatTimestampAr(player.lastPayment.created_at, { day: 'numeric', month: 'long' }, locale, timezone)}</time> : legacy('noPayments')}</span>
-      <div><span className={`inline-flex rounded-full px-2.5 py-1 text-[11.5px] ${segment === 'overdue' ? 'bg-danger-soft text-danger' : segment === 'ending' ? 'bg-warn-soft text-warn' : state.tone}`}>{pill}</span></div>
-      <div className="col-span-2 flex flex-wrap items-center justify-end gap-2 min-[761px]:col-span-1">
+      <span className="hidden text-row text-muted min-[761px]:block">{chosen?.name ?? (player.lastPayment ? legacy('days', { n: player.lastPayment.days, count: formatNumber(player.lastPayment.days, locale) }) : legacy('noPayments'))}{price != null && price > 0 && <> · {formatNumber(price, locale)} {t('currency')}</>}</span>
+      <span className="hidden text-row text-faint min-[761px]:block">{player.lastPayment ? <time dateTime={player.lastPayment.created_at}>{formatTimestampAr(player.lastPayment.created_at, { day: 'numeric', month: 'long' }, locale, timezone)}</time> : legacy('noPayments')}</span>
+      <div><span className={`inline-flex rounded-full px-stack py-inline text-micro ${segment === 'overdue' ? 'bg-danger-soft text-danger' : segment === 'ending' ? 'bg-warn-soft text-warn' : state.tone}`}>{pill}</span></div>
+      <div className="col-span-2 flex flex-wrap items-center justify-end gap-inline min-[761px]:col-span-1">
         {(segment === 'overdue' || segment === 'ending') && <Button type="button" disabled={!reminder} title={!reminder ? t('noPhone') : undefined} onClick={event => { event.stopPropagation(); if (reminder) window.open(reminder, '_blank', 'noopener,noreferrer'); }}
-          variant={'secondary'} block={false} className={"min-h-12 px-3 text-[12.5px] disabled:opacity-40"}>{payment('remind')}</Button>}
+          variant={'secondary'} block={false} className={"min-h-12 px-stack text-xs disabled:opacity-40"}>{payment('remind')}</Button>}
         {(segment === 'overdue' || player.pending || frozenAt) && <Button type="button" disabled={pending} onClick={event => { event.stopPropagation(); void action(); }}
-          variant={'secondary'} block={false} className={"min-h-12 px-3 text-[12.5px] disabled:opacity-40"}>{segment === 'overdue' ? payment('received') : t(state.action)}</Button>}
+          variant={'secondary'} block={false} className={"min-h-12 px-stack text-xs disabled:opacity-40"}>{segment === 'overdue' ? payment('received') : t(state.action)}</Button>}
       </div>
     </div>
-    {error && <p role="alert" className="px-4 pb-3 text-sm text-danger">{error}</p>}
+    {error && <p role="alert" className="px-page-x pb-stack text-sm text-danger">{error}</p>}
     {detail && <Detail player={{ ...player, frozenAt }} today={today} packages={packages} initialAction={detail} onClose={() => setDetail(null)} />}
   </li>;
 }

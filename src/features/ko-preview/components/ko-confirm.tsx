@@ -34,12 +34,12 @@ export function KoConfirm({ approval, busy, onConfirm, onCancel, now = Date.now 
     const timer = setTimeout(() => setExpired(true), Math.max(0, approval.receivedAt + 600_000 - now()));
     return () => clearTimeout(timer);
   }, [approval, now]);
-  return <div role="group" aria-label={t('confirmLabel')} dir={locale === 'ar' ? 'rtl' : 'ltr'} className="flex flex-wrap gap-2">
+  return <div role="group" aria-label={t('confirmLabel')} dir={locale === 'ar' ? 'rtl' : 'ltr'} className="flex flex-wrap gap-inline">
     {expired ? <p className="text-muted">{t('confirmExpired')}</p> : <>
-      <Button ref={confirm} type="button" disabled={busy} variant={(captainWorkspaceEnabled()) ? 'secondary' : 'primary'} block={false} className={captainWorkspaceEnabled() ? "min-h-12 px-4 text-ink disabled:opacity-50" : "min-h-12 px-4 disabled:opacity-50"}
+      <Button ref={confirm} type="button" disabled={busy} variant={(captainWorkspaceEnabled()) ? 'secondary' : 'primary'} block={false} className={captainWorkspaceEnabled() ? "min-h-12 px-page-x text-ink disabled:opacity-50" : "min-h-12 px-page-x disabled:opacity-50"}
         onClick={() => { if (locked.current || approval.expired(now())) { setExpired(approval.expired(now())); return; } locked.current = true; onConfirm(); }}>{t('confirmAction')}</Button>
-      {captainWorkspaceEnabled() ? <Button variant="secondary" type="button" disabled={busy} className="min-h-12 rounded-control px-4 text-muted disabled:opacity-50"
-        onClick={() => { if (locked.current) return; locked.current = true; approval.clear(); onCancel(); }}>{t('confirmCancel')}</Button> : <button type="button" disabled={busy} className="min-h-12 rounded-control px-4 text-muted disabled:opacity-50"
+      {captainWorkspaceEnabled() ? <Button variant="secondary" type="button" disabled={busy} className="min-h-12 rounded-control px-page-x text-muted disabled:opacity-50"
+        onClick={() => { if (locked.current) return; locked.current = true; approval.clear(); onCancel(); }}>{t('confirmCancel')}</Button> : <button type="button" disabled={busy} className="min-h-12 rounded-control px-page-x text-muted disabled:opacity-50"
         onClick={() => { if (locked.current) return; locked.current = true; approval.clear(); onCancel(); }}>{t('confirmCancel')}</button>}
     </>}
   </div>;

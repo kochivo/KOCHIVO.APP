@@ -6,7 +6,7 @@ import { Button } from '@/ui/button';
 
 export default function JoinError({ retry }: { retry: () => void }) {
   const t = useT(messages);
-  return <div className="glass space-y-4 rounded-card p-5">
+  return <div className="glass space-y-card-gap rounded-card p-card">
     <p role="alert">{t('somethingWentWrong')}</p>
     <Button className="min-h-12" onClick={retry}>{t('tryAgain')}</Button>
   </div>;

@@ -24,30 +24,30 @@ export function WeekMenu({ draft, day, update, saved, onNew }: { draft: ProgramD
     return { ...current, days: days.map((item, index) => ({ ...item, position: index + 1 })) };
   });
   return <>
-    <Button id="week-menu" aria-label={t('options')} aria-haspopup="dialog" aria-expanded={open} type="submit" variant={'secondary'} block={false} className={"inline-flex min-h-12 min-w-12 items-center justify-center gap-2 px-3"} onClick={() => setOpen(true)}><Ellipsis aria-hidden className="size-5" /><span className="hidden sm:inline">{t('options')}</span></Button>
-    {open && <ResponsiveDialog modal openerId="week-menu" fallbackId="week-menu" aria-label={t('options')} onDismiss={close} className="sheet fixed inset-0 z-50 m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-md space-y-3 overflow-y-auto rounded-card p-5 text-ink backdrop:bg-bg-deep/80">
-      <h2 className="font-display text-[19px]">{t('options')}</h2>
+    <Button id="week-menu" aria-label={t('options')} aria-haspopup="dialog" aria-expanded={open} type="submit" variant={'secondary'} block={false} className={"inline-flex min-h-12 min-w-12 items-center justify-center gap-inline px-stack"} onClick={() => setOpen(true)}><Ellipsis aria-hidden className="size-5" /><span className="hidden sm:inline">{t('options')}</span></Button>
+    {open && <ResponsiveDialog modal openerId="week-menu" fallbackId="week-menu" aria-label={t('options')} onDismiss={close} className="sheet fixed inset-0 z-50 m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-md space-y-stack overflow-y-auto rounded-card p-card text-ink backdrop:bg-bg-deep/80">
+      <h2 className="font-display text-title">{t('options')}</h2>
       <label className="block text-xs text-faint">{tt('programName')}<input value={draft.title} maxLength={80} className={`${editableFieldClass} block min-h-12 w-full bg-surface text-sm text-ink`} onChange={event => update(current => ({ ...current, title: event.target.value }))} /></label>
-      {weekly(draft) ? <label className="flex min-h-12 items-center gap-3"><input type="checkbox" checked={draft.repeatWeekly !== false} className={`${editableFieldClass} size-6 accent-lime`} onChange={event => update(current => ({ ...current, repeatWeekly: event.target.checked }))} />{t('repeat')}</label> : <>
-        <p className="text-xs text-faint">{t('rotation')}</p><Button disabled={draft.days.length > 7} type="submit" variant={'secondary'} block={false} className={"min-h-12 w-full px-3 text-start disabled:opacity-40"} onClick={() => update(current => convertWeek(current, uuidv7))}>{t('convert')}</Button>
+      {weekly(draft) ? <label className="flex min-h-12 items-center gap-stack"><input type="checkbox" checked={draft.repeatWeekly !== false} className={`${editableFieldClass} size-6 accent-lime`} onChange={event => update(current => ({ ...current, repeatWeekly: event.target.checked }))} />{t('repeat')}</label> : <>
+        <p className="text-xs text-faint">{t('rotation')}</p><Button disabled={draft.days.length > 7} type="submit" variant={'secondary'} block={false} className={"min-h-12 w-full px-stack text-start disabled:opacity-40"} onClick={() => update(current => convertWeek(current, uuidv7))}>{t('convert')}</Button>
         {draft.days.length > 7 && <p className="text-xs text-faint">{t('convertLimit')}</p>}
       </>}
       {day && <>
-        <Button type="submit" variant={'secondary'} block={false} className={"min-h-12 w-full px-3 text-start"} onClick={() => {
+        <Button type="submit" variant={'secondary'} block={false} className={"min-h-12 w-full px-stack text-start"} onClick={() => {
           if (!day.is_rest_day && (day.exercises.length || day.cardio?.length)) setConfirm(true);
           else update(current => restDay(current, day.id, !day.is_rest_day));
         }}>{t(day.is_rest_day ? 'restore' : 'rest')}</Button>
-        {confirm && <div role="alert" className="rounded-control border border-line p-3"><p>{t('restConfirm')}</p><Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-3 text-danger"} onClick={() => { update(current => restDay(current, day.id, true)); setConfirm(false); }}>{t('confirm')}</Button><Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-3"} onClick={() => setConfirm(false)}>{tt('cancel')}</Button></div>}
-        {!weekly(draft) && <div className="grid gap-2">
-          <Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-3 text-start"} onClick={() => move(-1)} disabled={day.id === draft.days[0]?.id}>{t('up')}</Button>
-          <Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-3 text-start"} onClick={() => move(1)} disabled={day.id === draft.days.at(-1)?.id}>{t('down')}</Button>
-          <Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-3 text-start text-danger"} onClick={() => setDeleteConfirm(true)}>{t('deleteDay')}</Button>
-          {deleteConfirm && <div role="alert"><p>{pt('deletePrompt', { name: day.title })}</p><Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-3 text-danger"} onClick={() => { update(current => ({ ...current, days: current.days.filter(item => item.id !== day.id).map((item, index) => ({ ...item, position: index + 1 })) })); setDeleteConfirm(false); }}>{pt('confirmDelete')}</Button><Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-3"} onClick={() => setDeleteConfirm(false)}>{tt('cancel')}</Button></div>}
+        {confirm && <div role="alert" className="rounded-control border border-line p-stack"><p>{t('restConfirm')}</p><Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-stack text-danger"} onClick={() => { update(current => restDay(current, day.id, true)); setConfirm(false); }}>{t('confirm')}</Button><Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-stack"} onClick={() => setConfirm(false)}>{tt('cancel')}</Button></div>}
+        {!weekly(draft) && <div className="grid gap-inline">
+          <Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-stack text-start"} onClick={() => move(-1)} disabled={day.id === draft.days[0]?.id}>{t('up')}</Button>
+          <Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-stack text-start"} onClick={() => move(1)} disabled={day.id === draft.days.at(-1)?.id}>{t('down')}</Button>
+          <Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-stack text-start text-danger"} onClick={() => setDeleteConfirm(true)}>{t('deleteDay')}</Button>
+          {deleteConfirm && <div role="alert"><p>{pt('deletePrompt', { name: day.title })}</p><Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-stack text-danger"} onClick={() => { update(current => ({ ...current, days: current.days.filter(item => item.id !== day.id).map((item, index) => ({ ...item, position: index + 1 })) })); setDeleteConfirm(false); }}>{pt('confirmDelete')}</Button><Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-stack"} onClick={() => setDeleteConfirm(false)}>{tt('cancel')}</Button></div>}
         </div>}
       </>}
       {draft.player_id && saved && <SaveTemplateButton kind="program" id={draft.id} title={draft.title} />}
-      {onNew && <Button type="submit" variant={'secondary'} block={false} className={"min-h-12 w-full px-3 text-start"} onClick={() => { close(); onNew(); }}>{tt('newProgram')}</Button>}
-      <Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-3"} onClick={close}>{t('close')}</Button>
+      {onNew && <Button type="submit" variant={'secondary'} block={false} className={"min-h-12 w-full px-stack text-start"} onClick={() => { close(); onNew(); }}>{tt('newProgram')}</Button>}
+      <Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-stack"} onClick={close}>{t('close')}</Button>
     </ResponsiveDialog>}
   </>;
 }

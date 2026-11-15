@@ -13,7 +13,7 @@ export function GoogleButton({ intent, code, coach }: { intent: 'captain' | 'pla
   const callAuthAction = (action: Parameters<typeof runAuthAction>[0]) => runAuthAction(action, locale, t);
   const [pending, start] = useTransition();
   const [error, setError] = useState('');
-  return <div className="space-y-2">
+  return <div className="space-y-inline">
     <Button variant="secondary" size="lg" className="w-full" disabled={pending} onClick={() => start(async () => {
       const result = await callAuthAction(() => signInGoogle(intent, code, coach, coach ? browserSelection() : undefined));
       setError(result.error ?? '');

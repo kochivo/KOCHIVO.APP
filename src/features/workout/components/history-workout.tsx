@@ -46,16 +46,16 @@ export function HistoryWorkoutRow({ workout, title, names, exerciseId, v3 = fals
   const exercises = exerciseId ? workout.exercises.filter(row => row.id === exerciseId) : workout.exercises;
   const minutes = Math.max(0, Math.round((Date.parse(workout.completed_at ?? workout.started_at) - Date.parse(workout.started_at)) / 60000));
   const monthKey = (['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'] as const)[Number(workout.training_date.slice(5, 7)) - 1] ?? 'jan';
-  return <details className={v3 ? 'rounded-[22px] border border-line-soft bg-surface px-3.5 py-3' : 'glass rounded-card p-4'} open={exerciseId ? true : undefined}>
-    <summary className={v3 ? 'flex min-h-12 cursor-pointer list-none items-center gap-3 [&::-webkit-details-marker]:hidden' : 'min-h-12 cursor-pointer space-y-1'}>
-      {v3 ? <><span className="flex size-12 shrink-0 flex-col items-center justify-center rounded-2xl bg-surface-raised"><b className="font-display text-base">{formatDate(workout.training_date, { day: 'numeric' }, locale)}</b><span className="text-[10px] text-muted">{v3t(monthKey)}</span></span><span className="flex flex-1 flex-col gap-0.5"><b className="text-sm"><bdi>{starterText(title, locale)}</bdi></b><span className="text-xs text-muted">{v3t('summary', { min: formatNumber(minutes, locale), sets: formatNumber(workout.setCount, locale) })}</span></span>{hasPr && <span className="rounded-[10px] bg-gold-face-1 px-2 py-1 text-[11px] font-extrabold text-gold-4">{v3t('pr')}</span>}</> : <>
+  return <details className={v3 ? 'rounded-[22px] border border-line-soft bg-surface px-card py-stack' : 'glass rounded-card p-card'} open={exerciseId ? true : undefined}>
+    <summary className={v3 ? 'flex min-h-12 cursor-pointer list-none items-center gap-stack [&::-webkit-details-marker]:hidden' : 'min-h-12 cursor-pointer space-y-inline'}>
+      {v3 ? <><span className="flex size-12 shrink-0 flex-col items-center justify-center rounded-2xl bg-surface-raised"><b className="font-display text-base">{formatDate(workout.training_date, { day: 'numeric' }, locale)}</b><span className="text-micro text-muted">{v3t(monthKey)}</span></span><span className="flex flex-1 flex-col gap-inline"><b className="text-sm"><bdi>{starterText(title, locale)}</bdi></b><span className="text-xs text-muted">{v3t('summary', { min: formatNumber(minutes, locale), sets: formatNumber(workout.setCount, locale) })}</span></span>{hasPr && <span className="rounded-[10px] bg-gold-face-1 px-inline py-inline text-micro font-extrabold text-gold-4">{v3t('pr')}</span>}</> : <>
       <span className="block font-bold">{formatDate(workout.training_date, { day: 'numeric', month: 'short', year: 'numeric' }, locale)}</span>
       <span className="text-sm text-muted"><bdi>{starterText(title, locale)}</bdi>{' · '}
         {t('historySets', { count: formatNumber(exercises.reduce((count, exercise) => count + exercise.sets.length, 0), locale) })}</span></>}
     </summary>
-    <div className="mt-3 space-y-4">{exercises.length ? exercises.map(exercise => {
+    <div className="mt-stack space-y-card-gap">{exercises.length ? exercises.map(exercise => {
       const name = names.find(row => row.id === exercise.id);
-      return <section key={exercise.id} className="space-y-2">
+      return <section key={exercise.id} className="space-y-inline">
         <h3 className="font-bold"><bdi>{name ? exerciseName(name, locale) : t('unknownExercise')}</bdi></h3>
         <HistorySets sets={exercise.sets} />
       </section>;

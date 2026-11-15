@@ -114,7 +114,7 @@ export function TrainingEditor({ playerId, playerName, remainingDays, playerFact
         toast.success({ title: success('assigned', { name: playerName ?? '' }), detail: success('name', { name: draft.title }), icon: 'program' }); }
     } catch { setError(t('error')); } finally { setPending(false); }
   }
-  return <section className="@container min-w-0 space-y-[18px]">
+  return <section className="@container min-w-0 space-y-card-gap">
     <EditorHeader playerId={playerId} playerName={playerName} remainingDays={draft?.status === 'active' ? remainingDays : undefined} template={template} title={draft?.title}
       starting={Boolean(allRest)} status={state.status} busy={pending} disabled={!draft || choosing} onSend={() => void send()} onRetry={() => {
         void state.flush().then(ok => { if (ok && draft) toast.success({ title: success(template ? 'templateSaved' : 'saved'), detail: success('name', { name: draft.title }), icon: template ? 'template' : 'program' }); });
@@ -133,33 +133,33 @@ export function TrainingEditor({ playerId, playerName, remainingDays, playerFact
     {pending && <p role="status" className="text-xs text-faint">{t('loading')}</p>}
     {choosing ? <><StartChoice templates={templates} onTemplates={() => setTemplates(value => !value)} onStart={id => void start(id)} busy={pending} />
       {draft && <Button variant="secondary" disabled={pending} className="min-h-12" onClick={() => setChoosing(false)}>{t('cancel')}</Button>}</> :
-      draft && <fieldset disabled={pending} className="min-w-0 space-y-3.5">
+      draft && <fieldset disabled={pending} className="min-w-0 space-y-card-gap">
           <div className={!template && draft.player_id
-            ? 'min-w-0 space-y-3.5 [&>nav]:static [&>nav]:flex-row [&>nav]:overflow-x-auto'
-            : 'grid min-w-0 items-start gap-4 min-[1001px]:grid-cols-[230px_minmax(0,1fr)]'}>
+            ? 'min-w-0 space-y-card-gap [&>nav]:static [&>nav]:flex-row [&>nav]:overflow-x-auto'
+            : 'grid min-w-0 items-start gap-card-gap min-[1001px]:grid-cols-[230px_minmax(0,1fr)]'}>
             <DayRail draft={draft} selectedId={day?.id} onSelect={setSelected} update={update} />
-            <div className="min-w-0 space-y-3.5">
+            <div className="min-w-0 space-y-card-gap">
               {!template && playerFacts && <TrainingFacts {...playerFacts} locale={locale} draft={draft} day={day} />}
-              {allRest ? <div className="glass-strong space-y-3 rounded-card p-5">
+              {allRest ? <div className="glass-strong space-y-stack rounded-card p-card">
               <p className="text-sm text-muted">{et('startHint')}</p>
               <Button disabled={pending} onClick={() => { const first = draft.days[0]; if (first) { update(current => restDay(current, first.id, false)); setSelected(first.id); } }}><Dumbbell aria-hidden className="size-4" />{et('startFirst')}</Button>
             </div> : day ? <>
               <DaySummary day={day} update={update} />
-              {day.is_rest_day ? <div className="glass space-y-3 rounded-card border border-dashed border-line-soft p-5 text-faint"><p>{et('rest')}</p><Button variant="secondary" className="min-h-12" onClick={() => update(current => restDay(current, day.id, false))}><Dumbbell aria-hidden className="size-4" />{et('restore')}</Button></div> : <>
+              {day.is_rest_day ? <div className="glass space-y-stack rounded-card border border-dashed border-line-soft p-card text-faint"><p>{et('rest')}</p><Button variant="secondary" className="min-h-12" onClick={() => update(current => restDay(current, day.id, false))}><Dumbbell aria-hidden className="size-4" />{et('restore')}</Button></div> : <>
                 <WarmupBlock key={`warmup-${day.id}`} day={day} update={update} />
                 <DayExercises key={day.id} day={day} update={update} flush={state.flush}
                   injuries={!template && draft.player_id ? playerFacts?.profile.intake?.injuries : undefined}
                   candidates={!template && draft.player_id ? playerFacts?.candidates : undefined} />
                 <CardioBlock day={day} update={update} />
               </>}
-            </> : <p className="glass rounded-card p-5 text-faint">{t('noDays')}</p>}</div>
+            </> : <p className="glass rounded-card p-card text-faint">{t('noDays')}</p>}</div>
           </div>
       </fieldset>}
     {template && assigning && draft && <AssignmentSheet programId={draft.id} programTitle={draft.title} onClose={() => setAssigning(false)} />}
     {!template && <Disclosure label={t('history')} className="glass rounded-card text-xs text-muted">
-      {programs.length ? programs.map(row => <Link key={row.id} href={`/captain/programs/${row.id}`} className={`${clickableClass} flex min-h-12 items-center justify-between gap-3 border-t border-line-soft text-sm`}>
+      {programs.length ? programs.map(row => <Link key={row.id} href={`/captain/programs/${row.id}`} className={`${clickableClass} flex min-h-12 items-center justify-between gap-stack border-t border-line-soft text-sm`}>
         <span>{row.title}</span><span className="ms-auto text-faint">{pt(row.status === 'active' ? 'active' : row.status === 'archived' ? 'archived' : 'draft')}</span><RowChevron />
-      </Link>) : <p className="py-3 text-faint">{t('emptyPrograms')}</p>}
+      </Link>) : <p className="py-stack text-faint">{t('emptyPrograms')}</p>}
     </Disclosure>}
   </section>;
 }

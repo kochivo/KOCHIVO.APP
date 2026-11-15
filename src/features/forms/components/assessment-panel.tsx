@@ -21,9 +21,9 @@ export function AssessmentPanel({ data, player, locale, now, busy, onEdit, onPau
   const SendIcon = captainWorkspaceEnabled() ? KoSend : Send;
   const t = createT(messages, locale), person = data.players.find(p => p.id === player);
   const date = (value: string) => formatDateAr(value, { day: 'numeric', month: 'long' }, locale);
-  return <aside className="glass-strong min-w-0 rounded-card border border-line-soft px-5 py-[18px] min-[1001px]:sticky min-[1001px]:top-4">
-    <h2 className="mb-3 font-display text-[19px] font-semibold">{person ? t('playerAssessments', { name: person.name }) : t('schedules')}</h2>
-    {!data.schedules.length && !data.forms.some(f => f.schedule) && <p className="py-3 text-xs text-faint">{t('noSchedules')}</p>}
+  return <aside className="glass-strong min-w-0 rounded-card border border-line-soft px-page-x py-page-y min-[1001px]:sticky min-[1001px]:top-4">
+    <h2 className="mb-stack font-display text-title font-semibold">{person ? t('playerAssessments', { name: person.name }) : t('schedules')}</h2>
+    {!data.schedules.length && !data.forms.some(f => f.schedule) && <p className="py-stack text-xs text-faint">{t('noSchedules')}</p>}
     {data.schedules.map(s => {
       const title = data.forms.find(f => f.id === s.form_id)?.title ?? '';
       const recipient = data.players.find(p => p.id === (player ?? s.player_id));
@@ -36,10 +36,10 @@ export function AssessmentPanel({ data, player, locale, now, busy, onEdit, onPau
       const last = data.answers.find(a => a.form_id === s.form_id && (!recipient || a.player_id === recipient.id));
       const status = s.paused_at ? t('paused') : next ? t('next', { date: date(next) }) : last?.answered_at
         ? t('lastAnswer', { date: date(localDate(new Date(last.answered_at), recipient?.timezone ?? DEFAULT_TIMEZONE)) }) : t('ended');
-      return <div key={s.id} className="border-b border-line-soft py-2 last:border-0">
-        <div className="flex items-center gap-1"><dl className="min-w-0 flex-1"><FactRow label={title}><span className={s.paused_at ? 'text-faint' : 'text-lime'}>{status}</span></FactRow></dl>
+      return <div key={s.id} className="border-b border-line-soft py-inline last:border-0">
+        <div className="flex items-center gap-inline"><dl className="min-w-0 flex-1"><FactRow label={title}><span className={s.paused_at ? 'text-faint' : 'text-lime'}>{status}</span></FactRow></dl>
           <div className="relative"><IconButton aria-label={t('edit')} popoverTarget={`schedule-menu-${s.id}`}><Ellipsis aria-hidden className="size-4" /></IconButton>
-            <div id={`schedule-menu-${s.id}`} popover="auto" className="glass-strong fixed m-0 min-w-40 rounded-card border border-line-soft p-2 [inset:auto] [position-area:block-end_span-inline-start]">
+            <div id={`schedule-menu-${s.id}`} popover="auto" className="glass-strong fixed m-0 min-w-40 rounded-card border border-line-soft p-inline [inset:auto] [position-area:block-end_span-inline-start]">
               <Button variant="secondary" disabled={busy} onClick={() => onEdit(s)} className="min-h-12 w-full text-xs">{t('edit')}</Button>
               <Button variant="secondary" disabled={busy} onClick={() => onPause(s)} className="min-h-12 w-full text-xs">{t(s.paused_at ? 'resume' : 'pause')}</Button>
               <Button variant="secondary" disabled={busy} onClick={() => onDelete(s)} className="min-h-12 w-full border border-danger/40 text-xs text-danger!">{t('delete')}</Button>
@@ -60,6 +60,6 @@ export function AssessmentPanel({ data, player, locale, now, busy, onEdit, onPau
       }
       return last?.answered_at ? <FactRow key={f.id} label={f.title}><span className="text-faint">{t('lastAnswer', { date: date(localDate(new Date(last.answered_at), person?.timezone ?? DEFAULT_TIMEZONE)) })}</span></FactRow> : null;
     })}</dl>
-    {player && <Button variant="secondary" onClick={onSend} className="mt-3 min-h-12 w-full rounded-full"><SendIcon aria-hidden className="size-4" />{t('send')}</Button>}
+    {player && <Button variant="secondary" onClick={onSend} className="mt-stack min-h-12 w-full rounded-full"><SendIcon aria-hidden className="size-4" />{t('send')}</Button>}
   </aside>;
 }

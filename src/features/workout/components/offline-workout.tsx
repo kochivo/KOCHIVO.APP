@@ -25,7 +25,7 @@ function CachedWorkout() {
   if (!snapshot) return <p>{t('thisWorkoutIsntInYourProgram')}</p>;
   if (dayId) return <FocusScreen dayId={dayId} playerId={snapshot.player_id} />;
   const days = snapshot.days.filter(day => !day.is_rest_day);
-  return <div className="space-y-3">
+  return <div className="space-y-stack">
     {days.length ? days.map(day => <Button key={day.id} variant="secondary" onClick={() => setDayId(day.id)}>{day.title}</Button>)
       : <p>{t('thisWorkoutIsntInYourProgram')}</p>}
   </div>;

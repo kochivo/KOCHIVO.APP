@@ -38,12 +38,12 @@ export function ActivateSheet({ packages, busy = false, error, onClose, onSave, 
     && price.trim() !== '' && paid.trim() !== '' && Number.isInteger(Number(price)) && Number(price) >= 0 && Number(price) <= 100000
     && Number.isInteger(Number(paid)) && Number(paid) >= 0 && Number(paid) <= Number(price);
   return <dialog ref={dialog} aria-labelledby="activate-title" onCancel={event => { event.preventDefault(); if (!busy) onClose(); }}
-    className="sheet fixed inset-x-0 bottom-0 top-auto m-0 max-h-[90dvh] w-full max-w-none overflow-y-auto rounded-t-card border border-line p-6 text-ink backdrop:bg-bg-deep/80 sm:inset-0 sm:m-auto sm:max-w-lg sm:rounded-card">
-    <header className="flex items-center justify-between gap-3"><h2 id="activate-title" className="text-2xl font-bold">{t('activate')}</h2>
+    className="sheet fixed inset-x-0 bottom-0 top-auto m-0 max-h-[90dvh] w-full max-w-none overflow-y-auto rounded-t-card border border-line p-section text-ink backdrop:bg-bg-deep/80 sm:inset-0 sm:m-auto sm:max-w-lg sm:rounded-card">
+    <header className="flex items-center justify-between gap-stack"><h2 id="activate-title" className="text-2xl font-bold">{t('activate')}</h2>
       {captainWorkspaceEnabled() ? <IconButton aria-label={t('close')} disabled={busy} onClick={onClose} className="min-h-12 min-w-12"><X aria-hidden /></IconButton> : <Button variant="ghost" aria-label={t('close')} disabled={busy} onClick={onClose} className="min-h-12 min-w-12"><X aria-hidden /></Button>}</header>
-    <form className="mt-5 space-y-4" onSubmit={event => { event.preventDefault(); if (valid && !busy) onSave({ kind, quantity, packageId, price: Number(price), paid: Number(paid), freeTrial, method }); }}>
+    <form className="mt-card-gap space-y-card-gap" onSubmit={event => { event.preventDefault(); if (valid && !busy) onSave({ kind, quantity, packageId, price: Number(price), paid: Number(paid), freeTrial, method }); }}>
       <ManualPaymentMethod value={method} onChange={setMethod} />
-      <label className="block space-y-2"><span>{t('package')}</span><select aria-label={t('package')} value={packageId ?? ''} onChange={event => pick(event.target.value)} className={captainWorkspaceEnabled() ? `${editableFieldClass} min-h-12 w-full rounded-control border border-line bg-surface p-3` : "min-h-12 w-full rounded-control border border-line bg-surface p-3"}>
+      <label className="block space-y-inline"><span>{t('package')}</span><select aria-label={t('package')} value={packageId ?? ''} onChange={event => pick(event.target.value)} className={captainWorkspaceEnabled() ? `${editableFieldClass} min-h-12 w-full rounded-control border border-line bg-surface p-stack` : "min-h-12 w-full rounded-control border border-line bg-surface p-stack"}>
         <option value="">{t('custom')}</option>{packages.map(pkg => <option key={pkg.id} value={pkg.id}>{pkg.name}</option>)}</select></label>
       <Segmented aria-label={t('kind')} value={kind} options={[{ value: 'days', label: t('byDays') }, { value: 'sessions', label: t('bySessions') }]}
         onChange={value => { setKind(value as 'days' | 'sessions'); setPackageId(null); setQuantity(1); }} />

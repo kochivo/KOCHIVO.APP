@@ -27,10 +27,10 @@ export function DonePanel({ workout, lifetime }: { workout?: WorkoutPointsInput;
   } else if (preview?.reason === 'sets' && workout) {
     line = t('pointsSets', { logged: number(workout.loggedSets), planned: number(workout.plannedSets), min: number(preview.minSets) });
   }
-  return <section className="glass-strong space-y-5 rounded-card p-8 text-center">
+  return <section className="glass-strong space-y-card-gap rounded-card p-section text-center">
     <h1 className="text-3xl font-extrabold">{t('workoutComplete')}</h1>
     {line && <p className={preview?.counted ? 'font-bold' : 'text-muted'}>{line}</p>}
     <p className="text-muted">{t('savedOnYourPhoneYourCoachWill')}</p>
-    <Link href="/player" className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-5" })}>{t('backToHome')}</Link>
+    <Link href="/player" className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-page-x" })}>{t('backToHome')}</Link>
   </section>;
 }

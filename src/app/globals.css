@@ -75,8 +75,20 @@
   --radius-card: 1.25rem;
   --radius-control: .875rem;
   --radius-chip: 9999px;
-  --spacing-card: 1.25rem;
-  --spacing-card-gap: 1rem;
+  --spacing-page-x: 1rem;
+  --spacing-page-y: 1rem;
+  --spacing-section: 1.5rem;
+  --spacing-card: 1rem;
+  --spacing-card-gap: .75rem;
+  --spacing-stack: .5rem;
+  --spacing-inline: .5rem;
+  --spacing-control: 1.25rem;
+  --spacing-chip: 2.375rem;
+  --text-micro: .71875rem;
+  --text-row: .8125rem;
+  --text-md: .9375rem;
+  --text-title: 1.1875rem;
+  --text-h: 1.5rem;
   --text-stat: 2rem;
   --text-stat-wide: 2.5rem;
   --text-stat-large: 3rem;
@@ -84,6 +96,16 @@
   --spacing-touch: 3rem;
   --shadow-lime-glow: inset 0 1px 0 rgb(255 255 255 / .25), 0 0 18px color-mix(in srgb, var(--color-lime) 25%, transparent);
   --shadow-lime-glow-hover: inset 0 1px 0 rgb(255 255 255 / .3), 0 0 18px color-mix(in srgb, var(--color-lime) 32%, transparent);
+}
+@media (min-width: 760px) {
+  :root {
+    --spacing-page-x: 1.5rem;
+    --spacing-page-y: 1.5rem;
+    --spacing-section: 2rem;
+    --spacing-card: 1.25rem;
+    --spacing-card-gap: 1rem;
+    --spacing-stack: .75rem;
+  }
 }
 :root {
   --safe-top: env(safe-area-inset-top, 0px);

@@ -14,8 +14,8 @@ export function OtpInput({ value, onChange, disabled }: { value: string; onChang
     onChange((value.slice(0, index) + digits + value.slice(index + digits.length)).slice(0, 6));
     focus(Math.min(index + digits.length, 5));
   }
-  return <div ref={container} dir="ltr" className="grid grid-cols-6 gap-2" aria-label={t('signInCode')}>
-    {Array.from({ length: 6 }, (_, index) => <TextField key={index} label={t('digit', { n: index + 1 })} hideLabel className="min-h-14 px-2 text-center text-xl"
+  return <div ref={container} dir="ltr" className="grid grid-cols-6 gap-inline" aria-label={t('signInCode')}>
+    {Array.from({ length: 6 }, (_, index) => <TextField key={index} label={t('digit', { n: index + 1 })} hideLabel className="min-h-14 px-inline text-center text-xl"
       inputMode="numeric" autoComplete={index === 0 ? 'one-time-code' : 'off'} pattern="[0-9]*" disabled={disabled}
       value={value[index] ?? ''} onFocus={(event) => event.target.select()}
       onChange={(event) => { if (!event.target.value) onChange(value.slice(0, index)); else insert(index, event.target.value); }}

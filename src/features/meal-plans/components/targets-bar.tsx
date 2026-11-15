@@ -14,13 +14,13 @@ export function TargetsBar({ targets, totals, onChange }: { targets: Macros; tot
   const locale = useLocale();
   const labels = { kcal: t('calories'), protein: t('protein'), carbs: t('carbs2'), fat: t('fat2') };
   const delta = targetDelta(totals, targets);
-  return <section aria-label={t('targetsAndTotals')} className="glass-strong grid gap-4 rounded-card p-5">
+  return <section aria-label={t('targetsAndTotals')} className="glass-strong grid gap-card-gap rounded-card p-card">
     <h2 className="text-xl font-bold">{t('targetsAndTotals')}</h2>
-    {(Object.keys(labels) as (keyof Macros)[]).map(key => <div key={key} className="grid gap-2">
-      <label className="flex items-center justify-between gap-3">{labels[key]}
+    {(Object.keys(labels) as (keyof Macros)[]).map(key => <div key={key} className="grid gap-inline">
+      <label className="flex items-center justify-between gap-stack">{labels[key]}
         <input type="number" min={key === 'kcal' ? 800 : 0} max={key === 'kcal' ? 8000 : 32767} step={1}
           value={targets[key]} onChange={event => onChange({ ...targets, [key]: Number(event.target.value) })}
-          className={captainWorkspaceEnabled() ? `${editableFieldClass} min-h-12 w-28 rounded-control border border-line bg-surface px-3` : "min-h-12 w-28 rounded-control border border-line bg-surface px-3"} />
+          className={captainWorkspaceEnabled() ? `${editableFieldClass} min-h-12 w-28 rounded-control border border-line bg-surface px-stack` : "min-h-12 w-28 rounded-control border border-line bg-surface px-stack"} />
       </label>
       <output aria-live="polite" className="text-2xl font-bold">{formatNumber(totals[key], locale)} / {formatNumber(targets[key], locale)} {key === 'kcal' ? t('kcal') : t('g2')}</output>
       <span className={Math.abs(delta[key]) <= targets[key] * .05 ? 'text-lime' : 'text-warn'}>

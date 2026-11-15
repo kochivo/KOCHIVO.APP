@@ -48,15 +48,15 @@ export function ChatComposer({ viewer, onSendText, onSendVoice, disabled = false
     await onSendText(body);
   };
   return <div data-chat-composer className={`fixed start-4 end-4 z-30 mx-auto max-w-lg ${viewer === 'player' ? 'bottom-24' : 'bottom-[calc(var(--nav-clearance)+0.5rem)] min-[760px]:bottom-6 lg:static lg:mx-0 lg:max-w-none'}`}>
-    {(state.status === 'denied' || state.status === 'unsupported') && <p role="alert" className="mb-2 rounded-full bg-surface px-4 py-2 text-xs text-danger">{voiceT(state.status === 'denied' ? 'micDenied' : 'unsupported')}</p>}
-    <form onSubmit={event => { event.preventDefault(); void send(); }} className="flex items-center gap-2">
+    {(state.status === 'denied' || state.status === 'unsupported') && <p role="alert" className="mb-inline rounded-full bg-surface px-page-x py-inline text-xs text-danger">{voiceT(state.status === 'denied' ? 'micDenied' : 'unsupported')}</p>}
+    <form onSubmit={event => { event.preventDefault(); void send(); }} className="flex items-center gap-inline">
       {voice && <button type="button" disabled={busy} aria-label={t('discard')} onClick={() => { sendAfterStop.current = false; recorder.reset(); }}
         className="flex size-[52px] shrink-0 items-center justify-center rounded-full bg-surface-raised text-muted"><Trash2 aria-hidden className="size-5" /></button>}
-      {voice ? <div role="status" className="flex min-h-[52px] min-w-0 flex-1 items-center gap-2.5 rounded-full border border-line-soft bg-surface px-4">
+      {voice ? <div role="status" className="flex min-h-[52px] min-w-0 flex-1 items-center gap-stack rounded-full border border-line-soft bg-surface px-page-x">
         <span aria-hidden className="size-2.5 rounded-full bg-danger" /><span dir="ltr" className="font-display text-sm">{Math.floor(state.seconds / 60)}:{String(state.seconds % 60).padStart(2, '0')}</span>
-        <span className="text-[13px] text-muted">{state.status === 'recording' ? t('recording') : voiceT('voiceNotes')}</span>
+        <span className="text-row text-muted">{state.status === 'recording' ? t('recording') : voiceT('voiceNotes')}</span>
       </div> : <input aria-label={placeholder} placeholder={placeholder} value={text} maxLength={1000} disabled={disabled || state.status === 'requesting'}
-        onChange={event => setText(event.target.value)} className="min-h-[52px] min-w-0 flex-1 rounded-full border border-line-soft bg-surface px-4 text-sm text-ink placeholder:text-muted" />}
+        onChange={event => setText(event.target.value)} className="min-h-[52px] min-w-0 flex-1 rounded-full border border-line-soft bg-surface px-page-x text-sm text-ink placeholder:text-muted" />}
       {voice || text.trim() ? <Button type="submit" disabled={disabled || busy} aria-label={t('send')}
         variant={'primary'} block={false} className={"flex size-[52px] shrink-0 items-center justify-center disabled:opacity-50"}><KoSend aria-hidden className="size-5 text-on-lime! [&_*]:text-on-lime!" /></Button> :
         <button type="button" disabled={disabled || state.status === 'requesting'} aria-label={t('record')} onClick={() => void recorder.start()}

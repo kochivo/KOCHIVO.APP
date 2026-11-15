@@ -23,7 +23,7 @@ export async function TrainingContent({ playerId, initial }: { playerId: string;
   const [profile, programs, playerFile] = await Promise.all([
     readPlayerProfile(playerId), readPlayerPrograms(playerId), readTrainingPlayerFile(playerId).catch(error => { unstable_rethrow(error); return null; }),
   ]);
-  const retry = <div role="alert" className="glass rounded-card p-5 text-danger"><p>{t('error')}</p>
+  const retry = <div role="alert" className="glass rounded-card p-card text-danger"><p>{t('error')}</p>
     <Link className={`${secondaryButtonClass} inline-flex min-h-12 items-center text-ink`} href={`/captain/players/${playerId}/programs`}>{t('retry')}</Link></div>;
   if (profile.error || programs.error || !playerFile) return retry;
   if (!profile.data) notFound();
@@ -36,7 +36,7 @@ export async function TrainingContent({ playerId, initial }: { playerId: string;
   if (!summary) return retry;
   const subscription = summary.subscription;
   const remaining = daysBetween(today, subscription.access_until);
-  return <TimezoneScope timezone={timezone}><div className="min-w-0 space-y-[18px]">
+  return <TimezoneScope timezone={timezone}><div className="min-w-0 space-y-card-gap">
     <TrainingEditorEntry key={loaded?.data?.id ?? playerId} playerId={playerId} playerName={profile.data.name}
       remainingDays={remaining >= 0 && !subscription.pending && !subscription.frozen_at ? remaining : undefined}
       initial={loaded?.data ?? null} programs={programs.data ?? []} loadingLabel={t('loading')}

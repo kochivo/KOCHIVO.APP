@@ -61,20 +61,20 @@ export function RenewSheet({ name, accessUntil, today, packages, onClose, onSave
 
   return (
     <dialog ref={dialog} aria-labelledby="renew-heading" onCancel={(event) => { event.preventDefault(); onClose(); }}
-      className="sheet fixed inset-x-0 bottom-0 top-auto m-0 max-h-[90dvh] w-full max-w-none overflow-y-auto rounded-t-card border border-line bg-surface p-6 text-ink backdrop:bg-bg-deep/80 sm:inset-0 sm:m-auto sm:max-w-lg sm:rounded-card">
-      <div className="mb-6 flex items-center justify-between gap-4">
+      className="sheet fixed inset-x-0 bottom-0 top-auto m-0 max-h-[90dvh] w-full max-w-none overflow-y-auto rounded-t-card border border-line bg-surface p-section text-ink backdrop:bg-bg-deep/80 sm:inset-0 sm:m-auto sm:max-w-lg sm:rounded-card">
+      <div className="mb-section flex items-center justify-between gap-card-gap">
         <h2 id="renew-heading" className="text-2xl font-extrabold">{t('renewTitle', { name })}</h2>
         {captainWorkspaceEnabled() ? <IconButton aria-label={t('close')} onClick={onClose} className="min-h-12 min-w-12 px-0"><X aria-hidden className="size-5" /></IconButton> : <Button variant="ghost" aria-label={t('close')} onClick={onClose} className="min-h-12 min-w-12 px-0"><X aria-hidden className="size-5" /></Button>}
       </div>
-      <form className="space-y-5" onSubmit={(event) => {
+      <form className="space-y-card-gap" onSubmit={(event) => {
         event.preventDefault();
         if (!busy && validDays && validAmount) onSave(chosen ? { days: null, amount: value, price, packageId: chosen.id, method } : { days, amount: value, method });
       }}>
         {error && <p role="alert" className="text-sm text-danger">{error}</p>}
         <ManualPaymentMethod value={method} onChange={setMethod} />
-        {packages.length > 0 && <fieldset className="space-y-2">
-          <legend className="mb-2 text-sm font-semibold">{t('choosePackage')}</legend>
-          <div className="flex flex-wrap gap-2">
+        {packages.length > 0 && <fieldset className="space-y-inline">
+          <legend className="mb-inline text-sm font-semibold">{t('choosePackage')}</legend>
+          <div className="flex flex-wrap gap-inline">
             {packages.map((item) => <Chip key={item.id} pressed={packageId === item.id} onClick={() => pick(item.id)}>
               {item.name} · {t('amount', { amount: formatNumber(item.price_egp, locale) })}
               {item.kind === 'sessions' && <> · {pt('sessionsLeft', { n: item.sessions ?? 0, count: formatNumber(item.sessions ?? 0, locale) })}</>}
@@ -90,7 +90,7 @@ export function RenewSheet({ name, accessUntil, today, packages, onClose, onSave
         </>}
         <TextField label={chosen ? t('paidNow') : t('optionalAmount')} type="number" inputMode="numeric" min={0} max={price ?? 100000} step={1}
           value={amount} onChange={(event) => setAmount(event.target.value)} />
-        <div aria-live="polite" className="glass-strong space-y-2 rounded-control p-4">
+        <div aria-live="polite" className="glass-strong space-y-inline rounded-control p-card">
           {preview ? <><p>{t('from')} <time dateTime={preview.start}>{formatDateAr(preview.start, { day: 'numeric', month: 'long', year: 'numeric' }, locale)}</time></p><p>{t('until')} <time dateTime={preview.end}>{formatDateAr(preview.end, { day: 'numeric', month: 'long', year: 'numeric' }, locale)}</time></p></>
             : <p className="text-muted">{t('choosePeriod')}</p>}
           {chosen && validAmount && <p className={left > 0 ? 'font-bold text-warn' : 'text-lime'}>

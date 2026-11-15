@@ -19,7 +19,7 @@ export function PlayerProfileEditor({ profile, onSave }: { profile: SettingsProf
   const writer = useProfileWrite();
   const pending = writer.pending;
   const [message, setMessage] = useState('');
-  return <form className="space-y-4 px-4 pb-4" onSubmit={async event => {
+  return <form className="space-y-card-gap px-page-x pb-card" onSubmit={async event => {
     event.preventDefault();
     await writer.run(async () => {
       setMessage('');

@@ -17,14 +17,14 @@ function PlanCard({ icon: Icon, heading, title, lines, href, action }: {
   icon: LucideIcon; heading: string; title: string | null; lines: string[]; href: string; action: string;
 }) {
   return (
-    <GlassCard className="flex flex-col gap-4 p-5">
-      <div className="flex items-center gap-3">
+    <GlassCard className="flex flex-col gap-card-gap p-card">
+      <div className="flex items-center gap-stack">
       <span aria-hidden className="grid size-11 place-items-center rounded-full bg-surface-raised text-ink"><Icon className="size-5" /></span>
         <h2 className="text-lg font-bold">{heading}</h2>
       </div>
       {title && <p className="text-xl font-extrabold">{title}</p>}
       {lines.map((line) => <p key={line} className="text-sm text-muted">{line}</p>)}
-      <Link href={href} className={buttonClass({ variant: 'secondary', block: false, className: "mt-auto inline-flex min-h-12 items-center justify-center px-4 font-bold" })}>{action}</Link>
+      <Link href={href} className={buttonClass({ variant: 'secondary', block: false, className: "mt-auto inline-flex min-h-12 items-center justify-center px-page-x font-bold" })}>{action}</Link>
     </GlassCard>
   );
 }
@@ -36,8 +36,8 @@ export async function PlanTab({ playerId, program, nutrition }: Pick<PlayerProfi
   const updated = (iso: string) => t('updated', { date: formatDateAr(localDate(new Date(iso), timezone), { day: 'numeric', month: 'long' }, locale) });
   const base = `/captain/players/${playerId}`;
   return (
-    <div className="space-y-4">
-      <div className="grid gap-4 md:grid-cols-2">
+    <div className="space-y-card-gap">
+      <div className="grid gap-card-gap md:grid-cols-2">
         {program ? <PlanCard icon={Dumbbell} heading={t('program')} title={starterText(program.title, locale)} href={`${base}/programs`} action={t('edit')}
           lines={[t('programSummary', { days: n(program.days), exercises: n(program.exercises) }), updated(program.updatedAt)]} /> :
           <EmptyState icon={Dumbbell} title={t('noProgramTitle')} body={t('noProgramBody')} action={{ label: t('writeProgram'), href: `${base}/programs` }} />}
@@ -47,7 +47,7 @@ export async function PlanTab({ playerId, program, nutrition }: Pick<PlayerProfi
           <EmptyState icon={Salad} title={t('noNutritionTitle')} body={t('noNutritionBody')} action={{ label: t('writeNutrition'), href: `${base}/nutrition` }} />}
       </div>
       <CaptainSupplements playerId={playerId} />
-      <Link href={`${base}/preview`} className="inline-flex min-h-12 items-center gap-2 rounded-control px-4 text-sm font-bold hover:bg-ink/5">
+      <Link href={`${base}/preview`} className="inline-flex min-h-12 items-center gap-inline rounded-control px-page-x text-sm font-bold hover:bg-ink/5">
         <Eye aria-hidden className="size-5" />{t('preview')}
       </Link>
     </div>

@@ -45,12 +45,12 @@ export function ConversationScreen(props: ConversationProps) {
     <PageBarTitle title={t('title')} />
     {(error || resource.error || !captainId) && <ErrorState message={t('error')} retryLabel={t('retry')} onRetry={() => error || !captainId ? router.refresh() : void resource.retry()} />}
     {!rows ? !error && !resource.error && captainId && <LoadingState variant="list" aria-label={t('loading')} /> :
-      <div className="grid items-start gap-3 min-[760px]:grid-cols-[270px_minmax(0,1fr)]">
+      <div className="grid items-start gap-stack min-[760px]:grid-cols-[270px_minmax(0,1fr)]">
         <div className={chatOpen ? 'hidden min-[760px]:block' : ''}><ConversationList rows={rows} selected={currentId} onSelect={choose} /></div>
         <div className={chatOpen ? 'min-w-0' : 'hidden min-w-0 min-[760px]:block'}>
           {current ? (desktop || chatOpen) && <Pane key={current.playerId} player={current} captainId={captainId} at={at} onGuard={onGuard} onUpdate={onUpdate}
             onBack={() => { if (guard.current()) setChatOpen(false); }} />
-            : <div className="glass flex min-h-[470px] items-center justify-center rounded-card border border-line-soft p-4 text-[12.5px] text-muted">{t(rows.length ? 'choose' : 'empty')}</div>}
+            : <div className="glass flex min-h-[470px] items-center justify-center rounded-card border border-line-soft p-card text-xs text-muted">{t(rows.length ? 'choose' : 'empty')}</div>}
         </div>
       </div>}
   </section>;

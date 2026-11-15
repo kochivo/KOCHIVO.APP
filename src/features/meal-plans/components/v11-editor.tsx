@@ -46,20 +46,20 @@ export function V11Editor({ planId }: { planId: string }) {
   if (!draft) return <div role="alert">{state.error}<Button variant="secondary" onClick={state.reload}>{t('retry')}</Button></div>;
   if (draft.playerId) return <LegacyEditor planId={planId} />;
   const meals = dayMeals(draft.meals, day);
-  return <div className="grid min-w-0 gap-4">
+  return <div className="grid min-w-0 gap-card-gap">
     <PageBarTitle title={draft.title} subtitle={usage.data !== undefined ? t('usage', { n: usage.data }) : usage.error ? t('error') : t('loading')} />
     <PageBarActions><Link href="/captain/library/meal-plans" aria-label={t('back')} aria-disabled={state.dirty || state.busy} onNavigate={event => { if (state.dirty || state.busy) event.preventDefault(); }} className={buttonClass({ variant: 'secondary', block: false, className: "grid min-h-12 min-w-12 place-items-center" })}><KoMealPlans aria-hidden className="size-5" /></Link><Button disabled={state.busy} onClick={() => void state.persist(false, true)}>{t('save')}</Button></PageBarActions>
     {state.error && <p role="alert" className="text-danger">{state.error}</p>}
     {state.busy && <p role="status" className="text-muted">{pt('saving')}</p>}
     {state.dirty && !state.busy && <p role="status" className="text-xs text-muted">{pt('youHaveUnsavedChanges')}</p>}
-    <div role="tablist" aria-label={pt('meals')} className="flex gap-2">{(['training', 'rest'] as const).map(value => <button key={value} type="button" role="tab" aria-selected={day === value} disabled={state.busy} onClick={() => {
+    <div role="tablist" aria-label={pt('meals')} className="flex gap-inline">{(['training', 'rest'] as const).map(value => <button key={value} type="button" role="tab" aria-selected={day === value} disabled={state.busy} onClick={() => {
       setDay(value);
-    }} className={`${clickableClass} press min-h-12 cursor-pointer rounded-full border border-line px-5 text-sm focus-visible:ring-2 focus-visible:ring-lime ${day === value ? 'bg-lime/10 text-lime' : 'bg-surface text-muted'}`}>{t(value)}</button>)}</div>
-    <div className="grid min-w-0 items-start gap-3 min-[1001px]:grid-cols-[minmax(0,1fr)_300px]">
-      <fieldset disabled={state.busy} className="grid min-w-0 gap-3">
+    }} className={`${clickableClass} press min-h-12 cursor-pointer rounded-full border border-line px-page-x text-sm focus-visible:ring-2 focus-visible:ring-lime ${day === value ? 'bg-lime/10 text-lime' : 'bg-surface text-muted'}`}>{t(value)}</button>)}</div>
+    <div className="grid min-w-0 items-start gap-stack min-[1001px]:grid-cols-[minmax(0,1fr)_300px]">
+      <fieldset disabled={state.busy} className="grid min-w-0 gap-stack">
         <EditInPlace label={pt('planName')} value={draft.title} maxLength={80} onChange={event => update(current => ({ ...current, title: event.target.value }))} />
         <MealTargets totals={nutritionTotals(meals).totals} targets={draft.targets} onChange={targets => update(current => ({ ...current, targets }))} />
-        {!meals.length && <p className="glass rounded-card p-5 text-muted">{pt('addYourFirstMealToStart')}</p>}
+        {!meals.length && <p className="glass rounded-card p-card text-muted">{pt('addYourFirstMealToStart')}</p>}
         {meals.map(meal => <V11Meal key={meal.id} meal={meal} day={day} update={update} />)}
         <Button variant="secondary" className="border border-dashed border-lime/40 text-lime" onClick={() => {
           const id = uuidv7(); update(current => {

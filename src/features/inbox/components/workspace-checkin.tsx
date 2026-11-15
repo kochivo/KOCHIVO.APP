@@ -16,17 +16,17 @@ export function WorkspaceCheckin({ item, inputs, now }: { item: Extract<InboxIte
   const averages = dailyAverages(item.player_id, inputs.dailyChecks, now, item.timezone);
   return <div>
     <WorkspaceKpis item={item} inputs={inputs} />
-    <dl className="px-5">
-      <div className="flex justify-between gap-3 py-[11px] text-[13px]"><dt className="text-muted">{t('sleep')}</dt>
+    <dl className="px-page-x">
+      <div className="flex justify-between gap-stack py-stack text-row"><dt className="text-muted">{t('sleep')}</dt>
         <dd className={averages.sleep !== null && averages.sleep < 6 ? 'text-warn' : ''}>{averages.sleep === null ? t('dash') : t('hours', { value: formatNumber(Math.round(averages.sleep * 10) / 10, locale) })}</dd></div>
-      <div className="flex justify-between gap-3 border-t border-line-soft py-[11px] text-[13px]"><dt className="text-muted">{t('sorenessAnswer')}</dt>
+      <div className="flex justify-between gap-stack border-t border-line-soft py-stack text-row"><dt className="text-muted">{t('sorenessAnswer')}</dt>
         <dd className={averages.soreness !== null && averages.soreness >= 4 ? 'text-warn' : ''}>{averages.soreness === null ? t('dash') : formatNumber(Math.round(averages.soreness * 10) / 10, locale)}</dd></div>
-      <div className="flex justify-between gap-3 border-t border-line-soft py-[11px] text-[13px]"><dt className="shrink-0 text-muted">{t('noteAnswer')}</dt>
+      <div className="flex justify-between gap-stack border-t border-line-soft py-stack text-row"><dt className="shrink-0 text-muted">{t('noteAnswer')}</dt>
         <dd className="min-w-0 whitespace-pre-wrap break-words text-end">{item.notes || t('noNotes')}</dd></div>
     </dl>
-    <div className="px-5 py-3.5">{media.loading ? <LoadingState variant="cards" aria-label={t('loading')} /> : media.error ? <div role="alert"><p>{t('photosFailed')}</p>
-      <Button variant="secondary" className="min-h-12 px-4" onClick={media.retry}>{t('retry')}</Button></div> : media.urls.length ?
-      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">{media.urls.slice(0, 3).map((url, index) => <a key={url} href={url} target="_blank" rel="noreferrer" className="min-h-12">
+    <div className="px-page-x py-card">{media.loading ? <LoadingState variant="cards" aria-label={t('loading')} /> : media.error ? <div role="alert"><p>{t('photosFailed')}</p>
+      <Button variant="secondary" className="min-h-12 px-page-x" onClick={media.retry}>{t('retry')}</Button></div> : media.urls.length ?
+      <div className="grid grid-cols-2 gap-stack sm:grid-cols-3">{media.urls.slice(0, 3).map((url, index) => <a key={url} href={url} target="_blank" rel="noreferrer" className="min-h-12">
         <Image src={url} alt={t((['front', 'side', 'rear'] as const)[index] ?? 'front')} width={240} height={320} unoptimized onError={media.failed}
           className="aspect-[3/4] w-full rounded-2xl border border-line-soft object-cover" /></a>)}</div> : <p className="text-sm text-faint">{t('noPhotos')}</p>}</div>
   </div>;

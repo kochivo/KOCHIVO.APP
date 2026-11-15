@@ -67,21 +67,21 @@ export function TasksScreen() {
     if (ok) toast.success({ title: success('replyNamed', { name: task.name }), detail: success('name', { name: task.item?.kind === 'form' ? task.item.exercise_name : t('checkinTag') }), icon: task.kind === 'video' || task.kind === 'checkin' ? 'form' : 'message' });
     return ok;
   }
-  return <div id="queue-heading" tabIndex={-1} className="space-y-4">
+  return <div id="queue-heading" tabIndex={-1} className="space-y-card-gap">
     <PageBarTitle title={t('title')} subtitle={t('subtitle')} />
     {!data ? <TasksState kind={resource.error ? 'error' : 'loading'} retry={resource.retry} /> : <>
       {(failed || resource.error) && <p role="alert" className="text-sm text-danger">{t(failed ? 'failed' : 'error')}</p>}
       {!tasks.length && !pending ? <TasksState kind="empty" /> : <>
-        <div aria-label={t('title')} className={`flex w-max max-w-full gap-1 overflow-x-auto rounded-full border border-line-soft bg-bg/25 p-1 ${mobileOpen ? 'max-[759px]:hidden' : ''}`}>
+        <div aria-label={t('title')} className={`flex w-max max-w-full gap-inline overflow-x-auto rounded-full border border-line-soft bg-bg/25 p-inline ${mobileOpen ? 'max-[759px]:hidden' : ''}`}>
           {taskTabs.map(tab => <button key={tab} aria-pressed={filter === tab} disabled={pending} onClick={() => { setFilter(tab); setMobileOpen(false); }}
-            className={`${clickableClass} min-h-12 shrink-0 whitespace-nowrap rounded-full px-3 text-xs ${filter === tab ? 'glass-strong text-ink' : 'text-muted'}`}>
-            {t(tab)} <span className="ms-1 tabular-nums">{formatNumber(counts[tab], locale)}</span></button>)}
+            className={`${clickableClass} min-h-12 shrink-0 whitespace-nowrap rounded-full px-stack text-xs ${filter === tab ? 'glass-strong text-ink' : 'text-muted'}`}>
+            {t(tab)} <span className="ms-inline tabular-nums">{formatNumber(counts[tab], locale)}</span></button>)}
         </div>
-        <div className="grid items-start gap-4 min-[760px]:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
-          <section className={`glass min-w-0 rounded-card p-[18px] ${mobileOpen ? 'max-[759px]:hidden' : ''}`}>
+        <div className="grid items-start gap-card-gap min-[760px]:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+          <section className={`glass min-w-0 rounded-card p-card ${mobileOpen ? 'max-[759px]:hidden' : ''}`}>
             {visible.length ? <ul aria-label={t('title')}>{visible.map(task => <TaskRow key={task.id} task={task} selected={selected?.id === task.id}
               first={tasks[0]?.id === task.id} pending={pending} onSelect={() => open(task)} onAction={() => void action(task)} />)}</ul>
-              : <p role="status" className="py-12 text-center text-sm text-muted">{t('filterEmpty')}</p>}
+              : <p role="status" className="py-section text-center text-sm text-muted">{t('filterEmpty')}</p>}
           </section>
           {selected && <div className={mobileOpen ? '' : 'max-[759px]:hidden'}><Detail key={selected.id} task={selected} pending={pending} onBack={() => setMobileOpen(false)} onSend={send} /></div>}
         </div>

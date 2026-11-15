@@ -8,7 +8,7 @@ import { messages } from './messages';
 export async function TrainingEntry({ playerId }: { playerId: string }) {
   const t = createT(messages, await getLocale());
   return <section className="min-w-0">
-    <Suspense fallback={<div role="status" className="glass min-h-64 rounded-card p-5 text-faint">{t('loading')}</div>}>
+    <Suspense fallback={<div role="status" className="glass min-h-64 rounded-card p-card text-faint">{t('loading')}</div>}>
       <PlayerProgramContent playerId={playerId} />
     </Suspense>
   </section>;

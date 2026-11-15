@@ -33,9 +33,9 @@ export function DeleteAccountCard({ requestedAt, onChange }: { requestedAt: stri
     } catch { setMessage(t('requestFailedTryAgain')); }
     finally { setPending(false); }
   }
-  return <section className="glass space-y-4 rounded-card border border-danger p-6">
+  return <section className="glass space-y-card-gap rounded-card border border-danger p-section">
     <h2 className="text-lg font-bold text-danger">{t('deleteAccount')}</h2>
-    {due ? <p role="status" className="glass-strong rounded-control p-4">
+    {due ? <p role="status" className="glass-strong rounded-control p-card">
       {t('yourAccountWillBeDeletedOn')} <time dateTime={due}>{formatTimestampAr(due, {
         day: 'numeric', month: 'long', year: 'numeric',
       }, locale, timezone)}</time>{t('youCanCancelBeforeThen')}

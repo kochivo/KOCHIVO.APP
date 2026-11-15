@@ -52,21 +52,21 @@ export function FoodDrawer({ food, onClose, onSaved, onMutation }: {
     finally { lock.current = false; setBusy(false); }
   }
   if (!food) return <LoadingState variant="detail" />;
-  const input = 'min-h-12 w-full rounded-control border border-line bg-surface px-3';
+  const input = 'min-h-12 w-full rounded-control border border-line bg-surface px-stack';
   const photo = food.photo ? foodPhotoUrl(food.photo) : null;
   return <ResponsiveDialog modal fallbackId="new-library-food" onDismiss={() => { if (!busy) onClose(); }} aria-labelledby={title}
-    className="sheet fixed inset-x-0 bottom-0 top-auto z-50 max-h-[90dvh] w-full overflow-y-auto rounded-t-card p-5 text-ink lg:inset-x-auto lg:inset-y-4 lg:end-0 lg:m-0 lg:h-auto lg:max-h-[90dvh] lg:w-[26rem] lg:rounded-none lg:border-s lg:border-line">
-    <div className="flex items-center justify-between gap-3">
+    className="sheet fixed inset-x-0 bottom-0 top-auto z-50 max-h-[90dvh] w-full overflow-y-auto rounded-t-card p-card text-ink lg:inset-x-auto lg:inset-y-4 lg:end-0 lg:m-0 lg:h-auto lg:max-h-[90dvh] lg:w-[26rem] lg:rounded-none lg:border-s lg:border-line">
+    <div className="flex items-center justify-between gap-stack">
       <h2 id={title} className="text-xl font-bold">{food.name}</h2>
       <IconButton type="button" disabled={busy} aria-label={t('close')} onClick={onClose}><X aria-hidden /></IconButton>
     </div>
-    {!food.custom && <p className="my-3 text-muted">{t('readonly')}</p>}
-    <div className="mt-4 grid gap-4" aria-busy={busy}>
-      <fieldset disabled className="grid gap-3">
+    {!food.custom && <p className="my-stack text-muted">{t('readonly')}</p>}
+    <div className="mt-card-gap grid gap-card-gap" aria-busy={busy}>
+      <fieldset disabled className="grid gap-stack">
         <label>{t('name')}<input className={captainWorkspaceEnabled() ? `${editableFieldClass} ${input}` : input} value={food.name} readOnly /></label>
         <label>{t('nameEn')}<input dir="ltr" className={captainWorkspaceEnabled() ? `${editableFieldClass} ${input}` : input} value={food.nameEn ?? ''} readOnly /></label>
         <p className="text-sm text-muted">{t('per100')}</p>
-        <div className="glass-strong grid grid-cols-2 gap-3 rounded-control p-3">{(['kcal', 'protein', 'carbs', 'fat'] as const).map(key => <label key={key}>{t(key)}
+        <div className="glass-strong grid grid-cols-2 gap-stack rounded-control p-stack">{(['kcal', 'protein', 'carbs', 'fat'] as const).map(key => <label key={key}>{t(key)}
           <input className={captainWorkspaceEnabled() ? `${editableFieldClass} ${input}` : input} type="number" value={food[key]} readOnly />
         </label>)}</div>
         <FoodUnits units={food.units ?? []} onChange={() => {}} disabled />
@@ -77,7 +77,7 @@ export function FoodDrawer({ food, onClose, onSaved, onMutation }: {
       {kcalMismatch(food) && <p role="status" className="text-warn">{t('mismatch')}</p>}
       {error && <p role="alert" className="text-danger">{error}</p>}
       {busy && <p role="status">{t('saving')}</p>}
-      {!busy && <Link onClick={onClose} className={buttonClass({ variant: 'primary', block: false, className: "flex min-h-12 items-center justify-center px-4 font-bold" })}
+      {!busy && <Link onClick={onClose} className={buttonClass({ variant: 'primary', block: false, className: "flex min-h-12 items-center justify-center px-page-x font-bold" })}
         href={id ? `${base}/${id}/edit` : `${base}/new?copyFrom=${food.id}`}>{id ? foodT('editFood') : t('copy')}</Link>}
       {id && <>
         {uses > 0 && <p className="text-muted">{t('blocked', { count: uses })}</p>}

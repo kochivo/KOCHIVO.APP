@@ -5,5 +5,5 @@ import { messages } from '../messages';
 
 export function CoachReductionBanner() {
   const t = useT(messages);
-  return <p role="status" className="glass rounded-card p-4 text-sm">{t('reduced')}</p>;
+  return <p role="status" className="glass rounded-card p-card text-sm">{t('reduced')}</p>;
 }

@@ -15,7 +15,7 @@ const Schedule = dynamic(() => import('@/features/forms').then(module => module.
 export function NewAssessmentEntry({ playerId, locale }: { playerId: string; locale: Locale }) {
   const [open, setOpen] = useState(false), t = createT(v11Messages, locale);
   return <div className={open ? 'col-span-full' : ''}>
-    <button aria-expanded={open} className={`${clickableClass} glass press flex min-h-[90px] w-full cursor-pointer items-center justify-center gap-2 rounded-card border border-line-soft p-5 text-ink focus-visible:ring-2 focus-visible:ring-lime`} onClick={() => setOpen(!open)}>
+    <button aria-expanded={open} className={`${clickableClass} glass press flex min-h-[90px] w-full cursor-pointer items-center justify-center gap-inline rounded-card border border-line-soft p-card text-ink focus-visible:ring-2 focus-visible:ring-lime`} onClick={() => setOpen(!open)}>
       <KoPlus aria-hidden className="size-5 text-lime" />{t(open ? 'close' : 'newAssessment')}<DisclosureChevron expanded={open} />
     </button>
     {open && <Schedule playerId={playerId} locale={locale} />}

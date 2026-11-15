@@ -46,26 +46,26 @@ export function CalculatorView({ playerId, file, plans }: { playerId: string; fi
   const [rate, setRate] = useState(goal === 'bulk' ? .25 : .5);
   const [split, setSplit] = useState(true);
   const result = calculatorResult(values, goal, rate);
-  if (!file.history.some(entry => entry.source.kind === 'intake')) return <section className="glass rounded-card p-6">
-    <h1 className="text-2xl font-bold">{t('noIntake')}</h1><p className="mt-3 text-muted">{t('requestUpdate')}</p>
+  if (!file.history.some(entry => entry.source.kind === 'intake')) return <section className="glass rounded-card p-section">
+    <h1 className="text-2xl font-bold">{t('noIntake')}</h1><p className="mt-stack text-muted">{t('requestUpdate')}</p>
   </section>;
-  return <div className="grid gap-5 lg:grid-cols-2">
-    <div className="glass grid content-start gap-5 rounded-card p-5">
+  return <div className="grid gap-card-gap lg:grid-cols-2">
+    <div className="glass grid content-start gap-card-gap rounded-card p-card">
       <CalculatorInputs facts={file.facts} values={values} onChange={setValues} />
-      <fieldset className="grid gap-3"><legend className="mb-3 font-semibold">{t('goal')}</legend>
+      <fieldset className="grid gap-stack"><legend className="mb-stack font-semibold">{t('goal')}</legend>
         <CalculatorSource source={goalFromFile ? file.facts.targetWeight?.source : undefined} local />
-        <div className="grid grid-cols-3 gap-2">{(['cut', 'maintain', 'bulk'] as const).map(value => <button key={value}
+        <div className="grid grid-cols-3 gap-inline">{(['cut', 'maintain', 'bulk'] as const).map(value => <button key={value}
           type="button" aria-pressed={goal === value} onClick={() => { setGoal(value); setGoalFromFile(false); setRate(value === 'bulk' ? .25 : .5); }}
-          className={`min-h-12 rounded-control border px-3 ${goal === value ? 'border-lime text-lime' : 'border-line'}`}>{t(value)}</button>)}</div>
-        {goal !== 'maintain' && <label className="grid gap-2">{t('rate')}<input type="number" min={0} max={2} step={.05}
+          className={`min-h-12 rounded-control border px-stack ${goal === value ? 'border-lime text-lime' : 'border-line'}`}>{t(value)}</button>)}</div>
+        {goal !== 'maintain' && <label className="grid gap-inline">{t('rate')}<input type="number" min={0} max={2} step={.05}
           value={Number.isNaN(rate) ? '' : rate} onChange={event => setRate(event.target.value === '' ? NaN : Number(event.target.value))}
-          className="min-h-12 rounded-control bg-surface px-3" /><CalculatorSource local /></label>}
+          className="min-h-12 rounded-control bg-surface px-stack" /><CalculatorSource local /></label>}
       </fieldset>
     </div>
-    <div className="grid content-start gap-4">
+    <div className="grid content-start gap-card-gap">
       {result && values.weightKg !== undefined && values.trainingDays !== undefined
         ? <CalculatorResults result={result.energy} weightKg={values.weightKg} trainingDays={values.trainingDays} split={split} onSplit={setSplit} />
-        : <p role="status" className="glass rounded-card p-5">{t('invalid')}</p>}
+        : <p role="status" className="glass rounded-card p-card">{t('invalid')}</p>}
       <CalculatorApply playerId={playerId} plans={plans} targets={result?.targets ?? null} />
     </div>
   </div>;

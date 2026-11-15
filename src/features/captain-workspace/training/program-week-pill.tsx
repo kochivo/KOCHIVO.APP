@@ -12,7 +12,7 @@ export function ProgramWeekPill({ startedOn, totalWeeks, today, locale }: {
   if (!Number.isFinite(elapsed) || elapsed < 0) return null;
   if (localDate(new Date(`${startedOn}T12:00:00Z`), 'UTC') !== startedOn) return null;
   const current = Math.min(totalWeeks, Math.floor(elapsed / 7) + 1);
-  return <span className="rounded-full bg-lime-soft px-3 py-1 text-xs text-lime">{createT(messages, locale)('week', {
+  return <span className="rounded-full bg-lime-soft px-stack py-inline text-xs text-lime">{createT(messages, locale)('week', {
     current: formatNumber(current, locale), total: formatNumber(totalWeeks, locale),
   })}</span>;
 }

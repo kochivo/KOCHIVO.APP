@@ -58,35 +58,35 @@ export function CaptainProfileCard({ variant = 'legacy', children }: { variant?:
   const { social, url } = captainContact(data);
   const progress = now ? subscriptionProgress(data, now, timezone) : null;
   const identity = <>
-    <div className={page ? 'flex flex-col items-center gap-3' : 'flex items-center gap-4'}>
+    <div className={page ? 'flex flex-col items-center gap-stack' : 'flex items-center gap-card-gap'}>
       {data.avatarUrl ? <Image src={data.avatarUrl} alt="" width={page ? 80 : 64} height={page ? 80 : 64} unoptimized
         className={`${page ? 'size-20' : 'size-16'} shrink-0 rounded-full object-cover`} /> :
-        <span aria-hidden className={page ? 'flex size-20 shrink-0 items-center justify-center rounded-full bg-lime-soft text-[30px] font-black text-lime' : 'glass flex size-16 shrink-0 items-center justify-center rounded-full text-2xl font-bold'}>{data.fullName.trim().slice(0, 1)}</span>}
+        <span aria-hidden className={page ? 'flex size-20 shrink-0 items-center justify-center rounded-full bg-lime-soft text-stat font-black text-lime' : 'glass flex size-16 shrink-0 items-center justify-center rounded-full text-2xl font-bold'}>{data.fullName.trim().slice(0, 1)}</span>}
       {page ? <div><h2 className="break-words text-xl font-bold">{data.fullName}</h2>
-        {data.location && <p className="mt-1 text-xs text-muted">{data.location}</p>}</div> : <h2 className="break-words text-xl font-bold">{data.fullName}</h2>}
+        {data.location && <p className="mt-inline text-xs text-muted">{data.location}</p>}</div> : <h2 className="break-words text-xl font-bold">{data.fullName}</h2>}
     </div>
-    {data.bio && <p className={page ? 'whitespace-pre-wrap break-words text-[13px] leading-[1.7] text-muted' : 'whitespace-pre-wrap break-words'}>{data.bio}</p>}
+    {data.bio && <p className={page ? 'whitespace-pre-wrap break-words text-row leading-[1.7] text-muted' : 'whitespace-pre-wrap break-words'}>{data.bio}</p>}
     {!page && data.location && <p className="text-sm text-muted">{data.location}</p>}
-    <div className={page ? 'flex flex-wrap justify-center gap-2' : 'flex flex-wrap gap-3'}>
+    <div className={page ? 'flex flex-wrap justify-center gap-inline' : 'flex flex-wrap gap-stack'}>
       {(['instagram', 'tiktok', 'facebook', 'youtube', 'x'] as const).map(key => social[key] ?
         <a key={key} href={social[key]} target="_blank" rel="noopener noreferrer"
-          className={buttonClass({ variant: (page) ? 'secondary' : 'secondary', block: false, className: page ? "flex min-h-12 items-center px-3 text-xs" : "flex min-h-12 items-center px-4" })}>{t(key)}</a> : null)}
+          className={buttonClass({ variant: (page) ? 'secondary' : 'secondary', block: false, className: page ? "flex min-h-12 items-center px-stack text-xs" : "flex min-h-12 items-center px-page-x" })}>{t(key)}</a> : null)}
     </div>
   </>;
-  const chip = <span className={`inline-flex rounded-full px-3 py-2 text-sm ${state === 'active' ? 'bg-lime-soft text-lime' : 'bg-warn-soft text-warn'}`}>{labels[state]}</span>;
-  const dates = <div className={page ? 'flex flex-wrap justify-between gap-2 text-[13px] text-muted' : 'space-y-2 text-sm text-muted'}>
+  const chip = <span className={`inline-flex rounded-full px-stack py-inline text-sm ${state === 'active' ? 'bg-lime-soft text-lime' : 'bg-warn-soft text-warn'}`}>{labels[state]}</span>;
+  const dates = <div className={page ? 'flex flex-wrap justify-between gap-inline text-row text-muted' : 'space-y-inline text-sm text-muted'}>
     {data.startedOn ? <p>{page ? p('memberSince', { date: formatDate(data.startedOn) }) : <>{t('memberSince')} <time dateTime={data.startedOn}>{formatDate(data.startedOn)}</time></>}</p> : <p>{t('yourStartDateWillAppearWhen')}</p>}
     <p>{page ? p('until', { date: formatDate(data.accessUntil) }) : <>{t('until')} <time dateTime={data.accessUntil}>{formatDate(data.accessUntil)}</time></>}</p>
   </div>;
   const contact = url ? <a href={url} target="_blank" rel="noopener noreferrer" aria-label={page ? p('whatsapp') : t('messageYourCoachOnWhatsApp')}
-    className={buttonClass({ variant: (page) ? 'secondary' : 'primary', block: false, className: page ? "flex min-h-12 items-center justify-center gap-2 px-4 text-[13px] font-bold" : "flex min-h-14 items-center justify-center gap-2 px-5 font-extrabold" })}>
+    className={buttonClass({ variant: (page) ? 'secondary' : 'primary', block: false, className: page ? "flex min-h-12 items-center justify-center gap-inline px-page-x text-row font-bold" : "flex min-h-14 items-center justify-center gap-inline px-page-x font-extrabold" })}>
     {page ? <KoCaptainChat aria-hidden className="size-[18px]" /> : <MessageCircle aria-hidden className="size-5" />}{page ? p('whatsapp') : t('messageYourCoachOnWhatsApp')}
   </a> : <Button disabled variant={page ? 'secondary' : 'primary'} className="min-h-12 w-full">{t('yourCoachHasnTAddedA')}</Button>;
-  if (!page) return <GlassCard className="space-y-5 p-6">{identity}{chip}{dates}{contact}</GlassCard>;
+  if (!page) return <GlassCard className="space-y-card-gap p-section">{identity}{chip}{dates}{contact}</GlassCard>;
   return <>
-    <section className="space-y-3 rounded-[22px] border border-line-soft bg-surface p-5 text-center">{identity}</section>
-    <section className="space-y-3 rounded-[22px] border border-line-soft bg-surface p-4">
-      <div className="flex items-center justify-between gap-3"><h2 className="text-[15px] font-bold">{p('subscription')}</h2>{chip}</div>
+    <section className="space-y-stack rounded-[22px] border border-line-soft bg-surface p-card text-center">{identity}</section>
+    <section className="space-y-stack rounded-[22px] border border-line-soft bg-surface p-card">
+      <div className="flex items-center justify-between gap-stack"><h2 className="text-md font-bold">{p('subscription')}</h2>{chip}</div>
       {dates}
       {progress && progress.percent !== null && <progress aria-label={p('subscription')} value={progress.percent} max={100}
         className="block h-[7px] w-full appearance-none overflow-hidden rounded-full border-0 bg-line [&::-webkit-progress-bar]:bg-line [&::-webkit-progress-value]:rounded-full [&::-webkit-progress-value]:bg-lime [&::-moz-progress-bar]:bg-lime" />}

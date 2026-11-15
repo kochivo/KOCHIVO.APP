@@ -33,7 +33,7 @@ export function KoTeaserPanel({ role, userId, joined: initialJoined, readFailed 
   }
   return <ResponsiveDialog modal dir={localeDir(locale)} aria-labelledby={`${openerId}-title`}
     fallbackId={openerId} openerId={openerId} onDismiss={onClose}
-    className="sheet fixed inset-auto start-[max(1rem,var(--safe-start))] bottom-[calc(var(--nav-clearance)+4.5rem)] z-50 m-0 max-h-[75dvh] w-96 max-w-[calc(100vw-2rem)] overflow-y-auto rounded-card border border-line p-5 text-start text-ink shadow-xl lg:bottom-24">
+    className="sheet fixed inset-auto start-[max(1rem,var(--safe-start))] bottom-[calc(var(--nav-clearance)+4.5rem)] z-50 m-0 max-h-[75dvh] w-96 max-w-[calc(100vw-2rem)] overflow-y-auto rounded-card border border-line p-card text-start text-ink shadow-xl lg:bottom-24">
     {captainWorkspaceEnabled() ? <IconButton type="button" onClick={onClose} aria-label={t('close')}
       className="ms-auto grid min-h-12 min-w-12 place-items-center rounded-control hover:bg-surface-raised">
       <X aria-hidden className="size-5" />
@@ -42,17 +42,17 @@ export function KoTeaserPanel({ role, userId, joined: initialJoined, readFailed 
       <X aria-hidden className="size-5" />
     </button>}
     <KoAvatar expression="welcome" className="mx-auto size-24" />
-    <h2 id={`${openerId}-title`} className="mt-3 text-xl font-extrabold">{t('title')}</h2>
-    <p className="mt-2 text-sm text-muted">{t('introduction')}</p>
-    <ul className="my-6 space-y-2">
-      {([1, 2, 3] as const).map(n => <li key={n} className="rounded-control border border-line bg-surface-raised px-3 py-3 text-sm">
+    <h2 id={`${openerId}-title`} className="mt-stack text-xl font-extrabold">{t('title')}</h2>
+    <p className="mt-inline text-sm text-muted">{t('introduction')}</p>
+    <ul className="my-section space-y-inline">
+      {([1, 2, 3] as const).map(n => <li key={n} className="rounded-control border border-line bg-surface-raised px-stack py-stack text-sm">
         {t(`${role}${n}`)}
       </li>)}
     </ul>
-    {joined ? <p role="status" className="flex items-center gap-2 rounded-control bg-lime-soft p-3 text-sm">
+    {joined ? <p role="status" className="flex items-center gap-inline rounded-control bg-lime-soft p-stack text-sm">
       <Check aria-hidden className="size-5 shrink-0 text-lime" />{t('joined')}
     </p> : <Button className="min-h-12 w-full" onClick={() => void join()}>{t('join')}</Button>}
-    {failed && <p role="alert" className="mt-3 text-sm text-danger">{t('joinError')}</p>}
-    {readFailed && !joined && !failed && <p role="alert" className="mt-3 text-sm text-muted">{t('readError')}</p>}
+    {failed && <p role="alert" className="mt-stack text-sm text-danger">{t('joinError')}</p>}
+    {readFailed && !joined && !failed && <p role="alert" className="mt-stack text-sm text-muted">{t('readError')}</p>}
   </ResponsiveDialog>;
 }

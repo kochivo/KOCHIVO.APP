@@ -23,7 +23,7 @@ export function RankHero({ lifetime, holdsCrown = false }: { lifetime: number; h
   const label = tier === 'legend' ? t('nextStar', {
     n: formatNumber(next.needed, locale), next: formatNumber(stars + 1, locale),
   }) : t('next', { n: formatNumber(next.needed, locale), tier: t(next.tier) });
-  return <section className="glass-strong flex flex-col items-center gap-3 rounded-card p-6 text-center">
+  return <section className="glass-strong flex flex-col items-center gap-stack rounded-card p-section text-center">
     <RankBadge tier={tier} stars={stars} size="xl" label={rankLabel} />
     <h2 className="text-2xl font-extrabold">{rankLabel}</h2>
     {v6 ? <p className="text-xs text-faint">{v6t('summary', { points: formatNumber(lifetime, locale), needed: formatNumber(next.needed, locale),

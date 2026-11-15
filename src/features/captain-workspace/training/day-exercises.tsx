@@ -46,9 +46,9 @@ export function DayExercises({ day, update, flush, injuries = [], candidates = [
   const { listRef, handleProps, rowStyle } = useDragReorder(day.exercises.map(row => row.id), move);
   return <CustomExerciseNavigation value={{ programId: day.program_id, dayId: day.id, flush }}>
     <section className="glass min-w-0 rounded-card border border-line-soft">
-    <div className="flex min-h-16 flex-wrap items-center gap-2.5 px-[18px] py-3.5"><span className="grid size-6 place-items-center rounded-lg bg-lime-soft font-display text-xs font-extrabold text-lime">{2}</span>
-      <h2 className="font-display text-[19px] font-semibold">{et('exerciseTitle')}</h2><span className="text-xs text-faint">{et('exerciseCount', { n: day.exercises.length, sets: day.exercises.reduce((sum, row) => sum + row.sets, 0) })}</span></div>
-    {!day.exercises.length && <p className="p-5 text-sm text-faint">{t('noExercises')}</p>}
+    <div className="flex min-h-16 flex-wrap items-center gap-stack px-page-x py-card"><span className="grid size-6 place-items-center rounded-lg bg-lime-soft font-display text-xs font-extrabold text-lime">{2}</span>
+      <h2 className="font-display text-title font-semibold">{et('exerciseTitle')}</h2><span className="text-xs text-faint">{et('exerciseCount', { n: day.exercises.length, sets: day.exercises.reduce((sum, row) => sum + row.sets, 0) })}</span></div>
+    {!day.exercises.length && <p className="p-card text-sm text-faint">{t('noExercises')}</p>}
     <p aria-live="polite" aria-atomic="true" className="sr-only">{announcement}</p>
     <ol ref={listRef}>{day.exercises.map((row, index) => <TrainingExerciseRow key={row.id} row={row}
       injuries={injuries} candidates={candidates}

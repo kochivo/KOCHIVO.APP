@@ -29,7 +29,7 @@ export function RequestReview({data,locale,onReviewed}:{data:RequestData;locale:
       setPhotos(current => ({...current,[path]:result.data.signedUrl}));
     } catch {setError(true);}
   }
-  return <article className="glass-strong space-y-4 rounded-card p-5">
+  return <article className="glass-strong space-y-card-gap rounded-card p-card">
     <h2 className="text-xl font-bold">{data.title}</h2>
     {!data.request.answered_at ? <p>{m.pendingAnswer}</p> : <>
       {!data.answers.length && <p>{m.noAnswers}</p>}
@@ -40,14 +40,14 @@ export function RequestReview({data,locale,onReviewed}:{data:RequestData;locale:
           || Array.isArray(value) && value.every(v => typeof v === 'string') ? value : null;
         return <div key={q.id}><QuestionField question={q} locale={locale} value={safe} readOnly />
           {a?.photo_paths.map(path => <div key={path}>{photos[path]
-            ? <a href={photos[path]} target="_blank" rel="noreferrer" className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-4" })}>{m.photo}</a>
+            ? <a href={photos[path]} target="_blank" rel="noreferrer" className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-page-x" })}>{m.photo}</a>
             : <Button variant="secondary" type="button" className="min-h-12" onClick={() => void sign(path)}>{m.photo}</Button>}</div>)}</div>;
       })}
       {data.request.reviewed_at ? <p>{m.reviewed} · {data.request.captain_reply}</p> :
-        <form onSubmit={e => {e.preventDefault();void review();}} className="space-y-3">
+        <form onSubmit={e => {e.preventDefault();void review();}} className="space-y-stack">
           <label className="block">{m.reply}<textarea maxLength={1000} value={reply} onChange={e => setReply(e.target.value)}
-            className="mt-2 min-h-24 w-full rounded-control bg-surface p-3" disabled={pending} /></label>
-          <button disabled={pending} className="min-h-12 rounded-control bg-lime-soft px-5 font-bold text-lime">{pending ? m.sending : m.review}</button>
+            className="mt-inline min-h-24 w-full rounded-control bg-surface p-stack" disabled={pending} /></label>
+          <button disabled={pending} className="min-h-12 rounded-control bg-lime-soft px-page-x font-bold text-lime">{pending ? m.sending : m.review}</button>
         </form>}
     </>}
     {error && <p role="alert" className="text-danger">{m.error}</p>}

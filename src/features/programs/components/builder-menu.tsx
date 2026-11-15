@@ -23,7 +23,7 @@ export function BuilderMenu({ id, fallbackId, label, name, actions, onDelete }: 
     </IconButton>
     {open && <ResponsiveDialog modal fallbackId={fallbackId} openerId={id} onDismiss={close} aria-label={label}
       dir={locale === 'ar' ? 'rtl' : 'ltr'}
-      className="sheet fixed inset-0 z-50 m-auto w-[calc(100%-2rem)] max-w-sm space-y-3 rounded-card p-5 text-ink backdrop:bg-bg-deep/80">
+      className="sheet fixed inset-0 z-50 m-auto w-[calc(100%-2rem)] max-w-sm space-y-stack rounded-card p-card text-ink backdrop:bg-bg-deep/80">
       <Button variant="ghost" block onClick={close}>{t('cancelRest')}</Button>
       {confirm ? <>
         <p className="break-words">{t('deletePrompt', { name })}</p>

@@ -23,7 +23,7 @@ export function PhonePane(props: PaneProps) {
         {state.tab === 'coach' && <Chat {...props} phone />}{state.tab === 'me' && <PhoneMe {...props} />}
       </div>
       <nav data-phone-tabs className="demo-phone-tabs glass grid shrink-0 grid-cols-4 gap-inline p-stack" aria-label={t('player')}>
-        {tabs.map(([tab, Icon]) => <Button key={tab} variant="secondary" className="min-w-0 flex-col px-0 text-micro" data-demo-target={tab === 'coach' ? 'coach-tab' : undefined} aria-current={state.tab === tab ? 'page' : undefined} onClick={() => dispatch({ type: 'phone', tab, now: now() })}><Icon className="size-5" /><span>{t(tab)}</span>{tab === 'coach' && state.unread > 0 && <b className="rounded-full bg-lime px-2 text-on-lime">{state.unread}</b>}</Button>)}
+        {tabs.map(([tab, Icon]) => <Button key={tab} variant="secondary" className="min-w-0 flex-col px-0 text-micro" data-demo-target={tab === 'coach' ? 'coach-tab' : undefined} aria-current={state.tab === tab ? 'page' : undefined} onClick={() => dispatch({ type: 'phone', tab, now: now() })}><Icon className="size-5" /><span>{t(tab)}</span>{tab === 'coach' && state.unread > 0 && <b className="rounded-full bg-lime px-inline text-on-lime">{state.unread}</b>}</Button>)}
       </nav>
       </div>
     </div>

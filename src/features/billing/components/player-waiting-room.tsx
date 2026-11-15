@@ -6,9 +6,9 @@ import { messages } from '../packages/messages';
 export function PlayerWaitingRoom({ frozen = false }: { frozen?: boolean }) {
   const t = useT(messages);
   const Icon = frozen ? Snowflake : Lock;
-  return <section role="status" className="mx-auto grid min-h-80 max-w-lg place-items-center p-5">
-    <div className="glass-strong flex flex-col items-center gap-5 rounded-card p-8 text-center">
-      <span className={frozen ? 'rounded-full bg-water/10 p-5 text-water' : 'rounded-full bg-lime-soft p-5 text-lime shadow-lime-glow'}>
+  return <section role="status" className="mx-auto grid max-w-lg place-items-center p-card">
+    <div className="glass-strong flex flex-col items-center gap-card-gap rounded-card p-section text-center">
+      <span className={frozen ? 'rounded-full bg-water/10 p-card text-water' : 'rounded-full bg-lime-soft p-card text-lime shadow-lime-glow'}>
         <Icon aria-hidden className="size-10" />
       </span>
       <h1 className="text-2xl font-bold">{t(frozen ? 'frozen' : 'pending')}</h1>

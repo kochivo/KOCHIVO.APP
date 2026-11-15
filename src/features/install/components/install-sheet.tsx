@@ -23,12 +23,12 @@ export function InstallSheet({ role = 'player' }: { role?: 'captain' | 'player' 
   if (!visible) return null;
   return <dialog ref={dialog} role="dialog" aria-modal="true" aria-labelledby={titleId}
     onCancel={(event) => { event.preventDefault(); dismiss(); }}
-    className="sheet fixed start-4 end-4 bottom-28 top-auto m-0 mx-auto max-h-[70dvh] w-auto max-w-lg overflow-y-auto rounded-card p-6 text-start text-ink backdrop:bg-bg-deep/80">
+    className="sheet fixed start-4 end-4 bottom-28 top-auto m-0 mx-auto max-h-[70dvh] w-auto max-w-lg overflow-y-auto rounded-card p-section text-start text-ink backdrop:bg-bg-deep/80">
     <h2 id={titleId} className="text-xl font-bold">{t('addKOCHIVOToYourPhone')}</h2>
-    <p className="mt-2 text-sm text-muted">{t('worksOfflineAndOpensFaster')}</p>
+    <p className="mt-inline text-sm text-muted">{t('worksOfflineAndOpensFaster')}</p>
     {platform === 'ios' && <IosSteps />}
-    {error && <p role="alert" className="mt-4 text-sm text-danger">{t('installationFailedTryAgain')}</p>}
-    <div className="mt-5 flex flex-col gap-2">
+    {error && <p role="alert" className="mt-card-gap text-sm text-danger">{t('installationFailedTryAgain')}</p>}
+    <div className="mt-card-gap flex flex-col gap-inline">
       {platform === 'android' && <Button disabled={busy} onClick={() => void install()}>
         {busy ? t('installing') : t('installApp')}
       </Button>}

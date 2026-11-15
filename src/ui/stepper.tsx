@@ -32,7 +32,7 @@ export function Stepper({ label, size = 'gym', controlLabel = label, value, step
   const buttonClass = compact
     ? 'press-scale flex min-h-12 min-w-12 items-center justify-center rounded-control active:bg-ink/20'
     : 'press-scale flex size-19 items-center justify-center rounded-card bg-ink/10 active:bg-ink/20';
-  const iconClass = compact ? 'size-8 rounded-control bg-ink/10 p-1.5' : 'size-8';
+  const iconClass = compact ? 'size-8 rounded-control bg-ink/10 p-inline' : 'size-8';
   const set = (next: number) => onChange(Math.min(max, Math.max(min, Math.round(next * 100) / 100)));
   const [draft, setDraft] = useState<string | null>(null);
   const commit = () => {
@@ -41,7 +41,7 @@ export function Stepper({ label, size = 'gym', controlLabel = label, value, step
     setDraft(null);
   };
   return (
-    <div className={compact ? '@container min-w-0' : 'glass-strong flex flex-col items-center gap-2 rounded-card p-4'}>
+    <div className={compact ? '@container min-w-0' : 'glass-strong flex flex-col items-center gap-inline rounded-card p-card'}>
       <span className={compact ? 'block text-center text-xs text-muted' : 'text-sm text-muted'}>{label}</span>
       <div className={compact ? 'flex flex-col items-center @[9rem]:flex-row @[9rem]:justify-between' : 'flex w-full items-center justify-between'}>
         <button

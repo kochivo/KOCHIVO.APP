@@ -11,18 +11,18 @@ export async function StartStepsCard({ captainFirstName, title }: { captainFirst
     { title: t('startProgram'), body: t('startProgramBody') },
     { title: t('startNutrition'), body: t('startNutritionBody') },
   ];
-  return <GlassCard data-tour="captain-home" level="strong" className="min-w-0 p-6">
+  return <GlassCard data-tour="captain-home" level="strong" className="min-w-0 p-section">
     <h2 className="text-2xl font-extrabold">{title ?? t('startTitle')}</h2>
-    <p className="mt-2 text-sm text-muted">{t('startSubtitle')}</p>
-    <ol className="mt-6 divide-y divide-line">
-      {steps.map((step, index) => <li key={step.title} className="flex min-w-0 gap-4 py-5 first:pt-0 last:pb-0">
+    <p className="mt-inline text-sm text-muted">{t('startSubtitle')}</p>
+    <ol className="mt-section divide-y divide-line">
+      {steps.map((step, index) => <li key={step.title} className="flex min-w-0 gap-card-gap py-page-y first:pt-0 last:pb-0">
         <span aria-hidden className={`flex size-9 shrink-0 items-center justify-center rounded-full font-display font-bold ${index === 0 ? 'bg-lime text-on-lime' : 'bg-surface-raised text-muted'}`}>
           {formatNumber(index + 1, locale)}
         </span>
-        <div className="min-w-0 space-y-2">
+        <div className="min-w-0 space-y-inline">
           <h3 className="font-bold"><span className={index === 0 ? 'text-ink' : 'text-muted'}>{step.title}</span></h3>
           <p className="text-sm text-muted">{step.body}</p>
-          {index === 0 && <InviteButton captainFirstName={captainFirstName} label={t('taskInviteAction')} className="mt-2 min-h-14" />}
+          {index === 0 && <InviteButton captainFirstName={captainFirstName} label={t('taskInviteAction')} className="mt-inline min-h-14" />}
         </div>
       </li>)}
     </ol>

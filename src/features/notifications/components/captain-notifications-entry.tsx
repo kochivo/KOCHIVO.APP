@@ -23,19 +23,19 @@ export function CaptainNotificationsEntry() {
     <PageBarTitle title={t('title')} />
     <PageBarActions>
       <Button type="button" disabled={n.pending || n.count === 0} onClick={() => void n.read()}
-        variant={'secondary'} block={false} className={"hidden min-h-12 px-4 text-xs font-semibold disabled:opacity-50 md:inline-flex md:items-center"}>
+        variant={'secondary'} block={false} className={"hidden min-h-12 px-page-x text-xs font-semibold disabled:opacity-50 md:inline-flex md:items-center"}>
         {t('workspaceMarkAll')}
       </Button>
     </PageBarActions>
-    {n.saveError && <p role="alert" className="mb-3 text-sm text-danger">{t('saveError')}</p>}
-    <section className="glass rounded-[18px] p-3.5">
-      {n.rows.length === 0 ? <p className="p-4 text-sm text-muted">{t('empty')}</p> :
+    {n.saveError && <p role="alert" className="mb-stack text-sm text-danger">{t('saveError')}</p>}
+    <section className="glass rounded-[18px] p-card">
+      {n.rows.length === 0 ? <p className="p-card text-sm text-muted">{t('empty')}</p> :
         <ul>{n.rows.map(row => {
           const { Icon, href } = captainNotification(row.type);
           const time = relativeTime(row.created_at, now);
           return <li key={row.id} className="border-line-soft [&+li]:border-t">
             <Link href={href} aria-disabled={n.pending}
-              className={`flex min-h-[50px] w-full items-center gap-2.5 rounded-xl p-2 text-start hover:bg-surface-raised ${row.is_read ? '' : 'bg-surface-raised'}`}
+              className={`flex min-h-[50px] w-full items-center gap-stack rounded-xl p-inline text-start hover:bg-surface-raised ${row.is_read ? '' : 'bg-surface-raised'}`}
               onClick={async event => {
                 if (n.pending) { event.preventDefault(); return; }
                 if (row.is_read) return;
@@ -46,11 +46,11 @@ export function CaptainNotificationsEntry() {
                 <Icon aria-hidden className="size-4" />
               </span>
               <div className="min-w-0 flex-1">
-                <p className="text-[13px] font-semibold">{t(notificationTextKey(row), {
+                <p className="text-row font-semibold">{t(notificationTextKey(row), {
                   name: row.payload.name || row.payload.captain_name || '',
                   n: row.payload.needs_workouts ?? 0, gap: row.payload.gap ?? 0,
                 })}</p>
-                <time dateTime={row.created_at} className="block truncate text-[11.5px] text-muted">{t(time.key, { n: time.n })}</time>
+                <time dateTime={row.created_at} className="block truncate text-micro text-muted">{t(time.key, { n: time.n })}</time>
               </div>
               {!row.is_read && <span aria-hidden className="size-2 shrink-0 rounded-full bg-lime" />}
             </Link>

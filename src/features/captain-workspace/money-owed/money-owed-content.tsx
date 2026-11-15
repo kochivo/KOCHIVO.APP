@@ -13,7 +13,7 @@ export async function MoneyOwedContent({ mode, playerId }: { mode: 'home' | 'bil
     data = await fetchMoneyOwed();
   } catch (error) {
     unstable_rethrow(error);
-    return <div role="alert" className="glass rounded-card p-4 text-sm">
+    return <div role="alert" className="glass rounded-card p-card text-sm">
       <p>{t('error')}</p><Link href={mode === 'player' ? `/captain/players/${playerId}` : mode === 'home' ? '/captain' : '/captain/billing'}
         className="inline-flex min-h-12 items-center underline">{t('retry')}</Link>
     </div>;

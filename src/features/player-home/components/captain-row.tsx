@@ -48,13 +48,13 @@ export function CaptainRow({ name, note, unheard = false, playerId, captainId }:
   const unread = result.data?.unread || unheard;
   const seconds = Math.max(0, Math.floor(latest.durationSeconds));
   const duration = `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
-  return <Link href="/player/captain" aria-label={unread ? t('homeUnheard') : undefined} className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-12 items-center gap-3 bg-surface px-3.5 py-3 text-ink" })}>
+  return <Link href="/player/captain" aria-label={unread ? t('homeUnheard') : undefined} className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-12 items-center gap-stack bg-surface px-card py-stack text-ink" })}>
     <span aria-hidden className="relative flex size-11 shrink-0 items-center justify-center rounded-full bg-lime-soft font-extrabold text-lime">{name?.slice(0, 1) || t('streakInitial')}
       {unread && <span data-unheard className="absolute end-0 top-0 size-[11px] rounded-full border-2 border-surface bg-lime" />}</span>
-    <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-      <b className="text-[13px]">{name ? t('homeCaptain', { name }) : t('captainTitle')}</b>
+    <span className="flex min-w-0 flex-1 flex-col gap-inline">
+      <b className="text-row">{name ? t('homeCaptain', { name }) : t('captainTitle')}</b>
       <span className="truncate text-xs text-muted">{latest.voice ? t('homeVoice', { duration }) : latest.body}</span>
-      <time dateTime={latest.createdAt} dir="ltr" className="font-display text-[10px] text-faint">{new Intl.DateTimeFormat('en-GB', { hour: 'numeric', minute: '2-digit', timeZone: timezone }).format(new Date(latest.createdAt))}</time>
+      <time dateTime={latest.createdAt} dir="ltr" className="font-display text-micro text-faint">{new Intl.DateTimeFormat('en-GB', { hour: 'numeric', minute: '2-digit', timeZone: timezone }).format(new Date(latest.createdAt))}</time>
     </span>
     {latest.voice && <span aria-hidden className="flex size-11 shrink-0 items-center justify-center rounded-full bg-ink text-on-lime"><Play className="size-4 fill-current" /></span>}
   </Link>;

@@ -158,13 +158,13 @@ export function TemplatesScreen({ libraryKind = 'program' }: { libraryKind?: Tem
     {previewing && <PreviewSheet template={previewing} onClose={() => setPreviewing(null)} onAssign={() => { setSelected(previewing); setPreviewing(null); }} />}
     {selected && <AssignSheet template={selected} onClose={() => { setSelected(null); setAttempt(value => value + 1); }} />}
   </>;
-  return <div className="mx-auto grid max-w-5xl gap-6">
-    <header className="space-y-2">
+  return <div className="mx-auto grid max-w-5xl gap-section">
+    <header className="space-y-inline">
       <p className="font-display text-sm text-muted">{t('templates')}</p>
       <h1 className="text-3xl font-extrabold">{t('yourTemplates')}</h1>
       <p className="text-muted">{t('saveYourWorkAndGiveAnyPlayer')}</p>
     </header>
-    <div role="group" aria-label={t('templateType')} className="glass flex w-fit gap-2 rounded-control p-1">
+    <div role="group" aria-label={t('templateType')} className="glass flex w-fit gap-inline rounded-control p-inline">
       {(['program', 'nutrition'] as const).map(tab => <Button key={tab} variant="ghost" className={`min-h-12 ${kind === tab ? 'glass-strong font-bold' : 'text-muted'}`}
         aria-pressed={kind === tab} onClick={() => setKind(tab)}>{tab === 'program' ? t('workouts') : t('nutrition')}</Button>)}
     </div>

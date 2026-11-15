@@ -22,17 +22,17 @@ export function PaymentHistory({ playerId }: { playerId: string }) {
   const history = useResource(`billing:history:${playerId}:${cursor.payments}:${cursor.collections}`, load, { staleMs: 0 });
   const rows = history.data ? [...history.data.payments.map(p => ({ ...p, kind: 'renewal' as const })),
     ...history.data.collections.map(p => ({ ...p, kind: 'collection' as const, notes: null }))].sort((a, b) => b.created_at.localeCompare(a.created_at)) : [];
-  return <section className="glass rounded-card border border-line-soft p-5"><h2 className="mb-3 font-display text-[19px] font-semibold">{t('history')}</h2>
+  return <section className="glass rounded-card border border-line-soft p-card"><h2 className="mb-stack font-display text-title font-semibold">{t('history')}</h2>
     {history.error ? <ErrorState message={t('failure')} retryLabel={t('retry')} onRetry={() => void history.retry()} />
       : !history.data ? <LoadingState variant="detail" /> : rows.length === 0 ? <p className="text-faint">{t('empty')}</p>
-        : <ul>{rows.map(row => <li key={`${row.kind}:${row.id}`} className="space-y-2 border-t border-line-soft py-3 first:border-t-0">
-          <div className="flex flex-wrap justify-between gap-2"><span>{t(row.kind)}</span><span className="font-display font-extrabold">{row.amount_egp === null ? legacy('noAmount') : t('money', { amount: formatNumber(row.amount_egp, locale) })}</span></div>
+        : <ul>{rows.map(row => <li key={`${row.kind}:${row.id}`} className="space-y-inline border-t border-line-soft py-stack first:border-t-0">
+          <div className="flex flex-wrap justify-between gap-inline"><span>{t(row.kind)}</span><span className="font-display font-extrabold">{row.amount_egp === null ? legacy('noAmount') : t('money', { amount: formatNumber(row.amount_egp, locale) })}</span></div>
           <p className="text-xs text-muted">{formatTimestampAr(row.created_at, { day: 'numeric', month: 'long', year: 'numeric' }, locale, timezone)}</p>
           <p className="text-xs text-muted">{methodT('method')}: {methodT(row.method ?? 'unset')}</p>
           {row.kind === 'renewal' && <p className="text-xs text-faint">{row.period_start} · {row.period_end}</p>}
           {row.notes && <p className="text-sm text-muted">{t('notes')}: {row.notes}</p>}
         </li>)}</ul>}
-    <div className="mt-3 flex gap-2">{page > 0 && <Button variant="secondary" onClick={() => setPage(value => value - 1)}>{t('previous')}</Button>}
+    <div className="mt-stack flex gap-inline">{page > 0 && <Button variant="secondary" onClick={() => setPage(value => value - 1)}>{t('previous')}</Button>}
       {history.data?.more && <Button variant="secondary" onClick={() => {
         if (!history.data) return;
         const next = history.data.next;

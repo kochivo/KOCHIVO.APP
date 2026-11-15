@@ -74,9 +74,9 @@ export function ProgramBuilder({ programId, playerId }: { programId?: string; pl
     } catch { setMessage(t('couldntActivateTryAgain')); }
     finally { setPending(false); }
   }
-  if (playerId) return <div className="mx-auto max-w-5xl space-y-6">
+  if (playerId) return <div className="mx-auto max-w-5xl space-y-section">
     <h1 className="text-3xl font-extrabold">{t('programs')}</h1>
-    <form className="glass grid gap-4 rounded-card p-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end" onSubmit={event => { event.preventDefault(); void create(); }}>
+    <form className="glass grid gap-card-gap rounded-card p-card sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end" onSubmit={event => { event.preventDefault(); void create(); }}>
       <TextField label={t('newProgramName')} value={title} maxLength={80} required disabled={pending} onChange={event => setTitle(event.target.value)} />
       <Button type="submit" variant={programs?.data?.length === 0 ? 'secondary' : 'primary'} className="min-h-12" disabled={pending}>{t('newProgram')}</Button>
       {pending && <p role="status" className="sm:col-span-2">{t('creatingProgram')}</p>}
@@ -85,8 +85,8 @@ export function ProgramBuilder({ programId, playerId }: { programId?: string; pl
     {programs === null || loadedRevision !== revision ? <LoadingState /> : programs.error ?
       <ErrorState message={programs.error} retryLabel={t('tryAgain')} onRetry={() => setRevision(value => value + 1)} /> : <>
         {programs.data?.length === 0 && <EmptyState icon={Dumbbell} title={t('noProgramsForThisPlayerYet')} body={t('emptyBody')} action={{ label: t('orStartFromTemplate'), href: '/captain/templates' }} />}
-        <ul className="grid gap-3 lg:grid-cols-2">{programs.data?.map(program => <li key={program.id}>
-          <Link className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-16 items-center justify-between gap-4 p-4" })} href={`/captain/programs/${program.id}`}>
+        <ul className="grid gap-stack lg:grid-cols-2">{programs.data?.map(program => <li key={program.id}>
+          <Link className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-16 items-center justify-between gap-card-gap p-card" })} href={`/captain/programs/${program.id}`}>
             <span className="min-w-0 break-words font-bold">{starterText(program.title, locale)}</span>
             <span className="shrink-0 text-sm text-muted">{{ active: t('active'), draft: t('draft'), archived: t('archived') }[program.status]}</span>
           </Link>
@@ -99,14 +99,14 @@ export function ProgramBuilder({ programId, playerId }: { programId?: string; pl
   const day = draft.days.find(item => item.id === selectedDay) ?? draft.days[0];
   const busy = pending || state.saving;
   const weekly = isWeekly(draft);
-  return <div className="mx-auto max-w-screen-2xl space-y-6 pb-[var(--builder-action-height)] lg:pb-0">
-    <fieldset disabled={busy} className="min-w-0 space-y-6">
+  return <div className="mx-auto max-w-screen-2xl space-y-section pb-[var(--builder-action-height)] lg:pb-0">
+    <fieldset disabled={busy} className="min-w-0 space-y-section">
       <BuilderHeader draft={draft} dirty={state.dirty} busy={busy} onTitle={value => state.update(current => ({ ...current, title: value }))}
         onSave={() => void save()} onActivate={() => void activate()} />
-      {weekly ? <label className="flex min-h-12 items-center gap-3">
+      {weekly ? <label className="flex min-h-12 items-center gap-stack">
         <input type="checkbox" className="size-6 accent-lime" checked={draft.repeatWeekly !== false}
           onChange={event => state.update(current => ({ ...current, repeatWeekly: event.target.checked }))} />{t('repeatWeekly')}
-      </label> : <div className="glass space-y-3 rounded-card p-4">
+      </label> : <div className="glass space-y-stack rounded-card p-card">
         <p className="text-sm text-muted">{t('rotationNotice')}</p>
         <Button variant="secondary" className="min-h-12" disabled={draft.days.length > 7}
           onClick={() => state.update(current => convertToWeek(current, uuidv7))}>{t('convertWeek')}</Button>
@@ -116,10 +116,10 @@ export function ProgramBuilder({ programId, playerId }: { programId?: string; pl
       {(message || state.error) && <div role="alert" className="text-danger"><p>{message || state.error}</p>
         <Button variant="ghost" className="min-h-12" onClick={() => void (message ? activate() : save())}>{t('tryAgain')}</Button>
       </div>}
-      <div className="grid items-start gap-5 lg:grid-cols-[15rem_minmax(0,1fr)]">
+      <div className="grid items-start gap-card-gap lg:grid-cols-[15rem_minmax(0,1fr)]">
         <BuilderNavigation draft={draft} selectedId={day?.id} onSelect={setSelectedDay} update={state.update} />
-        <div className="min-w-0 space-y-4">
-          {!draft.days.some(item => item.exercises.length > 0) && <p className="glass rounded-control p-4 text-sm text-muted">
+        <div className="min-w-0 space-y-card-gap">
+          {!draft.days.some(item => item.exercises.length > 0) && <p className="glass rounded-control p-card text-sm text-muted">
             {t('firstSteps', { one: formatNumber(1, locale), two: formatNumber(2, locale), three: formatNumber(3, locale) })}
           </p>}
           {day && <DayEditor key={day.id} day={day} update={state.update} first={day.id === draft.days[0]?.id}

@@ -11,15 +11,15 @@ export async function NutritionWorkspaceEntry({ playerId, locale, view }: { play
   const t = createT(messages, locale);
   const calc = view === 'calc';
   const href = `/captain/players/${playerId}/nutrition`;
-  if (calc) return <div className="grid gap-5">
+  if (calc) return <div className="grid gap-card-gap">
     <RowLink href={href} className="glass">{t('plan')}</RowLink>
     <Suspense fallback={<p role="status">{t('loading')}</p>}>
       <CalculatorContent playerId={playerId} locale={locale} />
     </Suspense></div>;
   const data = await loadPlayerEditor(playerId).catch(() => null);
   if (!data) {
-    return <section role="alert" className="glass rounded-card p-5"><p>{t('loadFailed')}</p>
-      <RowLink href={href} className="glass mt-3">{t('retry')}</RowLink></section>;
+    return <section role="alert" className="glass rounded-card p-card"><p>{t('loadFailed')}</p>
+      <RowLink href={href} className="glass mt-stack">{t('retry')}</RowLink></section>;
   }
   return <PlayerEditorEntry data={data} />;
 }

@@ -68,9 +68,9 @@ export function FoodWater({ playerId, today }: { playerId?: string; today: strin
   }
   const ready = result?.playerId === playerId && result?.today === today;
   const goal = waterGoalMl(weight?.playerId === owner ? weight?.value : undefined);
-  return <div className="space-y-2">
+  return <div className="space-y-inline">
     {error && <ErrorState message={t('waterError')} retryLabel={t('retry')} onRetry={() => { setError(false); setRevision(value => value + 1); }} />}
-    {!ready ? !error && <LoadingState variant="detail" /> : <div className="flex items-center gap-3 rounded-[22px] border border-line-soft bg-surface px-3 py-2.5">
+    {!ready ? !error && <LoadingState variant="detail" /> : <div className="flex items-center gap-stack rounded-[22px] border border-line-soft bg-surface px-stack py-stack">
       <span className="flex-1 text-sm">{t('water')} <b className="font-[family-name:var(--font-manrope)] text-water">{formatNumber((result.row?.water_ml ?? 0) / 250, locale)}</b>
         <span className="text-muted">{t('cups', { goal: formatNumber(goal / 250, locale) })}</span>
       </span>

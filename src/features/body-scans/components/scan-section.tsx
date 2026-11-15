@@ -52,32 +52,32 @@ export function ScanSection({ playerId }: { playerId?: string }) {
   const scans = data?.scans ?? [];
   const warnings = now ? alerts(scans, now, data?.timezone) : null;
   const date = (scan: Scan) => formatDateAr(scan.scan_date, { day: 'numeric', month: 'short', year: 'numeric' }, locale);
-  return <section className="space-y-4" aria-label={t('title')}>
-    {v6 && data && scans.length > 0 && !failed ? <div className="glass-strong space-y-4 rounded-card border border-line-soft p-5">
-      <header className="flex flex-wrap items-center justify-between gap-2"><h2 className="font-display text-[19px] font-semibold">{t('title')}</h2>
+  return <section className="space-y-card-gap" aria-label={t('title')}>
+    {v6 && data && scans.length > 0 && !failed ? <div className="glass-strong space-y-card-gap rounded-card border border-line-soft p-card">
+      <header className="flex flex-wrap items-center justify-between gap-inline"><h2 className="font-display text-title font-semibold">{t('title')}</h2>
         <Button variant="secondary" className="min-h-12 rounded-full" onClick={() => setSheet(true)}>{t('add')}</Button></header>
       <ScanMetrics scans={scans} total={false} target={data.target} embedded />
-    </div> : <header className="flex flex-wrap items-center justify-between gap-2"><h2 className="text-xl font-bold">{t('title')}</h2>
+    </div> : <header className="flex flex-wrap items-center justify-between gap-inline"><h2 className="text-xl font-bold">{t('title')}</h2>
       {!playerId && <Button variant="secondary" className="min-h-12" onClick={() => setSheet(true)}>{t('add')}</Button>}</header>}
     {failed ? <ErrorState message={t('error')} retryLabel={t('retry')} onRetry={() => setRetry(value => value + 1)} /> : !data ? <LoadingState variant="cards" /> : <>
-      {playerId && warnings && <div className="space-y-2">
-        {warnings.overdue && <p className="glass rounded-card p-4 text-muted">{t('overdue')}</p>}
-        {warnings.regressing && <p role="status" className="glass rounded-card p-4 text-muted">{t('regressing')}</p>}
+      {playerId && warnings && <div className="space-y-inline">
+        {warnings.overdue && <p className="glass rounded-card p-card text-muted">{t('overdue')}</p>}
+        {warnings.regressing && <p role="status" className="glass rounded-card p-card text-muted">{t('regressing')}</p>}
       </div>}
       {!scans.length ? <EmptyState icon={ScanLine} title={t('empty')} body={t('emptyBody')} /> : <>
         {playerId && <h3 className="text-sm text-muted">{t('latestMeasurements')}</h3>}
         {!v6 && <ScanMetrics scans={scans} total={Boolean(playerId)} target={data.target} />}
-        {playerId ? <div className="grid grid-cols-2 gap-3">
+        {playerId ? <div className="grid grid-cols-2 gap-stack">
           {[{ label: 'first', scan: scans[0] }, { label: 'latest', scan: scans.at(-1) }].map(({ label, scan }) => scan &&
-            <div key={label} className="glass min-w-0 space-y-2 rounded-card p-3">
+            <div key={label} className="glass min-w-0 space-y-inline rounded-card p-stack">
               <h3 className="font-bold">{t(label as 'first' | 'latest')}</h3>
               <ScanFile key={scan.id} path={scan.file_path} /><p className="text-sm text-muted">{date(scan)}</p>
             </div>)}
         </div> : <><h3 className="font-bold">{t('history')}</h3>
-          <ol className="space-y-4 border-s border-ink/10 ps-4">
-            {[...scans].reverse().map(scan => <li key={scan.id} className="glass space-y-3 rounded-card p-4">
+          <ol className="space-y-card-gap border-s border-ink/10 ps-card">
+            {[...scans].reverse().map(scan => <li key={scan.id} className="glass space-y-stack rounded-card p-card">
               <p className="font-bold">{date(scan)}</p>
-              <dl className="flex flex-wrap gap-3 text-sm">{metrics.map(metric => <div key={metric}>
+              <dl className="flex flex-wrap gap-stack text-sm">{metrics.map(metric => <div key={metric}>
                 <dt className="text-muted">{t(metric)}</dt><dd>{scan[metric] == null ? t('unknown') : formatNumber(scan[metric], locale)} {t(metric === 'fat_pct' ? 'pct' : 'kg')}</dd>
               </div>)}</dl>
               <ScanFile path={scan.file_path} />

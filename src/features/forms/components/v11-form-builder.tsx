@@ -33,19 +33,19 @@ export function V11FormBuilder({ form, locale, style, status, onChange, onRetry,
   }
   return <section className="min-w-0">
     <h1 className="sr-only">{form.title}</h1>
-    <header className="glass mb-4 flex flex-wrap items-center gap-3 rounded-card border border-line-soft p-3">
+    <header className="glass mb-card-gap flex flex-wrap items-center gap-stack rounded-card border border-line-soft p-stack">
       <Link href={`/${locale}/captain/library/forms`} prefetch={false} className={editorButton}>{t('back')}</Link>
       <div className="min-w-0 flex-1"><EditInPlace label={m.formTitle} value={form.title} onChange={e => onChange({ ...form, title: e.target.value })} /></div>
       <span className="text-xs text-muted">{questionCount(form.questions.length, locale, style)}</span>
-      <Button disabled={status === 'saving' || validateForm(form).length > 0} onClick={onRetry} block={false} className="px-5">{status === 'saving' ? m.saving : t('save')}</Button>
+      <Button disabled={status === 'saving' || validateForm(form).length > 0} onClick={onRetry} block={false} className="px-page-x">{status === 'saving' ? m.saving : t('save')}</Button>
     </header>
-    {status === 'saveError' && <p role="alert" className="mb-3 text-danger">{m.saveError}<button type="button" className={editorButton} onClick={onRetry}>{m.retry}</button>
+    {status === 'saveError' && <p role="alert" className="mb-stack text-danger">{m.saveError}<button type="button" className={editorButton} onClick={onRetry}>{m.retry}</button>
       <button type="button" className={editorButton} onClick={onDiscard}>{m.discard}</button></p>}
-    {validateForm(form).length > 0 && <p role="status" className="mb-3 text-sm text-muted">{m.invalid}</p>}
-    <div className="grid items-start gap-3 min-[761px]:grid-cols-[minmax(0,1fr)_320px]">
-      <div className="min-w-0 space-y-2.5">
+    {validateForm(form).length > 0 && <p role="status" className="mb-stack text-sm text-muted">{m.invalid}</p>}
+    <div className="grid items-start gap-stack min-[761px]:grid-cols-[minmax(0,1fr)_320px]">
+      <div className="min-w-0 space-y-stack">
         <V11FormSettings form={form} locale={locale} style={style} onChange={onChange} players={players} scheduleContext={scheduleContext} canManage={status === 'saved' && scheduleContext?.ready !== false} />
-        {!form.questions.length && <p className="glass rounded-card p-4 text-muted">{m.emptyQuestions}</p>}
+        {!form.questions.length && <p className="glass rounded-card p-card text-muted">{m.emptyQuestions}</p>}
         {form.questions.map((question, n) => <div key={question.id}
           onDragOver={e => e.preventDefault()} onDrop={e => { e.preventDefault(); if (dragged !== null) move(dragged, n); setDragged(null); }}>
           <div draggable onDragStart={event => {
@@ -60,16 +60,16 @@ export function V11FormBuilder({ form, locale, style, status, onChange, onRetry,
               }} />
           </div>
         </div>)}
-        <section className="glass rounded-card border border-line-soft p-4"><h2 className="mb-3 text-sm font-semibold">{t('add')}</h2>
-          <div className="flex flex-wrap gap-2">{questionTypes.map(type => {
+        <section className="glass rounded-card border border-line-soft p-card"><h2 className="mb-stack text-sm font-semibold">{t('add')}</h2>
+          <div className="flex flex-wrap gap-inline">{questionTypes.map(type => {
             const Icon = questionIcons[type];
             return <button key={type} type="button" onClick={() => add(type)} className={editorButton}><Icon aria-hidden className="size-4" />{questionTypeLabel(type, locale, style)}</button>;
           })}</div>
         </section>
       </div>
       <aside className="flex justify-center min-[761px]:sticky min-[761px]:top-20">
-        <div className="glass-strong flex min-h-[420px] w-full min-w-0 flex-col gap-3.5 rounded-[32px] border border-line px-4 py-5">
-          <p className="text-xs text-muted">{t('preview')}</p><div className="flex gap-1" aria-hidden>{form.questions.map((question, n) => <span key={question.id} className={`h-1 flex-1 rounded-full ${n <= index ? 'bg-lime' : 'bg-surface'}`} />)}</div>
+        <div className="glass-strong flex min-h-[420px] w-full min-w-0 flex-col gap-card-gap rounded-[32px] border border-line px-page-x py-page-y">
+          <p className="text-xs text-muted">{t('preview')}</p><div className="flex gap-inline" aria-hidden>{form.questions.map((question, n) => <span key={question.id} className={`h-1 flex-1 rounded-full ${n <= index ? 'bg-lime' : 'bg-surface'}`} />)}</div>
           <div className="[&_button]:cursor-pointer [&_button]:active:scale-[.98] [&_button:focus-visible]:ring-2 [&_button:focus-visible]:ring-lime [&_label:has(input)]:cursor-pointer [&_label]:active:scale-[.98] [&_label:focus-within]:ring-2 [&_label:focus-within]:ring-lime">
             {q ? <V11QuestionPreview key={q.id} question={q} locale={locale} style={style} /> : <p className="text-muted">{form.questions.length ? t('selectQuestion') : m.emptyQuestions}</p>}
           </div>

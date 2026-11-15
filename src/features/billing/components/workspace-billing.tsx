@@ -51,40 +51,40 @@ export function WorkspaceBilling({ data, today, moneyOwed }: { data: Promise<Bil
     } catch { setApproved(current => current.filter(value => value !== id)); setError(legacy('renewFailed')); }
     finally { setBusy(false); lock.current = false; }
   }
-  return <section id="billing-heading" tabIndex={-1} className="space-y-[18px]" aria-busy={busy || refreshing}>
+  return <section id="billing-heading" tabIndex={-1} className="space-y-card-gap" aria-busy={busy || refreshing}>
     <PageBarTitle title={t('title')} />
     <PageBarActions>
-      <Link href="/captain/billing/packages" className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-4 text-[13px]" })}>{t('catalog')}</Link>
+      <Link href="/captain/billing/packages" className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-page-x text-row" })}>{t('catalog')}</Link>
     </PageBarActions>
     <WorkspaceBillingTiles values={{ ...values, pending: rows ? rows.length : null }} />
     {moneyOwed}
     <CaptainReceipts />
-    {notice && <p role="status" className="glass rounded-control p-3 text-sm text-lime">{notice}</p>}
+    {notice && <p role="status" className="glass rounded-control p-stack text-sm text-lime">{notice}</p>}
     {error && <p role="alert" className="text-sm text-danger">{error}</p>}
-    <div className="grid items-start gap-3.5 min-[761px]:grid-cols-2">
-      <section className="glass min-w-0 rounded-card border border-line-soft p-[18px]">
-        <header className="mb-2 flex items-center justify-between gap-2"><h2 className="font-semibold">{t('pending')}</h2>
-          {rows && <span className="rounded-full bg-surface-raised px-2.5 py-1 text-xs tabular-nums">{formatNumber(rows.length, locale)}</span>}</header>
+    <div className="grid items-start gap-card-gap min-[761px]:grid-cols-2">
+      <section className="glass min-w-0 rounded-card border border-line-soft p-card">
+        <header className="mb-inline flex items-center justify-between gap-inline"><h2 className="font-semibold">{t('pending')}</h2>
+          {rows && <span className="rounded-full bg-surface-raised px-stack py-inline text-xs tabular-nums">{formatNumber(rows.length, locale)}</span>}</header>
         {requests.error || requests.data?.error ? <ErrorState message={legacy('loadFailed')} retryLabel={legacy('retry')} onRetry={() => void requests.retry()} />
-          : !rows ? <LoadingState variant="detail" /> : rows.length ? <ul>{rows.map(row => <li key={row.id} className="flex items-center gap-2 border-t border-line-soft py-3 first:border-0">
+          : !rows ? <LoadingState variant="detail" /> : rows.length ? <ul>{rows.map(row => <li key={row.id} className="flex items-center gap-inline border-t border-line-soft py-stack first:border-0">
             <span aria-hidden className="grid size-10 shrink-0 place-items-center rounded-full bg-surface-raised">{row.name.slice(0, 1)}</span>
             <div className="min-w-0 flex-1"><b className="block break-words text-sm">{row.name}</b><small className="text-xs text-muted">{t('renewalRequest', { package: row.package })}</small></div>
-            <Button disabled={busy} onClick={() => void confirm(row.id, row.name)} type="submit" variant={'primary'} block={false} className={"min-h-12 shrink-0 px-4 text-sm font-semibold disabled:opacity-50"}>{t('confirm')}</Button>
-          </li>)}</ul> : <p className="py-3 text-sm text-faint">{t('noRequests')}</p>}
+            <Button disabled={busy} onClick={() => void confirm(row.id, row.name)} type="submit" variant={'primary'} block={false} className={"min-h-12 shrink-0 px-page-x text-sm font-semibold disabled:opacity-50"}>{t('confirm')}</Button>
+          </li>)}</ul> : <p className="py-stack text-sm text-faint">{t('noRequests')}</p>}
       </section>
-      <section className="glass min-w-0 rounded-card border border-line-soft p-[18px]">
-        <header className="mb-2 flex items-center justify-between gap-2"><h2 className="font-semibold">{t('soon')}</h2><span className="rounded-full bg-surface-raised px-2.5 py-1 text-xs tabular-nums">{formatNumber(ending.length, locale)}</span></header>
+      <section className="glass min-w-0 rounded-card border border-line-soft p-card">
+        <header className="mb-inline flex items-center justify-between gap-inline"><h2 className="font-semibold">{t('soon')}</h2><span className="rounded-full bg-surface-raised px-stack py-inline text-xs tabular-nums">{formatNumber(ending.length, locale)}</span></header>
         {ending.length ? <ul>{ending.map(player => {
           const reminder = waLink(player.phone, reminderText(player.fullName, player.accessUntil, locale));
-          return <li key={player.playerId} className="flex items-center gap-2 border-t border-line-soft py-3 first:border-0">
+          return <li key={player.playerId} className="flex items-center gap-inline border-t border-line-soft py-stack first:border-0">
             <span aria-hidden className="grid size-10 shrink-0 place-items-center rounded-full bg-surface-raised">{player.fullName.slice(0, 1)}</span>
             <div className="min-w-0 flex-1"><b className="block break-words text-sm">{player.fullName}</b><small className="text-xs text-muted">{t('after', { n: daysBetween(today, player.accessUntil) })}</small></div>
-            <Button disabled={!reminder} onClick={() => { if (reminder) window.open(reminder, '_blank', 'noopener,noreferrer'); }} type="submit" variant={'secondary'} block={false} className={"min-h-12 shrink-0 px-4 text-sm disabled:opacity-40"}>{legacy('remind')}</Button>
+            <Button disabled={!reminder} onClick={() => { if (reminder) window.open(reminder, '_blank', 'noopener,noreferrer'); }} type="submit" variant={'secondary'} block={false} className={"min-h-12 shrink-0 px-page-x text-sm disabled:opacity-40"}>{legacy('remind')}</Button>
           </li>;
-        })}</ul> : <p className="py-3 text-sm text-faint">{t('noExpiring')}</p>}
+        })}</ul> : <p className="py-stack text-sm text-faint">{t('noExpiring')}</p>}
       </section>
     </div>
     <WorkspacePaymentsTable players={billing.players} packages={billing.packages} today={today} />
-    {!billing.players.length && <div className="glass rounded-card p-5"><p className="text-sm text-faint">{legacy('noPlayers')}</p><Link href="/captain/players" className={`${secondaryButtonClass} inline-flex min-h-12 items-center text-lime`}>{legacy('invitePlayer')}</Link></div>}
+    {!billing.players.length && <div className="glass rounded-card p-card"><p className="text-sm text-faint">{legacy('noPlayers')}</p><Link href="/captain/players" className={`${secondaryButtonClass} inline-flex min-h-12 items-center text-lime`}>{legacy('invitePlayer')}</Link></div>}
   </section>;
 }

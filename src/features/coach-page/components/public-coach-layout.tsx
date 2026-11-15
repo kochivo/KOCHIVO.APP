@@ -32,7 +32,7 @@ export function PublicCoachLayout({ coach, slug, requested, t, pricing, sections
   const action = coach.page?.accepting === false ? <PublicWaitlist slug={slug} labels={waitlistLabels(sectionsT)} /> : <PublicSignup href={signup} label={t('requestJoin')} />;
   return <div className="public-coach min-h-dvh text-start">
     <header className="border-b border-line-soft">
-      <div className="public-wrap flex min-h-20 items-center justify-between gap-6">
+      <div className="public-wrap flex min-h-20 items-center justify-between gap-section">
         <Link href="/" aria-label={t('brand')} className="inline-flex min-h-12 items-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/brand/logo-primary.png" alt={t('brand')} width={85} height={24} />
@@ -49,18 +49,18 @@ export function PublicCoachLayout({ coach, slug, requested, t, pricing, sections
       <PublicAbout coach={coach} t={t} sectionsT={sectionsT} />
       {!requested && <section className="public-close public-section relative isolate overflow-hidden">
         <span className="public-slash" aria-hidden="true" />
-        <div className="glass-featured relative space-y-6 rounded-card p-8 md:p-12">
+        <div className="glass-featured relative space-y-section rounded-card p-section md:p-section">
           <h2 className="public-heading">{t('readyTitle')}</h2><p className="max-w-lg text-muted">{t('readyBody')}</p>
           {action}
         </div>
       </section>}
     </main>
-    <footer className="public-wrap pb-[calc(7rem+var(--safe-bottom))] pt-8 text-sm text-muted md:pb-8">
+    <footer className="public-wrap pb-[calc(7rem+var(--safe-bottom))] pt-section text-sm text-muted md:pb-section">
       <Link href="/" className="inline-flex min-h-12 items-center">{t('madeOn')}</Link>
     </footer>
     {!requested && <PublicDock>
       {action}
-      {whatsapp && <a href={whatsapp} aria-label={t('contactWhatsapp')} target="_blank" rel="noopener noreferrer" className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-12 min-w-12 items-center justify-center px-4" })}>
+      {whatsapp && <a href={whatsapp} aria-label={t('contactWhatsapp')} target="_blank" rel="noopener noreferrer" className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-12 min-w-12 items-center justify-center px-page-x" })}>
         <MessageCircle aria-hidden strokeWidth={1.5} className="size-5" />
       </a>}
     </PublicDock>}

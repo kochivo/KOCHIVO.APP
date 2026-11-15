@@ -17,16 +17,16 @@ export function OfferPreview({ draft, catalog, now, used }: { draft: OfferDraft;
   const price = item ? finalPrice(item.price_egp, { kind: draft.kind, value }) : 0;
   const days = Number.isFinite(Date.parse(draft.ends)) ? Math.max(0, daysBetween(localDate(now, zone), draft.ends.slice(0, 10))) : 0;
   return <aside className="min-w-0 min-[1001px]:sticky min-[1001px]:top-[75px]">
-    <p className="mb-3 text-[11px] text-faint">{t('preview')}</p>
-    <div className="glass-strong relative space-y-3 rounded-card border border-lime px-5 py-[22px]">
-      <span className="absolute -top-3 start-5 max-w-[calc(100%-40px)] truncate rounded-full bg-lime px-2.5 py-1 text-[11px] font-semibold text-on-lime">{draft.name || t('newOffer')} · {draft.kind === 'percent' ? t('percentValue', { n: value }) : draft.kind === 'amount' ? t('amountValue', { n: value }) : t('gift', { n: value })}</span>
+    <p className="mb-stack text-micro text-faint">{t('preview')}</p>
+    <div className="glass-strong relative space-y-stack rounded-card border border-lime px-page-x py-page-y">
+      <span className="absolute -top-3 start-5 max-w-[calc(100%-40px)] truncate rounded-full bg-lime px-stack py-inline text-micro font-semibold text-on-lime">{draft.name || t('newOffer')} · {draft.kind === 'percent' ? t('percentValue', { n: value }) : draft.kind === 'amount' ? t('amountValue', { n: value }) : t('gift', { n: value })}</span>
       {item ? <><p className="break-words text-xs text-faint">{tier?.name} · {item.name}</p>
-        <div className="flex flex-wrap items-baseline gap-2"><b className="font-display text-[32px] font-extrabold tabular-nums">{formatNumber(price, locale)}</b><small className="text-faint">{tiers('currency')}</small>
-          {price !== item.price_egp && <s className="font-display text-[15px] text-faint">{formatNumber(item.price_egp, locale)}</s>}</div>
+        <div className="flex flex-wrap items-baseline gap-inline"><b className="font-display text-stat font-extrabold tabular-nums">{formatNumber(price, locale)}</b><small className="text-faint">{tiers('currency')}</small>
+          {price !== item.price_egp && <s className="font-display text-md text-faint">{formatNumber(item.price_egp, locale)}</s>}</div>
         {draft.kind === 'bonus_days' && <p className="text-xs text-warn">{t('gift', { n: value })}</p>}
         <p className="text-xs text-warn">{t('previewEnd', { n: days })}{draft.limited && <> · {t('slots', { n: Math.max(0, draft.limit - used) })}</>}</p>
       </> : <p className="text-sm text-faint">{t('noPreview')}</p>}
     </div>
-    <p className="mt-[26px] rounded-[18px] border border-dashed border-line px-[18px] py-3.5 text-[12.5px] leading-[1.9] text-muted">{t('note')}</p>
+    <p className="mt-section rounded-[18px] border border-dashed border-line px-page-x py-card text-xs leading-[1.9] text-muted">{t('note')}</p>
   </aside>;
 }

@@ -18,6 +18,6 @@ export function WelcomeRoleCard({ player = false, selected, title, description, 
       event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>('[role="radio"]').item(next === 'player' ? 0 : 1)?.focus();
     }}>
     <span className={styles.tile}><Icon className="size-6" aria-hidden="true" /></span>
-    <span className="flex-1 space-y-1"><span className="block text-lg font-bold">{title}</span><span className="block text-sm text-muted">{description}</span></span>
+    <span className="flex-1 space-y-inline"><span className="block text-lg font-bold">{title}</span><span className="block text-sm text-muted">{description}</span></span>
   </button>;
 }

@@ -18,15 +18,15 @@ export async function ProgressTab({ checkIns, targetKg, playerId }: { checkIns: 
   const weeks = checkIns.map(row => ({ date: row.weekStart, weight: row.weightKg,
     photos: row.photos.map((url, index) => ({ url, pose: photoPose(row.photoPoses?.[index]) })) }));
   return (
-    <div className="space-y-4">
-      {summary ? <GlassCard className="space-y-5 p-5">
+    <div className="space-y-card-gap">
+      {summary ? <GlassCard className="space-y-card-gap p-card">
         <h2 className="text-lg font-bold">{t('weightTrend')}</h2>
-        <dl className="grid grid-cols-3 gap-3">
-          <div className="glass-strong rounded-control p-3"><dt className="text-xs text-muted">{t('latest')}</dt>
+        <dl className="grid grid-cols-3 gap-stack">
+          <div className="glass-strong rounded-control p-stack"><dt className="text-xs text-muted">{t('latest')}</dt>
             <dd className="font-display text-2xl font-extrabold">{formatNumber(summary.latest, locale)} <span className="text-sm">{t('kg')}</span></dd></div>
-          <div className="glass-strong rounded-control p-3"><dt className="text-xs text-muted">{t('change')}</dt>
+          <div className="glass-strong rounded-control p-stack"><dt className="text-xs text-muted">{t('change')}</dt>
             <dd className="font-display text-2xl font-extrabold" dir="ltr">{signed(summary.change)}</dd></div>
-          <div className="glass-strong rounded-control p-3"><dt className="text-xs text-muted">{t('toTarget')}</dt>
+          <div className="glass-strong rounded-control p-stack"><dt className="text-xs text-muted">{t('toTarget')}</dt>
             <dd className="font-display text-2xl font-extrabold" dir="ltr">{summary.toTarget === null ? t('dash') : signed(summary.toTarget)}</dd></div>
         </dl>
         <LineChart points={points} bodyFat={bodyFat} title={t('weightTrend')} unit={t('kg')} />

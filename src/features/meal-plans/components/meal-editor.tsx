@@ -33,11 +33,11 @@ export function MealEditor({ meal, first, last, update, enhanced = false, facts 
   const [picking, setPicking] = useState(false);
   const [creating, setCreating] = useState(false);
   const openerId = useId();
-  return <section aria-label={meal.name || t('meal')} className="glass grid gap-4 rounded-card p-4">
-    <div className="flex flex-wrap items-center justify-between gap-2">
+  return <section aria-label={meal.name || t('meal')} className="glass grid gap-card-gap rounded-card p-card">
+    <div className="flex flex-wrap items-center justify-between gap-inline">
       <label>{t('mealName')}<input value={meal.name} maxLength={40} onChange={event => update(d => renameMeal(d, meal.id, event.target.value))}
-        className={captainWorkspaceEnabled() ? `${editableFieldClass} ms-2 min-h-12 rounded-control bg-surface px-3` : "ms-2 min-h-12 rounded-control bg-surface px-3"} /></label>
-      <div className="flex gap-1">
+        className={captainWorkspaceEnabled() ? `${editableFieldClass} ms-inline min-h-12 rounded-control bg-surface px-stack` : "ms-inline min-h-12 rounded-control bg-surface px-stack"} /></label>
+      <div className="flex gap-inline">
         {captainWorkspaceEnabled() ? <IconButton disabled={first} aria-label={t('moveMealUp')} onClick={() => update(d => day ? moveVisibleMeal(d, meal.id, -1, day) : moveMeal(d, meal.id, -1))}><ArrowUp aria-hidden className="dir-icon" /></IconButton> : <Button variant="ghost" disabled={first} aria-label={t('moveMealUp')} onClick={() => update(d => day ? moveVisibleMeal(d, meal.id, -1, day) : moveMeal(d, meal.id, -1))}><ArrowUp aria-hidden className="dir-icon" /></Button>}
         {captainWorkspaceEnabled() ? <IconButton disabled={last} aria-label={t('moveMealDown')} onClick={() => update(d => day ? moveVisibleMeal(d, meal.id, 1, day) : moveMeal(d, meal.id, 1))}><ArrowDown aria-hidden className="dir-icon" /></IconButton> : <Button variant="ghost" disabled={last} aria-label={t('moveMealDown')} onClick={() => update(d => day ? moveVisibleMeal(d, meal.id, 1, day) : moveMeal(d, meal.id, 1))}><ArrowDown aria-hidden className="dir-icon" /></Button>}
         {captainWorkspaceEnabled() ? <IconButton className="border border-danger/40 text-danger!" aria-label={t('deleteMeal')} onClick={() => update(d => removeMeal(d, meal.id))}><Trash2 aria-hidden /></IconButton> : <Button variant="ghost" aria-label={t('deleteMeal')} onClick={() => update(d => removeMeal(d, meal.id))}><Trash2 aria-hidden /></Button>}
@@ -46,12 +46,12 @@ export function MealEditor({ meal, first, last, update, enhanced = false, facts 
     {enhanced && <label>{editorT('dayType')}<select value={meal.dayType ?? 'all'} onChange={event => {
       const value = event.target.value;
       if (value === 'all' || value === 'training' || value === 'rest') update(d => ({ ...d, meals: d.meals.map(row => row.id === meal.id ? { ...row, dayType: value } : row) }));
-    }} className={captainWorkspaceEnabled() ? `${editableFieldClass} ms-2 min-h-12 rounded-control bg-surface px-3` : "ms-2 min-h-12 rounded-control bg-surface px-3"}>{(['all', 'training', 'rest'] as const).map(day => <option key={day} value={day}>{editorT(day)}</option>)}</select></label>}
+    }} className={captainWorkspaceEnabled() ? `${editableFieldClass} ms-inline min-h-12 rounded-control bg-surface px-stack` : "ms-inline min-h-12 rounded-control bg-surface px-stack"}>{(['all', 'training', 'rest'] as const).map(day => <option key={day} value={day}>{editorT(day)}</option>)}</select></label>}
     {!hideAdd && <p className="text-muted">{formatNumber(mealTotals(meal).kcal, locale)}  {t('kcal')}</p>}
     {!hideAdd && !meal.items.length && !picking && <EmptyState icon={Utensils} title={t('addTheFirstFood')} body={t('emptyBody')}
       action={{ label: t('addFood'), onClick: () => setPicking(true) }} />}
-    <ul className="grid gap-3">{meal.items.map((item, index) => <ItemRow key={item.id} item={item} first={index === 0} last={index === meal.items.length - 1} update={update} enhanced={enhanced} facts={facts} />)}</ul>
-    {!hideAdd && <div className="flex flex-wrap gap-2">
+    <ul className="grid gap-stack">{meal.items.map((item, index) => <ItemRow key={item.id} item={item} first={index === 0} last={index === meal.items.length - 1} update={update} enhanced={enhanced} facts={facts} />)}</ul>
+    {!hideAdd && <div className="flex flex-wrap gap-inline">
       {(meal.items.length > 0 || picking) && <Button variant="secondary" onClick={() => setPicking(!picking)}>{picking ? t('closeSearch') : t('addFood')}</Button>}
       <Button id={openerId} variant="secondary" onClick={() => setCreating(true)}>{t('newFood')}</Button>
     </div>}

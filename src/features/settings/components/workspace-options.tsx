@@ -7,5 +7,5 @@ import { GlassToggle } from './glass-toggle';
 
 const Install = dynamic(() => import('@/features/install').then(m => m.InstallButton), { ssr: false });
 export function WorkspaceOptions() {
-  return <div className="space-y-4"><GlassToggle workspace /><ThemeSwitch /><Install role="captain" /><PushToggleCard /><TourReplay role="captain" /></div>;
+  return <div className="space-y-card-gap"><GlassToggle workspace /><ThemeSwitch /><Install role="captain" /><PushToggleCard /><TourReplay role="captain" /></div>;
 }

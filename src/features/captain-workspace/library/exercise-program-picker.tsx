@@ -22,17 +22,17 @@ export function ExerciseProgramPicker({ exercise, onClose }: { exercise: Library
   const programs = useResource('exercise-detail:programs', load);
   const loadDays = useCallback(() => program ? exerciseProgramDays(program) : Promise.resolve([]), [program]);
   const days = useResource(`exercise-detail:days:${program}`, loadDays);
-  const field = 'min-h-12 w-full rounded-control border border-line bg-surface px-3 text-start';
-  return <section aria-label={t('choose')} className="glass-strong mt-4 space-y-3 rounded-card border border-line p-5">
+  const field = 'min-h-12 w-full rounded-control border border-line bg-surface px-stack text-start';
+  return <section aria-label={t('choose')} className="glass-strong mt-card-gap space-y-stack rounded-card border border-line p-card">
     <h3 ref={heading} tabIndex={-1} className="font-semibold">{t('choose')}</h3>
     {programs.error ? <ErrorState message={t('error')} retryLabel={t('retry')} onRetry={() => void programs.retry()} /> : !programs.data ?
       <LoadingState variant="detail" /> : !programs.data.length ? <p>{t('empty')}</p> : <>
-      <label className="block space-y-2"><span>{t('program')}</span><select className={`${editableFieldClass} ${field}`} value={program} disabled={state === 'saving'} onChange={event => {
+      <label className="block space-y-inline"><span>{t('program')}</span><select className={`${editableFieldClass} ${field}`} value={program} disabled={state === 'saving'} onChange={event => {
         setProgram(event.target.value); setDay(''); setState('idle');
       }}><option value="">{t('program')}</option>{programs.data.map(row => <option key={row.id} value={row.id}>{row.title}</option>)}</select></label>
       {program && (days.error ? <ErrorState message={t('error')} retryLabel={t('retry')} onRetry={() => void days.retry()} /> : !days.data ?
         <LoadingState variant="detail" /> : !days.data.length ? <p>{t('noDays')}</p> :
-        <label className="block space-y-2"><span>{t('day')}</span><select className={`${editableFieldClass} ${field}`} value={day} disabled={state === 'saving'} onChange={event => { setDay(event.target.value); setState('idle'); }}>
+        <label className="block space-y-inline"><span>{t('day')}</span><select className={`${editableFieldClass} ${field}`} value={day} disabled={state === 'saving'} onChange={event => { setDay(event.target.value); setState('idle'); }}>
           <option value="">{t('day')}</option>{days.data.map(row => <option key={row.id} value={row.id}>{row.title}</option>)}</select></label>)}
       <Button variant="secondary" disabled={!program || !day || state === 'saving' || state === 'saved'} onClick={async () => {
         if (lock.current) return;

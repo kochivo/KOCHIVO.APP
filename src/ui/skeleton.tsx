@@ -19,7 +19,7 @@ function Status({ children, className, ...props }: Props) {
 }
 
 function Lines({ lines = 3 }: { lines?: number }) {
-  return <div className="space-y-3">{Array.from({ length: lines }, (_, index) =>
+  return <div className="space-y-stack">{Array.from({ length: lines }, (_, index) =>
     <div key={index} className={cn(block, 'h-4', index === lines - 1 ? 'w-2/3' : 'w-full')} />)}</div>;
 }
 
@@ -32,14 +32,14 @@ export function SkeletonText({ lines = 3, ...props }: Props) {
 }
 
 export function SkeletonCard({ lines = 3, className, ...props }: Props) {
-  return <Status {...props} className={cn('glass rounded-card p-6', className)}>
-    <div className="space-y-5"><div className={cn(block, 'h-6 w-1/3')} /><Lines lines={lines} /></div>
+  return <Status {...props} className={cn('glass rounded-card p-section', className)}>
+    <div className="space-y-card-gap"><div className={cn(block, 'h-6 w-1/3')} /><Lines lines={lines} /></div>
   </Status>;
 }
 
 export function SkeletonList({ rows = 3, ...props }: Props) {
-  return <Status {...props}><div className="space-y-4">{Array.from({ length: rows }, (_, index) =>
-    <div key={index} className="glass flex items-center gap-4 rounded-card p-5">
+  return <Status {...props}><div className="space-y-card-gap">{Array.from({ length: rows }, (_, index) =>
+    <div key={index} className="glass flex items-center gap-card-gap rounded-card p-card">
       <div className={cn(block, 'size-12 shrink-0 rounded-full')} />
       <div className="flex-1"><Lines lines={2} /></div>
     </div>)}</div></Status>;

@@ -18,6 +18,6 @@ export function PublicWaitlist({ slug, labels }: { slug: string; labels: Waitlis
         setStatus(result.status ?? 'failure');
       } catch { setStatus('failure'); }
     })}><KoInvite aria-hidden className="size-5" />{pending ? t('pending') : t(status === 'waitlisted' ? 'waitlisted' : status === 'member' ? 'member' : 'waitlist')}</Button>
-    {status && <p role={status === 'failure' ? 'alert' : 'status'} className="mt-2 text-sm text-muted">{t(status)}</p>}
+    {status && <p role={status === 'failure' ? 'alert' : 'status'} className="mt-inline text-sm text-muted">{t(status)}</p>}
   </div>;
 }

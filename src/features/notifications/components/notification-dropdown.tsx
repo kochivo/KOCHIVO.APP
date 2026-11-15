@@ -36,9 +36,9 @@ export function NotificationDropdown({ openerId, notifications: n, onClose }: Pr
   }, [onClose, openerId]);
   return <ResponsiveDialog openerId={openerId} fallbackId={openerId} onDismiss={onClose}
     aria-labelledby={`${openerId}-title`}
-    className="sheet fixed inset-x-0 bottom-0 top-auto z-50 m-0 max-h-[80dvh] w-full max-w-none overflow-y-auto rounded-t-card border border-line p-4 text-ink backdrop:bg-bg-deep/80 lg:absolute lg:inset-x-auto lg:end-0 lg:top-full lg:bottom-auto lg:mt-2 lg:w-96 lg:rounded-card">
+    className="sheet fixed inset-x-0 bottom-0 top-auto z-50 m-0 max-h-[80dvh] w-full max-w-none overflow-y-auto rounded-t-card border border-line p-card text-ink backdrop:bg-bg-deep/80 lg:absolute lg:inset-x-auto lg:end-0 lg:top-full lg:bottom-auto lg:mt-inline lg:w-96 lg:rounded-card">
     <div ref={panel}>
-      <header className={v6 ? 'flex flex-wrap items-center justify-between gap-3' : 'flex items-center justify-between gap-3'}>
+      <header className={v6 ? 'flex flex-wrap items-center justify-between gap-stack' : 'flex items-center justify-between gap-stack'}>
         <h2 id={`${openerId}-title`} className={v6 ? 'font-display text-2xl font-semibold' : 'font-bold'}>{t('title')}</h2>
         {v6 && <Button variant="secondary" type="button" disabled={n.pending || n.count === 0} onClick={() => void n.read()}
           className="min-h-12 text-xs text-faint disabled:opacity-50">{t('markAll')}</Button>}
@@ -53,11 +53,11 @@ export function NotificationDropdown({ openerId, notifications: n, onClose }: Pr
         <button type="button" disabled={n.pending || n.count === 0} onClick={() => void n.read()}
           className="min-h-12 text-sm font-bold text-lime disabled:opacity-50">{t('markAll')}</button>)}
       {n.saveError && <p role="alert" className="text-sm text-danger">{t('saveError')}</p>}
-      {n.status === 'loading' ? <p role="status" className="p-4 text-muted">{t('loading')}</p>
-        : n.status === 'error' ? <div role="alert" className="p-4">
+      {n.status === 'loading' ? <p role="status" className="p-card text-muted">{t('loading')}</p>
+        : n.status === 'error' ? <div role="alert" className="p-card">
           <p>{t('error')}</p>{captainWorkspaceEnabled() ? <Button variant="secondary" type="button" onClick={() => void n.refresh()} className="min-h-12 text-lime">{t('retry')}</Button> :
             <button type="button" onClick={() => void n.refresh()} className="min-h-12 text-lime">{t('retry')}</button>}
-        </div> : n.rows.length === 0 ? <p className="p-4 text-muted">{t('empty')}</p>
+        </div> : n.rows.length === 0 ? <p className="p-card text-muted">{t('empty')}</p>
           : <ul className={v6 ? 'glass divide-y divide-line-soft overflow-hidden rounded-card border border-line-soft' : 'divide-y divide-line'}>{n.rows.map(row => {
             const time = relativeTime(row.created_at, now);
             const Icon = notificationIcon(row) ?? (v6 ? row.type === 'plan_assigned' ? Dumbbell : row.type === 'form_requested' ? ClipboardCheck : Bell : null);
@@ -65,7 +65,7 @@ export function NotificationDropdown({ openerId, notifications: n, onClose }: Pr
               : row.type === 'subscription_expired' ? 'text-danger' : row.type === 'plan_assigned' ? 'text-lime' : 'text-muted';
             return <li key={row.id}>
               <Link href={notificationHref(row)} aria-disabled={n.pending}
-                className={v6 ? 'relative block min-h-16 px-5 py-4 text-start pe-8' : `block min-h-12 rounded-control p-3 text-start ${row.is_read ? 'text-muted' : 'font-semibold text-ink'}`}
+                className={v6 ? 'relative block min-h-16 px-page-x py-page-y text-start pe-section' : `block min-h-12 rounded-control p-stack text-start ${row.is_read ? 'text-muted' : 'font-semibold text-ink'}`}
                 onClick={async event => {
                   if (n.pending) { event.preventDefault(); return; }
                   if (row.is_read) { onClose(); return; }
@@ -75,13 +75,13 @@ export function NotificationDropdown({ openerId, notifications: n, onClose }: Pr
                     router.push(notificationHref(row));
                   }
                 }}>
-                <p className="flex items-center gap-2">
+                <p className="flex items-center gap-inline">
                   {Icon && (v6 ? <span className={`glass grid size-10 shrink-0 place-items-center rounded-xl ${iconColour}`}><Icon aria-hidden className="size-5" /></span>
                     : <Icon aria-hidden className="size-5 shrink-0" />)}
                   {t(notificationTextKey(row), { name: row.payload.name || row.payload.captain_name || '',
                     n: row.payload.needs_workouts ?? 0, gap: row.payload.gap ?? 0 })}
                 </p>
-                <time dateTime={row.created_at} className={v6 ? 'ms-[48px] mt-1 block text-[11.5px] text-faint' : 'mt-1 block text-xs font-normal text-muted'}>{t(time.key, { n: time.n })}</time>
+                <time dateTime={row.created_at} className={v6 ? 'ms-touch mt-inline block text-micro text-faint' : 'mt-inline block text-xs font-normal text-muted'}>{t(time.key, { n: time.n })}</time>
                 {v6 && !row.is_read && <span aria-hidden className="absolute end-3 top-7 size-2 rounded-full bg-lime" />}
               </Link>
             </li>;

@@ -26,7 +26,7 @@ it.each(['en', 'ar'] as const)('explains where requests appear with an inbox emp
   expect(html).toContain(locale === 'en' ? 'Requests from your page link will appear here' : 'أول ما حد يطلب من لينك صفحتك هيظهر هنا');
   expect(html).toContain('lucide-inbox');
   expect(html).toContain('rounded-full border border-dashed');
-  expect(html).not.toContain('my-6');
+  expect(html).not.toContain('my-section');
 });
 it('preserves the request list actions', async () => {
   state.locale = 'en'; state.rows = [{ id: 'request-id', full_name: 'New player' }]; state.error = '';

@@ -65,18 +65,18 @@ export function KoWidget({ role, interactive = false, account = false, panelMess
       <KoAvatar expression={urgent > 0 ? 'thinking' : expression} motion={open ? 'none' : 'idle'} className="size-13" />
       {urgent > 0 ? <span key={urgent} aria-hidden className="absolute -top-1 -end-1 grid size-6 place-items-center rounded-full bg-danger-soft text-xs font-bold text-danger animate-[ko-pop-in_200ms_ease-out_both] motion-reduce:animate-none">{urgent}</span>
         : !interactive && <span aria-hidden className="absolute -top-1 -end-1 grid size-5 place-items-center rounded-full border border-line bg-surface-raised text-muted"><Hammer className="size-3" /></span>}
-      <span className="pointer-events-none absolute bottom-full start-0 mb-2 whitespace-nowrap rounded-control border border-line bg-surface px-3 py-2 text-xs text-ink opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 motion-reduce:transition-none">{t(account ? 'accountChatTitle' : interactive ? 'chatTitle' : 'soon')}</span>
+      <span className="pointer-events-none absolute bottom-full start-0 mb-inline whitespace-nowrap rounded-control border border-line bg-surface px-stack py-inline text-xs text-ink opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 motion-reduce:transition-none">{t(account ? 'accountChatTitle' : interactive ? 'chatTitle' : 'soon')}</span>
     </button>
     {open && (panel.Component ? <panel.Component role={role} expression={expression} closing={closing}
       onClosed={() => { setOpen(false); setClosing(false); }} onExpression={setExpression} onClose={close}
       openerId={openerId} interactive={interactive} account={account} />
       : <ResponsiveDialog data-ko-panel aria-label={t('accountChatTitle')} fallbackId={openerId} openerId={openerId} onDismiss={close}
-        className="sheet fixed inset-auto start-[max(1rem,var(--safe-start))] bottom-[calc(var(--nav-clearance)+4.5rem)] z-50 m-0 w-96 max-w-[calc(100vw-2rem)] rounded-card border border-line p-4 text-start text-ink lg:bottom-24">
+        className="sheet fixed inset-auto start-[max(1rem,var(--safe-start))] bottom-[calc(var(--nav-clearance)+4.5rem)] z-50 m-0 w-96 max-w-[calc(100vw-2rem)] rounded-card border border-line p-card text-start text-ink lg:bottom-24">
         {captainWorkspaceEnabled() ? <IconButton type="button" onClick={close} aria-label={t('close')} className="ms-auto grid min-h-12 min-w-12 place-items-center"><X aria-hidden className="size-5" /></IconButton> : <button type="button" onClick={close} aria-label={t('close')} className="ms-auto grid min-h-12 min-w-12 place-items-center"><X aria-hidden className="size-5" /></button>}
         {panel.failed ? <>
           <p role="alert">{panelMessages?.error ?? t('chatError')}</p>
-          <Button type="button" onClick={() => void loadPanel()} variant={'primary'} block={false} className={"mt-3 min-h-12 px-4"}>{panelMessages?.retry ?? t('open')}</Button>
-          <Link href="/ko" prefetch={false} className="ms-3 inline-flex min-h-12 items-center underline">{panelMessages?.fallback ?? t('accountChatTitle')}</Link>
+          <Button type="button" onClick={() => void loadPanel()} variant={'primary'} block={false} className={"mt-stack min-h-12 px-page-x"}>{panelMessages?.retry ?? t('open')}</Button>
+          <Link href="/ko" prefetch={false} className="ms-stack inline-flex min-h-12 items-center underline">{panelMessages?.fallback ?? t('accountChatTitle')}</Link>
         </> : <p role="status">{panelMessages?.loading ?? t('chatWorking')}</p>}
       </ResponsiveDialog>)}
   </>;

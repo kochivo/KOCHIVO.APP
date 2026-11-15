@@ -30,9 +30,9 @@ export function Greeting({ firstName, now, playerId, snapshot, loading = false }
   const weekday = formatDateAr(date, { weekday: 'long' }, locale);
   const dayMonth = formatDateAr(date, { day: 'numeric', month: 'long' }, locale);
   return <div className="min-w-0 flex-1">
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-stack">
     {stats && !captainWorkspaceEnabled() && <AvatarRing initial={firstName?.slice(0, 1) || t('streakInitial')} done={stats.weekDone} planned={stats.weekPlanned} />}
-    <div className="min-w-0 space-y-1">
+    <div className="min-w-0 space-y-inline">
     <p className="text-start text-xs text-muted"><bdi>{`${weekday} · ${dayMonth}`}</bdi></p>
     {!captainWorkspaceEnabled() && <h1 className="text-2xl font-extrabold">{hour < 12 ? t('goodMorning') : t('goodEvening')}{firstName ? t('namedGreeting', { value0: firstName }) : ''}</h1>}
     </div></div>

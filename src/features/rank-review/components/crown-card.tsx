@@ -8,9 +8,9 @@ import { messages } from '../messages';
 
 export function CrownCard({ holder, locale }: { holder?: LeaderboardRow; locale: Locale }) {
   const t = createT(messages, locale);
-  return <section className="glass-strong flex items-center gap-5 rounded-card p-5" aria-label={t('crown')}>
+  return <section className="glass-strong flex items-center gap-card-gap rounded-card p-card" aria-label={t('crown')}>
     <RankBadge tier="crown" size="lg" label={t('crown')} />
-    <div className="min-w-0 space-y-2">
+    <div className="min-w-0 space-y-inline">
       <h2 className="break-words text-xl font-bold">{holder ? holder.display_name : t('noCrown')}</h2>
       <p className="text-muted">{holder ? t('adherence', {
         n: formatNumber(holder.adherence, locale), done: formatNumber(holder.done, locale),

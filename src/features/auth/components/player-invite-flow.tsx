@@ -33,17 +33,17 @@ export function PlayerInviteFlow({ code, callbackError = false }: { code: string
       .catch((error: unknown) => { if (active) setPreview({ error: authError(error, t) }); });
     return () => { active = false; };
   }, [code, retry, t]);
-  return <main className="mesh flex min-h-dvh items-center justify-center p-6 pt-[max(1.5rem,var(--safe-top))]">
-    <GlassCard level="strong" className="w-full max-w-md space-y-6 p-6">
+  return <main className="mesh flex min-h-dvh items-center justify-center p-section pt-[max(1.5rem,var(--safe-top))]">
+    <GlassCard level="strong" className="w-full max-w-md space-y-section p-section">
       {!preview ? <LoadingState /> : preview.error ? <ErrorState message={preview.error} retryLabel={t('tryAgain')} onRetry={() => { setPreview(null); setRetry((value) => value + 1); }} /> : <>
-        <GlassCard className="p-4"><p>{t('coachInvitation', { name: preview.captainName ?? '' })}</p></GlassCard>
+        <GlassCard className="p-card"><p>{t('coachInvitation', { name: preview.captainName ?? '' })}</p></GlassCard>
         <h1 className="text-3xl font-extrabold">{sent ? t('enterYourCode') : t('letSGetStarted')}</h1>
         {preview.signedIn ? <Button disabled={pending} size="lg" className="w-full" onClick={() => start(async () => {
           const result = await callAuthAction(() => redeemInvite(code)); setError(result.error ?? '');
           if (result.redirect) window.location.assign(result.redirect);
         })}>{pending ? t('connectingYourAccount') : t('continueWithYourCoach')}</Button> : <>
           {!sent && <><p className="text-muted">{t('noPasswordNeededChooseHowTo')}</p><GoogleButton intent="player" code={code} /><p className="text-center text-muted">{t('orUseEmail')}</p></>}
-          <form className="space-y-4" aria-busy={pending} onSubmit={(event) => {
+          <form className="space-y-card-gap" aria-busy={pending} onSubmit={(event) => {
             event.preventDefault();
             start(async () => {
               const result = await callAuthAction(() => sent ? verifyEmailCode({ email, token }, code) : sendEmailCode({ email }));

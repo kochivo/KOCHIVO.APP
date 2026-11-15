@@ -17,7 +17,7 @@ const params = Promise.resolve({ playerId: 'player', locale: 'en' });
 it.each([undefined, '', '0', 'true'])('keeps the exact legacy component tree with flag %s', async flag => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', flag);
   const tree = await PlayerProgramsPage({ params });
-  const legacy = createElement('div', { className: 'space-y-6' },
+  const legacy = createElement('div', { className: 'space-y-section' },
     createElement('div', { className: 'mx-auto max-w-5xl' }, createElement(GenerateButton, {
       key: 'player-true', playerId: 'player', profileError: false, playerName: 'Ahmed', intake: null,
     })), createElement(ProgramBuilder, { key: 'player', playerId: 'player' }));

@@ -20,10 +20,10 @@ export function InAppBrowserWarning() {
   const [dismissed, setDismissed] = useState(false);
   const [copy, setCopy] = useState<'idle' | 'copied' | 'failed'>('idle');
   if (!visible || dismissed) return null;
-  return <aside role="alert" className="glass-strong sticky top-0 z-50 flex flex-wrap items-center gap-3 p-3 text-ink">
+  return <aside role="alert" className="glass-strong sticky top-0 z-50 flex flex-wrap items-center gap-stack p-stack text-ink">
     <p className="min-w-0 flex-1">{t('inAppBrowserWarning')}</p>
     {/* Plain buttons with the shared surface classes keep the public bundle under its budget. */}
-    <button type="button" className="glass press min-h-12 rounded-control px-4 text-lime" onClick={async () => {
+    <button type="button" className="glass press min-h-12 rounded-control px-page-x text-lime" onClick={async () => {
       try { await navigator.clipboard.writeText(window.location.href); setCopy('copied'); }
       catch { setCopy('failed'); }
     }}>{t('copyLink')}</button>

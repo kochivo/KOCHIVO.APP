@@ -21,8 +21,8 @@ export function PublicPackageCards(props: {
     days, label: t('packageDays', { count: formatNumber(days) }), content: <PublicTierCards {...props} days={days} />,
   }));
   return <section data-section="packages" id="packs" className="public-section">
-    <p className="mb-3 text-sm text-lime">{t('packagesTitle')}</p><h2 className="public-heading">{t('packagesHint')}</h2>
+    <p className="mb-stack text-sm text-lime">{t('packagesTitle')}</p><h2 className="public-heading">{t('packagesHint')}</h2>
     <PublicDurationTabs options={options} initial={initial} />
-    <p className="mt-6 text-sm text-muted">{t('paymentNote')}</p>
+    <p className="mt-section text-sm text-muted">{t('paymentNote')}</p>
   </section>;
 }

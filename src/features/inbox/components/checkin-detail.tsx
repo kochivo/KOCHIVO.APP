@@ -32,9 +32,9 @@ export function CheckinDetail({ item, history = [], dailyChecks = [], now }: {
       value, date: formatDateAr(previous.week_start, { day: 'numeric', month: 'short' }, locale),
     })}</p>;
   }
-  return <div className="space-y-4">
+  return <div className="space-y-card-gap">
     <h3 className="text-xl font-bold">{t('week', { date: formatDateAr(item.week_start, { day: 'numeric', month: 'long' }, locale) })}</h3>
-    <dl className="glass-strong grid grid-cols-2 gap-4 rounded-card p-4">
+    <dl className="glass-strong grid grid-cols-2 gap-card-gap rounded-card p-card">
       <div><dt className="text-muted">{t('weight')}</dt><dd className="text-2xl font-bold">{item.body_weight_kg === null ? t('dash') : formatNumber(item.body_weight_kg, locale)} {t('kg')}</dd><dd>{delta('body_weight_kg')}</dd></div>
       <div><dt className="text-muted">{t('waist')}</dt><dd className="text-2xl font-bold">{item.waist_cm === null ? t('dash') : formatNumber(item.waist_cm, locale)} {t('cm')}</dd><dd>{delta('waist_cm')}</dd></div>
       {averages?.sleep != null && <div><dt className="text-muted">{t('sleepAverage')}</dt><dd>{t('hoursUnit', { value: formatNumber(Math.round(averages.sleep * 10) / 10, locale) })}</dd></div>}
@@ -42,8 +42,8 @@ export function CheckinDetail({ item, history = [], dailyChecks = [], now }: {
     </dl>
     <p className="whitespace-pre-wrap text-muted">{item.notes || t('noNotes')}</p>
     {media.loading ? <LoadingState variant="cards" aria-label={t('loadingPhotos')} /> : media.error ?
-      <div role="alert"><p>{t('photosFailed')}</p>{captainWorkspaceEnabled() ? <Button variant="secondary" className="min-h-12 px-4" onClick={media.retry}>{t('retry')}</Button> : <button className="min-h-12 px-4" onClick={media.retry}>{t('retry')}</button>}</div> :
-      media.urls.length ? <div className="grid gap-3 sm:grid-cols-3">{media.urls.slice(0, 3).map((url, index) =>
+      <div role="alert"><p>{t('photosFailed')}</p>{captainWorkspaceEnabled() ? <Button variant="secondary" className="min-h-12 px-page-x" onClick={media.retry}>{t('retry')}</Button> : <button className="min-h-12 px-page-x" onClick={media.retry}>{t('retry')}</button>}</div> :
+      media.urls.length ? <div className="grid gap-stack sm:grid-cols-3">{media.urls.slice(0, 3).map((url, index) =>
         <Image key={url} src={url} alt={t('photo', { n: formatNumber(index + 1, locale) })} width={480} height={640} unoptimized onError={media.failed} className="h-auto w-full rounded-control object-contain" />)}</div> :
           <EmptyState icon={Camera} title={t('noPhotos')} body={t('photoHint')} action={{ label: t('openPlayer'), href: `/captain/players/${item.player_id}?tab=checkins` }} />}
   </div>;

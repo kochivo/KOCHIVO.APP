@@ -28,16 +28,16 @@ export function PlayerReceipt({ renewalId }: { renewalId: string | null }) {
     if (!ok) setError(t('error'));
     else await resource.retry();
   }
-  if (resource.error || resource.data?.error) return <div role="alert" className="space-y-2 text-danger">{t('loadError')}
-    <Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-4"} onClick={() => void resource.retry()}>{t('retry')}</Button></div>;
+  if (resource.error || resource.data?.error) return <div role="alert" className="space-y-inline text-danger">{t('loadError')}
+    <Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-page-x"} onClick={() => void resource.retry()}>{t('retry')}</Button></div>;
   const data = resource.data?.data;
   if (!data) return <p role="status" className="text-muted">{t('loading')}</p>;
   const receipt = data.receipt;
-  return <div className="space-y-3 border-t border-line-soft pt-4">
+  return <div className="space-y-stack border-t border-line-soft pt-card">
     {error && <p role="alert" className="text-danger">{error}</p>}
     {receipt && <p role="status" className={receipt.status === 'declined' ? 'text-warn' : 'text-muted'}>
       {receipt.status === 'declined' ? t('declined', { reason: receipt.decline_reason ?? '' }) : t(receipt.status)}</p>}
-    <Button type="button" onClick={() => setOpen(true)} variant={'secondary'} block={false} className={"min-h-12 px-5"}>
+    <Button type="button" onClick={() => setOpen(true)} variant={'secondary'} block={false} className={"min-h-12 px-page-x"}>
       {t(!receipt || receipt.status === 'accepted' ? 'upload' : receipt.status === 'pending' ? 'replace' : 'resend')}</Button>
     {open && <Sheet playerId={data.playerId} captainId={data.captainId} onClose={() => setOpen(false)} onSend={send} />}
   </div>;

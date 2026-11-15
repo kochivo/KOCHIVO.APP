@@ -99,27 +99,27 @@ export function WorkspaceScreen({ joinRequests }: { joinRequests: Record<string,
     finally { historyLock.current = false; setHistoryPending(false); }
   }
   const reviews = allItems.filter(item => item.reviewed_at).sort((a, b) => (b.reviewed_at ?? '').localeCompare(a.reviewed_at ?? ''));
-  return <section className="space-y-[18px]">
+  return <section className="space-y-card-gap">
     <WorkspaceControls summary={summary} counts={counts} kind={kind} status={status} search={search}
       onKind={value => { if (leave()) setKind(value); }} onStatus={value => { if (leave()) setStatus(value); }} onSearch={value => { if (leave()) setSearch(value); }} />
     {search.trim() && (data?.more || weekCount > metrics.reviewedWeek) && <p className="text-xs text-faint">{t('searchPartial')}</p>}
-    {Boolean(resource.error) && <div role="alert" className="glass rounded-card p-5 text-danger">{t('loadFailed')}<Button variant="secondary" className="min-h-12 px-3" onClick={() => { if (!sendLock.current && !historyLock.current && guard.current()) void resource.retry(); }}>{t('retry')}</Button></div>}
+    {Boolean(resource.error) && <div role="alert" className="glass rounded-card p-card text-danger">{t('loadFailed')}<Button variant="secondary" className="min-h-12 px-stack" onClick={() => { if (!sendLock.current && !historyLock.current && guard.current()) void resource.retry(); }}>{t('retry')}</Button></div>}
     {!data ? !resource.error && <LoadingState variant="list" aria-label={t('loading')} /> : <>
-      {caughtUp && !selected ? <WorkspaceEmpty count={weekCount} hours={hours} /> : <div className="grid items-start gap-4 lg:grid-cols-[360px_minmax(0,1fr)]">
+      {caughtUp && !selected ? <WorkspaceEmpty count={weekCount} hours={hours} /> : <div className="grid items-start gap-card-gap lg:grid-cols-[360px_minmax(0,1fr)]">
         <WorkspaceList attention={view.attention} routine={view.routine} selected={selected} inputs={data.triage} now={now} onSelect={item => { if (leave()) { setRequestNodes(value => ({ ...value, ...joinRequests })); setSelected(item); } }} />
         {selected ? <Detail key={taskKey(selected)} item={selected} inputs={data.triage} now={now} joinRequest={requestNodes[selected.id] ?? joinRequests[selected.id]} blocked={historyPending}
             reply={replyDraft(drafts, selected)} onDraft={reply => setDrafts(value => saveReplyDraft(value, selected, reply))}
             onClose={() => { leave(); }} onSend={send} onDirty={setGuard} />
-          : <div className="glass hidden rounded-card border border-line-soft p-5 text-sm text-faint lg:block">{t('emptyDetail')}</div>}
+          : <div className="glass hidden rounded-card border border-line-soft p-card text-sm text-faint lg:block">{t('emptyDetail')}</div>}
       </div>}
-      {data.more && limit < 500 && <div className="text-sm text-faint"><p>{t('partial')}</p><Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-5"} onClick={() => { if (leave()) setLimit(value => value + 50); }}>{t('older')}</Button></div>}
-      <details className="glass rounded-card border border-line-soft px-5 py-1.5">
+      {data.more && limit < 500 && <div className="text-sm text-faint"><p>{t('partial')}</p><Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-page-x"} onClick={() => { if (leave()) setLimit(value => value + 50); }}>{t('older')}</Button></div>}
+      <details className="glass rounded-card border border-line-soft px-page-x py-inline">
         <summary className="min-h-12 cursor-pointer content-center text-sm text-faint">{t('history')} {t('historyWeek', { n: formatNumber(weekCount, locale) })}</summary>
-        {!reviews.length ? <p className="py-3 text-sm text-faint">{t('historyEmpty')}</p> : <ul className="divide-y divide-line-soft">{reviews.map(item => <li key={taskKey(item)}>
+        {!reviews.length ? <p className="py-stack text-sm text-faint">{t('historyEmpty')}</p> : <ul className="divide-y divide-line-soft">{reviews.map(item => <li key={taskKey(item)}>
           <WorkspaceRow item={item} inputs={data.triage} now={now} selected={false} idPrefix="history-task" onSelect={() => { if (leave()) setSelected(item); }} />
         </li>)}</ul>}
         {historyError && <p role="alert" className="text-danger">{t('loadFailed')}</p>}
-        {(historyPage?.more ?? data.reviews?.more) && <Button disabled={historyPending} type="submit" variant={'secondary'} block={false} className={"min-h-12 px-5 disabled:opacity-50"} onClick={() => { void moreHistory(); }}>{t(historyPending ? 'loading' : historyError ? 'retry' : 'older')}</Button>}
+        {(historyPage?.more ?? data.reviews?.more) && <Button disabled={historyPending} type="submit" variant={'secondary'} block={false} className={"min-h-12 px-page-x disabled:opacity-50"} onClick={() => { void moreHistory(); }}>{t(historyPending ? 'loading' : historyError ? 'retry' : 'older')}</Button>}
       </details>
     </>}
   </section>;

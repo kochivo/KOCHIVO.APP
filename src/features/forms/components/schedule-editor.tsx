@@ -22,7 +22,7 @@ export function ScheduleEditor({ form, locale, onChange, players = 0, style, sch
   function manage() {
     if (canManage) onManage?.();
   }
-  if (!s && scheduleContext?.schedules.length) return <div className="glass mb-[14px] rounded-card border border-line-soft px-5 py-4">
+  if (!s && scheduleContext?.schedules.length) return <div className="glass mb-card-gap rounded-card border border-line-soft px-page-x py-page-y">
     {scheduleContext.schedules.map(schedule => <p key={schedule.id} className="text-sm leading-[2.2] text-muted">
       {t('sends')} {recurrenceLabel(schedule, locale)} · {schedule.player_id
         ? t('forPlayer', { name: scheduleContext.players.find(p => p.id === schedule.player_id)?.name ?? '' }) : t('all')}
@@ -32,8 +32,8 @@ export function ScheduleEditor({ form, locale, onChange, players = 0, style, sch
   </div>;
   const reminders = [{ value: '', label: t('noReminder') }, { value: '12', label: t('remind12') }, { value: '24', label: t('remind') }];
   if (form.remind_after_hours && ![12, 24].includes(form.remind_after_hours)) reminders.push({ value: String(form.remind_after_hours), label: t('remindHours', { n: form.remind_after_hours }) });
-  return <div className="glass mb-[14px] rounded-card border border-line-soft px-5 py-4">
-    <div className="flex flex-wrap items-center gap-2 text-sm leading-[2.2]">
+  return <div className="glass mb-card-gap rounded-card border border-line-soft px-page-x py-page-y">
+    <div className="flex flex-wrap items-center gap-inline text-sm leading-[2.2]">
       <span>{t('sends')}</span><ThemedSelect label={m.every} value={s?.every ?? ''}
         options={[{ value: '', label: t('manual') }, { value: 'week', label: m.week }, { value: 'month', label: m.month },
           ...(canManage ? [{ value: 'advanced', label: t('schedule') }] : [])]}
@@ -53,9 +53,9 @@ export function ScheduleEditor({ form, locale, onChange, players = 0, style, sch
         onChange={value => onChange({ ...form, remind_after_hours: value ? Number(value) : null })} />
     </div>
     <Button variant="secondary" type="button" disabled={!canManage} className="min-h-12 text-xs text-faint disabled:opacity-50" onClick={manage}>{t('schedule')}</Button>
-    {s && <details className={workspace ? 'group mt-1 text-xs text-muted' : 'mt-1 text-xs text-faint'}>
-      <summary className={workspace ? `${rowLinkClass} flex list-none items-center justify-between gap-2 py-3 text-ink` : 'min-h-12 cursor-pointer py-3'}>{t('details')}{workspace && <DisclosureChevron />}</summary>
-      <label className="flex flex-wrap items-center gap-3">{m.hour}<input aria-label={m.hour} className={workspace ? `${editableFieldClass} min-h-12 w-24 rounded-control border border-line bg-surface px-3` : 'min-h-12 w-24 rounded-control border border-line bg-transparent px-3'}
+    {s && <details className={workspace ? 'group mt-inline text-xs text-muted' : 'mt-inline text-xs text-faint'}>
+      <summary className={workspace ? `${rowLinkClass} flex list-none items-center justify-between gap-inline py-stack text-ink` : 'min-h-12 cursor-pointer py-stack'}>{t('details')}{workspace && <DisclosureChevron />}</summary>
+      <label className="flex flex-wrap items-center gap-stack">{m.hour}<input aria-label={m.hour} className={workspace ? `${editableFieldClass} min-h-12 w-24 rounded-control border border-line bg-surface px-stack` : 'min-h-12 w-24 rounded-control border border-line bg-transparent px-stack'}
         type="number" min={0} max={23} value={s.hour} onChange={e => onChange({ ...form, schedule: { ...s, hour: e.target.valueAsNumber } })} /></label>
     </details>}
   </div>;

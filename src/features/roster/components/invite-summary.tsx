@@ -16,15 +16,15 @@ export function InviteSummary({ input, pkg }: { input: PlayerInvite; pkg?: Invit
   const initials = input.name.trim().split(/\s+/).slice(0,2).map(part => part[0]).join(' ');
   const rows = [[m('package'), pkg?.name ?? m('custom')], [t('from'), isInviteDate(input.startsOn) ? date(input.startsOn) : '—'],
     [t('to'), end ? date(end) : '—'], [m('paid'), money(amount.paid)]];
-  return <aside className="glass-strong sticky top-6 hidden space-y-5 rounded-[24px] p-5 min-[760px]:block">
-    <div className="flex items-center gap-3"><span className="glass flex size-12 shrink-0 items-center justify-center rounded-[15px] text-lg font-bold">{initials}</span>
+  return <aside className="glass-strong sticky top-6 hidden space-y-card-gap rounded-[24px] p-card min-[760px]:block">
+    <div className="flex items-center gap-stack"><span className="glass flex size-12 shrink-0 items-center justify-center rounded-[15px] text-lg font-bold">{initials}</span>
       <div><b className="block">{input.name.trim() || t('newPlayer')}</b><small className="text-muted">{t('newPlayer')}</small></div></div>
-    <dl>{rows.map(([label,value]) => <div key={label} className="flex justify-between gap-3 border-b border-line py-3 text-sm"><dt className="text-muted">{label}</dt><dd className="font-semibold">{value}</dd></div>)}</dl>
+    <dl>{rows.map(([label,value]) => <div key={label} className="flex justify-between gap-stack border-b border-line py-stack text-sm"><dt className="text-muted">{label}</dt><dd className="font-semibold">{value}</dd></div>)}</dl>
     <div className="flex items-center justify-between"><span className="text-sm text-muted">{t('owed')}</span><b className="text-2xl tabular-nums">{money(amount.remaining)}</b></div>
-    <div className="border-t border-line pt-4"><h3 className="mb-3 text-xs text-muted">{t('flow')}</h3><div className="flex flex-wrap items-center gap-2 text-xs">
-      <span className="glass rounded-full px-3 py-2">{t('account')}</span>
-      {!!input.formIds?.length && <span className="glass rounded-full px-3 py-2">{t('fill', { n: formatNumber(input.formIds.length, locale) })}</span>}
-      <span className="glass rounded-full px-3 py-2">{t('program')}</span>
+    <div className="border-t border-line pt-card"><h3 className="mb-stack text-xs text-muted">{t('flow')}</h3><div className="flex flex-wrap items-center gap-inline text-xs">
+      <span className="glass rounded-full px-stack py-inline">{t('account')}</span>
+      {!!input.formIds?.length && <span className="glass rounded-full px-stack py-inline">{t('fill', { n: formatNumber(input.formIds.length, locale) })}</span>}
+      <span className="glass rounded-full px-stack py-inline">{t('program')}</span>
     </div></div>
   </aside>;
 }

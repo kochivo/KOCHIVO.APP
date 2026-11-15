@@ -27,15 +27,15 @@ export function RequestPicker({forms,playerId,locale,onSent,onCancel,onSend,now 
     } catch {setState('error');}
     finally {busy.current = false;}
   }
-  return <form className="glass-strong space-y-4 rounded-card p-5" onSubmit={e => {e.preventDefault();void send();}}>
-    <fieldset disabled={state === 'sending'} className="space-y-4">
-      <label className="block">{m.pick}<select className="mt-2 min-h-12 w-full rounded-control bg-surface p-3" value={form} onChange={e => setForm(e.target.value)}>
+  return <form className="glass-strong space-y-card-gap rounded-card p-card" onSubmit={e => {e.preventDefault();void send();}}>
+    <fieldset disabled={state === 'sending'} className="space-y-card-gap">
+      <label className="block">{m.pick}<select className="mt-inline min-h-12 w-full rounded-control bg-surface p-stack" value={form} onChange={e => setForm(e.target.value)}>
         {forms.map(f => <option key={f.id} value={f.id}>{f.title}</option>)}</select></label>
       {!forms.length && <p>{m.empty}</p>}
-      <label className="block">{m.due}<input type="date" min={localDate(now,timezone)} value={due} onChange={e => setDue(e.target.value)} className="ms-3 min-h-12 rounded-control bg-surface p-3" /></label>
+      <label className="block">{m.due}<input type="date" min={localDate(now,timezone)} value={due} onChange={e => setDue(e.target.value)} className="ms-stack min-h-12 rounded-control bg-surface p-stack" /></label>
       {state === 'error' && <p role="alert" className="text-danger">{m.error}</p>}
-      <div className="flex gap-3"><button disabled={!form} className="min-h-12 rounded-control bg-lime-soft px-5 font-bold text-lime">{state === 'sending' ? m.sending : m.send}</button>
-        <Button variant="secondary" type="button" onClick={onCancel} className="min-h-12 px-5">{m.cancel}</Button></div>
+      <div className="flex gap-stack"><button disabled={!form} className="min-h-12 rounded-control bg-lime-soft px-page-x font-bold text-lime">{state === 'sending' ? m.sending : m.send}</button>
+        <Button variant="secondary" type="button" onClick={onCancel} className="min-h-12 px-page-x">{m.cancel}</Button></div>
     </fieldset>
   </form>;
 }

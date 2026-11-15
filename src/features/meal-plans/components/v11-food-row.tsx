@@ -27,13 +27,13 @@ export function V11FoodRow({ item, update }: { item: MealItem; update: (change: 
   const validUnit = item.food.units?.some(value => value.key === unit) ? unit : null;
   const factor = unitGrams(item.food, validUnit);
   const values = macrosFor(item.food, item.grams);
-  return <li className="flex min-w-0 flex-wrap items-center gap-2 border-t border-line-soft px-4 py-2.5 text-xs">
+  return <li className="flex min-w-0 flex-wrap items-center gap-inline border-t border-line-soft px-page-x py-stack text-xs">
     <span className="size-9 shrink-0 overflow-hidden rounded-lg bg-surface">
       {/* Food storage hosts vary by deployment. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       {item.food.photo && <img src={foodPhotoUrl(item.food.photo)} alt="" width={36} height={36} loading="lazy" className="size-9 object-cover" />}
     </span>
-    <div className="min-w-0 flex-1"><b>{locale === 'en' ? item.food.nameEn || item.food.name : item.food.name}</b><p className="mt-1 text-muted">{t('grams', { n: item.grams })} · {t('macros', { p: values.protein, c: values.carbs, f: values.fat })}</p></div>
+    <div className="min-w-0 flex-1"><b>{locale === 'en' ? item.food.nameEn || item.food.name : item.food.name}</b><p className="mt-inline text-muted">{t('grams', { n: item.grams })} · {t('macros', { p: values.protein, c: values.carbs, f: values.fat })}</p></div>
     <input type="number" aria-label={pt('gramsOf', { v0: item.food.name })} min={5 / factor} max={2000 / factor} step="any" value={Number((item.grams / factor).toFixed(4))} onChange={event => {
       const amount = event.target.valueAsNumber;
       const grams = Number.isFinite(amount) && amount >= 0 ? portionGrams(item.food, amount, validUnit) : NaN;
@@ -43,7 +43,7 @@ export function V11FoodRow({ item, update }: { item: MealItem; update: (change: 
     <select aria-label={t('unit')} value={validUnit ?? ''} onChange={event => {
       const nextUnit = event.target.value || null;
       update(draft => setPortionUnit(draft, item.id, nextUnit));
-    }} className={`${editableFieldClass} press min-h-12 max-w-28 cursor-pointer rounded-control border border-line bg-surface px-2 focus-visible:ring-2 focus-visible:ring-lime`}><option value="">{rt('grams')}</option>{item.food.units?.map(unit => <option key={unit.key} value={unit.key}>{locale === 'en' ? unit.name_en : unit.name_ar}</option>)}</select>
+    }} className={`${editableFieldClass} press min-h-12 max-w-28 cursor-pointer rounded-control border border-line bg-surface px-inline focus-visible:ring-2 focus-visible:ring-lime`}><option value="">{rt('grams')}</option>{item.food.units?.map(unit => <option key={unit.key} value={unit.key}>{locale === 'en' ? unit.name_en : unit.name_ar}</option>)}</select>
     <span className="font-display tabular-nums">{Math.round(values.kcal)}</span>
     <Button id={openerId} variant="secondary" block={false} onClick={() => setAlternatives(true)}>{rt('alternatives', { n: item.alternatives.length })}</Button>
     <IconButton aria-label={pt('deleteFood')} onClick={() => update(draft => removeItem(draft, item.id))}><X aria-hidden className="size-4" /></IconButton>

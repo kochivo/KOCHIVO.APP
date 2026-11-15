@@ -30,16 +30,16 @@ export function PlayerIdentity({ profile, captainName, accessUntil, plan, onSave
       } catch { setFile(null); setError(true); }
     });
   };
-  return <section aria-label={t('identity')} aria-busy={pending} className="rounded-[28px] border border-line-soft bg-surface p-[18px]">
-    <div className="flex items-center gap-3.5">
-      <div className="shrink-0 [&_.glass]:border-0 [&_.glass]:bg-lime [&_.glass]:text-on-lime [&_.glass]:shadow-none [&_button]:start-0! [&_button]:end-0! [&_button]:top-0! [&_button]:bottom-0! [&_button]:size-16 [&_button]:bg-transparent! [&_button_svg]:sr-only [&_span[aria-hidden]]:text-[26px] [&_span[aria-hidden]]:font-black">
+  return <section aria-label={t('identity')} aria-busy={pending} className="rounded-[28px] border border-line-soft bg-surface p-card">
+    <div className="flex items-center gap-card-gap">
+      <div className="shrink-0 [&_.glass]:border-0 [&_.glass]:bg-lime [&_.glass]:text-on-lime [&_.glass]:shadow-none [&_button]:start-0! [&_button]:end-0! [&_button]:top-0! [&_button]:bottom-0! [&_button]:size-16 [&_button]:bg-transparent! [&_button_svg]:sr-only [&_span[aria-hidden]]:text-h [&_span[aria-hidden]]:font-black">
         <AvatarPicker name={profile.full_name} path={profile.avatar_path} file={file} pending={pending} onChange={next => void upload(next)} />
       </div>
-      <div className="flex min-w-0 flex-1 flex-col gap-1"><b className="break-words text-xl">{profile.full_name}</b>
+      <div className="flex min-w-0 flex-1 flex-col gap-inline"><b className="break-words text-xl">{profile.full_name}</b>
         {captainName && <span className="text-xs text-muted">{plan ? t('coachPlan', { name: captainName, plan }) : t('coach', { name: captainName })}</span>}
         {accessUntil && <span className="text-xs text-muted">{t('until')} <b dir="ltr" className="font-[family-name:var(--font-manrope)] text-ink"><time dateTime={accessUntil}>{formatDateAr(accessUntil, { day: 'numeric', month: 'short' }, locale)}</time></b></span>}
       </div>
     </div>
-    {error && <p role="alert" className="mt-2 text-xs text-danger">{t('saveError')}</p>}
+    {error && <p role="alert" className="mt-inline text-xs text-danger">{t('saveError')}</p>}
   </section>;
 }

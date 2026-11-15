@@ -10,7 +10,7 @@ export default async function PlayerPreviewPage({ params }: { params: Promise<{ 
   const { playerId, locale } = await params;
   const t = createT(previewMessages, parseLocale(locale));
   const today = localDate(new Date(), await getPlayerTimezone(playerId));
-  return <Suspense fallback={<p role="status" className="p-4 text-muted">{t('loading')}</p>}>
+  return <Suspense fallback={<p role="status" className="p-card text-muted">{t('loading')}</p>}>
     {fetchPlayerPreview(playerId, today).then((result) => {
       if ('data' in result && result.data === null) notFound();
       return <PreviewScreen result={result} today={today} />;

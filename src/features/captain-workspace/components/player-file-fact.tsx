@@ -11,14 +11,14 @@ export function PlayerFileFact({ factKey, fact, locale, children, timezone }: {
   const t = createT(messages, locale);
   const warning = factKey === 'injuries' || factKey === 'medical';
   const value = fact?.value;
-  return <div className="space-y-2 border-b border-line pb-4">
-    <div className="flex items-center gap-2 text-xs text-muted">
+  return <div className="space-y-inline border-b border-line pb-card">
+    <div className="flex items-center gap-inline text-xs text-muted">
       <span>{factLabel(factKey, locale)}</span>
       {fact?.isNew && <span role="img" aria-label={t('newFact')} className="size-1.5 rounded-full bg-lime" />}
     </div>
-    {children ?? (Array.isArray(value) && factKey !== 'trainingDays' ? <div className="flex flex-wrap gap-2">
+    {children ?? (Array.isArray(value) && factKey !== 'trainingDays' ? <div className="flex flex-wrap gap-inline">
       {(value.length ? value : ['none']).map(item => <span key={item}
-        className={`rounded-control px-2 py-1 text-sm ${warning && item !== 'none' ? 'bg-warn-soft text-warn' : 'glass-strong'}`}>
+        className={`rounded-control px-inline py-inline text-sm ${warning && item !== 'none' ? 'bg-warn-soft text-warn' : 'glass-strong'}`}>
         {optionLabel(String(item), locale)}</span>)}
     </div> : factKey === 'note' ? <blockquote className="break-words text-sm leading-relaxed">{factValue(factKey, value, locale)}</blockquote> :
       <bdi dir={typeof value === 'number' ? 'ltr' : 'auto'} className="block font-bold tabular-nums">{factValue(factKey, value, locale)}</bdi>)}

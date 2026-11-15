@@ -28,7 +28,7 @@ export function SaveTemplateButton({ kind, id, title }: { kind: TemplateKind; id
     } catch { setError(t('couldntSaveTemplateTryAgain')); }
     finally { setBusy(false); }
   }
-  return <div className="grid gap-1">
+  return <div className="grid gap-inline">
     <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} className="min-h-12" disabled={busy} onClick={() => {
       const name = window.prompt(t('templateName'), title);
       if (name !== null) void save(name);

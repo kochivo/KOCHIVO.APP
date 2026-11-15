@@ -24,19 +24,19 @@ export function BodyMap({ volume, muscles, total }: { volume: Record<Region, num
   return <div ref={card} className="relative" onPointerDown={event => {
     if (event.target === event.currentTarget) close();
   }}>
-    <div className="mx-auto grid w-full max-w-sm grid-cols-2 gap-5" dir="ltr">
+    <div className="mx-auto grid w-full max-w-sm grid-cols-2 gap-card-gap" dir="ltr">
       {(['front', 'back'] as const).map(view => <BodyFigure key={view} view={view} id={id}
         label={t('bodyLabel', { view: t(view), regions: top })}
         volume={muscles} select={select} />)}
     </div>
-    <div data-heat-scale className="mx-auto mt-3 flex max-w-sm items-center gap-2 text-xs text-muted">
+    <div data-heat-scale className="mx-auto mt-stack flex max-w-sm items-center gap-inline text-xs text-muted">
       <span>{t('less')}</span>
       <svg aria-hidden viewBox="0 0 100 8" preserveAspectRatio="none" className="h-2 min-w-8 flex-1 overflow-hidden rounded-full rtl:rotate-180">
         {HEAT_STEPS.map((sets, index) => <rect key={sets} x={index * 20} width="20" height="8" className={heatClass(sets)} />)}
       </svg>
       <span>{t('more')}</span><span className="shrink-0 font-bold text-ink">{mt('sets', { sets: total })}</span>
     </div>
-    <ul className="mt-3 grid grid-cols-3 gap-2">
+    <ul className="mt-stack grid grid-cols-3 gap-inline">
       {regions.map(region => <li key={region}><button type="button" data-muscle-trigger
         aria-label={t('regionSets', { muscle: t(`region.${region}`), sets: volume[region] })}
         aria-pressed={selection?.kind === 'region' && selection.key === region}
@@ -45,12 +45,12 @@ export function BodyMap({ volume, muscles, total }: { volume: Record<Region, num
           const bounds = event.currentTarget.getBoundingClientRect();
           select(region, bounds.x, bounds.y, 'region');
         }}
-        className="glass min-h-12 w-full rounded-control px-2 py-1 text-xs text-ink focus-visible:outline-2 focus-visible:outline-lime">
-        {t(`region.${region}`)}<span className="ms-1 font-bold">{volume[region]}</span>
+        className="glass min-h-12 w-full rounded-control px-inline py-inline text-xs text-ink focus-visible:outline-2 focus-visible:outline-lime">
+        {t(`region.${region}`)}<span className="ms-inline font-bold">{volume[region]}</span>
       </button></li>)}
     </ul>
     {selection && detail && <div id={`${id}-detail`} role="status"
-      className="glass-strong pointer-events-none absolute z-10 rounded-control p-3 text-sm font-bold text-ink shadow-lime-glow"
+      className="glass-strong pointer-events-none absolute z-10 rounded-control p-stack text-sm font-bold text-ink shadow-lime-glow"
       style={{ insetInlineStart: selection.x, top: selection.y, width: selection.width, maxHeight: 72 }} dir="ltr">
       <bdi>{t('regionSets', { muscle: detail.name, sets: detail.sets })}</bdi>
     </div>}

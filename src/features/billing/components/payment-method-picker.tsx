@@ -14,16 +14,16 @@ export function PaymentMethodPicker({ methods, value, onChange, optional = false
   const [feedback, setFeedback] = useState('');
   const selected = methods.find(row => row.method === value);
   if (!methods.length) return null;
-  return <fieldset className="space-y-2">
-    <legend className="mb-2 text-sm font-semibold">{t('method')}</legend>
+  return <fieldset className="space-y-inline">
+    <legend className="mb-inline text-sm font-semibold">{t('method')}</legend>
     <select aria-label={t('method')} required={!optional} value={value ?? ''} onChange={event => { onChange(methods.find(row => row.method === event.target.value)?.method ?? null); setFeedback(''); }}
-      className={captainWorkspaceEnabled() ? `${editableFieldClass} glass min-h-12 w-full rounded-control border border-line px-3` : "glass min-h-12 w-full rounded-control border border-line px-3"}>
+      className={captainWorkspaceEnabled() ? `${editableFieldClass} glass min-h-12 w-full rounded-control border border-line px-stack` : "glass min-h-12 w-full rounded-control border border-line px-stack"}>
       <option value="">{t(optional ? 'unset' : 'choose')}</option>
       {methods.map(row => <option key={row.method} value={row.method}>{t(row.method)}</option>)}
     </select>
-    {selected?.account_detail && <div className="glass-strong flex items-center justify-between gap-3 rounded-control p-3">
+    {selected?.account_detail && <div className="glass-strong flex items-center justify-between gap-stack rounded-control p-stack">
       <span dir="ltr" className="break-all font-display tabular-nums">{selected.account_detail}</span>
-      <Button type="button" variant={'secondary'} block={false} className={"min-h-12 shrink-0 px-4"} onClick={async () => {
+      <Button type="button" variant={'secondary'} block={false} className={"min-h-12 shrink-0 px-page-x"} onClick={async () => {
         try { await navigator.clipboard.writeText(selected.account_detail ?? ''); setFeedback(t('copied')); }
         catch { setFeedback(t('copyFailed')); }
       }}>{t('copy')}</Button>

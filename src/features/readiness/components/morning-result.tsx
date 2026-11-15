@@ -12,9 +12,9 @@ export function MorningResult({ row, goal = 3000 }: { row: DailyCheckRow | null;
   const result = readinessScore({ sleepHours: row.sleep_hours, soreness: row.soreness,
     waterMl: row.water_ml, waterGoalMl: goal });
   if (!result) return null;
-  return <div role="status" className="glass-strong flex items-center gap-3 rounded-card border border-line-soft p-5">
+  return <div role="status" className="glass-strong flex items-center gap-stack rounded-card border border-line-soft p-card">
     <Zap aria-hidden className="size-6 shrink-0 text-lime" />
     <div><p>{t('score', { n: result.score })}</p>
-      <p className="mt-1 text-xs text-faint">{t('suggested', { decision: t(suggestDecision(result.score)) })}</p></div>
+      <p className="mt-inline text-xs text-faint">{t('suggested', { decision: t(suggestDecision(result.score)) })}</p></div>
   </div>;
 }

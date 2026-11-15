@@ -36,8 +36,8 @@ export function AudioPlayer({ src, mimeType, durationSeconds, playLabel, pauseLa
     else element.pause();
   };
   return (
-    <div className={cn('glass-strong flex items-center gap-3 rounded-control p-2 pe-4', className)}>
-      {unsupported ? <p role="status" className="p-2 text-sm text-warn">{t('unsupportedAudio')}</p> : <>
+    <div className={cn('glass-strong flex items-center gap-stack rounded-control p-inline pe-card', className)}>
+      {unsupported ? <p role="status" className="p-inline text-sm text-warn">{t('unsupportedAudio')}</p> : <>
       {/* Not IconButton: its glass background outranks bg-lime in the cascade. */}
       <button type="button" aria-label={playing ? pauseLabel : playLabel} onClick={toggle} className="press inline-flex size-12 shrink-0 items-center justify-center rounded-control bg-lime text-on-lime">
         {playing ? <Pause aria-hidden className="size-5 fill-current" /> : <Play aria-hidden className="size-5 fill-current" />}

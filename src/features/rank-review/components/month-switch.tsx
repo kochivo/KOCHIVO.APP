@@ -11,7 +11,7 @@ export function MonthSwitch({ month, now, locale, onChange }: {
   month: string; now: Date; locale: Locale; onChange: (month: string) => void;
 }) {
   const t = createT(messages, locale);
-  return <div className="flex items-center justify-between gap-3">
+  return <div className="flex items-center justify-between gap-stack">
     {captainWorkspaceEnabled() ? <IconButton className="min-h-12 min-w-12" aria-label={t('previous')}
       onClick={() => onChange(previousMonth(month))}><ChevronLeft aria-hidden className="size-5 rtl:rotate-180" /></IconButton> : <Button variant="ghost" className="min-h-12 min-w-12" aria-label={t('previous')}
       onClick={() => onChange(previousMonth(month))}><ChevronLeft aria-hidden className="size-5 rtl:rotate-180" /></Button>}

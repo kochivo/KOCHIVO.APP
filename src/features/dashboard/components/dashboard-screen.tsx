@@ -23,15 +23,15 @@ interface Props {
 
 export async function DashboardScreen({ data, today, plan, joinRequests, coachLink }: Props) {
   const [t, locale, [roster, firstName, dues]] = await Promise.all([getT(messages), getLocale(), data]);
-  const header = <header className="flex flex-wrap items-end justify-between gap-4">
+  const header = <header className="flex flex-wrap items-end justify-between gap-card-gap">
     <div className="lg:min-w-0">
       <h1 className="text-3xl font-extrabold lg:truncate">{firstName ? t('greeting', { name: firstName }) : t('greetingNoName')}</h1>
-      <p className="mt-1 text-sm text-muted">{t('intro')}</p>
+      <p className="mt-inline text-sm text-muted">{t('intro')}</p>
     </div>
     <div className="min-w-0 lg:hidden">{plan}</div>
   </header>;
-  if (roster.error !== undefined) return <section data-tour-ready="true" className="space-y-6">{header}
-    <p role="alert" className="glass rounded-card p-5 text-danger">{t('loadFailed')}</p></section>;
+  if (roster.error !== undefined) return <section data-tour-ready="true" className="space-y-section">{header}
+    <p role="alert" className="glass rounded-card p-card text-danger">{t('loadFailed')}</p></section>;
   const players = roster.players;
   const tasks = captainNextTasks(players, dues, today);
 
@@ -45,24 +45,24 @@ export async function DashboardScreen({ data, today, plan, joinRequests, coachLi
   const finder = (rows: typeof players) => rows.map((player) => ({ playerId: player.playerId, fullName: player.fullName,
     programTitle: player.programTitle, lastSeen: lastSeenLabel(player.lastTrainingDate, player.playerToday ?? today, locale) }));
   return (
-    <section data-tour-ready="true" className="space-y-6">
+    <section data-tour-ready="true" className="space-y-section">
       {header}
       {players.length > 0 && <NextTaskCard tasks={tasks} captainFirstName={firstName} />}
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        {cards.map(({ label, value, color }) => <GlassCard key={label} level="strong" className="min-w-0 space-y-2 p-5">
+      <div className="grid grid-cols-2 gap-stack lg:grid-cols-4">
+        {cards.map(({ label, value, color }) => <GlassCard key={label} level="strong" className="min-w-0 space-y-inline p-card">
           <p className="text-sm text-muted">{label}</p>
           <p className={`font-display text-4xl font-extrabold ${color}`}>{formatNumber(value, locale)}</p>
         </GlassCard>)}
       </div>
-      {players.length === 0 ? <div className="grid min-w-0 items-start gap-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+      {players.length === 0 ? <div className="grid min-w-0 items-start gap-section lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
         <StartStepsCard captainFirstName={firstName} />
-        <div className="min-w-0 space-y-6">{coachLink}{joinRequests}</div>
-      </div> : <div className="grid min-w-0 items-start gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-        <div className="min-w-0 space-y-6">
+        <div className="min-w-0 space-y-section">{coachLink}{joinRequests}</div>
+      </div> : <div className="grid min-w-0 items-start gap-section lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+        <div className="min-w-0 space-y-section">
           <RadarCard today={today} showEmpty />
           <SmartAlerts alerts={buildAlerts(players, dues, today)} />
         </div>
-        <div className="min-w-0 space-y-6">
+        <div className="min-w-0 space-y-section">
           {joinRequests}
           <PlayerFinder players={finder(players)} recent={finder(recentActivity(players))} />
         </div>

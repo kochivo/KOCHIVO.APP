@@ -21,9 +21,9 @@ export function SwapSheet({ alternatives, onSelect, onClose }: {
   return <ResponsiveDialog modal fallbackId="generator-heading" onDismiss={onClose} aria-label={t('alternatives')}
     onKeyDownCapture={event => dismissNested(event, onClose)}
     dir={locale === 'ar' ? 'rtl' : 'ltr'}
-    className="sheet fixed inset-0 m-auto max-h-[85dvh] w-[calc(100%_-_2rem)] max-w-lg space-y-4 overflow-y-auto rounded-card border border-line bg-surface p-6 text-ink">
+    className="sheet fixed inset-0 m-auto max-h-[85dvh] w-[calc(100%_-_2rem)] max-w-lg space-y-card-gap overflow-y-auto rounded-card border border-line bg-surface p-section text-ink">
     <h3 className="text-xl font-bold">{t('alternatives')}</h3>
-    {!alternatives.length ? <p>{t('noAlternatives')}</p> : <ul className="space-y-2">{alternatives.map(row => <li key={row.exercise_id}>
+    {!alternatives.length ? <p>{t('noAlternatives')}</p> : <ul className="space-y-inline">{alternatives.map(row => <li key={row.exercise_id}>
       <Button variant="secondary" className="min-h-12 w-full justify-start" onClick={() => onSelect(row.exercise_id)}>
         <bdi>{(row.library && exerciseName(row.library, locale)) || t('unavailable')}</bdi>
       </Button>

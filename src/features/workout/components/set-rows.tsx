@@ -24,8 +24,8 @@ export function SetRows({ state, secondary = false }: { state: SetRowsState; sec
   if (!state.current) return null;
   const current = state.current;
   const blocked = state.disabled || state.rest.remaining > 0;
-  return <section aria-label={t('exerciseSets')} className="space-y-2">
-    <div className="grid grid-cols-[24px_minmax(0,1fr)_minmax(0,1fr)_56px] items-center gap-2 text-center text-xs text-faint">
+  return <section aria-label={t('exerciseSets')} className="space-y-inline">
+    <div className="grid grid-cols-[24px_minmax(0,1fr)_minmax(0,1fr)_56px] items-center gap-inline text-center text-xs text-faint">
       <span>{v6t('number')}</span><span>{v6t('kg')}</span><span>{v6t('reps')}</span><span />
     </div>
     {Array.from({ length: current.exercise.sets }, (_, index) => {
@@ -33,25 +33,25 @@ export function SetRows({ state, secondary = false }: { state: SetRowsState; sec
       const done = state.doneSets.find(row => row.program_exercise_id === current.exercise.id && row.set_index === setIndex);
       const active = setIndex === current.setIndex;
       const target = targetForSet(current.exercise, index);
-      return <div key={setIndex} className="space-y-1">
+      return <div key={setIndex} className="space-y-inline">
         {current.exercise.set_plan && <p className="text-xs text-muted"><bdi>{at('target', { reps: target.reps_max === null ? at('failure') :
           target.reps_min === target.reps_max ? formatNumber(target.reps_min, locale) : at('range', {
             min: formatNumber(target.reps_min, locale), max: formatNumber(target.reps_max, locale) }) })}
           {target.rir !== null && at('rir', { n: formatNumber(target.rir, locale) })}</bdi></p>}
         <div aria-current={active ? 'step' : undefined}
-        className="grid grid-cols-[24px_minmax(0,1fr)_minmax(0,1fr)_56px] items-center gap-2">
+        className="grid grid-cols-[24px_minmax(0,1fr)_minmax(0,1fr)_56px] items-center gap-inline">
         <span className="text-center font-display text-sm text-faint">{formatNumber(setIndex, locale)}</span>
         {active ? <>
           <input ref={state.invalid?.result !== 'reps' && !state.bodyweight ? invalidRef : undefined} aria-label={t('weightKg')}
             aria-invalid={state.invalid?.result === 'weight' || state.invalid?.result === 'both'}
             type="number" inputMode="decimal" min={0} max={500} step={2.5} value={state.weight}
             disabled={blocked || state.bodyweight} onChange={event => state.setWeight(Number(event.target.value))}
-            className="glass-strong min-h-14 w-full min-w-0 rounded-control border border-lime p-2 text-center font-display text-2xl font-extrabold tabular-nums" />
+            className="glass-strong min-h-14 w-full min-w-0 rounded-control border border-lime p-inline text-center font-display text-2xl font-extrabold tabular-nums" />
           <input ref={state.invalid?.result === 'reps' || state.bodyweight ? invalidRef : undefined} aria-label={t('reps')}
             aria-invalid={state.invalid?.result === 'reps' || state.invalid?.result === 'both'}
             type="number" inputMode="numeric" min={0} max={100} step={1} value={state.reps}
             disabled={blocked} onChange={event => state.setReps(Number(event.target.value))}
-            className="glass-strong min-h-14 w-full min-w-0 rounded-control border border-lime p-2 text-center font-display text-2xl font-extrabold tabular-nums" />
+            className="glass-strong min-h-14 w-full min-w-0 rounded-control border border-lime p-inline text-center font-display text-2xl font-extrabold tabular-nums" />
         </> : <>{[done?.weight_kg, done?.reps].map((value, column) => <span key={column}
           className="glass-strong flex min-h-14 items-center justify-center rounded-control border border-line-soft font-display text-2xl font-extrabold tabular-nums">
           {value == null ? '—' : formatNumber(value, locale)}</span>)}</>}
@@ -65,6 +65,6 @@ export function SetRows({ state, secondary = false }: { state: SetRowsState; sec
     })}
     {state.invalid && <p role="alert" className="text-sm text-danger">{t(state.invalid.result === 'reps' ? 'enterReps' : 'enterWeightAndReps')}</p>}
     <button type="button" aria-pressed={state.bodyweight} onClick={() => state.setBodyweight(!state.bodyweight)}
-      disabled={blocked} className="min-h-12 rounded-full border border-line-soft px-4 text-xs text-muted">{t('bodyweight')}</button>
+      disabled={blocked} className="min-h-12 rounded-full border border-line-soft px-page-x text-xs text-muted">{t('bodyweight')}</button>
   </section>;
 }

@@ -13,16 +13,16 @@ export function SocialLinksFields({ value, errors, onChange }: {
   onChange: (key: SocialKey, value: string) => void;
 }) {
   const t = useT(messages);
-  return <fieldset className="space-y-4">
+  return <fieldset className="space-y-card-gap">
     <legend className="text-sm text-muted">{t('socialLinks')}</legend>
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+    <div className="grid grid-cols-1 gap-card-gap md:grid-cols-2">
       {socialKeys.map(key => {
         const Icon = icons[key];
         return <div key={key} className="relative">
           <Icon aria-hidden className="absolute end-3 top-11 size-5 text-muted" />
           <TextField label={t(key)} value={value[key] ?? ''} dir="ltr" maxLength={200}
             onChange={event => onChange(key, event.target.value)} error={errors[`social.${key}`]}
-            className="bg-surface pe-12 focus-visible:ring-2 focus-visible:ring-lime" />
+            className="bg-surface pe-touch focus-visible:ring-2 focus-visible:ring-lime" />
         </div>;
       })}
     </div>

@@ -17,24 +17,24 @@ export interface EmptyStateProps extends Omit<HTMLAttributes<HTMLDivElement>, 't
 
 export function EmptyState({ icon: Icon, title, body, steps, action, secondary, className, ...props }: EmptyStateProps) {
   return (
-    <div {...props} className={cn('glass enter flex flex-col items-center gap-4 rounded-card px-6 py-8 text-center', className)}>
+    <div {...props} className={cn('glass enter flex flex-col items-center gap-card-gap rounded-card px-page-x py-page-y text-center', className)}>
       <span aria-hidden className="decorative-icon grid size-16 place-items-center rounded-full bg-lime-soft text-lime ring-8 ring-lime-soft">
         <Icon className="size-7" />
       </span>
-      <div className="space-y-1.5">
+      <div className="space-y-inline">
         <h2 className="text-xl font-bold">{title}</h2>
         <p className="mx-auto max-w-prose text-sm text-muted">{body}</p>
       </div>
-      {steps && steps.length > 0 && <ol className="grid w-full max-w-sm gap-2 text-start text-sm">
-        {steps.map((step, index) => <li key={step} className="glass-raised flex min-h-12 items-center gap-3 rounded-control px-3 py-2">
+      {steps && steps.length > 0 && <ol className="grid w-full max-w-sm gap-inline text-start text-sm">
+        {steps.map((step, index) => <li key={step} className="glass-raised flex min-h-12 items-center gap-stack rounded-control px-stack py-inline">
           <span aria-hidden className="grid size-7 shrink-0 place-items-center rounded-full bg-ink/5 font-display text-xs font-extrabold">{index + 1}</span>
           <span>{step}</span>
         </li>)}
       </ol>}
-      {(action || secondary) && <div className="flex flex-wrap justify-center gap-2">
-        {action && (action.href !== undefined ? <Link href={action.href} className="press glow primary-surface inline-flex min-h-12 items-center justify-center rounded-control bg-lime px-4 text-sm font-extrabold text-on-lime">{action.label}</Link> :
+      {(action || secondary) && <div className="flex flex-wrap justify-center gap-inline">
+        {action && (action.href !== undefined ? <Link href={action.href} className="press glow primary-surface inline-flex min-h-12 items-center justify-center rounded-control bg-lime px-page-x text-sm font-extrabold text-on-lime">{action.label}</Link> :
           <Button className="min-h-12" onClick={action.onClick}>{action.label}</Button>)}
-        {secondary && (secondary.href !== undefined ? <Link href={secondary.href} className="glass press hover-lift inline-flex min-h-12 items-center justify-center gap-2 rounded-control px-4 text-sm text-ink hover:bg-ink/10 disabled:opacity-40">{secondary.label}</Link> :
+        {secondary && (secondary.href !== undefined ? <Link href={secondary.href} className="glass press hover-lift inline-flex min-h-12 items-center justify-center gap-inline rounded-control px-page-x text-sm text-ink hover:bg-ink/10 disabled:opacity-40">{secondary.label}</Link> :
           <Button variant="secondary" className="min-h-12" onClick={secondary.onClick}>{secondary.label}</Button>)}
       </div>}
     </div>

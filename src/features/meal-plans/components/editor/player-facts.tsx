@@ -20,8 +20,8 @@ export function PlayerFactsCard({ name, facts, meals, logs, today, sent }: {
   const goal = target == null || weight == null || target === weight ? 'maintain' : target < weight ? 'cut' : 'muscle';
   const done = planAdherence(logs, today, meals, facts.trainingDays?.value ?? [])
     .filter(day => day.expected > 0 && day.completed >= day.expected).length;
-  return <aside className="glass rounded-card border border-line-soft px-5 py-[18px] min-[1001px]:sticky min-[1001px]:top-5">
-    <h2 className="mb-1.5 font-display text-base font-semibold">{t('playerFacts', { name })}</h2>
+  return <aside className="glass rounded-card border border-line-soft px-page-x py-page-y min-[1001px]:sticky min-[1001px]:top-5">
+    <h2 className="mb-inline font-display text-base font-semibold">{t('playerFacts', { name })}</h2>
     <dl>
       <FactRow label={t('goal')}>{t(goal)}</FactRow>
       <FactRow label={t('weight')}>{t('weightValue', { weight: number(weight) })}</FactRow>

@@ -14,14 +14,14 @@ export function CrownRace({ points, holdsCrown }: {
   const t = useT(messages);
   const locale = useLocale();
   if (points.month_position === null) return <EmptyState icon={Crown} title={t('race')} body={t('noCaptain')} />;
-  return <section className="glass-strong space-y-3 rounded-card p-5">
+  return <section className="glass-strong space-y-stack rounded-card p-card">
     <h2 className="font-bold">{t('race')}</h2>
-    {points.crown_prize && <p className="flex items-center gap-2 break-words">
+    {points.crown_prize && <p className="flex items-center gap-inline break-words">
       <Gift aria-hidden="true" className="size-5 shrink-0" />{t('crownPrize', { prize: points.crown_prize })}
     </p>}
     <p className="text-3xl font-bold tabular-nums">{t('adherence', { n: formatNumber(points.adherence, locale) })}</p>
     <p>{t('workouts', { done: formatNumber(points.done, locale), planned: formatNumber(points.planned, locale) })}</p>
-    {holdsCrown ? <div className="flex items-center gap-4"><RankBadge tier="crown" label={t('crown')} />
+    {holdsCrown ? <div className="flex items-center gap-card-gap"><RankBadge tier="crown" label={t('crown')} />
       <p className="font-bold">{t('holder')}</p></div> : <>
       <p className="text-xl font-bold">{t('position', { n: formatNumber(points.month_position, locale) })}</p>
       <p>{points.crown_needs_workouts > 0

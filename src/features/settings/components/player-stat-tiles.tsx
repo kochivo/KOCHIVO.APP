@@ -31,13 +31,13 @@ export function PlayerStatTiles({ playerId, snapshot }: { playerId: string; snap
   }} />;
   if (!result.data || !local || !now) return <LoadingState variant="detail" />;
   const stats = accountStats({ remote: result.data.sessions, local, today: localDate(now, timezone), snapshot });
-  return <div className="grid grid-cols-3 gap-2">
+  return <div className="grid grid-cols-3 gap-inline">
     {([{ key: 'sessions', value: stats.total, color: 'text-ink' },
       { key: 'streak', value: stats.streak, color: 'text-sore' },
       { key: 'rank', value: rankT(result.data.tier), color: 'text-gold-4' }] as const).map(tile =>
-      <div key={tile.key} className="glass-strong flex flex-col items-center gap-0.5 rounded-[20px] border border-line-soft bg-surface p-3">
-        <b className={`${tile.key === 'rank' ? 'text-lg' : 'font-[family-name:var(--font-manrope)] text-[22px]'} ${tile.color}`}>{tile.value}</b>
-        <span className="text-center text-[11px] text-muted">{t(tile.key)}</span>
+      <div key={tile.key} className="glass-strong flex flex-col items-center gap-inline rounded-[20px] border border-line-soft bg-surface p-stack">
+        <b className={`${tile.key === 'rank' ? 'text-lg' : 'font-[family-name:var(--font-manrope)] text-h'} ${tile.color}`}>{tile.value}</b>
+        <span className="text-center text-micro text-muted">{t(tile.key)}</span>
       </div>)}
   </div>;
 }

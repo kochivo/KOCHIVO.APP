@@ -37,14 +37,14 @@ export function ExerciseDrawer({ openerId, onClose, onAdd, usedExerciseIds, dayT
   }, [locale, openerId]);
   return <dialog ref={dialog} dir={locale === 'ar' ? 'rtl' : 'ltr'} aria-label={t('exerciseLibrary')}
     style={{ maxBlockSize: '100dvh' }}
-    className="sheet fixed inset-y-0 end-0 start-auto m-0 h-dvh w-full max-w-md scroll-pb-24 overflow-y-auto overscroll-contain p-4 text-ink backdrop:bg-bg-deep/80"
+    className="sheet fixed inset-y-0 end-0 start-auto m-0 h-dvh w-full max-w-md scroll-pb-24 overflow-y-auto overscroll-contain p-card text-ink backdrop:bg-bg-deep/80"
     onCancel={event => { event.preventDefault(); onClose(); }}
     onClick={event => {
       if (event.target !== event.currentTarget) return;
       const bounds = event.currentTarget.getBoundingClientRect();
       if (event.clientX < bounds.x || event.clientX > bounds.x + bounds.width || event.clientY < bounds.y || event.clientY > bounds.y + bounds.height) onClose();
     }}>
-    <div className="mb-4 flex justify-end">
+    <div className="mb-card-gap flex justify-end">
       <IconButton aria-label={t('closeLibrary')} onClick={onClose}><X aria-hidden className="size-5" /></IconButton>
     </div>
     <Deferred fallback={<LoadingState />}><ExercisePicker disabled={false} usedExerciseIds={usedExerciseIds} onAdd={onAdd} dayTitle={dayTitle} /></Deferred>

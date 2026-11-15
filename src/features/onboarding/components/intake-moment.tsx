@@ -17,8 +17,8 @@ export function IntakeMoment({ stage, captainName, onStart }: {
   const Icon = stage === 'success' ? Check : stage === 'preparing' ? LoaderCircle : Dumbbell;
   useEffect(() => { heading.current?.focus(); }, [stage]);
   return (
-    <main className="mx-auto flex min-h-[85dvh] w-full max-w-lg flex-col justify-center gap-8 px-5 py-10 text-start">
-      <section key={stage} className="glass-strong enter space-y-6 rounded-card p-6 motion-reduce:animate-none" aria-busy={stage === 'preparing'}>
+    <main className="mx-auto flex min-h-[85dvh] w-full max-w-lg flex-col justify-center gap-section px-page-x py-section text-start">
+      <section key={stage} className="glass-strong enter space-y-section rounded-card p-section motion-reduce:animate-none" aria-busy={stage === 'preparing'}>
         <div className="flex size-20 items-center justify-center rounded-card bg-lime-soft text-lime">
           <Icon aria-hidden className={`size-10 ${stage === 'preparing' ? 'animate-spin motion-reduce:animate-none' : ''}`} />
         </div>

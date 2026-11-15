@@ -15,7 +15,7 @@ afterEach(() => vi.unstubAllEnvs());
 const params = Promise.resolve({ playerId: 'p', locale: 'ar' });
 it.each([undefined, '0', 'true'])('retains byte-identical flag-off training for %s', async flag => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', flag);
-  const previous = createElement('div', { className: 'space-y-6' },
+  const previous = createElement('div', { className: 'space-y-section' },
     createElement('div', { className: 'mx-auto max-w-5xl' }, createElement(GenerateButton, {
       key: 'p-true', playerId: 'p', profileError: false, playerName: 'Ali', intake: null,
     })), createElement(ProgramBuilder, { key: 'p', playerId: 'p' }));

@@ -18,10 +18,10 @@ export function WorkoutValue({ kind, value, disabled, invalid, focusInvalid = in
   const step = weight ? 2.5 : 1;
   const max = weight ? 500 : 100;
   const change = (next: number) => onChange(Math.min(max, Math.max(0, Math.round(next * 100) / 100)));
-  return <div className="glass-strong flex flex-col items-center gap-2 rounded-[24px] border border-line-soft px-2.5 py-3">
+  return <div className="glass-strong flex flex-col items-center gap-inline rounded-[24px] border border-line-soft px-stack py-stack">
     <span className="text-xs text-muted">{t(weight ? 'v3Kg' : 'v3Reps')}</span>
     <label className="relative min-h-12 w-full rounded-lg text-center focus-within:outline-2 focus-within:outline-lime">
-      <span aria-hidden className="font-display text-[44px] leading-none font-extrabold tabular-nums">{draft ?? formatNumber(value, locale)}</span>
+      <span aria-hidden className="font-display text-stat-wide leading-none font-extrabold tabular-nums">{draft ?? formatNumber(value, locale)}</span>
       <input ref={input} aria-label={t(weight ? 'weightKg' : 'reps')} aria-invalid={invalid} aria-describedby={invalid ? 'set-error' : undefined}
         disabled={disabled} type="text" inputMode={weight ? 'decimal' : 'numeric'} enterKeyHint="done" autoComplete="off"
         value={draft ?? formatNumber(value, locale)} onFocus={() => setDraft('')} onChange={event => setDraft(event.target.value)}
@@ -29,7 +29,7 @@ export function WorkoutValue({ kind, value, disabled, invalid, focusInvalid = in
         onKeyDown={event => { if (event.key === 'Enter') event.currentTarget.blur(); if (event.key === 'Escape') setDraft(null); }}
         className="absolute inset-0 size-full opacity-0" />
     </label>
-    <div className="flex gap-2">
+    <div className="flex gap-inline">
       <button type="button" aria-label={t(weight ? 'v3DecreaseWeight' : 'v3DecreaseReps')} disabled={disabled || value <= 0}
         onClick={() => change(value - step)} className="flex size-14 items-center justify-center rounded-full bg-line disabled:opacity-40"><Minus aria-hidden className="size-6" /></button>
       <button type="button" aria-label={t(weight ? 'v3IncreaseWeight' : 'v3IncreaseReps')} disabled={disabled || value >= max}

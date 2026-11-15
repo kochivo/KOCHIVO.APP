@@ -37,16 +37,16 @@ export function JoinRequestsList({ rows, onResolved, workspace = false, now = 0 
       setHidden(previous => previous.filter(value => value !== id)); setError(t('failure'));
     } finally { busy.current.delete(id); }
   }
-  return <div className="space-y-3">
+  return <div className="space-y-stack">
     {selected && <BillingManagerLoader playerId={selected.id} name={selected.name} today={localDate(new Date(), timezone)} autoActivate />}
     {error && <p role="alert" className="text-danger">{error}</p>}
-    {visible.length ? <ul className={workspace ? 'grid grid-cols-1 gap-3.5 min-[760px]:grid-cols-2' : 'space-y-3'}>{visible.map(row => workspace
+    {visible.length ? <ul className={workspace ? 'grid grid-cols-1 gap-card-gap min-[760px]:grid-cols-2' : 'space-y-stack'}>{visible.map(row => workspace
       ? <WorkspaceJoinCard key={row.id} row={row} now={now} onResolve={(id, status) => void resolve(id, status)} />
-      : <li key={row.id} className="flex flex-wrap items-center justify-between gap-3">
-      <span>{row.full_name}</span><div className="flex gap-2">
+      : <li key={row.id} className="flex flex-wrap items-center justify-between gap-stack">
+      <span>{row.full_name}</span><div className="flex gap-inline">
         <Button variant="secondary" onClick={() => void resolve(row.id, 'accepted')}>{t('accept')}</Button>
         <Button variant="secondary" className="border border-danger/40 text-danger" onClick={() => void resolve(row.id, 'declined')}>{t('decline')}</Button>
       </div>
-    </li>)}</ul> : <p className={workspace ? 'glass rounded-card p-5 text-sm text-muted' : 'text-sm text-muted'}>{t('empty')}</p>}
+    </li>)}</ul> : <p className={workspace ? 'glass rounded-card p-card text-sm text-muted' : 'text-sm text-muted'}>{t('empty')}</p>}
   </div>;
 }

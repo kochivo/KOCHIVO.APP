@@ -46,14 +46,14 @@ export function ReviewDialog({ item, inputs, now, onClose, onReviewed }: {
     finally { busy.current = false; setPending(false); }
   }
   return <ResponsiveDialog modal openerId={`queue-${item.kind}-${item.id}`} fallbackId="queue-heading" onDismiss={close}
-    aria-label={item.player_name} className="sheet fixed inset-0 z-50 m-auto max-h-[90dvh] w-full max-w-2xl space-y-5 overflow-y-auto rounded-card bg-bg p-6 text-ink backdrop:bg-bg/80">
-    <header className="flex items-center justify-between gap-3"><h2 className="text-2xl font-bold">{item.player_name}</h2>
+    aria-label={item.player_name} className="sheet fixed inset-0 z-50 m-auto max-h-[90dvh] w-full max-w-2xl space-y-card-gap overflow-y-auto rounded-card bg-bg p-section text-ink backdrop:bg-bg/80">
+    <header className="flex items-center justify-between gap-stack"><h2 className="text-2xl font-bold">{item.player_name}</h2>
       <IconButton onClick={close} aria-label={t('close')} className="grid min-h-12 min-w-12 place-items-center"><X aria-hidden /></IconButton></header>
     {error && <p role="alert" className="text-danger">{error}</p>}
     {item.kind === 'form' ? <FormCheckDetail item={item} /> : <CheckinDetail item={item} history={inputs.history} dailyChecks={inputs.dailyChecks} now={now} />}
-    {item.reviewed_at ? <div className="glass rounded-card p-4"><p className="text-muted">{t('reviewedReply')}</p><p>{item.reply || t('noReply')}</p></div> : <>
+    {item.reviewed_at ? <div className="glass rounded-card p-card"><p className="text-muted">{t('reviewedReply')}</p><p>{item.reply || t('noReply')}</p></div> : <>
       <ReplyBox item={item} onSend={reply => send(reply)} onSendNext={reply => send(reply, true)} disabled={pending || recording} />
-      <section className="space-y-3"><h3 className="font-bold">{t('voiceReply')}</h3><fieldset disabled={pending || Boolean(uploaded)}>
+      <section className="space-y-stack"><h3 className="font-bold">{t('voiceReply')}</h3><fieldset disabled={pending || Boolean(uploaded)}>
         <VoiceRecorder playerId={item.player_id} recorder={recorder} />
       </fieldset></section>
     </>}

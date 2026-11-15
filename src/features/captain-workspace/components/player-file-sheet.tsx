@@ -17,13 +17,13 @@ export function PlayerFileSheet({ locale, summary, children }: {
   const id = useId();
   return <>
     <Button id={id} type="button" aria-label={t('playerFile')} aria-describedby={`${id}-summary`} aria-haspopup="dialog" aria-expanded={open}
-      onClick={() => setOpen(true)} variant={'secondary'} block={false} className={"min-h-12 w-full p-3 text-start"}>
+      onClick={() => setOpen(true)} variant={'secondary'} block={false} className={"min-h-12 w-full p-stack text-start"}>
       <span id={`${id}-summary`}>{summary}</span>
     </Button>
     {open && <ResponsiveDialog modal openerId={id} fallbackId={id} onDismiss={() => setOpen(false)}
       aria-labelledby={`${id}-title`} dir={locale === 'ar' ? 'rtl' : 'ltr'}
-      className="sheet fixed inset-x-0 bottom-0 top-auto m-0 max-h-[90dvh] w-full max-w-none overflow-y-auto rounded-t-card p-6 text-ink">
-      <div className="mb-5 flex items-center justify-between gap-4">
+      className="sheet fixed inset-x-0 bottom-0 top-auto m-0 max-h-[90dvh] w-full max-w-none overflow-y-auto rounded-t-card p-section text-ink">
+      <div className="mb-card-gap flex items-center justify-between gap-card-gap">
         <h2 id={`${id}-title`} className="text-xl font-bold">{t('playerFile')}</h2>
         <Button type="button" aria-label={t('closeFile')} onClick={() => setOpen(false)}
           variant={'secondary'} block={false} className={"grid min-h-12 min-w-12 place-items-center"}>

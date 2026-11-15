@@ -34,10 +34,10 @@ export function HomeTiles({ weightKg, today, playerId, rest, streak, done, plann
   const next = nutrition.snapshot?.meals.find(meal => !logs.some(log => log.meal_id === meal.id &&
     log.log_date === today && log.completed_at && !log.deleted_at));
   const water = waterGlasses(row?.water_ml ?? 0, waterGoalMl(weightKg));
-  const tile = 'glass-strong flex min-w-0 flex-col rounded-[24px] border-line-soft! bg-surface! p-4 text-ink shadow-none backdrop-blur-none';
-  return <div className="grid grid-cols-2 gap-3">
-    <Link href="/player/nutrition" className={`${tile} min-h-[136px] gap-2.5`}>
-      <span className="text-[13px] text-muted">{t('homeFood')}</span>
+  const tile = 'glass-strong flex min-w-0 flex-col rounded-[24px] border-line-soft! bg-surface! p-card text-ink shadow-none backdrop-blur-none';
+  return <div className="grid grid-cols-2 gap-stack">
+    <Link href="/player/nutrition" className={`${tile} min-h-[136px] gap-stack`}>
+      <span className="text-row text-muted">{t('homeFood')}</span>
       <svg width="60" height="60" viewBox="0 0 60 60" role="img" aria-label={t('homeFoodPercent', { percent: formatNumber(percent, locale) })}>
         <circle cx="30" cy="30" r="25" fill="none" className="stroke-line" strokeWidth="7" />
         <circle cx="30" cy="30" r="25" fill="none" className="stroke-lime" strokeWidth="7" strokeLinecap="round"
@@ -48,25 +48,25 @@ export function HomeTiles({ weightKg, today, playerId, rest, streak, done, plann
         ? t('homeNextMeal', { name: starterText(next.name, locale, nutrition.snapshot.title) }) : t('youveEatenAllYourMealsToday')}</span>
     </Link>
     <a href="#home-morning" onClick={() => { onWater?.(); document.getElementById('home-morning')?.setAttribute('open', ''); }}
-      className={`${tile} min-h-[136px] gap-2.5`}>
-      <span className="text-[13px] text-muted">{t('homeWater')}</span>
-      <span className="font-[family-name:var(--font-manrope)] text-[30px] font-extrabold text-water">
+      className={`${tile} min-h-[136px] gap-stack`}>
+      <span className="text-row text-muted">{t('homeWater')}</span>
+      <span className="font-[family-name:var(--font-manrope)] text-stat font-extrabold text-water">
         {formatNumber(water.done, locale)}<span className="text-base font-normal text-muted">{t('homeRatio', { done: '', planned: formatNumber(water.planned, locale) })}</span>
       </span>
-      <span className="flex gap-1" aria-hidden>{Array.from({ length: water.planned }, (_, index) =>
+      <span className="flex gap-inline" aria-hidden>{Array.from({ length: water.planned }, (_, index) =>
         <span key={index} className={`h-2 flex-1 rounded ${index < water.done ? 'bg-water' : 'bg-line'}`} />)}</span>
       <span className="text-xs text-muted">{t('homeGlasses')}</span>
     </a>
     {!rest && <>
-      <Link href="/player/history" className={`${tile} min-h-[120px] gap-1.5`}>
-        <span className="text-[13px] text-muted">{t('homeStreak')}</span>
+      <Link href="/player/history" className={`${tile} min-h-[120px] gap-inline`}>
+        <span className="text-row text-muted">{t('homeStreak')}</span>
         {streak === undefined ? <span className="text-xs text-muted">{t('homeStreakUnavailable')}</span> :
-          <span className="font-[family-name:var(--font-manrope)] text-[34px] font-extrabold text-sore">{formatNumber(streak, locale)}</span>}
+          <span className="font-[family-name:var(--font-manrope)] text-stat font-extrabold text-sore">{formatNumber(streak, locale)}</span>}
         <span className="text-xs text-muted">{t('streakConsecutive')}</span>
       </Link>
-      <Link href="/player/rank" className={`${tile} min-h-[120px] gap-1.5`}>
-        <span className="text-[13px] text-muted">{t('homeMedal')}</span>
-        <span className="font-[family-name:var(--font-manrope)] text-[34px] font-extrabold text-gold-2">
+      <Link href="/player/rank" className={`${tile} min-h-[120px] gap-inline`}>
+        <span className="text-row text-muted">{t('homeMedal')}</span>
+        <span className="font-[family-name:var(--font-manrope)] text-stat font-extrabold text-gold-2">
           {formatNumber(done, locale)}<span className="text-base font-normal text-muted">{t('homeRatio', { done: '', planned: formatNumber(planned, locale) })}</span>
         </span>
         <span className="text-xs text-muted">{t('homeWeek')}</span>

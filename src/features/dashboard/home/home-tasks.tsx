@@ -12,15 +12,15 @@ export async function HomeTasks({ players, dues, today, mealPlanPlayers, lastPay
   const [t, locale] = await Promise.all([getT(workspaceMessages), getLocale()]);
   const tasks = captainNextTasks(players, new Map(dues), today, { mealPlanPlayers: new Set(mealPlanPlayers) }).filter(task => task.kind !== 'invite');
   return <section className="glass rounded-card border border-line-soft">
-    <h2 className="px-5 pt-4 font-display text-[19px] font-semibold">{t('today')}</h2>
-    {!tasks.length && <p className="p-5 text-sm text-faint">{t('done')}</p>}
+    <h2 className="px-page-x pt-card font-display text-title font-semibold">{t('today')}</h2>
+    {!tasks.length && <p className="p-card text-sm text-faint">{t('done')}</p>}
     <ul className="divide-y divide-line-soft">{tasks.map((task, index) => {
       if (task.kind === 'invite') return null;
       const lastPayment = lastPayments.find(([id]) => id === task.playerId)?.[1];
-      return <li key={`${task.kind}:${index}`} className="flex min-h-16 flex-wrap items-center justify-between gap-3 px-5 py-3">
+      return <li key={`${task.kind}:${index}`} className="flex min-h-16 flex-wrap items-center justify-between gap-stack px-page-x py-stack">
         <div><p className="text-sm">{t(task.kind === 'late' ? 'lateTask' : task.days !== undefined ? 'endingTask' : task.kind, { name: task.name ?? '', count: task.days ?? task.count ?? 0 })}</p>
           <p className="text-xs text-faint">{lastPayment ? t('lastPayment', { date: formatDateAr(lastPayment, { day: 'numeric', month: 'long' }, locale) }) : t(`hint.${task.kind}`)}</p></div>
-        <Link className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-4 text-xs" })} href={task.href}>{t(`action.${task.kind}`)}</Link>
+        <Link className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-page-x text-xs" })} href={task.href}>{t(`action.${task.kind}`)}</Link>
       </li>;
     })}</ul>
   </section>;

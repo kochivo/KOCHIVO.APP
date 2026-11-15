@@ -15,9 +15,9 @@ export function OverviewFacts({ profile, summary, locale }: { profile: Profile; 
   const initial = profile.intake?.weightKg;
   const goal = target == null || initial === undefined ? t('unavailable') : t(target < initial ? 'lose' : target > initial ? 'gain' : 'maintain');
   const conditions = [facts.injuries, facts.medical, facts.allergies].flatMap(fact => fact?.value ?? []).filter(key => key !== 'none');
-  return <div className="space-y-[18px]">
-    <section className="glass rounded-card border border-line-soft px-5 py-[18px]">
-      <h2 className="mb-2 font-display text-[19px] font-semibold">{t('facts')}</h2>
+  return <div className="space-y-card-gap">
+    <section className="glass rounded-card border border-line-soft px-page-x py-page-y">
+      <h2 className="mb-inline font-display text-title font-semibold">{t('facts')}</h2>
       <dl>
         <FactRow label={t('goal')}>{goal}{target != null && <> · {factValue('targetWeight', target, locale)}</>}</FactRow>
         <FactRow label={t('body')}><bdi className="font-semibold">{n(facts.weight?.value)} · {n(facts.height?.value)} · {n(facts.age?.value)}</bdi></FactRow>
@@ -29,11 +29,11 @@ export function OverviewFacts({ profile, summary, locale }: { profile: Profile; 
         <FactRow label={t('notes')}><span className="whitespace-pre-wrap">{facts.note?.value || t('none')}</span></FactRow>
       </dl>
     </section>
-    {history.length > 0 && <section className="glass rounded-card border border-line-soft px-5 py-[18px]">
-      <h2 className="mb-2 font-display text-[19px] font-semibold">{t('history')}</h2>
-      <ol>{[...history].sort((a, b) => b.source.at.localeCompare(a.source.at)).map(entry => <li key={`${entry.source.kind}-${entry.source.id}`} className="border-t border-line-soft py-3 first:border-0">
+    {history.length > 0 && <section className="glass rounded-card border border-line-soft px-page-x py-page-y">
+      <h2 className="mb-inline font-display text-title font-semibold">{t('history')}</h2>
+      <ol>{[...history].sort((a, b) => b.source.at.localeCompare(a.source.at)).map(entry => <li key={`${entry.source.kind}-${entry.source.id}`} className="border-t border-line-soft py-stack first:border-0">
         <p className="text-sm">{sourceLabel(entry.source, locale, profile.timezone)}</p>
-        <p className="mt-1 text-xs text-faint">{entry.first ? wt('firstData') : entry.changed.length ? wt('changedFacts', { facts: entry.changed.map(key => factLabel(key, locale)).join(' · ') }) : wt('unchanged')}</p>
+        <p className="mt-inline text-xs text-faint">{entry.first ? wt('firstData') : entry.changed.length ? wt('changedFacts', { facts: entry.changed.map(key => factLabel(key, locale)).join(' · ') }) : wt('unchanged')}</p>
       </li>)}</ol>
     </section>}
   </div>;

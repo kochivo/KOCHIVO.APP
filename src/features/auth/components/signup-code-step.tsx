@@ -22,9 +22,9 @@ export function SignupCodeStep({ email, verify = verifyCaptainCode, onDone = nav
   const [sentAt, setSentAt] = useState(() => Date.now());
   const [error, setError] = useState('');
   const [pending, start] = useTransition();
-  return <div className="space-y-4">
+  return <div className="space-y-card-gap">
     <p role="status" className="break-words text-muted">{t('codeSentTo', { email })}</p>
-    <form className="space-y-4" aria-busy={pending} onSubmit={event => {
+    <form className="space-y-card-gap" aria-busy={pending} onSubmit={event => {
       event.preventDefault();
       start(async () => {
         const result = await callAuthAction(() => verify({ email, token }), locale, t);

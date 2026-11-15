@@ -22,8 +22,8 @@ export function CaptainSearchPalette({ players, onClose }: { players: CaptainFra
     ...frameItems.filter(item => item.available).map(item => ({ href: item.href, label: t(item.id), group: 'work' as const })),
   ].filter(item => item.label.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()));
   return <ResponsiveDialog modal aria-label={t('search')} fallbackId="captain-search" openerId="captain-search" onDismiss={onClose}
-    className="sheet fixed inset-x-4 top-[12dvh] mx-auto max-h-[75dvh] w-auto max-w-xl overflow-y-auto rounded-card border border-line bg-surface p-3 text-ink backdrop:bg-bg/70">
-    <div className="flex items-center gap-2">
+    className="sheet fixed inset-x-4 top-[12dvh] mx-auto max-h-[75dvh] w-auto max-w-xl overflow-y-auto rounded-card border border-line bg-surface p-stack text-ink backdrop:bg-bg/70">
+    <div className="flex items-center gap-inline">
       <input ref={input} role="combobox" aria-autocomplete="list" aria-expanded="true" aria-controls={id}
         aria-activedescendant={matches[selected] ? `${id}-${selected}` : undefined}
         aria-label={t('search')} placeholder={t('search')} value={query}
@@ -38,14 +38,14 @@ export function CaptainSearchPalette({ players, onClose }: { players: CaptainFra
             const link = event.currentTarget.closest('dialog')?.querySelector<HTMLAnchorElement>(`[data-result="${selected}"]`);
             link?.click();
           }
-        }} className="min-h-12 min-w-0 flex-1 rounded-control border border-line bg-bg px-3 text-sm" />
+        }} className="min-h-12 min-w-0 flex-1 rounded-control border border-line bg-bg px-stack text-sm" />
       <button type="button" onClick={onClose} aria-label={t('close')} className="flex min-h-12 min-w-12 items-center justify-center"><X className="size-5" aria-hidden /></button>
     </div>
-    {players === null && <p role="status" className="p-3 text-sm text-muted">{t('unavailable')}</p>}
-    <div id={id} role="listbox" aria-label={t('search')} className="mt-2 space-y-1">{matches.length ? matches.map((item, index) => <Link key={item.href} href={item.href}
+    {players === null && <p role="status" className="p-stack text-sm text-muted">{t('unavailable')}</p>}
+    <div id={id} role="listbox" aria-label={t('search')} className="mt-inline space-y-inline">{matches.length ? matches.map((item, index) => <Link key={item.href} href={item.href}
       id={`${id}-${index}`} role="option" aria-selected={selected === index} data-result={index} onClick={onClose} onFocus={() => setSelected(index)}
-      className={buttonClass({ variant: 'secondary', block: false, className: `flex min-h-12 items-center gap-3 px-3 text-sm ${selected === index ? "text-lime" : "text-ink"} ` })}>
+      className={buttonClass({ variant: 'secondary', block: false, className: `flex min-h-12 items-center gap-stack px-stack text-sm ${selected === index ? "text-lime" : "text-ink"} ` })}>
       {item.label}<small className="ms-auto text-faint">{t(item.group)}</small>
-    </Link>) : <p className="p-3 text-sm text-muted">{t('empty')}</p>}</div>
+    </Link>) : <p className="p-stack text-sm text-muted">{t('empty')}</p>}</div>
   </ResponsiveDialog>;
 }

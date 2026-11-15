@@ -78,14 +78,14 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
   const preview = snapshot && today ? v6 && rest && selectedDate === localDate(tomorrowAt, 'UTC')
     ? { day: tomorrow, status: tomorrowRest || tomorrow?.is_rest_day || (weekly && !tomorrow) ? 'rest' as const : 'upcoming' as const }
     : previewFor(snapshot, sessions ?? [], selectedDate, today) : { day: undefined, status: 'rest' as const };
-  const statusHeader = <header className="flex flex-wrap items-center justify-between gap-3">
+  const statusHeader = <header className="flex flex-wrap items-center justify-between gap-stack">
       {now && <Greeting firstName={firstName} now={now} playerId={playerId} snapshot={snapshot} loading={status === 'loading'} />}
       {ranksEnabled() && <RankChip />}
       <SyncPill state={!online ? 'offline' : parked && parked > 0 ? 'attention' : pending === undefined || pending > 0 ? 'pending' : 'synced'} pending={pending}
         onRetry={() => { void retryParked(localDb()).catch(onError); }} />
     </header>;
   return <main data-mood={rest ? 'rest' : undefined} data-tour-ready={Boolean(now && status !== 'loading' && (!snapshot || (sessions && weekSessions)))}
-    className={v6 ? 'mx-auto flex max-w-lg flex-col gap-3 bg-bg px-[18px] pt-[18px] pb-[104px] [font-family:var(--font-alexandria),var(--font-manrope),sans-serif]' : 'mx-auto max-w-lg space-y-4 px-5 pt-6 pb-32'}>
+    className={v6 ? 'mx-auto flex max-w-lg flex-col gap-stack bg-bg px-page-x pt-card pb-[104px] [font-family:var(--font-alexandria),var(--font-manrope),sans-serif]' : 'mx-auto max-w-lg space-y-card-gap px-page-x pt-section pb-32'}>
     {!v6 && statusHeader}
     {failed && (!snapshot || localError) ? <ErrorState message={t('couldntLoadYourProgram')} retryLabel={t('tryAgain')} onRetry={() => {
       setLocalError(false); setRetryKey((value) => value + 1); void retry();
@@ -93,10 +93,10 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
       {v6 && <>
         <V3Home weightKg={weightKg} now={now} today={today} firstName={firstName} playerId={playerId} snapshot={snapshot} day={day}
           rest={rest} sessions={sessions ?? []} weekSessions={weekSessions ?? []} onPreview={date => setSelection({ today, date })} />
-        <p className="mt-6 text-[13px] text-muted">{t('homeMore')}</p>
+        <p className="mt-section text-row text-muted">{t('homeMore')}</p>
         {statusHeader}
       </>}
-      <div hidden={selectedDate !== today} className="space-y-4">
+      <div hidden={selectedDate !== today} className="space-y-card-gap">
       {v6 ? <>
         <NextTaskSlot rest={rest} snapshot={snapshot ?? null} sessions={sessions ?? []} today={today} playerId={playerId}
           retryKey={retryKey} onRetry={() => setRetryKey(value => value + 1)} />

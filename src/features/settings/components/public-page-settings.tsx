@@ -21,7 +21,7 @@ export function PublicPageSettings({ profile, onSave }: { profile: SettingsProfi
   const [pending, setPending] = useState(false), [status, setStatus] = useState<'saved' | 'rollback' | 'invalid' | null>(null);
   const inFlight = useRef(false);
   if (!captainWorkspaceEnabled()) return null;
-  return <form className="glass space-y-6 rounded-card p-6" noValidate onSubmit={async event => {
+  return <form className="glass space-y-section rounded-card p-section" noValidate onSubmit={async event => {
     event.preventDefault();
     if (inFlight.current) return;
     const parsed = publicPageSchema.safeParse(value);
@@ -36,19 +36,19 @@ export function PublicPageSettings({ profile, onSave }: { profile: SettingsProfi
     finally { inFlight.current = false; setPending(false); }
   }}>
     <h2 className="font-display text-xl font-semibold">{t('title')}</h2>
-    <fieldset disabled={pending} className="space-y-6">
+    <fieldset disabled={pending} className="space-y-section">
       <PublicSpecialtyEditor items={value.specialties} onChange={specialties => setValue({ ...value, specialties })} />
       <TextField label={t('years')} type="number" min={0} max={60} step={1} value={value.years_experience ?? ''}
         onChange={event => setValue({ ...value, years_experience: event.target.value === '' ? null : Number(event.target.value) })} />
-      <fieldset><legend className="mb-2">{t('languages')}</legend><div className="flex gap-6">{(['ar', 'en'] as const).map(language =>
-        <label key={language} className="flex min-h-12 items-center gap-3"><input type="checkbox" checked={value.languages.includes(language)}
+      <fieldset><legend className="mb-inline">{t('languages')}</legend><div className="flex gap-section">{(['ar', 'en'] as const).map(language =>
+        <label key={language} className="flex min-h-12 items-center gap-stack"><input type="checkbox" checked={value.languages.includes(language)}
           onChange={event => setValue({ ...value, languages: event.target.checked ? [...value.languages, language] : value.languages.filter(item => item !== language) })} />{t(language)}</label>)}</div></fieldset>
-      <label className="flex min-h-12 items-center gap-3"><input type="checkbox" role="switch" checked={value.show_public_stats}
+      <label className="flex min-h-12 items-center gap-stack"><input type="checkbox" role="switch" checked={value.show_public_stats}
         onChange={event => setValue({ ...value, show_public_stats: event.target.checked })} />{t('stats')}</label>
       <p className="text-sm text-muted">{t('minimum')}</p>
       <Button type="submit" variant="secondary" disabled={pending}>{t(pending ? 'saving' : 'save')}</Button>
     </fieldset>
-    <div className="flex flex-wrap gap-6">
+    <div className="flex flex-wrap gap-section">
       <Link href="/captain/billing/packages" className="inline-flex min-h-12 items-center text-lime">{t('packages')}</Link>
       {profile.public_slug ? <Link href={`/c/${profile.public_slug}`} target="_blank" className="inline-flex min-h-12 items-center text-lime">{t('preview')}</Link>
         : <p className="text-sm text-muted">{t('noSlug')}</p>}

@@ -28,7 +28,7 @@ export function ThemedSelect({ label, value, options, onChange, disabled = false
   }, []);
   return <span className="inline-block max-w-full">
     <Button ref={trigger} type="button" aria-label={label} disabled={disabled} popoverTarget={id} onClick={position}
-      variant={'secondary'} block={false} className={"flex min-h-12 max-w-full cursor-pointer items-center gap-2 px-[14px] text-sm text-ink disabled:cursor-default disabled:opacity-50"}>
+      variant={'secondary'} block={false} className={"flex min-h-12 max-w-full cursor-pointer items-center gap-inline px-card text-sm text-ink disabled:cursor-default disabled:opacity-50"}>
       <span className="truncate">{options.find(o => o.value === value)?.label ?? label}</span><ChevronDown aria-hidden className="size-3 shrink-0 text-faint" />
     </Button>
     {!disabled && <div ref={list} id={id} popover="auto" role="radiogroup" aria-label={label}
@@ -39,8 +39,8 @@ export function ThemedSelect({ label, value, options, onChange, disabled = false
         (list.current?.querySelector<HTMLInputElement>('input:checked') ?? list.current?.querySelector<HTMLInputElement>('input'))?.focus();
       } }}
       onKeyDown={event => { if (event.key === 'Escape') trigger.current?.focus(); }}
-      className="fixed m-0 overflow-auto rounded-control border border-line bg-surface p-1 shadow-lg" style={{ inset: 'auto' }}>
-      {options.map(o => <label key={o.value} className={`flex min-h-12 cursor-pointer items-center gap-2 rounded-control px-3 text-sm ${value === o.value ? 'bg-lime-soft text-lime' : 'text-ink'}`}>
+      className="fixed m-0 overflow-auto rounded-control border border-line bg-surface p-inline shadow-lg" style={{ inset: 'auto' }}>
+      {options.map(o => <label key={o.value} className={`flex min-h-12 cursor-pointer items-center gap-inline rounded-control px-stack text-sm ${value === o.value ? 'bg-lime-soft text-lime' : 'text-ink'}`}>
         <input type="radio" name={id} value={o.value} checked={o.value === value} className={captainWorkspaceEnabled() ? `${editableFieldClass} accent-lime` : "accent-lime"}
           onChange={e => { onChange(e.target.value); list.current?.hidePopover(); trigger.current?.focus(); }} />{o.label}
       </label>)}

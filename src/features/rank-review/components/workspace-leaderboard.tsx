@@ -22,14 +22,14 @@ export function WorkspaceLeaderboard({ locale, board }: ComponentProps<typeof Le
   const t = createT(messages, locale);
   const [allTime, setAllTime] = useState(false);
   const rows = board.rows && rankingRows(board.rows, allTime);
-  return <div className="space-y-4 pb-5">
+  return <div className="space-y-card-gap pb-card">
     <PageBarTitle title={t('workspaceTitle')} />
     <PageBarActions>
-      <div className="hidden items-center gap-1 rounded-full border border-line bg-surface p-[3px] min-[760px]:flex">
+      <div className="hidden items-center gap-inline rounded-full border border-line bg-surface p-inline min-[760px]:flex">
         {(['thisMonth', 'allTime'] as const).map((key, index) => <button key={key} type="button"
           aria-pressed={allTime === Boolean(index)}
           onClick={() => { setAllTime(Boolean(index)); if (board.now) board.setMonth(currentMonth(board.now)); }}
-          className={`${clickableClass} min-h-12 rounded-full px-3 text-xs font-bold ${allTime === Boolean(index) ? 'glass-strong text-ink' : 'text-muted'}`}>
+          className={`${clickableClass} min-h-12 rounded-full px-stack text-xs font-bold ${allTime === Boolean(index) ? 'glass-strong text-ink' : 'text-muted'}`}>
           {t(key)}
         </button>)}
       </div>

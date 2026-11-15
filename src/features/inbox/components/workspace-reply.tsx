@@ -53,19 +53,19 @@ export function WorkspaceReply({ item, reply, onDraft, onSend, onDirty, blocked 
     } catch (failure) { setError(failure instanceof Error ? failure.message : t('failed')); }
     finally { locked.current = false; setPending(false); }
   }
-  return <form className="space-y-3 border-t border-line px-5 py-4" onSubmit={event => { event.preventDefault(); void send(true); }}>
-    <div className="flex flex-wrap gap-2">{suggestions.map(text => <button key={text} type="button" disabled={pending}
-      onClick={() => onDraft(text.replace(/^\+ /, ''))} className={`${clickableClass} min-h-12 rounded-full bg-surface-raised px-3 text-[12.5px] text-muted`}>{text}</button>)}
+  return <form className="space-y-stack border-t border-line px-page-x py-page-y" onSubmit={event => { event.preventDefault(); void send(true); }}>
+    <div className="flex flex-wrap gap-inline">{suggestions.map(text => <button key={text} type="button" disabled={pending}
+      onClick={() => onDraft(text.replace(/^\+ /, ''))} className={`${clickableClass} min-h-12 rounded-full bg-surface-raised px-stack text-xs text-muted`}>{text}</button>)}
     </div>
     {voice && <fieldset disabled={pending || Boolean(uploaded)}><VoiceRecorder playerId={item.player_id} recorder={recorder} /></fieldset>}
     <label className="block"><span className="sr-only">{t('placeholder')}</span><textarea value={reply} onChange={event => onDraft(event.target.value)}
-      placeholder={t('placeholder')} maxLength={1000} disabled={pending} className={`${editableFieldClass} min-h-[76px] w-full rounded-2xl border border-line bg-surface px-3.5 py-3 text-start text-sm placeholder:text-faint`} /></label>
+      placeholder={t('placeholder')} maxLength={1000} disabled={pending} className={`${editableFieldClass} min-h-[76px] w-full rounded-2xl border border-line bg-surface px-card py-stack text-start text-sm placeholder:text-faint`} /></label>
     {error && <p role="alert" className="text-sm text-danger">{error}</p>}
-    <div className="flex flex-wrap items-center gap-2.5">
+    <div className="flex flex-wrap items-center gap-stack">
       <Button type="button" disabled={pending || recording} aria-label={t('voice')} aria-expanded={voice} onClick={() => setVoice(value => !value)} variant={'secondary'} block={false} className={"grid min-h-12 min-w-12 place-items-center text-muted"}><MicIcon className="size-5" strokeWidth={1.5} aria-hidden /></Button>
       <span className="me-auto text-xs text-faint">{t('voice')}</span>
-      <Button type="button" disabled={pending || recording || blocked} onClick={() => { void send(true, true); }} variant={'secondary'} block={false} className={"min-h-12 px-3.5 text-[12.5px] disabled:opacity-50"}>{t('noReply')}</Button>
-      <Button disabled={pending || recording || blocked} type="submit" variant={'primary'} block={false} className={"min-h-12 px-5 font-semibold disabled:opacity-50"}>{t(pending ? 'sending' : 'sendNext')}</Button>
+      <Button type="button" disabled={pending || recording || blocked} onClick={() => { void send(true, true); }} variant={'secondary'} block={false} className={"min-h-12 px-card text-xs disabled:opacity-50"}>{t('noReply')}</Button>
+      <Button disabled={pending || recording || blocked} type="submit" variant={'primary'} block={false} className={"min-h-12 px-page-x font-semibold disabled:opacity-50"}>{t(pending ? 'sending' : 'sendNext')}</Button>
     </div>
   </form>;
 }

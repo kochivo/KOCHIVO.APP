@@ -9,10 +9,10 @@ import { TIERS } from '../tiers';
 export function RankJourney({ lifetime }: { lifetime: number }) {
   const t = useT(messages);
   const locale = useLocale();
-  return <section className="glass space-y-4 rounded-card p-4">
+  return <section className="glass space-y-card-gap rounded-card p-card">
     <h2 className="font-bold">{t('journey')}</h2>
-    <ol className="grid grid-cols-4 gap-2">
-      {TIERS.map(({ tier, threshold }) => <li key={tier} className="flex flex-col items-center gap-2 text-center text-xs">
+    <ol className="grid grid-cols-4 gap-inline">
+      {TIERS.map(({ tier, threshold }) => <li key={tier} className="flex flex-col items-center gap-inline text-center text-xs">
         <RankBadge tier={tier} size="md" locked={lifetime < threshold} label={t(tier)} />
         <span>{t(tier)}</span><span className="text-muted">{t('points', { n: formatNumber(threshold, locale) })}</span>
       </li>)}

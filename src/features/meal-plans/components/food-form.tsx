@@ -83,22 +83,22 @@ export function FoodForm({ food, copyFrom, initialName = '', onSaved, onCancel, 
   const check = checkMacros(macros);
   const macroLabels = { kcal: 'calories', protein: 'protein', carbs: 'carbs2', fat: 'fat2' } as const;
   const photo = preview || (food?.photo ? foodPhotoUrl(food.photo) : null);
-  const inputClass = 'min-h-12 w-full min-w-0 rounded-control border border-line bg-surface px-3';
-  return <form onSubmit={event => void submit(event)} className="grid gap-4 text-ink" aria-busy={busy}>
-    <header className={workspace ? 'glass flex flex-wrap items-center gap-3 rounded-card p-3' : 'glass flex flex-wrap items-center gap-3 rounded-card p-4'}>
+  const inputClass = 'min-h-12 w-full min-w-0 rounded-control border border-line bg-surface px-stack';
+  return <form onSubmit={event => void submit(event)} className="grid gap-card-gap text-ink" aria-busy={busy}>
+    <header className={workspace ? 'glass flex flex-wrap items-center gap-stack rounded-card p-stack' : 'glass flex flex-wrap items-center gap-stack rounded-card p-card'}>
       {workspace && <Button variant="secondary" type="button" disabled={busy} aria-label={t('cancel')} onClick={() => onCancel ? onCancel() : router.replace(destination)}><KoSend aria-hidden className="size-4 rotate-45 ltr:rotate-225" /></Button>}
-      <div className="me-auto min-w-0"><h1 className={workspace ? 'text-[15px] font-bold' : 'font-display text-2xl font-bold'}>{id ? planT('editFood') : t('title')}</h1><p className={workspace ? 'text-xs text-muted' : 'text-sm text-muted'}>{t('subtitle')}</p></div>
+      <div className="me-auto min-w-0"><h1 className={workspace ? 'text-md font-bold' : 'font-display text-2xl font-bold'}>{id ? planT('editFood') : t('title')}</h1><p className={workspace ? 'text-xs text-muted' : 'text-sm text-muted'}>{t('subtitle')}</p></div>
       <Button className={workspace ? 'hidden min-[761px]:inline-flex' : undefined} variant="secondary" type="button" disabled={busy} onClick={() => onCancel ? onCancel() : router.replace(destination)}>{t('cancel')}</Button>
       <Button type="submit" disabled={busy}><KoSend aria-hidden className="size-5" />{busy ? planT('saving') : t('save')}</Button>
     </header>
     {error && <p role="alert" className="text-danger">{error}</p>}
     {busy && <p role="status">{planT('saving')}</p>}
-    <div className={workspace ? 'grid items-start gap-3 min-[761px]:grid-cols-[minmax(0,1fr)_minmax(260px,320px)]' : 'grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_320px]'}>
-      <fieldset disabled={busy} className={workspace ? 'grid min-w-0 gap-3' : 'grid min-w-0 gap-4'}>
-        <section className={workspace ? 'glass grid gap-3 rounded-card p-[18px]' : 'glass grid gap-4 rounded-card p-5'}>
+    <div className={workspace ? 'grid items-start gap-stack min-[761px]:grid-cols-[minmax(0,1fr)_minmax(260px,320px)]' : 'grid items-start gap-card-gap lg:grid-cols-[minmax(0,1fr)_320px]'}>
+      <fieldset disabled={busy} className={workspace ? 'grid min-w-0 gap-stack' : 'grid min-w-0 gap-card-gap'}>
+        <section className={workspace ? 'glass grid gap-stack rounded-card p-card' : 'glass grid gap-card-gap rounded-card p-card'}>
           <h2 className="font-bold">{t('identity')}</h2>
-          <div className="grid grid-cols-[96px_minmax(0,1fr)] gap-3 sm:grid-cols-[128px_minmax(0,1fr)]">
-            <label className="flex min-h-12 cursor-pointer flex-col items-center justify-center gap-2 overflow-hidden rounded-control border border-dashed border-line p-2 text-center text-sm text-muted focus-within:ring-2 focus-within:ring-lime">
+          <div className="grid grid-cols-[96px_minmax(0,1fr)] gap-stack sm:grid-cols-[128px_minmax(0,1fr)]">
+            <label className="flex min-h-12 cursor-pointer flex-col items-center justify-center gap-inline overflow-hidden rounded-control border border-dashed border-line p-inline text-center text-sm text-muted focus-within:ring-2 focus-within:ring-lime">
               {/* This preview uses the existing public bucket or a local object URL. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               {photo ? <img src={photo} alt={name} width={128} height={128} className="size-24 rounded-control object-cover" /> : <KoCamera aria-hidden className="size-8" />}
@@ -107,22 +107,22 @@ export function FoodForm({ food, copyFrom, initialName = '', onSaved, onCancel, 
                 setFile(next); setPreview(next ? URL.createObjectURL(next) : '');
               }} />
             </label>
-            <div className="grid gap-3">
-              <label className="grid gap-1 text-sm">{t('nameAr')}<input className={captainWorkspaceEnabled() ? `${editableFieldClass} ${inputClass}` : inputClass} required maxLength={60} value={name} onChange={event => setName(event.target.value)} /></label>
-              <label className="grid gap-1 text-sm">{t('nameEn')}<input className={captainWorkspaceEnabled() ? `${editableFieldClass} ${inputClass}` : inputClass} dir="ltr" maxLength={100} value={nameEn} onChange={event => setNameEn(event.target.value)} /></label>
+            <div className="grid gap-stack">
+              <label className="grid gap-inline text-sm">{t('nameAr')}<input className={captainWorkspaceEnabled() ? `${editableFieldClass} ${inputClass}` : inputClass} required maxLength={60} value={name} onChange={event => setName(event.target.value)} /></label>
+              <label className="grid gap-inline text-sm">{t('nameEn')}<input className={captainWorkspaceEnabled() ? `${editableFieldClass} ${inputClass}` : inputClass} dir="ltr" maxLength={100} value={nameEn} onChange={event => setNameEn(event.target.value)} /></label>
             </div>
           </div>
         </section>
-        <section className={workspace ? 'glass grid gap-3 rounded-card p-[18px]' : 'glass grid gap-4 rounded-card p-5'}>
-          <div className="flex flex-wrap justify-between gap-2"><h2 className="font-bold">{t('nutrition')}</h2><p className="text-sm text-muted">{t('per100')}</p></div>
-          <div className={workspace ? 'grid grid-cols-2 gap-3 sm:grid-cols-4' : 'glass-strong grid grid-cols-2 gap-3 rounded-control p-3 sm:grid-cols-4'}>
-            {(['kcal', 'protein', 'carbs', 'fat'] as const).map(key => <label className="grid min-w-0 gap-1 text-sm" key={key}>
+        <section className={workspace ? 'glass grid gap-stack rounded-card p-card' : 'glass grid gap-card-gap rounded-card p-card'}>
+          <div className="flex flex-wrap justify-between gap-inline"><h2 className="font-bold">{t('nutrition')}</h2><p className="text-sm text-muted">{t('per100')}</p></div>
+          <div className={workspace ? 'grid grid-cols-2 gap-stack sm:grid-cols-4' : 'glass-strong grid grid-cols-2 gap-stack rounded-control p-stack sm:grid-cols-4'}>
+            {(['kcal', 'protein', 'carbs', 'fat'] as const).map(key => <label className="grid min-w-0 gap-inline text-sm" key={key}>
               {planT(macroLabels[key])}
               <input className={captainWorkspaceEnabled() ? `${editableFieldClass} ${inputClass}` : inputClass} required type="number" min={0} max={key === 'kcal' ? 900 : 100} step="0.1" value={macros[key]}
                 onChange={event => setMacros({ ...macros, [key]: Number(event.target.value) })} />
             </label>)}
           </div>
-          <p role="status" className={`rounded-control p-3 text-sm ${check.warn ? 'bg-warn/10 text-warn' : 'bg-lime/10 text-lime'}`}>
+          <p role="status" className={`rounded-control p-stack text-sm ${check.warn ? 'bg-warn/10 text-warn' : 'bg-lime/10 text-lime'}`}>
             {check.warn ? t('warn', { calculated: Math.round(check.calculated), kcal: macros.kcal }) : t('ok')}
           </p>
         </section>

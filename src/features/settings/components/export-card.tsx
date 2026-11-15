@@ -28,7 +28,7 @@ export function ExportCard() {
     } catch { setMessage(t('downloadFailedTryAgain')); }
     finally { setPending(false); }
   }
-  return <section className="glass space-y-4 rounded-card p-6">
+  return <section className="glass space-y-card-gap rounded-card p-section">
     <h2 className="text-lg font-bold">{t('downloadYourData')}</h2>
     <p className="text-sm text-muted">{t('oneFileWithYourDataPhotos')}</p>
     <Button variant="secondary" className="min-h-12" disabled={pending} onClick={() => void download()}>

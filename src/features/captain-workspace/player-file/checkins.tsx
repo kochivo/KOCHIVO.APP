@@ -7,7 +7,7 @@ import { Disclosure } from '@/ui/disclosure';
 
 export function PlayerCheckins({ playerId, profile, today, locale }: { playerId: string; profile: Profile; today: string; locale: Locale }) {
   const t = createT(messages, locale);
-  return <div className="space-y-[18px]">
+  return <div className="space-y-card-gap">
     <ProfileSection playerId={playerId} profile={profile} today={today} tab="checkins" />
     <Disclosure id="analysis" label={t('analysis')} className="glass rounded-card border-line-soft">
       <ProfileSection playerId={playerId} profile={profile} today={today} tab="analysis" />

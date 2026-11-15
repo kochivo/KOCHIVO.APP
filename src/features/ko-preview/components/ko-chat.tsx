@@ -124,12 +124,12 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
 
   const recording = recorder.status === 'recording';
   return <div data-ko-chat>
-    {account && context && <div className="flex items-center gap-2 border-b border-line px-4 text-sm text-muted">
+    {account && context && <div className="flex items-center gap-inline border-b border-line px-page-x text-sm text-muted">
       <span>{t(`context.${context.screen}`)}</span>
       {captainWorkspaceEnabled() ? <IconButton type="button" aria-label={t('context.remove')} onClick={() => setDropped(true)} className="grid min-h-12 min-w-12 place-items-center"><X aria-hidden className="size-4" /></IconButton> : <button type="button" aria-label={t('context.remove')} onClick={() => setDropped(true)} className="grid min-h-12 min-w-12 place-items-center"><X aria-hidden className="size-4" /></button>}
     </div>}
     {showFeed && <KoFeed avatar={value => <KoAvatar expression={value} className="size-10" />} />}
-    <div ref={log} role="log" aria-label={t(account ? 'accountChatTitle' : 'chatTitle')} className="flex max-h-60 min-h-32 flex-col gap-3 overflow-y-auto p-4 text-sm">
+    <div ref={log} role="log" aria-label={t(account ? 'accountChatTitle' : 'chatTitle')} className="flex max-h-60 min-h-32 flex-col gap-stack overflow-y-auto p-card text-sm">
       <KoMessage speaker="ko" text={t(account
         ? role === 'captain' ? 'accountCaptain' : 'accountPlayer'
         : role === 'captain' ? 'chatCaptain' : 'chatPlayer')} />
@@ -139,15 +139,15 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
         onCancel={() => { approval.clear(); setApproval(null); setHistory(entries => [...entries, { speaker: 'ko' as const, text: t('confirmCancelled') }].slice(-30)); }} />}
       {busy && <KoTyping />}
     </div>
-    {suggestionsFor(role, context, sent).length > 0 && <div className="flex flex-wrap gap-2 px-4 pb-3" role="group" aria-label={t('suggestions')}>
+    {suggestionsFor(role, context, sent).length > 0 && <div className="flex flex-wrap gap-inline px-page-x pb-stack" role="group" aria-label={t('suggestions')}>
       {suggestionsFor(role, context, sent).map(key => <Button key={key} type="button" disabled={busy || recorder.status !== 'idle' || (key === 'suggest.player' && !contextName)}
-        variant={'secondary'} block={false} className={"min-h-12 rounded-chip px-3 text-start text-sm text-lime-ink disabled:opacity-50"}
+        variant={'secondary'} block={false} className={"min-h-12 rounded-chip px-stack text-start text-sm text-lime-ink disabled:opacity-50"}
         onClick={() => {
           if (key === 'suggest.today') { setShowFeed(account); setSent(true); return; }
           void submit(undefined, t(key, { name: contextName }));
         }}>{t(key, { name: contextName || t('context.player') })}</Button>)}
     </div>}
-    <form onSubmit={submit} className="border-t border-line p-3">
+    <form onSubmit={submit} className="border-t border-line p-stack">
       {account && role === 'player' && <input ref={camera} type="file" className="hidden" accept="image/jpeg,image/png,image/webp"
         onChange={event => {
           const file = event.target.files?.[0];
@@ -157,19 +157,19 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
           setError('');
           setPhoto(file);
         }} />}
-      {photo && <div className="mb-2 flex items-center justify-between gap-2 rounded-control border border-line ps-3 text-sm">
+      {photo && <div className="mb-inline flex items-center justify-between gap-inline rounded-control border border-line ps-stack text-sm">
         <span>{t('photoReady')}</span>
         {captainWorkspaceEnabled() ? <IconButton type="button" disabled={busy} aria-label={t('discardPhoto')} onClick={() => setPhoto(null)}
           className="border border-danger/40 text-danger! grid min-h-12 min-w-12 place-items-center text-ink"><X aria-hidden className="size-4" /></IconButton> : <button type="button" disabled={busy} aria-label={t('discardPhoto')} onClick={() => setPhoto(null)}
           className="grid min-h-12 min-w-12 place-items-center text-muted"><X aria-hidden className="size-4" /></button>}
       </div>}
-      <div className="flex items-center gap-2">
-        {clip ? <div className="flex min-w-0 flex-1 items-center justify-between gap-2 rounded-control bg-bg ps-3 text-sm">
+      <div className="flex items-center gap-inline">
+        {clip ? <div className="flex min-w-0 flex-1 items-center justify-between gap-inline rounded-control bg-bg ps-stack text-sm">
           <span>{t('voiceReady')}</span>
           {captainWorkspaceEnabled() ? <IconButton type="button" disabled={busy} aria-label={t('discardVoice')} onClick={() => setClip(null)} className="border border-danger/40 text-danger! grid min-h-12 min-w-12 place-items-center text-ink"><X aria-hidden className="size-4" /></IconButton> : <button type="button" disabled={busy} aria-label={t('discardVoice')} onClick={() => setClip(null)} className="grid min-h-12 min-w-12 place-items-center text-muted"><X aria-hidden className="size-4" /></button>}
         </div> : <input dir="auto" value={draft} maxLength={koMaxText} onChange={event => setDraft(event.target.value)}
           aria-label={t('chatInput')} placeholder={t(recording ? 'voiceRecording' : 'chatInput')} disabled={busy || recorder.status !== 'idle'}
-          className="min-h-12 min-w-0 flex-1 rounded-full border border-line bg-bg px-4 text-base outline-offset-2 placeholder:text-muted" />}
+          className="min-h-12 min-w-0 flex-1 rounded-full border border-line bg-bg px-page-x text-base outline-offset-2 placeholder:text-muted" />}
         {account && role === 'player' && !clip && !photo && <Button type="button" disabled={busy || recorder.status !== 'idle'}
           aria-label={t('mealPhoto')} onClick={() => camera.current?.click()}
           variant={'secondary'} block={false} className={"grid min-h-12 min-w-12 place-items-center text-lime-ink disabled:opacity-50"}><Camera aria-hidden className="size-5" /></Button>}
@@ -182,8 +182,8 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
         <Button type="submit" aria-label={t('chatSend')} disabled={busy || recorder.status !== 'idle' || (!clip && !photo && !draft.trim())}
           variant={(captainWorkspaceEnabled()) ? 'secondary' : (approval) ? 'secondary' : 'primary'} block={false} className={`grid min-h-12 min-w-12 place-items-center disabled:opacity-50 ${captainWorkspaceEnabled() ? "text-muted" : approval ? "text-muted" : ""} `}><ArrowUp aria-hidden className="size-5" /></Button>
       </div>
-      {error && <p role="alert" className="mt-2 text-xs text-muted">{error}</p>}
-      <p className="mt-2 text-xs text-muted">{t(account ? 'accountPrivacy' : 'chatPrivacy')}</p>
+      {error && <p role="alert" className="mt-inline text-xs text-muted">{error}</p>}
+      <p className="mt-inline text-xs text-muted">{t(account ? 'accountPrivacy' : 'chatPrivacy')}</p>
     </form>
   </div>;
 }

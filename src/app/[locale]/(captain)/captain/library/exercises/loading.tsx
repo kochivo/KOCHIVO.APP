@@ -1,2 +1,2 @@
 import { LoadingState } from '@/ui/loading-state';
-export default function Loading() { return <LoadingState variant="cards" className="p-4" />; }
+export default function Loading() { return <LoadingState variant="cards" className="p-card" />; }

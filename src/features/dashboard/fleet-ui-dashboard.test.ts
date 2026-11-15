@@ -45,7 +45,7 @@ it.each(['ar', 'en'] as const)('renders fleet counts and recovery actions in %s'
       expect(steps[0]).toContain(locale === 'en' ? 'Add your first player' : 'ضيف أول لاعب ليك');
       expect(steps[1]).toContain(locale === 'en' ? 'Choose a program' : 'اختار له برنامج');
       expect(steps[2]).toContain(locale === 'en' ? 'Set a meal plan' : 'حدد خطة الأكل');
-      expect(html).toMatch(/<div class="min-w-0 space-y-6"><section>Link slot<\/section><section>Requests slot<\/section><\/div>/);
+      expect(html).toMatch(/<div class="min-w-0 space-y-section"><section>Link slot<\/section><section>Requests slot<\/section><\/div>/);
     }
     else {
       expect(html).not.toContain('Link slot');
@@ -53,8 +53,8 @@ it.each(['ar', 'en'] as const)('renders fleet counts and recovery actions in %s'
       expect(html).toMatch(new RegExp(`text-4xl[^>]*>${count}</p>`));
       expect(html).toContain('lg:grid-cols-4');
       expect(html).toContain('lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]');
-      expect(html).toContain('min-w-0 space-y-6');
-      expect(html).toContain('min-w-0 space-y-4 p-5');
+      expect(html).toContain('min-w-0 space-y-section');
+      expect(html).toContain('min-w-0 space-y-card-gap p-card');
     }
   }
 });

@@ -52,15 +52,15 @@ export async function WorkspaceHome({ data, now = new Date() }: {
   const training = trainingToday(players, summary.sessions, now, timezone);
   return <section data-tour-ready="true">
     {header}
-    <div className="space-y-3">
+    <div className="space-y-stack">
       <HomeHero tasks={tasks} count={count} completed={summary.completedTasks} />
       <HomeTiles adherence={summary.adherence} previous={summary.previousAdherence} trained={training.trained} active={training.active}
         pending={count} paid={summary.paid} progress={taskProgress(summary.completedTasks, count)} />
       <MoneyOwedEntry mode="home" />
       {!contacts && <WorkspaceError />}
-      <div className="grid items-start gap-3 min-[1000px]:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+      <div className="grid items-start gap-stack min-[1000px]:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
         <HomeTaskList tasks={tasks} count={count} contacts={contacts ?? new Map()} />
-        <div className="min-w-0 space-y-3"><HomeWeekChart sessions={summary.sessions.filter(session => players.some(player => player.playerId === session.playerId))} today={today} />
+        <div className="min-w-0 space-y-stack"><HomeWeekChart sessions={summary.sessions.filter(session => players.some(player => player.playerId === session.playerId))} today={today} />
           <HomeConfirmations requests={followup.requests} payments={renewals?.data ?? []} paymentsFailed={!renewals || Boolean(renewals.error)} /></div>
       </div>
     </div>

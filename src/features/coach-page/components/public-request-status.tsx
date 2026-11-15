@@ -4,8 +4,8 @@ import type { PublicT } from './public-types';
 import { buttonClass } from '@/ui/button';
 
 export function PublicRequestStatus({ requested, t }: { requested: CoachRequestStatus; t: PublicT }) {
-  return <div role="status" className="glass-strong space-y-4 rounded-card p-6">
+  return <div role="status" className="glass-strong space-y-card-gap rounded-card p-section">
     <p>{t(requested)}</p>
-    {requested === 'member' && <Link href="/player" className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-6" })}>{t('openApp')}</Link>}
+    {requested === 'member' && <Link href="/player" className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-page-x" })}>{t('openApp')}</Link>}
   </div>;
 }

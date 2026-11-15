@@ -31,13 +31,13 @@ export function FoodPreview({ name, nameEn, macros, units, photo }: {
     <div className="flex h-2 overflow-hidden rounded-full bg-surface" role="img" aria-label={planT('servingMacros')}>
       {energies.map((value, index) => <span key={labels[index]} className={colors[index]} style={{ width: `${total ? value / total * 100 : 0}%` }} />)}
     </div>
-    <dl className="grid grid-cols-2 gap-3">{(['kcal', 'protein', 'carbs', 'fat'] as const).map(key => <div key={key}>
+    <dl className="grid grid-cols-2 gap-stack">{(['kcal', 'protein', 'carbs', 'fat'] as const).map(key => <div key={key}>
       <dt className="text-sm text-muted">{planT(macroLabels[key])}</dt>
       <dd className="font-display text-2xl tabular-nums">{Math.round(portions[key] * 10) / 10}</dd>
     </div>)}</dl>
   </>;
-  return <aside className={workspace ? 'glass grid gap-3 self-start rounded-card p-[18px] min-[761px]:sticky min-[761px]:top-3' : 'glass-strong grid gap-4 self-start rounded-card p-5 lg:sticky lg:top-5'}>
+  return <aside className={workspace ? 'glass grid gap-stack self-start rounded-card p-card min-[761px]:sticky min-[761px]:top-3' : 'glass-strong grid gap-card-gap self-start rounded-card p-card lg:sticky lg:top-5'}>
     <h2 className="font-bold">{t('preview')}</h2>
-    {workspace ? <div className="glass-strong grid gap-3 rounded-control p-4">{content}</div> : content}
+    {workspace ? <div className="glass-strong grid gap-stack rounded-control p-card">{content}</div> : content}
   </aside>;
 }

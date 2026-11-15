@@ -19,14 +19,14 @@ export function RepsSheet({ row, openerId, onClose, onUpdate }: {
   const change = (minimum: number, maximum: number) => onUpdate(clampReps(mode, minimum, maximum));
   return <ResponsiveDialog modal fallbackId={openerId} openerId={openerId} onDismiss={onClose}
     aria-label={t('reps')} dir={locale === 'ar' ? 'rtl' : 'ltr'}
-    className="sheet fixed inset-0 z-50 m-auto w-[calc(100%-2rem)] max-w-md space-y-4 rounded-card p-5 text-ink backdrop:bg-bg-deep/80">
-    <div className="flex items-center justify-between gap-3"><h2>{t('reps')}</h2>
+    className="sheet fixed inset-0 z-50 m-auto w-[calc(100%-2rem)] max-w-md space-y-card-gap rounded-card p-card text-ink backdrop:bg-bg-deep/80">
+    <div className="flex items-center justify-between gap-stack"><h2>{t('reps')}</h2>
       <Button variant="secondary" onClick={onClose}>{t('closeEditor')}</Button></div>
-    <div className="flex flex-wrap gap-2" role="group" aria-label={t('reps')}>
+    <div className="flex flex-wrap gap-inline" role="group" aria-label={t('reps')}>
       {(['fixed', 'range', 'failure'] as const).map(value => <Chip key={value} pressed={mode === value}
         onClick={() => { setMode(value); onUpdate(clampReps(value, row.reps_min, row.reps_max ?? row.reps_min)); }}>{t(value)}</Chip>)}
     </div>
-    {mode === 'failure' ? <p className="text-muted">{t('failure')}</p> : <div className="space-y-3">
+    {mode === 'failure' ? <p className="text-muted">{t('failure')}</p> : <div className="space-y-stack">
       <Stepper label={t(mode === 'fixed' ? 'reps' : 'from')} value={row.reps_min} min={1} max={100} step={1} format={format}
         onChange={value => change(value, row.reps_max ?? value)} />
       {mode === 'range' && <Stepper label={t('upTo')} value={row.reps_max ?? row.reps_min} min={row.reps_min} max={100} step={1} format={format}

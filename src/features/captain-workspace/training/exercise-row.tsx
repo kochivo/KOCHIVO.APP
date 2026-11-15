@@ -35,33 +35,33 @@ export function TrainingExerciseRow({ row, onPatch, onRemove, onMove, onLink, fi
   const name = row.library?.name_ar || row.library?.name_en || wt('exerciseUnavailable');
   const reps = row.set_plan ? planLabel(row.set_plan) : row.reps_max === null ? t('failure') : row.reps_min === row.reps_max ? String(row.reps_min) : `${row.reps_min}–${row.reps_max}`;
   const rest = `${Math.floor(row.rest_seconds / 60)}:${String(row.rest_seconds % 60).padStart(2, '0')}`;
-  return <li style={style} className={`border-t border-line-soft ${row.superset_group !== null ? 'mx-[18px] border-s-[3px] border-s-lime' : ''}`}>
-    {groupStart && <p className="px-[18px] pt-2 text-[11px] text-lime">{t('superset')}</p>}
-    <div className={`flex items-center gap-2 px-[18px] ${open ? 'bg-surface/30' : ''}`}>
+  return <li style={style} className={`border-t border-line-soft ${row.superset_group !== null ? 'mx-card-gap border-s-[3px] border-s-lime' : ''}`}>
+    {groupStart && <p className="px-page-x pt-inline text-micro text-lime">{t('superset')}</p>}
+    <div className={`flex items-center gap-inline px-page-x ${open ? 'bg-surface/30' : ''}`}>
         <Button {...dragProps} aria-label={tt('reorder', { name })} type="submit" variant={'secondary'} block={false} className={"hidden min-h-12 min-w-12 touch-none items-center justify-center text-muted min-[761px]:flex"}
         onKeyDown={event => { if (event.key === 'ArrowUp' || event.key === 'ArrowDown') { event.preventDefault(); onMove(event.key === 'ArrowUp' ? -1 : 1); } }}><GripVertical aria-hidden className="size-4" /></Button>
-      <button aria-expanded={open} aria-controls={`exercise-${row.id}`} onClick={() => setOpen(value => !value)} className={`${clickableClass} grid min-h-16 min-w-0 flex-1 grid-cols-[44px_minmax(0,1fr)_24px] items-center gap-3 py-3 text-start min-[761px]:grid-cols-[44px_minmax(0,1fr)_64px_64px_64px_24px]`}>
+      <button aria-expanded={open} aria-controls={`exercise-${row.id}`} onClick={() => setOpen(value => !value)} className={`${clickableClass} grid min-h-16 min-w-0 flex-1 grid-cols-[44px_minmax(0,1fr)_24px] items-center gap-stack py-stack text-start min-[761px]:grid-cols-[44px_minmax(0,1fr)_64px_64px_64px_24px]`}>
         {row.library?.media_path ? <ExerciseImage src={exerciseMediaUrl(row.library.media_path)} alt="" width={44} height={44} className="size-11 rounded-xl border border-line object-cover" /> :
           <span className="glass-strong grid size-11 place-items-center rounded-xl border border-line"><Dumbbell aria-hidden className="size-4 text-faint" /></span>}
-        <span className="min-w-0"><bdi className="block break-words text-sm">{name}</bdi>{row.library?.name_en && row.library.name_en !== name && <bdi className="block text-[11px] text-faint">{row.library.name_en}</bdi>}<small className="block text-[11.5px] text-faint">{exerciseLabel(row.library?.body_part, wt)} · {exerciseLabel(row.library?.equipment, wt)}</small></span>
-        {([['sets', row.sets], ['compactReps', reps], ['restLabel', rest]] as const).map(([key, value]) => <span key={key} className="hidden text-center min-[761px]:block"><small className="block text-[10.5px] text-faint">{t(key)}</small><b dir="ltr" className="block font-display text-base font-extrabold tabular-nums">{value}</b></span>)}
+        <span className="min-w-0"><bdi className="block break-words text-sm">{name}</bdi>{row.library?.name_en && row.library.name_en !== name && <bdi className="block text-micro text-faint">{row.library.name_en}</bdi>}<small className="block text-micro text-faint">{exerciseLabel(row.library?.body_part, wt)} · {exerciseLabel(row.library?.equipment, wt)}</small></span>
+        {([['sets', row.sets], ['compactReps', reps], ['restLabel', rest]] as const).map(([key, value]) => <span key={key} className="hidden text-center min-[761px]:block"><small className="block text-micro text-faint">{t(key)}</small><b dir="ltr" className="block font-display text-base font-extrabold tabular-nums">{value}</b></span>)}
         <DisclosureChevron expanded={open} className="size-4" />
       </button>
     </div>
     {onReplace && <InjuryNote exerciseId={row.exercise_id} injuries={injuries} candidates={candidates} onReplace={onReplace} />}
-    {open && <div id={`exercise-${row.id}`} className="space-y-3 px-[18px] pb-[18px] pt-1">
+    {open && <div id={`exercise-${row.id}`} className="space-y-stack px-page-x pb-card pt-inline">
       <ExerciseFields row={row} onPatch={onPatch} />
-      <textarea aria-label={t('note')} placeholder={t('note')} value={row.notes ?? ''} maxLength={200} rows={2} className={`${editableFieldClass} min-h-12 w-full rounded-control border border-line bg-surface px-3.5 py-3 text-sm text-ink`} onChange={event => onPatch({ notes: event.target.value || null })} />
-      <div className="flex flex-wrap items-center gap-2">
-        {enabled && <Button id={`alternatives-${row.id}`} type="submit" variant={'secondary'} block={false} className={"min-h-12 px-3 text-xs"}
+      <textarea aria-label={t('note')} placeholder={t('note')} value={row.notes ?? ''} maxLength={200} rows={2} className={`${editableFieldClass} min-h-12 w-full rounded-control border border-line bg-surface px-card py-stack text-sm text-ink`} onChange={event => onPatch({ notes: event.target.value || null })} />
+      <div className="flex flex-wrap items-center gap-inline">
+        {enabled && <Button id={`alternatives-${row.id}`} type="submit" variant={'secondary'} block={false} className={"min-h-12 px-stack text-xs"}
           onClick={() => setAlternativesOpen(true)}>{t('alternatives')}{Boolean(row.alternatives?.length) &&
-            <span className="ms-1.5 rounded-full bg-lime-soft px-2 py-1 text-lime">{row.alternatives?.length}</span>}</Button>}
-        <Button disabled={last && row.superset_group === null} type="submit" variant={'secondary'} block={false} className={"min-h-12 px-3 text-xs disabled:opacity-40"} onClick={onLink}>{t(row.superset_group === null ? 'link' : 'unlink')}</Button>
-        {enabled && <button aria-pressed={Boolean(row.set_plan)} className={`${clickableClass} min-h-12 rounded-full border border-line-soft px-3 text-xs`}
+            <span className="ms-inline rounded-full bg-lime-soft px-inline py-inline text-lime">{row.alternatives?.length}</span>}</Button>}
+        <Button disabled={last && row.superset_group === null} type="submit" variant={'secondary'} block={false} className={"min-h-12 px-stack text-xs disabled:opacity-40"} onClick={onLink}>{t(row.superset_group === null ? 'link' : 'unlink')}</Button>
+        {enabled && <button aria-pressed={Boolean(row.set_plan)} className={`${clickableClass} min-h-12 rounded-full border border-line-soft px-stack text-xs`}
           onClick={() => onPatch({ set_plan: row.set_plan ? null : uniformPlan(row) })}>{t('differentSets')}</button>}
         <Button disabled={first} aria-label={tt('moveUp', { name })} type="submit" variant={'secondary'} block={false} className={"grid min-h-12 min-w-12 place-items-center disabled:opacity-40"} onClick={() => onMove(-1)}><ArrowUp aria-hidden className="size-4" /></Button>
         <Button disabled={last} aria-label={tt('moveDown', { name })} type="submit" variant={'secondary'} block={false} className={"grid min-h-12 min-w-12 place-items-center disabled:opacity-40"} onClick={() => onMove(1)}><ArrowDown aria-hidden className="size-4" /></Button>
-        <Button aria-label={tt('remove', { name })} type="submit" variant={'secondary'} block={false} className={"ms-auto min-h-12 px-3 text-xs text-danger"} onClick={onRemove}>{t('remove')}</Button>
+        <Button aria-label={tt('remove', { name })} type="submit" variant={'secondary'} block={false} className={"ms-auto min-h-12 px-stack text-xs text-danger"} onClick={onRemove}>{t('remove')}</Button>
       </div>
     </div>}
     {enabled && alternativesOpen && <AlternativesSheet row={row} onPatch={onPatch} onClose={() => setAlternativesOpen(false)} />}

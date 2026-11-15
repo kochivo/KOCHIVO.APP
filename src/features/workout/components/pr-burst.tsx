@@ -21,12 +21,12 @@ export function PrBurst({ pr, onDismiss }: Props) {
     return () => clearTimeout(timer);
   }, [pr, onDismiss]);
   const format = (value: { weight_kg: number; reps: number }) => t('performance', { value0: formatNumber(value.weight_kg, locale), value1: formatNumber(value.reps, locale) });
-  return <div className="pointer-events-none fixed inset-x-0 top-4 z-50 flex justify-center px-5">
+  return <div className="pointer-events-none fixed inset-x-0 top-4 z-50 flex justify-center px-page-x">
     <div role="status" aria-live="polite" className="glass-strong pointer-events-auto relative rounded-card">
       <Button variant="secondary" type="button" onClick={onDismiss} aria-label={t('dismissNewRecord')}
-        className="min-h-12 flex-col px-6 py-4 text-center">
+        className="min-h-12 flex-col px-page-x py-page-y text-center">
         <span className="block text-xl font-bold text-lime">{t('newRecord')}</span>
-        <span className="flex items-center justify-center gap-1"><bdi>{format(pr.previous)}</bdi><ArrowLeft aria-hidden className="dir-icon size-4" /><bdi className="font-bold">{format(pr.current)}</bdi></span>
+        <span className="flex items-center justify-center gap-inline"><bdi>{format(pr.previous)}</bdi><ArrowLeft aria-hidden className="dir-icon size-4" /><bdi className="font-bold">{format(pr.current)}</bdi></span>
       </Button>
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden motion-reduce:hidden">
         {Array.from({ length: 24 }, (_, index) => <span key={index}

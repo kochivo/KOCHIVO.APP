@@ -13,9 +13,9 @@ export async function PendingIntake({ status }: { status: 'pending' | 'rejected'
   const t = await getT(messages);
   if (error || !profile) return <IntakeLoadError error={error ?? t('loadFailed')} />;
   if (profile.captain_intake !== null) return <CaptainPendingScreen status={status} />;
-  return <main className={captainWorkspaceEnabled() ? 'mx-auto grid min-h-dvh w-full max-w-3xl content-start gap-3 p-4 text-start sm:p-6' : 'flex min-h-dvh items-center justify-center p-6 text-start'}>
-    {captainWorkspaceEnabled() && <header className="glass flex min-h-16 items-center rounded-card px-[18px] py-3"><h1 className="text-[15px] font-bold">{t('title')}</h1></header>}
-    <div className="w-full max-w-2xl space-y-4">
+  return <main className={captainWorkspaceEnabled() ? 'mx-auto grid min-h-dvh w-full max-w-3xl content-start gap-stack p-card text-start sm:p-section' : 'flex min-h-dvh items-center justify-center p-section text-start'}>
+    {captainWorkspaceEnabled() && <header className="glass flex min-h-16 items-center rounded-card px-page-x py-stack"><h1 className="text-md font-bold">{t('title')}</h1></header>}
+    <div className="w-full max-w-2xl space-y-card-gap">
       <IntakeForm fullName={profile.full_name} whatsapp={profile.social.whatsapp} instagram={profile.social.instagram} />
       <SignOutButton variant="danger" className={captainWorkspaceEnabled() ? 'min-h-12 w-full border border-line !bg-surface !text-ink' : 'min-h-12 w-full'} />
     </div>

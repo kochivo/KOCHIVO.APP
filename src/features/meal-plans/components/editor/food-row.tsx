@@ -40,13 +40,13 @@ export function FoodRow({ item, update }: { item: MealItem; update: (change: (dr
   const unitName = unit ? t('unitLabel', { name: locale === 'en' ? unit.name_en : unit.name_ar, grams: formatNumber(unit.grams, locale) }) : t('gramUnit');
   const name = locale === 'en' ? item.food.nameEn || item.food.name : item.food.name;
   const missing = missingNutrition(item.food);
-  return <li data-incomplete={missing} className={`grid grid-cols-[minmax(0,1fr)_minmax(6rem,120px)_auto_48px] items-center gap-2 border-t border-line-soft p-3 text-row @[36rem]:grid-cols-[40px_minmax(8rem,1fr)_minmax(150px,190px)_64px_48px] @[36rem]:gap-3 ${missing ? 'bg-warn/10' : ''}`}>
+  return <li data-incomplete={missing} className={`grid grid-cols-[minmax(0,1fr)_minmax(6rem,120px)_auto_48px] items-center gap-inline border-t border-line-soft p-stack text-row @[36rem]:grid-cols-[40px_minmax(8rem,1fr)_minmax(150px,190px)_64px_48px] @[36rem]:gap-stack ${missing ? 'bg-warn/10' : ''}`}>
     <span className="hidden size-10 overflow-hidden rounded-xl border border-line bg-surface @[36rem]:block">
       {/* Food storage hosts vary by deployment. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       {item.food.photo && <img src={foodPhotoUrl(item.food.photo)} alt="" width={40} height={40} loading="lazy" className="size-10 object-cover" />}
     </span>
-    <div className="min-w-0 break-words">{name}{missing ? <small className="block text-[11.5px] text-warn">{t('missingValues')} · {item.food.custom && <button id={openerId} type="button" className={`${secondaryButtonClass} min-h-12 underline`} onClick={() => setEditing(true)}>{t('complete')}</button>} {t('countHint')}</small>
+    <div className="min-w-0 break-words">{name}{missing ? <small className="block text-micro text-warn">{t('missingValues')} · {item.food.custom && <button id={openerId} type="button" className={`${secondaryButtonClass} min-h-12 underline`} onClick={() => setEditing(true)}>{t('complete')}</button>} {t('countHint')}</small>
       : <small className="block text-xs text-muted">{macroT('macros', { p: formatNumber(macrosFor(item.food, item.grams).protein, locale), c: formatNumber(macrosFor(item.food, item.grams).carbs, locale), f: formatNumber(macrosFor(item.food, item.grams).fat, locale) })}</small>}</div>
     <div className="flex min-h-12 min-w-0 flex-wrap items-center rounded-xl border border-line">
       <input type="number" aria-label={t('quantity', { name })} min={5 / (unit?.grams ?? 1)} max={2000 / (unit?.grams ?? 1)} step="any"
@@ -59,7 +59,7 @@ export function FoodRow({ item, update }: { item: MealItem; update: (change: (dr
             update(draft => setGrams(draft, item.id, grams, planT)); setEdited({ grams, key, text }); setError('');
           } catch { setEdited({ grams: item.grams, key, text }); setError(planT('amountMustBe5To2000Grams')); }
         }} className={`${editableFieldClass} min-h-12 w-14 shrink-0 bg-surface text-center font-display font-extrabold tabular-nums`} />
-      <span className="relative flex min-h-12 min-w-0 flex-1 items-center border-s border-line px-2 text-xs text-muted">
+      <span className="relative flex min-h-12 min-w-0 flex-1 items-center border-s border-line px-inline text-xs text-muted">
         <span className="whitespace-normal break-words">{unitName}</span>
         {!!item.food.units?.length && <ChevronDown aria-hidden className="ms-auto size-3 shrink-0" />}
         {!!item.food.units?.length && <select aria-label={t('unit')} value={key} onChange={event => { const unit = event.target.value || null; update(draft => ({ ...draft, meals: draft.meals.map(meal => ({ ...meal, items: meal.items.map(row => row.id === item.id ? { ...row, unit } : row) })) })); }} className={`${editableFieldClass} absolute inset-0 min-h-12 w-full cursor-pointer opacity-0 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-lime`}>

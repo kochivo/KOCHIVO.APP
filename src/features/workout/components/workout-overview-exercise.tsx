@@ -21,12 +21,12 @@ export function WorkoutOverviewExercise({ exercise, sessionId, playerId }: {
   const name = exerciseName(exercise, locale);
   const reps = exercise.reps_max === null ? t('toFailure') : exercise.reps_min === exercise.reps_max
     ? formatNumber(exercise.reps_min, locale) : t('targetRange', { min: formatNumber(exercise.reps_min, locale), max: formatNumber(exercise.reps_max, locale) });
-  return <li aria-busy={!history.ready} className="flex items-center gap-3 rounded-[22px] border border-line-soft bg-surface p-2.5">
+  return <li aria-busy={!history.ready} className="flex items-center gap-stack rounded-[22px] border border-line-soft bg-surface p-stack">
     <div className="size-16 shrink-0 overflow-hidden rounded-2xl bg-exercise-media">
       {exercise.media_path && <ExerciseLightbox src={exerciseMediaUrl(exercise.media_path)} name={name} thumbnail />}
     </div>
-    <div className="flex min-w-0 flex-1 flex-col gap-[3px]">
-      <b className="text-[15px]"><bdi>{name}</bdi></b>
+    <div className="flex min-w-0 flex-1 flex-col gap-inline">
+      <b className="text-md"><bdi>{name}</bdi></b>
       <span className="text-xs text-muted">{t('v3Prescription', { sets: formatNumber(exercise.sets, locale), reps })}
         {previous?.weight_kg != null && t('v3PreviousWeight', { weight: formatNumber(previous.weight_kg, locale) })}</span>
       {failed && <button type="button" className="min-h-12 text-start text-xs text-muted" onClick={() => { setFailed(false); setAttempt(value => value + 1); }}>{t('tryAgain')}</button>}

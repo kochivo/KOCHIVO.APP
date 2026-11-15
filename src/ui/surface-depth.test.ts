@@ -62,7 +62,7 @@ it('recesses text, number and time fields and both stepper sizes', () => {
 });
 
 it('uses the shared card spacing and full chip radius', () => {
-  expect(renderToStaticMarkup(createElement(GlassCard))).toContain('p-card md:p-6');
+  expect(renderToStaticMarkup(createElement(GlassCard))).toContain('p-card');
   expect(renderToStaticMarkup(createElement(Chip, { pressed: false }))).toContain('rounded-chip');
 });
 

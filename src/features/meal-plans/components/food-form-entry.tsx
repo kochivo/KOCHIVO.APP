@@ -19,9 +19,9 @@ export function FoodFormEntry({ result, returnTo, copyFrom }: {
   const formT = useT(foodFormMessages);
   const locale = useLocale();
   const router = useRouter();
-  if (result && !result.ok) return <section className="glass grid gap-4 rounded-card p-5">
+  if (result && !result.ok) return <section className="glass grid gap-card-gap rounded-card p-card">
     <p role="alert" className="text-danger">{result.error}</p>
-    <div className="flex gap-3">
+    <div className="flex gap-stack">
       <Button onClick={() => router.refresh()}>{t('tryAgain')}</Button>
       <Button variant="secondary" onClick={() => router.replace(`/${locale}/captain/library/foods`)}>{formT('cancel')}</Button>
     </div>

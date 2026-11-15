@@ -36,13 +36,13 @@ export function DemoScreen() {
       setError(failure); setToken(''); setAttempt((value) => value + 1); toast.error(failure);
     }
   };
-  return <main className="mx-auto grid min-h-dvh max-w-lg content-center items-center gap-6 p-6 pt-[max(1.5rem,var(--safe-top))] lg:max-w-5xl lg:grid-cols-2">
-    <section className="glass-strong w-full space-y-5 rounded-card p-6">
+  return <main className="mx-auto grid min-h-dvh max-w-lg content-center items-center gap-section p-section pt-[max(1.5rem,var(--safe-top))] lg:max-w-5xl lg:grid-cols-2">
+    <section className="glass-strong w-full space-y-card-gap rounded-card p-section">
       <LanguageSwitch />
       <h1 className="text-3xl font-extrabold">{t('tryTheDemo')}</h1>
       <p className="text-muted">{t('exploreTheCoachWorkspaceWithSample')}</p>
       {siteKey && <TurnstileWidget key={attempt} siteKey={siteKey} onToken={setToken} onError={captchaError} />}
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap gap-stack">
         <Button className="min-h-12 flex-1" disabled={pending || Boolean(siteKey && !token)}
           onClick={() => start('captain')}>{pending ? t('preparingTheDemo') : t('openDemo')}</Button>
         <Button variant="secondary" className="min-h-12 flex-1" disabled={pending || Boolean(siteKey && !token)}
@@ -50,7 +50,7 @@ export function DemoScreen() {
       </div>
       <p className="text-sm text-muted">{t('sampleAccountClearsAfter24Hours')}</p>
       {pending && <p role="status" className="text-sm text-muted">{t('preparingSampleData')}</p>}
-      {error && <div role="alert" className="space-y-2 text-sm text-danger"><p>{error}</p>
+      {error && <div role="alert" className="space-y-inline text-sm text-danger"><p>{error}</p>
         <Button variant="secondary" className="min-h-12" disabled={pending} onClick={() => {
           setError(''); setToken(''); setAttempt((value) => value + 1);
         }}>{t('tryAgain')}</Button>

@@ -42,19 +42,19 @@ export function VoiceRecorder({ playerId, context, onSent, recorder }: { playerI
     } finally { setSending(false); }
   };
   return (
-    <div className="space-y-3">
-      {state.status === 'recording' ? <Button variant="danger" className="min-h-14 w-full gap-2" onClick={stop}>
+    <div className="space-y-stack">
+      {state.status === 'recording' ? <Button variant="danger" className="min-h-14 w-full gap-inline" onClick={stop}>
         <Square aria-hidden className="size-5 fill-current" />{t('stop')}
-        <span role="status" className="ms-2 font-display tabular-nums" dir="ltr">{clock(state.seconds)} / {clock(MAX_VOICE_SECONDS)}</span>
-      </Button> : state.status === 'recorded' ? <div className="space-y-3">
+        <span role="status" className="ms-inline font-display tabular-nums" dir="ltr">{clock(state.seconds)} / {clock(MAX_VOICE_SECONDS)}</span>
+      </Button> : state.status === 'recorded' ? <div className="space-y-stack">
         <AudioPlayer src={state.url} mimeType={state.blob.type} durationSeconds={state.seconds} playLabel={t('play')} pauseLabel={t('pause')} formatTime={clock} />
-        <div className="grid grid-cols-2 gap-2">
-          <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} className={captainWorkspaceEnabled() ? 'gap-2 border border-danger/40 text-danger!' : 'gap-2'} onClick={reset} disabled={sending}><Trash2 aria-hidden className="size-5" />{t('discard')}</Button>
-          {!recorder && <Button variant="secondary" className="gap-2" onClick={() => void send()} disabled={sending}>
+        <div className="grid grid-cols-2 gap-inline">
+          <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} className={captainWorkspaceEnabled() ? 'gap-inline border border-danger/40 text-danger!' : 'gap-inline'} onClick={reset} disabled={sending}><Trash2 aria-hidden className="size-5" />{t('discard')}</Button>
+          {!recorder && <Button variant="secondary" className="gap-inline" onClick={() => void send()} disabled={sending}>
             <SendIcon aria-hidden className="size-5" />{sending ? t('sending') : t('send')}
           </Button>}
         </div>
-      </div> : <Button variant="secondary" className="min-h-14 w-full gap-2" disabled={state.status === 'requesting'} onClick={() => void start()}>
+      </div> : <Button variant="secondary" className="min-h-14 w-full gap-inline" disabled={state.status === 'requesting'} onClick={() => void start()}>
         <MicIcon aria-hidden className="size-5 text-lime" />{t('record')}
       </Button>}
       {state.status === 'denied' && <p role="alert" className="text-sm text-warn">{t('micDenied')}</p>}

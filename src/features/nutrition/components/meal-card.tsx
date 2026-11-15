@@ -51,13 +51,13 @@ export function MealCard({ meal, log, today, planTitle, primary = false }: { mea
     });
   }
   const v6 = captainWorkspaceEnabled();
-  const details = <GlassCard className="space-y-4 p-4">
+  const details = <GlassCard className="space-y-card-gap p-card">
     <h2 className="text-lg font-bold">{starterText(meal.name, locale, planTitle)}</h2>
     {meal.items.length === 0 && <EmptyState icon={Utensils} title={t('thisMealIsBeingPrepared')} body={t('itWillAppearHereWhenReady')} action={{ label: t('messageCoach'), href: '/player/captain' }} />}
-    <ul className="space-y-3">
+    <ul className="space-y-stack">
       {meal.items.map((item) => {
         const chosen = item.alternatives.find((alt) => alt.id === swaps[item.id]) ?? item;
-        return <li key={item.id} className="flex items-center gap-3">
+        return <li key={item.id} className="flex items-center gap-stack">
           {chosen.photo_path ? <Image src={foodPhotoUrl(chosen.photo_path)} alt={chosen.name} width={60} height={60}
             unoptimized className="size-15 shrink-0 rounded-control object-cover" /> :
             <span aria-hidden="true" className="glass flex size-15 shrink-0 items-center justify-center rounded-control text-muted">{chosen.name.charAt(0)}</span>}
@@ -76,16 +76,16 @@ export function MealCard({ meal, log, today, planTitle, primary = false }: { mea
   </GlassCard>;
   if (!v6) return details;
   const name = starterText(meal.name, locale, planTitle);
-  return <div className={`rounded-[22px] border bg-surface px-3 py-2.5 ${primary && !eaten ? 'border-lime/50' : 'border-line-soft'}`}>
-    <div className="flex items-center gap-3">
+  return <div className={`rounded-[22px] border bg-surface px-stack py-stack ${primary && !eaten ? 'border-lime/50' : 'border-line-soft'}`}>
+    <div className="flex items-center gap-stack">
       {eaten ? <span role="img" aria-label={v6t('eaten')} className="flex size-12 shrink-0 items-center justify-center rounded-full bg-lime text-on-lime">
         <Check aria-hidden className="size-[22px]" strokeWidth={3} />
       </span> : <button type="button" disabled={busy || !meal.items.length} aria-label={v6t('eatMeal', { meal: name })}
         onClick={() => void save(true, swaps, Date.now())}
         className={`size-12 shrink-0 rounded-full border-2 bg-transparent disabled:opacity-50 ${primary ? 'border-lime' : 'border-line'}`} />}
       <button type="button" aria-label={v6t('details')} aria-expanded={open} onClick={() => setOpen(value => !value)}
-        className="flex min-h-12 min-w-0 flex-1 flex-col justify-center gap-0.5 font-sans text-start">
-        <span className="text-[15px] font-bold">{name} {primary && !eaten && <span className="text-xs font-bold text-lime">{v6t('now')}</span>}</span>
+        className="flex min-h-12 min-w-0 flex-1 flex-col justify-center gap-inline font-sans text-start">
+        <span className="text-md font-bold">{name} {primary && !eaten && <span className="text-xs font-bold text-lime">{v6t('now')}</span>}</span>
         <span className="w-full truncate text-xs text-muted">{meal.items.length ? meal.items.map(item => {
           const chosen = item.alternatives.find(alt => alt.id === swaps[item.id]) ?? item;
           return `${chosen.name} ${formatNumber(chosen.grams, locale)}${t('g')}`;
@@ -93,6 +93,6 @@ export function MealCard({ meal, log, today, planTitle, primary = false }: { mea
       </button>
     </div>
     {error && <p role="alert" className="text-sm text-danger">{t('saveFailedTryAgain')}</p>}
-    {open && <div className="mt-3">{details}</div>}
+    {open && <div className="mt-stack">{details}</div>}
   </div>;
 }

@@ -10,7 +10,7 @@ interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> { la
 export function EditInPlace({ label, className, ...props }: Props) {
   return <label className="relative block">
     <span className="sr-only">{label}</span>
-    <input {...props} type="text" className={cn(editableFieldClass, 'recessed min-h-12 w-full py-3 ps-4 pe-12 text-start text-ink', className)} />
+    <input {...props} type="text" className={cn(editableFieldClass, 'recessed min-h-12 w-full py-stack ps-card pe-touch text-start text-ink', className)} />
     <Pencil aria-hidden className="pointer-events-none absolute end-4 top-4 size-4 text-muted" />
   </label>;
 }

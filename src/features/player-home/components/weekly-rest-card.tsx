@@ -15,7 +15,7 @@ export function WeeklyRestCard({ snapshot, today }: { snapshot: ProgramSnapshot;
   const locale = useLocale();
   const finished = weeklyFinished(snapshot, today);
   const next = finished ? undefined : nextTrainingDay(snapshot, today);
-  return <section className={captainWorkspaceEnabled() ? 'space-y-3 rounded-[24px] border border-line-soft bg-surface p-5' : 'glass space-y-3 rounded-card border border-dashed border-line p-5'}>
+  return <section className={captainWorkspaceEnabled() ? 'space-y-stack rounded-[24px] border border-line-soft bg-surface p-card' : 'glass space-y-stack rounded-card border border-dashed border-line p-card'}>
     <Moon aria-hidden className="size-6 text-muted" />
     <h2 className="text-xl font-bold">{t(finished ? 'programFinished' : 'weeklyRest')}</h2>
     {finished && <p className="text-muted">{t('renewProgram')}</p>}

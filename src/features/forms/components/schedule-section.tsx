@@ -14,8 +14,8 @@ export function ScheduleSection({ form, locale, onChange }: {
 }) {
   const [open, setOpen] = useState(false), m = messages[locale];
   const workspace = captainWorkspaceEnabled();
-  return <details className="mt-4" onToggle={event => setOpen(event.currentTarget.open)}>
-    <summary aria-expanded={workspace ? open : undefined} className={workspace ? `${rowLinkClass} flex list-none items-center justify-between gap-2 py-3` : 'min-h-12 cursor-pointer py-3'}>{m.schedule} · {assessmentMessages[locale].all}{workspace && <DisclosureChevron expanded={open} />}</summary>
+  return <details className="mt-card-gap" onToggle={event => setOpen(event.currentTarget.open)}>
+    <summary aria-expanded={workspace ? open : undefined} className={workspace ? `${rowLinkClass} flex list-none items-center justify-between gap-inline py-stack` : 'min-h-12 cursor-pointer py-stack'}>{m.schedule} · {assessmentMessages[locale].all}{workspace && <DisclosureChevron expanded={open} />}</summary>
     {open && <Suspense fallback={<p role="status">{m.loading}</p>}>
       <ScheduleEditor form={form} locale={locale} onChange={onChange} />
     </Suspense>}

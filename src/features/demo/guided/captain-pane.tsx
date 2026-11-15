@@ -28,7 +28,7 @@ export function CaptainPane(props: PaneProps & { plans: readonly DemoPlan[] }) {
           const count = page === 'home' ? needed : page === 'inbox' ? 2 + state.unread : page === 'assess' && !state.approved ? 1 : 0;
           return <Button key={page} variant="ghost" className="demo-sidebar-item shrink-0 justify-start" aria-current={active ? 'page' : undefined} onClick={() => go(page)}>
             <Icon className="size-5 shrink-0" active={active} />{t(page)}
-            {count > 0 && <b className={`ms-auto rounded-full px-2 text-micro ${page === 'home' ? 'bg-lime text-on-lime' : 'bg-surface-raised'}`}>{count}</b>}
+            {count > 0 && <b className={`ms-auto rounded-full px-inline text-micro ${page === 'home' ? 'bg-lime text-on-lime' : 'bg-surface-raised'}`}>{count}</b>}
           </Button>;
         })}
         <div className="demo-captain-card mt-auto rounded-control bg-surface p-stack"><b className="text-sm">{t('captainName')}</b><p className="text-xs text-muted">{props.plans[planIndex(state.n)]?.name} · {t('playersCount', { n: state.n })}</p></div>

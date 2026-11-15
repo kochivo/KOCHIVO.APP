@@ -34,7 +34,7 @@ export function WorkoutExercise({ state }: { state: ReturnType<typeof useFocusSe
       onEdit={state.edit} disabled={state.disabled} />}
     {rest.remaining > 0 ? <RestPanel remaining={rest.remaining} total={rest.total} sound={rest.sound} onToggleSound={rest.toggleSound}
       flashing={rest.flashing} onExtend={rest.extend} onSkip={rest.skip} /> : <>
-      {v6 ? <details className="group glass rounded-card p-4"><summary className="flex min-h-12 cursor-pointer items-center text-sm text-muted">{t('controls')}<ChevronDown aria-hidden className="ms-auto size-4 shrink-0 transition-transform group-open:rotate-180" /></summary><SetControls state={state} secondary /></details> : <SetControls state={state} />}
+      {v6 ? <details className="group glass rounded-card p-card"><summary className="flex min-h-12 cursor-pointer items-center text-sm text-muted">{t('controls')}<ChevronDown aria-hidden className="ms-auto size-4 shrink-0 transition-transform group-open:rotate-180" /></summary><SetControls state={state} secondary /></details> : <SetControls state={state} />}
     </>}
     {lastSet && <FormCheckButton exerciseId={lastSet.exercise_id} setLogId={lastSet.id} />}
     {state.next && <NextUp exercise={state.next.exercise} />}

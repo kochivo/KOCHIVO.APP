@@ -35,8 +35,8 @@ beforeEach(() => { state.effects = []; state.path = '/player'; state.rest = fals
 afterEach(() => vi.unstubAllGlobals());
 it('keeps the player shell at its existing mobile-first width', () => {
   const html = renderToStaticMarkup(createElement(PlayerShell, null, null));
-  expect(html).toContain('mx-auto flex max-w-lg justify-end gap-2 px-5');
-  expect(html).toContain('mx-auto max-w-lg space-y-3 px-5 pt-3');
+  expect(html).toContain('mx-auto flex max-w-lg justify-end gap-inline px-page-x');
+  expect(html).toContain('mx-auto max-w-lg space-y-stack px-page-x pt-stack');
   expect(html).not.toContain('lg:max-w-[1600px]');
 });
 

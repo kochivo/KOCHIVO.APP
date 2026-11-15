@@ -20,9 +20,9 @@ export function QuestionsSheet({ row, onChange, onClose, goal }: {
   const v6t = useT(v6Messages);
   const v6 = captainWorkspaceEnabled();
   return <ResponsiveDialog modal fallbackId="readiness-edit" onDismiss={onClose} aria-label={t('questions')}
-    className="sheet fixed inset-0 z-50 m-auto w-[calc(100%-2rem)] max-w-lg space-y-4 rounded-card p-5 text-ink">
+    className="sheet fixed inset-0 z-50 m-auto w-[calc(100%-2rem)] max-w-lg space-y-card-gap rounded-card p-card text-ink">
     <MorningQuestions row={row} onChange={onChange} />
     {v6 && <MorningResult row={row} goal={goal} />}
-    <Button type="button" onClick={onClose} variant={(v6) ? 'primary' : 'secondary'} block={false} className={v6 ? "min-h-12 w-full px-4 font-semibold" : "min-h-12 w-full px-4"}>{v6 ? v6t('done') : t('close')}</Button>
+    <Button type="button" onClick={onClose} variant={(v6) ? 'primary' : 'secondary'} block={false} className={v6 ? "min-h-12 w-full px-page-x font-semibold" : "min-h-12 w-full px-page-x"}>{v6 ? v6t('done') : t('close')}</Button>
   </ResponsiveDialog>;
 }

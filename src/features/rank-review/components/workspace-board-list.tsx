@@ -17,7 +17,7 @@ export function WorkspaceBoardList({ rows, locale, allTime }: {
 }) {
   const t = createT(messages, locale);
   if (!rows.length) return <EmptyState icon={Users} title={t('empty')} body={t('emptyBody')} />;
-  return <ol className="glass divide-y divide-line rounded-card p-[18px]" aria-label={t('workspaceTitle')}>
+  return <ol className="glass divide-y divide-line rounded-card p-card" aria-label={t('workspaceTitle')}>
     {rows.map((row, index) => {
       const content = <>
         <span className="w-[18px] shrink-0 font-display text-muted tabular-nums">{formatNumber(index + 1, locale)}</span>
@@ -28,13 +28,13 @@ export function WorkspaceBoardList({ rows, locale, allTime }: {
           <small className="block truncate text-xs text-muted">{allTime ? t('points', { points: formatNumber(row.lifetime, locale) }) : t('workoutPoints', {
             count: formatNumber(row.done, locale), points: formatNumber(row.monthly, locale),
           })}</small></div>
-        <span className="shrink-0 rounded-full bg-gold-2/10 px-[7px] py-0.5 font-display text-[9.5px] font-extrabold tracking-wider text-gold-2">
+        <span className="shrink-0 rounded-full bg-gold-2/10 px-inline py-inline font-display text-micro font-extrabold tracking-wider text-gold-2">
           {t(tags[row.tier])}
         </span>
       </>;
       return <li key={row.player_id ?? index}>{row.player_id ?
-        <Link href={`/captain/players/${row.player_id}`} className={`${clickableClass} flex min-h-[58px] items-center gap-3 rounded-xl p-2.5`}>{content}<RowChevron /></Link> :
-        <div className="flex min-h-[58px] items-center gap-3 rounded-xl p-2.5">{content}</div>}</li>;
+        <Link href={`/captain/players/${row.player_id}`} className={`${clickableClass} flex min-h-[58px] items-center gap-stack rounded-xl p-stack`}>{content}<RowChevron /></Link> :
+        <div className="flex min-h-[58px] items-center gap-stack rounded-xl p-stack">{content}</div>}</li>;
     })}
   </ol>;
 }

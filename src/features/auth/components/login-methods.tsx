@@ -35,11 +35,11 @@ export function LoginMethods() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [pending, start] = useTransition();
-  return <div className="space-y-4">
+  return <div className="space-y-card-gap">
     <Segmented aria-label={t('loginMethod')} value={method} options={[
       { value: 'email-code', label: t('emailCodeChoice') }, { value: 'password', label: t('password') },
     ]} onChange={value => { if (pending) return; setChoice(value); setCodeEmail(''); setToken(''); setMessage(''); setError(''); }} />
-    <form className="space-y-4" aria-busy={pending} onSubmit={event => {
+    <form className="space-y-card-gap" aria-busy={pending} onSubmit={event => {
       event.preventDefault();
       start(async () => {
         const result = await callAuthAction(() => method === 'password' ? signInPassword({ email, password })
@@ -49,7 +49,7 @@ export function LoginMethods() {
         if (result.redirect) window.location.assign(result.redirect);
       });
     }}>
-      <fieldset disabled={pending} className="space-y-4">
+      <fieldset disabled={pending} className="space-y-card-gap">
         {codeEmail ? <OtpInput value={token} onChange={setToken} disabled={pending} />
           : <TextField name="email" type="email" label={t('email')} value={email} onChange={event => setEmail(event.target.value)} autoComplete="email" dir="ltr" required />}
         {method === 'password' && <TextField name="password" type="password" label={t('password')} value={password}

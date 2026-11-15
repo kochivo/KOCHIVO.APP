@@ -16,14 +16,14 @@ export function CalculatorField({ label, value, source, onChange, min = 1, max =
   const locale = useLocale();
   const id = useId();
   const [editing, setEditing] = useState(false);
-  return <div className="glass grid gap-2 rounded-control p-4">
+  return <div className="glass grid gap-inline rounded-control p-card">
     <label htmlFor={id} className="font-semibold">{label}</label>
     <CalculatorSource source={source} local={value !== undefined} />
     {editing ? <input id={id} autoFocus type="number" min={min} max={max} step={step} value={value ?? ''}
       onChange={event => onChange(event.target.value === '' ? undefined : Number(event.target.value))}
-      className="min-h-12 w-full rounded-control border border-line bg-surface px-3" />
+      className="min-h-12 w-full rounded-control border border-line bg-surface px-stack" />
       : value === undefined ? <Button id={id} type="button" aria-label={`${t('add')} ${label}`}
-        variant={'secondary'} block={false} className={"min-h-12 px-4"} onClick={() => setEditing(true)}>{t('add')}</Button>
+        variant={'secondary'} block={false} className={"min-h-12 px-page-x"} onClick={() => setEditing(true)}>{t('add')}</Button>
         : <output id={id} className="text-2xl font-bold">{formatNumber(value, locale)}</output>}
   </div>;
 }
