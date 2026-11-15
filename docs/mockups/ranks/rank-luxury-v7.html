@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>رتب فاخرة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700&family=Changa:wght@500;600;700;800&family=Manrope:wght@500;700;800&display=swap">
+<style>
+:root {
+  --bg: #0b0c0d; --deep: #060707; --surface: #141515; --line: #262727; --soft: rgba(242,242,238,.07);
+  --glass: rgba(255,255,255,.035); --glass-line: rgba(255,255,255,.09);
+  --ink: #f4f4f1; --muted: #a6abb0; --faint: #7d8288; --warn: #f2b544;
+  --lime: #b6e94f; --lime-dim: rgba(182,233,79,.13); --on-lime: #101418;
+  --display: "Manrope", "Changa", "Alexandria", system-ui, sans-serif;
+  --text: "Manrope", "Alexandria", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--text); font-size: 14.5px; line-height: 1.6; }
+.page { max-width: 1240px; margin: 0 auto; padding: 40px 16px 90px; }
+h1, h2, h3 { margin: 0; font-family: var(--display); text-wrap: balance; }
+h1 { font-size: clamp(28px, 4.4vw, 42px); font-weight: 800; line-height: 1.2; }
+h2 { font-size: 22px; font-weight: 800; }
+p { margin: 0; }
+.lede { color: var(--muted); max-width: 72ch; margin-top: 12px; }
+.small { font-size: 12.5px; } .muted { color: var(--muted); } .faint { color: var(--faint); } .lime { color: var(--lime); }
+.num { font-family: "Manrope", sans-serif; font-weight: 800; direction: ltr; unicode-bidi: isolate; }
+section { margin-top: 56px; display: grid; gap: 16px; }
+.head p { color: var(--muted); max-width: 78ch; margin-top: 6px; }
+
+/* the ladder */
+.ladder { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; align-items: end; padding: 28px 10px 18px; border-radius: 26px; border: 1px solid var(--line);
+  background: radial-gradient(ellipse at 15% 100%, rgba(182,233,79,.08), transparent 55%), radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.05), transparent 60%), var(--deep); }
+.tier { display: grid; justify-items: center; gap: 6px; text-align: center; }
+.tier svg { width: 100%; height: auto; overflow: visible; }
+.tier b { font-family: var(--display); font-size: 15px; }
+.tier span { font-size: 11.5px; color: var(--faint); }
+
+/* phones */
+.phones { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; align-items: start; }
+.pw { display: grid; gap: 10px; min-width: 0; }
+.pw > p { color: var(--muted); font-size: 13px; }
+.phone { border: 1px solid var(--line); border-radius: 34px; background: var(--bg); padding: 16px 14px; display: grid; gap: 12px; width: 100%; max-width: 360px; justify-self: center; overflow: hidden; position: relative; min-height: 720px; align-content: start; }
+.phone.gold::before { content: ""; position: absolute; inset: -10% -30% auto -30%; height: 380px; background: radial-gradient(circle at 50% 35%, rgba(240,190,80,.26), transparent 60%); pointer-events: none; }
+.phone.legend { background: radial-gradient(circle at 50% 32%, rgba(182,233,79,.28), transparent 45%), radial-gradient(circle at 50% 32%, rgba(255,230,150,.12), transparent 60%), #070807; }
+.status { display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; color: var(--faint); padding: 2px 8px 0; direction: ltr; position: relative; }
+.hero { display: grid; justify-items: center; text-align: center; gap: 2px; position: relative; }
+.hero svg { width: 210px; height: auto; overflow: visible; }
+.hero .name { font-family: var(--display); font-size: 30px; font-weight: 800; letter-spacing: .2px; }
+.gold-text { background: linear-gradient(180deg, #fff6d4, #f0c45a 55%, #a8741c); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.lime-text { background: linear-gradient(180deg, #faffe6, #c8f26a 50%, #6f9a1c); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.glass { background: var(--glass); border: 1px solid var(--glass-line); border-radius: 18px; padding: 12px 14px; display: grid; gap: 8px; position: relative; }
+.prog { height: 10px; border-radius: 99px; background: #050505; border: 1px solid var(--soft); overflow: hidden; }
+.prog i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, #8a5d12, #f0c45a, #fff1b8); box-shadow: 0 0 12px rgba(240,196,90,.5); }
+.row { display: flex; align-items: center; gap: 10px; }
+.row .end { margin-inline-end: auto; }
+.next { display: grid; grid-template-columns: 78px minmax(0, 1fr); gap: 12px; align-items: center; }
+.next svg { width: 78px; height: auto; overflow: visible; }
+.path { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 2px; align-items: end; }
+.path svg { width: 100%; height: auto; overflow: visible; }
+.btn { min-height: 52px; border-radius: 999px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; font-family: var(--display); border: 1px solid transparent; }
+.btn.primary { background: var(--lime); color: var(--on-lime); box-shadow: inset 0 1px 0 rgba(255,255,255,.45); }
+.btn.secondary { background: var(--glass); border-color: var(--glass-line); color: var(--ink); }
+.perk { display: flex; gap: 10px; align-items: center; font-size: 13px; }
+.perk i { width: 8px; height: 8px; border-radius: 50%; background: #f0c45a; box-shadow: 0 0 8px #f0c45a; flex: none; }
+.unlock { display: grid; justify-items: center; text-align: center; gap: 6px; padding-top: 30px; position: relative; }
+.unlock svg { width: 250px; height: auto; overflow: visible; }
+.rays { position: absolute; top: 10px; left: 50%; width: 420px; height: 420px; margin-left: -210px; background: repeating-conic-gradient(from 0deg, rgba(182,233,79,.12) 0 6deg, transparent 6deg 18deg); -webkit-mask: radial-gradient(circle, #000 20%, transparent 62%); mask: radial-gradient(circle, #000 20%, transparent 62%); animation: spin 40s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.shine { animation: shine 4.5s ease-in-out infinite; }
+@keyframes shine { 0%, 60% { transform: translateX(-90px); } 100% { transform: translateX(110px); } }
+.float { animation: float 5s ease-in-out infinite; transform-origin: center; }
+@keyframes float { 50% { transform: translateY(-4px); } }
+@media (prefers-reduced-motion: reduce) { .rays, .shine, .float { animation: none; } }
+.decide { border: 1px solid rgba(242,181,68,.35); background: rgba(242,181,68,.07); border-radius: 16px; padding: 14px 16px; display: grid; gap: 8px; font-size: 13.5px; }
+.decide b { color: var(--warn); }
+@media (max-width: 1000px) { .ladder { grid-template-columns: repeat(4, minmax(0, 1fr)); } .phones { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main class="page">
+  <p class="small faint">KOCHIVO · الرتب · نسخة 7</p>
+  <h1>كل رتبة شكلها أغلى من اللي قبلها</h1>
+  <p class="lede">من غير كتابة. معادن حقيقية ولمعة وأحجار، والشكل نفسه بيتطور: الحديد حلقة مطروقة بسيطة، والأسطورة تاج بأجنحة وألماظة وهالة نور. اللاعب بيشوف الرتبة الجاية قدامه وهي مقفولة، فيعرف هو ناقصه إيه.</p>
+
+  <section>
+    <div class="head"><h2>السبع رتب</h2><p>كل رتبة بتزود حاجة: إطار، ثم نجمة، ثم أشعة وغار، ثم أجنحة وحجر، ثم ألماظة وتاج صغير، ثم تاج وهالة.</p></div>
+    <div class="ladder" id="ladder"></div>
+  </section>
+
+  <section>
+    <div class="head"><h2>عند اللاعب</h2><p>صفحة رتبتي، والرتبة الجاية مقفولة قدامه، ولحظة ما يطلع رتبة.</p></div>
+    <div class="phones">
+      <div class="pw">
+        <div class="phone gold">
+          <div class="status"><span>17:01</span><span>KOCHIVO</span></div>
+          <div class="hero"><div class="float" id="hero-gold"></div><span class="small faint">رتبتك</span><span class="name gold-text">ذهب</span><span class="small muted"><span class="num">342</span> نقطة</span></div>
+          <div class="glass"><div class="row"><span class="small muted">فاضلك على البلاتين</span><span class="end num small">58</span></div><div class="prog"><i style="width:42%"></i></div></div>
+          <div class="glass"><span class="small faint">رحلتك</span><div class="path" id="path"></div></div>
+          <div class="glass"><span class="small faint">مع الذهب</span><div class="perk"><i></i>اسمك بالدهبي في ترتيب الفريق</div><div class="perk"><i></i>كارت مشاركة بإطار ذهب</div></div>
+        </div>
+        <p>الرتبة بتلمع ولمعة نور بتعدّي عليها كل شوية. والرحلة تحت: اللي فات منوّر، واللي جاي ضلّ.</p>
+      </div>
+      <div class="pw">
+        <div class="phone">
+          <div class="status"><span>17:01</span><span>KOCHIVO</span></div>
+          <div class="glass" style="gap:12px"><span class="small faint">الرتبة الجاية</span>
+            <div class="next"><div id="next-lock"></div><div><b style="font-family:var(--display);font-size:20px">بلاتين</b><div class="small muted">مقفولة · فاضلك <span class="num lime">58</span> نقطة</div><div class="small faint">حوالي <span class="num">2</span> أسبوع لو كمّلت كده</div></div></div>
+          </div>
+          <div class="glass"><span class="small faint">أسرع طريق</span>
+            <div class="row small"><span>تمرين النهارده</span><span class="end num lime">+3</span></div>
+            <div class="row small"><span>كمّل الأسبوع كامل</span><span class="end num lime">+10</span></div>
+            <div class="row small"><span>رقم جديد في البنش</span><span class="end num lime">+1</span></div>
+          </div>
+          <div class="glass"><span class="small faint">اللي معاك في الفريق</span>
+            <div class="row small"><span>منى عادل</span><span class="end small" style="color:#bfe9df">بلاتين</span></div>
+            <div class="row small"><span>كريم</span><span class="end small" style="color:#f0c45a">ذهب · قدامك بـ <span class="num">12</span></span></div>
+          </div>
+          <span class="btn primary" style="margin-top:auto">ابدأ تمرين النهارده</span>
+        </div>
+        <p>الرتبة الجاية باينة بس مطفية، وجنبها إمتى هيوصلها وأسرع طريق ليها. ده اللي بيشدّه يتمرن.</p>
+      </div>
+      <div class="pw">
+        <div class="phone legend">
+          <div class="status"><span>17:01</span><span>KOCHIVO</span></div>
+          <div class="unlock"><div class="rays" aria-hidden="true"></div><div class="float" id="unlock"></div><span class="small faint" style="position:relative">رتبة جديدة</span><span class="name lime-text" style="position:relative;font-size:36px;font-family:var(--display);font-weight:800">أسطورة</span><span class="small muted" style="position:relative">أعلى رتبة في KOCHIVO. <span class="num">3</span> لاعبين بس وصلوها في فريقك.</span></div>
+          <span class="btn primary" style="margin-top:auto;position:relative">كمّل</span>
+          <span class="btn secondary" style="position:relative">شارك الرتبة</span>
+        </div>
+        <p>لحظة الوصول: أشعة بتلف ببطء ورا التاج، والرتبة بتنزل بهدوء. والمشاركة بكارت بنفس الشكل.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="decide">
+      <b>قرار ليك</b>
+      <span>الشكل ده أحسن من الحالي ونبدّل بيه؟ التبديل بيغيّر رسمة الرتب بس (ملف واحد)، ومش بيغيّر النقط ولا الداتابيز.</span>
+    </div>
+  </section>
+</main>
+<script>
+const T = [
+  { n: 'حديد', p: 0,   s: ['#f1f3f5', '#a3a9b0', '#5d636a', '#2c3035', '#8e959c', '#d9dde1'] },
+  { n: 'برونز', p: 100, s: ['#ffe2c6', '#e09a63', '#9a5527', '#4a220b', '#c47a42', '#ffd0a6'] },
+  { n: 'فضة', p: 200,  s: ['#ffffff', '#d7dde3', '#8f9aa5', '#3e4650', '#b9c3cc', '#f4f7fa'] },
+  { n: 'ذهب', p: 300,  s: ['#fffbe0', '#ffd96b', '#d39b26', '#6e4708', '#e8b23e', '#fff0b0'] },
+  { n: 'بلاتين', p: 400, s: ['#ffffff', '#d9fff5', '#8fd9c7', '#2f6e62', '#b5ecdf', '#f0fffb'] },
+  { n: 'ماس', p: 600,  s: ['#ffffff', '#cfe3ff', '#7aa8ff', '#1f3f99', '#a9c8ff', '#eef5ff'] },
+  { n: 'أسطورة', p: 900, s: ['#fffbe6', '#f4ffb8', '#b6e94f', '#40600a', '#e6c65a', '#fff3c4'] },
+];
+const P = (pts) => 'M' + pts.map(p => p.map(v => v.toFixed(2)).join(' ')).join(' L') + 'Z';
+const star = (cx, cy, R, r, n = 5, rot = -90) => P(Array.from({ length: n * 2 }, (_, i) => { const a = (rot + i * 180 / n) * Math.PI / 180, rad = i % 2 ? r : R; return [cx + Math.cos(a) * rad, cy + Math.sin(a) * rad]; }));
+const sparkle = (x, y, s, c) => `<path d="M${x} ${y - s} Q${x} ${y} ${x + s} ${y} Q${x} ${y} ${x} ${y + s} Q${x} ${y} ${x - s} ${y} Q${x} ${y} ${x} ${y - s}Z" fill="${c}"/>`;
+
+function defs(id, t, locked) {
+  const s = locked ? ['#3a3d40', '#2a2c2f', '#1b1c1e', '#0e0f10', '#232527', '#34373a'] : t.s;
+  return `<defs>
+    <linearGradient id="${id}m" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="${s[0]}"/><stop offset=".22" stop-color="${s[1]}"/><stop offset=".48" stop-color="${s[2]}"/>
+      <stop offset=".62" stop-color="${s[3]}"/><stop offset=".82" stop-color="${s[4]}"/><stop offset="1" stop-color="${s[5]}"/></linearGradient>
+    <linearGradient id="${id}v" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${s[1]}"/><stop offset=".55" stop-color="${s[2]}"/><stop offset="1" stop-color="${s[3]}"/></linearGradient>
+    <radialGradient id="${id}r" cx=".5" cy=".38" r=".7"><stop offset="0" stop-color="${s[2]}" stop-opacity=".55"/><stop offset=".6" stop-color="#0a0b0c"/><stop offset="1" stop-color="#050505"/></radialGradient>
+    <linearGradient id="${id}gem" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".35" stop-color="${locked ? '#2a2c2f' : (t.n === 'أسطورة' ? '#d8ff86' : t.s[1])}"/><stop offset="1" stop-color="${locked ? '#111' : t.s[3]}"/></linearGradient>
+    <radialGradient id="${id}aura" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="${s[2]}" stop-opacity=".55"/><stop offset="1" stop-color="${s[2]}" stop-opacity="0"/></radialGradient>
+    <linearGradient id="${id}sh" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+    <clipPath id="${id}clip"><circle cx="60" cy="62" r="30"/></clipPath>
+  </defs>`;
+}
+
+function emblem(r, id, { locked = false, shine = false } = {}) {
+  const t = T[r], m = `url(#${id}m)`, v = `url(#${id}v)`, dark = locked ? '#0c0d0e' : t.s[3], hi = locked ? '#45484c' : t.s[0];
+  const R = 26 + r * 1.3;
+  let back = '', front = '';
+  if (r >= 5 && !locked) back += `<circle cx="60" cy="62" r="${R + 30}" fill="url(#${id}aura)"/>`;
+  if (r >= 3) {
+    const n = 20, rays = Array.from({ length: n }, (_, i) => {
+      const a = (i * 360 / n - 90) * Math.PI / 180, b = a + .07, c = a - .07, L = R + 14 + (i % 2 ? 0 : 7);
+      return `<path d="M60 62 L${60 + Math.cos(b) * L} ${62 + Math.sin(b) * L} L${60 + Math.cos(c) * L} ${62 + Math.sin(c) * L}Z"/>`;
+    }).join('');
+    back += `<g fill="${v}" opacity="${r >= 6 ? .95 : .75}">${rays}</g>`;
+  }
+  if (r >= 4) {
+    const wing = (sd) => {
+      const f = (k) => { const y = 50 + k * 8, len = 34 - k * 5;
+        return `<path d="M${60 + sd * (R - 4)} ${y + 6} C${60 + sd * (R + len * .5)} ${y - 4}, ${60 + sd * (R + len)} ${y - 6 - k * 2}, ${60 + sd * (R + len + 6)} ${y - 12 - k * 3} C${60 + sd * (R + len * .8)} ${y + 4}, ${60 + sd * (R + 6)} ${y + 12}, ${60 + sd * (R - 4)} ${y + 14}Z" fill="${m}" stroke="${dark}" stroke-width=".7"/>`; };
+      return [3, 2, 1, 0].map(f).join('');
+    };
+    back += wing(1) + wing(-1);
+  }
+  if (r >= 3) {
+    const leaves = (sd) => Array.from({ length: 6 }, (_, i) => {
+      const deg = sd < 0 ? 102 + i * 17 : 78 - i * 17, a = deg * Math.PI / 180, x = 60 + Math.cos(a) * (R + 5), y = 62 + Math.sin(a) * (R + 5);
+      return `<ellipse cx="${x}" cy="${y}" rx="2.6" ry="6.4" transform="rotate(${deg + sd * 30} ${x} ${y})" fill="${m}" stroke="${dark}" stroke-width=".5"/>`;
+    }).join('');
+    back += leaves(1) + leaves(-1);
+  }
+  /* medallion body */
+  let body;
+  if (r === 0) {
+    body = `<path d="${P(Array.from({ length: 6 }, (_, i) => { const a = (i * 60 - 90) * Math.PI / 180; return [60 + Math.cos(a) * (R + 2), 62 + Math.sin(a) * (R + 2)]; }))}" fill="${m}" stroke="${dark}" stroke-width="1"/>
+      <circle cx="60" cy="62" r="${R - 8}" fill="url(#${id}r)" stroke="${hi}" stroke-opacity=".5"/>`;
+  } else {
+    body = `<circle cx="60" cy="62" r="${R + 1.5}" fill="${dark}"/><circle cx="60" cy="62" r="${R}" fill="${m}"/>
+      ${r >= 2 ? Array.from({ length: 48 }, (_, i) => { const a = i * 7.5 * Math.PI / 180; return `<line x1="${60 + Math.cos(a) * (R - 1.5)}" y1="${62 + Math.sin(a) * (R - 1.5)}" x2="${60 + Math.cos(a) * (R - 4)}" y2="${62 + Math.sin(a) * (R - 4)}" stroke="${dark}" stroke-width=".8" opacity=".55"/>`; }).join('') : ''}
+      <circle cx="60" cy="62" r="${R - 6}" fill="url(#${id}r)" stroke="${hi}" stroke-opacity=".6" stroke-width=".8"/>`;
+  }
+  /* center motif */
+  let motif = '';
+  if (r === 0) motif = `<rect x="52" y="59" width="16" height="6" rx="2" fill="${m}"/>`;
+  if (r === 1) motif = `<path d="M48 58 L60 68 L72 58 L72 64 L60 74 L48 64Z" fill="${m}" stroke="${dark}" stroke-width=".6"/>`;
+  if (r === 2 || r === 3) motif = `<path d="${star(60, 62, 13 + r, 5.6 + r * .6)}" fill="${m}" stroke="${dark}" stroke-width=".6"/><path d="${star(60, 62, 6, 2.6)}" fill="${hi}" opacity=".55"/>`;
+  if (r === 4) motif = `<circle cx="60" cy="62" r="11" fill="url(#${id}gem)" stroke="${hi}" stroke-width=".8"/><path d="M53 58 L60 53 L67 58 L60 71Z" fill="#fff" opacity=".35"/><path d="M49 62 L60 53 L71 62" fill="none" stroke="#fff" opacity=".4" stroke-width=".6"/>`;
+  if (r >= 5) motif = `<path d="M47 57 L53 50 L67 50 L73 57 L60 76Z" fill="url(#${id}gem)" stroke="${hi}" stroke-width=".8"/>
+      <path d="M47 57 L73 57 M53 50 L57 57 L60 76 M67 50 L63 57 L60 76 M57 57 L60 50 L63 57" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width=".6"/>
+      <path d="M53 50 L57 57 L47 57Z" fill="#fff" opacity=".35"/>`;
+  /* crown / tiara */
+  if (r === 5) front += `<path d="M${60 - 14} ${62 - R - 1} L${60 - 10} ${62 - R - 10} L${60 - 4} ${62 - R - 4} L60 ${62 - R - 14} L${60 + 4} ${62 - R - 4} L${60 + 10} ${62 - R - 10} L${60 + 14} ${62 - R - 1}Z" fill="${m}" stroke="${dark}" stroke-width=".6"/><circle cx="60" cy="${62 - R - 14}" r="2" fill="url(#${id}gem)"/>`;
+  if (r === 6) front += `<path d="M38 ${62 - R + 2} L36 ${62 - R - 18} L47 ${62 - R - 8} L53 ${62 - R - 24} L60 ${62 - R - 10} L67 ${62 - R - 24} L73 ${62 - R - 8} L84 ${62 - R - 18} L82 ${62 - R + 2}Z" fill="${m}" stroke="${dark}" stroke-width=".8"/>
+      <rect x="38" y="${62 - R - 2}" width="44" height="5" rx="2" fill="${v}"/>
+      ${[36, 53, 67, 84].map(x => `<circle cx="${x}" cy="${62 - R - (x === 36 || x === 84 ? 18 : 24)}" r="2.4" fill="url(#${id}gem)"/>`).join('')}
+      <circle cx="60" cy="${62 - R - 12}" r="3.2" fill="url(#${id}gem)" stroke="${hi}" stroke-width=".5"/>`;
+  const glints = !locked && r >= 4 ? sparkle(60 + R + 8, 62 - R + 4, 4 + r * .4, '#fff') + sparkle(60 - R - 4, 62 + R - 8, 2.6 + r * .3, '#fff') + (r >= 6 ? sparkle(60 + 6, 62 - R - 30, 3.5, '#fff') : '') : '';
+  const sheen = shine && !locked ? `<g clip-path="url(#${id}clip)"><rect class="shine" x="30" y="20" width="22" height="90" fill="url(#${id}sh)" transform="skewX(-18)"/></g>` : '';
+  const lock = locked ? `<g transform="translate(60 63)"><rect x="-7" y="-2" width="14" height="11" rx="2.5" fill="#55595e"/><path d="M-4.5 -2 V-5 a4.5 4.5 0 0 1 9 0 V-2" fill="none" stroke="#55595e" stroke-width="2"/></g>` : '';
+  const ground = `<ellipse cx="60" cy="${62 + R + 22}" rx="${R + 6}" ry="3.5" fill="#000" opacity=".55"/>`;
+  return `<svg viewBox="-10 -6 140 136" role="img" aria-label="${t.n}">${defs(id, t, locked)}${ground}${back}${body}${motif}${front}${sheen}${lock}${glints}</svg>`;
+}
+
+document.getElementById('ladder').innerHTML = T.map((t, r) =>
+  `<div class="tier">${emblem(r, 'l' + r, { shine: r === 6 })}<b>${t.n}</b><span><span class="num">${t.p}</span> نقطة</span></div>`).join('');
+document.getElementById('hero-gold').innerHTML = emblem(3, 'hg', { shine: true });
+document.getElementById('next-lock').innerHTML = emblem(4, 'nl', { locked: true });
+document.getElementById('unlock').innerHTML = emblem(6, 'un', { shine: true });
+document.getElementById('path').innerHTML = T.map((t, r) => emblem(r, 'p' + r, { locked: r > 3 })).join('');
+</script>
+</body>
+</html>
