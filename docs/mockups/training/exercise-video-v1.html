@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>فيديو التمرين</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700&family=Changa:wght@500;600;700;800&family=Manrope:wght@500;700;800&display=swap">
+<style>
+:root {
+  --bg: #0b0c0d; --deep: #070808; --surface: #141515; --raised: #1c1d1d;
+  --line: #292a2a; --soft: rgba(242,242,238,.07); --glass: rgba(255,255,255,.035); --glass-line: rgba(255,255,255,.09);
+  --ink: #f4f4f1; --muted: #a6abb0; --faint: #7d8288; --warn: #f2b544; --danger: #ff6b6b;
+  --lime: #b6e94f; --lime-dim: rgba(182,233,79,.13); --on-lime: #101418;
+  --display: "Manrope", "Changa", "Alexandria", system-ui, sans-serif;
+  --text: "Manrope", "Alexandria", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--text); font-size: 14.5px; line-height: 1.6; }
+.page { max-width: 1240px; margin: 0 auto; padding: 40px 16px 90px; }
+h1, h2, h3 { margin: 0; font-family: var(--display); text-wrap: balance; }
+h1 { font-size: clamp(28px, 4.4vw, 44px); font-weight: 800; line-height: 1.2; }
+h2 { font-size: 22px; font-weight: 800; }
+h3 { font-size: 15.5px; font-weight: 700; }
+p { margin: 0; }
+.lede { color: var(--muted); max-width: 68ch; margin-top: 12px; }
+section { margin-top: 56px; display: grid; gap: 18px; }
+.head p { color: var(--muted); max-width: 72ch; margin-top: 6px; }
+.small { font-size: 12.5px; } .muted { color: var(--muted); } .faint { color: var(--faint); } .lime { color: var(--lime); } .warn { color: var(--warn); }
+.num { font-family: "Manrope", sans-serif; font-weight: 800; font-variant-numeric: tabular-nums; direction: ltr; unicode-bidi: isolate; }
+.glass { background: var(--glass); border: 1px solid var(--glass-line); border-radius: 22px; }
+
+.phones { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; align-items: start; }
+.pw { display: grid; gap: 10px; min-width: 0; }
+.pw > p { color: var(--muted); font-size: 13px; }
+.phone { border: 1px solid var(--line); border-radius: 34px; background: var(--bg); padding: 14px 12px 16px; display: grid; gap: 12px; width: 100%; max-width: 360px; justify-self: center; overflow: hidden; position: relative; min-height: 700px; align-content: start; }
+.status { display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; color: var(--faint); padding: 2px 8px 0; direction: ltr; }
+.top { display: flex; align-items: center; gap: 10px; }
+.top h3 { font-size: 18px; }
+.iconbtn { width: 48px; height: 48px; border-radius: 16px; background: var(--glass); border: 1px solid var(--glass-line); display: grid; place-items: center; color: var(--ink); flex: none; }
+.iconbtn svg { width: 20px; height: 20px; }
+
+label.f { display: grid; gap: 6px; font-size: 13px; color: var(--muted); }
+.input { min-height: 48px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); padding: 0 14px; display: flex; align-items: center; font-size: 14px; }
+.input.ltr { direction: ltr; justify-content: flex-start; font-family: "Manrope", sans-serif; font-size: 13px; }
+.input.ok { border-color: rgba(182,233,79,.55); }
+.okline { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--lime); }
+.okline i { width: 18px; height: 18px; border-radius: 50%; background: var(--lime); color: var(--on-lime); display: grid; place-items: center; font-style: normal; font-size: 11px; font-weight: 800; }
+
+/* video thumb */
+.video { position: relative; border-radius: 20px; overflow: hidden; aspect-ratio: 16 / 9; background:
+  radial-gradient(circle at 30% 35%, rgba(182,233,79,.18), transparent 45%),
+  radial-gradient(circle at 75% 70%, rgba(120,140,255,.14), transparent 50%),
+  linear-gradient(160deg, #1d2021, #0d0f10); border: 1px solid var(--glass-line); }
+.video.tall { aspect-ratio: 9 / 16; }
+.video svg.fig { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .55; }
+.play { position: absolute; inset: 0; margin: auto; width: 68px; height: 68px; border-radius: 50%; background: var(--lime); color: var(--on-lime); display: grid; place-items: center; box-shadow: 0 10px 30px rgba(0,0,0,.45); }
+.play svg { width: 28px; height: 28px; margin-left: 4px; }
+.vtag { position: absolute; top: 10px; inset-inline-start: 10px; background: rgba(7,8,8,.72); border: 1px solid var(--glass-line); border-radius: 999px; padding: 2px 10px; font-size: 11.5px; }
+.vdur { position: absolute; bottom: 10px; inset-inline-end: 10px; background: rgba(7,8,8,.72); border-radius: 8px; padding: 0 8px; font-size: 11.5px; }
+
+/* player controls mock */
+.bar { position: absolute; inset-inline: 12px; bottom: 12px; display: grid; gap: 8px; }
+.track { height: 4px; border-radius: 4px; background: rgba(255,255,255,.18); overflow: hidden; direction: ltr; }
+.track i { display: block; height: 100%; width: 38%; background: var(--lime); }
+.ctrls { display: flex; align-items: center; justify-content: space-between; direction: ltr; font-size: 11.5px; color: var(--muted); }
+.ctrls b { display: flex; gap: 14px; color: var(--ink); }
+
+.values { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.val { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 12px; text-align: center; display: grid; gap: 2px; }
+.val .num { font-size: 30px; line-height: 1.1; }
+.btn { min-height: 52px; border-radius: 999px; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 800; font-size: 15px; border: 1px solid transparent; font-family: var(--display); width: 100%; }
+.btn.primary { background: var(--lime); color: var(--on-lime); min-height: 64px; font-size: 18px; }
+.btn.secondary { background: var(--glass); border-color: var(--glass-line); color: var(--ink); min-height: 48px; font-size: 14px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 1px solid var(--glass-line); background: var(--glass); border-radius: 999px; padding: 2px 10px; font-size: 12px; color: var(--muted); }
+
+.sheet { position: absolute; inset: 0; background: rgba(4,5,5,.94); display: grid; align-content: start; gap: 14px; padding: 14px 12px; }
+.sheet .top h3 { font-size: 16px; }
+.note { border: 1px solid var(--line); background: var(--deep); border-radius: 14px; padding: 10px 12px; font-size: 13px; color: var(--muted); }
+.note.warn { border-color: rgba(242,181,68,.35); background: rgba(242,181,68,.07); color: var(--ink); }
+
+.sources { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.srcc { padding: 14px; display: grid; gap: 4px; align-content: start; }
+.srcc p { color: var(--muted); font-size: 12.5px; }
+.yes { color: var(--lime); font-size: 12px; font-weight: 700; }
+.part { color: var(--warn); font-size: 12px; font-weight: 700; }
+.decide { border: 1px solid rgba(242,181,68,.35); background: rgba(242,181,68,.07); border-radius: 16px; padding: 14px 16px; display: grid; gap: 8px; font-size: 13.5px; }
+.decide b { color: var(--warn); }
+
+@media (max-width: 1100px) { .phones { grid-template-columns: repeat(2, minmax(0, 1fr)); } .sources { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 760px) { .phones { grid-template-columns: 1fr; } .sources { grid-template-columns: 1fr 1fr; } }
+</style>
+</head>
+<body>
+<main class="page">
+  <p class="small faint">KOCHIVO · فيديو التمرين · نسخة 1</p>
+  <h1>الكابتن يحط لينك، واللاعب يتفرج من جوه KOCHIVO</h1>
+  <p class="lede">النهارده لما الكابتن يعمل تمرين جديد ويحط لينك فيديو، اللاعب بيدوس عليه فيخرج من المنصة ويروح يوتيوب. الجديد: الفيديو يشتغل جوه شاشة التمرين نفسها، واللاعب مايسيبش التمرين.</p>
+
+  <section aria-labelledby="flow">
+    <div class="head"><h2 id="flow">بيمشي إزاي</h2><p>أربع شاشات: الكابتن بيضيف اللينك، واللاعب بيشوف الفيديو في التمرين، وبيشغله، ولو مفيش نت.</p></div>
+    <div class="phones">
+
+      <div class="pw">
+        <div class="phone">
+          <div class="status"><span>17:01</span><span>KOCHIVO</span></div>
+          <div class="top"><span class="iconbtn" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><h3>تمرين جديد</h3></div>
+          <label class="f">اسم التمرين<span class="input">سحب كابل بإيد واحدة</span></label>
+          <label class="f">العضلة<span class="input">ضهر</span></label>
+          <label class="f">لينك الفيديو<span class="input ltr ok">https://youtu.be/kX9…</span></label>
+          <span class="okline"><i>✓</i>لينك يوتيوب سليم. هيشتغل جوه KOCHIVO.</span>
+          <span class="small faint">اللاعب هيشوفه كده:</span>
+          <div class="video"><svg class="fig" viewBox="0 0 160 90" aria-hidden="true"><g fill="none" stroke="#b6e94f" stroke-width="2" stroke-linecap="round"><circle cx="72" cy="26" r="6"/><path d="M72 32v22l-8 18M72 54l8 18M72 38l20-10M92 28l14-6"/></g></svg>
+            <span class="play"><svg viewBox="0 0 24 24"><path d="M7 5v14l11-7Z" fill="currentColor"/></svg></span><span class="vtag">يوتيوب</span><span class="vdur num">0:48</span></div>
+          <div class="chips"><span class="chip">يوتيوب</span><span class="chip">شورتس</span><span class="chip">جوجل درايف</span><span class="chip">لينك mp4</span></div>
+          <button class="btn secondary" type="button">احفظ التمرين</button>
+        </div>
+        <p>أول ما الكابتن يلزق اللينك، بيظهرله الفيديو زي ما اللاعب هيشوفه بالظبط. لو اللينك مش هيشتغل جوه المنصة بنقوله على طول.</p>
+      </div>
+
+      <div class="pw">
+        <div class="phone">
+          <div class="status"><span>17:01</span><span>KOCHIVO</span></div>
+          <div class="video"><svg class="fig" viewBox="0 0 160 90" aria-hidden="true"><g fill="none" stroke="#b6e94f" stroke-width="2" stroke-linecap="round"><circle cx="72" cy="26" r="6"/><path d="M72 32v22l-8 18M72 54l8 18M72 38l20-10M92 28l14-6"/></g></svg>
+            <span class="play"><svg viewBox="0 0 24 24"><path d="M7 5v14l11-7Z" fill="currentColor"/></svg></span><span class="vtag">فيديو من الكابتن</span><span class="vdur num">0:48</span></div>
+          <h2 style="font-size:24px">سحب كابل بإيد واحدة</h2>
+          <p class="muted">المجموعة <span class="num">2</span> من <span class="num">4</span> · ركّز على الكوع ورا</p>
+          <div class="values">
+            <div class="val"><span class="small faint">الوزن</span><span class="num">22.5</span><span class="small faint">كجم</span></div>
+            <div class="val"><span class="small faint">العدات</span><span class="num">12</span><span class="small faint">عدة</span></div>
+          </div>
+          <div style="flex:1"></div>
+          <button class="btn primary" type="button" style="margin-top:120px">خلصت المجموعة</button>
+        </div>
+        <p>الفيديو بياخد مكان الصورة المتحركة فوق التمرين. نفس المكان اللي اللاعب متعود يبص عليه.</p>
+      </div>
+
+      <div class="pw">
+        <div class="phone">
+          <div class="status"><span>17:01</span><span>KOCHIVO</span></div>
+          <div class="sheet" style="position:relative;inset:auto;padding:0;background:none">
+            <div class="top"><span class="iconbtn" aria-label="قفل"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span><h3>سحب كابل بإيد واحدة</h3></div>
+            <div class="video tall" style="max-height:470px;justify-self:center;width:265px"><svg class="fig" viewBox="0 0 90 160" aria-hidden="true"><g fill="none" stroke="#b6e94f" stroke-width="2" stroke-linecap="round"><circle cx="44" cy="50" r="7"/><path d="M44 57v30l-10 28M44 87l10 28M44 65l22-12M66 53l12-8"/></g></svg>
+              <span class="vtag">شورتس</span>
+              <div class="bar"><div class="track"><i></i></div><div class="ctrls"><span class="num">0:18 / 0:48</span><b><span>❚❚</span><span>⟲</span><span>⛶</span></b></div></div>
+            </div>
+            <p class="small muted" style="text-align:center">الفيديو شغال من غير صوت. دوس عليه عشان الصوت.</p>
+            <button class="btn secondary" type="button">ارجع للمجموعة</button>
+          </div>
+        </div>
+        <p>بيفتح فوق التمرين، والفيديو الطولي (شورتس) بيظهر طولي. بيبدأ من غير صوت عشان الجيم، ولما يقفله يرجع لنفس المجموعة.</p>
+      </div>
+
+      <div class="pw">
+        <div class="phone">
+          <div class="status"><span>17:01</span><span>KOCHIVO</span></div>
+          <div class="video" style="filter:grayscale(.6) brightness(.7)"><svg class="fig" viewBox="0 0 160 90" aria-hidden="true"><g fill="none" stroke="#7d8288" stroke-width="2" stroke-linecap="round"><circle cx="72" cy="26" r="6"/><path d="M72 32v22l-8 18M72 54l8 18M72 38l20-10M92 28l14-6"/></g></svg>
+            <span class="vtag">مفيش نت</span></div>
+          <div class="note warn">الفيديو محتاج نت. تقدر تكمّل تمرينك عادي، وكل حاجة بتتحفظ.</div>
+          <h2 style="font-size:24px">سحب كابل بإيد واحدة</h2>
+          <div class="note">لو اللينك من موقع مش بيسمح يشتغل جوه المنصة (زي انستجرام أو تيك توك): بيظهر زرار «افتح الفيديو» ويفتحه برا.</div>
+          <button class="btn secondary" type="button">افتح الفيديو</button>
+          <div class="values">
+            <div class="val"><span class="small faint">الوزن</span><span class="num">22.5</span></div>
+            <div class="val"><span class="small faint">العدات</span><span class="num">12</span></div>
+          </div>
+        </div>
+        <p>من غير نت التمرين مايقفش أبدًا. واللينكات اللي مش بتشتغل جوه المنصة بتفتح برا زي النهارده.</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="src">
+    <div class="head"><h2 id="src">اللينكات اللي هتشتغل</h2><p>الكابتن يلزق أي لينك من دول.</p></div>
+    <div class="sources">
+      <div class="glass srcc"><h3>يوتيوب</h3><span class="yes">جوه KOCHIVO</span><p>فيديو عادي أو لينك مختصر youtu.be.</p></div>
+      <div class="glass srcc"><h3>يوتيوب شورتس</h3><span class="yes">جوه KOCHIVO</span><p>بيظهر طولي.</p></div>
+      <div class="glass srcc"><h3>جوجل درايف</h3><span class="yes">جوه KOCHIVO</span><p>لو الفيديو متشارك «أي حد معاه اللينك».</p></div>
+      <div class="glass srcc"><h3>لينك فيديو مباشر</h3><span class="yes">جوه KOCHIVO</span><p>أي لينك آخره mp4.</p></div>
+      <div class="glass srcc"><h3>انستجرام وتيك توك</h3><span class="part">بيفتح برا</span><p>المواقع دي مش بتسمح تشتغل جوه أي منصة تانية.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="decide">
+      <b>قرارات ليك</b>
+      <span><b>1.</b> الفيديو يبدأ من غير صوت؟ اقتراحي آه، عشان اللاعب في الجيم، ولو عايز الصوت يدوس.</span>
+      <span><b>2.</b> لو التمرين ليه صورة متحركة وفيديو من الكابتن، يظهر الفيديو الأول؟ اقتراحي آه، فيديو الكابتن أهم.</span>
+      <span><b>3.</b> نفس الفيديو يظهر في مكتبة التمارين عند الكابتن وفي معاينة البرنامج عند اللاعب؟ اقتراحي آه.</span>
+    </div>
+  </section>
+</main>
+</body>
+</html>
