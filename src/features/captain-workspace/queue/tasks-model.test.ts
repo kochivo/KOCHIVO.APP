@@ -1,6 +1,7 @@
 import { expect, it } from 'vitest';
 import type { RosterPlayer } from '@/features/roster';
 import { buildTasks, contactedTasks, taskCounts, filterTasks } from './tasks-model';
+import type { CustomFormItem } from './model';
 const now = new Date('2026-11-14T12:00:00Z');
 const player = (id: string, patch: Partial<RosterPlayer> = {}): RosterPlayer => ({
   playerId: id, fullName: id, accessUntil: '2026-12-01', startedOn: '2026-11-01',
@@ -8,6 +9,16 @@ const player = (id: string, patch: Partial<RosterPlayer> = {}): RosterPlayer => 
 });
 const video = (id: string, at: string) => ({ kind: 'form' as const, id, player_id: 'a', player_name: 'A',
   created_at: at, reviewed_at: null, reply: null, exercise_name: 'Squat', note: 'Help' });
+it('includes an answered assessment once and excludes reviewed assessments', () => {
+  const request: CustomFormItem = { kind: 'request', id: 'r', player_id: 'a', player_name: 'A',
+    title: 'Monthly assessment', created_at: '2026-11-13T10:00:00Z', reviewed_at: null, reply: null,
+    alert: false, snapshot: { source: { kind: 'form', id: 'r', at: '2026-11-13T10:00:00Z' }, facts: {} } };
+  const tasks = buildTasks([request, { ...request, id: 'done', reviewed_at: '2026-11-14T10:00:00Z' }],
+    [player('a')], [], now, 'Africa/Cairo');
+  expect(tasks).toMatchObject([{ id: 'request:r', kind: 'checkin', text: 'Monthly assessment',
+    href: '/captain/players/a/assessments?requestId=r#assessment-details' }]);
+  expect(taskCounts(tasks).all).toBe(1);
+});
 it('classifies all six kinds and orders videos, absence, check-ins, swaps, renewals, programs oldest first', () => {
   const tasks = buildTasks([video('new', '2026-11-13T10:00:00Z'), video('old', '2026-11-10T10:00:00Z'), {
     kind: 'checkin', id: 'check', player_id: 'a', player_name: 'A', created_at: '2026-11-01T10:00:00Z',

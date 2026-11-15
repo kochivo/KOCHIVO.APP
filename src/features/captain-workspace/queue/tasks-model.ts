@@ -8,14 +8,18 @@ export type TaskKind = 'video' | 'absent' | 'checkin' | 'swap' | 'renew' | 'prog
 export type TaskFilter = 'all' | TaskKind;
 export type SwapTask = { id: string; player_id: string; created_at: string; from: string; to: string };
 export type CaptainTask = { id: string; kind: TaskKind; playerId: string; name: string; at: string;
-  avatar?: string | null; text?: string | null; timezone?: string; days?: number; neverTrained?: boolean; item?: InboxItem; swap?: SwapTask };
+  avatar?: string | null; text?: string | null; href?: string; timezone?: string; days?: number; neverTrained?: boolean; item?: InboxItem; swap?: SwapTask };
 const priority: TaskKind[] = ['video', 'receipt', 'absent', 'checkin', 'swap', 'renew', 'program'];
 export const taskTabs: TaskFilter[] = ['all', 'video', 'checkin', 'receipt', 'absent', 'swap', 'renew', 'program'];
 type ReceiptTask = { id: string; player_id: string; created_at: string };
 
 export function buildTasks(items: QueueItem[], players: RosterPlayer[], swaps: SwapTask[], now: Date, timezone: string, receipts: ReceiptTask[] = []): CaptainTask[] {
   const roster = new Map(players.map(player => [player.playerId, player]));
-  const tasks: CaptainTask[] = items.flatMap(item => {
+  const tasks = items.flatMap<CaptainTask>(item => {
+    if (item.kind === 'request' && !item.reviewed_at) return [{ id: `request:${item.id}`, kind: 'checkin',
+      playerId: item.player_id, name: item.player_name, at: item.created_at, text: item.title,
+      avatar: roster.get(item.player_id)?.avatarUrl,
+      href: `/captain/players/${item.player_id}/assessments?requestId=${item.id}#assessment-details` }];
     if (item.reviewed_at || (item.kind !== 'form' && item.kind !== 'checkin')) return [];
     const kind = item.kind === 'form' ? 'video' : 'checkin';
     return [{ id: `${kind}:${item.id}`, kind, playerId: item.player_id, name: item.player_name,

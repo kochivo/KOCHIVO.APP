@@ -28,3 +28,12 @@ it('keeps the row selection separate from its task-specific action', () => {
   expect(html).toContain('عايز يبدل Squat بـ Press');
   expect(html.match(/<button/g)).toHaveLength(2);
 });
+it('links an assessment row and action to the existing review screen', () => {
+  const html = render(createElement(TaskRow, { task: { id: 'request:r', playerId: 'p', name: 'Player',
+    kind: 'checkin', at: '2026-11-14', text: 'Assessment',
+    href: '/captain/players/p/assessments?requestId=r#assessment-details' },
+  selected: false, first: false, pending: false, onSelect: () => {}, onAction: () => {} }));
+  expect(html.match(/href="\/ar\/captain\/players\/p\/assessments\?requestId=r#assessment-details"/g)).toHaveLength(2);
+  expect(html).toContain('dir-icon');
+  expect(html).toContain('press');
+});

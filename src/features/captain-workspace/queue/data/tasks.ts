@@ -16,13 +16,14 @@ export async function loadTasks(at?: string) {
   if (auth.error || !auth.data?.claims.sub) throw new Error('Unauthenticated');
   const captainId = auth.data.claims.sub;
   const [roster, first, timezone, locale, receipts] = await Promise.all([
-    fetchRoster(), loadQueuePage({ skipRequests: true }), getTimezone(), getLocale(), fetchPendingPaymentReceipts(),
+    fetchRoster(), loadQueuePage(), getTimezone(), getLocale(), fetchPendingPaymentReceipts(),
   ]);
   if (roster.error || !roster.players) throw new Error(roster.error);
   const items = [...first.items];
   let page = first;
-  while (page.cursor) {
-    page = await loadQueuePage({ cursor: page.cursor, skipRenewals: true, skipRequests: true });
+  while (page.cursor || page.requestCursor) {
+    page = await loadQueuePage({ cursor: page.cursor ?? undefined, requestCursor: page.requestCursor ?? undefined,
+      skipRenewals: true, skipInbox: !page.cursor, skipRequests: !page.requestCursor });
     items.push(...page.items);
   }
   const swaps: SwapTask[] = [];

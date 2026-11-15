@@ -12,8 +12,8 @@ export const taskProgress = (completed: number, pending: number) => completed + 
 
 export function buildHomeTasks(tasks: CaptainTask[]): HomeTask[] {
   return tasks.map(task => ({ id: task.id, playerId: task.playerId, name: task.name,
-    kind: task.kind === 'video' ? 'form' : task.kind === 'program' ? 'noProgram' : task.kind,
-    href: task.kind === 'receipt' ? `/captain/billing#receipt-${task.id.slice('receipt:'.length)}` : '/captain/tasks',
+    kind: task.href ? 'assessment' : task.kind === 'video' ? 'form' : task.kind === 'program' ? 'noProgram' : task.kind,
+    href: task.href ?? (task.kind === 'receipt' ? `/captain/billing#receipt-${task.id.slice('receipt:'.length)}` : '/captain/tasks'),
     urgent: task.kind === 'video' || task.kind === 'receipt' || (task.kind === 'absent' && (task.days ?? 0) >= 7),
     days: task.days, title: task.text ?? undefined }));
 }

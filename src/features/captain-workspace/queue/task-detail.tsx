@@ -25,7 +25,8 @@ export function TaskDetail({ task, pending, onBack, onSend }: { task: CaptainTas
     </header>
     {task.item && <Media key={task.id} item={task.item} />}
     <p className="my-stack whitespace-pre-wrap text-sm leading-8 text-muted">{taskText(task, t)}</p>
-    {task.kind === 'receipt' ? <Link href={`/${locale}/captain/billing#receipt-${task.id.slice('receipt:'.length)}`}
+    {task.href ? <Link href={`/${locale}${task.href}`} className={buttonClass({ variant: 'secondary', block: false })}>{t(`${task.kind}Action`)}</Link>
+      : task.kind === 'receipt' ? <Link href={`/${locale}/captain/billing#receipt-${task.id.slice('receipt:'.length)}`}
       className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-page-x text-sm" })}>{t('receiptAction')}</Link>
       : <Compose key={task.id} disabled={pending} onSend={onSend} />}
   </section>;
