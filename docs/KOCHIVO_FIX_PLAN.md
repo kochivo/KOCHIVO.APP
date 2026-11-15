@@ -54,4 +54,7 @@ No migration goes to production without the owner's yes. Code-only fixes ship wi
 
 | Date | Card | Status |
 |---|---|---|
-| 2026-11-15 | T-289, T-290, T-291 | Dispatched to Codex (C, D, E). Waiting for review |
+| 2026-11-15 | T-289, T-290, T-291 | Dispatched to Codex (C, D, E) |
+| 2026-11-15 | T-289 | Committed c0177132. Migration 0112 written and tested, **not applied** |
+| 2026-11-15 | T-291 | Committed 045828e3. Code only; ships with the next staging push |
+| 2026-11-15 | T-290 | Committed 47289225. Migration 0113 written and tested, **not applied**. Review also closed an audio re-attach gap: a new voice-note or chat row must point at the sender's own upload. Live check: all 7 private objects have `owner_id` set, so the rule holds on production |

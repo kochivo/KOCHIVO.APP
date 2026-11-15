@@ -62,4 +62,14 @@ All were run as `begin; set local role authenticated; set request.jwt.claims …
 
 ## 7. Regression tests added by the fixes
 
-Filled in when each fix lands (see `docs/KOCHIVO_FIX_PLAN.md`).
+| Fix | Test file | Before the fix | After the fix |
+|---|---|---|---|
+| T-289 (DB-01) | `supabase/tests/purge-with-forms.test.ts` | 3 failed, 2 passed (FK 23503) | 5 passed |
+| T-290 (SEC-06/07) | `supabase/tests/transfer-privacy.test.ts`, `src/features/player-shell/start-gate.test.ts` | 6 failed, 1 passed, then 3 failed after the re-attach tests were added | all passed. Whole `supabase/tests`: 115 files, 949 tests |
+| T-291 (BL-01) | `src/features/nutrition/day-type-filter.test.ts` | new tests | 6 passed |
+
+Gates after all three landed (plus T-287), on 47289225:
+
+- `npm run build`: PASSED.
+- `npm run check`: PASSED, 873 files and 5386 tests.
+- One earlier run had a single 20 s timeout under load. It passed on the rerun.
