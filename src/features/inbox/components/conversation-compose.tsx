@@ -1,4 +1,6 @@
 'use client';
+import { secondaryButtonClass } from '@/ui/secondary-button-class';
+import { editableFieldClass } from '@/ui/edit-in-place';
 import { useEffect, useRef, useState } from 'react';
 import { Mic, Square, Trash2 } from 'lucide-react';
 import { KoSend } from '@/ui/icons/ko-send';
@@ -40,11 +42,11 @@ export function ConversationCompose({ onSendText, onSendVoice, onGuard }: {
     <form className="flex items-center gap-2 rounded-2xl border border-line bg-bg/25 p-1.5" onSubmit={event => { event.preventDefault(); void send(); }}>
       <button type="button" disabled={busy || state.status === 'requesting'} aria-label={t(state.status === 'recording' ? 'stop' : 'record')}
         onClick={() => state.status === 'recording' ? recorder.stop() : void recorder.start()}
-        className="grid min-h-12 min-w-12 place-items-center rounded-xl text-muted disabled:opacity-50">{state.status === 'recording' ? <Square className="size-4" aria-hidden /> : <Mic strokeWidth={1.5} className="size-4" aria-hidden />}</button>
+        className={`${secondaryButtonClass} grid min-h-12 min-w-12 place-items-center rounded-xl text-muted disabled:opacity-50`}>{state.status === 'recording' ? <Square className="size-4" aria-hidden /> : <Mic strokeWidth={1.5} className="size-4" aria-hidden />}</button>
       {voice ? <div role="status" className="min-w-0 flex-1 text-xs text-muted"><span dir="ltr">{voiceDuration(state.seconds)}</span>{state.status === 'recording' && <span className="ms-2">{t('recording')}</span>}</div>
         : <input value={text} onChange={event => setText(event.target.value)} maxLength={1000} disabled={busy || state.status === 'requesting'}
-          aria-label={t('placeholder')} placeholder={t('placeholder')} className="min-h-12 min-w-0 flex-1 bg-transparent px-2 text-[13px] outline-none placeholder:text-faint" />}
-      {voice && <button type="button" disabled={busy} onClick={recorder.reset} aria-label={t('discard')} className="grid min-h-12 min-w-12 place-items-center text-muted"><Trash2 className="size-4" aria-hidden /></button>}
+          aria-label={t('placeholder')} placeholder={t('placeholder')} className={`${editableFieldClass} min-h-12 min-w-0 flex-1 bg-surface px-2 text-[13px] outline-none placeholder:text-faint`} />}
+      {voice && <button type="button" disabled={busy} onClick={recorder.reset} aria-label={t('discard')} className={`${secondaryButtonClass} grid min-h-12 min-w-12 place-items-center text-muted`}><Trash2 className="size-4" aria-hidden /></button>}
       <Button type="submit" aria-label={t('send')} disabled={busy || state.status === 'recording' || state.status === 'requesting' || (!text.trim() && state.status !== 'recorded')}
         variant={'primary'} block={false} className={"grid min-h-12 min-w-12 place-items-center disabled:opacity-50"}><KoSend className="size-4 text-on-lime! [&_*]:text-on-lime!" aria-hidden /></Button>
     </form>

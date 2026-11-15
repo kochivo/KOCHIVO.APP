@@ -6,6 +6,7 @@ import type { LibraryExercise } from '@/features/programs';
 import { ExerciseImage } from '@/ui/exercise-image';
 import { messages } from './messages';
 import { Button } from '@/ui/button';
+import { RowChevron } from '@/ui/row-chevron';
 
 export const muscleTabs = ['all', 'legs', 'chest', 'back', 'shoulders', 'arms', 'abs', 'cardio'] as const;
 export type MuscleTab = typeof muscleTabs[number];
@@ -47,6 +48,7 @@ export function ExerciseCard({ exercise, onSelect }: {
       <span className="rounded-full bg-surface-raised px-2 py-1">{muscle ? t(muscle) : exercise.body_part || t('missing')}</span>
       <span className="rounded-full bg-surface-raised px-2 py-1">{equipment ? t(equipment) : exercise.equipment || t('missing')}</span>
       {exercise.is_own && <span className="rounded-full bg-lime/10 px-2 py-1 text-lime">{t('own')}</span>}
+      <RowChevron className="ms-auto" />
     </span>
   </Button>;
 }

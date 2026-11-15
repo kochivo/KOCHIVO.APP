@@ -1,3 +1,4 @@
+import { secondaryButtonClass } from '@/ui/secondary-button-class';
 import 'server-only';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
@@ -18,7 +19,7 @@ export async function TemplateTrainingEntry({ planId }: { planId: string }) {
   const locale = await getLocale(), t = createT(messages, locale);
   const result = await readProgram(planId);
   if (result.error !== undefined) return <div role="alert" className="glass rounded-card p-5 text-danger">
-    <p>{t('error')}</p><Link className="inline-flex min-h-12 items-center text-ink" href={`/captain/templates?plan=${planId}`}>{t('retry')}</Link>
+    <p>{t('error')}</p><Link className={`${secondaryButtonClass} inline-flex min-h-12 items-center text-ink`} href={`/captain/templates?plan=${planId}`}>{t('retry')}</Link>
   </div>;
   if (!editableTemplate.safeParse(result.data).success) notFound();
   return <TrainingEditorEntry key={result.data.id} mode="template" initial={result.data} programs={[]} loadingLabel={t('loading')} />;

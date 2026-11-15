@@ -1,5 +1,6 @@
 'use client';
 import { Button } from '@/ui/button';
+import { RowChevron } from '@/ui/row-chevron';
 import { useState } from 'react';
 import Link from 'next/link';
 import { X } from 'lucide-react';
@@ -22,7 +23,7 @@ export function WorkspacePackages({ packages, onChange }: { packages: Package[];
     <Link href="/captain/billing/packages" className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex items-center text-sm min-h-12 px-4" })}>{tiers('manage')}</Link>
     {packages.length ? <ul>{packages.map(item => <li key={item.id} className="border-t border-line-soft first:border-0">
       <Button variant="secondary" type="button" onClick={() => setPanel('manage')} className="flex min-h-12 w-full items-center gap-2.5 py-3 text-start text-[13px]">
-        <span className="min-w-0 flex-1 break-words">{item.name}</span><b className="font-display tabular-nums">{formatNumber(item.price_egp, locale)}</b><span>{t('currency')}</span>
+        <span className="min-w-0 flex-1 break-words">{item.name}</span><b className="font-display tabular-nums">{formatNumber(item.price_egp, locale)}</b><span>{t('currency')}</span><RowChevron />
       </Button></li>)}</ul> : <p className="py-3 text-xs text-faint">{legacy('noPackages')}</p>}
     <Button type="button" variant={'secondary'} block={false} className={"mt-2 min-h-12 w-full text-[13px]"} onClick={() => setPanel('add')}>{t('addPackage')}</Button>
     {panel && <ResponsiveDialog modal fallbackId="billing-heading" onDismiss={() => setPanel(null)} aria-labelledby="package-panel-title"

@@ -1,4 +1,5 @@
 'use client';
+import { editableFieldClass } from '@/ui/edit-in-place';
 import { IconButton } from '@/ui/icon-button';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 
@@ -42,7 +43,7 @@ export function ActivateSheet({ packages, busy = false, error, onClose, onSave, 
       {captainWorkspaceEnabled() ? <IconButton aria-label={t('close')} disabled={busy} onClick={onClose} className="min-h-12 min-w-12"><X aria-hidden /></IconButton> : <Button variant="ghost" aria-label={t('close')} disabled={busy} onClick={onClose} className="min-h-12 min-w-12"><X aria-hidden /></Button>}</header>
     <form className="mt-5 space-y-4" onSubmit={event => { event.preventDefault(); if (valid && !busy) onSave({ kind, quantity, packageId, price: Number(price), paid: Number(paid), freeTrial, method }); }}>
       <ManualPaymentMethod value={method} onChange={setMethod} />
-      <label className="block space-y-2"><span>{t('package')}</span><select aria-label={t('package')} value={packageId ?? ''} onChange={event => pick(event.target.value)} className="min-h-12 w-full rounded-control border border-line bg-surface p-3">
+      <label className="block space-y-2"><span>{t('package')}</span><select aria-label={t('package')} value={packageId ?? ''} onChange={event => pick(event.target.value)} className={captainWorkspaceEnabled() ? `${editableFieldClass} min-h-12 w-full rounded-control border border-line bg-surface p-3` : "min-h-12 w-full rounded-control border border-line bg-surface p-3"}>
         <option value="">{t('custom')}</option>{packages.map(pkg => <option key={pkg.id} value={pkg.id}>{pkg.name}</option>)}</select></label>
       <Segmented aria-label={t('kind')} value={kind} options={[{ value: 'days', label: t('byDays') }, { value: 'sessions', label: t('bySessions') }]}
         onChange={value => { setKind(value as 'days' | 'sessions'); setPackageId(null); setQuantity(1); }} />

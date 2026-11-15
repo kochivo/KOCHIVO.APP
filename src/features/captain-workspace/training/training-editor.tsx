@@ -1,10 +1,13 @@
 'use client';
 
+import { clickableClass, Button } from '@/ui/button';
+import { Disclosure } from '@/ui/disclosure';
+import { RowChevron } from '@/ui/row-chevron';
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Dumbbell } from 'lucide-react';
-import { Button } from '@/ui/button';
+
 import { useLocale, useT } from '@/core/i18n/client';
 import { activateProgram, startTraining, useTrainingAutosave, validateForActivation, programMessages } from '@/features/programs';
 import type { ProgramDraft } from '@/features/programs';
@@ -153,11 +156,10 @@ export function TrainingEditor({ playerId, playerName, remainingDays, playerFact
           </div>
       </fieldset>}
     {template && assigning && draft && <AssignmentSheet programId={draft.id} programTitle={draft.title} onClose={() => setAssigning(false)} />}
-    {!template && <details className="glass rounded-card border border-line-soft px-5 py-2">
-      <summary className="flex min-h-12 cursor-pointer items-center text-xs text-muted">{t('history')}</summary>
-      {programs.length ? programs.map(row => <Link key={row.id} href={`/captain/programs/${row.id}`} className="flex min-h-12 items-center justify-between gap-3 border-t border-line-soft text-sm">
-        <span>{row.title}</span><span className="text-faint">{pt(row.status === 'active' ? 'active' : row.status === 'archived' ? 'archived' : 'draft')}</span>
+    {!template && <Disclosure label={t('history')} className="glass rounded-card text-xs text-muted">
+      {programs.length ? programs.map(row => <Link key={row.id} href={`/captain/programs/${row.id}`} className={`${clickableClass} flex min-h-12 items-center justify-between gap-3 border-t border-line-soft text-sm`}>
+        <span>{row.title}</span><span className="ms-auto text-faint">{pt(row.status === 'active' ? 'active' : row.status === 'archived' ? 'archived' : 'draft')}</span><RowChevron />
       </Link>) : <p className="py-3 text-faint">{t('emptyPrograms')}</p>}
-    </details>}
+    </Disclosure>}
   </section>;
 }

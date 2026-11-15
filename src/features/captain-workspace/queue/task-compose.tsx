@@ -1,4 +1,6 @@
 'use client';
+import { secondaryButtonClass } from '@/ui/secondary-button-class';
+import { editableFieldClass } from '@/ui/edit-in-place';
 import { useRef, useState } from 'react';
 import { Mic, Square, Trash2 } from 'lucide-react';
 import { KoSend } from '@/ui/icons/ko-send';
@@ -29,14 +31,14 @@ export function TaskCompose({ onSend, disabled }: { disabled: boolean;
   return <div className="mt-3 space-y-2">
     {(state.status === 'denied' || state.status === 'unsupported') && <p role="alert" className="text-sm text-danger">{t('voiceError')}</p>}
     {state.status === 'recorded' && <div className="flex items-center gap-2"><audio controls src={state.url} className="min-w-0 flex-1" />
-      <button disabled={disabled} aria-label={t('discard')} className="min-h-12 min-w-12" onClick={() => { recorder.reset(); voiceId.current = undefined; }}><Trash2 aria-hidden className="mx-auto size-4" /></button></div>}
+      <button disabled={disabled} aria-label={t('discard')} className={`${secondaryButtonClass} min-h-12 min-w-12`} onClick={() => { recorder.reset(); voiceId.current = undefined; }}><Trash2 aria-hidden className="mx-auto size-4" /></button></div>}
     <form className="glass flex items-center gap-2 rounded-control p-1.5" onSubmit={event => { event.preventDefault(); void send(); }}>
       <button type="button" disabled={disabled || state.status === 'requesting' || state.status === 'recorded'}
-        aria-label={t(recording ? 'stop' : 'mic')} className="grid min-h-12 min-w-12 place-items-center text-muted"
+        aria-label={t(recording ? 'stop' : 'mic')} className={`${secondaryButtonClass} grid min-h-12 min-w-12 place-items-center text-muted`}
         onClick={() => recording ? recorder.stop() : void recorder.start()}>{recording ? <Square aria-hidden className="size-4" /> : <Mic aria-hidden className="size-4" />}</button>
       {recording ? <span role="status" className="min-w-0 flex-1 text-xs text-muted">{t('recording')}</span> :
         <input id="task-reply" aria-label={t('placeholder')} placeholder={t('placeholder')} maxLength={1000} value={body} disabled={disabled}
-          onChange={event => setBody(event.target.value)} className="min-h-12 min-w-0 flex-1 bg-transparent text-sm outline-none" />}
+          onChange={event => setBody(event.target.value)} className={`${editableFieldClass} min-h-12 min-w-0 flex-1 bg-surface text-sm outline-none`} />}
       <Button disabled={blocked || (!body.trim() && state.status !== 'recorded')} type="submit" variant={'primary'} block={false} className={"flex min-h-12 shrink-0 items-center gap-1 px-3 text-xs font-semibold disabled:opacity-50"}>
         <KoSend aria-hidden className="size-4" />{t('send')}</Button>
     </form>

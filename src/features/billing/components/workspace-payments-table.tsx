@@ -1,4 +1,6 @@
 'use client';
+import { secondaryButtonClass } from '@/ui/secondary-button-class';
+import { RowChevron } from '@/ui/row-chevron';
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useLocale, useT } from '@/core/i18n/client';
@@ -31,7 +33,7 @@ export function WorkspacePaymentsTable({ players, packages, today }: { players: 
       <th className="py-3 text-start font-normal">{methodT('method')}</th>
       <th className="hidden py-3 text-start font-normal min-[761px]:table-cell">{t('date')}</th><th className="py-3 text-start font-normal">{t('status')}</th>
     </tr></thead><tbody>{paid.map(player => <tr key={player.playerId} className="border-t border-line-soft">
-      <td className="py-1 pe-2"><button onClick={() => { setAction('history'); setSelectedId(player.playerId); }} className="min-h-12 text-start">{player.fullName}</button></td>
+        <td className="py-1 pe-2"><button onClick={() => { setAction('history'); setSelectedId(player.playerId); }} className={`${secondaryButtonClass} min-h-12 text-start`}>{player.fullName}<RowChevron /></button></td>
       <td className="py-3 pe-2 font-display tabular-nums">{player.lastPayment?.amount_egp == null ? legacy('noAmount') : formatNumber(player.lastPayment.amount_egp, locale)}</td>
       <td className="py-3 pe-2 text-muted">{methodT(player.lastPayment?.method ?? 'unset')}</td>
       <td className="hidden py-3 pe-2 text-muted min-[761px]:table-cell">{player.lastPayment && formatTimestampAr(player.lastPayment.created_at, { day: 'numeric', month: 'long' }, locale, timezone)}</td>

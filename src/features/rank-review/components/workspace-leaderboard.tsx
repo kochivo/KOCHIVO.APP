@@ -1,5 +1,6 @@
 'use client';
 
+import { clickableClass } from '@/ui/button';
 import { useState } from 'react';
 import type { ComponentProps } from 'react';
 import { createT } from '@/core/i18n/messages';
@@ -28,7 +29,7 @@ export function WorkspaceLeaderboard({ locale, board }: ComponentProps<typeof Le
         {(['thisMonth', 'allTime'] as const).map((key, index) => <button key={key} type="button"
           aria-pressed={allTime === Boolean(index)}
           onClick={() => { setAllTime(Boolean(index)); if (board.now) board.setMonth(currentMonth(board.now)); }}
-          className={`min-h-12 rounded-full px-3 text-xs font-bold ${allTime === Boolean(index) ? 'glass-strong text-ink' : 'text-muted'}`}>
+          className={`${clickableClass} min-h-12 rounded-full px-3 text-xs font-bold ${allTime === Boolean(index) ? 'glass-strong text-ink' : 'text-muted'}`}>
           {t(key)}
         </button>)}
       </div>

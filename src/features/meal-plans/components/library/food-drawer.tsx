@@ -1,12 +1,14 @@
 'use client';
 
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { editableFieldClass } from '@/ui/edit-in-place';
 import { useEffect, useId, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { X } from 'lucide-react';
 import { useLocale, useT } from '@/core/i18n/client';
 import { foodPhotoUrl } from '@/core/storage/media-url';
-import { Button } from '@/ui/button';
+import { Button, buttonClass } from '@/ui/button';
 import { IconButton } from '@/ui/icon-button';
 import { LoadingState } from '@/ui/loading-state';
 import { ResponsiveDialog } from '@/ui/responsive-dialog';
@@ -17,7 +19,6 @@ import { kcalMismatch } from '../../food-library-rules';
 import { messages as foodMessages } from '../../messages';
 import { messages } from './messages';
 import { FoodUnits } from './food-units';
-import { buttonClass } from '@/ui/button';
 
 export function FoodDrawer({ food, onClose, onSaved, onMutation }: {
   food: LibraryFood | null; onClose: () => void; onSaved: (food?: Food, optimisticId?: string) => void;
@@ -62,11 +63,11 @@ export function FoodDrawer({ food, onClose, onSaved, onMutation }: {
     {!food.custom && <p className="my-3 text-muted">{t('readonly')}</p>}
     <div className="mt-4 grid gap-4" aria-busy={busy}>
       <fieldset disabled className="grid gap-3">
-        <label>{t('name')}<input className={input} value={food.name} readOnly /></label>
-        <label>{t('nameEn')}<input dir="ltr" className={input} value={food.nameEn ?? ''} readOnly /></label>
+        <label>{t('name')}<input className={captainWorkspaceEnabled() ? `${editableFieldClass} ${input}` : input} value={food.name} readOnly /></label>
+        <label>{t('nameEn')}<input dir="ltr" className={captainWorkspaceEnabled() ? `${editableFieldClass} ${input}` : input} value={food.nameEn ?? ''} readOnly /></label>
         <p className="text-sm text-muted">{t('per100')}</p>
         <div className="glass-strong grid grid-cols-2 gap-3 rounded-control p-3">{(['kcal', 'protein', 'carbs', 'fat'] as const).map(key => <label key={key}>{t(key)}
-          <input className={input} type="number" value={food[key]} readOnly />
+          <input className={captainWorkspaceEnabled() ? `${editableFieldClass} ${input}` : input} type="number" value={food[key]} readOnly />
         </label>)}</div>
         <FoodUnits units={food.units ?? []} onChange={() => {}} disabled />
       </fieldset>

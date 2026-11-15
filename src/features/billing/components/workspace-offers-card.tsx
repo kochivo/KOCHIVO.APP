@@ -1,4 +1,5 @@
 'use client';
+import { secondaryButtonClass } from '@/ui/secondary-button-class';
 import { ChevronLeft } from 'lucide-react';
 import { useLocale, useT } from '@/core/i18n/client';
 import { useTimezone } from '@/core/timezone/client';
@@ -13,7 +14,7 @@ export function WorkspaceOffersCard({ catalog, now, busy, onNew, onEdit }: {
 }) {
   const t = useT(workspaceMessages), offers = useT(messages), locale = useLocale(), zone = useTimezone();
   return <section className="glass rounded-card border border-line-soft p-[18px]">
-    <header className="flex items-center justify-between gap-3"><h2 className="font-semibold">{t('offers')}</h2><button disabled={busy} onClick={onNew} className="press min-h-12 cursor-pointer rounded-full border border-line bg-surface px-4 text-sm focus-visible:ring-2 focus-visible:ring-lime">{t('newOffer')}</button></header>
+    <header className="flex items-center justify-between gap-3"><h2 className="font-semibold">{t('offers')}</h2><button disabled={busy} onClick={onNew} className={`${secondaryButtonClass} press min-h-12 cursor-pointer rounded-full border border-line bg-surface px-4 text-sm focus-visible:ring-2 focus-visible:ring-lime`}>{t('newOffer')}</button></header>
     {catalog.offers.length ? <ul>{catalog.offers.map(offer => <li key={offer.id} className="border-t border-line-soft first:border-0">
       <button disabled={busy} onClick={() => onEdit(offer)} className="press flex min-h-12 w-full cursor-pointer items-center gap-3 rounded-control border border-line-soft bg-surface px-3 py-3 text-start hover:bg-surface-raised focus-visible:ring-2 focus-visible:ring-lime">
         <span aria-hidden className="grid size-10 shrink-0 place-items-center rounded-full bg-surface-raised font-display text-lime">{t(offer.kind === 'bonus_days' ? 'bonus' : 'percent')}</span>

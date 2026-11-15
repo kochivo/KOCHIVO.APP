@@ -1,4 +1,6 @@
 'use client';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { editableFieldClass } from '@/ui/edit-in-place';
 import { useState } from 'react';
 import { useT } from '@/core/i18n/client';
 import { messages } from '../methods/messages';
@@ -15,7 +17,7 @@ export function PaymentMethodPicker({ methods, value, onChange, optional = false
   return <fieldset className="space-y-2">
     <legend className="mb-2 text-sm font-semibold">{t('method')}</legend>
     <select aria-label={t('method')} required={!optional} value={value ?? ''} onChange={event => { onChange(methods.find(row => row.method === event.target.value)?.method ?? null); setFeedback(''); }}
-      className="glass min-h-12 w-full rounded-control border border-line px-3">
+      className={captainWorkspaceEnabled() ? `${editableFieldClass} glass min-h-12 w-full rounded-control border border-line px-3` : "glass min-h-12 w-full rounded-control border border-line px-3"}>
       <option value="">{t(optional ? 'unset' : 'choose')}</option>
       {methods.map(row => <option key={row.method} value={row.method}>{t(row.method)}</option>)}
     </select>

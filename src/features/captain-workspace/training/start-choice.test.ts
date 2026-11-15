@@ -15,10 +15,10 @@ it('shows the selected template and direction chevron in the player sheet', () =
   expect(html).toContain('Strength');
 });
 
-it('keeps callers outside the player sheet in the original immediate-start mode', () => {
+it('keeps immediate-start mode while giving every template an opening cue', () => {
   const html = renderToStaticMarkup(createElement(StartChoice, props));
   expect(html).not.toContain('aria-pressed');
-  expect(html).not.toContain('dir-icon');
-  expect(html).not.toContain('lucide-chevron-down');
-  expect(html).toContain('Strength</button>');
+  expect(html).toContain('dir-icon');
+  expect(html).toContain('lucide-chevron-down');
+  expect(html).toContain('Strength</span>');
 });

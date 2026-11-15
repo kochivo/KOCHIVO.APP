@@ -1,5 +1,6 @@
 'use client';
 
+import { editableFieldClass } from '@/ui/edit-in-place';
 import { useState } from 'react';
 import { useT } from '@/core/i18n/client';
 import type { PlayerFacts } from '@/features/player-file';
@@ -23,7 +24,7 @@ export function TargetCalculator({ facts, onApply }: { facts: PlayerFacts; onApp
       <fieldset><legend>{t('goal')}</legend><div className="mt-2 flex flex-wrap gap-2">{(['cut', 'maintain', 'bulk'] as const).map(value =>
         <Button key={value} variant="secondary" aria-pressed={value === goal} onClick={() => { setGoal(value); setRate(value === 'bulk' ? .25 : .5); }}>{t(value)}</Button>)}</div></fieldset>
       {goal !== 'maintain' && <label className="grid gap-2">{t('rate')}<input type="number" min={0} max={2} step={.05} value={Number.isNaN(rate) ? '' : rate}
-        onChange={event => setRate(event.target.valueAsNumber)} className="min-h-12 rounded-control bg-surface px-3" /></label>}
+        onChange={event => setRate(event.target.valueAsNumber)} className={`${editableFieldClass} min-h-12 rounded-control bg-surface px-3`} /></label>}
     </div>
     <div className="grid content-start gap-4">{result && values.weightKg !== undefined && values.trainingDays !== undefined
       ? <CalculatorResults result={result.energy} weightKg={values.weightKg} trainingDays={values.trainingDays} split={split} onSplit={setSplit} />

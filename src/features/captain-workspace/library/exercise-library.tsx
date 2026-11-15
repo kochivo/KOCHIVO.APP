@@ -1,5 +1,8 @@
 'use client';
 
+import { editableFieldClass } from '@/ui/edit-in-place';
+import { rowLinkClass } from '@/ui/row-link';
+import { clickableClass } from '@/ui/button';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { Search } from 'lucide-react';
@@ -7,7 +10,7 @@ import { useCallback, useState } from 'react';
 import { useT } from '@/core/i18n/client';
 import { useResource } from '@/core/resource';
 import type { LibraryExercise } from '@/features/programs';
-import { Button } from '@/ui/button';
+import { Button, buttonClass } from '@/ui/button';
 import { Chip } from '@/ui/chip';
 import { KoPlus } from '@/ui/icons/ko-plus';
 import { LoadingState } from '@/ui/loading-state';
@@ -15,7 +18,6 @@ import { ExerciseCard, equipmentChips, muscleBodyParts, muscleTabs } from './exe
 import type { MuscleTab } from './exercise-card';
 import { searchLibraryExercises } from './data/search';
 import { messages } from './messages';
-import { buttonClass } from '@/ui/button';
 
 // The detail sheet opens only on tap, so it stays out of the first load.
 const ExerciseDetail = dynamic(() => import('./exercise-detail').then(module => module.ExerciseDetail));
@@ -65,15 +67,15 @@ export function ExerciseLibrary() {
     }}>
       <input type="search" maxLength={120} value={query} onChange={event => {
         setQuery(event.target.value); if (!event.target.value) changeFilter({ query: '' });
-      }} aria-label={t('search')} placeholder={t('search')} className="min-h-12 min-w-0 flex-1 bg-transparent text-sm" />
-      <button type="submit" aria-label={t('search')} className="flex min-h-12 min-w-12 items-center justify-center">
+      }} aria-label={t('search')} placeholder={t('search')} className={`${editableFieldClass} min-h-12 min-w-0 flex-1 bg-surface text-sm`} />
+      <button type="submit" aria-label={t('search')} className={`${rowLinkClass} flex min-h-12 min-w-12 items-center justify-center`}>
         <Search aria-hidden strokeWidth={1.5} className="size-5 text-muted" />
       </button>
     </form>
     <div role="group" aria-label={t('target')} className="flex gap-1 overflow-x-auto border-b border-line-soft">
       {muscleTabs.map(tab => <button key={tab} type="button" aria-pressed={muscle === tab}
         onClick={() => changeFilter({ muscle: tab })}
-        className={`min-h-12 shrink-0 border-b-2 px-4 text-sm ${muscle === tab ? 'border-lime text-ink' : 'border-transparent text-muted'}`}>{t(tab)}</button>)}
+        className={`${clickableClass} min-h-12 shrink-0 border-b-2 bg-surface px-4 text-sm ${muscle === tab ? 'border-lime text-ink' : 'border-transparent text-muted'}`}>{t(tab)}</button>)}
     </div>
     <div role="group" aria-label={t('equipment')} className="flex flex-wrap gap-2">
       <Chip pressed={!equipment} onClick={() => changeFilter({ equipment: '' })}>{t('allEquipment')}</Chip>

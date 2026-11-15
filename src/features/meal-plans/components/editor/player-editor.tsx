@@ -1,18 +1,22 @@
 'use client';
 
+import { editableFieldClass } from '@/ui/edit-in-place';
 import { KoSend } from '@/ui/icons/ko-send';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { ChevronDown, CloudCheck, Send } from 'lucide-react';
+import { CloudCheck, Send } from 'lucide-react';
+import { Disclosure } from '@/ui/disclosure';
+import { RowLink } from '@/ui/row-link';
+import { DisclosureChevron } from '@/ui/disclosure-chevron';
 import { useLocale, useT } from '@/core/i18n/client';
 import { uuidv7 } from '@/core/offline/ids';
-import { Button } from '@/ui/button';
+import { Button, buttonClass } from '@/ui/button';
 import { Chip } from '@/ui/chip';
 import { SaveStatus } from '@/ui/save-status';
 import { formatNumber } from '@/lib/format';
-import { addMeal, setGrams } from '../../draft';
+import { addMeal, setGrams, addItem } from '../../draft';
 import { copyTrainingMeals, dayMeals, dayTargets } from '../../editor-rules';
 import { nutritionTotals } from './nutrition-values';
 import { usePlanDraft } from '../../hooks/use-plan-draft';
@@ -23,7 +27,7 @@ import { automaticTargets, openRestDay } from './workspace-model';
 import { MealTargets } from './meal-targets';
 import { V11FoodPicker } from '../v11-food-picker';
 import { defaultPortion } from '../../data/meal-portions';
-import { addItem } from '../../draft';
+
 import { messages as redesignMessages } from './redesign/messages';
 import { MealCard } from './meal-card';
 import { WeekCard } from './week-card';
@@ -33,7 +37,6 @@ import { NewPlanButton } from './new-plan-button';
 import type { PlanDraft } from '../../types';
 import { messages as editorMessages } from './messages';
 import { PlayerFactsCard } from './player-facts';
-import { buttonClass } from '@/ui/button';
 
 async function saveTemplate(draft: PlanDraft) {
   const { savePlan } = await import('../../data/plan-io');
@@ -71,7 +74,7 @@ export function PlayerEditor({ data, editableMealNames = false }: { data: Awaite
   return <div className="min-w-0">
     <header className="mb-[18px] flex flex-wrap items-center gap-3.5">
       {template ? <label className="min-w-0 text-xs text-faint">{planT('planName')}<input value={draft.title} maxLength={80} disabled={state.busy} onChange={event => update(current => ({ ...current, title: event.target.value }))}
-        className="block min-h-12 w-full bg-transparent font-display text-[30px] font-semibold text-ink" /></label> :
+        className={`${editableFieldClass} block min-h-12 w-full bg-surface font-display text-[30px] font-semibold text-ink`} /></label> :
         <><span aria-hidden className="grid size-[42px] shrink-0 place-items-center rounded-full border border-line bg-lime/10 font-display text-lime">{name.slice(0, 1)}</span>
         <div><p className="text-xs text-faint">{t('breadcrumb', { name })}</p><h1 className="font-display text-[30px] font-semibold leading-tight">{t('title', { name: locale === 'ar' ? name.split(' ')[0] ?? name : name })}</h1></div></>}
       <div className="ms-auto">{!state.error && !state.busy && !state.dirty ? <span role="status" className="inline-flex items-center gap-2 text-xs text-faint"><CloudCheck aria-hidden className="size-4 text-lime" />{editorT('saved')}</span>
@@ -111,16 +114,16 @@ export function PlayerEditor({ data, editableMealNames = false }: { data: Awaite
           <textarea disabled aria-label={t('notes')} placeholder={t('notePlaceholder')} className="min-h-12 w-full resize-none bg-transparent text-[12.5px] placeholder:text-faint" />
           <p className="text-xs text-faint">{t('noteGap')}</p></section>
       </div>}
-      <details className="group mt-[18px] text-muted" onToggle={event => setMore(event.currentTarget.open)}><summary className="flex min-h-12 cursor-pointer items-center">{t('more')}<ChevronDown aria-hidden className="ms-auto size-4 transition-transform group-open:rotate-180" /></summary>
+      <Disclosure label={t('more')} className="mt-[18px] text-muted" onToggle={event => setMore(event.currentTarget.open)}>
         <p className="text-xs text-faint">{automaticTargets(facts) ? t('calculated', { name }) : t('missing')}</p>
         <p className="text-xs text-faint">{t('facts', { weight: facts.weight ? formatNumber(facts.weight.value, locale) : '—', goal: t(goal), days: formatNumber(facts.trainingDays?.value.length ?? 0, locale) })}</p>
-        <Button variant="secondary" aria-expanded={calculator} disabled={state.busy} onClick={() => setCalculator(!calculator)} className="min-h-12 rounded-full">{t('edit')}</Button>
+        <Button variant="secondary" aria-expanded={calculator} disabled={state.busy} onClick={() => setCalculator(!calculator)} className="min-h-12 rounded-full">{t('edit')}<DisclosureChevron expanded={calculator} /></Button>
         {more && <div className="grid gap-[18px] min-[1001px]:grid-cols-2">{!template && <SmartNotesPanel meals={visible} planMeals={draft.meals} targets={targets} facts={facts} logs={context.logs} today={context.today} sent={draft.status !== 'draft'}
           onIncrease={(id, grams) => update(draft => {
             const item = draft.meals.flatMap(meal => meal.items).find(item => item.id === id);
             return item ? setGrams(draft, id, item.grams + grams) : draft;
           })} />}<TargetsBar targets={draft.targets} totals={totals} onChange={targets => update(draft => ({ ...draft, targets }))} /></div>}
-      </details>
+      </Disclosure>
     </fieldset>
     <aside className="grid min-w-0 gap-4"><V11FoodPicker meals={visible} disabled={state.busy || !visible.length} navigationDisabled={state.dirty || state.busy} onPick={(food, mealId) => {
       if (!mealId) return;
@@ -128,11 +131,11 @@ export function PlayerEditor({ data, editableMealNames = false }: { data: Awaite
       update(draft => { const next = addItem(draft, mealId, food, portion.grams, id, planT); return { ...next, meals: next.meals.map(meal => ({ ...meal, items: meal.items.map(item => item.id === id ? { ...item, unit: portion.unit } : item) })) }; });
     }} />{!template && <PlayerFactsCard name={name} facts={facts} meals={draft.meals} logs={context.logs} today={context.today} sent={draft.status !== 'draft'} />}</aside>
     </div>
-    {!template && <details className="group mt-3 text-muted"><summary className="flex min-h-12 cursor-pointer items-center">{t('library')}<ChevronDown aria-hidden className="ms-auto size-4 transition-transform group-open:rotate-180" /></summary>
+    {!template && <Disclosure label={t('library')} className="mt-3 text-muted">
       {!data.plans.length && <p className="text-xs text-faint">{planT('noPlansYetCreateANewOne')}</p>}
-      <ul>{data.plans.map(plan => <li key={plan.id}><Link className="flex min-h-12 items-center gap-3 text-lime hover:underline focus-visible:underline" href={`/captain/nutrition/${plan.id}`}>{plan.title}<span className="text-xs text-faint">{plan.status === 'active' ? planT('active') : plan.status === 'archived' ? planT('archived') : planT('draft')}</span></Link></li>)}</ul>
+      <ul>{data.plans.map(plan => <li key={plan.id}><RowLink href={`/captain/nutrition/${plan.id}`}>{plan.title}<span className="ms-3 text-xs text-muted">{plan.status === 'active' ? planT('active') : plan.status === 'archived' ? planT('archived') : planT('draft')}</span></RowLink></li>)}</ul>
       {draft.playerId && <NewPlanButton playerId={draft.playerId} disabled={state.busy || state.dirty} />}
       <Link href="/captain/templates" className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-4" })}>{t('library')}</Link>
-    </details>}
+    </Disclosure>}
   </div>;
 }

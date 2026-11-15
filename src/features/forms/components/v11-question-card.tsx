@@ -1,4 +1,6 @@
-import { ArrowDown, ArrowUp, ChevronDown, GripVertical, Trash2 } from 'lucide-react';
+import { editableFieldClass } from '@/ui/edit-in-place';
+import { ArrowDown, ArrowUp, GripVertical, Trash2 } from 'lucide-react';
+import { DisclosureChevron } from '@/ui/disclosure-chevron';
 import type { ComponentProps } from 'react';
 import { Disclosure } from '@/ui/disclosure';
 import { createT } from '@/core/i18n/messages';
@@ -24,10 +26,10 @@ export function V11QuestionCard({ question: q, locale, style, index, count, open
       <span className="grid size-9 shrink-0 place-items-center rounded-control bg-surface"><Icon aria-hidden className="size-4" /></span>
       <span className="min-w-0 flex-1"><b className="block break-words text-sm">{index + 1}. {locale === 'ar' ? q.label_ar : q.label_en || q.label_ar}</b>
         <small className="text-muted">{questionTypeLabel(q.type, locale, style)}{q.required && ` · ${m.required}`}</small></span>
-      <ChevronDown aria-hidden className={`size-4 shrink-0 text-muted transition-transform ${open ? 'rotate-180' : ''}`} />
+      <DisclosureChevron expanded={open} className="size-4" />
     </button>
     {open && <div id={`question-${q.id}`} className="space-y-3 border-t border-line-soft p-4">
-      <label className="block space-y-2 text-xs text-muted"><span>{m.labelAr}</span><input aria-label={m.labelAr} dir="rtl" className={input} value={q.label_ar} onChange={e => onChange({ ...q, label_ar: e.target.value })} /></label>
+      <label className="block space-y-2 text-xs text-muted"><span>{m.labelAr}</span><input aria-label={m.labelAr} dir="rtl" className={`${editableFieldClass} ${input}`} value={q.label_ar} onChange={e => onChange({ ...q, label_ar: e.target.value })} /></label>
       <div><p className="mb-2 text-xs text-muted">{r('answerWith')}</p>
         <div className="flex flex-wrap gap-2">{questionTypes.map(type => <button key={type} type="button" aria-pressed={q.type === type}
           className={`${editorButton} aria-pressed:border-lime/40 aria-pressed:bg-lime-soft aria-pressed:text-lime`}
@@ -38,7 +40,7 @@ export function V11QuestionCard({ question: q, locale, style, index, count, open
         <QuestionToggle label={m.required} checked={q.required} onChange={required => onChange({ ...q, required })} />
       </div>
       <Disclosure label={t('questionSettings')}>
-        <label className="mb-3 block space-y-2 text-xs text-muted"><span>{r('optionalEnglish')}</span><input aria-label={m.labelEn} dir="ltr" className={input} value={q.label_en} onChange={e => onChange({ ...q, label_en: e.target.value })} /></label>
+        <label className="mb-3 block space-y-2 text-xs text-muted"><span>{r('optionalEnglish')}</span><input aria-label={m.labelEn} dir="ltr" className={`${editableFieldClass} ${input}`} value={q.label_en} onChange={e => onChange({ ...q, label_en: e.target.value })} /></label>
         <div className="[&_button]:cursor-pointer [&_button]:rounded-control [&_button]:border [&_button]:border-line [&_button]:bg-surface [&_button]:px-3 [&_button]:active:scale-[.98] [&_button:focus-visible]:ring-2 [&_button:focus-visible]:ring-lime [&_summary]:cursor-pointer [&_summary]:active:scale-[.98] [&_summary:focus-visible]:ring-2 [&_summary:focus-visible]:ring-lime">
           {(q.type === 'number' || q.type === 'scale') && <QuestionToggle label={r('chart')} checked={q.show_chart !== false} onChange={show_chart => onChange({ ...q, show_chart })} />}
           <QuestionRules question={q} locale={locale} style={style} onChange={onChange} />

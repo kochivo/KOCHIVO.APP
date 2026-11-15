@@ -9,6 +9,7 @@ import { V11Ring } from './v11-ring';
 import { messages } from './v11/messages';
 import { mealDayType } from '../data/editor-fields';
 import { buttonClass } from '@/ui/button';
+import { RowChevron } from '@/ui/row-chevron';
 
 async function readPlanCards() {
     const client = await planClient();
@@ -39,7 +40,7 @@ export async function MealLibraryPage() {
   if (!captainWorkspaceEnabled()) notFound();
   const t = await getT(messages);
   const data = await readPlanCards().catch(() => null);
-  if (!data) return <section className="grid gap-4"><V11NewPlan /><p role="alert">{t('error')}</p><Link href="/captain/library/meal-plans" className="min-h-12 text-lime">{t('retry')}</Link></section>;
+  if (!data) return <section className="grid gap-4"><V11NewPlan /><p role="alert">{t('error')}</p><Link href="/captain/library/meal-plans" className={buttonClass({ variant: 'secondary', block: false })}>{t('retry')}</Link></section>;
   const { plans, usage } = data;
     return <section className="grid gap-4"><V11NewPlan plans={plans.map(plan => ({ id: plan.id, title: plan.title, calories: plan.target_kcal ?? undefined }))} />
       <div className="grid gap-4 min-[761px]:grid-cols-3">
@@ -51,6 +52,7 @@ export async function MealLibraryPage() {
               return value !== null && <span key={key} className="inline-flex items-center gap-1"><i className={`size-1.5 rounded-full ${key === 'protein' ? 'bg-lime' : key === 'carbs' ? 'bg-calm' : 'bg-warn'}`} />{t(key)} <b>{t('grams', { n: value })}</b></span>;
             })}
           </div><small className="text-muted">{t('usage', { n: usage.get(plan.id)?.size ?? 0 })}{plan.meals.some(meal => mealDayType(meal) === 'training') && plan.meals.some(meal => mealDayType(meal) === 'rest') && <> · {t('split')}</>}</small></div>
+          <RowChevron className="ms-auto" />
         </Link>)}
         <V11NewPlan card />
       </div>

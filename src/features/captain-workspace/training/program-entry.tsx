@@ -1,3 +1,4 @@
+import { secondaryButtonClass } from '@/ui/secondary-button-class';
 import 'server-only';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -14,7 +15,7 @@ const playerProgram = z.object({ is_template: z.literal(false), is_starter: z.li
 export async function ProgramTrainingEntry({ programId }: { programId: string }) {
   if (!captainWorkspaceEnabled() || !z.uuid().safeParse(programId).success) notFound();
   const result = await readProgram(programId), t = createT(messages, await getLocale());
-  if (result.error !== undefined) return <div role="alert" className="glass rounded-card p-5 text-danger"><p>{t('error')}</p><Link className="inline-flex min-h-12 items-center" href={`/captain/programs/${programId}`}>{t('retry')}</Link></div>;
+  if (result.error !== undefined) return <div role="alert" className="glass rounded-card p-5 text-danger"><p>{t('error')}</p><Link className={`${secondaryButtonClass} inline-flex min-h-12 items-center`} href={`/captain/programs/${programId}`}>{t('retry')}</Link></div>;
   // The authorized reader filters by captain; validate the editable shape as well.
   if (result.data.player_id === null) return <TemplateTrainingEntry planId={programId} />;
   const parsed = playerProgram.safeParse(result.data);

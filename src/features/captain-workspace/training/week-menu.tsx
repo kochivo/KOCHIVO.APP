@@ -1,4 +1,5 @@
 'use client';
+import { editableFieldClass } from '@/ui/edit-in-place';
 import { Ellipsis } from 'lucide-react';
 import { useState } from 'react';
 import { useT } from '@/core/i18n/client';
@@ -26,8 +27,8 @@ export function WeekMenu({ draft, day, update, saved, onNew }: { draft: ProgramD
     <Button id="week-menu" aria-label={t('options')} aria-haspopup="dialog" aria-expanded={open} type="submit" variant={'secondary'} block={false} className={"inline-flex min-h-12 min-w-12 items-center justify-center gap-2 px-3"} onClick={() => setOpen(true)}><Ellipsis aria-hidden className="size-5" /><span className="hidden sm:inline">{t('options')}</span></Button>
     {open && <ResponsiveDialog modal openerId="week-menu" fallbackId="week-menu" aria-label={t('options')} onDismiss={close} className="sheet fixed inset-0 z-50 m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-md space-y-3 overflow-y-auto rounded-card p-5 text-ink backdrop:bg-bg-deep/80">
       <h2 className="font-display text-[19px]">{t('options')}</h2>
-      <label className="block text-xs text-faint">{tt('programName')}<input value={draft.title} maxLength={80} className="block min-h-12 w-full bg-transparent text-sm text-ink" onChange={event => update(current => ({ ...current, title: event.target.value }))} /></label>
-      {weekly(draft) ? <label className="flex min-h-12 items-center gap-3"><input type="checkbox" checked={draft.repeatWeekly !== false} className="size-6 accent-lime" onChange={event => update(current => ({ ...current, repeatWeekly: event.target.checked }))} />{t('repeat')}</label> : <>
+      <label className="block text-xs text-faint">{tt('programName')}<input value={draft.title} maxLength={80} className={`${editableFieldClass} block min-h-12 w-full bg-surface text-sm text-ink`} onChange={event => update(current => ({ ...current, title: event.target.value }))} /></label>
+      {weekly(draft) ? <label className="flex min-h-12 items-center gap-3"><input type="checkbox" checked={draft.repeatWeekly !== false} className={`${editableFieldClass} size-6 accent-lime`} onChange={event => update(current => ({ ...current, repeatWeekly: event.target.checked }))} />{t('repeat')}</label> : <>
         <p className="text-xs text-faint">{t('rotation')}</p><Button disabled={draft.days.length > 7} type="submit" variant={'secondary'} block={false} className={"min-h-12 w-full px-3 text-start disabled:opacity-40"} onClick={() => update(current => convertWeek(current, uuidv7))}>{t('convert')}</Button>
         {draft.days.length > 7 && <p className="text-xs text-faint">{t('convertLimit')}</p>}
       </>}

@@ -1,4 +1,6 @@
 'use client';
+import { clickableClass } from '@/ui/button';
+import { RowChevron } from '@/ui/row-chevron';
 import { useArabicStyle, useLocale, useT } from '@/core/i18n/client';
 import { formatNumber } from '@/lib/format';
 import type { WorkspaceItem } from '../workspace-types';
@@ -21,13 +23,13 @@ export function WorkspaceRow({ item, inputs, now, selected, onSelect, idPrefix =
   const summary = item.kind === 'checkin' ? item.body_weight_kg !== null ? `${t('weight')} ${formatNumber(item.body_weight_kg, locale)}${weight?.change != null ? ` (${formatNumber(weight.change, locale)})` : ''}` : item.notes
     : item.kind === 'form' ? item.exercise_name : item.kind === 'assessment' ? item.title : t('requestKind');
   return <button id={`${idPrefix}-${taskKey(item)}`} aria-pressed={selected} onClick={onSelect}
-    className={`relative grid min-h-16 w-full grid-cols-[38px_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3.5 text-start ${selected ? 'bg-surface-raised' : 'hover:bg-surface-raised'}`}>
+    className={`${clickableClass} relative grid min-h-16 w-full grid-cols-[38px_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3.5 text-start ${selected ? 'bg-surface-raised' : 'hover:bg-surface-raised'}`}>
     {selected && <span className="absolute inset-y-0 start-0 w-[3px] bg-lime" aria-hidden />}
     <span aria-hidden className="glass grid size-[38px] place-items-center rounded-full border border-line text-xs">{item.player_name.slice(0, 1)}</span>
     <span className="min-w-0"><span className="flex flex-wrap items-center gap-2 text-sm font-medium">{item.player_name}
       <TierBadge tier={item.tier} />
       {(flag || item.kind === 'assessment' && item.answers.some(answer => answer.alert)) && <span className="rounded-full bg-warn-soft px-2.5 py-1 text-[11.5px] text-warn">{flag ? flagT(flag.key, values) : t('assessmentAlert')}</span>}</span>
       <span className="mt-1 block truncate text-[11.5px] text-faint">{kind}{summary && ` · ${summary}`}</span></span>
-    <span className={`text-end text-[11.5px] ${isOverdue(item, now) ? 'text-warn' : 'text-faint'}`}>{followupAge(item.created_at, now, locale, style)}</span>
+    <span className="flex items-center gap-2"><span className={`text-end text-[11.5px] ${isOverdue(item, now) ? 'text-warn' : 'text-faint'}`}>{followupAge(item.created_at, now, locale, style)}</span><RowChevron /></span>
   </button>;
 }

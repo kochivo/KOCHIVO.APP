@@ -1,4 +1,5 @@
 'use client';
+import { secondaryButtonClass } from '@/ui/secondary-button-class';
 import { use, useCallback, useRef, useState, useTransition } from 'react';
 import type { ReactNode } from 'react';
 import Link from 'next/link';
@@ -84,6 +85,6 @@ export function WorkspaceBilling({ data, today, moneyOwed }: { data: Promise<Bil
       </section>
     </div>
     <WorkspacePaymentsTable players={billing.players} packages={billing.packages} today={today} />
-    {!billing.players.length && <div className="glass rounded-card p-5"><p className="text-sm text-faint">{legacy('noPlayers')}</p><Link href="/captain/players" className="inline-flex min-h-12 items-center text-lime">{legacy('invitePlayer')}</Link></div>}
+    {!billing.players.length && <div className="glass rounded-card p-5"><p className="text-sm text-faint">{legacy('noPlayers')}</p><Link href="/captain/players" className={`${secondaryButtonClass} inline-flex min-h-12 items-center text-lime`}>{legacy('invitePlayer')}</Link></div>}
   </section>;
 }

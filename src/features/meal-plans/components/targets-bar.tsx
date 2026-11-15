@@ -1,5 +1,6 @@
 'use client';
-
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { editableFieldClass } from '@/ui/edit-in-place';
 import { useLocale, useT } from '@/core/i18n/client';
 import { formatNumber } from '@/lib/format';
 import { messages } from '../messages';
@@ -19,7 +20,7 @@ export function TargetsBar({ targets, totals, onChange }: { targets: Macros; tot
       <label className="flex items-center justify-between gap-3">{labels[key]}
         <input type="number" min={key === 'kcal' ? 800 : 0} max={key === 'kcal' ? 8000 : 32767} step={1}
           value={targets[key]} onChange={event => onChange({ ...targets, [key]: Number(event.target.value) })}
-          className="min-h-12 w-28 rounded-control border border-line bg-surface px-3" />
+          className={captainWorkspaceEnabled() ? `${editableFieldClass} min-h-12 w-28 rounded-control border border-line bg-surface px-3` : "min-h-12 w-28 rounded-control border border-line bg-surface px-3"} />
       </label>
       <output aria-live="polite" className="text-2xl font-bold">{formatNumber(totals[key], locale)} / {formatNumber(targets[key], locale)} {key === 'kcal' ? t('kcal') : t('g2')}</output>
       <span className={Math.abs(delta[key]) <= targets[key] * .05 ? 'text-lime' : 'text-warn'}>

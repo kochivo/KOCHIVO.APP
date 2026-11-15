@@ -1,5 +1,6 @@
 'use client';
 
+import { editableFieldClass } from '@/ui/edit-in-place';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { IconButton } from '@/ui/icon-button';
 import { useLocale, useT } from '@/core/i18n/client';
@@ -35,7 +36,7 @@ export function MealEditor({ meal, first, last, update, enhanced = false, facts 
   return <section aria-label={meal.name || t('meal')} className="glass grid gap-4 rounded-card p-4">
     <div className="flex flex-wrap items-center justify-between gap-2">
       <label>{t('mealName')}<input value={meal.name} maxLength={40} onChange={event => update(d => renameMeal(d, meal.id, event.target.value))}
-        className="ms-2 min-h-12 rounded-control bg-surface px-3" /></label>
+        className={captainWorkspaceEnabled() ? `${editableFieldClass} ms-2 min-h-12 rounded-control bg-surface px-3` : "ms-2 min-h-12 rounded-control bg-surface px-3"} /></label>
       <div className="flex gap-1">
         {captainWorkspaceEnabled() ? <IconButton disabled={first} aria-label={t('moveMealUp')} onClick={() => update(d => day ? moveVisibleMeal(d, meal.id, -1, day) : moveMeal(d, meal.id, -1))}><ArrowUp aria-hidden className="dir-icon" /></IconButton> : <Button variant="ghost" disabled={first} aria-label={t('moveMealUp')} onClick={() => update(d => day ? moveVisibleMeal(d, meal.id, -1, day) : moveMeal(d, meal.id, -1))}><ArrowUp aria-hidden className="dir-icon" /></Button>}
         {captainWorkspaceEnabled() ? <IconButton disabled={last} aria-label={t('moveMealDown')} onClick={() => update(d => day ? moveVisibleMeal(d, meal.id, 1, day) : moveMeal(d, meal.id, 1))}><ArrowDown aria-hidden className="dir-icon" /></IconButton> : <Button variant="ghost" disabled={last} aria-label={t('moveMealDown')} onClick={() => update(d => day ? moveVisibleMeal(d, meal.id, 1, day) : moveMeal(d, meal.id, 1))}><ArrowDown aria-hidden className="dir-icon" /></Button>}
@@ -45,7 +46,7 @@ export function MealEditor({ meal, first, last, update, enhanced = false, facts 
     {enhanced && <label>{editorT('dayType')}<select value={meal.dayType ?? 'all'} onChange={event => {
       const value = event.target.value;
       if (value === 'all' || value === 'training' || value === 'rest') update(d => ({ ...d, meals: d.meals.map(row => row.id === meal.id ? { ...row, dayType: value } : row) }));
-    }} className="ms-2 min-h-12 rounded-control bg-surface px-3">{(['all', 'training', 'rest'] as const).map(day => <option key={day} value={day}>{editorT(day)}</option>)}</select></label>}
+    }} className={captainWorkspaceEnabled() ? `${editableFieldClass} ms-2 min-h-12 rounded-control bg-surface px-3` : "ms-2 min-h-12 rounded-control bg-surface px-3"}>{(['all', 'training', 'rest'] as const).map(day => <option key={day} value={day}>{editorT(day)}</option>)}</select></label>}
     {!hideAdd && <p className="text-muted">{formatNumber(mealTotals(meal).kcal, locale)}  {t('kcal')}</p>}
     {!hideAdd && !meal.items.length && !picking && <EmptyState icon={Utensils} title={t('addTheFirstFood')} body={t('emptyBody')}
       action={{ label: t('addFood'), onClick: () => setPicking(true) }} />}

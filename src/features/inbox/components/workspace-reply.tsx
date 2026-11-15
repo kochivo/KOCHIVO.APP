@@ -1,4 +1,6 @@
 'use client';
+import { clickableClass, Button } from '@/ui/button';
+import { editableFieldClass } from '@/ui/edit-in-place';
 import { KoMic } from '@/ui/icons/ko-mic';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { useEffect, useRef, useState } from 'react';
@@ -10,7 +12,6 @@ import type { WorkspaceItem } from '../workspace-types';
 import { useUnsentVoiceGuard } from '../hooks/use-unsent-voice-guard';
 import { workspaceMessages } from '../workspace-messages';
 import { quickReplies } from '../merge';
-import { Button } from '@/ui/button';
 
 export function WorkspaceReply({ item, reply, onDraft, onSend, onDirty, blocked = false }: {
   item: Exclude<WorkspaceItem, { kind: 'request' }>;
@@ -54,11 +55,11 @@ export function WorkspaceReply({ item, reply, onDraft, onSend, onDirty, blocked 
   }
   return <form className="space-y-3 border-t border-line px-5 py-4" onSubmit={event => { event.preventDefault(); void send(true); }}>
     <div className="flex flex-wrap gap-2">{suggestions.map(text => <button key={text} type="button" disabled={pending}
-      onClick={() => onDraft(text.replace(/^\+ /, ''))} className="min-h-12 rounded-full bg-surface-raised px-3 text-[12.5px] text-muted">{text}</button>)}
+      onClick={() => onDraft(text.replace(/^\+ /, ''))} className={`${clickableClass} min-h-12 rounded-full bg-surface-raised px-3 text-[12.5px] text-muted`}>{text}</button>)}
     </div>
     {voice && <fieldset disabled={pending || Boolean(uploaded)}><VoiceRecorder playerId={item.player_id} recorder={recorder} /></fieldset>}
     <label className="block"><span className="sr-only">{t('placeholder')}</span><textarea value={reply} onChange={event => onDraft(event.target.value)}
-      placeholder={t('placeholder')} maxLength={1000} disabled={pending} className="min-h-[76px] w-full rounded-2xl border border-line bg-transparent px-3.5 py-3 text-start text-sm placeholder:text-faint" /></label>
+      placeholder={t('placeholder')} maxLength={1000} disabled={pending} className={`${editableFieldClass} min-h-[76px] w-full rounded-2xl border border-line bg-surface px-3.5 py-3 text-start text-sm placeholder:text-faint`} /></label>
     {error && <p role="alert" className="text-sm text-danger">{error}</p>}
     <div className="flex flex-wrap items-center gap-2.5">
       <Button type="button" disabled={pending || recording} aria-label={t('voice')} aria-expanded={voice} onClick={() => setVoice(value => !value)} variant={'secondary'} block={false} className={"grid min-h-12 min-w-12 place-items-center text-muted"}><MicIcon className="size-5" strokeWidth={1.5} aria-hidden /></Button>

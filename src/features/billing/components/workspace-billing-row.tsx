@@ -1,5 +1,6 @@
 'use client';
 import { Button } from '@/ui/button';
+import { RowChevron } from '@/ui/row-chevron';
 import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
@@ -50,7 +51,7 @@ export function WorkspaceBillingRow({ player, today, packages }: { player: Billi
     <div className="grid min-h-16 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-[18px] py-3 min-[761px]:grid-cols-[1.4fr_1fr_1fr_1fr_150px]">
       <Button variant="secondary" type="button" aria-label={`${t('history')}: ${player.fullName}`} className="flex min-h-12 min-w-0 justify-start items-center gap-2.5 text-start" onClick={() => setDetail('history')}>
         <span aria-hidden className="grid size-[38px] shrink-0 place-items-center rounded-full border border-line bg-surface-raised text-xs">{player.fullName.slice(0, 1)}</span>
-        <span className="break-words text-sm">{player.fullName}</span></Button>
+        <span className="break-words text-sm">{player.fullName}</span><RowChevron className="ms-auto" /></Button>
       <span className="hidden text-[13px] text-muted min-[761px]:block">{chosen?.name ?? (player.lastPayment ? legacy('days', { n: player.lastPayment.days, count: formatNumber(player.lastPayment.days, locale) }) : legacy('noPayments'))}{price != null && price > 0 && <> · {formatNumber(price, locale)} {t('currency')}</>}</span>
       <span className="hidden text-[13px] text-faint min-[761px]:block">{player.lastPayment ? <time dateTime={player.lastPayment.created_at}>{formatTimestampAr(player.lastPayment.created_at, { day: 'numeric', month: 'long' }, locale, timezone)}</time> : legacy('noPayments')}</span>
       <div><span className={`inline-flex rounded-full px-2.5 py-1 text-[11.5px] ${segment === 'overdue' ? 'bg-danger-soft text-danger' : segment === 'ending' ? 'bg-warn-soft text-warn' : state.tone}`}>{pill}</span></div>

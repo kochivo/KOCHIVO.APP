@@ -1,4 +1,5 @@
 'use client';
+import { secondaryButtonClass } from '@/ui/secondary-button-class';
 import { useEffect, useRef, useState } from 'react';
 import { useT } from '@/core/i18n/client';
 import { useTimezone } from '@/core/timezone/client';
@@ -31,7 +32,7 @@ export function ConversationBubbles({ items, onRetry }: { items: readonly ChatTh
         </time>
         {broken === item.id && <p role="alert">{t('playFailed')}</p>}
         {item.status === 'sending' && <p role="status" className="text-[10px]">{t('sending')}</p>}
-        {item.status === 'failed' && <button type="button" className="min-h-12 text-start underline" onClick={() => onRetry(item.id)}>{t('failed')}</button>}
+        {item.status === 'failed' && <button type="button" className={`${secondaryButtonClass} min-h-12 text-start underline`} onClick={() => onRetry(item.id)}>{t('failed')}</button>}
       </li>)}
     </ol><div ref={bottom} />
   </div>;

@@ -1,3 +1,4 @@
+import { secondaryButtonClass as clickableClass } from '@/ui/secondary-button-class';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Locale } from '@/core/i18n/locale';
@@ -20,7 +21,7 @@ export function OverviewActivity({ profile, activity, playerId, locale }: { prof
   for (const set of activity.sets) exercises.set(set.exercise_id, [...(exercises.get(set.exercise_id) ?? []), set]);
   return <div className="grid gap-3 min-[760px]:grid-cols-2">
     <section className="glass rounded-card border border-line-soft p-3.5">
-      <div className="mb-3 flex items-center justify-between"><h2 className="text-sm font-semibold">{t('photos')}</h2><Link href={`/captain/players/${playerId}/checkins`} className="inline-flex min-h-12 items-center text-xs text-lime">{t('all')}</Link></div>
+      <div className="mb-3 flex items-center justify-between"><h2 className="text-sm font-semibold">{t('photos')}</h2><Link href={`/captain/players/${playerId}/checkins`} className={`${clickableClass} inline-flex min-h-12 items-center text-xs text-lime`}>{t('all')}</Link></div>
       {selected.length ? <div className="grid grid-cols-2 gap-2">{selected.map(photo => <figure key={photo.date}>
         <Image src={photo.url} alt={t('photos')} width={240} height={320} unoptimized className="aspect-[3/4] w-full rounded-control object-cover" />
         <figcaption className="mt-2 text-xs text-muted">{formatDateAr(photo.date, { day: 'numeric', month: 'long' }, locale)}</figcaption>

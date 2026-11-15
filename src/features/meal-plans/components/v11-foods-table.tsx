@@ -1,4 +1,5 @@
 'use client';
+import { secondaryButtonClass } from '@/ui/secondary-button-class';
 import { Pencil } from 'lucide-react';
 import { useLocale, useT } from '@/core/i18n/client';
 import { foodPhotoUrl } from '@/core/storage/media-url';
@@ -24,7 +25,7 @@ export function V11FoodsTable({ foods, onSelect }: { foods: LibraryFood[]; onSel
           </span><b className="min-w-0 break-words">{locale === 'en' ? food.nameEn || food.name : food.name}</b></div></td>
         <td className="break-words px-1 py-3 text-muted min-[761px]:px-3">{t('grams', { n: grams })}{unit && <> · {locale === 'en' ? unit.name_en : unit.name_ar}</>}</td>
         {(['kcal', 'protein', 'carbs', 'fat'] as const).map(key => <td key={key} className={`px-1 py-3 font-display tabular-nums min-[761px]:px-3 ${key === 'carbs' || key === 'fat' ? 'hidden min-[761px]:table-cell' : ''}`}>{Math.round(values[key] * 10) / 10}</td>)}
-        <td>{food.custom && <button type="button" aria-label={t('edit')} onClick={() => onSelect(food)} className="grid min-h-12 min-w-12 place-items-center rounded-full"><Pencil aria-hidden className="size-4" /></button>}</td>
+        <td>{food.custom && <button type="button" aria-label={t('edit')} onClick={() => onSelect(food)} className={`${secondaryButtonClass} grid min-h-12 min-w-12 place-items-center rounded-full`}><Pencil aria-hidden className="size-4" /></button>}</td>
       </tr>; })}</tbody>
     </table>{!foods.length && <p className="p-8 text-center text-muted">{t('empty')}</p>}
   </section>;

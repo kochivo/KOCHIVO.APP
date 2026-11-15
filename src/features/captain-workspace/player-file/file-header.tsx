@@ -1,3 +1,4 @@
+import { clickableClass } from '@/ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, ArrowRight, Eye } from 'lucide-react';
@@ -29,11 +30,11 @@ export function FileHeader({ playerId, profile, summary, tab, locale, today, unr
   return <>
     <PageBarTitle title={profile.name} subtitle={subtitle} />
     <PageBarActions>
-      <Link href="/captain/players" aria-label={vt('back')} className="glass press grid min-h-12 min-w-12 cursor-pointer place-items-center rounded-full border border-line focus-visible:ring-2 focus-visible:ring-lime"><Back aria-hidden className="size-5" /></Link>
+      <Link href="/captain/players" aria-label={vt('back')} className={`${clickableClass} glass press grid min-h-12 min-w-12 cursor-pointer place-items-center rounded-full border border-line focus-visible:ring-2 focus-visible:ring-lime`}><Back aria-hidden className="size-5" /></Link>
       {profile.avatarUrl ? <Image src={profile.avatarUrl} alt="" width={48} height={48} unoptimized className="size-12 shrink-0 rounded-full object-cover" /> :
         <span aria-hidden className="glass-strong grid size-12 shrink-0 place-items-center rounded-full text-lg">{profile.name.charAt(0)}</span>}
-      <Link href={`${base}/preview`} prefetch={false} className="glass press hidden min-h-12 cursor-pointer items-center gap-2 rounded-full border border-line px-4 text-sm focus-visible:ring-2 focus-visible:ring-lime min-[760px]:inline-flex"><Eye aria-hidden className="size-4" />{t('preview')}</Link>
-      <Link href={`${base}/chat`} aria-label={vt('message')} className="glass press inline-flex min-h-12 min-w-12 cursor-pointer items-center justify-center gap-2 rounded-full border border-line px-3 text-sm focus-visible:ring-2 focus-visible:ring-lime"><KoCaptainChat className="size-5" /><span className="hidden min-[760px]:inline">{vt('message')}</span></Link>
+      <Link href={`${base}/preview`} prefetch={false} className={`${clickableClass} glass press hidden min-h-12 cursor-pointer items-center gap-2 rounded-full border border-line px-4 text-sm focus-visible:ring-2 focus-visible:ring-lime min-[760px]:inline-flex`}><Eye aria-hidden className="size-4" />{t('preview')}</Link>
+      <Link href={`${base}/chat`} aria-label={vt('message')} className={`${clickableClass} glass press inline-flex min-h-12 min-w-12 cursor-pointer items-center justify-center gap-2 rounded-full border border-line px-3 text-sm focus-visible:ring-2 focus-visible:ring-lime`}><KoCaptainChat className="size-5" /><span className="hidden min-[760px]:inline">{vt('message')}</span></Link>
       <ArchiveMenu playerId={playerId} archive={archivePlayer} confirmText={rt('archiveTheyllBeRemovedFromThePlayer', { v0: profile.name })}
         archivingText={rt('archiving')} errorText={rt('couldntArchiveTryAgain')} />
     </PageBarActions>

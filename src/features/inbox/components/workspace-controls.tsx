@@ -1,4 +1,6 @@
 'use client';
+import { editableFieldClass } from '@/ui/edit-in-place';
+import { clickableClass } from '@/ui/button';
 import { Search } from 'lucide-react';
 import { useLocale, useT } from '@/core/i18n/client';
 import { formatNumber } from '@/lib/format';
@@ -17,19 +19,19 @@ export function WorkspaceControls({ summary, counts, kind, status, search, onKin
       <label className="flex min-h-12 w-full items-center gap-2 rounded-full border border-line px-3.5 text-faint sm:w-[220px]">
         <Search className="size-4 shrink-0" strokeWidth={1.5} aria-hidden />
         <input type="search" aria-label={t('search')} placeholder={t('search')} value={search} onChange={event => onSearch(event.target.value)}
-          className="min-h-12 w-full min-w-0 bg-transparent text-[13px] text-ink outline-none placeholder:text-faint" />
+          className={`${editableFieldClass} min-h-12 w-full min-w-0 bg-surface text-[13px] text-ink outline-none placeholder:text-faint`} />
       </label>
     </header>
     <div className="flex flex-wrap items-center gap-2.5">
       <div role="group" aria-label={t('status')} className="inline-flex max-w-full flex-wrap gap-1 rounded-[26px] border border-line p-1">
         {(['waiting', 'overdue', 'completed'] as const).map(value => <button key={value} aria-pressed={status === value} onClick={() => onStatus(value)}
-          className={`inline-flex min-h-12 items-center gap-2 rounded-full px-3 text-[13px] ${status === value ? 'bg-ink text-bg' : 'text-muted'}`}>
+          className={`${clickableClass} inline-flex min-h-12 items-center gap-2 rounded-full px-3 text-[13px] ${status === value ? 'bg-ink text-bg' : 'text-muted'}`}>
           {t(value)}<b className={`grid size-[22px] place-items-center rounded-full font-display text-xs font-extrabold tabular-nums ${status === value ? 'bg-bg text-ink' : value === 'overdue' ? 'bg-warn-soft text-warn' : 'bg-surface-raised'}`}>{formatNumber(counts[value], locale)}</b>
         </button>)}
       </div>
       <div role="group" aria-label={t('types')} className="flex flex-wrap gap-1.5">
         {(['all', 'checkin', 'form', 'assessment', 'request'] as const).map(value => <button key={value} aria-pressed={kind === value} onClick={() => onKind(value)}
-          className={`min-h-12 rounded-full border px-3 text-[12.5px] ${kind === value ? 'border-lime text-lime' : 'border-line-soft text-muted'}`}>{t(value)}</button>)}
+          className={`${clickableClass} min-h-12 rounded-full border px-3 text-[12.5px] ${kind === value ? 'border-lime text-lime' : 'border-line-soft text-muted'}`}>{t(value)}</button>)}
       </div>
     </div>
   </>;

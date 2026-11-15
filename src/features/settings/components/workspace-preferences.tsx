@@ -1,4 +1,6 @@
 'use client';
+import { clickableClass } from '@/ui/button';
+import { editableFieldClass } from '@/ui/edit-in-place';
 import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale, useT } from '@/core/i18n/client';
@@ -51,19 +53,19 @@ export function WorkspacePreferences({ profile, update }: { profile: SettingsPro
     <fieldset disabled={state === 'saving'} className="space-y-2">
       <legend className="mb-2 text-xs text-faint">{t('language')}</legend>
       <div className="mb-3 flex flex-wrap gap-2">{options.map(choice => <button key={choice.label} type="button"
-        className={chip}
+        className={`${clickableClass} ${chip}`}
         aria-pressed={language.locale === choice.locale}
         onClick={() => chooseLanguage(choice)}>{t(choice.label)}</button>)}</div>
       <p className="text-xs text-faint">{t('timezone')}</p>
-      <div className="flex flex-wrap gap-2"><button type="button" className={chip} aria-pressed={auto}
+      <div className="flex flex-wrap gap-2"><button type="button" className={`${clickableClass} ${chip}`} aria-pressed={auto}
         onClick={() => preference({ timezone_auto: true, timezone: deviceTimezone() })}>{t('auto', { zone: zone === DEFAULT_TIMEZONE ? t('cairo') : zone })}</button>
-        <button type="button" className={chip} aria-pressed={!auto} onClick={() => preference({ timezone_auto: false })}>{t('manual')}</button></div>
+        <button type="button" className={`${clickableClass} ${chip}`} aria-pressed={!auto} onClick={() => preference({ timezone_auto: false })}>{t('manual')}</button></div>
       {!auto && <select aria-label={t('timezone')} value={zone} onChange={event => preference({ timezone: event.target.value, timezone_auto: false })}
-        className="min-h-12 w-full rounded-control border border-line bg-surface px-3 text-start">
+        className={`${editableFieldClass} min-h-12 w-full rounded-control border border-line bg-surface px-3 text-start`}>
         {Array.from(new Set([zone, ...timezones])).map(value => <option key={value}>{value}</option>)}
       </select>}
       <p className="pt-1 text-xs text-faint">{t('units')}</p><div className="flex flex-wrap gap-2">{(['metric', 'imperial'] as const).map(units =>
-        <button key={units} type="button" className={chip} aria-pressed={(profile.units ?? 'metric') === units} onClick={() => preference({ units })}>{t(units)}</button>)}</div>
+        <button key={units} type="button" className={`${clickableClass} ${chip}`} aria-pressed={(profile.units ?? 'metric') === units} onClick={() => preference({ units })}>{t(units)}</button>)}</div>
     </fieldset>
     <WorkspaceSaveStatus state={state} error={error} retry={() => retry.current()} />
   </section>;

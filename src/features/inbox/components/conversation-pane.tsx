@@ -1,4 +1,5 @@
 'use client';
+import { secondaryButtonClass } from '@/ui/secondary-button-class';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { useEffect } from 'react';
@@ -27,7 +28,7 @@ export function ConversationPane({ player, captainId, at, onBack, onGuard, onUpd
   const days = Math.max(0, Math.ceil((Date.parse(player.accessUntil) - Date.parse(at)) / 86400000));
   return <section className="glass flex min-h-[470px] min-w-0 flex-col gap-2.5 rounded-card border border-line-soft p-[18px]">
     <header className="flex items-center gap-2.5 border-b border-line pb-2.5">
-      <button type="button" aria-label={t('back')} onClick={onBack} className="grid min-h-12 min-w-12 place-items-center min-[760px]:hidden"><ArrowRight aria-hidden className="size-4 ltr:rotate-180" /></button>
+      <button type="button" aria-label={t('back')} onClick={onBack} className={`${secondaryButtonClass} grid min-h-12 min-w-12 place-items-center min-[760px]:hidden`}><ArrowRight aria-hidden className="size-4 ltr:rotate-180" /></button>
       <ConversationAvatar name={player.fullName} url={player.avatarUrl} />
       <div className="min-w-0 flex-1"><h2 className="text-[13px] font-semibold">{player.fullName}</h2>
         {Number.isFinite(days) && <p className="text-[11.5px] text-muted">{t('remaining', { n: formatNumber(days, locale) })}</p>}</div>

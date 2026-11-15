@@ -1,11 +1,13 @@
 'use client';
 
+import { editableFieldClass } from '@/ui/edit-in-place';
 import { useCallback, useId, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Plus, Search } from 'lucide-react';
 import { useLocale, useT } from '@/core/i18n/client';
 import { useResource } from '@/core/resource';
 import { Button } from '@/ui/button';
+import { DisclosureChevron } from '@/ui/disclosure-chevron';
 import { LoadingState } from '@/ui/loading-state';
 import { ResponsiveDialog } from '@/ui/responsive-dialog';
 import { searchFoods } from '../../data/foods';
@@ -35,11 +37,11 @@ export function FoodSearch({ onPick, meal }: { onPick: (food: Food, grams: numbe
   }, [term]);
   const resource = useResource(open ? `meal-editor:foods:${term}` : null, load);
   return <div className="border-t border-dashed border-line">
-    <Button variant="secondary" className="w-full border border-dashed border-lime/40 text-lime" aria-expanded={open} onClick={() => setOpen(!open)}><Plus aria-hidden className="size-4" />{meal ? rt('addTo', { meal }) : t('search')}</Button>
+    <Button variant="secondary" className="w-full border border-dashed border-lime/40 text-lime" aria-expanded={open} onClick={() => setOpen(!open)}><Plus aria-hidden className="size-4" />{meal ? rt('addTo', { meal }) : t('search')}<DisclosureChevron expanded={open} /></Button>
     {open && <div className="flex flex-wrap items-center gap-2 px-4">
     <label className="flex min-h-12 min-w-0 flex-1 items-center gap-2.5 text-faint"><Search aria-hidden className="size-4 shrink-0" />
       <input type="search" aria-label={t('search')} placeholder={meal ? t('mealSearch', { meal }) : t('search')} value={query} maxLength={100} onChange={event => setQuery(event.target.value)}
-        className="min-h-12 min-w-0 flex-1 bg-transparent text-xs placeholder:text-faint" />
+        className={`${editableFieldClass} min-h-12 min-w-0 flex-1 bg-surface text-xs placeholder:text-faint`} />
     </label>
     <Button variant="secondary" id={openerId} type="button" className="min-h-12 text-xs" onClick={() => setCreating(true)}><Plus aria-hidden className="size-4" />{t('createFood')}</Button>
     </div>}

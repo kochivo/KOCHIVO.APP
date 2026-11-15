@@ -1,5 +1,7 @@
 'use client';
 
+import { editableFieldClass } from '@/ui/edit-in-place';
+import { Disclosure } from '@/ui/disclosure';
 import { useCallback, useEffect, useState } from 'react';
 import { Search } from 'lucide-react';
 import { useT } from '@/core/i18n/client';
@@ -33,14 +35,14 @@ export function InlineSearch({ day, onAdd, onLibraryChange, excluded = [], disab
     <label className="flex min-h-16 items-center gap-2.5 border-t border-dashed border-line px-4 py-3 text-faint">
       <Search aria-hidden className="size-5 shrink-0" />
       <input aria-label={t('search')} placeholder={t('search')} value={query} onChange={event => setQuery(event.target.value)}
-        className="min-h-12 min-w-0 flex-1 bg-transparent text-[12.5px] text-ink outline-none placeholder:text-faint focus-visible:ring-1 focus-visible:ring-lime" />
+        className={`${editableFieldClass} min-h-12 min-w-0 flex-1 bg-surface text-[12.5px] text-ink outline-none placeholder:text-faint focus-visible:ring-1 focus-visible:ring-lime`} />
     </label>
-    <details className="px-4 text-xs text-muted" onToggle={event => setBrowsing(event.currentTarget.open)}><summary className="flex min-h-12 cursor-pointer items-center rounded-full border border-line-soft px-3">{pt('exerciseLibrary')}</summary>
-      <label className="flex min-h-12 items-center gap-2"><input type="checkbox" className="size-5 accent-lime" checked={mine} onChange={event => setMine(event.target.checked)} />{pt('myExercises')}</label>
-      <select aria-label={pt('bodyPart')} value={part} className="min-h-12 w-full bg-surface" onChange={event => setPart(event.target.value)}>
+    <Disclosure label={pt('exerciseLibrary')} className="mx-4 text-xs text-muted" onToggle={event => setBrowsing(event.currentTarget.open)}>
+      <label className="flex min-h-12 items-center gap-2"><input type="checkbox" className={`${editableFieldClass} size-5 accent-lime`} checked={mine} onChange={event => setMine(event.target.checked)} />{pt('myExercises')}</label>
+      <select aria-label={pt('bodyPart')} value={part} className={`${editableFieldClass} min-h-12 w-full bg-surface`} onChange={event => setPart(event.target.value)}>
         <option value="">{pt('all')}</option>{([['chest', 'chest'], ['back', 'back'], ['upper legs', 'thighs'], ['lower legs', 'calves'], ['shoulders', 'shoulders'], ['upper arms', 'upperArms'], ['lower arms', 'forearms'], ['waist', 'abs'], ['core', 'core'], ['glutes', 'glutes'], ['cardio', 'cardio'], ['neck', 'neck']] as const).map(([value, label]) => <option key={value} value={value}>{pt(label)}</option>)}
       </select>
-    </details>
+    </Disclosure>
     {error && <p role="alert" className="px-4 text-xs text-danger">{error}</p>}
     {(query.trim() || browsing) && <div className="max-h-64 overflow-y-auto px-4 pb-3">
       {search.error ? <p role="alert" className="text-danger">{t('error')}<Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-3"} onClick={() => void search.retry()}>{t('retry')}</Button></p> :

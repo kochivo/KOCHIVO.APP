@@ -1,5 +1,6 @@
 'use client';
 
+import { secondaryButtonClass } from '@/ui/secondary-button-class';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { useState } from 'react';
@@ -11,13 +12,12 @@ import { ExerciseImage } from '@/ui/exercise-image';
 import { ResponsiveDialog } from '@/ui/responsive-dialog';
 import { LoadingState } from '@/ui/loading-state';
 import { KoPlus } from '@/ui/icons/ko-plus';
-import { exerciseDetailMessages } from '../messages';
-import { messages as workspaceMessages } from '../messages';
+import { exerciseDetailMessages, messages as workspaceMessages } from '../messages';
+
 import { exerciseLabel } from '../exercise-label';
 import { exerciseTitle } from './exercise-card';
 import { messages } from './messages';
-import { Button } from '@/ui/button';
-import { buttonClass } from '@/ui/button';
+import { Button, buttonClass } from '@/ui/button';
 
 const AddToProgram = dynamic(() => import('./exercise-program-picker').then(module => module.ExerciseProgramPicker), {
   loading: () => <LoadingState variant="detail" />,
@@ -34,7 +34,7 @@ export function ExerciseDetail({ exercise, onClose }: { exercise: LibraryExercis
   return <ResponsiveDialog modal fallbackId="new-library-exercise" onDismiss={onClose} aria-label={exerciseTitle(exercise)}
     className="sheet fixed inset-0 z-50 m-auto h-full max-h-dvh w-full overflow-y-auto p-4 text-ink backdrop:bg-bg-deep/80 min-[760px]:max-h-[90dvh] min-[760px]:w-[calc(100%-3rem)] min-[760px]:max-w-5xl min-[760px]:rounded-card min-[760px]:p-5">
     <header className="glass mb-3.5 flex flex-wrap items-center gap-3 rounded-card border border-line-soft p-3">
-      <button type="button" onClick={onClose} aria-label={detail('back')} className="grid min-h-12 min-w-12 place-items-center rounded-full"><ArrowRight aria-hidden className="size-4 rtl:rotate-0 ltr:rotate-180" /></button>
+      <button type="button" onClick={onClose} aria-label={detail('back')} className={`${secondaryButtonClass} grid min-h-12 min-w-12 place-items-center rounded-full`}><ArrowRight aria-hidden className="size-4 rtl:rotate-0 ltr:rotate-180" /></button>
       <div><h2 className="text-[15px] font-semibold"><bdi>{exerciseTitle(exercise)}</bdi></h2>
         <p dir="ltr" className="text-start text-xs text-muted">{exercise.name_en}</p></div>
       <Button type="button" onClick={() => setAdding(true)} variant={'secondary'} block={false} className={"ms-auto inline-flex min-h-12 items-center gap-2 px-4 text-sm"}><KoPlus aria-hidden className="size-4" />{detail('add')}</Button>

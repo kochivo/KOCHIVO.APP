@@ -1,6 +1,7 @@
 'use client';
 
-import Link from 'next/link';
+import { RowLink } from '@/ui/row-link';
+
 import { useState } from 'react';
 import { Check, ChevronDown, TriangleAlert } from 'lucide-react';
 import { createT } from '@/core/i18n/messages';
@@ -29,7 +30,7 @@ export function TrainingFacts({ profile, file, locale, draft, day, fatPct, candi
   if (!intake) return <section className="glass-strong rounded-card border border-line-soft p-5">
     <h2 className="font-display text-lg font-semibold">{profile.name}</h2>
     <p className="text-sm text-muted">{t('missingIntake')}</p>
-    <Link href={`/captain/players/${draft.player_id}`} className="inline-flex min-h-12 items-center text-sm text-lime">{t('fullFile')}</Link>
+    <RowLink href={`/captain/players/${draft.player_id}`}>{t('fullFile')}</RowLink>
   </section>;
   const injuries = intake.injuries.filter(value => value !== 'none');
   const allergies = intake.allergies.filter(value => value !== 'none');
@@ -55,7 +56,7 @@ export function TrainingFacts({ profile, file, locale, draft, day, fatPct, candi
         <p className="mt-1 text-sm md:hidden"><bdi>{factValue('weight', weight, locale)} → {factValue('targetWeight', target, locale)}</bdi></p>
       </div>
       {injuries.map(injury => <span key={injury} className="rounded-full bg-warn/10 px-3 py-1 text-xs text-warn">{optionLabel(injury, locale)}</span>)}
-      <Link href={`/captain/players/${draft.player_id}`} className="inline-flex min-h-12 items-center text-sm text-lime">{t('fullFile')}</Link>
+      <RowLink href={`/captain/players/${draft.player_id}`}>{t('fullFile')}</RowLink>
       <Button type="button" aria-expanded={expanded} aria-controls={`player-facts-${draft.id}`} aria-label={t(expanded ? 'collapseFacts' : 'expandFacts')}
         onClick={() => setExpanded(value => !value)} variant={'secondary'} block={false} className={"grid min-h-12 min-w-12 place-items-center md:hidden"}>
         <ChevronDown aria-hidden className={`size-4 ${expanded ? 'rotate-180' : ''}`} />

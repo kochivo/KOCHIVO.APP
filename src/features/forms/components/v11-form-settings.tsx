@@ -1,3 +1,4 @@
+import { editableFieldClass } from '@/ui/edit-in-place';
 import type { ComponentProps } from 'react';
 import { useId, useState } from 'react';
 import { Bell, Pencil } from 'lucide-react';
@@ -32,8 +33,8 @@ export function V11FormSettings(props: ComponentProps<typeof LibrarySchedulesEnt
       className="sheet fixed inset-0 m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-2xl rounded-card border border-line p-5 text-ink"
       footer={<Button onClick={() => setEditing(false)} block={false} className="px-5">{m.close}</Button>}>
       <div className="[&_button]:cursor-pointer [&_button]:active:scale-[.98] [&_button:focus-visible]:ring-2 [&_button:focus-visible]:ring-lime [&_summary]:cursor-pointer [&_summary]:active:scale-[.98] [&_summary:focus-visible]:ring-2 [&_summary:focus-visible]:ring-lime">
-      <label className="mb-3 block text-xs text-muted">{m.formTitle}<input value={form.title} onChange={e => props.onChange({ ...form, title: e.target.value })} className="mt-2 min-h-12 w-full rounded-control border border-line bg-transparent px-3 text-sm text-ink" /></label>
-      <label className="flex min-h-12 items-center justify-between gap-3 text-xs text-muted">{t('kind')}<select value={form.kind} onChange={e => props.onChange({ ...form, kind: e.target.value as typeof form.kind })} className="min-h-12 max-w-full rounded-control bg-surface px-3 text-ink">
+      <label className="mb-3 block text-xs text-muted">{m.formTitle}<input value={form.title} onChange={e => props.onChange({ ...form, title: e.target.value })} className={`${editableFieldClass} mt-2 min-h-12 w-full rounded-control border border-line bg-surface px-3 text-sm text-ink`} /></label>
+      <label className="flex min-h-12 items-center justify-between gap-3 text-xs text-muted">{t('kind')}<select value={form.kind} onChange={e => props.onChange({ ...form, kind: e.target.value as typeof form.kind })} className={`${editableFieldClass} min-h-12 max-w-full rounded-control bg-surface px-3 text-ink`}>
         {Object.entries(m.kinds).map(([kind, label]) => <option key={kind} value={kind}>{label}</option>)}<option value="custom">{t('manual')}</option></select></label>
       <LibrarySchedulesEntry {...props} />
       </div>

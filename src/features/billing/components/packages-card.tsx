@@ -1,4 +1,6 @@
 'use client';
+import { editableFieldClass } from '@/ui/edit-in-place';
+import { clickableClass, Button } from '@/ui/button';
 import { IconButton } from '@/ui/icon-button';
 
 import { KoPlus } from '@/ui/icons/ko-plus';
@@ -12,7 +14,7 @@ import { duplicateDuration, durationLabel, durationPresets, firstUnusedDuration 
 
 import { useState } from 'react';
 import { Package as PackageIcon, Plus, X } from 'lucide-react';
-import { Button } from '@/ui/button';
+
 import { EmptyState, GlassCard, Segmented, Stepper, TextField } from '@/ui';
 import { archivePackage, createPackage } from '../data/finance-actions';
 import type { Package } from '../types';
@@ -93,7 +95,7 @@ export function PackagesCard({ packages: initial, onChange, initialAdding = fals
             const next = firstUnusedDuration(editor.packages, nextTier);
             setDays(String(next ?? 1)); setCustom(next === null);
           }
-        }} className="mt-2 min-h-12 w-full rounded-control border border-line bg-surface px-3 text-ink">
+        }} className={captainWorkspaceEnabled() ? `${editableFieldClass} mt-2 min-h-12 w-full rounded-control border border-line bg-surface px-3 text-ink` : "mt-2 min-h-12 w-full rounded-control border border-line bg-surface px-3 text-ink"}>
           <option value="">{editor.noTierLabel}</option>{editor.tiers.map(tier => <option key={tier.id} value={tier.id}>{tier.name}</option>)}
         </select></label>}
         <Segmented aria-label={pt('kind')} value={kind} options={[{ value: 'days', label: pt('byDays') }, { value: 'sessions', label: pt('bySessions') }]} onChange={value => setKind(value as 'days' | 'sessions')} />
@@ -103,10 +105,10 @@ export function PackagesCard({ packages: initial, onChange, initialAdding = fals
             const used = duplicateDuration(editor.packages, { id: editor.item?.id, tier_id: tierId || null, kind: 'days', days: value, sessions: null });
             return <button key={value} type="button" disabled={used} aria-pressed={!custom && Number(days) === value}
               aria-describedby={used ? 'duration-used' : undefined} title={used ? dt('duplicateDuration') : undefined}
-              className={`press min-h-12 cursor-pointer rounded-control border border-line px-3 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime disabled:opacity-40 ${!custom && Number(days) === value ? 'glass-raised font-bold' : 'text-muted'}`}
+              className={captainWorkspaceEnabled() ? `${clickableClass} press min-h-12 cursor-pointer rounded-control border border-line px-3 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime disabled:opacity-40 ${!custom && Number(days) === value ? 'glass-raised font-bold' : 'text-muted'}` : `press min-h-12 cursor-pointer rounded-control border border-line px-3 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime disabled:opacity-40 ${!custom && Number(days) === value ? 'glass-raised font-bold' : 'text-muted'}`}
               onClick={() => { setDays(String(value)); setCustom(false); }}>{durationLabel(value, dt, locale)}</button>;
           })}
-          <button type="button" aria-pressed={custom} onClick={() => setCustom(true)} className={`press min-h-12 cursor-pointer rounded-control border border-line px-3 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime ${custom ? 'glass-raised font-bold' : 'text-muted'}`}>{dt('customDuration')}</button>
+          <button type="button" aria-pressed={custom} onClick={() => setCustom(true)} className={captainWorkspaceEnabled() ? `${clickableClass} press min-h-12 cursor-pointer rounded-control border border-line px-3 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime ${custom ? 'glass-raised font-bold' : 'text-muted'}` : `press min-h-12 cursor-pointer rounded-control border border-line px-3 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime ${custom ? 'glass-raised font-bold' : 'text-muted'}`}>{dt('customDuration')}</button>
         </div>}
         {editor && <p id="duration-used" role={duplicate ? 'alert' : undefined} className={`text-xs ${duplicate ? 'text-danger' : 'text-muted'}`}>
           {(duplicate || kind === 'days' && durationPresets.some(value => duplicateDuration(editor.packages, { id: editor.item?.id, tier_id: tierId || null, kind: 'days', days: value, sessions: null }))) && dt('duplicateDuration')}

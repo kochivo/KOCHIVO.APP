@@ -1,4 +1,7 @@
 'use client';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { editableFieldClass } from '@/ui/edit-in-place';
+import { clickableClass } from '@/ui/button';
 import { useState } from 'react';
 import { useT } from '@/core/i18n/client';
 import type { AcceptedMethod, PaymentMethod } from '@/features/billing';
@@ -27,10 +30,10 @@ export function PaymentMethodRow({ method, initial, position, onSaved }: {
     <div className="flex items-center justify-between gap-3">
       <label htmlFor={`method-${method}`} className="flex min-h-12 flex-1 items-center text-sm">{t(method)}</label>
       {enabled && method !== 'cash' && <input aria-label={t('account')} dir="ltr" maxLength={80} required disabled={busy} value={detail}
-        className="glass min-h-12 min-w-0 flex-1 rounded-control border border-line px-2 text-start font-display text-xs tabular-nums"
+        className={captainWorkspaceEnabled() ? `${editableFieldClass} glass min-h-12 min-w-0 flex-1 rounded-control border border-line px-2 text-start font-display text-xs tabular-nums` : "glass min-h-12 min-w-0 flex-1 rounded-control border border-line px-2 text-start font-display text-xs tabular-nums"}
         onChange={event => setDetail(event.target.value)} onBlur={() => { if (detail !== stored.detail || enabled !== stored.enabled) void persist(true); }} />}
       <button id={`method-${method}`} type="button" role="switch" aria-checked={enabled} aria-label={t(method)} disabled={busy}
-        className="flex min-h-12 min-w-12 items-center justify-center" onClick={() => {
+        className={captainWorkspaceEnabled() ? `${clickableClass} flex min-h-12 min-w-12 items-center justify-center` : "flex min-h-12 min-w-12 items-center justify-center"} onClick={() => {
           const next = !enabled; setEnabled(next); void persist(next);
         }}><span className={`flex h-6 w-11 items-center rounded-full border border-line p-1 ${enabled ? 'bg-lime-soft' : 'bg-surface-raised'}`}>
           <span className={`size-4 rounded-full ${enabled ? 'ms-auto bg-lime' : 'bg-muted'}`} />

@@ -1,4 +1,5 @@
 'use client';
+import { clickableClass } from '@/ui/button';
 import { useCallback, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
@@ -73,7 +74,7 @@ export function TasksScreen() {
       {!tasks.length && !pending ? <TasksState kind="empty" /> : <>
         <div aria-label={t('title')} className={`flex w-max max-w-full gap-1 overflow-x-auto rounded-full border border-line-soft bg-bg/25 p-1 ${mobileOpen ? 'max-[759px]:hidden' : ''}`}>
           {taskTabs.map(tab => <button key={tab} aria-pressed={filter === tab} disabled={pending} onClick={() => { setFilter(tab); setMobileOpen(false); }}
-            className={`min-h-12 shrink-0 whitespace-nowrap rounded-full px-3 text-xs ${filter === tab ? 'glass-strong text-ink' : 'text-muted'}`}>
+            className={`${clickableClass} min-h-12 shrink-0 whitespace-nowrap rounded-full px-3 text-xs ${filter === tab ? 'glass-strong text-ink' : 'text-muted'}`}>
             {t(tab)} <span className="ms-1 tabular-nums">{formatNumber(counts[tab], locale)}</span></button>)}
         </div>
         <div className="grid items-start gap-4 min-[760px]:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">

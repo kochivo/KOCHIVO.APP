@@ -1,12 +1,14 @@
 'use client';
 
+import { clickableClass, Button } from '@/ui/button';
+import { editableFieldClass } from '@/ui/edit-in-place';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useRef, useState } from 'react';
 import { useT } from '@/core/i18n/client';
 import { useResource } from '@/core/resource';
 import { resourceStore } from '@/core/resource/store';
-import { Button } from '@/ui/button';
+
 import { RowLink } from '@/ui/row-link';
 import { KoSend } from '@/ui/icons/ko-send';
 import { Chip } from '@/ui/chip';
@@ -97,9 +99,9 @@ function FormFields({ exercise, names, returnTo }: { exercise: LibraryExercise |
   }
   return <form noValidate className="space-y-3" onSubmit={event => { event.preventDefault(); void submit(); }}>
     <header className="glass flex flex-wrap items-center gap-3 rounded-card p-3">
-      <Link aria-label={t('cancel')} aria-disabled={busy} onClick={event => { if (busy) event.preventDefault(); }} href={destination} className="press grid min-h-12 min-w-12 cursor-pointer place-items-center rounded-full border border-line bg-surface focus-visible:ring-2 focus-visible:ring-lime"><KoSend aria-hidden className="size-4 rotate-45 ltr:rotate-225" /></Link>
+      <Link aria-label={t('cancel')} aria-disabled={busy} onClick={event => { if (busy) event.preventDefault(); }} href={destination} className={`${clickableClass} press grid min-h-12 min-w-12 cursor-pointer place-items-center rounded-full border border-line bg-surface focus-visible:ring-2 focus-visible:ring-lime`}><KoSend aria-hidden className="size-4 rotate-45 ltr:rotate-225" /></Link>
       <div className="me-auto min-w-0"><h1 className="text-[15px] font-bold">{t(exercise ? 'edit' : 'new')}</h1><p className="mt-1 text-xs text-muted">{t('privacy')}</p></div>
-      <Link aria-disabled={busy} onClick={event => { if (busy) event.preventDefault(); }} href={destination} className="control control-secondary press hidden min-h-12 items-center px-5 text-sm min-[761px]:inline-flex">{t('cancel')}</Link>
+      <Link aria-disabled={busy} onClick={event => { if (busy) event.preventDefault(); }} href={destination} className={`${clickableClass} control control-secondary press hidden min-h-12 items-center px-5 text-sm min-[761px]:inline-flex`}>{t('cancel')}</Link>
       <Button type="submit" disabled={busy} aria-busy={busy}><KoSend aria-hidden className="size-4" />{t(busy ? 'saving' : 'save')}</Button>
     </header>
     {error && <p role="alert" className="text-danger">{error}</p>}
@@ -109,7 +111,7 @@ function FormFields({ exercise, names, returnTo }: { exercise: LibraryExercise |
           <h2 className="font-bold">{t('nameSection')}</h2>
           <div className="grid gap-4 sm:grid-cols-2">
             {(['name', 'nameEn'] as const).map(key => <div key={key}><label className="text-sm text-muted">{t(key)}{key === 'nameEn' && <span className="ms-2">{t('optional')}</span>}
-              <input {...invalid(key)} dir={key === 'nameEn' ? 'ltr' : undefined} required={key === 'name'} maxLength={key === 'name' ? 60 : 120} value={values[key]} onChange={event => patch({ [key]: event.target.value })} className={inputClass} />
+              <input {...invalid(key)} dir={key === 'nameEn' ? 'ltr' : undefined} required={key === 'name'} maxLength={key === 'name' ? 60 : 120} value={values[key]} onChange={event => patch({ [key]: event.target.value })} className={`${editableFieldClass} ${inputClass}`} />
             </label>{fieldError(key)}</div>)}
           </div>
           {(values.name.trim() || values.nameEn.trim()) && (similar ? <RowLink id="similar-exercise" href="#similar-exercise" aria-busy={detailBusy} onClick={event => { event.preventDefault(); void openSimilar(); }} className="text-sm">{t('similar', { name: similar.name_ar || similar.name_en })}</RowLink> :
@@ -122,7 +124,7 @@ function FormFields({ exercise, names, returnTo }: { exercise: LibraryExercise |
             {bodyParts.map(([value, label]) => <Chip key={value} pressed={values.bodyPart === value} onClick={() => patch({ bodyPart: value,
               equipment: value !== 'cardio' && ['treadmill', 'stairmaster'].includes(values.equipment) ? '' : values.equipment })}>{t(label)}</Chip>)}
           </div>{fieldError('bodyPart')}
-          <label className="block text-sm text-muted">{t('targetMuscle')}<input {...invalid('target')} maxLength={40} value={values.target} onChange={event => patch({ target: event.target.value })} className={inputClass} /></label>{fieldError('target')}
+          <label className="block text-sm text-muted">{t('targetMuscle')}<input {...invalid('target')} maxLength={40} value={values.target} onChange={event => patch({ target: event.target.value })} className={`${editableFieldClass} ${inputClass}`} /></label>{fieldError('target')}
         </section>
         <section className="glass space-y-3 rounded-card border border-line-soft p-[18px]">
           <h2 className="font-bold">{t('secondaryMuscles')}</h2><p className="text-sm text-muted">{t('secondaryHint')}</p>
@@ -141,9 +143,9 @@ function FormFields({ exercise, names, returnTo }: { exercise: LibraryExercise |
         <section className="glass space-y-3 rounded-card border border-line-soft p-[18px]">
           <h2 className="font-bold">{t('steps')}</h2><p className="text-sm text-muted">{t('stepsHint')}</p>
           {values.instructions.length ? <ol className="list-decimal space-y-3 ps-5">{values.instructions.map((step, index) => <li key={index}>
-            <div className="flex items-start gap-2"><textarea {...invalid('instructions')} aria-label={t('step', { number: index + 1 })} maxLength={160} value={step} rows={2} className={`${inputClass} py-3`}
+            <div className="flex items-start gap-2"><textarea {...invalid('instructions')} aria-label={t('step', { number: index + 1 })} maxLength={160} value={step} rows={2} className={`${editableFieldClass} ${inputClass} py-3`}
               onChange={event => patch({ instructions: values.instructions.map((item, position) => position === index ? event.target.value : item) })} />
-              <button type="button" aria-label={t('removeStep', { number: index + 1 })} className="press min-h-12 shrink-0 cursor-pointer rounded-control border border-line bg-surface px-3 text-sm text-muted focus-visible:ring-2 focus-visible:ring-lime" onClick={() => patch({ instructions: values.instructions.filter((_, position) => position !== index) })}>{t('remove')}</button></div>
+              <button type="button" aria-label={t('removeStep', { number: index + 1 })} className={`${clickableClass} press min-h-12 shrink-0 cursor-pointer rounded-control border border-line bg-surface px-3 text-sm text-muted focus-visible:ring-2 focus-visible:ring-lime`} onClick={() => patch({ instructions: values.instructions.filter((_, position) => position !== index) })}>{t('remove')}</button></div>
           </li>)}</ol> : <p className="text-sm text-muted">{t('noSteps')}</p>}
           {fieldError('instructions')}<Button type="button" variant="secondary" disabled={values.instructions.length >= 8} onClick={() => patch({ instructions: [...values.instructions, ''] })}>{t('addStep')}</Button>
         </section>
@@ -151,7 +153,7 @@ function FormFields({ exercise, names, returnTo }: { exercise: LibraryExercise |
       <div className="min-w-0 space-y-3 min-[761px]:sticky min-[761px]:top-3">
         <section className="glass space-y-3 rounded-card border border-line-soft p-[18px]">
           <div className="flex flex-wrap items-center justify-between gap-2"><h2 className="font-bold">{t('videoSection')}</h2><span className="text-xs text-muted">{t('videoUploadLater')}</span></div>
-          <label className="block text-sm text-muted">{t('videoLink')}<input {...invalid('video')} type="url" dir="ltr" maxLength={500} value={values.video} onChange={event => patch({ video: event.target.value })} className={inputClass} /></label>
+          <label className="block text-sm text-muted">{t('videoLink')}<input {...invalid('video')} type="url" dir="ltr" maxLength={500} value={values.video} onChange={event => patch({ video: event.target.value })} className={`${editableFieldClass} ${inputClass}`} /></label>
           <p className="text-sm text-muted">{t('videoHint')}</p>{fieldError('video')}
         </section>
         <ExercisePreview values={values} />

@@ -1,4 +1,6 @@
 'use client';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { editableFieldClass } from '@/ui/edit-in-place';
 import { useT } from '@/core/i18n/client';
 import { Segmented, TextField } from '@/ui';
 import { messages } from '../messages';
@@ -19,7 +21,7 @@ export function CaptainProfileFields({ value, errors, onChange }: { value: Capta
     <div className="space-y-2">
       <label htmlFor="captain-bio" className="text-sm font-semibold">{t('bio')}</label>
       <textarea id="captain-bio" value={value.bio} maxLength={280} rows={3} placeholder={t('bioPlaceholder')}
-        onChange={e => onChange({ ...value, bio: e.target.value })} className={fieldClass}
+        onChange={e => onChange({ ...value, bio: e.target.value })} className={captainWorkspaceEnabled() ? `${editableFieldClass} ${fieldClass}` : fieldClass}
         aria-invalid={!!errors.bio} aria-describedby={errors.bio ? 'bio-error' : undefined} />
       {errors.bio && <p id="bio-error" role="alert" className="text-sm text-danger">{errors.bio}</p>}
     </div>
@@ -29,7 +31,7 @@ export function CaptainProfileFields({ value, errors, onChange }: { value: Capta
       onChange={(timezone, timezone_auto) => onChange({ ...value, timezone, timezone_auto })} /> : <div className="space-y-2">
       <label htmlFor="captain-timezone" className="text-sm font-semibold">{t('timezone')}</label>
       <select id="captain-timezone" value={value.timezone} onChange={e => onChange({ ...value, timezone: e.target.value })}
-        className={fieldClass} aria-describedby="timezone-hint timezone-error" aria-invalid={!!errors.timezone}>
+        className={captainWorkspaceEnabled() ? `${editableFieldClass} ${fieldClass}` : fieldClass} aria-describedby="timezone-hint timezone-error" aria-invalid={!!errors.timezone}>
         {timezones.map(zone => <option key={zone} value={zone}>{zone}</option>)}
       </select>
       <p id="timezone-hint" className="text-sm text-muted">{t('timezoneHint')}</p>

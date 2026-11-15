@@ -1,5 +1,6 @@
 'use client';
 
+import { editableFieldClass } from '@/ui/edit-in-place';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useResource } from '@/core/resource';
 import { useT } from '@/core/i18n/client';
@@ -26,12 +27,12 @@ export function ExerciseProgramPicker({ exercise, onClose }: { exercise: Library
     <h3 ref={heading} tabIndex={-1} className="font-semibold">{t('choose')}</h3>
     {programs.error ? <ErrorState message={t('error')} retryLabel={t('retry')} onRetry={() => void programs.retry()} /> : !programs.data ?
       <LoadingState variant="detail" /> : !programs.data.length ? <p>{t('empty')}</p> : <>
-      <label className="block space-y-2"><span>{t('program')}</span><select className={field} value={program} disabled={state === 'saving'} onChange={event => {
+      <label className="block space-y-2"><span>{t('program')}</span><select className={`${editableFieldClass} ${field}`} value={program} disabled={state === 'saving'} onChange={event => {
         setProgram(event.target.value); setDay(''); setState('idle');
       }}><option value="">{t('program')}</option>{programs.data.map(row => <option key={row.id} value={row.id}>{row.title}</option>)}</select></label>
       {program && (days.error ? <ErrorState message={t('error')} retryLabel={t('retry')} onRetry={() => void days.retry()} /> : !days.data ?
         <LoadingState variant="detail" /> : !days.data.length ? <p>{t('noDays')}</p> :
-        <label className="block space-y-2"><span>{t('day')}</span><select className={field} value={day} disabled={state === 'saving'} onChange={event => { setDay(event.target.value); setState('idle'); }}>
+        <label className="block space-y-2"><span>{t('day')}</span><select className={`${editableFieldClass} ${field}`} value={day} disabled={state === 'saving'} onChange={event => { setDay(event.target.value); setState('idle'); }}>
           <option value="">{t('day')}</option>{days.data.map(row => <option key={row.id} value={row.id}>{row.title}</option>)}</select></label>)}
       <Button variant="secondary" disabled={!program || !day || state === 'saving' || state === 'saved'} onClick={async () => {
         if (lock.current) return;

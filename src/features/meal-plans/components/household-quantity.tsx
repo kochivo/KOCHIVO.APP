@@ -1,4 +1,6 @@
 'use client';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { editableFieldClass } from '@/ui/edit-in-place';
 import { useState } from 'react';
 import { useLocale, useT } from '@/core/i18n/client';
 import { Stepper } from '@/ui';
@@ -18,7 +20,7 @@ export function HouseholdQuantity({ item, onChange }: { item: MealItem; onChange
   const unit = item.food.units?.find(unit => unit.key === key);
   const name = unit ? locale === 'ar' ? unit.name_ar : unit.name_en : planT('grams');
   return <div className="grid gap-2">
-    {!!item.food.units?.length && <label>{t('unit')}<select aria-label={t('unit')} value={key} onChange={event => setKey(event.target.value)} className="ms-2 min-h-12 rounded-control bg-surface px-3">
+    {!!item.food.units?.length && <label>{t('unit')}<select aria-label={t('unit')} value={key} onChange={event => setKey(event.target.value)} className={captainWorkspaceEnabled() ? `${editableFieldClass} ms-2 min-h-12 rounded-control bg-surface px-3` : "ms-2 min-h-12 rounded-control bg-surface px-3"}>
       <option value="">{planT('grams')}</option>
       {item.food.units.map(unit => <option key={unit.key} value={unit.key}>{locale === 'ar' ? unit.name_ar : unit.name_en}</option>)}
     </select></label>}

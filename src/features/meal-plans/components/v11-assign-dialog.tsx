@@ -1,4 +1,5 @@
 'use client';
+import { editableFieldClass } from '@/ui/edit-in-place';
 import { useCallback, useState } from 'react';
 import { useResource } from '@/core/resource';
 import { useLocale, useT } from '@/core/i18n/client';
@@ -27,8 +28,8 @@ export function V11AssignDialog({ plans, onClose }: { plans: { id: string; title
         toast.success({ title: success('assigned', { name: resource.data?.find(row => row.id === player)?.name ?? '' }), detail: selected?.calories === undefined ? success('name', { name: selected?.title ?? '' }) : success('planDetail', { name: selected.title, calories: formatNumber(selected.calories, locale) }), icon: 'meal' }); onClose();
       } else setError(t('error')); }).catch(() => setError(t('error'))).finally(() => setBusy(false));
     }}>
-      <label className="grid gap-2">{t('plans')}<select disabled={busy} required value={plan} onChange={event => setPlan(event.target.value)} className="min-h-12 rounded-control bg-surface px-3">{!plans.length && <option value="">{t('noPlans')}</option>}{plans.map(row => <option key={row.id} value={row.id}>{row.title}</option>)}</select></label>
-      <label className="grid gap-2">{t('player')}<select disabled={busy} required value={player} onChange={event => setPlayer(event.target.value)} className="min-h-12 rounded-control bg-surface px-3"><option value="">{t(resource.data?.length ? 'choosePlayer' : 'noPlayers')}</option>{resource.data?.map(row => <option key={row.id} value={row.id}>{row.name}</option>)}</select></label>
+      <label className="grid gap-2">{t('plans')}<select disabled={busy} required value={plan} onChange={event => setPlan(event.target.value)} className={`${editableFieldClass} min-h-12 rounded-control bg-surface px-3`}>{!plans.length && <option value="">{t('noPlans')}</option>}{plans.map(row => <option key={row.id} value={row.id}>{row.title}</option>)}</select></label>
+      <label className="grid gap-2">{t('player')}<select disabled={busy} required value={player} onChange={event => setPlayer(event.target.value)} className={`${editableFieldClass} min-h-12 rounded-control bg-surface px-3`}><option value="">{t(resource.data?.length ? 'choosePlayer' : 'noPlayers')}</option>{resource.data?.map(row => <option key={row.id} value={row.id}>{row.name}</option>)}</select></label>
       {error && <p role="alert" className="text-danger">{error}</p>}
       <div className="flex gap-2"><Button disabled={busy || !plan || !player} type="submit">{t('assign')}</Button><Button variant="secondary" disabled={busy} type="button" onClick={onClose}>{t('close')}</Button></div>
     </form>}

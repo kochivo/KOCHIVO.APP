@@ -1,5 +1,6 @@
 'use client';
 import { useT } from '@/core/i18n/client';
+import { clickableClass } from '@/ui/button';
 import { messages } from '../messages';
 
 import { useSyncExternalStore } from 'react';
@@ -13,11 +14,11 @@ function subscribe(onChange: () => void) {
   return () => window.removeEventListener(changeEvent, onChange);
 }
 
-export function GlassToggle() {
+export function GlassToggle({ workspace = false }: { workspace?: boolean } = {}) {
   const t = useT(messages);
   const solid = useSyncExternalStore(subscribe, snapshot, serverSnapshot);
   return <button type="button" role="switch" aria-checked={solid}
-    className="glass flex min-h-12 w-full cursor-pointer items-center justify-between gap-4 rounded-card p-6 text-start"
+    className={`${workspace ? clickableClass + ' ' : ''}glass flex min-h-12 w-full cursor-pointer items-center justify-between gap-4 rounded-card p-6 text-start`}
     onClick={() => {
       const mode = snapshot() ? 'blur' : 'solid';
       document.documentElement.dataset.glass = mode;

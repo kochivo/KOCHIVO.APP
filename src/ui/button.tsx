@@ -4,6 +4,8 @@ import { cn } from '@/lib/cn';
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
 type Size = 'sm' | 'md' | 'lg';
 
+export const clickableClass = 'press cursor-pointer hover:opacity-90 focus-visible:ring-2 focus-visible:ring-lime motion-safe:transition-[transform,opacity] disabled:cursor-default';
+
 const variants: Record<Variant, string> = {
   primary: 'control-primary text-on-lime font-extrabold',
   secondary: 'control-secondary text-ink',

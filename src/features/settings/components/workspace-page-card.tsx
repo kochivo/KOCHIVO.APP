@@ -2,14 +2,14 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { Copy, Eye } from 'lucide-react';
+import { Copy, Eye, Pencil } from 'lucide-react';
+import { secondaryButtonClass } from '@/ui/secondary-button-class';
 import { useT } from '@/core/i18n/client';
-import { Button } from '@/ui/button';
+import { Button, buttonClass } from '@/ui/button';
 import { messages } from '../messages';
 import type { SettingsProfile } from '../schema';
 import { WorkspaceAvatar } from './workspace-avatar';
 import { WorkspaceFact } from './workspace-fact';
-import { buttonClass } from '@/ui/button';
 
 export function WorkspacePageCard({ profile, edit }: { profile: SettingsProfile; edit: () => void }) {
   const t = useT(messages);
@@ -30,7 +30,7 @@ export function WorkspacePageCard({ profile, edit }: { profile: SettingsProfile;
         catch { setStatus(t('copyFailed')); }
       }}><Copy aria-hidden className="size-4" />{t('workspaceCopy')}</Button>}
     </div>
-    <WorkspaceFact label={t('workspaceBio')}><button type="button" onClick={edit} className="min-h-12 text-start">{profile.bio || t('workspaceUnset')}</button></WorkspaceFact>
+    <WorkspaceFact label={t('workspaceBio')}><button type="button" onClick={edit} className={secondaryButtonClass + ' text-start'}>{profile.bio || t('workspaceUnset')}<Pencil aria-hidden className="size-4 shrink-0" /></button></WorkspaceFact>
     {status && <p role="status" className="mt-2 text-sm text-muted">{status}</p>}
   </section>;
 }

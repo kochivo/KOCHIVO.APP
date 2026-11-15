@@ -1,3 +1,5 @@
+import { clickableClass } from '@/ui/button';
+import { RowChevron } from '@/ui/row-chevron';
 import Link from 'next/link';
 import { Users } from 'lucide-react';
 import type { Locale } from '@/core/i18n/locale';
@@ -31,7 +33,7 @@ export function WorkspaceBoardList({ rows, locale, allTime }: {
         </span>
       </>;
       return <li key={row.player_id ?? index}>{row.player_id ?
-        <Link href={`/captain/players/${row.player_id}`} className="flex min-h-[58px] items-center gap-3 rounded-xl p-2.5">{content}</Link> :
+        <Link href={`/captain/players/${row.player_id}`} className={`${clickableClass} flex min-h-[58px] items-center gap-3 rounded-xl p-2.5`}>{content}<RowChevron /></Link> :
         <div className="flex min-h-[58px] items-center gap-3 rounded-xl p-2.5">{content}</div>}</li>;
     })}
   </ol>;

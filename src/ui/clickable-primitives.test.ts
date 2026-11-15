@@ -6,6 +6,7 @@ import { RowLink } from './row-link';
 import { Disclosure } from './disclosure';
 import { EditInPlace } from './edit-in-place';
 import { ResponsiveDialog } from './responsive-dialog';
+import { clickableClass } from './button';
 
 it('gives row links a direction-aware trailing chevron and interaction feedback', () => {
   const html = renderToStaticMarkup(createElement(RowLink, { href: '/captain/templates' }, 'Templates'));
@@ -17,12 +18,18 @@ it.each([false, true])('exposes native disclosure state: %s', open => {
   const html = renderToStaticMarkup(createElement(Disclosure, { label: 'Details', open }, 'Body'));
   expect(html).toContain('<details');
   expect(html).toContain(`aria-expanded="${open}"`);
-  for (const value of ['<summary', 'group-open:rotate-180', 'focus-visible:ring-2', 'cursor-pointer', 'press']) expect(html).toContain(value);
+  for (const value of ['<summary', 'lucide-chevron-down', 'focus-visible:ring-2', 'cursor-pointer', 'press']) expect(html).toContain(value);
+  expect(html.includes('rotate-180')).toBe(open);
 });
 
 it('labels the editable field and shows a decorative pencil with keyboard focus', () => {
   const html = renderToStaticMarkup(createElement(EditInPlace, { label: 'Name', defaultValue: 'Program' }));
   for (const value of ['Name', 'value="Program"', 'recessed', 'lucide-pencil', 'aria-hidden="true"', 'focus-visible:ring-2']) expect(html).toContain(value);
+  for (const value of ['cursor-pointer', 'press', 'hover:bg-surface-raised']) expect(html).toContain(value);
+});
+
+it('provides explicit shared interaction cues for custom captain controls', () => {
+  for (const value of ['cursor-pointer', 'press', 'hover:opacity-90', 'focus-visible:ring-2']) expect(clickableClass).toContain(value);
 });
 
 it('renders the optional dialog header, translated close control and footer', () => {

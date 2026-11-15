@@ -1,5 +1,7 @@
 'use client';
 
+import { editableFieldClass } from '@/ui/edit-in-place';
+import { secondaryButtonClass } from '@/ui/secondary-button-class';
 import { Button } from '@/ui/button';
 import { KoPlus } from '@/ui/icons/ko-plus';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
@@ -50,8 +52,8 @@ export function FoodsLibraryEntry() {
       <form className="ms-auto flex w-full items-center gap-2 rounded-full border border-line-soft px-3 sm:w-auto" onSubmit={event => {
         event.preventDefault(); setCursor(null); setSearch(query.trim());
       }}>
-        <input maxLength={100} className="min-h-12 min-w-0 flex-1 bg-transparent text-xs" aria-label={t('search')} placeholder={t('search')} value={query} onChange={e => setQuery(e.target.value)} />
-        <button type="submit" className="flex min-h-12 min-w-12 items-center justify-center" aria-label={t('search')}><Search aria-hidden className="size-4 text-faint" /></button>
+        <input maxLength={100} className={captainWorkspaceEnabled() ? `${editableFieldClass} min-h-12 min-w-0 flex-1 bg-surface text-xs` : "min-h-12 min-w-0 flex-1 bg-transparent text-xs"} aria-label={t('search')} placeholder={t('search')} value={query} onChange={e => setQuery(e.target.value)} />
+        <button type="submit" className={captainWorkspaceEnabled() ? `${secondaryButtonClass} flex min-h-12 min-w-12 items-center justify-center` : "flex min-h-12 min-w-12 items-center justify-center"} aria-label={t('search')}><Search aria-hidden className="size-4 text-faint" /></button>
       </form>
     </div>
     {(resource.status === 'loading' || resource.status === 'idle') && <div role="status"><span className="sr-only">{t('loading')}</span><LoadingState variant="list" /></div>}

@@ -1,5 +1,6 @@
 'use client';
 
+import { editableFieldClass } from '@/ui/edit-in-place';
 import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
@@ -101,14 +102,14 @@ export function FoodForm({ food, copyFrom, initialName = '', onSaved, onCancel, 
               {/* This preview uses the existing public bucket or a local object URL. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               {photo ? <img src={photo} alt={name} width={128} height={128} className="size-24 rounded-control object-cover" /> : <KoCamera aria-hidden className="size-8" />}
-              {planT('optionalPhoto')}<input className="sr-only" type="file" accept="image/*" onChange={event => {
+              {planT('optionalPhoto')}<input className={captainWorkspaceEnabled() ? `${editableFieldClass} sr-only` : "sr-only"} type="file" accept="image/*" onChange={event => {
                 const next = event.target.files?.[0] ?? null;
                 setFile(next); setPreview(next ? URL.createObjectURL(next) : '');
               }} />
             </label>
             <div className="grid gap-3">
-              <label className="grid gap-1 text-sm">{t('nameAr')}<input className={inputClass} required maxLength={60} value={name} onChange={event => setName(event.target.value)} /></label>
-              <label className="grid gap-1 text-sm">{t('nameEn')}<input className={inputClass} dir="ltr" maxLength={100} value={nameEn} onChange={event => setNameEn(event.target.value)} /></label>
+              <label className="grid gap-1 text-sm">{t('nameAr')}<input className={captainWorkspaceEnabled() ? `${editableFieldClass} ${inputClass}` : inputClass} required maxLength={60} value={name} onChange={event => setName(event.target.value)} /></label>
+              <label className="grid gap-1 text-sm">{t('nameEn')}<input className={captainWorkspaceEnabled() ? `${editableFieldClass} ${inputClass}` : inputClass} dir="ltr" maxLength={100} value={nameEn} onChange={event => setNameEn(event.target.value)} /></label>
             </div>
           </div>
         </section>
@@ -117,7 +118,7 @@ export function FoodForm({ food, copyFrom, initialName = '', onSaved, onCancel, 
           <div className={workspace ? 'grid grid-cols-2 gap-3 sm:grid-cols-4' : 'glass-strong grid grid-cols-2 gap-3 rounded-control p-3 sm:grid-cols-4'}>
             {(['kcal', 'protein', 'carbs', 'fat'] as const).map(key => <label className="grid min-w-0 gap-1 text-sm" key={key}>
               {planT(macroLabels[key])}
-              <input className={inputClass} required type="number" min={0} max={key === 'kcal' ? 900 : 100} step="0.1" value={macros[key]}
+              <input className={captainWorkspaceEnabled() ? `${editableFieldClass} ${inputClass}` : inputClass} required type="number" min={0} max={key === 'kcal' ? 900 : 100} step="0.1" value={macros[key]}
                 onChange={event => setMacros({ ...macros, [key]: Number(event.target.value) })} />
             </label>)}
           </div>

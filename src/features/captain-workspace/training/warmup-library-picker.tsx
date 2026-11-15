@@ -1,5 +1,6 @@
 'use client';
 
+import { editableFieldClass } from '@/ui/edit-in-place';
 import { useCallback, useEffect, useState } from 'react';
 import { useLocale, useT } from '@/core/i18n/client';
 import { uuidv7 } from '@/core/offline/ids';
@@ -18,9 +19,9 @@ export function WarmupLibraryPicker({ items, onAdd }: { items: WarmupItem[]; onA
   const search = useResource(`training-search:${debounced}::${mine}`, load);
   return <div className="mx-[18px] mb-3 rounded-control border border-line-soft p-3">
     <input aria-label={t('warmSearch')} placeholder={t('warmSearch')} value={query} onChange={event => setQuery(event.target.value)}
-      className="min-h-12 w-full rounded-control border border-line-soft bg-transparent px-3 text-sm" />
+      className={`${editableFieldClass} min-h-12 w-full rounded-control border border-line-soft bg-surface px-3 text-sm`} />
     <label className="flex min-h-12 items-center gap-2 text-xs text-muted"><input type="checkbox" checked={mine}
-      onChange={event => setMine(event.target.checked)} className="size-5 accent-lime" />{t('warmMine')}</label>
+      onChange={event => setMine(event.target.checked)} className={`${editableFieldClass} size-5 accent-lime`} />{t('warmMine')}</label>
     <div className="max-h-64 overflow-y-auto">
       {search.error ? <p role="alert" className="text-xs text-danger">{t('warmSearchError')}<Button type="button" variant={'secondary'} block={false} className={"min-h-12 px-3"} onClick={() => void search.retry()}>{t('warmRetry')}</Button></p> :
         !search.data || query !== debounced ? <p role="status" className="text-xs text-faint">{t('warmLoading')}</p> :

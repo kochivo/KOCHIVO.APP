@@ -1,10 +1,11 @@
 'use client';
 
+import { editableFieldClass, EditInPlace } from '@/ui/edit-in-place';
 import { IconButton } from '@/ui/icon-button';
-import { EditInPlace } from '@/ui/edit-in-place';
+
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
-import { Ellipsis } from 'lucide-react';
+import { DisclosureChevron } from '@/ui/disclosure-chevron';
 import { useLocale, useT } from '@/core/i18n/client';
 import { uuidv7 } from '@/core/offline/ids';
 import type { PlayerFacts } from '@/features/player-file';
@@ -45,10 +46,10 @@ export function MealCard({ meal, update, facts, day, first, last, editableName =
         onChange={event => { const name = event.target.value.slice(0, 40); if (name.trim()) update(draft => renameMeal(draft, meal.id, name)); }}
         className="font-display text-[19px] font-semibold" /></div> : <h2 className="font-display text-[19px] font-semibold">{meal.name}</h2>}
       <span className="ms-auto text-xs text-muted">{macroT('calories', { n: formatNumber(Math.round(totals.kcal), locale) })}<small className="block">{macroT('macros', { p: formatNumber(totals.protein, locale), c: formatNumber(totals.carbs, locale), f: formatNumber(totals.fat, locale) })}</small></span>
-      <label className="rounded-full border border-line bg-surface px-2"><span className="sr-only">{rt('time')}</span><input type="time" value={(meal as TimedMeal).timeOfDay?.slice(0, 5) ?? ''} onChange={event => update(draft => ({ ...draft, meals: draft.meals.map(row => row.id === meal.id ? { ...row, timeOfDay: event.target.value || null } : row) }))} className="press min-h-12 max-w-32 cursor-pointer rounded-control bg-transparent text-xs focus-visible:ring-2 focus-visible:ring-lime" /></label>
+      <label className="rounded-full border border-line bg-surface px-2"><span className="sr-only">{rt('time')}</span><input type="time" value={(meal as TimedMeal).timeOfDay?.slice(0, 5) ?? ''} onChange={event => update(draft => ({ ...draft, meals: draft.meals.map(row => row.id === meal.id ? { ...row, timeOfDay: event.target.value || null } : row) }))} className={`${editableFieldClass} press min-h-12 max-w-32 cursor-pointer rounded-control bg-surface text-xs focus-visible:ring-2 focus-visible:ring-lime`} /></label>
       <MealMenu meal={meal} day={day} update={update} rename={() => setDetails(true)} />
       {incomplete && <span className="text-xs text-warn">{t('incomplete')}</span>}
-      <IconButton type="button" aria-label={t('details')} aria-expanded={details} onClick={() => setDetails(!details)} className="grid min-h-12 min-w-12 place-items-center text-ink"><Ellipsis aria-hidden className="size-4" /></IconButton>
+      <IconButton type="button" aria-label={t('details')} aria-expanded={details} onClick={() => setDetails(!details)} className="grid min-h-12 min-w-12 place-items-center text-ink"><DisclosureChevron expanded={details} className="size-4" /></IconButton>
     </div>
     {!meal.items.length && <p className="px-[18px] pb-3 text-xs text-faint">{planT('addTheFirstFood')}</p>}
     <ul className="@container">{meal.items.map(item => <FoodRow key={item.id} item={item} update={update} />)}</ul>

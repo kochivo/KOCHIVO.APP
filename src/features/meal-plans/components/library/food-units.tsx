@@ -1,5 +1,6 @@
 'use client';
 
+import { editableFieldClass } from '@/ui/edit-in-place';
 import { Button } from '@/ui/button';
 import { IconButton } from '@/ui/icon-button';
 import { KoPlus } from '@/ui/icons/ko-plus';
@@ -21,9 +22,9 @@ export function FoodUnits({ units, onChange, disabled }: { units: FoodUnit[]; on
     <legend>{t('units')}</legend>
     {!units.length && <p className="text-sm text-muted">{t('noUnits')}</p>}
     {units.map((unit, index) => <div key={unit.key} className="grid grid-cols-2 gap-2 rounded-control border border-line p-2">
-      <label>{t('unitAr')}<input className={input} required maxLength={60} value={unit.name_ar} onChange={e => update(index, { name_ar: e.target.value })} /></label>
-      <label>{t('unitEn')}<input className={input} required maxLength={60} value={unit.name_en} onChange={e => update(index, { name_en: e.target.value })} /></label>
-      <label>{t('grams')}<input className={input} required type="number" min={0.1} max={10000} step="0.1" value={unit.grams} onChange={e => update(index, { grams: Number(e.target.value) })} /></label>
+      <label>{t('unitAr')}<input className={captainWorkspaceEnabled() ? `${editableFieldClass} ${input}` : input} required maxLength={60} value={unit.name_ar} onChange={e => update(index, { name_ar: e.target.value })} /></label>
+      <label>{t('unitEn')}<input className={captainWorkspaceEnabled() ? `${editableFieldClass} ${input}` : input} required maxLength={60} value={unit.name_en} onChange={e => update(index, { name_en: e.target.value })} /></label>
+      <label>{t('grams')}<input className={captainWorkspaceEnabled() ? `${editableFieldClass} ${input}` : input} required type="number" min={0.1} max={10000} step="0.1" value={unit.grams} onChange={e => update(index, { grams: Number(e.target.value) })} /></label>
       {!disabled && <IconButton type="button" className="border border-danger/40 text-danger! min-h-12 justify-self-end px-3" aria-label={t('removeUnit')}
         onClick={() => onChange(units.filter((_, i) => i !== index))}><Trash2 aria-hidden className="size-5" /></IconButton>}
     </div>)}

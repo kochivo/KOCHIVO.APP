@@ -1,5 +1,7 @@
 'use client';
 
+import { secondaryButtonClass } from '@/ui/secondary-button-class';
+import { editableFieldClass } from '@/ui/edit-in-place';
 import { IconButton } from '@/ui/icon-button';
 import { useId, useState } from 'react';
 import dynamic from 'next/dynamic';
@@ -44,7 +46,7 @@ export function FoodRow({ item, update }: { item: MealItem; update: (change: (dr
       {/* eslint-disable-next-line @next/next/no-img-element */}
       {item.food.photo && <img src={foodPhotoUrl(item.food.photo)} alt="" width={40} height={40} loading="lazy" className="size-10 object-cover" />}
     </span>
-    <div className="min-w-0 break-words">{name}{missing ? <small className="block text-[11.5px] text-warn">{t('missingValues')} · {item.food.custom && <button id={openerId} type="button" className="min-h-12 underline" onClick={() => setEditing(true)}>{t('complete')}</button>} {t('countHint')}</small>
+    <div className="min-w-0 break-words">{name}{missing ? <small className="block text-[11.5px] text-warn">{t('missingValues')} · {item.food.custom && <button id={openerId} type="button" className={`${secondaryButtonClass} min-h-12 underline`} onClick={() => setEditing(true)}>{t('complete')}</button>} {t('countHint')}</small>
       : <small className="block text-xs text-muted">{macroT('macros', { p: formatNumber(macrosFor(item.food, item.grams).protein, locale), c: formatNumber(macrosFor(item.food, item.grams).carbs, locale), f: formatNumber(macrosFor(item.food, item.grams).fat, locale) })}</small>}</div>
     <div className="flex min-h-12 min-w-0 flex-wrap items-center rounded-xl border border-line">
       <input type="number" aria-label={t('quantity', { name })} min={5 / (unit?.grams ?? 1)} max={2000 / (unit?.grams ?? 1)} step="any"
@@ -56,11 +58,11 @@ export function FoodRow({ item, update }: { item: MealItem; update: (change: (dr
             if (grams < 5 || grams > 2000) throw new RangeError('Invalid amount');
             update(draft => setGrams(draft, item.id, grams, planT)); setEdited({ grams, key, text }); setError('');
           } catch { setEdited({ grams: item.grams, key, text }); setError(planT('amountMustBe5To2000Grams')); }
-        }} className="min-h-12 w-14 shrink-0 bg-transparent text-center font-display font-extrabold tabular-nums" />
+        }} className={`${editableFieldClass} min-h-12 w-14 shrink-0 bg-surface text-center font-display font-extrabold tabular-nums`} />
       <span className="relative flex min-h-12 min-w-0 flex-1 items-center border-s border-line px-2 text-xs text-muted">
         <span className="whitespace-normal break-words">{unitName}</span>
         {!!item.food.units?.length && <ChevronDown aria-hidden className="ms-auto size-3 shrink-0" />}
-        {!!item.food.units?.length && <select aria-label={t('unit')} value={key} onChange={event => { const unit = event.target.value || null; update(draft => ({ ...draft, meals: draft.meals.map(meal => ({ ...meal, items: meal.items.map(row => row.id === item.id ? { ...row, unit } : row) })) })); }} className="absolute inset-0 min-h-12 w-full cursor-pointer opacity-0 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-lime">
+        {!!item.food.units?.length && <select aria-label={t('unit')} value={key} onChange={event => { const unit = event.target.value || null; update(draft => ({ ...draft, meals: draft.meals.map(meal => ({ ...meal, items: meal.items.map(row => row.id === item.id ? { ...row, unit } : row) })) })); }} className={`${editableFieldClass} absolute inset-0 min-h-12 w-full cursor-pointer opacity-0 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-lime`}>
           <option value="">{t('gramUnit')}</option>{item.food.units.map(value => <option key={value.key} value={value.key}>{t('unitLabel', { name: locale === 'en' ? value.name_en : value.name_ar, grams: formatNumber(value.grams, locale) })}</option>)}
         </select>}
       </span>

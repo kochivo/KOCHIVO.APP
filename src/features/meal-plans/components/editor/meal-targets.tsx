@@ -1,4 +1,5 @@
 'use client';
+import { editableFieldClass } from '@/ui/edit-in-place';
 import { useT } from '@/core/i18n/client';
 import type { Macros } from '@/lib/macros';
 import { V11Ring } from '../v11-ring';
@@ -14,7 +15,7 @@ export function MealTargets({ totals, targets, onChange }: { totals: Macros; tar
         <input type="number" min={key === 'kcal' ? 800 : 0} max={key === 'kcal' ? 8000 : 32767} step={1} value={targets[key]} onChange={event => {
           const value = event.target.valueAsNumber;
           if (Number.isInteger(value) && value >= (key === 'kcal' ? 800 : 0) && value <= (key === 'kcal' ? 8000 : 32767)) onChange({ ...targets, [key]: value });
-        }} className="min-h-12 w-full rounded-control bg-transparent font-display text-title text-ink focus-visible:ring-2 focus-visible:ring-lime" />
+        }} className={`${editableFieldClass} min-h-12 w-full rounded-control bg-surface font-display text-title text-ink focus-visible:ring-2 focus-visible:ring-lime`} />
       </label>)}</div>
       <small className="text-muted">{t('remaining', { k: Math.round(targets.kcal - totals.kcal), p: Math.round(totals.protein), t: targets.protein })}</small>
     </div>

@@ -1,4 +1,6 @@
 'use client';
+import { clickableClass, Button } from '@/ui/button';
+import { editableFieldClass } from '@/ui/edit-in-place';
 import { useCallback, useState } from 'react';
 import Link from 'next/link';
 import { Search } from 'lucide-react';
@@ -6,7 +8,7 @@ import { KoPlus as Plus } from '@/ui/icons/ko-plus';
 import { useLocale, useT } from '@/core/i18n/client';
 import { useResource } from '@/core/resource';
 import { foodPhotoUrl } from '@/core/storage/media-url';
-import { Button } from '@/ui/button';
+
 import { LoadingState } from '@/ui/loading-state';
 import { searchFoods } from '../data/foods';
 import type { Food, Meal } from '../types';
@@ -28,9 +30,9 @@ export function V11FoodPicker({ onPick, disabled, navigationDisabled = false, me
   }, [query, tab]);
   const resource = useResource(`v11-picker:${JSON.stringify([query, tab])}`, load);
   return <section className="glass min-w-0 rounded-card border border-line-soft p-5">
-    {!inline && <div className="mb-3 flex items-center justify-between gap-2"><h2 className="font-semibold">{t('foods')}</h2><Link href="/captain/library/foods" aria-disabled={navigationDisabled} onNavigate={event => { if (navigationDisabled) event.preventDefault(); }} className="press inline-flex min-h-12 cursor-pointer items-center rounded-control border border-line bg-surface px-3 text-sm focus-visible:ring-2 focus-visible:ring-lime">{t('open')}</Link></div>}
-    <label className="flex items-center gap-2 rounded-full border border-line px-3"><Search className="size-4 text-muted" aria-hidden /><input type="search" aria-label={t('search')} placeholder={t('search')} maxLength={100} value={query} onChange={event => setQuery(event.target.value)} className="min-h-12 min-w-0 w-full rounded-control bg-transparent text-sm focus-visible:ring-2 focus-visible:ring-lime" /></label>
-    <div className="my-2 flex flex-wrap gap-2">{(['all', 'protein', 'carbs', 'mine'] as const).map(value => <button key={value} type="button" aria-pressed={tab === value} onClick={() => setTab(value)} className={`press min-h-12 cursor-pointer rounded-full border border-line px-3 text-xs focus-visible:ring-2 focus-visible:ring-lime ${tab === value ? 'bg-lime/10 text-lime' : 'bg-surface text-muted'}`}>{t(value)}</button>)}</div>
+    {!inline && <div className="mb-3 flex items-center justify-between gap-2"><h2 className="font-semibold">{t('foods')}</h2><Link href="/captain/library/foods" aria-disabled={navigationDisabled} onNavigate={event => { if (navigationDisabled) event.preventDefault(); }} className={`${clickableClass} press inline-flex min-h-12 cursor-pointer items-center rounded-control border border-line bg-surface px-3 text-sm focus-visible:ring-2 focus-visible:ring-lime`}>{t('open')}</Link></div>}
+    <label className="flex items-center gap-2 rounded-full border border-line px-3"><Search className="size-4 text-muted" aria-hidden /><input type="search" aria-label={t('search')} placeholder={t('search')} maxLength={100} value={query} onChange={event => setQuery(event.target.value)} className={`${editableFieldClass} min-h-12 min-w-0 w-full rounded-control bg-surface text-sm focus-visible:ring-2 focus-visible:ring-lime`} /></label>
+    <div className="my-2 flex flex-wrap gap-2">{(['all', 'protein', 'carbs', 'mine'] as const).map(value => <button key={value} type="button" aria-pressed={tab === value} onClick={() => setTab(value)} className={`${clickableClass} press min-h-12 cursor-pointer rounded-full border border-line px-3 text-xs focus-visible:ring-2 focus-visible:ring-lime ${tab === value ? 'bg-lime/10 text-lime' : 'bg-surface text-muted'}`}>{t(value)}</button>)}</div>
     {(resource.status === 'idle' || resource.status === 'loading') && <LoadingState variant="list" />}
     {Boolean(resource.error) && <div role="alert">{t('error')}<Button variant="secondary" onClick={() => void resource.retry()}>{t('retry')}</Button></div>}
     {resource.data && <ul>{!resource.data.length && <li className="py-4 text-sm text-muted">{t('empty')}</li>}{filterFoods(resource.data, tab === 'mine' ? 'mine' : 'all').map(food => <li key={food.id} className="flex flex-wrap items-center gap-3 border-t border-line-soft py-2">

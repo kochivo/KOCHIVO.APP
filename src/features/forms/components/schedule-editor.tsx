@@ -1,3 +1,7 @@
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { rowLinkClass } from '@/ui/row-link';
+import { DisclosureChevron } from '@/ui/disclosure-chevron';
+import { editableFieldClass } from '@/ui/edit-in-place';
 import { Button } from '@/ui/button';
 import type { ArabicStyle, Locale } from '@/core/i18n/locale';
 import { createT } from '@/core/i18n/messages';
@@ -14,6 +18,7 @@ export function ScheduleEditor({ form, locale, onChange, players = 0, style, sch
   onManage?: () => void;
 }) {
   const m = formCopy(locale, style), t = createT(redesign, locale, style), s = form.schedule;
+  const workspace = captainWorkspaceEnabled();
   function manage() {
     if (canManage) onManage?.();
   }
@@ -48,8 +53,9 @@ export function ScheduleEditor({ form, locale, onChange, players = 0, style, sch
         onChange={value => onChange({ ...form, remind_after_hours: value ? Number(value) : null })} />
     </div>
     <Button variant="secondary" type="button" disabled={!canManage} className="min-h-12 text-xs text-faint disabled:opacity-50" onClick={manage}>{t('schedule')}</Button>
-    {s && <details className="mt-1 text-xs text-faint"><summary className="min-h-12 cursor-pointer py-3">{t('details')}</summary>
-      <label className="flex flex-wrap items-center gap-3">{m.hour}<input aria-label={m.hour} className="min-h-12 w-24 rounded-control border border-line bg-transparent px-3"
+    {s && <details className={workspace ? 'group mt-1 text-xs text-muted' : 'mt-1 text-xs text-faint'}>
+      <summary className={workspace ? `${rowLinkClass} flex list-none items-center justify-between gap-2 py-3 text-ink` : 'min-h-12 cursor-pointer py-3'}>{t('details')}{workspace && <DisclosureChevron />}</summary>
+      <label className="flex flex-wrap items-center gap-3">{m.hour}<input aria-label={m.hour} className={workspace ? `${editableFieldClass} min-h-12 w-24 rounded-control border border-line bg-surface px-3` : 'min-h-12 w-24 rounded-control border border-line bg-transparent px-3'}
         type="number" min={0} max={23} value={s.hour} onChange={e => onChange({ ...form, schedule: { ...s, hour: e.target.valueAsNumber } })} /></label>
     </details>}
   </div>;

@@ -16,7 +16,8 @@ it('keeps analysis and readiness behind labelled, chevron disclosures', () => {
   }));
   expect(html).toContain('id="analysis"');
   expect(html).toContain('id="readiness"');
-  expect(html.match(/group-open:rotate-180/g)).toHaveLength(2);
+  expect(html.match(/lucide-chevron-down/g)).toHaveLength(2);
+  expect(html.match(/aria-expanded="false"/g)).toHaveLength(2);
   expect(html).toContain('checkins');
 });
 

@@ -1,4 +1,6 @@
 'use client';
+import { clickableClass, Button, buttonClass } from '@/ui/button';
+import { RowChevron } from '@/ui/row-chevron';
 import { KoSend } from '@/ui/icons/ko-send';
 import { KoTemplate } from '@/ui/icons/ko-template';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
@@ -7,11 +9,10 @@ import { Check, CloudCheck, CloudUpload, Send } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { useT } from '@/core/i18n/client';
-import { Button } from '@/ui/button';
+
 import { UnderlineTabs } from '@/ui/underline-tabs';
 import { messages } from './editor/messages';
 import { messages as trainingMessages } from './messages';
-import { buttonClass } from '@/ui/button';
 
 export function EditorHeader({ playerId, playerName, remainingDays, template, title, status, busy, disabled, onSend, onAssign, onRetry, children, starting }: {
   starting?: boolean;
@@ -28,7 +29,7 @@ export function EditorHeader({ playerId, playerName, remainingDays, template, ti
   return <>
     <header className="flex flex-wrap items-center gap-3">
       <span aria-hidden className="glass-strong grid size-[52px] shrink-0 place-items-center rounded-full text-lg">{template ? <KoTemplate className="size-6" /> : (playerName || title || '').charAt(0)}</span>
-      <div className="relative me-auto min-w-0 pt-5"><Link href={template ? '/captain/templates' : '/captain/players'} className="absolute -top-4 start-0 flex min-h-12 items-center whitespace-nowrap text-xs text-faint">{template ? title : t('breadcrumb', { name: playerName ?? '' })}</Link>
+      <div className="relative me-auto min-w-0 pt-5"><Link href={template ? '/captain/templates' : '/captain/players'} className={`${clickableClass} absolute -top-4 start-0 flex min-h-12 items-center gap-1 whitespace-nowrap text-xs text-muted`}>{template ? title : t('breadcrumb', { name: playerName ?? '' })}<RowChevron className="size-3.5" /></Link>
         <h1 className="break-words font-display text-[30px] font-semibold leading-tight">{template ? title : t('title', { name: playerName?.trim().split(/\s+/)[0] ?? '' })}</h1></div>
       {!template && remainingDays !== undefined && <span className="rounded-full bg-lime-soft px-3 py-1 text-xs text-lime">{t('active', { n: Math.max(0, remainingDays) })}</span>}
       <span role="status" aria-live="polite" className="inline-flex min-h-12 items-center gap-2 text-xs text-faint">{status === 'saved' ? <CloudCheck aria-hidden className="size-4 text-lime" /> : <CloudUpload aria-hidden className="size-4" />}

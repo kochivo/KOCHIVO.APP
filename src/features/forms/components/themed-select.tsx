@@ -1,4 +1,6 @@
 'use client';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { editableFieldClass } from '@/ui/edit-in-place';
 import { useEffect, useId, useRef } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { selectPosition } from './select-position';
@@ -39,7 +41,7 @@ export function ThemedSelect({ label, value, options, onChange, disabled = false
       onKeyDown={event => { if (event.key === 'Escape') trigger.current?.focus(); }}
       className="fixed m-0 overflow-auto rounded-control border border-line bg-surface p-1 shadow-lg" style={{ inset: 'auto' }}>
       {options.map(o => <label key={o.value} className={`flex min-h-12 cursor-pointer items-center gap-2 rounded-control px-3 text-sm ${value === o.value ? 'bg-lime-soft text-lime' : 'text-ink'}`}>
-        <input type="radio" name={id} value={o.value} checked={o.value === value} className="accent-lime"
+        <input type="radio" name={id} value={o.value} checked={o.value === value} className={captainWorkspaceEnabled() ? `${editableFieldClass} accent-lime` : "accent-lime"}
           onChange={e => { onChange(e.target.value); list.current?.hidePopover(); trigger.current?.focus(); }} />{o.label}
       </label>)}
     </div>}

@@ -1,4 +1,5 @@
 'use client';
+import { clickableClass, Button, buttonClass } from '@/ui/button';
 import { useCallback, useState } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
@@ -6,7 +7,7 @@ import { KoMealPlans } from '@/ui/icons/ko-meal-plans';
 import { useLocale, useT } from '@/core/i18n/client';
 import { useResource } from '@/core/resource';
 import { uuidv7 } from '@/core/offline/ids';
-import { Button } from '@/ui/button';
+
 import { LoadingState } from '@/ui/loading-state';
 import { PageBarTitle } from '@/ui/page-bar-title';
 import { PageBarActions } from '@/ui/page-bar-actions';
@@ -24,7 +25,7 @@ import { V11FoodPicker } from './v11-food-picker';
 import { messages } from './v11/messages';
 import { messages as planMessages } from '../messages';
 import { planPlayers } from './v11-assignment';
-import { buttonClass } from '@/ui/button';
+
 import { useToast } from '@/ui/toast';
 import { messages as successMessages } from '../success/messages';
 import { formatNumber } from '@/lib/format';
@@ -53,7 +54,7 @@ export function V11Editor({ planId }: { planId: string }) {
     {state.dirty && !state.busy && <p role="status" className="text-xs text-muted">{pt('youHaveUnsavedChanges')}</p>}
     <div role="tablist" aria-label={pt('meals')} className="flex gap-2">{(['training', 'rest'] as const).map(value => <button key={value} type="button" role="tab" aria-selected={day === value} disabled={state.busy} onClick={() => {
       setDay(value);
-    }} className={`press min-h-12 cursor-pointer rounded-full border border-line px-5 text-sm focus-visible:ring-2 focus-visible:ring-lime ${day === value ? 'bg-lime/10 text-lime' : 'bg-surface text-muted'}`}>{t(value)}</button>)}</div>
+    }} className={`${clickableClass} press min-h-12 cursor-pointer rounded-full border border-line px-5 text-sm focus-visible:ring-2 focus-visible:ring-lime ${day === value ? 'bg-lime/10 text-lime' : 'bg-surface text-muted'}`}>{t(value)}</button>)}</div>
     <div className="grid min-w-0 items-start gap-3 min-[1001px]:grid-cols-[minmax(0,1fr)_300px]">
       <fieldset disabled={state.busy} className="grid min-w-0 gap-3">
         <EditInPlace label={pt('planName')} value={draft.title} maxLength={80} onChange={event => update(current => ({ ...current, title: event.target.value }))} />

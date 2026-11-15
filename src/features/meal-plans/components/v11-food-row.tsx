@@ -1,4 +1,5 @@
 'use client';
+import { editableFieldClass } from '@/ui/edit-in-place';
 import { useId, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { X } from 'lucide-react';
@@ -38,11 +39,11 @@ export function V11FoodRow({ item, update }: { item: MealItem; update: (change: 
       const grams = Number.isFinite(amount) && amount >= 0 ? portionGrams(item.food, amount, validUnit) : NaN;
       if (!Number.isFinite(grams) || grams < 5 || grams > 2000) { setError(pt('amountMustBe5To2000Grams')); return; }
       setError(''); update(draft => setGrams(draft, item.id, grams, pt));
-    }} className="min-h-12 w-14 rounded-lg border border-line bg-transparent text-center tabular-nums" />
+    }} className={`${editableFieldClass} min-h-12 w-14 rounded-lg border border-line bg-surface text-center tabular-nums`} />
     <select aria-label={t('unit')} value={validUnit ?? ''} onChange={event => {
       const nextUnit = event.target.value || null;
       update(draft => setPortionUnit(draft, item.id, nextUnit));
-    }} className="press min-h-12 max-w-28 cursor-pointer rounded-control border border-line bg-surface px-2 focus-visible:ring-2 focus-visible:ring-lime"><option value="">{rt('grams')}</option>{item.food.units?.map(unit => <option key={unit.key} value={unit.key}>{locale === 'en' ? unit.name_en : unit.name_ar}</option>)}</select>
+    }} className={`${editableFieldClass} press min-h-12 max-w-28 cursor-pointer rounded-control border border-line bg-surface px-2 focus-visible:ring-2 focus-visible:ring-lime`}><option value="">{rt('grams')}</option>{item.food.units?.map(unit => <option key={unit.key} value={unit.key}>{locale === 'en' ? unit.name_en : unit.name_ar}</option>)}</select>
     <span className="font-display tabular-nums">{Math.round(values.kcal)}</span>
     <Button id={openerId} variant="secondary" block={false} onClick={() => setAlternatives(true)}>{rt('alternatives', { n: item.alternatives.length })}</Button>
     <IconButton aria-label={pt('deleteFood')} onClick={() => update(draft => removeItem(draft, item.id))}><X aria-hidden className="size-4" /></IconButton>
