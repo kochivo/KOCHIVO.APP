@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { getT } from '@/core/i18n/server';
 import { buttonClass } from '@/ui/button';
 import { LanguageSwitch } from '@/ui/language-switch';
+import { ThemeSwitch } from '@/ui/theme-switch';
 import { messages } from '../messages';
 import { getContent } from '../content';
 import { LandingMotion } from './landing-motion';
@@ -20,8 +21,9 @@ export async function SiteHeader() {
       <nav aria-label={t('pageSections')}>{content.nav.map(item => <a key={item.href} href={item.href} className="press focus-visible:outline-lime">{item.label}</a>)}</nav>
       <div className={styles.headerEnd}>
         <div className="[&_[role=group]]:border-0 [&_[role=group]]:bg-transparent [&_[role=group]]:p-0 [&_[role=group]]:shadow-none [&_button]:border-0"><LanguageSwitch compact /></div>
-        <a href={content.links.login} className="press text-sm text-muted">{content.login}</a>
-        <a href={content.links.signup} className={buttonClass({ block: false, className: 'px-4' })}>{content.signup}</a>
+        <ThemeSwitch compact />
+        <a href={content.links.login} className={`press text-sm text-muted ${styles.headerLogin}`}>{content.login}</a>
+        <a href={content.links.signup} className={buttonClass({ block: false, className: `px-4 ${styles.headerSignup}` })}>{content.signup}</a>
       </div>
     </div>
   </header>;

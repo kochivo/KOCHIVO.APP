@@ -155,6 +155,7 @@
 .headerRow nav { display: flex; gap: 26px; font-size: var(--text-sm); color: var(--color-muted); }
 .headerRow a { min-block-size: 48px; display: inline-flex; align-items: center; }
 .headerEnd { margin-inline-start: auto; display: flex; align-items: center; gap: 14px; }
+.headerSignup { white-space: nowrap; }
 .footer { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; padding-block: 36px; color: var(--color-faint); font-size: var(--text-sm); }
 .footer nav { display: flex; gap: 22px; margin-inline-start: auto; }
 .footer a { display: inline-flex; align-items: center; min-block-size: 48px; }
@@ -224,8 +225,12 @@
   .cta { inline-size: 100%; }
   .cta a, .demoCta a { inline-size: 100%; }
   .demoCta { padding: 22px; }
-  .headerRow { gap: 12px; }
-  .headerEnd > :not(:last-child) { display: none; }
+  .headerRow { gap: var(--spacing-inline); padding-inline: max(var(--spacing-page-x), var(--safe-start, 0px)); }
+  .headerRow > a { min-inline-size: 0; flex: 0 1 98px; }
+  .headerRow > a img { max-inline-size: 100%; block-size: auto; }
+  .headerEnd { gap: var(--spacing-inline); flex-shrink: 0; }
+  .headerEnd :global([role='group']) button, .headerSignup { padding-inline: var(--spacing-inline); }
+  .headerEnd .headerLogin { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .hero *, .final *, .slogan, .slogan::before, .slogan em::before, .slogan em::after { animation: none !important; transition: none !important; }
