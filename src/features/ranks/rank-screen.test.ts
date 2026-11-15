@@ -99,7 +99,7 @@ describe('player ranks', () => {
 
   it.each([[0, 5], [100, 4], [300, 2], [600, 0]])('locks future tiers at %s', (lifetime, locked) => {
     const html = render(createElement(RankJourney, { lifetime }));
-    expect(html.match(/opacity-40 grayscale/g)?.length ?? 0).toBe(locked);
+    expect(html.match(/data-part="lock"/g)?.length ?? 0).toBe(locked);
     expect(html.match(/width="64"/g)).toHaveLength(7);
   });
 

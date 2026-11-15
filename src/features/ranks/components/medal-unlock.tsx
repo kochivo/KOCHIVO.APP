@@ -17,7 +17,7 @@ export function MedalUnlock({ item, onClose }: { item: Celebration; onClose: () 
   return <ResponsiveDialog modal title={title} fallbackId="rank-title" onDismiss={onClose}
     className="sheet m-auto w-full max-w-sm rounded-card border border-line p-section text-ink backdrop:bg-bg-deep/80 motion-reduce:animate-none">
     <div className="flex flex-col items-center gap-card-gap text-center">
-      <div className="enter motion-reduce:animate-none"><Medal rank={item.rank} emblem={item.emblem} size={190} label={title} /></div>
+      <div className="enter motion-reduce:animate-none"><Medal rank={item.rank} emblem={item.emblem} size={190} label={title} shine /></div>
       {item.labelKey && <p className="text-sm text-muted">{t(item.labelKey)} · {item.streak ? t('streakStep') : formatNumber(item.threshold ?? 0, locale)}</p>}
       <Button block onClick={onClose}>{t('continue')}</Button>
       {item.medal && <ShareRankButton kind="rank" rankLabel />}
