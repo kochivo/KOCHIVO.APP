@@ -18,6 +18,10 @@ async function graph(captain: string, player: string, invite = true) {
     values ($1,$2,0,'Weight','Weight','number')`, [ids.question, ids.form]);
   await db.query(`insert into public.form_requests(id,form_id,captain_id,player_id)
     values ($1,$2,$3,$4)`, [ids.request, ids.form, captain, player]);
+  // 0113 accepts answers only while the request's captain is still linked to the player.
+  await db.query(`insert into public.coach_clients(captain_id,player_id,access_until)
+    select $1,$2,'2026-12-31' where not exists (select 1 from public.coach_clients
+      where captain_id=$1 and player_id=$2 and archived_at is null)`, [captain, player]);
   await asUser(db, player, tx => tx.query(`insert into public.form_answers(id,request_id,question_id,value)
     values (gen_random_uuid(),$1,$2,'75')`, [ids.request, ids.question]));
   await db.query(`insert into public.assessment_schedules(id,form_id,captain_id,player_id,kind,hour,starts_on)

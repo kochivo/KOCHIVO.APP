@@ -37,6 +37,7 @@ export async function fetchMyCaptain(): Promise<{ data: MyCaptain | null } | { e
     const row = relation.data;
     if (captain.error || timezone?.error) return { error: t('couldnTLoadYourCoach') };
     const startForms = await client.from('form_requests').select('id').eq('player_id', auth.claims.sub)
+      .eq('captain_id', row.captain_id)
       .eq('blocks_access', true).is('answered_at', null).limit(1);
     if (startForms.error) return { error: t('couldnTLoadYourCoach') };
     const publicProfile = captain.data?.[0];
@@ -48,7 +49,7 @@ export async function fetchMyCaptain(): Promise<{ data: MyCaptain | null } | { e
       avatarUrl: publicProfile?.avatar_path ? client.storage.from('captain-avatars').getPublicUrl(publicProfile.avatar_path).data.publicUrl : null,
       accessUntil: row.access_until, archivedAt: row.archived_at, startedOn: row.started_on,
       pending: row.pending, frozenAt: row.frozen_at,
-      startFormsPending: startForms.data.length > 0,
+      startFormsPending: !row.archived_at && !row.pending && startForms.data.length > 0,
     } };
   } catch (error) { unstable_rethrow(error); return { error: t('couldnTLoadYourCoach') }; }
 }

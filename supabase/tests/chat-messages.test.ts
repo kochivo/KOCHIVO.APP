@@ -69,6 +69,11 @@ describe('chat content', () => {
     expect((await send(player, captain, player, player, 'x'.repeat(1000))).rows).toHaveLength(1);
   });
   it('requires exactly one content kind, a matching folder, and voice duration', async () => {
+    await upload(player, `${player}/chat/a.webm`);
+    await upload(player, `${player}/chat/valid.webm`);
+    // Isolate the row's folder constraint from the independent attachment-ownership check.
+    await db.query(`insert into storage.objects(bucket_id,name,owner_id,owner)
+      values('voice-notes',$1,$2,$3)`, [`${otherPlayer}/chat/a.webm`, player, player]);
     const insert = (body: string | null, path: string | null, duration: number | null) => as(player,
       `insert into public.chat_messages(id,captain_id,player_id,sender_id,body,audio_path,duration_seconds)
        values($1,$2,$3,$3,$4,$5,$6)`, [id(), captain, player, body, path, duration]);
@@ -89,7 +94,8 @@ describe('chat storage', () => {
     await upload(captain, `${player}/chat/two.webm`);
     await expect(upload(player, `${otherPlayer}/chat/no.webm`)).rejects.toThrow(/row-level security/);
     await expect(upload(player, `${player}/other/no.webm`)).rejects.toThrow(/row-level security/);
-    for (const user of [player, captain]) expect((await as(user, 'select name from storage.objects where name=$1', [path])).rows).toHaveLength(1);
+    // Captain access before attachment leaked player uploads from previous conversations after transfer.
+    for (const user of [player, captain]) expect((await as(user, 'select name from storage.objects where name=$1', [path])).rows).toHaveLength(user === player ? 1 : 0);
     expect((await as(otherCaptain, 'select name from storage.objects where name=$1', [path])).rows).toHaveLength(0);
   });
   it('lets either sender clean up failed uploads but protects saved audio', async () => {

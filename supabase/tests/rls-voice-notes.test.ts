@@ -45,6 +45,9 @@ describe('voice note rows', () => {
     expect((await note(captain, player, `${player}/a.webm`)).rows).toHaveLength(1);
     await expect(note(otherCaptain, player, `${player}/x.webm`)).rejects.toThrow(/row-level security/);
     await expect(note(player, player, `${player}/y.webm`)).rejects.toThrow(/row-level security/);
+    // Isolate the folder constraint after satisfying attachment ownership.
+    await db.query(`insert into storage.objects(bucket_id,name,owner_id,owner)
+      values('voice-notes',$1,$2,$3)`, [`${otherPlayer}/z.webm`, captain, captain]);
     await expect(note(captain, player, `${otherPlayer}/z.webm`)).rejects.toThrow(/check constraint/);
   });
   it('shows notes to both sides and lets the player only mark them heard', async () => {
