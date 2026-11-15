@@ -1,4 +1,5 @@
 export const arStd = {
+  tempoLabel: 'تمبو', tempoHelp: 'بالثواني: نزول، أسفل، صعود، أعلى. X يعني انفجاري.', rpeTarget: 'RPE {count} · المجهود من 10', rirTarget: 'RIR {count}',
   v3Summary: '{minutes} دقيقة · {count} تمارين', v3Warmup: '1 · الإحماء', v3Exercises: '2 · التمارين',
   v3Minutes: '{minutes} دقائق', v3Prescription: '{sets} × {reps}', v3PreviousWeight: ' · المرة السابقة {weight} كجم',
   v3More: 'وتمرين آخر: {name}', v3Start: 'ابدأ التمرين', v3Close: 'أغلق التمرين',

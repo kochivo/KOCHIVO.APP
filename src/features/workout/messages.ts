@@ -5,6 +5,7 @@ export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
+    tempoLabel: 'تمبو', tempoHelp: 'بالثواني: نزول، تحت، طلوع، فوق. X يعني انفجاري.', rpeTarget: 'RPE {count} · المجهود من 10', rirTarget: 'RIR {count}',
     v3Summary: '{minutes} دقيقة · {count} تمارين', v3Warmup: '1 · التسخين', v3Exercises: '2 · التمارين',
     v3Minutes: '{minutes} دقايق', v3Prescription: '{sets} × {reps}', v3PreviousWeight: ' · المرة اللي فاتت {weight} كجم',
     v3More: 'وتمرين كمان: {name}', v3Start: 'ابدأ التمرين', v3Close: 'اقفل التمرين',
@@ -99,6 +100,7 @@ export const messages = defineMessages({
     setNumber: "مجموعة {value0}",
   },
   en: {
+    tempoLabel: 'Tempo', tempoHelp: 'Seconds: lower, bottom, lift, top. X = explosive.', rpeTarget: 'RPE {count} · effort out of 10', rirTarget: 'RIR {count}',
     v3Summary: '{minutes} minutes · {count} exercises', v3Warmup: '1 · Warm-up', v3Exercises: '2 · Exercises',
     v3Minutes: '{minutes} minutes', v3Prescription: '{sets} × {reps}', v3PreviousWeight: ' · Last time {weight} kg',
     v3More: 'One more exercise: {name}', v3Start: 'Start workout', v3Close: 'Close workout',

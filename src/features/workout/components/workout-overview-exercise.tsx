@@ -8,6 +8,7 @@ import { formatNumber } from '@/lib/format';
 import { useLastSession } from '../hooks/use-last-session';
 import { messages } from '../messages';
 import { ExerciseLightbox } from './exercise-lightbox';
+import { ExerciseHeader } from './exercise-header';
 
 export function WorkoutOverviewExercise({ exercise, sessionId, playerId }: {
   exercise: SnapshotExercise; sessionId: string; playerId?: string;
@@ -27,6 +28,7 @@ export function WorkoutOverviewExercise({ exercise, sessionId, playerId }: {
     </div>
     <div className="flex min-w-0 flex-1 flex-col gap-inline">
       <b className="text-md"><bdi>{name}</bdi></b>
+      <ExerciseHeader exercise={exercise} last={null} prescriptionOnly />
       <span className="text-xs text-muted">{t('v3Prescription', { sets: formatNumber(exercise.sets, locale), reps })}
         {previous?.weight_kg != null && t('v3PreviousWeight', { weight: formatNumber(previous.weight_kg, locale) })}</span>
       {failed && <button type="button" className="min-h-12 text-start text-xs text-muted" onClick={() => { setFailed(false); setAttempt(value => value + 1); }}>{t('tryAgain')}</button>}

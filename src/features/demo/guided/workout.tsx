@@ -4,6 +4,7 @@ import { Button } from '@/ui/button';
 import { GlassCard } from '@/ui/glass-card';
 /* eslint-disable no-restricted-imports -- T-288 requires production presentation leaves without data hooks. */
 import { SetRowsView } from '@/features/workout/components/set-rows-view';
+import { ExerciseHeader } from '@/features/workout/components/exercise-header';
 import type { SetRowsState } from '@/features/workout/components/set-rows-view';
 import { messages as workoutMessages } from '@/features/workout/messages';
 import { messages as v6Messages } from '@/features/workout/v6-messages';
@@ -32,7 +33,7 @@ export function Workout({ state, dispatch, act, now }: PaneProps) {
   const rows: SetRowsState = {
     current: { exercise: { id: 'demo-exercise', exercise_id: 'demo-bench', position: 0,
       sets: state.sets.length + 1, reps_min: 8, reps_max: 12, rest_seconds: 90, superset_group: null,
-      rpe: null, tempo: null, notes: null, name_ar: ex[0] ?? '', name_en: ex[0] ?? '', media_path: null },
+      rpe: null, tempo: '3010', notes: null, name_ar: ex[0] ?? '', name_en: ex[0] ?? '', media_path: null },
       setIndex: editing === null ? state.sets.length + 1 : editing + 1, restAfter: 90 },
     disabled: remaining > 0, doneSets: state.sets.map(([weight_kg, reps], index) => ({
       id: `demo-set-${index}`, program_exercise_id: 'demo-exercise', set_index: index + 1, weight_kg, reps,
@@ -58,6 +59,7 @@ export function Workout({ state, dispatch, act, now }: PaneProps) {
   };
   return <div className="demo-workout grid gap-stack"><header className="flex items-center justify-between gap-inline"><div><p className="text-xs text-muted">{t('day', { n: 2 })}</p><h3 className="text-sm font-semibold">{t('days').split('|')[0]}</h3></div><span className="rounded-full border border-lime/30 p-stack text-micro text-lime">{t('offline')}</span></header>
     <GlassCard className="grid gap-stack p-stack"><h4 className="text-sm font-semibold">{ex[0]}</h4><div aria-hidden className="demo-exercise-preview recessed grid place-items-center rounded-control"><KoTraining className="size-6 text-muted" /></div>
+      {rows.current && <ExerciseHeader exercise={rows.current.exercise} last={null} prescriptionOnly />}
       <p className="text-xs text-muted">{t('previous')}</p>
     </GlassCard>
     {remaining > 0 && <div className="glass-strong flex items-center justify-between rounded-control p-stack"><div><small className="text-muted">{t('rest')}</small><b role="timer" className="ms-card text-h tabular-nums" dir="ltr">{Math.floor(remaining / 60)}:{String(remaining % 60).padStart(2, '0')}</b></div><Button variant="secondary" onClick={() => dispatch({ type: 'patch', patch: { restUntil: 0 } })}>{t('skipRest')}</Button></div>}
