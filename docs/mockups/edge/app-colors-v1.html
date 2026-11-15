@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ألوان التطبيق</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700&family=Changa:wght@500;600;700;800&family=Manrope:wght@500;700;800&display=swap">
+<style>
+:root {
+  --bg: #0b0c0d; --deep: #070808; --surface: #141515; --raised: #1c1d1d;
+  --line: #292a2a; --soft: rgba(242,242,238,.07); --glass: rgba(255,255,255,.035); --glass-line: rgba(255,255,255,.09);
+  --ink: #f4f4f1; --muted: #a6abb0; --faint: #7d8288; --on-accent: #101418;
+  --display: "Manrope", "Changa", "Alexandria", system-ui, sans-serif;
+  --text: "Manrope", "Alexandria", system-ui, sans-serif;
+  --accent: #b6e94f; --accent-rgb: 182,233,79;
+  color-scheme: dark;
+}
+[data-accent="lime"]     { --accent: #b6e94f; --accent-rgb: 182,233,79; }
+[data-accent="rose"]     { --accent: #f7a1c4; --accent-rgb: 247,161,196; }
+[data-accent="lavender"] { --accent: #bfa9ff; --accent-rgb: 191,169,255; }
+[data-accent="aqua"]     { --accent: #62e3c9; --accent-rgb: 98,227,201; }
+[data-accent="sky"]      { --accent: #82c8ff; --accent-rgb: 130,200,255; }
+[data-accent="sun"]      { --accent: #ffcb5c; --accent-rgb: 255,203,92; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--text); font-size: 14.5px; line-height: 1.6; }
+.page { max-width: 1240px; margin: 0 auto; padding: 40px 16px 90px; }
+h1, h2, h3 { margin: 0; font-family: var(--display); text-wrap: balance; }
+h1 { font-size: clamp(28px, 4.4vw, 42px); font-weight: 800; line-height: 1.2; }
+h2 { font-size: 22px; font-weight: 800; }
+h3 { font-size: 15.5px; font-weight: 700; }
+p { margin: 0; }
+.lede { color: var(--muted); max-width: 70ch; margin-top: 12px; }
+.small { font-size: 12.5px; } .muted { color: var(--muted); } .faint { color: var(--faint); }
+.num { font-family: "Manrope", sans-serif; font-weight: 800; font-variant-numeric: tabular-nums; direction: ltr; unicode-bidi: isolate; }
+section { margin-top: 56px; display: grid; gap: 18px; }
+.head p { color: var(--muted); max-width: 74ch; margin-top: 6px; }
+
+/* picker */
+.picker { display: flex; flex-wrap: wrap; gap: 10px; }
+.sw { display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 6px 16px 6px 8px; border-radius: 999px; border: 1px solid var(--glass-line); background: var(--glass); color: var(--ink); font: inherit; cursor: pointer; }
+.sw i { width: 36px; height: 36px; border-radius: 50%; background: var(--c); box-shadow: inset 0 0 0 2px rgba(0,0,0,.25); }
+.sw[aria-pressed="true"] { border-color: var(--c); box-shadow: 0 0 0 2px var(--c) inset; }
+.sw small { display: block; color: var(--faint); font-size: 11.5px; line-height: 1.2; }
+
+/* phones */
+.phones { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; align-items: start; }
+.pw { display: grid; gap: 10px; min-width: 0; }
+.pw > p { color: var(--muted); font-size: 13px; }
+.phone { border: 1px solid var(--line); border-radius: 34px; background: var(--bg); padding: 14px 12px 16px; display: grid; gap: 12px; width: 100%; max-width: 360px; justify-self: center; overflow: hidden; position: relative; min-height: 690px; align-content: start; }
+.phone::before { content: ""; position: absolute; inset: -30% -40% auto auto; width: 320px; height: 320px; border-radius: 50%; background: radial-gradient(circle, rgba(var(--accent-rgb), .16), transparent 65%); pointer-events: none; }
+.status { display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; color: var(--faint); padding: 2px 8px 0; direction: ltr; }
+.row { display: flex; align-items: center; gap: 10px; }
+.row .end { margin-inline-start: auto; }
+.glass { background: var(--glass); border: 1px solid var(--glass-line); border-radius: 20px; }
+.glass-strong { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); border-radius: 22px; }
+.card { padding: 14px; display: grid; gap: 8px; }
+.btn { min-height: 52px; border-radius: 999px; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 800; font-size: 15px; border: 1px solid transparent; font-family: var(--display); padding-inline: 18px; }
+.btn.primary { background: var(--accent); color: var(--on-accent); box-shadow: 0 8px 24px rgba(var(--accent-rgb), .25), inset 0 1px 0 rgba(255,255,255,.45); }
+.btn.secondary { background: var(--glass); border-color: var(--glass-line); color: var(--ink); }
+.chip { border: 1px solid var(--glass-line); background: var(--glass); border-radius: 999px; padding: 2px 10px; font-size: 12px; color: var(--muted); display: inline-flex; align-items: center; min-height: 28px; }
+.chip.on { color: var(--accent); border-color: rgba(var(--accent-rgb), .45); background: rgba(var(--accent-rgb), .12); }
+.accent { color: var(--accent); }
+.av { width: 44px; height: 44px; border-radius: 15px; background: rgba(var(--accent-rgb), .16); color: var(--accent); display: grid; place-items: center; font-weight: 800; }
+.ring { width: 92px; height: 92px; border-radius: 50%; background: conic-gradient(var(--accent) 0 72%, var(--line) 72% 100%); display: grid; place-items: center; flex: none; }
+.ring b { width: 74px; height: 74px; border-radius: 50%; background: var(--bg); display: grid; place-items: center; font-size: 20px; }
+.prog { height: 8px; border-radius: 99px; background: var(--deep); border: 1px solid var(--soft); overflow: hidden; }
+.prog i { display: block; height: 100%; background: var(--accent); border-radius: 99px; }
+.week { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px; text-align: center; font-size: 11px; color: var(--faint); }
+.week i { display: block; height: 30px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); margin-top: 3px; }
+.week i.d { background: rgba(var(--accent-rgb), .18); border-color: rgba(var(--accent-rgb), .5); }
+.week i.t { outline: 2px solid var(--accent); outline-offset: 2px; }
+.big { padding: 18px; text-align: center; display: grid; gap: 4px; }
+.big .num { font-size: 54px; line-height: 1.05; }
+.step { display: grid; grid-template-columns: 64px minmax(0, 1fr) 64px; gap: 10px; align-items: center; }
+.step > span { min-height: 64px; border-radius: 20px; border: 1px solid var(--glass-line); background: var(--glass); display: grid; place-items: center; font-size: 26px; font-weight: 800; }
+.dots { display: flex; gap: 6px; justify-content: center; }
+.dots i { width: 28px; height: 8px; border-radius: 99px; background: var(--line); }
+.dots i.d { background: var(--accent); }
+.medal { width: 64px; height: 64px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff6, transparent 40%), linear-gradient(145deg, #e9c46a, #a8742a); display: grid; place-items: center; font-weight: 800; color: #2a1c05; flex: none; }
+.pop { border-radius: 22px; padding: 16px; display: grid; gap: 8px; text-align: center; background: linear-gradient(160deg, rgba(var(--accent-rgb), .22), rgba(var(--accent-rgb), .05)); border: 1px solid rgba(var(--accent-rgb), .45); }
+.tabs { position: absolute; inset-inline: 12px; bottom: 14px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; padding: 6px; border-radius: 22px; background: rgba(20,21,21,.9); border: 1px solid var(--line); }
+.tabs span { min-height: 48px; border-radius: 16px; display: grid; place-items: center; font-size: 12px; color: var(--faint); }
+.tabs span.on { background: rgba(var(--accent-rgb), .14); color: var(--accent); font-weight: 700; }
+
+/* all at once */
+.strip { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; }
+.mini { border: 1px solid var(--line); border-radius: 22px; padding: 14px; display: grid; gap: 10px; background: var(--bg); position: relative; overflow: hidden; }
+.mini::before { content: ""; position: absolute; inset: -40% -50% auto auto; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, rgba(var(--accent-rgb), .18), transparent 65%); }
+.mini .btn { min-height: 44px; font-size: 13.5px; }
+.mini .num.k { font-size: 30px; line-height: 1.1; }
+.rules { border: 1px solid var(--glass-line); background: var(--glass); border-radius: 18px; padding: 16px; display: grid; gap: 8px; font-size: 13.5px; max-width: 80ch; }
+.decide { border: 1px solid rgba(242,181,68,.35); background: rgba(242,181,68,.07); border-radius: 16px; padding: 14px 16px; display: grid; gap: 8px; font-size: 13.5px; }
+.decide b { color: #f2b544; }
+@media (max-width: 1060px) { .phones { grid-template-columns: 1fr; } .strip { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+</style>
+</head>
+<body>
+<main class="page" id="app" data-accent="lime">
+  <p class="small faint">KOCHIVO · ألوان التطبيق · نسخة 1</p>
+  <h1>اللاعب يختار لون التطبيق بتاعه</h1>
+  <p class="lede">ست ألوان على نفس الخلفية الغامقة ونفس شكل الأزرار. الأخضر هو لون KOCHIVO الأساسي وبيفضل في اللوجو والموقع وشاشات الكابتن. اللون التاني بيغيّر أزرار ولمسات تطبيق اللاعب بس. دوس على أي لون تحت وشوف الشاشات بتتغير.</p>
+
+  <section id="pick" aria-labelledby="pick-h">
+    <div class="head"><h2 id="pick-h">جرّب الألوان</h2></div>
+    <div class="picker" role="group" aria-label="لون التطبيق">
+      <button class="sw" data-c="lime" style="--c:#b6e94f" aria-pressed="true"><i></i><span>ليموني<small>لون KOCHIVO</small></span></button>
+      <button class="sw" data-c="rose" style="--c:#f7a1c4" aria-pressed="false"><i></i><span>روز<small>هادي ودافي</small></span></button>
+      <button class="sw" data-c="lavender" style="--c:#bfa9ff" aria-pressed="false"><i></i><span>لافندر<small>بنفسجي فاتح</small></span></button>
+      <button class="sw" data-c="aqua" style="--c:#62e3c9" aria-pressed="false"><i></i><span>أكوا<small>نعناعي</small></span></button>
+      <button class="sw" data-c="sky" style="--c:#82c8ff" aria-pressed="false"><i></i><span>سماوي<small>أزرق فاتح</small></span></button>
+      <button class="sw" data-c="sun" style="--c:#ffcb5c" aria-pressed="false"><i></i><span>شمسي<small>أصفر دهبي</small></span></button>
+    </div>
+
+    <div class="phones">
+      <div class="pw">
+        <div class="phone">
+          <div class="status"><span>17:01</span><span>KOCHIVO</span></div>
+          <div class="row"><span class="av">م</span><div><h3>صباح الخير يا منى</h3><span class="small faint">الأسبوع 6 · برنامج تخسيس</span></div></div>
+          <div class="glass card">
+            <div class="row"><div><span class="small faint">تمرين النهارده</span><h3>رجل وجلوتس</h3><span class="small muted">6 تمارين · 50 دقيقة</span></div><div class="ring end"><b class="num">72%</b></div></div>
+            <span class="btn primary">ابدأي التمرين</span>
+          </div>
+          <div class="glass card"><div class="row"><span>الأسبوع ده</span><span class="end small accent"><span class="num">3</span> من <span class="num">4</span></span></div>
+            <div class="week"><span>سبت<i class="d"></i></span><span>أحد<i class="d"></i></span><span>اتنين<i></i></span><span>تلات<i class="d t"></i></span><span>أربع<i></i></span><span>خميس<i></i></span><span>جمعة<i></i></span></div></div>
+          <div class="glass card"><div class="row"><span>البروتين</span><span class="end small"><span class="num">96</span> / <span class="num">120</span> جم</span></div><div class="prog"><i style="width:80%"></i></div></div>
+          <div class="chips row" style="flex-wrap:wrap;gap:6px"><span class="chip on">الأكل</span><span class="chip">الماية</span><span class="chip">النوم</span></div>
+          <div class="tabs"><span class="on">الرئيسية</span><span>التمرين</span><span>الأكل</span><span>أنا</span></div>
+        </div>
+        <p>الرئيسية: الزرار، ودايرة التقدم، والأيام اللي اتمرنتها، والشريط تحت.</p>
+      </div>
+      <div class="pw">
+        <div class="phone">
+          <div class="status"><span>17:01</span><span>KOCHIVO</span></div>
+          <div class="row"><h3>هيب ثرست</h3><span class="chip on end">المجموعة 3 من 4</span></div>
+          <div class="dots"><i class="d"></i><i class="d"></i><i class="d"></i><i></i></div>
+          <div class="glass-strong big"><span class="small faint">الوزن</span><span class="num">60</span><span class="small muted">كجم · آخر مرة 57.5</span></div>
+          <div class="step"><span>−</span><div class="glass-strong big" style="padding:10px"><span class="num" style="font-size:34px">10</span><span class="small faint">تكرار</span></div><span>+</span></div>
+          <div class="glass card"><div class="row"><span class="small muted">الراحة بعدها</span><span class="end num accent">1:30</span></div><div class="prog"><i style="width:45%"></i></div></div>
+          <span class="btn primary" style="margin-top:auto">خلصت المجموعة</span>
+          <span class="btn secondary">بدّل التمرين</span>
+        </div>
+        <p>التمرين: الأرقام الكبيرة فاضلة أبيض عشان تتقري، واللون في الزرار والتقدم بس.</p>
+      </div>
+      <div class="pw">
+        <div class="phone">
+          <div class="status"><span>17:01</span><span>KOCHIVO</span></div>
+          <div class="pop"><span class="small accent">خلصتي التمرين</span><h3>+<span class="num">25</span> نقطة</h3><span class="small muted">رقم قياسي جديد في الهيب ثرست</span></div>
+          <div class="glass card"><div class="row"><span class="medal">ذهب</span><div><h3>رتبة الذهب</h3><span class="small muted">فاضلك <span class="num">40</span> نقطة على البلاتين</span></div></div><div class="prog"><i style="width:60%"></i></div></div>
+          <div class="glass card"><span class="small faint">لون التطبيق</span>
+            <div class="row" style="gap:8px">
+              <span style="width:34px;height:34px;border-radius:50%;background:#b6e94f"></span>
+              <span style="width:34px;height:34px;border-radius:50%;background:#f7a1c4"></span>
+              <span style="width:34px;height:34px;border-radius:50%;background:#bfa9ff"></span>
+              <span style="width:34px;height:34px;border-radius:50%;background:#62e3c9"></span>
+              <span style="width:34px;height:34px;border-radius:50%;background:#82c8ff"></span>
+              <span style="width:34px;height:34px;border-radius:50%;background:#ffcb5c"></span>
+            </div>
+            <span class="small muted">بيتغير على طول، ومحفوظ على كل أجهزتك.</span></div>
+          <span class="btn primary" style="margin-top:auto">شارك الإنجاز</span>
+        </div>
+        <p>الإنجاز والإعدادات. الميداليات بتفضل بألوانها (برونز، فضة، دهب) مهما كان لون التطبيق.</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="all-h">
+    <div class="head"><h2 id="all-h">الست ألوان جنب بعض</h2><p>كلهم بنفس الفتاحة تقريبًا عشان الكلام الغامق على الزرار يتقري في كل لون، وكلهم ماشيين مع الخلفية الغامقة ولمعة الزجاج.</p></div>
+    <div class="strip">
+      <div class="mini" data-accent="lime"><span class="small faint">ليموني · الأساسي</span><span class="num k accent">72%</span><div class="prog"><i style="width:72%"></i></div><span class="chip on" style="justify-self:start">النهارده</span><span class="btn primary">ابدأ</span></div>
+      <div class="mini" data-accent="rose"><span class="small faint">روز</span><span class="num k accent">72%</span><div class="prog"><i style="width:72%"></i></div><span class="chip on" style="justify-self:start">النهارده</span><span class="btn primary">ابدأ</span></div>
+      <div class="mini" data-accent="lavender"><span class="small faint">لافندر</span><span class="num k accent">72%</span><div class="prog"><i style="width:72%"></i></div><span class="chip on" style="justify-self:start">النهارده</span><span class="btn primary">ابدأ</span></div>
+      <div class="mini" data-accent="aqua"><span class="small faint">أكوا</span><span class="num k accent">72%</span><div class="prog"><i style="width:72%"></i></div><span class="chip on" style="justify-self:start">النهارده</span><span class="btn primary">ابدأ</span></div>
+      <div class="mini" data-accent="sky"><span class="small faint">سماوي</span><span class="num k accent">72%</span><div class="prog"><i style="width:72%"></i></div><span class="chip on" style="justify-self:start">النهارده</span><span class="btn primary">ابدأ</span></div>
+      <div class="mini" data-accent="sun"><span class="small faint">شمسي</span><span class="num k accent">72%</span><div class="prog"><i style="width:72%"></i></div><span class="chip on" style="justify-self:start">النهارده</span><span class="btn primary">ابدأ</span></div>
+    </div>
+    <div class="rules">
+      <b>اللي مش هيتغير</b>
+      <span>اللوجو والموقع وشاشات الكابتن: ليموني دايمًا.</span>
+      <span>ألوان التحذير (أحمر) والتنبيه (برتقالي) والميداليات: زي ما هي، عشان معناها مايتلخبطش.</span>
+      <span>كارت المشاركة على السوشيال: بلون KOCHIVO، عشان الهوية تفضل واحدة برا التطبيق.</span>
+    </div>
+  </section>
+
+  <section>
+    <div class="decide">
+      <b>قرارات ليك</b>
+      <span><b>1.</b> الست ألوان دول كويسين، ولا تشيل أو تضيف لون؟</span>
+      <span><b>2.</b> الاختيار متاح لكل اللاعبين، والبنات يتعرض عليهم الروز كاقتراح أول مرة؟ اقتراحي آه.</span>
+      <span><b>3.</b> الكابتن يقدر يختار لون لتطبيق فريقه كله (ولون اللاعب يغلب لو اختار)؟ اقتراحي نأجلها، ونبدأ باختيار اللاعب بس.</span>
+    </div>
+  </section>
+</main>
+<script>
+document.querySelectorAll('.sw').forEach(b => b.addEventListener('click', () => {
+  document.getElementById('app').dataset.accent = b.dataset.c;
+  document.querySelectorAll('.sw').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+  document.querySelectorAll('.mini').forEach(m => m.removeAttribute('data-current'));
+}));
+</script>
+</body>
+</html>
