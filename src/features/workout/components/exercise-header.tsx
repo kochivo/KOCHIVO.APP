@@ -5,7 +5,9 @@ import { messages } from '../messages';
 import { formatNumber } from '@/lib/format';
 
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { ExerciseLightbox } from './exercise-lightbox';
+import { parseExerciseVideo } from '@/lib/exercise-video';
 import type { SnapshotExercise } from '@/core/offline';
 import { exerciseMediaUrl } from '@/core/storage';
 import type { LastSession } from '../data/last-performance';
@@ -13,6 +15,7 @@ import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { messages as v6Messages } from '../v6-messages';
 import { exerciseMuscle } from '../exercise-muscle';
 import { formatTempo } from '../tempo';
+const ExerciseVideo = dynamic(() => import('./exercise-video').then(module => module.ExerciseVideo));
 
 const muscleKeys = { chest: 'chest', back: 'back', waist: 'waist', 'upper arms': 'upperArms', 'lower arms': 'lowerArms',
   'upper legs': 'upperLegs', 'lower legs': 'lowerLegs', shoulders: 'shoulders', cardio: 'cardio' } as const;
@@ -35,7 +38,7 @@ export function ExerciseHeader({ exercise, last, detailsOnly = false, prescripti
   </>;
   if (prescriptionOnly) return exercise.tempo || exercise.rpe != null || exercise.rir != null ? <div className="space-y-inline">{prescription}</div> : null;
   return <section className={v6 ? 'space-y-stack' : 'glass-strong flex items-center gap-card-gap rounded-card p-card'}>
-    {!v6 && exercise.media_path && <ExerciseLightbox src={exerciseMediaUrl(exercise.media_path)} name={name} />}
+    {!v6 && !parseExerciseVideo(exercise.video_url) && exercise.media_path && <ExerciseLightbox src={exerciseMediaUrl(exercise.media_path)} name={name} />}
     <div className="min-w-0 space-y-inline">
       {!detailsOnly && <h1 className="text-2xl font-extrabold"><bdi>{name}</bdi></h1>}
       {v6 && <p className="text-xs text-faint">{muscleKey ? <>{v6t(muscleKey)} · </> : muscle ? <>{muscle} · </> : null}<bdi>{v6t('prescription', { sets: formatNumber(exercise.sets, locale),
@@ -48,14 +51,13 @@ export function ExerciseHeader({ exercise, last, detailsOnly = false, prescripti
         `${formatNumber(set.weight_kg ?? 0, locale)}×${formatNumber(set.reps ?? 0, locale)}`).join(' · ')}</bdi></p> : null}
       {(exercise.tempo || exercise.rpe != null) && prescription}
       <div className="flex flex-wrap items-center gap-x-section">
-        {exercise.video_url?.startsWith('https://') && <a href={exercise.video_url} target="_blank" rel="noopener noreferrer"
-          className="inline-flex min-h-12 items-center text-lime underline">{t('watchVideo')}</a>}
+        {!detailsOnly && <ExerciseVideo key={exercise.video_url} url={exercise.video_url} name={name} compact />}
         <Link className="inline-flex min-h-12 items-center text-lime underline" href={`/player/history?exercise=${encodeURIComponent(exercise.exercise_id)}`}>
           {t('seeHistory')}
         </Link>
       </div>
     </div>
-    {v6 && !detailsOnly && exercise.media_path && <ExerciseLightbox src={exerciseMediaUrl(exercise.media_path)} name={name} large />}
+    {v6 && !detailsOnly && !parseExerciseVideo(exercise.video_url) && exercise.media_path && <ExerciseLightbox src={exerciseMediaUrl(exercise.media_path)} name={name} large />}
     {v6 && !detailsOnly && exercise.notes && <p className="glass rounded-card p-card text-sm text-muted">{exercise.notes}</p>}
   </section>;
 }

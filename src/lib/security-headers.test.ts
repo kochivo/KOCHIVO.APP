@@ -16,9 +16,9 @@ const expectedCsp = [
   "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://project.supabase.co",
-  "media-src 'self' blob: https://project.supabase.co",
+  "media-src 'self' blob: https://project.supabase.co https:",
   "connect-src 'self' https://project.supabase.co wss://project.supabase.co https://*.ingest.de.sentry.io",
-  'frame-src https://challenges.cloudflare.com',
+  'frame-src https://challenges.cloudflare.com https://www.youtube-nocookie.com https://drive.google.com',
   "font-src 'self'", "worker-src 'self'", "object-src 'none'", "base-uri 'self'",
   "form-action 'self'", "frame-ancestors 'none'", 'upgrade-insecure-requests',
 ];
@@ -48,7 +48,7 @@ describe('HTTP security headers', () => {
   it.each([undefined, '', 'invalid', 'javascript:alert(1)'])('falls back safely for %s', supabaseUrl => {
     const csp = buildContentSecurityPolicy({ supabaseUrl, production: false });
     expect(csp).toContain("img-src 'self' data: blob: https://*.supabase.co;");
-    expect(csp).toContain("media-src 'self' blob: https://*.supabase.co;");
+    expect(csp).toContain("media-src 'self' blob: https://*.supabase.co https:;");
     expect(csp).toContain("connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.ingest.de.sentry.io;");
   });
 

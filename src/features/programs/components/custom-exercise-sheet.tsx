@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useLocale, useT } from '@/core/i18n/client';
+import { ExerciseVideoPreview } from '@/features/workout';
 import { Button, TextField } from '@/ui';
 import { messages } from '../messages';
 import { bodyParts, bodyPartLabels, customExerciseSchema } from '../custom-exercises';
@@ -61,6 +62,7 @@ export function CustomExerciseSheet({ exercise, onClose, onSave }: {
         error={errors.target ? t('customTargetError') : undefined} />
       <TextField label={t('customVideo')} value={videoUrl} onChange={event => setVideoUrl(event.target.value)} type="url" maxLength={500}
         error={errors.videoUrl ? t('customVideoError') : undefined} />
+      <ExerciseVideoPreview url={videoUrl} name={name} invalidMessage={t('customVideoError')} />
       <div className="flex gap-stack">
         <Button type="submit">{t('saveCustomExercise')}</Button>
         <Button variant="ghost" onClick={onClose}>{t('cancelCustomExercise')}</Button>

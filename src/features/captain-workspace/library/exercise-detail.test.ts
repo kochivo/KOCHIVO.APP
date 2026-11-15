@@ -8,13 +8,13 @@ vi.mock('server-only', () => ({}));
 const exercise: LibraryExercise = { id: 'exercise', name_ar: 'سكوات', name_en: 'Squat', body_part: 'upper legs',
   target: 'quads', equipment: 'barbell', media_path: null, secondary_muscles: ['glutes', 'lower back'],
   instructions_ar: ['قف', 'انزل', 'اطلع'], instructions_en: ['English step'], is_own: true,
-  video_url: 'https://youtube.com/watch?v=example' };
+  video_url: 'https://youtube.com/watch?v=dQw4w9WgXcQ' };
 
 it('renders both names, main muscle and target, helpers, equipment, video and numbered instructions', () => {
   const html = renderToStaticMarkup(createElement(ExerciseDetail, { exercise, onClose() {} }));
   for (const field of ['سكوات', 'Squat', 'العضلات', 'فخذ', '(quads)', 'مؤخرة', 'lower back', 'بار',
-    'طريقة الأداء', '<ol', '<li>قف</li>', '<li>انزل</li>', '<li>اطلع</li>', 'فيديو يوتيوب بتاعك', 'ضيفه لبرنامج', 'aria-label="رجوع"']) expect(html).toContain(field);
-  expect(html).toContain('href="https://youtube.com/watch?v=example"');
+    'طريقة الأداء', '<ol', '<li>قف</li>', '<li>انزل</li>', '<li>اطلع</li>', 'فيديو من الكابتن', 'ضيفه لبرنامج', 'aria-label="رجوع"']) expect(html).toContain(field);
+  expect(html).not.toMatch(/<iframe|<video/);
   expect(html).not.toContain('English step');
   expect(html).toContain('min-[760px]:grid-cols-2');
   expect(html).toContain('aspect-square');

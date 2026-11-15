@@ -1,5 +1,6 @@
 'use client';
 import { useCallback, useState } from 'react';
+import { ChevronDown } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { useLocale, useT } from '@/core/i18n/client';
 import { localDb, useLiveQuery } from '@/core/offline';
@@ -10,6 +11,7 @@ import { KoTraining } from '@/ui/icons';
 import type { useFocusSession } from '../hooks/use-focus-session';
 import { prHistory } from '../data/pr-history';
 import { messages } from '../messages';
+import { parseExerciseVideo } from '@/lib/exercise-video';
 import { ExerciseLightbox } from './exercise-lightbox';
 import { WorkoutValue } from './workout-value';
 import { WorkoutHint } from './workout-hint';
@@ -26,6 +28,7 @@ import { DropProgress } from './drop-progress';
 import { SupersetCue } from './superset-cue';
 import { messages as setMessages } from '@/lib/training/messages';
 import { supersetTag } from '@/lib/superset';
+const ExerciseVideo = dynamic(() => import('./exercise-video').then(module => module.ExerciseVideo));
 
 const FormCheckButton = dynamic(() => import('./form-check-button').then(module => module.FormCheckButton), { ssr: false });
 
@@ -37,10 +40,12 @@ export function WorkoutSet({ state }: { state: ReturnType<typeof useFocusSession
   const exerciseId = current?.exercise.exercise_id ?? '';
   const [historyFailed, setHistoryFailed] = useState(false);
   const [attempt, setAttempt] = useState(0);
+  const [gifExercise, setGifExercise] = useState<string | null>(null);
   const read = useCallback(() => prHistory(localDb(), exerciseId, ''), [exerciseId]);
   const history = useLiveQuery(read, useCallback(() => setHistoryFailed(true), []), attempt);
   if (!current || !state.day) return null;
   const name = exerciseName(current.exercise, locale);
+  const showGif = gifExercise === exerciseId;
   const blocked = state.disabled || state.rest.remaining > 0;
   const lastSet = state.doneSets.filter(row => row.program_exercise_id === current.exercise.id)
     .sort((a, b) => b.completed_at.localeCompare(a.completed_at))[0];
@@ -51,7 +56,12 @@ export function WorkoutSet({ state }: { state: ReturnType<typeof useFocusSession
   return <>
     <div className="flex min-h-[calc(100dvh-160px)] flex-col gap-card-gap">
       <SupersetCue state={state} />
-      {!dropping && current.exercise.media_path && <ExerciseLightbox src={exerciseMediaUrl(current.exercise.media_path)} name={name} focus />}
+      {!dropping && (parseExerciseVideo(current.exercise.video_url) ? <div className="space-y-stack">
+        {showGif && current.exercise.media_path ? <ExerciseLightbox src={exerciseMediaUrl(current.exercise.media_path)} name={name} focus /> :
+          <ExerciseVideo key={current.exercise.video_url} url={current.exercise.video_url} name={name} />}
+        {current.exercise.media_path && <Button variant="secondary" aria-pressed={showGif} onClick={() => setGifExercise(showGif ? null : exerciseId)}
+          className="flex min-h-12 w-full items-center gap-inline text-sm">{t('gifToggle')}<ChevronDown aria-hidden className={`ms-auto size-4 transition-transform ${showGif ? 'rotate-180' : ''}`} /></Button>}
+      </div> : current.exercise.media_path && <ExerciseLightbox src={exerciseMediaUrl(current.exercise.media_path)} name={name} focus />)}
       <div className="flex flex-col gap-inline"><h1 style={{ fontFamily: 'inherit', fontWeight: 900 }} className="text-2xl leading-normal"><bdi>{name}</bdi></h1>
         <p className="text-row text-muted">{t('v3Set', { current: formatNumber(current.setIndex, locale), total: formatNumber(current.exercise.sets, locale) })}
           {current.exercise.notes && t('v3Coach', { note: current.exercise.notes })}</p>

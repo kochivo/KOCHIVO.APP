@@ -11,6 +11,7 @@ import type { ProgramSnapshot } from '@/features/player-home';
 import { starterText } from '@/lib/starter-text';
 import { supersetLabel, supersetTag } from '@/lib/superset';
 import { messages as setMessages } from '@/lib/training/messages';
+import { ExerciseVideo } from '@/features/workout';
 
 export function PreviewProgram({ program }: { program: ProgramSnapshot | null }) {
   const t = useT(messages);
@@ -35,6 +36,7 @@ export function PreviewProgram({ program }: { program: ProgramSnapshot | null })
         </div>}
         {exercise.set_plan?.some(set => set.drop) && <span className="inline-flex rounded-full bg-warn-soft px-stack py-inline text-xs text-warn">{st('drop')}</span>}
         <p className="font-bold">{exerciseName(exercise, locale)}</p>
+        <ExerciseVideo url={exercise.video_url} name={exerciseName(exercise, locale)} compact />
         {exercise.media_path && <ExerciseImage fullWidth src={exerciseMediaUrl(exercise.media_path)}
           alt={exerciseName(exercise, locale)} width={280} height={200} className="w-full rounded-control object-contain" />}
         <p className="text-sm">{t('sets', { n: exercise.sets, count: formatNumber(exercise.sets, locale) })} × {t('reps', { n: exercise.reps_max ?? exercise.reps_min, count: exercise.reps_max !== null && exercise.reps_max !== exercise.reps_min ? `${formatNumber(exercise.reps_min, locale)}–${formatNumber(exercise.reps_max, locale)}` : formatNumber(exercise.reps_min, locale) })}</p>

@@ -11,6 +11,7 @@ const exceptions: Record<string, number> = {
   '/c/[slug]': 205,
   '/login': 201,
   '/welcome': 201,
+  '/offline': 206,
   '/captain/programs/[programId]': 315,
   '/captain/players/[playerId]/programs': 315,
 };

@@ -4,7 +4,8 @@ import { secondaryButtonClass } from '@/ui/secondary-button-class';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { useState } from 'react';
-import { ArrowRight, Link as LinkIcon } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
+import { ExerciseVideo } from '@/features/workout';
 import { useT } from '@/core/i18n/client';
 import { exerciseMediaUrl } from '@/core/storage';
 import type { LibraryExercise } from '@/features/programs';
@@ -43,7 +44,7 @@ export function ExerciseDetail({ exercise, onClose }: { exercise: LibraryExercis
       <div className="glass space-y-stack rounded-card border border-line-soft p-card">
         {exercise.media_path ? <ExerciseImage src={exerciseMediaUrl(exercise.media_path)} alt="" width={480} height={480} fullWidth className="bg-exercise-media" /> :
           <p className="glass-strong flex aspect-square items-center justify-center rounded-card p-card text-muted">{t('noMedia')}</p>}
-        {video && <a href={video} target="_blank" rel="noreferrer" className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center gap-inline px-page-x text-sm" })}><LinkIcon aria-hidden className="size-4" />{detail('video')}</a>}
+        {video && <ExerciseVideo url={video} name={exerciseTitle(exercise)} />}
       </div>
       <div className="space-y-stack">
         <section className="glass rounded-card border border-line-soft p-card">

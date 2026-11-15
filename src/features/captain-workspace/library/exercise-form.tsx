@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useRef, useState } from 'react';
 import { useT } from '@/core/i18n/client';
+import { ExerciseVideoPreview } from '@/features/workout';
 import { useResource } from '@/core/resource';
 import { resourceStore } from '@/core/resource/store';
 
@@ -155,6 +156,7 @@ function FormFields({ exercise, names, returnTo }: { exercise: LibraryExercise |
           <div className="flex flex-wrap items-center justify-between gap-inline"><h2 className="font-bold">{t('videoSection')}</h2><span className="text-xs text-muted">{t('videoUploadLater')}</span></div>
           <label className="block text-sm text-muted">{t('videoLink')}<input {...invalid('video')} type="url" dir="ltr" maxLength={500} value={values.video} onChange={event => patch({ video: event.target.value })} className={`${editableFieldClass} ${inputClass}`} /></label>
           <p className="text-sm text-muted">{t('videoHint')}</p>{fieldError('video')}
+          <ExerciseVideoPreview url={values.video} name={values.name || values.nameEn} invalidMessage={t('videoError')} />
         </section>
         <ExercisePreview values={values} />
       </div>

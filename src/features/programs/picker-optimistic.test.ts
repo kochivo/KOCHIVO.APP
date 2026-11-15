@@ -4,6 +4,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { Chip } from '@/ui';
 import { Check } from 'lucide-react';
 import { beforeEach, expect, it, vi } from 'vitest';
+vi.mock('server-only', () => ({}));
 import { ExercisePicker } from './components/exercise-picker';
 import { CustomExerciseSheet } from './components/custom-exercise-sheet';
 import type { LibraryExercise, Result } from './types';

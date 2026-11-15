@@ -365,3 +365,12 @@ After T-252 (automatic language), `/[locale]/login` and `/[locale]/welcome` meas
 Both routes now have a ceiling of 201 KiB in `src/lib/perf-budget.test.ts`.
 
 Follow-up: trim the public pages back under 200 KiB, then drop this exception and the `/c/[slug]` one. A good place to start is the shared `src/ui/messages.ts` dictionary: it is duplicated into 16 chunks, and the compact language switch needs only four of its strings.
+
+## Budget exception — `/offline` (2026-11-15)
+
+The offline page carries the whole workout screen. Before T-307 it measured
+195.8 KiB; after T-307 (medal ranks and finish points) and T-309 (exercise
+video inside the app) it measured 203.8 KiB. The video player, its sheet and
+its strings already load only when a video is opened; the rest is shared
+workout code. Owner decision 2026-11-15: allow this route up to **206 KiB** in
+`src/lib/perf-budget.test.ts`, as long as the workout stays fast and smooth.
