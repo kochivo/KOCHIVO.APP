@@ -1,4 +1,7 @@
 export { TIERS, CROWN_MIN_WORKOUTS, tierFor, nextTier } from './tiers';
+export { MEDAL_RANKS, medalRank, nextMedalRank, legendStars } from './tiers';
+export type { MedalRank } from './tiers';
+export { loadMedals } from './data/load-medals';
 export type { Tier, LeaderboardRow } from './types';
 export { loadLeaderboard } from './data/load-leaderboard';
 export { loadHallOfFame } from './data/load-hall-of-fame';

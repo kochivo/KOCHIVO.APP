@@ -5,6 +5,8 @@ export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? { ...arStd, workspaceMarkAll: 'علّم الكل مقروء' } : undefined; },
   ar: {
+    player_rank_up: '{name} طلع {rank}', rank_up_medal: 'بقيت {rank}',
+    iron: 'حديد', bronze: 'برونز', silver: 'فضة', gold: 'ذهب', platinum: 'بلاتين', diamond: 'ماس', legend: 'أسطورة',
     workspaceMarkAll: 'علّم الكل مقروء',
     chat_message: '{name} بعتلك رسالة',
     renewal_requested: '{name} بعت طلب تجديد',
@@ -36,6 +38,8 @@ export const messages = defineMessages({
     now: 'دلوقتي', minutes: 'من {n} دقيقة', hours: 'من {n} ساعة', days: 'من {n} يوم',
   },
   en: {
+    player_rank_up: '{name} reached {rank}', rank_up_medal: 'You reached {rank}',
+    iron: 'Iron', bronze: 'Bronze', silver: 'Silver', gold: 'Gold', platinum: 'Platinum', diamond: 'Diamond', legend: 'Legend',
     workspaceMarkAll: 'Mark all as read',
     chat_message: '{name} sent you a message',
     renewal_requested: '{name} requested a renewal',

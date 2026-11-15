@@ -15,6 +15,7 @@ import { v11Messages } from './v11-messages';
 import type { FileSummary, PlayerFileTab, Profile } from './types';
 import { ArchiveMenu } from './archive-menu';
 import { ranksMessages } from '@/features/ranks/server';
+import { PlayerMedalChip } from './rank-chip';
 import { archivePlayer, rosterMessages } from '@/features/roster/server';
 import { messages as subscriptionMessages } from './subscription-messages';
 import { SubscriptionWaitEntry } from './subscription-wait-entry';
@@ -31,6 +32,7 @@ export function FileHeader({ playerId, profile, summary, tab, locale, today, unr
   const subtitle = [goal, summary.subscription.awaiting_plans_at ? createT(subscriptionMessages, locale)('waiting') : t('days', { count: formatNumber(Math.max(0, daysBetween(today, summary.subscription.access_until)), locale) }), summary.rank ? createT(ranksMessages, locale)(summary.rank) : null].filter(Boolean).join(' · ');
   return <>
     <PageBarTitle title={profile.name} subtitle={subtitle} />
+    {summary.lifetime !== undefined && <PlayerMedalChip lifetime={summary.lifetime} locale={locale} />}
     <PageBarActions>
       <Link href="/captain/players" aria-label={vt('back')} className={`${clickableClass} glass press grid min-h-12 min-w-12 cursor-pointer place-items-center rounded-full border border-line focus-visible:ring-2 focus-visible:ring-lime`}><Back aria-hidden className="size-5" /></Link>
       {profile.avatarUrl ? <Image src={profile.avatarUrl} alt="" width={48} height={48} unoptimized className="size-12 shrink-0 rounded-full object-cover" /> :

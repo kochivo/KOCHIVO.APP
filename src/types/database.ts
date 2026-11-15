@@ -2915,6 +2915,8 @@ export type Database = {
         }[]
       }
       my_points: { Args: never; Returns: Json }
+      my_medals: { Args: never; Returns: { workouts: number; full_weeks: number; prs: number; crowns: number; crown_streak: number }[] }
+      player_medals: { Args: { p_player: string }; Returns: { workouts: number; full_weeks: number; prs: number; crowns: number; crown_streak: number }[] }
       my_route_profile: {
         Args: never
         Returns: {

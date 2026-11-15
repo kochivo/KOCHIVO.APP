@@ -3,19 +3,22 @@ import { z } from 'zod';
 import { Children, cloneElement, Fragment, isValidElement } from 'react';
 import type { ReactNode } from 'react';
 import { RankBadgeShapes } from '@/ui/rank-badge-shapes';
+import { MedalArt } from '@/ui/medal-art';
+import { medalRank, MEDAL_RANKS, ranksMessages } from '@/features/ranks/server';
+import { medalColors } from './medal-colors';
 import { supabaseServer } from '@/core/supabase/server';
 import { getLocale } from '@/core/i18n/server';
 import { createT } from '@/core/i18n/messages';
 import type { Locale } from '@/core/i18n/locale';
 // Value imports from @/features/ranks would pull its client screens into every route's OG image entry.
-import type { Tier } from '@/features/ranks';
+import type { MedalRank } from '@/features/ranks';
 import { messages } from './messages';
 import { ogColors as colors } from './og-colors';
 import { ogFont } from './data/og-font';
 import { shareText } from './share-text';
 
 const headers = { 'Cache-Control': 'private, no-store' };
-const pointsSchema = z.object({ tier: z.enum(['beginner', 'champion', 'elite', 'legend']) });
+const pointsSchema = z.object({ lifetime: z.number().int().nonnegative() });
 const boardSchema = z.array(z.object({ player_id: z.string().nullable(), is_crown: z.boolean() }));
 
 export async function rankImageResponse(request: Request): Promise<Response> {
@@ -32,7 +35,7 @@ export async function rankImageResponse(request: Request): Promise<Response> {
       (kind !== 'rank' && kind !== 'crown')) return new Response(null, { status: 400, headers });
     const points = await db.rpc('my_points');
     if (points.error) throw points.error;
-    const { tier } = pointsSchema.parse(points.data);
+    const { lifetime } = pointsSchema.parse(points.data);
     if (kind === 'crown') {
       const board = await db.rpc('team_leaderboard');
       if (board.error) throw board.error;
@@ -49,7 +52,7 @@ export async function rankImageResponse(request: Request): Promise<Response> {
       if (coach.error) throw coach.error;
       captain = coach.data?.full_name ?? '';
     }
-    return await rankImage(await getLocale(), profile.data.full_name, captain, kind === 'crown' ? 'crown' : tier);
+    return await rankImage(await getLocale(), profile.data.full_name, captain, kind === 'crown' ? 'crown' : medalRank(lifetime));
   } catch {
     return new Response(null, { status: 500, headers });
   }
@@ -67,18 +70,19 @@ function ogShapes(nodes: ReactNode): ReactNode {
   });
 }
 
-async function rankImage(locale: Locale, fullName: string, captain: string, tier: Tier | 'crown') {
+async function rankImage(locale: Locale, fullName: string, captain: string, tier: MedalRank | 'crown') {
   const t = createT(messages, locale);
   const name = fullName.trim().split(/\s+/)[0] || t('player');
-  const title = tier === 'crown' ? t('crown', { name }) : t('rank', { name, tier: t(tier) });
+  const title = tier === 'crown' ? t('crown', { name }) : t('rank', { name, tier: createT(ranksMessages, locale)(tier) });
+  const rank = MEDAL_RANKS.findIndex(entry => entry.rank === tier) as 0 | 1 | 2 | 3 | 4 | 5 | 6;
   const font = await ogFont();
   return new ImageResponse(<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center',
     justifyContent: 'center', gap: 64, width: '100%', height: '100%', padding: 80,
     background: `radial-gradient(ellipse at top, ${colors.glow}, ${colors.bg} 75%)`,
     color: colors.ink, fontFamily: 'Card', textAlign: 'center' }}>
-    <svg viewBox="0 0 120 130" width={480} height={520}>
+    {tier === 'crown' ? <svg viewBox="0 0 120 130" width={480} height={520}>
       {ogShapes(RankBadgeShapes({ tier, id: 'rank' }))}
-    </svg>
+    </svg> : MedalArt({ rank, id: 'rank', label: title, size: 480, paints: { ...medalColors[rank], bg: colors.bg, ink: colors.ink } })}
     <div style={{ display: 'flex', fontSize: 76, lineHeight: 1.5, wordBreak: 'break-word' }}>{shareText(title)}</div>
     {captain && <div style={{ display: 'flex', fontSize: 42, color: colors.muted, wordBreak: 'break-word' }}>
       {shareText(t('captain', { name: captain }))}</div>}

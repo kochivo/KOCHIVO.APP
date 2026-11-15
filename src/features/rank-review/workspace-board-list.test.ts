@@ -19,11 +19,11 @@ describe('workspace ranking list', () => {
     expect(html).toContain('Mona Ali');
     expect(html).toContain('6 workouts · 84 points');
     expect(html).not.toContain('120 points');
-    expect(html).toContain('SILVER');
+    expect(html).toContain('aria-label="Bronze"');
   });
-  it.each([['beginner', 'BRONZE'], ['elite', 'GOLD'], ['legend', 'PLATINUM']] as const)(
-    'shows the existing %s tier metal', (tier, label) => {
-      expect(render([{ ...player, tier }])).toContain(label);
+  it.each([[0, 'Iron'], [300, 'Gold'], [900, 'Legend']] as const)(
+    'shows the medal at %i lifetime points', (lifetime, label) => {
+      expect(render([{ ...player, lifetime }])).toContain(`aria-label="${label}"`);
     },
   );
   it('uses lifetime points without mislabelling monthly workouts as lifetime', () => {

@@ -18,7 +18,7 @@ for (const locale of ['ar', 'en'] as const) {
     const html = render({}, 85);
     expect(html).toContain(locale === 'ar' ? 'هيتحسب' : 'Expected');
     expect(html).toContain('+3');
-    expect(html).toContain(locale === 'ar' ? '15 نقطة على بطل' : '15 points to Champion');
+    expect(html).toContain(locale === 'ar' ? '15 نقطة على برونز' : '15 points to Bronze');
   });
   it(`renders the minimum duration in ${locale}`, () => {
     const html = render({ completedAt: '2026-11-10T10:19:59Z' });
@@ -29,7 +29,7 @@ for (const locale of ['ar', 'en'] as const) {
     expect(render({ loggedSets: 5 })).toContain(locale === 'ar' ? 'سجّلت 5 من 10 مجموعة، محتاج 6' : 'you logged 5 of 10 sets, 6 needed');
   });
   it(`omits the next tier when unknown or at Legend in ${locale}`, () => {
-    for (const lifetime of [undefined, 600]) {
+    for (const lifetime of [undefined, 900]) {
       expect(render({}, lifetime)).not.toContain(locale === 'ar' ? 'فاضلك' : 'points to');
     }
   });

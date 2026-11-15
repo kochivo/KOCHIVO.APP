@@ -17,6 +17,8 @@ import { FinishRecord } from './finish-record';
 import { sessionRecords, formatVolume } from './workout-v3-model';
 import { groupHistory } from '../data/history-grouping';
 import { HistorySets } from './history-sets';
+import { FinishPoints } from './finish-points';
+import { expectedWorkoutPrs } from '../data/expected-workout-prs';
 
 export function FinishHero({ sessionId, workout, extras = false }: { sessionId: string; workout?: WorkoutPointsInput; extras?: boolean }) {
   const t = useT(messages);
@@ -36,11 +38,12 @@ export function FinishHero({ sessionId, workout, extras = false }: { sessionId: 
     const db = localDb();
     const [session, rows, plan] = await Promise.all([db.workout_sessions.get(sessionId), db.set_logs.toArray(), db.program_snapshot.get('active')]);
     if (!session?.completed_at) throw new Error('Completed session unavailable');
-    const record = sessionRecords(rows, sessionId).sort((a, b) => (b.weight_kg ?? 0) - (a.weight_kg ?? 0) || (b.reps ?? 0) - (a.reps ?? 0))[0];
+    const records = sessionRecords(rows, sessionId);
+    const record = records.sort((a, b) => (b.weight_kg ?? 0) - (a.weight_kg ?? 0) || (b.reps ?? 0) - (a.reps ?? 0))[0];
     const exercises = plan?.days.flatMap(day => day.exercises) ?? [];
     const exercise = record && exercises.find(exercise => exercise.exercise_id === record.exercise_id);
     const alternative = record && exercises.flatMap(exercise => exercise.alternative_exercises ?? []).find(exercise => exercise.id === record.exercise_id);
-    return { ...finishSummary(rows, sessionId), record,
+    return { ...finishSummary(rows, sessionId), record, expectedPrs: expectedWorkoutPrs(rows, session),
       exercises: groupHistory([session], rows)[0]?.exercises.map(group => ({ ...group,
         name: exerciseName(exercises.find(exercise => exercise.exercise_id === group.id) ??
           exercises.flatMap(exercise => exercise.alternative_exercises ?? []).find(exercise => exercise.id === group.id) ??
@@ -82,6 +85,7 @@ export function FinishHero({ sessionId, workout, extras = false }: { sessionId: 
           </div>)}
       </div>
       <div className="relative"><FinishRecord record={summary.record} name={summary.recordName} /></div>
+      {ranksEnabled() && <div className="relative"><FinishPoints sessionId={sessionId} expected={preview?.counted} expectedPrs={summary.expectedPrs} /></div>}
     </> : failed ? <ErrorState message={wt('couldntReadTheWorkoutOnYourPhone')} retryLabel={wt('tryAgain')}
       onRetry={() => { setFailed(false); setAttempt(value => value + 1); }} /> : <LoadingState variant="detail" />}
   </div>;

@@ -8,7 +8,8 @@ export type Subscription = Pick<Tables<'coach_clients'>, 'access_until' | 'start
   Partial<Pick<Tables<'coach_clients'>, 'id' | 'awaiting_plans_at'>>;
 export interface FileSummary {
   plansReady?: { training: boolean; nutrition: boolean };
-  rank?: 'beginner' | 'champion' | 'elite' | 'legend';
+  rank?: 'iron' | 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond' | 'legend';
+  lifetime?: number;
   tier?: { name: string; color: string; is_featured?: boolean } | null;
   file: PlayerFile;
   subscription: Subscription;

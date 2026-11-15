@@ -9,6 +9,6 @@ export function captainNotification(kind: NotificationType) {
     return { Icon: Banknote, href: '/captain/billing' };
   }
   if (kind === 'join_requested' || kind === 'player_joined') return { Icon: UserPlus, href: '/captain/join' };
-  if (kind === 'rank_up' || kind.startsWith('crown_')) return { Icon: Trophy, href: '/captain/leaderboard' };
+  if (kind === 'rank_up' || kind === 'player_rank_up' || kind.startsWith('crown_')) return { Icon: Trophy, href: '/captain/leaderboard' };
   return { Icon: Bell, href: kind === 'chat_message' ? '/captain/inbox' : '/captain/players' };
 }

@@ -4,6 +4,41 @@
 [dir='ltr'] .dir-icon { transform: scaleX(-1); }
 /* KOCHIVO design tokens — colors come from brand/tokens/palette.css (2026-10-26); use utilities, never raw hex in components. */
 @theme {
+  --color-medal-0-a: #d3d6da;
+  --color-medal-0-b: #6a6e74;
+  --color-medal-0-c: #3a3d41;
+  --color-medal-0-gem: #a9afb6;
+  --color-medal-0-gem2: #5f656c;
+  --color-medal-1-a: #f6c79c;
+  --color-medal-1-b: #9c5a30;
+  --color-medal-1-c: #4a2a17;
+  --color-medal-1-gem: #ffd9b5;
+  --color-medal-1-gem2: #c47a45;
+  --color-medal-2-a: #f4f7fb;
+  --color-medal-2-b: #8d97a6;
+  --color-medal-2-c: #3c4350;
+  --color-medal-2-gem: #cfe2ff;
+  --color-medal-2-gem2: #6f8fc9;
+  --color-medal-3-a: #ffe7a0;
+  --color-medal-3-b: #c08a1c;
+  --color-medal-3-c: #5a3d08;
+  --color-medal-3-gem: #ff7a7a;
+  --color-medal-3-gem2: #b8233a;
+  --color-medal-4-a: #dafff7;
+  --color-medal-4-b: #3e9d8d;
+  --color-medal-4-c: #123d37;
+  --color-medal-4-gem: #f2fffd;
+  --color-medal-4-gem2: #6fd6c4;
+  --color-medal-5-a: #d5e2ff;
+  --color-medal-5-b: #4d62e0;
+  --color-medal-5-c: #1a2163;
+  --color-medal-5-gem: #b9f3ff;
+  --color-medal-5-gem2: #5fb7ff;
+  --color-medal-6-a: #f1ffd0;
+  --color-medal-6-b: #8fc23a;
+  --color-medal-6-c: #24340c;
+  --color-medal-6-gem: #b6e94f;
+  --color-medal-6-gem2: #5f8f1c;
   --color-ivory: #ede6d3;
   --color-ivory-muted: #8a877f;
   --color-ivory-hatch: #cfc8b4;

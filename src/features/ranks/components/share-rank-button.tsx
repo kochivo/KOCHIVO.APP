@@ -22,7 +22,7 @@ export async function shareRankFile(file: File) {
   }
 }
 
-export function ShareRankButton({ kind, disabled = false }: { kind: 'rank' | 'crown'; disabled?: boolean }) {
+export function ShareRankButton({ kind, disabled = false, rankLabel = false }: { kind: 'rank' | 'crown'; disabled?: boolean; rankLabel?: boolean }) {
   const t = useT(messages);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
@@ -41,7 +41,7 @@ export function ShareRankButton({ kind, disabled = false }: { kind: 'rank' | 'cr
   }
   return <div className="space-y-inline">
     <Button variant="secondary" className="min-h-12" disabled={disabled || loading} aria-busy={loading} onClick={() => void share()}>
-      <Share2 size={20} aria-hidden="true" />{t(loading ? 'shareLoading' : 'share')}
+      <Share2 size={20} aria-hidden="true" />{t(loading ? 'shareLoading' : rankLabel ? 'shareRank' : 'share')}
     </Button>
     {error && <p role="alert" className="text-sm text-danger">{t('shareError')}</p>}
   </div>;

@@ -4,7 +4,7 @@ import { currentClaims } from '@/core/supabase/claims';
 import { readPlayerFile } from './read-player-file';
 import { saturdayWeek } from '@/lib/dates';
 import type { FileSummary } from './types';
-import { tierFor } from '@/features/ranks/server';
+import { medalRank } from '@/features/ranks/server';
 
 export async function loadSummary(playerId: string, today: string): Promise<FileSummary> {
   const client = await supabaseServer();
@@ -42,7 +42,7 @@ export async function loadSummary(playerId: string, today: string): Promise<File
     assessment = { title: form.data.title, next: current.answered_at ? null : current.due_at,
       last: rows.flatMap(row => row.answered_at ? [row.answered_at] : []).sort().at(-1) ?? null };
   }
-  return { file, rank: points.data ? tierFor(points.data.lifetime) : undefined, tier: tier.data ?? null, subscription: subscription.data, lastTraining: latest.data?.[0]?.training_date ?? null,
+  return { file, rank: points.data ? medalRank(points.data.lifetime) : undefined, lifetime: points.data?.lifetime, tier: tier.data ?? null, subscription: subscription.data, lastTraining: latest.data?.[0]?.training_date ?? null,
     completedDays: new Set((week.data ?? []).map(row => row.training_date)).size, assessment,
     plansReady: { training: Boolean(training.data?.length), nutrition: Boolean(nutrition.data?.length) } };
 }

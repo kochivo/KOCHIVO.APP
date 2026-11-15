@@ -2,6 +2,7 @@ import { beforeEach, expect, it, vi } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
 import type { ReactElement } from 'react';
 import type * as NextOg from 'next/og';
+vi.mock('server-only', () => ({}));
 
 const state = vi.hoisted(() => ({ user: true, role: 'player', crown: false, fail: false, real: false,
   locale: 'en', name: 'Ahmed Private', tier: 'champion' }));
@@ -14,7 +15,7 @@ vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => ({
         : { role: state.role, full_name: id === 'coach' ? 'Coach Name' : state.name }, error: null }) };
     return query;
   },
-  rpc: async (name: string) => ({ data: name === 'my_points' ? { tier: state.tier }
+  rpc: async (name: string) => ({ data: name === 'my_points' ? { tier: state.tier, lifetime: ({ beginner: 0, champion: 100, elite: 300, iron: 0, bronze: 100, silver: 200, gold: 300, platinum: 400, diamond: 600, legend: 900 } as Record<string,number>)[state.tier] }
     : [{ player_id: 'self', is_crown: state.crown }, { player_id: null, is_crown: true }],
     error: state.fail ? new Error('failed') : null }),
 }) }));
@@ -63,7 +64,7 @@ it.each(['rank', 'crown'])('returns a private story PNG for %s', async kind => {
   expect(response.headers.get('Cache-Control')).toBe('private, no-store');
   const result = await response.json();
   expect(result.width).toBe(1080); expect(result.height).toBe(1920);
-  expect(result.html).toContain(kind === 'rank' ? 'Ahmed reached Champion' : 'Ahmed took this month');
+  expect(result.html).toContain(kind === 'rank' ? 'Ahmed reached Bronze' : 'Ahmed took this month');
   expect(result.html).toContain('KOCHIVO');
   expect(result.html).toContain('Captain Coach Name');
   expect(result.html).not.toContain('Private');
@@ -76,10 +77,10 @@ it('does not render when a data dependency fails', async () => {
 it('uses the Arabic word-order fix and keeps only the first name', async () => {
   state.locale = 'ar'; state.name = 'أحمد سري';
   const result = await (await GET(request())).json();
-  expect(result.html).toContain('بطل بقى أحمد');
+  expect(result.html).toContain('برونز بقى أحمد');
   expect(result.html).not.toContain('سري');
 });
-it.each(['beginner', 'champion', 'elite', 'legend', 'crown'])('renders a real %s PNG without network access', async tier => {
+it.each(['iron', 'bronze', 'silver', 'gold', 'platinum', 'diamond', 'legend', 'crown'])('renders a real %s PNG without network access', async tier => {
   const kind = tier === 'crown' ? 'crown' : 'rank';
   state.tier = tier === 'crown' ? 'legend' : tier;
   state.real = true; state.crown = true;

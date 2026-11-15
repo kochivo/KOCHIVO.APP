@@ -4,6 +4,7 @@ import type { Notification } from './types';
 export function notificationTextKey(row: Notification) {
   if (row.type === 'crown_close' && row.payload.needs_workouts === 0 && (row.payload.gap ?? 0)>0) return 'crown_close_points';
   if (row.type === 'rank_up') {
+    if (medalKey(row.payload.medal)) return 'rank_up_medal';
     const tier = row.payload.tier;
     return tier === 'champion' || tier === 'elite' || tier === 'legend' ? `rank_up_${tier}` as const : 'rank_up';
   }
@@ -15,11 +16,16 @@ export function notificationTextKey(row: Notification) {
 }
 
 export function notificationIcon(row: Notification) {
-  if (row.type === 'rank_up') return Award;
+  if (row.type === 'rank_up' || row.type === 'player_rank_up') return Award;
   if (row.type === 'crown_taken' || row.type === 'crown_lost' || row.type === 'crown_close' || row.type === 'crown_defend') return Crown;
   if (row.type === 'subscription_expiring') return CalendarClock;
   if (row.type === 'subscription_expired') return CircleAlert;
   return null;
+}
+
+export function medalKey(value?: string) {
+  return value === 'iron' || value === 'bronze' || value === 'silver' || value === 'gold'
+    || value === 'platinum' || value === 'diamond' || value === 'legend' ? value : undefined;
 }
 
 export function notificationHref(row: Notification): string {

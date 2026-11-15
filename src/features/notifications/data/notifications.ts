@@ -4,7 +4,7 @@ import { ranksEnabled } from '@/lib/ranks-enabled';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 
 // While ranks are hidden, their notifications stay in the table but never reach the bell.
-const RANK_TYPES = '(rank_up,crown_taken,crown_lost,crown_close,crown_defend)';
+const RANK_TYPES = '(rank_up,player_rank_up,crown_taken,crown_lost,crown_close,crown_defend)';
 
 export async function unreadCount(): Promise<number> {
   const client = await loadSupabaseBrowser();
@@ -42,6 +42,8 @@ export async function latestNotifications(): Promise<Notification[]> {
       form_id: typeof payload.form_id === 'string' ? payload.form_id : undefined,
       captain_name: typeof payload.captain_name === 'string' ? payload.captain_name : undefined,
       tier: payload.tier === 'champion' || payload.tier === 'elite' || payload.tier === 'legend' ? payload.tier : undefined,
+      medal: typeof payload.medal === 'string' ? payload.medal : undefined,
+      display_name: typeof payload.display_name === 'string' ? payload.display_name : undefined,
       needs_workouts: typeof payload.needs_workouts === 'number' ? payload.needs_workouts : undefined,
       gap: typeof payload.gap === 'number' ? payload.gap : undefined,
     } };

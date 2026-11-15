@@ -1,4 +1,13 @@
 export const arStd = {
+  iron: 'حديد', bronze: 'برونز', silver: 'فضة', gold: 'ذهب', platinum: 'بلاتين', diamond: 'ماس',
+  rankMedals: 'ميداليات الرتب', otherMedals: 'ميدالياتك الأخرى', medalCount: '{n} من 20', earned: 'حصلت عليها',
+  full_weeks: 'الأسابيع الكاملة', prs: 'الأرقام الشخصية', crowns: 'التاج', workoutSet: 'التمارين',
+  streakStep: '3 متتالية', howPoints: 'كيف أحصل على نقاط', earnTitle: 'كيف تحصل على نقاط',
+  startToday: 'ابدأ تمرين اليوم', fastest: 'أكمل تمارينك وأسبوعك للوصول إلى الرتبة التالية أسرع',
+  lessWeek: 'أقل من أسبوع', oneWeek: 'حوالي أسبوع', weeks: 'حوالي {n} أسابيع', months: 'حوالي {n} أشهر',
+  estimate: '{next} · {time}', medalUnlock: 'ميدالية جديدة', became: 'أصبحت {rank}', shareRank: 'شارك الرتبة',
+  pendingPoints: 'بانتظار المزامنة', pendingAward: 'النقاط قيد الانتظار', crownFinish: 'مركزك {n} في سباق التاج',
+  crownWorkouts: '{n} تمارين أخرى لتتجاوز {name}',
   hallTitle: 'لوحة الشرف', hallEmpty: 'لم يحصل أحد على التاج بعد', hallDescription: 'الفائزون بالتاج في الأشهر السابقة',
   hallAdherence: '{n}٪ التزام', hallError: 'تعذّر تحميل لوحة الشرف الآن', workoutNext: 'تبقّت لك {n} نقطة للوصول إلى {tier}',
   crownPrize: 'جائزة التاج: {prize}', share: 'شارك', shareLoading: 'جاري إعداد الصورة', shareError: 'تعذّرت مشاركة الصورة. حاول مجدداً',

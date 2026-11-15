@@ -2,37 +2,34 @@
 
 import { useLocale, useT } from '@/core/i18n/client';
 import { formatNumber } from '@/lib/format';
-import { ProgressBar, RankBadge } from '@/ui';
+import { ProgressBar } from '@/ui/progress-bar';
+import { Medal } from '@/ui/medal';
+import type { MedalMetal } from '../medals';
 import { messages } from '../messages';
-import { legendStars, LEGEND_STAR_STEP, nextTier, tierFor, TIERS } from '../tiers';
-import { ShareRankButton } from './share-rank-button';
-import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
-import { messages as v6Messages } from '../v6-messages';
+import { legendStars, nextMedalRank, medalRank, MEDAL_RANKS } from '../tiers';
+import { timeEstimate } from '../time-estimate';
 
-export function RankHero({ lifetime, holdsCrown = false }: { lifetime: number; holdsCrown?: boolean }) {
+export function RankHero({ lifetime, weekly = 24 }: { lifetime: number; holdsCrown?: boolean; weekly?: number }) {
   const t = useT(messages);
-  const v6t = useT(v6Messages);
-  const v6 = captainWorkspaceEnabled();
   const locale = useLocale();
-  const tier = tierFor(lifetime);
-  const next = nextTier(lifetime);
+  const rank = medalRank(lifetime);
+  const next = nextMedalRank(lifetime);
   const stars = legendStars(lifetime);
-  const rankLabel = stars ? t('legendWithStars', { n: formatNumber(stars, locale) }) : t(tier);
-  const threshold = tier === 'legend' ? 600 + stars * LEGEND_STAR_STEP
-    : TIERS.find(entry => entry.tier === tier)?.threshold ?? 0;
-  const label = tier === 'legend' ? t('nextStar', {
-    n: formatNumber(next.needed, locale), next: formatNumber(stars + 1, locale),
-  }) : t('next', { n: formatNumber(next.needed, locale), tier: t(next.tier) });
-  return <section className="glass-strong flex flex-col items-center gap-stack rounded-card p-section text-center">
-    <RankBadge tier={tier} stars={stars} size="xl" label={rankLabel} />
-    <h2 className="text-2xl font-extrabold">{rankLabel}</h2>
-    {v6 ? <p className="text-xs text-faint">{v6t('summary', { points: formatNumber(lifetime, locale), needed: formatNumber(next.needed, locale),
-      tier: tier === 'legend' ? t('nextStar', { n: formatNumber(next.needed, locale), next: formatNumber(stars + 1, locale) }) : t(next.tier) })}</p>
-      : <><p className="text-6xl font-extrabold tabular-nums">{formatNumber(lifetime, locale)}</p>
-        <p className="text-sm text-muted">{t('lifetime')}</p></>}
-    {next.needed > 0 && <ProgressBar className="w-full" value={lifetime - threshold}
-      max={lifetime + next.needed - threshold} aria-label={label} />}
-    {!v6 && <p className="text-sm">{label}</p>}
-    <ShareRankButton kind={holdsCrown ? 'crown' : 'rank'} />
+  const index = MEDAL_RANKS.findIndex(entry => entry.rank === rank) as MedalMetal;
+  const threshold = rank === 'legend' ? 900 + stars * 300 : MEDAL_RANKS[index]?.threshold ?? 0;
+  const label = rank === 'legend' ? t('nextStar', { n: formatNumber(next.needed, locale), next: formatNumber(stars + 1, locale) })
+    : t('next', { n: formatNumber(next.needed, locale), tier: t(next.rank) });
+  const estimate = timeEstimate(next.needed, weekly);
+  const rankLabel = stars ? t('legendWithStars', { n: formatNumber(stars, locale) }) : t(rank);
+  return <section className="glass-strong space-y-stack rounded-card p-card">
+    <div className="flex items-center gap-stack">
+      <Medal rank={index} size={96} label={rankLabel} />
+      <div className="min-w-0 flex-1 space-y-inline">
+        <h2 className="font-display text-h font-extrabold">{rankLabel}</h2>
+        <p className="text-sm text-muted">{t('points', { n: formatNumber(lifetime, locale) })}</p>
+        <ProgressBar value={lifetime - threshold} max={lifetime + next.needed - threshold} aria-label={label} />
+        <p className="text-xs text-muted">{t('estimate', { next: label, time: t(estimate.key, { n: formatNumber(estimate.n, locale) }) })}</p>
+      </div>
+    </div>
   </section>;
 }

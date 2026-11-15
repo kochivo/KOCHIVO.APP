@@ -1,6 +1,6 @@
 'use client';
 import { useLocale, useT } from '@/core/i18n/client';
-import { nextTier, previewWorkoutPoints, ranksMessages, tierFor } from '@/features/ranks';
+import { nextMedalRank, previewWorkoutPoints, ranksMessages, medalRank } from '@/features/ranks';
 import type { WorkoutPointsInput } from '@/features/ranks';
 import { formatNumber } from '@/lib/format';
 import { ranksEnabled } from '@/lib/ranks-enabled';
@@ -16,12 +16,12 @@ export function DonePanel({ workout, lifetime }: { workout?: WorkoutPointsInput;
   const number = (value: number) => formatNumber(value, locale);
   const preview = workout && ranksEnabled() ? previewWorkoutPoints(workout) : undefined;
   // Stars above Legend have their own wording on the rank screen; skip them here.
-  const next = lifetime === undefined || tierFor(lifetime) === 'legend' ? undefined : nextTier(lifetime);
+  const next = lifetime === undefined || medalRank(lifetime) === 'legend' ? undefined : nextMedalRank(lifetime);
   let line: string | undefined;
   if (preview?.counted) {
     line = t('expectedPoints', { n: number(preview.points) });
     if (next && next.needed > 0) line = t('pointsWithNext', { points: line,
-      next: rankT('workoutNext', { n: number(next.needed), tier: rankT(next.tier) }) });
+      next: rankT('workoutNext', { n: number(next.needed), tier: rankT(next.rank) }) });
   } else if (preview?.reason === 'short') {
     line = t('pointsShort', { n: number(preview.minMinutes) });
   } else if (preview?.reason === 'sets' && workout) {

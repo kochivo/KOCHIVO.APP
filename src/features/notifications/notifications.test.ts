@@ -12,6 +12,12 @@ vi.mock('@/core/supabase/lazy', () => ({ loadSupabaseBrowser: load }));
 
 const row: Notification = { id: 'n', type: 'plan_assigned', payload: { name: 'Strength' }, is_read: false,
   created_at: '2026-11-03T08:00:00Z' };
+it('links a captain rank notification to the player and formats the new medal', () => {
+  const notice: Notification = { ...row, type: 'player_rank_up', payload: { player_id: 'p', display_name: 'Ali', medal: 'silver' } };
+  expect(notificationHref(notice)).toBe('/captain/players/p');
+  expect(notificationIcon(notice)).toBe(Award);
+  expect(createT(messages,'ar')(notificationTextKey(notice), { name: 'Ali', rank: 'فضة' })).toBe('Ali طلع فضة');
+});
 it('links a chat notification according to its recipient and formats the sender', () => {
   const notice: Notification = { ...row, type: 'chat_message', user_id: 'player', payload: { name: 'Ali', player_id: 'player' } };
   expect(notificationHref(notice)).toBe('/player/captain');
@@ -146,6 +152,6 @@ it('filters rank and crown notifications out of the bell while ranks are hidden'
   query.order.mockReturnValue(query);
   load.mockResolvedValue({ from: vi.fn().mockReturnValue(query) });
   await latestNotifications();
-  expect(query.not).toHaveBeenCalledWith('type', 'in', '(rank_up,crown_taken,crown_lost,crown_close,crown_defend)');
+  expect(query.not).toHaveBeenCalledWith('type', 'in', '(rank_up,player_rank_up,crown_taken,crown_lost,crown_close,crown_defend)');
   vi.unstubAllEnvs();
 });

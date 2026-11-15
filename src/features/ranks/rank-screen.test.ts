@@ -45,7 +45,7 @@ describe('player ranks', () => {
     expect(panel).toContain('>Continue</button>');
     const chip = render(createElement(RankChip, { points }));
     expect(chip).toContain('href="/player/rank"');
-    expect(chip).toContain('aria-label="Open your rank: Beginner, 99 points"');
+    expect(chip).toContain('aria-label="Open your rank: Iron, 99 points"');
     expect(chip).toContain('min-h-12');
     expect(render(createElement(RankChip))).toBe('');
   });
@@ -62,20 +62,20 @@ describe('player ranks', () => {
     expect(shouldCelebrate('invalid', 'elite')).toBe(false);
   });
 
-  it.each([[0, '100 points to Champion'], [99, '1 points to Champion'],
-    [100, '200 points to Elite'], [600, '300 points to star 1']] as const)('shows progress at %s', (lifetime, text) => {
+  it.each([[0, '100 points to Bronze'], [99, '1 points to Bronze'],
+    [100, '100 points to Silver'], [600, '300 points to Legend']] as const)('shows progress at %s', (lifetime, text) => {
     const html = render(createElement(RankHero, { lifetime }));
     expect(html).toContain(text);
-    expect(html).toContain(`>${lifetime}</p>`);
+    expect(html).toContain(`>${lifetime} points</p>`);
     expect(html).toContain('role="progressbar"');
-    expect(html).toContain('width="140"');
+    expect(html).toContain('width="96"');
   });
 
   it.each(['ar', 'en'] as const)('renders Legend stars throughout the rank UI in %s', locale => {
-    const label = locale === 'ar' ? 'أسطورة ★2' : 'Legend ★2';
+    const label = locale === 'ar' ? 'أسطورة ★1' : 'Legend ★1';
     const hero = render(createElement(RankHero, { lifetime: 1200 }), locale);
     expect(hero).toContain(label);
-    expect(hero).toContain(locale === 'ar' ? 'فاضلك 300 نقطة على النجمة 3' : '300 points to star 3');
+    expect(hero).toContain(locale === 'ar' ? 'فاضلك 300 نقطة على النجمة 2' : '300 points to star 2');
     expect(hero).toContain('aria-valuenow="0"');
     expect(render(createElement(RankJourney, { lifetime: 1200 }), locale)).toContain(
       locale === 'ar' ? 'نجوم الأسطورة: كل 300 نقطة نجمة' : 'Legend stars: one every 300 points');
@@ -97,10 +97,10 @@ describe('player ranks', () => {
     }
   });
 
-  it.each([[0, 3], [100, 2], [300, 1], [600, 0]])('locks future tiers at %s', (lifetime, locked) => {
+  it.each([[0, 5], [100, 4], [300, 2], [600, 0]])('locks future tiers at %s', (lifetime, locked) => {
     const html = render(createElement(RankJourney, { lifetime }));
-    expect(html.match(/grayscale opacity-30/g)?.length ?? 0).toBe(locked);
-    expect(html.match(/width="64"/g)).toHaveLength(4);
+    expect(html.match(/opacity-40 grayscale/g)?.length ?? 0).toBe(locked);
+    expect(html.match(/width="64"/g)).toHaveLength(7);
   });
 
   it.each(['ar', 'en'] as const)('shows adherence, workouts and the rule for the holder and chaser in %s', locale => {
@@ -182,7 +182,7 @@ describe('player ranks', () => {
     expect(render(createElement(PointsLog, { logs: [] }))).toContain('No points yet. Finish your first workout');
     expect(render(createElement(TeamBoard, { rows: [] }))).toContain('Nobody has trained this month');
     expect(render(createElement(CrownRace, { points: { ...points, month_position: null }, holdsCrown: false }))).toContain('Join a captain');
-    expect(render(createElement(RankHero, { lifetime: 99 }), 'ar')).toContain('فاضلك 1 نقطة لرتبة بطل');
+    expect(render(createElement(RankHero, { lifetime: 99 }), 'ar')).toContain('فاضلك 1 نقطة لرتبة برونز');
     expect(render(createElement(PointsLog, { logs: [] }), 'ar')).toContain('لسه ما كسبتش نقط. كمّل أول تمرين');
   });
 

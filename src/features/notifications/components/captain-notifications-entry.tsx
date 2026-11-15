@@ -8,7 +8,7 @@ import { PageBarTitle } from '@/ui/page-bar-title';
 import { PageBarActions } from '@/ui/page-bar-actions';
 import { messages } from '../messages';
 import { useNotifications } from '../hooks/use-notifications';
-import { notificationTextKey, relativeTime } from '../format';
+import { medalKey, notificationHref, notificationTextKey, relativeTime } from '../format';
 import { captainNotification } from './captain-notification-format';
 import { CaptainNotificationsStateEntry } from './captain-notifications-state-entry';
 import { Button } from '@/ui/button';
@@ -31,7 +31,8 @@ export function CaptainNotificationsEntry() {
     <section className="glass rounded-[18px] p-card">
       {n.rows.length === 0 ? <p className="p-card text-sm text-muted">{t('empty')}</p> :
         <ul>{n.rows.map(row => {
-          const { Icon, href } = captainNotification(row.type);
+          const { Icon, href: baseHref } = captainNotification(row.type);
+          const href = row.type === 'player_rank_up' ? notificationHref(row) : baseHref;
           const time = relativeTime(row.created_at, now);
           return <li key={row.id} className="border-line-soft [&+li]:border-t">
             <Link href={href} aria-disabled={n.pending}
@@ -47,7 +48,8 @@ export function CaptainNotificationsEntry() {
               </span>
               <div className="min-w-0 flex-1">
                 <p className="text-row font-semibold">{t(notificationTextKey(row), {
-                  name: row.payload.name || row.payload.captain_name || '',
+                  name: row.payload.display_name || row.payload.name || row.payload.captain_name || '',
+                  rank: t(medalKey(row.payload.medal) ?? 'iron'),
                   n: row.payload.needs_workouts ?? 0, gap: row.payload.gap ?? 0,
                 })}</p>
                 <time dateTime={row.created_at} className="block truncate text-micro text-muted">{t(time.key, { n: time.n })}</time>

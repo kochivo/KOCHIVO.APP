@@ -1,4 +1,6 @@
 export const arStd = {
+  player_rank_up: '{name} أصبح {rank}', rank_up_medal: 'أصبحت {rank}',
+  iron: 'حديد', bronze: 'برونز', silver: 'فضة', gold: 'ذهب', platinum: 'بلاتين', diamond: 'ماس', legend: 'أسطورة',
   chat_message: 'أرسل إليك {name} رسالة',
   renewal_requested: '{name} أرسل طلب تجديد',
   form_requested: 'ينتظر الكابتن ردّك على {name}', rank_up: 'ترقّيت إلى رتبة جديدة', rank_up_champion: 'ترقّيت! أصبحت بطلاً',

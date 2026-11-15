@@ -84,7 +84,7 @@ it('still awards rank_up when the meal RPC takes lifetime from 99 to 100', async
   await mealAward();
   expect((await mine()).rows[0]?.result).toMatchObject({ lifetime: 100, monthly: 50 });
   expect((await db.query(`select payload from public.notifications where user_id=$1 and type='rank_up'`, [player])).rows)
-    .toEqual([{ payload: { tier: 'champion', lifetime: 100 } }]);
+    .toEqual([{ payload: { tier: 'champion', lifetime: 100, medal: 'bronze' } }]);
   expect((await crowns()).rows).toEqual(before);
 });
 

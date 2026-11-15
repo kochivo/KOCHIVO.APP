@@ -15,8 +15,8 @@ it.each([
   expect(nextTier(points)).toEqual({ tier: next, needed });
 });
 
-it.each([[599, 0, 1], [600, 0, 300], [899, 0, 1], [900, 1, 300],
-  [1199, 1, 1], [1200, 2, 300], [10000, 31, 200]])('derives stars and the next goal at %i', (points, stars, needed) => {
+it.each([[599, 0, 1], [600, 0, 300], [899, 0, 1], [900, 0, 300],
+  [1199, 0, 1], [1200, 1, 300], [10000, 30, 200]])('derives stars and the next goal at %i', (points, stars, needed) => {
   expect(legendStars(points)).toBe(stars);
   expect(nextTier(points).needed).toBe(needed);
 });
