@@ -3,6 +3,7 @@
 import type { HTMLAttributes } from 'react';
 import { useT } from '@/core/i18n/client';
 import { cn } from '@/lib/cn';
+import { useInView } from '@/lib/use-in-view';
 import { messages } from './messages';
 
 type Props = HTMLAttributes<HTMLDivElement> & { lines?: number; rows?: number };
@@ -10,7 +11,8 @@ const block = 'shimmer rounded-control bg-line';
 
 function Status({ children, className, ...props }: Props) {
   const t = useT(messages);
-  return <div {...props} role="status" aria-busy="true" className={className}>
+  const motionRef = useInView<HTMLDivElement>('.shimmer');
+  return <div {...props} ref={motionRef} role="status" aria-busy="true" className={className}>
     <span className="sr-only">{t('loading')}</span>
     <div aria-hidden="true">{children}</div>
   </div>;

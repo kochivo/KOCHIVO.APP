@@ -1,49 +1,33 @@
-@utility glass {
-  @apply glass-surface;
-  --glass-blur-background: var(--glass-fill);
-  --glass-blur-filter: blur(24px);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
+@utility glass { @apply glass-surface;
+  --glass-blur-background: var(--glass-fill); --glass-blur-filter: blur(24px);
+  border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow);
 }
-@utility glass-raised {
-  @apply glass-surface;
-  --glass-blur-background: var(--glass-tint-raised);
-  --glass-blur-filter: blur(12px);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
+@utility glass-raised { @apply glass-surface;
+  --glass-blur-background: var(--glass-tint-raised); --glass-blur-filter: blur(12px);
+  border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow);
 }
-@utility glass-strong {
-  @apply glass-surface;
-  --glass-blur-background: var(--glass-strong-tint);
-  --glass-blur-filter: blur(24px);
-  border: 1px solid var(--glass-strong-border);
-  box-shadow: var(--glass-strong-shadow);
+@utility glass-strong { @apply glass-surface;
+  --glass-blur-background: var(--glass-strong-tint); --glass-blur-filter: blur(24px);
+  border: 1px solid var(--glass-strong-border); box-shadow: var(--glass-strong-shadow);
 }
 @utility glass-featured {
   @apply glass-strong;
   :where(html:not([data-theme='light'])) & {
-    position: relative;
-    --glass-blur-background: var(--featured-fill);
-    border-color: transparent;
-    box-shadow: var(--featured-shadow);
+    position: relative; --glass-blur-background: var(--featured-fill);
+    border-color: transparent; box-shadow: var(--featured-shadow);
     &::before {
-      content: '';
-      position: absolute;
-      inset: -1px;
-      padding: 1px;
-      border-radius: inherit;
-      background: var(--featured-edge);
+      content: ''; position: absolute; inset: -1px;
+      padding: 1px; border-radius: inherit; background: var(--featured-edge);
       mask: linear-gradient(var(--color-ink) 0 0) content-box, linear-gradient(var(--color-ink) 0 0);
-      mask-composite: exclude;
-      pointer-events: none;
+      mask-composite: exclude; pointer-events: none;
     }
   }
 }
 /* Shared by all glass levels, including responsive variants such as lg:glass-strong. */
 @utility glass-surface {
-  background: var(--glass-solid-background, var(--glass-blur-background));
-  -webkit-backdrop-filter: var(--glass-solid-filter, var(--glass-blur-filter));
-  backdrop-filter: var(--glass-solid-filter, var(--glass-blur-filter));
+  background: var(--glass-solid-background, var(--glass-touch-background, var(--glass-blur-background)));
+  -webkit-backdrop-filter: var(--glass-solid-filter, var(--glass-touch-filter, var(--glass-blur-filter)));
+  backdrop-filter: var(--glass-solid-filter, var(--glass-touch-filter, var(--glass-blur-filter)));
 }
 html[data-glass='solid'] { --glass-solid-background: var(--color-surface); --glass-solid-filter: none; }
 /* Nested panels keep their contrast without asking the GPU to blur the same pixels again. */
@@ -59,18 +43,14 @@ html[data-glass='solid'] { --glass-solid-background: var(--color-surface); --gla
 }
 @utility recessed {
   :where(html:not([data-theme='light'])) & {
-    background: var(--recessed-fill);
-    border: 1px solid var(--recessed-border);
-    box-shadow: var(--recessed-shadow);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
+    background: var(--recessed-fill); border: 1px solid var(--recessed-border); box-shadow: var(--recessed-shadow);
+    -webkit-backdrop-filter: none; backdrop-filter: none;
   }
 }
 /* Broad gradient falloffs provide the soft edge without an extra GPU blur layer. */
 @utility bg-aurora {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
+  contain: strict;
+  position: fixed; inset: 0; z-index: -1;
   background:
     radial-gradient(ellipse at 50% 0%, var(--aurora-glow), transparent 100%) 50% 0% / 100% 40vh no-repeat,
     radial-gradient(ellipse at 0% 100%, var(--orb-glow), transparent 75%) 0% 100% / 50% 60vh no-repeat,
@@ -97,8 +77,7 @@ html[data-glass='solid'] { --glass-solid-background: var(--color-surface); --gla
 }
 @utility progress-surface {
   :where(html:not([data-theme='light'])) & {
-    background-image: var(--progress-fill);
-    box-shadow: var(--progress-edge);
+    background-image: var(--progress-fill); box-shadow: var(--progress-edge);
   }
 }
 @utility progress-lime { @apply bg-lime progress-surface; }
@@ -159,11 +138,14 @@ html[data-glass='solid'] { --glass-solid-background: var(--color-surface); --gla
 .empty-state-in { animation: surface-in var(--enter-duration) ease-out; }
 @utility enter { animation: surface-in var(--enter-duration) ease-out; }
 @utility shimmer {
-  background-image: linear-gradient(100deg, transparent 25%, var(--glass-highlight) 50%, transparent 75%);
-  background-size: 200% 100%;
-  animation: skeleton-sweep 1.6s ease-in-out infinite;
+  position: relative; overflow: hidden;
+  &::after {
+    content: ''; position: absolute; inset: 0;
+    background-image: linear-gradient(100deg, transparent 25%, var(--glass-highlight) 50%, transparent 75%);
+    animation: skeleton-sweep 1.6s ease-in-out infinite; animation-play-state: paused;
+  }
 }
-@keyframes skeleton-sweep { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+@keyframes skeleton-sweep { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
 @layer utilities {
   html:not([data-theme='light']) {
     .enter { animation-delay: var(--enter-delay, 0ms); animation-fill-mode: backwards; }
@@ -245,3 +227,23 @@ html:not([data-theme='light']) [data-area='captain'] {
 @media (prefers-reduced-transparency: reduce) {
   html:not([data-theme='light']) [data-area='captain'] :is(.glass-strong, .glass-featured)::before { content: none; }
 }
+/* Touch cards precompose the liquid highlight over an opaque, mood-aware surface. */
+@media (hover: none) and (pointer: coarse) {
+  html :is(.glass, .glass-strong, .glass-raised, .glass-featured, .glass-surface, .lg\:glass-strong) {
+    --glass-touch-background: linear-gradient(160deg, rgb(255 255 255/.075), rgb(255 255 255/.025) 45%, rgb(255 255 255/.04)), color-mix(in srgb, var(--color-surface) 92%, var(--color-surface-raised));
+    --glass-touch-filter: none;
+  }
+  html :is(header, nav, footer, .sticky, .fixed):is(.glass, .glass-strong, .glass-raised, .glass-featured, .glass-surface, .lg\:glass-strong), html :is(dialog, [role='dialog'], .sheet), html:not([data-theme='light']) [data-area='captain'] :is(dialog, [role='dialog'], .sheet) {
+    --glass-touch-background: var(--glass-blur-background);
+    --glass-touch-filter: blur(12px);
+    -webkit-backdrop-filter: var(--glass-solid-filter, var(--glass-touch-filter)); backdrop-filter: var(--glass-solid-filter, var(--glass-touch-filter));
+  }
+}
+/* Visibility gates cover the animated node itself and its decorative descendants. */
+:is(.marketing-phone, .rank-shine, [class*='_infinite'], [class*='animate-pulse'], [class*='animate-spin'], [class*='animate-bounce']) { animation-play-state: paused; }
+:is(.marketing-phone, .rank-shine, [class*='_infinite'], [class*='animate-pulse'], [class*='animate-spin'], [class*='animate-bounce'])[data-motion-running='true'],
+[data-motion-running='true'] :is(.rank-shine, [class*='ko-typing_']),
+[data-motion-running='true'].shimmer::after, [data-motion-running='true'] .shimmer::after {
+  animation-play-state: running; will-change: transform, opacity;
+}
+[data-area='captain'] .deferred-rows > * { content-visibility: auto; contain-intrinsic-size: auto 120px; }

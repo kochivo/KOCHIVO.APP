@@ -334,7 +334,7 @@ html[data-keyboard='open'] dialog:modal { inset-block-end: var(--keyboard-inset)
 @media (prefers-reduced-motion: reduce) {
   .rank-shine { animation: none; opacity: 0; }
 }
-@keyframes marketing-sweep { 0% { background-position: 100% 0; } 45%, 60% { background-position: 0 0; } 100% { background-position: -100% 0; } }
+@keyframes marketing-sweep { 0%, 100% { opacity: .35; } 45%, 60% { opacity: 1; } }
 @keyframes marketing-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 @keyframes marketing-float { 50% { transform: translateY(-6px); } }
 @media (max-width: 700px) {
@@ -366,6 +366,7 @@ body:not(:has(.marketing-wrap)) .text-muted { font-weight: 500; }
 [dir='rtl'] [data-ko-panel] { transform-origin: 100% 100%; }
 [data-ko-panel][data-closing='true'] { animation: ko-rise 150ms ease-in reverse both; }
 @media (prefers-reduced-motion: reduce) {
+  [class*='_infinite'], [class*='animate-pulse'], [class*='animate-spin'], [class*='animate-bounce'], .shimmer::after, .marketing-phone, .rank-shine { animation: none !important; will-change: auto !important; }
   [data-ko-panel], [data-ko-panel][data-closing='true'] { animation: none; }
 }
 @media (prefers-reduced-motion: reduce) {

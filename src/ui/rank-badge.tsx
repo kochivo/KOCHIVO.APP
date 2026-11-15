@@ -1,6 +1,7 @@
 'use client';
 
 import { useId } from 'react';
+import { useInView } from '@/lib/use-in-view';
 import { Star } from 'lucide-react';
 import { RankBadgeShapes } from './rank-badge-shapes';
 
@@ -18,9 +19,10 @@ const widths = { sm: 40, md: 64, lg: 96, xl: 140 };
 
 export function RankBadge({ tier, size = 'md', locked = false, label, stars = 0 }: RankBadgeProps) {
   const id = useId();
+  const motionRef = useInView<SVGSVGElement>();
   const width = widths[size];
   return (
-    <svg role="img" aria-label={label || undefined} aria-hidden={label ? undefined : true}
+    <svg ref={motionRef} role="img" aria-label={label || undefined} aria-hidden={label ? undefined : true}
       viewBox="0 0 120 130" width={width} height={width * 130 / 120}
       className={locked ? 'shrink-0 grayscale opacity-30' : 'shrink-0'}
     >

@@ -14,7 +14,7 @@ export function WorkspaceList({ attention, routine, selected, inputs, now, onSel
     {!attention.length && !routine.length ? <p className="p-5 text-sm text-faint">{t('noMatches')}</p> :
       ([['attention', attention], ['routine', routine]] as const).map(([group, items]) => items.length > 0 && <section key={group} aria-label={t(group)}>
         <h2 className="px-4 pb-1 pt-3 text-[11px] text-faint">{t(group)}</h2>
-        <ul className="divide-y divide-line-soft">{items.map(item => <li key={taskKey(item)}>
+        <ul className="deferred-rows divide-y divide-line-soft">{items.map(item => <li key={taskKey(item)}>
           <WorkspaceRow item={item} inputs={inputs} now={now} selected={selected ? taskKey(selected) === taskKey(item) : false} onSelect={() => onSelect(item)} />
         </li>)}</ul>
       </section>)}

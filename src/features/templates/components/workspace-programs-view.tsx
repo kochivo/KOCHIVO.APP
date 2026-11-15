@@ -50,7 +50,7 @@ export function WorkspaceProgramsView(props: ComponentProps<typeof LibraryView>)
       <p>{error}</p><Button variant="secondary" onClick={onRetry}>{t('tryAgain')}</Button>
     </div> : <>
       {!visible.length && <p className="text-sm text-muted">{t('programEmpty')}</p>}
-      <ul className="grid grid-cols-1 gap-4 @min-[701px]:grid-cols-3">
+      <ul className="deferred-rows grid grid-cols-1 gap-4 @min-[701px]:grid-cols-3">
         {visible.map(template => <WorkspaceProgramCard key={template.id} template={template} error={errors[`program-${template.id}`]}
           busy={busy.includes(`program-${template.id}`)} onOpen={actions(template).onOpen} onAssign={actions(template).onAssign} onRetry={onRetry} />)}
         <li className="contents"><Button type="button" disabled={disabled} onClick={onCreate}

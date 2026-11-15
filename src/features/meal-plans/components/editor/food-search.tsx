@@ -49,7 +49,7 @@ export function FoodSearch({ onPick, meal }: { onPick: (food: Food, grams: numbe
       {resource.status === 'loading' || resource.status === 'idle' ? <LoadingState variant="list" />
         : resource.error ? <div role="alert" className="text-sm text-danger">{planT('searchFailedTryAgain')}<Button variant="secondary" onClick={() => void resource.retry()}>{t('retry')}</Button></div>
         : !resource.data?.foods.length ? <p className="text-xs text-faint">{planT(resource.data?.catalogEmpty ? 'theFoodLibraryIsEmpty' : 'noFoodWithThisName')}</p>
-        : <ul className="max-h-72 overflow-y-auto">{resource.data.foods.map(food => <li key={food.id}>
+        : <ul className="deferred-rows max-h-72 overflow-y-auto">{resource.data.foods.map(food => <li key={food.id}>
           <Button variant="secondary" type="button" className="min-h-12 w-full border-t border-line-soft px-3 text-start text-sm" onClick={() => {
             const grams = food.units?.[0]?.grams ?? 100;
             onPick(food, grams >= 5 && grams <= 2000 ? grams : 100); setQuery('');

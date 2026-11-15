@@ -15,7 +15,7 @@ export function FoodsTable({ foods, onSelect }: { foods: LibraryFood[]; onSelect
     <table className="block w-full text-start text-sm md:table">
       <thead className="block text-[11.5px] text-faint md:table-header-group"><tr className="block md:table-row">{(['food', 'kcal', 'protein', 'carbs', 'fat', 'units', 'usage'] as const)
         .map(key => <th key={key} scope="col" className={`${key === 'food' ? 'block' : 'hidden'} px-4 py-3 text-start font-medium md:table-cell`}>{t(key)}</th>)}</tr></thead>
-      <tbody className="block md:table-row-group">{foods.map(food => {
+      <tbody className="deferred-rows block md:table-row-group">{foods.map(food => {
         const photo = food.photo ? foodPhotoUrl(food.photo) : null;
         return <tr key={food.id} className="grid grid-cols-4 border-t border-line-soft md:table-row">
           <td className="col-span-4 min-w-0 px-4 py-3"><Button variant="secondary" type="button" className="flex min-h-12 w-full min-w-0 items-center gap-3 text-start" onClick={() => onSelect(food)}>

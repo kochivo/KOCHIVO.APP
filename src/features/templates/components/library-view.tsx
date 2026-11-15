@@ -43,7 +43,7 @@ export function LibraryView(props: {
     </div>}
     {(createError || busy.length > 0) && <p role={createError ? 'alert' : 'status'} className="mb-3 text-sm text-muted">{createError || tt('savingChanges')}</p>}
     {loading ? <LoadingState variant="cards" /> : error ? <div role="alert" className="glass rounded-card p-5">{error}<Button variant="secondary" onClick={onRetry}>{tt('tryAgain')}</Button></div> :
-      visible.length ? <ul className={training ? 'grid gap-3.5 sm:grid-cols-2 xl:grid-cols-3' : 'glass rounded-card border border-line-soft'}>{visible.map(template => <LibraryCard key={template.id} template={template}
+      visible.length ? <ul className={training ? 'deferred-rows grid gap-3.5 sm:grid-cols-2 xl:grid-cols-3' : 'deferred-rows glass rounded-card border border-line-soft'}>{visible.map(template => <LibraryCard key={template.id} template={template}
         busy={busy.includes(`${kind}-${template.id}`)} error={errors[`${kind}-${template.id}`]} {...actions(template)} />)}</ul> :
         <p className="glass rounded-card border border-line-soft p-5 text-faint">{t(query || level !== 'all' ? 'noMatches' : training ? 'emptyTraining' : 'emptyNutrition')}</p>}
     <details className="group mt-5 text-sm text-muted"><summary className="flex min-h-12 cursor-pointer items-center">{t('tools')}<ChevronDown aria-hidden className="ms-auto size-4 transition-transform group-open:rotate-180" /></summary>

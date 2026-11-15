@@ -44,12 +44,12 @@ export function WorkspaceRoster({ data, today, extras, details }: WorkspaceRoste
       <Button variant="secondary" className="min-h-12" onClick={() => startTransition(() => router.refresh())}>{t('retry')}</Button></div> :
       pending ? <div role="status" className="glass rounded-card p-5">{t('loading')}</div> :
       !visible.length ? <div className="glass rounded-card p-5 text-sm text-muted">{t(emptyKeys[filter])}</div> : <>
-        <div className="flex flex-col gap-2 min-[760px]:hidden">{visible.map(player => <PlayerRow key={player.playerId} mobile player={player}
+        <div className="deferred-rows flex flex-col gap-2 min-[760px]:hidden">{visible.map(player => <PlayerRow key={player.playerId} mobile player={player}
           today={today} meta={extras.meta?.[player.playerId]} activity={activity[player.playerId]} />)}</div>
         <div className="glass hidden rounded-[20px] px-1.5 py-1 min-[760px]:block"><table className="w-full border-collapse text-start" aria-label={t('players')}>
           <thead><tr>{(['player', 'week', 'weight', 'rpe', 'subscription', 'status'] as const).map(key =>
             <th key={key} scope="col" className="border-b border-line-soft px-2.5 py-2 text-start text-xs font-medium text-faint">{t(key)}</th>)}</tr></thead>
-          <tbody>{visible.map(player => <PlayerRow key={player.playerId} player={player} today={today}
+          <tbody className="deferred-rows">{visible.map(player => <PlayerRow key={player.playerId} player={player} today={today}
             meta={extras.meta?.[player.playerId]} activity={activity[player.playerId]} />)}</tbody>
         </table></div>
       </>}

@@ -1,4 +1,10 @@
+'use client';
+
+import { useEffect } from 'react';
+import { observeBuiltinLoops } from '@/lib/use-in-view';
+
 export function Orbs() {
+  useEffect(() => observeBuiltinLoops(document), []);
   return <div aria-hidden="true" className="theme-dark-only bg-aurora">
     <svg width="0" height="0" focusable="false">
       <defs>

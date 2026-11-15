@@ -25,6 +25,8 @@ it.each(['dark', 'light'])('keeps %s text readable on mesh, glass and solid surf
   const backgrounds = [mesh, glass, mix([255, 255, 255], glass, light ? 0.85 : 0.05),
     mix([255, 255, 255], mesh, light ? 0.95 : 0.07),
     token('bg'), token('bg-deep'), token('surface'), token('surface-raised')];
+  const touchBase = mix(token('surface'), token('surface-raised'), .92);
+  backgrounds.push(...[.025, .04, .075].map(alpha => mix([255, 255, 255], touchBase, alpha)));
   if (!light) backgrounds.push(mix(token('lime'), mix([255, 255, 255], mesh, .07), .08));
   const contrast = (a: number[], b: number[]) =>
     (Math.max(luminance(a), luminance(b)) + 0.05) / (Math.min(luminance(a), luminance(b)) + 0.05);
