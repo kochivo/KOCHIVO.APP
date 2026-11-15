@@ -19,6 +19,19 @@ const draft: ProgramDraft = { id: 'p', player_id: 'player', title: 'Plan', statu
 }] };
 const file = { facts: {}, history: [] };
 const props = { profile, file, locale: 'en' as const, draft, day: draft.days[0], fatPct: 19.5, candidates: [], today: '2026-11-14' };
+it('keeps long names readable with and without intake in Arabic and English', () => {
+  for (const locale of ['ar', 'en'] as const) {
+    for (const intake of [profile.intake, null]) {
+      const name = locale === 'ar' ? 'يوسف أحمد محمد' : 'Youssef Ahmed Mohamed';
+      const html = renderToStaticMarkup(createElement(TrainingFacts, { ...props, locale, profile: { ...profile, name, intake } }));
+      expect(html).toContain(`min-w-0 break-words font-display text-lg font-semibold">${name}</h2>`);
+      if (intake) {
+        expect(html).toContain('min-w-0 basis-full');
+        expect(html).toContain('flex w-full min-w-0 flex-wrap');
+      }
+    }
+  }
+});
 it('hides the player panel for templates even when player data is supplied', () => {
   expect(renderToStaticMarkup(createElement(TrainingFacts, { ...props, draft: { ...draft, player_id: null } }))).toBe('');
 });

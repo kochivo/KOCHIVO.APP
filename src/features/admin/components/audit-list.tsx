@@ -13,12 +13,13 @@ export function AuditList({ rows, captains, error }: { rows: AuditRow[]; captain
   const labels = { activate_plan: t('activatePlan'), suspend: t('suspendAction'), unsuspend: t('unsuspendAction'),
     approve_captain: t('approveCaptain'), reject_captain: t('rejectCaptain') };
   const locale = useLocale();
-  return <section className="glass rounded-card p-5" aria-labelledby="audit-title">
-    <h2 id="audit-title" className="mb-5 text-xl font-bold">{t('audit')}</h2>
+  return <section className="glass rounded-card p-card" aria-labelledby="audit-title">
+    <h2 id="audit-title" className="mb-card-gap text-title font-semibold">{t('audit')}</h2>
     {error ? <p role="alert" className="text-danger">{error}</p> : !rows.length ?
-      <EmptyState icon={History} title={t('noAudit')} body={t('auditHint')} action={{ label: t('manageCaptains'), href: '#captain-management' }} /> :
-      <ol className="divide-y divide-line">{rows.map(row => <li key={row.id} className="space-y-2 py-4 first:pt-0">
-        <div className="flex flex-wrap justify-between gap-2">
+      <EmptyState icon={History} title={t('noAudit')} body={t('auditHint')} secondary={{ label: t('manageCaptains'), href: '#captain-management' }} /> :
+      <ol className="space-y-card-gap border-s border-line ps-card">{rows.map(row => <li key={row.id} className="relative space-y-inline">
+        <span aria-hidden className="absolute -start-card top-2 size-2 -translate-x-1/2 rounded-full bg-lime rtl:translate-x-1/2" />
+        <div className="flex flex-wrap justify-between gap-inline">
           <p className="break-words font-bold">{labels[row.action]} · {captains.find(captain => captain.id === row.target_id)?.full_name ?? row.target_id}</p>
           <time dateTime={row.created_at} className="text-sm text-muted">{endsLabel(row.created_at, locale)}{' '}
             {formatTimestampAr(row.created_at, { hour: '2-digit', minute: '2-digit' }, locale)}

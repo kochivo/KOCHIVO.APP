@@ -12,6 +12,7 @@ type FoodResponse = Pick<Tables<'foods'>, 'name_ar' | 'photo_path' |
 type AlternativeResponse = Pick<Tables<'meal_item_alternatives'>, 'id' | 'grams'> & { foods: FoodResponse | null };
 export type NutritionResponse = Pick<Tables<'nutrition_plans'>,
   'id' | 'title' | 'target_kcal' | 'target_protein' | 'target_carbs' | 'target_fat'> & {
+  water_target_ml?: number | null;
   meals: (Pick<Tables<'meals'>, 'id' | 'position' | 'name'> & {
     day_type?: 'all' | 'training' | 'rest'; time_of_day?: string | null;
     meal_items: (AlternativeResponse & Pick<Tables<'meal_items'>, 'position'> & {
@@ -30,6 +31,7 @@ function mapFood(row: AlternativeResponse): NutritionFood {
 
 export function mapNutritionSnapshot(plan: NutritionResponse, playerId: string): NutritionSnapshot {
   return { id: 'active', player_id: playerId, plan_id: plan.id, title: plan.title,
+    water_target_ml: plan.water_target_ml ?? null,
     targets: { kcal: plan.target_kcal, protein: plan.target_protein, carbs: plan.target_carbs, fat: plan.target_fat },
     meals: [...plan.meals].sort((a, b) => a.position - b.position).map((meal) => ({
       id: meal.id, name: meal.name, position: meal.position,
@@ -46,7 +48,7 @@ export async function fetchNutritionSnapshot(client: SupabaseClient<Database>): 
   if (error || !auth.user) throw error ?? new Error('Missing session');
   const foodFields = 'name_ar,photo_path,kcal_per_100g,protein_per_100g,carbs_per_100g,fat_per_100g';
   const read = (extended: boolean) => {
-    const columns: string = `id,title,target_kcal,target_protein,target_carbs,target_fat,meals(id,position,name,${extended ? 'day_type,time_of_day,' : ''}meal_items(id,position,grams,${extended ? 'unit,' : ''}foods(${foodFields}${extended ? ',units' : ''}),meal_item_alternatives(id,grams,foods(${foodFields}))))`;
+    const columns: string = `id,title,water_target_ml,target_kcal,target_protein,target_carbs,target_fat,meals(id,position,name,${extended ? 'day_type,time_of_day,' : ''}meal_items(id,position,grams,${extended ? 'unit,' : ''}foods(${foodFields}${extended ? ',units' : ''}),meal_item_alternatives(id,grams,foods(${foodFields}))))`;
     return client.from('nutrition_plans').select(columns)
       .eq('player_id', auth.user.id).eq('status', 'active').maybeSingle();
   };

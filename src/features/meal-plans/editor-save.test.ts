@@ -20,3 +20,7 @@ it('retains the original RPC arguments with flag off', async () => {
   await savePlan(draft);
   expect(rpc).toHaveBeenCalledWith('save_nutrition_plan', { p_plan: id, p_draft: draft });
 });
+it.each([3500, null])('passes water target %s through the atomic draft saver', async waterTargetMl => {
+  await savePlan({ ...draft, waterTargetMl });
+  expect(rpc).toHaveBeenCalledWith('save_nutrition_plan', expect.objectContaining({ p_draft: { ...draft, waterTargetMl } }));
+});

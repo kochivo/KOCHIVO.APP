@@ -12,7 +12,7 @@ import { CaptainIntakeDetails } from './captain-intake-details';
 
 export type PendingCaptain = { id: string; email: string | null; full_name: string; created_at: string;
   whatsapp?: string | null; instagram?: string | null; captain_intake?: Json | null };
-export function CaptainRequests({ rows, error: loadError }: { rows: PendingCaptain[]; error: string | null }) {
+export function CaptainRequests({ rows, error: loadError, primaryAction = true }: { rows: PendingCaptain[]; error: string | null; primaryAction?: boolean }) {
   const t = useT(messages);
   const locale = useLocale();
   const router = useRouter();
@@ -35,10 +35,10 @@ export function CaptainRequests({ rows, error: loadError }: { rows: PendingCapta
       }
     });
   }
-  return <section aria-labelledby="captain-requests-title" className="glass space-y-4 rounded-card p-5" aria-busy={pending}>
-    <header className="flex flex-wrap items-center gap-3">
-      <h2 id="captain-requests-title" className="text-xl font-bold">{t('title')}</h2>
-      <span className="rounded-full bg-lime/10 px-3 py-1 text-sm text-lime" aria-label={t('count', { n: formatNumber(visible.length, locale) })}>
+  return <section aria-labelledby="captain-requests-title" className="glass space-y-card-gap rounded-card p-card" aria-busy={pending}>
+    <header className="flex flex-wrap items-center gap-stack">
+      <h2 id="captain-requests-title" className="text-title font-semibold">{t('title')}</h2>
+      <span className={`num rounded-full px-stack py-inline text-sm ${visible.length ? 'bg-lime-soft text-lime' : 'bg-surface text-muted'}`} aria-label={t('count', { n: formatNumber(visible.length, locale) })}>
         {formatNumber(visible.length, locale)}
       </span>
     </header>
@@ -46,27 +46,27 @@ export function CaptainRequests({ rows, error: loadError }: { rows: PendingCapta
     {(error || loadError) && <div role="alert" className="text-danger"><p>{error || loadError}</p>
       <Button variant="secondary" disabled={pending} onClick={() => start(() => router.refresh())}>{t('retry')}</Button>
     </div>}
-    {!loadError && (visible.length ? <ul className="divide-y divide-line">{visible.map((row, index) => <li key={row.id} className="space-y-3 py-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+    {!loadError && (visible.length ? <ul className="space-y-stack">{visible.map((row, index) => <li key={row.id} className="space-y-stack rounded-control border border-line p-stack">
+      <div className="flex flex-wrap items-center justify-between gap-stack">
         <div className="min-w-0"><p className="break-words font-bold">{row.full_name}</p>
           <p className="break-all text-sm text-muted">{row.email ?? t('noEmail')}</p>
           <time dateTime={row.created_at} className="text-sm text-muted">
             {formatTimestampAr(row.created_at, { year: 'numeric', month: 'long', day: 'numeric' }, locale)}
           </time>
         </div>
-        <div className="flex gap-2">
-          <Button variant={index === 0 ? 'primary' : 'secondary'} className="min-h-12" aria-label={t('approveName', { name: row.full_name })} disabled={pending}
+        <div className="flex gap-inline">
+          <Button variant={primaryAction && index === 0 ? 'primary' : 'secondary'} className="min-h-12" aria-label={t('approveName', { name: row.full_name })} disabled={pending}
             onClick={() => review(row, 'approved')}>{t('approve')}</Button>
           <Button variant="danger" className="min-h-12" aria-label={t('rejectName', { name: row.full_name })} disabled={pending}
             onClick={() => setRejecting(row.id)}>{t('reject')}</Button>
         </div>
       </div>
       <CaptainIntakeDetails whatsapp={row.whatsapp} instagram={row.instagram} intake={row.captain_intake} />
-      {rejecting === row.id && <div role="group" aria-label={t('confirm', { name: row.full_name })} className="space-y-3">
+      {rejecting === row.id && <div role="group" aria-label={t('confirm', { name: row.full_name })} className="space-y-stack">
         <p>{t('confirm', { name: row.full_name })}</p>
         <Button variant="danger" disabled={pending} onClick={() => review(row, 'rejected')}>{t('reject')}</Button>
         <Button variant="secondary" disabled={pending} onClick={() => setRejecting(null)}>{t('cancel')}</Button>
       </div>}
-    </li>)}</ul> : <p className="py-6 text-muted">{t('empty')}</p>)}
+    </li>)}</ul> : <p className="py-stack text-muted">{t('empty')}</p>)}
   </section>;
 }

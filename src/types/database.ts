@@ -2711,6 +2711,23 @@ export type Database = {
           players: number
         }[]
       }
+      admin_dashboard: {
+        Args: never
+        Returns: Json
+      }
+      admin_captain_activity: {
+        Args: { p_ids: string[] }
+        Returns: {
+          id: string
+          lastActiveAt: string | null
+          expiringSoon: boolean
+          quiet: boolean
+        }[]
+      }
+      admin_captain_detail: {
+        Args: { p_captain: string }
+        Returns: Json
+      }
       admin_pending_captains: {
         Args: never
         Returns: {

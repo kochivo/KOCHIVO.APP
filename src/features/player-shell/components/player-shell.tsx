@@ -61,8 +61,9 @@ export function PlayerShell({ children, unassignedAction }: { children?: ReactNo
   return <MyCaptainContext.Provider value={captain}>
     <div data-mood={!workout && restMood ? 'rest' : undefined} className="min-h-dvh bg-bg text-ink transition-colors motion-reduce:transition-none">
     <SyncRunner />
+    <div aria-hidden className="pointer-events-none fixed inset-x-0 top-0 z-40 h-[var(--safe-top)] bg-bg" />
     {!workout && <RestMoodSync onChange={setRestMood} />}
-    <div className={workout ? undefined : showsNav(pathname) ? (v6 ? 'pt-[var(--safe-top)] pb-[var(--page-bottom-clearance)]' : 'pb-[var(--page-bottom-clearance)]') : 'pt-[var(--safe-top)]'}>
+    <div className={workout ? undefined : showsNav(pathname) ? (v6 ? 'pt-[var(--safe-top)] pb-[var(--player-content-clearance)]' : 'pb-[var(--player-content-clearance)]') : 'pt-[var(--safe-top)]'}>
     {showsNav(pathname) && !v6 && <div className="sticky top-0 z-30 bg-bg/70 pb-stack pt-[max(0.75rem,var(--safe-top))] backdrop-blur-md"><div className="mx-auto flex max-w-lg justify-end gap-inline px-page-x">
       <Link href="/player/settings" aria-label={t(v6 ? 'v6Account' : 'settings')} aria-current={pathname === '/player/settings' ? 'page' : undefined}
         className={`${v6 ? 'glass border border-line-soft ' : ''}flex min-h-12 min-w-12 items-center justify-center rounded-control ${pathname === '/player/settings' ? 'bg-lime-soft text-lime' : 'text-muted'}`}>

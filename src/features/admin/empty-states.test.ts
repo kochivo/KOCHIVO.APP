@@ -31,11 +31,19 @@ it('renders a translated sign-out submit button in the admin header', () => {
  expect(header).toContain('min-h-12');
  expect(header).toContain('bg-danger-soft');
 });
+it('keeps existing summary and explains unavailable dashboard data', () => {
+ const html = render(createElement(AdminScreen, { captains: { rows: [], error: null }, audit: { rows: [], error: null },
+ plans: { rows: [], error: null }, kpis: { data: { captains: 12, players: 50, paid_captains: 8 }, error: null }, search: '', offset: 0 }));
+ expect(html).toContain('Dashboard data is unavailable');
+ expect(html).toContain('50');
+});
 it('offers clearing filters when the captains list is empty', () => {
  expect(render(createElement(CaptainsTable, { rows: [], selected: null, onActivate() {}, onSuspend() {}, onReset() {} }))).toContain('>Clear search and filters</button>');
 });
 it('takes an empty audit list to captain management', () => {
- expect(render(createElement(AuditList, { rows: [], captains: [], error: null }))).toMatch(/href="#captain-management"[^>]*>Manage captains<\/a>/);
+ const html = render(createElement(AuditList, { rows: [], captains: [], error: null }));
+ expect(html).toMatch(/href="#captain-management"[^>]*>Manage captains<\/a>/);
+ expect(html).not.toContain('primary-surface');
 });
 it('offers returning to captain management when plan choices are unavailable', () => {
  const html = render(createElement(ActivatePanel, { captain: { id: 'c', full_name: 'Coach', email: null, email_confirmed: true,

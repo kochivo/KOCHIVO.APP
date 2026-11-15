@@ -19,6 +19,11 @@ export async function loadTasks(at?: string) {
     fetchRoster(), loadQueuePage(), getTimezone(), getLocale(), fetchPendingPaymentReceipts(),
   ]);
   if (roster.error || !roster.players) throw new Error(roster.error);
+  const nutrition = await client.from('nutrition_plans').select('player_id')
+    .eq('captain_id', captainId).eq('status', 'active').eq('is_template', false)
+    .in('player_id', roster.players.map(player => player.playerId));
+  if (nutrition.error) throw nutrition.error;
+  const nutritionPlayers = new Set(nutrition.data.flatMap(plan => plan.player_id ? [plan.player_id] : []));
   const items = [...first.items];
   let page = first;
   while (page.cursor || page.requestCursor) {
@@ -39,7 +44,7 @@ export async function loadTasks(at?: string) {
   }
   const triage = await loadQueueTriage([...new Set(items.filter(item => item.kind === 'checkin').map(item => item.player_id))], first.at);
   const snapshotAt = at ?? first.at;
-  const tasks = buildTasks(items, roster.players, swaps, new Date(snapshotAt), timezone, receipts);
+  const tasks = buildTasks(items, roster.players, swaps, new Date(snapshotAt), timezone, receipts, nutritionPlayers);
   const contacts: Record<string, string> = {};
   await Promise.all([...new Set(tasks.filter(task => task.kind === 'absent' || task.kind === 'renew').map(task => task.playerId))].map(async playerId => {
     const result = await client.from('chat_messages').select('created_at').eq('captain_id', captainId)

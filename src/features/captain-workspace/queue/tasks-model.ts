@@ -4,16 +4,16 @@ import { daysBetween, localDate } from '@/lib/dates';
 import { endingSoon, ENDING_SOON_DAYS } from '@/lib/ending-soon';
 import type { QueueItem } from './model';
 
-export type TaskKind = 'video' | 'absent' | 'checkin' | 'swap' | 'renew' | 'program' | 'receipt';
+export type TaskKind = 'video' | 'absent' | 'checkin' | 'swap' | 'renew' | 'program' | 'nutrition' | 'receipt';
 export type TaskFilter = 'all' | TaskKind;
 export type SwapTask = { id: string; player_id: string; created_at: string; from: string; to: string };
 export type CaptainTask = { id: string; kind: TaskKind; playerId: string; name: string; at: string;
   avatar?: string | null; text?: string | null; href?: string; timezone?: string; days?: number; neverTrained?: boolean; item?: InboxItem; swap?: SwapTask };
-const priority: TaskKind[] = ['video', 'receipt', 'absent', 'checkin', 'swap', 'renew', 'program'];
-export const taskTabs: TaskFilter[] = ['all', 'video', 'checkin', 'receipt', 'absent', 'swap', 'renew', 'program'];
+const priority: TaskKind[] = ['video', 'receipt', 'absent', 'checkin', 'swap', 'renew', 'program', 'nutrition'];
+export const taskTabs: TaskFilter[] = ['all', 'video', 'checkin', 'receipt', 'absent', 'swap', 'renew', 'program', 'nutrition'];
 type ReceiptTask = { id: string; player_id: string; created_at: string };
 
-export function buildTasks(items: QueueItem[], players: RosterPlayer[], swaps: SwapTask[], now: Date, timezone: string, receipts: ReceiptTask[] = []): CaptainTask[] {
+export function buildTasks(items: QueueItem[], players: RosterPlayer[], swaps: SwapTask[], now: Date, timezone: string, receipts: ReceiptTask[] = [], nutritionPlayers?: ReadonlySet<string>): CaptainTask[] {
   const roster = new Map(players.map(player => [player.playerId, player]));
   const tasks = items.flatMap<CaptainTask>(item => {
     if (item.kind === 'request' && !item.reviewed_at) return [{ id: `request:${item.id}`, kind: 'checkin',
@@ -38,6 +38,9 @@ export function buildTasks(items: QueueItem[], players: RosterPlayer[], swaps: S
     const days = daysBetween(last, today);
     if (days >= 5) tasks.push({ ...base, id: `absent:${player.playerId}`, kind: 'absent', at: last, days, neverTrained: !player.lastTrainingDate });
     if (!player.programTitle) tasks.push({ ...base, id: `program:${player.playerId}`, kind: 'program', at: player.startedOn });
+    if (nutritionPlayers && !nutritionPlayers.has(player.playerId)) tasks.push({ ...base,
+      id: `nutrition:${player.playerId}`, kind: 'nutrition', at: player.startedOn,
+      href: `/captain/players/${player.playerId}/nutrition` });
   }
   for (const swap of swaps) {
     const player = roster.get(swap.player_id);
@@ -63,7 +66,7 @@ export function contactedTasks(tasks: CaptainTask[], contacts: Record<string, st
 }
 export const filterTasks = (tasks: CaptainTask[], filter: TaskFilter) => tasks.filter(task => filter === 'all' || task.kind === filter);
 export function taskCounts(tasks: CaptainTask[]): Record<TaskFilter, number> {
-  const counts = { all: tasks.length, video: 0, absent: 0, checkin: 0, swap: 0, renew: 0, program: 0, receipt: 0 };
+  const counts = { all: tasks.length, video: 0, absent: 0, checkin: 0, swap: 0, renew: 0, program: 0, nutrition: 0, receipt: 0 };
   for (const task of tasks) counts[task.kind]++;
   return counts;
 }

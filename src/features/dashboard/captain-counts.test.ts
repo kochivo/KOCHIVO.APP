@@ -25,7 +25,7 @@ it('feeds the same roster through home, tasks, badges, billing and KO with an in
     player('three', { lastTrainingDate: '2026-11-11' }), player('program', { programTitle: null })];
   const tasks = buildTasks([], roster, [{ id: 'swap', player_id: 'eight', created_at: today, from: 'A', to: 'B' }],
     now, 'Africa/Cairo', [{ id: 'receipt', player_id: 'expired', created_at: today }]);
-  expect(taskCounts(tasks)).toEqual({ all: 7, renew: 3, absent: 1, program: 1, swap: 1, receipt: 1, video: 0, checkin: 0 });
+  expect(taskCounts(tasks)).toEqual({ all: 7, renew: 3, absent: 1, program: 1, nutrition: 0, swap: 1, receipt: 1, video: 0, checkin: 0 });
   expect(buildHomeTasks(tasks)).toHaveLength(7);
   expect(frameCounts({ tasks: tasks.length, chats: { today: 2 }, joins: 1 })).toEqual({ tasks: 7, inbox: 2, join: 1, billing: null });
   expect(endingPlayers(roster, now, 'Africa/Cairo').map(row => row.playerId)).toEqual(['sessions', 'today', 'seven']);

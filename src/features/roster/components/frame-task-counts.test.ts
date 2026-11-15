@@ -28,6 +28,7 @@ vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => ({
   auth: { getClaims: async () => ({ data: { claims: { sub: 'captain' } } }) },
   from: () => {
     const query = { select: () => query, eq: () => query, order: () => query,
+      in: async () => ({ data: [], error: null }),
       range: async () => ({ data: [], error: null }), limit: async () => ({ data: [], error: null }) };
     return query;
   },
@@ -39,9 +40,9 @@ vi.mock('@/features/captain-workspace/server', async original => ({
 it('uses one loaded fixture snapshot for home, Tasks total and the task-count endpoint', async () => {
   const snapshot = await loadTasks('2026-11-14T12:00:00Z');
   state.snapshot = snapshot;
-  expect(taskCounts(snapshot.tasks).all).toBe(5);
-  expect(buildHomeTasks(snapshot.tasks)).toHaveLength(5);
+  expect(taskCounts(snapshot.tasks).all).toBe(6);
+  expect(buildHomeTasks(snapshot.tasks)).toHaveLength(6);
   const response = await GET();
   expect(response.status).toBe(200);
-  expect(await response.json()).toEqual({ count: 5 });
+  expect(await response.json()).toEqual({ count: 6 });
 });

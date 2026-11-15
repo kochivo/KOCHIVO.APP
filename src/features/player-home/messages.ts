@@ -6,7 +6,7 @@ export const messages = defineMessages({
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
     homeAccount: 'حسابي', homeCaptainMessages: 'رسايل الكابتن', homeUnheard: 'رسايل الكابتن، رسالة جديدة',
-    homeStart: 'يلا نبدأ', homeWarmup: 'فيه تسخين', homeMinutes: '{count} دقيقة',
+    homeStart: 'يلا نبدأ', homeDoneToday: 'خلصت تمرين النهارده', homeWarmup: 'فيه تسخين', homeMinutes: '{count} دقيقة',
     homeRest: 'يوم راحة', homeRestBody: 'العضل بيكبر وإنت مرتاح. نام كويس، واشرب ميه، وكُل أكلك.',
     homeRestStreak: 'الراحة مش هتقطع الـ{count} يوم بتوعك', homeTomorrow: 'بكره', homeTomorrowRest: 'بكره كمان راحة',
     homeLogFood: 'سجّل أكلك', homeFood: 'الأكل', homeWater: 'الميه', homeGlasses: 'كوبايات',
@@ -102,7 +102,7 @@ export const messages = defineMessages({
   },
   en: {
     homeAccount: 'My account', homeCaptainMessages: 'Captain messages', homeUnheard: 'Captain messages, new message',
-    homeStart: 'Let’s start', homeWarmup: 'Warm-up included', homeMinutes: '{count} minutes',
+    homeStart: 'Let’s start', homeDoneToday: 'Today’s workout is done', homeWarmup: 'Warm-up included', homeMinutes: '{count} minutes',
     homeRest: 'Rest day', homeRestBody: 'Muscles grow while you rest. Sleep well, drink water, and eat your meals.',
     homeRestStreak: 'Rest keeps your {count}-day streak', homeTomorrow: 'Tomorrow', homeTomorrowRest: 'Tomorrow is rest too',
     homeLogFood: 'Log your food', homeFood: 'Food', homeWater: 'Water', homeGlasses: 'glasses',

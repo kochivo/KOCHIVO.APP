@@ -27,8 +27,8 @@ export function TrainingFacts({ profile, file, locale, draft, day, fatPct, candi
   const t = createT(messages, locale, style), wt = createT(workspaceMessages, locale, style);
   if (!draft.player_id) return null;
   const intake = profile.intake;
-  if (!intake) return <section className="glass-strong rounded-card border border-line-soft p-card">
-    <h2 className="font-display text-lg font-semibold">{profile.name}</h2>
+  if (!intake) return <section className="glass-strong min-w-0 rounded-card border border-line-soft p-card">
+    <h2 className="min-w-0 break-words font-display text-lg font-semibold">{profile.name}</h2>
     <p className="text-sm text-muted">{t('missingIntake')}</p>
     <RowLink href={`/captain/players/${draft.player_id}`}>{t('fullFile')}</RowLink>
   </section>;
@@ -50,17 +50,19 @@ export function TrainingFacts({ profile, file, locale, draft, day, fatPct, candi
   ];
   return <section className="glass-strong min-w-0 rounded-card border border-line-soft p-card">
     <div className="flex flex-wrap items-center gap-stack">
-      <div className="min-w-0 flex-1">
-        <h2 className="font-display text-lg font-semibold">{profile.name}</h2>
+      <div className="min-w-0 basis-full">
+        <h2 className="min-w-0 break-words font-display text-lg font-semibold">{profile.name}</h2>
         <p className="text-xs text-muted">{factValue('age', Number(today.slice(0, 4)) - intake.birthYear, locale)} · {optionLabel(intake.sex, locale)} · {optionLabel(intake.experience, locale)}</p>
         <p className="mt-inline text-sm md:hidden"><bdi>{factValue('weight', weight, locale)} → {factValue('targetWeight', target, locale)}</bdi></p>
       </div>
+      <div className="flex w-full min-w-0 flex-wrap items-center gap-stack">
       {injuries.map(injury => <span key={injury} className="rounded-full bg-warn/10 px-stack py-inline text-xs text-warn">{optionLabel(injury, locale)}</span>)}
       <RowLink href={`/captain/players/${draft.player_id}`}>{t('fullFile')}</RowLink>
       <Button type="button" aria-expanded={expanded} aria-controls={`player-facts-${draft.id}`} aria-label={t(expanded ? 'collapseFacts' : 'expandFacts')}
         onClick={() => setExpanded(value => !value)} variant={'secondary'} block={false} className={"grid min-h-12 min-w-12 place-items-center md:hidden"}>
         <ChevronDown aria-hidden className={`size-4 ${expanded ? 'rotate-180' : ''}`} />
       </Button>
+      </div>
     </div>
     <div id={`player-facts-${draft.id}`} className={`${expanded ? 'block' : 'hidden'} space-y-card-gap pt-card md:block`}>
       <dl className="grid grid-cols-2 gap-card-gap sm:grid-cols-4">

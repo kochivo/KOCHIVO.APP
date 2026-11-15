@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useLocale, useT } from '@/core/i18n/client';
 import { localDb, useLiveQuery } from '@/core/offline';
 import { useMealLogs, useNutritionSnapshot } from '@/features/nutrition';
-import { readDailyCheck, waterGoalMl } from '@/features/readiness';
+import { readDailyCheck, playerWaterGoalMl } from '@/features/readiness';
 import { ErrorState, LoadingState } from '@/ui';
 import { formatNumber } from '@/lib/format';
 import { starterText } from '@/lib/starter-text';
@@ -33,7 +33,7 @@ export function HomeTiles({ weightKg, today, playerId, rest, streak, done, plann
   const percent = summary && summary.targetKcal > 0 ? Math.min(100, Math.max(0, Math.round((summary.eatenKcal ?? 0) / summary.targetKcal * 100))) : 0;
   const next = nutrition.snapshot?.meals.find(meal => !logs.some(log => log.meal_id === meal.id &&
     log.log_date === today && log.completed_at && !log.deleted_at));
-  const water = waterGlasses(row?.water_ml ?? 0, waterGoalMl(weightKg));
+  const water = waterGlasses(row?.water_ml ?? 0, playerWaterGoalMl(nutrition.snapshot?.water_target_ml, weightKg));
   const tile = 'glass-strong flex min-w-0 flex-col rounded-[24px] border-line-soft! bg-surface! p-card text-ink shadow-none backdrop-blur-none';
   return <div className="grid grid-cols-2 gap-stack">
     <Link href="/player/nutrition" className={`${tile} min-h-[136px] gap-stack`}>

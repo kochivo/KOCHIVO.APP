@@ -115,6 +115,7 @@
   --nav-height: calc(4.5rem + 2px);
   --nav-clearance: calc(var(--nav-height) + 1rem + var(--safe-bottom));
   --page-bottom-clearance: max(7rem, calc(var(--nav-clearance) + 1rem));
+  --player-content-clearance: max(var(--page-bottom-clearance), calc(var(--nav-clearance) + 0.5rem + 3.25rem + 3rem + var(--spacing-card-gap)));
   --captain-content-clearance: max(var(--page-bottom-clearance), calc(var(--nav-clearance) + 0.5rem + 3.25rem + 3rem + var(--spacing-card-gap)));
   --captain-top-inset: max(3rem, var(--safe-top));
   --builder-action-height: calc(4.5rem + 2px);

@@ -62,6 +62,7 @@ export async function loadPlan(id: string): Promise<ActionResult<PlanDraft>> {
     return result;
   }
   return ok({ id, playerId: plan.player_id, title: plan.title, status: plan.status,
+    waterTargetMl: z.object({ water_target_ml: z.number().nullable().optional() }).parse(plan).water_target_ml ?? null,
     targets: { kcal: plan.target_kcal ?? 2000, protein: plan.target_protein ?? 150, carbs: plan.target_carbs ?? 225, fat: plan.target_fat ?? 56 },
     meals: (meals.data ?? []).map((meal, index) => ({ id: meal.id, name: meal.name, position: index + 1,
       ...(captainWorkspaceEnabled() ? { dayType: mealDayType(meal), timeOfDay: (meal as typeof meal & { time_of_day?: string | null }).time_of_day ?? null } : {}),

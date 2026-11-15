@@ -6,6 +6,7 @@ const alternative = z.object({ id: z.uuid(), food: foodSchema, grams: z.number()
 export const draftSchema = z.object({
   id: z.uuid(), playerId: z.uuid().nullable(), title: z.string().trim().min(1).max(80),
   status: z.enum(['draft', 'active', 'archived']),
+  waterTargetMl: z.number().int().min(500).max(10000).nullable().optional(),
   targets: z.object({ kcal: z.number().int().min(800).max(8000), protein: z.number().int().min(0).max(32767),
     carbs: z.number().int().min(0).max(32767), fat: z.number().int().min(0).max(32767) }),
   meals: z.array(z.object({ id: z.uuid(), name: z.string().trim().min(1).max(40), position: z.number().int().positive(), dayType: z.enum(['all', 'training', 'rest']).optional(),

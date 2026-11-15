@@ -8,7 +8,7 @@ export const arStd = {
   v3DecreaseWeight: 'قلّل الوزن 2.5', v3IncreaseWeight: 'زِد الوزن 2.5', v3DecreaseReps: 'قلّل التكرارات', v3IncreaseReps: 'زِد التكرارات',
   v3Previous: 'المرة السابقة', v3PrHint: '· إكمالها يحقق رقماً قياسياً', v3CompleteSet: 'أكملت المجموعة', v3CompleteWorkout: 'أكملت التمرين',
   v3Done: 'أكملت تمرين اليوم', v3Congrats: 'أحسنت يا {name}!', v3CongratsFallback: 'أحسنت!',
-  v3Minute: 'دقيقة', v3Sets: 'مجموعة', v3Volume: 'إجمالي الوزن المرفوع', v3Ton: 'ط', v3Record: 'رقم قياسي جديد',
+  v3Minute: 'دقيقة', v3Sets: 'مجموعة', v3Volume: 'إجمالي الوزن المرفوع', v3Ton: 'طن', v3VolumeKg: 'كجم', v3Record: 'رقم قياسي جديد',
   v3Effort: 'كيف كان التمرين؟', v3Easy: 'سهل', v3Right: 'مناسب', v3Hard: 'صعب',
   v3Note: 'كلمة للكابتن (اختياري)', v3NotePlaceholder: 'مثلاً: شعرت بألم بسيط في الكتف', v3Send: 'أرسل للكابتن',
   v3Share: 'شارك الإنجاز', v3Soon: 'قريباً', v3Details: 'تفاصيل التمرين',

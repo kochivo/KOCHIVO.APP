@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest';
 import type { RosterPlayer } from '@/features/roster';
-import { buildTasks, contactedTasks, taskCounts, filterTasks } from './tasks-model';
+import { buildTasks, contactedTasks, taskCounts, filterTasks, taskTabs } from './tasks-model';
 import type { CustomFormItem } from './model';
 const now = new Date('2026-11-14T12:00:00Z');
 const player = (id: string, patch: Partial<RosterPlayer> = {}): RosterPlayer => ({
@@ -9,6 +9,19 @@ const player = (id: string, patch: Partial<RosterPlayer> = {}): RosterPlayer => 
 });
 const video = (id: string, at: string) => ({ kind: 'form' as const, id, player_id: 'a', player_name: 'A',
   created_at: at, reviewed_at: null, reply: null, exercise_name: 'Squat', note: 'Help' });
+it('adds nutrition after program tasks only for eligible players without an active nutrition plan', () => {
+  const tasks = buildTasks([], [player('missing'), player('both', { programTitle: null }), player('covered'),
+    player('pending', { pending: true }), player('frozen', { frozenAt: '2026-11-01' }),
+    player('expired', { accessUntil: '2026-11-13' })], [], now, 'Africa/Cairo', [], new Set(['covered']));
+  expect(tasks.map(task => task.id)).toEqual(['program:both', 'nutrition:both', 'nutrition:missing']);
+  expect(filterTasks(tasks, 'nutrition')).toHaveLength(2);
+  expect(taskCounts(tasks).nutrition).toBe(2);
+  expect(taskTabs.slice(taskTabs.indexOf('program'))).toEqual(['program', 'nutrition']);
+  expect(tasks.find(task => task.id === 'nutrition:missing')?.href).toBe('/captain/players/missing/nutrition');
+});
+it('does not create nutrition tasks when nutrition coverage is unknown', () => {
+  expect(buildTasks([], [player('a')], [], now, 'Africa/Cairo')).toEqual([]);
+});
 it('includes an answered assessment once and excludes reviewed assessments', () => {
   const request: CustomFormItem = { kind: 'request', id: 'r', player_id: 'a', player_name: 'A',
     title: 'Monthly assessment', created_at: '2026-11-13T10:00:00Z', reviewed_at: null, reply: null,
@@ -27,7 +40,7 @@ it('classifies all six kinds and orders videos, absence, check-ins, swaps, renew
     player('renew', { accessUntil: '2026-11-21' }), player('program', { programTitle: null })],
   [{ id: 'swap', player_id: 'a', created_at: '2026-11-01T10:00:00Z', from: 'Squat', to: 'Press' }], now, 'Africa/Cairo');
   expect(tasks.map(task => task.id)).toEqual(['video:old', 'video:new', 'absent:absent', 'checkin:check', 'swap:swap', 'renew:renew', 'program:program']);
-  expect(taskCounts(tasks)).toEqual({ all: 7, video: 2, absent: 1, checkin: 1, swap: 1, renew: 1, program: 1, receipt: 0 });
+  expect(taskCounts(tasks)).toEqual({ all: 7, video: 2, absent: 1, checkin: 1, swap: 1, renew: 1, program: 1, nutrition: 0, receipt: 0 });
   expect(filterTasks(tasks, 'video').map(task => task.id)).toEqual(['video:old', 'video:new']);
 });
 it('includes receipts for expired players, supports their filter and keeps them after contact', () => {

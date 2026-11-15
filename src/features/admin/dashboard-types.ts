@@ -19,7 +19,7 @@ export type AdminDashboard = {
   players: AdminTrend;
   /** Captains active in the last 7 days; previous is the 7 days before that. */
   activeCaptains: AdminTrend;
-  /** One entry per day, oldest first, 30 entries, dates as YYYY-MM-DD in Africa/Cairo. */
+  /** One entry per day, oldest first, 30 entries, dates as YYYY-MM-DD in the platform default timezone. */
   signups: { day: string; captains: number; players: number }[];
   planMix: { tier: Tier; captains: number }[];
   /** Whole-table counts for the captain tabs, so they do not depend on the loaded page. */

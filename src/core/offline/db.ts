@@ -107,6 +107,8 @@ export interface NutritionMeal {
 }
 
 export interface NutritionSnapshot {
+  /** Optional for older caches; no indexed fields change. */
+  water_target_ml?: number | null;
   id: 'active';
   player_id: string;
   plan_id: string;

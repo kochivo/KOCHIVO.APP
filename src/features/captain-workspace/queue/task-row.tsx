@@ -21,7 +21,7 @@ export function TaskRow({ task, selected, first, pending, onSelect, onAction }: 
   </>;
   const clickableClassRow = `${clickableClass} flex min-h-12 min-w-0 flex-1 items-center gap-stack text-start`;
   const tagColor = task.kind === 'video' || task.kind === 'absent' ? 'bg-warn-soft text-warn'
-    : task.kind === 'renew' || task.kind === 'program' ? 'bg-calm/10 text-calm' : 'bg-surface-raised text-muted';
+    : task.kind === 'renew' || task.kind === 'program' || task.kind === 'nutrition' ? 'bg-calm/10 text-calm' : 'bg-surface-raised text-muted';
   return <li className={`flex items-center gap-stack rounded-control border-line-soft p-stack [&+li]:border-t ${selected ? 'bg-surface-raised' : ''}`}>
     {task.href ? <Link href={`/${locale}${task.href}`} className={clickableClassRow}>{content}</Link>
       : <button aria-pressed={selected} onClick={onSelect} className={clickableClassRow}>{content}</button>}

@@ -30,6 +30,8 @@ export function V3Home({ weightKg, now, today, firstName, playerId, snapshot, da
   const trains = (date: string) => trainingDay(date, snapshot?.training_days ?? [], snapshot ?? undefined);
   const stats = history ? computeStreak({ today, ...history, isTrainingDay: trains }) : null;
   const captain = useCaptainContext();
+  // The hero must not offer a second start once today's session for this day is finished.
+  const doneToday = Boolean(day && sessions.some(session => session.program_day_id === day.id && session.training_date === today && session.completed_at));
   const tomorrow = shiftDate(today, 1);
   const tomorrowDay = snapshot ? pickTodayDay(snapshot, sessions, tomorrow) : undefined;
   const tomorrowRest = Boolean(snapshot && (isRestDay(snapshot, sessions, tomorrow) ||
@@ -38,7 +40,7 @@ export function V3Home({ weightKg, now, today, firstName, playerId, snapshot, da
     weekSessions.filter(session => snapshot?.days.some(day => day.id === session.program_day_id)), locale, snapshot ?? undefined);
   return <section data-mood={rest ? 'rest' : undefined} className="flex flex-col gap-stack">
     <HomeHeader now={now} firstName={firstName} bell={<NotificationBell round />} />
-    <HomeHero finished={Boolean(snapshot)} day={day} rest={rest} streak={stats && snapshot && !trains(today) ? stats.current : undefined} />
+    <HomeHero finished={Boolean(snapshot)} day={day} rest={rest} doneToday={doneToday} streak={stats && snapshot && !trains(today) ? stats.current : undefined} />
     {rest && <TomorrowCard day={tomorrowDay} date={tomorrow} rest={tomorrowRest} onPreview={onPreview} />}
     <HomeTiles weightKg={weightKg} today={today} playerId={playerId} rest={rest} streak={stats?.current}
       done={week.filter(day => day.state === 'done').length} planned={snapshot ? week.filter(day => trains(day.date)).length : 0}

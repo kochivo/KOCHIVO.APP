@@ -31,15 +31,15 @@ export function KoWaitlistCount({ initialCounts }: { initialCounts?: Counts }) {
     void load();
     return () => { active = false; };
   }, [attempt]);
-  return <section aria-label={t('koWaitlist')} className="space-y-3">
-    <h2 className="text-lg font-bold">{t('koWaitlist')}</h2>
+  return <section aria-label={t('koWaitlist')} className="glass space-y-card-gap rounded-card p-card">
+    <h2 className="text-title font-semibold">{t('koWaitlist')}</h2>
     {failed ? <div role="alert">
       <p className="text-danger">{t('failed')}</p>
       <Button variant="secondary" type="button" onClick={() => setAttempt(value => value + 1)} className="min-h-12 underline">{t('retry')}</Button>
-    </div> : counts ? <dl className="grid grid-cols-2 gap-3">
-      {(['captain', 'player'] as const).map(role => <div key={role} className="glass-strong rounded-card p-5">
+    </div> : counts ? <dl className="grid grid-cols-2 gap-stack">
+      {(['captain', 'player'] as const).map(role => <div key={role} className="glass-strong rounded-control p-stack">
         <dt className="text-sm text-muted">{t(role === 'captain' ? 'koWaitlistCaptains' : 'koWaitlistPlayers')}</dt>
-        <dd className="mt-3 text-4xl font-extrabold tabular-nums">{formatNumber(counts[role], locale)}</dd>
+        <dd className="num mt-stack text-stat font-extrabold">{formatNumber(counts[role], locale)}</dd>
       </div>)}
     </dl> : <p role="status" className="text-muted">{t('loading')}</p>}
   </section>;

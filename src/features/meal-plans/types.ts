@@ -25,7 +25,7 @@ export interface MealItem extends Alternative { position: number; alternatives: 
 export interface Meal { id: string; name: string; position: number; items: MealItem[]; dayType?: DayType }
 export interface PlanDraft {
   id: string; playerId: string | null; title: string; status: 'draft' | 'active' | 'archived';
-  targets: Macros; meals: Meal[];
+  targets: Macros; meals: Meal[]; waterTargetMl?: number | null;
 }
 export interface PlanSummary { id: string; title: string; status: string }
 

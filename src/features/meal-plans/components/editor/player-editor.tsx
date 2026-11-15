@@ -25,6 +25,7 @@ import { savePlayerEditor } from '../../data/player-editor';
 import type { loadPlayerEditor } from '../../data/player-editor';
 import { automaticTargets, openRestDay } from './workspace-model';
 import { MealTargets } from './meal-targets';
+import { WaterTarget } from './water-target';
 import { V11FoodPicker } from '../v11-food-picker';
 import { defaultPortion } from '../../data/meal-portions';
 
@@ -84,6 +85,8 @@ export function PlayerEditor({ data, editableMealNames = false }: { data: Awaite
     {state.error && <p role="alert" className="mb-stack text-sm text-danger">{state.error}</p>}
     {calculator && <TargetCalculator facts={facts} onApply={targets => { update(draft => ({ ...draft, targets })); setCalculator(false); }} />}
     <MealTargets totals={totals} targets={draft.targets} onChange={targets => update(draft => ({ ...draft, targets }))} />
+    <WaterTarget value={draft.waterTargetMl} weightKg={facts.weight?.value} disabled={state.busy}
+      onChange={waterTargetMl => update(draft => ({ ...draft, waterTargetMl }))} />
     {incomplete && <p className="text-xs text-warn">{t('incomplete')}</p>}
     <div className="mb-card-gap flex flex-wrap items-center gap-inline">
       {(['training', 'rest'] as const).map(value => <Chip key={value} disabled={state.busy} pressed={day === value} className={day === value ? '!border-ink !bg-ink !text-bg-deep' : 'bg-transparent'} onClick={() => {

@@ -5,7 +5,8 @@ import { Activity } from 'lucide-react';
 import { useT } from '@/core/i18n/client';
 import { ErrorState, LoadingState } from '@/ui';
 import { useDailyCheck } from '../hooks/use-daily-check';
-import { waterGoalMl } from '../water';
+import { playerWaterGoalMl } from '../water';
+import { useNutritionSnapshot } from '@/features/nutrition';
 import { messages } from '../messages';
 import { WaterStrip } from './water-strip';
 import { ReadinessRow } from './readiness-row';
@@ -21,7 +22,8 @@ export function DailyPanel({ playerId, today, rest, coachRest, tomorrow, tomorro
 }) {
   const t = useT(messages);
   const check = useDailyCheck(playerId, today);
-  const goal = waterGoalMl(weightKg);
+  const nutrition = useNutritionSnapshot();
+  const goal = playerWaterGoalMl(nutrition.snapshot?.water_target_ml, weightKg);
   return <div className="space-y-card-gap">
     {rest && <RestHero coachRest={coachRest} />}
     {check.error && <ErrorState message={t('saveError')} retryLabel={t('retry')} onRetry={check.retry} />}

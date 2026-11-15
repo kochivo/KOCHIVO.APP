@@ -136,3 +136,15 @@ it.each([[0, 2000, 0, 8], [1250, 2000, 5, 8], [249, 2125, 0, 9], [10000, 2000, 4
     expect(waterGlasses(ml, goal)).toEqual({ done, planned });
   },
 );
+
+it('shows a done state instead of a second start once today’s workout is finished', () => {
+  const todaySession: WorkoutSessionRow = { id: 'today', program_day_id: 'push', training_date: '2026-11-11',
+    started_at: '2026-11-11T07:00:00Z', completed_at: '2026-11-11T08:00:00Z', client_updated_at: '2026-11-11T08:00:00Z' };
+  const done = [...sessions, todaySession];
+  const html = render(false, '2026-11-11', snapshot, done);
+  expect(html).toContain('خلصت تمرين النهارده');
+  expect(html).not.toContain('يلا نبدأ');
+  expect(html).not.toContain('data-tour="workout-start"');
+  const started = render(false, '2026-11-11', snapshot, [...sessions, { ...todaySession, completed_at: null }]);
+  expect(started).toContain('يلا نبدأ');
+});

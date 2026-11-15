@@ -33,6 +33,7 @@ export const messages = {
 
 export const taskMessages = {
   ar: {
+    nutrition: 'بدون نظام أكل', nutritionText: 'محتاج نظام أكل', nutritionAction: 'ادّيله نظام أكل',
     receipt: 'إيصالات الدفع', receiptAction: 'راجع الإيصال', receiptText: 'إيصال دفع مستني مراجعتك',
     title: 'المهام', subtitle: 'كل اللي مستني منك، مترتب بالأهم', all: 'الكل', video: 'فيديوهات',
     checkin: 'متابعات', absent: 'غياب', swap: 'تبديل', renew: 'تجديد', program: 'بدون برنامج',
@@ -49,6 +50,7 @@ export const taskMessages = {
     stop: 'وقّف التسجيل', discard: 'امسح التسجيل', voiceError: 'مش قادرين نفتح الميكروفون', recording: 'جاري التسجيل',
   },
   arStd: {
+    nutrition: 'بدون نظام غذائي', nutritionText: 'يحتاج إلى نظام غذائي', nutritionAction: 'أضف له نظامًا غذائيًا',
     receipt: 'إيصالات الدفع', receiptAction: 'راجع الإيصال', receiptText: 'إيصال دفع بانتظار مراجعتك',
     title: 'المهام', subtitle: 'كل ما ينتظر منك، مرتّب حسب الأهمية', all: 'الكل', video: 'فيديوهات',
     checkin: 'متابعات', absent: 'غياب', swap: 'تبديل', renew: 'تجديد', program: 'بدون برنامج',
@@ -65,6 +67,7 @@ export const taskMessages = {
     stop: 'أوقف التسجيل', discard: 'احذف التسجيل', voiceError: 'تعذّر فتح الميكروفون', recording: 'جارٍ التسجيل',
   },
   en: {
+    nutrition: 'No nutrition plan', nutritionText: 'Needs a nutrition plan', nutritionAction: 'Give a nutrition plan',
     receipt: 'Payment receipts', receiptAction: 'Review receipt', receiptText: 'Payment receipt awaiting review',
     title: 'Tasks', subtitle: 'Everything waiting for you, in priority order', all: 'All', video: 'Videos',
     checkin: 'Check-ins', absent: 'Absent', swap: 'Swaps', renew: 'Renewals', program: 'No program',

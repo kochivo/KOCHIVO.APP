@@ -6,8 +6,12 @@ export const effortChoices = [
   { key: 'v3Easy', value: 3 }, { key: 'v3Right', value: 6 }, { key: 'v3Hard', value: 9 },
 ] as const;
 
-export function volumeInTons(kilograms: number, locale: Locale) {
-  return new Intl.NumberFormat(locale === 'ar' ? 'en-US' : intlLocale(locale), { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(kilograms / 1000);
+export function formatVolume(kilograms: number, locale: Locale) {
+  const tons = kilograms >= 1000;
+  const value = new Intl.NumberFormat(locale === 'ar' ? 'en-US' : intlLocale(locale), {
+    minimumFractionDigits: tons ? 1 : 0, maximumFractionDigits: tons ? 1 : 0,
+  }).format(tons ? kilograms / 1000 : kilograms);
+  return { value, unit: tons ? 'v3Ton' : 'v3VolumeKg' } as const;
 }
 
 export function sessionRecords(rows: readonly SetLogRow[], sessionId: string) {

@@ -14,7 +14,7 @@ import { messages as workoutMessages } from '../messages';
 import { ErrorState, LoadingState } from '@/ui';
 import { exerciseName } from '@/lib/display-name';
 import { FinishRecord } from './finish-record';
-import { sessionRecords, volumeInTons } from './workout-v3-model';
+import { sessionRecords, formatVolume } from './workout-v3-model';
 
 export function FinishHero({ sessionId, workout, extras = false }: { sessionId: string; workout?: WorkoutPointsInput; extras?: boolean }) {
   const t = useT(messages);
@@ -45,6 +45,7 @@ export function FinishHero({ sessionId, workout, extras = false }: { sessionId: 
   }, [sessionId, locale, wt]);
   const summary = useLiveQuery(read, useCallback(() => setFailed(true), []), attempt);
   const preview = workout && ranksEnabled() ? previewWorkoutPoints(workout) : undefined;
+  const volume = summary && formatVolume(summary.volume, locale);
   const number = (value: number) => formatNumber(value, locale);
   if (extras) return summary ? <details className="rounded-[22px] border border-line-soft bg-surface p-card">
     <summary className="min-h-12 cursor-pointer text-muted">{wt('v3Details')}</summary>
@@ -54,7 +55,8 @@ export function FinishHero({ sessionId, workout, extras = false }: { sessionId: 
         <div className="glass-strong rounded-card border border-line-soft p-card"><p className="text-xs text-faint">{t('records')}</p><p className="mt-inline font-display text-h font-extrabold">{number(summary.records)}</p></div>
       </div>
   </details> : null;
-  return <div className="relative flex flex-col gap-card-gap pt-[134px]">
+  // The skewed stripes and the edge-bleed gradient extend past the column; clip only sideways so they never add horizontal scroll.
+  return <div className="relative flex flex-col gap-card-gap overflow-x-clip pt-[134px]">
     <div aria-hidden className="pointer-events-none absolute -top-24 start-[192px] h-[360px] w-[120px] -skew-x-[18deg] bg-lime" />
     <div aria-hidden className="pointer-events-none absolute -top-24 start-[150px] h-[360px] w-[26px] -skew-x-[18deg] bg-ivory" />
     <div aria-hidden className="pointer-events-none absolute -inset-x-[18px] -top-4 h-[300px] bg-gradient-to-b from-bg/0 from-20% to-bg to-85%" />
@@ -65,9 +67,9 @@ export function FinishHero({ sessionId, workout, extras = false }: { sessionId: 
     {summary ? <>
       <div className="relative grid grid-cols-3 gap-inline">
         {[{ value: number(summary.minutes), label: wt('v3Minute') }, { value: number(summary.sets), label: wt('v3Sets') },
-          { value: volumeInTons(summary.volume, locale), label: wt('v3Volume'), unit: wt('v3Ton') }].map(stat =>
+          { value: volume?.value, label: wt('v3Volume'), unit: volume && wt(volume.unit) }].map(stat =>
           <div key={stat.label} className="glass-strong flex flex-col gap-inline rounded-[20px] border border-line-soft p-stack">
-            <span className="font-display text-2xl font-extrabold tabular-nums">{stat.value}{stat.unit && <span className="text-row">{stat.unit}</span>}</span>
+            <span className="font-display text-2xl font-extrabold tabular-nums"><bdi>{stat.value}{stat.unit && <> <span className="text-row">{stat.unit}</span></>}</bdi></span>
             <span className="text-xs text-muted">{stat.label}</span>
           </div>)}
       </div>

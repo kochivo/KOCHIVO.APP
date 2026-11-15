@@ -7,6 +7,11 @@ vi.mock('server-only', () => ({}));
 const now = new Date('2026-11-12T10:00:00Z');
 const player = (id: string, extra: Partial<RosterPlayer> = {}): RosterPlayer => ({ playerId: id, fullName: id,
   accessUntil: '2026-12-01', startedOn: '2026-11-01', lastTrainingDate: '2026-11-12', programTitle: 'Program', openTasks: 0, ...extra });
+it('shows both missing plans on Home with program first and nutrition linked to its editor', () => {
+  const tasks = buildHomeTasks(buildTasks([], [player('a', { programTitle: null })], [], now, 'Africa/Cairo', [], new Set()));
+  expect(tasks.map(task => task.kind)).toEqual(['noProgram', 'nutrition']);
+  expect(tasks[1]).toMatchObject({ href: '/captain/players/a/nutrition', urgent: false });
+});
 
 it('estimates three minutes for each pending task, including an empty day', () => {
   expect(taskEstimate(7)).toBe(21);

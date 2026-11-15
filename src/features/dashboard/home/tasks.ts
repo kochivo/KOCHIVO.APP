@@ -4,7 +4,7 @@ import type { CaptainTask } from '@/features/captain-workspace';
 
 export type HomeTask = {
   id: string; playerId: string; name: string; href: string;
-  kind: 'checkin' | 'form' | 'assessment' | 'absent' | 'noProgram' | 'renew' | 'dues' | 'swap' | 'receipt';
+  kind: 'checkin' | 'form' | 'assessment' | 'absent' | 'noProgram' | 'nutrition' | 'renew' | 'dues' | 'swap' | 'receipt';
   title?: string; days?: number; urgent: boolean;
 };
 export const taskEstimate = (count: number) => count * 3;
@@ -12,7 +12,7 @@ export const taskProgress = (completed: number, pending: number) => completed + 
 
 export function buildHomeTasks(tasks: CaptainTask[]): HomeTask[] {
   return tasks.map(task => ({ id: task.id, playerId: task.playerId, name: task.name,
-    kind: task.href ? 'assessment' : task.kind === 'video' ? 'form' : task.kind === 'program' ? 'noProgram' : task.kind,
+    kind: task.kind === 'nutrition' ? 'nutrition' : task.href ? 'assessment' : task.kind === 'video' ? 'form' : task.kind === 'program' ? 'noProgram' : task.kind,
     href: task.href ?? (task.kind === 'receipt' ? `/captain/billing#receipt-${task.id.slice('receipt:'.length)}` : '/captain/tasks'),
     urgent: task.kind === 'video' || task.kind === 'receipt' || (task.kind === 'absent' && (task.days ?? 0) >= 7),
     days: task.days, title: task.text ?? undefined }));

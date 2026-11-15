@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Moon } from 'lucide-react';
+import { CircleCheck, Moon } from 'lucide-react';
 import type { SnapshotDay } from '@/core/offline';
 import { useLocale, useT } from '@/core/i18n/client';
 import { KoPlay } from '@/ui/icons/ko-play';
@@ -11,7 +11,7 @@ import { messages } from '../messages';
 import { estimateMinutes, warmupDuration } from './today-card';
 import { buttonClass } from '@/ui/button';
 
-export function HomeHero({ day, rest, streak, finished = false }: { day?: SnapshotDay; rest: boolean; streak?: number; finished?: boolean }) {
+export function HomeHero({ day, rest, streak, finished = false, doneToday = false }: { day?: SnapshotDay; rest: boolean; streak?: number; finished?: boolean; doneToday?: boolean }) {
   const t = useT(messages);
   const locale = useLocale();
   if (!rest && !day && finished) return <FinishedHero title={t('programFinished')} body={t('renewProgram')} />;
@@ -39,7 +39,9 @@ export function HomeHero({ day, rest, streak, finished = false }: { day?: Snapsh
         {minutes > 0 && <span className="flex h-8 items-center rounded-full bg-surface-raised px-stack text-xs">{t('homeMinutes', { count: formatNumber(minutes, locale) })}</span>}
         {Boolean(day.warmup?.items.length) && <span className="flex h-8 items-center rounded-full bg-surface-raised px-stack text-xs">{t('homeWarmup')}</span>}
       </div>
-      {day.exercises.length > 0 && <Link data-tour="workout-start" href={`/player/workout/${day.id}`}
+      {doneToday ? <Link href={`/player/workout/${day.id}`} className="relative flex min-h-12 items-center gap-inline self-start rounded-full bg-lime-soft px-stack text-sm font-bold text-lime">
+        <CircleCheck aria-hidden className="size-5" />{t('homeDoneToday')}
+      </Link> : day.exercises.length > 0 && <Link data-tour="workout-start" href={`/player/workout/${day.id}`}
         className={buttonClass({ variant: 'primary', block: false, className: "relative flex h-[62px] items-center justify-center gap-stack text-title font-black" })}>
         <KoPlay aria-hidden className="size-[22px] text-on-lime! [&_*]:text-on-lime!" />{t('homeStart')}
       </Link>}

@@ -34,8 +34,8 @@ export function NotificationBell({ captain = false, round = false }: { captain?:
   }, [captain, pathname, refresh]);
   return <div className="relative">
     <Button id={id} type="button" aria-label={t('title')} aria-haspopup={workspace ? undefined : 'dialog'} aria-expanded={workspace ? undefined : open}
-      onClick={() => workspace ? router.push('/captain/notifications') : setOpen(value => !value)} variant={(round) ? 'secondary' : 'secondary'} block={false} className={round ? "relative flex size-12 items-center justify-center bg-surface-raised text-ink" : "relative flex min-h-12 min-w-12 items-center justify-center"}>
-      <Bell className="size-5" aria-hidden />
+      onClick={() => workspace ? router.push('/captain/notifications') : setOpen(value => !value)} variant={(round) ? 'secondary' : 'secondary'} block={false} className={round ? "relative flex size-12 shrink-0 px-0 items-center justify-center bg-surface-raised text-ink" : "relative flex min-h-12 min-w-12 items-center justify-center"}>
+      <Bell className="size-5 shrink-0" aria-hidden />
       {notifications.count > 0 && <span aria-hidden className="absolute end-2 top-2 size-2 rounded-full bg-lime shadow-sm shadow-lime/30" />}
     </Button>
     {open && <NotificationDropdown openerId={id} notifications={notifications} onClose={() => setOpen(false)} />}

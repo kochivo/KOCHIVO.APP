@@ -3,6 +3,7 @@ import { arStd } from './standard-messages';
 
 export const homeV11Messages = defineMessages({
   ar: {
+    nutrition: '{name} محتاج نظام أكل', 'action.nutrition': 'عيّن نظام أكل',
     tag: 'KO · ملخص الصبح', heroLead: 'عندك', heroTasks: '{count} مهام', heroTime: 'هياخدوا حوالي',
     minutes: '{count} دقيقة', urgentLead: 'ابدأ ب{tasks}.', joinNames: '، و',
     emptyHero: 'خلصت كل مهام النهارده. فريقك ماشي تمام.', todayTasks: 'مهام النهارده', startTasks: 'ابدأ المهام',
@@ -23,6 +24,7 @@ export const homeV11Messages = defineMessages({
     saturday: 'سبت', sunday: 'حد', monday: 'اتنين', tuesday: 'تلات', wednesday: 'أربع', thursday: 'خميس', friday: 'جمعة',
   },
   arStd: {
+    nutrition: '{name} يحتاج إلى نظام غذائي', 'action.nutrition': 'عيّن نظامًا غذائيًا',
     tag: 'KO · ملخص الصباح', heroLead: 'لديك', heroTasks: '{count} مهام', heroTime: 'تحتاج حوالي',
     minutes: '{count} دقيقة', urgentLead: 'ابدأ ب{tasks}.', joinNames: '، و',
     emptyHero: 'أنهيت كل مهام اليوم. فريقك يسير جيدًا.', todayTasks: 'مهام اليوم', startTasks: 'ابدأ المهام',
@@ -43,6 +45,7 @@ export const homeV11Messages = defineMessages({
     saturday: 'سبت', sunday: 'أحد', monday: 'اثنين', tuesday: 'ثلاثاء', wednesday: 'أربعاء', thursday: 'خميس', friday: 'جمعة',
   },
   en: {
+    nutrition: '{name} needs a nutrition plan', 'action.nutrition': 'Assign nutrition plan',
     tag: 'KO · Morning brief', heroLead: 'You have', heroTasks: '{count} tasks', heroTime: 'taking about',
     minutes: '{count} minutes', urgentLead: 'Start with {tasks}.', joinNames: ', and ',
     emptyHero: 'All tasks done today. Your team is on track.', todayTasks: 'Tasks today', startTasks: 'Start tasks',

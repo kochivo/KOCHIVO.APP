@@ -1,6 +1,6 @@
 export const arStd = {
   homeAccount: 'حسابي', homeCaptainMessages: 'رسائل الكابتن', homeUnheard: 'رسائل الكابتن، رسالة جديدة',
-  homeStart: 'لنبدأ', homeWarmup: 'يتضمن إحماء', homeMinutes: '{count} دقيقة',
+  homeStart: 'لنبدأ', homeDoneToday: 'أنهيت تمرين اليوم', homeWarmup: 'يتضمن إحماء', homeMinutes: '{count} دقيقة',
   homeRest: 'يوم راحة', homeRestBody: 'تنمو العضلات أثناء الراحة. نم جيداً، واشرب الماء، وتناول وجباتك.',
   homeRestStreak: 'الراحة تحافظ على سلسلة من {count} يوم', homeTomorrow: 'غداً', homeTomorrowRest: 'غداً راحة أيضاً',
   homeLogFood: 'سجّل طعامك', homeFood: 'الطعام', homeWater: 'الماء', homeGlasses: 'أكواب',

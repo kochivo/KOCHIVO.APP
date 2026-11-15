@@ -5,7 +5,8 @@ import { useLocale, useT } from '@/core/i18n/client';
 import { localDb, stableId, useLiveQuery } from '@/core/offline';
 import { useTimezone } from '@/core/timezone/client';
 import { loadSupabaseBrowser } from '@/core/supabase/lazy';
-import { readDailyCheck, saveDailyCheck, waterGoalMl } from '@/features/readiness';
+import { readDailyCheck, saveDailyCheck, playerWaterGoalMl } from '@/features/readiness';
+import { useNutritionSnapshot } from '../hooks/use-nutrition-snapshot';
 import { formatNumber } from '@/lib/format';
 import { ErrorState, LoadingState } from '@/ui';
 import { messages } from '../v6-messages';
@@ -14,6 +15,7 @@ export function FoodWater({ playerId, today }: { playerId?: string; today: strin
   const t = useT(messages);
   const locale = useLocale();
   const timezone = useTimezone();
+  const nutrition = useNutritionSnapshot();
   const [error, setError] = useState(false);
   const [busy, setBusy] = useState(false);
   const [revision, setRevision] = useState(0);
@@ -67,7 +69,7 @@ export function FoodWater({ playerId, today }: { playerId?: string; today: strin
     finally { setBusy(false); }
   }
   const ready = result?.playerId === playerId && result?.today === today;
-  const goal = waterGoalMl(weight?.playerId === owner ? weight?.value : undefined);
+  const goal = playerWaterGoalMl(nutrition.snapshot?.water_target_ml, weight?.playerId === owner ? weight?.value : undefined);
   return <div className="space-y-inline">
     {error && <ErrorState message={t('waterError')} retryLabel={t('retry')} onRetry={() => { setError(false); setRevision(value => value + 1); }} />}
     {!ready ? !error && <LoadingState variant="detail" /> : <div className="flex items-center gap-stack rounded-[22px] border border-line-soft bg-surface px-stack py-stack">
