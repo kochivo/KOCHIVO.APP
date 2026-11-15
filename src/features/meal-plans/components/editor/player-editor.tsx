@@ -97,7 +97,7 @@ export function PlayerEditor({ data, editableMealNames = false }: { data: Awaite
     </div>
     <div className={template ? 'min-w-0' : 'grid min-w-0 items-start gap-card-gap min-[1001px]:grid-cols-[minmax(0,1fr)_280px]'}>
     <fieldset disabled={state.busy} className="min-w-0">
-      {!visible.length && <p className="glass mb-stack rounded-card p-card text-faint">{t('empty')}</p>}
+      {!visible.length && <p className="mb-stack text-muted">{t('empty')}</p>}
       {visible.map((meal, index) => {
         const props = { meal, update, facts, day, first: index === 0, last: index === visible.length - 1 };
         return template ? <MealCard key={meal.id} {...props} editableName />

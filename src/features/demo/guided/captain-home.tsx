@@ -27,7 +27,7 @@ export function CaptainHome({ state, dispatch, act, now }: PaneProps) {
     <div className="grid gap-card-gap min-[1200px]:grid-cols-2">
       <GlassCard data-demo-target="needs" className="grid content-start gap-stack p-card"><h3 className="text-md font-semibold">{t('needs')}</h3>
         {tasks.map((visible, i) => visible && <DemoRow key={i} title={names[[1, 2, 3, 0][i] ?? 0]} detail={t('needsDetails').split('|')[i]}>
-          <Button data-demo-target={i === 0 ? 'review' : undefined} variant="secondary" onClick={() => i === 0 || i === 3 ? dispatch({ type: 'go', page: i === 0 ? 'assess' : 'money', now: now() }) : act(i === 1 ? 'nudge' : 'renew')}>{t((['review', 'nudge', 'renew', 'pay'] as const)[i] ?? 'review')}</Button>
+          <Button block={false} data-demo-target={i === 0 ? 'review' : undefined} variant="secondary" onClick={() => i === 0 || i === 3 ? dispatch({ type: 'go', page: i === 0 ? 'assess' : 'money', now: now() }) : act(i === 1 ? 'nudge' : 'renew')}>{t((['review', 'nudge', 'renew', 'pay'] as const)[i] ?? 'review')}</Button>
         </DemoRow>)}
         {!tasks.some(Boolean) && <div className="rounded-control border border-dashed border-line p-card"><b>{t('allDone')}</b><p className="text-sm text-muted">{t('allDoneDetail')}</p></div>}
       </GlassCard>

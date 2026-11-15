@@ -34,7 +34,7 @@ export function GuidedScreen({ plans, state, dispatch, now, onLanguage }: { plan
   if (account) return <><div className="p-card"><Button variant="secondary" onClick={() => setAccount(false)}>{t('back')}</Button></div><ViewBoundary message={t('error')} retryLabel={t('retry')}><AccountDemo /></ViewBoundary></>;
   if (state.intro) return <Intro onChoose={n => dispatch({ type: 'start', n, now: now() })} />;
   const props = { state, dispatch, act, now };
-  return <div className="demo-shell min-h-dvh bg-bg-deep text-ink">
+  return <div data-guide-state={state.guide} className="demo-shell min-h-dvh bg-bg-deep text-ink">
     <DemoHeader state={state} dispatch={dispatch} now={now} onLanguage={onLanguage} />
     <main data-demo-stage data-view={state.view} className="demo-stage mx-auto max-w-[1480px] p-page-x"><CaptainPane {...props} plans={plans} /><PhonePane {...props} /></main>
     <GuideCard state={state} plans={plans} dispatch={dispatch} now={now} onAccount={() => setAccount(true)} />

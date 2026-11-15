@@ -40,7 +40,8 @@ export async function CaptainWorkspaceFrame({ children, sidebarFooter }: { child
     </aside>
     <div className="min-w-0 flex-1">
       <CaptainTopBar players={data?.players ?? null} bell={<NotificationBell captain />} install={<HeaderInstall />} />
-      <main className="min-w-0 pb-[max(var(--page-bottom-clearance),calc(var(--nav-clearance)+4.5rem))] min-[760px]:pb-20 lg:pb-0">{children}</main>
+      {/* The KO badge extends above its 52px launcher; nav-clearance already includes the safe area. */}
+      <main className="min-w-0 pb-[max(var(--page-bottom-clearance),calc(var(--nav-clearance)+0.5rem+3.25rem+var(--spacing-stack)+var(--spacing-card-gap)))] min-[760px]:pb-20 lg:pb-0">{children}</main>
     </div>
     <KoAccountLink />
   </div>;

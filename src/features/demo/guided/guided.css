@@ -1,6 +1,10 @@
 .demo-target { outline: 2px solid var(--color-lime); outline-offset: 5px; scroll-margin-block: 6rem 50dvh; }
 .demo-step-number { color: transparent; -webkit-text-stroke: 1px var(--color-lime); line-height: 1; font-family: var(--font-changa), sans-serif; }
 .demo-stage { display: grid; grid-template-columns: minmax(0, 1fr) 318px; gap: var(--demo-section); }
+.demo-resume { inset-inline-start: var(--demo-page-x); inset-block-end: calc(var(--demo-page-x) + var(--safe-bottom, 0px)); }
+.demo-shell[data-guide-state='min'] .demo-stage, .demo-shell[data-guide-state='closed'] .demo-stage {
+  padding-block-end: calc(var(--spacing-touch) + var(--spacing-card-gap) + var(--demo-page-x) + var(--safe-bottom, 0px));
+}
 .demo-captain { display: grid; grid-template-columns: 212px minmax(0, 1fr); height: calc(100dvh - 124px); min-height: 640px; }
 .demo-captain-side { flex-direction: column; min-block-size: 0; overflow: auto; }
 .demo-captain-main { grid-template-columns: minmax(0, 1fr); min-block-size: 0; overflow: auto; scrollbar-width: thin; }

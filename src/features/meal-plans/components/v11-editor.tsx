@@ -59,7 +59,7 @@ export function V11Editor({ planId }: { planId: string }) {
       <fieldset disabled={state.busy} className="grid min-w-0 gap-stack">
         <EditInPlace label={pt('planName')} value={draft.title} maxLength={80} onChange={event => update(current => ({ ...current, title: event.target.value }))} />
         <MealTargets totals={nutritionTotals(meals).totals} targets={draft.targets} onChange={targets => update(current => ({ ...current, targets }))} />
-        {!meals.length && <p className="glass rounded-card p-card text-muted">{pt('addYourFirstMealToStart')}</p>}
+        {!meals.length && <p className="text-muted">{pt('addYourFirstMealToStart')}</p>}
         {meals.map(meal => <V11Meal key={meal.id} meal={meal} day={day} update={update} />)}
         <Button variant="secondary" className="border border-dashed border-lime/40 text-lime" onClick={() => {
           const id = uuidv7(); update(current => {

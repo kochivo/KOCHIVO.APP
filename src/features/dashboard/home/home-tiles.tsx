@@ -4,8 +4,9 @@ import { formatNumber } from '@/lib/format';
 import { homeMessages, homeV11Messages } from './messages';
 import { HomeRing } from './home-ring';
 
-export async function HomeTiles({ adherence, previous, trained, active, pending, paid, progress }: {
+export async function HomeTiles({ adherence, previous, trained, active, pending, paid, progress, incomeGoal }: {
   adherence: number; previous: number; trained: number; active: number; pending: number; paid: number; progress: number;
+  incomeGoal?: number | null;
 }) {
   const [t, old, locale] = await Promise.all([getT(homeV11Messages), getT(homeMessages), getLocale()]);
   const number = (value: number) => formatNumber(value, locale);
@@ -15,7 +16,7 @@ export async function HomeTiles({ adherence, previous, trained, active, pending,
       delta: `${delta > 0 ? '+' : ''}${number(delta)}%` },
     { label: t('trained'), value: `${number(trained)}/${number(active)}`, ring: active ? trained / active : 0, tone: 'text-lime' },
     { label: t('waitingTasks'), value: number(pending), ring: 1 - progress, tone: 'text-danger', href: '/captain/tasks' },
-    { label: t('revenue'), value: number(paid), ring: 1, tone: 'text-calm', href: '/captain/billing' },
+    { label: t('revenue'), value: number(paid), ring: incomeGoal && incomeGoal > 0 ? paid / incomeGoal : 0, tone: 'text-calm', href: '/captain/billing' },
   ];
   const className = 'glass-strong flex min-h-12 min-w-0 items-center gap-stack rounded-card p-stack text-start min-[760px]:p-card';
   return <div data-home-tiles className="grid grid-cols-2 gap-stack min-[1000px]:grid-cols-4">{tiles.map(tile => {

@@ -12,7 +12,7 @@ export function Money({ state, act }: PaneProps) {
     <ProgressBar value={collected} max={collected + owed} aria-label={t('collected')} /><p className="text-sm text-warn">{t('owed')} · {owed}</p>
     {(['cash', 'transfer', 'payments'] as const).map((key, i) => <DemoRow key={key} title={t(key)} detail={String([9200, collected - 9200, 17 + Number(state.paid) + Number(state.renewed)][i])} />)}
   </GlassCard><GlassCard className="grid content-start gap-stack p-card" data-demo-target="owed"><h3>{t('whoOwes')}</h3><DemoRow title={t('names').split('|')[0]} detail={t(state.paid ? 'paid' : 'remaining')}>
-    {!state.paid && <Button onClick={() => act('pay')}>{t('pay')}</Button>}</DemoRow><DemoRow title={t('names').split('|')[7]} detail={String(500)}><Button variant="secondary" onClick={() => act('remind')}>{t('nudge')}</Button></DemoRow>
+    {!state.paid && <Button block={false} onClick={() => act('pay')}>{t('pay')}</Button>}</DemoRow><DemoRow title={t('names').split('|')[7]} detail={String(500)}><Button block={false} variant="secondary" onClick={() => act('remind')}>{t('nudge')}</Button></DemoRow>
     <h3>{t('package')}</h3>{t('packages').split('|').map((title, i) => <DemoRow key={title} title={title} detail={t('packageDetails').split('|')[i]} />)}
   </GlassCard></div>;
 }
