@@ -67,9 +67,11 @@
   --color-warn-soft: rgb(242 181 68 / 0.12);
   --color-danger: #ffa080;
   --color-danger-soft: rgb(255 138 101 / 0.12);
-  --font-sans: var(--font-manrope), var(--font-alexandria), system-ui, sans-serif;
+  /* Real faces first, metric fallbacks after: next/font's "Manrope Fallback" is local Arial with every
+     Arabic glyph, so placing it before Changa/Alexandria (as var(--font-manrope) does) renders Arabic in Arial. */
+  --font-sans: 'Manrope', 'Alexandria', 'Manrope Fallback', 'Alexandria Fallback', system-ui, sans-serif;
   /* headings, buttons and big labels: athletic display face; body text stays on the calmer sans */
-  --font-display: var(--font-manrope), var(--font-changa), var(--font-alexandria), system-ui, sans-serif;
+  --font-display: 'Manrope', 'Changa', 'Alexandria', 'Manrope Fallback', 'Changa Fallback', system-ui, sans-serif;
   --radius-card: 1.25rem;
   --radius-control: .875rem;
   --radius-chip: 9999px;
