@@ -40,14 +40,14 @@ export function FoodRow({ item, update }: { item: MealItem; update: (change: (dr
   const unitName = unit ? t('unitLabel', { name: locale === 'en' ? unit.name_en : unit.name_ar, grams: formatNumber(unit.grams, locale) }) : t('gramUnit');
   const name = locale === 'en' ? item.food.nameEn || item.food.name : item.food.name;
   const missing = missingNutrition(item.food);
-  return <li data-incomplete={missing} className={`grid grid-cols-[minmax(0,1fr)_minmax(6rem,120px)_auto_48px] items-center gap-inline border-t border-line-soft p-stack text-row @[36rem]:grid-cols-[40px_minmax(8rem,1fr)_minmax(150px,190px)_64px_48px] @[36rem]:gap-stack ${missing ? 'bg-warn/10' : ''}`}>
+  return <li data-incomplete={missing} className={`grid grid-cols-[minmax(0,1fr)_auto_48px] items-center gap-inline border-t border-line-soft p-stack text-row @[36rem]:grid-cols-[40px_minmax(8rem,1fr)_minmax(150px,190px)_64px_48px] @[36rem]:gap-stack ${missing ? 'bg-warn/10' : ''}`}>
     <span className="hidden size-10 overflow-hidden rounded-xl border border-line bg-surface @[36rem]:block">
       {/* Food storage hosts vary by deployment. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       {item.food.photo && <img src={foodPhotoUrl(item.food.photo)} alt="" width={40} height={40} loading="lazy" className="size-10 object-cover" />}
     </span>
-    <div className="min-w-0 break-words">{name}{missing ? <small className="block text-micro text-warn">{t('missingValues')} · {item.food.custom && <button id={openerId} type="button" className={`${secondaryButtonClass} min-h-12 underline`} onClick={() => setEditing(true)}>{t('complete')}</button>} {t('countHint')}</small>
-      : <small className="block text-xs text-muted">{macroT('macros', { p: formatNumber(macrosFor(item.food, item.grams).protein, locale), c: formatNumber(macrosFor(item.food, item.grams).carbs, locale), f: formatNumber(macrosFor(item.food, item.grams).fat, locale) })}</small>}</div>
+    <div className="col-span-full min-w-0 break-words @[36rem]:col-span-1">{name}{missing ? <small className="block text-micro text-warn">{t('missingValues')} · {item.food.custom && <button id={openerId} type="button" className={`${secondaryButtonClass} min-h-12 underline`} onClick={() => setEditing(true)}>{t('complete')}</button>} {t('countHint')}</small>
+      : <small className="block whitespace-nowrap text-xs text-muted">{macroT('macros', { p: formatNumber(macrosFor(item.food, item.grams).protein, locale), c: formatNumber(macrosFor(item.food, item.grams).carbs, locale), f: formatNumber(macrosFor(item.food, item.grams).fat, locale) })}</small>}</div>
     <div className="flex min-h-12 min-w-0 flex-wrap items-center rounded-xl border border-line">
       <input type="number" aria-label={t('quantity', { name })} min={5 / (unit?.grams ?? 1)} max={2000 / (unit?.grams ?? 1)} step="any"
         value={edited?.grams === item.grams && edited.key === key ? edited.text : Math.round(unitQuantity(item.grams, unit) * 100) / 100}

@@ -19,6 +19,7 @@ it('renders the existing meal name as a labelled editable field and retains the 
   expect(html).toContain('lucide-pencil');
   expect(html).toContain('Add the first food');
   expect(html).toContain('aria-expanded="false"');
+  expect(html).toMatch(/type="time"[^>]*value=""/);
 });
 
 it('keeps the heading for callers outside the player workspace', () => {

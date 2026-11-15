@@ -26,7 +26,7 @@ export function QuestionField({ question: q, locale, value = null, readOnly = fa
       required={q.required} onChange={e => onChange?.(e.target.value)} />}
     {q.type === 'scale' && preview ? <div className="grid grid-cols-5 gap-inline">{Array.from({ length: 10 }, (_, i) => i + 1).map(n => <button key={n} type="button" aria-pressed={value === n}
       className="min-h-12 min-w-12 rounded-control bg-surface font-display text-xs text-faint aria-pressed:bg-lime aria-pressed:text-on-lime" onClick={() => onChange?.(n)}>{n}</button>)}</div>
-      : (q.type === 'number' || q.type === 'scale') && (preview ? <div className="flex items-center gap-inline">{numberField}
+      : (q.type === 'number' || q.type === 'scale') && (preview ? <div className="clear-both flex min-w-0 items-center gap-inline">{numberField}
         {(q.maps_to === 'weight' || q.maps_to === 'targetWeight' || q.maps_to === 'waist' || q.maps_to === 'height')
           && <span className="shrink-0 text-faint">{m[q.maps_to === 'weight' || q.maps_to === 'targetWeight' ? 'kg' : 'cm']}</span>}</div> : numberField)}
     {(q.type === 'choice' || q.type === 'multi') && <div className="flex flex-wrap gap-inline">{q.options.map((option, index) =>

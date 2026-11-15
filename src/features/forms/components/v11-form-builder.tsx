@@ -35,7 +35,7 @@ export function V11FormBuilder({ form, locale, style, status, onChange, onRetry,
     <h1 className="sr-only">{form.title}</h1>
     <header className="glass mb-card-gap flex flex-wrap items-center gap-stack rounded-card border border-line-soft p-stack">
       <Link href={`/${locale}/captain/library/forms`} prefetch={false} className={editorButton}>{t('back')}</Link>
-      <div className="min-w-0 flex-1"><EditInPlace label={m.formTitle} value={form.title} onChange={e => onChange({ ...form, title: e.target.value })} /></div>
+      <div className="order-first w-full min-w-0 min-[760px]:order-none min-[760px]:w-auto min-[760px]:flex-1"><EditInPlace label={m.formTitle} value={form.title} onChange={e => onChange({ ...form, title: e.target.value })} /></div>
       <span className="text-xs text-muted">{questionCount(form.questions.length, locale, style)}</span>
       <Button disabled={status === 'saving' || validateForm(form).length > 0} onClick={onRetry} block={false} className="px-page-x">{status === 'saving' ? m.saving : t('save')}</Button>
     </header>
@@ -68,7 +68,7 @@ export function V11FormBuilder({ form, locale, style, status, onChange, onRetry,
         </section>
       </div>
       <aside className="flex justify-center min-[761px]:sticky min-[761px]:top-20">
-        <div className="glass-strong flex min-h-[420px] w-full min-w-0 flex-col gap-card-gap rounded-[32px] border border-line px-page-x py-page-y">
+        <div className="glass-strong flex w-full min-w-0 flex-col gap-card-gap rounded-[32px] border border-line px-page-x py-page-y min-[760px]:min-h-[420px]">
           <p className="text-xs text-muted">{t('preview')}</p><div className="flex gap-inline" aria-hidden>{form.questions.map((question, n) => <span key={question.id} className={`h-1 flex-1 rounded-full ${n <= index ? 'bg-lime' : 'bg-surface'}`} />)}</div>
           <div className="[&_button]:cursor-pointer [&_button]:active:scale-[.98] [&_button:focus-visible]:ring-2 [&_button:focus-visible]:ring-lime [&_label:has(input)]:cursor-pointer [&_label]:active:scale-[.98] [&_label:focus-within]:ring-2 [&_label:focus-within]:ring-lime">
             {q ? <V11QuestionPreview key={q.id} question={q} locale={locale} style={style} /> : <p className="text-muted">{form.questions.length ? t('selectQuestion') : m.emptyQuestions}</p>}

@@ -20,6 +20,7 @@ export async function CaptainWorkspaceFrame({ children, sidebarFooter }: { child
     getT(frameMessages), getT(appearanceMessages), loadCaptainFrame().catch((error: unknown) => { unstable_rethrow(error); return null; }),
   ]);
   return <div className="flex min-h-dvh w-full min-w-0 gap-stack px-page-x pb-card pt-[max(1rem,var(--safe-top))] min-[760px]:py-page-y">
+    <div aria-hidden className="pointer-events-none fixed inset-x-0 top-0 z-40 h-[var(--safe-top)] bg-bg" />
     <style>{`[data-area="captain"] [role="radiogroup"][aria-label=${JSON.stringify(appearance('theme'))}] { display: none; }`}</style>
     <aside className="contents w-[220px] shrink-0 min-[760px]:sticky min-[760px]:top-3 min-[760px]:flex min-[760px]:h-[calc(100dvh-1.5rem)] min-[760px]:flex-col min-[760px]:overflow-y-auto min-[760px]:rounded-card min-[760px]:border min-[760px]:border-line min-[760px]:bg-surface min-[760px]:p-stack">
       <Link href="/captain" aria-label={t('home')} className="hidden min-h-12 items-center gap-inline px-inline font-display text-xl font-extrabold min-[760px]:flex">
@@ -40,8 +41,7 @@ export async function CaptainWorkspaceFrame({ children, sidebarFooter }: { child
     </aside>
     <div className="min-w-0 flex-1">
       <CaptainTopBar players={data?.players ?? null} bell={<NotificationBell captain />} install={<HeaderInstall />} />
-      {/* The KO badge extends above its 52px launcher; nav-clearance already includes the safe area. */}
-      <main className="min-w-0 pb-[max(var(--page-bottom-clearance),calc(var(--nav-clearance)+0.5rem+3.25rem+var(--spacing-stack)+var(--spacing-card-gap)))] min-[760px]:pb-20 lg:pb-0">{children}</main>
+      <main className="captain-content min-w-0">{children}</main>
     </div>
     <KoAccountLink />
   </div>;
