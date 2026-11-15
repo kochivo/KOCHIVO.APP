@@ -1,6 +1,6 @@
 # AGENTS.md — rules for any coding agent working on KOCHIVO
 
-Read this file, `docs/ARCHITECTURE.md`, and the task card you were given **before** writing code.
+Read this file, `docs/ARCHITECTURE.md`, `DESIGN.md` (for anything visible), and the task card you were given **before** writing code.
 These rules are mandatory. A diff that breaks one is rejected in review, even if it works.
 
 ## 1. Scope
