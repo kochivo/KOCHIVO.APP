@@ -20,7 +20,11 @@ import { useEditorAutosave } from '../../hooks/use-editor-autosave';
 import { savePlayerEditor } from '../../data/player-editor';
 import type { loadPlayerEditor } from '../../data/player-editor';
 import { automaticTargets, openRestDay } from './workspace-model';
-import { TargetTiles } from './target-tiles';
+import { MealTargets } from './meal-targets';
+import { V11FoodPicker } from '../v11-food-picker';
+import { defaultPortion } from '../../data/meal-portions';
+import { addItem } from '../../draft';
+import { messages as redesignMessages } from './redesign/messages';
 import { MealCard } from './meal-card';
 import { WeekCard } from './week-card';
 import { messages } from './workspace/messages';
@@ -43,6 +47,7 @@ const TargetCalculator = dynamic(() => import('./target-calculator').then(module
 export function PlayerEditor({ data, editableMealNames = false }: { data: Awaited<ReturnType<typeof loadPlayerEditor>>; editableMealNames?: boolean }) {
   const SendIcon = captainWorkspaceEnabled() ? KoSend : Send;
   const t = useT(messages);
+  const rt = useT(redesignMessages);
   const planT = useT(planMessages);
   const editorT = useT(editorMessages);
   const locale = useLocale();
@@ -75,7 +80,8 @@ export function PlayerEditor({ data, editableMealNames = false }: { data: Awaite
     </header>
     {state.error && <p role="alert" className="mb-3 text-sm text-danger">{state.error}</p>}
     {calculator && <TargetCalculator facts={facts} onApply={targets => { update(draft => ({ ...draft, targets })); setCalculator(false); }} />}
-    <TargetTiles totals={totals} targets={targets} incomplete={incomplete} />
+    <MealTargets totals={totals} targets={draft.targets} onChange={targets => update(draft => ({ ...draft, targets }))} />
+    {incomplete && <p className="text-xs text-warn">{t('incomplete')}</p>}
     <div className="mb-3.5 flex flex-wrap items-center gap-2">
       {(['training', 'rest'] as const).map(value => <Chip key={value} disabled={state.busy} pressed={day === value} className={day === value ? '!border-ink !bg-ink !text-bg-deep' : 'bg-transparent'} onClick={() => {
         if (value === 'rest') update(draft => openRestDay(draft, uuidv7));
@@ -89,10 +95,14 @@ export function PlayerEditor({ data, editableMealNames = false }: { data: Awaite
     <div className={template ? 'min-w-0' : 'grid min-w-0 items-start gap-4 min-[1001px]:grid-cols-[minmax(0,1fr)_280px]'}>
     <fieldset disabled={state.busy} className="min-w-0">
       {!visible.length && <p className="glass mb-3 rounded-card p-5 text-faint">{t('empty')}</p>}
-      {visible.map((meal, index) => <MealCard key={meal.id} meal={meal} update={update} facts={facts} day={day} editableName={editableMealNames && !template} first={index === 0} last={index === visible.length - 1} />)}
-      <Button variant="secondary" className="min-h-12 rounded-full" onClick={() => update(draft => {
-        const names = [t('breakfast'), t('lunch'), t('dinner')];
-        const next = addMeal(draft, names[visible.length] ?? t('newMeal'), uuidv7());
+      {visible.map((meal, index) => {
+        const props = { meal, update, facts, day, first: index === 0, last: index === visible.length - 1 };
+        return template ? <MealCard key={meal.id} {...props} editableName />
+          : <MealCard key={meal.id} {...props} editableName={editableMealNames && !template} />;
+      })}
+      <Button variant="secondary" className="min-h-12 w-full rounded-control border border-dashed border-lime/40 text-lime" onClick={() => update(draft => {
+        const names = [rt('breakfast'), rt('snack'), rt('lunch'), rt('dinner')];
+        const next = addMeal(draft, names[visible.length] ?? rt('meal', { n: visible.length + 1 }), uuidv7());
         return { ...next, meals: next.meals.map((meal, index) => index === next.meals.length - 1 ? { ...meal, dayType: split || day === 'rest' ? day : 'all' } : meal) };
       })}>{t('addMeal')}</Button>
       {!template && <div className="mt-[18px] grid gap-[18px] min-[1001px]:grid-cols-2">
@@ -112,7 +122,11 @@ export function PlayerEditor({ data, editableMealNames = false }: { data: Awaite
           })} />}<TargetsBar targets={draft.targets} totals={totals} onChange={targets => update(draft => ({ ...draft, targets }))} /></div>}
       </details>
     </fieldset>
-    {!template && <PlayerFactsCard name={name} facts={facts} meals={draft.meals} logs={context.logs} today={context.today} sent={draft.status !== 'draft'} />}
+    <aside className="grid min-w-0 gap-4"><V11FoodPicker meals={visible} disabled={state.busy || !visible.length} navigationDisabled={state.dirty || state.busy} onPick={(food, mealId) => {
+      if (!mealId) return;
+      const portion = defaultPortion(food), id = uuidv7();
+      update(draft => { const next = addItem(draft, mealId, food, portion.grams, id, planT); return { ...next, meals: next.meals.map(meal => ({ ...meal, items: meal.items.map(item => item.id === id ? { ...item, unit: portion.unit } : item) })) }; });
+    }} />{!template && <PlayerFactsCard name={name} facts={facts} meals={draft.meals} logs={context.logs} today={context.today} sent={draft.status !== 'draft'} />}</aside>
     </div>
     {!template && <details className="group mt-3 text-muted"><summary className="flex min-h-12 cursor-pointer items-center">{t('library')}<ChevronDown aria-hidden className="ms-auto size-4 transition-transform group-open:rotate-180" /></summary>
       {!data.plans.length && <p className="text-xs text-faint">{planT('noPlansYetCreateANewOne')}</p>}

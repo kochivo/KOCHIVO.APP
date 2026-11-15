@@ -14,14 +14,22 @@ import { messages } from './workspace/messages';
 import { messages as planMessages } from '../../messages';
 import { foodPhotoUrl } from '@/core/storage/media-url';
 import { missingNutrition } from './nutrition-values';
+import type { PortionItem } from '../../data/meal-portions';
+import { Button } from '@/ui/button';
+import { messages as redesignMessages } from './redesign/messages';
+import { messages as macroMessages } from '../v11/messages';
 
 const CustomFoodSheet = dynamic(() => import('../custom-food-sheet').then(module => module.CustomFoodSheet));
+const AlternativesSheet = dynamic(() => import('./alternatives-sheet').then(module => module.AlternativesSheet));
 
 export function FoodRow({ item, update }: { item: MealItem; update: (change: (draft: PlanDraft) => PlanDraft) => void }) {
   const t = useT(messages);
   const planT = useT(planMessages);
   const locale = useLocale();
-  const [key, setKey] = useState(item.food.units?.[0]?.key ?? '');
+  const macroT = useT(macroMessages);
+  const key = (item as PortionItem).unit ?? '';
+  const [alternatives, setAlternatives] = useState(false);
+  const rt = useT(redesignMessages), alternativeId = useId();
   const [error, setError] = useState('');
   const [editing, setEditing] = useState(false);
   const openerId = useId();
@@ -30,14 +38,14 @@ export function FoodRow({ item, update }: { item: MealItem; update: (change: (dr
   const unitName = unit ? t('unitLabel', { name: locale === 'en' ? unit.name_en : unit.name_ar, grams: formatNumber(unit.grams, locale) }) : t('gramUnit');
   const name = locale === 'en' ? item.food.nameEn || item.food.name : item.food.name;
   const missing = missingNutrition(item.food);
-  return <li data-incomplete={missing} className={`grid grid-cols-[minmax(6rem,1fr)_minmax(7.5rem,150px)_48px] items-center gap-2 border-t border-line-soft px-[18px] py-2.5 text-[13px] @[36rem]:grid-cols-[40px_minmax(8rem,1fr)_minmax(150px,190px)_64px_48px] @[36rem]:gap-3 ${missing ? 'bg-warn/10' : ''}`}>
+  return <li data-incomplete={missing} className={`grid grid-cols-[minmax(0,1fr)_minmax(6rem,120px)_auto_48px] items-center gap-2 border-t border-line-soft p-3 text-row @[36rem]:grid-cols-[40px_minmax(8rem,1fr)_minmax(150px,190px)_64px_48px] @[36rem]:gap-3 ${missing ? 'bg-warn/10' : ''}`}>
     <span className="hidden size-10 overflow-hidden rounded-xl border border-line bg-surface @[36rem]:block">
       {/* Food storage hosts vary by deployment. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       {item.food.photo && <img src={foodPhotoUrl(item.food.photo)} alt="" width={40} height={40} loading="lazy" className="size-10 object-cover" />}
     </span>
     <div className="min-w-0 break-words">{name}{missing ? <small className="block text-[11.5px] text-warn">{t('missingValues')} · {item.food.custom && <button id={openerId} type="button" className="min-h-12 underline" onClick={() => setEditing(true)}>{t('complete')}</button>} {t('countHint')}</small>
-      : <small className="block text-[11.5px] text-faint">{t('macros', { protein: formatNumber(item.food.protein, locale), carbs: formatNumber(item.food.carbs, locale), fat: formatNumber(item.food.fat, locale) })}</small>}</div>
+      : <small className="block text-xs text-muted">{macroT('macros', { p: formatNumber(macrosFor(item.food, item.grams).protein, locale), c: formatNumber(macrosFor(item.food, item.grams).carbs, locale), f: formatNumber(macrosFor(item.food, item.grams).fat, locale) })}</small>}</div>
     <div className="flex min-h-12 min-w-0 flex-wrap items-center rounded-xl border border-line">
       <input type="number" aria-label={t('quantity', { name })} min={5 / (unit?.grams ?? 1)} max={2000 / (unit?.grams ?? 1)} step="any"
         value={edited?.grams === item.grams && edited.key === key ? edited.text : Math.round(unitQuantity(item.grams, unit) * 100) / 100}
@@ -52,14 +60,16 @@ export function FoodRow({ item, update }: { item: MealItem; update: (change: (dr
       <span className="relative flex min-h-12 min-w-0 flex-1 items-center border-s border-line px-2 text-xs text-muted">
         <span className="whitespace-normal break-words">{unitName}</span>
         {!!item.food.units?.length && <ChevronDown aria-hidden className="ms-auto size-3 shrink-0" />}
-        {!!item.food.units?.length && <select aria-label={t('unit')} value={key} onChange={event => setKey(event.target.value)} className="absolute inset-0 min-h-12 w-full cursor-pointer opacity-0">
+        {!!item.food.units?.length && <select aria-label={t('unit')} value={key} onChange={event => { const unit = event.target.value || null; update(draft => ({ ...draft, meals: draft.meals.map(meal => ({ ...meal, items: meal.items.map(row => row.id === item.id ? { ...row, unit } : row) })) })); }} className="absolute inset-0 min-h-12 w-full cursor-pointer opacity-0 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-lime">
           <option value="">{t('gramUnit')}</option>{item.food.units.map(value => <option key={value.key} value={value.key}>{t('unitLabel', { name: locale === 'en' ? value.name_en : value.name_ar, grams: formatNumber(value.grams, locale) })}</option>)}
         </select>}
       </span>
     </div>
-    <span className={`hidden font-display font-extrabold tabular-nums @[36rem]:block ${missing ? 'text-warn' : ''}`}>{missing ? t('unknown') : formatNumber(Math.round(macrosFor(item.food, item.grams).kcal), locale)}{!missing && <small className="block text-[11.5px] font-normal text-faint">{t('calorieUnit')}</small>}</span>
+    <span className={`font-display font-extrabold tabular-nums ${missing ? 'text-warn' : ''}`}>{missing ? t('unknown') : formatNumber(Math.round(macrosFor(item.food, item.grams).kcal), locale)}{!missing && <small className="block text-micro font-normal text-muted">{t('calorieUnit')}</small>}</span>
     <IconButton type="button" aria-label={t('remove', { name })} className="border border-danger/40 text-danger! grid min-h-12 min-w-12 place-items-center text-ink" onClick={() => update(draft => removeItem(draft, item.id))}><X aria-hidden className="size-4" /></IconButton>
     {error && <p role="alert" className="col-span-full text-danger">{error}</p>}
+    <div className="col-span-full"><Button id={alternativeId} variant="secondary" block={false} onClick={() => setAlternatives(true)}>{rt('alternatives', { n: item.alternatives.length })}</Button></div>
+    {alternatives && <AlternativesSheet item={item} update={update} openerId={alternativeId} onClose={() => setAlternatives(false)} />}
     {editing && <CustomFoodSheet food={item.food} openerId={openerId} onClose={() => setEditing(false)} onSave={food => {
       update(draft => ({ ...draft, meals: draft.meals.map(meal => ({ ...meal, items: meal.items.map(row => ({ ...row,
         food: row.food.id === food.id ? food : row.food,

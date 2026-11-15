@@ -9,10 +9,11 @@ import { planClient, toFood } from './client';
 import { escapeSearch } from '../types';
 import type { Food } from '../types';
 
-export async function searchFoods({ query, limit = 30, mine = false }: { query: string; limit?: number; mine?: boolean }): Promise<ActionResult<{ foods: Food[]; catalogEmpty: boolean }>> {
+export async function searchFoods({ query, limit = 30, mine = false, category }: { query: string; limit?: number; mine?: boolean; category?: 'protein' | 'carbs' }): Promise<ActionResult<{ foods: Food[]; catalogEmpty: boolean }>> {
   const t = await getT(messages);
   const client = await planClient();
   let request = client.from('foods').select('*').is('archived_at', null).order('name_ar').limit(Math.max(1, Math.min(30, limit)));
+  if (category) request = request.contains('tags', [category]);
   if (mine) {
     const { data, error } = await client.auth.getClaims();
     if (error || !data?.claims.sub) return fail(t('signInFirst'));

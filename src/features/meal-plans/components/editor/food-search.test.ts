@@ -10,10 +10,10 @@ import type { Food, PlanDraft } from '../../types';
 
 const state = vi.hoisted(() => ({ query: '', status: 'ready', data: { foods: [] as { id: string; name: string; nameEn: string }[], catalogEmpty: false },
   error: undefined as unknown, search: vi.fn(), creating: false, change: vi.fn(),
-  load: undefined as undefined | (() => Promise<unknown>) }));
+  boolCalls: 0, open: true, load: undefined as undefined | (() => Promise<unknown>) }));
 vi.mock('react', async original => ({ ...await original<typeof React>(),
   useId: () => 'food-search', useRef: (current: unknown) => ({ current }),
-  useState: (initial: unknown) => [typeof initial === 'string' ? state.query : state.creating, state.change], useCallback: (fn: unknown) => fn,
+  useState: (initial: unknown) => [typeof initial === 'string' ? state.query : state.boolCalls++ % 2 === 0 ? state.open : state.creating, state.change], useCallback: (fn: unknown) => fn,
 }));
 vi.mock('@/core/i18n/client', () => ({ useT: (messages: Messages) => createT(messages, 'en'), useLocale: () => 'en' }));
 vi.mock('../../data/foods', () => ({ searchFoods: state.search }));
@@ -23,6 +23,7 @@ vi.mock('@/core/resource', () => ({ useResource: (_key: string | null, load: () 
 beforeEach(() => {
   state.query = 'egg'; state.status = 'ready'; state.data = { foods: [], catalogEmpty: false }; state.error = undefined;
   state.creating = false; state.change.mockClear();
+  state.boolCalls = 0; state.open = true;
 });
 const render = () => renderToStaticMarkup(createElement(FoodSearch, { onPick: vi.fn() }));
 it('searches the existing library inline with a bounded query', async () => {
@@ -39,7 +40,7 @@ it('shows localized library results and keeps the search text', () => {
 it('surfaces food creation and library results with add icons', () => {
   state.data.foods = [{ id: 'egg', name: 'بيض', nameEn: 'Egg' }];
   const html = render();
-  expect(html.match(/<button[^>]*class="[^"]*control-secondary[^>]*>/g)).toHaveLength(2);
+  expect(html.match(/<button[^>]*class="[^"]*control-secondary[^>]*>/g)).toHaveLength(3);
   expect(html.match(/lucide-plus/g)).toHaveLength(2);
 });
 it.each(['loading', 'error', 'empty'] as const)('has a %s state', kind => {

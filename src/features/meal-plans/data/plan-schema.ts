@@ -9,6 +9,7 @@ export const draftSchema = z.object({
   targets: z.object({ kcal: z.number().int().min(800).max(8000), protein: z.number().int().min(0).max(32767),
     carbs: z.number().int().min(0).max(32767), fat: z.number().int().min(0).max(32767) }),
   meals: z.array(z.object({ id: z.uuid(), name: z.string().trim().min(1).max(40), position: z.number().int().positive(), dayType: z.enum(['all', 'training', 'rest']).optional(),
-    items: z.array(alternative.extend({ grams: z.number().min(5).max(2000), position: z.number().int().positive(), alternatives: z.array(alternative).max(100) })).max(100),
+    timeOfDay: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/).nullable().optional(),
+    items: z.array(alternative.extend({ unit: z.string().min(1).max(80).nullable().optional(), grams: z.number().min(5).max(2000), position: z.number().int().positive(), alternatives: z.array(alternative).max(100) })).max(100),
   })).max(100),
 });

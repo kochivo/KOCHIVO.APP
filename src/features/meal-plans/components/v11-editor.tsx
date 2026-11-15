@@ -15,7 +15,10 @@ import { useEditorAutosave } from '../hooks/use-editor-autosave';
 import { addItem, addMeal } from '../draft';
 import { dayMeals } from '../editor-rules';
 import { nutritionTotals } from './editor/nutrition-values';
-import { V11Macros } from './v11-macros';
+import { MealTargets } from './editor/meal-targets';
+import { EditInPlace } from '@/ui/edit-in-place';
+import { defaultPortion } from '../data/meal-portions';
+import { messages as redesignMessages } from './editor/redesign/messages';
 import { V11Meal } from './v11-meal';
 import { V11FoodPicker } from './v11-food-picker';
 import { messages } from './v11/messages';
@@ -26,18 +29,15 @@ import { useToast } from '@/ui/toast';
 import { messages as successMessages } from '../success/messages';
 import { formatNumber } from '@/lib/format';
 
-const TargetsBar = dynamic(() => import('./targets-bar').then(module => module.TargetsBar));
 const LegacyEditor = dynamic(() => import('./legacy-editor').then(module => module.LegacyEditor), { loading: () => <LoadingState variant="detail" /> });
 
 export function V11Editor({ planId }: { planId: string }) {
   const t = useT(messages), pt = useT(planMessages);
+  const rt = useT(redesignMessages);
   const success = useT(successMessages), toast = useToast(), locale = useLocale();
   const state = usePlanDraft(planId, { clearErrorsOnEdit: true });
   useEditorAutosave(state);
   const [day, setDay] = useState<'training' | 'rest'>('training');
-  const [selected, setSelected] = useState<string | null>(null);
-  const [picker, setPicker] = useState(false);
-  const [targetsOpen, setTargetsOpen] = useState(false);
   const { draft, update } = state;
   const loadUsage = useCallback(() => planPlayers(planId), [planId]);
   const usage = useResource(draft && !draft.playerId ? `v11-plan-usage:${planId}` : null, loadUsage);
@@ -45,7 +45,6 @@ export function V11Editor({ planId }: { planId: string }) {
   if (!draft) return <div role="alert">{state.error}<Button variant="secondary" onClick={state.reload}>{t('retry')}</Button></div>;
   if (draft.playerId) return <LegacyEditor planId={planId} />;
   const meals = dayMeals(draft.meals, day);
-  const mealId = meals.some(meal => meal.id === selected) ? selected : meals[0]?.id;
   return <div className="grid min-w-0 gap-4">
     <PageBarTitle title={draft.title} subtitle={usage.data !== undefined ? t('usage', { n: usage.data }) : usage.error ? t('error') : t('loading')} />
     <PageBarActions><Link href="/captain/library/meal-plans" aria-label={t('back')} aria-disabled={state.dirty || state.busy} onNavigate={event => { if (state.dirty || state.busy) event.preventDefault(); }} className={buttonClass({ variant: 'secondary', block: false, className: "grid min-h-12 min-w-12 place-items-center" })}><KoMealPlans aria-hidden className="size-5" /></Link><Button disabled={state.busy} onClick={() => void state.persist(false, true)}>{t('save')}</Button></PageBarActions>
@@ -53,27 +52,26 @@ export function V11Editor({ planId }: { planId: string }) {
     {state.busy && <p role="status" className="text-muted">{pt('saving')}</p>}
     {state.dirty && !state.busy && <p role="status" className="text-xs text-muted">{pt('youHaveUnsavedChanges')}</p>}
     <div role="tablist" aria-label={pt('meals')} className="flex gap-2">{(['training', 'rest'] as const).map(value => <button key={value} type="button" role="tab" aria-selected={day === value} disabled={state.busy} onClick={() => {
-      setDay(value); setPicker(false);
-    }} className={`min-h-12 rounded-full px-5 text-sm ${day === value ? 'bg-lime/10 text-lime' : 'text-muted'}`}>{t(value)}</button>)}</div>
-    <div className="grid min-w-0 items-start gap-4 min-[761px]:grid-cols-[minmax(0,1fr)_300px]">
+      setDay(value);
+    }} className={`press min-h-12 cursor-pointer rounded-full border border-line px-5 text-sm focus-visible:ring-2 focus-visible:ring-lime ${day === value ? 'bg-lime/10 text-lime' : 'bg-surface text-muted'}`}>{t(value)}</button>)}</div>
+    <div className="grid min-w-0 items-start gap-3 min-[1001px]:grid-cols-[minmax(0,1fr)_300px]">
       <fieldset disabled={state.busy} className="grid min-w-0 gap-3">
-        <V11Macros totals={nutritionTotals(meals).totals} targets={draft.targets} />
+        <EditInPlace label={pt('planName')} value={draft.title} maxLength={80} onChange={event => update(current => ({ ...current, title: event.target.value }))} />
+        <MealTargets totals={nutritionTotals(meals).totals} targets={draft.targets} onChange={targets => update(current => ({ ...current, targets }))} />
         {!meals.length && <p className="glass rounded-card p-5 text-muted">{pt('addYourFirstMealToStart')}</p>}
-        {meals.map(meal => <V11Meal key={meal.id} meal={meal} selected={meal.id === mealId} update={update} onSelect={() => { setSelected(meal.id); setPicker(true); }} />)}
-        <Button variant="secondary" onClick={() => {
+        {meals.map(meal => <V11Meal key={meal.id} meal={meal} day={day} update={update} />)}
+        <Button variant="secondary" className="border border-dashed border-lime/40 text-lime" onClick={() => {
           const id = uuidv7(); update(current => {
-            const next = addMeal(current, pt('newMeal'), id);
+            const names = [rt('breakfast'), rt('snack'), rt('lunch'), rt('dinner')];
+            const next = addMeal(current, names[meals.length] ?? rt('meal', { n: meals.length + 1 }), id);
             return { ...next, meals: next.meals.map(meal => meal.id === id ? { ...meal, dayType: day } : meal) };
-          }); setSelected(id);
-        }}>{pt('addMeal')}</Button>
-        <details onToggle={event => setTargetsOpen(event.currentTarget.open)}><summary className="min-h-12 cursor-pointer py-3 text-sm text-muted">{pt('targetsAndTotals')}</summary>
-          <label className="mb-3 grid gap-2 text-sm text-muted">{pt('planName')}<input value={draft.title} maxLength={80} onChange={event => update(current => ({ ...current, title: event.target.value }))} className="min-h-12 rounded-control border border-line bg-transparent px-3 text-ink" /></label>
-          {targetsOpen && <TargetsBar targets={draft.targets} totals={nutritionTotals(meals).totals} onChange={targets => update(current => ({ ...current, targets }))} />}
-        </details>
+          });
+        }}>{rt('addMeal')}</Button>
       </fieldset>
-      <aside className={picker ? 'min-w-0' : 'hidden min-w-0 min-[761px]:block'}><V11FoodPicker navigationDisabled={state.dirty || state.busy} disabled={!mealId || state.busy} onPick={food => {
-        if (mealId) { update(current => addItem(current, mealId, food, 100, uuidv7(), pt));
-          toast.success({ title: success('added'), detail: success('foodDetail', { name: locale === 'en' ? food.nameEn || food.name : food.name, grams: formatNumber(100, locale) }), icon: 'meal' }); }
+      <aside className="min-w-0 min-[1001px]:sticky min-[1001px]:top-0 min-[1001px]:max-h-[calc(100dvh-200px)] min-[1001px]:overflow-y-auto"><V11FoodPicker meals={meals} navigationDisabled={state.dirty || state.busy} disabled={!meals.length || state.busy} onPick={(food, mealId) => {
+        if (mealId) { const portion = defaultPortion(food), id = uuidv7();
+          update(current => { const next = addItem(current, mealId, food, portion.grams, id, pt); return { ...next, meals: next.meals.map(meal => ({ ...meal, items: meal.items.map(item => item.id === id ? { ...item, unit: portion.unit } : item) })) }; });
+          toast.success({ title: success('added'), detail: success('foodDetail', { name: locale === 'en' ? food.nameEn || food.name : food.name, grams: formatNumber(portion.grams, locale) }), icon: 'meal' }); }
       }} /></aside>
     </div>
   </div>;

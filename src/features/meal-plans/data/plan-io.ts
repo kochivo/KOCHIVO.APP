@@ -12,6 +12,7 @@ import type { PlanDraft, PlanSummary } from '../types';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { mealDayType } from './editor-fields';
 import { draftSchema } from './plan-schema';
+import { portionPayload, portionsChanged } from './portion-payload';
 
 export async function createPlan(playerId: string, title: string): Promise<ActionResult<string>> {
   const t = await getT(messages);
@@ -63,9 +64,10 @@ export async function loadPlan(id: string): Promise<ActionResult<PlanDraft>> {
   return ok({ id, playerId: plan.player_id, title: plan.title, status: plan.status,
     targets: { kcal: plan.target_kcal ?? 2000, protein: plan.target_protein ?? 150, carbs: plan.target_carbs ?? 225, fat: plan.target_fat ?? 56 },
     meals: (meals.data ?? []).map((meal, index) => ({ id: meal.id, name: meal.name, position: index + 1,
-      ...(captainWorkspaceEnabled() ? { dayType: mealDayType(meal) } : {}),
+      ...(captainWorkspaceEnabled() ? { dayType: mealDayType(meal), timeOfDay: (meal as typeof meal & { time_of_day?: string | null }).time_of_day ?? null } : {}),
       items: (items.data ?? []).filter(item => item.meal_id === meal.id).map((item, index) => ({
         id: item.id, food: food(item.food_id), grams: Number(item.grams), position: index + 1,
+        ...(captainWorkspaceEnabled() ? { unit: (item as typeof item & { unit?: string | null }).unit ?? null } : {}),
         alternatives: (alts.data ?? []).filter(alt => alt.meal_item_id === item.id).map(alt => ({ id: alt.id, food: food(alt.food_id), grams: Number(alt.grams) })),
       })),
     })),
@@ -77,8 +79,19 @@ export async function savePlan(input: PlanDraft): Promise<ActionResult<void>> {
   if (!parsed.success) return fail(t('checkThePlanNameMealsTargetsAnd'));
   const draft = parsed.data;
   const client = await planClient();
+  let savePortions = false;
+  if (captainWorkspaceEnabled() && input.meals.some(meal => 'timeOfDay' in meal || meal.items.some(item => 'unit' in item))) {
+    const storedMeals = await client.from('meals').select('*').eq('plan_id', draft.id);
+    if (storedMeals.error) return fail(t('couldntSaveTryAgain'));
+    const ids = (storedMeals.data ?? []).map(meal => meal.id);
+    const storedItems = ids.length ? await client.from('meal_items').select('*').in('meal_id', ids) : { data: [], error: null };
+    if (storedItems.error) return fail(t('couldntSaveTryAgain'));
+    savePortions = portionsChanged(draft, storedMeals.data ?? [], storedItems.data ?? []);
+  }
   const args = { p_plan: draft.id, p_draft: draft,
-    ...(captainWorkspaceEnabled() ? { p_day_types: draft.meals.map(meal => ({ id: meal.id, dayType: meal.dayType ?? 'all' })) } : {}) };
+    ...(captainWorkspaceEnabled() ? { p_day_types: draft.meals.map(meal => ({ id: meal.id, dayType: meal.dayType ?? 'all' })) } : {}),
+    ...(savePortions ? { p_portions: portionPayload(draft) } : {}),
+  };
   const { error } = await client.rpc('save_nutrition_plan', args);
   if (error) return fail(t('couldntSaveTryAgain'));
   return ok(undefined);

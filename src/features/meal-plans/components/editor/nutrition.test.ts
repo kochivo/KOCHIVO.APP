@@ -41,19 +41,20 @@ it('shows an unknown custom food as unknown with a repair action rather than zer
   expect(details).toContain('Incomplete nutrition total');
 });
 it('shows the full household unit and gram equivalent outside the native select', () => {
-  const item = meal.items[0];
+  const original = meal.items[0];
+  const item = original ? { ...original, unit: 'plate' } : undefined;
   if (!item) throw new Error('Missing fixture');
   const html = render(createElement(FoodRow, { item, update() {} }));
   expect(html).toContain('plate (200 g)</span>');
-  expect(html).toContain('3 protein · 28 carbs · 0 fat per 100 g');
+  expect(html).toContain('P 6 · C 56 · F 0');
 });
 it('marks target totals incomplete and puts custom food creation inside the one search path', () => {
   const html = render(createElement(TargetTiles, { totals: mealTotals(meal), targets: { kcal: 500, protein: 100, carbs: 100, fat: 40 }, incomplete: true }));
   expect(html).toContain('Incomplete');
   expect(html).toContain('data-over="true"');
   const search = render(createElement(FoodSearch, { onPick() {} }));
-  expect(search.match(/type="search"/g)).toHaveLength(1);
-  expect(search).toContain('New food outside the library');
+  expect(search).not.toContain('type="search"');
+  expect(search).toContain('aria-expanded="false"');
   expect(search).toContain('lucide-plus');
   const details = render(createElement(MealEditor, { meal: { ...meal, items: [] }, first: true, last: true, update() {}, enhanced: true, hideAdd: true }));
   expect(details).not.toContain('Add food');
