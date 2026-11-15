@@ -1,12 +1,12 @@
 import { beforeEach, expect, it, vi } from 'vitest';
 import { loadCaptainFrame, loadCaptainFrameCounts } from './captain-frame-data';
 
-const state = vi.hoisted(() => ({ claims: vi.fn(), roster: vi.fn(), waiting: vi.fn(), chats: vi.fn(), joins: vi.fn(), profile: vi.fn() }));
+const state = vi.hoisted(() => ({ claims: vi.fn(), roster: vi.fn(), chats: vi.fn(), joins: vi.fn(), profile: vi.fn() }));
 vi.mock('server-only', () => ({}));
 vi.mock('next/navigation', () => ({ unstable_rethrow: () => {} }));
 vi.mock('@/core/supabase/claims', () => ({ currentClaims: state.claims }));
 vi.mock('../data/roster', () => ({ fetchRoster: state.roster }));
-vi.mock('../data/navigation-count', () => ({ fetchWaitingCount: state.waiting }));
+vi.mock('@/features/captain-workspace/server', () => { throw new Error('Task loading must stay outside the frame action graph'); });
 vi.mock('@/features/chat/server', () => ({ unreadCounts: state.chats }));
 vi.mock('../data/client', () => ({ rosterClient: async () => ({
   rpc: state.joins,
@@ -16,7 +16,6 @@ vi.mock('../data/client', () => ({ rosterClient: async () => ({
 beforeEach(() => {
   state.claims.mockResolvedValue({ data: { claims: { sub: 'captain-id' } } });
   state.roster.mockResolvedValue({ players: [{ playerId: 'player-id', fullName: 'Real player' }] });
-  state.waiting.mockResolvedValue(9);
   state.chats.mockResolvedValue({ 'player-id': 3, other: 2 });
   state.joins.mockResolvedValue({ data: [{ id: 'join1' }, { id: 'join2' }], error: null });
   state.profile.mockResolvedValue({ data: { full_name: 'Real captain', avatar_path: null }, error: null });
@@ -24,7 +23,7 @@ beforeEach(() => {
 
 it('separates joins from open tasks and uses the complete unread message count', async () => {
   const data = await loadCaptainFrame();
-  expect(data.counts).toEqual({ tasks: 7, inbox: 5, join: 2, billing: null });
+  expect(data.counts).toEqual({ tasks: null, inbox: 5, join: 2, billing: null });
   expect(data.players).toEqual([{ id: 'player-id', name: 'Real player' }]);
   expect(data.captain).toEqual({ name: 'Real captain', avatar: null });
 });
@@ -35,18 +34,23 @@ it('does not turn failed chat, roster or profile reads into fictional zero value
   state.profile.mockResolvedValue({ data: null, error: new Error('Unavailable') });
   const data = await loadCaptainFrame();
   expect(data.counts.inbox).toBeNull();
-  expect(data.counts.tasks).toBe(7);
+  expect(data.counts.tasks).toBeNull();
   expect(data.players).toBeNull();
   expect(data.captain).toBeNull();
 });
 
-it('does not guess the task count when join counts fail', async () => {
+it('keeps failed joins unknown without deriving a task count', async () => {
   state.joins.mockResolvedValue({ data: null, error: new Error('Unavailable') });
   expect((await loadCaptainFrame()).counts).toMatchObject({ tasks: null, join: null });
+});
+
+it('polls only chats and joins without loading tasks or the roster', async () => {
+  expect(await loadCaptainFrameCounts()).toEqual({ tasks: null, inbox: 5, join: 2, billing: null });
+  expect(state.roster).not.toHaveBeenCalled();
 });
 
 it('returns unknown counts instead of throwing when the session has expired', async () => {
   state.claims.mockResolvedValue({ data: null, error: new Error('Auth session missing') });
   await expect(loadCaptainFrameCounts()).resolves.toEqual({ tasks: null, inbox: null, join: null, billing: null });
-  expect(state.waiting).not.toHaveBeenCalled();
+  expect(state.chats).not.toHaveBeenCalled();
 });

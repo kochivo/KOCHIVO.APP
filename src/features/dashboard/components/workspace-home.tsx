@@ -21,7 +21,7 @@ import { HomeTaskList } from '../home/home-task-list';
 import { HomeWeekChart } from '../home/home-week-chart';
 import { HomeConfirmations } from '../home/home-confirmations';
 import { WorkspaceError } from './workspace-error';
-import { MoneyOwedEntry } from '@/features/captain-workspace/server';
+import { MoneyOwedEntry, loadTasks } from '@/features/captain-workspace/server';
 
 async function readHome<T>(read: Promise<T>) {
   try { return await read; } catch (error) { unstable_rethrow(error); return null; }
@@ -31,7 +31,7 @@ export async function WorkspaceHome({ data, now = new Date() }: {
   data: Promise<[RosterResult, string, Map<string, number>]>; today: string; now?: Date;
   plan?: ReactNode; coachLink?: ReactNode; joinRequests?: ReactNode;
 }) {
-  const [t, locale, timezone, [roster, firstName, dues]] = await Promise.all([
+  const [t, locale, timezone, [roster, firstName]] = await Promise.all([
     getT(homeMessages), getLocale(), getTimezone(), data,
   ]);
   const today = localDate(now, timezone);
@@ -42,12 +42,12 @@ export async function WorkspaceHome({ data, now = new Date() }: {
     <PageBarActions><HomeInvite name={firstName} label={t('invite')} /></PageBarActions>
   </>;
   if (roster.error) return <section data-tour-ready="true">{header}<WorkspaceError /></section>;
-  const [summary, followup, renewals] = await Promise.all([
-    readHome(loadHomeSummary(now)), readHome(loadHomeFollowup(now)), readHome(listRenewalRequests()),
+  const [summary, followup, renewals, pending] = await Promise.all([
+    readHome(loadHomeSummary(now)), readHome(loadHomeFollowup(now)), readHome(listRenewalRequests()), readHome(loadTasks(now.toISOString())),
   ]);
-  if (!summary || !followup) return <section data-tour-ready="true">{header}<WorkspaceError /></section>;
-  const tasks = buildHomeTasks(followup.rows, players, dues, now, timezone);
-  const count = tasks.length + Math.max(0, followup.count - followup.rows.length);
+  if (!summary || !followup || !pending) return <section data-tour-ready="true">{header}<WorkspaceError /></section>;
+  const tasks = buildHomeTasks(pending.tasks);
+  const count = tasks.length;
   const contacts = await readHome(loadHomeContacts(tasks.filter(task => task.kind === 'absent').map(task => task.playerId)));
   const training = trainingToday(players, summary.sessions, now, timezone);
   return <section data-tour-ready="true">

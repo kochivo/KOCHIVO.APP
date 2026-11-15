@@ -10,14 +10,15 @@ import { buildTasks, contactedTasks } from '../tasks-model';
 import type { SwapTask } from '../tasks-model';
 import { loadQueuePage, loadQueueTriage } from './page';
 
-export async function loadTasks() {
-  const [roster, first, timezone, locale, client, receipts] = await Promise.all([
-    fetchRoster(), loadQueuePage({ skipRequests: true }), getTimezone(), getLocale(), supabaseServer(), fetchPendingPaymentReceipts(),
-  ]);
-  if (roster.error || !roster.players) throw new Error(roster.error);
+export async function loadTasks(at?: string) {
+  const client = await supabaseServer();
   const auth = await client.auth.getClaims();
   if (auth.error || !auth.data?.claims.sub) throw new Error('Unauthenticated');
   const captainId = auth.data.claims.sub;
+  const [roster, first, timezone, locale, receipts] = await Promise.all([
+    fetchRoster(), loadQueuePage({ skipRequests: true }), getTimezone(), getLocale(), fetchPendingPaymentReceipts(),
+  ]);
+  if (roster.error || !roster.players) throw new Error(roster.error);
   const items = [...first.items];
   let page = first;
   while (page.cursor) {
@@ -36,7 +37,8 @@ export async function loadTasks() {
     if (result.data.length < 500) break;
   }
   const triage = await loadQueueTriage([...new Set(items.filter(item => item.kind === 'checkin').map(item => item.player_id))], first.at);
-  const tasks = buildTasks(items, roster.players, swaps, new Date(first.at), timezone, receipts);
+  const snapshotAt = at ?? first.at;
+  const tasks = buildTasks(items, roster.players, swaps, new Date(snapshotAt), timezone, receipts);
   const contacts: Record<string, string> = {};
   await Promise.all([...new Set(tasks.filter(task => task.kind === 'absent' || task.kind === 'renew').map(task => task.playerId))].map(async playerId => {
     const result = await client.from('chat_messages').select('created_at').eq('captain_id', captainId)
@@ -44,5 +46,5 @@ export async function loadTasks() {
     if (result.error) throw result.error;
     if (result.data[0]) contacts[playerId] = result.data[0].created_at;
   }));
-  return { tasks: contactedTasks(tasks, contacts, timezone), triage, at: first.at, captainId };
+  return { tasks: contactedTasks(tasks, contacts, timezone), triage, at: snapshotAt, captainId };
 }

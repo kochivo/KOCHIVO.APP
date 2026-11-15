@@ -1,4 +1,5 @@
 import { expect, it, vi, beforeEach } from 'vitest';
+import type * as BillingServer from '@/features/billing/server';
 type Result = { data: unknown; error: { message: string } | null; count?: number };
 const state = vi.hoisted(() => ({ rows: {} as Record<string, Result>, calls: [] as string[], sessionUntil: '' }));
 class Query implements PromiseLike<Result> {
@@ -22,7 +23,8 @@ vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => ({
   auth: { getClaims: async () => ({ data: { claims: { sub: 'captain' } }, error: null }) },
 }) }));
 vi.mock('@/core/timezone/server', () => ({ getTimezone: async () => 'Africa/Cairo' }));
-vi.mock('@/features/billing/server', () => ({ fetchPlanSummary: async () => ({ plan: { player_limit: 5 } }) }));
+vi.mock('@/features/billing/server', async original => ({ ...await original<typeof BillingServer>(),
+  fetchPlanSummary: async () => ({ plan: { player_limit: 5 } }) }));
 import { loadHomeActivity, loadHomeSummary } from './workspace';
 beforeEach(() => { state.rows = {}; state.calls = []; });
 it('merges all three real event kinds, ignores absent events and caps at the latest five with one list query', async () => {

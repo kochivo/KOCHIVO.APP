@@ -1,5 +1,6 @@
 import type { RosterPlayer } from '@/features/roster';
 import { daysBetween, localDate, saturdayWeek } from '@/lib/dates';
+import { endingSoon } from '@/lib/ending-soon';
 import type { homeMessages } from './messages';
 
 export type HomeFlag = 'low_sleep' | 'high_soreness' | 'weight_flat' | 'weight_jump' | 'no_logs' | 'note_present' | 'assessmentAlert';
@@ -21,8 +22,8 @@ export function summaryLine(counts: { replies: number; unpaid: number; ending: n
 }
 export function endingPlayers(players: RosterPlayer[], now: Date, timezone: string) {
   return players.filter(player => {
-    const days = daysBetween(localDate(now, player.timezone ?? timezone), player.accessUntil);
-    return !player.pending && !player.frozenAt && days >= 0 && days <= 7;
+    return !player.pending && !player.frozenAt
+      && endingSoon(localDate(now, timezone), player.accessUntil);
   }).sort((a, b) => a.accessUntil.localeCompare(b.accessUntil) || a.playerId.localeCompare(b.playerId));
 }
 export function homeNeeds(reviews: ReviewRow[], players: RosterPlayer[], now: Date, timezone: string, limit = 4): NeedRow[] {

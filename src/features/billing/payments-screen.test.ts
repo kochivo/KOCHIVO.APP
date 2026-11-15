@@ -40,7 +40,8 @@ it('renders the four tiles, reminder window and payments section', () => {
   state.result.data.players = [{ playerId: 'p', fullName: 'Ali', accessUntil: '2026-12-01', status: 'active',
     phone: null, lastPayment: null, due: 0, startedOn: '2026-10-01', lastTrainingDate: null, programTitle: null, openTasks: 0 }];
   const html = render();
-  for (const label of ['الاشتراكات والدفعات', 'دخل الشهر', 'مستني تأكيد', 'بيخلص الأسبوع ده', 'اشتراك شغال', 'بيخلص قريب', 'كل الدفعات', 'بعد 19 يوم']) expect(html).toContain(label);
+  for (const label of ['الاشتراكات والدفعات', 'دخل الشهر', 'مستني تأكيد', 'بيخلص خلال 7 أيام', 'اشتراك شغال', 'بيخلص قريب', 'كل الدفعات', 'مفيش اشتراكات بتخلص قريب']) expect(html).toContain(label);
+  expect(html).not.toContain('بعد 19 يوم');
   expect(html).toContain('4,500');
   expect(html).not.toContain('ج.م');
   expect(html).not.toContain('كبّر الباقة');

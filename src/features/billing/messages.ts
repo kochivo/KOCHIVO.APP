@@ -5,7 +5,7 @@ import { arStd } from './standard/messages';
 export const workspaceMessages = defineMessages({
   ar: {
     title: 'الاشتراكات والدفعات', catalog: 'الباقات والعروض', income: 'دخل الشهر', pending: 'مستني تأكيد',
-    ending: 'بيخلص الأسبوع ده', active: 'اشتراك شغال', soon: 'بيخلص قريب', all: 'كل الدفعات',
+    ending: 'بيخلص خلال 7 أيام', active: 'اشتراك شغال', soon: 'بيخلص قريب', all: 'كل الدفعات',
     confirm: 'وافق', confirmed: 'اتأكدت', saved: 'اتوافق على طلب تجديد {name}',
     renewalRequest: 'طلب تجديد · {package}', renewalOnly: 'تجديد من غير دفعة',
     fallback: 'اتقبل الطلب. العرض خلص؛ راجع تفاصيل الاشتراك', after: 'بعد {n} يوم',
@@ -16,7 +16,7 @@ export const workspaceMessages = defineMessages({
   },
   arStd: {
     title: 'الاشتراكات والدفعات', catalog: 'الباقات والعروض', income: 'دخل الشهر', pending: 'بانتظار التأكيد',
-    ending: 'تنتهي هذا الأسبوع', active: 'اشتراك نشط', soon: 'تنتهي قريبًا', all: 'كل الدفعات',
+    ending: 'تنتهي خلال 7 أيام', active: 'اشتراك نشط', soon: 'تنتهي قريبًا', all: 'كل الدفعات',
     confirm: 'وافق', confirmed: 'مؤكدة', saved: 'تمت الموافقة على طلب تجديد {name}',
     renewalRequest: 'طلب تجديد · {package}', renewalOnly: 'تجديد دون دفعة',
     fallback: 'تم قبول الطلب. انتهى العرض؛ راجع تفاصيل الاشتراك', after: 'بعد {n} يوم',
@@ -27,7 +27,7 @@ export const workspaceMessages = defineMessages({
   },
   en: {
     title: 'Subscriptions and payments', catalog: 'Packages and offers', income: 'Monthly income', pending: 'Awaiting confirmation',
-    ending: 'Ending this week', active: 'Active subscriptions', soon: 'Ending soon', all: 'All payments',
+    ending: 'Ending within 7 days', active: 'Active subscriptions', soon: 'Ending soon', all: 'All payments',
     confirm: 'Approve', confirmed: 'Confirmed', saved: '{name}’s renewal request approved',
     renewalRequest: 'Renewal request · {package}', renewalOnly: 'Renewed without payment',
     fallback: 'Request approved. The offer expired; review the subscription', after: 'In {n} days',

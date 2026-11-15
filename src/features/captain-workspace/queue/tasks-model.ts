@@ -1,6 +1,7 @@
 import type { InboxItem } from '@/features/inbox';
 import type { RosterPlayer } from '@/features/roster';
 import { daysBetween, localDate } from '@/lib/dates';
+import { endingSoon, ENDING_SOON_DAYS } from '@/lib/ending-soon';
 import type { QueueItem } from './model';
 
 export type TaskKind = 'video' | 'absent' | 'checkin' | 'swap' | 'renew' | 'program' | 'receipt';
@@ -23,13 +24,15 @@ export function buildTasks(items: QueueItem[], players: RosterPlayer[], swaps: S
   });
   for (const player of players) {
     const today = localDate(now, player.timezone ?? timezone);
-    if (player.pending || player.frozenAt || player.accessUntil < today) continue;
+    if (player.pending || player.frozenAt) continue;
     const base = { playerId: player.playerId, name: player.fullName, avatar: player.avatarUrl, timezone: player.timezone };
+    const captainToday = localDate(now, timezone);
+    if (endingSoon(captainToday, player.accessUntil)) tasks.push({ ...base, timezone,
+      id: `renew:${player.playerId}`, kind: 'renew', at: player.accessUntil, days: daysBetween(captainToday, player.accessUntil) });
+    if (player.accessUntil < today) continue;
     const last = player.lastTrainingDate ?? player.startedOn;
     const days = daysBetween(last, today);
     if (days >= 5) tasks.push({ ...base, id: `absent:${player.playerId}`, kind: 'absent', at: last, days, neverTrained: !player.lastTrainingDate });
-    const ending = daysBetween(today, player.accessUntil);
-    if (ending >= 0 && ending <= 7) tasks.push({ ...base, id: `renew:${player.playerId}`, kind: 'renew', at: player.accessUntil, days: ending });
     if (!player.programTitle) tasks.push({ ...base, id: `program:${player.playerId}`, kind: 'program', at: player.startedOn });
   }
   for (const swap of swaps) {
@@ -51,7 +54,7 @@ export function contactedTasks(tasks: CaptainTask[], contacts: Record<string, st
     const contact = contacts[task.playerId];
     if (!contact) return true;
     const days = daysBetween(task.at, localDate(new Date(contact), task.timezone ?? timezone));
-    return task.kind === 'absent' ? days < 5 : days < -7;
+    return task.kind === 'absent' ? days < 5 : days < -ENDING_SOON_DAYS;
   });
 }
 export const filterTasks = (tasks: CaptainTask[], filter: TaskFilter) => tasks.filter(task => filter === 'all' || task.kind === filter);

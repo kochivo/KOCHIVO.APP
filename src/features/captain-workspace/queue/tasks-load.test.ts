@@ -1,7 +1,7 @@
 import { beforeEach, expect, it, vi } from 'vitest';
 import type { QueuePage } from './data/page';
 import { loadTasks } from './data/tasks';
-const state = vi.hoisted(() => ({ pages: [] as QueuePage[], reads: 0, fail: false }));
+const state = vi.hoisted(() => ({ pages: [] as QueuePage[], reads: 0, fail: false, authenticated: true }));
 vi.mock('server-only', () => ({}));
 vi.mock('@/core/timezone/server', () => ({ getTimezone: async () => 'Africa/Cairo' }));
 vi.mock('@/core/i18n/server', () => ({ getLocale: async () => 'ar' }));
@@ -15,14 +15,14 @@ vi.mock('./data/page', () => ({
   loadQueueTriage: async () => ({ history: [], dailyChecks: [] }),
 }));
 vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => ({
-  auth: { getClaims: async () => ({ data: { claims: { sub: 'captain' } } }) },
+  auth: { getClaims: async () => ({ data: { claims: { sub: state.authenticated ? 'captain' : undefined } } }) },
   from: () => {
     const query = { select: () => query, eq: () => query, order: () => query,
       range: async () => ({ data: [], error: state.fail ? new Error('offline') : null }) };
     return query;
   },
 }) }));
-beforeEach(() => { state.reads = 0; state.fail = false; });
+beforeEach(() => { state.reads = 0; state.fail = false; state.authenticated = true; });
 const item = (id: string, created_at: string) => ({ id, created_at, kind: 'form' as const,
   player_id: 'p', player_name: 'Player', exercise_name: 'Squat', note: null, reviewed_at: null, reply: null });
 const page = (items: QueuePage['items'], cursor: QueuePage['cursor']): QueuePage => ({
@@ -38,4 +38,11 @@ it('includes oldest items from subsequent queue pages before exposing counts', a
 it('rejects incomplete reads instead of rendering a false empty state', async () => {
   state.pages = [page([], null)]; state.fail = true;
   await expect(loadTasks()).rejects.toThrow('offline');
+});
+
+it('rejects missing sessions before queue reads can hide the authentication error', async () => {
+  state.authenticated = false;
+  state.pages = [];
+  await expect(loadTasks()).rejects.toThrow('Unauthenticated');
+  expect(state.reads).toBe(0);
 });

@@ -9,6 +9,8 @@ import { CaptainSearchPalette } from './captain-search-palette';
 import { CaptainMoreSheet } from './captain-more-sheet';
 
 const state = vi.hoisted(() => ({ load: vi.fn(), path: '/captain/players/id' }));
+vi.mock('server-only', () => ({}));
+vi.mock('@/features/captain-workspace/server', () => { throw new Error('The layout must not import the task loader'); });
 vi.mock('next/navigation', () => ({ usePathname: () => state.path, unstable_rethrow: () => {} }));
 vi.mock('./captain-frame-data', () => ({ loadCaptainFrame: state.load }));
 vi.mock('@/core/i18n/server', () => ({ getT: (messages: Parameters<typeof createT>[0]) => createT(messages, 'ar') }));

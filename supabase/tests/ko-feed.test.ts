@@ -24,7 +24,7 @@ it('isolates captains and players and emits missing-plan rules', async () => {
   expect((await feed(a.player)).rows).toEqual([]);
 });
 
-it.each([[3, 'expiring'], [4, null], [0, 'expiring'], [-1, 'expired'], [-7, 'expired'], [-8, null]] as const)
+it.each([[3, 'expiring'], [4, 'expiring'], [7, 'expiring'], [8, null], [0, 'expiring'], [-1, 'expired'], [-7, 'expired'], [-8, null]] as const)
 ('checks access boundary %s', async (days, kind) => {
   const { captain, player } = await createCaptainWithPlayer(db);
   await db.query("update public.coach_clients set access_until=date '2026-11-03'+$2::int where player_id=$1", [player, days]);

@@ -1,6 +1,6 @@
 export const messages = {
   ar: {
-    digestTitle: 'ملخص النهارده', digestClear: 'النهارده كله تمام',
+    digestTitle: 'ملخص تنبيهات KO المعروضة', digestClear: 'النهارده كله تمام',
     'digestInactive.one': 'لاعب واحد متمرّنش من 5 أيام', 'digestInactive.two': 'لاعبين متمرّنوش من 5 أيام',
     'digestInactive.few': '{n} لاعيبة متمرّنوش من 5 أيام', 'digestInactive.other': '{n} لاعب متمرّنوش من 5 أيام',
     'digestSubscriptions.one': 'اشتراك واحد بيخلص أو خلص', 'digestSubscriptions.two': 'اشتراكين بيخلصوا أو خلصوا',
@@ -22,8 +22,9 @@ export const messages = {
     sessions_used_up: 'جلسات {name} خلصت', inactive: '{name} متمرّنش من 5 أيام', no_program: '{name} محتاج برنامج',
     no_nutrition: '{name} محتاج خطة أكل', today_workout: 'تمرين النهارده مستنيك', my_expiring: 'اشتراكك قرب يخلص', log_meal: 'سجّل أكلك النهارده',
   },
+  arStd: { digestTitle: 'ملخص تنبيهات KO المعروضة' },
   en: {
-    digestTitle: 'Today’s digest', digestClear: 'All clear today',
+    digestTitle: 'Shown KO alerts', digestClear: 'All clear today',
     'digestInactive.one': '1 inactive player', 'digestInactive.other': '{n} inactive players',
     'digestSubscriptions.one': '1 subscription ending or ended', 'digestSubscriptions.other': '{n} subscriptions ending or ended',
     digestRecord: '{name} set a new record in {exercise} yesterday',

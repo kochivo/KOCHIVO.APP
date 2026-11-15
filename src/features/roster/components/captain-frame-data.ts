@@ -5,7 +5,6 @@ import { currentClaims } from '@/core/supabase/claims';
 import { unreadCounts } from '@/features/chat/server';
 import { rosterClient } from '../data/client';
 import { fetchRoster } from '../data/roster';
-import { fetchWaitingCount } from '../data/navigation-count';
 import { frameCounts } from './captain-frame-model';
 
 async function safe<T>(read: Promise<T>): Promise<T | null> {
@@ -18,12 +17,12 @@ export async function loadCaptainFrameCounts() {
   const captain = auth.data?.claims.sub;
   // The nav polls this every 30s; an expired session is expected there, not a server error.
   if (auth.error || !captain) return frameCounts({ tasks: null, chats: null, joins: null });
-  const [waiting, chats, joins] = await Promise.all([
-    fetchWaitingCount(), safe(unreadCounts(client, captain)),
+  const [chats, joins] = await Promise.all([
+    safe(unreadCounts(client, captain)),
     client.rpc('pending_coach_join_requests'),
   ]);
   const joinCount = joins.error ? null : joins.data.length;
-  return frameCounts({ tasks: waiting === null || joinCount === null ? null : Math.max(0, waiting - joinCount), chats, joins: joinCount });
+  return frameCounts({ tasks: null, chats, joins: joinCount });
 }
 
 export async function loadCaptainFrame() {

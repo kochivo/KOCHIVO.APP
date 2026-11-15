@@ -1,6 +1,7 @@
 import { expect, it, vi } from 'vitest';
 import { buildHomeTasks, taskEstimate, weekChart, taskProgress, trainingToday } from './home/tasks';
 import type { RosterPlayer } from '@/features/roster';
+import { buildTasks } from '@/features/captain-workspace/server';
 
 vi.mock('server-only', () => ({}));
 const now = new Date('2026-11-12T10:00:00Z');
@@ -28,13 +29,15 @@ it('charts all sessions Saturday to Friday, keeps zero days, and distinguishes f
 it('keeps every review before operational tasks and does not cap the shared list at four', () => {
   const reviews = Array.from({ length: 6 }, (_, index) => ({ id: String(index), playerId: 'a', name: 'Ali',
     kind: 'form' as const, title: 'Squat', at: '2026-11-12T08:00:00Z', flags: [] }));
-  const tasks = buildHomeTasks(reviews, [player('a'), player('b', { lastTrainingDate: '2026-11-07' }),
-    player('c', { programTitle: null }), player('frozen', { frozenAt: '2026-11-01', programTitle: null })], new Map([['a', 100]]), now, 'Africa/Cairo');
-  expect(tasks.slice(0, 6).map(task => task.id)).toEqual(['form:0', 'form:1', 'form:2', 'form:3', 'form:4', 'form:5']);
+  const tasks = buildHomeTasks(buildTasks(reviews.map(row => ({ kind: 'form' as const, id: row.id,
+    player_id: row.playerId, player_name: row.name, created_at: row.at, exercise_name: row.title,
+    reviewed_at: null, reply: null, note: null })), [player('a'), player('b', { lastTrainingDate: '2026-11-07' }),
+    player('c', { programTitle: null }), player('frozen', { frozenAt: '2026-11-01', programTitle: null })], [], now, 'Africa/Cairo'));
+  expect(tasks.slice(0, 6).map(task => task.id)).toEqual(['video:0', 'video:1', 'video:2', 'video:3', 'video:4', 'video:5']);
   expect(tasks.filter(task => task.kind === 'absent')).toMatchObject([{ name: 'b', days: 5 }]);
   expect(tasks.some(task => task.name === 'frozen')).toBe(false);
   expect(tasks.some(task => task.kind === 'noProgram' && task.name === 'c')).toBe(true);
-  expect(tasks.some(task => task.kind === 'dues' && task.name === 'a')).toBe(true);
+  expect(tasks.some(task => task.kind === 'dues')).toBe(false);
 });
 it('counts active players once using their local day across the Friday to Saturday boundary', () => {
   expect(trainingToday([player('tokyo', { timezone: 'Asia/Tokyo' }), player('cairo'),

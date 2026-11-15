@@ -12,7 +12,15 @@ import type { ReviewRow } from './home/model';
 import { WorkspaceHome } from './components/workspace-home';
 
 vi.mock('server-only', () => ({}));
-vi.mock('@/features/captain-workspace/server', () => ({ MoneyOwedEntry: () => createElement('div', { 'data-money-owed': true }) }));
+vi.mock('@/features/captain-workspace/server', () => ({ MoneyOwedEntry: () => createElement('div', { 'data-money-owed': true }),
+  loadTasks: async () => {
+    if (state.failed) throw new Error('Unavailable');
+    return { tasks: Array.from({ length: state.count }, (_, index) => {
+      const row = state.rows[index];
+      return { id: `video:${index}`, playerId: row?.playerId ?? 'a', name: row?.name ?? 'Ali',
+        kind: 'video', at: row?.at ?? '2026-11-12', text: row?.title };
+    }) };
+  } }));
 vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh() {} }), usePathname: () => '/captain', unstable_rethrow: () => {} }));
 vi.mock('@/core/timezone/server', () => ({ getTimezone: async () => 'Africa/Cairo' }));
 vi.mock('@/core/i18n/server', () => ({ getLocale: async () => 'ar', getArabicStyle: async () => 'egyptian',
@@ -79,7 +87,7 @@ it('uses the exact outstanding count for the hero estimate even when only part o
   expect(html).toContain('7 مهام');
   expect(html).toContain('21 دقيقة');
   expect(html).toContain('ابدأ المهام');
-  expect(html).toContain('href="/captain/inbox"');
+  expect(html).toContain('href="/captain/tasks"');
 });
 it('does not pretend failed reads are zero or all-clear', async () => {
   state.failed = true;

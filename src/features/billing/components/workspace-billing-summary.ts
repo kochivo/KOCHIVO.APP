@@ -1,14 +1,15 @@
 import { daysBetween } from '@/lib/dates';
+import { endingSoon } from '@/lib/ending-soon';
 
 type Subscription = { accessUntil: string; pending?: boolean; frozenAt?: string | null; sessionsLeft?: number | null };
 export function expiringSoon<T extends Subscription>(players: T[], today: string) {
-  return players.filter(player => !player.pending && !player.frozenAt && player.sessionsLeft == null
-    && daysBetween(today, player.accessUntil) >= 0 && daysBetween(today, player.accessUntil) <= 30)
+  return players.filter(player => !player.pending && !player.frozenAt
+    && endingSoon(today, player.accessUntil))
     .sort((a, b) => a.accessUntil.localeCompare(b.accessUntil));
 }
 export function subscriptionTiles(players: Subscription[], today: string, income: number, pending: number) {
   return { income, pending,
-    ending: expiringSoon(players, today).filter(player => daysBetween(today, player.accessUntil) <= 7).length,
+    ending: expiringSoon(players, today).length,
     active: players.filter(player => !player.pending && !player.frozenAt
       && (player.sessionsLeft == null ? daysBetween(today, player.accessUntil) >= 0 : player.sessionsLeft > 0)).length };
 }

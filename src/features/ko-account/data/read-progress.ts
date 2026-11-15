@@ -4,6 +4,7 @@ import { createT } from '@/core/i18n/messages';
 import { TIERS, ranksMessages } from '@/features/ranks';
 import { daysBetween, formatDateAr, localDate } from '@/lib/dates';
 import { formatNumber } from '@/lib/format';
+import { endingSoon } from '@/lib/ending-soon';
 import { resolvePlayer } from './account';
 import type { KoActor } from './account';
 import type { Intent } from './intents';
@@ -114,14 +115,16 @@ async function captainSummary(actor: KoActor, intent: Extract<ReadIntent, { kind
   const roster = checked(await actor.db.rpc('captain_roster'));
   if (intent.kind === 'team_summary') {
     if (!roster?.length) return t('teamEmpty');
+    const links = checked(await actor.db.from('coach_clients').select('player_id,pending,frozen_at')
+      .eq('captain_id', actor.id).is('archived_at', null));
     const board = checked(await actor.db.rpc('team_leaderboard', { p_month: `${today.slice(0, 7)}-01` }));
     const names = (rows: typeof roster) => rows.map(row => row.full_name).join('، ') || t('teamNone');
     const inactive = roster.filter(row => {
       const last = row.last_training_date || row.started_on;
       return last && daysBetween(last, today) >= 7;
     });
-    const expiring = roster.filter(row => row.access_until && daysBetween(today, row.access_until) >= 0
-      && daysBetween(today, row.access_until) <= 7);
+    const expiring = roster.filter(row => row.access_until && endingSoon(today, row.access_until)
+      && links?.some(link => link.player_id === row.player_id && !link.pending && !link.frozen_at));
     const leader = board?.find(row => row.is_crown && roster.some(player => player.player_id === row.player_id));
     const zero = roster.filter(row => board?.some(entry => entry.player_id === row.player_id && entry.done === 0));
     return [t('teamInactive', { names: names(inactive) }), t('teamExpiring', { names: names(expiring) }),

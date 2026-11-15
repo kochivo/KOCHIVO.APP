@@ -1,4 +1,5 @@
 import 'server-only';
+export { loadTasks, buildTasks, contactedTasks, taskCounts } from './queue/data/server-tasks';
 export { MoneyOwedEntry } from './money-owed/money-owed-entry';
 export { TasksEntry } from './queue/tasks-entry';
 export { QueueEntry } from './queue/queue-entry';

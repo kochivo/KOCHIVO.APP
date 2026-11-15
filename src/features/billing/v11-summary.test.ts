@@ -9,12 +9,12 @@ describe('v11 billing numbers', () => {
       { ...base, accessUntil: '2026-11-22' }, { ...base, accessUntil: '2026-11-13' },
       { ...base, pending: true }, { ...base, frozenAt: today },
       { ...base, sessionsLeft: 0 }, { ...base, sessionsLeft: 3, accessUntil: '2026-11-13' }];
-    expect(subscriptionTiles(players, today, 12400, 2)).toEqual({ income: 12400, pending: 2, ending: 2, active: 4 });
+    expect(subscriptionTiles(players, today, 12400, 2)).toEqual({ income: 12400, pending: 2, ending: 3, active: 4 });
   });
-  it('includes today through day 30 for reminders, excluding expired and session packages', () => {
+  it('includes access ending today through day seven, excluding expired, pending and frozen links', () => {
     const players = [base, { ...base, accessUntil: '2026-12-14' },
       { ...base, accessUntil: '2026-12-15' }, { ...base, accessUntil: '2026-11-13' },
       { ...base, pending: true }, { ...base, frozenAt: today }, { ...base, sessionsLeft: 1 }];
-    expect(expiringSoon(players, today).map(row => row.accessUntil)).toEqual([today, '2026-12-14']);
+    expect(expiringSoon(players, today).map(row => row.accessUntil)).toEqual([today, today]);
   });
 });

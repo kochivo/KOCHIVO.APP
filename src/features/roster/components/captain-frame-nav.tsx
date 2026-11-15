@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { KoSettings } from '@/ui/icons/ko-settings';
 import { usePathname } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import { useT } from '@/core/i18n/client';
+import { useLocale, useT } from '@/core/i18n/client';
 import { useResource } from '@/core/resource/use-resource';
 import { loadCaptainFrameCounts } from './captain-frame-data';
 import { frameItems, frameParent } from './captain-frame-model';
@@ -13,6 +13,7 @@ import type { FrameCounts } from './captain-frame-model';
 import { frameMessages } from './captain-frame-messages';
 import { CaptainNavGroups } from './captain-nav-groups';
 import { LoadingState } from '@/ui/loading-state';
+import { useTaskCount } from '../hooks/use-task-count';
 
 const CaptainMoreSheet = dynamic(() => import('./captain-more-sheet').then(module => module.CaptainMoreSheet), {
   loading: () => <LoadingState />,
@@ -21,9 +22,11 @@ const CaptainMoreSheet = dynamic(() => import('./captain-more-sheet').then(modul
 export function CaptainFrameNav({ counts: initialCounts }: { counts: FrameCounts }) {
   const load = useCallback(() => loadCaptainFrameCounts(), []);
   const resource = useResource('captain:frame-counts', load, { pollMs: 30_000 });
-  const counts = resource.error ? { tasks: null, inbox: null, join: null, billing: null } : resource.data ?? initialCounts;
-  const t = useT(frameMessages);
+  const live = resource.error ? { inbox: null, join: null, billing: null } : resource.data ?? initialCounts;
   const path = usePathname();
+  const tasks = useTaskCount(path, useLocale());
+  const counts = { ...live, tasks };
+  const t = useT(frameMessages);
   const active = frameParent(path);
   const [sheetPath, setSheetPath] = useState<string | null>(null);
   const open = sheetPath === path;

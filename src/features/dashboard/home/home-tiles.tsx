@@ -14,7 +14,7 @@ export async function HomeTiles({ adherence, previous, trained, active, pending,
     { label: old('adherence'), value: old('percent', { value: number(adherence) }), ring: adherence / 100, tone: 'text-lime',
       delta: `${delta > 0 ? '+' : ''}${number(delta)}%` },
     { label: t('trained'), value: `${number(trained)}/${number(active)}`, ring: active ? trained / active : 0, tone: 'text-lime' },
-    { label: t('waitingTasks'), value: number(pending), ring: 1 - progress, tone: 'text-danger', href: '/captain/inbox' },
+    { label: t('waitingTasks'), value: number(pending), ring: 1 - progress, tone: 'text-danger', href: '/captain/tasks' },
     { label: t('revenue'), value: number(paid), ring: 1, tone: 'text-calm', href: '/captain/billing' },
   ];
   const className = 'glass-strong flex min-h-12 min-w-0 items-center gap-3 rounded-card p-3 text-start min-[760px]:p-[18px]';

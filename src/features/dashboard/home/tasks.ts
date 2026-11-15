@@ -1,32 +1,21 @@
 import type { RosterPlayer } from '@/features/roster';
 import { localDate, saturdayWeek } from '@/lib/dates';
-import { buildAlerts } from '../alerts';
-import { homeNeeds } from './model';
-import type { ReviewRow } from './model';
+import type { CaptainTask } from '@/features/captain-workspace';
 
 export type HomeTask = {
   id: string; playerId: string; name: string; href: string;
-  kind: 'checkin' | 'form' | 'assessment' | 'absent' | 'noProgram' | 'renew' | 'dues';
+  kind: 'checkin' | 'form' | 'assessment' | 'absent' | 'noProgram' | 'renew' | 'dues' | 'swap' | 'receipt';
   title?: string; days?: number; urgent: boolean;
 };
 export const taskEstimate = (count: number) => count * 3;
 export const taskProgress = (completed: number, pending: number) => completed + pending ? completed / (completed + pending) : 1;
 
-export function buildHomeTasks(reviews: ReviewRow[], players: RosterPlayer[], dues: Map<string, number>, now: Date, timezone: string): HomeTask[] {
-  const today = localDate(now, timezone);
-  const needs = homeNeeds(reviews, players, now, timezone, Infinity);
-  const tasks: HomeTask[] = needs.map(row => ({ id: `${row.kind}:${row.id}`, playerId: row.playerId, name: row.name,
-    kind: row.kind, href: row.kind === 'absent' ? `/captain/players/${row.playerId}` : '/captain/inbox',
-    urgent: row.kind === 'absent' ? row.days >= 7 : row.flags.length > 0,
-    ...('days' in row ? { days: row.days } : { title: row.title }) }));
-  const eligible = players.filter(player => !player.pending && !player.frozenAt);
-  for (const alert of buildAlerts(eligible, dues, today)) {
-    if (alert.kind === 'review') continue;
-    const kind = alert.kind === 'noProgram' || alert.kind === 'dues' ? alert.kind : 'renew';
-    tasks.push({ id: `${kind}:${alert.playerId}`, playerId: alert.playerId, name: alert.name,
-      kind, href: alert.href, days: alert.value, urgent: false });
-  }
-  return tasks;
+export function buildHomeTasks(tasks: CaptainTask[]): HomeTask[] {
+  return tasks.map(task => ({ id: task.id, playerId: task.playerId, name: task.name,
+    kind: task.kind === 'video' ? 'form' : task.kind === 'program' ? 'noProgram' : task.kind,
+    href: task.kind === 'receipt' ? `/captain/billing#receipt-${task.id.slice('receipt:'.length)}` : '/captain/tasks',
+    urgent: task.kind === 'video' || task.kind === 'receipt' || (task.kind === 'absent' && (task.days ?? 0) >= 7),
+    days: task.days, title: task.text ?? undefined }));
 }
 
 export function weekChart(sessions: { date: string }[], today: string) {
