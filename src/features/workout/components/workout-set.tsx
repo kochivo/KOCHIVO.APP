@@ -57,12 +57,13 @@ export function WorkoutSet({ state }: { state: ReturnType<typeof useFocusSession
       <WorkoutHint last={state.performance} history={history ?? []} weight={state.weight} reps={state.reps} />
       {historyFailed && <button type="button" className="min-h-12 text-xs text-muted" onClick={() => { setHistoryFailed(false); setAttempt(value => value + 1); }}>{t('tryAgain')}</button>}
       {state.invalid && <p id="set-error" role="alert" className="text-danger">{t(state.invalid.result === 'reps' ? 'enterReps' : 'enterWeightAndReps')}</p>}
+      {/* Rest sits in the free space above the bottom button so the whole timer stays on screen. */}
+      {state.rest.remaining > 0 && <RestPanel remaining={state.rest.remaining} total={state.rest.total} sound={state.rest.sound} onToggleSound={state.rest.toggleSound}
+        flashing={state.rest.flashing} onExtend={state.rest.extend} onSkip={state.rest.skip} />}
       <Button type="button" style={{ fontFamily: 'inherit' }} disabled={blocked} onClick={() => void state.complete()}
         variant={'primary'} block={false} className={"mt-auto flex min-h-[68px] w-full items-center justify-center gap-stack text-xl font-black disabled:opacity-50"}>
         <KoTraining aria-hidden className="size-6" />{t(state.progress === state.queue.length ? 'v3CompleteWorkout' : 'v3CompleteSet')}
       </Button>
-      {state.rest.remaining > 0 && <RestPanel remaining={state.rest.remaining} total={state.rest.total} sound={state.rest.sound} onToggleSound={state.rest.toggleSound}
-        flashing={state.rest.flashing} onExtend={state.rest.extend} onSkip={state.rest.skip} />}
     </div>
     <SetDots exercise={current.exercise} currentIndex={current.setIndex} doneSets={state.doneSets} onEdit={state.edit} disabled={state.disabled} />
     <details className="rounded-[24px] border border-line-soft bg-surface p-card">
