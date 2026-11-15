@@ -21,6 +21,10 @@ import { WorkspaceSheet } from './workspace-sheet';
 import { WorkspacePreferences } from './workspace-preferences';
 import { WorkspacePageCard } from './workspace-page-card';
 import { WorkspaceLanguageCard } from './workspace-language-card';
+import { useCalendarClock } from '@/lib/use-calendar-clock';
+import { useTimezone } from '@/core/timezone/client';
+import { localDate } from '@/lib/dates';
+import { ramadanSettingsVisible } from '@/lib/ramadan-calendar';
 
 const Profile = dynamic(() => import('./captain-profile-card').then(m => m.CaptainProfileCard), { loading: () => <LoadingState variant="detail" /> });
 const PaymentMethods = dynamic(() => import('./payment-methods-card').then(m => m.PaymentMethodsCard), { loading: () => <LoadingState variant="detail" /> });
@@ -30,10 +34,12 @@ const Delete = dynamic(() => import('./delete-account-card').then(m => m.DeleteA
 const Options = dynamic(() => import('./workspace-options').then(m => m.WorkspaceOptions));
 const PublicPage = dynamic(() => import('./public-page-settings').then(m => m.PublicPageSettings), { loading: () => <LoadingState variant="detail" /> });
 type Panel = 'profile' | 'invite' | 'download' | 'delete' | 'more';
+const Ramadan = dynamic(() => import('./ramadan-settings').then(m => m.RamadanSettings), { loading: () => <LoadingState variant="detail" /> });
 const card = 'glass rounded-card border border-line-soft px-page-x py-page-y';
 const heading = 'mb-inline font-display text-title font-semibold';
 export function CaptainSettings({ signOut }: { signOut?: ReactNode }) {
   const t = useT(messages), legacy = useT(legacyMessages), demo = useDemoExpiry();
+  const { now } = useCalendarClock(), timezone = useTimezone();
   const loader = useCallback(() => loadCaptainSettings(), []);
   const resource = useResource('settings:captain:workspace', loader);
   const [panel, setPanel] = useState<Panel | null>(null);
@@ -49,6 +55,7 @@ export function CaptainSettings({ signOut }: { signOut?: ReactNode }) {
       </div>
       <div className="grid items-start gap-card-gap min-[760px]:grid-cols-2">
         <WorkspacePreferences profile={profile} update={setEdited} />
+        {now && ramadanSettingsVisible(localDate(now, timezone)) && <Ramadan />}
         <SubscriptionEntry />
         <PaymentMethods />
         <FoodPricesEntry />

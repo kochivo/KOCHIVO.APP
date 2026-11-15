@@ -1,6 +1,7 @@
 import type { Database, Json } from './database';
 import type { AssessmentSchedulesTable } from './assessment-schedules';
 import type { PainReportRow, PainLoadHint, PainReply } from '@/core/offline/pain-tables';
+import type { WomenModeTables, WomenModeFunctions } from './women-mode';
 import type {
   CaptainStatus, Units, SupplementTiming, NotificationType, PointKind, PointStatus,
   Injury, SwapReason, SwapStatus, MovementPattern, ExerciseKind, EquipmentKind,
@@ -85,9 +86,9 @@ type CorrectedWrites = {
 };
 type CorrectedTables = Omit<CorrectedRows, keyof WritePatches> & CorrectedWrites;
 type TimezoneProfiles = Narrow<CorrectedTables['profiles'], {
-  Row: CorrectedTables['profiles']['Row'] & { timezone_auto: boolean };
-  Insert: CorrectedTables['profiles']['Insert'] & { timezone_auto?: boolean };
-  Update: CorrectedTables['profiles']['Update'] & { timezone_auto?: boolean };
+  Row: CorrectedTables['profiles']['Row'] & { timezone_auto: boolean; coach_gender: 'male' | 'female' | null };
+  Insert: CorrectedTables['profiles']['Insert'] & { timezone_auto?: boolean; coach_gender?: 'male' | 'female' | null };
+  Update: CorrectedTables['profiles']['Update'] & { timezone_auto?: boolean; coach_gender?: 'male' | 'female' | null };
 }>;
 type Functions = Public['Functions'];
 type ProfileRow = Public['Tables']['profiles']['Row'];
@@ -97,7 +98,7 @@ type FunctionPatches = {
   // RPC return metadata omits column nullability and the JSON aggregate's shape.
   coach_public_page: Narrow<Functions['coach_public_page'], {
     Returns: Narrow<Functions['coach_public_page']['Returns'][number], {
-      years_experience: number | null; languages: PublicProfileLanguage[];
+      years_experience: number | null; languages: PublicProfileLanguage[]; coach_gender: 'male' | 'female' | null;
     }>[];
   }>;
   coach_public_stats: Narrow<Functions['coach_public_stats'], {
@@ -153,7 +154,7 @@ type FunctionPatches = {
 
 export type AppDatabase = Omit<Database, 'public'> & {
   public: Omit<Public, 'Tables' | 'Functions'> & {
-    Tables: Omit<Public['Tables'], keyof CorrectedTables | 'form_checks' | 'check_ins'> & Omit<CorrectedTables, 'profiles'> & {
+    Tables: Omit<Public['Tables'], keyof CorrectedTables | 'form_checks' | 'check_ins'> & Omit<CorrectedTables, 'profiles'> & WomenModeTables & {
       profiles: TimezoneProfiles;
       assessment_schedules: AssessmentSchedulesTable;
       pain_reports: {
@@ -174,7 +175,7 @@ export type AppDatabase = Omit<Database, 'public'> & {
         };
       };
     };
-    Functions: Omit<Public['Functions'], keyof FunctionPatches | 'admin_activate_plan'> & FunctionPatches & {
+    Functions: Omit<Public['Functions'], keyof FunctionPatches | 'admin_activate_plan'> & FunctionPatches & WomenModeFunctions & {
       sync_pain_reports: { Args: { p_rows: Json }; Returns: undefined };
       expire_pain_swaps: { Args: never; Returns: undefined };
       answer_pain: { Args: { p_report: string; p_reply: PainReply }; Returns: undefined };

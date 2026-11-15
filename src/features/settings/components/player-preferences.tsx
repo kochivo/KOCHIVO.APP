@@ -12,6 +12,8 @@ import { messages as playerMessages } from '../player-messages';
 import { PlayerTheme } from './player-theme';
 import { PlayerReminder } from './player-reminder';
 import { ChevronLeft } from 'lucide-react';
+import dynamic from 'next/dynamic';
+const PrayerCity = dynamic(() => import('./prayer-city').then(m => m.PrayerCity));
 
 export function PlayerPreferences({ units: initial, styleOnly = false }: { units: 'metric' | 'imperial'; styleOnly?: boolean }) {
   const t = useT(messages);
@@ -48,6 +50,7 @@ export function PlayerPreferences({ units: initial, styleOnly = false }: { units
           onClick={() => void changeLanguage(choice)} className={chip}>{playerT(value === 'ar' ? 'arabic' : 'english')}</button>;
       })}</div></div>
     <PlayerTheme /><PlayerReminder />
+    <PrayerCity />
     <div className="flex min-h-[60px] items-center gap-stack px-page-x"><span className="flex-1 text-sm">{playerT('units')}</span>
       <div role="group" aria-label={playerT('units')} className="flex rounded-full bg-surface-raised p-inline">{(['metric', 'imperial'] as const).map(value =>
         <button key={value} type="button" disabled={busy} aria-pressed={value === units} onClick={() => void changeUnits(value)} className={chip}>{playerT(value)}</button>)}</div></div>

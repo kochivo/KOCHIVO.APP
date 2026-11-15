@@ -7,8 +7,9 @@ import { Button } from '@/ui';
 import { messages } from '../messages';
 import { compareWeeks, poses } from '../gallery';
 import type { GalleryPose, GalleryWeek } from '../gallery';
+import { LockedPhoto } from './locked-photo';
 
-export function ProgressGallery({ weeks, onPhotoError }: { weeks: readonly GalleryWeek[]; onPhotoError?: () => void }) {
+export function ProgressGallery({ weeks, onPhotoError, locked = false }: { weeks: readonly GalleryWeek[]; onPhotoError?: () => void; locked?: boolean }) {
   const t = useT(messages);
   const locale = useLocale();
   const ordered = [...weeks].filter(week => week.photos.length).sort((a, b) => b.date.localeCompare(a.date));
@@ -23,9 +24,7 @@ export function ProgressGallery({ weeks, onPhotoError }: { weeks: readonly Galle
     return <div className={onlyPose ? 'space-y-inline' : 'grid grid-cols-3 gap-inline'}>{[...poses, 'photo' as const].filter(key => !onlyPose || key === onlyPose).map(key => {
       const group = week.photos.filter(photo => photo.pose === key);
       return group.length ? <div key={key} className="space-y-inline"><p className="text-sm text-muted">{t(key)}</p>{group.map(photo =>
-        // Signed private URLs bypass the image optimizer and its shared cache.
-        // eslint-disable-next-line @next/next/no-img-element
-        <img key={photo.url} src={photo.url} alt={t('photoPosition', { value0: t(key) })} loading="lazy" decoding="async" width={480} height={640} referrerPolicy="no-referrer" className="aspect-[3/4] w-full rounded-control object-cover" onError={() => { setImageError(true); onPhotoError?.(); }} />)}</div> : null;
+        <LockedPhoto key={photo.url} url={photo.url} alt={t('photoPosition', { value0: t(key) })} locked={locked} onError={() => { setImageError(true); onPhotoError?.(); }} />)}</div> : null;
     })}</div>;
   }
   return <section className="glass space-y-card-gap rounded-card p-card">

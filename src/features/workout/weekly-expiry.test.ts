@@ -12,7 +12,7 @@ vi.mock('react', async original => ({ ...await original<typeof React>(), useStat
   useRef: (current: unknown) => ({ current }), useEffect: () => undefined,
   useCallback: (callback: unknown) => callback, useMemo: (callback: () => unknown) => callback() }));
 vi.mock('@/core/offline', async original => ({ ...await original<typeof Offline>(), useLiveQuery: () => undefined }));
-vi.mock('@/features/player-home', () => ({ useProgramSnapshot: () => ({ snapshot: state.snapshot, status: 'ready' }) }));
+vi.mock('@/features/player-home', () => ({ useCycle: () => ({}), isLightDay: () => false, useProgramSnapshot: () => ({ snapshot: state.snapshot, status: 'ready' }) }));
 vi.mock('./hooks/use-last-session', () => ({ useLastSession: () => ({ last: null, ready: true }) }));
 vi.mock('./hooks/use-rest-timer', () => ({ useRestTimer: () => ({ remaining: 0 }) }));
 

@@ -1,6 +1,7 @@
 export const messages = {
   ar: {
     player_pain: '{name} بلّغ عن وجع', pain_answered: 'الكابتن رد على تقرير الوجع',
+    ramadan_soon: 'رمضان قرّب. تحب تشغّل وضع رمضان لفريقك؟',
     rank_up: 'اترقيت لرتبة جديدة',
     rank_up_champion: 'اترقيت! بقيت بطل',
     rank_up_elite: 'اترقيت! بقيت نخبة',
@@ -27,6 +28,7 @@ export const messages = {
   },
   en: {
     player_pain: '{name} reported pain', pain_answered: 'Your coach answered your pain report',
+    ramadan_soon: 'Ramadan is close. Turn on Ramadan mode for your team?',
     rank_up: 'You reached a new rank',
     rank_up_champion: 'You ranked up to Champion',
     rank_up_elite: 'You ranked up to Elite',

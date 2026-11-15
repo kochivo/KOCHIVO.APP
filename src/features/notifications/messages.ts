@@ -6,6 +6,7 @@ export const messages = defineMessages({
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? { ...arStd, workspaceMarkAll: 'علّم الكل مقروء' } : undefined; },
   ar: {
     player_pain: '{name} بلّغ عن وجع', pain_answered: 'الكابتن رد على تقرير الوجع', urgent: 'عاجل',
+    ramadan_soon: 'رمضان قرّب. تحب تشغّل وضع رمضان لفريقك؟',
     player_rank_up: '{name} طلع {rank}', rank_up_medal: 'بقيت {rank}',
     iron: 'حديد', bronze: 'برونز', silver: 'فضة', gold: 'ذهب', platinum: 'بلاتين', diamond: 'ماس', legend: 'أسطورة',
     workspaceMarkAll: 'علّم الكل مقروء',
@@ -40,6 +41,7 @@ export const messages = defineMessages({
   },
   en: {
     player_pain: '{name} reported pain', pain_answered: 'Your coach answered your pain report', urgent: 'Urgent',
+    ramadan_soon: 'Ramadan is close. Turn on Ramadan mode for your team?',
     player_rank_up: '{name} reached {rank}', rank_up_medal: 'You reached {rank}',
     iron: 'Iron', bronze: 'Bronze', silver: 'Silver', gold: 'Gold', platinum: 'Platinum', diamond: 'Diamond', legend: 'Legend',
     workspaceMarkAll: 'Mark all as read',

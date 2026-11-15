@@ -1,7 +1,8 @@
-import { Banknote, Bell, ClipboardList, Play, Trophy, UserPlus } from 'lucide-react';
+import { Banknote, Bell, CalendarClock, ClipboardList, Play, Trophy, UserPlus } from 'lucide-react';
 import type { NotificationType } from '../types';
 
 export function captainNotification(kind: NotificationType) {
+  if (kind === 'ramadan_soon') return { Icon: CalendarClock, href: '/captain/settings#ramadan' };
   if (kind === 'workout_feedback') return { Icon: Play, href: '/captain/tasks' };
   if (kind === 'form_requested') return { Icon: ClipboardList, href: '/captain/tasks' };
   if (kind === 'renewal_requested' || kind === 'subscription_expiring'

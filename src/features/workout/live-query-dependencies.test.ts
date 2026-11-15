@@ -73,6 +73,7 @@ beforeEach(async () => {
   vi.doMock('@/core/offline', async original => ({ ...await original<typeof Offline>(), localDb: () => db }));
   vi.doMock('@/core/i18n/client', () => ({ useT: () => translate }));
   vi.doMock('@/features/player-home', () => ({
+    useCycle: () => ({}), isLightDay: () => false,
     useProgramSnapshot: () => ({ snapshot, status: 'ready', retry() {} }),
   }));
   vi.doMock('@/features/readiness', () => ({ useTodayDecision: () => null, reducedSets: (sets: number) => sets }));

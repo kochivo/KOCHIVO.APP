@@ -1,5 +1,11 @@
 import { expect, it } from 'vitest';
 import { pushPayload } from './payload';
+it.each(['ar', 'en'] as const)('routes the Ramadan reminder to captain settings in %s', locale => {
+  const result = pushPayload({ id: 'soon', type: 'ramadan_soon', payload: { year: 2027 } }, locale);
+  expect(result.url).toBe(`/${locale}/captain/settings#ramadan`);
+  expect(result.body).toBe(locale === 'ar' ? 'رمضان قرّب. تحب تشغّل وضع رمضان لفريقك؟'
+    : 'Ramadan is close. Turn on Ramadan mode for your team?');
+});
 
 it.each(['ar', 'en'] as const)('formats crown reminders and routes to rank in %s', locale => {
   for (const [type, needs_workouts, gap, ar, en] of [

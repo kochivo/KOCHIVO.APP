@@ -1,4 +1,7 @@
 export { HomeScreen } from './components/home-screen';
+export { CycleEntry } from './components/cycle-entry';
+export { useCycle } from './hooks/use-cycle';
+export { isLightDay } from './light-day';
 export { fetchPlayerIdentity } from './data/player-identity';
 export { useProgramSnapshot } from './hooks/use-program-snapshot';
 export { useRestMood } from './hooks/use-rest-mood';

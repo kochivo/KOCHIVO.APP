@@ -57,6 +57,7 @@ export function settingsSchemas(t: Translator<typeof messages> = createT(message
     return normalized;
   }).optional();
   const captainProfileSchema = z.object({
+    coach_gender: z.enum(['male', 'female']).nullable().optional(),
     timezone_auto: z.boolean().optional(),
     public_slug: z.string().refine(value => value === '' || coachSlug(value) !== null, t('invalidSlug')).optional(),
     full_name: profileSchema.shape.full_name,
@@ -80,6 +81,7 @@ export type CaptainProfileInput = z.infer<ReturnType<typeof settingsSchemas>['ca
 export const { profileSchema, inviteMessageSchema } = settingsSchemas();
 
 export type SettingsProfile = {
+  coach_gender?: 'male' | 'female' | null;
   specialties?: string[];
   years_experience?: number | null;
   languages?: ('ar' | 'en')[];

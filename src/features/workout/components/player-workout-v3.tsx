@@ -19,6 +19,7 @@ import { WorkoutClock } from './workout-clock';
 import { MediaStatus } from './media-status';
 import { DonePanel } from './done-panel';
 import { WarmupNav } from './warmup-nav';
+import { CycleEntry } from '@/features/player-home';
 
 const SessionFeedback = dynamic(() => import('./session-feedback').then(module => module.SessionFeedback), { ssr: false, loading: () => <LoadingState /> });
 const PrBurst = dynamic(() => import('./pr-burst').then(module => module.PrBurst), { ssr: false });
@@ -39,6 +40,7 @@ export function PlayerWorkoutV3({ state, progress, workout, online, playerId }: 
   // PlayerShell already contributes 12px above workout routes.
   return <main style={{ fontFamily: 'var(--font-alexandria), var(--font-manrope), sans-serif' }} className={`mx-auto flex min-h-[calc(100dvh-12px)] max-w-lg flex-col gap-card-gap bg-bg px-page-x pt-[max(4px,calc(env(safe-area-inset-top)_-_12px))] ${inFocus || state.finished ? 'pb-section' : 'pb-[120px]'}`}>
     <p role="status" aria-live="polite" aria-atomic="true" className="sr-only">{restAnnouncement(state.rest.remaining, state.rest.endsAt !== null, t)}</p>
+    <CycleEntry playerId={playerId} workout />
     {state.pr && <PrBurst key={state.pr.id} pr={state.pr} onDismiss={state.dismissPr} />}
     {state.error ? <ErrorState message={state.error} retryLabel={t('tryAgain')} onRetry={state.retry} /> : state.loading ? <LoadingState /> :
       state.finished ? state.session ? <SessionFeedback key={state.session.id} sessionId={state.session.id} workout={workout}

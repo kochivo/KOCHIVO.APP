@@ -11,8 +11,9 @@ import { WorkspaceState } from './workspace-state';
 import { MobileActions } from './mobile-actions';
 import type { Profile } from '../player-file/types';
 import type { PlayerFile } from '@/features/player-file';
+import { LightDayEntry } from './light-day-entry';
 
-export async function WorkspaceContent({ playerId, embedded, profileData, fileData }: {
+export async function WorkspaceContent({ playerId, today, embedded, profileData, fileData }: {
   playerId: string; today: string; embedded?: boolean; profileData?: Profile; fileData?: PlayerFile;
 }) {
   const [locale, profile, programs, playerFile] = await Promise.all([
@@ -26,6 +27,7 @@ export async function WorkspaceContent({ playerId, embedded, profileData, fileDa
   const current = programs.data?.find(program => program.status === 'active') ?? programs.data?.find(program => program.status === 'draft');
   const loaded = current ? await loadProgram(current.id) : null;
   const content = <>
+    <LightDayEntry playerId={playerId} date={today} />
     <div className="grid items-start gap-section lg:grid-cols-[360px_minmax(0,1fr)]">
       <PlayerFileSlot player={profile.data} locale={locale} file={playerFile.file} error={playerFile.error} />
       {loaded?.data ? <WorkspacePlanEntry key={loaded.data.id} program={loaded.data} locale={locale}

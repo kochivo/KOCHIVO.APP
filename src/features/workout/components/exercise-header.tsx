@@ -15,6 +15,7 @@ import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { messages as v6Messages } from '../v6-messages';
 import { exerciseMuscle } from '../exercise-muscle';
 import { formatTempo } from '../tempo';
+import { RamadanWorkoutHint } from './ramadan-workout-hint';
 const ExerciseVideo = dynamic(() => import('./exercise-video').then(module => module.ExerciseVideo));
 
 const muscleKeys = { chest: 'chest', back: 'back', waist: 'waist', 'upper arms': 'upperArms', 'lower arms': 'lowerArms',
@@ -50,6 +51,7 @@ export function ExerciseHeader({ exercise, last, detailsOnly = false, prescripti
       {last?.sets.length ? <p className="text-sm text-muted">{t('lastTime')} <bdi dir="ltr">{last.sets.map((set) =>
         `${formatNumber(set.weight_kg ?? 0, locale)}×${formatNumber(set.reps ?? 0, locale)}`).join(' · ')}</bdi></p> : null}
       {(exercise.tempo || exercise.rpe != null) && prescription}
+      <RamadanWorkoutHint sets={exercise.sets} weight={last?.sets.find(set => set.weight_kg !== null)?.weight_kg ?? null} />
       <div className="flex flex-wrap items-center gap-x-section">
         {!detailsOnly && <ExerciseVideo key={exercise.video_url} url={exercise.video_url} name={name} compact />}
         <Link className="inline-flex min-h-12 items-center text-lime underline" href={`/player/history?exercise=${encodeURIComponent(exercise.exercise_id)}`}>

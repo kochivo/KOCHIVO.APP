@@ -33,6 +33,7 @@ const PlayerAccount = dynamic(() => import('./player-account').then(module => mo
 const InstallButton = dynamic(() => import('@/features/install').then(module => module.InstallButton), { ssr: false });
 const ProfileForm = dynamic(() => import('./profile-form').then(module => module.ProfileForm), { loading: () => <LoadingState variant="detail" /> });
 const PlayerProfileEditor = dynamic(() => import('./player-profile-editor').then(module => module.PlayerProfileEditor), { loading: () => <LoadingState variant="detail" /> });
+const CycleEntry = dynamic(() => import('@/features/player-home').then(module => module.CycleEntry), { ssr: false });
 
 export function SettingsScreen({ signOut }: { signOut?: ReactNode }) {
   const t = useT(messages);
@@ -85,6 +86,7 @@ export function SettingsScreen({ signOut }: { signOut?: ReactNode }) {
   return <div className="mx-auto max-w-3xl space-y-card-gap">
     {playerSettings && <Link href="/player" className="inline-flex min-h-12 items-center text-muted">{t('backToPlayer')}</Link>}
     <h1 className="text-2xl font-extrabold">{t('settings')}</h1>
+    {playerSettings && profile && <CycleEntry playerId={profile.id} settings />}
     {playerSettings && (loading ? <LoadingState variant="detail" /> : error ? <ErrorState message={error} retryLabel={t('tryAgain')} onRetry={() => {
       setLoading(true); setError(''); setAttempt(value => value + 1);
     }} /> : profile ? <ProfileForm profile={profile} /> : null)}

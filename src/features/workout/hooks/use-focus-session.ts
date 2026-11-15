@@ -23,6 +23,7 @@ import { alternativeStep, loggedStep } from '../data/exercise-choices';
 import { useExerciseChoices } from './use-exercise-choices';
 import { usePainSkips } from './use-pain-skips';
 import { painLoad, safePainSwap } from '../pain-safe-swap';
+import { useCycle, isLightDay } from '@/features/player-home';
 
 const readCached = () => localDb().program_snapshot.get('active');
 const readPending = () => pendingCount(localDb());
@@ -48,6 +49,8 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
   const programFinished = Boolean(snapshot && today && weeklyFinished(snapshot, today));
   const decision = useTodayDecision(playerId ?? cached?.player_id, today);
   const originalDay = programFinished ? undefined : snapshot?.days.find((item) => item.id === dayId && !item.is_rest_day);
+  const cycle = useCycle(playerId ?? cached?.player_id).data;
+  const cycleLight = Boolean(cycle?.female && isLightDay(cycle.settings.enabled, cycle.starts, today, cycle.settings.light_days, cycle.overrides));
   const day = useMemo(() => decision === 'reduce' && originalDay ? { ...originalDay,
     exercises: originalDay.exercises.map(exercise => ({ ...exercise, sets: reducedSets(exercise.sets) })) } : originalDay, [decision, originalDay]);
   const plannedQueue = useMemo(() => day ? buildQueue(day) : [], [day]);
@@ -110,7 +113,7 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
   const adjusted = prefill && (('pain_adjusted' in prefill && prefill.pain_adjusted === true) ||
     ('completed_at' in prefill && typeof prefill.completed_at === 'string' && (!painSince || prefill.completed_at >= painSince)));
   const suggestedWeight = painLoad(prefill?.weight_kg ?? 0, adjusted ? undefined : hint, today);
-  const weight = bodyweight ? 0 : Math.min(500, Math.max(0, draft?.key === key ? draft.weight : edited?.weight_kg ?? dropWeight ?? suggestedWeight));
+  const weight = bodyweight ? 0 : Math.min(500, Math.max(0, draft?.key === key ? draft.weight : edited?.weight_kg ?? dropWeight ?? suggestedWeight * (cycleLight && prefill !== previous ? 0.85 : 1)));
   const plannedReps = current?.exercise.set_plan ? targetForSet(current.exercise, current.setIndex - 1).reps_min : undefined;
   const reps = Math.min(100, Math.max(0, draft?.key === key ? draft.reps : edited?.reps ?? (dropIndex > 0 ? drop?.reps ?? 0 : undefined) ?? performance?.reps ?? plannedReps ?? prefill?.reps ??
     (current ? targetForSet(current.exercise, current.setIndex - 1).reps_min : 0)));

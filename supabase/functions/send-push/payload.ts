@@ -24,7 +24,7 @@ export function pushPayload(row: PushNotificationRow, locale: 'ar' | 'en' = 'ar'
   const name = field(playerExpiry ? 'captain_name' : row.type === 'workout_reminder' ? 'day_title' : row.type === 'player_pain' ? 'display_name' : 'name');
   const rank = row.type === 'rank_up' || row.type === 'crown_taken' || row.type === 'crown_lost'
     || row.type === 'crown_close' || row.type === 'crown_defend';
-  const path = row.type === 'pain_answered' ? '/player/captain' : row.type === 'player_pain' && player ? `/captain/players/${encodeURIComponent(player)}#pain-reports`
+  const path = row.type === 'ramadan_soon' ? '/captain/settings#ramadan' : row.type === 'pain_answered' ? '/player/captain' : row.type === 'player_pain' && player ? `/captain/players/${encodeURIComponent(player)}#pain-reports`
     : rank ? '/player/rank' : playerExpiry ? '/player' : row.type === 'captain_approved' ? '/captain' : row.type === 'nutrition_updated' ? '/player/nutrition'
     : row.type === 'plan_assigned' || row.type === 'workout_reminder' ? '/player'
       : row.type === 'join_requested' || !player ? '/captain/players' : `/captain/players/${encodeURIComponent(player)}`;

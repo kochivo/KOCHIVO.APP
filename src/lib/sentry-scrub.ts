@@ -1,6 +1,7 @@
 import type { Breadcrumb, Event } from '@sentry/nextjs';
 
-const sensitiveKey = /email|phone|password|token|weight|kg|waist|photo|video|path|note|reply|full_?name|name|intake|injuries|medical|allergies/i;
+const sensitiveKey = /email|phone|password|token|weight|kg|waist|photo|video|path|note|reply|full_?name|name|intake|injuries|medical|allergies|cycle|period|light_days/i;
+const cycleEndpoint = /\/(?:cycle_(?:settings|logs|overrides)|(?:rpc\/)?player_light_day)(?:[/?#]|$)/i;
 const removedKey = /^(user|data|body|cookies|headers|query_string)$/i;
 // Stack-frame locations match the broad name/path patterns but hold code locations, not user data.
 const frameKey = /^(filename|abs_path|module|function)$/;
@@ -12,7 +13,7 @@ const inviteCode = /\/i\/[^\s"'<>/?#]+/g;
 
 function scrubText(value: string): string {
   return value.replace(inviteCode, '/i/[Redacted]').replace(/https?:\/\/[^\s"'<>]+|\/[^\s"'<>]*\?[^\s"'<>]*/gi,
-    (url) => url.includes('/storage/') ? '[Redacted]' : url.split(/[?#]/)[0] ?? '')
+    (url) => url.includes('/storage/') || cycleEndpoint.test(url) ? '[Redacted]' : url.split(/[?#]/)[0] ?? '')
     .replace(email, '[Redacted]').replace(phone, '[Redacted]');
 }
 
@@ -30,6 +31,7 @@ function scrub(value: unknown, seen = new WeakSet<object>()): unknown {
 
 export function beforeBreadcrumb(breadcrumb: Breadcrumb): Breadcrumb | null {
   const url = breadcrumb.data?.url;
+  if (typeof url === 'string' && cycleEndpoint.test(url)) return null;
   if (/fetch|xhr|http/i.test(breadcrumb.category ?? '') && typeof url === 'string'
     && /\/storage\/|\?/i.test(url)) return null;
   // DOM text and console arguments can contain unstructured personal details.
@@ -41,7 +43,7 @@ export function beforeBreadcrumb(breadcrumb: Breadcrumb): Breadcrumb | null {
 export function beforeSend<T extends Event>(event: T): T {
   const { request, breadcrumbs, ...rest } = event;
   const clean = scrub(rest) as T;
-  if (request) {
+  if (request && !cycleEndpoint.test(request.url ?? '')) {
     // Keep only diagnostic request metadata; credentials and payloads never leave the device.
     clean.request = {
       ...(request.method ? { method: scrubText(request.method) } : {}),

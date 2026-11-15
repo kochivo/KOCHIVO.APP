@@ -22,7 +22,7 @@ export const customFoodSchema = z.object({
 export type CustomFoodInput = z.infer<typeof customFoodSchema>;
 export interface Alternative { id: string; food: Food; grams: number }
 export interface MealItem extends Alternative { position: number; alternatives: Alternative[] }
-export interface Meal { id: string; name: string; position: number; items: MealItem[]; dayType?: DayType }
+export interface Meal { id: string; name: string; position: number; items: MealItem[]; dayType?: DayType; ramadanSlot?: 'iftar' | 'post_workout' | 'suhoor' | null }
 export interface PlanDraft {
   id: string; playerId: string | null; title: string; status: 'draft' | 'active' | 'archived';
   targets: Macros; meals: Meal[]; waterTargetMl?: number | null;

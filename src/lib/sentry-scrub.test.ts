@@ -6,6 +6,13 @@ vi.mock('@sentry/nextjs', () => ({ init: vi.fn() }));
 afterEach(() => { vi.unstubAllEnvs(); vi.resetModules(); vi.clearAllMocks(); });
 
 describe('Sentry privacy', () => {
+  it('drops cycle endpoint breadcrumbs and redacts cycle fields', () => {
+    for (const endpoint of ['cycle_settings', 'cycle_logs', 'cycle_overrides', 'rpc/player_light_day']) {
+      expect(beforeBreadcrumb({ category: 'fetch', data: { url: `https://app.test/rest/v1/${endpoint}` } })).toBeNull();
+    }
+    expect(beforeSend({ extra: { cycle_start: '2026-11-15', avg_period_days: 5 } }).extra)
+      .toEqual({ cycle_start: '[Redacted]', avg_period_days: '[Redacted]' });
+  });
   it('removes users and request payloads without mutating the event', () => {
     const event = { user: { id: 'private', email: 'a@example.com', ip_address: '127.0.0.1' },
       request: { url: 'https://app.test/workout?token=secret#private', data: 'body',

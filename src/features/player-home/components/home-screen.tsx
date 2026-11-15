@@ -19,7 +19,7 @@ import { RankChip } from '@/features/ranks';
 import { ranksEnabled } from '@/lib/ranks-enabled';
 import { WeekStrip } from './week-strip';
 import { NextTaskSlot } from './next-task-slot';
-import { TodayCard } from './today-card';
+import { TodayCard, estimateMinutes, warmupDuration } from './today-card';
 import { NutritionSlot } from './nutrition-slot';
 import { WeeklyRestCard } from './weekly-rest-card';
 import type { Decision } from '@/features/readiness';
@@ -30,8 +30,10 @@ import { previewFor } from '../day-preview';
 import { DayPreviewCard } from './day-preview-card';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { MorningRow } from './morning-row';
+import { CycleEntry } from './cycle-entry';
 
 const readPending = () => pendingCount(localDb());
+const RamadanSlot = dynamic(() => import('./ramadan-slot').then(m => m.RamadanSlot));
 const readParked = () => parkedCount(localDb());
 const readSessions = () => localDb().workout_sessions.toArray();
 const PlayerReadiness = dynamic(() => import('@/features/readiness').then(module => module.PlayerReadiness), {
@@ -87,6 +89,8 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
   return <main data-mood={rest ? 'rest' : undefined} data-tour-ready={Boolean(now && status !== 'loading' && (!snapshot || (sessions && weekSessions)))}
     className={v6 ? 'mx-auto flex max-w-lg flex-col gap-stack bg-bg px-page-x pt-card pb-[104px] [font-family:var(--font-alexandria),var(--font-manrope),sans-serif]' : 'mx-auto max-w-lg space-y-card-gap px-page-x pt-section pb-32'}>
     {!v6 && statusHeader}
+    {today && <CycleEntry playerId={playerId} today={today} />}
+    {now && <RamadanSlot now={now} playerId={playerId} duration={day ? estimateMinutes(day.exercises) + warmupDuration(day) + (day.cardio ?? []).reduce((sum, block) => sum + block.minutes, 0) : undefined} />}
     {failed && (!snapshot || localError) ? <ErrorState message={t('couldntLoadYourProgram')} retryLabel={t('tryAgain')} onRetry={() => {
       setLocalError(false); setRetryKey((value) => value + 1); void retry();
     }} /> : !now || status === 'loading' || (snapshot && (!sessions || !weekSessions)) ? <LoadingState variant="cards" /> : <>

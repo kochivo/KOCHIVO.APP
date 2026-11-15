@@ -1,5 +1,6 @@
 export const arStd = {
   player_pain: '{name} أبلغ عن ألم', pain_answered: 'ردّ المدرب على تقرير الألم', urgent: 'عاجل',
+  ramadan_soon: 'اقترب رمضان. هل تريد تفعيل وضع رمضان لفريقك؟',
   player_rank_up: '{name} أصبح {rank}', rank_up_medal: 'أصبحت {rank}',
   iron: 'حديد', bronze: 'برونز', silver: 'فضة', gold: 'ذهب', platinum: 'بلاتين', diamond: 'ماس', legend: 'أسطورة',
   chat_message: 'أرسل إليك {name} رسالة',

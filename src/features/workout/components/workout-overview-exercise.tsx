@@ -10,6 +10,7 @@ import { messages } from '../messages';
 import { ExerciseLightbox } from './exercise-lightbox';
 import { ExerciseHeader } from './exercise-header';
 import { messages as setMessages } from '@/lib/training/messages';
+import { RamadanWorkoutHint } from './ramadan-workout-hint';
 
 export function WorkoutOverviewExercise({ exercise, sessionId, playerId, tag }: {
   exercise: SnapshotExercise; sessionId: string; playerId?: string; tag?: string | null;
@@ -35,6 +36,7 @@ export function WorkoutOverviewExercise({ exercise, sessionId, playerId, tag }: 
       </div>
       <b className="text-md"><bdi>{name}</bdi></b>
       <ExerciseHeader exercise={exercise} last={null} prescriptionOnly />
+      <RamadanWorkoutHint sets={exercise.sets} weight={previous?.weight_kg ?? null} />
       <span className="text-xs text-muted">{t('v3Prescription', { sets: formatNumber(exercise.sets, locale), reps })}
         {previous?.weight_kg != null && t('v3PreviousWeight', { weight: formatNumber(previous.weight_kg, locale) })}</span>
       {failed && <button type="button" className="min-h-12 text-start text-xs text-muted" onClick={() => { setFailed(false); setAttempt(value => value + 1); }}>{t('tryAgain')}</button>}

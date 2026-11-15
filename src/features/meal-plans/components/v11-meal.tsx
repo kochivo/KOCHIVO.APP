@@ -17,6 +17,8 @@ import { V11FoodPicker } from './v11-food-picker';
 import { MealMenu } from './editor/meal-menu';
 import { messages } from './v11/messages';
 import { messages as redesignMessages } from './editor/redesign/messages';
+import dynamic from 'next/dynamic';
+const RamadanSlotSelect = dynamic(() => import('./ramadan-slot-select').then(m => m.RamadanSlotSelect));
 
 export function V11Meal({ meal, day, update }: { meal: Meal; day: 'training' | 'rest'; update: (change: (draft: PlanDraft) => PlanDraft) => void }) {
   const t = useT(messages), rt = useT(redesignMessages);
@@ -25,6 +27,7 @@ export function V11Meal({ meal, day, update }: { meal: Meal; day: 'training' | '
   return <section className="glass min-w-0 rounded-card border border-line-soft p-card">
     <div className="flex flex-wrap items-center gap-inline">
       <div ref={name} className="max-w-48"><EditInPlace label={rt('rename')} value={meal.name} maxLength={40} onChange={event => update(draft => renameMeal(draft, meal.id, event.target.value))} /></div>
+      <RamadanSlotSelect meal={meal} change={ramadanSlot => update(draft => ({ ...draft, meals: draft.meals.map(row => row.id === meal.id ? { ...row, ramadanSlot } : row) }))} />
       <label className="recessed rounded-full border border-line px-stack"><span className="sr-only">{rt('time')}</span><input type="time" value={(meal as TimedMeal).timeOfDay?.slice(0, 5) ?? ''} onChange={event => update(draft => ({ ...draft, meals: draft.meals.map(row => row.id === meal.id ? { ...row, timeOfDay: event.target.value || null } : row) }))} className={`${editableFieldClass} press min-h-12 max-w-32 cursor-pointer rounded-control bg-surface text-xs focus-visible:ring-2 focus-visible:ring-lime`} /></label>
       <div className="ms-auto text-xs"><b>{t('calories', { n: totals.kcal })}</b><p className="text-muted">{t('macros', { p: totals.protein, c: totals.carbs, f: totals.fat })}</p></div>
       <MealMenu meal={meal} day={day} update={update} rename={() => name.current?.querySelector('input')?.focus()} />

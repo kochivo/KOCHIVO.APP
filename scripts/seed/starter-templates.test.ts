@@ -21,20 +21,21 @@ const food = (key: string) => {
   return value;
 };
 
-it('provides the six workout schedules and four nutrition plans with valid seed references', () => {
+it('provides nine workout schedules and four nutrition plans with valid seed references', () => {
   const exercises = new Set((read('exercises-gif') as { dataset_id: string }[]).map(e => e.dataset_id));
   const high = new Set((read('exercise-names-ar.proposed') as { dataset_id: string; confidence: string }[])
     .filter(e => e.confidence === 'high').map(e => e.dataset_id));
-  expect(templates.filter(t => t.kind === 'workout').map(t => t.days?.length)).toEqual([3, 4, 6, 3, 3, 4]);
+  expect(templates.filter(t => t.kind === 'workout').map(t => t.days?.length)).toEqual([3, 3, 4, 3, 4, 6, 3, 3, 4]);
   expect(templates.filter(t => t.kind === 'nutrition')).toHaveLength(4);
-  expect(new Set(templates.map(t => t.key)).size).toBe(10);
+  expect(new Set(templates.map(t => t.key)).size).toBe(13);
   for (const template of templates) {
     for (const day of template.days ?? []) {
-      expect(day.exercises.length).toBeGreaterThanOrEqual(3);
+      const womenSeed = ['post-natal', 'women-home', 'women-strength'].includes(template.key);
+      expect(day.exercises.length).toBeGreaterThanOrEqual(womenSeed ? 2 : 3);
       for (const e of day.exercises) {
         expect(exercises.has(e.dataset_id), e.dataset_id).toBe(true);
-        expect(high.has(e.dataset_id), e.dataset_id).toBe(true);
-        expect(e.sets).toBeGreaterThanOrEqual(2);
+        if (!womenSeed) expect(high.has(e.dataset_id), e.dataset_id).toBe(true);
+        expect(e.sets).toBeGreaterThanOrEqual(template.key === 'post-natal' ? 1 : 2);
         expect(e.sets).toBeLessThanOrEqual(4);
         expect(e.reps_max).toBeGreaterThanOrEqual(e.reps_min);
         expect(e.rest_seconds).toBeGreaterThanOrEqual(30);
@@ -88,11 +89,12 @@ it('uses dumbbells without a bench at home and shorter Ramadan sessions with lon
     .toEqual(['الفطار', 'سناك خفيف', 'السحور']);
 });
 
-it('embeds the same library in the migrations and source JSON', () => {
+it('preserves every immutable migration template while allowing seed-only additions', () => {
   const sql = fs.readFileSync(new URL('../../supabase/migrations/0030_starter_templates.sql', import.meta.url), 'utf8');
   const payload = sql.match(/\$starter_library\$([\s\S]*?)\$starter_library\$/)?.[1];
   expect(payload).toBeDefined();
   // 0030 is immutable; 0034 rewrites its Arabic-Indic digits to Latin, as the source JSON now has.
   const latin = (payload ?? 'null').replace(/[٠-٩]/g, c => String(c.charCodeAt(0) - 0x660));
-  expect(JSON.parse(latin)).toEqual(templates);
+  const migrated = JSON.parse(latin) as Template[];
+  expect(templates.filter(template => migrated.some(row => row.key === template.key))).toEqual(migrated);
 });

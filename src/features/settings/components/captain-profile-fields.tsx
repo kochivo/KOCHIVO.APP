@@ -9,12 +9,18 @@ import type { CaptainProfileInput } from '../schema';
 import { PublicSlugField } from './public-slug-field';
 import { internationalEnabled } from '@/lib/international-enabled';
 import { TimezoneFields } from './timezone-fields';
+import { messages as genderMessages } from '../gender/messages';
 
 export function CaptainProfileFields({ value, errors, onChange }: { value: CaptainProfileInput;
   errors: Record<string, string>; onChange: (value: CaptainProfileInput) => void }) {
   const t = useT(messages);
+  const genderT = useT(genderMessages);
   const fieldClass = 'min-h-12 w-full rounded-control border border-line bg-surface px-page-x py-stack text-start focus-visible:ring-2 focus-visible:ring-lime';
   return <div className="space-y-card-gap">
+    <label className="grid gap-inline text-sm">{genderT('me')}<select className={`${fieldClass} press cursor-pointer`} value={value.coach_gender ?? ''}
+      onChange={event => onChange({ ...value, coach_gender: event.target.value === 'female' ? 'female' : event.target.value === 'male' ? 'male' : null })}>
+      <option value="">{genderT('optional')}</option><option value="male">{genderT('male')}</option><option value="female">{genderT('female')}</option>
+    </select></label>
     <PublicSlugField value={value.public_slug ?? ''} error={errors.public_slug} onChange={public_slug => onChange({ ...value, public_slug })} />
     <TextField label={t('fullName')} value={value.full_name} autoComplete="name" maxLength={80}
       onChange={e => onChange({ ...value, full_name: e.target.value })} error={errors.full_name} className="bg-surface" />

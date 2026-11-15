@@ -9,6 +9,7 @@ import { messages } from '../messages';
 import { PublicPricing } from './public-pricing';
 import { httpsSocialUrl } from './public-social-url';
 import { buttonClass } from '@/ui/button';
+import { CoachGenderChip } from './coach-gender-chip';
 
 export async function LegacyCoachPage({ slug, requested }: { slug: string; requested?: CoachRequestStatus }) {
   const t = await getT(messages);
@@ -29,6 +30,7 @@ export async function LegacyCoachPage({ slug, requested }: { slug: string; reque
         <img src={coach.avatar} alt="" width={112} height={112} className="size-28 rounded-full object-cover" />) :
         <span aria-hidden className="glass flex size-28 items-center justify-center rounded-full text-4xl font-bold">{coach.full_name.slice(0, 1)}</span>}
       <h1 className="text-4xl font-extrabold">{coach.full_name}</h1>
+      {coach.coach_gender === 'female' && <CoachGenderChip />}
       <p className="whitespace-pre-wrap text-muted">{coach.bio || t('noBio')}</p>
       {coach.location && <p className="flex items-center gap-2"><MapPin aria-hidden className="size-5" />{coach.location}</p>}
       {links.length ? <ul className="flex flex-wrap gap-3">{links.map(({ key, href }) =>

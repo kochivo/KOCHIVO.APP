@@ -8,9 +8,11 @@ import { signGallery } from '../data/gallery';
 import type { GalleryWeek } from '../gallery';
 import type { CheckIn } from '../data/checkins';
 import { ProgressGallery } from './progress-gallery';
+import { useCycle } from '@/features/player-home';
 
 export function PlayerGallery({ checkins }: { checkins: CheckIn[] }) {
   const t = useT(messages);
+  const cycle = useCycle(checkins[0]?.player_id);
   const [result, setResult] = useState<{ rows: CheckIn[]; weeks: GalleryWeek[]; failed: boolean }>();
   const [error, setError] = useState(false);
   const [retry, setRetry] = useState(0);
@@ -26,6 +28,8 @@ export function PlayerGallery({ checkins }: { checkins: CheckIn[] }) {
     void load();
     return () => { cancelled = true; };
   }, [checkins, retry]);
+  if (checkins.length && cycle.error) return <ErrorState message={t('couldntLoadPhotos')} retryLabel={t('tryAgain')} onRetry={() => void cycle.retry()} />;
+  if (checkins.length && !cycle.data) return <LoadingState />;
   if (error) return <ErrorState message={t('couldntLoadPhotos')} retryLabel={t('tryAgain')} onRetry={() => {
     setError(false); setResult(undefined); setRetry(value => value + 1);
   }} />;
@@ -34,6 +38,6 @@ export function PlayerGallery({ checkins }: { checkins: CheckIn[] }) {
     {result.failed && <ErrorState message={t('couldntLoadPhotos')} retryLabel={t('tryAgain')} onRetry={() => {
       setResult(undefined); setRetry(value => value + 1);
     }} />}
-    <ProgressGallery key={retry} weeks={result.weeks} />
+    <ProgressGallery key={retry} weeks={result.weeks} locked={cycle.data?.female === true} />
   </>;
 }

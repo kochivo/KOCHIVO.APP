@@ -14,7 +14,7 @@ export type NutritionResponse = Pick<Tables<'nutrition_plans'>,
   'id' | 'title' | 'target_kcal' | 'target_protein' | 'target_carbs' | 'target_fat'> & {
   water_target_ml?: number | null;
   meals: (Pick<Tables<'meals'>, 'id' | 'position' | 'name'> & {
-    day_type?: 'all' | 'training' | 'rest'; time_of_day?: string | null;
+    day_type?: 'all' | 'training' | 'rest'; time_of_day?: string | null; ramadan_slot?: 'iftar' | 'post_workout' | 'suhoor' | null;
     meal_items: (AlternativeResponse & Pick<Tables<'meal_items'>, 'position'> & {
       unit?: string | null;
       meal_item_alternatives: AlternativeResponse[];
@@ -36,6 +36,7 @@ export function mapNutritionSnapshot(plan: NutritionResponse, playerId: string):
     meals: [...plan.meals].sort((a, b) => a.position - b.position).map((meal) => ({
       id: meal.id, name: meal.name, position: meal.position,
       day_type: meal.day_type ?? 'all', time_of_day: meal.time_of_day ?? null,
+      ramadan_slot: meal.ramadan_slot ?? null,
       items: [...meal.meal_items].sort((a, b) => a.position - b.position).map((item) => ({
         ...mapFood(item), id: item.id, position: item.position, unit: item.unit ?? null,
         alternatives: item.meal_item_alternatives.map((alt) => ({ ...mapFood(alt), id: alt.id })),
@@ -48,7 +49,7 @@ export async function fetchNutritionSnapshot(client: SupabaseClient<Database>): 
   if (error || !auth.user) throw error ?? new Error('Missing session');
   const foodFields = 'name_ar,photo_path,kcal_per_100g,protein_per_100g,carbs_per_100g,fat_per_100g';
   const read = (extended: boolean) => {
-    const columns: string = `id,title,water_target_ml,target_kcal,target_protein,target_carbs,target_fat,meals(id,position,name,${extended ? 'day_type,time_of_day,' : ''}meal_items(id,position,grams,${extended ? 'unit,' : ''}foods(${foodFields}${extended ? ',units' : ''}),meal_item_alternatives(id,grams,foods(${foodFields}))))`;
+    const columns: string = `id,title,water_target_ml,target_kcal,target_protein,target_carbs,target_fat,meals(id,position,name,${extended ? 'day_type,time_of_day,ramadan_slot,' : ''}meal_items(id,position,grams,${extended ? 'unit,' : ''}foods(${foodFields}${extended ? ',units' : ''}),meal_item_alternatives(id,grams,foods(${foodFields}))))`;
     return client.from('nutrition_plans').select(columns)
       .eq('player_id', auth.user.id).eq('status', 'active').maybeSingle();
   };

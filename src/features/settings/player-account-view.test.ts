@@ -12,7 +12,7 @@ vi.hoisted(() => { process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY = ''; });
 vi.mock('server-only', () => ({}));
 vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh() {}, push() {} }) }));
 vi.mock('@/features/player-shell', () => ({ useCaptainContext: () => ({ data: { fullName: 'Real captain', accessUntil: '2026-12-15' } }) }));
-vi.mock('@/features/player-home', () => ({ useProgramSnapshot: () => ({ snapshot: { title: 'Actual plan' } }) }));
+vi.mock('@/features/player-home', () => ({ CycleEntry: () => null, useProgramSnapshot: () => ({ snapshot: { title: 'Actual plan' } }) }));
 vi.mock('@/core/resource', () => ({ useResource: () => ({ status: 'ready', data: { sessions: [], tier: 'champion' } }) }));
 vi.mock('@/core/offline', () => ({ localDb: () => ({ userId: 'player' }), useLiveQuery: () => [] }));
 vi.mock('@/lib/use-calendar-clock', () => ({ useCalendarClock: () => ({ now: new Date('2026-11-13T10:00:00Z') }) }));

@@ -49,6 +49,7 @@ beforeEach(async () => {
     useLiveQuery: (query: () => unknown) => { queries.push(query); return values[queries.length - 1]; },
   }));
   vi.doMock('@/features/player-home', () => ({
+    useCycle: () => ({}), isLightDay: () => false,
     useProgramSnapshot: () => ({ snapshot: { days: [day] }, status: 'ready', retry() {} }),
   }));
   vi.doMock('./hooks/use-rest-timer', () => ({ useRestTimer: () => ({ remaining: 0, start() {}, skip() {} }) }));

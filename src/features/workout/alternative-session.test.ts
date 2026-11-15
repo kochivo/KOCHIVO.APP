@@ -37,7 +37,7 @@ beforeEach(async () => {
   vi.doMock('@/core/offline', async original => ({ ...await original<typeof Offline>(), localDb: () => db,
     useLiveQuery: (query: () => unknown) => { queries.push(query); return values[queries.length - 1]; },
   }));
-  vi.doMock('@/features/player-home', () => ({ useProgramSnapshot: () => ({ snapshot: { days: [day] }, status: 'ready', retry() {} }) }));
+  vi.doMock('@/features/player-home', () => ({ useCycle: () => ({}), isLightDay: () => false, useProgramSnapshot: () => ({ snapshot: { days: [day] }, status: 'ready', retry() {} }) }));
   vi.doMock('@/features/readiness', () => ({ useTodayDecision: () => null, reducedSets: (sets: number) => sets }));
   vi.doMock('./hooks/use-rest-timer', () => ({ useRestTimer: () => ({ remaining: 0, start() {}, skip() {} }) }));
   await db.open();

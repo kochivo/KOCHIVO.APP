@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { ChevronRight, Sparkles } from 'lucide-react';
 import { useT } from '@/core/i18n/client';
 import { useCaptainContext } from '@/features/player-shell';
-import { useProgramSnapshot } from '@/features/player-home';
+import { CycleEntry, useProgramSnapshot } from '@/features/player-home';
 import dynamic from 'next/dynamic';
 const PlayerBudgetEntry = dynamic(() => import('@/features/meal-plans').then(module => module.PlayerBudgetEntry));
 import { internationalEnabled } from '@/lib/international-enabled';
@@ -39,6 +39,7 @@ export function PlayerAccount({ profile, profileForm, children, install, signOut
       <PlayerStatTiles playerId={current.id} snapshot={snapshot} />
       <PlayerPreferences units={current.units ?? 'metric'} />
       <PlayerBudgetEntry />
+      <CycleEntry playerId={current.id} settings />
     </> : profileForm}
     <section aria-label={t('more')} className="overflow-hidden rounded-[24px] border border-line-soft bg-surface">
       <details className="group"><summary className="flex min-h-[60px] cursor-pointer items-center px-page-x text-sm">{t('more')}</summary>

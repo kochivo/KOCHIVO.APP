@@ -42,6 +42,7 @@ beforeEach(async () => {
     },
   }));
   vi.doMock('@/features/player-home', () => ({
+    useCycle: () => ({}), isLightDay: () => false,
     useProgramSnapshot: () => ({ snapshot: { days: [day] }, status: 'ready', retry: async () => undefined }),
   }));
   vi.doMock('./hooks/use-rest-timer', () => ({
@@ -63,6 +64,7 @@ afterEach(async () => {
   vi.doUnmock('@/features/player-home');
   vi.doUnmock('./hooks/use-rest-timer');
   vi.doUnmock('./hooks/use-bodyweight');
+  vi.doUnmock('./hooks/use-last-session');
   vi.doUnmock('./hooks/use-focus-session');
   vi.doUnmock('./hooks/use-warmup-session');
   vi.doUnmock('./hooks/use-wake-lock');
@@ -81,6 +83,24 @@ async function loadedState(today = localDate(new Date(afterMidnight))) {
   queries = [];
   return renderSession(day.id, today, 'player');
 }
+
+it('suggests 85% of the historical load on a light day without editing the program', async () => {
+  vi.doMock('@/features/player-home', () => ({
+    useCycle: () => ({ data: { female: true, settings: { enabled: true, light_days: 2 }, starts: ['2026-11-04'], overrides: [] } }),
+    isLightDay: () => true,
+    useProgramSnapshot: () => ({ snapshot: { days: [day] }, status: 'ready', retry() {} }),
+  }));
+  vi.doMock('./hooks/use-bodyweight', () => ({ useBodyweight: () => ({ bodyweight: false, setBodyweight() {} }) }));
+  vi.doMock('./hooks/use-last-session', () => ({ useLastSession: () => ({ ready: true, last: { sets: [{ set_index: 1, weight_kg: 100, reps: 8 }] } }) }));
+  const original = structuredClone(day);
+  const state = await loadedState();
+  expect(state.weight).toBe(85);
+  expect(state.day).toEqual(original);
+  expect(day).toEqual(original);
+  expect(await db.outbox.count()).toBe(0);
+  await state.complete();
+  expect((await loadedState()).weight).toBe(85);
+});
 
 it('enables a new workout and queues its first session and set at the injected Cairo date', async () => {
   const state = await loadedState();

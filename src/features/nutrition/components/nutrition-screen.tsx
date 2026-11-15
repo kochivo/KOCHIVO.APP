@@ -19,11 +19,14 @@ import { FoodWater } from './food-water';
 import { messages as v6Messages } from '../v6-messages';
 import { useCallback, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { useRamadan } from '@/lib/use-ramadan';
+const RamadanMeals = dynamic(() => import('./ramadan-meals').then(m => m.RamadanMeals));
 const DayType = dynamic(() => import('./day-type').then(module => module.DayType), { ssr: false });
 const BudgetSummary = dynamic(() => import('./budget-summary').then(module => module.BudgetSummary));
 
 export function NutritionScreen() {
   const t = useT(messages);
+  const ramadan = useRamadan();
   const v6t = useT(v6Messages);
   const [day, setDay] = useState<{ today: string; rest: boolean | null | undefined }>();
   const locale = useLocale();
@@ -48,7 +51,7 @@ export function NutritionScreen() {
           </div>}
           {v6 ? <MacroTiles eaten={eatenTotals(visible, logs, today)} target={targetsOf(visible)} /> : <MacroRing eaten={eatenTotals(visible, logs, today)} target={targetsOf(visible)} />}
           <BudgetSummary meals={visible.meals} swaps={Object.assign({}, ...logs.filter(log => log.log_date === today && !log.deleted_at).map(log => log.swaps))} />
-          {v6 ? <ol className="flex list-none flex-col gap-inline" aria-label={v6t('meals')}>{visible.meals.map(meal => <li key={`${today}-${meal.id}`}>
+          {ramadan.data?.active ? <RamadanMeals meals={visible.meals} logs={logs} today={today} title={visible.title} /> : v6 ? <ol className="flex list-none flex-col gap-inline" aria-label={v6t('meals')}>{visible.meals.map(meal => <li key={`${today}-${meal.id}`}>
             <MealCard meal={meal} today={today} planTitle={visible.title}
               primary={meal.id === visible.meals.find(candidate => candidate.items.length > 0 && !logs.some(row => row.meal_id === candidate.id && row.log_date === today && row.completed_at && !row.deleted_at))?.id}
               log={logs.find(row => row.meal_id === meal.id && row.log_date === today && !row.deleted_at)} />

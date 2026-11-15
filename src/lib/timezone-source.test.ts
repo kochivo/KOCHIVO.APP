@@ -17,6 +17,9 @@ it('keeps Cairo in DEFAULT_TIMEZONE and passes a zone to every calendar-day calc
     const text = readFileSync(file, 'utf8');
     const remaining = text.replace("export const DEFAULT_TIMEZONE = 'Africa/Cairo';", '');
     if (remaining.includes('Africa/Cairo') && !cairoLiteralAllowlist.has(file.replaceAll('\\', '/'))) failures.push(file);
+    // A call whose source text is localDate cannot occur without this literal.
+    // Keep the Cairo check above on every file, avoiding unrelated AST allocations.
+    if (!text.includes('localDate')) continue;
     const tree = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true);
     function visit(node: ts.Node) {
       if (ts.isCallExpression(node) && node.expression.getText(tree) === 'localDate' && node.arguments.length < 2) failures.push(file);

@@ -22,9 +22,9 @@ it('keeps page facts when stats fail, and hides all slots when the page fails', 
   mocks.rpc.mockImplementation(async (name: string) => ({ data: name === 'coach_public_profile' ? [profile] : { players: 8 }, error: name === 'coach_public_page' ? {} : null }));
   expect(await loadPublicCoach('ali')).toMatchObject({ page: null, stats: null });
 });
-it('does not call either new RPC with the flag off', async () => {
+it('loads gender through the existing public page RPC with the workspace flag off', async () => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '0');
-  mocks.rpc.mockResolvedValue({ data: [profile], error: null });
-  await loadPublicCoach('ali');
-  expect(mocks.rpc).toHaveBeenCalledTimes(1);
+  mocks.rpc.mockImplementation(async (name: string) => ({ data: name === 'coach_public_profile' ? [profile] : [{ coach_gender: 'female' }], error: null }));
+  expect(await loadPublicCoach('ali')).toMatchObject({ coach_gender: 'female', page: null, stats: null });
+  expect(mocks.rpc.mock.calls.map(call => call[0])).toEqual(['coach_public_profile', 'coach_public_page']);
 });

@@ -59,7 +59,7 @@ export async function WorkspaceHome({ data, now = new Date() }: {
       <MoneyOwedEntry mode="home" />
       {!contacts && <WorkspaceError />}
       <div className="grid items-start gap-stack min-[1000px]:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
-        <HomeTaskList tasks={tasks} count={count} contacts={contacts ?? new Map()} />
+        <HomeTaskList tasks={tasks} count={count} contacts={contacts ?? new Map()} today={today} />
         <div className="min-w-0 space-y-stack"><HomeWeekChart sessions={summary.sessions.filter(session => players.some(player => player.playerId === session.playerId))} today={today} />
           <HomeConfirmations requests={followup.requests} payments={renewals?.data ?? []} paymentsFailed={!renewals || Boolean(renewals.error)} /></div>
       </div>

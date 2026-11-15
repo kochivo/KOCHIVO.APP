@@ -18,7 +18,7 @@ const fixture = vi.hoisted(() => ({
 vi.mock('@/features/readiness', async original => ({
   ...await original<typeof Readiness>(), useTodayDecision: () => 'reduce',
 }));
-vi.mock('@/features/player-home', () => ({ useProgramSnapshot: () => ({
+vi.mock('@/features/player-home', () => ({ useCycle: () => ({}), isLightDay: () => false, useProgramSnapshot: () => ({
   snapshot: { days: [fixture.day] }, status: 'ready', retry() {},
 }) }));
 vi.mock('@/core/offline', async original => ({

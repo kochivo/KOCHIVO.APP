@@ -3,6 +3,14 @@ import type { Locale } from '@/core/i18n/locale';
 // Starter templates are copied into each captain's own rows in Arabic. Unedited starter text is
 // shown in English for English readers; anything the captain typed is shown exactly as written.
 const english: Record<string, string> = {
+  'بعد الولادة': 'Postnatal training',
+  'تمرين في البيت للبنات': 'Home training for women',
+  'قوة للبنات': 'Strength for women',
+  'بإذن الدكتور. 3 أيام هادية وبينهم راحة.': 'With your doctor’s approval. 3 gentle days with rest between them.',
+  '3 أيام بوزن الجسم وبينهم راحة.': '3 bodyweight days with rest between them.',
+  '4 أيام. زوّدي الوزن بالتدريج مع الحفاظ على الحركة.': '4 days. Add weight gradually while keeping good form.',
+  'بإذن الدكتور، حركة هادية من غير ألم.': 'With your doctor’s approval, move gently without pain.',
+  'بإذن الدكتور، توقفي لو حسيتي بألم.': 'With your doctor’s approval, stop if you feel pain.',
   'جسم كامل للمبتدئين': 'Beginner full body',
   'علوي وسفلي': 'Upper and lower',
   'دفع وسحب ورجل': 'Push, pull, legs',

@@ -7,6 +7,9 @@ let db: PGlite;
 let captain: string;
 const source = (name: string) => JSON.parse(fs.readFileSync(
   new URL(`../seed/source/${name}.json`, import.meta.url), 'utf8'));
+// T-313 adds seed-only programs; this suite verifies the immutable 0030 library.
+const migratedLibrary = () => (source('starter-templates') as { key: string }[])
+  .filter(row => !['post-natal', 'women-home', 'women-strength'].includes(row.key));
 const counts = async (user: string) => (await db.query(`select
   (select count(*)::int from public.programs where captain_id = $1) as workouts,
   (select count(*)::int from public.nutrition_plans where captain_id = $1) as nutrition`, [user])).rows;
@@ -36,7 +39,7 @@ it('confirmation copies six workouts and four nutrition plans with complete hier
   await asUser(db, captain, tx => tx.query("select public.confirm_role('captain')"));
   expect(await counts(captain)).toEqual([{ workouts: 6, nutrition: 4 }]);
   await db.query(`update public.profiles set captain_status = 'approved' where id = $1`, [captain]);
-  const library = source('starter-templates') as {
+  const library = migratedLibrary() as unknown as {
     kind: string; days?: { exercises: unknown[] }[];
     meals?: { items: { alternatives: unknown[] }[] }[];
   }[];
@@ -76,7 +79,7 @@ it('preserves ordered workout prescriptions, meal grams, alternatives and target
         from public.meal_items i join public.foods f on f.id = i.food_id where i.meal_id = m.id)) order by m.position)
         from public.meals m where m.plan_id = p.id)) as payload
     from public.nutrition_plans p where captain_id = $1`, [captain]);
-  const expected = (source('starter-templates') as Record<string, unknown>[]).map(t => {
+  const expected = (migratedLibrary() as unknown as Record<string, unknown>[]).map(t => {
     const { key, kind, ...payload } = t;
     expect(key).toBeDefined();
     expect(kind).toBeDefined();

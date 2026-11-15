@@ -11,6 +11,7 @@ import { OverviewFacts } from './overview-facts';
 import { ProfileSection } from './profile-section';
 import { createT } from '@/core/i18n/messages';
 import { messages } from './messages';
+import { LightDayEntry } from '../components/light-day-entry';
 
 export function PlayerOverview({ playerId, profile, summary, locale, activity, today }: {
   playerId: string; profile: Profile; summary: FileSummary; locale: Locale; today: string; activity: FileActivity;
@@ -29,6 +30,7 @@ export function PlayerOverview({ playerId, profile, summary, locale, activity, t
     if (latest !== undefined) metrics.push({ key, value: latest, change: values.length > 1 && first !== undefined ? Math.round((latest - first) * 10) / 10 : null });
   }
   return <div className="space-y-stack">
+    <LightDayEntry playerId={playerId} date={today} />
     <div className="grid gap-stack min-[760px]:grid-cols-3">
       <TrainingAdherence completed={summary.completedDays} planned={summary.file.facts.trainingDays?.value.length ?? profile.program?.days ?? 0} rpe={activity.last?.session_rpe ?? null} locale={locale} />
       <FoodToday nutrition={activity.nutrition} locale={locale} />

@@ -65,6 +65,7 @@ export async function loadPlan(id: string): Promise<ActionResult<PlanDraft>> {
     waterTargetMl: z.object({ water_target_ml: z.number().nullable().optional() }).parse(plan).water_target_ml ?? null,
     targets: { kcal: plan.target_kcal ?? 2000, protein: plan.target_protein ?? 150, carbs: plan.target_carbs ?? 225, fat: plan.target_fat ?? 56 },
     meals: (meals.data ?? []).map((meal, index) => ({ id: meal.id, name: meal.name, position: index + 1,
+      ramadanSlot: z.object({ ramadan_slot: z.enum(['iftar','post_workout','suhoor']).nullable().optional() }).parse(meal).ramadan_slot ?? null,
       ...(captainWorkspaceEnabled() ? { dayType: mealDayType(meal), timeOfDay: (meal as typeof meal & { time_of_day?: string | null }).time_of_day ?? null } : {}),
       items: (items.data ?? []).filter(item => item.meal_id === meal.id).map((item, index) => ({
         id: item.id, food: food(item.food_id), grams: Number(item.grams), position: index + 1,

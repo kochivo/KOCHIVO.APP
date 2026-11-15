@@ -3,12 +3,13 @@ import { resolve } from 'node:path';
 import { expect, it } from 'vitest';
 import { hasStarterEnglish, starterText } from './starter-text';
 
-type Template = { title: string; notes?: string; days?: { title: string }[]; meals?: { name: string }[] };
+type Template = { title: string; notes?: string; days?: { title: string; exercises?: { notes?: string }[] }[]; meals?: { name: string }[] };
 const templates: Template[] = JSON.parse(readFileSync(resolve('supabase/seed/source/starter-templates.json'), 'utf8'));
 
 it('has English for every starter title, note, day and meal name', () => {
   const texts = templates.flatMap(t => [t.title, ...(t.notes ? [t.notes] : []),
-    ...(t.days ?? []).map(d => d.title), ...(t.meals ?? []).map(m => m.name)]);
+    ...(t.days ?? []).flatMap(d => [d.title, ...(d.exercises ?? []).flatMap(e => e.notes ? [e.notes] : [])]),
+    ...(t.meals ?? []).map(m => m.name)]);
   expect(texts.filter(text => !hasStarterEnglish(text))).toEqual([]);
 });
 

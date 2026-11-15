@@ -11,6 +11,7 @@ import { playerStatus } from './model';
 import type { PlayerActivity } from './model';
 import { WeekDots } from './week-dots';
 import { buttonClass } from '@/ui/button';
+import { LightDayEntry } from '@/features/captain-workspace';
 
 export function PlayerRow({ player, today, meta, activity, mobile = false }: {
   player: RosterPlayer; today: string; meta?: RosterMeta; activity?: PlayerActivity; mobile?: boolean;
@@ -34,7 +35,7 @@ export function PlayerRow({ player, today, meta, activity, mobile = false }: {
     className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-12 items-center gap-stack p-stack text-start focus-visible:outline-2 focus-visible:outline-lime" })}>
     {avatar}<div className="min-w-0 flex-1"><b className="block truncate text-sm">{player.fullName}</b>
       <small className="block text-xs text-muted">{goal ? `${goal} · ` : ''}{player.awaitingPlansAt ? t('waitingForPlans') : t('days', { count: n(days) })}</small>
-      <div className="mt-inline">{dots}</div></div>{pill}
+      <div className="mt-inline">{dots}</div><LightDayEntry playerId={player.playerId} date={player.playerToday ?? today} /></div>{pill}
   </Link>;
   return <tr className="relative cursor-pointer border-b border-line-soft text-row last:border-0 hover:bg-ink/5">
     <td className="px-stack py-inline"><div className="flex items-center gap-stack">{avatar}<div className="min-w-0">
@@ -45,6 +46,6 @@ export function PlayerRow({ player, today, meta, activity, mobile = false }: {
     <td className="px-stack py-inline tabular-nums">{meta ? n(meta.weight) : t('unknown')}</td>
     <td className="px-stack py-inline tabular-nums">{activity?.rpe != null ? n(activity.rpe) : t('unknown')}</td>
     <td className={`px-stack py-inline tabular-nums ${!player.awaitingPlansAt && days <= 3 ? 'text-warn' : ''}`}>{player.awaitingPlansAt ? t('waitingForPlans') : t('dayCount', { count: n(days) })}</td>
-    <td className="px-stack py-inline">{pill}</td>
+    <td className="space-y-inline px-stack py-inline">{pill}<LightDayEntry playerId={player.playerId} date={player.playerToday ?? today} /></td>
   </tr>;
 }

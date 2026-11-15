@@ -4,6 +4,7 @@
 [dir='ltr'] .dir-icon { transform: scaleX(-1); }
 /* KOCHIVO design tokens — colors come from brand/tokens/palette.css (2026-10-26); use utilities, never raw hex in components. */
 @theme {
+  --color-rose: #e98aaa;
   --color-medal-0-a: #d3d6da;
   --color-medal-0-b: #6a6e74;
   --color-medal-0-c: #3a3d41;
@@ -250,6 +251,7 @@ html[data-glass='solid'] [data-mood='rest'] { --glass-solid-background: var(--co
 }
 [dir='rtl'] { --featured-angle: 225deg; --progress-edge: -2px 0 5px color-mix(in srgb, var(--color-lime) 25%, transparent); }
 html[data-theme='light'] {
+  --color-rose: #a53760;
   --color-ivory: #514735;
   --color-ivory-muted: #756b5b;
   --color-ivory-hatch: #8a795a;

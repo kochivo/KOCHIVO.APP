@@ -1,5 +1,30 @@
 [
   {
+    "key": "post-natal", "title": "بعد الولادة", "notes": "بإذن الدكتور. 3 أيام هادية وبينهم راحة.", "kind": "workout",
+    "days": [
+      {"title":"اليوم الأول","exercises":[{"dataset_id":"1368","sets":1,"reps_min":6,"reps_max":8,"rest_seconds":120,"notes":"بإذن الدكتور، حركة هادية من غير ألم."},{"dataset_id":"0659","sets":1,"reps_min":6,"reps_max":8,"rest_seconds":120,"notes":"بإذن الدكتور، توقفي لو حسيتي بألم."}]},
+      {"title":"اليوم التاني","exercises":[{"dataset_id":"1373","sets":1,"reps_min":6,"reps_max":8,"rest_seconds":120,"notes":"بإذن الدكتور، حركة هادية من غير ألم."},{"dataset_id":"1368","sets":1,"reps_min":6,"reps_max":8,"rest_seconds":120,"notes":"بإذن الدكتور، توقفي لو حسيتي بألم."}]},
+      {"title":"اليوم التالت","exercises":[{"dataset_id":"1368","sets":1,"reps_min":6,"reps_max":8,"rest_seconds":120,"notes":"بإذن الدكتور، حركة هادية من غير ألم."},{"dataset_id":"0659","sets":1,"reps_min":6,"reps_max":8,"rest_seconds":120,"notes":"بإذن الدكتور، توقفي لو حسيتي بألم."}]}
+    ]
+  },
+  {
+    "key": "women-home", "title": "تمرين في البيت للبنات", "notes": "3 أيام بوزن الجسم وبينهم راحة.", "kind": "workout",
+    "days": [
+      {"title":"اليوم الأول","exercises":[{"dataset_id":"3132","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0662","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":90}]},
+      {"title":"اليوم التاني","exercises":[{"dataset_id":"2368","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"0659","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":90}]},
+      {"title":"اليوم التالت","exercises":[{"dataset_id":"3132","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":90},{"dataset_id":"1373","sets":2,"reps_min":8,"reps_max":12,"rest_seconds":90}]}
+    ]
+  },
+  {
+    "key": "women-strength", "title": "قوة للبنات", "notes": "4 أيام. زوّدي الوزن بالتدريج مع الحفاظ على الحركة.", "kind": "workout",
+    "days": [
+      {"title":"علوي أول","exercises":[{"dataset_id":"0025","sets":3,"reps_min":6,"reps_max":8,"rest_seconds":120},{"dataset_id":"0861","sets":3,"reps_min":6,"reps_max":8,"rest_seconds":120}]},
+      {"title":"سفلي أول","exercises":[{"dataset_id":"0739","sets":3,"reps_min":6,"reps_max":8,"rest_seconds":120},{"dataset_id":"0300","sets":3,"reps_min":6,"reps_max":8,"rest_seconds":120}]},
+      {"title":"علوي تاني","exercises":[{"dataset_id":"0025","sets":3,"reps_min":6,"reps_max":8,"rest_seconds":120},{"dataset_id":"0861","sets":3,"reps_min":6,"reps_max":8,"rest_seconds":120}]},
+      {"title":"سفلي تاني","exercises":[{"dataset_id":"0739","sets":3,"reps_min":6,"reps_max":8,"rest_seconds":120},{"dataset_id":"0300","sets":3,"reps_min":6,"reps_max":8,"rest_seconds":120}]}
+    ]
+  },
+  {
     "key": "beginner-full-body",
     "title": "جسم كامل للمبتدئين",
     "notes": "3 أيام وبينهم يوم راحة. ابدأ بوزن خفيف وزوّد بالتدريج.",

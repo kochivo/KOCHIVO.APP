@@ -75,7 +75,7 @@ it('provides Egyptian, standard Arabic and English public page copy', () => {
 });
 it('fills the named slots with this captain’s data and replaces all three full-capacity actions', () => {
   const page = { specialties: ['Strength'], years_experience: 8, languages: ['ar' as const],
-    show_public_stats: true, spots_left: 0, accepting: false };
+    show_public_stats: true, spots_left: 0, accepting: false, coach_gender: null };
   const node = createElement(PublicCoachLayout, { coach: { ...coach, page,
     stats: { players: 12, workouts_logged: 4210, adherence_pct: 87, member_since: 2020 } },
     slug: 'ahmed', t, sectionsT: createT(sections, 'en'), pricing: null });

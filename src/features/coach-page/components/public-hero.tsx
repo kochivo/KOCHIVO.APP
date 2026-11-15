@@ -9,6 +9,7 @@ import type { messages } from '../sections/messages';
 import { PublicSpecialties } from './public-specialties';
 import { PublicSpots } from './public-spots';
 import { buttonClass } from '@/ui/button';
+import { CoachGenderChip } from './coach-gender-chip';
 
 export function PublicHero({ coach, signup, whatsapp, requested, t, action, sectionsT }: {
   coach: PublicCoach; signup: string; whatsapp: string | null; requested?: CoachRequestStatus; t: PublicT;
@@ -19,6 +20,7 @@ export function PublicHero({ coach, signup, whatsapp, requested, t, action, sect
   return <section className="public-hero public-section grid items-center gap-section md:grid-cols-[1.15fr_1fr]">
     <div className="space-y-section">
       <div className="flex flex-wrap items-center gap-card-gap text-sm">
+        {coach.coach_gender === 'female' && <CoachGenderChip />}
         <span className="flex items-center gap-inline text-lime"><BadgeCheck aria-hidden strokeWidth={1.5} className="size-5" />{t('verified')}</span>
         {coach.location && <span className="flex items-center gap-inline text-muted"><MapPin aria-hidden strokeWidth={1.5} className="size-4" />{coach.location}</span>}
       </div>

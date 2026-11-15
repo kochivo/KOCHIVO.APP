@@ -230,6 +230,7 @@ it('keeps the session live query read-only so a missing session can load', async
     },
   }));
   vi.doMock('@/features/player-home', () => ({
+    useCycle: () => ({}), isLightDay: () => false,
     useProgramSnapshot: () => ({ snapshot: { days: [day] }, status: 'ready', retry: async () => undefined }),
   }));
   const { useFocusSession } = await import('./hooks/use-focus-session');

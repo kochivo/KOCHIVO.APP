@@ -3,6 +3,7 @@ import type * as React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { LocaleProvider } from '@/core/i18n/client';
+vi.mock('server-only', () => ({}));
 
 const state = vi.hoisted(() => ({ values: [] as unknown[], index: 0 }));
 vi.mock('react', async original => {
