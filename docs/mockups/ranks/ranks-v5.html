@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>رتب KOCHIVO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700&family=Changa:wght@500;600;700;800&family=Manrope:wght@500;700;800&display=swap">
+<style>
+:root {
+  --bg: #0b0c0d; --deep: #070808; --surface: #141515; --raised: #1c1d1d;
+  --line: #292a2a; --soft: rgba(242,242,238,.07); --glass: rgba(255,255,255,.035); --glass-line: rgba(255,255,255,.09);
+  --ink: #f4f4f1; --muted: #a6abb0; --faint: #7d8288; --warn: #f2b544;
+  --lime: #b6e94f; --lime-dim: rgba(182,233,79,.13); --on-lime: #101418;
+  --display: "Manrope", "Changa", "Alexandria", system-ui, sans-serif;
+  --text: "Manrope", "Alexandria", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--text); font-size: 14.5px; line-height: 1.6; }
+.page { max-width: 1220px; margin: 0 auto; padding: 40px 16px 90px; }
+h1, h2, h3 { margin: 0; font-family: var(--display); text-wrap: balance; }
+h1 { font-size: clamp(28px, 4.4vw, 46px); font-weight: 800; line-height: 1.2; }
+h2 { font-size: 22px; font-weight: 800; }
+h3 { font-size: 15.5px; font-weight: 700; }
+p { margin: 0; }
+.lede { color: var(--muted); max-width: 68ch; margin-top: 12px; }
+section { margin-top: 60px; display: grid; gap: 18px; }
+.head p { color: var(--muted); max-width: 72ch; margin-top: 6px; }
+.num { font-family: "Manrope", system-ui, sans-serif; font-variant-numeric: tabular-nums; font-weight: 800; direction: ltr; unicode-bidi: isolate; }
+.muted { color: var(--muted); } .faint { color: var(--faint); } .lime { color: var(--lime); } .warn { color: var(--warn); }
+.small { font-size: 12.5px; }
+.medal { display: block; width: 100%; height: auto; overflow: visible; }
+.glass { background: var(--glass); border: 1px solid var(--glass-line); border-radius: 22px; }
+
+/* how it works */
+.how { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.src { padding: 14px; display: grid; gap: 4px; align-content: start; }
+.src .pts { font-size: 28px; color: var(--lime); line-height: 1.1; }
+.src p { color: var(--muted); font-size: 12.5px; }
+.rules { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.rule { padding: 14px 16px; display: grid; gap: 4px; }
+.rule p { color: var(--muted); font-size: 13px; }
+
+/* ladder */
+.ladder { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px; align-items: end; }
+.step { display: grid; justify-items: center; gap: 4px; text-align: center; }
+.step .m { width: 100%; max-width: 120px; }
+.step b { font-family: var(--display); font-size: 15px; }
+.step span { color: var(--faint); font-size: 11.5px; }
+
+/* phones */
+.phones { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; align-items: start; }
+.pw { display: grid; gap: 10px; min-width: 0; }
+.pw > p { color: var(--muted); font-size: 13px; }
+.phone { border: 1px solid var(--line); border-radius: 34px; background: var(--bg); padding: 14px 12px 16px; display: grid; gap: 12px; width: 100%; max-width: 360px; justify-self: center; overflow: hidden; position: relative; min-height: 700px; align-content: start; }
+.status { display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; color: var(--faint); padding: 2px 8px 0; direction: ltr; }
+.top { display: flex; align-items: center; gap: 10px; }
+.top h3 { font-size: 18px; }
+.hero { padding: 14px; display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 12px; align-items: center; }
+.hero .m { width: 96px; }
+.hero .name { font-family: var(--display); font-size: 24px; font-weight: 800; line-height: 1.2; }
+.prog { height: 8px; border-radius: 99px; background: var(--deep); border: 1px solid var(--soft); overflow: hidden; }
+.prog i { display: block; height: 100%; background: var(--lime); border-radius: 99px; }
+.sect { display: flex; align-items: baseline; justify-content: space-between; }
+.grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.tile { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 8px 4px; display: grid; justify-items: center; gap: 1px; text-align: center; position: relative; min-width: 0; }
+.tile .m { width: 64px; }
+.tile b { font-family: var(--display); font-size: 12.5px; }
+.tile span { font-size: 10.5px; color: var(--faint); }
+.tile.lock .m { filter: grayscale(1) brightness(.45); }
+.tile.next { border-color: rgba(182,233,79,.45); background: linear-gradient(var(--lime-dim), var(--lime-dim)), var(--surface); }
+.tile.next span { color: var(--lime); }
+.crown { padding: 12px 14px; display: grid; gap: 8px; border-color: rgba(242,181,68,.3); }
+.row { display: flex; align-items: center; gap: 10px; min-height: 44px; padding-inline: 6px; border-radius: 12px; font-size: 13.5px; }
+.row .m { width: 30px; flex: none; }
+.row .v { margin-inline-start: auto; font-size: 12.5px; }
+.row.me { background: var(--lime-dim); }
+.pos { width: 18px; color: var(--faint); font-size: 12px; text-align: center; }
+.btn { min-height: 52px; border-radius: 999px; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 800; font-size: 15px; border: 1px solid transparent; font-family: var(--display); width: 100%; cursor: pointer; }
+.btn.primary { background: var(--lime); color: var(--on-lime); }
+.btn.secondary { background: var(--glass); border-color: var(--glass-line); color: var(--ink); min-height: 48px; font-size: 14px; }
+.btn:focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }
+
+/* sheet */
+.dim { display: grid; gap: 12px; opacity: .22; }
+.sheet { position: absolute; inset-inline: 0; bottom: 0; background: var(--raised); border-top: 1px solid var(--glass-line); border-radius: 28px 28px 0 0; padding: 10px 16px 18px; display: grid; gap: 10px; }
+.grab { width: 40px; height: 4px; border-radius: 4px; background: var(--line); justify-self: center; }
+.earn { display: flex; align-items: center; gap: 10px; background: var(--deep); border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; font-size: 13px; }
+.earn .p { margin-inline-start: auto; font-weight: 800; color: var(--lime); }
+.earn .d { width: 22px; height: 22px; border-radius: 50%; flex: none; display: grid; place-items: center; font-size: 12px; font-weight: 800; }
+.earn .d.ok { background: var(--lime); color: var(--on-lime); }
+.earn .d.todo { border: 2px solid var(--line); }
+.earn.done { color: var(--muted); }
+
+/* finish */
+.finish { display: grid; gap: 12px; justify-items: center; text-align: center; padding-top: 30px; }
+.gain { display: grid; gap: 6px; width: 100%; }
+.gain .earn { font-size: 13.5px; }
+.plus { font-size: 54px; color: var(--lime); line-height: 1; }
+
+/* unlock */
+.unlock { background: radial-gradient(circle at 50% 38%, rgba(224,188,95,.18), transparent 55%), var(--deep); border: 1px solid var(--line); border-radius: 26px; min-height: 610px; display: grid; align-content: center; justify-items: center; text-align: center; gap: 8px; padding: 22px 14px; overflow: hidden; position: relative; }
+.unlock .m { width: 190px; position: relative; }
+.rays { position: absolute; width: 520px; height: 520px; top: 50%; left: 50%; margin: -330px 0 0 -260px; opacity: .5; animation: spin 18s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.drop { animation: drop .9s cubic-bezier(.2,1.4,.4,1) both; }
+@keyframes drop { 0% { transform: translateY(-40px) scale(.7); opacity: 0; } 100% { transform: none; opacity: 1; } }
+.unlock .big { font-family: var(--display); font-size: 32px; font-weight: 800; position: relative; }
+.unlock .sub { color: var(--muted); font-size: 13.5px; max-width: 30ch; position: relative; }
+.unlock .btns { display: grid; gap: 8px; width: 100%; margin-top: 10px; position: relative; }
+
+/* captain */
+.frame { border: 1px solid var(--line); border-radius: 22px; background: var(--bg); overflow: hidden; }
+.frame-bar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--line); background: var(--deep); font-size: 12px; color: var(--faint); direction: ltr; }
+.frame-bar i { width: 10px; height: 10px; border-radius: 50%; background: var(--line); }
+.cap { padding: 22px; display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 16px; }
+.board { padding: 16px; display: grid; gap: 4px; }
+.board .row { min-height: 52px; }
+.board .row .m { width: 36px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--glass-line); background: var(--glass); border-radius: 999px; padding: 2px 10px 2px 4px; font-size: 12.5px; }
+.chip .m { width: 24px; }
+.file { padding: 16px; display: grid; gap: 12px; align-content: start; }
+.file-head { display: flex; align-items: center; gap: 12px; }
+.avatar { width: 52px; height: 52px; border-radius: 16px; background: var(--raised); display: grid; place-items: center; font-weight: 800; font-family: var(--display); }
+
+.decide { border: 1px solid rgba(242,181,68,.35); background: rgba(242,181,68,.07); border-radius: 16px; padding: 14px 16px; display: grid; gap: 8px; font-size: 13.5px; }
+.decide b { color: var(--warn); }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+td, th { padding: 8px 10px; border-bottom: 1px solid var(--line); text-align: start; }
+th { color: var(--faint); font-weight: 600; }
+
+@media (max-width: 1100px) { .phones { grid-template-columns: repeat(2, minmax(0, 1fr)); } .how { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 760px) {
+  .phones, .rules, .cap { grid-template-columns: 1fr; }
+  .how { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ladder { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (prefers-reduced-motion: reduce) { .rays, .drop { animation: none; } }
+</style>
+</head>
+<body>
+<main class="page">
+  <p class="small faint">رتب KOCHIVO · نسخة 5 · مبنية على الميداليات اللي وافقت عليها</p>
+  <h1>الرتب: اللاعب يتمرن، يجمع نقط، ويطلع رتبة</h1>
+  <p class="lede">نظام النقط والتاج شغال عندنا من دلوقتي. اللي هيتغير إن الرتب تبقى 7 ميداليات بدل 4، وتظهر في كل حتة مهمة: آخر التمرين، صفحة الرتبة، ترتيب الفريق، وعند الكابتن. الأسماء والأرقام اللي تحت أمثلة.</p>
+
+  <section aria-labelledby="how">
+    <div class="head"><h2 id="how">إزاي اللاعب بيجمع نقط</h2><p>النقط كلها بتتحسب على السيرفر، فاللاعب مايقدرش يزوّدها بإيده. ونفس الحاجة لو اتعملت مرتين مابتتحسبش مرتين.</p></div>
+    <div class="how">
+      <div class="glass src"><span class="num pts">+3</span><h3>تمرين كامل</h3><p>لما يخلّص تمرين اليوم. لو خلّصه في وقت قليل أوي أو عمل أقل من 60% من السِتات، النقط بتستنى لحد ما يكمّل.</p></div>
+      <div class="glass src"><span class="num pts">+1</span><h3>رقم جديد</h3><p>كل مرة يكسر رقمه في تمرين. لحد 3 في التمرين الواحد. الدروب سيت مابيتحسبش رقم.</p></div>
+      <div class="glass src"><span class="num pts">+10</span><h3>أسبوع كامل</h3><p>لما يخلّص كل أيام التمرين بتاعة الأسبوع.</p></div>
+      <div class="glass src"><span class="num pts">+5</span><h3>قياس InBody</h3><p>مرة واحدة في الشهر.</p></div>
+      <div class="glass src"><span class="num pts">+1</span><h3>صورة أكل لـ KO</h3><p>مرة واحدة في اليوم. بتطلّع الرتبة بس، مابتدخلش في سباق التاج.</p></div>
+    </div>
+    <div class="rules">
+      <div class="glass rule"><h3>الرتبة عمرها ما بتنزل</h3><p>النقط بتتجمع من أول يوم. لو اللاعب وقف شهر، رتبته زي ما هي.</p></div>
+      <div class="glass rule"><h3>التاج بيتجدد كل شهر</h3><p>أول كل شهر السباق بيبدأ من الصفر. اللي يلتزم أكتر في الفريق ياخده، بشرط 4 تمارين على الأقل.</p></div>
+      <div class="glass rule"><h3>لاعب ملتزم يطلع كل شهر تقريبًا</h3><p>4 تمارين في الأسبوع بيجيبوا حوالي 100 نقطة في الشهر، يعني ذهب بعد حوالي 3 شهور، وأسطورة بعد حوالي 9.</p></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="ladder">
+    <div class="head"><h2 id="ladder">السبع رتب</h2><p>كل رتبة الميدالية بتاعتها أفخم من اللي قبلها، وتحت كل واحدة المدة التقريبية للاعب بيتمرن 4 مرات في الأسبوع.</p></div>
+    <div class="ladder" id="ladderRow"></div>
+  </section>
+
+  <section aria-labelledby="player">
+    <div class="head"><h2 id="player">عند اللاعب</h2><p>أربع شاشات: صفحة رتبتي، وإزاي يجيب نقط، وآخر التمرين، ولحظة ما يطلع رتبة.</p></div>
+    <div class="phones">
+      <div class="pw">
+        <div class="phone">
+          <div class="status"><span>17:01</span><span>KOCHIVO</span></div>
+          <div class="top"><h3>رتبتي</h3><span class="small faint" style="margin-inline-start:auto"><span class="num">254</span> نقطة</span></div>
+          <div class="glass hero">
+            <div class="m" data-medal="2"></div>
+            <div style="display:grid;gap:4px">
+              <span class="small faint">رتبتك دلوقتي</span>
+              <span class="name">فضة</span>
+              <div class="prog"><i style="width:54%"></i></div>
+              <span class="small muted">فاضلك <b class="lime num">46</b> نقطة على ذهب · حوالي أسبوعين</span>
+            </div>
+          </div>
+          <div class="glass crown">
+            <div class="sect"><h3>تاج نوفمبر</h3><span class="small warn">فاضل 15 يوم</span></div>
+            <div class="row"><span class="pos num">1</span><div class="m" data-medal="3"></div><span>مازن</span><span class="v num">31</span></div>
+            <div class="row me"><span class="pos num">2</span><div class="m" data-medal="2"></div><span>إنت</span><span class="v num">27</span></div>
+            <div class="row"><span class="pos num">3</span><div class="m" data-medal="1"></div><span>سارة</span><span class="v num">19</span></div>
+            <span class="small muted">تمرينين كمان وتعدّي مازن.</span>
+          </div>
+          <div class="sect"><h3>ميداليات الرتبة</h3><span class="small faint">3 من 7</span></div>
+          <div class="grid3" id="rankGrid"></div>
+          <button class="btn secondary" type="button">إزاي أجيب نقط</button>
+        </div>
+        <p>أول حاجة يشوفها: رتبته، وناقصه قد إيه على اللي بعدها بالنقط وبالوقت، وترتيبه في سباق التاج دلوقتي.</p>
+      </div>
+
+      <div class="pw">
+        <div class="phone">
+          <div class="status"><span>17:01</span><span>KOCHIVO</span></div>
+          <div class="dim" aria-hidden="true">
+            <div class="top"><h3>رتبتي</h3></div>
+            <div class="glass hero"><div class="m" data-medal="2"></div><span class="name">فضة</span></div>
+            <div class="grid3" id="dimGrid"></div>
+          </div>
+          <div class="sheet" role="dialog" aria-label="إزاي تجيب نقط">
+            <span class="grab"></span>
+            <h2>إزاي تجيب نقط</h2>
+            <p class="small muted">اللي عملته النهارده متعلّم بالأخضر.</p>
+            <div class="earn done"><span class="d ok">✓</span><span>تمرين النهارده</span><span class="p num">+3</span></div>
+            <div class="earn done"><span class="d ok">✓</span><span>رقم جديد في البنش</span><span class="p num">+1</span></div>
+            <div class="earn"><span class="d todo"></span><span>كمّل أسبوعك: فاضل تمرين واحد</span><span class="p num">+10</span></div>
+            <div class="earn"><span class="d todo"></span><span>ابعت صورة أكلك لـ KO</span><span class="p num">+1</span></div>
+            <div class="earn"><span class="d todo"></span><span>قياس InBody الشهر ده</span><span class="p num">+5</span></div>
+            <p class="small faint">أسرع طريق لذهب: خلّص أسبوعك.</p>
+            <button class="btn primary" type="button">ابدأ تمرين النهارده</button>
+          </div>
+        </div>
+        <p>بتقول للاعب بالظبط يعمل إيه عشان يجيب نقط، وإيه اللي خلّصه النهارده.</p>
+      </div>
+
+      <div class="pw">
+        <div class="phone">
+          <div class="status"><span>17:01</span><span>KOCHIVO</span></div>
+          <div class="finish">
+            <span class="small faint">خلصت تمرين النهارده</span>
+            <span class="num plus">+4</span>
+            <span class="muted">نقط جديدة</span>
+            <div class="gain">
+              <div class="earn"><span class="d ok">✓</span><span>تمرين كامل</span><span class="p num">+3</span></div>
+              <div class="earn"><span class="d ok">✓</span><span>رقم جديد: بنش 62.5 كجم</span><span class="p num">+1</span></div>
+            </div>
+            <div class="glass hero" style="width:100%;grid-template-columns:64px minmax(0,1fr)">
+              <div class="m" style="width:64px" data-medal="2"></div>
+              <div style="display:grid;gap:4px;text-align:start">
+                <span class="small"><b>فضة</b> <span class="faint">· 258 نقطة</span></span>
+                <div class="prog"><i style="width:58%"></i></div>
+                <span class="small muted">فاضلك <b class="lime num">42</b> على ذهب</span>
+              </div>
+            </div>
+            <span class="small warn">إنت دلوقتي التاني في سباق التاج</span>
+            <button class="btn primary" type="button" style="margin-top:8px">تمام</button>
+          </div>
+        </div>
+        <p>آخر كل تمرين بيشوف النقط اللي جابها، والشريط بيتحرك قدامه. دي اللحظة اللي بتخليه يرجع بكرة.</p>
+      </div>
+
+      <div class="pw">
+        <div class="phone">
+          <div class="status"><span>17:01</span><span>KOCHIVO</span></div>
+          <div class="unlock" id="unlock">
+            <svg class="rays" viewBox="0 0 200 200" aria-hidden="true"><g fill="rgba(224,188,95,.10)" id="rayG"></g></svg>
+            <span class="small lime" style="position:relative">رتبة جديدة</span>
+            <div class="m drop" data-medal="3"></div>
+            <div class="big">بقيت ذهب</div>
+            <p class="sub">300 نقطة. اسمك هيظهر بميدالية ذهب في ترتيب الفريق، والكابتن هيوصله إشعار.</p>
+            <div class="btns">
+              <button class="btn primary" type="button">كمّل</button>
+              <button class="btn secondary" type="button" id="replay">شارك الرتبة</button>
+            </div>
+          </div>
+        </div>
+        <p>لما يطلع رتبة: الميدالية بتنزل بحركة، وزرار يشاركها صورة على الواتساب والانستجرام. الحركة دي بتظهر مرة واحدة بس.</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="captain">
+    <div class="head"><h2 id="captain">عند الكابتن</h2><p>الكابتن يشوف رتبة كل لاعب جنب اسمه، ومين ماشي ناحية التاج الشهر ده.</p></div>
+    <div class="frame">
+      <div class="frame-bar"><i></i><i></i><i></i><span>kochivo.site/captain/leaderboard</span></div>
+      <div class="cap">
+        <div class="glass board">
+          <div class="sect" style="padding-inline:6px"><h3>ترتيب الفريق · نوفمبر</h3><span class="small faint">التاج لأعلى التزام</span></div>
+          <div class="row"><span class="pos num">1</span><div class="m" data-medal="3"></div><span>مازن علي</span><span class="v"><span class="num">31</span> <span class="faint">· 5 تمارين</span></span></div>
+          <div class="row"><span class="pos num">2</span><div class="m" data-medal="2"></div><span>أحمد سمير</span><span class="v"><span class="num">27</span> <span class="faint">· 4 تمارين</span></span></div>
+          <div class="row"><span class="pos num">3</span><div class="m" data-medal="1"></div><span>سارة محمود</span><span class="v"><span class="num">19</span> <span class="faint">· 3 تمارين</span></span></div>
+          <div class="row"><span class="pos num">4</span><div class="m" data-medal="0"></div><span>يوسف خالد</span><span class="v"><span class="num">6</span> <span class="faint">· تمرين واحد</span></span></div>
+        </div>
+        <div class="glass file">
+          <div class="file-head"><span class="avatar">أ</span><div><h3>أحمد سمير</h3><span class="chip"><span class="m" data-medal="2"></span>فضة · 258 نقطة</span></div></div>
+          <p class="small muted">في ملف اللاعب، الرتبة جنب اسمه. الكابتن بيوصله إشعار لما لاعب يطلع رتبة، عشان يبعتله كلمة تشجيع.</p>
+          <div class="earn"><span class="d ok">✓</span><span>طلع فضة من 3 أسابيع</span><span class="p faint small">إشعار</span></div>
+          <button class="btn secondary" type="button">ابعتله تهنئة</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="move">
+    <div class="head"><h2 id="move">اللاعيبة الحاليين</h2><p>أعلى لاعب عندنا دلوقتي معاه 31 نقطة، فكلهم هيبدأوا حديد. محدش هيخسر نقطة ولا رتبة، والنقط القديمة كلها محسوبة.</p></div>
+    <div class="glass" style="padding:8px 8px 4px;overflow-x:auto">
+      <table>
+        <thead><tr><th>الرتبة القديمة</th><th>النقط</th><th>الرتبة الجديدة</th></tr></thead>
+        <tbody>
+          <tr><td>مبتدئ</td><td class="num">0 – 99</td><td>حديد</td></tr>
+          <tr><td>بطل</td><td class="num">100 – 299</td><td>برونز، بعدين فضة</td></tr>
+          <tr><td>نخبة</td><td class="num">300 – 599</td><td>ذهب، بعدين بلاتين</td></tr>
+          <tr><td>أسطورة</td><td class="num">600 وأكتر</td><td>ماس، وأسطورة من 900</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section aria-labelledby="decide">
+    <div class="decide" id="decide">
+      <b>قرارات ليك</b>
+      <span><b>1.</b> الرتب السبعة بالنقط دي (0، 100، 200، 300، 400، 600، 900)؟ اقتراحي آه. لاعب ملتزم يطلع رتبة كل شهر أو اتنين، فمايزهقش.</span>
+      <span><b>2.</b> نعمل الرتبة الأول، وبعدين مجموعات الميداليات التانية (الالتزام، الأسابيع الكاملة، الأرقام، التاج) في خطوة تانية؟ اقتراحي آه، عشان تنزل أسرع ونتأكد منها.</span>
+      <span><b>3.</b> الكابتن يوصله إشعار لما لاعب يطلع رتبة؟ اقتراحي آه، عشان يشجعه.</span>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  var TIERS = [
+    { a: '#d3d6da', b: '#6a6e74', c: '#3a3d41', gem: '#a9afb6', gem2: '#5f656c' },
+    { a: '#f6c79c', b: '#9c5a30', c: '#4a2a17', gem: '#ffd9b5', gem2: '#c47a45' },
+    { a: '#f4f7fb', b: '#8d97a6', c: '#3c4350', gem: '#cfe2ff', gem2: '#6f8fc9' },
+    { a: '#ffe7a0', b: '#c08a1c', c: '#5a3d08', gem: '#ff7a7a', gem2: '#b8233a' },
+    { a: '#dafff7', b: '#3e9d8d', c: '#123d37', gem: '#f2fffd', gem2: '#6fd6c4' },
+    { a: '#d5e2ff', b: '#4d62e0', c: '#1a2163', gem: '#b9f3ff', gem2: '#5fb7ff' },
+    { a: '#f1ffd0', b: '#8fc23a', c: '#24340c', gem: '#b6e94f', gem2: '#5f8f1c' }
+  ];
+  var STAR = 'M60 44l4.6 10.4 11.4 1.1-8.6 7.6 2.5 11.2L60 68.6l-9.9 5.7 2.5-11.2-8.6-7.6 11.4-1.1Z';
+  var uid = 0;
+  function medal(t) {
+    var p = TIERS[t], id = 'm' + (uid++), shield = t >= 3;
+    var frame = shield ? 'M60 16 96 29v29c0 23-16 39-36 47C40 97 24 81 24 58V29Z' : 'M60 16 96 36v42L60 98 24 78V36Z';
+    var inner = shield ? 'M60 25 87 35v23c0 18-12 30-27 37-15-7-27-19-27-37V35Z' : 'M60 25 88 40v32L60 88 32 72V40Z';
+    var s = '<svg class="medal" viewBox="0 0 120 120" aria-hidden="true"><defs>' +
+      '<linearGradient id="' + id + 'm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + p.a + '"/><stop offset=".55" stop-color="' + p.b + '"/><stop offset="1" stop-color="' + p.c + '"/></linearGradient>' +
+      '<linearGradient id="' + id + 'i" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + p.c + '"/><stop offset="1" stop-color="#0b0c0d"/></linearGradient>' +
+      '<linearGradient id="' + id + 'g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + p.gem + '"/><stop offset="1" stop-color="' + p.gem2 + '"/></linearGradient></defs>';
+    s += '<ellipse cx="60" cy="110" rx="' + (24 + t * 3) + '" ry="4" fill="rgba(0,0,0,.45)"/>';
+    if (t >= 2) {
+      var span = 6 + (t - 2) * 3.2;
+      var wing = '<path d="M30 48C' + (22 - span) + ' 40 ' + (10 - span) + ' 44 ' + (4 - span * .6) + ' 36C' + (8 - span * .4) + ' 58 ' + (18 - span * .3) + ' 70 34 72Z" fill="url(#' + id + 'm)" stroke="' + p.c + '" stroke-width="1"/>';
+      s += '<g>' + wing + '</g><g transform="translate(120 0) scale(-1 1)">' + wing + '</g>';
+    }
+    if (t >= 5) s += '<path d="M44 20 50 6l6 10 4-12 4 12 6-10 6 14Z" fill="url(#' + id + 'm)" stroke="' + p.c + '" stroke-width="1"/>';
+    s += '<path d="' + frame + '" fill="url(#' + id + 'm)" stroke="' + p.c + '" stroke-width="1.2"/>';
+    s += '<path d="' + frame + '" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1" transform="translate(60 57) scale(.94) translate(-60 -57)"/>';
+    s += '<path d="' + inner + '" fill="url(#' + id + 'i)"/>';
+    s += '<path d="M60 31 82 43v26L60 83 38 69V43Z" fill="url(#' + id + 'g)" opacity=".22"/>';
+    s += '<path d="' + STAR + '" fill="url(#' + id + 'g)" stroke="' + p.gem2 + '" stroke-width="1"/>';
+    return s + '<path d="M60 18 92 36" stroke="rgba(255,255,255,.35)" stroke-width="1.6" stroke-linecap="round"/></svg>';
+  }
+  var names = ['حديد', 'برونز', 'فضة', 'ذهب', 'بلاتين', 'ماس', 'أسطورة'];
+  var pts = [0, 100, 200, 300, 400, 600, 900];
+  var when = ['من أول يوم', 'حوالي شهر', 'حوالي شهرين', 'حوالي 3 شهور', 'حوالي 4 شهور', 'حوالي 6 شهور', 'حوالي 9 شهور'];
+  document.getElementById('ladderRow').innerHTML = names.map(function (n, i) {
+    return '<div class="step"><div class="m">' + medal(i) + '</div><b>' + n + '</b><span class="num">' + pts[i] + ' نقطة</span><span>' + when[i] + '</span></div>';
+  }).join('');
+  function tile(i, state, sub) {
+    return '<div class="tile' + (state !== 'have' ? ' lock' : '') + (state === 'next' ? ' next' : '') + '"><div class="m">' + medal(i) + '</div><b>' + names[i] + '</b><span>' + sub + '</span></div>';
+  }
+  var grid = tile(0, 'have', 'اتاخدت') + tile(1, 'have', 'اتاخدت') + tile(2, 'have', 'اتاخدت') + tile(3, 'next', '54٪') + tile(4, 'lock', '400 نقطة') + tile(5, 'lock', '600 نقطة');
+  document.getElementById('rankGrid').innerHTML = grid;
+  document.getElementById('dimGrid').innerHTML = grid;
+  document.querySelectorAll('[data-medal]').forEach(function (el) { el.innerHTML = medal(+el.getAttribute('data-medal')); });
+  var rays = '';
+  for (var i = 0; i < 12; i++) rays += '<path d="M100 100 L96 0 L104 0Z" transform="rotate(' + (i * 30) + ' 100 100)"/>';
+  document.getElementById('rayG').innerHTML = rays;
+  document.getElementById('replay').addEventListener('click', function () {
+    var el = document.querySelector('#unlock .drop');
+    el.style.animation = 'none'; void el.getBoundingClientRect(); el.style.animation = '';
+  });
+})();
+</script>
+</body>
+</html>
