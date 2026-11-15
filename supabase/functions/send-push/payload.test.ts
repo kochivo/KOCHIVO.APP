@@ -104,3 +104,8 @@ it.each(['ar', 'en'] as const)('uses generic push text for missing or invalid ra
     });
   }
 });
+it('routes pain pushes to the report and player conversation', () => {
+  expect(pushPayload({ id: 'pain', type: 'player_pain', payload: { player_id: 'player', display_name: 'Mona' } }, 'en'))
+    .toMatchObject({ body: 'Mona reported pain', url: '/en/captain/players/player#pain-reports' });
+  expect(pushPayload({ id: 'answer', type: 'pain_answered', payload: {} }, 'en').url).toBe('/en/player/captain');
+});

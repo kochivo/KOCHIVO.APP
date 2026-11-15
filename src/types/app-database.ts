@@ -1,5 +1,6 @@
 import type { Database, Json } from './database';
 import type { AssessmentSchedulesTable } from './assessment-schedules';
+import type { PainReportRow, PainLoadHint, PainReply } from '@/core/offline/pain-tables';
 import type {
   CaptainStatus, Units, SupplementTiming, NotificationType, PointKind, PointStatus,
   Injury, SwapReason, SwapStatus, MovementPattern, ExerciseKind, EquipmentKind,
@@ -91,6 +92,7 @@ type TimezoneProfiles = Narrow<CorrectedTables['profiles'], {
 type Functions = Public['Functions'];
 type ProfileRow = Public['Tables']['profiles']['Row'];
 type ProfileLinks = Pick<ProfileRow, 'bio' | 'location' | 'avatar_path'> & { social: Social };
+type PainRow = { [K in keyof PainReportRow]: PainReportRow[K] };
 type FunctionPatches = {
   // RPC return metadata omits column nullability and the JSON aggregate's shape.
   coach_public_page: Narrow<Functions['coach_public_page'], {
@@ -154,6 +156,11 @@ export type AppDatabase = Omit<Database, 'public'> & {
     Tables: Omit<Public['Tables'], keyof CorrectedTables | 'form_checks' | 'check_ins'> & Omit<CorrectedTables, 'profiles'> & {
       profiles: TimezoneProfiles;
       assessment_schedules: AssessmentSchedulesTable;
+      pain_reports: {
+        Row: PainRow & { player_id: string; status: 'open' | 'answered'; reply: PainReply | null; answered_at: string | null };
+        Insert: PainRow & { player_id?: string }; Update: never; Relationships: [];
+      };
+      pain_load_hints: { Row: { [K in keyof PainLoadHint]: PainLoadHint[K] }; Insert: never; Update: never; Relationships: [] };
       form_checks: Omit<FormChecks, 'Insert'> & {
         // The inbox BEFORE INSERT trigger in 0008 overwrites captain_id.
         Insert: Omit<FormChecks['Insert'], 'captain_id'> & {
@@ -168,6 +175,10 @@ export type AppDatabase = Omit<Database, 'public'> & {
       };
     };
     Functions: Omit<Public['Functions'], keyof FunctionPatches | 'admin_activate_plan'> & FunctionPatches & {
+      sync_pain_reports: { Args: { p_rows: Json }; Returns: undefined };
+      expire_pain_swaps: { Args: never; Returns: undefined };
+      answer_pain: { Args: { p_report: string; p_reply: PainReply }; Returns: undefined };
+      pain_repeat_count: { Args: { p_player: string; p_area: string }; Returns: number };
       my_captain_timezone: { Args: never; Returns: string | null };
       assessment_schedule_counts: { Args: never; Returns: { schedule_id: string; player_id: string; sends: number }[] };
       admin_activate_plan: Omit<ActivatePlan, 'Args'> & {

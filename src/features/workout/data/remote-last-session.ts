@@ -8,7 +8,7 @@ import type { LastSession } from './last-performance';
  * Thirty rows cover the newest workout even with many sets of the same exercise.
  */
 export async function remoteLastSession(client: SupabaseClient<AppDatabase>, input: {
-  playerId: string; exerciseId: string; beforeSessionId: string;
+  playerId: string; exerciseId: string; beforeSessionId: string; painSince?: string;
 }): Promise<LastSession | null> {
   const { playerId, exerciseId, beforeSessionId } = input;
   // Captains can read every player's sets, so the player filter is not optional.
@@ -17,5 +17,5 @@ export async function remoteLastSession(client: SupabaseClient<AppDatabase>, inp
   const { data, error } = await (beforeSessionId ? base.neq('session_id', beforeSessionId) : base)
     .order('completed_at', { ascending: false }).limit(30);
   if (error) throw new Error('Loading past sets failed');
-  return latestSession(data ?? []);
+  return latestSession(data ?? [], input.painSince);
 }

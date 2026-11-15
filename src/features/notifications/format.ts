@@ -1,4 +1,4 @@
-import { Award, CalendarClock, CircleAlert, Crown } from 'lucide-react';
+import { Award, CalendarClock, CircleAlert, Crown, HeartPulse } from 'lucide-react';
 import type { Notification } from './types';
 
 export function notificationTextKey(row: Notification) {
@@ -16,6 +16,7 @@ export function notificationTextKey(row: Notification) {
 }
 
 export function notificationIcon(row: Notification) {
+  if (row.type === 'player_pain' || row.type === 'pain_answered') return HeartPulse;
   if (row.type === 'rank_up' || row.type === 'player_rank_up') return Award;
   if (row.type === 'crown_taken' || row.type === 'crown_lost' || row.type === 'crown_close' || row.type === 'crown_defend') return Crown;
   if (row.type === 'subscription_expiring') return CalendarClock;
@@ -29,6 +30,8 @@ export function medalKey(value?: string) {
 }
 
 export function notificationHref(row: Notification): string {
+  if (row.type === 'player_pain') return row.payload.player_id ? `/captain/players/${encodeURIComponent(row.payload.player_id)}#pain-reports` : '/captain/players';
+  if (row.type === 'pain_answered') return '/player/captain';
   if (row.type === 'chat_message') return row.user_id === row.payload.player_id ? '/player/captain'
     : row.payload.player_id ? `/captain/players/${encodeURIComponent(row.payload.player_id)}/chat` : '/captain/players';
   if (row.type === 'form_requested') return row.payload.request_id

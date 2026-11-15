@@ -1,11 +1,15 @@
 import Dexie, { type Table } from 'dexie';
 import type { SetTarget } from '@/lib/set-plan';
+import type { PainReportRow, PainLoadHint } from './pain-tables';
 import type { DailyCheckRow, SupplementLogRow, SupplementRow } from './tables';
 import type { MealLogRow, SetLogRow, SyncTable, WorkoutSessionRow } from './tables';
 
 export interface SnapshotExercise {
   alternatives?: string[];
-  alternative_exercises?: { id: string; name_ar: string | null; name_en: string; media_path: string | null; video_url?: string | null }[];
+  alternative_exercises?: { id: string; name_ar: string | null; name_en: string; media_path: string | null; video_url?: string | null; body_part?: string | null; pattern?: string; stress?: string[] }[];
+  pattern?: string;
+  body_part?: string | null;
+  pain_hint?: PainLoadHint;
   set_plan?: SetTarget[] | null;
   id: string;
   exercise_id: string;
@@ -39,6 +43,7 @@ export interface SnapshotDay {
 }
 
 export interface ProgramSnapshot {
+  captain_id?: string;
   id: 'active';
   player_id: string;
   program_id: string;
@@ -123,6 +128,7 @@ export interface NutritionSnapshot {
  * here as new versions — never change an existing version's schema, add version(n+1).
  */
 export class KochivoDB extends Dexie {
+  pain_reports!: Table<PainReportRow, string>;
   daily_checks!: Table<DailyCheckRow, string>;
   supplement_logs!: Table<SupplementLogRow, string>;
   supplements!: Table<SupplementRow, string>;
@@ -150,6 +156,7 @@ export class KochivoDB extends Dexie {
     this.version(7).stores({
       set_logs: 'id, session_id, &[session_id+program_exercise_id+set_index+drop_index]',
     }).upgrade(tx => tx.table('set_logs').toCollection().modify({ drop_index: 0 }));
+    this.version(8).stores({ pain_reports: 'id, session_id' });
   }
 }
 

@@ -21,10 +21,11 @@ export function pushPayload(row: PushNotificationRow, locale: 'ar' | 'en' = 'ar'
     ? `rank_up_${tier}` as const
     : row.type === 'crown_close' && needsWorkouts===0 && gap>0 ? 'crown_close_points'
       : playerExpiry ? `${row.type}_player` as 'subscription_expiring_player' | 'subscription_expired_player' : row.type;
-  const name = field(playerExpiry ? 'captain_name' : row.type === 'workout_reminder' ? 'day_title' : 'name');
+  const name = field(playerExpiry ? 'captain_name' : row.type === 'workout_reminder' ? 'day_title' : row.type === 'player_pain' ? 'display_name' : 'name');
   const rank = row.type === 'rank_up' || row.type === 'crown_taken' || row.type === 'crown_lost'
     || row.type === 'crown_close' || row.type === 'crown_defend';
-  const path = rank ? '/player/rank' : playerExpiry ? '/player' : row.type === 'captain_approved' ? '/captain' : row.type === 'nutrition_updated' ? '/player/nutrition'
+  const path = row.type === 'pain_answered' ? '/player/captain' : row.type === 'player_pain' && player ? `/captain/players/${encodeURIComponent(player)}#pain-reports`
+    : rank ? '/player/rank' : playerExpiry ? '/player' : row.type === 'captain_approved' ? '/captain' : row.type === 'nutrition_updated' ? '/player/nutrition'
     : row.type === 'plan_assigned' || row.type === 'workout_reminder' ? '/player'
       : row.type === 'join_requested' || !player ? '/captain/players' : `/captain/players/${encodeURIComponent(player)}`;
   const body = row.type === 'crown_close'

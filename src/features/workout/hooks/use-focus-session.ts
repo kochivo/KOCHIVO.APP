@@ -21,6 +21,8 @@ import { triggerHaptic } from '@/lib/haptics';
 import { dropWeights, targetForSet } from '@/lib/set-plan';
 import { alternativeStep, loggedStep } from '../data/exercise-choices';
 import { useExerciseChoices } from './use-exercise-choices';
+import { usePainSkips } from './use-pain-skips';
+import { painLoad, safePainSwap } from '../pain-safe-swap';
 
 const readCached = () => localDb().program_snapshot.get('active');
 const readPending = () => pendingCount(localDb());
@@ -48,7 +50,7 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
   const originalDay = programFinished ? undefined : snapshot?.days.find((item) => item.id === dayId && !item.is_rest_day);
   const day = useMemo(() => decision === 'reduce' && originalDay ? { ...originalDay,
     exercises: originalDay.exercises.map(exercise => ({ ...exercise, sets: reducedSets(exercise.sets) })) } : originalDay, [decision, originalDay]);
-  const queue = useMemo(() => day ? buildQueue(day) : [], [day]);
+  const plannedQueue = useMemo(() => day ? buildQueue(day) : [], [day]);
   const rest = useRestTimer();
   const pending = useLiveQuery(readPending, onError, retryKey);
   const retrySync = () => { void retryParked(localDb()).catch(onError); };
@@ -70,6 +72,10 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
   // The session is created with the first logged set, so merely opening the workout never
   // counts as training for the captain's roster or locks today's day rotation.
   const sessionId = session?.id;
+  const readPain = useCallback(async () => sessionId ? localDb().pain_reports.where('session_id').equals(sessionId).toArray() : [], [sessionId]);
+  const reports = useLiveQuery(readPain, onError, retryKey);
+  const painSkips = usePainSkips(dayId, today, sessionId);
+  const queue = useMemo(() => plannedQueue.filter(step => !painSkips.ids.includes(step.exercise.id)), [plannedQueue, painSkips.ids]);
   const readSets = useCallback(async () => sessionId ?
     localDb().set_logs.where('session_id').equals(sessionId).filter((row) => row.deleted_at === null).toArray() : [], [sessionId]);
   const sets = useLiveQuery(readSets, onError, retryKey);
@@ -82,11 +88,15 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
   const logged = edited ?? (plannedCurrent?.dropIndex ? doneSets.find(row => matches(row, plannedCurrent.exercise.id, plannedCurrent.setIndex)) : undefined);
   const selectedId = choices.choices[plannedCurrent?.exercise.id ?? ''];
   const current = logged ? loggedStep(plannedCurrent, logged.exercise_id, t('unknownExercise')) : alternativeStep(plannedCurrent, selectedId);
-  const key = `${session?.id}:${current?.exercise.id}:${current?.setIndex}:${current?.dropIndex ?? 0}:${current?.exercise.exercise_id}`;
+  const exercisePain = reports?.filter(row => row.program_exercise_id === current?.exercise.id) ?? [];
+  const painBlocked = exercisePain.some(report => !selectedId || selectedId === report.exercise_id);
+  const key = `${session?.id ?? today}:${current?.exercise.id}:${current?.setIndex}:${current?.dropIndex ?? 0}:${current?.exercise.exercise_id}`;
   const exerciseId = String(current?.exercise.exercise_id ?? '');
   const { bodyweight, setBodyweight } = useBodyweight(exerciseId);
   const historySessionId = session?.id ?? '';
-  const memory = useLastSession(playerId ?? cached?.player_id, exerciseId, historySessionId, onError, retryKey);
+  const hint = current?.exercise.pain_hint;
+  const painSince = hint && hint.until >= today ? hint.since : undefined;
+  const memory = useLastSession(playerId ?? cached?.player_id, exerciseId, historySessionId, onError, retryKey, painSince);
   const performance = performanceFor(memory.last, current?.setIndex ?? 0);
   const previous = doneSets.filter((row) => row.program_exercise_id === current?.exercise.id &&
     row.exercise_id === exerciseId && (row.drop_index ?? 0) === 0 &&
@@ -97,7 +107,10 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
   const drop = current && targetForSet(current.exercise, current.setIndex - 1).drop;
   const preceding = current && doneSets.find(row => matches(row, current.exercise.id, current.setIndex, dropIndex - 1));
   const dropWeight = drop && dropIndex > 0 ? dropWeights(preceding?.weight_kg ?? 0, 1, drop.percent)[0] : undefined;
-  const weight = bodyweight ? 0 : Math.min(500, Math.max(0, draft?.key === key ? draft.weight : edited?.weight_kg ?? dropWeight ?? prefill?.weight_kg ?? 0));
+  const adjusted = prefill && (('pain_adjusted' in prefill && prefill.pain_adjusted === true) ||
+    ('completed_at' in prefill && typeof prefill.completed_at === 'string' && (!painSince || prefill.completed_at >= painSince)));
+  const suggestedWeight = painLoad(prefill?.weight_kg ?? 0, adjusted ? undefined : hint, today);
+  const weight = bodyweight ? 0 : Math.min(500, Math.max(0, draft?.key === key ? draft.weight : edited?.weight_kg ?? dropWeight ?? suggestedWeight));
   const plannedReps = current?.exercise.set_plan ? targetForSet(current.exercise, current.setIndex - 1).reps_min : undefined;
   const reps = Math.min(100, Math.max(0, draft?.key === key ? draft.reps : edited?.reps ?? (dropIndex > 0 ? drop?.reps ?? 0 : undefined) ?? performance?.reps ?? plannedReps ?? prefill?.reps ??
     (current ? targetForSet(current.exercise, current.setIndex - 1).reps_min : 0)));
@@ -105,13 +118,13 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
   useEffect(() => () => { clearTimeout(cooldown.current); }, []);
   // Recover a final set saved just before the tab closed, before completion was recorded.
   useEffect(() => {
-    if (session && sets && queue.length > 0 && currentIndex === -1 && !session.completed_at) {
+    if (session && sets && plannedQueue.length > 0 && currentIndex === -1 && !session.completed_at) {
       void finishSession(localDb(), session.id, Date.now()).then(() => triggerHaptic('success'))
         .catch(() => setError(t('setSavedTryAgainToFinishThe')));
     }
-  }, [session, sets, queue.length, currentIndex, retryKey, t]);
+  }, [session, sets, plannedQueue.length, currentIndex, retryKey, t]);
   const complete = useCallback(async () => {
-    if (!day || !current || !ready || saving.current || rest.remaining > 0) return;
+    if (!day || !current || !ready || saving.current || rest.remaining > 0 || painBlocked) return;
     const result = validateSet({ weight, reps, bodyweight });
     if (result !== 'ok') {
       triggerHaptic('heavy');
@@ -143,7 +156,7 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
     finally {
       cooldown.current = setTimeout(() => { saving.current = false; setBusy(false); }, Math.max(0, 600 - (Date.now() - tappedAt)));
     }
-  }, [day, today, session, current, ready, rest, edited, weight, reps, bodyweight, key, t, dropIndex]);
+  }, [day, today, session, current, ready, rest, edited, weight, reps, bodyweight, key, t, dropIndex, painBlocked]);
   const parked = useLiveQuery(readParked, onError, retryKey);
   return { day, session, decision, programFinished, queue, current, doneSets, performance, lastSession: memory.last, weight, reps, rest, pending, parked, retrySync, pr, dismissPr,
     bodyweight, setBodyweight, invalid: invalid?.key === key ? invalid : null,
@@ -157,9 +170,10 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
     setWeight: (value: number) => setDraft({ key, weight: Math.min(500, Math.max(0, value)), reps }),
     setReps: (value: number) => setDraft({ key, weight, reps: Math.min(100, Math.max(0, value)) }),
     edit: (row: SetLogRow) => { if (!saving.current) { rest.skip(); setDraft(null); setEditing(row.id); } },
-    complete,
+    complete, today, captainId: snapshot?.captain_id, skipExercise: painSkips.skip, painBlocked, painReports: exercisePain,
     switchExercise: (id: string) => {
       if (!plannedCurrent || dropIndex > 0 || saving.current || !choices.ready || edited || (id && !plannedCurrent.exercise.alternatives?.includes(id))) return;
+      if (exercisePain.some(report => !safePainSwap(report.area, plannedCurrent.exercise.alternative_exercises?.filter(row => row.id === id && row.id !== report.exercise_id) ?? [], plannedCurrent.exercise.pattern))) return;
       choices.choose(plannedCurrent.exercise.id, id); setDraft(null); setInvalid(null);
     },
     retry: () => { setError(null); setRetryKey((value) => value + 1); void refresh(); } };

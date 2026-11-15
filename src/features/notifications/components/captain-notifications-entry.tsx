@@ -32,7 +32,7 @@ export function CaptainNotificationsEntry() {
       {n.rows.length === 0 ? <p className="p-card text-sm text-muted">{t('empty')}</p> :
         <ul>{n.rows.map(row => {
           const { Icon, href: baseHref } = captainNotification(row.type);
-          const href = row.type === 'player_rank_up' ? notificationHref(row) : baseHref;
+          const href = row.type === 'player_rank_up' || row.type === 'player_pain' || row.type === 'pain_answered' ? notificationHref(row) : baseHref;
           const time = relativeTime(row.created_at, now);
           return <li key={row.id} className="border-line-soft [&+li]:border-t">
             <Link href={href} aria-disabled={n.pending}
@@ -47,6 +47,7 @@ export function CaptainNotificationsEntry() {
                 <Icon aria-hidden className="size-4" />
               </span>
               <div className="min-w-0 flex-1">
+                {row.type === 'player_pain' && <span className="rounded-full bg-danger-soft px-stack py-inline text-xs text-danger">{t('urgent')}</span>}
                 <p className="text-row font-semibold">{t(notificationTextKey(row), {
                   name: row.payload.display_name || row.payload.name || row.payload.captain_name || '',
                   rank: t(medalKey(row.payload.medal) ?? 'iron'),

@@ -6,12 +6,14 @@ import type { SnapshotDay } from '@/core/offline';
 import { createT } from '@/core/i18n/messages';
 import { sessionId } from './ids';
 import { logSet, startSession } from './data/log-set';
+import { savePain } from './data/save-pain';
 
 const now = Date.parse('2026-11-12T10:00:00Z');
 const day: SnapshotDay = { id: 'day', title: 'Push', position: 1, exercises: [{
   id: 'row', exercise_id: 'bench', position: 1, sets: 2, reps_min: 8, reps_max: 12, rir: 2,
   rest_seconds: 0, superset_group: null, rpe: null, tempo: null, notes: null, name_ar: null, name_en: 'Bench', media_path: null,
   alternatives: ['press'], alternative_exercises: [{ id: 'press', name_ar: null, name_en: 'Press', media_path: null }],
+  pattern: 'hinge',
   set_plan: [{ reps_min: 12, reps_max: 12, rir: 2 }, { reps_min: 6, reps_max: 8, rir: 1 }],
 }] };
 let db: KochivoDB, slots: unknown[], slot: number, queries: (() => unknown)[], values: unknown[];
@@ -52,6 +54,57 @@ async function render(today = '2026-11-12') {
   }
   slot = 0; queries = []; return renderSession(day.id, today);
 }
+it('skips remaining sets across reloads but starts the exercise again in the next session', async () => {
+  let state = await render();
+  await state.skipExercise('row');
+  state = await render();
+  expect(state.current).toBeUndefined();
+  expect(await db.set_logs.count()).toBe(0);
+  slots = []; values = [];
+  state = await render();
+  expect(state.current).toBeUndefined();
+  state = await render('2026-11-13');
+  expect(state.current?.exercise.id).toBe('row');
+});
+
+it('reduces the historical load once while retaining manually edited weights', async () => {
+  const exercise = day.exercises[0];
+  if (!exercise) throw new Error('Missing exercise');
+  exercise.pain_hint = { player_id: 'player', program_exercise_id: 'row', factor: 0.8, until: '2026-11-12' };
+  try {
+    await logSet(db, { session_id: 'older', program_exercise_id: 'another', exercise_id: 'bench', set_index: 1, weight_kg: 100, reps: 10 }, now - 1000);
+    let state = await render(); expect(state.weight).toBe(80);
+    state.setWeight(70); state = await render(); expect(state.weight).toBe(70);
+    state = await render('2026-11-13'); expect(state.weight).toBe(100);
+  } finally { delete exercise.pain_hint; }
+});
+it('does not compound the hint against a set logged after the hint began', async () => {
+  const exercise = day.exercises[0];
+  if (!exercise) throw new Error('Missing exercise');
+  exercise.pain_hint = { player_id: 'player', program_exercise_id: 'row', factor: 0.8, until: '2026-11-14', since: '2026-11-12T09:00:00Z' };
+  try {
+    let state = await render(); state.setWeight(80); state = await render(); await state.complete();
+    state = await render(); expect(state.weight).toBe(80);
+    state = await render('2026-11-13'); expect(state.weight).toBe(80);
+  } finally { delete exercise.pain_hint; }
+});
+it('blocks logging a reported exercise until a safe session swap or skip is chosen', async () => {
+  const alternative = day.exercises[0]?.alternative_exercises?.[0];
+  if (!alternative) throw new Error('Missing alternative');
+  Object.assign(alternative, { body_part: 'upper arms', pattern: 'hinge', stress: [] });
+  const session = await startSession(db, day, '2026-11-12', now);
+  await savePain(db, { captain_id: 'captain', session_id: session.id, program_exercise_id: 'row',
+    set_index: 1, area: 'knee_r', severity: 4, kind: 'sharp', side_view: 'front' }, now);
+  let state = await render();
+  expect(state.painBlocked).toBe(true);
+  state.setWeight(60); state = await render(); await state.complete();
+  expect(await db.set_logs.count()).toBe(0);
+  state.switchExercise('press'); state = await render();
+  expect(state.painBlocked).toBe(false);
+  await savePain(db, { captain_id: 'captain', session_id: session.id, program_exercise_id: 'row', exercise_id: 'press',
+    set_index: 2, area: 'knee_r', severity: 4, kind: 'sharp', side_view: 'front' }, now);
+  state = await render(); expect(state.painBlocked).toBe(true);
+});
 it('switches, survives reload before the first set, logs the choice and restores original next session', async () => {
   let state = await render();
   expect(state.reps).toBe(12);

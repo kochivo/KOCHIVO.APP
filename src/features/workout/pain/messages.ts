@@ -1,0 +1,42 @@
+import { defineMessages } from '@/core/i18n/messages';
+
+export const messages = defineMessages({
+  ar: {
+    open: 'عندي وجع', where: 'فين الوجع؟', severity: 'قد إيه؟', kind: 'نوعه', send: 'ابعت للكابتن',
+    front: 'أمام', back: 'ورا', sharp: 'وجع حاد', strain: 'شد', tired: 'تعب عادي',
+    doctor: 'لو الوجع حاد أو فيه ورم، وقف خالص وكلّم دكتور.', close: 'اقفل', saving: 'بنحفظ',
+    error: 'مقدرناش نحفظ. جرّب تاني', stopped: 'وقفنا {exercise} النهارده',
+    sent: 'التقرير اتحفظ. هيوصل للكابتن لما النت يرجع. لحد ما يرد، KO بيقترح ده:',
+    swap: 'استخدم البديل', skip: 'كمّل من غير {area}', noSwap: 'كمّل باقي التمرين من غير تمارين {area}',
+    rest: 'الكابتن قال ريّح ده الأسبوع ده', reduced: 'الكابتن قلّل الوزن 20%: {weight}',
+    neck: 'الرقبة', shoulder_l: 'الكتف الشمال', shoulder_r: 'الكتف اليمين', elbow_l: 'الكوع الشمال', elbow_r: 'الكوع اليمين',
+    wrist_l: 'الرسغ الشمال', wrist_r: 'الرسغ اليمين', upper_back: 'أعلى الظهر', lower_back: 'أسفل الظهر', chest: 'الصدر',
+    hip_l: 'الحوض الشمال', hip_r: 'الحوض اليمين', knee_l: 'الركبة الشمال', knee_r: 'الركبة اليمين',
+    ankle_l: 'الكاحل الشمال', ankle_r: 'الكاحل اليمين', other: 'مكان تاني',
+  },
+  get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? {
+    open: 'أشعر بألم', where: 'أين الألم؟', severity: 'ما شدته؟', kind: 'نوعه', send: 'أرسل للمدرب',
+    front: 'أمام', back: 'خلف', sharp: 'ألم حاد', strain: 'شد', tired: 'تعب عادي',
+    doctor: 'إذا كان الألم حاداً أو هناك تورم، توقف واستشر طبيباً.', close: 'إغلاق', saving: 'جارٍ الحفظ',
+    error: 'تعذّر الحفظ. حاول مجدداً', stopped: 'أوقفنا {exercise} اليوم',
+    sent: 'تم حفظ التقرير. سيصل للمدرب عند الاتصال. حتى يرد، يقترح KO هذا:',
+    swap: 'استخدم البديل', skip: 'تابع دون {area}', noSwap: 'أكمل بقية التمرين دون تمارين {area}',
+    rest: 'المدرب طلب إراحة هذا التمرين هذا الأسبوع', reduced: 'المدرب خفّض الوزن 20%: {weight}',
+    neck: 'الرقبة', shoulder_l: 'الكتف الأيسر', shoulder_r: 'الكتف الأيمن', elbow_l: 'المرفق الأيسر', elbow_r: 'المرفق الأيمن',
+    wrist_l: 'الرسغ الأيسر', wrist_r: 'الرسغ الأيمن', upper_back: 'أعلى الظهر', lower_back: 'أسفل الظهر', chest: 'الصدر',
+    hip_l: 'الورك الأيسر', hip_r: 'الورك الأيمن', knee_l: 'الركبة اليسرى', knee_r: 'الركبة اليمنى',
+    ankle_l: 'الكاحل الأيسر', ankle_r: 'الكاحل الأيمن', other: 'مكان آخر',
+  } as const : undefined; },
+  en: {
+    open: "I'm in pain", where: 'Where does it hurt?', severity: 'How bad?', kind: 'What kind?', send: 'Send to coach',
+    front: 'Front', back: 'Back', sharp: 'Sharp', strain: 'Strain', tired: 'Tired',
+    doctor: "If it's sharp or swollen, stop and see a doctor.", close: 'Close', saving: 'Saving',
+    error: 'Could not save. Try again', stopped: 'Stopped {exercise} today',
+    sent: 'Report saved. It will reach your coach when connected. Until they reply, KO suggests:',
+    swap: 'Use the swap', skip: 'Continue without {area}', noSwap: 'Finish the workout without exercises for {area}',
+    rest: 'Your coach said to rest this exercise this week', reduced: 'Coach reduced load 20%: {weight}',
+    neck: 'Neck', shoulder_l: 'Left shoulder', shoulder_r: 'Right shoulder', elbow_l: 'Left elbow', elbow_r: 'Right elbow',
+    wrist_l: 'Left wrist', wrist_r: 'Right wrist', upper_back: 'Upper back', lower_back: 'Lower back', chest: 'Chest',
+    hip_l: 'Left hip', hip_r: 'Right hip', knee_l: 'Left knee', knee_r: 'Right knee', ankle_l: 'Left ankle', ankle_r: 'Right ankle', other: 'Other',
+  },
+});

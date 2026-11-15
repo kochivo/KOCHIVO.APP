@@ -28,6 +28,8 @@ import { DropProgress } from './drop-progress';
 import { SupersetCue } from './superset-cue';
 import { messages as setMessages } from '@/lib/training/messages';
 import { supersetTag } from '@/lib/superset';
+import { PainButton } from './pain-button';
+import { PainLoadHint } from './pain-load-hint';
 const ExerciseVideo = dynamic(() => import('./exercise-video').then(module => module.ExerciseVideo));
 
 const FormCheckButton = dynamic(() => import('./form-check-button').then(module => module.FormCheckButton), { ssr: false });
@@ -46,7 +48,7 @@ export function WorkoutSet({ state }: { state: ReturnType<typeof useFocusSession
   if (!current || !state.day) return null;
   const name = exerciseName(current.exercise, locale);
   const showGif = gifExercise === exerciseId;
-  const blocked = state.disabled || state.rest.remaining > 0;
+  const blocked = state.disabled || state.rest.remaining > 0 || state.painBlocked;
   const lastSet = state.doneSets.filter(row => row.program_exercise_id === current.exercise.id)
     .sort((a, b) => b.completed_at.localeCompare(a.completed_at))[0];
   const target = current.exercise.set_plan ? { ...current.exercise, ...targetForSet(current.exercise, current.setIndex - 1) } : current.exercise;
@@ -56,6 +58,8 @@ export function WorkoutSet({ state }: { state: ReturnType<typeof useFocusSession
   return <>
     <div className="flex min-h-[calc(100dvh-160px)] flex-col gap-card-gap">
       <SupersetCue state={state} />
+      <PainButton state={state} />
+      <PainLoadHint hint={current.exercise.pain_hint} today={state.today} weight={state.weight} onSkip={() => void state.skipExercise(current.exercise.id)} />
       {!dropping && (parseExerciseVideo(current.exercise.video_url) ? <div className="space-y-stack">
         {showGif && current.exercise.media_path ? <ExerciseLightbox src={exerciseMediaUrl(current.exercise.media_path)} name={name} focus /> :
           <ExerciseVideo key={current.exercise.video_url} url={current.exercise.video_url} name={name} />}

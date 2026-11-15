@@ -9,6 +9,7 @@
 import type { Tables } from '@/types/database';
 import type { Narrow } from '@/types/app-database';
 import type { SupplementTiming } from '@/types/enums';
+import type { PainReportRow } from './pain-tables';
 
 type LocalRow<Name extends 'workout_sessions' | 'set_logs' | 'meal_logs' | 'daily_checks' | 'supplement_logs'> =
   Omit<Tables<Name>, 'player_id' | 'server_updated_at'>;
@@ -28,6 +29,7 @@ export type SetLogRow = Narrow<LocalRow<'set_logs'>, { program_exercise_id: stri
 export type MealLogRow = Narrow<LocalRow<'meal_logs'>, { meal_id: string; swaps: Record<string, string> }>;
 
 export interface SyncRows {
+  pain_reports: PainReportRow;
   daily_checks: DailyCheckRow;
   supplement_logs: SupplementLogRow;
   workout_sessions: WorkoutSessionRow;
@@ -38,11 +40,12 @@ export interface SyncRows {
 export type SyncTable = keyof SyncRows;
 
 /** Flush order respects foreign keys: a session must exist before its sets. */
-export const SYNC_ORDER: readonly SyncTable[] = ['workout_sessions', 'set_logs', 'meal_logs', 'supplement_logs', 'daily_checks'];
+export const SYNC_ORDER: readonly SyncTable[] = ['workout_sessions', 'set_logs', 'meal_logs', 'supplement_logs', 'daily_checks', 'pain_reports'];
 
 export const SYNC_DEPENDENCIES: {
   [T in SyncTable]?: readonly { parent: SyncTable; key: keyof SyncRows[T] }[];
 } = {
+  pain_reports: [{ parent: 'workout_sessions', key: 'session_id' }],
   set_logs: [{ parent: 'workout_sessions', key: 'session_id' }],
 };
 

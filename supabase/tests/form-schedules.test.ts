@@ -27,7 +27,7 @@ beforeAll(async () => {
 afterAll(async () => { await db.close(); });
 it('preserves every pre-0093 notification type alongside later notification types',async () => {
   expect(previousNotificationTypes).toHaveLength(16);
-  expect(notificationTypes).toEqual([...previousNotificationTypes,'form_requested','renewal_requested','chat_message','player_rank_up']);
+  expect(notificationTypes).toEqual([...previousNotificationTypes,'form_requested','renewal_requested','chat_message','player_rank_up','player_pain','pain_answered']);
   for(const type of notificationTypes) {
     const result=await db.query<{id:string}>(`insert into notifications(id,user_id,type,payload)
       values (gen_random_uuid(),$1,$2,'{}') returning id`,[player,type]);

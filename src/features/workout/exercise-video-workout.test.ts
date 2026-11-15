@@ -36,6 +36,7 @@ const exercise = { id: 'prescription', exercise_id: 'row', position: 1, sets: 3,
   video_url: 'https://youtube.com/shorts/dQw4w9WgXcQ', alternatives: ['press'],
   alternative_exercises: [{ id: 'press', name_ar: null, name_en: 'Press', media_path: null, video_url: 'https://drive.google.com/open?id=abc123' }] };
 const state: ComponentProps<typeof WorkoutSet>['state'] = {
+  today: '2026-11-15', captainId: 'captain', skipExercise: async () => {}, painBlocked: false, painReports: [],
   day: { id: 'day', title: 'Day', position: 1, exercises: [exercise] }, current: { exercise, setIndex: 1, restAfter: 60 },
   session: null, decision: null, programFinished: false, queue: [], doneSets: [], performance: null, lastSession: null,
   weight: 50, reps: 10, rest: { endsAt: null, remaining: 0, total: 0, sound: false, flashing: false,

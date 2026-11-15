@@ -226,7 +226,7 @@ it('keeps the session live query read-only so a missing session can load', async
     ...await original<typeof Offline>(), localDb: () => db,
     useLiveQuery: (query: () => unknown) => {
       queries.push(query);
-      return [undefined, 0, null, [], null][queries.length - 1];
+      return [undefined, 0, null, [], null, [], null, null, 0][queries.length - 1];
     },
   }));
   vi.doMock('@/features/player-home', () => ({

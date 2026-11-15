@@ -1,0 +1,22 @@
+import { defineMessages } from '@/core/i18n/messages';
+
+export const messages = defineMessages({
+  ar: { title: 'تنبيه وجع', urgent: 'عاجل', repeat: 'تاني مرة الشهر ده في نفس المكان',
+    minutes: 'من {n} دقايق', context: '{kind} · {severity} من 5 · في المجموعة {set} من {exercise}',
+    swap_2w: 'بدّل التمرين أسبوعين', reduce_20: 'قلّل الوزن 20%', rest_week: 'ريّح المنطقة الأسبوع ده', talk: 'افتح الشات',
+    effect: 'أي اختيار بيتعدّل في البرنامج على طول، ويوصل للاعب إشعار.',
+    error: 'مقدرناش نحمّل التقرير. جرّب تاني', retry: 'جرّب تاني', loading: 'بنحمّل التقارير', empty: 'مفيش تقارير وجع مفتوحة',
+    failed: 'مقدرناش نحفظ الرد. جرّب تاني', saved: 'الرد اتحفظ', detail: 'اللاعب هيوصله إشعار', close: 'اقفل' },
+  get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? { title: 'تنبيه ألم', urgent: 'عاجل', repeat: 'تكرر الألم هذا الشهر في المكان نفسه',
+    minutes: 'منذ {n} دقيقة', context: '{kind} · {severity} من 5 · في المجموعة {set} من {exercise}',
+    swap_2w: 'بدّل التمرين لأسبوعين', reduce_20: 'خفّض الوزن 20%', rest_week: 'أرح المنطقة هذا الأسبوع', talk: 'افتح المحادثة',
+    effect: 'يُطبّق الاختيار على البرنامج فوراً ويصل للاعب إشعار.',
+    error: 'تعذّر تحميل التقرير. حاول مجدداً', retry: 'حاول مجدداً', loading: 'جارٍ تحميل التقارير', empty: 'لا توجد تقارير ألم مفتوحة',
+    failed: 'تعذّر حفظ الرد. حاول مجدداً', saved: 'تم حفظ الرد', detail: 'سيصل للاعب إشعار', close: 'إغلاق' } as const : undefined; },
+  en: { title: 'Pain alert', urgent: 'Urgent', repeat: 'Pain reported here again this month',
+    minutes: '{n} minutes ago', context: '{kind} · {severity} of 5 · set {set} of {exercise}',
+    swap_2w: 'Swap for 2 weeks', reduce_20: 'Reduce load 20%', rest_week: 'Rest this region this week', talk: 'Talk',
+    effect: 'Your choice updates the program and notifies the player.',
+    error: 'Could not load the report. Try again', retry: 'Try again', loading: 'Loading reports', empty: 'No open pain reports',
+    failed: 'Could not save the reply. Try again', saved: 'Reply saved', detail: 'The player will be notified', close: 'Close' },
+});

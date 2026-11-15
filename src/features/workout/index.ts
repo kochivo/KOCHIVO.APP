@@ -6,3 +6,4 @@ export { fetchWorkoutIdentity } from './data/workout-identity';
 export { messages as workoutMessages } from './messages';
 export { ExerciseVideo } from './components/exercise-video-entry';
 export { ExerciseVideoPreview } from './components/exercise-video-preview-entry';
+export { messages as painMessages } from './pain/messages';
