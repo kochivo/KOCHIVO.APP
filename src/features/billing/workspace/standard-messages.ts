@@ -1,4 +1,5 @@
 export const arStd = {
+  waitingForPlans: 'بانتظار الخطط',
   'usageTail.one': 'من {limit} لاعب', 'usageTail.two': 'من {limit} لاعبين', 'usageTail.few': 'من {limit} لاعبين', 'usageTail.other': 'من {limit} لاعب', currency: 'جنيه',
   previous: 'السابق', next: 'التالي',
   plan: 'اشتراكي', 'usage.one': '{used} من {limit} لاعب', 'usage.two': '{used} من {limit} لاعبين', 'usage.few': '{used} من {limit} لاعبين', 'usage.other': '{used} من {limit} لاعب', upgrade: 'رقّي باقتك', paid: 'المدفوع هذا الشهر',

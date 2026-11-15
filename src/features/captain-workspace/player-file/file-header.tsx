@@ -16,6 +16,8 @@ import type { FileSummary, PlayerFileTab, Profile } from './types';
 import { ArchiveMenu } from './archive-menu';
 import { ranksMessages } from '@/features/ranks/server';
 import { archivePlayer, rosterMessages } from '@/features/roster/server';
+import { messages as subscriptionMessages } from './subscription-messages';
+import { SubscriptionWaitEntry } from './subscription-wait-entry';
 
 export function FileHeader({ playerId, profile, summary, tab, locale, today, unreadCount = 0 }: {
   playerId: string; profile: Profile; summary: FileSummary; tab: PlayerFileTab; locale: Locale; today: string; playerToday?: string; unreadCount?: number;
@@ -26,7 +28,7 @@ export function FileHeader({ playerId, profile, summary, tab, locale, today, unr
   const Back = locale === 'en' ? ArrowLeft : ArrowRight;
   const initial = profile.intake?.weightKg, target = summary.file.facts.targetWeight?.value;
   const goal = initial !== undefined && target != null ? t(target < initial ? 'lose' : target > initial ? 'gain' : 'maintain') : null;
-  const subtitle = [goal, t('days', { count: formatNumber(Math.max(0, daysBetween(today, summary.subscription.access_until)), locale) }), summary.rank ? createT(ranksMessages, locale)(summary.rank) : null].filter(Boolean).join(' · ');
+  const subtitle = [goal, summary.subscription.awaiting_plans_at ? createT(subscriptionMessages, locale)('waiting') : t('days', { count: formatNumber(Math.max(0, daysBetween(today, summary.subscription.access_until)), locale) }), summary.rank ? createT(ranksMessages, locale)(summary.rank) : null].filter(Boolean).join(' · ');
   return <>
     <PageBarTitle title={profile.name} subtitle={subtitle} />
     <PageBarActions>
@@ -42,5 +44,7 @@ export function FileHeader({ playerId, profile, summary, tab, locale, today, unr
       ['overview', base], ['training', `${base}/programs`], ['nutrition', `${base}/nutrition`],
       ['checkins', `${base}/checkins`], ['assessments', `${base}/assessments`], ['chat', `${base}/chat`],
     ] as const).map(([key, href]) => ({ href, label: key === 'chat' && unreadCount > 0 ? t('chatCount', { count: formatNumber(unreadCount, locale) }) : t(key), active: tab === key }))} />
+    {summary.subscription.awaiting_plans_at && summary.subscription.id && <SubscriptionWaitEntry
+      linkId={summary.subscription.id} training={summary.plansReady?.training ?? false} nutrition={summary.plansReady?.nutrition ?? false} />}
   </>;
 }

@@ -67,3 +67,13 @@ it('shows a retryable activity error instead of fabricated week or RPE data', ()
   expect(html).toContain('جرّب تاني');
   expect(html).not.toContain('<table');
 });
+it('replaces both countdowns with waiting labels', () => {
+  if (!state.result.players?.[0]) throw new Error('Missing fixture');
+  state.result.players[0].awaitingPlansAt = '2026-11-01T10:00:00Z';
+  try {
+    const html = render();
+    expect(html).toContain('مستني الأنظمة');
+    expect(html).not.toContain('باقي 3 يوم');
+    expect(html).not.toContain('بيخلص بعد');
+  } finally { delete state.result.players[0].awaitingPlansAt; }
+});

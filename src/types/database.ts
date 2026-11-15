@@ -650,6 +650,7 @@ export type Database = {
       }
       coach_clients: {
         Row: {
+          awaiting_plans_at: string | null
           access_until: string
           archived_at: string | null
           billing_started_at: string
@@ -664,6 +665,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          awaiting_plans_at?: string | null
           access_until: string
           archived_at?: string | null
           billing_started_at?: string
@@ -678,6 +680,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          awaiting_plans_at?: string | null
           access_until?: string
           archived_at?: string | null
           billing_started_at?: string
@@ -2986,6 +2989,10 @@ export type Database = {
       save_weekly_program: { Args: { p_draft: Json }; Returns: undefined }
       set_player_frozen: {
         Args: { p_frozen: boolean; p_link: string }
+        Returns: undefined
+      }
+      start_player_subscription: {
+        Args: { p_link: string }
         Returns: undefined
       }
       storage_owner: { Args: { p_name: string }; Returns: string }

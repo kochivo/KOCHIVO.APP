@@ -11,9 +11,9 @@ export async function loadSummary(playerId: string, today: string): Promise<File
   const claims = await currentClaims();
   const captainId = claims.data?.claims.sub;
   if (claims.error || !captainId) throw new Error('Unauthenticated');
-  const [file, subscription, latest, week, requests, tier, points] = await Promise.all([
+  const [file, subscription, latest, week, requests, tier, points, training, nutrition] = await Promise.all([
     readPlayerFile(playerId),
-    client.from('coach_clients').select('access_until,started_on,pending,frozen_at,sessions_left')
+    client.from('coach_clients').select('id,awaiting_plans_at,access_until,started_on,pending,frozen_at,sessions_left')
       .eq('captain_id', captainId).eq('player_id', playerId).is('archived_at', null).single(),
     client.from('workout_sessions').select('training_date').eq('player_id', playerId).not('completed_at', 'is', null)
       .order('training_date', { ascending: false }).limit(1),
@@ -24,7 +24,12 @@ export async function loadSummary(playerId: string, today: string): Promise<File
     // Reading the RPC here keeps billing/server (and its client entries) out of every player-file route.
     client.rpc('captain_player_tiers').eq('player_id', playerId).maybeSingle(),
     client.from('player_points').select('lifetime').eq('player_id', playerId).maybeSingle(),
+    client.from('programs').select('id').eq('captain_id', captainId).eq('player_id', playerId)
+      .eq('status', 'active').eq('is_template', false).limit(1),
+    client.from('nutrition_plans').select('id').eq('captain_id', captainId).eq('player_id', playerId)
+      .eq('status', 'active').eq('is_template', false).limit(1),
   ]);
+  if (training.error || nutrition.error) throw training.error ?? nutrition.error;
   if (subscription.error || !subscription.data || latest.error || week.error || requests.error)
     throw subscription.error ?? latest.error ?? week.error ?? requests.error ?? new Error('Subscription missing');
   const rows = requests.data ?? [];
@@ -38,5 +43,6 @@ export async function loadSummary(playerId: string, today: string): Promise<File
       last: rows.flatMap(row => row.answered_at ? [row.answered_at] : []).sort().at(-1) ?? null };
   }
   return { file, rank: points.data ? tierFor(points.data.lifetime) : undefined, tier: tier.data ?? null, subscription: subscription.data, lastTraining: latest.data?.[0]?.training_date ?? null,
-    completedDays: new Set((week.data ?? []).map(row => row.training_date)).size, assessment };
+    completedDays: new Set((week.data ?? []).map(row => row.training_date)).size, assessment,
+    plansReady: { training: Boolean(training.data?.length), nutrition: Boolean(nutrition.data?.length) } };
 }

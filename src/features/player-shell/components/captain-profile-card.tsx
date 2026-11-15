@@ -56,7 +56,7 @@ export function CaptainProfileCard({ variant = 'legacy', children }: { variant?:
   const state = accessState({ ...data, today: localDate(page && now ? now : new Date(), page ? timezone : profileTimezone(data.timezone)) });
   const labels = { active: page ? p('active') : t('subscriptionActive'), ending: t('subscriptionEndingSoon'), ended: t('subscriptionEnded'), archived: t('coachingPaused') };
   const { social, url } = captainContact(data);
-  const progress = now ? subscriptionProgress(data, now, timezone) : null;
+  const progress = now && !data.awaitingPlansAt ? subscriptionProgress(data, now, timezone) : null;
   const identity = <>
     <div className={page ? 'flex flex-col items-center gap-stack' : 'flex items-center gap-card-gap'}>
       {data.avatarUrl ? <Image src={data.avatarUrl} alt="" width={page ? 80 : 64} height={page ? 80 : 64} unoptimized
@@ -73,10 +73,10 @@ export function CaptainProfileCard({ variant = 'legacy', children }: { variant?:
           className={buttonClass({ variant: (page) ? 'secondary' : 'secondary', block: false, className: page ? "flex min-h-12 items-center px-stack text-xs" : "flex min-h-12 items-center px-page-x" })}>{t(key)}</a> : null)}
     </div>
   </>;
-  const chip = <span className={`inline-flex rounded-full px-stack py-inline text-sm ${state === 'active' ? 'bg-lime-soft text-lime' : 'bg-warn-soft text-warn'}`}>{labels[state]}</span>;
+  const chip = <span className={`inline-flex rounded-full px-stack py-inline text-sm ${data.awaitingPlansAt ? 'bg-calm-soft text-calm' : state === 'active' ? 'bg-lime-soft text-lime' : 'bg-warn-soft text-warn'}`}>{data.awaitingPlansAt ? t('waitingForPlans') : labels[state]}</span>;
   const dates = <div className={page ? 'flex flex-wrap justify-between gap-inline text-row text-muted' : 'space-y-inline text-sm text-muted'}>
     {data.startedOn ? <p>{page ? p('memberSince', { date: formatDate(data.startedOn) }) : <>{t('memberSince')} <time dateTime={data.startedOn}>{formatDate(data.startedOn)}</time></>}</p> : <p>{t('yourStartDateWillAppearWhen')}</p>}
-    <p>{page ? p('until', { date: formatDate(data.accessUntil) }) : <>{t('until')} <time dateTime={data.accessUntil}>{formatDate(data.accessUntil)}</time></>}</p>
+    {!data.awaitingPlansAt && <p>{page ? p('until', { date: formatDate(data.accessUntil) }) : <>{t('until')} <time dateTime={data.accessUntil}>{formatDate(data.accessUntil)}</time></>}</p>}
   </div>;
   const contact = url ? <a href={url} target="_blank" rel="noopener noreferrer" aria-label={page ? p('whatsapp') : t('messageYourCoachOnWhatsApp')}
     className={buttonClass({ variant: (page) ? 'secondary' : 'primary', block: false, className: page ? "flex min-h-12 items-center justify-center gap-inline px-page-x text-row font-bold" : "flex min-h-14 items-center justify-center gap-inline px-page-x font-extrabold" })}>

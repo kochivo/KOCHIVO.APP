@@ -6,6 +6,7 @@ export interface RosterPlayer {
   linkId?: string;
   pending?: boolean;
   frozenAt?: string | null;
+  awaitingPlansAt?: string | null;
   sessionsLeft?: number | null;
   playerId: string;
   fullName: string;

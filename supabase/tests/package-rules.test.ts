@@ -86,6 +86,7 @@ it('attributes deductions to the billing period and falls back to completion for
   await db.query("update coach_clients set pending=true,created_at='2026-10-01' where player_id=$1", [player]);
   const link = (await db.query<{ id: string }>('select id from coach_clients where player_id=$1', [player])).rows[0]?.id;
   await asUser(db, captain, tx => tx.query("select activate_player($1,null,'sessions',5,0,0,true)", [link]));
+  await asUser(db, captain, tx => tx.query('select start_player_subscription($1)', [link]));
   expect((await db.query('select billing_started_at=now() as activated from coach_clients where id=$1', [link])).rows)
     .toEqual([{ activated: true }]);
   for (const [start, date, end] of [

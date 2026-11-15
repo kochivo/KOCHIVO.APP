@@ -27,6 +27,8 @@ it.each(cases)('captain $index activates, freezes and renews a $kind package wit
   expect((await balance()).rows[0]).toMatchObject({ pending: false, frozen_at: null,
     sessions_left: kind === 'days' ? null : 1, access_until: kind === 'days' ? '2026-11-10' : '2027-01-02' });
   expect(await due()).toBe(previousDue + 200);
+  // This scenario exercises the running subscription's freeze and credit rules.
+  await run(captain.id, 'select start_player_subscription($1)', [player.linkId]);
   await run(captain.id, 'select set_player_frozen($1,true)', [player.linkId]);
   const before = (await payments()).rows;
   await expect(run(captain.id, 'select renew_player($1,7)', [player.id]))

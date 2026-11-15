@@ -1,4 +1,5 @@
 export const arStd = {
+  waitingForPlans: 'بانتظار الخطط',
   "unfreezeFirst": "ألغِ التجميد أولاً",
   "pending": "بانتظار التفعيل",
   "frozen": "مجمّد",

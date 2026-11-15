@@ -3,6 +3,7 @@ import { arStd } from './standard-messages';
 export const messages = defineMessages({
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
+    waitingForPlans: 'مستني الأنظمة',
     playersCount: 'اللاعبين {count}',
     players: 'اللاعبين', add: 'ضيف لاعب', all: 'الكل', needsYou: 'محتاجينك', good: 'ماشيين تمام',
     newPlayers: 'جداد', ending: 'بيخلص اشتراكهم', stopped: 'متوقفين',
@@ -19,6 +20,7 @@ export const messages = defineMessages({
     error: 'مش قادرين نحمّل اللاعبين', retry: 'جرّب تاني', loading: 'بنحمّل اللاعبين…',
   },
   en: {
+    waitingForPlans: 'Waiting for plans',
     playersCount: 'Players {count}',
     players: 'Players', add: 'Add player', all: 'All', needsYou: 'Need you', good: 'Doing well',
     newPlayers: 'New', ending: 'Expiring soon', stopped: 'Stopped',

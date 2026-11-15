@@ -14,7 +14,7 @@ import { TodayCard } from './components/today-card';
 
 const state = vi.hoisted(() => ({
   notes: [] as VoiceNote[], history: { accountStart: '2026-11-07', completedDates: ['2026-11-09'] },
-  meals: [] as NutritionMeal[], logs: [] as MealLogRow[],
+  meals: [] as NutritionMeal[], logs: [] as MealLogRow[], awaitingPlansAt: null as string | null,
 }));
 vi.mock('@/core/resource', () => ({ useResource: () => ({ status: 'ready', data: {
   latest: state.notes.toSorted((a, b) => b.createdAt.localeCompare(a.createdAt))[0]
@@ -22,7 +22,7 @@ vi.mock('@/core/resource', () => ({ useResource: () => ({ status: 'ready', data:
   unread: state.notes.some(note => !note.listenedAt),
 }, retry() {} }) }));
 vi.mock('./hooks/use-streak-sessions', () => ({ useStreakSessions: () => state.history }));
-vi.mock('@/features/player-shell', () => ({ useCaptainContext: () => ({ data: { fullName: 'محمود', captainId: 'c' }, status: 'ready', retry() {} }) }));
+vi.mock('@/features/player-shell', () => ({ useCaptainContext: () => ({ data: { fullName: 'محمود', captainId: 'c', awaitingPlansAt: state.awaitingPlansAt }, status: 'ready', retry() {} }) }));
 vi.mock('@/core/offline', async original => ({ ...await original<typeof Offline>(), useLiveQuery: () => ({ water_ml: 1250 }) }));
 vi.mock('@/features/nutrition', async original => ({
   ...await original<typeof Nutrition>(),
@@ -56,6 +56,12 @@ function render(rest = false, today = '2026-11-11', program = snapshot, history 
   })));
 }
 afterEach(() => { state.notes = []; vi.unstubAllEnvs(); });
+
+it('shows a calm waiting line in the hero area while the coach prepares plans', () => {
+  state.awaitingPlansAt = '2026-11-01T10:00:00Z';
+  try { expect(render()).toContain('الكابتن بيجهزلك الأنظمة، اشتراكك هيبدأ أول ما تجهز'); }
+  finally { state.awaitingPlansAt = null; }
+});
 
 it('shows one primary workout action and real workout, calorie, water and weekly data', () => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');

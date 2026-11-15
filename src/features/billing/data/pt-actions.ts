@@ -24,7 +24,7 @@ export async function loadPlayerBalance(playerId: string): Promise<ActionResult<
   try {
     const { client, captainId } = await captainClient();
     const [link, packages] = await Promise.all([
-      client.from('coach_clients').select('id,access_until,sessions_left,frozen_at,pending')
+      client.from('coach_clients').select('id,access_until,sessions_left,frozen_at,pending,awaiting_plans_at')
         .eq('player_id', playerId).eq('captain_id', captainId).is('archived_at', null).single(),
       client.from('captain_packages').select('id,name,days,price_egp,kind,sessions')
         .eq('captain_id', captainId).is('archived_at', null).order('created_at'),

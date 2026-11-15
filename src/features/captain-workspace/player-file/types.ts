@@ -4,8 +4,10 @@ import type { Tables } from '@/types/database';
 
 export type Profile = NonNullable<Awaited<ReturnType<typeof fetchPlayerProfile>>['data']>;
 export type PlayerFileTab = 'overview' | 'training' | 'nutrition' | 'assessments' | 'chat' | 'checkins';
-export type Subscription = Pick<Tables<'coach_clients'>, 'access_until' | 'started_on' | 'pending' | 'frozen_at' | 'sessions_left'>;
+export type Subscription = Pick<Tables<'coach_clients'>, 'access_until' | 'started_on' | 'pending' | 'frozen_at' | 'sessions_left'> &
+  Partial<Pick<Tables<'coach_clients'>, 'id' | 'awaiting_plans_at'>>;
 export interface FileSummary {
+  plansReady?: { training: boolean; nutrition: boolean };
   rank?: 'beginner' | 'champion' | 'elite' | 'legend';
   tier?: { name: string; color: string; is_featured?: boolean } | null;
   file: PlayerFile;

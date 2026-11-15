@@ -6,6 +6,7 @@ export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
+    waitingForPlans: 'مستني الأنظمة',
     unfreezeFirst: 'فكّ التجميد الأول',
     pending: 'مستني التفعيل', frozen: 'متجمّد',
     waiting: 'بياناتك وصلت للكابتن. مستني يوافق ويحدد الباقة.',
@@ -20,6 +21,7 @@ export const messages = defineMessages({
     retry: 'جرّب تاني', validity: 'الحصص المخصصة صالحة لمدة ٦٠ يوم',
   },
   en: {
+    waitingForPlans: 'Waiting for plans',
     unfreezeFirst: 'Unfreeze first',
     pending: 'Awaiting activation', frozen: 'Frozen',
     waiting: 'Your details reached the coach; waiting for approval and a package.',

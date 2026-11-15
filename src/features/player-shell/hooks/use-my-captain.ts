@@ -37,6 +37,7 @@ export function readCaptainCache(): MyCaptain | null {
       ...(internationalEnabled() ? { timezone: profileTimezone(row.timezone) } : {}),
       ...(typeof row.pending === 'boolean' ? { pending: row.pending } : {}),
       ...(typeof row.frozenAt === 'string' || row.frozenAt === null ? { frozenAt: row.frozenAt } : {}),
+      ...(typeof row.awaitingPlansAt === 'string' || row.awaitingPlansAt === null ? { awaitingPlansAt: row.awaitingPlansAt } : {}),
       archivedAt: row.archivedAt, startedOn: null, ...branding };
   } catch { return null; }
 }
@@ -46,8 +47,8 @@ export function writeCaptainCache(data: MyCaptain | null) {
     const cacheKey = captainCacheKey();
     if (!cacheKey) return;
     if (!data) { window.localStorage.removeItem(cacheKey); return; }
-    const { captainId, fullName, accessUntil, archivedAt, bio, location, avatarUrl, social, pending, frozenAt, startFormsPending } = data;
-    window.localStorage.setItem(cacheKey, JSON.stringify({ captainId, fullName, phone: null, accessUntil, archivedAt, bio, location, avatarUrl, social, pending, frozenAt, startFormsPending,
+    const { captainId, fullName, accessUntil, archivedAt, bio, location, avatarUrl, social, pending, frozenAt, awaitingPlansAt, startFormsPending } = data;
+    window.localStorage.setItem(cacheKey, JSON.stringify({ captainId, fullName, phone: null, accessUntil, archivedAt, bio, location, avatarUrl, social, pending, frozenAt, awaitingPlansAt, startFormsPending,
       ...(internationalEnabled() ? { timezone: profileTimezone(data.timezone) } : {}) }));
   } catch { /* Storage can be unavailable in private browsing. */ }
 }

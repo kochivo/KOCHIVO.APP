@@ -37,3 +37,11 @@ it.each([250, 0, null])('shows a currency only for a positive billing row price 
   if (price) expect(html).toContain('250 EGP');
   else expect(html).not.toContain(' · 0');
 });
+it('shows waiting instead of an overdue countdown for an awaiting player', () => {
+  const player: BillingPlayer = { playerId: 'player', fullName: 'Player', phone: null, accessUntil: '2026-11-01', due: 0,
+    startedOn: '2026-11-01', lastTrainingDate: null, programTitle: null, openTasks: 0, status: 'active',
+    lastPayment: null, awaitingPlansAt: '2026-11-01T10:00:00Z' };
+  const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' }, createElement(WorkspaceBillingRow, { player, today: '2026-11-13', packages: [] })));
+  expect(html).toContain('Waiting for plans');
+  expect(html).not.toContain('days overdue');
+});

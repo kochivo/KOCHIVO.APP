@@ -1,9 +1,10 @@
 import { daysBetween } from '@/lib/dates';
 
-export function accessState({ accessUntil, archivedAt, today }: {
-  accessUntil: string; archivedAt: string | null; today: string;
+export function accessState({ accessUntil, archivedAt, today, awaitingPlansAt }: {
+  accessUntil: string; archivedAt: string | null; today: string; awaitingPlansAt?: string | null;
 }): 'active' | 'ending' | 'ended' | 'archived' {
   if (archivedAt) return 'archived';
+  if (awaitingPlansAt) return 'active';
   if (accessUntil < today) return 'ended';
   return daysBetween(today, accessUntil) <= 3 ? 'ending' : 'active';
 }

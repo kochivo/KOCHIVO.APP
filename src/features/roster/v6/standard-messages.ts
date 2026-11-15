@@ -1,4 +1,5 @@
 export const arStd = {
+  waitingForPlans: 'بانتظار الخطط',
   playersCount: 'اللاعبون {count}',
   players: 'اللاعبون', add: 'أضف لاعباً', all: 'الكل', needsYou: 'يحتاجونك', good: 'ملتزمون',
   newPlayers: 'جدد', ending: 'اشتراكات تنتهي قريباً', stopped: 'متوقفون',

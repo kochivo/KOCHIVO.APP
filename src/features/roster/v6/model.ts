@@ -15,6 +15,7 @@ export function playerStatus(player: RosterPlayer, today: string, video = false)
   const days = daysBetween(today, player.accessUntil);
   const absent = daysBetween(player.lastTrainingDate ?? player.startedOn, player.playerToday ?? today);
   if (player.frozenAt) return { key: 'paused', tone: 'muted', count: 0 } as const;
+  if (player.awaitingPlansAt) return { key: 'waitingForPlans', tone: 'calm', count: 0 } as const;
   if (days < 0) return { key: 'expired', tone: 'muted', count: 0 } as const;
   if (video) return { key: 'video', tone: 'warn', count: 0 } as const;
   if (absent >= 4) return { key: 'absent', tone: 'warn', count: absent } as const;
@@ -26,11 +27,11 @@ export function playerStatus(player: RosterPlayer, today: string, video = false)
 
 export function matchesTab(player: RosterPlayer, tab: Tab, today: string) {
   const days = daysBetween(today, player.accessUntil);
-  const stopped = Boolean(player.frozenAt) || days < 0;
+  const stopped = Boolean(player.frozenAt) || (!player.awaitingPlansAt && days < 0);
   if (tab === 'needsYou') return player.openTasks > 0;
   if (tab === 'good') return playerStatus(player, today).key === 'good';
   if (tab === 'newPlayers') { const age = daysBetween(player.startedOn, today); return age >= 0 && age < 7; }
-  if (tab === 'ending') return !stopped && days <= 7;
+  if (tab === 'ending') return !player.awaitingPlansAt && !stopped && days <= 7;
   if (tab === 'stopped') return stopped;
   return true;
 }

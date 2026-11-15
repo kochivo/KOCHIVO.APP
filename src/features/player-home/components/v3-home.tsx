@@ -40,6 +40,7 @@ export function V3Home({ weightKg, now, today, firstName, playerId, snapshot, da
     weekSessions.filter(session => snapshot?.days.some(day => day.id === session.program_day_id)), locale, snapshot ?? undefined);
   return <section data-mood={rest ? 'rest' : undefined} className="flex flex-col gap-stack">
     <HomeHeader now={now} firstName={firstName} bell={<NotificationBell round />} />
+    {captain.data?.awaitingPlansAt && <p role="status" className="text-sm text-calm">{t('waitingForPlans')}</p>}
     <HomeHero finished={Boolean(snapshot)} day={day} rest={rest} doneToday={doneToday} streak={stats && snapshot && !trains(today) ? stats.current : undefined} />
     {rest && <TomorrowCard day={tomorrowDay} date={tomorrow} rest={tomorrowRest} onPreview={onPreview} />}
     <HomeTiles weightKg={weightKg} today={today} playerId={playerId} rest={rest} streak={stats?.current}

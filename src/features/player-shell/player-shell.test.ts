@@ -48,6 +48,9 @@ describe('subscription access', () => {
   it('handles month boundaries', () => {
     expect(accessState({ ...base, today: '2026-10-30', accessUntil: '2026-11-02' })).toBe('ending');
   });
+  it('does not expire a subscription awaiting plans', () => {
+    expect(accessState({ ...base, today: '2027-01-01', awaitingPlansAt: '2026-11-01T00:00Z' })).toBe('active');
+  });
 });
 
 it('builds WhatsApp URLs from digits only', () => {

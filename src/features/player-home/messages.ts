@@ -5,6 +5,7 @@ export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
+    waitingForPlans: 'الكابتن بيجهزلك الأنظمة، اشتراكك هيبدأ أول ما تجهز',
     homeAccount: 'حسابي', homeCaptainMessages: 'رسايل الكابتن', homeUnheard: 'رسايل الكابتن، رسالة جديدة',
     homeStart: 'يلا نبدأ', homeDoneToday: 'خلصت تمرين النهارده', homeWarmup: 'فيه تسخين', homeMinutes: '{count} دقيقة',
     homeRest: 'يوم راحة', homeRestBody: 'العضل بيكبر وإنت مرتاح. نام كويس، واشرب ميه، وكُل أكلك.',
@@ -101,6 +102,7 @@ export const messages = defineMessages({
     weekDayLabel: "{value0} {value1}، {value2}",
   },
   en: {
+    waitingForPlans: 'Your coach is preparing your plans. Your subscription starts when they are ready.',
     homeAccount: 'My account', homeCaptainMessages: 'Captain messages', homeUnheard: 'Captain messages, new message',
     homeStart: 'Let’s start', homeDoneToday: 'Today’s workout is done', homeWarmup: 'Warm-up included', homeMinutes: '{count} minutes',
     homeRest: 'Rest day', homeRestBody: 'Muscles grow while you rest. Sleep well, drink water, and eat your meals.',

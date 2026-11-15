@@ -36,6 +36,13 @@ it('renders the page header, subscription, renewal and outline WhatsApp', () => 
   expect(html).toContain('<progress');
   expect(html).toContain('كلّم الكابتن على واتساب');
 });
+it('shows waiting without a ticking countdown or progress bar', () => {
+  state.data = { ...captain, awaitingPlansAt: '2026-11-01T10:00:00Z' };
+  const html = render(true);
+  expect(html).toContain('مستني الأنظمة');
+  expect(html).not.toContain('فاضل 21 يوم');
+  expect(html).not.toContain('<progress');
+});
 it.each([{ pending: true }, { archivedAt: '2026-11-01T00:00Z' }])('hides renewal for %j', flags => {
   state.data = { ...captain, ...flags };
   expect(render(true)).not.toContain('Renewal flow');

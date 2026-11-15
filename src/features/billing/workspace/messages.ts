@@ -5,6 +5,7 @@ export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
+    waitingForPlans: 'مستني الأنظمة',
     'usageTail.one': 'من {limit} لاعب', 'usageTail.two': 'من {limit} لاعبين', 'usageTail.few': 'من {limit} لاعبين', 'usageTail.other': 'من {limit} لاعب', currency: 'جنيه',
     previous: 'اللي قبلها', next: 'اللي بعدها',
     plan: 'اشتراكي', 'usage.one': '{used} من {limit} لاعب', 'usage.two': '{used} من {limit} لاعبين', 'usage.few': '{used} من {limit} لاعبين', 'usage.other': '{used} من {limit} لاعب', upgrade: 'رقّي باقتك', paid: 'اتدفع الشهر ده',
@@ -17,6 +18,7 @@ export const messages = defineMessages({
     collection: 'دفعة', renewal: 'تجديد', more: 'تفاصيل الباقة', noPhone: 'ضيف رقم واتساب من ملف اللاعب عشان تفكّره',
   },
   en: {
+    waitingForPlans: 'Waiting for plans',
     'usageTail.one': 'of {limit} player', 'usageTail.other': 'of {limit} players', currency: 'EGP',
     previous: 'Previous', next: 'Next',
     plan: 'My subscription', 'usage.one': '{used} of {limit} player', 'usage.other': '{used} of {limit} players', upgrade: 'Upgrade plan', paid: 'Paid this month',

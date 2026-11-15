@@ -31,7 +31,7 @@ export function WorkspaceBillingRow({ player, today, packages }: { player: Billi
   const date = (value: string) => formatDateAr(value, { day: 'numeric', month: 'long' }, locale);
   const chosen = packages.find(item => item.id === player.lastPayment?.package_id);
   const price = player.lastPayment?.price_egp ?? chosen?.price_egp;
-  const pill = player.pending || frozenAt ? t(state.label, { n: state.days }) : days < 0 && player.sessionsLeft == null
+  const pill = player.awaitingPlansAt ? t('waitingForPlans') : player.pending || frozenAt ? t(state.label, { n: state.days }) : days < 0 && player.sessionsLeft == null
     ? payment('late', { n: -days, count: formatNumber(-days, locale) }) : player.due > 0 ? payment('balance', { amount: formatNumber(player.due, locale) })
       : player.sessionsLeft === 0 ? payment('sessionsEnded') : segment === 'ending' ? payment('ends', { n: days, count: formatNumber(days, locale) }) : payment('until', { date: date(player.accessUntil) });
   async function action() {

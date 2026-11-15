@@ -42,6 +42,7 @@ it('hides training for pending and frozen players, preserving time based access'
   expect((await asUser(db, player, tx => tx.query('select id from programs'))).rows).toHaveLength(1);
 });
 it('unfreezes once and saves whole elapsed days', async () => {
+  await asUser(db, captain, tx => tx.query('select start_player_subscription($1)', [link]));
   await expect(asUser(db, other, tx => tx.query('select set_player_frozen($1,true)', [link]))).rejects.toMatchObject({ code: '42501' });
   await expect(asUser(db, player, tx => tx.query('select set_player_frozen($1,true)', [link]))).rejects.toMatchObject({ code: '42501' });
   await asUser(db, captain, tx => tx.query('select set_player_frozen($1,true)', [link]));
@@ -60,6 +61,7 @@ it('activates time-based trials without dues and rejects repeat activation', asy
 });
 it('deducts completed sessions once across LWW retries and notifies at zero', async () => {
   await activate(captain, 'sessions', 1);
+  await asUser(db, captain, tx => tx.query('select start_player_subscription($1)', [link]));
   await db.query("update coach_clients set billing_started_at='2026-11-03T07:00:00Z' where id=$1", [link]);
   const row = { id: session, training_date: '2026-11-03', started_at: '2026-11-03T08:00:00Z',
     completed_at: '2026-11-03T09:00:00Z', client_updated_at: '2026-11-03T09:00:00Z' };
