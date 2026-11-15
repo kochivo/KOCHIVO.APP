@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>مميزات KOCHIVO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700&family=Changa:wght@500;600;700;800&family=Manrope:wght@500;700;800&display=swap">
+<style>
+:root {
+  --bg: #0b0c0d; --deep: #070808; --surface: #141515; --raised: #1c1d1d;
+  --line: #292a2a; --soft: rgba(242,242,238,.07); --glass: rgba(255,255,255,.035); --glass-line: rgba(255,255,255,.09);
+  --ink: #f4f4f1; --muted: #a6abb0; --faint: #7d8288; --warn: #f2b544; --danger: #ff6b6b; --moon: #e6c47a; --rose: #f39ac0;
+  --lime: #b6e94f; --lime-dim: rgba(182,233,79,.13); --on-lime: #101418;
+  --display: "Manrope", "Changa", "Alexandria", system-ui, sans-serif;
+  --text: "Manrope", "Alexandria", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--text); font-size: 14.5px; line-height: 1.6; }
+.page { max-width: 1240px; margin: 0 auto; padding: 40px 16px 90px; }
+h1, h2, h3 { margin: 0; font-family: var(--display); text-wrap: balance; }
+h1 { font-size: clamp(28px, 4.4vw, 44px); font-weight: 800; line-height: 1.2; }
+h2 { font-size: 24px; font-weight: 800; }
+h3 { font-size: 15.5px; font-weight: 700; }
+p { margin: 0; }
+.lede { color: var(--muted); max-width: 68ch; margin-top: 12px; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.toc a { color: var(--ink); text-decoration: none; border: 1px solid var(--glass-line); background: var(--glass); border-radius: 999px; padding: 8px 16px; min-height: 44px; display: inline-flex; align-items: center; }
+section { margin-top: 64px; display: grid; gap: 18px; }
+.head p { color: var(--muted); max-width: 74ch; margin-top: 6px; }
+.idx { color: var(--lime); font-family: "Manrope", sans-serif; font-weight: 800; margin-inline-end: 8px; }
+.small { font-size: 12.5px; } .muted { color: var(--muted); } .faint { color: var(--faint); } .lime { color: var(--lime); } .warn { color: var(--warn); } .danger { color: var(--danger); } .moon { color: var(--moon); } .rose { color: var(--rose); }
+.num { font-family: "Manrope", sans-serif; font-weight: 800; font-variant-numeric: tabular-nums; direction: ltr; unicode-bidi: isolate; }
+.glass { background: var(--glass); border: 1px solid var(--glass-line); border-radius: 20px; }
+.card { padding: 14px; display: grid; gap: 8px; }
+.btn { min-height: 48px; border-radius: 999px; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 800; font-size: 14.5px; border: 1px solid transparent; font-family: var(--display); padding-inline: 18px; }
+.btn.primary { background: var(--lime); color: var(--on-lime); }
+.btn.secondary { background: var(--glass); border-color: var(--glass-line); color: var(--ink); }
+.chip { border: 1px solid var(--glass-line); background: var(--glass); border-radius: 999px; padding: 2px 10px; font-size: 12px; color: var(--muted); white-space: nowrap; display: inline-flex; align-items: center; min-height: 28px; }
+.chip.on { color: var(--lime); border-color: rgba(182,233,79,.45); background: var(--lime-dim); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.phones { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; align-items: start; }
+.pw { display: grid; gap: 10px; min-width: 0; }
+.pw > p { color: var(--muted); font-size: 13px; }
+.phone { border: 1px solid var(--line); border-radius: 34px; background: var(--bg); padding: 14px 12px 16px; display: grid; gap: 12px; width: 100%; max-width: 360px; justify-self: center; overflow: hidden; position: relative; min-height: 700px; align-content: start; }
+.status { display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; color: var(--faint); padding: 2px 8px 0; direction: ltr; }
+.top { display: flex; align-items: center; gap: 10px; }
+.top h3 { font-size: 18px; }
+.row { display: flex; align-items: center; gap: 10px; }
+.row .end { margin-inline-start: auto; }
+.switch { width: 52px; height: 30px; border-radius: 999px; background: var(--lime); position: relative; flex: none; }
+.switch::after { content: ""; position: absolute; top: 3px; inset-inline-start: 3px; width: 24px; height: 24px; border-radius: 50%; background: var(--on-lime); }
+.switch.off { background: var(--line); }
+.switch.off::after { inset-inline-start: auto; inset-inline-end: 3px; background: var(--muted); }
+.field { min-height: 48px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); padding: 0 14px; display: flex; align-items: center; justify-content: space-between; font-size: 14px; }
+.lbl { font-size: 12.5px; color: var(--faint); }
+.prog { height: 8px; border-radius: 99px; background: var(--deep); border: 1px solid var(--soft); overflow: hidden; }
+.prog i { display: block; height: 100%; background: var(--lime); border-radius: 99px; }
+
+/* ramadan */
+.iftar { padding: 16px; display: grid; gap: 6px; text-align: center; border-color: rgba(230,196,122,.35); background: radial-gradient(circle at 80% 0%, rgba(230,196,122,.16), transparent 55%), var(--glass); }
+.iftar .num { font-size: 40px; line-height: 1.1; color: var(--moon); }
+.timeline { display: grid; gap: 6px; }
+.tl { display: grid; grid-template-columns: 56px 12px minmax(0, 1fr); gap: 10px; align-items: center; font-size: 13.5px; }
+.tl .t { color: var(--faint); font-size: 12.5px; }
+.tl i { width: 12px; height: 12px; border-radius: 50%; background: var(--line); }
+.tl.done i { background: var(--moon); }
+.tl.now i { background: var(--lime); box-shadow: 0 0 0 5px rgba(182,233,79,.2); }
+.tl.now span:last-child { color: var(--lime); font-weight: 700; }
+.cups { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 5px; }
+.cups i { height: 30px; border-radius: 6px 6px 10px 10px; border: 1px solid var(--glass-line); background: var(--deep); }
+.cups i.f { background: linear-gradient(to top, rgba(122,167,255,.75) 75%, transparent 75%); }
+.meal { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; }
+.meal b { font-size: 14px; }
+.meal span { font-size: 12.5px; color: var(--muted); grid-column: 1 / 2; }
+.meal .k { grid-row: 1 / 3; grid-column: 2; align-self: center; font-size: 13px; color: var(--faint); }
+
+/* pain */
+.body { position: relative; width: 170px; height: 320px; justify-self: center; }
+.body svg { width: 100%; height: 100%; }
+.spot { position: absolute; width: 34px; height: 34px; border-radius: 50%; background: rgba(255,107,107,.35); border: 2px solid var(--danger); box-shadow: 0 0 0 8px rgba(255,107,107,.15); }
+.scale { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.scale span { min-height: 48px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); display: grid; place-items: center; font-weight: 800; font-family: "Manrope", sans-serif; }
+.scale span.on { background: rgba(255,107,107,.18); border-color: var(--danger); color: var(--danger); }
+.alert { border: 1px solid rgba(255,107,107,.4); background: rgba(255,107,107,.08); border-radius: 16px; padding: 12px 14px; display: grid; gap: 6px; }
+.swap { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 8px; align-items: center; text-align: center; }
+.swap div { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 10px 6px; font-size: 13px; }
+.swap div.to { border-color: rgba(182,233,79,.45); background: var(--lime-dim); }
+.frame { border: 1px solid var(--line); border-radius: 22px; background: var(--bg); overflow: hidden; }
+.frame-bar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--line); background: var(--deep); font-size: 12px; color: var(--faint); direction: ltr; }
+.frame-bar i { width: 10px; height: 10px; border-radius: 50%; background: var(--line); }
+
+/* budget */
+.budget { padding: 16px; display: grid; gap: 10px; }
+.budget .num.big { font-size: 40px; line-height: 1.1; }
+.slider { position: relative; height: 8px; border-radius: 99px; background: var(--deep); border: 1px solid var(--soft); }
+.slider i { position: absolute; inset-block: 0; inset-inline-start: 0; width: 35%; background: var(--lime); border-radius: 99px; }
+.slider b { position: absolute; top: 50%; inset-inline-start: 35%; width: 24px; height: 24px; margin: -12px -12px 0; border-radius: 50%; background: var(--ink); border: 4px solid var(--lime); }
+.macros { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; text-align: center; }
+.macros div { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 8px; display: grid; }
+.macros .num { font-size: 20px; }
+.price { color: var(--lime); font-weight: 800; }
+.shop { display: grid; gap: 6px; }
+.shop div { display: flex; justify-content: space-between; gap: 10px; font-size: 13.5px; padding: 8px 12px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); }
+.total { display: flex; justify-content: space-between; font-weight: 800; padding: 10px 12px; border-radius: 12px; background: var(--lime-dim); border: 1px solid rgba(182,233,79,.4); }
+
+/* women */
+.cycle { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px; text-align: center; }
+.cycle span { display: grid; gap: 2px; font-size: 11px; color: var(--faint); }
+.cycle i { height: 34px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); display: grid; place-items: center; font-style: normal; font-family: "Manrope", sans-serif; font-weight: 800; color: var(--muted); font-size: 13px; }
+.cycle i.p { background: rgba(243,154,192,.16); border-color: rgba(243,154,192,.5); color: var(--rose); }
+.cycle i.today { outline: 2px solid var(--lime); outline-offset: 2px; }
+.soft { border: 1px solid rgba(243,154,192,.4); background: rgba(243,154,192,.07); border-radius: 16px; padding: 12px 14px; display: grid; gap: 6px; }
+.photos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.photos div { aspect-ratio: 3 / 4; border-radius: 14px; background: linear-gradient(160deg, #2a2b2c, #151617); border: 1px solid var(--line); display: grid; place-items: center; filter: blur(0); position: relative; overflow: hidden; }
+.photos div::after { content: ""; position: absolute; inset: 0; backdrop-filter: blur(8px); background: rgba(11,12,13,.35); }
+.photos svg { width: 26px; height: 26px; position: relative; z-index: 1; }
+.coach { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+.coach .av { width: 44px; height: 44px; border-radius: 14px; background: rgba(243,154,192,.18); color: var(--rose); display: grid; place-items: center; font-weight: 800; }
+
+.decide { border: 1px solid rgba(242,181,68,.35); background: rgba(242,181,68,.07); border-radius: 16px; padding: 14px 16px; display: grid; gap: 8px; font-size: 13.5px; }
+.decide b { color: var(--warn); }
+@media (max-width: 1060px) { .phones { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main class="page">
+  <p class="small faint">KOCHIVO · مميزات مصرية · نسخة 1</p>
+  <h1>حاجات مش هتلاقيها في أي منصة تانية</h1>
+  <p class="lede">أربع مميزات معمولة لحياة اللاعب في مصر: رمضان، والوجع وقت التمرين، والأكل على قد الميزانية، والبنات. الأسماء والأرقام والأسعار أمثلة.</p>
+  <nav class="toc" aria-label="المميزات"><a href="#ramadan">1. وضع رمضان</a><a href="#pain">2. عندي وجع</a><a href="#budget">3. أكل على قد الميزانية</a><a href="#women">4. وضع خاص للبنات</a></nav>
+
+  <!-- 1 Ramadan -->
+  <section aria-labelledby="ramadan">
+    <div class="head"><h2 id="ramadan"><span class="idx">1</span>وضع رمضان</h2><p>الكابتن يشغّله مرة واحدة لفريقه كله، وكل حاجة بتتظبط لوحدها على مواعيد الفطار والسحور في مدينة كل لاعب: التمرين، والأكل، والماية، والتنبيهات.</p></div>
+    <div class="phones">
+      <div class="pw">
+        <div class="phone">
+          <div class="status"><span>17:01</span><span>KOCHIVO</span></div>
+          <div class="top"><h3>وضع رمضان · الفريق</h3></div>
+          <div class="glass card"><div class="row"><b>شغّل وضع رمضان</b><span class="switch end" aria-hidden="true"></span></div><span class="small muted">من أول رمضان لآخره، ويرجع لوحده بعد العيد.</span></div>
+          <span class="lbl">التمرين إمتى؟</span>
+          <div class="chips"><span class="chip">قبل الفطار بساعة</span><span class="chip on">بعد الفطار بساعتين</span><span class="chip">بعد التراويح</span><span class="chip">قبل السحور</span></div>
+          <span class="lbl">شدة التمرين</span>
+          <div class="chips"><span class="chip">زي ما هو</span><span class="chip on">أخف 20%</span><span class="chip">صيانة بس</span></div>
+          <span class="lbl">الأكل</span>
+          <div class="glass card" style="gap:4px"><span>نفس السعرات، متقسمة على:</span><span class="small muted">فطار · سناك بعد التمرين · سحور</span></div>
+          <div class="glass card" style="gap:4px"><span>الماية: <b class="num">3</b> لتر بين الفطار والسحور</span><span class="small muted">تنبيه كل ساعة ونص</span></div>
+          <span class="btn primary" style="margin-top:auto">طبّق على 27 لاعب</span>
+        </div>
+        <p>عند الكابتن: ضغطة واحدة للفريق كله. ويقدر يستثني لاعب مش صايم.</p>
+      </div>
+      <div class="pw">
+        <div class="phone">
+          <div class="status"><span>17:01</span><span>KOCHIVO</span></div>
+          <div class="glass iftar"><span class="small moon">رمضان · اليوم 12</span><span class="num">1:24:10</span><span class="muted">على المغرب في القاهرة · <span class="num">5:52</span></span></div>
+          <h3>يومك</h3>
+          <div class="timeline">
+            <div class="tl done"><span class="t num">3:58</span><i></i><span>سحور</span></div>
+            <div class="tl now"><span class="t num">5:52</span><i></i><span>فطار</span></div>
+            <div class="tl"><span class="t num">7:50</span><i></i><span>تمرين ضهر · 45 دقيقة</span></div>
+            <div class="tl"><span class="t num">9:00</span><i></i><span>سناك بعد التمرين</span></div>
+            <div class="tl"><span class="t num">3:30</span><i></i><span>سحور</span></div>
+          </div>
+          <h3>الماية من الفطار</h3>
+          <div class="cups" aria-label="2 من 8 كوبايات"><i class="f"></i><i class="f"></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <span class="small muted"><span class="num">2</span> من <span class="num">8</span> · فاضل <span class="num">9</span> ساعات على السحور</span>
+          <span class="btn secondary" style="margin-top:auto">شربت كوباية</span>
+        </div>
+        <p>عند اللاعب: عدّاد للمغرب، ويومه مترتب على الفطار والسحور، والماية بتتحسب بالليل بس.</p>
+      </div>
+      <div class="pw">
+        <div class="phone">
+          <div class="status"><span>17:01</span><span>KOCHIVO</span></div>
+          <div class="top"><h3>أكل النهارده</h3><span class="chip end" style="color:var(--moon)">رمضان</span></div>
+          <span class="lbl">فطار · <span class="num">5:52</span></span>
+          <div class="meal"><b>3 تمرات وكوباية ماية</b><span>ابدأ بيهم وصلّي</span><span class="k num">70</span></div>
+          <div class="meal"><b>شوربة عدس + فراخ مشوية 200 جم + رز</b><span>بروتين 52 جم</span><span class="k num">720</span></div>
+          <span class="lbl">بعد التمرين · <span class="num">9:00</span></span>
+          <div class="meal"><b>زبادي يوناني + موزة</b><span>بروتين 18 جم</span><span class="k num">260</span></div>
+          <span class="lbl">سحور · <span class="num">3:30</span></span>
+          <div class="meal"><b>فول + 3 بيضات + عيش بلدي</b><span>بيشبّع لحد المغرب</span><span class="k num">640</span></div>
+          <div class="glass card" style="gap:4px"><span class="small">KO: قلّل الملح في السحور عشان العطش.</span></div>
+        </div>
+        <p>نفس سعرات اللاعب، متقسمة على مواعيد رمضان، وبأكل رمضاني حقيقي.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 Pain -->
+  <section aria-labelledby="pain">
+    <div class="head"><h2 id="pain"><span class="idx">2</span>عندي وجع</h2><p>زرار في شاشة التمرين. اللاعب يحدد مكان الوجع وقوته، والكابتن يوصله تنبيه فورًا، وKO يقترح بديل آمن لحد ما الكابتن يرد.</p></div>
+    <div class="phones">
+      <div class="pw">
+        <div class="phone">
+          <div class="status"><span>17:01</span><span>KOCHIVO</span></div>
+          <div class="top"><h3>فين الوجع؟</h3><span class="chip end">سكوات · المجموعة 3</span></div>
+          <div class="body">
+            <svg viewBox="0 0 100 190" aria-hidden="true"><g fill="#1c1d1d" stroke="#3a3c3d" stroke-width="1.4"><circle cx="50" cy="16" r="11"/><path d="M34 32h32l6 50H28Z"/><path d="M34 34 18 76l6 3 14-36M66 34l16 42-6 3-14-36"/><path d="M30 82h18l-2 50-4 48h-9l1-48ZM52 82h18l-3 50 1 48h-9l-4-48Z"/></g></svg>
+            <span class="spot" style="top:66%;left:52%"></span>
+          </div>
+          <div class="chips" style="justify-content:center"><span class="chip on">الركبة اليمين</span><span class="chip">أمام</span><span class="chip">ورا</span></div>
+          <span class="lbl">قد إيه؟</span>
+          <div class="scale"><span>1</span><span>2</span><span>3</span><span class="on">4</span><span>5</span></div>
+          <span class="lbl">نوعه</span>
+          <div class="chips"><span class="chip on">وجع حاد</span><span class="chip">شد</span><span class="chip">تعب عادي</span></div>
+          <span class="btn primary" style="margin-top:auto">ابعت للكابتن</span>
+        </div>
+        <p>اللاعب يدوس على مكان الوجع في الرسمة. 3 أسئلة بس، وفي أقل من 10 ثواني.</p>
+      </div>
+      <div class="pw">
+        <div class="phone">
+          <div class="status"><span>17:01</span><span>KOCHIVO</span></div>
+          <div class="alert"><b class="danger">وقفنا السكوات النهارده</b><span class="small">الكابتن وصله تنبيه. لحد ما يرد، KO بيقترح ده:</span></div>
+          <div class="swap"><div><s class="faint">سكوات بالبار</s></div><span class="lime">←</span><div class="to"><b>ليج بريس بمدى قصير</b></div></div>
+          <div class="glass card"><span class="small muted">أو</span><span>كمّل باقي التمرين من غير تمارين الرجل</span></div>
+          <div class="glass card"><span class="small muted">مهم</span><span>لو الوجع حاد أو فيه ورم، وقف خالص وكلّم دكتور.</span></div>
+          <span class="btn primary">استخدم البديل</span>
+          <span class="btn secondary">كمّل من غير رجل</span>
+          <span class="small faint" style="text-align:center">الكابتن ردّه هيوصلك هنا وفي الشات.</span>
+        </div>
+        <p>التمرين مابيقفش. اللاعب ياخد بديل آمن على طول، والقرار النهائي للكابتن.</p>
+      </div>
+      <div class="pw">
+        <div class="phone">
+          <div class="status"><span>17:01</span><span>KOCHIVO</span></div>
+          <div class="top"><h3>تنبيه وجع</h3><span class="chip end danger" style="color:var(--danger);border-color:rgba(255,107,107,.4)">عاجل</span></div>
+          <div class="alert"><b>منى عادل · الركبة اليمين</b><span class="small">وجع حاد <span class="num">4</span> من <span class="num">5</span> · في المجموعة 3 من السكوات · من 5 دقايق</span><span class="small muted">تاني مرة الشهر ده في نفس المكان.</span></div>
+          <span class="lbl">ردّ سريع</span>
+          <span class="btn secondary">بدّل السكوات أسبوعين</span>
+          <span class="btn secondary">قلّل الوزن 20%</span>
+          <span class="btn secondary">ريّح الرجل الأسبوع ده</span>
+          <span class="btn secondary">كلّمها</span>
+          <span class="small faint">أي اختيار بيتعدّل في برنامجها على طول، ويوصلها إشعار.</span>
+        </div>
+        <p>عند الكابتن: التنبيه بيقول المكان والقوة والتمرين، ولو اتكرر قبل كده. وفيه رد بضغطة واحدة.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 Budget -->
+  <section aria-labelledby="budget">
+    <div class="head"><h2 id="budget"><span class="idx">3</span>أكل على قد الميزانية</h2><p>الكابتن يحدد ميزانية اللاعب في اليوم بالجنيه، وKO يعمل خطة أكل توصّل البروتين والسعرات المطلوبة بأرخص أكل متاح، وجنب كل أكلة سعرها.</p></div>
+    <div class="phones">
+      <div class="pw">
+        <div class="phone">
+          <div class="status"><span>17:01</span><span>KOCHIVO</span></div>
+          <div class="top"><h3>خطة أكل · أحمد</h3></div>
+          <div class="glass budget">
+            <span class="lbl">الميزانية في اليوم</span>
+            <span class="num big">150 <span class="small faint">جنيه</span></span>
+            <div class="slider" aria-hidden="true"><i></i><b></b></div>
+            <div class="row small faint"><span class="num">80</span><span class="end num">400</span></div>
+          </div>
+          <div class="macros"><div><span class="small faint">سعرات</span><span class="num">2,600</span></div><div><span class="small faint">بروتين</span><span class="num">165</span></div><div><span class="small faint">الهدف</span><span class="small">تضخيم</span></div></div>
+          <div class="glass card"><span class="lbl">KO هيستخدم</span><div class="chips"><span class="chip on">بيض</span><span class="chip on">فول</span><span class="chip on">فراخ</span><span class="chip on">تونة</span><span class="chip on">عدس</span><span class="chip on">رز</span><span class="chip on">لبن</span><span class="chip">لحمة</span><span class="chip">سلمون</span></div></div>
+          <span class="btn primary" style="margin-top:auto">اعمل الخطة</span>
+        </div>
+        <p>عند الكابتن: الميزانية والهدف، وKO يعمل الباقي. والكابتن يعدّل زي أي خطة.</p>
+      </div>
+      <div class="pw">
+        <div class="phone">
+          <div class="status"><span>17:01</span><span>KOCHIVO</span></div>
+          <div class="top"><h3>أكل النهارده</h3><span class="chip end on">146 جنيه</span></div>
+          <div class="meal"><b>فطار: فول + 4 بيضات + عيش بلدي</b><span>بروتين 42 جم · <span class="price">28 جنيه</span></span><span class="k num">720</span></div>
+          <div class="meal"><b>غدا: فراخ 250 جم + رز + سلطة</b><span>بروتين 62 جم · <span class="price">62 جنيه</span></span><span class="k num">860</span></div>
+          <div class="meal"><b>سناك: علبة تونة + عيش</b><span>بروتين 30 جم · <span class="price">36 جنيه</span></span><span class="k num">420</span></div>
+          <div class="meal"><b>عشا: كشري صغير بالعدس + زبادي</b><span>بروتين 26 جم · <span class="price">20 جنيه</span></span><span class="k num">600</span></div>
+          <div class="glass card"><span class="lbl">بديل أرخص</span><div class="row"><span>فراخ ← كبدة فراخ</span><span class="end price">وفّر 25 جنيه</span></div></div>
+        </div>
+        <p>عند اللاعب: سعر كل أكلة جنبها، وبدائل أرخص بنفس البروتين لو الشهر ضاغط.</p>
+      </div>
+      <div class="pw">
+        <div class="phone">
+          <div class="status"><span>17:01</span><span>KOCHIVO</span></div>
+          <div class="top"><h3>طلبات الأسبوع</h3></div>
+          <div class="shop">
+            <div><span>بيض · 2 كرتونة</span><span class="num">330</span></div>
+            <div><span>فراخ · 2 كيلو</span><span class="num">280</span></div>
+            <div><span>فول · 7 علب</span><span class="num">105</span></div>
+            <div><span>تونة · 7 علب</span><span class="num">245</span></div>
+            <div><span>رز · 2 كيلو</span><span class="num">70</span></div>
+            <div><span>زبادي · 7</span><span class="num">70</span></div>
+          </div>
+          <div class="total"><span>الإجمالي</span><span class="num">1,020 جنيه</span></div>
+          <span class="small faint">الأسعار تقريبية، والكابتن يقدر يحدّثها كل شهر.</span>
+          <span class="btn secondary" style="margin-top:auto">ابعت القايمة على الواتساب</span>
+        </div>
+        <p>قايمة طلبات الأسبوع كلها بسعرها، يبعتها لأهله أو ياخدها السوبرماركت.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 Women -->
+  <section aria-labelledby="women">
+    <div class="head"><h2 id="women"><span class="idx">4</span>وضع خاص للبنات</h2><p>اختياري بالكامل. اللاعبة تشغّله لو حابة: متابعة الدورة والتمرين يتظبط عليها، وخصوصية أعلى للصور، وتقدر تدور على كابتنة.</p></div>
+    <div class="phones">
+      <div class="pw">
+        <div class="phone">
+          <div class="status"><span>17:01</span><span>KOCHIVO</span></div>
+          <div class="top"><h3>الدورة والتمرين</h3><span class="chip end">محدش يشوفها غيرك</span></div>
+          <div class="cycle">
+            <span>سبت<i>12</i></span><span>أحد<i>13</i></span><span>اتنين<i class="p today">1</i></span><span>تلات<i class="p">2</i></span><span>أربع<i class="p">3</i></span><span>خميس<i>14</i></span><span>جمعة<i>15</i></span>
+          </div>
+          <div class="soft"><b class="rose">يومك الأول · تمرين أخف النهارده</b><span class="small">الأوزان أقل 15%، ومن غير تمارين بطن تقيلة. لو حاسة إنك كويسة، تقدري تتمرني عادي.</span></div>
+          <div class="row"><span>اتمرني عادي</span><span class="switch off end" aria-hidden="true"></span></div>
+          <div class="glass card"><span class="lbl">الكابتن بيشوف إيه؟</span><span>«يوم خفيف» بس. من غير أي تفاصيل.</span></div>
+          <span class="btn primary" style="margin-top:auto">ابدأي تمرين النهارده</span>
+        </div>
+        <p>اللاعبة بتسجل الدورة بضغطة، والتمرين بيتظبط لوحده. الكابتن مابيعرفش غير إن ده «يوم خفيف».</p>
+      </div>
+      <div class="pw">
+        <div class="phone">
+          <div class="status"><span>17:01</span><span>KOCHIVO</span></div>
+          <div class="top"><h3>صور التقدم</h3><span class="chip end">مقفولة</span></div>
+          <div class="photos"><div><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 11V8a5 5 0 0 1 10 0v3M5 11h14v9H5Z" fill="none" stroke="#a6abb0" stroke-width="1.6"/></svg></div><div><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 11V8a5 5 0 0 1 10 0v3M5 11h14v9H5Z" fill="none" stroke="#a6abb0" stroke-width="1.6"/></svg></div><div><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 11V8a5 5 0 0 1 10 0v3M5 11h14v9H5Z" fill="none" stroke="#a6abb0" stroke-width="1.6"/></svg></div></div>
+          <span class="lbl">مين يشوف صوري؟</span>
+          <div class="glass card" style="gap:10px">
+            <div class="row"><span>أنا بس</span><span class="switch off end" aria-hidden="true"></span></div>
+            <div class="row"><span>الكابتنة بتاعتي</span><span class="switch end" aria-hidden="true"></span></div>
+            <div class="row"><span>في كارت التحول</span><span class="switch off end" aria-hidden="true"></span></div>
+          </div>
+          <div class="glass card"><span class="small muted">الصور بتتقفل بالبصمة أو الرقم السري، ومش بتتحفظ في معرض الصور.</span></div>
+        </div>
+        <p>هي اللي بتختار مين يشوف صورها، والصور مستخبية لحد ما تفتحها.</p>
+      </div>
+      <div class="pw">
+        <div class="phone">
+          <div class="status"><span>17:01</span><span>KOCHIVO</span></div>
+          <div class="top"><h3>دوّري على كابتن</h3></div>
+          <div class="chips"><span class="chip on">كابتنة</span><span class="chip">أونلاين</span><span class="chip">القاهرة</span><span class="chip">تخسيس</span></div>
+          <div class="coach"><span class="av">ن</span><div><b>كابتنة نهى</b><div class="small faint">تخسيس وشد · 42 لاعبة · رتبة الفريق ذهب</div></div></div>
+          <div class="coach"><span class="av">ر</span><div><b>كابتنة ريم</b><div class="small faint">بعد الولادة · 18 لاعبة</div></div></div>
+          <div class="coach"><span class="av">س</span><div><b>كابتنة سلمى</b><div class="small faint">قوة للبنات · 25 لاعبة</div></div></div>
+          <div class="glass card"><span class="small muted">برامج جاهزة للبنات: بعد الولادة، والحمل بإذن الدكتور، وتمرين في البيت.</span></div>
+        </div>
+        <p>فلتر «كابتنة» في صفحة الكباتن، وقوالب برامج معمولة للبنات.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="decide">
+      <b>قرارات ليك</b>
+      <span><b>1.</b> وضع رمضان لازم يكون جاهز قبل رمضان (حوالي فبراير 2027). نبدأ بيه الأول؟ اقتراحي آه.</span>
+      <span><b>2.</b> في «عندي وجع»، KO يقترح بديل على طول لحد ما الكابتن يرد، ولا يستنى الكابتن؟ اقتراحي يقترح على طول، مع تنبيه «لو الوجع حاد كلّم دكتور».</span>
+      <span><b>3.</b> أسعار الأكل: نحطها إحنا ونحدّثها كل شهر، ولا كل كابتن يحط أسعاره؟ اقتراحي نحطها إحنا، والكابتن يقدر يغيّرها.</span>
+      <span><b>4.</b> الدورة: الكابتن يشوف «يوم خفيف» بس من غير تفاصيل؟ اقتراحي آه، وهي تقدر تشارك أكتر لو حبت.</span>
+    </div>
+  </section>
+</main>
+</body>
+</html>
