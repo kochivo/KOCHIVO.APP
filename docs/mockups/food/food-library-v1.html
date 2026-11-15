@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>مكتبة الأكل</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700&family=Manrope:wght@500;700;800&display=swap">
+<style>
+/* Captain workspace v11: dark glass, lime is the only action color. Library grid + detail panel, then the player's meal. */
+:root {
+  --bg: #0b0c0d; --deep: #060707; --line: #262727; --soft: rgba(242,242,238,.07);
+  --glass: rgba(255,255,255,.04); --glass-line: rgba(255,255,255,.09);
+  --ink: #f4f4f1; --muted: #a6abb0; --faint: #7d8288;
+  --lime: #b6e94f; --lime-dim: rgba(182,233,79,.13); --on-lime: #101418;
+  --p: #7cc4ff; --c: #f2b544; --f: #ff8f7a;
+  --display: "Alexandria", system-ui, sans-serif; --num: "Manrope", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--display); font-size: 14px; line-height: 1.6; }
+.page { max-width: 1280px; margin: 0 auto; padding-block: 36px 80px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 44px; }
+h1, h2 { margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(26px, 4vw, 38px); font-weight: 700; line-height: 1.25; }
+h2 { font-size: 20px; font-weight: 700; }
+p { margin: 0; }
+.lede, .sub { color: var(--muted); max-width: 74ch; }
+.lede { margin-top: 10px; }
+.num { font-family: var(--num); font-weight: 800; direction: ltr; unicode-bidi: isolate; font-variant-numeric: tabular-nums; }
+.small { font-size: 12.5px; } .faint { color: var(--faint); } .muted { color: var(--muted); }
+section { display: grid; gap: 14px; }
+
+.app { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 16px; border: 1px solid var(--line); border-radius: 28px; padding: 16px; background: radial-gradient(ellipse at 90% 0%, rgba(182,233,79,.07), transparent 50%), var(--deep); }
+.lib { display: grid; gap: 12px; align-content: start; min-width: 0; }
+.bar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.search { flex: 1 1 240px; min-height: 48px; border-radius: 999px; border: 1px solid var(--glass-line); background: var(--glass); color: var(--ink); font: inherit; padding-inline: 18px; }
+.search:focus-visible, .chip:focus-visible, .card:focus-visible, .step button:focus-visible, .unit:focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }
+.count { color: var(--faint); font-size: 12.5px; }
+.chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; }
+.chip { flex: none; min-height: 40px; padding-inline: 14px; border-radius: 999px; border: 1px solid var(--glass-line); background: var(--glass); color: var(--muted); font: inherit; font-size: 13px; cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--lime-dim); border-color: rgba(182,233,79,.45); color: var(--lime); }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); grid-auto-rows: max-content; align-content: start; gap: 10px; max-height: 760px; overflow-y: auto; padding: 2px; }
+.card { display: grid; border-radius: 18px; overflow: hidden; border: 1px solid var(--glass-line); background: var(--glass); cursor: pointer; text-align: start; color: inherit; font: inherit; padding: 0; }
+.card[aria-current="true"] { border-color: var(--lime); box-shadow: 0 0 0 1px var(--lime) inset; }
+.card img { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; display: block; background: #151616; }
+.card .body { padding: 8px 10px 10px; display: grid; gap: 4px; }
+.card b { font-size: 13px; font-weight: 600; line-height: 1.35; min-height: 2.7em; }
+.macro { display: flex; height: 5px; border-radius: 99px; overflow: hidden; background: var(--soft); }
+.macro i { display: block; height: 100%; }
+.mp { background: var(--p); } .mc { background: var(--c); } .mf { background: var(--f); }
+.meta { display: flex; justify-content: space-between; align-items: center; gap: 6px; font-size: 11.5px; color: var(--faint); }
+.badge { font-size: 10.5px; padding: 1px 7px; border-radius: 99px; border: 1px solid var(--glass-line); color: var(--muted); white-space: nowrap; }
+.badge.usda { color: #bfe2ff; border-color: rgba(124,196,255,.35); }
+.badge.recipe { color: #ffe0a0; border-color: rgba(242,181,68,.35); }
+.badge.proxy { color: #ffc2b5; border-color: rgba(255,143,122,.35); }
+.empty { grid-column: 1 / -1; padding: 40px 16px; text-align: center; color: var(--muted); }
+
+.panel { border: 1px solid var(--glass-line); border-radius: 22px; background: rgba(255,255,255,.055); overflow: hidden; display: grid; align-content: start; position: sticky; top: 16px; }
+.panel img { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; display: block; }
+.pbody { padding: 14px 16px 16px; display: grid; gap: 12px; }
+.pbody h3 { margin: 0; font-size: 19px; }
+.units { display: flex; gap: 6px; flex-wrap: wrap; }
+.unit { min-height: 36px; padding-inline: 12px; border-radius: 999px; border: 1px solid var(--glass-line); background: var(--glass); color: var(--muted); font: inherit; font-size: 12.5px; cursor: pointer; }
+.unit[aria-pressed="true"] { color: var(--ink); border-color: rgba(255,255,255,.35); }
+.step { display: grid; grid-template-columns: 56px 1fr 56px; align-items: center; gap: 8px; }
+.step button { min-height: 56px; border-radius: 16px; border: 1px solid var(--glass-line); background: var(--glass); color: var(--ink); font-size: 24px; cursor: pointer; }
+.step output { text-align: center; font-family: var(--num); font-weight: 800; font-size: 30px; }
+.step output span { font-size: 13px; color: var(--muted); font-family: var(--display); font-weight: 500; }
+.tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.tile { border-radius: 14px; background: rgba(0,0,0,.35); border: 1px solid var(--soft); padding: 8px 6px; text-align: center; display: grid; gap: 0; }
+.tile .num { font-size: 19px; }
+.tile span { font-size: 11px; color: var(--faint); }
+.tile.kcal .num { color: var(--lime); } .tile.p .num { color: var(--p); } .tile.c .num { color: var(--c); } .tile.f .num { color: var(--f); }
+.src { border-radius: 14px; border: 1px solid var(--soft); padding: 10px 12px; display: grid; gap: 2px; font-size: 12px; color: var(--muted); }
+.src b { color: var(--ink); font-weight: 600; font-size: 12.5px; }
+.btn { min-height: 52px; border-radius: 999px; border: 0; background: var(--lime); color: var(--on-lime); font: inherit; font-weight: 700; font-size: 15px; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,.45); }
+
+.row3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: start; }
+.phone { border: 1px solid var(--line); border-radius: 32px; background: var(--bg); padding: 14px; display: grid; gap: 10px; max-width: 380px; width: 100%; justify-self: center; }
+.phone .top { display: flex; justify-content: space-between; color: var(--faint); font-size: 11px; font-family: var(--num); font-weight: 700; direction: ltr; padding-inline: 6px; }
+.meal { border-radius: 20px; border: 1px solid var(--glass-line); background: var(--glass); padding: 12px; display: grid; gap: 10px; }
+.meal header { display: flex; justify-content: space-between; align-items: baseline; }
+.item { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; gap: 10px; align-items: center; }
+.item img { width: 52px; height: 52px; border-radius: 14px; object-fit: cover; }
+.item .end { text-align: end; }
+.total { display: flex; justify-content: space-between; border-top: 1px solid var(--soft); padding-top: 8px; font-size: 12.5px; color: var(--muted); }
+.note { color: var(--muted); font-size: 13px; }
+.how { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.how div { border-radius: 18px; border: 1px solid var(--glass-line); background: var(--glass); padding: 14px; display: grid; gap: 6px; }
+.how b { font-size: 15px; }
+.decide { border: 1px solid rgba(242,181,68,.35); background: rgba(242,181,68,.07); border-radius: 16px; padding: 14px 16px; display: grid; gap: 6px; }
+.decide b { color: var(--c); }
+@media (max-width: 980px) { .app { grid-template-columns: 1fr; } .panel { position: static; } .row3, .how { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: no-preference) { .card { transition: transform .15s ease; } .card:hover { transform: translateY(-2px); } }
+</style>
+</head>
+<body>
+<main class="page">
+  <header>
+    <p class="small faint">KOCHIVO · مكتبة الأكل · موكاب 1</p>
+    <h1>كل أكلة بصورتها وأرقامها، ومعروف جايبين الرقم منين</h1>
+    <p class="lede">الكابتن يدوّر ويضغط على الأكلة ويختار الكمية، والسعرات والبروتين والكارب والدهون بتتحسب لوحدها. الأرقام دي حقيقية من مكتبتنا الحالية (60 أكلة)، وكل أكلة مكتوب جنبها مصدرها. جرّب: دوّر أو اضغط على أي أكلة.</p>
+  </header>
+
+  <section>
+    <div><h2>عند الكابتن</h2><p class="sub">الفلتر فوق، والأكل بالصور تحت، والتفاصيل على الجنب.</p></div>
+    <div class="app">
+      <div class="lib">
+        <div class="bar">
+          <input class="search" id="q" type="search" placeholder="دوّر: فراخ، رز، فول…" aria-label="دوّر على أكلة">
+          <span class="count" id="count"></span>
+        </div>
+        <div class="chips" id="chips" role="group" aria-label="نوع الأكل"></div>
+        <div class="grid" id="grid"></div>
+      </div>
+      <aside class="panel" id="panel" aria-live="polite"></aside>
+    </div>
+  </section>
+
+  <section>
+    <div><h2>إيه اللي بيضمن إن الرقم صح</h2></div>
+    <div class="how">
+      <div><span class="badge usda">USDA</span><b>أكل أساسي من قاعدة رسمية</b><p class="note">فراخ ورز وبيض وفاكهة وخضار: من قاعدة بيانات وزارة الزراعة الأمريكية، وكل أكلة ليها رقمها هناك.</p></div>
+      <div><span class="badge recipe">محسوب من الوصفة</span><b>الأكل المصري</b><p class="note">زي الكشري: بنحسبه من مكوناته بأوزان ثابتة، ومكتوب إن القيمة تقريبية.</p></div>
+      <div><span class="badge proxy">أقرب بديل</span><b>لما مفيش مصدر مباشر</b><p class="note">زي الطعمية: بناخد أقرب أكلة موجودة في المصدر ونكتب ده بوضوح.</p></div>
+    </div>
+    <p class="note">ولكل أكلة مكتوب هي نيّة ولا مطبوخة، لأن 100 جرام رز نيّ مش زي 100 جرام رز مطبوخ.</p>
+  </section>
+
+  <section>
+    <div><h2>عند اللاعب</h2><p class="sub">نفس الصور والأرقام في وجبته، فيعرف هياكل إيه بالظبط.</p></div>
+    <div class="row3" id="meals"></div>
+  </section>
+
+  <div class="decide">
+    <b>قرار ليك</b>
+    <span>الشكل ده تمام؟ لو تمام، الخطوة الجاية نوصّل المكتبة لحوالي 300 أكلة بنفس الطريقة، وكل أكلة جديدة ليها صورة ومصدر. وانت بتراجع قايمة الأكل المصري قبل ما ننزّلها.</span>
+  </div>
+</main>
+<script>
+const FOODS = [{"n":"أرز أبيض مطبوخ","k":130,"p":2.7,"c":28.2,"f":0.3,"img":"img/food_white_rice-v1.webp","cat":"p","eg":false,"prep":"مطبوخ، من غير زيت","fdc":"168878","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"أرز بني مطبوخ","k":123,"p":2.7,"c":25.6,"f":1,"img":"img/food_brown_rice-v1.webp","cat":"p","eg":false,"prep":"مطبوخ، من غير زيت","fdc":"169704","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"صدور دجاج مطبوخة","k":165,"p":31,"c":0,"f":3.6,"img":"img/food_chicken_breast-v1.webp","cat":"p","eg":false,"prep":"صدر مشوي، لحم بس من غير جلد","fdc":"171477","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"ورك دجاج مطبوخ","k":179,"p":24.8,"c":0,"f":8.2,"img":"img/food_chicken_thigh-v1.webp","cat":"p","eg":false,"prep":"ورك مشوي، لحم بس من غير جلد","fdc":"172388","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"لحم بقري قليل الدهن مطبوخ","k":217,"p":26.1,"c":0,"f":11.8,"img":"img/food_lean_beef-v1.webp","cat":"p","eg":false,"prep":"لحم مفروم مشوي، ٩٠٪ لحم و١٠٪ دهن","fdc":"174031","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"تونة بالماء مصفاة","k":116,"p":25.5,"c":0,"f":0.8,"img":"img/food_tuna-v1.webp","cat":"p","eg":false,"prep":"تونة لايت بالمياه، مصفّاة ومن غير ملح","fdc":"171986","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"سردين معلب","k":208,"p":24.6,"c":0,"f":11.5,"img":"img/food_sardines-v1.webp","cat":"p","eg":false,"prep":"سردين أطلسي معلب بالزيت ومصفّى، بالعظم اللي بيتاكل","fdc":"175139","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"بلطي مطبوخ","k":128,"p":26.2,"c":0,"f":2.7,"img":"img/food_tilapia-v1.webp","cat":"p","eg":false,"prep":"مطبوخ بحرارة جافة، وزن اللحم اللي بيتاكل بس","fdc":"175177","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"سلمون مطبوخ","k":206,"p":22.1,"c":0,"f":12.4,"img":"img/food_salmon-v1.webp","cat":"p","eg":false,"prep":"سلمون أطلسي مستزرع، مشوي","fdc":"175168","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"بيض مسلوق","k":155,"p":12.6,"c":1.1,"f":10.6,"img":"img/food_eggs-v1.webp","cat":"p","eg":false,"prep":"مسلوق، من غير القشر","fdc":"173424","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"بياض بيض مطبوخ","k":52,"p":10.7,"c":2.4,"f":0,"img":"img/food_egg_white-v1.webp","cat":"p","eg":false,"prep":"بياض بيض مطبوخ، من غير دهون مضافة","fdc":"2707289","ds":"FNDDS 2021–2023, October 2024","kind":"reference","nsrc":1},{"n":"فول مسلوق بدون زيت","k":110,"p":7.6,"c":19.7,"f":0.4,"img":"img/food_boiled_fava-v1.webp","cat":"eg","eg":true,"prep":"فول ناشف بعد السلق، من غير زيت","fdc":"173753","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"فول مدمس سادة","k":110,"p":7.6,"c":19.7,"f":0.4,"img":"img/food_foul-v1.webp","cat":"eg","eg":true,"prep":"فول مدمس سادة، من غير زيت","fdc":"173753","ds":"SR Legacy, April 2018","kind":"proxy","nsrc":1},{"n":"طعمية مقلية","k":333,"p":13.3,"c":31.8,"f":17.8,"img":"img/food_falafel-v1.webp","cat":"eg","eg":true,"prep":"بديل مرجعي لفلافل مقلية بيتية","fdc":"172455","ds":"SR Legacy, April 2018","kind":"proxy","nsrc":1},{"n":"عدس مطبوخ","k":116,"p":9,"c":20.1,"f":0.4,"img":"img/food_lentils-v1.webp","cat":"leg","eg":false,"prep":"مسلوق، من غير زيت","fdc":"172421","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"حمص مسلوق","k":164,"p":8.9,"c":27.4,"f":2.6,"img":"img/food_chickpeas-v1.webp","cat":"leg","eg":false,"prep":"مسلوق ومصفّى، من غير زيت","fdc":"173757","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"فاصوليا بيضاء مطبوخة","k":139,"p":9.7,"c":25.1,"f":0.4,"img":"img/food_white_beans-v1.webp","cat":"leg","eg":false,"prep":"مسلوقة ومصفّاة، من غير زيت","fdc":"175203","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"عيش بلدي","k":262,"p":9.8,"c":55.9,"f":1.7,"img":"img/food_baladi_bread-v1.webp","cat":"c","eg":true,"prep":"بديل مرجعي لعيش بيتا قمح كامل، جاهز للأكل","fdc":"174916","ds":"SR Legacy, April 2018","kind":"proxy","nsrc":1},{"n":"خبز قمح كامل","k":252,"p":12.5,"c":42.7,"f":3.5,"img":"img/food_wheat_bread-v1.webp","cat":"c","eg":false,"prep":"خبز قمح كامل جاهز، قبل التحميص","fdc":"172688","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"توست أبيض","k":266,"p":8.9,"c":49.4,"f":3.3,"img":"img/food_white_toast-v1.webp","cat":"c","eg":false,"prep":"توست أبيض قبل التحميص","fdc":"174924","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"شوفان جاف","k":389,"p":16.9,"c":66.3,"f":6.9,"img":"img/food_oats-v1.webp","cat":"c","eg":false,"prep":"شوفان جاف، قبل إضافة مياه أو لبن","fdc":"169705","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"مكرونة مسلوقة","k":158,"p":5.8,"c":30.9,"f":0.9,"img":"img/food_pasta-v1.webp","cat":"c","eg":false,"prep":"مكرونة مسلوقة ومصفّاة، من غير زيت","fdc":"169737","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"بطاطس مسلوقة","k":87,"p":1.9,"c":20.1,"f":0.1,"img":"img/food_potatoes-v1.webp","cat":"c","eg":false,"prep":"مسلوقة بقشرها، وزن اللحم من غير القشر","fdc":"170438","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"بطاطا مطبوخة","k":90,"p":2,"c":20.7,"f":0.2,"img":"img/food_sweet_potato-v1.webp","cat":"c","eg":false,"prep":"مشوية بقشرها، وزن اللحم من غير القشر","fdc":"168483","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"برغل مطبوخ","k":83,"p":3.1,"c":18.6,"f":0.2,"img":"img/food_bulgur-v1.webp","cat":"c","eg":false,"prep":"برغل بعد التسوية","fdc":"170287","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"كينوا مطبوخة","k":120,"p":4.4,"c":21.3,"f":1.9,"img":"img/food_quinoa-v1.webp","cat":"c","eg":false,"prep":"كينوا بعد التسوية","fdc":"168917","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"جبنة قريش","k":72,"p":12.4,"c":2.7,"f":1,"img":"img/food_cottage_cheese-v1.webp","cat":"d","eg":true,"prep":"بديل مرجعي لجبنة قريش قليلة الدسم، حوالي ١٪ دهن","fdc":"173417","ds":"SR Legacy, April 2018","kind":"proxy","nsrc":1},{"n":"جبنة فيتا","k":265,"p":14.2,"c":3.9,"f":21.5,"img":"img/food_feta-v1.webp","cat":"d","eg":false,"prep":"فيتا جاهزة للأكل","fdc":"173420","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"زبادي قليل الدسم","k":63,"p":5.3,"c":7,"f":1.6,"img":"img/food_yogurt-v1.webp","cat":"d","eg":false,"prep":"زبادي سادة قليل الدسم، حوالي ١٫٥٪ دهن","fdc":"170886","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"زبادي يوناني سادة","k":73,"p":10,"c":3.9,"f":1.9,"img":"img/food_greek_yogurt-v1.webp","cat":"d","eg":false,"prep":"زبادي يوناني سادة قليل الدسم، حوالي ٢٪ دهن","fdc":"170903","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"حليب كامل الدسم","k":61,"p":3.2,"c":4.8,"f":3.3,"img":"img/food_whole_milk-v1.webp","cat":"d","eg":false,"prep":"لبن كامل الدسم ٣٫٢٥٪، الوزن بالجرام","fdc":"171265","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"حليب خالي الدسم","k":34,"p":3.4,"c":5,"f":0.1,"img":"img/food_skim_milk-v1.webp","cat":"d","eg":false,"prep":"لبن خالي الدسم، الوزن بالجرام","fdc":"171269","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"لبن رايب سادة","k":40,"p":3.3,"c":4.8,"f":1.1,"img":"img/food_laban-v1.webp","cat":"d","eg":true,"prep":"بديل مرجعي للبن رايب قليل الدسم، الوزن بالجرام","fdc":"170874","ds":"SR Legacy, April 2018","kind":"proxy","nsrc":1},{"n":"جبنة شيدر","k":403,"p":22.9,"c":3.4,"f":33.3,"img":"img/food_cheddar-v1.webp","cat":"d","eg":false,"prep":"شيدر عادية، مش قليلة الدسم","fdc":"173414","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"زبدة فول سوداني","k":598,"p":22.2,"c":22.3,"f":51.4,"img":"img/food_peanut_butter-v1.webp","cat":"f","eg":false,"prep":"زبدة فول سوداني ناعمة، من غير ملح","fdc":"172470","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"فول سوداني","k":567,"p":25.8,"c":16.1,"f":49.2,"img":"img/food_peanuts-v1.webp","cat":"f","eg":false,"prep":"سوداني نيّ، من غير القشر","fdc":"172430","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"لوز","k":579,"p":21.2,"c":21.6,"f":49.9,"img":"img/food_almonds-v1.webp","cat":"f","eg":false,"prep":"لوز سادة، مش محمّص","fdc":"170567","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"عين جمل","k":654,"p":15.2,"c":13.7,"f":65.2,"img":"img/food_walnuts-v1.webp","cat":"f","eg":false,"prep":"عين جمل من غير القشر","fdc":"170187","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"طحينة","k":595,"p":17,"c":21.2,"f":53.8,"img":"img/food_tahini-v1.webp","cat":"f","eg":false,"prep":"معجون سمسم محمّص، مش سلطة طحينة مخففة","fdc":"170189","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"زيت زيتون","k":884,"p":0,"c":0,"f":100,"img":"img/food_olive_oil-v1.webp","cat":"f","eg":false,"prep":"زيت زيتون، الوزن بالجرام","fdc":"171413","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"زبدة","k":717,"p":0.9,"c":0.1,"f":81.1,"img":"img/food_butter-v1.webp","cat":"f","eg":false,"prep":"زبدة من غير ملح","fdc":"173430","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"موز","k":89,"p":1.1,"c":22.8,"f":0.3,"img":"img/food_banana-v1.webp","cat":"fr","eg":false,"prep":"فاكهة نيّة، من غير القشر","fdc":"173944","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"تفاح","k":52,"p":0.3,"c":13.8,"f":0.2,"img":"img/food_apple-v1.webp","cat":"fr","eg":false,"prep":"تفاح نيّ بالقشر، من غير القلب والبذور","fdc":"171688","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"برتقال","k":47,"p":0.9,"c":11.8,"f":0.1,"img":"img/food_orange-v1.webp","cat":"fr","eg":false,"prep":"برتقال نيّ، من غير القشر","fdc":"169097","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"بلح","k":277,"p":1.8,"c":75,"f":0.2,"img":"img/food_dates-v1.webp","cat":"fr","eg":false,"prep":"تمر مجدول من غير النوى، مش البلح الطري","fdc":"168191","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"فراولة","k":32,"p":0.7,"c":7.7,"f":0.3,"img":"img/food_strawberries-v1.webp","cat":"fr","eg":false,"prep":"نيّة، من غير الورق","fdc":"167762","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"مانجو","k":60,"p":0.8,"c":15,"f":0.4,"img":"img/food_mango-v1.webp","cat":"fr","eg":false,"prep":"اللحم النيّ، من غير القشر والنواة","fdc":"169910","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"بطيخ","k":30,"p":0.6,"c":7.6,"f":0.2,"img":"img/food_watermelon-v1.webp","cat":"fr","eg":false,"prep":"اللحم النيّ، من غير القشر","fdc":"167765","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"عنب","k":69,"p":0.7,"c":18.1,"f":0.2,"img":"img/food_grapes-v1.webp","cat":"fr","eg":false,"prep":"عنب أحمر أو أخضر نيّ، من غير العناقيد","fdc":"174683","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"خيار","k":15,"p":0.7,"c":3.6,"f":0.1,"img":"img/food_cucumber-v1.webp","cat":"v","eg":false,"prep":"خيار نيّ بالقشر","fdc":"168409","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"طماطم","k":18,"p":0.9,"c":3.9,"f":0.2,"img":"img/food_tomato-v1.webp","cat":"v","eg":false,"prep":"طماطم حمرا نيّة","fdc":"170457","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"جزر","k":41,"p":0.9,"c":9.6,"f":0.2,"img":"img/food_carrot-v1.webp","cat":"v","eg":false,"prep":"جزر نيّ، الجزء اللي بيتاكل","fdc":"170393","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"بروكلي مطبوخ","k":35,"p":2.4,"c":7.2,"f":0.4,"img":"img/food_broccoli-v1.webp","cat":"v","eg":false,"prep":"مسلوق ومصفّى، من غير زيت","fdc":"169967","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"سبانخ مطبوخة","k":23,"p":3,"c":3.8,"f":0.3,"img":"img/food_spinach-v1.webp","cat":"v","eg":false,"prep":"مسلوقة ومصفّاة، من غير زيت","fdc":"168463","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"كوسة مطبوخة","k":15,"p":1.1,"c":2.7,"f":0.4,"img":"img/food_zucchini-v1.webp","cat":"v","eg":false,"prep":"مسلوقة ومصفّاة بالقشر، من غير زيت","fdc":"169292","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"فاصوليا خضراء مطبوخة","k":35,"p":1.9,"c":7.9,"f":0.3,"img":"img/food_green_beans-v1.webp","cat":"v","eg":false,"prep":"مسلوقة ومصفّاة، من غير زيت","fdc":"169141","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"ملوخية سادة بدون تقلية","k":14.8,"p":1.5,"c":2.9,"f":0.1,"img":"img/food_molokhia-v1.webp","cat":"v","eg":true,"prep":"وصفة مثال: ٤٠ جم ورق ملوخية مطبوخ ومصفّى + ٦٠ جم مياه لكل ١٠٠ جم","fdc":"168420","ds":"SR Legacy, April 2018","kind":"recipe","nsrc":1},{"n":"عسل","k":304,"p":0.3,"c":82.4,"f":0,"img":"img/food_honey-v1.webp","cat":"fr","eg":false,"prep":"عسل سادة","fdc":"169640","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"سكر","k":387,"p":0,"c":100,"f":0,"img":"img/food_sugar-v1.webp","cat":"fr","eg":false,"prep":"سكر أبيض حبيبات","fdc":"169655","ds":"SR Legacy, April 2018","kind":"reference","nsrc":1},{"n":"كشري (قيمة تقريبية)","k":138.9,"p":5.1,"c":23.6,"f":2.7,"img":"img/food_koshari-v1.webp","cat":"eg","eg":true,"prep":"وصفة مثال محسوبة؛ وزن الناتج النهائي بعد التسوية ١٠٠٠ جم","fdc":"168878","ds":"SR Legacy, April 2018","kind":"recipe","nsrc":7}];
+const CATS = [['all', 'الكل'], ['p', 'بروتين'], ['c', 'نشويات'], ['leg', 'بقوليات'], ['d', 'ألبان'], ['f', 'دهون ومكسرات'], ['fr', 'فاكهة'], ['v', 'خضار'], ['eg', 'مصري']];
+const UNITS = { default: [['g', 'جرام', 1], ['h', 'حفنة', 30]], egg: [['g', 'جرام', 1], ['pc', 'بيضة', 50]], bread: [['g', 'جرام', 1], ['pc', 'رغيف', 90]], cup: [['g', 'جرام', 1], ['cup', 'كوب', 158]], milk: [['g', 'جرام', 1], ['cup', 'كوب', 245]], spoon: [['g', 'جرام', 1], ['tbsp', 'معلقة كبيرة', 15]], fruit: [['g', 'جرام', 1], ['pc', 'حبة', 120]] };
+const unitsFor = (f) => /بيض مسلوق/.test(f.n) ? UNITS.egg : /عيش|خبز|توست/.test(f.n) ? UNITS.bread : /أرز|مكرونة|برغل|كينوا|عدس|فول|حمص|فاصوليا بيضاء/.test(f.n) ? UNITS.cup : /حليب|لبن|زبادي/.test(f.n) ? UNITS.milk : /زيت|زبدة|طحينة|عسل|سكر/.test(f.n) ? UNITS.spoon : /موز|تفاح|برتقال|مانجو/.test(f.n) ? UNITS.fruit : UNITS.default;
+const badge = (f) => f.kind === 'recipe' ? '<span class="badge recipe">محسوب من الوصفة</span>' : f.kind === 'proxy' ? '<span class="badge proxy">أقرب بديل</span>' : '<span class="badge usda">USDA</span>';
+const r1 = (x) => Math.round(x * 10) / 10;
+let cat = 'all', sel = 2, grams = 150, unit = 'g';
+
+function bar(f) { const t = f.p * 4 + f.c * 4 + f.f * 9 || 1; return `<div class="macro" aria-hidden="true"><i class="mp" style="width:${f.p * 400 / t}%"></i><i class="mc" style="width:${f.c * 400 / t}%"></i><i class="mf" style="width:${f.f * 900 / t}%"></i></div>`; }
+
+function renderGrid() {
+  const q = document.getElementById('q').value.trim();
+  const list = FOODS.map((f, i) => [f, i]).filter(([f]) => (cat === 'all' || f.cat === cat || (cat === 'eg' && f.eg)) && (!q || f.n.includes(q)));
+  document.getElementById('count').textContent = `${list.length} أكلة`;
+  document.getElementById('grid').innerHTML = list.length ? list.map(([f, i]) => `<button class="card" data-i="${i}" aria-current="${i === sel}"><img src="${f.img}" alt="" width="600" height="450"><span class="body"><b>${f.n}</b>${bar(f)}<span class="meta"><span style="white-space:nowrap"><span class="num">${Math.round(f.k)}</span> سعر/100جم</span>${badge(f)}</span></span></button>`).join('')
+    : `<p class="empty">مفيش أكلة بالاسم ده. جرّب اسم تاني، أو ضيفها بنفسك من «أكلة جديدة».</p>`;
+}
+
+function renderPanel() {
+  const f = FOODS[sel], us = unitsFor(f), u = us.find(x => x[0] === unit) || us[0], g = unit === 'g' ? grams : grams * u[2], m = g / 100;
+  const qty = unit === 'g' ? `${grams} <span>جرام</span>` : `${grams} <span>${u[1]} · ${Math.round(g)} جم</span>`;
+  const src = f.kind === 'recipe' ? `وصفة محسوبة من <span class="num">${f.nsrc}</span> مكونات في USDA` : f.kind === 'proxy' ? `أقرب بديل في USDA، رقم <span class="num">${f.fdc}</span>` : `USDA FoodData Central، رقم <span class="num">${f.fdc}</span>`;
+  document.getElementById('panel').innerHTML = `<img src="${f.img}" alt="${f.n}" width="600" height="450">
+    <div class="pbody"><div><h3>${f.n}</h3><span class="small faint">${f.prep}</span></div>
+      <div class="units" role="group" aria-label="الوحدة">${us.map(x => `<button class="unit" data-u="${x[0]}" aria-pressed="${x[0] === u[0]}">${x[1]}</button>`).join('')}</div>
+      <div class="step"><button data-d="1" aria-label="زوّد">+</button><output>${qty}</output><button data-d="-1" aria-label="قلّل">−</button></div>
+      <div class="tiles"><div class="tile kcal"><b class="num">${Math.round(f.k * m)}</b><span>سعرات</span></div><div class="tile p"><b class="num">${r1(f.p * m)}</b><span>بروتين جم</span></div><div class="tile c"><b class="num">${r1(f.c * m)}</b><span>كارب جم</span></div><div class="tile f"><b class="num">${r1(f.f * m)}</b><span>دهون جم</span></div></div>
+      <div class="src"><b>المصدر</b><span>${src}</span><span class="faint">${f.ds}</span></div>
+      <button class="btn">ضيف للوجبة</button></div>`;
+}
+
+document.getElementById('chips').innerHTML = CATS.map(([k, l]) => `<button class="chip" data-c="${k}" aria-pressed="${k === cat}">${l}</button>`).join('');
+document.getElementById('chips').addEventListener('click', e => { const b = e.target.closest('.chip'); if (!b) return; cat = b.dataset.c; document.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', c === b)); renderGrid(); });
+document.getElementById('q').addEventListener('input', renderGrid);
+document.getElementById('grid').addEventListener('click', e => { const c = e.target.closest('.card'); if (!c) return; sel = +c.dataset.i; unit = 'g'; grams = 100; renderGrid(); renderPanel(); });
+document.getElementById('panel').addEventListener('click', e => {
+  const u = e.target.closest('.unit'), d = e.target.closest('[data-d]');
+  if (u) { unit = u.dataset.u; grams = unit === 'g' ? 100 : 1; renderPanel(); }
+  if (d) { grams = Math.max(unit === 'g' ? 10 : 0.5, grams + (+d.dataset.d) * (unit === 'g' ? 10 : 0.5)); renderPanel(); }
+});
+renderGrid(); renderPanel();
+
+const byName = (s) => FOODS.find(f => f.n.startsWith(s));
+const MEALS = [
+  ['الفطار', '08:30', [['بيض مسلوق', 100, '2 بيضة'], ['عيش بلدي', 90, 'رغيف'], ['جبنة قريش', 100, '100 جم'], ['خيار', 100, 'حبة كبيرة']]],
+  ['الغدا', '15:00', [['صدور دجاج', 180, '180 جم'], ['أرز أبيض', 200, '200 جم'], ['بروكلي', 100, '100 جم'], ['زيت زيتون', 10, 'معلقة صغيرة']]],
+  ['بعد التمرين', '19:30', [['زبادي يوناني', 170, 'علبة'], ['موز', 120, 'حبة'], ['شوفان', 40, '4 معالق']]],
+];
+document.getElementById('meals').innerHTML = MEALS.map(([title, time, items]) => {
+  let tk = 0, tp = 0;
+  const rows = items.map(([n, g, label]) => { const f = byName(n), m = g / 100; tk += f.k * m; tp += f.p * m; return `<div class="item"><img src="${f.img}" alt=""><div><b style="font-size:13.5px;font-weight:600">${f.n}</b><div class="small faint">${label}</div></div><div class="end"><span class="num">${Math.round(f.k * m)}</span><div class="small faint">${r1(f.p * m)} بروتين</div></div></div>`; }).join('');
+  return `<div class="phone"><div class="top"><span>${time}</span><span>KOCHIVO</span></div><div class="meal"><header><b>${title}</b><span class="small faint">${items.length} أكلات</span></header>${rows}<div class="total"><span>الإجمالي</span><span><span class="num" style="color:var(--lime)">${Math.round(tk)}</span> سعر · <span class="num" style="color:var(--p)">${Math.round(tp)}</span> جم بروتين</span></div></div></div>`;
+}).join('');
+</script>
+</body>
+</html>
