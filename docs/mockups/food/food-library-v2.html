@@ -1,0 +1,638 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>مكتبة الأكل</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700&family=Manrope:wght@500;700;800&display=swap">
+<style>
+/* Captain workspace v11 shell: side nav, then one workspace with tabs. Dark glass, lime is the only action color. */
+:root {
+  --bg: #0b0c0d; --deep: #060707; --panel: #111213; --line: #262727; --soft: rgba(242,242,238,.07);
+  --glass: rgba(255,255,255,.04); --glass-2: rgba(255,255,255,.065); --glass-line: rgba(255,255,255,.09);
+  --ink: #f4f4f1; --muted: #a6abb0; --faint: #7d8288;
+  --lime: #b6e94f; --lime-dim: rgba(182,233,79,.13); --on-lime: #101418;
+  --p: #7cc4ff; --c: #f2b544; --f: #ff8f7a; --demo: #c9a3ff; --ok: #8fe3b0;
+  --display: "Alexandria", system-ui, sans-serif; --num: "Manrope", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--display); font-size: 14px; line-height: 1.6; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }
+.num { font-family: var(--num); font-weight: 800; font-variant-numeric: tabular-nums; direction: ltr; unicode-bidi: isolate; }
+.small { font-size: 12.5px; } .faint { color: var(--faint); } .muted { color: var(--muted); }
+h1, h2, h3 { margin: 0; text-wrap: balance; } p { margin: 0; }
+
+.shell { display: grid; grid-template-columns: 228px minmax(0, 1fr); min-height: 100vh; }
+.side { border-inline-end: 1px solid var(--line); background: var(--deep); padding: 20px 14px; display: grid; align-content: start; gap: 4px; position: sticky; top: 0; height: 100vh; }
+.logo { font-family: var(--num); font-weight: 800; letter-spacing: 1px; padding: 4px 12px 18px; }
+.logo i { color: var(--lime); font-style: normal; }
+.nav { display: flex; align-items: center; gap: 10px; min-height: 44px; padding-inline: 12px; border-radius: 12px; color: var(--muted); text-decoration: none; font-size: 13.5px; }
+.nav.on { background: var(--lime-dim); color: var(--lime); }
+.nav svg { width: 18px; height: 18px; flex: none; }
+.main { padding-block: 22px 80px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 18px; align-content: start; min-width: 0; max-width: 1240px; width: 100%; margin-inline: auto; }
+.top { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.top h1 { font-size: clamp(22px, 3vw, 30px); }
+.demo-note { display: inline-flex; gap: 8px; align-items: center; border: 1px dashed rgba(201,163,255,.45); color: var(--demo); border-radius: 999px; padding: 4px 12px; font-size: 12px; }
+.lang { display: flex; border: 1px solid var(--glass-line); border-radius: 999px; padding: 3px; }
+.lang button { min-height: 36px; padding-inline: 14px; border-radius: 999px; border: 0; background: none; color: var(--muted); }
+.lang button[aria-pressed="true"] { background: var(--glass-2); color: var(--ink); }
+
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); overflow-x: auto; }
+.tab { flex: none; min-height: 46px; padding-inline: 16px; border: 0; background: none; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--lime); }
+.view[hidden] { display: none !important; }
+.view { display: grid; gap: 16px; min-width: 0; }
+.view > *, .two > * { min-width: 0; }
+
+.stats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)) minmax(0, 1.6fr); gap: 10px; }
+.stat { border: 1px solid var(--glass-line); background: var(--glass); border-radius: 18px; padding: 12px 14px; display: grid; gap: 2px; }
+.stat .num { font-size: 24px; }
+.stat span { color: var(--faint); font-size: 12px; }
+.recent { display: flex; flex-wrap: wrap; gap: 6px; }
+.recent button { border: 1px solid var(--glass-line); background: var(--glass-2); border-radius: 999px; padding: 2px 10px; font-size: 12px; color: var(--muted); min-height: 30px; }
+
+.searchwrap { display: grid; gap: 8px; }
+.search { display: flex; align-items: center; gap: 10px; min-height: 56px; border-radius: 18px; border: 1px solid var(--glass-line); background: var(--glass-2); padding-inline: 16px; }
+.search svg { width: 20px; height: 20px; color: var(--faint); flex: none; }
+.search input { flex: 1; min-width: 0; border: 0; background: none; outline: none; font-size: 15px; min-height: 52px; }
+.examples { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.examples button { border: 0; background: none; color: var(--lime); font-size: 12.5px; padding: 4px 6px; min-height: 32px; text-decoration: underline dotted; text-underline-offset: 4px; }
+
+.filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+.chips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; max-width: 100%; }
+.chip { flex: none; min-height: 38px; padding-inline: 13px; border-radius: 999px; border: 1px solid var(--glass-line); background: var(--glass); color: var(--muted); font-size: 12.5px; }
+.chip[aria-pressed="true"] { background: var(--lime-dim); border-color: rgba(182,233,79,.45); color: var(--lime); }
+.chip.soft[aria-pressed="true"] { background: var(--glass-2); border-color: rgba(255,255,255,.35); color: var(--ink); }
+.seg { display: flex; border: 1px solid var(--glass-line); border-radius: 12px; overflow: hidden; }
+.seg button { min-height: 38px; padding-inline: 12px; border: 0; background: none; color: var(--muted); font-size: 12.5px; }
+.seg button[aria-pressed="true"] { background: var(--glass-2); color: var(--ink); }
+
+.tablewrap { border: 1px solid var(--glass-line); border-radius: 20px; overflow-x: auto; background: var(--glass); }
+table { width: 100%; border-collapse: collapse; min-width: 980px; }
+th, td { padding: 10px 12px; text-align: start; border-bottom: 1px solid var(--soft); white-space: nowrap; }
+th { font-size: 12px; color: var(--faint); font-weight: 500; position: sticky; top: 0; background: var(--panel); }
+tbody tr { cursor: pointer; }
+tbody tr:hover { background: var(--glass-2); }
+.fcell { display: flex; align-items: center; gap: 10px; }
+.thumb { width: 44px; height: 44px; border-radius: 12px; object-fit: cover; flex: none; background: #1a1b1c; display: grid; place-items: center; font-weight: 700; color: var(--muted); }
+.thumb.ph { background: linear-gradient(135deg, #24262a, #141516); border: 1px solid var(--glass-line); font-size: 15px; }
+.names b { display: block; font-weight: 600; font-size: 13.5px; }
+.names span { font-size: 11.5px; color: var(--faint); }
+td .num { font-size: 13.5px; }
+.cp { color: var(--p); } .cc { color: var(--c); } .cf { color: var(--f); } .ck { color: var(--lime); }
+.badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 1px 8px; border-radius: 99px; border: 1px solid var(--glass-line); color: var(--muted); white-space: nowrap; }
+.b-verified { color: var(--ok); border-color: rgba(143,227,176,.35); }
+.b-recipe { color: #ffe0a0; border-color: rgba(242,181,68,.35); }
+.b-proxy { color: #ffc2b5; border-color: rgba(255,143,122,.35); }
+.b-demo { color: var(--demo); border-color: rgba(201,163,255,.4); border-style: dashed; }
+.b-custom { color: var(--p); border-color: rgba(124,196,255,.35); }
+.acts { display: flex; gap: 4px; }
+.icon-btn { width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--glass-line); background: var(--glass); display: grid; place-items: center; color: var(--muted); }
+.icon-btn svg { width: 17px; height: 17px; }
+.icon-btn.fav[aria-pressed="true"] { color: var(--c); border-color: rgba(242,181,68,.4); }
+.icon-btn.add { color: var(--lime); }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); grid-auto-rows: max-content; gap: 10px; }
+.card { border: 1px solid var(--glass-line); background: var(--glass); border-radius: 18px; overflow: hidden; display: grid; text-align: start; padding: 0; }
+.card .img { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; display: block; }
+.card .img.ph { display: grid; place-items: center; font-size: 30px; font-weight: 700; color: var(--faint); background: linear-gradient(135deg, #222428, #121314); }
+.card .cb { padding: 8px 10px 10px; display: grid; gap: 4px; }
+.card b { font-size: 13px; font-weight: 600; }
+.card .row { display: flex; justify-content: space-between; align-items: center; gap: 6px; font-size: 11.5px; color: var(--faint); }
+
+.skel { border-radius: 14px; height: 52px; background: linear-gradient(90deg, var(--glass) 0, var(--glass-2) 50%, var(--glass) 100%); background-size: 200% 100%; animation: sk 1s linear infinite; }
+@keyframes sk { to { background-position: -200% 0; } }
+.empty { border: 1px dashed var(--glass-line); border-radius: 20px; padding: 36px 16px; text-align: center; display: grid; gap: 10px; justify-items: center; color: var(--muted); }
+.empty b { color: var(--ink); font-size: 16px; }
+
+.btn { min-height: 48px; padding-inline: 20px; border-radius: 999px; border: 0; background: var(--lime); color: var(--on-lime); font-weight: 700; box-shadow: inset 0 1px 0 rgba(255,255,255,.45); }
+.btn.ghost { background: var(--glass-2); color: var(--ink); border: 1px solid var(--glass-line); box-shadow: none; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+
+.drawer-bg { position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 20; }
+.drawer { position: fixed; inset-block: 0; inset-inline-end: 0; width: min(440px, 100%); background: var(--panel); border-inline-start: 1px solid var(--line); z-index: 21; overflow-y: auto; display: grid; align-content: start; padding-bottom: env(safe-area-inset-bottom, 0px); }
+.drawer .hero { position: relative; }
+.drawer .hero img, .drawer .hero .ph { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: grid; place-items: center; font-size: 46px; color: var(--faint); background: linear-gradient(135deg, #222428, #121314); }
+.drawer .close { position: absolute; top: calc(12px + env(safe-area-inset-top, 0px)); inset-inline-start: 12px; background: rgba(0,0,0,.6); }
+.dbody { padding: 16px; display: grid; gap: 14px; }
+.dbody h2 { font-size: 21px; }
+.calc { border: 1px solid var(--glass-line); border-radius: 18px; padding: 12px; display: grid; gap: 10px; background: var(--glass); }
+.qty { display: grid; grid-template-columns: 52px 1fr 52px; gap: 8px; align-items: center; }
+.qty button { min-height: 52px; border-radius: 14px; border: 1px solid var(--glass-line); background: var(--glass-2); font-size: 22px; }
+.qty label { display: flex; align-items: baseline; justify-content: center; gap: 6px; }
+.qty input { width: 100px; text-align: center; background: none; border: 0; border-bottom: 1px solid var(--glass-line); font-family: var(--num); font-weight: 800; font-size: 30px; }
+.tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.tile { border-radius: 14px; background: rgba(0,0,0,.35); border: 1px solid var(--soft); padding: 8px 4px; text-align: center; display: grid; }
+.tile .num { font-size: 18px; }
+.tile span { font-size: 11px; color: var(--faint); }
+.facts { display: grid; grid-template-columns: 1fr auto; border: 1px solid var(--soft); border-radius: 14px; overflow: hidden; }
+.facts div { padding: 7px 12px; border-bottom: 1px solid var(--soft); font-size: 13px; }
+.facts div:nth-child(odd) { color: var(--muted); }
+.facts div:nth-last-child(-n+2) { border-bottom: 0; }
+.src { border-radius: 14px; border: 1px solid var(--soft); padding: 10px 12px; display: grid; gap: 2px; font-size: 12.5px; color: var(--muted); }
+.src b { color: var(--ink); font-weight: 600; }
+
+.two { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.box { border: 1px solid var(--glass-line); background: var(--glass); border-radius: 22px; padding: 16px; display: grid; gap: 12px; }
+.box h3 { font-size: 16px; }
+.form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.field { display: grid; gap: 4px; font-size: 12.5px; color: var(--muted); }
+.field.full { grid-column: 1 / -1; }
+.field input, .field select, .field textarea { min-height: 46px; border-radius: 12px; border: 1px solid var(--glass-line); background: var(--deep); padding-inline: 12px; font-size: 14px; color: var(--ink); }
+.field textarea { min-height: 70px; padding-block: 10px; resize: vertical; }
+.field .err { color: var(--f); font-size: 11.5px; min-height: 1em; }
+.hint { font-size: 12px; color: var(--faint); }
+.ing { display: grid; grid-template-columns: 40px minmax(0, 1fr) 96px 40px; gap: 8px; align-items: center; }
+.ing input { min-height: 40px; border-radius: 10px; border: 1px solid var(--glass-line); background: var(--deep); text-align: center; font-family: var(--num); font-weight: 700; width: 100%; }
+.ing .thumb { width: 40px; height: 40px; border-radius: 10px; }
+.total { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; border-top: 1px solid var(--soft); padding-top: 10px; font-size: 13px; }
+.pie { display: flex; height: 8px; border-radius: 99px; overflow: hidden; background: var(--soft); }
+.pie i { height: 100%; }
+.toast { position: fixed; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); inset-inline-start: 50%; transform: translateX(50%); background: var(--lime); color: var(--on-lime); font-weight: 700; padding: 10px 18px; border-radius: 999px; z-index: 30; box-shadow: 0 10px 30px rgba(0,0,0,.4); }
+[dir="ltr"] .toast { transform: translateX(-50%); }
+.mealcol { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.meal { border: 1px solid var(--glass-line); border-radius: 18px; padding: 10px; display: grid; gap: 8px; align-content: start; background: var(--deep); }
+.meal.on { border-color: rgba(182,233,79,.5); }
+.meal header { display: flex; justify-content: space-between; font-size: 13px; }
+.mi { display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; gap: 8px; align-items: center; font-size: 12.5px; }
+.mi .thumb { width: 32px; height: 32px; border-radius: 8px; font-size: 12px; }
+.mi.new { animation: pop .5s ease; }
+@keyframes pop { from { background: var(--lime-dim); } }
+.ko { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+.prompts { display: flex; flex-wrap: wrap; gap: 8px; }
+.prompts button { border: 1px solid var(--glass-line); background: var(--glass-2); border-radius: 14px; padding: 10px 14px; text-align: start; min-height: 48px; }
+.bubble { border-radius: 18px; padding: 12px 14px; max-width: 760px; }
+.bubble.me { background: var(--glass-2); justify-self: end; }
+.bubble.ai { background: var(--glass); border: 1px solid var(--glass-line); display: grid; gap: 10px; }
+.sugg { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
+.sugg > div { border: 1px solid var(--soft); border-radius: 14px; padding: 8px; display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 8px; align-items: center; }
+.typing { display: inline-flex; gap: 4px; } .typing i { width: 6px; height: 6px; border-radius: 50%; background: var(--faint); animation: bl 1s infinite; } .typing i:nth-child(2) { animation-delay: .15s; } .typing i:nth-child(3) { animation-delay: .3s; }
+@keyframes bl { 50% { opacity: .2; } }
+@media (prefers-reduced-motion: reduce) { .skel, .typing i, .mi.new { animation: none; } }
+@media (max-width: 1100px) { .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); } .stats .wide { grid-column: 1 / -1; } .mealcol { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 860px) { .shell { grid-template-columns: 1fr; } .side { display: none; } .two { grid-template-columns: 1fr; } }
+@media (max-width: 520px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } .form { grid-template-columns: 1fr; } .mealcol { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav class="side" aria-label="KOCHIVO">
+    <div class="logo">KOCHIV<i>O</i></div>
+    <a class="nav" href="#" data-t="navHome"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-7 9 7v9H3z"/></svg><span></span></a>
+    <a class="nav" href="#" data-t="navPlayers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-6 7-6s7 2 7 6M17 11a3 3 0 1 0 0-6M22 21c0-3-2-5-5-5"/></svg><span></span></a>
+    <a class="nav" href="#" data-t="navPrograms"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6v12M18 6v12M3 9v6M21 9v6M6 12h12"/></svg><span></span></a>
+    <a class="nav on" href="#" data-t="navNutrition" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21c5 0 8-4 8-9H4c0 5 3 9 8 9zM8 8c0-3 2-5 4-5M12 3c2 0 4 2 4 5"/></svg><span></span></a>
+    <a class="nav" href="#" data-t="navInbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16v11H8l-4 4z"/></svg><span></span></a>
+  </nav>
+
+  <main class="main">
+    <div class="top">
+      <div style="display:grid;gap:6px">
+        <span class="demo-note" data-t="demoBanner"></span>
+        <h1 data-t="title"></h1>
+        <p class="muted small" data-t="subtitle"></p>
+      </div>
+      <div class="lang" role="group" aria-label="Language"><button data-lang="ar" aria-pressed="true">عربي</button><button data-lang="en" aria-pressed="false">English</button></div>
+    </div>
+
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" data-view="lib" aria-selected="true" data-t="tabLib"></button>
+      <button class="tab" role="tab" data-view="custom" aria-selected="false" data-t="tabCustom"></button>
+      <button class="tab" role="tab" data-view="recipe" aria-selected="false" data-t="tabRecipe"></button>
+      <button class="tab" role="tab" data-view="plan" aria-selected="false" data-t="tabPlan"></button>
+      <button class="tab" role="tab" data-view="ko" aria-selected="false" data-t="tabKo"></button>
+    </div>
+
+    <section class="view" id="v-lib">
+      <div class="stats" id="stats"></div>
+      <div class="searchwrap">
+        <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" type="search" autocomplete="off"></div>
+        <div class="examples" id="examples"></div>
+      </div>
+      <div class="filters">
+        <div class="chips" id="regions" role="group"></div>
+      </div>
+      <div class="filters">
+        <div class="chips" id="nutri" role="group"></div>
+        <div class="seg" role="group" id="layout"><button data-l="table" aria-pressed="true" data-t="table"></button><button data-l="cards" aria-pressed="false" data-t="cards"></button></div>
+      </div>
+      <div class="small faint" id="count"></div>
+      <div id="results"></div>
+    </section>
+
+    <section class="view" id="v-custom" hidden>
+      <div class="two">
+        <form class="box" id="customForm" novalidate>
+          <h3 data-t="customTitle"></h3>
+          <div class="form">
+            <label class="field"><span data-t="fNameEn"></span><input id="cEn" value="Protein pancake"></label>
+            <label class="field"><span data-t="fNameAr"></span><input id="cAr" value="بان كيك بروتين"></label>
+            <label class="field"><span data-t="fCategory"></span><select id="cRegion"></select></label>
+            <label class="field"><span data-t="fServing"></span><input id="cServ" type="number" min="1" value="120" inputmode="decimal"></label>
+            <label class="field"><span data-t="fKcal"></span><input id="cK" type="number" min="0" value="210" inputmode="decimal"><span class="err" id="eK"></span></label>
+            <label class="field"><span data-t="fProtein"></span><input id="cP" type="number" min="0" step="0.1" value="18" inputmode="decimal"></label>
+            <label class="field"><span data-t="fCarbs"></span><input id="cC" type="number" min="0" step="0.1" value="22" inputmode="decimal"></label>
+            <label class="field"><span data-t="fFat"></span><input id="cF" type="number" min="0" step="0.1" value="5" inputmode="decimal"></label>
+            <label class="field"><span data-t="fFiber"></span><input id="cFi" type="number" min="0" step="0.1" value="3" inputmode="decimal"></label>
+            <label class="field full"><span data-t="fNotes"></span><textarea id="cN"></textarea></label>
+          </div>
+          <p class="hint" data-t="customHint"></p>
+          <button class="btn" id="cSave" type="submit" data-t="saveCustom"></button>
+        </form>
+        <div class="box"><h3 data-t="preview"></h3><div id="cPreview"></div><div id="cList"></div></div>
+      </div>
+    </section>
+
+    <section class="view" id="v-recipe" hidden>
+      <div class="two">
+        <div class="box">
+          <h3 data-t="recipeTitle"></h3>
+          <label class="field"><span data-t="recipeName"></span><input id="rName" value="كشري"></label>
+          <div class="hint" data-t="ingredients"></div>
+          <div id="ings" style="display:grid;gap:8px"></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap"><select id="rAddSel" class="field" style="flex:1;min-height:44px;border-radius:12px;border:1px solid var(--glass-line);background:var(--deep);padding-inline:10px;min-width:0"></select><button class="btn ghost" id="rAdd" type="button" data-t="addIngredient"></button></div>
+          <label class="field"><span data-t="cookedWeight"></span><input id="rCooked" type="number" min="1" value="1000" inputmode="decimal"><span class="hint" data-t="cookedHint"></span></label>
+        </div>
+        <div class="box" id="rOut"></div>
+      </div>
+    </section>
+
+    <section class="view" id="v-plan" hidden>
+      <div class="two">
+        <div class="box">
+          <h3 data-t="planTitle"></h3>
+          <div class="form">
+            <label class="field"><span data-t="client"></span><select id="pClient"><option>منى عادل</option><option>كريم سمير</option><option>Omar Khaled</option></select></label>
+            <label class="field"><span data-t="meal"></span><select id="pMeal"></select></label>
+            <label class="field full"><span data-t="food"></span><select id="pFood"></select></label>
+            <label class="field"><span data-t="quantity"></span><input id="pQty" type="number" min="1" value="150" inputmode="decimal"></label>
+            <div class="field"><span data-t="thisItem"></span><div id="pItem" class="num" style="min-height:46px;display:flex;align-items:center;gap:10px;font-size:15px"></div></div>
+          </div>
+          <button class="btn" id="pAdd" type="button" data-t="addToPlan"></button>
+          <p class="hint" data-t="planHint"></p>
+        </div>
+        <div class="box"><h3 id="pHead"></h3><div id="pTotals"></div></div>
+      </div>
+      <div class="mealcol" id="pMeals"></div>
+    </section>
+
+    <section class="view" id="v-ko" hidden>
+      <div class="box ko">
+        <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center"><h3 data-t="koTitle"></h3><span class="badge b-demo" data-t="koSim"></span></div>
+        <div class="prompts" id="koPrompts"></div>
+        <div id="koChat" style="display:grid;gap:10px"></div>
+      </div>
+    </section>
+  </main>
+</div>
+<div id="drawerRoot"></div>
+<div id="toastRoot" aria-live="polite"></div>
+
+<script>
+const REAL = [{"id":"s0","ar":"أرز أبيض مطبوخ","en":"White rice, cooked","k":130,"p":2.7,"c":28.2,"f":0.3,"img":"img/food_white_rice-v1.webp","type":"p","region":"intl","prepAr":"مطبوخ، من غير زيت","prepEn":"Cooked, no added oil","fdc":"168878","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s1","ar":"أرز بني مطبوخ","en":"Brown rice, cooked","k":123,"p":2.7,"c":25.6,"f":1,"img":"img/food_brown_rice-v1.webp","type":"p","region":"intl","prepAr":"مطبوخ، من غير زيت","prepEn":"Cooked, no added oil","fdc":"169704","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s2","ar":"صدور دجاج مطبوخة","en":"Chicken breast, cooked","k":165,"p":31,"c":0,"f":3.6,"img":"img/food_chicken_breast-v1.webp","type":"p","region":"intl","prepAr":"صدر مشوي، لحم بس من غير جلد","prepEn":"Roasted breast, skinless meat only","fdc":"171477","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s3","ar":"ورك دجاج مطبوخ","en":"Chicken thigh, cooked","k":179,"p":24.8,"c":0,"f":8.2,"img":"img/food_chicken_thigh-v1.webp","type":"p","region":"intl","prepAr":"ورك مشوي، لحم بس من غير جلد","prepEn":"Roasted thigh, skinless meat only","fdc":"172388","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s4","ar":"لحم بقري قليل الدهن مطبوخ","en":"Lean beef, cooked","k":217,"p":26.1,"c":0,"f":11.8,"img":"img/food_lean_beef-v1.webp","type":"p","region":"intl","prepAr":"لحم مفروم مشوي، ٩٠٪ لحم و١٠٪ دهن","prepEn":"Broiled ground beef, 90% lean / 10% fat","fdc":"174031","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s5","ar":"تونة بالماء مصفاة","en":"Tuna in water, drained","k":116,"p":25.5,"c":0,"f":0.8,"img":"img/food_tuna-v1.webp","type":"p","region":"intl","prepAr":"تونة لايت بالمياه، مصفّاة ومن غير ملح","prepEn":"Canned light tuna in water, drained, no salt","fdc":"171986","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s6","ar":"سردين معلب","en":"Sardines, canned","k":208,"p":24.6,"c":0,"f":11.5,"img":"img/food_sardines-v1.webp","type":"p","region":"intl","prepAr":"سردين أطلسي معلب بالزيت ومصفّى، بالعظم اللي بيتاكل","prepEn":"Atlantic sardines canned in oil, drained, edible bones included","fdc":"175139","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s7","ar":"بلطي مطبوخ","en":"Tilapia, cooked","k":128,"p":26.2,"c":0,"f":2.7,"img":"img/food_tilapia-v1.webp","type":"p","region":"intl","prepAr":"مطبوخ بحرارة جافة، وزن اللحم اللي بيتاكل بس","prepEn":"Cooked using dry heat, edible flesh only","fdc":"175177","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s8","ar":"سلمون مطبوخ","en":"Salmon, cooked","k":206,"p":22.1,"c":0,"f":12.4,"img":"img/food_salmon-v1.webp","type":"p","region":"intl","prepAr":"سلمون أطلسي مستزرع، مشوي","prepEn":"Farmed Atlantic salmon, dry heat","fdc":"175168","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s9","ar":"بيض مسلوق","en":"Whole egg, boiled","k":155,"p":12.6,"c":1.1,"f":10.6,"img":"img/food_eggs-v1.webp","type":"p","region":"intl","prepAr":"مسلوق، من غير القشر","prepEn":"Hard-boiled, peeled","fdc":"173424","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s10","ar":"بياض بيض مطبوخ","en":"Egg white, cooked","k":52,"p":10.7,"c":2.4,"f":0,"img":"img/food_egg_white-v1.webp","type":"p","region":"intl","prepAr":"بياض بيض مطبوخ، من غير دهون مضافة","prepEn":"Cooked egg white, no added fat","fdc":"2707289","ds":"FNDDS 2021–2023, October 2024","status":"verified","nsrc":1},{"id":"s11","ar":"فول مسلوق بدون زيت","en":"Fava beans, boiled","k":110,"p":7.6,"c":19.7,"f":0.4,"img":"img/food_boiled_fava-v1.webp","type":"p","region":"eg","prepAr":"فول ناشف بعد السلق، من غير زيت","prepEn":"Mature dry fava beans, boiled, no oil","fdc":"173753","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s12","ar":"فول مدمس سادة","en":"Ful medames, plain","k":110,"p":7.6,"c":19.7,"f":0.4,"img":"img/food_foul-v1.webp","type":"p","region":"eg","prepAr":"فول مدمس سادة، من غير زيت","prepEn":"Plain cooked mature fava beans, no oil","fdc":"173753","ds":"SR Legacy, April 2018","status":"proxy","nsrc":1},{"id":"s13","ar":"طعمية مقلية","en":"Falafel, fried","k":333,"p":13.3,"c":31.8,"f":17.8,"img":"img/food_falafel-v1.webp","type":"p","region":"eg","prepAr":"بديل مرجعي لفلافل مقلية بيتية","prepEn":"Home-prepared fried falafel proxy","fdc":"172455","ds":"SR Legacy, April 2018","status":"proxy","nsrc":1},{"id":"s14","ar":"عدس مطبوخ","en":"Lentils, cooked","k":116,"p":9,"c":20.1,"f":0.4,"img":"img/food_lentils-v1.webp","type":"leg","region":"intl","prepAr":"مسلوق، من غير زيت","prepEn":"Boiled, no added oil","fdc":"172421","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s15","ar":"حمص مسلوق","en":"Chickpeas, cooked","k":164,"p":8.9,"c":27.4,"f":2.6,"img":"img/food_chickpeas-v1.webp","type":"leg","region":"intl","prepAr":"مسلوق ومصفّى، من غير زيت","prepEn":"Boiled and drained, no oil","fdc":"173757","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s16","ar":"فاصوليا بيضاء مطبوخة","en":"White beans, cooked","k":139,"p":9.7,"c":25.1,"f":0.4,"img":"img/food_white_beans-v1.webp","type":"leg","region":"intl","prepAr":"مسلوقة ومصفّاة، من غير زيت","prepEn":"Boiled and drained, no oil","fdc":"175203","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s17","ar":"عيش بلدي","en":"Baladi bread","k":262,"p":9.8,"c":55.9,"f":1.7,"img":"img/food_baladi_bread-v1.webp","type":"c","region":"eg","prepAr":"بديل مرجعي لعيش بيتا قمح كامل، جاهز للأكل","prepEn":"Whole-wheat pita proxy, ready to eat","fdc":"174916","ds":"SR Legacy, April 2018","status":"proxy","nsrc":1},{"id":"s18","ar":"خبز قمح كامل","en":"Whole wheat bread","k":252,"p":12.5,"c":42.7,"f":3.5,"img":"img/food_wheat_bread-v1.webp","type":"c","region":"intl","prepAr":"خبز قمح كامل جاهز، قبل التحميص","prepEn":"Commercial whole-wheat bread, not toasted","fdc":"172688","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s19","ar":"توست أبيض","en":"White toast","k":266,"p":8.9,"c":49.4,"f":3.3,"img":"img/food_white_toast-v1.webp","type":"c","region":"intl","prepAr":"توست أبيض قبل التحميص","prepEn":"White sliced bread, before toasting","fdc":"174924","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s20","ar":"شوفان جاف","en":"Oats, dry","k":389,"p":16.9,"c":66.3,"f":6.9,"img":"img/food_oats-v1.webp","type":"c","region":"intl","prepAr":"شوفان جاف، قبل إضافة مياه أو لبن","prepEn":"Dry oats, before adding water or milk","fdc":"169705","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s21","ar":"مكرونة مسلوقة","en":"Pasta, cooked","k":158,"p":5.8,"c":30.9,"f":0.9,"img":"img/food_pasta-v1.webp","type":"c","region":"intl","prepAr":"مكرونة مسلوقة ومصفّاة، من غير زيت","prepEn":"Cooked pasta, drained, no oil","fdc":"169737","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s22","ar":"بطاطس مسلوقة","en":"Potatoes, boiled","k":87,"p":1.9,"c":20.1,"f":0.1,"img":"img/food_potatoes-v1.webp","type":"c","region":"intl","prepAr":"مسلوقة بقشرها، وزن اللحم من غير القشر","prepEn":"Boiled in skin, flesh only","fdc":"170438","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s23","ar":"بطاطا مطبوخة","en":"Sweet potato, cooked","k":90,"p":2,"c":20.7,"f":0.2,"img":"img/food_sweet_potato-v1.webp","type":"c","region":"intl","prepAr":"مشوية بقشرها، وزن اللحم من غير القشر","prepEn":"Baked in skin, flesh only","fdc":"168483","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s24","ar":"برغل مطبوخ","en":"Bulgur, cooked","k":83,"p":3.1,"c":18.6,"f":0.2,"img":"img/food_bulgur-v1.webp","type":"c","region":"intl","prepAr":"برغل بعد التسوية","prepEn":"Cooked bulgur","fdc":"170287","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s25","ar":"كينوا مطبوخة","en":"Quinoa, cooked","k":120,"p":4.4,"c":21.3,"f":1.9,"img":"img/food_quinoa-v1.webp","type":"c","region":"intl","prepAr":"كينوا بعد التسوية","prepEn":"Cooked quinoa","fdc":"168917","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s26","ar":"جبنة قريش","en":"Cottage cheese","k":72,"p":12.4,"c":2.7,"f":1,"img":"img/food_cottage_cheese-v1.webp","type":"d","region":"eg","prepAr":"بديل مرجعي لجبنة قريش قليلة الدسم، حوالي ١٪ دهن","prepEn":"Cottage cheese, 1% milkfat proxy","fdc":"173417","ds":"SR Legacy, April 2018","status":"proxy","nsrc":1},{"id":"s27","ar":"جبنة فيتا","en":"Feta cheese","k":265,"p":14.2,"c":3.9,"f":21.5,"img":"img/food_feta-v1.webp","type":"d","region":"intl","prepAr":"فيتا جاهزة للأكل","prepEn":"Ready-to-eat feta cheese","fdc":"173420","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s28","ar":"زبادي قليل الدسم","en":"Low fat yogurt","k":63,"p":5.3,"c":7,"f":1.6,"img":"img/food_yogurt-v1.webp","type":"d","region":"intl","prepAr":"زبادي سادة قليل الدسم، حوالي ١٫٥٪ دهن","prepEn":"Plain low-fat yogurt, about 1.5% fat","fdc":"170886","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s29","ar":"زبادي يوناني سادة","en":"Greek yogurt, plain","k":73,"p":10,"c":3.9,"f":1.9,"img":"img/food_greek_yogurt-v1.webp","type":"d","region":"intl","prepAr":"زبادي يوناني سادة قليل الدسم، حوالي ٢٪ دهن","prepEn":"Plain low-fat Greek yogurt, about 2% fat","fdc":"170903","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s30","ar":"حليب كامل الدسم","en":"Whole milk","k":61,"p":3.2,"c":4.8,"f":3.3,"img":"img/food_whole_milk-v1.webp","type":"d","region":"intl","prepAr":"لبن كامل الدسم ٣٫٢٥٪، الوزن بالجرام","prepEn":"Whole milk, 3.25% milkfat, weighed in grams","fdc":"171265","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s31","ar":"حليب خالي الدسم","en":"Skimmed milk","k":34,"p":3.4,"c":5,"f":0.1,"img":"img/food_skim_milk-v1.webp","type":"d","region":"intl","prepAr":"لبن خالي الدسم، الوزن بالجرام","prepEn":"Skim milk, weighed in grams","fdc":"171269","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s32","ar":"لبن رايب سادة","en":"Laban, plain","k":40,"p":3.3,"c":4.8,"f":1.1,"img":"img/food_laban-v1.webp","type":"d","region":"eg","prepAr":"بديل مرجعي للبن رايب قليل الدسم، الوزن بالجرام","prepEn":"Low-fat cultured buttermilk proxy, weighed in grams","fdc":"170874","ds":"SR Legacy, April 2018","status":"proxy","nsrc":1},{"id":"s33","ar":"جبنة شيدر","en":"Cheddar cheese","k":403,"p":22.9,"c":3.4,"f":33.3,"img":"img/food_cheddar-v1.webp","type":"d","region":"intl","prepAr":"شيدر عادية، مش قليلة الدسم","prepEn":"Regular cheddar cheese","fdc":"173414","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s34","ar":"زبدة فول سوداني","en":"Peanut butter","k":598,"p":22.2,"c":22.3,"f":51.4,"img":"img/food_peanut_butter-v1.webp","type":"f","region":"intl","prepAr":"زبدة فول سوداني ناعمة، من غير ملح","prepEn":"Smooth peanut butter, no salt","fdc":"172470","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s35","ar":"فول سوداني","en":"Peanuts","k":567,"p":25.8,"c":16.1,"f":49.2,"img":"img/food_peanuts-v1.webp","type":"f","region":"intl","prepAr":"سوداني نيّ، من غير القشر","prepEn":"Raw shelled peanuts","fdc":"172430","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s36","ar":"لوز","en":"Almonds","k":579,"p":21.2,"c":21.6,"f":49.9,"img":"img/food_almonds-v1.webp","type":"f","region":"intl","prepAr":"لوز سادة، مش محمّص","prepEn":"Plain almonds, unroasted","fdc":"170567","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s37","ar":"عين جمل","en":"Walnuts","k":654,"p":15.2,"c":13.7,"f":65.2,"img":"img/food_walnuts-v1.webp","type":"f","region":"intl","prepAr":"عين جمل من غير القشر","prepEn":"Shelled English walnuts","fdc":"170187","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s38","ar":"طحينة","en":"Tahini","k":595,"p":17,"c":21.2,"f":53.8,"img":"img/food_tahini-v1.webp","type":"f","region":"intl","prepAr":"معجون سمسم محمّص، مش سلطة طحينة مخففة","prepEn":"Sesame paste from roasted kernels, not diluted sauce","fdc":"170189","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s39","ar":"زيت زيتون","en":"Olive oil","k":884,"p":0,"c":0,"f":100,"img":"img/food_olive_oil-v1.webp","type":"f","region":"intl","prepAr":"زيت زيتون، الوزن بالجرام","prepEn":"Olive oil, weighed in grams","fdc":"171413","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s40","ar":"زبدة","en":"Butter","k":717,"p":0.9,"c":0.1,"f":81.1,"img":"img/food_butter-v1.webp","type":"f","region":"intl","prepAr":"زبدة من غير ملح","prepEn":"Unsalted butter","fdc":"173430","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s41","ar":"موز","en":"Banana","k":89,"p":1.1,"c":22.8,"f":0.3,"img":"img/food_banana-v1.webp","type":"fr","region":"intl","prepAr":"فاكهة نيّة، من غير القشر","prepEn":"Raw edible fruit, peel removed","fdc":"173944","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s42","ar":"تفاح","en":"Apple","k":52,"p":0.3,"c":13.8,"f":0.2,"img":"img/food_apple-v1.webp","type":"fr","region":"intl","prepAr":"تفاح نيّ بالقشر، من غير القلب والبذور","prepEn":"Raw apple with skin, core excluded","fdc":"171688","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s43","ar":"برتقال","en":"Orange","k":47,"p":0.9,"c":11.8,"f":0.1,"img":"img/food_orange-v1.webp","type":"fr","region":"intl","prepAr":"برتقال نيّ، من غير القشر","prepEn":"Raw orange, peel removed","fdc":"169097","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s44","ar":"بلح","en":"Dates","k":277,"p":1.8,"c":75,"f":0.2,"img":"img/food_dates-v1.webp","type":"fr","region":"intl","prepAr":"تمر مجدول من غير النوى، مش البلح الطري","prepEn":"Medjool dates, pits removed; not fresh wet dates","fdc":"168191","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s45","ar":"فراولة","en":"Strawberries","k":32,"p":0.7,"c":7.7,"f":0.3,"img":"img/food_strawberries-v1.webp","type":"fr","region":"intl","prepAr":"نيّة، من غير الورق","prepEn":"Raw, leaves removed","fdc":"167762","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s46","ar":"مانجو","en":"Mango","k":60,"p":0.8,"c":15,"f":0.4,"img":"img/food_mango-v1.webp","type":"fr","region":"intl","prepAr":"اللحم النيّ، من غير القشر والنواة","prepEn":"Raw edible flesh, skin and stone removed","fdc":"169910","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s47","ar":"بطيخ","en":"Watermelon","k":30,"p":0.6,"c":7.6,"f":0.2,"img":"img/food_watermelon-v1.webp","type":"fr","region":"intl","prepAr":"اللحم النيّ، من غير القشر","prepEn":"Raw flesh, rind excluded","fdc":"167765","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s48","ar":"عنب","en":"Grapes","k":69,"p":0.7,"c":18.1,"f":0.2,"img":"img/food_grapes-v1.webp","type":"fr","region":"intl","prepAr":"عنب أحمر أو أخضر نيّ، من غير العناقيد","prepEn":"Raw red or green grapes, stems excluded","fdc":"174683","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s49","ar":"خيار","en":"Cucumber","k":15,"p":0.7,"c":3.6,"f":0.1,"img":"img/food_cucumber-v1.webp","type":"v","region":"intl","prepAr":"خيار نيّ بالقشر","prepEn":"Raw cucumber with peel","fdc":"168409","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s50","ar":"طماطم","en":"Tomato","k":18,"p":0.9,"c":3.9,"f":0.2,"img":"img/food_tomato-v1.webp","type":"v","region":"intl","prepAr":"طماطم حمرا نيّة","prepEn":"Raw ripe red tomato","fdc":"170457","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s51","ar":"جزر","en":"Carrot","k":41,"p":0.9,"c":9.6,"f":0.2,"img":"img/food_carrot-v1.webp","type":"v","region":"intl","prepAr":"جزر نيّ، الجزء اللي بيتاكل","prepEn":"Raw carrot, edible portion","fdc":"170393","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s52","ar":"بروكلي مطبوخ","en":"Broccoli, cooked","k":35,"p":2.4,"c":7.2,"f":0.4,"img":"img/food_broccoli-v1.webp","type":"v","region":"intl","prepAr":"مسلوق ومصفّى، من غير زيت","prepEn":"Boiled and drained, no oil","fdc":"169967","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s53","ar":"سبانخ مطبوخة","en":"Spinach, cooked","k":23,"p":3,"c":3.8,"f":0.3,"img":"img/food_spinach-v1.webp","type":"v","region":"intl","prepAr":"مسلوقة ومصفّاة، من غير زيت","prepEn":"Boiled and drained, no oil","fdc":"168463","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s54","ar":"كوسة مطبوخة","en":"Zucchini, cooked","k":15,"p":1.1,"c":2.7,"f":0.4,"img":"img/food_zucchini-v1.webp","type":"v","region":"intl","prepAr":"مسلوقة ومصفّاة بالقشر، من غير زيت","prepEn":"Boiled and drained with skin, no oil","fdc":"169292","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s55","ar":"فاصوليا خضراء مطبوخة","en":"Green beans, cooked","k":35,"p":1.9,"c":7.9,"f":0.3,"img":"img/food_green_beans-v1.webp","type":"v","region":"intl","prepAr":"مسلوقة ومصفّاة، من غير زيت","prepEn":"Boiled and drained, no oil","fdc":"169141","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s56","ar":"ملوخية سادة بدون تقلية","en":"Molokhia, plain","k":14.8,"p":1.5,"c":2.9,"f":0.1,"img":"img/food_molokhia-v1.webp","type":"v","region":"eg","prepAr":"وصفة مثال: ٤٠ جم ورق ملوخية مطبوخ ومصفّى + ٦٠ جم مياه لكل ١٠٠ جم","prepEn":"Example soup: 40 g cooked drained jute + 60 g water per 100 g","fdc":"168420","ds":"SR Legacy, April 2018","status":"recipe","nsrc":1},{"id":"s57","ar":"عسل","en":"Honey","k":304,"p":0.3,"c":82.4,"f":0,"img":"img/food_honey-v1.webp","type":"fr","region":"intl","prepAr":"عسل سادة","prepEn":"Plain honey","fdc":"169640","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s58","ar":"سكر","en":"Sugar","k":387,"p":0,"c":100,"f":0,"img":"img/food_sugar-v1.webp","type":"fr","region":"intl","prepAr":"سكر أبيض حبيبات","prepEn":"White granulated sugar","fdc":"169655","ds":"SR Legacy, April 2018","status":"verified","nsrc":1},{"id":"s59","ar":"كشري (قيمة تقريبية)","en":"Koshari, typical","k":138.9,"p":5.1,"c":23.6,"f":2.7,"img":"img/food_koshari-v1.webp","type":"c","region":"eg","prepAr":"وصفة مثال محسوبة؛ وزن الناتج النهائي بعد التسوية ١٠٠٠ جم","prepEn":"Calculated example recipe; cooked final yield 1,000 g","fdc":"168878","ds":"SR Legacy, April 2018","status":"recipe","nsrc":7}];
+// Demo dishes: values are rough placeholders for the mockup only, not nutrition facts.
+const DEMO = [
+  ['eg', 'محشي خضار', 'Mahshi (stuffed vegetables)', 150, 3, 22, 5.5, 2.5, 2, 320, 'c'],
+  ['eg', 'فتة باللحمة', 'Fatta with beef', 190, 8, 20, 8.5, 0.8, 1, 380, 'c'],
+  ['eg', 'حواوشي', 'Hawawshi', 260, 12, 22, 14, 1.4, 2, 520, 'p'],
+  ['eg', 'بامية باللحمة', 'Okra with beef', 110, 7, 7, 6, 2.8, 3, 290, 'v'],
+  ['eg', 'مكرونة بشاميل', 'Macarona bechamel', 210, 9, 20, 10, 1, 3, 340, 'c'],
+  ['eg', 'رز معمر', 'Roz meammar', 180, 4, 22, 8.5, 0.4, 2, 210, 'c'],
+  ['gulf', 'كبسة فراخ', 'Chicken kabsa', 165, 10, 19, 5.5, 0.9, 1.5, 360, 'c'],
+  ['gulf', 'مندي لحم', 'Lamb mandi', 175, 11, 18, 6.5, 0.6, 0.5, 340, 'c'],
+  ['gulf', 'مجبوس فراخ', 'Chicken machboos', 160, 9, 19, 5, 0.9, 1.5, 350, 'c'],
+  ['gulf', 'هريس', 'Harees', 120, 7, 15, 3.5, 1.8, 0.3, 230, 'c'],
+  ['gulf', 'جريش', 'Jareesh', 115, 4, 18, 3, 2.2, 0.8, 260, 'c'],
+  ['gulf', 'سليق', 'Saleeg', 140, 8, 15, 5.5, 0.4, 0.8, 300, 'c'],
+  ['lev', 'شاورما فراخ', 'Chicken shawarma', 190, 17, 6, 11, 0.5, 1, 480, 'p'],
+  ['lev', 'حمص بالطحينة', 'Hummus', 177, 5, 14, 10, 4, 0.3, 380, 'leg'],
+  ['lev', 'تبولة', 'Tabbouleh', 120, 2, 10, 8, 2.5, 2, 260, 'v'],
+  ['lev', 'فتوش', 'Fattoush', 95, 2, 11, 5, 2, 3, 240, 'v'],
+  ['lev', 'كبة مقلية', 'Fried kibbeh', 260, 12, 22, 14, 3, 1, 410, 'p'],
+  ['lev', 'مقلوبة', 'Maqluba', 160, 8, 20, 6, 1.4, 1.5, 330, 'c'],
+  ['lev', 'مسخن', 'Musakhan', 230, 14, 18, 12, 1.5, 2, 400, 'p'],
+  ['na', 'كسكسي بالخضار', 'Vegetable couscous', 140, 5, 25, 2.5, 2.2, 2, 220, 'c'],
+  ['na', 'طاجين فراخ', 'Chicken tagine', 130, 12, 6, 6.5, 1.5, 3, 310, 'p'],
+  ['na', 'حريرة', 'Harira', 70, 4, 10, 1.5, 2, 1.5, 290, 'leg'],
+  ['na', 'بسطيلة', 'Pastilla', 270, 13, 25, 13, 1.2, 8, 360, 'p'],
+].map(([region, ar, en, k, p, c, f, fi, su, na, type], i) => ({ id: 'd' + i, ar, en, k, p, c, f, fi, su, na, type, region, status: 'demo', prepAr: 'مطبوخ، طريقة بيتي', prepEn: 'Cooked, home style' }));
+let FOODS = [...REAL, ...DEMO];
+const FAV = new Set(['s2', 's9', 's12']);
+const RECENT = ['d6', 'd12', 'd13', 'd0'];
+
+const T = {
+  ar: {
+    navHome: 'الرئيسية', navPlayers: 'اللاعبين', navPrograms: 'البرامج', navNutrition: 'التغذية', navInbox: 'الرسايل',
+    demoBanner: 'موكاب للعرض بس · الأكلات المعلّمة «تجريبي» أرقامها مش حقيقية', title: 'مكتبة الأكل', subtitle: 'دوّر بالعربي أو بالإنجليزي، شوف الأرقام، واحسب الكمية وضيفها للاعب.',
+    tabLib: 'المكتبة', tabCustom: 'أكلة جديدة', tabRecipe: 'وصفة', tabPlan: 'ضيف لخطة لاعب', tabKo: 'اسأل KO',
+    total: 'كل الأكلات', egyptian: 'مصري', arabic: 'عربي', intl: 'عالمي', custom: 'أكلاتي', recent: 'اتضاف قريب',
+    search: 'دوّر على أكلة بالعربي أو بالإنجليزي…', tryThese: 'جرّب:',
+    rAll: 'الكل', rEg: 'مصري', rGulf: 'خليجي', rLev: 'شامي', rNa: 'مغاربي', rIntl: 'عالمي', rMine: 'أكلاتي', rFav: 'المفضلة',
+    nHighP: 'بروتين عالي', nLowF: 'دهون قليلة', nLowC: 'كارب قليل', nLowK: 'سعرات قليلة',
+    table: 'جدول', cards: 'كروت', foodsCount: n => `${n} أكلة`,
+    hFood: 'الأكلة', hCat: 'النوع', hK: 'سعرات', hP: 'بروتين', hC: 'كارب', hF: 'دهون', hServ: 'الحصة', hSrc: 'المصدر', hStatus: 'الحالة', per100: 'في 100 جم',
+    sVerified: 'موثّق', sRecipe: 'محسوب من وصفة', sProxy: 'أقرب بديل', sDemo: 'تجريبي', sCustom: 'من الكابتن',
+    srcUsda: 'USDA', srcRecipe: 'وصفة', srcDemo: 'بيانات تجريبية', srcCoach: 'الكابتن',
+    view: 'التفاصيل', addMeal: 'ضيف لوجبة', favorite: 'مفضلة',
+    noResTitle: 'مفيش أكلة بالاسم ده', noResBody: 'جرّب اسم تاني أو بالإنجليزي، أو ضيفها بنفسك.', addItYourself: 'ضيف أكلة جديدة',
+    emptyMine: 'لسه مضفتش أكلات بنفسك', emptyFav: 'لسه مفيش أكلات في المفضلة', emptyFavBody: 'دوس على النجمة جنب أي أكلة.',
+    close: 'اقفل', quantity: 'الكمية', grams: 'جم', kcal: 'سعرات', protein: 'بروتين', carbs: 'كارب', fat: 'دهون', fiber: 'ألياف', sugar: 'سكر', sodium: 'صوديوم',
+    perHundred: 'في 100 جرام', state: 'الحالة', servings: 'حصص جاهزة', source: 'المصدر', confidence: 'درجة الثقة', notInSource: 'مش في مصدرنا لسه',
+    confVerified: 'عالية: رقم رسمي من USDA', confRecipe: 'متوسطة: محسوبة من مكونات موثّقة', confProxy: 'متوسطة: أقرب أكلة في المصدر', confDemo: 'رقم تجريبي للموكاب، مش للاستخدام', confCustom: 'الكابتن كتبها بنفسه',
+    usdaNo: n => `USDA FoodData Central رقم ${n}`, recipeOf: n => `وصفة من ${n} مكونات موثّقة`,
+    customTitle: 'ضيف أكلة بنفسك', fNameEn: 'الاسم بالإنجليزي', fNameAr: 'الاسم بالعربي', fCategory: 'النوع', fServing: 'الحصة (جم)', fKcal: 'سعرات في 100 جم', fProtein: 'بروتين (جم)', fCarbs: 'كارب (جم)', fFat: 'دهون (جم)', fFiber: 'ألياف (جم)', fNotes: 'ملاحظات',
+    customHint: 'الأرقام كلها في 100 جرام. بنقارن السعرات بالبروتين والكارب والدهون وننبّهك لو مش راكبين على بعض.', saveCustom: 'احفظ الأكلة', preview: 'شكلها في المكتبة', saved: 'اتحفظت في «أكلاتي»',
+    kcalMismatch: (a, b) => `السعرات ${a} بس الماكروز بتقول حوالي ${b}. راجع الأرقام.`, nameNeeded: 'اكتب اسم الأكلة', yourFoods: 'أكلاتك',
+    recipeTitle: 'اعمل وصفة', recipeName: 'اسم الوصفة', ingredients: 'المكونات (جرام نيّ أو مطبوخ زي ما مكتوب في كل مكون)', addIngredient: 'ضيف مكون', cookedWeight: 'وزن الأكل كله بعد الطبخ (جم)', cookedHint: 'الطبخ بيغيّر الوزن (مية بتتشرب أو تتبخر)، فبنقسم على الوزن النهائي.',
+    totalRecipe: 'الوصفة كلها', per100Recipe: 'في 100 جرام', servingSizes: 'الحصص', small: 'طبق صغير', medium: 'طبق وسط', large: 'طبق كبير', saveRecipe: 'احفظ الوصفة كأكلة', remove: 'شيل',
+    planTitle: 'ضيف أكلة لخطة لاعب', client: 'اللاعب', meal: 'الوجبة', food: 'الأكلة', thisItem: 'الأكلة دي', addToPlan: 'ضيف للخطة', planHint: 'ده موكاب: الخطة دي في الصفحة بس، ومش بتغيّر خطة أي لاعب حقيقي.',
+    mBreakfast: 'فطار', mLunch: 'غدا', mDinner: 'عشا', mSnack: 'سناك', dayTotal: 'إجمالي اليوم', left: 'سعرات فاضلة', target: 'الهدف', planOf: n => `خطة ${n} النهارده`, added: 'اتضافت للخطة', emptyMeal: 'مفيش أكل لسه',
+    koTitle: 'اسأل KO عن الأكل', koSim: 'محاكاة شكل بس · مفيش ذكاء اصطناعي شغال', koThinking: 'KO بيفكّر',
+    koNote: 'الأرقام من المكتبة اللي فوق. اللي عليه «تجريبي» مش حقيقي.',
+  },
+  en: {
+    navHome: 'Home', navPlayers: 'Players', navPrograms: 'Programs', navNutrition: 'Nutrition', navInbox: 'Inbox',
+    demoBanner: 'Mockup only · foods marked "Demo" have placeholder numbers', title: 'Food library', subtitle: 'Search in Arabic or English, check the numbers, set the amount and add it to a player.',
+    tabLib: 'Library', tabCustom: 'New food', tabRecipe: 'Recipe', tabPlan: 'Add to a plan', tabKo: 'Ask KO',
+    total: 'All foods', egyptian: 'Egyptian', arabic: 'Arabic', intl: 'International', custom: 'My foods', recent: 'Recently added',
+    search: 'Search foods in Arabic or English…', tryThese: 'Try:',
+    rAll: 'All', rEg: 'Egyptian', rGulf: 'Gulf', rLev: 'Levantine', rNa: 'North African', rIntl: 'International', rMine: 'My foods', rFav: 'Favorites',
+    nHighP: 'High protein', nLowF: 'Low fat', nLowC: 'Low carb', nLowK: 'Low calorie',
+    table: 'Table', cards: 'Cards', foodsCount: n => `${n} foods`,
+    hFood: 'Food', hCat: 'Type', hK: 'kcal', hP: 'Protein', hC: 'Carbs', hF: 'Fat', hServ: 'Serving', hSrc: 'Source', hStatus: 'Status', per100: 'per 100 g',
+    sVerified: 'Verified', sRecipe: 'Recipe', sProxy: 'Closest match', sDemo: 'Demo', sCustom: 'Coach',
+    srcUsda: 'USDA', srcRecipe: 'Recipe', srcDemo: 'Demo data', srcCoach: 'Coach',
+    view: 'Details', addMeal: 'Add to meal', favorite: 'Favorite',
+    noResTitle: 'No food with that name', noResBody: 'Try another name or the other language, or add it yourself.', addItYourself: 'Add a new food',
+    emptyMine: 'You have not added foods yet', emptyFav: 'No favorites yet', emptyFavBody: 'Tap the star next to any food.',
+    close: 'Close', quantity: 'Amount', grams: 'g', kcal: 'kcal', protein: 'Protein', carbs: 'Carbs', fat: 'Fat', fiber: 'Fiber', sugar: 'Sugar', sodium: 'Sodium',
+    perHundred: 'Per 100 g', state: 'State', servings: 'Servings', source: 'Source', confidence: 'Confidence', notInSource: 'Not in our source yet',
+    confVerified: 'High: official USDA value', confRecipe: 'Medium: built from verified ingredients', confProxy: 'Medium: closest food in the source', confDemo: 'Mockup placeholder, do not use', confCustom: 'Entered by the coach',
+    usdaNo: n => `USDA FoodData Central #${n}`, recipeOf: n => `Recipe of ${n} verified ingredients`,
+    customTitle: 'Add your own food', fNameEn: 'English name', fNameAr: 'Arabic name', fCategory: 'Type', fServing: 'Serving (g)', fKcal: 'kcal per 100 g', fProtein: 'Protein (g)', fCarbs: 'Carbs (g)', fFat: 'Fat (g)', fFiber: 'Fiber (g)', fNotes: 'Notes',
+    customHint: 'All numbers are per 100 g. We check the calories against the macros and warn you if they do not match.', saveCustom: 'Save food', preview: 'How it looks in the library', saved: 'Saved to My foods',
+    kcalMismatch: (a, b) => `${a} kcal, but the macros add up to about ${b}. Check the numbers.`, nameNeeded: 'Enter a name', yourFoods: 'Your foods',
+    recipeTitle: 'Build a recipe', recipeName: 'Recipe name', ingredients: 'Ingredients (grams, raw or cooked as each one says)', addIngredient: 'Add ingredient', cookedWeight: 'Total weight after cooking (g)', cookedHint: 'Cooking changes the weight (water is absorbed or lost), so we divide by the final weight.',
+    totalRecipe: 'Whole recipe', per100Recipe: 'Per 100 g', servingSizes: 'Servings', small: 'Small plate', medium: 'Medium plate', large: 'Large plate', saveRecipe: 'Save recipe as a food', remove: 'Remove',
+    planTitle: 'Add a food to a player plan', client: 'Player', meal: 'Meal', food: 'Food', thisItem: 'This item', addToPlan: 'Add to plan', planHint: 'Mockup: this plan lives on this page only and changes no real player.',
+    mBreakfast: 'Breakfast', mLunch: 'Lunch', mDinner: 'Dinner', mSnack: 'Snack', dayTotal: 'Day total', left: 'kcal left', target: 'Target', planOf: n => `${n}'s plan today`, added: 'Added to the plan', emptyMeal: 'Nothing yet',
+    koTitle: 'Ask KO about food', koSim: 'Look-only simulation · no AI running', koThinking: 'KO is thinking',
+    koNote: 'Numbers come from the library above. Anything marked "Demo" is not real.',
+  },
+};
+let lang = 'ar';
+const t = (k, ...a) => { const v = T[lang][k]; return typeof v === 'function' ? v(...a) : v ?? k; };
+const name = f => lang === 'ar' ? f.ar : f.en;
+const alt = f => lang === 'ar' ? f.en : f.ar;
+const r1 = x => Math.round(x * 10) / 10;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const REG = { eg: 'rEg', gulf: 'rGulf', lev: 'rLev', na: 'rNa', intl: 'rIntl', mine: 'rMine' };
+const STATUS = { verified: 'sVerified', recipe: 'sRecipe', proxy: 'sProxy', demo: 'sDemo', custom: 'sCustom' };
+const SRC = { verified: 'srcUsda', proxy: 'srcUsda', recipe: 'srcRecipe', demo: 'srcDemo', custom: 'srcCoach' };
+const thumb = (f, cls = 'thumb') => f.img ? `<img class="${cls}" src="${f.img}" alt="" width="600" height="450">` : `<span class="${cls} ph" aria-hidden="true">${esc(f.ar.slice(0, 1))}</span>`;
+const badge = f => `<span class="badge b-${f.status}">${t(STATUS[f.status])}</span>`;
+const servingsOf = f => {
+  if (f.serv) return f.serv;
+  const n = f.ar;
+  if (/بيض مسلوق/.test(n)) return [['بيضة', 'Egg', 50], ['2 بيضة', '2 eggs', 100]];
+  if (/عيش|خبز/.test(n)) return [['رغيف', 'Loaf', 90], ['نص رغيف', 'Half loaf', 45]];
+  if (/توست/.test(n)) return [['شريحة', 'Slice', 25]];
+  if (/زيت|زبدة|طحينة|عسل|سكر|زبدة فول/.test(n)) return [['معلقة كبيرة', 'Tablespoon', 15], ['معلقة صغيرة', 'Teaspoon', 5]];
+  if (/حليب|لبن/.test(n)) return [['كوب', 'Cup', 245]];
+  if (/زبادي/.test(n)) return [['علبة', 'Cup', 170]];
+  if (/موز|تفاح|برتقال|مانجو/.test(n)) return [['حبة وسط', 'Medium piece', 120]];
+  if (/لوز|سوداني|عين جمل/.test(n)) return [['حفنة', 'Handful', 30]];
+  if (/شوفان/.test(n)) return [['نص كوب', 'Half cup', 40]];
+  if (f.status === 'demo' && f.type !== 'v') return [['طبق وسط', 'Medium plate', 300], ['طبق صغير', 'Small plate', 200]];
+  return [['حصة', 'Portion', 150], ['100 جم', '100 g', 100]];
+};
+const toast = msg => { const el = document.getElementById('toastRoot'); el.innerHTML = `<div class="toast">${esc(msg)}</div>`; clearTimeout(toast.h); toast.h = setTimeout(() => el.innerHTML = '', 2200); };
+
+/* ---------- library ---------- */
+let region = 'all', nf = new Set(), layout = 'table', loading = false;
+function renderStats() {
+  const c = r => FOODS.filter(f => f.region === r).length;
+  const recent = RECENT.map(id => FOODS.find(f => f.id === id)).filter(Boolean);
+  document.getElementById('stats').innerHTML = [[FOODS.length, 'total'], [c('eg'), 'egyptian'], [c('gulf') + c('lev') + c('na'), 'arabic'], [c('intl'), 'intl'], [c('mine'), 'custom']]
+    .map(([n, k]) => `<div class="stat"><b class="num">${n}</b><span>${t(k)}</span></div>`).join('')
+    + `<div class="stat wide"><span>${t('recent')}</span><div class="recent">${recent.map(f => `<button data-open="${f.id}">${esc(name(f))}</button>`).join('')}</div></div>`;
+}
+function renderControls() {
+  document.getElementById('q').placeholder = t('search');
+  document.getElementById('examples').innerHTML = `<span class="small faint">${t('tryThese')}</span>` + ['كشري', 'صدور فراخ', 'فول مدمس', 'كبسة', 'Chicken breast', 'Rice', 'Oats'].map(x => `<button type="button" data-ex="${x}">${x}</button>`).join('');
+  document.getElementById('regions').innerHTML = [['all', 'rAll'], ['eg', 'rEg'], ['gulf', 'rGulf'], ['lev', 'rLev'], ['na', 'rNa'], ['intl', 'rIntl'], ['mine', 'rMine'], ['fav', 'rFav']].map(([k, l]) => `<button class="chip" data-r="${k}" aria-pressed="${k === region}">${t(l)}</button>`).join('');
+  document.getElementById('nutri').innerHTML = [['hp', 'nHighP'], ['lf', 'nLowF'], ['lc', 'nLowC'], ['lk', 'nLowK']].map(([k, l]) => `<button class="chip soft" data-n="${k}" aria-pressed="${nf.has(k)}">${t(l)}</button>`).join('');
+}
+function filtered() {
+  const q = document.getElementById('q').value.trim().toLowerCase();
+  const norm = s => s.toLowerCase().replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي');
+  const qa = norm(q).replace('فراخ', 'دجاج');
+  return FOODS.filter(f => (region === 'all' || (region === 'fav' ? FAV.has(f.id) : f.region === region))
+    && (!q || norm(f.ar).includes(qa) || norm(f.ar).includes(norm(q)) || f.en.toLowerCase().includes(q))
+    && (!nf.has('hp') || f.p >= 15) && (!nf.has('lf') || f.f <= 5) && (!nf.has('lc') || f.c <= 10) && (!nf.has('lk') || f.k <= 120));
+}
+const favBtn = f => `<button class="icon-btn fav" data-fav="${f.id}" aria-pressed="${FAV.has(f.id)}" aria-label="${t('favorite')}"><svg viewBox="0 0 24 24" fill="${FAV.has(f.id) ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"/></svg></button>`;
+const addBtn = f => `<button class="icon-btn add" data-addmeal="${f.id}" aria-label="${t('addMeal')}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></button>`;
+const viewBtn = f => `<button class="icon-btn" data-open="${f.id}" aria-label="${t('view')}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button>`;
+function renderResults() {
+  const box = document.getElementById('results');
+  if (loading) { document.getElementById('count').textContent = ''; box.innerHTML = `<div style="display:grid;gap:8px">${'<div class="skel"></div>'.repeat(6)}</div>`; return; }
+  const list = filtered();
+  document.getElementById('count').textContent = t('foodsCount', list.length) + ' · ' + t('per100');
+  if (!list.length) {
+    const k = region === 'mine' && !document.getElementById('q').value ? ['emptyMine', 'customHint'] : region === 'fav' && !document.getElementById('q').value ? ['emptyFav', 'emptyFavBody'] : ['noResTitle', 'noResBody'];
+    box.innerHTML = `<div class="empty"><b>${t(k[0])}</b><span>${t(k[1])}</span><button class="btn ghost" data-go="custom">${t('addItYourself')}</button></div>`; return;
+  }
+  if (layout === 'cards') {
+    box.innerHTML = `<div class="cards">${list.map(f => `<div class="card">${f.img ? `<img class="img" src="${f.img}" alt="" width="600" height="450">` : `<span class="img ph" aria-hidden="true">${esc(f.ar.slice(0, 1))}</span>`}<div class="cb"><b>${esc(name(f))}</b><span class="small faint">${esc(alt(f))}</span><div class="row"><span><span class="num ck">${Math.round(f.k)}</span> ${t('kcal')}</span>${badge(f)}</div><div class="row"><span class="cp num">P ${r1(f.p)}</span><span class="cc num">C ${r1(f.c)}</span><span class="cf num">F ${r1(f.f)}</span></div><div class="acts">${viewBtn(f)}${addBtn(f)}${favBtn(f)}</div></div></div>`).join('')}</div>`;
+    return;
+  }
+  box.innerHTML = `<div class="tablewrap"><table><thead><tr><th>${t('hFood')}</th><th>${t('hCat')}</th><th>${t('hK')}</th><th>${t('hP')}</th><th>${t('hC')}</th><th>${t('hF')}</th><th>${t('hServ')}</th><th>${t('hSrc')}</th><th>${t('hStatus')}</th><th></th></tr></thead><tbody>${list.map(f => {
+    const s = servingsOf(f)[0];
+    return `<tr data-row="${f.id}"><td><div class="fcell">${thumb(f)}<div class="names"><b>${esc(name(f))}</b><span>${esc(alt(f))}</span></div></div></td><td class="muted">${t(REG[f.region])}</td><td class="num ck">${Math.round(f.k)}</td><td class="num cp">${r1(f.p)}</td><td class="num cc">${r1(f.c)}</td><td class="num cf">${r1(f.f)}</td><td class="muted small">${esc(lang === 'ar' ? s[0] : s[1])} · <span class="num">${s[2]}</span>${t('grams')}</td><td class="muted small">${t(SRC[f.status])}</td><td>${badge(f)}</td><td><div class="acts">${viewBtn(f)}${addBtn(f)}${favBtn(f)}</div></td></tr>`;
+  }).join('')}</tbody></table></div>`;
+}
+function search() { loading = true; renderResults(); clearTimeout(search.h); search.h = setTimeout(() => { loading = false; renderResults(); }, 320); }
+
+/* ---------- details drawer ---------- */
+let dQty = 150, dFood = null;
+function openDrawer(id) { dFood = FOODS.find(f => f.id === id); dQty = servingsOf(dFood)[0][2]; renderDrawer(); }
+function renderDrawer() {
+  const root = document.getElementById('drawerRoot');
+  if (!dFood) { root.innerHTML = ''; return; }
+  const f = dFood, m = dQty / 100;
+  const src = f.status === 'verified' || f.status === 'proxy' ? t('usdaNo', f.fdc) : f.status === 'recipe' ? t('recipeOf', f.nsrc) : f.status === 'custom' ? t('srcCoach') : t('srcDemo');
+  const conf = { verified: 'confVerified', recipe: 'confRecipe', proxy: 'confProxy', demo: 'confDemo', custom: 'confCustom' }[f.status];
+  const opt = (v, u) => v == null ? `<span class="faint">${t('notInSource')}</span>` : `<span class="num">${r1(v)}</span> ${u}`;
+  root.innerHTML = `<div class="drawer-bg" data-close></div><aside class="drawer" role="dialog" aria-modal="true" aria-label="${esc(name(f))}">
+    <div class="hero">${f.img ? `<img src="${f.img}" alt="${esc(name(f))}" width="600" height="450">` : `<span class="ph" aria-hidden="true">${esc(f.ar.slice(0, 1))}</span>`}<button class="icon-btn close" data-close aria-label="${t('close')}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+    <div class="dbody">
+      <div style="display:grid;gap:4px"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><h2>${esc(name(f))}</h2>${badge(f)}</div><span class="muted">${esc(alt(f))}</span><span class="small faint">${t('state')}: ${esc(lang === 'ar' ? f.prepAr : f.prepEn)}</span></div>
+      <div class="calc">
+        <div class="qty"><button data-q="-10" aria-label="-10">−</button><label><input id="dq" type="number" min="1" value="${dQty}" inputmode="decimal" aria-label="${t('quantity')}"><span class="muted">${t('grams')}</span></label><button data-q="10" aria-label="+10">+</button></div>
+        <div class="chips">${servingsOf(f).map(s => `<button class="chip soft" data-sv="${s[2]}" aria-pressed="${s[2] === dQty}">${esc(lang === 'ar' ? s[0] : s[1])} · <span class="num">${s[2]}</span></button>`).join('')}</div>
+        <div class="tiles" id="dtiles"></div>
+      </div>
+      <div><div class="small faint" style="margin-bottom:6px">${t('perHundred')}</div><div class="facts">
+        <div>${t('kcal')}</div><div><span class="num ck">${Math.round(f.k)}</span></div>
+        <div>${t('protein')}</div><div>${opt(f.p, t('grams'))}</div><div>${t('carbs')}</div><div>${opt(f.c, t('grams'))}</div><div>${t('fat')}</div><div>${opt(f.f, t('grams'))}</div>
+        <div>${t('fiber')}</div><div>${opt(f.fi, t('grams'))}</div><div>${t('sugar')}</div><div>${opt(f.su, t('grams'))}</div><div>${t('sodium')}</div><div>${opt(f.na, 'mg')}</div></div></div>
+      <div class="src"><b>${t('source')}</b><span>${esc(src)}</span>${f.ds ? `<span class="faint">${esc(f.ds)}</span>` : ''}<b style="margin-top:6px">${t('confidence')}</b><span>${t(conf)}</span></div>
+      <button class="btn" data-addmeal="${f.id}">${t('addMeal')}</button>
+    </div></aside>`;
+  renderTiles();
+  root.querySelector('.close').focus();
+}
+function renderTiles() {
+  const f = dFood, m = dQty / 100, el = document.getElementById('dtiles'); if (!el) return;
+  el.innerHTML = [[Math.round(f.k * m), 'kcal', 'ck'], [r1(f.p * m), 'protein', 'cp'], [r1(f.c * m), 'carbs', 'cc'], [r1(f.f * m), 'fat', 'cf']].map(([v, k, c]) => `<div class="tile"><b class="num ${c}">${v}</b><span>${t(k)}</span></div>`).join('');
+  document.querySelectorAll('[data-sv]').forEach(b => b.setAttribute('aria-pressed', +b.dataset.sv === dQty));
+}
+
+/* ---------- custom food ---------- */
+const val = id => parseFloat(document.getElementById(id).value) || 0;
+function customDraft() {
+  return { id: 'c' + Date.now(), ar: document.getElementById('cAr').value.trim() || document.getElementById('cEn').value.trim(), en: document.getElementById('cEn').value.trim() || document.getElementById('cAr').value.trim(),
+    region: document.getElementById('cRegion').value, k: val('cK'), p: val('cP'), c: val('cC'), f: val('cF'), fi: val('cFi'), su: null, na: null, status: 'custom', type: 'p',
+    prepAr: document.getElementById('cN').value.trim() || 'من الكابتن', prepEn: document.getElementById('cN').value.trim() || 'Added by coach', serv: [['حصة', 'Serving', val('cServ') || 100]] };
+}
+function renderCustom() {
+  document.getElementById('cRegion').innerHTML = ['mine', 'eg', 'gulf', 'lev', 'na', 'intl'].map(r => `<option value="${r}">${t(REG[r])}</option>`).join('');
+  previewCustom();
+}
+function previewCustom() {
+  const d = customDraft(), macro = Math.round(d.p * 4 + d.c * 4 + d.f * 9), off = d.k && Math.abs(macro - d.k) > Math.max(25, d.k * .15);
+  document.getElementById('eK').textContent = off ? t('kcalMismatch', d.k, macro) : '';
+  const s = d.serv[0][2], m = s / 100;
+  document.getElementById('cPreview').innerHTML = `<div class="card" style="max-width:260px"><span class="img ph" aria-hidden="true">${esc((d.ar || '?').slice(0, 1))}</span><div class="cb"><b>${esc(name(d) || '—')}</b><span class="small faint">${esc(alt(d) || '')}</span><div class="row"><span><span class="num ck">${Math.round(d.k)}</span> ${t('kcal')} · ${t('per100')}</span>${badge(d)}</div><div class="row"><span class="cp num">P ${r1(d.p)}</span><span class="cc num">C ${r1(d.c)}</span><span class="cf num">F ${r1(d.f)}</span></div><span class="small faint">${t('hServ')} <span class="num">${s}</span>${t('grams')} = <span class="num ck">${Math.round(d.k * m)}</span> ${t('kcal')}</span></div></div>`;
+  const mine = FOODS.filter(f => f.region === 'mine' || f.status === 'custom');
+  document.getElementById('cList').innerHTML = mine.length ? `<div class="small faint">${t('yourFoods')}</div>` + mine.map(f => `<div class="mi" style="margin-top:6px">${thumb(f)}<span>${esc(name(f))}</span><span class="num ck">${Math.round(f.k)}</span></div>`).join('') : '';
+}
+
+/* ---------- recipe ---------- */
+const DEMO_ING = { onion: { id: 'x0', ar: 'بصل مقرمش', en: 'Crispy fried onion', k: 590, p: 6, c: 45, f: 42, fi: 4, su: 8, na: 300, status: 'demo', region: 'eg', type: 'f', prepAr: 'مقلي', prepEn: 'Fried' }, sauce: { id: 'x1', ar: 'صلصة طماطم بالخل والتوم', en: 'Tomato sauce with vinegar and garlic', k: 45, p: 1.5, c: 8, f: 1, fi: 1.5, su: 5, na: 400, status: 'demo', region: 'eg', type: 'v', prepAr: 'مطبوخة', prepEn: 'Cooked' } };
+const by = s => FOODS.find(f => f.ar.startsWith(s));
+let ings = [[by('أرز أبيض'), 300], [by('عدس'), 200], [by('مكرونة'), 250], [by('حمص'), 80], [DEMO_ING.sauce, 200], [DEMO_ING.onion, 40], [by('زيت زيتون'), 15]];
+function renderRecipe() {
+  document.getElementById('rAddSel').innerHTML = [...FOODS, DEMO_ING.onion, DEMO_ING.sauce].map(f => `<option value="${f.id}">${esc(name(f))}</option>`).join('');
+  document.getElementById('ings').innerHTML = ings.map(([f, g], i) => `<div class="ing">${thumb(f)}<div class="names"><b>${esc(name(f))}</b><span>${badge(f)} <span class="num">${Math.round(f.k * g / 100)}</span> ${t('kcal')}</span></div><input type="number" min="0" value="${g}" data-ig="${i}" aria-label="${t('quantity')} ${esc(name(f))}" inputmode="decimal"><button class="icon-btn" data-rm="${i}" aria-label="${t('remove')} ${esc(name(f))}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>`).join('');
+  recipeOut();
+}
+function recipeOut() {
+  const tot = ings.reduce((a, [f, g]) => ({ k: a.k + f.k * g / 100, p: a.p + f.p * g / 100, c: a.c + f.c * g / 100, f: a.f + f.f * g / 100, raw: a.raw + g }), { k: 0, p: 0, c: 0, f: 0, raw: 0 });
+  const cooked = val('rCooked') || tot.raw, per = x => x * 100 / cooked, hasDemo = ings.some(([f]) => f.status === 'demo');
+  const kc = tot.p * 4 + tot.c * 4 + tot.f * 9 || 1;
+  const sv = [['small', 250], ['medium', 350], ['large', 450]];
+  document.getElementById('rOut').innerHTML = `<h3>${esc(document.getElementById('rName').value || '—')}</h3>
+    <div class="pie" aria-hidden="true"><i style="width:${tot.p * 400 / kc}%;background:var(--p)"></i><i style="width:${tot.c * 400 / kc}%;background:var(--c)"></i><i style="width:${tot.f * 900 / kc}%;background:var(--f)"></i></div>
+    <div><div class="small faint" style="margin-bottom:6px">${t('totalRecipe')} · <span class="num">${Math.round(tot.raw)}</span>${t('grams')} → <span class="num">${Math.round(cooked)}</span>${t('grams')}</div>
+    <div class="tiles"><div class="tile"><b class="num ck">${Math.round(tot.k)}</b><span>${t('kcal')}</span></div><div class="tile"><b class="num cp">${r1(tot.p)}</b><span>${t('protein')}</span></div><div class="tile"><b class="num cc">${r1(tot.c)}</b><span>${t('carbs')}</span></div><div class="tile"><b class="num cf">${r1(tot.f)}</b><span>${t('fat')}</span></div></div></div>
+    <div><div class="small faint" style="margin-bottom:6px">${t('per100Recipe')}</div><div class="tiles"><div class="tile"><b class="num ck">${Math.round(per(tot.k))}</b><span>${t('kcal')}</span></div><div class="tile"><b class="num cp">${r1(per(tot.p))}</b><span>${t('protein')}</span></div><div class="tile"><b class="num cc">${r1(per(tot.c))}</b><span>${t('carbs')}</span></div><div class="tile"><b class="num cf">${r1(per(tot.f))}</b><span>${t('fat')}</span></div></div></div>
+    <div><div class="small faint" style="margin-bottom:6px">${t('servingSizes')}</div>${sv.map(([k, g]) => `<div class="total" style="border-top:0;padding-top:4px"><span>${t(k)} · <span class="num">${g}</span>${t('grams')}</span><span><span class="num ck">${Math.round(per(tot.k) * g / 100)}</span> ${t('kcal')} · <span class="num cp">${r1(per(tot.p) * g / 100)}</span> ${t('protein')}</span></div>`).join('')}</div>
+    ${hasDemo ? `<span class="badge b-demo" style="justify-self:start">${t('sDemo')}: ${esc(ings.filter(([f]) => f.status === 'demo').map(([f]) => name(f)).join('، '))}</span>` : ''}
+    <button class="btn" id="rSave">${t('saveRecipe')}</button>`;
+}
+
+/* ---------- plan ---------- */
+const MEALS = ['mBreakfast', 'mLunch', 'mDinner', 'mSnack'];
+const plan = { mBreakfast: [[by('بيض مسلوق'), 100], [by('عيش بلدي'), 90]], mLunch: [[by('صدور دجاج'), 180], [by('أرز أبيض'), 200]], mDinner: [], mSnack: [[by('زبادي يوناني'), 170]] };
+let lastAdded = null;
+function renderPlanForm() {
+  const m = document.getElementById('pMeal').value || 'mLunch', fsel = document.getElementById('pFood').value || by('صدور دجاج').id;
+  document.getElementById('pMeal').innerHTML = MEALS.map(k => `<option value="${k}" ${k === m ? 'selected' : ''}>${t(k)}</option>`).join('');
+  document.getElementById('pFood').innerHTML = FOODS.map(f => `<option value="${f.id}" ${f.id === fsel ? 'selected' : ''}>${esc(name(f))}${f.status === 'demo' ? ' · ' + t('sDemo') : ''}</option>`).join('');
+  renderPlan();
+}
+function renderPlan() {
+  const f = FOODS.find(x => x.id === document.getElementById('pFood').value), q = val('pQty'), m = q / 100, meal = document.getElementById('pMeal').value;
+  document.getElementById('pItem').innerHTML = f ? `<span class="ck">${Math.round(f.k * m)} ${t('kcal')}</span><span class="cp">P ${r1(f.p * m)}</span><span class="cc">C ${r1(f.c * m)}</span><span class="cf">F ${r1(f.f * m)}</span>` : '';
+  const sum = items => items.reduce((a, [x, g]) => ({ k: a.k + x.k * g / 100, p: a.p + x.p * g / 100, c: a.c + x.c * g / 100, f: a.f + x.f * g / 100 }), { k: 0, p: 0, c: 0, f: 0 });
+  document.getElementById('pMeals').innerHTML = MEALS.map(k => { const s = sum(plan[k]); return `<div class="meal ${k === meal ? 'on' : ''}"><header><b>${t(k)}</b><span class="num ck">${Math.round(s.k)}</span></header>${plan[k].length ? plan[k].map(([x, g], i) => `<div class="mi ${lastAdded && lastAdded[0] === k && lastAdded[1] === i ? 'new' : ''}">${thumb(x)}<span>${esc(name(x))} · <span class="num">${g}</span>${t('grams')}</span><span class="num cp">${r1(x.p * g / 100)}</span></div>`).join('') : `<span class="small faint">${t('emptyMeal')}</span>`}</div>`; }).join('');
+  const day = sum(MEALS.flatMap(k => plan[k])), target = { k: 2200, p: 160 };
+  document.getElementById('pHead').textContent = t('planOf', document.getElementById('pClient').value);
+  const barRow = (label, v, max, cls, unit) => `<div style="display:grid;gap:4px"><div class="total" style="border:0;padding:0"><span>${label}</span><span><span class="num ${cls}">${Math.round(v)}</span> / <span class="num">${max}</span> ${unit}</span></div><div class="pie"><i style="width:${Math.min(100, v * 100 / max)}%;background:var(--${cls === 'ck' ? 'lime' : 'p'})"></i></div></div>`;
+  document.getElementById('pTotals').innerHTML = `<div style="display:grid;gap:12px">${barRow(t('kcal'), day.k, target.k, 'ck', '')}${barRow(t('protein'), day.p, target.p, 'cp', t('grams'))}<div class="tiles"><div class="tile"><b class="num cc">${r1(day.c)}</b><span>${t('carbs')}</span></div><div class="tile"><b class="num cf">${r1(day.f)}</b><span>${t('fat')}</span></div><div class="tile"><b class="num">${MEALS.reduce((a, k) => a + plan[k].length, 0)}</b><span>${t('food')}</span></div><div class="tile"><b class="num ck">${Math.max(0, Math.round(target.k - day.k))}</b><span>${t('left')}</span></div></div></div>`;
+}
+
+/* ---------- KO ---------- */
+const KO = [
+  ['suggest40', { ar: 'اقترح وجبة مصري فيها 40 جم بروتين', en: 'Suggest an Egyptian meal with 40 g protein' }, [['s2', 120], ['s17', 90], ['s11', 150]], { ar: 'صدور فراخ 120 جم مع رغيف بلدي وطبق فول من غير زيت. ده بيدّي حوالي 40 جم بروتين.', en: 'Chicken breast 120 g, a baladi loaf and a plate of fava beans without oil. That gives about 40 g protein.' }],
+  ['highp', { ar: 'لاقيلي أكل مصري بروتين عالي', en: 'Find high-protein Egyptian foods' }, [['s26', 100], ['s11', 100], ['s13', 100], ['s32', 245]], { ar: 'دول أعلى أكلات مصري في البروتين في المكتبة، مرتبين بالبروتين في 100 جم.', en: 'These are the Egyptian foods highest in protein in the library, sorted per 100 g.' }],
+  ['lowfat', { ar: 'اقترح عشا عربي دهونه قليلة', en: 'Suggest a low-fat Arabic dinner' }, [['d20', 250], ['d15', 150]], { ar: 'طاجين فراخ مع فتوش. الاتنين أرقامهم تجريبية في الموكاب ده.', en: 'Chicken tagine with fattoush. Both have demo numbers in this mockup.' }],
+  ['swap', { ar: 'بدّل الرز بكارب يساويه', en: 'Replace rice with an equivalent carbohydrate source' }, [['s0', 200], ['s22', 260], ['s24', 250], ['s21', 180]], { ar: '200 جم رز أبيض = حوالي 56 جم كارب. الكميات دي بتدّي نفس الكارب تقريبًا.', en: '200 g white rice ≈ 56 g carbs. These amounts give about the same carbs.' }],
+];
+let koMsgs = [];
+function renderKo() {
+  document.getElementById('koPrompts').innerHTML = KO.map(([k, q]) => `<button data-ko="${k}">${esc(q[lang])}</button>`).join('');
+  document.getElementById('koChat').innerHTML = koMsgs.map(m => {
+    const it = KO.find(x => x[0] === m.k);
+    if (m.me) return `<div class="bubble me">${esc(it[1][lang])}</div>`;
+    if (m.wait) return `<div class="bubble ai"><span class="typing" aria-label="${t('koThinking')}"><i></i><i></i><i></i></span></div>`;
+    return `<div class="bubble ai"><span>${esc(it[3][lang])}</span><div class="sugg">${it[2].map(([id, g]) => { const f = FOODS.find(x => x.id === id), m = g / 100; return `<div>${thumb(f)}<div><b style="font-size:13px;font-weight:600">${esc(name(f))}</b> ${f.status === 'demo' ? badge(f) : ''}<div class="small faint"><span class="num">${g}</span>${t('grams')} · <span class="num ck">${Math.round(f.k * m)}</span> ${t('kcal')} · <span class="num cp">${r1(f.p * m)}</span> ${t('protein')} · <span class="num cc">${r1(f.c * m)}</span> ${t('carbs')}</div></div></div>`; }).join('')}</div><span class="small faint">${t('koNote')}</span></div>`;
+  }).join('');
+}
+
+/* ---------- wiring ---------- */
+function renderAll() {
+  document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  document.querySelectorAll('[data-t]').forEach(el => { const tgt = el.querySelector('span') && el.classList.contains('nav') ? el.querySelector('span') : el; tgt.textContent = t(el.dataset.t); });
+  document.querySelectorAll('[data-lang]').forEach(b => b.setAttribute('aria-pressed', b.dataset.lang === lang));
+  renderStats(); renderControls(); renderResults(); renderCustom(); renderRecipe(); renderPlanForm(); renderKo(); renderDrawer();
+}
+function go(view) {
+  document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-selected', b.dataset.view === view));
+  document.querySelectorAll('.view').forEach(v => v.hidden = v.id !== 'v-' + view);
+}
+function addToMealFlow(id) { dFood = null; renderDrawer(); go('plan'); document.getElementById('pFood').value = id; document.getElementById('pQty').value = servingsOf(FOODS.find(f => f.id === id))[0][2]; renderPlan(); }
+
+document.addEventListener('click', e => {
+  const b = e.target.closest('button, [data-row], [data-close]'); if (!b) return;
+  const d = b.dataset;
+  if (d.lang) { lang = d.lang; renderAll(); }
+  else if (d.view) go(d.view);
+  else if (d.go) go(d.go);
+  else if (d.ex) { document.getElementById('q').value = d.ex; region = 'all'; renderControls(); search(); }
+  else if (d.r) { region = d.r; renderControls(); renderResults(); }
+  else if (d.n) { nf.has(d.n) ? nf.delete(d.n) : nf.add(d.n); renderControls(); renderResults(); }
+  else if (d.l) { layout = d.l; document.querySelectorAll('[data-l]').forEach(x => x.setAttribute('aria-pressed', x.dataset.l === layout)); renderResults(); }
+  else if (d.fav) { FAV.has(d.fav) ? FAV.delete(d.fav) : FAV.add(d.fav); renderResults(); }
+  else if (d.addmeal) addToMealFlow(d.addmeal);
+  else if (d.open) openDrawer(d.open);
+  else if (d.close !== undefined) { dFood = null; renderDrawer(); }
+  else if (d.q) { dQty = Math.max(1, dQty + +d.q); document.getElementById('dq').value = dQty; renderTiles(); }
+  else if (d.sv) { dQty = +d.sv; document.getElementById('dq').value = dQty; renderTiles(); }
+  else if (d.rm) { ings.splice(+d.rm, 1); renderRecipe(); }
+  else if (d.ko) { koMsgs.push({ k: d.ko, me: true }, { k: d.ko, wait: true }); renderKo(); setTimeout(() => { koMsgs = koMsgs.filter(m => !m.wait); koMsgs.push({ k: d.ko }); renderKo(); }, 900); }
+  else if (d.row) openDrawer(d.row);
+  else if (b.id === 'rAdd') { const id = document.getElementById('rAddSel').value; ings.push([[...FOODS, DEMO_ING.onion, DEMO_ING.sauce].find(f => f.id === id), 100]); renderRecipe(); }
+  else if (b.id === 'rSave') { const tot = ings.reduce((a, [f, g]) => ({ k: a.k + f.k * g / 100, p: a.p + f.p * g / 100, c: a.c + f.c * g / 100, f: a.f + f.f * g / 100 }), { k: 0, p: 0, c: 0, f: 0 }); const cw = val('rCooked') || 1, nm = document.getElementById('rName').value || 'وصفة';
+    FOODS.push({ id: 'c' + Date.now(), ar: nm, en: nm, k: tot.k * 100 / cw, p: tot.p * 100 / cw, c: tot.c * 100 / cw, f: tot.f * 100 / cw, fi: null, su: null, na: null, status: 'custom', region: 'mine', type: 'c', prepAr: 'وصفة الكابتن', prepEn: 'Coach recipe', serv: [['طبق وسط', 'Medium plate', 350]] });
+    renderStats(); renderPlanForm(); previewCustom(); toast(t('saved')); }
+  else if (b.id === 'pAdd') { const id = document.getElementById('pFood').value, meal = document.getElementById('pMeal').value; plan[meal].push([FOODS.find(f => f.id === id), val('pQty') || 100]); lastAdded = [meal, plan[meal].length - 1]; renderPlan(); toast(t('added')); }
+});
+document.addEventListener('input', e => {
+  const el = e.target;
+  if (el.id === 'q') search();
+  else if (el.id === 'dq') { dQty = Math.max(0, +el.value || 0); renderTiles(); }
+  else if (el.dataset.ig) { ings[+el.dataset.ig][1] = Math.max(0, +el.value || 0); recipeOut(); }
+  else if (el.id === 'rCooked' || el.id === 'rName') recipeOut();
+  else if (el.closest('#customForm')) previewCustom();
+  else if (['pQty', 'pFood', 'pMeal', 'pClient'].includes(el.id)) renderPlan();
+});
+document.addEventListener('change', e => { if (['pFood', 'pMeal', 'pClient', 'cRegion'].includes(e.target.id)) { renderPlan(); previewCustom(); } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && dFood) { dFood = null; renderDrawer(); } });
+document.getElementById('customForm').addEventListener('submit', e => {
+  e.preventDefault(); const d = customDraft();
+  if (!d.ar) { document.getElementById('cAr').focus(); toast(t('nameNeeded')); return; }
+  d.region = d.region || 'mine'; if (d.region !== 'mine') d.status = 'custom';
+  FOODS.push(d); RECENT.unshift(d.id); renderStats(); previewCustom(); renderPlanForm(); toast(t('saved'));
+});
+renderAll();
+</script>
+</body>
+</html>
