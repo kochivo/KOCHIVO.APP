@@ -5,16 +5,15 @@ import { getContent } from '../content';
 import styles from './landing.module.css';
 
 export async function WhyKochivo() {
-  const { why } = getContent(await getT(messages));
-  return <section className="marketing-wrap marketing-section space-y-8">
-    <p className="marketing-eyebrow">{why.label}</p><h2 className="marketing-heading max-w-xl">{why.title}</h2>
-    <div className={`grid gap-4 md:grid-cols-2 ${styles.comparison}`}>
-      {[false, true].map(after => <article key={String(after)} className={`${after ? 'glass-strong' : 'glass'} space-y-6 rounded-card p-6 md:p-8`}>
-        <h3 className="text-xl font-bold">{after ? why.after : why.before}</h3>
-        <ul className="space-y-5">{(after ? why.afterList : why.beforeList).map(item => <li key={item} data-tick={after || undefined} className="flex items-start gap-3 text-sm leading-relaxed">
-          {after ? <Check size={20} aria-hidden="true" className="shrink-0 text-lime" /> : <X size={20} aria-hidden="true" className="shrink-0 text-muted" />}{item}
-        </li>)}</ul>
-      </article>)}
-    </div>
+  const t = await getT(messages);
+  const { why } = getContent(t);
+  return <section className={`${styles.wrap} ${styles.section}`}>
+    <div className={styles.headingRow}><div><p className={styles.eyebrow}>{why.label}</p><h2>{why.title}</h2></div><p>{t('whySub')}</p></div>
+    <div className={styles.comparison}>{[false, true].map(after => <article key={String(after)}>
+      <h3>{after ? why.after : why.before}</h3>
+      <ul>{(after ? why.afterList : why.beforeList).map(item => <li key={item}>
+        {after ? <Check size={18} strokeWidth={1.7} aria-hidden="true" className="text-lime" /> : <X size={18} strokeWidth={1.7} aria-hidden="true" className="text-danger" />}{item}
+      </li>)}</ul>
+    </article>)}</div>
   </section>;
 }

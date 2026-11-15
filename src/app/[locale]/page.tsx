@@ -34,8 +34,8 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     <main>
       <Hero />
       <WhyKochivo />
-      <HowItWorks />
       <FeaturesGrid />
+      <HowItWorks />
       <Pricing />
       <Faq />
       <FinalCta />

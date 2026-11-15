@@ -9,97 +9,95 @@ export function showStory(root: ParentNode, index: string) {
   });
 }
 
+export function adjustPreviewWeight(weight: number, change: number) {
+  return Math.max(0, Math.round((weight + change) * 10) / 10);
+}
+
 export function attachLandingMotion(doc: Document, win: Window, reduced: boolean) {
   const frames = new Set<number>();
   const observers: IntersectionObserver[] = [];
-  const counters = new Map<HTMLElement, string>();
+  let disposed = false;
   const frame = (callback: FrameRequestCallback) => {
-    const id = win.requestAnimationFrame(time => { frames.delete(id); callback(time); });
+    const id = win.requestAnimationFrame(time => { frames.delete(id); if (!disposed) callback(time); });
     frames.add(id);
   };
-  const observe = (selector: string, callback: (el: HTMLElement) => void, once = true, rootMargin = '0px') => {
-    if (!('IntersectionObserver' in win)) return;
-    const observer = new IntersectionObserver(entries => entries.filter(entry => entry.isIntersecting).forEach(entry => {
-      callback(entry.target as HTMLElement);
-      if (once) observer.unobserve(entry.target);
-    }), { rootMargin });
-    doc.querySelectorAll(selector).forEach(el => observer.observe(el));
-    observers.push(observer);
-  };
-  const header = doc.querySelector<HTMLElement>('[data-landing-header]');
   const hero = doc.querySelector<HTMLElement>('[data-hero]');
-  const progress = doc.querySelector<HTMLElement>('[data-reading]');
+  const active = () => !reduced && !doc.hidden && hero?.dataset.motionRunning === 'true';
   let scheduled = false;
   const scroll = () => {
-    if (scheduled) return;
+    if (!active() || scheduled) return;
     scheduled = true;
     frame(() => {
       scheduled = false;
-      progress?.style.setProperty('--reading', String(readingProgress(win.scrollY, doc.documentElement.scrollHeight, win.innerHeight)));
-      if (header) header.dataset.slim = String((hero?.getBoundingClientRect().bottom ?? 0) <= (header.offsetHeight || 80));
+      if (active()) hero?.style.setProperty('--py', `${Math.min(Math.max(win.scrollY, 0), 900) * .18}px`);
     });
   };
-  win.addEventListener('scroll', scroll, { passive: true });
-  win.addEventListener('resize', scroll);
-  scroll();
-  observe('[data-step]', el => showStory(doc, el.dataset.step ?? '0'), false, '-40% 0px -40% 0px');
-  let pointer: ((event: PointerEvent) => void) | undefined;
-  const devices = doc.querySelector<HTMLElement>('[data-devices]');
+  let pointerPending = false;
+  const pointer = (event: PointerEvent) => {
+    if (!active() || pointerPending) return;
+    pointerPending = true;
+    frame(() => {
+      pointerPending = false;
+      if (!active() || !hero) return;
+      const bounds = hero.getBoundingClientRect();
+      hero.style.setProperty('--mx', `${event.clientX - bounds.left}px`);
+      hero.style.setProperty('--my', `${event.clientY - bounds.top}px`);
+    });
+  };
+  const fit = () => {
+    doc.querySelectorAll<HTMLElement>('[data-fit]').forEach(container => {
+      const inner = container.firstElementChild;
+      if (!(inner instanceof HTMLElement)) return;
+      const scale = Math.min(1, container.clientWidth / 1120);
+      container.style.height = `${inner.offsetHeight * scale}px`;
+      container.style.setProperty('--preview-scale', String(scale));
+    });
+  };
+  const click = (event: MouseEvent) => {
+    if (!(event.target instanceof Element)) return;
+    const button = event.target.closest<HTMLElement>('[data-adjust], [data-preview-done]');
+    const preview = button?.closest('[data-set-preview]');
+    const weight = preview?.querySelector<HTMLElement>('[data-preview-weight]');
+    if (!button || !weight) return;
+    if (button.dataset.adjust) weight.textContent = String(adjustPreviewWeight(Number(weight.textContent), Number(button.dataset.adjust)));
+    else {
+      const set = preview?.querySelector<HTMLElement>('[data-preview-set]');
+      if (set) set.textContent = String(Number(set.textContent) + 1);
+      else button.textContent = button.dataset.success ?? button.textContent;
+    }
+  };
+  win.addEventListener('resize', fit);
+  doc.addEventListener('click', click);
+  fit();
+  if (doc.fonts) void doc.fonts.ready.then(() => { if (!disposed) fit(); });
+  const resize = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(fit);
+  doc.querySelectorAll('[data-fit]').forEach(container => resize?.observe(container));
   if (!reduced) {
     doc.body.dataset.landingMotion = '';
-    observe('[data-tick], [data-toast], [data-slash]', el => {
-      if (el.hasAttribute('data-tick')) el.style.setProperty('--delay', `${Array.from(el.parentElement?.children ?? []).indexOf(el) * 120}ms`);
-      if (el.hasAttribute('data-toast')) el.style.setProperty('--delay', `${el === doc.querySelector('[data-toast]') ? 300 : 650}ms`);
-      el.dataset.enter = '';
-    });
-    observe('[data-count]', el => {
-      const original = el.textContent ?? '';
-      counters.set(el, original);
-      const target = Number(el.dataset.count);
-      const start = win.performance.now();
-      const tick = (time: number) => {
-        const ratio = Math.min(1, (time - start) / 900);
-        el.textContent = original.replace(/[\d,]+/, Math.round(target * (1 - (1 - ratio) ** 3)).toLocaleString('en-US'));
-        if (ratio < 1) frame(tick);
-      };
-      frame(tick);
-    });
-    const weight = doc.querySelector<HTMLElement>('[data-weight]');
-    if (weight) {
-      weight.textContent = weight.dataset.from ?? '';
-      const start = win.performance.now();
-      const tick = (time: number) => {
-        if (time - start < 1500) frame(tick);
-        else { weight.textContent = weight.dataset.to ?? ''; weight.dataset.enter = ''; }
-      };
-      frame(tick);
-    }
-    if (win.matchMedia('(hover: hover) and (pointer: fine)').matches) {
-      let pending = false;
-      pointer = event => {
-        if (pending) return;
-        pending = true;
-        frame(() => {
-          pending = false;
-          devices?.style.setProperty('--mx', `${(event.clientX / win.innerWidth - .5) * 8}px`);
-          devices?.style.setProperty('--my', `${(event.clientY / win.innerHeight - .5) * 8}px`);
-        });
-      };
-      hero?.addEventListener('pointermove', pointer);
-    }
+    win.addEventListener('scroll', scroll, { passive: true });
+    hero?.addEventListener('pointermove', pointer);
+    hero?.setAttribute('data-enter', '');
+    hero?.querySelector('[data-slogan]')?.setAttribute('data-enter', '');
+    const final = doc.querySelector<HTMLElement>('#final-slogan');
+    if (final && typeof IntersectionObserver !== 'undefined') {
+      const observer = new IntersectionObserver(entries => {
+        if (entries.some(entry => entry.isIntersecting)) { final.dataset.enter = ''; observer.disconnect(); }
+      }, { threshold: .4 });
+      observer.observe(final);
+      observers.push(observer);
+    } else if (final) final.dataset.enter = '';
   }
   return () => {
+    disposed = true;
     frames.forEach(id => win.cancelAnimationFrame(id));
     observers.forEach(observer => observer.disconnect());
-    counters.forEach((text, el) => { el.textContent = text; });
+    resize?.disconnect();
     win.removeEventListener('scroll', scroll);
-    win.removeEventListener('resize', scroll);
-    if (pointer) hero?.removeEventListener('pointermove', pointer);
+    win.removeEventListener('resize', fit);
+    doc.removeEventListener('click', click);
+    hero?.removeEventListener('pointermove', pointer);
     delete doc.body.dataset.landingMotion;
-    doc.querySelectorAll<HTMLElement>('[data-enter]').forEach(el => { delete el.dataset.enter; });
-    const weight = doc.querySelector<HTMLElement>('[data-weight]');
-    if (weight) weight.textContent = weight.dataset.to ?? '';
-    devices?.style.removeProperty('--mx');
-    devices?.style.removeProperty('--my');
+    doc.querySelectorAll<HTMLElement>('[data-enter]').forEach(element => { delete element.dataset.enter; });
+    for (const property of ['--mx', '--my', '--py']) hero?.style.removeProperty(property);
   };
 }
