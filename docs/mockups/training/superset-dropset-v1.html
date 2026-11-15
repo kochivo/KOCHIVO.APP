@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Superset and drop set</title>
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700;800&family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0c0d;--deep:#070808;--ink:#f4f4f1;--muted:#a6abb0;--dim:#6f7479;--line:rgb(255 255 255/.08);--lime:#b6e94f;--lime-soft:rgb(182 233 79/.12);--warn:#ff9a73;--warn-soft:rgb(255 154 115/.12);--calm:#9db2ff;--calm-soft:rgb(157 178 255/.12);--g:rgb(255 255 255/.04);--g2:rgb(255 255 255/.065);--hl:rgb(255 255 255/.08);--sh:inset 0 1px 0 var(--hl),0 8px 30px -12px rgb(0 0 0/.7)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Alexandria,sans-serif;background:#050606;color:var(--ink);font-size:13px;padding:24px 20px 40px}
+button{font:inherit;color:inherit;border:0;background:none}
+.n{font-family:Manrope;unicode-bidi:isolate;direction:ltr;display:inline-block;font-variant-numeric:tabular-nums}
+.head{max-width:1700px;margin:0 auto 18px}
+.head h1{font-size:20px;font-weight:700}
+.head p{color:var(--muted);margin-top:4px;line-height:1.7}
+.row{max-width:1700px;margin:0 auto;display:flex;gap:22px;flex-wrap:wrap;justify-content:center}
+.col{display:flex;flex-direction:column;gap:10px;align-items:center}
+.cap{font-size:13px;font-weight:600;color:var(--muted);text-align:center;max-width:390px;line-height:1.6}
+.cap b{color:var(--ink)}
+.phone{width:390px;height:820px;border-radius:40px;border:1px solid var(--line);overflow:hidden;position:relative;
+  background:radial-gradient(100% 60% at 90% -10%,#141b0b 0%,transparent 55%),radial-gradient(80% 60% at 0% 110%,#0d111b 0%,transparent 60%),linear-gradient(180deg,var(--bg),var(--deep));
+  display:flex;flex-direction:column}
+.status{height:44px;flex:none}
+.bar{display:flex;align-items:center;gap:10px;padding:4px 18px 12px}
+.bar h2{font-size:17px;font-weight:700}
+.bar small{display:block;color:var(--muted);font-size:11.5px;font-weight:400}
+.back{width:44px;height:44px;border-radius:14px;background:var(--g);border:1px solid var(--line);display:grid;place-items:center;flex:none}
+.body{flex:1;overflow:hidden;padding:0 16px 16px;display:flex;flex-direction:column;gap:10px}
+.glass{background:var(--g);border:1px solid var(--line);box-shadow:var(--sh);border-radius:18px}
+.strong{background:var(--g2)}
+svg.i{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.chip{height:28px;padding:0 10px;border-radius:99px;background:var(--g2);font-size:11.5px;display:inline-flex;align-items:center;gap:5px;color:var(--muted)}
+.chip.lime{background:var(--lime-soft);color:var(--lime)}
+.chip.warn{background:var(--warn-soft);color:var(--warn)}
+.chip.calm{background:var(--calm-soft);color:var(--calm)}
+.ex{display:flex;align-items:center;gap:10px;padding:12px}
+.thumb{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#1c2116,#101213);border:1px solid var(--line);flex:none;display:grid;place-items:center;color:var(--dim)}
+.ex .t{flex:1;min-width:0}
+.ex .t b{display:block;font-size:14px;font-weight:600}
+.ex .t span{color:var(--muted);font-size:12px}
+.tag{font:800 11px Manrope;width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:var(--lime);color:#0e1206;flex:none}
+.group{border-radius:20px;border:1px solid rgb(182 233 79/.35);background:linear-gradient(180deg,rgb(182 233 79/.06),transparent);padding:8px;display:flex;flex-direction:column;gap:6px;position:relative}
+.group-h{display:flex;align-items:center;gap:8px;padding:4px 6px 2px}
+.group-h b{color:var(--lime);font-size:13px}
+.group-h span{color:var(--muted);font-size:11.5px;margin-inline-start:auto}
+.link{display:flex;align-items:center;justify-content:center;gap:6px;height:22px;color:var(--lime);font-size:11px}
+.link:before,.link:after{content:"";flex:1;height:1px;background:rgb(182 233 79/.3)}
+.addlink{height:48px;border-radius:14px;border:1px dashed rgb(255 255 255/.16);color:var(--muted);display:flex;align-items:center;justify-content:center;gap:8px;font-size:12.5px}
+.btn{height:56px;border-radius:18px;background:var(--lime);color:#0e1206;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 10px 30px -10px rgb(182 233 79/.55),inset 0 1px 0 rgb(255 255 255/.4)}
+.btn2{height:48px;border-radius:16px;background:var(--g2);border:1px solid var(--line);font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px}
+.sheet{margin-top:auto;border-radius:28px 28px 0 0;margin-inline:-16px;margin-bottom:-16px;padding:10px 18px 22px;background:#121415;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:12px;box-shadow:0 -20px 60px rgb(0 0 0/.6)}
+.grab{width:40px;height:5px;border-radius:9px;background:rgb(255 255 255/.18);margin:0 auto 4px}
+.sheet h3{font-size:16px;font-weight:700}
+.sheet p.h{color:var(--muted);font-size:12px;line-height:1.6}
+.seg{display:flex;padding:4px;border-radius:14px;background:var(--g);border:1px solid var(--line)}
+.seg span{flex:1;height:40px;border-radius:10px;display:grid;place-items:center;color:var(--muted);font-size:12.5px}
+.seg span.on{background:var(--g2);color:var(--ink);box-shadow:inset 0 1px 0 var(--hl)}
+.setrow{display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:var(--g);border:1px solid var(--line)}
+.setrow .k{font:800 13px Manrope;color:var(--muted);text-align:center}
+.setrow .v{font-size:13px}
+.setrow.drop{border-color:rgb(255 154 115/.35);background:linear-gradient(90deg,rgb(255 154 115/.07),transparent)}
+.toggle{width:46px;height:28px;border-radius:99px;background:var(--lime);position:relative;flex:none}
+.toggle:after{content:"";position:absolute;top:3px;inset-inline-end:3px;width:22px;height:22px;border-radius:50%;background:#0e1206}
+.toggle.off{background:var(--g2)}
+.toggle.off:after{inset-inline-end:auto;inset-inline-start:3px;background:var(--muted)}
+.field{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 8px 8px 12px;border-radius:14px;background:var(--g);border:1px solid var(--line)}
+.field>span{font-size:13px}
+.step{display:flex;align-items:center;gap:6px}
+.step button{width:44px;height:44px;border-radius:12px;background:var(--g2);border:1px solid var(--line);font-size:20px;display:grid;place-items:center}
+.step .n{min-width:46px;text-align:center;font-size:16px;font-weight:800}
+.preview{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:12px;border-radius:14px;background:var(--warn-soft);color:var(--warn);font-size:12.5px}
+.preview .n{font-weight:800}
+.arrow{opacity:.6}
+.big{font:800 64px/1 Manrope}
+.unit{font-size:16px;color:var(--muted);margin-inline-start:4px}
+.pill{display:flex;gap:6px}
+.pill i{flex:1;height:6px;border-radius:9px;background:var(--g2)}
+.pill i.on{background:var(--lime)}
+.pill i.d{background:var(--warn)}
+.next{display:flex;align-items:center;gap:10px;padding:12px;border-radius:16px;background:var(--lime-soft);border:1px solid rgb(182 233 79/.25)}
+.next b{font-size:13px}
+.next span{color:var(--muted);font-size:11.5px;display:block}
+.stepper{display:grid;grid-template-columns:64px 1fr 64px;align-items:center;gap:8px}
+.stepper button{height:64px;border-radius:18px;background:var(--g2);border:1px solid var(--line);font-size:26px}
+.stepper .mid{text-align:center}
+.stepper .mid small{display:block;color:var(--muted);font-size:11.5px;margin-top:4px}
+.drops{display:flex;flex-direction:column;gap:8px}
+.drop{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:var(--g);border:1px solid var(--line)}
+.drop .lbl{font-size:12px;color:var(--muted)}
+.drop .w{font:800 22px Manrope}
+.drop .r{font-size:12px;color:var(--muted)}
+.drop.done{opacity:.55}
+.drop.now{border-color:rgb(255 154 115/.45);background:linear-gradient(90deg,rgb(255 154 115/.1),transparent);box-shadow:0 0 0 4px rgb(255 154 115/.06)}
+.check{width:30px;height:30px;border-radius:50%;background:var(--lime);color:#0e1206;display:grid;place-items:center}
+.note{font-size:12px;color:var(--muted);line-height:1.7;text-align:center}
+.legend{max-width:1700px;margin:26px auto 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.legend .glass{padding:16px;line-height:1.8}
+.legend h4{font-size:14px;margin-bottom:6px}
+.legend li{color:var(--muted);margin-inline-start:16px}
+</style>
+</head>
+<body>
+<div class="head">
+  <h1>سوبرست ودروب سيت — موكاب</h1>
+  <p>الكابتن يربط تمرينين أو تلاتة في سوبرست، ويخلّي آخر مجموعة في أي تمرين دروب سيت. اللاعب بيلاقيهم جوه التمرين بنفس الترتيب ومن غير ما يحسبهم بنفسه.</p>
+</div>
+
+<div class="row">
+
+<!-- 1. Captain builder -->
+<div class="col">
+<div class="phone">
+  <div class="status"></div>
+  <div class="bar">
+    <div class="back"><svg class="i" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></div>
+    <div><h2>يوم صدر وضهر</h2><small>أحمد سمير · برنامج تضخيم</small></div>
+  </div>
+  <div class="body">
+    <div class="glass ex">
+      <div class="thumb"><svg class="i" viewBox="0 0 24 24"><path d="M6 6v12M18 6v12M3 9v6M21 9v6M6 12h12"/></svg></div>
+      <div class="t"><b>بنش برس بار</b><span><span class="n">4 × 8–10</span> · راحة <span class="n">90</span> ث</span></div>
+      <span class="chip warn">دروب سيت</span>
+    </div>
+
+    <div class="group">
+      <div class="group-h"><b>سوبرست A</b><span>راحة <span class="n">75</span> ث بعد آخر تمرين بس</span></div>
+      <div class="glass ex strong">
+        <span class="tag">A1</span>
+        <div class="t"><b>دمبل برس مايل</b><span><span class="n">3 × 10–12</span></span></div>
+      </div>
+      <div class="link">من غير راحة</div>
+      <div class="glass ex strong">
+        <span class="tag">A2</span>
+        <div class="t"><b>سحب بار واسع</b><span><span class="n">3 × 10–12</span></span></div>
+      </div>
+      <button class="addlink" style="height:40px;font-size:12px">+ ضيف تمرين تالت للسوبرست</button>
+    </div>
+
+    <div class="glass ex">
+      <div class="thumb"><svg class="i" viewBox="0 0 24 24"><path d="M6 6v12M18 6v12M3 9v6M21 9v6M6 12h12"/></svg></div>
+      <div class="t"><b>فتح دمبل</b><span><span class="n">3 × 12–15</span></span></div>
+    </div>
+    <button class="addlink"><svg class="i" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>اربطه مع اللي فوقه في سوبرست</button>
+
+    <div class="glass ex">
+      <div class="thumb"><svg class="i" viewBox="0 0 24 24"><path d="M6 6v12M18 6v12M3 9v6M21 9v6M6 12h12"/></svg></div>
+      <div class="t"><b>سحب كابل أرضي</b><span><span class="n">3 × 10–12</span></span></div>
+    </div>
+    <div style="margin-top:auto" class="btn">حفظ البرنامج</div>
+  </div>
+</div>
+<p class="cap"><b>1. الكابتن — بناء اليوم</b><br>السوبرست بيبان كمجموعة واحدة بلون الليم وحروف A1 وA2. زرار الربط بين أي تمرينين، والراحة بتتحط مرة واحدة للمجموعة كلها.</p>
+</div>
+
+<!-- 2. Captain drop set sheet -->
+<div class="col">
+<div class="phone">
+  <div class="status"></div>
+  <div class="bar">
+    <div class="back"><svg class="i" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></div>
+    <div><h2>بنش برس بار</h2><small>المجموعات</small></div>
+  </div>
+  <div class="body">
+    <div class="setrow"><span class="k">1</span><span class="v"><span class="n">8–10</span> عدة</span><span class="chip">عادية</span></div>
+    <div class="setrow"><span class="k">2</span><span class="v"><span class="n">8–10</span> عدة</span><span class="chip">عادية</span></div>
+    <div class="setrow"><span class="k">3</span><span class="v"><span class="n">8–10</span> عدة</span><span class="chip">عادية</span></div>
+    <div class="setrow drop"><span class="k">4</span><span class="v"><span class="n">8–10</span> عدة + <span class="n">2</span> نزلة</span><span class="chip warn">دروب سيت</span></div>
+
+    <div class="sheet">
+      <div class="grab"></div>
+      <div style="display:flex;align-items:center;gap:10px"><h3 style="flex:1">المجموعة 4 دروب سيت</h3><span class="toggle"></span></div>
+      <p class="h">بعد ما اللاعب يخلص المجموعة، يقلل الوزن ويكمل على طول من غير راحة.</p>
+      <div class="field"><span>عدد النزلات</span><div class="step"><button>−</button><span class="n">2</span><button>+</button></div></div>
+      <div class="field"><span>يقلل الوزن كل مرة</span><div class="step"><button>−</button><span class="n">20%</span><button>+</button></div></div>
+      <div class="seg"><span class="on">لحد الفشل</span><span>عدد عدات</span></div>
+      <div class="preview">مثال لو شال <span class="n">60</span> كجم: <span class="n">60</span><span class="arrow">←</span><span class="n">48</span><span class="arrow">←</span><span class="n">38</span> كجم</div>
+      <div class="btn">تمام</div>
+    </div>
+  </div>
+</div>
+<p class="cap"><b>2. الكابتن — إعداد الدروب سيت</b><br>من شيت المجموعات: يفعّل الدروب على أي مجموعة (غالبًا الأخيرة)، يختار عدد النزلات ونسبة التقليل، ويشوف مثال بالأوزان.</p>
+</div>
+
+<!-- 3. Player superset -->
+<div class="col">
+<div class="phone">
+  <div class="status"></div>
+  <div class="bar">
+    <div class="back"><svg class="i" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></div>
+    <div style="flex:1"><h2>سوبرست A</h2><small>الجولة <span class="n">2</span> من <span class="n">3</span></small></div>
+    <span class="chip lime">A1 ← A2</span>
+  </div>
+  <div class="body">
+    <div class="pill"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></div>
+    <div class="glass strong" style="padding:16px;display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:center;gap:10px"><span class="tag">A1</span><div><b style="font-size:16px">دمبل برس مايل</b><div style="color:var(--muted);font-size:12px">المرة اللي فاتت: <span class="n">22.5</span> كجم × <span class="n">11</span></div></div></div>
+      <div class="stepper">
+        <button>−</button>
+        <div class="mid"><span class="big">22.5</span><span class="unit">كجم</span><small>الوزن</small></div>
+        <button>+</button>
+      </div>
+      <div class="stepper">
+        <button>−</button>
+        <div class="mid"><span class="big" style="font-size:48px">11</span><small>العدات · الهدف <span class="n">10–12</span></small></div>
+        <button>+</button>
+      </div>
+    </div>
+    <div class="next">
+      <span class="tag">A2</span>
+      <div style="flex:1;min-width:0"><b>بعدها على طول: سحب بار واسع</b><span>من غير راحة بينهم. الراحة بعد التاني.</span></div>
+    </div>
+    <div style="margin-top:auto" class="btn">خلصت A1 ← روح لـ A2</div>
+  </div>
+</div>
+<p class="cap"><b>3. اللاعب — جوه السوبرست</b><br>بيشوف هو في أنهي جولة، والتمرين الجاي على طول. مفيش تايمر راحة بين A1 وA2؛ التايمر بيشتغل بعد A2 بس.</p>
+</div>
+
+<!-- 4. Player drop set -->
+<div class="col">
+<div class="phone">
+  <div class="status"></div>
+  <div class="bar">
+    <div class="back"><svg class="i" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></div>
+    <div style="flex:1"><h2>بنش برس بار</h2><small>المجموعة <span class="n">4</span> من <span class="n">4</span></small></div>
+    <span class="chip warn">دروب سيت</span>
+  </div>
+  <div class="body">
+    <div class="pill"><i class="on"></i><i class="on"></i><i class="on"></i><i class="d"></i></div>
+    <p class="note" style="color:var(--warn)">قلل الوزن وكمل على طول — من غير راحة</p>
+    <div class="drops">
+      <div class="drop done">
+        <span class="check"><svg class="i" viewBox="0 0 24 24" style="width:16px;height:16px"><path d="m5 12 5 5L20 7"/></svg></span>
+        <div><div class="lbl">المجموعة الأساسية</div><span class="w">60</span> <span class="r">كجم</span></div>
+        <span class="r"><span class="n">9</span> عدات</span>
+      </div>
+      <div class="drop now">
+        <span class="tag" style="background:var(--warn)">1</span>
+        <div><div class="lbl">النزلة الأولى · <span class="n">−20%</span></div><span class="w">47.5</span> <span class="r">كجم</span></div>
+        <span class="r">لحد الفشل</span>
+      </div>
+      <div class="drop">
+        <span class="tag" style="background:var(--g2);color:var(--muted)">2</span>
+        <div><div class="lbl">النزلة التانية · <span class="n">−20%</span></div><span class="w">37.5</span> <span class="r">كجم</span></div>
+        <span class="r">لحد الفشل</span>
+      </div>
+    </div>
+    <div class="glass strong" style="padding:14px;display:flex;flex-direction:column;gap:10px">
+      <div style="font-size:12.5px;color:var(--muted);text-align:center">عملت كام عدة في النزلة الأولى؟</div>
+      <div class="stepper">
+        <button>−</button>
+        <div class="mid"><span class="big" style="font-size:48px">7</span></div>
+        <button>+</button>
+      </div>
+    </div>
+    <p class="note">الأوزان متقربة لأقرب <span class="n">2.5</span> كجم. تقدر تغيّر الوزن لو الجهاز مختلف.</p>
+    <div style="margin-top:auto" class="btn">خلصت النزلة ← اللي بعدها</div>
+  </div>
+</div>
+<p class="cap"><b>4. اللاعب — الدروب سيت</b><br>الأوزان محسوبة جاهزة من وزن المجموعة الأساسية. كل نزلة بتتسجل لوحدها، فالكابتن يشوفها في المتابعة والأرقام القياسية متتلخبطش.</p>
+</div>
+
+</div>
+
+<div class="legend">
+  <div class="glass"><h4>السوبرست</h4><ul>
+    <li>تمرينين أو تلاتة (A1, A2, A3) بنفس عدد المجموعات.</li>
+    <li>الراحة بعد آخر تمرين في الجولة بس.</li>
+    <li>موجود جزئيًا دلوقتي (ربط وتبادل)؛ هنحسّن شكله وتجربة اللاعب.</li>
+  </ul></div>
+  <div class="glass"><h4>الدروب سيت</h4><ul>
+    <li>على أي مجموعة: من <span class="n">1</span> لـ <span class="n">3</span> نزلات، تقليل من <span class="n">10%</span> لـ <span class="n">40%</span>.</li>
+    <li>العدات: لحد الفشل، أو عدد محدد.</li>
+    <li>جديد: محتاج حقل جديد في خطة المجموعات ومكان لتسجيل النزلات.</li>
+  </ul></div>
+  <div class="glass"><h4>يبان فين كمان</h4><ul>
+    <li>معاينة البرنامج عند اللاعب، والقوالب، ونسخ القالب.</li>
+    <li>ملخص التمرين: «دروب سيت <span class="n">60←48←38</span>».</li>
+    <li>KO يقدر يقترح دروب سيت لما اللاعب يوقف تقدمه.</li>
+  </ul></div>
+</div>
+</body>
+</html>
