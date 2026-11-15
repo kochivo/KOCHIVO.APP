@@ -10,6 +10,7 @@ import type { LibraryPage } from './data/library-types';
 import type { Food } from './types';
 
 const state = vi.hoisted(() => ({ values: [] as unknown[], index: 0, save: vi.fn(), replace: vi.fn(), success: vi.fn(), refresh: vi.fn() }));
+vi.mock('@/lib/captain-workspace-enabled', () => ({ captainWorkspaceEnabled: () => true }));
 vi.mock('react', async original => ({ ...await original<typeof React>(), useEffect: () => {}, useRef: (current: unknown) => ({ current }),
   useState: (initial: unknown) => {
     const index = state.index++;
@@ -68,6 +69,14 @@ it('warns about mismatched macros but still saves and adds the first unit to the
   await submit(props);
   expect(onSaved).toHaveBeenCalledWith(food, 60);
   expect(state.replace).not.toHaveBeenCalled();
+});
+it('keeps the first-unit preview and all macro fields in the responsive editor', () => {
+  const html = renderToStaticMarkup(render());
+  expect(html).toContain('min-[761px]:grid-cols-');
+  expect(html).toContain('Grilled kofta');
+  expect(html).toContain('Piece');
+  expect(html).toContain('138');
+  expect(html).toContain('type="number"');
 });
 it('copies global foods without sending an update ID', async () => {
   await submit({ food: { ...food, custom: false } });

@@ -54,6 +54,14 @@ beforeEach(() => {
   actions.template.mockResolvedValue({ data: 'template-id' });
   actions.save.mockResolvedValue({ ok: true, data: true }); actions.activate.mockResolvedValue({ ok: true, data: true });
 });
+it('leaves the dialog header and footer to ResponsiveDialog while preserving form submission', () => {
+  const html = render('ar', createElement(BriefSheet, { brief, inDialog: true,
+    onChange: vi.fn(), onGenerate: vi.fn(), onClose: vi.fn() }));
+  expect(html).toContain('id="generator-brief"');
+  expect(html).not.toContain('<header');
+  expect(html).not.toContain('<footer');
+  expect(html).toContain(messages.ar.weekdays);
+});
 it('prefills intake weekdays in Saturday-first order and maps experience and duration', () => {
   expect(initialBrief({ trainingDays: [0, 6, 2], experience: 'over_3y', sessionMinutes: 45, injuries: ['knee', 'none'] }, 7))
     .toMatchObject({ weekdays: [0, 1, 3], level: 'advanced', minutes: 45, injuries: ['knee'], seed: 7 });
@@ -97,6 +105,9 @@ it.each(['ar', 'en'] as const)('renders brief, tabs, translated swap labels and 
   const form = render(locale, createElement(BriefSheet, { brief, playerName: 'Sam', onChange: vi.fn(), onGenerate: vi.fn(), onClose: vi.fn() }));
   expect(form).toContain('Sam'); expect(form).toContain(locale === 'ar' ? 'dir="rtl"' : 'dir="ltr"');
   expect(form.indexOf(t('sat'))).toBeLessThan(form.indexOf(t('sun')));
+  expect(form).toContain(t('goal'));
+  expect(form).toContain(t('injuries'));
+  expect(form).toContain(t('generate'));
   const props = { program: week(), onSwap: vi.fn() };
   const preview = render(locale, createElement(GeneratedWeek, props));
   expect(preview).toContain('role="tablist"'); expect(preview).toContain(t('swap'));

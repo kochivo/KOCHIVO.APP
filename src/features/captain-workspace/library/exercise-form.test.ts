@@ -101,6 +101,10 @@ it('renders live draft values and the English fallback in the player preview', (
   expect(preview).toContain('سكوات جديد');
   expect(preview).toContain('بتاعي');
   expect(preview).toContain('دمبل');
+  expect(preview).toContain('<details');
+  expect(preview).toContain('<summary');
+  expect(preview).toContain('انزل بهدوء');
+  expect(preview).toContain('glass-strong');
   const changed = renderToStaticMarkup(createElement(ExercisePreview, { values: { ...values, name: 'بنش', nameEn: 'Bench' } }));
   expect(changed).toContain('Bench');
   expect(changed).toContain('بنش');

@@ -1,4 +1,5 @@
-import Link from 'next/link';
+import { RowLink } from '@/ui/row-link';
+import { Disclosure } from '@/ui/disclosure';
 import Image from 'next/image';
 import { createT } from '@/core/i18n/messages';
 import type { Locale } from '@/core/i18n/locale';
@@ -27,7 +28,7 @@ export function CheckinList({ playerId, profile, locale }: { playerId: string; p
           {row.weightKg !== null && <span>{t('weight')} {n(row.weightKg, t('kg'))}</span>}
           <span>{vt('photoCount', { count: formatNumber(row.photoCount ?? row.photos.length, locale) })}</span>
         </div>
-        <details><summary className="glass inline-flex min-h-12 cursor-pointer items-center rounded-full px-4 text-sm">{vt('open')}</summary>
+        <Disclosure label={vt('open')} className="glass text-sm">
         <dl>{row.waistCm !== null && <FactRow label={t('waist')}>{n(row.waistCm, t('cm'))}</FactRow>}
           {row.bodyFatPct != null && <FactRow label={vt('bodyFat')}>{formatNumber(row.bodyFatPct, locale)}%</FactRow>}
         </dl>
@@ -36,8 +37,8 @@ export function CheckinList({ playerId, profile, locale }: { playerId: string; p
           <Image key={url} src={url} alt={vt('photos')} width={320} height={320} unoptimized className="h-56 w-full rounded-control object-cover" />)}</div>}
         {row.notes?.trim() && <p className="whitespace-pre-wrap text-sm text-muted">{row.notes}</p>}
         {row.reply ? <p className="glass rounded-control p-3 text-sm"><b>{t('yourReply')}: </b>{row.reply}</p> :
-          !row.reviewedAt && <Link href="/captain/inbox" className="glass inline-flex min-h-12 items-center rounded-full border border-line px-4 text-sm text-ink">{t('openInbox')}</Link>}
-        </details>
+          !row.reviewedAt && <RowLink href="/captain/inbox" className="glass mt-3 text-sm">{t('openInbox')}</RowLink>}
+        </Disclosure>
       </li>)}</ul> : <FileReminder playerId={playerId} locale={locale} title={t('noCheckinsTitle')} body={t('noCheckinsBody')} />}
     </section>
     <FileVoiceEntry playerId={playerId} />

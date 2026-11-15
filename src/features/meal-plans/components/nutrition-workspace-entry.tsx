@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import Link from 'next/link';
+import { RowLink } from '@/ui/row-link';
 import { createT } from '@/core/i18n';
 import type { Locale } from '@/core/i18n';
 import { loadPlayerEditor } from '../data/player-editor';
@@ -12,14 +12,14 @@ export async function NutritionWorkspaceEntry({ playerId, locale, view }: { play
   const calc = view === 'calc';
   const href = `/captain/players/${playerId}/nutrition`;
   if (calc) return <div className="grid gap-5">
-    <Link href={href} className="flex min-h-12 items-center text-lime hover:underline focus-visible:underline">{t('plan')}</Link>
+    <RowLink href={href} className="glass">{t('plan')}</RowLink>
     <Suspense fallback={<p role="status">{t('loading')}</p>}>
       <CalculatorContent playerId={playerId} locale={locale} />
     </Suspense></div>;
   const data = await loadPlayerEditor(playerId).catch(() => null);
   if (!data) {
     return <section role="alert" className="glass rounded-card p-5"><p>{t('loadFailed')}</p>
-      <Link href={href} className="glass inline-flex min-h-12 items-center rounded-full border border-line px-4">{t('retry')}</Link></section>;
+      <RowLink href={href} className="glass mt-3">{t('retry')}</RowLink></section>;
   }
   return <PlayerEditorEntry data={data} />;
 }

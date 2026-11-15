@@ -8,7 +8,7 @@ import { useLocale, useT } from '@/core/i18n/client';
 import { loadSupabaseBrowser } from '@/core/supabase/lazy';
 import { Button } from '@/ui/button';
 import { ResponsiveDialog } from '@/ui/responsive-dialog';
-import { injuries } from '../brief';
+import { generatorBriefSchema, injuries } from '../brief';
 import { loadCandidates } from '../data/load-candidates';
 import { saveGenerated } from '../data/save-generated';
 import { initialBrief, useGenerator, alternativesFor } from '../hooks/use-generator';
@@ -63,13 +63,17 @@ export function GenerateButton({ playerId, playerName, intake, profileError = fa
   function regenerate(keep: boolean) {
     state.regenerate(keep); setConfirm(false); setSaveError('');
   }
+  const framedBrief = captainWorkspaceEnabled() && !profileError && !!candidates?.length && !state.program;
   return <>
     <Button id="generator-entry" variant="secondary" className="min-h-12" onClick={() => setOpen(true)}>
       <Sparkles aria-hidden className="size-5" />{t('entry')}
     </Button>
     {open && <ResponsiveDialog modal fallbackId="generator-entry" openerId="generator-entry"
+      title={framedBrief ? t('brief') : undefined}
+      onClose={framedBrief ? () => setOpen(false) : undefined}
+      footer={framedBrief ? <Button type="submit" form="generator-brief" disabled={!generatorBriefSchema.safeParse(state.brief).success}>{t('generate')}</Button> : undefined}
       onDismiss={() => { if (!locked.current) { setOpen(false); setConfirm(false); setSlot(null); } }}
-      aria-labelledby="generator-heading" dir={locale === 'ar' ? 'rtl' : 'ltr'}
+      aria-labelledby={framedBrief ? undefined : 'generator-heading'} dir={locale === 'en' ? 'ltr' : 'rtl'}
       className="sheet fixed inset-0 m-auto max-h-[90dvh] w-[calc(100%_-_2rem)] max-w-3xl overflow-y-auto rounded-card border border-line bg-surface p-5 text-ink sm:p-6">
       {profileError ? <div className="space-y-4">
         <h2 id="generator-heading" className="text-xl font-bold">{t('brief')}</h2>
@@ -84,7 +88,7 @@ export function GenerateButton({ playerId, playerName, intake, profileError = fa
           onClick={() => { setCandidates(null); setLoadError(false); setAttempt(value => value + 1); }}>{t('retry')}</Button>}
         <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} className="min-h-12" onClick={() => setOpen(false)}>{t('close')}</Button>
       </div> : !state.program ? <div className="space-y-4">
-        <BriefSheet brief={state.brief} playerName={playerName} profileWarning={profileWarning} onChange={state.setBrief}
+        <BriefSheet brief={state.brief} playerName={playerName} profileWarning={profileWarning} inDialog={framedBrief} onChange={state.setBrief}
           onGenerate={state.generate} onClose={() => setOpen(false)} />
         {state.error && <p role="alert" className="text-danger">{t('unfilled')}</p>}
       </div> : <fieldset disabled={saving} className="min-w-0 space-y-5">

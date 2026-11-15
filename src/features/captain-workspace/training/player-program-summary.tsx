@@ -28,13 +28,13 @@ export function PlayerProgramSummary({ playerId, program, draftId, today, locale
       <div className="flex flex-wrap items-center gap-2">
         <h2 className="text-sm font-semibold">{program.title}</h2>
         <ProgramWeekPill startedOn={program.startedOn} totalWeeks={program.totalWeeks} today={today} locale={locale} />
-        <button id="player-program-change" onClick={() => setStarting(true)} className="glass ms-auto inline-flex min-h-12 items-center gap-2 rounded-control px-3 text-sm"><Copy aria-hidden className="size-4" />{t('change')}</button>
-        <Link href={`/captain/programs/${program.id}`} prefetch={false} className="inline-flex min-h-12 items-center gap-2 rounded-control bg-lime px-4 text-sm font-semibold text-on-lime"><KoTraining aria-hidden className="size-4" />{t('edit')}</Link>
+        <button id="player-program-change" onClick={() => setStarting(true)} className="glass press ms-auto inline-flex min-h-12 cursor-pointer items-center gap-2 rounded-control border border-line px-3 text-sm focus-visible:ring-2 focus-visible:ring-lime"><Copy aria-hidden className="size-4" />{t('change')}</button>
+        <Link href={`/captain/programs/${program.id}`} prefetch={false} className="press inline-flex min-h-12 cursor-pointer items-center gap-2 rounded-control bg-lime px-4 text-sm font-semibold text-on-lime focus-visible:ring-2 focus-visible:ring-lime"><KoTraining aria-hidden className="size-4" />{t('edit')}</Link>
       </div>
       {program.days.length ? <>
         <div role="tablist" aria-label={t('days')} className="flex w-fit max-w-full gap-1 overflow-x-auto rounded-full border border-line bg-bg/25 p-1">
           {program.days.map(item => <button key={item.id} role="tab" aria-selected={day?.id === item.id} aria-controls={`program-day-${item.id}`} id={`program-tab-${item.id}`} onClick={() => setSelected(item.id)}
-            className={`min-h-12 shrink-0 whitespace-nowrap rounded-full px-3 text-xs ${day?.id === item.id ? 'glass-strong text-ink' : 'text-muted'}`}>{item.title || item.rest ? t('day', { number: formatNumber(item.position, locale), title: item.title || t('restDay') }) : t('dayNumber', { number: formatNumber(item.position, locale) })}</button>)}
+            className={`press min-h-12 shrink-0 cursor-pointer whitespace-nowrap rounded-full px-3 text-xs focus-visible:ring-2 focus-visible:ring-lime ${day?.id === item.id ? 'glass-strong text-ink' : 'text-muted hover:bg-surface-raised'}`}>{item.title || item.rest ? t('day', { number: formatNumber(item.position, locale), title: item.title || t('restDay') }) : t('dayNumber', { number: formatNumber(item.position, locale) })}</button>)}
         </div>
         {day && <div role="tabpanel" id={`program-day-${day.id}`} aria-labelledby={`program-tab-${day.id}`}>
           {day.exercises.length || day.cardio?.length ? <ul>
@@ -45,8 +45,8 @@ export function PlayerProgramSummary({ playerId, program, draftId, today, locale
       </> : <p className="py-4 text-sm text-muted">{t('noDays')}</p>}
     </> : <div className="space-y-3 py-6 text-center">
       <h2 className="font-semibold">{t('empty')}</h2><p className="text-sm text-muted">{t('emptyBody')}</p>
-      {draftId ? <Link href={`/captain/programs/${draftId}`} prefetch={false} className="inline-flex min-h-12 items-center gap-2 rounded-control bg-lime px-4 text-sm font-semibold text-on-lime"><KoTraining aria-hidden className="size-5" />{t('assign')}</Link> :
-        <button id="player-program-change" onClick={() => setStarting(true)} className="inline-flex min-h-12 items-center gap-2 rounded-control bg-lime px-4 text-sm font-semibold text-on-lime"><KoTraining aria-hidden className="size-5" />{t('assign')}</button>}
+      {draftId ? <Link href={`/captain/programs/${draftId}`} prefetch={false} className="press inline-flex min-h-12 cursor-pointer items-center gap-2 rounded-control bg-lime px-4 text-sm font-semibold text-on-lime focus-visible:ring-2 focus-visible:ring-lime"><KoTraining aria-hidden className="size-5" />{t('assign')}</Link> :
+        <button id="player-program-change" onClick={() => setStarting(true)} className="press inline-flex min-h-12 cursor-pointer items-center gap-2 rounded-control bg-lime px-4 text-sm font-semibold text-on-lime focus-visible:ring-2 focus-visible:ring-lime"><KoTraining aria-hidden className="size-5" />{t('assign')}</button>}
     </div>}
     {starting && <Start playerId={playerId} templatesInitially={Boolean(program)} onClose={() => setStarting(false)} />}
   </section>;

@@ -34,8 +34,8 @@ export function WorkspaceCatalog() {
   return <section id="catalog-heading" tabIndex={-1} className="space-y-4" aria-busy={catalog.busy}>
     <PageBarTitle title={t('catalog')} />
     <PageBarActions>
-      <Link href="/captain/billing" aria-label={t('back')} className="grid min-h-12 min-w-12 place-items-center rounded-full border border-line"><KoSend aria-hidden className="size-4 rotate-45 ltr:rotate-225" /></Link>
-      <button disabled={catalog.busy} onClick={() => setPanel({ kind: 'tier' })} className="ms-auto flex min-h-12 items-center gap-2 rounded-full bg-lime px-4 text-sm font-semibold text-on-lime"><KoPlus aria-hidden className="size-4" />{t('newPackage')}</button>
+      <Link href="/captain/billing" aria-label={t('back')} className="press grid min-h-12 min-w-12 cursor-pointer place-items-center rounded-full border border-line bg-surface focus-visible:ring-2 focus-visible:ring-lime"><KoSend aria-hidden className="size-4 rotate-45 ltr:rotate-225" /></Link>
+      <button disabled={catalog.busy} onClick={() => setPanel({ kind: 'tier' })} className="press ms-auto flex min-h-12 cursor-pointer items-center gap-2 rounded-full bg-lime px-4 text-sm font-semibold text-on-lime focus-visible:ring-2 focus-visible:ring-lime"><KoPlus aria-hidden className="size-4" />{t('newPackage')}</button>
     </PageBarActions>
     {(catalog.error || catalog.status === 'error') && <ErrorState message={catalog.error || legacy('loadFailed')} retryLabel={legacy('retry')} onRetry={() => void catalog.retry()} />}
     {tiers.length ? <div className="grid items-start gap-4 min-[761px]:grid-cols-3">{tiers.map(tier => <WorkspaceTierCard key={tier.id} tier={tier} busy={catalog.busy}

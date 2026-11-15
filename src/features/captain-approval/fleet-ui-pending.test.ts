@@ -6,6 +6,7 @@ import { createT } from '@/core/i18n/messages';
 import { PendingIntake } from './components/pending-intake';
 
 const state = vi.hoisted(() => ({ locale: 'en' as 'ar' | 'en', intake: null as object | null, error: null as string | null }));
+vi.mock('@/lib/captain-workspace-enabled', () => ({ captainWorkspaceEnabled: () => true }));
 vi.mock('server-only', () => ({}));
 vi.mock('@/core/i18n/server', () => ({ getLocale: async () => state.locale,
   getT: async (dictionary: Parameters<typeof createT>[0]) => createT(dictionary, state.locale) }));
@@ -24,6 +25,9 @@ it.each(['ar', 'en'] as const)('shows intake only before submission and sign-out
   expect(await render('pending')).toContain('<form');
   state.intake = { current_tool: 'other_app' };
   const pending = await render('pending');
+  expect(pending).toContain('glass-strong');
+  expect(pending).toContain('<header');
+  expect(pending).not.toContain('animate-pulse');
   expect(pending).not.toContain('<form');
   expect(pending).toContain(locale === 'en' ? 'Sign out' : 'تسجيل الخروج');
   expect(await render('rejected')).not.toContain('<form');

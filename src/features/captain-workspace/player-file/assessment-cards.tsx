@@ -4,7 +4,7 @@ import type { RequestData } from '@/features/forms';
 import { formatDateAr, localDate } from '@/lib/dates';
 import { formatNumber } from '@/lib/format';
 import { messages } from './messages';
-import Link from 'next/link';
+import { RowLink } from '@/ui/row-link';
 import { v11Messages } from './v11-messages';
 
 export function AssessmentCards({ requests, locale, timezone, playerId }: { requests: RequestData[]; locale: Locale; timezone: string; playerId: string }) {
@@ -19,6 +19,6 @@ export function AssessmentCards({ requests, locale, timezone, playerId }: { requ
         <dt>{locale === 'en' ? question.label_en ?? question.label_ar : question.label_ar}</dt><dd>{formatNumber(answer.value, locale)}</dd>
       </div>] : [];
     })}</dl>
-    <Link href={`/captain/players/${playerId}/assessments?requestId=${row.request.id}#assessment-details`} prefetch={false} className="mt-2 inline-flex min-h-12 items-center text-sm text-lime">{createT(v11Messages, locale)('open')}</Link>
+    <RowLink href={`/captain/players/${playerId}/assessments?requestId=${row.request.id}#assessment-details`} className="glass mt-3 text-sm">{createT(v11Messages, locale)('open')}</RowLink>
   </section>) : <p className="glass rounded-card p-5 text-sm text-muted">{t('noAssessments')}</p>}</>;
 }

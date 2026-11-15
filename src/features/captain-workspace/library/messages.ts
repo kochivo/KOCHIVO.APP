@@ -2,6 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    videoSection: 'الفيديو', videoUploadLater: 'رفع GIF هييجي بعدين', chooseOne: 'اختار واحدة',
     remove: 'احذف', nameError: 'اكتب الاسم بالعربي، بحد أقصى 60 حرف.', nameEnError: 'الاسم بالإنجليزي أقصى حاجة 120 حرف.',
     targetError: 'العضلة المستهدفة أقصى حاجة 40 حرف.', secondaryError: 'اختار لحد 6 عضلات مساعدة.',
     stepsError: 'ضيف لحد 8 خطوات، كل خطوة من حرف لـ 160 حرف.', videoError: 'اكتب لينك صحيح يبدأ بـ https://، بحد أقصى 500 حرف.',
@@ -28,6 +29,7 @@ export const messages = defineMessages({
     next: 'التالي', previous: 'السابق', count: '{count} تمرين',
   },
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? {
+    videoSection: 'الفيديو', videoUploadLater: 'سيتاح رفع GIF لاحقًا', chooseOne: 'اختر واحدة',
     remove: 'احذف', nameError: 'أدخل الاسم بالعربية، بحد أقصى 60 حرفًا.', nameEnError: 'الاسم بالإنجليزية بحد أقصى 120 حرفًا.',
     targetError: 'العضلة المستهدفة بحد أقصى 40 حرفًا.', secondaryError: 'اختر حتى 6 عضلات مساعدة.',
     stepsError: 'أضف حتى 8 خطوات، من حرف إلى 160 حرفًا لكل خطوة.', videoError: 'أدخل رابطًا صحيحًا يبدأ بـ https://، بحد أقصى 500 حرف.',
@@ -54,6 +56,7 @@ export const messages = defineMessages({
     next: 'التالي', previous: 'السابق', count: '{count} تمرين',
   } as const : undefined; },
   en: {
+    videoSection: 'Video', videoUploadLater: 'GIF upload coming later', chooseOne: 'Choose one',
     remove: 'Remove', nameError: 'Enter an Arabic name, up to 60 characters.', nameEnError: 'English name must be at most 120 characters.',
     targetError: 'Target muscle must be at most 40 characters.', secondaryError: 'Choose up to 6 secondary muscles.',
     stepsError: 'Use up to 8 steps, each 1–160 characters.', videoError: 'Enter a valid https:// link, up to 500 characters.',

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { AtSign, Loader2 } from 'lucide-react';
 import { useT } from '@/core/i18n/client';
 import { Button } from '@/ui/button';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { saveIntake } from '../data/intake';
 import { intakeSchema } from '../schemas';
 import { messages } from '../intake/messages';
@@ -32,8 +33,8 @@ export function IntakeForm({ fullName, whatsapp = '', instagram = '' }: {
     });
   }
   const inputClass = 'glass min-h-12 w-full rounded-control border border-line px-4';
-  return <form onSubmit={submit} aria-labelledby="intake-title" aria-busy={pending} className="glass-strong w-full max-w-2xl space-y-6 rounded-card p-6">
-    <h1 id="intake-title" className="text-2xl font-bold">{t('title')}</h1>
+  return <form onSubmit={submit} aria-labelledby="intake-title" aria-busy={pending} className={captainWorkspaceEnabled() ? 'glass-strong w-full space-y-4 rounded-card p-[18px]' : 'glass-strong w-full max-w-2xl space-y-6 rounded-card p-6'}>
+    {captainWorkspaceEnabled() ? <h2 id="intake-title" className="text-base font-bold">{t('title')}</h2> : <h1 id="intake-title" className="text-2xl font-bold">{t('title')}</h1>}
     <p className="text-muted">{t('description')}</p>
     <label className="block space-y-2"><span>{t('fullName')}</span>
       <input name="full_name" autoComplete="name" defaultValue={fullName} required maxLength={80} disabled={pending} className={inputClass} />

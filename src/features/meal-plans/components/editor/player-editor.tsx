@@ -39,7 +39,7 @@ const SmartNotesPanel = dynamic(() => import('../smart-notes-panel').then(module
 const TargetsBar = dynamic(() => import('../targets-bar').then(module => module.TargetsBar));
 const TargetCalculator = dynamic(() => import('./target-calculator').then(module => module.TargetCalculator));
 
-export function PlayerEditor({ data }: { data: Awaited<ReturnType<typeof loadPlayerEditor>> }) {
+export function PlayerEditor({ data, editableMealNames = false }: { data: Awaited<ReturnType<typeof loadPlayerEditor>>; editableMealNames?: boolean }) {
   const SendIcon = captainWorkspaceEnabled() ? KoSend : Send;
   const t = useT(messages);
   const planT = useT(planMessages);
@@ -88,7 +88,7 @@ export function PlayerEditor({ data }: { data: Awaited<ReturnType<typeof loadPla
     <div className={template ? 'min-w-0' : 'grid min-w-0 items-start gap-4 min-[1001px]:grid-cols-[minmax(0,1fr)_280px]'}>
     <fieldset disabled={state.busy} className="min-w-0">
       {!visible.length && <p className="glass mb-3 rounded-card p-5 text-faint">{t('empty')}</p>}
-      {visible.map((meal, index) => <MealCard key={meal.id} meal={meal} update={update} facts={facts} day={day} first={index === 0} last={index === visible.length - 1} />)}
+      {visible.map((meal, index) => <MealCard key={meal.id} meal={meal} update={update} facts={facts} day={day} editableName={editableMealNames && !template} first={index === 0} last={index === visible.length - 1} />)}
       <Button variant="secondary" className="min-h-12 rounded-full" onClick={() => update(draft => {
         const names = [t('breakfast'), t('lunch'), t('dinner')];
         const next = addMeal(draft, names[visible.length] ?? t('newMeal'), uuidv7());
