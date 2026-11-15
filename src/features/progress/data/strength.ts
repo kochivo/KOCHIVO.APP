@@ -17,7 +17,7 @@ export async function readStrength(snapshot: ProgramSnapshot | null, locale: Loc
   for (const day of snapshot?.days ?? []) {
     for (const exercise of day.exercises) names[exercise.exercise_id] = (locale === 'en' ? exercise.name_en : exercise.name_ar || exercise.name_en) || t('exercise');
   }
-  const sets = logs.filter((log) => !log.deleted_at && dates.has(log.session_id)).map((log) => ({
+  const sets = logs.filter((log) => !log.deleted_at && (log.drop_index ?? 0) === 0 && dates.has(log.session_id)).map((log) => ({
     exercise_id: log.exercise_id, training_date: dates.get(log.session_id) ?? '', weight_kg: log.weight_kg, reps: log.reps,
   }));
   return { sets, names };

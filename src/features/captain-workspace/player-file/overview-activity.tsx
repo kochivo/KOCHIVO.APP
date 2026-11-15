@@ -11,9 +11,11 @@ import { v11Messages } from './v11-messages';
 import { messages } from './messages';
 import { ExerciseImage } from '@/ui/exercise-image';
 import { exerciseMediaUrl } from '@/core/storage/media-url';
+import { messages as setMessages } from '@/lib/training/messages';
 
 export function OverviewActivity({ profile, activity, playerId, locale }: { profile: Profile; activity: FileActivity; playerId: string; locale: Locale }) {
   const t = createT(v11Messages, locale), ft = createT(messages, locale);
+  const st = createT(setMessages, locale);
   const photos = [...profile.checkIns].sort((a, b) => a.weekStart.localeCompare(b.weekStart)).flatMap(row => row.photos[0] ? [{ url: row.photos[0], date: row.weekStart }] : []);
   const first = photos[0], last = photos.at(-1);
   const selected = first ? first === last ? [first] : [first, last].filter(item => item !== undefined) : [];
@@ -34,9 +36,12 @@ export function OverviewActivity({ profile, activity, playerId, locale }: { prof
       {exercises.size ? [...exercises].map(([id, sets]) => <div key={id} className="flex items-center gap-stack border-t border-line-soft py-stack first:border-0">
         {sets[0]?.exercises?.media_path && <ExerciseImage src={exerciseMediaUrl(sets[0].exercises.media_path)} alt="" width={44} height={44} />}
         <div className="min-w-0 flex-1"><h3 className="text-sm">{locale === 'en' ? sets[0]?.exercises?.name_en : sets[0]?.exercises?.name_ar}</h3>
-          <p className="mt-inline text-xs text-muted"><bdi>{formatNumber(sets.length, locale)} × {sets.map(set => set.reps === null ? '' : formatNumber(set.reps, locale)).join(' / ')}</bdi>
-            {sets.some(set => set.weight_kg !== null) && <> · <bdi>{sets.flatMap(set => set.weight_kg === null ? [] : formatNumber(set.weight_kg, locale)).join(' / ')}</bdi> {ft('kg')}</>}
-          </p></div>
+          {sets.filter(set => (set.drop_index ?? 0) === 0).map((set, index) => <div key={index} className="mt-inline text-xs text-muted">
+            <p><bdi>{formatNumber(set.weight_kg ?? 0, locale)} × {formatNumber(set.reps ?? 0, locale)}</bdi> {ft('kg')}</p>
+            {sets.some(row => row.program_exercise_id === set.program_exercise_id && row.set_index === set.set_index && row.drop_index > 0) &&
+              <p className="text-warn">{st('drops', { values: sets.filter(row => row.program_exercise_id === set.program_exercise_id && row.set_index === set.set_index && row.drop_index > 0)
+                .sort((a, b) => a.drop_index - b.drop_index).map(row => `${formatNumber(row.weight_kg ?? 0, locale)} × ${formatNumber(row.reps ?? 0, locale)}`).join('، ') })}</p>}
+          </div>)}</div>
       </div>) : <p className="text-sm text-muted">{t('noWorkout')}</p>}
     </section>
   </div>;

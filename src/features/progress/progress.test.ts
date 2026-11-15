@@ -16,6 +16,13 @@ vi.mock('@/core/offline/ids', async (original) => ({
 }));
 afterEach(() => vi.unstubAllGlobals());
 
+it('excludes drop sets from strength progression', () => {
+  const base = { exercise_id: 'bench', training_date: '2026-11-03', weight_kg: 60, reps: 8, drop_index: 0 };
+  expect(topSets([base, { ...base, weight_kg: 100, drop_index: 1 }], 'bench')).toEqual([
+    { date: '2026-11-03', value: 60, reps: 8 },
+  ]);
+});
+
 function fakeClient(client: object): SupabaseClient<AppDatabase> {
   // This unit double implements only the Auth, Storage and query methods exercised below.
   return client as SupabaseClient<AppDatabase>;

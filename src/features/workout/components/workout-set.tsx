@@ -22,11 +22,16 @@ import { RampLine } from './ramp-line';
 import { NextUp } from './next-up';
 import { targetForSet } from '@/lib/set-plan';
 import { Button } from '@/ui/button';
+import { DropProgress } from './drop-progress';
+import { SupersetCue } from './superset-cue';
+import { messages as setMessages } from '@/lib/training/messages';
+import { supersetTag } from '@/lib/superset';
 
 const FormCheckButton = dynamic(() => import('./form-check-button').then(module => module.FormCheckButton), { ssr: false });
 
 export function WorkoutSet({ state }: { state: ReturnType<typeof useFocusSession> }) {
   const t = useT(messages);
+  const st = useT(setMessages);
   const locale = useLocale();
   const current = state.current;
   const exerciseId = current?.exercise.exercise_id ?? '';
@@ -40,29 +45,38 @@ export function WorkoutSet({ state }: { state: ReturnType<typeof useFocusSession
   const lastSet = state.doneSets.filter(row => row.program_exercise_id === current.exercise.id)
     .sort((a, b) => b.completed_at.localeCompare(a.completed_at))[0];
   const target = current.exercise.set_plan ? { ...current.exercise, ...targetForSet(current.exercise, current.setIndex - 1) } : current.exercise;
+  const dropping = (current.dropIndex ?? 0) > 0;
+  const nextMember = state.next && state.next.exercise.id !== current.exercise.id && current.exercise.superset_group !== null &&
+    state.next.exercise.superset_group === current.exercise.superset_group && current.restAfter === 0;
   return <>
     <div className="flex min-h-[calc(100dvh-160px)] flex-col gap-card-gap">
-      {current.exercise.media_path && <ExerciseLightbox src={exerciseMediaUrl(current.exercise.media_path)} name={name} focus />}
+      <SupersetCue state={state} />
+      {!dropping && current.exercise.media_path && <ExerciseLightbox src={exerciseMediaUrl(current.exercise.media_path)} name={name} focus />}
       <div className="flex flex-col gap-inline"><h1 style={{ fontFamily: 'inherit', fontWeight: 900 }} className="text-2xl leading-normal"><bdi>{name}</bdi></h1>
         <p className="text-row text-muted">{t('v3Set', { current: formatNumber(current.setIndex, locale), total: formatNumber(current.exercise.sets, locale) })}
           {current.exercise.notes && t('v3Coach', { note: current.exercise.notes })}</p>
       </div>
-      <div className="grid grid-cols-2 gap-stack">
-        <WorkoutValue key={`${exerciseId}:${current.setIndex}:weight`} kind="weight" value={state.weight} disabled={blocked || state.bodyweight}
+      {targetForSet(current.exercise, current.setIndex - 1).drop && <span className="self-start rounded-full bg-warn-soft px-stack py-inline text-xs text-warn">{st('drop')}</span>}
+      <DropProgress state={state} />
+      <div className={current.exercise.superset_group !== null || dropping ? 'glass-strong grid gap-stack rounded-card p-card' : 'grid grid-cols-2 gap-stack'}>
+        <WorkoutValue key={`${exerciseId}:${current.setIndex}:${current.dropIndex ?? 0}:weight`} inline={current.exercise.superset_group !== null || dropping} kind="weight" value={state.weight} disabled={blocked || state.bodyweight}
           invalid={state.invalid?.result === 'weight' || state.invalid?.result === 'both'} onChange={state.setWeight} />
-        <WorkoutValue key={`${exerciseId}:${current.setIndex}:reps`} kind="reps" value={state.reps} disabled={blocked}
+        <WorkoutValue key={`${exerciseId}:${current.setIndex}:${current.dropIndex ?? 0}:reps`} inline={current.exercise.superset_group !== null || dropping} kind="reps" value={state.reps} disabled={blocked}
           invalid={state.invalid?.result === 'reps' || state.invalid?.result === 'both'}
           focusInvalid={state.invalid?.result === 'reps' || Boolean(state.bodyweight && state.invalid)} onChange={state.setReps} />
       </div>
-      <WorkoutHint last={state.performance} history={history ?? []} weight={state.weight} reps={state.reps} />
+      {!dropping && <WorkoutHint last={state.performance} history={history ?? []} weight={state.weight} reps={state.reps} />}
       {historyFailed && <button type="button" className="min-h-12 text-xs text-muted" onClick={() => { setHistoryFailed(false); setAttempt(value => value + 1); }}>{t('tryAgain')}</button>}
       {state.invalid && <p id="set-error" role="alert" className="text-danger">{t(state.invalid.result === 'reps' ? 'enterReps' : 'enterWeightAndReps')}</p>}
       {/* Rest sits in the free space above the bottom button so the whole timer stays on screen. */}
       {state.rest.remaining > 0 && <RestPanel remaining={state.rest.remaining} total={state.rest.total} sound={state.rest.sound} onToggleSound={state.rest.toggleSound}
         flashing={state.rest.flashing} onExtend={state.rest.extend} onSkip={state.rest.skip} />}
+      <SupersetCue state={state} next />
       <Button type="button" style={{ fontFamily: 'inherit' }} disabled={blocked} onClick={() => void state.complete()}
         variant={'primary'} block={false} className={"mt-auto flex min-h-[68px] w-full items-center justify-center gap-stack text-xl font-black disabled:opacity-50"}>
-        <KoTraining aria-hidden className="size-6" />{t(state.progress === state.queue.length ? 'v3CompleteWorkout' : 'v3CompleteSet')}
+        <KoTraining aria-hidden className="size-6" />{dropping ? st('finishDrop') : nextMember && state.next ? st('finishMember', {
+          current: supersetTag(state.day.exercises, current.exercise) ?? '', next: supersetTag(state.day.exercises, state.next.exercise) ?? '',
+        }) : t(state.progress === state.queue.length ? 'v3CompleteWorkout' : 'v3CompleteSet')}
       </Button>
     </div>
     <SetDots exercise={current.exercise} currentIndex={current.setIndex} doneSets={state.doneSets} onEdit={state.edit} disabled={state.disabled} />
@@ -75,7 +89,7 @@ export function WorkoutSet({ state }: { state: ReturnType<typeof useFocusSession
           className="min-h-12 rounded-full border border-line-soft px-page-x text-xs text-muted">{t('bodyweight')}</button>}
       </div>
     </details>
-    {Boolean(current.exercise.alternatives?.length) && <ExerciseAlternatives exercise={current.exercise} disabled={state.disabled} onChoose={state.switchExercise} />}
+    {!dropping && Boolean(current.exercise.alternatives?.length) && <ExerciseAlternatives exercise={current.exercise} disabled={state.disabled} onChoose={state.switchExercise} />}
     {state.day.warmup?.ramp && <RampLine day={state.day} exercise={current.exercise} bodyweight={state.bodyweight} last={state.lastSession} />}
     {lastSet && <FormCheckButton exerciseId={lastSet.exercise_id} setLogId={lastSet.id} />}
     {state.next && <NextUp exercise={state.next.exercise} />}

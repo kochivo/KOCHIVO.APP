@@ -13,7 +13,7 @@ export async function remoteLastSession(client: SupabaseClient<AppDatabase>, inp
   const { playerId, exerciseId, beforeSessionId } = input;
   // Captains can read every player's sets, so the player filter is not optional.
   const base = client.from('set_logs').select('id,session_id,set_index,weight_kg,reps,completed_at')
-    .eq('player_id', playerId).eq('exercise_id', exerciseId).is('deleted_at', null);
+    .eq('player_id', playerId).eq('exercise_id', exerciseId).eq('drop_index', 0).is('deleted_at', null);
   const { data, error } = await (beforeSessionId ? base.neq('session_id', beforeSessionId) : base)
     .order('completed_at', { ascending: false }).limit(30);
   if (error) throw new Error('Loading past sets failed');

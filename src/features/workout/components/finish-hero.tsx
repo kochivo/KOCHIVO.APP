@@ -15,6 +15,8 @@ import { ErrorState, LoadingState } from '@/ui';
 import { exerciseName } from '@/lib/display-name';
 import { FinishRecord } from './finish-record';
 import { sessionRecords, formatVolume } from './workout-v3-model';
+import { groupHistory } from '../data/history-grouping';
+import { HistorySets } from './history-sets';
 
 export function FinishHero({ sessionId, workout, extras = false }: { sessionId: string; workout?: WorkoutPointsInput; extras?: boolean }) {
   const t = useT(messages);
@@ -39,6 +41,11 @@ export function FinishHero({ sessionId, workout, extras = false }: { sessionId: 
     const exercise = record && exercises.find(exercise => exercise.exercise_id === record.exercise_id);
     const alternative = record && exercises.flatMap(exercise => exercise.alternative_exercises ?? []).find(exercise => exercise.id === record.exercise_id);
     return { ...finishSummary(rows, sessionId), record,
+      exercises: groupHistory([session], rows)[0]?.exercises.map(group => ({ ...group,
+        name: exerciseName(exercises.find(exercise => exercise.exercise_id === group.id) ??
+          exercises.flatMap(exercise => exercise.alternative_exercises ?? []).find(exercise => exercise.id === group.id) ??
+          { name_ar: null, name_en: wt('unknownExercise') }, locale),
+      })) ?? [],
       recordName: exercise ? exerciseName(exercise, locale) : alternative ? exerciseName(alternative, locale) : wt('unknownExercise'),
       day: plan?.days.find(day => day.id === session.program_day_id)?.title,
       minutes: Math.max(0, Math.round((Date.parse(session.completed_at) - Date.parse(session.started_at)) / 60000)) };
@@ -54,6 +61,7 @@ export function FinishHero({ sessionId, workout, extras = false }: { sessionId: 
         {preview?.counted && <div className="glass-strong rounded-card border border-line-soft p-card"><p className="text-xs text-faint">{t('points')}</p><p className="mt-inline font-display text-h font-extrabold text-lime">+{number(preview.points)}</p></div>}
         <div className="glass-strong rounded-card border border-line-soft p-card"><p className="text-xs text-faint">{t('records')}</p><p className="mt-inline font-display text-h font-extrabold">{number(summary.records)}</p></div>
       </div>
+      {summary.exercises.map(group => <section key={group.id} className="mt-stack space-y-inline"><h3 className="text-sm">{group.name}</h3><HistorySets sets={group.sets} /></section>)}
   </details> : null;
   // The skewed stripes and the edge-bleed gradient extend past the column; clip only sideways so they never add horizontal scroll.
   return <div className="relative flex flex-col gap-card-gap overflow-x-clip pt-[134px]">

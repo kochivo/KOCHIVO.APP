@@ -24,6 +24,14 @@ it('validates integer targets, ranges and nullable RIR', () => {
     expect(setPlanSchema.safeParse([target]).success).toBe(false);
   }
 });
+it('accepts drop prescriptions and rejects unsafe drop settings', () => {
+  const target = { reps_min: 8, reps_max: 12, rir: 2 };
+  expect(setPlanSchema.safeParse([{ ...target, drop: { count: 2, percent: 20, mode: 'failure', reps: null } }]).success).toBe(true);
+  for (const drop of [{ count: 4, percent: 20, mode: 'failure' }, { count: 2, percent: 50, mode: 'failure' },
+    { count: 2, percent: 20, mode: 'reps' }]) {
+    expect(setPlanSchema.safeParse([{ ...target, drop }]).success).toBe(false);
+  }
+});
 it('keeps the set count and target plan in step through draft edits', () => {
   const library = { id: 'exercise', name_ar: null, name_en: 'Bench', body_part: 'chest', equipment: null, media_path: null };
   let draft = addExercise(addDay({ id: 'p', player_id: null, title: 'P', status: 'draft', days: [] }, 'd'), 'd', library, 'r');

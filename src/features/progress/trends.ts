@@ -2,6 +2,7 @@ import { daysBetween } from '@/lib/dates';
 
 export interface TrendPoint { date: string; value: number }
 export interface StrengthSet {
+  drop_index?: number;
   exercise_id: string;
   training_date: string;
   weight_kg: number | null;
@@ -11,7 +12,7 @@ export interface StrengthSet {
 export function topSets(sets: readonly StrengthSet[], exerciseId: string) {
   const days = new Map<string, TrendPoint & { reps: number }>();
   for (const set of sets) {
-    if (set.exercise_id !== exerciseId || set.weight_kg === null) continue;
+    if ((set.drop_index ?? 0) > 0 || set.exercise_id !== exerciseId || set.weight_kg === null) continue;
     const best = days.get(set.training_date);
     const reps = set.reps ?? 0;
     if (!best || set.weight_kg > best.value || (set.weight_kg === best.value && reps > best.reps)) {

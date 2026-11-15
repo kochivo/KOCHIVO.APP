@@ -1,7 +1,7 @@
 import type { KochivoDB, SetLogRow } from '@/core/offline';
 
 export type Performance = Pick<SetLogRow, 'weight_kg' | 'reps'>;
-export type PastSet = Pick<SetLogRow, 'id' | 'session_id' | 'set_index' | 'weight_kg' | 'reps' | 'completed_at'>;
+export type PastSet = Pick<SetLogRow, 'id' | 'session_id' | 'set_index' | 'weight_kg' | 'reps' | 'completed_at' | 'drop_index'>;
 
 /** Every set of the most recent earlier workout that included this exercise, in set order. */
 export interface LastSession {
@@ -9,6 +9,7 @@ export interface LastSession {
 }
 
 export function latestSession(rows: readonly PastSet[]): LastSession | null {
+  rows = rows.filter(row => (row.drop_index ?? 0) === 0);
   const newest = [...rows].sort((a, b) => b.completed_at.localeCompare(a.completed_at) || b.id.localeCompare(a.id))[0];
   if (!newest) return null;
   const sets = rows.filter((row) => row.session_id === newest.session_id).sort((a, b) => a.set_index - b.set_index)

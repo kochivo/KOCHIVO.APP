@@ -14,12 +14,15 @@ import { WarmupCard } from './warmup-card';
 import { WorkoutOverviewExercise } from './workout-overview-exercise';
 import { RampLine } from './ramp-line';
 import { Button } from '@/ui/button';
+import { exerciseGroups, supersetLabel, supersetTag } from '@/lib/superset';
+import { messages as setMessages } from '@/lib/training/messages';
 
 export function WorkoutOverview({ state, progress, onStart, onBack, playerId }: {
   state: ReturnType<typeof useFocusSession>; progress: ReturnType<typeof useWarmupSession>;
   onStart: () => void; onBack: () => void; playerId?: string;
 }) {
   const t = useT(messages);
+  const st = useT(setMessages);
   const locale = useLocale();
   const day = state.day;
   if (!day) return null;
@@ -35,12 +38,24 @@ export function WorkoutOverview({ state, progress, onStart, onBack, playerId }: 
     <WarmupCard warmup={warmup} checked={progress.checked} disabled={progress.loading || progress.error} onToggle={progress.toggle} />
     <b className="px-inline pt-inline text-md">{t('v3Exercises')}</b>
     <ol id="workout-exercises" className="flex flex-col gap-inline">
-      {day.exercises.slice(0, 4).map(exercise => <WorkoutOverviewExercise key={exercise.id} exercise={exercise} sessionId={state.session?.id ?? ''} playerId={playerId} />)}
-      {day.exercises.slice(4).map(exercise => <li key={exercise.id} className="min-h-12 rounded-[22px] border border-dashed border-line-soft px-card text-row text-muted">
+      {exerciseGroups(day.exercises).map(group => {
+        const exercise = group[0];
+        if (!exercise) return null;
+        if (group.length > 1) return <li key={exercise.id} className="space-y-stack rounded-card border border-lime/40 bg-lime-soft p-stack">
+          <header className="flex flex-wrap justify-between gap-inline text-xs"><b className="text-lime">{st('superset', { letter: supersetLabel(day.exercises, exercise) ?? '' })}</b>
+            <span className="text-muted">{st('rest', { seconds: group.at(-1)?.rest_seconds ?? 0 })}</span></header>
+          <ol className="space-y-stack">{group.map((member, index) => <li key={member.id}>
+            {index > 0 && <p className="py-inline text-center text-xs text-lime">{st('noRest')}</p>}
+            <ol><WorkoutOverviewExercise exercise={member} tag={supersetTag(day.exercises, member)} sessionId={state.session?.id ?? ''} playerId={playerId} /></ol>
+          </li>)}</ol>
+        </li>;
+        if (day.exercises.indexOf(exercise) < 4) return <WorkoutOverviewExercise key={exercise.id} exercise={exercise} sessionId={state.session?.id ?? ''} playerId={playerId} />;
+        return <li key={exercise.id} className="min-h-12 rounded-[22px] border border-dashed border-line-soft px-card text-row text-muted">
         <details><summary className="flex min-h-12 cursor-pointer items-center py-stack">{t('v3More', { name: exerciseName(exercise, locale) })}</summary>
           <ol><WorkoutOverviewExercise exercise={exercise} sessionId={state.session?.id ?? ''} playerId={playerId} /></ol>
         </details>
-      </li>)}
+      </li>;
+      })}
     </ol>
     {progress.error && <ErrorState message={t('couldntReadTheWorkoutOnYourPhone')} retryLabel={t('tryAgain')} onRetry={state.retry} />}
     {warmup.ramp && state.current && <RampLine day={day} exercise={state.current.exercise} bodyweight={state.bodyweight} last={state.lastSession} />}

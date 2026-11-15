@@ -102,3 +102,21 @@ it('preserves the logged exercise when the captain removes its alternative befor
     expect(await db.set_logs.get(row.id)).toMatchObject({ exercise_id: 'press', weight_kg: 50 });
   } finally { exercise.alternatives = alternatives; exercise.alternative_exercises = metadata; }
 });
+
+it('keeps drops on the logged main exercise when its alternative is removed before a reload', async () => {
+  const exercise = day.exercises[0];
+  if (!exercise) throw new Error('Missing exercise');
+  const original = { set_plan: exercise.set_plan, alternatives: exercise.alternatives, alternative_exercises: exercise.alternative_exercises };
+  try {
+    exercise.set_plan = [{ reps_min: 12, reps_max: 12, rir: 2, drop: { count: 1, percent: 20, mode: 'failure', reps: null } }];
+    let state = await render(); state.switchExercise('press'); state = await render();
+    state.setWeight(60); state = await render(); await state.complete();
+    exercise.alternatives = []; exercise.alternative_exercises = [];
+    slots = []; values = []; storage.clear();
+    state = await render();
+    expect(state.current?.dropIndex).toBe(1);
+    expect(state.current?.exercise.exercise_id).toBe('press');
+    state.setReps(7); state = await render(); await state.complete();
+    expect((await db.set_logs.toArray()).find(row => row.drop_index === 1)).toMatchObject({ exercise_id: 'press', weight_kg: 47.5, reps: 7 });
+  } finally { Object.assign(exercise, original); }
+});

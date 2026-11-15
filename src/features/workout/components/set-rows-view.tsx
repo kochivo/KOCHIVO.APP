@@ -28,8 +28,8 @@ export function SetRowsView({ state, secondary = false, t, v6t, at, locale, v6, 
     </div>
     {Array.from({ length: current.exercise.sets }, (_, index) => {
       const setIndex = index + 1;
-      const done = state.doneSets.find(row => row.program_exercise_id === current.exercise.id && row.set_index === setIndex);
-      const active = setIndex === current.setIndex;
+      const done = state.doneSets.find(row => row.program_exercise_id === current.exercise.id && row.set_index === setIndex && (row.drop_index ?? 0) === 0);
+      const active = setIndex === current.setIndex && (current.dropIndex ?? 0) === 0;
       const target = targetForSet(current.exercise, index);
       return <div key={setIndex} className="space-y-inline">
         {current.exercise.set_plan && <p className="text-xs text-muted"><bdi>{at('target', { reps: target.reps_max === null ? at('failure') :

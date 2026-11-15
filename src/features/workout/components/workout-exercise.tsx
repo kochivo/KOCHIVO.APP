@@ -13,6 +13,7 @@ import { RestPanel } from './rest-panel';
 import { NextUp } from './next-up';
 import { ExerciseAlternatives } from './exercise-alternatives';
 import { targetForSet } from '@/lib/set-plan';
+import { WorkoutSet } from './workout-set';
 
 const FormCheckButton = dynamic(() => import('./form-check-button').then(module => module.FormCheckButton), { ssr: false });
 const RampLine = dynamic(() => import('./ramp-line').then(module => module.RampLine), { ssr: false });
@@ -24,6 +25,7 @@ export function WorkoutExercise({ state }: { state: ReturnType<typeof useFocusSe
   if (!current) return null;
   const lastSet = state.doneSets.filter(row => row.program_exercise_id === current.exercise.id)
     .sort((a, b) => b.completed_at.localeCompare(a.completed_at))[0];
+  if ((current.dropIndex ?? 0) > 0 || current.exercise.superset_group !== null || current.exercise.set_plan?.some(row => row.drop)) return <WorkoutSet state={state} />;
   return <>
     <ExerciseHeader exercise={current.exercise.set_plan ? { ...current.exercise, ...targetForSet(current.exercise, current.setIndex - 1) }
       : current.exercise} last={state.lastSession} />

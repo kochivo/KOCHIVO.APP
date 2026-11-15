@@ -23,7 +23,7 @@ async function readSets(client: SupabaseClient<AppDatabase>, playerId: string): 
   const rows: HistorySet[] = [];
   for (let offset = 0; ; offset += 500) {
     const { data, error } = await client.from('set_logs')
-      .select('id,session_id,program_exercise_id,exercise_id,set_index,weight_kg,reps,completed_at,client_updated_at,deleted_at')
+      .select('id,session_id,program_exercise_id,exercise_id,set_index,drop_index,weight_kg,reps,completed_at,client_updated_at,deleted_at')
       .eq('player_id', playerId).order('id').range(offset, offset + 499);
     if (error) throw error;
     rows.push(...data);

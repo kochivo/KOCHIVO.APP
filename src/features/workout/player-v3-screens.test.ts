@@ -48,6 +48,14 @@ function find(node: ReactNode, label: string): { onClick?: () => void; disabled?
 function primaryCount(html: string) {
   return (html.match(/<button[^>]*class="[^"]*\bcontrol-primary\b(?!-)/g) ?? []).length;
 }
+it('shows superset groups and drop chips in the player program overview', () => {
+  const first = { ...exercise, superset_group: 1, set_plan: [{ reps_min: 8, reps_max: 12, rir: 2,
+    drop: { count: 2, percent: 20, mode: 'failure' as const, reps: null } }] };
+  const second = { ...exercise, id: 'row2', exercise_id: 'row2', superset_group: 1 };
+  const html = renderToStaticMarkup(createElement(WorkoutOverview, { state: { ...state,
+    day: { ...state.day, id: 'day', title: 'Day', position: 1, exercises: [first, second] } }, progress, onStart() {}, onBack() {} }));
+  expect(html).toContain('سوبرست A'); expect(html).toContain('A1'); expect(html).toContain('A2'); expect(html).toContain('دروب سيت');
+});
 function elementsOf(node: ReactNode, type: unknown): ReactElement<Record<string, unknown>>[] {
   if (Array.isArray(node)) return node.flatMap(child => elementsOf(child, type));
   if (!isValidElement<{ children?: ReactNode }>(node)) return [];

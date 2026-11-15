@@ -9,11 +9,13 @@ import { useLastSession } from '../hooks/use-last-session';
 import { messages } from '../messages';
 import { ExerciseLightbox } from './exercise-lightbox';
 import { ExerciseHeader } from './exercise-header';
+import { messages as setMessages } from '@/lib/training/messages';
 
-export function WorkoutOverviewExercise({ exercise, sessionId, playerId }: {
-  exercise: SnapshotExercise; sessionId: string; playerId?: string;
+export function WorkoutOverviewExercise({ exercise, sessionId, playerId, tag }: {
+  exercise: SnapshotExercise; sessionId: string; playerId?: string; tag?: string | null;
 }) {
   const t = useT(messages);
+  const st = useT(setMessages);
   const locale = useLocale();
   const [failed, setFailed] = useState(false);
   const [attempt, setAttempt] = useState(0);
@@ -27,6 +29,10 @@ export function WorkoutOverviewExercise({ exercise, sessionId, playerId }: {
       {exercise.media_path && <ExerciseLightbox src={exerciseMediaUrl(exercise.media_path)} name={name} thumbnail />}
     </div>
     <div className="flex min-w-0 flex-1 flex-col gap-inline">
+      <div className="flex flex-wrap gap-inline text-xs">
+        {tag && <bdi className="rounded-control bg-lime-soft px-inline py-inline text-lime">{tag}</bdi>}
+        {exercise.set_plan?.some(row => row.drop) && <span className="rounded-full bg-warn-soft px-stack py-inline text-warn">{st('drop')}</span>}
+      </div>
       <b className="text-md"><bdi>{name}</bdi></b>
       <ExerciseHeader exercise={exercise} last={null} prescriptionOnly />
       <span className="text-xs text-muted">{t('v3Prescription', { sets: formatNumber(exercise.sets, locale), reps })}

@@ -4,8 +4,9 @@ export type HistorySet = Omit<SetLogRow, 'program_exercise_id'> & { program_exer
 export type HistorySession = Omit<WorkoutSessionRow, 'program_day_id'> & { program_day_id: string | null };
 export type HistoryWorkout = HistorySession & { exercises: { id: string; sets: HistorySet[] }[]; setCount: number };
 
-export function mergeHistoryRows<T extends { id: string; client_updated_at: string }>(remote: T[], local: T[]): T[] {
-  const rows = new Map(remote.map(row => [row.id, row]));
+type Versioned = { id: string; client_updated_at: string };
+export function mergeHistoryRows<R extends Versioned, L extends Versioned>(remote: R[], local: L[]): (R | L)[] {
+  const rows = new Map<string, R | L>(remote.map(row => [row.id, row]));
   for (const row of local) {
     const existing = rows.get(row.id);
     if (!existing || Date.parse(row.client_updated_at) >= Date.parse(existing.client_updated_at)) rows.set(row.id, row);
@@ -27,12 +28,12 @@ export function groupHistory(sessions: HistorySession[], sets: HistorySet[]): Hi
     b.training_date.localeCompare(a.training_date) || b.started_at.localeCompare(a.started_at) || b.id.localeCompare(a.id))
     .map(row => {
       const exercises = [...(bySession.get(row.id) ?? [])].map(([id, sets]) => ({ id,
-        sets: sets.sort((a, b) => a.set_index - b.set_index || a.completed_at.localeCompare(b.completed_at)) }));
-      return { ...row, exercises, setCount: exercises.reduce((total, exercise) => total + exercise.sets.length, 0) };
+        sets: sets.sort((a, b) => a.set_index - b.set_index || (a.drop_index ?? 0) - (b.drop_index ?? 0) || a.completed_at.localeCompare(b.completed_at)) }));
+      return { ...row, exercises, setCount: exercises.reduce((total, exercise) => total + exercise.sets.filter(set => (set.drop_index ?? 0) === 0).length, 0) };
     });
 }
 
 export function bestSet(sets: HistorySet[]): HistorySet | null {
-  return sets.reduce<HistorySet | null>((best, row) => !best || (row.weight_kg ?? 0) > (best.weight_kg ?? 0) ||
+  return sets.filter(row => (row.drop_index ?? 0) === 0).reduce<HistorySet | null>((best, row) => !best || (row.weight_kg ?? 0) > (best.weight_kg ?? 0) ||
     (row.weight_kg === best.weight_kg && (row.reps ?? 0) > (best.reps ?? 0)) ? row : best, null);
 }

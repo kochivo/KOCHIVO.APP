@@ -19,12 +19,13 @@ export async function startSession(db: KochivoDB, day: Readonly<Pick<SnapshotDay
 }
 
 export type LogSetInput = Pick<SetLogRow,
-  'session_id' | 'program_exercise_id' | 'exercise_id' | 'set_index' | 'weight_kg' | 'reps'>;
+  'session_id' | 'program_exercise_id' | 'exercise_id' | 'set_index' | 'weight_kg' | 'reps' | 'drop_index'>;
 
 export async function logSet(db: KochivoDB, input: LogSetInput, now: number): Promise<void> {
-  const id = await setId(input.session_id, input.program_exercise_id, input.set_index);
+  const drop_index = input.drop_index ?? 0;
+  const id = await setId(input.session_id, input.program_exercise_id, input.set_index, drop_index);
   const timestamp = new Date(now).toISOString();
-  await saveAndQueue(db, 'set_logs', { ...input, id, completed_at: timestamp,
+  await saveAndQueue(db, 'set_logs', { ...input, drop_index, id, completed_at: timestamp,
     client_updated_at: timestamp, deleted_at: null }, now);
 }
 

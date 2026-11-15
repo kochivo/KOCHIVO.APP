@@ -1,9 +1,11 @@
 import type { SnapshotDay, SnapshotExercise } from '@/core/offline';
+import { targetForSet } from '@/lib/set-plan';
 
 export interface WorkoutStep {
   exercise: SnapshotExercise;
   setIndex: number;
   restAfter: number;
+  dropIndex?: number;
 }
 
 export function buildQueue(day: SnapshotDay): WorkoutStep[] {
@@ -18,9 +20,13 @@ export function buildQueue(day: SnapshotDay): WorkoutStep[] {
     const rounds = Math.max(...group.map((item) => item.sets));
     for (let setIndex = 1; setIndex <= rounds; setIndex++) {
       const round = group.filter((item) => item.sets >= setIndex);
-      round.forEach((item, index) => queue.push({
-        exercise: item, setIndex, restAfter: index === round.length - 1 ? item.rest_seconds : 0,
-      }));
+      round.forEach((item, index) => {
+        const count = targetForSet(item, setIndex - 1).drop?.count ?? 0;
+        for (let dropIndex = 0; dropIndex <= count; dropIndex++) queue.push({
+          exercise: item, setIndex, dropIndex,
+          restAfter: dropIndex === count && index === round.length - 1 ? item.rest_seconds : 0,
+        });
+      });
     }
   }
   const final = queue.at(-1);

@@ -22,7 +22,7 @@ export type WorkoutSessionRow = Narrow<LocalRow<'workout_sessions'>, {
 }>;
 
 // Local sets retain their plan exercise; sync nulls deleted plan references on the server.
-export type SetLogRow = Narrow<LocalRow<'set_logs'>, { program_exercise_id: string }>;
+export type SetLogRow = Narrow<LocalRow<'set_logs'>, { program_exercise_id: string; drop_index?: number }>;
 
 // Local meals retain their plan reference and store only item-to-alternative ids in swaps.
 export type MealLogRow = Narrow<LocalRow<'meal_logs'>, { meal_id: string; swaps: Record<string, string> }>;

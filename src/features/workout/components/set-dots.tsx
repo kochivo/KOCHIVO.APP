@@ -18,7 +18,7 @@ export function SetDots({ exercise, currentIndex, doneSets, onEdit, disabled = f
   return <div className="flex flex-wrap gap-inline" aria-label={t('exerciseSets')}>
     {Array.from({ length: exercise.sets }, (_, index) => {
       const setIndex = index + 1;
-      const done = doneSets.find((row) => row.program_exercise_id === exercise.id && row.set_index === setIndex);
+      const done = doneSets.find((row) => row.program_exercise_id === exercise.id && row.set_index === setIndex && (row.drop_index ?? 0) === 0);
       return <button key={setIndex} type="button" disabled={!done || disabled}
         aria-current={setIndex === currentIndex ? 'step' : undefined}
         aria-label={done ? t('editSet', { value0: formatNumber(setIndex, locale) }) : t('setNumber', { value0: formatNumber(setIndex, locale) })}

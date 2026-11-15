@@ -2293,6 +2293,7 @@ export type Database = {
       }
       set_logs: {
         Row: {
+          drop_index: number
           client_updated_at: string
           completed_at: string
           deleted_at: string | null
@@ -2307,6 +2308,7 @@ export type Database = {
           weight_kg: number | null
         }
         Insert: {
+          drop_index?: number
           client_updated_at: string
           completed_at: string
           deleted_at?: string | null
@@ -2321,6 +2323,7 @@ export type Database = {
           weight_kg?: number | null
         }
         Update: {
+          drop_index?: number
           client_updated_at?: string
           completed_at?: string
           deleted_at?: string | null

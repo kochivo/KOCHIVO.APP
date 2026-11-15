@@ -1,0 +1,43 @@
+import { defineMessages } from '@/core/i18n/messages';
+
+export const messages = defineMessages({
+  ar: {
+    superset: 'سوبرست {letter}', noRest: 'من غير راحة', rest: 'راحة {seconds} ث بعد آخر تمرين بس',
+    link: 'اربطه مع اللي فوقه في سوبرست', third: '+ ضيف تمرين تالت للسوبرست',
+    aligned: 'عدد المجموعات اتوحّد على الأكبر', drop: 'دروب سيت', drops: 'دروب: {values}',
+    count: 'عدد النزلات', percent: 'يقلل الوزن كل مرة', failure: 'لحد الفشل', reps: 'عدد عدات',
+    example: 'مثال لو شال 60 كجم: {weights} كجم', hint: 'بعد ما اللاعب يخلص المجموعة، يقلل الوزن ويكمل على طول من غير راحة.',
+    done: 'تمام', close: 'قفل', sets: 'المجموعات', round: 'الجولة {current} من {total}',
+    next: 'بعدها على طول: {name}', nextHint: 'من غير راحة بينهم. الراحة بعد آخر تمرين بس.',
+    finishMember: 'خلصت {current} ← روح لـ {next}', finishDrop: 'خلصت النزلة ← اللي بعدها',
+    reduce: 'قلل الوزن وكمل على طول — من غير راحة', main: 'المجموعة الأساسية',
+    dropNumber: 'النزلة {n} · −{percent}%', rounded: 'الأوزان متقربة لأقرب 2.5 كجم. تقدر تغيّر الوزن لو الجهاز مختلف.',
+    targetReps: '{reps} عدات',
+  },
+  arStd: {
+    superset: 'سوبرست {letter}', noRest: 'بدون راحة', rest: 'راحة {seconds} ث بعد آخر تمرين فقط',
+    link: 'اربطه بالتمرين السابق في سوبرست', third: '+ أضف تمرينًا ثالثًا للسوبرست',
+    aligned: 'تم توحيد عدد المجموعات على العدد الأكبر', drop: 'دروب سيت', drops: 'دروب: {values}',
+    count: 'عدد النزلات', percent: 'تقليل الوزن كل مرة', failure: 'حتى الفشل', reps: 'عدد التكرارات',
+    example: 'مثال عند رفع 60 كجم: {weights} كجم', hint: 'بعد إكمال المجموعة، يقلل اللاعب الوزن ويواصل مباشرة بدون راحة.',
+    done: 'تم', close: 'إغلاق', sets: 'المجموعات', round: 'الجولة {current} من {total}',
+    next: 'التالي مباشرة: {name}', nextHint: 'بدون راحة بين التمارين. الراحة بعد آخر تمرين فقط.',
+    finishMember: 'أكملت {current} ← انتقل إلى {next}', finishDrop: 'أكملت النزلة ← التالية',
+    reduce: 'قلل الوزن وواصل مباشرة بدون راحة', main: 'المجموعة الأساسية',
+    dropNumber: 'النزلة {n} · −{percent}%', rounded: 'الأوزان مقربة لأقرب 2.5 كجم. يمكنك تعديل الوزن حسب الجهاز.',
+    targetReps: '{reps} تكرارات',
+  },
+  en: {
+    superset: 'Superset {letter}', noRest: 'No rest between', rest: 'Rest {seconds}s after the last exercise only',
+    link: 'Link with the one above as a superset', third: '+ Add a third exercise',
+    aligned: 'Set counts aligned to the larger count', drop: 'Drop set', drops: 'Drops: {values}',
+    count: 'Drops', percent: 'Reduce weight each time', failure: 'To failure', reps: 'Set reps',
+    example: 'Example at 60 kg: {weights} kg', hint: 'After the main set, reduce the weight and keep going without rest.',
+    done: 'Done', close: 'Close', sets: 'Sets', round: 'Round {current} of {total}',
+    next: 'Next straight away: {name}', nextHint: 'No rest between. Rest after the last exercise only.',
+    finishMember: 'Finish {current} → go to {next}', finishDrop: 'Finish drop, next',
+    reduce: 'Drop the weight and keep going, no rest', main: 'Main set',
+    dropNumber: 'Drop {n} · −{percent}%', rounded: 'Weights rounded to the nearest 2.5 kg. Adjust for your equipment.',
+    targetReps: '{reps} reps',
+  },
+});

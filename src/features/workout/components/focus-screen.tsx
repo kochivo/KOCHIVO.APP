@@ -56,7 +56,7 @@ export function FocusScreen({ dayId, playerId }: { dayId: string; playerId?: str
   const plannedDay = plan?.days.find(day => day.id === dayId) ?? (state.decision === 'reduce' ? undefined : state.day);
   const workout = state.session?.completed_at && plannedDay ? {
     startedAt: state.session.started_at, completedAt: state.session.completed_at,
-    loggedSets: state.doneSets.length,
+    loggedSets: state.doneSets.filter(row => (row.drop_index ?? 0) === 0).length,
     plannedSets: plannedDay.exercises.reduce((total, exercise) => total + exercise.sets, 0),
     plannedSeconds: plannedDay.exercises.reduce((total, exercise) => total + exercise.sets * (exercise.rest_seconds + 40), 0),
   } : undefined;

@@ -6,7 +6,7 @@ import type { DraftExercise } from '@/features/programs';
 import type { Patch } from './exercise-row';
 import { messages } from './editor/messages';
 import { messages as trainingMessages } from './messages';
-import { SetPlanEditor } from './set-plan-editor';
+import { planLabel } from '@/lib/set-plan';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 
 export function ExerciseFields({ row, onPatch }: { row: DraftExercise; onPatch: (patch: Patch) => void }) {
@@ -15,7 +15,7 @@ export function ExerciseFields({ row, onPatch }: { row: DraftExercise; onPatch: 
   return <div className="grid grid-cols-2 gap-stack min-[761px]:grid-cols-4">
     <div className={box}><Stepper size="compact" label={t('setsLabel')} value={row.sets} min={1} max={20} step={1} onChange={sets => onPatch({ sets })} /></div>
     <div className={box}>
-      {captainWorkspaceEnabled() && row.set_plan ? <SetPlanEditor plan={row.set_plan} onChange={set_plan => onPatch({ set_plan })} /> : <>
+      {captainWorkspaceEnabled() && row.set_plan ? <p className="text-sm tabular-nums">{planLabel(row.set_plan)}</p> : <>
       <div dir="ltr"><Stepper size="compact" label={t('repsLabel')} controlLabel={tt('repsMin', { name })} value={row.reps_min} min={1} max={100} step={1}
         format={minimum => row.reps_max === null ? t('failure') : row.reps_max === minimum ? String(minimum) : `${minimum}–${row.reps_max}`}
         onChange={reps_min => onPatch({ reps_min, reps_max: row.reps_max === null ? null : Math.max(reps_min, row.reps_max) })} /></div>

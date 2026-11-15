@@ -1,9 +1,25 @@
 import { z } from 'zod';
 
+export const dropSchema = z.object({
+  count: z.number().int().min(1).max(3),
+  percent: z.number().int().min(10).max(40),
+  mode: z.enum(['failure', 'reps']),
+  reps: z.number().int().min(1).max(50).nullable().optional(),
+}).strict().refine(drop => drop.mode !== 'reps' || drop.reps != null);
+export type DropConfig = z.infer<typeof dropSchema>;
+
+export function dropWeights(weight: number, count: number, percent: number): number[] {
+  return Array.from({ length: count }, () => {
+    weight = Math.round(weight * (1 - percent / 100) / 2.5) * 2.5;
+    return weight;
+  });
+}
+
 export const setTargetSchema = z.object({
   reps_min: z.number().int().min(1).max(100),
   reps_max: z.number().int().min(1).max(2147483647).nullable(),
   rir: z.number().int().min(0).max(5).nullable(),
+  drop: dropSchema.optional(),
 }).strict().refine(row => row.reps_max === null || row.reps_max >= row.reps_min);
 export const setPlanSchema = z.array(setTargetSchema).min(1).max(20);
 export type SetTarget = z.infer<typeof setTargetSchema>;

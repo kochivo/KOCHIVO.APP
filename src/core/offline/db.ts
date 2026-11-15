@@ -1,11 +1,12 @@
 import Dexie, { type Table } from 'dexie';
+import type { SetTarget } from '@/lib/set-plan';
 import type { DailyCheckRow, SupplementLogRow, SupplementRow } from './tables';
 import type { MealLogRow, SetLogRow, SyncTable, WorkoutSessionRow } from './tables';
 
 export interface SnapshotExercise {
   alternatives?: string[];
   alternative_exercises?: { id: string; name_ar: string | null; name_en: string; media_path: string | null; video_url?: string | null }[];
-  set_plan?: { reps_min: number; reps_max: number | null; rir: number | null }[] | null;
+  set_plan?: SetTarget[] | null;
   id: string;
   exercise_id: string;
   position: number;
@@ -146,6 +147,9 @@ export class KochivoDB extends Dexie {
     this.version(4).stores({ media_queue: '++id, next_attempt_at' });
     this.version(5).stores({ supplement_logs: 'id, &[supplement_id+log_date]', supplements: 'id, player_id' });
     this.version(6).stores({ daily_checks: 'id, log_date' });
+    this.version(7).stores({
+      set_logs: 'id, session_id, &[session_id+program_exercise_id+set_index+drop_index]',
+    }).upgrade(tx => tx.table('set_logs').toCollection().modify({ drop_index: 0 }));
   }
 }
 

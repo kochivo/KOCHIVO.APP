@@ -18,7 +18,7 @@ export async function loadActivity(playerId: string, today: string) {
       .lte('scan_date', today).order('scan_date', { ascending: false }).limit(26),
   ]);
   if (session.error || plan.error || logs.error || scans.error) throw session.error ?? plan.error ?? logs.error ?? scans.error;
-  const sets = session.data ? await client.from('set_logs').select('exercise_id,reps,weight_kg,exercises(name_ar,name_en,media_path)')
+  const sets = session.data ? await client.from('set_logs').select('exercise_id,program_exercise_id,set_index,drop_index,reps,weight_kg,exercises(name_ar,name_en,media_path)')
     .eq('player_id', playerId).eq('session_id', session.data.id).is('deleted_at', null).order('set_index') : null;
   if (sets?.error) throw sets.error;
   const snapshot = plan.data ? mapNutritionSnapshot(plan.data, playerId) : null;
