@@ -14,11 +14,14 @@ import { mealMacros } from '../macros';
 import { starterText } from '@/lib/starter-text';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { messages as v6Messages } from '../v6-messages';
+import { useToast } from '@/ui/toast';
+import { messages as successMessages } from '../success/messages';
 
 export function MealCard({ meal, log, today, planTitle, primary = false }: { meal: NutritionMeal; log?: MealLogRow; today: string; planTitle?: string; primary?: boolean }) {
   const t = useT(messages);
   const v6t = useT(v6Messages);
   const locale = useLocale();
+  const success = useT(successMessages), toast = useToast();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(false);
   const [open, setOpen] = useState(false);
@@ -30,7 +33,8 @@ export function MealCard({ meal, log, today, planTitle, primary = false }: { mea
     setError(false);
     try {
       await setMealEaten(localDb(), { mealId: meal.id, logDate: today, eaten: nextEaten, swaps: nextSwaps }, now);
-    } catch { setError(true); }
+      return true;
+    } catch { setError(true); return false; }
     finally { setBusy(false); }
   }
   function swap(itemId: string, now: number) {
@@ -41,7 +45,10 @@ export function MealCard({ meal, log, today, planTitle, primary = false }: { mea
     const nextSwaps = { ...swaps };
     if (next) nextSwaps[itemId] = next.id;
     else delete nextSwaps[itemId];
-    void save(eaten, nextSwaps, now);
+    void save(eaten, nextSwaps, now).then(ok => {
+      if (ok) { const chosen = next ?? item;
+        toast.success({ title: success('swapped'), detail: success('detail', { name: chosen.name, grams: formatNumber(chosen.grams, locale) }), icon: 'meal' }); }
+    });
   }
   const v6 = captainWorkspaceEnabled();
   const details = <GlassCard className="space-y-4 p-4">

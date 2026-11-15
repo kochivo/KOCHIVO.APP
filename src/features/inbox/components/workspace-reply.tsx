@@ -10,6 +10,7 @@ import type { WorkspaceItem } from '../workspace-types';
 import { useUnsentVoiceGuard } from '../hooks/use-unsent-voice-guard';
 import { workspaceMessages } from '../workspace-messages';
 import { quickReplies } from '../merge';
+import { Button } from '@/ui/button';
 
 export function WorkspaceReply({ item, reply, onDraft, onSend, onDirty, blocked = false }: {
   item: Exclude<WorkspaceItem, { kind: 'request' }>;
@@ -60,10 +61,10 @@ export function WorkspaceReply({ item, reply, onDraft, onSend, onDirty, blocked 
       placeholder={t('placeholder')} maxLength={1000} disabled={pending} className="min-h-[76px] w-full rounded-2xl border border-line bg-transparent px-3.5 py-3 text-start text-sm placeholder:text-faint" /></label>
     {error && <p role="alert" className="text-sm text-danger">{error}</p>}
     <div className="flex flex-wrap items-center gap-2.5">
-      <button type="button" disabled={pending || recording} aria-label={t('voice')} aria-expanded={voice} onClick={() => setVoice(value => !value)} className="grid min-h-12 min-w-12 place-items-center rounded-full border border-line text-muted"><MicIcon className="size-5" strokeWidth={1.5} aria-hidden /></button>
+      <Button type="button" disabled={pending || recording} aria-label={t('voice')} aria-expanded={voice} onClick={() => setVoice(value => !value)} variant={'secondary'} block={false} className={"grid min-h-12 min-w-12 place-items-center text-muted"}><MicIcon className="size-5" strokeWidth={1.5} aria-hidden /></Button>
       <span className="me-auto text-xs text-faint">{t('voice')}</span>
-      <button type="button" disabled={pending || recording || blocked} onClick={() => { void send(true, true); }} className="min-h-12 rounded-full border border-line px-3.5 text-[12.5px] disabled:opacity-50">{t('noReply')}</button>
-      <button disabled={pending || recording || blocked} className="min-h-12 rounded-full bg-lime px-5 font-semibold text-on-lime disabled:opacity-50">{t(pending ? 'sending' : 'sendNext')}</button>
+      <Button type="button" disabled={pending || recording || blocked} onClick={() => { void send(true, true); }} variant={'secondary'} block={false} className={"min-h-12 px-3.5 text-[12.5px] disabled:opacity-50"}>{t('noReply')}</Button>
+      <Button disabled={pending || recording || blocked} type="submit" variant={'primary'} block={false} className={"min-h-12 px-5 font-semibold disabled:opacity-50"}>{t(pending ? 'sending' : 'sendNext')}</Button>
     </div>
   </form>;
 }

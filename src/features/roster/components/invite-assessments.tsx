@@ -5,7 +5,7 @@ import { Lock, Plus, X } from 'lucide-react';
 import { useArabicStyle, useLocale, useT } from '@/core/i18n/client';
 import { FormPreviewEntry } from '@/features/forms';
 import type { FormDraft } from '@/features/forms';
-import { Button } from '@/ui/button';
+import { Button, buttonClass } from '@/ui/button';
 import { formatNumber } from '@/lib/format';
 import { inviteGateState, toggleInviteForm } from '../invite-start-forms';
 import { messages } from '../invites/page-messages';
@@ -24,7 +24,7 @@ export function InviteAssessments({ forms, formIds, gate, onChange }: {
   }, [preview]);
   const state = inviteGateState(formIds, gate);
   const create = `/${locale}/captain/library/forms?template=custom`;
-  const linkClass = 'press glass inline-flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-control border border-line px-4 text-sm hover:bg-ink/10 focus-visible:ring-2 focus-visible:ring-lime';
+  const linkClass = buttonClass({ variant: 'secondary', block: false });
   return <div className="space-y-3">
     <div className="glass-strong flex items-start gap-3 rounded-[16px] p-4">
       <Lock aria-hidden className="mt-2 size-5 shrink-0 text-muted" />

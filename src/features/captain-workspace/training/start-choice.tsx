@@ -6,6 +6,7 @@ import { useT } from '@/core/i18n/client';
 import { useResource } from '@/core/resource';
 import { trainingTemplates } from '@/features/programs';
 import { messages } from './messages';
+import { Button } from '@/ui/button';
 
 export function StartChoice({ templates, onTemplates, onStart, busy, selectedId }: {
   templates: boolean; onTemplates: () => void; onStart: (templateId?: string) => void; busy: boolean;
@@ -33,7 +34,7 @@ export function StartChoice({ templates, onTemplates, onStart, busy, selectedId 
       </button>
     </div>
     {templates && <div className="glass rounded-card border border-line-soft p-5">
-      {list.error ? <p role="alert">{t('error')}<button className="min-h-12 rounded-full border border-line px-3" onClick={() => void list.retry()}>{t('retry')}</button></p> :
+      {list.error ? <p role="alert">{t('error')}<Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-3"} onClick={() => void list.retry()}>{t('retry')}</Button></p> :
         !list.data ? <p role="status" className="text-faint">{t('loading')}</p> :
           list.data.length ? list.data.map(row => <button disabled={busy} aria-pressed={selection ? selectedId === row.id : undefined} className={`my-2 flex min-h-12 w-full items-center rounded-control border border-line-soft px-3 text-start ${selection ? `${selectable} gap-3 hover:bg-surface-raised` : ''}`} key={row.id} onClick={() => onStart(row.id)}>{selection ? <><span className="min-w-0 flex-1">{row.title}</span><ChevronLeft aria-hidden className="dir-icon size-5 shrink-0" /></> : row.title}</button>) : <p className="text-faint">{t('noTemplates')}</p>}
     </div>}

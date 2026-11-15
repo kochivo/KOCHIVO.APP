@@ -2,7 +2,11 @@
 import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 import { useEffect, useState, useTransition } from 'react';
-import { Button, ErrorState, GlassCard, LoadingState, TextField } from '@/ui';
+import { Button } from '@/ui/button';
+import { ErrorState } from '@/ui/error-state';
+import { GlassCard } from '@/ui/glass-card';
+import { LoadingState } from '@/ui/loading-state';
+import { TextField } from '@/ui/text-field';
 import { invitePreview } from '../data/invite-preview';
 import { redeemInvite } from '../data/redeem-invite';
 import { sendEmailCode } from '../data/send-email-code';

@@ -16,6 +16,7 @@ import { V11FormSettings } from './v11-form-settings';
 import { V11QuestionPreview } from './v11-question-preview';
 import { questionTypeLabel } from './v11-question-type';
 import { questionCount } from '../question-count';
+import { Button } from '@/ui/button';
 
 const icons = { number: Hash, text: Type, choice: List, multi: List, yesno: List, scale: Star, photos: Image };
 
@@ -35,7 +36,7 @@ export function V11FormBuilder({ form, locale, style, status, onChange, onRetry,
   return <section className="min-w-0">
     <PageBarTitle title={form.title} subtitle={`${questionCount(form.questions.length, locale, style)} · ${t('sends')} ${schedule}`} />
     <PageBarActions><Link href={`/${locale}/captain/library/forms`} prefetch={false} className="flex min-h-12 items-center px-3 text-sm">{t('back')}</Link>
-      <button type="button" disabled={status === 'saving' || validateForm(form).length > 0} onClick={onRetry} className="min-h-12 rounded-full bg-lime px-5 text-sm font-semibold text-on-lime disabled:opacity-50">{status === 'saving' ? m.saving : t('save')}</button></PageBarActions>
+      <Button type="button" disabled={status === 'saving' || validateForm(form).length > 0} onClick={onRetry} variant={'primary'} block={false} className={"min-h-12 px-5 text-sm font-semibold disabled:opacity-50"}>{status === 'saving' ? m.saving : t('save')}</Button></PageBarActions>
     {status === 'saveError' && <p role="alert" className="mb-3 text-danger">{m.saveError}<button type="button" className="min-h-12 px-3" onClick={onRetry}>{m.retry}</button>
       <button type="button" className="min-h-12 px-3" onClick={onDiscard}>{m.discard}</button></p>}
     {validateForm(form).length > 0 && <p role="status" className="mb-3 text-sm text-muted">{m.invalid}</p>}
@@ -55,14 +56,14 @@ export function V11FormBuilder({ form, locale, style, status, onChange, onRetry,
               </button><button type="button" onClick={() => remove(question.id)} aria-label={m.remove} className="grid min-h-12 min-w-12 place-items-center text-faint"><X aria-hidden className="size-4" /></button>
             </div>;
           })}
-          {q && <div className="mt-2 flex gap-2 min-[761px]:hidden">{([-1, 1] as const).map(direction => <button key={direction} type="button" aria-label={direction === -1 ? m.up : m.down}
-            disabled={index + direction < 0 || index + direction >= form.questions.length} onClick={() => move(index, index + direction)} className="grid min-h-12 min-w-12 place-items-center rounded-control border border-line disabled:opacity-40">
-            {direction === -1 ? <ArrowUp aria-hidden className="size-4" /> : <ArrowDown aria-hidden className="size-4" />}</button>)}</div>}
+          {q && <div className="mt-2 flex gap-2 min-[761px]:hidden">{([-1, 1] as const).map(direction => <Button key={direction} type="button" aria-label={direction === -1 ? m.up : m.down}
+            disabled={index + direction < 0 || index + direction >= form.questions.length} onClick={() => move(index, index + direction)} variant={'secondary'} block={false} className={"grid min-h-12 min-w-12 place-items-center disabled:opacity-40"}>
+            {direction === -1 ? <ArrowUp aria-hidden className="size-4" /> : <ArrowDown aria-hidden className="size-4" />}</Button>)}</div>}
         </section>
         <section className="glass rounded-card border border-line-soft p-4"><h2 className="mb-3 text-sm font-semibold">{t('add')}</h2>
           <div className="grid grid-cols-3 gap-1.5 min-[761px]:grid-cols-5">{(['number', 'text', 'choice', 'scale', 'photos'] as const).map(type => {
             const Icon = icons[type];
-            return <button key={type} type="button" onClick={() => add(type)} className="glass flex min-h-12 flex-col items-center justify-center gap-1 rounded-control border border-line px-1 py-2 text-[11px]"><Icon aria-hidden className="size-4 text-lime" />{questionTypeLabel(type, locale, style)}</button>;
+            return <Button key={type} type="button" onClick={() => add(type)} variant={'secondary'} block={false} className={"flex min-h-12 flex-col items-center justify-center gap-1 px-1 py-2 text-[11px]"}><Icon aria-hidden className="size-4 text-lime" />{questionTypeLabel(type, locale, style)}</Button>;
           })}</div></section>
         <V11FormSettings schedule={schedule} form={form} locale={locale} style={style} onChange={onChange} players={players} scheduleContext={scheduleContext} canManage={status === 'saved' && scheduleContext?.ready !== false} />
         {q && <QuestionEditor key={q.id} question={q} locale={locale} style={style} index={index} count={form.questions.length} onChange={update} onDelete={() => remove(q.id)} onMove={direction => move(index, index + direction)}
@@ -75,7 +76,7 @@ export function V11FormBuilder({ form, locale, style, status, onChange, onRetry,
         <div className="glass-strong flex min-h-[500px] w-[280px] min-w-0 flex-col gap-3.5 rounded-[32px] border border-line px-4 py-5">
           <p className="text-xs text-muted">{t('preview')}</p><div className="flex gap-1" aria-hidden>{form.questions.map((question, n) => <span key={question.id} className={`h-1 flex-1 rounded-full ${n <= index ? 'bg-lime' : 'bg-surface'}`} />)}</div>
           {q ? <V11QuestionPreview key={q.id} question={q} locale={locale} style={style} /> : <p className="text-muted">{m.emptyQuestions}</p>}
-          <button type="button" disabled={!q} onClick={() => setSelected(form.questions[(index + 1) % form.questions.length]?.id)} className="mt-auto min-h-12 rounded-full bg-lime px-5 text-sm font-semibold text-on-lime">{t('next')}</button>
+          <Button type="button" disabled={!q} onClick={() => setSelected(form.questions[(index + 1) % form.questions.length]?.id)} variant={'primary'} block={false} className={"mt-auto min-h-12 px-5 text-sm font-semibold"}>{t('next')}</Button>
         </div>
       </aside>
     </div>

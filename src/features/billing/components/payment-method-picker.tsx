@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useT } from '@/core/i18n/client';
 import { messages } from '../methods/messages';
 import type { AcceptedMethod, PaymentMethod } from '../payment-methods';
+import { Button } from '@/ui/button';
 
 export function PaymentMethodPicker({ methods, value, onChange, optional = false }: {
   methods: AcceptedMethod[]; value: PaymentMethod | null; onChange: (value: PaymentMethod | null) => void; optional?: boolean;
@@ -20,10 +21,10 @@ export function PaymentMethodPicker({ methods, value, onChange, optional = false
     </select>
     {selected?.account_detail && <div className="glass-strong flex items-center justify-between gap-3 rounded-control p-3">
       <span dir="ltr" className="break-all font-display tabular-nums">{selected.account_detail}</span>
-      <button type="button" className="min-h-12 shrink-0 rounded-full border border-line px-4" onClick={async () => {
+      <Button type="button" variant={'secondary'} block={false} className={"min-h-12 shrink-0 px-4"} onClick={async () => {
         try { await navigator.clipboard.writeText(selected.account_detail ?? ''); setFeedback(t('copied')); }
         catch { setFeedback(t('copyFailed')); }
-      }}>{t('copy')}</button>
+      }}>{t('copy')}</Button>
     </div>}
     {feedback && <p role="status" className="text-sm text-muted">{feedback}</p>}
   </fieldset>;

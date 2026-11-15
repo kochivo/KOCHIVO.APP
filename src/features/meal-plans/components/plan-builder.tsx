@@ -29,7 +29,7 @@ export function PlanBuilder({ planId }: { planId: string }) {
           className="min-h-12 rounded-control border border-line bg-surface px-4 text-2xl font-bold" /></label>
       <div className="flex flex-wrap gap-2">
         {!state.dirty && !state.busy && draft.playerId && <SaveTemplateButton kind="nutrition" id={draft.id} title={draft.title} />}
-        <Button variant={draft.playerId ? 'secondary' : 'primary'} disabled={state.busy} onClick={() => void state.persist()}>{draft.playerId ? t('savePlan') : templateT('saveTemplate')}</Button>
+        <Button variant={draft.playerId ? 'secondary' : 'primary'} disabled={state.busy} onClick={() => void state.persist(false, true)}>{draft.playerId ? t('savePlan') : templateT('saveTemplate')}</Button>
         {draft.playerId && <Button disabled={state.busy} onClick={() => void state.persist(true)}>{t('activateForPlayer')}</Button>}
       </div>
     </header>

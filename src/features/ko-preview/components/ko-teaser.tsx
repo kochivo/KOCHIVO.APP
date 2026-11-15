@@ -11,6 +11,7 @@ import type { KoRole } from '@/features/ko-core';
 import { ResponsiveDialog } from '@/ui/responsive-dialog';
 import type { KoTeaserPanel } from './ko-teaser-panel';
 import { koEntryMessages as messages } from '@/features/ko-entry';
+import { Button } from '@/ui/button';
 
 export function KoTeaser({ role, userId, joined: initialJoined, readFailed = false }: {
   role: KoRole; userId: string; joined: boolean; readFailed?: boolean;
@@ -43,7 +44,7 @@ export function KoTeaser({ role, userId, joined: initialJoined, readFailed = fal
         {captainWorkspaceEnabled() ? <IconButton type="button" aria-label={t('close')} onClick={() => setOpen(false)} className="ms-auto grid min-h-12 min-w-12 place-items-center"><X aria-hidden className="size-5" /></IconButton> : <button type="button" aria-label={t('close')} onClick={() => setOpen(false)} className="ms-auto grid min-h-12 min-w-12 place-items-center"><X aria-hidden className="size-5" /></button>}
         {panel.failed ? <>
           <p role="alert">{t('loadError')}</p>
-          <button type="button" onClick={() => void loadPanel()} className="mt-3 min-h-12 rounded-control bg-lime px-4 text-on-lime">{t('retry')}</button>
+          <Button type="button" onClick={() => void loadPanel()} variant={'primary'} block={false} className={"mt-3 min-h-12 px-4"}>{t('retry')}</Button>
         </> : <p role="status">{t('loading')}</p>}
       </ResponsiveDialog>)}
   </>;

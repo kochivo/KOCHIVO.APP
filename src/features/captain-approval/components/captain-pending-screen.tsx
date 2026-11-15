@@ -9,6 +9,7 @@ import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { RowLink } from '@/ui/row-link';
 import { messages } from '../messages';
 import { ApprovalWatcher } from './approval-watcher';
+import { buttonClass } from '@/ui/button';
 
 export async function CaptainPendingScreen({ status }: { status: 'pending' | 'rejected' }) {
   const t = await getT(messages);
@@ -33,7 +34,7 @@ export async function CaptainPendingScreen({ status }: { status: 'pending' | 're
       <h1 id="approval-title" className="text-2xl font-bold">{t(status === 'rejected' ? 'rejectedTitle' : 'title')}</h1>
       <p className="text-muted">{t(status)}</p>
       {status === 'rejected' && whatsapp && <a href={whatsapp}
-        className="flex min-h-12 items-center justify-center rounded-control border border-line px-6 font-bold">{t('support')}</a>}
+        className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-12 items-center justify-center px-6 font-bold" })}>{t('support')}</a>}
       {status === 'pending' && <ApprovalWatcher />}
       <PushToggleCard />
       <SignOutButton variant="danger" className="min-h-12 w-full" />

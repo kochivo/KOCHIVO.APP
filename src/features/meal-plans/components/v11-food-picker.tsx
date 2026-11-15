@@ -29,7 +29,7 @@ export function V11FoodPicker({ onPick, disabled, navigationDisabled = false }: 
     {Boolean(resource.error) && <div role="alert">{t('error')}<Button variant="secondary" onClick={() => void resource.retry()}>{t('retry')}</Button></div>}
     {resource.data && <ul>{!resource.data.length && <li className="py-4 text-sm text-muted">{t('empty')}</li>}{filterFoods(resource.data, tab).map(food => <li key={food.id} className="flex items-center gap-3 border-t border-line-soft py-2">
       <div className="min-w-0 flex-1"><b className="text-sm">{locale === 'en' ? food.nameEn || food.name : food.name}</b><p className="text-xs text-muted">{t('grams', { n: 100 })} · {t('calories', { n: food.kcal })} · {t('protein')} {food.protein}</p></div>
-      <button type="button" disabled={disabled} onClick={() => onPick(food)} aria-label={t('add')} className="grid min-h-12 min-w-12 place-items-center rounded-full border border-line text-lime disabled:opacity-40"><Plus aria-hidden className="size-4" /></button>
+      <Button type="button" disabled={disabled} onClick={() => onPick(food)} aria-label={t('add')} variant={'secondary'} block={false} className={"grid min-h-12 min-w-12 place-items-center text-lime disabled:opacity-40"}><Plus aria-hidden className="size-4" /></Button>
     </li>)}</ul>}
   </section>;
 }

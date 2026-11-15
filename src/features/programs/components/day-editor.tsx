@@ -100,7 +100,7 @@ export function DayEditor({ day, update, usedExerciseIds, first = false, last = 
       id: uuidv7(), day_id: day.id, position: cardio.length + 1, kind: t('walk'), minutes: 20, intensity: 'low', notes: '',
     }]))}>{t('addCardio')}</Button>
     </>}
-    {libraryOpen && <ExerciseDrawer openerId={openerId} usedExerciseIds={usedExerciseIds ?? day.exercises.map(row => row.exercise_id)}
+    {libraryOpen && <ExerciseDrawer openerId={openerId} dayTitle={day.title} usedExerciseIds={usedExerciseIds ?? day.exercises.map(row => row.exercise_id)}
       onClose={() => setLibraryOpen(false)} onAdd={exercise => {
       const id = uuidv7(); update(draft => addExercise(draft, day.id, exercise, id));
     }} />}

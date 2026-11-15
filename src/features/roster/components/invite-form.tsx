@@ -15,6 +15,7 @@ import { messages as pageMessages } from '../invites/page-messages';
 import { PackagePicker } from './package-picker';
 import { InviteAssessments } from './invite-assessments';
 import { InviteSummary } from './invite-summary';
+import { buttonClass } from '@/ui/button';
 
 export function InviteForm({ packages, forms = [], today, busy = false, error, onSave }: {
   packages: InvitePackage[]; forms?: FormDraft[]; today: string; busy?: boolean; error?: string; onSave: (input: PlayerInvite) => void;
@@ -31,7 +32,7 @@ export function InviteForm({ packages, forms = [], today, busy = false, error, o
   const amounts = inviteAmounts(input, pkg);
   const detailsValid = name.trim().length > 0 && name.trim().length <= 60 && normalizeWhatsapp(whatsapp) !== undefined;
   const money = (amount: number) => Number.isFinite(amount) ? t('money', { amount: formatNumber(amount, locale) }) : '—';
-  const linkClass = 'press glass inline-flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-control border border-line px-4 hover:bg-ink/10 focus-visible:ring-2 focus-visible:ring-lime';
+  const linkClass = buttonClass({ variant: 'secondary', block: false });
   function pick(next?: InvitePackage) {
     const value = defaultInvitePlan(next, plan.startsOn);
     setPlan(value); setPrice(String(value.price)); setPaid(String(value.paid));

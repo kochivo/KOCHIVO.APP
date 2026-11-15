@@ -6,6 +6,7 @@ import { ResponsiveDialog } from '@/ui/responsive-dialog';
 import { startTraining } from '@/features/programs';
 import { StartChoice } from './start-choice';
 import { messages } from './player-program-messages';
+import { Button } from '@/ui/button';
 
 export function PlayerProgramStartEntry({ playerId, templatesInitially, onClose }: {
   playerId: string; templatesInitially: boolean; onClose: () => void;
@@ -28,8 +29,7 @@ export function PlayerProgramStartEntry({ playerId, templatesInitially, onClose 
   return <ResponsiveDialog modal openerId="player-program-change" fallbackId="player-program-change"
     title={t(templatesInitially ? 'change' : 'assign')} onClose={close} onDismiss={close}
     className="sheet fixed inset-0 z-50 m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-2xl rounded-card text-ink backdrop:bg-bg-deep/80"
-    footer={<button disabled={busy || selected === null} onClick={() => void start(selected || undefined)}
-      className="press min-h-12 w-full cursor-pointer rounded-control bg-lime px-4 text-sm font-semibold text-on-lime focus-visible:ring-2 focus-visible:ring-lime disabled:opacity-40">{t(templatesInitially ? 'change' : 'assign')}</button>}>
+    footer={<Button disabled={busy || selected === null} onClick={() => void start(selected || undefined)} block>{t(templatesInitially ? 'change' : 'assign')}</Button>}>
     {error && <p role="alert" className="text-sm text-danger">{error}</p>}
     {busy && <p role="status" className="text-sm text-muted">{t('loading')}</p>}
     <StartChoice templates={templates} onTemplates={() => setTemplates(!templates)} onStart={id => setSelected(id ?? '')} selectedId={selected} busy={busy} />

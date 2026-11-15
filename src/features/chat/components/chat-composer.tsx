@@ -6,6 +6,7 @@ import { useT } from '@/core/i18n/client';
 import { useRecorder, voiceNoteMessages } from '@/features/voice-notes';
 import type { VoiceInput } from '../types';
 import { messages } from '../messages';
+import { Button } from '@/ui/button';
 
 export function ChatComposer({ viewer, onSendText, onSendVoice, disabled = false, playerName }: {
   viewer: 'player' | 'captain'; onSendText: (body: string) => Promise<boolean>;
@@ -56,8 +57,8 @@ export function ChatComposer({ viewer, onSendText, onSendVoice, disabled = false
         <span className="text-[13px] text-muted">{state.status === 'recording' ? t('recording') : voiceT('voiceNotes')}</span>
       </div> : <input aria-label={placeholder} placeholder={placeholder} value={text} maxLength={1000} disabled={disabled || state.status === 'requesting'}
         onChange={event => setText(event.target.value)} className="min-h-[52px] min-w-0 flex-1 rounded-full border border-line-soft bg-surface px-4 text-sm text-ink placeholder:text-muted" />}
-      {voice || text.trim() ? <button type="submit" disabled={disabled || busy} aria-label={t('send')}
-        className="flex size-[52px] shrink-0 items-center justify-center rounded-full bg-lime text-on-lime disabled:opacity-50"><KoSend aria-hidden className="size-5 text-on-lime! [&_*]:text-on-lime!" /></button> :
+      {voice || text.trim() ? <Button type="submit" disabled={disabled || busy} aria-label={t('send')}
+        variant={'primary'} block={false} className={"flex size-[52px] shrink-0 items-center justify-center disabled:opacity-50"}><KoSend aria-hidden className="size-5 text-on-lime! [&_*]:text-on-lime!" /></Button> :
         <button type="button" disabled={disabled || state.status === 'requesting'} aria-label={t('record')} onClick={() => void recorder.start()}
           className="flex size-[52px] shrink-0 items-center justify-center rounded-full bg-surface-raised text-ink"><Mic aria-hidden className="size-5" /></button>}
     </form>

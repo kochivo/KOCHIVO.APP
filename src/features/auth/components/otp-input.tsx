@@ -2,7 +2,7 @@
 import { useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 import { useRef } from 'react';
-import { TextField } from '@/ui';
+import { TextField } from '@/ui/text-field';
 
 export function OtpInput({ value, onChange, disabled }: { value: string; onChange: (value: string) => void; disabled?: boolean }) {
   const t = useT(messages);

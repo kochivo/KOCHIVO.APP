@@ -22,11 +22,11 @@ it.each([false, true])('shows one secondary create action and one primary with e
   state.data = { ...catalogFixture, tiers: existing ? catalogFixture.tiers : [], packages: [], offers: [] };
   const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' }, createElement(CatalogScreen)));
   const buttons = [...html.matchAll(/<button\b[^>]*>[\s\S]*?<\/button>/g)].map(match => match[0]);
-  expect(buttons.filter(button => button.includes('primary-surface'))).toHaveLength(1);
+  expect(buttons.filter(button => button.includes('control-primary'))).toHaveLength(1);
   const add = buttons.filter(button => button.includes('+ New package'));
   expect(add).toHaveLength(1);
-  expect(add[0]).toContain('glass');
-  expect(add[0]).not.toContain('primary-surface');
+  expect(add[0]).toContain('control-secondary');
+  expect(add[0]).not.toContain('control-primary');
   expect(html.includes('min-h-[280px]')).toBe(existing);
   expect(html.includes('No packages yet')).toBe(!existing);
 });

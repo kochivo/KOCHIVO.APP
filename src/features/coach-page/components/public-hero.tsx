@@ -8,6 +8,7 @@ import type { Translator } from '@/core/i18n/messages';
 import type { messages } from '../sections/messages';
 import { PublicSpecialties } from './public-specialties';
 import { PublicSpots } from './public-spots';
+import { buttonClass } from '@/ui/button';
 
 export function PublicHero({ coach, signup, whatsapp, requested, t, action, sectionsT }: {
   coach: PublicCoach; signup: string; whatsapp: string | null; requested?: CoachRequestStatus; t: PublicT;
@@ -28,7 +29,7 @@ export function PublicHero({ coach, signup, whatsapp, requested, t, action, sect
       <div data-slot="specialties">{coach.page && <PublicSpecialties items={coach.page.specialties} />}</div>
       {requested ? <PublicRequestStatus requested={requested} t={t} /> : <div className="hidden flex-wrap items-center gap-3 md:flex">
         {action ?? <PublicSignup href={signup} label={t('requestJoin')} />}
-        {whatsapp && <a href={whatsapp} target="_blank" rel="noopener noreferrer" className="glass inline-flex min-h-12 items-center gap-2 rounded-full px-6">
+        {whatsapp && <a href={whatsapp} target="_blank" rel="noopener noreferrer" className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center gap-2 px-6" })}>
           <MessageCircle aria-hidden strokeWidth={1.5} className="size-5" />{t('contactWhatsapp')}
         </a>}
       </div>}

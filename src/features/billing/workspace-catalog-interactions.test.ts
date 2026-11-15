@@ -1,3 +1,4 @@
+import { Button } from '@/ui/button';
 import { isValidElement } from 'react';
 import type { ReactElement } from 'react';
 import type * as React from 'react';
@@ -40,7 +41,7 @@ function editor() {
 }
 beforeEach(() => { state.slots = []; state.data = catalogFixture; state.status = 'ready'; vi.clearAllMocks(); });
 it('opens and closes the existing tier editor from New package', () => {
-  invoke(render().find(node => node.type === 'button' && nodes(node.props.children).length > 0), 'onClick');
+  invoke(render().find(node => (node.type === 'button' || node.type === Button) && nodes(node.props.children).length > 0), 'onClick');
   const panel = editor();
   expect(panel.props.tier).toBeUndefined();
   invoke(panel, 'onClose');

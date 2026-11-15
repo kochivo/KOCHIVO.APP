@@ -3,7 +3,9 @@ import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 import { useState, useTransition } from 'react';
 import { ForgotPasswordFlow } from './forgot-password-flow';
-import { Button, GlassCard, TextField } from '@/ui';
+import { Button } from '@/ui/button';
+import { GlassCard } from '@/ui/glass-card';
+import { TextField } from '@/ui/text-field';
 import { updatePassword } from '../data/update-password';
 import { callAuthAction as runAuthAction } from '../data/client-action';
 

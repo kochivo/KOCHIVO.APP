@@ -4,6 +4,7 @@ import { httpsSocialUrl } from './public-social-url';
 import type { Translator } from '@/core/i18n/messages';
 import type { messages } from '../sections/messages';
 import { PublicFacts } from './public-facts';
+import { buttonClass } from '@/ui/button';
 
 export function PublicAbout({ coach, t, sectionsT }: { coach: PublicCoach; t: PublicT; sectionsT?: Translator<typeof messages> }) {
   const socials = [['whatsapp', MessageCircle], ['instagram', Camera], ['tiktok', Music2], ['facebook', Users], ['youtube', Video], ['x', LinkIcon]] as const;
@@ -19,7 +20,7 @@ export function PublicAbout({ coach, t, sectionsT }: { coach: PublicCoach; t: Pu
       {coach.location && <dl className="glass flex justify-between gap-6 rounded-card p-6"><dt className="text-muted">{t('locationLabel')}</dt><dd>{coach.location}</dd></dl>}
       <div data-slot="facts">{coach.page && sectionsT && <PublicFacts years={coach.page.years_experience} languages={coach.page.languages} t={sectionsT} />}</div>
       {links.length ? <ul className="flex flex-wrap gap-3">{links.map(({ key, Icon, href }) => <li key={key}>
-        <a href={href} aria-label={t(key)} target="_blank" rel="noopener noreferrer" className="glass flex size-12 items-center justify-center rounded-full hover:text-lime">
+        <a href={href} aria-label={t(key)} target="_blank" rel="noopener noreferrer" className={buttonClass({ variant: 'secondary', block: false, className: "flex size-12 items-center justify-center hover:text-lime" })}>
           <Icon aria-hidden strokeWidth={1.5} className="size-5" />
         </a>
       </li>)}</ul> : <p className="text-muted">{t('noSocial')}</p>}

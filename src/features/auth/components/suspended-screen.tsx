@@ -5,6 +5,7 @@ import { messages } from '../messages';
 import { whatsappUrl } from '@/lib/whatsapp';
 import { SignOutButton } from './sign-out-button';
 import { publicConfig } from '@/lib/public-config';
+import { buttonClass } from '@/ui/button';
 
 export async function SuspendedScreen() {
   const t = await getT(messages);
@@ -14,7 +15,7 @@ export async function SuspendedScreen() {
     <section className="glass-strong w-full max-w-md space-y-6 rounded-card p-8" aria-labelledby="suspended-title">
       <h1 id="suspended-title" className="text-2xl font-bold">{t('yourAccountIsPaused')}</h1>
       <p className="text-muted">{t('contactSupportOnWhatsAppToRestore')}</p>
-      {whatsapp && <a className="flex min-h-12 items-center justify-center rounded-control border border-line px-6 font-bold text-ink"
+      {whatsapp && <a className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-12 items-center justify-center px-6 font-bold text-ink" })}
         href={whatsapp}>{t('contactSupportOnWhatsApp')}</a>}
       <SignOutButton />
     </section>

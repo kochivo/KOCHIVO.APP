@@ -1,3 +1,4 @@
+import { Button } from '@/ui/button';
 import { isValidElement } from 'react';
 import type { ReactElement } from 'react';
 import type * as React from 'react';
@@ -19,8 +20,9 @@ import { DaySummary } from './day-summary';
 import { loadLibraryExercise } from './data/editor-actions';
 
 const state = vi.hoisted(() => ({ cursor: 0, values: [] as unknown[], draft: null as ProgramDraft | null,
-  effects: [] as (() => void | (() => void))[], query: '', replace: vi.fn(), saved: null as ProgramDraft | null }));
+  effects: [] as (() => void | (() => void))[], query: '', replace: vi.fn(), saved: null as ProgramDraft | null, success: vi.fn() }));
 vi.mock('server-only', () => ({}));
+vi.mock('@/ui/toast', () => ({ useToast: () => ({ success: state.success, error: vi.fn() }) }));
 vi.mock('./data/editor-actions', async original => ({ ...await original<typeof EditorActions>(), loadLibraryExercise: vi.fn() }));
 vi.mock('@/core/offline/ids', async original => ({ ...await original<typeof Ids>(), uuidv7: () => '01900000-0000-7000-8000-000000000002' }));
 vi.mock('next/navigation', async original => ({ ...await original<typeof Navigation>(),
@@ -100,7 +102,7 @@ it('wires the injury action through row, day and autosave while preserving presc
   const dayTree = nodes(DayExercises(getProps(tree, DayExercises)));
   const rowTree = nodes(TrainingExerciseRow(getProps(dayTree, TrainingExerciseRow)));
   const warning = InjuryNote(getProps(rowTree, InjuryNote));
-  const action = nodes(warning).find(node => node.type === 'button');
+  const action = nodes(warning).find(node => (node.type === 'button' || node.type === Button));
   if (!action) throw new Error('Missing swap button');
   (action.props.onClick as () => void)();
   expect(state.draft?.days[0]?.exercises[0]).toMatchObject({ id: 'row', exercise_id: 'safe', sets: 3, rest_seconds: 90, rir: 2 });
@@ -114,12 +116,12 @@ it('expands the mobile panel with an accessible toggle', () => {
   const props = getProps(editor(), TrainingFacts);
   state.cursor = 0; state.values = [];
   let tree = nodes(TrainingFacts(props));
-  const action = tree.find(node => node.type === 'button');
+  const action = tree.find(node => (node.type === 'button' || node.type === Button));
   expect(action?.props['aria-expanded']).toBe(false);
   (action?.props.onClick as () => void)();
   state.cursor = 0;
   tree = nodes(TrainingFacts(props));
-  expect(tree.find(node => node.type === 'button')?.props['aria-expanded']).toBe(true);
+  expect(tree.find(node => (node.type === 'button' || node.type === Button))?.props['aria-expanded']).toBe(true);
   expect(tree.find(node => node.props.id === 'player-facts-p')?.props.className).toContain('block');
 });
 it('does not pass player facts or injury data into template screens', () => {
@@ -141,4 +143,5 @@ it('consumes the return query into the selected day, saves it, then removes the 
   expect(state.saved?.days[0]?.exercises).toHaveLength(1);
   expect(state.saved?.days[1]?.exercises).toHaveLength(2);
   expect(state.saved?.days[1]?.exercises[1]).toMatchObject({ exercise_id: 'new', day_id: 'two' });
+  expect(state.success).toHaveBeenCalledWith({ title: 'Added to program', detail: 'Bench · Two', icon: 'program' });
 });

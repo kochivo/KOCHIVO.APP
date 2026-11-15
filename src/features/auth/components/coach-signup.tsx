@@ -1,7 +1,9 @@
 'use client';
 import { useState, useTransition } from 'react';
 import { useLocale, useT } from '@/core/i18n/client';
-import { Button, GlassCard, TextField } from '@/ui';
+import { Button } from '@/ui/button';
+import { GlassCard } from '@/ui/glass-card';
+import { TextField } from '@/ui/text-field';
 import { LanguageSwitch } from '@/ui/language-switch';
 import { messages } from '../messages';
 import { signUpPlayer, verifyPlayerCode } from '../data/sign-up-player';

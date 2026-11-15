@@ -16,6 +16,7 @@ import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import dynamic from 'next/dynamic';
 import { InjuryNote } from './injury-note';
 import type { TaggedExercise } from './fit-checks';
+import { Button } from '@/ui/button';
 
 const AlternativesSheet = dynamic(() => import('./alternatives-sheet').then(module => module.AlternativesSheet));
 
@@ -35,8 +36,8 @@ export function TrainingExerciseRow({ row, onPatch, onRemove, onMove, onLink, fi
   return <li style={style} className={`border-t border-line-soft ${row.superset_group !== null ? 'mx-[18px] border-s-[3px] border-s-lime' : ''}`}>
     {groupStart && <p className="px-[18px] pt-2 text-[11px] text-lime">{t('superset')}</p>}
     <div className={`flex items-center gap-2 px-[18px] ${open ? 'bg-surface/30' : ''}`}>
-        <button {...dragProps} aria-label={tt('reorder', { name })} className="hidden min-h-12 min-w-12 touch-none items-center justify-center rounded-full border border-line-soft text-muted min-[761px]:flex"
-        onKeyDown={event => { if (event.key === 'ArrowUp' || event.key === 'ArrowDown') { event.preventDefault(); onMove(event.key === 'ArrowUp' ? -1 : 1); } }}><GripVertical aria-hidden className="size-4" /></button>
+        <Button {...dragProps} aria-label={tt('reorder', { name })} type="submit" variant={'secondary'} block={false} className={"hidden min-h-12 min-w-12 touch-none items-center justify-center text-muted min-[761px]:flex"}
+        onKeyDown={event => { if (event.key === 'ArrowUp' || event.key === 'ArrowDown') { event.preventDefault(); onMove(event.key === 'ArrowUp' ? -1 : 1); } }}><GripVertical aria-hidden className="size-4" /></Button>
       <button aria-expanded={open} aria-controls={`exercise-${row.id}`} onClick={() => setOpen(value => !value)} className="grid min-h-16 min-w-0 flex-1 grid-cols-[44px_minmax(0,1fr)_24px] items-center gap-3 py-3 text-start min-[761px]:grid-cols-[44px_minmax(0,1fr)_64px_64px_64px_24px]">
         {row.library?.media_path ? <ExerciseImage src={exerciseMediaUrl(row.library.media_path)} alt="" width={44} height={44} className="size-11 rounded-xl border border-line object-cover" /> :
           <span className="glass-strong grid size-11 place-items-center rounded-xl border border-line"><Dumbbell aria-hidden className="size-4 text-faint" /></span>}
@@ -50,15 +51,15 @@ export function TrainingExerciseRow({ row, onPatch, onRemove, onMove, onLink, fi
       <ExerciseFields row={row} onPatch={onPatch} />
       <textarea aria-label={t('note')} placeholder={t('note')} value={row.notes ?? ''} maxLength={200} rows={2} className="min-h-12 w-full rounded-control border border-line bg-transparent px-3.5 py-3 text-sm text-ink" onChange={event => onPatch({ notes: event.target.value || null })} />
       <div className="flex flex-wrap items-center gap-2">
-        {enabled && <button id={`alternatives-${row.id}`} className="min-h-12 rounded-full border border-line-soft px-3 text-xs"
+        {enabled && <Button id={`alternatives-${row.id}`} type="submit" variant={'secondary'} block={false} className={"min-h-12 px-3 text-xs"}
           onClick={() => setAlternativesOpen(true)}>{t('alternatives')}{Boolean(row.alternatives?.length) &&
-            <span className="ms-1.5 rounded-full bg-lime-soft px-2 py-1 text-lime">{row.alternatives?.length}</span>}</button>}
-        <button disabled={last && row.superset_group === null} className="min-h-12 rounded-full border border-line-soft px-3 text-xs disabled:opacity-40" onClick={onLink}>{t(row.superset_group === null ? 'link' : 'unlink')}</button>
+            <span className="ms-1.5 rounded-full bg-lime-soft px-2 py-1 text-lime">{row.alternatives?.length}</span>}</Button>}
+        <Button disabled={last && row.superset_group === null} type="submit" variant={'secondary'} block={false} className={"min-h-12 px-3 text-xs disabled:opacity-40"} onClick={onLink}>{t(row.superset_group === null ? 'link' : 'unlink')}</Button>
         {enabled && <button aria-pressed={Boolean(row.set_plan)} className="min-h-12 rounded-full border border-line-soft px-3 text-xs"
           onClick={() => onPatch({ set_plan: row.set_plan ? null : uniformPlan(row) })}>{t('differentSets')}</button>}
-        <button disabled={first} aria-label={tt('moveUp', { name })} className="grid min-h-12 min-w-12 place-items-center rounded-full border border-line-soft disabled:opacity-40" onClick={() => onMove(-1)}><ArrowUp aria-hidden className="size-4" /></button>
-        <button disabled={last} aria-label={tt('moveDown', { name })} className="grid min-h-12 min-w-12 place-items-center rounded-full border border-line-soft disabled:opacity-40" onClick={() => onMove(1)}><ArrowDown aria-hidden className="size-4" /></button>
-        <button aria-label={tt('remove', { name })} className="ms-auto min-h-12 rounded-full border border-line-soft px-3 text-xs text-danger" onClick={onRemove}>{t('remove')}</button>
+        <Button disabled={first} aria-label={tt('moveUp', { name })} type="submit" variant={'secondary'} block={false} className={"grid min-h-12 min-w-12 place-items-center disabled:opacity-40"} onClick={() => onMove(-1)}><ArrowUp aria-hidden className="size-4" /></Button>
+        <Button disabled={last} aria-label={tt('moveDown', { name })} type="submit" variant={'secondary'} block={false} className={"grid min-h-12 min-w-12 place-items-center disabled:opacity-40"} onClick={() => onMove(1)}><ArrowDown aria-hidden className="size-4" /></Button>
+        <Button aria-label={tt('remove', { name })} type="submit" variant={'secondary'} block={false} className={"ms-auto min-h-12 px-3 text-xs text-danger"} onClick={onRemove}>{t('remove')}</Button>
       </div>
     </div>}
     {enabled && alternativesOpen && <AlternativesSheet row={row} onPatch={onPatch} onClose={() => setAlternativesOpen(false)} />}

@@ -16,6 +16,7 @@ import type { Translator } from '@/core/i18n/messages';
 import type { messages as sectionMessages } from '../sections/messages';
 import { PublicNumbers } from './public-numbers';
 import { PublicWaitlist, type WaitlistLabels } from './public-waitlist';
+import { buttonClass } from '@/ui/button';
 
 function waitlistLabels(t?: Translator<typeof sectionMessages>): WaitlistLabels {
   const keys = ['waitlist', 'waitlisted', 'member', 'failure', 'pending'] as const;
@@ -59,7 +60,7 @@ export function PublicCoachLayout({ coach, slug, requested, t, pricing, sections
     </footer>
     {!requested && <PublicDock>
       {action}
-      {whatsapp && <a href={whatsapp} aria-label={t('contactWhatsapp')} target="_blank" rel="noopener noreferrer" className="glass flex min-h-12 min-w-12 items-center justify-center rounded-full px-4">
+      {whatsapp && <a href={whatsapp} aria-label={t('contactWhatsapp')} target="_blank" rel="noopener noreferrer" className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-12 min-w-12 items-center justify-center px-4" })}>
         <MessageCircle aria-hidden strokeWidth={1.5} className="size-5" />
       </a>}
     </PublicDock>}

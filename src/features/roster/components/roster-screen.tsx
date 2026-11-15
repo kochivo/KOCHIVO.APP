@@ -17,6 +17,7 @@ import { RosterRow } from './roster-row';
 import { PlayersEmptyState } from './players-empty-state';
 import Link from 'next/link';
 import { useDemoExpiry } from '@/features/demo';
+import { buttonClass } from '@/ui/button';
 
 
 export function RosterScreen({ data, today, plan }: { data: Promise<[RosterResult, string]>; today: string; plan?: ReactNode }) {
@@ -52,7 +53,7 @@ export function RosterScreen({ data, today, plan }: { data: Promise<[RosterResul
   const statuses = players.map((player) => ({ player, status: playerStatus({ ...player, today }) }));
   const visible = statuses.filter(({ player, status }) => (filter === 'all' || status === filter)
     && player.fullName.includes(search.trim()));
-  const inviteButton = <Link href="/captain/players/new" className="press inline-flex min-h-12 cursor-pointer items-center gap-2 rounded-control bg-lime px-4 font-bold text-on-lime focus-visible:ring-2 focus-visible:ring-lime"><Plus aria-hidden className="size-5" />{demo ? t('invitesAreDisabledInTheDemo') : t('newPlayer')}</Link>;
+  const inviteButton = <Link href="/captain/players/new" className={buttonClass({ variant: 'primary', block: false, className: "press inline-flex min-h-12 cursor-pointer items-center gap-2 px-4 font-bold focus-visible:ring-2 focus-visible:ring-lime" })}><Plus aria-hidden className="size-5" />{demo ? t('invitesAreDisabledInTheDemo') : t('newPlayer')}</Link>;
   return (
     <section className="space-y-6">
       <header className="flex flex-wrap items-end justify-between gap-4">

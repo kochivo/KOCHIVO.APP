@@ -1,7 +1,7 @@
 'use client';
 import { useState, useTransition } from 'react';
 import { useLocale, useT } from '@/core/i18n/client';
-import { Button } from '@/ui';
+import { Button } from '@/ui/button';
 import { messages } from '../messages';
 import { callAuthAction } from '../data/client-action';
 import type { ActionResult } from '../data/auth-client';

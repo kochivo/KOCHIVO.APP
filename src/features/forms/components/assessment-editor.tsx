@@ -20,6 +20,7 @@ import { assessmentSummary } from '../assessment-summary';
 import { messages } from '../assessments/messages';
 import { AssessmentFields } from './assessment-fields';
 import { ThemedSelect } from './themed-select';
+import { buttonClass } from '@/ui/button';
 
 export function AssessmentEditor({ data, player, formId, initial, locale, onSave, onSaved, onCancel, now }: {
   data: AssessmentWorkspaceData; player?: string; formId?: string; initial?: AssessmentSchedule; locale: Locale;
@@ -48,7 +49,7 @@ export function AssessmentEditor({ data, player, formId, initial, locale, onSave
       <h2 className="mb-3 font-display text-[19px] font-semibold">{t('which')}</h2>
       <div className="flex flex-wrap gap-2">{data.forms.map(f => <Chip key={f.id} pressed={s.form_id === f.id}
         className="aria-pressed:border-ink aria-pressed:bg-ink aria-pressed:text-bg-deep" onClick={() => set({ ...s, form_id: f.id })}>{f.title}</Chip>)}
-        <Link prefetch={false} href={`/${locale}/captain/library/forms?template=checkin`} className="inline-flex min-h-12 items-center gap-2 rounded-full border border-line-soft px-4"><PlusIcon aria-hidden className="size-4" />{t('new')}</Link>
+        <Link prefetch={false} href={`/${locale}/captain/library/forms?template=checkin`} className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center gap-2 px-4" })}><PlusIcon aria-hidden className="size-4" />{t('new')}</Link>
       </div>
       {!data.forms.length && <p className="py-3 text-faint">{t('empty')}</p>}
       {!player && <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-muted"><span>{t('target')}</span>

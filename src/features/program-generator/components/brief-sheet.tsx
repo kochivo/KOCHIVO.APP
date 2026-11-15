@@ -23,10 +23,10 @@ export function BriefSheet({ brief, playerName, profileWarning = false, inDialog
     onSubmit={event => { event.preventDefault(); if (generatorBriefSchema.safeParse(brief).success) onGenerate(); }}>
     {!inDialog && <header className={captainWorkspaceEnabled() ? 'captain-dialog-header flex items-center justify-between gap-4' : undefined}>
       <h2 id="generator-heading" className="text-2xl font-bold">{t('brief')}</h2>
-      {captainWorkspaceEnabled() && <button type="button" onClick={onClose} aria-label={t('close')}
-        className="press flex min-h-12 min-w-12 cursor-pointer items-center justify-center rounded-control border border-line bg-surface-raised focus-visible:ring-2 focus-visible:ring-lime">
+      {captainWorkspaceEnabled() && <Button type="button" onClick={onClose} aria-label={t('close')}
+        variant={'secondary'} block={false} className={"press flex min-h-12 min-w-12 cursor-pointer items-center justify-center bg-surface-raised focus-visible:ring-2 focus-visible:ring-lime"}>
         <X aria-hidden className="size-5" />
-      </button>}
+      </Button>}
     </header>}
     <div className={captainWorkspaceEnabled() ? 'captain-dialog-body grid gap-3 min-[761px]:grid-cols-2' : 'space-y-5'}>
     {playerName && <p className="font-bold"><bdi>{playerName}</bdi></p>}

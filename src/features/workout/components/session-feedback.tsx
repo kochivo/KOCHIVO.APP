@@ -53,8 +53,8 @@ export function SessionFeedback({ sessionId, hasFeedback, workout }: {
     </label>
     {error && <p role="alert" className="text-danger">{t('feedbackError')}</p>}
     <div className="mt-auto flex flex-col gap-2 pt-1">
-      <button type="button" style={{ fontFamily: 'inherit' }} disabled={busy || rpe === null} onClick={() => void submit()}
-        className="flex min-h-16 w-full items-center justify-center rounded-full bg-lime text-[19px] font-black text-on-lime disabled:opacity-50">{busy ? t('saving') : t('v3Send')}</button>
+      <Button type="button" style={{ fontFamily: 'inherit' }} disabled={busy || rpe === null} onClick={() => void submit()}
+        variant={'primary'} block={false} className={"flex min-h-16 w-full items-center justify-center text-[19px] font-black disabled:opacity-50"}>{busy ? t('saving') : t('v3Send')}</Button>
       <FinishShare />
     </div>
     </div>

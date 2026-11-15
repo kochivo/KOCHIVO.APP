@@ -11,6 +11,7 @@ import { messages } from './messages';
 import { useQueue } from './use-queue';
 import { QueueState } from './queue-state';
 import { QueueRow } from './queue-row';
+import { Button } from '@/ui/button';
 const Review = dynamic(() => import('./review-dialog').then(module => module.ReviewDialog));
 export function QueueScreen() {
   const t = useT(messages), locale = useLocale();
@@ -52,7 +53,7 @@ export function QueueScreen() {
       <QueueRow key={`${row.kind}:${row.item.id}`} row={row} locale={locale}
         flags={row.item.kind === 'renewal' || row.item.kind === 'request' ? [] : triage(row.item, data.triage.history, data.triage.dailyChecks, now).flags}
         onReview={() => { if (!resource.pending && row.item.kind !== 'renewal' && row.item.kind !== 'request') setSelected(row.item); }} />)}</ul>}
-    {(last?.cursor || last?.renewalCursor || last?.requestCursor) && <button disabled={resource.pending || selected !== null} onClick={resource.more} className="glass min-h-12 w-full rounded-control px-6 text-lime disabled:opacity-50">{resource.pending ? t('loading') : t('loadMore')}</button>}
+    {(last?.cursor || last?.renewalCursor || last?.requestCursor) && <Button disabled={resource.pending || selected !== null} onClick={resource.more} type="submit" variant={'secondary'} block={false} className={"min-h-12 w-full px-6 text-lime disabled:opacity-50"}>{resource.pending ? t('loading') : t('loadMore')}</Button>}
     {selected && <Review key={`${selected.kind}:${selected.id}`} item={selected} inputs={data.triage} now={now} onClose={() => setSelected(null)} onReviewed={async (reviewed, commit, advance) => {
       const next = advance ? nextOpenItem(items.filter((item): item is InboxItem => item.kind !== 'renewal' && item.kind !== 'request'), selected,
         item => triage(item, data.triage.history, data.triage.dailyChecks, now)) : null;

@@ -9,6 +9,7 @@ import { formatNumber } from '@/lib/format';
 import { starterText } from '@/lib/starter-text';
 import { messages } from '../messages';
 import { estimateMinutes, warmupDuration } from './today-card';
+import { buttonClass } from '@/ui/button';
 
 export function HomeHero({ day, rest, streak, finished = false }: { day?: SnapshotDay; rest: boolean; streak?: number; finished?: boolean }) {
   const t = useT(messages);
@@ -39,7 +40,7 @@ export function HomeHero({ day, rest, streak, finished = false }: { day?: Snapsh
         {Boolean(day.warmup?.items.length) && <span className="flex h-8 items-center rounded-full bg-surface-raised px-3 text-xs">{t('homeWarmup')}</span>}
       </div>
       {day.exercises.length > 0 && <Link data-tour="workout-start" href={`/player/workout/${day.id}`}
-        className="relative flex h-[62px] items-center justify-center gap-2.5 rounded-full bg-lime text-[19px] font-black text-on-lime">
+        className={buttonClass({ variant: 'primary', block: false, className: "relative flex h-[62px] items-center justify-center gap-2.5 text-[19px] font-black" })}>
         <KoPlay aria-hidden className="size-[22px] text-on-lime! [&_*]:text-on-lime!" />{t('homeStart')}
       </Link>}
     </>}

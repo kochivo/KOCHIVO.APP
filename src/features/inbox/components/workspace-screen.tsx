@@ -23,10 +23,13 @@ import { WorkspaceControls } from './workspace-controls';
 import { WorkspaceEmpty } from './workspace-empty';
 import { WorkspaceList } from './workspace-list';
 import { WorkspaceRow } from './workspace-row';
+import { useToast } from '@/ui/toast';
+import { messages as successMessages } from '../success/messages';
 const Detail = dynamic(() => import('./workspace-detail').then(module => module.WorkspaceDetail), { loading: () => <LoadingState variant="detail" /> });
 
 export function WorkspaceScreen({ joinRequests }: { joinRequests: Record<string, ReactNode> }) {
   const t = useT(workspaceMessages), locale = useLocale(), style = useArabicStyle();
+  const success = useT(successMessages), toast = useToast();
   const [limit, setLimit] = useState(50);
   const loader = useCallback(() => loadWorkspaceInbox(limit), [limit]);
   const resource = useResource(`captain-followup-v6:${locale}:${limit}`, loader, { pollMs: 60000 });
@@ -80,6 +83,7 @@ export function WorkspaceScreen({ joinRequests }: { joinRequests: Record<string,
         } });
       setSelected(next);
       setDrafts(value => clearReplyDraft(value, current));
+      toast.success({ title: success('replySent', { name: current.player_name }), detail: success('name', { name: current.kind === 'assessment' ? current.title : current.kind === 'form' ? current.exercise_name : t('checkin') }), icon: 'form' });
       void resource.retry();
     } finally { sendLock.current = false; }
   }
@@ -108,14 +112,14 @@ export function WorkspaceScreen({ joinRequests }: { joinRequests: Record<string,
             onClose={() => { leave(); }} onSend={send} onDirty={setGuard} />
           : <div className="glass hidden rounded-card border border-line-soft p-5 text-sm text-faint lg:block">{t('emptyDetail')}</div>}
       </div>}
-      {data.more && limit < 500 && <div className="text-sm text-faint"><p>{t('partial')}</p><button className="min-h-12 rounded-full border border-line px-5" onClick={() => { if (leave()) setLimit(value => value + 50); }}>{t('older')}</button></div>}
+      {data.more && limit < 500 && <div className="text-sm text-faint"><p>{t('partial')}</p><Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-5"} onClick={() => { if (leave()) setLimit(value => value + 50); }}>{t('older')}</Button></div>}
       <details className="glass rounded-card border border-line-soft px-5 py-1.5">
         <summary className="min-h-12 cursor-pointer content-center text-sm text-faint">{t('history')} {t('historyWeek', { n: formatNumber(weekCount, locale) })}</summary>
         {!reviews.length ? <p className="py-3 text-sm text-faint">{t('historyEmpty')}</p> : <ul className="divide-y divide-line-soft">{reviews.map(item => <li key={taskKey(item)}>
           <WorkspaceRow item={item} inputs={data.triage} now={now} selected={false} idPrefix="history-task" onSelect={() => { if (leave()) setSelected(item); }} />
         </li>)}</ul>}
         {historyError && <p role="alert" className="text-danger">{t('loadFailed')}</p>}
-        {(historyPage?.more ?? data.reviews?.more) && <button disabled={historyPending} className="min-h-12 rounded-full border border-line px-5 disabled:opacity-50" onClick={() => { void moreHistory(); }}>{t(historyPending ? 'loading' : historyError ? 'retry' : 'older')}</button>}
+        {(historyPage?.more ?? data.reviews?.more) && <Button disabled={historyPending} type="submit" variant={'secondary'} block={false} className={"min-h-12 px-5 disabled:opacity-50"} onClick={() => { void moreHistory(); }}>{t(historyPending ? 'loading' : historyError ? 'retry' : 'older')}</Button>}
       </details>
     </>}
   </section>;

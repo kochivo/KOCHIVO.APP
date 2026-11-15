@@ -39,17 +39,17 @@ it('keeps the food form in the top layer and its save action scrollable', () => 
   expect(html).toContain('max-h-[90dvh]');
   expect(html).toContain('overflow-y-auto');
   expect(html).toContain('type="submit"');
-  expect(html.match(/<button[^>]*aria-label="Close"[^>]*>/)?.[0]).toContain('glass');
+  expect(html.match(/<button[^>]*aria-label="Close"[^>]*>/)?.[0]).toContain('control-secondary');
 });
 it('surfaces the captain home retry', () => {
-  expect(control(render(createElement(WorkspaceError)), 'Try again')).toContain('glass');
+  expect(control(render(createElement(WorkspaceError)), 'Try again')).toContain('control-secondary');
 });
 it('surfaces both roster account destinations', () => {
   const html = render(createElement(CaptainAccountContent, { onNavigate: () => undefined }));
-  for (const href of ['settings', 'billing']) expect(html.match(new RegExp('<a[^>]*href="/captain/' + href + '"[^>]*>'))?.[0]).toContain('glass');
+  for (const href of ['settings', 'billing']) expect(html.match(new RegExp('<a[^>]*href="/captain/' + href + '"[^>]*>'))?.[0]).toContain('control-secondary');
 });
 it('surfaces the player file retry', () => {
-  expect(control(render(createElement(FileState, { locale: 'en', error: true, href: '/retry' })), 'Retry')).toContain('glass');
+  expect(control(render(createElement(FileState, { locale: 'en', error: true, href: '/retry' })), 'Retry')).toContain('control-secondary');
 });
 it('surfaces library actions and marks destructive actions', () => {
   const html = render(createElement(LibraryMenu, {
@@ -58,12 +58,12 @@ it('surfaces library actions and marks destructive actions', () => {
   }));
   // Items sit on one solid panel; glass items inside glass lose their blur and let rows show through.
   expect(html).toContain('bg-surface-raised');
-  expect(control(html, 'Preview')).not.toContain('glass');
+  expect(control(html, 'Preview')).not.toContain('control-secondary');
   expect(html).toContain('border-danger');
 });
 it('surfaces the follow-up prize action', () => {
   const html = render(createElement(CrownPrizeEditor, { locale: 'en', prize: null, async onSave() {} }));
-  expect(html.match(/<button[^>]*>/)?.[0]).toContain('glass');
+  expect(html.match(/<button[^>]*>/)?.[0]).toContain('control-secondary');
 });
 it('keeps the food library editing form modal and deletion visibly destructive', () => {
   const html = render(createElement(FoodDrawer, {
@@ -71,10 +71,10 @@ it('keeps the food library editing form modal and deletion visibly destructive',
     onClose() {}, onSaved() {},
   }));
   expect(dialog.modal).toBe(true);
-  expect(control(html, 'Delete food')).toContain('glass');
+  expect(control(html, 'Delete food')).toContain('control-secondary');
   expect(control(html, 'Delete food')).toContain('border-danger');
 });
 it('surfaces the supplement editor cancel action', () => {
   const html = render(createElement(SupplementEditor, { initial: null, onClose() {}, async onSave() {} }));
-  expect(control(html, 'Cancel')).toContain('glass');
+  expect(control(html, 'Cancel')).toContain('control-secondary');
 });

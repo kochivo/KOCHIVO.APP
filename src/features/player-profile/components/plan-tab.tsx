@@ -11,6 +11,7 @@ import { formatDateAr, localDate } from '@/lib/dates';
 import { starterText } from '@/lib/starter-text';
 import { CaptainSupplements } from '@/features/supplements';
 import type { PlayerProfile } from '../types';
+import { buttonClass } from '@/ui/button';
 
 function PlanCard({ icon: Icon, heading, title, lines, href, action }: {
   icon: LucideIcon; heading: string; title: string | null; lines: string[]; href: string; action: string;
@@ -23,7 +24,7 @@ function PlanCard({ icon: Icon, heading, title, lines, href, action }: {
       </div>
       {title && <p className="text-xl font-extrabold">{title}</p>}
       {lines.map((line) => <p key={line} className="text-sm text-muted">{line}</p>)}
-      <Link href={href} className="glass mt-auto inline-flex min-h-12 items-center justify-center rounded-control px-4 font-bold hover:bg-ink/10">{action}</Link>
+      <Link href={href} className={buttonClass({ variant: 'secondary', block: false, className: "mt-auto inline-flex min-h-12 items-center justify-center px-4 font-bold" })}>{action}</Link>
     </GlassCard>
   );
 }

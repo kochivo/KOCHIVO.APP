@@ -9,9 +9,12 @@ import { saveTier } from '../data/catalog-actions';
 import { messages } from './messages';
 import type { Tier } from './types';
 import type { useCatalog } from './use-catalog';
+import { useToast } from '@/ui/toast';
+import { messages as successMessages } from '../success/messages';
 
 export function TierSheet({ tier, catalog, onClose }: { tier?: Tier; catalog: ReturnType<typeof useCatalog>; onClose: () => void }) {
   const t = useT(messages);
+  const success = useT(successMessages), toast = useToast();
   const [name, setName] = useState(tier?.name ?? ''), [description, setDescription] = useState(tier?.description ?? '');
   const [features, setFeatures] = useState(tier?.features.join('\n') ?? ''), [color, setColor] = useState(tier?.color ?? 'muted');
   const [error, setError] = useState('');
@@ -21,7 +24,9 @@ export function TierSheet({ tier, catalog, onClose }: { tier?: Tier; catalog: Re
     const fields = { name: name.trim(), description, features: list, color, position: tier?.position ?? Math.max(-1, ...(catalog.data?.tiers.map(row => row.position) ?? [])) + 1, is_featured: tier?.is_featured ?? false };
     const optimistic: Tier = { ...fields, id: tier?.id ?? uuidv7(), captain_id: tier?.captain_id ?? '', archived_at: null, created_at: tier?.created_at ?? '' };
     if (await catalog.change(current => ({ ...current, tiers: tier ? current.tiers.map(row => row.id === tier.id ? optimistic : row) : [...current.tiers, optimistic] }),
-      () => saveTier({ ...fields, ...(tier ? { id: tier.id } : {}) }))) onClose();
+      () => saveTier({ ...fields, ...(tier ? { id: tier.id } : {}) }))) {
+      toast.success({ title: success('packageSaved'), detail: success('packageName', { name: fields.name }), icon: 'payment' }); onClose();
+    }
   }
   return <ResponsiveDialog modal fallbackId="catalog-heading" onDismiss={() => { if (!catalog.busy) onClose(); }} aria-labelledby="tier-title"
     className="sheet fixed inset-0 m-auto max-h-[90dvh] w-[calc(100%-32px)] max-w-lg overflow-y-auto rounded-card border border-line bg-surface p-5 text-ink backdrop:bg-bg-deep/80">

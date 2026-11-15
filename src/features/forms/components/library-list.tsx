@@ -5,6 +5,7 @@ import { messages } from '../messages';
 import { templates } from '../templates';
 import type { LibraryData } from '../types';
 import { FormCard } from './form-card';
+import { buttonClass } from '@/ui/button';
 
 export function LibraryList({ data, locale, selected }: { data: LibraryData; locale: Locale; selected?: string }) {
   const m = messages[locale], base = `/${locale}/captain/library/forms`;
@@ -17,6 +18,6 @@ export function LibraryList({ data, locale, selected }: { data: LibraryData; loc
       {templates.filter(template => !template.key).map(template => <FormCard key={template.kind} title={m.kinds[template.kind]}
         count={template.questions.length} locale={locale} href={`${base}?template=${template.kind}`} />)}
     </section>
-    {selected && <Link href={base} prefetch={false} className="block py-3 glass min-h-12 rounded-full border border-line px-4 hover:bg-ink/10">{m.close}</Link>}
+    {selected && <Link href={base} prefetch={false} className={buttonClass({ variant: 'secondary', block: false, className: "block py-3 min-h-12 px-4" })}>{m.close}</Link>}
   </aside>;
 }

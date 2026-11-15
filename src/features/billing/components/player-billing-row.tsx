@@ -18,6 +18,7 @@ import { RenewSheet } from './renew-sheet';
 import type { Renewal } from './renew-sheet';
 import type { PaymentMethod } from '../payment-methods';
 import { useToast } from '@/ui/toast';
+import { messages as successMessages } from '../success/messages';
 import { messages as uiMessages } from '@/ui/messages';
 import { BalanceBadges } from './balance-badges';
 import { ActivatePlayerButton } from './activate-player-button';
@@ -35,6 +36,7 @@ export function PlayerBillingRow({ player, today, packages, initialAction, works
   const t = useT(messages);
   const feedback = useT(uiMessages);
   const toast = useToast();
+  const success = useT(successMessages);
   const locale = useLocale();
   const [accessUntil, setAccessUntil] = useState(player.accessUntil);
   const [lastPayment, setLastPayment] = useState<Pick<NonNullable<BillingPlayer['lastPayment']>, 'created_at' | 'amount_egp' | 'days'> | null>(player.lastPayment);
@@ -76,7 +78,7 @@ export function PlayerBillingRow({ player, today, packages, initialAction, works
       else {
         setOpen(false);
         setAccessUntil(result.data);
-        toast.success(feedback('playerRenewed'));
+        toast.success({ title: feedback('playerRenewed'), detail: success('paymentDetail', { name: player.fullName, amount: renewal.amount === null ? t('noAmount') : formatNumber(renewal.amount, locale) }), icon: 'payment' });
         startRefresh(() => router.refresh());
       }
     } catch {
@@ -95,7 +97,7 @@ export function PlayerBillingRow({ player, today, packages, initialAction, works
     try {
       const result = await collectPayment({ playerId: player.playerId, amount, method });
       if (result.error !== undefined) { setDue(oldDue); setError(result.error); }
-      else { setCollecting(false); setDue(result.data); toast.success(feedback('paymentRecorded')); startRefresh(() => router.refresh()); }
+      else { setCollecting(false); setDue(result.data); toast.success({ title: success('paymentRecorded'), detail: success('paymentDetail', { name: player.fullName, amount: formatNumber(amount, locale) }), icon: 'payment' }); startRefresh(() => router.refresh()); }
     } catch { setDue(oldDue); setError(t('collectFailed')); } finally { inFlight.current = false; setPending(false); }
   }
 

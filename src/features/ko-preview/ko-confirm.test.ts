@@ -1,3 +1,4 @@
+import { Button } from '@/ui/button';
 import { createElement, isValidElement } from 'react';
 import type { ReactNode } from 'react';
 import type * as ReactModule from 'react';
@@ -177,7 +178,7 @@ it('focuses confirm on appearance and replaces controls when the expiry timer fi
     hooks.cursor = 0;
     return elements(KoConfirm({ approval, busy: false, now: () => now, onConfirm() {}, onCancel() {} }));
   };
-  const button = render().find(element => element.type === 'button');
+  const button = render().find(element => (element.type === 'button' || element.type === Button));
   let focused = false;
   (button?.props.ref as { current: { focus(): void } }).current = { focus() { focused = true; } };
   hooks.effects[0]?.();
@@ -185,7 +186,7 @@ it('focuses confirm on appearance and replaces controls when the expiry timer fi
   expect(delay).toBe(600000);
   now = 600100;
   timer?.();
-  expect(render().some(element => element.type === 'button')).toBe(false);
+  expect(render().some(element => (element.type === 'button' || element.type === Button))).toBe(false);
   expect(render().some(element => element.type === 'p')).toBe(true);
 });
 

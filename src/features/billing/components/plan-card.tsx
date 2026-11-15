@@ -10,6 +10,7 @@ import { waLink } from '../renew';
 import type { Plan } from '../types';
 import { publicConfig } from '@/lib/public-config';
 import { useDemoExpiry } from '@/features/demo';
+import { buttonClass } from '@/ui/button';
 
 
 export function PlanCard({ plan, used, subscriptionEnd }: { plan: Plan; used: number; subscriptionEnd: string | null }) {
@@ -29,7 +30,7 @@ export function PlanCard({ plan, used, subscriptionEnd }: { plan: Plan; used: nu
         <ProgressBar value={used} max={plan.player_limit} aria-label={t('usedPlayers')} aria-valuetext={t('usage', { used: formatNumber(used, locale), n: plan.player_limit, count: formatNumber(plan.player_limit, locale) })} />
       </div>
       {subscriptionEnd && <p className="text-sm text-muted">{t('paidUntil')} <time dateTime={subscriptionEnd}>{formatTimestampAr(subscriptionEnd, { day: 'numeric', month: 'long', year: 'numeric' }, locale, timezone)}</time></p>}
-      {!demo && (upgrade ? <a href={upgrade} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 w-full items-center justify-center rounded-control border border-line px-4 font-bold hover:bg-surface-raised">{t('upgrade')}</a>
+      {!demo && (upgrade ? <a href={upgrade} target="_blank" rel="noopener noreferrer" className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 w-full items-center justify-center px-4 font-bold hover:bg-surface-raised" })}>{t('upgrade')}</a>
         : <><Button variant="ghost" disabled className="min-h-12 w-full" aria-describedby="owner-phone-missing">{t('upgrade')}</Button><p id="owner-phone-missing" className="text-sm text-muted">{t('noSupport')}</p></>)}
       {!demo && <p className="text-sm text-muted">{t('activationHint')}</p>}
     </GlassCard>

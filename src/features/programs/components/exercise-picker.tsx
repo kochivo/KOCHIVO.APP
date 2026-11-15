@@ -4,6 +4,7 @@ import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 import dynamic from 'next/dynamic';
 import { useToast } from '@/ui/toast';
+import { messages as successMessages } from '../success/messages';
 import { uuidv7 } from '@/core/offline/ids';
 import { bodyParts, bodyPartLabels, bodyPartFilter, customExerciseSchema, optimisticExercise, prependExercise } from '../custom-exercises';
 import type { CustomExerciseInput } from '../custom-exercises';
@@ -20,10 +21,11 @@ import type { LibraryExercise, Result } from '../types';
 const CustomExerciseSheet = dynamic(() => import('./custom-exercise-sheet').then(module => module.CustomExerciseSheet), {
   ssr: false, loading: () => <LoadingState />,
 });
-export function ExercisePicker({ disabled, onAdd, usedExerciseIds = [] }: {
-  disabled: boolean; onAdd: (exercise: LibraryExercise) => void; usedExerciseIds?: string[];
+export function ExercisePicker({ disabled, onAdd, usedExerciseIds = [], dayTitle = '' }: {
+  disabled: boolean; onAdd: (exercise: LibraryExercise) => void; usedExerciseIds?: string[]; dayTitle?: string;
 }) {
   const t = useT(messages);
+  const success = useT(successMessages);
   const locale = useLocale();
   const parts: [string, string][] = [['', t('all')], ...bodyParts.map((part): [string, string] => [part, t(bodyPartLabels[part])])];
   const [query, setQuery] = useState('');
@@ -45,7 +47,7 @@ export function ExercisePicker({ disabled, onAdd, usedExerciseIds = [] }: {
     setSessionAdds(ids => ids.includes(exercise.id) ? ids : [...ids, exercise.id]);
     const notify = (row: LibraryExercise) => {
       onAdd(row);
-      toast.success(t('exerciseAdded', { name: exerciseName(row, locale) }));
+      toast.success({ title: success('added'), detail: success('exerciseDetail', { name: exerciseName(row, locale), day: dayTitle }), icon: 'program' });
     };
     const request = pending.current.get(exercise.id);
     if (request) void request.then(saved => {
@@ -115,15 +117,15 @@ export function ExercisePicker({ disabled, onAdd, usedExerciseIds = [] }: {
         {loadedKey === key && result?.data && rows.length === 0 && <EmptyState icon={Search} title={t('noExerciseWithThisName')} body={t('searchInArabicOrEnglish')}
           action={{ label: t('clearSearch'), onClick: () => { setQuery(''); setBodyPart(''); setMine(false); setRevision(value => value + 1); } }} />}
         <ul className="space-y-3 pb-24">{rows.map(exercise => <li key={exercise.id}>
-          <button type="button" disabled={disabled || deleting.includes(exercise.id)} onClick={() => add(exercise)}
-            className="glass flex min-h-16 w-full items-center gap-3 rounded-control p-2 text-start disabled:opacity-40">
+          <Button type="button" disabled={disabled || deleting.includes(exercise.id)} onClick={() => add(exercise)}
+            variant={'secondary'} block={false} className={"flex min-h-16 w-full items-center gap-3 p-2 text-start disabled:opacity-40"}>
             {exercise.media_path && <span className="shrink-0 rounded-control bg-exercise-media p-1 [&>span]:bg-transparent"><ExerciseImage src={exerciseMediaUrl(exercise.media_path)} alt="" width={48} height={48} /></span>}
             <span className="min-w-0 flex-1 break-words text-sm font-bold"><bdi>{exerciseName(exercise, locale)}</bdi></span>
             <span className="flex items-center gap-1 text-xs text-muted">
               {addedIds.has(exercise.id) && <Check aria-hidden className="size-4 text-lime" />}
               <span>{t(addedIds.has(exercise.id) ? 'added' : 'add')}</span>
             </span>
-          </button>
+          </Button>
           {exercise.is_own && <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs text-muted">{t('ownExercise')}</span>
             {busy.includes(exercise.id) && !deleting.includes(exercise.id) && <span role="status" className="text-xs text-muted">{t('customExerciseSaving')}</span>}

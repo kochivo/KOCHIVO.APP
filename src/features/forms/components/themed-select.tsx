@@ -2,6 +2,7 @@
 import { useEffect, useId, useRef } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { selectPosition } from './select-position';
+import { Button } from '@/ui/button';
 
 export function ThemedSelect({ label, value, options, onChange, disabled = false }: {
   label: string; value: string; options: readonly { value: string; label: string }[];
@@ -24,10 +25,10 @@ export function ThemedSelect({ label, value, options, onChange, disabled = false
     return () => { window.removeEventListener('resize', update); window.removeEventListener('scroll', update, true); };
   }, []);
   return <span className="inline-block max-w-full">
-    <button ref={trigger} type="button" aria-label={label} disabled={disabled} popoverTarget={id} onClick={position}
-      className="glass-strong flex min-h-12 max-w-full cursor-pointer items-center gap-2 rounded-control border border-line px-[14px] text-sm text-ink disabled:cursor-default disabled:opacity-50">
+    <Button ref={trigger} type="button" aria-label={label} disabled={disabled} popoverTarget={id} onClick={position}
+      variant={'secondary'} block={false} className={"flex min-h-12 max-w-full cursor-pointer items-center gap-2 px-[14px] text-sm text-ink disabled:cursor-default disabled:opacity-50"}>
       <span className="truncate">{options.find(o => o.value === value)?.label ?? label}</span><ChevronDown aria-hidden className="size-3 shrink-0 text-faint" />
-    </button>
+    </Button>
     {!disabled && <div ref={list} id={id} popover="auto" role="radiogroup" aria-label={label}
       onBlur={event => {
         if (!event.currentTarget.contains(event.relatedTarget) && event.relatedTarget !== trigger.current) event.currentTarget.hidePopover();

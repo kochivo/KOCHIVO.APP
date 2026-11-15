@@ -35,7 +35,7 @@ export function CrownPrizeEditor({ locale, prize, onSave, saving = false, error 
       <p id={`${id}-counter`} className="text-sm text-muted">{t('prizeCounter', { count: formatNumber(draft.length, locale) })}</p>
       {invalid && <p id={`${id}-error`} role="alert" className="text-sm text-danger">{t('prizeLength')}</p>}
       <div className="flex gap-3">
-        <button type="submit" disabled={saving} className="min-h-12 rounded-control bg-lime px-4 font-bold text-on-lime">{t('savePrize')}</button>
+        <Button type="submit" disabled={saving} variant={'primary'} block={false} className={"min-h-12 px-4 font-bold"}>{t('savePrize')}</Button>
         {captainWorkspaceEnabled() ? <Button variant="secondary" type="button" disabled={saving} onClick={() => { setOpen(false); setInvalid(false); }}
           className="min-h-12 rounded-control px-4">{t('cancelPrize')}</Button> : <button type="button" disabled={saving} onClick={() => { setOpen(false); setInvalid(false); }}
           className="min-h-12 rounded-control px-4">{t('cancelPrize')}</button>}

@@ -8,6 +8,7 @@ import type { ProgramDraft } from '@/features/programs';
 import { weekdays, weekly, restDay } from './editor-draft';
 import type { Update } from './editor-draft';
 import { messages } from './editor/messages';
+import { Button } from '@/ui/button';
 
 export function DayRail({ draft, selectedId, onSelect, update }: { draft: ProgramDraft; selectedId?: string; onSelect: (id: string) => void; update: Update }) {
   const t = useT(messages), pt = useT(programMessages), [showRest, setShowRest] = useState(false);
@@ -19,11 +20,11 @@ export function DayRail({ draft, selectedId, onSelect, update }: { draft: Progra
     </button>)}
     {rests.length > 0 && <div className="glass min-w-[140px] shrink-0 rounded-card border border-line px-3.5 text-xs text-muted">
       <button className="min-h-12 w-full text-start" aria-expanded={showRest} onClick={() => setShowRest(value => !value)}>{t('restDays')}</button>
-      {showRest && rests.filter(day => day.id !== selectedId).map(day => <button key={day.id} className="my-2 block min-h-12 w-full rounded-control border border-line-soft px-3 text-start" onClick={() => onSelect(day.id)}>{day.title || pt(weekdays[day.weekday ?? 0] ?? 'sat')}</button>)}
+      {showRest && rests.filter(day => day.id !== selectedId).map(day => <Button key={day.id} type="submit" variant={'secondary'} block={false} className={"my-2 block min-h-12 w-full px-3 text-start"} onClick={() => onSelect(day.id)}>{day.title || pt(weekdays[day.weekday ?? 0] ?? 'sat')}</Button>)}
     </div>}
-    <button className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-full border border-line px-4 text-sm" disabled={weekly(draft) && !rests.length} onClick={() => {
+    <Button type="submit" variant={'secondary'} block={false} className={"inline-flex min-h-12 shrink-0 items-center justify-center gap-2 px-4 text-sm"} disabled={weekly(draft) && !rests.length} onClick={() => {
       if (weekly(draft)) { const day = rests[0]; if (day) { update(current => restDay(current, day.id, false)); onSelect(day.id); } }
       else { const id = uuidv7(); update(current => addDay(current, id, pt('newDay'))); onSelect(id); }
-    }}><Plus aria-hidden className="size-4" />{t('addTraining')}</button>
+    }}><Plus aria-hidden className="size-4" />{t('addTraining')}</Button>
   </nav>;
 }

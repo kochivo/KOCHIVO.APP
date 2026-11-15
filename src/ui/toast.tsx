@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, useSyncExternalStore } from 'react';
+import { Suspense, createContext, lazy, useContext, useEffect, useState, useSyncExternalStore } from 'react';
 import type { ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
@@ -8,7 +8,12 @@ import { uuidv7 } from '@/core/offline/ids';
 import { useT } from '@/core/i18n/client';
 import { messages } from './messages';
 
-type Toast = { id: string; text: string; kind: 'success' | 'error'; leaving: boolean };
+import type { ToastIconName } from './toast-icon-names';
+
+// Icons load with the first toast, so the shared first-load bundle stays within budget.
+const ToastIcon = lazy(() => import('./toast-icon'));
+type Success = { title: string; detail?: string; icon?: ToastIconName };
+type Toast = { id: string; text: string; detail?: string; icon: ToastIconName; kind: 'success' | 'error'; leaving: boolean };
 type Clock = {
   now: () => number;
   setTimer: (callback: () => void, delay: number) => ReturnType<typeof setTimeout>;
@@ -34,15 +39,16 @@ export function createToastQueue(time: Clock = clock) {
     items = items.map(item => item.id === id ? { ...item, leaving: true } : item);
     entry.timer = time.setTimer(() => remove(id), 200); emit();
   };
-  const add = (kind: Toast['kind'], text: string) => {
+  const add = (kind: Toast['kind'], input: string | Success) => {
     if (items.length === 3 && items[0]) remove(items[0].id);
     const id = uuidv7(time.now()), remaining = kind === 'error' ? 6000 : 4000;
-    items = [...items, { id, kind, text, leaving: false }];
+    const content = typeof input === 'string' ? { title: input } : input;
+    items = [...items, { id, kind, text: content.title, detail: content.detail, icon: content.icon ?? 'check', leaving: false }];
     timers.set(id, { timer: time.setTimer(() => dismiss(id), remaining), remaining, started: time.now(), paused: new Set() });
     emit();
   };
   return {
-    success: (text: string) => add('success', text), error: (text: string) => add('error', text), dismiss,
+    success: (input: string | Success) => add('success', input), error: (text: string) => add('error', text), dismiss,
     getSnapshot: () => items,
     subscribe: (listener: () => void) => { listeners.add(listener); return () => { listeners.delete(listener); }; },
     pause: (id: string, reason: Reason) => {
@@ -90,10 +96,12 @@ export function ToastProvider({ children, queue: injected }: { children?: ReactN
         onMouseEnter={() => queue.pause(item.id, 'hover')} onMouseLeave={() => queue.resume(item.id, 'hover')}
         onFocus={() => queue.pause(item.id, 'focus')}
         onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) queue.resume(item.id, 'focus'); }}
-        className={`glass-strong pointer-events-auto flex items-center gap-3 rounded-control p-3 text-ink ${item.leaving ? 'toast-leave' : 'enter'}`}>
-        <p className="min-w-0 flex-1 break-words font-medium">{item.text}</p>
+        className={`glass-strong pointer-events-auto flex items-center gap-3 rounded-control p-3 text-ink ${item.leaving ? 'toast-leave' : 'toast-enter'}`}>
+        <span className={`flex size-9 shrink-0 items-center justify-center rounded-control ${item.kind === 'error' ? 'bg-danger-soft text-danger' : 'bg-lime-soft text-lime'}`}><Suspense fallback={null}><ToastIcon name={item.icon} /></Suspense></span>
+        <div className="min-w-0 flex-1"><p className="break-words font-semibold">{item.text}</p>
+          {item.detail && <p className="truncate text-sm text-muted">{item.detail}</p>}</div>
         <button type="button" aria-label={t('closeNotification')} onClick={() => queue.dismiss(item.id)}
-          className="glass press flex min-h-12 min-w-12 items-center justify-center rounded-control text-muted">
+          className="control control-secondary press flex min-h-12 min-w-12 items-center justify-center rounded-control text-muted">
           <X aria-hidden="true" className="size-5" />
         </button>
       </div>)}

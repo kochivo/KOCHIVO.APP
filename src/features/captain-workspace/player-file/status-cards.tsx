@@ -8,6 +8,7 @@ import { lastSeenLabel } from '@/features/roster';
 import { primaryCard } from './model';
 import { messages } from './messages';
 import type { FileSummary, Profile } from './types';
+import { buttonClass } from '@/ui/button';
 
 export function StatusCards({ playerId, profile, summary, locale, today }: {
   playerId: string; profile: Profile; summary: FileSummary; locale: Locale; today: string;
@@ -32,6 +33,6 @@ export function StatusCards({ playerId, profile, summary, locale, today }: {
     <p className="text-xs text-faint">{t(card.key)}</p><h2 className="my-1.5 break-words font-display text-[19px] font-semibold">{card.title}</h2>
     <p className="text-[12.5px] text-muted">{card.line}</p>
     <Link href={card.href} prefetch={false} data-primary={primary === card.key ? 'true' : undefined}
-      className={`mt-3 inline-flex min-h-12 items-center rounded-full px-4 text-sm ${primary === card.key ? 'bg-lime font-extrabold text-on-lime' : 'glass border border-line-soft'}`}>{card.action}</Link>
+      className={buttonClass({ variant: (primary === card.key) ? 'primary' : 'secondary', block: false, className: `mt-3 inline-flex min-h-12 items-center px-4 text-sm ${primary === card.key ? "font-extrabold" : ""} ` })}>{card.action}</Link>
   </section>)}</div>;
 }

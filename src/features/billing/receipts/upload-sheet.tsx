@@ -10,6 +10,7 @@ import { messages } from './messages';
 import { receiptMethods } from './types';
 import type { ReceiptMethod, UploadedReceipt } from './types';
 import { validReceiptImage } from './image';
+import { Button } from '@/ui/button';
 
 export function UploadSheet({ playerId, captainId, onClose, onSend }: {
   playerId: string; captainId: string; onClose: () => void; onSend: (receipt: UploadedReceipt) => Promise<void>;
@@ -35,7 +36,7 @@ export function UploadSheet({ playerId, captainId, onClose, onSend }: {
   return <dialog ref={dialog} aria-labelledby="receipt-upload-title" onCancel={event => { event.preventDefault(); if (!busy) onClose(); }}
     className="sheet fixed inset-x-0 bottom-0 top-auto m-0 max-h-[90dvh] w-full max-w-none overflow-y-auto rounded-t-card border border-line bg-surface p-6 text-ink backdrop:bg-bg-deep/80 sm:inset-0 sm:m-auto sm:max-w-lg sm:rounded-card">
     <header className="mb-5 flex items-center justify-between gap-3"><h2 id="receipt-upload-title" className="text-xl font-bold">{t('upload')}</h2>
-      <button type="button" disabled={busy} onClick={onClose} className="min-h-12 rounded-control border border-line px-4">{t('close')}</button></header>
+      <Button type="button" disabled={busy} onClick={onClose} variant={'secondary'} block={false} className={"min-h-12 px-4"}>{t('close')}</Button></header>
     <form className="space-y-4" onSubmit={event => { event.preventDefault(); void send(); }}>
       <label className="glass flex min-h-32 cursor-pointer flex-col items-center justify-center gap-2 rounded-control border border-dashed border-line p-5 text-center">
         <KoCamera aria-hidden className="size-6" /><b>{t('photo')}</b><small className="text-muted">{t('hint')}</small>
@@ -54,8 +55,8 @@ export function UploadSheet({ playerId, captainId, onClose, onSend }: {
       </select></label>
       {error && <p role="alert" className="text-danger">{error}</p>}
       {busy && <p role="status" className="text-muted">{t('sending')}</p>}
-      <button type="submit" disabled={busy || !file} className="flex min-h-12 w-full items-center justify-center gap-2 rounded-control bg-lime px-4 font-semibold text-on-lime disabled:opacity-50">
-        <KoSend aria-hidden className="size-5" />{t('send')}</button>
+      <Button type="submit" disabled={busy || !file} variant={'primary'} block={false} className={"flex min-h-12 w-full items-center justify-center gap-2 px-4 font-semibold disabled:opacity-50"}>
+        <KoSend aria-hidden className="size-5" />{t('send')}</Button>
     </form>
   </dialog>;
 }

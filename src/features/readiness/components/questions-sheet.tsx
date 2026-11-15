@@ -8,6 +8,7 @@ import { messages } from '../messages';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { messages as v6Messages } from '../v6-messages';
 import { MorningResult } from './morning-result';
+import { Button } from '@/ui/button';
 
 export function QuestionsSheet({ row, onChange, onClose, goal }: {
   row: DailyCheckRow | null;
@@ -22,6 +23,6 @@ export function QuestionsSheet({ row, onChange, onClose, goal }: {
     className="sheet fixed inset-0 z-50 m-auto w-[calc(100%-2rem)] max-w-lg space-y-4 rounded-card p-5 text-ink">
     <MorningQuestions row={row} onChange={onChange} />
     {v6 && <MorningResult row={row} goal={goal} />}
-    <button type="button" onClick={onClose} className={v6 ? 'min-h-12 w-full rounded-full bg-lime px-4 font-semibold text-on-lime' : 'min-h-12 w-full rounded-control border border-line px-4'}>{v6 ? v6t('done') : t('close')}</button>
+    <Button type="button" onClick={onClose} variant={(v6) ? 'primary' : 'secondary'} block={false} className={v6 ? "min-h-12 w-full px-4 font-semibold" : "min-h-12 w-full px-4"}>{v6 ? v6t('done') : t('close')}</Button>
   </ResponsiveDialog>;
 }

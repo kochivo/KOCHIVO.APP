@@ -6,6 +6,7 @@ import type { MoneyOwed, MoneyOwedRow } from '@/features/billing/server';
 import { formatNumber } from '@/lib/format';
 import { formatDateAr } from '@/lib/dates';
 import type { messages } from './messages';
+import { buttonClass } from '@/ui/button';
 
 export function MoneyOwedView({ data, mode, playerId, locale, t }: {
   data: MoneyOwed; mode: 'home' | 'billing' | 'player'; playerId?: string;
@@ -16,7 +17,7 @@ export function MoneyOwedView({ data, mode, playerId, locale, t }: {
   const description = (row: MoneyOwedRow) => row.reason === 'soon'
     ? t(row.days === 0 ? 'today' : row.days === 1 ? 'tomorrow' : 'soon', { n: number(row.days) })
     : t(row.reason, { n: number(row.days), date: date(row.since) });
-  const summary = <Link href="/captain/billing" className="glass-strong flex min-h-12 items-center gap-3 rounded-card p-4 text-start">
+  const summary = <Link href="/captain/billing" className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-12 items-center gap-3 p-4 text-start" })}>
     <Coins aria-hidden className="size-10 shrink-0 text-warn" />
     <div><b className="block font-display text-2xl font-extrabold tabular-nums">{number(data.total)}</b>
       <small className="text-muted">{t('total', { n: number(data.count) })}</small>

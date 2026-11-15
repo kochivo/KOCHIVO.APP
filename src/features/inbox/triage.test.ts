@@ -124,7 +124,7 @@ it.each(['ar', 'en'] as const)('renders translated groups, flags, filters and pr
   expect(html).toContain(locale === 'ar' ? 'متابعة عادية' : 'Routine');
   expect(html).toContain(locale === 'ar' ? 'ابعت وافتح اللي بعده' : 'Send and next');
   expect(html).toContain(`dir="${locale === 'ar' ? 'rtl' : 'ltr'}"`);
-  expect(html).toMatch(/type="submit"[^>]*bg-lime/);
+  expect(html).toMatch(/type="submit"[^>]*control-primary/);
 });
 
 it('filters groups and shows an empty state for a group with no items', () => {

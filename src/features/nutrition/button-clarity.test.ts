@@ -24,7 +24,7 @@ afterEach(() => { vi.unstubAllEnvs(); data.completed = ['first']; });
 it('preserves the legacy completion controls when the workspace flag is off', () => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '0');
   const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' }, createElement(NutritionScreen)));
-  expect(html.match(/<button[^>]*bg-lime /g)).toHaveLength(2);
+  expect(html.match(/<button[^>]*control-primary /g)).toHaveLength(2);
   expect(html.match(/<button[^>]*aria-pressed="true"[^>]*>/)?.[0]).toContain('bg-transparent');
 });
 
@@ -34,7 +34,7 @@ it.each([{ completed: [], next: 0 }, { completed: ['first'], next: 1 }, { comple
     vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
     data.completed = completed;
     const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' }, createElement(NutritionScreen)));
-    const lime = html.match(/<button[^>]*bg-lime /g) ?? [];
+    const lime = html.match(/<button[^>]*control-primary /g) ?? [];
     expect(lime).toHaveLength(0);
     expect(html.match(/role="img" aria-label="Eaten"/g) ?? []).toHaveLength(completed.length);
     expect(html.match(/aria-label="Ate /g) ?? []).toHaveLength(3 - completed.length);

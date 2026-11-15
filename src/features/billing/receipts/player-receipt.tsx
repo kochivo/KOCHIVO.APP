@@ -6,6 +6,7 @@ import { useResource } from '@/core/resource';
 import { loadPlayerReceipt, submitPaymentReceipt } from '../data/receipt-actions';
 import { messages } from './messages';
 import type { UploadedReceipt } from './types';
+import { Button } from '@/ui/button';
 const Sheet = dynamic(() => import('./upload-sheet').then(module => module.UploadSheet));
 export function PlayerReceipt({ renewalId }: { renewalId: string | null }) {
   const t = useT(messages), load = useCallback(() => loadPlayerReceipt(), []);
@@ -28,7 +29,7 @@ export function PlayerReceipt({ renewalId }: { renewalId: string | null }) {
     else await resource.retry();
   }
   if (resource.error || resource.data?.error) return <div role="alert" className="space-y-2 text-danger">{t('loadError')}
-    <button className="min-h-12 rounded-control border border-line px-4" onClick={() => void resource.retry()}>{t('retry')}</button></div>;
+    <Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-4"} onClick={() => void resource.retry()}>{t('retry')}</Button></div>;
   const data = resource.data?.data;
   if (!data) return <p role="status" className="text-muted">{t('loading')}</p>;
   const receipt = data.receipt;
@@ -36,8 +37,8 @@ export function PlayerReceipt({ renewalId }: { renewalId: string | null }) {
     {error && <p role="alert" className="text-danger">{error}</p>}
     {receipt && <p role="status" className={receipt.status === 'declined' ? 'text-warn' : 'text-muted'}>
       {receipt.status === 'declined' ? t('declined', { reason: receipt.decline_reason ?? '' }) : t(receipt.status)}</p>}
-    <button type="button" onClick={() => setOpen(true)} className="glass min-h-12 rounded-control border border-line px-5">
-      {t(!receipt || receipt.status === 'accepted' ? 'upload' : receipt.status === 'pending' ? 'replace' : 'resend')}</button>
+    <Button type="button" onClick={() => setOpen(true)} variant={'secondary'} block={false} className={"min-h-12 px-5"}>
+      {t(!receipt || receipt.status === 'accepted' ? 'upload' : receipt.status === 'pending' ? 'replace' : 'resend')}</Button>
     {open && <Sheet playerId={data.playerId} captainId={data.captainId} onClose={() => setOpen(false)} onSend={send} />}
   </div>;
 }

@@ -29,6 +29,7 @@ import { NewPlanButton } from './new-plan-button';
 import type { PlanDraft } from '../../types';
 import { messages as editorMessages } from './messages';
 import { PlayerFactsCard } from './player-facts';
+import { buttonClass } from '@/ui/button';
 
 async function saveTemplate(draft: PlanDraft) {
   const { savePlan } = await import('../../data/plan-io');
@@ -46,7 +47,7 @@ export function PlayerEditor({ data, editableMealNames = false }: { data: Awaite
   const editorT = useT(editorMessages);
   const locale = useLocale();
   const template = !data.draft.playerId;
-  const state = usePlanDraft(data.draft.id, { initialDraft: data.draft, clearErrorsOnEdit: true, save: template ? saveTemplate : savePlayerEditor });
+  const state = usePlanDraft(data.draft.id, { initialDraft: data.draft, clearErrorsOnEdit: true, save: template ? saveTemplate : savePlayerEditor, playerName: data.context.name });
   useEditorAutosave(state);
   const [day, setDay] = useState<'training' | 'rest'>('training');
   const [more, setMore] = useState(false);
@@ -70,7 +71,7 @@ export function PlayerEditor({ data, editableMealNames = false }: { data: Awaite
         <div><p className="text-xs text-faint">{t('breadcrumb', { name })}</p><h1 className="font-display text-[30px] font-semibold leading-tight">{t('title', { name: locale === 'ar' ? name.split(' ')[0] ?? name : name })}</h1></div></>}
       <div className="ms-auto">{!state.error && !state.busy && !state.dirty ? <span role="status" className="inline-flex items-center gap-2 text-xs text-faint"><CloudCheck aria-hidden className="size-4 text-lime" />{editorT('saved')}</span>
         : <SaveStatus locale={locale} status={state.error ? 'error' : 'saving'} onRetry={() => void state.retrySave()} />}</div>
-      <Button disabled={state.busy} className="min-h-12 rounded-full" onClick={() => void state.persist(!template)}><SendIcon aria-hidden className="size-4" />{template ? planT('savePlan') : t('send')}</Button>
+      <Button disabled={state.busy} className="min-h-12 rounded-full" onClick={() => void state.persist(!template, true)}><SendIcon aria-hidden className="size-4" />{template ? planT('savePlan') : t('send')}</Button>
     </header>
     {state.error && <p role="alert" className="mb-3 text-sm text-danger">{state.error}</p>}
     {calculator && <TargetCalculator facts={facts} onApply={targets => { update(draft => ({ ...draft, targets })); setCalculator(false); }} />}
@@ -117,7 +118,7 @@ export function PlayerEditor({ data, editableMealNames = false }: { data: Awaite
       {!data.plans.length && <p className="text-xs text-faint">{planT('noPlansYetCreateANewOne')}</p>}
       <ul>{data.plans.map(plan => <li key={plan.id}><Link className="flex min-h-12 items-center gap-3 text-lime hover:underline focus-visible:underline" href={`/captain/nutrition/${plan.id}`}>{plan.title}<span className="text-xs text-faint">{plan.status === 'active' ? planT('active') : plan.status === 'archived' ? planT('archived') : planT('draft')}</span></Link></li>)}</ul>
       {draft.playerId && <NewPlanButton playerId={draft.playerId} disabled={state.busy || state.dirty} />}
-      <Link href="/captain/templates" className="glass inline-flex min-h-12 items-center rounded-full border border-line px-4">{t('library')}</Link>
+      <Link href="/captain/templates" className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-4" })}>{t('library')}</Link>
     </details>}
   </div>;
 }

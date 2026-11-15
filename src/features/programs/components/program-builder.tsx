@@ -19,12 +19,15 @@ import { BuilderHeader } from './builder-header';
 import { DayEditor } from './day-editor';
 import { starterText } from '@/lib/starter-text';
 import { useToast } from '@/ui/toast';
+import { messages as successMessages } from '../success/messages';
 import { convertToWeek, isWeekly } from '../weekly-draft';
 import { BuilderNavigation } from './builder-navigation';
+import { buttonClass } from '@/ui/button';
 
 export function ProgramBuilder({ programId, playerId }: { programId?: string; playerId?: string }) {
   const t = useT(messages);
   const toast = useToast();
+  const success = useT(successMessages);
   const locale = useLocale();
   const state = useProgramDraft(programId);
   const [selectedDay, setSelectedDay] = useState('');
@@ -55,7 +58,7 @@ export function ProgramBuilder({ programId, playerId }: { programId?: string; pl
   }
   async function save() {
     setMessage('');
-    await state.save();
+    if (await state.save()) toast.success({ title: success('saved'), detail: success('name', { name: state.draft?.title ?? '' }), icon: 'program' });
   }
   async function activate() {
     if (!state.draft || pending || state.saving) return;
@@ -67,7 +70,7 @@ export function ProgramBuilder({ programId, playerId }: { programId?: string; pl
       if (!await state.save()) return;
       const result = await activateProgram(state.draft.id);
       if (!result.ok) setMessage(result.error);
-      else { state.activated(); toast.success(t('programActivatedForPlayer')); }
+      else { state.activated(); toast.success({ title: success('activated'), detail: success('name', { name: state.draft.title }), icon: 'program' }); }
     } catch { setMessage(t('couldntActivateTryAgain')); }
     finally { setPending(false); }
   }
@@ -83,7 +86,7 @@ export function ProgramBuilder({ programId, playerId }: { programId?: string; pl
       <ErrorState message={programs.error} retryLabel={t('tryAgain')} onRetry={() => setRevision(value => value + 1)} /> : <>
         {programs.data?.length === 0 && <EmptyState icon={Dumbbell} title={t('noProgramsForThisPlayerYet')} body={t('emptyBody')} action={{ label: t('orStartFromTemplate'), href: '/captain/templates' }} />}
         <ul className="grid gap-3 lg:grid-cols-2">{programs.data?.map(program => <li key={program.id}>
-          <Link className="glass flex min-h-16 items-center justify-between gap-4 rounded-control p-4" href={`/captain/programs/${program.id}`}>
+          <Link className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-16 items-center justify-between gap-4 p-4" })} href={`/captain/programs/${program.id}`}>
             <span className="min-w-0 break-words font-bold">{starterText(program.title, locale)}</span>
             <span className="shrink-0 text-sm text-muted">{{ active: t('active'), draft: t('draft'), archived: t('archived') }[program.status]}</span>
           </Link>

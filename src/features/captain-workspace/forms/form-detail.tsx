@@ -13,6 +13,9 @@ import { FormPhotos } from './form-photos';
 import type { SignPhotos } from './form-photos';
 import { formDate } from './format';
 import { messages } from './messages';
+import { Button } from '@/ui/button';
+import { useT } from '@/core/i18n/client';
+import { messages as successMessages } from '../success/messages';
 
 export function FormDetail({ form, playerId, locale, mutate, review, sign }: {
   form: PlayerForm; playerId: string; locale: Locale; mutate: FormsMutation; review: ReviewAction; sign: SignPhotos;
@@ -20,6 +23,7 @@ export function FormDetail({ form, playerId, locale, mutate, review, sign }: {
   const t = createT(messages, locale);
   const timezone = useTimezone();
   const toast = useToast();
+  const success = useT(successMessages);
   const [reply, setReply] = useState(form.reply ?? '');
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState(false);
@@ -31,8 +35,8 @@ export function FormDetail({ form, playerId, locale, mutate, review, sign }: {
     setSending(true);
     setSendError(false);
     try {
-      const ok = await sendFormReview({ form, reply, now: new Date(), mutate, review, toast,
-        failure: t('sendFailed'), success: t('sent') });
+      const ok = await sendFormReview({ form, reply, now: new Date(), mutate, review, toast: { error: toast.error, success: title => toast.success({ title, detail: success('form', { name: t(checkin ? 'checkin' : 'intake') }), icon: 'form' }) },
+        failure: t('sendFailed'), success: success('replySent') });
       setSendError(!ok);
     } finally { locked.current = false; setSending(false); }
   }
@@ -52,7 +56,7 @@ export function FormDetail({ form, playerId, locale, mutate, review, sign }: {
             className="min-h-24 w-full rounded-control border border-line bg-bg p-3 text-start" />
         </label>
         {sendError && <p role="alert" className="text-sm text-danger">{t('sendFailed')}</p>}
-        <button type="submit" disabled={sending} className="min-h-12 w-full rounded-control bg-lime px-6 font-bold text-on-lime disabled:opacity-50">{t(sending ? 'sending' : 'send')}</button>
+        <Button type="submit" disabled={sending} variant={'primary'} block={false} className={"min-h-12 w-full px-6 font-bold disabled:opacity-50"}>{t(sending ? 'sending' : 'send')}</Button>
       </form>
     </>}
   </article>;

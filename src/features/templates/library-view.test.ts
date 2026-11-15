@@ -30,7 +30,7 @@ const template: LibraryTemplate = { id: 'template', title: 'Push Pull Legs', kin
 it('renders the approved training labels and retains every menu action', () => {
   const html = render('program', [template]);
   for (const text of ['خطط التمارين', 'خططك الجاهزة. تستخدمها لأي لاعب وتعدّل عليها', 'خطة جديدة', 'الكل', 'مبتدئ', 'متوسط', 'متقدم', 'دوّر على خطة', 'افتح', 'أرشف', 'معاينة']) expect(html).toContain(text);
-  expect(html.match(/primary-surface/g)).toHaveLength(1);
+  expect(html.match(/control-primary/g)).toHaveLength(1);
   expect(html).toContain('Push Pull Legs');
 });
 it('renders one creation button and a short empty line for meal plans', () => {

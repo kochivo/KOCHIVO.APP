@@ -5,6 +5,7 @@ import { getKoActor } from '@/features/ko-account';
 import { koPilotAvailable } from '@/features/ko-entry/server';
 import { KoChat } from '@/features/ko-preview';
 import { koPreviewMessages } from '@/features/ko-core';
+import { buttonClass } from '@/ui/button';
 
 export default async function KoPage() {
   if (!await koPilotAvailable()) notFound();
@@ -16,7 +17,7 @@ export default async function KoPage() {
       <header className="flex items-center justify-between gap-3 border-b border-line p-4">
         <h1 className="font-display text-xl font-extrabold">{t('accountChatTitle')}</h1>
         <Link href={actor.role === 'captain' ? '/captain' : '/player'}
-          className="flex min-h-12 items-center rounded-control border border-line px-3 text-sm">{t('home')}</Link>
+          className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-12 items-center px-3 text-sm" })}>{t('home')}</Link>
       </header>
       <KoChat role={actor.role} account />
     </section>

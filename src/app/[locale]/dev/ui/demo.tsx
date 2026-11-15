@@ -28,7 +28,7 @@ export function UiDemo() {
           <IconButton aria-label="ضيف تمرين" onClick={() => setAdded(!added)}><Plus aria-hidden className="size-5" /></IconButton>
           <IconButton aria-label="الإضافة مش متاحة" disabled><Plus aria-hidden className="size-5" /></IconButton>
         </div>
-        <Button size="xl" variant="secondary">ابدأ التمرين</Button>
+        <Button size="lg" variant="secondary">ابدأ التمرين</Button>
         <div className="grid gap-4 sm:grid-cols-3">
           <GlassCard className="p-5">كارت عادي</GlassCard>
           <GlassCard level="raised" className="p-5">كارت بارز</GlassCard>

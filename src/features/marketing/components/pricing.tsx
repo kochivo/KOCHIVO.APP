@@ -2,6 +2,7 @@ import { getT } from '@/core/i18n/server';
 import { messages } from '../messages';
 import { getContent, whatsappUrl } from '../content';
 import { Check } from 'lucide-react';
+import { buttonClass } from '@/ui/button';
 
 export async function Pricing() {
   const t = await getT(messages);
@@ -16,7 +17,7 @@ export async function Pricing() {
         <li className="flex items-start gap-2 rounded-control bg-lime-soft p-3 font-extrabold"><Check aria-hidden="true" size={18} className="shrink-0 text-lime" />{plan.limitLabel}</li>
         {plan.checklist.map(item => <li key={item} className="flex items-start gap-2"><Check aria-hidden="true" size={18} className="shrink-0 text-lime" /><span>{item}</span></li>)}
       </ul>
-      <a href={plan.price === 0 ? content.links.signup : whatsappUrl} className="mt-auto min-h-13 marketing-ghost border border-line">{plan.action}</a>
+      <a href={plan.price === 0 ? content.links.signup : whatsappUrl} className={buttonClass({ variant: 'secondary', block: false, className: "mt-auto min-h-13" })}>{plan.action}</a>
     </article>)}</div>
     <p className="text-sm text-muted">{content.pricing.note}</p>
   </section>;

@@ -6,6 +6,7 @@ import type { RosterPlayer } from '@/features/roster';
 import type { WorkspaceCaptainTask } from '../next-task';
 import { taskIsPrimary } from '../next-task';
 import { workspaceMessages } from '../workspace-messages';
+import { buttonClass } from '@/ui/button';
 
 const icons = { review: MessageCircle, noProgram: Dumbbell, noMealPlan: Salad, renew: CalendarClock, dues: Wallet, late: Clock, done: CheckCheck, invite: CheckCheck };
 export async function WorkspaceTasks({ tasks, players = [], lastPayments }: { tasks: WorkspaceCaptainTask[]; players?: RosterPlayer[]; lastPayments?: Map<string, string> }) {
@@ -22,7 +23,7 @@ export async function WorkspaceTasks({ tasks, players = [], lastPayments }: { ta
           <p className="mt-1 text-[11.5px] text-faint">{task.kind === 'review' && players.some(player => player.openTasks) ? players.filter(player => player.openTasks).map(player => player.fullName).join(' · ') :
             task.kind === 'renew' && lastPayment ? t('lastPayment', { date: formatDateAr(lastPayment, { day: 'numeric', month: 'long' }, locale) }) :
             task.kind === 'late' && task.lastTrainingDate ? t('lastWorkout', { date: formatDateAr(task.lastTrainingDate, { day: 'numeric', month: 'long' }, locale) }) : t(`hint.${task.kind}`)}</p></div>
-        <Link href={task.href} className={`inline-flex min-h-12 items-center justify-center rounded-full border px-3.5 text-[12.5px] ${taskIsPrimary(index) && task.kind !== 'done' ? 'border-lime bg-lime font-semibold text-on-lime' : 'border-line text-ink'}`}>
+        <Link href={task.href} className={buttonClass({ variant: (taskIsPrimary(index) && task.kind !== 'done') ? 'primary' : 'secondary', block: false, className: `inline-flex min-h-12 items-center justify-center px-3.5 text-[12.5px] ${taskIsPrimary(index) && task.kind !== "done" ? "font-semibold" : "text-ink"} ` })}>
           {t(`action.${task.kind}`)}</Link>
       </li>;
     })}</ul>

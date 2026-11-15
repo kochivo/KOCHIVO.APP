@@ -5,6 +5,7 @@ import { exerciseMediaUrl } from '@/core/storage';
 import type { LibraryExercise } from '@/features/programs';
 import { ExerciseImage } from '@/ui/exercise-image';
 import { messages } from './messages';
+import { Button } from '@/ui/button';
 
 export const muscleTabs = ['all', 'legs', 'chest', 'back', 'shoulders', 'arms', 'abs', 'cardio'] as const;
 export type MuscleTab = typeof muscleTabs[number];
@@ -36,8 +37,8 @@ export function ExerciseCard({ exercise, onSelect }: {
   const equipment = equipmentChips.find(value => value === exercise.equipment ||
     (value === 'bodyweight' && exercise.equipment === 'body weight') ||
     (value === 'machine' && ['leverage machine', 'smith machine', 'sled machine'].includes(exercise.equipment ?? '')));
-  return <button type="button" onClick={() => onSelect(exercise)}
-    className="glass flex min-h-12 w-full flex-col gap-2 rounded-card border border-line-soft p-4 text-start hover:border-lime focus-visible:outline-2 focus-visible:outline-lime">
+  return <Button type="button" onClick={() => onSelect(exercise)}
+    variant={'secondary'} block={false} className={"flex min-h-12 w-full flex-col gap-2 p-4 text-start hover:border-lime focus-visible:outline-2 focus-visible:outline-lime"}>
     {exercise.media_path ? <ExerciseImage src={exerciseMediaUrl(exercise.media_path)} alt="" width={320} height={220} fullWidth className="bg-exercise-media" /> :
       <span className="flex aspect-[16/11] w-full items-center justify-center rounded-control bg-surface-raised p-3 text-sm text-muted">{t('noMedia')}</span>}
     <b className="mt-1 break-words"><bdi>{exerciseTitle(exercise)}</bdi></b>
@@ -47,5 +48,5 @@ export function ExerciseCard({ exercise, onSelect }: {
       <span className="rounded-full bg-surface-raised px-2 py-1">{equipment ? t(equipment) : exercise.equipment || t('missing')}</span>
       {exercise.is_own && <span className="rounded-full bg-lime/10 px-2 py-1 text-lime">{t('own')}</span>}
     </span>
-  </button>;
+  </Button>;
 }

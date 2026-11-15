@@ -21,6 +21,7 @@ import { ExerciseAlternatives } from './exercise-alternatives';
 import { RampLine } from './ramp-line';
 import { NextUp } from './next-up';
 import { targetForSet } from '@/lib/set-plan';
+import { Button } from '@/ui/button';
 
 const FormCheckButton = dynamic(() => import('./form-check-button').then(module => module.FormCheckButton), { ssr: false });
 
@@ -56,10 +57,10 @@ export function WorkoutSet({ state }: { state: ReturnType<typeof useFocusSession
       <WorkoutHint last={state.performance} history={history ?? []} weight={state.weight} reps={state.reps} />
       {historyFailed && <button type="button" className="min-h-12 text-xs text-muted" onClick={() => { setHistoryFailed(false); setAttempt(value => value + 1); }}>{t('tryAgain')}</button>}
       {state.invalid && <p id="set-error" role="alert" className="text-danger">{t(state.invalid.result === 'reps' ? 'enterReps' : 'enterWeightAndReps')}</p>}
-      <button type="button" style={{ fontFamily: 'inherit' }} disabled={blocked} onClick={() => void state.complete()}
-        className="mt-auto flex min-h-[68px] w-full items-center justify-center gap-2.5 rounded-full bg-lime text-xl font-black text-on-lime disabled:opacity-50">
+      <Button type="button" style={{ fontFamily: 'inherit' }} disabled={blocked} onClick={() => void state.complete()}
+        variant={'primary'} block={false} className={"mt-auto flex min-h-[68px] w-full items-center justify-center gap-2.5 text-xl font-black disabled:opacity-50"}>
         <KoTraining aria-hidden className="size-6" />{t(state.progress === state.queue.length ? 'v3CompleteWorkout' : 'v3CompleteSet')}
-      </button>
+      </Button>
       {state.rest.remaining > 0 && <RestPanel remaining={state.rest.remaining} total={state.rest.total} sound={state.rest.sound} onToggleSound={state.rest.toggleSound}
         flashing={state.rest.flashing} onExtend={state.rest.extend} onSkip={state.rest.skip} />}
     </div>

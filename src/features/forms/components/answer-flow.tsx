@@ -18,6 +18,7 @@ import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { messages as v6Messages } from '../v6-messages';
 import { Camera, X } from 'lucide-react';
 import { secondaryButtonClass } from '@/ui/secondary-button-class';
+import { Button } from '@/ui/button';
 
 export function AnswerFlow({data,locale}:{data:RequestData;locale:Locale}) {
   const CameraIcon = captainWorkspaceEnabled() ? KoCamera : Camera;
@@ -95,10 +96,10 @@ export function AnswerFlow({data,locale}:{data:RequestData;locale:Locale}) {
         {uploading && <p role="status">{m.upload}</p>}
         {error && <p role="alert" className="py-3 text-danger">{error}</p>}
         <div className="mt-5 flex gap-3">
-          {(step>0 || v6) && <button type="button" onClick={() => {if (step > 0) setStep(step-1);setError('');}} disabled={v6 && step === 0}
-            className={v6 ? 'min-h-12 flex-1 rounded-full border border-line-soft px-5 disabled:opacity-40' : 'min-h-12 px-5'}>{v6 ? v6t('back') : m.previous}</button>}
-          <button type="submit" className={v6 ? 'min-h-12 flex-[2] rounded-full bg-lime px-5 font-semibold text-on-lime' : 'min-h-12 flex-1 rounded-control bg-lime px-5 font-bold text-on-lime'}>
-            {state === 'sending' ? m.submitting : error ? m.retry : step === data.questions.length-1 ? m.finish : m.next}</button>
+          {(step>0 || v6) && <Button type="button" onClick={() => {if (step > 0) setStep(step-1);setError('');}} disabled={v6 && step === 0}
+            variant={(v6) ? 'secondary' : 'secondary'} block={false} className={v6 ? "min-h-12 flex-1 px-5 disabled:opacity-40" : "min-h-12 px-5"}>{v6 ? v6t('back') : m.previous}</Button>}
+          <Button type="submit" variant={(v6) ? 'primary' : 'primary'} block={false} className={v6 ? "min-h-12 flex-[2] px-5 font-semibold" : "min-h-12 flex-1 px-5 font-bold"}>
+            {state === 'sending' ? m.submitting : error ? m.retry : step === data.questions.length-1 ? m.finish : m.next}</Button>
         </div>
       </fieldset>
     </form>

@@ -16,6 +16,7 @@ import { useCaptainContext } from '../hooks/use-my-captain';
 import type { MyCaptain } from '../data/my-captain';
 import { messages } from '../messages';
 import { messages as pageMessages } from '../pages-messages';
+import { buttonClass } from '@/ui/button';
 
 const contactPatterns = {
   whatsapp: /^https:\/\/wa\.me\/[1-9]\d{7,14}$/,
@@ -69,7 +70,7 @@ export function CaptainProfileCard({ variant = 'legacy', children }: { variant?:
     <div className={page ? 'flex flex-wrap justify-center gap-2' : 'flex flex-wrap gap-3'}>
       {(['instagram', 'tiktok', 'facebook', 'youtube', 'x'] as const).map(key => social[key] ?
         <a key={key} href={social[key]} target="_blank" rel="noopener noreferrer"
-          className={page ? 'flex min-h-12 items-center rounded-full border border-line-soft px-3 text-xs' : 'glass flex min-h-12 items-center rounded-control px-4'}>{t(key)}</a> : null)}
+          className={buttonClass({ variant: (page) ? 'secondary' : 'secondary', block: false, className: page ? "flex min-h-12 items-center px-3 text-xs" : "flex min-h-12 items-center px-4" })}>{t(key)}</a> : null)}
     </div>
   </>;
   const chip = <span className={`inline-flex rounded-full px-3 py-2 text-sm ${state === 'active' ? 'bg-lime-soft text-lime' : 'bg-warn-soft text-warn'}`}>{labels[state]}</span>;
@@ -78,7 +79,7 @@ export function CaptainProfileCard({ variant = 'legacy', children }: { variant?:
     <p>{page ? p('until', { date: formatDate(data.accessUntil) }) : <>{t('until')} <time dateTime={data.accessUntil}>{formatDate(data.accessUntil)}</time></>}</p>
   </div>;
   const contact = url ? <a href={url} target="_blank" rel="noopener noreferrer" aria-label={page ? p('whatsapp') : t('messageYourCoachOnWhatsApp')}
-    className={page ? 'flex min-h-12 items-center justify-center gap-2 rounded-full border border-line-soft px-4 text-[13px] font-bold' : 'flex min-h-14 items-center justify-center gap-2 rounded-control bg-lime px-5 font-extrabold text-on-lime'}>
+    className={buttonClass({ variant: (page) ? 'secondary' : 'primary', block: false, className: page ? "flex min-h-12 items-center justify-center gap-2 px-4 text-[13px] font-bold" : "flex min-h-14 items-center justify-center gap-2 px-5 font-extrabold" })}>
     {page ? <KoCaptainChat aria-hidden className="size-[18px]" /> : <MessageCircle aria-hidden className="size-5" />}{page ? p('whatsapp') : t('messageYourCoachOnWhatsApp')}
   </a> : <Button disabled variant={page ? 'secondary' : 'primary'} className="min-h-12 w-full">{t('yourCoachHasnTAddedA')}</Button>;
   if (!page) return <GlassCard className="space-y-5 p-6">{identity}{chip}{dates}{contact}</GlassCard>;

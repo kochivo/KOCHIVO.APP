@@ -8,6 +8,7 @@ import { ResponsiveDialog } from '@/ui/responsive-dialog';
 import { frameMessages } from './captain-frame-messages';
 import { frameItems } from './captain-frame-model';
 import type { CaptainFrameData } from './captain-frame-data';
+import { buttonClass } from '@/ui/button';
 
 export function CaptainSearchPalette({ players, onClose }: { players: CaptainFrameData['players']; onClose: () => void }) {
   const t = useT(frameMessages);
@@ -43,7 +44,7 @@ export function CaptainSearchPalette({ players, onClose }: { players: CaptainFra
     {players === null && <p role="status" className="p-3 text-sm text-muted">{t('unavailable')}</p>}
     <div id={id} role="listbox" aria-label={t('search')} className="mt-2 space-y-1">{matches.length ? matches.map((item, index) => <Link key={item.href} href={item.href}
       id={`${id}-${index}`} role="option" aria-selected={selected === index} data-result={index} onClick={onClose} onFocus={() => setSelected(index)}
-      className={`flex min-h-12 items-center gap-3 rounded-control px-3 text-sm ${selected === index ? 'glass-strong text-lime' : 'text-ink'}`}>
+      className={buttonClass({ variant: 'secondary', block: false, className: `flex min-h-12 items-center gap-3 px-3 text-sm ${selected === index ? "text-lime" : "text-ink"} ` })}>
       {item.label}<small className="ms-auto text-faint">{t(item.group)}</small>
     </Link>) : <p className="p-3 text-sm text-muted">{t('empty')}</p>}</div>
   </ResponsiveDialog>;

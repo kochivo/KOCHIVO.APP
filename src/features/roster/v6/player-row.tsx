@@ -10,6 +10,7 @@ import { messages } from './messages';
 import { playerStatus } from './model';
 import type { PlayerActivity } from './model';
 import { WeekDots } from './week-dots';
+import { buttonClass } from '@/ui/button';
 
 export function PlayerRow({ player, today, meta, activity, mobile = false }: {
   player: RosterPlayer; today: string; meta?: RosterMeta; activity?: PlayerActivity; mobile?: boolean;
@@ -30,7 +31,7 @@ export function PlayerRow({ player, today, meta, activity, mobile = false }: {
   const dots = activity ? <WeekDots today={player.playerToday ?? today} startedOn={player.startedOn} activity={activity} /> : null;
   const href = `/captain/players/${player.playerId}`;
   if (mobile) return <Link href={href} prefetch={false}
-    className="glass flex min-h-12 items-center gap-3 rounded-[16px] p-3 text-start focus-visible:outline-2 focus-visible:outline-lime">
+    className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-12 items-center gap-3 p-3 text-start focus-visible:outline-2 focus-visible:outline-lime" })}>
     {avatar}<div className="min-w-0 flex-1"><b className="block truncate text-sm">{player.fullName}</b>
       <small className="block text-xs text-muted">{goal ? `${goal} · ` : ''}{t('days', { count: n(days) })}</small>
       <div className="mt-1.5">{dots}</div></div>{pill}

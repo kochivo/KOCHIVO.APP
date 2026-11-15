@@ -9,6 +9,7 @@ import { formatNumber } from '@/lib/format';
 import { loadPlan, savePlan } from '../data/plan-io';
 import type { PlanSummary } from '../types';
 import { messages } from './calculator/messages';
+import { buttonClass } from '@/ui/button';
 
 export async function applyCalculatorTargets(planId: string, playerId: string, targets: Macros) {
   const loaded = await loadPlan(planId);
@@ -34,7 +35,7 @@ export function CalculatorApply({ playerId, plans, targets }: { playerId: string
     } catch { setApplied(previous); setError(true); }
     finally { setBusy(false); }
   }
-  if (!plans.length) return <Link className="glass flex min-h-12 items-center rounded-control p-4" href={`/captain/players/${playerId}/nutrition`}>{t('noPlans')}</Link>;
+  if (!plans.length) return <Link className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-12 items-center p-4" })} href={`/captain/players/${playerId}/nutrition`}>{t('noPlans')}</Link>;
   return <section className="grid gap-3">
     <label className="grid gap-2">{t('choosePlan')}<select value={planId} disabled={busy}
       onChange={event => { setPlanId(event.target.value); setError(false); }} className="min-h-12 rounded-control bg-surface px-3">

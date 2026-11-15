@@ -32,7 +32,7 @@ export function SetControls({ state, secondary = false }: { state: ReturnType<ty
         hint={state.performance?.reps != null ? t('lastTimeReps', { value: formatNumber(state.performance.reps, locale) }) : undefined} />
     </div>
     {state.invalid && <p id="set-error" role="alert" className="text-danger">{t(issue === 'reps' ? 'enterReps' : 'enterWeightAndReps')}</p>}
-    <Button variant={secondary ? 'secondary' : 'primary'} size="xl" className="w-full" disabled={state.disabled} onClick={() => void state.complete()}>
+    <Button variant={secondary ? 'secondary' : 'primary'} size="lg" className="min-h-17 w-full px-6 text-xl" disabled={state.disabled} onClick={() => void state.complete()}>
       <Check aria-hidden />{t('completeSet')}
     </Button>
   </>;

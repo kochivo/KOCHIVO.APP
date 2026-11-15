@@ -7,6 +7,7 @@ import { ranksEnabled } from '@/lib/ranks-enabled';
 import { messages } from '../messages';
 
 import Link from 'next/link';
+import { buttonClass } from '@/ui/button';
 
 export function DonePanel({ workout, lifetime }: { workout?: WorkoutPointsInput; lifetime?: number }) {
   const t = useT(messages);
@@ -30,6 +31,6 @@ export function DonePanel({ workout, lifetime }: { workout?: WorkoutPointsInput;
     <h1 className="text-3xl font-extrabold">{t('workoutComplete')}</h1>
     {line && <p className={preview?.counted ? 'font-bold' : 'text-muted'}>{line}</p>}
     <p className="text-muted">{t('savedOnYourPhoneYourCoachWill')}</p>
-    <Link href="/player" className="glass inline-flex min-h-12 items-center rounded-control px-5">{t('backToHome')}</Link>
+    <Link href="/player" className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-5" })}>{t('backToHome')}</Link>
   </section>;
 }

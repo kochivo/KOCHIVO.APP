@@ -4,6 +4,7 @@ import { GlassCard } from '@/ui';
 import { loadCaptainSlug } from '../data/captain-slug';
 import { messages } from '../messages';
 import { CopyLinkButton } from './copy-link-button-entry';
+import { buttonClass } from '@/ui/button';
 
 export async function CoachLinkCard() {
   const [t, result] = await Promise.all([getT(messages), loadCaptainSlug()]);
@@ -19,7 +20,7 @@ export async function CoachLinkCard() {
       <CopyLinkButton url={`https://kochivo.site/c/${result.slug}`} />
     </> : <div className="space-y-3">
       <p className="text-sm text-muted">{t('choosePageLink')}</p>
-      <Link href="/captain/settings" className="inline-flex min-h-12 items-center rounded-control border border-line px-4 text-sm font-bold">{t('openSettings')}</Link>
+      <Link href="/captain/settings" className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-4 text-sm font-bold" })}>{t('openSettings')}</Link>
     </div>}
   </GlassCard>;
 }

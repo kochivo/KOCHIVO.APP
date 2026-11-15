@@ -1,3 +1,4 @@
+import { Button } from '@/ui/button';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { isValidElement } from 'react';
 import type { ReactElement } from 'react';
@@ -66,7 +67,7 @@ vi.mock('./components/invite-message-form', () => ({ InviteMessageForm: () => nu
 vi.mock('./components/export-card', () => ({ ExportCard: () => null }));
 vi.mock('./components/delete-account-card', () => ({ DeleteAccountCard: () => null }));
 function render() { hooks.cursor = 0; return SettingsScreen({}); }
-function languageButtons() { return nodes(render()).filter(node => node.type === 'button' && node.props.lang); }
+function languageButtons() { return nodes(render()).filter(node => (node.type === 'button' || node.type === Button) && node.props.lang); }
 it('selects the language immediately and rolls back with the translated error', async () => {
   const request = deferred<void>(); vi.mocked(setLocale).mockReturnValue(request.promise);
   expect(languageButtons().find(node => node.props.lang === 'en')?.props['aria-pressed']).toBe(true);

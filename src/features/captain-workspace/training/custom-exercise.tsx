@@ -7,6 +7,7 @@ import { useT } from '@/core/i18n/client';
 import type { LibraryExercise } from '@/features/programs';
 import { loadLibraryExercise } from './data/editor-actions';
 import { messages } from '../library/messages';
+import { buttonClass } from '@/ui/button';
 
 export const CustomExerciseNavigation = createContext<{
   programId: string; dayId: string; flush: () => Promise<boolean>;
@@ -47,7 +48,7 @@ export function CustomExercise({ exercise }: { onAdd?: (row: LibraryExercise) =>
   const href = customExerciseHref(`${pathname}?${search}`, context?.programId ?? '', context?.dayId ?? '', exercise?.id);
   return <div className="px-[18px] pb-3">
     <Link id={`custom-exercise-${exercise?.id ?? 'new'}`} href={href} aria-disabled={busy} aria-busy={busy}
-      className="inline-flex min-h-12 items-center rounded-full border border-line-soft px-3 text-xs text-muted"
+      className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-3 text-xs text-muted" })}
       onClick={event => {
         event.preventDefault(); if (navigating.current) return;
         navigating.current = true; setBusy(true); setError('');

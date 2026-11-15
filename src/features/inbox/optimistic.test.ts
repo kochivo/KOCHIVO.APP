@@ -1,3 +1,4 @@
+import { Button } from '@/ui/button';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { isValidElement } from 'react';
 import type { ReactElement } from 'react';
@@ -128,7 +129,7 @@ it('shows a pending review on the reviewed tab and removes it after rejection', 
   await load(); select(0);
   const request = deferred<{ error: string }>(); vi.mocked(reviewItem).mockReturnValue(request.promise);
   const operation = send()('Reply');
-  const tab = nodes(render()).find(node => node.type === 'button' && text(node.props.children) === 'reviewed');
+  const tab = nodes(render()).find(node => (node.type === 'button' || node.type === Button) && text(node.props.children) === 'reviewed');
   expect(tab?.props.disabled).not.toBe(true);
   (tab?.props.onClick as () => void)();
   vi.mocked(listInbox).mockResolvedValue({ data: [] });
@@ -198,7 +199,7 @@ it('asks before discarding a clip and stays open when leaving is declined', asyn
   const confirm = vi.fn().mockReturnValueOnce(false).mockReturnValueOnce(true);
   vi.stubGlobal('window', { confirm });
   try {
-    const close = () => nodes(render()).find(node => node.type === 'button' && node.props['aria-label'] === 'close')?.props.onClick as () => void;
+    const close = () => nodes(render()).find(node => (node.type === 'button' || node.type === Button) && node.props['aria-label'] === 'close')?.props.onClick as () => void;
     close()();
     expect(confirm).toHaveBeenCalledWith('unsentVoice');
     expect(nodes(render()).some(node => node.type === ReplyBox)).toBe(true);

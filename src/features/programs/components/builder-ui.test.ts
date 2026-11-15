@@ -62,7 +62,7 @@ const draft: ProgramDraft = { id: 'p', player_id: 'player', status: 'draft', tit
 it('keeps one primary send action and a separate status and dirty message', () => {
   const onSave = vi.fn(); const onActivate = vi.fn();
   const html = render(createElement(BuilderHeader, { draft, dirty: true, busy: false, onTitle() {}, onSave, onActivate }));
-  expect(html.match(/primary-surface/g)).toHaveLength(1);
+  expect(html.match(/control-primary/g)).toHaveLength(1);
   expect(html).toContain('There are unsaved changes');
   expect(html).toContain('>Draft</span>');
   expect(html).toContain('bottom-[var(--nav-clearance)]');

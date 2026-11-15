@@ -66,7 +66,7 @@ it.each(['ar', 'en'] as const)('renders swap approval and decline with localized
   const html = renderToStaticMarkup(createElement(LocaleProvider, { locale }, createElement(FeedCard, { item: row, onDismiss() {} })));
   for (const label of [t('approve'), t('decline'), t('knee'), 'Ali', locale === 'ar' ? 'سكوات' : 'Squat']) expect(html).toContain(label);
   expect(html).toContain(`dir="${locale === 'ar' ? 'rtl' : 'ltr'}"`);
-  expect(html).toContain('bg-lime');
+  expect(html).toContain('control-primary');
   expect(html).not.toContain(t('preview'));
   expect(rankFeed([item({ kind: 'expired', severity: 'urgent' }), row])[0]?.kind).toBe('swap_requested');
 });

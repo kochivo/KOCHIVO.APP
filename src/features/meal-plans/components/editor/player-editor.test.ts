@@ -28,7 +28,7 @@ it.each(['ar', 'en'] as const)('renders the player editor in %s with one primary
   expect(html).not.toContain('value="Old name"');
   expect(html).toContain(locale === 'ar' ? 'اتحفظ' : 'Saved');
   expect(html).not.toContain('احفظ');
-  expect(html.match(/primary-surface/g)).toHaveLength(1);
+  expect(html.match(/control-primary/g)).toHaveLength(1);
   expect(html).toContain('value="3"');
   expect(html).toContain('234');
   expect(html.match(/data-target=/g)).toHaveLength(4);

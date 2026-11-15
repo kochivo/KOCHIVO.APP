@@ -9,6 +9,7 @@ import { assessmentWeekday, recurrenceLabel } from '../assessment-summary';
 import type { AssessmentLibraryData } from '../data/assessment-library';
 import { V11TemplateChooser } from './v11-template-chooser';
 import { questionCount } from '../question-count';
+import { buttonClass, Button } from '@/ui/button';
 
 export function V11LibraryList({ data, locale, style }: { data: AssessmentLibraryData; locale: Locale; style?: ArabicStyle }) {
   const t = createT(workspaceMessages, locale, style), m = formCopy(locale, style), base = `/${locale}/captain/library/forms`;
@@ -20,7 +21,7 @@ export function V11LibraryList({ data, locale, style }: { data: AssessmentLibrar
         : schedules[0] ? recurrenceLabel(active ?? schedules[0], locale) : t('manual');
       const status = form.schedule || active ? 'active' : schedules.length ? 'stopped' : 'manual';
       const metrics = data.byForm[form.id];
-      return <Link key={form.id} href={`${base}?edit=${form.id}`} prefetch={false} className="glass press flex min-h-12 min-w-0 cursor-pointer flex-col gap-2 rounded-card border border-line-soft p-4 text-start hover:bg-ink/10 focus-visible:ring-2 focus-visible:ring-lime">
+      return <Link key={form.id} href={`${base}?edit=${form.id}`} prefetch={false} className={buttonClass({ variant: 'secondary', block: false, className: "press flex min-h-12 min-w-0 cursor-pointer flex-col gap-2 p-4 text-start focus-visible:ring-2 focus-visible:ring-lime" })}>
         <div className="flex items-center gap-2"><span className="grid size-9 shrink-0 place-items-center rounded-control bg-surface"><ClipboardList aria-hidden className="size-4" /></span>
           <b className="min-w-0 break-words text-sm">{form.title}</b><span className={`ms-auto shrink-0 rounded-full px-2 py-1 text-[11px] ${status === 'active' ? 'bg-lime-soft text-lime' : 'bg-surface text-muted'}`}>{t(status)}</span></div>
         <small className="text-muted">{form.kind === 'custom' ? t('manual') : m.kinds[form.kind]} · {schedule} · {questionCount(form.questions.length, locale, style)}</small>
@@ -28,7 +29,7 @@ export function V11LibraryList({ data, locale, style }: { data: AssessmentLibrar
       </Link>;
     })}
     <section className="glass flex min-h-32 flex-col items-center justify-center gap-1 rounded-card border border-line-soft p-4">
-      <button type="button" popoverTarget="assessment-templates" className="glass press flex min-h-12 cursor-pointer items-center gap-2 rounded-full border border-line px-4 hover:bg-ink/10 focus-visible:ring-2 focus-visible:ring-lime"><KoPlus aria-hidden className="size-5" /><span>{t('newForm')}</span></button>
+      <Button type="button" popoverTarget="assessment-templates" variant={'secondary'} block={false} className={"press flex min-h-12 cursor-pointer items-center gap-2 px-4 focus-visible:ring-2 focus-visible:ring-lime"}><KoPlus aria-hidden className="size-5" /><span>{t('newForm')}</span></Button>
       <small className="text-muted">{t('start')}</small>
     </section>
   </div><V11TemplateChooser locale={locale} style={style} /></>;

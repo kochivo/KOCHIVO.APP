@@ -39,7 +39,7 @@ it('shows localized library results and keeps the search text', () => {
 it('surfaces food creation and library results with add icons', () => {
   state.data.foods = [{ id: 'egg', name: 'بيض', nameEn: 'Egg' }];
   const html = render();
-  expect(html.match(/<button[^>]*class="[^"]*glass[^>]*>/g)).toHaveLength(2);
+  expect(html.match(/<button[^>]*class="[^"]*control-secondary[^>]*>/g)).toHaveLength(2);
   expect(html.match(/lucide-plus/g)).toHaveLength(2);
 });
 it.each(['loading', 'error', 'empty'] as const)('has a %s state', kind => {

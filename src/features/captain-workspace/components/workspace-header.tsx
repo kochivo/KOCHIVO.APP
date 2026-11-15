@@ -6,6 +6,7 @@ import { createT } from '@/core/i18n/messages';
 import type { Locale } from '@/core/i18n/locale';
 import { messages } from '../messages';
 import { messages as formsMessages } from '../forms/messages';
+import { Button } from '@/ui/button';
 
 export function WorkspaceHeader({ playerId, name, locale, view = 'training' }: { playerId: string; name: string; locale: Locale; view?: 'training' | 'forms' }) {
   const SendIcon = captainWorkspaceEnabled() ? KoSend : Send;
@@ -30,8 +31,8 @@ export function WorkspaceHeader({ playerId, name, locale, view = 'training' }: {
       </li>)}</ul>
     </nav>
     {view === 'training' && <>
-    <button type="button" className="hidden min-h-12 items-center gap-2 rounded-full bg-lime px-5 font-bold text-on-lime lg:inline-flex">
+    <Button type="button" variant={'primary'} block={false} className={"hidden min-h-12 items-center gap-2 px-5 font-bold lg:inline-flex"}>
       <SendIcon aria-hidden strokeWidth={1.5} className="size-4" />{t('send')}
-    </button></>}
+    </Button></>}
   </header>;
 }

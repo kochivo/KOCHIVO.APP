@@ -23,7 +23,7 @@ export function AssignSheet({ template, onClose }: { template: Template; onClose
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
   const [attempt, setAttempt] = useState(0);
-  const assignment = useTemplateAssignment(template, players.map(player => player.playerId), onClose);
+  const assignment = useTemplateAssignment(template, players.map(player => player.playerId), onClose, Object.fromEntries(players.map(player => [player.playerId, player.fullName])));
   const { selected, done, failures, busy } = assignment;
   useEffect(() => { dialog.current?.showModal(); }, []);
   useEffect(() => {

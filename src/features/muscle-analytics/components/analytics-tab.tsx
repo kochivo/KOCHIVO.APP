@@ -9,6 +9,7 @@ import { messages } from '../analytics/messages';
 import { loadAnalytics } from '../data/load-analytics';
 import { AnalyticsPanel } from './analytics-panel';
 import { AnalyticsSkeleton } from './analytics-skeleton';
+import { Button } from '@/ui/button';
 
 export function AnalyticsTab({ playerId, self = false }: { playerId: string; self?: boolean }) {
   const timezone = useTimezone();
@@ -22,8 +23,8 @@ export function AnalyticsTab({ playerId, self = false }: { playerId: string; sel
     <header className="space-y-1"><h2 className="font-display text-xl font-bold">{t('title')}</h2>
       <p className="text-sm text-muted">{t('subtitle')}</p></header>
     {failed ? <div className="space-y-3"><p role="alert" className="text-danger">{t('error')}</p>
-      <button type="button" className="min-h-12 rounded-control bg-lime px-5 font-bold text-on-lime"
-        onClick={() => void retry()}>{t('retry')}</button>
+      <Button type="button" variant={'primary'} block={false} className={"min-h-12 px-5 font-bold"}
+        onClick={() => void retry()}>{t('retry')}</Button>
     </div> : weeks ? <AnalyticsPanel key={playerId} weeks={weeks} self={self} readiness={readiness} /> : <AnalyticsSkeleton />}
   </section>;
 }

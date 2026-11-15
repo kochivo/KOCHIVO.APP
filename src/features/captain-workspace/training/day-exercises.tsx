@@ -1,6 +1,10 @@
 'use client';
 
 import { useT } from '@/core/i18n/client';
+import { useLocale } from '@/core/i18n/client';
+import { useToast } from '@/ui/toast';
+import { exerciseName } from '@/lib/display-name';
+import { messages as successMessages } from '../success/messages';
 import { useState } from 'react';
 import { uuidv7 } from '@/core/offline/ids';
 import { addExercise, removeExercise, reorderExercise, updateExercise, useDragReorder, programMessages } from '@/features/programs';
@@ -32,6 +36,7 @@ export function DayExercises({ day, update, flush, injuries = [], candidates = [
   injuries?: readonly string[]; candidates?: readonly TaggedExercise[];
 }) {
   const t = useT(messages), pt = useT(programMessages), et = useT(editorMessages);
+  const success = useT(successMessages), toast = useToast(), locale = useLocale();
   const [announcement, setAnnouncement] = useState('');
   const move = (id: string, index: number) => {
     update(draft => reorderExercise(draft, day.id, id, index));
@@ -54,7 +59,10 @@ export function DayExercises({ day, update, flush, injuries = [], candidates = [
       onPatch={patch => update(draft => updateExercise(draft, day.id, row.id, patch))}
       onRemove={() => update(draft => removeExercise(draft, day.id, row.id))}
       onMove={delta => move(row.id, index + delta)} />)}</ol>
-    <InlineSearch day={day} onAdd={row => update(draft => addExercise(draft, day.id, row, uuidv7()))}
+    <InlineSearch day={day} onAdd={row => {
+      update(draft => addExercise(draft, day.id, row, uuidv7()));
+      toast.success({ title: success('added'), detail: success('exerciseDetail', { name: exerciseName(row, locale), day: day.title }), icon: 'program' });
+    }}
       onLibraryChange={library => update(draft => ({ ...draft, days: draft.days.map(item => ({ ...item, exercises: item.exercises.map(row => row.exercise_id === library.id ? { ...row, library } : row) })) }))} />
     <CustomExercise />
   </section></CustomExerciseNavigation>;

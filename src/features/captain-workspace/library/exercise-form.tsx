@@ -99,7 +99,7 @@ function FormFields({ exercise, names, returnTo }: { exercise: LibraryExercise |
     <header className="glass flex flex-wrap items-center gap-3 rounded-card p-3">
       <Link aria-label={t('cancel')} aria-disabled={busy} onClick={event => { if (busy) event.preventDefault(); }} href={destination} className="press grid min-h-12 min-w-12 cursor-pointer place-items-center rounded-full border border-line bg-surface focus-visible:ring-2 focus-visible:ring-lime"><KoSend aria-hidden className="size-4 rotate-45 ltr:rotate-225" /></Link>
       <div className="me-auto min-w-0"><h1 className="text-[15px] font-bold">{t(exercise ? 'edit' : 'new')}</h1><p className="mt-1 text-xs text-muted">{t('privacy')}</p></div>
-      <Link aria-disabled={busy} onClick={event => { if (busy) event.preventDefault(); }} href={destination} className="press hidden min-h-12 cursor-pointer items-center rounded-full border border-line bg-surface px-5 focus-visible:ring-2 focus-visible:ring-lime min-[761px]:inline-flex">{t('cancel')}</Link>
+      <Link aria-disabled={busy} onClick={event => { if (busy) event.preventDefault(); }} href={destination} className="control control-secondary press hidden min-h-12 items-center px-5 text-sm min-[761px]:inline-flex">{t('cancel')}</Link>
       <Button type="submit" disabled={busy} aria-busy={busy}><KoSend aria-hidden className="size-4" />{t(busy ? 'saving' : 'save')}</Button>
     </header>
     {error && <p role="alert" className="text-danger">{error}</p>}

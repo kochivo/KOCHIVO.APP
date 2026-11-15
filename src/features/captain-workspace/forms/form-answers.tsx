@@ -6,6 +6,7 @@ import { formatNumber } from '@/lib/format';
 import { factLabel, factValue } from '../components/player-file-format';
 import type { PlayerForm } from './adapter';
 import { messages } from './messages';
+import { buttonClass } from '@/ui/button';
 
 const colors = { better: 'text-lime', worse: 'text-warn', same: 'text-muted', new: 'text-muted' } as const;
 
@@ -24,7 +25,7 @@ export function FormAnswers({ form, locale, trainingHref }: { form: PlayerForm; 
           {row.previousValue !== undefined && <p className="mt-1 text-sm text-muted">{t('previous', { value: factValue(row.key, row.previousValue, locale) })}</p>}
         </dd>
         <dd className={`text-sm ${colors[row.direction]}`}><bdi dir={row.delta === undefined ? undefined : 'ltr'}>{change}</bdi>
-          {injury && <Link href={trainingHref} className="mt-2 flex min-h-12 items-center rounded-control border border-line px-3 text-ink">{t('training')}</Link>}
+          {injury && <Link href={trainingHref} className={buttonClass({ variant: 'secondary', block: false, className: "mt-2 flex min-h-12 items-center px-3 text-ink" })}>{t('training')}</Link>}
         </dd>
       </div>;
     })}

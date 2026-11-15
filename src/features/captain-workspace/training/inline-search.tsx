@@ -11,6 +11,7 @@ import { loadSuggestions, loadTrainingSearch } from './data/library';
 import { messages } from './messages';
 import { CustomExercise } from './custom-exercise';
 import { removeCustom } from './data/editor-actions';
+import { Button } from '@/ui/button';
 
 export function InlineSearch({ day, onAdd, onLibraryChange, excluded = [], disabled = false }: {
   day: DraftDay; onAdd: (row: LibraryExercise) => void; onLibraryChange: (row: LibraryExercise) => void;
@@ -42,17 +43,17 @@ export function InlineSearch({ day, onAdd, onLibraryChange, excluded = [], disab
     </details>
     {error && <p role="alert" className="px-4 text-xs text-danger">{error}</p>}
     {(query.trim() || browsing) && <div className="max-h-64 overflow-y-auto px-4 pb-3">
-      {search.error ? <p role="alert" className="text-danger">{t('error')}<button className="min-h-12 rounded-full border border-line px-3" onClick={() => void search.retry()}>{t('retry')}</button></p> :
+      {search.error ? <p role="alert" className="text-danger">{t('error')}<Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-3"} onClick={() => void search.retry()}>{t('retry')}</Button></p> :
         !search.data || query !== debounced ? <p role="status" className="text-faint">{t('loading')}</p> :
           results?.length ? results.map(row => <div key={row.id}>
-            <button disabled={disabled || busy.includes(row.id)} className="my-2 flex min-h-12 w-full items-center rounded-control border border-line-soft px-3 text-start disabled:opacity-40" onClick={() => { onAdd(row); setQuery(''); }}><bdi>{t('add', { name: row.name_ar || row.name_en || t('noResults') })}</bdi></button>
+            <Button disabled={disabled || busy.includes(row.id)} type="submit" variant={'secondary'} block={false} className={"my-2 flex min-h-12 w-full items-center px-3 text-start disabled:opacity-40"} onClick={() => { onAdd(row); setQuery(''); }}><bdi>{t('add', { name: row.name_ar || row.name_en || t('noResults') })}</bdi></Button>
             {row.is_own && <div className="flex flex-wrap items-center gap-2"><CustomExercise key={`${row.id}-${row.name_ar}`} exercise={row} onAdd={next => { onLibraryChange(next); void search.retry(); }} />
-              <button disabled={busy.includes(row.id)} className="min-h-12 rounded-full border border-line px-3 text-xs text-danger" onClick={() => { void (async () => { setBusy(ids => [...ids, row.id]); setError(''); try { const result = await removeCustom(row.id); if (result.error) setError(result.error); else setRemoved(ids => [...ids, row.id]); } catch { setError(t('error')); } finally { setBusy(ids => ids.filter(id => id !== row.id)); } })(); }}>{pt('deleteCustomExercise')}</button></div>}
+              <Button disabled={busy.includes(row.id)} type="submit" variant={'secondary'} block={false} className={"min-h-12 px-3 text-xs text-danger"} onClick={() => { void (async () => { setBusy(ids => [...ids, row.id]); setError(''); try { const result = await removeCustom(row.id); if (result.error) setError(result.error); else setRemoved(ids => [...ids, row.id]); } catch { setError(t('error')); } finally { setBusy(ids => ids.filter(id => id !== row.id)); } })(); }}>{pt('deleteCustomExercise')}</Button></div>}
           </div>) : <p className="text-faint">{t('noResults')}</p>}
     </div>}
     <div className="flex flex-wrap items-center gap-1.5 px-4 pb-3.5 text-xs text-faint">
       <span>{t('suggestions', { day: day.title })}</span>
-      {suggestions.error ? <p role="alert">{t('error')}<button className="min-h-12 rounded-full border border-line px-3" onClick={() => void suggestions.retry()}>{t('retry')}</button></p> :
+      {suggestions.error ? <p role="alert">{t('error')}<Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-3"} onClick={() => void suggestions.retry()}>{t('retry')}</Button></p> :
         !suggestions.data ? <span role="status">{t('loading')}</span> : rows.length ?
           rows.map(row => <Chip key={row.id} disabled={disabled} pressed={false} className="border-transparent bg-surface/50 px-3 text-xs" onClick={() => onAdd(row)}>{t('add', { name: row.name_ar || row.name_en || t('noResults') })}</Chip>) : <span>{t('noResults')}</span>}
     </div>

@@ -40,9 +40,9 @@ export function WarmupWorkout({ state, today, progress }: {
     <>
       {progress.loading && <LoadingState />}
       {progress.error && <ErrorState message={wt('couldntReadTheWorkoutOnYourPhone')} retryLabel={wt('tryAgain')} onRetry={() => window.location.reload()} />}
-      <button type="button" disabled={progress.loading || progress.error} onClick={() => {
+      <Button type="button" disabled={progress.loading || progress.error} onClick={() => {
         document.querySelector<HTMLInputElement>('#warmup-checklist input:not(:checked)')?.focus();
-      }} className="flex min-h-12 w-full items-center justify-center rounded-full bg-lime px-5 font-semibold text-on-lime disabled:opacity-50">{t('continue')}</button>
+      }} variant={'primary'} block={false} className={"flex min-h-12 w-full items-center justify-center px-5 font-semibold disabled:opacity-50"}>{t('continue')}</Button>
       <Button variant="secondary" type="button" disabled={progress.loading || progress.error} onClick={progress.skip}
         className="min-h-12 w-full rounded-full px-5 text-sm text-muted">{t('skip')}</Button>
     </>

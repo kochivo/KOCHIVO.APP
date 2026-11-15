@@ -1,18 +1,22 @@
 'use client';
 
-import { useT } from '@/core/i18n/client';
+import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 import { useEffect, useState } from 'react';
 import { loadPlan, savePlan } from '../data/plan-io';
 import { activatePlan } from '../data/activate';
 import type { PlanDraft } from '../types';
 import { useToast } from '@/ui/toast';
+import { messages as successMessages } from '../success/messages';
+import { formatNumber } from '@/lib/format';
+import { planTotals } from '../totals';
 
-export function usePlanDraft(planId: string, { clearErrorsOnEdit = false, initialDraft, save = savePlan }: {
-  clearErrorsOnEdit?: boolean; initialDraft?: PlanDraft; save?: typeof savePlan;
+export function usePlanDraft(planId: string, { clearErrorsOnEdit = false, initialDraft, save = savePlan, playerName }: {
+  clearErrorsOnEdit?: boolean; initialDraft?: PlanDraft; save?: typeof savePlan; playerName?: string;
 } = {}) {
   const t = useT(messages);
   const toast = useToast();
+  const success = useT(successMessages), locale = useLocale();
   const [draft, setDraft] = useState<PlanDraft | null>(initialDraft ?? null);
   const [saved, setSaved] = useState(initialDraft ? JSON.stringify(initialDraft) : '');
   const [error, setError] = useState('');
@@ -20,6 +24,7 @@ export function usePlanDraft(planId: string, { clearErrorsOnEdit = false, initia
   const [busy, setBusy] = useState(false);
   const [retry, setRetry] = useState(0);
   const [lastActivate, setLastActivate] = useState(false);
+  const [lastNotify, setLastNotify] = useState(false);
   const dirty = !!draft && JSON.stringify(draft) !== saved;
   useEffect(() => {
     if (initialDraft) return;
@@ -43,9 +48,10 @@ export function usePlanDraft(planId: string, { clearErrorsOnEdit = false, initia
     if (clearErrorsOnEdit) setError('');
     setDraft(previous => previous ? change(previous) : previous);
   }
-  async function persist(activate = false) {
+  async function persist(activate = false, notify = false) {
     if (!draft || busy) return;
     setLastActivate(activate);
+    setLastNotify(notify);
     if (activate && !draft.meals.some(meal => meal.items.length > 0)) {
       setError(t('addAMealAndFoodFirst')); return;
     }
@@ -60,10 +66,10 @@ export function usePlanDraft(planId: string, { clearErrorsOnEdit = false, initia
         const active = { ...draft, status: 'active' as const };
         setDraft(active); setSaved(JSON.stringify(active));
       }
-      if (activate) toast.success(t('planActivatedForPlayer'));
+      if (activate || notify) toast.success({ title: success(activate ? playerName ? 'assigned' : 'activated' : 'saved', { name: playerName ?? '' }), detail: success('planDetail', { name: draft.title, calories: formatNumber(Math.round(planTotals(draft).kcal), locale) }), icon: 'meal' });
     } catch { setError(t('couldntSaveTryAgain')); }
     finally { setBusy(false); }
   }
-  return { draft, dirty, error, loading, busy, update, persist, retrySave: () => persist(lastActivate),
+  return { draft, dirty, error, loading, busy, update, persist, retrySave: () => persist(lastActivate, lastNotify),
     reload: () => { setLoading(true); setRetry(value => value + 1); } };
 }

@@ -7,6 +7,7 @@ import { formCopy } from '../form-copy';
 import { assessmentTime, assessmentWeekday, recurrenceLabel } from '../assessment-summary';
 import { messages as redesign } from '../redesign/messages';
 import { LibrarySchedulesEntry } from './library-schedules-entry';
+import { Button } from '@/ui/button';
 
 export function V11FormSettings(props: ComponentProps<typeof LibrarySchedulesEntry> & { schedule: string }) {
   const { form, locale, style, scheduleContext } = props;
@@ -23,7 +24,7 @@ export function V11FormSettings(props: ComponentProps<typeof LibrarySchedulesEnt
   const reminders = [form.remind_after_hours, ...schedules.map(s => s.remind_after_hours)].filter((hours): hours is number => Boolean(hours));
   return <section className="glass rounded-card border border-line-soft p-4"><h2 className="mb-3 text-sm font-semibold">{t('settings')}</h2>
     <p className="text-sm text-muted">{summary}{reminders.length > 0 && ` · ${reminders.map(n => r('remindHours', { n })).join(' · ')}`}</p>
-    <button type="button" aria-expanded={editing} onClick={() => setEditing(!editing)} className="glass press mt-3 flex min-h-12 cursor-pointer items-center gap-2 rounded-full border border-line px-4 text-sm hover:bg-ink/10 focus-visible:ring-2 focus-visible:ring-lime">{t('editSettings')}<ChevronDown aria-hidden className={`size-4 transition-transform ${editing ? 'rotate-180' : ''}`} /></button>
+    <Button type="button" aria-expanded={editing} onClick={() => setEditing(!editing)} variant={'secondary'} block={false} className={"press mt-3 flex min-h-12 cursor-pointer items-center gap-2 px-4 text-sm focus-visible:ring-2 focus-visible:ring-lime"}>{t('editSettings')}<ChevronDown aria-hidden className={`size-4 transition-transform ${editing ? 'rotate-180' : ''}`} /></Button>
     {editing && <div className="mt-3">
       <label className="mb-3 block text-xs text-muted">{m.formTitle}<input value={form.title} onChange={e => props.onChange({ ...form, title: e.target.value })} className="mt-2 min-h-12 w-full rounded-control border border-line bg-transparent px-3 text-sm text-ink" /></label>
       <label className="flex min-h-12 items-center justify-between gap-3 text-xs text-muted">{t('kind')}<select value={form.kind} onChange={e => props.onChange({ ...form, kind: e.target.value as typeof form.kind })} className="min-h-12 max-w-full rounded-control bg-surface px-3 text-ink">

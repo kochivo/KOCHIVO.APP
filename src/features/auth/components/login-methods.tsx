@@ -3,7 +3,9 @@
 import { useState, useSyncExternalStore, useTransition } from 'react';
 import Link from 'next/link';
 import { useLocale, useT } from '@/core/i18n/client';
-import { Button, Segmented, TextField } from '@/ui';
+import { Button } from '@/ui/button';
+import { Segmented } from '@/ui/segmented';
+import { TextField } from '@/ui/text-field';
 import { KoPlay } from '@/ui/icons/ko-play';
 import { messages } from '../messages';
 import { callAuthAction } from '../data/client-action';

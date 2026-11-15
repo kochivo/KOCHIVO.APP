@@ -13,6 +13,7 @@ import { formatNumber } from '@/lib/format';
 import { loadPlayerAssessments, loadPlayerAssessmentHistory } from '../data/player-assessments';
 import { messages as pageMessages } from '../pages-messages';
 import { messages } from '../v6-messages';
+import { buttonClass } from '@/ui/button';
 
 export type AssessmentLayout = 'list' | 'page' | 'link' | 'home';
 
@@ -25,7 +26,7 @@ export function PlayerAssessments({ actionable = true, layout = 'list' }: { acti
   const result = useResource(`${layout === 'page' ? 'player-assessment-history' : 'player-assessments-page'}:${localDb().userId}`, load);
   const date = (at: string) => formatTimestampAr(at, { day: 'numeric', month: 'long', year: 'numeric' }, locale, timezone);
   if (layout === 'link') return <div className="space-y-3"><Link href={`/${locale}/player/assessments`} prefetch={false} aria-busy={!result.data && result.status !== 'error'}
-    className="flex min-h-16 items-center gap-3 rounded-[22px] border border-line-soft bg-surface p-4 text-sm font-bold">
+    className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-16 items-center gap-3 bg-surface p-4 text-sm font-bold" })}>
     <KoForms aria-hidden className="size-5 text-muted" />{p('assessments')}
     {!!result.data?.due.length && <span aria-label={p('dueCount', { n: result.data.due.length })}
       className="ms-auto rounded-full bg-gold-2/10 px-2.5 py-1 font-numeric text-xs text-gold-2">{formatNumber(result.data.due.length, locale)}</span>}
@@ -46,7 +47,7 @@ export function PlayerAssessments({ actionable = true, layout = 'list' }: { acti
               {request.due_at && <p className="mt-0.5 text-xs text-muted">{p('dueBy', { date: date(request.due_at) })}</p>}</div>
           </div>
           <Link href={`/${locale}/player/forms/${request.id}`} prefetch={false}
-            className={`flex min-h-12 items-center justify-center rounded-full px-4 text-sm font-extrabold ${index === 0 && actionable ? 'w-full bg-lime text-on-lime' : 'shrink-0 border border-line-soft'}`}>
+            className={buttonClass({ variant: (index === 0 && actionable) ? 'primary' : 'secondary', block: false, className: `flex min-h-12 items-center justify-center px-4 text-sm font-extrabold ${index === 0 && actionable ? "w-full" : "shrink-0"} ` })}>
             {p(index === 0 ? 'record' : 'recordShort')}</Link>
         </li>)}</ul>}
     </section>
@@ -71,7 +72,7 @@ export function PlayerAssessments({ actionable = true, layout = 'list' }: { acti
             timeZone: timezone, day: 'numeric', month: 'long',
           }).format(new Date(request.due_at)) })}</p>}</div>
         <Link href={layout === 'home' ? `/${locale}/player/assessments` : `/${locale}/player/forms/${request.id}`} prefetch={false}
-          className={`flex min-h-12 shrink-0 items-center rounded-full px-5 text-sm ${layout !== 'home' && actionable && index === 0 ? 'bg-lime text-on-lime' : 'border border-line-soft text-muted'}`}>{t('answer')}</Link>
+          className={buttonClass({ variant: (layout !== 'home' && actionable && index === 0) ? 'primary' : 'secondary', block: false, className: `flex min-h-12 shrink-0 items-center px-5 text-sm ${layout !== "home" && actionable && index === 0 ? "" : "text-muted"} ` })}>{t('answer')}</Link>
       </li>)}</ul>}
   </section>;
 }

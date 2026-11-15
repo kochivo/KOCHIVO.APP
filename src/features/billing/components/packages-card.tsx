@@ -17,6 +17,8 @@ import { EmptyState, GlassCard, Segmented, Stepper, TextField } from '@/ui';
 import { archivePackage, createPackage } from '../data/finance-actions';
 import type { Package } from '../types';
 import type { CatalogPackage, Tier } from '../tiers/types';
+import { useToast } from '@/ui/toast';
+import { messages as successMessages } from '../success/messages';
 
 export type PackageEditor = { item?: CatalogPackage; tierId: string; packages: CatalogPackage[]; tiers: Tier[]; tierLabel: string; noTierLabel: string; saveLabel: string;
   save: (value: { name: string; price: number; days: number; kind: 'days' | 'sessions'; sessions: number | null; tier_id: string | null }) => Promise<boolean> };
@@ -27,6 +29,7 @@ export function PackagesCard({ packages: initial, onChange, initialAdding = fals
   const pt = useT(ptMessages);
   const dt = useT(durationMessages);
   const locale = useLocale();
+  const success = useT(successMessages), toast = useToast();
   const [packages, setPackages] = useState(initial);
   const [adding, setAdding] = useState(initialAdding);
   const [name, setName] = useState(editor?.item?.name ?? '');
@@ -50,10 +53,14 @@ export function PackagesCard({ packages: initial, onChange, initialAdding = fals
     if (!valid || busy) return;
     setBusy(true); setError('');
     try {
-      if (editor) { await editor.save({ ...values, tier_id: tierId || null }); return; }
+      if (editor) {
+        if (await editor.save({ ...values, tier_id: tierId || null })) toast.success({ title: success('packageSaved'), detail: success(values.kind === 'sessions' && values.sessions !== null ? 'sessionPackageDetail' : 'packageDetail', { name: values.name, days: formatNumber(values.days, locale), sessions: formatNumber(values.sessions ?? 0, locale) }), icon: 'payment' });
+        return;
+      }
       const result = await createPackage(values);
       if (result.error !== undefined) setError(result.error);
-      else { update([...packages, result.data]); setName(''); setPrice(''); setDays('30'); setAdding(false); }
+      else { update([...packages, result.data]); setName(''); setPrice(''); setDays('30'); setAdding(false);
+        toast.success({ title: success('packageSaved'), detail: success(result.data.kind === 'sessions' && result.data.sessions !== null ? 'sessionPackageDetail' : 'packageDetail', { name: result.data.name, days: formatNumber(result.data.days, locale), sessions: formatNumber(result.data.sessions ?? 0, locale) }), icon: 'payment' }); }
     } catch { setError(t('packageFailed')); } finally { setBusy(false); }
   }
   async function archive(item: Package) {

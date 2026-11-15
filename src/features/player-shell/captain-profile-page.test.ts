@@ -25,7 +25,7 @@ it('uses calendar days in the player timezone and clamps subscription progress',
 it('preserves the legacy card identity, links, dates and WhatsApp action', () => {
   const html = render();
   for (const text of ['Real coach', 'Cairo', 'Coach bio', 'https://instagram.com/coach', 'https://wa.me/201012345678', '2026-12-04']) expect(html).toContain(text);
-  expect(html).toContain('bg-lime px-5');
+  expect(html).toContain('control-primary');
 });
 it('renders the page header, subscription, renewal and outline WhatsApp', () => {
   const html = render(true);

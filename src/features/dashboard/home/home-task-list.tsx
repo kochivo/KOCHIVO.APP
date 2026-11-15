@@ -4,6 +4,7 @@ import { formatNumber } from '@/lib/format';
 import { whatsappUrl } from '@/lib/whatsapp';
 import { homeMessages, homeV11Messages } from './messages';
 import type { HomeTask } from './tasks';
+import { buttonClass } from '@/ui/button';
 
 export async function HomeTaskList({ tasks, count, contacts }: { tasks: HomeTask[]; count: number; contacts: Map<string, string> }) {
   const [t, old, locale] = await Promise.all([getT(homeV11Messages), getT(homeMessages), getLocale()]);
@@ -20,7 +21,7 @@ export async function HomeTaskList({ tasks, count, contacts }: { tasks: HomeTask
           <Link href={task.href} className="flex min-h-12 min-w-0 flex-1 flex-col justify-center"><b className="truncate text-sm font-semibold">{task.name}</b>
             <small className="truncate text-xs text-muted">{t(task.kind, { name: task.name, days: task.days ?? 0 })}{task.title ? ` · ${task.title}` : ''}</small></Link>
           <span className={`hidden rounded-full px-2.5 py-1 text-[11.5px] min-[1100px]:inline-flex ${task.urgent ? 'bg-danger-soft text-danger' : 'bg-lime-soft text-lime'}`}>{t(task.urgent ? 'urgent' : 'routine')}</span>
-          <a href={href} className="inline-flex min-h-12 shrink-0 items-center justify-center rounded-lg border border-line bg-surface-raised px-2.5 text-xs">{t(`action.${task.kind}`)}</a>
+          <a href={href} className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 shrink-0 items-center justify-center rounded-lg bg-surface-raised px-2.5 text-xs" })}>{t(`action.${task.kind}`)}</a>
         </li>;
       })}</ul>}
   </section>;

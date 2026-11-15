@@ -6,6 +6,7 @@ import { formatNumber } from '@/lib/format';
 import { countdown, pricingBanner, pricingCards, pricingDurations, durationLabel as sharedDurationLabel } from '../package-choice';
 import type { PricingCatalog } from '../package-choice';
 import { messages } from './messages';
+import { Button, buttonClass } from '@/ui/button';
 
 export type PricingProps = { catalog: PricingCatalog; name: string; now: string; signup?: string;
   isRenewal?: boolean; busy?: boolean; onChoose?: (packageId: string, offerId: string | null) => void };
@@ -43,7 +44,7 @@ export function PricingCards({ catalog, name, now, signup, isRenewal = false, on
       </button>)}</div></div>
     {cards.length ? <div className="grid items-stretch gap-3.5 min-[1001px]:grid-cols-3">{cards.map(card => {
       const href = signup ? `${signup}&package=${card.pkg.id}${card.offer ? `&offer=${card.offer.id}` : ''}` : undefined;
-      const action = `flex min-h-12 items-center justify-center rounded-full border px-5 text-sm ${card.tier.is_featured ? 'border-lime bg-lime font-semibold text-on-lime' : 'border-line text-ink'}`;
+      const action = buttonClass({ variant: card.tier.is_featured ? 'primary' : 'secondary', block: false });
       return <article key={card.tier.id} className={`glass relative flex flex-col gap-2.5 rounded-card border px-5 py-[22px] ${card.tier.is_featured ? 'border-lime bg-gradient-to-b from-lime/10 to-transparent' : 'border-line-soft'}`}>
         {card.tier.is_featured && <span className="absolute -top-3 start-5 rounded-full bg-lime px-2.5 py-1 text-[11px] font-semibold text-on-lime">{t('popular')}</span>}
         <h3 className="font-display text-[19px] font-semibold">{card.tier.name}</h3><p className="text-xs text-faint">{card.tier.description}</p>
@@ -54,7 +55,7 @@ export function PricingCards({ catalog, name, now, signup, isRenewal = false, on
         <ul className="flex-1 text-[13px] leading-[2.1] text-muted">{card.features.map(feature => <li key={feature.text} className={`flex items-start gap-2 ${feature.included ? '' : 'text-faint'}`}>
           {feature.included ? <Check aria-hidden className="mt-1.5 size-4 shrink-0 text-lime" /> : <Minus aria-hidden className="mt-1.5 size-4 shrink-0" />}{feature.text}</li>)}</ul>
         {href ? <a href={href} className={action}>{t('choose', { tier: card.tier.name })}</a>
-          : <button type="button" className={action} disabled={busy} onClick={() => onChoose?.(card.pkg.id, card.offer?.id ?? null)}>{t('choose', { tier: card.tier.name })}</button>}
+          : <Button type="button" variant={card.tier.is_featured ? 'primary' : 'secondary'} block={false} disabled={busy} onClick={() => onChoose?.(card.pkg.id, card.offer?.id ?? null)}>{t('choose', { tier: card.tier.name })}</Button>}
       </article>;
     })}</div> : <p className="glass rounded-card p-5 text-faint">{t('empty')}</p>}
   </section>;

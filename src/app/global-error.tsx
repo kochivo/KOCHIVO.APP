@@ -7,6 +7,7 @@ import { LocaleProvider, useT } from '@/core/i18n/client';
 import { DEFAULT_LOCALE, localeDir } from '@/core/i18n/locale';
 import { messages } from '@/ui/messages';
 import { publicConfig } from '@/lib/public-config';
+import { Button } from '@/ui/button';
 
 export default function GlobalError({ error, reset }: {
   error: Error & { digest?: string };
@@ -33,10 +34,10 @@ function ErrorPanel({ reset }: { reset: () => void }) {
           <section className="glass-strong w-full max-w-md rounded-card p-6">
             <h1 className="text-2xl font-bold text-ink">{t('somethingWentWrong')}</h1>
             <p className="mt-3 text-muted">{t('tryAgainToContinue')}</p>
-            <button type="button" onClick={reset}
-              className="mt-6 min-h-12 w-full rounded-control bg-lime px-6 font-bold text-on-lime">
+            <Button type="button" onClick={reset}
+              variant={'primary'} block={false} className={"mt-6 min-h-12 w-full px-6 font-bold"}>
               {t('tryAgain')}
-            </button>
+            </Button>
           </section>
         </main>
   );

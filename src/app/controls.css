@@ -1,0 +1,47 @@
+.control, :is(button, a).bg-lime.text-on-lime:not([aria-pressed]), :is(button, a).glass:not([aria-pressed]):not([aria-current]):not([role]), .primary-surface {
+  border-radius: var(--radius-control);
+  cursor: pointer;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  transition: transform 200ms ease, filter 200ms ease, background 200ms ease;
+}
+.control:disabled, .control[aria-disabled='true'] { cursor: default; }
+.control:focus-visible { outline: 2px solid var(--color-lime-ink); outline-offset: 2px; }
+.control-primary, .control-primary:hover:not(:disabled),
+:is(button, a).bg-lime.text-on-lime:not([aria-pressed]),
+html:not([data-theme='light']) [data-area='captain'] .primary-surface,
+html:not([data-theme='light']) [data-area='captain'] .primary-surface:hover:not(:disabled),
+.primary-surface {
+  background: linear-gradient(180deg, var(--color-lime-top), var(--color-lime-bottom));
+  color: var(--color-on-lime);
+  box-shadow: var(--shadow-control-primary);
+}
+.control-secondary, .control-secondary:hover:not(:disabled), :is(button, a).glass:not([aria-pressed]):not([aria-current]):not([role]) {
+  background: linear-gradient(180deg, var(--color-control-top), var(--color-control-bottom));
+  border: 1px solid var(--color-control-border);
+  box-shadow: inset 0 1px 0 var(--color-control-highlight);
+}
+@media (hover: hover) and (pointer: fine) {
+  .control:hover:not(:disabled) { transform: none; translate: none; }
+  .control-primary:hover:not(:disabled), :is(button, a).bg-lime.text-on-lime:not([aria-pressed]):hover:not(:disabled) { filter: brightness(1.06); }
+  .control-secondary:hover:not(:disabled), :is(button, a).glass:not([aria-pressed]):not([aria-current]):not([role]):hover:not(:disabled) { background: var(--color-control-hover); }
+}
+.control:active:not(:disabled), :is(button, a).bg-lime.text-on-lime:not([aria-pressed]):active:not(:disabled), :is(button, a).glass:not([aria-pressed]):not([aria-current]):not([role]):active:not(:disabled) { transform: scale(.97); translate: none; }
+.control-sm { min-block-size: 2.5rem; }
+html[data-theme='light'] {
+  --color-control-top: color-mix(in srgb, var(--color-ink) 9%, transparent);
+  --color-control-bottom: color-mix(in srgb, var(--color-ink) 4%, transparent);
+  --color-control-border: color-mix(in srgb, var(--color-ink) 13%, transparent);
+  --color-control-highlight: color-mix(in srgb, var(--color-ink) 10%, transparent);
+  --color-control-hover: color-mix(in srgb, var(--color-ink) 10%, transparent);
+}
+.toast-enter { animation: toast-enter 300ms ease-out; }
+.toast-leave { animation: toast-fade 200ms ease-out forwards; }
+@keyframes toast-enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@media (min-width: 1024px) {
+  html .toast-stack { inset-inline-start: auto; inset-inline-end: max(1rem, var(--safe-end)); inset-block-start: calc(5rem + var(--safe-top)); inset-block-end: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .toast-enter, .toast-leave { animation: none; }
+  .control, .control:hover:not(:disabled), .control:active:not(:disabled), :is(button, a).bg-lime.text-on-lime, :is(button, a).glass { transition: none; transform: none; translate: none; }
+}

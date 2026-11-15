@@ -1,3 +1,4 @@
+import { Button } from '@/ui/button';
 import { isValidElement } from 'react';
 import type { ReactElement } from 'react';
 import type * as React from 'react';
@@ -26,7 +27,7 @@ it('opens the file chooser through an accessible control and reports the selecte
   expect(html).toContain('aria-label="Change profile photo"');
   expect(html).toContain('>A</span>');
   const all = nodes(tree);
-  (all.find(node => node.type === 'button')?.props.onClick as () => void)();
+  (all.find(node => (node.type === 'button' || node.type === Button))?.props.onClick as () => void)();
   expect(mock.click).toHaveBeenCalled();
   const file = new File(['photo'], 'photo.jpg', { type: 'image/jpeg' });
   (all.find(node => node.type === 'input')?.props.onChange as (event: unknown) => void)({ target: { files: [file] } });
@@ -34,5 +35,5 @@ it('opens the file chooser through an accessible control and reports the selecte
 });
 it('disables selection while a save is pending', () => {
   const tree = AvatarPicker({ name: 'Ali', file: null, pending: true, onChange: vi.fn() });
-  expect(nodes(tree).find(node => node.type === 'button')?.props.disabled).toBe(true);
+  expect(nodes(tree).find(node => (node.type === 'button' || node.type === Button))?.props.disabled).toBe(true);
 });

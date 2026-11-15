@@ -9,6 +9,7 @@ import type { Question } from '../types';
 import { QuestionRules } from './question-rules';
 import { QuestionToggle } from './question-toggle';
 import { ThemedSelect } from './themed-select';
+import { Button } from '@/ui/button';
 
 export function QuestionEditor({ question: q, locale, index, count, onChange, onDelete, onMove, onDuplicate, style }: {
   question: Question; locale: Locale; index: number; count: number; style?: ArabicStyle;
@@ -54,10 +55,10 @@ export function QuestionEditor({ question: q, locale, index, count, onChange, on
         onChange={show_chart => onChange({ ...q, show_chart })} />}
       <QuestionRules question={q} locale={locale} style={style} onChange={onChange} />
       <div className="mt-[10px] flex flex-wrap justify-end gap-2">
-        <button type="button" className="min-h-12 min-w-12 rounded-full border border-line" aria-label={m.up} disabled={index === 0} onClick={() => onMove(-1)}><ArrowUp aria-hidden className="mx-auto size-4" /></button>
-        <button type="button" className="min-h-12 min-w-12 rounded-full border border-line" aria-label={m.down} disabled={index === count - 1} onClick={() => onMove(1)}><ArrowDown aria-hidden className="mx-auto size-4" /></button>
-        <button type="button" className="min-h-12 rounded-full border border-line px-[14px] text-[12.5px]" onClick={onDuplicate}>{t('duplicate')}</button>
-        <button type="button" className="min-h-12 rounded-full border border-line px-[14px] text-[12.5px] text-danger" onClick={onDelete}>{t('remove')}</button>
+        <Button type="button" variant={'secondary'} block={false} className={"min-h-12 min-w-12"} aria-label={m.up} disabled={index === 0} onClick={() => onMove(-1)}><ArrowUp aria-hidden className="mx-auto size-4" /></Button>
+        <Button type="button" variant={'secondary'} block={false} className={"min-h-12 min-w-12"} aria-label={m.down} disabled={index === count - 1} onClick={() => onMove(1)}><ArrowDown aria-hidden className="mx-auto size-4" /></Button>
+        <Button type="button" variant={'secondary'} block={false} className={"min-h-12 px-[14px] text-[12.5px]"} onClick={onDuplicate}>{t('duplicate')}</Button>
+        <Button type="button" variant={'secondary'} block={false} className={"min-h-12 px-[14px] text-[12.5px] text-danger"} onClick={onDelete}>{t('remove')}</Button>
       </div>
     </div>
   </details>;

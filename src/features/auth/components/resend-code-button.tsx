@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useT } from '@/core/i18n/client';
-import { Button } from '@/ui';
+import { Button } from '@/ui/button';
 import { messages } from '../messages';
 import { resendRemaining } from '../resend-cooldown';
 

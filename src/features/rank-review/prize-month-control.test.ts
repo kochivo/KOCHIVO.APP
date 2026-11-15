@@ -16,7 +16,7 @@ describe('prize month control', () => {
       locale: 'en', now, month: '2026-11-01', onChange,
     }));
     expect(html).toContain('Next month');
-    expect(html).toContain('glass');
+    expect(html).toContain('control-secondary');
     expect(html).not.toContain('bg-lime');
   });
   it('can return from next-month prize setup to the current board', () => {

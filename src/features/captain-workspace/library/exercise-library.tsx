@@ -15,6 +15,7 @@ import { ExerciseCard, equipmentChips, muscleBodyParts, muscleTabs } from './exe
 import type { MuscleTab } from './exercise-card';
 import { searchLibraryExercises } from './data/search';
 import { messages } from './messages';
+import { buttonClass } from '@/ui/button';
 
 // The detail sheet opens only on tap, so it stays out of the first load.
 const ExerciseDetail = dynamic(() => import('./exercise-detail').then(module => module.ExerciseDetail));
@@ -55,7 +56,7 @@ export function ExerciseLibrary() {
         {total !== undefined && <span dir="ltr" aria-label={t('count', { count: total })} className="font-display text-sm font-medium tabular-nums text-muted">{total.toLocaleString('en')}</span>}
       </h1>
       <Link id="new-library-exercise" href="/captain/library/exercises/new"
-        className="inline-flex min-h-12 items-center gap-2 rounded-full bg-lime px-5 font-semibold text-on-lime">
+        className={buttonClass({ variant: 'primary', block: false, className: "inline-flex min-h-12 items-center gap-2 px-5 font-semibold" })}>
         <KoPlus aria-hidden className="size-5" />{t('new')}
       </Link>
     </header>

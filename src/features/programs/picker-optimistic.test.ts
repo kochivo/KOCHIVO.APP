@@ -34,6 +34,7 @@ vi.mock('./data/library', () => ({ searchExercises: vi.fn() }));
 vi.mock('./data/custom-exercise', () => ({ createCustomExercise: hooks.save, updateCustomExercise: hooks.save, deleteCustomExercise: hooks.remove }));
 
 type NodeProps = { children?: unknown; onClick?: () => void; onSave?: SheetProps['onSave']; exercise?: unknown;
+  className?: string;
   disabled?: boolean; pressed?: boolean; value?: string;
   onChange?: (event: { target: { value: string } }) => void;
   onSubmit?: (event: { preventDefault: () => void }) => void;
@@ -67,7 +68,7 @@ it('shows a new exercise before persistence and safely adds its reconciled row t
   open(render(onAdd)); submit(render(onAdd));
   const nodes = render(onAdd);
   expect(nodes.some(node => node.props.children === 'Custom press')).toBe(true);
-  const add = nodes.find(node => node.type === 'button');
+  const add = nodes.find(node => node.props.className?.includes('min-h-16'));
   expect(add).toBeDefined(); add?.props.onClick?.();
   expect(onAdd).not.toHaveBeenCalled();
   const id = hooks.save.mock.calls[0]?.[1] as string;
@@ -84,7 +85,7 @@ it('rolls back a failed optimistic insert and never adds an unpersisted row', as
   hooks.save.mockReturnValue(new Promise<Result<LibraryExercise>>(done => { resolve = done; }));
   const onAdd = vi.fn();
   open(render(onAdd)); submit(render(onAdd));
-  render(onAdd).find(node => node.type === 'button')?.props.onClick?.();
+  render(onAdd).find(node => node.props.className?.includes('min-h-16'))?.props.onClick?.();
   resolve?.({ error: 'Save failed' });
   await Promise.resolve(); await Promise.resolve();
   expect(render(onAdd).some(node => node.props.children === 'Custom press')).toBe(false);
@@ -142,10 +143,10 @@ it('blocks addition while deletion is pending and keeps the row on a delete fail
   hooks.remove.mockReturnValue(new Promise<Result<true>>(done => { resolve = done; }));
   const onAdd = vi.fn();
   render(onAdd).find(node => node.props.children === 'deleteCustomExercise')?.props.onClick?.();
-  expect(render(onAdd).find(node => node.type === 'button')?.props.disabled).toBe(true);
+  expect(render(onAdd).find(node => node.props.className?.includes('min-h-16'))?.props.disabled).toBe(true);
   resolve?.({ error: 'In use' }); await Promise.resolve();
   const nodes = render(onAdd);
-  expect(nodes.find(node => node.type === 'button')?.props.disabled).toBe(false);
+  expect(nodes.find(node => node.props.className?.includes('min-h-16'))?.props.disabled).toBe(false);
   expect(nodes.some(node => node.props.children === 'Press')).toBe(true);
   expect(hooks.error).toHaveBeenCalledWith('In use');
 });
@@ -157,18 +158,18 @@ it('derives the check and added label from the current day ids', () => {
   const nodes = render(vi.fn(), ['press']);
   expect(nodes.some(node => node.props.children === 'added')).toBe(true);
   expect(nodes.some(node => node.type === Check)).toBe(true);
-  expect(nodes.find(node => node.type === 'button')?.props.disabled).toBe(false);
+  expect(nodes.find(node => node.props.className?.includes('min-h-16'))?.props.disabled).toBe(false);
 });
 it('marks session additions immediately and adds another copy with a toast on every press', () => {
   hooks.values[3] = { data: [press] };
   const onAdd = vi.fn();
-  render(onAdd).find(node => node.type === 'button')?.props.onClick?.();
+  render(onAdd).find(node => node.props.className?.includes('min-h-16'))?.props.onClick?.();
   const nodes = render(onAdd);
   expect(nodes.some(node => node.props.children === 'added')).toBe(true);
   expect(nodes.some(node => node.type === Check)).toBe(true);
-  nodes.find(node => node.type === 'button')?.props.onClick?.();
+  nodes.find(node => node.props.className?.includes('min-h-16'))?.props.onClick?.();
   expect(onAdd.mock.calls).toEqual([[press], [press]]);
-  expect(hooks.success.mock.calls).toEqual([['exerciseAdded'], ['exerciseAdded']]);
+  expect(hooks.success.mock.calls).toEqual([[{ title: 'added', detail: 'exerciseDetail', icon: 'program' }], [{ title: 'added', detail: 'exerciseDetail', icon: 'program' }]]);
 });
 it('shows the active chip for All, a muscle, and My exercises', () => {
   const onAdd = vi.fn();

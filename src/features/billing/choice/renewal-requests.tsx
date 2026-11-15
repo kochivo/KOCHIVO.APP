@@ -26,7 +26,7 @@ export function RenewalRequests({ playerId }: { playerId?: string }) {
     {!resource.data ? <p role="status" className="text-faint">{t('loading')}</p> : resource.data.data?.length ? <ul className="divide-y divide-line-soft">{resource.data.data.map(row =>
       <li key={row.id} className="flex flex-wrap items-center gap-3 py-3"><span>{row.name} · {row.package}</span><div className="ms-auto flex gap-2">
         <button type="button" disabled={busy} onClick={() => void decide(row.id, 'approved')} className="min-h-12 rounded-full border border-lime px-4 text-lime">{t('approve')}</button>
-        <button type="button" disabled={busy} onClick={() => void decide(row.id, 'declined')} className="min-h-12 rounded-full border border-line px-4">{t('decline')}</button>
+        <Button type="button" disabled={busy} onClick={() => void decide(row.id, 'declined')} variant={'secondary'} block={false} className={"min-h-12 px-4"}>{t('decline')}</Button>
       </div></li>)}</ul> : !resource.data.error && <p className="text-faint">{t('noRequests')}</p>}
   </section>;
 }

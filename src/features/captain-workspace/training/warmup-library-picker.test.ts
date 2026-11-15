@@ -1,3 +1,4 @@
+import { Button } from '@/ui/button';
 import { isValidElement } from 'react';
 import type { ReactElement } from 'react';
 import type * as React from 'react';
@@ -29,7 +30,7 @@ function nodes(value: unknown): ReactElement<Record<string, unknown>>[] {
 const exerciseId = '019ab800-0000-7000-8000-000000000011';
 const onAdd = vi.fn();
 function render(items: WarmupItem[] = []) { state.cursor = 0; return nodes(WarmupLibraryPicker({ items, onAdd })); }
-function result(items: WarmupItem[] = []) { return render(items).find(node => node.type === 'button' && node.props['aria-label']); }
+function result(items: WarmupItem[] = []) { return render(items).find(node => (node.type === 'button' || node.type === Button) && node.props['aria-label']); }
 beforeEach(() => { vi.clearAllMocks(); state.values = []; state.error = false; state.locale = 'ar';
   state.data = [{ id: exerciseId, name_ar: ' دوران ', name_en: 'Rotation' }]; });
 it('browses own exercises immediately and can switch to the whole library', () => {
@@ -57,6 +58,6 @@ it('disables existing exercises and every result at twelve items', () => {
 });
 it('shows the own-library empty guidance and retry on errors', () => {
   state.data = []; expect(render().some(node => node.props.children === messages.ar.warmMineEmpty)).toBe(true);
-  state.error = true; const retry = render().find(node => node.type === 'button');
+  state.error = true; const retry = render().find(node => (node.type === 'button' || node.type === Button));
   (retry?.props.onClick as () => void)(); expect(resource.retry).toHaveBeenCalledOnce();
 });

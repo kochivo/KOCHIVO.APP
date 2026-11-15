@@ -11,6 +11,7 @@ import { Button } from '@/ui/button';
 import { UnderlineTabs } from '@/ui/underline-tabs';
 import { messages } from './editor/messages';
 import { messages as trainingMessages } from './messages';
+import { buttonClass } from '@/ui/button';
 
 export function EditorHeader({ playerId, playerName, remainingDays, template, title, status, busy, disabled, onSend, onAssign, onRetry, children, starting }: {
   starting?: boolean;
@@ -31,9 +32,9 @@ export function EditorHeader({ playerId, playerName, remainingDays, template, ti
         <h1 className="break-words font-display text-[30px] font-semibold leading-tight">{template ? title : t('title', { name: playerName?.trim().split(/\s+/)[0] ?? '' })}</h1></div>
       {!template && remainingDays !== undefined && <span className="rounded-full bg-lime-soft px-3 py-1 text-xs text-lime">{t('active', { n: Math.max(0, remainingDays) })}</span>}
       <span role="status" aria-live="polite" className="inline-flex min-h-12 items-center gap-2 text-xs text-faint">{status === 'saved' ? <CloudCheck aria-hidden className="size-4 text-lime" /> : <CloudUpload aria-hidden className="size-4" />}
-        {status === 'error' ? <button className="min-h-12 rounded-full border border-line px-3 text-danger" onClick={onRetry}>{tt('retry')}</button> : t(status === 'saved' ? 'saved' : 'saving')}</span>
+        {status === 'error' ? <Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-3 text-danger"} onClick={onRetry}>{tt('retry')}</Button> : t(status === 'saved' ? 'saved' : 'saving')}</span>
       {children}
-      {!template && playerId && <Link prefetch={false} className="glass inline-flex min-h-12 items-center rounded-full border border-line-soft px-4 text-sm" href={`${base}/preview`}>{t('preview')}</Link>}
+      {!template && playerId && <Link prefetch={false} className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-4 text-sm" })} href={`${base}/preview`}>{t('preview')}</Link>}
       {template && <Button variant="secondary" disabled={disabled || busy} className="min-h-12 w-auto! rounded-full!" aria-live="polite"
         onClick={() => { setAsked(true); onRetry(); }}>{confirmed && <Check aria-hidden className="size-4 text-lime" />}{t(confirmed ? 'templateSaved' : 'saveTemplate')}</Button>}
       <Button variant={starting ? 'secondary' : 'primary'} id={template ? 'assign-program' : undefined} disabled={disabled || busy} className="min-h-12 w-auto! rounded-full!" onClick={template ? onAssign : onSend}>{!template && <SendIcon aria-hidden className="size-4" />}{template ? t('assign') : tt('send')}</Button>

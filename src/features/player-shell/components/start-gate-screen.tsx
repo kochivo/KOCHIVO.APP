@@ -7,12 +7,13 @@ import { useLocale, useT } from '@/core/i18n/client';
 import { formatNumber } from '@/lib/format';
 import type { loadStartGate } from '../data/start-gate';
 import { messages } from '../start/messages';
+import { buttonClass } from '@/ui/button';
 
 export function StartGateScreen({ data, captain }: { data: Awaited<ReturnType<typeof loadStartGate>>; captain: string }) {
   const t = useT(messages), locale = useLocale();
   const done = data.rows.filter(row => row.answered_at).length;
   const next = data.rows.find(row => !row.answered_at);
-  const linkClass = 'press glass inline-flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-control border border-line px-4 hover:bg-ink/10 focus-visible:ring-2 focus-visible:ring-lime';
+  const linkClass = buttonClass({ variant: 'secondary', block: false });
   return <section className="mx-auto max-w-lg space-y-5 px-5 pb-32 pt-6">
     <header><h1 className="text-2xl font-bold">{t('hello', { name: data.name })}</h1><p className="mt-3 text-sm leading-7 text-muted">{t('intro', { captain })}</p></header>
     <div><p className="mb-2 text-xs text-muted">{t('progress', { done: formatNumber(done, locale), total: formatNumber(data.rows.length, locale) })}</p>
@@ -25,7 +26,7 @@ export function StartGateScreen({ data, captain }: { data: Awaited<ReturnType<ty
     <p className="flex items-center gap-2 text-xs leading-6 text-muted"><Lock aria-hidden className="size-4 shrink-0" />{t('locked')}</p>
     <div className="flex flex-wrap gap-2"><Link href={`/${locale}/player/captain`} className={linkClass}>{t('chat')}</Link><Link href={`/${locale}/player/settings`} className={linkClass}>{t('settings')}</Link></div>
     {next && <div className="glass-strong fixed inset-x-0 bottom-[var(--page-bottom-clearance)] z-30 px-5 pb-[max(0.75rem,var(--safe-bottom))] pt-3">
-      <Link href={`/${locale}/player/forms/${next.id}`} className="press mx-auto flex min-h-14 max-w-lg cursor-pointer items-center justify-center gap-2 rounded-control bg-lime px-4 font-bold text-on-lime focus-visible:ring-2 focus-visible:ring-lime"><KoSend aria-hidden className="size-5" />{t('next', { form: next.title })}</Link>
+      <Link href={`/${locale}/player/forms/${next.id}`} className={buttonClass({ variant: 'primary', block: false, className: "press mx-auto flex min-h-14 max-w-lg cursor-pointer items-center justify-center gap-2 px-4 font-bold focus-visible:ring-2 focus-visible:ring-lime" })}><KoSend aria-hidden className="size-5" />{t('next', { form: next.title })}</Link>
     </div>}
   </section>;
 }

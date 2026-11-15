@@ -1,3 +1,4 @@
+import { Button } from '@/ui/button';
 import { isValidElement } from 'react';
 import type { ReactElement } from 'react';
 import type * as React from 'react';
@@ -40,7 +41,7 @@ function nodes(value: unknown): Node[] {
 }
 async function confirm() {
   const tree = WorkspaceBilling({ data: Promise.resolve(result), today: '2026-11-14' });
-  const button = nodes(tree).find(node => node.type === 'button' && node.props.children === 'Approve');
+  const button = nodes(tree).find(node => (node.type === 'button' || node.type === Button) && node.props.children === 'Approve');
   if (!button || typeof button.props.onClick !== 'function') throw new Error('Missing confirmation button');
   await button.props.onClick();
   await Promise.resolve();

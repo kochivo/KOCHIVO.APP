@@ -7,6 +7,7 @@ import { getContent } from '../content';
 import { Slogan } from './slogan';
 import { HeroPhones } from './hero-phones';
 import styles from './landing.module.css';
+import { buttonClass } from '@/ui/button';
 
 export async function Hero() {
   const content = getContent(await getT(messages));
@@ -19,7 +20,7 @@ export async function Hero() {
       <p className="max-w-lg text-base leading-relaxed text-muted">{content.hero.description}</p>
       <div className="flex flex-wrap gap-3">
         <form action={content.links.login}><input type="hidden" name="tab" value="signup" /><Button type="submit" size="lg" className="ring-4 ring-bg-deep">{content.hero.signup}</Button></form>
-        <a href="#day" className="glass inline-flex min-h-14 items-center gap-2 rounded-control px-5 font-bold"><KoPlay className="size-5" aria-hidden="true" />{content.hero.demo}</a>
+        <a href="#day" className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-14 items-center gap-2 px-5 font-bold" })}><KoPlay className="size-5" aria-hidden="true" />{content.hero.demo}</a>
       </div>
       <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted">
         <p className="flex flex-wrap items-center gap-2">{content.hero.invite}<a href={content.links.login} className="inline-flex min-h-12 items-center text-lime underline underline-offset-4">{content.hero.inviteNote}</a></p>

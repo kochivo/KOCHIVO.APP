@@ -9,10 +9,12 @@ import { Button } from '@/ui/button';
 import { saveAsTemplate } from '../data/templates';
 import type { TemplateKind } from '../types';
 import { useToast } from '@/ui/toast';
+import { messages as successMessages } from '../success/messages';
 
 export function SaveTemplateButton({ kind, id, title }: { kind: TemplateKind; id: string; title: string }) {
   const t = useT(messages);
   const toast = useToast();
+  const success = useT(successMessages);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [lastTitle, setLastTitle] = useState(title);
@@ -22,7 +24,7 @@ export function SaveTemplateButton({ kind, id, title }: { kind: TemplateKind; id
     try {
       const result = await saveAsTemplate({ kind, id, title: name });
       if (result.error !== undefined) setError(result.error);
-      else toast.success(t('templateSaved'));
+      else toast.success({ title: success('saved'), detail: success('name', { name }), icon: 'template' });
     } catch { setError(t('couldntSaveTemplateTryAgain')); }
     finally { setBusy(false); }
   }

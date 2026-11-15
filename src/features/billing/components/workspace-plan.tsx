@@ -10,6 +10,7 @@ import { waLink } from '../renew';
 import { messages as legacyMessages } from '../messages';
 import { messages } from '../workspace/messages';
 import type { BillingData } from '../types';
+import { buttonClass, Button } from '@/ui/button';
 
 export function WorkspacePlan({ data }: { data: Pick<BillingData, 'plan' | 'used' | 'subscriptionEnd'> }) {
   const t = useT(messages), legacy = useT(legacyMessages), locale = useLocale(), demo = useDemoExpiry();
@@ -24,8 +25,8 @@ export function WorkspacePlan({ data }: { data: Pick<BillingData, 'plan' | 'used
     <ProgressBar className="mb-3.5 mt-2.5" value={used} max={plan.player_limit} aria-label={usage} />
     <p className="mb-3 text-xs text-muted">{legacy('price', { price: formatNumber(plan.price_egp, locale), n: plan.player_limit, count: formatNumber(plan.player_limit, locale) })}</p>
     {data.subscriptionEnd && <p className="mb-3 text-xs text-muted">{legacy('paidUntil')} <time dateTime={data.subscriptionEnd}>{formatTimestampAr(data.subscriptionEnd, { day: 'numeric', month: 'long', year: 'numeric' }, locale, timezone)}</time></p>}
-    {!demo && (upgrade ? <a href={upgrade} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 w-full items-center justify-center rounded-full border border-line px-3 text-[12.5px]">{t('upgrade')}</a>
-      : <><button disabled className="min-h-12 w-full rounded-full border border-line text-muted">{t('upgrade')}</button><p className="text-xs text-faint">{legacy('noSupport')}</p></>)}
+    {!demo && (upgrade ? <a href={upgrade} target="_blank" rel="noopener noreferrer" className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 w-full items-center justify-center px-3 text-[12.5px]" })}>{t('upgrade')}</a>
+      : <><Button disabled type="submit" variant={'secondary'} block={false} className={"min-h-12 w-full text-muted"}>{t('upgrade')}</Button><p className="text-xs text-faint">{legacy('noSupport')}</p></>)}
     {!demo && <p className="mt-2 text-xs text-faint">{legacy('activationHint')}</p>}
   </section>;
 }

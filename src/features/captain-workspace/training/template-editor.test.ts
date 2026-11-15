@@ -10,6 +10,7 @@ import { WeekMenu } from './week-menu';
 import { EditorHeader } from './editor-header';
 
 vi.mock('server-only', () => ({}));
+vi.mock('@/ui/toast', () => ({ useToast: () => ({ success: vi.fn(), error: vi.fn() }) }));
 vi.mock('react', async original => ({ ...await original<typeof React>(), useState: (initial: unknown) => [initial, state.set],
   useCallback: (callback: unknown) => callback, useRef: (initial: unknown) => ({ current: initial }), useEffect: () => {},
 }));

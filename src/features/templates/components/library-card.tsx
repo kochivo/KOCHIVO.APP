@@ -8,6 +8,7 @@ import { messages } from '../library-messages';
 import { messages as templateMessages } from '../messages';
 import { LibraryMenu } from './library-menu';
 import type { ComponentProps } from 'react';
+import { Button } from '@/ui/button';
 
 export function LibraryCard({ onOpen, error, ...props }: ComponentProps<typeof LibraryMenu> & { onOpen: () => void; error?: string }) {
   const { template } = props;
@@ -26,7 +27,7 @@ export function LibraryCard({ onOpen, error, ...props }: ComponentProps<typeof L
       {template.starter && <p className="text-xs text-lime">{tt('starterBadge')}</p>}
       <p className="text-[12.5px] text-faint">{summary}</p>
       <div className="mt-3.5 flex flex-wrap items-center gap-2"><span className="me-auto inline-flex items-center gap-1 text-xs text-muted"><Users aria-hidden className="size-4" />{usage}</span>
-        <button disabled={props.busy} onClick={onOpen} className="min-h-12 rounded-full border border-line px-3.5 text-[12.5px]">{t('open')}</button><LibraryMenu {...props} /></div>
+        <Button disabled={props.busy} onClick={onOpen} type="submit" variant={'secondary'} block={false} className={"min-h-12 px-3.5 text-[12.5px]"}>{t('open')}</Button><LibraryMenu {...props} /></div>
     </> : <>
       <Salad aria-hidden className="size-6 shrink-0 text-lime" />
       <button disabled={props.busy} onClick={onOpen} className="flex min-h-12 min-w-0 flex-1 flex-wrap items-center gap-3 text-start">

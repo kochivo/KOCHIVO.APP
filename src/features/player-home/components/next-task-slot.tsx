@@ -11,6 +11,7 @@ import { NextTaskCard } from './next-task-card';
 import { pickTodayDay } from '../next-day';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import Link from 'next/link';
+import { buttonClass } from '@/ui/button';
 
 export function NextTaskSlot({ snapshot, sessions, today, playerId, retryKey, onRetry, rest }: {
   snapshot: ProgramSnapshot | null; sessions: WorkoutSessionRow[]; today: string;
@@ -30,6 +31,6 @@ export function NextTaskSlot({ snapshot, sessions, today, playerId, retryKey, on
     meals: nutrition.snapshot?.meals ?? [], mealLogs: logs, checkInWeeks: remote.checkInWeeks, voiceNotes: remote.voiceNotes });
   return <><NextTaskCard task={task} day={snapshot ? pickTodayDay(snapshot, sessions, today) : undefined} />
     {captainWorkspaceEnabled() && task.kind !== 'voice' && remote.voiceNotes.some(note => !note.listenedAt) &&
-      <Link href="/player/captain" className="glass flex min-h-12 items-center rounded-card px-5 py-3 text-sm">{t('task.voice')}</Link>}
+      <Link href="/player/captain" className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-12 items-center px-5 py-3 text-sm" })}>{t('task.voice')}</Link>}
   </>;
 }

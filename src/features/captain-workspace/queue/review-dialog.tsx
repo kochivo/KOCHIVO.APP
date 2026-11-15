@@ -9,11 +9,14 @@ import { CheckinDetail, FormCheckDetail, ReplyBox, reviewItem, useUnsentVoiceGua
 import type { InboxItem, TriageInputs } from '@/features/inbox';
 import { VoiceRecorder, useRecorder, sendVoiceNote } from '@/features/voice-notes';
 import { messages } from './messages';
+import { useToast } from '@/ui/toast';
+import { messages as successMessages } from '../success/messages';
 export function ReviewDialog({ item, inputs, now, onClose, onReviewed }: {
   item: InboxItem; inputs: TriageInputs; now: Date; onClose: () => void;
   onReviewed: (item: InboxItem, commit: () => Promise<void>, advance: boolean) => Promise<void>;
 }) {
   const t = useT(messages);
+  const success = useT(successMessages), toast = useToast();
   const recorder = useRecorder();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState('');
@@ -38,6 +41,7 @@ export function ReviewDialog({ item, inputs, now, onClose, onReviewed }: {
         if (result.error) throw new Error(result.error);
       }, advance);
       recorder.reset();
+      toast.success({ title: success('replyNamed', { name: item.player_name }), detail: success('form', { name: item.kind === 'form' ? item.exercise_name : t('checkin') }), icon: 'form' });
     } catch (failure) { setError(failure instanceof Error ? failure.message : t('error')); }
     finally { busy.current = false; setPending(false); }
   }

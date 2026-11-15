@@ -13,6 +13,7 @@ import { lastSeenLabel, playerStatus } from '../status';
 import type { RosterPlayer } from '../types';
 import { starterText } from '@/lib/starter-text';
 import dynamic from 'next/dynamic';
+import { buttonClass } from '@/ui/button';
 
 const RosterBilling = dynamic(() => import('@/features/billing').then(module => module.RosterBilling), { ssr: false });
 
@@ -50,7 +51,7 @@ export function RosterRow({ player, today, error, onArchive }: {
         </div>
         {(chat?.unread ?? 0) > 0 && <Link href={`/captain/players/${player.playerId}/chat`} prefetch={false}
           aria-label={t('chatUnread', { count: formatNumber(chat?.unread ?? 0, locale) })}
-          className="inline-flex min-h-12 min-w-12 items-center justify-center rounded-full bg-lime px-2 font-display text-xs font-extrabold text-on-lime">{formatNumber(chat?.unread ?? 0, locale)}</Link>}
+          className={buttonClass({ variant: 'primary', block: false, className: "inline-flex min-h-12 min-w-12 items-center justify-center px-2 font-display text-xs font-extrabold" })}>{formatNumber(chat?.unread ?? 0, locale)}</Link>}
         {player.openTasks > 0 && <span aria-label={t('taskCount', { n: player.openTasks, count: formatNumber(player.openTasks, locale) })} className="rounded-full bg-lime px-2 py-1 text-xs font-bold text-on-lime">{formatNumber(player.openTasks, locale)}</span>}
       </div>
       <div role="cell" className="space-y-2"><RosterBilling playerId={player.playerId} name={player.fullName} today={today}

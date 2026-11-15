@@ -9,6 +9,7 @@ import { messages } from '../messages';
 import type { SettingsProfile } from '../schema';
 import { WorkspaceAvatar } from './workspace-avatar';
 import { WorkspaceFact } from './workspace-fact';
+import { buttonClass } from '@/ui/button';
 
 export function WorkspacePageCard({ profile, edit }: { profile: SettingsProfile; edit: () => void }) {
   const t = useT(messages);
@@ -17,7 +18,7 @@ export function WorkspacePageCard({ profile, edit }: { profile: SettingsProfile;
   return <section className="glass rounded-card border border-line-soft p-3.5">
     <header className="mb-3 flex items-center justify-between gap-3">
       <h2 className="text-sm font-semibold">{t('workspacePage')}</h2>
-      {slug && <Link href={`/c/${slug}`} target="_blank" rel="noreferrer" className="glass inline-flex min-h-12 items-center gap-2 rounded-full px-4 text-sm">
+      {slug && <Link href={`/c/${slug}`} target="_blank" rel="noreferrer" className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center gap-2 px-4 text-sm" })}>
         <Eye aria-hidden className="size-4" />{t('workspaceView')}</Link>}
     </header>
     <div className="flex min-w-0 items-center gap-4 border-b border-line-soft pb-4">

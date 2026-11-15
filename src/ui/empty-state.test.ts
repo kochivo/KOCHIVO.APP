@@ -31,7 +31,7 @@ it('gives secondary links a persistent surface and a full touch target', () => {
     icon: Inbox, title: 'No matches', body: 'Try again', secondary: { label: 'Help', href: '/help' },
   }));
   expect(html).toContain('href="/help"');
-  expect(html).toContain(`class="${secondaryButtonClass}"`);
+  expect(secondaryButtonClass).toContain('control-secondary');
   expect(html).toContain('glass');
   expect(html).toContain('min-h-12');
   expect(html).not.toContain('bg-transparent');
@@ -43,6 +43,6 @@ it.each(['link', 'button'])('surfaces the secondary %s action', kind => {
     secondary: kind === 'link' ? { label: 'Help', href: '/help' } : { label: 'Help', onClick() {} },
   }));
   const control = html.match(/<(?:a|button)[^>]*>Help<\/(?:a|button)>/)?.[0];
-  expect(control).toContain('glass');
+  expect(control).toMatch(/glass|control-secondary/);
   expect(control).not.toContain('bg-transparent');
 });

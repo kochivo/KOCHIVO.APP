@@ -89,13 +89,13 @@ export function FoodPicker({ onPick, alternative = false, inline = false }: { on
         action={result?.catalogEmpty || filter === 'mine' ? { label: t('newFood'), onClick: () => setCreating(true) } :
           { label: t('clearSearch'), onClick: () => { setQuery(''); setFilter('all'); setLoading(true); setRetry(n => n + 1); } }} />}
       <ul className="grid max-h-96 gap-2 overflow-y-auto">{result?.foods.map(food => <li key={food.id}>
-        <button type="button" disabled={(!alternative && (!Number.isFinite(grams) || grams < 5 || grams > 2000 || grams % 5 !== 0)) || (alternative && food.kcal <= 0)}
-          onClick={() => onPick(food, grams)} className="flex min-h-12 w-full items-center gap-3 rounded-control border border-line p-3 text-start disabled:opacity-40">
+        <Button type="button" disabled={(!alternative && (!Number.isFinite(grams) || grams < 5 || grams > 2000 || grams % 5 !== 0)) || (alternative && food.kcal <= 0)}
+          onClick={() => onPick(food, grams)} variant={'secondary'} block={false} className={"flex min-h-12 w-full items-center gap-3 p-3 text-start disabled:opacity-40"}>
           {/* Public storage hosts vary by deployment and are not in the optimizer allowlist. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           {food.photo && <img src={foodPhotoUrl(food.photo)} alt="" width={48} height={48} loading="lazy" decoding="async" className="size-12 shrink-0 rounded-control object-cover" />}
           <span><strong>{food.name}</strong>{food.custom && <span className="ms-2 rounded-control bg-surface px-2 text-xs text-muted">{t(inline ? 'myFoods' : 'mine')}</span>}<span className="block text-sm text-muted">{t('per100g')} {formatNumber(food.kcal, locale)}  {t('kcalProtein')} {formatNumber(food.protein, locale)}  {t('carbs')} {formatNumber(food.carbs, locale)}  {t('fat')} {formatNumber(food.fat, locale)}</span></span>
-        </button>
+        </Button>
         {food.custom && <div className="flex gap-2">
           {captainWorkspaceEnabled() ? <IconButton aria-label={t('editFood')} onClick={() => setEditing(food)}><Pencil aria-hidden /></IconButton> : <Button variant="ghost" aria-label={t('editFood')} onClick={() => setEditing(food)}><Pencil aria-hidden /></Button>}
           {captainWorkspaceEnabled() ? <IconButton className="border border-danger/40 text-danger!" aria-label={t('deleteFood')} onClick={() => void remove(food)}><Trash2 aria-hidden /></IconButton> : <Button variant="ghost" aria-label={t('deleteFood')} onClick={() => void remove(food)}><Trash2 aria-hidden /></Button>}

@@ -8,6 +8,7 @@ import { V11NewPlan } from './v11-new-plan';
 import { V11Ring } from './v11-ring';
 import { messages } from './v11/messages';
 import { mealDayType } from '../data/editor-fields';
+import { buttonClass } from '@/ui/button';
 
 async function readPlanCards() {
     const client = await planClient();
@@ -40,9 +41,9 @@ export async function MealLibraryPage() {
   const data = await readPlanCards().catch(() => null);
   if (!data) return <section className="grid gap-4"><V11NewPlan /><p role="alert">{t('error')}</p><Link href="/captain/library/meal-plans" className="min-h-12 text-lime">{t('retry')}</Link></section>;
   const { plans, usage } = data;
-    return <section className="grid gap-4"><V11NewPlan plans={plans.map(plan => ({ id: plan.id, title: plan.title }))} />
+    return <section className="grid gap-4"><V11NewPlan plans={plans.map(plan => ({ id: plan.id, title: plan.title, calories: plan.target_kcal ?? undefined }))} />
       <div className="grid gap-4 min-[761px]:grid-cols-3">
-        {plans.map(plan => <Link key={plan.id} href={`/captain/nutrition/${plan.id}`} className="glass flex min-h-[120px] min-w-0 items-center gap-3.5 rounded-card border border-line-soft p-5">
+        {plans.map(plan => <Link key={plan.id} href={`/captain/nutrition/${plan.id}`} className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-[120px] min-w-0 items-center gap-3.5 p-5" })}>
           {plan.target_kcal !== null && <V11Ring small value={String(plan.target_kcal)} />}
           <div className="min-w-0"><b>{plan.title}</b><div className="my-2 flex flex-wrap gap-2 text-xs text-muted">
             {(['protein', 'carbs', 'fat'] as const).map(key => {

@@ -16,10 +16,14 @@ import { useDemoExpiry } from '@/features/demo';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { messages as pageMessages } from '../invites/page-messages';
+import { buttonClass } from '@/ui/button';
+import { useToast } from '@/ui/toast';
+import { messages as successMessages } from '../success/messages';
 
 export function InviteContent({ captainFirstName, assessments = [] }: { captainFirstName: string; assessments?: FormDraft[] | null }) {
   const timezone = useTimezone();
   const t = useT(messages);
+  const success = useT(successMessages), toast = useToast();
   const p = useT(pageMessages), router = useRouter(), demo = useDemoExpiry();
   const [packages, setPackages] = useState<InvitePackage[] | null>(null);
   const [loadError, setLoadError] = useState('');
@@ -48,7 +52,8 @@ export function InviteContent({ captainFirstName, assessments = [] }: { captainF
       try {
         const response = await createPlayerInvite(input);
         if ('error' in response) setError(response.error);
-        else setResult({ code: response.code, input: { ...input, name: input.name.trim() } });
+        else { setResult({ code: response.code, input: { ...input, name: input.name.trim() } });
+          toast.success({ title: success('inviteReady', { name: input.name.trim() }), detail: success('package', { name: packages?.find(pkg => pkg.id === input.packageId)?.name ?? success(input.kind === 'sessions' ? 'customSessions' : 'customPackage', { days: input.quantity }) }), icon: 'player' }); }
       } catch { setError(t('failed')); }
     });
   }
@@ -57,7 +62,7 @@ export function InviteContent({ captainFirstName, assessments = [] }: { captainF
   if (loadError) return <div className="space-y-3"><p role="alert" className="text-danger">{loadError}</p>
     <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} onClick={() => { setLoadError(''); setAttempt(value => value + 1); }}>{t('retry')}</Button></div>;
   if (!packages) return <p role="status" className="text-muted">{t('loading')}</p>;
-  if (result) return <div className="mx-auto max-w-xl space-y-5"><Link href="/captain/players" className="glass inline-flex min-h-12 items-center rounded-control px-4">{p('players')}</Link>
+  if (result) return <div className="mx-auto max-w-xl space-y-5"><Link href="/captain/players" className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-4" })}>{p('players')}</Link>
     <InviteResult {...result} pkg={packages.find(pkg => pkg.id === result.input.packageId)} captainFirstName={captainFirstName} onAnother={() => setResult(null)} /></div>;
   return <InviteForm packages={packages} forms={assessments} today={today} busy={pending} error={error} onSave={save} />;
 }

@@ -19,6 +19,8 @@ import type { Meal, PlanDraft } from '../types';
 import type { PlayerFacts } from '@/features/player-file';
 import { messages as editorMessages } from './editor/messages';
 import { moveVisibleMeal } from '../editor-rules';
+import { useToast } from '@/ui/toast';
+import { messages as successMessages } from '../success/messages';
 
 const CustomFoodSheet = dynamic(() => import('./custom-food-sheet').then(module => module.CustomFoodSheet));
 
@@ -26,6 +28,7 @@ export function MealEditor({ meal, first, last, update, enhanced = false, facts 
   const t = useT(messages);
   const editorT = useT(editorMessages);
   const locale = useLocale();
+  const success = useT(successMessages), toast = useToast();
   const [picking, setPicking] = useState(false);
   const [creating, setCreating] = useState(false);
   const openerId = useId();
@@ -53,7 +56,9 @@ export function MealEditor({ meal, first, last, update, enhanced = false, facts 
     </div>}
     {creating && <CustomFoodSheet openerId={openerId} onClose={() => setCreating(false)} onSave={(food, grams) => {
       const id = uuidv7(); update(d => addItem(d, meal.id, food, grams, id, t)); setCreating(false); setPicking(false);
+      toast.success({ title: success('added'), detail: success('foodDetail', { name: locale === 'en' ? food.nameEn || food.name : food.name, grams: formatNumber(grams, locale) }), icon: 'meal' });
     }} />}
-    {picking && <FoodPicker inline={enhanced} onPick={(food, grams) => { const id = uuidv7(); update(d => addItem(d, meal.id, food, grams, id, t)); setPicking(false); }} />}
+    {picking && <FoodPicker inline={enhanced} onPick={(food, grams) => { const id = uuidv7(); update(d => addItem(d, meal.id, food, grams, id, t)); setPicking(false);
+      toast.success({ title: success('added'), detail: success('foodDetail', { name: locale === 'en' ? food.nameEn || food.name : food.name, grams: formatNumber(grams, locale) }), icon: 'meal' }); }} />}
   </section>;
 }

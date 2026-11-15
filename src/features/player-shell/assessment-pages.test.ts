@@ -27,8 +27,8 @@ it('renders due fill links and a real dated past headline with only one primary 
   expect(html).toContain('Monthly');
   expect(html).toContain('82.4');
   expect(html).toContain('2026-11-10T12:00:00Z');
-  expect(html.match(/bg-lime /g)).toHaveLength(1);
-  expect(render('page', false)).not.toContain('bg-lime ');
+  expect(html.match(/control-primary /g)).toHaveLength(1);
+  expect(render('page', false)).not.toContain('control-primary ');
 });
 it('keeps the progress row linked during loading and adds the real due count when ready', () => {
   state.data = undefined; state.status = 'loading';
@@ -47,5 +47,5 @@ it('handles loading and errors and keeps home assessment navigation on the new p
   state.data.due.push({ id: 'one', due_at: null, forms: { title: 'First' } });
   expect(render('home')).toContain('/ar/player/assessments');
   expect(render('home')).not.toContain('/player/forms/');
-  expect(render('home')).not.toContain('bg-lime ');
+  expect(render('home')).not.toContain('control-primary ');
 });

@@ -16,7 +16,7 @@ vi.mock('react', async original => ({ ...await original<typeof React>(), useEffe
     }];
   },
 }));
-vi.mock('@/core/i18n/client', () => ({ useT: () => createT(messages, 'ar') }));
+vi.mock('@/core/i18n/client', () => ({ useLocale: () => 'ar', useT: (dictionary: Parameters<typeof createT>[0]) => createT(dictionary, 'ar') }));
 vi.mock('@/ui/toast', () => ({ useToast: () => ({ success: state.success }) }));
 vi.mock('./data/plan-io', () => ({ savePlan: state.save, loadPlan: vi.fn() }));
 vi.mock('./data/activate', () => ({ activatePlan: state.activate }));
@@ -45,6 +45,13 @@ it('saves a draft quietly without activating it', async () => {
   expect(state.activate).not.toHaveBeenCalled();
   expect(state.success).not.toHaveBeenCalled();
 });
+it('shows the rich saved popup after an explicit save and a successful retry', async () => {
+  state.save.mockResolvedValueOnce({ ok: false, error: 'validation' });
+  await render().persist(false, true);
+  expect(state.success).not.toHaveBeenCalled();
+  await render().retrySave();
+  expect(state.success).toHaveBeenCalledWith(expect.objectContaining({ title: 'اتحفظ النظام', icon: 'meal', detail: expect.stringContaining('Plan') }));
+});
 it('shows a returned validation error and does not activate', async () => {
   state.save.mockResolvedValue({ ok: false, error: 'validation' });
   await render().persist(true);
@@ -63,7 +70,7 @@ it('preserves the server rule allowing activation when at least one meal has foo
   await render().persist(true);
   expect(render().draft?.status).toBe('active');
   expect(state.activate).toHaveBeenCalledWith('plan');
-  expect(state.success).toHaveBeenCalledWith(createT(messages, 'ar')('planActivatedForPlayer'));
+  expect(state.success).toHaveBeenCalledWith(expect.objectContaining({ title: 'النظام وصل للاعب', icon: 'meal' }));
 });
 it.each([{ meals: [] }, { meals: [{ id: 'empty', name: 'Meal', position: 1, items: [] }] }])(
   'checks empty meals before saving or activating', async ({ meals }) => {

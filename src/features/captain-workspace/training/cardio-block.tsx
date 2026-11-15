@@ -6,6 +6,7 @@ import { editDay } from './editor-draft';
 import type { Update } from './editor-draft';
 import { messages } from './editor/messages';
 import { CardioRow } from './cardio-row';
+import { Button } from '@/ui/button';
 
 export function CardioBlock({ day, update }: { day: DraftDay; update: Update }) {
   const t = useT(messages), rows = day.cardio ?? [];
@@ -16,7 +17,7 @@ export function CardioBlock({ day, update }: { day: DraftDay; update: Update }) 
   return <section className="glass rounded-card border border-line-soft">
     <div className="flex flex-wrap items-center gap-2.5 px-[18px] py-3.5"><span className="grid size-6 place-items-center rounded-lg bg-surface font-display text-xs font-extrabold">{3}</span>
       <h2 className="font-display text-[19px] font-semibold">{t('cardio')}</h2><span className="text-xs text-faint">{t('optional')}</span>
-      <button className="ms-auto min-h-12 rounded-full border border-line-soft px-3 text-xs" onClick={() => change([...rows, { id: uuidv7(), day_id: day.id, position: rows.length + 1, kind: t('walk'), minutes: 20, intensity: 'low', notes: '' }])}>{t('addCardio')}</button>
+      <Button type="submit" variant={'secondary'} block={false} className={"ms-auto min-h-12 px-3 text-xs"} onClick={() => change([...rows, { id: uuidv7(), day_id: day.id, position: rows.length + 1, kind: t('walk'), minutes: 20, intensity: 'low', notes: '' }])}>{t('addCardio')}</Button>
     </div>
     {rows.length > 0 && <ol className="space-y-3 p-[18px]">{rows.map((row, index) => <li key={row.id}><CardioRow row={row} first={index === 0} last={index === rows.length - 1}
       onChange={next => change(rows.map(item => item.id === row.id ? next : item))} onRemove={() => change(rows.filter(item => item.id !== row.id))}

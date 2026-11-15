@@ -68,10 +68,10 @@ it('shows one primary workout action and real workout, calorie, water and weekly
   expect(html).toContain('href="/player/history"');
   expect(html).toContain('href="/player/rank"');
   expect(html.replace(/<[^>]*>/g, '')).toContain('1 / 3');
-  expect(html.match(/<a\b[^>]*class="[^"]*\bbg-lime\b[^"/]*"/g)).toHaveLength(1);
+  expect(html.match(/<a\b[^>]*class="[^"]*\bcontrol-primary\b[^"/]*"/g)).toHaveLength(1);
   expect(html).toContain('يلا نبدأ');
   const task = renderToStaticMarkup(createElement(NextTaskCard, { task: { kind: 'start', href: '/player/workout/push', name: 'Push' }, day }));
-  expect(task).not.toMatch(/class="[^"]*\bbg-lime\b/);
+  expect(task).not.toMatch(/class="[^"]*\bcontrol-primary\b/);
 });
 it('shows rest content, tomorrow preview and the food action without a workout primary', () => {
   const html = render(true, '2026-11-10');
@@ -79,7 +79,7 @@ it('shows rest content, tomorrow preview and the food action without a workout p
   expect(html).toContain('href="#home-day-preview"');
   expect(html).not.toContain('يلا نبدأ');
   expect(html).not.toContain('/player/rank');
-  expect(html.match(/<a\b[^>]*class="[^"]*\bbg-lime\b[^"/]*"/g)).toHaveLength(1);
+  expect(html.match(/<a\b[^>]*class="[^"]*\bcontrol-primary\b[^"/]*"/g)).toHaveLength(1);
 });
 it('only promises streak preservation on a scheduled rest day', () => {
   expect(render(true, '2026-11-10')).toContain('الراحة مش هتقطع الـ1 يوم بتوعك');
@@ -122,7 +122,7 @@ it('keeps missing-plan and empty-workout contact actions secondary in v3', () =>
     const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' },
       createElement('div', {}, createElement(NutritionSlot), createElement(TodayCard, { day: { ...day, exercises: [] }, rest: false }))));
     expect(html).toContain('/player/captain');
-    expect(html).not.toMatch(/<a\b[^>]*class="[^"]*\bbg-lime\b/);
+    expect(html).not.toMatch(/<a\b[^>]*class="[^"]*\bcontrol-primary\b/);
   } finally { state.meals = meals; }
 });
 it('selects the latest note while the bell also accounts for older unheard notes', () => {

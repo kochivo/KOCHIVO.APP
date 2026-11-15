@@ -11,6 +11,7 @@ import { CardioCards } from '@/ui/cardio-cards';
 import { starterText } from '@/lib/starter-text';
 import { messages as warmupMessages } from '../warmup/messages';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { buttonClass } from '@/ui/button';
 
 const weekdays = ['sat', 'sun', 'mon', 'tue', 'wed', 'thu', 'fri'] as const;
 
@@ -44,7 +45,7 @@ export function TodayCard({ day, rest }: { day: SnapshotDay; rest: boolean }) {
     </div>
     {day.exercises.length === 0 ? !resting && !day.cardio?.length && <EmptyState icon={Dumbbell} title={t('yourProgramIsBeingPrepared')} body={t('yourCoachIsPreparingTodaysExercises')}
       action={v3 ? undefined : contact} secondary={v3 ? contact : undefined} /> :
-    <Link data-tour={v3 ? undefined : 'workout-start'} href={`/player/workout/${day.id}`} className="flex min-h-12 items-center justify-center rounded-control border border-line px-4 font-bold text-muted hover:text-ink">
+    <Link data-tour={v3 ? undefined : 'workout-start'} href={`/player/workout/${day.id}`} className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-12 items-center justify-center px-4 font-bold text-muted hover:text-ink" })}>
       {resting ? t('trainAnyway') : t('startWorkout')}
     </Link>}
     <CardioCards blocks={day.cardio ?? []} />

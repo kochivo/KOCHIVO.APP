@@ -20,6 +20,7 @@ import { WorkspaceReply } from './workspace-reply';
 import { WorkspaceFlags } from './workspace-flags';
 import { WorkspaceKpis } from './workspace-kpis';
 import { useDesktopDetail } from '../hooks/use-desktop-detail';
+import { buttonClass } from '@/ui/button';
 
 export function WorkspaceDetail({ item, inputs, now, reply, onDraft, onClose, onSend, onDirty, joinRequest, blocked }: {
   item: WorkspaceItem; inputs: TriageInputs; now: Date; joinRequest: ReactNode; blocked: boolean;
@@ -37,7 +38,7 @@ export function WorkspaceDetail({ item, inputs, now, reply, onDraft, onClose, on
       <span aria-hidden className="glass grid size-[38px] shrink-0 place-items-center rounded-full border border-line">{item.player_name.slice(0, 1)}</span>
       <div className="min-w-0 flex-1"><h2 className="font-display text-[19px] font-semibold">{item.player_name}</h2>
         <p className="mt-1 text-xs text-faint">{item.kind === 'checkin' ? t('weekly') : t(item.kind)} · {t('sent', { date: formatTimestampAr(item.created_at, { weekday: 'long', hour: 'numeric', minute: '2-digit' }, locale, timezone) })}</p></div>
-      {item.kind !== 'request' && <Link className="inline-flex min-h-12 items-center rounded-full border border-line px-3.5 text-[12.5px]" href={`/captain/players/${item.player_id}`}>{t('openPlayer')}</Link>}
+      {item.kind !== 'request' && <Link className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-3.5 text-[12.5px]" })} href={`/captain/players/${item.player_id}`}>{t('openPlayer')}</Link>}
     </header>
     {item.kind === 'request' ? <div className="p-5" onKeyDown={event => {
       if (event.key === 'Escape' && event.target instanceof Element && event.target.closest('dialog') !== event.currentTarget.closest('dialog')) event.stopPropagation();

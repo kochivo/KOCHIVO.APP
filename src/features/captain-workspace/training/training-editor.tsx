@@ -24,6 +24,9 @@ import { messages as editorMessages } from './editor/messages';
 import { restDay } from './editor-draft';
 import { TrainingFacts } from './training-facts';
 import type { TrainingPlayerFacts } from './training-facts';
+import { useToast } from '@/ui/toast';
+import { messages as successMessages } from '../success/messages';
+import { exerciseName } from '@/lib/display-name';
 
 type Props = { programs: { id: string; title: string; status: string }[]; playerName?: string; remainingDays?: number; playerFacts?: TrainingPlayerFacts } & (
   { mode?: 'player'; playerId: string; initial: ProgramDraft | null } |
@@ -33,6 +36,7 @@ type Props = { programs: { id: string; title: string; status: string }[]; player
 export function TrainingEditor({ playerId, playerName, remainingDays, playerFacts, initial, programs, mode = 'player' }: Props) {
   const t = useT(messages), pt = useT(programMessages), et = useT(editorMessages);
   const locale = useLocale();
+  const success = useT(successMessages), toast = useToast();
   const template = mode === 'template';
   const state = useTrainingAutosave(initial);
   const search = useSearchParams(), pathname = usePathname(), router = useRouter();
@@ -47,18 +51,22 @@ export function TrainingEditor({ playerId, playerName, remainingDays, playerFact
   const draft = state.draft;
   const { update: updateDraft, flush: flushDraft } = state;
   const draftId = draft?.id;
+  const returnDayTitle = draft?.days.find(day => day.id === returnDay)?.title ?? '';
   const acceptReturn = useCallback(async () => {
     const key = `${returnProgram}:${returnDay}:${returnId}:${returnMode}`;
     if (!returnId || draftId !== returnProgram || !returnDay || !['add', 'edit'].includes(returnMode) || handlingReturn.current === key) return;
     handlingReturn.current = key;
     setPending(true); setReturnError('');
     try {
+      let addedName = '';
       const saved = await completeCustomExerciseReturn(returnId, library => {
         // A read may finish after the captain has left this editor.
         if (window.location.pathname !== pathname || new URLSearchParams(window.location.search).get('customExercise') !== returnId) throw new Error('navigation');
+        addedName = exerciseName(library, locale);
         updateDraft(current => applyCustomExercise(current, returnProgram, returnDay, library, returnMode, uuidv7()));
       }, flushDraft);
       if (!saved) throw new Error('save');
+      if (returnMode === 'add') toast.success({ title: success('added'), detail: success('exerciseDetail', { name: addedName, day: returnDayTitle }), icon: 'program' });
       setSelected(returnDay);
       if (window.location.pathname === pathname) {
         const next = new URLSearchParams(search);
@@ -67,7 +75,7 @@ export function TrainingEditor({ playerId, playerName, remainingDays, playerFact
       }
     } catch { handlingReturn.current = ''; setReturnError(t('error')); }
     finally { setPending(false); }
-  }, [draftId, returnProgram, returnDay, returnId, returnMode, pathname, search, router, updateDraft, flushDraft, t]);
+  }, [draftId, returnProgram, returnDay, returnDayTitle, returnId, returnMode, pathname, search, router, updateDraft, flushDraft, t, success, toast, locale]);
   useEffect(() => {
     let active = true;
     void Promise.resolve().then(() => { if (active) void acceptReturn(); });
@@ -99,12 +107,15 @@ export function TrainingEditor({ playerId, playerName, remainingDays, playerFact
       if (!await state.flush()) return;
       const result = await activateProgram(draft.id);
       if (!result.ok) setError(result.error);
-      else { state.replace({ ...draft, status: 'active' }); setSent(true); }
+      else { state.replace({ ...draft, status: 'active' }); setSent(true);
+        toast.success({ title: success('assigned', { name: playerName ?? '' }), detail: success('name', { name: draft.title }), icon: 'program' }); }
     } catch { setError(t('error')); } finally { setPending(false); }
   }
   return <section className="@container min-w-0 space-y-[18px]">
     <EditorHeader playerId={playerId} playerName={playerName} remainingDays={draft?.status === 'active' ? remainingDays : undefined} template={template} title={draft?.title}
-      starting={Boolean(allRest)} status={state.status} busy={pending} disabled={!draft || choosing} onSend={() => void send()} onRetry={() => void state.flush()}
+      starting={Boolean(allRest)} status={state.status} busy={pending} disabled={!draft || choosing} onSend={() => void send()} onRetry={() => {
+        void state.flush().then(ok => { if (ok && draft) toast.success({ title: success(template ? 'templateSaved' : 'saved'), detail: success('name', { name: draft.title }), icon: template ? 'template' : 'program' }); });
+      }}
       onAssign={() => {
         if (!draft?.days.some(row => row.exercises.length)) { setError(et('emptyAssign')); return; }
         setError('');
@@ -141,7 +152,7 @@ export function TrainingEditor({ playerId, playerName, remainingDays, playerFact
             </> : <p className="glass rounded-card p-5 text-faint">{t('noDays')}</p>}</div>
           </div>
       </fieldset>}
-    {template && assigning && draft && <AssignmentSheet programId={draft.id} onClose={() => setAssigning(false)} />}
+    {template && assigning && draft && <AssignmentSheet programId={draft.id} programTitle={draft.title} onClose={() => setAssigning(false)} />}
     {!template && <details className="glass rounded-card border border-line-soft px-5 py-2">
       <summary className="flex min-h-12 cursor-pointer items-center text-xs text-muted">{t('history')}</summary>
       {programs.length ? programs.map(row => <Link key={row.id} href={`/captain/programs/${row.id}`} className="flex min-h-12 items-center justify-between gap-3 border-t border-line-soft text-sm">

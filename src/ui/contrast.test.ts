@@ -35,4 +35,16 @@ it.each(['dark', 'light'])('keeps %s text readable on mesh, glass and solid surf
     expect(contrast(token('lime-ink'), background)).toBeGreaterThanOrEqual(3);
   }
   expect(contrast(token('on-lime'), token('lime'))).toBeGreaterThanOrEqual(4.5);
+  const base = (name: string) => {
+    const hex = css.match(new RegExp(`--color-${name}: #([0-9a-f]{6})`))?.[1];
+    if (!hex) throw new Error(`Missing ${name}`);
+    return [0, 2, 4].map(offset => Number.parseInt(hex.slice(offset, offset + 2), 16));
+  };
+  for (const name of ['lime-top', 'lime-bottom']) expect(contrast(token('on-lime'), base(name))).toBeGreaterThanOrEqual(4.5);
+  for (const surface of ['bg', 'surface', 'surface-raised']) {
+    for (const alpha of [.04, .09, .1]) {
+      const secondary = mix(light ? token('ink') : [255, 255, 255], token(surface), alpha);
+      expect(contrast(token('ink'), secondary), `${theme} secondary ${surface} ${alpha}`).toBeGreaterThanOrEqual(4.5);
+    }
+  }
 });

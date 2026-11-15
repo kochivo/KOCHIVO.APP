@@ -8,6 +8,7 @@ import { messages } from '../messages';
 import { useRankData } from '../hooks/use-rank-data';
 import type { MyPoints } from '../data/load-my-points';
 import { legendStars, tierFor } from '../tiers';
+import { buttonClass } from '@/ui/button';
 
 export function RankChip({ points }: { points?: MyPoints }) {
   const t = useT(messages);
@@ -20,7 +21,7 @@ export function RankChip({ points }: { points?: MyPoints }) {
   const label = stars ? t('legendWithStars', { n: formatNumber(stars, locale) }) : t(tier);
   const n = formatNumber(active.lifetime, locale);
   return <Link href="/player/rank" aria-label={t('chip', { tier: label, n })}
-    className="glass inline-flex min-h-12 items-center gap-2 rounded-full px-3 text-sm font-bold">
+    className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center gap-2 px-3 text-sm font-bold" })}>
     <RankBadge tier={tier} stars={stars} size="sm" label={label} /><span>{t('points', { n })}</span>
   </Link>;
 }

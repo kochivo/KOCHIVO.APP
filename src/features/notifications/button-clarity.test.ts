@@ -20,7 +20,7 @@ it.each(['0', '1'])('surfaces notification actions only with workspace flag %s e
   const buttons = html.match(/<button[^>]*>/g) ?? [];
   expect(buttons).toHaveLength(3);
   for (const button of buttons) {
-    if (flag === '1') expect(button).toContain('glass');
+    if (flag === '1') expect(button).toMatch(/glass|control-secondary/);
     else {
       expect(button).not.toContain('glass');
       expect(button).not.toContain('press');

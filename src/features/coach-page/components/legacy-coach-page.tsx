@@ -8,6 +8,7 @@ import { coachSignupHref } from '../slug';
 import { messages } from '../messages';
 import { PublicPricing } from './public-pricing';
 import { httpsSocialUrl } from './public-social-url';
+import { buttonClass } from '@/ui/button';
 
 export async function LegacyCoachPage({ slug, requested }: { slug: string; requested?: CoachRequestStatus }) {
   const t = await getT(messages);
@@ -31,13 +32,13 @@ export async function LegacyCoachPage({ slug, requested }: { slug: string; reque
       <p className="whitespace-pre-wrap text-muted">{coach.bio || t('noBio')}</p>
       {coach.location && <p className="flex items-center gap-2"><MapPin aria-hidden className="size-5" />{coach.location}</p>}
       {links.length ? <ul className="flex flex-wrap gap-3">{links.map(({ key, href }) =>
-        <li key={key}><a href={href} rel="noopener noreferrer" target="_blank" className="glass flex min-h-12 items-center rounded-control px-4">{t(key)}</a></li>)}</ul> :
+        <li key={key}><a href={href} rel="noopener noreferrer" target="_blank" className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-12 items-center px-4" })}>{t(key)}</a></li>)}</ul> :
         <p className="text-sm text-muted">{t('noSocial')}</p>}
       {requested ? <div role="status" className="glass space-y-4 rounded-control p-4">
         <p>{t(requested)}</p>
-        {requested === 'member' && <Link href="/player" className="flex min-h-12 items-center justify-center rounded-control glass border border-line px-6 py-4 font-bold text-ink">{t('openApp')}</Link>}
+        {requested === 'member' && <Link href="/player" className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-12 items-center justify-center px-6 py-4 font-bold text-ink" })}>{t('openApp')}</Link>}
       </div> :
-        <Link href={coachSignupHref(slug)} className={`flex min-h-12 items-center justify-center rounded-control px-6 py-4 font-bold ${pricing ? 'border border-line text-ink' : 'bg-lime text-on-lime'}`}>{t('train')}</Link>}
+        <Link href={coachSignupHref(slug)} className={buttonClass({ variant: (pricing) ? 'secondary' : 'primary', block: false, className: `flex min-h-12 items-center justify-center px-6 py-4 font-bold ${pricing ? "text-ink" : ""} ` })}>{t('train')}</Link>}
     </article>
     {pricing}
   </main>;

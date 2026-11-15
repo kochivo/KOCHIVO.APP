@@ -1,3 +1,4 @@
+import { Button } from '@/ui/button';
 import { isValidElement } from 'react';
 import type { ReactElement } from 'react';
 import type * as React from 'react';
@@ -21,7 +22,7 @@ type Node = ReactElement<{ children?: unknown; onClick?: () => void | Promise<vo
 function buttons(value: unknown): Node[] {
   if (Array.isArray(value)) return value.flatMap(buttons);
   if (!isValidElement<Node['props']>(value)) return [];
-  return [...(value.type === 'button' ? [value] : []), ...buttons(value.props.children)];
+  return [...((value.type === 'button' || value.type === Button) ? [value] : []), ...buttons(value.props.children)];
 }
 beforeEach(() => {
   vi.clearAllMocks(); state.updates = []; state.events = [];

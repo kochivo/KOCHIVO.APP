@@ -14,6 +14,7 @@ import { messages } from '../player-v3-messages';
 import { messages as legacyMessages } from '../messages';
 import { rangePoints, weightChange } from './progress-v3-model';
 import { LineChart } from './line-chart';
+import { Button, buttonClass } from '@/ui/button';
 
 export function ProgressV3({ today, checkins, strength, count, checkinError, strengthError, retry, onLog }: {
   today: string; checkins?: CheckIn[]; strength?: StrengthHistory; count?: number;
@@ -46,7 +47,7 @@ export function ProgressV3({ today, checkins, strength, count, checkinError, str
       {latest != null && <div className="flex items-baseline gap-2.5"><span dir="ltr" className="glass-strong rounded-xl font-display text-[40px] leading-none font-extrabold">{number(latest)}</span><span className="text-[13px] text-muted">{t('kg')}</span>
         {change && <span className="ms-auto flex h-[30px] items-center rounded-[15px] bg-water/15 px-2.5 text-xs font-bold text-water">{t(change.direction, { value: number(change.amount) })}</span>}</div>}
       {checkinError ? <ErrorState message={old('couldntLoadCheckinsCheckYourConnection')} retryLabel={old('tryAgain')} onRetry={retry} /> : !checkins ? <LoadingState /> : weight.length ? <LineChart points={weight} title={t('weight')} unit={t('kg')} compact="water" /> : <p className="py-5 text-sm text-muted">{t('noWeight')}</p>}
-      <button type="button" onClick={onLog} className="min-h-12 rounded-full border border-line-soft text-[13px] font-bold">{t('log')}</button>
+      <Button type="button" onClick={onLog} variant={'secondary'} block={false} className={"min-h-12 text-[13px] font-bold"}>{t('log')}</Button>
     </section>
     <section className={`${card} gap-2.5`} aria-label={t('strength')}>
       <h2 className="text-[13px] text-muted">{t('strength')}</h2>
@@ -56,6 +57,6 @@ export function ProgressV3({ today, checkins, strength, count, checkinError, str
         <LineChart points={top} title={t('strength')} unit={t('kg')} compact="lime" />
       </> : <p className="py-5 text-sm text-muted">{t('noStrength')}</p>}
     </section>
-    <Link href="/player/history" className="flex min-h-[60px] items-center gap-2.5 rounded-[22px] border border-line-soft bg-surface px-4 text-sm"><span className="flex-1">{t('history')}</span>{count !== undefined && <span className="font-display font-extrabold">{number(count)}</span>}<ChevronLeft aria-hidden size={18} className="text-muted rtl:rotate-0 ltr:rotate-180" /></Link>
+    <Link href="/player/history" className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-[60px] items-center gap-2.5 bg-surface px-4 text-sm" })}><span className="flex-1">{t('history')}</span>{count !== undefined && <span className="font-display font-extrabold">{number(count)}</span>}<ChevronLeft aria-hidden size={18} className="text-muted rtl:rotate-0 ltr:rotate-180" /></Link>
   </>;
 }

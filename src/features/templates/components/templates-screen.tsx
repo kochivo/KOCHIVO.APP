@@ -18,6 +18,7 @@ import { createTemplate } from '../data/templates';
 import { TemplateSection } from './template-section';
 import { useToast } from '@/ui/toast';
 import { messages as uiMessages } from '@/ui/messages';
+import { messages as successMessages } from '../success/messages';
 
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { LoadingState } from '@/ui/loading-state';
@@ -32,6 +33,7 @@ type Edit = { template: Template; title: string } | { template: Template; title?
 export function TemplatesScreen({ libraryKind = 'program' }: { libraryKind?: TemplateKind } = {}) {
   const t = useT(messages);
   const feedback = useT(uiMessages);
+  const success = useT(successMessages);
   const toast = useToast();
   const locale = useLocale();
   const router = useRouter();
@@ -123,7 +125,7 @@ export function TemplatesScreen({ libraryKind = 'program' }: { libraryKind?: Tem
         if (result.error !== undefined) { failure = result.error; throw new Error(failure); }
         return result.data;
       });
-      toast.success(feedback('templateCopied'));
+      toast.success({ title: feedback('templateCopied'), detail: success('name', { name: placeholder.title }), icon: 'template' });
       if (openEditor) router.push(templateEditorHref(template.kind, id, true));
     } catch { setErrors(current => ({ ...current, [keyOf(template)]: failure })); }
     finally { unlock(keys); }

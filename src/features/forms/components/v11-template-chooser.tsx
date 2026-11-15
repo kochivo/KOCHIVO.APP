@@ -7,6 +7,7 @@ import { templates } from '../templates';
 import { questionCount } from '../question-count';
 import { assessmentTime, assessmentWeekday } from '../assessment-summary';
 import { TemplateLinkEntry } from './template-link-entry';
+import { Button } from '@/ui/button';
 
 export function V11TemplateChooser({ locale, style }: { locale: Locale; style?: ArabicStyle }) {
   const t = createT(workspaceMessages, locale, style), m = formCopy(locale, style);
@@ -14,8 +15,8 @@ export function V11TemplateChooser({ locale, style }: { locale: Locale; style?: 
   return <section id="assessment-templates" popover="auto" aria-label={t('newForm')}
     className="glass-strong fixed m-auto max-h-[85dvh] w-[min(720px,92vw)] overflow-hidden rounded-[24px] border border-line p-5 text-ink">
     <header className="mb-4 flex items-center justify-between gap-3"><h2 className="font-semibold">{t('newForm')}</h2>
-      <button type="button" popoverTarget="assessment-templates" popoverTargetAction="hide" aria-label={m.close}
-        className="glass press grid min-h-12 min-w-12 cursor-pointer place-items-center rounded-full border border-line focus-visible:ring-2 focus-visible:ring-lime"><X aria-hidden className="size-4" /></button></header>
+      <Button type="button" popoverTarget="assessment-templates" popoverTargetAction="hide" aria-label={m.close}
+        variant={'secondary'} block={false} className={"press grid min-h-12 min-w-12 cursor-pointer place-items-center focus-visible:ring-2 focus-visible:ring-lime"}><X aria-hidden className="size-4" /></Button></header>
     <div className="grid max-h-[calc(85dvh-7rem)] gap-3 overflow-y-auto [scrollbar-width:thin] min-[761px]:grid-cols-2">
       {templates.map(template => {
         const key = template.key ?? template.kind, schedule = template.schedule;

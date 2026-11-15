@@ -35,8 +35,8 @@ export function FoodsLibraryEntry() {
     return result.data;
   }, [search, segment, cursor]);
   const resource = useResource(`foods-library:${JSON.stringify([search, segment, cursor])}`, load);
-  const newButton = <button id="new-library-food" type="button" disabled={selected !== undefined} onClick={() => setSelected(null)}
-    className={`flex min-h-12 items-center gap-2 rounded-full px-5 font-semibold ${selected === undefined ? 'bg-lime text-on-lime' : 'glass text-muted'}`}><PlusIcon aria-hidden className="size-5" />{t('new')}</button>;
+  const newButton = <Button id="new-library-food" type="button" disabled={selected !== undefined} onClick={() => setSelected(null)}
+    variant={(selected === undefined) ? 'primary' : 'secondary'} block={false} className={`flex min-h-12 items-center gap-2 px-5 font-semibold ${selected === undefined ? "" : "text-muted"} `}><PlusIcon aria-hidden className="size-5" />{t('new')}</Button>;
   return <section className="grid gap-5">
     {workspace ? <><PageBarTitle title={t('title')} /><PageBarActions>{newButton}</PageBarActions></> : <header className="flex flex-wrap items-center gap-4">
       <div className="me-auto"><h1 className="font-display text-[30px] font-semibold leading-tight">{t('title')}</h1><p className="mt-1 text-sm text-muted">{t('subtitle')}</p></div>

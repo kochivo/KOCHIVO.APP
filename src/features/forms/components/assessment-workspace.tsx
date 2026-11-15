@@ -72,7 +72,7 @@ export function AssessmentWorkspace({ playerId, formId, locale }: { playerId?: s
         {showEditor ? <AssessmentEditor key={editing?.id ?? `new:${revision}`} data={data} player={playerId} formId={formId}
           initial={editing} locale={locale} now={now} onSave={save} onCancel={() => { setShowEditor(false); setEditing(undefined); }}
           onSaved={() => { void resource.retry(); if (formId) router.refresh(); setEditing(undefined); setShowEditor(false); setRevision(r => r + 1); }} />
-          : <button className="glass min-h-12 rounded-full px-5" onClick={() => setShowEditor(true)}>{t('schedule')}</button>}
+          : <Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-5"} onClick={() => setShowEditor(true)}>{t('schedule')}</Button>}
       </div>
     </div>
     {playerId && <details className="glass rounded-card border border-line-soft p-5" open={undefined}>

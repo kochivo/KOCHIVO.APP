@@ -46,7 +46,7 @@ export function CaptainSupplements({ playerId }: { playerId: string }) {
   };
   return <section className="glass space-y-4 rounded-card p-5">
     <div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-xl font-bold">{t('title')}</h2>
-      <button className="glass min-h-12 rounded-control px-4 font-bold" disabled={busy} onClick={() => setEditing(null)}>{t('add')}</button></div>
+      <Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-4 font-bold"} disabled={busy} onClick={() => setEditing(null)}>{t('add')}</Button></div>
     {error && <div role="alert"><p>{t('error')}</p>{captainWorkspaceEnabled() ? <Button variant="secondary" className="min-h-12 px-4" onClick={() => { setError(false); void refresh(); }}>{t('retry')}</Button> : <button className="min-h-12 px-4" onClick={() => { setError(false); void refresh(); }}>{t('retry')}</button>}</div>}
     {!data && !error && <p role="status">{t('loading')}</p>}
     {data && !data.rows.length && <p className="text-muted">{t('empty')}</p>}

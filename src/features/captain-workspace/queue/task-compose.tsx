@@ -7,6 +7,7 @@ import { uuidv7 } from '@/core/offline/ids';
 import { useRecorder } from '@/features/voice-notes';
 import type { VoiceInput } from '@/features/chat';
 import { taskMessages } from './messages';
+import { Button } from '@/ui/button';
 export function TaskCompose({ onSend, disabled }: { disabled: boolean;
   onSend: (body: string, voice?: Pick<VoiceInput, 'blob' | 'mimeType' | 'durationSeconds' | 'id'>) => Promise<boolean> }) {
   const t = useT(taskMessages), recorder = useRecorder();
@@ -36,8 +37,8 @@ export function TaskCompose({ onSend, disabled }: { disabled: boolean;
       {recording ? <span role="status" className="min-w-0 flex-1 text-xs text-muted">{t('recording')}</span> :
         <input id="task-reply" aria-label={t('placeholder')} placeholder={t('placeholder')} maxLength={1000} value={body} disabled={disabled}
           onChange={event => setBody(event.target.value)} className="min-h-12 min-w-0 flex-1 bg-transparent text-sm outline-none" />}
-      <button disabled={blocked || (!body.trim() && state.status !== 'recorded')} className="flex min-h-12 shrink-0 items-center gap-1 rounded-control bg-lime px-3 text-xs font-semibold text-on-lime disabled:opacity-50">
-        <KoSend aria-hidden className="size-4" />{t('send')}</button>
+      <Button disabled={blocked || (!body.trim() && state.status !== 'recorded')} type="submit" variant={'primary'} block={false} className={"flex min-h-12 shrink-0 items-center gap-1 px-3 text-xs font-semibold disabled:opacity-50"}>
+        <KoSend aria-hidden className="size-4" />{t('send')}</Button>
     </form>
   </div>;
 }

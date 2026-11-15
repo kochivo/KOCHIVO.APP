@@ -15,6 +15,7 @@ import type { Profile } from '../player-file/types';
 import { checkDays, checkMinutes, injuryCount, selectedMinutes } from './fit-checks';
 import type { TrainingContext } from './fit-checks';
 import { messages } from './messages';
+import { Button } from '@/ui/button';
 
 export type TrainingPlayerFacts = TrainingContext & { profile: Pick<Profile, 'name' | 'intake'>; file: PlayerFile; today: string };
 type Props = TrainingPlayerFacts & { locale: Locale; draft: ProgramDraft; day?: DraftDay };
@@ -55,10 +56,10 @@ export function TrainingFacts({ profile, file, locale, draft, day, fatPct, candi
       </div>
       {injuries.map(injury => <span key={injury} className="rounded-full bg-warn/10 px-3 py-1 text-xs text-warn">{optionLabel(injury, locale)}</span>)}
       <Link href={`/captain/players/${draft.player_id}`} className="inline-flex min-h-12 items-center text-sm text-lime">{t('fullFile')}</Link>
-      <button type="button" aria-expanded={expanded} aria-controls={`player-facts-${draft.id}`} aria-label={t(expanded ? 'collapseFacts' : 'expandFacts')}
-        onClick={() => setExpanded(value => !value)} className="grid min-h-12 min-w-12 place-items-center rounded-full border border-line-soft md:hidden">
+      <Button type="button" aria-expanded={expanded} aria-controls={`player-facts-${draft.id}`} aria-label={t(expanded ? 'collapseFacts' : 'expandFacts')}
+        onClick={() => setExpanded(value => !value)} variant={'secondary'} block={false} className={"grid min-h-12 min-w-12 place-items-center md:hidden"}>
         <ChevronDown aria-hidden className={`size-4 ${expanded ? 'rotate-180' : ''}`} />
-      </button>
+      </Button>
     </div>
     <div id={`player-facts-${draft.id}`} className={`${expanded ? 'block' : 'hidden'} space-y-4 pt-4 md:block`}>
       <dl className="grid grid-cols-2 gap-4 sm:grid-cols-4">

@@ -46,7 +46,7 @@ function find(node: ReactNode, label: string): { onClick?: () => void; disabled?
   return find(node.props.children, label);
 }
 function primaryCount(html: string) {
-  return (html.match(/<button[^>]*class="[^"]*\bbg-lime\b(?!-)/g) ?? []).length;
+  return (html.match(/<button[^>]*class="[^"]*\bcontrol-primary\b(?!-)/g) ?? []).length;
 }
 function elementsOf(node: ReactNode, type: unknown): ReactElement<Record<string, unknown>>[] {
   if (Array.isArray(node)) return node.flatMap(child => elementsOf(child, type));
@@ -93,7 +93,7 @@ it('uses the finish label only for the last queued set and disables logging duri
   expect(renderToStaticMarkup(createElement(WorkoutSet, { state }))).toContain('خلصت المجموعة');
   const html = renderToStaticMarkup(createElement(WorkoutSet, { state: { ...state, progress: 2, rest: { ...state.rest, remaining: 30 } } }));
   expect(html).toContain('خلصت التمرين');
-  expect(html).toMatch(/<button[^>]*disabled=""[^>]*class="[^"]*bg-lime/);
+  expect(html).toMatch(/<button[^>]*disabled=""[^>]*class="[^"]*control-primary/);
 });
 it('preserves each value control’s identity when committing a typed weight or reps', () => {
   const initial = elementsOf(WorkoutSet({ state }), WorkoutValue);

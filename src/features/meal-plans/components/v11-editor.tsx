@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { KoMealPlans } from '@/ui/icons/ko-meal-plans';
-import { useT } from '@/core/i18n/client';
+import { useLocale, useT } from '@/core/i18n/client';
 import { useResource } from '@/core/resource';
 import { uuidv7 } from '@/core/offline/ids';
 import { Button } from '@/ui/button';
@@ -21,12 +21,17 @@ import { V11FoodPicker } from './v11-food-picker';
 import { messages } from './v11/messages';
 import { messages as planMessages } from '../messages';
 import { planPlayers } from './v11-assignment';
+import { buttonClass } from '@/ui/button';
+import { useToast } from '@/ui/toast';
+import { messages as successMessages } from '../success/messages';
+import { formatNumber } from '@/lib/format';
 
 const TargetsBar = dynamic(() => import('./targets-bar').then(module => module.TargetsBar));
 const LegacyEditor = dynamic(() => import('./legacy-editor').then(module => module.LegacyEditor), { loading: () => <LoadingState variant="detail" /> });
 
 export function V11Editor({ planId }: { planId: string }) {
   const t = useT(messages), pt = useT(planMessages);
+  const success = useT(successMessages), toast = useToast(), locale = useLocale();
   const state = usePlanDraft(planId, { clearErrorsOnEdit: true });
   useEditorAutosave(state);
   const [day, setDay] = useState<'training' | 'rest'>('training');
@@ -43,7 +48,7 @@ export function V11Editor({ planId }: { planId: string }) {
   const mealId = meals.some(meal => meal.id === selected) ? selected : meals[0]?.id;
   return <div className="grid min-w-0 gap-4">
     <PageBarTitle title={draft.title} subtitle={usage.data !== undefined ? t('usage', { n: usage.data }) : usage.error ? t('error') : t('loading')} />
-    <PageBarActions><Link href="/captain/library/meal-plans" aria-label={t('back')} aria-disabled={state.dirty || state.busy} onNavigate={event => { if (state.dirty || state.busy) event.preventDefault(); }} className="grid min-h-12 min-w-12 place-items-center rounded-full glass"><KoMealPlans aria-hidden className="size-5" /></Link><Button disabled={state.busy} onClick={() => void state.persist()}>{t('save')}</Button></PageBarActions>
+    <PageBarActions><Link href="/captain/library/meal-plans" aria-label={t('back')} aria-disabled={state.dirty || state.busy} onNavigate={event => { if (state.dirty || state.busy) event.preventDefault(); }} className={buttonClass({ variant: 'secondary', block: false, className: "grid min-h-12 min-w-12 place-items-center" })}><KoMealPlans aria-hidden className="size-5" /></Link><Button disabled={state.busy} onClick={() => void state.persist(false, true)}>{t('save')}</Button></PageBarActions>
     {state.error && <p role="alert" className="text-danger">{state.error}</p>}
     {state.busy && <p role="status" className="text-muted">{pt('saving')}</p>}
     {state.dirty && !state.busy && <p role="status" className="text-xs text-muted">{pt('youHaveUnsavedChanges')}</p>}
@@ -67,7 +72,8 @@ export function V11Editor({ planId }: { planId: string }) {
         </details>
       </fieldset>
       <aside className={picker ? 'min-w-0' : 'hidden min-w-0 min-[761px]:block'}><V11FoodPicker navigationDisabled={state.dirty || state.busy} disabled={!mealId || state.busy} onPick={food => {
-        if (mealId) update(current => addItem(current, mealId, food, 100, uuidv7(), pt));
+        if (mealId) { update(current => addItem(current, mealId, food, 100, uuidv7(), pt));
+          toast.success({ title: success('added'), detail: success('foodDetail', { name: locale === 'en' ? food.nameEn || food.name : food.name, grams: formatNumber(100, locale) }), icon: 'meal' }); }
       }} /></aside>
     </div>
   </div>;

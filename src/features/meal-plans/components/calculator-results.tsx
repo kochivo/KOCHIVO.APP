@@ -4,6 +4,7 @@ import { useLocale, useT } from '@/core/i18n/client';
 import { formatNumber } from '@/lib/format';
 import { cycle, macros } from '../energy';
 import { messages } from './calculator/messages';
+import { Button } from '@/ui/button';
 
 export function CalculatorResults({ result, weightKg, trainingDays, split, onSplit }: {
   result: { bmr: number; tdee: number; target: number }; weightKg: number; trainingDays: number;
@@ -46,7 +47,7 @@ export function CalculatorResults({ result, weightKg, trainingDays, split, onSpl
         <p className="text-sm text-muted">{t('fat')} {t('grams', { value: number(fat) })}</p>
         <p className="text-sm text-muted">{t('carbs')} {t('grams', { value: number(Math.round((splitCalories[key] - protein * 4 - fat * 9) / 4)) })}</p>
       </div>)}</div>
-      <button type="button" onClick={() => onSplit(false)} className="min-h-12 rounded-control border border-line px-4">{t('oneNumber')}</button>
+      <Button type="button" onClick={() => onSplit(false)} variant={'secondary'} block={false} className={"min-h-12 px-4"}>{t('oneNumber')}</Button>
     </section>
   </div>;
 }

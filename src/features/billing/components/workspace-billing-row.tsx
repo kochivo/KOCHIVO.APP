@@ -55,10 +55,10 @@ export function WorkspaceBillingRow({ player, today, packages }: { player: Billi
       <span className="hidden text-[13px] text-faint min-[761px]:block">{player.lastPayment ? <time dateTime={player.lastPayment.created_at}>{formatTimestampAr(player.lastPayment.created_at, { day: 'numeric', month: 'long' }, locale, timezone)}</time> : legacy('noPayments')}</span>
       <div><span className={`inline-flex rounded-full px-2.5 py-1 text-[11.5px] ${segment === 'overdue' ? 'bg-danger-soft text-danger' : segment === 'ending' ? 'bg-warn-soft text-warn' : state.tone}`}>{pill}</span></div>
       <div className="col-span-2 flex flex-wrap items-center justify-end gap-2 min-[761px]:col-span-1">
-        {(segment === 'overdue' || segment === 'ending') && <button type="button" disabled={!reminder} title={!reminder ? t('noPhone') : undefined} onClick={event => { event.stopPropagation(); if (reminder) window.open(reminder, '_blank', 'noopener,noreferrer'); }}
-          className="min-h-12 rounded-full border border-line px-3 text-[12.5px] disabled:opacity-40">{payment('remind')}</button>}
-        {(segment === 'overdue' || player.pending || frozenAt) && <button type="button" disabled={pending} onClick={event => { event.stopPropagation(); void action(); }}
-          className="min-h-12 rounded-full border border-line px-3 text-[12.5px] disabled:opacity-40">{segment === 'overdue' ? payment('received') : t(state.action)}</button>}
+        {(segment === 'overdue' || segment === 'ending') && <Button type="button" disabled={!reminder} title={!reminder ? t('noPhone') : undefined} onClick={event => { event.stopPropagation(); if (reminder) window.open(reminder, '_blank', 'noopener,noreferrer'); }}
+          variant={'secondary'} block={false} className={"min-h-12 px-3 text-[12.5px] disabled:opacity-40"}>{payment('remind')}</Button>}
+        {(segment === 'overdue' || player.pending || frozenAt) && <Button type="button" disabled={pending} onClick={event => { event.stopPropagation(); void action(); }}
+          variant={'secondary'} block={false} className={"min-h-12 px-3 text-[12.5px] disabled:opacity-40"}>{segment === 'overdue' ? payment('received') : t(state.action)}</Button>}
       </div>
     </div>
     {error && <p role="alert" className="px-4 pb-3 text-sm text-danger">{error}</p>}

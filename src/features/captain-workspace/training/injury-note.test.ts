@@ -1,3 +1,4 @@
+import { Button } from '@/ui/button';
 import { createElement, isValidElement } from 'react';
 import type { ReactElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
@@ -48,7 +49,7 @@ it('applies a one-tap swap through the editor operation, preserving prescription
   const tree = InjuryNote({ exerciseId: 'a', injuries: ['shoulder'], candidates,
     onReplace: replacement => { current = replaceInjuryExercise(current, 'day', 'e', replacement); },
   });
-  const button = nodes(tree).find(node => node.type === 'button');
+  const button = nodes(tree).find(node => (node.type === 'button' || node.type === Button));
   if (!button) throw new Error('Missing swap action');
   (button.props.onClick as () => void)();
   expect(current.days[0]?.exercises[0]).toEqual({ ...row, exercise_id: 'b', library: candidates[1]?.library,

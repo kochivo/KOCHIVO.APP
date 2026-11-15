@@ -13,6 +13,7 @@ import { LoadingState } from '@/ui/loading-state';
 import { fetchRadar } from '../data/radar';
 import { radarReasonLabel, radarWhatsappUrl } from '../radar';
 import type { RadarResult } from '../radar';
+import { buttonClass } from '@/ui/button';
 
 export function RadarCard({ today, showEmpty = false }: { today: string; showEmpty?: boolean }) {
   const t = useT(messages);
@@ -54,7 +55,7 @@ export function RadarCard({ today, showEmpty = false }: { today: string; showEmp
               </div>
               {href ? (
                 <a href={href} target="_blank" rel="noopener noreferrer" aria-label={t('message', { v0: player.full_name })}
-                  className={captainWorkspaceEnabled() ? 'glass inline-flex min-h-12 shrink-0 items-center justify-center rounded-full border border-line px-4 text-sm text-ink hover:bg-surface-raised' : 'inline-flex min-h-12 shrink-0 items-center justify-center rounded-control px-4 text-sm text-ink hover:bg-surface-raised'}>{t('message2')}</a>
+                  className={buttonClass({ variant: (captainWorkspaceEnabled()) ? 'secondary' : 'secondary', block: false, className: captainWorkspaceEnabled() ? "inline-flex min-h-12 shrink-0 items-center justify-center px-4 text-sm text-ink hover:bg-surface-raised" : "inline-flex min-h-12 shrink-0 items-center justify-center px-4 text-sm text-ink hover:bg-surface-raised" })}>{t('message2')}</a>
               ) : <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} disabled className="min-h-12 shrink-0" aria-label={t('messageNoPhoneNumber', { v0: player.full_name })}>{t('message2')}</Button>}
             </li>
           );

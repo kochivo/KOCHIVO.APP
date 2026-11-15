@@ -10,6 +10,7 @@ import { editWarmup } from './editor-draft';
 import type { Update } from './editor-draft';
 import { WarmupRow } from './warmup-row';
 import { WarmupLibraryPicker } from './warmup-library-picker';
+import { Button } from '@/ui/button';
 
 export function WarmupBlock({ day, update }: { day: DraftDay; update: Update }) {
   const t = useT(messages), [open, setOpen] = useState(true), [name, setName] = useState('');
@@ -43,15 +44,15 @@ export function WarmupBlock({ day, update }: { day: DraftDay; update: Update }) 
     {open && <div id={`warmup-${day.id}`}>
       <p className="px-[18px] pb-3 text-xs text-faint">{t('warmHint')}</p>
       <div className="flex flex-wrap gap-2 px-[18px] pb-3">{presets.filter(preset => !warmup.items.some(item => item.name === t(preset.key))).map(preset =>
-        <button key={preset.key} disabled={warmup.items.length >= 12} className="min-h-12 rounded-full border border-line-soft px-3 text-xs text-muted disabled:opacity-40" onClick={() => add({ name: t(preset.key), amount: preset.amount, unit: preset.unit, note: 'note' in preset ? preset.note : undefined })}>{t(preset.chip)}</button>)}</div>
+        <Button key={preset.key} disabled={warmup.items.length >= 12} type="submit" variant={'secondary'} block={false} className={"min-h-12 px-3 text-xs text-muted disabled:opacity-40"} onClick={() => add({ name: t(preset.key), amount: preset.amount, unit: preset.unit, note: 'note' in preset ? preset.note : undefined })}>{t(preset.chip)}</Button>)}</div>
       {!warmup.items.length && <p className="px-[18px] pb-3 text-xs text-faint">{t('emptyWarm')}</p>}
       <ol ref={listRef}>{warmup.items.map((item, index) => <WarmupRow key={item.id} item={item} dragProps={handleProps(item.id)} style={rowStyle(index)}
         onChange={next => change(current => ({ ...current, items: current.items.map(row => row.id === item.id ? next : row) }))}
         onRemove={() => change(current => removeWarmupItem(current, item.id))} onMove={delta => change(current => moveWarmupItem(current, item.id, delta))} />)}</ol>
       <form className="flex flex-wrap gap-2 px-[18px] py-3" onSubmit={event => { event.preventDefault(); if (name.trim() && warmup.items.length < 12) { add({ name: name.trim(), amount: 1, unit: 'min' }); setName(''); } }}>
         <input aria-label={t('warmName')} placeholder={t('warmName')} maxLength={60} value={name} onChange={event => setName(event.target.value)} className="min-h-12 min-w-0 flex-1 rounded-control border border-line-soft bg-transparent px-3 text-sm" />
-        <button disabled={!name.trim() || warmup.items.length >= 12} className="min-h-12 rounded-full border border-line-soft px-3 text-xs disabled:opacity-40">{t('addWarm')}</button>
-        <button type="button" aria-expanded={libraryOpen} aria-controls={`warmup-library-${day.id}`} className="min-h-12 rounded-full border border-line-soft px-3 text-xs" onClick={() => setLibraryOpen(value => !value)}>{t('warmFromMine')}</button>
+        <Button disabled={!name.trim() || warmup.items.length >= 12} type="submit" variant={'secondary'} block={false} className={"min-h-12 px-3 text-xs disabled:opacity-40"}>{t('addWarm')}</Button>
+        <Button type="button" aria-expanded={libraryOpen} aria-controls={`warmup-library-${day.id}`} variant={'secondary'} block={false} className={"min-h-12 px-3 text-xs"} onClick={() => setLibraryOpen(value => !value)}>{t('warmFromMine')}</Button>
       </form>
       {libraryOpen && <div id={`warmup-library-${day.id}`}><WarmupLibraryPicker items={warmup.items} onAdd={item => change(current =>
         current.items.length >= 12 || current.items.some(row => row.exerciseId === item.exerciseId) ? current : addWarmupItem(current, item))} /></div>}

@@ -5,6 +5,7 @@ import { messages } from '../messages';
 import { useRef } from 'react';
 import Image from 'next/image';
 import { Maximize2, X } from 'lucide-react';
+import { Button } from '@/ui/button';
 
 // A native dialog gives focus trapping, Escape/back-gesture closing and a top layer above the bottom nav for free.
 export function ExerciseLightbox({ src, name, large = false, thumbnail = false, focus = false }: {
@@ -23,10 +24,10 @@ export function ExerciseLightbox({ src, name, large = false, thumbnail = false, 
     </button>
     <dialog ref={dialog} aria-label={name} onClick={event => { if (event.target === event.currentTarget) close(); }}
       className="m-0 h-dvh max-h-none w-dvw max-w-none bg-bg/80 p-4 text-ink backdrop-blur-md open:flex open:items-center open:justify-center open:animate-[surface-in_200ms_ease-out] motion-reduce:open:animate-none backdrop:bg-transparent">
-      <button type="button" aria-label={t('closeImage')} onClick={close}
-        className="glass absolute end-[max(1rem,var(--safe-end))] top-[max(1rem,var(--safe-top))] grid size-12 place-items-center rounded-full">
+      <Button type="button" aria-label={t('closeImage')} onClick={close}
+        variant={'secondary'} block={false} className={"absolute end-[max(1rem,var(--safe-end))] top-[max(1rem,var(--safe-top))] grid size-12 place-items-center"}>
         <X aria-hidden className="size-6" />
-      </button>
+      </Button>
       <Image src={src} alt={name} width={480} height={480} unoptimized decoding="async"
         className="h-auto max-h-[80vh] w-auto max-w-full rounded-card border border-line object-contain" />
     </dialog>

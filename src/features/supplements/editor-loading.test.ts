@@ -1,3 +1,4 @@
+import { Button } from '@/ui/button';
 import { createElement } from 'react';
 import type * as ReactModule from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
@@ -34,7 +35,7 @@ function button(node: unknown, label: string): (() => void) | undefined {
     return;
   }
   const element = node as { type?: unknown; props?: { children?: unknown; onClick?: () => void } };
-  if (element.type === 'button' && element.props?.children === label) return element.props.onClick;
+  if ((element.type === 'button' || element.type === Button) && element.props?.children === label) return element.props.onClick;
   return button(element.props?.children, label);
 }
 const render = () => {

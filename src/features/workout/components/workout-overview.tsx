@@ -13,6 +13,7 @@ import { messages } from '../messages';
 import { WarmupCard } from './warmup-card';
 import { WorkoutOverviewExercise } from './workout-overview-exercise';
 import { RampLine } from './ramp-line';
+import { Button } from '@/ui/button';
 
 export function WorkoutOverview({ state, progress, onStart, onBack, playerId }: {
   state: ReturnType<typeof useFocusSession>; progress: ReturnType<typeof useWarmupSession>;
@@ -44,8 +45,8 @@ export function WorkoutOverview({ state, progress, onStart, onBack, playerId }: 
     {progress.error && <ErrorState message={t('couldntReadTheWorkoutOnYourPhone')} retryLabel={t('tryAgain')} onRetry={state.retry} />}
     {warmup.ramp && state.current && <RampLine day={day} exercise={state.current.exercise} bodyweight={state.bodyweight} last={state.lastSession} />}
     <div className="fixed inset-x-0 bottom-0 z-20 mx-auto max-w-lg bg-gradient-to-b from-bg/0 to-bg to-35% px-[18px] pt-4 pb-[max(24px,env(safe-area-inset-bottom))]">
-      <button type="button" style={{ fontFamily: 'inherit' }} onClick={onStart} disabled={warmup.items.length > 0 && (progress.loading || progress.error)}
-        className="flex h-16 w-full items-center justify-center gap-2.5 rounded-full bg-lime text-[19px] font-black text-on-lime disabled:opacity-50"><KoPlay aria-hidden className="size-[22px]" />{t('v3Start')}</button>
+      <Button type="button" style={{ fontFamily: 'inherit' }} onClick={onStart} disabled={warmup.items.length > 0 && (progress.loading || progress.error)}
+        variant={'primary'} block={false} className={"flex h-16 w-full items-center justify-center gap-2.5 text-[19px] font-black disabled:opacity-50"}><KoPlay aria-hidden className="size-[22px]" />{t('v3Start')}</Button>
     </div>
   </>;
 }

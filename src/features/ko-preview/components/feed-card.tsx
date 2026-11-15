@@ -11,6 +11,7 @@ import { koFeedMessages as messages } from '@/features/ko-feed';
 import type { KoFeedItem } from '@/features/ko-feed';
 import { decideSwapOptimistically } from '@/features/ko-feed';
 import { refreshFeed } from '@/features/ko-feed';
+import { buttonClass } from '@/ui/button';
 
 function exerciseName(value: unknown, locale: string): string {
   if (!value || typeof value !== 'object') return '';
@@ -87,18 +88,18 @@ export function FeedCard({ item, onDismiss, primary = true }: { item: KoFeedItem
       })}</p>
       <div className="flex gap-2">
         {captainWorkspaceEnabled() ? <Button variant={primary ? 'primary' : 'secondary'} disabled={busy} onClick={() => void decide(true)} className="min-h-12 flex-1">{t('approve')}</Button>
-          : <button type="button" disabled={busy} onClick={() => void decide(true)} className="min-h-12 flex-1 rounded-control bg-lime text-on-lime disabled:opacity-50">{t('approve')}</button>}
-        <button type="button" disabled={busy} onClick={() => void decide(false)} className="min-h-12 flex-1 rounded-control border border-line disabled:opacity-50">{t('decline')}</button>
+          : <Button type="button" disabled={busy} onClick={() => void decide(true)} variant={'primary'} block={false} className={"min-h-12 flex-1 disabled:opacity-50"}>{t('approve')}</Button>}
+        <Button type="button" disabled={busy} onClick={() => void decide(false)} variant={'secondary'} block={false} className={"min-h-12 flex-1 disabled:opacity-50"}>{t('decline')}</Button>
       </div>
       {error && <p role="alert" className="text-sm text-danger">{t('swapError')}</p>}
     </div>}
-    {!swap && (href ? <Link href={href} className="mt-2 flex min-h-12 items-center justify-center rounded-control border border-line text-sm text-lime-ink">{t('action')}</Link>
-      : !review && <button type="button" onClick={() => setReview(true)} className="mt-2 min-h-12 w-full rounded-control border border-line text-sm text-lime-ink">{t('preview')}</button>)}
+    {!swap && (href ? <Link href={href} className={buttonClass({ variant: 'secondary', block: false, className: "mt-2 flex min-h-12 items-center justify-center text-sm text-lime-ink" })}>{t('action')}</Link>
+      : !review && <Button type="button" onClick={() => setReview(true)} variant={'secondary'} block={false} className={"mt-2 min-h-12 w-full text-sm text-lime-ink"}>{t('preview')}</Button>)}
     {review && <form onSubmit={event => { event.preventDefault(); void preview(Boolean(reply?.token)); }} className="mt-2 space-y-2">
       {renewal && !reply && <label className="block text-sm">{t('days')}<input type="number" min={1} max={365} required value={days} onChange={event => setDays(event.target.value)} className="mt-1 min-h-12 w-full rounded-control border border-line bg-bg px-3" /></label>}
       {reply && <p className="whitespace-pre-wrap text-sm" role="status">{reply.text}</p>}
-      {reply && <button type="button" disabled={busy} onClick={() => { setReply(null); setError(false); }} className="min-h-12 w-full rounded-control border border-line text-lime-ink disabled:opacity-50">{t('restart')}</button>}
-      {(!reply || reply.token || error) && <button disabled={busy} className="min-h-12 w-full rounded-control border border-line text-lime-ink disabled:opacity-50">{t(busy ? 'loading' : reply?.token ? 'confirm' : 'preview')}</button>}
+      {reply && <Button type="button" disabled={busy} onClick={() => { setReply(null); setError(false); }} variant={'secondary'} block={false} className={"min-h-12 w-full text-lime-ink disabled:opacity-50"}>{t('restart')}</Button>}
+      {(!reply || reply.token || error) && <Button disabled={busy} type="submit" variant={'secondary'} block={false} className={"min-h-12 w-full text-lime-ink disabled:opacity-50"}>{t(busy ? 'loading' : reply?.token ? 'confirm' : 'preview')}</Button>}
       {error && <p role="alert" className="text-sm text-danger">{t('error')}</p>}
     </form>}
   </article>;

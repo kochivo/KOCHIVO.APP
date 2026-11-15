@@ -11,6 +11,7 @@ import { useNotifications } from '../hooks/use-notifications';
 import { notificationTextKey, relativeTime } from '../format';
 import { captainNotification } from './captain-notification-format';
 import { CaptainNotificationsStateEntry } from './captain-notifications-state-entry';
+import { Button } from '@/ui/button';
 
 export function CaptainNotificationsEntry() {
   const t = useT(messages);
@@ -21,10 +22,10 @@ export function CaptainNotificationsEntry() {
   return <>
     <PageBarTitle title={t('title')} />
     <PageBarActions>
-      <button type="button" disabled={n.pending || n.count === 0} onClick={() => void n.read()}
-        className="glass hidden min-h-12 rounded-full px-4 text-xs font-semibold disabled:opacity-50 md:inline-flex md:items-center">
+      <Button type="button" disabled={n.pending || n.count === 0} onClick={() => void n.read()}
+        variant={'secondary'} block={false} className={"hidden min-h-12 px-4 text-xs font-semibold disabled:opacity-50 md:inline-flex md:items-center"}>
         {t('workspaceMarkAll')}
-      </button>
+      </Button>
     </PageBarActions>
     {n.saveError && <p role="alert" className="mb-3 text-sm text-danger">{t('saveError')}</p>}
     <section className="glass rounded-[18px] p-3.5">

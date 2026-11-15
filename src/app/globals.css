@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import './surfaces.css';
+@import './controls.css';
 [dir='ltr'] .dir-icon { transform: scaleX(-1); }
 /* KOCHIVO design tokens — colors come from brand/tokens/palette.css (2026-10-26); use utilities, never raw hex in components. */
 @theme {
@@ -47,6 +48,14 @@
   --color-sore: #f5ac78;
   --color-ember: #c8936f;
   --color-lime: #b6e94f;
+  --color-lime-top: #cdf56f;
+  --color-lime-bottom: #a9e03c;
+  --color-control-top: rgb(255 255 255 / .09);
+  --color-control-bottom: rgb(255 255 255 / .04);
+  --color-control-border: rgb(255 255 255 / .13);
+  --color-control-highlight: rgb(255 255 255 / .1);
+  --color-control-hover: rgb(255 255 255 / .1);
+  --shadow-control-primary: inset 0 1px 0 rgb(255 255 255 / .55), inset 0 -2px 0 rgb(0 0 0 / .12), 0 6px 20px -4px rgb(182 233 79 / .45);
   --color-lime-ink: #b6e94f;
   --color-bg-deep: #070808;
   --color-surface-raised: #1c1c1c;

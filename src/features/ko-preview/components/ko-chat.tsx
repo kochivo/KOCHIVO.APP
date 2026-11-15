@@ -21,6 +21,7 @@ import { messages } from '../messages';
 import type { KoExpression, KoRole } from '../policy';
 import type { KoReply } from '@/features/ko-core';
 import type { AccountReply } from '@/features/ko-core';
+import { Button } from '@/ui/button';
 
 type Entry = { speaker: 'user' | 'ko'; text: string; contextText?: string };
 
@@ -139,12 +140,12 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
       {busy && <KoTyping />}
     </div>
     {suggestionsFor(role, context, sent).length > 0 && <div className="flex flex-wrap gap-2 px-4 pb-3" role="group" aria-label={t('suggestions')}>
-      {suggestionsFor(role, context, sent).map(key => <button key={key} type="button" disabled={busy || recorder.status !== 'idle' || (key === 'suggest.player' && !contextName)}
-        className="min-h-12 rounded-chip border border-line px-3 text-start text-sm text-lime-ink disabled:opacity-50"
+      {suggestionsFor(role, context, sent).map(key => <Button key={key} type="button" disabled={busy || recorder.status !== 'idle' || (key === 'suggest.player' && !contextName)}
+        variant={'secondary'} block={false} className={"min-h-12 rounded-chip px-3 text-start text-sm text-lime-ink disabled:opacity-50"}
         onClick={() => {
           if (key === 'suggest.today') { setShowFeed(account); setSent(true); return; }
           void submit(undefined, t(key, { name: contextName }));
-        }}>{t(key, { name: contextName || t('context.player') })}</button>)}
+        }}>{t(key, { name: contextName || t('context.player') })}</Button>)}
     </div>}
     <form onSubmit={submit} className="border-t border-line p-3">
       {account && role === 'player' && <input ref={camera} type="file" className="hidden" accept="image/jpeg,image/png,image/webp"
@@ -169,17 +170,17 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
         </div> : <input dir="auto" value={draft} maxLength={koMaxText} onChange={event => setDraft(event.target.value)}
           aria-label={t('chatInput')} placeholder={t(recording ? 'voiceRecording' : 'chatInput')} disabled={busy || recorder.status !== 'idle'}
           className="min-h-12 min-w-0 flex-1 rounded-full border border-line bg-bg px-4 text-base outline-offset-2 placeholder:text-muted" />}
-        {account && role === 'player' && !clip && !photo && <button type="button" disabled={busy || recorder.status !== 'idle'}
+        {account && role === 'player' && !clip && !photo && <Button type="button" disabled={busy || recorder.status !== 'idle'}
           aria-label={t('mealPhoto')} onClick={() => camera.current?.click()}
-          className="grid min-h-12 min-w-12 place-items-center rounded-control border border-line text-lime-ink disabled:opacity-50"><Camera aria-hidden className="size-5" /></button>}
+          variant={'secondary'} block={false} className={"grid min-h-12 min-w-12 place-items-center text-lime-ink disabled:opacity-50"}><Camera aria-hidden className="size-5" /></Button>}
         {!clip && !photo && <button type="button" disabled={busy || recorder.status === 'starting' || Boolean(draft.trim())}
           onClick={() => { setError(''); if (recording) recorder.stop(); else void recorder.start(); }}
           aria-label={t(recording ? 'stopVoice' : 'recordVoice')} aria-pressed={recording}
           className="grid min-h-12 min-w-12 place-items-center rounded-control border border-line text-lime-ink disabled:opacity-50">
           {recording ? <Square aria-hidden className="size-4" /> : <Mic aria-hidden className="size-5" />}
         </button>}
-        <button type="submit" aria-label={t('chatSend')} disabled={busy || recorder.status !== 'idle' || (!clip && !photo && !draft.trim())}
-          className={`grid min-h-12 min-w-12 place-items-center rounded-full disabled:opacity-50 ${captainWorkspaceEnabled() ? 'glass border border-line text-muted' : approval ? 'border border-line text-muted' : 'bg-lime text-on-lime'}`}><ArrowUp aria-hidden className="size-5" /></button>
+        <Button type="submit" aria-label={t('chatSend')} disabled={busy || recorder.status !== 'idle' || (!clip && !photo && !draft.trim())}
+          variant={(captainWorkspaceEnabled()) ? 'secondary' : (approval) ? 'secondary' : 'primary'} block={false} className={`grid min-h-12 min-w-12 place-items-center disabled:opacity-50 ${captainWorkspaceEnabled() ? "text-muted" : approval ? "text-muted" : ""} `}><ArrowUp aria-hidden className="size-5" /></Button>
       </div>
       {error && <p role="alert" className="mt-2 text-xs text-muted">{error}</p>}
       <p className="mt-2 text-xs text-muted">{t(account ? 'accountPrivacy' : 'chatPrivacy')}</p>

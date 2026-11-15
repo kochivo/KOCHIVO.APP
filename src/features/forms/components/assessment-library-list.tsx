@@ -12,6 +12,7 @@ import { formCopy } from '../form-copy';
 import { messages as assessmentMessages } from '../assessments/messages';
 import { TemplateLinkEntry } from './template-link-entry';
 import { questionCaption } from '../question-caption';
+import { buttonClass } from '@/ui/button';
 
 export function AssessmentLibraryList({ data, locale, style }: { data: AssessmentLibraryData; locale: Locale; selected?: string; style?: ArabicStyle }) {
   const PlusIcon = captainWorkspaceEnabled() ? KoPlus : Plus;
@@ -51,8 +52,8 @@ export function AssessmentLibraryList({ data, locale, style }: { data: Assessmen
             <div className="relative z-10 -my-[17px] ms-auto">
               <IconButton aria-label={t('menu')} popoverTarget={`assessment-menu-${f.id}`}><Ellipsis aria-hidden className="size-5" /></IconButton>
               <div id={`assessment-menu-${f.id}`} popover="auto" className="glass-strong fixed m-0 min-w-40 rounded-control border border-line p-2 [inset:auto] [position-area:block-end_span-inline-start]">
-                <Link href={`${base}?edit=${f.id}`} prefetch={false} className="glass flex min-h-12 items-center rounded-full border border-line px-3 hover:bg-ink/10">{t('edit')}</Link>
-                <Link href={`${base}?edit=${f.id}#schedules`} prefetch={false} className="glass mt-1 flex min-h-12 items-center rounded-full border border-line px-3 hover:bg-ink/10">{t('schedule')}</Link>
+                <Link href={`${base}?edit=${f.id}`} prefetch={false} className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-12 items-center px-3" })}>{t('edit')}</Link>
+                <Link href={`${base}?edit=${f.id}#schedules`} prefetch={false} className={buttonClass({ variant: 'secondary', block: false, className: "mt-1 flex min-h-12 items-center px-3" })}>{t('schedule')}</Link>
               </div>
             </div>
           </footer>

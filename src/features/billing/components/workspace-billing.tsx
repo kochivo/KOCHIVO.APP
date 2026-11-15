@@ -20,6 +20,7 @@ import type { BillingResult } from '../types';
 import { expiringSoon, subscriptionTiles } from './workspace-billing-summary';
 import { WorkspaceBillingTiles } from './workspace-billing-tiles';
 import { WorkspacePaymentsTable } from './workspace-payments-table';
+import { buttonClass, Button } from '@/ui/button';
 const CaptainReceipts = dynamic(() => import('../receipts/captain-receipts').then(module => module.CaptainReceipts));
 
 export function WorkspaceBilling({ data, today, moneyOwed }: { data: Promise<BillingResult>; today: string; moneyOwed?: ReactNode }) {
@@ -52,7 +53,7 @@ export function WorkspaceBilling({ data, today, moneyOwed }: { data: Promise<Bil
   return <section id="billing-heading" tabIndex={-1} className="space-y-[18px]" aria-busy={busy || refreshing}>
     <PageBarTitle title={t('title')} />
     <PageBarActions>
-      <Link href="/captain/billing/packages" className="glass inline-flex min-h-12 items-center rounded-full border border-line px-4 text-[13px]">{t('catalog')}</Link>
+      <Link href="/captain/billing/packages" className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-4 text-[13px]" })}>{t('catalog')}</Link>
     </PageBarActions>
     <WorkspaceBillingTiles values={{ ...values, pending: rows ? rows.length : null }} />
     {moneyOwed}
@@ -67,7 +68,7 @@ export function WorkspaceBilling({ data, today, moneyOwed }: { data: Promise<Bil
           : !rows ? <LoadingState variant="detail" /> : rows.length ? <ul>{rows.map(row => <li key={row.id} className="flex items-center gap-2 border-t border-line-soft py-3 first:border-0">
             <span aria-hidden className="grid size-10 shrink-0 place-items-center rounded-full bg-surface-raised">{row.name.slice(0, 1)}</span>
             <div className="min-w-0 flex-1"><b className="block break-words text-sm">{row.name}</b><small className="text-xs text-muted">{t('renewalRequest', { package: row.package })}</small></div>
-            <button disabled={busy} onClick={() => void confirm(row.id, row.name)} className="min-h-12 shrink-0 rounded-full bg-lime px-4 text-sm font-semibold text-on-lime disabled:opacity-50">{t('confirm')}</button>
+            <Button disabled={busy} onClick={() => void confirm(row.id, row.name)} type="submit" variant={'primary'} block={false} className={"min-h-12 shrink-0 px-4 text-sm font-semibold disabled:opacity-50"}>{t('confirm')}</Button>
           </li>)}</ul> : <p className="py-3 text-sm text-faint">{t('noRequests')}</p>}
       </section>
       <section className="glass min-w-0 rounded-card border border-line-soft p-[18px]">
@@ -77,7 +78,7 @@ export function WorkspaceBilling({ data, today, moneyOwed }: { data: Promise<Bil
           return <li key={player.playerId} className="flex items-center gap-2 border-t border-line-soft py-3 first:border-0">
             <span aria-hidden className="grid size-10 shrink-0 place-items-center rounded-full bg-surface-raised">{player.fullName.slice(0, 1)}</span>
             <div className="min-w-0 flex-1"><b className="block break-words text-sm">{player.fullName}</b><small className="text-xs text-muted">{t('after', { n: daysBetween(today, player.accessUntil) })}</small></div>
-            <button disabled={!reminder} onClick={() => { if (reminder) window.open(reminder, '_blank', 'noopener,noreferrer'); }} className="glass min-h-12 shrink-0 rounded-full border border-line px-4 text-sm disabled:opacity-40">{legacy('remind')}</button>
+            <Button disabled={!reminder} onClick={() => { if (reminder) window.open(reminder, '_blank', 'noopener,noreferrer'); }} type="submit" variant={'secondary'} block={false} className={"min-h-12 shrink-0 px-4 text-sm disabled:opacity-40"}>{legacy('remind')}</Button>
           </li>;
         })}</ul> : <p className="py-3 text-sm text-faint">{t('noExpiring')}</p>}
       </section>

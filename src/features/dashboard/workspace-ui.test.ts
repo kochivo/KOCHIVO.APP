@@ -16,6 +16,6 @@ it('renders each task once with only the first primary action', async () => {
   expect(html).toContain('ابدأ المراجعة');
   expect(html).toContain('Ali مالوش نظام أكل');
   expect(html).toContain('اعمل نظام');
-  expect(html.match(/bg-lime /g)).toHaveLength(1);
+  expect(html.match(/control-primary /g)).toHaveLength(1);
   expect(html.match(/<a /g)).toHaveLength(3);
 });

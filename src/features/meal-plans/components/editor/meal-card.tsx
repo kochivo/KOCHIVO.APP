@@ -16,6 +16,8 @@ import { FoodRow } from './food-row';
 import { FoodSearch } from './food-search';
 import { messages } from './workspace/messages';
 import { messages as planMessages } from '../../messages';
+import { useToast } from '@/ui/toast';
+import { messages as successMessages } from '../../success/messages';
 
 const MealEditor = dynamic(() => import('../meal-editor').then(module => module.MealEditor));
 
@@ -27,6 +29,7 @@ export function MealCard({ meal, update, facts, day, first, last, editableName =
   const t = useT(messages);
   const planT = useT(planMessages);
   const locale = useLocale();
+  const success = useT(successMessages), toast = useToast();
   const [details, setDetails] = useState(false);
   const { totals, incomplete } = nutritionTotals([meal]);
   return <section className="glass mb-3 min-w-0 rounded-card border border-line-soft">
@@ -41,7 +44,10 @@ export function MealCard({ meal, update, facts, day, first, last, editableName =
     </div>
     {!meal.items.length && <p className="px-[18px] pb-3 text-xs text-faint">{planT('addTheFirstFood')}</p>}
     <ul className="@container">{meal.items.map(item => <FoodRow key={item.id} item={item} update={update} />)}</ul>
-    <FoodSearch meal={meal.name} onPick={(food, grams) => update(draft => addItem(draft, meal.id, food, grams, uuidv7(), planT))} />
+    <FoodSearch meal={meal.name} onPick={(food, grams) => {
+      update(draft => addItem(draft, meal.id, food, grams, uuidv7(), planT));
+      toast.success({ title: success('added'), detail: success('foodDetail', { name: locale === 'en' ? food.nameEn || food.name : food.name, grams: formatNumber(grams, locale) }), icon: 'meal' });
+    }} />
     {details && <MealEditor meal={meal} update={update} facts={facts} enhanced day={day} first={first} last={last} hideAdd />}
   </section>;
 }

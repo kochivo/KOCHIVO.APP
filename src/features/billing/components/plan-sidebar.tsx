@@ -6,6 +6,7 @@ import { messages } from '../messages';
 import type { PlanSummary } from '../data/plan-summary';
 import { PlanBadgeError } from './plan-badge-error';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { buttonClass } from '@/ui/button';
 
 export async function PlanSidebar({ data }: { data: Promise<[PlanSummary | null, Locale]> }) {
   const [summary, locale] = await data;
@@ -17,7 +18,7 @@ export async function PlanSidebar({ data }: { data: Promise<[PlanSummary | null,
   const full = used >= plan.player_limit;
   const usage = t('usage', { used: formatNumber(used, locale), n: plan.player_limit, count: formatNumber(plan.player_limit, locale) });
   const percent = plan.player_limit > 0 ? Math.min(100, Math.max(0, used / plan.player_limit * 100)) : 100;
-  if (captainWorkspaceEnabled()) return <Link href="/captain/settings" className="glass block min-h-12 rounded-full border border-line px-4 py-3 text-xs hover:bg-ink/10">
+  if (captainWorkspaceEnabled()) return <Link href="/captain/settings" className={buttonClass({ variant: 'secondary', block: false, className: "block min-h-12 px-4 py-3 text-xs" })}>
     {tier}<span aria-hidden> · </span>{usage}
   </Link>;
   return <Link href="/captain/billing" className="block min-h-12 min-w-0 space-y-2 rounded-control px-3 py-2 text-sm">

@@ -15,10 +15,13 @@ import { filterTasks, taskCounts, taskTabs } from './tasks-model';
 import type { CaptainTask, TaskFilter } from './tasks-model';
 import { TaskRow } from './task-row';
 import { TasksState } from './tasks-state';
+import { useToast } from '@/ui/toast';
+import { messages as successMessages } from '../success/messages';
 const Detail = dynamic(() => import('./task-detail').then(module => module.TaskDetail));
 const Review = dynamic(() => import('./review-dialog').then(module => module.ReviewDialog));
 export function TasksScreen() {
   const t = useT(taskMessages), locale = useLocale(), router = useRouter();
+  const success = useT(successMessages), toast = useToast();
   const loader = useCallback(() => loadTasks(), []);
   const resource = useResource(`captain-tasks:${locale}`, loader);
   const [filter, setFilter] = useState<TaskFilter>('all');
@@ -58,7 +61,10 @@ export function TasksScreen() {
   }
   async function send(body: string, voice?: Pick<VoiceInput, 'blob' | 'mimeType' | 'durationSeconds' | 'id'>) {
     if (!selected || !data) return false;
-    return complete(selected, () => replyToTask(selected, data.captainId, body, voice));
+    const task = selected;
+    const ok = await complete(task, () => replyToTask(task, data.captainId, body, voice));
+    if (ok) toast.success({ title: success('replyNamed', { name: task.name }), detail: success('name', { name: task.item?.kind === 'form' ? task.item.exercise_name : t('checkinTag') }), icon: task.kind === 'video' || task.kind === 'checkin' ? 'form' : 'message' });
+    return ok;
   }
   return <div id="queue-heading" tabIndex={-1} className="space-y-4">
     <PageBarTitle title={t('title')} subtitle={t('subtitle')} />

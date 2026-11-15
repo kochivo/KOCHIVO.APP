@@ -125,7 +125,7 @@ describe('UI primitives', () => {
       createElement(Chip, { pressed: true })]) {
       expect(renderToStaticMarkup(component)).toMatch(/class="[^"]*\bpress\b/);
     }
-    expect(renderToStaticMarkup(createElement(Button))).toContain('glow');
+    expect(renderToStaticMarkup(createElement(Button))).toContain('control-primary');
     expect(renderToStaticMarkup(createElement(Button, { variant: 'secondary' }))).not.toContain('glow');
     expect(renderToStaticMarkup(createElement(Chip, { pressed: true }))).not.toContain('glow');
     expect(renderToStaticMarkup(createElement(Chip, { pressed: false }))).not.toContain('glow');

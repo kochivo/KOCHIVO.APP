@@ -7,6 +7,7 @@ import { whatsappUrl } from '@/lib/whatsapp';
 import type { NeedRow } from './model';
 import { homeMessages } from './messages';
 import { homeAge } from './age';
+import { buttonClass } from '@/ui/button';
 
 export async function HomeNeeds({ rows, now, failed, contacts }: { rows: NeedRow[]; now: Date; failed: boolean; contacts: Map<string, string> }) {
   const [t, locale] = await Promise.all([getT(homeMessages), getLocale()]);
@@ -14,7 +15,7 @@ export async function HomeNeeds({ rows, now, failed, contacts }: { rows: NeedRow
   return <section className="glass overflow-hidden rounded-card border border-line-soft">
     <header className="flex flex-wrap items-center gap-2.5 px-5 pb-1.5 pt-[18px]">
       <h2 className="min-w-0 flex-1 font-display text-[19px] font-semibold">{t('needs')}</h2>
-      <Link href="/captain/inbox" className="inline-flex min-h-12 items-center justify-center rounded-full border border-line px-3.5 text-[12.5px]">{t('followup')}</Link>
+      <Link href="/captain/inbox" className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center justify-center px-3.5 text-[12.5px]" })}>{t('followup')}</Link>
     </header>
     {failed ? <p className="p-5 text-sm text-faint">{t('failed')}</p> : rows.length === 0 && <p className="p-5 text-sm text-faint">{t('allClear')}</p>}
     <ul className="divide-y divide-line-soft">{rows.map(row => {
@@ -34,7 +35,7 @@ export async function HomeNeeds({ rows, now, failed, contacts }: { rows: NeedRow
       return <li key={row.id} className={rowClass}>{content}
         <a href={href ?? `/captain/players/${row.playerId}`} target={href ? '_blank' : undefined} rel={href ? 'noopener noreferrer' : undefined}
           aria-label={href ? t('messageName', { name: row.name }) : t('noPhone', { name: row.name })}
-          className="inline-flex min-h-12 shrink-0 items-center justify-center rounded-full border border-line px-3.5 text-[12.5px]">{t('message')}</a>
+          className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 shrink-0 items-center justify-center px-3.5 text-[12.5px]" })}>{t('message')}</a>
       </li>;
     })}</ul>
   </section>;

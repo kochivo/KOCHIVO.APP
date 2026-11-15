@@ -10,6 +10,7 @@ import { messages, workspaceMessages } from '../messages';
 import { messages as paymentMessages } from '../payments/messages';
 import type { BillingPlayer, Package } from '../types';
 import { messages as methodMessages } from '../methods/messages';
+import { Button } from '@/ui/button';
 
 const Detail = dynamic(() => import('./workspace-player-detail').then(module => module.WorkspacePlayerDetail), { loading: () => <LoadingState variant="detail" /> });
 const Picker = dynamic(() => import('./payment-player-picker').then(module => module.PaymentPlayerPicker), { loading: () => <LoadingState variant="detail" /> });
@@ -24,7 +25,7 @@ export function WorkspacePaymentsTable({ players, packages, today }: { players: 
   const paid = players.filter(player => player.lastPayment).sort((a, b) => (b.lastPayment?.created_at ?? '').localeCompare(a.lastPayment?.created_at ?? ''));
   return <section className="glass min-w-0 rounded-card border border-line-soft p-[18px]">
     <header className="mb-3 flex items-center justify-between gap-3"><h2 className="font-semibold">{t('all')}</h2>
-      {players.length > 0 && <button onClick={() => setPicking(true)} className="glass min-h-12 rounded-full border border-line px-4 text-sm">{payment('record')}</button>}</header>
+      {players.length > 0 && <Button onClick={() => setPicking(true)} type="submit" variant={'secondary'} block={false} className={"min-h-12 px-4 text-sm"}>{payment('record')}</Button>}</header>
     {paid.length ? <table className="w-full text-start text-[13px]"><caption className="pb-3 text-start text-xs text-faint">{t('latest')}</caption><thead><tr className="text-xs text-faint">
       <th className="py-3 text-start font-normal">{t('player')}</th><th className="py-3 text-start font-normal">{t('amount')}</th>
       <th className="py-3 text-start font-normal">{methodT('method')}</th>

@@ -46,7 +46,7 @@ it('renders real player data, weekly dots and the urgent status in both responsi
 it('puts the total and lime invite action in the shared bar without a page header', () => {
   const html = render();
   expect(html).toMatch(/data-slot="title"[^>]*><h1[^>]*>اللاعبين 1<\/h1>/);
-  expect(html).toMatch(/data-slot="actions"[^>]*><a[^>]*bg-lime[^>]*href="\/captain\/players\/new"/);
+  expect(html).toMatch(/data-slot="actions"[^>]*><a[^>]*control-primary[^>]*href="\/captain\/players\/new"/);
   expect(html).toContain('ضيف لاعب');
   expect(html).not.toContain('<header');
 });

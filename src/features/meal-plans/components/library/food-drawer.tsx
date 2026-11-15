@@ -17,6 +17,7 @@ import { kcalMismatch } from '../../food-library-rules';
 import { messages as foodMessages } from '../../messages';
 import { messages } from './messages';
 import { FoodUnits } from './food-units';
+import { buttonClass } from '@/ui/button';
 
 export function FoodDrawer({ food, onClose, onSaved, onMutation }: {
   food: LibraryFood | null; onClose: () => void; onSaved: (food?: Food, optimisticId?: string) => void;
@@ -75,7 +76,7 @@ export function FoodDrawer({ food, onClose, onSaved, onMutation }: {
       {kcalMismatch(food) && <p role="status" className="text-warn">{t('mismatch')}</p>}
       {error && <p role="alert" className="text-danger">{error}</p>}
       {busy && <p role="status">{t('saving')}</p>}
-      {!busy && <Link onClick={onClose} className="flex min-h-12 items-center justify-center rounded-control bg-lime px-4 font-bold text-on-lime"
+      {!busy && <Link onClick={onClose} className={buttonClass({ variant: 'primary', block: false, className: "flex min-h-12 items-center justify-center px-4 font-bold" })}
         href={id ? `${base}/${id}/edit` : `${base}/new?copyFrom=${food.id}`}>{id ? foodT('editFood') : t('copy')}</Link>}
       {id && <>
         {uses > 0 && <p className="text-muted">{t('blocked', { count: uses })}</p>}

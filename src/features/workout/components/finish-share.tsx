@@ -7,6 +7,7 @@ import { ranksEnabled } from '@/lib/ranks-enabled';
 import { messages } from '../finish-messages';
 import { messages as workoutMessages } from '../messages';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { Button } from '@/ui/button';
 
 export function FinishShare() {
   const t = useT(messages);
@@ -30,10 +31,10 @@ export function FinishShare() {
     } catch (cause) { if (!(cause instanceof Error && cause.name === 'AbortError')) setError(true); }
     finally { setBusy(false); }
   }
-  if (!ranksEnabled()) return v3 ? <button type="button" disabled className="min-h-[52px] w-full rounded-full border border-line-soft text-sm font-bold text-muted">{wt('v3Share')} · {wt('v3Soon')}</button> : null;
-  return <div className="space-y-2"><button type="button" disabled={busy} onClick={() => void share()}
-    className="flex min-h-[52px] w-full items-center justify-center gap-2 rounded-full border border-line-soft px-5 text-sm font-bold">
-    {!v3 && <Share2 aria-hidden className="size-5" />}{v3 ? wt('v3Share') : t('share')}</button>
+  if (!ranksEnabled()) return v3 ? <Button type="button" disabled variant={'secondary'} block={false} className={"min-h-[52px] w-full text-sm font-bold text-muted"}>{wt('v3Share')} · {wt('v3Soon')}</Button> : null;
+  return <div className="space-y-2"><Button type="button" disabled={busy} onClick={() => void share()}
+    variant={'secondary'} block={false} className={"flex min-h-[52px] w-full items-center justify-center gap-2 px-5 text-sm font-bold"}>
+    {!v3 && <Share2 aria-hidden className="size-5" />}{v3 ? wt('v3Share') : t('share')}</Button>
     {error && <p role="alert" className="text-sm text-danger">{t('shareError')}</p>}
   </div>;
 }

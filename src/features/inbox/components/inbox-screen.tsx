@@ -8,7 +8,7 @@ import { CheckCheck, History, ListFilter, X } from 'lucide-react';
 import { EmptyState } from '@/ui';
 import { LoadingState } from '@/ui/loading-state';
 import { useToast } from '@/ui/toast';
-import { messages as uiMessages } from '@/ui/messages';
+import { messages as successMessages } from '../success/messages';
 import { ResponsiveDialog } from '@/ui/responsive-dialog';
 import { listInbox, reviewItem } from '../data/inbox';
 import type { InboxItem } from '../types';
@@ -27,7 +27,7 @@ import { FlagChip } from './flag-chip';
 const currentTime = () => new Date();
 export function InboxScreen({ now: clock = currentTime }: { now?: () => Date } = {}) {
   const t = useT(messages);
-  const feedback = useT(uiMessages);
+  const success = useT(successMessages);
   const toast = useToast();
   const locale = useLocale();
   const [status, setStatus] = useState<'open' | 'reviewed'>('open');
@@ -130,7 +130,7 @@ export function InboxScreen({ now: clock = currentTime }: { now?: () => Date } =
         setCaughtUp(!next);
       }
       setDrafts(current => { const next = { ...current }; delete next[key]; return next; });
-      toast.success(feedback('reviewSent'));
+      toast.success({ title: success('replySent', { name: item.player_name }), detail: success('name', { name: item.kind === 'form' ? item.exercise_name : t('checkin') }), icon: 'form' });
     } catch {
       markReview(key, null);
       setDrafts(current => ({ ...current, [key]: reply }));

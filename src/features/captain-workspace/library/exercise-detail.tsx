@@ -16,6 +16,8 @@ import { messages as workspaceMessages } from '../messages';
 import { exerciseLabel } from '../exercise-label';
 import { exerciseTitle } from './exercise-card';
 import { messages } from './messages';
+import { Button } from '@/ui/button';
+import { buttonClass } from '@/ui/button';
 
 const AddToProgram = dynamic(() => import('./exercise-program-picker').then(module => module.ExerciseProgramPicker), {
   loading: () => <LoadingState variant="detail" />,
@@ -35,13 +37,13 @@ export function ExerciseDetail({ exercise, onClose }: { exercise: LibraryExercis
       <button type="button" onClick={onClose} aria-label={detail('back')} className="grid min-h-12 min-w-12 place-items-center rounded-full"><ArrowRight aria-hidden className="size-4 rtl:rotate-0 ltr:rotate-180" /></button>
       <div><h2 className="text-[15px] font-semibold"><bdi>{exerciseTitle(exercise)}</bdi></h2>
         <p dir="ltr" className="text-start text-xs text-muted">{exercise.name_en}</p></div>
-      <button type="button" onClick={() => setAdding(true)} className="glass ms-auto inline-flex min-h-12 items-center gap-2 rounded-full px-4 text-sm"><KoPlus aria-hidden className="size-4" />{detail('add')}</button>
+      <Button type="button" onClick={() => setAdding(true)} variant={'secondary'} block={false} className={"ms-auto inline-flex min-h-12 items-center gap-2 px-4 text-sm"}><KoPlus aria-hidden className="size-4" />{detail('add')}</Button>
     </header>
     <div className="grid items-start gap-3 min-[760px]:grid-cols-2">
       <div className="glass space-y-3 rounded-card border border-line-soft p-3.5">
         {exercise.media_path ? <ExerciseImage src={exerciseMediaUrl(exercise.media_path)} alt="" width={480} height={480} fullWidth className="bg-exercise-media" /> :
           <p className="glass-strong flex aspect-square items-center justify-center rounded-card p-5 text-muted">{t('noMedia')}</p>}
-        {video && <a href={video} target="_blank" rel="noreferrer" className="inline-flex min-h-12 items-center gap-2 rounded-full border border-line px-4 text-sm"><LinkIcon aria-hidden className="size-4" />{detail('video')}</a>}
+        {video && <a href={video} target="_blank" rel="noreferrer" className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center gap-2 px-4 text-sm" })}><LinkIcon aria-hidden className="size-4" />{detail('video')}</a>}
       </div>
       <div className="space-y-3">
         <section className="glass rounded-card border border-line-soft p-3.5">
@@ -54,7 +56,7 @@ export function ExerciseDetail({ exercise, onClose }: { exercise: LibraryExercis
         </dl></section>
         <section className="glass rounded-card border border-line-soft p-3.5">
           <div className="flex items-center justify-between gap-3"><h3 className="text-sm font-semibold">{t('instructions')}</h3>
-            {exercise.is_own && <Link href={`/captain/library/exercises/${exercise.id}/edit`} className="inline-flex min-h-12 items-center rounded-full border border-line px-4">{t('edit')}</Link>}</div>
+            {exercise.is_own && <Link href={`/captain/library/exercises/${exercise.id}/edit`} className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-4" })}>{t('edit')}</Link>}</div>
           {instructions.length ? <ol className="list-decimal ps-5 text-[13px] leading-loose text-muted">{instructions.map((step, index) => <li key={index}>{step}</li>)}</ol> :
             <p className="text-sm text-muted">{t('missing')}</p>}
         </section>

@@ -6,6 +6,7 @@ import { applyDecision } from '../data/decisions';
 import { reducedSets, suggestDecision } from '../score';
 import type { Decision } from '../score';
 import { messages } from '../messages';
+import { Button } from '@/ui/button';
 
 export function DecisionCard({ playerId, score, exercises, applied, onApplied }: {
   playerId: string; score: number | null; exercises: { sets: number }[]; applied?: Decision;
@@ -39,7 +40,7 @@ export function DecisionCard({ playerId, score, exercises, applied, onApplied }:
         className={`min-h-12 rounded-control border border-line px-3 ${selected === decision ? 'bg-lime text-on-lime' : 'text-muted'}`}>{t(decision)}</button>)}
     </div>
     {selected !== suggestion && <p className="text-muted">{t('sets', { original, suggested: setsFor(selected) })}</p>}
-    <button type="button" disabled={busy} onClick={() => void apply()} className="min-h-12 w-full rounded-control bg-lime px-4 font-bold text-on-lime">{t('apply')}</button>
+    <Button type="button" disabled={busy} onClick={() => void apply()} variant={'primary'} block={false} className={"min-h-12 w-full px-4 font-bold"}>{t('apply')}</Button>
     {applied && <p role="status" className="text-sm text-muted">{t('applied')}</p>}
     {error && <p role="alert" className="text-danger">{error}</p>}
   </section>;

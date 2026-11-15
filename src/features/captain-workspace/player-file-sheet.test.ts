@@ -1,3 +1,4 @@
+import { Button } from '@/ui/button';
 import type { ButtonHTMLAttributes, ReactElement, ReactNode } from 'react';
 import type * as ReactModule from 'react';
 import { Children, isValidElement } from 'react';
@@ -16,7 +17,7 @@ function elements(node: ReactNode): ReactElement<Record<string, unknown>>[] {
 it('opens from the compact strip and closes from the labelled button and dialog dismissal', () => {
   const props = { locale: 'en' as const, summary: '27 years', children: 'Full file' };
   state.open = false;
-  const opener = elements(PlayerFileSheet(props)).find(element => element.type === 'button');
+  const opener = elements(PlayerFileSheet(props)).find(element => (element.type === 'button' || element.type === Button));
   expect(opener?.props['aria-describedby']).toBe('file-summary');
   expect(elements(PlayerFileSheet(props)).find(element => element.props.id === 'file-summary')?.props.children).toBe('27 years');
   (opener?.props as ButtonHTMLAttributes<HTMLButtonElement>).onClick?.({} as React.MouseEvent<HTMLButtonElement>);

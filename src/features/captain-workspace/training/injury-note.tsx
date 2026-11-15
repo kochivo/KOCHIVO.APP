@@ -7,6 +7,7 @@ import { optionLabel } from '../components/player-file-format';
 import { injuryOverlap, swapSuggestion } from './fit-checks';
 import type { TaggedExercise } from './fit-checks';
 import { messages } from './messages';
+import { Button } from '@/ui/button';
 
 export function InjuryNote({ exerciseId, injuries, candidates, onReplace }: {
   exerciseId: string; injuries: readonly string[]; candidates: readonly TaggedExercise[];
@@ -23,8 +24,8 @@ export function InjuryNote({ exerciseId, injuries, candidates, onReplace }: {
     <span>{t('injuryWarning', { injury: overlap.map(injury => optionLabel(injury, locale)).join(' · ') })}</span>
     {suggestion && <>
       <span className="min-w-0 break-words">{t('swapSuggestion', { name: name ?? '' })}</span>
-      <button type="button" className="ms-auto min-h-12 rounded-full border border-line-soft px-4 text-lime"
-        onClick={() => onReplace(suggestion.library)}>{t('swap')}</button>
+      <Button type="button" variant={'secondary'} block={false} className={"ms-auto min-h-12 px-4 text-lime"}
+        onClick={() => onReplace(suggestion.library)}>{t('swap')}</Button>
     </>}
   </div>;
 }

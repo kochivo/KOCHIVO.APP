@@ -10,6 +10,7 @@ import { normalizeWhatsapp } from '../invite-plan';
 import type { InvitePackage, PlayerInvite } from '../invite-plan';
 import { messages } from '../invites/messages';
 import { messages as pageMessages } from '../invites/page-messages';
+import { buttonClass } from '@/ui/button';
 
 export function InviteResult({ input, pkg, code, captainFirstName, onAnother }: {
   input: PlayerInvite; pkg?: InvitePackage; code: string; captainFirstName: string; onAnother?: () => void;
@@ -35,7 +36,7 @@ export function InviteResult({ input, pkg, code, captainFirstName, onAnother }: 
         <Button variant="secondary" className="min-h-12" onClick={copy} aria-label={t('copy')}><Copy aria-hidden className="size-5" /></Button></div>
     </div>
     <div className="space-y-2">
-      <a href={share} target="_blank" rel="noopener noreferrer" className="press flex min-h-14 cursor-pointer items-center justify-center gap-2 rounded-control bg-lime px-4 font-bold text-on-lime focus-visible:ring-2 focus-visible:ring-lime"><KoSend aria-hidden className="size-5" />{t('send')}</a>
+      <a href={share} target="_blank" rel="noopener noreferrer" className={buttonClass({ variant: 'primary', block: false, className: "press flex min-h-14 cursor-pointer items-center justify-center gap-2 px-4 font-bold focus-visible:ring-2 focus-visible:ring-lime" })}><KoSend aria-hidden className="size-5" />{t('send')}</a>
       <Button variant="secondary" className="min-h-12 w-full" onClick={copy}>{t('copy')}</Button>
       {onAnother && <Button variant="secondary" className="min-h-12 w-full" onClick={onAnother}>{p('another')}</Button>}
     </div>

@@ -50,7 +50,7 @@ export function FormBuilder({ form, locale, status, preview, onChange, onPreview
         : status === 'saved' ? <span role="status" className="flex items-center gap-2 text-xs text-faint"><CloudCheck aria-hidden className="size-4 text-lime" />{t('saved')}</span>
           : <SaveStatus locale={locale} status={status === 'saveError' ? 'error' : 'saving'} onRetry={onRetry} />}
       {(invalid || status === 'saveError') && onDiscard && <Button variant="secondary" type="button" className="min-h-12 px-3" onClick={onDiscard}>{m.discard}</Button>}
-      <button type="button" className="min-h-12 rounded-full border border-line px-5 text-[12.5px]" onClick={onPreview}>{preview ? m.back : m.preview}</button>
+      <Button type="button" variant={'secondary'} block={false} className={"min-h-12 px-5 text-[12.5px]"} onClick={onPreview}>{preview ? m.back : m.preview}</Button>
     </header>
     <div className={preview ? 'mx-auto max-w-md' : 'grid items-start gap-[18px] min-[1001px]:grid-cols-[minmax(0,1fr)_340px]'}>
       {!preview && <div className="min-w-0">

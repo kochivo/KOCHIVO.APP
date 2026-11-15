@@ -12,6 +12,7 @@ import { messages } from '../messages';
 import type { KoExpression, KoRole } from '../policy';
 import { KoAvatar } from '@/ui/ko-avatar';
 import type { KoPanel } from './ko-panel';
+import { Button } from '@/ui/button';
 
 export function KoWidget({ role, interactive = false, account = false, panelMessages }: {
   role: KoRole; interactive?: boolean; account?: boolean;
@@ -72,7 +73,7 @@ export function KoWidget({ role, interactive = false, account = false, panelMess
         {captainWorkspaceEnabled() ? <IconButton type="button" onClick={close} aria-label={t('close')} className="ms-auto grid min-h-12 min-w-12 place-items-center"><X aria-hidden className="size-5" /></IconButton> : <button type="button" onClick={close} aria-label={t('close')} className="ms-auto grid min-h-12 min-w-12 place-items-center"><X aria-hidden className="size-5" /></button>}
         {panel.failed ? <>
           <p role="alert">{panelMessages?.error ?? t('chatError')}</p>
-          <button type="button" onClick={() => void loadPanel()} className="mt-3 min-h-12 rounded-control bg-lime px-4 text-on-lime">{panelMessages?.retry ?? t('open')}</button>
+          <Button type="button" onClick={() => void loadPanel()} variant={'primary'} block={false} className={"mt-3 min-h-12 px-4"}>{panelMessages?.retry ?? t('open')}</Button>
           <Link href="/ko" prefetch={false} className="ms-3 inline-flex min-h-12 items-center underline">{panelMessages?.fallback ?? t('accountChatTitle')}</Link>
         </> : <p role="status">{panelMessages?.loading ?? t('chatWorking')}</p>}
       </ResponsiveDialog>)}

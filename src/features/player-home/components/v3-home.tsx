@@ -17,6 +17,7 @@ import { HomeHero } from './home-hero';
 import { HomeTiles } from './home-tiles';
 import { TomorrowCard } from './tomorrow-card';
 import { CaptainRow } from './captain-row';
+import { buttonClass } from '@/ui/button';
 
 export function V3Home({ weightKg, now, today, firstName, playerId, snapshot, day, rest, sessions, weekSessions, onPreview }: {
   weightKg?: number; now: Date; today: string; firstName?: string; playerId?: string; snapshot?: ProgramSnapshot | null;
@@ -42,7 +43,7 @@ export function V3Home({ weightKg, now, today, firstName, playerId, snapshot, da
     <HomeTiles weightKg={weightKg} today={today} playerId={playerId} rest={rest} streak={stats?.current}
       done={week.filter(day => day.state === 'done').length} planned={snapshot ? week.filter(day => trains(day.date)).length : 0}
       onWater={() => onPreview(today)} />
-    {rest ? <Link href="/player/nutrition" className="flex h-[62px] items-center justify-center gap-2.5 rounded-full bg-lime text-lg font-black text-on-lime">
+    {rest ? <Link href="/player/nutrition" className={buttonClass({ variant: 'primary', block: false, className: "flex h-[62px] items-center justify-center gap-2.5 text-lg font-black" })}>
       <KoPlus aria-hidden className="size-[22px] text-on-lime! [&_*]:text-on-lime!" />{t('homeLogFood')}
     </Link> : <CaptainRow name={captain.data?.fullName} playerId={playerId} captainId={captain.data?.captainId} />}
   </section>;

@@ -62,7 +62,7 @@ it.each(['ar', 'en'] as const)('uses the same inline controls with template save
   expect(html).toContain(messages[locale].reorder.replace('{name}', 'بنش'));
   expect(html).toContain(messages[locale].suggestions.replace('{day}', 'صدر وضهر'));
   expect(html).toContain('href="/captain/templates"');
-  expect(html.match(/primary-surface/g)).toHaveLength(1);
+  expect(html.match(/control-primary/g)).toHaveLength(1);
 });
 it('keeps missing intake explicit and hides fit checks', () => {
   const html = renderToStaticMarkup(createElement(TrainingFacts, {
@@ -79,7 +79,7 @@ it('renders the all-rest start card with one primary action and an enabled assig
     mode: 'template', initial: { ...draft, player_id: null, days: draft.days.map(day => ({ ...day, exercises: [], is_rest_day: true })) }, programs: [],
   })));
   expect(html).toContain('ابدأ أول يوم تمرين');
-  expect(html.match(/primary-surface/g)).toHaveLength(1);
+  expect(html.match(/control-primary/g)).toHaveLength(1);
   expect(html).toContain('احفظ القالب');
   expect(html).not.toContain('aria-label="اسم اليوم"');
   expect(html).toMatch(/<button[^>]*id="assign-program"[^>]*>/);

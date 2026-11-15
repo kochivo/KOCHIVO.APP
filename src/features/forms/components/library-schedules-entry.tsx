@@ -6,6 +6,7 @@ import { ResponsiveDialog } from '@/ui/responsive-dialog';
 import { messages } from '../redesign/messages';
 import { AssessmentScheduleEntry } from './assessment-schedule-entry';
 import { ScheduleEditor } from './schedule-editor';
+import { Button } from '@/ui/button';
 
 export function LibrarySchedulesEntry(props: ComponentProps<typeof ScheduleEditor>) {
   const [open, setOpen] = useState(false), id = useId();
@@ -16,7 +17,7 @@ export function LibrarySchedulesEntry(props: ComponentProps<typeof ScheduleEdito
       className="sheet fixed inset-0 m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-5xl overflow-auto rounded-card border border-line p-5 text-ink">
       <header className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h2 className="font-display text-lg">{t('schedule')}</h2>
-        <button type="button" className="min-h-12 rounded-full border border-line px-5" onClick={() => setOpen(false)}>{t('close')}</button>
+        <Button type="button" variant={'secondary'} block={false} className={"min-h-12 px-5"} onClick={() => setOpen(false)}>{t('close')}</Button>
       </header>
       <AssessmentScheduleEntry formId={props.form.id} locale={props.locale} />
     </ResponsiveDialog>}

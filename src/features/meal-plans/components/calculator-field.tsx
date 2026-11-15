@@ -6,6 +6,7 @@ import { useLocale, useT } from '@/core/i18n/client';
 import { formatNumber } from '@/lib/format';
 import { messages } from './calculator/messages';
 import { CalculatorSource } from './calculator-source';
+import { Button } from '@/ui/button';
 
 export function CalculatorField({ label, value, source, onChange, min = 1, max = 500, step = .1 }: {
   label: string; value?: number; source?: FormSource; onChange: (value: number | undefined) => void;
@@ -21,8 +22,8 @@ export function CalculatorField({ label, value, source, onChange, min = 1, max =
     {editing ? <input id={id} autoFocus type="number" min={min} max={max} step={step} value={value ?? ''}
       onChange={event => onChange(event.target.value === '' ? undefined : Number(event.target.value))}
       className="min-h-12 w-full rounded-control border border-line bg-surface px-3" />
-      : value === undefined ? <button id={id} type="button" aria-label={`${t('add')} ${label}`}
-        className="min-h-12 rounded-control border border-line px-4" onClick={() => setEditing(true)}>{t('add')}</button>
+      : value === undefined ? <Button id={id} type="button" aria-label={`${t('add')} ${label}`}
+        variant={'secondary'} block={false} className={"min-h-12 px-4"} onClick={() => setEditing(true)}>{t('add')}</Button>
         : <output id={id} className="text-2xl font-bold">{formatNumber(value, locale)}</output>}
   </div>;
 }

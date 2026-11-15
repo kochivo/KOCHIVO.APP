@@ -13,6 +13,7 @@ import { ProgramWeekPill } from './program-week-pill';
 import { ProgramPrescriptionRow } from './program-prescription-row';
 import { ProgramCardioPrescription } from './program-cardio-prescription';
 import { messages } from './player-program-messages';
+import { Button, buttonClass } from '@/ui/button';
 
 function Loading() { return <p role="status" className="glass rounded-card p-4">{useT(messages)('loading')}</p>; }
 const Start = dynamic(() => import('./player-program-start-entry').then(module => module.PlayerProgramStartEntry), { loading: Loading });
@@ -28,8 +29,8 @@ export function PlayerProgramSummary({ playerId, program, draftId, today, locale
       <div className="flex flex-wrap items-center gap-2">
         <h2 className="text-sm font-semibold">{program.title}</h2>
         <ProgramWeekPill startedOn={program.startedOn} totalWeeks={program.totalWeeks} today={today} locale={locale} />
-        <button id="player-program-change" onClick={() => setStarting(true)} className="glass press ms-auto inline-flex min-h-12 cursor-pointer items-center gap-2 rounded-control border border-line px-3 text-sm focus-visible:ring-2 focus-visible:ring-lime"><Copy aria-hidden className="size-4" />{t('change')}</button>
-        <Link href={`/captain/programs/${program.id}`} prefetch={false} className="press inline-flex min-h-12 cursor-pointer items-center gap-2 rounded-control bg-lime px-4 text-sm font-semibold text-on-lime focus-visible:ring-2 focus-visible:ring-lime"><KoTraining aria-hidden className="size-4" />{t('edit')}</Link>
+        <Button id="player-program-change" onClick={() => setStarting(true)} variant="secondary" block={false} className="ms-auto px-3"><Copy aria-hidden className="size-4" />{t('change')}</Button>
+        <Link href={`/captain/programs/${program.id}`} prefetch={false} className={buttonClass({ block: false })}><KoTraining aria-hidden className="size-4" />{t('edit')}</Link>
       </div>
       {program.days.length ? <>
         <div role="tablist" aria-label={t('days')} className="flex w-fit max-w-full gap-1 overflow-x-auto rounded-full border border-line bg-bg/25 p-1">
@@ -45,8 +46,8 @@ export function PlayerProgramSummary({ playerId, program, draftId, today, locale
       </> : <p className="py-4 text-sm text-muted">{t('noDays')}</p>}
     </> : <div className="space-y-3 py-6 text-center">
       <h2 className="font-semibold">{t('empty')}</h2><p className="text-sm text-muted">{t('emptyBody')}</p>
-      {draftId ? <Link href={`/captain/programs/${draftId}`} prefetch={false} className="press inline-flex min-h-12 cursor-pointer items-center gap-2 rounded-control bg-lime px-4 text-sm font-semibold text-on-lime focus-visible:ring-2 focus-visible:ring-lime"><KoTraining aria-hidden className="size-5" />{t('assign')}</Link> :
-        <button id="player-program-change" onClick={() => setStarting(true)} className="press inline-flex min-h-12 cursor-pointer items-center gap-2 rounded-control bg-lime px-4 text-sm font-semibold text-on-lime focus-visible:ring-2 focus-visible:ring-lime"><KoTraining aria-hidden className="size-5" />{t('assign')}</button>}
+      {draftId ? <Link href={`/captain/programs/${draftId}`} prefetch={false} className={buttonClass({ block: false })}><KoTraining aria-hidden className="size-5" />{t('assign')}</Link> :
+        <Button id="player-program-change" onClick={() => setStarting(true)} block={false}><KoTraining aria-hidden className="size-5" />{t('assign')}</Button>}
     </div>}
     {starting && <Start playerId={playerId} templatesInitially={Boolean(program)} onClose={() => setStarting(false)} />}
   </section>;

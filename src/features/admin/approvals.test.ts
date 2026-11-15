@@ -19,10 +19,10 @@ it('reserves filled lime for the first pending approval', () => {
   })));
   const approvals = html.match(/<button[^>]*aria-label="Approve [^"]*"[^>]*>/g) ?? [];
   expect(approvals).toHaveLength(3);
-  expect(approvals[0]).toContain('bg-lime');
+  expect(approvals[0]).toContain('control-primary');
   for (const button of approvals.slice(1)) {
-    expect(button).toContain('glass');
-    expect(button).not.toContain('bg-lime');
+    expect(button).toContain('control-secondary');
+    expect(button).not.toContain('control-primary');
   }
 });
 it('labels approve and reject per captain and formats signup dates', () => {

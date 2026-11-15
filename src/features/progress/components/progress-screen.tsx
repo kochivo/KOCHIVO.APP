@@ -26,6 +26,7 @@ import { ranksEnabled } from '@/lib/ranks-enabled';
 import { messages as v6Messages } from '../v6-messages';
 import { ProgressV3 } from './progress-v3';
 import { readRemoteSessionIds } from './progress-session-count';
+import { buttonClass } from '@/ui/button';
 const WeightOverview = dynamic(() => import('./weight-overview').then(module => module.WeightOverview), { ssr: false });
 const RankOverview = dynamic(() => import('./rank-overview').then(module => module.RankOverview), { ssr: false });
 const PlayerAssessments = dynamic(() => import('@/features/player-shell').then(module => module.PlayerAssessments), { ssr: false });
@@ -116,7 +117,7 @@ export function ProgressScreen({ analytics }: { analytics?: ReactNode }) {
   return <main className={v6 ? 'mx-auto max-w-lg space-y-3 px-[18px] pt-[18px] pb-[104px]' : 'mx-auto max-w-lg space-y-4 px-5 pt-6 pb-32'}>
     {v6 ? <ProgressV3 today={today} checkins={checkins} strength={strength} count={sessionCount} checkinError={checkinError} strengthError={localError} retry={() => { setLocalError(false); setRetryKey(value => value + 1); }} onLog={() => { setSheetLoaded(true); setSheet(true); }} /> : <header><h1 className="text-2xl font-extrabold">{t('yourProgress')}</h1></header>}
     {v6 && countError && <ErrorState message={t('couldntLoadYourWorkouts')} retryLabel={t('tryAgain')} onRetry={() => setRetryKey(value => value + 1)} />}
-    {!v6 && <Link href="/player/history" className="glass flex min-h-12 items-center gap-3 rounded-card p-5 font-bold">
+    {!v6 && <Link href="/player/history" className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-12 items-center gap-3 p-5 font-bold" })}>
       <Dumbbell aria-hidden className="text-lime" />{v6 ? v6t('history') : t('workoutHistory')}
     </Link>}
     {!v6 && (localError ? <ErrorState message={t('couldntLoadYourWorkouts')} retryLabel={t('tryAgain')} onRetry={() => {

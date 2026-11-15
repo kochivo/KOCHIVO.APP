@@ -53,10 +53,10 @@ export function WorkspaceProgramsView(props: ComponentProps<typeof LibraryView>)
       <ul className="grid grid-cols-1 gap-4 @min-[701px]:grid-cols-3">
         {visible.map(template => <WorkspaceProgramCard key={template.id} template={template} error={errors[`program-${template.id}`]}
           busy={busy.includes(`program-${template.id}`)} onOpen={actions(template).onOpen} onAssign={actions(template).onAssign} onRetry={onRetry} />)}
-        <li className="contents"><button type="button" disabled={disabled} onClick={onCreate}
-          className="glass flex min-h-[150px] flex-col items-center justify-center gap-1.5 rounded-[20px] p-[18px] text-lime disabled:opacity-40">
+        <li className="contents"><Button type="button" disabled={disabled} onClick={onCreate}
+          variant={'secondary'} block={false} className={"flex min-h-[150px] flex-col items-center justify-center gap-1.5 p-[18px] text-lime disabled:opacity-40"}>
           <KoPlus aria-hidden className="size-6" /><span>{t('programNew')}</span><small className="text-muted">{t('programNewHint')}</small>
-        </button></li>
+        </Button></li>
       </ul>
     </>}
     {picking && <PlayerPicker onClose={() => setPicking(false)} />}

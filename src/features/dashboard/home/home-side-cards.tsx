@@ -9,6 +9,7 @@ import { homeMessages } from './messages';
 import { HomePanelEntry } from './home-panel-entry';
 import { homeAge } from './age';
 import { joinPackageLabel } from './join-package-label';
+import { buttonClass } from '@/ui/button';
 
 export async function HomeSideCards({ ending, requests, now, timezone, joinRequests }: {
   ending: RosterPlayer[]; requests: Awaited<ReturnType<typeof loadHomeFollowup>>['requests']; now: Date; timezone: string; joinRequests?: ReactNode;
@@ -19,7 +20,7 @@ export async function HomeSideCards({ ending, requests, now, timezone, joinReque
       <h2 className="mb-1.5 font-display text-base font-semibold">{t('ending')}</h2>
       <ul className="divide-y divide-line-soft">{ending.map(player => {
         const days = daysBetween(localDate(now, player.timezone ?? timezone), player.accessUntil);
-        return <li key={player.playerId}><Link href="/captain/billing" className="glass flex min-h-12 items-center justify-between gap-3 rounded-full border border-line px-4 py-2.5 text-[13px]">
+        return <li key={player.playerId}><Link href="/captain/billing" className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-12 items-center justify-between gap-3 px-4 py-2.5 text-[13px]" })}>
           <span>{player.fullName}</span><span className="shrink-0 text-faint">{days === 0 ? t('endsToday') : days === 1 ? t('afterOne') : days === 2 ? t('afterTwo') : t('after', { n: days })}</span>
         </Link></li>;
       })}</ul>
@@ -32,7 +33,7 @@ export async function HomeSideCards({ ending, requests, now, timezone, joinReque
           <div className="min-w-0 flex-1"><p className="break-words">{label ? t('packageName', { name: request.name, label }) : request.name}</p><p className="mt-1 text-[11.5px] text-faint">{homeAge(request.at, now, t)}</p></div>
           {joinRequests ? <HomePanelEntry id={`join-${request.id}`} title={t('join')} content={joinRequests}
             className="inline-flex min-h-12 shrink-0 items-center rounded-full border border-line px-3.5 text-[12.5px]">{t('view')}</HomePanelEntry>
-            : <Link className="inline-flex min-h-12 shrink-0 items-center rounded-full border border-line px-3.5 text-[12.5px]" href="/captain/inbox">{t('view')}</Link>}
+            : <Link className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 shrink-0 items-center px-3.5 text-[12.5px]" })} href="/captain/inbox">{t('view')}</Link>}
         </li>;
       })}</ul>
     </section>}

@@ -6,6 +6,7 @@ import { homeV11Messages } from './messages';
 import type { HomeTask } from './tasks';
 import { taskEstimate, taskProgress } from './tasks';
 import { HomeRing } from './home-ring';
+import { buttonClass } from '@/ui/button';
 
 export async function HomeHero({ tasks, count, completed }: { tasks: HomeTask[]; count: number; completed: number }) {
   const [t, locale] = await Promise.all([getT(homeV11Messages), getLocale()]);
@@ -18,7 +19,7 @@ export async function HomeHero({ tasks, count, completed }: { tasks: HomeTask[];
         {urgent && t('urgentLead', { tasks: urgent })}</> : t('emptyHero')}</p></div>
     <div className="text-center"><div className="font-display text-[52px] leading-none font-extrabold tracking-[-.04em] tabular-nums min-[760px]:text-[64px]">{formatNumber(count, locale)}</div>
       <p className="mt-1.5 text-[13px] text-muted">{t('todayTasks')}</p>
-      {count > 0 && <Link href="/captain/inbox" className="mt-3 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-control bg-lime px-6 text-sm font-semibold text-on-lime shadow-lime-glow min-[760px]:w-auto"><KoFollowup className="size-[18px]" />{t('startTasks')}</Link>}
+      {count > 0 && <Link href="/captain/inbox" className={buttonClass({ variant: 'primary', block: false, className: "mt-3 inline-flex min-h-12 w-full items-center justify-center gap-2 px-6 text-sm font-semibold min-[760px]:w-auto" })}><KoFollowup className="size-[18px]" />{t('startTasks')}</Link>}
     </div>
   </section>;
 }

@@ -25,16 +25,16 @@ it('keeps lime on only the first approval across several actionable cards', () =
   state.rows = [{ key: 'other', player_id: 'p', player_name: 'Player', severity: 'urgent', kind: 'expired', data: {} }, swap('first'), swap('second')];
   const buttons = approvals();
   expect(buttons).toHaveLength(2);
-  expect(buttons[0]).toContain('bg-lime');
-  expect(buttons[1]).toContain('glass');
-  expect(buttons[1]).not.toContain('bg-lime');
+  expect(buttons[0]).toContain('control-primary');
+  expect(buttons[1]).toContain('control-secondary');
+  expect(buttons[1]).not.toContain('control-primary');
 });
 it('retains the legacy approval appearance with the workspace flag off', () => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '0');
   state.rows = [swap('first'), swap('second')];
   for (const button of approvals()) {
-    expect(button).toContain('bg-lime');
-    expect(button).not.toContain('primary-surface');
+    expect(button).toContain('control-primary');
+    expect(button).toContain('control-primary');
   }
 });
 it('keeps chat send secondary beside the first lime feed approval', () => {
@@ -43,7 +43,7 @@ it('keeps chat send secondary beside the first lime feed approval', () => {
   const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' }, createElement(KoPanel, {
     role: 'player', expression: 'welcome', onExpression() {}, onClose() {}, openerId: 'ko', interactive: true,
   })));
-  expect(html.match(/<button[^>]*\bbg-lime(?:[ "])[^>]*>/g)).toHaveLength(1);
+  expect(html.match(/<button[^>]*\bcontrol-primary(?:[ "])[^>]*>/g)).toHaveLength(1);
 });
 it('keeps chat confirmation secondary beside the feed approval', () => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
@@ -52,5 +52,5 @@ it('keeps chat confirmation secondary beside the feed approval', () => {
     createElement(KoFeed, { avatar: () => null }), createElement(KoConfirm, {
       approval: createApproval('token', 0), now: () => 0, busy: false, onConfirm() {}, onCancel() {},
     }))));
-  expect(html.match(/<button[^>]*\bbg-lime(?:[ "])[^>]*>/g)).toHaveLength(1);
+  expect(html.match(/<button[^>]*\bcontrol-primary(?:[ "])[^>]*>/g)).toHaveLength(1);
 });

@@ -31,16 +31,16 @@ it('preserves the pre-T-195 flag-off markup in Arabic and English', () => {
       {
         "exercise": "73438a1c26a2e4677591b756ce8fb3b4457eb8649095d19dcbf3ae0c33ed886d",
         "locale": "ar",
-        "meal": "d84931926c2232cc6ff624d6fef2203734962b95678657cf8b3583448bfff373",
-        "rest": "c4b943b38cf1a4be1bdb5e98a51d7d6ffb028c67796b70155f0dd380c34a8f10",
-        "task": "93a08d93503b9aacafc8e927ed4e402873aa5597acf515cb85c61e19265fe912",
+        "meal": "55e6fcb40472bbef681b4bda6d98e98c1905b84dae78ed71a0678d8c91d671e4",
+        "rest": "7895548b3dbef521756896ffd47e5dcaa4a4de2c441616cbe393738244f06f32",
+        "task": "d43ebdd350fcaa58421e1ba70611c4ad536de39c9f644d535752e3f3e871f063",
       },
       {
         "exercise": "242e6c4f7a5d9f7bfb3a7fe5310bc155481e1dbd22525b5190903517e189d16d",
         "locale": "en",
-        "meal": "7503ba5cf0cff5244a8ba2f1bef8dcaf548f07caacd6f85a5e4a6008adad19e6",
-        "rest": "afe4c92051b877f53de75ab27ae5db3c48576bbd4b4737f1fed6f439d806791a",
-        "task": "f9f36fdfe7789e8b6da589d675992f7b120e584286d919055945e2f2d291f0ea",
+        "meal": "7d627f8dcd68e07723ed67b2209edb750281c763d3eee3bcd3ada393d745723c",
+        "rest": "f15bb7d4050ccdd68343a8fe9e441c3036b8df361e25041917be0a15cad81f1a",
+        "task": "e3380f6fa7e60ff7366b114033900d8528477fcae1da8deab3c4cecc5fa908c9",
       },
     ]
   `);

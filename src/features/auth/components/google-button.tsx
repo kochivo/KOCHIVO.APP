@@ -2,7 +2,7 @@
 import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 import { useState, useTransition } from 'react';
-import { Button } from '@/ui';
+import { Button } from '@/ui/button';
 import { signInGoogle } from '../data/sign-in-google';
 import { callAuthAction as runAuthAction } from '../data/client-action';
 import { browserSelection } from '../package-selection';

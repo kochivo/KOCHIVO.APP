@@ -2,6 +2,7 @@
 import { useT } from '@/core/i18n/client';
 import type { ReactNode } from 'react';
 import { messages } from '../messages';
+import { Button } from '@/ui/button';
 
 export function NoCaptainScreen({ onRetry, signOut }: { onRetry: () => void; signOut: ReactNode }) {
   const t = useT(messages);
@@ -9,6 +10,6 @@ export function NoCaptainScreen({ onRetry, signOut }: { onRetry: () => void; sig
     <h1 className="text-2xl font-extrabold">{t('youReNotWorkingWithA')}</h1>
     <p className="text-muted">{t('openCoachInvite')}</p>
     {signOut}
-    <button type="button" className="min-h-12 rounded-control border border-line px-4 font-bold" onClick={onRetry}>{t('tryAgain')}</button>
+    <Button type="button" variant={'secondary'} block={false} className={"min-h-12 px-4 font-bold"} onClick={onRetry}>{t('tryAgain')}</Button>
   </main>;
 }

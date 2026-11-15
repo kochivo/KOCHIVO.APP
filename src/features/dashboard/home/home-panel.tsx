@@ -4,6 +4,7 @@ import { X } from 'lucide-react';
 import { useT } from '@/core/i18n/client';
 import { ResponsiveDialog } from '@/ui/responsive-dialog';
 import { homeMessages } from './messages';
+import { Button } from '@/ui/button';
 
 export function HomePanel({ title, openerId, onClose, children }: {
   title: string; openerId: string; onClose: () => void; children: ReactNode;
@@ -13,7 +14,7 @@ export function HomePanel({ title, openerId, onClose, children }: {
     className="sheet fixed inset-0 z-50 m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-3xl overflow-y-auto rounded-card border border-line p-5 text-ink backdrop:bg-bg-deep/80">
     <header className="mb-4 flex items-center justify-between gap-3">
       <h2 className="font-display text-[19px] font-semibold">{title}</h2>
-      <button type="button" onClick={onClose} aria-label={t('close')} className="grid size-12 shrink-0 place-items-center rounded-full border border-line"><X aria-hidden className="size-5" /></button>
+      <Button type="button" onClick={onClose} aria-label={t('close')} variant={'secondary'} block={false} className={"grid size-12 shrink-0 place-items-center"}><X aria-hidden className="size-5" /></Button>
     </header>
     <div className="space-y-4">{children}</div>
   </ResponsiveDialog>;

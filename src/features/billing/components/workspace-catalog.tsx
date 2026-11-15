@@ -17,6 +17,7 @@ import { UnassignedPackages } from '../tiers/unassigned-packages';
 import type { Tier, CatalogPackage, CatalogOffer } from '../tiers/types';
 import { WorkspaceTierCard } from './workspace-tier-card';
 import { WorkspaceOffersCard } from './workspace-offers-card';
+import { Button } from '@/ui/button';
 
 const TierSheet = dynamic(() => import('../tiers/tier-sheet').then(module => module.TierSheet), { loading: () => <LoadingState variant="detail" /> });
 const PackageSheet = dynamic(() => import('../tiers/package-sheet').then(module => module.PackageSheet), { loading: () => <LoadingState variant="detail" /> });
@@ -35,7 +36,7 @@ export function WorkspaceCatalog() {
     <PageBarTitle title={t('catalog')} />
     <PageBarActions>
       <Link href="/captain/billing" aria-label={t('back')} className="press grid min-h-12 min-w-12 cursor-pointer place-items-center rounded-full border border-line bg-surface focus-visible:ring-2 focus-visible:ring-lime"><KoSend aria-hidden className="size-4 rotate-45 ltr:rotate-225" /></Link>
-      <button disabled={catalog.busy} onClick={() => setPanel({ kind: 'tier' })} className="press ms-auto flex min-h-12 cursor-pointer items-center gap-2 rounded-full bg-lime px-4 text-sm font-semibold text-on-lime focus-visible:ring-2 focus-visible:ring-lime"><KoPlus aria-hidden className="size-4" />{t('newPackage')}</button>
+      <Button disabled={catalog.busy} onClick={() => setPanel({ kind: 'tier' })} block={false} className="ms-auto"><KoPlus aria-hidden className="size-4" />{t('newPackage')}</Button>
     </PageBarActions>
     {(catalog.error || catalog.status === 'error') && <ErrorState message={catalog.error || legacy('loadFailed')} retryLabel={legacy('retry')} onRetry={() => void catalog.retry()} />}
     {tiers.length ? <div className="grid items-start gap-4 min-[761px]:grid-cols-3">{tiers.map(tier => <WorkspaceTierCard key={tier.id} tier={tier} busy={catalog.busy}

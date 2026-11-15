@@ -3,6 +3,7 @@ import { useT } from '@/core/i18n/client';
 import { Stepper } from '@/ui/stepper';
 import type { SetTarget } from '@/features/programs';
 import { messages } from './editor/messages';
+import { Button } from '@/ui/button';
 
 export function SetPlanEditor({ plan, onChange }: { plan: SetTarget[]; onChange: (plan: SetTarget[] | null) => void }) {
   const t = useT(messages);
@@ -20,6 +21,6 @@ export function SetPlanEditor({ plan, onChange }: { plan: SetTarget[]; onChange:
         <option value="">{t('noRir')}</option>{[0, 1, 2, 3, 4, 5].map(n => <option key={n} value={n}>{t('rir', { n })}</option>)}
       </select>
     </div>)}
-    <button className="min-h-12 rounded-full border border-line-soft px-3 text-xs" onClick={() => onChange(null)}>{t('uniform')}</button>
+    <Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-3 text-xs"} onClick={() => onChange(null)}>{t('uniform')}</Button>
   </div>;
 }

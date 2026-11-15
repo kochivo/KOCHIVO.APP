@@ -11,8 +11,8 @@ export function PublicSpecialtyEditor({ items, onChange }: { items: string[]; on
   return <div className="space-y-3">
     <p className="text-sm text-muted">{t('hint')}</p>
     {items.length > 0 && <ul className="flex flex-wrap gap-2">{items.map((item, index) => <li key={`${index}-${item}`}>
-      <button type="button" aria-label={t('remove', { name: item })} onClick={() => onChange(items.filter((_, i) => i !== index))}
-        className="glass min-h-12 rounded-full px-4">{item}</button>
+      <Button type="button" aria-label={t('remove', { name: item })} onClick={() => onChange(items.filter((_, i) => i !== index))}
+        variant={'secondary'} block={false} className={"min-h-12 px-4"}>{item}</Button>
     </li>)}</ul>}
     <TextField label={t('specialties')} value={draft} maxLength={30} onChange={event => setDraft(event.target.value)} />
     <Button type="button" variant="secondary" disabled={!draft.trim() || !validSpecialties([...items, draft])}
