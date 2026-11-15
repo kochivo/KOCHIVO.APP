@@ -106,3 +106,16 @@ This must ship before Ramadan 2027 (about mid-February 2027).
 1. `npx vitest run src/lib src/features/player-home src/features/nutrition src/features/meal-plans src/features/settings src/features/workout supabase/tests/ramadan-mode.test.ts`
 2. `npm run typecheck`
 3. `npm run lint`
+
+## Owner change (2026-11-16)
+
+The owner chose this on 2026-11-16. It is sent as a follow-up after the first run.
+
+1. **Captain settings.** The «وضع رمضان» section shows only from 14 days before the first day of Ramadan until the last day, using `src/lib/ramadan-calendar.ts`. Outside that window it is hidden completely. A toggle that was left on stays stored but does nothing (already true through `my_ramadan()`).
+2. **Reminder.** Add a daily pg_cron job, in the same migration 0122, that fires on the day 14 days before Ramadan starts. It sends each active captain one notification of the new type `ramadan_soon`:
+   - **Arabic:** «رمضان قرّب. تحب تشغّل وضع رمضان لفريقك؟»
+   - **English:** "Ramadan is close. Turn on Ramadan mode for your team?"
+   - **Tapping it** opens captain settings at the Ramadan section.
+   - **Dedupe:** one per captain per year.
+   - **Type list:** rebuild `notifications_type_check` the 0121 way, and add the type to `src/types/enums.ts`, `format.ts`, messages and push text.
+3. **Tests.** The section is hidden outside the window and shown inside it. The reminder dedupe is covered in `supabase/tests/ramadan-mode.test.ts`.
