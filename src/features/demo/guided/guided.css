@@ -1,0 +1,82 @@
+.demo-target { outline: 2px solid var(--color-lime); outline-offset: 5px; scroll-margin-block: 6rem 50dvh; }
+.demo-step-number { color: transparent; -webkit-text-stroke: 1px var(--color-lime); line-height: 1; font-family: var(--font-changa), sans-serif; }
+.demo-stage { display: grid; grid-template-columns: minmax(0, 1fr) 318px; gap: var(--demo-section); }
+.demo-captain { display: grid; grid-template-columns: 212px minmax(0, 1fr); height: calc(100dvh - 124px); min-height: 640px; }
+.demo-captain-side { flex-direction: column; min-block-size: 0; overflow: auto; }
+.demo-captain-main { min-block-size: 0; overflow: auto; scrollbar-width: thin; }
+.demo-shell .demo-sidebar-item { inline-size: 100%; border: 0; background: transparent; box-shadow: none; color: var(--color-muted); }
+.demo-shell .demo-sidebar-item:hover { background: var(--color-surface-raised); color: var(--color-ink); }
+.demo-shell .demo-sidebar-item[aria-current='page'] { background: var(--color-lime-soft); color: var(--color-lime); box-shadow: inset 0 0 0 1px var(--color-line); }
+.demo-captain-bar { flex-wrap: nowrap; }
+.demo-shell .demo-search { display: none; }
+.demo-header { padding-inline: var(--demo-page-x); }
+.demo-top-bar { block-size: 64px; flex-wrap: nowrap; }
+.demo-desktop-actions, .demo-fixture-pill { display: flex; }
+.demo-fixture-pill { min-block-size: 30px; }
+.demo-shell .demo-language { border: 0; background: transparent; box-shadow: none; font-size: var(--text-xs); }
+.demo-view-switch { display: none; }
+.demo-shell .demo-view-option { background: transparent; border: 0; box-shadow: none; padding-inline: var(--demo-inline); }
+.demo-shell .demo-view-option[aria-pressed='true'] { background: var(--color-surface-raised); }
+.demo-player-column { position: sticky; inset-block-start: 84px; }
+/* The landing device uses the same token bezel, inset screen and notch treatment. */
+.demo-phone { inline-size: 300px; block-size: 620px; border-radius: 3rem; padding: var(--demo-stack); border: 1px solid var(--color-line); background: linear-gradient(145deg, var(--color-muted), var(--color-surface), var(--color-bg-deep)); box-shadow: var(--glass-shadow); overflow: hidden; }
+.demo-phone-screen { position: relative; display: flex; flex-direction: column; block-size: 100%; min-block-size: 0; overflow: hidden; border-radius: 2.5rem; }
+.demo-phone-status { display: flex; flex: none; align-items: center; justify-content: space-between; min-block-size: 44px; padding-inline: var(--demo-page-x); }
+.demo-phone-notch { position: absolute; inset-inline-start: 50%; inset-block-start: 8px; translate: -50% 0; inline-size: 92px; block-size: 26px; border-radius: var(--radius-control); background: var(--color-bg-deep); }
+.demo-phone-content { display: flex; flex-direction: column; gap: var(--demo-stack); overflow-y: auto; scrollbar-width: none; overscroll-behavior-block: contain; }
+.demo-phone-content > * { flex-shrink: 0; }
+.demo-phone-tabs { flex: none; }
+.demo-guide { inline-size: 360px; inset-inline-start: var(--demo-page-x); inset-block-end: var(--demo-page-x); max-block-size: 80dvh; }
+.demo-guide header b { font-size: var(--text-md, .9375rem); font-weight: 800; }
+.demo-guide > p { font-size: var(--text-md, .9375rem); }
+.demo-guide .demo-step-number { flex: none; font-size: var(--text-stat-large); }
+.demo-shell .demo-guide h2 { font-size: var(--text-title, 1.1875rem); font-weight: 800; line-height: 1.45; }
+.demo-tile-value { display: block; font: 800 var(--text-h, 1.5rem)/1.2 var(--font-manrope), sans-serif; font-variant-numeric: tabular-nums; }
+.demo-workout { --demo-stack: .5rem; }
+.demo-shell .demo-workout > header h3 { font-size: var(--text-sm, .875rem); line-height: 1.4; }
+.demo-exercise-preview { block-size: 2rem; }
+.demo-set-row { min-block-size: 24px; padding-inline: var(--demo-inline); }
+/* Values get their own row so narrow columns retain 48px controls without a tall vertical stack. */
+.demo-workout-steppers > div > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.demo-workout-steppers input { grid-column: 1 / -1; grid-row: 1; inline-size: 100%; }
+.demo-workout-steppers button { grid-row: 2; }
+.demo-guide-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.demo-shell .demo-guide-actions > .control { inline-size: 100%; min-block-size: 48px; white-space: normal; }
+.demo-shell, .demo-intro {
+  --demo-page-x: 1rem;
+  --demo-stack: .5rem;
+  --demo-inline: .5rem;
+  --demo-section: 1.5rem;
+}
+.demo-shell .p-page-x, .demo-intro.p-page-x { padding: var(--demo-page-x); }
+.demo-shell .p-stack, .demo-intro .p-stack { padding: var(--demo-stack); }
+.demo-shell .px-stack { padding-inline: var(--demo-stack); }
+.demo-shell .py-stack { padding-block: var(--demo-stack); }
+.demo-shell .my-stack { margin-block: var(--demo-stack); }
+.demo-shell .mt-stack { margin-block-start: var(--demo-stack); }
+.demo-shell .mb-stack { margin-block-end: var(--demo-stack); }
+.demo-shell .gap-stack, .demo-intro .gap-stack { gap: var(--demo-stack); }
+.demo-shell .gap-inline { gap: var(--demo-inline); }
+.demo-intro .gap-section { gap: var(--demo-section); }
+@media (min-width: 760px) {
+  .demo-shell, .demo-intro { --demo-page-x: 1.5rem; --demo-stack: .75rem; --demo-section: 2rem; }
+}
+@media (min-width: 1200px) { .demo-shell .demo-search { display: inline-flex; } }
+@media (980px <= width <= 1180px) {
+  .demo-stage { grid-template-columns: minmax(0, 1fr) 300px; }
+  .demo-phone { inline-size: 282px; block-size: 584px; }
+}
+@media (width < 980px) {
+  .demo-stage { display: block; }
+  .demo-stage[data-view='captain'] > .demo-player-column, .demo-stage[data-view='player'] > .demo-captain-column { display: none; }
+  .demo-shell .demo-stage { padding-block-end: 50dvh; }
+  .demo-desktop-actions, .demo-fixture-pill, .demo-pane-caption, .demo-captain-card { display: none; }
+  .demo-view-switch { display: flex; }
+  .demo-captain { display: flex; flex-direction: column; height: auto; min-height: 0; }
+  .demo-captain-side { flex-direction: row; overflow-x: auto; }
+  .demo-shell .demo-sidebar-item { inline-size: auto; }
+  .demo-captain-main { overflow: visible; }
+  .demo-player-column { position: static; }
+  .demo-phone { inline-size: min(100%, 300px); block-size: 600px; }
+  .demo-guide { inset-inline: var(--demo-page-x); inset-block-start: auto; inset-block-end: max(var(--demo-stack), var(--safe-bottom, 0px)); inline-size: auto; max-inline-size: 460px; margin-inline: auto; max-block-size: 47dvh; }
+}
