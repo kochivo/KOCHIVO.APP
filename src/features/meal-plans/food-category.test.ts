@@ -1,4 +1,5 @@
 import { beforeEach, expect, it, vi } from 'vitest';
+vi.mock('server-only', () => ({}));
 
 const state = vi.hoisted(() => ({ calls: [] as unknown[][] }));
 vi.mock('@/core/i18n/server', () => ({ getT: async () => (key: string) => key }));

@@ -8,6 +8,7 @@ import { FoodFormEntry } from './components/food-form-entry';
 import { resourceStore } from '@/core/resource/store';
 import type { LibraryPage } from './data/library-types';
 import type { Food } from './types';
+import { foodResourceKey } from './data/food-resource-version';
 
 const state = vi.hoisted(() => ({ values: [] as unknown[], index: 0, save: vi.fn(), replace: vi.fn(), success: vi.fn(), refresh: vi.fn() }));
 vi.mock('@/lib/captain-workspace-enabled', () => ({ captainWorkspaceEnabled: () => true }));
@@ -30,7 +31,7 @@ function render(props: Parameters<typeof FoodForm>[0] = { food }) {
 }
 async function submit(props: Parameters<typeof FoodForm>[0] = { food }) {
   render(props).props.onSubmit({ preventDefault() {} } as React.FormEvent<HTMLFormElement>);
-  await Promise.resolve(); await Promise.resolve();
+  for (let index = 0; index < 20; index++) await Promise.resolve();
 }
 beforeEach(() => {
   vi.clearAllMocks(); state.values = []; state.index = 0;
@@ -46,13 +47,26 @@ it('normalizes unit names and rejects invalid grams or more than twenty units in
   expect(() => foodFormInput({ ...values, units: Array.from({ length: 21 }, () => unit) })).toThrow();
 });
 it('updates the library cache before returning from an edit', async () => {
-  const key = 'foods-library:["","all",null]';
-  await resourceStore.mutate<LibraryPage>(key, () => ({ foods: [{ ...food, name: 'Old name', uses: 3 }],
+  const key = () => foodResourceKey('foods-library:["","all",null]');
+  await resourceStore.mutate<LibraryPage>(key(), () => ({ foods: [{ ...food, name: 'Old name', uses: 3 }],
     counts: { all: 4, mine: 2, global: 2 }, cursor: null }), async () => {});
   await submit();
-  expect(resourceStore.read<LibraryPage>(key).data).toMatchObject({
+  expect(resourceStore.read<LibraryPage>(key()).data).toMatchObject({
     foods: [{ name: 'Kofta', uses: 3 }], counts: { all: 4, mine: 2, global: 2 },
   });
+});
+it('optimistically replaces a catalog food while saving and rolls back on failure', async () => {
+  const key = foodResourceKey('foods-library:["","all",null]');
+  const original = { ...food, custom: false, uses: 2 };
+  await resourceStore.mutate<LibraryPage>(key, () => ({ foods: [original],
+    counts: { all: 1, mine: 0, global: 1 }, cursor: null }), async () => {});
+  let finish: (value: { ok: false; error: string }) => void = () => {};
+  state.save.mockReturnValue(new Promise(resolve => { finish = resolve; }));
+  await submit({ food: original });
+  expect(resourceStore.read<LibraryPage>(key).data?.foods).toMatchObject([{ custom: true, replacesId: original.id }]);
+  finish({ ok: false, error: 'Failed' });
+  for (let index = 0; index < 10; index++) await Promise.resolve();
+  expect(resourceStore.read<LibraryPage>(key).data?.foods).toEqual([original]);
 });
 it('saves unchanged per-100 values, units and an own-food ID, then returns to the library', async () => {
   await submit();
@@ -123,6 +137,6 @@ it('prevents duplicate submissions while a save is pending and reports busy stat
   expect(state.save).toHaveBeenCalledOnce();
   expect(onBusyChange).toHaveBeenLastCalledWith(true);
   finish({ ok: true, data: food });
-  await Promise.resolve(); await Promise.resolve();
+  for (let index = 0; index < 20; index++) await Promise.resolve();
   expect(onBusyChange).toHaveBeenLastCalledWith(false);
 });

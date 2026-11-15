@@ -23,10 +23,11 @@ it('opens the new-food route once and closes the drawer when creating from the l
   expect(mocks.push).toHaveBeenCalledExactlyOnceWith('/en/captain/library/foods/new');
   expect(onClose).toHaveBeenCalledOnce();
 });
-it('renders global food fields read-only with copy but no save or delete action', () => {
+it('offers editing global food fields without a catalog delete action', () => {
   const html = renderToStaticMarkup(createElement(FoodDrawer, { food, onClose() {}, onSaved() {} }));
   expect(html).toContain('<fieldset disabled=""');
-  expect(html).toContain('Copy to my foods');
+  expect(html).toContain('Edit food');
+  expect(html).not.toContain('Restore original');
   expect(html).toContain('/en/captain/library/foods/new?copyFrom=id');
   expect(html).not.toContain('type="submit"');
   expect(html).not.toContain('Delete food');
@@ -37,4 +38,11 @@ it('disables deleting a used own food and explains the count', () => {
   expect(html).toContain('/en/captain/library/foods/id/edit');
   expect(html).toContain('Edit food');
   expect(html).toMatch(/<button[^>]*disabled=""[^>]*>Delete food/);
+});
+it('offers restore on a modified version even when existing plans use it', () => {
+  const html = renderToStaticMarkup(createElement(FoodDrawer, {
+    food: { ...food, custom: true, replacesId: 'catalog' }, onClose() {}, onSaved() {},
+  }));
+  expect(html).toContain('Modified');
+  expect(html).toMatch(/<button(?![^>]*disabled="")[^>]*>Restore original/);
 });

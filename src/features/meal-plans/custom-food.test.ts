@@ -4,7 +4,7 @@ vi.mock('next/headers', () => ({ cookies: async () => ({ get: () => undefined })
 import { createCustomFood, updateCustomFood, deleteCustomFood } from './data/custom-food';
 import { searchFoods } from './data/foods';
 
-const mocks = vi.hoisted(() => ({ insert: vi.fn(), update: vi.fn(), delete: vi.fn(), remove: vi.fn(), eq: vi.fn(), is: vi.fn(), getUser: vi.fn(), getClaims: vi.fn(), single: vi.fn() }));
+const mocks = vi.hoisted(() => ({ insert: vi.fn(), update: vi.fn(), delete: vi.fn(), remove: vi.fn(), eq: vi.fn(), is: vi.fn(), getUser: vi.fn(), getClaims: vi.fn(), single: vi.fn(), maybeSingle: vi.fn() }));
 vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => ({
   auth: { getUser: mocks.getUser, getClaims: mocks.getClaims },
   storage: { from: () => ({ remove: mocks.remove }) },
@@ -12,6 +12,7 @@ vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => ({
     const request = { select: () => request, order: () => request, limit: () => request,
       or: () => request, is: (key: string, value: null) => { mocks.is(key, value); return request; },
       eq: (key: string, value: string) => { mocks.eq(key, value); return request; },
+      filter: () => request, maybeSingle: mocks.maybeSingle,
       insert: mocks.insert, update: mocks.update, delete: mocks.delete,
       single: table === 'profiles' ? async () => ({ data: { role: 'captain' }, error: null }) : mocks.single,
       then: (resolve: (value: unknown) => unknown) => Promise.resolve({ data: [], error: null }).then(resolve) };
@@ -25,6 +26,7 @@ const input = { name: 'Soup', servingGrams: 150, kcal: 200, protein: 10, carbs: 
 beforeEach(() => {
   vi.clearAllMocks();
   mocks.remove.mockResolvedValue({ error: null });
+  mocks.maybeSingle.mockResolvedValue({ data: null, error: null });
   mocks.getUser.mockResolvedValue({ data: { user: { id: captain } }, error: null });
   mocks.getClaims.mockResolvedValue({ data: { claims: { sub: captain } }, error: null });
   mocks.single.mockResolvedValue({ data: { id: captain, owner_id: captain, name_ar: 'Soup', photo_path: null,
@@ -45,6 +47,36 @@ it('preserves the photo when copying a visible global food', async () => {
   await createCustomFood({ ...input, copyFrom: captain });
   expect(mocks.insert).toHaveBeenCalledWith(expect.objectContaining({ photo_path: 'food-media/rice.jpg' }));
   expect(mocks.is).toHaveBeenCalledWith('owner_id', null);
+  expect(mocks.insert).toHaveBeenCalledWith(expect.objectContaining({ replaces_id: captain }));
+});
+it('falls back to an unlinked copy when replaces_id is unavailable', async () => {
+  mocks.maybeSingle.mockResolvedValueOnce({ data: null, error: { code: '42703', message: 'foods.replaces_id does not exist' } });
+  expect((await createCustomFood({ ...input, copyFrom: captain })).ok).toBe(true);
+  expect(mocks.insert.mock.calls[0]?.[0]).not.toHaveProperty('replaces_id');
+});
+it('reuses the existing live version when a catalog edit is submitted again', async () => {
+  mocks.maybeSingle.mockResolvedValueOnce({ data: { id: captain }, error: null });
+  expect((await createCustomFood({ ...input, copyFrom: captain })).ok).toBe(true);
+  expect(mocks.insert).not.toHaveBeenCalled();
+  expect(mocks.update).toHaveBeenCalledWith(expect.objectContaining({ replaces_id: captain }));
+  expect(mocks.eq).toHaveBeenCalledWith('id', captain);
+});
+it('recovers a simultaneous first edit using the unique-index winner', async () => {
+  mocks.single.mockResolvedValueOnce({ data: { photo_path: null }, error: null })
+    .mockResolvedValueOnce({ data: null, error: { code: '23505' } })
+    .mockResolvedValueOnce({ data: { id: captain }, error: null });
+  expect((await createCustomFood({ ...input, copyFrom: captain })).ok).toBe(true);
+  expect(mocks.insert).toHaveBeenCalledOnce();
+  expect(mocks.update).toHaveBeenCalledOnce();
+});
+it('retries a missing-column insert as a legacy copy without masking other failures', async () => {
+  mocks.single.mockResolvedValueOnce({ data: { photo_path: null }, error: null })
+    .mockResolvedValueOnce({ data: null, error: { code: 'PGRST204', message: 'replaces_id missing from schema cache' } });
+  expect((await createCustomFood({ ...input, copyFrom: captain })).ok).toBe(true);
+  expect(mocks.insert).toHaveBeenCalledTimes(2);
+  expect(mocks.insert.mock.calls[1]?.[0]).not.toHaveProperty('replaces_id');
+  mocks.maybeSingle.mockResolvedValueOnce({ data: null, error: { code: '42501', message: 'permission denied' } });
+  expect((await createCustomFood({ ...input, copyFrom: captain })).ok).toBe(false);
 });
 it('rejects global food updates when the ownership lookup finds no row', async () => {
   mocks.single.mockResolvedValueOnce({ data: null, error: { code: 'PGRST116' } });
@@ -121,9 +153,9 @@ it('does not filter all foods by owner', async () => {
   await searchFoods({ query: '' });
   expect(mocks.eq).not.toHaveBeenCalled();
   expect(mocks.is).toHaveBeenCalledWith('archived_at', null);
-  expect(mocks.is).toHaveBeenCalledTimes(1);
+  expect(mocks.is).toHaveBeenCalledTimes(2);
 });
 it('excludes archived foods from the empty-catalog probe', async () => {
   await searchFoods({ query: 'missing' });
-  expect(mocks.is.mock.calls).toEqual([['archived_at', null], ['archived_at', null]]);
+  expect(mocks.is.mock.calls).toEqual([['archived_at', null], ['archived_at', null], ['archived_at', null]]);
 });

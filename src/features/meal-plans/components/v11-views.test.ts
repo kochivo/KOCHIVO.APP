@@ -16,13 +16,13 @@ it('renders excess calories as a warning instead of a negative remainder', () =>
   expect(html).toContain('aria-valuenow="160"');
 });
 
-it('only offers editing for own foods and keeps a table empty state', () => {
+it('offers editing for every food and keeps a table empty state', () => {
   const food = { id: 'global', name: 'Global', photo: null, custom: false, uses: 0,
     kcal: 100, protein: 10, carbs: 12, fat: 1 };
   const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' }, createElement(V11FoodsTable, {
     foods: [food, { ...food, id: 'own', name: 'Own', custom: true }], onSelect() {},
   })));
-  expect(html.match(/aria-label="Edit food"/g)).toHaveLength(1);
+  expect(html.match(/aria-label="Edit food"/g)).toHaveLength(2);
   expect(html).toContain('>Global</b>');
   const empty = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' }, createElement(V11FoodsTable, { foods: [], onSelect() {} })));
   expect(empty).toContain('No foods match this search');

@@ -10,7 +10,6 @@ import type { Food } from '../types';
 import { planClient, toFood } from './client';
 import type { FoodRow } from './client';
 import { foodFields } from './editor-fields';
-import { FOOD_COLUMNS } from './food-library-columns';
 
 async function loadFood(id: string, copy: boolean): Promise<ActionResult<Food>> {
   const t = await getT(messages);
@@ -18,7 +17,7 @@ async function loadFood(id: string, copy: boolean): Promise<ActionResult<Food>> 
   const client = await planClient();
   const user = await client.auth.getUser();
   if (user.error || !user.data.user) return fail(t('signInFirst'));
-  let request = client.from('foods').select(FOOD_COLUMNS.join(',')).eq('id', id).is('archived_at', null);
+  let request = client.from('foods').select('*').eq('id', id).is('archived_at', null);
   // Global rows can seed an insert, but are never loaded as editable captain rows.
   request = copy ? request.is('owner_id', null) : request.eq('owner_id', user.data.user.id);
   // The generated database types predate units; foodFields validates its runtime shape.

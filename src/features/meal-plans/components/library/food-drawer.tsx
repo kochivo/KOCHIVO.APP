@@ -14,7 +14,8 @@ import { LoadingState } from '@/ui/loading-state';
 import { ResponsiveDialog } from '@/ui/responsive-dialog';
 import type { Food } from '../../types';
 import type { LibraryFood } from '../../data/library-types';
-import { deleteLibraryFood } from '../../data/food-library';
+import { deleteLibraryFood, restoreLibraryFood } from '../../data/food-library';
+import { invalidateFoodResources } from '../../data/food-resource-version';
 import { kcalMismatch } from '../../food-library-rules';
 import { messages as foodMessages } from '../../messages';
 import { messages } from './messages';
@@ -38,13 +39,14 @@ export function FoodDrawer({ food, onClose, onSaved, onMutation }: {
   }, [food, onClose, router, base]);
   const id = food?.custom ? food.id : undefined;
   const uses = (food?.uses ?? 0) + (food?.alternativeUses ?? 0);
-  async function remove() {
-    if (!id || lock.current || !window.confirm(t('confirmDelete'))) return;
+  async function remove(restore = false) {
+    if (!id || lock.current || !window.confirm(t(restore ? 'confirmRestore' : 'confirmDelete'))) return;
     lock.current = true; setBusy(true); setError('');
     try {
       const commit = async () => {
-        const result = await deleteLibraryFood(id);
+        const result = restore ? await restoreLibraryFood(id) : await deleteLibraryFood(id);
         if (!result.ok) { setError(result.error); throw new Error(result.error); }
+        invalidateFoodResources();
         onSaved();
       };
       if (onMutation) await onMutation(undefined, commit); else await commit();
@@ -60,6 +62,7 @@ export function FoodDrawer({ food, onClose, onSaved, onMutation }: {
       <h2 id={title} className="text-xl font-bold">{food.name}</h2>
       <IconButton type="button" disabled={busy} aria-label={t('close')} onClick={onClose}><X aria-hidden /></IconButton>
     </div>
+    {food.replacesId && <p className="text-micro text-muted">{t('modified')}</p>}
     {!food.custom && <p className="my-stack text-muted">{t('readonly')}</p>}
     <div className="mt-card-gap grid gap-card-gap" aria-busy={busy}>
       <fieldset disabled className="grid gap-stack">
@@ -78,7 +81,8 @@ export function FoodDrawer({ food, onClose, onSaved, onMutation }: {
       {error && <p role="alert" className="text-danger">{error}</p>}
       {busy && <p role="status">{t('saving')}</p>}
       {!busy && <Link onClick={onClose} className={buttonClass({ variant: 'primary', block: false, className: "flex min-h-12 items-center justify-center px-page-x font-bold" })}
-        href={id ? `${base}/${id}/edit` : `${base}/new?copyFrom=${food.id}`}>{id ? foodT('editFood') : t('copy')}</Link>}
+        href={id ? `${base}/${id}/edit` : `${base}/new?copyFrom=${food.id}`}>{foodT('editFood')}</Link>}
+      {id && food.replacesId && <Button variant="secondary" disabled={busy} onClick={() => void remove(true)}>{t('restore')}</Button>}
       {id && <>
         {uses > 0 && <p className="text-muted">{t('blocked', { count: uses })}</p>}
         <Button variant="secondary" type="button" disabled={busy || uses > 0} className="min-h-12 border border-danger/40 text-danger! disabled:opacity-50" onClick={() => void remove()}>{t('delete')}</Button>

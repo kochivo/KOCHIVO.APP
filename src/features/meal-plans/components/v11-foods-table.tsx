@@ -6,9 +6,11 @@ import { foodPhotoUrl } from '@/core/storage/media-url';
 import { macrosFor } from '@/lib/macros';
 import type { LibraryFood } from '../data/library-types';
 import { messages } from './v11/messages';
+import { messages as libraryMessages } from './library/messages';
 
 export function V11FoodsTable({ foods, onSelect }: { foods: LibraryFood[]; onSelect: (food: LibraryFood) => void }) {
   const t = useT(messages), locale = useLocale();
+  const lt = useT(libraryMessages);
   return <section className="glass min-w-0 rounded-card border border-line-soft px-inline py-inline">
     <table className="w-full table-fixed text-start text-xs min-[761px]:table-auto min-[761px]:text-sm">
       <thead><tr>{(['food', 'unit', 'kcal', 'protein', 'carbs', 'fat', 'edit'] as const).map(key => <th key={key} scope="col" className={`px-inline py-stack text-start font-medium text-muted min-[761px]:px-stack ${key === 'food' ? 'w-[36%] min-[761px]:w-auto' : key === 'unit' ? 'w-1/5 min-[761px]:w-auto' : ''} ${key === 'carbs' || key === 'fat' ? 'hidden min-[761px]:table-cell' : ''}`}><span className={key === 'edit' ? 'sr-only' : ''}>{t(key)}</span></th>)}</tr></thead>
@@ -22,10 +24,10 @@ export function V11FoodsTable({ foods, onSelect }: { foods: LibraryFood[]; onSel
             {/* Storage images use deployment-specific public hosts. */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             {food.photo && <img src={foodPhotoUrl(food.photo)} alt="" width={32} height={32} loading="lazy" className="size-8 object-cover" />}
-          </span><b className="min-w-0 break-words">{locale === 'en' ? food.nameEn || food.name : food.name}</b></div></td>
+          </span><b className="min-w-0 break-words">{locale === 'en' ? food.nameEn || food.name : food.name}</b>{food.replacesId && <span className="text-micro text-muted">{lt('modified')}</span>}</div></td>
         <td className="break-words px-inline py-stack text-muted min-[761px]:px-stack">{t('grams', { n: grams })}{unit && <> · {locale === 'en' ? unit.name_en : unit.name_ar}</>}</td>
         {(['kcal', 'protein', 'carbs', 'fat'] as const).map(key => <td key={key} className={`px-inline py-stack font-display tabular-nums min-[761px]:px-stack ${key === 'carbs' || key === 'fat' ? 'hidden min-[761px]:table-cell' : ''}`}>{Math.round(values[key] * 10) / 10}</td>)}
-        <td>{food.custom && <button type="button" aria-label={t('edit')} onClick={() => onSelect(food)} className={`${secondaryButtonClass} grid min-h-12 min-w-12 place-items-center rounded-full`}><Pencil aria-hidden className="size-4" /></button>}</td>
+        <td><button type="button" aria-label={t('edit')} onClick={() => onSelect(food)} className={`${secondaryButtonClass} grid min-h-12 min-w-12 place-items-center rounded-full`}><Pencil aria-hidden className="size-4" /></button></td>
       </tr>; })}</tbody>
     </table>{!foods.length && <p className="p-section text-center text-muted">{t('empty')}</p>}
   </section>;

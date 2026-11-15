@@ -14,6 +14,7 @@ import { deleteCustomFood } from './custom-food';
 import type { FoodSegment, LibraryPage } from './library-types';
 import type { ActionResult } from '@/lib/action-result';
 import { libraryUsage } from '../library-usage';
+import { foodReplacements } from './food-replacements';
 
 const inputSchema = z.object({ query: z.string().max(100), segment: z.enum(['all', 'mine', 'global']), cursor: z.uuid().nullish() });
 
@@ -25,9 +26,13 @@ export async function listLibraryFoods(input: { query: string; segment: FoodSegm
   const user = await client.auth.getUser();
   if (!user.data.user) return fail(t('error'));
   const owner = user.data.user.id;
+  const replacements = await foodReplacements(client);
+  if (replacements.error) return fail(t('error'));
+  const hidden = `(${[...replacements.versions.values()].join(',')})`;
   const { query, segment, cursor } = parsed.data;
   const filtered = () => {
     let request = client.from('foods').select('id', { count: 'exact', head: true }).is('archived_at', null);
+    if (replacements.versions.size) request = request.not('id', 'in', hidden);
     if (query.trim()) {
       const pattern = foodSearchPattern(query).replace(/[\\"]/g, character => `\\${character}`);
       request = request.or(`name_ar.imatch."${pattern}",name_en.imatch."${pattern}"`);
@@ -36,6 +41,7 @@ export async function listLibraryFoods(input: { query: string; segment: FoodSegm
   };
   let request = client.from('foods').select(FOOD_LIBRARY_SELECT)
     .is('archived_at', null).order('id').limit(40);
+  if (replacements.versions.size) request = request.not('id', 'in', hidden);
   if (cursor) request = request.gt('id', cursor);
   if (segment === 'mine') request = request.eq('owner_id', owner);
   if (segment === 'global') request = request.is('owner_id', null);
@@ -49,7 +55,8 @@ export async function listLibraryFoods(input: { query: string; segment: FoodSegm
   ]);
   if (page.error || all.error || mine.error || global.error) return fail(t('error'));
   const rows = page.data ?? [];
-  return ok({ foods: rows.map(row => ({ ...toFood(row), ...foodFields(row), ...libraryUsage(row) })),
+  return ok({ foods: rows.map(row => ({ ...toFood(row), ...foodFields(row), ...libraryUsage(row),
+    replacesId: replacements.versions.get(row.id) })),
     cursor: rows.length === 40 ? rows.at(-1)?.id ?? null : null,
     counts: { all: all.count ?? 0, mine: mine.count ?? 0, global: global.count ?? 0 } });
 }
@@ -71,6 +78,10 @@ export async function deleteLibraryFood(id: string): Promise<ActionResult<void>>
   if (count) return fail(t('blocked', { count }));
   const deleted = await deleteCustomFood(id, true);
   return deleted.ok ? ok(undefined) : deleted;
+}
+
+export async function restoreLibraryFood(id: string) {
+  return deleteCustomFood(id);
 }
 
 export async function checkFoodDuplicate(name: string, nameEn: string, id?: string): Promise<ActionResult<boolean>> {

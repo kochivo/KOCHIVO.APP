@@ -11,6 +11,7 @@ import { Plus, Search } from 'lucide-react';
 import { useT } from '@/core/i18n/client';
 import { useResource } from '@/core/resource';
 import { listLibraryFoods } from '../data/food-library';
+import { foodResourceKey } from '../data/food-resource-version';
 import type { FoodSegment, LibraryFood } from '../data/library-types';
 import { messages } from './library/messages';
 import { FoodsTable } from './library/foods-table';
@@ -36,7 +37,7 @@ export function FoodsLibraryEntry() {
     if (!result.ok) throw new Error(result.error);
     return result.data;
   }, [search, segment, cursor]);
-  const resource = useResource(`foods-library:${JSON.stringify([search, segment, cursor])}`, load);
+  const resource = useResource(foodResourceKey(`foods-library:${JSON.stringify([search, segment, cursor])}`), load);
   const newButton = <Button id="new-library-food" type="button" disabled={selected !== undefined} onClick={() => setSelected(null)}
     variant={(selected === undefined) ? 'primary' : 'secondary'} block={false} className={`flex min-h-12 items-center gap-inline px-page-x font-semibold ${selected === undefined ? "" : "text-muted"} `}><PlusIcon aria-hidden className="size-5" />{t('new')}</Button>;
   return <section className="grid gap-card-gap">

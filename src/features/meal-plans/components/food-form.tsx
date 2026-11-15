@@ -6,13 +6,13 @@ import type { FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale, useT } from '@/core/i18n/client';
 import { foodPhotoUrl } from '@/core/storage/media-url';
-import { resourceStore } from '@/core/resource/store';
+import { uuidv7 } from '@/core/offline/ids';
 import { Button } from '@/ui/button';
 import { KoCamera } from '@/ui/icons/ko-camera';
 import { KoSend } from '@/ui/icons/ko-send';
 import { useToast } from '@/ui/toast';
 import { saveCustomFood } from '../data/custom-food-photo';
-import type { LibraryPage } from '../data/library-types';
+import { saveFoodWithCache } from '../data/food-library-cache';
 import type { Macros } from '@/lib/macros';
 import { checkMacros } from '../macro-check';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
@@ -61,19 +61,10 @@ export function FoodForm({ food, copyFrom, initialName = '', onSaved, onCancel, 
     catch { setError(planT('invalidCustomFood')); return; }
     lock.current = true; setBusy(true); setError(''); onBusyChange?.(true);
     try {
-      const result = await saveCustomFood(input, file, planT, id);
+      const optimistic: Food = { ...food, id: id ?? uuidv7(), name, nameEn, units, ...macros,
+        custom: true, photo: food?.photo ?? null, ...(copyId ? { replacesId: copyId } : {}) };
+      const result = await saveFoodWithCache(optimistic, saveCustomFood(input, file, planT, id), id);
       if (!result.ok) { setError(result.error); return; }
-      for (const segment of ['all', 'mine']) {
-        void resourceStore.mutate<LibraryPage>(`foods-library:${JSON.stringify(['', segment, null])}`, current => {
-          const page = current ?? { foods: [], cursor: null, counts: { all: 0, mine: 0, global: 0 } };
-          const existing = page.foods.find(row => row.id === result.data.id);
-          const next = { ...existing, ...result.data, uses: existing?.uses ?? 0 };
-          const foods = existing ? page.foods.map(row => row.id === next.id ? next : row)
-            : id && current ? page.foods : [next, ...page.foods].slice(0, 40);
-          const delta = id ? 0 : 1;
-          return { ...page, foods, counts: { ...page.counts, all: page.counts.all + delta, mine: page.counts.mine + delta } };
-        }, async () => {});
-      }
       toast.success(t('saved', { name: result.data.name }));
       if (onSaved) onSaved(result.data, units[0]?.grams ?? 100);
       else { router.replace(destination); router.refresh(); }
@@ -87,7 +78,7 @@ export function FoodForm({ food, copyFrom, initialName = '', onSaved, onCancel, 
   return <form onSubmit={event => void submit(event)} className="grid gap-card-gap text-ink" aria-busy={busy}>
     <header className={workspace ? 'glass flex flex-wrap items-center gap-stack rounded-card p-stack' : 'glass flex flex-wrap items-center gap-stack rounded-card p-card'}>
       {workspace && <Button variant="secondary" type="button" disabled={busy} aria-label={t('cancel')} onClick={() => onCancel ? onCancel() : router.replace(destination)}><KoSend aria-hidden className="size-4 rotate-45 ltr:rotate-225" /></Button>}
-      <div className="me-auto min-w-0"><h1 className={workspace ? 'text-md font-bold' : 'font-display text-2xl font-bold'}>{id ? planT('editFood') : t('title')}</h1><p className={workspace ? 'text-xs text-muted' : 'text-sm text-muted'}>{t('subtitle')}</p></div>
+      <div className="me-auto min-w-0"><h1 className={workspace ? 'text-md font-bold' : 'font-display text-2xl font-bold'}>{id || copyId ? planT('editFood') : t('title')}</h1><p className={workspace ? 'text-xs text-muted' : 'text-sm text-muted'}>{t('subtitle')}</p></div>
       <Button className={workspace ? 'hidden min-[761px]:inline-flex' : undefined} variant="secondary" type="button" disabled={busy} onClick={() => onCancel ? onCancel() : router.replace(destination)}>{t('cancel')}</Button>
       <Button type="submit" disabled={busy}><KoSend aria-hidden className="size-5" />{busy ? planT('saving') : t('save')}</Button>
     </header>

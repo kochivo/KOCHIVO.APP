@@ -8,13 +8,17 @@ import { messages } from '../messages';
 import { planClient, toFood } from './client';
 import { escapeSearch } from '../types';
 import type { Food } from '../types';
+import { foodReplacements } from './food-replacements';
 
 const CATEGORY_MACRO_THRESHOLDS = { protein: 10, carbs: 20 } as const;
 
 export async function searchFoods({ query, limit = 30, mine = false, category }: { query: string; limit?: number; mine?: boolean; category?: 'protein' | 'carbs' }): Promise<ActionResult<{ foods: Food[]; catalogEmpty: boolean }>> {
   const t = await getT(messages);
   const client = await planClient();
+  const replacements = await foodReplacements(client);
+  if (replacements.error) return fail(t('searchFailedTryAgain'));
   let request = client.from('foods').select('*').is('archived_at', null).order('name_ar').limit(Math.max(1, Math.min(30, limit)));
+  if (replacements.versions.size) request = request.not('id', 'in', `(${[...replacements.versions.values()].join(',')})`);
   if (category) request = request.gte(category === 'protein' ? 'protein_per_100g' : 'carbs_per_100g', CATEGORY_MACRO_THRESHOLDS[category]);
   if (mine) {
     const { data, error } = await client.auth.getClaims();

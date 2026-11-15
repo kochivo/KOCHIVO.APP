@@ -23,7 +23,7 @@ export function FoodsTable({ foods, onSelect }: { foods: LibraryFood[]; onSelect
             {/* eslint-disable-next-line @next/next/no-img-element */}
             {photo && <img src={photo} alt="" width={40} height={40} className="size-10 rounded-control object-cover" />}
             <span className="min-w-0 break-words"><span>{locale === 'en' ? food.nameEn || food.name : food.name}</span>
-              <span className="block text-micro text-faint">{food.custom ? t('mine') : t('global')}</span></span>
+              <span className="block text-micro text-faint">{food.replacesId ? t('modified') : food.custom ? t('mine') : t('global')}</span></span>
           </Button></td>
           {(['kcal', 'protein', 'carbs', 'fat'] as const).map(key => <td key={key} className="px-page-x py-stack font-display tabular-nums"><span className="mb-inline block font-sans text-xs text-faint md:hidden">{t(key)}</span>{food[key]}</td>)}
           <td className="col-span-3 px-page-x py-stack"><div className="flex flex-wrap gap-inline">{food.units?.length ? food.units.map(unit => <span key={unit.key}

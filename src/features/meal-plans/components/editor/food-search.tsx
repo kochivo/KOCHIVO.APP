@@ -11,12 +11,14 @@ import { DisclosureChevron } from '@/ui/disclosure-chevron';
 import { LoadingState } from '@/ui/loading-state';
 import { ResponsiveDialog } from '@/ui/responsive-dialog';
 import { searchFoods } from '../../data/foods';
+import { foodResourceKey } from '../../data/food-resource-version';
 import type { Food } from '../../types';
 import { messages } from './workspace/messages';
 import { messages as planMessages } from '../../messages';
 import { messages as redesignMessages } from './redesign/messages';
 import { defaultPortion } from '../../data/meal-portions';
 import { DefaultPortion } from './default-portion';
+import { FoodModified } from '../food-modified';
 const FoodForm = dynamic(() => import('../food-form').then(module => module.FoodForm),
   { loading: () => <LoadingState variant="detail" /> });
 
@@ -35,7 +37,7 @@ export function FoodSearch({ onPick, meal }: { onPick: (food: Food, grams: numbe
     if (!result.ok) throw new Error(result.error);
     return result.data;
   }, [term]);
-  const resource = useResource(open ? `meal-editor:foods:${term}` : null, load);
+  const resource = useResource(open ? foodResourceKey(`meal-editor:foods:${term}`) : null, load);
   return <div className="border-t border-dashed border-line">
     <Button variant="secondary" className="w-full border border-dashed border-lime/40 text-lime" aria-expanded={open} onClick={() => setOpen(!open)}><Plus aria-hidden className="size-4" />{meal ? rt('addTo', { meal }) : t('search')}<DisclosureChevron expanded={open} /></Button>
     {open && <div className="flex flex-wrap items-center gap-inline px-page-x">
@@ -60,7 +62,7 @@ export function FoodSearch({ onPick, meal }: { onPick: (food: Food, grams: numbe
           <Button variant="secondary" type="button" className="min-h-12 w-full border-t border-line-soft px-stack text-start text-sm" onClick={() => {
             const portion = defaultPortion(food);
             onPick(food, portion.grams, portion.unit); setQuery(''); setOpen(false);
-          }}><span className="min-w-0 flex-1">{locale === 'en' ? food.nameEn || food.name : food.name}<DefaultPortion food={food} /></span><span>{rt('add')}</span></Button>
+          }}><span className="min-w-0 flex-1">{locale === 'en' ? food.nameEn || food.name : food.name}{food.replacesId && <FoodModified />}<DefaultPortion food={food} /></span><span>{rt('add')}</span></Button>
         </li>)}</ul>}
     </div>}
   </div>;

@@ -15,8 +15,10 @@ import { Button } from '@/ui/button';
 import { EmptyState, Segmented } from '@/ui';
 import { LoadingState } from '@/ui/loading-state';
 import { searchFoods } from '../data/foods';
+import { invalidateFoodResources } from '../data/food-resource-version';
 import type { Food } from '../types';
 import { messages as editorMessages } from './editor/messages';
+import { FoodModified } from './food-modified';
 const CustomFoodSheet = dynamic(() => import('./custom-food-sheet').then(module => module.CustomFoodSheet));
 
 export function FoodPicker({ onPick, alternative = false, inline = false }: { onPick: (food: Food, grams: number) => void; alternative?: boolean; inline?: boolean }) {
@@ -53,6 +55,7 @@ export function FoodPicker({ onPick, alternative = false, inline = false }: { on
     try {
       const result = await deleteCustomFood(food.id);
       if (!result.ok) { showFood(food); toast.error(result.error); return; }
+      invalidateFoodResources();
       toast.success(t(result.data?.archived ? 'foodArchived' : 'foodDeleted'));
     }
     catch {
@@ -94,7 +97,7 @@ export function FoodPicker({ onPick, alternative = false, inline = false }: { on
           {/* Public storage hosts vary by deployment and are not in the optimizer allowlist. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           {food.photo && <img src={foodPhotoUrl(food.photo)} alt="" width={48} height={48} loading="lazy" decoding="async" className="size-12 shrink-0 rounded-control object-cover" />}
-          <span><strong>{food.name}</strong>{food.custom && <span className="ms-inline rounded-control bg-surface px-inline text-xs text-muted">{t(inline ? 'myFoods' : 'mine')}</span>}<span className="block text-sm text-muted">{t('per100g')} {formatNumber(food.kcal, locale)}  {t('kcalProtein')} {formatNumber(food.protein, locale)}  {t('carbs')} {formatNumber(food.carbs, locale)}  {t('fat')} {formatNumber(food.fat, locale)}</span></span>
+          <span><strong>{food.name}</strong>{food.replacesId ? <FoodModified /> : food.custom && <span className="ms-inline rounded-control bg-surface px-inline text-xs text-muted">{t(inline ? 'myFoods' : 'mine')}</span>}<span className="block text-sm text-muted">{t('per100g')} {formatNumber(food.kcal, locale)}  {t('kcalProtein')} {formatNumber(food.protein, locale)}  {t('carbs')} {formatNumber(food.carbs, locale)}  {t('fat')} {formatNumber(food.fat, locale)}</span></span>
         </Button>
         {food.custom && <div className="flex gap-inline">
           {captainWorkspaceEnabled() ? <IconButton aria-label={t('editFood')} onClick={() => setEditing(food)}><Pencil aria-hidden /></IconButton> : <Button variant="ghost" aria-label={t('editFood')} onClick={() => setEditing(food)}><Pencil aria-hidden /></Button>}

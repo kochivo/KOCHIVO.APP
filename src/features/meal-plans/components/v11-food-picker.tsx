@@ -11,11 +11,13 @@ import { foodPhotoUrl } from '@/core/storage/media-url';
 
 import { LoadingState } from '@/ui/loading-state';
 import { searchFoods } from '../data/foods';
+import { foodResourceKey } from '../data/food-resource-version';
 import type { Food, Meal } from '../types';
 import { DefaultPortion } from './editor/default-portion';
 import { messages as redesignMessages } from './editor/redesign/messages';
 import { filterFoods } from './v11-model';
 import { messages } from './v11/messages';
+import { FoodModified } from './food-modified';
 
 export function V11FoodPicker({ onPick, disabled, navigationDisabled = false, meals, inline = false, alternative = false }: { onPick: (food: Food, mealId?: string) => void; disabled: boolean; navigationDisabled?: boolean; meals?: Meal[]; inline?: boolean; alternative?: boolean }) {
   const t = useT(messages), locale = useLocale();
@@ -28,7 +30,7 @@ export function V11FoodPicker({ onPick, disabled, navigationDisabled = false, me
     if (!result.ok) throw new Error(result.error);
     return result.data.foods;
   }, [query, tab]);
-  const resource = useResource(`v11-picker:${JSON.stringify([query, tab])}`, load);
+  const resource = useResource(foodResourceKey(`v11-picker:${JSON.stringify([query, tab])}`), load);
   return <section className="glass min-w-0 rounded-card border border-line-soft p-card">
     {!inline && <div className="mb-stack flex items-center justify-between gap-inline"><h2 className="font-semibold">{t('foods')}</h2><Link href="/captain/library/foods" aria-disabled={navigationDisabled} onNavigate={event => { if (navigationDisabled) event.preventDefault(); }} className={`${clickableClass} press inline-flex min-h-12 cursor-pointer items-center rounded-control border border-line bg-surface px-stack text-sm focus-visible:ring-2 focus-visible:ring-lime`}>{t('open')}</Link></div>}
     <label className="flex items-center gap-inline rounded-full border border-line px-stack"><Search className="size-4 text-muted" aria-hidden /><input type="search" aria-label={t('search')} placeholder={t('search')} maxLength={100} value={query} onChange={event => setQuery(event.target.value)} className={`${editableFieldClass} min-h-12 min-w-0 w-full rounded-control bg-surface text-sm focus-visible:ring-2 focus-visible:ring-lime`} /></label>
@@ -41,7 +43,7 @@ export function V11FoodPicker({ onPick, disabled, navigationDisabled = false, me
         {/* eslint-disable-next-line @next/next/no-img-element */}
         {food.photo && <img src={foodPhotoUrl(food.photo)} alt="" width={36} height={36} loading="lazy" className="size-9 object-cover" />}
       </span>
-      <div className="min-w-0 flex-1"><b className="text-sm">{locale === 'en' ? food.nameEn || food.name : food.name}</b><DefaultPortion food={food} /></div>
+      <div className="min-w-0 flex-1"><b className="text-sm">{locale === 'en' ? food.nameEn || food.name : food.name}</b>{food.replacesId && <FoodModified />}<DefaultPortion food={food} /></div>
       <Button type="button" disabled={disabled || (alternative && food.kcal <= 0)} onClick={() => meals ? setChoosing(choosing === food.id ? null : food.id) : onPick(food)} aria-label={t('add')} variant={'secondary'} block={false} className={"grid min-h-12 min-w-12 place-items-center text-lime disabled:opacity-40"}>{inline ? rt('add') : <Plus aria-hidden className="size-4" />}</Button>
       {choosing === food.id && meals && <div className="sheet grid w-full gap-inline rounded-control border border-line p-stack"><small>{rt('chooseMeal', { food: locale === 'en' ? food.nameEn || food.name : food.name })}</small>{meals.map(meal => <Button variant="secondary" key={meal.id} onClick={() => { onPick(food, meal.id); setChoosing(null); }}>{meal.name}</Button>)}</div>}
     </li>)}</ul>}
