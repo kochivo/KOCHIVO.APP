@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>أدوات جديدة للكابتن</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700&family=Changa:wght@500;600;700;800&family=Manrope:wght@500;700;800&display=swap">
+<style>
+:root {
+  --bg: #0b0c0d; --deep: #070808; --surface: #141515; --raised: #1c1d1d;
+  --line: #292a2a; --soft: rgba(242,242,238,.07); --glass: rgba(255,255,255,.035); --glass-line: rgba(255,255,255,.09);
+  --ink: #f4f4f1; --muted: #a6abb0; --faint: #7d8288; --warn: #f2b544; --danger: #ff6b6b; --info: #7aa7ff;
+  --lime: #b6e94f; --lime-dim: rgba(182,233,79,.13); --on-lime: #101418;
+  --display: "Manrope", "Changa", "Alexandria", system-ui, sans-serif;
+  --text: "Manrope", "Alexandria", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--text); font-size: 14.5px; line-height: 1.6; }
+.page { max-width: 1240px; margin: 0 auto; padding: 40px 16px 90px; }
+h1, h2, h3 { margin: 0; font-family: var(--display); text-wrap: balance; }
+h1 { font-size: clamp(28px, 4.4vw, 44px); font-weight: 800; line-height: 1.2; }
+h2 { font-size: 24px; font-weight: 800; }
+h3 { font-size: 15.5px; font-weight: 700; }
+p { margin: 0; }
+.lede { color: var(--muted); max-width: 68ch; margin-top: 12px; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.toc a { color: var(--ink); text-decoration: none; border: 1px solid var(--glass-line); background: var(--glass); border-radius: 999px; padding: 8px 16px; min-height: 44px; display: inline-flex; align-items: center; }
+section { margin-top: 64px; display: grid; gap: 18px; }
+.head p { color: var(--muted); max-width: 74ch; margin-top: 6px; }
+.idx { color: var(--lime); font-family: "Manrope", sans-serif; font-weight: 800; margin-inline-end: 8px; }
+.small { font-size: 12.5px; } .muted { color: var(--muted); } .faint { color: var(--faint); } .lime { color: var(--lime); } .warn { color: var(--warn); } .danger { color: var(--danger); }
+.num { font-family: "Manrope", sans-serif; font-weight: 800; font-variant-numeric: tabular-nums; direction: ltr; unicode-bidi: isolate; }
+.glass { background: var(--glass); border: 1px solid var(--glass-line); border-radius: 22px; }
+.btn { min-height: 48px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 800; font-size: 14.5px; border: 1px solid transparent; font-family: var(--display); padding-inline: 20px; }
+.btn.primary { background: var(--lime); color: var(--on-lime); }
+.btn.secondary { background: var(--glass); border-color: var(--glass-line); color: var(--ink); }
+.btn.block { width: 100%; }
+.chip { border: 1px solid var(--glass-line); background: var(--glass); border-radius: 999px; padding: 2px 10px; font-size: 12px; color: var(--muted); white-space: nowrap; }
+.chip.ok { color: var(--lime); border-color: rgba(182,233,79,.35); }
+.chip.warn { color: var(--warn); border-color: rgba(242,181,68,.35); }
+.chip.danger { color: var(--danger); border-color: rgba(255,107,107,.35); }
+
+.frame { border: 1px solid var(--line); border-radius: 22px; background: var(--bg); overflow: hidden; }
+.frame-bar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--line); background: var(--deep); font-size: 12px; color: var(--faint); direction: ltr; }
+.frame-bar i { width: 10px; height: 10px; border-radius: 50%; background: var(--line); }
+.fbody { padding: 22px; display: grid; gap: 16px; }
+
+.phones { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; align-items: start; }
+.pw { display: grid; gap: 10px; min-width: 0; }
+.pw > p { color: var(--muted); font-size: 13px; }
+.phone { border: 1px solid var(--line); border-radius: 34px; background: var(--bg); padding: 14px 12px 16px; display: grid; gap: 12px; width: 100%; max-width: 360px; justify-self: center; overflow: hidden; position: relative; min-height: 680px; align-content: start; }
+.status { display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; color: var(--faint); padding: 2px 8px 0; direction: ltr; }
+
+/* import */
+.steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.stepc { padding: 16px; display: grid; gap: 12px; align-content: start; }
+.stepc .lab { color: var(--faint); font-size: 12px; }
+.drop { border: 2px dashed var(--line); border-radius: 18px; padding: 26px 14px; display: grid; gap: 8px; justify-items: center; text-align: center; }
+.file { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; font-size: 13px; }
+.file .ic { width: 34px; height: 40px; border-radius: 6px; background: var(--raised); display: grid; place-items: center; font-size: 10px; font-weight: 800; color: var(--danger); font-family: "Manrope", sans-serif; }
+.prog { height: 8px; border-radius: 99px; background: var(--deep); border: 1px solid var(--soft); overflow: hidden; }
+.prog i { display: block; height: 100%; background: var(--lime); border-radius: 99px; }
+.read { display: grid; gap: 6px; font-size: 13px; }
+.read div { display: flex; align-items: center; gap: 8px; }
+.dot { width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; font-size: 10px; font-weight: 800; flex: none; }
+.dot.ok { background: var(--lime); color: var(--on-lime); }
+.dot.run { border: 2px solid var(--lime); border-inline-end-color: transparent; }
+.days { display: flex; gap: 6px; flex-wrap: wrap; }
+.days span { border-radius: 999px; padding: 4px 12px; font-size: 12.5px; border: 1px solid var(--glass-line); }
+.days span.on { background: var(--lime-dim); border-color: rgba(182,233,79,.45); color: var(--lime); }
+.ex { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 10px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; }
+.ex b { font-size: 13.5px; }
+.ex .from { grid-column: 1 / -1; font-size: 11.5px; color: var(--faint); }
+.ex.unsure { border-color: rgba(242,181,68,.4); }
+.ex select { grid-column: 1 / -1; min-height: 40px; border-radius: 10px; background: var(--deep); color: var(--ink); border: 1px solid var(--line); font: inherit; font-size: 13px; padding-inline: 10px; }
+
+/* timed */
+.toggle { display: grid; grid-template-columns: 1fr 1fr; background: var(--deep); border: 1px solid var(--line); border-radius: 999px; padding: 4px; }
+.toggle span { min-height: 40px; border-radius: 999px; display: grid; place-items: center; font-size: 13.5px; color: var(--muted); }
+.toggle span.on { background: var(--lime); color: var(--on-lime); font-weight: 800; }
+.stepper { display: flex; align-items: center; justify-content: space-between; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 8px; }
+.stepper .b { width: 56px; height: 56px; border-radius: 16px; background: var(--raised); display: grid; place-items: center; font-size: 22px; font-weight: 800; }
+.stepper .v { text-align: center; display: grid; }
+.stepper .v .num { font-size: 30px; line-height: 1.1; }
+.ringw { position: relative; width: 240px; height: 240px; justify-self: center; }
+.ringw svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.ringw .in { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; gap: 2px; }
+.ringw .in .num { font-size: 58px; line-height: 1; }
+.setrow { display: flex; justify-content: center; gap: 8px; }
+.setrow i { width: 10px; height: 10px; border-radius: 50%; background: var(--line); }
+.setrow i.done { background: var(--lime); }
+.big { min-height: 68px; font-size: 18px; }
+
+/* form review */
+.review { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 16px; }
+.clip { position: relative; aspect-ratio: 16 / 10; border-radius: 18px; overflow: hidden; border: 1px solid var(--glass-line); background:
+  radial-gradient(circle at 40% 40%, rgba(182,233,79,.15), transparent 45%), linear-gradient(160deg, #1d2021, #0d0f10); }
+.clip svg.fig { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .6; }
+.pin { position: absolute; width: 30px; height: 30px; border-radius: 50%; background: var(--warn); color: var(--on-lime); display: grid; place-items: center; font-weight: 800; font-size: 13px; box-shadow: 0 0 0 6px rgba(242,181,68,.25); }
+.bubble { position: absolute; max-width: 62%; background: rgba(7,8,8,.86); border: 1px solid rgba(242,181,68,.45); border-radius: 14px; padding: 8px 12px; font-size: 13px; }
+.timeline { position: relative; height: 36px; direction: ltr; }
+.timeline .tr { position: absolute; inset-inline: 0; top: 15px; height: 6px; border-radius: 6px; background: var(--line); }
+.timeline .pl { position: absolute; left: 0; top: 15px; height: 6px; width: 42%; border-radius: 6px; background: var(--lime); }
+.timeline .mk { position: absolute; top: 6px; width: 24px; height: 24px; margin-left: -12px; border-radius: 50%; background: var(--warn); color: var(--on-lime); font-size: 11px; font-weight: 800; display: grid; place-items: center; }
+.cmts { display: grid; gap: 8px; align-content: start; }
+.cmt { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; font-size: 13.5px; align-items: start; }
+.cmt .t { background: rgba(242,181,68,.14); color: var(--warn); border-radius: 8px; padding: 0 8px; font-size: 12px; }
+.composer { display: flex; gap: 8px; align-items: center; background: var(--deep); border: 1px solid var(--line); border-radius: 14px; padding: 6px 6px 6px 12px; }
+.composer .ph { flex: 1; color: var(--faint); font-size: 13px; padding-inline-start: 6px; }
+.change { border: 1px solid rgba(182,233,79,.35); background: var(--lime-dim); border-radius: 14px; padding: 10px 12px; display: flex; gap: 10px; align-items: center; font-size: 13.5px; }
+
+/* insights */
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.kpi { padding: 16px; display: grid; gap: 4px; }
+.kpi > .num { font-size: 32px; line-height: 1.1; }
+.kpi .d { font-size: 12.5px; }
+.ins { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 14px; }
+.chart { padding: 16px; display: grid; gap: 12px; }
+.bars { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px; align-items: end; height: 190px; padding-top: 10px; }
+.bar { display: grid; gap: 6px; justify-items: center; align-self: end; }
+.bar .stack { width: 100%; max-width: 44px; display: grid; border-radius: 10px 10px 4px 4px; overflow: hidden; }
+.bar .stack i { display: block; }
+.bar .stack .ren { background: var(--lime); }
+.bar .stack .new { background: rgba(182,233,79,.38); }
+.bar span { font-size: 12px; color: var(--faint); }
+.legend { display: flex; gap: 16px; font-size: 12.5px; color: var(--muted); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-inline-end: 6px; }
+.list { padding: 16px; display: grid; gap: 6px; align-content: start; }
+.lrow { display: flex; align-items: center; gap: 10px; min-height: 52px; padding-inline: 8px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); font-size: 13.5px; }
+.lrow .av { width: 34px; height: 34px; border-radius: 11px; background: var(--raised); display: grid; place-items: center; font-weight: 800; font-size: 13px; flex: none; }
+.lrow .why { font-size: 12px; color: var(--faint); }
+.lrow .end { margin-inline-start: auto; }
+.funnel { padding: 16px; display: grid; gap: 10px; }
+.fstep { display: grid; grid-template-columns: 130px minmax(0, 1fr) 46px; gap: 10px; align-items: center; font-size: 13px; }
+.fstep .fb { height: 22px; border-radius: 8px; background: var(--deep); border: 1px solid var(--soft); overflow: hidden; }
+.fstep .fb i { display: block; height: 100%; background: var(--lime); opacity: .8; }
+
+.decide { border: 1px solid rgba(242,181,68,.35); background: rgba(242,181,68,.07); border-radius: 16px; padding: 14px 16px; display: grid; gap: 8px; font-size: 13.5px; }
+.decide b { color: var(--warn); }
+
+@media (max-width: 1060px) {
+  .steps, .phones, .review, .ins { grid-template-columns: 1fr; }
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 520px) { .kpis { grid-template-columns: 1fr; } .fbody { padding: 14px; } .fstep { grid-template-columns: 100px minmax(0, 1fr) 40px; } }
+</style>
+</head>
+<body>
+<main class="page">
+  <p class="small faint">KOCHIVO · أفكار من Prime · نسخة 1</p>
+  <h1>أربع أدوات توفّر وقت الكابتن</h1>
+  <p class="lede">أفكار شفناها في Prime، معمولة على طريقة KOCHIVO: بنفس الشكل، وبالعربي، ومعاها KO. الأسماء والأرقام أمثلة.</p>
+  <nav class="toc" aria-label="الأفكار">
+    <a href="#import">1. استيراد برنامج من PDF</a><a href="#timed">2. تمارين بالوقت</a><a href="#review">3. تعليق على فيديو الفورم</a><a href="#insights">4. أرقام الشغل</a>
+  </nav>
+
+  <!-- 1 -->
+  <section aria-labelledby="import">
+    <div class="head"><h2 id="import"><span class="idx">1</span>استيراد برنامج من PDF أو Word</h2><p>الكابتن عنده برامجه جاهزة PDF. بدل ما يكتبها تمرين تمرين، يرفع الملف، وKO يقراه ويحوّله لبرنامج جاهز، والكابتن يراجع ويعدّل قبل ما يتحفظ.</p></div>
+    <div class="frame">
+      <div class="frame-bar"><i></i><i></i><i></i><span>kochivo.site/captain/templates/import</span></div>
+      <div class="fbody">
+        <div class="steps">
+          <div class="glass stepc">
+            <span class="lab">الخطوة 1</span><h3>ارفع البرنامج</h3>
+            <div class="drop"><svg width="34" height="34" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0-5 5m5-5 5 5M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3" fill="none" stroke="#b6e94f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><b>اسحب الملف هنا</b><span class="small faint">PDF أو Word أو صورة للبرنامج</span><span class="btn secondary">اختار ملف</span></div>
+            <div class="file"><span class="ic">PDF</span><div><b>برنامج تضخيم 4 أيام.pdf</b><div class="small faint">6 صفحات</div></div></div>
+          </div>
+          <div class="glass stepc">
+            <span class="lab">الخطوة 2</span><h3>KO بيقرا البرنامج</h3>
+            <div class="prog"><i style="width:72%"></i></div>
+            <div class="read">
+              <div><span class="dot ok">✓</span>لقيت 4 أيام تمرين</div>
+              <div><span class="dot ok">✓</span>لقيت 26 تمرين، و23 منهم موجودين في المكتبة</div>
+              <div><span class="dot ok">✓</span>قريت المجموعات والعدات والراحة</div>
+              <div><span class="dot run"></span>بربط التمارين بالفيديوهات…</div>
+            </div>
+            <p class="small faint">بياخد أقل من دقيقة. تقدر تقفل الصفحة وهيبعتلك إشعار لما يخلص.</p>
+          </div>
+          <div class="glass stepc">
+            <span class="lab">الخطوة 3</span><h3>راجع قبل ما تحفظ</h3>
+            <div class="days"><span class="on">يوم 1 · صدر</span><span>يوم 2 · ضهر</span><span>يوم 3 · رجل</span><span>يوم 4 · كتف</span></div>
+            <div class="ex"><b>بنش برس بالبار</b><span class="chip ok">موجود</span><span class="from">4 × 8–10 · راحة 90 ث</span></div>
+            <div class="ex"><b>تفتيح دمبل على بنش مايل</b><span class="chip ok">موجود</span><span class="from">3 × 12 · راحة 60 ث</span></div>
+            <div class="ex unsure"><b>«كروس أوفر من تحت»</b><span class="chip warn">مش متأكد</span><span class="from">في الملف مكتوب كده. اختار التمرين الصح:</span><select aria-label="اختار التمرين"><option>كابل كروس أوفر لتحت لفوق</option></select></div>
+            <span class="btn primary block">اعمل البرنامج</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="small muted">البرنامج بيتحفظ كقالب. بعدها الكابتن يديه لأي لاعب بضغطة، أو يعدّل فيه زي أي برنامج.</p>
+  </section>
+
+  <!-- 2 -->
+  <section aria-labelledby="timed">
+    <div class="head"><h2 id="timed"><span class="idx">2</span>تمارين بالوقت</h2><p>تمارين زي البلانك والتعليق والكارديو مالهاش عدات، ليها وقت. الكابتن يختار «بالوقت»، واللاعب ياخد تايمر بيعدّ قدامه.</p></div>
+    <div class="phones">
+      <div class="pw">
+        <div class="phone">
+          <div class="status"><span>17:01</span><span>KOCHIVO</span></div>
+          <h3 style="font-size:18px">بلانك · المجموعات</h3>
+          <div class="toggle" role="radiogroup" aria-label="نوع التمرين"><span>بالعدات</span><span class="on">بالوقت</span></div>
+          <span class="small faint">مدة كل مجموعة</span>
+          <div class="stepper"><span class="b">−</span><span class="v"><span class="num">0:45</span><span class="small faint">ثانية</span></span><span class="b">+</span></div>
+          <span class="small faint">عدد المجموعات</span>
+          <div class="stepper"><span class="b">−</span><span class="v"><span class="num">3</span><span class="small faint">مجموعات</span></span><span class="b">+</span></div>
+          <span class="small faint">الراحة</span>
+          <div class="stepper"><span class="b">−</span><span class="v"><span class="num">0:30</span><span class="small faint">ثانية</span></span><span class="b">+</span></div>
+          <div class="chip" style="justify-self:start">زوّد 5 ثواني كل أسبوع</div>
+          <span class="btn primary block" style="margin-top:auto">تمام</span>
+        </div>
+        <p>عند الكابتن: زرار واحد يقلب التمرين من عدات لوقت. ويقدر يزوّد الوقت كل أسبوع لوحده.</p>
+      </div>
+      <div class="pw">
+        <div class="phone">
+          <div class="status"><span>17:01</span><span>KOCHIVO</span></div>
+          <h2 style="font-size:24px">بلانك</h2>
+          <p class="muted">المجموعة <span class="num">2</span> من <span class="num">3</span> · المرة اللي فاتت <span class="num">0:40</span></p>
+          <div class="ringw">
+            <svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="44" fill="none" stroke="#292a2a" stroke-width="7"/><circle cx="50" cy="50" r="44" fill="none" stroke="#b6e94f" stroke-width="7" stroke-linecap="round" stroke-dasharray="166 277"/></svg>
+            <div class="in"><span class="num">0:18</span><span class="small faint">من 0:45</span></div>
+          </div>
+          <div class="setrow" aria-hidden="true"><i class="done"></i><i></i><i></i></div>
+          <span class="btn secondary block">وقّف</span>
+          <span class="btn primary block big">خلصت بدري</span>
+        </div>
+        <p>عند اللاعب: عدّ تنازلي كبير، وصوت تنبيه في آخر 3 ثواني. لو وقف بدري بيدوس «خلصت بدري» والوقت اللي عمله بيتسجل.</p>
+      </div>
+      <div class="pw">
+        <div class="phone">
+          <div class="status"><span>17:01</span><span>KOCHIVO</span></div>
+          <h2 style="font-size:24px">بلانك</h2>
+          <div class="glass" style="padding:16px;display:grid;gap:6px;text-align:center">
+            <span class="small faint">المجموعة 2</span>
+            <span class="num" style="font-size:44px;color:var(--lime)">0:47</span>
+            <span class="muted">رقم جديد. أطول من المرة اللي فاتت بـ <span class="num">7</span> ثواني</span>
+          </div>
+          <div class="glass" style="padding:14px;display:grid;gap:8px">
+            <div style="display:flex;justify-content:space-between"><span>المجموعة 1</span><span class="num">0:45</span></div>
+            <div style="display:flex;justify-content:space-between"><span>المجموعة 2</span><span class="num lime">0:47</span></div>
+            <div style="display:flex;justify-content:space-between" class="faint"><span>المجموعة 3</span><span class="num">0:45</span></div>
+          </div>
+          <span class="btn primary block big" style="margin-top:auto">ابدأ الراحة</span>
+        </div>
+        <p>الوقت الأطول بيتحسب رقم جديد، وبيجيب نقطة في الرتب زي الوزن بالظبط.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section aria-labelledby="review">
+    <div class="head"><h2 id="review"><span class="idx">3</span>تعليق على لحظة في فيديو الفورم</h2><p>اللاعب بيبعت فيديو. الكابتن يوقّفه عند الثانية الغلط ويكتب أو يسجل صوت، وممكن يعدّل البرنامج من نفس المكان، ويبعت كله بزرار واحد.</p></div>
+    <div class="frame">
+      <div class="frame-bar"><i></i><i></i><i></i><span>kochivo.site/captain/inbox</span></div>
+      <div class="fbody">
+        <div class="review">
+          <div style="display:grid;gap:10px;align-content:start">
+            <div style="display:flex;align-items:center;gap:10px"><h3>عمر · سكوات بالبار</h3><span class="chip">100 كجم × 6</span><span class="chip warn">الإحساس 4 من 5</span></div>
+            <div class="clip"><svg class="fig" viewBox="0 0 160 100" aria-hidden="true"><g fill="none" stroke="#b6e94f" stroke-width="2.2" stroke-linecap="round"><circle cx="80" cy="22" r="7"/><path d="M58 32h44M80 29v26l-14 14v20M80 55l14 14v20"/></g></svg>
+              <span class="pin" style="top:52%;left:46%">2</span>
+              <div class="bubble" style="top:12%;left:4%">0:04 · ركبتك بتدخل لجوه. ادفع ركبك برا مع صوابع رجلك.</div>
+            </div>
+            <div class="timeline" aria-label="الفيديو"><span class="tr"></span><span class="pl"></span><span class="mk" style="left:18%">1</span><span class="mk" style="left:42%">2</span><span class="mk" style="left:80%">3</span></div>
+            <div class="small faint" style="direction:ltr;text-align:left"><span class="num">0:04 / 0:11</span></div>
+          </div>
+          <div class="cmts">
+            <div class="cmt"><span class="t num">0:02</span><span>النزول كويس، العمق ممتاز.</span></div>
+            <div class="cmt"><span class="t num">0:04</span><span>ركبتك بتدخل لجوه. ادفع ركبك برا مع صوابع رجلك.</span></div>
+            <div class="cmt"><span class="t num">0:09</span><span>رسالة صوتية <span class="num faint">0:12</span></span></div>
+            <div class="composer"><span class="ph">علّق على الثانية <span class="num">0:04</span>…</span><span class="btn secondary" style="min-height:40px;padding-inline:12px">صوت</span><span class="btn primary" style="min-height:40px;padding-inline:14px">ضيف</span></div>
+            <div class="change"><span class="dot ok">✓</span><span>غيّرت في البرنامج: سكوات الأسبوع الجاي <b class="num">95</b> كجم بدل <b class="num">100</b></span></div>
+            <span class="btn secondary">عدّل البرنامج</span>
+            <span class="btn primary block">ابعت لعمر · 3 تعليقات وتعديل واحد</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="small muted">عند اللاعب: الفيديو بيشتغل والتعليقات بتطلع لوحدها في ثانيتها. وبيوصله إشعار «الكابتن راجع الفورم بتاعك».</p>
+  </section>
+
+  <!-- 4 -->
+  <section aria-labelledby="insights">
+    <div class="head"><h2 id="insights"><span class="idx">4</span>أرقام الشغل</h2><p>صفحة واحدة تقول للكابتن شغله ماشي إزاي: الفلوس، ومين جدد، ومين بدأ يقع، والناس بتقف فين قبل ما تشترك.</p></div>
+    <div class="frame">
+      <div class="frame-bar"><i></i><i></i><i></i><span>kochivo.site/captain/insights</span></div>
+      <div class="fbody">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><h3 style="font-size:18px">أرقام الشغل</h3><div class="toggle" style="margin-inline-start:auto;width:260px;grid-template-columns:repeat(3,1fr)"><span>3 شهور</span><span class="on">6 شهور</span><span>سنة</span></div></div>
+        <div class="kpis">
+          <div class="glass kpi"><span class="small faint">الفلوس اللي دخلت</span><span class="num">48,500</span><span class="d lime">جنيه · <span class="num">+18%</span> عن اللي قبلها</span></div>
+          <div class="glass kpi"><span class="small faint">نسبة التجديد</span><span class="num">75%</span><span class="d muted">جدد <span class="num">12</span> من <span class="num">16</span> خلصوا</span></div>
+          <div class="glass kpi"><span class="small faint">لاعيبة شغالين</span><span class="num">27</span><span class="d muted">جديد الشهر ده <span class="num">4</span></span></div>
+          <div class="glass kpi"><span class="small faint">بيقعوا</span><span class="num warn">3</span><span class="d warn">محتاجين منك كلمة</span></div>
+        </div>
+        <div class="ins">
+          <div class="glass chart">
+            <h3>الفلوس كل شهر</h3>
+            <div class="bars" id="bars"></div>
+            <div class="legend"><span><i style="background:var(--lime)"></i>تجديد</span><span><i style="background:rgba(182,233,79,.38)"></i>لاعيبة جداد</span></div>
+          </div>
+          <div class="glass list">
+            <h3>بيقعوا</h3>
+            <div class="lrow"><span class="av">ي</span><div><b>يوسف خالد</b><div class="why">ماتمرنش من 9 أيام</div></div><span class="end btn secondary" style="min-height:40px;padding-inline:12px">كلّمه</span></div>
+            <div class="lrow"><span class="av">م</span><div><b>منى عادل</b><div class="why">التزام الأكل 30% الأسبوع ده</div></div><span class="end btn secondary" style="min-height:40px;padding-inline:12px">كلّمها</span></div>
+            <div class="lrow"><span class="av">ك</span><div><b>كريم سامي</b><div class="why">اشتراكه بيخلص بعد 3 أيام</div></div><span class="end btn secondary" style="min-height:40px;padding-inline:12px">فكّره</span></div>
+          </div>
+        </div>
+        <div class="glass funnel">
+          <h3>الناس بتقف فين قبل ما تشترك</h3>
+          <div class="fstep"><span>فتحوا صفحتك</span><span class="fb"><i style="width:100%"></i></span><span class="num">220</span></div>
+          <div class="fstep"><span>بعتوا طلب انضمام</span><span class="fb"><i style="width:28%"></i></span><span class="num">62</span></div>
+          <div class="fstep"><span>دفعوا</span><span class="fb"><i style="width:9%"></i></span><span class="num">19</span></div>
+          <div class="fstep"><span>بدأوا أول تمرين</span><span class="fb"><i style="width:8%"></i></span><span class="num">17</span></div>
+          <p class="small warn">أكبر وقفة: بين الطلب والدفع. 43 طلب مادفعوش. KO يقدر يفكّرهم.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="decide">
+      <b>قرارات ليك</b>
+      <span><b>1.</b> نبدأ بأنهي واحدة؟ اقتراحي: التمارين بالوقت الأول لأنها الأسهل وبتسد نقص واضح، وبعدها الاستيراد من PDF لأنه أكبر حاجة بتجيب كباتن جداد.</span>
+      <span><b>2.</b> الاستيراد من PDF بيستخدم KO، فهيبقى ليه حد شهري في كل باقة زي باقي حاجات KO؟ اقتراحي آه.</span>
+      <span><b>3.</b> أرقام الشغل تبقى للكابتن بس، ولا كمان في لوحة الأدمن لكل الكباتن؟ اقتراحي للكابتن الأول.</span>
+    </div>
+  </section>
+</main>
+<script>
+(function () {
+  var months = ['يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر'];
+  var ren = [30, 38, 36, 48, 55, 62], fresh = [22, 18, 30, 24, 28, 32];
+  document.getElementById('bars').innerHTML = months.map(function (m, i) {
+    return '<div class="bar"><div class="stack"><i class="new" style="height:' + fresh[i] * 1.5 + 'px"></i><i class="ren" style="height:' + ren[i] * 1.5 + 'px"></i></div><span>' + m + '</span></div>';
+  }).join('');
+})();
+</script>
+</body>
+</html>
