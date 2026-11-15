@@ -69,8 +69,13 @@ export async function executeIntent(actor: KoActor, intent: Intent, locale: Loca
     }
     const { sets, reps } = intent.args;
     if (sets === undefined && reps === undefined) return say(t('missingValues'));
+    const snapshot = await actor.db.from('program_exercises').select('sets,reps_min,reps_max,set_plan')
+      .eq('id', row.id).single();
+    if (snapshot.error) throw snapshot.error;
+    if (snapshot.data.sets !== row.sets || snapshot.data.reps_min !== row.reps_min || snapshot.data.reps_max !== row.reps_max)
+      return say(t('changed'));
     return preview('exercise', { id: row.id, sets: sets ?? null, reps: reps ?? null, previousSets: row.sets,
-      previousReps: row.reps_min, previousMax: row.reps_max }, t('change', { name, day: row.day,
+      previousReps: row.reps_min, previousMax: row.reps_max, previousSetPlan: z.json().parse(snapshot.data.set_plan) }, t('change', { name, day: row.day,
       before: `${row.sets} × ${current}`, after: `${sets ?? row.sets} × ${reps ?? current}` }), name);
   }
   if (intent.kind === 'create_training' || intent.kind === 'create_nutrition') {
