@@ -29,7 +29,8 @@ export function KoTeaser({ role, userId, joined: initialJoined, readFailed = fal
       setPanel({ Component: loaded.KoTeaserPanel, failed: false });
     } catch { setPanel({ Component: null, failed: true }); }
   }
-  if (/^\/player\/(?:workout|onboarding)(?:\/|$)/.test(path)) return null;
+  // The player chat has its own composer in this corner.
+  if (/^\/player\/(?:workout|onboarding)(?:\/|$)/.test(path) || path === '/player/captain') return null;
   return <>
     <button id={openerId} type="button" aria-label={t('teaserOpen')} aria-haspopup="dialog" aria-expanded={open}
       onClick={() => { setOpen(!open); if (!open && !panel.Component) void loadPanel(); }}

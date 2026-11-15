@@ -25,7 +25,7 @@ export function CaptainHeading({ captain }: { captain: MyCaptain }) {
     {captain.avatarUrl ? <Image src={captain.avatarUrl} alt="" width={52} height={52} unoptimized className="size-[52px] shrink-0 rounded-full object-cover" /> :
       <span aria-hidden className="flex size-[52px] shrink-0 items-center justify-center rounded-full bg-lime-soft text-xl font-black text-lime">{captain.fullName.trim().slice(0, 1)}</span>}
     <div className="flex min-w-0 flex-col gap-inline"><h1 className="font-sans text-xl font-black!">{t('captain', { name: captain.fullName })}</h1>
-      <p className="text-xs text-muted">{duration && <>{t('since', { duration })}{' · '}</>}{chatT('profile')}</p></div>
+      <p className="text-xs text-muted">{days === 0 ? <>{t('sinceToday')}{' · '}</> : duration && <>{t('since', { duration })}{' · '}</>}{chatT('profile')}</p></div>
     <ChevronLeft aria-hidden className="dir-icon ms-auto size-[18px] shrink-0 text-muted" />
   </Link>;
 }

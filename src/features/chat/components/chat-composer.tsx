@@ -47,7 +47,7 @@ export function ChatComposer({ viewer, onSendText, onSendVoice, disabled = false
     setText('');
     await onSendText(body);
   };
-  return <div data-chat-composer className={`fixed start-4 end-4 z-30 mx-auto max-w-lg ${viewer === 'player' ? 'bottom-24' : 'bottom-[calc(var(--nav-clearance)+0.5rem)] min-[760px]:bottom-6 lg:static lg:mx-0 lg:max-w-none'}`}>
+  return <div data-chat-composer className={`fixed start-4 end-4 z-30 mx-auto max-w-lg ${viewer === 'player' ? 'bottom-[calc(var(--nav-clearance)+0.5rem)]' : 'bottom-[calc(var(--nav-clearance)+0.5rem)] min-[760px]:bottom-6 lg:static lg:mx-0 lg:max-w-none'}`}>
     {(state.status === 'denied' || state.status === 'unsupported') && <p role="alert" className="mb-inline rounded-full bg-surface px-page-x py-inline text-xs text-danger">{voiceT(state.status === 'denied' ? 'micDenied' : 'unsupported')}</p>}
     <form onSubmit={event => { event.preventDefault(); void send(); }} className="flex items-center gap-inline">
       {voice && <button type="button" disabled={busy} aria-label={t('discard')} onClick={() => { sendAfterStop.current = false; recorder.reset(); }}
