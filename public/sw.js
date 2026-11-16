@@ -3,7 +3,7 @@
  * Player data lives in IndexedDB (src/core/offline), never in this cache.
  * Bump VERSION on any change to this file's caching rules.
  */
-const VERSION = 'v4';
+const VERSION = 'v5';
 const SHELL_CACHE = `kochivo-shell-${VERSION}`;
 const STATIC_CACHE = `kochivo-static-${VERSION}`;
 const OFFLINE_URL = '/offline';
@@ -22,7 +22,7 @@ async function cacheOffline() {
     const cache = await caches.open(STATIC_CACHE);
     for (const asset of assets) {
       const response = await fetch(asset);
-      if (!response.ok || response.redirected) continue;
+      if (!response.ok || response.redirected || response.type === 'opaqueredirect') continue;
       if (asset.endsWith('.js')) {
         const script = await response.clone().text();
         // Turbopack's lazy imports must also be available on a cold offline navigation.
@@ -72,7 +72,7 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       fetch(request)
         .then(async (res) => {
-          if (publicPage(url.pathname) && res.ok && !res.redirected) {
+          if (publicPage(url.pathname) && res.ok && !res.redirected && res.type !== 'opaqueredirect') {
             const cache = await caches.open(SHELL_CACHE);
             await cache.put(request, res.clone());
           }
@@ -90,9 +90,11 @@ self.addEventListener('fetch', (event) => {
       caches.match(request).then(
         (hit) =>
           hit ||
-          fetch(request).then((res) => {
-            const copy = res.clone();
-            caches.open(STATIC_CACHE).then((c) => c.put(request, copy));
+          fetch(request).then(async (res) => {
+            if (res.ok && res.type !== 'opaqueredirect') {
+              const cache = await caches.open(STATIC_CACHE);
+              await cache.put(request, res.clone());
+            }
             return res;
           }),
       ),

@@ -3,6 +3,10 @@ import { beforeEach, expect, it, vi } from 'vitest';
 import { proxy, config } from './proxy';
 import { unstable_doesMiddlewareMatch } from 'next/experimental/testing/server';
 
+it.each(['/sitemap.xml', '/robots.txt'])('leaves metadata endpoint %s outside the locale proxy', url => {
+  expect(unstable_doesMiddlewareMatch({ config, nextConfig: {}, url })).toBe(false);
+});
+
 it.each(['/_vercel/insights/script.js', '/_vercel/insights/view', '/_vercel/insights/event'])('leaves analytics endpoint %s outside the auth/locale proxy', url => {
   expect(unstable_doesMiddlewareMatch({ config, nextConfig: {}, url })).toBe(false);
 });

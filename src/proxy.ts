@@ -38,5 +38,5 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   // Offline still needs a locale rewrite; Vercel insights endpoints are platform-owned.
-  matcher: ['/((?!_vercel/insights(?:/|$)|_next/static|_next/image|icons|brand|sw.js|manifest.webmanifest|.*\\.(?:png|gif|webp|svg)$).*)'],
+  matcher: ['/((?!sitemap\\.xml$|robots\\.txt$|_vercel/insights(?:/|$)|_next/static|_next/image|icons|brand|sw.js|manifest.webmanifest|.*\\.(?:png|gif|webp|svg)$).*)'],
 };

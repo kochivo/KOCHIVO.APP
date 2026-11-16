@@ -1,4 +1,5 @@
 export { content, getContent } from './content';
+export { NotFoundPage } from './not-found/not-found-page';
 export { messages as marketingMessages } from './messages';
 export { SiteHeader } from './components/site-header';
 export { Hero } from './components/hero';
