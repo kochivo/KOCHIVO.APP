@@ -180,7 +180,7 @@ export type AppDatabase = Omit<Database, 'public'> & {
       profiles: TimezoneProfiles;
       assessment_schedules: AssessmentSchedulesTable;
       pain_reports: {
-        Row: PainRow & { player_id: string; status: 'open' | 'answered'; reply: PainReply | null; answered_at: string | null };
+        Row: PainRow & { player_id: string; status: 'open' | 'answered'; reply: PainReply | null; answered_at: string | null; swap_alternatives: string[] | null };
         Insert: PainRow & { player_id?: string }; Update: never; Relationships: [];
       };
       pain_load_hints: { Row: { [K in keyof PainLoadHint]: PainLoadHint[K] }; Insert: never; Update: never; Relationships: [] };

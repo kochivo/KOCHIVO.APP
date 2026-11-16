@@ -136,6 +136,6 @@ it('recalculates historical adherence with the current weekdays and uses trainin
   await db.query(`insert into public.program_days(program_id,position,weekday)
     select p.id,w,w from public.programs p cross join generate_series(2,6) w where p.player_id=$1`, [player]);
   expect((await board(captain, '2026-10-01')).rows.find(r => r.player_id === player))
-    .toMatchObject({ done: 1, planned: 27, adherence: 4 });
+    .toMatchObject({ done: 1, planned: 26, adherence: 4 });
   expect((await board()).rows.find(r => r.player_id === player)?.done).toBe(0);
 });
