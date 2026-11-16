@@ -20,10 +20,15 @@ import { LoadingState } from '@/ui/loading-state';
 import { PageBarTitle } from '@/ui/page-bar-title';
 import { PageBarActions } from '@/ui/page-bar-actions';
 import { V11FoodsTable } from './v11-foods-table';
+const LibraryWorkspace = dynamic(() => import('./library/library-workspace').then(module => module.LibraryWorkspace), { loading: () => <LoadingState variant="list" /> });
 
 const FoodDrawer = dynamic(() => import('./library/food-drawer').then(module => module.FoodDrawer));
 
 export function FoodsLibraryEntry() {
+  return captainWorkspaceEnabled() ? <LibraryWorkspace /> : <LegacyFoodsLibrary />;
+}
+
+function LegacyFoodsLibrary() {
   const workspace = captainWorkspaceEnabled();
   const PlusIcon = workspace ? KoPlus : Plus;
   const t = useT(messages);

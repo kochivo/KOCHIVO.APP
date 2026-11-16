@@ -21,8 +21,9 @@ import { customFoodSchema } from '../types';
 import type { Food, FoodUnit } from '../types';
 import { FoodUnitsEditor } from './food-units-editor';
 import { FoodPreview } from './food-preview';
+import { messages as libraryV2Messages } from './library/v2/messages';
 
-export function foodFormInput(value: Macros & { name: string; nameEn: string; units: FoodUnit[]; copyFrom?: string }) {
+export function foodFormInput(value: Macros & { name: string; nameEn: string; units: FoodUnit[]; copyFrom?: string; fiber?: number | null }) {
   return customFoodSchema.parse({ ...value, servingGrams: 100,
     units: value.units.map(unit => ({ ...unit, name_en: unit.name_en.trim() || unit.name_ar.trim() })) });
 }
@@ -33,6 +34,8 @@ export function FoodForm({ food, copyFrom, initialName = '', onSaved, onCancel, 
   onBusyChange?: (busy: boolean) => void;
 }) {
   const t = useT(foodFormMessages);
+  const libraryT = useT(libraryV2Messages);
+  const [fiber, setFiber] = useState<number | null>(food?.fiber_per_100g ?? null);
   const workspace = captainWorkspaceEnabled();
   const planT = useT(messages);
   const locale = useLocale();
@@ -57,11 +60,12 @@ export function FoodForm({ food, copyFrom, initialName = '', onSaved, onCancel, 
     event.preventDefault();
     if (lock.current) return;
     let input;
-    try { input = foodFormInput({ name, nameEn, ...macros, units, ...(copyId ? { copyFrom: copyId } : {}) }); }
+    try { input = foodFormInput({ name, nameEn, ...macros, fiber, units, ...(copyId ? { copyFrom: copyId } : {}) }); }
     catch { setError(planT('invalidCustomFood')); return; }
     lock.current = true; setBusy(true); setError(''); onBusyChange?.(true);
     try {
       const optimistic: Food = { ...food, id: id ?? uuidv7(), name, nameEn, units, ...macros,
+        fiber_per_100g: fiber, source_kind: null, source_ref: null,
         custom: true, photo: food?.photo ?? null, ...(copyId ? { replacesId: copyId } : {}) };
       const result = await saveFoodWithCache(optimistic, saveCustomFood(input, file, planT, id), id);
       if (!result.ok) { setError(result.error); return; }
@@ -71,7 +75,7 @@ export function FoodForm({ food, copyFrom, initialName = '', onSaved, onCancel, 
     } catch { setError(planT('couldntSaveTryAgain')); }
     finally { lock.current = false; setBusy(false); onBusyChange?.(false); }
   }
-  const check = checkMacros(macros);
+  const check = { ...checkMacros(macros), warn: Math.abs(4 * macros.protein + 4 * macros.carbs + 9 * macros.fat - macros.kcal) > macros.kcal * 0.15 };
   const macroLabels = { kcal: 'calories', protein: 'protein', carbs: 'carbs2', fat: 'fat2' } as const;
   const photo = preview || (food?.photo ? foodPhotoUrl(food.photo) : null);
   const inputClass = 'min-h-12 w-full min-w-0 rounded-control border border-line bg-surface px-stack';
@@ -113,6 +117,7 @@ export function FoodForm({ food, copyFrom, initialName = '', onSaved, onCancel, 
                 onChange={event => setMacros({ ...macros, [key]: Number(event.target.value) })} />
             </label>)}
           </div>
+          <label className="grid gap-inline text-sm">{libraryT('fiber')}<input className={inputClass} type="number" min={0} max={100} step="0.1" value={fiber ?? ''} onChange={event => setFiber(event.target.value === '' ? null : Number(event.target.value))} /></label>
           <p role="status" className={`rounded-control p-stack text-sm ${check.warn ? 'bg-warn/10 text-warn' : 'bg-lime/10 text-lime'}`}>
             {check.warn ? t('warn', { calculated: Math.round(check.calculated), kcal: macros.kcal }) : t('ok')}
           </p>

@@ -27,7 +27,9 @@ it('replaces the temporary row with the saved id and values before refreshing', 
   state.index = 0;
   state.page = { foods: [temporary], cursor: null, counts: { all: 1, mine: 1, global: 0 } };
   const saved = { ...temporary, id: 'persisted', kcal: 2, photo: 'food-media/rice.jpg' };
-  const tree = FoodsLibraryEntry();
+  const entry = FoodsLibraryEntry();
+  if (typeof entry.type !== 'function') throw new Error('Missing legacy library');
+  const tree = entry.type(entry.props);
   const drawer = Children.toArray(tree.props.children).find(child => isValidElement<{ onSaved?: unknown }>(child) && child.props.onSaved);
   if (!isValidElement<{ onSaved: (food: Food, optimisticId: string) => void }>(drawer)) throw new Error('Missing drawer');
   drawer.props.onSaved(saved, temporary.id);

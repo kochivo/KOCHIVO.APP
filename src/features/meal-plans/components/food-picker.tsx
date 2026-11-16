@@ -19,6 +19,7 @@ import { invalidateFoodResources } from '../data/food-resource-version';
 import type { Food } from '../types';
 import { messages as editorMessages } from './editor/messages';
 import { FoodModified } from './food-modified';
+import { matchesFood } from './library/library-model';
 const CustomFoodSheet = dynamic(() => import('./custom-food-sheet').then(module => module.CustomFoodSheet));
 
 export function FoodPicker({ onPick, alternative = false, inline = false }: { onPick: (food: Food, grams: number) => void; alternative?: boolean; inline?: boolean }) {
@@ -43,7 +44,7 @@ export function FoodPicker({ onPick, alternative = false, inline = false }: { on
   function showFood(food: Food) {
     changes.current.set(food.id, food);
     setResult(value => ({ catalogEmpty: false, foods: [
-      ...(food.name.toLocaleLowerCase().includes(latestQuery.current.trim().toLocaleLowerCase()) ? [food] : []),
+      ...(matchesFood(food, latestQuery.current) ? [food] : []),
       ...(value?.foods ?? []).filter(row => row.id !== food.id),
     ] }));
   }
@@ -72,7 +73,7 @@ export function FoodPicker({ onPick, alternative = false, inline = false }: { on
         const value = response.data;
         const foods = value.foods.filter(food => !changes.current.has(food.id));
         const local = [...changes.current.values()].filter((food): food is Food => food !== null &&
-          food.name.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()));
+          matchesFood(food, query));
         setResult({ foods: [...local, ...foods].slice(0, inline ? 20 : 30), catalogEmpty: value.catalogEmpty && !local.length });
         setLoading(false); setError('');
       }

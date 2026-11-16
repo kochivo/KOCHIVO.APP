@@ -16,6 +16,7 @@ export const customFoodSchema = z.object({
   protein: z.number().min(0).max(1000),
   carbs: z.number().min(0).max(1000),
   fat: z.number().min(0).max(1000),
+  fiber: z.number().min(0).max(100).nullable().optional(),
   photoPath: z.string().min(1).max(200).optional(),
 }).refine(value => value.kcal / value.servingGrams * 100 <= 900)
   // Macros are part of the serving's weight, so together they can never weigh more than the serving.

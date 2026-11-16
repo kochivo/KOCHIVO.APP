@@ -71,7 +71,7 @@ it('optimistically replaces a catalog food while saving and rolls back on failur
 it('saves unchanged per-100 values, units and an own-food ID, then returns to the library', async () => {
   await submit();
   expect(state.save.mock.calls[0]?.[0]).toEqual({ name: 'Kofta', nameEn: 'Grilled kofta', servingGrams: 100,
-    kcal: 230, protein: 18, carbs: 4, fat: 16, units: food.units });
+    kcal: 230, protein: 18, carbs: 4, fat: 16, fiber: null, units: food.units });
   expect(state.save.mock.calls[0]?.[3]).toBe(food.id);
   expect(state.replace).toHaveBeenCalledWith('/en/captain/library/foods');
   expect(state.success).toHaveBeenCalledWith('Saved Kofta to your library');

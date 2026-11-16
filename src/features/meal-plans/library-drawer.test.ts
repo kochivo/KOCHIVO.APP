@@ -25,7 +25,7 @@ it('opens the new-food route once and closes the drawer when creating from the l
 });
 it('offers editing global food fields without a catalog delete action', () => {
   const html = renderToStaticMarkup(createElement(FoodDrawer, { food, onClose() {}, onSaved() {} }));
-  expect(html).toContain('<fieldset disabled=""');
+  expect(html).toContain('Not in our source yet');
   expect(html).toContain('Edit food');
   expect(html).not.toContain('Restore original');
   expect(html).toContain('/en/captain/library/foods/new?copyFrom=id');

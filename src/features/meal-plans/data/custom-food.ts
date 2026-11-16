@@ -42,11 +42,12 @@ async function writeCustomFood(input: CustomFoodInput, id?: string): Promise<Act
     else if (existing.data) id = existing.data.id;
   }
   const values = {
-    owner_id: owner, source: 'captain', name_ar: value.name,
+    owner_id: owner, source: 'captain', source_kind: null, source_ref: null, name_ar: value.name,
     ...(value.nameEn !== undefined ? { name_en: value.nameEn || null } : id ? {} : { name_en: null }),
     ...(value.units !== undefined ? { units: value.units } : {}),
     kcal_per_100g: per100(value.kcal), protein_per_100g: per100(value.protein),
     carbs_per_100g: per100(value.carbs), fat_per_100g: per100(value.fat),
+    ...(value.fiber !== undefined ? { fiber_per_100g: value.fiber == null ? null : per100(value.fiber) } : {}),
     photo_path: value.photoPath ?? previous?.data?.photo_path ?? original?.data?.photo_path ?? null,
     ...(replacesId ? { replaces_id: replacesId } : {}),
   };
