@@ -4,7 +4,7 @@ import { loadPlayerAssessmentHistory } from './data/player-assessments';
 const state = vi.hoisted(() => ({ user: 'player' as string | null, error: null as Error | null,
   calls: [] as { table: string; method: string; args: unknown[] }[],
   due: [{ id: 'due', due_at: null, forms: { title: 'Due' } }],
-  past: [{ id: 'past', form_id: 'form', answered_at: '2026-11-10T12:00:00Z', forms: { title: 'Monthly' } }],
+  past: [{ id: 'past', form_id: 'form', answered_at: '2026-11-10T12:00:00Z', reviewed_at: '2026-11-11T12:00:00Z', captain_reply: 'Keep going', forms: { title: 'Monthly' } }],
   questions: [{ id: 'weight', form_id: 'form', type: 'number', maps_to: 'weight', label_ar: 'الوزن', label_en: 'Weight', position: 0 }],
   answers: [{ id: 'answer', request_id: 'past', question_id: 'weight', value: 82.4 }],
 }));
@@ -31,6 +31,7 @@ it('loads due and answered rows under the player session and derives a real nume
   const result = await loadPlayerAssessmentHistory();
   expect(result.due).toEqual(state.due);
   expect(result.past[0]).toMatchObject({ id: 'past', answered_at: '2026-11-10T12:00:00Z',
+    reviewed_at: '2026-11-11T12:00:00Z', captain_reply: 'Keep going',
     headline: { value: 82.4, labelAr: 'الوزن', labelEn: 'Weight' } });
   expect(state.calls.filter(c => c.table === 'form_requests' && c.method === 'eq'))
     .toEqual([expect.objectContaining({ args: ['player_id', 'player'] }), expect.objectContaining({ args: ['player_id', 'player'] })]);

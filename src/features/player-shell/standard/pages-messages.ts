@@ -1,4 +1,5 @@
 export const arStd = {
+  reviewed: 'تمت المراجعة',
   profileTitle: 'الكابتن واشتراكك', back: 'العودة', subscription: 'اشتراكك', active: 'نشط',
   memberSince: 'عضو منذ {date}', until: 'حتى {date}', daysLeft: 'متبقٍ {n} يوم',
   renew: 'جدّد باقتك', renewalBody: 'اختر الباقة وأرسل للكابتن طلب التجديد من باقاته الحالية.',

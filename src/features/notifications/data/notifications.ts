@@ -1,7 +1,6 @@
 import { loadSupabaseBrowser } from '@/core/supabase/lazy';
 import type { Notification } from '../types';
 import { ranksEnabled } from '@/lib/ranks-enabled';
-import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 
 // While ranks are hidden, their notifications stay in the table but never reach the bell.
 const RANK_TYPES = '(rank_up,player_rank_up,crown_taken,crown_lost,crown_close,crown_defend)';
@@ -9,7 +8,6 @@ const RANK_TYPES = '(rank_up,player_rank_up,crown_taken,crown_lost,crown_close,c
 export async function unreadCount(): Promise<number> {
   const client = await loadSupabaseBrowser();
   const base = client.from('notifications').select('id', { count: 'exact', head: true }).eq('is_read', false);
-  if (!captainWorkspaceEnabled()) base.not('type','eq','form_requested');
   const { count, error } = await (ranksEnabled() ? base : base.not('type', 'in', RANK_TYPES));
   if (error) throw error;
   return count ?? 0;
@@ -18,7 +16,6 @@ export async function unreadCount(): Promise<number> {
 export async function latestNotifications(): Promise<Notification[]> {
   const client = await loadSupabaseBrowser();
   const base = client.from('notifications').select('*');
-  if (!captainWorkspaceEnabled()) base.not('type','eq','form_requested');
   const { data, error } = await (ranksEnabled() ? base : base.not('type', 'in', RANK_TYPES))
     .order('created_at', { ascending: false }).order('id', { ascending: false }).limit(20);
   if (error) throw error;
@@ -40,6 +37,7 @@ export async function latestNotifications(): Promise<Notification[]> {
       plan_id: typeof payload.plan_id === 'string' ? payload.plan_id : undefined,
       request_id: typeof payload.request_id === 'string' ? payload.request_id : undefined,
       form_id: typeof payload.form_id === 'string' ? payload.form_id : undefined,
+      kind: payload.kind === 'assessment' || payload.kind === 'checkin' || payload.kind === 'form_check' ? payload.kind : undefined,
       captain_name: typeof payload.captain_name === 'string' ? payload.captain_name : undefined,
       tier: payload.tier === 'champion' || payload.tier === 'elite' || payload.tier === 'legend' ? payload.tier : undefined,
       medal: typeof payload.medal === 'string' ? payload.medal : undefined,

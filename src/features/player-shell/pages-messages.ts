@@ -4,6 +4,7 @@ import { arStd } from './standard/pages-messages';
 export const messages = defineMessages({
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
+    reviewed: 'اتراجع',
     profileTitle: 'الكابتن واشتراكك', back: 'ارجع', subscription: 'اشتراكك', active: 'شغّال',
     memberSince: 'عضو من {date}', until: 'لحد {date}', daysLeft: 'فاضل {n} يوم',
     renew: 'جدد باقتك', renewalBody: 'اختار الباقة وابعت للكابتن طلب التجديد. نفس باقات الكابتن الموجودة دلوقتي.',
@@ -13,6 +14,7 @@ export const messages = defineMessages({
     dueCount: '{n} تقييمات مطلوبة',
   },
   en: {
+    reviewed: 'Reviewed',
     profileTitle: 'Coach and subscription', back: 'Back', subscription: 'Your subscription', active: 'Active',
     memberSince: 'Member since {date}', until: 'Until {date}', daysLeft: '{n} days left',
     renew: 'Renew your plan', renewalBody: 'Choose a plan and send your coach a renewal request from their current plans.',

@@ -16,6 +16,7 @@ export async function loadPlayerAssessments() {
 export type DueAssessment = Awaited<ReturnType<typeof loadPlayerAssessments>>[number];
 export type PastAssessment = {
   id: string; answered_at: string; forms: { title: string } | null;
+  reviewed_at: string | null; captain_reply: string | null;
   headline: { value: number; labelAr: string; labelEn: string } | null;
 };
 export type PlayerAssessmentHistory = { due: DueAssessment[]; past: PastAssessment[] };
@@ -27,7 +28,7 @@ export async function loadPlayerAssessmentHistory(): Promise<PlayerAssessmentHis
   const [due, history] = await Promise.all([
     loadPlayerAssessments(),
     client.from('form_requests')
-      .select('id,form_id,answered_at,forms!form_requests_form_id_fkey(title)')
+      .select('id,form_id,answered_at,reviewed_at,captain_reply,forms!form_requests_form_id_fkey(title)')
       .eq('player_id', auth.data.user.id).not('answered_at', 'is', null)
       .order('answered_at', { ascending: false }).order('id').limit(50),
   ]);
@@ -62,7 +63,8 @@ export async function loadPlayerAssessmentHistory(): Promise<PlayerAssessmentHis
       headline = { value: number, labelAr: question.label_ar, labelEn: question.label_en || question.label_ar };
       break;
     }
-    return [{ id: row.id, answered_at: row.answered_at, forms: row.forms, headline }];
+    return [{ id: row.id, answered_at: row.answered_at, reviewed_at: row.reviewed_at,
+      captain_reply: row.captain_reply, forms: row.forms, headline }];
   });
   return { due, past };
 }

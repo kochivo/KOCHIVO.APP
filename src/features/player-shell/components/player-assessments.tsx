@@ -54,11 +54,17 @@ export function PlayerAssessments({ actionable = true, layout = 'list' }: { acti
     <section aria-labelledby="assessments-past" className="space-y-stack pt-inline">
       <h2 id="assessments-past" className="text-xs text-faint">{p('past')}</h2>
       {!past.length ? <p className="rounded-[22px] border border-line-soft bg-surface p-card text-sm text-muted">{p('noPast')}</p> :
-        <ul className="divide-y divide-line-soft overflow-hidden rounded-[22px] border border-line-soft bg-surface">{past.map(request => <li key={request.id} className="flex min-h-16 items-center gap-stack px-page-x py-card">
+        <ul className="divide-y divide-line-soft overflow-hidden rounded-[22px] border border-line-soft bg-surface">{past.map(request => <li key={request.id} className="space-y-stack px-page-x py-card">
+          <div className="flex min-h-16 items-center gap-stack">
           <div className="min-w-0 flex-1"><h3 className="text-sm font-bold">{request.forms?.title}</h3>
             <time dateTime={request.answered_at} className="mt-inline block text-xs text-muted">{date(request.answered_at)}</time></div>
           {request.headline && <span className="font-numeric text-sm font-extrabold">{formatNumber(request.headline.value, locale)}
             <span className="ms-inline text-micro font-normal text-muted">{locale === 'en' ? request.headline.labelEn : request.headline.labelAr}</span></span>}
+          </div>
+          {request.captain_reply?.trim() && <div className="recessed rounded-card p-card text-sm">
+            {request.reviewed_at && <p className="text-xs text-muted">{p('reviewed')}</p>}
+            <p className="whitespace-pre-wrap break-words text-ink">{request.captain_reply}</p>
+          </div>}
         </li>)}</ul>}
     </section>
   </div>;

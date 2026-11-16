@@ -14,6 +14,16 @@ const data = { request: { id: 'r', player_id: 'p', answered_at: null, reviewed_a
     label_ar: 'صوّر نفسك من قدام', label_en: 'Front photo', required: true, options: [], maps_to: null, alert_on: null }],
 } as unknown as RequestData;
 
+it('shows the captain reply on an answered assessment and hides the card without a reply', () => {
+  const render = (reply: string | null) => renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' },
+    createElement(AnswerFlow, { locale: 'ar', data: { ...data, request: { ...data.request,
+      answered_at: '2026-11-03T10:00:00Z', reviewed_at: '2026-11-03T11:00:00Z', captain_reply: reply } } })));
+  expect(render('Keep going')).toContain('Keep going');
+  expect(render('Keep going')).toContain('التقييم اتراجع');
+  expect(render(null)).not.toContain('التقييم اتراجع');
+  expect(render('   ')).not.toContain('التقييم اتراجع');
+});
+
 it('renders camera and gallery actions, step count and offline draft note', () => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
   const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' }, createElement(AnswerFlow, { data, locale: 'ar' })));

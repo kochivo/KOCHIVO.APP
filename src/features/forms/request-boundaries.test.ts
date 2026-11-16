@@ -3,11 +3,12 @@ import { readFileSync } from 'node:fs';
 vi.mock('server-only',() => ({}));
 vi.mock('next/navigation',() => ({notFound:() => {throw new Error('NOT_FOUND');}}));
 vi.mock('@/core/supabase/server',() => ({supabaseServer:() => {throw new Error('Unexpected data access');}}));
+vi.mock('./server', () => ({ PlayerFormPage: () => null }));
 afterEach(() => vi.unstubAllEnvs());
-it('rejects the player route before data access when disabled',async () => {
+it('keeps the notification destination available while captain workspace discovery is disabled',async () => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE','0');
   const {default:page} = await import('@/app/[locale]/(player)/player/forms/[requestId]/page');
-  await expect(page({params:Promise.resolve({locale:'en',requestId:'r'})})).rejects.toThrow('NOT_FOUND');
+  await expect(page({params:Promise.resolve({locale:'en',requestId:'r'})})).resolves.toMatchObject({ props: { locale: 'en', requestId: 'r' } });
   const {pendingRequests,playerRequests} = await import('./data/request-actions');
   expect(await pendingRequests()).toEqual([]);
   expect(await playerRequests('p')).toEqual([]);

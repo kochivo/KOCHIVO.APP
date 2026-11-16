@@ -2,7 +2,7 @@ import { messages } from './messages.ts';
 
 export type NotificationType = Exclude<keyof typeof messages.ar,
   'title' | 'fallback' | 'subscription_expiring_player' | 'subscription_expired_player' | 'crown_close_points' | `rank_up_${string}`
-  | 'coach_replied_form_check' | 'swap_decided_declined'>;
+  | 'coach_replied_form_check' | 'coach_replied_assessment' | 'swap_decided_declined'>;
 export interface PushNotificationRow { id: string; type: string; payload: unknown; player_id?: string; user_id?: string }
 
 export function pushPayload(row: PushNotificationRow, locale: 'ar' | 'en' = 'ar', style: 'egyptian' | 'standard' = 'egyptian') {
@@ -19,7 +19,8 @@ export function pushPayload(row: PushNotificationRow, locale: 'ar' | 'en' = 'ar'
   };
   const needsWorkouts = number('needs_workouts');
   const gap = number('gap');
-  const key = row.type === 'coach_replied' && field('kind') === 'form_check' ? 'coach_replied_form_check'
+  const key = row.type === 'coach_replied' && field('kind') === 'assessment' ? 'coach_replied_assessment'
+    : row.type === 'coach_replied' && field('kind') === 'form_check' ? 'coach_replied_form_check'
     : row.type === 'swap_decided' && field('status') === 'declined' ? 'swap_decided_declined'
     : row.type === 'rank_up' && (tier === 'champion' || tier === 'elite' || tier === 'legend')
     ? `rank_up_${tier}` as const
@@ -35,7 +36,9 @@ export function pushPayload(row: PushNotificationRow, locale: 'ar' | 'en' = 'ar'
     : row.type === 'chat_message' ? row.user_id === player && player ? '/player/captain'
       : playerPath ? `${playerPath}/chat` : '/captain/players'
     : row.type === 'form_requested' ? field('request_id') ? `/player/forms/${encodeURIComponent(field('request_id'))}` : '/player'
-    : row.type === 'coach_replied' ? '/player/captain' : row.type === 'swap_decided' ? '/player'
+    : row.type === 'coach_replied' ? field('kind') === 'assessment'
+      ? field('request_id') ? `/player/forms/${encodeURIComponent(field('request_id'))}` : '/player/assessments'
+      : '/player/captain' : row.type === 'swap_decided' ? '/player'
     : row.type === 'swap_requested' ? playerPath || '/captain/players'
     : row.type === 'form_check_submitted' ? '/captain/tasks'
     : row.type === 'checkin_submitted' ? playerPath ? `${playerPath}/checkins` : '/captain/players'

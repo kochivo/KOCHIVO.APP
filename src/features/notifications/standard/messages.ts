@@ -1,4 +1,5 @@
 export const arStd = {
+  coach_replied_assessment: 'ردّ المدرب {name} على التقييم',
   checkin_submitted: 'أرسل {name} المتابعة', form_answered: 'أجاب {name} عن النموذج',
   swap_requested: 'طلب {name} تبديل تمرين', form_check_submitted: 'أرسل {name} فيديو أداء',
   receipt_submitted: 'رفع {name} إيصال دفع', coach_replied: 'ردّ المدرب {name} على المتابعة',

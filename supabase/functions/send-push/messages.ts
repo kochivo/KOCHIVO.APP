@@ -1,5 +1,6 @@
 const baseMessages = {
   ar: {
+    coach_replied_assessment: 'كابتن {name} رد على التقييم',
     chat_message: '{name} بعتلك رسالة',
     form_requested: 'الكابتن مستني ردّك على {name}',
     renewal_requested: '{name} بعت طلب تجديد',
@@ -37,6 +38,7 @@ const baseMessages = {
     workout_reminder: 'جاهز لتمرين النهارده؟ {name} مستنيك',
   },
   en: {
+    coach_replied_assessment: '{name} replied to your assessment',
     chat_message: '{name} sent you a message',
     form_requested: 'Your captain is waiting for: {name}',
     renewal_requested: '{name} requested a renewal',
@@ -77,6 +79,7 @@ const baseMessages = {
 
 export const messages = { ...baseMessages, arStd: {
   ...baseMessages.ar,
+  coach_replied_assessment: 'ردّ المدرب {name} على التقييم',
   chat_message: 'أرسل {name} رسالة إليك',
   form_requested: 'المدرب ينتظر ردك على {name}',
   renewal_requested: 'أرسل {name} طلب تجديد',

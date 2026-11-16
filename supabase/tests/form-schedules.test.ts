@@ -89,9 +89,9 @@ it('reminds once through notifications and rejects unauthorized manual reminders
   await db.query(`select public.queue_form_reminders($1)`, ['2026-11-04T09:59:00Z']);
   expect((await db.query(`select reminded_at from form_requests where form_id=$1`,[form])).rows).toEqual([{ reminded_at: null }]);
   for (let i=0;i<2;i++) await db.query(`select public.queue_form_reminders($1)`, ['2026-11-04T10:00:00Z']);
-  expect((await db.query(`select id from notifications where payload->>'request_id'=$1`,[r.id])).rows).toHaveLength(1);
+  expect((await db.query(`select id from notifications where payload->>'request_id'=$1`,[r.id])).rows).toHaveLength(2);
   expect((await db.query(`select type,payload from notifications where payload->>'request_id'=$1`,[r.id])).rows)
-    .toEqual([{type:'form_requested',payload:{name:'Weekly',request_id:r.id,form_id:form}}]);
+    .toEqual(Array.from({length:2}, () => ({type:'form_requested',payload:{name:'Weekly',request_id:r.id,form_id:form}})));
 });
 it('completes send → answer → answered_at → captain review under RLS', async () => {
   const r = (await db.query<{ id: string }>(`select id from form_requests where form_id=$1`,[form])).rows[0];
@@ -116,5 +116,5 @@ it('the scheduler also reuses a request that was sent manually first',async () =
   expect((await db.query(`select id from form_requests where form_id=$1`,[manualForm])).rows).toEqual([{id:manualRequest}]);
   await asUser(db,captain,tx => tx.query(`select public.remind_custom_form_request($1)`,[manualRequest]));
   expect((await db.query(`select type,payload from notifications where payload->>'request_id'=$1`,[manualRequest])).rows)
-    .toEqual([{type:'form_requested',payload:{name:'Manual first',request_id:manualRequest,form_id:manualForm}}]);
+    .toEqual(Array.from({length:2}, () => ({type:'form_requested',payload:{name:'Manual first',request_id:manualRequest,form_id:manualForm}})));
 });

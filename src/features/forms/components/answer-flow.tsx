@@ -70,7 +70,12 @@ export function AnswerFlow({data,locale}:{data:RequestData;locale:Locale}) {
     finally {busy.current = false;}
   }
   if (state === 'done') return <section className="glass-strong space-y-card-gap rounded-card p-section" role="status">
-    <h1 className="text-2xl font-bold">{t('done')}</h1><Link href={`/${locale}/player`} className="flex min-h-12 items-center text-lime">{t('home')}</Link></section>;
+    <h1 className="text-2xl font-bold">{t('done')}</h1>
+    {data.request.captain_reply?.trim() && <div className="recessed rounded-card p-card text-sm">
+      {data.request.reviewed_at && <p className="text-xs text-muted">{t('reviewed')}</p>}
+      <p className="whitespace-pre-wrap break-words text-ink">{data.request.captain_reply}</p>
+    </div>}
+    <Link href={`/${locale}/player`} className="flex min-h-12 items-center text-lime">{t('home')}</Link></section>;
   if (data.request.reviewed_at) return <p>{t('reviewed')}</p>;
   if (!q) return <p>{t('unavailable')}</p>;
   return <section className={v6 ? 'space-y-card-gap' : 'glass-strong space-y-card-gap rounded-card p-section'} aria-busy={state === 'sending' || uploading}>

@@ -2,6 +2,7 @@ import { Award, CalendarClock, CircleAlert, Crown, HeartPulse } from 'lucide-rea
 import type { Notification } from './types';
 
 export function notificationTextKey(row: Notification) {
+  if (row.type === 'coach_replied' && row.payload.kind === 'assessment') return 'coach_replied_assessment';
   if (row.type === 'coach_replied' && row.payload.kind === 'form_check') return 'coach_replied_form_check';
   if (row.type === 'swap_decided' && row.payload.status === 'declined') return 'swap_decided_declined';
   if (row.type === 'crown_close' && row.payload.needs_workouts === 0 && (row.payload.gap ?? 0)>0) return 'crown_close_points';
@@ -52,7 +53,9 @@ export function notificationHref(row: Notification): string {
 
 export function importantNotificationHref(row: Notification): string | undefined {
   const player = row.payload.player_id ? `/captain/players/${encodeURIComponent(row.payload.player_id)}` : undefined;
-  if (row.type === 'coach_replied') return '/player/captain';
+  if (row.type === 'coach_replied') return row.payload.kind === 'assessment'
+    ? row.payload.request_id ? `/player/forms/${encodeURIComponent(row.payload.request_id)}` : '/player/assessments'
+    : '/player/captain';
   if (row.type === 'swap_decided') return '/player';
   if (row.type === 'receipt_submitted') return '/captain/billing';
   if (row.type === 'swap_requested') return player ?? '/captain/players';

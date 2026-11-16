@@ -18,9 +18,17 @@ it('renders separate empty due and past sections', () => {
   expect(render()).toContain('مفيش تقييمات مطلوبة دلوقتي');
   expect(render()).toContain('لسه مسجلتش تقييمات');
 });
+it('shows the reply and reviewed label only for answered requests with a reply', () => {
+  state.data = { due: [], past: [{ id: 'past', answered_at: '2026-11-03T10:00:00Z',
+    reviewed_at: '2026-11-03T11:00:00Z', captain_reply: 'Keep going', forms: { title: 'Monthly' }, headline: null }] };
+  expect(render()).toContain('Keep going');
+  expect(render()).toContain('اتراجع');
+  state.data.past = state.data.past.map(row => ({ ...row, captain_reply: null }));
+  expect(render()).not.toContain('اتراجع');
+});
 it('renders due fill links and a real dated past headline with only one primary action', () => {
   state.data = { due: [{ id: 'one', due_at: null, forms: { title: 'First' } }, { id: 'two', due_at: null, forms: { title: 'Second' } }],
-    past: [{ id: 'past', answered_at: '2026-11-10T12:00:00Z', forms: { title: 'Monthly' }, headline: { value: 82.4, labelAr: 'الوزن', labelEn: 'Weight' } }] };
+    past: [{ id: 'past', answered_at: '2026-11-10T12:00:00Z', reviewed_at: null, captain_reply: null, forms: { title: 'Monthly' }, headline: { value: 82.4, labelAr: 'الوزن', labelEn: 'Weight' } }] };
   const html = render();
   expect(html).toContain('/ar/player/forms/one');
   expect(html).toContain('/ar/player/forms/two');

@@ -30,15 +30,15 @@ it('preserves form/request ids from stored notifications without accepting non-s
   expect(result[1]?.payload.request_id).toBeUndefined();
   expect(result[1]?.payload.form_id).toBeUndefined();
 });
-it('hides form notifications and their unread count while the workspace flag is off',async () => {
+it('keeps player form notifications and their unread count while the workspace flag is off',async () => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE','0');
   const query={select:vi.fn(),eq:vi.fn(),not:vi.fn(),order:vi.fn(),limit:vi.fn().mockResolvedValue({data:[],error:null}),
     then:(resolve:(result:unknown)=>unknown) => Promise.resolve(resolve({count:0,error:null}))};
   for(const method of [query.select,query.eq,query.not,query.order]) method.mockReturnValue(query);
   load.mockResolvedValue({from:() => query});
   await latestNotifications();
-  expect(query.not).toHaveBeenCalledWith('type','eq','form_requested');
+  expect(query.not).not.toHaveBeenCalledWith('type','eq','form_requested');
   query.not.mockClear();
   expect(await unreadCount()).toBe(0);
-  expect(query.not).toHaveBeenCalledWith('type','eq','form_requested');
+  expect(query.not).not.toHaveBeenCalledWith('type','eq','form_requested');
 });
