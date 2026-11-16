@@ -19,6 +19,7 @@ import { groupHistory } from '../data/history-grouping';
 import { HistorySets } from './history-sets';
 import { FinishPoints } from './finish-points';
 import { expectedWorkoutPrs } from '../data/expected-workout-prs';
+import { mergeHistory, remotePrHistory } from '../data/pr-history';
 
 export function FinishHero({ sessionId, workout, extras = false }: { sessionId: string; workout?: WorkoutPointsInput; extras?: boolean }) {
   const t = useT(messages);
@@ -27,6 +28,13 @@ export function FinishHero({ sessionId, workout, extras = false }: { sessionId: 
   const [failed, setFailed] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const [firstName, setFirstName] = useState<string>();
+  const [remoteRows, setRemoteRows] = useState<Awaited<ReturnType<typeof remotePrHistory>> | null>(null);
+  useEffect(() => {
+    let active = true;
+    void remotePrHistory(localDb()).then(rows => { if (active) setRemoteRows(rows); })
+      .catch(() => { if (active) setFailed(true); });
+    return () => { active = false; };
+  }, [sessionId, attempt]);
   useEffect(() => {
     if (extras || navigator.onLine === false) return;
     let active = true;
@@ -35,8 +43,10 @@ export function FinishHero({ sessionId, workout, extras = false }: { sessionId: 
     return () => { active = false; };
   }, [extras]);
   const read = useCallback(async () => {
+    if (remoteRows === null) return undefined;
     const db = localDb();
-    const [session, rows, plan] = await Promise.all([db.workout_sessions.get(sessionId), db.set_logs.toArray(), db.program_snapshot.get('active')]);
+    const [session, localRows, plan] = await Promise.all([db.workout_sessions.get(sessionId), db.set_logs.toArray(), db.program_snapshot.get('active')]);
+    const rows = mergeHistory(localRows, remoteRows);
     if (!session?.completed_at) throw new Error('Completed session unavailable');
     const records = sessionRecords(rows, sessionId);
     const record = records.sort((a, b) => (b.weight_kg ?? 0) - (a.weight_kg ?? 0) || (b.reps ?? 0) - (a.reps ?? 0))[0];
@@ -52,7 +62,7 @@ export function FinishHero({ sessionId, workout, extras = false }: { sessionId: 
       recordName: exercise ? exerciseName(exercise, locale) : alternative ? exerciseName(alternative, locale) : wt('unknownExercise'),
       day: plan?.days.find(day => day.id === session.program_day_id)?.title,
       minutes: Math.max(0, Math.round((Date.parse(session.completed_at) - Date.parse(session.started_at)) / 60000)) };
-  }, [sessionId, locale, wt]);
+  }, [sessionId, locale, wt, remoteRows]);
   const summary = useLiveQuery(read, useCallback(() => setFailed(true), []), attempt);
   const preview = workout && ranksEnabled() ? previewWorkoutPoints(workout) : undefined;
   const volume = summary && formatVolume(summary.volume, locale);

@@ -9,7 +9,8 @@ import { finishSession, logSet, startSession } from '../data/log-set';
 import { performanceFor } from '../data/last-performance';
 import { prHistory } from '../data/pr-history';
 import { detectPr, type Pr } from '../pr';
-import { setId } from '../ids';
+import { setId, sessionId as deterministicSessionId } from '../ids';
+import { hydrateSession } from '../data/hydrate-session';
 import { buildQueue, isCardioOnly } from '../queue';
 import { finishCardioSession } from '../data/finish-cardio-session';
 import { painBlocksExercise } from '../pain-block';
@@ -62,6 +63,14 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
   const pending = useLiveQuery(readPending, onError, retryKey);
   const retrySync = () => { void retryParked(localDb()).catch(onError); };
   const sessionDayId = day?.id;
+  useEffect(() => {
+    if (!sessionDayId || !today || typeof window === 'undefined') return;
+    const hydrate = () => { void deterministicSessionId(sessionDayId, today)
+      .then(id => hydrateSession(localDb(), id)).catch(onError); };
+    hydrate();
+    window.addEventListener('online', hydrate);
+    return () => window.removeEventListener('online', hydrate);
+  }, [sessionDayId, today, onError, retryKey]);
   const readSession = useCallback(async () => {
     if (!sessionDayId || !today) return null;
     const sessions = await localDb().workout_sessions.where('training_date').belowOrEqual(today).reverse()
@@ -155,6 +164,7 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
     const tappedAt = Date.now();
     try {
       const active = session ?? await startSession(localDb(), day, today, tappedAt);
+      if (active.completed_at && !edited) return;
       await logSet(localDb(), { session_id: active.id, program_exercise_id: current.exercise.id,
         exercise_id: current.exercise.exercise_id, set_index: current.setIndex, drop_index: dropIndex, weight_kg: weight, reps }, tappedAt);
       triggerHaptic('light');

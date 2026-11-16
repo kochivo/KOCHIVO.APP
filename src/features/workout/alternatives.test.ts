@@ -20,7 +20,7 @@ it('keeps prescription identity and logs the chosen exercise offline with its ow
   const saved = await db.set_logs.where('session_id').equals('current').first();
   expect(saved).toMatchObject({ exercise_id: 'press', program_exercise_id: 'prescription' });
   expect(await db.outbox.count()).toBe(2);
-  expect(await lastSession(db, chosen.exercise_id, 'current')).toEqual({ sets: [{ set_index: 1, weight_kg: 40, reps: 12 }] });
+  expect(await lastSession(db, chosen.exercise_id, 'current')).toMatchObject({ sets: [{ set_index: 1, weight_kg: 40, reps: 12 }] });
   expect((await prHistory(db, chosen.exercise_id, saved?.id ?? '')).map(item => item.session_id)).toEqual(['old']);
   expect(row.exercise_id).toBe('bench');
   const step = { exercise: row, setIndex: 1, restAfter: 90 };

@@ -7,12 +7,16 @@ import type { ProgramSnapshot } from '@/features/player-home';
 import type { StrengthSet } from '../trends';
 
 export interface StrengthHistory { sets: StrengthSet[]; names: Record<string, string> }
-export type StrengthLog = StrengthSet & { id: string; deleted_at: string | null; drop_index?: number;
+export type StrengthLog = StrengthSet & { id: string; client_updated_at?: string; deleted_at: string | null; drop_index?: number;
   name_ar?: string | null; name_en?: string | null };
 
 export function mergeStrength(local: StrengthLog[], remote: StrengthLog[]): StrengthSet[] {
   const rows = new Map(remote.map(row => [row.id, row]));
-  for (const row of local) rows.set(row.id, row);
+  for (const row of local) {
+    const other = rows.get(row.id);
+    if (!other || Date.parse(row.client_updated_at ?? '') >= Date.parse(other.client_updated_at ?? '') ||
+      !row.client_updated_at || !other.client_updated_at) rows.set(row.id, row);
+  }
   return [...rows.values()].filter(row => !row.deleted_at && (row.drop_index ?? 0) === 0 && row.training_date)
     .map(({ exercise_id, training_date, weight_kg, reps }) => ({ exercise_id, training_date, weight_kg, reps }));
 }
@@ -25,7 +29,7 @@ export async function readRemoteStrength(): Promise<StrengthLog[]> {
   const rows: StrengthLog[] = [];
   for (let offset = 0; ; offset += 500) {
     const { data, error } = await client.from('set_logs')
-      .select('id,exercise_id,weight_kg,reps,drop_index,deleted_at,workout_sessions!inner(training_date),exercises(name_ar,name_en)')
+      .select('id,exercise_id,weight_kg,reps,drop_index,deleted_at,client_updated_at,workout_sessions!inner(training_date),exercises(name_ar,name_en)')
       .eq('player_id', id).order('id').range(offset, offset + 499);
     if (error) throw error;
     rows.push(...data.map(({ workout_sessions, exercises, ...row }) => ({ ...row, training_date: workout_sessions.training_date,

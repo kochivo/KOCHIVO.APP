@@ -4,9 +4,11 @@ const t = createT(messages, 'ar');
 
 import { saveAndQueue, type KochivoDB, type SetLogRow, type SnapshotDay } from '@/core/offline';
 import { sessionId, setId } from '../ids';
+import { hydrateSession } from './hydrate-session';
 
 export async function startSession(db: KochivoDB, day: Readonly<Pick<SnapshotDay, 'id'>>, today: string, now: number) {
   const id = await sessionId(day.id, today);
+  await hydrateSession(db, id).catch(() => undefined);
   const timestamp = new Date(now).toISOString();
   return db.transaction('rw', db.workout_sessions, db.outbox, async () => {
     const existing = await db.workout_sessions.get(id);

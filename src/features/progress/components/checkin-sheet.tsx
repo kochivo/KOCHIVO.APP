@@ -67,7 +67,6 @@ export function CheckinSheet({ latest, open, onClose, onSent }: {
       }, t);
       if (result.error) {
         setError(result.error);
-        if (result.error === t('youveAlreadySentThisWeeksCheckin')) onSent();
       } else onSent();
     } catch {
       setError(t('couldntSendTheCheckinTryAgain'));

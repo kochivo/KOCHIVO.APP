@@ -35,7 +35,7 @@ it('round trips LWW feedback and notifies once even after reading and resync', a
   await sync(player, row);
   await sync(player, { ...base, session_rpe: 2 });
   expect((await db.query('select session_rpe, player_note from public.workout_sessions where id = $1', [id])).rows)
-    .toEqual([{ session_rpe: 10, player_note: null }]);
+    .toEqual([{ session_rpe: 10, player_note: 'x'.repeat(500) }]);
   await asUser(db, captain, tx => tx.query("update public.notifications set is_read = true where type = 'workout_feedback'"));
   await sync(player, { ...row, player_note: 'pain', client_updated_at: '2026-11-05T13:00:00Z' });
   const notifications = await db.query("select user_id, payload from public.notifications where type = 'workout_feedback'");

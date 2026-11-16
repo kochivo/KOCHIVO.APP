@@ -59,7 +59,7 @@ describe('muscle memory', () => {
       limit: vi.fn(async () => ({ data: [set('s', 1, 40, 12, 1)], error: null })),
     };
     const client = { from: () => query } as never;
-    expect(await remoteLastSession(client, { playerId: 'p1', exerciseId: 'ex', beforeSessionId: 'today' })).toEqual({ sets: [{ set_index: 1, weight_kg: 40, reps: 12 }] });
+    expect(await remoteLastSession(client, { playerId: 'p1', exerciseId: 'ex', beforeSessionId: 'today' })).toMatchObject({ sets: [{ set_index: 1, weight_kg: 40, reps: 12 }] });
     expect(calls).toContainEqual(['eq', 'player_id', 'p1']);
     expect(calls).toContainEqual(['eq', 'exercise_id', 'ex']);
     expect(calls).toContainEqual(['neq', 'session_id', 'today']);

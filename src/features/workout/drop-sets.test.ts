@@ -23,7 +23,7 @@ it('ignores drops for records and last time even when a drop is heavier or more 
   expect(detectPr([{ weight_kg: 60, reps: 8 }], { weight_kg: 70, reps: 9, drop_index: 1 })).toBeNull();
   const base = { id: 'main', session_id: 'old', set_index: 1, weight_kg: 60, reps: 8, completed_at: '2026-11-01', drop_index: 0 };
   expect(latestSession([base, { ...base, id: 'drop', weight_kg: 47.5, reps: 7, drop_index: 1, completed_at: '2026-11-02' }]))
-    .toEqual({ sets: [{ set_index: 1, weight_kg: 60, reps: 8 }] });
+    .toMatchObject({ sets: [{ set_index: 1, weight_kg: 60, reps: 8 }] });
 });
 it('rounds each drop from the previous rounded weight', () => {
   expect(dropWeights(60, 2, 20)).toEqual([47.5, 37.5]);

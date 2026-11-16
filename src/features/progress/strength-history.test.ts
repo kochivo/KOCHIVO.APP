@@ -13,6 +13,13 @@ vi.mock('@/core/supabase/lazy', () => ({ loadSupabaseBrowser: async () => create
 }) }));
 beforeEach(() => { state.fetch.mockReset(); vi.unstubAllGlobals(); });
 
+it('uses the newest timestamp for server corrections and tombstones', () => {
+  const row = { id: 'same', exercise_id: 'lift', training_date: '2026-11-16', weight_kg: 100, reps: 8,
+    deleted_at: null, client_updated_at: '2026-11-15' };
+  expect(mergeStrength([row], [{ ...row, weight_kg: 120, client_updated_at: '2026-11-16' }])[0]?.weight_kg).toBe(120);
+  expect(mergeStrength([row], [{ ...row, deleted_at: '2026-11-16', client_updated_at: '2026-11-16' }])).toEqual([]);
+});
+
 it('merges device history by id with local edits and deletions winning', () => {
   const row = { id: 'same', exercise_id: 'lift', training_date: '2026-11-16', weight_kg: 100, reps: 8, deleted_at: null, drop_index: 0 };
   const remote = [row, { ...row, id: 'remote' }, { ...row, id: 'deleted' }];

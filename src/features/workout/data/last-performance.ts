@@ -6,6 +6,13 @@ export type PastSet = Pick<SetLogRow, 'id' | 'session_id' | 'set_index' | 'weigh
 /** Every set of the most recent earlier workout that included this exercise, in set order. */
 export interface LastSession {
   sets: (Performance & { set_index: number })[];
+  completedAt?: string;
+}
+
+export function newerSession(local: LastSession | null, remote: LastSession | null): LastSession | null {
+  if (!local) return remote;
+  if (!remote) return local;
+  return Date.parse(remote.completedAt ?? '') > Date.parse(local.completedAt ?? '') ? remote : local;
 }
 
 export function latestSession(rows: readonly PastSet[], painSince?: string): LastSession | null {
@@ -15,7 +22,7 @@ export function latestSession(rows: readonly PastSet[], painSince?: string): Las
   const sets = rows.filter((row) => row.session_id === newest.session_id).sort((a, b) => a.set_index - b.set_index)
     .map(({ set_index, weight_kg, reps, completed_at }) => ({ set_index, weight_kg, reps,
       ...(painSince ? { pain_adjusted: completed_at >= painSince } : {}) }));
-  return { sets };
+  return { sets, completedAt: newest.completed_at };
 }
 
 /** The same set from last time; progressive overload compares set 2 with set 2. */
