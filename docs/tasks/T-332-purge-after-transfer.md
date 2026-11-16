@@ -2,7 +2,7 @@
 
 **Source:** found while doing T-328 (2026-11-16). During its PGlite probes, Codex hit `program_exercises_exercise_id_fkey` as a second purge blocker.
 
-**Migration:** ONE new file, `supabase/migrations/0133_purge_after_transfer.sql`. It is additive: new columns with defaults, replaced functions and policies; no data rewrites of existing rows, and no edits to older migrations. Do not apply it to any hosted database.
+**Migration:** ONE new file, `supabase/migrations/0134_purge_after_transfer.sql`. It is additive: new columns with defaults, replaced functions and policies; no data rewrites of existing rows, and no edits to older migrations. Do not apply it to any hosted database.
 
 ## Problem to verify first (PGlite, full chain)
 Captain A creates a custom exercise and puts it in player P's program. P trains, so `set_logs` and maybe `program_exercises` rows reference A's exercise. Then P moves to captain B, perhaps with B's programs or templates copied in other ways. Later A requests deletion and `purge_deleted_accounts()` runs.
