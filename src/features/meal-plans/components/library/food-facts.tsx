@@ -7,6 +7,7 @@ import { macrosFor } from '@/lib/macros';
 import { Button } from '@/ui/button';
 import { IconButton } from '@/ui/icon-button';
 import type { Food } from '../../types';
+import { ingredientNames } from '../../data/ingredient-names';
 import { messages } from './v2/messages';
 import { messages as baseMessages } from './messages';
 import { foodStatus } from './library-model';
@@ -36,8 +37,8 @@ export function FoodFacts({ food, onAdd }: { food: Food; onAdd?: (food: Food, gr
       ['fiber', food.fiber_per_100g], ['sugar', food.sugar_per_100g], ['sodium', food.sodium_mg_per_100g],
     ] as const).map(([key, value]) => <div key={key} className="flex justify-between gap-stack border-b border-line-soft py-inline"><dt>{key === 'fiber' || key === 'sugar' || key === 'sodium' ? t(key) : bt(key)}</dt><dd className="text-muted">{value == null ? t('missing') : value}</dd></div>)}</dl>
     <section className="recessed grid gap-inline rounded-control p-card"><h3 className="font-semibold">{t('source')}</h3><p>{t(status)}</p>
-      {ref && 'fdc_id' in ref && <><p dir="ltr">{ref.fdc_id} · {ref.dataset}</p><p>{ref.description}</p></>}
-      {ref && 'ingredients' in ref && <><h4>{t('ingredients')} · {ref.ingredients.length}</h4><ul>{ref.ingredients.map((item, index) => <li key={`${item.fdc_id}-${index}`}>{item.description} · {item.grams} {bt('grams')}</li>)}</ul></>}
+      {ref && 'fdc_id' in ref && <><p dir="ltr">{ref.fdc_id} · {ref.dataset}</p>{locale === 'en' && <p>{ref.description}</p>}</>}
+      {ref && 'ingredients' in ref && <><h4>{t('ingredients')} · {ref.ingredients.length}</h4><ul>{ref.ingredients.map((item, index) => <li key={`${item.fdc_id}-${index}`}>{'food_id' in item && item.food_id ? item.description : ingredientNames[item.fdc_id]?.[locale === 'en' ? 'en' : 'ar'] ?? item.description} · {item.grams} {bt('grams')}</li>)}</ul></>}
       <p className="text-xs text-muted">{t(`${status}Confidence`)}</p>
     </section>
     {onAdd && <Button className="sticky bottom-0" onClick={() => onAdd(food, grams)}>{t('add')}</Button>}
