@@ -19,7 +19,7 @@ export async function signUpCaptain(input: unknown) {
     const { data, error } = await client.auth.signUp({ email, password, options: {
       data: { role: 'captain', full_name },
     } });
-    if (error) throw error;
+    if (error) return runAction(async () => { throw error; }, { sendsEmail: true });
     // Confirmed duplicates can return an obfuscated user without sending an email.
     if (!data.session && data.user?.identities?.length === 0) return { error: t('trySigningInOrResettingYour') };
     (await cookies()).set('auth-intent', JSON.stringify({ intent: 'captain' }), {
@@ -68,5 +68,5 @@ export async function resendCaptainCode(input: unknown) {
     const { error } = await (await authClient()).auth.resend({ ...parsed.data, type: 'signup' });
     if (error) throw error;
     return {};
-  });
+  }, { sendsEmail: true });
 }

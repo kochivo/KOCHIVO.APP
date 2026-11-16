@@ -31,7 +31,7 @@ export async function signUpPlayer(input: unknown, rawCoach: string, existing = 
     const result = await client.auth.signUp({ email: parsed.data.email, password: parsed.data.password,
       options: { data: { role: 'player', full_name },
         emailRedirectTo: `${await siteOrigin()}/auth/callback?coach=${coach}${selectionQuery(selection)}` } });
-    if (result.error) throw result.error;
+    if (result.error) return runAction(async () => { throw result.error; }, { sendsEmail: true });
     if (!result.data.session && result.data.user?.identities?.length === 0) return { error: t('trySigningInOrResettingYour') };
     return result.data.session ? { redirect: await completeCoachRequest(client, coach, selection) }
       : { codeEmail: parsed.data.email, message: t('confirmCoachRequest') };

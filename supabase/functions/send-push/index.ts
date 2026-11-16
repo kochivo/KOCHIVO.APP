@@ -3,9 +3,11 @@ import { allowedPushEndpoint } from './push-endpoint.ts';
 import { timingSafeEqual } from 'node:crypto';
 import { pushPayload } from './payload.ts';
 import type { PushNotificationRow } from './payload.ts';
+import { reportPushFailure } from './report.ts';
 
 interface SubscriptionRow { id: string; endpoint: string; p256dh: string; auth: string }
 interface PushConfig {
+  sentry_dsn?: string;
   push_hook_secret: string;
   vapid_public_key: string;
   vapid_private_key: string;
@@ -22,6 +24,7 @@ Deno.serve(async request => {
   if (request.method !== 'POST') return new Response(null, { status: 405 });
   const suppliedSecret = request.headers.get('x-push-secret');
   if (!suppliedSecret) return new Response(null, { status: 401 });
+  let sentryDsn: string | undefined;
   try {
     const base = Deno.env.get('SUPABASE_URL');
     const key = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
@@ -34,6 +37,7 @@ Deno.serve(async request => {
       return response;
     };
     const config: PushConfig | null = await (await rest('rpc/push_config', { method: 'POST', body: '{}' })).json();
+    sentryDsn = config?.sentry_dsn;
     if (!config?.push_hook_secret || !await sameSecret(suppliedSecret, config.push_hook_secret)) {
       return new Response(null, { status: 401 });
     }
@@ -64,6 +68,7 @@ Deno.serve(async request => {
       `push_subscriptions?user_id=eq.${encodeURIComponent(notification.user_id)}&select=id,endpoint,p256dh,auth`,
     )).json();
     const payload = JSON.stringify(pushPayload(notification));
+    let failedDeliveries = 0;
     await Promise.all(subscriptions.map(async subscription => {
       if (!allowedPushEndpoint(subscription.endpoint)) {
         console.warn('Rejected push endpoint host');
@@ -83,11 +88,13 @@ Deno.serve(async request => {
         if (status === 404 || status === 410) {
           try { await rest(`push_subscriptions?id=eq.${subscription.id}`, { method: 'DELETE' }); }
           catch { console.error('Push subscription cleanup failed'); }
-        } else console.error('Push delivery failed');
+        } else { failedDeliveries += 1; console.error('Push delivery failed'); }
       }
     }));
+    if (failedDeliveries) await reportPushFailure(sentryDsn, 'delivery_failed', failedDeliveries);
     return new Response(null, { status: 204 });
   } catch {
+    await reportPushFailure(sentryDsn, 'request_failed');
     console.error('Push request failed');
     return new Response(null, { status: 500 });
   }

@@ -1,4 +1,6 @@
 export const arStd = {
+  emailProviderFailed: 'تعذّر إرسال البريد الآن. سجّل الدخول بجوجل أو بكلمة المرور، أو حاول لاحقًا.',
+  emailRateLimited: 'طلبت رموزًا كثيرة. انتظر دقيقة ثم حاول مرة أخرى.',
   loginTitle: 'سجّل الدخول', authBrand: 'KOCHIVO',
   emailCodeChoice: 'رمز عبر البريد', loginMethod: 'طريقة الدخول', emailCodeNeutral: 'إذا كان لهذا البريد حساب، فسيصلك رمز',
   loginEveryone: 'للاعب والكابتن.', newPlayerInvite: 'لاعب جديد؟ أدخل رمز الدعوة', loginOr: 'أو',

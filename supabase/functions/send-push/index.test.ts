@@ -11,12 +11,14 @@ const source = ts.transpileModule(readFileSync('supabase/functions/send-push/ind
   compilerOptions: { module: ts.ModuleKind.CommonJS, esModuleInterop: true, target: ts.ScriptTarget.ES2022 },
 }).outputText;
 
-function sender(status?: number, configured = true, feedback = false, endpoint = 'https://fcm.googleapis.com/private-endpoint') {
+function sender(status?: number, configured = true, feedback = false, endpoint = 'https://fcm.googleapis.com/private-endpoint',
+  failRead = false, copies = 1) {
+  const reports: unknown[][] = [];
   const requests: { path: string; method: string; body?: string }[] = [];
   const sent: { endpoint: string; payload: string }[] = [];
   const errors: unknown[][] = [];
   let handler: ((request: Request) => Promise<Response>) | undefined;
-  const config = configured ? { push_hook_secret: 'hook-secret', vapid_public_key: 'public',
+  const config = configured ? { sentry_dsn: 'https://abc@o1.ingest.sentry.io/2', push_hook_secret: 'hook-secret', vapid_public_key: 'public',
     vapid_private_key: 'private', vapid_subject: 'mailto:test@example.com' } : null;
   class FixedDate extends Date { constructor() { super('2026-11-04T10:00:00Z'); } }
   runInNewContext(source, {
@@ -24,6 +26,7 @@ function sender(status?: number, configured = true, feedback = false, endpoint =
     console: { error: (...args: unknown[]) => errors.push(args), warn: (...args: unknown[]) => errors.push(args) },
     require: (name: string) => {
       if (name === 'node:crypto') return { timingSafeEqual };
+      if (name === './report.ts') return { reportPushFailure: async (...args: unknown[]) => { reports.push(args); } };
       if (name === './payload.ts') return { pushPayload };
       if (name === './push-endpoint.ts') return { allowedPushEndpoint };
       if (name === 'npm:web-push@3.6.7') return { sendNotification: async (subscription: { endpoint: string }, payload: string) => {
@@ -41,20 +44,20 @@ function sender(status?: number, configured = true, feedback = false, endpoint =
       const path = url.replace('https://db.example/rest/v1/', '');
       requests.push({ path, method: init.method ?? 'GET', body: init.body as string | undefined });
       if (path === 'rpc/push_config') return Response.json(config);
+      if (failRead) throw new Error('private data failure');
       if (path.startsWith('notifications?')) return Response.json([
         feedback ? { id, user_id: id, type: 'workout_feedback', payload: { session_id: id, rpe: 9, has_note: true } }
           : { id, user_id: id, type: 'workout_reminder', payload: { day_title: 'Legs' } },
       ]);
       if (path.startsWith('workout_sessions?')) return Response.json([{ player_id: id }]);
-      if (path.startsWith('push_subscriptions?user_id=')) return Response.json([
-        { id, endpoint, p256dh: 'key', auth: 'auth' },
-      ]);
+      if (path.startsWith('push_subscriptions?user_id=')) return Response.json(Array.from({ length: copies },
+        () => ({ id, endpoint, p256dh: 'key', auth: 'auth' })));
       if (path === `push_subscriptions?id=eq.${id}`) return new Response(null, { status: 204 });
       throw new Error('Unexpected data request');
     },
   });
   if (!handler) throw new Error('Sender did not register');
-  return { handle: handler, requests, sent, errors };
+  return { handle: handler, requests, sent, errors, reports };
 }
 const request = (secret = 'hook-secret', notificationId = id) => new Request('https://functions.example/send-push', {
   method: 'POST', headers: { 'x-push-secret': secret }, body: JSON.stringify({ notification_id: notificationId }),
@@ -101,16 +104,31 @@ it('delivers default Arabic payloads and records successful delivery', async () 
   expect(test.requests.at(-1)).toEqual({ path: `push_subscriptions?id=eq.${id}`, method: 'PATCH',
     body: '{"last_success_at":"2026-11-04T10:00:00.000Z"}' });
   expect(test.errors).toEqual([]);
+  expect(test.reports).toEqual([]);
 });
 it.each([404, 410])('removes dead endpoints for status %s', async status => {
   const test = sender(status);
   expect((await test.handle(request())).status).toBe(204);
   expect(test.requests.at(-1)?.method).toBe('DELETE');
   expect(test.errors).toEqual([]);
+  expect(test.reports).toEqual([]);
 });
 it('retains endpoints on transient failures and logs no user or provider data', async () => {
   const test = sender(503);
   expect((await test.handle(request())).status).toBe(204);
   expect(test.requests.some(row => row.method === 'DELETE')).toBe(false);
   expect(test.errors).toEqual([['Push delivery failed']]);
+  expect(test.reports).toEqual([['https://abc@o1.ingest.sentry.io/2', 'delivery_failed', 1]]);
+});
+
+it('reports multiple failed deliveries once and preserves the response', async () => {
+  const test = sender(503, true, false, undefined, false, 2);
+  expect((await test.handle(request())).status).toBe(204);
+  expect(test.reports).toEqual([['https://abc@o1.ingest.sentry.io/2', 'delivery_failed', 2]]);
+});
+
+it('reports request failures without private data', async () => {
+  const test = sender(undefined, true, false, undefined, true);
+  expect((await test.handle(request())).status).toBe(500);
+  expect(test.reports).toEqual([['https://abc@o1.ingest.sentry.io/2', 'request_failed']]);
 });

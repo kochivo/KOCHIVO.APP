@@ -5,6 +5,8 @@ export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
+    emailProviderFailed: 'مقدرناش نبعت الإيميل دلوقتي. ادخل بجوجل أو بالباسورد، أو جرّب كمان شوية.',
+    emailRateLimited: 'طلبت أكواد كتير. استنى دقيقة وجرّب تاني.',
     loginTitle: 'سجّل دخولك', authBrand: 'KOCHIVO',
     emailCodeChoice: 'كود على الإيميل', loginMethod: 'طريقة الدخول', emailCodeNeutral: 'لو الإيميل ده عليه حساب، هيوصلك كود',
     loginEveryone: 'للاعب والكابتن.', newPlayerInvite: 'لاعب جديد؟ ادخل كود الدعوة', loginOr: 'أو',
@@ -102,6 +104,8 @@ export const messages = defineMessages({
     checkYourEmailToConfirmYour: "شوف إيميلك عشان تأكد حسابك وتدخل",
   },
   en: {
+    emailProviderFailed: "We couldn't send the email right now. Sign in with Google or your password, or try again later.",
+    emailRateLimited: 'Too many codes requested. Wait a minute and try again.',
     loginTitle: 'Sign in', authBrand: 'KOCHIVO',
     emailCodeChoice: 'Email code', loginMethod: 'Sign-in method', emailCodeNeutral: 'If this email has an account, you will receive a code',
     loginEveryone: 'For players and coaches.', newPlayerInvite: 'New player? Enter your invite code', loginOr: 'Or',

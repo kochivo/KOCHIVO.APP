@@ -7,6 +7,8 @@ import { unstable_rethrow } from 'next/navigation';
 import type { AppDatabase as Database } from '@/types/app-database';
 import { authError } from '../errors';
 import type { AuthUser } from '../routing';
+import { captureException } from '@sentry/nextjs';
+import { publicConfig } from '@/lib/public-config';
 
 export { supabaseServer as authClient } from '@/core/supabase/server';
 
@@ -28,6 +30,11 @@ export async function profile(client: SupabaseClient<Database>): Promise<AuthUse
   return { role: result.data.role, roleConfirmed: result.data.role_confirmed, admin: membership.data === true,
     captainStatus: result.data.captain_status };
 }
-export async function runAction(work: () => Promise<ActionResult>): Promise<ActionResult> {
-  try { return await work(); } catch (error) { unstable_rethrow(error); return { error: authError(error, await getT(messages)) }; }
+export async function runAction(work: () => Promise<ActionResult>, { sendsEmail = false }: { sendsEmail?: boolean } = {}): Promise<ActionResult> {
+  try { return await work(); } catch (error) {
+    unstable_rethrow(error);
+    return { error: authError(error, await getT(messages), { sendsEmail, report: (failure, context) => {
+      if (publicConfig.sentryDsn) captureException(failure, context);
+    } }) };
+  }
 }

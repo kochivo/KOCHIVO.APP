@@ -16,7 +16,7 @@ export async function sendSignInEmailCode(input: unknown) {
     // Auth can reject unknown addresses when account creation is disabled. Keep both paths indistinguishable.
     if (error && !['user_not_found', 'signup_disabled', 'otp_disabled'].includes(error.code ?? '')) throw error;
     return { codeEmail: email, message: t('emailCodeNeutral') };
-  });
+  }, { sendsEmail: true });
 }
 
 export async function verifySignInEmailCode(input: unknown) {

@@ -14,5 +14,5 @@ export async function sendEmailCode(input: unknown) {
       options: { shouldCreateUser: true, data: { role: 'player' } } });
     if (error) throw error;
     return {};
-  });
+  }, { sendsEmail: true });
 }

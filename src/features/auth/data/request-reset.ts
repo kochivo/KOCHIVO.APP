@@ -13,5 +13,5 @@ export async function requestReset(input: unknown) {
     const { error } = await (await authClient()).auth.resetPasswordForEmail(parsed.data.email);
     if (error && error.code !== 'user_not_found') throw error;
     return {};
-  });
+  }, { sendsEmail: true });
 }
