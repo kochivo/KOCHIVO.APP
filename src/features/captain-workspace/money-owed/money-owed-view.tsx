@@ -45,7 +45,7 @@ export function MoneyOwedView({ data, mode, playerId, locale, t, onSelect, rowAc
         </div>
         <b className="font-display text-sm tabular-nums">{row.amount === null ? t('unpriced') : t('currency', { amount: number(row.amount) })}</b>
         <span className={`rounded-full px-stack py-inline text-xs ${tone}`}>{t(waiting ? 'waiting' : row.reason === 'soon' ? 'upcoming' : 'late')}</span>
-        {rowAction && <span className="flex min-h-12 w-full shrink-0 items-center min-[760px]:w-auto">{rowAction(row.playerId)}</span>}
+        {rowAction && <span className="shrink-0">{rowAction(row.playerId)}</span>}
       </li>;
     })}</ul>}
   </section>;

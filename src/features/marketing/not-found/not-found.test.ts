@@ -4,6 +4,7 @@ import { createT } from '@/core/i18n/messages';
 import { messages } from './messages';
 import { NotFoundPage } from './not-found-page';
 
+vi.mock('server-only', () => ({}));
 vi.mock('@/core/i18n/server', () => ({ getT: async () => createT(messages, 'en') }));
 
 it('renders the public brand, missing-page message and a single home action', async () => {
