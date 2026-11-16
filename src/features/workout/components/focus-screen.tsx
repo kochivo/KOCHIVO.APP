@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowRight, Dumbbell, ChevronDown } from 'lucide-react';
 import { localDate } from '@/lib/dates';
 import { useCalendarClock } from '@/lib/use-calendar-clock';
-import { EmptyState, ErrorState, IconButton, LoadingState, ProgressBar, SyncPill } from '@/ui';
+import { Button, EmptyState, ErrorState, IconButton, LoadingState, ProgressBar, SyncPill } from '@/ui';
 import { CardioCards } from '@/ui/cardio-cards';
 import { useFocusSession } from '../hooks/use-focus-session';
 import { useWakeLock } from '../hooks/use-wake-lock';
@@ -87,7 +87,10 @@ export function FocusScreen({ dayId, playerId }: { dayId: string; playerId?: str
       state.loading ? <LoadingState /> : state.programFinished ?
         <EmptyState icon={Dumbbell} title={t('programFinished')} body={t('renewProgram')} action={{ label: t('backToHome'), href: '/player' }} /> : !state.day ?
         <EmptyState icon={Dumbbell} title={t('thisWorkoutIsntInYourProgram')} body={t('goHomeToSeeYourCurrentWorkout')} action={{ label: t('backToHome'), href: '/player' }} />
-      : state.queue.length === 0 ? !state.day.cardio?.length && <EmptyState icon={Dumbbell} title={t('noExercisesForThisDay')} body={t('yourCoachIsPreparingYourWorkout')} action={{ label: t('messageCoach'), href: '/player/captain' }} /> : <>
+      : state.queue.length === 0 ? state.finished && state.session ? <SessionFeedback key={state.session.id} sessionId={state.session.id}
+        workout={workout} hasFeedback={state.session.session_rpe != null || Boolean(state.session.player_note)} /> : state.day.cardio?.length ?
+        <Button size="lg" block disabled={state.disabled} onClick={() => void state.finishCardio()}>{t('finishCardioWorkout')}</Button> :
+        <EmptyState icon={Dumbbell} title={t('noExercisesForThisDay')} body={t('yourCoachIsPreparingYourWorkout')} action={{ label: t('messageCoach'), href: '/player/captain' }} /> : <>
         {!warmupView && <><p className="text-sm text-muted">{t('setProgress', { value0: formatNumber(state.progress, locale), value1: formatNumber(state.queue.length, locale) })}</p>
         <ProgressBar value={state.doneSets.length} max={state.queue.length} aria-label={t('setProgress', { value0: formatNumber(state.progress, locale), value1: formatNumber(state.queue.length, locale) })} /></>}
         {state.finished ? state.session ? <SessionFeedback key={state.session.id} sessionId={state.session.id}
@@ -99,7 +102,7 @@ export function FocusScreen({ dayId, playerId }: { dayId: string; playerId?: str
             </section> : <WorkoutExercise state={state} /> : <LoadingState />}
       </>}
     {!state.error && !state.loading && state.day && <CardioCards blocks={state.day.cardio ?? []} />}
-    {v6 && state.day && !state.finished && !warmupView && <div className="glass rounded-card border border-line-soft p-card">
+    {v6 && state.day && state.queue.length > 0 && !state.finished && !warmupView && <div className="glass rounded-card border border-line-soft p-card">
       <div className="flex min-h-12 items-center justify-between gap-stack"><span className="text-lime">{v6t('workout')}</span>
         <a href="#workout-exercises" className="flex min-h-12 items-center text-lime hover:underline focus-visible:underline">{v6t('exercises')}</a>
         <Link href="/player/history" className="flex min-h-12 items-center text-lime hover:underline focus-visible:underline">{v6t('history')}</Link></div>

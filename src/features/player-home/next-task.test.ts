@@ -11,6 +11,16 @@ const snapshot = { id: 'active' as const, player_id: 'p', program_id: 'program',
 const session = { id: 's', program_day_id: 'day', training_date: base.today, started_at: '2026-11-03T10:00:00Z',
   completed_at: null, client_updated_at: '2026-11-03T10:00:00Z' };
 describe('player next task', () => {
+  it('starts, resumes and finishes a weekly cardio-only day, while empty and rest days stay skipped', () => {
+    const day = { ...snapshot.days[0], id: 'day', title: 'Cardio', position: 1, exercises: [], weekday: 3,
+      cardio: [{ id: 'walk', day_id: 'day', position: 1, kind: 'Walk', minutes: 20, intensity: 'low', notes: '' }] };
+    const plan = { ...snapshot, days: [day] };
+    expect(playerNextTask({ ...base, snapshot: plan })).toMatchObject({ kind: 'start', href: '/player/workout/day' });
+    expect(playerNextTask({ ...base, snapshot: plan, sessions: [session] }).kind).toBe('continue');
+    expect(playerNextTask({ ...base, snapshot: plan, sessions: [{ ...session, completed_at: session.started_at }] }).kind).toBe('done');
+    expect(playerNextTask({ ...base, snapshot: { ...plan, days: [{ ...day, cardio: [] }] } }).kind).toBe('done');
+    expect(playerNextTask({ ...base, snapshot: { ...plan, days: [{ ...day, is_rest_day: true }] } }).kind).toBe('done');
+  });
   it('prioritizes a meal over starting a workout on a coached rest day', () => {
     expect(playerNextTask({ ...base, snapshot, rest: true,
       meals: [{ id: 'm', name: 'Lunch', position: 1 }] })).toMatchObject({ kind: 'meal', href: '/player/nutrition' });

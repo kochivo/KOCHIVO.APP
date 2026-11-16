@@ -36,23 +36,36 @@ const exercise = { id: 'prescription', exercise_id: 'row', position: 1, sets: 3,
   video_url: 'https://youtube.com/shorts/dQw4w9WgXcQ', alternatives: ['press'],
   alternative_exercises: [{ id: 'press', name_ar: null, name_en: 'Press', media_path: null, video_url: 'https://drive.google.com/open?id=abc123' }] };
 const state: ComponentProps<typeof WorkoutSet>['state'] = {
-  today: '2026-11-15', captainId: 'captain', skipExercise: async () => {}, painBlocked: false, painReports: [],
+  today: '2026-11-15', captainId: 'captain', skipExercise: async () => {}, painBlocked: false, painCarried: [], painReports: [],
   day: { id: 'day', title: 'Day', position: 1, exercises: [exercise] }, current: { exercise, setIndex: 1, restAfter: 60 },
   session: null, decision: null, programFinished: false, queue: [], doneSets: [], performance: null, lastSession: null,
   weight: 50, reps: 10, rest: { endsAt: null, remaining: 0, total: 0, sound: false, flashing: false,
     toggleSound() {}, start() {}, extend() {}, skip() {} }, pending: 0, parked: 0, retrySync() {}, pr: null, dismissPr() {},
   bodyweight: false, setBodyweight() {}, invalid: null, progress: 1, next: undefined, finished: false, loading: false,
-  error: null, disabled: false, setWeight() {}, setReps() {}, edit() {}, complete: async () => {}, switchExercise() {}, retry() {},
+  error: null, disabled: false, setWeight() {}, setReps() {}, edit() {}, complete: async () => {}, finishCardio: async () => {}, switchExercise() {}, retry() {},
 };
-const render = (current = state.current) => {
+const render = (current = state.current, overrides: Partial<typeof state> = {}) => {
   hooks.index = 0;
-  const tree = WorkoutSet({ state: { ...state, current } });
+  const tree = WorkoutSet({ state: { ...state, current, ...overrides } });
   hooks.rendering = true;
   try { return { tree, html: renderToStaticMarkup(tree) }; }
   finally { hooks.rendering = false; }
 };
 beforeEach(() => { hooks.values = []; hooks.index = 0; });
 afterEach(() => vi.unstubAllGlobals());
+it('shows carried pain recovery actions in the workout set with only one primary action', () => {
+  const report = { id: 'pain', captain_id: 'captain', session_id: 'session', program_exercise_id: 'earlier',
+    exercise_id: 'earlier', set_index: 1, area: 'knee_r' as const, side_view: 'front' as const,
+    severity: 2, kind: 'strain' as const, created_at: '2026-11-16T10:00:00Z' };
+  const current = { setIndex: 1, restAfter: 60, exercise: { ...exercise, pattern: 'pull', body_part: 'upper legs',
+    alternative_exercises: [{ ...exercise.alternative_exercises[0], id: 'press', name_ar: null,
+      name_en: 'Supported row', media_path: null, body_part: 'back', pattern: 'pull', stress: [] }] } };
+  const html = render(current, { painCarried: [report], painReports: [report], painBlocked: true }).html;
+  expect(html).toContain('Your pain report (Right knee) affects this exercise.');
+  expect(html).toContain('Skip this exercise');
+  expect(html).toContain('Switch to Supported row');
+  expect(html.match(/control-primary/g)).toHaveLength(1);
+});
 it('swaps the large video for the GIF and back without changing set inputs', () => {
   const initial = render();
   expect(initial.html).toContain('Video from your coach');

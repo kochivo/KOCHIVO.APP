@@ -14,6 +14,7 @@ import { NextUp } from './next-up';
 import { ExerciseAlternatives } from './exercise-alternatives';
 import { targetForSet } from '@/lib/set-plan';
 import { WorkoutSet } from './workout-set';
+import { PainCarried } from './pain-carried';
 
 const FormCheckButton = dynamic(() => import('./form-check-button').then(module => module.FormCheckButton), { ssr: false });
 const RampLine = dynamic(() => import('./ramp-line').then(module => module.RampLine), { ssr: false });
@@ -29,6 +30,7 @@ export function WorkoutExercise({ state }: { state: ReturnType<typeof useFocusSe
   return <>
     <ExerciseHeader exercise={current.exercise.set_plan ? { ...current.exercise, ...targetForSet(current.exercise, current.setIndex - 1) }
       : current.exercise} last={state.lastSession} />
+    <PainCarried state={state} />
     {Boolean(current.exercise.alternatives?.length) && <ExerciseAlternatives exercise={current.exercise}
       disabled={state.disabled} onChoose={state.switchExercise} />}
     {state.day?.warmup?.ramp && <RampLine day={state.day} exercise={current.exercise} bodyweight={state.bodyweight} last={state.lastSession} />}
@@ -36,7 +38,7 @@ export function WorkoutExercise({ state }: { state: ReturnType<typeof useFocusSe
       onEdit={state.edit} disabled={state.disabled} />}
     {rest.remaining > 0 ? <RestPanel remaining={rest.remaining} total={rest.total} sound={rest.sound} onToggleSound={rest.toggleSound}
       flashing={rest.flashing} onExtend={rest.extend} onSkip={rest.skip} /> : <>
-      {v6 ? <details className="group glass rounded-card p-card"><summary className="flex min-h-12 cursor-pointer items-center text-sm text-muted">{t('controls')}<ChevronDown aria-hidden className="ms-auto size-4 shrink-0 transition-transform group-open:rotate-180" /></summary><SetControls state={state} secondary /></details> : <SetControls state={state} />}
+      {v6 ? <details className="group glass rounded-card p-card"><summary className="flex min-h-12 cursor-pointer items-center text-sm text-muted">{t('controls')}<ChevronDown aria-hidden className="ms-auto size-4 shrink-0 transition-transform group-open:rotate-180" /></summary><SetControls state={state} secondary /></details> : <SetControls state={state} secondary={Boolean(state.painCarried?.length)} />}
     </>}
     {lastSet && <FormCheckButton exerciseId={lastSet.exercise_id} setLogId={lastSet.id} />}
     {state.next && <NextUp exercise={state.next.exercise} />}

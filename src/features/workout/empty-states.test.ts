@@ -44,4 +44,6 @@ it('shows prescribed cardio below the workout without asking the coach to prepar
  expect(html).toContain('20 minutes');
  expect(html).toContain('Easy pace');
  expect(html).not.toContain('Your coach is preparing your workout');
+ expect(html).toMatch(/<button[^>]*class="[^"]*control-primary[^"]*min-h-14[^>]*>Finish workout<\/button>/);
+ expect(html.match(/control-primary/g)).toHaveLength(1);
 });

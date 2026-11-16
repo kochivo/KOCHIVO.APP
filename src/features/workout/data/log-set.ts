@@ -33,6 +33,7 @@ export async function finishSession(db: KochivoDB, id: string, now: number): Pro
   await db.transaction('rw', db.workout_sessions, db.outbox, async () => {
     const row = await db.workout_sessions.get(id);
     if (!row) throw new Error(t('sessionNotFoundOnThisPhone'));
+    if (row.completed_at) return;
     const timestamp = new Date(now).toISOString();
     await saveAndQueue(db, 'workout_sessions', { ...row, completed_at: timestamp, client_updated_at: timestamp }, now);
   });

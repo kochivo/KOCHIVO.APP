@@ -29,7 +29,7 @@ export function playerNextTask(input: PlayerTaskInput): PlayerTask {
   const weekly = snapshot ? isWeeklyProgram(snapshot) : false;
   const scheduled = snapshot && (weekly ? Boolean(day && !day.is_rest_day) :
     !snapshot.training_days.length || snapshot.training_days.includes(new Date(`${today}T12:00:00Z`).getUTCDay()));
-  if (!input.rest && day && !day.is_rest_day && (!weekly || day.exercises.length > 0) && (scheduled || session) && !session?.completed_at) {
+  if (!input.rest && day && !day.is_rest_day && (!weekly || day.exercises.length > 0 || Boolean(day.cardio?.length)) && (scheduled || session) && !session?.completed_at) {
     return { kind: session ? 'continue' : 'start', href: `/player/workout/${day.id}`, name: day.title };
   }
   const meal = [...input.meals].sort((a, b) => a.position - b.position || a.id.localeCompare(b.id))

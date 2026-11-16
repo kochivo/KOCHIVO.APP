@@ -62,13 +62,16 @@ it('shows reduced targets and a skip action for rest, hiding expired hints', () 
   expect(renderToStaticMarkup(createElement(PainLoadHint, { ...props, hint: { ...hint, until: '2026-11-14' } }))).toBe('');
 });
 
-it('keeps an unaffected current set writable and later unaffected exercises in the session', async () => {
+it.each(['chest', 'upper legs'])('keeps an unaffected current set writable and checks later %s exercises', async bodyPart => {
   const now = Date.parse('2026-11-15T10:00:00Z');
   const db = new KochivoDB('pain-unaffected-session');
   const day = { id: 'day', title: 'Push', position: 1, exercises: [1, 2].map(n => ({
     id: `row${n}`, exercise_id: `exercise${n}`, position: n, sets: 1, reps_min: 8, reps_max: 12,
     rest_seconds: 0, superset_group: null, rpe: null, tempo: null, notes: null,
-    name_ar: null, name_en: 'Bench press', media_path: null, body_part: 'chest',
+    name_ar: null, name_en: 'Bench press', media_path: null, body_part: n === 1 ? 'chest' : bodyPart,
+    pattern: 'pull', alternatives: n === 2 ? ['safe', 'affected'] : [],
+    alternative_exercises: n === 2 ? ['safe', 'affected'].map(id => ({ id, name_ar: null, name_en: id,
+      media_path: null, body_part: id === 'safe' ? 'back' : 'upper legs', pattern: 'pull', stress: [] })) : [],
   })) };
   const slots: unknown[] = [];
   let slot = 0, queries: (() => unknown)[] = [], values: unknown[] = [];
@@ -111,7 +114,19 @@ it('keeps an unaffected current set writable and later unaffected exercises in t
     expect(await db.set_logs.count()).toBe(1);
     state = await render();
     expect(state.current?.exercise.id).toBe('row2');
-    expect(state.painBlocked).toBe(false);
+    expect(state.painBlocked).toBe(bodyPart === 'upper legs');
+    expect(state.painCarried).toHaveLength(bodyPart === 'upper legs' ? 1 : 0);
+    if (state.painBlocked) {
+      await state.complete();
+      expect(await db.set_logs.count()).toBe(1);
+      expect(state.queue).toHaveLength(2);
+      state.switchExercise('affected'); state = await render();
+      expect(state.current?.exercise.exercise_id).toBe('exercise2');
+      state.switchExercise('safe'); state = await render();
+      expect(state.current?.exercise.exercise_id).toBe('safe');
+      expect(state.painBlocked).toBe(false);
+      expect(state.painCarried).toEqual([]);
+    }
   } finally {
     vi.clearAllTimers(); vi.useRealTimers(); await db.delete(); vi.unstubAllGlobals();
     for (const path of ['react', 'server-only', '@/core/offline', '@/features/player-home', '@/features/readiness', './hooks/use-rest-timer']) vi.doUnmock(path);

@@ -132,6 +132,23 @@ it('uses the new date when yesterday has a session with no logged sets', async (
     .toEqual(['2026-11-03', '2026-11-04']);
 });
 
+it('finishes a cardio-only day explicitly, including repeat taps and reload', async () => {
+  const cardioDay = { ...day, exercises: [], cardio: [{ id: 'walk', day_id: day.id, position: 1,
+    kind: 'Walk', minutes: 20, intensity: 'low', notes: '' }] };
+  vi.doMock('@/features/player-home', () => ({ useCycle: () => ({}), isLightDay: () => false,
+    useProgramSnapshot: () => ({ snapshot: { days: [cardioDay] }, status: 'ready', retry() {} }) }));
+  const state = await loadedState();
+  expect(state.disabled).toBe(false);
+  expect(state.queue).toEqual([]);
+  expect(state.finished).toBe(false);
+  expect(await db.workout_sessions.count()).toBe(0);
+  await Promise.all([state.finishCardio(), state.finishCardio()]);
+  expect((await loadedState()).finished).toBe(true);
+  expect(await db.workout_sessions.count()).toBe(1);
+  expect(await db.set_logs.count()).toBe(0);
+  expect(await db.outbox.count()).toBe(1);
+});
+
 it('does not pin yesterday to a deleted set', async () => {
   const session = await startSession(db, day, '2026-11-03', beforeMidnight);
   await logSet(db, { session_id: session.id, program_exercise_id: 'a', exercise_id: 'a',

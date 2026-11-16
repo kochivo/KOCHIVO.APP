@@ -5,6 +5,7 @@ export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
+    finishCardioWorkout: 'خلّص التمرين', couldntFinishWorkoutOnYourPhone: 'مش قادرين نحفظ إنهاء التمرين على الموبايل. جرّب تاني.',
     gifToggle: 'الصورة المتحركة',
     tempoLabel: 'تمبو', tempoHelp: 'بالثواني: نزول، تحت، طلوع، فوق. X يعني انفجاري.', rpeTarget: 'RPE {count} · المجهود من 10', rirTarget: 'RIR {count}',
     v3Summary: '{minutes} دقيقة · {count} تمارين', v3Warmup: '1 · التسخين', v3Exercises: '2 · التمارين',
@@ -101,6 +102,7 @@ export const messages = defineMessages({
     setNumber: "مجموعة {value0}",
   },
   en: {
+    finishCardioWorkout: 'Finish workout', couldntFinishWorkoutOnYourPhone: 'Could not save workout completion on your phone. Try again.',
     gifToggle: 'Animated image',
     tempoLabel: 'Tempo', tempoHelp: 'Seconds: lower, bottom, lift, top. X = explosive.', rpeTarget: 'RPE {count} · effort out of 10', rirTarget: 'RIR {count}',
     v3Summary: '{minutes} minutes · {count} exercises', v3Warmup: '1 · Warm-up', v3Exercises: '2 · Exercises',

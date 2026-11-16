@@ -2,6 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    carried: 'تقرير الوجع ({area}) بيأثر على التمرين ده.', switchTo: 'بدّل لـ {name}', skipExercise: 'عدّي التمرين ده',
     open: 'عندي وجع', where: 'فين الوجع؟', severity: 'قد إيه؟', kind: 'نوعه', send: 'ابعت للكابتن',
     front: 'أمام', back: 'ورا', sharp: 'وجع حاد', strain: 'شد', tired: 'تعب عادي',
     doctor: 'لو الوجع حاد أو فيه ورم، وقف خالص وكلّم دكتور.', close: 'اقفل', saving: 'بنحفظ',
@@ -17,6 +18,7 @@ export const messages = defineMessages({
     ankle_l: 'الكاحل الشمال', ankle_r: 'الكاحل اليمين', other: 'مكان تاني',
   },
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? {
+    carried: 'تقرير الألم ({area}) يؤثر على هذا التمرين.', switchTo: 'انتقل إلى {name}', skipExercise: 'تخطّ هذا التمرين',
     open: 'أشعر بألم', where: 'أين الألم؟', severity: 'ما شدته؟', kind: 'نوعه', send: 'أرسل للمدرب',
     front: 'أمام', back: 'خلف', sharp: 'ألم حاد', strain: 'شد', tired: 'تعب عادي',
     doctor: 'إذا كان الألم حاداً أو هناك تورم، توقف واستشر طبيباً.', close: 'إغلاق', saving: 'جارٍ الحفظ',
@@ -32,6 +34,7 @@ export const messages = defineMessages({
     ankle_l: 'الكاحل الأيسر', ankle_r: 'الكاحل الأيمن', other: 'مكان آخر',
   } as const : undefined; },
   en: {
+    carried: 'Your pain report ({area}) affects this exercise.', switchTo: 'Switch to {name}', skipExercise: 'Skip this exercise',
     open: "I'm in pain", where: 'Where does it hurt?', severity: 'How bad?', kind: 'What kind?', send: 'Send to coach',
     front: 'Front', back: 'Back', sharp: 'Sharp', strain: 'Strain', tired: 'Tired',
     doctor: "If it's sharp or swollen, stop and see a doctor.", close: 'Close', saving: 'Saving',

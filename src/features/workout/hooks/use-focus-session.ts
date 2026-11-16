@@ -10,7 +10,9 @@ import { performanceFor } from '../data/last-performance';
 import { prHistory } from '../data/pr-history';
 import { detectPr, type Pr } from '../pr';
 import { setId } from '../ids';
-import { buildQueue } from '../queue';
+import { buildQueue, isCardioOnly } from '../queue';
+import { finishCardioSession } from '../data/finish-cardio-session';
+import { painBlocksExercise } from '../pain-block';
 import { trainingDate } from '../training-date';
 import { useLastSession } from './use-last-session';
 import { useRestTimer } from './use-rest-timer';
@@ -22,7 +24,7 @@ import { dropWeights, targetForSet } from '@/lib/set-plan';
 import { alternativeStep, loggedStep } from '../data/exercise-choices';
 import { useExerciseChoices } from './use-exercise-choices';
 import { usePainSkips } from './use-pain-skips';
-import { painAffects, painLoad, safePainSwap } from '../pain-safe-swap';
+import { painLoad, safePainSwap } from '../pain-safe-swap';
 import { useCycle, isLightDay } from '@/features/player-home';
 
 const readCached = () => localDb().program_snapshot.get('active');
@@ -93,10 +95,9 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
   const logged = edited ?? (plannedCurrent?.dropIndex ? doneSets.find(row => matches(row, plannedCurrent.exercise.id, plannedCurrent.setIndex)) : undefined);
   const selectedId = choices.choices[plannedCurrent?.exercise.id ?? ''];
   const current = logged ? loggedStep(plannedCurrent, logged.exercise_id, t('unknownExercise')) : alternativeStep(plannedCurrent, selectedId);
-  const exercisePain = reports?.filter(row => row.program_exercise_id === current?.exercise.id) ?? [];
-  const painMetadata = current?.exercise.alternative_exercises?.find(row => row.id === current.exercise.exercise_id) ?? current?.exercise;
-  const painBlocked = exercisePain.some(report => (!selectedId || selectedId === report.exercise_id) &&
-    (report.severity === 5 || report.kind === 'sharp' || painAffects(report.area, painMetadata ?? {})));
+  const painBlocked = painBlocksExercise(reports ?? [], current?.exercise, selectedId);
+  const painCarried = reports?.filter(report => report.program_exercise_id !== current?.exercise.id &&
+    painBlocksExercise([report], current?.exercise)) ?? [];
   const key = `${session?.id ?? today}:${current?.exercise.id}:${current?.setIndex}:${current?.dropIndex ?? 0}:${current?.exercise.exercise_id}`;
   const exerciseId = String(current?.exercise.exercise_id ?? '');
   const { bodyweight, setBodyweight } = useBodyweight(exerciseId);
@@ -130,6 +131,16 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
         .catch(() => setError(t('setSavedTryAgainToFinishThe')));
     }
   }, [session, sets, plannedQueue.length, currentIndex, retryKey, t]);
+  const finishCardio = useCallback(async () => {
+    if (!day || !isCardioOnly(day) || !today || session === undefined || !sets || saving.current || session?.completed_at) return;
+    saving.current = true;
+    setBusy(true);
+    try {
+      await finishCardioSession(localDb(), day, today, Date.now());
+      triggerHaptic('success');
+    } catch { setError(t('couldntFinishWorkoutOnYourPhone')); }
+    finally { saving.current = false; setBusy(false); }
+  }, [day, today, session, sets, t]);
   const complete = useCallback(async () => {
     if (!day || !current || !ready || saving.current || rest.remaining > 0 || painBlocked) return;
     const result = validateSet({ weight, reps, bodyweight });
@@ -177,10 +188,10 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
     setWeight: (value: number) => setDraft({ key, weight: Math.min(500, Math.max(0, value)), reps }),
     setReps: (value: number) => setDraft({ key, weight, reps: Math.min(100, Math.max(0, value)) }),
     edit: (row: SetLogRow) => { if (!saving.current) { rest.skip(); setDraft(null); setEditing(row.id); } },
-    complete, today, captainId: snapshot?.captain_id, skipExercise: painSkips.skip, painBlocked, painReports: exercisePain,
+    complete, finishCardio, today, captainId: snapshot?.captain_id, skipExercise: painSkips.skip, painBlocked, painCarried, painReports: reports ?? [],
     switchExercise: (id: string) => {
       if (!plannedCurrent || dropIndex > 0 || saving.current || !choices.ready || edited || (id && !plannedCurrent.exercise.alternatives?.includes(id))) return;
-      if (exercisePain.some(report => !safePainSwap(report.area, plannedCurrent.exercise.alternative_exercises?.filter(row => row.id === id && row.id !== report.exercise_id) ?? [], plannedCurrent.exercise.pattern))) return;
+      if (reports?.some(report => !safePainSwap(report.area, plannedCurrent.exercise.alternative_exercises?.filter(row => row.id === id && row.id !== report.exercise_id) ?? [], plannedCurrent.exercise.pattern))) return;
       choices.choose(plannedCurrent.exercise.id, id); setDraft(null); setInvalid(null);
     },
     retry: () => { setError(null); setRetryKey((value) => value + 1); void refresh(); } };

@@ -8,6 +8,10 @@ export interface WorkoutStep {
   dropIndex?: number;
 }
 
+export function isCardioOnly(day: SnapshotDay): boolean {
+  return Boolean(day.cardio?.length) && buildQueue(day).length === 0;
+}
+
 export function buildQueue(day: SnapshotDay): WorkoutStep[] {
   const ordered = [...day.exercises].sort((a, b) => a.position - b.position);
   const visited = new Set<string>();

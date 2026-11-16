@@ -30,6 +30,7 @@ import { messages as setMessages } from '@/lib/training/messages';
 import { supersetTag } from '@/lib/superset';
 import { PainButton } from './pain-button';
 import { PainLoadHint } from './pain-load-hint';
+import { PainCarried } from './pain-carried';
 const ExerciseVideo = dynamic(() => import('./exercise-video').then(module => module.ExerciseVideo));
 
 const FormCheckButton = dynamic(() => import('./form-check-button').then(module => module.FormCheckButton), { ssr: false });
@@ -59,6 +60,7 @@ export function WorkoutSet({ state }: { state: ReturnType<typeof useFocusSession
     <div className="flex min-h-[calc(100dvh-160px)] flex-col gap-card-gap">
       <SupersetCue state={state} />
       <PainButton state={state} />
+      <PainCarried state={state} />
       <PainLoadHint hint={current.exercise.pain_hint} today={state.today} weight={state.weight} onSkip={() => void state.skipExercise(current.exercise.id)} />
       {!dropping && (parseExerciseVideo(current.exercise.video_url) ? <div className="space-y-stack">
         {showGif && current.exercise.media_path ? <ExerciseLightbox src={exerciseMediaUrl(current.exercise.media_path)} name={name} focus /> :
@@ -87,7 +89,7 @@ export function WorkoutSet({ state }: { state: ReturnType<typeof useFocusSession
         flashing={state.rest.flashing} onExtend={state.rest.extend} onSkip={state.rest.skip} />}
       <SupersetCue state={state} next />
       <Button type="button" style={{ fontFamily: 'inherit' }} disabled={blocked} onClick={() => void state.complete()}
-        variant={'primary'} block={false} className={"mt-auto flex min-h-[68px] w-full items-center justify-center gap-stack text-xl font-black disabled:opacity-50"}>
+        variant={state.painCarried?.length ? 'secondary' : 'primary'} block={false} className={"mt-auto flex min-h-[68px] w-full items-center justify-center gap-stack text-xl font-black disabled:opacity-50"}>
         <KoTraining aria-hidden className="size-6" />{dropping ? st('finishDrop') : nextMember && state.next ? st('finishMember', {
           current: supersetTag(state.day.exercises, current.exercise) ?? '', next: supersetTag(state.day.exercises, state.next.exercise) ?? '',
         }) : t(state.progress === state.queue.length ? 'v3CompleteWorkout' : 'v3CompleteSet')}
