@@ -171,7 +171,8 @@ it.each(['returned', 'thrown', 'success', 'missing'])('preserves a successful me
   const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
   if (mode === 'missing') vi.stubEnv('KO_MEAL_RECEIPT_SECRET', '');
   if (mode === 'returned' || mode === 'thrown') await db.query('update public.profiles set suspended_at=now() where id=$1', [player]);
-  const rpc = async (_name: string, args: { p_day: string; p_receipt: string }) => {
+  const rpc = async (name: string, args: { p_day: string; p_receipt: string }) => {
+    if (name === 'ko_rate_take') return { data: true, error: null };
     try {
       await asUser(db, player, tx => tx.query('select public.award_meal_check($1::date,$2)', [args.p_day, args.p_receipt]));
       return { error: null };

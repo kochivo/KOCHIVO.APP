@@ -119,7 +119,8 @@ function chatRequest(text: string, cookie?: string, token?: string) {
 }
 function authenticated(role: 'player' | 'captain' = 'player') {
   const rpc = vi.fn().mockResolvedValue({ error: null });
-  chat.actor = { id: player, role, db: { rpc } } as unknown as KoActor;
+  const sharedRpc = (name: string, args: unknown) => name === 'ko_rate_take' ? Promise.resolve({ data: true, error: null }) : rpc(name, args);
+  chat.actor = { id: player, role, db: { rpc: sharedRpc } } as unknown as KoActor;
   chat.pilots.add(player);
   vi.spyOn(Date, 'now').mockReturnValue(now);
   return rpc;
@@ -183,7 +184,7 @@ it('sets an HttpOnly options cookie from the normal intent path for the existing
     { exercise_id: 'current', pattern: 'hinge', stress: [], exercises: { name_ar: null, name_en: 'Bridge' } },
     { exercise_id: target, pattern: 'hinge', stress: [], exercises: { name_ar: null, name_en: 'Alternative' } },
   ]);
-  chat.actor = { ...fixture.actor, db: { ...fixture.actor.db, rpc } } as unknown as KoActor;
+  chat.actor = { ...fixture.actor, db: { ...fixture.actor.db, rpc: chat.actor?.db.rpc } } as unknown as KoActor;
   chat.plan.mockResolvedValue({ kind: 'swap_exercise', args: { exercise: 'Bridge', injury: 'knee' } });
   const response = await postKoAccountChat(chatRequest('My knee hurts doing Bridge'));
   expect(await response.json()).toMatchObject({ kind: 'message', text: expect.stringContaining('Send the number') });
@@ -195,7 +196,6 @@ it('sets an HttpOnly options cookie from the normal intent path for the existing
 });
 it('clears pending options when using the meal suggestion shortcut', async () => {
   authenticated();
-  vi.mocked(Date.now).mockReturnValue(now + 60_001);
   const text = createT(koPreviewMessages, 'en')('suggest.meal');
   const response = await postKoAccountChat(chatRequest(text, `ko_swap_options=${optionsToken()}`));
   expect(response.status).toBe(200);
@@ -204,8 +204,8 @@ it('clears pending options when using the meal suggestion shortcut', async () =>
 });
 it('rate-limits numeric choices through the existing shared limiter', async () => {
   const rpc = authenticated();
-  vi.mocked(Date.now).mockReturnValue(now + 120_002);
-  for (let i = 0; i < 12; i++) expect((await postKoAccountChat(chatRequest('1'))).status).toBe(200);
+  if (!chat.actor) throw new Error('Missing actor');
+  chat.actor = { ...chat.actor, db: { rpc: async () => ({ data: false, error: null }) } } as unknown as KoActor;
   expect((await postKoAccountChat(chatRequest('1', undefined, optionsToken()))).status).toBe(429);
   expect(rpc).not.toHaveBeenCalled();
 });

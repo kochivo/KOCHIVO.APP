@@ -22,8 +22,6 @@ const maxImage = 3_000_000;
 const maxAudio = 1_000_000;
 const audioTypes = new Set(['audio/webm', 'audio/ogg', 'audio/mp4', 'audio/m4a', 'audio/wav']);
 const imageTypes = new Set(['image/jpeg', 'image/png', 'image/webp']);
-const windowMs = 60_000;
-const usage = new Map<string, { count: number; until: number }>();
 
 const contextSchema = z.discriminatedUnion('screen', [
   z.strictObject({ screen: z.literal('player'), playerId: z.uuid() }),
@@ -55,16 +53,15 @@ function playerReply(result: AccountReply, secure: boolean) {
   return response;
 }
 
-function rateLimited(actor: string, now: number) {
-  const current = usage.get(actor);
-  if (current && current.until > now) {
-    current.count += 1;
-    return current.count > 12;
+async function rateLimited(actor: KoActor) {
+  try {
+    const { data, error } = await actor.db.rpc('ko_rate_take', { p_limit: 12, p_window_seconds: 60 });
+    if (error) { console.error('KO rate limit failed', error); return true; }
+    return data !== true;
+  } catch (error) {
+    console.error('KO rate limit failed', error);
+    return true;
   }
-  for (const [id, entry] of usage) if (entry.until <= now) usage.delete(id);
-  if (usage.size >= 500) return true;
-  usage.set(actor, { count: 1, until: now + windowMs });
-  return false;
 }
 
 export async function postKoAccountChat(request: Request) {
@@ -80,7 +77,7 @@ export async function postKoAccountChat(request: Request) {
     const actor = await getKoActor();
     if (!actor || !config.pilots.has(actor.id)) return reply({ error: 'unauthorized' }, 403);
     const now = Date.now();
-    if (rateLimited(actor.id, now)) return reply({ error: 'rateLimit' }, 429);
+    if (await rateLimited(actor)) return reply({ error: 'rateLimit' }, 429);
     const form = await request.formData().catch(() => null);
     if (!form) return reply({ error: 'invalid' }, 400);
     const locale = form.get('locale') === 'en' ? 'en' : 'ar';
