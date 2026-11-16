@@ -14,7 +14,7 @@ vi.mock('../data/receipt-actions', () => ({ loadPlayerReceipt() {}, listPaymentR
 const receipt: ReceiptReview = {
   id: 'receipt', player_id: 'player', captain_id: 'captain', renewal_request_id: null, amount_egp: 800,
   method: 'instapay', photo_path: 'private/photo.jpg', status: 'pending', decline_reason: null, revision: 1,
-  created_at: '2026-11-14T10:00:00Z', decided_at: null, name: 'Player name', url: '/signed-photo', packageName: null,
+  created_at: '2026-11-14T10:00:00Z', decided_at: null, name: 'Player name', url: '/signed-photo', packageName: null, frozenAt: null,
 };
 const render = (child: ReturnType<typeof createElement>) => renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' }, child));
 beforeEach(() => { state.data = undefined; state.error = undefined; });
@@ -26,6 +26,15 @@ it('shows real amount, method and photo and asks for a period only for unlinked 
   const linked = render(createElement(ReceiptReviewRow, { ...props, receipt: { ...receipt, renewal_request_id: 'request', packageName: 'Monthly' } }));
   expect(linked).toContain('Package: Monthly'); expect(linked).not.toContain('Renewal length in days');
   expect(linked).not.toContain('disabled=""');
+});
+it('disables acceptance for frozen players while leaving decline available', () => {
+  const html = render(createElement(ReceiptReviewRow, {
+    receipt: { ...receipt, renewal_request_id: 'request', frozenAt: '2026-11-01T10:00:00Z' },
+    first: true, busy: false, onDecide: async () => {},
+  }));
+  expect(html).toContain('Unfreeze the player first');
+  expect(html).toMatch(/<button[^>]*disabled=""[^>]*>Accept<\/button>/);
+  expect(html).toMatch(/<button(?![^>]*disabled=")[^>]*>Decline<\/button>/);
 });
 it('shows a declined reason and a new-receipt action to the player', () => {
   const declined: PaymentReceipt = { ...receipt, status: 'declined', decline_reason: 'Amount not visible' };

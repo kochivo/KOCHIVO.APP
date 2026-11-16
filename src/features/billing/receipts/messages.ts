@@ -2,6 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    unfreezeFirst: 'فك تجميد اللاعب الأول',
     title: 'إيصالات مستنية مراجعة', empty: 'مفيش إيصالات مستنية مراجعة', upload: 'ابعت إيصال الدفع',
     photo: 'صوّر الإيصال', hint: 'صورة واضحة فيها المبلغ والتاريخ. JPEG أو PNG أو WebP، لحد ٥ ميجا',
     send: 'ابعت للكابتن', sending: 'بنبعت الإيصال', amount: 'المبلغ بالجنيه', method: 'طريقة الدفع',
@@ -17,6 +18,7 @@ export const messages = defineMessages({
     saved: 'القرار اتحفظ', review: 'راجع الإيصال',
   },
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? {
+    unfreezeFirst: 'ألغِ تجميد اللاعب أولًا',
     title: 'إيصالات بانتظار المراجعة', empty: 'لا توجد إيصالات بانتظار المراجعة', upload: 'أرسل إيصال الدفع',
     photo: 'صوّر الإيصال', hint: 'صورة واضحة تتضمن المبلغ والتاريخ. JPEG أو PNG أو WebP، حتى ٥ ميجابايت',
     send: 'أرسل للكابتن', sending: 'جارٍ إرسال الإيصال', amount: 'المبلغ بالجنيه', method: 'طريقة الدفع',
@@ -32,6 +34,7 @@ export const messages = defineMessages({
     saved: 'حُفظ القرار', review: 'راجع الإيصال',
   } as const : undefined; },
   en: {
+    unfreezeFirst: 'Unfreeze the player first',
     title: 'Receipts awaiting review', empty: 'No receipts awaiting review', upload: 'Send payment receipt',
     photo: 'Photograph your receipt', hint: 'Show the amount and date clearly. JPEG, PNG or WebP, up to 5 MB',
     send: 'Send to captain', sending: 'Sending receipt', amount: 'Amount (EGP)', method: 'Payment method',

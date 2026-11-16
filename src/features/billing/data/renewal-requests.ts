@@ -63,13 +63,16 @@ export async function listRenewalRequests(playerId?: string) {
     const receipts = await fetchPendingPaymentReceipts();
     const receiptRequests = new Set(receipts.map(row => row.renewal_request_id));
     requests.data = requests.data.filter(row => !receiptRequests.has(row.id));
-    const [players, packages] = await Promise.all([
+    const [players, packages, memberships] = await Promise.all([
       client.from('profiles').select('id,full_name').in('id', requests.data.map(r => r.player_id)),
       client.from('captain_packages').select('id,name,price_egp').in('id', requests.data.map(r => r.package_id)),
+      client.from('coach_clients').select('player_id,frozen_at').eq('captain_id', captainId)
+        .is('archived_at', null).in('player_id', requests.data.map(r => r.player_id)),
     ]);
-    if (players.error || packages.error) throw players.error ?? packages.error;
+    if (players.error || packages.error || memberships.error) throw players.error ?? packages.error ?? memberships.error;
     return { error: undefined, data: requests.data.map(r => ({ ...r, name: players.data.find(p => p.id === r.player_id)?.full_name ?? '',
-      package: packages.data.find(p => p.id === r.package_id)?.name ?? '' })) };
+      package: packages.data.find(p => p.id === r.package_id)?.name ?? '',
+      frozenAt: memberships.data.find(p => p.player_id === r.player_id)?.frozen_at ?? null })) };
   } catch (error) { return failure(error); }
 }
 export async function decideRenewalRequest(id: string, status: 'approved' | 'declined' | 'cancelled') {

@@ -24,8 +24,9 @@ export function RenewalRequests({ playerId }: { playerId?: string }) {
     {notice && <p role="status" className="text-warn">{notice}</p>}
     {(error || resource.error || resource.data?.error) && <div role="alert"><p className="text-danger">{error || t('error')}</p><Button variant="secondary" type="button" className="min-h-12 px-page-x" onClick={() => void resource.retry()}>{t('retry')}</Button></div>}
     {!resource.data ? <p role="status" className="text-faint">{t('loading')}</p> : resource.data.data?.length ? <ul className="divide-y divide-line-soft">{resource.data.data.map(row =>
-      <li key={row.id} className="flex flex-wrap items-center gap-stack py-stack"><span>{row.name} · {row.package}</span><div className="ms-auto flex gap-inline">
-        <button type="button" disabled={busy} onClick={() => void decide(row.id, 'approved')} className="min-h-12 rounded-full border border-lime px-page-x text-lime">{t('approve')}</button>
+      <li key={row.id} className="flex flex-wrap items-center gap-stack py-stack"><div><span>{row.name} · {row.package}</span>
+        {row.frozenAt && <p className="text-sm text-warn">{t('unfreezeFirst')}</p>}</div><div className="ms-auto flex gap-inline">
+        <Button variant="secondary" block={false} type="button" disabled={busy || !!row.frozenAt} onClick={() => void decide(row.id, 'approved')} className="min-h-12 px-page-x">{t('approve')}</Button>
         <Button type="button" disabled={busy} onClick={() => void decide(row.id, 'declined')} variant={'secondary'} block={false} className={"min-h-12 px-page-x"}>{t('decline')}</Button>
       </div></li>)}</ul> : !resource.data.error && <p className="text-faint">{t('noRequests')}</p>}
   </section>;

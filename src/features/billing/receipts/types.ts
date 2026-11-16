@@ -6,5 +6,5 @@ export type PaymentReceipt = {
   status: 'pending' | 'accepted' | 'declined'; decline_reason: string | null; revision: number;
   created_at: string; decided_at: string | null;
 };
-export type ReceiptReview = PaymentReceipt & { name: string; url: string; packageName: string | null };
+export type ReceiptReview = PaymentReceipt & { name: string; url: string; packageName: string | null; frozenAt: string | null };
 export type UploadedReceipt = { id: string; amount: number; method: ReceiptMethod | null; photo: string };

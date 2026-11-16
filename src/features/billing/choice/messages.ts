@@ -3,6 +3,7 @@ import { arStd } from './standard-messages';
 export const messages = defineMessages({
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
+    unfreezeFirst: 'فك تجميد اللاعب الأول',
     year: 'سنة',
     title: 'اختار باقتك مع كابتن {name}', hint: 'تقدر تغيّر باقتك وقت التجديد', popular: 'الأكثر طلبًا',
     currency: 'جنيه', monthly: 'شهرك بـ {price} جنيه بس', excluded: 'العرض مش على الفئة دي', choose: 'اختار {tier}',
@@ -16,6 +17,7 @@ export const messages = defineMessages({
     bonusOffer: '{value} يوم هدية على باقات {durations}', durationSeparator: ' و',
   },
   en: {
+    unfreezeFirst: 'Unfreeze the player first',
     year: '1 year',
     title: 'Choose your plan with Captain {name}', hint: 'You can change your plan when you renew', popular: 'Most popular',
     currency: 'EGP', monthly: 'Only EGP {price} per month', excluded: 'Offer does not cover this tier', choose: 'Choose {tier}',

@@ -36,7 +36,7 @@ export function MoneyOwedView({ data, mode, playerId, locale, t, onSelect, rowAc
     {rows.length > 0 && <ul className="glass divide-y divide-line rounded-card">{rows.map(row => {
       const waiting = row.reason === 'receipt_pending' || row.reason === 'renewal_pending';
       const tone = waiting ? 'bg-calm/10 text-calm' : row.reason === 'soon' ? 'bg-surface text-muted' : 'bg-warn-soft text-warn';
-      return <li key={row.playerId} className="flex flex-wrap items-center gap-stack p-card">
+      return <li key={`${row.playerId}:${row.reason}`} className="flex flex-wrap items-center gap-stack p-card">
         {mode === 'billing' && <span aria-hidden className="glass grid size-10 shrink-0 place-items-center rounded-full font-bold">{row.name.slice(0, 1)}</span>}
         <div className="min-w-0 basis-[calc(100%-4rem)] min-[760px]:basis-0 flex-1">
           {mode === 'billing' && <Link prefetch={onSelect ? false : undefined} href={onSelect ? `#${`/captain/players/${row.playerId}`}` : `/captain/players/${row.playerId}`} onClick={onSelect ? event => { event.preventDefault(); onSelect(`/captain/players/${row.playerId}`); } : undefined} className="flex min-h-12 items-center font-bold">{row.name}</Link>}

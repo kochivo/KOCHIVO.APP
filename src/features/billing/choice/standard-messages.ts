@@ -1,4 +1,5 @@
 export const arStd = {
+  unfreezeFirst: 'ألغِ تجميد اللاعب أولًا',
   year: 'سنة',
   title: 'اختر باقتك مع كابتن {name}', hint: 'يمكنك تغيير باقتك عند التجديد', popular: 'الأكثر طلبًا',
   currency: 'جنيه', monthly: 'شهرك بـ {price} جنيه فقط', excluded: 'العرض لا يشمل هذه الفئة', choose: 'اختر {tier}',

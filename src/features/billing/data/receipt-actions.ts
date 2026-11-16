@@ -50,17 +50,19 @@ export async function submitPaymentReceipt(input: unknown) {
 export async function listPaymentReceipts() {
   try {
     const rows = await fetchPendingPaymentReceipts();
-    const { client } = await captainClient();
+    const { client, captainId } = await captainClient();
     const data = await Promise.all(rows.map(async row => {
-      const [profile, url, request] = await Promise.all([
+      const [profile, url, request, membership] = await Promise.all([
         client.from('profiles').select('full_name').eq('id', row.player_id).single(),
         signedMediaUrl(client, 'payment-receipts', row.photo_path),
         row.renewal_request_id ? client.from('player_renewal_requests').select('package_id').eq('id', row.renewal_request_id).single() : null,
+        client.from('coach_clients').select('frozen_at').eq('captain_id', captainId)
+          .eq('player_id', row.player_id).is('archived_at', null).maybeSingle(),
       ]);
-      if (profile.error || request?.error) throw profile.error ?? request?.error;
+      if (profile.error || request?.error || membership.error) throw profile.error ?? request?.error ?? membership.error;
       const pkg = request?.data ? await client.from('captain_packages').select('name').eq('id', request.data.package_id).single() : null;
       if (pkg?.error) throw pkg.error;
-      return { ...row, name: profile.data.full_name, url, packageName: pkg?.data?.name ?? null };
+      return { ...row, name: profile.data.full_name, url, packageName: pkg?.data?.name ?? null, frozenAt: membership.data?.frozen_at ?? null };
     }));
     return { data, error: undefined };
   } catch (error) { return failure(error); }

@@ -27,6 +27,6 @@ export function buildMoneyOwed(records: MoneyOwedRecord[], players: Player[], pr
     });
   }
   return { rows, total: records.reduce((sum, record) => sum + (record.amount_egp ?? 0), 0),
-    count: records.length, unpriced: records.filter(record => record.amount_egp === null).length };
+    count: owing.size, unpriced: records.filter(record => record.amount_egp === null).length };
 }
 export type MoneyOwed = ReturnType<typeof buildMoneyOwed>;

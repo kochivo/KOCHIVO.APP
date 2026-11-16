@@ -25,9 +25,10 @@ export function ReceiptReviewRow({ receipt, first, busy, onDecide }: { receipt: 
         {receipt.packageName && <p className="text-xs text-muted">{t('package', { name: receipt.packageName })}</p>}
       </div>
       <Button type="button" disabled={busy} onClick={() => setDeclining(!declining)} variant={'secondary'} block={false} className={"min-h-12 px-page-x text-sm disabled:opacity-50"}>{t('decline')}</Button>
-      <Button type="button" disabled={busy || !validDays} onClick={() => void onDecide(receipt, receipt.renewal_request_id ? null : Number(days))}
+      <Button type="button" disabled={busy || !!receipt.frozenAt || !validDays} onClick={() => void onDecide(receipt, receipt.renewal_request_id ? null : Number(days))}
         variant={(first) ? 'primary' : 'secondary'} block={false} className={`min-h-12 px-page-x text-sm font-semibold disabled:opacity-50 ${first ? "" : ""} `}>{t('accept')}</Button>
     </div>
+    {receipt.frozenAt && <p className="text-sm text-warn">{t('unfreezeFirst')}</p>}
     {expanded && <Image src={receipt.url} alt={t('image')} width={800} height={1000} unoptimized className="glass-strong max-h-[65dvh] w-full rounded-control object-contain" />}
     {!receipt.renewal_request_id && <label className="block space-y-inline text-sm"><span>{t('days')}</span>
       <input type="number" min={1} max={365} step={1} disabled={busy} value={days} onChange={event => setDays(event.target.value)}

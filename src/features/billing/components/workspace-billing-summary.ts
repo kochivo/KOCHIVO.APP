@@ -11,5 +11,5 @@ export function subscriptionTiles(players: Subscription[], today: string, income
   return { income, pending,
     ending: expiringSoon(players, today).length,
     active: players.filter(player => !player.pending && !player.frozenAt && !player.awaitingPlansAt
-      && (player.sessionsLeft == null ? daysBetween(today, player.accessUntil) >= 0 : player.sessionsLeft > 0)).length };
+      && daysBetween(today, player.accessUntil) >= 0 && (player.sessionsLeft == null || player.sessionsLeft > 0)).length };
 }

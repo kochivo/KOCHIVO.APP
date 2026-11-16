@@ -11,7 +11,10 @@ const now = new Date('2026-11-03T23:30:00Z');
 beforeEach(() => {
   vi.clearAllMocks();
   fake.roster.mockResolvedValue({ players: [{ playerId: 'soon', fullName: 'A', accessUntil: '2026-11-07' }] });
-  fake.rpc.mockReturnValue({ order: () => ({ range: async () => ({ data: [], error: null }) }) });
+  fake.rpc.mockImplementation(() => {
+    const query = { order: () => query, range: async () => ({ data: [], error: null }) };
+    return query;
+  });
   fake.from.mockImplementation(() => {
     const query = { select: () => query, eq: () => query, in: () => query, order: () => query,
       range: async () => ({ data: [
@@ -27,7 +30,10 @@ it('uses the current package price for upcoming rows and excludes it from the RP
   expect(result).toMatchObject({ total: 0, count: 0, rows: [{ playerId: 'soon', amount: 1200, days: 3, reason: 'soon' }] });
 });
 it('propagates RPC and roster failures instead of displaying an invented zero total', async () => {
-  fake.rpc.mockReturnValue({ order: () => ({ range: async () => ({ data: null, error: new Error('RPC unavailable') }) }) });
+  fake.rpc.mockImplementation(() => {
+    const query = { order: () => query, range: async () => ({ data: null, error: new Error('RPC unavailable') }) };
+    return query;
+  });
   await expect(fetchMoneyOwed(now)).rejects.toThrow('RPC unavailable');
   fake.roster.mockResolvedValue({ error: 'Unavailable' });
   await expect(fetchMoneyOwed(now)).rejects.toThrow('Money owed roster unavailable');
@@ -39,7 +45,8 @@ it('reads all RPC pages so the total never stops at the API row limit', async ()
   }));
   const range = vi.fn().mockResolvedValueOnce({ data: records, error: null })
     .mockResolvedValueOnce({ data: [{ ...records[0], player_id: 'last' }], error: null });
-  fake.rpc.mockReturnValue({ order: () => ({ range }) });
+  const query = { order: () => query, range };
+  fake.rpc.mockReturnValue(query);
   const result = await fetchMoneyOwed(now);
   expect(range.mock.calls).toEqual([[0, 499], [500, 999]]);
   expect(result.total).toBe(5010);

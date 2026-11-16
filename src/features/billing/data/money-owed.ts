@@ -24,7 +24,7 @@ export async function fetchMoneyOwed(now = new Date()) {
   const moneyClient = client as unknown as SupabaseClient<MoneyDatabase>;
   const records: MoneyOwedRecord[] = [];
   for (let offset = 0; ; offset += 500) {
-    const page = await moneyClient.rpc('captain_money_owed').order('player_id').range(offset, offset + 499);
+    const page = await moneyClient.rpc('captain_money_owed').order('player_id').order('reason').range(offset, offset + 499);
     if (page.error) throw page.error;
     records.push(...page.data);
     if (page.data.length < 500) break;

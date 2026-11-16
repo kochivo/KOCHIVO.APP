@@ -8,6 +8,15 @@ const players = [
   { playerId: 'soon', fullName: 'C', accessUntil: '2026-11-07' },
   { playerId: 'later', fullName: 'D', accessUntil: '2026-11-08' },
 ];
+it('keeps both debts but counts each owing player once', () => {
+  const result = buildMoneyOwed([
+    { player_id: 'expired', amount_egp: 600, reason: 'partial', since: '2026-10-01' },
+    { player_id: 'expired', amount_egp: 900, reason: 'renewal_pending', since: '2026-11-03' },
+  ], players, new Map(), now, 'Africa/Cairo');
+  expect(result.total).toBe(1500);
+  expect(result.count).toBe(1);
+  expect(result.rows.filter(row => row.playerId === 'expired')).toHaveLength(2);
+});
 it('sums only RPC amounts, counts unpriced rows, and uses captain-local days', () => {
   const result = buildMoneyOwed([
     { player_id: 'expired', amount_egp: 1200, reason: 'expired', since: '2026-10-30' },
