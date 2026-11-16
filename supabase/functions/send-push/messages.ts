@@ -1,5 +1,10 @@
 const baseMessages = {
   ar: {
+    chat_message: '{name} بعتلك رسالة',
+    form_requested: 'الكابتن مستني ردّك على {name}',
+    renewal_requested: '{name} بعت طلب تجديد',
+    player_rank_up: '{name} اترقّى لرتبة جديدة',
+    fallback: 'عندك إشعار جديد',
     checkin_submitted: '{name} بعت المتابعة', form_answered: '{name} جاوب على الفورم',
     swap_requested: '{name} طالب يبدّل تمرين', form_check_submitted: '{name} بعت فيديو أداء',
     receipt_submitted: '{name} رفع إيصال دفع', coach_replied: 'كابتن {name} رد على المتابعة',
@@ -32,6 +37,11 @@ const baseMessages = {
     workout_reminder: 'جاهز لتمرين النهارده؟ {name} مستنيك',
   },
   en: {
+    chat_message: '{name} sent you a message',
+    form_requested: 'Your captain is waiting for: {name}',
+    renewal_requested: '{name} requested a renewal',
+    player_rank_up: '{name} reached a new rank',
+    fallback: 'You have a new notification',
     checkin_submitted: '{name} submitted a check-in', form_answered: '{name} answered a form',
     swap_requested: '{name} requested an exercise swap', form_check_submitted: '{name} submitted a form video',
     receipt_submitted: '{name} uploaded a payment receipt', coach_replied: '{name} replied to your check-in',
@@ -67,6 +77,11 @@ const baseMessages = {
 
 export const messages = { ...baseMessages, arStd: {
   ...baseMessages.ar,
+  chat_message: 'أرسل {name} رسالة إليك',
+  form_requested: 'المدرب ينتظر ردك على {name}',
+  renewal_requested: 'أرسل {name} طلب تجديد',
+  player_rank_up: 'ترقّى {name} إلى رتبة جديدة',
+  fallback: 'لديك إشعار جديد',
   checkin_submitted: 'أرسل {name} المتابعة', form_answered: 'أجاب {name} عن النموذج',
   swap_requested: 'طلب {name} تبديل تمرين', form_check_submitted: 'أرسل {name} فيديو أداء',
   receipt_submitted: 'رفع {name} إيصال دفع', coach_replied: 'ردّ المدرب {name} على المتابعة',

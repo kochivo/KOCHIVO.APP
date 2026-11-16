@@ -1,9 +1,9 @@
 import { messages } from './messages.ts';
 
 export type NotificationType = Exclude<keyof typeof messages.ar,
-  'title' | 'subscription_expiring_player' | 'subscription_expired_player' | 'crown_close_points' | `rank_up_${string}`
+  'title' | 'fallback' | 'subscription_expiring_player' | 'subscription_expired_player' | 'crown_close_points' | `rank_up_${string}`
   | 'coach_replied_form_check' | 'swap_decided_declined'>;
-export interface PushNotificationRow { id: string; type: NotificationType; payload: unknown; player_id?: string }
+export interface PushNotificationRow { id: string; type: string; payload: unknown; player_id?: string; user_id?: string }
 
 export function pushPayload(row: PushNotificationRow, locale: 'ar' | 'en' = 'ar', style: 'egyptian' | 'standard' = 'egyptian') {
   const dictionary = locale === 'ar' && style === 'standard' ? messages.arStd : messages[locale];
@@ -27,11 +27,14 @@ export function pushPayload(row: PushNotificationRow, locale: 'ar' | 'en' = 'ar'
       : playerExpiry ? `${row.type}_player` as 'subscription_expiring_player' | 'subscription_expired_player' : row.type;
   const captainEvent = ['checkin_submitted', 'form_answered', 'swap_requested', 'form_check_submitted', 'receipt_submitted'].includes(row.type);
   const name = field(playerExpiry || row.type === 'coach_replied' || row.type === 'swap_decided' ? 'captain_name'
-    : row.type === 'workout_reminder' ? 'day_title' : row.type === 'player_pain' || captainEvent ? 'display_name' : 'name');
+    : row.type === 'workout_reminder' ? 'day_title' : row.type === 'player_pain' || row.type === 'player_rank_up' || captainEvent ? 'display_name' : 'name');
   const rank = row.type === 'rank_up' || row.type === 'crown_taken' || row.type === 'crown_lost'
     || row.type === 'crown_close' || row.type === 'crown_defend';
   const playerPath = player ? `/captain/players/${encodeURIComponent(player)}` : '';
   const importantPath = row.type === 'receipt_submitted' ? '/captain/billing'
+    : row.type === 'chat_message' ? row.user_id === player && player ? '/player/captain'
+      : playerPath ? `${playerPath}/chat` : '/captain/players'
+    : row.type === 'form_requested' ? field('request_id') ? `/player/forms/${encodeURIComponent(field('request_id'))}` : '/player'
     : row.type === 'coach_replied' ? '/player/captain' : row.type === 'swap_decided' ? '/player'
     : row.type === 'swap_requested' ? playerPath || '/captain/players'
     : row.type === 'form_check_submitted' ? '/captain/tasks'
@@ -42,9 +45,11 @@ export function pushPayload(row: PushNotificationRow, locale: 'ar' | 'en' = 'ar'
     : rank ? '/player/rank' : playerExpiry ? '/player' : row.type === 'captain_approved' ? '/captain' : row.type === 'nutrition_updated' ? '/player/nutrition'
     : row.type === 'plan_assigned' || row.type === 'workout_reminder' ? '/player'
       : row.type === 'join_requested' || !player ? '/captain/players' : `/captain/players/${encodeURIComponent(player)}`);
+  const template = Object.hasOwn(dictionary, key) ? Reflect.get(dictionary, key) : undefined;
+  const text = typeof template === 'string' ? template : dictionary.fallback;
   const body = row.type === 'crown_close'
-    ? dictionary[key].replace('{n}', String(needsWorkouts)).replace('{gap}', String(gap))
-    : dictionary[key].replace('{name}', () => name);
+    ? text.replace('{n}', String(needsWorkouts)).replace('{gap}', String(gap))
+    : text.replace('{name}', () => name);
   return { title: dictionary.title, body,
     url: `/${locale}${path}`, tag: row.id };
 }
