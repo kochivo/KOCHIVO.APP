@@ -1,4 +1,9 @@
 export const arStd = {
+  checkin_submitted: 'أرسل {name} المتابعة', form_answered: 'أجاب {name} عن النموذج',
+  swap_requested: 'طلب {name} تبديل تمرين', form_check_submitted: 'أرسل {name} فيديو أداء',
+  receipt_submitted: 'رفع {name} إيصال دفع', coach_replied: 'ردّ المدرب {name} على المتابعة',
+  coach_replied_form_check: 'ردّ المدرب {name} على فيديو الأداء', swap_decided: 'وافق المدرب {name} على تبديل التمرين',
+  swap_decided_declined: 'رفض المدرب {name} تبديل التمرين',
   player_pain: '{name} أبلغ عن ألم', pain_answered: 'ردّ المدرب على تقرير الألم', urgent: 'عاجل',
   ramadan_soon: 'اقترب رمضان. هل تريد تفعيل وضع رمضان لفريقك؟',
   player_rank_up: '{name} أصبح {rank}', rank_up_medal: 'أصبحت {rank}',

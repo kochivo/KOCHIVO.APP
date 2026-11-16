@@ -2,6 +2,8 @@ import { Award, CalendarClock, CircleAlert, Crown, HeartPulse } from 'lucide-rea
 import type { Notification } from './types';
 
 export function notificationTextKey(row: Notification) {
+  if (row.type === 'coach_replied' && row.payload.kind === 'form_check') return 'coach_replied_form_check';
+  if (row.type === 'swap_decided' && row.payload.status === 'declined') return 'swap_decided_declined';
   if (row.type === 'crown_close' && row.payload.needs_workouts === 0 && (row.payload.gap ?? 0)>0) return 'crown_close_points';
   if (row.type === 'rank_up') {
     if (medalKey(row.payload.medal)) return 'rank_up_medal';
@@ -30,6 +32,8 @@ export function medalKey(value?: string) {
 }
 
 export function notificationHref(row: Notification): string {
+  const important = importantNotificationHref(row);
+  if (important) return important;
   if (row.type === 'player_pain') return row.payload.player_id ? `/captain/players/${encodeURIComponent(row.payload.player_id)}#pain-reports` : '/captain/players';
   if (row.type === 'pain_answered') return '/player/captain';
   if (row.type === 'ramadan_soon') return '/captain/settings#ramadan';
@@ -44,6 +48,18 @@ export function notificationHref(row: Notification): string {
   if (row.type === 'plan_assigned' || row.type === 'workout_reminder') return '/player';
   if (row.type === 'nutrition_updated') return '/player/nutrition';
   return row.payload.player_id ? `/captain/players/${encodeURIComponent(row.payload.player_id)}` : '/captain/players';
+}
+
+export function importantNotificationHref(row: Notification): string | undefined {
+  const player = row.payload.player_id ? `/captain/players/${encodeURIComponent(row.payload.player_id)}` : undefined;
+  if (row.type === 'coach_replied') return '/player/captain';
+  if (row.type === 'swap_decided') return '/player';
+  if (row.type === 'receipt_submitted') return '/captain/billing';
+  if (row.type === 'swap_requested') return player ?? '/captain/players';
+  if (row.type === 'form_check_submitted') return '/captain/tasks';
+  if (row.type === 'checkin_submitted') return player ? `${player}/checkins` : '/captain/players';
+  if (row.type === 'form_answered') return player ? `${player}/assessments${row.payload.request_id
+    ? `?requestId=${encodeURIComponent(row.payload.request_id)}#assessment-details` : ''}` : '/captain/players';
 }
 
 export function relativeTime(createdAt: string, now: number): { key: 'now' | 'minutes' | 'hours' | 'days'; n: number } {

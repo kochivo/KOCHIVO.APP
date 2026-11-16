@@ -51,4 +51,16 @@ describe('captain notification list', () => {
     expect(html).toContain('Could not mark as read');
     expect(html).toContain('No notifications yet');
   });
+
+  it('opens important events at their actionable destinations with player names', () => {
+    const html = render({ rows: (['checkin_submitted', 'form_answered', 'swap_requested',
+      'form_check_submitted', 'receipt_submitted'] as const).map(type => ({
+      id: type, type, payload: { player_id: 'p', display_name: 'Mariam', request_id: 'r' },
+      created_at: '2026-11-14T09:00:00Z', is_read: false,
+    })) });
+    for (const text of ['Mariam submitted a check-in', 'Mariam answered a form', 'Mariam requested an exercise swap',
+      'Mariam submitted a form video', 'Mariam uploaded a payment receipt']) expect(html).toContain(text);
+    for (const href of ['/captain/players/p/checkins', '/captain/players/p/assessments?requestId=r#assessment-details',
+      '/captain/players/p', '/captain/tasks', '/captain/billing']) expect(html).toContain(`href="${href}"`);
+  });
 });

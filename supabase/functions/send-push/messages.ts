@@ -1,5 +1,10 @@
-export const messages = {
+const baseMessages = {
   ar: {
+    checkin_submitted: '{name} بعت المتابعة', form_answered: '{name} جاوب على الفورم',
+    swap_requested: '{name} طالب يبدّل تمرين', form_check_submitted: '{name} بعت فيديو أداء',
+    receipt_submitted: '{name} رفع إيصال دفع', coach_replied: 'كابتن {name} رد على المتابعة',
+    coach_replied_form_check: 'كابتن {name} رد على فيديو الأداء', swap_decided: 'كابتن {name} وافق على تبديل التمرين',
+    swap_decided_declined: 'كابتن {name} رفض تبديل التمرين',
     player_pain: '{name} بلّغ عن وجع', pain_answered: 'الكابتن رد على تقرير الوجع',
     ramadan_soon: 'رمضان قرّب. تحب تشغّل وضع رمضان لفريقك؟',
     rank_up: 'اترقيت لرتبة جديدة',
@@ -27,6 +32,11 @@ export const messages = {
     workout_reminder: 'جاهز لتمرين النهارده؟ {name} مستنيك',
   },
   en: {
+    checkin_submitted: '{name} submitted a check-in', form_answered: '{name} answered a form',
+    swap_requested: '{name} requested an exercise swap', form_check_submitted: '{name} submitted a form video',
+    receipt_submitted: '{name} uploaded a payment receipt', coach_replied: '{name} replied to your check-in',
+    coach_replied_form_check: '{name} replied to your form video', swap_decided: '{name} approved your exercise swap',
+    swap_decided_declined: '{name} declined your exercise swap',
     player_pain: '{name} reported pain', pain_answered: 'Your coach answered your pain report',
     ramadan_soon: 'Ramadan is close. Turn on Ramadan mode for your team?',
     rank_up: 'You reached a new rank',
@@ -54,3 +64,12 @@ export const messages = {
     workout_reminder: 'Ready for today’s workout? {name} is waiting',
   },
 } as const;
+
+export const messages = { ...baseMessages, arStd: {
+  ...baseMessages.ar,
+  checkin_submitted: 'أرسل {name} المتابعة', form_answered: 'أجاب {name} عن النموذج',
+  swap_requested: 'طلب {name} تبديل تمرين', form_check_submitted: 'أرسل {name} فيديو أداء',
+  receipt_submitted: 'رفع {name} إيصال دفع', coach_replied: 'ردّ المدرب {name} على المتابعة',
+  coach_replied_form_check: 'ردّ المدرب {name} على فيديو الأداء', swap_decided: 'وافق المدرب {name} على تبديل التمرين',
+  swap_decided_declined: 'رفض المدرب {name} تبديل التمرين',
+} } as const;

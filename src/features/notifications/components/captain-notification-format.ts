@@ -4,9 +4,10 @@ import type { NotificationType } from '../types';
 export function captainNotification(kind: NotificationType) {
   if (kind === 'ramadan_soon') return { Icon: CalendarClock, href: '/captain/settings#ramadan' };
   if (kind === 'workout_feedback') return { Icon: Play, href: '/captain/tasks' };
-  if (kind === 'form_requested') return { Icon: ClipboardList, href: '/captain/tasks' };
+  if (kind === 'form_requested' || kind === 'form_answered' || kind === 'checkin_submitted') return { Icon: ClipboardList, href: '/captain/tasks' };
+  if (kind === 'form_check_submitted') return { Icon: Play, href: '/captain/tasks' };
   if (kind === 'renewal_requested' || kind === 'subscription_expiring'
-    || kind === 'subscription_expired' || kind === 'sessions_used_up') {
+    || kind === 'subscription_expired' || kind === 'sessions_used_up' || kind === 'receipt_submitted') {
     return { Icon: Banknote, href: '/captain/billing' };
   }
   if (kind === 'join_requested' || kind === 'player_joined') return { Icon: UserPlus, href: '/captain/join' };

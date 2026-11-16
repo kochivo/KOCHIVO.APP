@@ -8,7 +8,7 @@ import { PageBarTitle } from '@/ui/page-bar-title';
 import { PageBarActions } from '@/ui/page-bar-actions';
 import { messages } from '../messages';
 import { useNotifications } from '../hooks/use-notifications';
-import { medalKey, notificationHref, notificationTextKey, relativeTime } from '../format';
+import { importantNotificationHref, medalKey, notificationHref, notificationTextKey, relativeTime } from '../format';
 import { captainNotification } from './captain-notification-format';
 import { CaptainNotificationsStateEntry } from './captain-notifications-state-entry';
 import { Button } from '@/ui/button';
@@ -32,7 +32,7 @@ export function CaptainNotificationsEntry() {
       {n.rows.length === 0 ? <p className="p-card text-sm text-muted">{t('empty')}</p> :
         <ul>{n.rows.map(row => {
           const { Icon, href: baseHref } = captainNotification(row.type);
-          const href = row.type === 'player_rank_up' || row.type === 'player_pain' || row.type === 'pain_answered' ? notificationHref(row) : baseHref;
+          const href = importantNotificationHref(row) ?? (row.type === 'player_rank_up' || row.type === 'player_pain' || row.type === 'pain_answered' ? notificationHref(row) : baseHref);
           const time = relativeTime(row.created_at, now);
           return <li key={row.id} className="border-line-soft [&+li]:border-t">
             <Link href={href} aria-disabled={n.pending}

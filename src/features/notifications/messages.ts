@@ -5,6 +5,11 @@ export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? { ...arStd, workspaceMarkAll: 'علّم الكل مقروء' } : undefined; },
   ar: {
+    checkin_submitted: '{name} بعت المتابعة', form_answered: '{name} جاوب على الفورم',
+    swap_requested: '{name} طالب يبدّل تمرين', form_check_submitted: '{name} بعت فيديو أداء',
+    receipt_submitted: '{name} رفع إيصال دفع', coach_replied: 'كابتن {name} رد على المتابعة',
+    coach_replied_form_check: 'كابتن {name} رد على فيديو الأداء', swap_decided: 'كابتن {name} وافق على تبديل التمرين',
+    swap_decided_declined: 'كابتن {name} رفض تبديل التمرين',
     player_pain: '{name} بلّغ عن وجع', pain_answered: 'الكابتن رد على تقرير الوجع', urgent: 'عاجل',
     ramadan_soon: 'رمضان قرّب. تحب تشغّل وضع رمضان لفريقك؟',
     player_rank_up: '{name} طلع {rank}', rank_up_medal: 'بقيت {rank}',
@@ -40,6 +45,11 @@ export const messages = defineMessages({
     now: 'دلوقتي', minutes: 'من {n} دقيقة', hours: 'من {n} ساعة', days: 'من {n} يوم',
   },
   en: {
+    checkin_submitted: '{name} submitted a check-in', form_answered: '{name} answered a form',
+    swap_requested: '{name} requested an exercise swap', form_check_submitted: '{name} submitted a form video',
+    receipt_submitted: '{name} uploaded a payment receipt', coach_replied: '{name} replied to your check-in',
+    coach_replied_form_check: '{name} replied to your form video', swap_decided: '{name} approved your exercise swap',
+    swap_decided_declined: '{name} declined your exercise swap',
     player_pain: '{name} reported pain', pain_answered: 'Your coach answered your pain report', urgent: 'Urgent',
     ramadan_soon: 'Ramadan is close. Turn on Ramadan mode for your team?',
     player_rank_up: '{name} reached {rank}', rank_up_medal: 'You reached {rank}',
