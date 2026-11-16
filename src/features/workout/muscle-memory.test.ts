@@ -1,10 +1,39 @@
 import { describe, expect, it, vi } from 'vitest';
-import { latestSession, performanceFor } from './data/last-performance';
+vi.mock('server-only', () => ({}));
+import { lastSession, latestSession, performanceFor } from './data/last-performance';
+import { isLightDay } from '@/features/player-home';
 import type { PastSet } from './data/last-performance';
 import { remoteLastSession } from './data/remote-last-session';
 
 const set = (session_id: string, set_index: number, weight_kg: number, reps: number, minute: number): PastSet => ({
   id: `${session_id}-${set_index}`, session_id, set_index, weight_kg, reps, completed_at: `2026-11-0${minute < 60 ? 1 : 2}T10:${String(minute % 60).padStart(2, '0')}:00.000Z`,
+});
+
+it('walks past consecutive light sessions to keep 85 kg light and 100 kg usual', async () => {
+  const rows = [set('usual', 1, 100, 10, 1), set('light1', 1, 85, 10, 62), set('light2', 1, 85, 10, 63)];
+  const dates = ['2026-10-31', '2026-11-01', '2026-11-02'];
+  const db = { set_logs: { filter: () => ({ toArray: async () => rows }) },
+    workout_sessions: { toArray: async () => rows.map((row, i) => ({ id: row.session_id, training_date: dates[i] })) },
+  } as unknown as Parameters<typeof lastSession>[0];
+  const skip = (date: string) => isLightDay(true, ['2026-11-01'], date, 3, []);
+  const baseline = await lastSession(db, 'exercise', 'today', undefined, skip);
+  expect(performanceFor(baseline, 1)?.weight_kg).toBe(100);
+  expect((performanceFor(baseline, 1)?.weight_kg ?? 0) * 0.85).toBe(85);
+  rows.pop();
+  expect((performanceFor(await lastSession(db, 'exercise', 'today', undefined, skip), 1)?.weight_kg ?? 0) * 0.85).toBe(85);
+});
+
+it('walks remote light history across pages and keeps the whole usual session', async () => {
+  const light = Array.from({ length: 99 }, (_, index) => ({ ...set(`light-${index}`, 1, 85, 10, 65),
+    workout_sessions: { training_date: '2026-11-02' } }));
+  const usual = (index: number) => ({ ...set('usual', index, 100, 10, index), workout_sessions: { training_date: '2026-10-31' } });
+  const range = vi.fn().mockResolvedValueOnce({ data: [...light, usual(2)], error: null })
+    .mockResolvedValueOnce({ data: [usual(1)], error: null });
+  const query = { select: () => query, eq: () => query, is: () => query, order: () => query, range };
+  const last = await remoteLastSession({ from: () => query } as never, { playerId: 'p', exerciseId: 'ex', beforeSessionId: '',
+    skipDate: date => isLightDay(true, ['2026-11-01'], date, 3, []) });
+  expect(last?.sets.map(row => row.set_index)).toEqual([1, 2]);
+  expect(range).toHaveBeenCalledWith(100, 199);
 });
 
 describe('muscle memory', () => {

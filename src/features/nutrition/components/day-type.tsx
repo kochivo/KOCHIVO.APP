@@ -6,6 +6,16 @@ import { localDb, useLiveQuery } from '@/core/offline';
 import { isRestDay } from '@/features/player-home';
 import { messages } from '../v6-messages';
 import { useTodayDecision } from '@/features/readiness';
+import type { ProgramSnapshot, WorkoutSessionRow } from '@/core/offline';
+import { localDate } from '@/lib/dates';
+
+export function shoppingWeekRestDays(snapshot: ProgramSnapshot | null, sessions: WorkoutSessionRow[], today: string): boolean[] {
+  return Array.from({ length: 7 }, (_, index) => {
+    const date = new Date(`${today}T12:00:00Z`);
+    date.setUTCDate(date.getUTCDate() + index);
+    return snapshot ? isRestDay(snapshot, sessions, localDate(date, 'UTC')) : false;
+  });
+}
 
 export function DayType({ today, playerId, onRestChange }: { today: string; playerId?: string; onRestChange?: (rest: boolean | null | undefined) => void }) {
   const t = useT(messages);

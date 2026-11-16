@@ -30,6 +30,9 @@ export async function prepareSwap(actor: KoActor, exercise: string, injury: Inju
   }) };
   const row = matches[0];
   if (!row) return { text: t('exerciseMissing') };
+  const intake = await actor.db.from('player_intake').select('injuries').eq('player_id', actor.id).maybeSingle();
+  if (intake.error) throw intake.error;
+  const injuries = [...new Set([...(intake.data?.injuries ?? []), ...(injury ? [injury] : [])])];
   const candidates = [];
   for (let offset = 0; ; offset += 500) {
     const page = await actor.db.from('exercise_generator_tags')
@@ -42,10 +45,11 @@ export async function prepareSwap(actor: KoActor, exercise: string, injury: Inju
   const seen = new Set([row.exercise_id]);
   const options = reason === 'busy' ? [...candidates].sort((a, b) => a.exercise_id.localeCompare(b.exercise_id)).filter(candidate => {
     if (!source?.exercises.body_part || !source.exercises.equipment || !candidate.exercises.equipment || seen.has(candidate.exercise_id) ||
+      candidate.pattern !== source.pattern || candidate.stress.some(stress => injuries.includes(stress)) ||
       candidate.exercises.body_part !== source.exercises.body_part || candidate.exercises.equipment === source.exercises.equipment) return false;
     seen.add(candidate.exercise_id);
     return true;
-  }).slice(0, 3) : swapOptions(row.exercise_id, reason === 'injury' && injury ? [injury] : [], candidates);
+  }).slice(0, 3) : swapOptions(row.exercise_id, injuries, candidates);
   if (!options.length) return { text: reason === 'busy' ? `${t('swapBusyNone')}\n${t('swapToday')}` : t('swapNone') };
   const numbered = options.map((option, i) => t('swapOption', { number: i + 1, name: label(option.exercises) })).join('، ');
   if (reason === 'busy') return { text: `${t('swapBusyChoices', { name: label(row), options: numbered })}\n${t('swapToday')}` };

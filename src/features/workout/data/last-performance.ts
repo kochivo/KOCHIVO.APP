@@ -25,8 +25,14 @@ export function performanceFor(last: LastSession | null | undefined, setIndex: n
     ...(match.pain_adjusted === undefined ? {} : { pain_adjusted: match.pain_adjusted }) } : null;
 }
 
-export async function lastSession(db: KochivoDB, exerciseId: string, beforeSessionId: string, painSince?: string): Promise<LastSession | null> {
+export async function lastSession(db: KochivoDB, exerciseId: string, beforeSessionId: string, painSince?: string,
+  skipDate?: (date: string) => boolean): Promise<LastSession | null> {
   const rows = await db.set_logs.filter((row) => row.exercise_id === exerciseId &&
     row.session_id !== beforeSessionId && row.deleted_at === null).toArray();
+  if (skipDate) {
+    const sessions = await db.workout_sessions.toArray();
+    const eligible = new Set(sessions.filter(row => !skipDate(row.training_date)).map(row => row.id));
+    return latestSession(rows.filter(row => eligible.has(row.session_id)), painSince);
+  }
   return latestSession(rows, painSince);
 }

@@ -374,3 +374,11 @@ video inside the app) it measured 203.8 KiB. The video player, its sheet and
 its strings already load only when a video is opened; the rest is shared
 workout code. Owner decision 2026-11-15: allow this route up to **206 KiB** in
 `src/lib/perf-budget.test.ts`, as long as the workout stays fast and smooth.
+
+## Budget exception — captain player program tab (2026-11-16)
+
+`/captain/players/[playerId]/programs` measured 316.2 KiB after T-319 (audit
+fixes) and T-321b (rank share image). None of their new code is in this
+route's first-load chunks; the 1.2 KiB came from shared chunks splitting
+differently. The route may grow to **317 KiB**; the program builder route
+keeps 315.

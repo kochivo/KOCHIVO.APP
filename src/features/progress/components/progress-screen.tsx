@@ -15,7 +15,8 @@ import { localDate } from '@/lib/dates';
 import { Button, Chip, EmptyState, ErrorState, LoadingState } from '@/ui';
 import { listCheckIns } from '../data/checkins';
 import type { CheckIn } from '../data/checkins';
-import { readStrength } from '../data/strength';
+import { readRemoteStrength, readStrength } from '../data/strength';
+import type { StrengthLog } from '../data/strength';
 import { mainLifts, topSets, trendDelta } from '../trends';
 import type { TrendPoint } from '../trends';
 import { weekStart } from '../week';
@@ -56,17 +57,29 @@ export function ProgressScreen({ analytics }: { analytics?: ReactNode }) {
   const [sheet, setSheet] = useState(false);
   const [sheetLoaded, setSheetLoaded] = useState(false);
   const [remoteSessionIds, setRemoteSessionIds] = useState<string[]>();
+  const [remoteStrength, setRemoteStrength] = useState<StrengthLog[]>([]);
   const [countError, setCountError] = useState(false);
   const onCountError = useCallback(() => setCountError(true), []);
   const onLocalError = useCallback(() => setLocalError(true), []);
   const query = useCallback(async () => {
     const snapshot = await localDb().program_snapshot.get('active');
-    return readStrength(snapshot ?? null, locale);
-  }, [locale]);
+    return readStrength(snapshot ?? null, locale, remoteStrength);
+  }, [locale, remoteStrength]);
   const strength = useLiveQuery(query, onLocalError, retryKey);
   const readCount = useCallback(async () => (await localDb().workout_sessions.toArray()).filter(row => row.completed_at).map(row => row.id), []);
   const localSessionIds = useLiveQuery(readCount, onCountError, retryKey);
   const sessionCount = Array.isArray(localSessionIds) ? new Set([...(remoteSessionIds ?? []), ...localSessionIds]).size : undefined;
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      try { const rows = await readRemoteStrength(); if (!cancelled) setRemoteStrength(rows); }
+      // Server history only fills gaps on a new phone; local sets must still show when it fails.
+      catch (error) { console.warn('Loading strength history from the server failed', error); }
+    };
+    void load();
+    window.addEventListener('online', load);
+    return () => { cancelled = true; window.removeEventListener('online', load); };
+  }, [retryKey]);
   useEffect(() => {
     if (!v6) return;
     let cancelled = false;

@@ -69,8 +69,8 @@ function withPlan(names: string[], tags: object[]) {
       id: programExercise, exercise_id: 'current', exercises: { name_ar: null, name_en: name },
     })) }] }, error: null,
   }) };
-  const tagQuery = { select: vi.fn().mockReturnThis(), order: vi.fn().mockReturnThis(),
-    range: vi.fn().mockResolvedValue({ data: tags, error: null }) };
+  const tagQuery = { select: vi.fn().mockReturnThis(), order: vi.fn().mockReturnThis(), eq: vi.fn().mockReturnThis(),
+    range: vi.fn().mockResolvedValue({ data: tags, error: null }), maybeSingle: vi.fn().mockResolvedValue({ data: { injuries: [] }, error: null }) };
   const from = vi.fn((table: string) => table === 'programs' ? programQuery : tagQuery);
   return { actor: { id: player, role: 'player', db: { from } } as unknown as KoActor, from, programQuery };
 }

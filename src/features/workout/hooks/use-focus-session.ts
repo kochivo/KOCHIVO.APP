@@ -51,6 +51,8 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
   const originalDay = programFinished ? undefined : snapshot?.days.find((item) => item.id === dayId && !item.is_rest_day);
   const cycle = useCycle(playerId ?? cached?.player_id).data;
   const cycleLight = Boolean(cycle?.female && isLightDay(cycle.settings.enabled, cycle.starts, today, cycle.settings.light_days, cycle.overrides));
+  const skipLightDate = useMemo(() => cycle?.female && !cycle.failed ? (date: string) =>
+    isLightDay(cycle.settings.enabled, cycle.starts, date, cycle.settings.light_days, cycle.overrides) : undefined, [cycle]);
   const day = useMemo(() => decision === 'reduce' && originalDay ? { ...originalDay,
     exercises: originalDay.exercises.map(exercise => ({ ...exercise, sets: reducedSets(exercise.sets) })) } : originalDay, [decision, originalDay]);
   const plannedQueue = useMemo(() => day ? buildQueue(day) : [], [day]);
@@ -101,7 +103,7 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
   const historySessionId = session?.id ?? '';
   const hint = current?.exercise.pain_hint;
   const painSince = hint && hint.until >= today ? hint.since : undefined;
-  const memory = useLastSession(playerId ?? cached?.player_id, exerciseId, historySessionId, onError, retryKey, painSince);
+  const memory = useLastSession(playerId ?? cached?.player_id, exerciseId, historySessionId, onError, retryKey, painSince, skipLightDate);
   const performance = performanceFor(memory.last, current?.setIndex ?? 0);
   const previous = doneSets.filter((row) => row.program_exercise_id === current?.exercise.id &&
     row.exercise_id === exerciseId && (row.drop_index ?? 0) === 0 &&

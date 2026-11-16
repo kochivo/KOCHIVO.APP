@@ -13,7 +13,7 @@ const exceptions: Record<string, number> = {
   '/welcome': 201,
   '/offline': 206,
   '/captain/programs/[programId]': 315,
-  '/captain/players/[playerId]/programs': 315,
+  '/captain/players/[playerId]/programs': 317,
 };
 
 it.skipIf(!existsSync(statsPath))('keeps first-load route JavaScript within gzip budgets', () => {

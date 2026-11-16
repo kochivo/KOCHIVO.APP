@@ -22,7 +22,8 @@ export function MedalArt({ rank, emblem, size = 64, locked = false, label, id, p
   const white = shared('white'), radius = 26 + rank * 1.3;
   const sheen = shine && !locked && !paints;
   return <svg role="img" aria-label={label} data-medal-rank={rank} width={size} height={size}
-    viewBox="-10 -6 140 136" className="shrink-0 overflow-visible">
+    style={paints ? { width: size, height: size, flexShrink: 0 } : undefined}
+    viewBox={paints && size === 640 ? (rank < 3 ? '24 26 72 72' : '-10 -6 140 136') : '-10 -6 140 136'} className="shrink-0 overflow-visible">
     <defs>
       <linearGradient id={`${id}m`} x1="0" y1="0" x2="1" y2="1">
         {[0, .22, .48, .62, .82, 1].map((offset, i) => <stop key={i} offset={offset} stopColor={s(i)} />)}
