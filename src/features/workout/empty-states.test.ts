@@ -19,8 +19,8 @@ beforeEach(() => { state.values = []; state.index = 0; });
 const render = (element: React.ReactElement) => renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' }, element));
 import { FocusScreen } from './components/focus-screen';
 import { SetDots } from './components/set-dots';
-const focus = vi.hoisted(() => ({ day: null as null | { id: string; title: string; cardio?: SnapshotDay['cardio'] } }));
-vi.mock('./hooks/use-focus-session', () => ({ useFocusSession: () => ({ day: focus.day, queue: [], doneSets: [], rest: { remaining: 0, endsAt: null } }) }));
+const focus = vi.hoisted(() => ({ day: null as null | { id: string; title: string; cardio?: SnapshotDay['cardio'] }, session: null as null | { id: string } }));
+vi.mock('./hooks/use-focus-session', () => ({ useFocusSession: () => ({ day: focus.day, session: focus.session, queue: [], doneSets: [], rest: { remaining: 0, endsAt: null } }) }));
 vi.mock('./components/media-status', () => ({ MediaStatus: () => null }));
 it('puts the home link inside the missing workout state', () => {
  const html = render(createElement(FocusScreen, { dayId: 'missing' }));
@@ -44,6 +44,11 @@ it('shows prescribed cardio below the workout without asking the coach to prepar
  expect(html).toContain('20 minutes');
  expect(html).toContain('Easy pace');
  expect(html).not.toContain('Your coach is preparing your workout');
- expect(html).toMatch(/<button[^>]*class="[^"]*control-primary[^"]*min-h-14[^>]*>Finish workout<\/button>/);
+ expect(html).toMatch(/<button[^>]*class="[^"]*control-primary[^"]*min-h-14[^>]*>Start cardio<\/button>/);
  expect(html.match(/control-primary/g)).toHaveLength(1);
+ focus.session = { id: 'session' };
+ const started = render(createElement(FocusScreen, { dayId: 'day' }));
+ expect(started).toMatch(/<button[^>]*class="[^"]*control-primary[^"]*min-h-14[^>]*>Finish workout<\/button>/);
+ expect(started.match(/control-primary/g)).toHaveLength(1);
+ focus.session = null;
 });

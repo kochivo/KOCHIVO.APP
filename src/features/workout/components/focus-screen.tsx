@@ -59,6 +59,7 @@ export function FocusScreen({ dayId, playerId }: { dayId: string; playerId?: str
     loggedSets: state.doneSets.filter(row => (row.drop_index ?? 0) === 0).length,
     plannedSets: plannedDay.exercises.reduce((total, exercise) => total + exercise.sets, 0),
     plannedSeconds: plannedDay.exercises.reduce((total, exercise) => total + exercise.sets * (exercise.rest_seconds + 40), 0),
+    cardioSeconds: plannedDay.cardio?.reduce((total, block) => total + block.minutes * 60, 0),
   } : undefined;
   const { current, rest } = state;
   const hasWarmup = Boolean(state.day?.warmup?.items.length || state.day?.warmup?.ramp);
@@ -89,7 +90,7 @@ export function FocusScreen({ dayId, playerId }: { dayId: string; playerId?: str
         <EmptyState icon={Dumbbell} title={t('thisWorkoutIsntInYourProgram')} body={t('goHomeToSeeYourCurrentWorkout')} action={{ label: t('backToHome'), href: '/player' }} />
       : state.queue.length === 0 ? state.finished && state.session ? <SessionFeedback key={state.session.id} sessionId={state.session.id}
         workout={workout} hasFeedback={state.session.session_rpe != null || Boolean(state.session.player_note)} /> : state.day.cardio?.length ?
-        <Button size="lg" block disabled={state.disabled} onClick={() => void state.finishCardio()}>{t('finishCardioWorkout')}</Button> :
+        <Button size="lg" block disabled={state.disabled} onClick={() => void state.finishCardio()}>{t(state.session ? 'finishCardioWorkout' : 'startCardioWorkout')}</Button> :
         <EmptyState icon={Dumbbell} title={t('noExercisesForThisDay')} body={t('yourCoachIsPreparingYourWorkout')} action={{ label: t('messageCoach'), href: '/player/captain' }} /> : <>
         {!warmupView && <><p className="text-sm text-muted">{t('setProgress', { value0: formatNumber(state.progress, locale), value1: formatNumber(state.queue.length, locale) })}</p>
         <ProgressBar value={state.doneSets.length} max={state.queue.length} aria-label={t('setProgress', { value0: formatNumber(state.progress, locale), value1: formatNumber(state.queue.length, locale) })} /></>}

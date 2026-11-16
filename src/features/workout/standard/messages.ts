@@ -1,4 +1,5 @@
 export const arStd = {
+  startCardioWorkout: 'ابدأ الكارديو',
   finishCardioWorkout: 'إنهاء التمرين', couldntFinishWorkoutOnYourPhone: 'تعذّر حفظ إنهاء التمرين على الهاتف. حاول مجدداً.',
   gifToggle: 'الصورة المتحركة',
   tempoLabel: 'تمبو', tempoHelp: 'بالثواني: نزول، أسفل، صعود، أعلى. X يعني انفجاري.', rpeTarget: 'RPE {count} · المجهود من 10', rirTarget: 'RIR {count}',

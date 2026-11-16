@@ -143,6 +143,10 @@ it('finishes a cardio-only day explicitly, including repeat taps and reload', as
   expect(state.finished).toBe(false);
   expect(await db.workout_sessions.count()).toBe(0);
   await Promise.all([state.finishCardio(), state.finishCardio()]);
+  const started = await loadedState();
+  expect(started.finished).toBe(false);
+  vi.setSystemTime(afterMidnight + 20 * 60_000);
+  await started.finishCardio();
   expect((await loadedState()).finished).toBe(true);
   expect(await db.workout_sessions.count()).toBe(1);
   expect(await db.set_logs.count()).toBe(0);

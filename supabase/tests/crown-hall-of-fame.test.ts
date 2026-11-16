@@ -100,12 +100,13 @@ it('returns the latest twelve frozen rows newest first', async () => {
   expect(rows[11]?.month).toBe('2025-11-01');
 });
 
-it('backfills completed months and runs the guarded cron command at Cairo midnight in winter and summer', async () => {
-  let owner = '';
+it('backfills completed months and retries the settled cron command in winter and summer', async () => {
+  let owner = '', winner = '';
   const migrated = await createTestDb(async (file, pending) => {
     if (!file.startsWith('0087_')) return;
     const team = await createCaptainWithPlayer(pending, '2026-01-01');
     owner = team.captain;
+    winner = team.player;
     await pending.query(`insert into public.programs(captain_id,player_id,title,status) values($1,$2,'Plan','active')`,
       [owner, team.player]);
     await pending.query(`with sessions as (
@@ -115,23 +116,37 @@ it('backfills completed months and runs the guarded cron command at Cairo midnig
       insert into public.points_log(player_id,captain_id,kind,source_key,points,status,earned_on)
       select $1,$2,'workout',id::text,3,'counted',training_date from sessions`, [team.player, owner]);
     await pending.exec(`create schema cron;
-      create table cron.jobs(name text, schedule text, command text);
+      create table cron.jobs(name text primary key, schedule text, command text);
       create function cron.schedule(text,text,text) returns bigint language sql as $$
-        insert into cron.jobs values($1,$2,$3) returning 1::bigint $$;`);
+        insert into cron.jobs values($1,$2,$3) on conflict(name) do update
+          set schedule=excluded.schedule,command=excluded.command returning 1::bigint $$;`);
   });
   try {
     expect((await asUser(migrated, owner, tx => tx.query('select month::text from public.crown_hall_of_fame()'))).rows)
       .toEqual([{ month: '2026-10-01' }]);
-    const job = (await migrated.query<{ schedule: string; command: string }>('select schedule,command from cron.jobs')).rows[0];
+    const job = (await migrated.query<{ schedule: string; command: string }>(
+      "select schedule,command from cron.jobs where name='freeze-crown-winners'")).rows[0];
     if (!job) throw new Error('Cron job missing');
     expect(job.schedule).toBe('10 * * * *');
-    for (const [instant, calls] of [
-      ['2026-10-31T21:10:00Z', 0], ['2026-10-31T22:10:00Z', 1], ['2026-10-31T23:10:00Z', 0],
-      ['2026-05-31T20:10:00Z', 0], ['2026-05-31T21:10:00Z', 1], ['2026-06-01T21:10:00Z', 0],
+    const frozen = (await migrated.query('select * from crown_winners')).rows;
+    for (const [instant, month] of [
+      ['2026-11-02T22:10:00Z', '2026-10-01'],
+      ['2026-06-02T21:10:00Z', '2026-05-01'],
     ] as const) {
       await migrated.exec(`create or replace function pg_catalog.now() returns timestamptz language sql stable
-        as $$ select timestamptz '${instant}' $$`);
-      expect((await migrated.query(job.command)).rows).toHaveLength(calls);
+        as $$ select timestamptz '${instant}' $$; discard plans;`);
+      if (month === '2026-05-01') await migrated.query(`with sessions as (
+        insert into workout_sessions(id,player_id,training_date,started_at,client_updated_at)
+        select gen_random_uuid(),$1,d,d,now() from generate_series('2026-05-01'::date,'2026-05-04'::date,interval '1 day') d
+        returning id,training_date)
+        insert into points_log(player_id,captain_id,kind,source_key,points,status,earned_on)
+        select $1,$2,'workout',id::text,3,'counted',training_date from sessions`, [winner, owner]);
+      await migrated.query(job.command);
+      const settled = (await migrated.query('select * from crown_winners order by month')).rows;
+      expect(settled).toContainEqual(expect.objectContaining({ captain_id: owner, month: new Date(month), done: 4 }));
+      await migrated.query(job.command);
+      expect((await migrated.query('select * from crown_winners order by month')).rows).toEqual(settled);
+      expect(settled).toEqual(expect.arrayContaining(frozen));
     }
   } finally { await migrated.close(); }
 });

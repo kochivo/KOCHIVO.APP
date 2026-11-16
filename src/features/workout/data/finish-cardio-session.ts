@@ -5,5 +5,7 @@ import { finishSession, startSession } from './log-set';
 export async function finishCardioSession(db: KochivoDB, day: SnapshotDay, today: string, now: number): Promise<void> {
   if (!isCardioOnly(day)) return;
   const session = await startSession(db, day, today, now);
+  // The first tap records the real start; completion needs a later tap.
+  if (session.started_at === new Date(now).toISOString()) return;
   await finishSession(db, session.id, now);
 }

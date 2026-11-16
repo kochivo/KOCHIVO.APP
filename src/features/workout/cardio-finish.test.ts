@@ -22,10 +22,12 @@ it('offers explicit completion only for cardio with an empty set queue', () => {
 it('finishes offline with one stable session and outbox row across double taps and replay', async () => {
   await db.open();
   await Promise.all([finishCardioSession(db, day, '2026-11-16', now), finishCardioSession(db, day, '2026-11-16', now)]);
+  expect((await db.workout_sessions.toArray())[0]?.completed_at).toBeNull();
+  await finishCardioSession(db, day, '2026-11-16', now + 20 * 60_000);
   const sessions = await db.workout_sessions.toArray();
   expect(sessions).toHaveLength(1);
   expect(sessions[0]).toMatchObject({ program_day_id: day.id, training_date: '2026-11-16',
-    started_at: '2026-11-16T10:00:00.000Z', completed_at: '2026-11-16T10:00:00.000Z' });
+    started_at: '2026-11-16T10:00:00.000Z', completed_at: '2026-11-16T10:20:00.000Z' });
   await finishCardioSession(db, day, '2026-11-16', now + 60_000);
   expect(await db.workout_sessions.toArray()).toEqual(sessions);
   expect(await db.set_logs.count()).toBe(0);

@@ -60,9 +60,15 @@ it('uses each captain month-end day on daily dispatch and never repeats notices'
 it('freezes only completed captain months and retries without rewriting winners', async () => {
   await clock('2026-11-30T11:10:00Z');
   await job('freeze-crown-winners');
+  expect((await db.query('select captain_id from crown_winners')).rows).toEqual([]);
+  await clock('2026-12-02T10:59:00Z');
+  await job('freeze-crown-winners');
+  expect((await db.query('select captain_id from crown_winners')).rows).toEqual([]);
+  await clock('2026-12-02T11:00:00Z');
+  await job('freeze-crown-winners');
   expect((await db.query('select captain_id from crown_winners')).rows).toEqual([{ captain_id: teams[1]?.captain }]);
   await job('freeze-crown-winners');
-  await clock('2026-12-01T00:10:00Z');
+  await clock('2026-12-03T00:00:00Z');
   await job('freeze-crown-winners');
   const before = (await db.query('select * from crown_winners order by captain_id')).rows;
   expect(before).toHaveLength(2);

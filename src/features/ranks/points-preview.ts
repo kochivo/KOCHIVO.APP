@@ -4,6 +4,7 @@ export type WorkoutPointsInput = {
   loggedSets: number;
   plannedSets: number;
   plannedSeconds: number;
+  cardioSeconds?: number;
 };
 
 type WorkoutPointsPreview = { counted: true; points: 3 }
@@ -11,8 +12,9 @@ type WorkoutPointsPreview = { counted: true; points: 3 }
   | { counted: false; reason: 'sets'; minSets: number };
 
 export function previewWorkoutPoints(input: WorkoutPointsInput): WorkoutPointsPreview {
-  // Keep in step with security_private.award_session_points in 0081_points_and_ranks.sql.
-  const minSeconds = Math.max(1200, input.plannedSeconds * 0.5);
+  // Match the cardio exception in 0144_points_crown_fairness.sql.
+  const minSeconds = input.plannedSets === 0 && (input.cardioSeconds ?? 0) > 0
+    ? input.cardioSeconds ?? 0 : Math.max(1200, input.plannedSeconds * 0.5);
   const seconds = (Date.parse(input.completedAt) - Date.parse(input.startedAt)) / 1000;
   if (!Number.isFinite(seconds) || seconds < minSeconds) {
     return { counted: false, reason: 'short', minMinutes: Math.ceil(minSeconds / 60) };
