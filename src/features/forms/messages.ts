@@ -28,6 +28,7 @@ export const messages = {
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
+    answeredQuestion: 'السؤال ده عليه إجابات بالفعل. ضيف سؤال جديد بدل ما تغيّره.',
     title: 'التقييمات', library: 'المكتبة', newForm: 'تقييم جديد', templates: 'ابدأ من قالب جاهز',
     active: 'تقييمات شغالة', sent: 'اتبعت الشهر ده', rate: 'نسبة الرد', average: 'متوسط وقت الرد بالساعات',
     period: 'الشهر ده', questions: 'أسئلة', recipients: 'لاعب', edit: 'تعديل', preview: 'شوفه زي اللاعب', back: 'ارجع للتعديل',
@@ -51,6 +52,7 @@ export const messages = {
     weekdays: ['الحد', 'الاتنين', 'التلات', 'الأربع', 'الخميس', 'الجمعة', 'السبت'],
   },
   en: {
+    answeredQuestion: 'This question already has answers. Add a new question instead.',
     title: 'Assessments', library: 'Library', newForm: 'New assessment', templates: 'Start from a template',
     active: 'Active assessments', sent: 'Sent this month', rate: 'Response rate', average: 'Average response hours',
     period: 'This month', questions: 'Questions', recipients: 'Players', edit: 'Edit', preview: 'View as player', back: 'Back to editing',

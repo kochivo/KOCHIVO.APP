@@ -1,4 +1,5 @@
 export const arStd = {
+  answeredQuestion: 'هذا السؤال له إجابات بالفعل. أضف سؤالًا جديدًا بدلًا من تغييره.',
   title: 'التقييمات', library: 'المكتبة', newForm: 'تقييم جديد', templates: 'ابدأ من قالب جاهز',
   active: 'تقييمات نشطة', sent: 'أُرسلت هذا الشهر', rate: 'نسبة الرد', average: 'متوسط وقت الرد بالساعات',
   period: 'هذا الشهر', questions: 'أسئلة', recipients: 'لاعب', edit: 'تعديل', preview: 'اعرض كما يراه اللاعب', back: 'العودة للتعديل',

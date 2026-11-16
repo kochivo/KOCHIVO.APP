@@ -20,22 +20,11 @@ export async function submitAnswers(input: unknown): Promise<{ok:boolean}> {
     const rows = await answerRows(requestId,data.questions,draft);
     const same = (a:typeof data.answers[number],row:typeof rows[number]) => a.id === row.id
       && JSON.stringify(a.value) === JSON.stringify(row.value) && JSON.stringify(a.photo_paths) === JSON.stringify(row.photo_paths);
-    // A submitted form is immutable in this flow. One bulk insert commits all answers
-    // together; a retry confirms the saved payload even if the captain already reviewed it.
-    if (data.request.answered_at || data.request.reviewed_at)
+    // Reviewed requests only allow confirmation; unreviewed retries repair partial submissions.
+    if (data.request.reviewed_at)
       return {ok:rows.every(row => data.answers.some(a => same(a,row)))};
-    if (data.answers.some(a => !rows.some(row => same(a,row)))) return {ok:false};
-    // A JS null becomes SQL NULL, which the not-null jsonb column rejects, and a request mixing
-    // rows with and without `value` still lists the column for all of them (missing=default did
-    // not help live). Empty answers go in their own write that has no value column, so the
-    // column default stores JSON null. Ids are stable, so a retry after a partial write is safe.
-    const empty = rows.filter(row => row.value === null).map(({id,request_id,question_id,photo_paths}) => ({id,request_id,question_id,photo_paths}));
-    const filled = rows.filter(row => row.value !== null);
-    for (const batch of [empty,filled]) {
-      if (!batch.length) continue;
-      const inserted = await client.from('form_answers').upsert(batch,{onConflict:'id',ignoreDuplicates:true});
-      if (inserted.error) throw inserted.error;
-    }
+    const inserted = await client.rpc('submit_custom_form_answers',{p_request:requestId,p_answers:rows});
+    if (inserted.error) throw inserted.error;
     const confirmed = await loadRequest(client,requestId);
     return {ok:confirmed.request.answered_at !== null && rows.every(row => confirmed.answers.some(a => same(a,row)))};
   } catch (error) { unstable_rethrow(error); return {ok:false}; }

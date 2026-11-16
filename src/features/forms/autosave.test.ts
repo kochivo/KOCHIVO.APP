@@ -2,6 +2,7 @@ import { expect, it } from 'vitest';
 import { createAutosave } from './hooks/autosave';
 import { copyTemplate } from './model';
 import { templates } from './templates';
+import { saveDraft } from './hooks/save-draft';
 
 it('debounces, serializes writes and never reports a stale revision as saved', async () => {
   let tick: (() => void) | undefined;
@@ -50,4 +51,18 @@ it('cancels a discarded unsaved draft and clears its pending status', () => {
   tick?.();
   expect(writes).toEqual([]);
   expect(statuses.at(-1)).toBe('saved');
+});
+
+it('carries the answered-question error through the save-error path', async () => {
+  let tick: (() => void) | undefined;
+  const statuses: string[] = [], errors: unknown[] = [];
+  const form = copyTemplate(templates[0], 'captain');
+  const autosave = createAutosave(draft => saveDraft(draft, async () => ({ ok: false, error: 'answeredQuestion' }),
+    () => true, () => { throw new Error('Failed save must not commit'); }),
+  status => statuses.push(status), fn => { tick = fn; return () => {}; }, error => errors.push(error));
+  autosave.update(form); tick?.();
+  await Promise.resolve(); await Promise.resolve(); await Promise.resolve();
+  expect(statuses.at(-1)).toBe('saveError');
+  expect(errors).toEqual([new Error('answeredQuestion')]);
+  autosave.dispose();
 });

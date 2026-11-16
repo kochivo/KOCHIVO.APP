@@ -64,3 +64,13 @@ it('preserves answered questions and allows retry after a failed write', async (
   expect(await save({ ...form, title: 'Retry' })).toEqual({ ok: false });
   expect(await save({ ...form, title: 'Retry' })).toEqual({ ok: true });
 });
+
+it('maps answered question changes to a specific save error', async () => {
+  const form = copyTemplate(templates[0], captain);
+  expect(await save(form)).toEqual({ ok: true });
+  const first = form.questions[0];
+  if (!first) throw new Error('Expected question');
+  await store.db.query('insert into form_answers values($1,$2)', [form.id, first.id]);
+  expect(await save({ ...form, questions: form.questions.map(q => q.id === first.id ? { ...q, maps_to: 'waist' } : q) }))
+    .toEqual({ ok: false, error: 'answeredQuestion' });
+});

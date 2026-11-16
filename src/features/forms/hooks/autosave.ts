@@ -5,7 +5,7 @@ export type SaveStatus = 'saved' | 'pending' | 'saving' | 'saveError';
 export function createAutosave(save: (form: FormDraft) => Promise<void>, status: (status: SaveStatus) => void,
   schedule: (fn: () => void) => () => void = fn => {
     const timer = setTimeout(fn, 700); return () => clearTimeout(timer);
-  }) {
+  }, onError?: (error: unknown) => void) {
   let latest: FormDraft | undefined, version = 0, running = false, ready = false, disposed = false;
   let cancel: (() => void) | undefined;
   async function flush() {
@@ -15,8 +15,8 @@ export function createAutosave(save: (form: FormDraft) => Promise<void>, status:
     try {
       await save(form);
       if (!disposed) status(!latest || version === revision ? 'saved' : 'pending');
-    } catch {
-      if (!disposed) status(latest ? 'saveError' : 'saved');
+    } catch (error) {
+      if (!disposed) { status(latest ? 'saveError' : 'saved'); if (latest) onError?.(error); }
     } finally {
       running = false;
       if (ready) void flush();

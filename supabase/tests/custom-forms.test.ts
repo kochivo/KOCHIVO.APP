@@ -133,7 +133,7 @@ it('rejects invalid schedule and fact mapping values', async () => {
   await expect(asUser(db, captain, tx => tx.query(`update forms set schedule='{"every":"day","hour":24}' where id=$1`, [form])))
     .rejects.toThrow(/check constraint/);
   await expect(asUser(db, captain, tx => tx.query(`update form_questions set maps_to='unknown' where id=$1`, [question])))
-    .rejects.toThrow(/check constraint/);
+    .rejects.toThrow(/answered_question_locked/);
 });
 it('prevents deleting a used form', async () => {
   await expect(asUser(db, captain, tx => tx.query(`delete from forms where id=$1`, [form]))).rejects.toThrow(/foreign key/);

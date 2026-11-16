@@ -1,6 +1,7 @@
 import { PGlite } from '@electric-sql/pglite';
 import { createClient } from '@supabase/supabase-js';
 import type { AppDatabase } from '@/types/app-database';
+import { readFileSync } from 'node:fs';
 
 // A real Postgres transport keeps constraint/reorder tests independent of fluent-client mocks.
 export async function formTestDatabase() {
@@ -10,10 +11,27 @@ export async function formTestDatabase() {
     label_ar text,label_en text,type text,required boolean,options jsonb,maps_to text,alert_on jsonb,show_chart boolean default true,unique(form_id,position));
     create table form_answers (id uuid primary key,question_id uuid references form_questions(id));`);
   await db.exec('create unique index forms_creation_key on forms(captain_id,creation_key) where creation_key is not null');
+  await db.exec(`create role anon; create role authenticated; create schema auth;
+    create function auth.uid() returns uuid language sql as $$ select '00000000-0000-7000-8000-000000000001'::uuid $$;
+    create function require_active_caller() returns void language sql as $$ select $$;`);
+  const migration = readFileSync(new URL('../../../supabase/migrations/0130_forms_atomic.sql', import.meta.url), 'utf8');
+  await db.exec(migration.slice(migration.indexOf('create function public.save_custom_form'))
+    .replace(/commit;\s*$/, ''));
   let failNextWrite = false;
   const errors: string[] = [];
   const client = createClient<AppDatabase>('https://test.invalid', 'test', { global: { fetch: async (input, init) => {
     const url = new URL(String(input)), table = url.pathname.split('/').at(-1);
+    if (table === 'save_custom_form') {
+      if (failNextWrite) { failNextWrite = false; return Response.json({ message: 'Injected failure' }, { status: 500 }); }
+      const body = JSON.parse(String(init?.body)) as { p_form: unknown; p_questions: unknown };
+      try {
+        await db.query('select save_custom_form($1::jsonb,$2::jsonb)', [JSON.stringify(body.p_form), JSON.stringify(body.p_questions)]);
+        return new Response(null, { status: 204 });
+      } catch (error) {
+        errors.push(String(error));
+        return Response.json({ message: String(error), code: (error as { code?: string }).code }, { status: 400 });
+      }
+    }
     if (!table || !['forms','form_questions','form_answers'].includes(table)) throw new Error('Unknown table');
     const values: unknown[] = [], filters: string[] = [];
     for (const [key, raw] of url.searchParams) {

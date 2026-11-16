@@ -198,6 +198,8 @@ export type AppDatabase = Omit<Database, 'public'> & {
       };
     };
     Functions: Omit<Public['Functions'], keyof FunctionPatches | 'admin_activate_plan'> & FunctionPatches & WomenModeFunctions & {
+      submit_custom_form_answers: { Args: { p_request: string; p_answers: Json }; Returns: undefined };
+      save_custom_form: { Args: { p_form: Json; p_questions: Json }; Returns: undefined };
       sync_pain_reports: { Args: { p_rows: Json }; Returns: undefined };
       expire_pain_swaps: { Args: never; Returns: undefined };
       answer_pain: { Args: { p_report: string; p_reply: PainReply }; Returns: undefined };
