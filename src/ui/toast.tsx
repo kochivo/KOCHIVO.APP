@@ -7,6 +7,7 @@ import { X } from 'lucide-react';
 import { uuidv7 } from '@/core/offline/ids';
 import { useT } from '@/core/i18n/client';
 import { messages } from './messages';
+import { topModalDialog } from './modal-host';
 
 import type { ToastIconName } from './toast-icon-names';
 
@@ -84,7 +85,7 @@ export function ToastProvider({ children, queue: injected }: { children?: ReactN
   useEffect(() => () => queue.dispose(), [queue]);
   useEffect(() => {
     // Native modal dialogs make outside controls inert, regardless of z-index.
-    const update = () => setHost(Array.from(document.querySelectorAll('dialog:modal')).at(-1) ?? document.body);
+    const update = () => setHost(topModalDialog(document) ?? document.body);
     const observer = new MutationObserver(update);
     observer.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ['open'] });
     update();
