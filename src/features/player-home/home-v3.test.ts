@@ -72,7 +72,8 @@ it('shows one primary workout action and real workout, calorie, water and weekly
   expect(html).toContain('الجاي: الغدا');
   expect(html).toContain('href="#home-morning"');
   expect(html).toContain('href="/player/history"');
-  expect(html).toContain('href="/player/rank"');
+  // Ranks are off by default, so the medal tile must not link to the hidden rank page.
+  expect(html).not.toContain('href="/player/rank"');
   expect(html.replace(/<[^>]*>/g, '')).toContain('1 / 3');
   expect(html.match(/<a\b[^>]*class="[^"]*\bcontrol-primary\b[^"/]*"/g)).toHaveLength(1);
   expect(html).toContain('يلا نبدأ');

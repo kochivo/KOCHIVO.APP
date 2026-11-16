@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { steps } from './steps';
+import { guideSpot } from './guide-spot';
 import type { DemoState } from './state';
 
 export function useTarget(state: DemoState) {
@@ -12,15 +13,10 @@ export function useTarget(state: DemoState) {
       if (!guide || innerWidth < 980) return;
       const rect = highlighted?.getBoundingClientRect();
       const width = guide.offsetWidth, height = guide.offsetHeight;
-      let x = (innerWidth - width) / 2, y = (innerHeight - height) / 2;
-      if (rect) {
-        x = rect.x > width + 32 ? rect.x - width - 16 : rect.x + rect.width + 16;
-        if (x + width > innerWidth - 16) x = Math.max(16, rect.x + rect.width / 2 - width / 2);
-        y = rect.y + rect.height / 2 - height / 2;
-      }
-      const physicalX = Math.max(16, Math.min(innerWidth - width - 16, x));
-      guide.style.insetInlineStart = `${getComputedStyle(guide).direction === 'rtl' ? innerWidth - physicalX - width : physicalX}px`;
-      guide.style.top = `${Math.max(90, Math.min(innerHeight - height - 16, y))}px`;
+      const phone = document.querySelector('.demo-phone')?.getBoundingClientRect();
+      const [x, y] = guideSpot(rect, phone, width, height);
+      guide.style.insetInlineStart = `${getComputedStyle(guide).direction === 'rtl' ? innerWidth - x - width : x}px`;
+      guide.style.top = `${y}px`;
       guide.style.bottom = 'auto';
     };
     const find = () => {

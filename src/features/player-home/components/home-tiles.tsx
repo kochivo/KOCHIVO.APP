@@ -8,6 +8,7 @@ import { readDailyCheck, playerWaterGoalMl } from '@/features/readiness';
 import { ErrorState, LoadingState } from '@/ui';
 import { formatNumber } from '@/lib/format';
 import { starterText } from '@/lib/starter-text';
+import { ranksEnabled } from '@/lib/ranks-enabled';
 import { dayNutrition } from '../day-nutrition';
 import { messages } from '../messages';
 import { waterGlasses } from './home-metrics';
@@ -64,7 +65,8 @@ export function HomeTiles({ weightKg, today, playerId, rest, streak, done, plann
           <span className="font-[family-name:var(--font-manrope)] text-stat font-extrabold text-sore">{formatNumber(streak, locale)}</span>}
         <span className="text-xs text-muted">{t('streakConsecutive')}</span>
       </Link>
-      <Link href="/player/rank" className={`${tile} min-h-[120px] gap-inline`}>
+      {/* The rank page 404s while ranks are switched off, so the tile opens the workout history instead. */}
+      <Link href={ranksEnabled() ? "/player/rank" : "/player/history"} className={`${tile} min-h-[120px] gap-inline`}>
         <span className="text-row text-muted">{t('homeMedal')}</span>
         <span className="font-[family-name:var(--font-manrope)] text-stat font-extrabold text-gold-2">
           {formatNumber(done, locale)}<span className="text-base font-normal text-muted">{t('homeRatio', { done: '', planned: formatNumber(planned, locale) })}</span>

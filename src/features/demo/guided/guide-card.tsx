@@ -11,7 +11,7 @@ import type { DemoPlan } from './types';
 export function GuideCard({ state, plans, dispatch, now, onAccount }: { state: DemoState; plans: readonly DemoPlan[]; dispatch: (action: Action) => void; now: () => number; onAccount: () => void }) {
   const t = useT(guidedMessages);
   if (state.guide !== 'open') return <Button className="demo-resume fixed z-40" variant="secondary" onClick={() => dispatch({ type: 'patch', patch: { guide: 'open' } })}>{t('resume')}</Button>;
-  return <aside data-guide aria-live="polite" className="demo-guide sheet fixed z-40 overflow-y-auto rounded-card border-t-2 border-lime p-card shadow-xl">
+  return <aside data-guide aria-live="polite" className="demo-guide sheet fixed z-40 overflow-y-auto overflow-x-hidden rounded-card border-t-2 border-lime p-card shadow-xl">
     <div aria-hidden className="pointer-events-none absolute end-12 top-0 -z-10 h-full w-20 -skew-x-[36deg] bg-lime-soft" />
     <header className="flex items-center gap-inline">
       <Image src="/brand/icon.png" alt="" width={34} height={34} className="shrink-0 rounded-control" />

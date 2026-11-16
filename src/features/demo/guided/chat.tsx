@@ -14,7 +14,7 @@ export function Chat({ state, dispatch, act, now, phone = false }: PaneProps & {
   const thread = phone ? 'mohamed' : state.chat;
   const initial = thread === 'mohamed' ? [t('initialCoach'), t('initialPlayer')] : [t(thread === 'sara' ? 'saraMessage' : 'omarMessage')];
   const send = (text: string) => { if (text.trim()) { act(phone ? 'reply' : 'send', text); setDraft(''); } };
-  return <div className={`grid min-w-0 gap-card-gap ${phone ? '' : 'min-[1200px]:grid-cols-[180px_1fr]'}`}>
+  return <div className={`grid min-w-0 gap-card-gap ${phone ? '' : 'min-[1400px]:grid-cols-[280px_minmax(0,1fr)]'}`}>
     {!phone && <ChatList state={state} dispatch={dispatch} act={act} now={now} />}
     <GlassCard className="grid min-w-0 gap-stack p-card">
       <header className="flex flex-wrap items-center justify-between gap-inline"><b>{phone ? t('captainName') : t('names').split('|')[['mohamed', 'sara', 'omar'].indexOf(thread)]}</b>{!phone && <Button variant="secondary" onClick={() => dispatch({ type: 'go', page: 'player', now: now() })}>{t('file')}</Button>}</header>
