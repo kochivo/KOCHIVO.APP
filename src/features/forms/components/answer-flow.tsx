@@ -78,7 +78,11 @@ export function AnswerFlow({data,locale}:{data:RequestData;locale:Locale}) {
       <Link href={`/${locale}/player`} aria-label={v6t('close')} className={secondaryButtonClass}><X aria-hidden className="size-5" /></Link>
       <h1 className="min-w-0 flex-1">{data.title}</h1><span>{v6t('progress', { n: step + 1, total: data.questions.length })}</span>
     </header> : <h1 className="text-2xl font-bold">{data.title}</h1>}
-    <progress className="w-full accent-lime" value={step+1} max={data.questions.length} aria-label={data.title} />
+    {/* iOS paints native <progress> in system green and ignores accent-color. */}
+    <div role="progressbar" aria-label={data.title} aria-valuemin={1} aria-valuemax={data.questions.length} aria-valuenow={step+1}
+      className="h-2 w-full overflow-hidden rounded-full bg-surface-raised">
+      <div className="h-full rounded-full bg-lime transition-[width]" style={{ width: `${((step+1)/data.questions.length)*100}%` }} />
+    </div>
     <form onSubmit={e => {e.preventDefault();void advance();}}>
       <fieldset disabled={state === 'sending' || uploading}>
         {v6 && q.type === 'photos' ? <div className="space-y-card-gap">

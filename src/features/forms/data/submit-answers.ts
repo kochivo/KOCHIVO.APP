@@ -25,7 +25,10 @@ export async function submitAnswers(input: unknown): Promise<{ok:boolean}> {
     if (data.request.answered_at || data.request.reviewed_at)
       return {ok:rows.every(row => data.answers.some(a => same(a,row)))};
     if (data.answers.some(a => !rows.some(row => same(a,row)))) return {ok:false};
-    const inserted = await client.from('form_answers').upsert(rows,{onConflict:'id',ignoreDuplicates:true});
+    // PostgREST turns a JS null into SQL NULL, which the not-null jsonb column rejects.
+    // Skipped optional answers omit the key so the column default stores JSON null.
+    const payload = rows.map(({value,...row}) => value === null ? row : {...row,value});
+    const inserted = await client.from('form_answers').upsert(payload,{onConflict:'id',ignoreDuplicates:true,defaultToNull:false});
     if (inserted.error) throw inserted.error;
     const confirmed = await loadRequest(client,requestId);
     return {ok:confirmed.request.answered_at !== null && rows.every(row => confirmed.answers.some(a => same(a,row)))};
