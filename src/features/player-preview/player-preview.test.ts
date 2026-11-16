@@ -16,9 +16,9 @@ beforeEach(() => {
   from.mockImplementation((table: string) => {
     const result = results.get(table) ?? { data: null, error: null };
     const query = { select: vi.fn(), eq: vi.fn(), gte: vi.fn(), lte: vi.fn(),
-      not: vi.fn(), in: vi.fn(), order: vi.fn(), limit: vi.fn(), maybeSingle: vi.fn(),
+      not: vi.fn(), in: vi.fn(), order: vi.fn(), limit: vi.fn(), returns: vi.fn(), maybeSingle: vi.fn(),
       then: (resolve: (value: typeof result) => unknown) => Promise.resolve(result).then(resolve) };
-    for (const key of ['select', 'eq', 'gte', 'lte', 'not', 'in', 'order', 'limit', 'maybeSingle'] as const) query[key].mockReturnValue(query);
+    for (const key of ['select', 'eq', 'gte', 'lte', 'not', 'in', 'order', 'limit', 'returns', 'maybeSingle'] as const) query[key].mockReturnValue(query);
     return query;
   });
   server.mockResolvedValue({ from, rpc });
@@ -47,6 +47,27 @@ describe('activityWeek', () => {
 });
 
 describe('fetchPlayerPreview', () => {
+  it('requests weekly scheduling, cardio and full exercise prescriptions', async () => {
+    await fetchPlayerPreview(player, '2026-11-03');
+    const query = from.mock.results.find((_, index) => from.mock.calls[index]?.[0] === 'programs')?.value;
+    const fields = query.select.mock.calls[0]?.[0] as string;
+    for (const field of ['captain_id', 'weekday', 'is_rest_day', 'warmup', 'program_cardio(*)', 'rir', 'alternatives', 'set_plan', 'video_url', 'body_part']) {
+      expect(fields).toContain(field);
+    }
+  });
+  it('selects the calendar day including rest and ends a non-repeating week', async () => {
+    results.set('profiles', { data: { full_name: 'Ali' }, error: null });
+    const data = { id: 'week', title: 'Week', notes: null,
+      settings: { repeatWeekly: false, weeklyStartedOn: '2026-10-31' },
+      program_days: [
+        { id: 'saturday', position: 1, weekday: 0, is_rest_day: false, title: 'Train', program_exercises: [] },
+        { id: 'tuesday', position: 2, weekday: 3, is_rest_day: true, title: 'Rest', program_exercises: [] },
+      ] };
+    results.set('programs', { data, error: null });
+    expect((await fetchPlayerPreview(player, '2026-11-03')).data?.todayDay)
+      .toMatchObject({ id: 'tuesday', weekday: 3, is_rest_day: true });
+    expect((await fetchPlayerPreview(player, '2026-11-07')).data?.todayDay).toBeNull();
+  });
   it('retains completed feedback when its program day was deleted', async () => {
     results.set('profiles', { data: { full_name: 'Ali' }, error: null });
     const session = { id: 'orphan', program_day_id: null, training_date: '2026-11-03',

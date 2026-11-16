@@ -38,7 +38,10 @@ it('gives pre-migration and newly inserted days the empty default', async () => 
 
 it('round-trips insert/update, template save, duplication and assignment without shared data', async () => {
   const draft = { id: program, player_id: player, title: 'Warm-up', days: [{ id: day, program_id: program,
-    title: 'Training', position: 1, exercises: [], cardio: [], warmup }] };
+    title: 'Training', position: 1, exercises: [], cardio: [{
+      id: '019ab800-0000-7000-8000-000000000006', day_id: day, position: 1,
+      kind: 'Walk', minutes: 20, intensity: 'low',
+    }], warmup }] };
   await asUser(db, captain, tx => tx.query('select public.save_weekly_program($1)', [JSON.stringify(draft)]));
   expect(await readWarmup(program)).toEqual([{ warmup }]);
   const template = await asUser(db, captain, tx => tx.query<{ id: string }>(
@@ -56,7 +59,8 @@ it('round-trips insert/update, template save, duplication and assignment without
   expect(await readWarmup(template.rows[0]?.id ?? '')).toEqual([{ warmup }]);
   const newDay = '019ab800-0000-7000-8000-000000000002';
   await asUser(db, captain, tx => tx.query('select public.save_weekly_program($1)', [JSON.stringify({ ...draft,
-    days: [{ ...draft.days[0], id: newDay, warmup }] })]));
+    days: [{ ...draft.days[0], id: newDay, warmup,
+      cardio: draft.days[0]?.cardio.map(row => ({ ...row, day_id: newDay })) }] })]));
   expect(await readWarmup(program)).toEqual([{ warmup }]);
   await asUser(db, captain, tx => tx.query('select public.save_weekly_program($1)', [JSON.stringify({ ...draft,
     days: [{ id: newDay, program_id: program, title: 'Legacy', position: 1, exercises: [], cardio: [] }] })]));
@@ -94,6 +98,12 @@ it('round-trips exercise notes on insert, update and clearing to null', async ()
 });
 
 it('copies starter JSON through new captains and both demo workspace paths', async () => {
+  const catalog = await db.query<{ dataset_id: string }>(`select distinct e->>'dataset_id' as dataset_id
+    from security_private.starter_templates t,
+    lateral jsonb_array_elements(t.payload->'days') d,
+    lateral jsonb_array_elements(d->'exercises') e where t.payload->>'kind'='workout'`);
+  await db.query(`insert into exercises(dataset_id,name_en,body_part)
+    select id,'Exercise '||id,'legs' from unnest($1::text[]) id`, [catalog.rows.map(row => row.dataset_id)]);
   await db.query(`update security_private.starter_templates set payload=jsonb_set(payload,'{days}',
     (select jsonb_agg(d || jsonb_build_object('warmup',$1::jsonb)) from jsonb_array_elements(payload->'days') d))
     where payload->>'kind'='workout'`, [JSON.stringify(warmup)]);

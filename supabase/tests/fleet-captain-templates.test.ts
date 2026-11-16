@@ -21,8 +21,12 @@ it.each(Array.from({ length: 25 }, (_, i) => i))('captain %i creates both templa
     const template = (await run(`insert into ${table}(captain_id,title,is_template)
       values($1,'Before',true) returning id`, [captain.id])).rows[0]?.id;
     if (!template) throw new Error('Missing template');
-    await run(program ? `insert into program_days(program_id,position,title,is_rest_day) values($1,1,'Original',true)`
-      : `insert into meals(plan_id,position,name) values($1,1,'Original')`, [template]);
+    if (program) {
+      const day = (await run(`insert into program_days(program_id,position,title)
+        values($1,1,'Original') returning id`, [template])).rows[0]?.id;
+      await run(`insert into program_cardio(day_id,position,kind,minutes,intensity)
+        values($1,1,'Walk',20,'low')`, [day]);
+    } else await run(`insert into meals(plan_id,position,name) values($1,1,'Original')`, [template]);
     const assigned: string[] = [];
     for (const player of captain.players.slice(0, 5)) {
       const id = (await run(`select ${program ? 'assign_program_template' : 'assign_nutrition_template'}($1,$2) as id`,

@@ -64,6 +64,7 @@ export const arStd = {
   "templatesAreForCoachesOnly": "القوالب للكباتن فقط",
   "youDontHavePermission": "لا يُسمح لك بتنفيذ هذا الإجراء",
   "templateNameMustBe1To80": "يجب أن يكون اسم القالب من 1 إلى 80 حرفاً",
+  "programTemplateIsEmpty": "أضف تمريناً أو كارديو إلى يوم تدريب قبل تعيين القالب",
   "templateIsEmptyAddDaysOrMeals": "القالب فارغ. أضف أياماً أو وجبات أولاً",
   "preview": "معاينة",
   "previewTitle": "معاينة «{title}»",

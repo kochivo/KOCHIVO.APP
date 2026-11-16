@@ -114,7 +114,7 @@ export async function assignTemplate(input: unknown): Promise<TemplateResult<str
     const { client } = await session();
     const result = await client.rpc(kind === 'program' ? 'assign_program_template' : 'assign_nutrition_template',
       { p_template: templateId, p_player: playerId });
-    if (result.error?.code === '22023') return { error: t('templateIsEmptyAddDaysOrMeals') };
+    if (result.error?.code === '22023') return { error: t(kind === 'program' ? 'programTemplateIsEmpty' : 'templateIsEmptyAddDaysOrMeals') };
     if (result.error) throw result.error;
     if (!result.data) return { error: t('templateOrSourceNotFound') };
     revalidatePath(`/captain/players/${playerId}/${kind === 'program' ? 'programs' : 'nutrition'}`);

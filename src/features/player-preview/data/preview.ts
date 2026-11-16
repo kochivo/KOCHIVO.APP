@@ -8,6 +8,7 @@ import { messages } from '../messages';
 import { z } from 'zod';
 import { supabaseServer } from '@/core/supabase/server';
 import { mapProgramSnapshot, pickTodayDay } from '@/features/player-home';
+import type { ProgramResponse } from '@/features/player-home';
 import { mapNutritionSnapshot } from '@/features/nutrition';
 import type { WorkoutSessionRow } from '@/core/offline';
 import { localDate } from '@/lib/dates';
@@ -30,8 +31,8 @@ export async function fetchPlayerPreview(playerId: string, today: string) {
     const food = 'name_ar,name_en,photo_path,kcal_per_100g,protein_per_100g,carbs_per_100g,fat_per_100g';
     const sessionFields = 'id,program_day_id,training_date,started_at,completed_at,client_updated_at,session_rpe,player_note';
     const [program, intake, nutrition, profile, sessions, meals] = await Promise.all([
-      client.from('programs').select('id,title,notes,settings,program_days(id,position,title,program_exercises(id,exercise_id,position,sets,reps_min,reps_max,rest_seconds,superset_group,rpe,tempo,notes,exercises(name_ar,name_en,media_path)))')
-        .eq('player_id', playerId).eq('status', 'active').maybeSingle(),
+      client.from('programs').select('id,captain_id,title,notes,settings,program_days(id,position,title,weekday,is_rest_day,warmup,program_cardio(*),program_exercises(id,exercise_id,position,sets,reps_min,reps_max,rest_seconds,superset_group,rpe,rir,tempo,notes,alternatives,set_plan,exercises(name_ar,name_en,media_path,video_url,body_part)))')
+        .eq('player_id', playerId).eq('status', 'active').returns<ProgramResponse[]>().maybeSingle(),
       client.from('player_intake').select('training_days').eq('player_id', playerId).maybeSingle(),
       client.from('nutrition_plans').select(`id,title,target_kcal,target_protein,target_carbs,target_fat,meals(id,position,name,meal_items(id,position,grams,foods(${food}),meal_item_alternatives(id,grams,foods(${food}))))`)
         .eq('player_id', playerId).eq('status', 'active').maybeSingle(),

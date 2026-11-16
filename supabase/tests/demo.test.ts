@@ -146,13 +146,14 @@ it('suspension, private receipts, purge ACL and RPC ACL stay enforced', async ()
     .toEqual([{ anon: false, authenticated: true, relrowsecurity: true }]);
 });
 
-it('works with empty global catalogs and never borrows private exercises or foods', async () => {
+it('keeps empty starter programs unassigned and never borrows private exercises or foods', async () => {
   const owner = await createUser(db, 'captain');
   await db.query('update public.exercises set owner_id = $1', [owner]);
   await db.query('update public.foods set owner_id = $1', [owner]);
   const user = await anonymous();
   await demo(user);
-  expect((await db.query('select count(*)::int as n from public.programs where captain_id = $1', [user])).rows).toEqual([{ n: 12 }]);
+  expect((await db.query('select count(*)::int as n from public.programs where captain_id = $1', [user])).rows).toEqual([{ n: 6 }]);
+  expect((await db.query("select id from public.programs where captain_id=$1 and not is_template", [user])).rows).toEqual([]);
   expect((await db.query(`select count(*)::int as n from public.program_exercises e join public.program_days d on d.id = e.day_id
     join public.programs p on p.id = d.program_id where p.captain_id = $1`, [user])).rows).toEqual([{ n: 0 }]);
   expect((await db.query(`select count(*)::int as n from public.meal_items i join public.meals m on m.id = i.meal_id

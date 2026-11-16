@@ -113,7 +113,9 @@ describe('template actions', () => {
     expect(await saveAsTemplate({ kind: 'program', id, title: 'قالب' })).toEqual({ error });
     for (const kind of ['program', 'nutrition'] as const) {
       expect(await assignTemplate({ kind, templateId: id, playerId }))
-        .toEqual({ error: code === '22023' ? 'القالب فاضي. زوّد أيام أو وجبات الأول' : error });
+        .toEqual({ error: code === '22023' ? kind === 'program'
+          ? 'القالب فاضي. ضيف تمرين أو كارديو في يوم مش راحة الأول'
+          : 'القالب فاضي. زوّد أيام أو وجبات الأول' : error });
     }
   });
   it('rejects signed-out and non-captain sessions', async () => {
