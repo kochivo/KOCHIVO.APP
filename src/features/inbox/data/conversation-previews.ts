@@ -1,15 +1,20 @@
 'use client';
 import { loadSupabaseBrowser } from '@/core/supabase/lazy';
-import { listMessages, mergeThread, unreadCounts } from '@/features/chat';
 import type { ConversationProps, Conversation } from '../conversation-types';
 
 export async function loadConversationPreviews({ players, captainId }: ConversationProps): Promise<Conversation[]> {
   const client = await loadSupabaseBrowser();
-  const counts = await unreadCounts(client, captainId);
-  return Promise.all(players.map(async player => {
-    // Keep list polling bounded; the opened thread loads legacy replies and recordings.
-    const messages = await listMessages(client, { playerId: player.playerId, captainId, limit: 1 });
-    const items = mergeThread({ messages, voiceNotes: [], replies: [], playerId: player.playerId, captainId, viewerId: captainId });
-    return { player, latest: items.at(-1), unread: counts[player.playerId] ?? 0 };
-  }));
+  const { data, error } = await client.rpc('inbox_previews');
+  if (error) throw error;
+  const previews = new Map((data ?? []).map(row => [row.player_id, row]));
+  return players.map(player => {
+    const row = previews.get(player.playerId);
+    const latest: Conversation['latest'] = row?.id && row.created_at && row.sender_id && row.kind ? {
+      id: row.id, playerId: player.playerId, captainId, senderId: row.sender_id,
+      body: row.body, audioPath: null, durationSeconds: row.duration_seconds,
+      readAt: null, createdAt: row.created_at, source: 'chat', kind: row.kind,
+      mine: row.sender_id === captainId, status: 'sent',
+    } : undefined;
+    return { player, latest, unread: row?.unread_count ?? 0 };
+  });
 }

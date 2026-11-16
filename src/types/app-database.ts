@@ -116,6 +116,12 @@ type ProfileRow = Public['Tables']['profiles']['Row'];
 type ProfileLinks = Pick<ProfileRow, 'bio' | 'location' | 'avatar_path'> & { social: Social };
 type PainRow = { [K in keyof PainReportRow]: PainReportRow[K] };
 type FunctionPatches = {
+  inbox_previews: {
+    Args: never;
+    Returns: { player_id: string; id: string | null; kind: 'text' | 'voice' | null;
+      body: string | null; created_at: string | null; sender_id: string | null;
+      duration_seconds: number | null; unread_count: number }[];
+  };
   // RPC return metadata omits column nullability and the JSON aggregate's shape.
   coach_public_page: Narrow<Functions['coach_public_page'], {
     Returns: Narrow<Functions['coach_public_page']['Returns'][number], {

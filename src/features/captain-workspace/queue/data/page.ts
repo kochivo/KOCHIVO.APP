@@ -35,6 +35,7 @@ export async function loadQueuePage(input: { cursor?: Cursor; renewalCursor?: Cu
     const renewals = client.from('coach_clients')
       .select('id,player_id,created_at,access_until,profiles!coach_clients_player_id_fkey(full_name)')
       .eq('captain_id', captain).is('archived_at', null).is('frozen_at', null).eq('pending', false)
+      .is('awaiting_plans_at', null)
       .gte('access_until', localDate(now, timezone)).lte('access_until', localDate(end, timezone))
       .order('created_at', { ascending: false }).order('id').limit(50);
     if (parsed.renewalCursor) {

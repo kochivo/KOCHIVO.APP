@@ -38,14 +38,14 @@ export function MoneyOwedView({ data, mode, playerId, locale, t, onSelect, rowAc
       const tone = waiting ? 'bg-calm/10 text-calm' : row.reason === 'soon' ? 'bg-surface text-muted' : 'bg-warn-soft text-warn';
       return <li key={row.playerId} className="flex flex-wrap items-center gap-stack p-card">
         {mode === 'billing' && <span aria-hidden className="glass grid size-10 shrink-0 place-items-center rounded-full font-bold">{row.name.slice(0, 1)}</span>}
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 basis-[calc(100%-4rem)] min-[760px]:basis-0 flex-1">
           {mode === 'billing' && <Link prefetch={onSelect ? false : undefined} href={onSelect ? `#${`/captain/players/${row.playerId}`}` : `/captain/players/${row.playerId}`} onClick={onSelect ? event => { event.preventDefault(); onSelect(`/captain/players/${row.playerId}`); } : undefined} className="flex min-h-12 items-center font-bold">{row.name}</Link>}
           <p className="text-sm text-muted">{description(row)}</p>
           {waiting && <p className="text-xs text-muted">{t('since', { date: date(row.since) })}</p>}
         </div>
         <b className="font-display text-sm tabular-nums">{row.amount === null ? t('unpriced') : t('currency', { amount: number(row.amount) })}</b>
         <span className={`rounded-full px-stack py-inline text-xs ${tone}`}>{t(waiting ? 'waiting' : row.reason === 'soon' ? 'upcoming' : 'late')}</span>
-        {rowAction && <span className="shrink-0">{rowAction(row.playerId)}</span>}
+        {rowAction && <span className="flex min-h-12 w-full shrink-0 items-center min-[760px]:w-auto">{rowAction(row.playerId)}</span>}
       </li>;
     })}</ul>}
   </section>;

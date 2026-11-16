@@ -31,12 +31,12 @@ export function buildTasks(items: QueueItem[], players: RosterPlayer[], swaps: S
     if (player.pending || player.frozenAt) continue;
     const base = { playerId: player.playerId, name: player.fullName, avatar: player.avatarUrl, timezone: player.timezone };
     const captainToday = localDate(now, timezone);
-    if (endingSoon(captainToday, player.accessUntil)) tasks.push({ ...base, timezone,
+    if (!player.awaitingPlansAt && endingSoon(captainToday, player.accessUntil)) tasks.push({ ...base, timezone,
       id: `renew:${player.playerId}`, kind: 'renew', at: player.accessUntil, days: daysBetween(captainToday, player.accessUntil) });
-    if (player.accessUntil < today) continue;
+    if (!player.awaitingPlansAt && player.accessUntil < today) continue;
     const last = player.lastTrainingDate ?? player.startedOn;
     const days = daysBetween(last, today);
-    if (days >= 5) tasks.push({ ...base, id: `absent:${player.playerId}`, kind: 'absent', at: last, days, neverTrained: !player.lastTrainingDate });
+    if (!player.awaitingPlansAt && days >= 5) tasks.push({ ...base, id: `absent:${player.playerId}`, kind: 'absent', at: last, days, neverTrained: !player.lastTrainingDate });
     if (!player.programTitle) tasks.push({ ...base, id: `program:${player.playerId}`, kind: 'program', at: player.startedOn });
     if (nutritionPlayers && !nutritionPlayers.has(player.playerId)) tasks.push({ ...base,
       id: `nutrition:${player.playerId}`, kind: 'nutrition', at: player.startedOn,

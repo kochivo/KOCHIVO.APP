@@ -9,6 +9,11 @@ const player = (id: string, patch: Partial<RosterPlayer> = {}): RosterPlayer => 
 });
 const video = (id: string, at: string) => ({ kind: 'form' as const, id, player_id: 'a', player_name: 'A',
   created_at: at, reviewed_at: null, reply: null, exercise_name: 'Squat', note: 'Help' });
+it.each(['2026-11-13', '2026-11-14', '2026-11-20'])('keeps only missing plans while the subscription clock waits, ending %s', accessUntil => {
+  const tasks = buildTasks([], [player('waiting', { awaitingPlansAt: '2026-11-01T10:00:00Z',
+    accessUntil, lastTrainingDate: null, programTitle: null })], [], now, 'Africa/Cairo', [], new Set());
+  expect(tasks.map(task => task.id)).toEqual(['program:waiting', 'nutrition:waiting']);
+});
 it('adds nutrition after program tasks only for eligible players without an active nutrition plan', () => {
   const tasks = buildTasks([], [player('missing'), player('both', { programTitle: null }), player('covered'),
     player('pending', { pending: true }), player('frozen', { frozenAt: '2026-11-01' }),
