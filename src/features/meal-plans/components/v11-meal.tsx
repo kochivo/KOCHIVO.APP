@@ -1,5 +1,5 @@
 'use client';
-import { editableFieldClass, EditInPlace } from '@/ui/edit-in-place';
+import { EditInPlace } from '@/ui/edit-in-place';
 import { useRef, useState } from 'react';
 import { KoPlus as Plus } from '@/ui/icons/ko-plus';
 import { useT } from '@/core/i18n/client';
@@ -9,6 +9,7 @@ import { Button } from '@/ui/button';
 import { DisclosureChevron } from '@/ui/disclosure-chevron';
 import type { Meal, PlanDraft } from '../types';
 import type { TimedMeal } from '../data/meal-portions';
+import { MealTimeField } from './meal-time-field';
 import { defaultPortion } from '../data/meal-portions';
 import { addItem, renameMeal } from '../draft';
 import { mealTotals } from '../totals';
@@ -28,7 +29,7 @@ export function V11Meal({ meal, day, update }: { meal: Meal; day: 'training' | '
     <div className="flex flex-wrap items-center gap-inline">
       <div ref={name} className="max-w-48"><EditInPlace label={rt('rename')} value={meal.name} maxLength={40} onChange={event => update(draft => renameMeal(draft, meal.id, event.target.value))} /></div>
       <RamadanSlotSelect meal={meal} change={ramadanSlot => update(draft => ({ ...draft, meals: draft.meals.map(row => row.id === meal.id ? { ...row, ramadanSlot } : row) }))} />
-      <label className="recessed rounded-full border border-line px-stack"><span className="sr-only">{rt('time')}</span><input type="time" value={(meal as TimedMeal).timeOfDay?.slice(0, 5) ?? ''} onChange={event => update(draft => ({ ...draft, meals: draft.meals.map(row => row.id === meal.id ? { ...row, timeOfDay: event.target.value || null } : row) }))} className={`${editableFieldClass} press min-h-12 max-w-32 cursor-pointer rounded-control bg-surface text-xs focus-visible:ring-2 focus-visible:ring-lime`} /></label>
+      <MealTimeField label={rt('time')} value={(meal as TimedMeal).timeOfDay?.slice(0, 5) ?? ''} onChange={timeOfDay => update(draft => ({ ...draft, meals: draft.meals.map(row => row.id === meal.id ? { ...row, timeOfDay } : row) }))} />
       <div className="ms-auto text-xs"><b>{t('calories', { n: totals.kcal })}</b><p className="text-muted">{t('macros', { p: totals.protein, c: totals.carbs, f: totals.fat })}</p></div>
       <MealMenu meal={meal} day={day} update={update} rename={() => name.current?.querySelector('input')?.focus()} />
     </div>

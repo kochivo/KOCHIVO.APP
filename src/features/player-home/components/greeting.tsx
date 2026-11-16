@@ -29,7 +29,7 @@ export function Greeting({ firstName, now, playerId, snapshot, loading = false }
   const stats = history && !loading ? computeStreak({ today: date, ...history, isTrainingDay }) : null;
   const weekday = formatDateAr(date, { weekday: 'long' }, locale);
   const dayMonth = formatDateAr(date, { day: 'numeric', month: 'long' }, locale);
-  return <div className="min-w-0 flex-1">
+  return <div className="min-w-0 basis-full">
     <div className="flex items-center gap-stack">
     {stats && !captainWorkspaceEnabled() && <AvatarRing initial={firstName?.slice(0, 1) || t('streakInitial')} done={stats.weekDone} planned={stats.weekPlanned} />}
     <div className="min-w-0 space-y-inline">

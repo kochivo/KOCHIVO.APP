@@ -11,9 +11,10 @@ const program: ProgramResponse = { id: 'p', title: 'Plan', notes: null, settings
     exercises: { name_ar: 'بنش', name_en: 'Bench press', media_path: null, body_part: 'chest' } }],
 }] };
 
-it('stores muscle metadata for offline v6 headers without changing flag-off snapshots', () => {
+// The pain check (T-317) reads body_part offline, so it is stored whatever the workspace flag says.
+it('stores muscle metadata offline in every build', () => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
   expect(mapProgramSnapshot(program, [4], 'player').days[0]?.exercises[0]).toMatchObject({ body_part: 'chest' });
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '0');
-  expect(mapProgramSnapshot(program, [4], 'player').days[0]?.exercises[0]).not.toHaveProperty('body_part');
+  expect(mapProgramSnapshot(program, [4], 'player').days[0]?.exercises[0]).toMatchObject({ body_part: 'chest' });
 });

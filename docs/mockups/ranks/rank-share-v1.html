@@ -1,0 +1,138 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rank share image v1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;600;800;900&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0}
+body{background:#1a1c1e;color:#f1f0eb;font-family:Alexandria,sans-serif;padding:40px 24px}
+h1{font-size:22px;font-weight:800;margin-bottom:6px}
+.sub{color:#9a9c98;font-size:14px;margin-bottom:28px}
+.row{display:flex;flex-wrap:wrap;gap:28px;justify-content:center}
+.frame{width:360px;height:640px;border-radius:28px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.55)}
+.story{width:1080px;height:1920px;transform:scale(.3333);transform-origin:top right;position:relative;overflow:hidden;background:#060707;display:flex;flex-direction:column;align-items:center;padding:100px 90px 110px}
+[dir=rtl] .story{transform-origin:top right}
+.glow{position:absolute;inset:0;background:radial-gradient(60% 38% at 50% 34%,var(--c2) 0%,transparent 70%),radial-gradient(90% 60% at 50% 30%,var(--c3) 0%,transparent 75%);opacity:.55}
+.rays{position:absolute;left:50%;top:640px;width:1700px;height:1700px;transform:translate(-50%,-50%);background:repeating-conic-gradient(from 0deg,rgba(255,255,255,.06) 0deg 2deg,transparent 2deg 12deg);-webkit-mask:radial-gradient(circle,#000 0%,transparent 60%);mask:radial-gradient(circle,#000 0%,transparent 60%)}
+.slash{position:absolute;width:220px;height:2600px;background:linear-gradient(#b8ea4f,#b8ea4f00);opacity:.07;transform:rotate(36deg);top:-300px;left:120px}
+.slash.b{left:auto;right:40px;top:900px;opacity:.05;width:120px}
+.top{position:relative;display:flex;width:100%;justify-content:space-between;align-items:center}
+.logo{height:92px}
+.pill{border:2px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);border-radius:999px;padding:18px 34px;font-size:34px;font-weight:600;color:#cfd0cb}
+.medal{position:relative;width:600px;height:600px;margin-top:30px;filter:drop-shadow(0 40px 60px rgba(0,0,0,.6))}
+.medal svg{width:100%;height:100%}
+.label{position:relative;margin-top:36px;font-size:40px;font-weight:600;color:#b8ea4f;letter-spacing:2px}
+.tier{position:relative;font-size:170px;font-weight:900;line-height:1.15;background:linear-gradient(180deg,var(--c0),var(--c1) 45%,var(--c2) 70%,var(--c5));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 6px 30px var(--c2s))}
+.name{position:relative;font-family:Manrope,Alexandria,sans-serif;font-size:84px;font-weight:800;margin-top:6px;direction:ltr}
+.stats{position:relative;display:flex;gap:24px;margin-top:40px}
+.stat{min-width:280px;border-radius:36px;padding:28px 40px;background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.12);text-align:center}
+.stat b{display:block;font-family:Manrope,sans-serif;font-size:76px;font-weight:800;color:var(--c1)}
+.stat span{font-size:34px;color:#b9bab5}
+.captain{position:relative;margin-top:32px;font-size:40px;color:#b9bab5}
+.foot{position:relative;margin-top:auto;text-align:center}
+.foot p{font-size:40px;font-weight:600;color:#e9e9e4}
+.foot small{display:block;margin-top:14px;font-family:Manrope,sans-serif;font-size:32px;color:#b8ea4f;letter-spacing:4px;direction:ltr}
+.cap{font-size:15px;color:#c9cac5;text-align:center;margin-top:12px}
+</style></head><body>
+<h1>صورة مشاركة الرتبة · موكاب v1</h1>
+<p class="sub">مقاس ستوري 1080×1920. لون الخلفية بيتغير مع الرتبة. الأرقام من حساب اللاعب الحقيقي.</p>
+<div class="row" id="row"></div>
+<script>const T = [
+  { n: 'حديد', p: 0,   s: ['#f1f3f5', '#a3a9b0', '#5d636a', '#2c3035', '#8e959c', '#d9dde1'] },
+  { n: 'برونز', p: 100, s: ['#ffe2c6', '#e09a63', '#9a5527', '#4a220b', '#c47a42', '#ffd0a6'] },
+  { n: 'فضة', p: 200,  s: ['#ffffff', '#d7dde3', '#8f9aa5', '#3e4650', '#b9c3cc', '#f4f7fa'] },
+  { n: 'ذهب', p: 300,  s: ['#fffbe0', '#ffd96b', '#d39b26', '#6e4708', '#e8b23e', '#fff0b0'] },
+  { n: 'بلاتين', p: 400, s: ['#ffffff', '#d9fff5', '#8fd9c7', '#2f6e62', '#b5ecdf', '#f0fffb'] },
+  { n: 'ماس', p: 600,  s: ['#ffffff', '#cfe3ff', '#7aa8ff', '#1f3f99', '#a9c8ff', '#eef5ff'] },
+  { n: 'أسطورة', p: 900, s: ['#fffbe6', '#f4ffb8', '#b6e94f', '#40600a', '#e6c65a', '#fff3c4'] },
+];
+const P = (pts) => 'M' + pts.map(p => p.map(v => v.toFixed(2)).join(' ')).join(' L') + 'Z';
+const star = (cx, cy, R, r, n = 5, rot = -90) => P(Array.from({ length: n * 2 }, (_, i) => { const a = (rot + i * 180 / n) * Math.PI / 180, rad = i % 2 ? r : R; return [cx + Math.cos(a) * rad, cy + Math.sin(a) * rad]; }));
+const sparkle = (x, y, s, c) => `<path d="M${x} ${y - s} Q${x} ${y} ${x + s} ${y} Q${x} ${y} ${x} ${y + s} Q${x} ${y} ${x - s} ${y} Q${x} ${y} ${x} ${y - s}Z" fill="${c}"/>`;
+
+function defs(id, t, locked) {
+  const s = locked ? ['#3a3d40', '#2a2c2f', '#1b1c1e', '#0e0f10', '#232527', '#34373a'] : t.s;
+  return `<defs>
+    <linearGradient id="${id}m" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="${s[0]}"/><stop offset=".22" stop-color="${s[1]}"/><stop offset=".48" stop-color="${s[2]}"/>
+      <stop offset=".62" stop-color="${s[3]}"/><stop offset=".82" stop-color="${s[4]}"/><stop offset="1" stop-color="${s[5]}"/></linearGradient>
+    <linearGradient id="${id}v" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${s[1]}"/><stop offset=".55" stop-color="${s[2]}"/><stop offset="1" stop-color="${s[3]}"/></linearGradient>
+    <radialGradient id="${id}r" cx=".5" cy=".38" r=".7"><stop offset="0" stop-color="${s[2]}" stop-opacity=".55"/><stop offset=".6" stop-color="#0a0b0c"/><stop offset="1" stop-color="#050505"/></radialGradient>
+    <linearGradient id="${id}gem" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".35" stop-color="${locked ? '#2a2c2f' : (t.n === 'أسطورة' ? '#d8ff86' : t.s[1])}"/><stop offset="1" stop-color="${locked ? '#111' : t.s[3]}"/></linearGradient>
+    <radialGradient id="${id}aura" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="${s[2]}" stop-opacity=".55"/><stop offset="1" stop-color="${s[2]}" stop-opacity="0"/></radialGradient>
+    <linearGradient id="${id}sh" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+    <clipPath id="${id}clip"><circle cx="60" cy="62" r="30"/></clipPath>
+  </defs>`;
+}
+
+function emblem(r, id, { locked = false, shine = false } = {}) {
+  const t = T[r], m = `url(#${id}m)`, v = `url(#${id}v)`, dark = locked ? '#0c0d0e' : t.s[3], hi = locked ? '#45484c' : t.s[0];
+  const R = 26 + r * 1.3;
+  let back = '', front = '';
+  if (r >= 5 && !locked) back += `<circle cx="60" cy="62" r="${R + 30}" fill="url(#${id}aura)"/>`;
+  if (r >= 3) {
+    const n = 20, rays = Array.from({ length: n }, (_, i) => {
+      const a = (i * 360 / n - 90) * Math.PI / 180, b = a + .07, c = a - .07, L = R + 14 + (i % 2 ? 0 : 7);
+      return `<path d="M60 62 L${60 + Math.cos(b) * L} ${62 + Math.sin(b) * L} L${60 + Math.cos(c) * L} ${62 + Math.sin(c) * L}Z"/>`;
+    }).join('');
+    back += `<g fill="${v}" opacity="${r >= 6 ? .95 : .75}">${rays}</g>`;
+  }
+  if (r >= 4) {
+    const wing = (sd) => {
+      const f = (k) => { const y = 50 + k * 8, len = 34 - k * 5;
+        return `<path d="M${60 + sd * (R - 4)} ${y + 6} C${60 + sd * (R + len * .5)} ${y - 4}, ${60 + sd * (R + len)} ${y - 6 - k * 2}, ${60 + sd * (R + len + 6)} ${y - 12 - k * 3} C${60 + sd * (R + len * .8)} ${y + 4}, ${60 + sd * (R + 6)} ${y + 12}, ${60 + sd * (R - 4)} ${y + 14}Z" fill="${m}" stroke="${dark}" stroke-width=".7"/>`; };
+      return [3, 2, 1, 0].map(f).join('');
+    };
+    back += wing(1) + wing(-1);
+  }
+  if (r >= 3) {
+    const leaves = (sd) => Array.from({ length: 6 }, (_, i) => {
+      const deg = sd < 0 ? 102 + i * 17 : 78 - i * 17, a = deg * Math.PI / 180, x = 60 + Math.cos(a) * (R + 5), y = 62 + Math.sin(a) * (R + 5);
+      return `<ellipse cx="${x}" cy="${y}" rx="2.6" ry="6.4" transform="rotate(${deg + sd * 30} ${x} ${y})" fill="${m}" stroke="${dark}" stroke-width=".5"/>`;
+    }).join('');
+    back += leaves(1) + leaves(-1);
+  }
+  /* medallion body */
+  let body;
+  if (r === 0) {
+    body = `<path d="${P(Array.from({ length: 6 }, (_, i) => { const a = (i * 60 - 90) * Math.PI / 180; return [60 + Math.cos(a) * (R + 2), 62 + Math.sin(a) * (R + 2)]; }))}" fill="${m}" stroke="${dark}" stroke-width="1"/>
+      <circle cx="60" cy="62" r="${R - 8}" fill="url(#${id}r)" stroke="${hi}" stroke-opacity=".5"/>`;
+  } else {
+    body = `<circle cx="60" cy="62" r="${R + 1.5}" fill="${dark}"/><circle cx="60" cy="62" r="${R}" fill="${m}"/>
+      ${r >= 2 ? Array.from({ length: 48 }, (_, i) => { const a = i * 7.5 * Math.PI / 180; return `<line x1="${60 + Math.cos(a) * (R - 1.5)}" y1="${62 + Math.sin(a) * (R - 1.5)}" x2="${60 + Math.cos(a) * (R - 4)}" y2="${62 + Math.sin(a) * (R - 4)}" stroke="${dark}" stroke-width=".8" opacity=".55"/>`; }).join('') : ''}
+      <circle cx="60" cy="62" r="${R - 6}" fill="url(#${id}r)" stroke="${hi}" stroke-opacity=".6" stroke-width=".8"/>`;
+  }
+  /* center motif */
+  let motif = '';
+  if (r === 0) motif = `<rect x="52" y="59" width="16" height="6" rx="2" fill="${m}"/>`;
+  if (r === 1) motif = `<path d="M48 58 L60 68 L72 58 L72 64 L60 74 L48 64Z" fill="${m}" stroke="${dark}" stroke-width=".6"/>`;
+  if (r === 2 || r === 3) motif = `<path d="${star(60, 62, 13 + r, 5.6 + r * .6)}" fill="${m}" stroke="${dark}" stroke-width=".6"/><path d="${star(60, 62, 6, 2.6)}" fill="${hi}" opacity=".55"/>`;
+  if (r === 4) motif = `<circle cx="60" cy="62" r="11" fill="url(#${id}gem)" stroke="${hi}" stroke-width=".8"/><path d="M53 58 L60 53 L67 58 L60 71Z" fill="#fff" opacity=".35"/><path d="M49 62 L60 53 L71 62" fill="none" stroke="#fff" opacity=".4" stroke-width=".6"/>`;
+  if (r >= 5) motif = `<path d="M47 57 L53 50 L67 50 L73 57 L60 76Z" fill="url(#${id}gem)" stroke="${hi}" stroke-width=".8"/>
+      <path d="M47 57 L73 57 M53 50 L57 57 L60 76 M67 50 L63 57 L60 76 M57 57 L60 50 L63 57" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width=".6"/>
+      <path d="M53 50 L57 57 L47 57Z" fill="#fff" opacity=".35"/>`;
+  /* crown / tiara */
+  if (r === 5) front += `<path d="M${60 - 14} ${62 - R - 1} L${60 - 10} ${62 - R - 10} L${60 - 4} ${62 - R - 4} L60 ${62 - R - 14} L${60 + 4} ${62 - R - 4} L${60 + 10} ${62 - R - 10} L${60 + 14} ${62 - R - 1}Z" fill="${m}" stroke="${dark}" stroke-width=".6"/><circle cx="60" cy="${62 - R - 14}" r="2" fill="url(#${id}gem)"/>`;
+  if (r === 6) front += `<path d="M38 ${62 - R + 2} L36 ${62 - R - 18} L47 ${62 - R - 8} L53 ${62 - R - 24} L60 ${62 - R - 10} L67 ${62 - R - 24} L73 ${62 - R - 8} L84 ${62 - R - 18} L82 ${62 - R + 2}Z" fill="${m}" stroke="${dark}" stroke-width=".8"/>
+      <rect x="38" y="${62 - R - 2}" width="44" height="5" rx="2" fill="${v}"/>
+      ${[36, 53, 67, 84].map(x => `<circle cx="${x}" cy="${62 - R - (x === 36 || x === 84 ? 18 : 24)}" r="2.4" fill="url(#${id}gem)"/>`).join('')}
+      <circle cx="60" cy="${62 - R - 12}" r="3.2" fill="url(#${id}gem)" stroke="${hi}" stroke-width=".5"/>`;
+  const glints = !locked && r >= 4 ? sparkle(60 + R + 8, 62 - R + 4, 4 + r * .4, '#fff') + sparkle(60 - R - 4, 62 + R - 8, 2.6 + r * .3, '#fff') + (r >= 6 ? sparkle(60 + 6, 62 - R - 30, 3.5, '#fff') : '') : '';
+  const sheen = shine && !locked ? `<g clip-path="url(#${id}clip)"><rect class="shine" x="30" y="20" width="22" height="90" fill="url(#${id}sh)" transform="skewX(-18)"/></g>` : '';
+  const lock = locked ? `<g transform="translate(60 63)"><rect x="-7" y="-2" width="14" height="11" rx="2.5" fill="#55595e"/><path d="M-4.5 -2 V-5 a4.5 4.5 0 0 1 9 0 V-2" fill="none" stroke="#55595e" stroke-width="2"/></g>` : '';
+  const ground = `<ellipse cx="60" cy="${62 + R + 22}" rx="${R + 6}" ry="3.5" fill="#000" opacity=".55"/>`;
+  return `<svg viewBox="-10 -6 140 136" role="img" aria-label="${t.n}">${defs(id, t, locked)}${ground}${back}${body}${motif}${front}${sheen}${lock}${glints}</svg>`;
+}
+
+
+const demo=[{r:0,name:'Youssef',pts:35,w:4,cap:'Ali Esmail'},{r:3,name:'Youssef',pts:312,w:41,cap:'Ali Esmail'},{r:6,name:'Youssef',pts:915,w:126,cap:'Ali Esmail'}];
+const hexA=(h,a)=>h+Math.round(a*255).toString(16).padStart(2,'0');
+document.getElementById('row').innerHTML=demo.map((d,i)=>{const t=T[d.r],s=t.s;
+ return '<div><div class="frame"><div class="story" style="--c0:'+s[0]+';--c1:'+s[1]+';--c2:'+s[2]+';--c3:'+s[3]+';--c5:'+s[5]+';--c2s:'+hexA(s[2],.45)+'">'+
+ '<div class="glow"></div><div class="rays"></div><div class="slash"></div><div class="slash b"></div>'+
+ '<div class="top"><img class="logo" src="../captain-workspace/kochivo-logo.png" alt="KOCHIVO"><span class="pill">رتبة جديدة</span></div>'+
+ '<div class="medal">'+emblem(d.r,'s'+i,{})+'</div>'+
+ '<div class="label">وصل لرتبة</div><div class="tier">'+t.n+'</div><div class="name">'+d.name+'</div>'+
+ '<div class="stats"><div class="stat"><b>'+d.pts+'</b><span>نقطة</span></div><div class="stat"><b>'+d.w+'</b><span>تمرين</span></div></div>'+
+ '<div class="captain">مع الكابتن <bdi>'+d.cap+'</bdi></div>'+
+ '<div class="foot"><p>خطوتك الجاية بتبدأ من هنا</p><small>kochivo.site</small></div>'+
+ '</div></div><p class="cap">'+t.n+'</p></div>';}).join('');
+</script></body></html>

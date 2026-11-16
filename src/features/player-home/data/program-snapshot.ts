@@ -4,7 +4,6 @@ import type { ProgramSnapshot } from '@/core/offline';
 import type { Tables } from '@/types/database';
 import type { AppDatabase as Database } from '@/types/app-database';
 import type { PainLoadHint } from '@/core/offline/pain-tables';
-import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import type { DayWarmup } from '@/features/programs';
 import { setPlanSchema } from '@/lib/set-plan';
 
@@ -43,7 +42,8 @@ export function mapProgramSnapshot(program: ProgramResponse, trainingDays: numbe
         ...(exercise.alternatives?.length ? { alternative_exercises: exercise.alternatives.flatMap(id => alternatives.find(row => row.id === id) ?? []) } : {}),
         media_path: exercises?.media_path ?? null,
         video_url: exercises?.video_url ?? null,
-        ...(captainWorkspaceEnabled() ? { body_part: exercises?.body_part ?? null } : {}),
+        // The pain check needs the body part on every device, not only in the captain workspace build.
+        body_part: exercises?.body_part ?? null,
       })),
     })),
   };

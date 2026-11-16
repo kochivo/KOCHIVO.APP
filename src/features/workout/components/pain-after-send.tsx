@@ -4,12 +4,19 @@ import type { PainReportRow } from '@/core/offline/pain-tables';
 import { Button } from '@/ui/button';
 import { messages } from '../pain/messages';
 
-export function PainAfterSend({ report, exercise, alternative, onSwap, onSkip }: {
-  report: PainReportRow; exercise: string; alternative?: string; onSwap: () => void; onSkip: () => void;
+export function PainAfterSend({ report, exercise, alternative, affected, onContinue, onSwap, onSkip }: {
+  report: PainReportRow; exercise: string; alternative?: string; affected: boolean;
+  onContinue: () => void; onSwap: () => void; onSkip: () => void;
 }) {
   const t = useT(messages);
   const urgent = report.severity === 5 || report.kind === 'sharp';
   const note = <p className={`glass-strong rounded-card p-card ${urgent ? 'text-danger' : 'text-muted'}`}>{t('doctor')}</p>;
+  if (!affected && !urgent) return <section className="space-y-card-gap" role="status">
+    <p className="glass-strong rounded-card p-card text-calm">{t('unaffected', { area: t(report.area) })}</p>
+    {note}
+    <Button block onClick={onContinue}>{t('continueWorkout')}</Button>
+    <Button block variant="secondary" onClick={onSkip}>{t('stopAnyway')}</Button>
+  </section>;
   return <section className="space-y-card-gap" role="status">
     {urgent && note}
     <div className="glass-strong space-y-stack rounded-card p-card"><h2 className="text-title text-danger">{t('stopped', { exercise })}</h2><p>{t('sent')}</p></div>

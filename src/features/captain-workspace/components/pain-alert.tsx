@@ -6,17 +6,18 @@ import type { PainReply } from '@/core/offline/pain-tables';
 import { Button } from '@/ui/button';
 import { messages } from '../pain/messages';
 import type { PainAlertReport } from '../data/pain-reports';
+import { PainAnswerError } from '../data/pain-reports';
 
 export function PainAlert({ report, now, onAnswer }: { report: PainAlertReport; now: number; onAnswer: (reply: PainReply) => Promise<void> }) {
   const t = useT(messages);
   const pt = useT(painMessages);
   const saving = useRef(false);
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<PainAnswerError['key'] | null>(null);
   async function answer(reply: PainReply) {
     if (saving.current) return;
-    saving.current = true; setBusy(true); setError(false);
-    try { await onAnswer(reply); } catch { setError(true); }
+    saving.current = true; setBusy(true); setError(null);
+    try { await onAnswer(reply); } catch (error) { setError(error instanceof PainAnswerError ? error.key : 'failed'); }
     finally { saving.current = false; setBusy(false); }
   }
   return <section className="glass-strong space-y-card-gap rounded-card p-card">
@@ -30,7 +31,7 @@ export function PainAlert({ report, now, onAnswer }: { report: PainAlertReport; 
     </div>
     <div className="grid gap-stack">{(['swap_2w', 'reduce_20', 'rest_week', 'talk'] as const).map(reply =>
       <Button variant="secondary" key={reply} disabled={busy} onClick={() => void answer(reply)}>{t(reply)}</Button>)}</div>
-    {error && <p role="alert" className="text-danger">{t('failed')}</p>}
+    {error && <p role="alert" className="text-danger">{t(error)}</p>}
     <p className="text-xs text-muted">{t('effect')}</p>
   </section>;
 }

@@ -27,8 +27,17 @@ export async function loadPainReports(playerId: string, locale: Locale, signal?:
   }));
 }
 
+export class PainAnswerError extends Error {
+  readonly key: 'noSafeSwap' | 'inactiveExercise' | 'failed';
+  constructor(error: { message: string }) {
+    super(error.message);
+    this.key = error.message === 'No safe alternative' ? 'noSafeSwap'
+      : error.message === 'Active exercise required' ? 'inactiveExercise' : 'failed';
+  }
+}
+
 export async function answerPain(id: string, reply: PainReply): Promise<void> {
   const client = await loadSupabaseBrowser();
   const { error } = await client.rpc('answer_pain', { p_report: id, p_reply: reply });
-  if (error) throw error;
+  if (error) throw new PainAnswerError(error);
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { editableFieldClass, EditInPlace } from '@/ui/edit-in-place';
+import { EditInPlace } from '@/ui/edit-in-place';
 import { IconButton } from '@/ui/icon-button';
 
 import { useState } from 'react';
@@ -20,6 +20,7 @@ import { messages as planMessages } from '../../messages';
 import { useToast } from '@/ui/toast';
 import { messages as successMessages } from '../../success/messages';
 import type { TimedMeal } from '../../data/meal-portions';
+import { MealTimeField } from '../meal-time-field';
 import { MealMenu } from './meal-menu';
 import { messages as redesignMessages } from './redesign/messages';
 import { messages as macroMessages } from '../v11/messages';
@@ -46,7 +47,7 @@ export function MealCard({ meal, update, facts, day, first, last, editableName =
         onChange={event => { const name = event.target.value.slice(0, 40); if (name.trim()) update(draft => renameMeal(draft, meal.id, name)); }}
         className="min-w-0 font-display text-title font-semibold" /></div> : <h2 className="col-span-full min-w-0 break-words font-display text-title font-semibold">{meal.name}</h2>}
       <span className="col-span-full min-w-0 text-xs text-muted">{macroT('calories', { n: formatNumber(Math.round(totals.kcal), locale) })}<small className="block">{macroT('macros', { p: formatNumber(totals.protein, locale), c: formatNumber(totals.carbs, locale), f: formatNumber(totals.fat, locale) })}</small></span>
-      <label className="min-w-0 rounded-control border border-line bg-surface px-inline"><span className="sr-only">{rt('time')}</span><input type="time" value={(meal as TimedMeal).timeOfDay?.slice(0, 5) ?? ''} onChange={event => update(draft => ({ ...draft, meals: draft.meals.map(row => row.id === meal.id ? { ...row, timeOfDay: event.target.value || null } : row) }))} className={`${editableFieldClass} press min-h-12 w-full min-w-0 max-w-32 cursor-pointer rounded-control bg-surface text-xs focus-visible:ring-2 focus-visible:ring-lime`} /></label>
+      <MealTimeField label={rt('time')} value={(meal as TimedMeal).timeOfDay?.slice(0, 5) ?? ''} onChange={timeOfDay => update(draft => ({ ...draft, meals: draft.meals.map(row => row.id === meal.id ? { ...row, timeOfDay } : row) }))} />
       <MealMenu meal={meal} day={day} update={update} rename={() => setDetails(true)} />
       <IconButton type="button" aria-label={t('details')} aria-expanded={details} onClick={() => setDetails(!details)} className="grid min-h-12 min-w-12 place-items-center text-ink"><DisclosureChevron expanded={details} className="size-4" /></IconButton>
       {incomplete && <span className="col-span-full text-xs text-warn">{t('incomplete')}</span>}

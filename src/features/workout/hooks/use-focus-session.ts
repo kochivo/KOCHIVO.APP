@@ -22,7 +22,7 @@ import { dropWeights, targetForSet } from '@/lib/set-plan';
 import { alternativeStep, loggedStep } from '../data/exercise-choices';
 import { useExerciseChoices } from './use-exercise-choices';
 import { usePainSkips } from './use-pain-skips';
-import { painLoad, safePainSwap } from '../pain-safe-swap';
+import { painAffects, painLoad, safePainSwap } from '../pain-safe-swap';
 import { useCycle, isLightDay } from '@/features/player-home';
 
 const readCached = () => localDb().program_snapshot.get('active');
@@ -92,7 +92,9 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
   const selectedId = choices.choices[plannedCurrent?.exercise.id ?? ''];
   const current = logged ? loggedStep(plannedCurrent, logged.exercise_id, t('unknownExercise')) : alternativeStep(plannedCurrent, selectedId);
   const exercisePain = reports?.filter(row => row.program_exercise_id === current?.exercise.id) ?? [];
-  const painBlocked = exercisePain.some(report => !selectedId || selectedId === report.exercise_id);
+  const painMetadata = current?.exercise.alternative_exercises?.find(row => row.id === current.exercise.exercise_id) ?? current?.exercise;
+  const painBlocked = exercisePain.some(report => (!selectedId || selectedId === report.exercise_id) &&
+    (report.severity === 5 || report.kind === 'sharp' || painAffects(report.area, painMetadata ?? {})));
   const key = `${session?.id ?? today}:${current?.exercise.id}:${current?.setIndex}:${current?.dropIndex ?? 0}:${current?.exercise.exercise_id}`;
   const exerciseId = String(current?.exercise.exercise_id ?? '');
   const { bodyweight, setBodyweight } = useBodyweight(exerciseId);

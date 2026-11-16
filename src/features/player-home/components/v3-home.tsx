@@ -44,7 +44,8 @@ export function V3Home({ weightKg, now, today, firstName, playerId, snapshot, da
     <HomeHero finished={Boolean(snapshot)} day={day} rest={rest} doneToday={doneToday} streak={stats && snapshot && !trains(today) ? stats.current : undefined} />
     {rest && <TomorrowCard day={tomorrowDay} date={tomorrow} rest={tomorrowRest} onPreview={onPreview} />}
     <HomeTiles weightKg={weightKg} today={today} playerId={playerId} rest={rest} streak={stats?.current}
-      done={week.filter(day => day.state === 'done').length} planned={snapshot ? week.filter(day => trains(day.date)).length : 0}
+      // Same week count as the streak pill, which skips days before the account started.
+      done={stats?.weekDone ?? week.filter(day => day.state === 'done').length} planned={snapshot ? stats?.weekPlanned ?? week.filter(day => trains(day.date)).length : 0}
       onWater={() => onPreview(today)} />
     {rest ? <Link href="/player/nutrition" className={buttonClass({ variant: 'primary', block: false, className: "flex h-[62px] items-center justify-center gap-stack text-lg font-black" })}>
       <KoPlus aria-hidden className="size-[22px] text-on-lime! [&_*]:text-on-lime!" />{t('homeLogFood')}

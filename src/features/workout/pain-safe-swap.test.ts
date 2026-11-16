@@ -1,5 +1,21 @@
 import { expect, it } from 'vitest';
-import { safePainSwap, painLoad } from './pain-safe-swap';
+import { safePainSwap, painLoad, painAffects } from './pain-safe-swap';
+
+it.each([
+  ['knee_r', { body_part: 'chest' }, false],
+  ['knee_l', { body_part: 'UPPER LEGS' }, true],
+  ['shoulder_l', { body_part: 'chest' }, true],
+  ['other', { body_part: 'chest' }, true],
+  ['knee_r', {}, true],
+  ['knee_r', { body_part: null }, true],
+  ['knee_r', { body_part: 'unrecognized' }, true],
+  ['knee_r', { body_part: 'chest', stress: ['knee'] }, true],
+  ['shoulder_r', { body_part: 'upper legs', stress: ['shoulder'] }, true],
+  ['lower_back', { body_part: 'chest', stress: ['lower_back'] }, true],
+] as const)('checks %s against exercise metadata %j', (area, exercise, affected) => {
+  expect(painAffects(area, { body_part: 'body_part' in exercise ? exercise.body_part : undefined,
+    stress: 'stress' in exercise ? [...exercise.stress] : undefined })).toBe(affected);
+});
 
 it('rejects knee-loading and unknown alternatives and keeps catalog order', () => {
   const rows = [{ id: 'unknown' }, { id: 'squat', body_part: 'upper legs', pattern: 'hinge', stress: [] },
