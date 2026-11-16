@@ -23,6 +23,8 @@ function exerciseName(value: unknown, locale: string): string {
 export function feedHref(item: KoFeedItem, locale: string) {
   const player = `/${locale}/captain/players/${item.player_id}`;
   switch (item.kind) {
+    case 'expiring':
+    case 'expired': return typeof item.data.sessions_left === 'number' ? player : null;
     case 'join_requested': return `/${locale}/captain/players`;
     case 'sessions_used_up': return player;
     case 'no_program': return `${player}/programs`;

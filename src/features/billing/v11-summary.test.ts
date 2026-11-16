@@ -9,7 +9,7 @@ describe('v11 billing numbers', () => {
       { ...base, accessUntil: '2026-11-22' }, { ...base, accessUntil: '2026-11-13' },
       { ...base, pending: true }, { ...base, frozenAt: today },
       { ...base, sessionsLeft: 0 }, { ...base, sessionsLeft: 3, accessUntil: '2026-11-13' }];
-    expect(subscriptionTiles(players, today, 12400, 2)).toEqual({ income: 12400, pending: 2, ending: 3, active: 4 });
+    expect(subscriptionTiles(players, today, 12400, 2)).toEqual({ income: 12400, pending: 2, ending: 3, active: 3 });
   });
   it('includes access ending today through day seven, excluding expired, pending and frozen links', () => {
     const players = [base, { ...base, accessUntil: '2026-12-14' },

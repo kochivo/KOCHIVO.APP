@@ -146,6 +146,6 @@ it('reads only the current tier for the player or their own captain, including u
   await db.query("update player_payments set period_start='2026-01-01',period_end='2026-01-30' where player_id=$1", [player]);
   // Unfreezing extends the link, not the immutable payment period.
   expect((await read(player)).rows).toEqual([{ id: tier }]);
-  await db.query("update coach_clients set access_until='2026-01-30' where player_id=$1", [player]);
+  await db.query("update coach_clients set access_until='2026-01-30',awaiting_plans_at=null where player_id=$1", [player]);
   expect((await read(player)).rows).toEqual([]);
 });
