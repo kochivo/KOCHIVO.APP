@@ -8,6 +8,8 @@ import { ExerciseVideo } from './components/exercise-video';
 const state = vi.hoisted(() => ({ values: [] as unknown[], index: 0, serverOnline: true, clientOnline: true }));
 vi.mock('react', async original => ({ ...await original<typeof React>(),
   useId: () => 'video-opener',
+  useRef: () => ({ current: null }),
+  useEffect: () => {},
   useSyncExternalStore: (_subscribe: unknown, snapshot: () => boolean, serverSnapshot: () => boolean) => {
     state.serverOnline = serverSnapshot(); state.clientOnline = snapshot();
     return state.clientOnline;
@@ -15,7 +17,7 @@ vi.mock('react', async original => ({ ...await original<typeof React>(),
   useState: (initial: unknown) => {
     const index = state.index++;
     if (!(index in state.values)) state.values[index] = initial;
-    return [state.values[index], (value: unknown) => { state.values[index] = value; }];
+    return [state.values[index], (value: unknown) => { state.values[index] = typeof value === 'function' ? value(state.values[index]) : value; }];
   },
 }));
 vi.mock('@/core/i18n/client', () => ({ useT: (messages: Parameters<typeof createT>[0]) => createT(messages, 'en') }));
@@ -67,16 +69,30 @@ it('plays direct files muted with native inline controls after opening', () => {
   expect(html).toMatch(/<video[^>]*controls=""[^>]*muted=""[^>]*playsInline=""[^>]*autoPlay=""/);
   expect(html).not.toContain('<iframe');
 });
-it('replaces failed media with a nonblocking warning and lets the user retry', () => {
+it('keeps the Drive escape visible before a provider error', () => {
+  const url = 'https://drive.google.com/file/d/abc_123/view';
+  const tree = open(url);
+  const html = renderToStaticMarkup(tree);
+  expect(html).toContain(`href="${url}"`);
+  expect(html).toContain('https://drive.google.com/file/d/abc_123/preview');
+  elements(tree).find(node => node.type === 'iframe')?.props.onError?.();
+  expect(renderToStaticMarkup(render(url))).toContain('Video needs internet.');
+  expect(renderToStaticMarkup(render(url))).not.toContain('<iframe');
+});
+it('keeps failed YouTube media visible with an external fallback and remounts on retry', () => {
   const tree = open();
   elements(tree).find(node => node.type === 'iframe')?.props.onError?.();
   const failed = renderToStaticMarkup(render());
-  expect(failed).toContain('Video needs internet. You can keep training; everything is saved.');
-  expect(failed).not.toContain('<iframe');
+  expect(failed).toContain('Video is stuck. Open it on YouTube or try again.');
+  expect(failed).toContain('<iframe');
+  expect(failed).toContain('Open video on YouTube');
   expect(failed).toContain('Try again');
   expect(failed).toContain('href="https://youtube.com/shorts/dQw4w9WgXcQ"');
+  const before = elements(render()).find(node => node.type === 'iframe')?.key;
   elements(render()).find(node => node.props.children === 'Try again')?.props.onClick?.();
-  expect(renderToStaticMarkup(render())).toContain('<iframe');
+  const retried = render();
+  expect(elements(retried).find(node => node.type === 'iframe')?.key).not.toBe(before);
+  expect(renderToStaticMarkup(retried)).not.toContain('Video is stuck.');
 });
 it('shows loading until the iframe loads and offers recovery for provider errors', () => {
   const tree = open();
@@ -84,7 +100,8 @@ it('shows loading until the iframe loads and offers recovery for provider errors
   elements(tree).find(node => node.type === 'iframe')?.props.onLoad?.();
   const loaded = render();
   expect(renderToStaticMarkup(loaded)).not.toContain('Loading video');
-  elements(loaded).find(node => node.props.children === 'Video not loading?')?.props.onClick?.();
-  expect(renderToStaticMarkup(render())).toContain('Video needs internet. You can keep training; everything is saved.');
-  expect(renderToStaticMarkup(render())).not.toContain('<iframe');
+  expect(renderToStaticMarkup(loaded)).toContain('Open on YouTube');
+  elements(loaded).find(node => node.type === 'iframe')?.props.onError?.();
+  expect(renderToStaticMarkup(render())).toContain('Open video on YouTube');
+  expect(renderToStaticMarkup(render())).toContain('<iframe');
 });

@@ -3,6 +3,7 @@ import { defineMessages } from '@/core/i18n/messages';
 // Kept apart so the offline workout bundle only loads these with the video player.
 export const videoMessages = defineMessages({
   ar: {
+    openYoutube: 'افتح على يوتيوب', openYoutubeFull: 'افتح الفيديو على يوتيوب', retry: 'جرب تاني', stalled: 'الفيديو مش بيتحرك. افتحه على يوتيوب أو جرب تاني.',
     coach: 'فيديو من الكابتن', back: 'ارجع للمجموعة', open: 'افتح الفيديو',
     offline: 'الفيديو محتاج نت. تقدر تكمّل تمرينك عادي، وكل حاجة بتتحفظ.',
     muted: 'الفيديو شغال من غير صوت. دوس عليه عشان الصوت.', gif: 'الصورة المتحركة',
@@ -12,6 +13,7 @@ export const videoMessages = defineMessages({
     youtube: 'يوتيوب', shorts: 'شورتس', drive: 'جوجل درايف', file: 'فيديو', instagram: 'انستجرام', tiktok: 'تيك توك', link: 'لينك',
   },
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? {
+    openYoutube: 'افتح على يوتيوب', openYoutubeFull: 'افتح الفيديو على يوتيوب', retry: 'حاول مرة أخرى', stalled: 'الفيديو لا يعمل. افتحه على يوتيوب أو حاول مرة أخرى.',
     coach: 'فيديو من المدرب', back: 'العودة للمجموعة', open: 'افتح الفيديو',
     offline: 'الفيديو يحتاج إلى الإنترنت. يمكنك متابعة تمرينك، وكل شيء يُحفظ.',
     muted: 'الفيديو يعمل دون صوت. اضغط عليه لتشغيل الصوت.', gif: 'الصورة المتحركة',
@@ -21,6 +23,7 @@ export const videoMessages = defineMessages({
     youtube: 'يوتيوب', shorts: 'شورتس', drive: 'جوجل درايف', file: 'فيديو', instagram: 'إنستجرام', tiktok: 'تيك توك', link: 'رابط',
   } as const : undefined; },
   en: {
+    openYoutube: 'Open on YouTube', openYoutubeFull: 'Open video on YouTube', retry: 'Try again', stalled: 'Video is stuck. Open it on YouTube or try again.',
     coach: 'Video from your coach', back: 'Back to the set', open: 'Open video',
     offline: 'Video needs internet. You can keep training; everything is saved.',
     muted: 'Plays muted. Tap for sound.', gif: 'Animated image',

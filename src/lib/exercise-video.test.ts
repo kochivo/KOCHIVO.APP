@@ -2,6 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { parseExerciseVideo } from './exercise-video';
 
 describe('exercise video URLs', () => {
+  it('enables state messages with the client origin', () => {
+    const source = parseExerciseVideo('https://youtu.be/dQw4w9WgXcQ', 'https://kochivo.test');
+    expect(source).toMatchObject({ embedUrl: expect.stringContaining('enablejsapi=1&origin=https%3A%2F%2Fkochivo.test') });
+  });
   it.each([
     'https://youtube.com/watch?v=dQw4w9WgXcQ',
     'https://www.youtube.com/watch?v=dQw4w9WgXcQ',

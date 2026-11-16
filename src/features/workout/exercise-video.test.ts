@@ -5,13 +5,25 @@ import type * as React from 'react';
 import { ExerciseVideo } from './components/exercise-video';
 import { ExerciseVideoPreview } from './components/exercise-video-preview-entry';
 import { Button } from '@/ui/button';
+import { LocaleProvider } from '@/core/i18n/client';
+
+const dialog = vi.hoisted(() => ({ open: false }));
 
 vi.mock('react', async original => ({ ...await original<typeof React>(),
   useSyncExternalStore: (_subscribe: unknown, snapshot: () => boolean) => snapshot(),
+  useState: (initial: unknown) => [initial === false && dialog.open ? true : initial, vi.fn()],
 }));
 
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => { vi.unstubAllGlobals(); dialog.open = false; });
 describe('exercise video UI', () => {
+  it.each(['ar', 'en'] as const)('keeps a safe YouTube escape and translated footer in the %s dialog', locale => {
+    dialog.open = true;
+    const html = renderToStaticMarkup(h(LocaleProvider, { locale }, h(ExerciseVideo, { url: 'https://youtu.be/dQw4w9WgXcQ', name: 'Row' })));
+    expect(html).toContain('<dialog');
+    expect(html).toMatch(/<a[^>]*href="https:\/\/youtu.be\/dQw4w9WgXcQ"[^>]*target="_blank"[^>]*rel="noopener noreferrer"/);
+    expect(html).toContain(locale === 'ar' ? 'افتح على يوتيوب' : 'Open on YouTube');
+    expect(html).toContain(locale === 'ar' ? 'ارجع للمجموعة' : 'Back to the set');
+  });
   it('shows a lime play card without fetching media before opening', () => {
     const html = renderToStaticMarkup(h(ExerciseVideo, { url: 'https://youtu.be/dQw4w9WgXcQ', name: 'Row' }));
     expect(html).toContain('bg-lime');

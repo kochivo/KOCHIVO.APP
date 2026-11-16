@@ -2,7 +2,7 @@ export type VideoLabel = 'youtube' | 'shorts' | 'drive' | 'file' | 'instagram' |
 export type ExerciseVideoSource = { kind: 'youtube' | 'drive' | 'file'; embedUrl: string; vertical: boolean; label: VideoLabel }
   | { kind: 'external'; url: string; label: VideoLabel };
 
-export function parseExerciseVideo(value: string | null | undefined): ExerciseVideoSource | null {
+export function parseExerciseVideo(value: string | null | undefined, origin?: string): ExerciseVideoSource | null {
   if (!value || value.trim().length > 500) return null;
   let url: URL;
   try { url = new URL(value.trim()); } catch { return null; }
@@ -16,6 +16,10 @@ export function parseExerciseVideo(value: string | null | undefined): ExerciseVi
       ['embed', 'shorts'].includes(parts[1] ?? '') ? parts[2] : null;
     if (id && /^[A-Za-z0-9_-]{11}$/.test(id)) {
       const embed = new URL(`https://www.youtube-nocookie.com/embed/${id}?mute=1&playsinline=1&rel=0&modestbranding=1`);
+      if (origin) {
+        embed.searchParams.set('enablejsapi', '1');
+        embed.searchParams.set('origin', origin);
+      }
       const time = url.searchParams.get('start') ?? url.searchParams.get('t');
       const match = time?.match(/^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?$/);
       const seconds = time && /^\d+$/.test(time) ? Number(time) : match ? Number(match[1] ?? 0) * 3600 + Number(match[2] ?? 0) * 60 + Number(match[3] ?? 0) : 0;
