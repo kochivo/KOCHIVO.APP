@@ -29,10 +29,10 @@ export function useNutritionSnapshot() {
   const pending = useLiveQuery(readPending, onError, retryKey);
   const parked = useLiveQuery(readParked, onError, retryKey);
   const retrySync = () => { void retryParked(localDb()).catch(onError); };
-  const refresh = useCallback(() => refreshNutrition().then((result) => {
+  const refresh = useCallback(() => refreshNutrition({ day: localDate(new Date(), timezone) }).then((result) => {
     setStale(result === 'error' || result === 'offline');
     setSettled(true);
-  }), []);
+  }), [timezone]);
   const retry = useCallback(() => {
     setLocalError(false);
     setRetryKey((key) => key + 1);

@@ -1,7 +1,7 @@
 import type { ProgramSnapshot, WorkoutSessionRow } from '@/core/offline';
-import { isWeeklyProgram, weeklyFinished } from '@/core/offline';
+import { isWeeklyProgram, weeklyFinished } from '@/core/offline/program-cycle';
 import { localDate, weeklyWeekday } from '@/lib/dates';
-export { isWeeklyProgram, weeklyFinished } from '@/core/offline';
+export { isWeeklyProgram, weeklyFinished } from '@/core/offline/program-cycle';
 
 export function nextTrainingDay(snapshot: ProgramSnapshot, today: string) {
   for (let offset = 1; offset <= 7; offset++) {

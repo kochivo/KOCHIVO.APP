@@ -26,4 +26,20 @@ it('loads a request list with four bulk reads while preserving questions and pho
   expect(result[0]?.questions[0]?.type).toBe('photos');
   expect(result[0]?.answers[0]?.photo_paths).toEqual(['private/photo.jpg']);
   expect(result[1]?.answers).toEqual([]);
+  expect(result[1]?.questions).toEqual([]);
+});
+
+it('loads immutable question snapshots for answered and reviewed requests', async () => {
+  const original = { id: 'old', form_id: 'f', position: 0, label_ar: 'Original', label_en: 'Original',
+    type: 'text', required: false, options: [], maps_to: null, alert_on: null };
+  const client = createClient<AppDatabase>('https://test.invalid', 'test', { global: { fetch: async input => {
+    const table = new URL(String(input)).pathname.split('/').at(-1);
+    return Response.json(table === 'form_requests' ? ['answered', 'reviewed'].map(status => ({ id: status, form_id: 'f',
+      player_id: 'p', captain_id: 'c', answered_at: '2026-11-16T10:00Z', reviewed_at: status === 'reviewed' ? '2026-11-16T11:00Z' : null,
+      question_snapshot: [original], status })) : table === 'forms' ? [{ id: 'f', title: 'Form' }]
+      : table === 'form_questions' ? [{ ...original, label_en: 'Edited' }, { ...original, id: 'new', required: true }] : []);
+  } } });
+  const results = await loadPlayerRequests(client, 'p');
+  for (const result of results) expect(result.questions).toMatchObject([{ id: 'old', label_en: 'Original', required: false }]);
+  expect(results.every(result => result.questions.length === 1)).toBe(true);
 });
