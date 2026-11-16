@@ -130,6 +130,16 @@ it('loads only known tiers from rank payloads', async () => {
   ]);
 });
 
+it('keeps only validated swap decisions when loading the bell', async () => {
+  const data = ['approved', 'declined', 'unknown', null].map(status => ({ ...row, type: 'swap_decided', payload: { status } }));
+  const query = { select: vi.fn(), not: vi.fn(), order: vi.fn(), limit: vi.fn().mockResolvedValue({ data, error: null }) };
+  query.select.mockReturnValue(query); query.not.mockReturnValue(query); query.order.mockReturnValue(query);
+  load.mockResolvedValue({ from: vi.fn().mockReturnValue(query) });
+  const loaded = await latestNotifications();
+  expect(loaded.map(item => item.payload.status)).toEqual(['approved', 'declined', undefined, undefined]);
+  expect(notificationTextKey(loaded[1] ?? row)).toBe('swap_decided_declined');
+});
+
 it('preserves numeric crown gaps when loading stored notifications', async () => {
   const data = [{ ...row, type: 'crown_close', payload: { needs_workouts: 0, gap: 14 } },
     { ...row, type: 'crown_close', payload: { needs_workouts: '2', gap: null } }];

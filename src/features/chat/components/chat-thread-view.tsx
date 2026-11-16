@@ -8,16 +8,18 @@ import { threadDay } from '@/features/voice-notes/player-thread';
 // eslint-disable-next-line no-restricted-imports -- Message types only.
 import type { messages as voiceNoteMessages } from '@/features/voice-notes/messages';
 import { AudioPlayer } from '@/ui/audio-player';
+import { Button } from '@/ui/button';
 import { localDate, formatDateAr } from '@/lib/dates';
 import type { ChatThreadItem } from '../types';
 import type { messages } from '../messages';
 
 const heights = [8, 16, 24, 12, 20, 8, 16, 6, 22, 12, 4, 16, 10];
 const clock = (seconds: number) => `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
-export function ChatThreadView({ items, viewer, onRetry, onVoicePlay, t, voiceT, locale, timezone, now }: {
+export function ChatThreadView({ items, viewer, onRetry, onVoicePlay, onLoadOlder, hasOlder, olderStatus, t, voiceT, locale, timezone, now }: {
   t: Translator<typeof messages>; voiceT: Translator<typeof voiceNoteMessages>; locale: Locale; timezone: string; now: Date | null | undefined;
   items: readonly ChatThreadItem[]; viewer: 'player' | 'captain'; onRetry?: (id: string) => unknown;
   onVoicePlay?: (item: ChatThreadItem) => void;
+  hasOlder?: boolean; olderStatus?: 'ready' | 'loading' | 'error'; onLoadOlder?: () => unknown;
 }) {
   const bottom = useRef<HTMLDivElement>(null);
   const [broken, setBroken] = useState<string | null>(null);
@@ -25,6 +27,12 @@ export function ChatThreadView({ items, viewer, onRetry, onVoicePlay, t, voiceT,
   const tail = items.at(-1)?.id;
   useEffect(() => { bottom.current?.scrollIntoView({ block: 'end' }); }, [tail]);
   return <div className={viewer === 'captain' ? 'pb-[calc(var(--nav-clearance)+5rem)] min-[760px]:pb-28 lg:pb-card' : 'pb-40'}>
+    {hasOlder && <div className="flex flex-col items-center gap-stack">
+      {olderStatus === 'error' && <p role="alert" className="text-sm text-danger">{t('olderError')}</p>}
+      <Button variant="secondary" disabled={olderStatus === 'loading'} onClick={() => onLoadOlder?.()}>
+        <span role={olderStatus === 'loading' ? 'status' : undefined}>{t(olderStatus === 'loading' ? 'olderLoading' : olderStatus === 'error' ? 'retry' : 'loadOlder')}</span>
+      </Button>
+    </div>}
     {!items.length && <p className="py-page-y text-center text-sm text-muted">{t(viewer === 'player' ? 'empty' : 'emptyCaptain')}</p>}
     <ol aria-label={t('thread')} className="flex flex-col gap-stack pt-inline">
       {items.map((item, index) => {

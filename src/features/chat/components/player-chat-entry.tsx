@@ -15,7 +15,8 @@ export function PlayerChat({ playerId, captainId }: { playerId: string; captainI
   return <>
     {thread.status === 'loading' ? <LoadingState variant="detail" /> : <>
       {(thread.status === 'error' || thread.readError) && <ErrorState message={t('error')} retryLabel={t('retry')} onRetry={() => void thread.refresh()} />}
-      {(thread.status !== 'error' || thread.items.length > 0) && <ChatThread items={thread.items} viewer="player" onRetry={thread.retry} onVoicePlay={item => {
+      {(thread.status !== 'error' || thread.items.length > 0) && <ChatThread items={thread.items} viewer="player" onRetry={thread.retry}
+        hasOlder={thread.hasOlder} olderStatus={thread.olderStatus} onLoadOlder={thread.loadOlder} onVoicePlay={item => {
         if (item.source === 'voice_note' && !item.readAt) void loadSupabaseBrowser().then(client => markListened(client, item.id.slice(6), new Date())).then(() => thread.refresh()).catch(() => thread.refresh());
       }} />}
     </>}

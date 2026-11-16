@@ -43,7 +43,7 @@ async function addPlayer() {
 }
 
 it('preserves old profile values and the old public RPC projection', async () => {
-  expect((await db.query(`select to_jsonb(p)-'specialties'-'years_experience'-'languages'-'show_public_stats'-'coach_gender'-array['ramadan_mode','ramadan_training','ramadan_intensity','ramadan_water_ml','prayer_city'] profile
+  expect((await db.query(`select to_jsonb(p)-'locale'-'specialties'-'years_experience'-'languages'-'show_public_stats'-'coach_gender'-array['ramadan_mode','ramadan_training','ramadan_intensity','ramadan_water_ml','prayer_city'] profile
     from profiles p where id=$1`, [captain])).rows).toEqual(previousProfile);
   expect((await db.query("select pg_get_functiondef('coach_public_profile(text)'::regprocedure)")).rows).toEqual(previousFunction);
   expect((await db.query('select * from coach_public_profile($1)', ['public-coach'])).rows).toEqual(legacy);

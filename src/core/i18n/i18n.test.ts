@@ -5,6 +5,7 @@ import { formatDateAr, formatTimestampAr, localDate } from '@/lib/dates';
 import { formatNumber } from '@/lib/format';
 
 vi.mock('server-only', () => ({}));
+vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => ({ auth: { getClaims: async () => ({ data: null }) } }) }));
 const jar = vi.hoisted(() => ({ get: vi.fn(), set: vi.fn() }));
 vi.mock('next/headers', () => ({ cookies: async () => jar }));
 

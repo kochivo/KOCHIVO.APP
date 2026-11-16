@@ -120,14 +120,15 @@ describe('chat notifications', () => {
     await db.query("update public.notifications set created_at=now()-interval '1 day' where type='chat_message'");
     await send(player);
     const notices = await as(captain, "select payload,created_at=now() as fresh from public.notifications where type='chat_message'");
-    expect(notices.rows).toEqual([{ payload: { name: 'player', player_id: player }, fresh: true }]);
+    expect(notices.rows).toEqual([{ payload: { name: 'player', player_id: player, captain_id: captain,
+      message_id: expect.any(String) }, fresh: true }]);
     expect((await as(player, "select id from public.notifications where type='chat_message'")).rows).toHaveLength(0);
     await as(captain, "update public.notifications set is_read=true where type='chat_message'");
     await send(player);
     expect((await as(captain, "select id from public.notifications where type='chat_message'")).rows).toHaveLength(2);
     await send(captain);
     expect((await as(player, "select payload from public.notifications where type='chat_message'")).rows)
-      .toEqual([{ payload: { name: 'captain', player_id: player } }]);
+      .toEqual([{ payload: { name: 'captain', player_id: player, captain_id: captain, message_id: expect.any(String) } }]);
   });
   it('preserves every existing notification kind', async () => {
     for (const type of notificationTypes.filter(type => type !== 'chat_message')) {

@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import type { AppDatabase } from '@/types/app-database';
 import { mergeThread } from './thread';
-import { listMessages, markRead, sendText, sendVoice, unreadCounts } from './data/chat';
+import { listMessages, markRead, markConversationRead, sendText, sendVoice, unreadCounts } from './data/chat';
 import { useChatThread } from './hooks/use-chat-thread';
 import type { ChatMessage, ChatTimer } from './types';
 
@@ -40,10 +40,12 @@ let failInsert: boolean;
 let failRead: boolean;
 let failLoad: boolean;
 let insertGate: Promise<void> | undefined;
+let olderPages: (typeof wire[])[] = [];
 const fetcher = async (input: RequestInfo | URL, init?: RequestInit) => {
   const url = new URL(String(input)); const method = init?.method ?? 'GET';
   const body: unknown = typeof init?.body === 'string' ? JSON.parse(init.body) : init?.body;
   requests.push({ url, method, body });
+  if (url.pathname.endsWith('/rpc/read_chat_conversation')) return new Response(failRead ? '{"message":"failed"}' : '', { status: failRead ? 403 : 200 });
   if (url.pathname.includes('/storage/')) return new Response(JSON.stringify(
     url.pathname.includes('/sign/') ? [{ path: `${player}/chat/a.webm`, signedURL: '/signed' }] : { Key: 'uploaded' }), { status: 200 });
   if (url.pathname.endsWith('/chat_messages')) {
@@ -53,7 +55,7 @@ const fetcher = async (input: RequestInfo | URL, init?: RequestInit) => {
       if (failInsert) return new Response(JSON.stringify({ message: 'denied', code: '42501' }), { status: 403 });
       return new Response(JSON.stringify({ ...wire, body: null, ...(body as object) }), { status: 201 });
     }
-    return new Response(JSON.stringify(method === 'PATCH' ? [] : rows), { status: 200 });
+    return new Response(JSON.stringify(method === 'PATCH' ? [] : url.searchParams.has('or') && olderPages.length ? olderPages.shift() : rows), { status: 200 });
   }
   return new Response('[]', { status: 200 });
 };
@@ -72,9 +74,10 @@ const render = (hook = useTestThread) => {
   lifecycle.refIndex = 0; lifecycle.stateIndex = 0;
   return hook();
 };
-const settle = async () => { for (let i = 0; i < 60; i++) await Promise.resolve(); };
+const settle = async () => { for (let i = 0; i < 120; i++) await Promise.resolve(); };
 beforeEach(() => {
   requests.length = 0; rows = []; failInsert = false; failRead = false; failLoad = false; insertGate = undefined;
+  olderPages = [];
   lifecycle.refs = []; lifecycle.states = []; lifecycle.effects = []; lifecycle.collect = true;
   listeners.clear(); visible = 'visible'; tick = undefined; stop.mockClear();
   vi.stubGlobal('document', { get visibilityState() { return visible; },
@@ -106,6 +109,34 @@ it('loads the newest bounded page in chronological order and filters both partic
   expect(requests[0]?.url.searchParams.get('captain_id')).toBe(`eq.${captain}`);
 });
 
+it('uses a stable timestamp and id cursor for older messages', async () => {
+  await listMessages(client, { playerId: player, captainId: captain, before: { createdAt: date, id: captain } });
+  expect(requests[0]?.url.searchParams.get('or')).toBe(`(created_at.lt.${date},and(created_at.eq.${date},id.lt.${captain}))`);
+});
+
+it('loads older pages, preserves them through polls, and exposes retryable page errors', async () => {
+  rows = Array.from({ length: 50 }, (_, i) => ({ ...wire, id: String(100 - i) }));
+  render(); const cleanup = lifecycle.effects[0]?.(); lifecycle.collect = false; await settle();
+  expect(render().hasOlder).toBe(true);
+  failLoad = true; await render().loadOlder();
+  expect(render().olderStatus).toBe('error');
+  failLoad = false; rows = [{ ...wire, id: 'old', created_at: '2026-11-12T10:00:00Z' }];
+  await render().loadOlder();
+  expect(render().hasOlder).toBe(false);
+  rows = [wire]; await render().refresh();
+  expect(render().items.some(item => item.id === 'old')).toBe(true);
+  cleanup?.();
+});
+
+it('fills the gap when more than a page arrives between visible polls', async () => {
+  rows = [wire]; render(); const cleanup = lifecycle.effects[0]?.(); lifecycle.collect = false; await settle();
+  rows = Array.from({ length: 50 }, (_, i) => ({ ...wire, id: `new${i}`, created_at: '2026-11-14T10:00:00Z' }));
+  olderPages = [[{ ...wire, id: 'gap', created_at: '2026-11-14T09:00:00Z' }, wire]];
+  await render().refresh();
+  expect(render().items).toHaveLength(52);
+  expect(render().items.some(item => item.id === 'gap')).toBe(true); cleanup?.();
+});
+
 it('trims text, supplies a uuid, and rejects empty or oversized input before sending', async () => {
   const result = await sendText(client, { playerId: player, captainId: captain, senderId: player, body: ' hi ' });
   expect(result.body).toBe('hi'); expect(result.id).toMatch(/^[\da-f-]{14}7/);
@@ -135,11 +166,18 @@ it('marks only unread ids and counts incoming messages in one query', async () =
   expect(requests[0]?.url.searchParams.get('sender_id')).toBe(`neq.${captain}`);
 });
 
+it('marks the whole conversation and matching bell item even when the latest page is empty', async () => {
+  await markConversationRead(client, { playerId: player, captainId: captain, viewerId: player }, now());
+  expect(requests).toHaveLength(1);
+  expect(requests[0]?.url.pathname).toContain('/rpc/read_chat_conversation');
+  expect(requests[0]?.body).toEqual({ p_player_id: player, p_captain_id: captain, p_read_at: date });
+});
+
 it('loads and marks incoming messages, stops polling while hidden, resumes and cleans up', async () => {
   rows = [wire]; render(); const cleanup = lifecycle.effects[0]?.(); lifecycle.collect = false;
   await settle();
   expect(render().items[0]).toMatchObject({ id: 'm', mine: false, readAt: date });
-  expect(requests.some(r => r.method === 'PATCH')).toBe(true);
+  expect(requests.some(r => r.url.pathname.endsWith('/rpc/read_chat_conversation'))).toBe(true);
   const previous = requests.length;
   visible = 'hidden'; listeners.get('visibilitychange')?.(); tick?.(); await settle();
   expect(requests).toHaveLength(previous); expect(stop).toHaveBeenCalledWith(7);
@@ -159,7 +197,7 @@ it('shows optimistic sends immediately, keeps failed sends through polls and ret
   await hook.refresh(); expect(render().items[0]?.status).toBe('failed');
   failInsert = false; insertGate = undefined; await render().retry(messageId ?? '');
   expect(render().items[0]).toMatchObject({ id: messageId, status: 'sent' });
-  expect(requests.filter(r => r.method === 'POST').map(r => (r.body as { id: string }).id)).toEqual([messageId, messageId]);
+  expect(requests.filter(r => r.method === 'POST' && r.url.pathname.endsWith('/chat_messages')).map(r => (r.body as { id: string }).id)).toEqual([messageId, messageId]);
   cleanup?.();
 });
 
@@ -182,7 +220,8 @@ it('exposes load failures for retry and never marks the viewer’s own messages 
   failLoad = true; render(); const cleanup = lifecycle.effects[0]?.(); lifecycle.collect = false;
   await settle(); expect(render().status).toBe('error');
   failLoad = false; rows = [{ ...wire, sender_id: player }]; await render().refresh();
-  expect(render().status).toBe('ready'); expect(requests.some(r => r.method === 'PATCH')).toBe(false); cleanup?.();
+  expect(render().status).toBe('ready');
+  expect(render().items[0]?.readAt).toBeNull(); cleanup?.();
 });
 
 it('does not update a disposed thread after a delayed send completes', async () => {

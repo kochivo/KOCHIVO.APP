@@ -12,12 +12,13 @@ const source = ts.transpileModule(readFileSync('supabase/functions/send-push/ind
 }).outputText;
 
 function sender(status?: number, configured = true, feedback = false, endpoint = 'https://fcm.googleapis.com/private-endpoint',
-  failRead = false, copies = 1) {
+  failRead = false, copies = 1, profile: { locale?: string; arabic_style?: string | null; timezone?: string } = {}, chat = false) {
   const reports: unknown[][] = [];
   const requests: { path: string; method: string; body?: string }[] = [];
   const sent: { endpoint: string; payload: string }[] = [];
   const errors: unknown[][] = [];
   let handler: ((request: Request) => Promise<Response>) | undefined;
+  let claimed = false;
   const config = configured ? { sentry_dsn: 'https://abc@o1.ingest.sentry.io/2', push_hook_secret: 'hook-secret', vapid_public_key: 'public',
     vapid_private_key: 'private', vapid_subject: 'mailto:test@example.com' } : null;
   class FixedDate extends Date { constructor() { super('2026-11-04T10:00:00Z'); } }
@@ -45,11 +46,19 @@ function sender(status?: number, configured = true, feedback = false, endpoint =
       requests.push({ path, method: init.method ?? 'GET', body: init.body as string | undefined });
       if (path === 'rpc/push_config') return Response.json(config);
       if (failRead) throw new Error('private data failure');
+      if (path === 'rpc/claim_chat_push') {
+        const body = JSON.parse(String(init.body));
+        const allowed = !claimed && body.p_message_id === id;
+        if (allowed) claimed = true;
+        return Response.json(allowed);
+      }
       if (path.startsWith('notifications?')) return Response.json([
-        feedback ? { id, user_id: id, type: 'workout_feedback', payload: { session_id: id, rpe: 9, has_note: true } }
+        chat ? { id, user_id: id, type: 'chat_message', payload: { message_id: id, player_id: id, name: 'Coach' } }
+          : feedback ? { id, user_id: id, type: 'workout_feedback', payload: { session_id: id, rpe: 9, has_note: true } }
           : { id, user_id: id, type: 'workout_reminder', payload: { day_title: 'Legs' } },
       ]);
       if (path.startsWith('workout_sessions?')) return Response.json([{ player_id: id }]);
+      if (path.startsWith('profiles?')) return Response.json([profile]);
       if (path.startsWith('push_subscriptions?user_id=')) return Response.json(Array.from({ length: copies },
         () => ({ id, endpoint, p256dh: 'key', auth: 'auth' })));
       if (path === `push_subscriptions?id=eq.${id}`) return new Response(null, { status: 204 });
@@ -59,8 +68,8 @@ function sender(status?: number, configured = true, feedback = false, endpoint =
   if (!handler) throw new Error('Sender did not register');
   return { handle: handler, requests, sent, errors, reports };
 }
-const request = (secret = 'hook-secret', notificationId = id) => new Request('https://functions.example/send-push', {
-  method: 'POST', headers: { 'x-push-secret': secret }, body: JSON.stringify({ notification_id: notificationId }),
+const request = (secret = 'hook-secret', notificationId = id, messageId?: string) => new Request('https://functions.example/send-push', {
+  method: 'POST', headers: { 'x-push-secret': secret }, body: JSON.stringify({ notification_id: notificationId, message_id: messageId }),
 });
 
 it('never contacts endpoints outside the provider allow-list', async () => {
@@ -69,6 +78,16 @@ it('never contacts endpoints outside the provider allow-list', async () => {
   expect(test.sent).toEqual([]);
   expect(test.requests.some(row => row.method === 'PATCH')).toBe(false);
   expect(test.errors).toEqual([['Rejected push endpoint host']]);
+});
+
+it('sends a coalesced chat message once despite stale events and duplicate deliveries', async () => {
+  const test = sender(undefined, true, false, undefined, false, 1, { locale: 'ar', arabic_style: 'standard' }, true);
+  await test.handle(request('hook-secret', id, '00000000-0000-4000-8000-000000000002'));
+  await test.handle(request('hook-secret', id, id));
+  await test.handle(request('hook-secret', id, id));
+  expect(test.sent).toHaveLength(1);
+  expect(JSON.parse(test.sent[0]?.payload ?? '{}').url).toBe('/ar/player/captain');
+  expect(JSON.parse(test.sent[0]?.payload ?? '{}').body).toBe('أرسل Coach رسالة إليك');
 });
 
 it('resolves feedback to a player URL without fetching the note', async () => {
@@ -105,6 +124,19 @@ it('delivers default Arabic payloads and records successful delivery', async () 
     body: '{"last_success_at":"2026-11-04T10:00:00.000Z"}' });
   expect(test.errors).toEqual([]);
   expect(test.reports).toEqual([]);
+});
+
+it.each([
+  [{ locale: 'en', timezone: 'Africa/Cairo' }, '/en/player', 'Ready'],
+  [{ locale: 'ar', arabic_style: 'standard', timezone: 'Asia/Riyadh' }, '/ar/player', 'Legs'],
+  [{ locale: 'ar', arabic_style: 'egyptian', timezone: 'Africa/Cairo' }, '/ar/player', 'النهارده'],
+] as const)('uses the recipient profile for push copy and links: %j', async (profile, url, text) => {
+  const test = sender(undefined, true, false, undefined, false, 1, profile);
+  expect((await test.handle(request())).status).toBe(204);
+  const payload = JSON.parse(test.sent[0]?.payload ?? '{}');
+  expect(payload.url).toBe(url); expect(payload.body).toContain(text);
+  expect(payload).toEqual(pushPayload({ id, type: 'workout_reminder', payload: { day_title: 'Legs' } },
+    profile.locale, 'arabic_style' in profile ? profile.arabic_style : 'egyptian'));
 });
 it.each([404, 410])('removes dead endpoints for status %s', async status => {
   const test = sender(status);

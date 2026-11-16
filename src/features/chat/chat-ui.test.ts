@@ -30,3 +30,12 @@ it('uses the workspace surfaces for captain bubbles', () => {
   expect(html).toContain('bg-surface-raised text-ink');
   expect(html).not.toContain('bg-lime font-semibold text-on-lime');
 });
+
+it.each(['ar', 'en'] as const)('renders older-page loading and retry states in %s', locale => {
+  const page = (olderStatus: 'loading' | 'error') => renderToStaticMarkup(createElement(LocaleProvider, { locale },
+    createElement(ChatThread, { items: [base], viewer: 'player', hasOlder: true, olderStatus })));
+  expect(page('loading')).toContain('role="status"');
+  expect(page('loading')).toContain('disabled');
+  expect(page('error')).toContain('role="alert"');
+  expect(page('error')).toContain(locale === 'en' ? 'Try again' : 'جرّب تاني');
+});

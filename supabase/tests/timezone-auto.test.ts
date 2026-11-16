@@ -15,7 +15,7 @@ beforeAll(async () => {
 });
 afterAll(async () => { await db?.close(); });
 it('defaults to automatic without rewriting any existing profile fields', async () => {
-  expect((await db.query("select to_jsonb(p)-'timezone_auto'-'arabic_style'-array['specialties','years_experience','languages','show_public_stats','coach_gender','ramadan_mode','ramadan_training','ramadan_intensity','ramadan_water_ml','prayer_city'] as row from profiles p where id=$1", [existing])).rows).toEqual(before);
+  expect((await db.query("select to_jsonb(p)-'timezone_auto'-'arabic_style'-'locale'-array['specialties','years_experience','languages','show_public_stats','coach_gender','ramadan_mode','ramadan_training','ramadan_intensity','ramadan_water_ml','prayer_city'] as row from profiles p where id=$1", [existing])).rows).toEqual(before);
   expect((await db.query('select timezone_auto from profiles where id=$1', [existing])).rows).toEqual([{ timezone_auto: true }]);
   const fresh = await createUser(db, 'player');
   expect((await db.query('select timezone_auto from profiles where id=$1', [fresh])).rows).toEqual([{ timezone_auto: true }]);
@@ -46,6 +46,8 @@ it('keeps the anonymous player demo able to read its own seeded captain clock', 
   const demo = result.rows[0]?.id;
   if (!demo) throw new Error('Missing demo user');
   await asUser(db, demo, tx => tx.query('select public.create_demo_player_workspace()'), true);
+  await asUser(db, demo, tx => tx.query('select public.create_demo_player_workspace()'), true);
+  expect((await db.query('select id from programs where player_id=$1', [demo])).rows).toEqual([]);
   expect((await asUser(db, demo, tx => tx.query('select public.my_captain_timezone() as timezone'), true)).rows)
     .toEqual([{ timezone: 'Africa/Cairo' }]);
 });

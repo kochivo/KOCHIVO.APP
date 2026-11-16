@@ -13,7 +13,8 @@ export function CaptainChat({ playerId, captainId, playerName }: { playerId: str
   return <section className="min-w-0">
     {thread.status === 'loading' ? <LoadingState variant="detail" /> : <>
       {(thread.status === 'error' || thread.readError) && <ErrorState message={t('error')} retryLabel={t('retry')} onRetry={() => void thread.refresh()} />}
-      {(thread.status !== 'error' || thread.items.length > 0) && <ChatThread items={thread.items} viewer="captain" onRetry={thread.retry} />}
+      {(thread.status !== 'error' || thread.items.length > 0) && <ChatThread items={thread.items} viewer="captain" onRetry={thread.retry}
+        hasOlder={thread.hasOlder} olderStatus={thread.olderStatus} onLoadOlder={thread.loadOlder} />}
     </>}
     <ChatComposer viewer="captain" playerName={playerName} onSendText={thread.sendText} onSendVoice={thread.sendVoice} />
   </section>;

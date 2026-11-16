@@ -6,6 +6,7 @@ import type { PushNotificationRow } from './payload.ts';
 import { reportPushFailure } from './report.ts';
 
 interface SubscriptionRow { id: string; endpoint: string; p256dh: string; auth: string }
+interface RecipientProfile { locale: 'ar' | 'en' | null; arabic_style: 'egyptian' | 'standard' | null; timezone: string }
 interface PushConfig {
   sentry_dsn?: string;
   push_hook_secret: string;
@@ -55,6 +56,14 @@ Deno.serve(async request => {
     )).json();
     const notification = rows[0];
     if (!notification) return new Response(null, { status: 204 });
+    if (notification.type === 'chat_message') {
+      const messageId = input && typeof input === 'object' && 'message_id' in input ? input.message_id : null;
+      if (typeof messageId !== 'string' || !/^[0-9a-f-]{36}$/i.test(messageId)) return new Response(null, { status: 400 });
+      const claimed: boolean = await (await rest('rpc/claim_chat_push', { method: 'POST',
+        body: JSON.stringify({ p_notification_id: id, p_message_id: messageId }),
+      })).json();
+      if (!claimed) return new Response(null, { status: 204 });
+    }
     if (notification.type === 'workout_feedback') {
       const data = notification.payload;
       const sessionId = data && typeof data === 'object' && 'session_id' in data ? data.session_id : null;
@@ -67,7 +76,14 @@ Deno.serve(async request => {
     const subscriptions: SubscriptionRow[] = await (await rest(
       `push_subscriptions?user_id=eq.${encodeURIComponent(notification.user_id)}&select=id,endpoint,p256dh,auth`,
     )).json();
-    const payload = JSON.stringify(pushPayload(notification));
+    const profiles: RecipientProfile[] = await (await rest(
+      `profiles?id=eq.${encodeURIComponent(notification.user_id)}&select=locale,arabic_style,timezone&limit=1`,
+    )).json();
+    const profile = profiles[0];
+    const locale = profile?.locale === 'en' ? 'en' : 'ar';
+    const style = profile?.arabic_style === 'standard' || profile?.arabic_style === 'egyptian' ? profile.arabic_style
+      : profile?.timezone && profile.timezone !== 'Africa/Cairo' ? 'standard' : 'egyptian';
+    const payload = JSON.stringify(pushPayload(notification, locale, style));
     let failedDeliveries = 0;
     await Promise.all(subscriptions.map(async subscription => {
       if (!allowedPushEndpoint(subscription.endpoint)) {

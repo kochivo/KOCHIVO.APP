@@ -35,6 +35,7 @@ export async function latestNotifications(): Promise<Notification[]> {
       player_id: row.type === 'workout_feedback' && typeof payload.session_id === 'string' ? players.get(payload.session_id)
         : typeof payload.player_id === 'string' ? payload.player_id : undefined,
       plan_id: typeof payload.plan_id === 'string' ? payload.plan_id : undefined,
+      status: payload.status === 'approved' || payload.status === 'declined' ? payload.status : undefined,
       request_id: typeof payload.request_id === 'string' ? payload.request_id : undefined,
       form_id: typeof payload.form_id === 'string' ? payload.form_id : undefined,
       kind: payload.kind === 'assessment' || payload.kind === 'checkin' || payload.kind === 'form_check' ? payload.kind : undefined,

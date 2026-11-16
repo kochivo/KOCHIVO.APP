@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { uuidv7 } from '@/core/offline/ids';
 import { loadSupabaseBrowser } from '@/core/supabase/lazy';
 import { listVoiceNotes, loadCaptainThreadReplies } from '@/features/voice-notes';
-import { listMessages, markRead, sendText, sendVoice } from '../data/chat';
+import { listMessages, markConversationRead, sendText, sendVoice } from '../data/chat';
 import { mergeThread } from '../thread';
 import type { ChatMessage, ChatThreadItem, ChatThreadOptions, ChatTimer, VoiceInput } from '../types';
 
@@ -13,8 +13,10 @@ const browserTimer: ChatTimer = {
   stop: handle => window.clearInterval(handle as number),
 };
 type Pending = { item: ChatThreadItem; voice?: Pick<VoiceInput, 'blob' | 'mimeType' | 'durationSeconds'> };
-type Scope = { active: boolean; busy: boolean; pending: Map<string, Pending>; urls: Set<string> };
-const scopeForThread = (): Scope => ({ active: true, busy: false, pending: new Map(), urls: new Set() });
+type Scope = { active: boolean; busy: boolean; olderBusy: boolean; cursor?: ChatMessage;
+  messages: Map<string, ChatMessage>; pending: Map<string, Pending>; urls: Set<string> };
+const scopeForThread = (): Scope => ({ active: true, busy: false, olderBusy: false,
+  messages: new Map(), pending: new Map(), urls: new Set() });
 const ordered = (items: ChatThreadItem[]) => items.sort((a, b) => Date.parse(a.createdAt) - Date.parse(b.createdAt) || a.id.localeCompare(b.id));
 
 export function useChatThread({ playerId, captainId, viewerId, now = clock, intervalMs = 15000,
@@ -23,10 +25,13 @@ export function useChatThread({ playerId, captainId, viewerId, now = clock, inte
   const [items, setItems] = useState<ChatThreadItem[]>([]);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [readError, setReadError] = useState(false);
+  const [hasOlder, setHasOlder] = useState(false);
+  const [olderStatus, setOlderStatus] = useState<'ready' | 'loading' | 'error'>('ready');
   const key = `${playerId}:${captainId}:${viewerId}`;
   const [threadKey, setThreadKey] = useState(key);
   if (threadKey !== key) {
     setThreadKey(key); setItems([]); setStatus('loading'); setReadError(false);
+    setHasOlder(false); setOlderStatus('ready');
   }
   const getClient = useCallback(() => client ? Promise.resolve(client) : loadSupabaseBrowser(), [client]);
 
@@ -40,20 +45,34 @@ export function useChatThread({ playerId, captainId, viewerId, now = clock, inte
         listMessages(db, { playerId, captainId }), listVoiceNotes(db, playerId), loadCaptainThreadReplies(db, playerId),
       ]);
       if (!current.active) return;
-      const loaded = mergeThread({ messages, voiceNotes, replies, playerId, captainId, viewerId });
+      let page = messages;
+      while (current.messages.size && page.length === 50 && !page.some(message => current.messages.has(message.id))) {
+        page = await listMessages(db, { playerId, captainId, before: page[0] });
+        if (!current.active) return;
+        messages.unshift(...page);
+      }
+      if (!current.cursor) {
+        current.cursor = messages[0];
+        setHasOlder(messages.length === 50);
+      }
+      for (const message of messages) current.messages.set(message.id, message);
+      const loaded = mergeThread({ messages: [...current.messages.values()], voiceNotes, replies, playerId, captainId, viewerId });
       const loadedIds = new Set(loaded.map(item => item.id));
       for (const [id, pending] of current.pending) {
         if (loadedIds.has(id) && pending.item.status === 'sent') current.pending.delete(id);
       }
       setItems(ordered([...loaded, ...[...current.pending.values()].filter(pending => !loadedIds.has(pending.item.id)).map(pending => pending.item)]));
       setStatus('ready');
-      const unread = messages.filter(item => item.senderId !== viewerId && !item.readAt).map(item => item.id);
-      if (document.visibilityState === 'visible' && unread.length) {
+      if (document.visibilityState === 'visible') {
         try {
           const readAt = now();
-          await markRead(db, unread, readAt);
+          await markConversationRead(db, { playerId, captainId, viewerId }, readAt);
           if (!current.active) return;
-          setItems(previous => previous.map(item => unread.includes(item.id) ? { ...item, readAt: readAt.toISOString() } : item));
+          for (const [id, message] of current.messages) {
+            if (message.senderId !== viewerId && !message.readAt) current.messages.set(id, { ...message, readAt: readAt.toISOString() });
+          }
+          setItems(previous => previous.map(item => item.source === 'chat' && !item.mine && !item.readAt
+            ? { ...item, readAt: readAt.toISOString() } : item));
           setReadError(false);
         } catch { if (current.active) setReadError(true); }
       }
@@ -61,10 +80,29 @@ export function useChatThread({ playerId, captainId, viewerId, now = clock, inte
     finally { current.busy = false; }
   }, [playerId, captainId, viewerId, getClient, now]);
 
+  const loadOlder = useCallback(async () => {
+    const current = scope.current;
+    if (!current.active || current.olderBusy || !current.cursor || !hasOlder) return;
+    current.olderBusy = true; setOlderStatus('loading');
+    try {
+      const messages = await listMessages(await getClient(), { playerId, captainId, before: current.cursor });
+      if (!current.active) return;
+      for (const message of messages) current.messages.set(message.id, message);
+      current.cursor = messages[0] ?? current.cursor;
+      const older = mergeThread({ messages, voiceNotes: [], replies: [], playerId, captainId, viewerId });
+      setItems(previous => {
+        const ids = new Set(previous.map(item => item.id));
+        return ordered([...previous, ...older.filter(item => !ids.has(item.id))]);
+      });
+      setHasOlder(messages.length === 50); setOlderStatus('ready');
+    } catch { if (current.active) setOlderStatus('error'); }
+    finally { current.olderBusy = false; }
+  }, [playerId, captainId, viewerId, getClient, hasOlder]);
+
   useEffect(() => {
     const current = scopeForThread();
     scope.current = current;
-    void refresh();
+    void Promise.resolve().then(refresh);
     let handle: unknown;
     let running = false;
     const tick = () => { if (current.active && document.visibilityState === 'visible') void refresh(); };
@@ -127,7 +165,7 @@ export function useChatThread({ playerId, captainId, viewerId, now = clock, inte
     const pending = current.pending.get(id);
     return pending?.item.status === 'failed' ? persist(pending, current) : Promise.resolve(false);
   }, [persist]);
-  return { items, status, readError, refresh, retry,
+  return { items, status, readError, refresh, retry, hasOlder, olderStatus, loadOlder,
     sendText: (body: string) => send(body),
     sendVoice: (voice: Pick<VoiceInput, 'blob' | 'mimeType' | 'durationSeconds'>) => send(null, voice) };
 }

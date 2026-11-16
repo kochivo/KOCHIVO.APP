@@ -15,10 +15,17 @@ function message(row: Row): ChatMessage {
     body: row.body, audioPath: row.audio_path, durationSeconds: row.duration_seconds, readAt: row.read_at, createdAt: row.created_at };
 }
 
-export async function listMessages(client: Client, input: { playerId: string; captainId: string; limit?: number }): Promise<ChatMessage[]> {
-  const { data, error } = await client.from('chat_messages').select(fields).eq('player_id', input.playerId)
+export async function listMessages(client: Client, input: {
+  playerId: string; captainId: string; limit?: number; before?: Pick<ChatMessage, 'createdAt' | 'id'>;
+}): Promise<ChatMessage[]> {
+  let query = client.from('chat_messages').select(fields).eq('player_id', input.playerId)
     .eq('captain_id', input.captainId).order('created_at', { ascending: false }).order('id', { ascending: false })
     .limit(input.limit ?? 50);
+  if (input.before) {
+    const { createdAt, id } = input.before;
+    query = query.or(`created_at.lt.${createdAt},and(created_at.eq.${createdAt},id.lt.${id})`);
+  }
+  const { data, error } = await query;
   if (error) throw error;
   const rows = (data ?? []).toReversed().map(message);
   const audio = rows.filter(row => row.audioPath);
@@ -76,6 +83,18 @@ export async function sendVoice(client: Client, input: VoiceInput): Promise<Chat
 export async function markRead(client: Client, ids: readonly string[], now = new Date()): Promise<void> {
   if (!ids.length) return;
   const { error } = await client.from('chat_messages').update({ read_at: now.toISOString() }).in('id', [...ids]).is('read_at', null);
+  if (error) throw error;
+}
+
+export async function markConversationRead(client: Client, input: {
+  playerId: string; captainId: string; viewerId: string;
+}, now: Date): Promise<void> {
+  type ReadDatabase = AppDatabase & { public: { Functions: {
+    read_chat_conversation: { Args: { p_player_id: string; p_captain_id: string; p_read_at: string }; Returns: undefined };
+  } } };
+  const { error } = await (client as SupabaseClient<ReadDatabase>).rpc('read_chat_conversation', {
+    p_player_id: input.playerId, p_captain_id: input.captainId, p_read_at: now.toISOString(),
+  });
   if (error) throw error;
 }
 
