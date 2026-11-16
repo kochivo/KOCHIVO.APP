@@ -1,4 +1,5 @@
 export const arStd = {
+  retry: 'حاول مجدداً',
   whatsappPlayer: 'تواصل مع اللاعب على واتساب', remindPlayer: 'أرسل تذكيراً صوتياً', profile: 'ملف اللاعب',
   backToPlayers: 'العودة للاعبين', tabs: 'أقسام ملف اللاعب', 'tab.intake': 'البيانات', 'tab.progress': 'التطور',
   'tab.plan': 'الخطة', 'tab.checkins': 'Check-in', 'tab.analysis': 'التحليل', 'tab.readiness': 'الجاهزية',

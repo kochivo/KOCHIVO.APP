@@ -5,6 +5,7 @@ export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
+    retry: 'جرّب تاني',
     whatsappPlayer: 'كلّم اللاعب على واتساب',
     remindPlayer: "ابعت تذكير صوتي",
     profile: "ملف اللاعب",
@@ -75,6 +76,7 @@ export const messages = defineMessages({
     listSeparator: "، ",
   },
   en: {
+    retry: 'Retry',
     whatsappPlayer: 'Message player on WhatsApp',
     remindPlayer: "Send a voice reminder",
     profile: "Player profile",

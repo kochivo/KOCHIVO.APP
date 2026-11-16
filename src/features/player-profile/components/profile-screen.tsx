@@ -20,6 +20,7 @@ import { AnalyticsLoader } from '@/features/muscle-analytics';
 import { ReadinessLoader } from './readiness-loader';
 import { BodyScansLoader } from '@/features/body-scans';
 import { BillingLoader } from './billing-loader';
+import { ProfileRetry } from './profile-retry';
 
 interface Props {
   playerId: string;
@@ -34,7 +35,8 @@ export async function ProfileScreen({ playerId, tab, today, data }: Props) {
   const back = <Link href="/captain/players" className="inline-flex min-h-12 items-center gap-inline text-sm font-bold text-muted hover:text-ink">
     <Back aria-hidden className="size-5" />{t('backToPlayers')}
   </Link>;
-  if (result.error) return <section className="space-y-card-gap">{back}<p role="alert" className="glass rounded-card p-card text-danger">{t('loadFailed')}</p></section>;
+  if (result.error) return <section className="space-y-card-gap">{back}<p role="alert" className="glass rounded-card p-card text-danger">{t('loadFailed')}</p>
+    <ProfileRetry label={t('retry')} /></section>;
   if (!result.data) notFound();
   const profile = result.data;
   const playerToday = internationalEnabled() ? localDate(new Date(), profileTimezone(profile.timezone)) : today;

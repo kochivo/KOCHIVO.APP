@@ -25,7 +25,7 @@ export function AnswerFlow({data,locale}:{data:RequestData;locale:Locale}) {
   const v6 = captainWorkspaceEnabled();
   const v6t = useT(v6Messages);
   const style = useArabicStyle();
-  const m = messages[locale], key = `${data.request.player_id}:${data.request.id}`;
+  const t = useT(messages), key = `${data.request.player_id}:${data.request.id}`;
   const [draft,setDraft] = useState<AnswerDraft>(() => {
     const saved:AnswerDraft = {};
     for (const a of data.answers) {
@@ -51,28 +51,28 @@ export function AnswerFlow({data,locale}:{data:RequestData;locale:Locale}) {
     if (!files?.length || busy.current) return;
     busy.current = true; setUploading(true); setError('');
     try { update(null,await uploadAnswerPhotos(data.request.player_id,data.request.id,files)); }
-    catch { setError(m.photosError); }
+    catch { setError(t('photosError')); }
     finally { busy.current = false; setUploading(false); }
   }
   async function advance() {
     if (!q || busy.current) return;
-    if (!validAnswer(q,draft[q.id]?.value ?? null,draft[q.id]?.photo_paths)) {setError(m.required);return;}
+    if (!validAnswer(q,draft[q.id]?.value ?? null,draft[q.id]?.photo_paths)) {setError(t('required'));return;}
     if (step < data.questions.length-1) {setStep(step+1);setError('');return;}
     const invalid = data.questions.findIndex(q => !validAnswer(q,draft[q.id]?.value ?? null,draft[q.id]?.photo_paths));
-    if (invalid >= 0) {setStep(invalid);setError(m.required);return;}
-    if (!navigator.onLine) {setError(m.offline);return;}
+    if (invalid >= 0) {setStep(invalid);setError(t('required'));return;}
+    if (!navigator.onLine) {setError(t('offline'));return;}
     busy.current = true;setState('sending');setError('');
     try {
       const ok = await submitDraft(() => submitAnswers({requestId:data.request.id,draft}),() => clearAnswerDraft(key));
       if (!ok) throw new Error('submit');
       setState('done');
-    } catch {setError(m.error);setState('editing');}
+    } catch {setError(t('error'));setState('editing');}
     finally {busy.current = false;}
   }
   if (state === 'done') return <section className="glass-strong space-y-card-gap rounded-card p-section" role="status">
-    <h1 className="text-2xl font-bold">{m.done}</h1><Link href={`/${locale}/player`} className="flex min-h-12 items-center text-lime">{m.home}</Link></section>;
-  if (data.request.reviewed_at) return <p>{m.reviewed}</p>;
-  if (!q) return <p>{m.unavailable}</p>;
+    <h1 className="text-2xl font-bold">{t('done')}</h1><Link href={`/${locale}/player`} className="flex min-h-12 items-center text-lime">{t('home')}</Link></section>;
+  if (data.request.reviewed_at) return <p>{t('reviewed')}</p>;
+  if (!q) return <p>{t('unavailable')}</p>;
   return <section className={v6 ? 'space-y-card-gap' : 'glass-strong space-y-card-gap rounded-card p-section'} aria-busy={state === 'sending' || uploading}>
     {v6 ? <header className="flex items-center gap-inline text-xs text-faint">
       <Link href={`/${locale}/player`} aria-label={v6t('close')} className={secondaryButtonClass}><X aria-hidden className="size-5" /></Link>
@@ -96,14 +96,14 @@ export function AnswerFlow({data,locale}:{data:RequestData;locale:Locale}) {
           </div>
         </div> : <QuestionField key={q.id} question={{...q,required:q.type === 'photos' && draft[q.id]?.photo_paths.length ? false : q.required}}
           locale={locale} style={style} value={draft[q.id]?.value ?? null} onChange={value => update(value)} onPhotos={files => void photos(files)} />}
-        {q.type === 'photos' && !!draft[q.id]?.photo_paths.length && <p className="text-sm text-muted">{m.savedPhotos}</p>}
-        {uploading && <p role="status">{m.upload}</p>}
+        {q.type === 'photos' && !!draft[q.id]?.photo_paths.length && <p className="text-sm text-muted">{t('savedPhotos')}</p>}
+        {uploading && <p role="status">{t('upload')}</p>}
         {error && <p role="alert" className="py-stack text-danger">{error}</p>}
         <div className="mt-card-gap flex gap-stack">
           {(step>0 || v6) && <Button type="button" onClick={() => {if (step > 0) setStep(step-1);setError('');}} disabled={v6 && step === 0}
-            variant={(v6) ? 'secondary' : 'secondary'} block={false} className={v6 ? "min-h-12 flex-1 px-page-x disabled:opacity-40" : "min-h-12 px-page-x"}>{v6 ? v6t('back') : m.previous}</Button>}
+            variant={(v6) ? 'secondary' : 'secondary'} block={false} className={v6 ? "min-h-12 flex-1 px-page-x disabled:opacity-40" : "min-h-12 px-page-x"}>{v6 ? v6t('back') : t('previous')}</Button>}
           <Button type="submit" variant={(v6) ? 'primary' : 'primary'} block={false} className={v6 ? "min-h-12 flex-[2] px-page-x font-semibold" : "min-h-12 flex-1 px-page-x font-bold"}>
-            {state === 'sending' ? m.submitting : error ? m.retry : step === data.questions.length-1 ? m.finish : m.next}</Button>
+            {state === 'sending' ? t('submitting') : error ? t('retry') : step === data.questions.length-1 ? t('finish') : t('next')}</Button>
         </div>
       </fieldset>
     </form>

@@ -3,7 +3,7 @@ import { getTimezone } from '@/core/timezone/server';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { AppDatabase } from '@/types/app-database';
 import type { FormDraft, LibraryData, Question } from '../types';
-import { loadMetrics, monthPeriod } from './metrics';
+import { libraryMetrics, loadMetricRequests, monthPeriod } from './metrics';
 import { decodeQuestion, decodeSchedule } from './validation';
 
 export async function loadLibrary(client: SupabaseClient<AppDatabase>, captain: string, now: Date,
@@ -14,22 +14,25 @@ export async function loadLibrary(client: SupabaseClient<AppDatabase>, captain: 
       .order('created_at').order('id').range(offset, offset + 99).abortSignal(signal);
     if (result.error) throw result.error;
     for (const row of result.data) {
-      const questions: Question[] = [];
-      for (let start = 0; ; start += 500) {
-        const result = await client.from('form_questions').select('*').eq('form_id', row.id).order('position')
-          .range(start, start + 499).abortSignal(signal);
-        if (result.error) throw result.error;
-        questions.push(...result.data.map(decodeQuestion));
-        if (result.data.length < 500) break;
-      }
-      forms.push({ ...row, schedule: decodeSchedule(row.schedule), questions });
+      forms.push({ ...row, schedule: decodeSchedule(row.schedule), questions: [] });
     }
     if (result.data.length < 100) break;
   }
+  const ids = forms.map(form => form.id);
+  const questions = new Map<string, Question[]>();
+  if (ids.length) for (let offset = 0; ; offset += 500) {
+    const result = await client.from('form_questions').select('*').in('form_id', ids).order('position').order('id')
+      .range(offset, offset + 499).abortSignal(signal);
+    if (result.error) throw result.error;
+    for (const row of result.data) {
+      const group = questions.get(row.form_id) ?? [];
+      group.push(decodeQuestion(row));
+      questions.set(row.form_id, group);
+    }
+    if (result.data.length < 500) break;
+  }
+  for (const form of forms) form.questions = questions.get(form.id) ?? [];
   const period = monthPeriod(now, await getTimezone());
-  const metrics = await loadMetrics(client, captain, period, undefined, signal);
-  metrics.active = forms.length;
-  const byForm: LibraryData['byForm'] = {};
-  for (const form of forms) byForm[form.id] = await loadMetrics(client, captain, period, form.id, signal);
-  return { forms, metrics, byForm };
+  const rows = await loadMetricRequests(client, captain, period, signal);
+  return { forms, ...libraryMetrics(rows, ids) };
 }
