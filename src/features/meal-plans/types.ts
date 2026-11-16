@@ -1,9 +1,10 @@
 import type { Macros } from '@/lib/macros';
+import type { FoodLibraryFields } from '@/types/app-database';
 import { z } from 'zod';
 
 export interface FoodUnit { key: string; name_ar: string; name_en: string; grams: number }
 export type DayType = 'all' | 'training' | 'rest';
-export interface Food extends Macros { id: string; name: string; photo: string | null; custom: boolean; nameEn?: string | null; tags?: string[]; units?: FoodUnit[]; replacesId?: string | null }
+export interface Food extends Macros, Partial<FoodLibraryFields> { id: string; name: string; photo: string | null; custom: boolean; nameEn?: string | null; tags?: string[]; units?: FoodUnit[]; replacesId?: string | null }
 export const customFoodSchema = z.object({
   name: z.string().trim().min(1).max(60),
   nameEn: z.string().trim().max(100).optional(),

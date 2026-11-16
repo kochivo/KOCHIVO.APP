@@ -13,6 +13,27 @@ import type {
 export type Narrow<Row, Patch> = Omit<Row, keyof Patch> & Patch;
 
 type Public = Database['public'];
+export type FoodRegion = 'eg' | 'gulf' | 'lev' | 'na' | 'intl';
+export type FoodDietTag = 'meat' | 'poultry' | 'fish' | 'dairy' | 'egg' | 'plant';
+export type FoodSourceRef = {
+  fdc_id: string; dataset: string; description: string;
+} | {
+  ingredients: { fdc_id: string; grams: number; description: string; diet_tags: FoodDietTag[] }[]; cooked_yield_g: number;
+};
+export type FoodLibraryFields = {
+  diet_tags: FoodDietTag[];
+  region: FoodRegion; state: 'raw' | 'cooked' | null;
+  fiber_per_100g: number | null; sugar_per_100g: number | null; sodium_mg_per_100g: number | null;
+  source_kind: 'usda' | 'recipe' | 'proxy' | null; source_ref: FoodSourceRef | null;
+};
+type Foods = Public['Tables']['foods'];
+// Keep jsonb opaque at the PostgREST boundary, as in generated database types.
+type FoodDatabaseFields = Omit<FoodLibraryFields, 'source_ref'> & { source_ref: Json | null };
+type SourcedFoods = Narrow<Foods, {
+  Row: Foods['Row'] & FoodDatabaseFields;
+  Insert: Foods['Insert'] & Partial<FoodDatabaseFields>;
+  Update: Foods['Update'] & Partial<FoodDatabaseFields>;
+}>;
 type FormChecks = Public['Tables']['form_checks'];
 type CheckIns = Public['Tables']['check_ins'];
 type ActivatePlan = Public['Functions']['admin_activate_plan'];
@@ -154,7 +175,8 @@ type FunctionPatches = {
 
 export type AppDatabase = Omit<Database, 'public'> & {
   public: Omit<Public, 'Tables' | 'Functions'> & {
-    Tables: Omit<Public['Tables'], keyof CorrectedTables | 'form_checks' | 'check_ins'> & Omit<CorrectedTables, 'profiles'> & WomenModeTables & {
+    Tables: Omit<Public['Tables'], keyof CorrectedTables | 'form_checks' | 'check_ins' | 'foods'> & Omit<CorrectedTables, 'profiles'> & WomenModeTables & {
+      foods: SourcedFoods;
       profiles: TimezoneProfiles;
       assessment_schedules: AssessmentSchedulesTable;
       pain_reports: {

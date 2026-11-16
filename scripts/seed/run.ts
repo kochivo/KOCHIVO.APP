@@ -11,6 +11,28 @@ import { estimatedPricesSchema, mapFoodPrices } from './map-food-prices.ts';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const print = (message: string) => process.stdout.write(`${message}\n`);
+const dietTagsSchema = z.array(z.enum(['meat', 'poultry', 'fish', 'dairy', 'egg', 'plant'])).min(1);
+const foodLibrarySchema = z.object({
+  diet_tags: dietTagsSchema,
+  region: z.enum(['eg', 'gulf', 'lev', 'na', 'intl']), state: z.enum(['raw', 'cooked']).nullable(),
+  fiber_per_100g: z.number().nonnegative().nullable(), sugar_per_100g: z.number().nonnegative().nullable(),
+  sodium_mg_per_100g: z.number().nonnegative().nullable(), source_kind: z.enum(['usda', 'recipe', 'proxy']),
+  source_ref: z.union([
+    z.object({ fdc_id: z.string().min(1), dataset: z.string().min(1), description: z.string().min(1) }),
+    z.object({ ingredients: z.array(z.object({ fdc_id: z.string().min(1), grams: z.number().positive(),
+      description: z.string().min(1), diet_tags: dietTagsSchema })).min(1), cooked_yield_g: z.number().positive() }),
+  ]),
+  units: z.array(z.object({ key: z.string().min(1), name_ar: z.string().min(1), name_en: z.string().min(1),
+    grams: z.number().positive() })).min(1),
+});
+
+function mapLibraryFood(entry: unknown, files: ReadonlySet<string>) {
+  const { photo_file } = z.object({ photo_file: z.string() }).parse(entry);
+  // T-315 photos are a later deliverable; still validate filenames and keep the original seed key.
+  const mapped = mapFood(entry, new Set([...files, photo_file]));
+  return { ...mapped, ...foodLibrarySchema.parse(entry),
+    photo_path: files.has(photo_file) ? mapped.photo_path : null };
+}
 
 async function readEntries(filename: string): Promise<unknown[]> {
   const entries: unknown = JSON.parse(await readFile(join(root, 'supabase/seed/source', filename), 'utf8'));
@@ -51,7 +73,7 @@ async function main() {
   // Reviewed names (high, plus medium kept for the trial) fill only exercises without one.
   const exercises = mergeArabicNames(validate(exerciseEntries, gifs, mapExercise, 'exercises'),
     proposals, { minConfidence: 'medium' });
-  const foods = validate(foodEntries, photos, mapFood, 'foods');
+  const foods = validate(foodEntries, photos, mapLibraryFood, 'foods');
   const estimatedPrices = estimatedPricesSchema.parse(await readEntries('food-prices-egp.json'));
   const ids = exercises.map((row) => row.dataset_id);
   if (new Set(ids).size !== ids.length) failures.push('Duplicate exercise dataset_id.');
@@ -76,7 +98,7 @@ async function main() {
       contentType: 'image/gif',
     })),
     ...foods.map((row) => {
-      const filename = row.photo_path.slice('food-media/'.length);
+      const filename = row.photo_path?.slice('food-media/'.length) ?? `${row.seed_key}.webp`;
       return {
         row, bucket: 'food-media', table: 'foods', onConflict: 'seed_key',
         filename, directory: foodDir,
@@ -89,10 +111,12 @@ async function main() {
     await Promise.all(files.slice(offset, offset + 6).map(async (file) => {
       const { filename, directory, bucket, contentType, table, row, onConflict } = file;
       try {
-        await uploadFile(client, bucket, filename, join(directory, filename), contentType);
-        const { error } = await client.from(table).upsert(row, {
-          onConflict, ignoreDuplicates: true,
-        });
+        if (table !== 'foods' || ('photo_path' in row && row.photo_path)) {
+          await uploadFile(client, bucket, filename, join(directory, filename), contentType);
+        }
+        const { error } = 'photo_path' in row
+          ? await client.from('foods').upsert(row, { onConflict, ignoreDuplicates: false })
+          : await client.from('exercises').upsert(row, { onConflict, ignoreDuplicates: true });
         if (error) throw new Error('Upsert failed.');
       } catch {
         failures.push(filename);
@@ -120,7 +144,7 @@ async function main() {
   if (prices.missing.length) print(`Price estimates awaiting catalog foods: ${prices.missing.join(', ')}`);
 }
 
-main().catch((error: unknown) => {
+if (process.argv[1]?.replaceAll('\\', '/').endsWith('/seed/run.ts')) main().catch((error: unknown) => {
   // Never print client errors, which can contain credentials or request headers.
   const message = error instanceof Error ? error.message : 'Seed failed.';
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
