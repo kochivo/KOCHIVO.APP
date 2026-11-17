@@ -28,7 +28,7 @@ export function CaptainAuthCard({ callbackError = false, initialMode = 'login' }
   const [pending, start] = useTransition();
   if (mode === 'login') return <main dir={localeDir(locale)} className="min-h-dvh bg-bg px-page-x pb-[max(1.5rem,var(--safe-bottom))] pt-[max(1.5rem,var(--safe-top))]">
     <div className="mx-auto flex min-h-[calc(100dvh-4rem)] w-full max-w-md flex-col gap-section">
-      <div className="flex flex-wrap items-center justify-between gap-stack"><AuthLogo /><LanguageSwitch compact /></div>
+      <div className="flex flex-wrap items-center justify-between gap-stack"><Link href={`/${locale}`} aria-label={t('authBrand')} className="press inline-flex min-h-12 items-center rounded-control focus-visible:outline-lime"><AuthLogo /></Link><LanguageSwitch compact /></div>
       <div className="space-y-inline pt-section"><h1 className="text-3xl font-extrabold">{t('loginTitle')}</h1><p className="text-sm text-muted">{t('loginEveryone')}</p></div>
       {callbackError && <p role="alert" className="text-danger">{t('signInFailedTryAgain')}</p>}
       <LoginMethods />

@@ -9,7 +9,7 @@ export async function Pricing() {
   const content = getContent(await getT(messages));
   return <section id="pricing" className={`${styles.wrap} ${styles.section}`}>
     <div className={styles.headingRow}><div><p className={styles.eyebrow}>{content.pricing.label}</p><h2>{content.pricing.title}</h2></div><p>{content.pricing.description}</p></div>
-    <div className={styles.plans}>{content.plans.map(plan => <article key={plan.name} className={`${styles.plan} ${plan.hot ? styles.featured : ''}`}>
+    <div className={`${styles.plans} snap-x snap-mandatory`}>{content.plans.map(plan => <article key={plan.name} className={`${styles.plan} snap-start ${plan.hot ? styles.featured : ''}`}>
       <div className={styles.planTop}><h3 dir="ltr">{plan.name}</h3>{plan.hot && <span>{content.pricing.popular}</span>}</div>
       <p className={styles.price}><bdi>{plan.displayPrice}</bdi> <small>{plan.price === 0 ? content.pricing.unit : content.pricing.monthly}</small></p>
       <p className="text-md font-semibold">{plan.limitLabel}</p><p className="text-sm text-muted">{plan.audience}</p>

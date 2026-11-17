@@ -143,8 +143,6 @@
 .faq details:first-child { border-block-start: 1px solid var(--color-line); }
 .faq summary { list-style: none; cursor: pointer; min-block-size: 76px; display: flex; align-items: center; gap: 16px; font-size: 1.063rem; font-weight: 600; }
 .faq summary::-webkit-details-marker { display: none; }
-.faq summary::after { content: ''; margin-inline-start: auto; inline-size: 12px; block-size: 12px; border-inline-end: 2px solid var(--color-muted); border-block-end: 2px solid var(--color-muted); transform: rotate(45deg); transition: transform .2s; flex-shrink: 0; }
-.faq details[open] summary::after { transform: rotate(-135deg); }
 .faq p { color: var(--color-muted); padding-block-end: 24px; max-inline-size: 60ch; }
 .final { margin-block-start: clamp(72px, 8.5vw, 120px); position: relative; overflow: hidden; isolation: isolate; border-block: 1px solid var(--color-line); padding-block: clamp(72px, 10vw, 128px); text-align: center; background: var(--color-surface); }
 .final .slash { inline-size: 150px; block-size: 200%; inset-block-start: -50%; inset-inline-start: 10%; opacity: .95; }
@@ -154,6 +152,7 @@
 .headerRow { min-block-size: 72px; display: flex; align-items: center; gap: 28px; }
 .headerRow nav { display: flex; gap: 26px; font-size: var(--text-sm); color: var(--color-muted); }
 .headerRow a { min-block-size: 48px; display: inline-flex; align-items: center; }
+.headerRow nav a { min-inline-size: 48px; padding-inline: var(--spacing-inline); justify-content: center; }
 .headerEnd { margin-inline-start: auto; display: flex; align-items: center; gap: 14px; }
 .headerSignup { white-space: nowrap; }
 .footer { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; padding-block: 36px; color: var(--color-faint); font-size: var(--text-sm); }
@@ -220,7 +219,8 @@
   .toast { display: none; }
 }
 @media (max-width: 620px) {
-  .bento, .plans { grid-template-columns: 1fr; }
+  .bento { grid-template-columns: 1fr; }
+  .plans { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 85%; overflow-x: auto; padding: var(--spacing-inline); scroll-padding-inline: var(--spacing-inline); }
   .tile, .tile:first-child, .tile:last-child { grid-column: span 1; padding: 22px; }
   .cta { inline-size: 100%; }
   .cta a, .demoCta a { inline-size: 100%; }

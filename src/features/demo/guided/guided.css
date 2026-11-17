@@ -1,4 +1,6 @@
 .demo-target { outline: 2px solid var(--color-lime); outline-offset: 5px; scroll-margin-block: 6rem 50dvh; }
+/* Keep the production row while replacing its empty photo tile in demo fixtures. */
+.demo-shell li:has(> .demo-food-fallback) > span:first-child { display: none; }
 .demo-step-number { color: transparent; -webkit-text-stroke: 1px var(--color-lime); line-height: 1; font-family: var(--font-changa), sans-serif; }
 .demo-stage { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: var(--demo-section); }
 /* Floats over the sidebar footer, so it needs an opaque surface to stay readable. */
