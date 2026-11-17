@@ -10,9 +10,10 @@ import { ProgressBar } from '@/ui/progress-bar';
 import { Button } from '@/ui/button';
 import { loadWorkoutPoints } from '../data/load-workout-points';
 import type { WorkoutPoints } from '../data/load-workout-points';
+import { Medal as MedalIcon } from 'lucide-react';
 
-export function FinishPoints({ sessionId, expected = false, expectedPrs = 0, initial }: {
-  sessionId: string; expected?: boolean; expectedPrs?: number; initial?: WorkoutPoints;
+export function FinishPoints({ sessionId, expected = false, expectedPrs = 0, initial, v4 = false }: {
+  sessionId: string; expected?: boolean; expectedPrs?: number; initial?: WorkoutPoints; v4?: boolean;
 }) {
   const t = useT(ranksMessages);
   const locale = useLocale();
@@ -43,8 +44,14 @@ export function FinishPoints({ sessionId, expected = false, expectedPrs = 0, ini
   const index = MEDAL_RANKS.findIndex(entry => entry.rank === rank);
   const next = lifetime === undefined ? undefined : nextMedalRank(lifetime);
   const threshold = rank === 'legend' && lifetime !== undefined ? 900 + legendStars(lifetime) * 300 : MEDAL_RANKS[index]?.threshold ?? 0;
-  return <section className="glass-strong space-y-stack rounded-card p-card">
-    <p className={`text-center font-display font-extrabold ${counted.length ? 'text-stat-wide text-lime' : 'text-sm text-muted'}`}>{counted.length ? `+${formatNumber(total, locale)}` : t(pending ? 'pendingAward' : rows.length ? 'rejected' : 'pendingPoints')}</p>
+  return <section className={v4 ? 'glass space-y-stack rounded-card p-stack' : 'glass-strong space-y-stack rounded-card p-card'}>
+    {v4 ? <div className="flex items-center gap-stack">
+      <MedalIcon aria-hidden className="size-6 shrink-0 text-lime" />
+      <div><p className="text-sm font-bold">{counted.length ? t('points', { n: `+${formatNumber(total, locale)}` }) :
+        t(pending ? 'pendingAward' : rows.length ? 'rejected' : 'pendingPoints')}</p>
+        {next && <p className="text-micro text-muted">{t('workoutNext', { n: formatNumber(next.needed, locale), tier: t(next.rank) })}</p>}
+      </div>
+    </div> : <p className={`text-center font-display font-extrabold ${counted.length ? 'text-stat-wide text-lime' : 'text-sm text-muted'}`}>{counted.length ? `+${formatNumber(total, locale)}` : t(pending ? 'pendingAward' : rows.length ? 'rejected' : 'pendingPoints')}</p>}
     {rows.map(row => <div key={row.id} className="flex items-center justify-between gap-inline text-sm">
       <span>{t(row.kind)}</span><span className={row.status === 'rejected' ? 'text-muted' : ''}>
         <span className={row.status === 'rejected' ? 'line-through' : ''}>+{formatNumber(row.points, locale)}</span>

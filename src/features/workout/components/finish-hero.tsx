@@ -23,8 +23,12 @@ import { mergeHistory, remotePrHistory } from '../data/pr-history';
 import { readChoices } from '../data/exercise-choices';
 import { painFinishHeadline } from '../pain-stop';
 import { messages as painMessages } from '../pain/messages';
+import { StatStrip } from '@/ui/stat-strip';
+import { detectPr } from '../pr';
 
-export function FinishHero({ sessionId, workout, extras = false }: { sessionId: string; workout?: WorkoutPointsInput; extras?: boolean }) {
+export function FinishHero({ sessionId, workout, extras = false, v4 = false }: {
+  sessionId: string; workout?: WorkoutPointsInput; extras?: boolean; v4?: boolean;
+}) {
   const t = useT(messages);
   const wt = useT(workoutMessages);
   const pt = useT(painMessages);
@@ -54,13 +58,15 @@ export function FinishHero({ sessionId, workout, extras = false }: { sessionId: 
     if (!session?.completed_at) throw new Error('Completed session unavailable');
     const records = sessionRecords(rows, sessionId);
     const record = records.sort((a, b) => (b.weight_kg ?? 0) - (a.weight_kg ?? 0) || (b.reps ?? 0) - (a.reps ?? 0))[0];
+    const previous = v4 && record ? detectPr(rows.filter(row => !row.deleted_at && row.exercise_id === record.exercise_id &&
+      row.completed_at < record.completed_at), record)?.previous : undefined;
     const exercises = plan?.days.flatMap(day => day.exercises) ?? [];
     const exercise = record && exercises.find(exercise => exercise.exercise_id === record.exercise_id);
     const alternative = record && exercises.flatMap(exercise => exercise.alternative_exercises ?? []).find(exercise => exercise.id === record.exercise_id);
     let painSkipped = 0;
     try { painSkipped = Object.keys(readChoices(window.localStorage, `pain-skips:${sessionId}`)).length; }
     catch { /* Storage may be unavailable; the workout summary still works. */ }
-    return { ...finishSummary(rows, sessionId), record, expectedPrs: expectedWorkoutPrs(rows, session),
+    return { ...finishSummary(rows, sessionId), record, previous, expectedPrs: expectedWorkoutPrs(rows, session),
       painSkipped,
       exercises: groupHistory([session], rows)[0]?.exercises.map(group => ({ ...group,
         name: exerciseName(exercises.find(exercise => exercise.exercise_id === group.id) ??
@@ -70,7 +76,7 @@ export function FinishHero({ sessionId, workout, extras = false }: { sessionId: 
       recordName: exercise ? exerciseName(exercise, locale) : alternative ? exerciseName(alternative, locale) : wt('unknownExercise'),
       day: plan?.days.find(day => day.id === session.program_day_id)?.title,
       minutes: Math.max(0, Math.round((Date.parse(session.completed_at) - Date.parse(session.started_at)) / 60000)) };
-  }, [sessionId, locale, wt, remoteRows]);
+  }, [sessionId, locale, wt, remoteRows, v4]);
   const summary = useLiveQuery(read, useCallback(() => setFailed(true), []), attempt);
   const preview = workout && ranksEnabled() ? previewWorkoutPoints(workout) : undefined;
   const volume = summary && formatVolume(summary.volume, locale);
@@ -85,6 +91,23 @@ export function FinishHero({ sessionId, workout, extras = false }: { sessionId: 
       </div>
       {summary.exercises.map(group => <section key={group.id} className="mt-stack space-y-inline"><h3 className="text-sm">{group.name}</h3><HistorySets sets={group.sets} /></section>)}
   </details> : null;
+  if (v4 && summary) return <section className="space-y-card-gap pt-card">
+    <header className="space-y-inline text-center">
+      {!painHeadline && <p className="text-sm font-bold text-lime">{wt('v3Done')}</p>}
+      <h1 className="text-h font-extrabold">{painHeadline ? pt(painHeadline, { n: number(summary.painSkipped) }) :
+        firstName ? wt('v3Congrats', { name: firstName }) : wt('v3CongratsFallback')}</h1>
+    </header>
+    <StatStrip className="glass-strong cut-corner border border-lime/25 bg-lime-soft max-sm:grid-cols-3! [&>div]:flex [&>div]:flex-col-reverse [&>div]:gap-inline [&>div]:px-stack [&>div>div]:justify-center [&>div>p]:mt-0 [&>div>p]:justify-center"
+      items={[
+        { value: <span className="engraved">{number(summary.minutes)}</span>, label: wt('v3Minute'), tone: 'lime' },
+        { value: number(summary.sets), label: wt('v3Sets'), tone: 'lime' },
+        { value: volume?.value, label: volume ? wt(volume.unit) : wt('v3Volume'), tone: 'lime' },
+      ]} />
+    <FinishRecord record={summary.record} name={summary.recordName} previous={summary.previous} v4 />
+    {ranksEnabled() && <FinishPoints sessionId={sessionId} expected={preview?.counted} expectedPrs={summary.expectedPrs} v4 />}
+  </section>;
+  if (v4) return failed ? <ErrorState message={wt('couldntReadTheWorkoutOnYourPhone')} retryLabel={wt('tryAgain')}
+    onRetry={() => { setFailed(false); setAttempt(value => value + 1); }} /> : <LoadingState variant="detail" />;
   // The skewed stripes and the edge-bleed gradient extend past the column; clip only sideways so they never add horizontal scroll.
   return <div className="relative flex flex-col gap-card-gap overflow-x-clip pt-[134px]">
     <div aria-hidden className="pointer-events-none absolute -top-24 start-[192px] h-[360px] w-[120px] -skew-x-[18deg] bg-lime" />

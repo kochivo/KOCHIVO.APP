@@ -5,6 +5,8 @@ import { localDb } from '@/core/offline';
 import { useLocale, useT } from '@/core/i18n/client';
 import { formatNumber } from '@/lib/format';
 import { Button } from '@/ui';
+import { buttonClass } from '@/ui/button';
+import Link from 'next/link';
 import { messages } from '../messages';
 import { rpeValues, saveSessionFeedback } from '../data/session-feedback';
 import { DonePanel } from './done-panel';
@@ -13,11 +15,14 @@ import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { FinishHero } from './finish-hero';
 import { FinishShare } from './finish-share';
 import { effortChoices } from './workout-v3-model';
+import { messages as v4Messages } from '../v4/messages';
 
-export function SessionFeedback({ sessionId, hasFeedback, workout }: {
-  sessionId: string; hasFeedback: boolean; workout?: WorkoutPointsInput;
+export function SessionFeedback({ sessionId, hasFeedback, workout, onSavedHome }: {
+  sessionId: string; hasFeedback: boolean; workout?: WorkoutPointsInput; onSavedHome?: () => void;
 }) {
   const t = useT(messages);
+  const vt = useT(v4Messages);
+  const v4 = onSavedHome !== undefined;
   const v6 = captainWorkspaceEnabled();
   const locale = useLocale();
   const [done, setDone] = useState(hasFeedback);
@@ -34,9 +39,30 @@ export function SessionFeedback({ sessionId, hasFeedback, workout }: {
     try {
       await saveSessionFeedback(localDb(), sessionId, { rpe, note }, Date.now());
       setDone(true);
+      onSavedHome?.();
     } catch { setError(true); }
     finally { saving.current = false; setBusy(false); }
   };
+  if (v4) return <section aria-label={t('v3Done')} className="flex min-h-[calc(100dvh-5rem)] flex-col gap-card-gap">
+    <FinishHero sessionId={sessionId} workout={workout} v4 />
+    {!done && <>
+      <fieldset disabled={busy} className="space-y-inline">
+        <legend className="pb-inline text-sm font-bold">{t('v3Effort')}</legend>
+        <div className="grid grid-cols-3 gap-inline">{effortChoices.map(choice => <Button key={choice.value} type="button"
+          size="lg" variant="secondary" aria-pressed={rpe === choice.value} onClick={() => setRpe(choice.value)}
+          className={rpe === choice.value ? 'border-lime bg-lime-soft px-inline text-lime' : 'px-inline'}>{t(choice.key)}</Button>)}</div>
+      </fieldset>
+      <textarea aria-label={t('v3Note')} value={note} placeholder={t('v3NotePlaceholder')} maxLength={500} rows={1} disabled={busy}
+        onChange={event => setNote(event.target.value)} className="min-h-12 w-full resize-y rounded-control border border-line-soft bg-surface px-card py-stack text-start text-sm text-ink" />
+      {error && <p role="alert" className="text-danger">{t('feedbackError')}</p>}
+    </>}
+    <FinishShare />
+    <FinishHero sessionId={sessionId} workout={workout} extras />
+    <div className="mt-auto">
+      {done || (rpe === null && !note.trim()) ? <Link href="/player" className={buttonClass({ size: 'lg', block: true })}>{t('backToHome')}</Link> :
+        <Button block size="lg" disabled={busy || rpe === null} onClick={() => void submit()}>{busy ? t('saving') : vt('saveHome')}</Button>}
+    </div>
+  </section>;
   if (done) return <>{v6 && <FinishHero sessionId={sessionId} workout={workout} />}<DonePanel workout={workout} sessionId={sessionId} />{v6 && <><FinishShare /><FinishHero sessionId={sessionId} workout={workout} extras /></>}</>;
   if (v6) return <section aria-label={t('v3Done')} className="space-y-card-gap">
     <div className="flex min-h-[calc(100dvh-40px)] flex-col gap-card-gap">

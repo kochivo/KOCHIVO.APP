@@ -14,7 +14,7 @@ const exceptions: Record<string, number> = {
   '/offline': 207, // T-363..T-368 refined look: measured 206.03
   '/captain/programs/[programId]': 315,
   '/captain/players/[playerId]/programs': 321, // refined look: measured 320.56
-  '/captain/players/[playerId]/preview': 311, // refined look: measured 310.41
+  '/captain/players/[playerId]/preview': 312, // player v4 workout media (T-372): measured 311.70
 };
 
 it.skipIf(!existsSync(statsPath))('keeps first-load route JavaScript within gzip budgets', () => {

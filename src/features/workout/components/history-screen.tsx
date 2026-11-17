@@ -47,7 +47,7 @@ export function HistoryScreen({ playerId, exerciseId = '' }: { playerId: string;
     </div>;
   return <main className={v3 ? 'mx-auto max-w-lg space-y-stack px-page-x pt-card pb-24' : 'mx-auto max-w-lg space-y-card-gap px-page-x pt-section pb-32'}>
     {v3 ? <header className="flex items-center gap-stack"><Link href="/player/progress" aria-label={v3t('back')} className="flex size-12 items-center justify-center rounded-full bg-surface-raised"><ChevronRight size={20} aria-hidden className="ltr:rotate-180" /></Link><h1 className="text-h font-black">{v3t('title')}</h1></header> : <><Link href="/player/progress" className="inline-flex min-h-12 items-center text-lime">{t('back')}</Link><h1 className="text-2xl font-extrabold">{t('historyTitle')}</h1></>}
-    {v3 && today && !history.loading && <HistoryCalendar today={today} trained={history.workouts.map(row => row.training_date)} snapshot={history.error ? undefined : snapshot} />}
+    {v3 && today && !history.loading && <HistoryCalendar today={today} trained={history.workouts.map(row => row.training_date)} snapshot={history.error ? undefined : snapshot} v4 />}
     {!v3 && views}
     {history.error && <ErrorState message={t('historyError')} retryLabel={t('tryAgain')} onRetry={history.retry} />}
     {history.loading ? <LoadingState /> : !history.workouts.length ?

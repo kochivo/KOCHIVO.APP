@@ -67,7 +67,7 @@ export function FocusScreen({ dayId, playerId }: { dayId: string; playerId?: str
   const warmupProgress = useWarmupSession(warmup.items.length ? dayId : '', today, state.session?.id, warmup);
   const warmupView = warmup.items.length > 0 && (warmupProgress.loading || warmupProgress.pending) &&
     !state.finished && !state.loading && !state.error && !state.programFinished;
-  if (v6 && state.day && state.queue.length > 0 && !state.programFinished) {
+  if (v6 && state.day && (state.queue.length > 0 || state.finished || state.painSkipped > 0) && !state.programFinished) {
     return <PlayerWorkoutV3 key={`${dayId}:${today}`} state={state} progress={warmupProgress} workout={workout} online={online} playerId={playerId ?? plan?.player_id} />;
   }
   return <main className={warmupView ? 'mx-auto flex min-h-dvh max-w-lg flex-col gap-stack bg-bg-deep px-page-x pt-[max(22px,env(safe-area-inset-top))]'

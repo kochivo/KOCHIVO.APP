@@ -1,6 +1,6 @@
 'use client';
 import { useCallback, useState } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Play } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { useLocale, useT } from '@/core/i18n/client';
 import { localDb, useLiveQuery } from '@/core/offline';
@@ -11,6 +11,8 @@ import { KoTraining } from '@/ui/icons';
 import type { useFocusSession } from '../hooks/use-focus-session';
 import { prHistory } from '../data/pr-history';
 import { messages } from '../messages';
+import { messages as v4Messages } from '../v4/messages';
+import { SetDots } from './set-dots';
 import { parseExerciseVideo } from '@/lib/exercise-video';
 import { ExerciseLightbox } from './exercise-lightbox';
 import { WorkoutValue } from './workout-value';
@@ -32,12 +34,14 @@ import { supersetTag } from '@/lib/superset';
 import { PainButton } from './pain-button';
 import { PainLoadHint } from './pain-load-hint';
 import { PainCarried } from './pain-carried';
+import styles from './workout-media.module.css';
 const ExerciseVideo = dynamic(() => import('./exercise-video').then(module => module.ExerciseVideo));
 
 const FormCheckButton = dynamic(() => import('./form-check-button').then(module => module.FormCheckButton), { ssr: false });
 
-export function WorkoutSet({ state }: { state: ReturnType<typeof useFocusSession> }) {
+export function WorkoutSet({ state, v4 = false }: { state: ReturnType<typeof useFocusSession>; v4?: boolean }) {
   const t = useT(messages);
+  const vt = useT(v4Messages);
   const st = useT(setMessages);
   const locale = useLocale();
   const current = state.current;
@@ -54,6 +58,9 @@ export function WorkoutSet({ state }: { state: ReturnType<typeof useFocusSession
   const lastSet = state.doneSets.filter(row => row.program_exercise_id === current.exercise.id)
     .sort((a, b) => b.completed_at.localeCompare(a.completed_at))[0];
   const target = current.exercise.set_plan ? { ...current.exercise, ...targetForSet(current.exercise, current.setIndex - 1) } : current.exercise;
+  const number = (value: number) => formatNumber(value, locale);
+  const targetReps = target.reps_max === null ? t('toFailure') : target.reps_min === target.reps_max ?
+    number(target.reps_min) : t('targetRange', { min: number(target.reps_min), max: number(target.reps_max) });
   const dropping = (current.dropIndex ?? 0) > 0;
   const nextMember = state.next && state.next.exercise.id !== current.exercise.id && current.exercise.superset_group !== null &&
     state.next.exercise.superset_group === current.exercise.superset_group && current.restAfter === 0;
@@ -65,17 +72,23 @@ export function WorkoutSet({ state }: { state: ReturnType<typeof useFocusSession
           <ExerciseVideo key={current.exercise.video_url} url={current.exercise.video_url} name={name} />}
         {current.exercise.media_path && <Button variant="secondary" aria-pressed={showGif} onClick={() => setGifExercise(showGif ? null : exerciseId)}
           className="flex min-h-12 w-full items-center gap-inline text-sm">{t('gifToggle')}<ChevronDown aria-hidden className={`ms-auto size-4 transition-transform ${showGif ? 'rotate-180' : ''}`} /></Button>}
-      </div> : current.exercise.media_path && <ExerciseLightbox src={exerciseMediaUrl(current.exercise.media_path)} name={name} focus />)}
-      <div className="flex flex-col gap-inline"><h1 style={{ fontFamily: 'inherit', fontWeight: 900 }} className="text-2xl leading-normal"><bdi>{name}</bdi></h1>
-        <p className="text-row text-muted">{t('v3Set', { current: formatNumber(current.setIndex, locale), total: formatNumber(current.exercise.sets, locale) })}
+      </div> : current.exercise.media_path ? <ExerciseLightbox src={exerciseMediaUrl(current.exercise.media_path)} name={name} focus /> :
+        v4 && <div className={`grid aspect-video place-items-center rounded-card ${styles.placeholder}`}><Play aria-hidden className="size-7 text-muted" /></div>)}
+      <div className="flex flex-col gap-inline">
+        <h1 style={{ fontFamily: 'inherit', fontWeight: 900 }} className={v4 ? 'flex items-end justify-between gap-stack text-h' : 'text-2xl leading-normal'}>
+          <bdi>{name}</bdi>{v4 && <bdi aria-hidden className="engraved shrink-0 text-stat-wide">{formatNumber(current.setIndex, locale)}</bdi>}
+        </h1>
+        <p className="text-row text-muted">{t('v3Set', { current: number(current.setIndex), total: number(current.exercise.sets) })}
+          {v4 && <> · {vt('targetReps', { reps: targetReps })}{current.restAfter > 0 && <> · {st('rest', { seconds: number(current.restAfter) })}</>}</>}
           {current.exercise.notes && t('v3Coach', { note: current.exercise.notes })}</p>
-        <ProgressBar thin value={current.setIndex} max={current.exercise.sets}
-          aria-label={t('v3Set', { current: formatNumber(current.setIndex, locale), total: formatNumber(current.exercise.sets, locale) })} />
+        {v4 ? <SetDots exercise={current.exercise} currentIndex={current.setIndex} doneSets={state.doneSets}
+          onEdit={state.edit} disabled={blocked} compact /> : <ProgressBar thin value={current.setIndex} max={current.exercise.sets}
+          aria-label={t('v3Set', { current: formatNumber(current.setIndex, locale), total: formatNumber(current.exercise.sets, locale) })} />}
       </div>
-      <PainButton state={state} />
+      {!v4 && <PainButton state={state} />}
       <PainCarried state={state} />
       <PainLoadHint hint={current.exercise.pain_hint} today={state.today} weight={state.weight} onSkip={() => void state.skipExercise(current.exercise.id)} />
-      <FocusSetTable state={state} />
+      <FocusSetTable state={state} v4={v4} />
       {targetForSet(current.exercise, current.setIndex - 1).drop && <span className="self-start rounded-full bg-warn-soft px-stack py-inline text-xs text-warn">{st('drop')}</span>}
       <DropProgress state={state} />
       <div className={current.exercise.superset_group !== null || dropping ? 'glass-strong grid gap-stack rounded-card p-card' : 'grid grid-cols-2 gap-stack'}>
@@ -89,14 +102,17 @@ export function WorkoutSet({ state }: { state: ReturnType<typeof useFocusSession
       {historyFailed && <button type="button" className="min-h-12 text-xs text-muted" onClick={() => { setHistoryFailed(false); setAttempt(value => value + 1); }}>{t('tryAgain')}</button>}
       {state.invalid && <p id="set-error" role="alert" className="text-danger">{t(state.invalid.result === 'reps' ? 'enterReps' : 'enterWeightAndReps')}</p>}
       {/* Rest sits in the free space above the bottom button so the whole timer stays on screen. */}
-      {state.rest.remaining > 0 && <RestPanel remaining={state.rest.remaining} total={state.rest.total} sound={state.rest.sound} onToggleSound={state.rest.toggleSound}
+      {!v4 && state.rest.remaining > 0 && <RestPanel remaining={state.rest.remaining} total={state.rest.total} sound={state.rest.sound} onToggleSound={state.rest.toggleSound}
         flashing={state.rest.flashing} onExtend={state.rest.extend} onSkip={state.rest.skip} />}
       <SupersetCue state={state} next />
       <Button type="button" style={{ fontFamily: 'inherit' }} disabled={blocked} onClick={() => void state.complete()}
-        variant={state.painCarried?.length ? 'secondary' : 'primary'} block={false} className={"mt-auto flex min-h-[68px] w-full items-center justify-center gap-stack text-xl font-black disabled:opacity-50"}>
+        variant={state.painCarried?.length ? 'secondary' : 'primary'} block={false} className={v4 ?
+          'sticky bottom-page-y z-10 mt-auto flex min-h-14 w-full items-center justify-center gap-inline text-md font-bold disabled:opacity-50' :
+          'mt-auto flex min-h-[68px] w-full items-center justify-center gap-stack text-xl font-black disabled:opacity-50'}>
         <KoTraining aria-hidden className="size-6" />{dropping ? st('finishDrop') : nextMember && state.next ? st('finishMember', {
           current: supersetTag(state.day.exercises, current.exercise) ?? '', next: supersetTag(state.day.exercises, state.next.exercise) ?? '',
-        }) : t(state.progress === state.queue.length ? 'v3CompleteWorkout' : 'v3CompleteSet')}
+        }) : v4 && state.progress !== state.queue.length ? vt('doneSet', { set: formatNumber(current.setIndex, locale) }) :
+          t(state.progress === state.queue.length ? 'v3CompleteWorkout' : 'v3CompleteSet')}
       </Button>
     </div>
     <details className="glass rounded-card p-card">

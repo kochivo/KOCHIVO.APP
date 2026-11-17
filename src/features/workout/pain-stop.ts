@@ -21,6 +21,14 @@ export function savePainSkips(storage: Pick<Storage, 'setItem'>, sessionId: stri
   return ids;
 }
 
+export function describePainQueue(remaining: readonly string[], blocked: readonly string[], names: ReadonlyMap<string, string>) {
+  const removed = new Set(blocked);
+  return remaining.flatMap(id => {
+    const name = names.get(id);
+    return name === undefined ? [] : [{ id, name, removed: removed.has(id) }];
+  });
+}
+
 export function painFinishHeadline(skipped: number, loggedSets: number) {
   return skipped > 0 ? loggedSets > 0 ? 'finishSafe' : 'finishStopped' : null;
 }

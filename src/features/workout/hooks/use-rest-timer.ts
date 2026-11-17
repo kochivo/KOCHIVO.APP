@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { extendRest, restRemaining } from '../rest';
+import { adjustRestDeadline, extendRest, restRemaining } from '../rest';
 import { playRestChime, prepareRestChime } from '../rest-chime';
 import { triggerHaptic } from '@/lib/haptics';
 
@@ -79,5 +79,15 @@ export function useRestTimer({ now = defaultNow, chime = playRestChime, prepare 
     },
     extend: () => { if (soundEnabled.current) prepare(); update(extendRest(deadline.current, now(), 30),
       (restRemaining(deadline.current, now()) > 0 ? duration.current : 0) + 30); },
+    adjust: (seconds: -15 | 15) => {
+      const timestamp = now();
+      const current = deadline.current;
+      const next = adjustRestDeadline(current, timestamp, seconds);
+      if (next !== current) {
+        const remaining = restRemaining(next, timestamp);
+        const elapsed = Math.max(0, duration.current - restRemaining(current, timestamp));
+        update(next, elapsed + remaining);
+      }
+    },
     skip: () => update(null) };
 }

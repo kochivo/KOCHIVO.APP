@@ -10,12 +10,14 @@ vi.mock('server-only', () => ({}));
 const exercise = { id: 'bench', exercise_id: 'bench', position: 1, sets: 2, reps_min: 8, reps_max: 8,
   rest_seconds: 60, superset_group: null, rpe: null, tempo: null, notes: null,
   name_ar: 'بنش برس بالبار', name_en: 'Bench press', media_path: null };
-const state = vi.hoisted(() => ({ day: null as SnapshotDay | null }));
+const state = vi.hoisted(() => ({ day: null as SnapshotDay | null, painStopped: false }));
 const progress = vi.hoisted(() => ({ checked: [] as string[], skipped: false, loading: false, pending: true,
   toggle: vi.fn(), skip: vi.fn() }));
 vi.mock('./hooks/use-warmup-session', () => ({ useWarmupSession: () => progress }));
-vi.mock('./hooks/use-focus-session', () => ({ useFocusSession: () => ({ ...state, current: { exercise, setIndex: 1 },
-  doneSets: [], queue: [{ exercise, setIndex: 1 }], progress: 1, rest: { remaining: 0, endsAt: null },
+vi.mock('./hooks/use-focus-session', () => ({ useFocusSession: () => ({ day: state.day,
+  current: state.painStopped ? undefined : { exercise, setIndex: 1 },
+  finished: state.painStopped, painSkipped: state.painStopped ? 1 : 0, session: state.painStopped ? { id: 'stopped' } : undefined,
+  doneSets: [], queue: state.painStopped ? [] : [{ exercise, setIndex: 1 }], progress: 1, rest: { remaining: 0, endsAt: null },
   lastSession: { sets: [{ weight_kg: 63, reps: 8, set_index: 1 }] }, weight: 63, reps: 8, bodyweight: false,
   disabled: false, loading: false, setWeight() {}, setReps() {}, setBodyweight() {}, complete() {} }) }));
 vi.mock('./hooks/use-wake-lock', () => ({ useWakeLock() {} }));
@@ -23,10 +25,13 @@ vi.mock('./components/media-status', () => ({ MediaStatus: () => null }));
 vi.mock('@/lib/use-calendar-clock', () => ({ useCalendarClock: () => ({ now: new Date('2026-11-07T12:00:00Z'), online: false }) }));
 vi.mock('next/navigation', () => ({ useRouter: () => ({ push() {} }) }));
 vi.mock('next/dynamic', () => ({ default: (loader: () => unknown) => loader.toString().includes('warmup-workout')
-  ? (props: Parameters<typeof WarmupWorkout>[0]) => createElement(WarmupWorkout, props) : () => null }));
+  ? (props: Parameters<typeof WarmupWorkout>[0]) => createElement(WarmupWorkout, props)
+  : loader.toString().includes('session-feedback') ? ({ onSavedHome }: { onSavedHome?: () => void }) =>
+    createElement('div', { 'data-v4-finish': Boolean(onSavedHome) }) : () => null }));
 const render = () => renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' }, createElement(FocusScreen, { dayId: 'day' })));
 beforeEach(() => {
   state.day = { id: 'day', title: 'دفع · صدر وكتف', position: 1, exercises: [exercise] };
+  state.painStopped = false;
   Object.assign(progress, { checked: [], skipped: false, pending: true, loading: false });
 });
 afterEach(() => vi.unstubAllEnvs());
@@ -75,4 +80,9 @@ it.each([false, true])('keeps the v3 overview, checklist and history until expli
   expect(html).toContain('id="workout-exercises"');
   expect(html).toContain('href="/player/history"');
   expect(html).not.toContain('خلصت المجموعة');
+});
+it('reaches the v4 finish through FocusScreen when pain removes the whole queue', () => {
+  vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
+  state.painStopped = true;
+  expect(render()).toContain('data-v4-finish="true"');
 });

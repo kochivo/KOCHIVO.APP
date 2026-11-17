@@ -4,7 +4,6 @@ import { ChevronRight } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ProgressBar } from '@/ui/progress-bar';
 import { useLocale, useT } from '@/core/i18n/client';
 import { formatNumber } from '@/lib/format';
 import { ErrorState, LoadingState, SyncPill } from '@/ui';
@@ -16,6 +15,8 @@ import { restAnnouncement } from '../rest';
 import { messages } from '../messages';
 import { WorkoutOverview } from './workout-overview';
 import { WorkoutSet } from './workout-set';
+const WorkoutRest = dynamic(() => import('./workout-rest').then(module => module.WorkoutRest), { ssr: false, loading: () => <LoadingState /> });
+import { PainButton } from './pain-button';
 import { WorkoutClock } from './workout-clock';
 import { MediaStatus } from './media-status';
 import { DonePanel } from './done-panel';
@@ -45,20 +46,24 @@ export function PlayerWorkoutV3({ state, progress, workout, online, playerId }: 
     {state.pr && <PrBurst key={state.pr.id} pr={state.pr} onDismiss={state.dismissPr} />}
     {state.error ? <ErrorState message={state.error} retryLabel={t('tryAgain')} onRetry={state.retry} /> : state.loading ? <LoadingState /> :
       state.finished ? state.session ? <SessionFeedback key={state.session.id} sessionId={state.session.id} workout={workout}
-      hasFeedback={state.session.session_rpe != null || Boolean(state.session.player_note)} /> : <DonePanel workout={workout} /> : inFocus ? <>
+      hasFeedback={state.session.session_rpe != null || Boolean(state.session.player_note)} onSavedHome={() => router.push('/player')} /> : <DonePanel workout={workout} /> :
+      state.painSkipped > 0 && !state.current ? <LoadingState /> : inFocus ?
+      state.rest.remaining > 0 ? <WorkoutRest state={state} onBack={() => setStarted(false)} /> : <>
       <header className="flex items-center gap-stack">
         <button type="button" aria-label={t('v3Close')} onClick={() => setStarted(false)} className="glass press flex size-12 shrink-0 items-center justify-center rounded-control"><ChevronRight aria-hidden className="dir-icon size-5" /></button>
-        <div className="min-w-0 flex-1">
-          <h2 className="truncate text-md font-bold"><bdi>{state.day.title}</bdi></h2>
+        <div className="min-w-0 flex-1 space-y-inline">
+          <div aria-hidden className="flex gap-inline">{state.day.exercises.map((exercise, position) =>
+            <span key={exercise.id} className={`h-1 min-w-0 flex-1 rounded-full ${position < index ? 'bg-lime' :
+              position === index ? 'bg-lime/60' : 'bg-line'}`} />)}
+          </div>
           <div className="flex flex-wrap items-center gap-x-inline text-micro text-muted">
             <span>{t('v3ExerciseProgress', { current: formatNumber(index + 1, locale), total: formatNumber(state.day.exercises.length, locale) })}</span>
             <WorkoutClock startedAt={startedAt ?? state.session?.started_at} quiet />
           </div>
         </div>
-        <ProgressBar thin value={index + 1} max={state.day.exercises.length} className="w-1/4 shrink-0"
-          aria-label={t('v3ExerciseProgress', { current: formatNumber(index + 1, locale), total: formatNumber(state.day.exercises.length, locale) })} />
+        <PainButton state={state} v4 />
       </header>
-      <WorkoutSet state={state} />
+      <WorkoutSet state={state} v4 />
     </> : <WorkoutOverview state={state} progress={progress} playerId={playerId} onBack={() => router.push('/player')}
       onStart={() => { if (state.day?.warmup?.items.length && progress.pending) progress.skip(); setStartedAt(previous => previous ?? state.session?.started_at ?? new Date().toISOString()); setStarted(true); }} />}
     {state.decision === 'reduce' && <CoachReductionBanner />}

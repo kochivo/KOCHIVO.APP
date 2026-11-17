@@ -63,6 +63,25 @@ it('never chimes on reopening an expired rest', () => {
   expect(storage.size).toBe(0);
 });
 
+it('adjusts the active rest and resets to the next prescription on start', () => {
+  const timer = mount();
+  timer.start(30);
+  now += 20_000;
+  timer.adjust(15);
+  expect(hooks.states[1]).toBe(25);
+  expect(hooks.states[2]).toBe(45);
+  timer.adjust(-15);
+  expect(hooks.states[1]).toBe(10);
+  expect(hooks.states[2]).toBe(30);
+  timer.adjust(-15);
+  expect(hooks.states[1]).toBe(0);
+  tick(); tick();
+  expect(chime).toHaveBeenCalledTimes(1);
+  timer.start(45);
+  expect(hooks.states[1]).toBe(45);
+  expect(hooks.states[2]).toBe(45);
+});
+
 it('defaults sound on, persists the toggle and still vibrates when muted', () => {
   const timer = mount();
   expect(timer.sound).toBe(true);

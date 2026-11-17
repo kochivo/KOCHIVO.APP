@@ -13,6 +13,7 @@ import { SessionFeedback } from './components/session-feedback';
 import { WorkoutValue } from './components/workout-value';
 import { PlayerWorkoutV3 } from './components/player-workout-v3';
 import { WorkoutClock } from './components/workout-clock';
+import { WorkoutRest } from './components/workout-rest';
 
 const control = vi.hoisted(() => ({ index: 0, values: [] as unknown[], setters: [] as ReturnType<typeof vi.fn>[], save: vi.fn() }));
 vi.mock('server-only', () => ({}));
@@ -113,6 +114,21 @@ it('uses the finish label only for the last queued set and disables logging duri
   const html = renderToStaticMarkup(createElement(WorkoutSet, { state: { ...state, progress: 2, rest: { ...state.rest, remaining: 30 } } }));
   expect(html).toContain('خلصت التمرين');
   expect(html).toMatch(/<button[^>]*disabled=""[^>]*class="[^"]*control-primary/);
+});
+it('renders the v4 countdown and wires both adjustments to the active rest', () => {
+  const adjust = vi.fn(), skip = vi.fn();
+  const props = { state: { ...state, selectedExercises: {}, rest: {
+    ...state.rest, total: 60, remaining: 30, adjust, skip,
+  } }, onBack() {} };
+  const panel = WorkoutRest(props);
+  find(panel, '−15 ث')?.onClick?.();
+  find(panel, '+15 ث')?.onClick?.();
+  find(panel, 'خلاص، جاهز')?.onClick?.();
+  expect(adjust.mock.calls).toEqual([[-15], [15]]);
+  expect(skip).toHaveBeenCalledOnce();
+  const html = renderToStaticMarkup(createElement(WorkoutRest, props));
+  expect(html).toContain('stroke-dashoffset="0.5"');
+  expect(primaryCount(html)).toBe(1);
 });
 it('preserves each value control’s identity when committing a typed weight or reps', () => {
   const initial = elementsOf(WorkoutSet({ state }), WorkoutValue);

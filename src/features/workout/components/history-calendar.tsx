@@ -5,6 +5,9 @@ import { localDate, formatDateAr, saturdayWeek, weeklyWeekday } from '@/lib/date
 import { formatNumber } from '@/lib/format';
 import type { ProgramSnapshot } from '@/core/offline';
 import { messages } from '../history-v3-messages';
+import { messages as v4Messages } from '../v4/messages';
+import { IconButton } from '@/ui/icon-button';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export function calendarCells({ month, today, trained, planned }: {
   month: string; today: string; trained: readonly string[]; planned: readonly string[];
@@ -28,8 +31,9 @@ export function plannedDate(date: string, snapshot?: ProgramSnapshot) {
     snapshot.training_days.includes(new Date(`${date}T12:00:00Z`).getUTCDay());
 }
 
-export function HistoryCalendar({ today, trained, snapshot }: { today: string; trained: string[]; snapshot?: ProgramSnapshot }) {
+export function HistoryCalendar({ today, trained, snapshot, v4 = false }: { today: string; trained: string[]; snapshot?: ProgramSnapshot; v4?: boolean }) {
   const t = useT(messages);
+  const vt = useT(v4Messages);
   const locale = useLocale();
   const [offset, setOffset] = useState(0);
   const touchStart = useRef<number | null>(null);
@@ -38,7 +42,7 @@ export function HistoryCalendar({ today, trained, snapshot }: { today: string; t
   base.setUTCMonth(base.getUTCMonth() + offset);
   const month = localDate(base, 'UTC').slice(0, 7);
   const days = calendarCells({ month, today, trained, planned: [] }).flatMap(cell => cell ? [cell.date] : []);
-  const cells = calendarCells({ month, today, trained, planned: days.filter(date => plannedDate(date, snapshot)) }).filter(cell => month !== today.slice(0, 7) || !cell || cell.date <= today);
+  const cells = calendarCells({ month, today, trained, planned: days.filter(date => plannedDate(date, snapshot)) }).filter(cell => v4 || month !== today.slice(0, 7) || !cell || cell.date <= today);
   const week = saturdayWeek(today);
   const hasSchedule = Boolean(snapshot?.starts_on && (snapshot.days.some(day => day.weekday != null) || snapshot.training_days.length));
   const name = formatDateAr(`${month}-01`, { month: 'long', ...(offset ? { year: 'numeric' } : {}) }, locale);
@@ -49,10 +53,15 @@ export function HistoryCalendar({ today, trained, snapshot }: { today: string; t
     const end = event.changedTouches[0]?.clientX;
     if (end !== undefined && touchStart.current !== null && Math.abs(end - touchStart.current) > 40) change(end < touchStart.current ? 1 : -1);
     touchStart.current = null;
-  }} className="flex touch-pan-y flex-col gap-stack rounded-[26px] border border-line-soft bg-surface p-card focus-visible:outline-2 focus-visible:outline-ink">
-    <div className="flex items-center justify-between gap-inline"><b className="text-md">{name}</b><span className="text-xs text-muted">{t('week', { done: formatNumber(week.filter(date => trained.includes(date)).length, locale), planned: hasSchedule ? formatNumber(week.filter(date => plannedDate(date, snapshot)).length, locale) : '—' })}</span></div>
+  }} className={v4 ? 'glass flex touch-pan-y flex-col gap-stack rounded-card p-stack focus-visible:outline-2 focus-visible:outline-ink' :
+    'flex touch-pan-y flex-col gap-stack rounded-[26px] border border-line-soft bg-surface p-card focus-visible:outline-2 focus-visible:outline-ink'}>
+    {v4 ? <header className="flex items-center justify-between gap-inline">
+      <IconButton aria-label={vt('previousMonth')} onClick={() => setOffset(value => value - 1)}><ChevronLeft aria-hidden className="size-5 rtl:rotate-180" /></IconButton>
+      <h2 className="text-sm font-bold">{name}</h2>
+      <IconButton aria-label={vt('nextMonth')} onClick={() => setOffset(value => value + 1)}><ChevronRight aria-hidden className="size-5 rtl:rotate-180" /></IconButton>
+    </header> : <div className="flex items-center justify-between gap-inline"><b className="text-md">{name}</b><span className="text-xs text-muted">{t('week', { done: formatNumber(week.filter(date => trained.includes(date)).length, locale), planned: hasSchedule ? formatNumber(week.filter(date => plannedDate(date, snapshot)).length, locale) : '—' })}</span></div>}
     <div className="grid grid-cols-7 gap-inline text-center text-micro text-faint">{(['sat', 'sun', 'mon', 'tue', 'wed', 'thu', 'fri'] as const).map(key => <span key={key}>{t(key)}</span>)}</div>
-    <div className="grid grid-cols-7 gap-inline font-display text-row font-bold">{cells.map((cell, index) => cell ? <span key={cell.date} aria-current={cell.today ? 'date' : undefined} aria-label={`${formatDateAr(cell.date, { day: 'numeric', month: 'long' }, locale)}${cell.trained ? ` · ${t('trained')}` : cell.missed ? ` · ${t('missed')}` : ''}`} className={`flex h-10 items-center justify-center rounded-xl ${cell.trained ? 'bg-lime text-on-lime' : cell.missed ? 'border border-sore text-sore' : 'text-faint'} ${cell.today ? 'ring-2 ring-ink ring-offset-2 ring-offset-bg' : ''}`}>{formatNumber(cell.day, locale)}</span> : <span key={`blank-${index}`} />)}</div>
+    <div className="grid grid-cols-7 gap-inline font-display text-row font-bold">{cells.map((cell, index) => cell ? <span key={cell.date} aria-current={cell.today ? 'date' : undefined} aria-label={`${formatDateAr(cell.date, { day: 'numeric', month: 'long' }, locale)}${cell.trained ? ` · ${t('trained')}` : cell.missed ? ` · ${t('missed')}` : ''}`} className={`flex items-center justify-center rounded-xl ${v4 ? 'h-9' : 'h-10'} ${cell.trained ? 'bg-lime text-on-lime' : cell.missed ? 'border border-sore text-sore' : v4 ? 'bg-surface-raised text-muted' : 'text-faint'} ${cell.today ? v4 ? 'ring-2 ring-lime ring-offset-2 ring-offset-bg' : 'ring-2 ring-ink ring-offset-2 ring-offset-bg' : ''}`}>{formatNumber(cell.day, locale)}</span> : <span key={`blank-${index}`} />)}</div>
     <div className="flex gap-card-gap text-micro text-muted">{(['trained', 'missed', 'today'] as const).map(key => <span key={key} className="flex items-center gap-inline"><span aria-hidden className={`size-2.5 rounded-[3px] ${key === 'trained' ? 'bg-lime' : key === 'missed' ? 'border border-sore' : 'border-2 border-ink'}`} />{t(key)}</span>)}</div>
   </section>;
 }

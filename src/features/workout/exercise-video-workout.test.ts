@@ -37,10 +37,11 @@ const exercise = { id: 'prescription', exercise_id: 'row', position: 1, sets: 3,
   alternative_exercises: [{ id: 'press', name_ar: null, name_en: 'Press', media_path: null, video_url: 'https://drive.google.com/open?id=abc123' }] };
 const state: ComponentProps<typeof WorkoutSet>['state'] = {
   today: '2026-11-15', captainId: 'captain', skipExercise: async () => {}, skipForPain: async () => 0, painBlocked: false, painCarried: [], painReports: [],
+  remainingForPain: () => [], selectedExercises: {}, painSkipped: 0,
   day: { id: 'day', title: 'Day', position: 1, exercises: [exercise] }, current: { exercise, setIndex: 1, restAfter: 60 },
   session: null, decision: null, programFinished: false, queue: [], doneSets: [], performance: null, lastSession: null,
   weight: 50, reps: 10, rest: { endsAt: null, remaining: 0, total: 0, sound: false, flashing: false,
-    toggleSound() {}, start() {}, extend() {}, skip() {} }, pending: 0, parked: 0, retrySync() {}, pr: null, dismissPr() {},
+    toggleSound() {}, start() {}, extend() {}, adjust() {}, skip() {} }, pending: 0, parked: 0, retrySync() {}, pr: null, dismissPr() {},
   bodyweight: false, setBodyweight() {}, invalid: null, progress: 1, next: undefined, finished: false, loading: false,
   error: null, disabled: false, setWeight() {}, setReps() {}, edit() {}, complete: async () => {}, finishCardio: async () => {}, switchExercise() {}, retry() {},
 };

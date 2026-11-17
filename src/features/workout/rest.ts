@@ -22,3 +22,8 @@ export function formatRest(seconds: number, locale: Locale = 'ar'): string {
 export function extendRest(endsAt: number | null, now: number, seconds: number): number {
   return Math.max(endsAt ?? now, now) + seconds * 1000;
 }
+
+export function adjustRestDeadline(endsAt: number | null, now: number, seconds: -15 | 15): number | null {
+  if (endsAt === null || endsAt <= now) return endsAt;
+  return Math.max(now, endsAt + seconds * 1000);
+}

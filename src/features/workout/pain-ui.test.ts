@@ -48,6 +48,19 @@ it('renders the sheet with accessible body choices, severity and kind', () => {
   expect(html).toContain('Send to coach');
   expect(html).toContain('Sharp');
 });
+
+it('shows named safe and removed exercises with a count on the continue button', () => {
+  const html = renderToStaticMarkup(createElement(PainAfterSend, {
+    report, exercise: 'Squat', affected: true, onContinue: noop, onSkip: noop, onSwap: noop, onStop: noop,
+    queue: [{ id: 'press', name: 'Leg press', removed: true }, { id: 'row', name: 'Cable row', removed: false }],
+  }));
+  expect(html).toContain('<bdi>Leg press</bdi></s>');
+  expect(html).toContain('>Removed</span>');
+  expect(html).toContain('<bdi>Cable row</bdi>');
+  expect(html).toContain('>Safe</span>');
+  expect(html).toContain('Continue safe exercises (1)');
+  expect(html.match(/control-primary/g)).toHaveLength(1);
+});
 it('always shows the doctor note and exposes a swap only when safe', () => {
   const props = { report, exercise: 'Squat', affected: true, onContinue: noop, onSkip: noop, onSwap: noop, onStop: noop };
   const without = renderToStaticMarkup(createElement(PainAfterSend, props));

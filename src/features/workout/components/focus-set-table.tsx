@@ -11,7 +11,7 @@ import { SetDots } from './set-dots';
 
 type TableState = Pick<ReturnType<typeof useFocusSession>, 'current' | 'lastSession' | 'doneSets' | 'weight' | 'reps' | 'disabled' | 'edit'>;
 
-export function FocusSetTable({ state }: { state: TableState }) {
+export function FocusSetTable({ state, v4 = false }: { state: TableState; v4?: boolean }) {
   const t = useT(messages);
   const tt = useT(tableMessages);
   const locale = useLocale();
@@ -38,10 +38,10 @@ export function FocusSetTable({ state }: { state: TableState }) {
         <td className="text-micro text-muted"><bdi>{previous ? `${number(previous.weight_kg)} × ${number(previous.reps)}` : '—'}</bdi></td>
         <td className="px-inline"><div className={cell}><bdi>{number(active ? state.weight : done?.weight_kg)}</bdi></div></td>
         <td><div className={cell}><bdi>{number(active ? state.reps : done?.reps)}</bdi></div></td>
-        <td className="rounded-e-control">{done && <button type="button" disabled={state.disabled}
+        <td className="rounded-e-control">{done ? <button type="button" disabled={state.disabled}
           aria-label={t('editSet', { value0: number(set) })} onClick={() => state.edit(done)}
           className="press tone-lime mx-auto grid size-12 place-items-center rounded-control disabled:opacity-50">
-          <Check aria-hidden className="size-5" /></button>}</td>
+          <Check aria-hidden className="size-5" /></button> : v4 && <span aria-hidden className="glass mx-auto grid size-12 place-items-center rounded-control text-muted"><Check className="size-5" /></span>}</td>
       </tr>;
     })}</tbody>
   </table>;

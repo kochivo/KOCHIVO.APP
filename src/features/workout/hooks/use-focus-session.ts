@@ -188,6 +188,7 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
     }
   }, [day, today, session, current, ready, rest, edited, weight, reps, bodyweight, key, t, dropIndex, painBlocked]);
   const parked = useLiveQuery(readParked, onError, retryKey);
+  const remainingForPain = (report?: PainReportRow) => remainingPainIds(queue, doneSets, choices.choices, report);
   return { day, session, decision, programFinished, queue, current, doneSets, performance, lastSession: memory.last, weight, reps, rest, pending, parked, retrySync, pr, dismissPr,
     bodyweight, setBodyweight, invalid: invalid?.key === key ? invalid : null,
     progress: edited ? queue.findIndex((step) => matches(edited, step.exercise.id, step.setIndex, step.dropIndex)) + 1 :
@@ -201,8 +202,9 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
     setReps: (value: number) => setDraft({ key, weight, reps: Math.min(100, Math.max(0, value)) }),
     edit: (row: SetLogRow) => { if (!saving.current) { rest.skip(); setDraft(null); setEditing(row.id); } },
     complete, finishCardio, today, captainId: snapshot?.captain_id, skipExercise: painSkips.skip, painBlocked, painCarried, painReports: reports ?? [],
+    remainingForPain, selectedExercises: choices.choices, painSkipped: painSkips.ids.length,
     skipForPain: async (report?: PainReportRow) => {
-      const ids = remainingPainIds(queue, doneSets, choices.choices, report);
+      const ids = remainingForPain(report);
       await painSkips.skipMany(ids); return ids.length;
     },
     switchExercise: (id: string) => {

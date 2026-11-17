@@ -8,9 +8,9 @@ import { EmptyState } from '@/ui/empty-state';
 import type { SetLogRow, SnapshotExercise } from '@/core/offline';
 import { cn } from '@/lib/cn';
 
-export function SetDots({ exercise, currentIndex, doneSets, onEdit, disabled = false }: {
+export function SetDots({ exercise, currentIndex, doneSets, onEdit, disabled = false, compact = false }: {
   exercise: SnapshotExercise; currentIndex: number; doneSets: SetLogRow[];
-  onEdit: (row: SetLogRow) => void; disabled?: boolean;
+  onEdit: (row: SetLogRow) => void; disabled?: boolean; compact?: boolean;
 }) {
   const t = useT(messages);
   const locale = useLocale();
@@ -19,6 +19,8 @@ export function SetDots({ exercise, currentIndex, doneSets, onEdit, disabled = f
     {Array.from({ length: exercise.sets }, (_, index) => {
       const setIndex = index + 1;
       const done = doneSets.find((row) => row.program_exercise_id === exercise.id && row.set_index === setIndex && (row.drop_index ?? 0) === 0);
+      if (compact) return <span key={setIndex} aria-hidden className={cn('h-1 min-w-2 flex-1 rounded-full',
+        done ? 'bg-lime' : setIndex === currentIndex ? 'bg-lime/45' : 'bg-line')} />;
       return <button key={setIndex} type="button" disabled={!done || disabled}
         aria-current={setIndex === currentIndex ? 'step' : undefined}
         aria-label={done ? t('editSet', { value0: formatNumber(setIndex, locale) }) : t('setNumber', { value0: formatNumber(setIndex, locale) })}

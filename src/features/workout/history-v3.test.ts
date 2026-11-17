@@ -23,6 +23,13 @@ it('shows a PR only when the real session has one and retains expandable details
   expect(html).toContain('صدر وترايسبس');
   expect(renderToStaticMarkup(createElement(HistoryWorkoutRow, props))).not.toContain('رقم قياسي');
 });
+it('shows volume derived from the saved sets in the v4 workout row', () => {
+  const set = { weight_kg: 120, reps: 40 } as HistorySet;
+  const html = renderToStaticMarkup(createElement(HistoryWorkoutRow, {
+    workout: { ...workout, exercises: [{ id: 'press', sets: [set] }] }, title: 'Leg day', names: [], v3: true,
+  }));
+  expect(html).toContain('4.8 طن');
+});
 it('renders today-trained with the ink ring and three real-state legend labels', () => {
   const html = renderToStaticMarkup(createElement(HistoryCalendar, { today: '2026-11-13', trained: ['2026-11-13'] }));
   expect(html).toMatch(/aria-current="date"[^>]*bg-lime[^>]*ring-ink/);

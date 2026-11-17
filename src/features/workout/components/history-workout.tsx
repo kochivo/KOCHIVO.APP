@@ -11,6 +11,9 @@ import type { HistoryName } from '../data/history';
 import { messages } from '../messages';
 import { messages as v3Messages } from '../history-v3-messages';
 import { HistorySets } from './history-sets';
+import { ChevronLeft } from 'lucide-react';
+import { formatVolume } from './workout-v3-model';
+import { messages as v4Messages } from '../v4/messages';
 
 export function sessionPrIds(workouts: readonly HistoryWorkout[]) {
   const sets = workouts.flatMap(workout => workout.exercises.flatMap(exercise => exercise.sets))
@@ -42,13 +45,27 @@ export function HistoryWorkoutRow({ workout, title, names, exerciseId, v3 = fals
 }) {
   const t = useT(messages);
   const v3t = useT(v3Messages);
+  const vt = useT(v4Messages);
   const locale = useLocale();
   const exercises = exerciseId ? workout.exercises.filter(row => row.id === exerciseId) : workout.exercises;
   const minutes = Math.max(0, Math.round((Date.parse(workout.completed_at ?? workout.started_at) - Date.parse(workout.started_at)) / 60000));
-  const monthKey = (['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'] as const)[Number(workout.training_date.slice(5, 7)) - 1] ?? 'jan';
-  return <details className={v3 ? 'rounded-[22px] border border-line-soft bg-surface px-card py-stack' : 'glass rounded-card p-card'} open={exerciseId ? true : undefined}>
+  const volume = v3 ? formatVolume(workout.exercises.reduce((total, exercise) => total + exercise.sets.reduce((sum, set) =>
+    sum + (set.weight_kg ?? 0) * (set.reps ?? 0), 0), 0), locale) : undefined;
+  return <details className={v3 ? 'glass group rounded-card px-card py-stack' : 'glass rounded-card p-card'} open={exerciseId ? true : undefined}>
     <summary className={v3 ? 'flex min-h-12 cursor-pointer list-none items-center gap-stack [&::-webkit-details-marker]:hidden' : 'min-h-12 cursor-pointer space-y-inline'}>
-      {v3 ? <><span className="flex size-12 shrink-0 flex-col items-center justify-center rounded-2xl bg-surface-raised"><b className="font-display text-base">{formatDate(workout.training_date, { day: 'numeric' }, locale)}</b><span className="text-micro text-muted">{v3t(monthKey)}</span></span><span className="flex flex-1 flex-col gap-inline"><b className="text-sm"><bdi>{starterText(title, locale)}</bdi></b><span className="text-xs text-muted">{v3t('summary', { min: formatNumber(minutes, locale), sets: formatNumber(workout.setCount, locale) })}</span></span>{hasPr && <span className="rounded-[10px] bg-gold-face-1 px-inline py-inline text-micro font-extrabold text-gold-4">{v3t('pr')}</span>}</> : <>
+      {v3 ? <>
+        <span className="flex w-12 shrink-0 flex-col items-center justify-center">
+          <b className="font-display text-title">{formatDate(workout.training_date, { day: 'numeric' }, locale)}</b>
+          <span className="text-micro text-muted">{formatDate(workout.training_date, { weekday: 'short' }, locale)}</span>
+        </span>
+        <span className="min-w-0 flex-1"><b className="text-sm"><bdi>{starterText(title, locale)}</bdi></b>
+          <span className="block text-micro text-muted">{v3t('summary', { min: formatNumber(minutes, locale), sets: formatNumber(workout.setCount, locale) })}
+            {volume && <> · {vt('historyVolume', { value: volume.value, unit: t(volume.unit) })}</>}
+          </span>
+        </span>
+        {hasPr && <span className="tone-warn rounded-md px-inline text-micro font-bold">{v3t('pr')}</span>}
+        <ChevronLeft aria-hidden className="size-4 shrink-0 text-muted ltr:rotate-180 group-open:rotate-270" />
+      </> : <>
       <span className="block font-bold">{formatDate(workout.training_date, { day: 'numeric', month: 'short', year: 'numeric' }, locale)}</span>
       <span className="text-sm text-muted"><bdi>{starterText(title, locale)}</bdi>{' · '}
         {t('historySets', { count: formatNumber(exercises.reduce((count, exercise) => count + exercise.sets.length, 0), locale) })}</span></>}
