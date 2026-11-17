@@ -31,13 +31,11 @@ export function WorkspaceTierCard({ tier, packages, busy, count, onEdit, onPacka
     <ul className="mb-card-gap space-y-stack text-row">{tier.features.length ? tier.features.map((feature, index) =>
       <li key={index} className="flex items-start gap-inline"><Check aria-hidden className="size-5 shrink-0 text-lime" />{feature}</li>)
       : <li className="text-muted">{catalog('noFeatures')}</li>}</ul>
-    <footer className="mt-auto space-y-stack border-t border-line-soft pt-stack">
-      <div className="flex flex-wrap items-center justify-between gap-inline">
-        {count !== undefined && <span className="text-xs text-muted">{catalog('players', { n: formatNumber(count, locale) })}</span>}
-        <Button disabled={busy} onClick={onEdit} variant="secondary" block={false}><Pencil aria-hidden className="size-4" />{t('edit')}</Button>
-      </div>
-      <Button variant="secondary" block disabled={busy} onClick={() => onPackage()}
+    <footer className="mt-auto flex flex-wrap items-center gap-inline border-t border-line-soft pt-stack">
+      {count !== undefined && <span className="me-auto text-xs text-muted">{catalog('players', { n: formatNumber(count, locale) })}</span>}
+      <Button variant="secondary" block={false} disabled={busy} onClick={() => onPackage()}
         className="border-dashed">{catalog('addDuration')}</Button>
+      <Button disabled={busy} onClick={onEdit} variant="secondary" block={false}><Pencil aria-hidden className="size-4" />{t('edit')}</Button>
     </footer>
   </article>;
 }

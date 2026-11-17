@@ -35,8 +35,8 @@ export function FreezeSettings() {
   if (!resource.data && resource.status === 'error') return <ErrorState message={t('settingsLoadError')} retryLabel={t('retry')} onRetry={() => void resource.retry()} />;
   if (!resource.data) return <LoadingState variant="detail" aria-label={t('settingsLoading')} />;
   return <section className="glass space-y-stack rounded-card p-card" aria-busy={busy}>
-    <NumberInput label={t('defaultDays')} hint={t('defaultHint')} value={resource.data.default_days}
-      min={0} max={90} step={1} inputMode="numeric" allowEmpty disabled={busy} onCommit={days => void save(days)} />
+    <div className="max-w-md"><NumberInput label={t('defaultDays')} hint={t('defaultHint')} value={resource.data.default_days}
+      min={0} max={90} step={1} inputMode="numeric" allowEmpty disabled={busy} onCommit={days => void save(days)} /></div>
     {busy && <p role="status" className="text-sm text-muted">{t('settingsSaving')}</p>}
     {error && <p role="alert" className="text-sm text-danger">{t('settingsSaveError')}</p>}
     {!error && resource.status === 'error' && <ErrorState message={t('settingsLoadError')} retryLabel={t('retry')} onRetry={() => void resource.retry()} />}
