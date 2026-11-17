@@ -15,6 +15,8 @@ Edit only these:
 - `src/features/ranks/**`
 - tests
 
+Do not touch `src/features/progress/components/line-chart.tsx`, `src/features/progress/components/chart/`, or `series.ts`. They belong to T-375, which is running at the same time. Use `LineChart` as it is.
+
 ## What to build
 1. **Food (09).** The header has the title and `CoachButton`. The page shows:
    - a calories ring and macro bars;
