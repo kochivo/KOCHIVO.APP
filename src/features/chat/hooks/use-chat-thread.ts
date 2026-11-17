@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { uuidv7 } from '@/core/offline/ids';
 import { loadSupabaseBrowser } from '@/core/supabase/lazy';
 import { listVoiceNotes, loadCaptainThreadReplies } from '@/features/voice-notes';
-import { listMessages, markConversationRead, sendText, sendVoice } from '../data/chat';
+import { listMessages, markConversationRead, renewMessageAudio, sendText, sendVoice } from '../data/chat';
 import { mergeThread } from '../thread';
 import type { ChatMessage, ChatThreadItem, ChatThreadOptions, ChatTimer, VoiceInput } from '../types';
 
@@ -42,12 +42,12 @@ export function useChatThread({ playerId, captainId, viewerId, now = clock, inte
     try {
       const db = await getClient();
       const [messages, voiceNotes, replies] = await Promise.all([
-        listMessages(db, { playerId, captainId }), listVoiceNotes(db, playerId), loadCaptainThreadReplies(db, playerId),
+        listMessages(db, { playerId, captainId }, now()), listVoiceNotes(db, playerId, captainId), loadCaptainThreadReplies(db, playerId, captainId),
       ]);
       if (!current.active) return;
       let page = messages;
       while (current.messages.size && page.length === 50 && !page.some(message => current.messages.has(message.id))) {
-        page = await listMessages(db, { playerId, captainId, before: page[0] });
+        page = await listMessages(db, { playerId, captainId, before: page[0] }, now());
         if (!current.active) return;
         messages.unshift(...page);
       }
@@ -56,6 +56,9 @@ export function useChatThread({ playerId, captainId, viewerId, now = clock, inte
         setHasOlder(messages.length === 50);
       }
       for (const message of messages) current.messages.set(message.id, message);
+      const renewed = await renewMessageAudio(db, [...current.messages.values()], now());
+      if (!current.active) return;
+      for (const message of renewed) current.messages.set(message.id, message);
       const loaded = mergeThread({ messages: [...current.messages.values()], voiceNotes, replies, playerId, captainId, viewerId });
       const loadedIds = new Set(loaded.map(item => item.id));
       for (const [id, pending] of current.pending) {
@@ -85,7 +88,7 @@ export function useChatThread({ playerId, captainId, viewerId, now = clock, inte
     if (!current.active || current.olderBusy || !current.cursor || !hasOlder) return;
     current.olderBusy = true; setOlderStatus('loading');
     try {
-      const messages = await listMessages(await getClient(), { playerId, captainId, before: current.cursor });
+      const messages = await listMessages(await getClient(), { playerId, captainId, before: current.cursor }, now());
       if (!current.active) return;
       for (const message of messages) current.messages.set(message.id, message);
       current.cursor = messages[0] ?? current.cursor;
@@ -97,7 +100,7 @@ export function useChatThread({ playerId, captainId, viewerId, now = clock, inte
       setHasOlder(messages.length === 50); setOlderStatus('ready');
     } catch { if (current.active) setOlderStatus('error'); }
     finally { current.olderBusy = false; }
-  }, [playerId, captainId, viewerId, getClient, hasOlder]);
+  }, [playerId, captainId, viewerId, getClient, hasOlder, now]);
 
   useEffect(() => {
     const current = scopeForThread();

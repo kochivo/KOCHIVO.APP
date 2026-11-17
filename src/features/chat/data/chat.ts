@@ -17,7 +17,7 @@ function message(row: Row): ChatMessage {
 
 export async function listMessages(client: Client, input: {
   playerId: string; captainId: string; limit?: number; before?: Pick<ChatMessage, 'createdAt' | 'id'>;
-}): Promise<ChatMessage[]> {
+}, now = new Date()): Promise<ChatMessage[]> {
   let query = client.from('chat_messages').select(fields).eq('player_id', input.playerId)
     .eq('captain_id', input.captainId).order('created_at', { ascending: false }).order('id', { ascending: false })
     .limit(input.limit ?? 50);
@@ -27,8 +27,13 @@ export async function listMessages(client: Client, input: {
   }
   const { data, error } = await query;
   if (error) throw error;
-  const rows = (data ?? []).toReversed().map(message);
-  const audio = rows.filter(row => row.audioPath);
+  return renewMessageAudio(client, (data ?? []).toReversed().map(message), now);
+}
+
+export async function renewMessageAudio(client: Client, messages: readonly ChatMessage[], now: Date): Promise<ChatMessage[]> {
+  const rows = messages.map(row => row.audioPath && (!row.url || (row.urlExpiresAt ?? 0) <= now.getTime() + 60_000)
+    ? { ...row } : row);
+  const audio = rows.filter((row, index) => row !== messages[index]);
   if (audio.length) {
     const signed = await client.storage.from(bucket).createSignedUrls(audio.map(row => row.audioPath ?? ''), 3600);
     if (signed.error || !signed.data || signed.data.length !== audio.length) throw signed.error ?? new Error('Signing chat audio failed');
@@ -36,6 +41,7 @@ export async function listMessages(client: Client, input: {
       const file = signed.data[index];
       if (file?.error || !file?.signedUrl) throw new Error('Signing chat audio failed');
       row.url = file.signedUrl;
+      row.urlExpiresAt = now.getTime() + 3600_000;
     }
   }
   return rows;

@@ -6,7 +6,6 @@ import { mergeThread } from './thread';
 import { listMessages, markRead, markConversationRead, sendText, sendVoice, unreadCounts } from './data/chat';
 import { useChatThread } from './hooks/use-chat-thread';
 import type { ChatMessage, ChatTimer } from './types';
-
 const lifecycle = vi.hoisted(() => ({
   refs: [] as { current: unknown }[], states: [] as unknown[], refIndex: 0, stateIndex: 0,
   effects: [] as (() => (() => void) | undefined)[], collect: true,
@@ -25,9 +24,9 @@ vi.mock('react', async original => ({
   },
   useEffect: (effect: () => (() => void) | undefined) => { if (lifecycle.collect) lifecycle.effects.push(effect); },
 }));
-
 const date = '2026-11-13T10:00:00.000Z';
-const now = () => new Date(date);
+let currentTime = date;
+const now = () => new Date(currentTime);
 const player = '01900000-0000-7000-8000-000000000001';
 const captain = '01900000-0000-7000-8000-000000000002';
 const wire: AppDatabase['public']['Tables']['chat_messages']['Row'] = { id: 'm', player_id: player, captain_id: captain, sender_id: captain,
@@ -76,6 +75,7 @@ const render = (hook = useTestThread) => {
 };
 const settle = async () => { for (let i = 0; i < 120; i++) await Promise.resolve(); };
 beforeEach(() => {
+  currentTime = date;
   requests.length = 0; rows = []; failInsert = false; failRead = false; failLoad = false; insertGate = undefined;
   olderPages = [];
   lifecycle.refs = []; lifecycle.states = []; lifecycle.effects = []; lifecycle.collect = true;
@@ -85,7 +85,6 @@ beforeEach(() => {
     removeEventListener: (name: string) => listeners.delete(name) });
 });
 afterEach(() => vi.unstubAllGlobals());
-
 it('merges all real sources chronologically with stable ids and viewer ownership', () => {
   const input = { messages: [message, { ...message, id: 'mine', senderId: player, createdAt: '2026-11-13T12:00:00+02:00' }],
     voiceNotes: [{ id: 'm', url: '/audio', durationSeconds: 12, listenedAt: null,
@@ -120,11 +119,15 @@ it('loads older pages, preserves them through polls, and exposes retryable page 
   expect(render().hasOlder).toBe(true);
   failLoad = true; await render().loadOlder();
   expect(render().olderStatus).toBe('error');
-  failLoad = false; rows = [{ ...wire, id: 'old', created_at: '2026-11-12T10:00:00Z' }];
+  failLoad = false; rows = [{ ...wire, id: 'old', created_at: '2026-11-12T10:00:00Z', audio_path: `${player}/chat/a.webm` }];
   await render().loadOlder();
   expect(render().hasOlder).toBe(false);
+  const oldUrl = render().items.find(item => item.id === 'old')?.url;
+  currentTime = '2026-11-13T11:00:00Z'; requests.length = 0;
   rows = [wire]; await render().refresh();
   expect(render().items.some(item => item.id === 'old')).toBe(true);
+  expect(render().items.find(item => item.id === 'old')).toMatchObject({ url: oldUrl, readAt: now().toISOString(), urlExpiresAt: now().getTime() + 3600_000 });
+  expect(requests.some(request => request.url.pathname.includes('/sign/'))).toBe(true);
   cleanup?.();
 });
 

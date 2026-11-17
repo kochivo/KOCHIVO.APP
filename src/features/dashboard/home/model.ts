@@ -1,5 +1,5 @@
 import type { RosterPlayer } from '@/features/roster';
-import { daysBetween, localDate, saturdayWeek } from '@/lib/dates';
+import { daysBetween, localDate, saturdayWeek, weeklyWeekday } from '@/lib/dates';
 import { endingSoon } from '@/lib/ending-soon';
 import type { homeMessages } from './messages';
 
@@ -37,17 +37,33 @@ export function homeNeeds(reviews: ReviewRow[], players: RosterPlayer[], now: Da
   if (limit !== 4) return [...reviews, ...absent].slice(0, limit);
   return [...reviews.slice(0, absent.length ? 3 : 4), ...absent.slice(0, Math.max(1, 4 - reviews.length))].slice(0, 4);
 }
-export function weekComparison(programs: { playerId: string | null; days: string[] }[], sessions: { playerId: string; dayId: string | null; date: string }[], today: string) {
+export function weekComparison(programs: { playerId: string | null;
+  days: { id: string; weekday: number | null; isRestDay: boolean }[]; trainingDays: number[] }[],
+sessions: { playerId: string; dayId: string | null; date: string }[], today: string) {
   const week = saturdayWeek(today);
   const start = week[0] ?? today;
   const previous = new Date(`${start}T12:00:00Z`);
   previous.setUTCDate(previous.getUTCDate() - 7);
   const previousStart = localDate(previous, 'UTC');
-  const planned = programs.reduce((sum, program) => sum + program.days.length, 0);
-  const adherence = (from: string, until: string) => planned ? Math.round(programs.reduce((sum, program) => sum +
-    new Set(sessions.filter(session => session.playerId === program.playerId && session.date >= from && session.date < until
-      && session.dayId !== null && program.days.includes(session.dayId)).map(session => session.dayId)).size, 0) / planned * 100) : 0;
-  const next = new Date(`${start}T12:00:00Z`);
-  next.setUTCDate(next.getUTCDate() + 7);
-  return { current: adherence(start, localDate(next, 'UTC')), previous: adherence(previousStart, start) };
+  const adherence = (dates: string[]) => {
+    const planned = new Set<string>();
+    const completed = new Set<string>();
+    for (const program of programs) {
+      if (!program.playerId) continue;
+      const training = program.days.filter(day => !day.isRestDay);
+      const rotating = program.days.every(day => day.weekday === null);
+      for (const date of dates) {
+        const weekday = weeklyWeekday(date);
+        const scheduled = rotating ? training.length > 0 && program.trainingDays.includes((weekday + 6) % 7)
+          : training.some(day => day.weekday === weekday);
+        if (!scheduled) continue;
+        const key = `${program.playerId}:${date}`;
+        planned.add(key);
+        if (sessions.some(session => session.playerId === program.playerId && session.date === date
+          && training.some(day => day.id === session.dayId))) completed.add(key);
+      }
+    }
+    return planned.size ? Math.round(completed.size / planned.size * 100) : 0;
+  };
+  return { current: adherence(week), previous: adherence(saturdayWeek(previousStart)) };
 }

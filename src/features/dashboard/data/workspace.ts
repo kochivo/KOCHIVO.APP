@@ -57,7 +57,7 @@ export async function loadHomeSummary(now: Date) {
   const first = new Date(`${today.slice(0, 7)}-01T00:00:00Z`);
   const start = new Date(first.getTime() - 86400000).toISOString();
   const end = new Date(Date.UTC(first.getUTCFullYear(), first.getUTCMonth() + 1, 2)).toISOString();
-  const [payments, meals, programs, sessions, plan, activity, lastPayments, assessments, collections, completed] = await Promise.all([
+  const [payments, meals, programs, sessions, plan, activity, lastPayments, assessments, collections, completed, intake] = await Promise.all([
     client.from('player_payments').select('created_at,amount_egp').eq('captain_id', captain).gte('created_at', start).lt('created_at', end),
     client.from('nutrition_plans').select('player_id').eq('captain_id', captain).eq('status', 'active').eq('is_template', false),
     client.from('programs').select('player_id,program_days(id,weekday,is_rest_day)').eq('captain_id', captain).eq('status', 'active').eq('is_template', false),
@@ -69,12 +69,14 @@ export async function loadHomeSummary(now: Date) {
     Promise.all((['check_ins', 'form_checks', 'form_requests'] as const).map(table =>
       client.from(table).select('id', { count: 'exact', head: true }).eq('captain_id', captain)
         .gte('reviewed_at', new Date(timezoneMidnight(today, timezone)).toISOString()).lte('reviewed_at', now.toISOString()))),
+    client.from('player_intake').select('player_id,training_days'),
   ]);
-  const failure = payments.error ?? meals.error ?? programs.error ?? lastPayments.error ?? assessments.error ?? collections.error ?? completed.find(row => row.error)?.error;
+  const failure = payments.error ?? meals.error ?? programs.error ?? lastPayments.error ?? assessments.error ?? collections.error ?? completed.find(row => row.error)?.error ?? intake.error;
   if (failure) throw failure;
   if (!payments.data || !meals.data || !programs.data || !lastPayments.data || !assessments.data || !collections.data) throw new Error('Home unavailable');
   const adherence = weekComparison(programs.data.map(program => ({ playerId: program.player_id,
-    days: program.program_days.filter(day => !day.is_rest_day).map(day => day.id) })),
+    days: program.program_days.map(day => ({ id: day.id, weekday: day.weekday, isRestDay: day.is_rest_day })),
+    trainingDays: intake.data?.find(row => row.player_id === program.player_id)?.training_days ?? [] })),
   sessions.map(session => ({ playerId: session.player_id, dayId: session.program_day_id, date: session.training_date })), today);
   return { today, timezone, adherence: adherence.current, previousAdherence: adherence.previous, paid: monthlyPayments([...payments.data, ...collections.data], now, timezone),
     sessions: sessions.map(session => ({ playerId: session.player_id, date: session.training_date })),

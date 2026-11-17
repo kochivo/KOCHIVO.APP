@@ -12,6 +12,7 @@ export interface ChatMessage {
   readAt: string | null;
   createdAt: string;
   url?: string;
+  urlExpiresAt?: number;
 }
 
 export interface ChatThreadItem extends ChatMessage {

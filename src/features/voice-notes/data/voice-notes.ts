@@ -49,9 +49,10 @@ export async function sendVoiceNote(client: SupabaseClient<AppDatabase>, input: 
   return note;
 }
 
-export async function listVoiceNotes(client: SupabaseClient<AppDatabase>, playerId: string): Promise<VoiceNote[]> {
-  const { data, error } = await client.from('voice_notes').select(fields)
-    .eq('player_id', playerId).order('created_at', { ascending: false }).limit(30);
+export async function listVoiceNotes(client: SupabaseClient<AppDatabase>, playerId: string, captainId?: string): Promise<VoiceNote[]> {
+  let query = client.from('voice_notes').select(fields).eq('player_id', playerId);
+  if (captainId) query = query.eq('captain_id', captainId);
+  const { data, error } = await query.order('created_at', { ascending: false }).limit(30);
   if (error || !data) throw new Error('Loading voice notes failed');
   return withUrls(client, data);
 }

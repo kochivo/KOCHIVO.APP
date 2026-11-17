@@ -35,9 +35,11 @@ it('uses player-local dates for expiry and excludes non-active relationships', (
     player('later', { accessUntil: '2026-11-20' }), player('pending', { pending: true, accessUntil: '2026-11-13' })], now, 'Africa/Cairo')
     .map(row => row.playerId)).toEqual(['today', 'week']);
 });
-it('compares separate weeks and counts a repeated program day once in each week', () => {
-  expect(weekComparison([{ playerId: 'p', days: ['a', 'b'] }], [
+it('compares separate weeks and counts completed scheduled dates', () => {
+  expect(weekComparison([{ playerId: 'p', days: [
+    { id: 'a', weekday: 1, isRestDay: false }, { id: 'b', weekday: 2, isRestDay: false },
+  ], trainingDays: [] }], [
     { playerId: 'p', dayId: 'a', date: '2026-11-08' }, { playerId: 'p', dayId: 'a', date: '2026-11-09' },
     { playerId: 'p', dayId: 'a', date: '2026-11-01' }, { playerId: 'p', dayId: 'b', date: '2026-11-02' },
-  ], '2026-11-12')).toEqual({ current: 50, previous: 100 });
+  ], '2026-11-12')).toEqual({ current: 100, previous: 100 });
 });

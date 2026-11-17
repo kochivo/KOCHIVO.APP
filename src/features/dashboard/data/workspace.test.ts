@@ -42,7 +42,7 @@ it('merges all three real event kinds, ignores absent events and caps at the lat
 it('returns timezone-aware payments, weighted adherence and active meal-plan players', async () => {
   state.rows.player_payments = { error: null, data: [{ created_at: '2026-10-31T22:30:00Z', amount_egp: 150 }] };
   state.rows.nutrition_plans = { error: null, data: [{ player_id: 'a' }] };
-  state.rows.programs = { error: null, data: [{ player_id: 'a', program_days: [{ id: 'd', is_rest_day: false }, { id: 'rest', is_rest_day: true }] }] };
+  state.rows.programs = { error: null, data: [{ player_id: 'a', program_days: [{ id: 'd', weekday: 3, is_rest_day: false }, { id: 'rest', weekday: 4, is_rest_day: true }] }] };
   state.rows.workout_sessions = { error: null, data: [{ player_id: 'a', program_day_id: 'd', training_date: '2026-11-10' }, { player_id: 'a', program_day_id: 'd', training_date: '2026-11-10' }] };
   const result = await loadHomeSummary(new Date('2026-11-12T10:00:00Z'));
   expect(result).toMatchObject({ paid: 150, adherence: 100, limit: 5, today: '2026-11-12' });
@@ -50,6 +50,14 @@ it('returns timezone-aware payments, weighted adherence and active meal-plan pla
 });
 it('surfaces a failed list read instead of showing a false zero', async () => {
   state.rows.player_payments = { data: null, error: { message: 'Unavailable' } };
+  await expect(loadHomeSummary(new Date('2026-11-12T10:00:00Z'))).rejects.toEqual({ message: 'Unavailable' });
+});
+it('loads rotating intake weekdays and divides by planned occurrences', async () => {
+  state.rows.programs = { error: null, data: [{ player_id: 'a', program_days: [{ id: 'd', weekday: null, is_rest_day: false }] }] };
+  state.rows.player_intake = { error: null, data: [{ player_id: 'a', training_days: [0, 2, 4] }] };
+  state.rows.workout_sessions = { error: null, data: [{ player_id: 'a', program_day_id: 'd', training_date: '2026-11-10' }] };
+  expect(await loadHomeSummary(new Date('2026-11-12T10:00:00Z'))).toMatchObject({ adherence: 33 });
+  state.rows.player_intake = { data: null, error: { message: 'Unavailable' } };
   await expect(loadHomeSummary(new Date('2026-11-12T10:00:00Z'))).rejects.toEqual({ message: 'Unavailable' });
 });
 it('counts completed reviews and collected instalments in the same real home summary', async () => {
