@@ -1,16 +1,17 @@
 'use client';
 import { secondaryButtonClass } from '@/ui/secondary-button-class';
-import { useEffect, useRef, useState } from 'react';
-import { useT } from '@/core/i18n/client';
+import { Fragment, useEffect, useRef, useState } from 'react';
+import { useLocale, useT } from '@/core/i18n/client';
 import { useTimezone } from '@/core/timezone/client';
 import { AudioPlayer } from '@/ui/audio-player';
 import type { ChatThreadItem } from '@/features/chat';
 import { conversationMessages } from '../conversation-messages';
 import { voiceDuration } from '../conversation-preview';
+import { conversationDays, conversationDayLabel } from '../conversation-dates';
 
 const heights = [8, 16, 12, 18, 8, 14, 6, 18, 10, 4, 16, 10, 18, 8, 12, 6, 16, 10, 18, 6, 12, 16, 8, 14];
-export function ConversationBubbles({ items, onRetry }: { items: readonly ChatThreadItem[]; onRetry: (id: string) => unknown }) {
-  const t = useT(conversationMessages), timezone = useTimezone();
+export function ConversationBubbles({ items, onRetry, now = new Date() }: { items: readonly ChatThreadItem[]; onRetry: (id: string) => unknown; now?: Date }) {
+  const t = useT(conversationMessages), timezone = useTimezone(), locale = useLocale();
   const [broken, setBroken] = useState<string | null>(null);
   const bottom = useRef<HTMLDivElement>(null);
   const tail = items.at(-1)?.id;
@@ -18,7 +19,9 @@ export function ConversationBubbles({ items, onRetry }: { items: readonly ChatTh
   return <div className="min-h-0 flex-1">
     {!items.length && <p className="p-section text-center text-xs text-muted">{t('emptyThread')}</p>}
     <ol aria-label={t('thread')} className="flex flex-col gap-inline">
-      {items.map(item => <li key={item.id} className={`max-w-[75%] rounded-2xl px-card py-stack text-sm leading-[1.7] ${item.mine ? 'self-end rounded-se-[5px] bg-lime text-on-lime' : 'self-start rounded-ss-[5px] border border-line bg-surface-raised'}`}>
+      {conversationDays(items, timezone).map(group => <Fragment key={group.date}>
+        <li className="self-center py-inline text-xs text-muted"><time dateTime={group.date}>{conversationDayLabel(group.date, now, timezone, locale, t)}</time></li>
+        {group.items.map(item => <li key={item.id} className={`max-w-[75%] rounded-2xl px-card py-stack text-sm leading-[1.7] ${item.mine ? 'self-end rounded-se-[5px] bg-lime text-on-lime' : 'self-start rounded-ss-[5px] border border-line bg-surface-raised'}`}>
         {item.kind === 'text' ? <p className="whitespace-pre-wrap break-words">{item.body}</p> : <div className="relative w-[220px] max-w-full">
           <AudioPlayer src={item.url ?? ''} durationSeconds={item.durationSeconds ?? 0} playLabel={t('play')} pauseLabel={t('pause')}
             formatTime={voiceDuration} onError={() => setBroken(item.id)}
@@ -33,7 +36,7 @@ export function ConversationBubbles({ items, onRetry }: { items: readonly ChatTh
         {broken === item.id && <p role="alert">{t('playFailed')}</p>}
         {item.status === 'sending' && <p role="status" className="text-micro">{t('sending')}</p>}
         {item.status === 'failed' && <button type="button" className={`${secondaryButtonClass} min-h-12 text-start underline`} onClick={() => onRetry(item.id)}>{t('failed')}</button>}
-      </li>)}
+      </li>)}</Fragment>)}
     </ol><div ref={bottom} />
   </div>;
 }

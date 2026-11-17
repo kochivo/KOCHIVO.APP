@@ -52,7 +52,11 @@ async function render(players: RosterPlayer[]) {
 }
 it.each([0, 1])('keeps an empty hero with %i players and no outstanding work', async count => {
   const html = await render(count ? [player] : []);
-  expect(html).toContain('خلصت كل مهام النهارده. فريقك ماشي تمام.');
+  expect(html).toContain('خلصت مهام النهارده.');
+  expect(html).toContain('KO · ملخص النهارده');
+  expect(html).toContain('التزام الفريق الأسبوع ده 78%.');
+  expect(html).toContain('href="/captain/players"');
+  expect(html).not.toContain('فريقك ماشي تمام');
   expect(html).not.toContain('ابدأ المهام');
   expect(html).toContain('مفيش مهام. عاش يا كابتن.');
   expect(html).not.toContain('<details');

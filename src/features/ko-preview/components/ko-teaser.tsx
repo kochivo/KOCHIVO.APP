@@ -21,6 +21,7 @@ export function KoTeaser({ role, userId, joined: initialJoined, readFailed = fal
   const path = usePathname();
   const [open, setOpen] = useState(false);
   const [joined, setJoined] = useState(initialJoined);
+  const position = role === 'captain' ? 'min-[760px]:start-auto min-[760px]:end-20' : '';
   const [panel, setPanel] = useState<{ Component: typeof KoTeaserPanel | null; failed: boolean }>({ Component: null, failed: false });
   async function loadPanel() {
     setPanel({ Component: null, failed: false });
@@ -34,7 +35,7 @@ export function KoTeaser({ role, userId, joined: initialJoined, readFailed = fal
   return <>
     <button id={openerId} type="button" aria-label={t('teaserOpen')} aria-haspopup="dialog" aria-expanded={open}
       onClick={() => { setOpen(!open); if (!open && !panel.Component) void loadPanel(); }}
-      className="fixed start-[max(1rem,var(--safe-start))] bottom-[calc(var(--nav-clearance)+0.5rem)] z-30 grid size-13 min-h-12 min-w-12 place-items-center rounded-card border border-lime/30 bg-bg shadow-xl lg:bottom-6">
+      className={`fixed start-[max(1rem,var(--safe-start))] bottom-[calc(var(--nav-clearance)+0.5rem)] z-30 grid size-13 min-h-12 min-w-12 place-items-center rounded-card border border-lime/30 bg-bg shadow-xl lg:bottom-6 ${position}`}>
       <KoAvatar expression="welcome" motion={open ? 'none' : 'idle'} className="size-13" />
       <span className="absolute -top-2 -end-3 rounded-full border border-line bg-surface-raised px-inline py-inline text-xs font-bold text-muted">{t('soon')}</span>
     </button>

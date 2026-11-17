@@ -11,6 +11,7 @@ import { captainClient } from './client';
 import { revenueSince, summarizeRevenue } from '../finance';
 import type { BillingResult } from '../types';
 import { paymentMethodClient } from './payment-method-client';
+import { currentPaymentCollections } from './current-payment-collections';
 
 export async function fetchBilling(): Promise<BillingResult> {
   return fetchBillingAt(new Date());
@@ -36,13 +37,14 @@ export async function fetchBillingAt(now: Date): Promise<BillingResult> {
     if (roster.error || !roster.players || tier.error || !tier.data) throw new Error('billing unavailable');
     const ids = roster.players.map((player) => player.playerId);
     const paymentIds = payments.data?.map(payment => payment.id) ?? [];
-    const [phones, plan, subscription, paymentPackages] = await Promise.all([
+    const [phones, plan, subscription, paymentPackages, collections] = await Promise.all([
       ids.length ? client.from('profiles').select('id, phone').in('id', ids) : { data: [], error: null },
       client.from('plan_tiers').select('tier, price_egp, player_limit').eq('tier', tier.data).single(),
       client.from('captain_subscriptions').select('ends_at').eq('captain_id', captainId).eq('tier', tier.data)
         .lte('starts_at', timestamp).gt('ends_at', timestamp).order('ends_at', { ascending: false }).limit(1).maybeSingle(),
       captainWorkspaceEnabled() && paymentIds.length ? paymentMethodClient(client).from('player_payments').select('id, package_id, price_egp, method')
         .eq('captain_id', captainId).in('id', paymentIds) : { data: [], error: null },
+      currentPaymentCollections(client, captainId, paymentIds),
     ]);
     if (phones.error || plan.error || !plan.data || subscription.error || payments.error
       || packages.error || dues.error || paid.error || collected.error || paymentPackages.error) {
@@ -56,7 +58,7 @@ export async function fetchBillingAt(now: Date): Promise<BillingResult> {
       players: roster.players.map(player => {
         const payment = paymentMap.get(player.playerId);
         return { ...player, status: playerStatus({ ...player, today }), phone: phoneMap.get(player.playerId) ?? null,
-          lastPayment: payment ? { ...payment, ...packageMap.get(payment.id) } : null, due: dueMap.get(player.playerId) ?? 0 };
+          lastPayment: payment ? { ...payment, ...packageMap.get(payment.id), ...collections.get(payment.id) } : null, due: dueMap.get(player.playerId) ?? 0 };
       }),
       plan: plan.data, used: roster.players.length, subscriptionEnd: subscription.data?.ends_at ?? null,
       packages: packages.data,

@@ -43,13 +43,13 @@ const tableFor = (kind: TemplateKind) => kind === 'program' ? 'programs' : 'nutr
 
 export async function createTemplate(input: unknown): Promise<TemplateResult<string>> {
   const t = await getT(messages);
-  const parsed = z.object({ kind: kindSchema }).strict().safeParse(input);
+  const parsed = z.object({ kind: kindSchema, title: z.string().trim().min(1).max(80) }).strict().safeParse(input);
   if (!parsed.success) return { error: t('checkTheTemplateTypeNameAndPlayer') };
   try {
     const { client, captain } = await session();
     const id = uuidv7();
     const program = parsed.data.kind === 'program';
-    const row = { id, captain_id: captain, player_id: null, is_template: true, title: t('blankTitle'), status: 'draft' as const };
+    const row = { id, captain_id: captain, player_id: null, is_template: true, title: parsed.data.title, status: 'draft' as const };
     const result = program ?
       await client.from('programs').insert({ ...row, settings: { repeatWeekly: true } }) :
       await client.from('nutrition_plans').insert(row);

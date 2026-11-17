@@ -52,10 +52,12 @@ export function TemplatesScreen({ libraryKind = 'program' }: { libraryKind?: Tem
   const [createError, setCreateError] = useState('');
   const libraryType = captainWorkspaceEnabled() ? kind : null;
   async function create() {
+    const title = window.prompt(t('templateName'))?.trim();
+    if (!title) return;
     if (!lock(['create'])) return;
     setCreating(true); setCreateError('');
     try {
-      const result = await createTemplate({ kind });
+      const result = await createTemplate({ kind, title });
       if (result.error !== undefined) { setCreateError(result.error); return; }
       router.push(templateEditorHref(kind, result.data, captainWorkspaceEnabled()));
     } catch { setCreateError(t('couldntSaveTemplateTryAgain')); }

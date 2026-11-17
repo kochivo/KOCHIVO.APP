@@ -9,6 +9,7 @@ const FoodPrices = dynamic(() => import('./food-prices').then(m => m.FoodPrices)
 export function FoodPricesEntry({ platform = false }: { platform?: boolean }) {
   const [open, setOpen] = useState(false), t = useT(messages);
   return <section className="glass space-y-stack rounded-card p-card">
+    <p className="text-sm text-muted">{t('estimate')}</p>
     <Button variant="secondary" aria-expanded={open} onClick={() => setOpen(!open)}>{t('prices')}</Button>
     {open && <FoodPrices platform={platform} />}
   </section>;

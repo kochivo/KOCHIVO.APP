@@ -13,7 +13,7 @@ export const messages = defineMessages({
     protein: "بروتين",
     carbs: "كارب",
     fat: "دهون",
-    g: "ج",
+    g: "جم",
     thisMealIsBeingPrepared: "الوجبة لسه بتتجهز",
     swap: "بدّل",
     mealEaten: "كلت الوجبة",
@@ -26,7 +26,7 @@ export const messages = defineMessages({
     lastUpdatedAWhileAgo: "آخر تحديث من شوية",
     todaysMealsList: "وجبات النهارده",
     foodDataIsMissing: "بيانات الأكل ناقصة",
-    macroAmount: "{value0} / {value1}ج",
+    macroAmount: "{value0} / {value1} جم",
     swapFood: "بدّل {value0}",
   },
   en: {

@@ -104,10 +104,12 @@ describe('fetchBilling', () => {
   };
   let phoneError = false;
   let paymentError = false;
+  let currentCollections: { payment_id: string; amount_egp: number; method: string | null }[] = [];
   beforeEach(() => {
     vi.resetAllMocks();
     phoneError = false;
     paymentError = false;
+    currentCollections = [];
     mocks.user.mockResolvedValue({ data: { claims: { sub: 'session-captain' } }, error: null });
     mocks.rpc.mockImplementation(async (name: string) => ({
       error: name === 'captain_last_payments' && paymentError ? { code: '500' } : null,
@@ -120,10 +122,11 @@ describe('fetchBilling', () => {
         eq: (...args: unknown[]) => { filters(table, 'eq', ...args); return query; },
         lte: (...args: unknown[]) => { filters(table, 'lte', ...args); return query; },
         gt: (...args: unknown[]) => { filters(table, 'gt', ...args); return query; },
-        order: () => query, limit: () => query, is: () => query, neq: () => query, range: () => query,
+        order: () => query, limit: () => query, is: () => query, neq: () => query,
+        range: () => table === 'payment_collections' ? Promise.resolve({ data: currentCollections, error: null }) : query,
         gte: (...args: unknown[]) => { filters(table, 'gte', ...args); return query; },
         then: (resolve: (value: unknown) => void) => resolve({ data: tables[table] ?? [], error: null }),
-        in: () => table === 'chat_messages' ? query : Promise.resolve(table === 'player_payments'
+        in: () => table === 'chat_messages' || table === 'payment_collections' ? query : Promise.resolve(table === 'player_payments'
           ? { data: [{ id: payment.id, package_id: pkg.id, price_egp: pkg.price_egp }], error: null }
           : { data: [{ id: 'player-1', phone: '+201001234567' }], error: phoneError ? { code: '500' } : null }),
         single: async () => ({ data: table === 'profiles' ? { role: 'captain' } : { tier: 'champion', player_limit: 20, price_egp: 399 }, error: null }),
@@ -146,6 +149,12 @@ describe('fetchBilling', () => {
     expect(mocks.rpc).toHaveBeenCalledWith('captain_last_payments');
     expect(filters).toHaveBeenCalledWith('captain_subscriptions', 'lte', 'starts_at', '2026-11-02T23:30:00.000Z');
     expect(filters).toHaveBeenCalledWith('captain_subscriptions', 'gt', 'ends_at', '2026-11-02T23:30:00.000Z');
+  });
+  it('attaches collections to the matching latest renewal without changing received revenue', async () => {
+    currentCollections = [{ payment_id: payment.id, amount_egp: 700, method: 'cash' }];
+    const result = await fetchBilling();
+    expect(result.data?.players[0]?.lastPayment).toMatchObject({ amount_egp: 800, collected_egp: 700, collection_method: 'cash' });
+    expect(result.data?.revenue).toEqual({ thisMonth: 800, lastMonth: 200, dues: 700, owing: 1 });
   });
   it('returns an empty roster with the plan', async () => {
     mocks.rpc.mockImplementation(async (name: string) => ({ error: null, data: name === 'current_tier' ? 'entry' : [] }));

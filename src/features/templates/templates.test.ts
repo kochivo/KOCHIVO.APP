@@ -24,6 +24,11 @@ beforeEach(() => {
 });
 
 describe('template validation', () => {
+  it.each([undefined, '', '   ', 'x'.repeat(81)])('requires a real name before creating: %s', async title => {
+    expect(await createTemplate({ kind: 'program', title })).toHaveProperty('error');
+    expect(mocks.client.auth.getClaims).not.toHaveBeenCalled();
+    expect(mocks.query.insert).not.toHaveBeenCalled();
+  });
   it.each(['', '   ', 'x'.repeat(81)])('rejects invalid title %s before accessing the client', async title => {
     expect(await saveAsTemplate({ kind: 'program', id, title })).toHaveProperty('error');
     expect(await renameTemplate({ kind: 'nutrition', id, title })).toHaveProperty('error');
@@ -44,17 +49,17 @@ describe('template validation', () => {
 describe('template actions', () => {
   it.each(['program', 'nutrition'] as const)('creates a blank %s template with no player', async kind => {
     mocks.query.insert.mockResolvedValue({ error: null });
-    const result = await createTemplate({ kind });
+    const result = await createTemplate({ kind, title: ' خطتي ' });
     expect(result.data).toMatch(/^[0-9a-f-]{36}$/);
     expect(mocks.client.from).toHaveBeenCalledWith(kind === 'program' ? 'programs' : 'nutrition_plans');
     expect(mocks.query.insert).toHaveBeenCalledWith(expect.objectContaining({
-      id: result.data, captain_id: 'captain', player_id: null, is_template: true, title: 'قالب جديد', status: 'draft',
+      id: result.data, captain_id: 'captain', player_id: null, is_template: true, title: 'خطتي', status: 'draft',
     }));
   });
   it('starts a program template as a seven-day week so rest days can be set', async () => {
     vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '0');
     mocks.query.insert.mockResolvedValue({ error: null });
-    const result = await createTemplate({ kind: 'program' });
+    const result = await createTemplate({ kind: 'program', title: 'خطتي' });
     expect(mocks.client.from).toHaveBeenCalledWith('program_days');
     const days = mocks.query.insert.mock.calls[1]?.[0] as { weekday: number; is_rest_day: boolean; program_id: string }[];
     expect(days.map(day => day.weekday)).toEqual([0, 1, 2, 3, 4, 5, 6]);
@@ -63,19 +68,19 @@ describe('template actions', () => {
   it('starts workspace templates with Saturday ready for training', async () => {
     vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
     mocks.query.insert.mockResolvedValue({ error: null });
-    await createTemplate({ kind: 'program' });
+    await createTemplate({ kind: 'program', title: 'خطتي' });
     const days = mocks.query.insert.mock.calls[1]?.[0] as { weekday: number; is_rest_day: boolean }[];
     expect(days.map(day => day.is_rest_day)).toEqual([false, true, true, true, true, true, true]);
     expect(days[0]?.weekday).toBe(0);
   });
   it('removes the template when its days cannot be created', async () => {
     mocks.query.insert.mockResolvedValueOnce({ error: null }).mockResolvedValueOnce({ error: { code: '42501' } });
-    expect(await createTemplate({ kind: 'program' })).toHaveProperty('error');
+    expect(await createTemplate({ kind: 'program', title: 'خطتي' })).toHaveProperty('error');
     expect(mocks.query.delete).toHaveBeenCalled();
   });
   it('reports a failed blank template creation', async () => {
     mocks.query.insert.mockResolvedValue({ error: { code: '42501' } });
-    expect(await createTemplate({ kind: 'program' })).toHaveProperty('error');
+    expect(await createTemplate({ kind: 'program', title: 'خطتي' })).toHaveProperty('error');
   });
   it.each(['program', 'nutrition'] as const)('copies a %s template through copy_template', async kind => {
     expect(await copyTemplate({ kind, id, title: ' نسخة ' })).toEqual({ data: id });

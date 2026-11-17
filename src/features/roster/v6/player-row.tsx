@@ -28,13 +28,13 @@ export function PlayerRow({ player, today, meta, activity, mobile = false }: {
   const pill = <span className={`inline-flex h-6 shrink-0 items-center whitespace-nowrap rounded-full border px-stack text-micro font-medium ${
     status.tone === 'warn' ? 'border-warn/20 bg-warn/10 text-warn' : status.tone === 'calm' ? 'border-calm/20 bg-calm/10 text-calm' :
       status.tone === 'lime' ? 'border-lime/20 bg-lime/10 text-lime' : 'border-line bg-ink/5 text-muted'}`}>
-    {t(status.key === 'good' ? 'okay' : status.key, { count: n(status.count) })}</span>;
+    {t(status.key === 'good' ? 'okay' : status.key, { n: status.count, count: n(status.count) })}</span>;
   const dots = activity ? <WeekDots today={player.playerToday ?? today} startedOn={player.startedOn} activity={activity} /> : null;
   const href = `/captain/players/${player.playerId}`;
   if (mobile) return <Link href={href} prefetch={false}
     className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-12 items-center gap-stack p-stack text-start focus-visible:outline-2 focus-visible:outline-lime" })}>
     {avatar}<div className="min-w-0 flex-1"><b className="block truncate text-sm">{player.fullName}</b>
-      <small className="block text-xs text-muted">{goal ? `${goal} · ` : ''}{player.awaitingPlansAt ? t('waitingForPlans') : t('days', { count: n(days) })}</small>
+      <small className="block text-xs text-muted">{goal ? `${goal} · ` : ''}{player.awaitingPlansAt ? t('waitingForPlans') : t('days', { n: days, count: n(days) })}</small>
       <div className="mt-inline">{dots}</div><LightDayEntry playerId={player.playerId} date={player.playerToday ?? today} /></div>{pill}
   </Link>;
   return <tr className="relative cursor-pointer border-b border-line-soft text-row last:border-0 hover:bg-ink/5">
@@ -45,7 +45,7 @@ export function PlayerRow({ player, today, meta, activity, mobile = false }: {
     <td className="px-stack py-inline">{dots}</td>
     <td className="px-stack py-inline tabular-nums">{meta ? n(meta.weight) : t('unknown')}</td>
     <td className="px-stack py-inline tabular-nums">{activity?.rpe != null ? n(activity.rpe) : t('unknown')}</td>
-    <td className={`px-stack py-inline tabular-nums ${!player.awaitingPlansAt && days <= 3 ? 'text-warn' : ''}`}>{player.awaitingPlansAt ? t('waitingForPlans') : t('dayCount', { count: n(days) })}</td>
+    <td className={`px-stack py-inline tabular-nums ${!player.awaitingPlansAt && days <= 3 ? 'text-warn' : ''}`}>{player.awaitingPlansAt ? t('waitingForPlans') : t('dayCount', { n: days, count: n(days) })}</td>
     <td className="space-y-inline px-stack py-inline">{pill}<LightDayEntry playerId={player.playerId} date={player.playerToday ?? today} /></td>
   </tr>;
 }

@@ -4,9 +4,10 @@ import type { LeaderboardRow } from '@/features/ranks';
 import { formatNumber } from '@/lib/format';
 import { messages } from '../messages';
 
-export function Podium({ rows, locale }: { rows: LeaderboardRow[]; locale: Locale }) {
+export function Podium({ rows, locale, allTime = false }: { rows: LeaderboardRow[]; locale: Locale; allTime?: boolean }) {
   const t = createT(messages, locale);
-  const places = [1, 0, 2].flatMap(index => rows[index] ? [{ row: rows[index], place: index + 1 }] : []);
+  const eligible = rows.filter(row => (allTime ? row.lifetime : row.monthly) > 0);
+  const places = [1, 0, 2].flatMap(index => eligible[index] ? [{ row: eligible[index], place: index + 1 }] : []);
   if (!places.length) return null;
   return <section className="glass rounded-card p-card" aria-label={t('workspaceTitle')}>
     <ol className="flex items-end justify-center gap-stack pt-stack">

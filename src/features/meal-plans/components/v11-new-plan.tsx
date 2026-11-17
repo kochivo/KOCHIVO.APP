@@ -17,10 +17,12 @@ export function V11NewPlan({ card = false, plans = [] }: { card?: boolean; plans
   const [assigning, setAssigning] = useState(false);
   async function create() {
     if (lock.current) return;
+    const title = window.prompt(t('planName'))?.trim();
+    if (!title) return;
     lock.current = true; setBusy(true); setError('');
     try {
       const { createTemplate } = await import('@/features/templates');
-      const result = await createTemplate({ kind: 'nutrition' });
+      const result = await createTemplate({ kind: 'nutrition', title });
       if (result.error !== undefined) { setError(result.error); return; }
       router.push(`/captain/nutrition/${result.data}`);
     } catch { setError(t('error')); }

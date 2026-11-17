@@ -30,6 +30,8 @@ it('links the home stat to billing and shows only the selected player in their f
   expect(html).not.toContain('إيصال مستني مراجعتك');
 });
 it('shows an empty state when nobody owes and still shows upcoming subscriptions', () => {
-  expect(render({ rows: [], total: 0, count: 0, unpriced: 0 })).toContain('مفيش مبالغ مستنية');
+  const html = render({ rows: [], total: 0, count: 0, unpriced: 0 });
+  expect(html).toContain('مفيش مبالغ مستنية');
+  expect(html).not.toContain('جنيه مستني من 0');
   expect(render({ ...data, count: 0, total: 0, unpriced: 0, rows: data.rows.slice(4) })).toContain('قريب');
 });

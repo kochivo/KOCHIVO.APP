@@ -2,6 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const conversationMessages = defineMessages({
   ar: {
+    today: 'النهارده', yesterday: 'امبارح',
     title: 'صندوق الوارد', profile: 'الملف', back: 'رجوع', voice: 'رسالة صوتية · {duration}', own: 'انت: {text}',
     remaining: 'باقي {n} يوم', empty: 'مفيش محادثات لسه', emptyThread: 'مفيش رسائل لسه',
     choose: 'اختار محادثة', loading: 'بنحمّل المحادثات…', error: 'مش قادرين نحمّل المحادثات', retry: 'جرّب تاني',
@@ -12,6 +13,7 @@ export const conversationMessages = defineMessages({
     unsent: 'فيه تسجيل لسه متبعتش. تخرج وتمسحه؟', conversations: 'المحادثات', thread: 'الرسائل', unread: '{n} رسائل غير مقروءة',
   },
   arStd: {
+    today: 'اليوم', yesterday: 'أمس',
     title: 'صندوق الوارد', profile: 'الملف', back: 'رجوع', voice: 'رسالة صوتية · {duration}', own: 'أنت: {text}',
     remaining: 'متبقي {n} يوم', empty: 'لا توجد محادثات بعد', emptyThread: 'لا توجد رسائل بعد',
     choose: 'اختر محادثة', loading: 'جارٍ تحميل المحادثات…', error: 'تعذّر تحميل المحادثات', retry: 'حاول مجددًا',
@@ -22,6 +24,7 @@ export const conversationMessages = defineMessages({
     unsent: 'لديك تسجيل لم يُرسل. هل تريد الخروج وحذفه؟', conversations: 'المحادثات', thread: 'الرسائل', unread: '{n} رسائل غير مقروءة',
   },
   en: {
+    today: 'Today', yesterday: 'Yesterday',
     title: 'Inbox', profile: 'Profile', back: 'Back', voice: 'Voice note · {duration}', own: 'You: {text}',
     remaining: '{n} days left', empty: 'No conversations yet', emptyThread: 'No messages yet',
     choose: 'Choose a conversation', loading: 'Loading conversations…', error: 'Could not load conversations', retry: 'Try again',

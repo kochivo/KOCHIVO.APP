@@ -15,7 +15,7 @@ export async function saveGenerated(generated: GeneratedProgram, title: string, 
   try {
     if (mode === 'assign' && !generated.player_id) return { error: t('saveError') };
     if (!programId) {
-      const created = generated.player_id ? await createProgram(generated.player_id, title) : await createTemplate({ kind: 'program' });
+      const created = generated.player_id ? await createProgram(generated.player_id, title) : await createTemplate({ kind: 'program', title });
       if (created.error !== undefined) return { error: created.error };
       programId = created.data;
     }

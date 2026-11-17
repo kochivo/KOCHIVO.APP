@@ -29,9 +29,22 @@ it('hides zero unread pills and supplies an empty state', () => {
   expect(render(h(ConversationList, { rows: [], onSelect() {} }))).toContain('مفيش محادثات لسه');
 });
 it('aligns incoming bubbles at start and lime captain bubbles at end with times', () => {
-  const html = render(h(ConversationBubbles, { items: [message, { ...message, id: 'own', mine: true }], onRetry() {} }));
+  const html = render(h(ConversationBubbles, { items: [message, { ...message, id: 'own', mine: true }], now: new Date('2026-11-14T15:00:00Z'), onRetry() {} }));
   expect(html).toContain('self-start');
   expect(html).toContain('self-end');
   expect(html).toContain('bg-lime text-on-lime');
-  expect(html.match(/dateTime=/gi)).toHaveLength(2);
+  expect(html.match(/dateTime=/gi)).toHaveLength(3);
+  expect(html).toContain('النهارده');
+});
+
+it('renders one separator for each message day, including older dates', () => {
+  const html = render(h(ConversationBubbles, { items: [
+    { ...message, id: 'old', createdAt: '2026-11-04T08:51:00Z' },
+    { ...message, id: 'yesterday', createdAt: '2026-11-13T21:40:00Z' },
+    message,
+  ], now: new Date('2026-11-14T15:00:00Z'), onRetry() {} }));
+  expect(html).toContain('dateTime="2026-11-04"');
+  expect(html).toContain('4 نوفمبر 2026');
+  expect(html).toContain('امبارح');
+  expect(html).toContain('النهارده');
 });

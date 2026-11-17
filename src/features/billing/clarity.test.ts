@@ -18,6 +18,7 @@ it.each([1, 2, 5, 11, 100])('pluralizes player limits and overdue counts for %s'
   for (const style of ['egyptian', 'standard'] as const) {
     const unit = n >= 2 && n <= 10 ? 'لاعبين' : 'لاعب';
     expect(createT(messages, 'ar', style)('usage', { used: 1, n, count: n })).toBe(`1 من ${n} ${unit}`);
+    expect(createT(messages, 'ar', style)('price', { price: 0, n, count: n })).toContain(`${n} ${unit}`);
     expect(createT(workspace, 'ar', style)('usage', { used: 1, n, limit: n })).toBe(`1 من ${n} ${unit}`);
     expect(createT(workspace, 'ar', style)('usageTail', { n, limit: n })).toBe(`من ${n} ${unit}`);
     expect(createT(payments, 'ar', style)('summary', { n, count: n, paid: 0, due: 0, ending: 0 })).toContain(`من ${n} ${unit} ·`);

@@ -5,13 +5,24 @@ import { activityRange, matchesTab, playerStatus, tabCounts, weekDots, withOpenT
 const today = '2026-11-14';
 const base: RosterPlayer = { playerId: 'p', fullName: 'Ali', startedOn: '2026-10-01',
   accessUntil: '2026-12-01', lastTrainingDate: today, programTitle: 'Strength', openTasks: 0 };
-it('counts overlapping tabs and excludes expired and paused players from doing well', () => {
+it('assigns each player to one bucket, with urgent work before new and ending', () => {
   const players = [base, { ...base, openTasks: 1 }, { ...base, startedOn: '2026-11-08' },
     { ...base, accessUntil: '2026-11-21' }, { ...base, frozenAt: today }, { ...base, accessUntil: '2026-11-13' }];
-  expect(tabCounts(players, today)).toEqual({ all: 6, needsYou: 1, good: 2, newPlayers: 1, ending: 1, stopped: 2 });
+  expect(tabCounts(players, today)).toEqual({ all: 6, needsYou: 1, good: 1, newPlayers: 1, ending: 1, stopped: 2 });
   expect(matchesTab({ ...base, startedOn: '2026-11-07' }, 'newPlayers', today)).toBe(false);
   expect(matchesTab({ ...base, startedOn: '2026-11-15' }, 'newPlayers', today)).toBe(false);
   expect(matchesTab({ ...base, accessUntil: today }, 'ending', today)).toBe(true);
+});
+it('includes absent, waiting and unassigned players in needs-you without gaps or overlap', () => {
+  const players = [base, { ...base, lastTrainingDate: '2026-11-01' },
+    { ...base, programTitle: null }, { ...base, awaitingPlansAt: today },
+    { ...base, startedOn: '2026-11-13', openTasks: 1 },
+    { ...base, accessUntil: '2026-11-16', lastTrainingDate: '2026-11-01' }];
+  expect(tabCounts(players, today)).toEqual({ all: 6, needsYou: 5, good: 1, newPlayers: 0, ending: 0, stopped: 0 });
+  for (const player of players) {
+    expect(['needsYou', 'good', 'newPlayers', 'ending', 'stopped'].filter(tab =>
+      matchesTab(player, tab as Parameters<typeof matchesTab>[1], today))).toHaveLength(1);
+  }
 });
 it('prioritizes paused, video, absence, renewal, missing program and other tasks', () => {
   const urgent = { ...base, openTasks: 2, lastTrainingDate: '2026-11-09', accessUntil: '2026-11-17', programTitle: null };

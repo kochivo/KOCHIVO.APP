@@ -1,7 +1,14 @@
 import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
+  arStd: {
+    shortDays: 'أحد اثنين ثلاثاء أربعاء خميس جمعة سبت',
+    readOnly: 'هذه معاينة فقط. أي تعديل في البرنامج أو نظام الأكل يظهر هنا مباشرة.',
+    'sets.zero': 'لا توجد مجموعات', 'sets.two': 'مجموعتان', 'sets.few': '{count} مجموعات',
+    'sets.many': '{count} مجموعة', 'sets.other': '{count} مجموعة',
+  },
   ar: {
+    shortDays: 'حد اتنين تلات أربع خميس جمعة سبت',
     sessionRpe: 'مجهود التمرين {n} / 10',
     unavailable: "اختار لاعب عشان تشوف خطته",
     openPlayers: "افتح اللاعبين",
@@ -25,7 +32,8 @@ export const messages = defineMessages({
     'noDays': "لسه مفيش أيام في البرنامج",
     'noExercises': "لسه مفيش تمارين في اليوم ده",
     'sets.one': "مجموعة واحدة",
-    'sets.other': "{count} مجموعات",
+    'sets.zero': 'مفيش مجموعات', 'sets.two': 'مجموعتين', 'sets.few': '{count} مجموعات',
+    'sets.many': '{count} مجموعة', 'sets.other': '{count} مجموعة',
     'reps.one': "{count} عدة",
     'reps.other': "{count} عدة",
     'rest.one': "راحة {count} ثانية",
@@ -40,7 +48,7 @@ export const messages = defineMessages({
     'preview': "معاينة كلاعب · {name}",
     'player': "اللاعب",
     'back': "رجوع للاعبين",
-    'readOnly': "ده عرض بس. أي تعديل من البرنامج أو النظام",
+    'readOnly': "ده عرض بس. أي تعديل في البرنامج أو النظام بيظهر هنا على طول.",
     'sections': "أقسام المعاينة",
     'loading': "جاري تحميل المعاينة",
     'retry': "جرّب تاني",
@@ -61,6 +69,7 @@ export const messages = defineMessages({
     'dash': "—",
   },
   en: {
+    shortDays: 'Sun Mon Tue Wed Thu Fri Sat',
     sessionRpe: 'Session RPE {n} / 10',
     unavailable: "Choose a player to preview",
     openPlayers: "Open players",
@@ -99,7 +108,7 @@ export const messages = defineMessages({
     'preview': "Player preview · {name}",
     'player': "Player",
     'back': "Back to players",
-    'readOnly': "Preview only. Edit the program or meal plan to make changes",
+    'readOnly': "Preview only. Changes to the program or meal plan appear here straight away.",
     'sections': "Preview sections",
     'loading': "Loading preview",
     'retry': "Try again",

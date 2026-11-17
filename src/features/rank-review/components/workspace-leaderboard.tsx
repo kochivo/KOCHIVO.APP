@@ -40,7 +40,7 @@ export function WorkspaceLeaderboard({ locale, board }: ComponentProps<typeof Le
     </div>}
     {board.error ? <ErrorState message={t('error')} retryLabel={t('retry')} onRetry={board.reload} /> : !rows ?
       <LoadingState variant="cards" /> : <>
-        <Podium rows={rows} locale={locale} />
+        <Podium rows={rows} locale={locale} allTime={allTime} />
         <WorkspaceBoardList rows={rows} locale={locale} allTime={allTime} />
         {board.now && board.savePrize && canEditPrize(board.month, board.now) &&
           <CrownPrizeEditor key={board.month} locale={locale} prize={board.prize ?? null} onSave={board.savePrize}

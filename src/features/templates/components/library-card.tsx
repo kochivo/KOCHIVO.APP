@@ -16,7 +16,7 @@ export function LibraryCard({ onOpen, error, ...props }: ComponentProps<typeof L
   const number = (value: number) => formatNumber(value, locale);
   const training = template.kind === 'program';
   const usage = template.uses === 1 ? t('usedOne') : template.uses ? t('used', { n: number(template.uses) }) : t(training ? 'unusedTraining' : 'unusedNutrition');
-  const summary = training ? [t('days', { days: number(template.count) }),
+  const summary = training ? [tt('dayCount', { n: template.count, count: number(template.count) }),
     template.minutes ? t('minutes', { minutes: number(template.minutes) }) : '', template.place ? t(template.place) : ''].filter(Boolean).join(' · ')
     : [t('meals', { meals: number(template.count) }), template.protein != null ? t('protein', { protein: number(template.protein) }) : '', template.split ? t('split') : ''].filter(Boolean).join(' · ');
   // Lift the card whose menu is open above its siblings; each glass card is its own stacking layer.

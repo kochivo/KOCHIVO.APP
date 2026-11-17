@@ -4,8 +4,9 @@ import { arStd } from './standard/messages';
 
 export const workspaceMessages = defineMessages({
   ar: {
-    title: 'الاشتراكات والدفعات', catalog: 'الباقات والعروض', income: 'دخل الشهر', pending: 'مستني تأكيد',
+    title: 'الاشتراكات', catalog: 'الباقات والعروض', income: 'دخل الشهر', pending: 'مستني تأكيد',
     ending: 'بيخلص خلال 7 أيام', active: 'اشتراك شغال', soon: 'بيخلص قريب', all: 'كل الدفعات',
+    noPayment: 'مفيش دفعة متسجلة', unpaid: 'من غير مبلغ', partial: 'مدفوعة جزئيًا', fullyPaid: 'مدفوعة كاملة',
     confirm: 'وافق', confirmed: 'اتأكدت', saved: 'اتوافق على طلب تجديد {name}',
     renewalRequest: 'طلب تجديد · {package}', renewalOnly: 'تجديد من غير دفعة',
     fallback: 'اتقبل الطلب. العرض خلص؛ راجع تفاصيل الاشتراك', after: 'بعد {n} يوم',
@@ -15,8 +16,9 @@ export const workspaceMessages = defineMessages({
     back: 'رجوع', percent: '%', bonus: '+',
   },
   arStd: {
-    title: 'الاشتراكات والدفعات', catalog: 'الباقات والعروض', income: 'دخل الشهر', pending: 'بانتظار التأكيد',
+    title: 'الاشتراكات', catalog: 'الباقات والعروض', income: 'دخل الشهر', pending: 'بانتظار التأكيد',
     ending: 'تنتهي خلال 7 أيام', active: 'اشتراك نشط', soon: 'تنتهي قريبًا', all: 'كل الدفعات',
+    noPayment: 'لا توجد دفعة مسجلة', unpaid: 'دون مبلغ', partial: 'مدفوعة جزئيًا', fullyPaid: 'مدفوعة بالكامل',
     confirm: 'وافق', confirmed: 'مؤكدة', saved: 'تمت الموافقة على طلب تجديد {name}',
     renewalRequest: 'طلب تجديد · {package}', renewalOnly: 'تجديد دون دفعة',
     fallback: 'تم قبول الطلب. انتهى العرض؛ راجع تفاصيل الاشتراك', after: 'بعد {n} يوم',
@@ -26,8 +28,9 @@ export const workspaceMessages = defineMessages({
     back: 'رجوع', percent: '%', bonus: '+',
   },
   en: {
-    title: 'Subscriptions and payments', catalog: 'Packages and offers', income: 'Monthly income', pending: 'Awaiting confirmation',
+    title: 'Subscriptions', catalog: 'Packages and offers', income: 'Monthly income', pending: 'Awaiting confirmation',
     ending: 'Ending within 7 days', active: 'Active subscriptions', soon: 'Ending soon', all: 'All payments',
+    noPayment: 'No payment recorded', unpaid: 'Not paid', partial: 'Partly paid', fullyPaid: 'Paid in full',
     confirm: 'Approve', confirmed: 'Confirmed', saved: '{name}’s renewal request approved',
     renewalRequest: 'Renewal request · {package}', renewalOnly: 'Renewed without payment',
     fallback: 'Request approved. The offer expired; review the subscription', after: 'In {n} days',
@@ -45,7 +48,7 @@ export const messages = defineMessages({
     unfreezeFirst: 'فكّ التجميد الأول',
     invitePlayer: "ضيف لاعب",
     'reminder': "يا {name}، اشتراكك مع الكابتن بيخلص {date}. تحب نجدد؟",
-    'billing': "الدفعات",
+    'billing': "الاشتراكات",
     'intro': "جدّد للاعبينك وتابع باقتك",
     'loadFailed': "مش قادرين نحمّل الدفعات. جرّب تاني",
     'retry': "جرّب تاني",
@@ -60,6 +63,7 @@ export const messages = defineMessages({
     'myPlan': "باقتي",
     planLoadFailed: 'مش قادرين نحمّل باقتك',
     'price.one': "{price} جنيه / شهر · لحد {count} لاعب",
+    'price.two': "{price} جنيه / شهر · لحد {count} لاعبين", 'price.few': "{price} جنيه / شهر · لحد {count} لاعبين",
     'price.other': "{price} جنيه / شهر · لحد {count} لاعب",
     'usage.one': "{used} من {count} لاعب",
     'usage.two': "{used} من {count} لاعبين",
@@ -137,7 +141,7 @@ export const messages = defineMessages({
     unfreezeFirst: 'Unfreeze first',
     invitePlayer: "Invite a player",
     'reminder': "Hi {name}, your coaching subscription ends on {date}. Ready to renew?",
-    'billing': "Billing",
+    'billing': "Subscriptions",
     'intro': "Renew players and track your plan",
     'loadFailed': "Couldn't load billing. Try again",
     'retry': "Try again",

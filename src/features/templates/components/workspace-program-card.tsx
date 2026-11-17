@@ -18,12 +18,12 @@ export function WorkspaceProgramCard({ template, busy, error, onOpen, onAssign, 
   return <li className="glass min-w-0 rounded-[20px] p-card">
     <div className="mb-stack flex items-center gap-inline">
       <h2 className="min-w-0 break-words text-sm font-bold">{starterText(template.title, locale)}</h2>
-      <span className="ms-auto shrink-0 rounded-full bg-ink/5 px-inline py-inline text-micro text-muted">{t('programPlayers', { count: formatNumber(template.uses, locale) })}</span>
+      <span className="ms-auto shrink-0 rounded-full bg-ink/5 px-inline py-inline text-micro text-muted">{t('programPlayers', { n: template.uses, count: formatNumber(template.uses, locale) })}</span>
     </div>
-    <p className="text-xs text-muted">{t('programDays', { count: formatNumber(template.count, locale) })}</p>
-    {template.weekdays && <div className="my-stack flex gap-inline" aria-label={t('programTrainingDays')}>
+    <p className="text-xs text-muted">{t('programDays', { n: template.count, count: formatNumber(template.count, locale) })}</p>
+    {template.weekdays && <div className="my-stack flex" aria-label={t('programTrainingDays')}>
       {letters.map((letter, index) => <span key={index} aria-label={t(template.weekdays?.[index] ? 'programTrainingDay' : 'programRestDay', { day: letter })}
-        className={`flex h-[26px] flex-1 items-center justify-center rounded-[7px] text-micro ${template.weekdays?.[index] ? 'bg-lime-soft text-lime' : 'bg-ink/5 text-muted'}`}>{letter}</span>)}
+        className={`flex h-[26px] flex-1 items-center justify-center whitespace-nowrap rounded-control text-micro ${template.weekdays?.[index] ? 'bg-lime-soft text-lime' : 'bg-ink/5 text-muted'}`}>{letter}</span>)}
     </div>}
     {template.scheduleError && <div role="alert" className="my-stack text-xs text-danger">{template.scheduleError}
       <Button variant="secondary" className="min-h-12" onClick={onRetry}>{t('tryAgain')}</Button></div>}

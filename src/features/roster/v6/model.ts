@@ -25,15 +25,18 @@ export function playerStatus(player: RosterPlayer, today: string, video = false)
   return { key: 'good', tone: 'lime', count: 0 } as const;
 }
 
-export function matchesTab(player: RosterPlayer, tab: Tab, today: string) {
+export function playerBucket(player: RosterPlayer, today: string): Exclude<Tab, 'all'> {
   const days = daysBetween(today, player.accessUntil);
   const stopped = Boolean(player.frozenAt) || (!player.awaitingPlansAt && days < 0);
-  if (tab === 'needsYou') return player.openTasks > 0;
-  if (tab === 'good') return playerStatus(player, today).key === 'good';
-  if (tab === 'newPlayers') { const age = daysBetween(player.startedOn, today); return age >= 0 && age < 7; }
-  if (tab === 'ending') return !player.awaitingPlansAt && !stopped && days <= 7;
-  if (tab === 'stopped') return stopped;
-  return true;
+  if (stopped) return 'stopped';
+  const absent = daysBetween(player.lastTrainingDate ?? player.startedOn, player.playerToday ?? today);
+  if (absent >= 4 || player.openTasks > 0 || player.awaitingPlansAt || !player.programTitle) return 'needsYou';
+  if (days <= 7) return 'ending';
+  const age = daysBetween(player.startedOn, today);
+  return age >= 0 && age < 7 ? 'newPlayers' : 'good';
+}
+export function matchesTab(player: RosterPlayer, tab: Tab, today: string) {
+  return tab === 'all' || playerBucket(player, today) === tab;
 }
 export function tabCounts(players: RosterPlayer[], today: string) {
   return Object.fromEntries(tabs.map(tab => [tab, players.filter(player => matchesTab(player, tab, today)).length])) as Record<Tab, number>;

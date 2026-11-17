@@ -18,7 +18,7 @@ export function CaptainNavGroups({ active, counts, tiles = false, onNavigate, on
         <div className={tiles ? 'grid grid-cols-3 gap-inline' : 'space-y-inline'}>
           {items.map(({ id, href, icon: Icon }) => {
             const count = id in counts ? counts[id as keyof FrameCounts] : undefined;
-            return <Link prefetch={onSelect ? false : undefined} key={id} href={onSelect ? `#${href}` : href} onClick={event => {
+            return <Link prefetch={false} key={id} href={onSelect ? `#${href}` : href} onClick={event => {
               onNavigate?.();
               if (onSelect) { event.preventDefault(); onSelect(id); }
             }} aria-current={active === id ? 'page' : undefined}

@@ -9,11 +9,7 @@ import { CaptainProfileCard } from './captain-profile-card';
 
 const Renewal = dynamic(() => import('@/features/billing').then(module => module.RenewalEntry));
 
-// RenewalChoice marks pending cancellation with an unlabelled paragraph; status/error paragraphs have roles.
-const renewalStyle = '[&>section]:border-0 [&>section]:bg-transparent [&>section]:p-0 [&>section]:shadow-none ' +
-  '[&>section:not(:has(>p:not([role])))>button]:w-full [&>section:not(:has(>p:not([role])))>button]:border-0 ' +
-  '[&>section:not(:has(>p:not([role])))>button]:bg-lime [&>section:not(:has(>p:not([role])))>button]:font-extrabold ' +
-  '[&>section:not(:has(>p:not([role])))>button]:text-on-lime';
+const renewalStyle = '[&>section]:border-0 [&>section]:bg-transparent [&>section]:p-0 [&>section]:shadow-none';
 
 export function CaptainProfileScreen() {
   const locale = useLocale(), t = useT(messages);

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import type { Locale } from '@/core/i18n/locale';
 import { createT } from '@/core/i18n/messages';
 import { formatDateAr } from '@/lib/dates';
-import { formatNumber } from '@/lib/format';
+import { setPerformance } from './set-performance';
 import type { FileActivity } from './load-activity';
 import type { Profile } from './types';
 import { v11Messages } from './v11-messages';
@@ -37,10 +37,10 @@ export function OverviewActivity({ profile, activity, playerId, locale }: { prof
         {sets[0]?.exercises?.media_path && <ExerciseImage src={exerciseMediaUrl(sets[0].exercises.media_path)} alt="" width={44} height={44} />}
         <div className="min-w-0 flex-1"><h3 className="text-sm">{locale === 'en' ? sets[0]?.exercises?.name_en : sets[0]?.exercises?.name_ar}</h3>
           {sets.filter(set => (set.drop_index ?? 0) === 0).map((set, index) => <div key={index} className="mt-inline text-xs text-muted">
-            <p><bdi>{formatNumber(set.weight_kg ?? 0, locale)} × {formatNumber(set.reps ?? 0, locale)}</bdi> {ft('kg')}</p>
+            <p><bdi>{setPerformance(set.weight_kg, set.reps, ft('kg'), locale)}</bdi></p>
             {sets.some(row => row.program_exercise_id === set.program_exercise_id && row.set_index === set.set_index && row.drop_index > 0) &&
               <p className="text-warn">{st('drops', { values: sets.filter(row => row.program_exercise_id === set.program_exercise_id && row.set_index === set.set_index && row.drop_index > 0)
-                .sort((a, b) => a.drop_index - b.drop_index).map(row => `${formatNumber(row.weight_kg ?? 0, locale)} × ${formatNumber(row.reps ?? 0, locale)}`).join('، ') })}</p>}
+                .sort((a, b) => a.drop_index - b.drop_index).map(row => setPerformance(row.weight_kg, row.reps, ft('kg'), locale)).join('، ') })}</p>}
           </div>)}</div>
       </div>) : <p className="text-sm text-muted">{t('noWorkout')}</p>}
     </section>

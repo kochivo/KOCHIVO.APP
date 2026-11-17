@@ -30,7 +30,7 @@ export function MoneyOwedView({ data, mode, playerId, locale, t, onSelect, rowAc
   if (mode === 'home') return summary;
   const rows = mode === 'player' ? data.rows.filter(row => row.playerId === playerId) : data.rows;
   return <section className="space-y-stack" aria-label={t('title')}>
-    {mode === 'billing' && <><h2 className="text-lg font-bold">{t('title')}</h2>{summary}</>}
+    {mode === 'billing' && <><h2 className="text-lg font-bold">{t('title')}</h2>{data.count > 0 && summary}</>}
     {data.count === 0 && mode === 'billing' && <p className="text-sm text-muted">{t('empty')}</p>}
     {rows.length === 0 && mode === 'player' && <p className="glass rounded-card p-card text-sm text-muted">{t('empty')}</p>}
     {rows.length > 0 && <ul className="glass divide-y divide-line rounded-card">{rows.map(row => {

@@ -14,7 +14,7 @@ export const messages = defineMessages({
     goal: 'هدفه', cut: 'تنشيف', maintain: 'ثبات', bulk: 'تضخيم', rate: 'التغيير بالكيلو في الأسبوع',
     formula: 'المعادلة: Mifflin-St Jeor. لو ضفت نسبة الدهون هنستخدم Katch-McArdle.',
     bmr: 'الحرق وهو مرتاح', tdee: 'الحرق اليومي', target: 'السعرات المستهدفة',
-    macros: 'الماكروز', protein: 'بروتين', carbs: 'كارب', fat: 'دهون', grams: '{value} ج', percent: '{value}٪',
+    macros: 'الماكروز', protein: 'بروتين', carbs: 'كارب', fat: 'دهون', grams: '{value} جم', percent: '{value}٪',
     split: 'يوم تمرين ويوم راحة', splitHint: 'كارب أكتر في التمرين. المتوسط الأسبوعي تقريبي بعد التقريب.',
     training: 'يوم تمرين', rest: 'يوم راحة', kcal: '{value} سعرة',
     splitUnavailable: 'التقسيم مش مناسب للأرقام دي. هنستخدم رقم واحد عشان البروتين والدهون يفضلوا ثابتين.',

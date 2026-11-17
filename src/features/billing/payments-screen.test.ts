@@ -40,7 +40,7 @@ it('renders the four tiles, reminder window and payments section', () => {
   state.result.data.players = [{ playerId: 'p', fullName: 'Ali', accessUntil: '2026-12-01', status: 'active',
     phone: null, lastPayment: null, due: 0, startedOn: '2026-10-01', lastTrainingDate: null, programTitle: null, openTasks: 0 }];
   const html = render();
-  for (const label of ['الاشتراكات والدفعات', 'دخل الشهر', 'مستني تأكيد', 'بيخلص خلال 7 أيام', 'اشتراك شغال', 'بيخلص قريب', 'كل الدفعات', 'مفيش اشتراكات بتخلص قريب']) expect(html).toContain(label);
+  for (const label of ['الاشتراكات', 'دخل الشهر', 'مستني تأكيد', 'بيخلص خلال 7 أيام', 'اشتراك شغال', 'بيخلص قريب', 'كل الدفعات', 'مفيش اشتراكات بتخلص قريب']) expect(html).toContain(label);
   expect(html).not.toContain('بعد 19 يوم');
   expect(html).toContain('4,500');
   expect(html).not.toContain('ج.م');
@@ -68,8 +68,8 @@ it.each([null, 0, 800])('does not call unpaid renewals confirmed payments: %s', 
       package_id: null, days: 30, price_egp: 800, amount_egp: amount, created_at: '2026-11-13T12:00:00Z' } };
   const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' },
     createElement(WorkspacePaymentsTable, { players: [player], packages: [], today: '2026-11-14' })));
-  expect(html.includes('Confirmed')).toBe(amount !== null && amount > 0);
-  expect(html.includes('Renewed without payment')).toBe(amount === null || amount === 0);
+  expect(html.includes('Paid in full')).toBe(amount !== null && amount > 0);
+  expect(html.includes('Not paid')).toBe(amount === null || amount === 0);
 });
 
 it.each(['instapay', null] as const)('shows a recorded payment method or the legacy dash: %s', method => {

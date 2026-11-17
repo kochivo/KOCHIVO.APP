@@ -15,7 +15,7 @@ describe('prize month control', () => {
     const html = renderToStaticMarkup(createElement(PrizeMonthControl, {
       locale: 'en', now, month: '2026-11-01', onChange,
     }));
-    expect(html).toContain('Next month');
+    expect(html).toContain('Set next month');
     expect(html).toContain('control-secondary');
     expect(html).not.toContain('bg-lime');
   });

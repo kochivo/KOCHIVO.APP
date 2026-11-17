@@ -20,7 +20,6 @@ import { WorkspaceFact } from './workspace-fact';
 import { WorkspaceSheet } from './workspace-sheet';
 import { WorkspacePreferences } from './workspace-preferences';
 import { WorkspacePageCard } from './workspace-page-card';
-import { WorkspaceLanguageCard } from './workspace-language-card';
 import { useCalendarClock } from '@/lib/use-calendar-clock';
 import { useTimezone } from '@/core/timezone/client';
 import { localDate } from '@/lib/dates';
@@ -51,10 +50,9 @@ export function CaptainSettings({ signOut }: { signOut?: ReactNode }) {
       : <LoadingState variant="detail" /> : <>
       <div className="grid items-start gap-stack min-[760px]:grid-cols-2">
         <WorkspacePageCard profile={profile} edit={() => setPanel('profile')} />
-        <WorkspaceLanguageCard profile={profile} />
+        <WorkspacePreferences profile={profile} update={setEdited} />
       </div>
       <div className="grid items-start gap-card-gap min-[760px]:grid-cols-2">
-        <WorkspacePreferences profile={profile} update={setEdited} />
         {now && ramadanSettingsVisible(localDate(now, timezone)) && <Ramadan />}
         <SubscriptionEntry />
         <PaymentMethods />

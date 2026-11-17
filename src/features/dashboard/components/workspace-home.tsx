@@ -53,7 +53,7 @@ export async function WorkspaceHome({ data, now = new Date() }: {
   return <section data-tour-ready="true">
     {header}
     <div className="space-y-stack">
-      <HomeHero tasks={tasks} count={count} completed={summary.completedTasks} />
+      <HomeHero tasks={tasks} count={count} completed={summary.completedTasks} adherence={summary.adherence} />
       <HomeTiles adherence={summary.adherence} previous={summary.previousAdherence} trained={training.trained} active={training.active}
         pending={count} paid={summary.paid} progress={taskProgress(summary.completedTasks, count)} />
       <MoneyOwedEntry mode="home" />

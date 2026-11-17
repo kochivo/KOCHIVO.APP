@@ -29,16 +29,16 @@ describe('program weekday markers', () => {
   it('does not invent weekdays for unscheduled days', () => {
     expect(programWeek([{ weekday: null }, {}])).toEqual([false, false, false, false, false, false, false]);
   });
-  it('renders seven Arabic letters and highlights only the training days', () => {
+  it('renders readable Arabic day names and highlights only the training days', () => {
     const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' }, createElement(WorkspaceProgramCard, {
       template: { id: 'program', kind: 'program', title: 'Strength', starter: false, count: 2, uses: 3,
         created_at: '2026-11-14', weekdays: [true, false, false, true, false, false, false] },
       busy: false, onOpen() {}, onAssign() {}, onRetry() {},
     })));
     expect(html.match(/bg-lime-soft text-lime/g)).toHaveLength(2);
-    expect(html).toContain('س: تمرين');
-    expect(html).toContain('ث: تمرين');
-    for (const letter of ['ح', 'ن', 'ر', 'خ', 'ج']) expect(html).toContain(`${letter}: راحة`);
+    expect(html).toContain('سبت: تمرين');
+    expect(html).toContain('تلات: تمرين');
+    for (const day of ['حد', 'اتنين', 'أربع', 'خميس', 'جمعة']) expect(html).toContain(`${day}: راحة`);
     expect(html).toContain('ادّيه للاعب');
     expect(html).toContain('عدّل');
   });

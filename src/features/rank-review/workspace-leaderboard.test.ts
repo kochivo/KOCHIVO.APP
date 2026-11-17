@@ -15,7 +15,7 @@ describe('workspace leaderboard', () => {
     }));
     expect(html).toContain('No players yet');
     expect(html).toContain('Set a prize for this month');
-    expect(html).toContain('Next month');
+    expect(html).toContain('Set next month');
   });
   it('keeps the existing prize editor available after selecting next month', () => {
     const html = renderToStaticMarkup(createElement(WorkspaceLeaderboard, {

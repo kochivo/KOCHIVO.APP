@@ -37,7 +37,7 @@ it('renders real player data, weekly dots and the urgent status in both responsi
   expect(html.match(/فيديو مستني/g)).toHaveLength(2);
   expect(html).toContain('82');
   expect(html).toContain('بطل');
-  expect(html).toContain('باقي 3 يوم');
+  expect(html).toContain('باقي 3 أيام');
   expect(html).toContain('2026-11-12: اتمرن');
   expect(html).toContain('text-warn');
   expect(html).not.toContain('Join request sentinel');

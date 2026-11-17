@@ -31,7 +31,7 @@ export const arStd = {
   "protein": "بروتين",
   "carbs": "كربوهيدرات",
   "fat": "دهون",
-  "grams": "{value} ج",
+  "grams": "{value} جم",
   "percent": "{value}٪",
   "split": "يوم تمرين ويوم راحة",
   "splitHint": "كربوهيدرات أكثر في يوم التمرين. المتوسط الأسبوعي تقريبي بعد التقريب.",

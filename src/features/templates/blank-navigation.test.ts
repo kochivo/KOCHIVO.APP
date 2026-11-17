@@ -40,15 +40,16 @@ function sections() {
 beforeEach(() => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '0');
   vi.resetAllMocks(); state.refs = [];
+  vi.stubGlobal('window', { prompt: vi.fn(() => 'My plan') });
   state.values = [[], 'program', null, null, false];
 });
-afterEach(() => vi.unstubAllEnvs());
+afterEach(() => { vi.unstubAllEnvs(); vi.unstubAllGlobals(); });
 it('creates an enabled training template and opens the shared template editor', async () => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
   state.create.mockResolvedValue({ data: 'blank' });
   await sections()[0]?.props.onCreate();
   expect(state.push).toHaveBeenCalledWith('/captain/templates?plan=blank');
-  expect(state.create).toHaveBeenCalledWith({ kind: 'program' });
+  expect(state.create).toHaveBeenCalledWith({ kind: 'program', title: 'My plan' });
 });
 it('creates an enabled nutrition template and opens the shared nutrition editor', async () => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
@@ -56,7 +57,7 @@ it('creates an enabled nutrition template and opens the shared nutrition editor'
   state.create.mockResolvedValue({ data: 'meal-template' });
   await sections()[0]?.props.onCreate();
   expect(state.push).toHaveBeenCalledWith('/captain/nutrition/meal-template');
-  expect(state.create).toHaveBeenCalledWith({ kind: 'nutrition' });
+  expect(state.create).toHaveBeenCalledWith({ kind: 'nutrition', title: 'My plan' });
 });
 it('edits a ready program by opening an owned copy in the shared builder', async () => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
@@ -75,12 +76,18 @@ it.each([['program', '/captain/programs/blank'], ['nutrition', '/captain/nutriti
     state.create.mockResolvedValue({ data: 'blank' });
     await sections()[0]?.props.onCreate();
     expect(state.push).toHaveBeenCalledWith(url);
-    expect(state.create).toHaveBeenCalledWith({ kind });
+    expect(state.create).toHaveBeenCalledWith({ kind, title: 'My plan' });
   },
 );
 it('keeps creation failures visible without navigating', async () => {
   state.create.mockResolvedValue({ error: 'Could not create' });
   await sections()[0]?.props.onCreate();
   expect(state.values).toContain('Could not create');
+  expect(state.push).not.toHaveBeenCalled();
+});
+it.each([null, '', '   '])('writes nothing when the name is canceled or empty: %s', async title => {
+  vi.mocked(window.prompt).mockReturnValue(title);
+  await sections()[0]?.props.onCreate();
+  expect(state.create).not.toHaveBeenCalled();
   expect(state.push).not.toHaveBeenCalled();
 });

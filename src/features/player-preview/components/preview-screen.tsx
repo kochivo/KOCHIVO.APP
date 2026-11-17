@@ -62,7 +62,7 @@ export function PreviewScreen({ result, today }: { result: Result; today: string
               <ol aria-label={t('weekdays')} className="glass grid grid-cols-7 rounded-control p-inline">
                 {data.week.map((entry) => <li key={entry.date} aria-current={entry.date === today ? 'date' : undefined}
                   className={`py-inline text-center text-xs ${entry.date === today ? 'rounded-control bg-lime-soft text-lime' : 'text-muted'}`}>
-                  <span>{formatDateAr(entry.date, { weekday: 'short' }, locale)}</span>
+                  <span className="whitespace-nowrap text-micro" title={formatDateAr(entry.date, { weekday: 'long' }, locale)}>{t('shortDays').split(' ')[new Date(`${entry.date}T12:00:00Z`).getUTCDay()]}</span>
                   <p className="font-bold">{formatNumber(Number(entry.date.slice(-2)), locale)}</p>
                   {/* A dot like the player's own strip: words do not fit seven 40px columns in English. */}
                   <span className="sr-only">{entry.trained ? t('trained') : !data.program ? t('dash') : data.program.training_days.length === 0 ||
@@ -73,7 +73,7 @@ export function PreviewScreen({ result, today }: { result: Result; today: string
               <section className="glass-strong space-y-stack rounded-card p-card">
                 <h2 className="text-xl font-bold">{!data.program ? t('noProgram') : rest ? t('todayRest') : day ? starterText(day.title, locale) : t('noDays')}</h2>
                 {day && <><p className="text-sm text-muted">{rest && `${starterText(day.title, locale)} · `}{t('exercises', { n: day.exercises.length, count: formatNumber(day.exercises.length, locale) })} · {t('sets', { n: day.exercises.reduce((count, exercise) => count + exercise.sets, 0), count: formatNumber(day.exercises.reduce((count, exercise) => count + exercise.sets, 0), locale) })}</p>
-                  <PreviewProgram program={data.program ? { ...data.program, days: [day] } : null} /></>}
+                  <PreviewProgram today program={data.program ? { ...data.program, days: [day] } : null} /></>}
                 {!day && <PreviewProgram program={data.program} />}
               </section>
             </div>}

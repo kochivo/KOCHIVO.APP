@@ -1,6 +1,15 @@
 import { readFileSync } from 'node:fs';
 import { expect, it } from 'vitest';
 
+it.each(['captain-nav-groups.tsx', 'captain-frame-nav-view.tsx'])(
+  'disables viewport and hover prefetch for captain navigation in %s', file => {
+    const source = readFileSync(`src/features/roster/components/${file}`, 'utf8');
+    const links = source.match(/<Link\b[^>]*>/g) ?? [];
+    expect(links.length).toBeGreaterThan(0);
+    for (const link of links) expect(link).toContain('prefetch={false}');
+  },
+);
+
 it('loads the legacy shell only after selecting the flag-off path', () => {
   const shell = readFileSync('src/features/roster/components/captain-shell.tsx', 'utf8');
   expect(shell).toContain("await import('./captain-legacy-shell')");
