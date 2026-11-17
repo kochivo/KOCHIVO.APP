@@ -1,4 +1,5 @@
 'use client';
+import { NumberInput } from '@/ui/number-input';
 import { editableFieldClass } from '@/ui/edit-in-place';
 import { useT } from '@/core/i18n/client';
 import { Stepper } from '@/ui/stepper';
@@ -18,9 +19,9 @@ export function SetPlanEditor({ plan, onChange }: { plan: SetTarget[]; onChange:
       <Stepper size="compact" label={t('setNumber', { n: index + 1 })} value={row.reps_min} min={1} max={100} step={1}
         format={minimum => row.reps_max === null ? t('failure') : row.reps_max === minimum ? String(minimum) : `${minimum}–${row.reps_max}`}
         onChange={value => { const reps_min = Math.round(value); update(index, { reps_min, reps_max: row.reps_max === null ? null : Math.max(reps_min, row.reps_max) }); }} />
-      <input type="number" aria-label={t('setMaximum', { n: index + 1 })} dir="ltr" min={row.reps_min}
+      <NumberInput allowEmpty aria-label={t('setMaximum', { n: index + 1 })} dir="ltr" min={row.reps_min}
         value={row.reps_max ?? ''} className={`${editableFieldClass} min-h-12 w-full bg-surface text-center text-sm`}
-        onChange={event => update(index, { reps_max: event.target.value === '' ? null : Math.max(row.reps_min, Math.min(2147483647, Math.round(Number(event.target.value)))) })} />
+        onCommit={value => update(index, { reps_max: value === null ? null : Math.max(row.reps_min, Math.min(2147483647, Math.round(value))) })} />
       <select aria-label={t('setIntensity', { n: index + 1 })} value={row.rir ?? ''} className={`${editableFieldClass} min-h-12 w-full bg-surface text-center text-xs`}
         onChange={event => update(index, { rir: event.target.value === '' ? null : Number(event.target.value) })}>
         <option value="">{t('noRir')}</option>{[0, 1, 2, 3, 4, 5].map(n => <option key={n} value={n}>{t('rir', { n })}</option>)}

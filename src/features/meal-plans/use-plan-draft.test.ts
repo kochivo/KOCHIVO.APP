@@ -6,8 +6,13 @@ import { usePlanDraft as renderPlanDraft } from './hooks/use-plan-draft';
 import type { PlanDraft } from './types';
 
 const state = vi.hoisted(() => ({ values: [] as unknown[], index: 0,
+  refs: [] as { current: unknown }[], refIndex: 0,
   save: vi.fn(), activate: vi.fn(), success: vi.fn() }));
 vi.mock('react', async original => ({ ...await original<typeof React>(), useEffect: () => {},
+  useRef: (current: unknown) => {
+    const index = state.refIndex++;
+    return state.refs[index] ?? (state.refs[index] = { current });
+  },
   useState: (initial: unknown) => {
     const index = state.index++;
     if (!(index in state.values)) state.values[index] = initial;
@@ -25,9 +30,9 @@ const draft: PlanDraft = { id: 'plan', playerId: 'player', title: 'Plan', status
     items: [{ id: 'item', position: 1, grams: 100, alternatives: [],
       food: { id: 'food', name: 'Food', photo: null, custom: false, kcal: 100, protein: 10, carbs: 10, fat: 1 } }] }] };
 function RenderDraft(clearErrorsOnEdit = false) { return renderPlanDraft('plan', { clearErrorsOnEdit }); }
-function render(clearErrorsOnEdit = false) { state.index = 0; return RenderDraft(clearErrorsOnEdit); }
+function render(clearErrorsOnEdit = false) { state.index = 0; state.refIndex = 0; return RenderDraft(clearErrorsOnEdit); }
 beforeEach(() => {
-  vi.resetAllMocks(); state.values = [draft, '', '', false, false, 0, false];
+  vi.resetAllMocks(); state.refs = []; state.values = [draft, '', '', false, false, 0, false];
   state.save.mockResolvedValue({ ok: true, data: undefined });
   state.activate.mockResolvedValue({ ok: true, data: undefined });
 });
@@ -99,4 +104,28 @@ it('preserves legacy error behavior on edits', () => {
   state.values[2] = 'validation';
   render().update(value => ({ ...value, title: 'Corrected' }));
   expect(render().error).toBe('validation');
+});
+
+it('keeps fields enabled during background saves and saves edits made while waiting', async () => {
+  let finish: (value: { ok: true }) => void = () => {};
+  state.save.mockReturnValueOnce(new Promise(resolve => { finish = resolve; }));
+  const first = render().persist();
+  expect(render().busy).toBe(false);
+  render().update(value => ({ ...value, title: 'Latest' }));
+  const next = render().persist();
+  expect(render().draft?.title).toBe('Latest');
+  expect(state.save).toHaveBeenCalledTimes(1);
+  finish({ ok: true }); await first; await next;
+  expect(state.save).toHaveBeenLastCalledWith({ ...draft, title: 'Latest' });
+  expect(render().dirty).toBe(false);
+});
+
+it('locks explicit Send until saving and activation finish', async () => {
+  let finish: (value: { ok: true }) => void = () => {};
+  state.save.mockReturnValueOnce(new Promise(resolve => { finish = resolve; }));
+  const send = render().persist(true, true);
+  expect(render().busy).toBe(true);
+  finish({ ok: true }); await send;
+  expect(render().busy).toBe(false);
+  expect(state.activate).toHaveBeenCalledOnce();
 });

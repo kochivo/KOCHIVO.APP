@@ -1,3 +1,4 @@
+import { NumberInput } from '@/ui/number-input';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { rowLinkClass } from '@/ui/row-link';
 import { DisclosureChevron } from '@/ui/disclosure-chevron';
@@ -55,8 +56,8 @@ export function ScheduleEditor({ form, locale, onChange, players = 0, style, sch
     <Button variant="secondary" type="button" disabled={!canManage} className="min-h-12 text-xs text-faint disabled:opacity-50" onClick={manage}>{t('schedule')}</Button>
     {s && <details className={workspace ? 'group mt-inline text-xs text-muted' : 'mt-inline text-xs text-faint'}>
       <summary className={workspace ? `${rowLinkClass} flex list-none items-center justify-between gap-inline py-stack text-ink` : 'min-h-12 cursor-pointer py-stack'}>{t('details')}{workspace && <DisclosureChevron />}</summary>
-      <label className="flex flex-wrap items-center gap-stack">{m.hour}<input aria-label={m.hour} className={workspace ? `${editableFieldClass} min-h-12 w-24 rounded-control border border-line bg-surface px-stack` : 'min-h-12 w-24 rounded-control border border-line bg-transparent px-stack'}
-        type="number" min={0} max={23} value={s.hour} onChange={e => onChange({ ...form, schedule: { ...s, hour: e.target.valueAsNumber } })} /></label>
+      <label className="flex flex-wrap items-center gap-stack">{m.hour}<NumberInput aria-label={m.hour} className={workspace ? `${editableFieldClass} min-h-12 w-24 rounded-control border border-line bg-surface px-stack` : 'min-h-12 w-24 rounded-control border border-line bg-transparent px-stack'}
+        min={0} max={23} value={s.hour} onCommit={value => onChange({ ...form, schedule: { ...s, hour: value } })} /></label>
     </details>}
   </div>;
 }

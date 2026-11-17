@@ -10,8 +10,8 @@ it('renders litres, quarter-litre steps and an automatic weight hint', () => {
     createElement(WaterTarget, { value: null, weightKg: 80, onChange: () => {} })));
   expect(html).toContain('Water a day');
   expect(html).toContain('step="0.25"');
-  expect(html).toContain('min="0.5"');
-  expect(html).toContain('max="10"');
+  expect(html).toContain('type="text"');
+  expect(html).toContain('inputMode="decimal"');
   expect(html).toContain('Automatic by weight: 2.8 L');
 });
 it('stores ml, rounds steps, clamps limits and clears to automatic', () => {

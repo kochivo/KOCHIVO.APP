@@ -1,4 +1,5 @@
 'use client';
+import { NumberInput } from '@/ui/number-input';
 import { Pencil } from 'lucide-react';
 import { clickableClass } from '@/ui/button';
 import { useT } from '@/core/i18n/client';
@@ -14,8 +15,7 @@ export function MealTargets({ totals, targets, onChange }: { totals: Macros; tar
     <div className="grid min-w-0 flex-1 gap-inline"><div className="flex flex-wrap justify-between gap-inline"><b>{t('targets')}</b><small className="text-muted">{t('hint')}</small></div>
       <div className="grid grid-cols-2 gap-inline min-[1000px]:grid-cols-4">{(['kcal', 'protein', 'carbs', 'fat'] as const).map(key => <label key={key} data-target={key} className="recessed grid min-w-0 rounded-control border border-line p-inline text-xs text-muted">
         <span className="flex items-center justify-between gap-inline">{label(key)}<Pencil aria-hidden className="size-3 shrink-0" /></span>
-        <input type="number" min={key === 'kcal' ? 800 : 0} max={key === 'kcal' ? 8000 : 32767} step={1} value={targets[key]} onChange={event => {
-          const value = event.target.valueAsNumber;
+        <NumberInput min={key === 'kcal' ? 800 : 0} max={key === 'kcal' ? 8000 : 32767} step={1} value={targets[key]} onCommit={value => {
           if (Number.isInteger(value) && value >= (key === 'kcal' ? 800 : 0) && value <= (key === 'kcal' ? 8000 : 32767)) onChange({ ...targets, [key]: value });
         }} className={`${clickableClass} min-h-12 w-full min-w-0 border-0 bg-transparent font-display text-title text-ink focus-visible:ring-2 focus-visible:ring-lime`} />
       </label>)}</div>

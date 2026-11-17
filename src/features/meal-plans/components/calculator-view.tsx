@@ -1,4 +1,5 @@
 'use client';
+import { NumberInput } from '@/ui/number-input';
 
 import { useState } from 'react';
 import { useT } from '@/core/i18n/client';
@@ -57,8 +58,8 @@ export function CalculatorView({ playerId, file, plans }: { playerId: string; fi
         <div className="grid grid-cols-3 gap-inline">{(['cut', 'maintain', 'bulk'] as const).map(value => <button key={value}
           type="button" aria-pressed={goal === value} onClick={() => { setGoal(value); setGoalFromFile(false); setRate(value === 'bulk' ? .25 : .5); }}
           className={`min-h-12 rounded-control border px-stack ${goal === value ? 'border-lime text-lime' : 'border-line'}`}>{t(value)}</button>)}</div>
-        {goal !== 'maintain' && <label className="grid gap-inline">{t('rate')}<input type="number" min={0} max={2} step={.05}
-          value={Number.isNaN(rate) ? '' : rate} onChange={event => setRate(event.target.value === '' ? NaN : Number(event.target.value))}
+        {goal !== 'maintain' && <label className="grid gap-inline">{t('rate')}<NumberInput allowEmpty min={0} max={2} step={.05}
+          value={Number.isNaN(rate) ? '' : rate} onCommit={value => setRate(value === null ? NaN : value)}
           className="min-h-12 rounded-control bg-surface px-stack" /><CalculatorSource local /></label>}
       </fieldset>
     </div>

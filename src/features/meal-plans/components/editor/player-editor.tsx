@@ -76,7 +76,7 @@ export function PlayerEditor({ data, editableMealNames = false }: { data: Awaite
   const { totals, incomplete } = nutritionTotals(visible);
   const goal = facts.targetWeight?.value == null || facts.weight?.value === facts.targetWeight.value ? 'maintain'
     : (facts.weight?.value ?? 0) > facts.targetWeight.value ? 'cut' : 'bulk';
-  return <div className="min-w-0">
+  return <div onBlur={() => void state.persist()} className="min-w-0">
     <header className="mb-card-gap flex flex-wrap items-center gap-card-gap">
       {template ? <label className="min-w-0 text-xs text-faint">{planT('planName')}<input value={draft.title} maxLength={80} disabled={state.busy} onChange={event => update(current => ({ ...current, title: event.target.value }))}
         className={`${editableFieldClass} block min-h-12 w-full bg-surface font-display text-stat font-semibold text-ink`} /></label> :

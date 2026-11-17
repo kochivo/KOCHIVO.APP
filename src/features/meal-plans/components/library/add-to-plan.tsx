@@ -1,4 +1,5 @@
 'use client';
+import { NumberInput } from '@/ui/number-input';
 import { useCallback, useId, useRef, useState } from 'react';
 import { X } from 'lucide-react';
 import { useT } from '@/core/i18n/client';
@@ -51,7 +52,7 @@ export function AddToPlan({ food, initialGrams, onClose }: { food: Food; initial
       {Boolean(plan.error) && <div role="alert">{bt('error')}<Button variant="secondary" onClick={() => void plan.retry()}>{bt('retry')}</Button></div>}
       {player && plan.status === 'ready' && !plan.data?.meals.length && <p className="text-muted">{t('noPlan')}</p>}
       {!!plan.data?.meals.length && <label className="grid gap-inline">{t('meal')}<select className={input} value={meal} onChange={event => setMeal(event.target.value)}><option value="">{t('choose')}</option>{plan.data.meals.map(row => <option key={row.id} value={row.id}>{t(row.dayType === 'training' ? 'training' : row.dayType === 'rest' ? 'rest' : 'everyDay')} · {row.name}</option>)}</select></label>}
-      <label className="grid gap-inline">{t('grams')}<input className={input} type="number" min={1} max={10000} value={grams} onChange={event => setGrams(Math.max(1, Math.min(10000, Number(event.target.value) || 1)))} /></label>
+      <label className="grid gap-inline">{t('grams')}<NumberInput className={input} min={1} max={10000} value={grams} onCommit={value => setGrams(Math.max(1, Math.min(10000, value || 1)))} /></label>
       <section className="glass-strong rounded-control p-card"><h3>{t('preview')} · {food.name}</h3><dl className="grid grid-cols-4 gap-stack">{(['kcal', 'protein', 'carbs', 'fat'] as const).map(key => <div key={key}><dt className="text-xs text-muted">{bt(key)}</dt><dd className="font-display text-title">{Math.round(values[key] * 10) / 10}</dd></div>)}</dl></section>
     </fieldset>{error && <p role="alert" className="text-danger">{error}</p>}
     <footer className="sheet sticky bottom-0 py-stack"><Button disabled={busy || !meal || !plan.data} onClick={() => void save()}>{busy ? bt('saving') : t('add')}</Button></footer>

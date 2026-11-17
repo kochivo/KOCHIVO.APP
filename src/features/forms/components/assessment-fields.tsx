@@ -1,3 +1,4 @@
+import { NumberInput } from '@/ui/number-input';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { editableFieldClass } from '@/ui/edit-in-place';
 import type { ArabicStyle, Locale } from '@/core/i18n/locale';
@@ -25,12 +26,12 @@ export function AssessmentFields({ value: s, onChange, locale, allowOnJoin = tru
     </div>
     <div className="my-stack grid grid-cols-1 gap-stack sm:grid-cols-3">
       {s.kind === 'days' && <label className="glass rounded-card border border-line-soft p-card text-xs text-muted">{t('every')}
-        <input type="number" min={2} max={60} value={s.every_days ?? ''} className={captainWorkspaceEnabled() ? `${editableFieldClass} ${input}` : input} onChange={e => onChange({ ...s, every_days: Number(e.target.value) })} />{t('daysUnit')}</label>}
+        <NumberInput min={2} max={60} value={s.every_days ?? ''} className={captainWorkspaceEnabled() ? `${editableFieldClass} ${input}` : input} onCommit={value => onChange({ ...s, every_days: value })} />{t('daysUnit')}</label>}
       {s.kind === 'week' && <div className="glass flex flex-wrap items-center gap-stack rounded-card border border-line-soft p-card text-xs text-muted"><span>{t('weekday')}</span>
         <ThemedSelect label={t('weekday')} value={String(s.weekday ?? 5)} onChange={value => onChange({ ...s, weekday: Number(value) })}
           options={formMessages[locale].weekdays.map((label, n) => ({ label, value: String(n) }))} /></div>}
       {s.kind === 'month' && <label className="glass rounded-card border border-line-soft p-card text-xs text-muted">{t('monthDay')}
-        <input type="number" min={1} max={31} value={s.day ?? ''} className={captainWorkspaceEnabled() ? `${editableFieldClass} ${input}` : input} onChange={e => onChange({ ...s, day: Number(e.target.value) })} /></label>}
+        <NumberInput min={1} max={31} value={s.day ?? ''} className={captainWorkspaceEnabled() ? `${editableFieldClass} ${input}` : input} onCommit={value => onChange({ ...s, day: value })} /></label>}
       <label className="glass rounded-card border border-line-soft p-card text-xs text-muted">{t('hour')}
         <input type="time" required className={captainWorkspaceEnabled() ? `${editableFieldClass} ${input}` : input} value={`${String(s.hour).padStart(2, '0')}:${String(s.minute).padStart(2, '0')}`}
           onChange={e => { const [hour, minute] = e.target.value.split(':').map(Number); onChange({ ...s, hour: hour ?? 0, minute: minute ?? 0 }); }} /></label>
@@ -42,7 +43,7 @@ export function AssessmentFields({ value: s, onChange, locale, allowOnJoin = tru
       <Chip className={selected} pressed={end === 'date'} onClick={() => onChange({ ...s, ends_on: s.ends_on ?? s.starts_on, max_times: null })}>{t('until')}</Chip>
       <Chip className={selected} pressed={end === 'count'} onClick={() => onChange({ ...s, ends_on: null, max_times: s.max_times ?? 2 })}>{t('times')}</Chip>
       {end === 'date' && <input aria-label={t('until')} type="date" min={s.starts_on} required className={captainWorkspaceEnabled() ? `${editableFieldClass} ${input} max-w-48` : `${input} max-w-48`} value={s.ends_on ?? ''} onChange={e => onChange({ ...s, ends_on: e.target.value })} />}
-      {end === 'count' && <input aria-label={t('times')} type="number" min={1} max={10000} required className={captainWorkspaceEnabled() ? `${editableFieldClass} ${input} max-w-24` : `${input} max-w-24`} value={s.max_times ?? ''} onChange={e => onChange({ ...s, max_times: Number(e.target.value) })} />}
+      {end === 'count' && <NumberInput aria-label={t('times')} min={1} max={10000} required className={captainWorkspaceEnabled() ? `${editableFieldClass} ${input} max-w-24` : `${input} max-w-24`} value={s.max_times ?? ''} onCommit={value => onChange({ ...s, max_times: value })} />}
     </div>
     <h2 className="mb-stack mt-card-gap font-display text-title font-semibold">{t('unanswered')}</h2>
     <div className="flex flex-wrap gap-inline">{([null, 12, 24] as const).map(hours => <Chip className={selected} key={String(hours)} pressed={s.remind_after_hours === hours}

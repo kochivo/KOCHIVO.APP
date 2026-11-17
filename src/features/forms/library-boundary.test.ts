@@ -8,6 +8,7 @@ import { templates } from './templates';
 
 vi.mock('./components/editor-session', () => { throw new Error('Editor loaded before opening a form'); });
 vi.mock('server-only', () => ({}));
+vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh() {} }) }));
 
 it('renders the initial library client entry without loading editor dependencies', () => {
   const markup = renderToStaticMarkup(createElement(FormsLibraryEntry, { form: null, locale: 'en' }, 'Server-rendered list'));

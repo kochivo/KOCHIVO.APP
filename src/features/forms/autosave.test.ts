@@ -1,8 +1,42 @@
-import { expect, it } from 'vitest';
+import { expect, it, vi } from 'vitest';
 import { createAutosave } from './hooks/autosave';
 import { copyTemplate } from './model';
 import { templates } from './templates';
 import { saveDraft } from './hooks/save-draft';
+
+it('saves after 1500ms and flushes immediately when a field blurs', async () => {
+  vi.useFakeTimers();
+  try {
+    const writes: string[] = [];
+    const autosave = createAutosave(async form => { writes.push(form.title); }, () => {});
+    const form = copyTemplate(templates[0], 'captain');
+    autosave.update({ ...form, title: 'Pause' });
+    await vi.advanceTimersByTimeAsync(1499);
+    expect(writes).toEqual([]);
+    await vi.advanceTimersByTimeAsync(1);
+    expect(writes).toEqual(['Pause']);
+    autosave.update({ ...form, title: 'Blur' });
+    autosave.retry();
+    expect(writes).toEqual(['Pause', 'Blur']);
+    await vi.runAllTimersAsync();
+    expect(writes).toEqual(['Pause', 'Blur']);
+    autosave.dispose();
+  } finally { vi.useRealTimers(); }
+});
+
+it('flushes the latest edit on unmount even during a running save', async () => {
+  let finish: (() => void) | undefined;
+  const writes: string[] = [];
+  const autosave = createAutosave(async form => {
+    writes.push(form.title);
+    if (writes.length === 1) await new Promise<void>(resolve => { finish = resolve; });
+  }, () => {}, () => () => {});
+  const form = copyTemplate(templates[0], 'captain');
+  autosave.update({ ...form, title: 'First' }); autosave.retry();
+  autosave.update({ ...form, title: 'Last' }); autosave.dispose();
+  finish?.(); await Promise.resolve(); await Promise.resolve();
+  expect(writes).toEqual(['First', 'Last']);
+});
 
 it('debounces, serializes writes and never reports a stale revision as saved', async () => {
   let tick: (() => void) | undefined;

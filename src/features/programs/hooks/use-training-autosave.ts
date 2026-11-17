@@ -6,6 +6,7 @@ import { messages } from '../messages';
 import { createSaveQueue } from '../autosave';
 import { saveProgram } from '../data/program-io';
 import type { ProgramDraft } from '../types';
+import { AUTOSAVE_DELAY_MS } from '@/lib/autosave-delay';
 
 export function useTrainingAutosave(initial: ProgramDraft | null) {
   const t = useT(messages);
@@ -38,7 +39,7 @@ export function useTrainingAutosave(initial: ProgramDraft | null) {
   }, [t]);
   useEffect(() => {
     if (!draft || draft === saved.current) return;
-    const timer = setTimeout(() => { void flush(); }, 600);
+    const timer = setTimeout(() => { void flush(); }, AUTOSAVE_DELAY_MS);
     return () => clearTimeout(timer);
   }, [draft, flush]);
   useEffect(() => {

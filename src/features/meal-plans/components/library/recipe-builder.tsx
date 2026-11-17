@@ -1,4 +1,5 @@
 'use client';
+import { NumberInput } from '@/ui/number-input';
 import { useId, useRef, useState } from 'react';
 import { X, Trash2 } from 'lucide-react';
 import { useLocale, useT } from '@/core/i18n/client';
@@ -43,8 +44,8 @@ export function RecipeBuilder({ foods, onClose, onSaved }: { foods: Food[]; onCl
         if (food) setIngredients(value => value.some(item => item.food.id === food.id) ? value : [...value, { food, grams: 100 }]);
       }}><option value="">{t('choose')}</option>{foods.filter(food => matchesFood(food, query)).map(food => <option key={food.id} value={food.id}>{locale === 'en' ? food.nameEn || food.name : food.name}</option>)}</select></label>
       {!ingredients.length && <p className="text-muted">{t('ingredient')}</p>}
-      {ingredients.map((item, index) => <div key={item.food.id} className="flex items-center gap-stack"><span className="me-auto">{item.food.name}</span><label><span className="sr-only">{t('grams')}</span><input className={`${input} max-w-28`} type="number" min={1} max={10000} value={item.grams} onChange={event => setIngredients(value => value.map((entry, position) => position === index ? { ...entry, grams: Math.max(1, Math.min(10000, Number(event.target.value) || 1)) } : entry))} /></label><IconButton aria-label={t('remove')} onClick={() => setIngredients(value => value.filter((_, position) => position !== index))}><Trash2 aria-hidden /></IconButton></div>)}
-      <label className="grid gap-inline">{t('cookedWeight')}<input className={input} type="number" min={1} max={100000} value={weight} onChange={event => setWeight(Math.max(0, Math.min(100000, Number(event.target.value) || 0)))} /></label>
+      {ingredients.map((item, index) => <div key={item.food.id} className="flex items-center gap-stack"><span className="me-auto">{item.food.name}</span><label><span className="sr-only">{t('grams')}</span><NumberInput className={`${input} max-w-28`} min={1} max={10000} value={item.grams} onCommit={grams => setIngredients(value => value.map((entry, position) => position === index ? { ...entry, grams } : entry))} /></label><IconButton aria-label={t('remove')} onClick={() => setIngredients(value => value.filter((_, position) => position !== index))}><Trash2 aria-hidden /></IconButton></div>)}
+      <label className="grid gap-inline">{t('cookedWeight')}<NumberInput className={input} min={1} max={100000} value={weight} onCommit={value => setWeight(Math.max(0, Math.min(100000, value || 0)))} /></label>
       {result && <div className="grid gap-stack">{[{ label: t('total'), values: result.total }, { label: t('per100'), values: result.per100 }, ...result.plates.map((values, index) => ({ label: t(plateLabels[index] ?? 'small', { grams: values.grams }), values }))].map(row => <section key={row.label} className="glass-strong rounded-control p-card"><h3>{row.label}</h3><dl className="grid grid-cols-4 gap-inline">{(['kcal', 'protein', 'carbs', 'fat'] as const).map(key => <div key={key}><dt className="text-xs text-muted">{bt(key)}</dt><dd className="font-display text-title">{Math.round(row.values[key] * 10) / 10}</dd></div>)}</dl></section>)}</div>}
     </fieldset>
     {error && <p role="alert" className="text-danger">{error}</p>}

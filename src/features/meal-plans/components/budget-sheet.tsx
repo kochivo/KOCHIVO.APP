@@ -1,4 +1,5 @@
 'use client';
+import { NumberInput } from '@/ui/number-input';
 import { useCallback, useId, useState } from 'react';
 import { X } from 'lucide-react';
 import { useLocale, useT } from '@/core/i18n/client';
@@ -7,7 +8,6 @@ import { uuidv7 } from '@/core/offline/ids';
 import { ResponsiveDialog } from '@/ui/responsive-dialog';
 import { IconButton } from '@/ui/icon-button';
 import { Button } from '@/ui/button';
-import { TextField } from '@/ui/text-field';
 import { LoadingState } from '@/ui/loading-state';
 import { formatNumber } from '@/lib/format';
 import { loadFoodPrices } from '../data/food-prices';
@@ -47,7 +47,7 @@ export function BudgetSheet({ draft, targets, dayType, onApply, onClose }: {
       {!resource.data ? resource.error ? <div role="alert">{t('error')}<Button variant="secondary" onClick={() => void resource.retry()}>{t('retry')}</Button></div> : <LoadingState /> : !resource.data.daily ? <p>{t('noBudget')}</p> : <>
         <div className="glass-strong rounded-card p-card"><p className="text-sm text-muted">{t('budget')}</p><p className="text-stat font-extrabold"><bdi>{t('money', { n: formatNumber(Math.floor(resource.data.daily), locale) })}</bdi></p></div>
         <div className="grid grid-cols-2 gap-stack">{(['kcal', 'protein'] as const).map(key => <div key={key} className="glass rounded-control p-card"><p className="text-xs text-muted">{t(key)}</p><bdi className="text-title font-bold">{formatNumber(targets[key], locale)}</bdi></div>)}</div>
-        <TextField label={t('meals')} type="number" min={1} max={8} value={count} onChange={event => { setCount(Number(event.target.value)); setResult(undefined); }} />
+        <NumberInput label={t('meals')} min={1} max={8} value={count} onCommit={value => { setCount(value); setResult(undefined); }} />
         <fieldset><legend className="mb-stack text-sm text-muted">{t('foods')}</legend><div className="flex flex-wrap gap-inline">{foods.map(food => <Button key={food.id} variant="secondary" className="rounded-full! aria-pressed:border-lime aria-pressed:bg-lime-soft! aria-pressed:text-lime!" aria-pressed={(selected ?? foods.map(food => food.id)).includes(food.id)} onClick={() => {
           const current = selected ?? foods.map(food => food.id); setSelected(current.includes(food.id) ? current.filter(id => id !== food.id) : [...current, food.id]); setResult(undefined);
         }}>{food.name}</Button>)}</div>{!foods.length && <p>{t('empty')}</p>}</fieldset>

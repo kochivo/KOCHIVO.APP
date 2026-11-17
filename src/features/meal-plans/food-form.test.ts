@@ -90,7 +90,8 @@ it('keeps the first-unit preview and all macro fields in the responsive editor',
   expect(html).toContain('Grilled kofta');
   expect(html).toContain('Piece');
   expect(html).toContain('138');
-  expect(html).toContain('type="number"');
+  expect(html).toContain('type="text"');
+  expect(html).toContain('inputMode="decimal"');
 });
 it('copies global foods without sending an update ID', async () => {
   await submit({ food: { ...food, custom: false } });

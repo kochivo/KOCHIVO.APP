@@ -1,4 +1,5 @@
 'use client';
+import { NumberInput } from '@/ui/number-input';
 import { editableFieldClass } from '@/ui/edit-in-place';
 import { useId, useState } from 'react';
 import dynamic from 'next/dynamic';
@@ -29,8 +30,8 @@ export function V11FoodRow({ item, update }: { item: MealItem; update: (change: 
   const values = macrosFor(item.food, item.grams);
   return <V11FoodRowView name={locale === 'en' ? item.food.nameEn || item.food.name : item.food.name} photo={item.food.photo}
     detail={`${t('grams', { n: item.grams })} · ${t('macros', { p: values.protein, c: values.carbs, f: values.fat })}`}>
-    <input type="number" aria-label={pt('gramsOf', { v0: item.food.name })} min={5 / factor} max={2000 / factor} step="any" value={Number((item.grams / factor).toFixed(4))} onChange={event => {
-      const amount = event.target.valueAsNumber;
+    <NumberInput aria-label={pt('gramsOf', { v0: item.food.name })} min={5 / factor} max={2000 / factor} step="any" value={Number((item.grams / factor).toFixed(4))} onCommit={value => {
+      const amount = value;
       const grams = Number.isFinite(amount) && amount >= 0 ? portionGrams(item.food, amount, validUnit) : NaN;
       if (!Number.isFinite(grams) || grams < 5 || grams > 2000) { setError(pt('amountMustBe5To2000Grams')); return; }
       setError(''); update(draft => setGrams(draft, item.id, grams, pt));

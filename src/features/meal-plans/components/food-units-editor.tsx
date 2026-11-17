@@ -1,4 +1,5 @@
 'use client';
+import { NumberInput } from '@/ui/number-input';
 
 import { editableFieldClass } from '@/ui/edit-in-place';
 import { clickableClass, Button } from '@/ui/button';
@@ -27,8 +28,8 @@ export function FoodUnitsEditor({ units, kcal, onChange }: {
       <label className="grid gap-inline text-sm">{t('unitName')}<input className={captainWorkspaceEnabled() ? `${editableFieldClass} ${input}` : input} required maxLength={60} value={unit.name_ar}
         onChange={event => update(unit.key, { name_ar: event.target.value,
           name_en: unit.name_en === unit.name_ar ? event.target.value : unit.name_en })} /></label>
-      <label className="grid gap-inline text-sm">{t('unitGrams')}<input type="number" className={captainWorkspaceEnabled() ? `${editableFieldClass} ${input}` : input} required min={Number.MIN_VALUE} max={10000} step="any" value={unit.grams || ''}
-        onChange={event => update(unit.key, { grams: Number(event.target.value) })} /></label>
+      <label className="grid gap-inline text-sm">{t('unitGrams')}<NumberInput className={captainWorkspaceEnabled() ? `${editableFieldClass} ${input}` : input} required min={Number.MIN_VALUE} max={10000} step="any" value={unit.grams || ''}
+        onCommit={value => update(unit.key, { grams: value })} /></label>
       <button className={captainWorkspaceEnabled() ? `${clickableClass} ${captainWorkspaceEnabled() ? 'press flex min-h-12 min-w-12 cursor-pointer items-center justify-center rounded-control border border-line bg-surface text-muted focus-visible:ring-2 focus-visible:ring-lime' : 'flex min-h-12 min-w-12 items-center justify-center text-muted'}` : captainWorkspaceEnabled() ? 'press flex min-h-12 min-w-12 cursor-pointer items-center justify-center rounded-control border border-line bg-surface text-muted focus-visible:ring-2 focus-visible:ring-lime' : 'flex min-h-12 min-w-12 items-center justify-center text-muted'} type="button" aria-label={t('removeUnit')}
         onClick={() => onChange(units.filter(row => row.key !== unit.key))}><Trash2 aria-hidden className="size-4" /></button>
       <output className="col-span-3 text-sm tabular-nums text-muted">{t('kcal', { value: Math.round(unitKcal(kcal, unit.grams)) })}</output>

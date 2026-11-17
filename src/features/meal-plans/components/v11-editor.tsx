@@ -9,6 +9,7 @@ import { useResource } from '@/core/resource';
 import { uuidv7 } from '@/core/offline/ids';
 
 import { LoadingState } from '@/ui/loading-state';
+import { SaveStatus } from '@/ui/save-status';
 import { PageBarTitle } from '@/ui/page-bar-title';
 import { PageBarActions } from '@/ui/page-bar-actions';
 import { usePlanDraft } from '../hooks/use-plan-draft';
@@ -46,12 +47,11 @@ export function V11Editor({ planId }: { planId: string }) {
   if (!draft) return <div role="alert">{state.error}<Button variant="secondary" onClick={state.reload}>{t('retry')}</Button></div>;
   if (draft.playerId) return <LegacyEditor planId={planId} />;
   const meals = dayMeals(draft.meals, day);
-  return <div className="grid min-w-0 gap-card-gap">
+  return <div onBlur={() => void state.persist()} className="grid min-w-0 gap-card-gap">
     <PageBarTitle title={draft.title} subtitle={usage.data !== undefined ? t('usage', { n: usage.data }) : usage.error ? t('error') : t('loading')} />
     <PageBarActions><Link href="/captain/library/meal-plans" aria-label={t('back')} aria-disabled={state.dirty || state.busy} onNavigate={event => { if (state.dirty || state.busy) event.preventDefault(); }} className={buttonClass({ variant: 'secondary', block: false, className: "grid min-h-12 min-w-12 place-items-center" })}><KoMealPlans aria-hidden className="size-5" /></Link><Button disabled={state.busy} onClick={() => void state.persist(false, true)}>{t('save')}</Button></PageBarActions>
     {state.error && <p role="alert" className="text-danger">{state.error}</p>}
-    {state.busy && <p role="status" className="text-muted">{pt('saving')}</p>}
-    {state.dirty && !state.busy && <p role="status" className="text-xs text-muted">{pt('youHaveUnsavedChanges')}</p>}
+    <SaveStatus locale={locale} status={state.error ? 'error' : state.dirty || state.busy ? 'saving' : 'saved'} onRetry={() => void state.retrySave()} />
     <div role="tablist" aria-label={pt('meals')} className="flex gap-inline">{(['training', 'rest'] as const).map(value => <button key={value} type="button" role="tab" aria-selected={day === value} disabled={state.busy} onClick={() => {
       setDay(value);
     }} className={`${clickableClass} press min-h-12 cursor-pointer rounded-full border border-line px-page-x text-sm focus-visible:ring-2 focus-visible:ring-lime ${day === value ? 'bg-lime/10 text-lime' : 'bg-surface text-muted'}`}>{t(value)}</button>)}</div>

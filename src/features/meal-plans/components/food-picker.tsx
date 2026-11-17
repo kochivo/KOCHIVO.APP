@@ -1,4 +1,5 @@
 'use client';
+import { NumberInput } from '@/ui/number-input';
 
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { IconButton } from '@/ui/icon-button';
@@ -86,8 +87,8 @@ export function FoodPicker({ onPick, alternative = false, inline = false }: { on
       value={filter} onChange={value => { if (value !== filter) { setFilter(value); setLoading(true); } }} />
     <label>{t('searchFoods')}<input value={query} onChange={event => { setQuery(event.target.value); setLoading(true); }}
       className="mt-inline min-h-12 w-full rounded-control border border-line bg-surface px-stack" /></label>
-    {!alternative && <label>{t('grams')}<input type="number" min={5} max={2000} step={5} value={grams}
-      onChange={event => setGrams(Number(event.target.value))} className="ms-stack min-h-12 w-28 rounded-control bg-surface px-stack" /></label>}
+    {!alternative && <label>{t('grams')}<NumberInput min={5} max={2000} step={5} value={grams}
+      onCommit={value => setGrams(value)} className="ms-stack min-h-12 w-28 rounded-control bg-surface px-stack" /></label>}
     {loading ? <LoadingState variant="list" /> : error ? <div role="alert">{error} <Button variant="secondary" onClick={() => { setLoading(true); setRetry(n => n + 1); }}>{t('tryAgain')}</Button></div> : <>
       {!result?.foods.length && <EmptyState tabIndex={-1} icon={Search} title={result?.catalogEmpty ? t('theFoodLibraryIsEmpty') : t('noFoodWithThisName')} body={result?.catalogEmpty ? t('catalogHint') : t('searchHint')}
         action={result?.catalogEmpty || filter === 'mine' ? { label: t('newFood'), onClick: () => setCreating(true) } :

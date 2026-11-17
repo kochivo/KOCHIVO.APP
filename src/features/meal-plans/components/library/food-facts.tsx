@@ -1,4 +1,5 @@
 'use client';
+import { NumberInput } from '@/ui/number-input';
 import { useState } from 'react';
 import { Minus, Plus } from 'lucide-react';
 import { useLocale, useT } from '@/core/i18n/client';
@@ -27,7 +28,7 @@ export function FoodFacts({ food, onAdd }: { food: Food; onAdd?: (food: Food, gr
         {food.photo && <img src={foodPhotoUrl(food.photo)} alt="" width={96} height={96} className="size-24 object-cover" />}
       </div><div><h3 className="text-title font-bold">{food.name}</h3><p className="text-sm text-muted">{food.nameEn}</p><FoodBadge food={food} /><p className="text-xs text-muted">{t(food.state ?? 'unknownState')}</p></div>
     </div>
-    <label className="grid gap-inline">{t('grams')}<input className="min-h-12 w-full rounded-control border border-line bg-surface px-stack" type="number" min={1} max={10000} value={grams} onChange={event => setGrams(Math.max(1, Math.min(10000, Number(event.target.value) || 1)))} /></label>
+    <label className="grid gap-inline">{t('grams')}<NumberInput className="min-h-12 w-full rounded-control border border-line bg-surface px-stack" min={1} max={10000} value={grams} onCommit={value => setGrams(Math.max(1, Math.min(10000, value || 1)))} /></label>
     <div className="flex flex-wrap items-center gap-inline"><IconButton aria-label={t('minus')} onClick={() => setGrams(value => Math.max(1, value - 10))}><Minus aria-hidden /></IconButton><IconButton aria-label={t('plus')} onClick={() => setGrams(value => Math.min(10000, value + 10))}><Plus aria-hidden /></IconButton>
       {food.units?.map(unit => <Button key={unit.key} variant="secondary" onClick={() => setGrams(unit.grams)}>{t('serving', { name: locale === 'en' ? unit.name_en : unit.name_ar, grams: unit.grams })}</Button>)}
     </div>

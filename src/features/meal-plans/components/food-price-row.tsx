@@ -1,7 +1,7 @@
 'use client';
+import { NumberInput } from '@/ui/number-input';
 import { useState } from 'react';
 import { useT } from '@/core/i18n/client';
-import { TextField } from '@/ui/text-field';
 import { Button } from '@/ui/button';
 import { saveFoodPrice } from '../data/food-prices';
 import { messages } from '../budget/messages';
@@ -24,8 +24,8 @@ export function FoodPriceRow({ foodId, initial, platform, onSaved }: { foodId: s
       <label className="text-sm">{t('unit')}<select className="min-h-12 w-full rounded-control bg-surface px-stack" value={unit} onChange={event => {
         const next = event.target.value as typeof unit; setUnit(next); if (next === 'kg') setGrams(1000);
       }}>{(['kg', 'piece', 'pack'] as const).map(key => <option key={key} value={key}>{t(key)}</option>)}</select></label>
-      <TextField label={t('grams')} type="number" min={1} max={100000} value={grams} disabled={unit === 'kg'} onChange={event => setGrams(Number(event.target.value))} />
-      <TextField label={t(platform ? 'price' : 'yours')} type="number" min={0.01} step={0.01} value={price} onChange={event => setPrice(Number(event.target.value))} />
+      <NumberInput label={t('grams')} min={1} max={100000} value={grams} disabled={unit === 'kg'} onCommit={value => setGrams(value)} />
+      <NumberInput label={t(platform ? 'price' : 'yours')} min={0.01} step={0.01} value={price} onCommit={value => setPrice(value)} />
     </fieldset>
     {initial && <p className="text-xs text-muted">{t('updated')}: <time dateTime={initial.updated_at}><bdi>{initial.updated_at.slice(0, 10)}</bdi></time></p>}
     <Button type="submit" variant="secondary" disabled={busy || price <= 0 || grams <= 0}>{t('save')}</Button>

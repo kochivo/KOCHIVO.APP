@@ -1,4 +1,5 @@
 'use client';
+import { NumberInput } from '@/ui/number-input';
 
 import { editableFieldClass } from '@/ui/edit-in-place';
 import { useEffect, useRef, useState } from 'react';
@@ -113,11 +114,11 @@ export function FoodForm({ food, copyFrom, initialName = '', onSaved, onCancel, 
           <div className={workspace ? 'grid grid-cols-2 gap-stack sm:grid-cols-4' : 'glass-strong grid grid-cols-2 gap-stack rounded-control p-stack sm:grid-cols-4'}>
             {(['kcal', 'protein', 'carbs', 'fat'] as const).map(key => <label className="grid min-w-0 gap-inline text-sm" key={key}>
               {planT(macroLabels[key])}
-              <input className={captainWorkspaceEnabled() ? `${editableFieldClass} ${inputClass}` : inputClass} required type="number" min={0} max={key === 'kcal' ? 900 : 100} step="0.1" value={macros[key]}
-                onChange={event => setMacros({ ...macros, [key]: Number(event.target.value) })} />
+              <NumberInput className={captainWorkspaceEnabled() ? `${editableFieldClass} ${inputClass}` : inputClass} required min={0} max={key === 'kcal' ? 900 : 100} step="0.1" value={macros[key]}
+                onCommit={value => setMacros({ ...macros, [key]: value })} />
             </label>)}
           </div>
-          <label className="grid gap-inline text-sm">{libraryT('fiber')}<input className={inputClass} type="number" min={0} max={100} step="0.1" value={fiber ?? ''} onChange={event => setFiber(event.target.value === '' ? null : Number(event.target.value))} /></label>
+          <label className="grid gap-inline text-sm">{libraryT('fiber')}<NumberInput allowEmpty className={inputClass} min={0} max={100} step="0.1" value={fiber ?? ''} onCommit={value => setFiber(value === null ? null : value)} /></label>
           <p role="status" className={`rounded-control p-stack text-sm ${check.warn ? 'bg-warn/10 text-warn' : 'bg-lime/10 text-lime'}`}>
             {check.warn ? t('warn', { calculated: Math.round(check.calculated), kcal: macros.kcal }) : t('ok')}
           </p>

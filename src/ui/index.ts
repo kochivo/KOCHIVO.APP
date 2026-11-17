@@ -8,6 +8,7 @@ export { Stat } from './stat';
 export { GlassCard } from './glass-card';
 export { Stepper } from './stepper';
 export { TextField } from './text-field';
+export { NumberInput } from './number-input';
 export { Segmented } from './segmented';
 export { ThemeSwitch } from './theme-switch';
 export { Chip } from './chip';

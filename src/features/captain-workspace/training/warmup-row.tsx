@@ -1,4 +1,5 @@
 'use client';
+import { NumberInput } from '@/ui/number-input';
 import { editableFieldClass } from '@/ui/edit-in-place';
 import { GripVertical, X, ArrowUp, ArrowDown } from 'lucide-react';
 import type { ButtonHTMLAttributes, CSSProperties } from 'react';
@@ -22,7 +23,7 @@ export function WarmupRow({ item, onChange, onRemove, onMove, dragProps, style }
     </div>
     <div className="col-span-full row-start-2 flex min-w-0 flex-wrap items-center gap-inline min-[760px]:col-span-1 min-[760px]:col-start-3 min-[760px]:row-start-1">
     <div className="flex min-w-0 flex-1 items-center rounded-control border border-line-soft">
-      <input type="number" aria-label={t('amount')} value={item.amount} min={1} max={999} dir="ltr" className={`${editableFieldClass} min-h-12 w-12 min-w-0 bg-surface text-center font-display font-extrabold`} onChange={event => onChange({ ...item, amount: Math.max(1, Math.min(999, Math.round(Number(event.target.value) || 1))) })} />
+      <NumberInput aria-label={t('amount')} value={item.amount} min={1} max={999} dir="ltr" className={`${editableFieldClass} min-h-12 w-12 min-w-0 bg-surface text-center font-display font-extrabold`} onCommit={value => onChange({ ...item, amount: Math.max(1, Math.min(999, Math.round(value || 1))) })} />
       <select aria-label={t('unit')} value={item.unit} className={`${editableFieldClass} min-h-12 min-w-0 flex-1 bg-surface text-xs`} onChange={event => onChange({ ...item, unit: event.target.value as WarmupItem['unit'] })}>
         {(['min', 'sec', 'reps', 'times'] as const).map(unit => <option key={unit} value={unit}>{t(unit)}</option>)}
       </select>

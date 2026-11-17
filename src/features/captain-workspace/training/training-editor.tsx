@@ -114,7 +114,7 @@ export function TrainingEditor({ playerId, playerName, remainingDays, playerFact
         toast.success({ title: success('assigned', { name: playerName ?? '' }), detail: success('name', { name: draft.title }), icon: 'program' }); }
     } catch { setError(t('error')); } finally { setPending(false); }
   }
-  return <section className="@container min-w-0 space-y-card-gap">
+  return <section onBlur={() => void state.flush()} className="@container min-w-0 space-y-card-gap">
     <EditorHeader playerId={playerId} playerName={playerName} remainingDays={draft?.status === 'active' ? remainingDays : undefined} template={template} title={draft?.title}
       starting={Boolean(allRest)} status={state.status} busy={pending} disabled={!draft || choosing} onSend={() => void send()} onRetry={() => {
         void state.flush().then(ok => { if (ok && draft) toast.success({ title: success(template ? 'templateSaved' : 'saved'), detail: success('name', { name: draft.title }), icon: template ? 'template' : 'program' }); });

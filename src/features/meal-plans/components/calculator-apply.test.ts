@@ -91,10 +91,10 @@ it('opens an inline number input for a missing fact and keeps the edit local', (
   const render = () => { state.index = 0; return CalculatorField({ label: 'Body fat (%)', onChange }); };
   expect(renderToStaticMarkup(render())).toContain('Add');
   handler(render(), 'onClick')();
-  expect(renderToStaticMarkup(render())).toContain('type="number"');
+  expect(renderToStaticMarkup(render())).toContain('inputMode="decimal"');
   const input = render();
-  const change = handler(input, 'onChange') as (event: { target: { value: string } }) => void;
-  change({ target: { value: '20' } });
+  const change = handler(input, 'onCommit') as (value: number) => void;
+  change(20);
   expect(onChange).toHaveBeenCalledWith(20);
   expect(state.save).not.toHaveBeenCalled();
 });

@@ -8,13 +8,13 @@ it('debounces existing save and cancels pending work on a new edit', async () =>
   const persist = vi.fn();
   useEditorAutosave({ dirty: true, busy: false, error: '', persist });
   const cleanup = effects.run?.();
-  await vi.advanceTimersByTimeAsync(799);
+  await vi.advanceTimersByTimeAsync(1499);
   expect(persist).not.toHaveBeenCalled();
   cleanup?.();
   await vi.advanceTimersByTimeAsync(1);
   expect(persist).not.toHaveBeenCalled();
   effects.run?.();
-  await vi.advanceTimersByTimeAsync(800);
+  await vi.advanceTimersByTimeAsync(1500);
   expect(persist).toHaveBeenCalledWith();
 });
 it.each([{ dirty: false, busy: false, error: '' }, { dirty: true, busy: true, error: '' }, { dirty: true, busy: false, error: 'failed' }])('does not save clean, busy or failed state', async state => {

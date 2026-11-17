@@ -5,6 +5,7 @@ import { expect, it, vi } from 'vitest';
 import { createT } from '@/core/i18n/messages';
 import type { Messages } from '@/core/i18n/messages';
 import { Button } from '@/ui/button';
+import { NumberInput } from '@/ui/number-input';
 import { FoodUnitsEditor } from './food-units-editor';
 
 vi.mock('@/core/i18n/client', () => ({ useT: (messages: Messages) => createT(messages, 'en') }));
@@ -41,6 +42,7 @@ it('keeps the key when changing unit grams or names', () => {
   const inputs = elements(tree).filter(element => element.type === 'input');
   (inputs[0]?.props.onChange as (event: { target: { value: string } }) => void)({ target: { value: 'طبق' } });
   expect(onChange).toHaveBeenLastCalledWith([{ ...unit, name_ar: 'طبق' }]);
-  (inputs[1]?.props.onChange as (event: { target: { value: string } }) => void)({ target: { value: '0.5' } });
+  const number = elements(tree).find(element => element.type === NumberInput);
+  (number?.props.onCommit as (value: number) => void)(0.5);
   expect(onChange).toHaveBeenLastCalledWith([{ ...unit, grams: 0.5 }]);
 });

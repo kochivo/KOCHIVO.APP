@@ -1,4 +1,5 @@
 'use client';
+import { NumberInput } from '@/ui/number-input';
 
 import { secondaryButtonClass } from '@/ui/secondary-button-class';
 import { editableFieldClass } from '@/ui/edit-in-place';
@@ -35,7 +36,6 @@ export function FoodRow({ item, update }: { item: MealItem; update: (change: (dr
   const [error, setError] = useState('');
   const [editing, setEditing] = useState(false);
   const openerId = useId();
-  const [edited, setEdited] = useState<{ grams: number; key: string; text: string } | null>(null);
   const unit = item.food.units?.find(value => value.key === key);
   const unitName = unit ? t('unitLabel', { name: locale === 'en' ? unit.name_en : unit.name_ar, grams: formatNumber(unit.grams, locale) }) : t('gramUnit');
   const name = locale === 'en' ? item.food.nameEn || item.food.name : item.food.name;
@@ -49,15 +49,14 @@ export function FoodRow({ item, update }: { item: MealItem; update: (change: (dr
     <div className="col-span-full min-w-0 break-words @[36rem]:col-span-1">{name}{missing ? <small className="block text-micro text-warn">{t('missingValues')} · {item.food.custom && <button id={openerId} type="button" className={`${secondaryButtonClass} min-h-12 underline`} onClick={() => setEditing(true)}>{t('complete')}</button>} {t('countHint')}</small>
       : <small className="block whitespace-nowrap text-xs text-muted">{macroT('macros', { p: formatNumber(macrosFor(item.food, item.grams).protein, locale), c: formatNumber(macrosFor(item.food, item.grams).carbs, locale), f: formatNumber(macrosFor(item.food, item.grams).fat, locale) })}</small>}</div>
     <div className="flex min-h-12 min-w-0 flex-wrap items-center rounded-xl border border-line">
-      <input type="number" aria-label={t('quantity', { name })} min={5 / (unit?.grams ?? 1)} max={2000 / (unit?.grams ?? 1)} step="any"
-        value={edited?.grams === item.grams && edited.key === key ? edited.text : Math.round(unitQuantity(item.grams, unit) * 100) / 100}
-        onChange={event => {
-          const text = event.target.value;
+      <NumberInput aria-label={t('quantity', { name })} min={5 / (unit?.grams ?? 1)} max={2000 / (unit?.grams ?? 1)} step="any"
+        value={Math.round(unitQuantity(item.grams, unit) * 100) / 100}
+        onCommit={value => {
           try {
-            const grams = unitGrams(event.target.valueAsNumber, unit);
+            const grams = unitGrams(value, unit);
             if (grams < 5 || grams > 2000) throw new RangeError('Invalid amount');
-            update(draft => setGrams(draft, item.id, grams, planT)); setEdited({ grams, key, text }); setError('');
-          } catch { setEdited({ grams: item.grams, key, text }); setError(planT('amountMustBe5To2000Grams')); }
+            update(draft => setGrams(draft, item.id, grams, planT)); setError('');
+          } catch { setError(planT('amountMustBe5To2000Grams')); }
         }} className={`${editableFieldClass} min-h-12 w-14 shrink-0 bg-surface text-center font-display font-extrabold tabular-nums`} />
       <span className="relative flex min-h-12 min-w-0 flex-1 items-center border-s border-line px-inline text-xs text-muted">
         <span className="whitespace-normal break-words">{unitName}</span>
