@@ -31,6 +31,11 @@ export async function remindRequest(id:string) {
 export async function reviewRequest(id:string,reply:string) {
   const {client,captain} = await formsAccess();
   const parsed = z.object({id:z.uuid(),reply:z.string().trim().max(1000)}).parse({id,reply});
+  const request = await client.from('form_requests').select('player_id').eq('id',parsed.id).eq('captain_id',captain).single();
+  if (request.error || !request.data) return {ok:false};
+  const link = await client.from('coach_clients').select('player_id').eq('player_id',request.data.player_id)
+    .eq('captain_id',captain).is('archived_at',null).eq('pending',false).maybeSingle();
+  if (link.error || !link.data) return {ok:false};
   const result = await client.from('form_requests').update({captain_reply:parsed.reply || null,reviewed_at:new Date().toISOString()})
     .eq('id',parsed.id).eq('captain_id',captain).not('answered_at','is',null).select('id').single();
   return {ok:!result.error};

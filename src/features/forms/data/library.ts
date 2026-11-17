@@ -21,7 +21,7 @@ export async function loadLibrary(client: SupabaseClient<AppDatabase>, captain: 
   const ids = forms.map(form => form.id);
   const questions = new Map<string, Question[]>();
   if (ids.length) for (let offset = 0; ; offset += 500) {
-    const result = await client.from('form_questions').select('*').in('form_id', ids).order('position').order('id')
+    const result = await client.from('form_questions').select('*').in('form_id', ids).is('retired_at', null).order('position').order('id')
       .range(offset, offset + 499).abortSignal(signal);
     if (result.error) throw result.error;
     for (const row of result.data) {

@@ -17,6 +17,7 @@ it.each([1, 20])('loads %i forms with three reads and preserves questions and me
     urls.push(url);
     if (url.pathname.endsWith('/forms')) return Response.json(forms);
     if (url.pathname.endsWith('/form_questions')) {
+      expect(url.searchParams.get('retired_at')).toBe('is.null');
       expect(url.searchParams.get('form_id')).toBe(`in.(${forms.map(form => form.id).join(',')})`);
       return Response.json(questions);
     }

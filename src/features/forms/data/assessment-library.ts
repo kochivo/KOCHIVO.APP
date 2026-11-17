@@ -22,7 +22,7 @@ export async function loadAssessmentLibrary(client: SupabaseClient<AppDatabase>,
       client.from('forms').select('id,captain_id,title,kind,schedule,remind_after_hours').eq('captain_id', captain).is('archived_at', null).order('id').range(offset, offset + 499),
       client.from('form_requests').select('form_id,player_id,sent_at,answered_at,reviewed_at').eq('captain_id', captain).order('id').range(offset, offset + 499),
       client.from('form_questions').select('id,form_id,position,label_ar,label_en,type,required,options,maps_to,alert_on,show_chart,forms!inner(captain_id)')
-        .eq('forms.captain_id', captain).order('id').range(offset, offset + 499),
+        .eq('forms.captain_id', captain).is('retired_at', null).order('id').range(offset, offset + 499),
     ]);
     if (result.error || answers.error || questionRows.error) throw result.error ?? answers.error ?? questionRows.error;
     forms.push(...result.data.map(row => ({ ...row, schedule: decodeSchedule(row.schedule), questions: [] })));

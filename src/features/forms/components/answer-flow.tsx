@@ -9,7 +9,7 @@ import { validAnswer } from '../answers';
 import { clearAnswerDraft,readAnswerDraft,writeAnswerDraft } from '../data/answer-draft';
 import { submitAnswers } from '../data/submit-answers';
 import { submitDraft } from '../data/submit-draft';
-import { uploadAnswerPhotos } from '../data/answer-photos';
+import { AnswerPhotoFitError, uploadAnswerPhotos } from '../data/answer-photos';
 import { messages } from '../requests/messages';
 import { QuestionField } from './question-field';
 import type { QuestionValue } from './question-field';
@@ -51,7 +51,7 @@ export function AnswerFlow({data,locale}:{data:RequestData;locale:Locale}) {
     if (!files?.length || busy.current) return;
     busy.current = true; setUploading(true); setError('');
     try { update(null,await uploadAnswerPhotos(data.request.player_id,data.request.id,files)); }
-    catch { setError(t('photosError')); }
+    catch (error) { setError(t(error instanceof AnswerPhotoFitError ? 'photoFitError' : 'photosError')); }
     finally { busy.current = false; setUploading(false); }
   }
   async function advance() {
