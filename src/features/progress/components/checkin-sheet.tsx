@@ -94,7 +94,7 @@ export function CheckinSheet({ latest, open, onClose, onSent }: {
           {positions.map((position, index) => <div key={position} className="glass space-y-inline rounded-control p-inline">
             <label className="flex min-h-12 cursor-pointer items-center justify-center rounded-control text-sm has-focus-visible:outline-2 has-focus-visible:outline-lime has-focus-visible:outline-offset-2">
               {position}
-              <input aria-label={t('photoPosition', { value0: position })} type="file" accept="image/*" capture="environment" className="sr-only" onChange={(event) => {
+              <input aria-label={t('photoPosition', { value0: position })} type="file" accept="image/*" className="sr-only" onChange={(event) => {
                 const file = event.target.files?.[0];
                 if (file && !file.type.startsWith('image/')) setError(t('chooseAnImage'));
                 else if (file) changePhoto(index, file);

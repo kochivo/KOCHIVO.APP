@@ -44,7 +44,9 @@ it.each(['egyptian', 'standard'] as const)('previews photos with translated came
     locale: 'ar', style, preview: true }));
   expect(html).toContain('capture="user"');
   expect(html).toContain(style === 'standard' ? 'التقط صورة' : 'تصوّر');
-  expect(html).toContain(style === 'standard' ? 'اختر صورة' : 'تختار صورة');
+  expect(html).toContain('من المعرض');
+  // The gallery button must not force the camera, or phones hide the photo library.
+  expect(html.match(/capture=/g)).toHaveLength(1);
   expect(html.match(/class="sr-only"/g)).toHaveLength(2);
 });
 

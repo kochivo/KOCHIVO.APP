@@ -27,7 +27,7 @@ it('shows the captain reply on an answered assessment and hides the card without
 it('renders camera and gallery actions, step count and offline draft note', () => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
   const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' }, createElement(AnswerFlow, { data, locale: 'ar' })));
-  for (const text of ['1 من 1', 'اضغط تصوّر أو تختار صورة', 'capture="user"', 'إجاباتك بتتحفظ لو النت فصل', 'رجوع', 'ابعت الإجابات']) expect(html).toContain(text);
+  for (const text of ['1 من 1', 'صوّر أو اختار صورة من المعرض', 'من المعرض', 'capture="user"', 'إجاباتك بتتحفظ لو النت فصل', 'رجوع', 'ابعت الإجابات']) expect(html).toContain(text);
   expect(html.match(/<pattern /g)).toHaveLength(1);
   expect(html).not.toContain('lucide-camera');
 });

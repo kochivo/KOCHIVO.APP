@@ -40,7 +40,7 @@ export function UploadSheet({ playerId, captainId, onClose, onSend }: {
     <form className="space-y-card-gap" onSubmit={event => { event.preventDefault(); void send(); }}>
       <label className="glass flex min-h-32 cursor-pointer flex-col items-center justify-center gap-inline rounded-control border border-dashed border-line p-card text-center">
         <KoCamera aria-hidden className="size-6" /><b>{t('photo')}</b><small className="text-muted">{t('hint')}</small>
-        <input type="file" accept="image/jpeg,image/png,image/webp" capture="environment" disabled={busy} className="w-full min-w-0 text-sm" required onChange={event => {
+        <input type="file" accept="image/jpeg,image/png,image/webp" disabled={busy} className="w-full min-w-0 text-sm" required onChange={event => {
           const next = event.target.files?.[0]; setError('');
           if (next && validReceiptImage(next)) { setFile(next); setPreview(URL.createObjectURL(next)); }
           else { setFile(null); setPreview(''); setError(t('imageIsTooLargeOrUnsupportedChoose')); event.target.value = ''; }
