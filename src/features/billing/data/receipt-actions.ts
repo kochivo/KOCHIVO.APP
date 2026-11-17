@@ -17,6 +17,9 @@ const decision = z.object({ id: z.uuid(), photo: z.string().max(160), revision: 
   reason: z.string().trim().min(1).max(200).regex(/^[^\r\n]+$/).optional() }).strict();
 async function failure(error: unknown) {
   unstable_rethrow(error);
+  if (error && typeof error === 'object' && 'message' in error && error.message === 'more than the player owes') {
+    return { error: (await getT(messages))('exceedsDebt'), data: undefined };
+  }
   return { error: (await getT(messages))('error'), data: undefined };
 }
 function refresh() {
@@ -52,17 +55,18 @@ export async function listPaymentReceipts() {
     const rows = await fetchPendingPaymentReceipts();
     const { client, captainId } = await captainClient();
     const data = await Promise.all(rows.map(async row => {
-      const [profile, url, request, membership] = await Promise.all([
+      const [profile, url, request, membership, debt] = await Promise.all([
         client.from('profiles').select('full_name').eq('id', row.player_id).single(),
         signedMediaUrl(client, 'payment-receipts', row.photo_path),
         row.renewal_request_id ? client.from('player_renewal_requests').select('package_id').eq('id', row.renewal_request_id).single() : null,
         client.from('coach_clients').select('frozen_at').eq('captain_id', captainId)
           .eq('player_id', row.player_id).is('archived_at', null).maybeSingle(),
+        receiptClient(client).rpc('receipt_debt', { p_player: row.player_id }),
       ]);
-      if (profile.error || request?.error || membership.error) throw profile.error ?? request?.error ?? membership.error;
+      if (profile.error || request?.error || membership.error || debt.error) throw profile.error ?? request?.error ?? membership.error ?? debt.error;
       const pkg = request?.data ? await client.from('captain_packages').select('name').eq('id', request.data.package_id).single() : null;
       if (pkg?.error) throw pkg.error;
-      return { ...row, name: profile.data.full_name, url, packageName: pkg?.data?.name ?? null, frozenAt: membership.data?.frozen_at ?? null };
+      return { ...row, debt: debt.data ?? 0, name: profile.data.full_name, url, packageName: pkg?.data?.name ?? null, frozenAt: membership.data?.frozen_at ?? null };
     }));
     return { data, error: undefined };
   } catch (error) { return failure(error); }

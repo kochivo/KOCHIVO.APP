@@ -18,6 +18,16 @@ const receipt: ReceiptReview = {
 };
 const render = (child: ReturnType<typeof createElement>) => renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' }, child));
 beforeEach(() => { state.data = undefined; state.error = undefined; });
+it('accepts an installment without days and blocks amounts above the debt', () => {
+  const props = { receipt: { ...receipt, debt: 900 }, first: true, busy: false, onDecide: async () => {} };
+  const html = render(createElement(ReceiptReviewRow, props));
+  expect(html).toContain('Pays existing debt');
+  expect(html).not.toContain('Renewal length in days');
+  expect(html).not.toContain('disabled=""');
+  const excess = render(createElement(ReceiptReviewRow, { ...props, receipt: { ...receipt, debt: 700 } }));
+  expect(excess).toContain('Receipt exceeds the remaining debt');
+  expect(excess).toMatch(/<button[^>]*disabled=""[^>]*>Accept<\/button>/);
+});
 it('shows real amount, method and photo and asks for a period only for unlinked receipts', () => {
   const props = { receipt, first: true, busy: false, onDecide: async () => {} };
   const html = render(createElement(ReceiptReviewRow, props));
@@ -46,7 +56,7 @@ it('shows pending replacement and accepted confirmation to the player', () => {
   state.data = { data: { playerId: 'player', captainId: 'captain', receipt } };
   expect(render(createElement(PlayerReceipt, { renewalId: null }))).toContain('Replace receipt photo');
   state.data = { data: { playerId: 'player', captainId: 'captain', receipt: { ...receipt, status: 'accepted' } } };
-  expect(render(createElement(PlayerReceipt, { renewalId: null }))).toContain('Receipt accepted and subscription renewed');
+  expect(render(createElement(PlayerReceipt, { renewalId: null }))).toContain('Receipt accepted');
 });
 it('provides loading, error and empty states without invented receipt rows', () => {
   expect(render(createElement(CaptainReceipts))).toContain('Loading receipts');

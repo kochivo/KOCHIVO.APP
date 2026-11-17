@@ -13,6 +13,7 @@ export interface MyCaptain {
   timezone?: string;
   pending?: boolean; frozenAt?: string | null;
   awaitingPlansAt?: string | null;
+  subscriptionStartsOn?: string | null;
   startFormsPending?: boolean;
   fullName: string; phone: string | null; accessUntil: string;
   archivedAt: string | null; startedOn: string | null;
@@ -27,7 +28,7 @@ export async function fetchMyCaptain(): Promise<{ data: MyCaptain | null } | { e
     const { data: auth, error: authError } = await client.auth.getClaims();
     if (authError || !auth?.claims.sub) return { error: t('signInAgain') };
     const [relation, captain, timezone] = await Promise.all([client.from('coach_clients')
-      .select('access_until,archived_at,started_on,captain_id,pending,frozen_at,awaiting_plans_at')
+      .select('access_until,archived_at,started_on,captain_id,pending,frozen_at,awaiting_plans_at,subscription_starts_on')
       .eq('player_id', auth.claims.sub).order('archived_at', { ascending: true, nullsFirst: true })
       .order('created_at', { ascending: false }).limit(1).maybeSingle(),
       client.rpc('my_captain_profile'),
@@ -51,6 +52,7 @@ export async function fetchMyCaptain(): Promise<{ data: MyCaptain | null } | { e
       accessUntil: row.access_until, archivedAt: row.archived_at, startedOn: row.started_on,
       pending: row.pending, frozenAt: row.frozen_at,
       awaitingPlansAt: row.awaiting_plans_at,
+      subscriptionStartsOn: row.subscription_starts_on,
       startFormsPending: !row.archived_at && !row.pending && startForms.data.length > 0,
     } };
   } catch (error) { unstable_rethrow(error); return { error: t('couldnTLoadYourCoach') }; }

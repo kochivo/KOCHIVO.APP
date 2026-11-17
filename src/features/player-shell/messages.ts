@@ -5,6 +5,7 @@ export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
+    subscriptionStartsOn: 'اشتراكك هيبدأ يوم {date}',
     waitingForPlans: 'مستني الأنظمة',
     v6Food: 'الأكل', v6Progress: 'تطوري', v6Account: 'حسابي',
     instagram: 'إنستجرام', tiktok: 'تيك توك', facebook: 'فيسبوك', youtube: 'يوتيوب', x: 'إكس',
@@ -44,6 +45,7 @@ export const messages = defineMessages({
     signInAgain: "سجّل دخولك تاني",
   },
   en: {
+    subscriptionStartsOn: 'Your subscription starts on {date}',
     waitingForPlans: 'Waiting for plans',
     v6Food: 'Food', v6Progress: 'My progress', v6Account: 'My account',
     instagram: 'Instagram', tiktok: 'TikTok', facebook: 'Facebook', youtube: 'YouTube', x: 'X',

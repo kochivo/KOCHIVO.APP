@@ -5,7 +5,7 @@ import { LocaleProvider } from '@/core/i18n/client';
 import { PlayerShell } from './components/player-shell';
 
 const state = vi.hoisted(() => ({ path: '/player', status: 'ready' as 'ready' | 'loading' | 'error',
-  data: null as { fullName: string; accessUntil: string; archivedAt: null; phone: null } | null }));
+  data: null as { fullName: string; accessUntil: string; archivedAt: null; phone: null; subscriptionStartsOn?: string } | null }));
 vi.mock('next/navigation', () => ({ usePathname: () => state.path }));
 vi.mock('next/dynamic', async () => {
   const { NoCaptainScreen } = await import('./components/no-captain-screen');
@@ -42,4 +42,17 @@ it('keeps account settings accessible without a coach', () => {
 it('keeps existing or cached coach content accessible', () => {
   state.data = { fullName: 'Coach', accessUntil: '2099-01-01', archivedAt: null, phone: null };
   expect(render()).toContain('Private player content');
+});
+// Like an ended subscription: a banner explains it, pages stay usable for reading and RLS rejects writes.
+it('shows the scheduled start before it begins while leaving every page readable', () => {
+  vi.useFakeTimers();
+  vi.setSystemTime(new Date('2026-11-03T10:00:00Z'));
+  try {
+    state.data = { fullName: 'Coach', accessUntil: '2026-12-01', archivedAt: null, phone: null, subscriptionStartsOn: '2026-11-10' };
+    expect(render()).toContain('Your subscription starts on');
+    expect(render()).toContain('Private player content');
+    expect(render()).not.toContain('<fieldset disabled=""');
+    state.path = '/player/settings';
+    expect(render()).toContain('Private player content');
+  } finally { vi.useRealTimers(); }
 });

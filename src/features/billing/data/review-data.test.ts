@@ -8,7 +8,8 @@ vi.mock('next/navigation', () => ({ unstable_rethrow() {} }));
 vi.mock('next/cache', () => ({ revalidatePath() {} }));
 vi.mock('@/core/i18n/server', () => ({ getT: async () => () => 'Failed' }));
 vi.mock('@/core/storage/private-media', () => ({ signedMediaUrl: async () => '/signed' }));
-vi.mock('./client', () => ({ captainClient: async () => ({ client: { from: state.from }, captainId: 'captain' }) }));
+vi.mock('./client', () => ({ captainClient: async () => ({ client: { from: state.from,
+  rpc: async () => ({ data: 0, error: null }) }, captainId: 'captain' }) }));
 vi.mock('./receipt-read', () => ({ fetchPendingPaymentReceipts: async () => [
   { id: 'receipt', player_id: 'player', renewal_request_id: null },
 ] }));

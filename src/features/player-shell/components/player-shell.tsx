@@ -13,9 +13,9 @@ import { NotificationBell } from '@/features/notifications';
 import Link from 'next/link';
 import { Settings, UserRound } from 'lucide-react';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
-import { daysBetween, localDate } from '@/lib/dates';
+import { daysBetween, formatDateAr, localDate } from '@/lib/dates';
 import { whatsappUrl } from '@/lib/whatsapp';
-import { accessState } from '../access';
+import { accessState, subscriptionNotStarted } from '../access';
 import { gateApplies } from '../start-gate';
 import { playerNav, showsFeedback, showsNav } from '../nav';
 import { MyCaptainContext, useMyCaptain } from '../hooks/use-my-captain';
@@ -48,8 +48,11 @@ export function PlayerShell({ children, unassignedAction }: { children?: ReactNo
   const url = whatsappUrl({ phone: captain.data?.phone ?? '' });
   const left = captain.data ? daysBetween(today, captain.data.accessUntil) : 0;
   const blocked = captain.data?.pending || captain.data?.frozenAt;
+  const futureStart = subscriptionNotStarted(captain.data?.subscriptionStartsOn, today);
+  const startMessage = t('subscriptionStartsOn', { date: captain.data?.subscriptionStartsOn
+    ? formatDateAr(captain.data.subscriptionStartsOn, { day: 'numeric', month: 'long', year: 'numeric' }, locale) : '' });
   const training = !/\/player\/(settings|onboarding|captain|progress)(?:\/|$)/.test(pathname);
-  const message = blocked ? null : state === 'ending' ?
+  const message = blocked ? null : futureStart ? startMessage : state === 'ending' ?
     t('subscriptionEndsIn', { n: left }) :
     state === 'ended' ? t('yourSubscriptionEndedContactYourCoach') :
     state === 'archived' ? t('yourCoachPausedYourCoaching') : null;

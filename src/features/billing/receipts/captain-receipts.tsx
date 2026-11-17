@@ -20,9 +20,9 @@ export function CaptainReceipts() {
     try {
       const ok = await resource.mutate(current => ({ data: (current?.data ?? []).filter(row => row.id !== receipt.id), error: undefined }), async () => {
         const result = await decidePaymentReceipt({ id: receipt.id, photo: receipt.photo_path, revision: receipt.revision, days, ...(reason === undefined ? {} : { reason }) });
-        if (result.error) throw new Error(result.error);
+        if (result.error) { setError(result.error); throw new Error(result.error); }
       });
-      if (!ok) { setError(t('error')); await resource.retry(); }
+      if (!ok) { setError(current => current || t('error')); await resource.retry(); }
       else { setNotice(t('saved')); await resource.retry(); router.refresh(); }
     } catch { setError(t('error')); }
     finally { lock.current = false; setBusy(false); }

@@ -1,5 +1,9 @@
 import { daysBetween } from '@/lib/dates';
 
+export function subscriptionNotStarted(startsOn: string | null | undefined, today: string): boolean {
+  return !!startsOn && startsOn > today;
+}
+
 export function accessState({ accessUntil, archivedAt, today, awaitingPlansAt }: {
   accessUntil: string; archivedAt: string | null; today: string; awaitingPlansAt?: string | null;
 }): 'active' | 'ending' | 'ended' | 'archived' {

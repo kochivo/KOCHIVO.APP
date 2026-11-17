@@ -1,4 +1,5 @@
 export const arStd = {
+  subscriptionStartsOn: 'يبدأ اشتراكك في {date}',
   waitingForPlans: 'بانتظار الخطط',
   instagram: 'إنستجرام', tiktok: 'تيك توك', facebook: 'فيسبوك', youtube: 'يوتيوب', x: 'إكس',
   backHome: 'العودة للرئيسية',

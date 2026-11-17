@@ -60,6 +60,16 @@ it('builds WhatsApp URLs from digits only', () => {
 });
 
 describe('captain cache', () => {
+  it('preserves the subscription start offline', () => {
+    const storage = new Map<string, string>();
+    vi.stubGlobal('window', { localStorage: {
+      setItem: (key: string, value: string) => storage.set(key, value),
+      getItem: (key: string) => storage.get(key),
+    } });
+    writeCaptainCache({ fullName: 'Coach', phone: null, accessUntil: '2026-12-01', archivedAt: null, startedOn: null,
+      subscriptionStartsOn: '2026-11-10' });
+    expect(readCaptainCache()?.subscriptionStartsOn).toBe('2026-11-10');
+  });
   it('survives a blocked localStorage getter', () => {
     vi.stubGlobal('window', { get localStorage() { throw new Error('blocked'); } });
     expect(readCaptainCache()).toBeNull();

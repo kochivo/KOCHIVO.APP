@@ -650,6 +650,7 @@ export type Database = {
       }
       coach_clients: {
         Row: {
+          subscription_starts_on: string | null
           awaiting_plans_at: string | null
           access_until: string
           archived_at: string | null
@@ -665,6 +666,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          subscription_starts_on?: string | null
           awaiting_plans_at?: string | null
           access_until: string
           archived_at?: string | null
@@ -680,6 +682,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          subscription_starts_on?: string | null
           awaiting_plans_at?: string | null
           access_until?: string
           archived_at?: string | null
@@ -1392,6 +1395,7 @@ export type Database = {
       }
       meal_logs: {
         Row: {
+          eaten_macros: Json | null
           client_updated_at: string
           completed_at: string | null
           deleted_at: string | null
@@ -1403,6 +1407,7 @@ export type Database = {
           swaps: Json
         }
         Insert: {
+          eaten_macros?: Json | null
           client_updated_at: string
           completed_at?: string | null
           deleted_at?: string | null
@@ -1414,6 +1419,7 @@ export type Database = {
           swaps?: Json
         }
         Update: {
+          eaten_macros?: Json | null
           client_updated_at?: string
           completed_at?: string | null
           deleted_at?: string | null

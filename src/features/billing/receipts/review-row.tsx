@@ -12,7 +12,9 @@ export function ReceiptReviewRow({ receipt, first, busy, onDecide }: { receipt: 
   const t = useT(messages), locale = useLocale();
   const [declining, setDeclining] = useState(false), [reason, setReason] = useState(''), [days, setDays] = useState('');
   const [expanded, setExpanded] = useState(false);
-  const validDays = !!receipt.renewal_request_id || (Number.isInteger(Number(days)) && Number(days) >= 1 && Number(days) <= 365);
+  const installment = !receipt.renewal_request_id && (receipt.debt ?? 0) > 0;
+  const excess = installment && receipt.amount_egp > (receipt.debt ?? 0);
+  const validDays = installment || !!receipt.renewal_request_id || (Number.isInteger(Number(days)) && Number(days) >= 1 && Number(days) <= 365);
   return <li id={`receipt-${receipt.id}`} className="space-y-stack border-t border-line-soft py-page-y first:border-0">
     <div className="flex flex-wrap items-center gap-stack">
       <Button type="button" onClick={() => setExpanded(!expanded)} aria-expanded={expanded} aria-label={t('image')} variant={'secondary'} block={false} className={"min-h-12 shrink-0 overflow-hidden"}>
@@ -25,12 +27,14 @@ export function ReceiptReviewRow({ receipt, first, busy, onDecide }: { receipt: 
         {receipt.packageName && <p className="text-xs text-muted">{t('package', { name: receipt.packageName })}</p>}
       </div>
       <Button type="button" disabled={busy} onClick={() => setDeclining(!declining)} variant={'secondary'} block={false} className={"min-h-12 px-page-x text-sm disabled:opacity-50"}>{t('decline')}</Button>
-      <Button type="button" disabled={busy || !!receipt.frozenAt || !validDays} onClick={() => void onDecide(receipt, receipt.renewal_request_id ? null : Number(days))}
+      <Button type="button" disabled={busy || !!receipt.frozenAt || !validDays || excess} onClick={() => void onDecide(receipt, receipt.renewal_request_id || installment ? null : Number(days))}
         variant={(first) ? 'primary' : 'secondary'} block={false} className={`min-h-12 px-page-x text-sm font-semibold disabled:opacity-50 ${first ? "" : ""} `}>{t('accept')}</Button>
     </div>
     {receipt.frozenAt && <p className="text-sm text-warn">{t('unfreezeFirst')}</p>}
+    {installment && <p className="text-sm text-muted">{t('installment')}</p>}
+    {excess && <p role="alert" className="text-sm text-warn">{t('exceedsDebt')}</p>}
     {expanded && <Image src={receipt.url} alt={t('image')} width={800} height={1000} unoptimized className="glass-strong max-h-[65dvh] w-full rounded-control object-contain" />}
-    {!receipt.renewal_request_id && <label className="block space-y-inline text-sm"><span>{t('days')}</span>
+    {!receipt.renewal_request_id && !installment && <label className="block space-y-inline text-sm"><span>{t('days')}</span>
       <input type="number" min={1} max={365} step={1} disabled={busy} value={days} onChange={event => setDays(event.target.value)}
         className="glass ms-stack min-h-12 w-28 rounded-control border border-line px-stack" aria-label={t('days')} />
       <small className="block text-faint">{t('daysHint')}</small></label>}

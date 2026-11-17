@@ -24,11 +24,16 @@ it('rejects invalid uploads before reaching Supabase', async () => {
 it('passes the reviewed version, photo and translated confirmation to atomic acceptance', async () => {
   expect(await decidePaymentReceipt({ id, photo, revision: 2, days: 30 })).toEqual({ data: true, error: undefined });
   expect(state.rpc).toHaveBeenCalledWith('accept_payment_receipt', { p_receipt: id, p_days: 30, p_package: null,
-    p_photo: photo, p_revision: 2, p_message: 'Your payment receipt was accepted and your subscription renewed. View your subscription details in the app.' });
+    p_photo: photo, p_revision: 2, p_message: 'Your payment receipt was accepted. View your payment and subscription details in the app.' });
 });
 it('requires a one-line decline reason and forwards the reviewed version', async () => {
   for (const reason of ['', '  ', 'a\nb', 'x'.repeat(201)]) expect((await decidePaymentReceipt({ id, photo, revision: 2, days: null, reason })).error).toBeTruthy();
   expect(state.rpc).not.toHaveBeenCalled();
   await decidePaymentReceipt({ id, photo, revision: 2, days: null, reason: ' Photo unclear ' });
   expect(state.rpc).toHaveBeenCalledWith('decline_payment_receipt', { p_receipt: id, p_photo: photo, p_revision: 2, p_reason: 'Photo unclear' });
+});
+it('returns a translated overpayment error when the debt changed after review', async () => {
+  state.rpc.mockResolvedValue({ data: null, error: { message: 'more than the player owes', code: '22023' } });
+  expect((await decidePaymentReceipt({ id, photo, revision: 1, days: null })).error)
+    .toBe('Receipt exceeds the remaining debt. Ask for a receipt with the correct amount');
 });

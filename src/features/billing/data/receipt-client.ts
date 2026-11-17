@@ -9,6 +9,7 @@ type ReceiptDatabase = Omit<AppDatabase, 'public'> & {
       payment_receipts: { Row: PaymentReceipt; Insert: never; Update: never; Relationships: [] };
     };
     Functions: AppDatabase['public']['Functions'] & {
+      receipt_debt: { Args: { p_player: string }; Returns: number };
       submit_payment_receipt: { Args: { p_id: string; p_captain: string; p_amount: number;
         p_method: ReceiptMethod | null; p_photo: string; p_renewal: string | null }; Returns: string };
       accept_payment_receipt: { Args: { p_receipt: string; p_days: number | null; p_package: string | null; p_message: string; p_photo: string; p_revision: number }; Returns: undefined };
