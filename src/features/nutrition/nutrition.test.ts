@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import Dexie from 'dexie';
 import { KochivoDB, stableId, type MealLogRow } from '@/core/offline';
 import { mapNutritionSnapshot, type NutritionResponse } from './data/nutrition-snapshot';
 import { refreshNutrition } from './data/refresh-nutrition';
@@ -46,20 +47,43 @@ describe('nutrition snapshot and macros', () => {
     expect(targetsOf(snapshot)).toEqual({ kcal: 2900, protein: 8, carbs: 80, fat: 0 });
     expect(targetsOf({ ...snapshot, meals: [] }).protein).toBe(0);
   });
+  it('keeps eaten macros after a captain edits the meal', () => {
+    const saved = { ...log, eaten_macros: { kcal: 400, protein: 10, carbs: 60, fat: 3 } };
+    const edited = { ...snapshot, meals: snapshot.meals.map(entry => ({ ...entry, items: [] })) };
+    expect(eatenTotals(edited, [saved], today)).toEqual(saved.eaten_macros);
+  });
 });
 
 it('keeps one row and one outbox entry across toggles and eaten swaps', async () => {
   const db = new KochivoDB('nutrition-log-test');
   try {
-    const input = { mealId: 'meal', logDate: today, swaps: {} };
+    const input = { mealId: 'meal', meal, logDate: today, swaps: {} };
     await setMealEaten(db, { ...input, eaten: true }, now);
     await setMealEaten(db, { ...input, eaten: true, swaps: { item: 'alt' } }, now + 1);
     expect(await db.meal_logs.toArray()).toMatchObject([{ swaps: { item: 'alt' } }]);
+    expect((await db.meal_logs.toArray())[0]).toHaveProperty('eaten_macros', { kcal: 400, protein: 10, carbs: 60, fat: 3 });
     await setMealEaten(db, { ...input, eaten: false }, now + 2);
     expect(await db.meal_logs.toArray()).toEqual([{ id: await stableId('meal', 'meal', today), meal_id: 'meal',
-      log_date: today, swaps: {}, completed_at: null, deleted_at: null,
+      log_date: today, swaps: {}, completed_at: null, deleted_at: null, eaten_macros: null,
       client_updated_at: new Date(now + 2).toISOString() }]);
     expect(await db.outbox.count()).toBe(1);
+    await setMealEaten(db, { ...input, meal: { ...meal, items: [] }, eaten: true }, now + 3);
+    expect((await db.meal_logs.toArray())[0]?.eaten_macros).toEqual({ kcal: 0, protein: 0, carbs: 0, fat: 0 });
+  } finally { await db.delete(); }
+});
+
+it('upgrades a version 8 database without changing legacy logs or pending writes', async () => {
+  const old = new Dexie('nutrition-upgrade');
+  old.version(8).stores({ meal_logs: 'id, &[meal_id+log_date]', outbox: '++id, &[table+row_id], next_attempt_at' });
+  await old.table('meal_logs').put(log);
+  const pending = { table: 'meal_logs', row_id: log.id, revision: 1, enqueued_at: now, attempts: 0, next_attempt_at: now };
+  await old.table('outbox').add(pending);
+  old.close();
+  const db = new KochivoDB('nutrition-upgrade');
+  try {
+    expect(await db.meal_logs.get(log.id)).toEqual(log);
+    expect(await db.outbox.toArray()).toMatchObject([pending]);
+    expect(eatenTotals(snapshot, await db.meal_logs.toArray(), today).kcal).toBe(400);
   } finally { await db.delete(); }
 });
 

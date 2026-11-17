@@ -66,7 +66,7 @@ async function expectLogs(f: Awaited<ReturnType<typeof fixture>>, refs = {
     ...f.set, player_id: owner.player, program_exercise_id: refs.item, drop_index: 0,
   });
   expect(await stored('meal_logs', f.log.id)).toEqual({
-    ...f.log, player_id: owner.player, meal_id: refs.meal,
+    ...f.log, player_id: owner.player, meal_id: refs.meal, eaten_macros: null,
   });
 }
 

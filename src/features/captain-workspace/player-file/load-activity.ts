@@ -1,6 +1,6 @@
 import 'server-only';
 import { supabaseServer } from '@/core/supabase/server';
-import { filterMeals, mapNutritionSnapshot, mealMacros, targetsOf } from '@/features/nutrition/server';
+import { eatenMacros, filterMeals, mapNutritionSnapshot, mealMacros, targetsOf } from '@/features/nutrition/server';
 import type { NutritionResponse } from '@/features/nutrition';
 import { sumMacros } from '@/lib/macros';
 import { loadMealDay } from './load-meal-day';
@@ -25,14 +25,14 @@ export async function loadActivity(playerId: string, today: string) {
   if (sets?.error) throw sets.error;
   const snapshot = plan.data ? mapNutritionSnapshot(plan.data, playerId) : null;
   if (snapshot) snapshot.meals = filterMeals(snapshot.meals, rest, logs.data.flatMap(row => row.meal_id ? [{ ...row,
-    meal_id: row.meal_id, swaps: {} }] : []), today);
+    meal_id: row.meal_id, swaps: {}, eaten_macros: eatenMacros(row.eaten_macros) }] : []), today);
   const meals = snapshot?.meals.map(meal => {
     const log = logs.data.find(row => row.meal_id === meal.id);
     const swaps = Object.fromEntries(Object.entries(log?.swaps ?? {}).filter((pair): pair is [string, string] => typeof pair[1] === 'string'));
     return { id: meal.id, name: meal.name, items: meal.items.map(item => {
       const food = item.alternatives.find(alt => alt.id === swaps[item.id]) ?? item;
       return { name: food.name, grams: food.grams };
-    }), macros: mealMacros(meal, swaps), logged: Boolean(log?.completed_at) };
+    }), macros: log?.completed_at ? eatenMacros(log.eaten_macros) ?? mealMacros(meal, swaps) : mealMacros(meal, swaps), logged: Boolean(log?.completed_at) };
   }) ?? [];
   return { scans: scans.data, last: session.data, sets: sets?.data ?? [], nutrition: snapshot ? {
     title: snapshot.title, meals, targets: targetsOf(snapshot), eaten: sumMacros(meals.filter(meal => meal.logged).map(meal => meal.macros)),

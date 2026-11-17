@@ -1,5 +1,6 @@
 import { localDb, type KochivoDB, type MealLogRow } from '@/core/offline';
 import { loadSupabaseBrowser } from '@/core/supabase/lazy';
+import { eatenMacros } from '../macros';
 
 export async function mergeMealLogs(db: KochivoDB, logs: MealLogRow[]) {
   await db.transaction('rw', db.meal_logs, db.outbox, async () => {
@@ -27,7 +28,7 @@ export async function refreshMealLogs(day: string, db: KochivoDB = localDb()) {
     for (const row of result.data) {
       if (!row.meal_id) continue;
       logs.push({ id: row.id, meal_id: row.meal_id, log_date: row.log_date, completed_at: row.completed_at,
-        deleted_at: row.deleted_at, client_updated_at: row.client_updated_at,
+        deleted_at: row.deleted_at, client_updated_at: row.client_updated_at, eaten_macros: eatenMacros(row.eaten_macros),
         swaps: Object.fromEntries(Object.entries(row.swaps ?? {}).filter((pair): pair is [string, string] => typeof pair[1] === 'string')) });
     }
     if (result.data.length < 500) break;

@@ -12,7 +12,7 @@ it('retains a set and meal through offline failure and reload, then delivers bot
     const session = await startSession(db, { id: 'day' }, '2026-11-12', now);
     await logSet(db, { session_id: session.id, program_exercise_id: 'press', exercise_id: 'exercise',
       set_index: 1, weight_kg: 52.5, reps: 9 }, now);
-    await setMealEaten(db, { mealId: 'breakfast', logDate: '2026-11-12', eaten: true, swaps: {} }, now);
+    await setMealEaten(db, { mealId: 'breakfast', meal: { id: 'breakfast', name: 'Meal', position: 0, items: [] }, logDate: '2026-11-12', eaten: true, swaps: {} }, now);
     expect(await flushOutbox(db, async () => { throw new Error('offline'); }, now)).toEqual({ sent: 0, failed: 3 });
     db.close();
     db = new KochivoDB('v6-offline-set-and-meal');

@@ -35,7 +35,7 @@ export function MealCard({ meal, log, today, planTitle, primary = false }: { mea
     setBusy(true);
     setError(false);
     try {
-      await setMealEaten(localDb(), { mealId: meal.id, logDate: today, eaten: nextEaten, swaps: nextSwaps }, now);
+      await setMealEaten(localDb(), { mealId: meal.id, meal, logDate: today, eaten: nextEaten, swaps: nextSwaps }, now);
       return true;
     } catch { setError(true); return false; }
     finally { setBusy(false); }

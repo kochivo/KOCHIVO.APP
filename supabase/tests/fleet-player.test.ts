@@ -52,7 +52,7 @@ it('starts offline, queues sets and meals, completes and replays without duplica
       expect((await db.query('select id from set_logs where session_id=$1', [session.id])).rows).toHaveLength(0);
       expect((await flushOutbox(local, send, now + 1000)).failed).toBe(0);
       await finishSession(local, session.id, now + 2000);
-      await setMealEaten(local, { mealId: content.meal, logDate: today, eaten: true,
+      await setMealEaten(local, { mealId: content.meal, meal: { id: content.meal, name: 'Meal', position: 0, items: [] }, logDate: today, eaten: true,
         swaps: { [content.mealItem]: content.alternative } }, now + 3000);
       expect((await flushOutbox(local, send, now + 3000)).failed).toBe(0);
       const sessions = await local.workout_sessions.toArray();
@@ -128,7 +128,7 @@ it('keeps meal swaps on the Cairo day at 23:30 UTC and rejects delayed older cha
   const local = new KochivoDB('fleet-cairo-meals');
   try {
     const mealItem = await fleetId('meal-item', player.id), alternative = await fleetId('alternative', player.id);
-    await setMealEaten(local, { mealId: meal, logDate: date, eaten: true, swaps: { [mealItem]: alternative } }, at);
+    await setMealEaten(local, { mealId: meal, meal: { id: meal, name: 'Meal', position: 0, items: [] }, logDate: date, eaten: true, swaps: { [mealItem]: alternative } }, at);
     const rows = await local.meal_logs.toArray();
     const sync = (payload: object[]) => asUser(db, player.id, tx => tx.query('select sync_meal_logs($1)', [JSON.stringify(payload)]));
     await sync(rows); await sync(rows);

@@ -21,7 +21,10 @@ it('hydrates a second device with swaps, merges corrections and preserves newer 
     expect((await db.meal_logs.get(row.id))?.swaps).toEqual({ item: 'alt' });
     await mergeMealLogs(db, [{ ...row, client_updated_at: new Date(now + 1).toISOString(), completed_at: null }]);
     expect((await db.meal_logs.get(row.id))?.completed_at).toBeNull();
-    await setMealEaten(db, { mealId: 'pending', logDate: today, eaten: false, swaps: {} }, now);
+    await mergeMealLogs(db, [{ ...row, client_updated_at: new Date(now + 2).toISOString(),
+      eaten_macros: { kcal: 75, protein: 3, carbs: 4, fat: 1 } }]);
+    expect(eatenTotals(snapshot, await db.meal_logs.toArray(), today)).toEqual({ kcal: 75, protein: 3, carbs: 4, fat: 1 });
+    await setMealEaten(db, { mealId: 'pending', meal: snapshot.meals[0] ?? { id: 'pending', name: 'Meal', position: 0, items: [] }, logDate: today, eaten: false, swaps: {} }, now);
     const pending = (await db.meal_logs.toArray()).find(log => log.meal_id === 'pending');
     if (!pending) throw new Error('Missing fixture');
     await mergeMealLogs(db, [{ ...pending, completed_at: row.completed_at, client_updated_at: new Date(now + 2).toISOString() }]);

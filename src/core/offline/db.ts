@@ -157,6 +157,7 @@ export class KochivoDB extends Dexie {
       set_logs: 'id, session_id, &[session_id+program_exercise_id+set_index+drop_index]',
     }).upgrade(tx => tx.table('set_logs').toCollection().modify({ drop_index: 0 }));
     this.version(8).stores({ pain_reports: 'id, session_id' });
+    this.version(9).stores({ meal_logs: 'id, &[meal_id+log_date]' });
   }
 }
 

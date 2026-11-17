@@ -1,2 +1,2 @@
 import 'server-only';
-export { mapNutritionSnapshot, mealMacros, targetsOf, filterMeals } from './data/server-macros';
+export { mapNutritionSnapshot, eatenMacros, mealMacros, targetsOf, filterMeals } from './data/server-macros';

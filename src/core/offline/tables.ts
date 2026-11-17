@@ -10,6 +10,7 @@ import type { Tables } from '@/types/database';
 import type { Narrow } from '@/types/app-database';
 import type { SupplementTiming } from '@/types/enums';
 import type { PainReportRow } from './pain-tables';
+import type { Macros } from '@/lib/macros';
 
 type LocalRow<Name extends 'workout_sessions' | 'set_logs' | 'meal_logs' | 'daily_checks' | 'supplement_logs'> =
   Omit<Tables<Name>, 'player_id' | 'server_updated_at'>;
@@ -26,7 +27,9 @@ export type WorkoutSessionRow = Narrow<LocalRow<'workout_sessions'>, {
 export type SetLogRow = Narrow<LocalRow<'set_logs'>, { program_exercise_id: string; drop_index?: number }>;
 
 // Local meals retain their plan reference and store only item-to-alternative ids in swaps.
-export type MealLogRow = Narrow<LocalRow<'meal_logs'>, { meal_id: string; swaps: Record<string, string> }>;
+export type MealLogRow = Narrow<LocalRow<'meal_logs'>, {
+  meal_id: string; swaps: Record<string, string>; eaten_macros?: { [K in keyof Macros]: number } | null;
+}>;
 
 export interface SyncRows {
   pain_reports: PainReportRow;
