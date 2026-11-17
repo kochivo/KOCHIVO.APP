@@ -18,6 +18,7 @@ it('shows the request identity, relative submission time and card actions', () =
   expect(html).toContain('بعت الطلب');
   expect(html).toContain('قبل ساعتين');
   expect(html).toContain('جديد');
+  expect(html).toContain('tone-info');
   expect(html).toContain('اقبل');
   expect(html).toContain('ارفض');
   expect(html).toContain('dateTime="2026-11-14T10:00:00Z"');

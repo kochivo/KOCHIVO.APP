@@ -26,8 +26,8 @@ export function ConversationPane({ player, captainId, at, onBack, onGuard, onUpd
   const latest = latestSentMessage(thread.items);
   useEffect(() => { if (thread.status === 'ready' && !thread.readError) onUpdate(player.playerId, latest); }, [latest, thread.status, thread.readError, onUpdate, player.playerId]);
   const days = Math.max(0, Math.ceil((Date.parse(player.accessUntil) - Date.parse(at)) / 86400000));
-  return <section className="glass flex min-h-[470px] min-w-0 flex-col gap-stack rounded-card border border-line-soft p-card">
-    <header className="flex items-center gap-stack border-b border-line pb-stack">
+  return <section className="glass flex h-[calc(100dvh-10rem)] min-h-[470px] min-w-0 flex-col overflow-hidden rounded-card min-[760px]:h-[calc(100dvh-8rem)]">
+    <header className="flex items-center gap-stack border-b border-line-soft px-card py-stack">
       <button type="button" aria-label={t('back')} onClick={onBack} className={`${secondaryButtonClass} grid min-h-12 min-w-12 place-items-center min-[760px]:hidden`}><ArrowRight aria-hidden className="size-4 ltr:rotate-180" /></button>
       <ConversationAvatar name={player.fullName} url={player.avatarUrl} />
       <div className="min-w-0 flex-1"><h2 className="text-row font-semibold">{player.fullName}</h2>

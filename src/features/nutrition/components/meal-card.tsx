@@ -62,7 +62,7 @@ export function MealCard({ meal, log, today, planTitle, primary = false }: { mea
     <ul className="space-y-stack">
       {meal.items.map((item) => {
         const chosen = item.alternatives.find((alt) => alt.id === swaps[item.id]) ?? item;
-        return <li key={item.id} className="flex items-center gap-stack">
+        return <li key={item.id} className="flex min-h-14 items-center gap-stack border-t border-line-soft py-stack">
           {chosen.photo_path ? <Image src={foodPhotoUrl(chosen.photo_path)} alt={chosen.name} width={60} height={60}
             unoptimized className="size-15 shrink-0 rounded-control object-cover" /> :
             <span aria-hidden="true" className="glass flex size-15 shrink-0 items-center justify-center rounded-control text-muted">{chosen.name.charAt(0)}</span>}
@@ -81,25 +81,26 @@ export function MealCard({ meal, log, today, planTitle, primary = false }: { mea
   </GlassCard>;
   if (!v6) return details;
   const name = starterText(meal.name, locale, planTitle);
-  return <div className={`rounded-[22px] border bg-surface px-stack py-stack ${primary && !eaten ? 'border-lime/50' : 'border-line-soft'}`}>
+  return <article className={`glass rounded-card px-card py-stack ${primary && !eaten ? 'border-lime/30' : ''}`}>
     <div className="flex items-center gap-stack">
-      {eaten ? <span role="img" aria-label={v6t('eaten')} className="flex size-12 shrink-0 items-center justify-center rounded-full bg-lime text-on-lime">
-        <Check aria-hidden className="size-[22px]" strokeWidth={3} />
+      {eaten ? <span role="img" aria-label={v6t('eaten')} className="flex size-12 shrink-0 items-center justify-center rounded-control text-lime">
+        <Check aria-hidden className="tone-lime size-7 rounded-md p-inline" strokeWidth={3} />
       </span> : <button type="button" disabled={busy || !meal.items.length} aria-label={v6t('eatMeal', { meal: name })}
         onClick={() => void save(true, swaps, Date.now())}
-        className={`size-12 shrink-0 rounded-full border-2 bg-transparent disabled:opacity-50 ${primary ? 'border-lime' : 'border-line'}`} />}
+        className="press grid size-12 shrink-0 place-items-center rounded-control disabled:opacity-50"><span aria-hidden className={`size-7 rounded-md border ${primary ? 'border-lime/50' : 'border-line'}`} /></button>}
       <button type="button" aria-label={v6t('details')} aria-expanded={open} onClick={() => setOpen(value => !value)}
-        className="flex min-h-12 min-w-0 flex-1 flex-col justify-center gap-inline font-sans text-start">
+        className="flex min-h-12 min-w-0 flex-1 flex-col justify-center font-sans text-start">
         <span className="text-md font-bold">{name} {primary && !eaten && <span className="text-xs font-bold text-lime">{v6t('now')}</span>}</span>
         <MealBudget meal={meal} swaps={swaps} />
         {meal.time_of_day && <time className="text-xs text-muted" dateTime={meal.time_of_day}><bdi>{meal.time_of_day.slice(0, 5)}</bdi></time>}
-        <span className="w-full truncate text-xs text-muted">{meal.items.length ? meal.items.map(item => {
+        <span className="w-full text-xs text-muted">{meal.items.length ? meal.items.map(item => {
           const chosen = item.alternatives.find(alt => alt.id === swaps[item.id]) ?? item;
           return `${chosen.name} ${formatPortion(chosen, locale, t('g'))}`;
         }).join(' · ') : t('thisMealIsBeingPrepared')}</span>
       </button>
+      <p className="shrink-0 text-micro text-muted"><bdi className="font-display text-md font-extrabold tabular-nums text-ink">{formatNumber(macros.kcal, locale)}</bdi> {t('kcal')}</p>
     </div>
     {error && <p role="alert" className="text-sm text-danger">{t('saveFailedTryAgain')}</p>}
     {open && <div className="mt-stack">{details}</div>}
-  </div>;
+  </article>;
 }

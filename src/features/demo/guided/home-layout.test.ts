@@ -16,13 +16,10 @@ it('keeps full card heights inside the fixed-height scrolling captain grid', () 
   expect(rule).toContain('overflow: auto');
 });
 
-it('uses the tile container width and preserves whole words in KPI labels', () => {
+it('shows the home KPIs as one stat strip that the demo container can hold', () => {
   const view = read('../../dashboard/home/home-tiles-view.tsx');
-  expect(view).toContain('@container/home-tiles');
-  expect(view).toContain('@min-[1000px]/home-tiles:grid-cols-4');
-  expect(view).toContain("responsiveTo = 'viewport'");
+  expect(view).toContain('StatStrip');
   expect(read('./captain-home.tsx')).toContain('responsiveTo="container"');
-  expect(view).toContain('wrap-normal');
 });
 
 it('stacks tasks and activity until the home container can fit the real two-column layout', () => {
@@ -34,15 +31,12 @@ it('stacks tasks and activity until the home container can fit the real two-colu
   expect(home).toContain('items-start');
 });
 
-it('preserves the real dashboard tile markup unless container responsiveness is requested', () => {
+it('renders the same real tile markup in production and in the demo', () => {
   const props = { t: createT(homeV11Messages, 'en'), old: createT(homeMessages, 'en'), locale: 'en' as const,
     adherence: 78, previous: 72, trained: 16, active: 20, pending: 4, paid: 21400, progress: 0 };
   const production = renderToStaticMarkup(createElement(HomeTilesView, props));
-  expect(production).toMatch(/^<div data-home-tiles="true" class="grid grid-cols-2 gap-stack min-\[1000px\]:grid-cols-4">/);
-  expect(production).not.toContain('@container');
-  expect(production).toContain('<small class="text-xs text-muted">Weekly adherence</small>');
-  const embedded = renderToStaticMarkup(createElement(HomeTilesView, { ...props, responsiveTo: 'container' }));
-  expect(embedded).toContain('class="@container/home-tiles"');
-  expect(embedded).toContain('@min-[1000px]/home-tiles:grid-cols-4');
-  expect(embedded).toContain('<small class="wrap-normal text-xs text-muted">Weekly adherence</small>');
+  expect(production).toMatch(/^<div data-home-tiles="true"><section class="glass hairline-cells grid/);
+  expect(production).toContain('Weekly adherence');
+  expect(production.match(/role="progressbar"/g)?.length).toBeGreaterThanOrEqual(3);
+  expect(renderToStaticMarkup(createElement(HomeTilesView, { ...props, responsiveTo: 'container' }))).toBe(production);
 });

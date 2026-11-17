@@ -1,4 +1,6 @@
 export const arStd = {
+  intro: 'مدفوعات كل لاعب ورصيده المتبقي', owed: 'بانتظار التحصيل', actions: 'الإجراء',
+  catalogTitle: 'الباقات', catalogIntro: 'الباقات التي يختار منها اللاعبون عبر رابط الدعوة',
   waitingForPlans: 'بانتظار الخطط',
   'usageTail.one': 'من {limit} لاعب', 'usageTail.two': 'من {limit} لاعبين', 'usageTail.few': 'من {limit} لاعبين', 'usageTail.other': 'من {limit} لاعب', currency: 'جنيه',
   previous: 'السابق', next: 'التالي',

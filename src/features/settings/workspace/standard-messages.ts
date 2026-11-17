@@ -1,4 +1,5 @@
 export const arStd = {
+  subscription: 'باقة KOCHIVO', security: 'الأمان',
   profile: 'ملفك وصفحتك', name: 'الاسم', page: 'رابط صفحتك', whatsapp: 'واتساب', edit: 'تعديل',
   arabic: 'عربي', preferences: 'اللغة والتوقيت', language: 'اللغة', english: 'English',
   timezone: 'التوقيت', auto: 'تلقائي · {zone}', cairo: 'القاهرة', manual: 'اختر بنفسك', units: 'الوحدات',

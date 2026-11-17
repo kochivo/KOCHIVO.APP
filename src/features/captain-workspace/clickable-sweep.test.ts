@@ -7,7 +7,7 @@ const sources = [
   'library/exercise-detail.tsx', 'library/exercise-library.tsx',
   'training/day-rail.tsx', 'training/warmup-block.tsx',
   '../inbox/components/workspace-row.tsx', '../inbox/components/workspace-controls.tsx',
-  '../rank-review/components/workspace-board-list.tsx', '../rank-review/components/workspace-leaderboard.tsx',
+  '../rank-review/components/workspace-board-list.tsx',
   '../settings/components/workspace-page-card.tsx', '../settings/components/workspace-preferences.tsx',
   '../meal-plans/components/v11-foods-table.tsx',
   '../meal-plans/components/foods-library-entry.tsx', '../meal-plans/components/v11-assign-dialog.tsx',

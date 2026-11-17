@@ -5,7 +5,7 @@ import { arStd } from './standard/messages';
 export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? { ...arStd,
-    copyJoinLink: 'انسخ رابط الانضمام', requestSent: 'أرسل الطلب', newRequest: 'جديد',
+    inviteLink: 'رابط دعوتك', shareInvite: 'شارك الرابط', inviteDescription: 'شارك الرابط ليستطيع اللاعبون طلب الانضمام.', copyJoinLink: 'انسخ رابط الانضمام', requestSent: 'أرسل الطلب', newRequest: 'جديد',
     joinAccepted: 'تم قبول {name}',
     playerLogin: "دخول اللاعبين",
     verified: "كابتن موثّق على كوتشيفو",
@@ -56,7 +56,7 @@ export const messages = defineMessages({
     madeOn: "هذه الصفحة مصمّمة على KOCHIVO",
   } as const : undefined; },
   ar: {
-    copyJoinLink: 'انسخ لينك الانضمام', requestSent: 'بعت الطلب', newRequest: 'جديد',
+    inviteLink: 'لينك الدعوة بتاعك', shareInvite: 'شارك اللينك', inviteDescription: 'ابعت اللينك عشان اللاعبين يطلبوا الانضمام.', copyJoinLink: 'انسخ لينك الانضمام', requestSent: 'بعت الطلب', newRequest: 'جديد',
     joinAccepted: 'اتقبل {name}',
     playerLogin: "دخول اللاعبين",
     verified: "كابتن موثّق على كوتشيفو",
@@ -125,7 +125,7 @@ export const messages = defineMessages({
     whatsapp: 'واتساب', instagram: 'إنستجرام', tiktok: 'تيك توك', facebook: 'فيسبوك', youtube: 'يوتيوب', x: 'إكس',
   },
   en: {
-    copyJoinLink: 'Copy join link', requestSent: 'Request sent', newRequest: 'New',
+    inviteLink: 'Your invite link', shareInvite: 'Share link', inviteDescription: 'Share this link so players can request to join.', copyJoinLink: 'Copy join link', requestSent: 'Request sent', newRequest: 'New',
     joinAccepted: '{name} accepted',
     playerLogin: "Player login",
     verified: "Verified coach on KOCHIVO",

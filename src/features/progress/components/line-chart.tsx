@@ -6,27 +6,31 @@ import { formatNumber } from '@/lib/format';
 import { formatDateAr } from '@/lib/dates';
 import { Button, EmptyState } from '@/ui';
 import { messages } from '../messages';
+import { messages as chartMessages } from '../player-v3-messages';
 import { scaleSeries } from '../series';
 import type { TrendPoint } from '../trends';
 
-export function LineChart({ points, bodyFat = [], title, unit, compact }: {
-  points: readonly TrendPoint[]; bodyFat?: readonly TrendPoint[]; title: string; unit: string; compact?: 'water' | 'lime';
+export function LineChart({ points, bodyFat = [], title, unit, compact, showDates = false, today }: {
+  points: readonly TrendPoint[]; bodyFat?: readonly TrendPoint[]; title: string; unit: string; compact?: 'water' | 'lime'; showDates?: boolean; today?: string;
 }) {
   const t = useT(messages);
+  const ct = useT(chartMessages);
   const locale = useLocale();
   const id = useId();
   const [table, setTable] = useState(false);
   if (compact && points.length) {
-    const height = compact === 'water' ? 70 : 80;
+    const height = showDates ? 120 : compact === 'water' ? 70 : 80;
     const values = points.map(point => point.value);
     const min = Math.min(...values);
     const span = Math.max(...values) - min || 1;
     const coordinates = points.map((point, index) => ({ x: points.length === 1 ? 160 : 5 + index * 310 / (points.length - 1), y: height - 10 - (point.value - min) / span * (height - 20) }));
     const end = coordinates.at(-1);
-    return <svg width="100%" height={height} viewBox={`0 0 320 ${height}`} preserveAspectRatio="none" role="img" aria-label={`${title}: ${points.map(point => `${point.date}: ${formatNumber(point.value, locale)} ${unit}`).join(t('separator'))}`} className={compact === 'water' ? 'text-water' : 'text-lime'}>
+    const ticks = points.filter((_, index) => index === 0 || index === points.length - 1 || (points.length > 2 && index === Math.floor((points.length - 1) / 2)));
+    return <div><svg width="100%" height={height} viewBox={`0 0 320 ${height}`} preserveAspectRatio="none" role="img" aria-label={`${title}: ${points.map(point => `${point.date}: ${formatNumber(point.value, locale)} ${unit}`).join(t('separator'))}`} className={compact === 'water' ? 'text-water' : 'text-lime'}>
+      {showDates && [height / 3, height * 2 / 3].map(y => <line key={y} x1="0" x2="320" y1={y} y2={y} stroke="currentColor" className="text-line-soft" />)}
       <polyline points={coordinates.map(point => `${point.x},${point.y}`).join(' ')} fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-      {end && <circle cx={end.x} cy={end.y} r="5" fill="currentColor" />}
-    </svg>;
+      {end && (!showDates || points.length === 1) && <circle cx={end.x} cy={end.y} r="5" fill="currentColor" />}
+    </svg>{showDates && <div dir="ltr" className="flex justify-between gap-inline text-micro text-muted">{ticks.map(point => <time dir="auto" key={point.date} dateTime={point.date}>{point.date === today ? ct('chartToday') : formatDateAr(point.date, { day: 'numeric', month: 'short' }, locale)}</time>)}</div>}</div>;
   }
   const weeks = [...new Set([...points, ...bodyFat].map(point => point.date))].sort();
   if (!weeks.length) return <EmptyState icon={Scale} title={t('noMeasurementsYet')} body={t('yourFirstCheckinIsYourStartingPoint')} action={{ label: t('sendWeeklyCheckin'), href: '/player/progress' }} />;

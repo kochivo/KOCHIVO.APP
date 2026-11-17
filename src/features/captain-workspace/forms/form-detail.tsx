@@ -40,24 +40,26 @@ export function FormDetail({ form, playerId, locale, mutate, review, sign }: {
       setSendError(!ok);
     } finally { locked.current = false; setSending(false); }
   }
-  return <article id="player-form-detail" tabIndex={-1} className="glass-strong min-w-0 rounded-card p-section">
+  return <article id="player-form-detail" tabIndex={-1} className="@container glass min-w-0 space-y-card-gap rounded-card p-card">
     <header className="mb-card-gap flex flex-wrap items-start justify-between gap-stack">
       <div><h2 className="text-xl font-bold">{t(checkin ? 'checkin' : 'intake')}</h2>
         <p className="mt-inline text-sm text-muted">{formDate(form.snapshot.source.at, locale, timezone)}</p></div>
       <span className="text-sm text-muted">{t(form.reviewedAt ? 'reviewed' : 'new')}</span>
       {form.previous && <p className="w-full text-sm text-muted">{t('compare', { date: formDate(form.previous.source.at, locale, timezone) })}</p>}
     </header>
-    <FormAnswers form={form} locale={locale} trainingHref={`/captain/players/${playerId}/programs`} />
-    {checkin && <>
-      <FormPhotos key={form.snapshot.source.id} id={form.snapshot.source.id} playerId={playerId} count={form.photoCount} locale={locale} sign={sign} />
+    <div className={`grid items-start gap-card-gap ${checkin && form.photoCount ? '@min-[680px]:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]' : ''}`}>
+      {checkin && <FormPhotos key={form.snapshot.source.id} id={form.snapshot.source.id} playerId={playerId} count={form.photoCount} locale={locale} sign={sign} />}
+      <FormAnswers form={form} locale={locale} trainingHref={`/captain/players/${playerId}/programs`} />
+    </div>
+    {checkin &&
       <form className="mt-card-gap space-y-stack" onSubmit={event => { event.preventDefault(); void send(); }}>
         <label className="block space-y-inline"><span className="text-sm text-muted">{t('reply')}</span>
           <textarea value={reply} onChange={event => setReply(event.target.value)} maxLength={1000} disabled={sending}
             className="min-h-24 w-full rounded-control border border-line bg-bg p-stack text-start" />
         </label>
         {sendError && <p role="alert" className="text-sm text-danger">{t('sendFailed')}</p>}
-        <Button type="submit" disabled={sending} variant={'primary'} block={false} className={"min-h-12 w-full px-page-x font-bold disabled:opacity-50"}>{t(sending ? 'sending' : 'send')}</Button>
+        <Button type="submit" disabled={sending} variant="primary" block={false}>{t(sending ? 'sending' : 'send')}</Button>
       </form>
-    </>}
+    }
   </article>;
 }

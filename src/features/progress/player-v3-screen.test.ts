@@ -29,6 +29,7 @@ it('shows the exact empty copy and a real history count without sample chart val
   expect(html).toContain('سجّل وزنك أول مرة');
   expect(html).toContain('لسه مافيش تمارين كفاية للرسم');
   expect(html).toContain('href="/player/history"');
+  expect(html).toContain('hairline-cells');
   expect(html).toContain('>7</span>');
   expect(html).not.toContain('<svg width="100%"');
 });
@@ -48,6 +49,13 @@ it('feeds the selected range into both charts and keeps the program baseline for
   state.values = [1, 'bench'];
   const data = { ...props, checkins: [{ week_start: '2026-08-20', body_weight_kg: 80 }, { week_start: '2026-10-20', body_weight_kg: 81 }, { week_start: '2026-11-13', body_weight_kg: 82.4 }] as CheckIn[],
     strength: { names: { bench: 'بنش' }, sets: ['2026-08-20', '2026-10-20', '2026-11-13'].map((training_date, index) => ({ exercise_id: 'bench', training_date, weight_kg: 65 + index * 5, reps: 8 })) } };
+  const html = renderToStaticMarkup(createElement(ProgressV3, data));
+  expect(html).toContain('hairline-cells');
+  expect(html).toContain('+1.4');
+  expect(html).toContain('1,680');
+  expect(html.indexOf('dateTime="2026-10-20"')).toBeLessThan(html.indexOf('dateTime="2026-11-13"'));
+  expect(html).toContain('النهارده');
+  state.index = 0;
   const charts = find(ProgressV3(data), LineChart);
   expect(charts.map(chart => chart.props.points)).toEqual([
     [{ date: '2026-10-20', value: 81 }, { date: '2026-11-13', value: 82.4 }],

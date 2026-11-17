@@ -49,15 +49,15 @@ export function TrainingExerciseRow({ row, onPatch, onRemove, onMove, onLink, fi
       {row.set_plan?.some(set => set.drop) && <span className="rounded-full bg-warn-soft px-stack py-inline text-xs text-warn">{st('drop')}</span>}
     </div>}
     <div className={`flex items-center gap-inline px-page-x ${open ? 'bg-surface/30' : ''}`}>
-        <Button {...dragProps} aria-label={tt('reorder', { name })} type="submit" variant={'secondary'} block={false} className={"hidden min-h-12 min-w-12 touch-none items-center justify-center text-muted min-[761px]:flex"}
-        onKeyDown={event => { if (event.key === 'ArrowUp' || event.key === 'ArrowDown') { event.preventDefault(); onMove(event.key === 'ArrowUp' ? -1 : 1); } }}><GripVertical aria-hidden className="size-4" /></Button>
-      <button aria-expanded={open} aria-controls={`exercise-${row.id}`} onClick={() => setOpen(value => !value)} className={`${clickableClass} grid min-h-16 min-w-0 flex-1 grid-cols-[44px_minmax(0,1fr)_24px] items-center gap-stack py-stack text-start min-[761px]:grid-cols-[44px_minmax(0,1fr)_64px_64px_64px_24px]`}>
+      <button aria-expanded={open} aria-controls={`exercise-${row.id}`} onClick={() => setOpen(value => !value)} className={`${clickableClass} grid min-h-14 min-w-0 flex-1 grid-cols-[repeat(3,minmax(0,1fr))_auto] items-center gap-inline py-stack text-start @min-[460px]:grid-cols-[auto_minmax(0,1fr)_repeat(3,minmax(0,3.5rem))_auto]`}>
         {row.library?.media_path ? <ExerciseImage src={exerciseMediaUrl(row.library.media_path)} alt="" width={44} height={44} className="size-11 rounded-xl border border-line object-cover" /> :
           <span className="glass-strong grid size-11 place-items-center rounded-xl border border-line"><Dumbbell aria-hidden className="size-4 text-faint" /></span>}
-        <span className="min-w-0"><bdi className="block break-words text-sm">{name}</bdi>{row.library?.name_en && row.library.name_en !== name && <bdi className="block text-micro text-faint">{row.library.name_en}</bdi>}<small className="block text-micro text-faint">{exerciseLabel(row.library?.body_part, wt)} · {exerciseLabel(row.library?.equipment, wt)}</small></span>
-        {([['sets', row.sets], ['compactReps', reps], ['restLabel', rest]] as const).map(([key, value]) => <span key={key} className="hidden text-center min-[761px]:block"><small className="block text-micro text-faint">{t(key)}</small><b dir="ltr" className="block font-display text-base font-extrabold tabular-nums">{value}</b></span>)}
+        <span className="col-span-3 min-w-0 @min-[460px]:col-span-1"><bdi className="block break-words text-sm font-semibold">{name}</bdi>{row.library?.name_en && row.library.name_en !== name && <bdi className="block text-micro text-faint">{row.library.name_en}</bdi>}<small className="block text-micro text-faint">{exerciseLabel(row.library?.body_part, wt)} · {exerciseLabel(row.library?.equipment, wt)}</small></span>
+        {([['sets', row.sets], ['compactReps', reps], ['restLabel', rest]] as const).map(([key, value]) => <span key={key} className="min-w-0 text-center"><small className="block text-micro text-muted">{t(key)}</small><bdi dir="ltr" className="block break-words rounded-control bg-bg-deep py-inline font-display text-row font-extrabold tabular-nums">{value}</bdi></span>)}
         <DisclosureChevron expanded={open} className="size-4" />
       </button>
+      <Button {...dragProps} aria-label={tt('reorder', { name })} type="submit" variant="ghost" block={false} className="hidden min-h-12 min-w-12 touch-none items-center justify-center px-0 text-muted min-[760px]:flex"
+        onKeyDown={event => { if (event.key === 'ArrowUp' || event.key === 'ArrowDown') { event.preventDefault(); onMove(event.key === 'ArrowUp' ? -1 : 1); } }}><GripVertical aria-hidden className="size-4" /></Button>
     </div>
     {onReplace && <InjuryNote exerciseId={row.exercise_id} injuries={injuries} candidates={candidates} onReplace={onReplace} />}
     {open && <div id={`exercise-${row.id}`} className="space-y-stack px-page-x pb-card pt-inline">

@@ -20,9 +20,12 @@ it('uses the selected period for podium eligibility', () => {
 });
 it('formats workout and point counts independently', () => {
   const rows = [{ ...row, done: 13, monthly: 3 }];
-  expect(renderToStaticMarkup(createElement(WorkspaceBoardList, { rows, locale: 'ar', allTime: false })))
-    .toContain('13 تمرين · 3 نقاط');
-  expect(renderToStaticMarkup(createElement(WorkspaceBoardList, {
+  const ar = renderToStaticMarkup(createElement(WorkspaceBoardList, { rows, locale: 'ar', allTime: false }));
+  expect(ar).toContain('13 تمرين');
+  expect(ar).toContain('3 نقاط');
+  const en = renderToStaticMarkup(createElement(WorkspaceBoardList, {
     rows: [{ ...row, done: 1, monthly: 1 }], locale: 'en', allTime: false,
-  }))).toContain('1 workout · 1 point');
+  }));
+  expect(en).toContain('1 workout');
+  expect(en).toContain('1 point');
 });

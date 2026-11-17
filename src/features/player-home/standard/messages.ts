@@ -1,7 +1,8 @@
 export const arStd = {
   waitingForPlans: 'يجهز الكابتن خططك. يبدأ اشتراكك عند اكتمالها.',
   homeAccount: 'حسابي', homeCaptainMessages: 'رسائل الكابتن', homeUnheard: 'رسائل الكابتن، رسالة جديدة',
-  homeStart: 'لنبدأ', homeDoneToday: 'أنهيت تمرين اليوم', homeWarmup: 'يتضمن إحماء', homeMinutes: '{count} دقيقة',
+  homeGreeting: '{greeting} يا {name}', homeCalories: 'السعرات', homeProtein: 'البروتين', homeDayNumber: 'اليوم {position}',
+  homeStart: 'ابدأ التمرين', homeDoneToday: 'أنهيت تمرين اليوم', homeWarmup: 'يتضمن إحماء', homeMinutes: '{count} دقيقة',
   homeRest: 'يوم راحة', homeRestBody: 'تنمو العضلات أثناء الراحة. نم جيداً، واشرب الماء، وتناول وجباتك.',
   homeRestStreak: 'الراحة تحافظ على سلسلة من {count} يوم', homeTomorrow: 'غداً', homeTomorrowRest: 'غداً راحة أيضاً',
   homeLogFood: 'سجّل طعامك', homeFood: 'الطعام', homeWater: 'الماء', homeGlasses: 'أكواب',

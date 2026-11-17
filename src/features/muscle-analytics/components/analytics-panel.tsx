@@ -21,10 +21,10 @@ export function AnalyticsPanel({ weeks, self = false, readiness = null }: { week
   const week = weeks[selected - 1];
   if (!week || !weeks.some(item => item.total > 0)) return <p className="text-muted">{t(self ? 'emptySelf' : 'empty')}</p>;
   const fatigue = muscles.filter(muscle => (week.muscles[muscle] ?? 0) > OVERLOAD_THRESHOLD);
-  return <div className="space-y-section">
+  return <div className={self ? 'space-y-card-gap' : 'space-y-section'}>
     <WeekSlider value={selected} onChange={setSelected} />
     <p className="text-xs text-muted">{t('weekDates', { date: formatDateAr(week.start, { day: 'numeric', month: 'short' }, locale) })}</p>
-    <div className="grid gap-card-gap md:grid-cols-[1fr_280px]">
+    <div className="grid gap-card-gap md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
       <div className="md:col-start-2 md:row-start-1"><QuickStats week={week} readiness={readiness} /></div>
       <div className="glass min-w-0 rounded-card p-card md:col-start-1 md:row-start-1">
         <BodyMap key={week.start} volume={week.regions} muscles={week.muscles} total={week.total} />

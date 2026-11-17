@@ -136,7 +136,7 @@ export function TrainingEditor({ playerId, playerName, remainingDays, playerFact
       draft && <fieldset disabled={pending} className="min-w-0 space-y-card-gap">
           <div className={!template && draft.player_id
             ? 'min-w-0 space-y-card-gap [&>nav]:static [&>nav]:flex-row [&>nav]:overflow-x-auto'
-            : 'grid min-w-0 items-start gap-card-gap min-[1001px]:grid-cols-[230px_minmax(0,1fr)]'}>
+            : 'grid min-w-0 items-start gap-card-gap @min-[760px]:grid-cols-[12rem_minmax(0,1fr)]'}>
             <DayRail draft={draft} selectedId={day?.id} onSelect={setSelected} update={update} />
             <div className="min-w-0 space-y-card-gap">
               {!template && playerFacts && <TrainingFacts {...playerFacts} locale={locale} draft={draft} day={day} />}
@@ -144,12 +144,15 @@ export function TrainingEditor({ playerId, playerName, remainingDays, playerFact
               <p className="text-sm text-muted">{et('startHint')}</p>
               <Button disabled={pending} onClick={() => { const first = draft.days[0]; if (first) { update(current => restDay(current, first.id, false)); setSelected(first.id); } }}><Dumbbell aria-hidden className="size-4" />{et('startFirst')}</Button>
             </div> : day ? <>
-              <DaySummary day={day} update={update} />
-              {day.is_rest_day ? <div className="glass space-y-stack rounded-card border border-dashed border-line-soft p-card text-faint"><p>{et('rest')}</p><Button variant="secondary" className="min-h-12" onClick={() => update(current => restDay(current, day.id, false))}><Dumbbell aria-hidden className="size-4" />{et('restore')}</Button></div> : <>
-                <WarmupBlock key={`warmup-${day.id}`} day={day} update={update} />
+              {day.is_rest_day ? <>
+                <DaySummary day={day} update={update} />
+                <div className="glass space-y-stack rounded-card border border-dashed border-line-soft p-card text-faint"><p>{et('rest')}</p><Button variant="secondary" className="min-h-12" onClick={() => update(current => restDay(current, day.id, false))}><Dumbbell aria-hidden className="size-4" />{et('restore')}</Button></div>
+              </> : <>
                 <DayExercises key={day.id} day={day} update={update} flush={state.flush}
                   injuries={!template && draft.player_id ? playerFacts?.profile.intake?.injuries : undefined}
                   candidates={!template && draft.player_id ? playerFacts?.candidates : undefined} />
+                <DaySummary day={day} update={update} />
+                <WarmupBlock key={`warmup-${day.id}`} day={day} update={update} />
                 <CardioBlock day={day} update={update} />
               </>}
             </> : <p className="glass rounded-card p-card text-faint">{t('noDays')}</p>}</div>

@@ -5,11 +5,10 @@ import Link from 'next/link';
 import { getT } from '@/core/i18n/server';
 import { planClient } from '../data/client';
 import { V11NewPlan } from './v11-new-plan';
-import { V11Ring } from './v11-ring';
+import { RefinedMealCard } from './refined-meal-card';
 import { messages } from './v11/messages';
 import { mealDayType } from '../data/editor-fields';
 import { buttonClass } from '@/ui/button';
-import { RowChevron } from '@/ui/row-chevron';
 
 async function readPlanCards() {
     const client = await planClient();
@@ -43,18 +42,11 @@ export async function MealLibraryPage() {
   if (!data) return <section className="grid gap-card-gap"><V11NewPlan /><p role="alert">{t('error')}</p><Link href="/captain/library/meal-plans" className={buttonClass({ variant: 'secondary', block: false })}>{t('retry')}</Link></section>;
   const { plans, usage } = data;
     return <section className="grid gap-card-gap"><V11NewPlan plans={plans.map(plan => ({ id: plan.id, title: plan.title, calories: plan.target_kcal ?? undefined }))} />
-      <div className="grid gap-card-gap min-[761px]:grid-cols-3">
-        {plans.map(plan => <Link key={plan.id} href={`/captain/nutrition/${plan.id}`} className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-[120px] min-w-0 items-center gap-card-gap p-card" })}>
-          {plan.target_kcal !== null && <V11Ring small value={String(plan.target_kcal)} />}
-          <div className="min-w-0"><b>{plan.title}</b><div className="my-inline flex flex-wrap gap-inline text-xs text-muted">
-            {(['protein', 'carbs', 'fat'] as const).map(key => {
-              const value = key === 'protein' ? plan.target_protein : key === 'carbs' ? plan.target_carbs : plan.target_fat;
-              return value !== null && <span key={key} className="inline-flex items-center gap-inline"><i className={`size-1.5 rounded-full ${key === 'protein' ? 'bg-lime' : key === 'carbs' ? 'bg-calm' : 'bg-warn'}`} />{t(key)} <b>{t('grams', { n: value })}</b></span>;
-            })}
-          </div><small className="text-muted">{t('usage', { n: usage.get(plan.id)?.size ?? 0 })}{plan.meals.some(meal => mealDayType(meal) === 'training') && plan.meals.some(meal => mealDayType(meal) === 'rest') && <> · {t('split')}</>}</small></div>
-          <RowChevron className="ms-auto" />
-        </Link>)}
-        <V11NewPlan card />
+      <div className="grid gap-card-gap min-[760px]:grid-cols-2 xl:grid-cols-3">
+        {!plans.length && <p className="glass rounded-card p-card text-muted min-[760px]:col-span-full">{t('noPlans')}</p>}
+        {plans.map(plan => <RefinedMealCard key={plan.id} id={plan.id} title={plan.title} kcal={plan.target_kcal}
+          protein={plan.target_protein} carbs={plan.target_carbs} fat={plan.target_fat} meals={plan.meals.length} players={usage.get(plan.id)?.size ?? 0}
+          split={plan.meals.some(meal => mealDayType(meal) === 'training') && plan.meals.some(meal => mealDayType(meal) === 'rest')} t={t} />)}
       </div>
     </section>;
 }

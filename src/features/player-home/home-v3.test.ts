@@ -57,6 +57,17 @@ function render(rest = false, today = '2026-11-11', program = snapshot, history 
 }
 afterEach(() => { state.notes = []; vi.unstubAllEnvs(); });
 
+it('places the cut-corner workout above the compact stats and meal link', () => {
+  const html = render();
+  const hero = html.indexOf('cut-corner');
+  const stats = html.indexOf('hairline-cells');
+  expect(hero).toBeGreaterThan(0);
+  expect(stats).toBeGreaterThan(hero);
+  expect(html.indexOf('href="/player/nutrition"')).toBeGreaterThan(stats);
+  expect(html).toContain('engraved');
+  expect(html).toMatch(/<time datetime="2026-11-11"/i);
+});
+
 it('shows a calm waiting line in the hero area while the coach prepares plans', () => {
   state.awaitingPlansAt = '2026-11-01T10:00:00Z';
   try { expect(render()).toContain('الكابتن بيجهزلك الأنظمة، اشتراكك هيبدأ أول ما تجهز'); }
@@ -76,7 +87,7 @@ it('shows one primary workout action and real workout, calorie, water and weekly
   expect(html).not.toContain('href="/player/rank"');
   expect(html.replace(/<[^>]*>/g, '')).toContain('1 / 3');
   expect(html.match(/<a\b[^>]*class="[^"]*\bcontrol-primary\b[^"/]*"/g)).toHaveLength(1);
-  expect(html).toContain('يلا نبدأ');
+  expect(html).toContain('ابدأ التمرين');
   const task = renderToStaticMarkup(createElement(NextTaskCard, { task: { kind: 'start', href: '/player/workout/push', name: 'Push' }, day }));
   expect(task).not.toMatch(/class="[^"]*\bcontrol-primary\b/);
 });
@@ -84,7 +95,7 @@ it('shows rest content, tomorrow preview and the food action without a workout p
   const html = render(true, '2026-11-10');
   for (const text of ['يوم راحة', 'بكره', 'سجّل أكلك', 'العضل بيكبر وإنت مرتاح. نام كويس، واشرب ميه، وكُل أكلك.']) expect(html).toContain(text);
   expect(html).toContain('href="#home-day-preview"');
-  expect(html).not.toContain('يلا نبدأ');
+  expect(html).not.toContain('ابدأ التمرين');
   expect(html).not.toContain('/player/rank');
   expect(html.match(/<a\b[^>]*class="[^"]*\bcontrol-primary\b[^"/]*"/g)).toHaveLength(1);
 });
@@ -150,8 +161,8 @@ it('shows a done state instead of a second start once today’s workout is finis
   const done = [...sessions, todaySession];
   const html = render(false, '2026-11-11', snapshot, done);
   expect(html).toContain('خلصت تمرين النهارده');
-  expect(html).not.toContain('يلا نبدأ');
+  expect(html).not.toContain('ابدأ التمرين');
   expect(html).not.toContain('data-tour="workout-start"');
   const started = render(false, '2026-11-11', snapshot, [...sessions, { ...todaySession, completed_at: null }]);
-  expect(started).toContain('يلا نبدأ');
+  expect(started).toContain('ابدأ التمرين');
 });

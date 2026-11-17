@@ -24,9 +24,10 @@ describe('exercise video UI', () => {
     expect(html).toContain(locale === 'ar' ? 'افتح على يوتيوب' : 'Open on YouTube');
     expect(html).toContain(locale === 'ar' ? 'ارجع للمجموعة' : 'Back to the set');
   });
-  it('shows a lime play card without fetching media before opening', () => {
+  it('shows a fixed-ratio glass play card without fetching media before opening', () => {
     const html = renderToStaticMarkup(h(ExerciseVideo, { url: 'https://youtu.be/dQw4w9WgXcQ', name: 'Row' }));
-    expect(html).toContain('bg-lime');
+    expect(html).toContain('aspect-video');
+    expect(html).toContain('glass');
     expect(html).toContain('فيديو من الكابتن');
     expect(html).not.toMatch(/<iframe|<video|<img/);
   });

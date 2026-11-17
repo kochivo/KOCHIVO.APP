@@ -19,7 +19,7 @@ const noop = () => undefined;
 const render = (node: ReactNode) => renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' }, node));
 const props = () => ({ state: reduceDemo(initialState(0), { type: 'start', n: 20, now: 0 }), dispatch: noop, act: noop, now });
 
-it('renders the real home hero, four ring tiles and money owed from reducer state', () => {
+it('renders the real home hero, the four-number strip and money owed from reducer state', () => {
   const html = render(createElement(CaptainHome, props()));
   expect(html).toContain('data-home-hero');
   expect(html).toContain('data-home-tiles');
@@ -27,9 +27,9 @@ it('renders the real home hero, four ring tiles and money owed from reducer stat
   expect(html).toContain('1,500');
   expect(html).toContain('4 مهام');
   const updated = render(createElement(CaptainHome, { ...props(), state: { ...props().state, paid: true, renewed: true } }));
-  expect(updated).toContain('>500</b>');
+  expect(updated).toContain('>500</a>');
   expect(updated).toContain('2 مهام');
-  expect(updated).not.toContain('>1,500</b>');
+  expect(updated).not.toContain('>1,500</a>');
 });
 it('renders production set rows with logged sets, editable inputs and the pulse source', () => {
   const html = render(createElement(Workout, props()));

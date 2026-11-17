@@ -1,6 +1,6 @@
 'use client';
 import { profileTimezone } from '@/lib/timezone';
-import { useLocale, useT } from '@/core/i18n/client';
+import { useArabicStyle, useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 
 import type { ReactNode } from 'react';
@@ -38,6 +38,7 @@ export function PlayerShell({ children, unassignedAction }: { children?: ReactNo
   const t = useT(messages);
   const v6 = captainWorkspaceEnabled();
   const locale = useLocale();
+  const style = useArabicStyle();
   const pathname = usePathname();
   const captain = useMyCaptain();
   const online = useOnline();
@@ -94,7 +95,7 @@ export function PlayerShell({ children, unassignedAction }: { children?: ReactNo
     {showsNav(pathname) && <InstallSheet />}
     {showsFeedback(pathname, v6) && <FeedbackButton role="player" />}
     {process.env.NODE_ENV === 'development' && showsNav(pathname) && <KoPreview role="player" />}
-    {showsNav(pathname) && (v6 ? <PlayerTabsView pathname={pathname} locale={locale} label={t('navigation')} /> :
+    {showsNav(pathname) && (v6 ? <PlayerTabsView pathname={pathname} locale={locale} style={style} label={t('navigation')} /> :
       <BottomNav aria-label={t('navigation')} items={playerNav(pathname, locale)} />)}
     </div>
   </MyCaptainContext.Provider>;

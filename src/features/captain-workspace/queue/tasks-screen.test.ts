@@ -11,10 +11,13 @@ it('links the missing nutrition row and action to the player nutrition editor', 
     startedOn: '2026-11-14', lastTrainingDate: '2026-11-14', programTitle: 'Plan', openTasks: 0 }],
   [], new Date('2026-11-14T12:00:00Z'), 'Africa/Cairo', [], new Set());
   if (!task) throw new Error('missing nutrition task');
-  const html = render(createElement(TaskRow, { task, selected: false, first: false, pending: false,
+  const html = render(createElement(TaskRow, { task, selected: false, pending: false,
     onSelect: () => {}, onAction: () => {} }));
   expect(html.match(/href="\/ar\/captain\/players\/p\/nutrition"/g)).toHaveLength(2);
   expect(html).toContain('محتاج نظام أكل');
+  expect(html).toContain('tone-info');
+  expect(html).toContain('min-h-[58px]');
+  expect(html).not.toContain('control-primary');
   expect(html).toContain('ادّيله نظام أكل');
   expect(html).toContain('dir-icon');
   expect(html).toContain('press');
@@ -36,7 +39,7 @@ it('renders loading and recoverable errors without claiming completion', () => {
 it('keeps the row selection separate from its task-specific action', () => {
   const html = render(createElement(TaskRow, { task: { id: 'swap:s', playerId: 'p', name: 'أحمد', kind: 'swap',
     at: '2026-11-14', swap: { id: 's', player_id: 'p', created_at: '2026-11-14', from: 'Squat', to: 'Press' } },
-  selected: true, first: false, pending: false, onSelect: () => {}, onAction: () => {} }));
+  selected: true, pending: false, onSelect: () => {}, onAction: () => {} }));
   expect(html).toContain('aria-pressed="true"');
   expect(html).toContain('وافق');
   expect(html).toContain('عايز يبدل Squat بـ Press');
@@ -46,7 +49,7 @@ it('links an assessment row and action to the existing review screen', () => {
   const html = render(createElement(TaskRow, { task: { id: 'request:r', playerId: 'p', name: 'Player',
     kind: 'checkin', at: '2026-11-14', text: 'Assessment',
     href: '/captain/players/p/assessments?requestId=r#assessment-details' },
-  selected: false, first: false, pending: false, onSelect: () => {}, onAction: () => {} }));
+  selected: false, pending: false, onSelect: () => {}, onAction: () => {} }));
   expect(html.match(/href="\/ar\/captain\/players\/p\/assessments\?requestId=r#assessment-details"/g)).toHaveLength(2);
   expect(html).toContain('dir-icon');
   expect(html).toContain('press');

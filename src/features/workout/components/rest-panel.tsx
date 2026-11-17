@@ -2,7 +2,9 @@
 import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 
+import { Timer, Volume2, VolumeX } from 'lucide-react';
 import { Button } from '@/ui';
+import { IconButton } from '@/ui/icon-button';
 import { cn } from '@/lib/cn';
 import { formatRest } from '../rest';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
@@ -13,14 +15,19 @@ export function RestPanel({ remaining, total = remaining, sound = true, flashing
 }) {
   const t = useT(messages);
   const locale = useLocale();
-  if (captainWorkspaceEnabled()) return <section className={cn('glass-strong space-y-stack rounded-card border border-line-soft p-card',
+  if (captainWorkspaceEnabled()) return <section className={cn('glass-strong flex flex-wrap items-center justify-between gap-inline rounded-card px-card py-stack',
     flashing && 'motion-safe:animate-pulse motion-safe:bg-lime-soft')}>
-    <div className="flex items-center justify-between gap-stack"><h2 className="text-sm text-muted">{t('rest')}</h2>
-      <output aria-label={t('restTimeRemaining')} aria-live="off" className="font-display text-h font-extrabold tabular-nums"><bdi>{formatRest(remaining, locale)}</bdi></output></div>
-    <div className="flex flex-wrap gap-inline">
-      <Button variant="secondary" className="min-h-14 flex-1 rounded-full" onClick={onExtend}>{t('message30Sec')}</Button>
-      <Button variant="secondary" className="min-h-14 flex-1 rounded-full" onClick={onSkip}>{t('skip')}</Button>
-      <button type="button" aria-pressed={sound} onClick={onToggleSound} className="min-h-12 rounded-full border border-line-soft px-page-x text-xs text-muted">{t('sound')}</button>
+    <div className="flex items-center gap-inline">
+      <Timer aria-hidden className="size-5 text-lime" />
+      <div><h2 className="text-micro text-muted">{t('rest')}</h2>
+        <output aria-label={t('restTimeRemaining')} aria-live="off" className="font-display text-h leading-none font-extrabold tabular-nums"><bdi>{formatRest(remaining, locale)}</bdi></output></div>
+    </div>
+    <div className="flex flex-wrap items-center gap-inline">
+      <IconButton aria-label={t('sound')} aria-pressed={sound} onClick={onToggleSound}>
+        {sound ? <Volume2 aria-hidden className="size-5" /> : <VolumeX aria-hidden className="size-5" />}
+      </IconButton>
+      <Button variant="secondary" className="min-h-14 px-stack text-xs" onClick={onExtend}>{t('message30Sec')}</Button>
+      <Button variant="secondary" className="min-h-14 px-stack text-xs" onClick={onSkip}>{t('skip')}</Button>
     </div>
   </section>;
   return <section className={cn('glass-strong flex flex-col items-center gap-card-gap rounded-card px-page-x py-section',

@@ -32,6 +32,7 @@ it('hides rest-day stats and uses dashes for empty training durations', () => {
   const rest = render(createElement(DaySummary, { day: { ...empty, is_rest_day: true }, update: vi.fn() }));
   expect(rest).not.toContain('المدة');
   const html = render(createElement(DaySummary, { day: empty, update: vi.fn() }));
+  expect(html).toContain('hairline-cells');
   expect(html).toContain('—');
   expect(html).not.toContain('~0');
 });

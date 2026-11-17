@@ -33,6 +33,7 @@ export const messages = {
 
 export const taskMessages = {
   ar: {
+    startFirst: 'ابدأ من الأول', filterByType: 'فلتر بنوع المهمة',
     nutrition: 'بدون نظام أكل', nutritionText: 'محتاج نظام أكل', nutritionAction: 'ادّيله نظام أكل',
     receipt: 'إيصالات الدفع', receiptAction: 'راجع الإيصال', receiptText: 'إيصال دفع مستني مراجعتك',
     title: 'المهام', subtitle: 'كل اللي مستني منك، مترتب بالأهم', all: 'الكل', video: 'فيديوهات',
@@ -50,6 +51,7 @@ export const taskMessages = {
     stop: 'وقّف التسجيل', discard: 'امسح التسجيل', voiceError: 'مش قادرين نفتح الميكروفون', recording: 'جاري التسجيل',
   },
   arStd: {
+    startFirst: 'ابدأ بالمهمة الأولى', filterByType: 'تصفية حسب نوع المهمة',
     nutrition: 'بدون نظام غذائي', nutritionText: 'يحتاج إلى نظام غذائي', nutritionAction: 'أضف له نظامًا غذائيًا',
     receipt: 'إيصالات الدفع', receiptAction: 'راجع الإيصال', receiptText: 'إيصال دفع بانتظار مراجعتك',
     title: 'المهام', subtitle: 'كل ما ينتظر منك، مرتّب حسب الأهمية', all: 'الكل', video: 'فيديوهات',
@@ -67,6 +69,7 @@ export const taskMessages = {
     stop: 'أوقف التسجيل', discard: 'احذف التسجيل', voiceError: 'تعذّر فتح الميكروفون', recording: 'جارٍ التسجيل',
   },
   en: {
+    startFirst: 'Start first task', filterByType: 'Filter by task type',
     nutrition: 'No nutrition plan', nutritionText: 'Needs a nutrition plan', nutritionAction: 'Give a nutrition plan',
     receipt: 'Payment receipts', receiptAction: 'Review receipt', receiptText: 'Payment receipt awaiting review',
     title: 'Tasks', subtitle: 'Everything waiting for you, in priority order', all: 'All', video: 'Videos',

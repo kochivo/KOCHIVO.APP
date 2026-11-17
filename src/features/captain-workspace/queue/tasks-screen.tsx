@@ -1,5 +1,8 @@
 'use client';
-import { clickableClass } from '@/ui/button';
+import { Button, clickableClass } from '@/ui/button';
+import { PageBarActions } from '@/ui/page-bar-actions';
+import { Segmented } from '@/ui/segmented';
+import { StatStrip } from '@/ui/stat-strip';
 import { useCallback, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
@@ -35,6 +38,12 @@ export function TasksScreen() {
   const data = resource.data;
   const tasks = data?.tasks ?? [], visible = filterTasks(tasks, filter), counts = taskCounts(tasks);
   const selected = pending && workingTask ? workingTask : visible.find(task => task.id === selectedId) ?? visible[0];
+  const firstTask = tasks[0];
+  const extraTab = filter === 'all' || filter === 'checkin' || filter === 'receipt' ? 'video' : filter;
+  function changeFilter(value: string) {
+    const tab = taskTabs.find(key => key === value);
+    if (tab) { setFilter(tab); setMobileOpen(false); }
+  }
   function open(task: CaptainTask) { setSelectedId(task.id); setMobileOpen(true); }
   async function complete(task: CaptainTask, commit: () => Promise<void>) {
     if (!data || busy.current) return false;
@@ -69,18 +78,27 @@ export function TasksScreen() {
   }
   return <div id="queue-heading" tabIndex={-1} className="space-y-card-gap">
     <PageBarTitle title={t('title')} subtitle={t('subtitle')} />
+    {firstTask && <PageBarActions><Button disabled={pending} onClick={() => { setFilter('all'); open(firstTask); }}>{t('startFirst')}</Button></PageBarActions>}
     {!data ? <TasksState kind={resource.error ? 'error' : 'loading'} retry={resource.retry} /> : <>
       {(failed || resource.error) && <p role="alert" className="text-sm text-danger">{t(failed ? 'failed' : 'error')}</p>}
       {!tasks.length && !pending ? <TasksState kind="empty" /> : <>
-        <div aria-label={t('title')} className={`flex w-max max-w-full gap-inline overflow-x-auto rounded-full border border-line-soft bg-bg/25 p-inline ${mobileOpen ? 'max-[759px]:hidden' : ''}`}>
-          {taskTabs.map(tab => <button key={tab} aria-pressed={filter === tab} disabled={pending} onClick={() => { setFilter(tab); setMobileOpen(false); }}
-            className={`${clickableClass} min-h-12 shrink-0 whitespace-nowrap rounded-full px-stack text-xs ${filter === tab ? 'glass-strong text-ink' : 'text-muted'}`}>
-            {t(tab)} <span className="ms-inline tabular-nums">{formatNumber(counts[tab], locale)}</span></button>)}
-        </div>
-        <div className="grid items-start gap-card-gap min-[760px]:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
-          <section className={`glass min-w-0 rounded-card p-card ${mobileOpen ? 'max-[759px]:hidden' : ''}`}>
+        <StatStrip items={(['all', 'checkin', 'receipt', 'program'] as const).map(key => ({
+          label: t(key), value: formatNumber(counts[key], locale),
+        }))} />
+        <div className="grid items-start gap-card-gap min-[760px]:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+          <section className={`glass min-w-0 overflow-hidden rounded-card ${mobileOpen ? 'max-[759px]:hidden' : ''}`}>
+            <fieldset disabled={pending} className="min-w-0 space-y-stack px-card pt-card pb-stack">
+              <Segmented aria-label={t('filterByType')} value={filter}
+                options={[{ value: 'all', label: t('all') }, { value: 'checkin', label: t('checkin') },
+                  { value: 'receipt', label: t('receipt') }, { value: extraTab, label: t(extraTab) }]}
+                onChange={changeFilter} />
+              <select aria-label={t('filterByType')} value={filter} className={`${clickableClass} glass min-h-12 max-w-full rounded-control px-stack text-sm`}
+                onChange={event => changeFilter(event.target.value)}>
+                {taskTabs.map(tab => <option key={tab} value={tab}>{t(tab)} ({formatNumber(counts[tab], locale)})</option>)}
+              </select>
+            </fieldset>
             {visible.length ? <ul aria-label={t('title')}>{visible.map(task => <TaskRow key={task.id} task={task} selected={selected?.id === task.id}
-              first={tasks[0]?.id === task.id} pending={pending} onSelect={() => open(task)} onAction={() => void action(task)} />)}</ul>
+              pending={pending} onSelect={() => open(task)} onAction={() => void action(task)} />)}</ul>
               : <p role="status" className="py-section text-center text-sm text-muted">{t('filterEmpty')}</p>}
           </section>
           {selected && <div className={mobileOpen ? '' : 'max-[759px]:hidden'}><Detail key={selected.id} task={selected} pending={pending} onBack={() => setMobileOpen(false)} onSend={send} /></div>}

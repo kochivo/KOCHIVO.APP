@@ -54,15 +54,16 @@ export function ExerciseLibrary() {
   const total = resource.data?.total;
   return <section className="grid min-w-0 gap-card-gap">
     <header className="flex flex-wrap items-center gap-card-gap">
-      <h1 className="me-auto flex items-center gap-stack text-2xl font-bold">{t('title')}
-        {total !== undefined && <span dir="ltr" aria-label={t('count', { count: total })} className="font-display text-sm font-medium tabular-nums text-muted">{total.toLocaleString('en')}</span>}
-      </h1>
+      <div className="me-auto"><h1 className="text-h font-bold">{t('title')}</h1>
+        {total !== undefined && <p className="text-xs text-muted">{t('count', { count: total.toLocaleString('en') })}</p>}
+      </div>
       <Link id="new-library-exercise" href="/captain/library/exercises/new"
         className={buttonClass({ variant: 'primary', block: false, className: "inline-flex min-h-12 items-center gap-inline px-page-x font-semibold" })}>
         <KoPlus aria-hidden className="size-5" />{t('new')}
       </Link>
     </header>
-    <form className="flex items-center gap-inline rounded-full border border-line-soft px-stack" onSubmit={event => {
+    <div className="flex min-w-0 flex-wrap items-center gap-stack">
+    <form className="flex min-w-0 w-full items-center gap-inline rounded-control border border-line-soft bg-bg-deep px-stack min-[760px]:w-auto" onSubmit={event => {
       event.preventDefault(); changeFilter({ query: query.trim() });
     }}>
       <input type="search" maxLength={120} value={query} onChange={event => {
@@ -72,10 +73,10 @@ export function ExerciseLibrary() {
         <Search aria-hidden strokeWidth={1.5} className="size-5 text-muted" />
       </button>
     </form>
-    <div role="group" aria-label={t('target')} className="flex gap-inline overflow-x-auto border-b border-line-soft">
+    <div role="group" aria-label={t('target')} className="glass flex min-w-0 max-w-full gap-inline overflow-x-auto rounded-control">
       {muscleTabs.map(tab => <button key={tab} type="button" aria-pressed={muscle === tab}
         onClick={() => changeFilter({ muscle: tab })}
-        className={`${clickableClass} min-h-12 shrink-0 border-b-2 bg-surface px-page-x text-sm ${muscle === tab ? 'border-lime text-ink' : 'border-transparent text-muted'}`}>{t(tab)}</button>)}
+        className={`${clickableClass} min-h-12 shrink-0 rounded-control px-stack text-xs ${muscle === tab ? 'glass-raised font-bold text-ink' : 'text-muted'}`}>{t(tab)}</button>)}
     </div>
     <div role="group" aria-label={t('equipment')} className="flex flex-wrap gap-inline">
       <Chip pressed={!equipment} onClick={() => changeFilter({ equipment: '' })}>{t('allEquipment')}</Chip>
@@ -83,12 +84,13 @@ export function ExerciseLibrary() {
         onClick={() => changeFilter({ equipment: equipment === chip ? '' : chip })}>{t(chip)}</Chip>)}
       <Chip pressed={mine} onClick={() => changeFilter({ mine: !mine })}>{t('mine')}</Chip>
     </div>
+    </div>
     {loading && <div role="status"><span className="sr-only">{t('loading')}</span><LoadingState variant="cards" /></div>}
     {Boolean(resource.error) && <div role="alert" className="glass rounded-card p-card">
       <p>{t('error')}</p><Button type="button" variant="secondary" onClick={() => void resource.retry()}>{t('retry')}</Button>
     </div>}
     {!loading && !resource.error && resource.data && (rows.length ?
-      <ul className="grid grid-cols-2 gap-stack sm:gap-card-gap lg:grid-cols-4">{rows.map(exercise => <li key={exercise.id} className="flex">
+      <ul className="grid grid-cols-1 gap-card-gap min-[760px]:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">{rows.map(exercise => <li key={exercise.id} className="flex min-w-0">
         <ExerciseCard exercise={exercise} onSelect={setSelected} />
       </li>)}</ul> : <p role="status" className="glass rounded-card p-section text-muted">{t(emptyMessage(mine, search, muscle !== 'all' || Boolean(equipment)))}</p>)}
     <div className="flex items-center gap-stack">

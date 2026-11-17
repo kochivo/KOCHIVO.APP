@@ -39,11 +39,11 @@ export function PlayerPreferences({ units: initial, styleOnly = false }: { units
     catch { setUnits(previous); setError(true); }
     finally { lock.current = false; setBusy(false); }
   }
-  const chip = 'min-h-12 rounded-full px-stack font-sans text-xs text-muted aria-pressed:bg-ink aria-pressed:font-extrabold aria-pressed:text-bg disabled:opacity-40';
+  const chip = 'min-h-12 rounded-full px-stack font-sans text-xs text-muted aria-pressed:bg-surface aria-pressed:font-bold aria-pressed:text-ink disabled:opacity-40';
   const choices = languageOptions();
   if (styleOnly) return null;
-  return <section aria-label={playerT('settings')} className="divide-y divide-line-soft overflow-hidden rounded-[24px] border border-line-soft bg-surface" aria-busy={busy}>
-    <div className="flex min-h-[60px] items-center gap-stack px-page-x"><span className="flex-1 text-sm">{playerT('language')}</span>
+  return <section aria-label={playerT('settings')} className="divide-y divide-line-soft border-t border-line-soft" aria-busy={busy}>
+    <div className="flex min-h-14 items-center gap-stack px-page-x"><span className="flex-1 text-sm">{playerT('language')}</span>
       <div role="group" aria-label={playerT('language')} className="flex rounded-full bg-surface-raised p-inline">{(['ar', 'en'] as const).map(value => {
         const choice = choices.find(option => option.locale === value);
         return choice && <button key={value} type="button" lang={value} disabled={busy} aria-pressed={locale === value}
@@ -51,10 +51,10 @@ export function PlayerPreferences({ units: initial, styleOnly = false }: { units
       })}</div></div>
     <PlayerTheme /><PlayerReminder />
     <PrayerCity />
-    <div className="flex min-h-[60px] items-center gap-stack px-page-x"><span className="flex-1 text-sm">{playerT('units')}</span>
+    <div className="flex min-h-14 items-center gap-stack px-page-x"><span className="flex-1 text-sm">{playerT('units')}</span>
       <div role="group" aria-label={playerT('units')} className="flex rounded-full bg-surface-raised p-inline">{(['metric', 'imperial'] as const).map(value =>
         <button key={value} type="button" disabled={busy} aria-pressed={value === units} onClick={() => void changeUnits(value)} className={chip}>{playerT(value)}</button>)}</div></div>
-    <button type="button" className="flex min-h-[60px] w-full items-center gap-stack px-page-x text-start font-sans text-sm" onClick={() => {
+    <button type="button" className="flex min-h-14 w-full items-center gap-stack px-page-x text-start font-sans text-sm" onClick={() => {
       window.dispatchEvent(new Event('kochivo:replay-tour')); router.push('/player');
     }}><span className="flex-1">{playerT('guide')}</span><ChevronLeft aria-hidden className="dir-icon size-[18px] text-muted" /></button>
     {error && <p role="alert" className="px-page-x py-inline text-sm text-danger">{t('error')}</p>}

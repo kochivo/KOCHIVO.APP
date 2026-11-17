@@ -38,17 +38,17 @@ export function V3Home({ weightKg, now, today, firstName, playerId, snapshot, da
     (isWeeklyProgram(snapshot) && !tomorrowDay))) || Boolean(tomorrowDay?.is_rest_day);
   const week = buildWeek(today, snapshot?.training_days ?? [],
     weekSessions.filter(session => snapshot?.days.some(day => day.id === session.program_day_id)), locale, snapshot ?? undefined);
-  return <section data-mood={rest ? 'rest' : undefined} className="flex flex-col gap-stack">
-    <HomeHeader now={now} firstName={firstName} bell={<NotificationBell round />} />
+  return <section data-mood={rest ? 'rest' : undefined} className="flex flex-col gap-card-gap">
+    <HomeHeader now={now} firstName={firstName} rest={rest} bell={<NotificationBell round />} />
     {captain.data?.awaitingPlansAt && <p role="status" className="text-sm text-calm">{t('waitingForPlans')}</p>}
     <HomeHero finished={Boolean(snapshot)} day={day} rest={rest} doneToday={doneToday} streak={stats && snapshot && !trains(today) ? stats.current : undefined} />
-    {rest && <TomorrowCard day={tomorrowDay} date={tomorrow} rest={tomorrowRest} onPreview={onPreview} />}
     <HomeTiles weightKg={weightKg} today={today} playerId={playerId} rest={rest} streak={stats?.current}
       // Same week count as the streak pill, which skips days before the account started.
       done={stats?.weekDone ?? week.filter(day => day.state === 'done').length} planned={snapshot ? stats?.weekPlanned ?? week.filter(day => trains(day.date)).length : 0}
       onWater={() => onPreview(today)} />
-    {rest ? <Link href="/player/nutrition" className={buttonClass({ variant: 'primary', block: false, className: "flex h-[62px] items-center justify-center gap-stack text-lg font-black" })}>
-      <KoPlus aria-hidden className="size-[22px] text-on-lime! [&_*]:text-on-lime!" />{t('homeLogFood')}
+    {rest && <TomorrowCard day={tomorrowDay} date={tomorrow} rest={tomorrowRest} onPreview={onPreview} />}
+    {rest ? <Link href="/player/nutrition" className={buttonClass({ variant: 'primary', size: 'lg' })}>
+      <KoPlus aria-hidden className="size-5 text-on-lime! [&_*]:text-on-lime!" />{t('homeLogFood')}
     </Link> : <CaptainRow name={captain.data?.fullName} playerId={playerId} captainId={captain.data?.captainId} />}
   </section>;
 }

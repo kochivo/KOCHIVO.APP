@@ -5,6 +5,13 @@ import { messages } from './captain-messages';
 
 const source = (path: string) => readFileSync(resolve(path), 'utf8');
 
+it('scopes refined text bubbles and the composer shortcut to the player coach screen', () => {
+  const screen = source('src/features/player-shell/components/captain-screen.tsx');
+  expect(screen).toContain('li>div:has(>p)');
+  expect(screen).toContain('self-end>div:has(>p)');
+  expect(screen).toContain('[data-chat-composer] input');
+});
+
 it('keeps the player chat composer above the bottom nav on phones with a home indicator', () => {
   const composer = source('src/features/chat/components/chat-composer.tsx');
   expect(composer).not.toContain("'bottom-24'");

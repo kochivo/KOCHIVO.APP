@@ -20,7 +20,7 @@ it('links a positive unread badge to chat and keeps the task badge distinct', ()
   const html = render({ unread: 2, body: 'أول سطر\nثاني سطر', voice: false, createdAt: '2026-11-13T07:44:00Z' });
   expect(html).toContain('href="/captain/players/p/chat"');
   expect(html).toContain('aria-label="2 رسايل جديدة"');
-  expect(html).toMatch(/control-primary[^>]*>2<\/a>/);
+  expect(html).toMatch(/tone-lime[^>]*>2<\/a>/);
   expect(html).toContain('أول سطر');
   expect(html).not.toContain('ثاني سطر');
   expect(html).toContain('مهام مستنياك');

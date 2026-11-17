@@ -13,7 +13,7 @@ export function ProgressBar({ value, max, thin, className, ...props }: ProgressB
     ? Math.min(100, Math.max(0, value / max * 100)) : 0;
   return (
     <div {...props} role="progressbar" aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100} className={cn(thin ? 'h-1 overflow-hidden rounded-sm bg-ink/7' : 'h-2 overflow-hidden rounded-control bg-line', className)}>
-      <div className={cn('progress-surface h-full bg-lime', thin ? 'rounded-sm' : 'rounded-control')} style={{ width: `${percent}%` }} />
+      <div className={thin ? 'progress-surface h-full rounded-sm bg-lime' : 'progress-surface h-full rounded-control bg-lime'} style={{ width: `${percent}%` }} />
     </div>
   );
 }

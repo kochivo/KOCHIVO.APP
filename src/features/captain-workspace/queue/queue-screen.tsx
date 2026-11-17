@@ -11,6 +11,7 @@ import { messages } from './messages';
 import { useQueue } from './use-queue';
 import { QueueState } from './queue-state';
 import { QueueRow } from './queue-row';
+import { StatStrip } from '@/ui/stat-strip';
 import { Button } from '@/ui/button';
 const Review = dynamic(() => import('./review-dialog').then(module => module.ReviewDialog));
 export function QueueScreen() {
@@ -35,12 +36,12 @@ export function QueueScreen() {
     <header className="flex flex-wrap items-center justify-between gap-card-gap"><div>
       <p className="text-sm text-muted">{t('subtitle')}</p><h1 id="queue-heading" tabIndex={-1} className="text-3xl font-bold">{t('title')}</h1>
     </div><input aria-label={t('search')} placeholder={t('search')} type="search" value={search} onChange={event => setSearch(event.target.value)} className="glass min-h-12 rounded-full px-page-x" /></header>
-    <div className="grid grid-cols-2 gap-card-gap lg:grid-cols-4">{(['needsReply', 'late', 'replyHours', 'reviewedWeek'] as const).map(key =>
-      <div key={key} className="glass-strong rounded-card p-card"><p className="text-sm text-muted">{t(key)}</p>
-        <p className={`mt-inline text-3xl font-bold tabular-nums ${key === 'needsReply' ? 'text-lime' : key === 'late' ? 'text-warn' : ''}`}>
-          {metrics[key] === null ? t('unavailable') : key === 'replyHours' ? t('hours', { value: formatNumber(Math.round(metrics[key] * 10) / 10, locale) }) : formatNumber(metrics[key], locale)}</p>
-        {key === 'replyHours' && metrics.comparison !== null && <p className="mt-inline text-sm text-muted">{t('comparison', { value: formatNumber(Math.round(metrics.comparison * 10) / 10, locale) })}</p>}
-      </div>)}</div>
+    <StatStrip items={(['all', 'late', 'needsReply', 'reviewed'] as const).map(key => ({
+      label: t(key), value: formatNumber(metrics[key], locale), tone: key === 'late' ? 'warn' : 'ink',
+    }))} />
+    <p className="text-sm text-muted">{t('replyHours')} {metrics.replyHours === null ? t('unavailable') : t('hours', { value: formatNumber(Math.round(metrics.replyHours * 10) / 10, locale) })}
+      {metrics.comparison !== null && <> · {t('comparison', { value: formatNumber(Math.round(metrics.comparison * 10) / 10, locale) })}</>}
+      {' · '}{t('reviewedWeek')} {formatNumber(metrics.reviewedWeek, locale)}</p>
     <p className="text-xs text-muted">{t('sample')}</p>
     <div className="flex flex-wrap justify-between gap-card-gap"><div className="flex flex-wrap gap-inline">
       {(['needsReply', 'late', 'reviewed', 'all'] as const).map(value => <button key={value} aria-pressed={filter === value} onClick={() => setFilter(value)} className={`glass min-h-12 rounded-full px-page-x ${filter === value ? 'text-lime' : 'text-muted'}`}>

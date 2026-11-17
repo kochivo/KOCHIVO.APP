@@ -5,8 +5,7 @@ import { exerciseMediaUrl } from '@/core/storage';
 import type { LibraryExercise } from '@/features/programs';
 import { ExerciseImage } from '@/ui/exercise-image';
 import { messages } from './messages';
-import { Button } from '@/ui/button';
-import { RowChevron } from '@/ui/row-chevron';
+import { clickableClass } from '@/ui/button';
 
 export const muscleTabs = ['all', 'legs', 'chest', 'back', 'shoulders', 'arms', 'abs', 'cardio'] as const;
 export type MuscleTab = typeof muscleTabs[number];
@@ -38,17 +37,18 @@ export function ExerciseCard({ exercise, onSelect }: {
   const equipment = equipmentChips.find(value => value === exercise.equipment ||
     (value === 'bodyweight' && exercise.equipment === 'body weight') ||
     (value === 'machine' && ['leverage machine', 'smith machine', 'sled machine'].includes(exercise.equipment ?? '')));
-  return <Button type="button" onClick={() => onSelect(exercise)}
-    variant={'secondary'} block={false} className={"flex min-h-12 w-full flex-col gap-inline p-card text-start hover:border-lime focus-visible:outline-2 focus-visible:outline-lime"}>
-    {exercise.media_path ? <ExerciseImage src={exerciseMediaUrl(exercise.media_path)} alt="" width={320} height={220} fullWidth className="bg-exercise-media" /> :
-      <span className="flex aspect-[16/11] w-full items-center justify-center rounded-control bg-surface-raised p-stack text-sm text-muted">{t('noMedia')}</span>}
-    <b className="mt-inline break-words"><bdi>{exerciseTitle(exercise)}</bdi></b>
-    <small dir="ltr" className="text-start text-muted">{exercise.name_en}</small>
-    <span className="mt-auto flex flex-wrap gap-inline pt-inline text-xs">
-      <span className="rounded-full bg-surface-raised px-inline py-inline">{muscle ? t(muscle) : exercise.body_part || t('missing')}</span>
-      <span className="rounded-full bg-surface-raised px-inline py-inline">{equipment ? t(equipment) : exercise.equipment || t('missing')}</span>
-      {exercise.is_own && <span className="rounded-full bg-lime/10 px-inline py-inline text-lime">{t('own')}</span>}
-      <RowChevron className="ms-auto" />
+  return <button type="button" onClick={() => onSelect(exercise)}
+    className={`${clickableClass} glass flex min-h-12 w-full min-w-0 flex-col overflow-hidden rounded-card text-start`}>
+    {exercise.media_path ? <ExerciseImage src={exerciseMediaUrl(exercise.media_path)} alt="" width={320} height={220} fullWidth className="rounded-none bg-exercise-media" /> :
+      <span className="flex aspect-[16/11] w-full items-center justify-center bg-surface-raised p-stack text-sm text-muted">{t('noMedia')}</span>}
+    <span className="grid w-full gap-inline p-stack">
+      <b className="break-words text-md"><bdi>{exerciseTitle(exercise)}</bdi></b>
+      <small dir="ltr" className="break-words text-start text-muted">{exercise.name_en}</small>
+      <span className="flex flex-wrap gap-inline">
+        <span className="tone-neutral rounded-md px-inline text-micro font-semibold">{muscle ? t(muscle) : exercise.body_part || t('missing')}</span>
+        <span className="tone-neutral rounded-md px-inline text-micro font-semibold">{equipment ? t(equipment) : exercise.equipment || t('missing')}</span>
+        {exercise.is_own && <span className="tone-lime rounded-md px-inline text-micro font-semibold">{t('own')}</span>}
+      </span>
     </span>
-  </Button>;
+  </button>;
 }

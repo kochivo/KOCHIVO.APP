@@ -1,7 +1,7 @@
 export const arStd = {
   mismatch: 'السعرات {kcal} لكن مجموع الماكروز يقارب {calculated}. راجع القيم.',
   small: 'طبق صغير · {grams} جم', medium: 'طبق متوسط · {grams} جم', large: 'طبق كبير · {grams} جم', noRecent: 'لم تضف أطعمة بعد',
-  title: 'مكتبة الطعام', subtitle: 'ابحث بالعربية أو الإنجليزية، وراجع القيم، وحدّد الكمية وأضفها للاعب.', count: '{count} طعام · لكل 100 جم',
+  title: 'مكتبة الطعام', subtitle: 'ابحث بالعربية أو الإنجليزية، وراجع القيم، وحدّد الكمية وأضفها للاعب.', count: '{count} طعام', foodName: 'الطعام', defaultServing: '100 جم',
   training: 'يوم تدريب', rest: 'يوم راحة', everyDay: 'كل الأيام', noPlayers: 'لا يوجد لاعبون. أضف لاعبًا أولًا',
   eg: 'مصري', gulf: 'خليجي', lev: 'شامي', na: 'شمال أفريقيا', intl: 'عالمي', all: 'الكل', mine: 'أطعمتي', favorites: 'المفضلة',
   arabic: 'عربي', recent: 'أطعمتك الأخيرة', protein: 'بروتين مرتفع ≥ 15 جم', fat: 'دهون منخفضة ≤ 5 جم', carbs: 'كربوهيدرات منخفضة ≤ 10 جم', kcal: 'سعرات منخفضة ≤ 120',
@@ -15,5 +15,5 @@ export const arStd = {
   noPlan: 'لا يوجد نظام حالي بوجبات لهذا اللاعب. أنشئ النظام أولًا', empty: 'مكتبتك فارغة. أضف أول طعام', noResults: 'لا توجد أطعمة تطابق البحث والمرشحات',
   usdaConfidence: 'قيم من قاعدة بيانات USDA للمصدر الموضّح', recipeConfidence: 'محسوبة من المكونات والوزن بعد الطهي',
   proxyConfidence: 'قيم تقريبية لأقرب طعام؛ قد تختلف', captainConfidence: 'قيم أضافها المدرّب؛ راجعها قبل الاستخدام',
-  examples: 'جرّب', chicken: 'دجاج', bread: 'خبز', meat: 'لحم', clear: 'امسح المرشحات', serving: '{name} · {grams} جم',
+  examples: 'جرّب', chicken: 'دجاج', bread: 'خبز', meat: 'لحم', clear: 'امسح المرشحات', serving: '{name} · {grams} جم', moreFilters: 'المرشحات وطريقة العرض',
 } as const;

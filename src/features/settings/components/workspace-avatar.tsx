@@ -19,9 +19,9 @@ export function WorkspaceAvatar({ profile }: { profile: SettingsProfile }) {
   }, [path]);
   const current = image.path === path;
   return <span className="shrink-0">
-    {current && image.url ? <Image src={image.url} alt="" width={52} height={52} unoptimized className="size-13 rounded-control object-cover"
+    {current && image.url ? <Image src={image.url} alt="" width={52} height={52} unoptimized className="size-13 rounded-full object-cover ring-1 ring-lime"
       onError={() => setImage({ path, url: '', error: true, loaded: true })} /> :
-      <span aria-hidden className="glass grid size-13 place-items-center rounded-control font-display text-xl text-lime">{profile.full_name.trim().slice(0, 1)}</span>}
+      <span aria-hidden className="glass grid size-13 place-items-center rounded-full font-display text-xl text-ink ring-1 ring-lime">{profile.full_name.trim().slice(0, 1)}</span>}
     {path && (!current || !image.loaded) && <span role="status" className="sr-only">{t('loadingPhoto')}</span>}
     {current && image.error && <span role="alert" className="text-xs text-danger">{t('photoFailed')}</span>}
   </span>;

@@ -27,14 +27,15 @@ it.each(['en', 'ar'] as const)('renders 0, 1, 5 and 50 distinct player rows in %
     expect(html.match(/role="row"/g)?.length ?? 0).toBe(count ? count + 1 : 0);
     for (let i = 0; i < count; i++) expect(html).toContain(`href="/captain/players/player-${i}"`);
     if (!count) expect(html).toContain(locale === 'en' ? 'Send' : 'دعوة');
+    if (count) expect(html).toContain('hairline-cells');
   }
 });
-it('contains a 250-character player name inside a shrinking truncated link', () => {
+it('contains a 250-character player name inside the player link’s truncated name', () => {
   const longName = 'م'.repeat(250);
   state.result = { players: [{ ...player(0), fullName: longName }] };
   const html = render('ar');
   expect(html).toContain(longName);
-  expect(html).toMatch(/class="[^"]*min-w-0[^"]*truncate[^"]*"[^>]*>م{250}<\/a>/);
+  expect(html).toMatch(/<a[^>]*href="\/captain\/players\/player-0"[^>]*><span class="[^"]*min-w-0[^"]*"><b class="[^"]*truncate[^"]*">م{250}<\/b>/);
 });
 it.each(['en', 'ar'] as const)('shows an actionable read error in %s', locale => {
   state.result = { error: 'Read failed' };

@@ -30,6 +30,8 @@ it.each(['ar', 'en'] as const)('renders an inline editable plan with one send ac
     playerId: 'player', initial: draft, programs: [],
   })));
   expect(html).toContain('Bench Press');
+  expect(html).toContain('<aside class="glass');
+  expect(html).toContain('@min-[1040px]:grid-cols-');
   expect(html).toContain('صدر وضهر');
   expect(html).not.toContain('اليوم ١ ·');
   expect(html).toContain('1:30');

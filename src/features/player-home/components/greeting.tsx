@@ -25,18 +25,21 @@ export function Greeting({ firstName, now, playerId, snapshot, loading = false }
   const date = localDate(now, timezone);
   const history = useStreakSessions(date, playerId);
   const [open, setOpen] = useState(false);
+  const v6 = captainWorkspaceEnabled();
   const isTrainingDay = (day: string) => trainingDay(day, snapshot?.training_days ?? [], snapshot ?? undefined);
   const stats = history && !loading ? computeStreak({ today: date, ...history, isTrainingDay }) : null;
   const weekday = formatDateAr(date, { weekday: 'long' }, locale);
   const dayMonth = formatDateAr(date, { day: 'numeric', month: 'long' }, locale);
+  const streakLoading = playerId && (history === undefined || loading);
+  if (v6 && !stats && !streakLoading) return null;
   return <div className="min-w-0 basis-full">
-    <div className="flex items-center gap-stack">
-    {stats && !captainWorkspaceEnabled() && <AvatarRing initial={firstName?.slice(0, 1) || t('streakInitial')} done={stats.weekDone} planned={stats.weekPlanned} />}
+    {!v6 && <div className="flex items-center gap-stack">
+    {stats && <AvatarRing initial={firstName?.slice(0, 1) || t('streakInitial')} done={stats.weekDone} planned={stats.weekPlanned} />}
     <div className="min-w-0 space-y-inline">
     <p className="text-start text-xs text-muted"><bdi>{`${weekday} · ${dayMonth}`}</bdi></p>
-    {!captainWorkspaceEnabled() && <h1 className="text-2xl font-extrabold">{hour < 12 ? t('goodMorning') : t('goodEvening')}{firstName ? t('namedGreeting', { value0: firstName }) : ''}</h1>}
-    </div></div>
-    {playerId && (history === undefined || loading) ? <div className="flex min-h-12 items-center" role="status" aria-label={t('streakLoading')}><span className="h-[26px] w-56 animate-pulse rounded-full border border-ink/10 bg-ink/5 motion-reduce:animate-none" /></div> :
+    <h1 className="text-2xl font-extrabold">{hour < 12 ? t('goodMorning') : t('goodEvening')}{firstName ? t('namedGreeting', { value0: firstName }) : ''}</h1>
+    </div></div>}
+    {streakLoading ? <div className="flex min-h-12 items-center" role="status" aria-label={t('streakLoading')}><span className="h-[26px] w-56 animate-pulse rounded-full border border-ink/10 bg-ink/5 motion-reduce:animate-none" /></div> :
       stats && <StreakPill stats={stats} onOpen={() => setOpen(true)} />}
     {open && stats && history && <StreakSheet stats={stats} today={date} completedDates={history.completedDates} isTrainingDay={isTrainingDay} onClose={() => setOpen(false)} />}
   </div>;

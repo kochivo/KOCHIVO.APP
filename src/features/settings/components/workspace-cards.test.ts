@@ -54,5 +54,8 @@ it('leaves payment activation states and category toggles absent when no prefere
   const html = renderToStaticMarkup(createElement(CaptainSettings, { signOut: createElement('button', null, 'sign-out') }));
   for (const field of ['انستاباي', 'فودافون كاش', 'تحويل بنكي', 'مفعّل', 'رسالة جديدة', 'فيديو أداء', 'دفعة جديدة', 'ملخص الصبح']) expect(html).not.toContain(field);
   expect(html).toContain('sign-out');
-  expect(html.indexOf('صفحتك')).toBeLessThan(html.indexOf('حسابك'));
+  expect(html).toContain('href="#settings-profile"');
+  expect(html).toContain('href="#settings-language"');
+  expect(html.indexOf('id="settings-profile"')).toBeLessThan(html.indexOf('id="settings-page"'));
+  expect(html.indexOf('id="settings-security"')).toBeLessThan(html.indexOf('sign-out'));
 });

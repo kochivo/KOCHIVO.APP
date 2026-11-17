@@ -1,5 +1,5 @@
 export const arStd = {
-  today: 'غذاؤك اليوم', kcal: 'سعرات', protein: 'بروتين', coach: 'من الكابتن:',
+  shopping: 'قائمة التسوق', today: 'غذاؤك اليوم', kcal: 'سعرات', protein: 'بروتين', coach: 'من الكابتن:',
   calories: 'السعرات', leftOf: 'سعرة متبقية من {target}', over: 'زيادة {value}', carbs: 'كربوهيدرات', fat: 'دهون',
   grams: '{eaten}/{target} جم', meals: 'الوجبات', now: '· الآن', eaten: 'تم تناولها', eatMeal: 'تناولت {meal}',
   water: 'الماء', cups: ' / {goal} أكواب', addWater: 'أضف كوب ماء',

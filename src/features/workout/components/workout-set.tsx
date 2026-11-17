@@ -16,7 +16,8 @@ import { ExerciseLightbox } from './exercise-lightbox';
 import { WorkoutValue } from './workout-value';
 import { WorkoutHint } from './workout-hint';
 import { RestPanel } from './rest-panel';
-import { SetDots } from './set-dots';
+import { FocusSetTable } from './focus-set-table';
+import { ProgressBar } from '@/ui/progress-bar';
 import { SetRows } from './set-rows';
 import { ExerciseHeader } from './exercise-header';
 import { ExerciseAlternatives } from './exercise-alternatives';
@@ -57,11 +58,8 @@ export function WorkoutSet({ state }: { state: ReturnType<typeof useFocusSession
   const nextMember = state.next && state.next.exercise.id !== current.exercise.id && current.exercise.superset_group !== null &&
     state.next.exercise.superset_group === current.exercise.superset_group && current.restAfter === 0;
   return <>
-    <div className="flex min-h-[calc(100dvh-160px)] flex-col gap-card-gap">
+    <div className="flex flex-col gap-card-gap">
       <SupersetCue state={state} />
-      <PainButton state={state} />
-      <PainCarried state={state} />
-      <PainLoadHint hint={current.exercise.pain_hint} today={state.today} weight={state.weight} onSkip={() => void state.skipExercise(current.exercise.id)} />
       {!dropping && (parseExerciseVideo(current.exercise.video_url) ? <div className="space-y-stack">
         {showGif && current.exercise.media_path ? <ExerciseLightbox src={exerciseMediaUrl(current.exercise.media_path)} name={name} focus /> :
           <ExerciseVideo key={current.exercise.video_url} url={current.exercise.video_url} name={name} />}
@@ -71,7 +69,13 @@ export function WorkoutSet({ state }: { state: ReturnType<typeof useFocusSession
       <div className="flex flex-col gap-inline"><h1 style={{ fontFamily: 'inherit', fontWeight: 900 }} className="text-2xl leading-normal"><bdi>{name}</bdi></h1>
         <p className="text-row text-muted">{t('v3Set', { current: formatNumber(current.setIndex, locale), total: formatNumber(current.exercise.sets, locale) })}
           {current.exercise.notes && t('v3Coach', { note: current.exercise.notes })}</p>
+        <ProgressBar thin value={current.setIndex} max={current.exercise.sets}
+          aria-label={t('v3Set', { current: formatNumber(current.setIndex, locale), total: formatNumber(current.exercise.sets, locale) })} />
       </div>
+      <PainButton state={state} />
+      <PainCarried state={state} />
+      <PainLoadHint hint={current.exercise.pain_hint} today={state.today} weight={state.weight} onSkip={() => void state.skipExercise(current.exercise.id)} />
+      <FocusSetTable state={state} />
       {targetForSet(current.exercise, current.setIndex - 1).drop && <span className="self-start rounded-full bg-warn-soft px-stack py-inline text-xs text-warn">{st('drop')}</span>}
       <DropProgress state={state} />
       <div className={current.exercise.superset_group !== null || dropping ? 'glass-strong grid gap-stack rounded-card p-card' : 'grid grid-cols-2 gap-stack'}>
@@ -95,8 +99,7 @@ export function WorkoutSet({ state }: { state: ReturnType<typeof useFocusSession
         }) : t(state.progress === state.queue.length ? 'v3CompleteWorkout' : 'v3CompleteSet')}
       </Button>
     </div>
-    <SetDots exercise={current.exercise} currentIndex={current.setIndex} doneSets={state.doneSets} onEdit={state.edit} disabled={state.disabled} />
-    <details className="rounded-[24px] border border-line-soft bg-surface p-card">
+    <details className="glass rounded-card p-card">
       <summary className="flex min-h-12 cursor-pointer items-center text-muted">{t('v3Details')}</summary>
       <div className="space-y-stack">
         <ExerciseHeader exercise={target} last={state.lastSession} detailsOnly />

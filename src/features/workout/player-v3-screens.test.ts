@@ -97,6 +97,17 @@ it('binds the overview prescription and previous weight to the program and histo
   expect(html).toContain('بنش بريس'); expect(html).toContain('4 × 6–8');
   expect(html).toContain('المرة اللي فاتت 75 كجم');
 });
+it('shows the active set beside its previous performance and retains a single primary action', () => {
+  const html = renderToStaticMarkup(createElement(WorkoutSet, {
+    state: { ...state, lastSession: { sets: [{ set_index: 1, weight_kg: 75, reps: 8 }] } },
+  }));
+  expect(html).toContain('<table');
+  expect(html).toContain('aria-current="step"');
+  expect(html).toContain('75 × 8');
+  expect(html).toContain('>77.5</bdi>');
+  expect(html).toContain('h-1 overflow-hidden');
+  expect(primaryCount(html)).toBe(1);
+});
 it('uses the finish label only for the last queued set and disables logging during rest', () => {
   expect(renderToStaticMarkup(createElement(WorkoutSet, { state }))).toContain('خلصت المجموعة');
   const html = renderToStaticMarkup(createElement(WorkoutSet, { state: { ...state, progress: 2, rest: { ...state.rest, remaining: 30 } } }));

@@ -19,31 +19,39 @@ export function HomeHero({ day, rest, streak, finished = false, doneToday = fals
   const minutes = day ? estimateMinutes(day.exercises) + warmupDuration(day) +
     (day.cardio ?? []).reduce((sum, block) => sum + block.minutes, 0) : 0;
   return <section data-tour="player-workout" aria-label={t(rest ? 'today' : 'v6WorkoutToday')}
-    className={`relative flex flex-col overflow-hidden rounded-[28px] border border-line-soft bg-surface p-card ${rest ? 'gap-stack' : 'gap-card-gap'}`}>
-    <div aria-hidden className="absolute -end-[30px] -top-10 h-[220px] w-[90px] -skew-x-[18deg] bg-lime opacity-90" />
-    {rest && <Moon aria-hidden className="absolute end-6 top-[22px] size-11 text-on-lime" />}
-    <div className="relative flex flex-col gap-inline pe-20">
-      <span className="text-row text-muted">{t(rest ? 'today' : 'v6WorkoutToday')}</span>
-      <h2 className="text-stat! leading-[1.15] font-black! [font-family:inherit]!">
+    className={`glass flex flex-col gap-stack rounded-card p-card ${rest ? 'items-center py-section text-center' : 'cut-corner'}`}>
+    {rest && <Moon aria-hidden className="size-9 text-lime" />}
+    <div className="flex flex-col">
+      {!rest && <div className="flex flex-wrap items-center justify-between gap-inline">
+        <span className="text-xs font-bold text-lime">{t('v6WorkoutToday')}</span>
+        {day && <span className="text-micro text-faint">{t('homeDayNumber', { position: formatNumber(day.position, locale) })}</span>}
+      </div>}
+      <h2 className="text-title font-extrabold">
         {rest ? t('homeRest') : starterText(day?.title ?? '', locale) || t('v6WorkoutToday')}
       </h2>
     </div>
     {rest ? <>
-      <p className="relative text-sm leading-[1.7] text-ink">{t('homeRestBody')}</p>
-      {streak !== undefined && <span className="relative flex h-8 items-center self-start rounded-full bg-lime-soft px-stack text-xs font-bold text-lime">
+      <p className="text-row text-muted">{t('homeRestBody')}</p>
+      {streak !== undefined && <span className="tone-lime rounded-md px-inline text-micro font-semibold">
         {t('homeRestStreak', { count: formatNumber(streak, locale) })}
       </span>}
     </> : day && <>
-      <div className="relative flex flex-wrap gap-inline">
-        <span className="flex h-8 items-center rounded-full bg-surface-raised px-stack text-xs">{t('exerciseCount', { n: day.exercises.length, count: formatNumber(day.exercises.length, locale) })}</span>
-        {minutes > 0 && <span className="flex h-8 items-center rounded-full bg-surface-raised px-stack text-xs">{t('homeMinutes', { count: formatNumber(minutes, locale) })}</span>}
-        {Boolean(day.warmup?.items.length) && <span className="flex h-8 items-center rounded-full bg-surface-raised px-stack text-xs">{t('homeWarmup')}</span>}
-      </div>
+      <p className="text-xs text-muted">
+        {t('exerciseCount', { n: day.exercises.length, count: formatNumber(day.exercises.length, locale) })}
+        {minutes > 0 && <> · {t('homeMinutes', { count: formatNumber(minutes, locale) })}</>}
+      </p>
+      {(day.exercises.length > 0 || Boolean(day.warmup?.items.length)) && <div className="flex flex-wrap gap-inline">
+        {day.exercises.slice(0, 3).map(exercise => <span key={exercise.id} className="tone-neutral rounded-md px-inline text-micro font-semibold">
+          {locale === 'en' ? exercise.name_en || exercise.name_ar : exercise.name_ar}
+        </span>)}
+        {day.exercises.length > 3 && <bdi dir="ltr" className="tone-neutral rounded-md px-inline text-micro font-semibold">+{formatNumber(day.exercises.length - 3, locale)}</bdi>}
+        {Boolean(day.warmup?.items.length) && <span className="tone-neutral rounded-md px-inline text-micro font-semibold">{t('homeWarmup')}</span>}
+      </div>}
       {doneToday ? <Link href={`/player/workout/${day.id}`} className="relative flex min-h-12 items-center gap-inline self-start rounded-full bg-lime-soft px-stack text-sm font-bold text-lime">
         <CircleCheck aria-hidden className="size-5" />{t('homeDoneToday')}
       </Link> : day.exercises.length > 0 && <Link data-tour="workout-start" href={`/player/workout/${day.id}`}
-        className={buttonClass({ variant: 'primary', block: false, className: "relative flex h-[62px] items-center justify-center gap-stack text-title font-black" })}>
-        <KoPlay aria-hidden className="size-[22px] text-on-lime! [&_*]:text-on-lime!" />{t('homeStart')}
+        className={buttonClass({ variant: 'primary', size: 'lg', className: 'mt-inline text-md' })}>
+        <KoPlay aria-hidden className="size-5 text-on-lime! [&_*]:text-on-lime!" />{t('homeStart')}
       </Link>}
     </>}
   </section>;
@@ -51,9 +59,8 @@ export function HomeHero({ day, rest, streak, finished = false, doneToday = fals
 
 // The program ran out: same hero frame, no action, the captain renews it.
 function FinishedHero({ title, body }: { title: string; body: string }) {
-  return <section aria-label={title} className="relative flex flex-col gap-stack overflow-hidden rounded-[28px] border border-line-soft bg-surface p-card">
-    <div aria-hidden className="absolute -end-[30px] -top-10 h-[220px] w-[90px] -skew-x-[18deg] bg-lime opacity-90" />
-    <h2 className="relative pe-20 text-stat! leading-[1.15] font-black! [font-family:inherit]!">{title}</h2>
-    <p className="relative pe-20 text-sm leading-[1.7] text-ink">{body}</p>
+  return <section aria-label={title} className="glass cut-corner flex flex-col gap-stack rounded-card p-card">
+    <h2 className="text-title font-extrabold">{title}</h2>
+    <p className="text-row text-muted">{body}</p>
   </section>;
 }

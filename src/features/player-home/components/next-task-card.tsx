@@ -18,7 +18,7 @@ export function NextTaskCard({ task, day }: { task: PlayerTask; day?: SnapshotDa
   const wt = useT(warmupMessages);
   const locale = useLocale();
   const view = taskPresentation(task);
-  if (captainWorkspaceEnabled()) return <section className="space-y-stack rounded-[24px] border border-line-soft bg-surface p-card">
+  if (captainWorkspaceEnabled()) return <section className="glass space-y-stack rounded-card p-card">
     <p className="text-xs text-faint">{t(view.heading, { name: starterText(task.name ?? '', locale) })}</p>
     {view.workout && <h2 className="font-display text-h font-semibold">{starterText(task.name ?? '', locale)}</h2>}
     <p className="text-xs text-muted">{view.workout && day ? t('v6WorkoutSummary', {

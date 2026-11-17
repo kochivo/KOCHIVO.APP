@@ -16,7 +16,7 @@ export function PlayerReminder() {
   at?.setUTCHours(6, 0, 0, 0);
   const time = at ? new Intl.DateTimeFormat(locale, { timeZone: timezone, hour: 'numeric', hour12: true }).format(at) : null;
   return <div className="px-page-x py-inline">
-    <div className="flex min-h-[44px] items-center gap-stack">
+    <div className="flex min-h-14 items-center gap-stack">
       <span className="flex flex-1 flex-col gap-inline"><span className="text-sm">{t('reminder')}</span>
         {time && <span className="text-xs text-muted">{t('reminderTime', { time })}</span>}</span>
       {!publicConfig.vapidPublicKey && <button type="button" role="switch" aria-checked={false} aria-label={t('reminder')} disabled

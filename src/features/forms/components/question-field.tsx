@@ -7,9 +7,10 @@ import { createT } from '@/core/i18n/messages';
 import { messages as v6Messages } from '../v6-messages';
 
 export type QuestionValue = string | number | boolean | string[] | null;
-export function QuestionField({ question: q, locale, value = null, readOnly = false, onChange, onPhotos, preview = false, style }: {
+export function QuestionField({ question: q, locale, value = null, readOnly = false, onChange, onPhotos, preview = false, style, playerCard = false }: {
   question: Question; locale: Locale; value?: QuestionValue; readOnly?: boolean;
   preview?: boolean;
+  playerCard?: boolean;
   style?: ArabicStyle;
   onChange?: (value: QuestionValue) => void; onPhotos?: (files: FileList | null) => void;
 }) {
@@ -20,8 +21,9 @@ export function QuestionField({ question: q, locale, value = null, readOnly = fa
     min={q.type === 'scale' ? 1 : undefined} max={q.type === 'scale' ? 10 : undefined}
     step={q.type === 'scale' ? 1 : 'any'} value={typeof value === 'number' ? value : ''} required={q.required}
     onChange={e => onChange?.(e.target.value === '' ? null : e.target.valueAsNumber)} />;
-  return <fieldset className={preview ? 'mb-stack min-w-0 space-y-inline rounded-[16px] border border-line-soft px-card pb-stack text-row' : 'space-y-stack border-b border-line py-page-y'} disabled={readOnly}>
-    <legend className={preview ? 'float-start w-full pt-stack font-normal' : 'pt-stack font-bold'}>{label}{q.required && !preview && <span className="ms-inline text-muted">{m.required}</span>}</legend>
+  return <fieldset className={preview ? 'mb-stack min-w-0 space-y-inline rounded-[16px] border border-line-soft px-card pb-stack text-row' :
+    playerCard ? 'min-w-0 space-y-stack' : 'space-y-stack border-b border-line py-page-y'} disabled={readOnly}>
+    <legend className={preview ? 'float-start w-full pt-stack font-normal' : playerCard ? 'mb-stack text-md font-bold' : 'pt-stack font-bold'}>{label}{q.required && !preview && <span className="ms-inline text-muted">{m.required}</span>}</legend>
     {q.type === 'text' && <textarea aria-label={label} className={`${input}${preview ? ' resize-none' : ''}`} value={typeof value === 'string' ? value : ''}
       required={q.required} onChange={e => onChange?.(e.target.value)} />}
     {q.type === 'scale' && preview ? <div className="grid grid-cols-5 gap-inline">{Array.from({ length: 10 }, (_, i) => i + 1).map(n => <button key={n} type="button" aria-pressed={value === n}

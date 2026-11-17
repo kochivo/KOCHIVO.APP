@@ -99,7 +99,7 @@ it.each(['idle', 'loading', 'error', 'empty'] as const)('renders the %s state', 
 it('renders a responsive grid, the total, paging controls and creation link', () => {
   mocks.resource.mockReturnValue({ status: 'ready', data: { data: [exercise, { ...exercise, id: 'archived', name_en: 'Archived', archived_at: '2026-11-14' }], total: 1301 } });
   const html = renderToStaticMarkup(createElement(ExerciseLibrary));
-  expect(html).toContain('grid-cols-2'); expect(html).toContain('lg:grid-cols-4');
+  expect(html).toContain('grid-cols-1'); expect(html).toContain('xl:grid-cols-5');
   expect(html).toContain('1,301'); expect(html).not.toContain('Archived');
   expect(html).toContain('href="/captain/library/exercises/new"'); expect(html).toContain('التالي');
 });

@@ -15,6 +15,7 @@ import { PageBarTitle } from '@/ui/page-bar-title';
 import { PageBarActions } from '@/ui/page-bar-actions';
 import { useToast } from '@/ui/toast';
 import { messages, workspaceMessages } from '../messages';
+import { messages as financeMessages } from '../workspace/messages';
 import { listRenewalRequests, decideRenewalRequest } from '../data/renewal-requests';
 import { reminderText, waLink } from '../renew';
 import type { BillingResult } from '../types';
@@ -25,7 +26,7 @@ import { buttonClass, Button } from '@/ui/button';
 const CaptainReceipts = dynamic(() => import('../receipts/captain-receipts').then(module => module.CaptainReceipts));
 
 export function WorkspaceBilling({ data, today, moneyOwed }: { data: Promise<BillingResult>; today: string; moneyOwed?: ReactNode }) {
-  const result = use(data), t = useT(workspaceMessages), legacy = useT(messages), locale = useLocale(), router = useRouter();
+  const result = use(data), t = useT(workspaceMessages), legacy = useT(messages), finance = useT(financeMessages), locale = useLocale(), router = useRouter();
   const toast = useToast(), lock = useRef(false);
   const load = useCallback(() => listRenewalRequests(), []);
   const requests = useResource('billing:renewal-requests:all', load);
@@ -52,16 +53,17 @@ export function WorkspaceBilling({ data, today, moneyOwed }: { data: Promise<Bil
     finally { setBusy(false); lock.current = false; }
   }
   return <section id="billing-heading" tabIndex={-1} className="space-y-card-gap" aria-busy={busy || refreshing}>
-    <PageBarTitle title={t('title')} />
+    <PageBarTitle title={t('title')} subtitle={finance('intro')} />
     <PageBarActions>
       <Link href="/captain/billing/packages" className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-page-x text-row" })}>{t('catalog')}</Link>
     </PageBarActions>
-    <WorkspaceBillingTiles values={{ ...values, pending: rows ? rows.length : null }} />
-    {moneyOwed}
-    <CaptainReceipts />
+    <WorkspaceBillingTiles values={{ ...values, pending: rows ? rows.length : null }} owed={billing.revenue.dues} />
     {notice && <p role="status" className="glass rounded-control p-stack text-sm text-lime">{notice}</p>}
     {error && <p role="alert" className="text-sm text-danger">{error}</p>}
-    <div className="grid items-start gap-card-gap min-[761px]:grid-cols-2">
+    <WorkspacePaymentsTable players={billing.players} packages={billing.packages} today={today} />
+    {moneyOwed}
+    <CaptainReceipts />
+    <div className="grid items-start gap-card-gap min-[760px]:grid-cols-2">
       <section className="glass min-w-0 rounded-card border border-line-soft p-card">
         <header className="mb-inline flex items-center justify-between gap-inline"><h2 className="font-semibold">{t('pending')}</h2>
           {rows && <span className="rounded-full bg-surface-raised px-stack py-inline text-xs tabular-nums">{formatNumber(rows.length, locale)}</span>}</header>
@@ -69,7 +71,7 @@ export function WorkspaceBilling({ data, today, moneyOwed }: { data: Promise<Bil
           : !rows ? <LoadingState variant="detail" /> : rows.length ? <ul>{rows.map(row => <li key={row.id} className="flex items-center gap-inline border-t border-line-soft py-stack first:border-0">
             <span aria-hidden className="grid size-10 shrink-0 place-items-center rounded-full bg-surface-raised">{row.name.slice(0, 1)}</span>
             <div className="min-w-0 flex-1"><b className="block break-words text-sm">{row.name}</b><small className="text-xs text-muted">{t('renewalRequest', { package: row.package })}</small></div>
-            <Button disabled={busy} onClick={() => void confirm(row.id, row.name)} type="submit" variant={'primary'} block={false} className={"min-h-12 shrink-0 px-page-x text-sm font-semibold disabled:opacity-50"}>{t('confirm')}</Button>
+            <Button disabled={busy} onClick={() => void confirm(row.id, row.name)} type="submit" variant={'secondary'} block={false} className={"min-h-12 shrink-0 px-page-x text-sm font-semibold disabled:opacity-50"}>{t('confirm')}</Button>
           </li>)}</ul> : <p className="py-stack text-sm text-faint">{t('noRequests')}</p>}
       </section>
       <section className="glass min-w-0 rounded-card border border-line-soft p-card">
@@ -84,7 +86,6 @@ export function WorkspaceBilling({ data, today, moneyOwed }: { data: Promise<Bil
         })}</ul> : <p className="py-stack text-sm text-faint">{t('noExpiring')}</p>}
       </section>
     </div>
-    <WorkspacePaymentsTable players={billing.players} packages={billing.packages} today={today} />
     {!billing.players.length && <div className="glass rounded-card p-card"><p className="text-sm text-faint">{legacy('noPlayers')}</p><Link href="/captain/players" className={`${secondaryButtonClass} inline-flex min-h-12 items-center text-lime`}>{legacy('invitePlayer')}</Link></div>}
   </section>;
 }

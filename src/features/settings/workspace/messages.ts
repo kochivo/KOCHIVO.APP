@@ -5,6 +5,7 @@ export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
+    subscription: 'باقة KOCHIVO', security: 'الأمان',
     profile: 'ملفك وصفحتك', name: 'الاسم', page: 'رابط صفحتك', whatsapp: 'واتساب', edit: 'عدّل',
     arabic: 'عربي', preferences: 'اللغة والتوقيت', language: 'اللغة', english: 'English',
     timezone: 'التوقيت', auto: 'تلقائي · {zone}', cairo: 'القاهرة', manual: 'اختار بنفسي', units: 'الوحدات',
@@ -15,6 +16,7 @@ export const messages = defineMessages({
     saved: 'محفوظ', saving: 'بيتحفظ…', error: 'الحفظ متعملش. جرّب تاني', retry: 'جرّب تاني', unset: 'لسه متضافش',
   },
   en: {
+    subscription: 'KOCHIVO plan', security: 'Security',
     profile: 'Profile and page', name: 'Name', page: 'Your page', whatsapp: 'WhatsApp', edit: 'Edit',
     arabic: 'عربي', preferences: 'Language and timezone', language: 'Language', english: 'English',
     timezone: 'Timezone', auto: 'Automatic · {zone}', cairo: 'Cairo', manual: 'Choose manually', units: 'Units',

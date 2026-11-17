@@ -19,7 +19,7 @@ it.each(['loading', 'error', 'empty'] as const)('renders the asynchronous %s sta
 it('shows the newest detail on desktop and waits for a tap on phones', () => {
   mocks.resource.mockReturnValue({ data: [form], status: 'ready', mutate: vi.fn(), retry: vi.fn() });
   const html = renderToStaticMarkup(createElement(FormsScreen, props));
-  expect(html).toContain('hidden lg:block');
+  expect(html).toContain('hidden min-[760px]:block');
   expect(html).toContain('Select an assessment to see its answers');
   expect(html).toContain('player-form-detail');
   expect(html).toContain('82 kg');

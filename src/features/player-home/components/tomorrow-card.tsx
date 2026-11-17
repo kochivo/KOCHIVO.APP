@@ -28,7 +28,7 @@ export function TomorrowCard({ day, date, rest, onPreview }: {
     </span>
     {!rest && day && <ChevronLeft aria-hidden className="size-[18px] text-muted ltr:rotate-180" />}
   </>;
-  const className = 'flex items-center gap-stack rounded-[24px] border border-line-soft bg-surface px-page-x py-card text-ink';
+  const className = 'glass flex min-h-12 items-center gap-stack rounded-card px-card py-stack text-ink';
   return !rest && day ? <a href="#home-day-preview" onClick={() => onPreview(date)} className={className}>{content}</a>
     : <div className={className}>{content}</div>;
 }

@@ -8,23 +8,36 @@ import { duplicateDuration, durationLabel } from '../package-choice';
 import type { Tier, CatalogPackage } from '../tiers/types';
 import { Button } from '@/ui/button';
 
-export function WorkspaceTierCard({ tier, packages, busy, onEdit, onPackage }: {
-  tier: Tier; packages: CatalogPackage[]; busy: boolean; onEdit: () => void; onPackage: (item?: CatalogPackage) => void;
+export function WorkspaceTierCard({ tier, packages, busy, count, onEdit, onPackage }: {
+  tier: Tier; packages: CatalogPackage[]; busy: boolean; count?: number;
+  onEdit: () => void; onPackage: (item?: CatalogPackage) => void;
 }) {
   const t = useT(workspaceMessages), catalog = useT(messages), locale = useLocale();
-  return <article className={`${tier.is_featured ? 'glass-featured' : 'glass'} relative min-w-0 rounded-card border border-line-soft p-card`}>
-    {tier.is_featured && <span className="absolute end-3 top-3 rounded-full bg-lime-soft px-stack py-inline text-micro text-lime">{t('featured')}</span>}
-    <h2 className="pe-section text-base font-semibold">{tier.name}</h2>
+  return <article className={`${tier.is_featured ? 'glass-featured cut-corner' : 'glass'} flex h-full min-w-0 flex-col rounded-card p-card`}>
+    <header className="flex flex-wrap items-center gap-inline">
+      <h2 className="min-w-0 flex-1 break-words text-title font-bold">{tier.name}</h2>
+      {tier.is_featured && <span className="tone-lime rounded-md px-inline text-micro font-semibold">{t('featured')}</span>}
+    </header>
     {tier.description && <p className="mt-inline text-xs text-muted">{tier.description}</p>}
-    <ul className="my-stack space-y-inline text-xs">{tier.features.length ? tier.features.map((feature, index) => <li key={index} className="flex items-start gap-inline"><Check aria-hidden className="size-4 shrink-0 text-lime" />{feature}</li>) : <li className="text-faint">{catalog('noFeatures')}</li>}</ul>
-    {packages.length ? packages.map(item => <button key={item.id} disabled={busy} onClick={() => onPackage(item)} className="press mb-inline flex min-h-12 w-full cursor-pointer items-center justify-between gap-inline rounded-control border border-line-soft bg-surface px-stack text-start text-row hover:bg-surface-raised focus-visible:ring-2 focus-visible:ring-lime disabled:opacity-40">
-      <span className="py-inline">{item.kind === 'sessions' ? item.name : durationLabel(item.days, catalog, locale)}
-        {duplicateDuration(packages, item) && <span className="block text-xs text-warn">{catalog('duplicateWarning')}</span>}
-      </span>
-      <b className="font-display tabular-nums">{formatNumber(item.price_egp, locale)} {catalog('currency')}</b>
-      {duplicateDuration(packages, item) ? <span className="underline">{catalog('editDuration')}</span> : <ChevronLeft aria-hidden className="dir-icon size-4 shrink-0 text-muted" />}
-    </button>) : <p className="py-stack text-xs text-faint">{catalog('noDurations')}</p>}
-    <button disabled={busy} onClick={() => onPackage()} className="press mt-inline min-h-12 w-full cursor-pointer rounded-control border border-dashed border-line bg-surface px-stack text-sm text-muted hover:bg-surface-raised focus-visible:ring-2 focus-visible:ring-lime">{catalog('addDuration')}</button>
-    <Button disabled={busy} onClick={onEdit} variant="secondary" block className="mt-stack"><Pencil aria-hidden className="size-4" />{t('edit')}</Button>
+    <div className="my-stack divide-y divide-line-soft">{packages.length ? packages.map(item =>
+      <Button variant="ghost" key={item.id} disabled={busy} onClick={() => onPackage(item)}
+        className="min-h-12 w-full min-w-0 flex-wrap justify-start gap-inline px-inline text-start focus-visible:ring-2 focus-visible:ring-lime">
+        <span className="font-display text-stat font-extrabold tracking-tight tabular-nums">{formatNumber(item.price_egp, locale)}</span>
+        <span className="text-xs text-muted">{catalog('currency')} · {item.kind === 'sessions' ? item.name : durationLabel(item.days, catalog, locale)}</span>
+        {duplicateDuration(packages, item) ? <span className="w-full text-xs text-warn">
+          {catalog('duplicateWarning')} <span className="underline">{catalog('editDuration')}</span>
+        </span> : <ChevronLeft aria-hidden className="dir-icon ms-auto size-4 shrink-0 text-muted" />}
+      </Button>) : <p className="py-stack text-xs text-muted">{catalog('noDurations')}</p>}</div>
+    <ul className="mb-card-gap space-y-stack text-row">{tier.features.length ? tier.features.map((feature, index) =>
+      <li key={index} className="flex items-start gap-inline"><Check aria-hidden className="size-5 shrink-0 text-lime" />{feature}</li>)
+      : <li className="text-muted">{catalog('noFeatures')}</li>}</ul>
+    <footer className="mt-auto space-y-stack border-t border-line-soft pt-stack">
+      <div className="flex flex-wrap items-center justify-between gap-inline">
+        {count !== undefined && <span className="text-xs text-muted">{catalog('players', { n: formatNumber(count, locale) })}</span>}
+        <Button disabled={busy} onClick={onEdit} variant="secondary" block={false}><Pencil aria-hidden className="size-4" />{t('edit')}</Button>
+      </div>
+      <Button variant="secondary" block disabled={busy} onClick={() => onPackage()}
+        className="border-dashed">{catalog('addDuration')}</Button>
+    </footer>
   </article>;
 }

@@ -1,5 +1,6 @@
 'use client';
 import { useCallback, useState } from 'react';
+import { StatStrip } from '@/ui/stat-strip';
 import { useT } from '@/core/i18n/client';
 import { useTimezone } from '@/core/timezone/client';
 import { localDb, useLiveQuery } from '@/core/offline';
@@ -31,13 +32,9 @@ export function PlayerStatTiles({ playerId, snapshot }: { playerId: string; snap
   }} />;
   if (!result.data || !local || !now) return <LoadingState variant="detail" />;
   const stats = accountStats({ remote: result.data.sessions, local, today: localDate(now, timezone), snapshot });
-  return <div className="grid grid-cols-3 gap-inline">
-    {([{ key: 'sessions', value: stats.total, color: 'text-ink' },
-      { key: 'streak', value: stats.streak, color: 'text-sore' },
-      { key: 'rank', value: rankT(result.data.tier), color: 'text-gold-4' }] as const).map(tile =>
-      <div key={tile.key} className="glass-strong flex flex-col items-center gap-inline rounded-[20px] border border-line-soft bg-surface p-stack">
-        <b className={`${tile.key === 'rank' ? 'text-lg' : 'font-[family-name:var(--font-manrope)] text-h'} ${tile.color}`}>{tile.value}</b>
-        <span className="text-center text-micro text-muted">{t(tile.key)}</span>
-      </div>)}
-  </div>;
+  return <StatStrip className="max-sm:grid-cols-3! [&>div]:px-stack [&_p>span]:text-title" items={[
+    { label: t('sessions'), value: stats.total },
+    { label: t('streak'), value: stats.streak },
+    { label: t('rank'), value: rankT(result.data.tier) },
+  ]} />;
 }

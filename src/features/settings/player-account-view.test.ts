@@ -33,4 +33,7 @@ it('binds identity, plan, subscription and existing rank, retaining editing and 
   expect(html).not.toContain('فصحى');
   expect(html).toContain('aria-label="غيّر صورة البروفايل"');
   expect(html).toContain('href="/player"');
+  expect(html).toContain('glass overflow-hidden rounded-card');
+  expect(html).toContain('min-h-14');
+  expect(html).toContain('text-danger!');
 });

@@ -82,4 +82,18 @@ it('retries catalog errors without opening an editor', () => {
   invoke(render()[0], 'onRetry');
   expect(state.retry).toHaveBeenCalledOnce();
 });
+it('reserves the single primary action for New package and passes real subscriber counts', () => {
+  const tree = render();
+  expect(tree.filter(node => node.type === Button && (node.props.variant === undefined || node.props.variant === 'primary'))).toHaveLength(1);
+  expect(tree.find(node => node.type === WorkspaceTierCard)?.props.count).toBe(4);
+});
+it.each([[1, 'min-[1100px]:col-span-6'], [2, 'min-[1100px]:col-span-3'], [4, 'min-[1100px]:col-span-6'], [5, 'min-[1100px]:col-span-3']])(
+  'fills the last desktop row with %i packages', (count, span) => {
+    const source = catalogFixture.tiers[0];
+    if (!source) throw new Error('Missing tier fixture');
+    state.data = { ...catalogFixture, tiers: Array.from({ length: Number(count) }, (_, index) => ({ ...source, id: `tier-${index}` })) };
+    const cells = render().filter(node => node.type === 'div' && typeof node.props.className === 'string' && node.props.className.includes('col-span-'));
+    expect(cells.at(-1)?.props.className).toContain(span);
+  },
+);
 vi.mock('./data/freeze-settings', () => ({ loadFreezeSettings: vi.fn(), saveFreezeSettings: vi.fn() }));

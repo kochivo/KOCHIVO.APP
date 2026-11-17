@@ -7,6 +7,7 @@ import { useLocale, useT } from '@/core/i18n/client';
 import { formatNumber } from '@/lib/format';
 import { Button } from '@/ui/button';
 import { LoadingState } from '@/ui/loading-state';
+import { Segmented } from '@/ui/segmented';
 import { PageBarTitle } from '@/ui/page-bar-title';
 import { PageBarActions } from '@/ui/page-bar-actions';
 import { KoPlus } from '@/ui/icons/ko-plus';
@@ -29,6 +30,8 @@ export function WorkspaceProgramsView(props: ComponentProps<typeof LibraryView>)
   const [picking, setPicking] = useState(false), [generatorRequest, setGeneratorRequest] = useState(0);
   const visible = filterPrograms(templates, tab);
   const disabled = creating || loading || !!error;
+  const label = (item: typeof tabs[number]) => loading || error ? t(item.label)
+    : `${t(item.label)} ${formatNumber(filterPrograms(templates, item.id).length, locale)}`;
   return <div className="@container min-w-0 space-y-card-gap">
     <PageBarTitle title={t('programsTitle')} />
     <PageBarActions>
@@ -36,27 +39,20 @@ export function WorkspaceProgramsView(props: ComponentProps<typeof LibraryView>)
         <KoTemplate aria-hidden className="size-4" />{t('programAskKo')}</Button>
       <Button variant="secondary" className="min-h-12 rounded-full px-stack text-xs" onClick={() => setPicking(true)}>
         <KoPlayers aria-hidden className="size-4" />{t('programForPlayer')}</Button>
-      <Button disabled={disabled} className="min-h-12 !w-auto rounded-full px-stack text-xs" onClick={onCreate}>
+      <Button disabled={disabled} block={false} onClick={onCreate}>
         <KoPlus aria-hidden className="size-4" />{t('programNew')}</Button>
     </PageBarActions>
-    <div role="group" aria-label={t('programsTitle')} className="flex w-max max-w-full gap-inline overflow-x-auto rounded-full border border-line-soft bg-bg-deep/25 p-inline">
-      {tabs.map(item => <button key={item.id} type="button" aria-pressed={tab === item.id} onClick={() => setTab(item.id)}
-        className={`min-h-12 shrink-0 whitespace-nowrap rounded-full px-stack text-micro ${tab === item.id ? 'glass-strong text-ink' : 'text-muted'}`}>
-        {t(item.label)}{!loading && !error && <span className="ms-inline tabular-nums">{formatNumber(filterPrograms(templates, item.id).length, locale)}</span>}
-      </button>)}
-    </div>
+    <Segmented aria-label={t('programsTitle')} className="w-fit max-w-full" value={tab}
+      options={[{ value: tabs[0].id, label: label(tabs[0]) }, { value: tabs[1].id, label: label(tabs[1]) }, { value: tabs[2].id, label: label(tabs[2]) }]}
+      onChange={value => { const next = tabs.find(item => item.id === value); if (next) setTab(next.id); }} />
     {(createError || busy.length > 0) && <p role={createError ? 'alert' : 'status'} className="text-sm text-muted">{createError || t('savingChanges')}</p>}
     {loading ? <LoadingState variant="cards" /> : error ? <div role="alert" className="glass rounded-card p-card">
       <p>{error}</p><Button variant="secondary" onClick={onRetry}>{t('tryAgain')}</Button>
     </div> : <>
-      {!visible.length && <p className="text-sm text-muted">{t('programEmpty')}</p>}
-      <ul className="deferred-rows grid grid-cols-1 gap-card-gap @min-[701px]:grid-cols-3">
+      {!visible.length && <p className="glass rounded-card p-card text-sm text-muted">{t('programEmpty')}</p>}
+      <ul className="grid grid-cols-1 gap-card-gap min-[760px]:grid-cols-2 @min-[700px]:grid-cols-3 @min-[1000px]:grid-cols-4">
         {visible.map(template => <WorkspaceProgramCard key={template.id} template={template} error={errors[`program-${template.id}`]}
           busy={busy.includes(`program-${template.id}`)} onOpen={actions(template).onOpen} onAssign={actions(template).onAssign} onRetry={onRetry} />)}
-        <li className="contents"><Button type="button" disabled={disabled} onClick={onCreate}
-          variant={'secondary'} block={false} className={"flex min-h-[150px] flex-col items-center justify-center gap-inline p-card text-lime disabled:opacity-40"}>
-          <KoPlus aria-hidden className="size-6" /><span>{t('programNew')}</span><small className="text-muted">{t('programNewHint')}</small>
-        </Button></li>
       </ul>
     </>}
     {picking && <PlayerPicker onClose={() => setPicking(false)} />}

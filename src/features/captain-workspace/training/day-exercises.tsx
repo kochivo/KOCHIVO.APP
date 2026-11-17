@@ -6,8 +6,10 @@ import { useToast } from '@/ui/toast';
 import { exerciseName } from '@/lib/display-name';
 import { messages as successMessages } from '../success/messages';
 import { useState } from 'react';
+import { KoPlus } from '@/ui/icons/ko-plus';
+import { Button } from '@/ui/button';
 import { uuidv7 } from '@/core/offline/ids';
-import { addExercise, removeExercise, reorderExercise, updateExercise, useDragReorder, programMessages } from '@/features/programs';
+import { addExercise, daySummary, removeExercise, reorderExercise, updateExercise, useDragReorder, warmupMinutes, programMessages } from '@/features/programs';
 import type { DraftDay, LibraryExercise, ProgramDraft } from '@/features/programs';
 import { TrainingExerciseRow } from './exercise-row';
 import { InlineSearch } from './inline-search';
@@ -40,6 +42,8 @@ export function DayExercises({ day, update, flush, injuries = [], candidates = [
   const t = useT(messages), pt = useT(programMessages), et = useT(editorMessages);
   const success = useT(successMessages), toast = useToast(), locale = useLocale();
   const [announcement, setAnnouncement] = useState('');
+  const searchId = `training-exercise-search-${day.id}`;
+  const summary = daySummary(day);
   const st = useT(setMessages);
   const link = (id: string, above = false) => {
     update(draft => (above ? linkAbove : linkNext)(draft, day.id, id));
@@ -52,9 +56,11 @@ export function DayExercises({ day, update, flush, injuries = [], candidates = [
   };
   const { listRef, handleProps, rowStyle } = useDragReorder(day.exercises.map(row => row.id), move);
   return <CustomExerciseNavigation value={{ programId: day.program_id, dayId: day.id, flush }}>
-    <section className="glass min-w-0 rounded-card border border-line-soft">
-    <div className="flex min-h-16 flex-wrap items-center gap-stack px-page-x py-card"><span className="grid size-6 place-items-center rounded-lg bg-lime-soft font-display text-xs font-extrabold text-lime">{2}</span>
-      <h2 className="font-display text-title font-semibold">{et('exerciseTitle')}</h2><span className="text-xs text-faint">{et('exerciseCount', { n: day.exercises.length, sets: day.exercises.reduce((sum, row) => sum + row.sets, 0) })}</span></div>
+    <div className="grid min-w-0 items-start gap-card-gap @min-[780px]:grid-cols-[minmax(0,1fr)_minmax(14rem,1fr)] @min-[1040px]:grid-cols-[minmax(0,1fr)_18rem]">
+    <section className="@container glass min-w-0 rounded-card border border-line-soft">
+    <div className="flex min-h-14 flex-wrap items-center justify-between gap-inline px-card pt-card pb-stack">
+      <h2 className="text-md font-bold">{day.title || et('exerciseTitle')}</h2>
+      <span className="text-xs text-muted">{day.exercises.length ? et('minutes', { n: summary.minutes + warmupMinutes(day.warmup) }) : et('unknownDuration')}</span></div>
     {!day.exercises.length && <p className="p-card text-sm text-faint">{t('noExercises')}</p>}
     <p aria-live="polite" aria-atomic="true" className="sr-only">{announcement}</p>
     <ol ref={listRef}>{day.exercises.map((row, index) => {
@@ -75,11 +81,19 @@ export function DayExercises({ day, update, flush, injuries = [], candidates = [
       onMove={delta => move(row.id, index + delta)} />;
     })}</ol>
     {announcement && <p role="status" className="px-page-x py-stack text-xs text-muted">{announcement}</p>}
-    <InlineSearch day={day} onAdd={row => {
+    <div className="p-card"><Button type="button" variant="secondary" block className="border-dashed" onClick={() => document.getElementById(searchId)?.focus()}>
+      <KoPlus aria-hidden className="size-4" />{pt('addExercise')}
+    </Button></div>
+    </section>
+    <aside className="glass min-w-0 space-y-stack rounded-card p-card">
+    <h2 className="text-md font-bold">{pt('exerciseLibrary')}</h2>
+    <InlineSearch inputId={searchId} day={day} onAdd={row => {
       update(draft => addExercise(draft, day.id, row, uuidv7()));
       toast.success({ title: success('added'), detail: success('exerciseDetail', { name: exerciseName(row, locale), day: day.title }), icon: 'program' });
     }}
       onLibraryChange={library => update(draft => ({ ...draft, days: draft.days.map(item => ({ ...item, exercises: item.exercises.map(row => row.exercise_id === library.id ? { ...row, library } : row) })) }))} />
     <CustomExercise />
-  </section></CustomExerciseNavigation>;
+    </aside>
+    </div>
+  </CustomExerciseNavigation>;
 }

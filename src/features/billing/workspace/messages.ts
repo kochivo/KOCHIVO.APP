@@ -5,6 +5,8 @@ export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
+    intro: 'كل لاعب، دفع كام وفاضل كام', owed: 'مستني يتحصّل', actions: 'الإجراء',
+    catalogTitle: 'الباقات', catalogIntro: 'الباقات اللي لاعبينك بيختاروا منها في لينك الدعوة',
     waitingForPlans: 'مستني الأنظمة',
     'usageTail.one': 'من {limit} لاعب', 'usageTail.two': 'من {limit} لاعبين', 'usageTail.few': 'من {limit} لاعبين', 'usageTail.other': 'من {limit} لاعب', currency: 'جنيه',
     previous: 'اللي قبلها', next: 'اللي بعدها',
@@ -18,6 +20,8 @@ export const messages = defineMessages({
     collection: 'دفعة', renewal: 'تجديد', more: 'تفاصيل الباقة', noPhone: 'ضيف رقم واتساب من ملف اللاعب عشان تفكّره',
   },
   en: {
+    intro: 'Track each player’s payments and balance', owed: 'To collect', actions: 'Action',
+    catalogTitle: 'Packages', catalogIntro: 'Packages players can choose from your invite link',
     waitingForPlans: 'Waiting for plans',
     'usageTail.one': 'of {limit} player', 'usageTail.other': 'of {limit} players', currency: 'EGP',
     previous: 'Previous', next: 'Next',

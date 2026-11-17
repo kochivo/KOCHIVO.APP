@@ -18,25 +18,25 @@ const pillItems = [
   { href: '/player/nutrition', label: 'Food', icon: Home },
 ];
 
-it('shows only the active pill label and names inactive links accessibly', () => {
+it('shows every player tab label and marks the active page', () => {
   const html = renderToStaticMarkup(createElement(PillNav, { items: pillItems }));
   expect(html.match(/aria-current="page"/g)).toHaveLength(1);
   expect(html).toContain('>Home</span>');
-  expect(html).not.toContain('>Food</span>');
-  expect(html).toContain('aria-label="Food"');
-  expect(html).toContain('h-[52px]');
-  expect(html).toContain('size-[52px]');
-  expect(html).toContain('size-[20px]');
-  expect(html).toContain('size-[22px]');
+  expect(html).toContain('>Food</span>');
+  expect(html.match(/min-h-12/g)).toHaveLength(2);
+  expect(html.match(/<svg/g)).toHaveLength(2);
 });
 
 it('uses mood-aware tokens and safe-area spacing inside a rest frame', () => {
   const html = renderToStaticMarkup(createElement('div', { 'data-mood': 'rest' },
     createElement(PillNav, { items: pillItems })));
-  expect(html).toContain('bg-surface-raised');
-  expect(html).toContain('bg-ink text-bg');
-  expect(html).toContain('bottom-[calc(1rem+var(--safe-bottom))]');
-  expect(html).toContain('h-[68px]');
+  expect(html).toContain('bg-bg/95');
+  expect(html).toContain('text-lime');
+  expect(html).toContain('text-faint');
+  expect(html).toContain('inset-x-0 bottom-0');
+  expect(html).toContain('border-t');
+  expect(html).toContain('var(--safe-bottom)');
+  expect(html).toContain('var(--nav-height)');
   expect(html).not.toMatch(/#[\da-f]{3,8}\b/i);
 });
 

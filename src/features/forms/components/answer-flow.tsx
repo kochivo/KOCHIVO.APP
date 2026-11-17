@@ -1,4 +1,5 @@
 'use client';
+import type { ReactNode } from 'react';
 import { KoCamera } from '@/ui/icons/ko-camera';
 import { useRef,useState } from 'react';
 import Link from 'next/link';
@@ -19,6 +20,7 @@ import { messages as v6Messages } from '../v6-messages';
 import { Camera, X } from 'lucide-react';
 import { secondaryButtonClass } from '@/ui/secondary-button-class';
 import { Button } from '@/ui/button';
+import { ProgressBar } from '@/ui/progress-bar';
 
 export function AnswerFlow({data,locale}:{data:RequestData;locale:Locale}) {
   const CameraIcon = captainWorkspaceEnabled() ? KoCamera : Camera;
@@ -79,39 +81,51 @@ export function AnswerFlow({data,locale}:{data:RequestData;locale:Locale}) {
   if (data.request.reviewed_at) return <p>{t('reviewed')}</p>;
   if (!q) return <p>{t('unavailable')}</p>;
   return <section className={v6 ? 'space-y-card-gap' : 'glass-strong space-y-card-gap rounded-card p-section'} aria-busy={state === 'sending' || uploading}>
-    {v6 ? <header className="flex items-center gap-inline text-xs text-faint">
-      <Link href={`/${locale}/player`} aria-label={v6t('close')} className={secondaryButtonClass}><X aria-hidden className="size-5" /></Link>
-      <h1 className="min-w-0 flex-1">{data.title}</h1><span>{v6t('progress', { n: step + 1, total: data.questions.length })}</span>
+    {v6 ? <header className="flex items-center gap-stack">
+      <Link href={`/${locale}/player`} aria-label={v6t('close')} className={`${secondaryButtonClass} size-12 shrink-0 !p-0`}><X aria-hidden className="size-5" /></Link>
+      <div className="min-w-0 flex-1">
+        <h1 className="text-md font-bold">{data.title}</h1>
+        <p className="text-xs text-faint">{v6t('progress', { n: step + 1, total: data.questions.length })}</p>
+      </div>
     </header> : <h1 className="text-2xl font-bold">{data.title}</h1>}
-    {/* iOS paints native <progress> in system green and ignores accent-color. */}
-    <div role="progressbar" aria-label={data.title} aria-valuemin={1} aria-valuemax={data.questions.length} aria-valuenow={step+1}
-      className="h-2 w-full overflow-hidden rounded-full bg-surface-raised">
-      <div className="h-full rounded-full bg-lime transition-[width]" style={{ width: `${((step+1)/data.questions.length)*100}%` }} />
-    </div>
+    {v6 ? <ProgressBar thin value={step + 1} max={data.questions.length} aria-label={data.title}
+      aria-valuetext={v6t('progress', { n: step + 1, total: data.questions.length })} />
+      : /* iOS paints native <progress> in system green and ignores accent-color. */
+      <div role="progressbar" aria-label={data.title} aria-valuemin={1} aria-valuemax={data.questions.length} aria-valuenow={step+1}
+        className="h-2 w-full overflow-hidden rounded-full bg-surface-raised">
+        <div className="h-full rounded-full bg-lime transition-[width]" style={{ width: `${((step+1)/data.questions.length)*100}%` }} />
+      </div>}
     <form onSubmit={e => {e.preventDefault();void advance();}}>
       <fieldset disabled={state === 'sending' || uploading}>
+        <Wrap v6={v6}>
         {v6 && q.type === 'photos' ? <div className="space-y-card-gap">
           <h2 className="font-display text-h font-semibold">{locale === 'en' ? q.label_en.trim() || q.label_ar : q.label_ar}</h2>
-          <div className="glass flex aspect-[3/4] flex-col items-center justify-center gap-card-gap rounded-card border border-line-soft p-card text-muted">
-            <CameraIcon aria-hidden className="size-8" /><p className="text-sm">{v6t('photo')}</p>
+          <div className="recessed flex aspect-[3/2] min-h-fit flex-wrap content-center items-center justify-center gap-stack rounded-control p-card text-muted">
+            <div className="flex w-full flex-col items-center gap-inline text-center"><CameraIcon aria-hidden className="size-8" /><p className="text-sm">{v6t('photo')}</p></div>
             <label className="glass flex min-h-12 cursor-pointer items-center rounded-full border border-line-soft px-page-x">{v6t('camera')}
               <input type="file" accept="image/*" capture="user" className="sr-only" aria-label={v6t('camera')} onChange={event => void photos(event.target.files)} /></label>
             <label className="glass flex min-h-12 cursor-pointer items-center rounded-full border border-line-soft px-page-x">{v6t('gallery')}
               <input type="file" accept="image/*" multiple className="sr-only" aria-label={v6t('gallery')} onChange={event => void photos(event.target.files)} /></label>
           </div>
         </div> : <QuestionField key={q.id} question={{...q,required:q.type === 'photos' && draft[q.id]?.photo_paths.length ? false : q.required}}
-          locale={locale} style={style} value={draft[q.id]?.value ?? null} onChange={value => update(value)} onPhotos={files => void photos(files)} />}
+          locale={locale} style={style} value={draft[q.id]?.value ?? null} onChange={value => update(value)} onPhotos={files => void photos(files)} playerCard={v6} />}
         {q.type === 'photos' && !!draft[q.id]?.photo_paths.length && <p className="text-sm text-muted">{t('savedPhotos')}</p>}
         {uploading && <p role="status">{t('upload')}</p>}
         {error && <p role="alert" className="py-stack text-danger">{error}</p>}
+        </Wrap>
         <div className="mt-card-gap flex gap-stack">
           {(step>0 || v6) && <Button type="button" onClick={() => {if (step > 0) setStep(step-1);setError('');}} disabled={v6 && step === 0}
-            variant={(v6) ? 'secondary' : 'secondary'} block={false} className={v6 ? "min-h-12 flex-1 px-page-x disabled:opacity-40" : "min-h-12 px-page-x"}>{v6 ? v6t('back') : t('previous')}</Button>}
-          <Button type="submit" variant={(v6) ? 'primary' : 'primary'} block={false} className={v6 ? "min-h-12 flex-[2] px-page-x font-semibold" : "min-h-12 flex-1 px-page-x font-bold"}>
+            variant="secondary" block={false} className={v6 ? "min-h-12 px-page-x" : "min-h-12 px-page-x"}>{v6 ? v6t('back') : t('previous')}</Button>}
+          <Button type="submit" variant="primary" size={v6 ? 'lg' : 'md'} block={false} className={v6 ? "flex-1 px-page-x" : "min-h-12 flex-1 px-page-x font-bold"}>
             {state === 'sending' ? t('submitting') : error ? t('retry') : step === data.questions.length-1 ? t('finish') : t('next')}</Button>
         </div>
       </fieldset>
     </form>
     {v6 && <p className="text-center text-micro text-faint">{v6t('offline')}</p>}
   </section>;
+}
+
+// The flag-off check-in keeps its original markup; only the workspace look wraps each question in a card.
+function Wrap({ v6, children }: { v6: boolean; children: ReactNode }) {
+  return v6 ? <fieldset className={'glass rounded-card p-card [&_label:has(:checked)]:border-lime [&_label:has(:checked)]:bg-lime-soft [&_label:has(:checked)]:text-lime [&_label:has(:focus-visible)]:outline-2 [&_label:has(:focus-visible)]:outline-lime'}>{children}</fieldset> : <>{children}</>;
 }

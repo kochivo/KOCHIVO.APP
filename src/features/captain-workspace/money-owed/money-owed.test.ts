@@ -21,6 +21,14 @@ it('renders the total, all reason pills, missing-price label and links to player
   expect(html).toContain('/captain/players/a');
   expect(html).toContain('2,000');
 });
+it('uses a shared total strip and distinguishes upcoming and overdue row tones', () => {
+  const html = render();
+  expect(html).toContain('hairline-cells');
+  expect(html).toContain('tone-warn');
+  expect(html).toContain('tone-danger');
+  expect(html).toContain('tone-info');
+  expect(html).toContain('min-h-14');
+});
 it('links the home stat to billing and shows only the selected player in their file', () => {
   expect(render(data, 'home')).toContain('/captain/billing');
   expect(render(data, 'home')).toContain('جنيه مستني من 4 لاعبين');
@@ -34,4 +42,11 @@ it('shows an empty state when nobody owes and still shows upcoming subscriptions
   expect(html).toContain('مفيش مبالغ مستنية');
   expect(html).not.toContain('جنيه مستني من 0');
   expect(render({ ...data, count: 0, total: 0, unpriced: 0, rows: data.rows.slice(4) })).toContain('قريب');
+});
+it('keeps the original player rows and status pills', () => {
+  const html = render(data, 'player', 'a');
+  expect(html).toContain('class="flex flex-wrap items-center gap-stack p-card"');
+  expect(html).toContain('class="rounded-full px-stack py-inline text-xs bg-warn-soft text-warn"');
+  expect(html).not.toContain('tone-danger');
+  expect(html).not.toContain('hairline-cells');
 });

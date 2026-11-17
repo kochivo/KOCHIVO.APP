@@ -17,7 +17,9 @@ describe('workspace ranking list', () => {
     const html = render([player]);
     expect(html).toContain('href="/captain/players/player-1"');
     expect(html).toContain('Mona Ali');
-    expect(html).toContain('6 workouts · 84 points');
+    expect(html).toContain('6 workouts');
+    expect(html).toContain('84 points');
+    expect(html).toContain('tabular-nums');
     expect(html).not.toContain('120 points');
     expect(html).toContain('aria-label="Bronze"');
   });

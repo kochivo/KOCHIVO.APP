@@ -45,8 +45,8 @@ export function ConversationScreen(props: ConversationProps) {
     <PageBarTitle title={t('title')} />
     {(error || resource.error || !captainId) && <ErrorState message={t('error')} retryLabel={t('retry')} onRetry={() => error || !captainId ? router.refresh() : void resource.retry()} />}
     {!rows ? !error && !resource.error && captainId && <LoadingState variant="list" aria-label={t('loading')} /> :
-      <div className="grid items-start gap-stack min-[760px]:grid-cols-[270px_minmax(0,1fr)]">
-        <div className={chatOpen ? 'hidden min-[760px]:block' : ''}><ConversationList rows={rows} selected={currentId} onSelect={choose} /></div>
+      <div className="grid items-stretch gap-card-gap min-[760px]:grid-cols-[minmax(12rem,1fr)_minmax(0,2fr)]">
+        <div className={chatOpen ? 'hidden min-[760px]:block' : 'min-w-0'}><ConversationList rows={rows} selected={currentId} onSelect={choose} /></div>
         <div className={chatOpen ? 'min-w-0' : 'hidden min-w-0 min-[760px]:block'}>
           {current ? (desktop || chatOpen) && <Pane key={current.playerId} player={current} captainId={captainId} at={at} onGuard={onGuard} onUpdate={onUpdate}
             onBack={() => { if (guard.current()) setChatOpen(false); }} />

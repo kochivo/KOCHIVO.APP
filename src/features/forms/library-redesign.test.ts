@@ -1,10 +1,12 @@
-import { isValidElement } from 'react';
+import { createElement, isValidElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import type { ReactElement, ReactNode } from 'react';
 import { beforeEach, expect, it, vi } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { AppDatabase } from '@/types/app-database';
 import { FormsLibraryPage } from './components/forms-library-page';
 import { FormsLibraryEntry } from './components/forms-library-entry';
+import { V11LibraryList } from './components/v11-library-list';
 import type { AssessmentLibraryData } from './data/assessment-library';
 import { templateCopyForAction } from './template-copy';
 
@@ -45,4 +47,17 @@ it('reuses the same draft after a reload and preserves the saved captain edits',
 
 it('rejects invalid copy keys before opening an autosaving editor', async () => {
   await expect(visit({ template: 'checkin', draft: 'invalid' })).rejects.toThrow('NOT_FOUND');
+});
+
+it('shows the question count and distinct recipients on a form card', async () => {
+  const template = await templateCopyForAction('checkin', captain, action, 'en');
+  if (!template) throw new Error('Missing check-in template');
+  const form = { ...template, title: 'Weekly review', questions: template.questions.slice(0, 2) };
+  const html = renderToStaticMarkup(createElement(V11LibraryList, { locale: 'en', data: {
+    ...data, forms: [form], byForm: { [form.id]: { active: 0, sent: 8, answered: 3, recipients: 4, averageHours: null } },
+  } }));
+  expect(html).toContain('Weekly review');
+  expect(html).toContain('2 questions');
+  expect(html).toContain('4 players');
+  expect(html).toContain('3/8');
 });

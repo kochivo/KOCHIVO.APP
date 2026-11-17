@@ -39,7 +39,7 @@ export function TaskCompose({ onSend, disabled }: { disabled: boolean;
       {recording ? <span role="status" className="min-w-0 flex-1 text-xs text-muted">{t('recording')}</span> :
         <input id="task-reply" aria-label={t('placeholder')} placeholder={t('placeholder')} maxLength={1000} value={body} disabled={disabled}
           onChange={event => setBody(event.target.value)} className={`${editableFieldClass} min-h-12 min-w-0 flex-1 bg-surface text-sm outline-none`} />}
-      <Button disabled={blocked || (!body.trim() && state.status !== 'recorded')} type="submit" variant={'primary'} block={false} className={"flex min-h-12 shrink-0 items-center gap-inline px-stack text-xs font-semibold disabled:opacity-50"}>
+      <Button disabled={blocked || (!body.trim() && state.status !== 'recorded')} type="submit" variant="secondary" block={false} className={"flex min-h-12 shrink-0 items-center gap-inline px-stack text-xs font-semibold disabled:opacity-50"}>
         <KoSend aria-hidden className="size-4" />{t('send')}</Button>
     </form>
   </div>;

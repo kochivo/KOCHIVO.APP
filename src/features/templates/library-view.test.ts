@@ -1,4 +1,5 @@
 import { createElement } from 'react';
+import type { ReactNode } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, expect, it, vi } from 'vitest';
 import { LocaleProvider } from '@/core/i18n/client';
@@ -6,6 +7,8 @@ import { LibraryView } from './components/library-view';
 import type { LibraryTemplate } from './library-types';
 import { messages } from './messages';
 import { createT } from '@/core/i18n/messages';
+
+vi.mock('@/ui/page-bar-actions', () => ({ PageBarActions: ({ children }: { children: ReactNode }) => children }));
 
 const actions = () => ({ onOpen() {}, onPreview() {}, onAssign() {}, onCopy() {}, onRename() {}, onDelete() {}, onArchive() {} });
 afterEach(() => vi.unstubAllEnvs());
@@ -17,7 +20,10 @@ it('uses the engraved add action only with the workspace flag', () => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
   const v6 = render('program', []);
   expect(v6).not.toContain('lucide-plus');
-  expect(v6.match(/<pattern /g)).toHaveLength(1);
+  const primary = v6.match(/<button[^>]*control-primary[^>]*>[\s\S]*?<\/button>/g);
+  expect(primary).toHaveLength(1);
+  expect(primary?.[0]).toContain('<pattern');
+  expect(v6).toContain('role="radiogroup"');
 });
 function render(kind: 'program' | 'nutrition', templates: LibraryTemplate[], locale: 'ar' | 'en' = 'ar') {
   return renderToStaticMarkup(createElement(LocaleProvider, { locale }, createElement(LibraryView, {

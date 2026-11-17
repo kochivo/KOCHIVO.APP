@@ -58,8 +58,8 @@ export function ExerciseVideo({ url, name, compact = false }: { url?: string | n
     </div> : <>
       <Button id={id} type="button" variant="secondary" aria-disabled={unavailable} onClick={() => { if (!unavailable) { setLoaded(false); setStalled(false); setOpened(true); } }}
         aria-label={`${t('open')}: ${name}`} aria-haspopup="dialog"
-        className={compact ? 'inline-flex min-h-12 items-center gap-inline' : 'relative flex aspect-video w-full items-center justify-center overflow-hidden rounded-card bg-surface-raised p-card'}>
-        <span className={`grid place-items-center rounded-full ${compact ? 'size-5' : 'size-16'} ${unavailable ? 'bg-surface text-muted' : 'bg-lime text-on-lime'}`}>
+        className={compact ? 'inline-flex min-h-12 items-center gap-inline' : 'glass relative flex aspect-video w-full items-center justify-center overflow-hidden rounded-card p-card'}>
+        <span className={`grid place-items-center rounded-full ${compact ? 'size-5' : 'size-12'} ${compact && !unavailable ? 'bg-lime text-on-lime' : 'text-muted'}`}>
           <Play aria-hidden className={compact ? 'size-3' : 'size-7'} fill="currentColor" />
         </span>
         <span className={compact ? 'text-xs' : 'absolute start-stack top-stack rounded-full border border-line-soft bg-bg-deep/80 px-stack py-inline text-micro text-ink'}>{t('coach')}</span>

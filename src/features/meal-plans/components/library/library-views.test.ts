@@ -33,3 +33,24 @@ it('distinguishes an empty library from no filter results', () => {
   expect(render(createElement(FoodResults, { ...props, empty: true }))).toContain('Your library is empty');
   expect(render(createElement(FoodResults, { ...props, empty: false }))).toContain('No foods match these filters');
 });
+it('renders the food macros with their distinct tones and keeps row actions available', () => {
+  const html = render(createElement(FoodResults, {
+    foods: [{ ...food, uses: 0 }], cards: false, favorites: new Set<string>(), empty: false,
+    onSelect() {}, onAdd() {}, onFavorite() {},
+  }));
+  expect(html).toMatch(/text-lime[^>]*>.*15/);
+  expect(html).toMatch(/text-info[^>]*>.*10/);
+  expect(html).toMatch(/text-warn[^>]*>.*5/);
+  expect(html).toContain('Add to plan');
+});
+it('shows nutrition for the listed portion without changing the catalog values', () => {
+  const entry = { ...food, uses: 0, units: [{ key: 'half', name_ar: 'نص طبق', name_en: 'Half plate', grams: 50 }] };
+  const html = render(createElement(FoodResults, {
+    foods: [entry], cards: false, favorites: new Set<string>(), empty: false,
+    onSelect() {}, onAdd() {}, onFavorite() {},
+  }), 'ar');
+  expect(html).toContain('نص طبق · 50 جم');
+  expect(html).toContain('</span>60</td>');
+  expect(html).toContain('</span>7.5</td>');
+  expect(entry.kcal).toBe(120);
+});

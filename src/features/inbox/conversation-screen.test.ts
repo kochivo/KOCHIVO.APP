@@ -23,7 +23,7 @@ it('shows the list first on mobile without mounting a thread that could mark mes
   const html = render();
   expect(html).toContain('علي');
   expect(html).not.toContain('data-chat-pane');
-  expect(html).toContain('min-[760px]:grid-cols-[270px_minmax(0,1fr)]');
+  expect(html).toContain('min-[760px]:grid-cols-[minmax(12rem,1fr)_minmax(0,2fr)]');
 });
 it('opens the first conversation on desktop and puts the title only in the page bar', () => {
   state.desktop = true;

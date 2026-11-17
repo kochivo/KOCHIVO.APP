@@ -16,7 +16,7 @@ export function ExerciseLightbox({ src, name, large = false, thumbnail = false, 
   const close = () => dialog.current?.close();
   return <>
     <button type="button" aria-label={t('enlargeExerciseImage', { name })} onClick={() => dialog.current?.showModal()}
-      className={focus ? 'relative block h-[210px] w-full overflow-hidden rounded-[28px] bg-exercise-media motion-reduce:hidden' : thumbnail ? 'relative block size-16 overflow-hidden rounded-2xl bg-exercise-media motion-reduce:hidden' : large ? 'relative block aspect-[16/10] w-full cursor-pointer overflow-hidden rounded-card bg-ink motion-reduce:hidden' : 'relative block shrink-0 cursor-pointer rounded-control transition-transform hover:scale-105 motion-reduce:hidden motion-reduce:transition-none'}>
+      className={focus ? 'glass relative block aspect-video w-full overflow-hidden rounded-card motion-reduce:hidden' : thumbnail ? 'relative block size-16 overflow-hidden rounded-2xl bg-exercise-media motion-reduce:hidden' : large ? 'relative block aspect-[16/10] w-full cursor-pointer overflow-hidden rounded-card bg-ink motion-reduce:hidden' : 'relative block shrink-0 cursor-pointer rounded-control transition-transform hover:scale-105 motion-reduce:hidden motion-reduce:transition-none'}>
       <Image src={src} alt="" width={large || focus ? 480 : 84} height={large || focus ? 300 : 84} unoptimized loading="eager" decoding="async" className={large || thumbnail || focus ? 'size-full object-contain' : 'rounded-control'} />
       <span aria-hidden className="absolute bottom-1 end-1 grid size-6 place-items-center rounded-full bg-bg/75 text-ink">
         <Maximize2 className="size-3.5" />

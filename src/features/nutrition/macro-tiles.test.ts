@@ -11,8 +11,11 @@ it('shows excess calories and all three macro bars', () => {
   expect(html).toContain('Calories');
   expect(html).toContain('Protein');
   expect(html).toContain('Over 340');
-  expect(html).toContain('aria-label="Carbs"');
-  expect(html).toContain('aria-label="Fat"');
+  expect(html).toContain('hairline-cells');
+  expect(html).toContain('>Carbs</span>');
+  expect(html).toContain('>Fat</span>');
+  expect(html.match(/role="progressbar"/g)).toHaveLength(3);
+  expect(html).toContain('h-1 overflow-hidden');
   expect(html).toContain('aria-valuenow="100"');
   expect(html).toContain('text-warn');
 });
@@ -22,5 +25,6 @@ it('shows calories remaining from the assigned target', () => {
     eaten: { kcal: 1240, protein: 72, carbs: 150, fat: 38 }, target: { kcal: 2900, protein: 190, carbs: 360, fat: 78 },
   })));
   expect(html).toContain('1,660');
+  expect(html).toContain('engraved');
   expect(html).toContain('calories left of 2,900');
 });

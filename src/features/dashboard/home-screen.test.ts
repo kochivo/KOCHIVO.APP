@@ -85,6 +85,16 @@ it('renders four real tiles, the weekly chart and join empty state', async () =>
   expect(html).not.toContain('هيخلص اشتراكهم');
   expect(html).not.toContain('لاعب جديد عايز ينضم');
 });
+it.each([0, 1])('reserves the primary action for the frame and keeps side features with %i players', async count => {
+  const html = await render(count ? [player] : []);
+  expect(html).not.toContain('control-primary');
+  expect(html).toContain('hairline-cells');
+  expect(html).toContain('min-[1100px]:grid-cols-');
+  expect(html).toContain('finder-heading');
+  expect(html).toContain('alerts-heading');
+  expect(html).toContain('لسه مفيش نشاط');
+  if (!count) expect(html).toContain('data-tour="captain-home"');
+});
 it('uses the exact outstanding count for the hero estimate even when only part of the review list is loaded', async () => {
   state.count = 7;
   const html = await render([player]);
@@ -109,7 +119,8 @@ it('names the first two urgent tasks in the hero and shows only the first five r
   const html = await render([player]);
   expect(html).toContain('ابدأ بفيديو محمد، وفيديو يوسف.');
   expect(html).toContain('18 دقيقة');
-  expect(html.match(/<li\b/g)).toHaveLength(5);
+  const tasksCard = html.slice(html.indexOf('>المهام</h2>')).split('</section>')[0] ?? '';
+  expect(tasksCard.match(/<li\b/g)).toHaveLength(5);
   expect(html).not.toContain('كريم');
 });
 it('shows the names and count of pending renewal payments and links them to billing', async () => {

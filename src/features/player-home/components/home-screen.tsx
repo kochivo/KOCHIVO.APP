@@ -86,19 +86,22 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
       <SyncPill state={!online ? 'offline' : parked && parked > 0 ? 'attention' : pending === undefined || pending > 0 ? 'pending' : 'synced'} pending={pending}
         onRetry={() => { void retryParked(localDb()).catch(onError); }} />
     </header>;
-  return <main data-mood={rest ? 'rest' : undefined} data-tour-ready={Boolean(now && status !== 'loading' && (!snapshot || (sessions && weekSessions)))}
-    className={v6 ? 'mx-auto flex max-w-lg flex-col gap-stack bg-bg px-page-x pt-card pb-[104px] [font-family:var(--font-alexandria),var(--font-manrope),sans-serif]' : 'mx-auto max-w-lg space-y-card-gap px-page-x pt-section pb-32'}>
-    {!v6 && statusHeader}
+  const weekStrip = <WeekStrip today={today} selected={selectedDate} nextDays={buildWeek(localDate(nextWeekAt, 'UTC'), snapshot?.training_days ?? [], [], locale, snapshot ?? undefined)} onSelect={date => setSelection({ today, date })} days={buildWeek(today, snapshot?.training_days ?? [],
+    weekSessions?.filter((session) => snapshot?.days.some((day) => day.id === session.program_day_id)) ?? [], locale, snapshot ?? undefined)} />;
+  const dailyExtras = <>
     {today && <CycleEntry playerId={playerId} today={today} />}
     {now && <RamadanSlot now={now} playerId={playerId} duration={day ? estimateMinutes(day.exercises) + warmupDuration(day) + (day.cardio ?? []).reduce((sum, block) => sum + block.minutes, 0) : undefined} />}
+  </>;
+  return <main data-mood={rest ? 'rest' : undefined} data-tour-ready={Boolean(now && status !== 'loading' && (!snapshot || (sessions && weekSessions)))}
+    className={v6 ? 'mx-auto flex max-w-lg flex-col gap-card-gap px-page-x pt-card [font-family:var(--font-alexandria),var(--font-manrope),sans-serif]' : 'mx-auto max-w-lg space-y-card-gap px-page-x pt-section pb-32'}>
+    {!v6 && statusHeader}
+    {!v6 && dailyExtras}
     {failed && (!snapshot || localError) ? <ErrorState message={t('couldntLoadYourProgram')} retryLabel={t('tryAgain')} onRetry={() => {
       setLocalError(false); setRetryKey((value) => value + 1); void retry();
     }} /> : !now || status === 'loading' || (snapshot && (!sessions || !weekSessions)) ? <LoadingState variant="cards" /> : <>
       {v6 && <>
         <V3Home weightKg={weightKg} now={now} today={today} firstName={firstName} playerId={playerId} snapshot={snapshot} day={day}
           rest={rest} sessions={sessions ?? []} weekSessions={weekSessions ?? []} onPreview={date => setSelection({ today, date })} />
-        <p className="mt-section text-row text-muted">{t('homeMore')}</p>
-        {statusHeader}
       </>}
       <div hidden={selectedDate !== today} className="space-y-card-gap">
       {v6 ? <>
@@ -116,16 +119,17 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
       <PlayerReadiness weightKg={weightKg} playerId={playerId} today={today} rest={false} onDecisionChange={setDecision} />
       </>}
       </div>
-      <WeekStrip today={today} selected={selectedDate} nextDays={buildWeek(localDate(nextWeekAt, 'UTC'), snapshot?.training_days ?? [], [], locale, snapshot ?? undefined)} onSelect={date => setSelection({ today, date })} days={buildWeek(today, snapshot?.training_days ?? [],
-        weekSessions?.filter((session) => snapshot?.days.some((day) => day.id === session.program_day_id)) ?? [], locale, snapshot ?? undefined)} />
+      {weekStrip}
       <div id="home-day-preview" key={selectedDate} className={selectedDate !== today ? 'motion-safe:animate-[surface-in_180ms_ease-out] motion-reduce:animate-none' : undefined}>
       {selectedDate !== today ? <DayPreviewCard date={selectedDate} {...preview} /> :
         snapshot && weekly && (!day || day.is_rest_day) ? <WeeklyRestCard snapshot={snapshot} today={today} /> :
         snapshot && day ? <TodayCard day={day} rest={Boolean(rest)} /> :
         <EmptyState icon={Dumbbell} title={t('yourProgramIsBeingPrepared')} body={t('yourCoachIsPreparingYourProgramIt')} secondary={{ label: t('messageCoach'), href: '/player/captain' }} />}
       </div>
+      {v6 && statusHeader}
       {failed && snapshot && <p className="text-sm text-muted">{t('lastUpdatedAWhileAgo')}</p>}
     </>}
+    {v6 && dailyExtras}
     {captainWorkspaceEnabled() && <PendingForms layout="home" />}
     <NutritionSlot date={selectedDate || undefined} />
   </main>;

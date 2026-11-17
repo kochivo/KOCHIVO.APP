@@ -47,7 +47,8 @@ export function DayEditor({ day, update, usedExerciseIds, first = false, last = 
   </Button>;
   const summary = daySummary(day);
   const title = day.weekday != null ? t(weekdayKeys[day.weekday] ?? 'sat') : day.title || t('newDay');
-  return <section aria-label={t('todaysExercises')} className="glass min-w-0 space-y-card-gap rounded-card p-card sm:p-section">
+  return <div className="grid min-w-0 items-start gap-card-gap xl:grid-cols-[minmax(0,1fr)_16rem]">
+    <section aria-label={t('todaysExercises')} className="glass min-w-0 space-y-card-gap rounded-card p-card">
     <div className="flex items-center justify-between gap-stack">
       <h2 id={`day-title-${day.id}`} tabIndex={-1} className="min-w-0 break-words text-xl font-bold">{title}</h2>
       {day.weekday == null && <BuilderMenu id={`day-menu-${day.id}`} fallbackId="program-days-heading" label={t('dayOptions', { name: title })} name={title}
@@ -58,14 +59,6 @@ export function DayEditor({ day, update, usedExerciseIds, first = false, last = 
             onClick: () => update(draft => moveDay(draft, day.id, 1)) },
         ]} />}
     </div>
-    <TextField label={t('dayName')} placeholder={t('dayPlaceholder')} maxLength={60} value={day.title} onChange={event => update(draft => renameDay(draft, day.id, event.target.value))} />
-    {day.weekday != null && <label className="flex min-h-12 items-center gap-stack">
-      <input type="checkbox" className="size-6 accent-lime" checked={rest} onChange={event => {
-        const checked = event.target.checked;
-        if (checked && (day.exercises.length || cardio.length)) setConfirmRest(true);
-        else update(draft => setRestDay(draft, day.id, checked, false));
-      }} />{t('setRest')}
-    </label>}
     {confirmRest && <RestConfirmation onCancel={() => setConfirmRest(false)}
       onConfirm={() => { update(draft => setRestDay(draft, day.id, true, true)); setConfirmRest(false); }} />}
     {rest ? <div className="glass flex min-h-32 items-center justify-center gap-stack rounded-card border border-dashed border-line p-card text-muted">
@@ -75,7 +68,7 @@ export function DayEditor({ day, update, usedExerciseIds, first = false, last = 
     {day.exercises.length === 0 && <EmptyState icon={Dumbbell} title={t('addTheFirstExercise')} body={t('emptyBody')}
       action={{ label: t('addExercise'), onClick: () => setLibraryOpen(true) }} />}
     <p aria-live="polite" aria-atomic="true" className="sr-only">{announcement}</p>
-    <ol ref={listRef} className="space-y-card-gap">{day.exercises.map((row, index) => <li key={row.id} style={rowStyle(index)}
+    <ol ref={listRef} className="divide-y divide-line-soft">{day.exercises.map((row, index) => <li key={row.id} style={rowStyle(index)}
       className={draggingId === row.id ? 'select-none' : draggingId ? 'transition-transform duration-150 motion-reduce:transition-none' : ''}>
       <ExerciseRow row={row} first={index === 0} last={index === day.exercises.length - 1}
       dragProps={handleProps(row.id)} dragging={draggingId === row.id}
@@ -104,5 +97,16 @@ export function DayEditor({ day, update, usedExerciseIds, first = false, last = 
       onClose={() => setLibraryOpen(false)} onAdd={exercise => {
       const id = uuidv7(); update(draft => addExercise(draft, day.id, exercise, id));
     }} />}
-  </section>;
+  </section>
+  <aside className="glass min-w-0 space-y-stack rounded-card p-card">
+    <TextField label={t('dayName')} placeholder={t('dayPlaceholder')} maxLength={60} value={day.title} onChange={event => update(draft => renameDay(draft, day.id, event.target.value))} />
+    {day.weekday != null && <label className="flex min-h-12 items-center gap-stack">
+      <input type="checkbox" className="size-6 accent-lime" checked={rest} onChange={event => {
+        const checked = event.target.checked;
+        if (checked && (day.exercises.length || cardio.length)) setConfirmRest(true);
+        else update(draft => setRestDay(draft, day.id, checked, false));
+      }} />{t('setRest')}
+    </label>}
+  </aside>
+  </div>;
 }

@@ -1,4 +1,6 @@
 'use client';
+import { ChevronLeft, Pencil } from 'lucide-react';
+import { WorkspaceAvatar } from './workspace-avatar';
 import { useCallback, useState } from 'react';
 import type { ReactNode } from 'react';
 import dynamic from 'next/dynamic';
@@ -48,25 +50,43 @@ export function CaptainSettings({ signOut }: { signOut?: ReactNode }) {
     <PageBarTitle title={legacy('settings')} />
     {!profile ? resource.error ? <ErrorState message={legacy('couldnTLoadSettings')} retryLabel={t('retry')} onRetry={() => void resource.retry()} />
       : <LoadingState variant="detail" /> : <>
-      <div className="grid items-start gap-stack min-[760px]:grid-cols-2">
-        <WorkspacePageCard profile={profile} edit={() => setPanel('profile')} />
-        <WorkspacePreferences profile={profile} update={setEdited} />
-      </div>
-      <div className="grid items-start gap-card-gap min-[760px]:grid-cols-2">
-        {now && ramadanSettingsVisible(localDate(now, timezone)) && <Ramadan />}
-        <SubscriptionEntry />
-        <PaymentMethods />
-        <FoodPricesEntry />
-        <PublicPage profile={profile} onSave={setEdited} />
-        <section className={card}><h2 className={heading}>{t('invite')}</h2><p className="text-row leading-[1.9] text-muted">{profile.invite_message || t('unset')}</p>
-          <Button variant="secondary" className="mt-stack min-h-12 rounded-full" onClick={() => setPanel('invite')}>{t('editInvite')}</Button></section>
-        <section className={card}><h2 className={heading}>{t('account')}</h2><div>
-          <WorkspaceFact label={t('profile')}><Button variant="secondary" className="min-h-12 rounded-full" onClick={() => setPanel('profile')}>{t('edit')}</Button></WorkspaceFact>
-          <WorkspaceFact label={t('whatsapp')}><span dir="ltr">{profile.social?.whatsapp?.replace('https://wa.me/', '+') || profile.phone || t('unset')}</span></WorkspaceFact>
-          <WorkspaceFact label={t('download')}><Button variant="secondary" className="min-h-12 rounded-full" onClick={() => setPanel('download')}>{t('downloadAction')}</Button></WorkspaceFact>
-          <WorkspaceFact label={t('signOut')}>{signOut}</WorkspaceFact>
-          {!demo && !demoExpiry(profile) && <WorkspaceFact label={t('delete')} danger><Button variant="secondary" className="min-h-12 rounded-full text-danger" onClick={() => setPanel('delete')}>{t('deleteAction')}</Button></WorkspaceFact>}
-        </div><Button variant="secondary" className="mt-inline min-h-12 rounded-full text-muted" onClick={() => setPanel('more')}>{t('more')}</Button></section>
+      <div className="grid items-start gap-card-gap min-[760px]:grid-cols-[minmax(0,1fr)_minmax(0,4fr)]">
+        <nav aria-label={legacy('settings')} className="glass overflow-hidden rounded-card">
+          {([
+            ['profile', t('account')], ['page', t('page')], ['language', t('language')],
+            ['subscription', t('subscription')], ['security', t('security')],
+          ] as const).map(([id, label]) => <a key={id} href={`#settings-${id}`}
+            className="press flex min-h-14 items-center justify-between gap-inline border-t border-line-soft px-card text-sm text-muted first:border-0 first:bg-surface-raised first:font-bold first:text-ink">
+            {label}<ChevronLeft aria-hidden className="dir-icon size-4 shrink-0" />
+          </a>)}
+        </nav>
+        <div className="grid min-w-0 gap-card-gap">
+          <section id="settings-profile" className="glass flex min-h-14 flex-wrap items-center gap-card-gap rounded-card p-card">
+            <WorkspaceAvatar profile={profile} />
+            <div className="min-w-0 flex-1">
+              <h2 className="text-title font-bold"><bdi>{profile.full_name}</bdi></h2>
+              {profile.location && <p className="text-sm text-muted">{profile.location}</p>}
+            </div>
+            <Button variant="secondary" onClick={() => setPanel('profile')}><Pencil aria-hidden className="size-4" />{t('edit')}</Button>
+          </section>
+          <div id="settings-page" className="space-y-card-gap">
+            <WorkspacePageCard profile={profile} edit={() => setPanel('profile')} />
+            <PublicPage profile={profile} onSave={setEdited} />
+            <section className={card}><h2 className={heading}>{t('invite')}</h2><p className="text-row leading-relaxed text-muted">{profile.invite_message || t('unset')}</p>
+              <Button variant="secondary" className="mt-stack" onClick={() => setPanel('invite')}>{t('editInvite')}</Button></section>
+          </div>
+          <div id="settings-language"><WorkspacePreferences profile={profile} update={setEdited} /></div>
+          <div id="settings-subscription"><SubscriptionEntry /></div>
+          {now && ramadanSettingsVisible(localDate(now, timezone)) && <Ramadan />}
+          <PaymentMethods />
+          <FoodPricesEntry />
+          <section id="settings-security" className={card}><h2 className={heading}>{t('security')}</h2><div>
+            <WorkspaceFact label={t('whatsapp')}><span dir="ltr">{profile.social?.whatsapp?.replace('https://wa.me/', '+') || profile.phone || t('unset')}</span></WorkspaceFact>
+            <WorkspaceFact label={t('download')}><Button variant="secondary" className="min-h-12 rounded-full" onClick={() => setPanel('download')}>{t('downloadAction')}</Button></WorkspaceFact>
+            {!demo && !demoExpiry(profile) && <WorkspaceFact label={t('delete')} danger><Button variant="secondary" className="min-h-12 rounded-full text-danger" onClick={() => setPanel('delete')}>{t('deleteAction')}</Button></WorkspaceFact>}
+          </div><Button variant="secondary" className="mt-inline min-h-12 rounded-control text-muted" onClick={() => setPanel('more')}>{t('more')}</Button></section>
+          <div className="[&_button]:min-h-12 [&_button]:w-full [&_button]:rounded-control! [&_button]:bg-surface! [&_button]:text-danger! [&_button]:shadow-none!">{signOut}</div>
+        </div>
       </div>
       {panel && <WorkspaceSheet title={t(panel)} onClose={() => setPanel(null)}>
         {panel === 'profile' && <Profile profile={profile} onSave={setEdited} quiet />}

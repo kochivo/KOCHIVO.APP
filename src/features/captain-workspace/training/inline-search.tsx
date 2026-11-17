@@ -15,7 +15,8 @@ import { CustomExercise } from './custom-exercise';
 import { removeCustom } from './data/editor-actions';
 import { Button } from '@/ui/button';
 
-export function InlineSearch({ day, onAdd, onLibraryChange, excluded = [], disabled = false }: {
+export function InlineSearch({ inputId, day, onAdd, onLibraryChange, excluded = [], disabled = false }: {
+  inputId?: string;
   day: DraftDay; onAdd: (row: LibraryExercise) => void; onLibraryChange: (row: LibraryExercise) => void;
   excluded?: string[]; disabled?: boolean;
 }) {
@@ -32,9 +33,9 @@ export function InlineSearch({ day, onAdd, onLibraryChange, excluded = [], disab
   const rows = suggestedExercises(day.title, [...day.exercises.map(row => row.exercise_id), ...excluded], suggestions.data ?? [], existing.split('|'));
   const results = search.data?.filter(row => !removed.includes(row.id) && !excluded.includes(row.id));
   return <div>
-    <label className="flex min-h-16 items-center gap-stack border-t border-dashed border-line px-page-x py-stack text-faint">
+    <label className="flex min-h-12 items-center gap-inline rounded-control border border-line-soft px-stack text-muted">
       <Search aria-hidden className="size-5 shrink-0" />
-      <input aria-label={t('search')} placeholder={t('search')} value={query} onChange={event => setQuery(event.target.value)}
+      <input id={inputId} aria-label={t('search')} placeholder={t('search')} value={query} onChange={event => setQuery(event.target.value)}
         className={`${editableFieldClass} min-h-12 min-w-0 flex-1 bg-surface text-xs text-ink outline-none placeholder:text-faint focus-visible:ring-1 focus-visible:ring-lime`} />
     </label>
     <Disclosure label={pt('exerciseLibrary')} className="mx-card-gap text-xs text-muted" onToggle={event => setBrowsing(event.currentTarget.open)}>

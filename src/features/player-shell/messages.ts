@@ -7,7 +7,7 @@ export const messages = defineMessages({
   ar: {
     subscriptionStartsOn: 'اشتراكك هيبدأ يوم {date}',
     waitingForPlans: 'مستني الأنظمة',
-    v6Food: 'الأكل', v6Progress: 'تطوري', v6Account: 'حسابي',
+    v6Today: 'النهارده', v6Food: 'الأكل', v6Progress: 'التقدم', v6Account: 'حسابي',
     instagram: 'إنستجرام', tiktok: 'تيك توك', facebook: 'فيسبوك', youtube: 'يوتيوب', x: 'إكس',
     backHome: "ارجع للرئيسية",
     "subscriptionEndsIn.zero": "اشتراكك بيخلص النهارده",
@@ -47,7 +47,7 @@ export const messages = defineMessages({
   en: {
     subscriptionStartsOn: 'Your subscription starts on {date}',
     waitingForPlans: 'Waiting for plans',
-    v6Food: 'Food', v6Progress: 'My progress', v6Account: 'My account',
+    v6Today: 'Today', v6Food: 'Food', v6Progress: 'Progress', v6Account: 'My account',
     instagram: 'Instagram', tiktok: 'TikTok', facebook: 'Facebook', youtube: 'YouTube', x: 'X',
     backHome: "Back to home",
     "subscriptionEndsIn.one": "Your subscription ends in {n} day",

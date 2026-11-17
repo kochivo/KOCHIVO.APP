@@ -3,9 +3,11 @@ import { useCallback, useState } from 'react';
 import Link from 'next/link';
 import { useLocale, useT } from '@/core/i18n/client';
 import { localDb, useLiveQuery } from '@/core/offline';
-import { useMealLogs, useNutritionSnapshot } from '@/features/nutrition';
+import { eatenTotals, targetsOf, useMealLogs, useNutritionSnapshot } from '@/features/nutrition';
 import { readDailyCheck, playerWaterGoalMl } from '@/features/readiness';
 import { ErrorState, LoadingState } from '@/ui';
+import { StatStrip } from '@/ui/stat-strip';
+import type { StatStripItem } from '@/ui/stat-strip';
 import { formatNumber } from '@/lib/format';
 import { starterText } from '@/lib/starter-text';
 import { ranksEnabled } from '@/lib/ranks-enabled';
@@ -35,44 +37,51 @@ export function HomeTiles({ weightKg, today, playerId, rest, streak, done, plann
   const next = nutrition.snapshot?.meals.find(meal => !logs.some(log => log.meal_id === meal.id &&
     log.log_date === today && log.completed_at && !log.deleted_at));
   const water = waterGlasses(row?.water_ml ?? 0, playerWaterGoalMl(nutrition.snapshot?.water_target_ml, weightKg));
-  const tile = 'glass-strong flex min-w-0 flex-col rounded-[24px] border-line-soft! bg-surface! p-card text-ink shadow-none backdrop-blur-none';
-  return <div className="grid grid-cols-2 gap-stack">
-    <Link href="/player/nutrition" className={`${tile} min-h-[136px] gap-stack`}>
-      <span className="text-row text-muted">{t('homeFood')}</span>
-      <svg width="60" height="60" viewBox="0 0 60 60" role="img" aria-label={t('homeFoodPercent', { percent: formatNumber(percent, locale) })}>
-        <circle cx="30" cy="30" r="25" fill="none" className="stroke-line" strokeWidth="7" />
-        <circle cx="30" cy="30" r="25" fill="none" className="stroke-lime" strokeWidth="7" strokeLinecap="round"
-          strokeDasharray={`${percent * Math.PI / 2} ${50 * Math.PI}`} transform="rotate(-90 30 30)" />
-        <text x="30" y="35" textAnchor="middle" className="fill-ink font-[family-name:var(--font-manrope)] text-sm font-extrabold">{t('homePercent', { percent: formatNumber(percent, locale) })}</text>
-      </svg>
-      <span className="text-xs text-muted">{!nutrition.snapshot?.meals.length ? t('yourCoachIsPreparingYourMealPlan') : next
-        ? t('homeNextMeal', { name: starterText(next.name, locale, nutrition.snapshot.title) }) : t('youveEatenAllYourMealsToday')}</span>
-    </Link>
-    <a href="#home-morning" onClick={() => { onWater?.(); document.getElementById('home-morning')?.setAttribute('open', ''); }}
-      className={`${tile} min-h-[136px] gap-stack`}>
-      <span className="text-row text-muted">{t('homeWater')}</span>
-      <span className="font-[family-name:var(--font-manrope)] text-stat font-extrabold text-water">
-        {formatNumber(water.done, locale)}<span className="text-base font-normal text-muted">{t('homeRatio', { done: '', planned: formatNumber(water.planned, locale) })}</span>
-      </span>
-      <span className="flex gap-inline" aria-hidden>{Array.from({ length: water.planned }, (_, index) =>
-        <span key={index} className={`h-2 flex-1 rounded ${index < water.done ? 'bg-water' : 'bg-line'}`} />)}</span>
-      <span className="text-xs text-muted">{t('homeGlasses')}</span>
-    </a>
-    {!rest && <>
-      <Link href="/player/history" className={`${tile} min-h-[120px] gap-inline`}>
-        <span className="text-row text-muted">{t('homeStreak')}</span>
-        {streak === undefined ? <span className="text-xs text-muted">{t('homeStreakUnavailable')}</span> :
-          <span className="font-[family-name:var(--font-manrope)] text-stat font-extrabold text-sore">{formatNumber(streak, locale)}</span>}
-        <span className="text-xs text-muted">{t('streakConsecutive')}</span>
+  const number = (value: number) => formatNumber(value, locale);
+  const ratio = (done: number, planned: number) => t('homeRatio', { done: number(done), planned: number(planned) });
+  const targetLabel = (value: number) => t('homeRatio', { done: '', planned: number(value) }).trim();
+  const waterStat: StatStripItem = {
+    label: t('homeWater'), value: ratio(water.done, water.planned), note: t('homeGlasses'),
+    percent: water.planned > 0 ? water.done / water.planned * 100 : undefined, tone: 'info',
+  };
+  const nutrients: StatStripItem[] = [];
+  if (summary && summary.targetKcal > 0) nutrients.push({
+    label: t('homeCalories'), value: number(summary.eatenKcal ?? 0), unit: targetLabel(summary.targetKcal),
+    percent, note: t('homePercent', { percent: number(percent) }),
+  });
+  if (nutrition.snapshot) {
+    const target = targetsOf(nutrition.snapshot).protein;
+    if (target > 0) {
+      const eaten = eatenTotals(nutrition.snapshot, logs, today).protein;
+      nutrients.push({ label: t('homeProtein'), value: number(Math.round(eaten)), unit: targetLabel(target), percent: eaten / target * 100 });
+    }
+  }
+  const week: StatStripItem[] = rest ? [] : [{
+    label: t('homeStreak'), value: streak === undefined ? <span className="text-xs">{t('homeStreakUnavailable')}</span> :
+      <span className="engraved">{number(streak)}</span>, note: t('streakConsecutive'),
+  }, {
+    label: t('homeWeek'), value: ratio(done, planned),
+    percent: planned > 0 ? done / planned * 100 : undefined,
+  }];
+  const openWater = () => { onWater?.(); document.getElementById('home-morning')?.setAttribute('open', ''); };
+  const rowClass = 'press flex min-h-12 items-center px-card py-stack text-xs text-muted';
+  return <div className="space-y-card-gap">
+    <StatStrip items={[...week, waterStat]} className={rest
+      ? '[&_p>span:first-child]:text-title'
+      : 'max-sm:[&&]:grid-cols-3! [&_p>span:first-child]:text-md [&_.engraved]:text-title'} />
+    <StatStrip items={nutrients} className="[&_p]:flex-wrap [&_p>span:first-child]:text-title" />
+    <section className="glass overflow-hidden rounded-card">
+      <Link href="/player/nutrition" className={rowClass}>
+        {!nutrition.snapshot?.meals.length ? t('yourCoachIsPreparingYourMealPlan') : next
+          ? t('homeNextMeal', { name: starterText(next.name, locale, nutrition.snapshot.title) }) : t('youveEatenAllYourMealsToday')}
       </Link>
-      {/* The rank page 404s while ranks are switched off, so the tile opens the workout history instead. */}
-      <Link href={ranksEnabled() ? "/player/rank" : "/player/history"} className={`${tile} min-h-[120px] gap-inline`}>
-        <span className="text-row text-muted">{t('homeMedal')}</span>
-        <span className="font-[family-name:var(--font-manrope)] text-stat font-extrabold text-gold-2">
-          {formatNumber(done, locale)}<span className="text-base font-normal text-muted">{t('homeRatio', { done: '', planned: formatNumber(planned, locale) })}</span>
-        </span>
-        <span className="text-xs text-muted">{t('homeWeek')}</span>
-      </Link>
-    </>}
+      <div className="flex flex-wrap border-t border-line-soft">
+        <a href="#home-morning" onClick={openWater} className={rowClass}>{t('homeWater')}</a>
+        {!rest && <>
+          <Link href="/player/history" className={rowClass}>{t('homeStreak')}</Link>
+          <Link href={ranksEnabled() ? '/player/rank' : '/player/history'} className={rowClass}>{t('homeMedal')}</Link>
+        </>}
+      </div>
+    </section>
   </div>;
 }

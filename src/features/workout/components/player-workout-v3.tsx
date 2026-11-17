@@ -1,9 +1,10 @@
 'use client';
 import { useState } from 'react';
-import { X } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { ProgressBar } from '@/ui/progress-bar';
 import { useLocale, useT } from '@/core/i18n/client';
 import { formatNumber } from '@/lib/format';
 import { ErrorState, LoadingState, SyncPill } from '@/ui';
@@ -38,7 +39,7 @@ export function PlayerWorkoutV3({ state, progress, workout, online, playerId }: 
   if (!state.day) return null;
   const index = state.day.exercises.findIndex(exercise => exercise.id === state.current?.exercise.id);
   // PlayerShell already contributes 12px above workout routes.
-  return <main style={{ fontFamily: 'var(--font-alexandria), var(--font-manrope), sans-serif' }} className={`mx-auto flex min-h-[calc(100dvh-12px)] max-w-lg flex-col gap-card-gap bg-bg px-page-x pt-[max(4px,calc(env(safe-area-inset-top)_-_12px))] ${inFocus || state.finished ? 'pb-section' : 'pb-[120px]'}`}>
+  return <main style={{ fontFamily: 'var(--font-alexandria), var(--font-manrope), sans-serif' }} className={`mx-auto flex min-h-[calc(100dvh-12px)] max-w-lg flex-col gap-card-gap px-page-x pt-[max(4px,calc(env(safe-area-inset-top)_-_12px))] ${inFocus || state.finished ? 'pb-section' : 'pb-[120px]'}`}>
     <p role="status" aria-live="polite" aria-atomic="true" className="sr-only">{restAnnouncement(state.rest.remaining, state.rest.endsAt !== null, t)}</p>
     <CycleEntry playerId={playerId} workout />
     {state.pr && <PrBurst key={state.pr.id} pr={state.pr} onDismiss={state.dismissPr} />}
@@ -46,11 +47,16 @@ export function PlayerWorkoutV3({ state, progress, workout, online, playerId }: 
       state.finished ? state.session ? <SessionFeedback key={state.session.id} sessionId={state.session.id} workout={workout}
       hasFeedback={state.session.session_rpe != null || Boolean(state.session.player_note)} /> : <DonePanel workout={workout} /> : inFocus ? <>
       <header className="flex items-center gap-stack">
-        <button type="button" aria-label={t('v3Close')} onClick={() => setStarted(false)} className="flex size-12 shrink-0 items-center justify-center rounded-full bg-surface-raised"><X aria-hidden className="size-5" /></button>
-        <div role="img" aria-label={t('v3ExerciseProgress', { current: formatNumber(index + 1, locale), total: formatNumber(state.day.exercises.length, locale) })} className="flex flex-1 gap-inline">
-          {state.day.exercises.map((exercise, position) => <span key={exercise.id} className={`h-1.5 flex-1 rounded-[3px] ${position <= index ? 'bg-lime' : 'bg-line'}`} />)}
+        <button type="button" aria-label={t('v3Close')} onClick={() => setStarted(false)} className="glass press flex size-12 shrink-0 items-center justify-center rounded-control"><ChevronRight aria-hidden className="dir-icon size-5" /></button>
+        <div className="min-w-0 flex-1">
+          <h2 className="truncate text-md font-bold"><bdi>{state.day.title}</bdi></h2>
+          <div className="flex flex-wrap items-center gap-x-inline text-micro text-muted">
+            <span>{t('v3ExerciseProgress', { current: formatNumber(index + 1, locale), total: formatNumber(state.day.exercises.length, locale) })}</span>
+            <WorkoutClock startedAt={startedAt ?? state.session?.started_at} quiet />
+          </div>
         </div>
-        <WorkoutClock startedAt={startedAt ?? state.session?.started_at} quiet />
+        <ProgressBar thin value={index + 1} max={state.day.exercises.length} className="w-1/4 shrink-0"
+          aria-label={t('v3ExerciseProgress', { current: formatNumber(index + 1, locale), total: formatNumber(state.day.exercises.length, locale) })} />
       </header>
       <WorkoutSet state={state} />
     </> : <WorkoutOverview state={state} progress={progress} playerId={playerId} onBack={() => router.push('/player')}

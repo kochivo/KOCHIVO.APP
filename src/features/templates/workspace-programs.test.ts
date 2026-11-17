@@ -41,5 +41,7 @@ describe('program weekday markers', () => {
     for (const day of ['حد', 'اتنين', 'أربع', 'خميس', 'جمعة']) expect(html).toContain(`${day}: راحة`);
     expect(html).toContain('ادّيه للاعب');
     expect(html).toContain('عدّل');
+    expect(html).toContain('<details');
+    expect(html).toContain('grid-cols-7');
   });
 });

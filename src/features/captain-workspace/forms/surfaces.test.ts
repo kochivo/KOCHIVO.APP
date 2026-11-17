@@ -23,6 +23,7 @@ it('highlights injuries and links back to training', () => {
   const html = renderToStaticMarkup(createElement(FormAnswers, { form, locale: 'en', trainingHref: '/captain/players/player/programs' }));
   expect(html).toContain('text-danger');
   expect(html).toContain('Previously: None');
+  expect(html).toContain('glass rounded-control');
   expect(html).toContain('href="/captain/players/player/programs"');
 });
 it('shows a neutral numeric delta for body fat', () => {

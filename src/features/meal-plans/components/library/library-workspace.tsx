@@ -5,7 +5,10 @@ import { useT } from '@/core/i18n/client';
 import { useResource } from '@/core/resource';
 import { Button } from '@/ui/button';
 import { Chip } from '@/ui/chip';
+import { Disclosure } from '@/ui/disclosure';
 import { LoadingState } from '@/ui/loading-state';
+import { Segmented } from '@/ui/segmented';
+import { Search } from 'lucide-react';
 import { PageBarTitle } from '@/ui/page-bar-title';
 import { PageBarActions } from '@/ui/page-bar-actions';
 import { KoPlus } from '@/ui/icons/ko-plus';
@@ -37,6 +40,8 @@ export function LibraryWorkspace() {
   const foods = resource.data?.foods ?? [];
   const favorites = useMemo(() => new Set(resource.data?.favorites ?? []), [resource.data?.favorites]);
   const filtered = filterFoods(foods, query, region, nutrition, favorites) as LibraryFood[];
+  const regional = region === 'all' || region === 'mine' || region === 'favorites' ? 'eg' : region;
+  const changeRegion = (key: RegionFilter) => { setRegion(key); setPage(0); };
   async function favorite(id: string) {
     if (pending.current.has(id)) return;
     pending.current.add(id);
@@ -49,18 +54,32 @@ export function LibraryWorkspace() {
     } catch { toast.error(bt('error')); }
     finally { pending.current.delete(id); }
   }
-  return <section className="grid gap-card-gap">
-    <PageBarTitle title={t('title')} /><PageBarActions><Button variant="secondary" onClick={() => setRecipe(true)}>{t('recipeNew')}</Button><Button id="new-library-food" onClick={() => setSelected(null)}><KoPlus aria-hidden className="size-5" />{bt('new')}</Button></PageBarActions>
-    <p className="text-sm text-muted">{t('subtitle')}</p>
-    <LibraryStats foods={foods} onSelect={setSelected} />
-    <label className="glass grid gap-inline rounded-card p-card"><span className="sr-only">{bt('search')}</span><input className="min-h-12 w-full rounded-control border border-line bg-surface px-stack" maxLength={100} placeholder={bt('search')} value={query} onChange={event => { setQuery(event.target.value); setPage(0); }} /></label>
-    <div className="flex flex-wrap items-center gap-inline"><span className="text-xs text-muted">{t('examples')}</span>{(['chicken', 'bread', 'meat'] as const).map(key => <Chip key={key} pressed={query === t(key)} onClick={() => { setQuery(t(key)); setPage(0); }}>{t(key)}</Chip>)}</div>
-    <div className="flex flex-wrap gap-inline">{regions.map(key => <Chip key={key} pressed={region === key} onClick={() => { setRegion(key); setPage(0); }}>{t(key)}</Chip>)}</div>
-    <div className="flex flex-wrap gap-inline">{nutrients.map(key => <Chip key={key} pressed={nutrition.includes(key)} onClick={() => { setNutrition(value => value.includes(key) ? value.filter(item => item !== key) : [...value, key]); setPage(0); }}>{t(key)}</Chip>)}<div className="ms-auto flex gap-inline">{(['table', 'cards'] as const).map(key => <Button key={key} variant="secondary" aria-pressed={cards === (key === 'cards')} onClick={() => setCards(key === 'cards')}>{t(key)}</Button>)}</div></div>
+  return <section className="grid min-w-0 gap-card-gap">
+    <PageBarTitle title={t('title')} subtitle={resource.data ? t('count', { count: foods.length }) : t('subtitle')} /><PageBarActions><Button variant="secondary" onClick={() => setRecipe(true)}>{t('recipeNew')}</Button><Button id="new-library-food" onClick={() => setSelected(null)}><KoPlus aria-hidden className="size-5" />{bt('new')}</Button></PageBarActions>
+    <div className="flex min-w-0 flex-wrap items-center gap-stack">
+      <label className="flex min-h-12 w-full min-w-0 items-center gap-inline rounded-control border border-line-soft bg-bg-deep px-stack min-[760px]:w-auto">
+        <span className="sr-only">{bt('search')}</span><Search aria-hidden className="size-4 shrink-0 text-muted" />
+        <input type="search" className="min-h-12 min-w-0 flex-1 bg-transparent text-sm" maxLength={100} placeholder={bt('search')} value={query} onChange={event => { setQuery(event.target.value); setPage(0); }} />
+      </label>
+      <Segmented aria-label={t('type')} value={region} className="max-w-full flex-wrap" options={[
+        { value: 'all', label: t('all') }, { value: regional, label: t(regional) }, { value: 'mine', label: t('mine') }, { value: 'favorites', label: t('favorites') },
+      ]} onChange={value => { const next = regions.find(key => key === value); if (next) changeRegion(next); }} />
+    </div>
+    <Disclosure label={t('moreFilters')} className="text-sm text-muted">
+      <div className="grid gap-stack">
+        <div className="flex flex-wrap items-center gap-inline"><span className="text-xs text-muted">{t('examples')}</span>{(['chicken', 'bread', 'meat'] as const).map(key => <Chip key={key} pressed={query === t(key)} onClick={() => { setQuery(t(key)); setPage(0); }}>{t(key)}</Chip>)}</div>
+        <div className="flex flex-wrap gap-inline">{regions.filter(key => key !== 'all' && key !== 'mine' && key !== 'favorites').map(key =>
+          <Chip key={key} pressed={region === key} onClick={() => changeRegion(key)}>{t(key)}</Chip>)}</div>
+        <div className="flex flex-wrap gap-inline">{nutrients.map(key => <Chip key={key} pressed={nutrition.includes(key)} onClick={() => { setNutrition(value => value.includes(key) ? value.filter(item => item !== key) : [...value, key]); setPage(0); }}>{t(key)}</Chip>)}
+          <div className="ms-auto flex gap-inline">{(['table', 'cards'] as const).map(key => <Button key={key} variant="secondary" aria-pressed={cards === (key === 'cards')} onClick={() => setCards(key === 'cards')}>{t(key)}</Button>)}</div>
+        </div>
+      </div>
+    </Disclosure>
     {(resource.status === 'loading' || resource.status === 'idle') && <LoadingState variant="list" />}
     {Boolean(resource.error) && <div role="alert"><p>{bt('error')}</p><Button variant="secondary" onClick={() => void resource.retry()}>{bt('retry')}</Button></div>}
     {resource.data && <><p className="text-xs text-muted">{t('count', { count: filtered.length })}</p><FoodResults foods={filtered.slice(page * 30, (page + 1) * 30)} cards={cards} favorites={favorites} empty={!foods.length} onSelect={setSelected} onAdd={food => setAdd({ food, grams: 100 })} onFavorite={id => void favorite(id)} /></>}
     <div className="flex gap-inline">{page > 0 && <Button variant="secondary" onClick={() => setPage(0)}>{bt('first')}</Button>}{(page + 1) * 30 < filtered.length && <Button variant="secondary" onClick={() => setPage(value => value + 1)}>{bt('next')}</Button>}{(query || region !== 'all' || nutrition.length > 0) && <Button variant="secondary" onClick={() => { setQuery(''); setRegion('all'); setNutrition([]); setPage(0); }}>{t('clear')}</Button>}</div>
+    <LibraryStats foods={foods} onSelect={setSelected} />
     {selected !== undefined && <FoodDrawer food={selected} onClose={() => setSelected(undefined)} onSaved={() => { setSelected(undefined); void resource.retry(); }}
       onMutation={(_, commit) => resource.mutate(current => ({ foods: (current?.foods ?? []).filter(food => food.id !== selected?.id), favorites: current?.favorites ?? [] }), commit)}
       onAdd={(food, grams) => { setSelected(undefined); setAdd({ food, grams }); }} />}

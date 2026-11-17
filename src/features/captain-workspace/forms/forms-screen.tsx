@@ -52,13 +52,13 @@ export function FormsScreen({ playerId, locale, review, sign }: {
   return <section aria-label={t('title')} className="space-y-card-gap">
     {captainWorkspaceEnabled() && <AssessmentScheduleEntry playerId={playerId} locale={locale} />}
     {resource.status === 'error' && <FormsState kind="error" locale={locale} retry={() => void resource.retry()} />}
-    <div className="grid items-start gap-section lg:grid-cols-[minmax(280px,1fr)_minmax(0,1.8fr)]">
+    <div className="grid items-start gap-card-gap min-[760px]:grid-cols-[minmax(12rem,1fr)_minmax(0,3fr)]">
       <FormsTimeline forms={resource.data} selectedId={selected?.snapshot.source.id} locale={locale} onSelect={select} disabled={reviewing} showLegacyReminder={!captainWorkspaceEnabled()} />
-      {selected && <div className={selectedId ? 'min-w-0' : 'min-w-0 hidden lg:block'}>
+      {selected && <div className={selectedId ? 'min-w-0' : 'min-w-0 hidden min-[760px]:block'}>
         <FormDetail key={selected.snapshot.source.id} form={selected} playerId={playerId} locale={locale}
           mutate={mutate} review={review} sign={sign} />
       </div>}
-      {selected && !selectedId && <p className="text-sm text-muted lg:hidden">{t('choose')}</p>}
+      {selected && !selectedId && <p className="text-sm text-muted min-[760px]:hidden">{t('choose')}</p>}
     </div>
   </section>;
 }

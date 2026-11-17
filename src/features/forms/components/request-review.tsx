@@ -30,7 +30,7 @@ export function RequestReview({data,locale,onReviewed}:{data:RequestData;locale:
       setPhotos(current => ({...current,[path]:result.data.signedUrl}));
     } catch {setError(true);}
   }
-  return <article className="glass-strong space-y-card-gap rounded-card p-card">
+  return <article className="glass space-y-card-gap rounded-card p-card">
     <h2 className="text-xl font-bold">{data.title}</h2>
     {!data.request.answered_at ? <p>{t('pendingAnswer')}</p> : <>
       {!data.answers.length && <p>{t('noAnswers')}</p>}
@@ -39,10 +39,10 @@ export function RequestReview({data,locale,onReviewed}:{data:RequestData;locale:
         const value = a?.value;
         const safe:QuestionValue = typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean'
           || Array.isArray(value) && value.every(v => typeof v === 'string') ? value : null;
-        return <div key={q.id}><QuestionField question={q} locale={locale} value={safe} readOnly />
-          {a?.photo_paths.map(path => <div key={path}>{photos[path]
+        return <div key={q.id} className="glass space-y-stack rounded-control p-stack"><QuestionField question={q} locale={locale} value={safe} readOnly />
+          {Boolean(a?.photo_paths.length) && <div className="grid gap-inline min-[760px]:grid-cols-2 xl:grid-cols-3">{a?.photo_paths.map(path => <div key={path}>{photos[path]
             ? <a href={photos[path]} target="_blank" rel="noreferrer" className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-page-x" })}>{t('photo')}</a>
-            : <Button variant="secondary" type="button" className="min-h-12" onClick={() => void sign(path)}>{t('photo')}</Button>}</div>)}</div>;
+            : <Button variant="secondary" type="button" className="min-h-12" onClick={() => void sign(path)}>{t('photo')}</Button>}</div>)}</div>}</div>;
       })}
       {data.request.reviewed_at ? <p>{t('reviewed')} · {data.request.captain_reply}</p> :
         <form onSubmit={e => {e.preventDefault();void review();}} className="space-y-stack">

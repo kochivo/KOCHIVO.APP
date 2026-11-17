@@ -36,9 +36,9 @@ export function EditorHeader({ playerId, playerName, remainingDays, template, ti
         {status === 'error' ? <Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-stack text-danger"} onClick={onRetry}>{tt('retry')}</Button> : t(status === 'saved' ? 'saved' : 'saving')}</span>
       {children}
       {!template && playerId && <Link prefetch={false} className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-page-x text-sm" })} href={`${base}/preview`}>{t('preview')}</Link>}
-      {template && <Button variant="secondary" disabled={disabled || busy} className="min-h-12 w-auto! rounded-full!" aria-live="polite"
+      {template && <Button variant={starting ? 'secondary' : 'primary'} block={false} disabled={disabled || busy} aria-live="polite"
         onClick={() => { setAsked(true); onRetry(); }}>{confirmed && <Check aria-hidden className="size-4 text-lime" />}{t(confirmed ? 'templateSaved' : 'saveTemplate')}</Button>}
-      <Button variant={starting ? 'secondary' : 'primary'} id={template ? 'assign-program' : undefined} disabled={disabled || busy} className="min-h-12 w-auto! rounded-full!" onClick={template ? onAssign : onSend}>{!template && <SendIcon aria-hidden className="size-4" />}{template ? t('assign') : tt('send')}</Button>
+      <Button variant={template || starting ? 'secondary' : 'primary'} block={false} id={template ? 'assign-program' : undefined} disabled={disabled || busy} onClick={template ? onAssign : onSend}>{!template && <SendIcon aria-hidden className="size-4" />}{template ? t('assign') : tt('send')}</Button>
     </header>
     {!template && playerId && <UnderlineTabs label={t('tabs')} items={([
       ['overview', base], ['training', `${base}/programs`], ['nutrition', `${base}/nutrition`], ['assessments', `${base}/assessments`], ['checkins', `${base}/checkins`],

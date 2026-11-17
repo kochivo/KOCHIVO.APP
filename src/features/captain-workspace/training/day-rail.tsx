@@ -14,7 +14,7 @@ import { messages } from './editor/messages';
 export function DayRail({ draft, selectedId, onSelect, update }: { draft: ProgramDraft; selectedId?: string; onSelect: (id: string) => void; update: Update }) {
   const t = useT(messages), pt = useT(programMessages), [showRest, setShowRest] = useState(false);
   const rests = draft.days.filter(day => day.is_rest_day);
-  return <nav aria-label={t('rail')} className="flex min-w-0 gap-inline overflow-x-auto min-[1001px]:sticky min-[1001px]:top-[75px] min-[1001px]:flex-col min-[1001px]:overflow-visible">
+  return <nav aria-label={t('rail')} className="glass flex min-w-0 gap-inline overflow-x-auto rounded-card p-inline @min-[760px]:flex-col">
     {draft.days.filter(day => !day.is_rest_day || day.id === selectedId).map(day => <button key={day.id} aria-pressed={selectedId === day.id} onClick={() => onSelect(day.id)} className={`${clickableClass} min-h-16 min-w-[140px] shrink-0 rounded-card border px-card py-stack text-start ${selectedId === day.id ? 'border-lime bg-lime-soft' : 'border-line-soft'}`}>
       <b className={`block text-sm font-medium ${selectedId === day.id ? 'text-lime' : ''}`}>{day.title || pt(day.weekday == null ? 'newDay' : weekdays[day.weekday] ?? 'sat')}</b>
       <small className="text-micro text-faint">{day.is_rest_day ? t('rest') : t(day.weekday == null ? 'rotationLine' : 'dayLine', { weekday: pt(weekdays[day.weekday ?? 0] ?? 'sat'), n: day.exercises.length, m: day.exercises.length ? t('minutes', { n: daySummary(day).minutes + warmupMinutes(day.warmup) }) : t('unknownDuration') })}</small>

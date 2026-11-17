@@ -22,7 +22,8 @@ it('shows the selected conversation, voice preview and unread pill', () => {
   expect(html).toContain('رسالة صوتية · 0:18');
   expect(html).toContain('aria-pressed="true"');
   expect(html).toContain('2 رسائل غير مقروءة');
-  expect(html).toContain('text-start bg-surface-raised');
+  expect(html).toContain('<time');
+  expect(html).toContain('bg-surface-raised border-s-lime');
 });
 it('hides zero unread pills and supplies an empty state', () => {
   expect(render(h(ConversationList, { rows: [{ player, latest: message, unread: 0 }], onSelect() {} }))).not.toContain('رسائل غير مقروءة');
@@ -32,7 +33,7 @@ it('aligns incoming bubbles at start and lime captain bubbles at end with times'
   const html = render(h(ConversationBubbles, { items: [message, { ...message, id: 'own', mine: true }], now: new Date('2026-11-14T15:00:00Z'), onRetry() {} }));
   expect(html).toContain('self-start');
   expect(html).toContain('self-end');
-  expect(html).toContain('bg-lime text-on-lime');
+  expect(html).toContain('bg-lime-soft bg-none text-ink');
   expect(html.match(/dateTime=/gi)).toHaveLength(3);
   expect(html).toContain('النهارده');
 });

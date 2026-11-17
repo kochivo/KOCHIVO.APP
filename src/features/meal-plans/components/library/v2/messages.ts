@@ -5,7 +5,7 @@ export const messages = defineMessages({
   ar: {
     mismatch: 'السعرات {kcal} بس الماكروز بتقول حوالي {calculated}. راجع الأرقام.',
     small: 'طبق صغير · {grams} جم', medium: 'طبق وسط · {grams} جم', large: 'طبق كبير · {grams} جم', noRecent: 'لسه مضفتش أكلات بنفسك',
-    title: 'مكتبة الأكل', subtitle: 'دوّر بالعربي أو بالإنجليزي، شوف الأرقام، واحسب الكمية وضيفها للاعب.', count: '{count} أكلة · في 100 جم',
+    title: 'مكتبة الأكل', subtitle: 'دوّر بالعربي أو بالإنجليزي، شوف الأرقام، واحسب الكمية وضيفها للاعب.', count: '{count} أكلة', foodName: 'الأكلة', defaultServing: '100 جم',
     training: 'يوم تمرين', rest: 'يوم راحة', everyDay: 'كل الأيام', noPlayers: 'مفيش لاعبين. ضيف لاعب الأول',
     eg: 'مصري', gulf: 'خليجي', lev: 'شامي', na: 'شمال أفريقيا', intl: 'عالمي', all: 'الكل', mine: 'أكلاتي', favorites: 'المفضلة',
     arabic: 'عربي', recent: 'اتضاف قريب', protein: 'بروتين عالي ≥ 15 جم', fat: 'دهون قليلة ≤ 5 جم', carbs: 'كارب قليل ≤ 10 جم', kcal: 'سعرات قليلة ≤ 120',
@@ -19,12 +19,12 @@ export const messages = defineMessages({
     noPlan: 'اللاعب ده معندوش نظام حالي بوجبات. جهّز النظام الأول', empty: 'مكتبتك لسه فاضية. ضيف أول أكلة', noResults: 'مفيش أكلات بالبحث والفلاتر دي',
     usdaConfidence: 'قيم من قاعدة بيانات USDA للمصدر الموضّح', recipeConfidence: 'محسوبة من المكونات والوزن بعد الطبخ',
     proxyConfidence: 'قيم تقريبية لأقرب أكلة؛ ممكن تختلف', captainConfidence: 'قيم أضافها الكابتن؛ راجعها قبل الاستخدام',
-    examples: 'جرّب', chicken: 'فراخ', bread: 'عيش', meat: 'لحمة', clear: 'امسح الفلاتر', serving: '{name} · {grams} جم',
+    examples: 'جرّب', chicken: 'فراخ', bread: 'عيش', meat: 'لحمة', clear: 'امسح الفلاتر', serving: '{name} · {grams} جم', moreFilters: 'فلاتر وطريقة العرض',
   },
   en: {
     mismatch: '{kcal} kcal, but the macros add up to about {calculated}. Check the numbers.',
     small: 'Small plate · {grams} g', medium: 'Medium plate · {grams} g', large: 'Large plate · {grams} g', noRecent: 'You have not added foods yet',
-    title: 'Food library', subtitle: 'Search in Arabic or English, check the numbers, set the amount and add it to a player.', count: '{count} foods · per 100 g',
+    title: 'Food library', subtitle: 'Search in Arabic or English, check the numbers, set the amount and add it to a player.', count: '{count} foods', foodName: 'Food', defaultServing: '100 g',
     training: 'Training day', rest: 'Rest day', everyDay: 'Every day', noPlayers: 'No players yet. Add a player first',
     eg: 'Egyptian', gulf: 'Gulf', lev: 'Levantine', na: 'North African', intl: 'International', all: 'All', mine: 'My foods', favorites: 'Favorites',
     arabic: 'Arabic', recent: 'Your recent foods', protein: 'High protein ≥ 15 g', fat: 'Low fat ≤ 5 g', carbs: 'Low carb ≤ 10 g', kcal: 'Low calorie ≤ 120',
@@ -38,6 +38,6 @@ export const messages = defineMessages({
     noPlan: 'This player has no current plan with meals. Set up a plan first', empty: 'Your library is empty. Add your first food', noResults: 'No foods match these filters',
     usdaConfidence: 'Values from the listed USDA dataset', recipeConfidence: 'Calculated from ingredients and cooked weight',
     proxyConfidence: 'Approximate values from the closest food; values may differ', captainConfidence: 'Captain supplied values; review before use',
-    examples: 'Try', chicken: 'Chicken', bread: 'Bread', meat: 'Meat', clear: 'Clear filters', serving: '{name} · {grams} g',
+    examples: 'Try', chicken: 'Chicken', bread: 'Bread', meat: 'Meat', clear: 'Clear filters', serving: '{name} · {grams} g', moreFilters: 'Filters and view',
   },
 });

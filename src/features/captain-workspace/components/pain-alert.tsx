@@ -22,7 +22,7 @@ export function PainAlert({ report, now, onAnswer }: { report: PainAlertReport; 
   }
   return <section className="glass-strong space-y-card-gap rounded-card p-card">
     <header className="flex items-center justify-between gap-inline"><h2 className="text-title">{t('title')}</h2>
-      <span className="rounded-full bg-danger-soft px-stack py-inline text-xs text-danger">{t('urgent')}</span></header>
+      <span className="tone-danger rounded-md px-inline text-micro font-semibold">{t('urgent')}</span></header>
     <div className="space-y-stack rounded-control border border-danger/30 bg-danger-soft p-card">
       <h3 className="font-semibold">{report.player_name} · {pt(report.area)}</h3>
       <p className="text-sm">{t('context', { kind: pt(report.kind), severity: report.severity, set: report.set_index ?? '', exercise: report.exercise_name })}</p>

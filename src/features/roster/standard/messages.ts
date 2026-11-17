@@ -74,6 +74,7 @@ export const arStd = {
   "archive": "أرشفة {v0}",
   "archiving": "جاري الأرشفة",
   "pendingTasks2": "مهام بانتظارك",
+  "needsAttention": "بحاجة إلى متابعة", "newThisMonth": "جدد هذا الشهر", "playerActions": "إجراءات اللاعب",
   "newPlayer": "لاعب جديد",
   "player": "لاعب",
   "players": "اللاعبون",

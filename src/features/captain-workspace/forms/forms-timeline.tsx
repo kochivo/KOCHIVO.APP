@@ -1,4 +1,4 @@
-import { Button } from '@/ui/button';
+import { Button, clickableClass } from '@/ui/button';
 import { Repeat2 } from 'lucide-react';
 import { useTimezone } from '@/core/timezone/client';
 import type { Locale } from '@/core/i18n/locale';
@@ -23,14 +23,14 @@ export function FormsTimeline({ forms, selectedId, locale, onSelect, dueAt, disa
         className="min-h-12 rounded-control px-stack text-sm text-muted disabled:opacity-50">{t('reminder')}</Button></span>}
     </div>
     {!forms.length ? <p role="status" className="p-section text-muted">{t('empty')}</p> :
-      <ol aria-label={t('title')} className="divide-y divide-line overflow-hidden rounded-card border border-line">
+      <ol aria-label={t('title')} className="glass divide-y divide-line-soft overflow-hidden rounded-card">
         {forms.map(form => {
           const source = form.snapshot.source;
           const selected = source.id === selectedId;
           const summary = formSummary(form, locale);
           return <li key={`${source.kind}:${source.id}`}>
             <button type="button" disabled={disabled} aria-current={selected ? true : undefined} aria-controls="player-form-detail"
-              onClick={() => onSelect(form)} className={`min-h-12 w-full space-y-inline p-section text-start ${selected ? 'bg-lime-soft' : 'hover:bg-surface-raised'}`}>
+              onClick={() => onSelect(form)} className={`${clickableClass} min-h-14 w-full space-y-inline border-s-2 px-card py-stack text-start ${selected ? 'border-lime bg-surface-raised' : 'border-transparent'}`}>
               <span className="flex flex-wrap items-center justify-between gap-inline">
                 <span className="font-bold">{t(source.kind === 'intake' ? 'intake' : 'checkin')}</span>
                 <span className={form.reviewedAt ? 'text-sm text-muted' : 'text-sm text-warn'}>{t(form.reviewedAt ? 'reviewed' : 'new')}</span>

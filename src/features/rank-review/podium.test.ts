@@ -12,12 +12,14 @@ const rows: LeaderboardRow[] = [1, 2, 3, 4].map(position => ({
 const render = (players: LeaderboardRow[]) => renderToStaticMarkup(createElement(Podium, { rows: players, locale: 'en' }));
 
 describe('podium', () => {
-  it('shows second, first and third in that order, using first names only', () => {
+  it('shows second, first and third in that order, with full names', () => {
     const html = render(rows);
     expect(html.indexOf('Player2')).toBeLessThan(html.indexOf('Player1'));
     expect(html.indexOf('Player1')).toBeLessThan(html.indexOf('Player3'));
     expect(html).not.toContain('Player4');
-    expect(html).not.toContain('Family');
+    expect(html).toContain('engraved');
+    expect(html).toContain('glass-featured');
+    expect(html).toContain('Player1 Family');
   });
   it.each([0, 1, 2])('renders only existing places for %i players', count => {
     const html = render(rows.slice(0, count));

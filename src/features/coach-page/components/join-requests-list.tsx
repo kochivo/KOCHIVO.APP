@@ -40,7 +40,7 @@ export function JoinRequestsList({ rows, onResolved, workspace = false, now = 0 
   return <div className="space-y-stack">
     {selected && <BillingManagerLoader playerId={selected.id} name={selected.name} today={localDate(new Date(), timezone)} autoActivate />}
     {error && <p role="alert" className="text-danger">{error}</p>}
-    {visible.length ? <ul className={workspace ? 'grid grid-cols-1 gap-card-gap min-[760px]:grid-cols-2' : 'space-y-stack'}>{visible.map(row => workspace
+    {visible.length ? <ul className={workspace ? 'glass overflow-hidden rounded-card' : 'space-y-stack'}>{visible.map(row => workspace
       ? <WorkspaceJoinCard key={row.id} row={row} now={now} onResolve={(id, status) => void resolve(id, status)} />
       : <li key={row.id} className="flex flex-wrap items-center justify-between gap-stack">
       <span>{row.full_name}</span><div className="flex gap-inline">

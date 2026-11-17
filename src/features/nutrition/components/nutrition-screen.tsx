@@ -2,6 +2,8 @@
 import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 
+import Link from 'next/link';
+import { buttonClass } from '@/ui/button';
 import { Utensils } from 'lucide-react';
 import { Button, EmptyState, ErrorState, LoadingState, SyncPill } from '@/ui';
 import { useNutritionSnapshot } from '../hooks/use-nutrition-snapshot';
@@ -37,8 +39,12 @@ export function NutritionScreen() {
   const setRest = useCallback((rest: boolean | null | undefined) => setDay({ today, rest }), [today]);
   const visible = snapshot ? { ...snapshot, meals: filterMeals(snapshot.meals, rest, logs ?? [], today) } : null;
   const sync = <SyncPill state={!online ? 'offline' : parked && parked > 0 ? 'attention' : pending === undefined || pending > 0 ? 'pending' : 'synced'} pending={pending} onRetry={retrySync} />;
-  return <main data-mood={v6 && rest ? 'rest' : undefined} className={v6 ? 'mx-auto flex max-w-lg flex-col gap-stack bg-bg px-page-x pt-card pb-[104px]' : 'mx-auto max-w-lg space-y-card-gap px-page-x pt-section pb-32'}>
-    {v6 ? <h1 className="m-0 font-sans text-h font-black!">{v6t('today')}</h1> : <header className="flex flex-wrap items-center justify-between gap-stack">
+  return <main data-mood={v6 && rest ? 'rest' : undefined} className={v6 ? 'mx-auto flex max-w-lg flex-col gap-card-gap px-page-x pt-card pb-[104px]' : 'mx-auto max-w-lg space-y-card-gap px-page-x pt-section pb-32'}>
+    {v6 ? <header className="flex items-center justify-between gap-stack">
+      <div className="min-w-0"><h1 className="text-h font-extrabold">{v6t('today')}</h1>
+        {snapshot && <p className="text-xs text-muted">{starterText(snapshot.title, locale)}</p>}</div>
+      <Link href="/player/nutrition/shopping" className={buttonClass({ variant: 'secondary' })}>{v6t('shopping')}</Link>
+    </header> : <header className="flex flex-wrap items-center justify-between gap-stack">
       <div><h1 className="text-2xl font-extrabold">{t(v6 ? 'todaysNutrition' : 'todaysMeals')}</h1>
         {snapshot && <p className="text-sm text-muted">{starterText(snapshot.title, locale)}</p>}{!v6 && <DayType key={today} today={today} playerId={snapshot?.player_id} onRestChange={setRest} />}</div>
       {sync}
@@ -50,8 +56,8 @@ export function NutritionScreen() {
             <p>{t('lastUpdatedAWhileAgo')}</p><Button variant={v6 ? 'secondary' : 'ghost'} onClick={retry}>{t('tryAgain')}</Button>
           </div>}
           {v6 ? <MacroTiles eaten={eatenTotals(visible, logs, today)} target={targetsOf(visible)} /> : <MacroRing eaten={eatenTotals(visible, logs, today)} target={targetsOf(visible)} />}
-          <BudgetSummary meals={visible.meals} swaps={Object.assign({}, ...logs.filter(log => log.log_date === today && !log.deleted_at).map(log => log.swaps))} />
-          {ramadan.data?.active ? <RamadanMeals meals={visible.meals} logs={logs} today={today} title={visible.title} /> : v6 ? <ol className="flex list-none flex-col gap-inline" aria-label={v6t('meals')}>{visible.meals.map(meal => <li key={`${today}-${meal.id}`}>
+          <BudgetSummary showShopping={!v6} meals={visible.meals} swaps={Object.assign({}, ...logs.filter(log => log.log_date === today && !log.deleted_at).map(log => log.swaps))} />
+          {ramadan.data?.active ? <RamadanMeals meals={visible.meals} logs={logs} today={today} title={visible.title} /> : v6 ? <ol className="flex list-none flex-col gap-card-gap" aria-label={v6t('meals')}>{visible.meals.map(meal => <li key={`${today}-${meal.id}`}>
             <MealCard meal={meal} today={today} planTitle={visible.title}
               primary={meal.id === visible.meals.find(candidate => candidate.items.length > 0 && !logs.some(row => row.meal_id === candidate.id && row.log_date === today && row.completed_at && !row.deleted_at))?.id}
               log={logs.find(row => row.meal_id === meal.id && row.log_date === today && !row.deleted_at)} />
@@ -63,8 +69,7 @@ export function NutritionScreen() {
       <FoodWater playerId={snapshot?.player_id} today={today} />
       <FoodActions />
       <div className="flex flex-wrap items-center justify-between gap-stack">
-        <div>{snapshot && <p className="text-sm text-muted">{starterText(snapshot.title, locale)}</p>}
-          <DayType key={today} today={today} playerId={snapshot?.player_id} onRestChange={setRest} /></div>{sync}
+        <DayType key={today} today={today} playerId={snapshot?.player_id} onRestChange={setRest} />{sync}
       </div>
     </>}
     <PlayerSupplements />

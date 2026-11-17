@@ -2,6 +2,7 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { expect, it, vi } from 'vitest';
 import { LocaleProvider } from '@/core/i18n/client';
+import { OverviewActivity } from './overview-activity';
 import { StatusCards } from './status-cards';
 import { FileHeader } from './file-header';
 import { ProgressSummary } from './progress-summary';
@@ -29,7 +30,9 @@ it('orders all six real route tabs and renders the player header actions', () =>
   const hrefs = [...html.matchAll(/<li><a[^>]*href="([^"]+)"/g)].map(match => match[1]);
   expect(hrefs).toEqual(['/captain/players/p', '/captain/players/p/programs', '/captain/players/p/nutrition', '/captain/players/p/checkins', '/captain/players/p/assessments', '/captain/players/p/chat']);
   expect(html.match(/aria-current="page"/g)).toHaveLength(1);
-  expect(html).toContain('رسالة'); expect(html).toContain('باقي 29 يوم');
+  expect(html).toContain('رسالة');
+  expect(html).toContain('hairline-cells');
+  expect(html).toContain('باقي 29 يوم');
   expect(html).toContain('href="/captain/players/p/preview"');
 });
 it('shows the unread count only when positive on the chat tab', () => {
@@ -54,4 +57,17 @@ it('shows unavailable weight and no invented goal bar for missing measurements',
   const html = render(createElement(ProgressSummary, input));
   expect(html).toContain('—');
   expect(html.match(/role="progressbar"/g)).toHaveLength(1);
+});
+
+it('renders the measurement and training content alongside the existing activity cards', () => {
+  const html = render(createElement(OverviewActivity, {
+    profile, playerId: 'p', locale: 'en',
+    activity: { scans: [], last: null, sets: [], nutrition: null },
+    overview: createElement('div', null, 'Weight chart'),
+    training: createElement('div', null, 'Training adherence'),
+  }));
+  expect(html).toContain('min-[760px]:grid-cols-');
+  expect(html).toContain('Weight chart');
+  expect(html).toContain('Training adherence');
+  expect(html).toContain('href="/captain/players/p/checkins"');
 });

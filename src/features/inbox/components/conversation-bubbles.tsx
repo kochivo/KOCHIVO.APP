@@ -16,16 +16,16 @@ export function ConversationBubbles({ items, onRetry, now = new Date() }: { item
   const bottom = useRef<HTMLDivElement>(null);
   const tail = items.at(-1)?.id;
   useEffect(() => { bottom.current?.scrollIntoView({ block: 'nearest' }); }, [tail]);
-  return <div className="min-h-0 flex-1">
+  return <div className="min-h-0 flex-1 overflow-y-auto p-card">
     {!items.length && <p className="p-section text-center text-xs text-muted">{t('emptyThread')}</p>}
     <ol aria-label={t('thread')} className="flex flex-col gap-inline">
       {conversationDays(items, timezone).map(group => <Fragment key={group.date}>
         <li className="self-center py-inline text-xs text-muted"><time dateTime={group.date}>{conversationDayLabel(group.date, now, timezone, locale, t)}</time></li>
-        {group.items.map(item => <li key={item.id} className={`max-w-[75%] rounded-2xl px-card py-stack text-sm leading-[1.7] ${item.mine ? 'self-end rounded-se-[5px] bg-lime text-on-lime' : 'self-start rounded-ss-[5px] border border-line bg-surface-raised'}`}>
+        {group.items.map(item => <li key={item.id} className={`glass max-w-[85%] min-[760px]:max-w-[70%] rounded-card px-card py-stack text-sm leading-[1.7] ${item.mine ? 'self-end rounded-se-sm border border-lime/20 bg-lime-soft bg-none text-ink' : 'self-start rounded-ss-sm'}`}>
         {item.kind === 'text' ? <p className="whitespace-pre-wrap break-words">{item.body}</p> : <div className="relative w-[220px] max-w-full">
           <AudioPlayer src={item.url ?? ''} durationSeconds={item.durationSeconds ?? 0} playLabel={t('play')} pauseLabel={t('pause')}
             formatTime={voiceDuration} onError={() => setBroken(item.id)}
-            className={`gap-inline! rounded-none! border-0! bg-transparent! p-0! shadow-none! [&_[role=progressbar]]:opacity-0 [&>span]:text-micro [&>button]:rounded-full ${item.mine ? '[&>button]:bg-on-lime [&>button]:text-lime [&>span]:text-on-lime' : '[&>button]:bg-transparent [&>button]:text-ink'}`} />
+            className={`gap-inline! rounded-none! border-0! bg-transparent! p-0! shadow-none! [&_[role=progressbar]]:opacity-0 [&>span]:text-micro [&>button]:rounded-full ${item.mine ? '[&>button]:bg-lime-soft [&>button]:text-ink [&>span]:text-ink' : '[&>button]:bg-transparent [&>button]:text-ink'}`} />
           <svg aria-hidden viewBox="0 0 120 18" className="pointer-events-none absolute start-[54px] top-[15px] h-[18px] w-[calc(100%-95px)] fill-current opacity-60">
             {heights.map((height, index) => <rect key={index} x={index * 5} y={(18 - height) / 2} width={2} height={height} />)}
           </svg>
