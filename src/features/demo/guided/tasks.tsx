@@ -17,7 +17,7 @@ export function Tasks({ state, act, dispatch, now }: PaneProps) {
     ...(!state.renewed ? [{ id: 'renew', kind: 'renew' as const, playerId: 'ali', name: names[3] ?? '', at: '2026-11-16', days: 1 }] : []),
   ];
   const action = (task: CaptainTask) => task.id === 'review' ? dispatch({ type: 'go', page: 'assess', now: now() }) : act(task.id);
-  return <section className="glass min-w-0 rounded-card p-card">
+  return <section className="demo-tasks glass min-w-0 rounded-card p-card">
     {tasks.length ? <ul aria-label={tt('title')}>{tasks.map((task, index) => <TaskRow key={task.id} task={task}
       selected={selected === task.id} first={index === 0} pending={false} onSelect={() => { setSelected(task.id); action(task); }} onAction={() => action(task)} />)}</ul>
       : <p role="status" className="py-section text-center text-sm text-muted">{t('allDone')}</p>}

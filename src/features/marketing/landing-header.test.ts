@@ -30,11 +30,14 @@ describe('T-298 landing header and slogan', () => {
     expect(source).toContain('<ThemeSwitch compact />');
   });
 
-  it('hides only login on phones and keeps signup on one line', () => {
+  it('renders a visible 48px login link on phones and keeps signup on one line', async () => {
+    const html = renderToStaticMarkup(await SiteHeader());
+    const login = html.match(/<a[^>]*href="[^"]*login"[^>]*>دخول<\/a>/)?.[0] ?? '';
+    expect(login).toContain('min-h-12');
     const css = readFileSync('src/features/marketing/components/landing.module.css', 'utf8');
     const phone = css.split('@media (max-width: 620px)')[1]?.split('@media')[0] ?? '';
     expect(phone).not.toMatch(/\.headerEnd\s*>\s*:not\(:last-child\)/);
-    expect(phone).toMatch(/\.headerLogin\s*\{\s*display:\s*none;/);
+    expect(phone).not.toMatch(/\.headerLogin\s*\{\s*display:\s*none;/);
     expect(css).toMatch(/\.headerSignup\s*\{[^}]*white-space:\s*nowrap/);
   });
 });

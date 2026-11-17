@@ -22,7 +22,7 @@ export async function SiteHeader() {
       <div className={styles.headerEnd}>
         <div className="[&_[role=group]]:border-0 [&_[role=group]]:bg-transparent [&_[role=group]]:p-0 [&_[role=group]]:shadow-none [&_button]:border-0"><LanguageSwitch compact /></div>
         <ThemeSwitch compact />
-        <a href={content.links.login} className={`press text-sm text-muted ${styles.headerLogin}`}>{content.login}</a>
+        <a href={content.links.login} className="press min-h-12 min-w-12 justify-center text-sm text-muted">{content.login}</a>
         <a href={content.links.signup} className={buttonClass({ block: false, className: `px-4 ${styles.headerSignup}` })}>{content.signup}</a>
       </div>
     </div>

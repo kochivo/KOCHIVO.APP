@@ -13,9 +13,9 @@ export function Summary({ state, plans, now, onExplore, onAccount }: { state: De
   const name = plan.name;
   return <div className="grid gap-stack">
     <div className="grid grid-cols-3 gap-inline">
-      {[[values.actions, 'actions'], [values.elapsed, 'minutes'], [values.players, 'player']].map(([value, label]) =>
+      {[[values.actions, t('actions')], [values.elapsed, t('time')], [values.players, t('summaryPlayers', { n: values.players })]].map(([value, label]) =>
         <div key={label} className="glass-strong rounded-control p-stack text-center">
-          <b className="block text-title tabular-nums" dir="ltr">{value}</b><span className="text-micro text-muted">{t(label as 'actions' | 'minutes' | 'player')}</span>
+          <b className="block text-title tabular-nums" dir="ltr">{value}</b><span className="text-micro text-muted">{label}</span>
         </div>)}
     </div>
     <div className="recessed flex items-center justify-between gap-inline rounded-control p-stack">

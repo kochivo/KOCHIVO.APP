@@ -21,7 +21,7 @@ export function GuideCard({ state, plans, dispatch, now, onAccount }: { state: D
     </header>
     <div className="my-stack flex gap-1" aria-hidden>{Array.from({ length: 13 }, (_, i) => <i key={i} className={`h-1 flex-1 -skew-x-[36deg] ${i <= state.step ? 'bg-lime' : 'bg-line'}`} />)}</div>
     <div className="flex items-center gap-inline"><span aria-hidden dir="ltr" className="demo-step-number text-stat-large font-extrabold">{String(state.step + 1).padStart(2, '0')}</span><h2 className="min-w-0 flex-1 text-title font-extrabold">{t('titles').split('|')[state.step]}</h2></div>
-    <p className="my-stack text-md text-muted">{t(`step${state.step}` as 'step0', { n: state.n })}</p>
+    <p className="my-stack text-md text-muted">{state.step === 12 ? <>{state.did.includes('set') && <>{t('summarySetArrived')}{' '}</>}{t('step12')}</> : t(`step${state.step}` as 'step0', { n: state.n })}</p>
     {state.step === 12 ? <Summary state={state} plans={plans} now={now()} onExplore={() => dispatch({ type: 'patch', patch: { guide: 'closed' } })} onAccount={onAccount} /> : <>
       {t('hints').split('|')[state.step] && <p className="my-stack rounded-control border border-lime/30 bg-lime-soft p-stack text-xs">{t('hints').split('|')[state.step]}</p>}
       <footer className="demo-guide-actions grid grid-cols-2 gap-inline"><Button block variant="secondary" disabled={state.step === 0} onClick={() => dispatch({ type: 'prev', now: now() })}>{t('prev')}</Button>

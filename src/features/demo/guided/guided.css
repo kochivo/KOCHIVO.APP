@@ -91,6 +91,8 @@
 @media (width < 760px) {
   .demo-captain { display: flex; flex-direction: column; }
   .demo-captain-side { display: contents; }
-  .demo-captain-side > nav { position: absolute; inset-inline: var(--spacing-stack); inset-block-end: var(--spacing-stack); }
+  .demo-captain-side > nav { position: fixed; inset-inline: var(--demo-page-x); inset-block-end: calc(var(--demo-stack) + var(--safe-bottom, 0px)); }
   .demo-captain-main { padding-block-end: var(--page-bottom-clearance); }
+  .demo-tasks li { flex-wrap: wrap; }
+  .demo-tasks li > :first-child { flex-basis: 100%; }
 }
