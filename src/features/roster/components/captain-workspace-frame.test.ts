@@ -27,8 +27,8 @@ const counts = { tasks: 4, inbox: 3, join: 2, billing: null };
 it('renders grouped navigation, real captain identity and the existing plan footer', async () => {
   state.load.mockResolvedValue({ counts, captain: { name: 'Actual captain', avatar: null }, players: [{ id: 'p1', name: 'Actual player' }] });
   const html = render(await CaptainWorkspaceFrame({ children: 'Page content', sidebarFooter: 'Current plan' }));
-  for (const text of ['شغلي', 'لاعبيني', 'مكتبتي', 'حسابي', 'Actual captain', 'Current plan', 'Page content', 'دور على لاعب أو صفحة', 'Ctrl K']) expect(html).toContain(text);
-  expect(html).toContain('1 لاعب');
+  for (const text of ['شغلي', 'فريقي', 'مكتبتي', 'فلوسي', 'Actual captain', 'Current plan', 'Page content', 'دور على لاعب أو صفحة', 'Ctrl K']) expect(html).toContain(text);
+  expect(html).toContain('الإعدادات والحساب');
   expect(html).toContain('href="/captain/tasks"');
   expect(html).toContain('href="/captain/join"');
   expect(html).not.toContain('href="/captain/notifications"');

@@ -22,17 +22,17 @@ export async function CaptainWorkspaceFrame({ children, sidebarFooter }: { child
   return <div className="flex min-h-dvh w-full min-w-0 gap-stack px-page-x pb-card pt-[max(1rem,var(--safe-top))] min-[760px]:py-page-y">
     <div aria-hidden className="pointer-events-none fixed inset-x-0 top-0 z-40 h-[var(--safe-top)] bg-bg" />
     <style>{`[data-area="captain"] [role="radiogroup"][aria-label=${JSON.stringify(appearance('theme'))}] { display: none; }`}</style>
-    <aside className="contents w-[220px] shrink-0 min-[760px]:sticky min-[760px]:top-3 min-[760px]:flex min-[760px]:h-[calc(100dvh-1.5rem)] min-[760px]:flex-col min-[760px]:overflow-y-auto min-[760px]:rounded-card min-[760px]:border min-[760px]:border-line min-[760px]:bg-surface min-[760px]:p-stack">
-      <Link href="/captain" aria-label={t('home')} className="hidden min-h-12 items-center gap-inline px-inline font-display text-xl font-extrabold min-[760px]:flex">
+    <aside className="contents w-[236px] shrink-0 min-[760px]:sticky min-[760px]:top-3 min-[760px]:flex min-[760px]:h-[calc(100dvh-1.5rem)] min-[760px]:flex-col min-[760px]:overflow-y-auto min-[760px]:border-e min-[760px]:border-line-soft min-[760px]:pe-stack">
+      <Link href="/captain" aria-label={t('home')} className="hidden min-h-12 items-center gap-inline px-inline font-display text-base font-extrabold tracking-[.14em] min-[760px]:flex">
         <BrandMark className="size-7" />{t('brand')}
       </Link>
       <CaptainFrameNav counts={data?.counts ?? { tasks: null, inbox: null, join: null, billing: null }} />
       <div className="mt-auto hidden space-y-stack pt-card min-[760px]:block">
         {data?.captain ? <CaptainAccountMenu placement="sidebar">
-          {data.captain.avatar ? <Image src={data.captain.avatar} alt="" width={32} height={32} unoptimized className="size-8 rounded-control object-cover" />
-            : <span aria-hidden className="glass-strong grid size-8 shrink-0 place-items-center rounded-control font-bold text-lime">{data.captain.name.slice(0, 1)}</span>}
+          {data.captain.avatar ? <Image src={data.captain.avatar} alt="" width={36} height={36} unoptimized className="size-9 shrink-0 rounded-full object-cover ring-1 ring-lime ring-offset-2 ring-offset-bg" />
+            : <span aria-hidden className="grid size-9 shrink-0 place-items-center rounded-full bg-surface-raised font-bold text-ink ring-1 ring-lime ring-offset-2 ring-offset-bg">{data.captain.name.slice(0, 1)}</span>}
           <span className="min-w-0 truncate text-row font-semibold">{data.captain.name}
-            {data.players && <small className="block text-micro font-normal text-muted">{t('playerCount', { count: data.players.length })}</small>}
+            <small className="block text-micro font-normal text-muted">{t('settingsAccount')}</small>
           </span>
         </CaptainAccountMenu> : <><p role="status" className="px-inline text-xs text-muted">{t('unavailable')}</p><CaptainAccountMenu placement="sidebar" /></>}
         {sidebarFooter}

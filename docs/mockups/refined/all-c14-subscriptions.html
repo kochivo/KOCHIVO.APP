@@ -1,0 +1,135 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700&amp;family=Manrope:wght@600;700;800&amp;family=Saira+Condensed:wght@800;900&amp;display=swap">
+<style>
+body{margin:0;background:#090a0b}
+*{box-sizing:border-box}
+.app{position:relative;display:flex;background:#090a0b;color:#f4f4f1;font-family:Alexandria,sans-serif;overflow:hidden}
+.orb{position:absolute;top:-240px;inset-inline-start:300px;width:640px;height:480px;border-radius:50%;background:radial-gradient(closest-side,rgba(182,233,79,.10),transparent);pointer-events:none}
+.n{font-family:Manrope,sans-serif;font-weight:800;letter-spacing:-.025em;font-variant-numeric:tabular-nums}
+.eng{font-family:"Saira Condensed",sans-serif;font-weight:900;line-height:.9;color:transparent;-webkit-text-stroke:1.4px #cdf56f;background:repeating-linear-gradient(135deg,#b6e94f 0 1.6px,transparent 1.6px 5.5px);-webkit-background-clip:text;background-clip:text}
+.card{position:relative;background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.018));border:1px solid rgba(255,255,255,.07);box-shadow:inset 0 1px 0 rgba(255,255,255,.05);border-radius:18px}
+.cut{clip-path:polygon(0 0,calc(100% - 22px) 0,100% 22px,100% 100%,0 100%)}
+.ko{background:linear-gradient(90deg,rgba(182,233,79,.10),rgba(182,233,79,.03) 55%,rgba(255,255,255,.02));border:1px solid rgba(182,233,79,.18)}
+.ic{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.mu{color:#a6abb0}.fa{color:#80858b}.li{color:#b6e94f}.am{color:#f2b544}.co{color:#ffa080}
+.h2{margin:0;font-size:15px;font-weight:700}
+.ch{display:flex;align-items:center;gap:8px;padding:14px 18px 10px}
+.row{display:flex;align-items:center;gap:12px;min-height:58px;padding:0 18px;border-top:1px solid rgba(255,255,255,.05)}
+.av{flex:none;border-radius:50%;background:#1d2024;display:grid;place-items:center;font-weight:700}
+.btn{min-height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:#f4f4f1;font:inherit;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap}
+.btnp{min-height:48px;padding:0 22px;border-radius:14px;border:0;background:linear-gradient(180deg,#cdf56f,#a9e03c);color:#0b0c0d;font:inherit;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 10px 26px -10px rgba(182,233,79,.75),inset 0 1px 0 rgba(255,255,255,.5);display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap}
+.tag{font-size:11px;font-weight:600;padding:4px 10px;border-radius:8px;white-space:nowrap}
+.t-li{color:#b6e94f;background:rgba(182,233,79,.1)}.t-co{color:#ffa080;background:rgba(255,160,128,.1)}.t-bl{color:#9fb8ff;background:rgba(120,150,255,.12)}.t-am{color:#f2b544;background:rgba(242,181,68,.12)}.t-gr{color:#a6abb0;background:rgba(255,255,255,.06)}
+.seg{display:flex;gap:2px;padding:3px;border-radius:10px;background:rgba(0,0,0,.3)}
+.seg button{min-height:32px;padding:0 12px;border-radius:8px;border:0;font:inherit;font-size:12px;cursor:pointer;background:transparent;color:#a6abb0}
+.seg button.on{background:rgba(255,255,255,.09);color:#f4f4f1;font-weight:600}
+.bar{height:4px;border-radius:2px;background:rgba(255,255,255,.07)}.bar>i{display:block;height:100%;border-radius:2px}
+.in{height:44px;border-radius:12px;display:flex;align-items:center;gap:10px;padding:0 14px;color:#80858b;font-size:13px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08)}
+.th{display:flex;align-items:center;gap:12px;min-height:38px;padding:0 18px;font-size:11px;color:#80858b}
+.ph{border-radius:12px;background:repeating-linear-gradient(135deg,rgba(255,255,255,.04) 0 6px,transparent 6px 12px),#141618;border:1px solid rgba(255,255,255,.06)}
+</style>
+</head><body>
+
+<div class="app" dir="rtl" style="width:1440px;height:900px">
+  <div class="orb" aria-hidden="true"></div>
+  
+<nav aria-label="القائمة" style="position:relative;width:236px;flex:none;padding:18px 12px 14px;border-inline-start:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column">
+  <div style="display:flex;align-items:center;gap:10px;padding:0 10px 10px">
+    <span class="cut" style="width:32px;height:32px;background:linear-gradient(180deg,#cdf56f,#a9e03c);color:#0b0c0d;display:grid;place-items:center;font-weight:800;font-size:17px">K</span>
+    <span class="n" style="font-size:16px;letter-spacing:.14em">KOCHIVO</span>
+  </div>
+  <p class="fa" style="margin:9px 12px 2px;font-size:11px">شغلي</p><a href="#" style="display:flex;align-items:center;gap:10px;min-height:38px;padding:0 12px;border-radius:11px;text-decoration:none;font-size:13.5px;color:#a6abb0">
+      <span aria-hidden="true" style="width:4px;height:18px;margin-inline-start:-4px;"></span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style=""><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"></path></svg><span style="flex:1">الرئيسية</span></a><a href="#" style="display:flex;align-items:center;gap:10px;min-height:38px;padding:0 12px;border-radius:11px;text-decoration:none;font-size:13.5px;color:#a6abb0">
+      <span aria-hidden="true" style="width:4px;height:18px;margin-inline-start:-4px;"></span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style=""><path d="M9 11l3 3 8-8M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"></path></svg><span style="flex:1">المهام</span><span class="n" style="font-size:11px;min-width:20px;text-align:center;padding:2px 6px;border-radius:7px;color:#b6e94f;background:rgba(182,233,79,.12)">4</span></a><a href="#" style="display:flex;align-items:center;gap:10px;min-height:38px;padding:0 12px;border-radius:11px;text-decoration:none;font-size:13.5px;color:#a6abb0">
+      <span aria-hidden="true" style="width:4px;height:18px;margin-inline-start:-4px;"></span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style=""><path d="M22 12h-6l-2 3h-4l-2-3H2M5.5 5h13L22 12v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6z"></path></svg><span style="flex:1">صندوق الوارد</span><span class="n" style="font-size:11px;min-width:20px;text-align:center;padding:2px 6px;border-radius:7px;color:#b6e94f;background:rgba(182,233,79,.12)">2</span></a><p class="fa" style="margin:9px 12px 2px;font-size:11px">فريقي</p><a href="#" style="display:flex;align-items:center;gap:10px;min-height:38px;padding:0 12px;border-radius:11px;text-decoration:none;font-size:13.5px;color:#a6abb0">
+      <span aria-hidden="true" style="width:4px;height:18px;margin-inline-start:-4px;"></span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style=""><path d="M16 20v-1a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v1M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 20v-1a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"></path></svg><span style="flex:1">اللاعبين</span></a><a href="#" style="display:flex;align-items:center;gap:10px;min-height:38px;padding:0 12px;border-radius:11px;text-decoration:none;font-size:13.5px;color:#a6abb0">
+      <span aria-hidden="true" style="width:4px;height:18px;margin-inline-start:-4px;"></span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style=""><path d="M15 20v-1a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v1M8.5 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM19 8v6M22 11h-6"></path></svg><span style="flex:1">طلبات الانضمام</span><span class="n" style="font-size:11px;min-width:20px;text-align:center;padding:2px 6px;border-radius:7px;color:#b6e94f;background:rgba(182,233,79,.12)">1</span></a><a href="#" style="display:flex;align-items:center;gap:10px;min-height:38px;padding:0 12px;border-radius:11px;text-decoration:none;font-size:13.5px;color:#a6abb0">
+      <span aria-hidden="true" style="width:4px;height:18px;margin-inline-start:-4px;"></span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style=""><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4"></path></svg><span style="flex:1">الترتيب</span></a><p class="fa" style="margin:9px 12px 2px;font-size:11px">مكتبتي</p><a href="#" style="display:flex;align-items:center;gap:10px;min-height:38px;padding:0 12px;border-radius:11px;text-decoration:none;font-size:13.5px;color:#a6abb0">
+      <span aria-hidden="true" style="width:4px;height:18px;margin-inline-start:-4px;"></span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style=""><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"></path></svg><span style="flex:1">برامج التمرين</span></a><a href="#" style="display:flex;align-items:center;gap:10px;min-height:38px;padding:0 12px;border-radius:11px;text-decoration:none;font-size:13.5px;color:#a6abb0">
+      <span aria-hidden="true" style="width:4px;height:18px;margin-inline-start:-4px;"></span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style=""><path d="M6 7v10M3 9v6M18 7v10M21 9v6M6 12h12"></path></svg><span style="flex:1">التمارين</span></a><a href="#" style="display:flex;align-items:center;gap:10px;min-height:38px;padding:0 12px;border-radius:11px;text-decoration:none;font-size:13.5px;color:#a6abb0">
+      <span aria-hidden="true" style="width:4px;height:18px;margin-inline-start:-4px;"></span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style=""><path d="M4 3v8a3 3 0 0 0 6 0V3M7 3v18M17 3c-2 2-3 5-3 8h4V3zM18 11v10"></path></svg><span style="flex:1">الأنظمة الغذائية</span></a><a href="#" style="display:flex;align-items:center;gap:10px;min-height:38px;padding:0 12px;border-radius:11px;text-decoration:none;font-size:13.5px;color:#a6abb0">
+      <span aria-hidden="true" style="width:4px;height:18px;margin-inline-start:-4px;"></span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style=""><path d="M12 7c-3-2-8-1-8 5 0 5 3 9 5 9 1 0 2-1 3-1s2 1 3 1c2 0 5-4 5-9 0-6-5-7-8-5zM12 7c0-2 1-4 3-4"></path></svg><span style="flex:1">الأكلات</span></a><a href="#" style="display:flex;align-items:center;gap:10px;min-height:38px;padding:0 12px;border-radius:11px;text-decoration:none;font-size:13.5px;color:#a6abb0">
+      <span aria-hidden="true" style="width:4px;height:18px;margin-inline-start:-4px;"></span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style=""><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8zM14 3v5h5M9 13h6M9 17h6"></path></svg><span style="flex:1">التقييمات</span></a><p class="fa" style="margin:9px 12px 2px;font-size:11px">فلوسي</p><a href="#" style="display:flex;align-items:center;gap:10px;min-height:38px;padding:0 12px;border-radius:11px;text-decoration:none;font-size:13.5px;color:#f4f4f1;font-weight:600;background:rgba(255,255,255,.05)">
+      <span aria-hidden="true" style="width:4px;height:18px;margin-inline-start:-4px;background:#b6e94f;transform:skewX(-18deg)"></span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style=""><path d="M2 6h20v12H2zM2 10h20M6 15h4"></path></svg><span style="flex:1">الاشتراكات</span><span class="n" style="font-size:11px;min-width:20px;text-align:center;padding:2px 6px;border-radius:7px;color:#f2b544;background:rgba(242,181,68,.12)">1</span></a><a href="#" style="display:flex;align-items:center;gap:10px;min-height:38px;padding:0 12px;border-radius:11px;text-decoration:none;font-size:13.5px;color:#a6abb0">
+      <span aria-hidden="true" style="width:4px;height:18px;margin-inline-start:-4px;"></span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style=""><path d="M21 8l-9-5-9 5 9 5zM3 8v8l9 5 9-5V8M12 13v8"></path></svg><span style="flex:1">الباقات</span></a>
+  <a href="#" style="margin-top:auto;display:flex;align-items:center;gap:10px;padding:10px;border-radius:14px;border:1px solid rgba(255,255,255,.06);text-decoration:none;color:#f4f4f1;">
+    <span class="av" style="width:36px;height:36px;box-shadow:0 0 0 2px #090a0b,0 0 0 3px #b6e94f">ه</span>
+    <span style="flex:1;min-width:0"><b style="display:block;font-size:13px">كابتن هشام</b><span class="mu" style="font-size:11px">الإعدادات والحساب</span></span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="color:#80858b"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19 12l2-1-1-3-2 .3-1.4-1.4.3-2-3-1-1 2h-2l-1-2-3 1 .3 2L5.9 7.3l-2-.3-1 3 2 1v2l-2 1 1 3 2-.3 1.4 1.4-.3 2 3 1 1-2h2l1 2 3-1-.3-2 1.4-1.4 2 .3 1-3-2-1z"></path></svg>
+  </a>
+</nav>
+  <main style="position:relative;flex:1;min-width:0;padding:18px 26px 22px;display:flex;flex-direction:column;gap:14px">
+    <header style="display:flex;align-items:center;gap:10px">
+      <div style="flex:1;min-width:0"><h1 style="margin:0;font-size:22px;font-weight:700">الاشتراكات</h1><p class="fa" style="margin:2px 0 0;font-size:12px">كل لاعب، دفع كام وفاضل كام</p></div>
+      <div class="in" style="width:280px"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style=""><path d="M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM21 21l-4.3-4.3"></path></svg>دوّر على لاعب</div>
+      <button aria-label="الإشعارات" class="btn" style="position:relative;width:44px;height:44px;padding:0;border-radius:12px"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style=""><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg><span style="position:absolute;top:10px;inset-inline-end:11px;width:7px;height:7px;border-radius:50%;background:#b6e94f"></span></button>
+      <button class="btnp"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style=""><path d="M12 5v14M5 12h14"></path></svg>سجّل دفعة</button>
+    </header>
+    
+  <section class="card" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr))">
+  <div style="padding:16px 20px 14px;box-shadow:inset -1px 0 0 rgba(255,255,255,.06)">
+    <div style="display:flex;align-items:center;justify-content:space-between;font-size:12px" class="mu">اتحصّل الشهر ده<span class="n tag t-li" style="padding:2px 7px"><bdi dir="ltr">+12%</bdi></span></div>
+    <div style="margin-top:8px"><span class="n" style="font-size:30px;color:#f4f4f1">21,400</span><span class="fa" style="font-size:12px;margin-inline-start:6px">جنيه</span></div>
+    <div style="margin-top:10px"><div class="bar"><i style="width:86%;background:#b6e94f"></i></div></div>
+    <p class="fa" style="margin:8px 0 0;font-size:11px">من 25,000 متوقعة</p>
+  </div>
+  <div style="padding:16px 20px 14px;box-shadow:inset -1px 0 0 rgba(255,255,255,.06)">
+    <div style="display:flex;align-items:center;justify-content:space-between;font-size:12px" class="mu">مستني يتحصّل</div>
+    <div style="margin-top:8px"><span class="n" style="font-size:30px;color:#f2b544">1,500</span><span class="fa" style="font-size:12px;margin-inline-start:6px">جنيه</span></div>
+    <div style="margin-top:10px"><div class="bar"><i style="width:30%;background:#f2b544"></i></div></div>
+    <p class="fa" style="margin:8px 0 0;font-size:11px">من لاعبين اتنين</p>
+  </div>
+  <div style="padding:16px 20px 14px;box-shadow:inset -1px 0 0 rgba(255,255,255,.06)">
+    <div style="display:flex;align-items:center;justify-content:space-between;font-size:12px" class="mu">بيتجدد الأسبوع ده</div>
+    <div style="margin-top:8px"><span class="n" style="font-size:30px;color:#f4f4f1">4</span><span class="fa" style="font-size:12px;margin-inline-start:6px">لاعبين</span></div>
+    
+    <p class="fa" style="margin:8px 0 0;font-size:11px">قيمتهم 6,800 جنيه</p>
+  </div>
+  <div style="padding:16px 20px 14px;box-shadow:inset -1px 0 0 rgba(255,255,255,.06)">
+    <div style="display:flex;align-items:center;justify-content:space-between;font-size:12px" class="mu">متوقفين</div>
+    <div style="margin-top:8px"><span class="n" style="font-size:30px;color:#f4f4f1">3</span><span class="fa" style="font-size:12px;margin-inline-start:6px">لاعبين</span></div>
+    
+    <p class="fa" style="margin:8px 0 0;font-size:11px">اتنين منهم طالبين تجميد</p>
+  </div></section>
+  <div style="display:flex;align-items:center;gap:10px"><div class="seg" role="tablist"><button role="tab" class="on">الكل 40</button><button role="tab" class="">دافعين 33</button><button role="tab" class="">ناقص 2</button><button role="tab" class="">بيتجدد 4</button><button role="tab" class="">متوقف 3</button></div><div style="flex:1"></div><button class="btn">نوفمبر 2026</button></div>
+  <section class="card" style="flex:1;overflow:hidden">
+    <div class="th"><span style="width:32px"></span><span style="width:170px">اللاعب</span><span style="width:110px">المطلوب</span><span style="width:110px">المدفوع</span><span style="width:130px">الحالة</span><span style="flex:1">التاريخ</span></div>
+    <div class="row" style="min-height:56px"><span class="av" style="width:32px;height:32px;font-size:13px;">م</span>
+  <div style="width:170px"><b style="font-size:13.5px;font-weight:600">محمد حسن</b><span class="fa" style="display:block;font-size:11px">باقة 3 شهور</span></div>
+  <span class="n" style="width:110px;font-size:13px">2,400</span><span class="n" style="width:110px;font-size:13px;color:#f4f4f1">1,900</span>
+  <span style="width:130px"><span class="tag t-am">دفعة ناقصة</span></span><span class="mu" style="flex:1;font-size:12px">باقي 500 من 2 نوفمبر</span><button class="btn">سجّل الباقي</button></div>
+    <div class="row" style="min-height:56px"><span class="av" style="width:32px;height:32px;font-size:13px;">ط</span>
+  <div style="width:170px"><b style="font-size:13.5px;font-weight:600">طارق علي</b><span class="fa" style="display:block;font-size:11px">شهري</span></div>
+  <span class="n" style="width:110px;font-size:13px">1,000</span><span class="n" style="width:110px;font-size:13px;color:#f4f4f1">0</span>
+  <span style="width:130px"><span class="tag t-am">مستني الدفع</span></span><span class="mu" style="flex:1;font-size:12px">بيخلص الخميس 20 نوفمبر</span><button class="btn">فكّره</button></div>
+    <div class="row" style="min-height:56px"><span class="av" style="width:32px;height:32px;font-size:13px;">ن</span>
+  <div style="width:170px"><b style="font-size:13.5px;font-weight:600">نور السيد</b><span class="fa" style="display:block;font-size:11px">باقة 3 شهور</span></div>
+  <span class="n" style="width:110px;font-size:13px">2,400</span><span class="n" style="width:110px;font-size:13px;color:#b6e94f">2,400</span>
+  <span style="width:130px"><span class="tag t-li">دفع كامل</span></span><span class="mu" style="flex:1;font-size:12px">لحد 20 ديسمبر</span></div>
+    <div class="row" style="min-height:56px"><span class="av" style="width:32px;height:32px;font-size:13px;">ه</span>
+  <div style="width:170px"><b style="font-size:13.5px;font-weight:600">هشام فؤاد</b><span class="fa" style="display:block;font-size:11px">باقة 6 شهور</span></div>
+  <span class="n" style="width:110px;font-size:13px">4,200</span><span class="n" style="width:110px;font-size:13px;color:#b6e94f">4,200</span>
+  <span style="width:130px"><span class="tag t-li">دفع كامل</span></span><span class="mu" style="flex:1;font-size:12px">لحد 2 يناير</span></div>
+    <div class="row" style="min-height:56px"><span class="av" style="width:32px;height:32px;font-size:13px;">س</span>
+  <div style="width:170px"><b style="font-size:13.5px;font-weight:600">سارة مصطفى</b><span class="fa" style="display:block;font-size:11px">شهري</span></div>
+  <span class="n" style="width:110px;font-size:13px">1,000</span><span class="n" style="width:110px;font-size:13px;color:#b6e94f">1,000</span>
+  <span style="width:130px"><span class="tag t-li">متأكد بالإيصال</span></span><span class="mu" style="flex:1;font-size:12px">لحد 30 نوفمبر</span></div>
+    <div class="row" style="min-height:56px"><span class="av" style="width:32px;height:32px;font-size:13px;">ك</span>
+  <div style="width:170px"><b style="font-size:13.5px;font-weight:600">كريم سامي</b><span class="fa" style="display:block;font-size:11px">باقة 3 شهور</span></div>
+  <span class="n" style="width:110px;font-size:13px">2,400</span><span class="n" style="width:110px;font-size:13px;color:#b6e94f">2,400</span>
+  <span style="width:130px"><span class="tag t-li">دفع كامل</span></span><span class="mu" style="flex:1;font-size:12px">لحد 12 ديسمبر</span></div>
+    <div class="row" style="min-height:56px"><span class="av" style="width:32px;height:32px;font-size:13px;">ح</span>
+  <div style="width:170px"><b style="font-size:13.5px;font-weight:600">حازم رأفت</b><span class="fa" style="display:block;font-size:11px">شهري</span></div>
+  <span class="n" style="width:110px;font-size:13px">1,000</span><span class="n" style="width:110px;font-size:13px;color:#b6e94f">1,000</span>
+  <span style="width:130px"><span class="tag t-li">دفع كامل</span></span><span class="mu" style="flex:1;font-size:12px">لحد 15 ديسمبر</span></div>
+    <div class="row" style="min-height:56px"><span class="av" style="width:32px;height:32px;font-size:13px;">د</span>
+  <div style="width:170px"><b style="font-size:13.5px;font-weight:600">دينا سمير</b><span class="fa" style="display:block;font-size:11px">باقة 3 شهور</span></div>
+  <span class="n" style="width:110px;font-size:13px">2,400</span><span class="n" style="width:110px;font-size:13px;color:#b6e94f">2,400</span>
+  <span style="width:130px"><span class="tag t-li">متأكد بالإيصال</span></span><span class="mu" style="flex:1;font-size:12px">لحد 9 ديسمبر</span></div>
+    <div class="row" style="min-height:56px"><span class="av" style="width:32px;height:32px;font-size:13px;">ر</span>
+  <div style="width:170px"><b style="font-size:13.5px;font-weight:600">رنا محمود</b><span class="fa" style="display:block;font-size:11px">شهري</span></div>
+  <span class="n" style="width:110px;font-size:13px">1,000</span><span class="n" style="width:110px;font-size:13px;color:#f4f4f1">0</span>
+  <span style="width:130px"><span class="tag t-bl">طالبة تجميد</span></span><span class="mu" style="flex:1;font-size:12px">من 10 نوفمبر</span><button class="btn">راجع</button></div>
+  </section>
+  </main>
+</div>
+</body></html>

@@ -10,6 +10,8 @@ import { KoMealPlans } from '@/ui/icons/ko-meal-plans';
 import { KoFoods } from '@/ui/icons/ko-foods';
 import { KoForms } from '@/ui/icons/ko-forms';
 import { KoSettings } from '@/ui/icons/ko-settings';
+import { KoPackages } from '@/ui/icons/ko-packages';
+import { KoTemplate } from '@/ui/icons/ko-template';
 
 export const frameItems = [
   { id: 'home', href: '/captain', group: 'work', icon: KoHome, available: true, mobile: true },
@@ -18,16 +20,19 @@ export const frameItems = [
   { id: 'players', href: '/captain/players', group: 'team', icon: KoPlayers, available: true, mobile: true },
   { id: 'join', href: '/captain/join', group: 'team', icon: KoInvite, available: true, mobile: false },
   { id: 'ranks', href: '/captain/leaderboard', group: 'team', icon: KoProgress, available: true, mobile: false },
-  { id: 'billing', href: '/captain/billing', group: 'team', icon: KoBilling, available: true, mobile: false },
-  { id: 'programs', href: '/captain/templates', group: 'library', icon: KoTraining, available: true, mobile: false },
+    { id: 'programs', href: '/captain/templates', group: 'library', icon: KoTemplate, available: true, mobile: false },
   { id: 'exercises', href: '/captain/library/exercises', group: 'library', icon: KoTraining, available: true, mobile: false },
   { id: 'plans', href: '/captain/library/meal-plans', group: 'library', icon: KoMealPlans, available: true, mobile: false },
   { id: 'foods', href: '/captain/library/foods', group: 'library', icon: KoFoods, available: true, mobile: false },
   { id: 'forms', href: '/captain/library/forms', group: 'library', icon: KoForms, available: true, mobile: false },
+  { id: 'billing', href: '/captain/billing', group: 'money', icon: KoBilling, available: true, mobile: false },
+  { id: 'packages', href: '/captain/billing/packages', group: 'money', icon: KoPackages, available: true, mobile: false },
   { id: 'settings', href: '/captain/settings', group: 'account', icon: KoSettings, available: true, mobile: false },
 ] as const;
 export type FrameId = typeof frameItems[number]['id'];
-export const frameGroups = ['work', 'team', 'library', 'account'] as const;
+export const frameGroups = ['work', 'team', 'library', 'money', 'account'] as const;
+/** The desktop sidebar reaches settings through the profile card, so it skips this group. */
+export const sidebarHiddenGroups: readonly string[] = ['account'];
 export type FrameCounts = { tasks: number | null; inbox: number | null; join: number | null; billing: number | null };
 
 export function frameCounts(input: { tasks: number | null; chats: Record<string, number> | null; joins: number | null }): FrameCounts {

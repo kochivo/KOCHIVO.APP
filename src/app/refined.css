@@ -1,0 +1,33 @@
+/* Refined workspace look (owner approved the 25-screen mockup on 2026-11-17). */
+@utility ko-strip {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--color-lime) 10%, transparent), color-mix(in srgb, var(--color-lime) 3%, transparent) 55%, rgb(255 255 255 / .02));
+  border: 1px solid color-mix(in srgb, var(--color-lime) 18%, transparent);
+  border-radius: var(--radius-card);
+  html[data-theme='light'] & { background: var(--color-lime-soft); }
+}
+/* The mockup cuts the physical top-right corner in both directions, like the brand mark. */
+@utility cut-corner { clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 0 100%); }
+@utility cut-corner-sm { clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%); }
+/* Hero numbers only: an outlined, hatched figure in brand lime. */
+@utility engraved {
+  font-family: var(--font-display); font-weight: 800; line-height: .9; letter-spacing: -.03em;
+  font-variant-numeric: tabular-nums;
+  color: transparent; -webkit-text-stroke: 1.4px var(--color-lime-top);
+  background: repeating-linear-gradient(135deg, var(--color-lime) 0 1.6px, transparent 1.6px 5.5px);
+  -webkit-background-clip: text; background-clip: text;
+  @media (forced-colors: active) { color: CanvasText; -webkit-text-stroke: 0; background: none; }
+}
+/* Active nav item: a short slanted lime bar on the start edge. */
+@utility nav-slash {
+  position: relative;
+  &::before {
+    content: ''; position: absolute; inset-inline-start: 0; inset-block: 0; margin-block: auto;
+    inline-size: 4px; block-size: 18px; background: var(--color-lime); transform: skewX(-18deg);
+  }
+}
+@utility hairline-cells { & > * + * { border-inline-start: 1px solid var(--color-line-soft); } }
+@utility tone-lime { color: var(--color-lime); background: var(--color-lime-soft); }
+@utility tone-warn { color: var(--color-warn); background: var(--color-warn-soft); }
+@utility tone-danger { color: var(--color-danger); background: var(--color-danger-soft); }
+@utility tone-info { color: var(--color-info); background: var(--color-info-soft); }
+@utility tone-neutral { color: var(--color-muted); background: var(--color-neutral-soft); }

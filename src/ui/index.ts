@@ -5,6 +5,8 @@ export { BrandMark } from './brand-mark';
 export { PageContainer } from './page-container';
 export { CardGrid } from './card-grid';
 export { Stat } from './stat';
+export { StatStrip } from './stat-strip';
+export type { StatStripItem, StatTone } from './stat-strip';
 export { GlassCard } from './glass-card';
 export { Stepper } from './stepper';
 export { TextField } from './text-field';
