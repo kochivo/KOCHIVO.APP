@@ -20,10 +20,14 @@ import { HistorySets } from './history-sets';
 import { FinishPoints } from './finish-points';
 import { expectedWorkoutPrs } from '../data/expected-workout-prs';
 import { mergeHistory, remotePrHistory } from '../data/pr-history';
+import { readChoices } from '../data/exercise-choices';
+import { painFinishHeadline } from '../pain-stop';
+import { messages as painMessages } from '../pain/messages';
 
 export function FinishHero({ sessionId, workout, extras = false }: { sessionId: string; workout?: WorkoutPointsInput; extras?: boolean }) {
   const t = useT(messages);
   const wt = useT(workoutMessages);
+  const pt = useT(painMessages);
   const locale = useLocale();
   const [failed, setFailed] = useState(false);
   const [attempt, setAttempt] = useState(0);
@@ -53,7 +57,11 @@ export function FinishHero({ sessionId, workout, extras = false }: { sessionId: 
     const exercises = plan?.days.flatMap(day => day.exercises) ?? [];
     const exercise = record && exercises.find(exercise => exercise.exercise_id === record.exercise_id);
     const alternative = record && exercises.flatMap(exercise => exercise.alternative_exercises ?? []).find(exercise => exercise.id === record.exercise_id);
+    let painSkipped = 0;
+    try { painSkipped = Object.keys(readChoices(window.localStorage, `pain-skips:${sessionId}`)).length; }
+    catch { /* Storage may be unavailable; the workout summary still works. */ }
     return { ...finishSummary(rows, sessionId), record, expectedPrs: expectedWorkoutPrs(rows, session),
+      painSkipped,
       exercises: groupHistory([session], rows)[0]?.exercises.map(group => ({ ...group,
         name: exerciseName(exercises.find(exercise => exercise.exercise_id === group.id) ??
           exercises.flatMap(exercise => exercise.alternative_exercises ?? []).find(exercise => exercise.id === group.id) ??
@@ -67,6 +75,7 @@ export function FinishHero({ sessionId, workout, extras = false }: { sessionId: 
   const preview = workout && ranksEnabled() ? previewWorkoutPoints(workout) : undefined;
   const volume = summary && formatVolume(summary.volume, locale);
   const number = (value: number) => formatNumber(value, locale);
+  const painHeadline = summary && painFinishHeadline(summary.painSkipped, summary.sets);
   if (extras) return summary ? <details className="rounded-[22px] border border-line-soft bg-surface p-card">
     <summary className="min-h-12 cursor-pointer text-muted">{wt('v3Details')}</summary>
     <p className="mb-stack text-sm">{summary.day ? starterText(summary.day, locale) : t('title')}</p>
@@ -82,8 +91,10 @@ export function FinishHero({ sessionId, workout, extras = false }: { sessionId: 
     <div aria-hidden className="pointer-events-none absolute -top-24 start-[150px] h-[360px] w-[26px] -skew-x-[18deg] bg-ivory" />
     <div aria-hidden className="pointer-events-none absolute -inset-x-[18px] -top-4 h-[300px] bg-gradient-to-b from-bg/0 from-20% to-bg to-85%" />
     <div className="relative flex flex-col gap-inline">
-      <span className="text-sm font-bold text-lime">{wt('v3Done')}</span>
-      <h1 style={{ fontFamily: 'inherit', fontWeight: 900 }} className="text-4xl leading-normal">{firstName ? wt('v3Congrats', { name: firstName }) : wt('v3CongratsFallback')}</h1>
+      {summary && !painHeadline && <span className="text-sm font-bold text-lime">{wt('v3Done')}</span>}
+      {summary && <h1 style={{ fontFamily: 'inherit', fontWeight: 900 }} className={painHeadline ? 'text-h leading-normal' : 'text-4xl leading-normal'}>
+        {painHeadline ? pt(painHeadline, { n: number(summary.painSkipped) }) : firstName ? wt('v3Congrats', { name: firstName }) : wt('v3CongratsFallback')}
+      </h1>}
     </div>
     {summary ? <>
       <div className="relative grid grid-cols-3 gap-inline">

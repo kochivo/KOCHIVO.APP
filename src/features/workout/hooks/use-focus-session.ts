@@ -14,6 +14,8 @@ import { hydrateSession } from '../data/hydrate-session';
 import { buildQueue, isCardioOnly } from '../queue';
 import { finishCardioSession } from '../data/finish-cardio-session';
 import { painBlocksExercise } from '../pain-block';
+import { remainingPainIds } from '../pain-stop';
+import type { PainReportRow } from '@/core/offline/pain-tables';
 import { trainingDate } from '../training-date';
 import { useLastSession } from './use-last-session';
 import { useRestTimer } from './use-rest-timer';
@@ -199,6 +201,10 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
     setReps: (value: number) => setDraft({ key, weight, reps: Math.min(100, Math.max(0, value)) }),
     edit: (row: SetLogRow) => { if (!saving.current) { rest.skip(); setDraft(null); setEditing(row.id); } },
     complete, finishCardio, today, captainId: snapshot?.captain_id, skipExercise: painSkips.skip, painBlocked, painCarried, painReports: reports ?? [],
+    skipForPain: async (report?: PainReportRow) => {
+      const ids = remainingPainIds(queue, doneSets, choices.choices, report);
+      await painSkips.skipMany(ids); return ids.length;
+    },
     switchExercise: (id: string) => {
       if (!plannedCurrent || dropIndex > 0 || saving.current || !choices.ready || edited || (id && !plannedCurrent.exercise.alternatives?.includes(id))) return;
       if (reports?.some(report => !safePainSwap(report.area, plannedCurrent.exercise.alternative_exercises?.filter(row => row.id === id && row.id !== report.exercise_id) ?? [], plannedCurrent.exercise.pattern))) return;

@@ -36,7 +36,7 @@ const exercise = { id: 'prescription', exercise_id: 'row', position: 1, sets: 3,
   video_url: 'https://youtube.com/shorts/dQw4w9WgXcQ', alternatives: ['press'],
   alternative_exercises: [{ id: 'press', name_ar: null, name_en: 'Press', media_path: null, video_url: 'https://drive.google.com/open?id=abc123' }] };
 const state: ComponentProps<typeof WorkoutSet>['state'] = {
-  today: '2026-11-15', captainId: 'captain', skipExercise: async () => {}, painBlocked: false, painCarried: [], painReports: [],
+  today: '2026-11-15', captainId: 'captain', skipExercise: async () => {}, skipForPain: async () => 0, painBlocked: false, painCarried: [], painReports: [],
   day: { id: 'day', title: 'Day', position: 1, exercises: [exercise] }, current: { exercise, setIndex: 1, restAfter: 60 },
   session: null, decision: null, programFinished: false, queue: [], doneSets: [], performance: null, lastSession: null,
   weight: 50, reps: 10, rest: { endsAt: null, remaining: 0, total: 0, sound: false, flashing: false,
@@ -62,7 +62,7 @@ it('shows carried pain recovery actions in the workout set with only one primary
       name_en: 'Supported row', media_path: null, body_part: 'back', pattern: 'pull', stress: [] }] } };
   const html = render(current, { painCarried: [report], painReports: [report], painBlocked: true }).html;
   expect(html).toContain('Your pain report (Right knee) affects this exercise.');
-  expect(html).toContain('Skip this exercise');
+  expect(html).toContain('Continue without Right knee');
   expect(html).toContain('Switch to Supported row');
   expect(html.match(/control-primary/g)).toHaveLength(1);
 });

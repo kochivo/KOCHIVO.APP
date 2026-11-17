@@ -13,10 +13,12 @@ import { PainSheet } from './pain-sheet';
 import type { PainInput } from './pain-sheet';
 import { PainAfterSend } from './pain-after-send';
 import { ResponsiveDialog } from '@/ui/responsive-dialog';
+import { usePainSkipNotice } from '../hooks/use-pain-skip-notice';
 
 export function PainFlow({ state, onClose }: { state: ReturnType<typeof useFocusSession>; onClose: () => void }) {
   const locale = useLocale();
   const t = useT(messages);
+  const notifySkipped = usePainSkipNotice();
   const [report, setReport] = useState<PainReportRow | null>(null);
   const current = state.current;
   if (!current || !state.day) return null;
@@ -38,6 +40,11 @@ export function PainFlow({ state, onClose }: { state: ReturnType<typeof useFocus
     <PainAfterSend report={report} exercise={exercise} affected={affected} onContinue={onClose}
       alternative={alternative ? exerciseName(alternative, locale) : undefined}
       onSwap={() => { if (alternative) { state.switchExercise(alternative.id); onClose(); } }}
-      onSkip={() => { void state.skipExercise(current.exercise.id); onClose(); }} />
+      onStop={() => { void state.skipForPain(); onClose(); }}
+      onSkip={() => {
+        if (affected) void state.skipForPain(report).then(count => notifySkipped(count, report));
+        else void state.skipExercise(current.exercise.id);
+        onClose();
+      }} />
   </ResponsiveDialog>;
 }

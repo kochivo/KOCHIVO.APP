@@ -4,13 +4,23 @@ import { nextMedalRank, previewWorkoutPoints, ranksMessages, medalRank } from '@
 import type { WorkoutPointsInput } from '@/features/ranks';
 import { formatNumber } from '@/lib/format';
 import { ranksEnabled } from '@/lib/ranks-enabled';
+import { useSyncExternalStore } from 'react';
 import { messages } from '../messages';
+import { messages as painMessages } from '../pain/messages';
+import { painFinishHeadline, readPainSkipCount } from '../pain-stop';
 
 import Link from 'next/link';
 import { buttonClass } from '@/ui/button';
 
-export function DonePanel({ workout, lifetime }: { workout?: WorkoutPointsInput; lifetime?: number }) {
+const noSubscribe = () => () => {};
+
+export function DonePanel({ workout, lifetime, sessionId }: { workout?: WorkoutPointsInput; lifetime?: number; sessionId?: string }) {
   const t = useT(messages);
+  const pt = useT(painMessages);
+  // localStorage is browser-only; the server snapshot keeps hydration on the normal headline.
+  const painSkipped = useSyncExternalStore(noSubscribe,
+    () => sessionId ? readPainSkipCount(window.localStorage, sessionId) : 0, () => 0);
+  const painHeadline = painFinishHeadline(painSkipped, workout?.loggedSets ?? 0);
   const rankT = useT(ranksMessages);
   const locale = useLocale();
   const number = (value: number) => formatNumber(value, locale);
@@ -28,7 +38,8 @@ export function DonePanel({ workout, lifetime }: { workout?: WorkoutPointsInput;
     line = t('pointsSets', { logged: number(workout.loggedSets), planned: number(workout.plannedSets), min: number(preview.minSets) });
   }
   return <section className="glass-strong space-y-card-gap rounded-card p-section text-center">
-    <h1 className="text-3xl font-extrabold">{t('workoutComplete')}</h1>
+    <h1 className={painHeadline ? 'text-title font-extrabold' : 'text-3xl font-extrabold'}>
+      {painHeadline ? pt(painHeadline, { n: number(painSkipped) }) : t('workoutComplete')}</h1>
     {line && <p className={preview?.counted ? 'font-bold' : 'text-muted'}>{line}</p>}
     <p className="text-muted">{t('savedOnYourPhoneYourCoachWill')}</p>
     <Link href="/player" className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-page-x" })}>{t('backToHome')}</Link>

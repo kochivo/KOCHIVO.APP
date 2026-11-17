@@ -8,6 +8,7 @@ import type { SnapshotExercise } from '@/core/offline';
 import { PainCarried } from './components/pain-carried';
 
 vi.mock('@/core/i18n/client', () => ({ useT: (m: Parameters<typeof createT>[0]) => createT(m, 'en'), useLocale: () => 'en' }));
+vi.mock('@/ui/toast', () => ({ useToast: () => ({ success() {} }) }));
 const report: PainReportRow = { id: 'pain', captain_id: 'coach', session_id: 'session',
   program_exercise_id: 'bench', exercise_id: 'bench-exercise', set_index: 1, area: 'knee_r',
   side_view: 'front', severity: 2, kind: 'strain', created_at: '2026-11-16T10:00:00Z' };
@@ -19,7 +20,7 @@ const safe = { id: 'safe', name_ar: null, name_en: 'Supported row', media_path: 
   body_part: 'back', pattern: 'pull', stress: [] };
 const step = { exercise, setIndex: 1, restAfter: 0 };
 const state: Parameters<typeof PainCarried>[0]['state'] = { current: step, painCarried: [report], painReports: [report],
-  disabled: false, switchExercise() {}, skipExercise: async () => {} };
+  disabled: false, switchExercise() {}, skipForPain: async () => 0 };
 type Props = { children?: unknown; onClick?: () => void };
 function elements(node: unknown): ReactElement<Props>[] {
   if (Array.isArray(node)) return node.flatMap(elements);
@@ -28,16 +29,16 @@ function elements(node: unknown): ReactElement<Props>[] {
   return [element, ...elements(element.props.children)];
 }
 
-it('explains the carried area and skips the current exercise without another report', () => {
-  let skipped = '';
-  const tree = PainCarried({ state: { ...state, skipExercise: async id => { skipped = id; } } });
+it('explains the carried area and bulk skips using the carried report without another report', () => {
+  let skipped: PainReportRow | undefined;
+  const tree = PainCarried({ state: { ...state, skipForPain: async report => { skipped = report; return 2; } } });
   const html = renderToStaticMarkup(tree);
   expect(html).toContain('Your pain report (Right knee) affects this exercise.');
-  expect(html).toContain('Skip this exercise');
-  expect(html).toContain('control-secondary');
+  expect(html).toContain('Continue without Right knee');
+  expect(html).toContain('control-primary');
   expect(html).not.toContain('Switch to');
-  elements(tree).find(node => node.props.children === 'Skip this exercise')?.props.onClick?.();
-  expect(skipped).toBe('squat');
+  elements(tree).find(node => node.props.children === 'Continue without Right knee')?.props.onClick?.();
+  expect(skipped).toEqual(report);
 });
 
 it('offers a safe alternative and switches to its identity', () => {

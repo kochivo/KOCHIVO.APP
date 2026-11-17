@@ -2,6 +2,9 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    stopWorkout: 'وقّف تمرين النهارده', removed: 'شلنا {n} تمارين عشان {area}',
+    finishStopped: 'وقفنا تمرين النهارده عشان الوجع. الكابتن عرف.',
+    finishSafe: 'خلصت التمارين الآمنة. شلنا {n} عشان الوجع، والكابتن عرف.',
     carried: 'تقرير الوجع ({area}) بيأثر على التمرين ده.', switchTo: 'بدّل لـ {name}', skipExercise: 'عدّي التمرين ده',
     open: 'عندي وجع', where: 'فين الوجع؟', severity: 'قد إيه؟', kind: 'نوعه', send: 'ابعت للكابتن',
     front: 'أمام', back: 'ورا', sharp: 'وجع حاد', strain: 'شد', tired: 'تعب عادي',
@@ -18,6 +21,9 @@ export const messages = defineMessages({
     ankle_l: 'الكاحل الشمال', ankle_r: 'الكاحل اليمين', other: 'مكان تاني',
   },
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? {
+    stopWorkout: 'أوقف تمرين اليوم', removed: 'أزلنا {n} تمارين بسبب الألم في {area}',
+    finishStopped: 'أوقفنا تمرين اليوم بسبب الألم. أُبلغ المدرب.',
+    finishSafe: 'أنهيت التمارين الآمنة. أزلنا {n} بسبب الألم، وأُبلغ المدرب.',
     carried: 'تقرير الألم ({area}) يؤثر على هذا التمرين.', switchTo: 'انتقل إلى {name}', skipExercise: 'تخطّ هذا التمرين',
     open: 'أشعر بألم', where: 'أين الألم؟', severity: 'ما شدته؟', kind: 'نوعه', send: 'أرسل للمدرب',
     front: 'أمام', back: 'خلف', sharp: 'ألم حاد', strain: 'شد', tired: 'تعب عادي',
@@ -34,6 +40,9 @@ export const messages = defineMessages({
     ankle_l: 'الكاحل الأيسر', ankle_r: 'الكاحل الأيمن', other: 'مكان آخر',
   } as const : undefined; },
   en: {
+    stopWorkout: "Stop today's workout", removed: 'Removed {n} exercises for {area} pain',
+    finishStopped: "We stopped today's workout because of pain. Your coach knows.",
+    finishSafe: 'You finished the safe exercises. We removed {n} for pain. Your coach knows.',
     carried: 'Your pain report ({area}) affects this exercise.', switchTo: 'Switch to {name}', skipExercise: 'Skip this exercise',
     open: "I'm in pain", where: 'Where does it hurt?', severity: 'How bad?', kind: 'What kind?', send: 'Send to coach',
     front: 'Front', back: 'Back', sharp: 'Sharp', strain: 'Strain', tired: 'Tired',

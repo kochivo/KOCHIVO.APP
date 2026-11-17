@@ -37,7 +37,7 @@ export function SessionFeedback({ sessionId, hasFeedback, workout }: {
     } catch { setError(true); }
     finally { saving.current = false; setBusy(false); }
   };
-  if (done) return <>{v6 && <FinishHero sessionId={sessionId} workout={workout} />}<DonePanel workout={workout} />{v6 && <><FinishShare /><FinishHero sessionId={sessionId} workout={workout} extras /></>}</>;
+  if (done) return <>{v6 && <FinishHero sessionId={sessionId} workout={workout} />}<DonePanel workout={workout} sessionId={sessionId} />{v6 && <><FinishShare /><FinishHero sessionId={sessionId} workout={workout} extras /></>}</>;
   if (v6) return <section aria-label={t('v3Done')} className="space-y-card-gap">
     <div className="flex min-h-[calc(100dvh-40px)] flex-col gap-card-gap">
     <FinishHero sessionId={sessionId} workout={workout} />

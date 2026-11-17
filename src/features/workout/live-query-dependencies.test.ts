@@ -85,6 +85,7 @@ beforeEach(async () => {
 
 afterEach(async () => {
   for (const slot of slots) slot.cleanup?.();
+  vi.unstubAllGlobals();
   await db.delete();
   vi.useRealTimers();
   for (const path of ['react', '@/core/offline', '@/core/i18n/client', '@/features/player-home',
@@ -131,4 +132,29 @@ it('keeps session and sets values when a snapshot emits an equal but new day obj
   expect(after.doneSets).toHaveLength(1);
   expect(after.current?.setIndex).toBe(2);
   expect(after.loading).toBe(false);
+});
+
+it.each([0, 1])('bulk pain skip completes through the existing path with %i logged sets', async loggedSets => {
+  const writes: [string, string][] = [];
+  const stored = new Map<string, string>();
+  vi.stubGlobal('window', { addEventListener() {}, removeEventListener() {}, localStorage: {
+    getItem: (key: string) => stored.get(key) ?? null,
+    setItem: (key: string, value: string) => { writes.push([key, value]); stored.set(key, value); },
+  } });
+  if (!loggedSets) await db.set_logs.clear();
+  for (let pass = 0; pass < 4; pass++) { render(); await vi.runAllTimersAsync(); }
+  const before = render();
+  expect(before.doneSets).toHaveLength(loggedSets);
+  expect(await before.skipForPain(loggedSets ? undefined : {
+    id: 'pain', captain_id: 'captain', session_id: before.session?.id ?? '', program_exercise_id: 'item',
+    exercise_id: 'exercise', set_index: 1, area: 'knee_r', side_view: 'front', severity: 2,
+    kind: 'strain', created_at: '2026-11-04T10:00:00.000Z',
+  })).toBe(1);
+  for (let pass = 0; pass < 4; pass++) { render(); await db.workout_sessions.toArray(); await vi.runAllTimersAsync(); }
+  const after = render();
+  expect(after.queue).toEqual([]);
+  expect(after.finished).toBe(true);
+  expect(after.doneSets).toHaveLength(loggedSets);
+  expect(writes).toEqual([[`exercise-choices:pain-skips:${before.session?.id}`, '{"item":"skip"}']]);
+  expect((await db.workout_sessions.get(before.session?.id ?? ''))?.completed_at).toBe('2026-11-04T10:00:00.000Z');
 });

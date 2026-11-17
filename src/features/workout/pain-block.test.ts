@@ -29,8 +29,17 @@ it('checks every report, including stress metadata and unknown body parts', () =
   const stressed = { ...lat, exercise_id: 'swap', alternative_exercises: [{ id: 'swap',
     name_ar: null, name_en: 'Swap', media_path: null, body_part: 'back', stress: ['knee'] }] };
   expect(painBlocksExercise([{ ...report, area: 'ankle_r' }, report], stressed)).toBe(true);
-  expect(painBlocksExercise([report], { ...lat, body_part: null })).toBe(true);
+  expect(painBlocksExercise([report], { ...lat, body_part: null })).toBe(false);
   expect(painBlocksExercise([], undefined)).toBe(false);
+});
+
+it.each([null, undefined, 'unknown'])('keeps unknown part %s open for mild named pain only', body_part => {
+  const unknown = { ...lat, body_part };
+  expect(painBlocksExercise([report], unknown)).toBe(false);
+  expect(painBlocksExercise([{ ...report, kind: 'sharp' }], unknown)).toBe(true);
+  expect(painBlocksExercise([{ ...report, severity: 5 }], unknown)).toBe(true);
+  expect(painBlocksExercise([{ ...report, area: 'other' }], unknown)).toBe(true);
+  expect(painBlocksExercise([report], { ...bench, body_part })).toBe(true);
 });
 
 it('uses the selected alternative body part for reports from another exercise', () => {

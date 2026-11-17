@@ -17,7 +17,7 @@ const report = { id: 'report', captain_id: 'captain', player_id: 'player', sessi
 const noop = () => {};
 it('lets an unaffected exercise continue without offering a swap or claiming it stopped', () => {
   const props = { report: { ...report, severity: 2, kind: 'strain' as const }, exercise: 'Bench press',
-    affected: false, onContinue: noop, onSkip: noop, onSwap: noop, alternative: 'Curl' };
+    affected: false, onContinue: noop, onSkip: noop, onSwap: noop, onStop: noop, alternative: 'Curl' };
   const html = renderToStaticMarkup(createElement(PainAfterSend, props));
   expect(html).toContain('Continue the workout');
   expect(html).toContain('Stop this exercise anyway');
@@ -31,10 +31,13 @@ it.each([
   { severity: 2, kind: 'sharp' as const },
 ])('stops even an unaffected exercise for urgent pain %j', urgent => {
   const props = { report: { ...report, ...urgent }, exercise: 'Bench press', affected: false,
-    onContinue: noop, onSkip: noop, onSwap: noop };
+    onContinue: noop, onSkip: noop, onSwap: noop, onStop: noop };
   const html = renderToStaticMarkup(createElement(PainAfterSend, props));
   expect(html).toContain('Stopped Bench press');
   expect(html).not.toContain('Continue the workout');
+  expect(html).toContain('Stop today&#x27;s workout');
+  expect(html).toContain('Continue without Right knee');
+  expect(html.match(/control-primary/g)).toHaveLength(1);
   expect(html.indexOf('text-danger')).toBeLessThan(html.indexOf('Stopped Bench press'));
 });
 it('renders the sheet with accessible body choices, severity and kind', () => {
@@ -46,7 +49,7 @@ it('renders the sheet with accessible body choices, severity and kind', () => {
   expect(html).toContain('Sharp');
 });
 it('always shows the doctor note and exposes a swap only when safe', () => {
-  const props = { report, exercise: 'Squat', affected: true, onContinue: noop, onSkip: noop, onSwap: noop };
+  const props = { report, exercise: 'Squat', affected: true, onContinue: noop, onSkip: noop, onSwap: noop, onStop: noop };
   const without = renderToStaticMarkup(createElement(PainAfterSend, props));
   expect(without).toContain("If it&#x27;s sharp or swollen, stop and see a doctor.");
   expect(without).not.toContain('Use the swap');
