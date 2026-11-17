@@ -55,6 +55,13 @@ it('edits package values and tier together while retaining session fields', asyn
   const result = await saveCatalogPackage({ ...input, id: state.row.id });
   expect(result.data).toMatchObject({ name: 'PT', days: 60, price_egp: 1500, sessions: 10, tier_id: input.tier_id });
 });
+it('saves an optional bounded freeze allowance', async () => {
+  expect((await saveCatalogPackage({ ...input, max_freeze_days: 12 })).data).toMatchObject({ max_freeze_days: 12 });
+  expect((await saveCatalogPackage({ ...input, max_freeze_days: null })).data).toMatchObject({ max_freeze_days: null });
+  for (const max_freeze_days of [-1, 91, 1.5]) {
+    expect(await saveCatalogPackage({ ...input, max_freeze_days })).toEqual({ error: 'packageInvalid' });
+  }
+});
 it('does not edit a package outside the current captain ownership filter', async () => {
   state.row.captain_id = 'other';
   try { expect(await saveCatalogPackage({ ...input, id: state.row.id })).toEqual({ error: 'packageFailed' }); }

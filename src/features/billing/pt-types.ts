@@ -1,6 +1,7 @@
 import type { PaymentMethod } from './payment-methods';
 
 export interface PlayerBalance {
+  frozen_until?: string | null;
   awaiting_plans_at?: string | null;
   id: string;
   access_until: string;

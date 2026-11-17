@@ -1,5 +1,8 @@
 const baseMessages = {
   ar: {
+    freeze_requested: '{name} بعت طلب تجميد',
+    freeze_approved: 'كابتن {name} وافق على طلب التجميد',
+    freeze_declined: 'كابتن {name} رفض طلب التجميد',
     coach_replied_assessment: 'كابتن {name} رد على التقييم',
     chat_message: '{name} بعتلك رسالة',
     form_requested: 'الكابتن مستني ردّك على {name}',
@@ -38,6 +41,9 @@ const baseMessages = {
     workout_reminder: 'جاهز لتمرين النهارده؟ {name} مستنيك',
   },
   en: {
+    freeze_requested: '{name} requested a freeze',
+    freeze_approved: '{name} approved your freeze request',
+    freeze_declined: '{name} declined your freeze request',
     coach_replied_assessment: '{name} replied to your assessment',
     chat_message: '{name} sent you a message',
     form_requested: 'Your captain is waiting for: {name}',
@@ -79,6 +85,9 @@ const baseMessages = {
 
 export const messages = { ...baseMessages, arStd: {
   ...baseMessages.ar,
+  freeze_requested: 'أرسل {name} طلب تجميد',
+  freeze_approved: 'وافق المدرب {name} على طلب التجميد',
+  freeze_declined: 'رفض المدرب {name} طلب التجميد',
   coach_replied_assessment: 'ردّ المدرب {name} على التقييم',
   chat_message: 'أرسل {name} رسالة إليك',
   form_requested: 'المدرب ينتظر ردك على {name}',

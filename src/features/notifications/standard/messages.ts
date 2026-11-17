@@ -1,4 +1,7 @@
 export const arStd = {
+  freeze_requested: 'أرسل {name} طلب تجميد',
+  freeze_approved: 'وافق المدرب {name} على طلب التجميد',
+  freeze_declined: 'رفض المدرب {name} طلب التجميد',
   coach_replied_assessment: 'ردّ المدرب {name} على التقييم',
   checkin_submitted: 'أرسل {name} المتابعة', form_answered: 'أجاب {name} عن النموذج',
   swap_requested: 'طلب {name} تبديل تمرين', form_check_submitted: 'أرسل {name} فيديو أداء',

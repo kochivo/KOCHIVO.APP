@@ -14,10 +14,13 @@ import type { Renewal } from './renew-sheet';
 import { messages as choiceMessages } from '../choice/messages';
 import { RequestsEntry } from '../choice/requests-entry';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { messages as freezeMessages } from '../freeze/messages';
+import { formatDateAr } from '@/lib/dates';
 
 export function BillingManagerCard({ playerId, name, today, autoActivate, workspace = false }: { playerId: string; name: string; today: string; autoActivate?: boolean; workspace?: boolean }) {
   const t = useT(messages), locale = useLocale(), router = useRouter();
   const ct = useT(choiceMessages);
+  const ft = useT(freezeMessages);
   const [data, setData] = useState<Awaited<ReturnType<typeof loadPlayerBalance>>['data']>();
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -48,17 +51,18 @@ export function BillingManagerCard({ playerId, name, today, autoActivate, worksp
       : <p role="status">{t('loading')}</p> : <>
       <p className="text-xl font-bold">{balanceLabel(balance, today, locale)}</p>
       {balance.frozen_at && <span className="rounded-control bg-water/10 px-stack py-inline text-water">{t('frozen')}</span>}
+      {balance.frozen_until && <p className="text-warn">{ft('until', { date: formatDateAr(balance.frozen_until, { day: 'numeric', month: 'long', year: 'numeric' }, locale) })}</p>}
       <div className="flex flex-wrap gap-inline">
         {balance.pending ? <Button disabled={busy} onClick={() => setSheet('activate')}>{t('activate')}</Button> : <>
           <Button className="w-auto flex-1" disabled={busy || Boolean(balance.frozen_at)} onClick={() => setSheet('renew')}>{t(balance.frozen_at ? 'unfreezeFirst' : 'renew')}</Button>
           <Button variant="secondary" className="flex-1 text-muted hover:text-ink" disabled={busy} onClick={() => {
             if (window.confirm(t('confirm'))) void run(() => setPlayerFrozen(balance.id, !balance.frozen_at),
-              { ...data, balance: { ...balance, frozen_at: balance.frozen_at ? null : `${today}T12:00:00Z` } });
+              { ...data, balance: { ...balance, frozen_at: balance.frozen_at ? null : `${today}T12:00:00Z`, frozen_until: null } });
           }}>{t(balance.frozen_at ? 'unfreeze' : 'freeze')}</Button>
         </>}
       </div>
       {error && <p role="alert" className="text-danger">{error}</p>}
-      {captainWorkspaceEnabled() && !balance.pending && <RequestsEntry playerId={playerId} />}
+      {captainWorkspaceEnabled() && !balance.pending && <RequestsEntry playerId={playerId} onDecided={() => void load()} />}
       {sheet === 'activate' && <ActivateSheet packages={data.packages} selectedPackageId={data.selectedPackageId} busy={busy} error={error} onClose={() => setSheet(null)}
         onSave={(input: Activation) => void run(() => activatePlayer(balance.id, input))} />}
       {sheet === 'renew' && !balance.frozen_at && <RenewSheet name={name} accessUntil={balance.access_until} today={today} packages={data.packages}

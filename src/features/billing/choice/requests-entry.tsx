@@ -1,4 +1,5 @@
 'use client';
 import dynamic from 'next/dynamic';
 const Requests = dynamic(() => import('./renewal-requests').then(m => m.RenewalRequests));
-export function RequestsEntry({ playerId }: { playerId?: string }) { return <Requests playerId={playerId} />; }
+const Freezes = dynamic(() => import('../freeze/captain-requests').then(m => m.CaptainFreezeRequests));
+export function RequestsEntry({ playerId, onDecided }: { playerId?: string; onDecided?: () => void }) { return <><Requests playerId={playerId} /><Freezes playerId={playerId} onDecided={onDecided} /></>; }

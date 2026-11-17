@@ -52,6 +52,8 @@ export function notificationHref(row: Notification): string {
 }
 
 export function importantNotificationHref(row: Notification): string | undefined {
+  if (row.type === 'freeze_requested') return '/captain/billing';
+  if (row.type === 'freeze_approved' || row.type === 'freeze_declined') return '/player';
   const player = row.payload.player_id ? `/captain/players/${encodeURIComponent(row.payload.player_id)}` : undefined;
   if (row.type === 'coach_replied') return row.payload.kind === 'assessment'
     ? row.payload.request_id ? `/player/forms/${encodeURIComponent(row.payload.request_id)}` : '/player/assessments'

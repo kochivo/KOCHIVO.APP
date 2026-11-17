@@ -10,6 +10,7 @@ import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 import { messages as ptMessages } from '../packages/messages';
 import { messages as durationMessages } from '../tiers/messages';
+import { messages as freezeMessages } from '../freeze/messages';
 import { duplicateDuration, durationLabel, durationPresets, firstUnusedDuration } from '../package-choice';
 
 import { useState } from 'react';
@@ -23,13 +24,15 @@ import { useToast } from '@/ui/toast';
 import { messages as successMessages } from '../success/messages';
 
 export type PackageEditor = { item?: CatalogPackage; tierId: string; packages: CatalogPackage[]; tiers: Tier[]; tierLabel: string; noTierLabel: string; saveLabel: string;
-  save: (value: { name: string; price: number; days: number; kind: 'days' | 'sessions'; sessions: number | null; tier_id: string | null }) => Promise<boolean> };
+  save: (value: { name: string; price: number; days: number; kind: 'days' | 'sessions'; sessions: number | null; tier_id: string | null; max_freeze_days: number | null }) => Promise<boolean> };
 
 export function PackagesCard({ packages: initial, onChange, initialAdding = false, editor }: { packages: Package[]; onChange: (packages: Package[]) => void; initialAdding?: boolean; editor?: PackageEditor }) {
   const PlusIcon = captainWorkspaceEnabled() ? KoPlus : Plus;
   const t = useT(messages);
   const pt = useT(ptMessages);
   const dt = useT(durationMessages);
+  const ft = useT(freezeMessages);
+  const [freezeDays, setFreezeDays] = useState(editor?.item?.max_freeze_days == null ? '' : String(editor.item.max_freeze_days));
   const locale = useLocale();
   const success = useT(successMessages), toast = useToast();
   const [packages, setPackages] = useState(initial);
@@ -44,11 +47,12 @@ export function PackagesCard({ packages: initial, onChange, initialAdding = fals
   const [tierId, setTierId] = useState(editor?.item?.tier_id ?? editor?.tierId ?? '');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
-  const values = { name: name.trim(), price: Number(price), days: Number(days), kind, sessions: kind === 'sessions' ? sessions : null };
+  const values = { name: name.trim(), price: Number(price), days: Number(days), kind, sessions: kind === 'sessions' ? sessions : null, max_freeze_days: freezeDays === '' ? null : Number(freezeDays) };
   const duplicate = editor && duplicateDuration(editor.packages, { ...values, id: editor.item?.id, tier_id: tierId || null });
   const valid = values.name.length > 0 && values.name.length <= 60 && price.trim() !== ''
     && Number.isInteger(values.price) && values.price >= 0 && values.price <= 100000
-    && Number.isInteger(values.days) && values.days >= 1 && values.days <= 365 && !duplicate;
+    && Number.isInteger(values.days) && values.days >= 1 && values.days <= 365 && !duplicate
+    && (values.max_freeze_days === null || Number.isInteger(values.max_freeze_days) && values.max_freeze_days >= 0 && values.max_freeze_days <= 90);
   function update(next: Package[]) { setPackages(next); onChange(next); }
 
   async function add() {
@@ -118,6 +122,8 @@ export function PackagesCard({ packages: initial, onChange, initialAdding = fals
           <TextField label={t('packagePrice')} type="number" inputMode="numeric" min={0} max={100000} step={1} required value={price} onChange={(event) => setPrice(event.target.value)} />
           {(!editor || kind === 'sessions' || custom) && <TextField label={t('packageDays')} type="number" inputMode="numeric" min={1} max={365} step={1} required value={days} onChange={(event) => setDays(event.target.value)} />}
         </div>
+        <TextField label={ft('limit')} type="number" inputMode="numeric" min={0} max={90} step={1} value={freezeDays} onChange={event => setFreezeDays(event.target.value)} />
+        <p className="text-xs text-muted">{ft('limitHint')}</p>
         <div className="flex flex-wrap gap-inline">
           <Button type="submit" className="min-h-12 flex-1" disabled={!valid || busy}>{editor?.item ? editor.saveLabel : t('addPackage')}</Button>
           {!editor && <Button variant={captainWorkspaceEnabled() ? 'secondary' : 'ghost'} className="min-h-12" disabled={busy} onClick={() => { setAdding(false); setError(''); }}>{t('closeCollect')}</Button>}

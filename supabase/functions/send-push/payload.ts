@@ -26,13 +26,15 @@ export function pushPayload(row: PushNotificationRow, locale: 'ar' | 'en' = 'ar'
     ? `rank_up_${tier}` as const
     : row.type === 'crown_close' && needsWorkouts===0 && gap>0 ? 'crown_close_points'
       : playerExpiry ? `${row.type}_player` as 'subscription_expiring_player' | 'subscription_expired_player' : row.type;
-  const captainEvent = ['checkin_submitted', 'form_answered', 'swap_requested', 'form_check_submitted', 'receipt_submitted'].includes(row.type);
-  const name = field(playerExpiry || row.type === 'coach_replied' || row.type === 'swap_decided' ? 'captain_name'
+  const freezeDecision = row.type === 'freeze_approved' || row.type === 'freeze_declined';
+  const captainEvent = ['checkin_submitted', 'form_answered', 'swap_requested', 'form_check_submitted', 'receipt_submitted', 'freeze_requested'].includes(row.type);
+  const name = field(playerExpiry || row.type === 'coach_replied' || row.type === 'swap_decided' || freezeDecision ? 'captain_name'
     : row.type === 'workout_reminder' ? 'day_title' : row.type === 'player_pain' || row.type === 'player_rank_up' || captainEvent ? 'display_name' : 'name');
   const rank = row.type === 'rank_up' || row.type === 'crown_taken' || row.type === 'crown_lost'
     || row.type === 'crown_close' || row.type === 'crown_defend';
   const playerPath = player ? `/captain/players/${encodeURIComponent(player)}` : '';
-  const importantPath = row.type === 'receipt_submitted' ? '/captain/billing'
+  const importantPath = row.type === 'receipt_submitted' || row.type === 'freeze_requested' ? '/captain/billing'
+    : freezeDecision ? '/player'
     : row.type === 'chat_message' ? row.user_id === player && player ? '/player/captain'
       : playerPath ? `${playerPath}/chat` : '/captain/players'
     : row.type === 'form_requested' ? field('request_id') ? `/player/forms/${encodeURIComponent(field('request_id'))}` : '/player'

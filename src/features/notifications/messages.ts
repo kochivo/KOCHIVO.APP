@@ -5,6 +5,9 @@ export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? { ...arStd, workspaceMarkAll: 'علّم الكل مقروء' } : undefined; },
   ar: {
+    freeze_requested: '{name} بعت طلب تجميد',
+    freeze_approved: 'كابتن {name} وافق على طلب التجميد',
+    freeze_declined: 'كابتن {name} رفض طلب التجميد',
     coach_replied_assessment: 'كابتن {name} رد على التقييم',
     checkin_submitted: '{name} بعت المتابعة', form_answered: '{name} جاوب على الفورم',
     swap_requested: '{name} طالب يبدّل تمرين', form_check_submitted: '{name} بعت فيديو أداء',
@@ -46,6 +49,9 @@ export const messages = defineMessages({
     now: 'دلوقتي', minutes: 'من {n} دقيقة', hours: 'من {n} ساعة', days: 'من {n} يوم',
   },
   en: {
+    freeze_requested: '{name} requested a freeze',
+    freeze_approved: '{name} approved your freeze request',
+    freeze_declined: '{name} declined your freeze request',
     coach_replied_assessment: '{name} replied to your assessment',
     checkin_submitted: '{name} submitted a check-in', form_answered: '{name} answered a form',
     swap_requested: '{name} requested an exercise swap', form_check_submitted: '{name} submitted a form video',

@@ -13,6 +13,7 @@ import { paymentMethod } from '../payment-methods';
 import { paymentMethodClient } from './payment-method-client';
 
 const packageInput = z.object({
+  max_freeze_days: z.number().int().min(0).max(90).nullable().optional(),
   name: z.string().trim().min(1).max(60),
   price: z.number().int().min(0).max(100000),
   days: z.number().int().min(1).max(365),
@@ -37,8 +38,8 @@ export async function createPackage(input: unknown): Promise<ActionResult<Packag
   if (!parsed.success) return { error: t('packageInvalid') };
   try {
     const { client, captainId } = await captainClient();
-    const { name, price, days, kind, sessions } = parsed.data;
-    const result = await client.from('captain_packages').insert({ id: uuidv7(), captain_id: captainId, name, price_egp: price, days, kind, sessions })
+    const { name, price, days, kind, sessions, max_freeze_days } = parsed.data;
+    const result = await client.from('captain_packages').insert({ id: uuidv7(), captain_id: captainId, name, price_egp: price, days, kind, sessions, max_freeze_days })
       .select('id, name, price_egp, days, kind, sessions').single();
     if (result.error) throw result.error;
     revalidatePath('/captain/billing');

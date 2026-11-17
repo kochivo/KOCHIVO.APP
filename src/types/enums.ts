@@ -20,6 +20,7 @@ export const notificationTypes = [
   'subscription_expiring', 'subscription_expired', 'rank_up', 'crown_taken', 'crown_lost',
   'crown_close', 'crown_defend', 'form_requested', 'renewal_requested', 'chat_message', 'player_rank_up', 'ramadan_soon', 'player_pain', 'pain_answered',
   'checkin_submitted', 'form_answered', 'swap_requested', 'form_check_submitted', 'receipt_submitted', 'coach_replied', 'swap_decided',
+  'freeze_requested', 'freeze_approved', 'freeze_declined',
 ] as const;
 export type NotificationType = typeof notificationTypes[number];
 export const pointKinds = ['workout', 'pr', 'perfect_week', 'inbody', 'meal_check'] as const;

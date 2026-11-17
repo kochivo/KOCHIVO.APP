@@ -466,8 +466,18 @@ export type Database = {
           referencedColumns: ["id"]
         }]
       }
+      freeze_requests: {
+        Row: { id: string; player_id: string; captain_id: string; days: number; note: string | null; status: string; created_at: string; decided_at: string | null }
+        Insert: { id: string; player_id: string; captain_id: string; days: number; note?: string | null; status?: string; created_at?: string; decided_at?: string | null }
+        Update: { id?: string; player_id?: string; captain_id?: string; days?: number; note?: string | null; status?: string; created_at?: string; decided_at?: string | null }
+        Relationships: [
+          { foreignKeyName: "freeze_requests_player_id_fkey"; columns: ["player_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] },
+          { foreignKeyName: "freeze_requests_captain_id_fkey"; columns: ["captain_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] },
+        ]
+      }
       captain_packages: {
         Row: {
+          max_freeze_days: number | null
           archived_at: string | null
           captain_id: string
           created_at: string
@@ -480,6 +490,7 @@ export type Database = {
           tier_id: string | null
         }
         Insert: {
+          max_freeze_days?: number | null
           archived_at?: string | null
           captain_id: string
           created_at?: string
@@ -492,6 +503,7 @@ export type Database = {
           tier_id?: string | null
         }
         Update: {
+          max_freeze_days?: number | null
           archived_at?: string | null
           captain_id?: string
           created_at?: string
@@ -650,6 +662,7 @@ export type Database = {
       }
       coach_clients: {
         Row: {
+          frozen_until: string | null
           subscription_starts_on: string | null
           awaiting_plans_at: string | null
           access_until: string
@@ -666,6 +679,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          frozen_until?: string | null
           subscription_starts_on?: string | null
           awaiting_plans_at?: string | null
           access_until: string
@@ -682,6 +696,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          frozen_until?: string | null
           subscription_starts_on?: string | null
           awaiting_plans_at?: string | null
           access_until?: string
@@ -2636,6 +2651,10 @@ export type Database = {
       }
     }
     Functions: {
+      remaining_freeze_days: { Args: { p_captain: string }; Returns: number }
+      request_player_freeze: { Args: { p_id: string; p_captain: string; p_days: number; p_note?: string | null }; Returns: undefined }
+      cancel_freeze_request: { Args: { p_id: string }; Returns: undefined }
+      decide_freeze_request: { Args: { p_id: string; p_approve: boolean }; Returns: undefined }
       leave_coach_waitlist: {
         Args: { p_id: string }
         Returns: undefined

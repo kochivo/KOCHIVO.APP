@@ -11,6 +11,7 @@ import { messages as methodMessages } from '../methods/messages';
 import { PlayerReceipt } from '../receipts/player-receipt';
 import { loadPlayerReceipt } from '../data/receipt-actions';
 import { Button } from '@/ui/button';
+import { PlayerFreeze } from '../freeze/player-freeze';
 export function RenewalChoice() {
   const t = useT(messages);
   const methodT = useT(methodMessages);
@@ -46,5 +47,6 @@ export function RenewalChoice() {
     {open && !data.pending && <><PaymentMethodPicker methods={data.methods} value={method} onChange={setMethod} />
       <PricingCards catalog={data.catalog} name={data.name} now={data.now} isRenewal busy={busy} onChoose={(pkg, offer) => void submit(pkg, offer)} /></>}
     <PlayerReceipt renewalId={data.pending} />
+    <PlayerFreeze />
   </section>;
 }
