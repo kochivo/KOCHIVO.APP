@@ -44,3 +44,4 @@ it('connects the featured tiers before offers only in the workspace path', () =>
   expect(html).not.toContain('min-h-[280px]');
   expect(state.portal.mock.calls.map(call => call[1])).toEqual(['title', 'actions']);
 });
+vi.mock('../data/freeze-settings', () => ({ loadFreezeSettings: vi.fn(), saveFreezeSettings: vi.fn() }));

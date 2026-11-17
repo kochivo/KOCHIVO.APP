@@ -16,6 +16,32 @@ export type Database = {
   }
   public: {
     Tables: {
+      captain_freeze_settings: {
+        Row: {
+          captain_id: string
+          default_days: number | null
+          updated_at: string
+        }
+        Insert: {
+          captain_id: string
+          default_days?: number | null
+          updated_at?: string
+        }
+        Update: {
+          captain_id?: string
+          default_days?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "captain_freeze_settings_captain_id_fkey"
+            columns: ["captain_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       coach_waitlist: {
         Row: {
           captain_id: string

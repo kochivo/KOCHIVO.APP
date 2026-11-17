@@ -9,6 +9,7 @@ import { catalogFixture } from './tiers/catalog-fixture';
 import type { CatalogPackage } from './tiers/types';
 
 vi.mock('./data/finance-actions', () => ({ createPackage: vi.fn(), archivePackage: vi.fn() }));
+vi.mock('./data/freeze-settings', () => ({ loadFreezeSettings: vi.fn(), saveFreezeSettings: vi.fn() }));
 const month = catalogFixture.packages[0];
 const tier = catalogFixture.tiers[0];
 if (!month || !tier) throw new Error('Missing catalog fixture');

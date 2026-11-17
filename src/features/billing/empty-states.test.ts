@@ -23,3 +23,4 @@ it('invites creating the first package in the empty state', () => {
  expect(html).toContain('<h2 class="text-xl font-bold">No packages yet</h2>');
  expect(html).toContain('>New package</button>');
 });
+vi.mock('./data/freeze-settings', () => ({ loadFreezeSettings: vi.fn(), saveFreezeSettings: vi.fn() }));

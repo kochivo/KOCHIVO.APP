@@ -67,3 +67,4 @@ it.each([1, 2, 7])('renders session plurals across badges, packages and renewal 
       .toContain(count === 1 ? '1 session left' : `${count} sessions left`);
   }
 });
+vi.mock('./data/freeze-settings', () => ({ loadFreezeSettings: vi.fn(), saveFreezeSettings: vi.fn() }));

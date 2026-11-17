@@ -16,3 +16,4 @@ it.each(['0', '1'])('gates the new package icon with flag %s and retains archive
   expect(html).toContain('lucide-x');
   expect(html).toContain('aria-label=');
 });
+vi.mock('./data/freeze-settings', () => ({ loadFreezeSettings: vi.fn(), saveFreezeSettings: vi.fn() }));

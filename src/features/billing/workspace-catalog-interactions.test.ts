@@ -82,3 +82,4 @@ it('retries catalog errors without opening an editor', () => {
   invoke(render()[0], 'onRetry');
   expect(state.retry).toHaveBeenCalledOnce();
 });
+vi.mock('./data/freeze-settings', () => ({ loadFreezeSettings: vi.fn(), saveFreezeSettings: vi.fn() }));

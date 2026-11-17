@@ -22,6 +22,7 @@ import type { Package } from '../types';
 import type { CatalogPackage, Tier } from '../tiers/types';
 import { useToast } from '@/ui/toast';
 import { messages as successMessages } from '../success/messages';
+import { FreezeSettings } from '../freeze/freeze-settings';
 
 export type PackageEditor = { item?: CatalogPackage; tierId: string; packages: CatalogPackage[]; tiers: Tier[]; tierLabel: string; noTierLabel: string; saveLabel: string;
   save: (value: { name: string; price: number; days: number; kind: 'days' | 'sessions'; sessions: number | null; tier_id: string | null; max_freeze_days: number | null }) => Promise<boolean> };
@@ -130,6 +131,7 @@ export function PackagesCard({ packages: initial, onChange, initialAdding = fals
         </div>
       </form> : packages.length > 0 && <Button variant="secondary" className="min-h-12 w-full" onClick={() => setAdding(true)}><PlusIcon aria-hidden className="size-5" />{t('newPackage')}</Button>}
       {error && <p role="alert" className="text-sm text-danger">{error}</p>}
+      {!editor && <FreezeSettings />}
     </GlassCard>
   );
 }

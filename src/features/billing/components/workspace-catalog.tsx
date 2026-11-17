@@ -18,6 +18,7 @@ import type { Tier, CatalogPackage, CatalogOffer } from '../tiers/types';
 import { WorkspaceTierCard } from './workspace-tier-card';
 import { WorkspaceOffersCard } from './workspace-offers-card';
 import { Button } from '@/ui/button';
+import { FreezeSettings } from '../freeze/freeze-settings';
 
 const TierSheet = dynamic(() => import('../tiers/tier-sheet').then(module => module.TierSheet), { loading: () => <LoadingState variant="detail" /> });
 const PackageSheet = dynamic(() => import('../tiers/package-sheet').then(module => module.PackageSheet), { loading: () => <LoadingState variant="detail" /> });
@@ -45,6 +46,7 @@ export function WorkspaceCatalog() {
       : <p className="glass rounded-card p-card text-sm text-faint">{legacy('empty')}</p>}
     <WorkspaceOffersCard catalog={data} now={now} busy={catalog.busy} onNew={() => setPanel({ kind: 'offer' })} onEdit={offer => setPanel({ kind: 'offer', offer })} />
     <UnassignedPackages packages={data.packages.filter(item => !tiers.some(tier => tier.id === item.tier_id))} busy={catalog.busy} onEdit={item => setPanel({ kind: 'package', tierId: '', item })} />
+    <FreezeSettings />
     {panel?.kind === 'tier' && <TierSheet catalog={catalog} tier={panel.tier} onClose={close} />}
     {panel?.kind === 'package' && <PackageSheet catalog={catalog} item={panel.item} tierId={panel.tierId} onClose={close} />}
   </section>;
