@@ -382,3 +382,9 @@ fixes) and T-321b (rank share image). None of their new code is in this
 route's first-load chunks; the 1.2 KiB came from shared chunks splitting
 differently. The route may grow to **317 KiB**; the program builder route
 keeps 315.
+
+## Budget exception — captain player program tab, T-356 (2026-11-17)
+
+T-356 added the shared `NumberInput` (clearable number fields) to the training
+editor. The route measured 317.13 KiB, 0.13 KiB over the old 317 ceiling. The
+route may grow to **318 KiB**; the program builder route keeps 315.
