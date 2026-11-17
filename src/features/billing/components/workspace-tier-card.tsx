@@ -6,16 +6,19 @@ import { workspaceMessages } from '../messages';
 import { messages } from '../tiers/messages';
 import { duplicateDuration, durationLabel } from '../package-choice';
 import type { Tier, CatalogPackage } from '../tiers/types';
+import { tierAccent } from '../tiers/tier-accent';
 import { Button } from '@/ui/button';
 
 export function WorkspaceTierCard({ tier, packages, busy, count, onEdit, onPackage }: {
   tier: Tier; packages: CatalogPackage[]; busy: boolean; count?: number;
   onEdit: () => void; onPackage: (item?: CatalogPackage) => void;
 }) {
-  const t = useT(workspaceMessages), catalog = useT(messages), locale = useLocale();
-  return <article className={`${tier.is_featured ? 'glass-featured cut-corner' : 'glass'} flex h-full min-w-0 flex-col rounded-card p-card`}>
+  const t = useT(workspaceMessages), catalog = useT(messages), locale = useLocale(), accent = tierAccent(tier.color);
+  return <article data-tier-color={tier.color} className={`${tier.is_featured ? 'glass-featured cut-corner' : 'glass'} relative flex h-full min-w-0 flex-col rounded-card p-card`}>
+    <span aria-hidden className={`absolute inset-x-card top-0 h-1 rounded-b-sm ${accent.bar}`} />
     <header className="flex flex-wrap items-center gap-inline">
-      <h2 className="min-w-0 flex-1 break-words text-title font-bold">{tier.name}</h2>
+      <span aria-hidden className={`size-3 shrink-0 rounded-full ${accent.bar}`} />
+      <h2 className="min-w-0 flex-1 break-words text-title font-bold"><span className={accent.text}>{tier.name}</span></h2>
       {tier.is_featured && <span className="tone-lime rounded-md px-inline text-micro font-semibold">{t('featured')}</span>}
     </header>
     {tier.description && <p className="mt-inline text-xs text-muted">{tier.description}</p>}

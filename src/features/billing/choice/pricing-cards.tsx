@@ -6,6 +6,7 @@ import { formatNumber } from '@/lib/format';
 import { countdown, pricingBanner, pricingCards, pricingDurations, durationLabel as sharedDurationLabel } from '../package-choice';
 import type { PricingCatalog } from '../package-choice';
 import { messages } from './messages';
+import { tierAccent } from '../tiers/tier-accent';
 import { Button, buttonClass } from '@/ui/button';
 
 export type PricingProps = { catalog: PricingCatalog; name: string; now: string; signup?: string;
@@ -46,8 +47,9 @@ export function PricingCards({ catalog, name, now, signup, isRenewal = false, on
       const href = signup ? `${signup}&package=${card.pkg.id}${card.offer ? `&offer=${card.offer.id}` : ''}` : undefined;
       const action = buttonClass({ variant: card.tier.is_featured ? 'primary' : 'secondary', block: false });
       return <article key={card.tier.id} className={`glass relative flex flex-col gap-stack rounded-card border px-page-x py-page-y ${card.tier.is_featured ? 'border-lime bg-gradient-to-b from-lime/10 to-transparent' : 'border-line-soft'}`}>
+        <span aria-hidden className={`absolute inset-x-page-x top-0 h-1 rounded-b-sm ${tierAccent(card.tier.color).bar}`} />
         {card.tier.is_featured && <span className="absolute -top-3 start-5 rounded-full bg-lime px-stack py-inline text-micro font-semibold text-on-lime">{t('popular')}</span>}
-        <h3 className="font-display text-title font-semibold">{card.tier.name}</h3><p className="text-xs text-faint">{card.tier.description}</p>
+        <h3 className="font-display text-title font-semibold"><span className={tierAccent(card.tier.color).text}>{card.tier.name}</span></h3><p className="text-xs text-faint">{card.tier.description}</p>
         <div className="glass-strong flex flex-wrap items-baseline gap-inline rounded-control px-stack py-inline"><b className="font-display text-stat font-extrabold tabular-nums">{formatNumber(card.price, locale)}</b>
           <small className="text-faint">{t('currency')}</small>{card.price < card.listPrice && <s className="font-display text-md text-faint">{formatNumber(card.listPrice, locale)}</s>}</div>
         <p className={`text-xs ${banner && !time?.ended && !card.offer ? 'text-faint' : 'text-warn'}`}>{banner && !time?.ended && !card.offer ? t('excluded') : t('monthly', { price: formatNumber(card.monthly, locale) })}</p>

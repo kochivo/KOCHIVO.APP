@@ -86,7 +86,8 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
       <SyncPill state={!online ? 'offline' : parked && parked > 0 ? 'attention' : pending === undefined || pending > 0 ? 'pending' : 'synced'} pending={pending}
         onRetry={() => { void retryParked(localDb()).catch(onError); }} />
     </header>;
-  const weekStrip = <WeekStrip today={today} selected={selectedDate} nextDays={buildWeek(localDate(nextWeekAt, 'UTC'), snapshot?.training_days ?? [], [], locale, snapshot ?? undefined)} onSelect={date => setSelection({ today, date })} days={buildWeek(today, snapshot?.training_days ?? [],
+  // Built before the loading guard, so it must wait for a real date; buildWeek('') throws in Intl.
+  const weekStrip = today && <WeekStrip today={today} selected={selectedDate} nextDays={buildWeek(localDate(nextWeekAt, 'UTC'), snapshot?.training_days ?? [], [], locale, snapshot ?? undefined)} onSelect={date => setSelection({ today, date })} days={buildWeek(today, snapshot?.training_days ?? [],
     weekSessions?.filter((session) => snapshot?.days.some((day) => day.id === session.program_day_id)) ?? [], locale, snapshot ?? undefined)} />;
   const dailyExtras = <>
     {today && <CycleEntry playerId={playerId} today={today} />}
