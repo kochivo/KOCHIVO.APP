@@ -7,7 +7,6 @@ import type { ReactNode } from 'react';
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { BottomNav, ErrorState, LoadingState } from '@/ui';
-import { PlayerTabsView } from './player-tabs-view';
 import dynamic from 'next/dynamic';
 import { NotificationBell } from '@/features/notifications';
 import Link from 'next/link';
@@ -26,6 +25,7 @@ const FeedbackButton = dynamic(() => import('@/features/feedback').then(module =
 const InstallButton = dynamic(() => import('@/features/install').then(module => module.InstallButton), { ssr: false });
 const InstallSheet = dynamic(() => import('@/features/install').then(module => module.InstallSheet), { ssr: false });
 const RestMoodSync = dynamic(() => import('@/features/player-home').then(module => module.RestMoodSync), { ssr: false });
+const PlayerTabs = dynamic(() => import('./player-tabs').then(module => module.PlayerTabs), { ssr: false });
 const SyncRunner = dynamic(() => import('./sync-runner').then(module => module.SyncRunner), { ssr: false });
 const WaitingRoom = dynamic(() => import('@/features/billing').then(module => module.PlayerWaitingRoom), { ssr: false });
 const StartGateBoundary = dynamic(() => import('./start-gate-boundary').then(module => module.StartGateBoundary), { loading: () => <LoadingState variant="cards" />, ssr: false });
@@ -95,7 +95,7 @@ export function PlayerShell({ children, unassignedAction }: { children?: ReactNo
     {showsNav(pathname) && <InstallSheet />}
     {showsFeedback(pathname, v6) && <FeedbackButton role="player" />}
     {process.env.NODE_ENV === 'development' && showsNav(pathname) && <KoPreview role="player" />}
-    {showsNav(pathname) && (v6 ? <PlayerTabsView pathname={pathname} locale={locale} style={style} label={t('navigation')} /> :
+    {showsNav(pathname) && (v6 ? <PlayerTabs rest={restMood} pathname={pathname} locale={locale} style={style} label={t('navigation')} /> :
       <BottomNav aria-label={t('navigation')} items={playerNav(pathname, locale)} />)}
     </div>
   </MyCaptainContext.Provider>;

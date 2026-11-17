@@ -1,4 +1,7 @@
 export const arStd = {
+  v4Assessments: 'التقييمات', v4StartWorkout: 'ابدأ تمرين اليوم',
+  v4RestDay: 'اليوم راحة، عد للرئيسية', v4NoProgram: 'افتح اليوم، لا يوجد برنامج بعد',
+  v4CoachChat: 'المحادثة مع الكابتن', v4CoachUnread: 'المحادثة مع الكابتن، {count} رسائل غير مقروءة',
   subscriptionStartsOn: 'يبدأ اشتراكك في {date}',
   waitingForPlans: 'بانتظار الخطط',
   instagram: 'إنستجرام', tiktok: 'تيك توك', facebook: 'فيسبوك', youtube: 'يوتيوب', x: 'إكس',

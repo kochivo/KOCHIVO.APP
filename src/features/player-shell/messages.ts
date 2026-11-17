@@ -5,6 +5,9 @@ export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
+    v4Assessments: 'التقييمات', v4StartWorkout: 'ابدأ تمرين النهارده',
+    v4RestDay: 'النهارده راحة، ارجع للرئيسية', v4NoProgram: 'افتح النهارده، البرنامج لسه مش جاهز',
+    v4CoachChat: 'الشات مع الكابتن', v4CoachUnread: 'الشات مع الكابتن، {count} رسايل مش مقروءة',
     subscriptionStartsOn: 'اشتراكك هيبدأ يوم {date}',
     waitingForPlans: 'مستني الأنظمة',
     v6Today: 'النهارده', v6Food: 'الأكل', v6Progress: 'التقدم', v6Account: 'حسابي',
@@ -45,6 +48,9 @@ export const messages = defineMessages({
     signInAgain: "سجّل دخولك تاني",
   },
   en: {
+    v4Assessments: 'Assessments', v4StartWorkout: "Start today's workout",
+    v4RestDay: 'Rest day, open Today', v4NoProgram: 'Open Today, no program yet',
+    v4CoachChat: 'Chat with coach', v4CoachUnread: 'Chat with coach, {count} unread messages',
     subscriptionStartsOn: 'Your subscription starts on {date}',
     waitingForPlans: 'Waiting for plans',
     v6Today: 'Today', v6Food: 'Food', v6Progress: 'Progress', v6Account: 'My account',

@@ -1,0 +1,32 @@
+.bar {
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--color-bg) 96%, transparent) 30%);
+  padding-block-end: max(var(--spacing-card), var(--safe-bottom));
+}
+.slots { min-block-size: 56px; }
+.tab { position: relative; }
+.tab[aria-current='page']::before {
+  content: '';
+  position: absolute;
+  inset-block-start: 0;
+  inline-size: 16px;
+  block-size: 4px;
+  background: var(--color-lime);
+  transform: skewX(-18deg);
+}
+.workout {
+  inline-size: 64px;
+  block-size: 64px;
+  border-radius: 20px;
+  margin-block-start: calc(-1 * var(--spacing-section));
+  transform: rotate(45deg);
+  background: linear-gradient(180deg, var(--color-lime-top), var(--color-lime-bottom));
+  box-shadow: var(--shadow-control-primary);
+}
+.workout:hover { opacity: .9; }
+.workout:active { transform: rotate(45deg) scale(.97); }
+.rest {
+  background: var(--color-info-soft);
+  color: var(--color-info);
+  border: 1.5px solid var(--color-info);
+  box-shadow: none;
+}
