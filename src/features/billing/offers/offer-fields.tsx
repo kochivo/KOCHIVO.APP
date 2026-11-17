@@ -2,6 +2,7 @@
 import { useT } from '@/core/i18n/client';
 import { TextField } from '@/ui/text-field';
 import { messages } from './messages';
+import { offerValueBounds } from './offer-form';
 import type { OfferDraft } from './offer-form';
 import type { Catalog } from '../tiers/types';
 
@@ -18,7 +19,7 @@ export function OfferFields({ draft, onChange, catalog }: { draft: OfferDraft; o
         className="min-h-20 rounded-2xl border border-line-soft p-card text-xs text-muted aria-pressed:border-lime aria-pressed:bg-lime-soft aria-pressed:text-lime">
         <b className="mb-inline block font-display text-lg text-ink">{t(kind === 'percent' ? 'kindPercent' : kind === 'amount' ? 'kindAmount' : 'kindGift')}</b>{t(kind)}</button>)}
     </div></fieldset>
-    <TextField label={t(draft.kind === 'bonus_days' ? 'giftValue' : 'value')} type="number" value={draft.value || ''} required min={draft.kind === 'percent' ? 1 : 0.01} step={draft.kind === 'bonus_days' ? 1 : 'any'} max={draft.kind === 'percent' ? 90 : draft.kind === 'bonus_days' ? 365 : undefined} onChange={event => patch({ value: Number(event.target.value) })} />
+    <TextField label={t(draft.kind === 'bonus_days' ? 'giftValue' : 'value')} type="number" value={draft.value || ''} required {...offerValueBounds(draft.kind)} onChange={event => patch({ value: Number(event.target.value) })} />
     <fieldset><legend className="mb-inline text-xs text-faint">{t('scope')}</legend><div className="flex flex-wrap gap-inline">
       {(['all', 'packages', 'tiers'] as const).map(scope => <button type="button" key={scope} className={chip} aria-pressed={draft.scope === scope} onClick={() => patch({ scope })}>{t(scope)}</button>)}
     </div>

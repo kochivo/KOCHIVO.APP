@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { offerDraft, validateOffer, offerPayload } from './offer-form';
+import { offerDraft, validateOffer, offerPayload, offerValueBounds } from './offer-form';
 import { presetDates, zonedInput } from './preset-dates';
 
 const now = new Date('2026-11-12T12:00:00Z');
@@ -26,4 +26,13 @@ it('uses the captain calendar year for presets on either side of New Year', () =
   expect(presetDates('summer', now, 'Africa/Cairo').starts).toBe('2026-06-01T00:00');
   expect(presetDates('newYear', now, 'Africa/Cairo').ends).toBe('2026-01-07T23:59');
   expect(zonedInput('2026-11-27T05:00:00Z', 'America/New_York')).toBe('2026-11-27T00:00');
+});
+
+it('lets whole gift days like 29 pass the browser step check', () => {
+  const { min, step } = offerValueBounds('bonus_days');
+  expect(min).toBe(1);
+  expect(step).toBe(1);
+  expect((29 - min) % Number(step)).toBe(0);
+  expect(offerValueBounds('percent').min).toBe(1);
+  expect(offerValueBounds('amount').step).toBe('any');
 });

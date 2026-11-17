@@ -14,6 +14,12 @@ export function offerDraft(now: Date, zone: string, offer?: Tables<'captain_offe
   return { name: '', kind: 'percent', value: 20, scope: 'all', tier_ids: [], package_ids: [],
     ...presetDates('scratch', now, zone), for_new: true, for_renewals: true, limited: false, limit: 20 };
 }
+// The browser only accepts min + n×step, so whole-day gifts must start at 1, not 0.01.
+export function offerValueBounds(kind: OfferDraft['kind']) {
+  if (kind === 'bonus_days') return { min: 1, step: 1, max: 365 } as const;
+  if (kind === 'percent') return { min: 1, step: 'any', max: 90 } as const;
+  return { min: 0.01, step: 'any', max: undefined } as const;
+}
 export function validateOffer(draft: OfferDraft) {
   if (!draft.name.trim() || draft.name.trim().length > 40) return 'badName';
   if (!draft.for_new && !draft.for_renewals) return 'noAudience';
