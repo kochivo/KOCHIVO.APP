@@ -42,6 +42,7 @@ const state: ComponentProps<typeof WorkoutSet>['state'] = {
   session: null, decision: null, programFinished: false, queue: [], doneSets: [], performance: null, lastSession: null,
   weight: 50, reps: 10, rest: { endsAt: null, remaining: 0, total: 0, sound: false, flashing: false,
     toggleSound() {}, start() {}, extend() {}, adjust() {}, skip() {} }, pending: 0, parked: 0, retrySync() {}, pr: null, dismissPr() {},
+  typedValues: undefined, typedWeightInvalid: false, typedRepsInvalid: false, setTypedValue() {},
   bodyweight: false, setBodyweight() {}, invalid: null, progress: 1, next: undefined, finished: false, loading: false,
   error: null, disabled: false, setWeight() {}, setReps() {}, edit() {}, complete: async () => {}, finishCardio: async () => {}, switchExercise() {}, retry() {},
 };

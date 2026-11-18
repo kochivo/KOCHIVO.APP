@@ -10,11 +10,11 @@ import { messages as painMessages } from '../pain/messages';
 import { painFinishHeadline, readPainSkipCount } from '../pain-stop';
 
 import Link from 'next/link';
-import { buttonClass } from '@/ui/button';
+import { Button, buttonClass } from '@/ui/button';
 
 const noSubscribe = () => () => {};
 
-export function DonePanel({ workout, lifetime, sessionId }: { workout?: WorkoutPointsInput; lifetime?: number; sessionId?: string }) {
+export function DonePanel({ workout, lifetime, sessionId, onBack }: { workout?: WorkoutPointsInput; lifetime?: number; sessionId?: string; onBack?: () => void }) {
   const t = useT(messages);
   const pt = useT(painMessages);
   // localStorage is browser-only; the server snapshot keeps hydration on the normal headline.
@@ -42,6 +42,7 @@ export function DonePanel({ workout, lifetime, sessionId }: { workout?: WorkoutP
       {painHeadline ? pt(painHeadline, { n: number(painSkipped) }) : t('workoutComplete')}</h1>
     {line && <p className={preview?.counted ? 'font-bold' : 'text-muted'}>{line}</p>}
     <p className="text-muted">{t('savedOnYourPhoneYourCoachWill')}</p>
-    <Link href="/player" className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-page-x" })}>{t('backToHome')}</Link>
+    {onBack ? <Button variant="secondary" className="inline-flex min-h-12 items-center px-page-x" onClick={onBack}>{t('cachedWorkouts')}</Button> :
+    <Link href="/player" className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-page-x" })}>{t('backToHome')}</Link>}
   </section>;
 }

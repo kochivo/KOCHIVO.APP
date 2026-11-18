@@ -1,4 +1,5 @@
 'use client';
+import { useCallback } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { useLocale, useT } from '@/core/i18n/client';
 import { warmupMinutes } from '@/features/programs';
@@ -27,6 +28,7 @@ export function WorkoutOverview({ state, progress, onStart, onBack, playerId }: 
   const st = useT(setMessages);
   const vt = useT(v4Messages);
   const locale = useLocale();
+  const focusHeading = useCallback((heading: HTMLHeadingElement | null) => heading?.focus(), []);
   const day = state.day;
   if (!day) return null;
   const warmup = day.warmup ?? { items: [], ramp: false };
@@ -39,7 +41,7 @@ export function WorkoutOverview({ state, progress, onStart, onBack, playerId }: 
   return <>
     <header className="flex items-center gap-stack">
       <IconButton aria-label={t('back')} onClick={onBack}><ArrowRight aria-hidden className="dir-icon size-5" /></IconButton>
-      <div><h1 className="text-md font-bold">{starterText(day.title, locale)}</h1>
+      <div><h1 ref={focusHeading} tabIndex={-1} className="text-md font-bold">{starterText(day.title, locale)}</h1>
         <span className="text-xs text-muted">{t('v3Summary', { minutes: formatNumber(minutes, locale), count: formatNumber(day.exercises.length, locale) })}</span></div>
     </header>
     <StatStrip className="max-sm:grid-cols-3! [&>div]:px-stack" items={[

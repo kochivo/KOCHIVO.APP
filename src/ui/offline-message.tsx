@@ -7,9 +7,9 @@ import { messages } from '@/core/pwa/messages';
 const subscribe = () => () => {};
 const serverRole = () => null;
 
-export function OfflineMessage() {
+export function OfflineMessage({ verifiedWorkoutCopy }: { verifiedWorkoutCopy?: string | null } = {}) {
   const t = useT(messages);
   const role = useSyncExternalStore(subscribe, readDeviceRole, serverRole);
-  return <p className="text-muted">{t(role === 'player' ? 'todaySWorkoutIsSavedOn'
+  return <p className="text-muted">{verifiedWorkoutCopy ?? t(verifiedWorkoutCopy === undefined && role === 'player' ? 'todaySWorkoutIsSavedOn'
     : role === 'captain' ? 'offlineCaptain' : 'offlineGeneric')}</p>;
 }

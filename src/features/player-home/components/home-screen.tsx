@@ -13,6 +13,7 @@ import { EmptyState, ErrorState, LoadingState, SyncPill } from '@/ui';
 import { useProgramSnapshot } from '../hooks/use-program-snapshot';
 import { useWeekSessions } from '../hooks/use-week-sessions';
 import { isWeeklyProgram, pickTodayDay, weeklyFinished } from '../next-day';
+import { Button } from '@/ui/button';
 import { CardioCards } from '@/ui/cardio-cards';
 import { buildWeek } from '../week';
 import { Greeting } from './greeting';
@@ -58,6 +59,11 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
   const [retryKey, setRetryKey] = useState(0);
   const onError = useCallback(() => setLocalError(true), []);
   const { snapshot, status, retry } = useProgramSnapshot(playerId, retryKey);
+  const retryProgram = () => {
+    setLocalError(false);
+    setRetryKey(value => value + 1);
+    void retry();
+  };
   const weightKg = usePlayerWeight(playerId);
   const pending = useLiveQuery(readPending, onError, retryKey);
   const parked = useLiveQuery(readParked, onError, retryKey);
@@ -103,9 +109,7 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
     className={v6 ? 'mx-auto flex max-w-lg flex-col gap-card-gap px-page-x pt-card [font-family:var(--font-alexandria),var(--font-manrope),sans-serif]' : 'mx-auto max-w-lg space-y-card-gap px-page-x pt-section pb-32'}>
     {!v6 && statusHeader}
     {!v6 && dailyExtras}
-    {showError ? <ErrorState message={t('couldntLoadYourProgram')} retryLabel={t('tryAgain')} onRetry={() => {
-      setLocalError(false); setRetryKey((value) => value + 1); void retry();
-    }} /> : loading || !now ? <LoadingState variant="cards" /> : <>
+    {showError ? <ErrorState message={t('couldntLoadYourProgram')} retryLabel={t('tryAgain')} onRetry={retryProgram} /> : loading || !now ? <LoadingState variant="cards" /> : <>
       {v6 && <V3Home weightKg={weightKg} now={now} today={today} firstName={firstName} playerId={playerId} snapshot={snapshot} day={day}
         rest={rest} sessions={sessions ?? []} onPreview={date => setSelection({ today, date })} week={weekStrip} showToday={selectedDate === today}
         readiness={<MorningRow playerId={playerId} today={today} rest={rest}><PlayerReadiness weightKg={weightKg} playerId={playerId} today={today} rest={rest} coachRest={decision === 'rest'}
@@ -132,7 +136,10 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
         <EmptyState icon={Dumbbell} title={t('yourProgramIsBeingPrepared')} body={t('yourCoachIsPreparingYourProgramIt')} secondary={{ label: t('messageCoach'), href: '/player/captain' }} />}
       </div>
       {v6 && <div className="flex items-center justify-between gap-inline">{sync}<NotificationBell round /></div>}
-      {failed && snapshot && <p className="text-sm text-muted">{t('lastUpdatedAWhileAgo')}</p>}
+      {failed && snapshot && <div className="flex flex-wrap items-center gap-inline">
+        <p className="text-sm text-muted">{t('lastUpdatedAWhileAgo')}</p>
+        <Button variant="secondary" onClick={retryProgram}>{t('tryAgain')}</Button>
+      </div>}
     </>}
     {v6 && dailyExtras}
     {captainWorkspaceEnabled() && <PendingForms layout="home" />}

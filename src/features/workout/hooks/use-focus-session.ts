@@ -20,7 +20,8 @@ import { trainingDate } from '../training-date';
 import { useLastSession } from './use-last-session';
 import { useRestTimer } from './use-rest-timer';
 import { useBodyweight } from './use-bodyweight';
-import { validateSet } from '../set-validation';
+import type { SetValueKind } from '../set-validation';
+import { parseSetValue, validateSet } from '../set-validation';
 import { reducedSets, useTodayDecision } from '@/features/readiness';
 import { triggerHaptic } from '@/lib/haptics';
 import { dropWeights, targetForSet } from '@/lib/set-plan';
@@ -44,6 +45,7 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
   const [retryKey, setRetryKey] = useState(0);
   const [editing, setEditing] = useState<string | null>(null);
   const [draft, setDraft] = useState<{ key: string; weight: number; reps: number } | null>(null);
+  const [typed, setTyped] = useState<{ key: string; weight?: string; reps?: string } | null>(null);
   const [busy, setBusy] = useState(false);
   const [invalid, setInvalid] = useState<{ key: string; result: ReturnType<typeof validateSet>; attempt: number } | null>(null);
   const saving = useRef(false);
@@ -133,6 +135,11 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
   const plannedReps = current?.exercise.set_plan ? targetForSet(current.exercise, current.setIndex - 1).reps_min : undefined;
   const reps = Math.min(100, Math.max(0, draft?.key === key ? draft.reps : edited?.reps ?? (dropIndex > 0 ? drop?.reps ?? 0 : undefined) ?? performance?.reps ?? plannedReps ?? prefill?.reps ??
     (current ? targetForSet(current.exercise, current.setIndex - 1).reps_min : 0)));
+  const typedValues = typed?.key === key ? typed : undefined;
+  const typedWeight = !bodyweight && typedValues?.weight !== undefined ? parseSetValue('weight', typedValues.weight) : undefined;
+  const typedReps = typedValues?.reps !== undefined ? parseSetValue('reps', typedValues.reps) : undefined;
+  const typedWeightInvalid = typedWeight === null;
+  const typedRepsInvalid = typedReps === null;
   const ready = Boolean(day && session !== undefined && sets && today && memory.ready && (!hasAlternatives || choices.ready));
   useEffect(() => () => { clearTimeout(cooldown.current); }, []);
   // Recover a final set saved just before the tab closed, before completion was recorded.
@@ -152,9 +159,11 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
     } catch { setError(t('couldntFinishWorkoutOnYourPhone')); }
     finally { saving.current = false; setBusy(false); }
   }, [day, today, session, sets, t]);
+  const weightToLog = typedWeight ?? weight;
+  const repsToLog = typedReps ?? reps;
   const complete = useCallback(async () => {
-    if (!day || !current || !ready || saving.current || rest.remaining > 0 || painBlocked) return;
-    const result = validateSet({ weight, reps, bodyweight });
+    if (!day || !current || !ready || saving.current || rest.remaining > 0 || painBlocked || typedWeightInvalid || typedRepsInvalid) return;
+    const result = validateSet({ weight: weightToLog, reps: repsToLog, bodyweight });
     if (result !== 'ok') {
       triggerHaptic('heavy');
       setInvalid(previous => ({ key, result, attempt: (previous?.attempt ?? 0) + 1 }));
@@ -168,25 +177,27 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
       const active = session ?? await startSession(localDb(), day, today, tappedAt);
       if (active.completed_at && !edited) return;
       await logSet(localDb(), { session_id: active.id, program_exercise_id: current.exercise.id,
-        exercise_id: current.exercise.exercise_id, set_index: current.setIndex, drop_index: dropIndex, weight_kg: weight, reps }, tappedAt);
+        exercise_id: current.exercise.exercise_id, set_index: current.setIndex, drop_index: dropIndex, weight_kg: weightToLog, reps: repsToLog }, tappedAt);
       triggerHaptic('light');
       if (!edited && dropIndex === 0) {
         // Celebration is best-effort and never holds the next set behind a history read.
         void (async () => {
           const id = await setId(active.id, current.exercise.id, current.setIndex);
           const history = await prHistory(localDb(), current.exercise.exercise_id, id);
-          const result = detectPr(history, { weight_kg: weight, reps });
-          if (result) setPr({ ...result, id, current: { weight_kg: weight, reps } });
+          const loggedValues = { weight_kg: weightToLog, reps: repsToLog };
+          const result = detectPr(history, loggedValues);
+          if (result) setPr({ ...result, id, current: loggedValues });
         })().catch(() => undefined);
       }
       if (!edited) rest.start(current.restAfter);
+      setTyped(null);
       setEditing(null);
       setDraft(null);
     } catch { setError(t('couldntSaveTheSetOnYourPhone')); }
     finally {
       cooldown.current = setTimeout(() => { saving.current = false; setBusy(false); }, Math.max(0, 600 - (Date.now() - tappedAt)));
     }
-  }, [day, today, session, current, ready, rest, edited, weight, reps, bodyweight, key, t, dropIndex, painBlocked]);
+  }, [day, today, session, current, ready, rest, edited, weightToLog, repsToLog, bodyweight, key, t, dropIndex, painBlocked, typedWeightInvalid, typedRepsInvalid]);
   const parked = useLiveQuery(readParked, onError, retryKey);
   const remainingForPain = (report?: PainReportRow) => remainingPainIds(queue, doneSets, choices.choices, report);
   return { day, session, decision, programFinished, queue, current, doneSets, performance, lastSession: memory.last, weight, reps, rest, pending, parked, retrySync, pr, dismissPr,
@@ -198,9 +209,19 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
     loading: !today || status === 'loading' || Boolean(day && (session === undefined || sets === undefined || (hasAlternatives && !choices.ready))),
     error: error ?? (status === 'error' && !snapshot ? t('couldntLoadYourProgram') : null),
     disabled: busy || !ready,
-    setWeight: (value: number) => setDraft({ key, weight: Math.min(500, Math.max(0, value)), reps }),
-    setReps: (value: number) => setDraft({ key, weight, reps: Math.min(100, Math.max(0, value)) }),
-    edit: (row: SetLogRow) => { if (!saving.current) { rest.skip(); setDraft(null); setEditing(row.id); } },
+    typedValues, typedWeightInvalid, typedRepsInvalid,
+    setTypedValue: (kind: SetValueKind, text?: string) => {
+      setTyped(previous => ({ ...(previous?.key === key ? previous : { key }), [kind]: text }));
+    },
+    setWeight: (value: number) => {
+      setTyped(previous => previous?.key === key ? { ...previous, weight: undefined } : previous);
+      setDraft({ key, weight: Math.min(500, Math.max(0, value)), reps });
+    },
+    setReps: (value: number) => {
+      setTyped(previous => previous?.key === key ? { ...previous, reps: undefined } : previous);
+      setDraft({ key, weight, reps: Math.min(100, Math.max(0, value)) });
+    },
+    edit: (row: SetLogRow) => { if (!saving.current) { rest.skip(); setTyped(null); setDraft(null); setEditing(row.id); } },
     complete, finishCardio, today, captainId: snapshot?.captain_id, skipExercise: painSkips.skip, painBlocked, painCarried, painReports: reports ?? [],
     remainingForPain, selectedExercises: choices.choices, painSkipped: painSkips.ids.length,
     skipForPain: async (report?: PainReportRow) => {
@@ -210,7 +231,7 @@ export function useFocusSession(dayId: string, today: string, playerId?: string)
     switchExercise: (id: string) => {
       if (!plannedCurrent || dropIndex > 0 || saving.current || !choices.ready || edited || (id && !plannedCurrent.exercise.alternatives?.includes(id))) return;
       if (reports?.some(report => !safePainSwap(report.area, plannedCurrent.exercise.alternative_exercises?.filter(row => row.id === id && row.id !== report.exercise_id) ?? [], plannedCurrent.exercise.pattern))) return;
-      choices.choose(plannedCurrent.exercise.id, id); setDraft(null); setInvalid(null);
+      choices.choose(plannedCurrent.exercise.id, id); setTyped(null); setDraft(null); setInvalid(null);
     },
     retry: () => { setError(null); setRetryKey((value) => value + 1); void refresh(); } };
 }

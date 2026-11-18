@@ -34,7 +34,10 @@ it('offers editing completed sets and big numeric controls only for the current 
   expect(html).toContain('value="52.5"');
   expect(html).toContain('value="9"');
   expect(html.match(/aria-current="step"/g)).toHaveLength(1);
-  expect(html).toMatch(/aria-label="Edit set 1"[^>]*aria-pressed="true"/);
+  const edit = html.match(/<button[^>]*aria-label="Edit set 1"[^>]*>.*?<\/button>/)?.[0];
+  expect(edit).toContain('lucide-pencil');
+  expect(edit).not.toContain('aria-pressed');
+  expect(html).toContain('Set completed');
   expect(html).toMatch(/aria-label="Complete set"[^>]*min-h-14/);
 });
 

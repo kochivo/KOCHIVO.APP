@@ -1,6 +1,6 @@
 'use client';
 
-import { Check } from 'lucide-react';
+import { Check, Pencil } from 'lucide-react';
 import { useLocale, useT } from '@/core/i18n/client';
 import { formatNumber } from '@/lib/format';
 import { cn } from '@/lib/cn';
@@ -26,7 +26,7 @@ export function FocusSetTable({ state, v4 = false }: { state: TableState; v4?: b
       <tr><th scope="col" className="w-8">{tt('number')}</th>
         <th scope="col" className="w-1/5">{tt('previous')}</th>
         <th scope="col">{tt('kg')}</th><th scope="col">{tt('reps')}</th>
-        <th scope="col" className="w-14"><span className="sr-only">{t('completeSet')}</span></th></tr>
+        <th scope="col" className="w-14"><span /></th></tr>
     </thead>
     <tbody>{Array.from({ length: current.exercise.sets }, (_, index) => {
       const set = index + 1;
@@ -34,14 +34,17 @@ export function FocusSetTable({ state, v4 = false }: { state: TableState; v4?: b
       const previous = state.lastSession?.sets.find(row => row.set_index === set);
       const done = state.doneSets.find(row => row.program_exercise_id === current.exercise.id && row.set_index === set && (row.drop_index ?? 0) === 0);
       return <tr key={set} aria-current={active ? 'step' : undefined} className={active ? 'bg-lime-soft' : undefined}>
-        <th scope="row" className={cn('rounded-s-control text-xs', done ? 'text-lime' : 'text-muted')}>{number(set)}</th>
+        <th scope="row" className={cn('relative rounded-s-control text-xs', done ? 'text-lime' : 'text-muted')}>{number(set)}
+          {done && <><Check aria-hidden className="absolute start-1/2 top-[calc(50%+0.5rem)] size-3 -translate-x-1/2 rtl:translate-x-1/2" />
+            <span className="sr-only">{t('setCompleted')}</span></>}
+        </th>
         <td className="text-micro text-muted"><bdi>{previous ? `${number(previous.weight_kg)} × ${number(previous.reps)}` : '—'}</bdi></td>
         <td className="px-inline"><div className={cell}><bdi>{number(active ? state.weight : done?.weight_kg)}</bdi></div></td>
         <td><div className={cell}><bdi>{number(active ? state.reps : done?.reps)}</bdi></div></td>
         <td className="rounded-e-control">{done ? <button type="button" disabled={state.disabled}
           aria-label={t('editSet', { value0: number(set) })} onClick={() => state.edit(done)}
           className="press tone-lime mx-auto grid size-12 place-items-center rounded-control disabled:opacity-50">
-          <Check aria-hidden className="size-5" /></button> : v4 && <span aria-hidden className="glass mx-auto grid size-12 place-items-center rounded-control text-muted"><Check className="size-5" /></span>}</td>
+          <Pencil aria-hidden className="size-5" /></button> : v4 && <span aria-hidden className="glass mx-auto grid size-12 place-items-center rounded-control text-muted"><Check className="size-5" /></span>}</td>
       </tr>;
     })}</tbody>
   </table>;

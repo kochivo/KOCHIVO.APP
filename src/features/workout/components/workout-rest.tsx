@@ -1,4 +1,5 @@
 'use client';
+import { useCallback } from 'react';
 import { ChevronRight, Play, Volume2, VolumeX } from 'lucide-react';
 import { useLocale, useT } from '@/core/i18n/client';
 import { exerciseName } from '@/lib/display-name';
@@ -16,6 +17,7 @@ import { alternativeStep, loggedStep } from '../data/exercise-choices';
 import styles from './workout-media.module.css';
 
 export function WorkoutRest({ state, onBack }: { state: ReturnType<typeof useFocusSession>; onBack: () => void }) {
+  const focusHeading = useCallback((heading: HTMLHeadingElement | null) => heading?.focus(), []);
   const t = useT(messages);
   const vt = useT(v4Messages);
   const locale = useLocale();
@@ -31,7 +33,7 @@ export function WorkoutRest({ state, onBack }: { state: ReturnType<typeof useFoc
     <header className="flex items-center gap-stack">
       <IconButton aria-label={t('back')} onClick={onBack}><ChevronRight aria-hidden className="dir-icon size-5" /></IconButton>
       <div className="min-w-0 flex-1">
-        <h1 className="text-md font-bold">{t('rest')}</h1>
+        <h1 ref={focusHeading} tabIndex={-1} className="text-md font-bold">{t('rest')}</h1>
         {previous && <p className="text-micro text-muted">{vt('restAfter', {
           exercise: exerciseName(previous.exercise, locale), set: formatNumber(previous.setIndex, locale),
         })}</p>}

@@ -39,3 +39,13 @@ it.each(['ar', 'en'] as const)('shows loading and read errors in %s', locale => 
   expect(html).toContain('Read failed');
   expect(html).toContain(locale === 'en' ? 'Try again' : 'جرّب تاني');
 });
+
+it('uses the surrounding landmark and offers the cached picker action offline', () => {
+  const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' },
+    createElement(FocusScreen, { dayId: 'day', onBack: () => {} })));
+  expect(html).not.toContain('<main');
+  expect(html).not.toContain('href="/player"');
+  expect(html).toContain('role="heading" aria-level="2" tabindex="-1"');
+  expect(html).toContain('aria-label="Back"');
+  expect(html).toContain('Saved workouts');
+});

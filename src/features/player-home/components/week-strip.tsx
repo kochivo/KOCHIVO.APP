@@ -23,7 +23,7 @@ export function WeekStrip({ days, nextDays = days, today, selected = today, onSe
   const next = paging.today === today && paging.next;
   const states = { done: t('workoutDone'), today: t('today'), train: t('workout'), rest: t('rest') };
   if (captainWorkspaceEnabled()) return <section>
-    <ul className="grid grid-cols-7" aria-label={t('week')}>{(next ? nextDays : days).map(day => <li key={day.date} className="min-w-0">
+    <ul className="grid grid-cols-[repeat(7,minmax(3rem,1fr))] overflow-x-auto" aria-label={t('week')}>{(next ? nextDays : days).map(day => <li key={day.date} className="min-w-12">
       <Button variant="ghost" type="button" onClick={() => onSelect?.(day.date)} aria-pressed={day.date === selected}
         aria-current={day.date === today ? 'date' : undefined}
         aria-label={t('weekDayLabel', { value0: day.label, value1: formatNumber(day.dayOfMonth, locale), value2: states[day.state] })}
@@ -44,8 +44,8 @@ export function WeekStrip({ days, nextDays = days, today, selected = today, onSe
   return <GlassCard className="p-inline"><div className="flex justify-between">
     <button type="button" className="min-h-12 min-w-12" aria-label={t('thisWeek')} disabled={!next} onClick={() => { setPaging({ today, next: false }); onSelect?.(today); }}><ChevronLeft aria-hidden className="mx-auto rtl:rotate-180" /></button>
     <button type="button" className="min-h-12 min-w-12" aria-label={t('nextWeek')} disabled={next} onClick={() => setPaging({ today, next: true })}><ChevronRight aria-hidden className="mx-auto rtl:rotate-180" /></button>
-  </div><ul className="flex gap-inline" aria-label={t('week')}>
-    {(next ? nextDays : days).map((day) => <li key={day.date} className="min-w-0 flex-1"><button type="button"
+  </div><ul className="flex gap-inline overflow-x-auto" aria-label={t('week')}>
+    {(next ? nextDays : days).map((day) => <li key={day.date} className="min-w-12 flex-1"><button type="button"
       onClick={() => { if (day.date === today) setPaging({ today, next: false }); onSelect?.(day.date); }} aria-pressed={day.date === selected}
       aria-label={t('weekDayLabel', { value0: day.label, value1: formatNumber(day.dayOfMonth, locale), value2: states[day.state] })}
       aria-current={day.date === today ? 'date' : undefined}

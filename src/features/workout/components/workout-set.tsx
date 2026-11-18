@@ -1,6 +1,6 @@
 'use client';
 import { useCallback, useState } from 'react';
-import { ChevronDown, Play } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { useLocale, useT } from '@/core/i18n/client';
 import { localDb, useLiveQuery } from '@/core/offline';
@@ -45,6 +45,8 @@ export function WorkoutSet({ state, v4 = false }: { state: ReturnType<typeof use
   const st = useT(setMessages);
   const locale = useLocale();
   const current = state.current;
+  const step = current && `${current.exercise.id}:${current.exercise.exercise_id}:${current.setIndex}:${current.dropIndex ?? 0}`;
+  const focusHeading = useCallback((heading: HTMLHeadingElement | null) => { if (step) heading?.focus(); }, [step]);
   const exerciseId = current?.exercise.exercise_id ?? '';
   const [historyFailed, setHistoryFailed] = useState(false);
   const [attempt, setAttempt] = useState(0);
@@ -73,9 +75,9 @@ export function WorkoutSet({ state, v4 = false }: { state: ReturnType<typeof use
         {current.exercise.media_path && <Button variant="secondary" aria-pressed={showGif} onClick={() => setGifExercise(showGif ? null : exerciseId)}
           className="flex min-h-12 w-full items-center gap-inline text-sm">{t('gifToggle')}<ChevronDown aria-hidden className={`ms-auto size-4 transition-transform ${showGif ? 'rotate-180' : ''}`} /></Button>}
       </div> : current.exercise.media_path ? <ExerciseLightbox src={exerciseMediaUrl(current.exercise.media_path)} name={name} focus /> :
-        v4 && <div className={`grid aspect-video place-items-center rounded-card ${styles.placeholder}`}><Play aria-hidden className="size-7 text-muted" /></div>)}
+        v4 && <div className={`grid aspect-video place-items-center rounded-card ${styles.placeholder}`} aria-hidden />)}
       <div className="flex flex-col gap-inline">
-        <h1 style={{ fontFamily: 'inherit', fontWeight: 900 }} className={v4 ? 'flex items-end justify-between gap-stack text-h' : 'text-2xl leading-normal'}>
+        <h1 ref={focusHeading} tabIndex={-1} style={{ fontFamily: 'inherit', fontWeight: 900 }} className={v4 ? 'flex items-end justify-between gap-stack text-h' : 'text-2xl leading-normal'}>
           <bdi>{name}</bdi>{v4 && <bdi aria-hidden className="engraved shrink-0 text-stat-wide">{formatNumber(current.setIndex, locale)}</bdi>}
         </h1>
         <p className="text-row text-muted">{t('v3Set', { current: number(current.setIndex), total: number(current.exercise.sets) })}
@@ -93,10 +95,10 @@ export function WorkoutSet({ state, v4 = false }: { state: ReturnType<typeof use
       <DropProgress state={state} />
       <div className={current.exercise.superset_group !== null || dropping ? 'glass-strong grid gap-stack rounded-card p-card' : 'grid grid-cols-2 gap-stack'}>
         <WorkoutValue key={`${exerciseId}:${current.setIndex}:${current.dropIndex ?? 0}:weight`} inline={current.exercise.superset_group !== null || dropping} kind="weight" value={state.weight} disabled={blocked || state.bodyweight}
-          invalid={state.invalid?.result === 'weight' || state.invalid?.result === 'both'} onChange={state.setWeight} />
+          invalid={state.invalid?.result === 'weight' || state.invalid?.result === 'both'} draft={state.bodyweight ? undefined : state.typedValues?.weight} onDraft={text => state.setTypedValue('weight', text)} onChange={state.setWeight} />
         <WorkoutValue key={`${exerciseId}:${current.setIndex}:${current.dropIndex ?? 0}:reps`} inline={current.exercise.superset_group !== null || dropping} kind="reps" value={state.reps} disabled={blocked}
           invalid={state.invalid?.result === 'reps' || state.invalid?.result === 'both'}
-          focusInvalid={state.invalid?.result === 'reps' || Boolean(state.bodyweight && state.invalid)} onChange={state.setReps} />
+          focusInvalid={state.invalid?.result === 'reps' || Boolean(state.bodyweight && state.invalid)} draft={state.typedValues?.reps} onDraft={text => state.setTypedValue('reps', text)} onChange={state.setReps} />
       </div>
       {!dropping && <WorkoutHint last={state.performance} history={history ?? []} weight={state.weight} reps={state.reps} />}
       {historyFailed && <button type="button" className="min-h-12 text-xs text-muted" onClick={() => { setHistoryFailed(false); setAttempt(value => value + 1); }}>{t('tryAgain')}</button>}
@@ -105,7 +107,7 @@ export function WorkoutSet({ state, v4 = false }: { state: ReturnType<typeof use
       {!v4 && state.rest.remaining > 0 && <RestPanel remaining={state.rest.remaining} total={state.rest.total} sound={state.rest.sound} onToggleSound={state.rest.toggleSound}
         flashing={state.rest.flashing} onExtend={state.rest.extend} onSkip={state.rest.skip} />}
       <SupersetCue state={state} next />
-      <Button type="button" style={{ fontFamily: 'inherit' }} disabled={blocked} onClick={() => void state.complete()}
+      <Button type="button" style={{ fontFamily: 'inherit' }} disabled={blocked || state.typedWeightInvalid || state.typedRepsInvalid} onClick={() => void state.complete()}
         variant={state.painCarried?.length ? 'secondary' : 'primary'} block={false} className={v4 ?
           'sticky bottom-page-y z-10 mt-auto flex min-h-14 w-full items-center justify-center gap-inline text-md font-bold disabled:opacity-50' :
           'mt-auto flex min-h-[68px] w-full items-center justify-center gap-stack text-xl font-black disabled:opacity-50'}>

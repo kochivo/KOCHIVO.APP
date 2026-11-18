@@ -28,3 +28,10 @@ it('renders the week as a named native list with one current day', () => {
   expect(html.match(/aria-pressed="true"/g)).toHaveLength(1);
   expect(html.match(/aria-pressed="false"/g)).toHaveLength(6);
 });
+
+it('keeps seven weekday targets at least 48 pixels wide in a scrollable strip', () => {
+  const today = '2026-11-03';
+  const html = renderToStaticMarkup(createElement(WeekStrip, { today, days: buildWeek(today, [], []) }));
+  expect(html).toContain('overflow-x-auto');
+  expect(html.match(/<li class="min-w-12/g)).toHaveLength(7);
+});

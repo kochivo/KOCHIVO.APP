@@ -18,17 +18,26 @@ const day: SnapshotDay = { id: 'day', title: 'صدر', position: 1, exercises: [
 const db = new KochivoDB('workout-start-test');
 let queries: (() => unknown)[];
 let values: unknown[];
+let hookState: Map<number, unknown> | undefined;
+let hookIndex: number;
 
 beforeEach(async () => {
   vi.resetModules();
   vi.useFakeTimers({ now: afterMidnight, toFake: ['Date', 'setTimeout', 'clearTimeout'] });
   queries = [];
   values = [];
+  hookState = undefined;
   vi.doMock('@/core/timezone/client', () => ({ useTimezone: () => 'Africa/Cairo' }));
   vi.doMock('@/core/i18n/client', () => ({ useT: (messages: Parameters<typeof createT>[0]) => createT(messages, 'ar'), useLocale: () => 'ar' }));
   vi.doMock('react', async original => ({
     ...await original<typeof React>(),
-    useState: (initial: unknown) => [initial, () => undefined],
+    useState: (initial: unknown) => {
+      const index = hookIndex++;
+      const current = hookState?.has(index) ? hookState.get(index) : initial;
+      return [current, (next: unknown) => {
+        hookState?.set(index, typeof next === 'function' ? next(current) : next);
+      }];
+    },
     useRef: (current: unknown) => ({ current }),
     useCallback: <T,>(callback: T) => callback,
     useMemo: <T,>(callback: () => T) => callback(),
@@ -77,10 +86,12 @@ async function loadedState(today = localDate(new Date(afterMidnight))) {
   // Resolve the real local queries through session, sets, then history dependencies.
   for (let pass = 0; pass < 3; pass++) {
     queries = [];
+    hookIndex = 0;
     renderSession(day.id, today, 'player');
     values = await Promise.all(queries.map((query) => query()));
   }
   queries = [];
+  hookIndex = 0;
   return renderSession(day.id, today, 'player');
 }
 
@@ -123,6 +134,19 @@ it('enables a new workout and queues its first session and set at the injected C
     expect.objectContaining({ table: 'workout_sessions', row_id: sessions[0]?.id, enqueued_at: afterMidnight }),
     expect.objectContaining({ table: 'set_logs', row_id: sets[0]?.id, enqueued_at: afterMidnight }),
   ]));
+});
+
+it('blocks saving invalid typed reps and logs corrected localized digits', async () => {
+  hookState = new Map();
+  (await loadedState()).setTypedValue('reps', '١٫٥');
+  const invalid = await loadedState();
+  expect(invalid.typedRepsInvalid).toBe(true);
+  await invalid.complete();
+  expect(await db.set_logs.count()).toBe(0);
+
+  invalid.setTypedValue('reps', '۱۲');
+  await (await loadedState()).complete();
+  expect(await db.set_logs.toArray()).toMatchObject([{ reps: 12 }]);
 });
 
 it('uses the new date when yesterday has a session with no logged sets', async () => {

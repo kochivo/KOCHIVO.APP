@@ -80,8 +80,8 @@ export function PlayerAssessments({ actionable = true, layout = 'list' }: { acti
           {request.due_at && <p className="mt-inline text-xs text-faint">{t('due', { date: new Intl.DateTimeFormat(locale, {
             timeZone: timezone, day: 'numeric', month: 'long',
           }).format(new Date(request.due_at)) })}</p>}</div>
-        <Link href={layout === 'home' ? `/${locale}/player/assessments` : `/${locale}/player/forms/${request.id}`} prefetch={false}
-          className={buttonClass({ variant: (layout !== 'home' && actionable && index === 0) ? 'primary' : 'secondary', block: false, className: `flex min-h-12 shrink-0 items-center px-page-x text-sm ${layout !== "home" && actionable && index === 0 ? "" : "text-muted"} ` })}>{t('answer')}</Link>
+        {(layout !== 'home' || index === 0) && <Link href={layout === 'home' ? `/${locale}/player/assessments` : `/${locale}/player/forms/${request.id}`} prefetch={false}
+          className={buttonClass({ variant: (layout !== 'home' && actionable && index === 0) ? 'primary' : 'secondary', block: false, className: `flex min-h-12 shrink-0 items-center px-page-x text-sm ${layout !== "home" && actionable && index === 0 ? "" : "text-muted"} ` })}>{layout === 'home' ? p('assessments') : t('answer')}</Link>}
       </li>)}</ul>}
   </section>;
 }

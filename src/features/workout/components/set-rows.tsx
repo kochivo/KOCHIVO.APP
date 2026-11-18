@@ -10,5 +10,5 @@ import type { SetRowsState } from './set-rows-view';
 export function SetRows({ state, secondary = false }: { state: SetRowsState; secondary?: boolean }) {
   const t = useT(messages), v6t = useT(v6Messages), at = useT(alternativeMessages);
   const locale = useLocale();
-  return <SetRowsView state={state} secondary={secondary} t={t} v6t={v6t} at={at} locale={locale} v6={captainWorkspaceEnabled()} />;
+  return <SetRowsView state={state} secondary={secondary} separateCompletedStatus t={t} v6t={v6t} at={at} locale={locale} v6={captainWorkspaceEnabled()} />;
 }

@@ -17,8 +17,8 @@ import { FinishShare } from './finish-share';
 import { effortChoices } from './workout-v3-model';
 import { messages as v4Messages } from '../v4/messages';
 
-export function SessionFeedback({ sessionId, hasFeedback, workout, onSavedHome }: {
-  sessionId: string; hasFeedback: boolean; workout?: WorkoutPointsInput; onSavedHome?: () => void;
+export function SessionFeedback({ sessionId, hasFeedback, workout, onSavedHome, onBack }: {
+  sessionId: string; hasFeedback: boolean; workout?: WorkoutPointsInput; onSavedHome?: () => void; onBack?: () => void;
 }) {
   const t = useT(messages);
   const vt = useT(v4Messages);
@@ -39,7 +39,7 @@ export function SessionFeedback({ sessionId, hasFeedback, workout, onSavedHome }
     try {
       await saveSessionFeedback(localDb(), sessionId, { rpe, note }, Date.now());
       setDone(true);
-      onSavedHome?.();
+      (onBack ?? onSavedHome)?.();
     } catch { setError(true); }
     finally { saving.current = false; setBusy(false); }
   };
@@ -59,11 +59,11 @@ export function SessionFeedback({ sessionId, hasFeedback, workout, onSavedHome }
     <FinishShare />
     <FinishHero sessionId={sessionId} workout={workout} extras />
     <div className="mt-auto">
-      {done || (rpe === null && !note.trim()) ? <Link href="/player" className={buttonClass({ size: 'lg', block: true })}>{t('backToHome')}</Link> :
+      {done || (rpe === null && !note.trim()) ? (onBack ? <Button size="lg" block onClick={onBack}>{t('cachedWorkouts')}</Button> : <Link href="/player" className={buttonClass({ size: 'lg', block: true })}>{t('backToHome')}</Link>) :
         <Button block size="lg" disabled={busy || rpe === null} onClick={() => void submit()}>{busy ? t('saving') : vt('saveHome')}</Button>}
     </div>
   </section>;
-  if (done) return <>{v6 && <FinishHero sessionId={sessionId} workout={workout} />}<DonePanel workout={workout} sessionId={sessionId} />{v6 && <><FinishShare /><FinishHero sessionId={sessionId} workout={workout} extras /></>}</>;
+  if (done) return <>{v6 && <FinishHero sessionId={sessionId} workout={workout} />}<DonePanel workout={workout} sessionId={sessionId} onBack={onBack} />{v6 && <><FinishShare /><FinishHero sessionId={sessionId} workout={workout} extras /></>}</>;
   if (v6) return <section aria-label={t('v3Done')} className="space-y-card-gap">
     <div className="flex min-h-[calc(100dvh-40px)] flex-col gap-card-gap">
     <FinishHero sessionId={sessionId} workout={workout} />

@@ -18,7 +18,7 @@ import { WorkoutRest } from './components/workout-rest';
 const control = vi.hoisted(() => ({ index: 0, values: [] as unknown[], setters: [] as ReturnType<typeof vi.fn>[], save: vi.fn() }));
 vi.mock('server-only', () => ({}));
 vi.mock('react', async original => ({ ...await original<typeof React>(), useCallback: (callback: unknown) => callback,
-  useRef: (current: unknown) => ({ current }), useEffect: () => {}, useState: (initial: unknown) => {
+  useId: () => 'workout-value-error', useRef: (current: unknown) => ({ current }), useEffect: () => {}, useState: (initial: unknown) => {
   const index = control.index++;
   const setter = vi.fn(); control.setters[index] = setter;
   return [index in control.values ? control.values[index] : initial, setter];
@@ -87,11 +87,11 @@ it('saves the selected RPE and note through the existing feedback action', () =>
 });
 it('keeps the existing 2.5kg and 1 rep steps with 56px controls', () => {
   const weight = vi.fn(), reps = vi.fn();
-  find(WorkoutValue({ kind: 'weight', value: 75, disabled: false, invalid: false, onChange: weight }), 'زوّد الوزن 2.5')?.onClick?.();
+  find(WorkoutValue({ kind: 'weight', value: 75, disabled: false, invalid: false, onDraft() {}, onChange: weight }), 'زوّد الوزن 2.5')?.onClick?.();
   expect(weight).toHaveBeenCalledWith(77.5);
-  find(WorkoutValue({ kind: 'reps', value: 8, disabled: false, invalid: false, onChange: reps }), 'قلّل العدّات')?.onClick?.();
+  find(WorkoutValue({ kind: 'reps', value: 8, disabled: false, invalid: false, onDraft() {}, onChange: reps }), 'قلّل العدّات')?.onClick?.();
   expect(reps).toHaveBeenCalledWith(7);
-  expect(renderToStaticMarkup(createElement(WorkoutValue, { kind: 'weight', value: 75, disabled: false, invalid: false, onChange: weight }))).toContain('size-14');
+  expect(renderToStaticMarkup(createElement(WorkoutValue, { kind: 'weight', value: 75, disabled: false, invalid: false, onDraft() {}, onChange: weight }))).toContain('size-14');
 });
 it('binds the overview prescription and previous weight to the program and history', () => {
   const html = renderToStaticMarkup(createElement(WorkoutOverview, { state, progress, onStart() {}, onBack() {} }));
@@ -154,4 +154,24 @@ it('reopens a session loaded after mounting without replacing its original clock
   const update: unknown = control.setters[1]?.mock.calls[0]?.[0];
   if (typeof update !== 'function') throw new Error('Clock update missing');
   expect(update(undefined)).toBe(start);
+});
+
+it('keeps an invalid typed value visible and disables set completion', () => {
+  const html = renderToStaticMarkup(createElement(WorkoutSet, {
+    state: { ...state, typedValues: { key: 'bench', reps: '١٫٥' }, typedRepsInvalid: true },
+  }));
+  expect(html).toContain('value="١٫٥"');
+  expect(html).toContain('aria-invalid="true"');
+  expect(html).toContain('role="alert"');
+  expect(html).toMatch(/<button(?=[^>]*\bdisabled="")(?=[^>]*disabled:opacity-50)[^>]*>/);
+});
+
+it('focuses the heading when the player enters a set step', () => {
+  const heading = elementsOf(WorkoutSet({ state }), 'h1')[0];
+  const focus = vi.fn();
+  const ref = heading?.props.ref;
+  expect(heading?.props.tabIndex).toBe(-1);
+  if (typeof ref !== 'function') throw new Error('Missing set step focus target');
+  ref({ focus });
+  expect(focus).toHaveBeenCalledOnce();
 });

@@ -1,19 +1,22 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef } from 'react';
 import { Minus, Plus } from 'lucide-react';
 import { useLocale, useT } from '@/core/i18n/client';
 import { formatNumber } from '@/lib/format';
-import { parseTypedNumber } from '@/ui/typed-number';
+import { parseSetValue } from '../set-validation';
+import { Button } from '@/ui/button';
 import { messages } from '../messages';
 import { IconButton } from '@/ui/icon-button';
 
-export function WorkoutValue({ kind, value, disabled, invalid, focusInvalid = invalid, onChange, inline = false }: {
+export function WorkoutValue({ kind, value, disabled, invalid, focusInvalid = invalid, onChange, inline = false, draft, onDraft }: {
   kind: 'weight' | 'reps'; value: number; disabled: boolean; invalid: boolean; focusInvalid?: boolean; onChange: (value: number) => void;
-  inline?: boolean;
+  inline?: boolean; draft?: string; onDraft: (text?: string) => void;
 }) {
   const t = useT(messages);
   const locale = useLocale();
-  const [draft, setDraft] = useState<string | null>(null);
+  const errorId = useId();
+  const parsed = draft === undefined ? undefined : parseSetValue(kind, draft);
+  const typedInvalid = !disabled && parsed === null;
   const input = useRef<HTMLInputElement>(null);
   useEffect(() => { if (focusInvalid) input.current?.focus(); }, [focusInvalid]);
   const weight = kind === 'weight';
@@ -31,14 +34,16 @@ export function WorkoutValue({ kind, value, disabled, invalid, focusInvalid = in
     <div className="flex min-w-0 flex-col items-center gap-inline">
     <label className="relative min-h-12 w-full rounded-lg text-center focus-within:outline-2 focus-within:outline-lime">
       <span aria-hidden className="font-display text-stat-wide leading-none font-extrabold tabular-nums">{draft ?? formatNumber(value, locale)}</span>
-      <input ref={input} aria-label={t(weight ? 'weightKg' : 'reps')} aria-invalid={invalid} aria-describedby={invalid ? 'set-error' : undefined}
+      <input ref={input} aria-label={t(weight ? 'weightKg' : 'reps')} aria-invalid={invalid || typedInvalid} aria-describedby={typedInvalid ? errorId : invalid ? 'set-error' : undefined}
         disabled={disabled} type="text" inputMode={weight ? 'decimal' : 'numeric'} enterKeyHint="done" autoComplete="off"
-        value={draft ?? formatNumber(value, locale)} onFocus={() => setDraft('')} onChange={event => setDraft(event.target.value)}
-        onBlur={() => { const typed = draft === null ? null : parseTypedNumber(draft); if (typed !== null) change(typed); setDraft(null); }}
-        onKeyDown={event => { if (event.key === 'Enter') event.currentTarget.blur(); if (event.key === 'Escape') setDraft(null); }}
+        value={draft ?? formatNumber(value, locale)} onFocus={event => event.currentTarget.select()} onChange={event => onDraft(event.target.value)}
+        onBlur={() => { if (parsed != null) onChange(parsed); }}
+        onKeyDown={event => { if (event.key === 'Enter') event.currentTarget.blur(); if (event.key === 'Escape') onDraft(); }}
         className="absolute inset-0 size-full opacity-0" />
     </label>
     <span className="text-xs text-muted">{t(weight ? 'v3Kg' : 'v3Reps')}</span>
+    {typedInvalid && <><p id={errorId} role="alert" className="text-xs text-danger">{t(weight ? 'typedWeightError' : 'typedRepsError')}</p>
+      <Button variant="secondary" className="max-w-full px-inline!" onClick={() => { onDraft(); input.current?.focus(); }}>{t('revertSetValue')}</Button></>}
     </div>
     {inline ? button(false) : <div className="flex gap-inline">{button(false)}{button(true)}</div>}
   </div>;

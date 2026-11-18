@@ -1,4 +1,11 @@
 export const arStd = {
+  typedWeightError: 'أدخل وزنًا أكبر من صفر وحتى 500 كجم.',
+  typedRepsError: 'أدخل عددًا صحيحًا من 1 إلى 100.',
+  revertSetValue: 'استعادة القيمة',
+  setCompleted: 'اكتملت المجموعة',
+  cachedWorkoutsAvailable: 'لديك تمارين محفوظة على هذا الجهاز.',
+  noCachedWorkouts: 'لا توجد تمارين محفوظة. افتح برنامجك عند عودة الاتصال.',
+  cachedWorkouts: 'التمارين المحفوظة',
   startCardioWorkout: 'ابدأ الكارديو',
   finishCardioWorkout: 'إنهاء التمرين', couldntFinishWorkoutOnYourPhone: 'تعذّر حفظ إنهاء التمرين على الهاتف. حاول مجدداً.',
   gifToggle: 'الصورة المتحركة',
