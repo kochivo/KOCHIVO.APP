@@ -34,9 +34,13 @@ export function isInviteDate(date: string, today?: string): boolean {
 export function inviteEndDate(plan: Pick<InvitePlan, 'kind' | 'quantity' | 'startsOn'>, pkg?: InvitePackage): string {
   return shiftInviteDate(plan.startsOn, plan.kind === 'days' ? plan.quantity - 1 : pkg?.days ?? 60);
 }
+export function inviteDigits(value: string): string {
+  return value.replace(/[٠-٩۰-۹]/g, digit => String(digit.charCodeAt(0) - (digit <= '٩' ? 0x660 : 0x6f0)));
+}
+
 /** Invalid input stays distinct from an omitted optional number. */
 export function normalizeWhatsapp(input: string): string | null | undefined {
-  const value = input.trim();
+  const value = inviteDigits(input.trim());
   if (!value) return null;
   if (!/^[0-9]{8,15}$/.test(value)) return undefined;
   return /^01[0-9]{9}$/.test(value) ? `2${value}` : value;

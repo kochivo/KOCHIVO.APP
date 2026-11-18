@@ -5,6 +5,9 @@ export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
+    assessmentRequests: 'طلبات التقييم والسجل · {count} في الانتظار',
+    photoLoadError: 'مش قادرين نحمّل الصور.', reviewFailed: 'مش قادرين نحفظ المراجعة.',
+    fullPhoto: 'افتح الصورة {count} بالحجم الكامل', reviewCheckin: 'راجع المتابعة',
     chat: 'الشات', chatCount: 'الشات · {count}',
     players: 'اللاعبين', breadcrumb: 'اللاعبين ‹', tabs: 'ملف اللاعب', overview: 'نظرة عامة', training: 'البرنامج',
     nutrition: 'الأكل', assessments: 'التقييمات', checkins: 'المتابعات الأسبوعية', active: 'نشط', renew: 'جدّد', preview: 'شوف زي اللاعب',
@@ -31,6 +34,9 @@ export const messages = defineMessages({
     macros: 'بروتين {protein} · كارب {carbs} · دهون {fat}', updated: 'آخر تعديل {date}',
   },
   en: {
+    assessmentRequests: 'Assessment requests and history · {count} pending',
+    photoLoadError: 'Could not load the photos.', reviewFailed: 'Could not save the review.',
+    fullPhoto: 'Open full-size photo {count}', reviewCheckin: 'Review check-in',
     chat: 'Chat', chatCount: 'Chat · {count}',
     players: 'Players', breadcrumb: 'Players ‹', tabs: 'Player file', overview: 'Overview', training: 'Training',
     nutrition: 'Food', assessments: 'Assessments', checkins: 'Check-ins', active: 'Active', renew: 'Renew', preview: 'View as player',

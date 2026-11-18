@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, Eye } from 'lucide-react';
 import { createT } from '@/core/i18n/messages';
 import { useArabicStyle } from '@/core/i18n/client';
 import type { Locale } from '@/core/i18n/locale';
@@ -37,6 +37,9 @@ export function PhoneFileHeader({ base, playerId, today, name, goal, packageName
         <h1 className="truncate text-md font-bold">{name}</h1>
         <p className="text-micro text-muted">{subtitle}</p>
       </div>
+      <Link href={`${base}/preview`} prefetch={false} aria-label={t('preview')} className={iconLink}>
+        <Eye aria-hidden className="size-5" />
+      </Link>
       <Link href={`${base}/chat`} aria-current={tab === 'chat' ? 'page' : undefined}
         aria-label={unreadCount > 0 ? t('chatCount', { count }) : vt('message')} className={iconLink}>
         <KoCaptainChat aria-hidden className="size-5" />

@@ -1,5 +1,5 @@
 'use client';
-import { Fragment, useEffect, useRef, useState } from 'react';
+import { Fragment, useLayoutEffect, useRef, useState } from 'react';
 import { Check, CheckCheck } from 'lucide-react';
 import type { Locale } from '@/core/i18n/locale';
 import type { Translator } from '@/core/i18n/messages';
@@ -15,6 +15,10 @@ import type { messages } from '../messages';
 
 const heights = [8, 16, 24, 12, 20, 8, 16, 6, 22, 12, 4, 16, 10];
 const clock = (seconds: number) => `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
+export function chatTailAction(viewer: 'player' | 'captain', first: boolean, own: boolean, nearEnd: boolean) {
+  return viewer === 'player' || first || own || nearEnd ? 'scroll' : 'notify';
+}
+
 export function ChatThreadView({ items, viewer, onRetry, onVoicePlay, onLoadOlder, hasOlder, olderStatus, t, voiceT, locale, timezone, now }: {
   t: Translator<typeof messages>; voiceT: Translator<typeof voiceNoteMessages>; locale: Locale; timezone: string; now: Date | null | undefined;
   items: readonly ChatThreadItem[]; viewer: 'player' | 'captain'; onRetry?: (id: string) => unknown;
@@ -24,8 +28,34 @@ export function ChatThreadView({ items, viewer, onRetry, onVoicePlay, onLoadOlde
   const bottom = useRef<HTMLDivElement>(null);
   const [broken, setBroken] = useState<string | null>(null);
   const lastRead = items.findLast(item => item.mine && item.readAt && item.status === 'sent')?.id;
-  const tail = items.at(-1)?.id;
-  useEffect(() => { bottom.current?.scrollIntoView({ block: 'end' }); }, [tail]);
+  const tail = items.at(-1);
+  const tailId = tail?.id, tailMine = tail?.mine;
+  const nearEnd = useRef(true);
+  const seenTail = useRef<string | undefined>(undefined);
+  const [newTail, setNewTail] = useState<string>();
+  useLayoutEffect(() => {
+    if (viewer !== 'captain') return;
+    function trackPosition() {
+      const marker = bottom.current;
+      if (!marker) return;
+      nearEnd.current = marker.getBoundingClientRect().top <= window.innerHeight + 96;
+      if (nearEnd.current) setNewTail(undefined);
+    }
+    window.addEventListener('scroll', trackPosition, true);
+    window.addEventListener('resize', trackPosition);
+    return () => {
+      window.removeEventListener('scroll', trackPosition, true);
+      window.removeEventListener('resize', trackPosition);
+    };
+  }, [viewer]);
+  useLayoutEffect(() => {
+    if (!tailId || seenTail.current === tailId) return;
+    const scroll = chatTailAction(viewer, seenTail.current === undefined, Boolean(tailMine), nearEnd.current) === 'scroll';
+    seenTail.current = tailId;
+    if (scroll) bottom.current?.scrollIntoView({ block: 'end' });
+    const frame = window.requestAnimationFrame(() => setNewTail(scroll || nearEnd.current ? undefined : tailId));
+    return () => window.cancelAnimationFrame(frame);
+  }, [tailId, tailMine, viewer]);
   return <div className={viewer === 'captain' ? 'pb-[calc(var(--nav-clearance)+5rem)] min-[760px]:pb-28 lg:pb-card' : 'pb-40'}>
     {hasOlder && <div className="flex flex-col items-center gap-stack">
       {olderStatus === 'error' && <p role="alert" className="text-sm text-danger">{t('olderError')}</p>}
@@ -67,6 +97,13 @@ export function ChatThreadView({ items, viewer, onRetry, onVoicePlay, onLoadOlde
           </li>
         </Fragment>;
       })}
-    </ol><div ref={bottom} className="scroll-mb-44" />
+    </ol><div ref={bottom} tabIndex={-1} className="scroll-mb-44" />
+    {newTail && <div className="fixed inset-x-0 bottom-[calc(var(--nav-clearance)+5rem)] z-20 flex justify-center min-[760px]:bottom-24 lg:bottom-card">
+      <Button variant="secondary" block={false} onClick={() => {
+        bottom.current?.focus({ preventScroll: true });
+        bottom.current?.scrollIntoView({ block: 'end' });
+        setNewTail(undefined);
+      }}>{t('newMessages')}</Button>
+    </div>}
   </div>;
 }

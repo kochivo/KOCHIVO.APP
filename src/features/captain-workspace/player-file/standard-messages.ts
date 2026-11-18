@@ -1,4 +1,7 @@
 export const arStd = {
+  assessmentRequests: 'طلبات التقييم والسجل · {count} قيد الانتظار',
+  photoLoadError: 'تعذّر تحميل الصور.', reviewFailed: 'تعذّر حفظ المراجعة.',
+  fullPhoto: 'افتح الصورة {count} بالحجم الكامل', reviewCheckin: 'راجع المتابعة',
   chat: 'المحادثة', chatCount: 'المحادثة · {count}',
   players: 'اللاعبون', breadcrumb: 'اللاعبون ‹', tabs: 'ملف اللاعب', overview: 'نظرة عامة', training: 'البرنامج',
   nutrition: 'الطعام', assessments: 'التقييمات', checkins: 'المتابعات الأسبوعية', active: 'نشط', renew: 'جدّد', preview: 'اعرض مثل اللاعب',

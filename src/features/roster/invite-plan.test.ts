@@ -1,5 +1,11 @@
 import { expect, it } from 'vitest';
-import { defaultInvitePlan, inviteAmounts, inviteEndDate, isInviteDate, normalizeWhatsapp } from './invite-plan';
+import { defaultInvitePlan, inviteAmounts, inviteEndDate, isInviteDate, inviteDigits, normalizeWhatsapp } from './invite-plan';
+
+it('normalizes Arabic and Persian digits without accepting separators', () => {
+  expect(inviteDigits('١۲٣')).toBe('123');
+  expect(normalizeWhatsapp('٠١٠٠١٢٣٤٥٦٧')).toBe('201001234567');
+  expect(normalizeWhatsapp('٠١٠-٠١٢٣٤٥٦٧')).toBeUndefined();
+});
 
 const pkg = { id: 'package', name: 'PT', kind: 'sessions' as const, sessions: 8, days: 45, price_egp: 500 };
 it('defaults to a package with full payment and the supplied Cairo date', () => {

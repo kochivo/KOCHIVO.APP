@@ -67,7 +67,7 @@ export function AssessmentWorkspace({ playerId, formId, locale }: { playerId?: s
         onDelete={s => void mutate(s, true)} onSend={() => setManual(true)} />
       <div className="min-w-0 space-y-card-gap">
         {manual && playerId && <RequestPicker forms={data.forms} playerId={playerId} locale={locale} now={now}
-          onCancel={() => setManual(false)} onSent={() => { setManual(false); setRevision(r => r + 1); void resource.retry(); }}
+          onCancel={() => setManual(false)} onSent={() => { setManual(false); setRevision(r => r + 1); void resource.retry(); router.refresh(); }}
           onSend={async (_row, commit) => { await commit(); return true; }} />}
         {showEditor ? <AssessmentEditor key={editing?.id ?? `new:${revision}`} data={data} player={playerId} formId={formId}
           initial={editing} locale={locale} now={now} onSave={save} onCancel={() => { setShowEditor(false); setEditing(undefined); }}

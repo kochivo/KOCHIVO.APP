@@ -33,11 +33,11 @@ export function PlayerProgramSummary({ playerId, program, draftId, today, locale
         <Link href={`/captain/programs/${program.id}`} prefetch={false} className={buttonClass({ block: false })}><KoTraining aria-hidden className="size-4" />{t('edit')}</Link>
       </div>
       {program.days.length ? <>
-        <div role="tablist" aria-label={t('days')} className="flex w-fit max-w-full gap-inline overflow-x-auto rounded-full border border-line bg-bg/25 p-inline">
-          {program.days.map(item => <button key={item.id} role="tab" aria-selected={day?.id === item.id} aria-controls={`program-day-${item.id}`} id={`program-tab-${item.id}`} onClick={() => setSelected(item.id)}
+        <div role="group" aria-label={t('days')} className="flex w-fit max-w-full gap-inline overflow-x-auto rounded-full border border-line bg-bg/25 p-inline">
+          {program.days.map(item => <button key={item.id} type="button" aria-pressed={day?.id === item.id} id={`program-tab-${item.id}`} onClick={() => setSelected(item.id)}
             className={`press min-h-12 shrink-0 cursor-pointer whitespace-nowrap rounded-full px-stack text-xs focus-visible:ring-2 focus-visible:ring-lime ${day?.id === item.id ? 'glass-strong text-ink' : 'text-muted hover:bg-surface-raised'}`}>{item.title || item.rest ? t('day', { number: formatNumber(item.position, locale), title: item.title || t('restDay') }) : t('dayNumber', { number: formatNumber(item.position, locale) })}</button>)}
         </div>
-        {day && <div role="tabpanel" id={`program-day-${day.id}`} aria-labelledby={`program-tab-${day.id}`}>
+        {day && <div>
           {day.exercises.length || day.cardio?.length ? <ul>
             {day.exercises.map(row => <ProgramPrescriptionRow key={row.id} row={row} locale={locale} />)}
             {day.cardio?.map(row => <ProgramCardioPrescription key={row.id} row={row} locale={locale} />)}

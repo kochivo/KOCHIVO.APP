@@ -37,8 +37,8 @@ it('filters prescription rows when a day is selected', () => {
   (second?.props.onClick as () => void)();
   tree = render();
   expect(tree.find(node => node.type === ProgramPrescriptionRow)?.props.row).toMatchObject({ id: 'second-row' });
-  expect(tree.find(node => node.props.id === 'program-tab-second')?.props['aria-selected']).toBe(true);
-  expect(tree.find(node => node.props.id === 'program-tab-first')?.props['aria-selected']).toBe(false);
+  expect(tree.find(node => node.props.id === 'program-tab-second')?.props['aria-pressed']).toBe(true);
+  expect(tree.find(node => node.props.id === 'program-tab-first')?.props['aria-pressed']).toBe(false);
 });
 it('mounts the existing start flow only after the change action', () => {
   let tree = render();

@@ -9,11 +9,14 @@ vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh() {} }) }));
 vi.mock('server-only', () => ({}));
 vi.mock('@/core/storage', () => ({ exerciseMediaUrl: () => 'https://example.test/squat.gif' }));
 it('renders the English preview with LTR and localized weekdays', () => {
-  const html = renderToStaticMarkup(h(LocaleProvider, { locale: 'en' }, h(PreviewScreen, {
+  const html = renderToStaticMarkup(h(LocaleProvider, { locale: 'en' }, h(PreviewScreen, { playerId: 'player',
     today: '2026-11-03', result: { data: { name: 'Ali', program: null, todayDay: null, nutrition: null, sessions: [],
       week: [{ date: '2026-11-03', trained: false, mealsEaten: 0 }] } },
   })));
   expect(html).toContain('Player preview');
+  expect(html).toContain('href="/captain/players/player"');
+  expect(html).toMatch(/role="group".*aria-pressed="true"/);
+  expect(html).not.toContain('aria-current="page"');
   expect(html).toContain('dir="ltr"');
   expect(html).toContain('Tue');
   expect(html).not.toMatch(/[\u0600-\u06ff]/);

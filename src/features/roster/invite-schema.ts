@@ -10,5 +10,6 @@ export function playerInviteSchema(today: string) {
     startsOn: z.iso.date().refine(v => v >= shiftInviteDate(today, -30) && v <= shiftInviteDate(today, 60)),
     formIds: z.array(z.uuid()).max(5).refine(ids => new Set(ids).size === ids.length).optional(),
     gate: z.boolean().optional(),
-  }).refine(v => v.paid <= v.price && (v.kind !== 'sessions' || v.quantity <= 200));
+  }).refine(v => v.paid <= v.price, { path: ['paid'] })
+    .refine(v => v.kind !== 'sessions' || v.quantity <= 200, { path: ['quantity'] });
 }

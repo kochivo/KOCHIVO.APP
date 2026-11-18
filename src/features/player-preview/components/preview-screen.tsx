@@ -24,7 +24,7 @@ import { starterText } from '@/lib/starter-text';
 
 type Result = Awaited<ReturnType<typeof fetchPlayerPreview>>;
 
-export function PreviewScreen({ result, today }: { result: Result; today: string }) {
+export function PreviewScreen({ result, today, playerId }: { result: Result; today: string; playerId: string }) {
   const t = useT(messages);
   const locale = useLocale();
   const tabs = [t('today'), t('program'), t('nutrition'), t('week')];
@@ -34,6 +34,7 @@ export function PreviewScreen({ result, today }: { result: Result; today: string
   const data = result.data;
   const workspace = captainWorkspaceEnabled();
   const Back = locale === 'en' ? ArrowLeft : ArrowRight;
+  const backHref = `/captain/players/${playerId}`;
   const day = data?.todayDay;
   const rest = data?.program && data.program.training_days.length > 0 &&
     !data.program.training_days.includes(new Date(`${today}T12:00:00Z`).getUTCDay()) &&
@@ -41,18 +42,18 @@ export function PreviewScreen({ result, today }: { result: Result; today: string
   return <main className={workspace ? 'min-w-0 space-y-card-gap' : 'mx-auto max-w-4xl space-y-section p-card'} dir={localeDir(locale)}>
     {workspace ? <>
       <PageBarTitle title={t('preview', { name: data?.name ?? t('player') })} subtitle={t('readOnly')} />
-      <PageBarActions><Link href="/captain/players" aria-label={t('back')}
+      <PageBarActions><Link href={backHref} aria-label={t('back')}
         className="glass press grid min-h-12 min-w-12 cursor-pointer place-items-center rounded-full border border-line focus-visible:ring-2 focus-visible:ring-lime"><Back aria-hidden className="size-5" /></Link></PageBarActions>
     </> : <header className="flex flex-wrap items-center justify-between gap-stack">
       <h1 className="text-xl font-bold">{t('preview', { name: data?.name ?? t('player') })}</h1>
-      <Link href="/captain" className="flex min-h-12 items-center text-lime">{t('back')}</Link>
+      <Link href={backHref} className="flex min-h-12 items-center text-lime">{t('back')}</Link>
     </header>}
     <PhoneFrame>
       <p className="shrink-0 p-stack text-center text-xs text-muted">{t('readOnly')}</p>
-      <nav aria-label={t('sections')} className="grid shrink-0 grid-cols-4 gap-inline border-b border-line pb-inline">
-        {tabs.map((label, index) => <button type="button" key={label} aria-current={tab === index ? 'page' : undefined}
+      <div role="group" aria-label={t('sections')} className="grid shrink-0 grid-cols-4 gap-inline border-b border-line pb-inline">
+        {tabs.map((label, index) => <button type="button" key={label} aria-pressed={tab === index}
           onClick={() => setTab(index)} className={`min-h-12 rounded-control text-xs ${workspace ? 'press cursor-pointer focus-visible:ring-2 focus-visible:ring-lime ' : ''}${tab === index ? 'bg-lime-soft font-bold text-lime' : workspace ? 'glass border border-line text-ink' : 'text-muted'}`}>{label}</button>)}
-      </nav>
+      </div>
       <div className="min-h-0 flex-1 overflow-y-auto p-stack">
           {pending ? <p role="status">{t('loading')}</p> : result.error ? <div role="alert" className="space-y-stack">
             <p>{result.error}</p>{captainWorkspaceEnabled() ? <Button variant="secondary" type="button" className="min-h-12 text-ink" onClick={() => startTransition(() => router.refresh())}>{t('retry')}</Button> : <button type="button" className="min-h-12 text-lime" onClick={() => startTransition(() => router.refresh())}>{t('retry')}</button>}

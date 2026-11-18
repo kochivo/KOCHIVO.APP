@@ -2,7 +2,7 @@
 import { useT } from '@/core/i18n/client';
 import { Button } from '@/ui/button';
 import { useCallback,useRef,useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useResource } from '@/core/resource';
 import { useViewerTimezone } from '@/core/timezone/client';
 import type { Locale } from '@/core/i18n/locale';
@@ -11,6 +11,7 @@ import { messages } from '../requests/messages';
 import { RequestPicker } from './request-picker';
 import { RequestReview } from './request-review';
 export function RequestManager({playerId,locale}:{playerId:string;locale:Locale}) {
+  const router = useRouter();
   const timezone = useViewerTimezone();
   const t = useT(messages),search = useSearchParams();
   const requested = search.get('requestId');
@@ -25,17 +26,17 @@ export function RequestManager({playerId,locale}:{playerId:string;locale:Locale}
   const resource = useResource(`form-requests:${playerId}:${locale}:${requested ?? ''}`,load);
   const [picking,setPicking] = useState(false),[selection,setSelection] = useState({query:requested,id:requested});
   const selected = selection.query === requested ? selection.id : requested;
-  const [error,setError] = useState(false),[sending,setSending] = useState(false),[sent,setSent] = useState(false);
+  const [failedReminder,setFailedReminder] = useState<string | null>(null),[sending,setSending] = useState(false),[sent,setSent] = useState(false);
   const busy = useRef(false);
   async function remind(id:string) {
     if (busy.current || !resource.data) return;
     const previous = resource.data;
-    busy.current = true;setSending(true);setError(false);
+    busy.current = true;setSending(true);setFailedReminder(null);
     try {
       const ok = await resource.mutate(current => ({...(current ?? previous),pending:(current ?? previous).pending.map(r => r.id === id ? {...r,reminded_at:new Date().toISOString()} : r)}),
         async () => {if (!(await remindRequest(id)).ok) throw new Error('remind');});
-      if (!ok) setError(true);
-    } catch {setError(true);}
+      if (!ok) setFailedReminder(id);
+    } catch {setFailedReminder(id);}
     finally {busy.current = false;setSending(false);}
   }
   if (!resource.data) return <section role="status">{resource.status === 'error' ? t('error') : t('loading')}
@@ -48,9 +49,9 @@ export function RequestManager({playerId,locale}:{playerId:string;locale:Locale}
       onSend={(row,commit) => resource.mutate(current => ({...(current ?? data),pending:[{
         id:row.id,form_id:row.form_id,due_at:row.due_at,reminded_at:null,forms:{title:data.forms.find(f => f.id === row.form_id)?.title ?? ''},
       },...(current ?? data).pending]}),commit)}
-      onSent={() => {setPicking(false);setSent(true);void resource.retry();}} />}
-    {(error || resource.status === 'error') && <div role="alert" className="text-danger"><p>{t('error')}</p>
-      <Button variant="secondary" className="min-h-12" onClick={() => {setError(false);void resource.retry();}}>{t('retry')}</Button></div>}
+      onSent={() => {setPicking(false);setSent(true);void resource.retry();router.refresh();}} />}
+    {(failedReminder || resource.status === 'error') && <div role="alert" className="text-danger"><p>{t('error')}</p>
+      <Button variant="secondary" className="min-h-12" disabled={sending} onClick={() => { if (failedReminder) void remind(failedReminder); else void resource.retry(); }}>{t('retry')}</Button></div>}
     {!!data.pending.length && <ul className="glass divide-y divide-line rounded-card p-card">{data.pending.map(r => <li key={r.id} className="flex flex-wrap items-center justify-between gap-stack">
       <span>{r.forms?.title}{r.due_at && <span className="ms-stack text-xs text-muted">{new Intl.DateTimeFormat(locale,{timeZone:timezone}).format(new Date(r.due_at))}</span>}</span><Button variant="secondary" disabled={sending || !!r.reminded_at} onClick={() => void remind(r.id)}
         className="min-h-12 px-page-x">{r.reminded_at ? t('reminded') : t('remind')}</Button></li>)}</ul>}

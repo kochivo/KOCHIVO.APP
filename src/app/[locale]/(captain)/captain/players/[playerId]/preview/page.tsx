@@ -13,7 +13,7 @@ export default async function PlayerPreviewPage({ params }: { params: Promise<{ 
   return <Suspense fallback={<p role="status" className="p-card text-muted">{t('loading')}</p>}>
     {fetchPlayerPreview(playerId, today).then((result) => {
       if ('data' in result && result.data === null) notFound();
-      return <PreviewScreen result={result} today={today} />;
+      return <PreviewScreen result={result} today={today} playerId={playerId} />;
     })}
   </Suspense>;
 }

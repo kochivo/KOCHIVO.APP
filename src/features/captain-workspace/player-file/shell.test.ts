@@ -2,6 +2,7 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { expect, it, vi } from 'vitest';
 import { LocaleProvider } from '@/core/i18n/client';
+import { PhoneOverview } from './phone-overview';
 import { OverviewActivity } from './overview-activity';
 import { StatusCards } from './status-cards';
 import { FileHeader } from './file-header';
@@ -46,7 +47,7 @@ it('adds the phone header and billing action while keeping the six desktop tabs'
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
   try {
     const html = render(createElement(FileHeader, { ...input, summary: { ...summary, tier: { name: 'VIP', color: '' } }, tab: 'overview' }));
-    expect(html).toMatch(/md:hidden"><header.*VIP/);
+    expect(html).toMatch(/md:hidden"><header.*VIP.*aria-label="[^"]+"[^>]*href="\/captain\/players\/p\/preview"/);
     expect(html).toMatch(/id="file-renew"[^>]*aria-haspopup="dialog"[^>]*>الفلوس/);
     expect(html).toMatch(/<nav[^>]*max-md:hidden"><ul/);
     expect(html.match(/<li><a[^>]*href=/g)).toHaveLength(6);
@@ -54,6 +55,14 @@ it('adds the phone header and billing action while keeping the six desktop tabs'
     vi.unstubAllEnvs();
   }
 });
+it('adds a check only to the trained day in the phone week', () => {
+  const html = render(createElement(PhoneOverview, {
+    ...input, summary: { ...summary, completedDates: ['2026-11-12'] },
+    activity: { scans: [], last: null, sets: [], nutrition: null },
+  }));
+  expect(html.match(/\blucide-check\b/g)).toHaveLength(1);
+});
+
 it('renders one primary missing card, then none when every section exists', () => {
   let html = render(createElement(StatusCards, input));
   expect(html.match(/data-primary="true"/g)).toHaveLength(1);

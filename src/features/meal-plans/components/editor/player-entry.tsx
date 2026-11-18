@@ -8,5 +8,5 @@ const PlayerEditor = dynamic(() => import('./player-editor').then(module => modu
   { loading: () => <LoadingState variant="detail" /> });
 
 export function PlayerEditorEntry({ data }: { data: Awaited<ReturnType<typeof loadPlayerEditor>> }) {
-  return <PlayerEditor key={data.draft.id} data={data} editableMealNames />;
+  return <PlayerEditor key={data.draft.id} data={data} editableMealNames restViewOnly />;
 }

@@ -9,7 +9,7 @@ import { RequestPicker } from './components/request-picker';
 import { requestDueAt } from './request-dates';
 
 const due = '2026-01-01T21:30:00Z';
-vi.mock('next/navigation', () => ({ useSearchParams: () => new URLSearchParams() }));
+vi.mock('next/navigation', () => ({ useSearchParams: () => new URLSearchParams(), useRouter: () => ({ refresh() {} }) }));
 vi.mock('./data/request-actions', () => ({ pendingRequests: vi.fn(), requestPicker: vi.fn(),
   playerRequests: vi.fn(), remindRequest: vi.fn(), requestDetail: vi.fn(), sendRequest: vi.fn(), reviewRequest: vi.fn() }));
 vi.mock('@/core/resource', () => ({ useResource: (key: string) => ({

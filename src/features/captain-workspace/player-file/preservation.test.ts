@@ -3,11 +3,16 @@ import type { ReactElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { expect, it, vi } from 'vitest';
 import { LocaleProvider } from '@/core/i18n/client';
+import { Button } from '@/ui/button';
+import { CheckinPhotos } from './checkin-photos';
 import { CheckinList } from './checkin-list';
 import { ProgressHistory } from './progress-history';
 import { ProgressMediaEntry } from './progress-media-entry';
 import type { Profile } from './types';
 
+const actions = vi.hoisted(() => ({ mediaUrls: vi.fn() }));
+vi.mock('@/features/inbox', () => ({ mediaUrls: actions.mediaUrls }));
+vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh() {} }) }));
 vi.mock('server-only', () => ({}));
 vi.mock('next/dynamic', () => ({ default: () => () => null }));
 const profile: Profile = { name: 'Ali', intake: null, program: null, nutrition: null, checkIns: [
@@ -23,13 +28,31 @@ function find(tree: ReactElement, type: unknown): ReactElement<Record<string, un
   }
   return matches;
 }
-it('retains check-in notes, review status, replies, measurements and the inbox action', () => {
+it('retains check-in notes, review status, replies, measurements and in-context review', () => {
   const html = render(createElement(CheckinList, { playerId: 'p', profile, locale: 'en' }));
   for (const value of ['76.8', '82', 'My check-in notes', 'Coach reply']) expect(html).toContain(value);
-  expect(html.match(/href="\/captain\/inbox"/g)).toHaveLength(1);
+  expect(html).toContain('Review check-in');
+  expect(html).toContain('Open full-size photo 1');
+  expect(html).toContain('src="https://private.test/signed"');
   const empty = render(createElement(CheckinList, { playerId: 'p', profile: { ...profile, checkIns: [] }, locale: 'en' }));
   expect(empty).toContain('/captain/players/p/checkins#voice-recorder-p');
 });
+it('refreshes signed photos for the affected check-in only', async () => {
+  let retry: (() => void) | undefined;
+  function Capture() {
+    retry = find(CheckinPhotos({ id: 'one', initialUrls: [], initialError: true }), Button)[0]?.props.onClick as () => void;
+    return null;
+  }
+  render(createElement(Capture));
+  const called = new Promise(resolve => actions.mediaUrls.mockImplementationOnce((input: unknown) => {
+    resolve(input);
+    return { data: ['https://private.test/fresh'] };
+  }));
+  expect(retry).toBeTypeOf('function');
+  retry?.();
+  await expect(called).resolves.toEqual({ kind: 'checkin', id: 'one' });
+});
+
 it('keeps weight/body-fat history, signed photos/poses, photo errors and missing-data reminders', () => {
   const tree = ProgressHistory({ playerId: 'p', profile, locale: 'en', today: '2026-11-12' });
   const media = find(tree, ProgressMediaEntry);

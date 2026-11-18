@@ -4,6 +4,9 @@ import { arStd } from './standard/page-messages';
 export const messages = defineMessages({
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
+    invalidName: 'اكتب اسم اللاعب.', invalidPrice: 'اكتب سعر صحيح من 0 لحد 100,000.',
+    invalidDiscount: 'اكتب خصم صحيح من صفر لحد سعر الباقة.', invalidPaid: 'اكتب مبلغ صحيح من صفر لحد السعر.',
+    invalidStart: 'اختار تاريخ من 30 يوم فاتوا لحد 60 يوم قدام.', invalidPackage: 'اختار باقة أو مدة صالحة.',
     players: 'اللاعبين', back: 'رجوع', cancel: 'إلغاء', subtitle: 'هنعملك لينك تبعته للاعب يفتح بيه حسابه',
     gatedReady: 'ابعته له، هيلاقي التقييمات قدامه أول ما يفتح حسابه', detailsAndPayment: 'البيانات والباقة',
     details: 'بيانات اللاعب', payment: 'الباقة والدفع', paymentHint: 'من باقاتك، أو مدة وسعر مخصوص',
@@ -18,6 +21,9 @@ export const messages = defineMessages({
     month: 'شهر', months: '{n} شهور', days: '{n} يوم', year: 'سنة', customDuration: 'مدة تانية',
   },
   en: {
+    invalidName: 'Enter the player’s name.', invalidPrice: 'Enter a whole number from 0 to 100,000.',
+    invalidDiscount: 'Enter a whole number from zero to the package price.', invalidPaid: 'Enter a whole number from zero to the price.',
+    invalidStart: 'Choose a date from 30 days ago to 60 days ahead.', invalidPackage: 'Choose a valid package or duration.',
     players: 'Players', back: 'Back', cancel: 'Cancel', subtitle: 'Create a link for your player to open their account',
     gatedReady: 'Send it to them. They will answer the assessments when they open their account', detailsAndPayment: 'Details and package',
     details: 'Player details', payment: 'Package and payment', paymentHint: 'Choose a package or a custom duration and price',

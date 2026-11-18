@@ -3,9 +3,13 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { readFileSync } from 'node:fs';
 import { expect, it, vi } from 'vitest';
 import { PlayerCheckins } from './checkins';
+import { LocaleProvider } from '@/core/i18n/client';
+import { AssessmentReviewEntry } from './assessment-review-entry';
 import { AssessmentCards } from './assessment-cards';
 import type { RequestData } from '@/features/forms';
 
+vi.mock('next/navigation', () => ({ useSearchParams: () => new URLSearchParams() }));
+vi.mock('next/dynamic', () => ({ default: () => () => null }));
 vi.mock('./profile-section', () => ({ ProfileSection: ({ tab }: { tab: string }) => createElement('div', null, tab) }));
 const source = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8');
 
@@ -37,6 +41,12 @@ it('keeps answered assessment links directed to the existing request review', ()
     playerId: 'p', locale: 'en', timezone: 'Africa/Cairo', requests: [],
   }));
   expect(html).toContain('No assessments');
+});
+
+it('shows the pending assessment count before opening request history', () => {
+  const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' },
+    createElement(AssessmentReviewEntry, { playerId: 'p', locale: 'en', pending: 3 })));
+  expect(html).toMatch(/aria-expanded="false".*Assessment requests and history · 3 pending/);
 });
 
 it('uses the sheet header and guarded close for changing a player program', () => {

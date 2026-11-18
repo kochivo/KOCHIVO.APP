@@ -1,6 +1,6 @@
-import { RowLink } from '@/ui/row-link';
 import { Disclosure } from '@/ui/disclosure';
-import Image from 'next/image';
+import { CheckinPhotos } from './checkin-photos';
+import { CheckinReview } from './checkin-review';
 import { createT } from '@/core/i18n/messages';
 import type { Locale } from '@/core/i18n/locale';
 import { messages } from './messages';
@@ -32,12 +32,10 @@ export function CheckinList({ playerId, profile, locale }: { playerId: string; p
         <dl>{row.waistCm !== null && <FactRow label={t('waist')}>{n(row.waistCm, t('cm'))}</FactRow>}
           {row.bodyFatPct != null && <FactRow label={vt('bodyFat')}>{formatNumber(row.bodyFatPct, locale)}%</FactRow>}
         </dl>
-        {row.photoError && <p role="alert" className="text-sm text-danger">{t('error')}</p>}
-        {row.photos.length > 0 && <div className="grid grid-cols-2 gap-inline">{row.photos.map(url =>
-          <Image key={url} src={url} alt={vt('photos')} width={320} height={320} unoptimized className="h-56 w-full rounded-control object-cover" />)}</div>}
+        <CheckinPhotos key={row.photos.join('|')} id={row.id} initialUrls={row.photos} initialError={row.photoError} />
         {row.notes?.trim() && <p className="whitespace-pre-wrap text-sm text-muted">{row.notes}</p>}
         {row.reply ? <p className="glass rounded-control p-stack text-sm"><b>{t('yourReply')}: </b>{row.reply}</p> :
-          !row.reviewedAt && <RowLink href="/captain/inbox" className="glass mt-stack text-sm">{t('openInbox')}</RowLink>}
+          !row.reviewedAt && <CheckinReview row={row} playerId={playerId} playerName={profile.name} />}
         </Disclosure>
       </li>)}</ul> : <FileReminder playerId={playerId} locale={locale} title={t('noCheckinsTitle')} body={t('noCheckinsBody')} />}
     </section>

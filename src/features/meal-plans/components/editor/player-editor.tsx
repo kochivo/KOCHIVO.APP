@@ -50,7 +50,9 @@ const TargetsBar = dynamic(() => import('../targets-bar').then(module => module.
 const TargetCalculator = dynamic(() => import('./target-calculator').then(module => module.TargetCalculator));
 const BudgetSheet = dynamic(() => import('../budget-sheet').then(module => module.BudgetSheet));
 
-export function PlayerEditor({ data, editableMealNames = false }: { data: Awaited<ReturnType<typeof loadPlayerEditor>>; editableMealNames?: boolean }) {
+export function PlayerEditor({ data, editableMealNames = false, restViewOnly = false }: {
+  data: Awaited<ReturnType<typeof loadPlayerEditor>>; editableMealNames?: boolean; restViewOnly?: boolean;
+}) {
   const SendIcon = captainWorkspaceEnabled() ? KoSend : Send;
   const t = useT(messages);
   const rt = useT(redesignMessages);
@@ -96,10 +98,13 @@ export function PlayerEditor({ data, editableMealNames = false }: { data: Awaite
     {incomplete && <p className="text-xs text-warn">{t('incomplete')}</p>}
     <div className="mb-card-gap flex flex-wrap items-center gap-inline">
       {(['training', 'rest'] as const).map(value => <Chip key={value} disabled={state.busy} pressed={day === value} className={day === value ? '!border-ink !bg-ink !text-bg-deep' : 'bg-transparent'} onClick={() => {
-        if (value === 'rest') update(draft => openRestDay(draft, uuidv7));
+        if (!restViewOnly && value === 'rest') update(current => openRestDay(current, uuidv7));
         setDay(value);
       }}>{t(value)}</Chip>)}<p className="text-xs text-faint">{split ? t('restDifference', { kcal: formatNumber(Math.max(0,
-        dayTargets(draft.targets, facts.trainingDays?.value.length ?? 0, 'training').kcal - dayTargets(draft.targets, facts.trainingDays?.value.length ?? 0, 'rest').kcal), locale) }) : t('restHint')}</p>
+        dayTargets(draft.targets, facts.trainingDays?.value.length ?? 0, 'training').kcal - dayTargets(draft.targets, facts.trainingDays?.value.length ?? 0, 'rest').kcal), locale) }) : t(restViewOnly ? 'restViewHint' : 'restHint')}</p>
+      {restViewOnly && day === 'rest' && draft.meals.length > 0 && !draft.meals.some(meal => meal.dayType === 'rest') &&
+        <Button variant="secondary" disabled={state.busy} className="min-h-12 rounded-full"
+          onClick={() => update(current => openRestDay(current, uuidv7))}>{t('createRestMeals')}</Button>}
       {template && split && <Button variant="secondary" disabled={state.busy} className="min-h-12 rounded-full" onClick={() => {
         update(current => copyTrainingMeals(current, uuidv7)); setDay('rest');
       }}>{editorT('copy')}</Button>}

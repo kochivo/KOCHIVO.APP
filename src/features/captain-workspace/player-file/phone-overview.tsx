@@ -1,3 +1,4 @@
+import { Check } from 'lucide-react';
 import type { ArabicStyle, Locale } from '@/core/i18n/locale';
 import { createT } from '@/core/i18n/messages';
 import { formatDateAr, saturdayWeek } from '@/lib/dates';
@@ -36,7 +37,7 @@ export function PhoneOverview({ summary, profile, activity, today, locale, style
           const label = formatDateAr(date, { weekday: 'long' }, locale);
           return <li key={date} title={label} className={`grid min-h-8 place-items-center rounded-control text-micro ${done ? 'bg-lime font-bold text-on-lime' : 'bg-ink/5 text-muted'}`}>
             <span className="sr-only">{phone('dayStatus', { day: label, status: phone(done ? 'trained' : 'unlogged') })}</span>
-            <span aria-hidden>{formatDateAr(date, { weekday: 'narrow' }, locale)}</span>
+            <span aria-hidden className="inline-flex items-center">{formatDateAr(date, { weekday: 'narrow' }, locale)}{done && <Check className="size-3" />}</span>
           </li>;
         })}
       </ul>

@@ -1,4 +1,7 @@
 export const arStd = {
+  invalidName: 'أدخل اسم اللاعب.', invalidPrice: 'أدخل عددًا صحيحًا من 0 إلى 100,000.',
+  invalidDiscount: 'أدخل عددًا صحيحًا من صفر إلى سعر الباقة.', invalidPaid: 'أدخل عددًا صحيحًا من صفر إلى السعر.',
+  invalidStart: 'اختر تاريخًا من 30 يومًا مضت إلى 60 يومًا مقبلة.', invalidPackage: 'اختر باقة أو مدة صالحة.',
   players: 'اللاعبون', back: 'رجوع', cancel: 'إلغاء', subtitle: 'سننشئ رابطاً ترسله للاعب ليفتح حسابه',
   gatedReady: 'أرسله إليه، وستظهر التقييمات عند فتح حسابه', detailsAndPayment: 'البيانات والباقة',
   details: 'بيانات اللاعب', payment: 'الباقة والدفع', paymentHint: 'من باقاتك، أو مدة وسعر مخصصان',

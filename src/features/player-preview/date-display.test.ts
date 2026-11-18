@@ -12,7 +12,7 @@ it('keeps preview dates and weekday labels in Arabic', () => {
   const week = [{ date: '2026-11-03', trained: false, mealsEaten: 0 }];
   const html = renderToStaticMarkup(createElement(PreviewWeek, { week, today: '2026-11-03' }));
   expect(html).toContain('الثلاثاء، 3 نوفمبر');
-  const screen = renderToStaticMarkup(createElement(PreviewScreen, {
+  const screen = renderToStaticMarkup(createElement(PreviewScreen, { playerId: 'player',
     today: '2026-11-03', result: { data: { name: 'علي', program: null, todayDay: null, nutrition: null, sessions: [], week } },
   }));
   expect(screen).toContain('<span class="whitespace-nowrap text-micro" title="الثلاثاء">تلات</span>');
@@ -24,7 +24,7 @@ it('shows the selected day once and leaves no media block for exercises without 
     rest_seconds: 60, superset_group: null, media_path: null, rpe: null, tempo: null, notes: null }] };
   const program: ProgramSnapshot = { id: 'active', player_id: 'player', program_id: 'plan', title: 'خطة',
     notes: null, settings: {}, training_days: [], days: [day] };
-  const html = renderToStaticMarkup(createElement(PreviewScreen, {
+  const html = renderToStaticMarkup(createElement(PreviewScreen, { playerId: 'player',
     today: '2026-11-05', result: { data: { name: 'علي', program, todayDay: day, nutrition: null,
       sessions: [], week: [{ date: '2026-11-05', trained: false, mealsEaten: 0 }] } },
   }));

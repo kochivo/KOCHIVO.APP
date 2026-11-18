@@ -46,6 +46,7 @@ export async function FileContent({ playerId, tab, locale, children }: {
   let counts: Record<string, number>;
   let activity;
   let assessments;
+  let pendingAssessments = 0;
   try {
     const claims = await currentClaims();
     if (claims.error || !claims.data?.claims.sub) throw new Error('Unauthenticated');
@@ -54,7 +55,15 @@ export async function FileContent({ playerId, tab, locale, children }: {
       // The tab count is secondary; a chat failure must not hide the whole player file.
       .catch((error: unknown) => { console.warn('Chat counts unavailable', error); return {}; })]);
     if (tab === 'overview' || tab === 'nutrition') activity = await loadActivity(playerId, today);
-    if (tab === 'assessments') assessments = await loadPlayerRequests(await supabaseServer(), playerId);
+    if (tab === 'assessments') {
+      const client = await supabaseServer();
+      const [requests, pending] = await Promise.all([loadPlayerRequests(client, playerId),
+        client.from('form_requests').select('id', { count: 'exact', head: true }).eq('player_id', playerId)
+          .eq('captain_id', captainId).is('answered_at', null)]);
+      if (pending.error) throw pending.error;
+      assessments = requests;
+      pendingAssessments = pending.count ?? 0;
+    }
   }
   catch (error) { unstable_rethrow(error); return <FileState error locale={locale} href={href} />; }
   const phone = captainWorkspaceEnabled();
@@ -69,7 +78,7 @@ export async function FileContent({ playerId, tab, locale, children }: {
       tab === 'checkins' ? <PlayerCheckins playerId={playerId} profile={profile} today={today} locale={locale} /> :
         tab === 'assessments' ? <div className="grid gap-stack min-[760px]:grid-cols-2">
           <AssessmentCards requests={assessments ?? []} locale={locale} timezone={timezone} playerId={playerId} /><NewAssessmentEntry playerId={playerId} locale={locale} />
-          <AssessmentReviewEntry playerId={playerId} locale={locale} />
+          <AssessmentReviewEntry playerId={playerId} locale={locale} pending={pendingAssessments} />
         </div> :
           tab === 'training' ? <>{children}
             <PlanContext profile={profile} locale={locale} kind="training" timezone={timezone} /></> : <>

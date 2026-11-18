@@ -2,6 +2,7 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { expect, it, vi } from 'vitest';
 import { LocaleProvider } from '@/core/i18n/client';
+import { chatTailAction } from './components/chat-thread-view';
 import { ChatThread } from './components/chat-thread';
 import type { ChatThreadItem } from './types';
 
@@ -38,4 +39,12 @@ it.each(['ar', 'en'] as const)('renders older-page loading and retry states in %
   expect(page('loading')).toContain('disabled');
   expect(page('error')).toContain('role="alert"');
   expect(page('error')).toContain(locale === 'en' ? 'Try again' : 'جرّب تاني');
+});
+
+it('protects earlier captain context from incoming messages while following sends', () => {
+  expect(chatTailAction('captain', false, false, false)).toBe('notify');
+  expect(chatTailAction('captain', false, false, true)).toBe('scroll');
+  expect(chatTailAction('captain', false, true, false)).toBe('scroll');
+  expect(chatTailAction('captain', true, false, false)).toBe('scroll');
+  expect(chatTailAction('player', false, false, false)).toBe('scroll');
 });

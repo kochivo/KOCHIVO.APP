@@ -28,9 +28,9 @@ it('links empty program days to their editor', () => {
  expect(render(createElement(PreviewProgram, { program: { id: 'active', player_id: 'p', program_id: 'program', title: 'Plan', notes: null, settings: {}, training_days: [], days: [] } }))).toMatch(/href="\/captain\/programs\/program"[^>]*>Edit plan<\/a>/);
 });
 it('gives the empty Today preview a template action', () => {
- const html = render(createElement(PreviewScreen, { today: '2026-11-03', result: { data: { name: 'Ali', program: null, todayDay: null, nutrition: null, sessions: [], week: [] } } }));
+ const html = render(createElement(PreviewScreen, { playerId: 'player', today: '2026-11-03', result: { data: { name: 'Ali', program: null, todayDay: null, nutrition: null, sessions: [], week: [] } } }));
  expect(html).toMatch(/href="\/captain\/templates"[^>]*>Choose a template<\/a>/);
 });
 it('takes an unavailable player preview back to players', () => {
- expect(render(createElement(PreviewScreen, { today: '2026-11-03', result: { data: null } }))).toMatch(/href="\/captain\/players"[^>]*>Open players<\/a>/);
+ expect(render(createElement(PreviewScreen, { playerId: 'player', today: '2026-11-03', result: { data: null } }))).toMatch(/href="\/captain\/players"[^>]*>Open players<\/a>/);
 });
