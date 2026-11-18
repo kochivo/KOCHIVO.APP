@@ -16,7 +16,8 @@ vi.mock('react', async original => ({ ...await original<typeof React>(),
       state.values[index] = typeof next === 'function' ? next(state.values[index]) : next;
     }];
   },
-  useRef: () => ({ current: new Set<string>() }),
+  useRef: (initial: unknown) => ({ current: initial }),
+  useLayoutEffect: () => {},
 }));
 vi.mock('@/core/i18n/client', () => ({ useT: () => createT(messages, 'ar'), useLocale: () => 'ar' }));
 vi.mock('@/core/timezone/client', () => ({ useTimezone: () => 'Africa/Cairo' }));
@@ -29,12 +30,12 @@ function list() {
   state.cursor = 0;
   return JoinRequestsList({ rows, workspace: true, now: Date.parse('2026-11-14T12:00:00Z') });
 }
-async function resolve(status: 'accepted' | 'declined') {
+function resolve(status: 'accepted' | 'declined') {
   const tree = list();
   const ul = tree.props.children[2] as ReactElement<{ children: ReactElement<{ onResolve: (id: string, status: 'accepted' | 'declined') => Promise<void> }>[] }>;
   const card = ul.props.children[0];
   if (!card) throw new Error('Expected a pending request card');
-  await card.props.onResolve('request', status);
+  return card.props.onResolve('request', status);
 }
 beforeEach(() => { state.values = []; state.cursor = 0; state.resolve.mockReset(); state.success.mockReset(); });
 
@@ -46,11 +47,24 @@ it('removes accepted requests and announces acceptance only', async () => {
   expect(state.success).toHaveBeenCalledWith('اتقبل عمر خالد');
   expect(html).not.toContain('<li');
 });
-it('restores the request after a failed decision', async () => {
+it('keeps the request after a failed decision', async () => {
   state.resolve.mockResolvedValue({ error: 'Failed' });
   await resolve('declined');
   const html = renderToStaticMarkup(list());
   expect(html).toContain('role="alert"');
   expect(html).toContain('عمر خالد');
   expect(html).toContain('<li');
+});
+
+it('keeps the request and its action controls in place while resolving', async () => {
+  let finish: (value: { ok: true }) => void = () => {};
+  state.resolve.mockReturnValue(new Promise(resolve => { finish = resolve; }));
+  const decision = resolve('declined');
+  const html = renderToStaticMarkup(list());
+  expect(html).toContain('data-join-row="request"');
+  expect(html).toContain('aria-busy="true"');
+  expect(html.match(/aria-disabled="true"/g)).toHaveLength(2);
+  finish({ ok: true });
+  await decision;
+  expect(renderToStaticMarkup(list())).not.toContain('data-join-row="request"');
 });

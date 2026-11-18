@@ -3,12 +3,13 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { LocaleProvider } from '@/core/i18n/client';
 import { CaptainNotificationsEntry } from './components/captain-notifications-entry';
+import { NotificationBell } from './components/notification-bell';
 import type { useNotifications } from './hooks/use-notifications';
 
 const state = vi.hoisted(() => ({ current: {} as ReturnType<typeof useNotifications> }));
 vi.mock('./hooks/use-notifications', () => ({ useNotifications: () => state.current }));
-vi.mock('next/navigation', () => ({ useRouter: () => ({ push() {} }) }));
-afterEach(() => vi.restoreAllMocks());
+vi.mock('next/navigation', () => ({ usePathname: () => '/captain/tasks' }));
+afterEach(() => { vi.restoreAllMocks(); vi.unstubAllEnvs(); });
 
 function render(overrides: Partial<ReturnType<typeof useNotifications>> = {}) {
   vi.spyOn(Date, 'now').mockReturnValue(Date.parse('2026-11-14T10:00:00Z'));
@@ -30,7 +31,7 @@ describe('captain notification list', () => {
     expect(render({ status: 'error' })).toContain('Try again');
   });
 
-  it('renders real notification text, relative time, destinations, and unread dots', () => {
+  it('renders real notification text, relative time, destinations, and a readable unread label', () => {
     const html = render({ rows: [{
       id: 'notification-1', type: 'join_requested', payload: { name: 'Mariam' },
       created_at: '2026-11-14T09:00:00Z', is_read: false,
@@ -43,6 +44,7 @@ describe('captain notification list', () => {
     expect(html).toContain('href="/captain/join"');
     expect(html).toContain('href="/captain/billing"');
     expect(html.match(/rounded-full bg-lime/g)).toHaveLength(1);
+    expect(html.match(/>Unread<\/span>/g)).toHaveLength(1);
   });
 
   it('reports read failures without hiding the list', () => {
@@ -50,6 +52,14 @@ describe('captain notification list', () => {
     expect(html).toContain('role="alert"');
     expect(html).toContain('Could not mark as read');
     expect(html).toContain('No notifications yet');
+  });
+
+  it('uses a native, named notifications link with an unread status in the workspace bell', () => {
+    vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
+    render({ count: 2 });
+    const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' },
+      createElement(NotificationBell, { captain: true })));
+    expect(html).toMatch(/<a[^>]*aria-label="Notifications, unread alerts"[^>]*href="\/captain\/notifications"/);
   });
 
   it('opens important events at their actionable destinations with player names', () => {

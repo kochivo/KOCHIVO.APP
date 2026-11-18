@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useT } from '@/core/i18n/client';
 import { PageBarTitle } from '@/ui/page-bar-title';
@@ -16,7 +15,6 @@ import { Button } from '@/ui/button';
 export function CaptainNotificationsEntry() {
   const t = useT(messages);
   const n = useNotifications(true);
-  const router = useRouter();
   const [now] = useState(() => Date.now());
   if (n.status !== 'ready') return <CaptainNotificationsStateEntry kind={n.status} retry={() => void n.refresh()} />;
   return <>
@@ -35,14 +33,9 @@ export function CaptainNotificationsEntry() {
           const href = importantNotificationHref(row) ?? (row.type === 'player_rank_up' || row.type === 'player_pain' || row.type === 'pain_answered' ? notificationHref(row) : baseHref);
           const time = relativeTime(row.created_at, now);
           return <li key={row.id} className="border-line-soft [&+li]:border-t">
-            <Link href={href} aria-disabled={n.pending}
+            <Link href={href}
               className={`flex min-h-[50px] w-full items-center gap-stack rounded-xl p-inline text-start hover:bg-surface-raised ${row.is_read ? '' : 'bg-surface-raised'}`}
-              onClick={async event => {
-                if (n.pending) { event.preventDefault(); return; }
-                if (row.is_read) return;
-                event.preventDefault();
-                if (await n.read(row.id)) router.push(href);
-              }}>
+              onClick={() => { if (!row.is_read) void n.read(row.id); }}>
               <span className="grid size-8 shrink-0 place-items-center rounded-[10px] border border-line-soft bg-surface-raised">
                 <Icon aria-hidden className="size-4" />
               </span>
@@ -55,7 +48,7 @@ export function CaptainNotificationsEntry() {
                 })}</p>
                 <time dateTime={row.created_at} className="block truncate text-micro text-muted">{t(time.key, { n: time.n })}</time>
               </div>
-              {!row.is_read && <span aria-hidden className="size-2 shrink-0 rounded-full bg-lime" />}
+              {!row.is_read && <><span className="text-micro text-muted">{t('unread')}</span><span aria-hidden className="size-2 shrink-0 rounded-full bg-lime" /></>}
             </Link>
           </li>;
         })}</ul>}

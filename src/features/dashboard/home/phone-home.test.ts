@@ -21,7 +21,9 @@ it('adds one phone primary action and keeps the original hero inside the desktop
   expect(withoutIconIds(html)).toContain(`<div class="hidden md:block">${withoutIconIds(desktop)}</div>`);
   expect(html).toContain('Start tasks');
   expect(html).toContain('Sara');
-  expect(html.match(/control-primary/g)).toHaveLength(1);
+  expect(html.match(/control-primary/g)).toHaveLength(2);
+  expect(html).toMatch(/class="hidden md:block"[\s\S]*control-primary/);
+  expect(html).toMatch(/<section[^>]*md:hidden[\s\S]*control-primary/);
 });
 
 it('renders three phone stats from real totals and keeps the four-cell desktop strip', () => {

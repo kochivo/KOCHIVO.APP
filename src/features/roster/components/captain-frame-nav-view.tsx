@@ -9,7 +9,7 @@ import { CaptainNavGroups } from './captain-nav-groups';
 import { CaptainPhoneNav } from './captain-phone-nav';
 
 export function CaptainFrameNavView({ active, counts, open, onMore, onClose, onSelect, more, available, adding = false, onQuickAdd }: {
-  active: FrameId; counts: FrameCounts; open: boolean; onMore: () => void; onClose: () => void;
+  active: FrameId | null; counts: FrameCounts; open: boolean; onMore: () => void; onClose: () => void;
   onSelect?: (id: FrameId) => void; more?: ReactNode; available?: readonly FrameId[];
   adding?: boolean; onQuickAdd?: () => void;
 }) {

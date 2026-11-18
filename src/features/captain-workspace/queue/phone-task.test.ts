@@ -16,7 +16,7 @@ it('shows the selected check-in, its facts and note, and one approve-and-reply a
   };
   const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' }, createElement(PhoneTaskCard, {
     task, at: '2026-11-18T12:00:00Z', triage: { history: [], dailyChecks: [] }, pending: false, canMove: true,
-    onNext: () => {}, onAction: () => {}, onReview: () => {}, onSend: async () => true,
+    onNext: () => {}, onAction: () => {}, onSend: async () => true,
   })));
   expect(html).toContain('Sara');
   expect(html).toContain('64.2');

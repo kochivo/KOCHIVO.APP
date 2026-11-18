@@ -40,10 +40,11 @@ export function frameCounts(input: { tasks: number | null; chats: Record<string,
     join: input.joins, billing: null };
 }
 
-export function frameParent(path: string): FrameId {
+export function frameParent(path: string): FrameId | null {
+  if (path === '/captain') return 'home';
   if (/^\/captain\/players(?:\/|$)/u.test(path)) return 'players';
   if (path.startsWith('/captain/programs/')) return 'programs';
   if (path.startsWith('/captain/nutrition/')) return 'plans';
   return [...frameItems].reverse().find(item => item.href !== '/captain' &&
-    (path === item.href || path.startsWith(`${item.href}/`)))?.id ?? 'home';
+    (path === item.href || path.startsWith(`${item.href}/`)))?.id ?? null;
 }

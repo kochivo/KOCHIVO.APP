@@ -4,12 +4,12 @@ import { beforeEach, expect, it, vi } from 'vitest';
 import { LocaleProvider } from '@/core/i18n/client';
 import { CaptainFrameNav } from './captain-frame-nav';
 
-const state = vi.hoisted(() => ({ error: false, tasks: 7 as number | null, data: { tasks: null, inbox: 8, join: 6, billing: null } }));
-vi.mock('next/navigation', () => ({ usePathname: () => '/captain/tasks' }));
+const state = vi.hoisted(() => ({ error: false, path: '/captain/tasks', tasks: 7 as number | null, data: { tasks: null, inbox: 8, join: 6, billing: null } }));
+vi.mock('next/navigation', () => ({ usePathname: () => state.path }));
 vi.mock('@/core/resource/use-resource', () => ({ useResource: () => state }));
 vi.mock('./captain-frame-data', () => ({ loadCaptainFrameCounts: vi.fn() }));
 vi.mock('../hooks/use-task-count', () => ({ useTaskCount: () => state.tasks }));
-beforeEach(() => { state.error = false; state.tasks = 7; });
+beforeEach(() => { state.error = false; state.path = '/captain/tasks'; state.tasks = 7; });
 
 function render(tasks: number | null) {
   return renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' },
@@ -35,6 +35,7 @@ it('keeps desktop groups and exposes the five phone controls in order', () => {
 });
 it('retains tasks when polling fails and accepts a fresh endpoint count', () => {
   state.error = true;
+  expect(render(7)).toContain('العدد مش متاح');
   for (const link of taskLinks(render(7))) expect(link).toContain('>7</span>');
   state.error = false;
   state.tasks = 9;
@@ -43,4 +44,12 @@ it('retains tasks when polling fails and accepts a fresh endpoint count', () => 
 it('keeps the badge unknown before the first successful endpoint read', () => {
   state.tasks = null;
   for (const link of taskLinks(render(99))) expect(link).not.toMatch(/>\d+<\/span>/);
+});
+
+it('leaves phone destinations unselected on notifications', () => {
+  state.path = '/captain/notifications';
+  const html = render(7);
+  const phone = html.slice(html.indexOf('data-captain-phone-nav'));
+  expect(phone).not.toContain('aria-current');
+  expect(phone).not.toContain('nav-slash');
 });

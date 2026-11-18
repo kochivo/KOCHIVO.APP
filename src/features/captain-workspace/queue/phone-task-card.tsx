@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useLocale, useT } from '@/core/i18n/client';
 import { ageLabel } from '@/features/inbox';
-import type { InboxItem, TriageInputs } from '@/features/inbox';
+import type { TriageInputs } from '@/features/inbox';
 import type { VoiceInput } from '@/features/chat';
 import { Button, buttonClass, clickableClass } from '@/ui/button';
 import { formatDateAr } from '@/lib/dates';
@@ -17,9 +17,9 @@ import { PhoneTaskFacts } from './phone-task-facts';
 const Media = dynamic(() => import('./task-media').then(module => module.TaskMedia));
 const Compose = dynamic(() => import('./task-compose').then(module => module.TaskCompose));
 
-export function PhoneTaskCard({ task, at, triage, pending, canMove, onNext, onAction, onReview, onSend }: {
+export function PhoneTaskCard({ task, at, triage, pending, canMove, onNext, onAction, onSend }: {
   task: CaptainTask; at: string; triage: TriageInputs; pending: boolean; canMove: boolean;
-  onNext: () => void; onAction: () => void; onReview: (item: InboxItem) => void;
+  onNext: () => void; onAction: () => void;
   onSend: (body: string, voice?: Pick<VoiceInput, 'blob' | 'mimeType' | 'durationSeconds' | 'id'>) => Promise<boolean>;
 }) {
   const t = useT(phoneTaskMessages), copy = useT(taskMessages), locale = useLocale();
@@ -45,7 +45,7 @@ export function PhoneTaskCard({ task, at, triage, pending, canMove, onNext, onAc
       {task.href ? <Link href={`/${locale}${task.href}`} className={buttonClass({ size: 'lg', block: false, className: 'min-w-0 flex-1' })}>
         {copy(`${task.kind}Action`)}</Link> :
         <Button id={item ? `phone-queue-${item.kind}-${item.id}` : undefined} size="lg" block={false} className="min-w-0 flex-1"
-          disabled={pending} onClick={() => item ? onReview(item) : onAction()}>{item ? t('approveReply') : copy(`${task.kind}Action`)}</Button>}
+          disabled={pending} onClick={onAction}>{item ? t('approveReply') : copy(`${task.kind}Action`)}</Button>}
     </div>
     {!task.href && task.kind !== 'receipt' && <details>
       <summary className={`${clickableClass} min-h-12 content-center text-sm text-muted`}>{t('reply')}</summary>

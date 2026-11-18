@@ -35,7 +35,7 @@ export function CaptainTopBar({ players, bell, install }: { players: CaptainFram
     window.addEventListener('keydown', shortcut);
     return () => window.removeEventListener('keydown', shortcut);
   }, [path]);
-  const title = path.startsWith('/captain/players/') ? 'player' : path === '/captain/billing/packages' ? 'packages' : frameParent(path);
+  const title = path.startsWith('/captain/players/') ? 'player' : path === '/captain/billing/packages' ? 'packages' : frameParent(path) ?? 'home';
   return <>
     <div data-captain-top-bar className="group/top glass mb-stack flex min-h-16 flex-wrap items-center gap-inline rounded-control border border-line px-inline py-inline max-md:min-h-12 max-md:flex-nowrap max-md:rounded-none max-md:border-0 max-md:bg-transparent! max-md:bg-none max-md:p-0 max-md:shadow-none max-md:backdrop-blur-none max-md:group-has-[[data-captain-phone-heading]]/page:hidden">
       <div key={`title:${path}`} data-top-bar-title className="min-w-0 grow basis-48 ps-inline max-md:basis-auto max-md:ps-0">

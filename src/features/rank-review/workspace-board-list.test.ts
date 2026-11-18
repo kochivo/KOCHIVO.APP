@@ -35,6 +35,13 @@ describe('workspace ranking list', () => {
     expect(html).toContain('>—</span>');
     expect(html).not.toContain('>6</span>');
   });
+  it('hides desktop-only headers on compact screens and exposes the metrics in a disclosure', () => {
+    const html = render([player]);
+    expect(html).toContain('role="columnheader" class="max-md:hidden">Medal');
+    expect(html).toContain('role="columnheader" class="max-md:hidden">Workouts');
+    expect(html).toContain('<dt>Medal</dt><dd>Bronze</dd>');
+    expect(html).toContain('<dt>Workouts</dt><dd>6</dd>');
+  });
   it('does not link an unavailable player id', () => {
     expect(render([{ ...player, player_id: null }])).not.toContain('href=');
   });

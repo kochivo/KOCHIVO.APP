@@ -27,8 +27,8 @@ export function WorkspaceBoardList({ rows, locale, allTime, phoneLeader }: {
     <div role="row" className={cn(columns, 'min-h-10 text-micro text-muted max-md:sr-only')}>
       <span role="columnheader" aria-label={t('rank')}><span aria-hidden>#</span></span>
       <span role="columnheader">{t('player')}</span>
-      <span role="columnheader">{t('medal')}</span>
-      <span role="columnheader">{t('workouts')}</span>
+      <span role="columnheader" className="max-md:hidden">{t('medal')}</span>
+      <span role="columnheader" className="max-md:hidden">{t('workouts')}</span>
       <span role="columnheader">{t('points')}</span>
     </div>
     {rows.map((row, index) => {
@@ -40,16 +40,25 @@ export function WorkspaceBoardList({ rows, locale, allTime, phoneLeader }: {
         <span role="cell" className={cn('min-w-4 font-display font-extrabold tabular-nums', rank === 1 && points > 0 ? 'text-warn' : 'text-muted')}>
           {formatNumber(rank, locale)}
         </span>
-        <span role="cell" className="flex min-w-0 items-center gap-stack">
+        <div role="cell" className="flex min-w-0 items-center gap-stack">
           <span aria-hidden className="grid size-9 shrink-0 place-items-center rounded-full bg-surface-raised font-bold">
             {row.display_name.trim().slice(0, 1)}
           </span>
-          {row.player_id ?
-            <Link href={`/captain/players/${row.player_id}`}
-              className={`${clickableClass} min-w-0 break-words font-bold transform-none! after:absolute after:inset-0 focus-visible:underline`}>
-              {row.display_name}
-            </Link> : <b className="min-w-0 break-words">{row.display_name}</b>}
-        </span>
+          <div className="min-w-0 max-md:flex max-md:flex-wrap max-md:items-center max-md:gap-inline">
+            {row.player_id ?
+              <Link href={`/captain/players/${row.player_id}`}
+                className={`${clickableClass} min-w-0 break-words font-bold transform-none! after:absolute after:inset-0 focus-visible:underline`}>
+                {row.display_name}
+              </Link> : <b className="min-w-0 break-words">{row.display_name}</b>}
+            <details className="relative z-10 text-xs text-muted md:hidden">
+              <summary className={`${clickableClass} min-h-12 content-center`}>{t('rowDetails')}</summary>
+              <dl className="pb-stack">
+                <dt>{t('medal')}</dt><dd>{medals(medalRank(row.lifetime))}</dd>
+                <dt>{t('workouts')}</dt><dd>{allTime ? t('missing') : formatNumber(row.done, locale)}</dd>
+              </dl>
+            </details>
+          </div>
+        </div>
         <span role="cell" className="flex min-w-0 items-center gap-inline text-xs max-md:hidden">
           <Medal aria-hidden className="hidden size-4 shrink-0 text-muted min-[960px]:block" />
           <span className="break-words">{medals(medalRank(row.lifetime))}</span>

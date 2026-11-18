@@ -106,7 +106,14 @@ export function WorkspaceScreen({ joinRequests }: { joinRequests: Record<string,
     {Boolean(resource.error) && <div role="alert" className="glass rounded-card p-card text-danger">{t('loadFailed')}<Button variant="secondary" className="min-h-12 px-stack" onClick={() => { if (!sendLock.current && !historyLock.current && guard.current()) void resource.retry(); }}>{t('retry')}</Button></div>}
     {!data ? !resource.error && <LoadingState variant="list" aria-label={t('loading')} /> : <>
       {caughtUp && !selected ? <WorkspaceEmpty count={weekCount} hours={hours} /> : <div className="grid items-start gap-card-gap lg:grid-cols-[360px_minmax(0,1fr)]">
-        <WorkspaceList attention={view.attention} routine={view.routine} selected={selected} inputs={data.triage} now={now} onSelect={item => { if (leave()) { setRequestNodes(value => ({ ...value, ...joinRequests })); setSelected(item); } }} />
+        <WorkspaceList attention={view.attention} routine={view.routine} selected={selected} inputs={data.triage} now={now}
+          onReset={kind !== 'all' || status !== 'waiting' || search.trim() ? () => {
+            if (leave()) {
+              setKind('all'); setStatus('waiting'); setSearch('');
+              document.getElementById('tasks-heading')?.focus();
+            }
+          } : undefined}
+          onSelect={item => { if (leave()) { setRequestNodes(value => ({ ...value, ...joinRequests })); setSelected(item); } }} />
         {selected ? <Detail key={taskKey(selected)} item={selected} inputs={data.triage} now={now} joinRequest={requestNodes[selected.id] ?? joinRequests[selected.id]} blocked={historyPending}
             reply={replyDraft(drafts, selected)} onDraft={reply => setDrafts(value => saveReplyDraft(value, selected, reply))}
             onClose={() => { leave(); }} onSend={send} onDirty={setGuard} />

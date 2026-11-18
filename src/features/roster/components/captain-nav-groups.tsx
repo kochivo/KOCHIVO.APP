@@ -9,7 +9,7 @@ import { frameGroups, frameItems, sidebarHiddenGroups } from './captain-frame-mo
 import type { FrameCounts, FrameId } from './captain-frame-model';
 
 export function CaptainNavGroups({ active, counts, libraryCounts, tiles = false, phone = false, onNavigate, onSelect, available }: {
-  active: FrameId; counts: FrameCounts; tiles?: boolean; phone?: boolean; onNavigate?: () => void; onSelect?: (id: FrameId) => void; available?: readonly FrameId[];
+  active: FrameId | null; counts: FrameCounts; tiles?: boolean; phone?: boolean; onNavigate?: () => void; onSelect?: (id: FrameId) => void; available?: readonly FrameId[];
   libraryCounts?: Partial<Record<FrameId, number | null>> | null;
 }) {
   const t = useT(frameMessages);
@@ -46,7 +46,7 @@ export function CaptainNavGroups({ active, counts, libraryCounts, tiles = false,
               className={`relative flex min-h-12 rounded-control text-row ${tiles ? `glass min-h-[72px] flex-col items-center justify-center gap-stack px-stack py-stack text-center ${active === id ? 'glass-strong font-semibold text-ink' : 'text-muted'}` : `items-center gap-stack px-stack ${active === id ? 'nav-slash bg-ink/5 font-semibold text-ink' : 'text-muted hover:bg-ink/5 hover:text-ink'}`}`}>
               <Icon active={active === id} className={`size-5 shrink-0 ${tiles ? 'text-lime' : ''}`} aria-hidden />
               <span className={tiles ? undefined : 'min-w-0 flex-1 truncate'}>{t(id)}</span>
-              {count === null ? <span className="sr-only">{t('unavailable')}</span> : count !== undefined && count > 0
+              {count === null && id !== 'billing' ? <span className="text-micro text-muted">{t('countUnavailable')}</span> : count != null && count > 0
                 ? <span className={tiles ? 'absolute end-2 top-1 text-xs font-bold text-lime' : `min-w-5 rounded-md px-inline text-center text-micro font-bold tabular-nums ${id === 'billing' ? 'tone-warn' : 'tone-lime'}`}>{count}</span> : null}
             </Link>;
           })}

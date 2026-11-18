@@ -78,10 +78,13 @@ export function TasksScreen() {
   async function action(task: CaptainTask) {
     if (!data || busy.current) return;
     if (task.kind === 'receipt') { router.push(`/${locale}/captain/billing#receipt-${task.id.slice('receipt:'.length)}`); return; }
-    if (task.kind === 'video') { open(task); return; }
+    if (task.kind === 'video') {
+      open(task);
+      if (phone && task.item) setReview(task.item);
+      return;
+    }
     if (task.kind === 'checkin' && task.item) { open(task); setReview(task.item); return; }
     if (task.kind === 'program') {
-      await complete(task, async () => {});
       router.push(`/${locale}/captain/players/${task.playerId}/programs`);
       return;
     }
@@ -105,7 +108,7 @@ export function TasksScreen() {
         <PhoneTaskControls at={countAt ?? data.at} open={tasks.length} {...{ counts, filter, search, pending }}
           onFilter={changeFilter} onSearch={setSearch} index={selectedIndex} total={visible.length} onMove={move}>
           {selected ? <PhoneTaskCard key={selected.id} task={selected} at={data.at} triage={data.triage} pending={pending}
-            canMove={visible.length > 1} onNext={() => move(1)} onAction={() => void action(selected)} onReview={setReview} onSend={send} />
+            canMove={visible.length > 1} onNext={() => move(1)} onAction={() => void action(selected)} onSend={send} />
             : tasks.length ? <p role="status" className="p-card text-sm text-muted">{phoneText('noMatches')}</p> : <TasksState kind="empty" />}
         </PhoneTaskControls>
       </section> : !tasks.length && !pending ? <TasksState kind="empty" /> : <>

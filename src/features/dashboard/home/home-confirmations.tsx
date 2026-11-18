@@ -1,11 +1,14 @@
 import Link from 'next/link';
-import { Banknote, UserPlus } from 'lucide-react';
+import { Banknote } from 'lucide-react';
 import { getLocale, getT } from '@/core/i18n/server';
 import { formatNumber } from '@/lib/format';
 import { homeV11Messages } from './messages';
+import { HomeJoinConfirmations } from './home-join-confirmations';
 
-export async function HomeConfirmations({ requests, payments, paymentsFailed }: {
-  requests: { id: string; name: string }[]; payments: { id: string; name: string }[]; paymentsFailed: boolean;
+export async function HomeConfirmations({ requests, retryRequests, payments, paymentsFailed }: {
+  requests: { id: string; name: string }[] | null;
+  retryRequests?: () => Promise<{ id: string; name: string }[] | null>;
+  payments: { id: string; name: string }[]; paymentsFailed: boolean;
 }) {
   const [t, locale] = await Promise.all([getT(homeV11Messages), getLocale()]);
   return <section className="glass min-w-0 rounded-[18px] p-card">
@@ -17,12 +20,6 @@ export async function HomeConfirmations({ requests, payments, paymentsFailed }: 
           <small className="block truncate text-xs text-muted">{payments.map(row => row.name).join(t('joinNames'))}</small></div>
         <span className="rounded-full bg-lime-soft px-stack py-inline text-xs font-medium text-lime">{formatNumber(payments.length, locale)}</span>
       </Link> : <p className="px-inline py-page-y text-sm text-muted">{t('noPayments')}</p>}
-    {requests.length ? <Link href="/captain/join"
-      className="flex min-h-[58px] w-full items-center gap-stack rounded-xl p-stack text-start">
-      <span className="grid size-[38px] shrink-0 place-items-center rounded-xl border border-line bg-surface-raised"><UserPlus className="size-4" aria-hidden /></span>
-      <div className="min-w-0 flex-1"><b className="block text-sm font-semibold">{t('requests', { count: formatNumber(requests.length, locale) })}</b>
-        <small className="block truncate text-xs text-muted">{requests.map(row => row.name).join(t('joinNames'))}</small></div>
-      <span className="rounded-full bg-lime-soft px-stack py-inline text-xs font-medium text-lime">{formatNumber(requests.length, locale)}</span>
-    </Link> : <p className="px-inline py-page-y text-sm text-muted">{t('noRequests')}</p>}
+    <HomeJoinConfirmations requests={requests} retryAction={retryRequests} />
   </section>;
 }

@@ -21,7 +21,7 @@ import { loadCaptainMoreCounts } from './captain-more-counts';
 const FeedbackButton = dynamic(() => import('@/features/feedback').then(module => module.FeedbackButton), { ssr: false });
 
 export function CaptainMoreSheet({ active, counts, captain, plan, bell, tools, onClose }: {
-  active: FrameId; counts: FrameCounts; captain?: CaptainFrameData['captain'];
+  active: FrameId | null; counts: FrameCounts; captain?: CaptainFrameData['captain'];
   plan?: { tier: string; used: number; limit: number } | null; bell?: ReactNode; tools?: ReactNode; onClose: () => void;
 }) {
   const t = useT(frameMessages);
@@ -35,7 +35,7 @@ export function CaptainMoreSheet({ active, counts, captain, plan, bell, tools, o
     className="sheet fixed inset-x-0 top-[var(--safe-top)] bottom-[calc(5.5rem+var(--safe-bottom))] m-0 max-h-none w-full max-w-none space-y-card-gap overflow-y-auto rounded-none! border-0! bg-bg! bg-none! px-page-x pb-card text-ink shadow-none! before:content-none! backdrop:bg-transparent! backdrop:backdrop-blur-none!">
     <header className="flex flex-nowrap items-center gap-inline">
       <h2 className="me-auto min-w-0 truncate text-h font-bold">{t('more')}</h2>
-      <Link href="/captain/inbox" prefetch={false} aria-label={t('inbox')} onClick={onClose}
+      <Link href="/captain/inbox" prefetch={false} aria-label={t('inbox')} aria-current={active === 'inbox' ? 'page' : undefined} onClick={onClose}
         className={buttonClass({ variant: 'secondary', block: false, className: 'relative size-12 px-0' })}>
         <KoCaptainChat className="size-5" aria-hidden />
         {!!counts.inbox && <span className="absolute end-0 top-0 rounded-full bg-lime px-inline text-micro font-bold tabular-nums text-on-lime">{counts.inbox}</span>}

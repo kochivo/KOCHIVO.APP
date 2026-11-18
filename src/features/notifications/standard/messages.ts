@@ -24,7 +24,7 @@ export const arStd = {
   sessions_used_up: 'انتهت حصص اللاعب. راجع الاشتراك', workout_feedback: 'يوجد تقييم تمرين جديد للمراجعة',
   workout_reminder: 'هل أنت جاهز لتمرين اليوم؟ {name} بانتظارك', join_requested: 'أرسل {name} طلب انضمام',
   title: 'الإشعارات', close: 'أغلق الإشعارات', markAll: 'علّم الكل كمقروء', loading: 'جاري تحميل الإشعارات…',
-  empty: 'لا توجد إشعارات بعد', error: 'تعذّر تحميل الإشعارات. حاول مجدداً', retry: 'حاول مجدداً',
+  empty: 'لا توجد إشعارات بعد', error: 'تعذّر تحميل الإشعارات. حاول مجدداً', titleWithUnread: 'الإشعارات، توجد إشعارات غير مقروءة', unread: 'غير مقروء', retry: 'حاول مجدداً',
   saveError: 'تعذّر تعليم الإشعار كمقروء. حاول مجدداً', plan_assigned: 'تم تعيين برنامج {name} لك',
   nutrition_updated: 'تم تحديث خطتك الغذائية {name}', player_joined: 'انضم إليك {name}',
   player_inactive: 'لم يتمرّن {name} منذ 3 أيام أو أكثر', now: 'الآن', minutes: 'منذ {n} دقيقة', hours: 'منذ {n} ساعة', days: 'منذ {n} يوم',

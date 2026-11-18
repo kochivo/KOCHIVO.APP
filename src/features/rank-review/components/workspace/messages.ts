@@ -1,6 +1,7 @@
 import { defineMessages } from '@/core/i18n/messages';
 
 const arStd = {
+  rowDetails: 'التفاصيل',
   monthSummary: '{month} · الأيام المتبقية: {days}',
   firstMonthly: 'الأول هذا الشهر', firstAllTime: 'الأول في الترتيب العام',
   rank: 'المركز', player: 'اللاعب', medal: 'الميدالية', workouts: 'التمارين', points: 'النقاط',
@@ -15,6 +16,7 @@ const arStd = {
 export const workspaceMessages = defineMessages({
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
+    rowDetails: 'التفاصيل',
     monthSummary: '{month} · باقي {days} يوم على نهاية الشهر',
     firstMonthly: 'الأول الشهر ده', firstAllTime: 'الأول على كل الوقت',
     rank: 'المركز', player: 'اللاعب', medal: 'الميدالية', workouts: 'تمارين', points: 'النقط',
@@ -26,6 +28,7 @@ export const workspaceMessages = defineMessages({
     zeroNote: 'اللاعيبة اللي معندهاش نقط بتظهر في الجدول بترتيبها.',
   },
   en: {
+    rowDetails: 'Details',
     monthSummary: '{month} · {days} days left',
     firstMonthly: 'First this month', firstAllTime: 'First all time',
     rank: 'Rank', player: 'Player', medal: 'Medal', workouts: 'Workouts', points: 'Points',

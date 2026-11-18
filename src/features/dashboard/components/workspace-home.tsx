@@ -43,16 +43,20 @@ export async function WorkspaceHome({ data, now = new Date() }: {
   ]);
   const today = localDate(now, timezone);
   const players = (roster.players ?? []).map(player => ({ ...player, playerToday: localDate(now, player.timezone ?? timezone) }));
-  const header = <>
+  const header = (startTasks = false) => <>
     <PageBarTitle title={t(greetingPeriod(now, timezone), { name: firstName })}
       subtitle={t('date', { weekday: formatDateAr(today, { weekday: 'long' }, locale), date: formatDateAr(today, { day: 'numeric', month: 'long' }, locale) })} />
-    <PageBarActions><HomeInvite name={firstName} label={t('invite')} /></PageBarActions>
+    <PageBarActions><HomeInvite name={firstName} label={t('invite')} secondary={startTasks} /></PageBarActions>
   </>;
-  if (roster.error) return <section data-tour-ready="true">{header}<WorkspaceError /></section>;
+  if (roster.error) return <section data-tour-ready="true">{header()}<WorkspaceError /></section>;
   const [summary, followup, renewals, pending] = await Promise.all([
     readHome(loadHomeSummary(now)), readHome(loadHomeFollowup(now)), readHome(listRenewalRequests()), readHome(loadTasks(now.toISOString())),
   ]);
-  if (!summary || !followup || !pending) return <section data-tour-ready="true">{header}<WorkspaceError /></section>;
+  if (!summary || !pending) return <section data-tour-ready="true">{header()}<WorkspaceError /></section>;
+  async function retryFollowup() {
+    'use server';
+    return (await readHome(loadHomeFollowup(new Date())))?.requests ?? null;
+  }
   const tasks = buildHomeTasks(pending.tasks);
   const count = tasks.length;
   const contacts = await readHome(loadHomeContacts(tasks.filter(task => task.kind === 'absent').map(task => task.playerId)));
@@ -62,7 +66,7 @@ export async function WorkspaceHome({ data, now = new Date() }: {
   const finder = (rows: RosterPlayer[]) => rows.map(player => ({ playerId: player.playerId, fullName: player.fullName,
     programTitle: player.programTitle, lastSeen: lastSeenLabel(player.lastTrainingDate, player.playerToday ?? today, locale) }));
   return <section data-tour-ready="true">
-    {header}
+    {header(count > 0)}
     <div className="space-y-card-gap">
       <HomeHero tasks={tasks} count={count} completed={summary.completedTasks} adherence={summary.adherence} />
       <HomeTiles adherence={summary.adherence} previous={summary.previousAdherence} hasPrevious={hasPrevious} trained={training.trained} active={training.active}
@@ -77,9 +81,9 @@ export async function WorkspaceHome({ data, now = new Date() }: {
           <PlayerFinder players={finder(players)} recent={finder(recentActivity(players))} />
           <MoneyOwedEntry mode="home" />
           <WorkspaceActivity events={summary.activity} now={now} />
-          {players.length === 0 && <HomeStart />}
+          {players.length === 0 && <HomeStart phonePrimary={!count && captainWorkspaceEnabled()} />}
           <HomeWeekChart sessions={summary.sessions.filter(session => players.some(player => player.playerId === session.playerId))} today={today} />
-          <HomeConfirmations requests={followup.requests} payments={renewals?.data ?? []} paymentsFailed={!renewals || Boolean(renewals.error)} /></div>
+          <HomeConfirmations requests={followup?.requests ?? null} retryRequests={retryFollowup} payments={renewals?.data ?? []} paymentsFailed={!renewals || Boolean(renewals.error)} /></div>
       </div>
     </div>
   </section>;

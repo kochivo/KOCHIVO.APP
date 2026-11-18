@@ -16,7 +16,8 @@ it('shows every destination that has a route', () => {
 it.each([
   ['/captain/players/id/programs', 'players'], ['/captain/programs/id', 'programs'],
   ['/captain/nutrition/id', 'plans'], ['/captain/library/exercises/id/edit', 'exercises'],
-  ['/captain/billing/packages', 'packages'], ['/captain/billing', 'billing'], ['/captain/notifications', 'home'],
+  ['/captain/billing/packages', 'packages'], ['/captain/billing', 'billing'], ['/captain/notifications', null],
+  ['/captain/pending', null], ['/captain', 'home'],
   ['/captain/join', 'join'],
 ])('maps %s to the mockup parent %s', (path, parent) => {
   expect(frameParent(path)).toBe(parent);

@@ -10,7 +10,7 @@ export const arStd = {
   weekly: 'متابعة أسبوعية', videoKind: 'فيديو أداء', joinKind: 'طلب انضمام', types: 'نوع المتابعة', status: 'حالة المتابعة',
   adherence: 'الالتزام بالغذاء', change: '{value} مقارنة بالأسبوع الماضي', sameWeek: 'كما في الأسبوع الماضي',
   sleepEarly: '+ نم أبكر بساعة', sleepAnswer: 'كيف كان نومك؟', noteAnswer: 'هل تريد إخبار الكابتن بشيء؟',
-  sorenessAnswer: 'إجهاد العضلات', noMatches: 'لا توجد متابعات مطابقة', historyEmpty: 'لا توجد مراجعات بعد',
+  sorenessAnswer: 'إجهاد العضلات', resetFilters: 'امسح عوامل التصفية', noMatches: 'لا توجد متابعات مطابقة', historyEmpty: 'لا توجد مراجعات بعد',
   ageNow: 'الآن', ageHour: 'منذ ساعة', ageHours: 'منذ {n} ساعات', ageDay: 'منذ يوم', ageTwoDays: 'منذ يومين', ageDays: 'منذ {n} أيام',
   partial: 'اعرض المزيد لرؤية بقية المتابعات', averageSample: 'متوسط الردود المعروضة',
   assessmentFlag: 'تقييم', requestFlag: 'طلب', requestKind: 'يريد الانضمام', soreness: 'إجهاد مرتفع',

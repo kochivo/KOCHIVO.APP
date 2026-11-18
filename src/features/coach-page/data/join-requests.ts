@@ -19,13 +19,15 @@ export async function resolveJoinRequest(id: string, status: 'accepted' | 'decli
   try {
     const linkId = uuidv7();
     const client = await supabaseServer();
+    const request = status === 'accepted'
+      ? await client.from('coach_join_requests').select('player_id').eq('id', id).single()
+      : null;
+    if (request?.error) throw request.error;
     const result = await client.rpc('resolve_coach_join_request', {
       p_request: id, p_status: status, p_link_id: linkId,
     });
     if (result.error) throw result.error;
     revalidatePath('/captain'); revalidatePath('/captain/players');
-    const request = await client.from('coach_join_requests').select('player_id').eq('id', id).single();
-    if (request.error) throw request.error;
-    return { ok: true, playerId: request.data.player_id };
+    return { ok: true, playerId: request?.data?.player_id };
   } catch (error) { unstable_rethrow(error); return { error: t('failure') }; }
 }

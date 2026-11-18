@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import { useLocale, useT } from '@/core/i18n/client';
@@ -17,6 +17,7 @@ import { phoneMessages } from '../phone/messages';
 import { ConversationAvatar } from './conversation-avatar';
 
 export function PhoneConversationList({ rows, at, onSelect }: { rows?: Conversation[]; at: string; onSelect: (id: string) => void }) {
+  const allFilter = useRef<HTMLButtonElement>(null);
   const [filter, setFilter] = useState<ConversationFilter>('all');
   const t = useT(phoneMessages), chat = useT(conversationMessages), locale = useLocale(), timezone = useTimezone();
   const unread = rows?.filter(row => row.unread > 0).length ?? 0;
@@ -41,11 +42,14 @@ export function PhoneConversationList({ rows, at, onSelect }: { rows?: Conversat
     </header>
     {rows && <>
       <div className="flex flex-wrap gap-inline">
-        {filters.map(key => <Button key={key} variant="ghost" block={false} aria-pressed={filter === key}
+        {filters.map(key => <Button key={key} ref={key === 'all' ? allFilter : undefined} variant="ghost" block={false} aria-pressed={filter === key}
           className="min-h-12 bg-surface px-inline text-xs text-muted aria-pressed:bg-surface-raised aria-pressed:font-bold aria-pressed:text-ink"
           onClick={() => setFilter(key)}>{key === 'unread' ? t(key, { n: count }) : t(key)}</Button>)}
       </div>
       <div className="glass overflow-hidden rounded-card">
+        <p role="status" className={visible.length ? 'sr-only' : 'p-card text-center text-xs text-muted'}>
+          {visible.length ? null : filter === 'all' ? chat('empty') : t(filter === 'photos' ? 'noPhotos' : 'noMatches')}
+        </p>
         {visible.length ? <ul className="divide-y divide-line-soft">{visible.map(({ player, latest, unread }) => <li key={player.playerId}>
           <button type="button" onClick={() => onSelect(player.playerId)}
             className={`${clickableClass} flex min-h-16 w-full items-center gap-card-gap px-card text-start hover:bg-surface-raised`}>
@@ -58,7 +62,9 @@ export function PhoneConversationList({ rows, at, onSelect }: { rows?: Conversat
               {unread > 0 && <span role="img" aria-label={chat('unread', { n: formatNumber(unread, locale) })} className="size-2.5 rounded-full bg-lime" />}
             </span>
           </button>
-        </li>)}</ul> : <p className="p-card text-center text-xs text-muted">{filter === 'all' ? chat('empty') : t(filter === 'photos' ? 'noPhotos' : 'noMatches')}</p>}
+        </li>)}</ul> : filter !== 'all' && <Button variant="secondary" block={false} className="mx-auto mb-card flex" onClick={() => {
+          setFilter('all'); allFilter.current?.focus();
+        }}>{t('resetFilters')}</Button>}
       </div>
     </>}
   </section>;

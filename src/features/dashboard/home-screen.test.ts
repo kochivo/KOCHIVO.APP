@@ -25,7 +25,7 @@ vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh() {} }), usePath
 vi.mock('@/core/timezone/server', () => ({ getTimezone: async () => 'Africa/Cairo' }));
 vi.mock('@/core/i18n/server', () => ({ getLocale: async () => 'ar', getArabicStyle: async () => 'egyptian',
   getT: async (dictionary: Parameters<typeof createT>[0]) => createT(dictionary, 'ar') }));
-const state = vi.hoisted(() => ({ failed: false, count: 0, rows: [] as ReviewRow[],
+const state = vi.hoisted(() => ({ failed: false, followupFailure: false, count: 0, rows: [] as ReviewRow[],
   renewals: [] as { id: string; name: string }[], renewalFailure: 'none' as 'none' | 'error' | 'throw' }));
 vi.mock('@/features/billing', () => ({ listRenewalRequests: async () => {
   if (state.renewalFailure === 'throw') throw new Error('Unavailable');
@@ -37,10 +37,10 @@ vi.mock('./data/workspace', () => ({ loadHomeSummary: async () => {
     assessments: new Map(), activity: [], mealPlanPlayers: new Set(), lastPayments: new Map(), sessions: [], completedTasks: 0 };
 } }));
 vi.mock('./data/home-followup', () => ({ loadHomeFollowup: async () => {
-  if (state.failed) throw new Error('Unavailable');
+  if (state.followupFailure) throw new Error('Unavailable');
   return { rows: state.rows, count: state.count, requests: [] };
 } }));
-beforeEach(() => { state.failed = false; state.count = 0; state.rows = []; state.renewals = []; state.renewalFailure = 'none'; });
+beforeEach(() => { state.failed = false; state.followupFailure = false; state.count = 0; state.rows = []; state.renewals = []; state.renewalFailure = 'none'; });
 const now = new Date('2026-11-12T15:00:00Z');
 const player: RosterPlayer = { playerId: 'a', fullName: 'Ali', accessUntil: '2026-12-01', startedOn: '2026-11-01',
   lastTrainingDate: '2026-11-12', programTitle: 'Program', openTasks: 0 };
@@ -70,7 +70,7 @@ it('passes the greeting, date and existing lime invite into the shared frame slo
   const actions = slots.find(node => isValidElement(node) && node.type === PageBarActions) as ReactElement<{ children: ReactElement<{ name: string; label: string }> }> | undefined;
   expect(title?.props).toEqual({ title: 'مساء الخير يا كابتن علي', subtitle: 'الخميس · 12 نوفمبر' });
   expect(actions?.props.children.type).toBe(HomeInvite);
-  expect(actions?.props.children.props).toEqual({ name: 'علي', label: 'ضيف لاعب' });
+  expect(actions?.props.children.props).toMatchObject({ name: 'علي', label: 'ضيف لاعب' });
 });
 it('renders four real tiles, the weekly chart and join empty state', async () => {
   const html = await render([player]);
@@ -101,7 +101,7 @@ it('uses the exact outstanding count for the hero estimate even when only part o
   expect(html).toContain('7 مهام');
   expect(html).toContain('21 دقيقة');
   expect(html).toContain('ابدأ المهام');
-  expect(html).toContain('href="/captain/tasks"');
+  expect(html).toMatch(/<a[^>]*control-primary[^>]*href="\/captain\/tasks"/);
 });
 it('does not pretend failed reads are zero or all-clear', async () => {
   state.failed = true;
@@ -110,6 +110,15 @@ it('does not pretend failed reads are zero or all-clear', async () => {
   expect(html).not.toContain('كل حاجة ماشية تمام');
   expect(html).not.toContain('0 جنيه متأخرين');
   expect(html).not.toContain('خلصت كل مهام النهارده');
+});
+it('keeps the tasks and roster visible with a scoped retry when follow-up fails', async () => {
+  state.followupFailure = true;
+  state.count = 1;
+  const html = await render([player]);
+  expect(html).toContain('data-home-hero');
+  expect(html).toContain('finder-heading');
+  expect(html).toContain('مش قادرين نحمّل طلبات الانضمام');
+  expect(html).toContain('جرّب تاني</button>');
 });
 it('names the first two urgent tasks in the hero and shows only the first five rows', async () => {
   state.rows = ['محمد', 'يوسف', 'أحمد', 'عمر', 'علي', 'كريم'].map((name, index) => ({
