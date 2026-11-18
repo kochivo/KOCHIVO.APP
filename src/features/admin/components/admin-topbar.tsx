@@ -37,7 +37,7 @@ export function AdminTopbar({ search, pending, onSearch, onExport }: {
       <kbd className="num hidden self-center text-micro text-muted min-[1100px]:block">{d('shortcut')}</kbd>
     </form>
     <div className="ms-auto flex flex-wrap gap-inline">
-      <Button variant="secondary" onClick={onExport}>{d('export')}</Button>
+      <Button variant="secondary" disabled={pending} onClick={onExport}>{d('export')}</Button>
       <form action={signOutAdmin} onSubmit={clearDeviceRole}><Button type="submit" variant="danger" className="min-h-12">{t('signOut')}</Button></form>
     </div>
   </header>;

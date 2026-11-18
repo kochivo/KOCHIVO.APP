@@ -1,3 +1,4 @@
+import { renderToStaticMarkup } from 'react-dom/server';
 import type { ReactElement } from 'react';
 import { expect, it, vi } from 'vitest';
 import { WelcomeRoleCard } from './components/welcome-role-card';
@@ -11,6 +12,11 @@ it.each(['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'End'])('selects and
   radio.props.onKeyDown({ key, preventDefault, currentTarget: { parentElement: { querySelectorAll: () => ({ item }) } } });
   expect(select).toHaveBeenCalledWith('captain'); expect(item).toHaveBeenCalledWith(1); expect(focus).toHaveBeenCalledOnce();
   expect(preventDefault).toHaveBeenCalledOnce();
+});
+it('only shows a check marker on the selected role', () => {
+  const props = { title: 'Coach', description: 'Players', onClick() {}, onSelect() {} };
+  expect(renderToStaticMarkup(WelcomeRoleCard({ ...props, selected: true }))).toContain('lucide-check');
+  expect(renderToStaticMarkup(WelcomeRoleCard({ ...props, selected: false }))).not.toContain('lucide-check');
 });
 it('returns focus and selection to player with Home', () => {
   const select = vi.fn(); const item = vi.fn(() => ({ focus() {} }));

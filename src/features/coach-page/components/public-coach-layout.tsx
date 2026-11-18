@@ -16,6 +16,7 @@ import type { Translator } from '@/core/i18n/messages';
 import type { messages as sectionMessages } from '../sections/messages';
 import { PublicNumbers } from './public-numbers';
 import { PublicWaitlist, type WaitlistLabels } from './public-waitlist';
+import { PublicWaitlistProvider } from './public-waitlist-provider';
 import { buttonClass } from '@/ui/button';
 
 function waitlistLabels(t?: Translator<typeof sectionMessages>): WaitlistLabels {
@@ -29,8 +30,9 @@ export function PublicCoachLayout({ coach, slug, requested, t, pricing, sections
 }) {
   const signup = coachSignupHref(slug);
   const whatsapp = httpsSocialUrl(coach.social.whatsapp);
-  const action = coach.page?.accepting === false ? <PublicWaitlist slug={slug} labels={waitlistLabels(sectionsT)} /> : <PublicSignup href={signup} label={t('requestJoin')} />;
-  return <div className="public-coach min-h-dvh text-start">
+  const accepting = coach.page?.accepting !== false;
+  const action = !accepting ? <PublicWaitlist labels={waitlistLabels(sectionsT)} /> : <PublicSignup href={signup} label={t('requestJoin')} />;
+  const layout = <div className="public-coach min-h-dvh text-start">
     <header className="border-b border-line-soft">
       <div className="public-wrap flex min-h-20 items-center justify-between gap-section">
         <Link href="/" aria-label={t('brand')} className="inline-flex min-h-12 items-center">
@@ -65,4 +67,5 @@ export function PublicCoachLayout({ coach, slug, requested, t, pricing, sections
       </a>}
     </PublicDock>}
   </div>;
+  return accepting ? layout : <PublicWaitlistProvider key={slug} slug={slug}>{layout}</PublicWaitlistProvider>;
 }

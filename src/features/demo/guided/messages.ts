@@ -4,6 +4,7 @@ export const guidedMessages = defineMessages({
     'summaryPlayers.one': 'لاعب', 'summaryPlayers.two': 'لاعبين', 'summaryPlayers.few': 'لاعبين', 'summaryPlayers.many': 'لاعب', 'summaryPlayers.other': 'لاعب',
     captainPane: 'لوحة الكابتن', captainCaption: 'كابتن هشام، {n} لاعب', phoneTime: '6:42', phoneNetwork: '5G', initialFeedTimes: '8:10|7:55|أمس',
     nudgeText: 'يا عمر وحشتنا، النهارده رجل. مستنيك.', freePrice: 'مجاناً',
+    demoOptions: 'اختيارات الديمو',
     languageSwitch: 'English',
     question: 'قبل ما نبدأ، عندك كام لاعب؟', introDetail: 'هنملا الديمو على قدّك، ونقولك في الآخر الباقة اللي تناسبك.', sizes: '1–5|6–20|21–40|+40', sizeHints: 'لسه بادئ|شغلك بيكبر|كابتن محترف|فريق كبير', skip: 'عدّي، ورّيني على طول',
     label: 'ديمو · كل الأسماء والأرقام تجريبية', restart: 'من الأول', captain: 'الكابتن', player: 'اللاعب', captainName: 'كابتن هشام', phoneTitle: 'موبايل محمد', playersCount: '{n} لاعب', trained: '{n} لاعب اتمرنوا النهارده', of: 'من {n}', home: 'الرئيسية', inbox: 'الرسايل', players: 'اللاعبين', programs: 'البرامج', food: 'الأكل', assess: 'التقييمات', money: 'الفلوس', add: 'ضيف لاعب',
@@ -24,6 +25,7 @@ export const guidedMessages = defineMessages({
     'summaryPlayers.one': 'لاعب', 'summaryPlayers.two': 'لاعبان', 'summaryPlayers.few': 'لاعبين', 'summaryPlayers.many': 'لاعباً', 'summaryPlayers.other': 'لاعب',
     captainPane: 'لوحة المدرّب', captainCaption: 'المدرّب هشام، {n} لاعب', phoneTime: '6:42', phoneNetwork: '5G', initialFeedTimes: '8:10|7:55|أمس',
     nudgeText: 'يا عمر، نفتقدك. اليوم تمرين الرجل، ننتظرك.', freePrice: 'مجاناً',
+    demoOptions: 'خيارات العرض التجريبي',
     languageSwitch: 'English', sizes: '1–5|6–20|21–40|+40', playersCount: '{n} لاعب', of: 'من {n}', programs: 'البرامج', assess: 'التقييمات', next: 'التالي', prev: 'السابق', startPlan: 'ابدأ بـ {plan}', back: 'العودة إلى الجولة', time: 'الوقت', price: '{price} جنيه / شهر', limit: 'حتى {n} لاعب', hints: '||اضغط «ذكّره» بجانب عمر|اضغط «راجع»|اضغط «اعتماد وإرسال الرد»|اختر رداً سريعاً أو اكتب رسالة||افتح مكتبة التمارين واختر تمريناً|اضغط «بدّل»|اضغط «تسجيل دفعة»|اضغط «إنشاء رابط الدعوة»|زد الوزن ثم سجّل المجموعة|',
     names: 'محمد حسن|سارة مصطفى|عمر خالد|مريم أحمد|نور إبراهيم|كريم سامي|ياسمين فؤاد|أحمد طارق', defaultName: 'يوسف علي', live: 'مباشر', owed: 'متأخر', review: 'راجع', needsDetails: 'أرسلت تقييمها الأسبوعي مع الصور|لم يسجّل تمريناً منذ 4 أيام|ينتهي اشتراكها بعد 3 أيام|دفع 1,000 من 2,000', initialFeed: 'أنهت نور إبراهيم تمرين الرجل|أرسلت سارة تقييمها الأسبوعي|دفع كريم 800 جنيه', initialFeedDetails: '5 تمارين · 52 دقيقة|3 صور · 4 مقاسات|تحويل · الباقة الأساسية', now: 'الآن', yesterday: 'أمس',
     nudgeSuccess: 'أُرسل تذكير إلى عمر', renewSuccess: 'جُدّد اشتراك مريم', approveSuccess: 'أُرسل ردك إلى سارة', paySuccess: 'سُجّلت الدفعة', swapSuccess: 'بُدّل الصنف', addexSuccess: 'أُضيف التمرين إلى البرنامج', inviteSuccess: 'رابط {name} جاهز', setSuccess: 'سجّل محمد رقماً جديداً', setLogged: 'سجّل محمد مجموعة', sendSuccess: 'أُرسلت الرسالة إلى محمد', replySuccess: 'رسالة من محمد', copySuccess: 'نُسخ الرابط', waSuccess: 'الرسالة جاهزة في واتساب', remindSuccess: 'أُرسل تذكير إلى أحمد', successDetail: 'ظهر التغيير في العرض التجريبي', conversations: 'المحادثات', file: 'ملفه', message: 'الرسالة', quick: 'عمل ممتاز، واصل|أرسل فيديو للمجموعة الأخيرة|زد 2.5 كجم الأسبوع المقبل', initialCoach: 'صباح الخير يا محمد. اليوم تمرين الصدر، ركّز على النزول البطيء.', initialPlayer: 'حسناً يا مدرّب، سأذهب إلى النادي الساعة 7.', saraMessage: 'نزل وزني 1.2 كيلو، وأرسلت الصور والمقاسات.', omarMessage: 'كيف حالك يا عمر؟ لم تسجّل تمريناً منذ عدة أيام.', reply: 'عمل ممتاز يا سارة. سنزيد الكربوهيدرات 30 جم يوم الرجل.',
@@ -35,6 +37,7 @@ export const guidedMessages = defineMessages({
   } as const : undefined; },
   en: {
     'summaryPlayers.one': 'Player', 'summaryPlayers.other': 'Players',
+    demoOptions: 'Demo options',
     languageSwitch: 'عربي',
     captainPane: 'Coach workspace', captainCaption: 'Coach Hesham, {n} players', phoneTime: '6:42', phoneNetwork: '5G', initialFeedTimes: '8:10|7:55|Yesterday',
     nudgeText: 'We miss you, Omar. It’s leg day. See you at the gym.', freePrice: 'Free',

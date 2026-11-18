@@ -18,3 +18,9 @@ it.each(['ar', 'en'] as const)('links the login logo to the %s home page with a 
   expect(logo).toContain('min-h-12');
   expect(logo).toContain('logo-primary.png');
 });
+
+it('announces password reset success on the sign-in screen', () => {
+  const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' },
+    createElement(CaptainAuthCard, { passwordUpdated: true })));
+  expect(html).toMatch(/role="status"[^>]*>Password changed\. Sign in with your new password<\/p>/);
+});

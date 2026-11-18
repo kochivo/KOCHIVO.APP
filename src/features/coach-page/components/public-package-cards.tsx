@@ -8,7 +8,7 @@ import { PublicDurationTabs } from './public-duration-tabs';
 type Catalog = Awaited<ReturnType<typeof fetchPackageCatalog>>;
 
 export function PublicPackageCards(props: {
-  catalog: Catalog; signup: string; requested?: CoachRequestStatus; t: PublicT; now: Date;
+  catalog: Catalog; signup: string; requested?: CoachRequestStatus; accepting?: boolean; t: PublicT; now: Date;
 }) {
   const { catalog, t } = props;
   const packages = catalog.packages.filter(p => p.kind === 'days' && catalog.tiers.some(tier => tier.id === p.tier_id));

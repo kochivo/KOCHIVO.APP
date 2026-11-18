@@ -1,5 +1,6 @@
 export const arStd = {
-    admin: 'الإدارة', logo: 'KOCHIVO', export: 'تصدير CSV', shortcut: 'Ctrl / ⌘ K',
+    admin: 'الإدارة', logo: 'KOCHIVO', export: 'تصدير كل النتائج (CSV)', shortcut: 'Ctrl / ⌘ K',
+    activityUnavailable: 'نشاط المدربين غير متاح. حاول مجدداً.',
     unavailable: 'بيانات لوحة الإدارة غير متاحة. يمكنك المتابعة من قائمة المدربين.',
     decisions: 'قرارات اليوم', pendingCaptains: 'طلبات مدربين جديدة', pendingHint: 'بانتظار موافقتك.',
     expiringSoon: 'باقات تنتهي خلال 7 أيام', expiringHint: 'أرسل تذكيرًا على واتساب قبل انتهاء الباقة.',

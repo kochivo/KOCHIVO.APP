@@ -17,8 +17,8 @@ import { SignupCodeStep } from './signup-code-step';
 import { LoginMethods } from './login-methods';
 import { AuthLogo } from './auth-logo';
 
-export function CaptainAuthCard({ callbackError = false, initialMode = 'login', returnTo }: {
-  callbackError?: boolean; initialMode?: AuthMode; returnTo?: string;
+export function CaptainAuthCard({ callbackError = false, initialMode = 'login', returnTo, passwordUpdated = false }: {
+  callbackError?: boolean; passwordUpdated?: boolean; initialMode?: AuthMode; returnTo?: string;
 }) {
   const t = useT(messages);
   const locale = useLocale();
@@ -33,6 +33,7 @@ export function CaptainAuthCard({ callbackError = false, initialMode = 'login', 
       <div className="flex flex-wrap items-center justify-between gap-stack"><Link href={`/${locale}`} aria-label={t('authBrand')} className="press inline-flex min-h-12 items-center rounded-control focus-visible:outline-lime"><AuthLogo /></Link><LanguageSwitch compact /></div>
       <div className="space-y-inline pt-section"><h1 className="text-3xl font-extrabold">{t('loginTitle')}</h1><p className="text-sm text-muted">{t('loginEveryone')}</p></div>
       {callbackError && <p role="alert" className="text-danger">{t('signInFailedTryAgain')}</p>}
+      {passwordUpdated && <p role="status" className="text-sm text-muted">{t('passwordUpdated')}</p>}
       <LoginMethods returnTo={returnTo} />
       <div className="flex items-center gap-stack text-sm text-faint"><span className="h-px flex-1 bg-line" />{t('loginOr')}<span className="h-px flex-1 bg-line" /></div>
       <GoogleButton intent="captain" returnTo={returnTo} />

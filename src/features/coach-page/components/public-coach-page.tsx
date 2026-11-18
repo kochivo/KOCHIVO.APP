@@ -15,6 +15,6 @@ export async function PublicCoachPage({ slug, requested }: { slug: string; reque
   if (!coach) notFound();
   if (!requested && coach.page?.accepting === false && await waitlistMember(coach.id)) requested = 'member';
   const t = await getT(messages);
-  const pricing = await PublicPackages({ captainId: coach.id, signup: coachSignupHref(slug), requested, t, now: new Date() });
+  const pricing = await PublicPackages({ captainId: coach.id, signup: coachSignupHref(slug), requested, accepting: coach.page?.accepting !== false, t, now: new Date() });
   return <PublicCoachLayout coach={coach} slug={slug} requested={requested} t={t} pricing={pricing} sectionsT={await getT(sectionMessages)} />;
 }

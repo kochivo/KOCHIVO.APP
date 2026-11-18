@@ -73,7 +73,7 @@
 .weight strong { font-size: 1.875rem; line-height: 1; font-weight: 800; }
 .weight small { display: block; font-size: .625rem; color: var(--color-muted); margin-block-start: 3px; white-space: nowrap; }
 .done { min-block-size: 48px; border-radius: 13px; display: grid; place-items: center; background: linear-gradient(180deg, var(--color-lime-top), var(--color-lime)); color: var(--color-on-lime); font-size: var(--text-sm); font-weight: 700; }
-.record { font-size: var(--text-micro); color: var(--color-lime-ink); text-align: center; }
+.record { min-block-size: 1lh; font-size: var(--text-micro); color: var(--color-lime-ink); text-align: center; }
 .compactSet [data-preview-done] { font: 800 1rem var(--font-alexandria), sans-serif; }
 .compactSet .record { font-size: var(--text-xs); color: var(--color-lime-ink); }
 .phoneNav { margin-block-start: auto; flex-shrink: 0; block-size: 50px; border-radius: 18px; display: flex; justify-content: space-around; align-items: center; font-size: .594rem; color: var(--color-muted); }

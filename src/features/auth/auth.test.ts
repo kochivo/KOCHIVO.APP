@@ -9,6 +9,7 @@ import { signUpCaptain } from './data/sign-up-captain';
 import { signInGoogle } from './data/sign-in-google';
 import { sendEmailCode } from './data/send-email-code';
 import { verifyEmailCode } from './data/verify-email-code';
+import { invitePreview } from './data/invite-preview';
 import { redeemInvite } from './data/redeem-invite';
 import { requestReset } from './data/request-reset';
 import { updatePassword } from './data/update-password';
@@ -43,6 +44,20 @@ beforeEach(() => {
   for (const action of Object.values(mocks.auth)) {
     if (action !== mocks.auth.getClaims) action.mockResolvedValue({ data: {}, error: null });
   }
+});
+
+it('distinguishes a revoked invite from an unavailable invite preview', async () => {
+  mocks.auth.getClaims.mockResolvedValue({ data: null, error: { name: 'AuthSessionMissingError' } });
+  mocks.rpc.mockResolvedValueOnce({ data: [{ valid: false }], error: null })
+    .mockResolvedValueOnce({ data: null, error: { code: 'internal' } });
+  expect(await invitePreview('abc')).toMatchObject({ inviteIssue: 'invalid' });
+  const unavailable = await invitePreview('abc');
+  expect(unavailable).toEqual({ error: expect.any(String) });
+});
+it('lets a signed-out visitor preview a valid player invite', async () => {
+  mocks.auth.getClaims.mockResolvedValue({ data: null, error: { name: 'AuthSessionMissingError' } });
+  mocks.rpc.mockResolvedValue({ data: [{ valid: true, captain_name: 'Coach' }], error: null });
+  expect(await invitePreview('abc')).toEqual({ captainName: 'Coach', signedIn: false });
 });
 
 describe('route decisions', () => {
@@ -144,7 +159,7 @@ describe('auth actions and callback', () => {
   });
   it('does not redeem for a captain or after failed verification', async () => {
     mocks.single.mockResolvedValue({ data: { role: 'captain', role_confirmed: true }, error: null });
-    expect(await redeemInvite('abc')).toEqual({ error: 'الحساب ده حساب كابتن' });
+    expect(await redeemInvite('abc')).toEqual({ error: 'الحساب ده حساب كابتن', inviteIssue: 'coach' });
     mocks.auth.verifyOtp.mockResolvedValue({ error: { code: 'otp_expired' } });
     expect(await verifyEmailCode({ email, token: '012345' }, 'abc')).toHaveProperty('error');
     expect(mocks.rpc).toHaveBeenCalledExactlyOnceWith('is_admin');

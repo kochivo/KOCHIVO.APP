@@ -71,6 +71,7 @@
   background: linear-gradient(var(--color-lime-soft), var(--glass-tint));
 }
 .tile {
+  position: relative;
   display: grid;
   place-items: center;
   flex: none;

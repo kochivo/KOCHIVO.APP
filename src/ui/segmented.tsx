@@ -14,19 +14,21 @@ export interface SegmentedProps extends Omit<HTMLAttributes<HTMLDivElement>, 'on
   options: Options;
   value: string;
   phoneScroll?: boolean;
+  disabled?: boolean;
   onChange: (value: string) => void;
 }
 
-export function Segmented({ options, value, onChange, className, phoneScroll, ...props }: SegmentedProps) {
+export function Segmented({ options, value, onChange, className, phoneScroll, disabled, ...props }: SegmentedProps) {
   return (
-    <div {...props} role="radiogroup" className={cn('glass flex gap-inline rounded-control p-inline', phoneScroll && 'max-md:max-w-full max-md:overflow-x-auto', className)}>
+    <div {...props} role="radiogroup" aria-disabled={disabled} className={cn('glass flex gap-inline rounded-control p-inline', phoneScroll && 'max-md:max-w-full max-md:overflow-x-auto', className)}>
       {options.map((option, index) => (
         <button
           key={option.value}
           type="button"
           role="radio"
           aria-checked={option.value === value}
-          tabIndex={option.value === value ? 0 : -1}
+          disabled={disabled}
+          tabIndex={!disabled && option.value === value ? 0 : -1}
           onClick={() => onChange(option.value)}
           onKeyDown={(event) => {
             const direction = getComputedStyle(event.currentTarget).direction;

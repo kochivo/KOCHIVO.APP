@@ -10,17 +10,18 @@ export async function redeemInvite(input: string) {
   const t = await getT(messages);
   return runAction(async () => {
     const code = parseInviteCode(input);
-    if (!code) return { error: t('inviteIsInvalidOrExpired') };
+    if (!code) return { error: t('inviteIsInvalidOrExpired'), inviteIssue: 'invalid' };
     const client = await authClient();
     const user = await profile(client);
     if (user?.admin) return { redirect: homeFor(user) };
-    if (user?.role === 'captain') return { error: t('thisIsACoachAccount') };
+    if (user?.role === 'captain') return { error: t('thisIsACoachAccount'), inviteIssue: 'coach' };
     if (!user) return { error: t('signInFirst') };
     if (!user.roleConfirmed) {
       const confirmation = await client.rpc('confirm_role', { p_role: 'player' });
       if (confirmation.error) throw confirmation.error;
     }
     const { error } = await client.rpc('redeem_invite', { p_code: code });
+    if (error?.code === 'P0002') return { error: t('inviteIsInvalidOrExpired'), inviteIssue: 'invalid' };
     if (error) throw error;
     return { redirect: '/player/onboarding' };
   });

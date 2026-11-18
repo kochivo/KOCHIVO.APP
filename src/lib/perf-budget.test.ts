@@ -8,16 +8,16 @@ const statsPath = resolve('.next/diagnostics/route-bundle-stats.json');
 
 // Fixed ceilings for scoped misses; measurements and retained modules are in docs/PERFORMANCE.md.
 const exceptions: Record<string, number> = {
-  '/c/[slug]': 205,
+  '/c/[slug]': 209, // M3 review fixes T-397..T-401 (2026-11-18): measured 208.19
   '/login': 201,
   '/welcome': 201,
   '/offline': 207, // T-363..T-368 refined look: measured 206.03
   '/captain/programs/[programId]': 315,
   // T-383..T-388 captain phone shell and player-file header (2026-11-18): +1..3 KiB on these routes.
   '/captain/players/[playerId]/programs': 327, // measured 326.01
-  '/captain/players/[playerId]/nutrition': 313, // measured 312.02
+  '/captain/players/[playerId]/nutrition': 314, // measured 313.34 after T-397..T-401
   '/captain/players/[playerId]/preview': 314, // measured 313.11 after T-389 phone header menu
-  '/demo': 282, // measured 281.58
+  '/demo': 283, // measured 282.28 after T-401 compact menu
 };
 
 it.skipIf(!existsSync(statsPath))('keeps first-load route JavaScript within gzip budgets', () => {

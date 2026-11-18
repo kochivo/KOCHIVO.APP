@@ -6,6 +6,7 @@ import { LocaleProvider } from '@/core/i18n/client';
 import { createT } from '@/core/i18n/messages';
 import { marketingMessages as messages } from '@/features/marketing';
 import { guidedMessages } from './messages';
+import { DemoHeader } from './demo-header';
 import { GuideCard } from './guide-card';
 import { Summary } from './summary';
 import { WeightChart } from './weight-chart';
@@ -22,6 +23,20 @@ it('anchors the mobile captain navigation to the viewport rather than short cont
   const css = readFileSync(new URL('./guided.css', import.meta.url), 'utf8');
   const mobile = css.split('@media (width < 760px)')[1] ?? '';
   expect(mobile).toMatch(/\.demo-captain-side > nav\s*\{[^}]*position: fixed;[^}]*inset-block-end:/);
+});
+
+it('keeps the guide and its resume button above the mobile captain nav', () => {
+  const css = readFileSync(new URL('./guided.css', import.meta.url), 'utf8');
+  expect(css).toMatch(/data-view='captain'\]\) :is\(\.demo-guide, \.demo-resume\) \{[^}]*inset-block-end: calc\(var\(--demo-nav-height\)/);
+  expect(css).toMatch(/\.demo-captain-side > nav[^}]*block-size: var\(--demo-nav-height\)/);
+});
+
+it('keeps language and restart available in the compact header', () => {
+  const html = wrap(createElement(DemoHeader, { state: initialState(0), dispatch() {}, now: () => 0, onLanguage() {} }));
+  const menu = html.match(/<details[^>]*>[\s\S]*?<\/details>/)?.[0];
+  expect(menu).toContain('aria-label="Demo options"');
+  expect(menu).toContain(guidedMessages.en.languageSwitch);
+  expect(menu).toContain(guidedMessages.en.restart);
 });
 
 it('gives mobile task text a full row before its action button', () => {

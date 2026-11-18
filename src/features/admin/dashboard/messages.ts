@@ -3,7 +3,8 @@ import { arStd } from './standard-messages';
 
 export const messages = defineMessages({
   ar: {
-    admin: 'الإدارة', logo: 'KOCHIVO', export: 'تصدير CSV', shortcut: 'Ctrl / ⌘ K',
+    admin: 'الإدارة', logo: 'KOCHIVO', export: 'تصدير كل النتائج (CSV)', shortcut: 'Ctrl / ⌘ K',
+    activityUnavailable: 'نشاط الكباتن مش متاح. جرّب تاني.',
     unavailable: 'بيانات لوحة الإدارة مش متاحة. تقدر تكمّل من قائمة الكباتن.',
     decisions: 'محتاج قرار النهارده', pendingCaptains: 'طلبات كباتن جديدة', pendingHint: 'مستنيين موافقتك.',
     expiringSoon: 'باقات بتخلص خلال 7 أيام', expiringHint: 'ابعتلهم تذكير على واتساب قبل ما تقف.',
@@ -31,7 +32,8 @@ export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   en: {
-    admin: 'Admin', logo: 'KOCHIVO', export: 'Export CSV', shortcut: 'Ctrl / ⌘ K',
+    admin: 'Admin', logo: 'KOCHIVO', export: 'Export all matches (CSV)', shortcut: 'Ctrl / ⌘ K',
+    activityUnavailable: 'Captain activity is unavailable. Try again.',
     unavailable: 'Dashboard data is unavailable. You can still manage captains below.',
     decisions: 'Needs a decision today', pendingCaptains: 'New captain requests', pendingHint: 'Waiting for your approval.',
     expiringSoon: 'Expiring soon', expiringHint: 'Send a WhatsApp reminder before the plan ends.',

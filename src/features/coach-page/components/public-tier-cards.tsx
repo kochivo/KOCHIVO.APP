@@ -8,8 +8,8 @@ import { PublicSignup } from './public-signup';
 
 type Catalog = Awaited<ReturnType<typeof fetchPackageCatalog>>;
 
-export function PublicTierCards({ catalog, signup, requested, t, now, days }: {
-  catalog: Catalog; signup: string; requested?: CoachRequestStatus; t: PublicT; now: Date; days: number;
+export function PublicTierCards({ catalog, signup, requested, accepting = true, t, now, days }: {
+  catalog: Catalog; signup: string; requested?: CoachRequestStatus; accepting?: boolean; t: PublicT; now: Date; days: number;
 }) {
   const cards = catalog.tiers.flatMap(tier => {
     const pkg = catalog.packages.find(p => p.tier_id === tier.id && p.kind === 'days' && p.days === days);
@@ -34,7 +34,7 @@ export function PublicTierCards({ catalog, signup, requested, t, now, days }: {
         {offer && <p className="text-sm text-lime">{offer.kind === 'bonus_days' ? t('bonusOfferLabel', { name: offer.name, count: formatNumber(offer.value) }) : offer.name}</p>}
         {features.length > 0 && <ul className="flex-1 space-y-stack border-t border-line-soft pt-card text-sm text-muted">{features.map((feature, index) =>
           <li key={`${index}-${feature}`} className="flex items-start gap-inline"><Check aria-hidden strokeWidth={1.5} className="mt-inline size-4 shrink-0 text-lime" />{feature}</li>)}</ul>}
-        {!requested && <div className="mt-auto"><PublicSignup href={href} label={t('requestPackage')} secondary /></div>}
+        {!requested && accepting && <div className="mt-auto"><PublicSignup href={href} label={t('requestPackage')} secondary /></div>}
       </article>;
     })}</div>;
 }

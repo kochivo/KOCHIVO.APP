@@ -20,8 +20,8 @@ const catalog: Catalog = {
     tier_ids: [], package_ids: [], starts_at: '2026-11-01T00:00:00Z', ends_at: '2026-12-01T00:00:00Z',
     for_new: true, for_renewals: true, max_uses: null, used_count: 0, paused_at: null, created_at: '2026-11-01T00:00:00Z' }],
 };
-const render = (data = catalog, requested?: 'sent' | 'member' | 'linked') => renderToStaticMarkup(createElement(PublicPackageCards, {
-  catalog: data, signup: '/login?tab=signup&coach=ahmed', t, now, requested,
+const render = (data = catalog, requested?: 'sent' | 'member' | 'linked', accepting = true) => renderToStaticMarkup(createElement(PublicPackageCards, {
+  catalog: data, signup: '/login?tab=signup&coach=ahmed', t, now, requested, accepting,
 }));
 it('hides an unpublished or empty catalog', async () => {
   expect(render({ tiers: [], packages: [], offers: [] })).toBe('');
@@ -49,6 +49,11 @@ it('limits cards to three visible tiers in catalog order', () => {
 });
 it.each(['sent', 'member', 'linked'] as const)('keeps pricing but removes package signup for %s', status => {
   const html = render(catalog, status);
+  expect(html).toContain('VIP');
+  expect(html).not.toContain('<form');
+});
+it('keeps pricing and hides package requests when the coach is full', () => {
+  const html = render(catalog, undefined, false);
   expect(html).toContain('VIP');
   expect(html).not.toContain('<form');
 });

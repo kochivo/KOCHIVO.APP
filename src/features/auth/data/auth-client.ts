@@ -12,7 +12,7 @@ import { publicConfig } from '@/lib/public-config';
 
 export { supabaseServer as authClient } from '@/core/supabase/server';
 
-export type ActionResult = { error?: string; redirect?: string; message?: string; codeEmail?: string; recoveryReady?: boolean; recoveryInvalid?: boolean };
+export type ActionResult = { inviteIssue?: 'invalid' | 'coach'; error?: string; redirect?: string; message?: string; codeEmail?: string; recoveryReady?: boolean; recoveryInvalid?: boolean };
 export async function siteOrigin() {
   // The Host header is client-controlled; never build auth email or OAuth links from it in production.
   if (process.env.NODE_ENV === 'production') return 'https://kochivo.site';
@@ -21,6 +21,7 @@ export async function siteOrigin() {
 }
 export async function profile(client: SupabaseClient<Database>): Promise<AuthUser | null> {
   const { data: claims, error } = await client.auth.getClaims();
+  if (error?.name === 'AuthSessionMissingError') return null;
   if (error) throw error;
   if (!claims?.claims.sub) return null;
   const result = await client.from('profiles').select('role, role_confirmed, captain_status').eq('id', claims.claims.sub).single();

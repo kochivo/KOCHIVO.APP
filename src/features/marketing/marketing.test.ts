@@ -40,6 +40,7 @@ describe('T-284 landing', () => {
       expect(features).toMatch(/<span[^>]*>3 \/ 13<\/span>/);
       expect(compact).not.toMatch(/dir="ltr"|<bdi/);
       expect(compact).toContain('compactSet');
+      expect(compact).toMatch(/<p[^>]*role="status"[^>]*data-preview-record="[^"]+"[^>]*><\/p>/);
     } finally { locale.value = 'ar'; }
   });
   it('pins round-two typography and state colors without changing the heading wrap', () => {

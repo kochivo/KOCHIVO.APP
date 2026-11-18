@@ -9,7 +9,7 @@ import { callAuthAction as runAuthAction } from '../data/client-action';
 import { signOutDevice } from '../data/device-sign-out';
 import { clearDeviceCache, closeDeviceDb, finalDeviceSync } from '../data/clear-device';
 
-export function SignOutButton({ variant, className }: { variant?: 'primary' | 'danger'; className?: string }) {
+export function SignOutButton({ variant, className, inviteCode, label }: { variant?: 'primary' | 'secondary' | 'danger'; className?: string; inviteCode?: string; label?: string }) {
   const t = useT(messages);
   const locale = useLocale();
   const callAuthAction = (action: Parameters<typeof runAuthAction>[0]) => runAuthAction(action, locale, t);
@@ -25,6 +25,6 @@ export function SignOutButton({ variant, className }: { variant?: 'primary' | 'd
     });
     setError(result.error ?? '');
     clearResources();
-    if (result.redirect) window.location.assign(result.redirect);
-  })}>{pending ? t('signingOut') : t('signOut')}</Button>{error && <p role="alert">{error}</p>}</div>;
+    if (result.redirect) window.location.assign(inviteCode ? `/i/${encodeURIComponent(inviteCode)}` : result.redirect);
+  })}>{pending ? t('signingOut') : (label ?? t('signOut'))}</Button>{error && <p role="alert">{error}</p>}</div>;
 }

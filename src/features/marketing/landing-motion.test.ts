@@ -44,6 +44,32 @@ it('adjusts sample weights in 2.5 kg steps and never goes below zero', () => {
   expect(adjustPreviewWeight(0, -2.5)).toBe(0);
 });
 
+it('announces the compact record only after a set is logged', () => {
+  const record = { textContent: '', dataset: { previewRecord: 'New record' } };
+  const weight = { textContent: '65' };
+  const preview = { querySelector: (selector: string) =>
+    selector === '[data-preview-record]' ? record : selector === '[data-preview-weight]' ? weight : null };
+  class Target {
+    textContent = 'Done';
+    constructor(readonly dataset: Record<string, string>) {}
+    closest(selector: string) { return selector === '[data-set-preview]' ? preview : selector === '[data-adjust], [data-preview-done]' ? this : null; }
+  }
+  const listeners = new Map<string, (event: { target: Target }) => void>();
+  const doc = { querySelector: () => null, querySelectorAll: () => [],
+    addEventListener: (name: string, fn: (event: { target: Target }) => void) => listeners.set(name, fn),
+    removeEventListener() {}, body: { dataset: {} } } as unknown as Document;
+  const win = { addEventListener() {}, removeEventListener() {} } as unknown as Window;
+  vi.stubGlobal('Element', Target);
+  try {
+    const cleanup = attachLandingMotion(doc, win, true);
+    listeners.get('click')?.({ target: new Target({ adjust: '2.5' }) });
+    expect(record.textContent).toBe('');
+    listeners.get('click')?.({ target: new Target({ success: 'Set logged' }) });
+    expect(record.textContent).toBe('New record');
+    cleanup();
+  } finally { vi.unstubAllGlobals(); }
+});
+
 it('pauses pointer and parallax work off screen or hidden, and observes the final slogan once', () => {
   const callbacks = new Map<number, FrameRequestCallback>();
   const styles = new Map<string, string>();

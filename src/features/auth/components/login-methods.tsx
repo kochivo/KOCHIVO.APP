@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useSyncExternalStore, useTransition } from 'react';
+import { useId, useState, useSyncExternalStore, useTransition } from 'react';
 import Link from 'next/link';
 import { useLocale, useT } from '@/core/i18n/client';
 import { Button } from '@/ui/button';
@@ -27,6 +27,7 @@ export function LoginMethods({ returnTo }: { returnTo?: string } = {}) {
   const t = useT(messages);
   const locale = useLocale();
   const installed = useSyncExternalStore(subscribeInstalled, installedSnapshot, serverSnapshot);
+  const destinationId = useId();
   const [choice, setChoice] = useState<string | null>(null);
   const method = choice ?? (installed ? 'email-code' : 'password');
   const [email, setEmail] = useState('');
@@ -37,9 +38,9 @@ export function LoginMethods({ returnTo }: { returnTo?: string } = {}) {
   const [error, setError] = useState('');
   const [pending, start] = useTransition();
   return <div className="space-y-card-gap">
-    <Segmented aria-label={t('loginMethod')} value={method} options={[
+    <Segmented disabled={pending} aria-label={t('loginMethod')} value={method} options={[
       { value: 'email-code', label: t('emailCodeChoice') }, { value: 'password', label: t('password') },
-    ]} onChange={value => { if (pending) return; setChoice(value); setCodeEmail(''); setToken(''); setMessage(''); setError(''); }} />
+    ]} onChange={value => { setChoice(value); setCodeEmail(''); setToken(''); setMessage(''); setError(''); }} />
     <form className="space-y-card-gap" aria-busy={pending} onSubmit={event => {
       event.preventDefault();
       start(async () => {
@@ -51,12 +52,13 @@ export function LoginMethods({ returnTo }: { returnTo?: string } = {}) {
       });
     }}>
       <fieldset disabled={pending} className="space-y-card-gap">
-        {codeEmail ? <OtpInput value={token} onChange={setToken} disabled={pending} />
+        {codeEmail ? <OtpInput value={token} onChange={setToken} disabled={pending} focusOnEntry describedBy={destinationId} />
           : <TextField name="email" type="email" label={t('email')} value={email} onChange={event => setEmail(event.target.value)} autoComplete="email" dir="ltr" required />}
         {method === 'password' && <TextField name="password" type="password" label={t('password')} value={password}
           onChange={event => setPassword(event.target.value)} autoComplete="current-password" required />}
         {error && <p role="alert" className="text-danger">{error}</p>}
-        {message && <p role="status" className="text-sm text-muted">{message}</p>}
+        {codeEmail && <p id={destinationId} role="status" className="break-words text-sm text-muted">{t('emailCodeNeutralTo', { email: `\u2068${codeEmail}\u2069` })}</p>}
+        {!codeEmail && message && <p role="status" className="text-sm text-muted">{message}</p>}
         <Button type="submit" size="lg" block disabled={pending || (!!codeEmail && token.length !== 6)}>
           <KoPlay aria-hidden="true" />{pending ? t('oneMoment') : method === 'password' ? t('signIn') : codeEmail ? t('continue') : t('sendMeACode')}
         </Button>

@@ -74,11 +74,12 @@ it.each([
   expect(html).toContain('dir="ltr"');
   expect(html).toContain('bg-warn');
 });
-it('filters only matching loaded activity without treating absent activity as quiet', () => {
+it('matches activity filters and limits quiet to paid captains', () => {
   const activity = [{ id: 'c', lastActiveAt: null, expiringSoon: true, quiet: false }];
   expect(filterCaptains([captain], 'expiringSoon', activity)).toEqual([captain]);
   expect(filterCaptains([captain], 'quiet', activity)).toEqual([]);
   expect(filterCaptains([captain], 'quiet', [])).toEqual([]);
+  expect(filterCaptains([captain, { ...captain, tier: 'entry' }], 'quiet', [{ id: captain.id, lastActiveAt: null, expiringSoon: false, quiet: true }])).toEqual([captain]);
 });
 it('labels activity by Cairo calendar date across midnight', () => {
   expect(relativeActivity('2026-11-14T21:00:00Z', Date.parse('2026-11-14T23:00:00Z'))).toEqual({ key: 'yesterday', days: 1 });

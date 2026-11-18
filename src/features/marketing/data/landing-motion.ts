@@ -55,6 +55,11 @@ export function attachLandingMotion(doc: Document, win: Window, reduced: boolean
   };
   const click = (event: MouseEvent) => {
     if (!(event.target instanceof Element)) return;
+    const menu = event.target.closest('[data-section-menu] a')?.closest<HTMLDetailsElement>('details');
+    if (menu) {
+      menu.open = false;
+      menu.querySelector('summary')?.focus();
+    }
     const button = event.target.closest<HTMLElement>('[data-adjust], [data-preview-done]');
     const preview = button?.closest('[data-set-preview]');
     const weight = preview?.querySelector<HTMLElement>('[data-preview-weight]');
@@ -63,7 +68,11 @@ export function attachLandingMotion(doc: Document, win: Window, reduced: boolean
     else {
       const set = preview?.querySelector<HTMLElement>('[data-preview-set]');
       if (set) set.textContent = String(Number(set.textContent) + 1);
-      else button.textContent = button.dataset.success ?? button.textContent;
+      else {
+        button.textContent = button.dataset.success ?? button.textContent;
+        const record = preview?.querySelector<HTMLElement>('[data-preview-record]');
+        if (record) record.textContent = record.dataset.previewRecord ?? '';
+      }
     }
   };
   win.addEventListener('resize', fit);

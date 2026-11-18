@@ -12,6 +12,6 @@ export async function SetPreview({ interactive = true, compact = false }: { inte
       {interactive ? <Button variant="secondary" aria-label={t('increaseWeight')} data-adjust="2.5">{t('plus')}</Button> : <span>{t('plus')}</span>}
     </div>
     {interactive ? <Button data-preview-done data-success={t('workoutLogged')} block>{t('done')}</Button> : <span className={styles.done}>{t('done')}</span>}
-    {compact && <p className={styles.record}>{t('record')}</p>}
+    {compact && interactive && <p className={styles.record} role="status" data-preview-record={t('record')} />}
   </div>;
 }

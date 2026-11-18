@@ -1,3 +1,4 @@
+import { Menu } from 'lucide-react';
 import Image from 'next/image';
 import { getT } from '@/core/i18n/server';
 import { buttonClass } from '@/ui/button';
@@ -11,6 +12,7 @@ import styles from './landing.module.css';
 export async function SiteHeader() {
   const t = await getT(messages);
   const content = getContent(t);
+  const links = content.nav.map(item => <a key={item.href} href={item.href} className="press focus-visible:outline-lime">{item.label}</a>);
   return <header data-landing-header className="sticky top-0 z-50 border-b border-line bg-bg pt-[var(--safe-top)]">
     <LandingMotion />
     <div className={`marketing-wrap ${styles.wrap} ${styles.headerRow}`}>
@@ -18,7 +20,13 @@ export async function SiteHeader() {
         <Image src="/brand/logo-primary.png" alt={content.brand} width={98} height={28} preload className="theme-dark-only h-7 w-auto" />
         <Image src="/brand/logo-primary-light.png" alt={content.brand} width={98} height={28} preload className="theme-light-only h-7 w-auto" />
       </a>
-      <nav aria-label={t('pageSections')}>{content.nav.map(item => <a key={item.href} href={item.href} className="press focus-visible:outline-lime">{item.label}</a>)}</nav>
+      <nav className={styles.headerNav} aria-label={t('pageSections')}>{links}</nav>
+      <details className={styles.sectionMenu} data-section-menu>
+        <summary aria-label={t('pageSections')} className={buttonClass({ variant: 'secondary', block: false, className: 'min-h-12 min-w-12 list-none px-inline [&::-webkit-details-marker]:hidden' })}>
+          <Menu aria-hidden className="size-5" />
+        </summary>
+        <nav className="glass-strong absolute start-0 top-full z-10 flex-col gap-inline rounded-card p-stack" aria-label={t('pageSections')}>{links}</nav>
+      </details>
       <div className={styles.headerEnd}>
         <div className="[&_[role=group]]:border-0 [&_[role=group]]:bg-transparent [&_[role=group]]:p-0 [&_[role=group]]:shadow-none [&_button]:border-0"><LanguageSwitch compact /></div>
         <ThemeSwitch compact />

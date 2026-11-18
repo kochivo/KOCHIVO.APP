@@ -15,7 +15,11 @@ it('keeps the real logo, primary signup and desktop section navigation', async (
   expect(html).toContain('href="#inside"');
   expect(html).toContain('href="#player"');
   expect(html).toContain('href="/demo"');
-  expect(html).not.toContain('aria-expanded');
+  const desktop = html.match(/<nav[^>]*>(.*?)<\/nav>/s)?.[1];
+  const compact = html.match(/<details[^>]*>.*?<nav[^>]*>(.*?)<\/nav>/s)?.[1];
+  expect(compact).toContain('href="#pricing"');
+  expect(compact).toContain('href="#faq"');
+  expect(compact).toBe(desktop);
 });
 
 it('renders language and sign-in controls', async () => {

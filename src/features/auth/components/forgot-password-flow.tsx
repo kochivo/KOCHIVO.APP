@@ -2,7 +2,7 @@
 import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 import Link from 'next/link';
-import { useState, useTransition } from 'react';
+import { useEffect, useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/ui/toast';
 import { Button } from '@/ui/button';
@@ -14,7 +14,7 @@ import { updatePassword } from '../data/update-password';
 import { OtpInput } from './otp-input';
 import { ResendCodeButton } from './resend-code-button';
 
-export function ForgotPasswordFlow() {
+export function ForgotPasswordFlow({ focusEmail = false }: { focusEmail?: boolean } = {}) {
   const t = useT(messages);
   const locale = useLocale();
   const router = useRouter();
@@ -27,6 +27,15 @@ export function ForgotPasswordFlow() {
   const [recoveryReady, setRecoveryReady] = useState(false);
   const [error, setError] = useState('');
   const [pending, start] = useTransition();
+  const form = useRef<HTMLFormElement>(null);
+  const editing = useRef(focusEmail);
+  useEffect(() => {
+    if (!sent && editing.current) {
+      form.current?.querySelector('input')?.focus();
+      editing.current = false;
+    }
+    if (recoveryReady) form.current?.querySelector<HTMLInputElement>('input[name="password"]')?.focus();
+  }, [sent, recoveryReady]);
   function send() {
     start(async () => {
       const result = await callAuthAction(() => requestReset({ email }));
@@ -39,7 +48,7 @@ export function ForgotPasswordFlow() {
       <h1 className="text-3xl font-extrabold">{sent ? t('checkYourEmail') : t('forgotPassword')}</h1>
       {sent ? <p role="status" className="break-words text-muted">{t('ifAnAccountExistsAReset')} <bdi>{email}</bdi></p>
         : <p className="text-muted">{t('enterYourEmailToGetA')}</p>}
-      <form className="space-y-card-gap" aria-busy={pending} onSubmit={(event) => {
+      <form ref={form} className="space-y-card-gap" aria-busy={pending} onSubmit={(event) => {
         event.preventDefault();
         if (!sent) { send(); return; }
         const input = Object.fromEntries(new FormData(event.currentTarget));
@@ -50,9 +59,9 @@ export function ForgotPasswordFlow() {
           if (result.redirect) { toast.success(t('passwordUpdated')); router.push(result.redirect); router.refresh(); }
         });
       }}>
-        {!sent && <TextField label={t('email')} type="email" autoComplete="email" dir="ltr" value={email} onChange={(event) => setEmail(event.target.value)} required />}
+        {!sent && <TextField label={t('email')} type="email" autoComplete="email" dir="ltr" disabled={pending} value={email} onChange={(event) => setEmail(event.target.value)} required />}
         {sent && <>
-          {!recoveryReady && <OtpInput value={token} onChange={setToken} disabled={pending} />}
+          {!recoveryReady && <OtpInput value={token} onChange={setToken} disabled={pending} focusOnEntry />}
           <p className="text-muted">{t('atLeast8CharactersWithA')}</p>
           <TextField label={t('newPasswordLabel')} name="password" type="password" autoComplete="new-password" minLength={8} required disabled={pending} />
           <TextField label={t('enterItAgain')} name="confirm" type="password" autoComplete="new-password" required disabled={pending} />
@@ -63,6 +72,9 @@ export function ForgotPasswordFlow() {
         </Button>
       </form>
       {sent && <ResendCodeButton sentAt={sentAt} pending={pending} onResend={send} />}
+      {sent && <Button variant="ghost" disabled={pending} onClick={() => {
+        editing.current = true; setSent(false); setRecoveryReady(false); setToken(''); setError('');
+      }}>{t('changeEmail')}</Button>}
       <Link href="/login" className="flex min-h-12 items-center text-lime">{t('backToSignIn')}</Link>
     </GlassCard>
   </main>;
