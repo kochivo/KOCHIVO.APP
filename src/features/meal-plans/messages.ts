@@ -5,6 +5,7 @@ import { arStd } from './standard/messages';
 export const foodFormMessages = defineMessages({
   ar: {
     title: 'أكلة جديدة', subtitle: 'هتظهر في مكتبتك وفي أنظمة لاعيبتك', cancel: 'إلغاء', save: 'احفظ الأكلة',
+    copyTitle: 'اعمل نسخة من الأكلة', saveCopy: 'احفظ النسخة', invalidValue: 'راجع القيمة دي', invalidCalories: 'السعرات لازم تكون من 0 لـ900', invalidMacros: 'مجموع البروتين والكارب والدهون لازم يكون 100 جرام أو أقل', invalidWeight: 'وزن الوحدة لازم يكون أكبر من صفر ولحد 10000 جرام',
     identity: 'الاسم والصورة', nameAr: 'بالعربي', nameEn: 'بالإنجليزي', nutrition: 'القيم الغذائية', per100: 'لكل 100 جرام',
     units: 'وحدات القياس', unitsHint: 'عشان اللاعب ميوزنش كل مرة', addUnit: 'ضيف وحدة', emptyUnits: 'ضيف وحدة زي صباع، طبق أو معلقة',
     unitName: 'اسم الوحدة', unitGrams: 'وزن الوحدة بالجرام', removeUnit: 'امسح الوحدة', preview: 'كده هتظهر في النظام',
@@ -13,6 +14,7 @@ export const foodFormMessages = defineMessages({
   },
   arStd: {
     title: 'أكلة جديدة', subtitle: 'ستظهر في مكتبتك وفي أنظمة لاعبيك', cancel: 'إلغاء', save: 'احفظ الأكلة',
+    copyTitle: 'إنشاء نسخة من الأكلة', saveCopy: 'احفظ النسخة', invalidValue: 'راجع هذه القيمة', invalidCalories: 'يجب أن تكون السعرات بين 0 و900', invalidMacros: 'يجب ألا يتجاوز مجموع البروتين والكربوهيدرات والدهون 100 جرام', invalidWeight: 'يجب أن يكون وزن الوحدة أكبر من صفر وحتى 10000 جرام',
     identity: 'الاسم والصورة', nameAr: 'بالعربية', nameEn: 'بالإنجليزية', nutrition: 'القيم الغذائية', per100: 'لكل 100 جرام',
     units: 'وحدات القياس', unitsHint: 'حتى لا يحتاج اللاعب للوزن كل مرة', addUnit: 'أضف وحدة', emptyUnits: 'أضف وحدة مثل قطعة، طبق أو ملعقة',
     unitName: 'اسم الوحدة', unitGrams: 'وزن الوحدة بالجرام', removeUnit: 'احذف الوحدة', preview: 'هكذا ستظهر في النظام',
@@ -21,6 +23,7 @@ export const foodFormMessages = defineMessages({
   },
   en: {
     title: 'New food', subtitle: 'Available in your library and player plans', cancel: 'Cancel', save: 'Save food',
+    copyTitle: 'Copy food', saveCopy: 'Save copy', invalidValue: 'Check this value', invalidCalories: 'Enter 0 to 900 kcal', invalidMacros: 'Protein, carbs and fat must total 100 g or less', invalidWeight: 'Enter a weight above 0 and up to 10,000 g',
     identity: 'Name and photo', nameAr: 'Arabic name', nameEn: 'English name', nutrition: 'Nutrition', per100: 'Per 100 grams',
     units: 'Household units', unitsHint: 'So players do not need to weigh every portion', addUnit: 'Add unit', emptyUnits: 'Add a unit such as a piece, plate or spoon',
     unitName: 'Unit name', unitGrams: 'Unit weight in grams', removeUnit: 'Remove unit', preview: 'Preview in plan',
@@ -100,6 +103,7 @@ export const messages = defineMessages({
     activateForPlayer: "فعّل للاعب",
     saving: "جاري الحفظ",
     youHaveUnsavedChanges: "فيه تعديلات لسه متحفظتش",
+    leaveWithUnsavedPlan: "فيه تعديلات لسه متحفظتش. تخرج من النظام؟",
     meals: "الوجبات",
     addYourFirstMealToStart: "ضيف أول وجبة وابدأ النظام",
     newMeal: "وجبة جديدة",
@@ -206,6 +210,7 @@ export const messages = defineMessages({
     activateForPlayer: "Activate for player",
     saving: "Saving",
     youHaveUnsavedChanges: "You have unsaved changes",
+    leaveWithUnsavedPlan: "You have unsaved changes. Leave this plan?",
     meals: "Meals",
     addYourFirstMealToStart: "Add your first meal to start",
     newMeal: "New meal",

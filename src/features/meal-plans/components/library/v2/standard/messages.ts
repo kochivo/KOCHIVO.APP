@@ -1,4 +1,5 @@
 export const arStd = {
+  rowAction: '{action} للطعام {name}',
   loading: 'جارٍ تحميل الأطعمة...', filters: 'المرشحات', tabCount: '{label} {count}', usedInPlans: 'عدد الخطط التي تستخدم هذا الطعام: {count}',
   mismatch: 'السعرات {kcal} لكن مجموع الماكروز يقارب {calculated}. راجع القيم.',
   small: 'طبق صغير · {grams} جم', medium: 'طبق متوسط · {grams} جم', large: 'طبق كبير · {grams} جم', noRecent: 'لم تضف أطعمة بعد',

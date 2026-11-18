@@ -1,5 +1,5 @@
 import { beforeEach, expect, it, vi } from 'vitest';
-import { loadExerciseForm, saveCustom } from '../training/data/editor-actions';
+import { loadExerciseForm, loadExerciseNames, saveCustom } from '../training/data/editor-actions';
 import { normalizeExerciseName, similarExercise } from './similar-exercise';
 import { exerciseReturnPath, refreshSavedExercise } from './exercise-form';
 import { resourceStore } from '@/core/resource/store';
@@ -13,7 +13,7 @@ vi.mock('@/core/i18n/server', () => ({ getT: async () => (key: string) => key })
 vi.mock('@/features/roster', () => ({ fetchRoster: vi.fn() }));
 vi.mock('./data/search', () => ({ searchLibraryExercises: vi.fn() }));
 vi.mock('@/core/offline/ids', () => ({ uuidv7: () => '01900000-0000-7000-8000-000000000001' }));
-const state = vi.hoisted(() => ({ rows: [] as Record<string, unknown>[], writes: [] as Record<string, unknown>[], role: 'captain' }));
+const state = vi.hoisted(() => ({ rows: [] as Record<string, unknown>[], writes: [] as Record<string, unknown>[], role: 'captain', namesFail: false }));
 vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => ({
   auth: { getClaims: async () => ({ data: { claims: { sub: 'captain' } }, error: null }) },
   from: (table: string) => {
@@ -21,7 +21,8 @@ vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => ({
     let written: Record<string, unknown> | undefined;
     const result = () => ({ data: state.rows.filter(row => Object.entries(filters).every(([key, value]) => row[key] === value)), error: null });
     const request = {
-      select: () => request, order: () => request, range: async () => result(),
+      select: () => request, order: () => request, range: async () => state.namesFail ? { data: null, error: { code: 'offline' } } : result(),
+      maybeSingle: async () => ({ data: result().data[0] ?? null, error: null }),
       eq: (key: string, value: unknown) => { filters[key] = value; return request; },
       is: (key: string, value: unknown) => { filters[key] = value; return request; },
       insert: (row: Record<string, unknown>) => { written = row; state.writes.push(row); return request; },
@@ -35,7 +36,7 @@ vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => ({
 const id = '01900000-0000-7000-8000-000000000001';
 const input = { name: '  سكوات  ', nameEn: '', bodyPart: 'upper legs', target: 'فخذ', equipment: 'dumbbell',
   secondaryMuscles: ['glutes'], instructions: ['انزل بهدوء'], video: 'https://example.com/video' };
-beforeEach(() => { state.rows = []; state.writes = []; state.role = 'captain'; resourceStore.clear(); vi.clearAllMocks(); });
+beforeEach(() => { state.rows = []; state.writes = []; state.role = 'captain'; state.namesFail = false; resourceStore.clear(); vi.clearAllMocks(); });
 
 it('saves every existing column and falls back to the trimmed Arabic name', async () => {
   expect(await saveCustom(input)).toHaveProperty('data');
@@ -64,14 +65,14 @@ it('accepts the count and length boundaries and cardio machines', async () => {
 it('loads only an unarchived exercise belonging to the captain for editing', async () => {
   const row = { id, owner_id: 'other', archived_at: null, name_ar: 'سكوات', name_en: 'Squat' };
   state.rows = [row];
-  expect(await loadExerciseForm(id)).toHaveProperty('error');
+  expect(await loadExerciseForm(id)).toEqual({ data: null });
   state.rows = [{ ...row, owner_id: 'captain' }];
-  expect(await loadExerciseForm(id)).toMatchObject({ data: { exercise: { id, owner_id: 'captain' } } });
+  expect(await loadExerciseForm(id)).toMatchObject({ data: { id, owner_id: 'captain' } });
   state.rows = [{ ...row, owner_id: 'captain', archived_at: 'archived' }];
-  expect(await loadExerciseForm(id)).toHaveProperty('error');
+  expect(await loadExerciseForm(id)).toEqual({ data: null });
 });
 it('rejects invalid edit ids and non-captains', async () => {
-  expect(await loadExerciseForm('bad')).toHaveProperty('error');
+  expect(await loadExerciseForm('bad')).toEqual({ data: null });
   state.role = 'player';
   expect(await loadExerciseForm(id)).toHaveProperty('error');
 });
@@ -114,16 +115,25 @@ const libraryKey = 'exercise-library:{"query":"","muscle":"all","equipment":"","
 const savedRow = { id, name_ar: 'سكوات جديد', name_en: 'New squat', body_part: 'upper legs', equipment: 'dumbbell', media_path: null,
   owner_id: 'captain', is_own: true, target: null, video_url: null, instructions_ar: [], instructions_en: [], secondary_muscles: [], archived_at: null };
 it('reopens edits from saved values and refreshes cached library rows and totals', async () => {
-  await resourceStore.mutate(`exercise-form:${id}`, () => ({ exercise: { ...savedRow, name_ar: 'قديم' }, names: [] }), async () => {});
+  await resourceStore.mutate(`exercise-form:${id}`, () => ({ ...savedRow, name_ar: 'قديم' }), async () => {});
   await resourceStore.mutate(libraryKey, () => ({ data: [], total: 0 }), async () => {});
   vi.mocked(searchLibraryExercises).mockResolvedValue({ data: [savedRow], total: 1 });
   expect(await refreshSavedExercise(savedRow, id)).toBe(true);
-  expect(resourceStore.read<{ exercise: { name_ar: string } }>(`exercise-form:${id}`).data?.exercise.name_ar).toBe('سكوات جديد');
+  expect(resourceStore.read<{ name_ar: string }>(`exercise-form:${id}`).data?.name_ar).toBe('سكوات جديد');
   expect(resourceStore.read(libraryKey).data).toEqual({ data: [savedRow], total: 1 });
 });
 it('keeps a new form blank after creation and exposes refresh failures to the library', async () => {
   vi.mocked(searchLibraryExercises).mockResolvedValue({ error: 'offline' });
   expect(await refreshSavedExercise(savedRow)).toBe(false);
-  expect(resourceStore.read<{ exercise: unknown }>('exercise-form:new').data?.exercise).toBeNull();
+  expect(resourceStore.read('exercise-form:new').data).toBeUndefined();
   expect(resourceStore.read(libraryKey).status).toBe('error');
+});
+
+it('loads owned edit data independently of a failed duplicate scan and retries the scan separately', async () => {
+  state.rows = [savedRow];
+  state.namesFail = true;
+  expect(await loadExerciseForm(id)).toMatchObject({ data: savedRow });
+  expect(await loadExerciseNames()).toEqual({ error: 'error' });
+  state.namesFail = false;
+  expect(await loadExerciseNames()).toMatchObject({ data: [{ id }] });
 });

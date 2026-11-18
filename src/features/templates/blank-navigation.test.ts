@@ -63,10 +63,15 @@ it('edits a ready program by opening an owned copy in the shared builder', async
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
   state.copy.mockResolvedValue({ data: 'editable-copy' });
   const template: Template = { id: 'ready', kind: 'program', title: 'Strength', starter: true, count: 3, created_at: '2026-11-14' };
-  type View = { actions: (row: Template) => { onOpen: () => Promise<void> } };
+  type View = { actions: (row: Template) => { onOpen: () => void; onCopyAndEdit: () => Promise<void> } };
   const view = Children.toArray(render().props.children as React.ReactNode).find((child): child is React.ReactElement<View> =>
     isValidElement<View>(child) && typeof child.props.actions === 'function');
-  await view?.props.actions(template).onOpen();
+  const actions = view?.props.actions(template);
+  actions?.onOpen();
+  expect(state.copy).not.toHaveBeenCalled();
+  expect(state.push).not.toHaveBeenCalled();
+  expect(state.values[3]).toBe(template);
+  await actions?.onCopyAndEdit();
   expect(state.copy).toHaveBeenCalledWith({ kind: 'program', id: 'ready', title: 'Strength (copy)' });
   expect(state.push).toHaveBeenCalledWith('/captain/templates?plan=editable-copy');
 });

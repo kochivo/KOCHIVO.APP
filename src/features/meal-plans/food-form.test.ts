@@ -12,7 +12,7 @@ import { foodResourceKey } from './data/food-resource-version';
 
 const state = vi.hoisted(() => ({ values: [] as unknown[], index: 0, save: vi.fn(), replace: vi.fn(), success: vi.fn(), refresh: vi.fn() }));
 vi.mock('@/lib/captain-workspace-enabled', () => ({ captainWorkspaceEnabled: () => true }));
-vi.mock('react', async original => ({ ...await original<typeof React>(), useEffect: () => {}, useRef: (current: unknown) => ({ current }),
+vi.mock('react', async original => ({ ...await original<typeof React>(), useEffect: () => {}, useId: () => 'field-error', useRef: (current: unknown) => ({ current }),
   useState: (initial: unknown) => {
     const index = state.index++;
     if (!(index in state.values)) state.values[index] = initial;
@@ -94,7 +94,9 @@ it('keeps the first-unit preview and all macro fields in the responsive editor',
   expect(html).toContain('inputMode="decimal"');
 });
 it('copies global foods without sending an update ID', async () => {
-  await submit({ food: { ...food, custom: false } });
+  const copy = { food: { ...food, custom: false } };
+  expect(renderToStaticMarkup(render(copy))).toContain('Save copy');
+  await submit(copy);
   expect(state.save.mock.calls[0]?.[0]).toMatchObject({ copyFrom: food.id, servingGrams: 100 });
   expect(state.save.mock.calls[0]?.[3]).toBeUndefined();
 });
@@ -109,7 +111,9 @@ it('keeps the form open on save failure and allows another attempt', async () =>
 it('rejects invalid units before saving', async () => {
   await submit({ food: { ...food, units: [{ key: 'bad', name_ar: 'Plate', name_en: 'Plate', grams: 0 }] } });
   expect(state.save).not.toHaveBeenCalled();
-  expect(renderToStaticMarkup(render())).toContain('Check the name');
+  const html = renderToStaticMarkup(render());
+  expect(html).toContain('Enter a weight above 0');
+  expect(html).toMatch(/aria-invalid="true" aria-describedby="[^"]+-unit-0-grams"/);
 });
 it('only returns to local captain routes', async () => {
   await submit({ food, returnTo: 'https://example.org' });

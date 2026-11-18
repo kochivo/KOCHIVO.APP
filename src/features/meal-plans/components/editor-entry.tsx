@@ -8,5 +8,5 @@ const LegacyEditor = dynamic(() => import('./legacy-editor').then(module => modu
 const V11Editor = dynamic(() => import('./v11-editor').then(module => module.V11Editor), { loading: () => <LoadingState variant="detail" /> });
 
 export function EditorEntry({ planId }: { planId: string }) {
-  return captainWorkspaceEnabled() ? <V11Editor planId={planId} /> : <LegacyEditor planId={planId} />;
+  return captainWorkspaceEnabled() ? <V11Editor key={planId} planId={planId} /> : <LegacyEditor key={planId} planId={planId} />;
 }

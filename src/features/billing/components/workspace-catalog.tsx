@@ -65,8 +65,8 @@ export function WorkspaceCatalog() {
     <PageBarTitle title={finance('catalogTitle')} subtitle={finance('catalogIntro')} />
     <PageBarActions>
       <Link href="/captain/billing" aria-label={t('back')} className="press grid min-h-12 min-w-12 cursor-pointer place-items-center rounded-full border border-line bg-surface focus-visible:ring-2 focus-visible:ring-lime max-md:hidden"><KoSend aria-hidden className="size-4 rotate-45 ltr:rotate-225" /></Link>
-      <Button disabled={catalog.busy} aria-label={t('newPackage')} onClick={() => setPanel({ kind: 'tier' })} block={false} className="ms-auto max-md:min-w-12 max-md:px-inline!">
-        <KoPlus aria-hidden className="size-4 max-md:text-on-lime!" /><span className="max-md:sr-only">{t('newPackage')}</span>
+      <Button disabled={catalog.busy} aria-label={t('newCatalogTier')} onClick={() => setPanel({ kind: 'tier' })} block={false} className="ms-auto max-md:min-w-12 max-md:px-inline!">
+        <KoPlus aria-hidden className="size-4 max-md:text-on-lime!" /><span className="max-md:sr-only">{t('newCatalogTier')}</span>
       </Button>
       <PageBarMenu><Link href="/captain/billing" className="press flex min-h-12 items-center rounded-control px-stack text-sm focus-visible:ring-2 focus-visible:ring-lime">{t('back')}</Link></PageBarMenu>
     </PageBarActions>

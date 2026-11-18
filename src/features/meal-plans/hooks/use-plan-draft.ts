@@ -3,6 +3,7 @@
 import { useLocale, useT } from '@/core/i18n/client';
 import { messages } from '../messages';
 import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { loadPlan, savePlan } from '../data/plan-io';
 import { activatePlan } from '../data/activate';
 import type { PlanDraft } from '../types';
@@ -11,14 +12,18 @@ import { messages as successMessages } from '../success/messages';
 import { formatNumber } from '@/lib/format';
 import { planTotals } from '../totals';
 
-export function usePlanDraft(planId: string, { clearErrorsOnEdit = false, initialDraft, save = savePlan, playerName }: {
+const pendingDrafts = new Map<string, { draft: PlanDraft; saved: string }>();
+
+export function usePlanDraft(planId: string, { clearErrorsOnEdit = false, initialDraft, save = savePlan, playerName, editor = 'all' }: {
   clearErrorsOnEdit?: boolean; initialDraft?: PlanDraft; save?: typeof savePlan; playerName?: string;
+  editor?: 'all' | 'template' | 'none';
 } = {}) {
+  const router = useRouter();
   const t = useT(messages);
   const toast = useToast();
   const success = useT(successMessages), locale = useLocale();
-  const [draft, setDraft] = useState<PlanDraft | null>(initialDraft ?? null);
-  const [saved, setSaved] = useState(initialDraft ? JSON.stringify(initialDraft) : '');
+  const [draft, setDraft] = useState<PlanDraft | null>(() => initialDraft ? pendingDrafts.get(planId)?.draft ?? initialDraft : null);
+  const [saved, setSaved] = useState(() => initialDraft ? pendingDrafts.get(planId)?.saved ?? JSON.stringify(initialDraft) : '');
   const latest = useRef(draft);
   const savedSnapshot = useRef(saved);
   const [error, setError] = useState('');
@@ -34,13 +39,18 @@ export function usePlanDraft(planId: string, { clearErrorsOnEdit = false, initia
     let current = true;
     loadPlan(planId).then(value => {
       if (current) {
-        if (value.ok) { latest.current = value.data; savedSnapshot.current = JSON.stringify(value.data); setDraft(value.data); setSaved(savedSnapshot.current); setError(''); }
+        if (value.ok) {
+          const recovered = editor === 'none' || (editor === 'template' && value.data.playerId) ? undefined : pendingDrafts.get(planId);
+          latest.current = recovered?.draft ?? value.data;
+          savedSnapshot.current = recovered?.saved ?? JSON.stringify(value.data);
+          setDraft(latest.current); setSaved(savedSnapshot.current); setError('');
+        }
         else setError(value.error);
         setLoading(false);
       }
     }).catch(() => { if (current) { setError(t('couldntLoadThePlanTryAgain')); setLoading(false); } });
     return () => { current = false; };
-  }, [planId, retry, t, initialDraft]);
+  }, [planId, retry, t, initialDraft, editor]);
   useEffect(() => {
     if (!dirty) return;
     const warn = (event: BeforeUnloadEvent) => { event.preventDefault(); event.returnValue = ''; };
@@ -72,6 +82,7 @@ export function usePlanDraft(planId: string, { clearErrorsOnEdit = false, initia
       const result = await save(draft);
       if (!result.ok) { setError(result.error); return; }
       savedSnapshot.current = JSON.stringify(draft); setSaved(savedSnapshot.current);
+      if (JSON.stringify(latest.current) === savedSnapshot.current) pendingDrafts.delete(planId);
       if (activate) {
         const activation = await activatePlan(draft.id);
         if (!activation.ok) { setError(activation.error); return; }
@@ -87,9 +98,64 @@ export function usePlanDraft(planId: string, { clearErrorsOnEdit = false, initia
     await task;
     if (running.current === task) running.current = null;
   }
-  const persistLatest = useRef(persist);
-  useEffect(() => { persistLatest.current = persist; });
-  useEffect(() => () => { void persistLatest.current(); }, []);
-  return { draft, dirty, error, loading, busy, update, persist, retrySave: () => persist(lastActivate, lastNotify),
+  async function saveBeforeLeaving() {
+    await running.current;
+    while (latest.current && JSON.stringify(latest.current) !== savedSnapshot.current) {
+      const previous = savedSnapshot.current;
+      await persist();
+      if (previous === savedSnapshot.current) return false;
+    }
+    return true;
+  }
+  const actions = useRef({ persist, saveBeforeLeaving });
+  const leaving = useRef(false);
+  const unsavedMessage = t('leaveWithUnsavedPlan');
+  const editing = editor !== 'none' && (editor !== 'template' || !draft?.playerId);
+  useEffect(() => { actions.current = { persist, saveBeforeLeaving }; });
+  useEffect(() => {
+    if (!editing) return;
+    if (!/\/captain\/nutrition\/[^/]+\/?$/.test(window.location.pathname)) {
+      return () => { void actions.current.persist(); };
+    }
+    const editorUrl = window.location.href;
+    const editorHistoryState: unknown = window.history.state;
+    function hasUnsavedChanges() {
+      return !!latest.current && JSON.stringify(latest.current) !== savedSnapshot.current;
+    }
+    function traverse(event: PopStateEvent) {
+      if (!hasUnsavedChanges() || window.location.href === editorUrl || window.confirm(unsavedMessage)) return;
+      event.stopImmediatePropagation();
+      window.history.pushState(editorHistoryState, '', editorUrl);
+      void actions.current.persist();
+    }
+    function follow(event: MouseEvent) {
+      if (event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.altKey || event.shiftKey ||
+        !(event.target instanceof Element)) return;
+      const link = event.target.closest<HTMLAnchorElement>('a[href]');
+      if (!link || (link.target && link.target !== '_self') || link.hasAttribute('download') || !latest.current ||
+        (!running.current && !hasUnsavedChanges())) return;
+      const url = new URL(link.href);
+      if (url.origin !== window.location.origin || (url.pathname === window.location.pathname && url.search === window.location.search)) return;
+      event.preventDefault();
+      if (leaving.current) return;
+      leaving.current = true;
+      void (async () => {
+        try {
+          if (await actions.current.saveBeforeLeaving()) router.push(url.href);
+        } finally { leaving.current = false; }
+      })();
+    }
+    window.addEventListener('popstate', traverse, true);
+    document.addEventListener('click', follow, true);
+    return () => {
+      window.removeEventListener('popstate', traverse, true);
+      document.removeEventListener('click', follow, true);
+      // History and programmatic navigation can bypass link activation. Recover the draft when reopened.
+      if (latest.current && JSON.stringify(latest.current) !== savedSnapshot.current) {
+        pendingDrafts.set(planId, { draft: latest.current, saved: savedSnapshot.current });
+      }
+    };
+  }, [planId, router, unsavedMessage, editing]);
+  return { draft, dirty, error, loading, busy, update, persist, saveBeforeLeaving, retrySave: () => persist(lastActivate, lastNotify),
     reload: () => { setLoading(true); setRetry(value => value + 1); } };
 }

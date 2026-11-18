@@ -1,7 +1,8 @@
 import { readFileSync } from 'node:fs';
-import { Children, isValidElement } from 'react';
+import { Children, createElement, isValidElement } from 'react';
 import type { ReactNode } from 'react';
 import type * as React from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, expect, it, vi } from 'vitest';
 import { createT } from '@/core/i18n/messages';
 import type { Messages } from '@/core/i18n/messages';
@@ -25,6 +26,13 @@ it('keeps the desktop navigation and existing section grid while adding a phone 
   expect(source).toContain('min-[760px]:grid-cols-[minmax(0,1fr)_minmax(0,3.4fr)]');
   expect(source).toContain('<SectionNav section={section}');
   expect(source).toContain('<SecuritySection profile={profile}');
+});
+
+it('gives both routes into language settings distinct Back focus targets', () => {
+  const profile = { full_name: 'Ali', public_slug: null } as SettingsProfile;
+  const html = renderToStaticMarkup(createElement(CaptainPhoneSettingsMenu, { profile, query: '', timezone: 'Africa/Cairo' }));
+  expect(html).toMatch(/<a[^>]*id="settings-row-notifications"[^>]*>/);
+  expect(html).toMatch(/<a[^>]*id="settings-row-language"[^>]*>/);
 });
 
 it.each([true, false])('reports clipboard outcomes for the actual public join URL (success=%s)', async success => {

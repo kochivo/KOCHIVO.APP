@@ -12,7 +12,7 @@ const PlayerEditor = dynamic(() => import('./editor/player-editor').then(module 
 
 export function LegacyEditor({ planId }: { planId: string }) {
   const t = useT(messages), planT = useT(planMessages);
-  const state = usePlanDraft(planId, { clearErrorsOnEdit: true });
+  const state = usePlanDraft(planId, { editor: 'none' });
   const { draft } = state;
   const [context, setContext] = useState<Awaited<ReturnType<typeof loadEditorContext>> | null>(null);
   const [contextError, setContextError] = useState(false);

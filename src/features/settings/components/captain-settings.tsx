@@ -1,5 +1,5 @@
 'use client';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
@@ -49,10 +49,26 @@ export function CaptainSettings({ signOut, connectedTools }: {
   const loader = useCallback(() => loadCaptainSettings(), []);
   const resource = useResource('settings:captain:workspace', loader);
   const profile = resource.data;
+  const hasProfile = Boolean(profile);
+  const root = useRef<HTMLElement>(null);
+  const activeRow = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    if (!hasProfile || !window.matchMedia('(width < 48rem)').matches) return;
+    if (!overview) root.current?.querySelector<HTMLElement>('#settings-heading')?.focus({ preventScroll: true });
+    else if (activeRow.current) {
+      document.getElementById(activeRow.current)?.focus();
+      activeRow.current = undefined;
+    }
+  }, [overview, section, hasProfile]);
   const setEdited = (next: SettingsProfile) => { void resource.mutate(() => next, async () => {}); };
 
-  return <section className="space-y-card-gap">
+  return <section ref={root} className="space-y-card-gap" onClickCapture={event => {
+    if (!(event.target instanceof Element) || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    const row = event.target.closest<HTMLElement>('[data-settings-row]');
+    if (row) activeRow.current = row.id;
+  }}>
     <PageBarTitle title={legacy('settings')} />
+    {profile && Boolean(resource.error) && <ErrorState message={legacy('couldnTLoadSettings')} retryLabel={t('retry')} onRetry={() => void resource.retry()} />}
     {!profile ? resource.error ? <ErrorState message={legacy('couldnTLoadSettings')} retryLabel={t('retry')} onRetry={() => void resource.retry()} />
       : <LoadingState variant="detail" /> :
       <div className="grid items-start gap-card-gap max-md:grid-cols-1! min-[760px]:grid-cols-[minmax(0,1fr)_minmax(0,3.4fr)]">

@@ -7,7 +7,9 @@ import { TemplateTrainingEntry } from './template-entry';
 vi.mock('server-only', () => ({}));
 vi.mock('@/core/i18n/server', () => ({ getLocale: async () => 'en' }));
 const state = vi.hoisted(() => ({ read: vi.fn() }));
-vi.mock('@/features/programs/server', () => ({ readProgram: state.read }));
+vi.mock('@/features/programs/server', () => ({ readProgram: state.read, readPlayerPrograms: async () => ({ error: 'offline' }) }));
+vi.mock('../player-file/profile-data', () => ({ readPlayerProfile: async () => ({ data: {} }) }));
+vi.mock('../player-file/read-player-file', () => ({ readTrainingPlayerFile: async () => ({}) }));
 vi.mock('./training-content', () => ({ TrainingContent: () => createElement('section') }));
 vi.mock('./template-entry', () => ({ TemplateTrainingEntry: () => createElement('section') }));
 const id = '01900000-0000-7000-8000-000000000001', player = '01900000-0000-7000-8000-000000000002';
@@ -39,4 +41,12 @@ it('leaves server failures retryable without exposing a draft', async () => {
   const html = renderToStaticMarkup(await ProgramTrainingEntry({ programId: id }));
   expect(html).toContain('role="alert"'); expect(html).toContain(`href="/captain/programs/${id}"`);
   expect(html).not.toContain('private details');
+});
+
+it('reloads the requested program when its workspace data fails', async () => {
+  const { TrainingContent: renderTraining } = await vi.importActual<{ TrainingContent: typeof TrainingContent }>('./training-content');
+  const selected = await ProgramTrainingEntry({ programId: id });
+  const html = renderToStaticMarkup(await renderTraining(selected.props));
+  expect(html).toContain(`href="/en/captain/programs/${id}"`);
+  expect(html).not.toContain(`/captain/players/${player}/programs`);
 });

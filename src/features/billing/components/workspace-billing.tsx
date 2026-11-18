@@ -1,6 +1,6 @@
 'use client';
 import { secondaryButtonClass } from '@/ui/secondary-button-class';
-import { use, useCallback, useRef, useState, useTransition } from 'react';
+import { use, useCallback, useRef, useState, useSyncExternalStore, useTransition } from 'react';
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { Bell, Box } from 'lucide-react';
@@ -29,8 +29,16 @@ import { WorkspaceBillingTask } from './workspace-billing-task';
 import { WorkspacePaymentsTable } from './workspace-payments-table';
 import { buttonClass, Button } from '@/ui/button';
 
+const phoneQuery = '(width < 48rem)';
+function subscribePhone(onChange: () => void) {
+  const media = window.matchMedia(phoneQuery);
+  media.addEventListener('change', onChange);
+  return () => media.removeEventListener('change', onChange);
+}
+
 export function WorkspaceBilling({ data, today, moneyOwed }: { data: Promise<BillingResult>; today: string; moneyOwed?: ReactNode }) {
   const result = use(data), t = useT(workspaceMessages), legacy = useT(messages), finance = useT(financeMessages), locale = useLocale(), router = useRouter();
+  const phone = useSyncExternalStore(subscribePhone, () => window.matchMedia(phoneQuery).matches, () => false);
   const timezone = useTimezone();
   const toast = useToast(), lock = useRef(false);
   const load = useCallback(() => listRenewalRequests(), []);
@@ -60,20 +68,7 @@ export function WorkspaceBilling({ data, today, moneyOwed }: { data: Promise<Bil
     } catch { setApproved(current => current.filter(value => value !== id)); setError(legacy('renewFailed')); }
     finally { setBusy(false); lock.current = false; }
   }
-  return <section id="billing-heading" tabIndex={-1} className="flex min-w-0 flex-col gap-card-gap" aria-busy={busy || refreshing}>
-    <PageBarTitle title={t('title')} subtitle={t('intro')} phoneSubtitle={formatDateAr(today, { month: 'long' }, locale)} />
-    <PageBarActions>
-      <Link href="/captain/billing/packages" aria-label={t('catalog')}
-        className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 min-w-12 items-center px-page-x text-row max-md:px-inline!" })}>
-        <Box aria-hidden className="size-4 max-md:hidden" /><KoPackages aria-hidden className="size-5 md:hidden" />
-        <span className="max-md:sr-only">{t('catalog')}</span></Link>
-    </PageBarActions>
-    <WorkspaceBillingTiles values={values} owed={billing.revenue.dues} owing={billing.revenue.owing}
-      today={today} expected={expected} noPackage={noPackage} className="max-md:hidden" />
-    <WorkspaceBillingPhoneIncome income={values.income} expected={expected} waiting={billing.revenue.dues} />
-    {notice && <p role="status" className="glass rounded-control p-stack text-sm text-lime">{notice}</p>}
-    {error && <p role="alert" className="text-sm text-danger">{error}</p>}
-    <div className="group hidden has-[[data-billing-task]]:block has-[[data-billing-feedback]]:block max-md:order-last">
+  const attention = <div key="attention" className="group hidden has-[[data-billing-task]]:block has-[[data-billing-feedback]]:block">
       <section className="rounded-card has-[[data-billing-task]]:border has-[[data-billing-task]]:border-warn/25 has-[[data-billing-task]]:bg-ink/3">
         <header className="hidden items-center gap-stack px-card py-stack group-has-[[data-billing-task]]:flex">
           <Bell aria-hidden className="size-4 text-warn" /><h2 className="text-md font-bold">{t('attention')}</h2>
@@ -98,15 +93,29 @@ export function WorkspaceBilling({ data, today, moneyOwed }: { data: Promise<Bil
           </li>;
         })}</ul></WorkspaceBillingTask>}
       </section>
-    </div>
-    <WorkspacePaymentsTable players={billing.players} packages={billing.packages} today={today} rows={payments} phone
+    </div>;
+  const paymentTable = <WorkspacePaymentsTable key="payments" players={billing.players} packages={billing.packages} today={today} rows={payments} phone
       summary={<p className="w-full text-xs text-muted">
         {t('activeSubscriptions')} <bdi>{formatNumber(values.active, locale)}</bdi>
         {noPackage > 0 && <span className="ms-inline">{t('withoutPackages', { count: formatNumber(noPackage, locale) })}</span>}
         {billing.revenue.owing > 0 && <span className="ms-inline">{legacy('owingPlayers', {
           n: billing.revenue.owing, count: formatNumber(billing.revenue.owing, locale),
         })}</span>}
-      </p>} />
-    {!billing.players.length && <div className="glass rounded-card p-card"><p className="text-sm text-faint">{legacy('noPlayers')}</p><Link href="/captain/players" className={`${secondaryButtonClass} inline-flex min-h-12 items-center text-lime`}>{legacy('invitePlayer')}</Link></div>}
+      </p>} />;
+  const emptyPlayers = !billing.players.length && <div key="empty-players" className="glass rounded-card p-card"><p className="text-sm text-faint">{legacy('noPlayers')}</p><Link href="/captain/players" className={`${secondaryButtonClass} inline-flex min-h-12 items-center text-lime`}>{legacy('invitePlayer')}</Link></div>;
+  return <section id="billing-heading" tabIndex={-1} className="flex min-w-0 flex-col gap-card-gap" aria-busy={busy || refreshing}>
+    <PageBarTitle title={t('title')} subtitle={t('intro')} phoneSubtitle={formatDateAr(today, { month: 'long' }, locale)} />
+    <PageBarActions>
+      <Link href="/captain/billing/packages" aria-label={t('catalog')}
+        className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 min-w-12 items-center px-page-x text-row max-md:px-inline!" })}>
+        <Box aria-hidden className="size-4 max-md:hidden" /><KoPackages aria-hidden className="size-5 md:hidden" />
+        <span className="max-md:sr-only">{t('catalog')}</span></Link>
+    </PageBarActions>
+    <WorkspaceBillingTiles values={values} owed={billing.revenue.dues} owing={billing.revenue.owing}
+      today={today} expected={expected} noPackage={noPackage} className="max-md:hidden" />
+    <WorkspaceBillingPhoneIncome income={values.income} expected={expected} waiting={billing.revenue.dues} />
+    {notice && <p role="status" className="glass rounded-control p-stack text-sm text-lime">{notice}</p>}
+    {error && <p role="alert" className="text-sm text-danger">{error}</p>}
+    {phone ? [paymentTable, emptyPlayers, attention] : [attention, paymentTable, emptyPlayers]}
   </section>;
 }

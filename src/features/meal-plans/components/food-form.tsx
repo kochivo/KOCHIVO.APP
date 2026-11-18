@@ -2,7 +2,7 @@
 import { NumberInput } from '@/ui/number-input';
 
 import { editableFieldClass } from '@/ui/edit-in-place';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale, useT } from '@/core/i18n/client';
@@ -18,6 +18,7 @@ import type { Macros } from '@/lib/macros';
 import { checkMacros } from '../macro-check';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { foodFormMessages, messages } from '../messages';
+import { ZodError } from 'zod';
 import { customFoodSchema } from '../types';
 import type { Food, FoodUnit } from '../types';
 import { FoodUnitsEditor } from './food-units-editor';
@@ -50,6 +51,16 @@ export function FoodForm({ food, copyFrom, initialName = '', onSaved, onCancel, 
   const [preview, setPreview] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [issues, setIssues] = useState<Record<string, string>>({});
+  const form = useRef<HTMLFormElement>(null);
+  const errorPrefix = useId();
+  useEffect(() => {
+    if (Object.keys(issues).length) form.current?.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
+  }, [issues]);
+  const issue = (key: string) => issues[key] ? {
+    'aria-invalid': true, 'aria-describedby': `${errorPrefix}-${key}`,
+  } : {};
+  const errorLine = (key: string) => issues[key] && <span id={`${errorPrefix}-${key}`} role="alert" className="text-sm text-danger">{issues[key]}</span>;
   const lock = useRef(false);
   const home = `/${locale}/captain/library/foods`;
   // Only return to a captain route in the current locale.
@@ -60,9 +71,28 @@ export function FoodForm({ food, copyFrom, initialName = '', onSaved, onCancel, 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (lock.current) return;
+    setError(''); setIssues({});
     let input;
     try { input = foodFormInput({ name, nameEn, ...macros, fiber, units, ...(copyId ? { copyFrom: copyId } : {}) }); }
-    catch { setError(planT('invalidCustomFood')); return; }
+    catch (failure) {
+      if (!(failure instanceof ZodError)) { setError(planT('invalidCustomFood')); return; }
+      const fields: Record<string, string> = {};
+      for (const { path } of failure.issues) {
+        if (path.length === 0) {
+          if (macros.kcal > 900) fields.kcal = t('invalidCalories');
+          if (macros.protein + macros.carbs + macros.fat > 100) {
+            for (const key of ['protein', 'carbs', 'fat']) fields[key] ??= t('invalidMacros');
+          }
+        } else if (path[0] === 'units' && typeof path[1] === 'number') {
+          const field = path[2] === 'grams' ? 'grams' : 'name';
+          fields[`unit-${path[1]}-${field}`] = t(field === 'grams' ? 'invalidWeight' : 'invalidValue');
+        } else if (['name', 'nameEn', 'kcal', 'protein', 'carbs', 'fat', 'fiber'].includes(String(path[0]))) {
+          fields[String(path[0])] = t('invalidValue');
+        } else setError(planT('invalidCustomFood'));
+      }
+      setIssues(fields);
+      return;
+    }
     lock.current = true; setBusy(true); setError(''); onBusyChange?.(true);
     try {
       const optimistic: Food = { ...food, id: id ?? uuidv7(), name, nameEn, units, ...macros,
@@ -80,12 +110,12 @@ export function FoodForm({ food, copyFrom, initialName = '', onSaved, onCancel, 
   const macroLabels = { kcal: 'calories', protein: 'protein', carbs: 'carbs2', fat: 'fat2' } as const;
   const photo = preview || (food?.photo ? foodPhotoUrl(food.photo) : null);
   const inputClass = 'min-h-12 w-full min-w-0 rounded-control border border-line bg-surface px-stack';
-  return <form onSubmit={event => void submit(event)} className="grid gap-card-gap text-ink" aria-busy={busy}>
+  return <form ref={form} noValidate onSubmit={event => void submit(event)} className="grid gap-card-gap text-ink" aria-busy={busy}>
     <header className={workspace ? 'glass flex flex-wrap items-center gap-stack rounded-card p-stack' : 'glass flex flex-wrap items-center gap-stack rounded-card p-card'}>
       {workspace && <Button variant="secondary" type="button" disabled={busy} aria-label={t('cancel')} onClick={() => onCancel ? onCancel() : router.replace(destination)}><KoSend aria-hidden className="size-4 rotate-45 ltr:rotate-225" /></Button>}
-      <div className="me-auto min-w-0"><h1 className={workspace ? 'text-md font-bold' : 'font-display text-2xl font-bold'}>{id || copyId ? planT('editFood') : t('title')}</h1><p className={workspace ? 'text-xs text-muted' : 'text-sm text-muted'}>{t('subtitle')}</p></div>
+      <div className="me-auto min-w-0"><h1 className={workspace ? 'text-md font-bold' : 'font-display text-2xl font-bold'}>{copyId ? t('copyTitle') : id ? planT('editFood') : t('title')}</h1><p className={workspace ? 'text-xs text-muted' : 'text-sm text-muted'}>{t('subtitle')}</p></div>
       <Button className={workspace ? 'hidden min-[761px]:inline-flex' : undefined} variant="secondary" type="button" disabled={busy} onClick={() => onCancel ? onCancel() : router.replace(destination)}>{t('cancel')}</Button>
-      <Button type="submit" disabled={busy}><KoSend aria-hidden className="size-5" />{busy ? planT('saving') : t('save')}</Button>
+      <Button type="submit" disabled={busy}><KoSend aria-hidden className="size-5" />{busy ? planT('saving') : t(copyId ? 'saveCopy' : 'save')}</Button>
     </header>
     {error && <p role="alert" className="text-danger">{error}</p>}
     {busy && <p role="status">{planT('saving')}</p>}
@@ -104,8 +134,8 @@ export function FoodForm({ food, copyFrom, initialName = '', onSaved, onCancel, 
               }} />
             </label>
             <div className="grid gap-stack">
-              <label className="grid gap-inline text-sm">{t('nameAr')}<input className={captainWorkspaceEnabled() ? `${editableFieldClass} ${inputClass}` : inputClass} required maxLength={60} value={name} onChange={event => setName(event.target.value)} /></label>
-              <label className="grid gap-inline text-sm">{t('nameEn')}<input className={captainWorkspaceEnabled() ? `${editableFieldClass} ${inputClass}` : inputClass} dir="ltr" maxLength={100} value={nameEn} onChange={event => setNameEn(event.target.value)} /></label>
+              <label className="grid gap-inline text-sm">{t('nameAr')}<input className={captainWorkspaceEnabled() ? `${editableFieldClass} ${inputClass}` : inputClass} required {...issue('name')} maxLength={60} value={name} onChange={event => setName(event.target.value)} />{errorLine('name')}</label>
+              <label className="grid gap-inline text-sm">{t('nameEn')}<input className={captainWorkspaceEnabled() ? `${editableFieldClass} ${inputClass}` : inputClass} dir="ltr" {...issue('nameEn')} maxLength={100} value={nameEn} onChange={event => setNameEn(event.target.value)} />{errorLine('nameEn')}</label>
             </div>
           </div>
         </section>
@@ -114,16 +144,16 @@ export function FoodForm({ food, copyFrom, initialName = '', onSaved, onCancel, 
           <div className={workspace ? 'grid grid-cols-2 gap-stack sm:grid-cols-4' : 'glass-strong grid grid-cols-2 gap-stack rounded-control p-stack sm:grid-cols-4'}>
             {(['kcal', 'protein', 'carbs', 'fat'] as const).map(key => <label className="grid min-w-0 gap-inline text-sm" key={key}>
               {planT(macroLabels[key])}
-              <NumberInput className={captainWorkspaceEnabled() ? `${editableFieldClass} ${inputClass}` : inputClass} required min={0} max={key === 'kcal' ? 900 : 100} step="0.1" value={macros[key]}
-                onCommit={value => setMacros({ ...macros, [key]: value })} />
+              <NumberInput className={captainWorkspaceEnabled() ? `${editableFieldClass} ${inputClass}` : inputClass} required {...issue(key)} min={0} max={key === 'kcal' ? 900 : 100} step="0.1" value={macros[key]}
+                onCommit={value => setMacros({ ...macros, [key]: value })} />{errorLine(key)}
             </label>)}
           </div>
-          <label className="grid gap-inline text-sm">{libraryT('fiber')}<NumberInput allowEmpty className={inputClass} min={0} max={100} step="0.1" value={fiber ?? ''} onCommit={value => setFiber(value === null ? null : value)} /></label>
+          <label className="grid gap-inline text-sm">{libraryT('fiber')}<NumberInput allowEmpty {...issue('fiber')} className={inputClass} min={0} max={100} step="0.1" value={fiber ?? ''} onCommit={value => setFiber(value === null ? null : value)} />{errorLine('fiber')}</label>
           <p role="status" className={`rounded-control p-stack text-sm ${check.warn ? 'bg-warn/10 text-warn' : 'bg-lime/10 text-lime'}`}>
             {check.warn ? t('warn', { calculated: Math.round(check.calculated), kcal: macros.kcal }) : t('ok')}
           </p>
         </section>
-        <FoodUnitsEditor units={units} kcal={macros.kcal} onChange={setUnits} />
+        <FoodUnitsEditor units={units} kcal={macros.kcal} onChange={setUnits} issue={issue} errorLine={errorLine} />
       </fieldset>
       <FoodPreview name={name} nameEn={nameEn} macros={macros} units={units} photo={photo} />
     </div>

@@ -21,7 +21,7 @@ type Actions = Omit<ComponentProps<typeof LibraryCard>, 'template' | 'busy' | 'e
 export function LibraryView(props: {
   kind: TemplateKind; templates: LibraryTemplate[]; loading: boolean; error: string; createError: string;
   creating: boolean; busy: string[]; errors: Record<string, string>; onCreate: () => void; onRetry: () => void;
-  actions: (template: LibraryTemplate) => Actions; tools?: ReactNode;
+  actions: (template: LibraryTemplate) => Actions & { onCopyAndEdit?: () => void }; tools?: ReactNode;
 }) {
   const { kind, templates, loading, error, createError, creating, busy, errors, onCreate, onRetry, actions, tools } = props;
   const PlusIcon = captainWorkspaceEnabled() ? KoPlus : Plus;
@@ -38,7 +38,7 @@ export function LibraryView(props: {
     </header>
     {training && <div className="mb-card-gap flex flex-wrap items-center gap-inline">
       {(['all', 'beginner', 'intermediate', 'advanced'] as const).map(value => <Chip key={value} pressed={level === value} className={level === value ? '!border-ink !bg-ink !text-bg-deep' : 'bg-transparent text-muted'} onClick={() => setLevel(value)}>{t(value)}</Chip>)}
-      <label className="ms-auto flex min-h-12 w-full items-center gap-inline rounded-full border border-line-soft px-page-x sm:w-auto"><Search aria-hidden className="size-4 text-faint" />
+      <label className="ms-auto flex min-h-12 w-full items-center gap-inline rounded-full border border-line-soft px-page-x focus-within:ring-2 focus-within:ring-lime sm:w-auto"><Search aria-hidden className="size-4 text-faint" />
         <input aria-label={t('search')} placeholder={t('search')} value={query} onChange={event => setQuery(event.target.value)} className="min-w-0 flex-1 bg-transparent text-xs outline-none" /></label>
     </div>}
     {(createError || busy.length > 0) && <p role={createError ? 'alert' : 'status'} className="mb-stack text-sm text-muted">{createError || tt('savingChanges')}</p>}

@@ -66,6 +66,7 @@ export const arStd = {
   "activateForPlayer": "فعّل للاعب",
   "saving": "جاري الحفظ",
   "youHaveUnsavedChanges": "توجد تعديلات غير محفوظة",
+  "leaveWithUnsavedPlan": "توجد تعديلات غير محفوظة. هل تريد مغادرة الخطة؟",
   "meals": "الوجبات",
   "addYourFirstMealToStart": "أضف أول وجبة لبدء النظام",
   "newMeal": "وجبة جديدة",

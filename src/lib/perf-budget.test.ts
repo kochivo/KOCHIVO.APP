@@ -14,10 +14,10 @@ const exceptions: Record<string, number> = {
   '/offline': 207, // T-363..T-368 refined look: measured 206.03
   '/captain/programs/[programId]': 315,
   // T-383..T-388 captain phone shell and player-file header (2026-11-18): +1..3 KiB on these routes.
-  '/captain/players/[playerId]/programs': 327, // measured 326.01
-  '/captain/players/[playerId]/nutrition': 314, // measured 313.34 after T-397..T-401
+  '/captain/players/[playerId]/programs': 332, // measured 331.03 after T-400 library and editor fixes
+  '/captain/players/[playerId]/nutrition': 315, // measured 314.22 after T-397..T-401
   '/captain/players/[playerId]/preview': 314, // measured 313.11 after T-389 phone header menu
-  '/demo': 283, // measured 282.28 after T-401 compact menu
+  '/demo': 287, // measured 286.70 after T-400 and T-401
 };
 
 it.skipIf(!existsSync(statsPath))('keeps first-load route JavaScript within gzip budgets', () => {

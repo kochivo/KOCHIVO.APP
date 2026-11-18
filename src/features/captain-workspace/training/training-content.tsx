@@ -1,6 +1,5 @@
 import { secondaryButtonClass } from '@/ui/secondary-button-class';
 import 'server-only';
-import Link from 'next/link';
 import { notFound, unstable_rethrow } from 'next/navigation';
 import { getLocale } from '@/core/i18n/server';
 import { createT } from '@/core/i18n/messages';
@@ -24,7 +23,7 @@ export async function TrainingContent({ playerId, initial }: { playerId: string;
     readPlayerProfile(playerId), readPlayerPrograms(playerId), readTrainingPlayerFile(playerId).catch(error => { unstable_rethrow(error); return null; }),
   ]);
   const retry = <div role="alert" className="glass rounded-card p-card text-danger"><p>{t('error')}</p>
-    <Link className={`${secondaryButtonClass} inline-flex min-h-12 items-center text-ink`} href={`/captain/players/${playerId}/programs`}>{t('retry')}</Link></div>;
+    <a className={`${secondaryButtonClass} inline-flex min-h-12 items-center text-ink`} href={initial ? `/${locale}/captain/programs/${initial.id}` : `/${locale}/captain/players/${playerId}/programs`}>{t('retry')}</a></div>;
   if (profile.error || programs.error || !playerFile) return retry;
   if (!profile.data) notFound();
   const current = programs.data?.find(row => row.status === 'draft' || row.status === 'active');

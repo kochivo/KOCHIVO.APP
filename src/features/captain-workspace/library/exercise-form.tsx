@@ -10,13 +10,14 @@ import { ExerciseVideoPreview } from '@/features/workout';
 import { useResource } from '@/core/resource';
 import { resourceStore } from '@/core/resource/store';
 
-import { RowLink } from '@/ui/row-link';
+import { rowLinkClass } from '@/ui/row-link';
+import { RowChevron } from '@/ui/row-chevron';
 import { KoSend } from '@/ui/icons/ko-send';
 import { Chip } from '@/ui/chip';
 import { LoadingState } from '@/ui/loading-state';
 import { useToast } from '@/ui/toast';
 import type { LibraryExercise } from '@/features/programs';
-import { loadExerciseForm, loadLibraryExercise, saveCustom } from '../training/data/editor-actions';
+import { loadExerciseForm, loadExerciseNames, loadLibraryExercise, saveCustom } from '../training/data/editor-actions';
 import { ExercisePreview, bodyParts, secondaryOptions, tools } from './exercise-preview';
 import type { ExerciseValues } from './exercise-preview';
 import { ExerciseDetail } from './exercise-detail';
@@ -28,10 +29,12 @@ import { searchLibraryExercises } from './data/search';
 export { exerciseReturnPath } from '../training/custom-exercise';
 
 export async function refreshSavedExercise(saved: LibraryExercise, exerciseId?: string) {
-  await resourceStore.mutate<{ exercise: LibraryExercise | null; names: ExerciseName[] }>(`exercise-form:${exerciseId ?? 'new'}`, current => ({
-    exercise: exerciseId ? saved : null,
-    names: [...(current?.names ?? []).filter(row => row.id !== saved.id), { id: saved.id, name_ar: saved.name_ar, name_en: saved.name_en }],
-  }), async () => {});
+  if (exerciseId) await resourceStore.mutate(`exercise-form:${exerciseId}`, () => saved, async () => {});
+  if (resourceStore.read<ExerciseName[]>('exercise-form:names').data) {
+    await resourceStore.mutate<ExerciseName[]>('exercise-form:names', current => [
+      ...(current ?? []).filter(row => row.id !== saved.id), { id: saved.id, name_ar: saved.name_ar, name_en: saved.name_en },
+    ], async () => {});
+  }
   // Returning to the library mounts its default filters, so refresh that snapshot before navigation.
   const filters = { query: '', muscle: 'all', equipment: '', mine: false, page: 0 };
   const key = `exercise-library:${JSON.stringify(filters)}`;
@@ -44,6 +47,11 @@ export async function refreshSavedExercise(saved: LibraryExercise, exerciseId?: 
 }
 
 export function ExerciseForm({ exerciseId, returnTo }: { exerciseId?: string; returnTo?: string }) {
+  return exerciseId ? <EditForm key={exerciseId} exerciseId={exerciseId} returnTo={returnTo} />
+    : <FormFields exercise={null} returnTo={returnTo} />;
+}
+
+function EditForm({ exerciseId, returnTo }: { exerciseId: string; returnTo?: string }) {
   const t = useT(messages);
   const load = useCallback(async () => {
     const result = await loadExerciseForm(exerciseId);
@@ -54,11 +62,14 @@ export function ExerciseForm({ exerciseId, returnTo }: { exerciseId?: string; re
   if (resource.error) return <div role="alert" className="glass space-y-stack rounded-card p-section">
     <p>{t('error')}</p><Button variant="secondary" onClick={() => void resource.retry()}>{t('retry')}</Button>
   </div>;
+  if (resource.data === null) return <div role="alert" className="glass space-y-stack rounded-card p-section">
+    <p>{t('unavailable')}</p><Link href="/captain/library/exercises" className={`${rowLinkClass} inline-flex items-center px-page-x`}>{t('backToLibrary')}</Link>
+  </div>;
   if (!resource.data) return <div role="status"><p>{t('loading')}</p><LoadingState variant="cards" /></div>;
-  return <FormFields key={exerciseId ?? 'new'} exercise={resource.data.exercise} names={resource.data.names} returnTo={returnTo} />;
+  return <FormFields exercise={resource.data} returnTo={returnTo} />;
 }
 
-function FormFields({ exercise, names, returnTo }: { exercise: LibraryExercise | null; names: ExerciseName[]; returnTo?: string }) {
+function FormFields({ exercise, returnTo }: { exercise: LibraryExercise | null; returnTo?: string }) {
   const t = useT(messages), toast = useToast(), router = useRouter();
   const [values, setValues] = useState<ExerciseValues>(() => ({ name: exercise?.name_ar ?? '', nameEn: exercise?.name_en ?? '',
     bodyPart: exercise?.body_part ?? 'chest', target: exercise?.target ?? '', equipment: exercise?.equipment ?? '',
@@ -67,6 +78,13 @@ function FormFields({ exercise, names, returnTo }: { exercise: LibraryExercise |
   const [error, setError] = useState(''), [fields, setFields] = useState<Record<string, string>>({});
   const [detail, setDetail] = useState<LibraryExercise | null>(null), [detailBusy, setDetailBusy] = useState(false);
   const destination = exerciseReturnPath(returnTo);
+  const loadNames = useCallback(async () => {
+    const result = await loadExerciseNames();
+    if (!result.data) throw new Error(result.error);
+    return result.data;
+  }, []);
+  const lookup = useResource('exercise-form:names', loadNames);
+  const names = lookup.data ?? [];
   const similar = similarExercise(values.name, names, exercise?.id) ?? similarExercise(values.nameEn, names, exercise?.id);
   const patch = (value: Partial<ExerciseValues>) => setValues(current => ({ ...current, ...value }));
   const inputClass = 'mt-inline block min-h-12 w-full rounded-control border border-line bg-transparent px-stack text-ink';
@@ -115,8 +133,14 @@ function FormFields({ exercise, names, returnTo }: { exercise: LibraryExercise |
               <input {...invalid(key)} dir={key === 'nameEn' ? 'ltr' : undefined} required={key === 'name'} maxLength={key === 'name' ? 60 : 120} value={values[key]} onChange={event => patch({ [key]: event.target.value })} className={`${editableFieldClass} ${inputClass}`} />
             </label>{fieldError(key)}</div>)}
           </div>
-          {(values.name.trim() || values.nameEn.trim()) && (similar ? <RowLink id="similar-exercise" href="#similar-exercise" aria-busy={detailBusy} onClick={event => { event.preventDefault(); void openSimilar(); }} className="text-sm">{t('similar', { name: similar.name_ar || similar.name_en })}</RowLink> :
-            <p role="status" className="text-sm text-muted">{t('noSimilar')}</p>)}
+          {Boolean(lookup.error) && <div role="alert" className="flex flex-wrap items-center gap-inline text-sm text-danger">
+            {t('lookupFailed')}<Button variant="secondary" block={false} onClick={() => void lookup.retry()}>{t('retry')}</Button>
+          </div>}
+          {lookup.data && (values.name.trim() || values.nameEn.trim()) && (similar ? <button type="button"
+            aria-haspopup="dialog" aria-busy={detailBusy} onClick={() => void openSimilar()}
+            className={`${rowLinkClass} flex w-full items-center gap-stack px-page-x py-stack text-start text-sm`}>
+            <span className="min-w-0 flex-1">{t('similar', { name: similar.name_ar || similar.name_en })}</span><RowChevron />
+          </button> : <p role="status" className="text-sm text-muted">{t('noSimilar')}</p>)}
           {detailBusy && <p role="status" className="text-sm text-muted">{t('loading')}</p>}
         </section>
         <section className="glass space-y-stack rounded-card border border-line-soft p-card">

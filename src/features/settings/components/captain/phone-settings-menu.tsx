@@ -48,9 +48,9 @@ export function CaptainPhoneSettingsMenu({ profile, query, timezone, signOut, co
   const languageAndZone = t('languageAndZone', { language: preferences(locale === 'en' ? 'english' : 'arabic'),
     zone: timezone === DEFAULT_TIMEZONE ? preferences('cairo') : timezone });
   const accountRows = [
-    { url: href('subscription'), Icon: CreditCard, label: t('subscription') },
-    { url: href('security'), Icon: FileText, label: t('security') },
-    ...(connectedTools ? [{ url: href('connected-tools'), Icon: Plug, label: tools('connectedTools') }] : []),
+    { id: 'subscription', url: href('subscription'), Icon: CreditCard, label: t('subscription') },
+    { id: 'security', url: href('security'), Icon: FileText, label: t('security') },
+    ...(connectedTools ? [{ id: 'connected-tools', url: href('connected-tools'), Icon: Plug, label: tools('connectedTools') }] : []),
   ];
   return <div className="flex min-h-[calc(100dvh-var(--captain-content-clearance)-max(var(--spacing-card),var(--safe-top))-var(--spacing-card)-4rem-var(--spacing-stack))] min-w-0 flex-col gap-card-gap md:hidden">
     <section className="glass flex items-center gap-card-gap rounded-card p-card">
@@ -62,19 +62,19 @@ export function CaptainPhoneSettingsMenu({ profile, query, timezone, signOut, co
           <bdi className="truncate text-xs text-muted">{legacy('publicPreview', { slug })}</bdi>
         </Link> : <h2 className="wrap-break-word text-md font-bold">{profile.full_name}</h2>}
       </div>
-      <Link href={href('profile')} className={buttonClass({ variant: 'secondary', block: false, className: 'shrink-0 px-stack text-row' })}>
+      <Link href={href('profile')} data-settings-row id="settings-row-profile" className={buttonClass({ variant: 'secondary', block: false, className: 'shrink-0 px-stack text-row' })}>
         <Pencil aria-hidden className="size-4" />{t('edit')}
       </Link>
     </section>
     <nav aria-label={sectionT('sections')} className="space-y-card-gap">
       <div className="glass overflow-hidden rounded-card">
-        <Link href={href('page')} className={`${rowClass} px-card`}>
+        <Link href={href('page')} data-settings-row id="settings-row-page" className={`${rowClass} px-card`}>
           <Link2 aria-hidden className="size-5 shrink-0 text-muted" />
           <span className="flex-1">{sectionT('page')}</span>
           <span className="text-xs text-muted">{t(slug ? 'publicOn' : 'publicOff')}</span><RowChevron />
         </Link>
         <div className="flex items-center border-t border-line-soft px-card">
-          <Link href={href('invite')} className={`${rowClass} flex-1`}>
+          <Link href={href('invite')} data-settings-row id="settings-row-invite" className={`${rowClass} flex-1`}>
             <Copy aria-hidden className="size-5 shrink-0 text-muted" />
             <span className="flex-1">{t('invite')}</span><RowChevron />
           </Link>
@@ -85,7 +85,7 @@ export function CaptainPhoneSettingsMenu({ profile, query, timezone, signOut, co
       </div>
       <div className="glass overflow-hidden rounded-card">
         <div className="group flex items-center gap-inline px-card">
-          <Link href={href('language', '#settings-notifications')} className={`${rowClass} flex-1`}>
+          <Link href={href('language', '#settings-notifications')} data-settings-row id="settings-row-notifications" className={`${rowClass} flex-1`}>
             <Bell aria-hidden className="size-5 shrink-0 text-muted" />
             <span className="flex-1">{t('notifications')}</span>
             <RowChevron className="group-has-[[role=switch]]:hidden" />
@@ -96,14 +96,14 @@ export function CaptainPhoneSettingsMenu({ profile, query, timezone, signOut, co
             <PushToggle />
           </div>}
         </div>
-        <Link href={href('language')} className={`${rowClass} border-t border-line-soft px-card`}>
+        <Link href={href('language')} data-settings-row id="settings-row-language" className={`${rowClass} border-t border-line-soft px-card`}>
           <MessageCircle aria-hidden className="size-5 shrink-0 text-muted" />
           <span className="min-w-0 flex-1">{t('language')}</span>
           <bdi className="max-w-1/2 truncate text-xs text-muted">{languageAndZone}</bdi><RowChevron />
         </Link>
       </div>
       <div className="glass overflow-hidden rounded-card">
-        {accountRows.map(({ url, Icon, label }) => <Link key={url} href={url}
+        {accountRows.map(({ id, url, Icon, label }) => <Link key={id} href={url} data-settings-row id={`settings-row-${id}`}
           className={`${rowClass} border-t border-line-soft px-card first:border-t-0`}>
           <Icon aria-hidden className="size-5 shrink-0 text-muted" />
           <span className="min-w-0 flex-1">{label}</span>

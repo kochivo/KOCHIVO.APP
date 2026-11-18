@@ -22,6 +22,7 @@ vi.mock('react', async original => ({ ...await original<typeof React>(), useEffe
   },
 }));
 vi.mock('@/core/i18n/client', () => ({ useLocale: () => 'ar', useT: (dictionary: Parameters<typeof createT>[0]) => createT(dictionary, 'ar') }));
+vi.mock('next/navigation', () => ({ useRouter: () => ({ push: vi.fn() }) }));
 vi.mock('@/ui/toast', () => ({ useToast: () => ({ success: state.success }) }));
 vi.mock('./data/plan-io', () => ({ savePlan: state.save, loadPlan: vi.fn() }));
 vi.mock('./data/activate', () => ({ activatePlan: state.activate }));
@@ -128,4 +129,13 @@ it('locks explicit Send until saving and activation finish', async () => {
   finish({ ok: true }); await send;
   expect(render().busy).toBe(false);
   expect(state.activate).toHaveBeenCalledOnce();
+});
+
+it('keeps a failed draft open and allows leaving after saving it successfully', async () => {
+  state.save.mockResolvedValueOnce({ ok: false, error: 'offline' });
+  expect(await render().saveBeforeLeaving()).toBe(false);
+  expect(render().draft).toEqual(draft);
+  expect(render().error).toBe('offline');
+  expect(await render().saveBeforeLeaving()).toBe(true);
+  expect(render().dirty).toBe(false);
 });

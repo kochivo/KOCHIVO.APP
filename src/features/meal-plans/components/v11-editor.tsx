@@ -37,7 +37,7 @@ export function V11Editor({ planId }: { planId: string }) {
   const t = useT(messages), pt = useT(planMessages);
   const rt = useT(redesignMessages);
   const success = useT(successMessages), toast = useToast(), locale = useLocale();
-  const state = usePlanDraft(planId, { clearErrorsOnEdit: true });
+  const state = usePlanDraft(planId, { clearErrorsOnEdit: true, editor: 'template' });
   useEditorAutosave(state);
   const [day, setDay] = useState<'training' | 'rest'>('training');
   const { draft, update } = state;
@@ -49,7 +49,7 @@ export function V11Editor({ planId }: { planId: string }) {
   const meals = dayMeals(draft.meals, day);
   return <div onBlur={() => void state.persist()} className="grid min-w-0 gap-card-gap">
     <PageBarTitle title={draft.title} subtitle={usage.data !== undefined ? t('usage', { n: usage.data }) : usage.error ? t('error') : t('loading')} />
-    <PageBarActions><Link href="/captain/library/meal-plans" aria-label={t('back')} aria-disabled={state.dirty || state.busy} onNavigate={event => { if (state.dirty || state.busy) event.preventDefault(); }} className={buttonClass({ variant: 'secondary', block: false, className: "grid min-h-12 min-w-12 place-items-center" })}><KoMealPlans aria-hidden className="size-5" /></Link><Button disabled={state.busy} onClick={() => void state.persist(false, true)}>{t('save')}</Button></PageBarActions>
+    <PageBarActions><Link href="/captain/library/meal-plans" aria-label={t('back')} className={buttonClass({ variant: 'secondary', block: false, className: "grid min-h-12 min-w-12 place-items-center" })}><KoMealPlans aria-hidden className="size-5" /></Link><Button disabled={state.busy} onClick={() => void state.persist(false, true)}>{t('save')}</Button></PageBarActions>
     {state.error && <p role="alert" className="text-danger">{state.error}</p>}
     <SaveStatus locale={locale} status={state.error ? 'error' : state.dirty || state.busy ? 'saving' : 'saved'} onRetry={() => void state.retrySave()} />
     <div role="tablist" aria-label={pt('meals')} className="flex gap-inline">{(['training', 'rest'] as const).map(value => <button key={value} type="button" role="tab" aria-selected={day === value} disabled={state.busy} onClick={() => {

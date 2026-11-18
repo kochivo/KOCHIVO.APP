@@ -27,10 +27,10 @@ export function RefinedMealCard({ plan, onAssign, t }: {
         <h2 className="break-words text-md font-bold max-md:text-sm">
           <Link href={`/captain/nutrition/${id}`} className={`${clickableClass} after:absolute after:inset-0 after:rounded-card focus-visible:after:ring-2 focus-visible:after:ring-lime`}>{title}</Link>
         </h2>
-        <span className={`${tone} rounded-md px-inline text-micro font-semibold max-md:hidden`}>{t(tag)}</span>
+        <span className={`${tone} rounded-md px-inline text-micro font-semibold max-md:bg-transparent max-md:px-0 max-md:font-normal max-md:text-muted`}>{t(tag)}</span>
       </div>
       <span className="tone-neutral shrink-0 rounded-md px-inline text-micro font-semibold md:hidden">{t('playerCount', { n: players.length })}</span>
-      {kcal !== null && <div className="shrink-0 text-end max-md:hidden">
+      {kcal !== null && <div className="glass-strong shrink-0 rounded-control text-end max-md:hidden">
         <bdi className="block font-display text-stat font-extrabold tabular-nums tracking-tight">{formatNumber(kcal)}</bdi>
         <span className="block text-micro text-muted">{t('kcalPerDay')}</span>
       </div>}

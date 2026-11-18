@@ -26,6 +26,7 @@ vi.mock('react', async original => ({
   },
   useCallback: (callback: unknown) => callback,
   useRef: (current: unknown) => ({ current }),
+  useSyncExternalStore: (_subscribe: unknown, _client: unknown, server: () => boolean) => server(),
   useTransition: () => [false, (callback: () => void) => callback()],
 }));
 vi.mock('@/core/i18n/client', () => ({ useT: (messages: Messages) => createT(messages, 'en'), useLocale: () => 'en' }));

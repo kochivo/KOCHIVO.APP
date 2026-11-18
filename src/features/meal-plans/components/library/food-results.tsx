@@ -27,6 +27,8 @@ export function FoodResults({ foods, cards, favorites, empty, onSelect, onAdd, o
         <th key={key} scope="col" className="px-stack py-stack text-start text-xs font-medium text-muted">{key === 'food' ? t('foodName') : bt(key)}</th>)}
         <th scope="col"><span className="sr-only">{t('actions')}</span></th></tr></thead>
       <tbody className={`deferred-rows grid ${cards ? 'gap-stack p-stack min-[760px]:grid-cols-2 min-[1200px]:grid-cols-3' : 'min-[760px]:table-row-group'}`}>{foods.map(food => {
+        const name = locale === 'en' ? food.nameEn || food.name : food.name;
+        const actionLabel = (key: 'actions' | 'add' | 'details' | 'favorite') => t('rowAction', { action: t(key), name });
         const portion = food.units?.[0];
         const values = portion ? macrosFor(food, portion.grams) : food;
         const serving = portion ? t('serving', { name: locale === 'en' ? portion.name_en : portion.name_ar, grams: portion.grams }) : t('defaultServing');
@@ -37,7 +39,7 @@ export function FoodResults({ foods, cards, favorites, empty, onSelect, onAdd, o
             {/* eslint-disable-next-line @next/next/no-img-element */}
             {food.photo && <img src={foodPhotoUrl(food.photo)} alt="" width={600} height={450} loading="lazy" className="size-full object-cover" />}
           </span><span className="min-w-0">
-            <span className="flex flex-wrap items-center gap-inline"><b className="break-words">{locale === 'en' ? food.nameEn || food.name : food.name}</b>
+            <span className="flex flex-wrap items-center gap-inline"><b className="break-words">{name}</b>
               {food.custom && <span className={`tone-lime rounded-md px-inline text-micro font-semibold ${compactOnly}`}>{bt('mine')}</span>}</span>
             {!cards && <span className="hidden text-xs text-muted min-[760px]:block">{t(food.region ?? 'intl')} · {serving}</span>}
           </span>
@@ -49,14 +51,14 @@ export function FoodResults({ foods, cards, favorites, empty, onSelect, onAdd, o
           {(!food.custom || food.uses > 0) && <span className="block">{t('usedInPlans', { count: food.uses })}</span>}
         </td>
         <td className="col-span-4 px-stack"><div className="flex items-start justify-end gap-inline">
-          {!cards && <IconButton aria-label={t('add')} className="hidden min-[760px]:inline-flex" onClick={() => onAdd(food)}><Plus aria-hidden className="size-4" /></IconButton>}
+          {!cards && <IconButton aria-label={actionLabel('add')} className="hidden min-[760px]:inline-flex" onClick={() => onAdd(food)}><Plus aria-hidden className="size-4" /></IconButton>}
           <details className="group">
-          <summary aria-label={t('actions')} className={`${clickableClass} ms-auto grid min-h-12 w-12 list-none place-items-center rounded-control text-muted`}><Ellipsis aria-hidden className="size-4" /></summary>
+          <summary aria-label={actionLabel('actions')} className={`${clickableClass} ms-auto grid min-h-12 w-12 list-none place-items-center rounded-control text-muted`}><Ellipsis aria-hidden className="size-4" /></summary>
           <div className="space-y-stack pb-stack">
             {food.nameEn && food.nameEn !== food.name && <p className="text-xs text-muted"><bdi>{locale === 'en' ? food.name : food.nameEn}</bdi></p>}
             <FoodBadge food={food} />
             <p className="text-xs text-muted">{t(food.region ?? 'intl')} · {food.source_ref && 'fdc_id' in food.source_ref ? `${food.source_ref.fdc_id} · ${food.source_ref.dataset}` : t(foodStatus(food))}</p>
-            <div className="flex flex-wrap gap-inline"><IconButton aria-label={t('details')} onClick={() => onSelect(food)}><Eye aria-hidden className="size-4" /></IconButton><IconButton aria-label={t('add')} className={compactOnly} onClick={() => onAdd(food)}><Plus aria-hidden className="size-4" /></IconButton><IconButton aria-label={t('favorite')} aria-pressed={favorites.has(food.id)} onClick={() => onFavorite(food.id)}><Star aria-hidden className={`size-4 ${favorites.has(food.id) ? 'fill-lime text-lime' : ''}`} /></IconButton></div>
+            <div className="flex flex-wrap gap-inline"><IconButton aria-label={actionLabel('details')} onClick={() => onSelect(food)}><Eye aria-hidden className="size-4" /></IconButton><IconButton aria-label={actionLabel('add')} className={compactOnly} onClick={() => onAdd(food)}><Plus aria-hidden className="size-4" /></IconButton><IconButton aria-label={actionLabel('favorite')} aria-pressed={favorites.has(food.id)} onClick={() => onFavorite(food.id)}><Star aria-hidden className={`size-4 ${favorites.has(food.id) ? 'fill-lime text-lime' : ''}`} /></IconButton></div>
           </div>
         </details></div></td>
       </tr>; })}</tbody>

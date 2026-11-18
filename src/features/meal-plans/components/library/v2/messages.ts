@@ -3,6 +3,7 @@ import { arStd } from './standard/messages';
 export const messages = defineMessages({
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
+    rowAction: '{action} لـ{name}',
     loading: 'بنجيب الأكلات...', filters: 'فلاتر', tabCount: '{label} {count}', usedInPlans: 'مستخدمة في {count} أنظمة',
     mismatch: 'السعرات {kcal} بس الماكروز بتقول حوالي {calculated}. راجع الأرقام.',
     small: 'طبق صغير · {grams} جم', medium: 'طبق وسط · {grams} جم', large: 'طبق كبير · {grams} جم', noRecent: 'لسه مضفتش أكلات بنفسك',
@@ -23,6 +24,7 @@ export const messages = defineMessages({
     examples: 'جرّب', chicken: 'فراخ', bread: 'عيش', meat: 'لحمة', clear: 'امسح الفلاتر', serving: '{name} · {grams} جم', moreFilters: 'فلاتر وطريقة العرض',
   },
   en: {
+    rowAction: '{action} for {name}',
     loading: 'Loading foods...', filters: 'Filters', tabCount: '{label} {count}', usedInPlans: 'Plans using this food: {count}',
     mismatch: '{kcal} kcal, but the macros add up to about {calculated}. Check the numbers.',
     small: 'Small plate · {grams} g', medium: 'Medium plate · {grams} g', large: 'Large plate · {grams} g', noRecent: 'You have not added foods yet',

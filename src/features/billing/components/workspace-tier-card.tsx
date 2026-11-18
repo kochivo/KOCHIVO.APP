@@ -27,7 +27,7 @@ export function WorkspaceTierCard({ tier, packages, busy, count, onEdit, onPacka
     <div className="my-stack divide-y divide-line-soft">{packages.length ? packages.map(item =>
       <Button variant="ghost" key={item.id} disabled={busy} onClick={() => onPackage(item)}
         className="min-h-12 w-full min-w-0 flex-wrap justify-start gap-inline px-inline text-start focus-visible:ring-2 focus-visible:ring-lime">
-        <span className="font-display text-stat font-extrabold tracking-tight tabular-nums">{formatNumber(item.price_egp, locale)}</span>
+        <span className="glass-strong rounded-control font-display text-stat font-extrabold tracking-tight tabular-nums">{formatNumber(item.price_egp, locale)}</span>
         <span className="text-xs text-muted">{catalog('currency')} · {item.kind === 'sessions' ? item.name : durationLabel(item.days, catalog, locale)}</span>
         {duplicateDuration(packages, item) ? <span className="w-full text-xs text-warn">
           {catalog('duplicateWarning')} <span className="underline">{catalog('editDuration')}</span>

@@ -13,8 +13,8 @@ import type { LibraryTemplate } from '../library-types';
 
 export type WorkspaceProgram = LibraryTemplate & { weekdays?: boolean[]; scheduleError?: string };
 
-export function WorkspaceProgramCard({ template, busy, error, onOpen, onAssign, onRetry }: {
-  template: WorkspaceProgram; busy: boolean; error?: string; onOpen: () => void; onAssign: () => void; onRetry: () => void;
+export function WorkspaceProgramCard({ template, busy, error, onOpen, onCopyAndEdit, onAssign, onRetry }: {
+  template: WorkspaceProgram; busy: boolean; error?: string; onOpen: () => void; onCopyAndEdit?: () => void; onAssign: () => void; onRetry: () => void;
 }) {
   const t = useT(messages), lt = useT(libraryMessages), locale = useLocale();
   const letters = t('programDayLetters').split(' ');
@@ -36,7 +36,7 @@ export function WorkspaceProgramCard({ template, busy, error, onOpen, onAssign, 
       <details className="relative ms-auto">
         <summary aria-label={lt('more')} className={`${clickableClass} grid min-h-12 min-w-12 list-none place-items-center rounded-control text-muted`}><Ellipsis aria-hidden className="size-4" /></summary>
         <div className="absolute end-0 z-20 grid min-w-40 rounded-control border border-line bg-surface-raised p-inline">
-          <Button variant="ghost" disabled={busy} onClick={onOpen}>{t('programEdit')}</Button>
+          <Button variant="ghost" disabled={busy} onClick={onCopyAndEdit ?? onOpen}>{t(onCopyAndEdit ? 'copyAndEdit' : 'programEdit')}</Button>
           <Button variant="ghost" disabled={busy} onClick={onAssign}>{t('assignToPlayer')}</Button>
         </div>
       </details>

@@ -14,7 +14,7 @@ const load = vi.hoisted(() => vi.fn());
 vi.mock('server-only', () => ({}));
 vi.mock('./data/assessment-library', () => ({ loadAssessmentLibrary: load }));
 vi.mock('@/core/i18n/server', () => ({ getArabicStyle: async () => 'egyptian' }));
-vi.mock('next/navigation', () => ({ notFound: () => { throw new Error('NOT_FOUND'); }, useRouter: () => ({ push() {} }) }));
+vi.mock('next/navigation', () => ({ redirect: (href: string) => { throw new Error(href); }, notFound: () => { throw new Error('NOT_FOUND'); }, useRouter: () => ({ push() {} }) }));
 const captain = '00000000-0000-7000-8000-000000000201';
 const action = '00000000-0000-7000-8000-000000000202';
 const data: AssessmentLibraryData = { forms: [], metrics: { active: 0, sent: 0, answered: 0, recipients: 0, averageHours: null },
@@ -32,8 +32,16 @@ const visit = (query: { template?: string; draft?: string }) => FormsLibraryPage
   captain, client, locale: 'ar', query, now: new Date(data.now),
 });
 
-it('does not instantiate or autosave a starter on repeated read-only template visits', async () => {
-  for (let i = 0; i < 3; i++) expect(entry(await visit({ template: 'checkin' }))?.props.form).toBeNull();
+it('redirects a bare template link to a fresh draft before reading the library', async () => {
+  const redirects: string[] = [];
+  for (let i = 0; i < 2; i++) {
+    try { await visit({ template: 'checkin' }); }
+    catch (error) { redirects.push(String(error)); }
+  }
+  expect(redirects).toHaveLength(2);
+  expect(redirects[0]).toMatch(/template=checkin&draft=[\da-f-]{36}$/);
+  expect(redirects[1]).not.toBe(redirects[0]);
+  expect(load).not.toHaveBeenCalled();
 });
 
 it('reuses the same draft after a reload and preserves the saved captain edits', async () => {
@@ -60,4 +68,11 @@ it('shows the question count and distinct recipients on a form card', async () =
   expect(html).toContain('2 questions');
   expect(html).toContain('4 players');
   expect(html).toContain('3/8');
+});
+
+it('retains the requested draft when retrying and exposes a separate library link', async () => {
+  load.mockRejectedValueOnce(new Error('offline'));
+  const html = renderToStaticMarkup(await visit({ template: 'checkin', draft: action }));
+  expect(html).toContain(`?template=checkin&amp;draft=${action}`);
+  expect(html).toContain('href="/ar/captain/library/forms"');
 });

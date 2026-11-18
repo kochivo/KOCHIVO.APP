@@ -1,8 +1,7 @@
 import type { ReactNode } from 'react';
 import { useLocale, useT } from '@/core/i18n/client';
 import { formatNumber } from '@/lib/format';
-import { Button, clickableClass } from '@/ui/button';
-import { KoPlus } from '@/ui/icons/ko-plus';
+import { clickableClass } from '@/ui/button';
 import { workspaceMessages } from '../messages';
 import { messages as paymentMessages } from '../payments/messages';
 import { messages } from '../phone/messages';
@@ -12,9 +11,9 @@ import { WorkspaceBillingPhonePlayer } from './workspace-billing-phone-player';
 
 const filters = ['all', 'overdue', 'ending', 'paid'] as const;
 
-export function WorkspaceBillingPhonePayments({ rows, filtered, filter, today, search, summary, onFilter, onOpen, onPick }: {
+export function WorkspaceBillingPhonePayments({ rows, filtered, filter, today, search, summary, onFilter, onOpen }: {
   rows: PaymentRow[]; filtered: PaymentRow[]; filter: PaymentFilter; today: string; search: ReactNode; summary?: ReactNode;
-  onFilter: (value: PaymentFilter) => void; onOpen: (row: PaymentRow) => void; onPick: () => void;
+  onFilter: (value: PaymentFilter) => void; onOpen: (row: PaymentRow) => void;
 }) {
   const t = useT(messages), workspace = useT(workspaceMessages), payment = useT(paymentMessages), locale = useLocale();
   const chip = `${clickableClass} flex min-h-12 min-w-12 shrink-0 items-center justify-center gap-inline whitespace-nowrap rounded-control bg-ink/5 px-inline text-xs text-muted aria-pressed:bg-ink/10 aria-pressed:font-bold aria-pressed:text-ink`;
@@ -24,6 +23,7 @@ export function WorkspaceBillingPhonePayments({ rows, filtered, filter, today, s
       {filters.map(value => <button key={value} type="button" aria-pressed={filter === value} className={chip}
         onClick={() => onFilter(value)}>{t(value)} <bdi>{count(value)}</bdi></button>)}
     </div>
+    {search}
     <div className="glass overflow-hidden rounded-card">
       {filtered.length ? <ul aria-label={workspace('title')}>{filtered.map(row =>
         <WorkspaceBillingPhonePlayer key={row.player.playerId} row={row} today={today} onOpen={() => onOpen(row)} />)}
@@ -34,10 +34,8 @@ export function WorkspaceBillingPhonePayments({ rows, filtered, filter, today, s
         {t('details')}
       </summary>
       <div className="flex flex-wrap items-center gap-stack pb-card">
-        {search}
         <button type="button" aria-pressed={filter === 'noPackage'} onClick={() => onFilter(filter === 'noPackage' ? 'all' : 'noPackage')}
           className={chip}>{workspace('noPackage')} <bdi>{count('noPackage')}</bdi></button>
-        <Button block={false} onClick={onPick}><KoPlus aria-hidden className="size-5" />{t('record')}</Button>
         {summary}
       </div>
     </details>

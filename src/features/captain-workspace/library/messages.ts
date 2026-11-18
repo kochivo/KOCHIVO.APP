@@ -2,6 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
+    unavailable: 'التمرين ده مش متاح', backToLibrary: 'ارجع للمكتبة', lookupFailed: 'مقدرناش ندور على تمرين مشابه',
     videoSection: 'الفيديو', videoUploadLater: 'رفع GIF هييجي بعدين', chooseOne: 'اختار واحدة',
     remove: 'احذف', nameError: 'اكتب الاسم بالعربي، بحد أقصى 60 حرف.', nameEnError: 'الاسم بالإنجليزي أقصى حاجة 120 حرف.',
     targetError: 'العضلة المستهدفة أقصى حاجة 40 حرف.', secondaryError: 'اختار لحد 6 عضلات مساعدة.',
@@ -29,6 +30,7 @@ export const messages = defineMessages({
     next: 'التالي', previous: 'السابق', count: '{count} تمرين',
   },
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? {
+    unavailable: 'هذا التمرين غير متاح', backToLibrary: 'العودة إلى المكتبة', lookupFailed: 'تعذّر البحث عن تمرين مشابه',
     videoSection: 'الفيديو', videoUploadLater: 'سيتاح رفع GIF لاحقًا', chooseOne: 'اختر واحدة',
     remove: 'احذف', nameError: 'أدخل الاسم بالعربية، بحد أقصى 60 حرفًا.', nameEnError: 'الاسم بالإنجليزية بحد أقصى 120 حرفًا.',
     targetError: 'العضلة المستهدفة بحد أقصى 40 حرفًا.', secondaryError: 'اختر حتى 6 عضلات مساعدة.',
@@ -56,6 +58,7 @@ export const messages = defineMessages({
     next: 'التالي', previous: 'السابق', count: '{count} تمرين',
   } as const : undefined; },
   en: {
+    unavailable: 'This exercise is unavailable', backToLibrary: 'Return to library', lookupFailed: 'Could not check for similar exercises',
     videoSection: 'Video', videoUploadLater: 'GIF upload coming later', chooseOne: 'Choose one',
     remove: 'Remove', nameError: 'Enter an Arabic name, up to 60 characters.', nameEnError: 'English name must be at most 120 characters.',
     targetError: 'Target muscle must be at most 40 characters.', secondaryError: 'Choose up to 6 secondary muscles.',

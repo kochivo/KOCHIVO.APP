@@ -4,6 +4,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { expect, it } from 'vitest';
 import { LocaleProvider } from '@/core/i18n/client';
 import { WorkspaceBillingPhoneIncome } from './workspace-billing-phone-income';
+import { WorkspaceBillingPhonePayments } from './workspace-billing-phone-payments';
 
 const source = (file: string) => readFileSync(new URL(file, import.meta.url), 'utf8');
 
@@ -24,4 +25,14 @@ it('renders the collected, expected and waiting amounts with the real progress v
   expect(html).toContain('Of 25,000 expected · 1,500 outstanding');
   expect(html).toContain('aria-valuenow="85.6"');
   expect(html).toContain('aria-valuemax="100"');
+});
+
+it('keeps player search above results and outside the collapsed details', () => {
+  const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' },
+    createElement(WorkspaceBillingPhonePayments, {
+      rows: [], filtered: [], filter: 'all', today: '2026-11-18',
+      search: createElement('input', { type: 'search' }), onFilter() {}, onOpen() {},
+    })));
+  expect(html).toMatch(/type="search".*<details/);
+  expect(html).not.toMatch(/<details.*type="search"/);
 });

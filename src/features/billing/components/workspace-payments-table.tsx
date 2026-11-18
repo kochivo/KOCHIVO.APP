@@ -46,8 +46,8 @@ export function WorkspacePaymentsTable({ players, packages, today, rows = paymen
 
   return <section className="min-w-0 space-y-card-gap">
     {phone && <WorkspaceBillingPhonePayments rows={rows} filtered={filtered} filter={filter} today={today}
-      search={searchField} summary={summary} onFilter={setFilter} onOpen={open} onPick={() => setPicking(true)} />}
-    <PageBarActions><Button onClick={() => setPicking(true)} block={false} className={phone ? 'max-md:hidden!' : undefined}>
+      search={searchField} summary={summary} onFilter={setFilter} onOpen={open} />}
+    <PageBarActions><Button onClick={() => setPicking(true)} block={false} className={phone ? 'max-md:px-stack' : undefined}>
       <KoPlus aria-hidden className="size-5" />{payment('record')}</Button></PageBarActions>
     <header className={`flex flex-wrap items-center justify-between gap-stack${phone ? ' max-md:hidden' : ''}`}>
       <div role="group" aria-label={t('status')} className="glass flex max-w-full gap-inline overflow-x-auto rounded-control p-inline">

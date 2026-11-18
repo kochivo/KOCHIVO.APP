@@ -481,3 +481,12 @@ body:not(:has(.marketing-wrap)) .text-muted { font-weight: 500; }
   }
   .hover-lift, .hover-lift:hover, .hover-lift:active { transform: none; translate: none; transition: none; }
 }
+
+/* The chip surface stays compact while its pointer target extends into the surrounding gap. */
+.captain-chip { position: relative; }
+.captain-chip::after {
+  content: "";
+  position: absolute;
+  inset-inline: min(0px, calc((100% - 48px) / 2));
+  inset-block: min(0px, calc((100% - 48px) / 2));
+}

@@ -22,7 +22,7 @@ export function PlanBuilder({ planId }: { planId: string }) {
   if (state.loading) return <LoadingState variant="detail" />;
   if (!draft) return <div role="alert">{state.error}<Button variant="secondary" onClick={state.reload}>{t('tryAgain')}</Button></div>;
   return <div className="mx-auto grid max-w-6xl gap-card-gap">
-    <Link className="inline-flex min-h-12 items-center text-muted" href={draft.playerId ? `/captain/players/${draft.playerId}/nutrition` : '/captain/templates'}>{draft.playerId ? t('mealPlans') : templateT('myTemplates')}</Link>
+    <Link className="inline-flex min-h-12 items-center text-muted" href={draft.playerId ? `/captain/players/${draft.playerId}/nutrition` : '/captain/library/meal-plans'}>{t('mealPlans')}</Link>
     <header className="flex flex-wrap items-end justify-between gap-card-gap">
       <label className="grid gap-inline"><span className="text-sm text-muted">{t('planName')}</span>
         <input aria-label={t('planName')} disabled={state.busy} maxLength={80} value={draft.title} onChange={event => update(d => ({ ...d, title: event.target.value }))}

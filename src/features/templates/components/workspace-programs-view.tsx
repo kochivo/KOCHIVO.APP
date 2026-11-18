@@ -78,7 +78,7 @@ export function WorkspaceProgramsView(props: ComponentProps<typeof LibraryView>)
       {!visible.length && <p className="glass rounded-card p-card text-sm text-muted">{t('programEmpty')}</p>}
       <ul className="grid grid-cols-1 gap-card-gap max-md:grid-cols-1! min-[760px]:grid-cols-2 @min-[700px]:grid-cols-3 @min-[1000px]:grid-cols-4">
         {visible.map(template => <WorkspaceProgramCard key={template.id} template={template} error={errors[`program-${template.id}`]}
-          busy={busy.includes(`program-${template.id}`)} onOpen={actions(template).onOpen} onAssign={actions(template).onAssign} onRetry={onRetry} />)}
+          busy={busy.includes(`program-${template.id}`)} onOpen={actions(template).onOpen} onCopyAndEdit={actions(template).onCopyAndEdit} onAssign={actions(template).onAssign} onRetry={onRetry} />)}
       </ul>
     </>}
     {picking && <PlayerPicker onClose={() => setPicking(false)} />}

@@ -153,7 +153,8 @@ export function TemplatesScreen({ libraryKind = 'program' }: { libraryKind?: Tem
       loading={loading} error={loadError} createError={createError} creating={creating} busy={busy} errors={errors}
       onCreate={create} onRetry={() => { setLoading(true); setAttempt(value => value + 1); }}
       tools={kind === 'program' ? <GenerateButton /> : undefined} actions={template => ({
-        onOpen: () => template.starter ? kind === 'program' ? duplicate(template, true) : setPreviewing(template) : router.push(templateEditorHref(kind, template.id, true)),
+        onCopyAndEdit: template.starter && kind === 'program' ? () => duplicate(template, true) : undefined,
+        onOpen: () => template.starter ? setPreviewing(template) : router.push(templateEditorHref(kind, template.id, true)),
         onPreview: () => setPreviewing(template), onAssign: () => setSelected(template), onCopy: () => void duplicate(template),
         onRename: title => void edit({ template, title }), onDelete: () => void edit({ template }), onArchive: () => void archive(template),
       })} />

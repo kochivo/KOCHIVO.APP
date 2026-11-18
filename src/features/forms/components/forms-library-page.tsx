@@ -1,6 +1,7 @@
 import 'server-only';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
+import { uuidv7 } from '@/core/offline/ids';
 import { z } from 'zod';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { AppDatabase } from '@/types/app-database';
@@ -32,11 +33,23 @@ export async function FormsLibraryPage({ captain, client, locale, query, now = n
   const style = await getArabicStyle();
   const workspace = captainWorkspaceEnabled(), w = createT(workspaceMessages, locale, style);
   const m = formCopy(locale, style), t = createT(redesign, locale, style), base = `/${locale}/captain/library/forms`;
-  const data = await loadAssessmentLibrary(client, captain, now).catch(() => null);
-  if (!data) return <div role="alert" className="glass rounded-card p-card text-danger">{m.loadError}
-    <Link href={base} prefetch={false} className={buttonClass({ variant: 'secondary', block: false, className: "ms-stack inline-flex items-center min-h-12 px-page-x" })}>{m.retry}</Link></div>;
   if (query.template && query.template !== 'custom' && !templates.some(t => (t.key ?? t.kind) === query.template)) notFound();
   if (query.draft && !z.uuid().safeParse(query.draft).success) notFound();
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(query)) {
+    if (typeof value === 'string') params.set(key, value);
+  }
+  if (query.template && !query.draft && !query.edit) {
+    params.set('draft', uuidv7());
+    redirect(`${base}?${params}`);
+  }
+  const retryHref = params.size ? `${base}?${params}` : base;
+  const recoveryClass = buttonClass({ variant: 'secondary', block: false, className: 'ms-stack inline-flex items-center min-h-12 px-page-x' });
+  const data = await loadAssessmentLibrary(client, captain, now).catch(() => null);
+  if (!data) return <div role="alert" className="glass rounded-card p-card text-danger">{m.loadError}
+    <a href={retryHref} className={recoveryClass}>{m.retry}</a>
+    {params.size > 0 && <Link href={base} className={recoveryClass}>{t('returnToLibrary')}</Link>}
+  </div>;
   const candidate = query.edit ? data.forms.find(f => f.id === query.edit) : query.template && query.draft
     ? await templateCopyForAction(query.template, captain, query.draft, locale) : null;
   const form = candidate ? data.forms.find(f => f.id === candidate.id) ?? candidate : null;
@@ -54,9 +67,6 @@ export async function FormsLibraryPage({ captain, client, locale, query, now = n
         <p className="mt-inline text-row text-muted">{t('subline', { n: active, m: data.waitingReview })}</p></div>
       <TemplateLinkEntry href={`${base}?template=custom`} primary>{m.newForm}</TemplateLinkEntry>
     </header>}
-    {query.template && !query.draft && !query.edit && <TemplateLinkEntry href={`${base}?template=${query.template}`}>
-      {t('useTemplate')}
-    </TemplateLinkEntry>}
     <FormsLibraryEntry key={form?.id ?? 'list'} form={form ?? null} locale={locale} players={data.players.length}
       scheduleContext={{ schedules: data.schedules.filter(s => s.form_id === form?.id), players: data.players, ready: data.forms.some(f => f.id === form?.id) }}>
       {workspace ? <V11LibraryList data={data} locale={locale} style={style} /> : <AssessmentLibraryList data={data} locale={locale} style={style} />}

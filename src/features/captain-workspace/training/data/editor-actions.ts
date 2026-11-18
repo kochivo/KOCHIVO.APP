@@ -50,19 +50,20 @@ export async function saveCustom(input: unknown, id?: string): Promise<{ data: L
     return result.error ? { error: t('saveError') } : { data: { ...result.data, is_own: true } };
   } catch (error) { unstable_rethrow(error); return { error: t('saveError') }; }
 }
-export async function loadExerciseForm(id?: string): Promise<{
-  data: { exercise: LibraryExercise | null; names: ExerciseName[] }; error?: never;
-} | { error: string; data?: never }> {
+export async function loadExerciseForm(id: string): Promise<{ data: LibraryExercise | null; error?: never } | { error: string; data?: never }> {
   const t = await getT(formMessages);
-  if (id !== undefined && !z.uuid().safeParse(id).success) return { error: t('error') };
+  if (!z.uuid().safeParse(id).success) return { data: null };
   try {
     const { client, owner } = await captainClient();
-    let exercise: LibraryExercise | null = null;
-    if (id) {
-      const result = await client.from('exercises').select(exerciseColumns).eq('id', id).eq('owner_id', owner).is('archived_at', null).single();
-      if (result.error || !result.data) return { error: t('error') };
-      exercise = { ...result.data, is_own: true };
-    }
+    const result = await client.from('exercises').select(exerciseColumns).eq('id', id).eq('owner_id', owner).is('archived_at', null).maybeSingle();
+    if (result.error) return { error: t('error') };
+    return { data: result.data ? { ...result.data, is_own: true } : null };
+  } catch (error) { unstable_rethrow(error); return { error: t('error') }; }
+}
+export async function loadExerciseNames() {
+  const t = await getT(formMessages);
+  try {
+    const { client } = await captainClient();
     const names: ExerciseName[] = [];
     for (let offset = 0; ; offset += 500) {
       const result = await client.from('exercises').select('id,name_ar,name_en').is('archived_at', null).order('id').range(offset, offset + 499);
@@ -70,7 +71,7 @@ export async function loadExerciseForm(id?: string): Promise<{
       names.push(...result.data);
       if (result.data.length < 500) break;
     }
-    return { data: { exercise, names } };
+    return { data: names };
   } catch (error) { unstable_rethrow(error); return { error: t('error') }; }
 }
 export async function loadLibraryExercise(id: string) {

@@ -3,7 +3,7 @@ import { defineMessages } from '@/core/i18n/messages';
 import { arStd, workspaceArStd } from './standard/messages';
 
 export const workspaceMessages = defineMessages({
-  get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? workspaceArStd : undefined; },
+  get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? { ...workspaceArStd, newCatalogTier: 'فئة جديدة' } : undefined; },
   ar: {
     attention: 'محتاج منك', intro: 'مين دفع، ومين باقي عليه، ومين اشتراكه بيخلص',
     monthIncome: 'دخل {month}', expected: 'من {amount} متوقعة', withoutPackages: '{count} من غير باقة', activeSubscriptions: 'اشتراكات شغالة',
@@ -19,7 +19,7 @@ export const workspaceMessages = defineMessages({
     fallback: 'اتقبل الطلب. العرض خلص؛ راجع تفاصيل الاشتراك', after: 'بعد {n} يوم',
     noRequests: 'مفيش دفعات مستنية تأكيد', noExpiring: 'مفيش اشتراكات بتخلص قريب',
     player: 'اللاعب', amount: 'المبلغ', date: 'التاريخ', status: 'الحالة', latest: 'آخر دفعة لكل لاعب؛ اضغط اسمه لكل الدفعات',
-    newPackage: 'باقة جديدة', edit: 'عدّل', featured: 'مميزة', offers: 'العروض', newOffer: '+ عرض جديد',
+    newCatalogTier: 'فئة جديدة', newPackage: 'باقة جديدة', edit: 'عدّل', featured: 'مميزة', offers: 'العروض', newOffer: '+ عرض جديد',
     back: 'رجوع', percent: '%', bonus: '+',
   },
   en: {
@@ -37,7 +37,7 @@ export const workspaceMessages = defineMessages({
     fallback: 'Request approved. The offer expired; review the subscription', after: 'In {n} days',
     noRequests: 'No payments awaiting confirmation', noExpiring: 'No subscriptions ending soon',
     player: 'Player', amount: 'Amount', date: 'Date', status: 'Status', latest: 'Latest payment per player; select a name for all payments',
-    newPackage: 'New package', edit: 'Edit', featured: 'Featured', offers: 'Offers', newOffer: '+ New offer',
+    newCatalogTier: 'New tier', newPackage: 'New package', edit: 'Edit', featured: 'Featured', offers: 'Offers', newOffer: '+ New offer',
     back: 'Back', percent: '%', bonus: '+',
   },
 });

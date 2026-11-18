@@ -33,7 +33,7 @@ it('hides player actions and saves a nutrition template', () => {
  expect(html).toContain('>Save template</button>');
  expect(html).not.toContain('Activate for player');
  expect(html).not.toContain('Save as template');
- expect(html).toMatch(/href="\/captain\/templates"[^>]*>My templates<\/a>/);
+ expect(html).toMatch(/href="\/captain\/library\/meal-plans"[^>]*>Meal plans<\/a>/);
 });
 it('links empty player nutrition plans to templates', () => {
  state.values = [[]];
