@@ -1,7 +1,7 @@
 import { createElement } from 'react';
 import type * as React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { beforeEach, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { LocaleProvider } from '@/core/i18n/client';
 vi.mock('server-only', () => ({}));
 
@@ -16,6 +16,7 @@ vi.mock('react', async original => {
 vi.mock('next/navigation', () => ({ useRouter: () => ({ push() {}, refresh() {} }) }));
 vi.mock('@/ui/toast', () => ({ useToast: () => ({ success() {}, error() {} }) }));
 beforeEach(() => { state.values = []; state.index = 0; });
+afterEach(() => vi.unstubAllEnvs());
 const render = (element: React.ReactElement) => renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' }, element));
 import { ProgressScreen } from './components/progress-screen';
 import { LineChart } from './components/line-chart';
@@ -29,4 +30,16 @@ it('offers the first workout and first check-in from empty progress', () => {
 });
 it('gives an empty chart a way to record measurements', () => {
  expect(render(createElement(LineChart, { points: [], title: 'Weight', unit: 'kg' }))).toMatch(/href="\/player\/progress"[^>]*>Send weekly check-in<\/a>/);
+});
+it('orders the v4 weight, strength, muscle and record sections with no weight yet', () => {
+ vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
+ state.values = ['2026-11-03', 0, false, [], false];
+ const html = render(createElement(ProgressScreen, { analytics: createElement('p', null, 'Muscle data') }));
+ expect(html.match(/data-progress-section="[^"]+"/g)).toEqual([
+   'data-progress-section="weight"', 'data-progress-section="strength"', 'data-progress-section="muscles"', 'data-progress-section="records"',
+ ]);
+ expect(html).toContain('Log your first weight');
+ expect(html).toContain('My photos');
+ expect(html).toContain('Check-in history');
+ expect(html).toContain('href="/player/history"');
 });

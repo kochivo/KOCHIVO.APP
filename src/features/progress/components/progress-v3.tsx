@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
-import Link from 'next/link';
-import { ChevronLeft, Scale } from 'lucide-react';
+import dynamic from 'next/dynamic';
+import { KoPlus } from '@/ui/icons';
 import { useLocale, useT } from '@/core/i18n/client';
 import { formatNumber } from '@/lib/format';
 import { daysBetween } from '@/lib/dates';
@@ -12,20 +12,24 @@ import type { StrengthHistory } from '../data/strength';
 import { mainLifts, topSets, trendDelta } from '../trends';
 import { messages } from '../player-v3-messages';
 import { messages as legacyMessages } from '../messages';
+import { messages as v4Messages } from '../player-v4/messages';
 import { rangePoints, weightChange } from './progress-v3-model';
 import { LineChart } from './line-chart';
-import { Button, buttonClass } from '@/ui/button';
+import { Button } from '@/ui/button';
 import { StatStrip } from '@/ui/stat-strip';
 import type { StatStripItem } from '@/ui/stat-strip';
 
-export function ProgressV3({ today, checkins, strength, count, checkinError, strengthError, retry, onLog }: {
+const CoachButton = dynamic(() => import('@/features/player-shell').then(module => module.CoachButton), { ssr: false });
+
+export function ProgressV3({ today, checkins, strength, count, checkinError, strengthError, retry, onLog, logDisabled }: {
   today: string; checkins?: CheckIn[]; strength?: StrengthHistory; count?: number;
-  checkinError: boolean; strengthError: boolean; retry: () => void; onLog: () => void;
+  checkinError: boolean; strengthError: boolean; retry: () => void; onLog: () => void; logDisabled?: boolean;
 }) {
   const t = useT(messages);
   const old = useT(legacyMessages);
+  const v4t = useT(v4Messages);
   const locale = useLocale();
-  const [months, setMonths] = useState(1);
+  const [months, setMonths] = useState(2);
   const [selected, setSelected] = useState('');
   const lifts = mainLifts(strength?.sets ?? []);
   const active = lifts.includes(selected) ? selected : lifts[0] ?? '';
@@ -45,32 +49,31 @@ export function ProgressV3({ today, checkins, strength, count, checkinError, str
     value: number(volumeSets.reduce((total, set) => total + (set.weight_kg ?? 0) * (set.reps ?? 0), 0)), unit: t('kg') });
   const card = 'glass flex flex-col rounded-card p-card';
   return <>
-    <header className="flex items-center justify-between gap-inline">
-      <h1 className="text-h font-black">{t('title')}</h1>
-      <div role="group" aria-label={t('range')} className="glass flex rounded-control p-inline">
-        {([1, 3] as const).map(value => <button key={value} type="button" aria-pressed={months === value} onClick={() => setMonths(value)} className={`min-h-12 rounded-control px-stack text-xs ${months === value ? 'bg-surface-raised font-extrabold text-ink' : 'text-muted'}`}>{t(value === 1 ? 'month' : 'quarter')}</button>)}
-      </div>
+    <header className="flex min-h-12 items-center gap-inline">
+      <div className="min-w-0 flex-1"><h1 className="text-h font-extrabold">{v4t('title')}</h1>
+        <p className="text-xs text-muted">{v4t(months === 2 ? 'recent' : 'six')}</p></div>
+      <Button type="button" variant="secondary" aria-label={t('log')} onClick={onLog} disabled={logDisabled} className="size-12 shrink-0 px-0"><KoPlus aria-hidden className="size-5" /></Button>
+      <CoachButton />
     </header>
     <StatStrip items={stats} className={`${stats.length === 3 ? 'max-sm:grid-cols-3!' : ''} [&>div]:px-stack [&>div>div]:flex-wrap [&_.truncate]:whitespace-normal [&_p]:flex-wrap [&_p>span:first-child]:wrap-anywhere [&_p>span:first-child]:text-title`} />
-    <section className={`${card} gap-inline`} aria-label={t('weight')}>
-      <h2 className="text-row text-muted">{t('weight')}</h2>
-      {latest != null && <div className="flex items-baseline gap-stack"><span dir="ltr" className="glass-strong rounded-xl font-display text-stat-wide leading-none font-extrabold">{number(latest)}</span><span className="text-row text-muted">{t('kg')}</span>
-        {change && <span className="ms-auto flex h-[30px] items-center rounded-[15px] bg-water/15 px-stack text-xs font-bold text-water">{t(change.direction, { value: number(change.amount) })}</span>}</div>}
+    <section data-progress-section="weight" className={`${card} gap-inline`} aria-label={t('weight')}>
+      <div className="flex flex-wrap items-center justify-between gap-inline">
+        <h2 className="text-row font-bold">{t('weight')}</h2>
+        <div role="group" aria-label={t('range')} className="recessed flex rounded-control">
+          {([2, 6] as const).map(value => <Button key={value} type="button" variant={months === value ? 'secondary' : 'ghost'}
+            aria-pressed={months === value} onClick={() => setMonths(value)} className="px-stack text-xs">{v4t(value === 2 ? 'two' : 'six')}</Button>)}
+        </div>
+      </div>
       {checkinError ? <ErrorState message={old('couldntLoadCheckinsCheckYourConnection')} retryLabel={old('tryAgain')} onRetry={retry} /> : !checkins ? <LoadingState /> : weight.length ? <LineChart points={weight} title={t('weight')} unit={t('kg')} compact="lime" showDates today={today} /> : <p className="py-page-y text-sm text-muted">{t('noWeight')}</p>}
     </section>
-    <section className={`${card} gap-stack`} aria-label={t('strength')}>
-      <h2 className="text-row text-muted">{t('strength')}</h2>
-      <div className="flex flex-wrap gap-inline">{lifts.map(lift => <button key={lift} type="button" aria-pressed={active === lift} onClick={() => setSelected(lift)} className={`min-h-12 rounded-full px-card text-xs ${active === lift ? 'bg-lime font-extrabold text-on-lime' : 'border border-line-soft text-muted'}`}>{strength?.names[lift] || old('exercise')}</button>)}</div>
+    <section data-progress-section="strength" className={`${card} gap-stack`} aria-label={t('strength')}>
+      <h2 className="text-row font-bold">{t('strength')}</h2>
+      {lifts.length > 0 && <div className="flex flex-wrap gap-inline">{lifts.map(lift => <Button key={lift} type="button"
+        variant={active === lift ? 'secondary' : 'ghost'} aria-pressed={active === lift} onClick={() => setSelected(lift)} className="text-xs">{strength?.names[lift] || old('exercise')}</Button>)}</div>}
       {strengthError ? <ErrorState message={old('couldntLoadYourWorkouts')} retryLabel={old('tryAgain')} onRetry={retry} /> : !strength ? <LoadingState /> : top.length ? <>
         <div className="flex items-baseline gap-inline"><span dir="ltr" className="glass-strong rounded-xl font-display text-stat font-extrabold">{number(Math.max(...top.map(point => point.value)))}</span><span className="text-row text-muted">{t('kg')}</span>{delta !== null && <span className="ms-auto text-row font-bold text-lime">{t('delta', { value: `${delta >= 0 ? '+' : '−'}${number(Math.abs(delta))}` })}</span>}</div>
         <LineChart points={top} title={t('strength')} unit={t('kg')} compact="lime" />
       </> : <p className="py-page-y text-sm text-muted">{t('noStrength')}</p>}
     </section>
-    <div className="glass flex items-center justify-between gap-stack rounded-card px-card py-stack">
-      <Scale aria-hidden className="size-5 shrink-0 text-lime" />
-      <h2 className="min-w-0 flex-1 text-sm font-bold">{old('sendWeeklyCheckin')}</h2>
-      <Button type="button" onClick={onLog} variant="secondary" className="min-h-12 text-row font-bold">{t('log')}</Button>
-    </div>
-    <Link href="/player/history" className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-[60px] items-center gap-stack bg-surface px-page-x text-sm" })}><span className="flex-1">{t('history')}</span><ChevronLeft aria-hidden size={18} className="text-muted rtl:rotate-0 ltr:rotate-180" /></Link>
   </>;
 }

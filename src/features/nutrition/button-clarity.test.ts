@@ -35,11 +35,9 @@ it.each([{ completed: [], next: 0 }, { completed: ['first'], next: 1 }, { comple
     data.completed = completed;
     const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' }, createElement(NutritionScreen)));
     const lime = html.match(/<button[^>]*control-primary /g) ?? [];
-    expect(lime).toHaveLength(0);
+    expect(lime).toHaveLength(next === null ? 0 : 1);
     expect(html.match(/role="img" aria-label="Eaten"/g) ?? []).toHaveLength(completed.length);
     expect(html.match(/aria-label="Ate /g) ?? []).toHaveLength(3 - completed.length);
-    expect(html.match(/· Now/g) ?? []).toHaveLength(next === null ? 0 : 1);
     if (next !== null) expect(html).toContain(`aria-label="Ate ${['first', 'second', 'third'][next]}"`);
-    expect(html.match(/disabled=""[^>]*class="[^"]*min-h-14/g) ?? []).toHaveLength(2);
   },
 );

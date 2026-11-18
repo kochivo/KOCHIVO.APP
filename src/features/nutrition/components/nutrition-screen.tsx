@@ -4,7 +4,7 @@ import { messages } from '../messages';
 
 import Link from 'next/link';
 import { buttonClass } from '@/ui/button';
-import { Utensils } from 'lucide-react';
+import { Package, Utensils } from 'lucide-react';
 import { Button, EmptyState, ErrorState, LoadingState, SyncPill } from '@/ui';
 import { useNutritionSnapshot } from '../hooks/use-nutrition-snapshot';
 import { useMealLogs } from '../hooks/use-meal-logs';
@@ -13,23 +13,26 @@ import { filterMeals } from '../day-type-filter';
 import { MacroRing } from './macro-ring';
 import { MealCard } from './meal-card';
 import { starterText } from '@/lib/starter-text';
-import { PlayerSupplements } from '@/features/supplements';
+import { formatNumber } from '@/lib/format';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
-import { MacroTiles } from './macro-tiles';
-import { FoodActions } from './food-actions';
+import { FoodMacroSummary } from './food-macro-summary';
 import { FoodWater } from './food-water';
 import { messages as v6Messages } from '../v6-messages';
+import { messages as v4Messages } from '../player-v4/messages';
 import { useCallback, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useRamadan } from '@/lib/use-ramadan';
 const RamadanMeals = dynamic(() => import('./ramadan-meals').then(m => m.RamadanMeals));
 const DayType = dynamic(() => import('./day-type').then(module => module.DayType), { ssr: false });
 const BudgetSummary = dynamic(() => import('./budget-summary').then(module => module.BudgetSummary));
+const CoachButton = dynamic(() => import('@/features/player-shell').then(module => module.CoachButton), { ssr: false });
+const PlayerSupplements = dynamic(() => import('@/features/supplements').then(module => module.PlayerSupplements), { loading: () => <LoadingState /> });
 
 export function NutritionScreen() {
   const t = useT(messages);
   const ramadan = useRamadan();
   const v6t = useT(v6Messages);
+  const v4t = useT(v4Messages);
   const [day, setDay] = useState<{ today: string; rest: boolean | null | undefined }>();
   const locale = useLocale();
   const v6 = captainWorkspaceEnabled();
@@ -38,12 +41,18 @@ export function NutritionScreen() {
   const rest = day?.today === today ? day.rest : undefined;
   const setRest = useCallback((rest: boolean | null | undefined) => setDay({ today, rest }), [today]);
   const visible = snapshot ? { ...snapshot, meals: filterMeals(snapshot.meals, rest, logs ?? [], today) } : null;
+  const planTitle = snapshot ? starterText(snapshot.title, locale) : '';
+  const calories = v6 && visible ? targetsOf(visible).kcal : 0;
   const sync = <SyncPill state={!online ? 'offline' : parked && parked > 0 ? 'attention' : pending === undefined || pending > 0 ? 'pending' : 'synced'} pending={pending} onRetry={retrySync} />;
+  const budget = status !== 'error' && status !== 'loading' && visible?.meals.length && logs
+    ? <BudgetSummary showShopping={!v6} meals={visible.meals} swaps={Object.assign({}, ...logs.filter(log => log.log_date === today && !log.deleted_at).map(log => log.swaps))} />
+    : null;
   return <main data-mood={v6 && rest ? 'rest' : undefined} className={v6 ? 'mx-auto flex max-w-lg flex-col gap-card-gap px-page-x pt-card pb-[104px]' : 'mx-auto max-w-lg space-y-card-gap px-page-x pt-section pb-32'}>
-    {v6 ? <header className="flex items-center justify-between gap-stack">
-      <div className="min-w-0"><h1 className="text-h font-extrabold">{v6t('today')}</h1>
-        {snapshot && <p className="text-xs text-muted">{starterText(snapshot.title, locale)}</p>}</div>
-      <Link href="/player/nutrition/shopping" className={buttonClass({ variant: 'secondary' })}>{v6t('shopping')}</Link>
+    {v6 ? <header className="flex min-h-12 items-center gap-inline">
+      <div className="min-w-0 flex-1"><h1 className="text-h font-extrabold">{v4t('food')}</h1>
+        {snapshot && <p className="text-xs text-muted">{calories > 0 ? v4t('target', { plan: planTitle, goal: formatNumber(calories, locale) }) : planTitle}</p>}</div>
+      <Link href="/player/nutrition/shopping" aria-label={v6t('shopping')} className={buttonClass({ variant: 'secondary', className: 'size-12 shrink-0 px-0' })}><Package aria-hidden className="size-5" /></Link>
+      <CoachButton />
     </header> : <header className="flex flex-wrap items-center justify-between gap-stack">
       <div><h1 className="text-2xl font-extrabold">{t(v6 ? 'todaysNutrition' : 'todaysMeals')}</h1>
         {snapshot && <p className="text-sm text-muted">{starterText(snapshot.title, locale)}</p>}{!v6 && <DayType key={today} today={today} playerId={snapshot?.player_id} onRestChange={setRest} />}</div>
@@ -55,9 +64,9 @@ export function NutritionScreen() {
           {stale && <div className="flex items-center justify-between gap-inline text-sm text-muted">
             <p>{t('lastUpdatedAWhileAgo')}</p><Button variant={v6 ? 'secondary' : 'ghost'} onClick={retry}>{t('tryAgain')}</Button>
           </div>}
-          {v6 ? <MacroTiles eaten={eatenTotals(visible, logs, today)} target={targetsOf(visible)} /> : <MacroRing eaten={eatenTotals(visible, logs, today)} target={targetsOf(visible)} />}
-          <BudgetSummary showShopping={!v6} meals={visible.meals} swaps={Object.assign({}, ...logs.filter(log => log.log_date === today && !log.deleted_at).map(log => log.swaps))} />
-          {ramadan.data?.active ? <RamadanMeals meals={visible.meals} logs={logs} today={today} title={visible.title} /> : v6 ? <ol className="flex list-none flex-col gap-card-gap" aria-label={v6t('meals')}>{visible.meals.map(meal => <li key={`${today}-${meal.id}`}>
+          {v6 ? <FoodMacroSummary eaten={eatenTotals(visible, logs, today)} target={targetsOf(visible)} /> : <MacroRing eaten={eatenTotals(visible, logs, today)} target={targetsOf(visible)} />}
+          {!v6 && budget}
+          {ramadan.data?.active ? <RamadanMeals meals={visible.meals} logs={logs} today={today} title={visible.title} /> : v6 ? <ol data-food-section="meals" className="flex list-none flex-col gap-card-gap" aria-label={v6t('meals')}>{visible.meals.map(meal => <li key={`${today}-${meal.id}`}>
             <MealCard meal={meal} today={today} planTitle={visible.title}
               primary={meal.id === visible.meals.find(candidate => candidate.items.length > 0 && !logs.some(row => row.meal_id === candidate.id && row.log_date === today && row.completed_at && !row.deleted_at))?.id}
               log={logs.find(row => row.meal_id === meal.id && row.log_date === today && !row.deleted_at)} />
@@ -66,8 +75,8 @@ export function NutritionScreen() {
           </li>)}</ul>}
         </>}
     {v6 && <>
-      <FoodWater playerId={snapshot?.player_id} today={today} />
-      <FoodActions />
+      <div data-food-section="water"><FoodWater playerId={snapshot?.player_id} today={today} /></div>
+      {budget}
       <div className="flex flex-wrap items-center justify-between gap-stack">
         <DayType key={today} today={today} playerId={snapshot?.player_id} onRestChange={setRest} />{sync}
       </div>

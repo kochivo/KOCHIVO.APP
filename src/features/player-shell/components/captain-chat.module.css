@@ -1,0 +1,62 @@
+/* The player shell owns the navigation. Hide it only while a workspace captain screen is mounted. */
+body:has(.focus) :global(nav:has([data-tour="/player/assessments"])),
+body:has(.focus) :global([data-floating-fab]) {
+  display: none;
+}
+
+.focus {
+  padding-block-end: max(var(--safe-bottom), var(--spacing-stack));
+}
+
+:has(> .focus) {
+  --player-content-clearance: 0px;
+}
+
+.chat {
+  height: calc(100dvh - var(--safe-top) - var(--spacing-stack));
+}
+
+.thread div:has(> ol) {
+  padding-block-end: 0;
+}
+
+.thread ol > li > div:has(> p) {
+  border-radius: var(--radius-control);
+  font-size: var(--text-row);
+}
+
+.thread ol > li:global(.self-end) > div:has(> p) {
+  background-image: linear-gradient(var(--color-lime-top), var(--color-lime-bottom));
+}
+
+.composer [data-chat-composer] {
+  position: static;
+}
+
+.composer [data-chat-composer] input,
+.composer [data-chat-composer] button {
+  border-radius: var(--radius-control);
+}
+
+.composer [data-chat-composer] button:has(:global(.lucide-mic)) {
+  background: var(--color-lime);
+  color: var(--color-on-lime);
+}
+
+.renewal > section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-stack);
+}
+
+.renewal > section > button:first-child {
+  min-block-size: 3.5rem;
+  inline-size: 100%;
+  margin-block: 0;
+}
+
+.renewal > section > button:first-child:not(:disabled) {
+  background: linear-gradient(var(--color-lime-top), var(--color-lime-bottom));
+  box-shadow: var(--shadow-control-primary);
+  color: var(--color-on-lime);
+}

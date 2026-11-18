@@ -24,15 +24,17 @@ it('binds identity, plan, subscription and existing rank, retaining editing and 
   const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' }, createElement(PlayerAccount, {
     profile, onProfileSave() {}, profileForm: createElement('form', { 'aria-label': 'Profile and timezone editor' }),
     install: createElement('button', null, 'Install app'), signOut: createElement('button', null, 'Sign out'),
+    privacy: [createElement('button', { key: 'export' }, 'Export data'), createElement('button', { key: 'delete' }, 'Delete account')],
   }, [createElement(GlassToggle, { key: 'glass' }), createElement(ThemeSwitch, { key: 'theme' }),
-      createElement(TourReplay, { key: 'tour', role: 'player' }), createElement('button', { key: 'export' }, 'Export data'),
-      createElement('button', { key: 'delete' }, 'Delete account')])));
+      createElement(TourReplay, { key: 'tour', role: 'player' })])));
   for (const content of ['Actual player', 'Real captain', 'Actual plan', '15 ديسمبر', 'بطل', 'يوم ورا بعض',
     'اللغة', 'الشكل', 'فكّرني بالتمرين', 'الوزن بـ', 'ازاي تستخدم التطبيق', 'المزيد', 'عربي', 'English',
     'Profile and timezone editor', 'Install app', 'Export data', 'Delete account', 'Sign out', 'KO']) expect(html).toContain(content);
   expect(html).not.toContain('فصحى');
   expect(html).toContain('aria-label="غيّر صورة البروفايل"');
   expect(html).toContain('href="/player"');
+  expect(html).toContain('href="/ar/player/captain/profile"');
+  expect(html).toMatch(/<details[^>]*group\/privacy[^>]*>.*الخصوصية.*Export data.*Delete account.*<\/details>/);
   expect(html).toContain('glass overflow-hidden rounded-card');
   expect(html).toContain('min-h-14');
   expect(html).toContain('text-danger!');

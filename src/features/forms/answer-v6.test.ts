@@ -14,11 +14,12 @@ const data = { request: { id: 'r', player_id: 'p', answered_at: null, reviewed_a
     label_ar: 'صوّر نفسك من قدام', label_en: 'Front photo', required: true, options: [], maps_to: null, alert_on: null }],
 } as unknown as RequestData;
 
-it('shows a thin progress bar and one primary action beside the question card', () => {
+it('shows the progress bar and step count in the header and a single primary action', () => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
   const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' }, createElement(AnswerFlow, { data, locale: 'en' })));
   expect(html).toMatch(/role="progressbar"[^>]*class="h-1\b/);
-  expect(html).toMatch(/<fieldset[^>]*class="glass rounded-card/);
+  expect(html).toMatch(/<header.*role="progressbar".*1 of 1.*<\/header>/);
+  expect(html).toContain('Question 1');
   expect(html.match(/\bcontrol-primary\b/g)).toHaveLength(1);
 });
 

@@ -1,0 +1,16 @@
+body:has(.flow) nav:has([data-tour="/player/assessments"]),
+body:has(.flow) [data-floating-fab] {
+  display: none;
+}
+
+:has(> main > .flow) {
+  --player-content-clearance: 0px;
+}
+
+main:has(> .flow) {
+  padding-block-end: max(var(--safe-bottom), var(--spacing-card));
+}
+
+.flow {
+  min-height: calc(100dvh - var(--safe-top) - var(--spacing-stack) - var(--spacing-card) - max(var(--safe-bottom), var(--spacing-card)));
+}

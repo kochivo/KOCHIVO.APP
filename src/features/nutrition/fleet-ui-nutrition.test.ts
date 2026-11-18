@@ -11,6 +11,21 @@ vi.mock('./hooks/use-nutrition-snapshot', () => ({ useNutritionSnapshot: () => (
 vi.mock('./hooks/use-meal-logs', () => ({ useMealLogs: () => [] }));
 vi.mock('@/features/supplements', () => ({ PlayerSupplements: () => null }));
 const render = (locale: 'ar' | 'en') => renderToStaticMarkup(createElement(LocaleProvider, { locale }, createElement(NutritionScreen)));
+it('orders the v4 calorie summary, meals and water, and keeps the empty plan message', () => {
+  vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
+  try {
+    state.status = 'ready';
+    state.snapshot = { id: 'active', player_id: 'player', plan_id: 'plan', title: 'Plan',
+      meals: [{ id: 'lunch', name: 'Lunch', position: 1, items: [] }],
+      targets: { kcal: 1500, protein: 120, carbs: 150, fat: 50 } };
+    const html = render('en');
+    expect(html.match(/data-food-section="[^"]+"/g)).toEqual([
+      'data-food-section="macros"', 'data-food-section="meals"', 'data-food-section="water"',
+    ]);
+    state.snapshot = null;
+    expect(render('en')).toContain('href="/player/captain"');
+  } finally { vi.unstubAllEnvs(); }
+});
 it.each(['ar', 'en'] as const)('offers coach contact for absent and empty meal plans in %s', locale => {
   state.status = 'empty'; state.snapshot = null;
   expect(render(locale)).toContain('href="/player/captain"');

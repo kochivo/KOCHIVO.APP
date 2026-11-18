@@ -1,0 +1,3 @@
+main:has(> .account) {
+  padding-block: var(--spacing-stack) var(--spacing-card);
+}

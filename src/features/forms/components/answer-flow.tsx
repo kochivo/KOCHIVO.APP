@@ -17,10 +17,11 @@ import type { QuestionValue } from './question-field';
 import { useArabicStyle, useT } from '@/core/i18n/client';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { messages as v6Messages } from '../v6-messages';
-import { Camera, X } from 'lucide-react';
+import { Camera, ChevronLeft } from 'lucide-react';
 import { secondaryButtonClass } from '@/ui/secondary-button-class';
 import { Button } from '@/ui/button';
 import { ProgressBar } from '@/ui/progress-bar';
+import css from './answer-flow.module.css';
 
 export function AnswerFlow({data,locale}:{data:RequestData;locale:Locale}) {
   const CameraIcon = captainWorkspaceEnabled() ? KoCamera : Camera;
@@ -80,23 +81,24 @@ export function AnswerFlow({data,locale}:{data:RequestData;locale:Locale}) {
     <Link href={`/${locale}/player`} className="flex min-h-12 items-center text-lime">{t('home')}</Link></section>;
   if (data.request.reviewed_at) return <p>{t('reviewed')}</p>;
   if (!q) return <p>{t('unavailable')}</p>;
-  return <section className={v6 ? 'space-y-card-gap' : 'glass-strong space-y-card-gap rounded-card p-section'} aria-busy={state === 'sending' || uploading}>
+  const progress = v6t('progress', { n: step + 1, total: data.questions.length });
+  return <section className={v6 ? `${css.flow} flex flex-col gap-card-gap` : 'glass-strong space-y-card-gap rounded-card p-section'} aria-busy={state === 'sending' || uploading}>
     {v6 ? <header className="flex items-center gap-stack">
-      <Link href={`/${locale}/player`} aria-label={v6t('close')} className={`${secondaryButtonClass} size-12 shrink-0 !p-0`}><X aria-hidden className="size-5" /></Link>
-      <div className="min-w-0 flex-1">
+      <Link href={`/${locale}/player`} aria-label={v6t('close')} className={`${secondaryButtonClass} size-12 shrink-0 !p-0`}><ChevronLeft aria-hidden className="dir-icon size-5" /></Link>
+      <div className="min-w-0 flex-1 space-y-inline">
         <h1 className="text-md font-bold">{data.title}</h1>
-        <p className="text-xs text-faint">{v6t('progress', { n: step + 1, total: data.questions.length })}</p>
+        <ProgressBar thin value={step + 1} max={data.questions.length} aria-label={data.title} aria-valuetext={progress} />
       </div>
+      <p className="shrink-0 text-xs text-muted">{progress}</p>
     </header> : <h1 className="text-2xl font-bold">{data.title}</h1>}
-    {v6 ? <ProgressBar thin value={step + 1} max={data.questions.length} aria-label={data.title}
-      aria-valuetext={v6t('progress', { n: step + 1, total: data.questions.length })} />
-      : /* iOS paints native <progress> in system green and ignores accent-color. */
+    {!v6 && /* iOS paints native <progress> in system green and ignores accent-color. */
       <div role="progressbar" aria-label={data.title} aria-valuemin={1} aria-valuemax={data.questions.length} aria-valuenow={step+1}
         className="h-2 w-full overflow-hidden rounded-full bg-surface-raised">
         <div className="h-full rounded-full bg-lime transition-[width]" style={{ width: `${((step+1)/data.questions.length)*100}%` }} />
       </div>}
-    <form onSubmit={e => {e.preventDefault();void advance();}}>
-      <fieldset disabled={state === 'sending' || uploading}>
+    <form className={v6 ? 'flex flex-1 flex-col' : undefined} onSubmit={e => {e.preventDefault();void advance();}}>
+      <fieldset className={v6 ? 'flex min-w-0 flex-1 flex-col gap-stack' : undefined} disabled={state === 'sending' || uploading}>
+        {v6 && <p className="pt-card text-xs text-muted">{v6t('question', { n: step + 1 })}</p>}
         <Wrap v6={v6}>
         {v6 && q.type === 'photos' ? <div className="space-y-card-gap">
           <h2 className="font-display text-h font-semibold">{locale === 'en' ? q.label_en.trim() || q.label_ar : q.label_ar}</h2>
@@ -113,9 +115,9 @@ export function AnswerFlow({data,locale}:{data:RequestData;locale:Locale}) {
         {uploading && <p role="status">{t('upload')}</p>}
         {error && <p role="alert" className="py-stack text-danger">{error}</p>}
         </Wrap>
-        <div className="mt-card-gap flex gap-stack">
+        <div className={v6 ? 'mt-auto flex gap-stack pt-card' : 'mt-card-gap flex gap-stack'}>
           {(step>0 || v6) && <Button type="button" onClick={() => {if (step > 0) setStep(step-1);setError('');}} disabled={v6 && step === 0}
-            variant="secondary" block={false} className={v6 ? "min-h-12 px-page-x" : "min-h-12 px-page-x"}>{v6 ? v6t('back') : t('previous')}</Button>}
+            variant="secondary" block={false} className="min-h-12 px-page-x">{v6 ? v6t('back') : t('previous')}</Button>}
           <Button type="submit" variant="primary" size={v6 ? 'lg' : 'md'} block={false} className={v6 ? "flex-1 px-page-x" : "min-h-12 flex-1 px-page-x font-bold"}>
             {state === 'sending' ? t('submitting') : error ? t('retry') : step === data.questions.length-1 ? t('finish') : t('next')}</Button>
         </div>
@@ -125,7 +127,6 @@ export function AnswerFlow({data,locale}:{data:RequestData;locale:Locale}) {
   </section>;
 }
 
-// The flag-off check-in keeps its original markup; only the workspace look wraps each question in a card.
 function Wrap({ v6, children }: { v6: boolean; children: ReactNode }) {
-  return v6 ? <fieldset className={'glass rounded-card p-card [&_label:has(:checked)]:border-lime [&_label:has(:checked)]:bg-lime-soft [&_label:has(:checked)]:text-lime [&_label:has(:focus-visible)]:outline-2 [&_label:has(:focus-visible)]:outline-lime'}>{children}</fieldset> : <>{children}</>;
+  return v6 ? <div className="min-w-0 [&_label:has(:focus-visible)]:outline-2 [&_label:has(:focus-visible)]:outline-lime">{children}</div> : <>{children}</>;
 }

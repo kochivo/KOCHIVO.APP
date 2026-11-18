@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import type { ReactNode } from 'react';
 import { useT } from '@/core/i18n/client';
 import { savePlayerWithAvatar } from '../data/captain-avatar';
 import type { SettingsProfile } from '../schema';
@@ -8,8 +9,9 @@ import { messages as profileMessages } from '../messages';
 import { AvatarPicker } from './avatar-picker';
 import { useProfileWrite } from '../hooks/use-profile-write';
 
-export function PlayerIdentity({ profile, captainName, plan, onSave }: {
+export function PlayerIdentity({ profile, captainName, plan, onSave, action, children }: {
   profile: SettingsProfile; captainName?: string; plan?: string; onSave: (profile: SettingsProfile) => void;
+  action?: ReactNode; children?: ReactNode;
 }) {
   const t = useT(messages);
   const profileT = useT(profileMessages);
@@ -36,7 +38,9 @@ export function PlayerIdentity({ profile, captainName, plan, onSave }: {
       <div className="flex min-w-0 flex-1 flex-col gap-inline"><b className="break-words text-title">{profile.full_name}</b>
         {captainName && <span className="text-xs text-muted">{plan ? t('coachPlan', { name: captainName, plan }) : t('coach', { name: captainName })}</span>}
       </div>
+      {action}
     </div>
+    {children}
     {error && <p role="alert" className="mt-inline text-xs text-danger">{t('saveError')}</p>}
   </section>;
 }

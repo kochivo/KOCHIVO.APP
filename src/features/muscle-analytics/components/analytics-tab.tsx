@@ -9,7 +9,9 @@ import { messages } from '../analytics/messages';
 import { loadAnalytics } from '../data/load-analytics';
 import { AnalyticsPanel } from './analytics-panel';
 import { AnalyticsSkeleton } from './analytics-skeleton';
-import { Button } from '@/ui/button';
+import { Button, clickableClass } from '@/ui/button';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { MuscleWeekSummary } from './muscle-week-summary';
 
 export function AnalyticsTab({ playerId, self = false }: { playerId: string; self?: boolean }) {
   const timezone = useTimezone();
@@ -19,6 +21,12 @@ export function AnalyticsTab({ playerId, self = false }: { playerId: string; sel
   const { data, status, retry } = useResource(`analytics:${playerId}:${today}:${self}`, load);
   const weeks = data?.weeks, readiness = data?.readiness ?? null;
   const failed = status === 'error';
+  if (self && captainWorkspaceEnabled() && weeks && !failed) return <section className="glass space-y-stack rounded-card p-card">
+    <MuscleWeekSummary week={weeks.at(-1)} />
+    <details><summary className={`${clickableClass} flex min-h-12 items-center rounded-control text-sm font-bold`}>{t('title')}</summary>
+      <AnalyticsPanel key={playerId} weeks={weeks} self readiness={readiness} />
+    </details>
+  </section>;
   return <section className="glass space-y-card-gap rounded-card p-card sm:p-section" aria-busy={!weeks && !failed}>
     <header className="space-y-inline"><h2 className="font-display text-xl font-bold">{t('title')}</h2>
       <p className="text-sm text-muted">{t('subtitle')}</p></header>

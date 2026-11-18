@@ -1,6 +1,6 @@
 'use client';
 import { useCallback, useEffect, useState } from 'react';
-import { Plus } from 'lucide-react';
+import { Droplet } from 'lucide-react';
 import { useLocale, useT } from '@/core/i18n/client';
 import { localDb, stableId, useLiveQuery } from '@/core/offline';
 import { useTimezone } from '@/core/timezone/client';
@@ -10,9 +10,12 @@ import { useNutritionSnapshot } from '../hooks/use-nutrition-snapshot';
 import { formatNumber } from '@/lib/format';
 import { ErrorState, LoadingState } from '@/ui';
 import { messages } from '../v6-messages';
+import { messages as v4Messages } from '../player-v4/messages';
+import { Button } from '@/ui/button';
 
 export function FoodWater({ playerId, today }: { playerId?: string; today: string }) {
   const t = useT(messages);
+  const v4t = useT(v4Messages);
   const locale = useLocale();
   const timezone = useTimezone();
   const nutrition = useNutritionSnapshot();
@@ -72,12 +75,13 @@ export function FoodWater({ playerId, today }: { playerId?: string; today: strin
   const goal = playerWaterGoalMl(nutrition.snapshot?.water_target_ml, weight?.playerId === owner ? weight?.value : undefined);
   return <div className="space-y-inline">
     {error && <ErrorState message={t('waterError')} retryLabel={t('retry')} onRetry={() => { setError(false); setRevision(value => value + 1); }} />}
-    {!ready ? !error && <LoadingState variant="detail" /> : <div className="flex items-center gap-stack rounded-[22px] border border-line-soft bg-surface px-stack py-stack">
-      <span className="flex-1 text-sm">{t('water')} <b className="font-[family-name:var(--font-manrope)] text-water">{formatNumber((result.row?.water_ml ?? 0) / 250, locale)}</b>
-        <span className="text-muted">{t('cups', { goal: formatNumber(goal / 250, locale) })}</span>
+    {!ready ? !error && <LoadingState variant="detail" /> : <div className="glass flex min-h-12 items-center gap-inline rounded-card px-card py-stack">
+      <Droplet aria-hidden className="size-5 shrink-0 text-info" />
+      <span className="flex-1 text-sm">{t('water')} <b className="font-display">{formatNumber((result.row?.water_ml ?? 0) / 1000, locale)}</b>{' '}
+        <span className="text-muted">{v4t('liters', { goal: formatNumber(goal / 1000, locale) })}</span>
       </span>
-      <button type="button" aria-label={t('addWater')} disabled={!owner || busy} onClick={() => void add()}
-        className="flex size-12 shrink-0 items-center justify-center rounded-full bg-water/15 text-water disabled:opacity-50"><Plus aria-hidden className="size-6" /></button>
+      <Button type="button" variant="secondary" aria-label={t('addWater')} disabled={!owner || busy} onClick={() => void add()}
+        className="shrink-0">{v4t('cup')}</Button>
     </div>}
   </div>;
 }

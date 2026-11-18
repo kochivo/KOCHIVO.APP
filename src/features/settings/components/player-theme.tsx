@@ -1,5 +1,6 @@
 'use client';
 import { useSyncExternalStore } from 'react';
+import { Moon } from 'lucide-react';
 import { useT } from '@/core/i18n/client';
 import { themeMode } from '@/lib/theme-mode';
 import { messages } from '../player-messages';
@@ -22,7 +23,8 @@ export function PlayerTheme() {
   const t = useT(messages);
   const value = useSyncExternalStore(subscribe, snapshot, () => 'dark');
   return <div className="flex min-h-14 items-center gap-stack px-page-x">
-    <span className="flex-1 text-sm">{t('theme')}</span>
+    <Moon aria-hidden className="size-5 shrink-0 text-muted" />
+    <span className="flex-1 text-sm font-bold">{t('theme')}</span>
     <div role="group" aria-label={t('theme')} className="flex rounded-full bg-surface-raised p-inline">
       {(['dark', 'light'] as const).map(option => <button key={option} type="button" aria-pressed={value === option}
         onClick={() => select(option)} className="min-h-12 rounded-full px-stack font-sans text-xs text-muted aria-pressed:bg-surface aria-pressed:font-bold aria-pressed:text-ink">

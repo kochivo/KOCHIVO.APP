@@ -9,10 +9,18 @@ import { messages } from '../messages';
 import { messages as chartMessages } from '../player-v3-messages';
 import { scaleSeries } from '../series';
 import type { TrendPoint } from '../trends';
+import { CalmChart } from './chart/calm-chart';
 
-export function LineChart({ points, bodyFat = [], title, unit, compact, showDates = false, today }: {
-  points: readonly TrendPoint[]; bodyFat?: readonly TrendPoint[]; title: string; unit: string; compact?: 'water' | 'lime'; showDates?: boolean; today?: string;
-}) {
+export type LineChartProps = {
+  points: readonly TrendPoint[]; bodyFat?: readonly TrendPoint[]; title: string; unit: string;
+  compact?: 'water' | 'lime'; showDates?: boolean; today?: string; target?: number | null;
+};
+
+export function LineChart(props: LineChartProps) {
+  return process.env.NEXT_PUBLIC_CAPTAIN_WORKSPACE === '1' ? <CalmChart {...props} /> : <LegacyChart {...props} />;
+}
+
+function LegacyChart({ points, bodyFat = [], title, unit, compact, showDates = false, today }: LineChartProps) {
   const t = useT(messages);
   const ct = useT(chartMessages);
   const locale = useLocale();

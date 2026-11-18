@@ -15,14 +15,15 @@ vi.mock('@/core/offline', () => ({ localDb: () => ({ userId: 'p' }) }));
 vi.mock('@/core/resource', () => ({ useResource: () => ({ status: 'ready', data: state.due ? [{ id: 'a', sent_at: '2026-11-12', answered_at: null, forms: { title: 'Assessment' }, questionCount: 3 }] : [], retry: vi.fn() }) }));
 vi.mock('./hooks/use-my-captain', () => ({ useCaptainContext: () => ({ data: captain, status: 'ready', retry: vi.fn() }) }));
 vi.mock('./components/captain-profile-card', () => ({ CaptainProfileCard: () => createElement('div', null, 'profile-content'), captainContact: () => ({ url: 'https://wa.me/201012345678' }) }));
-vi.mock('@/features/chat', async original => ({ ...await original<object>(), PlayerChat: () => createElement('div', null, 'real-chat') }));
+vi.mock('./components/captain-chat', () => ({ CaptainChat: () => createElement('div', null, 'real-chat') }));
 const render = (component: ReturnType<typeof createElement>) => renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' }, component));
 beforeEach(() => { state.v6 = true; state.due = true; });
-it('links the whole captain heading and the gold assessment banner to their pages', () => {
+it('links the chat header back home and to coach details, and retains the assessment banner link', () => {
   const heading = render(createElement(CaptainHeading, { captain }));
   expect(heading).toContain('href="/ar/player/captain/profile"');
   expect(heading).toContain('كابتنك من 3 شهور');
-  expect(heading).toContain('دوس لبياناته واشتراكك');
+  expect(heading).toContain('href="/ar/player"');
+  expect(heading).toContain('aria-label="الكابتن واشتراكك"');
   const banner = render(createElement(CaptainPendingAssessment));
   expect(banner).toContain('href="/ar/player/assessments"');
   expect(banner).toContain('عندك تقييم مطلوب');

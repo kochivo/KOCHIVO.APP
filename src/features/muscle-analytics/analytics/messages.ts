@@ -6,6 +6,7 @@ export const messages = defineMessages({
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
     title: 'توزيع حمل التمرين',
+    thisWeek: 'العضلات اللي اشتغلت الأسبوع ده',
     subtitle: 'عدد السِتات لكل عضلة في آخر ٤ أسابيع',
     loading: 'بنحمّل التحليل',
     error: 'مقدرناش نحمّل التحليل',
@@ -33,6 +34,7 @@ export const messages = defineMessages({
   },
   en: {
     title: 'Training volume',
+    thisWeek: 'Muscles trained this week',
     subtitle: 'Sets per muscle over the last 4 weeks',
     loading: 'Loading analysis',
     error: "Couldn't load analysis",

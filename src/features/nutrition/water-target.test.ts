@@ -15,7 +15,7 @@ vi.mock('./hooks/use-nutrition-snapshot', () => ({ useNutritionSnapshot: () => (
 it('shows the plan target in food-water', () => {
   const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' },
     createElement(FoodWater, { playerId: 'player', today: '2026-11-15' })));
-  expect(html).toContain('/ 14 cups');
+  expect(html).toContain('of 3.5 L');
 });
 it.each([3500, null])('carries %s through the snapshot and offline cache', async target => {
   const snapshot = mapNutritionSnapshot({ id: 'plan', title: 'Plan', water_target_ml: target,

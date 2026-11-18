@@ -1,4 +1,8 @@
 export const arStd = {
+  chartMonth: 'شهر', chartQuarter: '3 أشهر', chartAll: 'الكل', chartPeriod: 'مدة الرسم',
+  chartToday: 'اليوم', chartGoal: 'الهدف {value}', chartChange: '{value} منذ البداية',
+  chartShow: 'اعرض الأرقام', chartHide: 'أخفِ الأرقام',
+  chartFirst: 'يظهر الرسم بعد المتابعة الثانية', chartEmptyPeriod: 'لا توجد قياسات في هذه المدة',
   workoutHistory: 'سجل تماريني', bodyFatOptional: 'نسبة الدهون (اختياري)', bodyFat: 'نسبة الدهون', photo: 'صورة',
   gallery: 'صور التقدم', compare: 'قارن', firstWeek: 'الأسبوع الأول', secondWeek: 'الأسبوع الثاني', pose: 'وضع الصورة',
   chooseComparison: 'اختر أسبوعين مختلفين يحتويان على صور بالوضع نفسه', weightDifference: 'فرق الوزن: {value} كجم',

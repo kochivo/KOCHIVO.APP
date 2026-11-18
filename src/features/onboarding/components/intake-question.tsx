@@ -11,6 +11,7 @@ import type { IntakeDraft } from '../wizard';
 import { ChipGroup } from './chip-group';
 import { DayPicker } from './day-picker';
 import { MetricSlider } from './metric-slider';
+import { Dumbbell, TrendingUp, Weight, UserRound } from 'lucide-react';
 import dynamic from 'next/dynamic';
 const BudgetField = dynamic(() => import('@/features/meal-plans').then(module => module.BudgetField));
 
@@ -32,12 +33,17 @@ export function IntakeQuestion({ field, draft, update, year }: {
         { value: 'new', label: t('justStarting') }, { value: 'under_1y', label: t('lessThanAYear') },
         { value: '1_3y', label: t('message13Years') }, { value: 'over_3y', label: t('over3Years') },
       ] : [];
+  const experienceIcons = [UserRound, Weight, Dumbbell, TrendingUp];
   return <div className="space-y-card-gap">
-    <h1 ref={heading} tabIndex={-1} className="font-display text-2xl font-semibold outline-none">{label}</h1>
-    {!!choices.length && <div role="group" aria-label={label} className="space-y-inline">{choices.map(choice =>
-      <button type="button" key={choice.value} aria-pressed={draft[field] === choice.value}
+    <h1 ref={heading} tabIndex={-1} className="text-h font-bold outline-none">{label}</h1>
+    {!!choices.length && <div role="group" aria-label={label} className="grid grid-cols-2 gap-stack">{choices.map((choice, index) => {
+      const Icon = field === 'experience' ? experienceIcons[index] : null;
+      return <button type="button" key={choice.value} aria-pressed={draft[field] === choice.value}
         onClick={() => update({ [field]: choice.value })}
-        className={`flex min-h-16 w-full items-center rounded-card border px-page-x py-page-y text-start ${draft[field] === choice.value ? 'border-lime bg-lime-soft' : 'glass border-line-soft text-muted'}`}>{choice.label}</button>)}</div>}
+        className="glass press flex min-h-20 flex-col items-center justify-center gap-inline rounded-card border border-line-soft p-stack text-center text-sm font-bold aria-pressed:border-lime aria-pressed:bg-lime-soft aria-pressed:text-lime">
+        {Icon && <Icon aria-hidden className="size-5" />}{choice.label}
+      </button>;
+    })}</div>}
     {field === 'full_name' && <TextField label={label} autoComplete="name" maxLength={80} value={draft.full_name ?? ''}
       onChange={event => update({ full_name: event.target.value })} />}
     {field === 'birth_year' && <Stepper label={label} step={1} min={10} max={year - 1930} value={year - (draft.birth_year ?? year - 25)}

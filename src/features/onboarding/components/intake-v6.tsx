@@ -3,7 +3,7 @@
 import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import { useT } from '@/core/i18n/client';
+import { useLocale, useT } from '@/core/i18n/client';
 import { useCaptainContext } from '@/features/player-shell';
 import { Button, ErrorState, LoadingState, ProgressBar } from '@/ui';
 import { useIntakeDraft } from '../hooks/use-intake-draft';
@@ -16,12 +16,14 @@ import { questions, optionalQuestions, questionValid } from '../v6-steps';
 import { messages } from '../messages';
 import { messages as v6Messages } from '../v6-messages';
 import { IntakeQuestion } from './intake-question';
+import { formatNumber } from '@/lib/format';
 
 const IntakeMoment = dynamic(() => import('./intake-moment').then(module => module.IntakeMoment));
 
 export function IntakeV6({ statusError }: { statusError?: string }) {
   const t = useT(messages);
   const v6t = useT(v6Messages);
+  const locale = useLocale();
   const captain = useCaptainContext();
   const router = useRouter();
   const { draft, update, clear, ready } = useIntakeDraft();
@@ -52,22 +54,32 @@ export function IntakeV6({ statusError }: { statusError?: string }) {
   }
   if (statusError) return <ErrorState message={statusError} retryLabel={t('tryAgain')} onRetry={() => router.refresh()} />;
   if (!ready) return <LoadingState aria-label={t('loadingYourAnswers')} />;
-  if (stage !== 'steps') return <IntakeMoment stage={stage} captainName={captain.data?.fullName} onStart={() => setStage('steps')} />;
-  const progress = v6t('progress', { n: index + 1, total: questions.length });
-  return <main className="mx-auto flex min-h-dvh max-w-lg flex-col gap-card-gap px-page-x py-page-y">
-    <header className="space-y-stack"><div className="flex items-center justify-between text-xs text-faint">
+  if (stage !== 'steps') return <IntakeMoment workspace stage={stage} captainName={captain.data?.fullName} onStart={() => setStage('steps')} />;
+  const progress = v6t('progress', { n: formatNumber(index + 1, locale), total: formatNumber(questions.length, locale) });
+  return <main className="mx-auto flex min-h-[calc(100dvh-var(--safe-top)-var(--spacing-stack))] max-w-lg flex-col gap-section px-page-x pt-stack pb-[max(var(--safe-bottom),var(--spacing-card))]">
+    <header className="space-y-stack">
+      <div role="progressbar" aria-label={progress} aria-valuenow={index + 1} aria-valuemin={0} aria-valuemax={questions.length}
+        className="grid grid-cols-3 gap-inline">
+        {[0, 1, 2].map(part => {
+          const section = questions.length / 3;
+          return <ProgressBar key={part} thin aria-hidden value={Math.max(0, Math.min(section, index + 1 - part * section))} max={section} />;
+        })}
+      </div>
+      <div className="flex items-center justify-between gap-inline text-xs text-muted">
       <span aria-live="polite">{progress}</span>
       {optionalQuestions.includes(field) && <Button variant="secondary" type="button" disabled={busy} className="min-h-12 px-stack" onClick={() => {
         update({ [field]: field === 'target_weight_kg' ? null : field === 'notes' ? '' : [] });
         if (index < questions.length - 1) setIndex(index + 1);
         else void next({ ...draft, notes: '' });
       }}>{v6t('skip')}</Button>}</div>
-      <ProgressBar value={index + 1} max={questions.length} aria-label={progress} /></header>
+    </header>
     <fieldset disabled={busy} className="min-w-0 flex-1"><IntakeQuestion key={field} field={field} draft={draft} update={patch => { update(patch); setError(''); }} year={now.getUTCFullYear()} /></fieldset>
     <p className="text-xs text-muted">{t('onlyYourCoachCanSeeYourAnswers')}</p>
     {error && <p role="alert" className="text-sm text-danger">{error}</p>}
-    <footer className="space-y-inline"><Button className="min-h-12 w-full rounded-full" disabled={busy || !valid} onClick={() => void next()}>
-      {busy ? t('sendingYourAnswers') : index === questions.length - 1 ? t('sendToCoach') : t('next')}</Button>
-      <Button variant="secondary" className="min-h-12 w-full rounded-full" disabled={busy} onClick={() => index ? setIndex(index - 1) : setStage('welcome')}>{t('back')}</Button></footer>
+    <footer className="flex gap-stack">
+      <Button variant="secondary" block={false} disabled={busy} onClick={() => index ? setIndex(index - 1) : setStage('welcome')}>{t('back')}</Button>
+      <Button size="lg" block={false} className="flex-1" disabled={busy || !valid} onClick={() => void next()}>
+        {busy ? t('sendingYourAnswers') : index === questions.length - 1 ? t('sendToCoach') : t('next')}</Button>
+    </footer>
   </main>;
 }

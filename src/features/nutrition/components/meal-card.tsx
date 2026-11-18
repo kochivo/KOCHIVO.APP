@@ -15,6 +15,7 @@ import { formatPortion } from '../format-portion';
 import { starterText } from '@/lib/starter-text';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { messages as v6Messages } from '../v6-messages';
+import { messages as v4Messages } from '../player-v4/messages';
 import { useToast } from '@/ui/toast';
 import { messages as successMessages } from '../success/messages';
 import dynamic from 'next/dynamic';
@@ -23,6 +24,7 @@ const MealBudget = dynamic(() => import('./meal-budget').then(module => module.M
 export function MealCard({ meal, log, today, planTitle, primary = false }: { meal: NutritionMeal; log?: MealLogRow; today: string; planTitle?: string; primary?: boolean }) {
   const t = useT(messages);
   const v6t = useT(v6Messages);
+  const v4t = useT(v4Messages);
   const locale = useLocale();
   const success = useT(successMessages), toast = useToast();
   const [busy, setBusy] = useState(false);
@@ -83,23 +85,27 @@ export function MealCard({ meal, log, today, planTitle, primary = false }: { mea
   const name = starterText(meal.name, locale, planTitle);
   return <article className={`glass rounded-card px-card py-stack ${primary && !eaten ? 'border-lime/30' : ''}`}>
     <div className="flex items-center gap-stack">
-      {eaten ? <span role="img" aria-label={v6t('eaten')} className="flex size-12 shrink-0 items-center justify-center rounded-control text-lime">
-        <Check aria-hidden className="tone-lime size-7 rounded-md p-inline" strokeWidth={3} />
+      {eaten ? <span role="img" aria-label={v6t('eaten')} className="grid size-12 shrink-0 place-items-center">
+        <span className="grid size-8 place-items-center rounded-control bg-lime text-on-lime"><Check aria-hidden className="size-4" strokeWidth={3} /></span>
       </span> : <button type="button" disabled={busy || !meal.items.length} aria-label={v6t('eatMeal', { meal: name })}
         onClick={() => void save(true, swaps, Date.now())}
-        className="press grid size-12 shrink-0 place-items-center rounded-control disabled:opacity-50"><span aria-hidden className={`size-7 rounded-md border ${primary ? 'border-lime/50' : 'border-line'}`} /></button>}
+        className="press grid size-12 shrink-0 place-items-center rounded-control disabled:opacity-50"><span aria-hidden className="size-8 rounded-control border border-line" /></button>}
       <button type="button" aria-label={v6t('details')} aria-expanded={open} onClick={() => setOpen(value => !value)}
-        className="flex min-h-12 min-w-0 flex-1 flex-col justify-center font-sans text-start">
-        <span className="text-md font-bold">{name} {primary && !eaten && <span className="text-xs font-bold text-lime">{v6t('now')}</span>}</span>
-        <MealBudget meal={meal} swaps={swaps} />
+        className="press flex min-h-12 min-w-0 flex-1 flex-col justify-center rounded-control font-sans text-start">
+        <span className="text-md font-bold">{name}</span>
         {meal.time_of_day && <time className="text-xs text-muted" dateTime={meal.time_of_day}><bdi>{meal.time_of_day.slice(0, 5)}</bdi></time>}
-        <span className="w-full text-xs text-muted">{meal.items.length ? meal.items.map(item => {
-          const chosen = item.alternatives.find(alt => alt.id === swaps[item.id]) ?? item;
-          return `${chosen.name} ${formatPortion(chosen, locale, t('g'))}`;
-        }).join(' · ') : t('thisMealIsBeingPrepared')}</span>
       </button>
       <p className="shrink-0 text-micro text-muted"><bdi className="font-display text-md font-extrabold tabular-nums text-ink">{formatNumber(macros.kcal, locale)}</bdi> {t('kcal')}</p>
     </div>
+    <p className="text-xs text-muted">{meal.items.length ? meal.items.map(item => {
+          const chosen = item.alternatives.find(alt => alt.id === swaps[item.id]) ?? item;
+          return `${chosen.name} ${formatPortion(chosen, locale, t('g'))}`;
+    }).join(' · ') : t('thisMealIsBeingPrepared')}</p>
+    {!open && <MealBudget meal={meal} swaps={swaps} />}
+    {primary && !eaten && <div className="mt-stack flex flex-wrap gap-inline">
+      {meal.items.some(item => item.alternatives.length > 0) && <Button type="button" aria-expanded={open} variant="secondary" onClick={() => setOpen(value => !value)}>{v4t('swap')}</Button>}
+      <Button type="button" block={false} className="min-w-0 flex-1" disabled={busy || !meal.items.length} onClick={() => void save(true, swaps, Date.now())}><Check aria-hidden className="size-5" />{t('mealEaten')}</Button>
+    </div>}
     {error && <p role="alert" className="text-sm text-danger">{t('saveFailedTryAgain')}</p>}
     {open && <div className="mt-stack">{details}</div>}
   </article>;

@@ -14,6 +14,8 @@ import { loadPlayerAssessments, loadPlayerAssessmentHistory } from '../data/play
 import { messages as pageMessages } from '../pages-messages';
 import { messages } from '../v6-messages';
 import { buttonClass } from '@/ui/button';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { PlayerAssessmentsWorkspace } from './player-assessments-workspace';
 
 export type AssessmentLayout = 'list' | 'page' | 'link' | 'home';
 
@@ -35,6 +37,7 @@ export function PlayerAssessments({ actionable = true, layout = 'list' }: { acti
   if (result.status === 'error') return <ErrorState message={t('failed')} retryLabel={t('retry')} onRetry={() => void result.retry()} />;
   if (!result.data) return <LoadingState role="status" variant="detail" />;
   const { due, past } = result.data;
+  if (layout === 'page' && captainWorkspaceEnabled()) return <PlayerAssessmentsWorkspace actionable={actionable} due={due} past={past} />;
   if (layout === 'page') return <div className="space-y-stack">
     <section aria-labelledby="assessments-due" className="space-y-stack">
       <h2 id="assessments-due" className="text-xs text-faint">{p('due')}</h2>

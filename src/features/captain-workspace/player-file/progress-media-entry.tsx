@@ -6,7 +6,7 @@ import { LoadingState } from '@/ui/loading-state';
 const Chart = dynamic(() => import('@/features/progress').then(module => module.LineChart), { ssr: false, loading: () => <LoadingState variant="cards" /> });
 const Gallery = dynamic(() => import('@/features/progress').then(module => module.ProgressGallery), { ssr: false, loading: () => <LoadingState variant="cards" /> });
 
-export function ProgressMediaEntry(props: { points?: readonly TrendPoint[]; bodyFat?: readonly TrendPoint[]; title: string; unit: string; weeks?: readonly GalleryWeek[] }) {
+export function ProgressMediaEntry(props: { points?: readonly TrendPoint[]; bodyFat?: readonly TrendPoint[]; title: string; unit: string; weeks?: readonly GalleryWeek[]; today?: string; target?: number | null }) {
   if (props.weeks) return <Gallery weeks={props.weeks} />;
-  return <Chart points={props.points ?? []} bodyFat={props.bodyFat} title={props.title} unit={props.unit} />;
+  return <Chart points={props.points ?? []} bodyFat={props.bodyFat} title={props.title} unit={props.unit} today={props.today} target={props.target} />;
 }

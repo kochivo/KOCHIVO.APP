@@ -1,10 +1,12 @@
 'use client';
 import { useLocale, useT } from '@/core/i18n/client';
 import { useTimezone } from '@/core/timezone/client';
-import { PushToggleCard } from '@/features/notifications';
+import dynamic from 'next/dynamic';
+import { Bell } from 'lucide-react';
 import { publicConfig } from '@/lib/public-config';
 import { useCalendarClock } from '@/lib/use-calendar-clock';
 import { messages } from '../player-messages';
+const PushToggleCard = dynamic(() => import('@/features/notifications').then(module => module.PushToggleCard));
 
 export function PlayerReminder() {
   const t = useT(messages);
@@ -17,6 +19,7 @@ export function PlayerReminder() {
   const time = at ? new Intl.DateTimeFormat(locale, { timeZone: timezone, hour: 'numeric', hour12: true }).format(at) : null;
   return <div className="px-page-x py-inline">
     <div className="flex min-h-14 items-center gap-stack">
+      <Bell aria-hidden className="size-5 shrink-0 text-muted" />
       <span className="flex flex-1 flex-col gap-inline"><span className="text-sm">{t('reminder')}</span>
         {time && <span className="text-xs text-muted">{t('reminderTime', { time })}</span>}</span>
       {!publicConfig.vapidPublicKey && <button type="button" role="switch" aria-checked={false} aria-label={t('reminder')} disabled

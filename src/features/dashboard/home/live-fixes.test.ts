@@ -5,6 +5,7 @@ vi.mock('server-only', () => ({}));
 vi.mock('@/core/i18n/server', () => ({ getLocale: async () => 'en', getT: async () => (key: string) => key }));
 import { HomeTiles } from './home-tiles';
 import { HomeInvite } from './home-invite';
+import { HomeWeekChart } from './home-week-chart';
 
 it.each([[undefined, null], [0, null], [2000, 25], [100, 100]] as const)(
   'renders thin revenue progress only with a real positive goal %s', async (incomeGoal, percent) => {
@@ -23,4 +24,20 @@ it('renders exactly one KO plus icon in the home invite action', () => {
   expect(html.match(/control-primary/g)).toHaveLength(1);
   expect(html).toContain('href="/captain/players/new"');
   expect(html).toContain('data-tour="invite-player"');
+});
+
+it('marks today and distinguishes past bars from future stubs', async () => {
+  vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
+  try {
+    const today = '2026-11-18';
+    const html = renderToStaticMarkup(await HomeWeekChart({ today, sessions: [
+      { date: '2026-11-17' }, { date: today }, { date: today },
+    ] }));
+    expect(html).toMatch(/>1<\/span><span class="[^"]*bg-lime\/35" style="height:40px"/);
+    expect(html).toMatch(/aria-current="date"[^>]*>.*?>2<\/span><span class="[^"]*bg-lime" style="height:80px"/);
+    expect(html.match(/bg-line-soft" style="height:4px"/g)).toHaveLength(2);
+    expect(html).toContain('font-bold text-ink">wednesday');
+  } finally {
+    vi.unstubAllEnvs();
+  }
 });

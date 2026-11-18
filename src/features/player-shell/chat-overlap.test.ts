@@ -5,11 +5,11 @@ import { messages } from './captain-messages';
 
 const source = (path: string) => readFileSync(resolve(path), 'utf8');
 
-it('scopes refined text bubbles and the composer shortcut to the player coach screen', () => {
-  const screen = source('src/features/player-shell/components/captain-screen.tsx');
-  expect(screen).toContain('li>div:has(>p)');
-  expect(screen).toContain('self-end>div:has(>p)');
-  expect(screen).toContain('[data-chat-composer] input');
+it('scopes the composer and bubble styling to the workspace chat', () => {
+  const css = source('src/features/player-shell/components/captain-chat.module.css');
+  expect(css).toContain('.thread ol > li > div:has(> p)');
+  expect(css).toContain('.thread ol > li:global(.self-end) > div:has(> p)');
+  expect(css).toContain('.composer [data-chat-composer] input');
 });
 
 it('keeps the player chat composer above the bottom nav on phones with a home indicator', () => {
@@ -24,7 +24,7 @@ it('hides the floating KO button on the player chat, where the composer sits', (
 });
 
 it('says since today instead of zero days on the first day', () => {
-  expect(source('src/features/player-shell/components/captain-heading.tsx')).toContain("days === 0 ? <>{t('sinceToday')}");
+  expect(source('src/features/player-shell/components/captain-heading.tsx')).toContain("days === 0 ? t('sinceToday')");
   expect(messages.ar.sinceToday).toBe('كابتنك من النهارده');
   expect(messages.en.sinceToday).toBe('Your coach since today');
 });

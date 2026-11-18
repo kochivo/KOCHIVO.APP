@@ -1,7 +1,7 @@
 import { createElement } from 'react';
 import type { ReactElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { LocaleProvider } from '@/core/i18n/client';
 import type { Locale } from '@/core/i18n/locale';
 import { levelUpStorageKey, shouldCelebrate } from './level-up';
@@ -23,6 +23,17 @@ const render = (child: ReactElement, locale: Locale = 'en') =>
   renderToStaticMarkup(createElement(LocaleProvider, { locale }, child));
 
 describe('player ranks', () => {
+  it('orders the v4 hero, board, points log and medals, with an empty log', () => {
+    vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
+    try {
+      const html = render(createElement(RankScreen, { data: { points: { ...points, lifetime: 0 }, board: [],
+        medals: { workouts: 0, full_weeks: 0, prs: 0, crowns: 0, crown_streak: 0 } } }));
+      expect(html.match(/data-rank-section="[^"]+"/g)).toEqual([
+        'data-rank-section="hero"', 'data-rank-section="board"', 'data-rank-section="points"', 'data-rank-section="medals"',
+      ]);
+      expect(html).toContain('No points yet. Finish your first workout');
+    } finally { vi.unstubAllEnvs(); }
+  });
   it('celebrates each star once per player and preserves the highest seen count', () => {
     const values = new Map<string, string>();
     const storage = { getItem: (key: string) => values.get(key) ?? null,

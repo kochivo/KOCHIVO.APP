@@ -16,7 +16,11 @@ import { useCaptainContext } from '../hooks/use-my-captain';
 import type { MyCaptain } from '../data/my-captain';
 import { messages } from '../messages';
 import { messages as pageMessages } from '../pages-messages';
+import { messages as captainMessages } from '../captain-messages';
 import { buttonClass } from '@/ui/button';
+import { localDb, useLiveQuery } from '@/core/offline';
+import { ProgressBar } from '@/ui/progress-bar';
+import { useCallback } from 'react';
 
 const contactPatterns = {
   whatsapp: /^https:\/\/wa\.me\/[1-9]\d{7,14}$/,
@@ -42,13 +46,17 @@ export function subscriptionProgress(data: Pick<MyCaptain, 'startedOn' | 'access
   return { daysLeft: Math.max(0, daysBetween(today, data.accessUntil)), percent };
 }
 
-export function CaptainProfileCard({ variant = 'legacy', children }: { variant?: 'legacy' | 'page'; children?: ReactNode }) {
+export function CaptainProfileCard({ variant = 'legacy', children }: { variant?: 'legacy' | 'page' | 'workspace'; children?: ReactNode }) {
   const t = useT(messages), p = useT(pageMessages);
+  const c = useT(captainMessages);
   const locale = useLocale();
   const timezone = useTimezone();
   const { now } = useCalendarClock();
   const { data, status, retry } = useCaptainContext();
-  const page = variant === 'page';
+  const workspace = variant === 'workspace';
+  const page = variant !== 'legacy';
+  const readPlan = useCallback(() => workspace ? localDb().program_snapshot.get('active') : undefined, [workspace]);
+  const plan = useLiveQuery(readPlan);
   const formatDate = (date: string) => formatDateAr(date, { day: 'numeric', month: 'long', year: 'numeric' }, locale);
   if (status === 'loading') return <LoadingState variant="detail" />;
   if (status === 'error') return <ErrorState message={t('couldnTLoadYourCoach')} retryLabel={t('tryAgain')} onRetry={() => void retry()} />;
@@ -58,14 +66,15 @@ export function CaptainProfileCard({ variant = 'legacy', children }: { variant?:
   const { social, url } = captainContact(data);
   const progress = now && !data.awaitingPlansAt ? subscriptionProgress(data, now, timezone) : null;
   const identity = <>
-    <div className={page ? 'flex flex-col items-center gap-stack' : 'flex items-center gap-card-gap'}>
-      {data.avatarUrl ? <Image src={data.avatarUrl} alt="" width={page ? 80 : 64} height={page ? 80 : 64} unoptimized
-        className={`${page ? 'size-20' : 'size-16'} shrink-0 rounded-full object-cover`} /> :
-        <span aria-hidden className={page ? 'flex size-20 shrink-0 items-center justify-center rounded-full bg-lime-soft text-stat font-black text-lime' : 'glass flex size-16 shrink-0 items-center justify-center rounded-full text-2xl font-bold'}>{data.fullName.trim().slice(0, 1)}</span>}
+    <div className={page && !workspace ? 'flex flex-col items-center gap-stack' : 'flex items-center gap-card-gap'}>
+      {data.avatarUrl ? <Image src={data.avatarUrl} alt="" width={page && !workspace ? 80 : 64} height={page && !workspace ? 80 : 64} unoptimized
+        className={`${workspace ? 'size-16 border-2 border-lime' : page ? 'size-20' : 'size-16'} shrink-0 rounded-full object-cover`} /> :
+        <span aria-hidden className={workspace ? 'flex size-16 shrink-0 items-center justify-center rounded-full border-2 border-lime bg-surface-raised text-title font-bold' : page ? 'flex size-20 shrink-0 items-center justify-center rounded-full bg-lime-soft text-stat font-black text-lime' : 'glass flex size-16 shrink-0 items-center justify-center rounded-full text-2xl font-bold'}>{data.fullName.trim().slice(0, 1)}</span>}
       {page ? <div><h2 className="break-words text-xl font-bold">{data.fullName}</h2>
+        {workspace && data.bio && <p className="break-words whitespace-pre-wrap text-xs text-muted">{data.bio}</p>}
         {data.location && <p className="mt-inline text-xs text-muted">{data.location}</p>}</div> : <h2 className="break-words text-xl font-bold">{data.fullName}</h2>}
     </div>
-    {data.bio && <p className={page ? 'whitespace-pre-wrap break-words text-row leading-[1.7] text-muted' : 'whitespace-pre-wrap break-words'}>{data.bio}</p>}
+    {!workspace && data.bio && <p className={page ? 'whitespace-pre-wrap break-words text-row leading-[1.7] text-muted' : 'whitespace-pre-wrap break-words'}>{data.bio}</p>}
     {!page && data.location && <p className="text-sm text-muted">{data.location}</p>}
     <div className={page ? 'flex flex-wrap justify-center gap-inline' : 'flex flex-wrap gap-stack'}>
       {(['instagram', 'tiktok', 'facebook', 'youtube', 'x'] as const).map(key => social[key] ?
@@ -83,6 +92,21 @@ export function CaptainProfileCard({ variant = 'legacy', children }: { variant?:
     {page ? <KoCaptainChat aria-hidden className="size-[18px]" /> : <MessageCircle aria-hidden className="size-5" />}{page ? p('whatsapp') : t('messageYourCoachOnWhatsApp')}
   </a> : <Button disabled variant={page ? 'secondary' : 'primary'} className="min-h-12 w-full">{t('yourCoachHasnTAddedA')}</Button>;
   if (!page) return <GlassCard className="space-y-card-gap p-section">{identity}{chip}{dates}{contact}</GlassCard>;
+  if (workspace) return <>
+    <section className="glass space-y-stack rounded-card p-card">{identity}</section>
+    <section className="glass-strong cut-corner space-y-stack rounded-card border border-lime/25 bg-lime-soft p-card">
+      <div className="flex items-center justify-between gap-stack"><h2 className="text-md font-bold">{p('subscription')}</h2>{chip}</div>
+      {plan?.title && <p className="break-words text-row text-muted">{c('trainingPlan', { name: plan.title })}</p>}
+      {progress && <div className="flex items-end gap-stack">
+        <span aria-hidden className="engraved font-display text-stat-large-wide font-extrabold">{formatNumber(progress.daysLeft, locale)}</span>
+        <span aria-hidden className="text-xs text-muted">{c('daysRemaining')}</span>
+        <span className="sr-only">{p('daysLeft', { n: formatNumber(progress.daysLeft, locale) })}</span>
+      </div>}
+      {dates}
+      {progress?.percent != null && <ProgressBar thin aria-label={p('subscription')} value={progress.percent} max={100} />}
+    </section>
+    {contact}{children}
+  </>;
   return <>
     <section className="space-y-stack rounded-[22px] border border-line-soft bg-surface p-card text-center">{identity}</section>
     <section className="space-y-stack rounded-[22px] border border-line-soft bg-surface p-card">

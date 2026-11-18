@@ -78,10 +78,11 @@ export function SettingsScreen({ signOut }: { signOut?: ReactNode }) {
     profileForm={loading ? <LoadingState variant="detail" /> : error ? <ErrorState message={error} retryLabel={t('tryAgain')} onRetry={() => {
       setLoading(true); setError(''); setAttempt(value => value + 1);
     }} /> : profile ? <PlayerProfileEditor profile={profile} onSave={setProfile} /> : null}
-    install={<InstallButton role="player" />} signOut={signOut}>
+    install={<InstallButton role="player" />} signOut={signOut}
+    privacy={profile && <><ExportCard />
+      {!demo && !demoExpiry(profile) && <DeleteAccountCard requestedAt={profile.deletion_requested_at} />}</>}>
     <GlassToggle /><ThemeSwitch />
-    {profile && <><TourReplay role={profile.role} /><ExportCard />
-      {!demo && !demoExpiry(profile) && <DeleteAccountCard requestedAt={profile.deletion_requested_at} />}</>}
+    {profile && <TourReplay role={profile.role} />}
   </PlayerAccount>;
   return <div className="mx-auto max-w-3xl space-y-card-gap">
     {playerSettings && <Link href="/player" className="inline-flex min-h-12 items-center text-muted">{t('backToPlayer')}</Link>}

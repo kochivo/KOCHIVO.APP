@@ -28,7 +28,6 @@ it('shows the exact empty copy and a real history count without sample chart val
   const html = renderToStaticMarkup(createElement(ProgressV3, props));
   expect(html).toContain('سجّل وزنك أول مرة');
   expect(html).toContain('لسه مافيش تمارين كفاية للرسم');
-  expect(html).toContain('href="/player/history"');
   expect(html).toContain('hairline-cells');
   expect(html).toContain('>7</span>');
   expect(html).not.toContain('<svg width="100%"');
@@ -36,14 +35,14 @@ it('shows the exact empty copy and a real history count without sample chart val
 it('opens the existing sheet and changes the pressed range control', () => {
   const tree = ProgressV3(props);
   const buttons = [...find(tree, 'button'), ...find(tree, Button)];
-  const log = buttons.find(button => button.props.children === 'سجّل وزن النهارده');
+  const log = buttons.find(button => button.props['aria-label'] === 'سجّل وزن النهارده');
   if (typeof log?.props.onClick !== 'function') throw new Error('Missing log control');
   log.props.onClick();
   expect(props.onLog).toHaveBeenCalledOnce();
-  const quarter = buttons.find(button => button.props.children === '3 شهور');
+  const quarter = buttons.find(button => button.props.children === '6 شهور');
   if (typeof quarter?.props.onClick !== 'function') throw new Error('Missing range control');
   quarter.props.onClick();
-  expect(state.setters[0]).toHaveBeenCalledWith(3);
+  expect(state.setters[0]).toHaveBeenCalledWith(6);
 });
 it('feeds the selected range into both charts and keeps the program baseline for strength', () => {
   state.values = [1, 'bench'];
@@ -61,6 +60,6 @@ it('feeds the selected range into both charts and keeps the program baseline for
     [{ date: '2026-10-20', value: 81 }, { date: '2026-11-13', value: 82.4 }],
     [{ date: '2026-10-20', value: 70, reps: 8 }, { date: '2026-11-13', value: 75, reps: 8 }],
   ]);
-  state.index = 0; state.values = [3, 'bench'];
+  state.index = 0; state.values = [6, 'bench'];
   expect(find(ProgressV3(data), LineChart).map(chart => (chart.props.points as unknown[]).length)).toEqual([3, 3]);
 });

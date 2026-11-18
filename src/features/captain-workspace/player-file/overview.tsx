@@ -36,10 +36,13 @@ export function PlayerOverview({ playerId, profile, summary, locale, activity, t
     ...activity.scans.flatMap(row => row.weight_kg == null ? [] : [{ date: row.scan_date, value: row.weight_kg }]),
   ].filter(point => { const age = daysBetween(point.date, today); return age >= 0 && age < 12 * 7; })
     .map(point => [point.date, point])).values()].sort((a, b) => a.date.localeCompare(b.date));
+  const calmCharts = process.env.NEXT_PUBLIC_CAPTAIN_WORKSPACE === '1';
   return <div className="space-y-stack">
     <LightDayEntry playerId={playerId} date={today} />
     <OverviewActivity profile={profile} activity={activity} playerId={playerId} locale={locale} overview={<>
-        {weights.length > 1 && <section className="glass space-y-stack rounded-card p-card">
+        {calmCharts && weights.length > 0 && <ProgressMediaEntry points={weights} title={t('weight')} unit={t('kg')}
+          today={today} target={summary.file.facts.targetWeight?.value} />}
+        {!calmCharts && weights.length > 1 && <section className="glass space-y-stack rounded-card p-card">
           <h2 className="text-md font-bold">{t('recentWeight')}</h2>
           <ProgressMediaEntry points={weights} title={t('recentWeight')} unit={t('kg')} />
         </section>}
