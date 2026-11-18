@@ -77,6 +77,17 @@ it('advertises only player tools and marks meal logging writable', async () => {
   ]);
 });
 
+it('wraps list and scalar tool results in an object, as MCP requires for structuredContent', async () => {
+  mocks.run.mockResolvedValueOnce({ ok: true, data: [{ id: 'a' }] });
+  const list = (await (await post(rpc('tools/call', { name: 'list_exercises', arguments: {} }))).json()).result;
+  expect(list).toEqual({
+    content: [{ type: 'text', text: '{"items":[{"id":"a"}]}' }], structuredContent: { items: [{ id: 'a' }] }, isError: false,
+  });
+  mocks.run.mockResolvedValueOnce({ ok: true, data: null });
+  const empty = (await (await post(rpc('tools/call', { name: 'get_dues', arguments: {} }))).json()).result;
+  expect(empty.structuredContent).toEqual({ data: null });
+});
+
 it('returns both representations of the tool result using the bearer-scoped client', async () => {
   const data = { athletes: [] };
   mocks.run.mockResolvedValue({ ok: true, data });

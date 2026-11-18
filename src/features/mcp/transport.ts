@@ -92,9 +92,17 @@ export async function postMcp(request: Request, now: Date = new Date()) {
     if (!result.ok) return reply({
       content: [{ type: 'text', text: `${result.error.code}: ${result.error.message}` }], isError: true,
     });
+    const structured = structuredResult(result.data);
     return reply({
-      content: [{ type: 'text', text: JSON.stringify(result.data) }], structuredContent: result.data ?? { data: null }, isError: false,
+      content: [{ type: 'text', text: JSON.stringify(structured) }], structuredContent: structured, isError: false,
     });
   }
   return rpcError(-32601, 'Method not found');
+}
+
+// MCP requires structuredContent to be a JSON object; list tools return arrays.
+function structuredResult(data: unknown): Record<string, unknown> {
+  if (Array.isArray(data)) return { items: data };
+  if (data !== null && typeof data === 'object') return data as Record<string, unknown>;
+  return { data: data ?? null };
 }
