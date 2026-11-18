@@ -22,17 +22,16 @@ export function WeekStrip({ days, nextDays = days, today, selected = today, onSe
   if (paging.today !== today) setPaging({ today, next: false });
   const next = paging.today === today && paging.next;
   const states = { done: t('workoutDone'), today: t('today'), train: t('workout'), rest: t('rest') };
-  if (captainWorkspaceEnabled()) return <section className="glass space-y-stack rounded-card p-card">
-    <h2 className="text-xs font-bold">{t('thisWeek')}</h2>
-    <ul className="flex gap-inline" aria-label={t('week')}>{(next ? nextDays : days).map(day => <li key={day.date} className="min-w-0 flex-1">
-      <Button variant="secondary" type="button" onClick={() => onSelect?.(day.date)} aria-pressed={day.date === selected}
+  if (captainWorkspaceEnabled()) return <section>
+    <ul className="grid grid-cols-7" aria-label={t('week')}>{(next ? nextDays : days).map(day => <li key={day.date} className="min-w-0">
+      <Button variant="ghost" type="button" onClick={() => onSelect?.(day.date)} aria-pressed={day.date === selected}
         aria-current={day.date === today ? 'date' : undefined}
         aria-label={t('weekDayLabel', { value0: day.label, value1: formatNumber(day.dayOfMonth, locale), value2: states[day.state] })}
-        className={cn('border border-line-soft flex min-h-12 w-full min-w-0 flex-col items-center justify-center gap-stack rounded-control px-0!',
-          day.date === selected && 'outline-1 outline-lime',
-          day.state === 'done' && 'bg-lime-soft text-lime')}>
-        <span className={cn('text-micro', day.state === 'done' ? 'text-lime' : 'text-faint')}>{day.label}</span>
-        <span aria-hidden className={cn('size-2 rounded-full border', day.state === 'done' ? 'border-lime bg-lime' : day.date === today ? 'border-lime' : 'border-line')} />
+        className="flex min-h-12 w-full min-w-0 flex-col items-center justify-center rounded-control p-0!">
+        <span className="max-w-full truncate text-micro text-muted">{day.label}</span>
+        <span className={cn('grid size-8 place-items-center rounded-control font-display text-sm font-extrabold tabular-nums',
+          day.state === 'done' ? 'bg-lime text-on-lime' : day.state === 'train' ? 'bg-surface-raised' : 'text-muted',
+          day.date === selected && 'ring-1 ring-inset ring-lime')}>{formatNumber(day.dayOfMonth, locale)}</span>
       </Button>
     </li>)}</ul>
     <details className="group mt-inline"><summary className="flex min-h-12 cursor-pointer items-center justify-center text-xs text-faint">{t(next ? 'nextWeek' : 'thisWeek')}<ChevronDown aria-hidden className="ms-auto size-4 shrink-0 transition-transform group-open:rotate-180" /></summary>

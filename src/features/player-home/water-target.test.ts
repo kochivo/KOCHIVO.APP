@@ -13,8 +13,8 @@ vi.mock('@/features/nutrition', async original => ({ ...await original<typeof Nu
   } }), useMealLogs: () => [],
 }));
 
-it('uses fourteen cups from the plan target instead of the weight goal', () => {
+it('uses the plan water target instead of the weight goal', () => {
   const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' },
-    createElement(HomeTiles, { playerId: 'player', today: '2026-11-15', weightKg: 80, done: 0, planned: 0 })));
-  expect(html).toContain('/ 14');
+    createElement(HomeTiles, { playerId: 'player', today: '2026-11-15', weightKg: 80 })));
+  expect(html).toContain('of 3.5 L');
 });

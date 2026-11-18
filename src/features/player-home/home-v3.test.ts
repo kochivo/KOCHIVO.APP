@@ -6,21 +6,28 @@ import type { MealLogRow, NutritionMeal, ProgramSnapshot, SnapshotDay, WorkoutSe
 import type * as Offline from '@/core/offline';
 import type * as Nutrition from '@/features/nutrition';
 import type { VoiceNote } from '@/features/voice-notes';
+import { readFileSync } from 'node:fs';
 import { V3Home } from './components/v3-home';
 import { waterGlasses } from './components/home-metrics';
 import { NextTaskCard } from './components/next-task-card';
 import { NutritionSlot } from './components/nutrition-slot';
 import { TodayCard } from './components/today-card';
+import { WeekStrip } from './components/week-strip';
+import { MorningRow } from './components/morning-row';
+import { buildWeek } from './week';
 
 const state = vi.hoisted(() => ({
   notes: [] as VoiceNote[], history: { accountStart: '2026-11-07', completedDates: ['2026-11-09'] },
   meals: [] as NutritionMeal[], logs: [] as MealLogRow[], awaitingPlansAt: null as string | null,
+  rank: 'ready' as 'ready' | 'error' | 'loading',
 }));
-vi.mock('@/core/resource', () => ({ useResource: () => ({ status: 'ready', data: {
+vi.mock('@/core/resource', () => ({ useResource: (key: string | null) => key?.startsWith('player-home-rank:')
+  ? { status: state.rank, data: state.rank === 'ready' ? { lifetime: 160, month_position: 3 } : undefined }
+  : { status: 'ready', data: {
   latest: state.notes.toSorted((a, b) => b.createdAt.localeCompare(a.createdAt))[0]
     ? { ...state.notes.toSorted((a, b) => b.createdAt.localeCompare(a.createdAt))[0], body: null, voice: true } : null,
   unread: state.notes.some(note => !note.listenedAt),
-}, retry() {} }) }));
+}, retry() {} } }));
 vi.mock('./hooks/use-streak-sessions', () => ({ useStreakSessions: () => state.history }));
 vi.mock('@/features/player-shell', () => ({ useCaptainContext: () => ({ data: { fullName: 'محمود', captainId: 'c', awaitingPlansAt: state.awaitingPlansAt }, status: 'ready', retry() {} }) }));
 vi.mock('@/core/offline', async original => ({ ...await original<typeof Offline>(), useLiveQuery: () => ({ water_ml: 1250 }) }));
@@ -52,20 +59,53 @@ const note: VoiceNote = { id: 'voice', url: '/audio', durationSeconds: 24, liste
 function render(rest = false, today = '2026-11-11', program = snapshot, history = sessions) {
   return renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' }, createElement(V3Home, {
     now: new Date(`${today}T08:00:00Z`), today, firstName: 'أحمد', playerId: 'player',
-    snapshot: program, day, rest, weekSessions: history, sessions: history, onPreview() {},
+    snapshot: program, day, rest, sessions: history, onPreview() {},
+    week: createElement(WeekStrip, { today, days: buildWeek(today, program.training_days, history) }),
+    readiness: createElement(MorningRow, { today }),
   })));
 }
-afterEach(() => { state.notes = []; vi.unstubAllEnvs(); });
+afterEach(() => { state.notes = []; state.rank = 'ready'; vi.unstubAllEnvs(); });
 
-it('places the cut-corner workout above the compact stats and meal link', () => {
+it('places the cut-corner workout above the compact meal and macro card', () => {
   const html = render();
   const hero = html.indexOf('cut-corner');
-  const stats = html.indexOf('hairline-cells');
+  const stats = html.indexOf('data-home-section="nutrition"');
   expect(hero).toBeGreaterThan(0);
   expect(stats).toBeGreaterThan(hero);
   expect(html.indexOf('href="/player/nutrition"')).toBeGreaterThan(stats);
   expect(html).toContain('engraved');
   expect(html).toMatch(/<time datetime="2026-11-11"/i);
+});
+
+it.each([
+  [false, ['hero', 'readiness', 'rank', 'nutrition', 'week']],
+  [true, ['week', 'hero', 'nutrition', 'tomorrow', 'rank']],
+] as const)('orders the v4 sections on rest=%s', (rest, order) => {
+  vi.stubEnv('NEXT_PUBLIC_RANKS_ENABLED', '1');
+  vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
+  const html = render(rest);
+  const positions = order.map(section => html.indexOf(`data-home-section="${section}"`));
+  expect(positions[0]).toBeGreaterThanOrEqual(0);
+  expect(positions.every((position, index) => index === 0 || position > (positions[index - 1] ?? -1))).toBe(true);
+  expect(html).toMatch(/<header[^>]*>.*data-home-coach.*<\/header>/);
+  expect(html).toContain('href="/player/rank"');
+});
+
+it('uses the dynamically imported coach control at the end of the header', () => {
+  const header = readFileSync('src/features/player-home/components/home-header.tsx', 'utf8');
+  expect(header).toContain("dynamic(() => import('@/features/player-shell').then(module => module.CoachButton))");
+  expect(header).toMatch(/<header[\s\S]*<time[\s\S]*<CoachButton \/>[\s\S]*<\/header>/);
+});
+
+it('uses real points and team place and hides the rank link on error', () => {
+  vi.stubEnv('NEXT_PUBLIC_RANKS_ENABLED', '1');
+  expect(render()).toContain('aria-valuenow="60"');
+  expect(render()).toContain('ترتيبك في الفريق: 3');
+  state.rank = 'loading';
+  expect(render()).toContain('aria-busy="true"');
+  expect(render()).not.toContain('href="/player/rank"');
+  state.rank = 'error';
+  expect(render()).not.toContain('href="/player/rank"');
 });
 
 it('shows a calm waiting line in the hero area while the coach prepares plans', () => {
@@ -74,18 +114,17 @@ it('shows a calm waiting line in the hero area while the coach prepares plans', 
   finally { state.awaitingPlansAt = null; }
 });
 
-it('shows one primary workout action and real workout, calorie, water and weekly data', () => {
+it('shows one primary workout action and real workout, calorie and water data', () => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
   const html = render();
   expect(html).toContain('صدر وترايسبس');
   expect(html).toContain('فيه تسخين');
-  expect(html).toContain('43%');
+  expect(html).toContain('aria-valuenow="43"');
   expect(html).toContain('الجاي: الغدا');
-  expect(html).toContain('href="#home-morning"');
-  expect(html).toContain('href="/player/history"');
+  expect(html).toContain('ضيف 250 مل');
   // Ranks are off by default, so the medal tile must not link to the hidden rank page.
   expect(html).not.toContain('href="/player/rank"');
-  expect(html.replace(/<[^>]*>/g, '')).toContain('1 / 3');
+  expect(html.replace(/<[^>]*>/g, '')).toContain('1.25 من');
   expect(html.match(/<a\b[^>]*class="[^"]*\bcontrol-primary\b[^"/]*"/g)).toHaveLength(1);
   expect(html).toContain('ابدأ التمرين');
   const task = renderToStaticMarkup(createElement(NextTaskCard, { task: { kind: 'start', href: '/player/workout/push', name: 'Push' }, day }));
@@ -93,11 +132,11 @@ it('shows one primary workout action and real workout, calorie, water and weekly
 });
 it('shows rest content, tomorrow preview and the food action without a workout primary', () => {
   const html = render(true, '2026-11-10');
-  for (const text of ['يوم راحة', 'بكره', 'سجّل أكلك', 'العضل بيكبر وإنت مرتاح. نام كويس، واشرب ميه، وكُل أكلك.']) expect(html).toContain(text);
+  for (const text of ['يوم راحة', 'بكره', 'href="/player/nutrition"', 'العضل بيكبر وإنت مرتاح. نام كويس، واشرب ميه، وكُل أكلك.']) expect(html).toContain(text);
   expect(html).toContain('href="#home-day-preview"');
   expect(html).not.toContain('ابدأ التمرين');
   expect(html).not.toContain('/player/rank');
-  expect(html.match(/<a\b[^>]*class="[^"]*\bcontrol-primary\b[^"/]*"/g)).toHaveLength(1);
+  expect(html).not.toMatch(/<a\b[^>]*class="[^"]*\bcontrol-primary\b[^"/]*"/);
 });
 it('only promises streak preservation on a scheduled rest day', () => {
   expect(render(true, '2026-11-10')).toContain('الراحة مش هتقطع الـ1 يوم بتوعك');
@@ -137,6 +176,7 @@ it('keeps missing-plan and empty-workout contact actions secondary in v3', () =>
   const meals = state.meals;
   state.meals = [];
   try {
+    expect(render()).toContain('href="/player/captain"');
     const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' },
       createElement('div', {}, createElement(NutritionSlot), createElement(TodayCard, { day: { ...day, exercises: [] }, rest: false }))));
     expect(html).toContain('/player/captain');
@@ -164,5 +204,6 @@ it('shows a done state instead of a second start once today’s workout is finis
   expect(html).not.toContain('ابدأ التمرين');
   expect(html).not.toContain('data-tour="workout-start"');
   const started = render(false, '2026-11-11', snapshot, [...sessions, { ...todaySession, completed_at: null }]);
-  expect(started).toContain('ابدأ التمرين');
+  expect(started).toContain('كمّل التمرين');
+  expect(started).toContain('data-tour="workout-start"');
 });

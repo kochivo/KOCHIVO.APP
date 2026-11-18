@@ -13,9 +13,9 @@ import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import Link from 'next/link';
 import { buttonClass } from '@/ui/button';
 
-export function NextTaskSlot({ snapshot, sessions, today, playerId, retryKey, onRetry, rest }: {
+export function NextTaskSlot({ snapshot, sessions, today, playerId, retryKey, onRetry, rest, workoutInHero }: {
   snapshot: ProgramSnapshot | null; sessions: WorkoutSessionRow[]; today: string;
-  playerId?: string; retryKey: number; onRetry: () => void; rest?: boolean;
+  playerId?: string; retryKey: number; onRetry: () => void; rest?: boolean; workoutInHero?: boolean;
 }) {
   const t = useT(messages);
   const status = useTaskStatus(today, playerId, retryKey);
@@ -29,7 +29,8 @@ export function NextTaskSlot({ snapshot, sessions, today, playerId, retryKey, on
     : { intakeDone: true, checkInWeeks: [saturdayWeek(today)[0] ?? today], voiceNotes: [] };
   const task = playerNextTask({ today, snapshot, sessions, rest, intakeDone: remote.intakeDone,
     meals: nutrition.snapshot?.meals ?? [], mealLogs: logs, checkInWeeks: remote.checkInWeeks, voiceNotes: remote.voiceNotes });
-  return <><NextTaskCard task={task} day={snapshot ? pickTodayDay(snapshot, sessions, today) : undefined} />
+  return <>{!(workoutInHero && (task.kind === 'start' || task.kind === 'continue')) &&
+    <NextTaskCard task={task} day={snapshot ? pickTodayDay(snapshot, sessions, today) : undefined} />}
     {captainWorkspaceEnabled() && task.kind !== 'voice' && remote.voiceNotes.some(note => !note.listenedAt) &&
       <Link href="/player/captain" className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-12 items-center px-page-x py-stack text-sm" })}>{t('task.voice')}</Link>}
   </>;

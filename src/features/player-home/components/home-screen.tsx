@@ -12,7 +12,8 @@ import { useCalendarClock } from '@/lib/use-calendar-clock';
 import { EmptyState, ErrorState, LoadingState, SyncPill } from '@/ui';
 import { useProgramSnapshot } from '../hooks/use-program-snapshot';
 import { useWeekSessions } from '../hooks/use-week-sessions';
-import { isWeeklyProgram, pickTodayDay } from '../next-day';
+import { isWeeklyProgram, pickTodayDay, weeklyFinished } from '../next-day';
+import { CardioCards } from '@/ui/cardio-cards';
 import { buildWeek } from '../week';
 import { Greeting } from './greeting';
 import { RankChip } from '@/features/ranks';
@@ -45,6 +46,7 @@ const V3Home = dynamic(() => import('./v3-home').then(module => module.V3Home), 
 const PendingForms = dynamic(() => import('@/features/player-shell').then(module => module.PlayerAssessments), {
   ssr: false, loading: () => <LoadingState variant="detail" />,
 });
+const NotificationBell = dynamic(() => import('@/features/notifications').then(module => module.NotificationBell), { ssr: false });
 
 export function HomeScreen({ firstName, playerId }: { firstName?: string; playerId?: string }) {
   const timezone = useTimezone();
@@ -69,22 +71,26 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
   const day = snapshot && sessions && today ? pickTodayDay(snapshot, sessions, today) : undefined;
   const weekly = snapshot ? isWeeklyProgram(snapshot) : false;
   const [decision, setDecision] = useState<Decision | null>(null);
-  const rest = decision === 'rest' || Boolean(snapshot && sessions && today && isRestDay(snapshot, sessions, today));
+  const rest = decision === 'rest' || Boolean(snapshot && sessions && today &&
+    (isRestDay(snapshot, sessions, today) || (v6 && weekly && !day && !weeklyFinished(snapshot, today))));
   const tomorrowAt = new Date(`${today || '2000-01-01'}T12:00:00Z`);
   tomorrowAt.setUTCDate(tomorrowAt.getUTCDate() + 1);
   const tomorrow = snapshot && sessions ? pickTodayDay(snapshot, sessions, localDate(tomorrowAt, 'UTC')) : undefined;
   const tomorrowRest = snapshot && sessions ? isRestDay(snapshot, sessions, localDate(tomorrowAt, 'UTC')) : false;
   const failed = localError || status === 'error';
+  const loading = !now || status === 'loading' || Boolean(snapshot && (!sessions || !weekSessions));
+  const showError = failed && (!snapshot || localError);
   const nextWeekAt = new Date(`${today || '2000-01-01'}T12:00:00Z`);
   nextWeekAt.setUTCDate(nextWeekAt.getUTCDate() + 7);
   const preview = snapshot && today ? v6 && rest && selectedDate === localDate(tomorrowAt, 'UTC')
     ? { day: tomorrow, status: tomorrowRest || tomorrow?.is_rest_day || (weekly && !tomorrow) ? 'rest' as const : 'upcoming' as const }
     : previewFor(snapshot, sessions ?? [], selectedDate, today) : { day: undefined, status: 'rest' as const };
+  const sync = <SyncPill state={!online ? 'offline' : parked && parked > 0 ? 'attention' : pending === undefined || pending > 0 ? 'pending' : 'synced'} pending={pending}
+    onRetry={() => { void retryParked(localDb()).catch(onError); }} />;
   const statusHeader = <header className="flex flex-wrap items-center justify-between gap-stack">
       {now && <Greeting firstName={firstName} now={now} playerId={playerId} snapshot={snapshot} loading={status === 'loading'} />}
       {ranksEnabled() && <RankChip />}
-      <SyncPill state={!online ? 'offline' : parked && parked > 0 ? 'attention' : pending === undefined || pending > 0 ? 'pending' : 'synced'} pending={pending}
-        onRetry={() => { void retryParked(localDb()).catch(onError); }} />
+      {sync}
     </header>;
   // Built before the loading guard, so it must wait for a real date; buildWeek('') throws in Intl.
   const weekStrip = today && <WeekStrip today={today} selected={selectedDate} nextDays={buildWeek(localDate(nextWeekAt, 'UTC'), snapshot?.training_days ?? [], [], locale, snapshot ?? undefined)} onSelect={date => setSelection({ today, date })} days={buildWeek(today, snapshot?.training_days ?? [],
@@ -97,21 +103,18 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
     className={v6 ? 'mx-auto flex max-w-lg flex-col gap-card-gap px-page-x pt-card [font-family:var(--font-alexandria),var(--font-manrope),sans-serif]' : 'mx-auto max-w-lg space-y-card-gap px-page-x pt-section pb-32'}>
     {!v6 && statusHeader}
     {!v6 && dailyExtras}
-    {failed && (!snapshot || localError) ? <ErrorState message={t('couldntLoadYourProgram')} retryLabel={t('tryAgain')} onRetry={() => {
+    {showError ? <ErrorState message={t('couldntLoadYourProgram')} retryLabel={t('tryAgain')} onRetry={() => {
       setLocalError(false); setRetryKey((value) => value + 1); void retry();
-    }} /> : !now || status === 'loading' || (snapshot && (!sessions || !weekSessions)) ? <LoadingState variant="cards" /> : <>
-      {v6 && <>
-        <V3Home weightKg={weightKg} now={now} today={today} firstName={firstName} playerId={playerId} snapshot={snapshot} day={day}
-          rest={rest} sessions={sessions ?? []} weekSessions={weekSessions ?? []} onPreview={date => setSelection({ today, date })} />
-      </>}
+    }} /> : loading || !now ? <LoadingState variant="cards" /> : <>
+      {v6 && <V3Home weightKg={weightKg} now={now} today={today} firstName={firstName} playerId={playerId} snapshot={snapshot} day={day}
+        rest={rest} sessions={sessions ?? []} onPreview={date => setSelection({ today, date })} week={weekStrip} showToday={selectedDate === today}
+        readiness={<MorningRow playerId={playerId} today={today} rest={rest}><PlayerReadiness weightKg={weightKg} playerId={playerId} today={today} rest={rest} coachRest={decision === 'rest'}
+          onDecisionChange={setDecision} tomorrowRest={Boolean(tomorrowRest || (weekly && !tomorrow))}
+          tomorrow={tomorrow && !tomorrowRest && !tomorrow.is_rest_day ? starterText(tomorrow.title, locale) : undefined} /></MorningRow>} />}
       <div hidden={selectedDate !== today} className="space-y-card-gap">
-      {v6 ? <>
-        <NextTaskSlot rest={rest} snapshot={snapshot ?? null} sessions={sessions ?? []} today={today} playerId={playerId}
-          retryKey={retryKey} onRetry={() => setRetryKey(value => value + 1)} />
-        <MorningRow><PlayerReadiness weightKg={weightKg} playerId={playerId} today={today} rest={rest} coachRest={decision === 'rest'}
-          onDecisionChange={setDecision} tomorrowRest={Boolean(tomorrowRest)}
-          tomorrow={tomorrow && !tomorrowRest && !tomorrow.is_rest_day ? starterText(tomorrow.title, locale) : undefined} /></MorningRow>
-      </> : rest ? <PlayerReadiness weightKg={weightKg} playerId={playerId} today={today} rest coachRest={decision === 'rest'}
+      {v6 ? <NextTaskSlot rest={rest} snapshot={snapshot ?? null} sessions={sessions ?? []} today={today} playerId={playerId}
+        retryKey={retryKey} onRetry={() => setRetryKey(value => value + 1)} workoutInHero={!rest && Boolean(day?.exercises.length)} />
+        : rest ? <PlayerReadiness weightKg={weightKg} playerId={playerId} today={today} rest coachRest={decision === 'rest'}
         onDecisionChange={setDecision}
         tomorrowRest={Boolean(tomorrowRest)}
         tomorrow={tomorrow && !tomorrowRest && !tomorrow.is_rest_day ? starterText(tomorrow.title, locale) : undefined} /> : <>
@@ -120,18 +123,19 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
       <PlayerReadiness weightKg={weightKg} playerId={playerId} today={today} rest={false} onDecisionChange={setDecision} />
       </>}
       </div>
-      {weekStrip}
+      {!v6 && weekStrip}
       <div id="home-day-preview" key={selectedDate} className={selectedDate !== today ? 'motion-safe:animate-[surface-in_180ms_ease-out] motion-reduce:animate-none' : undefined}>
       {selectedDate !== today ? <DayPreviewCard date={selectedDate} {...preview} /> :
         snapshot && weekly && (!day || day.is_rest_day) ? <WeeklyRestCard snapshot={snapshot} today={today} /> :
-        snapshot && day ? <TodayCard day={day} rest={Boolean(rest)} /> :
+        snapshot && day ? !v6 || rest || !day.exercises.length ? <TodayCard day={day} rest={Boolean(rest)} />
+          : <CardioCards blocks={day.cardio ?? []} /> : v6 && snapshot ? null :
         <EmptyState icon={Dumbbell} title={t('yourProgramIsBeingPrepared')} body={t('yourCoachIsPreparingYourProgramIt')} secondary={{ label: t('messageCoach'), href: '/player/captain' }} />}
       </div>
-      {v6 && statusHeader}
+      {v6 && <div className="flex items-center justify-between gap-inline">{sync}<NotificationBell round /></div>}
       {failed && snapshot && <p className="text-sm text-muted">{t('lastUpdatedAWhileAgo')}</p>}
     </>}
     {v6 && dailyExtras}
     {captainWorkspaceEnabled() && <PendingForms layout="home" />}
-    <NutritionSlot date={selectedDate || undefined} />
+    {(!v6 || selectedDate !== today || showError || loading) && <NutritionSlot date={selectedDate || undefined} />}
   </main>;
 }

@@ -2,7 +2,8 @@
 
 import type { SnapshotDay } from '@/core/offline';
 import { useLocale, useT } from '@/core/i18n/client';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, Dumbbell, Moon } from 'lucide-react';
+import { formatDateAr } from '@/lib/dates';
 import { starterText } from '@/lib/starter-text';
 import { formatNumber } from '@/lib/format';
 import { messages } from '../messages';
@@ -16,19 +17,24 @@ export function TomorrowCard({ day, date, rest, onPreview }: {
   const minutes = day ? estimateMinutes(day.exercises) + warmupDuration(day) +
     (day.cardio ?? []).reduce((sum, block) => sum + block.minutes, 0) : 0;
   const content = <>
-    <span className="flex size-12 shrink-0 flex-col items-center justify-center rounded-2xl bg-surface-raised">
-      <span className="text-micro text-muted">{t('homeTomorrow')}</span>
-      <b className="font-[family-name:var(--font-manrope)] text-base">{formatNumber(Number(date.slice(-2)), locale)}</b>
+    <span className="flex items-center justify-between gap-inline text-xs">
+      <b>{t('homeTomorrow')}</b>
+      <time dateTime={date} className="text-faint">{formatDateAr(date, { weekday: 'long' }, locale)}</time>
     </span>
-    <span className="flex min-w-0 flex-1 flex-col gap-inline">
-      <b className="text-md">{rest ? t('homeTomorrowRest') : day ? starterText(day.title, locale) : t('homeNoTomorrow')}</b>
-      {!rest && day && <span className="text-xs text-muted">{t('exerciseCount', { n: day.exercises.length, count: formatNumber(day.exercises.length, locale) })}
-        {minutes > 0 && <> · {t('homeMinutes', { count: formatNumber(minutes, locale) })}</>}
-      </span>}
+    <span className="flex items-center gap-stack">
+      <span aria-hidden className="grid size-12 shrink-0 place-items-center rounded-control bg-surface-raised text-muted">
+        {rest ? <Moon className="size-5" /> : <Dumbbell className="size-5" />}
+      </span>
+      <span className="min-w-0 flex-1">
+        <b className="text-md">{rest ? t('homeTomorrowRest') : day ? starterText(day.title, locale) : t('homeNoTomorrow')}</b>
+        {!rest && day && <span className="block text-xs text-muted">{t('exerciseCount', { n: day.exercises.length, count: formatNumber(day.exercises.length, locale) })}
+          {minutes > 0 && <> · {t('homeMinutes', { count: formatNumber(minutes, locale) })}</>}
+        </span>}
+      </span>
+      {!rest && day && <ChevronLeft aria-hidden className="size-4 shrink-0 text-muted ltr:rotate-180" />}
     </span>
-    {!rest && day && <ChevronLeft aria-hidden className="size-[18px] text-muted ltr:rotate-180" />}
   </>;
-  const className = 'glass flex min-h-12 items-center gap-stack rounded-card px-card py-stack text-ink';
-  return !rest && day ? <a href="#home-day-preview" onClick={() => onPreview(date)} className={className}>{content}</a>
+  const className = 'glass flex min-h-12 flex-col gap-stack rounded-card px-card py-stack text-ink';
+  return !rest && day ? <a href="#home-day-preview" onClick={() => onPreview(date)} className={`press ${className}`}>{content}</a>
     : <div className={className}>{content}</div>;
 }

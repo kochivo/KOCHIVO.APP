@@ -1,5 +1,6 @@
 'use client';
 import { IconButton } from '@/ui/icon-button';
+import type { ReactNode } from 'react';
 import { X } from 'lucide-react';
 import { useLocale, useT } from '@/core/i18n/client';
 import { ResponsiveDialog } from '@/ui/responsive-dialog';
@@ -9,8 +10,8 @@ import { messages } from '../messages';
 import type { StreakStats } from '../streak';
 import { StreakRing } from './streak-ring';
 
-export function StreakSheet({ stats, today, completedDates, isTrainingDay, onClose }: {
-  stats: StreakStats; today: string; completedDates: readonly string[]; isTrainingDay: (date: string) => boolean; onClose: () => void;
+export function StreakSheet({ stats, today, completedDates, isTrainingDay, onClose, footer }: {
+  stats: StreakStats; today: string; completedDates: readonly string[]; isTrainingDay: (date: string) => boolean; onClose: () => void; footer?: ReactNode;
 }) {
   const t = useT(messages);
   const locale = useLocale();
@@ -44,5 +45,6 @@ export function StreakSheet({ stats, today, completedDates, isTrainingDay, onClo
     <dl className="grid grid-cols-3 divide-x divide-line">{rows.map(([label, value]) => <div key={label} className="space-y-inline px-inline text-center">
       <dt className="text-xs text-muted">{label}</dt><dd className="text-xl font-light tabular-nums">{value}</dd>
     </div>)}</dl>
+    {footer}
   </ResponsiveDialog>;
 }
