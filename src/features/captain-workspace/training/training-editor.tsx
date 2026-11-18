@@ -30,6 +30,8 @@ import type { TrainingPlayerFacts } from './training-facts';
 import { useToast } from '@/ui/toast';
 import { messages as successMessages } from '../success/messages';
 import { exerciseName } from '@/lib/display-name';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { messages as phoneMessages } from './phone/messages';
 
 type Props = { programs: { id: string; title: string; status: string }[]; playerName?: string; remainingDays?: number; playerFacts?: TrainingPlayerFacts } & (
   { mode?: 'player'; playerId: string; initial: ProgramDraft | null } |
@@ -39,6 +41,7 @@ type Props = { programs: { id: string; title: string; status: string }[]; player
 export function TrainingEditor({ playerId, playerName, remainingDays, playerFacts, initial, programs, mode = 'player' }: Props) {
   const t = useT(messages), pt = useT(programMessages), et = useT(editorMessages);
   const locale = useLocale();
+  const phone = useT(phoneMessages);
   const success = useT(successMessages), toast = useToast();
   const template = mode === 'template';
   const state = useTrainingAutosave(initial);
@@ -114,8 +117,12 @@ export function TrainingEditor({ playerId, playerName, remainingDays, playerFact
         toast.success({ title: success('assigned', { name: playerName ?? '' }), detail: success('name', { name: draft.title }), icon: 'program' }); }
     } catch { setError(t('error')); } finally { setPending(false); }
   }
-  return <section onBlur={() => void state.flush()} className="@container min-w-0 space-y-card-gap">
+  const phoneDay = draft && day && !choosing && captainWorkspaceEnabled() ? [
+    phone('dayPosition', { n: draft.days.indexOf(day) + 1, total: draft.days.length }), day.title,
+  ].filter(Boolean).join(' · ') : undefined;
+  return <section onBlur={() => void state.flush()} className={`@container min-w-0 space-y-card-gap${phoneDay ? ' max-md:pb-[var(--builder-action-height)]' : ''}`}>
     <EditorHeader playerId={playerId} playerName={playerName} remainingDays={draft?.status === 'active' ? remainingDays : undefined} template={template} title={draft?.title}
+      phoneDay={phoneDay}
       starting={Boolean(allRest)} status={state.status} busy={pending} disabled={!draft || choosing} onSend={() => void send()} onRetry={() => {
         void state.flush().then(ok => { if (ok && draft) toast.success({ title: success(template ? 'templateSaved' : 'saved'), detail: success('name', { name: draft.title }), icon: template ? 'template' : 'program' }); });
       }}

@@ -4,6 +4,7 @@ import { expect, it, vi } from 'vitest';
 import { Measurements } from './measurements';
 import { TrainingAdherence } from './training-adherence';
 import { PlayerOverview } from './overview';
+import { PhoneOverview } from './phone-overview';
 import type { FileSummary, Profile } from './types';
 import type { FileActivity } from './load-activity';
 
@@ -43,4 +44,17 @@ it('uses chronological scan measurements for current values and change pills', (
     ] }, locale: 'en', today: '2026-11-14' }));
   for (const value of ['82.4', '+1.2', '−0.8']) expect(html).toContain(value);
   expect(html).not.toContain('Best squat');
+});
+
+it('limits the phone stat strip and week dots to the phone and uses completed dates', () => {
+  const html = renderToStaticMarkup(createElement(PhoneOverview, { locale: 'en', today: '2026-11-18',
+    profile: { ...profile, program: { title: 'Plan', updatedAt: '2026-11-13', days: 2, exercises: 4 } },
+    summary: { ...summary, completedDays: 1, completedDates: ['2026-11-14'] },
+    activity: { ...activity, scans: [{ scan_date: '2026-11-14', weight_kg: 82.4, fat_pct: null },
+      { scan_date: '2026-11-18', weight_kg: 81.2, fat_pct: null }] },
+  }));
+  for (const value of ['md:hidden', 'hairline-cells', '81.2', '−1.2', '50%', 'Saturday: Trained', 'Sunday: No workout logged']) {
+    expect(html).toContain(value);
+  }
+  expect(html.match(/<li /g)).toHaveLength(7);
 });

@@ -41,6 +41,8 @@ it('shows actual player initials, count, meal count and calorie target', () => {
   expect(html).toContain('3 meals');
   expect(html).toContain('1 player');
   expect(html).toContain('title="Sam"');
+  expect(html).toMatch(/class="[^"]*\smd:hidden"/);
+  expect(html).toContain('max-md:hidden');
   expect(html).not.toContain('<button');
 });
 

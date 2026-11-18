@@ -20,6 +20,8 @@ import { PlayerMedalChip } from './rank-chip';
 import { archivePlayer, rosterMessages } from '@/features/roster/server';
 import { messages as subscriptionMessages } from './subscription-messages';
 import { SubscriptionWaitEntry } from './subscription-wait-entry';
+import { PhoneFileHeader } from './phone-file-header';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 
 export function FileHeader({ playerId, profile, summary, tab, locale, today, unreadCount = 0 }: {
   playerId: string; profile: Profile; summary: FileSummary; tab: PlayerFileTab; locale: Locale; today: string; playerToday?: string; unreadCount?: number;
@@ -34,16 +36,19 @@ export function FileHeader({ playerId, profile, summary, tab, locale, today, unr
   const weight = summary.file.facts.weight?.value;
   const remaining = Math.max(0, daysBetween(today, summary.subscription.access_until));
   const planned = summary.file.facts.trainingDays?.value.length ?? profile.program?.days ?? 0;
+  const phone = captainWorkspaceEnabled();
   return <>
     <PageBarTitle title={profile.name} subtitle={subtitle} />
     <PageBarActions>
-      <Link href="/captain/players" aria-label={vt('back')} className={`${clickableClass} glass press grid min-h-12 min-w-12 cursor-pointer place-items-center rounded-full border border-line focus-visible:ring-2 focus-visible:ring-lime`}><Back aria-hidden className="size-5" /></Link>
+      <Link href="/captain/players" aria-label={vt('back')} className={`${clickableClass} glass press grid min-h-12 min-w-12 cursor-pointer place-items-center rounded-full border border-line focus-visible:ring-2 focus-visible:ring-lime${phone ? ' max-md:hidden' : ''}`}><Back aria-hidden className="size-5" /></Link>
       <Link href={`${base}/preview`} prefetch={false} className={`${clickableClass} glass press hidden min-h-12 cursor-pointer items-center gap-inline rounded-full border border-line px-page-x text-sm focus-visible:ring-2 focus-visible:ring-lime min-[760px]:inline-flex`}><Eye aria-hidden className="size-4" />{t('preview')}</Link>
-      <Link href={`${base}/chat`} aria-label={vt('message')} className={buttonClass({ variant: 'primary', block: false })}><KoCaptainChat className="size-5" /><span className="hidden min-[760px]:inline">{vt('message')}</span></Link>
+      <Link href={`${base}/chat`} aria-label={vt('message')} className={buttonClass({ variant: 'primary', block: false, className: phone ? 'max-md:hidden' : undefined })}><KoCaptainChat className="size-5" /><span className="hidden min-[760px]:inline">{vt('message')}</span></Link>
       <ArchiveMenu playerId={playerId} archive={archivePlayer} confirmText={rt('archiveTheyllBeRemovedFromThePlayer', { v0: profile.name })}
         archivingText={rt('archiving')} errorText={rt('couldntArchiveTryAgain')} />
     </PageBarActions>
-    <section className="glass grid items-center gap-card-gap rounded-card p-card min-[760px]:grid-cols-2">
+    {phone && <PhoneFileHeader base={base} playerId={playerId} today={today} name={profile.name} goal={goal} packageName={summary.tier?.name}
+      remaining={remaining} waiting={Boolean(summary.subscription.awaiting_plans_at)} tab={tab} locale={locale} unreadCount={unreadCount} />}
+    <section className={phone ? 'glass grid items-center gap-card-gap rounded-card p-card min-[760px]:grid-cols-2 max-md:hidden' : 'glass grid items-center gap-card-gap rounded-card p-card min-[760px]:grid-cols-2'}>
       <div className="flex min-w-0 items-center gap-stack">
         {profile.avatarUrl ? <Image src={profile.avatarUrl} alt="" width={64} height={64} unoptimized className="size-16 shrink-0 rounded-full border-2 border-lime object-cover" /> :
           <span aria-hidden className="glass-strong grid size-16 shrink-0 place-items-center rounded-full border-2 border-lime text-title font-bold">{profile.name.charAt(0)}</span>}
@@ -63,7 +68,7 @@ export function FileHeader({ playerId, profile, summary, tab, locale, today, unr
         { label: t("subscription"), value: formatNumber(remaining, locale), unit: t("dayUnit"), tone: "warn" },
       ]} />
     </section>
-    <FileTabs label={t('tabs')} items={([
+    <FileTabs desktopOnly={phone} label={t('tabs')} items={([
       ['overview', base], ['training', `${base}/programs`], ['nutrition', `${base}/nutrition`],
       ['checkins', `${base}/checkins`], ['assessments', `${base}/assessments`], ['chat', `${base}/chat`],
     ] as const).map(([key, href]) => ({ href, label: key === 'chat' && unreadCount > 0 ? t('chatCount', { count: formatNumber(unreadCount, locale) }) : t(key), active: tab === key }))} />

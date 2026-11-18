@@ -1,7 +1,7 @@
 'use client';
 import { useSyncExternalStore } from 'react';
 
-const query = '(min-width: 760px)';
+const query = '(min-width: 768px)';
 function subscribe(notify: () => void) {
   const media = window.matchMedia(query);
   media.addEventListener('change', notify);

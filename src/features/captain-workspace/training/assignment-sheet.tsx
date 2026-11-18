@@ -11,9 +11,12 @@ import { messages as trainingMessages } from './messages';
 import { useToast } from '@/ui/toast';
 import { messages as successMessages } from '../success/messages';
 import { Button } from '@/ui/button';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { messages as phoneMessages } from './phone/messages';
 
 export function AssignmentSheet({ programId, programTitle = '', onClose }: { programId: string; programTitle?: string; onClose: () => void }) {
   const t = useT(messages), tt = useT(trainingMessages), router = useRouter();
+  const phone = useT(phoneMessages), enabled = captainWorkspaceEnabled();
   const success = useT(successMessages), toast = useToast();
   const load = useCallback(() => loadAssignmentPlayers(), []), players = useResource('training-assignment-players', load);
   const [selected, setSelected] = useState<string[]>([]), [done, setDone] = useState<string[]>([]);
@@ -34,7 +37,9 @@ export function AssignmentSheet({ programId, programTitle = '', onClose }: { pro
       {players.error ? <p role="alert">{tt('error')}<Button type="submit" variant={'secondary'} block={false} className={"min-h-12 px-stack"} onClick={() => void players.retry()}>{tt('retry')}</Button></p> : !players.data ? <p role="status">{tt('loading')}</p> : players.data.length ?
       <fieldset disabled={busy}>{players.data.map(player => <label key={player.playerId} className="flex min-h-12 items-center gap-stack border-t border-line-soft"><input type="checkbox" disabled={done.includes(player.playerId)} checked={selected.includes(player.playerId)} className={`${editableFieldClass} size-5 accent-lime`} onChange={event => setSelected(current => event.target.checked ? [...current, player.playerId] : current.filter(id => id !== player.playerId))} />{player.fullName}{failures[player.playerId] && <span role="alert" className="text-xs text-danger">{failures[player.playerId]}</span>}</label>)}</fieldset> : <p className="text-faint">{t('playersEmpty')}</p>}
     {busy && <p role="status">{tt('loading')}</p>}
-    <Button disabled={busy || !selected.some(id => !done.includes(id))} type="submit" variant={'secondary'} block={false} className={"min-h-12 px-page-x disabled:opacity-40"} onClick={() => void assign()}>{t('assign')}</Button>
+    <Button disabled={busy || !selected.some(id => !done.includes(id))} type="submit" variant={'secondary'} block={false} className={"min-h-12 px-page-x disabled:opacity-40"} onClick={() => void assign()}>
+      {enabled ? <><span className="max-md:hidden">{t('assign')}</span><span className="md:hidden">{phone('saveAndSend', { n: selected.filter(id => !done.includes(id)).length })}</span></> : t('assign')}
+    </Button>
       <Button disabled={busy} type="submit" variant={'secondary'} block={false} className={"min-h-12 px-stack"} onClick={onClose}>{t('close')}</Button>
   </ResponsiveDialog>;
 }

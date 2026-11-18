@@ -12,6 +12,7 @@ import { conversationMessages } from '../conversation-messages';
 import type { ConversationProps } from '../conversation-types';
 import { loadConversationPreviews } from '../data/conversation-previews';
 import { ConversationList } from './conversation-list';
+import { PhoneConversationList } from './phone-conversation-list';
 import { useConversationDesktop } from '../hooks/use-conversation-desktop';
 
 const Pane = dynamic(() => import('./conversation-pane').then(module => module.ConversationPane), {
@@ -43,11 +44,12 @@ export function ConversationScreen(props: ConversationProps) {
   };
   return <section>
     <PageBarTitle title={t('title')} />
+    <div className={chatOpen ? 'hidden' : 'mb-card-gap md:hidden'}><PhoneConversationList rows={rows} at={at} onSelect={choose} /></div>
     {(error || resource.error || !captainId) && <ErrorState message={t('error')} retryLabel={t('retry')} onRetry={() => error || !captainId ? router.refresh() : void resource.retry()} />}
     {!rows ? !error && !resource.error && captainId && <LoadingState variant="list" aria-label={t('loading')} /> :
-      <div className="grid items-stretch gap-card-gap min-[760px]:grid-cols-[minmax(12rem,1fr)_minmax(0,2fr)]">
-        <div className={chatOpen ? 'hidden min-[760px]:block' : 'min-w-0'}><ConversationList rows={rows} selected={currentId} onSelect={choose} /></div>
-        <div className={chatOpen ? 'min-w-0' : 'hidden min-w-0 min-[760px]:block'}>
+      <div className="grid items-stretch gap-card-gap md:grid-cols-[minmax(12rem,1fr)_minmax(0,2fr)]">
+        <div className={chatOpen ? 'hidden md:block' : 'hidden min-w-0 md:block'}><ConversationList rows={rows} selected={currentId} onSelect={choose} /></div>
+        <div className={chatOpen ? 'min-w-0' : 'hidden min-w-0 md:block'}>
           {current ? (desktop || chatOpen) && <Pane key={current.playerId} player={current} captainId={captainId} at={at} onGuard={onGuard} onUpdate={onUpdate}
             onBack={() => { if (guard.current()) setChatOpen(false); }} />
             : <div className="glass flex min-h-[470px] items-center justify-center rounded-card border border-line-soft p-card text-xs text-muted">{t(rows.length ? 'choose' : 'empty')}</div>}

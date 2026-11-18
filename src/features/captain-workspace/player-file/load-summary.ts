@@ -42,7 +42,8 @@ export async function loadSummary(playerId: string, today: string): Promise<File
     assessment = { title: form.data.title, next: current.answered_at ? null : current.due_at,
       last: rows.flatMap(row => row.answered_at ? [row.answered_at] : []).sort().at(-1) ?? null };
   }
+  const completedDates = [...new Set((week.data ?? []).map(row => row.training_date))];
   return { file, rank: points.data ? medalRank(points.data.lifetime) : undefined, lifetime: points.data?.lifetime, tier: tier.data ?? null, subscription: subscription.data, lastTraining: latest.data?.[0]?.training_date ?? null,
-    completedDays: new Set((week.data ?? []).map(row => row.training_date)).size, assessment,
+    completedDays: completedDates.length, completedDates, assessment, programId: training.data?.[0]?.id,
     plansReady: { training: Boolean(training.data?.length), nutrition: Boolean(nutrition.data?.length) } };
 }

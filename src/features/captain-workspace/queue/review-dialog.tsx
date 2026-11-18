@@ -11,9 +11,9 @@ import { VoiceRecorder, useRecorder, sendVoiceNote } from '@/features/voice-note
 import { messages } from './messages';
 import { useToast } from '@/ui/toast';
 import { messages as successMessages } from '../success/messages';
-export function ReviewDialog({ item, inputs, now, onClose, onReviewed }: {
+export function ReviewDialog({ item, inputs, now, onClose, onReviewed, phone }: {
   item: InboxItem; inputs: TriageInputs; now: Date; onClose: () => void;
-  onReviewed: (item: InboxItem, commit: () => Promise<void>, advance: boolean) => Promise<void>;
+  onReviewed: (item: InboxItem, commit: () => Promise<void>, advance: boolean) => Promise<void>; phone?: boolean;
 }) {
   const t = useT(messages);
   const success = useT(successMessages), toast = useToast();
@@ -45,7 +45,7 @@ export function ReviewDialog({ item, inputs, now, onClose, onReviewed }: {
     } catch (failure) { setError(failure instanceof Error ? failure.message : t('error')); }
     finally { busy.current = false; setPending(false); }
   }
-  return <ResponsiveDialog modal openerId={`queue-${item.kind}-${item.id}`} fallbackId="queue-heading" onDismiss={close}
+  return <ResponsiveDialog modal openerId={`${phone ? 'phone-' : ''}queue-${item.kind}-${item.id}`} fallbackId="queue-heading" onDismiss={close}
     aria-label={item.player_name} className="sheet fixed inset-0 z-50 m-auto max-h-[90dvh] w-full max-w-2xl space-y-card-gap overflow-y-auto rounded-card bg-bg p-section text-ink backdrop:bg-bg/80">
     <header className="flex items-center justify-between gap-stack"><h2 className="text-2xl font-bold">{item.player_name}</h2>
       <IconButton onClick={close} aria-label={t('close')} className="grid min-h-12 min-w-12 place-items-center"><X aria-hidden /></IconButton></header>

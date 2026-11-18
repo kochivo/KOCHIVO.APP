@@ -13,8 +13,13 @@ import { messages } from './messages';
 import { ExerciseImage } from '@/ui/exercise-image';
 import { exerciseMediaUrl } from '@/core/storage/media-url';
 import { messages as setMessages } from '@/lib/training/messages';
+import { buttonClass } from '@/ui/button';
+import { phoneMessages } from './phone/messages';
 
-export function OverviewActivity({ profile, activity, playerId, locale, overview, training }: { profile: Profile; activity: FileActivity; playerId: string; locale: Locale; overview: ReactNode; training: ReactNode }) {
+export function OverviewActivity({ profile, activity, playerId, locale, overview, training, phone = false, programId }: {
+  profile: Profile; activity: FileActivity; playerId: string; locale: Locale; overview: ReactNode;
+  training: ReactNode; phone?: boolean; programId?: string;
+}) {
   const t = createT(v11Messages, locale), ft = createT(messages, locale);
   const st = createT(setMessages, locale);
   const photos = [...profile.checkIns].sort((a, b) => a.weekStart.localeCompare(b.weekStart)).flatMap(row => row.photos[0] ? [{ url: row.photos[0], date: row.weekStart }] : []);
@@ -23,7 +28,7 @@ export function OverviewActivity({ profile, activity, playerId, locale, overview
   const exercises = new Map<string, FileActivity['sets']>();
   for (const set of activity.sets) exercises.set(set.exercise_id, [...(exercises.get(set.exercise_id) ?? []), set]);
   return <div className="grid items-start gap-card-gap min-[760px]:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
-    <div className="min-w-0 space-y-card-gap">
+    <div className={phone ? 'min-w-0 space-y-card-gap max-md:order-3' : 'min-w-0 space-y-card-gap'}>
       {overview}
       <section className="glass rounded-card border border-line-soft p-card">
         <div className="mb-stack flex items-center justify-between"><h2 className="text-md font-bold">{t('photos')}</h2><Link href={`/captain/players/${playerId}/checkins`} className={`${clickableClass} inline-flex min-h-12 items-center text-xs text-lime`}>{t('all')}</Link></div>
@@ -33,9 +38,9 @@ export function OverviewActivity({ profile, activity, playerId, locale, overview
         </figure>)}</div> : <p className="text-sm text-muted">{ft('noPhotos')}</p>}
       </section>
     </div>
-    <div className="min-w-0 space-y-card-gap">
-      {training}
-      <section className="glass rounded-card border border-line-soft p-card">
+    <div className={phone ? 'min-w-0 space-y-card-gap max-md:contents' : 'min-w-0 space-y-card-gap'}>
+      {phone ? <div className="space-y-card-gap max-md:order-4">{training}</div> : training}
+      <section className={phone ? 'glass rounded-card border border-line-soft p-card max-md:order-1' : 'glass rounded-card border border-line-soft p-card'}>
         <div className="mb-stack flex flex-wrap items-center justify-between gap-inline"><h2 className="text-sm font-semibold">{t('lastWorkout')}</h2>
           {activity.last && <span className="text-xs text-lime">{activity.last.program_days?.title} · {formatDateAr(activity.last.training_date, { day: 'numeric', month: 'long' }, locale)}</span>}
         </div>
@@ -50,6 +55,10 @@ export function OverviewActivity({ profile, activity, playerId, locale, overview
             </div>)}</div>
         </div>) : <p className="text-sm text-muted">{t('noWorkout')}</p>}
       </section>
+      {phone && <Link href={programId ? `/captain/programs/${programId}` : `/captain/players/${playerId}/programs`} prefetch={false}
+        className={buttonClass({ variant: 'primary', size: 'lg', className: 'order-2 md:hidden' })}>
+        {programId ? createT(phoneMessages, locale)('edit') : ft('createTraining')}
+      </Link>}
     </div>
   </div>;
 }

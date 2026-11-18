@@ -16,12 +16,12 @@ export function ConversationBubbles({ items, onRetry, now = new Date() }: { item
   const bottom = useRef<HTMLDivElement>(null);
   const tail = items.at(-1)?.id;
   useEffect(() => { bottom.current?.scrollIntoView({ block: 'nearest' }); }, [tail]);
-  return <div className="min-h-0 flex-1 overflow-y-auto p-card">
+  return <div className="min-h-0 flex-1 overflow-y-auto p-card max-md:px-0">
     {!items.length && <p className="p-section text-center text-xs text-muted">{t('emptyThread')}</p>}
-    <ol aria-label={t('thread')} className="flex flex-col gap-inline">
+    <ol aria-label={t('thread')} className="flex flex-col gap-inline max-md:min-h-full max-md:justify-end">
       {conversationDays(items, timezone).map(group => <Fragment key={group.date}>
         <li className="self-center py-inline text-xs text-muted"><time dateTime={group.date}>{conversationDayLabel(group.date, now, timezone, locale, t)}</time></li>
-        {group.items.map(item => <li key={item.id} className={`glass max-w-[85%] min-[760px]:max-w-[70%] rounded-card px-card py-stack text-sm leading-[1.7] ${item.mine ? 'self-end rounded-se-sm border border-lime/20 bg-lime-soft bg-none text-ink' : 'self-start rounded-ss-sm'}`}>
+        {group.items.map(item => <li key={item.id} className={`glass max-w-[85%] md:max-w-[70%] rounded-card px-card py-stack text-sm leading-[1.7] max-md:max-w-[78%] max-md:px-card-gap max-md:text-row ${item.mine ? 'self-end rounded-se-sm border border-lime/20 bg-lime-soft bg-none text-ink' : 'self-start rounded-ss-sm max-md:rounded-ss-card max-md:rounded-ee-sm max-md:border-0 max-md:bg-surface-raised max-md:bg-none max-md:shadow-none'}`}>
         {item.kind === 'text' ? <p className="whitespace-pre-wrap break-words">{item.body}</p> : <div className="relative w-[220px] max-w-full">
           <AudioPlayer src={item.url ?? ''} durationSeconds={item.durationSeconds ?? 0} playLabel={t('play')} pauseLabel={t('pause')}
             formatTime={voiceDuration} onError={() => setBroken(item.id)}

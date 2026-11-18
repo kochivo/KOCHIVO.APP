@@ -1,4 +1,4 @@
-import type { Locale } from '@/core/i18n/locale';
+import type { ArabicStyle, Locale } from '@/core/i18n/locale';
 import type { Translator } from '@/core/i18n/messages';
 import Link from 'next/link';
 import { formatNumber } from '@/lib/format';
@@ -7,9 +7,14 @@ import type { homeMessages, homeV11Messages } from './messages';
 import type { HomeTask } from './tasks';
 import { buttonClass } from '@/ui/button';
 import { LightDayEntry } from '@/features/captain-workspace';
+import { PhoneHomeNeeds } from './phone-home-needs';
+import type { PhoneHomeDebt } from './phone-home-needs';
 
-export function HomeTaskListView({ t, locale, onSelect, old, tasks, count, contacts, today }: { t: Translator<typeof homeV11Messages>; locale: Locale; onSelect?: (href: string) => void; old: Translator<typeof homeMessages>; tasks: HomeTask[]; count: number; contacts: Map<string, string>; today?: string }) {
-  return <section className="glass min-w-0 overflow-hidden rounded-card">
+export function HomeTaskListView({ t, locale, onSelect, old, tasks, count, contacts, today, phone, style, debts }: {
+  t: Translator<typeof homeV11Messages>; locale: Locale; onSelect?: (href: string) => void; old: Translator<typeof homeMessages>;
+  tasks: HomeTask[]; count: number; contacts: Map<string, string>; today?: string; phone?: boolean; style?: ArabicStyle; debts?: PhoneHomeDebt[];
+}) {
+  const desktop = <section className="glass min-w-0 overflow-hidden rounded-card">
     <header className="flex items-center gap-inline px-card pt-card pb-stack"><h2 className="text-md font-bold">{t('tasks')}</h2>
       <span className="tone-neutral rounded-md px-inline text-micro font-semibold">{formatNumber(count, locale)}</span>
       <Link prefetch={onSelect ? false : undefined} onClick={onSelect ? event => { event.preventDefault(); onSelect((event.currentTarget.getAttribute('href') ?? '').replace(/^#/, '')); } : undefined} href={onSelect ? '#/captain/tasks' : '/captain/tasks'} className="ms-auto inline-flex min-h-12 items-center text-xs text-muted">{t('all')}</Link></header>
@@ -27,5 +32,7 @@ export function HomeTaskListView({ t, locale, onSelect, old, tasks, count, conta
         </li>;
       })}</ul>}
   </section>;
+  return phone ? <div><div className="hidden md:block">{desktop}</div>
+    <PhoneHomeNeeds {...{ tasks, contacts, locale, today, style, debts }} /></div> : desktop;
 }
 

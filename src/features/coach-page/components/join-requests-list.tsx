@@ -12,8 +12,8 @@ import { localDate } from '@/lib/dates';
 import { WorkspaceJoinCard } from './workspace-join-card';
 import type { JoinRequestRow } from './workspace-join-card';
 
-export function JoinRequestsList({ rows, onResolved, workspace = false, now = 0 }: {
-  rows: JoinRequestRow[]; onResolved?: (id: string) => void; workspace?: boolean; now?: number;
+export function JoinRequestsList({ rows, onResolved, workspace = false, phone = false, now = 0 }: {
+  rows: JoinRequestRow[]; onResolved?: (id: string) => void; workspace?: boolean; phone?: boolean; now?: number;
 }) {
   const timezone = useTimezone();
   const t = useT(messages), router = useRouter();
@@ -40,8 +40,8 @@ export function JoinRequestsList({ rows, onResolved, workspace = false, now = 0 
   return <div className="space-y-stack">
     {selected && <BillingManagerLoader playerId={selected.id} name={selected.name} today={localDate(new Date(), timezone)} autoActivate />}
     {error && <p role="alert" className="text-danger">{error}</p>}
-    {visible.length ? <ul className={workspace ? 'glass overflow-hidden rounded-card' : 'space-y-stack'}>{visible.map(row => workspace
-      ? <WorkspaceJoinCard key={row.id} row={row} now={now} onResolve={(id, status) => void resolve(id, status)} />
+    {visible.length ? <ul className={workspace ? `glass overflow-hidden rounded-card${phone ? ' max-md:space-y-card-gap max-md:border-0 max-md:bg-none max-md:shadow-none' : ''}` : 'space-y-stack'}>{visible.map(row => workspace
+      ? <WorkspaceJoinCard key={row.id} row={row} now={now} phone={phone} onResolve={(id, status) => void resolve(id, status)} />
       : <li key={row.id} className="flex flex-wrap items-center justify-between gap-stack">
       <span>{row.full_name}</span><div className="flex gap-inline">
         <Button variant="secondary" onClick={() => void resolve(row.id, 'accepted')}>{t('accept')}</Button>

@@ -9,9 +9,12 @@ import type { RosterResult } from '../types';
 
 const state = vi.hoisted(() => ({ filter: 'all', result: { players: [{ playerId: 'p', fullName: 'Ali',
   accessUntil: '2026-11-15', startedOn: '2026-11-01', lastTrainingDate: '2026-11-12', programTitle: 'Full body', openTasks: 2 }] } as RosterResult,
-  index: 0 }));
+  index: 0, search: '' }));
 vi.mock('react', async original => ({ ...await original<typeof React>(), use: () => [state.result, 'Captain'],
-  useState: (initial: unknown) => [state.index++ === 0 ? state.filter : initial, () => {}],
+  useState: (initial: unknown) => {
+    const index = state.index++;
+    return [index === 0 ? state.filter : index === 1 ? state.search : initial, () => {}];
+  },
 }));
 vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh() {} }) }));
 vi.mock('next/dynamic', () => ({ default: () => () => null }));
@@ -19,7 +22,7 @@ vi.mock('@/ui/page-bar-slot', () => ({ usePageBarTarget: (slot: string) => ({ id
 vi.mock('react-dom', async original => ({ ...await original<typeof ReactDOM>(),
   createPortal: (children: React.ReactNode, target: { id: string }) => createElement('div', { 'data-slot': target.id }, children),
 }));
-beforeEach(() => { state.index = 0; state.filter = 'all'; });
+beforeEach(() => { state.index = 0; state.filter = 'all'; state.search = ''; });
 function render(error = false) {
   state.index = 0;
   return renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' }, createElement(WorkspaceRoster, {
@@ -31,7 +34,7 @@ function render(error = false) {
     details: error ? { error: true } : { activity: { p: { dates: ['2026-11-12'], weekdays: [0, 2, 4], rpe: 8, video: true, rank: 'champion' } } },
   })));
 }
-it('renders real player data, weekly dots and the urgent status in both responsive views', () => {
+it('renders real player data and urgent status in both views, and weekly dots in the desktop table', () => {
   const html = render();
   expect(html.match(/href="\/captain\/players\/p"/g)).toHaveLength(2);
   expect(html.match(/فيديو مستني/g)).toHaveLength(2);
@@ -42,6 +45,18 @@ it('renders real player data, weekly dots and the urgent status in both responsi
   expect(html).toContain('text-warn');
   expect(html).not.toContain('Join request sentinel');
   expect(html).not.toContain('/preview');
+});
+it('counts trained players and scopes the phone search to the phone list', () => {
+  const html = render();
+  expect(html).toContain('1 لاعب · 1 اتمرنوا الأسبوع ده');
+  expect(html).toContain('type="search"');
+  state.search = '  aLI  ';
+  expect(render().match(/href="\/captain\/players\/p"/g)).toHaveLength(2);
+  state.search = 'Mona';
+  const filtered = render();
+  expect(filtered).toContain('مفيش لاعب مطابق للبحث');
+  expect(filtered).toMatch(/md:block"><table.*href="\/captain\/players\/p"/);
+  expect(filtered.match(/href="\/captain\/players\/p"/g)).toHaveLength(1);
 });
 it('puts the total and lime invite action in the shared bar without a page header', () => {
   const html = render();

@@ -2,6 +2,7 @@
 import { useCallback } from 'react';
 import type { ReactNode } from 'react';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useT } from '@/core/i18n/client';
 import { useResource } from '@/core/resource';
@@ -23,6 +24,9 @@ import { SectionHeading } from './captain/section-heading';
 import { InviteSection } from './captain/invite-section';
 import { SecuritySection } from './captain/security-section';
 import { PreferencesSection } from './captain/preferences-section';
+import { CaptainPhoneSettingsMenu } from './captain/phone-settings-menu';
+import { messages as phoneMessages } from '../captain-phone/messages';
+import { buttonClass } from '@/ui/button';
 
 const Profile = dynamic(() => import('./captain-profile-card').then(m => m.CaptainProfileCard), { loading: () => <LoadingState variant="detail" /> });
 const PaymentMethods = dynamic(() => import('./payment-methods-card').then(m => m.PaymentMethodsCard), { loading: () => <LoadingState variant="detail" /> });
@@ -31,9 +35,13 @@ const PublicPage = dynamic(() => import('./public-page-settings').then(m => m.Pu
 const Ramadan = dynamic(() => import('./ramadan-settings').then(m => m.RamadanSettings), { loading: () => <LoadingState variant="detail" /> });
 
 export function CaptainSettings({ signOut }: { signOut?: ReactNode }) {
-  const t = useT(messages), legacy = useT(legacyMessages), demo = useDemoExpiry();
+  const t = useT(messages), legacy = useT(legacyMessages), phone = useT(phoneMessages), demo = useDemoExpiry();
   const query = useSearchParams();
   const section = selectedSection(query?.get('section') ?? null);
+  const overview = !query?.has('section');
+  const overviewQuery = new URLSearchParams(query?.toString());
+  overviewQuery.delete('section');
+  const overviewHref = overviewQuery.size ? `?${overviewQuery}` : '/captain/settings';
   const { now } = useCalendarClock(), timezone = useTimezone();
   const loader = useCallback(() => loadCaptainSettings(), []);
   const resource = useResource('settings:captain:workspace', loader);
@@ -44,9 +52,12 @@ export function CaptainSettings({ signOut }: { signOut?: ReactNode }) {
     <PageBarTitle title={legacy('settings')} />
     {!profile ? resource.error ? <ErrorState message={legacy('couldnTLoadSettings')} retryLabel={t('retry')} onRetry={() => void resource.retry()} />
       : <LoadingState variant="detail" /> :
-      <div className="grid items-start gap-card-gap min-[760px]:grid-cols-[minmax(0,1fr)_minmax(0,3.4fr)]">
-        <SectionNav section={section} query={query?.toString() ?? ''} />
-        <section key={section} id={`settings-${section}`} className="glass min-w-0 space-y-card-gap rounded-card p-card">
+      <div className="grid items-start gap-card-gap max-md:grid-cols-1! min-[760px]:grid-cols-[minmax(0,1fr)_minmax(0,3.4fr)]">
+        {overview && <CaptainPhoneSettingsMenu profile={profile} query={query?.toString() ?? ''} timezone={timezone} signOut={signOut} />}
+        <div className="hidden md:contents"><SectionNav section={section} query={query?.toString() ?? ''} /></div>
+        {!overview && <Link href={overviewHref} className={buttonClass({ variant: 'secondary', block: false, className: 'justify-self-start md:hidden!' })}>{phone('back')}</Link>}
+        <section key={section} id={`settings-${section}`}
+          className={`glass min-w-0 space-y-card-gap rounded-card p-card${overview ? ' max-md:hidden' : ''}`}>
           <SectionHeading section={section} />
           {section === 'profile' && <Profile workspace profile={profile} onSave={setEdited} />}
           {section === 'page' && <PublicPage profile={profile} onSave={setEdited} />}

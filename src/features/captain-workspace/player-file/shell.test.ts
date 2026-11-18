@@ -42,6 +42,18 @@ it('shows the unread count only when positive on the chat tab', () => {
   expect(empty).toContain('>الشات</a>');
   expect(empty).not.toContain('الشات ·');
 });
+it('adds the phone header and billing action while keeping the six desktop tabs', () => {
+  vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
+  try {
+    const html = render(createElement(FileHeader, { ...input, summary: { ...summary, tier: { name: 'VIP', color: '' } }, tab: 'overview' }));
+    expect(html).toMatch(/md:hidden"><header.*VIP/);
+    expect(html).toMatch(/id="file-renew"[^>]*aria-haspopup="dialog"[^>]*>الفلوس/);
+    expect(html).toMatch(/<nav[^>]*max-md:hidden"><ul/);
+    expect(html.match(/<li><a[^>]*href=/g)).toHaveLength(6);
+  } finally {
+    vi.unstubAllEnvs();
+  }
+});
 it('renders one primary missing card, then none when every section exists', () => {
   let html = render(createElement(StatusCards, input));
   expect(html.match(/data-primary="true"/g)).toHaveLength(1);
@@ -70,4 +82,13 @@ it('renders the measurement and training content alongside the existing activity
   expect(html).toContain('Weight chart');
   expect(html).toContain('Training adherence');
   expect(html).toContain('href="/captain/players/p/checkins"');
+});
+
+it('opens the existing program editor from the phone overview action', () => {
+  const html = render(createElement(OverviewActivity, {
+    profile, playerId: 'p', locale: 'en', phone: true, programId: 'active',
+    activity: { scans: [], last: null, sets: [], nutrition: null }, overview: null, training: null,
+  }));
+  expect(html.match(/control-primary/g)).toHaveLength(1);
+  expect(html).toMatch(/control-primary[^>]*md:hidden[^>]*href="\/captain\/programs\/active">Edit program/);
 });

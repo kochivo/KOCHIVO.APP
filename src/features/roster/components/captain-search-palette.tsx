@@ -10,7 +10,9 @@ import { frameItems } from './captain-frame-model';
 import type { CaptainFrameData } from './captain-frame-data';
 import { buttonClass } from '@/ui/button';
 
-export function CaptainSearchPalette({ players, onClose }: { players: CaptainFrameData['players']; onClose: () => void }) {
+export function CaptainSearchPalette({ players, onClose, openerId = 'captain-search' }: {
+  players: CaptainFrameData['players']; onClose: () => void; openerId?: string;
+}) {
   const t = useT(frameMessages);
   const id = useId();
   const [query, setQuery] = useState('');
@@ -21,7 +23,7 @@ export function CaptainSearchPalette({ players, onClose }: { players: CaptainFra
     ...(players ?? []).map(player => ({ href: `/captain/players/${player.id}`, label: player.name, group: 'players' as const })),
     ...frameItems.filter(item => item.available).map(item => ({ href: item.href, label: t(item.id), group: 'work' as const })),
   ].filter(item => item.label.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()));
-  return <ResponsiveDialog modal aria-label={t('search')} fallbackId="captain-search" openerId="captain-search" onDismiss={onClose}
+  return <ResponsiveDialog modal aria-label={t('search')} fallbackId={openerId} openerId={openerId} onDismiss={onClose}
     className="sheet fixed inset-x-4 top-[12dvh] mx-auto max-h-[75dvh] w-auto max-w-xl overflow-y-auto rounded-card border border-line bg-surface p-stack text-ink backdrop:bg-bg/70">
     <div className="flex items-center gap-inline">
       <input ref={input} role="combobox" aria-autocomplete="list" aria-expanded="true" aria-controls={id}

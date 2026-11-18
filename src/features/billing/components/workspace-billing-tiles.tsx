@@ -6,13 +6,13 @@ import { messages as legacyMessages, workspaceMessages } from '../messages';
 import { messages } from '../workspace/messages';
 import type { subscriptionTiles } from './workspace-billing-summary';
 
-export function WorkspaceBillingTiles({ values, owed, owing, today, expected, noPackage }: {
+export function WorkspaceBillingTiles({ values, owed, owing, today, expected, noPackage, className }: {
   values: Omit<ReturnType<typeof subscriptionTiles>, 'pending'> & { pending: number | null };
-  owed?: number; owing?: number; today?: string; expected?: number; noPackage?: number;
+  owed?: number; owing?: number; today?: string; expected?: number; noPackage?: number; className?: string;
 }) {
   const t = useT(workspaceMessages), finance = useT(messages), legacy = useT(legacyMessages), locale = useLocale();
   const number = (value: number | null) => value === null ? null : formatNumber(value, locale);
-  return <StatStrip className={today ? 'glass-strong' : undefined} items={[
+  return <StatStrip className={today ? ['glass-strong', className].filter(Boolean).join(' ') : className} items={[
     { label: today ? t('monthIncome', { month: formatDateAr(today, { month: 'long' }, locale) }) : t('income'),
       value: number(values.income), unit: finance('currency'),
       note: expected && expected > 0 ? t('expected', { amount: formatNumber(expected, locale) }) : undefined },

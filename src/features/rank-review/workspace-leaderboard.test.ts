@@ -70,6 +70,9 @@ describe('workspace leaderboard', () => {
     }));
     expect(html).toContain('aria-label="First this month"');
     expect(html.match(/Youssef Ahmed/g)).toHaveLength(2);
+    expect(html).toMatch(/role="table"[^>]*max-md:hidden/);
+    expect(html).toMatch(/role="row"[^>]*min-h-15[^>]*max-md:hidden/);
+    expect(html).toMatch(/flex-nowrap whitespace-nowrap md:hidden/);
   });
   it('shows loading before rows arrive', () => {
     const html = renderToStaticMarkup(createElement(WorkspaceLeaderboard, { locale: 'en', board }));

@@ -4,14 +4,14 @@ import { expect, it, vi } from 'vitest';
 import { CaptainSettings } from './components/captain-settings';
 
 vi.mock('server-only', () => ({}));
-const query = vi.hoisted(() => ({ section: 'language' }));
+const query = vi.hoisted(() => ({ section: 'language' as string | null }));
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ refresh() {} }),
-  useSearchParams: () => new URLSearchParams({ section: query.section }),
+  useSearchParams: () => new URLSearchParams(query.section ? { section: query.section } : {}),
 }));
 vi.mock('next/dynamic', () => ({ default: () => () => null }));
 vi.mock('@/core/resource', () => ({ useResource: () => ({ data: {
-  full_name: 'Ali', timezone: 'Africa/Cairo', timezone_auto: true, units: 'metric',
+  full_name: 'Ali', public_slug: 'ali', timezone: 'Africa/Cairo', timezone_auto: true, units: 'metric',
 }, mutate() {} }) }));
 vi.mock('@/features/demo', () => ({ demoExpiry: () => null, useDemoExpiry: () => null }));
 vi.mock('@/features/billing', () => ({ SubscriptionEntry: () => null }));
@@ -47,4 +47,16 @@ it.each(['profile', 'page', 'invite', 'language', 'subscription', 'security'])('
   expect(html.match(/id="settings-(?:profile|page|invite|language|subscription|security)"/g)).toEqual([`id="settings-${section}"`]);
   expect(html.match(/aria-current="page"/g)).toHaveLength(1);
   expect(html).toMatch(new RegExp(`<a[^>]*aria-current="page"[^>]*href="\\?section=${section}"`));
+});
+
+it('shows phone overview links, the public page and sign out alongside the desktop profile default', () => {
+  query.section = null;
+  const html = renderToStaticMarkup(createElement(CaptainSettings, { signOut: createElement('button', null, 'sign-out') }));
+  expect(html).toMatch(/md:hidden[^]*href="\/c\/ali"/);
+  expect(html).toContain('شغالة');
+  expect(html).toContain('انسخ');
+  expect(html).toContain('sign-out');
+  expect(html).toContain('href="?section=language#settings-notifications"');
+  expect(html).toContain('max-md:hidden');
+  expect(html).toMatch(/<a[^>]*aria-current="page"[^>]*href="\?section=profile"/);
 });

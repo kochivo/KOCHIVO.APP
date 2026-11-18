@@ -40,12 +40,13 @@ export async function listLibraryTemplates(kind: TemplateKind): Promise<Template
     if (auth.error || !auth.data?.claims.sub) return { error: t('signInFirst') };
     const captain = auth.data.claims.sub;
     if (kind === 'program') {
-      const result = await client.from('programs').select('id,title,created_at,is_starter,status,settings,program_days(is_rest_day)')
+      const result = await client.from('programs').select('id,title,created_at,is_starter,status,settings,program_days(is_rest_day,program_exercises(count))')
         .eq('captain_id', captain).eq('is_template', true).order('created_at', { ascending: false });
       if (result.error) throw result.error;
       const usage = await templateUsage(client, kind, captain, result.data.map(row => row.id));
       return { data: result.data.map(row => ({ id: row.id, title: row.title, created_at: row.created_at,
         starter: row.is_starter, kind, count: row.program_days.filter(day => !day.is_rest_day).length,
+        exerciseCount: row.program_days.reduce((total, day) => total + (day.is_rest_day ? 0 : day.program_exercises?.[0]?.count ?? 0), 0),
         uses: usage.get(row.id)?.size ?? 0, archived: row.status === 'archived', ...trainingMetadata(row.settings) })) };
     }
     const result = await client.from('nutrition_plans').select('id,title,created_at,is_starter,status,target_protein,meals(id,day_type)')

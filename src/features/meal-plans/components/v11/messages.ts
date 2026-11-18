@@ -2,6 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 const arStd = {
   librarySummary: '{plans} أنظمة · {players} لاعبين يتبعونها',
+  phonePlanCount: '{n} أنظمة',
   writePlan: 'اكتب نظامًا للاعب', findPlan: 'ابحث عن نظام', filterPlans: 'تصفية الأنظمة',
   assigned: 'مستخدمة', unassigned: 'غير معيّن لأي لاعب', unassignedFilter: 'غير معيّنة', filterCount: '{label} {n}',
   recentlyEdited: 'الترتيب: آخر تعديل', noMatchingPlans: 'لا توجد أنظمة مطابقة',
@@ -26,6 +27,7 @@ const arStd = {
 export const messages = defineMessages({
   ar: {
     librarySummary: '{plans} أنظمة · {players} لاعبين عليها',
+    phonePlanCount: '{n} أنظمة',
     writePlan: 'اكتب نظام للاعب', findPlan: 'دوّر على نظام', filterPlans: 'تصفية الأنظمة',
     assigned: 'مستخدمة', unassigned: 'مش متعيّن لحد', unassignedFilter: 'مش متعيّنة', filterCount: '{label} {n}',
     recentlyEdited: 'ترتيب: آخر تعديل', noMatchingPlans: 'مفيش أنظمة مطابقة',
@@ -48,6 +50,7 @@ export const messages = defineMessages({
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   en: {
     librarySummary: '{plans} plans · {players} players using them',
+    phonePlanCount: '{n} plans',
     writePlan: 'Write a plan for a player', findPlan: 'Search plans', filterPlans: 'Filter plans',
     assigned: 'In use', unassigned: 'Unassigned', unassignedFilter: 'Unassigned', filterCount: '{label} {n}',
     recentlyEdited: 'Sorted by last edit', noMatchingPlans: 'No matching plans',

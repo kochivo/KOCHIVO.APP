@@ -1,14 +1,17 @@
 import { useId, useRef, useState } from 'react';
+import Link from 'next/link';
+import { buttonClass } from '@/ui/button';
 import { useT } from '@/core/i18n/client';
 import { editableFieldClass } from '@/ui/edit-in-place';
 import { useToast } from '@/ui/toast';
 import { saveInviteMessage } from '../../data/settings';
 import { messages } from '../../messages';
+import { messages as phoneMessages } from '../../captain-phone/messages';
 import type { SettingsProfile } from '../../schema';
 import { SaveBar } from './save-bar';
 
 export function InviteSection({ profile, onSave }: { profile: SettingsProfile; onSave: (profile: SettingsProfile) => void }) {
-  const t = useT(messages), toast = useToast(), id = useId();
+  const t = useT(messages), phone = useT(phoneMessages), toast = useToast(), id = useId();
   const saved = profile.invite_message ?? '';
   const [draft, setDraft] = useState(saved);
   const [pending, setPending] = useState(false);
@@ -34,5 +37,6 @@ export function InviteSection({ profile, onSave }: { profile: SettingsProfile; o
       className={`${editableFieldClass} min-h-32 w-full rounded-control border border-line bg-surface p-card text-start text-ink`} />
     {error && <p role="alert" className="text-sm text-danger">{error}</p>}
     <SaveBar dirty={dirty} pending={pending} onReset={() => { setDraft(saved); setError(''); }} />
+    <Link href="/captain/players/new" className={buttonClass({ variant: 'secondary', block: false, className: 'md:hidden!' })}>{phone('inviteLinks')}</Link>
   </form>;
 }

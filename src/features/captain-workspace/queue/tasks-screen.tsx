@@ -21,23 +21,34 @@ import { TaskRow } from './task-row';
 import { TasksState } from './tasks-state';
 import { useToast } from '@/ui/toast';
 import { messages as successMessages } from '../success/messages';
+import { PhoneTaskControls } from './phone-task-controls';
+import { PhoneTaskCard } from './phone-task-card';
+import { phoneTaskMessages } from './phone/messages';
+import { usePhoneTaskHash, usePhoneTasks } from './use-phone-tasks';
 const Detail = dynamic(() => import('./task-detail').then(module => module.TaskDetail));
 const Review = dynamic(() => import('./review-dialog').then(module => module.ReviewDialog));
 export function TasksScreen() {
   const t = useT(taskMessages), locale = useLocale(), router = useRouter();
+  const phone = usePhoneTasks(), phoneText = useT(phoneTaskMessages);
+  const hash = usePhoneTaskHash(phone);
   const success = useT(successMessages), toast = useToast();
   const loader = useCallback(() => loadTasks(), []);
   const resource = useResource(`captain-tasks:${locale}`, loader);
   const [filter, setFilter] = useState<TaskFilter>('all');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const [countAt, setCountAt] = useState<string | null>(null);
   const [review, setReview] = useState<InboxItem | null>(null);
   const [workingTask, setWorkingTask] = useState<CaptainTask | null>(null);
   const [pending, setPending] = useState(false), [failed, setFailed] = useState(false);
   const busy = useRef(false);
   const data = resource.data;
-  const tasks = data?.tasks ?? [], visible = filterTasks(tasks, filter), counts = taskCounts(tasks);
-  const selected = pending && workingTask ? workingTask : visible.find(task => task.id === selectedId) ?? visible[0];
+  const tasks = data?.tasks ?? [], filtered = filterTasks(tasks, filter), counts = taskCounts(tasks);
+  const visible = phone && search.trim() ? filtered.filter(task => task.name.toLocaleLowerCase(locale).includes(search.trim().toLocaleLowerCase(locale))) : filtered;
+  const requested = hash ? visible.find(task => `#${encodeURIComponent(task.id)}` === hash) : undefined;
+  const selected = pending && workingTask ? workingTask : visible.find(task => task.id === selectedId) ?? requested ?? visible[0];
+  const selectedIndex = visible.findIndex(task => task.id === selected?.id);
   const firstTask = tasks[0];
   const extraTab = filter === 'all' || filter === 'checkin' || filter === 'receipt' ? 'video' : filter;
   function changeFilter(value: string) {
@@ -45,13 +56,22 @@ export function TasksScreen() {
     if (tab) { setFilter(tab); setMobileOpen(false); }
   }
   function open(task: CaptainTask) { setSelectedId(task.id); setMobileOpen(true); }
+  function move(step: number) {
+    if (busy.current || visible.length < 2) return;
+    const next = visible[(selectedIndex + step + visible.length) % visible.length];
+    if (next) setSelectedId(next.id);
+  }
   async function complete(task: CaptainTask, commit: () => Promise<void>) {
     if (!data || busy.current) return false;
     busy.current = true; setWorkingTask(task); setPending(true); setFailed(false);
     try {
       const ok = await resource.mutate(current => ({ ...(current ?? data), tasks: (current ?? data).tasks.filter(row => row.id !== task.id) }), commit);
       if (!ok) { setFailed(true); setSelectedId(task.id); }
-      else setMobileOpen(false);
+      else {
+        setMobileOpen(false);
+        if (phone && task.item) setCountAt(new Date().toISOString());
+        if (phone && selectedIndex >= 0) setSelectedId((visible[selectedIndex + 1] ?? visible[0])?.id ?? null);
+      }
       return ok;
     } finally { busy.current = false; setPending(false); }
   }
@@ -77,11 +97,18 @@ export function TasksScreen() {
     return ok;
   }
   return <div id="queue-heading" tabIndex={-1} className="space-y-card-gap">
-    <PageBarTitle title={t('title')} subtitle={t('subtitle')} />
-    {firstTask && <PageBarActions><Button disabled={pending} onClick={() => { setFilter('all'); open(firstTask); }}>{t('startFirst')}</Button></PageBarActions>}
+    {!phone && <PageBarTitle title={t('title')} subtitle={t('subtitle')} />}
+    {!phone && firstTask && <PageBarActions><Button disabled={pending} onClick={() => { setFilter('all'); open(firstTask); }}>{t('startFirst')}</Button></PageBarActions>}
     {!data ? <TasksState kind={resource.error ? 'error' : 'loading'} retry={resource.retry} /> : <>
       {(failed || resource.error) && <p role="alert" className="text-sm text-danger">{t(failed ? 'failed' : 'error')}</p>}
-      {!tasks.length && !pending ? <TasksState kind="empty" /> : <>
+      {phone ? <section className="space-y-card-gap md:hidden">
+        <PhoneTaskControls at={countAt ?? data.at} open={tasks.length} {...{ counts, filter, search, pending }}
+          onFilter={changeFilter} onSearch={setSearch} index={selectedIndex} total={visible.length} onMove={move}>
+          {selected ? <PhoneTaskCard key={selected.id} task={selected} at={data.at} triage={data.triage} pending={pending}
+            canMove={visible.length > 1} onNext={() => move(1)} onAction={() => void action(selected)} onReview={setReview} onSend={send} />
+            : tasks.length ? <p role="status" className="p-card text-sm text-muted">{phoneText('noMatches')}</p> : <TasksState kind="empty" />}
+        </PhoneTaskControls>
+      </section> : !tasks.length && !pending ? <TasksState kind="empty" /> : <>
         <StatStrip items={(['all', 'checkin', 'receipt', 'program'] as const).map(key => ({
           label: t(key), value: formatNumber(counts[key], locale),
         }))} />
@@ -104,7 +131,7 @@ export function TasksScreen() {
           {selected && <div className={mobileOpen ? '' : 'max-[759px]:hidden'}><Detail key={selected.id} task={selected} pending={pending} onBack={() => setMobileOpen(false)} onSend={send} /></div>}
         </div>
       </>}
-      {review && <Review item={review} inputs={data.triage} now={new Date(data.at)} onClose={() => setReview(null)} onReviewed={async (_item, commit) => {
+      {review && <Review item={review} inputs={data.triage} now={new Date(data.at)} phone={phone || undefined} onClose={() => setReview(null)} onReviewed={async (_item, commit) => {
         const task = tasks.find(row => row.item?.id === review.id && row.item.kind === review.kind);
         if (!task || !await complete(task, commit)) throw new Error(t('failed'));
         setReview(null);

@@ -7,6 +7,7 @@ import { CaptainWorkspaceFrame } from './captain-workspace-frame';
 import { CaptainNavGroups } from './captain-nav-groups';
 import { CaptainSearchPalette } from './captain-search-palette';
 import { CaptainMoreSheet } from './captain-more-sheet';
+import { CaptainQuickAddSheet } from './captain-quick-add-sheet';
 
 const state = vi.hoisted(() => ({ load: vi.fn(), path: '/captain/players/id' }));
 vi.mock('server-only', () => ({}));
@@ -18,6 +19,12 @@ vi.mock('@/features/notifications', () => ({ NotificationBell: ({ captain }: { c
 vi.mock('./header-install', () => ({ HeaderInstall: () => createElement('button', { 'data-header-install': true }) }));
 vi.mock('./captain-device', () => ({ CaptainDevice: () => createElement('div', { 'data-captain-device': true }) }));
 vi.mock('@/features/ko-preview/server', () => ({ KoAccountLink: () => createElement('div', { 'data-ko-account': true }) }));
+vi.mock('@/features/billing/server', () => ({ fetchPlanSummary: async () => ({ plan: { tier: 'champion', player_limit: 20 }, used: 7 }) }));
+vi.mock('@/core/resource/use-resource', () => ({
+  useResource: (key: string) => key === 'captain:phone-more-counts'
+    ? { data: { programs: 12, exercises: 1250, plans: 8, foods: 640, forms: 5 } }
+    : {},
+}));
 
 function render(node: React.ReactNode) {
   return renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' }, node));
@@ -33,6 +40,8 @@ it('renders grouped navigation, real captain identity and the existing plan foot
   expect(html).toContain('href="/captain/join"');
   expect(html).not.toContain('href="/captain/notifications"');
   expect(html).toContain('min-[760px]');
+  expect(html).toContain('md:sticky md:top-3 md:flex');
+  expect(html).toContain('hidden min-[760px]:block max-md:hidden');
   expect(html).toContain('captain-more');
   expect(html).toContain('display: none');
   expect(html).toContain('data-captain-bell="true"');
@@ -67,6 +76,33 @@ it('offers the existing account popover from the mobile More sheet', () => {
   expect(html).toMatch(/popovertarget=/i);
   expect(html).toContain('حسابي');
   expect(html).not.toContain('lg:hidden');
+});
+
+it('lists the phone groups, inbox and live plan usage in More', () => {
+  const html = render(createElement(CaptainMoreSheet, { active: 'programs', counts, onClose: () => {},
+    captain: { name: 'Actual captain', avatar: null }, plan: { tier: 'champion', used: 7, limit: 20 } }));
+  expect(html).toContain('Actual captain');
+  expect(html).toContain('البطل');
+  for (const path of ['inbox', 'join', 'leaderboard', 'templates', 'library/exercises', 'library/meal-plans', 'library/foods', 'library/forms', 'billing', 'billing/packages', 'settings']) {
+    expect(html).toContain(`href="/captain/${path}"`);
+  }
+  expect(html).toMatch(/href="\/captain\/join"[\s\S]*?>2<\/span>/);
+  expect(html).toContain('>1,250</span>');
+  expect(html).toContain('>640</span>');
+  expect(html).toMatch(/<a\b(?=[^>]*href="\/captain\/templates")(?=[^>]*aria-current="page")/);
+  expect(html).toContain('divide-y divide-line-soft');
+});
+
+it('renders five destination links and the existing assessment flow in quick add', () => {
+  const html = render(createElement(CaptainQuickAddSheet, { onClose: () => {}, onAction: () => {}, players: null }));
+  expect(html).toContain('عاوز تعمل إيه؟');
+  expect(html).toContain('grid-cols-2');
+  expect([...html.matchAll(/href="([^"]+)"/g)].map(match => match[1])).toEqual([
+    '/captain/players/new', '/captain/billing', '/captain/templates',
+    '/captain/library/meal-plans', '/captain/join',
+  ]);
+  expect(html).toMatch(/<button[^>]*>[\s\S]*ابعت تقييم<\/button>/);
+  expect(html.match(/border-lime bg-lime-soft/g)).toHaveLength(1);
 });
 
 it('searches real players and available pages and reports player load failure', () => {

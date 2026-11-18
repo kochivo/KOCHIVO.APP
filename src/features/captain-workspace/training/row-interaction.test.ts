@@ -46,6 +46,9 @@ it('adds the two mockup actions only behind the workspace flag and uses the exis
   expect(nodes(TrainingExerciseRow(props)).find(node => node.props.children === 'مجموعات مختلفة')).toBeUndefined();
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
   const result = nodes(TrainingExerciseRow(props));
+  const drag = result.find(node => node.props.className?.toString().includes('touch-none'));
+  expect(drag?.props.className).toContain('max-md:flex');
+  expect(drag?.props.className).toContain('min-[760px]:flex');
   const different = result.find(node => node.props.children === 'مجموعات مختلفة');
   (different?.props.onClick as () => void)();
   expect(onPatch).toHaveBeenCalledWith({ set_plan: Array.from({ length: 4 }, () => ({ reps_min: 6, reps_max: 8, rir: 2 })) });

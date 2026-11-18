@@ -26,9 +26,12 @@ beforeEach(() => { vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1'); state.calls
 it('loads training metadata without the ambiguous recursive embed and batches distinct player usage', async () => {
   state.copies = [{ source_template_id: 'plan', player_id: 'a', status: 'active' }, { source_template_id: 'plan', player_id: 'a', status: 'draft' }];
   state.rows = [{ id: 'plan', title: 'Plan', created_at: '2026-11-12', is_starter: false, status: 'draft',
-    settings: { level: 'beginner', minutes: 30, equipment: 'gym' }, program_days: [{ is_rest_day: true }, { is_rest_day: false }],
+    settings: { level: 'beginner', minutes: 30, equipment: 'gym' }, program_days: [
+      { is_rest_day: true, program_exercises: [{ count: 2 }] },
+      { is_rest_day: false, program_exercises: [{ count: 7 }] },
+    ],
     copies: [{ player_id: 'a', status: 'active' }, { player_id: 'a', status: 'draft' }, { player_id: 'b', status: 'archived' }] }];
-  expect(await listLibraryTemplates('program')).toMatchObject({ data: [{ count: 1, uses: 1, level: 'beginner', minutes: 30, place: 'gym' }] });
+  expect(await listLibraryTemplates('program')).toMatchObject({ data: [{ count: 1, exerciseCount: 7, uses: 1, level: 'beginner', minutes: 30, place: 'gym' }] });
   expect(state.calls.filter(call => call[0] === 'from')).toEqual([['from', 'programs'], ['from', 'programs']]);
   expect(state.calls).toContainEqual(['in', 'source_template_id', ['plan']]);
   expect(state.calls).toContainEqual(['neq', 'status', 'archived']);

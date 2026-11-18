@@ -12,13 +12,13 @@ export function MealLibraryGrid({ plans, emptyLibrary, onAssign, onCreate, t }: 
   onCreate: () => void;
   t: Translator<typeof messages>;
 }) {
-  return <div className="grid gap-card-gap min-[760px]:grid-cols-2 xl:grid-cols-3">
+  return <div className="grid gap-card-gap min-[760px]:grid-cols-2 max-md:grid-cols-1! xl:grid-cols-3">
     {!plans.length && <p className="glass col-span-full rounded-card p-card text-muted" role="status">
       {t(emptyLibrary ? 'noPlans' : 'noMatchingPlans')}
     </p>}
     {plans.map(plan => <RefinedMealCard key={plan.id} plan={plan} t={t} onAssign={() => onAssign(plan.id)} />)}
     <button id="meal-library-create-card" type="button" onClick={onCreate}
-      className={`${clickableClass} flex min-h-44 flex-col items-center justify-center gap-inline rounded-card border border-dashed border-line p-card text-sm text-muted hover:text-ink ${plans.length ? '' : 'col-span-full'}`}>
+      className={`${clickableClass} flex min-h-44 flex-col items-center justify-center gap-inline rounded-card border border-dashed border-line p-card text-sm text-muted hover:text-ink max-md:min-h-12 ${plans.length ? '' : 'col-span-full'}`}>
       <KoPlus aria-hidden className="size-5" />
       {t('newPlanFromScratchOrTemplate')}
     </button>

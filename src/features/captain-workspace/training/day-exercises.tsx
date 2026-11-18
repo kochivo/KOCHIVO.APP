@@ -21,6 +21,8 @@ import { replaceInjuryExercise } from './fit-checks';
 import type { TaggedExercise } from './fit-checks';
 import { supersetLabel, supersetTag } from '@/lib/superset';
 import { messages as setMessages } from '@/lib/training/messages';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { messages as phoneMessages } from './phone/messages';
 
 export function applyCustomExercise(draft: ProgramDraft, programId: string, dayId: string, library: LibraryExercise, mode: string, rowId: string): ProgramDraft {
   const day = draft.days.find(item => item.id === dayId);
@@ -40,6 +42,8 @@ export function DayExercises({ day, update, flush, injuries = [], candidates = [
   injuries?: readonly string[]; candidates?: readonly TaggedExercise[];
 }) {
   const t = useT(messages), pt = useT(programMessages), et = useT(editorMessages);
+  const enabled = captainWorkspaceEnabled();
+  const phone = useT(phoneMessages);
   const success = useT(successMessages), toast = useToast(), locale = useLocale();
   const [announcement, setAnnouncement] = useState('');
   const searchId = `training-exercise-search-${day.id}`;
@@ -57,13 +61,13 @@ export function DayExercises({ day, update, flush, injuries = [], candidates = [
   const { listRef, handleProps, rowStyle } = useDragReorder(day.exercises.map(row => row.id), move);
   return <CustomExerciseNavigation value={{ programId: day.program_id, dayId: day.id, flush }}>
     <div className="grid min-w-0 items-start gap-card-gap @min-[780px]:grid-cols-[minmax(0,1fr)_minmax(14rem,1fr)] @min-[1040px]:grid-cols-[minmax(0,1fr)_18rem]">
-    <section className="@container glass min-w-0 rounded-card border border-line-soft">
-    <div className="flex min-h-14 flex-wrap items-center justify-between gap-inline px-card pt-card pb-stack">
+    <section className={`@container glass min-w-0 rounded-card border border-line-soft${enabled ? ' max-md:border-0 max-md:bg-none max-md:shadow-none' : ''}`}>
+    <div className={`flex min-h-14 flex-wrap items-center justify-between gap-inline px-card pt-card pb-stack${enabled && day.exercises.length ? ' max-md:sr-only' : ''}`}>
       <h2 className="text-md font-bold">{day.title || et('exerciseTitle')}</h2>
       <span className="text-xs text-muted">{day.exercises.length ? et('minutes', { n: summary.minutes + warmupMinutes(day.warmup) }) : et('unknownDuration')}</span></div>
     {!day.exercises.length && <p className="p-card text-sm text-faint">{t('noExercises')}</p>}
     <p aria-live="polite" aria-atomic="true" className="sr-only">{announcement}</p>
-    <ol ref={listRef}>{day.exercises.map((row, index) => {
+    <ol ref={listRef} className={enabled ? 'max-md:space-y-card-gap' : undefined}>{day.exercises.map((row, index) => {
       const previous = day.exercises[index - 1], following = day.exercises[index + 1];
       const members = day.exercises.filter(item => row.superset_group !== null && item.superset_group === row.superset_group);
       const groupStart = members.length > 1 && previous?.superset_group !== row.superset_group;
@@ -81,8 +85,8 @@ export function DayExercises({ day, update, flush, injuries = [], candidates = [
       onMove={delta => move(row.id, index + delta)} />;
     })}</ol>
     {announcement && <p role="status" className="px-page-x py-stack text-xs text-muted">{announcement}</p>}
-    <div className="p-card"><Button type="button" variant="secondary" block className="border-dashed" onClick={() => document.getElementById(searchId)?.focus()}>
-      <KoPlus aria-hidden className="size-4" />{pt('addExercise')}
+    <div className={`p-card${enabled ? ' max-md:px-0 max-md:pb-0' : ''}`}><Button type="button" variant="secondary" block className="border-dashed" onClick={() => document.getElementById(searchId)?.focus()}>
+      <KoPlus aria-hidden className="size-4" />{enabled ? <><span className="max-md:hidden">{pt('addExercise')}</span><span className="md:hidden">{phone('addExercise')}</span></> : pt('addExercise')}
     </Button></div>
     </section>
     <aside className="glass min-w-0 space-y-stack rounded-card p-card">

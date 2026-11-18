@@ -7,6 +7,7 @@ import { createT } from '@/core/i18n/messages';
 import type { Messages } from '@/core/i18n/messages';
 import { WorkspacePaymentsTable } from './workspace-payments-table';
 import { WorkspaceBillingPaymentRow } from './workspace-billing-payment-row';
+import { WorkspaceBillingPhonePayments } from './workspace-billing-phone-payments';
 import type { BillingPlayer } from '../types';
 
 const state = vi.hoisted(() => ({ slots: [] as unknown[], cursor: 0 }));
@@ -33,9 +34,9 @@ function nodes(value: unknown): Node[] {
   if (Array.isArray(value)) return value.flatMap(nodes);
   return isValidElement<Record<string, unknown>>(value) ? [value, ...nodes(value.props.children)] : [];
 }
-function render(rows: BillingPlayer[] = players) {
+function render(rows: BillingPlayer[] = players, phone = false) {
   state.cursor = 0;
-  return WorkspacePaymentsTable({ players: rows, packages: [], today: '2026-11-17' });
+  return WorkspacePaymentsTable({ players: rows, packages: [], today: '2026-11-17', phone });
 }
 function filter(value: string) {
   const onClick = nodes(render()).find(node => node.key === value)?.props.onClick;
@@ -87,3 +88,24 @@ it.each([['active', 'history'], ['late', 'collect'], ['pending', 'activate']] as
     expect(nodes(render()).some(node => node.props.initialAction === action)).toBe(true);
   },
 );
+
+it('shares the desktop filter and payment selection with the narrower list', () => {
+  const phone = () => {
+    const component = nodes(render(players, true)).find(node => node.type === WorkspaceBillingPhonePayments);
+    if (!component) throw new Error('Missing phone payment list');
+    return component as unknown as ReactElement<React.ComponentProps<typeof WorkspaceBillingPhonePayments>>;
+  };
+  const { props } = phone();
+  const html = renderToStaticMarkup(phone());
+  expect(html).toMatch(/Overdue <bdi>2<\/bdi>/);
+  expect(html).toMatch(/Ending <bdi>1<\/bdi>/);
+  expect(html).toMatch(/Paid <bdi>1<\/bdi>/);
+  expect(html).toContain('Paid 100');
+  props.onFilter('ending');
+  const ending = phone().props.filtered;
+  expect(ending.map(row => row.player.playerId)).toEqual(['soon']);
+  const row = ending[0];
+  if (!row) throw new Error('Missing ending payment row');
+  phone().props.onOpen(row);
+  expect(nodes(render(players, true)).some(node => node.props.initialAction === 'collect')).toBe(true);
+});

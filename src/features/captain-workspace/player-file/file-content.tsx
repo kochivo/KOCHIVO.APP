@@ -4,6 +4,7 @@ import { getPlayerTimezone } from '@/core/timezone/server';
 import { getTimezone } from '@/core/timezone/server';
 import { TimezoneScope } from '@/core/timezone/timezone-scope';
 import type { Locale } from '@/core/i18n/locale';
+import { getArabicStyle } from '@/core/i18n/server';
 import { localDate } from '@/lib/dates';
 import { currentClaims } from '@/core/supabase/claims';
 import { supabaseServer } from '@/core/supabase/server';
@@ -26,6 +27,8 @@ import { NewAssessmentEntry } from './new-assessment-entry';
 import { AssessmentReviewEntry } from './assessment-review-entry';
 import { MoneyOwedEntry } from '../money-owed/money-owed-entry';
 import { PainReportsEntry } from '../components/pain-reports-entry';
+import { PhoneOverview } from './phone-overview';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 
 export async function FileContent({ playerId, tab, locale, children }: {
   playerId: string; tab: PlayerFileTab; locale: Locale; children?: ReactNode;
@@ -54,8 +57,11 @@ export async function FileContent({ playerId, tab, locale, children }: {
     if (tab === 'assessments') assessments = await loadPlayerRequests(await supabaseServer(), playerId);
   }
   catch (error) { unstable_rethrow(error); return <FileState error locale={locale} href={href} />; }
+  const phone = captainWorkspaceEnabled();
   return <TimezoneScope timezone={timezone}><section className="min-w-0 space-y-stack">
     <FileHeader playerId={playerId} profile={profile} summary={summary} tab={tab} locale={locale} today={captainToday} playerToday={today} unreadCount={counts[playerId] ?? 0} />
+    {phone && tab === 'overview' && activity && <PhoneOverview summary={summary} profile={profile} activity={activity}
+      today={today} locale={locale} style={locale === 'ar' ? await getArabicStyle() : 'egyptian'} />}
     <PainReportsEntry playerId={playerId} />
     {tab === 'overview' && <MoneyOwedEntry mode="player" playerId={playerId} />}
     {tab === 'overview' && activity ? <PlayerOverview playerId={playerId} profile={profile} summary={summary} locale={locale} today={today} activity={activity} /> :

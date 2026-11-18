@@ -23,8 +23,15 @@ it('uses the endpoint count independently of the chats and joins poll', () => {
   expect(links).toHaveLength(2);
   for (const link of links) expect(link).toContain('>7</span>');
   const inboxLinks = render(7).match(/<a\b[^>]*href="\/captain\/inbox"[^>]*>[\s\S]*?<\/a>/g) ?? [];
-  expect(inboxLinks).toHaveLength(2);
+  expect(inboxLinks).toHaveLength(1);
   for (const link of inboxLinks) expect(link).toContain('>8</span>');
+});
+it('keeps desktop groups and exposes the five phone controls in order', () => {
+  const html = render(7);
+  expect(html).toContain('hidden min-[760px]:block');
+  const phone = html.slice(html.indexOf('data-captain-phone-nav'));
+  expect(phone).toMatch(/href="\/captain"[\s\S]*<a\b(?=[^>]*href="\/captain\/tasks")(?=[^>]*aria-current="page")[\s\S]*id="captain-quick-add"[\s\S]*href="\/captain\/players"[\s\S]*id="captain-more"/);
+  expect(phone).toContain('md:hidden');
 });
 it('retains tasks when polling fails and accepts a fresh endpoint count', () => {
   state.error = true;

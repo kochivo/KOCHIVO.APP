@@ -113,6 +113,19 @@ it('renders all three language dictionaries', () => {
   }
 });
 
+it('adds phone exercise rows while keeping the desktop grid and disabling the redesign with the flag off', () => {
+  mocks.resource.mockReturnValue({ status: 'ready', data: { data: [exercise], total: 1 } });
+  vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '0');
+  expect(renderToStaticMarkup(createElement(ExerciseLibrary))).not.toContain('max-md:flex-row');
+  vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
+  const html = renderToStaticMarkup(createElement(ExerciseLibrary));
+  expect(html).toContain('max-md:flex-row');
+  expect(html).toContain('min-[760px]:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5');
+  expect(html).toContain('سكوات');
+  expect(html).toContain('رجل');
+  expect(html).toContain('بار');
+});
+
 it('loads the first bounded page through the public search API and keeps failures retryable', async () => {
   let load: (() => Promise<unknown>) | undefined;
   mocks.resource.mockImplementation((_key: string, loader: () => Promise<unknown>) => {

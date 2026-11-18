@@ -25,6 +25,7 @@ export function PreferencesSection({ profile, onSave }: {
 
   return <>
     <WorkspacePreferences profile={profile} update={onSave} />
+    <span id="settings-notifications" className="block md:hidden" />
     <Options />
   </>;
 }

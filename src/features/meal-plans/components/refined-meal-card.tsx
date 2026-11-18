@@ -16,20 +16,21 @@ export function RefinedMealCard({ plan, onAssign, t }: {
   const shares = macroSplit(plan);
   const macros = [
     { key: 'protein', grams: protein, color: 'bg-lime' },
-    { key: 'carbs', grams: carbs, color: 'bg-info' },
-    { key: 'fat', grams: fat, color: 'bg-warn' },
+    { key: 'carbs', grams: carbs, color: 'bg-info max-md:bg-warn' },
+    { key: 'fat', grams: fat, color: 'bg-warn max-md:bg-info' },
   ] as const;
   const tone = tag === 'draft' ? 'tone-neutral' : tag === 'allDays' ? 'tone-lime' : 'tone-info';
 
   return <article className="glass relative flex min-w-0 flex-col gap-stack rounded-card p-card">
-    <header className="flex items-start justify-between gap-inline">
+    <header className="flex items-start justify-between gap-inline max-md:items-center">
       <div className="min-w-0">
-        <h2 className="break-words text-md font-bold">
+        <h2 className="break-words text-md font-bold max-md:text-sm">
           <Link href={`/captain/nutrition/${id}`} className={`${clickableClass} after:absolute after:inset-0 after:rounded-card focus-visible:after:ring-2 focus-visible:after:ring-lime`}>{title}</Link>
         </h2>
-        <span className={`${tone} rounded-md px-inline text-micro font-semibold`}>{t(tag)}</span>
+        <span className={`${tone} rounded-md px-inline text-micro font-semibold max-md:hidden`}>{t(tag)}</span>
       </div>
-      {kcal !== null && <div className="shrink-0 text-end">
+      <span className="tone-neutral shrink-0 rounded-md px-inline text-micro font-semibold md:hidden">{t('playerCount', { n: players.length })}</span>
+      {kcal !== null && <div className="shrink-0 text-end max-md:hidden">
         <bdi className="block font-display text-stat font-extrabold tabular-nums tracking-tight">{formatNumber(kcal)}</bdi>
         <span className="block text-micro text-muted">{t('kcalPerDay')}</span>
       </div>}
@@ -39,14 +40,15 @@ export function RefinedMealCard({ plan, onAssign, t }: {
         {macros.map(({ key, color }, index) => Boolean(shares[index]) &&
           <span key={key} style={{ width: `${shares[index]}%` }} className={`${color} border-e-2 border-bg last:border-e-0`} />)}
       </div>
-      <div className="flex flex-wrap gap-inline text-micro text-muted">
+      <div className="flex flex-wrap gap-inline text-micro text-muted max-md:justify-between">
         {macros.map(({ key, grams, color }) => grams !== null && <span key={key} className="inline-flex items-center gap-inline">
-          <span aria-hidden className={`size-2 rounded-sm ${color}`} />
+          <span aria-hidden className={`size-2 rounded-sm max-md:hidden ${color}`} />
           <span>{t(key)} <bdi className="tabular-nums">{t('grams', { n: grams })}</bdi></span>
         </span>)}
+        {kcal !== null && <span className="md:hidden"><bdi className="font-display font-bold tabular-nums">{formatNumber(kcal)}</bdi> {t('kcalPerDay')}</span>}
       </div>
     </div>
-    <footer className="mt-auto flex min-h-12 flex-wrap items-center justify-between gap-inline border-t border-line-soft pt-stack text-xs text-muted">
+    <footer className={`mt-auto flex min-h-12 flex-wrap items-center justify-between gap-inline border-t border-line-soft pt-stack text-xs text-muted ${players.length ? 'max-md:hidden' : ''}`}>
       <span>{t('mealCount', { n: meals })}</span>
       {players.length > 0 ? <span className="flex items-center gap-inline">
         <span className="flex [&>*+*]:-ms-inline">

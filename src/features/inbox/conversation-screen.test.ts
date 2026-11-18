@@ -23,7 +23,7 @@ it('shows the list first on mobile without mounting a thread that could mark mes
   const html = render();
   expect(html).toContain('علي');
   expect(html).not.toContain('data-chat-pane');
-  expect(html).toContain('min-[760px]:grid-cols-[minmax(12rem,1fr)_minmax(0,2fr)]');
+  expect(html).toContain('md:grid-cols-[minmax(12rem,1fr)_minmax(0,2fr)]');
 });
 it('opens the first conversation on desktop and puts the title only in the page bar', () => {
   state.desktop = true;
@@ -31,7 +31,7 @@ it('opens the first conversation on desktop and puts the title only in the page 
   expect(html).toContain('data-chat-pane');
   expect(html).toContain('صندوق الوارد');
   expect(html).not.toContain('type="search"');
-  expect(html).not.toContain('<h1');
+  expect(html).toContain('space-y-card-gap md:hidden');
 });
 it('shows loading and retry states instead of presenting an empty inbox on failure', () => {
   state.rows = undefined;
@@ -39,4 +39,13 @@ it('shows loading and retry states instead of presenting an empty inbox on failu
   state.error = true;
   expect(render()).toContain('مش قادرين نحمّل المحادثات');
   expect(render()).toContain('جرّب تاني');
+});
+it('shows phone filter controls and a new count alongside the preserved desktop list', () => {
+  const html = render();
+  expect(html).toContain('مش مقروء');
+  expect(html).toContain('صور');
+  expect(html).toContain('جداد');
+  expect(html).toContain('md:hidden');
+  expect(html).toContain('hidden min-w-0 md:block');
+  expect(html).toContain('bg-surface-raised border-s-lime');
 });

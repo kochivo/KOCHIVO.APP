@@ -20,6 +20,7 @@ import dynamic from 'next/dynamic';
 import { InjuryNote } from './injury-note';
 import type { TaggedExercise } from './fit-checks';
 import { messages as setMessages } from '@/lib/training/messages';
+import { messages as phoneMessages } from './phone/messages';
 
 const AlternativesSheet = dynamic(() => import('./alternatives-sheet').then(module => module.AlternativesSheet));
 const SetsSheet = dynamic(() => import('./sets-sheet').then(module => module.SetsSheet));
@@ -36,10 +37,12 @@ export function TrainingExerciseRow({ row, onPatch, onRemove, onMove, onLink, fi
   const [alternativesOpen, setAlternativesOpen] = useState(false);
   const [setsOpen, setSetsOpen] = useState(false), st = useT(setMessages);
   const enabled = captainWorkspaceEnabled();
+  const phone = useT(phoneMessages);
   const name = row.library?.name_ar || row.library?.name_en || wt('exerciseUnavailable');
   const reps = row.set_plan ? planLabel(row.set_plan) : row.reps_max === null ? t('failure') : row.reps_min === row.reps_max ? String(row.reps_min) : `${row.reps_min}–${row.reps_max}`;
   const rest = `${Math.floor(row.rest_seconds / 60)}:${String(row.rest_seconds % 60).padStart(2, '0')}`;
-  return <li style={style} className={tag ? `mx-card-gap border-x border-lime/50 bg-lime-soft ${groupStart ? 'mt-card-gap rounded-t-card border-t' : ''} ${groupEnd ? 'mb-card-gap rounded-b-card border-b' : ''}` : 'border-t border-line-soft'}>
+  const groupClass = tag ? `mx-card-gap border-x border-lime/50 bg-lime-soft ${groupStart ? 'mt-card-gap rounded-t-card border-t' : ''} ${groupEnd ? 'mb-card-gap rounded-b-card border-b' : ''}` : 'border-t border-line-soft';
+  return <li style={style} className={groupClass + (enabled ? ' max-md:glass max-md:rounded-card' : '')}>
     {onLinkAbove && <Button type="button" variant="secondary" block className="border-dashed" onClick={onLinkAbove}>{st('link')}</Button>}
     {groupStart && <header className="flex flex-wrap justify-between gap-inline p-stack text-xs"><b className="text-lime">{st('superset', { letter: groupLabel ?? '' })}</b>
       <span className="text-muted">{st('rest', { seconds: groupRest ?? row.rest_seconds })}</span></header>}
@@ -48,15 +51,21 @@ export function TrainingExerciseRow({ row, onPatch, onRemove, onMove, onLink, fi
       {tag && <span className="rounded-control bg-lime-soft px-inline py-inline text-xs text-lime" dir="ltr">{tag}</span>}
       {row.set_plan?.some(set => set.drop) && <span className="rounded-full bg-warn-soft px-stack py-inline text-xs text-warn">{st('drop')}</span>}
     </div>}
-    <div className={`flex items-center gap-inline px-page-x ${open ? 'bg-surface/30' : ''}`}>
-      <button aria-expanded={open} aria-controls={`exercise-${row.id}`} onClick={() => setOpen(value => !value)} className={`${clickableClass} grid min-h-14 min-w-0 flex-1 grid-cols-[repeat(3,minmax(0,1fr))_auto] items-center gap-inline py-stack text-start @min-[460px]:grid-cols-[auto_minmax(0,1fr)_repeat(3,minmax(0,3.5rem))_auto]`}>
+    <div className={`flex items-center gap-inline px-page-x ${open ? 'bg-surface/30' : ''}${enabled ? ' max-md:gap-0 max-md:ps-0 max-md:pe-stack' : ''}`}>
+      <button aria-expanded={open} aria-controls={`exercise-${row.id}`} onClick={() => setOpen(value => !value)} className={`${clickableClass} grid min-h-14 min-w-0 flex-1 grid-cols-[repeat(3,minmax(0,1fr))_auto] items-center gap-inline py-stack text-start @min-[460px]:grid-cols-[auto_minmax(0,1fr)_repeat(3,minmax(0,3.5rem))_auto]${enabled ? ' max-md:grid-cols-[auto_repeat(3,minmax(0,1fr))_auto]! max-md:[&>span:first-child]:row-span-2' : ''}`}>
         {row.library?.media_path ? <ExerciseImage src={exerciseMediaUrl(row.library.media_path)} alt="" width={44} height={44} className="size-11 rounded-xl border border-line object-cover" /> :
           <span className="glass-strong grid size-11 place-items-center rounded-xl border border-line"><Dumbbell aria-hidden className="size-4 text-faint" /></span>}
-        <span className="col-span-3 min-w-0 @min-[460px]:col-span-1"><bdi className="block break-words text-sm font-semibold">{name}</bdi>{row.library?.name_en && row.library.name_en !== name && <bdi className="block text-micro text-faint">{row.library.name_en}</bdi>}<small className="block text-micro text-faint">{exerciseLabel(row.library?.body_part, wt)} · {exerciseLabel(row.library?.equipment, wt)}</small></span>
-        {([['sets', row.sets], ['compactReps', reps], ['restLabel', rest]] as const).map(([key, value]) => <span key={key} className="min-w-0 text-center"><small className="block text-micro text-muted">{t(key)}</small><bdi dir="ltr" className="block break-words rounded-control bg-bg-deep py-inline font-display text-row font-extrabold tabular-nums">{value}</bdi></span>)}
+        <span className={`col-span-3 min-w-0 @min-[460px]:col-span-1${enabled ? ' max-md:col-span-4! max-md:[&>small]:hidden max-md:[&>bdi+bdi]:hidden' : ''}`}><bdi className="block break-words text-sm font-semibold">{name}</bdi>{row.library?.name_en && row.library.name_en !== name && <bdi className="block text-micro text-faint">{row.library.name_en}</bdi>}<small className="block text-micro text-faint">{exerciseLabel(row.library?.body_part, wt)} · {exerciseLabel(row.library?.equipment, wt)}</small></span>
+        {([['sets', row.sets], ['compactReps', reps], ['restLabel', rest]] as const).map(([key, value]) =>
+          <span key={key} className={`min-w-0 text-center${enabled ? ' max-md:flex max-md:flex-row-reverse max-md:flex-wrap max-md:items-center max-md:justify-center max-md:gap-x-inline max-md:rounded-control max-md:bg-bg-deep max-md:py-inline' : ''}`}>
+            <small className={`block text-micro text-muted${enabled ? ' max-md:hidden' : ''}`}>{t(key)}</small>
+            {enabled && <small className="text-micro text-muted md:hidden">{phone(key === 'restLabel' ? 'seconds' : key === 'sets' ? 'sets' : 'reps')}</small>}
+            <bdi dir="ltr" className={`block break-words rounded-control bg-bg-deep py-inline font-display text-row font-extrabold tabular-nums${enabled ? ' max-md:py-0' : ''}${enabled && key === 'restLabel' ? ' max-md:hidden' : ''}`}>{value}</bdi>
+            {enabled && key === 'restLabel' && <bdi className="font-display text-row font-extrabold tabular-nums md:hidden">{row.rest_seconds}</bdi>}
+          </span>)}
         <DisclosureChevron expanded={open} className="size-4" />
       </button>
-      <Button {...dragProps} aria-label={tt('reorder', { name })} type="submit" variant="ghost" block={false} className="hidden min-h-12 min-w-12 touch-none items-center justify-center px-0 text-muted min-[760px]:flex"
+      <Button {...dragProps} aria-label={tt('reorder', { name })} type="submit" variant="ghost" block={false} className={`hidden min-h-12 min-w-12 touch-none items-center justify-center px-0 text-muted min-[760px]:flex${enabled ? ' max-md:-order-1 max-md:flex' : ''}`}
         onKeyDown={event => { if (event.key === 'ArrowUp' || event.key === 'ArrowDown') { event.preventDefault(); onMove(event.key === 'ArrowUp' ? -1 : 1); } }}><GripVertical aria-hidden className="size-4" /></Button>
     </div>
     {onReplace && <InjuryNote exerciseId={row.exercise_id} injuries={injuries} candidates={candidates} onReplace={onReplace} />}

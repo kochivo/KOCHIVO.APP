@@ -1,13 +1,16 @@
 'use client';
 
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
+import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { Pencil, Search } from 'lucide-react';
 import { useT } from '@/core/i18n/client';
-import { Button } from '@/ui/button';
+import { Button, buttonClass } from '@/ui/button';
 import { KoPlus } from '@/ui/icons/ko-plus';
-import { PageBarTitle } from '@/ui/page-bar-title';
+import { usePageBarTarget } from '@/ui/page-bar-slot';
+import { RowChevron } from '@/ui/row-chevron';
 import { PageBarActions } from '@/ui/page-bar-actions';
 import { Segmented } from '@/ui/segmented';
 import { messages } from './v11/messages';
@@ -20,6 +23,7 @@ const AssignDialog = dynamic(() => import('./v11-assign-dialog').then(module => 
 
 export function V11NewPlan({ plans }: { plans?: MealLibraryPlan[] }) {
   const t = useT(messages), router = useRouter();
+  const titleTarget = usePageBarTarget('title');
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
   const [assignment, setAssignment] = useState<{ planId?: string; opener: HTMLElement | null } | null>(null);
@@ -38,13 +42,22 @@ export function V11NewPlan({ plans }: { plans?: MealLibraryPlan[] }) {
     setAssignment({ planId, opener: document.activeElement instanceof HTMLElement ? document.activeElement : null });
   }
   return <>
-    <PageBarTitle title={t('plans')} subtitle={plans && t('librarySummary', { plans: plans.length, players: playerCount })} />
+    {titleTarget && createPortal(<>
+      <h1 className="text-base font-semibold max-md:hidden">{t('plans')}</h1>
+      {plans && <p className="text-xs text-muted max-md:hidden">{t('librarySummary', { plans: plans.length, players: playerCount })}</p>}
+      <div className="flex items-center gap-stack md:hidden">
+        <Link href="/captain" aria-label={t('back')} className={buttonClass({ variant: 'secondary', block: false, className: 'min-w-12 shrink-0 px-stack' })}><RowChevron className="rotate-180" /></Link>
+        <div><h1 className="text-md font-bold">{t('plans')}</h1>
+          {plans && <p className="text-xs text-muted">{t('phonePlanCount', { n: plans.length })}</p>}
+        </div>
+      </div>
+    </>, titleTarget)}
     <PageBarActions>
       <Button id="v11-assign" onClick={() => openAssignment()} variant="secondary" block={false}>
         <Pencil aria-hidden className="size-4" />{t('writePlan')}
       </Button>
-      <Button id="meal-library-create" onClick={() => setCreating(true)} block={false}>
-        <KoPlus aria-hidden className="size-5" />{t('newPlan')}
+      <Button id="meal-library-create" aria-label={t('newPlan')} onClick={() => setCreating(true)} block={false} className="max-md:min-w-12 max-md:px-stack!">
+        <KoPlus aria-hidden className="size-5" /><span className="max-md:sr-only">{t('newPlan')}</span>
       </Button>
     </PageBarActions>
     {plans && <>
