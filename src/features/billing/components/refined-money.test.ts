@@ -26,14 +26,14 @@ it('groups collected, owed, active and ending totals in one strip', () => {
   expect(html).not.toContain('<svg');
 });
 
-it('keeps subscriptions in one glass list with segmented filters and ending tags', () => {
+it('keeps subscriptions in one glass list with five filters and a package status', () => {
   const html = render(createElement(WorkspacePaymentsTable, { players: [player], packages: [], today: '2026-11-17' }));
-  expect(html).toContain('role="radiogroup"');
-  expect(html.match(/role="radio"/g)).toHaveLength(4);
-  expect(html).toContain('tone-warn');
-  expect(html).toContain('min-h-14');
+  expect(html).toContain('role="group"');
+  expect(html.match(/aria-pressed=/g)).toHaveLength(5);
+  expect(html).toContain('tone-neutral');
+  expect(html).toContain('min-h-16');
   expect(html).toContain('Ali');
-  expect(html).toContain('No payment recorded');
+  expect(html).toContain('No package');
 });
 
 it('leads with real duration prices before included features and retains all editors', () => {

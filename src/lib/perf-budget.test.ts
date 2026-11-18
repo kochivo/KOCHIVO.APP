@@ -13,7 +13,7 @@ const exceptions: Record<string, number> = {
   '/welcome': 201,
   '/offline': 207, // T-363..T-368 refined look: measured 206.03
   '/captain/programs/[programId]': 315,
-  '/captain/players/[playerId]/programs': 322, // calm player-file chart (T-375): measured 321.79
+  '/captain/players/[playerId]/programs': 323, // T-375 chart + T-382 KO corner card: measured 322.41
   '/captain/players/[playerId]/preview': 312, // player v4 workout media (T-372): measured 311.70
 };
 

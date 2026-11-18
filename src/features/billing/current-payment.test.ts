@@ -15,15 +15,17 @@ function render(lastPayment: Payment | null, due = 0) {
   return renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' },
     createElement(WorkspacePaymentsTable, { players: [{ ...player, lastPayment, due }], packages: [], today: '2026-11-17' })));
 }
-it('includes an active player without a payment and offers payment recording', () => {
+it('includes a player without a package and offers package setup', () => {
   const html = render(null);
   expect(html).toContain('Hesham');
-  expect(html).toContain('No payment recorded');
-  expect(html).toContain('Record payment');
+  expect(html).toContain('No payments yet');
+  expect(html).toContain('Set package');
+  expect(html).toContain('>-</span>');
 });
-it.each([null, 0])('uses the same no-amount label and hides a method for %s', amount => {
+it.each([null, 0])('shows the unpaid progress and hides a method for %s', amount => {
   const html = render({ ...payment, amount_egp: amount });
-  expect(html).toContain('No amount');
+  expect(html).toContain('aria-label="0 of 500"');
+  expect(html).not.toContain('No amount');
   expect(html).not.toContain('InstaPay');
   expect(html).toContain('Not paid');
 });
@@ -33,12 +35,14 @@ it.each([
   [500, 0, 'Paid in full', '500'],
 ] as const)('adds collections to %s plus %s and derives period status', (amount, collected, status, total) => {
   const html = render({ ...payment, amount_egp: amount, collected_egp: collected });
-  expect(html).toContain(`>${total}</td>`);
+  expect(html).toContain(`aria-label="${total} of 500"`);
+  expect(html.includes('[&amp;&gt;div]:bg-warn')).toBe(total !== '500');
   expect(html).toContain(status);
 });
 it('uses the method of a later collection and ignores debts from other periods', () => {
   const html = render({ ...payment, amount_egp: 0, collected_egp: 500, collection_method: 'cash' }, 200);
-  expect(html).toContain('Paid in full');
+  expect(html).toContain('aria-label="500 of 500"');
+  expect(html).toContain('200 due');
   expect(html).toContain('Cash');
   expect(html).not.toContain('InstaPay');
 });

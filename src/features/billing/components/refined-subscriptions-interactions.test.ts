@@ -5,8 +5,8 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { createT } from '@/core/i18n/messages';
 import type { Messages } from '@/core/i18n/messages';
-import { Segmented } from '@/ui/segmented';
 import { WorkspacePaymentsTable } from './workspace-payments-table';
+import { WorkspaceBillingPaymentRow } from './workspace-billing-payment-row';
 import type { BillingPlayer } from '../types';
 
 const state = vi.hoisted(() => ({ slots: [] as unknown[], cursor: 0 }));
@@ -22,31 +22,35 @@ vi.mock('@/ui/page-bar-actions', () => ({ PageBarActions: ({ children }: { child
 const base: BillingPlayer = { playerId: 'active', fullName: 'Active player', accessUntil: '2026-12-20', due: 0,
   phone: null, lastPayment: null, startedOn: '2026-11-01', lastTrainingDate: null, programTitle: null,
   openTasks: 0, status: 'active' };
-const players = [base, { ...base, playerId: 'late', fullName: 'Late player', due: 100 },
-  { ...base, playerId: 'soon', fullName: 'Ending player', accessUntil: '2026-11-20' },
+const payment = { id: 'pay', captain_id: 'captain', player_id: 'p', period_start: '2026-11-01', period_end: '2026-11-20',
+  days: 30, price_egp: 100, amount_egp: 100, created_at: '2026-11-01T12:00:00Z' };
+const players = [{ ...base, lastPayment: payment }, { ...base, playerId: 'late', fullName: 'Late player', due: 100,
+  lastPayment: { ...payment, amount_egp: 0 } },
+  { ...base, playerId: 'soon', fullName: 'Ending player', accessUntil: '2026-11-20', lastPayment: { ...payment, amount_egp: 25 }, due: 75 },
   { ...base, playerId: 'pending', fullName: 'Pending player', pending: true }];
 type Node = ReactElement<Record<string, unknown>>;
 function nodes(value: unknown): Node[] {
   if (Array.isArray(value)) return value.flatMap(nodes);
   return isValidElement<Record<string, unknown>>(value) ? [value, ...nodes(value.props.children)] : [];
 }
-function render(rows = players) {
+function render(rows: BillingPlayer[] = players) {
   state.cursor = 0;
   return WorkspacePaymentsTable({ players: rows, packages: [], today: '2026-11-17' });
 }
 function filter(value: string) {
-  const onChange = nodes(render()).find(node => node.type === Segmented)?.props.onChange;
-  if (typeof onChange !== 'function') throw new Error('Missing filter');
-  onChange(value);
+  const onClick = nodes(render()).find(node => node.key === value)?.props.onClick;
+  if (typeof onClick !== 'function') throw new Error('Missing filter');
+  onClick();
 }
 beforeEach(() => { state.slots = []; state.cursor = 0; });
 
-it.each([['paid', 'Active player'], ['overdue', 'Late player'], ['ending', 'Ending player']] as const)(
-  'uses the existing %s subscription category without including waiting players', (category, name) => {
+it.each([['paid', ['Active player']], ['overdue', ['Late player', 'Ending player']],
+  ['ending', ['Ending player']], ['noPackage', ['Pending player']]] as const)(
+  'filters by %s while keeping the other filters available', (category, names) => {
     filter(category);
     const html = renderToStaticMarkup(render());
-    expect(html).toContain(name);
-    for (const other of players.filter(row => row.fullName !== name)) expect(html).not.toContain(other.fullName);
+    expect(html.match(/aria-pressed=/g)).toHaveLength(5);
+    for (const player of players) expect(html.includes(player.fullName)).toBe(names.some(name => name === player.fullName));
     filter('all');
     expect(renderToStaticMarkup(render())).toContain('Pending player');
   },
@@ -55,12 +59,31 @@ it('shows filter recovery when the selected category has no matches', () => {
   filter('overdue');
   const html = renderToStaticMarkup(render([base]));
   expect(html).toContain('No players match');
-  expect(html).toContain('role="radiogroup"');
+  expect(html).toContain('role="group"');
 });
-it('keeps recording and row actions secondary alongside the unchanged receipt action', () => {
+it('combines the player search with the current filter', () => {
+  filter('overdue');
+  const onChange = nodes(render()).find(node => node.type === 'input')?.props.onChange;
+  if (typeof onChange !== 'function') throw new Error('Missing search');
+  onChange({ target: { value: '  ENDING  ' } });
   const html = renderToStaticMarkup(render());
-  expect(html).not.toContain('control-primary');
+  expect(html).toContain('Ending player');
+  expect(html).not.toContain('Late player');
+});
+it('keeps the header action primary and exactly one secondary action per row', () => {
+  const html = renderToStaticMarkup(render());
+  expect(html.match(/control-primary/g)).toHaveLength(1);
   expect(html).toContain('Record payment');
   const rows = html.slice(html.indexOf('<tbody'));
-  expect(rows).toContain('control-secondary');
+  expect(rows.match(/<button/g)).toHaveLength(players.length);
+  expect(rows.match(/control-secondary/g)).toHaveLength(players.length);
 });
+
+it.each([['active', 'history'], ['late', 'collect'], ['pending', 'activate']] as const)(
+  'opens the existing %s player flow with the %s action', (id, action) => {
+    const onOpen = nodes(render()).find(node => node.type === WorkspaceBillingPaymentRow && node.key === id)?.props.onOpen;
+    if (typeof onOpen !== 'function') throw new Error('Missing row action');
+    onOpen();
+    expect(nodes(render()).some(node => node.props.initialAction === action)).toBe(true);
+  },
+);

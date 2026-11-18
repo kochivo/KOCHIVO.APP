@@ -3,11 +3,12 @@ import { secondaryButtonClass } from '@/ui/secondary-button-class';
 import { use, useCallback, useRef, useState, useTransition } from 'react';
 import type { ReactNode } from 'react';
 import Link from 'next/link';
-import dynamic from 'next/dynamic';
+import { Bell, Box } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useLocale, useT } from '@/core/i18n/client';
+import { useTimezone } from '@/core/timezone/client';
 import { useResource } from '@/core/resource';
-import { daysBetween } from '@/lib/dates';
+import { formatDateAr } from '@/lib/dates';
 import { formatNumber } from '@/lib/format';
 import { ErrorState } from '@/ui/error-state';
 import { LoadingState } from '@/ui/loading-state';
@@ -18,15 +19,17 @@ import { messages, workspaceMessages } from '../messages';
 import { messages as financeMessages } from '../workspace/messages';
 import { listRenewalRequests, decideRenewalRequest } from '../data/renewal-requests';
 import { reminderText, waLink } from '../renew';
+import { CaptainReceipts } from '../receipts/captain-receipts';
 import type { BillingResult } from '../types';
-import { expiringSoon, subscriptionTiles } from './workspace-billing-summary';
+import { activeSubscription, expectedIncome, expiringSoon, paymentRows, subscriptionTiles } from './workspace-billing-summary';
 import { WorkspaceBillingTiles } from './workspace-billing-tiles';
+import { WorkspaceBillingTask } from './workspace-billing-task';
 import { WorkspacePaymentsTable } from './workspace-payments-table';
 import { buttonClass, Button } from '@/ui/button';
-const CaptainReceipts = dynamic(() => import('../receipts/captain-receipts').then(module => module.CaptainReceipts));
 
 export function WorkspaceBilling({ data, today, moneyOwed }: { data: Promise<BillingResult>; today: string; moneyOwed?: ReactNode }) {
   const result = use(data), t = useT(workspaceMessages), legacy = useT(messages), finance = useT(financeMessages), locale = useLocale(), router = useRouter();
+  const timezone = useTimezone();
   const toast = useToast(), lock = useRef(false);
   const load = useCallback(() => listRenewalRequests(), []);
   const requests = useResource('billing:renewal-requests:all', load);
@@ -38,6 +41,9 @@ export function WorkspaceBilling({ data, today, moneyOwed }: { data: Promise<Bil
   const rows = requests.data?.data?.filter(row => !approved.includes(row.id));
   const values = subscriptionTiles(billing.players, today, billing.revenue.thisMonth, rows?.length ?? 0);
   const ending = expiringSoon(billing.players, today);
+  const payments = paymentRows(billing.players, billing.packages, today);
+  const noPackage = payments.filter(row => !row.hasPackage && activeSubscription(row.player, today)).length;
+  const expected = expectedIncome(payments, values.income, today, timezone);
   async function confirm(id: string, name: string) {
     if (lock.current) return;
     lock.current = true;
@@ -52,40 +58,43 @@ export function WorkspaceBilling({ data, today, moneyOwed }: { data: Promise<Bil
     } catch { setApproved(current => current.filter(value => value !== id)); setError(legacy('renewFailed')); }
     finally { setBusy(false); lock.current = false; }
   }
-  return <section id="billing-heading" tabIndex={-1} className="space-y-card-gap" aria-busy={busy || refreshing}>
-    <PageBarTitle title={t('title')} subtitle={finance('intro')} />
+  return <section id="billing-heading" tabIndex={-1} className="flex min-w-0 flex-col gap-card-gap" aria-busy={busy || refreshing}>
+    <PageBarTitle title={t('title')} subtitle={t('intro')} />
     <PageBarActions>
-      <Link href="/captain/billing/packages" className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-page-x text-row" })}>{t('catalog')}</Link>
+      <Link href="/captain/billing/packages" className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-page-x text-row" })}>
+        <Box aria-hidden className="size-4" />{t('catalog')}</Link>
     </PageBarActions>
-    <WorkspaceBillingTiles values={{ ...values, pending: rows ? rows.length : null }} owed={billing.revenue.dues} />
+    <WorkspaceBillingTiles values={values} owed={billing.revenue.dues} owing={billing.revenue.owing}
+      today={today} expected={expected} noPackage={noPackage} />
     {notice && <p role="status" className="glass rounded-control p-stack text-sm text-lime">{notice}</p>}
     {error && <p role="alert" className="text-sm text-danger">{error}</p>}
-    <WorkspacePaymentsTable players={billing.players} packages={billing.packages} today={today} />
-    {moneyOwed}
-    <CaptainReceipts />
-    <div className="grid items-start gap-card-gap min-[760px]:grid-cols-2">
-      <section className="glass min-w-0 rounded-card border border-line-soft p-card">
-        <header className="mb-inline flex items-center justify-between gap-inline"><h2 className="font-semibold">{t('pending')}</h2>
-          {rows && <span className="rounded-full bg-surface-raised px-stack py-inline text-xs tabular-nums">{formatNumber(rows.length, locale)}</span>}</header>
-        {requests.error || requests.data?.error ? <ErrorState message={legacy('loadFailed')} retryLabel={legacy('retry')} onRetry={() => void requests.retry()} />
-          : !rows ? <LoadingState variant="detail" /> : rows.length ? <ul>{rows.map(row => <li key={row.id} className="flex items-center gap-inline border-t border-line-soft py-stack first:border-0">
+    <div className="group hidden has-[[data-billing-task]]:block has-[[data-billing-feedback]]:block">
+      <section className="rounded-card has-[[data-billing-task]]:border has-[[data-billing-task]]:border-warn/25 has-[[data-billing-task]]:bg-ink/3">
+        <header className="hidden items-center gap-stack px-card py-stack group-has-[[data-billing-task]]:flex">
+          <Bell aria-hidden className="size-4 text-warn" /><h2 className="text-md font-bold">{t('attention')}</h2>
+        </header>
+        {moneyOwed}
+        <CaptainReceipts workspace />
+        {requests.error || requests.data?.error ? <div data-billing-feedback><ErrorState message={legacy('loadFailed')} retryLabel={legacy('retry')} onRetry={() => void requests.retry()} /></div>
+          : !rows ? <div data-billing-feedback><LoadingState variant="detail" /></div> : rows.length > 0 &&
+          <WorkspaceBillingTask label={t('pending')} count={formatNumber(rows.length, locale)}><ul>{rows.map(row => <li key={row.id} className="flex items-center gap-inline border-t border-line-soft py-stack first:border-0">
             <span aria-hidden className="grid size-10 shrink-0 place-items-center rounded-full bg-surface-raised">{row.name.slice(0, 1)}</span>
             <div className="min-w-0 flex-1"><b className="block break-words text-sm">{row.name}</b><small className="text-xs text-muted">{t('renewalRequest', { package: row.package })}</small></div>
-            <Button disabled={busy} onClick={() => void confirm(row.id, row.name)} type="submit" variant={'secondary'} block={false} className={"min-h-12 shrink-0 px-page-x text-sm font-semibold disabled:opacity-50"}>{t('confirm')}</Button>
-          </li>)}</ul> : <p className="py-stack text-sm text-faint">{t('noRequests')}</p>}
-      </section>
-      <section className="glass min-w-0 rounded-card border border-line-soft p-card">
-        <header className="mb-inline flex items-center justify-between gap-inline"><h2 className="font-semibold">{t('soon')}</h2><span className="rounded-full bg-surface-raised px-stack py-inline text-xs tabular-nums">{formatNumber(ending.length, locale)}</span></header>
-        {ending.length ? <ul>{ending.map(player => {
+            <Button disabled={busy} onClick={() => void confirm(row.id, row.name)} variant="secondary" block={false} className="shrink-0">{t('confirm')}</Button>
+          </li>)}</ul></WorkspaceBillingTask>}
+        {ending.length > 0 && <WorkspaceBillingTask label={t('soon')} count={formatNumber(ending.length, locale)}><ul>{ending.map(player => {
           const reminder = waLink(player.phone, reminderText(player.fullName, player.accessUntil, locale));
           return <li key={player.playerId} className="flex items-center gap-inline border-t border-line-soft py-stack first:border-0">
             <span aria-hidden className="grid size-10 shrink-0 place-items-center rounded-full bg-surface-raised">{player.fullName.slice(0, 1)}</span>
-            <div className="min-w-0 flex-1"><b className="block break-words text-sm">{player.fullName}</b><small className="text-xs text-muted">{t('after', { n: daysBetween(today, player.accessUntil) })}</small></div>
-            <Button disabled={!reminder} onClick={() => { if (reminder) window.open(reminder, '_blank', 'noopener,noreferrer'); }} type="submit" variant={'secondary'} block={false} className={"min-h-12 shrink-0 px-page-x text-sm disabled:opacity-40"}>{legacy('remind')}</Button>
+            <div className="min-w-0 flex-1"><b className="block break-words text-sm">{player.fullName}</b>
+              <small className="text-xs text-muted">{t('endsOn', { date: formatDateAr(player.accessUntil, { day: 'numeric', month: 'long' }, locale) })}</small></div>
+            <Button disabled={!reminder} title={!reminder ? finance('noPhone') : undefined}
+              onClick={() => { if (reminder) window.open(reminder, '_blank', 'noopener,noreferrer'); }} variant="secondary" block={false} className="shrink-0">{legacy('remind')}</Button>
           </li>;
-        })}</ul> : <p className="py-stack text-sm text-faint">{t('noExpiring')}</p>}
+        })}</ul></WorkspaceBillingTask>}
       </section>
     </div>
+    <WorkspacePaymentsTable players={billing.players} packages={billing.packages} today={today} rows={payments} />
     {!billing.players.length && <div className="glass rounded-card p-card"><p className="text-sm text-faint">{legacy('noPlayers')}</p><Link href="/captain/players" className={`${secondaryButtonClass} inline-flex min-h-12 items-center text-lime`}>{legacy('invitePlayer')}</Link></div>}
   </section>;
 }

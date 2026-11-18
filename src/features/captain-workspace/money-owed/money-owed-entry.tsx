@@ -6,7 +6,10 @@ import { MoneyOwedContent } from './money-owed-content';
 
 export async function MoneyOwedEntry({ mode, playerId }: { mode: 'home' | 'billing' | 'player'; playerId?: string }) {
   const t = await getT(messages);
-  return <Suspense fallback={<p role="status" className="glass rounded-card p-card text-sm text-muted">{t('loading')}</p>}>
+  const fallback = mode === 'billing'
+    ? <p data-billing-feedback role="status" className="px-card text-sm text-muted">{t('loading')}</p>
+    : <p role="status" className="glass rounded-card p-card text-sm text-muted">{t('loading')}</p>;
+  return <Suspense fallback={fallback}>
     <MoneyOwedContent mode={mode} playerId={playerId} />
   </Suspense>;
 }

@@ -1,4 +1,5 @@
 import { beforeEach, expect, it, vi } from 'vitest';
+import { renderToStaticMarkup } from 'react-dom/server';
 import type * as React from 'react';
 import { createT } from '@/core/i18n/messages';
 import { messages } from './messages';
@@ -11,7 +12,7 @@ vi.mock('react', async original => ({
   useState: (initial: unknown) => [typeof initial === 'function' ? initial() : initial, vi.fn()],
   useRef: (initial: unknown) => ({ current: initial }), useEffect: () => {},
 }));
-vi.mock('@/core/i18n/client', () => ({ useT: () => createT(messages, 'en') }));
+vi.mock('@/core/i18n/client', () => ({ useT: (dictionary: typeof messages) => createT(dictionary, 'en') }));
 vi.mock('@/ui/toast', () => ({ useToast: () => ({ success: mock.success, error: mock.error }) }));
 vi.mock('./data/captain-avatar', () => ({ saveCaptainWithAvatar: mock.save, captainAvatarUrl: vi.fn() }));
 const profile: SettingsProfile = { id: 'captain', role: 'captain', full_name: 'Ali', phone: null,
@@ -42,4 +43,15 @@ it('keeps the saved response and announces success', async () => {
   expect(onSave).toHaveBeenLastCalledWith(updated);
   expect(mock.success).toHaveBeenCalledWith('Saved');
   expect(mock.error).not.toHaveBeenCalled();
+});
+
+it('renders one avatar editor and keeps the account fields in the clean workspace form', () => {
+  const html = renderToStaticMarkup(CaptainProfileCard({ profile, onSave: vi.fn(), workspace: true }));
+  expect(html.match(/type="file"/g)).toHaveLength(1);
+  expect(html).toContain('value="Ali"');
+  for (const key of ['fullName', 'location', 'timezone', 'units', 'whatsapp', 'instagram', 'tiktok', 'facebook', 'youtube', 'x'] as const) {
+    expect(html).toContain(messages.en[key]);
+  }
+  expect(html).not.toContain('type="submit"');
+  expect(html).not.toContain('captain-bio');
 });

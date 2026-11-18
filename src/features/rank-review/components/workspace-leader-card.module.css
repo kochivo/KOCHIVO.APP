@@ -1,0 +1,17 @@
+.card {
+  border-color: color-mix(in srgb, var(--color-warn) 25%, transparent);
+  background: linear-gradient(160deg, color-mix(in srgb, var(--color-warn) 14%, var(--color-surface)),
+    color-mix(in srgb, var(--color-warn) 3%, var(--color-surface)) 60%);
+}
+
+.engraved {
+  -webkit-text-stroke-color: var(--color-warn);
+  background-image: repeating-linear-gradient(135deg, var(--color-warn) 0 1.6px, transparent 1.6px 5.5px);
+}
+
+@media (forced-colors: active) {
+  .engraved {
+    -webkit-text-stroke: 0;
+    background: none;
+  }
+}

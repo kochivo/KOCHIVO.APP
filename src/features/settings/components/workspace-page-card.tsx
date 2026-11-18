@@ -2,35 +2,27 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { Copy, Eye, Pencil } from 'lucide-react';
-import { secondaryButtonClass } from '@/ui/secondary-button-class';
+import { Copy, Eye } from 'lucide-react';
 import { useT } from '@/core/i18n/client';
 import { Button, buttonClass } from '@/ui/button';
 import { messages } from '../messages';
-import type { SettingsProfile } from '../schema';
-import { WorkspaceAvatar } from './workspace-avatar';
-import { WorkspaceFact } from './workspace-fact';
+import { messages as publicMessages } from '../public-page/messages';
 
-export function WorkspacePageCard({ profile, edit }: { profile: SettingsProfile; edit: () => void }) {
-  const t = useT(messages);
+export function WorkspacePageCard({ slug }: { slug: string | null | undefined }) {
+  const t = useT(messages), publicT = useT(publicMessages);
   const [status, setStatus] = useState('');
-  const slug = profile.public_slug;
-  return <section className="glass rounded-card border border-line-soft p-card">
-    <header className="mb-stack flex items-center justify-between gap-stack">
-      <h2 className="text-sm font-semibold">{t('workspacePage')}</h2>
-      {slug && <Link href={`/c/${slug}`} target="_blank" rel="noreferrer" className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center gap-inline px-page-x text-sm" })}>
-        <Eye aria-hidden className="size-4" />{t('workspaceView')}</Link>}
-    </header>
-    <div className="flex min-w-0 items-center gap-card-gap border-b border-line-soft pb-card">
-      <WorkspaceAvatar profile={profile} />
-      <div className="min-w-0 flex-1"><b className="text-row font-semibold">{t('workspaceCaptain', { name: profile.full_name })}</b>
-        <p dir="ltr" className="break-all text-start text-xs text-muted">{slug ? t('publicPreview', { slug }) : t('publicSlug')}</p></div>
-      {slug && <Button variant="secondary" className="shrink-0 rounded-full" onClick={async () => {
+  if (!slug) return <p className="text-sm text-muted">{publicT('noSlug')}</p>;
+  return <div className="space-y-inline">
+    <div className="flex flex-wrap items-center gap-stack rounded-control border border-line-soft p-stack">
+      <p dir="ltr" className="min-w-0 flex-1 break-all text-start text-sm text-muted">{t('publicPreview', { slug })}</p>
+      <Button variant="secondary" onClick={async () => {
         try { await navigator.clipboard.writeText(`https://kochivo.site/c/${slug}`); setStatus(t('copied')); }
         catch { setStatus(t('copyFailed')); }
-      }}><Copy aria-hidden className="size-4" />{t('workspaceCopy')}</Button>}
+      }}><Copy aria-hidden className="size-4" />{t('workspaceCopy')}</Button>
+      <Link href={`/c/${slug}`} target="_blank" rel="noreferrer" className={buttonClass({ variant: 'secondary' })}>
+        <Eye aria-hidden className="size-4" />{publicT('preview')}
+      </Link>
     </div>
-    <WorkspaceFact label={t('workspaceBio')}><button type="button" onClick={edit} className={secondaryButtonClass + ' text-start'}>{profile.bio || t('workspaceUnset')}<Pencil aria-hidden className="size-4 shrink-0" /></button></WorkspaceFact>
-    {status && <p role="status" className="mt-inline text-sm text-muted">{status}</p>}
-  </section>;
+    {status && <p role="status" className="text-sm text-muted">{status}</p>}
+  </div>;
 }

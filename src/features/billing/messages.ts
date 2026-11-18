@@ -1,9 +1,16 @@
 import { defineMessages } from '@/core/i18n/messages';
 
-import { arStd } from './standard/messages';
+import { arStd, workspaceArStd } from './standard/messages';
 
 export const workspaceMessages = defineMessages({
+  get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? workspaceArStd : undefined; },
   ar: {
+    attention: 'محتاج منك', intro: 'مين دفع، ومين باقي عليه، ومين اشتراكه بيخلص',
+    monthIncome: 'دخل {month}', expected: 'من {amount} متوقعة', withoutPackages: '{count} من غير باقة', activeSubscriptions: 'اشتراكات شغالة',
+    search: 'دوّر على لاعب', allPlayers: 'الكل', overdue: 'باقي عليهم', noPackage: 'من غير باقة', paid: 'مدفوع',
+    paidColumn: 'المدفوع', subscription: 'الاشتراك', setPackage: 'حدد باقة', payments: 'الدفعات', dash: '-',
+    paidOf: 'من {total}', paidProgress: '{paid} من {total}', balance: 'باقي {amount}',
+    endsOn: 'بيخلص {date}', startedOn: 'بدأ {date}', paymentOn: '{method} · {date}',
     title: 'الاشتراكات', catalog: 'الباقات والعروض', income: 'دخل الشهر', pending: 'مستني تأكيد',
     ending: 'بيخلص خلال 7 أيام', active: 'اشتراك شغال', soon: 'بيخلص قريب', all: 'كل الدفعات',
     noPayment: 'مفيش دفعة متسجلة', unpaid: 'من غير مبلغ', partial: 'مدفوعة جزئيًا', fullyPaid: 'مدفوعة كاملة',
@@ -15,19 +22,13 @@ export const workspaceMessages = defineMessages({
     newPackage: 'باقة جديدة', edit: 'عدّل', featured: 'مميزة', offers: 'العروض', newOffer: '+ عرض جديد',
     back: 'رجوع', percent: '%', bonus: '+',
   },
-  arStd: {
-    title: 'الاشتراكات', catalog: 'الباقات والعروض', income: 'دخل الشهر', pending: 'بانتظار التأكيد',
-    ending: 'تنتهي خلال 7 أيام', active: 'اشتراك نشط', soon: 'تنتهي قريبًا', all: 'كل الدفعات',
-    noPayment: 'لا توجد دفعة مسجلة', unpaid: 'دون مبلغ', partial: 'مدفوعة جزئيًا', fullyPaid: 'مدفوعة بالكامل',
-    confirm: 'وافق', confirmed: 'مؤكدة', saved: 'تمت الموافقة على طلب تجديد {name}',
-    renewalRequest: 'طلب تجديد · {package}', renewalOnly: 'تجديد دون دفعة',
-    fallback: 'تم قبول الطلب. انتهى العرض؛ راجع تفاصيل الاشتراك', after: 'بعد {n} يوم',
-    noRequests: 'لا توجد دفعات بانتظار التأكيد', noExpiring: 'لا توجد اشتراكات تنتهي قريبًا',
-    player: 'اللاعب', amount: 'المبلغ', date: 'التاريخ', status: 'الحالة', latest: 'آخر دفعة لكل لاعب؛ اضغط اسمه لعرض كل الدفعات',
-    newPackage: 'باقة جديدة', edit: 'عدّل', featured: 'مميزة', offers: 'العروض', newOffer: '+ عرض جديد',
-    back: 'رجوع', percent: '%', bonus: '+',
-  },
   en: {
+    attention: 'Needs your attention', intro: 'See who paid, who owes and whose subscription is ending',
+    monthIncome: '{month} income', expected: 'Of {amount} expected', withoutPackages: '{count} without a package', activeSubscriptions: 'Active subscriptions',
+    search: 'Find a player', allPlayers: 'All', overdue: 'Owe money', noPackage: 'No package', paid: 'Paid',
+    paidColumn: 'Paid', subscription: 'Subscription', setPackage: 'Set package', payments: 'Payments', dash: '-',
+    paidOf: 'of {total}', paidProgress: '{paid} of {total}', balance: '{amount} due',
+    endsOn: 'Ends {date}', startedOn: 'Started {date}', paymentOn: '{method} · {date}',
     title: 'Subscriptions', catalog: 'Packages and offers', income: 'Monthly income', pending: 'Awaiting confirmation',
     ending: 'Ending within 7 days', active: 'Active subscriptions', soon: 'Ending soon', all: 'All payments',
     noPayment: 'No payment recorded', unpaid: 'Not paid', partial: 'Partly paid', fullyPaid: 'Paid in full',

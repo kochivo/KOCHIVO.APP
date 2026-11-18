@@ -16,21 +16,26 @@ vi.mock('../data/captain-avatar', () => ({ captainAvatarUrl: vi.fn() }));
 vi.mock('../data/workspace-settings', () => ({ loadCaptainSettings: vi.fn() }));
 vi.mock('../data/preferences', () => ({ saveCaptainPreferences: vi.fn() }));
 vi.mock('../data/language', () => ({ saveLanguage: vi.fn() }));
-vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh() {} }) }));
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ refresh() {} }),
+  useSearchParams: () => new URLSearchParams('section=security'),
+}));
+vi.mock('../data/settings', () => ({ saveInviteMessage: vi.fn() }));
 const profile: SettingsProfile = { id: 'captain', role: 'captain', full_name: 'Ali', phone: null,
   invite_message: null, deletion_requested_at: null, bio: 'Strength coach', public_slug: 'ali', timezone: 'Africa/Cairo' };
 afterEach(() => vi.unstubAllEnvs());
 
-it('renders the real public page, bio, name, preview and copy control', () => {
-  const html = renderToStaticMarkup(createElement(WorkspacePageCard, { profile, edit() {} }));
-  for (const field of ['صفحتك', 'كابتن Ali', 'kochivo.site/c/ali', 'href="/c/ali"', 'شوفها', 'انسخ', 'Strength coach']) expect(html).toContain(field);
+it('renders the real public link, preview and copy control without repeating the profile', () => {
+  const html = renderToStaticMarkup(createElement(WorkspacePageCard, { slug: profile.public_slug }));
+  for (const field of ['kochivo.site/c/ali', 'href="/c/ali"', 'انسخ']) expect(html).toContain(field);
+  expect(html).not.toContain('Ali');
+  expect(html).not.toContain('Strength coach');
 });
 
 it('does not invent a link, bio or gallery count for missing profile data', () => {
-  const html = renderToStaticMarkup(createElement(WorkspacePageCard, { profile: { ...profile, public_slug: null, bio: null }, edit() {} }));
+  const html = renderToStaticMarkup(createElement(WorkspacePageCard, { slug: null }));
   expect(html).not.toContain('href=');
   expect(html).not.toContain('مدرب أونلاين');
-  expect(html).toContain('مش متسجل');
   expect(html).not.toContain('الصور والشهادات');
 });
 
@@ -54,8 +59,8 @@ it('leaves payment activation states and category toggles absent when no prefere
   const html = renderToStaticMarkup(createElement(CaptainSettings, { signOut: createElement('button', null, 'sign-out') }));
   for (const field of ['انستاباي', 'فودافون كاش', 'تحويل بنكي', 'مفعّل', 'رسالة جديدة', 'فيديو أداء', 'دفعة جديدة', 'ملخص الصبح']) expect(html).not.toContain(field);
   expect(html).toContain('sign-out');
-  expect(html).toContain('href="#settings-profile"');
-  expect(html).toContain('href="#settings-language"');
-  expect(html.indexOf('id="settings-profile"')).toBeLessThan(html.indexOf('id="settings-page"'));
+  expect(html).toContain('section=profile');
+  expect(html).toContain('section=language');
+  expect(html).not.toContain('id="settings-profile"');
   expect(html.indexOf('id="settings-security"')).toBeLessThan(html.indexOf('sign-out'));
 });

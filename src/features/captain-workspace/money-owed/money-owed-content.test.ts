@@ -20,11 +20,23 @@ it('shows a retryable error instead of a zero total when the load fails', async 
   expect(html).toContain('Try again');
   expect(html).not.toContain('Nobody owes money');
 });
-it('renders the empty state only after a successful read', async () => {
+it('omits the billing task after a successful empty read', async () => {
   fake.load.mockResolvedValue({ total: 0, count: 0, unpriced: 0, rows: [] });
   const html = renderToStaticMarkup(await MoneyOwedContent({ mode: 'billing' }));
-  expect(html).toContain('Nobody owes money');
-  expect(html).not.toContain('role="alert"');
+  expect(html).toBe('');
+});
+it('shows overdue and partial amounts as a single list with player links', async () => {
+  fake.load.mockResolvedValue({ total: 300, count: 2, unpriced: 1, rows: [
+    { playerId: 'p', name: 'Ali', reason: 'partial', amount: 300, since: '2026-11-01', days: 11 },
+    { playerId: 'q', name: 'Omar', reason: 'expired', amount: null, since: '2026-11-05', days: 7 },
+    { playerId: 'r', name: 'Waiting', reason: 'receipt_pending', amount: 100, since: '2026-11-05', days: 7 },
+  ] });
+  const html = renderToStaticMarkup(await MoneyOwedContent({ mode: 'billing' }));
+  expect(html.match(/<details data-billing-task/g)).toHaveLength(1);
+  expect(html).toContain('300 EGP');
+  expect(html).toContain('href="/captain/players/q"');
+  expect(html).not.toContain('No price');
+  expect(html).not.toContain('Waiting');
 });
 it('provides a translated Suspense fallback and passes the player scope through', async () => {
   const tree = await MoneyOwedEntry({ mode: 'player', playerId: 'p' });

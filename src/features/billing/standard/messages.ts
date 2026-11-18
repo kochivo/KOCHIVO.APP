@@ -1,3 +1,22 @@
+export const workspaceArStd = {
+  attention: 'يحتاج إلى انتباهك', intro: 'تابع الدفعات والمبالغ المستحقة والاشتراكات التي تنتهي قريبًا',
+  monthIncome: 'دخل {month}', expected: 'من أصل {amount} متوقعة', withoutPackages: '{count} دون باقة', activeSubscriptions: 'اشتراكات نشطة',
+  search: 'ابحث عن لاعب', allPlayers: 'الكل', overdue: 'عليهم مستحقات', noPackage: 'دون باقة', paid: 'مدفوع',
+  paidColumn: 'المدفوع', subscription: 'الاشتراك', setPackage: 'حدّد باقة', payments: 'الدفعات', dash: '-',
+  paidOf: 'من أصل {total}', paidProgress: '{paid} من أصل {total}', balance: 'المتبقي {amount}',
+  endsOn: 'ينتهي في {date}', startedOn: 'بدأ في {date}', paymentOn: '{method} · {date}',
+  title: 'الاشتراكات', catalog: 'الباقات والعروض', income: 'دخل الشهر', pending: 'بانتظار التأكيد',
+  ending: 'تنتهي خلال 7 أيام', active: 'اشتراك نشط', soon: 'تنتهي قريبًا', all: 'كل الدفعات',
+  noPayment: 'لا توجد دفعة مسجلة', unpaid: 'دون مبلغ', partial: 'مدفوعة جزئيًا', fullyPaid: 'مدفوعة بالكامل',
+  confirm: 'وافق', confirmed: 'مؤكدة', saved: 'تمت الموافقة على طلب تجديد {name}',
+  renewalRequest: 'طلب تجديد · {package}', renewalOnly: 'تجديد دون دفعة',
+  fallback: 'تم قبول الطلب. انتهى العرض؛ راجع تفاصيل الاشتراك', after: 'بعد {n} يوم',
+  noRequests: 'لا توجد دفعات بانتظار التأكيد', noExpiring: 'لا توجد اشتراكات تنتهي قريبًا',
+  player: 'اللاعب', amount: 'المبلغ', date: 'التاريخ', status: 'الحالة', latest: 'آخر دفعة لكل لاعب؛ اضغط اسمه لعرض كل الدفعات',
+  newPackage: 'باقة جديدة', edit: 'عدّل', featured: 'مميزة', offers: 'العروض', newOffer: '+ عرض جديد',
+  back: 'رجوع', percent: '%', bonus: '+',
+} as const;
+
 export const arStd = {
   "unfreezeFirst": "ألغِ التجميد أولاً",
   "invitePlayer": "أضف لاعباً",

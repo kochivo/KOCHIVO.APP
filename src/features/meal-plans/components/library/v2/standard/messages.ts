@@ -1,4 +1,5 @@
 export const arStd = {
+  loading: 'جارٍ تحميل الأطعمة...', filters: 'المرشحات', tabCount: '{label} {count}', usedInPlans: 'عدد الخطط التي تستخدم هذا الطعام: {count}',
   mismatch: 'السعرات {kcal} لكن مجموع الماكروز يقارب {calculated}. راجع القيم.',
   small: 'طبق صغير · {grams} جم', medium: 'طبق متوسط · {grams} جم', large: 'طبق كبير · {grams} جم', noRecent: 'لم تضف أطعمة بعد',
   title: 'مكتبة الطعام', subtitle: 'ابحث بالعربية أو الإنجليزية، وراجع القيم، وحدّد الكمية وأضفها للاعب.', count: '{count} طعام', foodName: 'الطعام', defaultServing: '100 جم',

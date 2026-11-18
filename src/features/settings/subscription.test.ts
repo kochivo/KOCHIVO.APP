@@ -6,7 +6,10 @@ import { CaptainSettings } from './components/captain-settings';
 
 const state = vi.hoisted(() => ({ planError: false }));
 vi.mock('server-only', () => ({}));
-vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh() {} }) }));
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ refresh() {} }),
+  useSearchParams: () => new URLSearchParams('section=subscription'),
+}));
 vi.mock('../billing/data/subscription', () => ({ loadSubscription: vi.fn() }));
 vi.mock('./data/settings', () => ({ loadSettings: vi.fn() }));
 // The real entry is a lazy wrapper; render the view directly in static markup.

@@ -17,21 +17,23 @@ describe('workspace ranking list', () => {
     const html = render([player]);
     expect(html).toContain('href="/captain/players/player-1"');
     expect(html).toContain('Mona Ali');
-    expect(html).toContain('6 workouts');
-    expect(html).toContain('84 points');
+    expect(html).toContain('>Workouts</span>');
+    expect(html).toContain('>6</span>');
+    expect(html).toContain('>84</span>');
     expect(html).toContain('tabular-nums');
-    expect(html).not.toContain('120 points');
-    expect(html).toContain('aria-label="Bronze"');
+    expect(html).not.toContain('>120</span>');
+    expect(html).toContain('>Bronze</span>');
   });
   it.each([[0, 'Iron'], [300, 'Gold'], [900, 'Legend']] as const)(
     'shows the medal at %i lifetime points', (lifetime, label) => {
-      expect(render([{ ...player, lifetime }])).toContain(`aria-label="${label}"`);
+      expect(render([{ ...player, lifetime }])).toContain(`>${label}</span>`);
     },
   );
   it('uses lifetime points without mislabelling monthly workouts as lifetime', () => {
     const html = render([player], true);
-    expect(html).toContain('120 points');
-    expect(html).not.toContain('workouts');
+    expect(html).toContain('>120</span>');
+    expect(html).toContain('>—</span>');
+    expect(html).not.toContain('>6</span>');
   });
   it('does not link an unavailable player id', () => {
     expect(render([{ ...player, player_id: null }])).not.toContain('href=');

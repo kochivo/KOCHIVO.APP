@@ -2,9 +2,11 @@ import { createElement } from 'react';
 import type * as ReactModule from 'react';
 import type { ComponentProps } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { beforeEach, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { LocaleProvider } from '@/core/i18n/client';
 import { createT } from '@/core/i18n/messages';
+import type * as ButtonModule from '@/ui/button';
+import type * as IconButtonModule from '@/ui/icon-button';
 import { KoAccountLink } from '../ko-preview/components/ko-account-link';
 import { koTeaserEnabled } from './config';
 import { KoTeaser } from '../ko-preview/components/ko-teaser';
@@ -14,17 +16,31 @@ import { messages } from './messages';
 
 const mocks = vi.hoisted(() => ({ claims: vi.fn(), insert: vi.fn(), query: vi.fn(), fetch: vi.fn(), path: '/player',
   interaction: false, states: [] as unknown[], cursor: 0, click: undefined as (() => void) | undefined,
+  close: undefined as (() => void) | undefined,
+  effects: [] as Array<() => void | (() => void)>,
 }));
 vi.mock('react', async original => {
   const react = await original<typeof ReactModule>();
-  return { ...react, useState: (initial: unknown) => {
+  return { ...react, useEffect: (effect: () => void | (() => void)) => {
+    if (mocks.interaction) mocks.effects.push(effect);
+    else react.useEffect(effect);
+  }, useSyncExternalStore: (...args: Parameters<typeof react.useSyncExternalStore>) =>
+    mocks.interaction ? args[1]() : react.useSyncExternalStore(...args),
+  useState: (initial: unknown) => {
     if (!mocks.interaction) return react.useState(initial);
     const index = mocks.cursor++;
     if (!(index in mocks.states)) mocks.states[index] = initial;
     return [mocks.states[index], (value: unknown) => { mocks.states[index] = value; }];
   } };
 });
-vi.mock('@/ui/button', () => ({ Button: (props: ComponentProps<'button'>) => {
+vi.mock('@/ui/icon-button', async original => {
+  const { IconButton } = await original<typeof IconButtonModule>();
+  return { IconButton: (props: ComponentProps<typeof IconButton>) => {
+    mocks.close = props.onClick as (() => void) | undefined;
+    return createElement(IconButton, props);
+  } };
+});
+vi.mock('@/ui/button', async original => ({ ...await original<typeof ButtonModule>(), Button: (props: ComponentProps<'button'>) => {
   mocks.click = props.onClick as (() => void) | undefined;
   return createElement('button', props);
 } }));
@@ -36,7 +52,7 @@ vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => ({
 }) }));
 vi.mock('@/core/supabase/browser', () => ({ supabaseBrowser: () => ({ from: () => ({ insert: mocks.insert }) }) }));
 beforeEach(() => {
-  mocks.interaction = false; mocks.states = []; mocks.cursor = 0; mocks.click = undefined;
+  mocks.interaction = false; mocks.states = []; mocks.cursor = 0; mocks.click = undefined; mocks.close = undefined; mocks.effects = [];
   vi.unstubAllEnvs();
   vi.stubGlobal('fetch', mocks.fetch);
   vi.stubEnv('KO_ENABLED', '');
@@ -47,6 +63,7 @@ beforeEach(() => {
   mocks.insert.mockResolvedValue({ error: null });
   mocks.fetch.mockClear();
 });
+afterEach(() => vi.unstubAllGlobals());
 
 it('requires the exact teaser flag', () => {
   expect(koTeaserEnabled()).toBe(true);
@@ -138,4 +155,58 @@ it('shows optimistic confirmation, rolls back failure, and allows a retry', asyn
   expect(render()).toContain(t('joined'));
   expect(joined).toHaveBeenCalledOnce();
   expect(mocks.fetch).not.toHaveBeenCalled();
+});
+
+it('uses a nonmodal corner card with the KO helmet, three examples and the waitlist action', () => {
+  vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
+  vi.stubEnv('NEXT_PUBLIC_INTERNATIONAL', '1');
+  const child = createElement(KoTeaserPanel, {
+    role: 'captain', userId: 'user', joined: false, openerId: 'opener', desktop: true, onClose() {}, onJoined() {},
+  });
+  const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar', style: 'standard' }, child));
+  expect(html).toContain('أمثلة على ما يمكنك طلبه');
+  expect(html).toMatch(/(?:\/|%2F)ko-preview(?:\/|%2F)welcome\.png/);
+  expect(html).toContain('end-page-x bottom-page-y');
+  expect(html.match(/<li\b/g)).toHaveLength(3);
+  expect(html).toContain('role="dialog"');
+  expect(html).toContain(createT(messages, 'ar', 'standard')('join'));
+  expect(html).not.toMatch(/<dialog|aria-modal|backdrop|blur/);
+});
+
+it.each(['close button', 'Escape'] as const)('dismisses the desktop card with %s and respects storage on remount', method => {
+  vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
+  mocks.interaction = true;
+  const storage = new Map<string, string>();
+  const events = new EventTarget();
+  vi.stubGlobal('window', {
+    location: { href: 'https://example.com/captain' },
+    matchMedia: () => ({ matches: true }),
+    localStorage: { getItem: (key: string) => storage.get(key), setItem: (key: string, value: string) => storage.set(key, value) },
+    addEventListener: events.addEventListener.bind(events), removeEventListener: events.removeEventListener.bind(events),
+  });
+  vi.stubGlobal('document', { activeElement: null, querySelector: () => null });
+  const render = (userId = 'user') => {
+    mocks.cursor = 0;
+    mocks.effects = [];
+    return renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' },
+      createElement(KoTeaser, { role: 'captain', userId, joined: false })));
+  };
+  expect(render()).toContain('data-ko-teaser-corner');
+  expect(render()).toContain('aria-label="Close"');
+  if (method === 'close button') {
+    expect(mocks.close).toBeTypeOf('function');
+    mocks.close?.();
+  } else {
+    // The corner's effect follows the launcher's lazy-load effect.
+    const cleanup = mocks.effects.at(-1)?.();
+    events.dispatchEvent(Object.assign(new Event('keydown'), { key: 'Enter' }));
+    expect(storage.size).toBe(0);
+    events.dispatchEvent(Object.assign(new Event('keydown'), { key: 'Escape' }));
+    cleanup?.();
+  }
+  expect(storage.size).toBe(1);
+  expect(render()).not.toContain('data-ko-teaser-corner');
+  mocks.states = [];
+  expect(render()).not.toContain('data-ko-teaser-corner');
+  expect(render('other-user')).toContain('data-ko-teaser-corner');
 });

@@ -1,36 +1,61 @@
-import { clickableClass } from '@/ui/button';
-import { RowChevron } from '@/ui/row-chevron';
 import Link from 'next/link';
-import { Users } from 'lucide-react';
+import { Medal, Users } from 'lucide-react';
 import type { Locale } from '@/core/i18n/locale';
+import { useArabicStyle } from '@/core/i18n/client';
 import { createT } from '@/core/i18n/messages';
+import { medalRank, ranksMessages } from '@/features/ranks';
 import type { LeaderboardRow } from '@/features/ranks';
+import { cn } from '@/lib/cn';
 import { formatNumber } from '@/lib/format';
+import { clickableClass } from '@/ui/button';
 import { EmptyState } from '@/ui/empty-state';
 import { messages } from '../messages';
-import { MEDAL_RANKS, medalRank, ranksMessages } from '@/features/ranks';
-import { Medal } from '@/ui/medal';
+import { workspaceMessages } from './workspace/messages';
 
-export function WorkspaceBoardList({ rows, locale, allTime, startAt = 0 }: {
-  rows: LeaderboardRow[]; locale: Locale; allTime: boolean; startAt?: number;
+const columns = 'grid grid-cols-[2ch_minmax(0,2fr)_repeat(3,minmax(0,1fr))] items-center gap-inline px-stack min-[1000px]:grid-cols-[3rem_minmax(0,2fr)_repeat(3,minmax(0,1fr))] min-[760px]:px-card';
+
+export function WorkspaceBoardList({ rows, locale, allTime }: {
+  rows: LeaderboardRow[]; locale: Locale; allTime: boolean;
 }) {
-  const t = createT(messages, locale);
-  if (!rows.length) return <EmptyState icon={Users} title={t('empty')} body={t('emptyBody')} />;
-  return <ol className="glass divide-y divide-line-soft overflow-hidden rounded-card" aria-label={t('workspaceTitle')}>
+  const style = useArabicStyle();
+  const t = createT(workspaceMessages, locale, style);
+  const labels = createT(messages, locale, style);
+  const medals = createT(ranksMessages, locale, style);
+  if (!rows.length) return <EmptyState icon={Users} title={labels('empty')} body={labels('emptyBody')} />;
+
+  return <div role="table" className="glass overflow-hidden rounded-card" aria-label={labels('workspaceTitle')}>
+    <div role="row" className={cn(columns, 'min-h-10 text-micro text-muted')}>
+      <span role="columnheader" aria-label={t('rank')}><span aria-hidden>#</span></span>
+      <span role="columnheader">{t('player')}</span>
+      <span role="columnheader">{t('medal')}</span>
+      <span role="columnheader">{t('workouts')}</span>
+      <span role="columnheader">{t('points')}</span>
+    </div>
     {rows.map((row, index) => {
-      const content = <>
-        <span className="shrink-0 font-display text-muted tabular-nums">{(allTime ? row.lifetime : row.monthly) > 0 ? formatNumber(startAt + index + 1, locale) : t('notYet')}</span>
-        <span aria-hidden className="grid size-[38px] shrink-0 place-items-center rounded-full border border-line bg-surface text-sm font-bold">
-          {row.display_name.trim().slice(0, 1)}
+      const points = allTime ? row.lifetime : row.monthly;
+      const rank = allTime ? index + 1 : row.position;
+      return <div role="row" key={row.player_id ?? index}
+        className={cn(columns, 'relative min-h-15 border-t border-line-soft text-row', row.player_id && 'hover:bg-ink/5 focus-within:bg-ink/5 active:bg-ink/10')}>
+        <span role="cell" className={cn('min-w-4 font-display font-extrabold tabular-nums', rank === 1 && points > 0 ? 'text-warn' : 'text-muted')}>
+          {formatNumber(rank, locale)}
         </span>
-        <b className="min-w-0 flex-1 break-words text-sm">{row.display_name}</b>
-        {!allTime && <span className="shrink-0 font-display text-xs text-muted tabular-nums">{t('workoutCount', { n: row.done, count: formatNumber(row.done, locale) })}</span>}
-        <span className="shrink-0 font-display text-row font-extrabold tabular-nums">{t('points', { n: allTime ? row.lifetime : row.monthly, points: formatNumber(allTime ? row.lifetime : row.monthly, locale) })}</span>
-        <Medal rank={MEDAL_RANKS.findIndex(entry => entry.rank === medalRank(row.lifetime)) as 0 | 1 | 2 | 3 | 4 | 5 | 6} size={36} label={createT(ranksMessages, locale)(medalRank(row.lifetime))} />
-      </>;
-      return <li key={row.player_id ?? index}>{row.player_id ?
-        <Link href={`/captain/players/${row.player_id}`} className={`${clickableClass} flex min-h-[58px] flex-wrap items-center gap-inline px-card py-inline`}>{content}<RowChevron /></Link> :
-        <div className="flex min-h-[58px] items-center gap-stack px-card">{content}</div>}</li>;
+        <span role="cell" className="flex min-w-0 items-center gap-stack">
+          <span aria-hidden className="hidden size-9 shrink-0 place-items-center rounded-full bg-surface-raised font-bold min-[760px]:grid">
+            {row.display_name.trim().slice(0, 1)}
+          </span>
+          {row.player_id ?
+            <Link href={`/captain/players/${row.player_id}`}
+              className={`${clickableClass} min-w-0 break-words font-bold transform-none! after:absolute after:inset-0 focus-visible:underline`}>
+              {row.display_name}
+            </Link> : <b className="min-w-0 break-words">{row.display_name}</b>}
+        </span>
+        <span role="cell" className="flex min-w-0 items-center gap-inline text-xs">
+          <Medal aria-hidden className="hidden size-4 shrink-0 text-muted min-[960px]:block" />
+          <span className="break-words">{medals(medalRank(row.lifetime))}</span>
+        </span>
+        <span role="cell" className="font-display font-extrabold tabular-nums">{allTime ? t('missing') : formatNumber(row.done, locale)}</span>
+        <span role="cell" className="break-words font-display text-md font-extrabold tabular-nums">{formatNumber(points, locale)}</span>
+      </div>;
     })}
-  </ol>;
+  </div>;
 }

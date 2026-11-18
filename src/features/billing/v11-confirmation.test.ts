@@ -29,10 +29,12 @@ vi.mock('react', async original => ({
   useTransition: () => [false, (callback: () => void) => callback()],
 }));
 vi.mock('@/core/i18n/client', () => ({ useT: (messages: Messages) => createT(messages, 'en'), useLocale: () => 'en' }));
+vi.mock('@/core/timezone/client', () => ({ useTimezone: () => 'Africa/Cairo' }));
 vi.mock('@/core/resource', () => ({ useResource: () => ({ data: { data: [{ id: 'request', name: 'Ali', package: 'Monthly' }] }, retry: state.retry }) }));
 vi.mock('@/ui/toast', () => ({ useToast: () => ({ success: state.success }) }));
 vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh: state.refresh }) }));
 vi.mock('./data/renewal-requests', () => ({ listRenewalRequests: vi.fn(), decideRenewalRequest: vi.fn() }));
+vi.mock('./receipts/captain-receipts', () => ({ CaptainReceipts: () => null }));
 
 type Node = ReactElement<Record<string, unknown>>;
 function nodes(value: unknown): Node[] {

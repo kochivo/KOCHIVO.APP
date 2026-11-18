@@ -4,7 +4,11 @@ import { expect, it, vi } from 'vitest';
 import { CaptainSettings } from './components/captain-settings';
 
 vi.mock('server-only', () => ({}));
-vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh() {} }) }));
+const query = vi.hoisted(() => ({ section: 'language' }));
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ refresh() {} }),
+  useSearchParams: () => new URLSearchParams({ section: query.section }),
+}));
 vi.mock('next/dynamic', () => ({ default: () => () => null }));
 vi.mock('@/core/resource', () => ({ useResource: () => ({ data: {
   full_name: 'Ali', timezone: 'Africa/Cairo', timezone_auto: true, units: 'metric',
@@ -13,13 +17,34 @@ vi.mock('@/features/demo', () => ({ demoExpiry: () => null, useDemoExpiry: () =>
 vi.mock('@/features/billing', () => ({ SubscriptionEntry: () => null }));
 vi.mock('@/lib/use-calendar-clock', () => ({ useCalendarClock: () => ({ now: null }) }));
 vi.mock('./data/workspace-settings', () => ({ loadCaptainSettings() {} }));
+vi.mock('./data/settings', () => ({ saveInviteMessage: vi.fn() }));
 vi.mock('./data/language', () => ({ saveLanguage() {} }));
 vi.mock('./data/preferences', () => ({ saveCaptainPreferences() {} }));
 
 it('renders one language and timezone card with its editable controls', () => {
   const html = renderToStaticMarkup(createElement(CaptainSettings));
-  expect(html.match(/اللغة والتوقيت/g)).toHaveLength(1);
-  expect(html).not.toContain('اللغة والوقت');
+  expect(html).toContain('اللغة والإشعارات');
+  expect(html).toMatch(/<a[^>]*aria-current="page"[^>]*>.*?اللغة والإشعارات/);
   expect(html).toContain('English');
   expect(html).toContain('aria-pressed');
+});
+
+it('shows sign-out only in security and falls back to account for unknown sections', () => {
+  const props = { signOut: createElement('button', null, 'sign-out') };
+  query.section = 'security';
+  const security = renderToStaticMarkup(createElement(CaptainSettings, props));
+  expect(security).toContain('sign-out');
+  expect(security).not.toContain('English');
+  query.section = 'unknown';
+  const account = renderToStaticMarkup(createElement(CaptainSettings, props));
+  expect(account).toMatch(/<a[^>]*aria-current="page"[^>]*>.*?حسابك/);
+  expect(account).not.toContain('sign-out');
+});
+
+it.each(['profile', 'page', 'invite', 'language', 'subscription', 'security'])('renders only the %s section from the URL', section => {
+  query.section = section;
+  const html = renderToStaticMarkup(createElement(CaptainSettings));
+  expect(html.match(/id="settings-(?:profile|page|invite|language|subscription|security)"/g)).toEqual([`id="settings-${section}"`]);
+  expect(html.match(/aria-current="page"/g)).toHaveLength(1);
+  expect(html).toMatch(new RegExp(`<a[^>]*aria-current="page"[^>]*href="\\?section=${section}"`));
 });

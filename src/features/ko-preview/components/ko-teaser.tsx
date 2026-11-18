@@ -2,7 +2,7 @@
 
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { IconButton } from '@/ui/icon-button';
-import { useId, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { X } from 'lucide-react';
 import { useT } from '@/core/i18n/client';
@@ -12,6 +12,15 @@ import { ResponsiveDialog } from '@/ui/responsive-dialog';
 import type { KoTeaserPanel } from './ko-teaser-panel';
 import { koEntryMessages as messages } from '@/features/ko-entry';
 import { Button } from '@/ui/button';
+import { dismissDesktopTeaser, useTeaserDesktop } from '../hooks/use-teaser-desktop';
+import { KoTeaserCorner } from './ko-teaser-corner';
+
+function loadTeaserPanel() {
+  return import('./ko-teaser-panel').then(
+    loaded => ({ Component: loaded.KoTeaserPanel, failed: false }),
+    () => ({ Component: null, failed: true }),
+  );
+}
 
 export function KoTeaser({ role, userId, joined: initialJoined, readFailed = false }: {
   role: KoRole; userId: string; joined: boolean; readFailed?: boolean;
@@ -19,35 +28,68 @@ export function KoTeaser({ role, userId, joined: initialJoined, readFailed = fal
   const t = useT(messages);
   const openerId = useId();
   const path = usePathname();
-  const [open, setOpen] = useState(false);
+  const [phoneOpen, setOpen] = useState(false);
+  const [desktopOpen, setDesktopOpen] = useState<boolean | null>(null);
+  const returnFocus = useRef(false);
   const [joined, setJoined] = useState(initialJoined);
   const position = role === 'captain' ? 'min-[760px]:start-auto min-[760px]:end-20' : '';
   const [panel, setPanel] = useState<{ Component: typeof KoTeaserPanel | null; failed: boolean }>({ Component: null, failed: false });
+  const desktopStatus = useTeaserDesktop(role === 'captain' && captainWorkspaceEnabled(), userId);
+  const desktop = desktopStatus !== 'phone';
+  const open = desktop ? (desktopOpen ?? desktopStatus === 'desktop') : phoneOpen;
+  const excluded = /^\/player\/(?:workout|onboarding)(?:\/|$)/.test(path) || path === '/player/captain';
+
+  useEffect(() => {
+    if (!desktop || !open || excluded || panel.Component || panel.failed) return;
+    let active = true;
+    void loadTeaserPanel().then(result => { if (active) setPanel(result); });
+    return () => { active = false; };
+  }, [desktop, open, excluded, panel.Component, panel.failed]);
+
   async function loadPanel() {
     setPanel({ Component: null, failed: false });
-    try {
-      const loaded = await import('./ko-teaser-panel');
-      setPanel({ Component: loaded.KoTeaserPanel, failed: false });
-    } catch { setPanel({ Component: null, failed: true }); }
+    if (!desktop) setPanel(await loadTeaserPanel());
+  }
+  function close() {
+    if (desktop) {
+      returnFocus.current = Boolean(document.activeElement?.closest('[data-ko-teaser-corner]'));
+      dismissDesktopTeaser(userId);
+      setDesktopOpen(false);
+    } else setOpen(false);
   }
   // The player chat has its own composer in this corner.
-  if (/^\/player\/(?:workout|onboarding)(?:\/|$)/.test(path) || path === '/player/captain') return null;
+  if (excluded) return null;
+  const loadingContent = panel.failed ? <>
+    <p role="alert">{t('loadError')}</p>
+    <Button type="button" onClick={() => void loadPanel()} variant={'primary'} block={false} className={"mt-stack min-h-12 px-page-x"}>{t('retry')}</Button>
+  </> : <p role="status">{t('loading')}</p>;
   return <>
-    <button id={openerId} type="button" aria-label={t('teaserOpen')} aria-haspopup="dialog" aria-expanded={open}
-      onClick={() => { setOpen(!open); if (!open && !panel.Component) void loadPanel(); }}
-      className={`fixed start-[max(1rem,var(--safe-start))] bottom-[calc(var(--nav-clearance)+0.5rem)] z-30 grid size-13 min-h-12 min-w-12 place-items-center rounded-card border border-lime/30 bg-bg shadow-xl lg:bottom-6 ${position}`}>
+    {(!desktop || !open) && <button id={openerId} type="button" aria-label={t('teaserOpen')} aria-haspopup="dialog" aria-expanded={open}
+      ref={desktop ? button => {
+        if (button && returnFocus.current) {
+          returnFocus.current = false;
+          button.focus();
+        }
+      } : undefined}
+      onClick={() => {
+        if (desktop) setDesktopOpen(true);
+        else { setOpen(!open); if (!open && !panel.Component) void loadPanel(); }
+      }}
+      className={desktop
+        ? 'fixed end-page-x bottom-page-y z-30 grid size-13 min-h-12 min-w-12 place-items-center rounded-card border border-lime/30 bg-bg shadow-xl'
+        : `fixed start-[max(1rem,var(--safe-start))] bottom-[calc(var(--nav-clearance)+0.5rem)] z-30 grid size-13 min-h-12 min-w-12 place-items-center rounded-card border border-lime/30 bg-bg shadow-xl lg:bottom-6 ${position}`}>
       <KoAvatar expression="welcome" motion={open ? 'none' : 'idle'} className="size-13" />
       <span className="absolute -top-2 -end-3 rounded-full border border-line bg-surface-raised px-inline py-inline text-xs font-bold text-muted">{t('soon')}</span>
-    </button>
+    </button>}
     {open && (panel.Component ? <panel.Component role={role} userId={userId} joined={joined} readFailed={readFailed}
-      openerId={openerId} onClose={() => setOpen(false)} onJoined={() => setJoined(true)} />
-      : <ResponsiveDialog modal aria-label={t('teaserOpen')} fallbackId={openerId} openerId={openerId} onDismiss={() => setOpen(false)}
+      openerId={openerId} desktop={desktop} onClose={close} onJoined={() => setJoined(true)} />
+      : desktop ? <KoTeaserCorner label={t('teaserOpen')} onClose={close}>
+        <IconButton aria-label={t('close')} onClick={close} className="ms-auto"><X aria-hidden className="size-5" /></IconButton>
+        {loadingContent}
+      </KoTeaserCorner> : <ResponsiveDialog modal aria-label={t('teaserOpen')} fallbackId={openerId} openerId={openerId} onDismiss={close}
         className="sheet fixed inset-auto start-[max(1rem,var(--safe-start))] bottom-[calc(var(--nav-clearance)+4.5rem)] z-50 m-0 w-96 max-w-[calc(100vw-2rem)] rounded-card border border-line p-card text-start text-ink lg:bottom-24">
         {captainWorkspaceEnabled() ? <IconButton type="button" aria-label={t('close')} onClick={() => setOpen(false)} className="ms-auto grid min-h-12 min-w-12 place-items-center"><X aria-hidden className="size-5" /></IconButton> : <button type="button" aria-label={t('close')} onClick={() => setOpen(false)} className="ms-auto grid min-h-12 min-w-12 place-items-center"><X aria-hidden className="size-5" /></button>}
-        {panel.failed ? <>
-          <p role="alert">{t('loadError')}</p>
-          <Button type="button" onClick={() => void loadPanel()} variant={'primary'} block={false} className={"mt-stack min-h-12 px-page-x"}>{t('retry')}</Button>
-        </> : <p role="status">{t('loading')}</p>}
+        {loadingContent}
       </ResponsiveDialog>)}
   </>;
 }
