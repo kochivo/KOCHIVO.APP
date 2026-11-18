@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#090a0b;--surface:#141414;--raised:#1c1c1c;--line:#292929;--line-soft:rgba(242,242,238,.07);--ink:#f4f4f1;--muted:#a6abb0;--lime:#b6e94f;--on-lime:#10140a;--lime-soft:rgba(182,233,79,.12);--danger:#ff8a7a;--danger-soft:rgba(255,138,122,.12)}
+*{box-sizing:border-box}
+body{margin:0;background:#000;font-family:Alexandria,system-ui,sans-serif;color:var(--ink);display:flex;gap:40px;padding:40px;flex-wrap:wrap}
+.phone{width:390px;height:844px;background:var(--bg);position:relative;overflow:hidden;display:flex;flex-direction:column;padding:20px 16px 24px;gap:16px}
+.top{display:flex;align-items:center;gap:12px}
+.icon-btn{width:48px;height:48px;border-radius:999px;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;flex-shrink:0}
+h1{margin:0;font-size:22px;font-weight:800}
+h2{margin:0;font-size:15px;font-weight:700}
+p{margin:0}
+.muted{color:var(--muted)}
+.sm{font-size:13px;line-height:1.7}
+.xs{font-size:12px}
+.group{background:var(--surface);border:1px solid var(--line-soft);border-radius:20px}
+.row{display:flex;align-items:center;gap:12px;padding:14px;min-height:72px}
+.row+.row{border-top:1px solid var(--line-soft)}
+.logo{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-weight:800;font-size:15px;flex-shrink:0}
+.claude{background:#d9775733;color:#e8a184}
+.gpt{background:#ffffff14;color:#f4f4f1}
+.grow{flex-grow:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.btn{min-height:48px;padding:0 18px;border-radius:14px;font-family:inherit;font-size:14px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap}
+.primary{background:var(--lime);color:var(--on-lime);border:0}
+.tonal{background:var(--lime-soft);color:var(--lime);border:0}
+.outline{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.danger-outline{background:transparent;color:var(--danger);border:1px solid #ff8a7a55}
+.block{width:100%}
+.status{display:inline-flex;align-items:center;gap:6px;font-size:12px}
+.dot{width:8px;height:8px;border-radius:99px}
+.list{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+.list li{display:flex;gap:10px;font-size:13px;line-height:1.6;align-items:flex-start}
+.chk{flex-shrink:0;width:20px;height:20px}
+.label{position:absolute;top:-30px;inset-inline-start:0;font-size:13px;color:#888}
+.wrap{position:relative}
+.scrim{position:absolute;inset:0;background:rgba(0,0,0,.6)}
+.sheet{position:absolute;inset-inline:0;bottom:0;background:#161616;border-radius:28px 28px 0 0;padding:12px 16px 24px;display:flex;flex-direction:column;gap:14px;border-top:1px solid var(--line)}
+.handle{width:36px;height:4px;border-radius:9px;background:#444;margin:0 auto 4px}
+.step{display:flex;gap:12px;align-items:flex-start}
+.num{width:28px;height:28px;border-radius:99px;background:var(--raised);display:grid;place-items:center;font-size:13px;font-weight:700;flex-shrink:0}
+.url{display:flex;align-items:center;gap:8px;background:var(--raised);border-radius:14px;padding:6px 6px 6px 12px;margin-top:8px}
+.url code{direction:ltr;font-size:12px;flex-grow:1;text-align:left;color:var(--ink)}
+.dialog{position:absolute;inset-inline:24px;top:260px;background:#1d1d1d;border-radius:28px;padding:24px;display:flex;flex-direction:column;gap:14px}
+.pair{display:flex;align-items:center;justify-content:center;gap:16px;direction:ltr}
+.tile{width:64px;height:64px;border-radius:18px;display:grid;place-items:center;font-weight:800;font-size:20px}
+.kochivo{background:var(--lime);color:var(--on-lime)}
+hr{border:0;border-top:1px solid var(--line-soft);margin:4px 0}
+</style>
+</head>
+<body>
+
+<!-- 1. First time: no tools yet, each tool has a real next step -->
+<div class="wrap" id="s1"><div class="phone">
+  <div class="top">
+    <span class="icon-btn" aria-label="رجوع"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f4f4f1" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></span>
+    <h1>الأدوات المتصلة</h1>
+  </div>
+  <p class="sm muted">اربط Claude أو ChatGPT، وابعتله صورة أكلك يقولك تاكل منها قد إيه، ويسجّل الوجبة لما تقوله.</p>
+  <div class="group">
+    <div class="row">
+      <span class="logo claude">Cl</span>
+      <span class="grow"><b>Claude</b><span class="status muted"><span class="dot" style="border:1.5px solid #888"></span>مش متصل</span></span>
+      <button class="btn tonal">اربط</button>
+    </div>
+    <div class="row">
+      <span class="logo gpt">GPT</span>
+      <span class="grow"><b>ChatGPT</b><span class="status muted"><span class="dot" style="border:1.5px solid #888"></span>مش متصل</span></span>
+      <button class="btn tonal">اربط</button>
+    </div>
+  </div>
+  <h2 style="margin-top:6px">يقدر يعمل إيه</h2>
+  <ul class="list">
+    <li><svg class="chk" viewBox="0 0 24 24" fill="none" stroke="#b6e94f" stroke-width="2.5"><path d="M5 12l5 5L20 7"/></svg>يقرا نظام أكلك وتمرين النهارده وتقدّمك</li>
+    <li><svg class="chk" viewBox="0 0 24 24" fill="none" stroke="#b6e94f" stroke-width="2.5"><path d="M5 12l5 5L20 7"/></svg>يعلّم وجبة إنها اتاكلت، بس لما تطلب منه</li>
+  </ul>
+  <h2 style="margin-top:6px">مش هيقدر</h2>
+  <ul class="list">
+    <li><svg class="chk" viewBox="0 0 24 24" fill="none" stroke="#a6abb0" stroke-width="2.5"><path d="M6 6l12 12M18 6 6 18"/></svg><span class="muted">يغيّر نظامك أو برنامجك، أو يشوف رسايلك ووزنك وصورك</span></li>
+  </ul>
+  <p class="xs muted" style="margin-top:auto;line-height:1.7">صور الأكل اللي بتبعتها بتفضل عند Claude أو ChatGPT، ومش بتتحفظ في KOCHIVO.</p>
+</div></div>
+
+<!-- 2. Connect Claude: steps in a bottom sheet instead of a raw URL card -->
+<div class="wrap" id="s2"><div class="phone">
+  <div class="top"><span class="icon-btn"></span><h1>الأدوات المتصلة</h1></div>
+  <div class="group"><div class="row"><span class="logo claude">Cl</span><span class="grow"><b>Claude</b></span></div></div>
+  <div class="scrim"></div>
+  <div class="sheet" role="dialog" aria-label="اربط Claude">
+    <div class="handle"></div>
+    <div style="display:flex;align-items:center;gap:12px"><span class="logo claude">Cl</span><h2 style="font-size:18px">اربط Claude في 3 خطوات</h2></div>
+    <div class="step"><span class="num">1</span><div class="grow"><b class="sm">انسخ لينك KOCHIVO</b>
+      <div class="url"><button class="btn primary" style="min-height:44px;padding:0 14px">انسخ</button><code>kochivo.site/api/mcp</code></div></div></div>
+    <div class="step"><span class="num">2</span><div class="grow"><b class="sm">في Claude: الإعدادات ← Connectors ← Add custom connector</b><span class="xs muted">الصق اللينك واختار أي اسم، مثلاً KOCHIVO</span></div></div>
+    <div class="step"><span class="num">3</span><div class="grow"><b class="sm">سجّل دخول بحسابك ودوس «اسمح»</b><span class="xs muted">هترجع هنا لوحدك وتلاقي Claude متصل</span></div></div>
+    <button class="btn outline block">افتح Claude</button>
+  </div>
+</div></div>
+
+<!-- 3. Connected + disconnect asks first -->
+<div class="wrap" id="s3"><div class="phone">
+  <div class="top"><span class="icon-btn"></span><h1>الأدوات المتصلة</h1></div>
+  <div class="group">
+    <div class="row">
+      <span class="logo claude">Cl</span>
+      <span class="grow"><b>Claude</b><span class="status" style="color:var(--lime)"><span class="dot" style="background:var(--lime)"></span>متصل من 18 نوفمبر</span><span class="xs muted">23 طلب الأسبوع ده</span></span>
+      <button class="btn danger-outline">افصل</button>
+    </div>
+    <div class="row">
+      <span class="logo gpt">GPT</span>
+      <span class="grow"><b>ChatGPT</b><span class="status muted"><span class="dot" style="border:1.5px solid #888"></span>مش متصل</span></span>
+      <button class="btn tonal">اربط</button>
+    </div>
+  </div>
+  <div class="scrim"></div>
+  <div class="dialog" role="alertdialog" aria-labelledby="dt">
+    <h2 id="dt" style="font-size:19px">تفصل Claude؟</h2>
+    <p class="sm muted">Claude مش هيقدر يقرا أكلك أو يسجّل وجبات تاني. تقدر تربطه تاني في أي وقت.</p>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:6px">
+      <button class="btn outline">خليه</button>
+      <button class="btn danger-outline" style="background:var(--danger-soft)">افصل</button>
+    </div>
+  </div>
+</div></div>
+
+<!-- 4. Consent page for a player -->
+<div class="wrap" id="s4"><div class="phone">
+  <div class="pair" style="margin-top:28px"><span class="tile kochivo">K</span>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a6abb0" stroke-width="2"><path d="M7 7h12l-3-3M17 17H5l3 3"/></svg>
+    <span class="tile claude">Cl</span></div>
+  <h1 style="text-align:center;font-size:21px;line-height:1.5">Claude عايز يوصل لحسابك في KOCHIVO</h1>
+  <p class="sm muted" style="text-align:center">داخل باسم منة خالد</p>
+  <div class="group" style="padding:16px;display:flex;flex-direction:column;gap:12px">
+    <h2>هيقدر</h2>
+    <ul class="list">
+      <li><svg class="chk" viewBox="0 0 24 24" fill="none" stroke="#b6e94f" stroke-width="2.5"><path d="M5 12l5 5L20 7"/></svg>يقرا نظام أكلك وتمرين النهارده وتقدّمك</li>
+      <li><svg class="chk" viewBox="0 0 24 24" fill="none" stroke="#b6e94f" stroke-width="2.5"><path d="M5 12l5 5L20 7"/></svg>يسجّل وجبة من نظامك، لما تطلب منه بس</li>
+    </ul>
+    <hr>
+    <h2>مش هيقدر</h2>
+    <ul class="list">
+      <li><svg class="chk" viewBox="0 0 24 24" fill="none" stroke="#a6abb0" stroke-width="2.5"><path d="M6 6l12 12M18 6 6 18"/></svg><span class="muted">يغيّر نظامك أو برنامجك أو أي حاجة تانية</span></li>
+      <li><svg class="chk" viewBox="0 0 24 24" fill="none" stroke="#a6abb0" stroke-width="2.5"><path d="M6 6l12 12M18 6 6 18"/></svg><span class="muted">يشوف رسايلك أو وزنك أو صورك</span></li>
+    </ul>
+  </div>
+  <p class="xs muted" style="line-height:1.7">اللي بتسأل عنه بيروح لـ Anthropic علشان Claude يرد. تقدر تفصله في أي وقت من «الأدوات المتصلة».</p>
+  <div style="margin-top:auto;display:flex;flex-direction:column;gap:8px">
+    <button class="btn primary block" style="min-height:56px;font-size:16px">اسمح</button>
+    <button class="btn outline block" style="min-height:56px">مش دلوقتي</button>
+  </div>
+</div></div>
+
+</body>
+</html>

@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#090a0b;--surface:#141414;--raised:#1c1c1c;--line:#292929;--line-soft:rgba(242,242,238,.07);--ink:#f4f4f1;--muted:#a6abb0;--lime:#b6e94f;--on-lime:#10140a;--lime-soft:rgba(182,233,79,.12);--danger:#ff8a7a;--danger-soft:rgba(255,138,122,.12)}
+*{box-sizing:border-box}
+body{margin:0;background:#000;font-family:Alexandria,system-ui,sans-serif;color:var(--ink);display:flex;gap:40px;padding:40px;flex-wrap:wrap}
+.phone{width:390px;height:844px;background:var(--bg);position:relative;overflow:hidden;display:flex;flex-direction:column;padding:20px 16px 24px;gap:16px}
+.top{display:flex;align-items:center;gap:12px}
+.icon-btn{width:48px;height:48px;border-radius:999px;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;flex-shrink:0}
+h1{margin:0;font-size:22px;font-weight:800}
+h2{margin:0;font-size:15px;font-weight:700}
+p{margin:0}
+.muted{color:var(--muted)}
+.sm{font-size:13px;line-height:1.7}
+.xs{font-size:12px}
+.group{background:var(--surface);border:1px solid var(--line-soft);border-radius:20px}
+.row{display:flex;align-items:center;gap:12px;padding:14px;min-height:72px}
+.row+.row{border-top:1px solid var(--line-soft)}
+.logo{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-weight:800;font-size:15px;flex-shrink:0}
+.claude{background:#d9775733;color:#e8a184}
+.gpt{background:#ffffff14;color:#f4f4f1}
+.grow{flex-grow:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.btn{min-height:48px;padding:0 18px;border-radius:14px;font-family:inherit;font-size:14px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap}
+.primary{background:var(--lime);color:var(--on-lime);border:0}
+.tonal{background:var(--lime-soft);color:var(--lime);border:0}
+.outline{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.danger-outline{background:transparent;color:var(--danger);border:1px solid #ff8a7a55}
+.block{width:100%}
+.status{display:inline-flex;align-items:center;gap:6px;font-size:12px}
+.dot{width:8px;height:8px;border-radius:99px}
+.list{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+.list li{display:flex;gap:10px;font-size:13px;line-height:1.6;align-items:flex-start}
+.chk{flex-shrink:0;width:20px;height:20px}
+.label{position:absolute;top:-30px;inset-inline-start:0;font-size:13px;color:#888}
+.wrap{position:relative}
+.scrim{position:absolute;inset:0;background:rgba(0,0,0,.6)}
+.sheet{position:absolute;inset-inline:0;bottom:0;background:#161616;border-radius:28px 28px 0 0;padding:12px 16px 24px;display:flex;flex-direction:column;gap:14px;border-top:1px solid var(--line)}
+.handle{width:36px;height:4px;border-radius:9px;background:#444;margin:0 auto 4px}
+.step{display:flex;gap:12px;align-items:flex-start}
+.num{width:28px;height:28px;border-radius:99px;background:var(--raised);display:grid;place-items:center;font-size:13px;font-weight:700;flex-shrink:0}
+.url{display:flex;align-items:center;gap:8px;background:var(--raised);border-radius:14px;padding:6px 6px 6px 12px;margin-top:8px}
+.url code{direction:ltr;font-size:12px;flex-grow:1;text-align:left;color:var(--ink)}
+.dialog{position:absolute;inset-inline:24px;top:260px;background:#1d1d1d;border-radius:28px;padding:24px;display:flex;flex-direction:column;gap:14px}
+.pair{display:flex;align-items:center;justify-content:center;gap:16px;direction:ltr}
+.tile{width:64px;height:64px;border-radius:18px;display:grid;place-items:center;font-weight:800;font-size:20px}
+.kochivo{background:var(--lime);color:var(--on-lime)}
+hr{border:0;border-top:1px solid var(--line-soft);margin:4px 0}
+</style>
+</head>
+<body>
+<style>
+body{padding:40px 40px 70px!important}
+.phone{height:auto!important;min-height:844px}
+.chip{display:inline-flex;align-items:center;min-height:48px;padding:0 14px;border-radius:12px;font-size:13px;font-weight:600;border:1px solid var(--line);color:var(--ink);white-space:nowrap}
+.chip.on{background:var(--lime-soft);color:var(--lime);border-color:transparent}
+.badge{font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--lime);color:var(--on-lime)}
+.field{border:1.5px solid var(--line);border-radius:14px;min-height:56px;display:flex;align-items:center;padding:0 14px;font-size:15px;color:var(--muted)}
+.field.err{border-color:var(--danger)}
+.field.val{color:var(--ink);font-weight:700}
+.err-text{color:var(--danger);font-size:12px;display:flex;gap:6px;align-items:flex-start;line-height:1.6}
+.lbl{font-size:12px;color:var(--muted)}
+.col{display:flex;flex-direction:column;gap:6px}
+.notice{display:flex;gap:10px;align-items:center;padding:12px 14px;border-radius:16px;background:#2a2412;color:#f0cf6a;font-size:13px}
+.notice.err{background:var(--danger-soft);color:var(--danger)}
+.notice .btn{min-height:40px;padding:0 12px;font-size:13px}
+.days{display:flex;gap:8px;overflow:hidden}
+.day{min-width:52px;min-height:64px;border-radius:14px;border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12px;gap:2px}
+.day.on{background:var(--lime);color:var(--on-lime);border:0;font-weight:700}
+.hero{border-radius:22px;padding:18px;background:linear-gradient(150deg,#1d2412,#121410);border:1px solid var(--line-soft);display:flex;flex-direction:column;gap:10px}
+.radio{width:22px;height:22px;border-radius:99px;border:2px solid #777;flex-shrink:0;display:grid;place-items:center}
+.radio.on{border-color:var(--lime)}
+.radio.on::after{content:"";width:11px;height:11px;border-radius:99px;background:var(--lime)}
+.steps{display:flex;gap:6px}.steps span{flex:1;height:4px;border-radius:9px;background:var(--line)}.steps .on{background:var(--lime)}
+.big{font-size:30px;font-weight:800}
+.strong{background:rgba(255,255,255,.07);border-radius:14px;padding:10px 12px}
+.bubble{max-width:75%;padding:10px 14px;border-radius:18px;font-size:13px;line-height:1.6}
+.me{background:var(--lime-soft);align-self:flex-start}
+.them{background:var(--surface);align-self:flex-end}
+.floating{align-self:center;background:var(--lime);color:var(--on-lime);border-radius:99px;padding:8px 14px;font-size:12px;font-weight:700;display:flex;gap:6px;align-items:center}
+.tag{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:8px;padding:1px 6px}
+</style>
+
+<!-- p1 player home -->
+<div class="wrap" id="p1"><div class="phone">
+  <div class="top"><h1>أهلاً يا كريم</h1></div>
+  <div class="days">
+    <span class="day">سبت<b>15</b></span><span class="day">حد<b>16</b></span><span class="day on">اتنين<b>17</b></span><span class="day">تلات<b>18</b></span><span class="day">أربع<b>19</b></span><span class="day">خميس<b>20</b></span>
+  </div>
+  <p class="xs muted">اسحب عشان تشوف باقي الأيام. كل يوم 52 بكسل على الأقل.</p>
+  <div class="notice"><span class="grow">ده آخر برنامج اتحفظ. ممكن يكون فيه تحديث.</span><button class="btn outline" style="color:#f0cf6a;border-color:#f0cf6a55">حدّث</button></div>
+  <div class="hero"><span class="xs muted">تمرين النهارده</span><b style="font-size:20px">يوم الرجل</b><span class="sm muted">6 تمارين · 50 دقيقة</span><button class="btn primary block">ابدأ التمرين</button></div>
+  <h2>تقييمات مطلوبة</h2>
+  <div class="group"><div class="row"><span class="grow"><b>تقييم الأسبوع الرابع</b><span class="xs muted">مطلوب لحد الخميس</span></span><button class="btn tonal">جاوب</button></div></div>
+  <p class="xs muted">"جاوب" بيفتح التقييم نفسه، مش القايمة.</p>
+</div></div>
+
+<!-- p2 nutrition -->
+<div class="wrap" id="p2"><div class="phone">
+  <div class="top"><h1>أكل النهارده</h1></div>
+  <div class="group">
+    <div class="row"><span class="grow"><b>الفطار</b><span class="xs muted">520 سعر · 35 بروتين</span></span><span class="status" style="color:var(--lime)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b6e94f" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg>اتسجّل</span><button class="btn outline" style="padding:0 12px">تراجع</button></div>
+    <div class="row"><span class="grow"><b>الغدا</b><span class="xs muted">780 سعر · 52 بروتين</span></span><button class="btn tonal">كلته</button></div>
+    <div class="row"><span class="grow"><b>العشا</b><span class="xs muted">450 سعر · 30 بروتين</span></span><button class="btn tonal">كلته</button></div>
+  </div>
+  <p class="xs muted">زرار التفاصيل بيتقري "تفاصيل الغدا" مش "تفاصيل" بس.</p>
+  <h2>قايمة المشتريات</h2>
+  <div class="group">
+    <div class="row"><span class="radio on" style="border-radius:6px"></span><span class="grow" style="text-decoration:line-through;color:var(--muted)">صدور فراخ 1 كجم</span></div>
+    <div class="row"><span class="radio" style="border-radius:6px"></span><span class="grow">رز بسمتي 2 كجم</span></div>
+  </div>
+  <div style="display:flex;justify-content:space-between;align-items:center"><span class="xs muted">علامات الشراء بتتحفظ لو قفلت ورجعت</span><button class="btn outline" style="font-size:13px">ابدأ من الأول</button></div>
+</div></div>
+
+<!-- p3 progress + rank -->
+<div class="wrap" id="p3"><div class="phone">
+  <div class="top"><h1>تقدّمي</h1></div>
+  <div class="notice err"><span class="grow">ما قدرناش نجيب كل أرقام القوة من السيرفر. اللي ظاهر هو المحفوظ عندك.</span><button class="btn outline" style="color:var(--danger);border-color:#ff8a7a55">حاول تاني</button></div>
+  <div class="group" style="padding:16px;display:flex;flex-direction:column;gap:10px">
+    <b>متابعة الأسبوع</b><span class="sm muted">بعتها يوم السبت. الجاية متاحة يوم السبت الجاي.</span>
+    <button class="btn outline block" disabled style="opacity:.5">اتبعتت الأسبوع ده</button>
+  </div>
+  <p class="xs muted">زرار واحد للمتابعة، ونفس القاعدة فوق وتحت.</p>
+  <h2 style="margin-top:8px">رتبتي</h2>
+  <div class="group" style="padding:16px;display:flex;flex-direction:column;gap:8px">
+    <b>برونز 2</b><span class="sm muted">محتاجين أسبوعين تمرين كمان عشان نقدر نتوقع امتى توصل للفضة.</span>
+  </div>
+  <div class="group" style="padding:16px;display:flex;align-items:center;gap:10px"><span class="grow sm">قاعة المشاهير ما اتحمّلتش</span><button class="btn outline" style="font-size:13px">حاول تاني</button></div>
+  <p class="xs muted">باقي الصفحة يفضل ظاهر وهي بتعيد التحميل.</p>
+</div></div>
+
+<!-- p4 forms + onboarding -->
+<div class="wrap" id="p4"><div class="phone">
+  <div class="top"><h1>بياناتك للكابتن</h1></div>
+  <div class="steps"><span class="on"></span><span class="on"></span><span></span><span></span></div>
+  <div class="col"><span class="lbl">سنة الميلاد</span><div class="field">اكتب سنة ميلادك</div></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <div class="col"><span class="lbl">الطول (سم)</span><div class="field val">178</div></div>
+    <div class="col"><span class="lbl">الوزن (كجم)</span><div class="field err">—</div></div>
+  </div>
+  <span class="err-text">لازم تكتب وزنك. الخانات فاضية في الأول عشان ما تبعتش أرقام مش بتاعتك.</span>
+  <button class="btn primary block">التالي</button>
+  <p class="xs muted">"التالي" مش مقفول: لو فيه ناقص بيوريك هو فين ويوديك عليه.</p>
+  <h2 style="margin-top:10px">سؤال اختيار متعدد</h2>
+  <div class="group" style="padding:14px;display:flex;flex-direction:column;gap:10px;border-color:var(--danger)">
+    <b class="sm">إيه أهدافك؟</b>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="chip">تخسيس</span><span class="chip">عضلات</span><span class="chip">لياقة</span></div>
+    <span class="err-text">اختار إجابة واحدة على الأقل.</span>
+  </div>
+</div></div>
+
+<!-- c1 captain home -->
+<div class="wrap" id="c1"><div class="phone">
+  <div class="top"><h1>صباح الخير يا كابتن</h1></div>
+  <div class="hero"><span class="xs muted">مستنياك</span><b style="font-size:20px">7 مهام النهارده</b><span class="sm muted">3 فيديوهات · 2 متابعة · 2 برامج</span><button class="btn primary block">ابدأ المهام</button></div>
+  <button class="btn outline block">ادعي لاعب</button>
+  <p class="xs muted">لما فيه شغل، "ابدأ المهام" هو الزرار الأساسي. لما مفيش لاعبين، "ادعي لاعب" هو اللي يبقى ليموني.</p>
+  <h2>المتابعات</h2>
+  <div class="notice err"><span class="grow">المتابعات ما اتحمّلتش.</span><button class="btn outline" style="color:var(--danger);border-color:#ff8a7a55">حاول تاني</button></div>
+  <p class="xs muted">الخطأ في الجزء ده بس، باقي الصفحة شغال.</p>
+  <h2>طلبات الانضمام</h2>
+  <div class="group"><div class="row"><span class="grow"><b>سارة علي</b><span class="xs muted">باقة 3 شهور · 3 حصص في الأسبوع</span></span><button class="btn outline">ارفض</button><button class="btn tonal">اقبل</button></div></div>
+</div></div>
+
+<!-- c2 player file + new player -->
+<div class="wrap" id="c2"><div class="phone">
+  <div class="top"><span class="icon-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f4f4f1" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></span><h1 class="grow">منى سامي</h1><button class="btn outline" style="font-size:13px">شوف زي اللاعب</button></div>
+  <div class="group" style="padding:14px;display:flex;justify-content:space-between">
+    <span class="col" style="align-items:center"><span class="day on" style="min-width:40px;min-height:40px">✓</span><span class="xs">سبت</span></span>
+    <span class="col" style="align-items:center"><span class="day" style="min-width:40px;min-height:40px"></span><span class="xs">حد</span></span>
+    <span class="col" style="align-items:center"><span class="day on" style="min-width:40px;min-height:40px">✓</span><span class="xs">اتنين</span></span>
+    <span class="col" style="align-items:center"><span class="day" style="min-width:40px;min-height:40px"></span><span class="xs">تلات</span></span>
+  </div>
+  <p class="xs muted">الأيام اللي اتمرّنت فيها عليها علامة، مش لون بس.</p>
+  <div class="group"><div class="row"><span class="grow"><b>تقييمات مستنية رد</b><span class="xs muted">2 مستنيين</span></span><span class="badge">2</span></div></div>
+  <h2 style="margin-top:8px">لاعب جديد — الدفع</h2>
+  <div class="steps"><span class="on"></span><span class="on"></span><span></span></div>
+  <div class="col"><span class="lbl">المبلغ (جنيه)</span><div class="field err">0</div><span class="err-text">المبلغ لازم يكون أكبر من صفر.</span></div>
+  <div class="col"><span class="lbl">تاريخ البداية</span><div class="field val">17 نوفمبر</div></div>
+  <button class="btn primary block">التالي</button>
+</div></div>
+
+<!-- c3 chat + checkins + rest day -->
+<div class="wrap" id="c3"><div class="phone">
+  <div class="top"><h1>شات كريم</h1></div>
+  <div class="col" style="gap:10px">
+    <span class="bubble them">كابتن الوزن ده كتير عليا؟</span>
+    <span class="bubble me">جرّب 70 الأول وشوف الفورم</span>
+    <span class="bubble them">تمام</span>
+  </div>
+  <span class="floating">رسالتين جداد ↓</span>
+  <p class="xs muted">لو انت بتقرا رسايل قديمة، الشات مش بيشدّك لتحت. بيظهر الزرار ده.</p>
+  <h2>المتابعة الأسبوعية</h2>
+  <div class="group" style="padding:14px;display:flex;gap:10px;align-items:center">
+    <span style="width:72px;height:90px;border-radius:12px;background:#2a2f22"></span>
+    <span class="grow"><b class="sm">صورة من قدّام</b><span class="xs muted">اضغط تشوفها كاملة</span></span>
+    <button class="btn outline" style="font-size:13px">راجع</button>
+  </div>
+  <p class="xs muted">"راجع" يفتح المتابعة دي نفسها، مش صندوق الوارد كله.</p>
+  <h2>نظام الأكل — يوم الراحة</h2>
+  <div class="group" style="padding:14px;display:flex;flex-direction:column;gap:10px">
+    <span class="sm muted">يوم الراحة بياخد نفس وجبات يوم التمرين.</span>
+    <button class="btn tonal block">اعمل وجبات مختلفة ليوم الراحة</button>
+  </div>
+  <p class="xs muted">الفرجة على يوم الراحة ما بتغيّرش النظام. التغيير بزرار واضح.</p>
+</div></div>
+
+<!-- t1 captain tools -->
+<div class="wrap" id="t1"><div class="phone">
+  <div class="top"><h1>مكتبة التمارين</h1></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="chip on">دمبل</span><span class="chip">بار</span><span class="chip">كيبل</span><span class="chip">من غير أدوات</span></div>
+  <p class="xs muted">كل الفلاتر 48 بكسل في الطول (كانت 38).</p>
+  <div class="group"><div class="row"><span style="width:56px;height:56px;border-radius:12px;background:#22261c;display:grid;place-items:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#777" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 15 5-5 4 4 3-3 6 6"/></svg></span><span class="grow"><b>بلغاري سبليت سكوات</b><span class="xs muted">مفيش فيديو</span></span></div></div>
+  <p class="xs muted">لو مفيش فيديو، صورة عادية مش زرار تشغيل.</p>
+  <h2 style="margin-top:6px">القوالب</h2>
+  <div class="group"><div class="row"><span class="grow"><b>برنامج مبتدئين 3 أيام</b><span class="xs muted">قالب جاهز</span></span><button class="btn outline" style="font-size:13px">شوف</button><button class="btn tonal" style="font-size:13px">انسخ وعدّل</button></div></div>
+  <h2 style="margin-top:6px">الباقات</h2>
+  <div class="group" style="padding:14px;display:flex;flex-direction:column;gap:10px">
+    <div style="display:flex;justify-content:space-between;align-items:center"><b>الذهبي</b><span class="tag">مستوى</span></div>
+    <div class="strong"><span class="big">1,200</span> <span class="sm muted">جنيه / شهر</span></div>
+  </div>
+  <button class="btn outline block">مستوى جديد</button>
+</div></div>
+
+<!-- t2 billing + food form -->
+<div class="wrap" id="t2"><div class="phone">
+  <div class="top"><h1 class="grow">الفلوس</h1><button class="btn primary" style="font-size:13px">سجّل دفعة</button></div>
+  <div class="field">دوّر على لاعب…</div>
+  <div class="group">
+    <div class="row"><span class="grow"><b>كريم</b><span class="xs muted">باقي 800 جنيه</span></span><span class="tag" style="color:var(--danger);border-color:#ff8a7a55">متأخر</span></div>
+    <div class="row"><span class="grow"><b>منى</b><span class="xs muted">مدفوع لحد ديسمبر</span></span></div>
+  </div>
+  <p class="xs muted">"سجّل دفعة" فوق والبحث قبل القايمة، مش جوه "تفاصيل" مقفولة.</p>
+  <h2 style="margin-top:6px">نسخة من أكلة جاهزة</h2>
+  <p class="sm muted">بتعمل نسخة خاصة بيك. الأصل مش هيتغيّر.</p>
+  <div class="col"><span class="lbl">البروتين لكل 100 جم</span><div class="field err">abc</div><span class="err-text">اكتب رقم، زي 23.</span></div>
+  <div class="col"><span class="lbl">الوحدة</span><div class="field val">جرام</div></div>
+  <button class="btn primary block">احفظ النسخة</button>
+</div></div>
+
+<!-- u1 welcome + forgot + consent -->
+<div class="wrap" id="u1"><div class="phone">
+  <div class="top"><h1>انت مين؟</h1></div>
+  <div class="group">
+    <div class="row"><span class="radio on"></span><span class="grow"><b>كابتن</b><span class="xs muted">بتدرّب لاعبين</span></span></div>
+    <div class="row"><span class="radio"></span><span class="grow"><b>لاعب</b><span class="xs muted">عندك كابتن</span></span></div>
+  </div>
+  <p class="xs muted">دايرة اختيار واضحة، مش لون الإطار بس.</p>
+  <h2 style="margin-top:8px">نسيت الباسورد</h2>
+  <p class="sm muted">بعتنا كود لـ <b style="color:var(--ink)">kareem@gmial.com</b></p>
+  <div style="display:flex;gap:8px;direction:ltr">
+    <div class="field val" style="width:48px;justify-content:center">٤</div><div class="field val" style="width:48px;justify-content:center">٢</div><div class="field" style="width:48px"></div><div class="field" style="width:48px"></div><div class="field" style="width:48px"></div><div class="field" style="width:48px"></div>
+  </div>
+  <p class="xs muted">الأرقام العربي بتتقبل عادي.</p>
+  <div style="display:flex;gap:8px"><button class="btn outline">غيّر الإيميل</button><button class="btn outline">ابعت تاني</button></div>
+  <h2 style="margin-top:8px">صفحة الموافقة</h2>
+  <div style="display:flex;gap:8px"><button class="btn outline">ارفض وارجع</button><button class="btn primary" style="flex-grow:1">اسمح</button></div>
+</div></div>
+
+<!-- u2 coach page + invite + suspended -->
+<div class="wrap" id="u2"><div class="phone">
+  <div class="top"><h1>كابتن أحمد</h1></div>
+  <div class="notice"><span class="grow">الكابتن مكمّل دلوقتي. سيب بياناتك ونكلّمك أول ما يفضى مكان.</span></div>
+  <div class="group">
+    <div class="row"><span class="grow"><b>3 شهور</b><span class="xs muted">2,400 جنيه</span></span><span class="tag">مقفولة مؤقتًا</span></div>
+  </div>
+  <button class="btn primary block">انضم لقايمة الانتظار</button>
+  <p class="xs muted">زرار واحد بس. بعد ما تسجّل، كل الأماكن تقول "انت في القايمة".</p>
+  <h2 style="margin-top:8px">الدعوة خلصت</h2>
+  <div class="group" style="padding:16px;display:flex;flex-direction:column;gap:10px"><span class="sm muted">الدعوة دي انتهت. "حاول تاني" مش هتفيد.</span><button class="btn tonal block">اطلب دعوة جديدة من الكابتن</button></div>
+  <h2 style="margin-top:8px">الحساب متوقف</h2>
+  <div class="group" style="padding:16px;display:flex;flex-direction:column;gap:10px"><span class="sm muted">لو مفيش واتساب للدعم، بنعرض الإيميل.</span><button class="btn primary block">كلّم الدعم</button><button class="btn outline block">اخرج</button></div>
+</div></div>
+
+<!-- u3 admin + demo -->
+<div class="wrap" id="u3"><div class="phone">
+  <div class="top"><h1>الأدمن</h1></div>
+  <div class="field">دوّر على كابتن…</div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="chip on">نشط</span><span class="chip">متوقف</span><span class="chip">تجربة</span></div>
+  <p class="sm muted">48 كابتن مطابقين (البحث على كل الكباتن، مش أول 100 بس)</p>
+  <button class="btn outline block">صدّر الـ 48 مطابقين CSV</button>
+  <div class="notice err"><span class="grow">نشاط الكباتن مش متاح دلوقتي، فلاتر النشاط ممكن تكون ناقصة.</span><button class="btn outline" style="color:var(--danger);border-color:#ff8a7a55">حاول تاني</button></div>
+  <h2 style="margin-top:8px">الديمو على الموبايل</h2>
+  <div class="group" style="padding:14px;display:flex;flex-direction:column;gap:8px"><b class="sm">الخطوة 2 من 6</b><span class="sm muted">افتح ملف اللاعب من القايمة.</span></div>
+  <div class="group"><div class="row" style="justify-content:space-around"><span class="xs">الرئيسية</span><span class="xs">اللاعبين</span><span class="xs">المهام</span><span class="xs">المزيد</span></div></div>
+  <p class="xs muted">الدليل فوق الشريط مش فوقه. اللغة والبدء من الأول في قايمة صغيرة.</p>
+</div></div>
+</body></html>

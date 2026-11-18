@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#090a0b;--surface:#141414;--raised:#1c1c1c;--line:#292929;--line-soft:rgba(242,242,238,.07);--ink:#f4f4f1;--muted:#a6abb0;--lime:#b6e94f;--on-lime:#10140a;--lime-soft:rgba(182,233,79,.12);--danger:#ff8a7a;--danger-soft:rgba(255,138,122,.12)}
+*{box-sizing:border-box}
+body{margin:0;background:#000;font-family:Alexandria,system-ui,sans-serif;color:var(--ink);display:flex;gap:40px;padding:40px;flex-wrap:wrap}
+.phone{width:390px;height:844px;background:var(--bg);position:relative;overflow:hidden;display:flex;flex-direction:column;padding:20px 16px 24px;gap:16px}
+.top{display:flex;align-items:center;gap:12px}
+.icon-btn{width:48px;height:48px;border-radius:999px;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;flex-shrink:0}
+h1{margin:0;font-size:22px;font-weight:800}
+h2{margin:0;font-size:15px;font-weight:700}
+p{margin:0}
+.muted{color:var(--muted)}
+.sm{font-size:13px;line-height:1.7}
+.xs{font-size:12px}
+.group{background:var(--surface);border:1px solid var(--line-soft);border-radius:20px}
+.row{display:flex;align-items:center;gap:12px;padding:14px;min-height:72px}
+.row+.row{border-top:1px solid var(--line-soft)}
+.logo{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-weight:800;font-size:15px;flex-shrink:0}
+.claude{background:#d9775733;color:#e8a184}
+.gpt{background:#ffffff14;color:#f4f4f1}
+.grow{flex-grow:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.btn{min-height:48px;padding:0 18px;border-radius:14px;font-family:inherit;font-size:14px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap}
+.primary{background:var(--lime);color:var(--on-lime);border:0}
+.tonal{background:var(--lime-soft);color:var(--lime);border:0}
+.outline{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.danger-outline{background:transparent;color:var(--danger);border:1px solid #ff8a7a55}
+.block{width:100%}
+.status{display:inline-flex;align-items:center;gap:6px;font-size:12px}
+.dot{width:8px;height:8px;border-radius:99px}
+.list{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+.list li{display:flex;gap:10px;font-size:13px;line-height:1.6;align-items:flex-start}
+.chk{flex-shrink:0;width:20px;height:20px}
+.label{position:absolute;top:-30px;inset-inline-start:0;font-size:13px;color:#888}
+.wrap{position:relative}
+.scrim{position:absolute;inset:0;background:rgba(0,0,0,.6)}
+.sheet{position:absolute;inset-inline:0;bottom:0;background:#161616;border-radius:28px 28px 0 0;padding:12px 16px 24px;display:flex;flex-direction:column;gap:14px;border-top:1px solid var(--line)}
+.handle{width:36px;height:4px;border-radius:9px;background:#444;margin:0 auto 4px}
+.step{display:flex;gap:12px;align-items:flex-start}
+.num{width:28px;height:28px;border-radius:99px;background:var(--raised);display:grid;place-items:center;font-size:13px;font-weight:700;flex-shrink:0}
+.url{display:flex;align-items:center;gap:8px;background:var(--raised);border-radius:14px;padding:6px 6px 6px 12px;margin-top:8px}
+.url code{direction:ltr;font-size:12px;flex-grow:1;text-align:left;color:var(--ink)}
+.dialog{position:absolute;inset-inline:24px;top:260px;background:#1d1d1d;border-radius:28px;padding:24px;display:flex;flex-direction:column;gap:14px}
+.pair{display:flex;align-items:center;justify-content:center;gap:16px;direction:ltr}
+.tile{width:64px;height:64px;border-radius:18px;display:grid;place-items:center;font-weight:800;font-size:20px}
+.kochivo{background:var(--lime);color:var(--on-lime)}
+hr{border:0;border-top:1px solid var(--line-soft);margin:4px 0}
+</style>
+</head>
+<body>
+<style>
+body{padding:40px 40px 70px!important}
+.chip{display:inline-flex;align-items:center;min-height:32px;padding:0 12px;border-radius:10px;font-size:12px;font-weight:600;border:1px solid var(--line);color:var(--ink)}
+.chip.on{background:var(--lime-soft);color:var(--lime);border-color:transparent}
+.badge{font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--lime);color:var(--on-lime)}
+.video{height:190px;border-radius:18px;background:linear-gradient(160deg,#23271c,#121212);display:grid;place-items:center}
+.play{width:60px;height:60px;border-radius:99px;background:var(--lime);display:grid;place-items:center}
+.field{border:1.5px solid var(--line);border-radius:14px;min-height:56px;display:flex;align-items:center;padding:0 14px;font-size:20px;font-weight:800}
+.field.err{border-color:var(--danger)}
+.err-text{color:var(--danger);font-size:12px;display:flex;gap:6px;align-items:center;line-height:1.6}
+.setrow{display:flex;align-items:center;gap:10px;padding:12px 14px;min-height:64px}
+.setrow+.setrow{border-top:1px solid var(--line-soft)}
+.n{width:24px;font-weight:800;color:var(--muted)}
+.done-mark{display:inline-flex;gap:4px;align-items:center;color:var(--lime);font-size:12px;font-weight:700}
+.snack{position:absolute;inset-inline:16px;bottom:24px;background:#e9ecdf;color:#141810;border-radius:12px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;font-size:13px}
+.snack b{color:#3e6b00}
+.btn[disabled]{opacity:.38}
+</style>
+
+<div class="wrap" id="a1"><div class="phone">
+  <div class="top"><h1>المهام</h1><span style="flex-grow:1"></span><span class="badge">4</span></div>
+  <div class="group">
+    <div class="row"><span class="logo gpt">▶</span><span class="grow"><b>فيديو سكوات — كريم</b><span class="xs muted">اتبعت من ساعتين</span></span><button class="btn tonal">راجع</button></div>
+    <div class="row"><span class="logo gpt">P</span><span class="grow"><b>برنامج جديد — منى</b><span class="xs muted">لسه ما اتسلّمش</span></span><button class="btn outline">افتح</button></div>
+  </div>
+  <div class="scrim"></div>
+  <div class="sheet" style="top:150px">
+    <div class="handle"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center"><h2>مراجعة فيديو السكوات</h2><span class="icon-btn" aria-label="اقفل"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f4f4f1" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></span></div>
+    <p class="sm muted">كريم — سكوات 3×8 على 80 كجم</p>
+    <div class="video"><span class="play"><svg width="22" height="22" viewBox="0 0 24 24" fill="#10140a"><path d="M8 5v14l11-7z"/></svg></span></div>
+    <p class="sm" style="font-weight:700">ملاحظة سريعة</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="chip on">الأداء ممتاز</span><span class="chip">انزل أعمق</span><span class="chip">ضهرك مستقيم</span><span class="chip">خفّف الوزن</span></div>
+    <div class="field" style="font-size:13px;font-weight:400;color:var(--muted)">اكتب ملاحظتك…</div>
+    <button class="btn primary block">ابعت الملاحظة</button>
+  </div>
+</div></div>
+
+<div class="wrap" id="a2"><div class="phone">
+  <div class="top"><h1>مفيش إنترنت</h1></div>
+  <div class="group" style="padding:16px;display:flex;gap:12px;align-items:flex-start">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#a6abb0" stroke-width="2"><path d="M2 8.8a15 15 0 0 1 4.2-2.8M10.7 5.1A15 15 0 0 1 22 8.8M5 12.5a10 10 0 0 1 5.2-2.8M19 12.5a10 10 0 0 0-2.2-1.6M8.5 16a5 5 0 0 1 7 0M12 20h.01M3 3l18 18"/></svg>
+    <span class="grow"><b>تقدر تتمرّن عادي</b><span class="sm muted">التمارين اللي تحت محفوظة على موبايلك. أي مجموعة تسجّلها هتتبعت لوحدها لما النت يرجع.</span></span>
+  </div>
+  <h2>تمارين محفوظة</h2>
+  <div class="group">
+    <div class="row"><span class="grow"><b>يوم الرجل</b><span class="xs muted">النهارده — 6 تمارين</span></span><button class="btn primary">ابدأ</button></div>
+    <div class="row"><span class="grow"><b>يوم الصدر</b><span class="xs muted">بكرة — 5 تمارين</span></span><button class="btn outline">افتح</button></div>
+  </div>
+  <p class="xs muted">آخر تحديث للنسخة المحفوظة: النهارده 9:40 ص</p>
+  <h2 style="margin-top:10px">لو مفيش تمارين محفوظة</h2>
+  <div class="group" style="padding:16px;display:flex;flex-direction:column;gap:6px">
+    <b>مفيش تمرين محفوظ على الموبايل ده</b>
+    <span class="sm muted">افتح التطبيق مرة وانت متصل، وهنحفظ تمارين الأسبوع لوحدها.</span>
+  </div>
+  <span style="flex-grow:1"></span>
+  <button class="btn outline block">حاول تتصل تاني</button>
+</div></div>
+
+<div class="wrap" id="a3"><div class="phone">
+  <div class="top"><span class="icon-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f4f4f1" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></span><h1>بنش برس</h1></div>
+  <div class="group">
+    <div class="setrow"><span class="n">1</span><span class="grow"><b>60 كجم × 10</b></span><span class="done-mark"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b6e94f" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg>اتسجّلت</span><button class="btn outline" style="padding:0 14px">عدّل</button></div>
+    <div class="setrow"><span class="n">2</span><span class="grow"><b>60 كجم × 9</b></span><span class="done-mark"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b6e94f" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg>اتسجّلت</span><button class="btn outline" style="padding:0 14px">عدّل</button></div>
+  </div>
+  <div class="group" style="padding:16px;display:flex;flex-direction:column;gap:12px;border-color:var(--line)">
+    <h2>المجموعة 3</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div style="display:flex;flex-direction:column;gap:6px"><span class="xs muted">الوزن (كجم)</span><div class="field err">6000</div></div>
+      <div style="display:flex;flex-direction:column;gap:6px"><span class="xs muted">العدّات</span><div class="field">8</div></div>
+    </div>
+    <span class="err-text"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff8a7a" stroke-width="2.5" style="flex-shrink:0"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>الوزن لازم يكون من 0 لـ 500. صلّحه أو ارجع لـ 60.</span>
+    <div style="display:flex;gap:10px"><button class="btn outline">ارجع لـ 60</button><button class="btn primary" style="flex-grow:1" disabled>خلّصت المجموعة</button></div>
+  </div>
+</div></div>
+
+<div class="wrap" id="a4"><div class="phone">
+  <div class="top"><h1>الإشعارات</h1><span style="flex-grow:1"></span><button class="btn outline" style="font-size:13px">علّم الكل مقروء</button></div>
+  <div class="group">
+    <div class="row"><span class="dot" style="background:var(--lime)"></span><span class="grow"><span style="display:flex;gap:8px;align-items:center"><b>كريم بعت فيديو</b><span class="badge">جديد</span></span><span class="xs muted">سكوات — من ساعتين</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a6abb0" stroke-width="2"><path d="m15 6-6 6 6 6"/></svg></div>
+    <div class="row"><span class="dot" style="background:var(--lime)"></span><span class="grow"><span style="display:flex;gap:8px;align-items:center"><b>اشتراك منى بيخلص</b><span class="badge">جديد</span></span><span class="xs muted">باقي 3 أيام</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a6abb0" stroke-width="2"><path d="m15 6-6 6 6 6"/></svg></div>
+    <div class="row"><span class="dot" style="border:1.5px solid #555"></span><span class="grow"><b class="muted" style="font-weight:600">أحمد سجّل وزنه</b><span class="xs muted">امبارح</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a6abb0" stroke-width="2"><path d="m15 6-6 6 6 6"/></svg></div>
+  </div>
+  <span style="flex-grow:1"></span>
+  <div class="snack"><span>ما قدرناش نعلّمه مقروء، بس فتحناه لك</span><b>حاول تاني</b></div>
+</div></div>
+</body></html>
