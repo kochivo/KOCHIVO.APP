@@ -26,7 +26,21 @@ it('keeps existing questions enabled and leaves both legacy duplicates and RLS p
   expect((await db.query('select show_chart from form_questions where id=$1', [legacy])).rows).toEqual([{ show_chart: true }]);
   expect((await db.query('select id from forms where creation_key is null')).rows).toHaveLength(2);
   expect((await db.query(`select * from pg_policies where schemaname='public'
-    and tablename in ('forms','form_questions') order by tablename,policyname`)).rows).toEqual(policies);
+    and tablename in ('forms','form_questions') order by tablename,policyname`)).rows).toEqual([
+    ...policies,
+    ...['form_questions', 'forms'].flatMap(tablename => ['DELETE', 'INSERT', 'SELECT', 'UPDATE'].map(cmd => ({
+      schemaname: 'public', tablename, policyname: `first_party_${cmd.toLowerCase()}`,
+      permissive: 'RESTRICTIVE', roles: ['authenticated'], cmd,
+      qual: cmd === 'INSERT' ? null : '(NOT is_oauth_client())',
+      with_check: ['INSERT', 'UPDATE'].includes(cmd) ? '(NOT is_oauth_client())' : null,
+    }))),
+  ].sort((a, b) => {
+    const key = (row: unknown) => {
+      const { tablename, policyname } = row as { tablename: string; policyname: string };
+      return `${tablename}/${policyname}`;
+    };
+    return key(a) < key(b) ? -1 : 1;
+  }));
 });
 
 it('preserves default chart behavior, saves preferences and copies them', async () => {

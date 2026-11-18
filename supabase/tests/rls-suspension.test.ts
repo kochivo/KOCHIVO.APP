@@ -54,7 +54,7 @@ it('requires a restrictive active_caller policy on every public table', async ()
   expect(rows).toEqual([]);
   expect((await db.query(`select cmd from pg_policies where schemaname = 'public'
     and tablename = 'profiles' and permissive = 'RESTRICTIVE' order by cmd`)).rows)
-    .toEqual([{ cmd: 'DELETE' }, { cmd: 'INSERT' }, { cmd: 'SELECT' }, { cmd: 'UPDATE' }]);
+    .toEqual(['DELETE', 'DELETE', 'INSERT', 'INSERT', 'SELECT', 'UPDATE', 'UPDATE'].map(cmd => ({ cmd })));
 });
 
 it('blocks renewal, archiving, content CRUD and review with the same authenticated identity', async () => {

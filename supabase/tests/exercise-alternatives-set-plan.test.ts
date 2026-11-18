@@ -81,7 +81,16 @@ it('saves, updates and copies both columns through every template RPC', async ()
     .toEqual([{ alternatives: [], set_plan: [...plan].reverse() }]);
 });
 it('retains RLS for unrelated captains and player writes', async () => {
-  expect((await db.query("select * from pg_policies where tablename='program_exercises' order by policyname")).rows).toEqual(policies);
+  expect((await db.query("select * from pg_policies where tablename='program_exercises' order by policyname")).rows).toEqual([
+    ...policies.slice(0, 1),
+    ...['DELETE', 'INSERT', 'UPDATE'].map(cmd => ({
+      schemaname: 'public', tablename: 'program_exercises', policyname: `first_party_${cmd.toLowerCase()}`,
+      permissive: 'RESTRICTIVE', roles: ['authenticated'], cmd,
+      qual: cmd === 'INSERT' ? null : '(NOT is_oauth_client())',
+      with_check: ['INSERT', 'UPDATE'].includes(cmd) ? '(NOT is_oauth_client())' : null,
+    })),
+    ...policies.slice(1),
+  ]);
   const other = await createUser(db, 'captain');
   for (const user of [other, player]) {
     expect((await asUser(db, user, tx => tx.query('update public.program_exercises set sets=2 where id=$1 returning id', [id]))).rows).toEqual([]);

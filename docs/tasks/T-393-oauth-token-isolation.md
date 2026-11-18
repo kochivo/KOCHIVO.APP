@@ -12,7 +12,21 @@ The MCP endpoint itself is read-only. That isn't enough, because the token can b
 
 Supabase's guidance is to check `auth.jwt() ->> 'client_id'` in policies. See https://supabase.com/docs/guides/auth/oauth-server/token-security.
 
-## Build
+## Revision 2026-11-18 (replaces points 2 and 5 below)
+
+The first attempt guarded 119 function bodies and rewrote every policy. That was too risky for production, so it was thrown away.
+
+The design now:
+- A PostgREST pre-request gate, `public.oauth_request_gate()`, set with `pgrst.db_pre_request`. It lets OAuth tokens make only:
+  - GET and HEAD on the 10 allowlisted tables, which now include `program_days` and `program_exercises`;
+  - POST on the 7 tool RPCs.
+- Restrictive write policies on every table.
+- Restrictive select policies on every table outside the allowlist.
+- A storage policy.
+
+No existing function or policy is edited.
+
+## Build (original)
 
 ### Migration `supabase/migrations/0155_oauth_token_isolation.sql` (additive only)
 
