@@ -1,19 +1,22 @@
 # T-401: Landing, coach page, demo, auth, invite, suspended, and admin fixes
 
-Owner decision 2026-11-18: fix every "Must fix" item from the Material 3 review of all screens, and keep the KOCHIVO look.
+Owner decision 2026-11-18: fix every "Must fix" item from the Material 3 review of all screens. **Do not change the look.**
 
-The look stays as it is: dark, lime as the only action color, glass. Change behavior, semantics, states, and accessibility only.
+## The look must not change (hard rule)
+The owner checks every screen afterwards. Anything that looks different gets reverted.
+
+- Keep every existing color, surface, glass effect, font, size, spacing, radius, icon, animation, and layout order exactly as it is.
+- Don't restyle, re-layout, or swap a component for a different-looking one.
+- When a fix needs something new on screen, build it from components already on that screen or in `src/ui`, with their existing variants. Examples: an error line under a field, a Retry button, an Undo button, a "New" label, a sheet.
+  - It should look as if it was always there.
+  - Use the same button style the screen already uses for secondary actions.
+- Invisible fixes are preferred wherever they solve the problem: accessible names, focus, aria, logic, validation, retry targets.
+- Size fixes are invisible padding and hit-area changes. Examples: the 48px chip hit area, the weekday strip minimum width. Don't change the visible size of a control unless the item says so.
+- The mockups in `docs/mockups/design-audit/` are rough sketches of **behavior and wording only**. Never copy their colors, shapes, or layout.
 
 ## Read first
 - `AGENTS.md` and `DESIGN.md`.
 - `docs/design-audit/04-public-auth-admin.md`: the full scores and reasons for these screens.
-- `docs/mockups/design-audit/`:
-  - `screens-worst.html` has mockups a1–a4;
-  - `screens-all.html` has p1–p4, c1–c3, t1–t2 and u1–u3;
-  - `ai-connect.html` has s1–s4;
-  - the matching PNGs are in the same folder.
-
-  Match the behavior and copy shown there. Visual details follow the existing components and tokens.
 
 ## Fix list
 ### `/` — Explain KOCHIVO and lead visitors to signup or the demo
@@ -55,10 +58,7 @@ The look stays as it is: dark, lime as the only action color, glass. Change beha
 - Export CSV uses the current unfiltered page → admins can mistake a partial export for the whole matching dataset → export the declared query scope and state that scope in the action label. `src/features/admin/components/admin-screen.tsx:73`
 - The route discards captain activity read errors → activity-dependent filters can quietly omit captains → show an unavailable state and offer retry. `src/app/[locale]/admin/page.tsx:21`, `src/features/admin/dashboard-ui.ts:14`
 
-Mockups to follow:
-- `u1` (welcome, forgot password, OTP);
-- `u2` (coach page waitlist, invite, suspended);
-- `u3` (admin, demo).
+Behavior sketches (wording and behavior only, not looks): see the mockup PNGs named in `docs/mockups/design-audit/`.
 
 Admin server-side filtering must use the existing admin queries and RLS or admin RPCs. Don't add a migration. If server-side filtering truly needs one, stop and say so under Notes.
 

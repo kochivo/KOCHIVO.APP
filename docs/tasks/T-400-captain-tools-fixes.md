@@ -1,19 +1,22 @@
 # T-400: Captain library, templates, program and nutrition editors, billing, packages, settings fixes
 
-Owner decision 2026-11-18: fix every "Must fix" item from the Material 3 review of all screens, and keep the KOCHIVO look.
+Owner decision 2026-11-18: fix every "Must fix" item from the Material 3 review of all screens. **Do not change the look.**
 
-The look stays as it is: dark, lime as the only action color, glass. Change behavior, semantics, states, and accessibility only.
+## The look must not change (hard rule)
+The owner checks every screen afterwards. Anything that looks different gets reverted.
+
+- Keep every existing color, surface, glass effect, font, size, spacing, radius, icon, animation, and layout order exactly as it is.
+- Don't restyle, re-layout, or swap a component for a different-looking one.
+- When a fix needs something new on screen, build it from components already on that screen or in `src/ui`, with their existing variants. Examples: an error line under a field, a Retry button, an Undo button, a "New" label, a sheet.
+  - It should look as if it was always there.
+  - Use the same button style the screen already uses for secondary actions.
+- Invisible fixes are preferred wherever they solve the problem: accessible names, focus, aria, logic, validation, retry targets.
+- Size fixes are invisible padding and hit-area changes. Examples: the 48px chip hit area, the weekday strip minimum width. Don't change the visible size of a control unless the item says so.
+- The mockups in `docs/mockups/design-audit/` are rough sketches of **behavior and wording only**. Never copy their colors, shapes, or layout.
 
 ## Read first
 - `AGENTS.md` and `DESIGN.md`.
 - `docs/design-audit/03-captain-tools.md`: the full scores and reasons for these screens.
-- `docs/mockups/design-audit/`:
-  - `screens-worst.html` has mockups a1–a4;
-  - `screens-all.html` has p1–p4, c1–c3, t1–t2 and u1–u3;
-  - `ai-connect.html` has s1–s4;
-  - the matching PNGs are in the same folder.
-
-  Match the behavior and copy shown there. Visual details follow the existing components and tokens.
 
 ## Fix list
 ### `/captain/library/exercises` — Find exercises and add them to programs
@@ -72,9 +75,7 @@ The look stays as it is: dark, lime as the only action color, glass. Change beha
 - Phone drill-in unmounts the menu and renders a focusable heading without moving focus to it → keyboard and screen-reader users can lose their place → focus the section heading on entry and restore the activating row on Back. `captain-settings.tsx:59`, `captain-settings.tsx:65`, `section-heading.tsx:23`
 - A profile error is only shown when no profile data exists → captains can keep seeing stale settings with no retry cue → preserve the displayed data and show a scoped refresh error with Retry. `captain-settings.tsx:50`, `captain-settings.tsx:56`
 
-Mockups to follow:
-- `t1` (library, templates, packages);
-- `t2` (billing and food copy form).
+Behavior sketches (wording and behavior only, not looks): see the mockup PNGs named in `docs/mockups/design-audit/`.
 
 The shared chip fix (48px minimum hit area in `src/ui/chip.tsx` and `globals.css`) belongs to this card. Check that other screens using the chip still look right.
 

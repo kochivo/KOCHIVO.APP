@@ -1,19 +1,22 @@
 # T-396: Player workout, home, and offline screen fixes
 
-Owner decision 2026-11-18: fix every "Must fix" item from the Material 3 review of all screens, and keep the KOCHIVO look.
+Owner decision 2026-11-18: fix every "Must fix" item from the Material 3 review of all screens. **Do not change the look.**
 
-The look stays as it is: dark, lime as the only action color, glass. Change behavior, semantics, states, and accessibility only.
+## The look must not change (hard rule)
+The owner checks every screen afterwards. Anything that looks different gets reverted.
+
+- Keep every existing color, surface, glass effect, font, size, spacing, radius, icon, animation, and layout order exactly as it is.
+- Don't restyle, re-layout, or swap a component for a different-looking one.
+- When a fix needs something new on screen, build it from components already on that screen or in `src/ui`, with their existing variants. Examples: an error line under a field, a Retry button, an Undo button, a "New" label, a sheet.
+  - It should look as if it was always there.
+  - Use the same button style the screen already uses for secondary actions.
+- Invisible fixes are preferred wherever they solve the problem: accessible names, focus, aria, logic, validation, retry targets.
+- Size fixes are invisible padding and hit-area changes. Examples: the 48px chip hit area, the weekday strip minimum width. Don't change the visible size of a control unless the item says so.
+- The mockups in `docs/mockups/design-audit/` are rough sketches of **behavior and wording only**. Never copy their colors, shapes, or layout.
 
 ## Read first
 - `AGENTS.md` and `DESIGN.md`.
 - `docs/design-audit/01-player.md`: the full scores and reasons for these screens.
-- `docs/mockups/design-audit/`:
-  - `screens-worst.html` has mockups a1–a4;
-  - `screens-all.html` has p1–p4, c1–c3, t1–t2 and u1–u3;
-  - `ai-connect.html` has s1–s4;
-  - the matching PNGs are in the same folder.
-
-  Match the behavior and copy shown there. Visual details follow the existing components and tokens.
 
 ## Fix list
 ### `/player` — See today’s plan and start the next task
@@ -30,10 +33,9 @@ The look stays as it is: dark, lime as the only action color, glass. Change beha
 - The saved-workout promise depends on device role alone → players can expect a workout that is absent → derive availability copy from the verified snapshot and give the empty state a next step. `src/ui/offline-message.tsx:12`, `src/features/workout/components/offline-workout.tsx:25`
 - The legacy workout nests a main landmark and its Back action leaves the picker → assistive-technology users get ambiguous page structure and offline users can be routed away from cached choices → use one main landmark and return to the cached-day list. `src/app/[locale]/offline/page.tsx:17`, `src/features/workout/components/focus-screen.tsx:73`
 
-Mockups to follow:
-- `a3` (workout set entry);
-- `p1` (player home);
-- `a2` (offline).
+Behavior sketches (wording and behavior only, not looks): see the mockup PNGs named in `docs/mockups/design-audit/`.
+
+
 
 ## Rules
 - **Strings:** every new string goes in the feature's `messages.ts` in `ar`, `arStd`, and `en`. Egyptian Arabic is plain and short, like the mockups.
