@@ -42,7 +42,7 @@ it.each([
   ['HEAD', '/meal_item_alternatives'],
   ['GET', '/foods'],
   ['GET', '/ai_player_workout_history'],
-  ['HEAD', '/ai_player_training_days'],
+  ['POST', '/rpc/ai_my_training_days'],
   ['POST', '/rpc/ai_log_meal'],
   ['HEAD', '/program_exercises'],
   ['POST', '/rpc/captain_roster'],
@@ -152,7 +152,7 @@ it('limits workout scheduling to the caller and excludes private fields', async 
     (id,player_id,training_date,started_at,client_updated_at,player_note)
     values (gen_random_uuid(),$1,public.user_today($1),now(),now(),'private'),
            (gen_random_uuid(),$2,public.user_today($2),now(),now(),'private')`, [player, otherPlayer]);
-  expect((await run(true, 'select * from public.ai_player_training_days', [], 'GET', '/ai_player_training_days', player)).rows)
+  expect((await run(true, 'select public.ai_my_training_days() as training_days', [], 'POST', '/rpc/ai_my_training_days', player)).rows)
     .toEqual([{ training_days: [3] }]);
   const history = await run(true, 'select * from public.ai_player_workout_history', [], 'GET', '/ai_player_workout_history', player);
   expect(history.rows).toEqual([{ id: expect.any(String), player_id: player, program_day_id: null,

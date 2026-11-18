@@ -49,7 +49,7 @@ function fixture({ rest = false, noPlan = false, rotating = false, role = 'playe
               rest_seconds: 90, exercises: { name_en: 'Press' } }],
           }, ...(rotating ? [{ id: 'day-2', title: 'Lower body', position: 2, program_exercises: [] }] : [])],
         }] : []);
-      case 'ai_player_training_days': return Response.json([{ training_days: [rest ? 3 : 4] }]);
+      case 'ai_my_training_days': return Response.json([rest ? 3 : 4]);
       case 'ai_player_workout_history': return Response.json(url.searchParams.get('training_date') === `lt.${today}` ? [{
         id: 'session', program_day_id: 'day', training_date: '2026-11-18', completed_at: '2026-11-18T09:00:00Z',
       }] : []);
