@@ -45,16 +45,16 @@ export function PlayerPreferences({ units: initial, styleOnly = false }: { units
   return <section aria-label={playerT('settings')} className="space-y-card-gap" aria-busy={busy}>
     <div className="glass overflow-hidden rounded-card"><PlayerReminder /></div>
     <div className="glass divide-y divide-line-soft overflow-hidden rounded-card">
-    <div className="flex min-h-14 items-center gap-stack px-page-x"><Languages aria-hidden className="size-5 shrink-0 text-muted" /><span className="flex-1 text-sm font-bold">{playerT('language')}</span>
-      <div role="group" aria-label={playerT('language')} className="flex rounded-full bg-surface-raised p-inline">{(['ar', 'en'] as const).map(value => {
+    <div className="flex min-h-14 flex-wrap items-center gap-stack px-page-x max-[24rem]:gap-y-inline max-[24rem]:py-inline"><Languages aria-hidden className="size-5 shrink-0 text-muted" /><span className="flex-1 text-sm font-bold">{playerT('language')}</span>
+      <div role="group" aria-label={playerT('language')} className="flex max-w-full flex-wrap rounded-full bg-surface-raised p-inline max-[24rem]:basis-full">{(['ar', 'en'] as const).map(value => {
         const choice = choices.find(option => option.locale === value);
         return choice && <button key={value} type="button" lang={value} disabled={busy} aria-pressed={locale === value}
           onClick={() => void changeLanguage(choice)} className={chip}>{playerT(value === 'ar' ? 'arabic' : 'english')}</button>;
       })}</div></div>
     <PlayerTheme />
     <PrayerCity />
-    <div className="flex min-h-14 items-center gap-stack px-page-x"><Ruler aria-hidden className="size-5 shrink-0 text-muted" /><span className="flex-1 text-sm font-bold">{playerT('units')}</span>
-      <div role="group" aria-label={playerT('units')} className="flex rounded-full bg-surface-raised p-inline">{(['metric', 'imperial'] as const).map(value =>
+    <div className="flex min-h-14 flex-wrap items-center gap-stack px-page-x max-[24rem]:gap-y-inline max-[24rem]:py-inline"><Ruler aria-hidden className="size-5 shrink-0 text-muted" /><span className="flex-1 text-sm font-bold">{playerT('units')}</span>
+      <div role="group" aria-label={playerT('units')} className="flex max-w-full flex-wrap rounded-full bg-surface-raised p-inline max-[24rem]:basis-full">{(['metric', 'imperial'] as const).map(value =>
         <button key={value} type="button" disabled={busy} aria-pressed={value === units} onClick={() => void changeUnits(value)} className={chip}>{playerT(value)}</button>)}</div></div>
     <button type="button" className="flex min-h-14 w-full items-center gap-stack px-page-x text-start font-sans text-sm" onClick={() => {
       window.dispatchEvent(new Event('kochivo:replay-tour')); router.push('/player');

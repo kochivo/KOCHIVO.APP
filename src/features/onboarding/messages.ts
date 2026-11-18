@@ -4,6 +4,8 @@ import { arStd } from './standard/messages';
 export const messages = defineMessages({
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
+    confirmMeasurement: "أكّد الرقم ده",
+    confirmOrChangeMeasurement: "أكّد الرقم اللي ظاهر أو غيّره",
     coachIsWaiting: "الكابتن مستنيك",
     letsStart: "يلا نبدأ",
     preparingYourPlan: "بنجهّز خطتك…",
@@ -102,6 +104,8 @@ export const messages = defineMessages({
     maximum: "أكبر قيمة {value0}",
   },
   en: {
+    confirmMeasurement: "Confirm this number",
+    confirmOrChangeMeasurement: "Confirm or change the number shown",
     coachIsWaiting: "Your coach is waiting for you",
     letsStart: "Let's start",
     preparingYourPlan: "Preparing your plan…",

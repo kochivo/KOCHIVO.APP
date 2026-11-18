@@ -1,4 +1,5 @@
 export const arStd = {
+  moreHistoryForEstimate: "يلزم سجل نقاط أطول لتقدير المدة",
   iron: 'حديد', bronze: 'برونز', silver: 'فضة', gold: 'ذهب', platinum: 'بلاتين', diamond: 'ماس',
   rankMedals: 'ميداليات الرتب', otherMedals: 'ميدالياتك الأخرى', medalCount: '{n} من 20', earned: 'حصلت عليها',
   full_weeks: 'الأسابيع الكاملة', prs: 'الأرقام الشخصية', crowns: 'التاج', workoutSet: 'التمارين',

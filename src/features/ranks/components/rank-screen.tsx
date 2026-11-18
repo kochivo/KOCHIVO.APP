@@ -31,6 +31,7 @@ export function RankScreen({ data, status, onRetry, playerId }: {
   const locale = useLocale();
   const loaded = useRankData(true, status === undefined && data === undefined);
   const active = data ?? loaded.data;
+  const retryHall = data && onRetry ? onRetry : loaded.retryHall;
   const state = status ?? (data ? 'ready' : loaded.status);
   const ready = state === 'ready' && active ? active.points.lifetime : undefined;
   const { celebration, dismiss } = useMedalCelebration(playerId, ready, active?.medals);
@@ -43,14 +44,14 @@ export function RankScreen({ data, status, onRetry, playerId }: {
     </header> : <h1 id="rank-title" tabIndex={-1} className="text-2xl font-extrabold">{t('pageTitle')}</h1>}
     {state === 'error' ? <ErrorState message={t('error')} retryLabel={t('retry')} onRetry={onRetry ?? loaded.retry} /> :
       state === 'loading' || !active ? <LoadingState variant="cards" /> : v4
-        ? <RankV6 data={active} holdsCrown={holdsCrown} retry={onRetry ?? loaded.retry} /> : <>
+        ? <RankV6 data={active} holdsCrown={holdsCrown} retry={retryHall} /> : <>
         <RankHero lifetime={active.points.lifetime} holdsCrown={holdsCrown} weekly={active.weekly} />
         <RankJourney lifetime={active.points.lifetime} />
         {active.medals && <MedalSets counts={active.medals} />}
         <EarnPoints logs={active.points.logs} />
         <CrownRace points={active.points} holdsCrown={holdsCrown} />
         {active.points.month_position !== null && <TeamBoard rows={active.board} />}
-        <HallOfFame locale={locale} rows={active.hall} error={active.hallError} onRetry={onRetry ?? loaded.retry} />
+        <HallOfFame locale={locale} rows={active.hall} error={active.hallError} onRetry={retryHall} />
         <PointsLog logs={active.points.logs} />
       </>}
     {celebration && <MedalUnlock key={celebration.id} item={celebration} onClose={dismiss} />}

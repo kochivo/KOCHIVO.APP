@@ -16,7 +16,7 @@ import type { CheckIn } from '../data/checkins';
 import { poses } from '../gallery';
 
 export function CheckinSheet({ latest, open, onClose, onSent }: {
-  latest?: CheckIn; open: boolean; onClose: () => void; onSent: () => void;
+  latest?: CheckIn; open: boolean; onClose: () => void; onSent: (today: string) => void;
 }) {
   const t = useT(messages);
   const timezone = useTimezone();
@@ -58,8 +58,9 @@ export function CheckinSheet({ latest, open, onClose, onSent }: {
     if (busy) return;
     setBusy(true); setError(''); setProgress(0);
     try {
+      const today = localDate(new Date(), timezone);
       const result = await submitCheckIn(await loadSupabaseBrowser(), {
-        today: localDate(new Date(), timezone), body_weight_kg: weight, waist_cm: waist, notes,
+        today, body_weight_kg: weight, waist_cm: waist, notes,
         photos: photos.flatMap((photo) => photo ? [photo.file] : []),
         body_fat_pct: bodyFat === '' ? null : Number(bodyFat),
         photo_poses: poses.filter((_, index) => photos[index] !== null),
@@ -67,7 +68,7 @@ export function CheckinSheet({ latest, open, onClose, onSent }: {
       }, t);
       if (result.error) {
         setError(result.error);
-      } else onSent();
+      } else onSent(today);
     } catch {
       setError(t('couldntSendTheCheckinTryAgain'));
     } finally { setBusy(false); }

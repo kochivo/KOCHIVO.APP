@@ -5,6 +5,7 @@ export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
+    inAppConversation: "كلّم الكابتن هنا",
     v4Assessments: 'التقييمات', v4StartWorkout: 'ابدأ تمرين النهارده',
     v4RestDay: 'النهارده راحة، ارجع للرئيسية', v4NoProgram: 'افتح النهارده، البرنامج لسه مش جاهز',
     v4CoachChat: 'الشات مع الكابتن', v4CoachUnread: 'الشات مع الكابتن، {count} رسايل مش مقروءة',
@@ -48,6 +49,7 @@ export const messages = defineMessages({
     signInAgain: "سجّل دخولك تاني",
   },
   en: {
+    inAppConversation: "Message your coach here",
     v4Assessments: 'Assessments', v4StartWorkout: "Start today's workout",
     v4RestDay: 'Rest day, open Today', v4NoProgram: 'Open Today, no program yet',
     v4CoachChat: 'Chat with coach', v4CoachUnread: 'Chat with coach, {count} unread messages',

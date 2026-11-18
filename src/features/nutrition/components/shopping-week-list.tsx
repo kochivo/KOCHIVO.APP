@@ -7,11 +7,18 @@ import { formatNumber } from '@/lib/format';
 import { Button, buttonClass } from '@/ui/button';
 import { aisles } from '../shopping-items';
 import type { shoppingItems } from '../shopping-items';
+import { messages as nutritionMessages } from '../messages';
+import { readShoppingChecks, writeShoppingChecks } from '../data/shopping-checks';
 import { messages } from '../player-v4/messages';
 
-export function ShoppingWeekList({ items, total, hasEstimate }: ReturnType<typeof shoppingItems>) {
+export function ShoppingWeekList({ items, total, hasEstimate, listKey }: ReturnType<typeof shoppingItems> & { listKey?: string }) {
   const t = useT(messages), budget = useT(foodBudgetMessages), locale = useLocale();
-  const [checked, setChecked] = useState<Set<string>>(() => new Set());
+  const labels = useT(nutritionMessages);
+  const [checked, setChecked] = useState(() => readShoppingChecks(listKey));
+  function saveChecks(next: Set<string>) {
+    setChecked(next);
+    writeShoppingChecks(listKey, next);
+  }
   const [selectedAisle, setSelectedAisle] = useState<typeof aisles[number] | 'all'>('all');
   const number = (value: number) => formatNumber(value, locale);
   const price = (value: number) => budget('money', { n: number(value) });
@@ -38,11 +45,9 @@ export function ShoppingWeekList({ items, total, hasEstimate }: ReturnType<typeo
         <label className="flex min-h-14 cursor-pointer items-center gap-stack px-card py-stack">
           <input type="checkbox" checked={checked.has(item.id)} className="peer sr-only" onChange={event => {
             const selected = event.target.checked;
-            setChecked(previous => {
-              const next = new Set(previous);
-              if (selected) next.add(item.id); else next.delete(item.id);
-              return next;
-            });
+            const next = new Set(checked);
+            if (selected) next.add(item.id); else next.delete(item.id);
+            saveChecks(next);
           }} />
           <span aria-hidden className="grid size-7 shrink-0 place-items-center rounded-control border border-line text-transparent peer-checked:border-lime peer-checked:bg-lime peer-checked:text-on-lime peer-focus-visible:ring-2 peer-focus-visible:ring-lime">
             <Check className="size-4" />
@@ -56,6 +61,7 @@ export function ShoppingWeekList({ items, total, hasEstimate }: ReturnType<typeo
     {hasEstimate && <section data-shopping-section="cost" className="glass-strong space-y-inline rounded-card p-card">
       <p className="font-bold"><bdi>{totalText}</bdi></p><p className="text-xs text-muted">{budget('estimate')}</p>
     </section>}
+    {items.some(item => checked.has(item.id)) && <Button variant="secondary" block onClick={() => saveChecks(new Set())}>{labels('resetShoppingChecks')}</Button>}
     {items.length > 0 && <a href={`https://wa.me/?text=${encodeURIComponent(share.join('\n'))}`} target="_blank" rel="noopener noreferrer" className={buttonClass({ variant: 'secondary', block: true })}>{budget('share')}</a>}
   </>;
 }

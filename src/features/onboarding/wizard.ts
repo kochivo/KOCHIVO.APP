@@ -12,6 +12,8 @@ export type StepProps = {
   touch: (field: keyof Intake) => void;
 };
 
+export const sampleMeasurements = { birth_year: 1998, height_cm: 170, weight_kg: 75 } as const;
+
 export const metricBounds = {
   height_cm: { min: 100, max: 250, step: 0.5 },
   weight_kg: { min: 25, max: 300, step: 0.5 },

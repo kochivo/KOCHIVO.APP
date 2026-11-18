@@ -8,14 +8,16 @@ import type { VoiceInput } from '../types';
 import { messages } from '../messages';
 import { Button } from '@/ui/button';
 
-export function ChatComposer({ viewer, onSendText, onSendVoice, disabled = false, playerName }: {
+export function ChatComposer({ viewer, onSendText, onSendVoice, disabled = false, playerName, draft }: {
   viewer: 'player' | 'captain'; onSendText: (body: string) => Promise<boolean>;
   onSendVoice: (voice: Pick<VoiceInput, 'blob' | 'mimeType' | 'durationSeconds'>) => Promise<boolean>; disabled?: boolean; playerName?: string;
+  draft?: { text: string; setText: (text: string) => void };
 }) {
   const t = useT(messages), voiceT = useT(voiceNoteMessages);
   const recorder = useRecorder();
   const { state } = recorder;
-  const [text, setText] = useState('');
+  const [localText, setLocalText] = useState('');
+  const { text, setText } = draft ?? { text: localText, setText: setLocalText };
   const [busy, setBusy] = useState(false);
   const sendAfterStop = useRef(false);
   const sending = useRef(false);

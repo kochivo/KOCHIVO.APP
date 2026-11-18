@@ -19,7 +19,7 @@ import { readRemoteStrength, readStrength } from '../data/strength';
 import type { StrengthLog } from '../data/strength';
 import { mainLifts, topSets, trendDelta } from '../trends';
 import type { TrendPoint } from '../trends';
-import { weekStart } from '../week';
+import { canOpenCheckin, weekStart } from '../week';
 import { PlayerGallery } from './player-gallery';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { ranksEnabled } from '@/lib/ranks-enabled';
@@ -56,6 +56,9 @@ export function ProgressScreen({ analytics }: { analytics?: ReactNode }) {
   const [sheet, setSheet] = useState(false);
   const [sheetLoaded, setSheetLoaded] = useState(false);
   const [remoteSessionIds, setRemoteSessionIds] = useState<string[]>();
+  const [strengthRetry, setStrengthRetry] = useState(0);
+  const [remoteStrengthError, setRemoteStrengthError] = useState(false);
+  const [sentWeek, setSentWeek] = useState('');
   const [remoteStrength, setRemoteStrength] = useState<StrengthLog[]>([]);
   const [countError, setCountError] = useState(false);
   const onCountError = useCallback(() => setCountError(true), []);
@@ -70,15 +73,21 @@ export function ProgressScreen({ analytics }: { analytics?: ReactNode }) {
   const sessionCount = Array.isArray(localSessionIds) ? new Set([...(remoteSessionIds ?? []), ...localSessionIds]).size : undefined;
   useEffect(() => {
     let cancelled = false;
+    let request = 0;
     const load = async () => {
-      try { const rows = await readRemoteStrength(); if (!cancelled) setRemoteStrength(rows); }
-      // Server history only fills gaps on a new phone; local sets must still show when it fails.
-      catch (error) { console.warn('Loading strength history from the server failed', error); }
+      const current = ++request;
+      if (!navigator.onLine) { setRemoteStrengthError(true); return; }
+      try {
+        const rows = await readRemoteStrength();
+        if (!cancelled && current === request) { setRemoteStrength(rows); setRemoteStrengthError(false); }
+      } catch {
+        if (!cancelled && current === request) setRemoteStrengthError(true);
+      }
     };
     void load();
     window.addEventListener('online', load);
     return () => { cancelled = true; window.removeEventListener('online', load); };
-  }, [retryKey]);
+  }, [strengthRetry]);
   useEffect(() => {
     if (!v6) return;
     let cancelled = false;
@@ -118,24 +127,35 @@ export function ProgressScreen({ analytics }: { analytics?: ReactNode }) {
   const active = lifts.includes(selected) ? selected : lifts[0] ?? '';
   const top = topSets(strength?.sets ?? [], active);
   const latest = checkins?.[0];
-  const sent = today && checkins?.some((row) => row.week_start === weekStart(today));
+  const week = today ? weekStart(today) : '';
+  const sent = Boolean(week && (sentWeek === week || checkins?.some(row => row.week_start === week)));
+  const eligible = canOpenCheckin(today, checkins, checkinError, sentWeek);
+  function openCheckin() {
+    if (!eligible) return;
+    setSheetLoaded(true);
+    setSheet(true);
+  }
+  const partialStrength = remoteStrengthError && <div className="flex flex-wrap items-center gap-stack">
+    <p role="status" className="flex-1 text-sm text-muted">{t('partialStrength')}</p>
+    <Button variant="secondary" block={false} onClick={() => setStrengthRetry(value => value + 1)}>{t('tryAgain')}</Button>
+  </div>;
   const measures = [
     { key: 'body_weight_kg', label: t('weight'), unit: t('kg') },
     { key: 'waist_cm', label: t('waist'), unit: t('cm') },
   ] as const;
   const bodyFat = checkins?.flatMap(row => row.body_fat_pct == null ? [] : [{ date: row.week_start, value: row.body_fat_pct }]) ?? [];
-  const checkinAction = sent ? { label: t('messageCoach'), href: '/player/captain' } :
-    { label: t('sendWeeklyCheckin'), onClick: () => { setSheetLoaded(true); setSheet(true); } };
+  const checkinAction = sent ? { label: t('messageCoach'), href: '/player/captain' } : undefined;
   return <main className={v6 ? 'mx-auto max-w-lg space-y-card-gap px-page-x pt-card pb-[104px]' : 'mx-auto max-w-lg space-y-card-gap px-page-x pt-section pb-32'}>
-    {v6 ? <ProgressV3 today={today} checkins={checkins} strength={strength} count={sessionCount} checkinError={checkinError} strengthError={localError} retry={() => { setLocalError(false); setRetryKey(value => value + 1); }} logDisabled={!today || (!checkins && !checkinError)} onLog={() => { setSheetLoaded(true); setSheet(true); }} /> : <header><h1 className="text-2xl font-extrabold">{t('yourProgress')}</h1></header>}
+    {v6 ? <ProgressV3 today={today} checkins={checkins} strength={strength} count={sessionCount} checkinError={checkinError} strengthError={localError} retry={() => { setLocalError(false); setRetryKey(value => value + 1); }} partialStrength={partialStrength} logDisabled={!eligible} onLog={openCheckin} /> : <header><h1 className="text-2xl font-extrabold">{t('yourProgress')}</h1></header>}
     {v6 && countError && <ErrorState message={t('couldntLoadYourWorkouts')} retryLabel={t('tryAgain')} onRetry={() => setRetryKey(value => value + 1)} />}
     {!v6 && <Link href="/player/history" className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-12 items-center gap-stack p-card font-bold" })}>
       <Dumbbell aria-hidden className="text-lime" />{t('workoutHistory')}
     </Link>}
+    {!v6 && partialStrength}
     {!v6 && (localError ? <ErrorState message={t('couldntLoadYourWorkouts')} retryLabel={t('tryAgain')} onRetry={() => {
       setLocalError(false); setRetryKey((value) => value + 1);
     }} /> : !strength ? <LoadingState /> : !lifts.length ?
-      <EmptyState icon={Dumbbell} title={t('workoutsTitle')} body={t('logYourFirstWorkoutToSeeYour')} action={{ label: t('firstWorkout'), href: '/player' }} /> : <>
+      !remoteStrengthError && <EmptyState icon={Dumbbell} title={t('workoutsTitle')} body={t('logYourFirstWorkoutToSeeYour')} action={{ label: t('firstWorkout'), href: '/player' }} /> : <>
         <div className="glass flex flex-wrap gap-inline rounded-control p-inline" aria-label={t('mainLifts')}>
           {lifts.map((lift, index) => <Chip key={lift} pressed={lift === active} onClick={() => setSelected(lift)}>{strength.names[lift] || t('exerciseNumber', { value0: formatNumber(index + 1, locale) })}</Chip>)}
         </div>
@@ -152,7 +172,7 @@ export function ProgressScreen({ analytics }: { analytics?: ReactNode }) {
       <PlayerAssessments layout="link" />{ranksEnabled() && <RankOverview />}</> : analytics}
     <BodyScansLoader />
     {checkinError ? <ErrorState message={t('couldntLoadCheckinsCheckYourConnection')} retryLabel={t('tryAgain')} onRetry={() => setRetryKey((value) => value + 1)} /> : !checkins ? <LoadingState variant="cards" /> : <>
-      {!checkins.length && <EmptyState icon={CalendarCheck} title={t('firstCheckin')} body={t('yourFirstCheckinIsYourStartingPoint')} action={{ label: t('sendWeeklyCheckin'), onClick: () => { setSheetLoaded(true); setSheet(true); } }} />}
+      {!checkins.length && <EmptyState icon={CalendarCheck} title={t('firstCheckin')} body={t('yourFirstCheckinIsYourStartingPoint')} action={!v6 && eligible ? { label: t('sendWeeklyCheckin'), onClick: openCheckin } : undefined} />}
       {checkins.length > 0 && <><div className="grid grid-cols-2 gap-stack">
         {measures.map(({ key, label, unit }) => {
           const points = checkins.flatMap((row) => row[key] === null ? [] : [{ date: row.week_start, value: row[key] }]).reverse();
@@ -168,9 +188,9 @@ export function ProgressScreen({ analytics }: { analytics?: ReactNode }) {
     </>}
     {sent && <p role="status" className="min-h-12 py-stack text-center text-muted">{t('sent')}</p>}
     {!v6 && checkins && checkins.length > 0 && <CheckinHistory checkins={checkins} />}
-    {(checkins?.length !== 0 || checkinError) && <Button variant={v6 ? 'secondary' : 'primary'} size="lg" className="w-full" aria-disabled={Boolean(sent)} disabled={!today || (!checkins && !checkinError)} onClick={() => { if (!sent) { setSheetLoaded(true); setSheet(true); } }}>{t('sendWeeklyCheckin')}</Button>}
-    {sheetLoaded && (checkins || checkinError) && <CheckinSheet latest={latest} open={sheet} onClose={() => setSheet(false)} onSent={() => {
-      setSheet(false); setRetryKey((value) => value + 1);
+    {!v6 && checkins && checkins.length > 0 && <Button variant="primary" size="lg" className="w-full" disabled={!eligible} onClick={openCheckin}>{t('sendWeeklyCheckin')}</Button>}
+    {sheetLoaded && (checkins || checkinError) && <CheckinSheet latest={latest} open={sheet} onClose={() => setSheet(false)} onSent={date => {
+      setSentWeek(weekStart(date)); setSheet(false); setRetryKey((value) => value + 1);
     }} />}
   </main>;
 }

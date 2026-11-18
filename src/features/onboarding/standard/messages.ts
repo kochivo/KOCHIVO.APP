@@ -1,4 +1,6 @@
 export const arStd = {
+  confirmMeasurement: "أكّد هذا الرقم",
+  confirmOrChangeMeasurement: "أكّد الرقم المعروض أو غيّره",
   coachIsWaiting: 'الكابتن بانتظارك', letsStart: 'لنبدأ', preparingYourPlan: 'جاري تجهيز خطتك…',
   coachWillSendYourPlan: 'تم، سيرسل الكابتن خطتك', loadingYourDetails: 'جاري تحميل بياناتك', pageTitle: 'لنتعرف عليك',
   saturday: 'السبت', sunday: 'الأحد', monday: 'الاثنين', tuesday: 'الثلاثاء', wednesday: 'الأربعاء', thursday: 'الخميس', friday: 'الجمعة',

@@ -12,11 +12,11 @@ export function StepSchedule({ draft, update, errors, touch }: StepProps) {
   const locale = useLocale();
   return (
     <div className="space-y-section">
-      <div onBlur={() => touch('training_days')}>
+      <div data-intake-field="training_days" onBlur={() => touch('training_days')}>
         <DayPicker value={draft.training_days ?? []} onChange={(training_days) => update({ training_days })}
           error={errors.training_days} />
       </div>
-      <fieldset className="space-y-stack" onBlur={() => touch('session_minutes')}>
+      <fieldset className="space-y-stack" data-intake-field="session_minutes" onBlur={() => touch('session_minutes')}>
         <legend className="mb-inline text-sm text-muted">{t('workoutLength')}</legend>
         <div className="flex flex-wrap gap-inline">
           {([30, 45, 60, 90] as const).map((minutes) => (
@@ -26,7 +26,7 @@ export function StepSchedule({ draft, update, errors, touch }: StepProps) {
         </div>
         {errors.session_minutes && <p role="alert" className="text-sm text-danger">{errors.session_minutes}</p>}
       </fieldset>
-      <fieldset className="space-y-stack" onBlur={() => touch('experience')}>
+      <fieldset className="space-y-stack" data-intake-field="experience" onBlur={() => touch('experience')}>
         <legend className="mb-inline text-sm text-muted">{t('gymExperience')}</legend>
         <div className="flex flex-wrap gap-inline">
           {([

@@ -5,6 +5,7 @@ export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
+    resetShoppingChecks: "شيل علامات الشراء",
     messageCoach: "ابعت للكابتن",
     macroSummary: "P {protein} · C {carbs} · F {fat}",
     pageTitle: "أكل النهارده",
@@ -30,6 +31,7 @@ export const messages = defineMessages({
     swapFood: "بدّل {value0}",
   },
   en: {
+    resetShoppingChecks: "Reset shopping checks",
     messageCoach: "Message your coach",
     macroSummary: "P {protein} · C {carbs} · F {fat}",
     pageTitle: "Today's meals",

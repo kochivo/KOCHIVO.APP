@@ -44,6 +44,7 @@ export function IntakeWizard({ statusError }: { statusError?: string }) {
   const [offline, setOffline] = useState(false);
   const [error, setError] = useState('');
   const submitting = useRef(false);
+  const fields = useRef<HTMLFieldSetElement>(null);
   const heading = useRef<HTMLHeadingElement>(null);
   const router = useRouter();
   const step = stepOrder[index] ?? 'basics';
@@ -53,7 +54,10 @@ export function IntakeWizard({ statusError }: { statusError?: string }) {
   if (!validation.success) {
     for (const issue of validation.error.issues) {
       const field = issue.path[0] as keyof Intake;
-      if (touched[field] && !errors[field]) errors[field] = issue.message;
+      if (touched[field] && !errors[field]) {
+        errors[field] = draft[field] === undefined && (field === 'birth_year' || field === 'height_cm' || field === 'weight_kg')
+          ? t('confirmOrChangeMeasurement') : issue.message;
+      }
     }
   }
 
@@ -79,7 +83,15 @@ export function IntakeWizard({ statusError }: { statusError?: string }) {
     setError('');
   }
   async function next() {
-    if (submitting.current || !canAdvance(step, draft, now)) return;
+    if (submitting.current) return;
+    if (!validation.success) {
+      const invalid = validation.error.issues.map(issue => String(issue.path[0]));
+      setTouched(previous => ({ ...previous, ...Object.fromEntries(invalid.map(field => [field, true])) }));
+      const field = Array.from(fields.current?.querySelectorAll<HTMLElement>('[data-intake-field]') ?? [])
+        .find(node => invalid.includes(node.dataset.intakeField ?? ''));
+      (field?.matches('input') ? field : field?.querySelector('input') ?? field?.querySelector('button:not(:disabled)'))?.focus();
+      return;
+    }
     if (index < stepOrder.length - 1) { setIndex(index + 1); return; }
     if (!navigator.onLine) { setOffline(true); return; }
     for (const candidate of stepOrder) {
@@ -120,7 +132,7 @@ export function IntakeWizard({ statusError }: { statusError?: string }) {
         <ProgressBar value={progress(step)} max={100} aria-label={t('stepProgress', { value0: formatNumber(index + 1, locale) })} />
         <h1 ref={heading} tabIndex={-1} className="text-3xl font-extrabold outline-none">{titles[index]}</h1>
       </header>
-      <fieldset key={step} disabled={busy} className="enter min-w-0 flex-1 motion-reduce:animate-none">
+      <fieldset ref={fields} key={step} disabled={busy} className="enter min-w-0 flex-1 motion-reduce:animate-none">
         <legend className="sr-only">{titles[index]}</legend>
         <Screen draft={draft} update={change} errors={errors} touch={touch} />
       </fieldset>
@@ -130,7 +142,7 @@ export function IntakeWizard({ statusError }: { statusError?: string }) {
         <div className="flex gap-stack">
           <Button variant="ghost" size="lg" className="min-h-12" disabled={busy}
             onClick={() => index === 0 ? setStage('welcome') : setIndex(index - 1)}>{t('back')}</Button>
-          <Button size="lg" className="min-h-12 flex-1" disabled={busy || !canAdvance(step, draft, now)}
+          <Button size="lg" className="min-h-12 flex-1" disabled={busy}
             aria-busy={busy} onClick={next}>{busy ? t('sendingYourAnswers') : index === stepOrder.length - 1 ? t('sendToCoach') : t('next')}</Button>
         </div>
       </footer>

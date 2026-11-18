@@ -5,6 +5,7 @@ export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
+    moreHistoryForEstimate: "محتاجين سجل أطول عشان نقدّر المدة",
     iron: 'حديد', bronze: 'برونز', silver: 'فضة', gold: 'ذهب', platinum: 'بلاتين', diamond: 'ماس',
     rankMedals: 'ميداليات الرتب', otherMedals: 'ميدالياتك التانية', medalCount: '{n} من 20', earned: 'اتاخدت',
     full_weeks: 'الأسبوع الكامل', prs: 'الأرقام الجديدة', crowns: 'التاج', workoutSet: 'الالتزام',
@@ -35,6 +36,7 @@ export const messages = defineMessages({
     error: 'مش قادرين نحمّل رتبتك دلوقتي', retry: 'جرّب تاني',
   },
   en: {
+    moreHistoryForEstimate: "More points history is needed for an estimate",
     iron: 'Iron', bronze: 'Bronze', silver: 'Silver', gold: 'Gold', platinum: 'Platinum', diamond: 'Diamond',
     rankMedals: 'Rank medals', otherMedals: 'Your other medals', medalCount: '{n} of 20', earned: 'Earned',
     full_weeks: 'Full weeks', prs: 'Personal records', crowns: 'Crown', workoutSet: 'Workouts',

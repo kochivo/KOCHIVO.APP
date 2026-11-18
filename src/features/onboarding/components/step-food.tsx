@@ -15,12 +15,12 @@ export function StepFood({ draft, update, errors, touch }: StepProps) {
   const locale = useLocale();
   return (
     <div className="space-y-section">
-      <BudgetField value={draft.food_budget_monthly_egp} onChange={food_budget_monthly_egp => update({ food_budget_monthly_egp })} error={errors.food_budget_monthly_egp} />
-      <div onBlur={() => touch('allergies')}>
+      <div data-intake-field="food_budget_monthly_egp"><BudgetField value={draft.food_budget_monthly_egp} onChange={food_budget_monthly_egp => update({ food_budget_monthly_egp })} error={errors.food_budget_monthly_egp} /></div>
+      <div data-intake-field="allergies" onBlur={() => touch('allergies')}>
         <ChipGroup label={t('anyFoodAllergies')} options={allergyOptions} value={draft.allergies ?? []}
           onChange={(allergies) => update({ allergies })} error={errors.allergies} />
       </div>
-      <TextField label={t('anythingYourCoachShouldKnowOptional')} value={draft.notes ?? ''}
+      <TextField data-intake-field="notes" label={t('anythingYourCoachShouldKnowOptional')} value={draft.notes ?? ''}
         placeholder={t('forExampleIWorkNightShifts')} maxLength={500}
         onChange={(event) => update({ notes: Array.from(event.target.value).slice(0, 500).join('') })}
         onBlur={() => touch('notes')} error={errors.notes} aria-describedby="intake-notes-count" />

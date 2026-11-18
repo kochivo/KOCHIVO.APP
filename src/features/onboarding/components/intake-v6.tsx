@@ -32,11 +32,22 @@ export function IntakeV6({ statusError }: { statusError?: string }) {
   const [now] = useState(() => new Date());
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const fields = useRef<HTMLFieldSetElement>(null);
   const lock = useRef(false);
   const field = questions[index] ?? 'full_name';
-  const valid = questionValid(field, draft, now);
   async function next(candidate: IntakeDraft = draft) {
-    if (lock.current || !questionValid(field, candidate, now)) return;
+    if (lock.current) return;
+    if (!questionValid(field, candidate, now)) {
+      const schema = makeIntakeSchema(now, t).intakeSchema.shape;
+      const budget = schema.food_budget_monthly_egp.safeParse(candidate.food_budget_monthly_egp);
+      const invalidBudget = field === 'notes' && !budget.success;
+      const result = invalidBudget ? budget : schema[field].safeParse(candidate[field]);
+      const measurement = field === 'birth_year' || field === 'height_cm' || field === 'weight_kg';
+      setError(measurement && candidate[field] === undefined ? t('confirmOrChangeMeasurement') :
+        result.error?.issues[0]?.message ?? t('reviewYourAnswersBeforeSending'));
+      (fields.current?.querySelector('input') ?? fields.current?.querySelector('button:not(:disabled)'))?.focus();
+      return;
+    }
     if (index < questions.length - 1) { setIndex(index + 1); setError(''); return; }
     const invalid = questions.findIndex(question => !questionValid(question, candidate, now));
     if (invalid >= 0) { setIndex(invalid); setError(t('reviewYourAnswersBeforeSending')); return; }
@@ -73,12 +84,12 @@ export function IntakeV6({ statusError }: { statusError?: string }) {
         else void next({ ...draft, notes: '' });
       }}>{v6t('skip')}</Button>}</div>
     </header>
-    <fieldset disabled={busy} className="min-w-0 flex-1"><IntakeQuestion key={field} field={field} draft={draft} update={patch => { update(patch); setError(''); }} year={now.getUTCFullYear()} /></fieldset>
+    <fieldset ref={fields} disabled={busy} className="min-w-0 flex-1"><IntakeQuestion key={field} field={field} draft={draft} update={patch => { update(patch); setError(''); }} year={now.getUTCFullYear()} /></fieldset>
     <p className="text-xs text-muted">{t('onlyYourCoachCanSeeYourAnswers')}</p>
     {error && <p role="alert" className="text-sm text-danger">{error}</p>}
     <footer className="flex gap-stack">
-      <Button variant="secondary" block={false} disabled={busy} onClick={() => index ? setIndex(index - 1) : setStage('welcome')}>{t('back')}</Button>
-      <Button size="lg" block={false} className="flex-1" disabled={busy || !valid} onClick={() => void next()}>
+      <Button variant="secondary" block={false} disabled={busy} onClick={() => { setError(''); if (index) setIndex(index - 1); else setStage('welcome'); }}>{t('back')}</Button>
+      <Button size="lg" block={false} className="flex-1" disabled={busy} onClick={() => void next()}>
         {busy ? t('sendingYourAnswers') : index === questions.length - 1 ? t('sendToCoach') : t('next')}</Button>
     </footer>
   </main>;

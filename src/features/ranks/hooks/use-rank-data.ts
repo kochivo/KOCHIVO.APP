@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTimezone } from '@/core/timezone/client';
 import { loadMyPoints } from '../data/load-my-points';
 import type { MyPoints } from '../data/load-my-points';
@@ -21,6 +21,15 @@ export function useRankData(board = true, enabled = true) {
   const timezone = useTimezone();
   const [attempt, setAttempt] = useState(0);
   const [state, setState] = useState<{ data?: RankData; status: RankStatus }>({ status: 'loading' });
+  const hallRequest = useRef(0);
+  const invalidateHall = useCallback(() => { hallRequest.current++; }, []);
+  const retryHall = useCallback(async () => {
+    const request = ++hallRequest.current;
+    setState(current => current.data ? { ...current, data: { ...current.data, hallError: false } } : current);
+    const hall = await loadHallOfFame().then(rows => ({ rows, error: false }), () => ({ rows: undefined, error: true }));
+    if (request !== hallRequest.current) return;
+    setState(current => current.data ? { ...current, data: { ...current.data, hall: hall.rows, hallError: hall.error } } : current);
+  }, []);
   useEffect(() => {
     if (!enabled) return;
     let cancelled = false;
@@ -41,7 +50,7 @@ export function useRankData(board = true, enabled = true) {
       }
     }
     void load();
-    return () => { cancelled = true; };
-  }, [attempt, board, enabled, timezone]);
-  return { ...state, retry: () => setAttempt(value => value + 1) };
+    return () => { cancelled = true; invalidateHall(); };
+  }, [attempt, board, enabled, timezone, invalidateHall]);
+  return { ...state, retryHall, retry: () => setAttempt(value => value + 1) };
 }

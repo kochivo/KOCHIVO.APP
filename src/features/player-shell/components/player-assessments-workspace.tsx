@@ -33,21 +33,28 @@ export function PlayerAssessmentsWorkspace({ due, past, actionable }: PlayerAsse
         { label: t('nextDue'), value: count(nextDue ? due.filter(row => row.due_at && day(row.due_at) === nextDue).length : 0),
           note: nextDue && formatDateAr(nextDue, { month: 'short', day: 'numeric' }, locale) },
       ]} />
-    <section aria-label={p('due')} className="space-y-stack">
+    <section aria-labelledby="workspace-assessment-due" className="space-y-stack">
+      <h2 id="workspace-assessment-due" className="text-row font-bold">{p('due')}</h2>
       {!due.length ? <p className="glass rounded-card p-card text-sm text-muted">{s('noAssessments')}</p> :
-        <ul className="space-y-stack">{due.map((request, index) => <li key={request.id} className="space-y-stack">
-          <Link href={requestHref(request.id)} prefetch={false}
-            className={`press flex min-h-14 items-center gap-stack rounded-card p-card ${index === 0 ? 'ko-strip' : 'glass'}`}>
+        <ul className="space-y-stack">{due.map((request, index) => {
+          const hasRecord = index === 0 && actionable;
+          const titleId = `assessment-title-${request.id}`;
+          const cardClass = `press flex min-h-14 items-center gap-stack rounded-card p-card ${index === 0 ? 'ko-strip' : 'glass'}`;
+          const content = <>
             <KoForms aria-hidden className="size-6 shrink-0 text-lime" />
             <div className="min-w-0 flex-1">
-              <h3 className="break-words text-sm font-bold">{request.forms?.title ?? p('assessments')}</h3>
+              <h3 id={titleId} className="break-words text-sm font-bold">{request.forms?.title ?? p('assessments')}</h3>
               {request.due_at && <p className="text-xs text-muted">{p('dueBy', { date: date(request.due_at) })}</p>}
             </div>
             {index > 0 && <ChevronLeft aria-hidden className="dir-icon size-4 shrink-0 text-muted" />}
-          </Link>
-          {index === 0 && actionable && <Link href={requestHref(request.id)} prefetch={false}
-            className={buttonClass({ variant: 'primary', size: 'lg', block: true })}>{p('record')}</Link>}
-        </li>)}</ul>}
+          </>;
+          return <li key={request.id} className="space-y-stack">
+            {hasRecord ? <div className={cardClass}>{content}</div> :
+              <Link href={requestHref(request.id)} prefetch={false} className={cardClass}>{content}</Link>}
+            {hasRecord && <Link href={requestHref(request.id)} prefetch={false} aria-labelledby={`assessment-record-${request.id} ${titleId}`}
+              className={buttonClass({ variant: 'primary', size: 'lg', block: true })}><span id={`assessment-record-${request.id}`}>{p('record')}</span></Link>}
+          </li>;
+        })}</ul>}
     </section>
     <section aria-labelledby="workspace-assessment-history" className="space-y-stack">
       <h2 id="workspace-assessment-history" className="text-row font-bold">{p('past')}</h2>

@@ -7,6 +7,8 @@ export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
+    voiceOnlyReady: "التسجيل جاهز للإرسال لوحده",
+    sendVoiceOnly: "ابعت التسجيل بس",
     ...koPreviewMessages.ar,
     confirmLabel: 'تأكيد الطلب', confirmAction: 'نفّذ', confirmCancel: 'إلغاء',
     confirmCancelled: 'تمام، لغيته.', confirmExpired: 'الطلب ده خلص وقته. ابعته تاني.',
@@ -43,6 +45,8 @@ export const messages = defineMessages({
     photoError: 'اختار صورة JPEG أو PNG أو WebP، حجمها 3 ميجابايت أو أقل.',
   },
   en: {
+    voiceOnlyReady: "Ready to send as voice only",
+    sendVoiceOnly: "Send voice only",
     ...koPreviewMessages.en,
     confirmLabel: 'Confirm request', confirmAction: 'Confirm', confirmCancel: 'Cancel',
     confirmCancelled: 'Cancelled.', confirmExpired: 'This request expired. Send it again.',

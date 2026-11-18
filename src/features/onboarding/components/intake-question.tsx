@@ -2,11 +2,12 @@
 
 import { useLocale, useT } from '@/core/i18n/client';
 import { useEffect, useRef } from 'react';
-import { TextField, Stepper } from '@/ui';
+import { Button, TextField, Stepper } from '@/ui';
 import { formatNumber } from '@/lib/format';
 import { messages } from '../messages';
 import { allergyOptions, injuryOptions, medicalOptions } from '../data/intake-schema';
 import type { IntakeQuestion as Field } from '../v6-steps';
+import { sampleMeasurements } from '../wizard';
 import type { IntakeDraft } from '../wizard';
 import { ChipGroup } from './chip-group';
 import { DayPicker } from './day-picker';
@@ -46,10 +47,14 @@ export function IntakeQuestion({ field, draft, update, year }: {
     })}</div>}
     {field === 'full_name' && <TextField label={label} autoComplete="name" maxLength={80} value={draft.full_name ?? ''}
       onChange={event => update({ full_name: event.target.value })} />}
-    {field === 'birth_year' && <Stepper label={label} step={1} min={10} max={year - 1930} value={year - (draft.birth_year ?? year - 25)}
+    {field === 'birth_year' && <Stepper label={label} step={1} min={10} max={year - 1930} value={year - (draft.birth_year ?? sampleMeasurements.birth_year)}
       format={value => formatNumber(value, locale)} onChange={age => update({ birth_year: year - age })} />}
     {(field === 'height_cm' || field === 'weight_kg' || field === 'target_weight_kg') && <MetricSlider field={field}
-      label={label} value={draft[field] ?? (field === 'height_cm' ? 170 : 75)} onChange={value => update({ [field]: value })} onBlur={() => {}} />}
+      label={label} value={draft[field] ?? (field === 'target_weight_kg' ? sampleMeasurements.weight_kg : sampleMeasurements[field])} onChange={value => update({ [field]: value })} onBlur={() => {}} />}
+    {field === 'birth_year' && draft.birth_year === undefined && <Button type="button" variant="secondary"
+      onClick={() => { update({ birth_year: sampleMeasurements.birth_year }); heading.current?.focus(); }}>{t('confirmMeasurement')}</Button>}
+    {(field === 'height_cm' || field === 'weight_kg') && draft[field] === undefined && <Button type="button" variant="secondary"
+      onClick={() => { update({ [field]: sampleMeasurements[field] }); heading.current?.focus(); }}>{t('confirmMeasurement')}</Button>}
     {field === 'training_days' && <DayPicker value={draft.training_days ?? []} onChange={training_days => update({ training_days })} />}
     {field === 'injuries' && <ChipGroup label={label} options={injuryOptions} value={draft.injuries ?? []} onChange={injuries => update({ injuries })} />}
     {field === 'medical' && <><ChipGroup label={label} options={medicalOptions} value={draft.medical ?? []} onChange={medical => update({ medical })} />

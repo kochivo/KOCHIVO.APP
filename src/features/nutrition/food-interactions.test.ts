@@ -65,16 +65,17 @@ afterEach(async () => {
 });
 const now = Date.parse('2026-11-13T10:00:00Z');
 
-it('the meal check writes the existing meal log and offline queue', async () => {
+it('the meal check logs and reverses completion through the offline queue', async () => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
   vi.spyOn(Date, 'now').mockReturnValue(now);
   state.db = new KochivoDB('food-check');
-  renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' }, createElement(MealCard, {
-    today: '2026-11-13', primary: true, meal: { id: 'meal', name: 'Lunch', position: 1, items: [{
+  const props = {
+    today: '2026-11-13', meal: { id: 'meal', name: 'Lunch', position: 1, items: [{
       id: 'rice', position: 1, name: 'Rice', grams: 200, photo_path: null, alternatives: [],
       per100g: { kcal: 100, protein: 2, carbs: 20, fat: 1 },
     }] },
-  })));
+  };
+  renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' }, createElement(MealCard, props)));
   const check = state.buttons.find(button => button['aria-label'] === 'Ate Lunch');
   expect(check).toBeDefined();
   check?.onClick?.();
@@ -82,6 +83,14 @@ it('the meal check writes the existing meal log and offline queue', async () => 
   expect(setMealEaten).toHaveBeenCalled();
   expect(await state.db.meal_logs.toArray()).toMatchObject([{ meal_id: 'meal', log_date: '2026-11-13', completed_at: '2026-11-13T10:00:00.000Z' }]);
   expect(await state.db.outbox.toArray()).toMatchObject([{ table: 'meal_logs' }]);
+  const [log] = await state.db.meal_logs.toArray();
+  state.buttons = [];
+  renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' }, createElement(MealCard, { ...props, log })));
+  const undo = state.buttons.find(button => button['aria-label'] === 'Ate Lunch');
+  expect(undo).toBeDefined();
+  undo?.onClick?.();
+  await state.pending;
+  expect(await state.db.meal_logs.toArray()).toMatchObject([{ meal_id: 'meal', completed_at: null }]);
 });
 
 it('the water plus adds 250 ml without replacing readiness answers', async () => {

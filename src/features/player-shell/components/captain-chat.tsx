@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useT } from '@/core/i18n/client';
 import { loadSupabaseBrowser } from '@/core/supabase/lazy';
@@ -16,6 +17,7 @@ const Composer = dynamic(() => import('@/features/chat').then(module => module.C
 
 export function CaptainChat({ playerId, captainId }: { playerId: string; captainId: string }) {
   const t = useT(messages), chatT = useT(chatMessages);
+  const [draft, setDraft] = useState('');
   const thread = useChatThread({ playerId, captainId, viewerId: playerId });
   return <>
     <div className={`${css.thread} flex min-h-0 flex-1 flex-col overflow-y-auto`}>
@@ -33,8 +35,8 @@ export function CaptainChat({ playerId, captainId }: { playerId: string; captain
       </>}
     </div>
     <div className={`${css.composer} shrink-0 space-y-stack`}>
-      <CaptainQuickReplies replies={[t('okay'), t('alternative'), t('video')]} sendText={thread.sendText} />
-      <Composer viewer="player" onSendText={thread.sendText} onSendVoice={thread.sendVoice} />
+      <CaptainQuickReplies replies={[t('okay'), t('alternative'), t('video')]} onChoose={setDraft} />
+      <Composer viewer="player" draft={{ text: draft, setText: setDraft }} onSendText={thread.sendText} onSendVoice={thread.sendVoice} />
     </div>
   </>;
 }

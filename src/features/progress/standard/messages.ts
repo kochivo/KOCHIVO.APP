@@ -1,4 +1,5 @@
 export const arStd = {
+  partialStrength: "تعذّر تحميل جزء من سجل القوة. تظهر هنا البيانات المتاحة.",
   chartMonth: 'شهر', chartQuarter: '3 أشهر', chartAll: 'الكل', chartPeriod: 'مدة الرسم',
   chartToday: 'اليوم', chartGoal: 'الهدف {value}', chartChange: '{value} منذ البداية',
   chartShow: 'اعرض الأرقام', chartHide: 'أخفِ الأرقام',

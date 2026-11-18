@@ -45,7 +45,8 @@ export function ShoppingScreen() {
         name: locale === 'en' ? data.foods.find(food => food.id === item.food.id)?.name_en || item.food.name : item.food.name,
       } })) })) };
     });
-    return v4 ? <ShoppingWeekList key={nutrition.today} {...shoppingItems(days, mealsByDay, data.foods, Boolean(data.monthly), locale === 'en')} />
+    const listKey = JSON.stringify([nutrition.snapshot.player_id, nutrition.snapshot.plan_id, nutrition.today]);
+    return v4 ? <ShoppingWeekList key={listKey} listKey={listKey} {...shoppingItems(days, mealsByDay, data.foods, Boolean(data.monthly), locale === 'en')} />
       : <main className="mx-auto max-w-lg p-card pb-32"><ShoppingList days={days} /></main>;
   }
   if (!v4) return content();

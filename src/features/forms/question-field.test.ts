@@ -2,6 +2,7 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { expect, it } from 'vitest';
 import { QuestionField } from './components/question-field';
+import { validAnswer } from './answers';
 import { newQuestion } from './model';
 import { customFormQuestionTypes } from '@/types/enums';
 
@@ -22,4 +23,17 @@ it.each(['choice','yesno','photos'] as const)('marks required %s fields for play
   const question = { ...newQuestion('form', 0, () => 'question'), type, required: true,
     options: [{ value: 'one', label_ar: 'الأول', label_en: 'First' }] };
   expect(renderToStaticMarkup(createElement(QuestionField, { question, locale: 'en' }))).toContain('required=""');
+});
+
+it('validates required multi-selects as a group and describes the group error', () => {
+  const question = { ...newQuestion('form', 0, () => 'question'), type: 'multi' as const, required: true,
+    options: [{ value: 'a', label_ar: 'أ', label_en: 'First' }, { value: 'b', label_ar: 'ب', label_en: 'Second' }] };
+  expect(validAnswer(question, [])).toBe(false);
+  expect(validAnswer(question, ['b'])).toBe(true);
+  const markup = renderToStaticMarkup(createElement(QuestionField, { question, locale: 'en', groupError: 'Select at least one', promptRef: () => {} }));
+  expect(markup).not.toContain('required=""');
+  const id = markup.match(/aria-describedby="([^"]+)"/)?.[1];
+  expect(id).toBeTruthy();
+  expect(markup).toContain(`id="${id}" role="alert"`);
+  expect(markup).toContain('<legend tabindex="-1"');
 });

@@ -90,7 +90,7 @@ export function SettingsScreen({ signOut, connectedTools }: {
     install={<InstallButton role="player" />} signOut={signOut} connectedTools={connectedSection}
     privacy={profile && <><ExportCard />
       {!demo && !demoExpiry(profile) && <DeleteAccountCard requestedAt={profile.deletion_requested_at} />}</>}>
-    <GlassToggle /><ThemeSwitch />
+    <GlassToggle />
     {profile && <TourReplay role={profile.role} />}
   </PlayerAccount>;
   return <div className="mx-auto max-w-3xl space-y-card-gap">

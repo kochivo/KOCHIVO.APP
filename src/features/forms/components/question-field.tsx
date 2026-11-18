@@ -1,4 +1,6 @@
 'use client';
+import { useId } from 'react';
+import type { Ref } from 'react';
 import type { ArabicStyle, Locale } from '@/core/i18n/locale';
 import { formCopy } from '../form-copy';
 import type { Question } from '../types';
@@ -7,13 +9,16 @@ import { createT } from '@/core/i18n/messages';
 import { messages as v6Messages } from '../v6-messages';
 
 export type QuestionValue = string | number | boolean | string[] | null;
-export function QuestionField({ question: q, locale, value = null, readOnly = false, onChange, onPhotos, preview = false, style, playerCard = false }: {
+export function QuestionField({ question: q, locale, value = null, readOnly = false, onChange, onPhotos, preview = false, style, playerCard = false, promptRef, groupError }: {
   question: Question; locale: Locale; value?: QuestionValue; readOnly?: boolean;
   preview?: boolean;
+  promptRef?: Ref<HTMLLegendElement>;
+  groupError?: string;
   playerCard?: boolean;
   style?: ArabicStyle;
   onChange?: (value: QuestionValue) => void; onPhotos?: (files: FileList | null) => void;
 }) {
+  const errorId = useId();
   const m = formCopy(locale, style), label = locale === 'ar' ? q.label_ar : q.label_en.trim() || q.label_ar;
   const v6t = createT(v6Messages, locale, style);
   const input = `min-h-12 w-full rounded-control border border-line bg-surface px-stack text-ink${preview ? ' min-w-0 font-display' : ''}`;
@@ -22,8 +27,9 @@ export function QuestionField({ question: q, locale, value = null, readOnly = fa
     step={q.type === 'scale' ? 1 : 'any'} value={typeof value === 'number' ? value : ''} required={q.required}
     onChange={e => onChange?.(e.target.value === '' ? null : e.target.valueAsNumber)} />;
   return <fieldset className={preview ? 'mb-stack min-w-0 space-y-inline rounded-[16px] border border-line-soft px-card pb-stack text-row' :
-    playerCard ? 'min-w-0 space-y-stack' : 'space-y-stack border-b border-line py-page-y'} disabled={readOnly}>
-    <legend className={preview ? 'float-start w-full pt-stack font-normal' : playerCard ? 'mb-stack text-h font-bold' : 'pt-stack font-bold'}>{label}{q.required && !preview && <span className={playerCard ? 'sr-only' : 'ms-inline text-muted'}>{m.required}</span>}</legend>
+    playerCard ? 'min-w-0 space-y-stack' : 'space-y-stack border-b border-line py-page-y'} disabled={readOnly}
+    aria-invalid={groupError ? true : undefined} aria-describedby={groupError ? errorId : undefined}>
+    <legend ref={promptRef} tabIndex={promptRef ? -1 : undefined} className={preview ? 'float-start w-full pt-stack font-normal' : playerCard ? 'mb-stack text-h font-bold' : 'pt-stack font-bold'}>{label}{q.required && !preview && <span className={playerCard ? 'sr-only' : 'ms-inline text-muted'}>{m.required}</span>}</legend>
     {q.type === 'text' && <textarea aria-label={label} className={`${input}${preview ? ' resize-none' : ''}`} value={typeof value === 'string' ? value : ''}
       required={q.required} onChange={e => onChange?.(e.target.value)} />}
     {q.type === 'scale' && preview ? <div className="grid grid-cols-5 gap-inline">{Array.from({ length: 10 }, (_, i) => i + 1).map(n => <button key={n} type="button" aria-pressed={value === n}
@@ -31,11 +37,11 @@ export function QuestionField({ question: q, locale, value = null, readOnly = fa
       : (q.type === 'number' || q.type === 'scale') && (preview ? <div className="clear-both flex min-w-0 items-center gap-inline">{numberField}
         {(q.maps_to === 'weight' || q.maps_to === 'targetWeight' || q.maps_to === 'waist' || q.maps_to === 'height')
           && <span className="shrink-0 text-faint">{m[q.maps_to === 'weight' || q.maps_to === 'targetWeight' ? 'kg' : 'cm']}</span>}</div> : numberField)}
-    {(q.type === 'choice' || q.type === 'multi') && <div className={playerCard ? 'grid gap-stack' : 'flex flex-wrap gap-inline'}>{q.options.map((option, index) =>
+    {(q.type === 'choice' || q.type === 'multi') && <div className={playerCard ? 'grid gap-stack' : 'flex flex-wrap gap-inline'}>{q.options.map(option =>
       <label key={option.value} className={playerCard ? 'glass flex min-h-16 cursor-pointer items-center gap-stack rounded-control border border-line-soft px-card has-checked:border-lime has-checked:bg-lime-soft has-checked:font-bold' : 'glass flex min-h-12 items-center gap-stack rounded-control px-stack'}>
         <input type={q.type === 'multi' ? 'checkbox' : 'radio'} name={q.id} value={option.value}
           className={playerCard ? 'size-5 shrink-0 accent-lime' : undefined}
-          required={q.required && (q.type === 'choice' || index === 0 && (!Array.isArray(value) || !value.length))}
+          required={q.required && q.type === 'choice'}
           checked={q.type === 'multi' ? Array.isArray(value) && value.includes(option.value) : value === option.value}
           onChange={e => onChange?.(q.type === 'multi'
             ? e.target.checked ? [...(Array.isArray(value) ? value : []), option.value]
@@ -54,5 +60,6 @@ export function QuestionField({ question: q, locale, value = null, readOnly = fa
         <input type="file" accept="image/*" multiple className="sr-only" aria-label={v6t('gallery')} onChange={event => onPhotos?.(event.target.files)} /></label>
     </div> : <input type="file" accept="image/*" multiple required={q.required} aria-label={label} className={input}
       onChange={e => onPhotos?.(e.target.files)} />)}
+    {groupError && <p id={errorId} role="alert" className="py-stack text-danger">{groupError}</p>}
   </fieldset>;
 }

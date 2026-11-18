@@ -1,4 +1,5 @@
 export const arStd = {
+  resetShoppingChecks: "أزل علامات الشراء",
   messageCoach: 'أرسل للكابتن', macroSummary: 'P {protein} · C {carbs} · F {fat}', pageTitle: 'وجبات اليوم',
   todaysNutrition: 'غذاؤك اليوم', kcal: 'سعر حراري', protein: 'بروتين', carbs: 'كربوهيدرات', fat: 'دهون', g: 'جم',
   thisMealIsBeingPrepared: 'جاري إعداد الوجبة', swap: 'بدّل', mealEaten: 'تناولت الوجبة',

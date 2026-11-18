@@ -13,6 +13,7 @@ import { KoTyping } from './ko-typing';
 import { KoConfirm, createApproval } from './ko-confirm';
 import { contextFromPath } from '../context';
 import type { KoContext } from '../context';
+import { canSubmitKoDraft } from '../composer-draft';
 import { suggestionsFor } from '../suggestions';
 import { useLocale, useT } from '@/core/i18n/client';
 import { koMaxText } from '@/features/ko-core';
@@ -65,7 +66,7 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
   async function submit(event?: FormEvent<HTMLFormElement>, suggestion?: string) {
     event?.preventDefault();
     const prompt = (suggestion ?? draft).trim();
-    if (active.current || recorder.status !== 'idle' || (!prompt && !clip && !photo)) return;
+    if (active.current || recorder.status !== 'idle' || !canSubmitKoDraft(prompt, clip, photo)) return;
     const controller = new AbortController();
     active.current = controller;
     setBusy(true);
@@ -140,7 +141,7 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
       {busy && <KoTyping />}
     </div>
     {suggestionsFor(role, context, sent).length > 0 && <div className="flex flex-wrap gap-inline px-page-x pb-stack" role="group" aria-label={t('suggestions')}>
-      {suggestionsFor(role, context, sent).map(key => <Button key={key} type="button" disabled={busy || recorder.status !== 'idle' || (key === 'suggest.player' && !contextName)}
+      {suggestionsFor(role, context, sent).map(key => <Button key={key} type="button" disabled={busy || Boolean(clip) || recorder.status !== 'idle' || (key === 'suggest.player' && !contextName)}
         variant={'secondary'} block={false} className={"min-h-12 rounded-chip px-stack text-start text-sm text-lime-ink disabled:opacity-50"}
         onClick={() => {
           if (key === 'suggest.today') { setShowFeed(account); setSent(true); return; }
@@ -152,7 +153,7 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
         onChange={event => {
           const file = event.target.files?.[0];
           event.target.value = '';
-          if (!file) return;
+          if (!file || clip || recorder.status !== 'idle') return;
           if (file.size > 3_000_000 || !['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) { setError(t('photoError')); return; }
           setError('');
           setPhoto(file);
@@ -165,7 +166,7 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
       </div>}
       <div className="flex items-center gap-inline">
         {clip ? <div className="flex min-w-0 flex-1 items-center justify-between gap-inline rounded-control bg-bg ps-stack text-sm">
-          <span>{t('voiceReady')}</span>
+          <span>{t('voiceOnlyReady')}</span>
           {captainWorkspaceEnabled() ? <IconButton type="button" disabled={busy} aria-label={t('discardVoice')} onClick={() => setClip(null)} className="border border-danger/40 text-danger! grid min-h-12 min-w-12 place-items-center text-ink"><X aria-hidden className="size-4" /></IconButton> : <button type="button" disabled={busy} aria-label={t('discardVoice')} onClick={() => setClip(null)} className="grid min-h-12 min-w-12 place-items-center text-muted"><X aria-hidden className="size-4" /></button>}
         </div> : <input dir="auto" value={draft} maxLength={koMaxText} onChange={event => setDraft(event.target.value)}
           aria-label={t('chatInput')} placeholder={t(recording ? 'voiceRecording' : 'chatInput')} disabled={busy || recorder.status !== 'idle'}
@@ -173,13 +174,13 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
         {account && role === 'player' && !clip && !photo && <Button type="button" disabled={busy || recorder.status !== 'idle'}
           aria-label={t('mealPhoto')} onClick={() => camera.current?.click()}
           variant={'secondary'} block={false} className={"grid min-h-12 min-w-12 place-items-center text-lime-ink disabled:opacity-50"}><Camera aria-hidden className="size-5" /></Button>}
-        {!clip && !photo && <button type="button" disabled={busy || recorder.status === 'starting' || Boolean(draft.trim())}
+        {!clip && !photo && <button type="button" disabled={busy || recorder.status === 'starting' || Boolean(draft)}
           onClick={() => { setError(''); if (recording) recorder.stop(); else void recorder.start(); }}
           aria-label={t(recording ? 'stopVoice' : 'recordVoice')} aria-pressed={recording}
           className="grid min-h-12 min-w-12 place-items-center rounded-control border border-line text-lime-ink disabled:opacity-50">
           {recording ? <Square aria-hidden className="size-4" /> : <Mic aria-hidden className="size-5" />}
         </button>}
-        <Button type="submit" aria-label={t('chatSend')} disabled={busy || recorder.status !== 'idle' || (!clip && !photo && !draft.trim())}
+        <Button type="submit" aria-label={t(clip ? 'sendVoiceOnly' : 'chatSend')} disabled={busy || recorder.status !== 'idle' || !canSubmitKoDraft(draft, clip, photo)}
           variant={(captainWorkspaceEnabled()) ? 'secondary' : (approval) ? 'secondary' : 'primary'} block={false} className={`grid min-h-12 min-w-12 place-items-center disabled:opacity-50 ${captainWorkspaceEnabled() ? "text-muted" : approval ? "text-muted" : ""} `}><ArrowUp aria-hidden className="size-5" /></Button>
       </div>
       {error && <p role="alert" className="mt-inline text-xs text-muted">{error}</p>}

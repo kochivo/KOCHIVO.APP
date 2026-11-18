@@ -32,6 +32,7 @@ describe('player ranks', () => {
         'data-rank-section="hero"', 'data-rank-section="board"', 'data-rank-section="points"', 'data-rank-section="medals"',
       ]);
       expect(html).toContain('No points yet. Finish your first workout');
+      expect(html).toContain('More points history is needed for an estimate');
     } finally { vi.unstubAllEnvs(); }
   });
   it('celebrates each star once per player and preserves the highest seen count', () => {

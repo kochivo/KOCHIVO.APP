@@ -1,4 +1,5 @@
 export const arStd = {
+  inAppConversation: "راسل الكابتن هنا",
   v4Assessments: 'التقييمات', v4StartWorkout: 'ابدأ تمرين اليوم',
   v4RestDay: 'اليوم راحة، عد للرئيسية', v4NoProgram: 'افتح اليوم، لا يوجد برنامج بعد',
   v4CoachChat: 'المحادثة مع الكابتن', v4CoachUnread: 'المحادثة مع الكابتن، {count} رسائل غير مقروءة',

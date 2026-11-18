@@ -1,4 +1,5 @@
 'use client';
+import type { ReactNode } from 'react';
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { KoPlus } from '@/ui/icons';
@@ -21,9 +22,9 @@ import type { StatStripItem } from '@/ui/stat-strip';
 
 const CoachButton = dynamic(() => import('@/features/player-shell').then(module => module.CoachButton), { ssr: false });
 
-export function ProgressV3({ today, checkins, strength, count, checkinError, strengthError, retry, onLog, logDisabled }: {
+export function ProgressV3({ today, checkins, strength, count, checkinError, strengthError, retry, onLog, logDisabled, partialStrength }: {
   today: string; checkins?: CheckIn[]; strength?: StrengthHistory; count?: number;
-  checkinError: boolean; strengthError: boolean; retry: () => void; onLog: () => void; logDisabled?: boolean;
+  checkinError: boolean; strengthError: boolean; retry: () => void; onLog: () => void; logDisabled?: boolean; partialStrength?: ReactNode;
 }) {
   const t = useT(messages);
   const old = useT(legacyMessages);
@@ -52,7 +53,7 @@ export function ProgressV3({ today, checkins, strength, count, checkinError, str
     <header className="flex min-h-12 items-center gap-inline">
       <div className="min-w-0 flex-1"><h1 className="text-h font-extrabold">{v4t('title')}</h1>
         <p className="text-xs text-muted">{v4t(months === 2 ? 'recent' : 'six')}</p></div>
-      <Button type="button" variant="secondary" aria-label={t('log')} onClick={onLog} disabled={logDisabled} className="size-12 shrink-0 px-0"><KoPlus aria-hidden className="size-5" /></Button>
+      <Button type="button" variant="secondary" aria-label={old('sendWeeklyCheckin')} onClick={onLog} disabled={logDisabled} className="size-12 shrink-0 px-0"><KoPlus aria-hidden className="size-5" /></Button>
       <CoachButton />
     </header>
     <StatStrip items={stats} className={`${stats.length === 3 ? 'max-sm:grid-cols-3!' : ''} [&>div]:px-stack [&>div>div]:flex-wrap [&_.truncate]:whitespace-normal [&_p]:flex-wrap [&_p>span:first-child]:wrap-anywhere [&_p>span:first-child]:text-title`} />
@@ -68,12 +69,13 @@ export function ProgressV3({ today, checkins, strength, count, checkinError, str
     </section>
     <section data-progress-section="strength" className={`${card} gap-stack`} aria-label={t('strength')}>
       <h2 className="text-row font-bold">{t('strength')}</h2>
+      {partialStrength}
       {lifts.length > 0 && <div className="flex flex-wrap gap-inline">{lifts.map(lift => <Button key={lift} type="button"
         variant={active === lift ? 'secondary' : 'ghost'} aria-pressed={active === lift} onClick={() => setSelected(lift)} className="text-xs">{strength?.names[lift] || old('exercise')}</Button>)}</div>}
       {strengthError ? <ErrorState message={old('couldntLoadYourWorkouts')} retryLabel={old('tryAgain')} onRetry={retry} /> : !strength ? <LoadingState /> : top.length ? <>
         <div className="flex items-baseline gap-inline"><span dir="ltr" className="glass-strong rounded-xl font-display text-stat font-extrabold">{number(Math.max(...top.map(point => point.value)))}</span><span className="text-row text-muted">{t('kg')}</span>{delta !== null && <span className="ms-auto text-row font-bold text-lime">{t('delta', { value: `${delta >= 0 ? '+' : '−'}${number(Math.abs(delta))}` })}</span>}</div>
         <LineChart points={top} title={t('strength')} unit={t('kg')} compact="lime" />
-      </> : <p className="py-page-y text-sm text-muted">{t('noStrength')}</p>}
+      </> : !partialStrength && <p className="py-page-y text-sm text-muted">{t('noStrength')}</p>}
     </section>
   </>;
 }

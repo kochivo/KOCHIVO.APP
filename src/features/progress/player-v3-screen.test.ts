@@ -7,6 +7,7 @@ import { ProgressV3 } from './components/progress-v3';
 import type { CheckIn } from './data/checkins';
 import { LineChart } from './components/line-chart';
 import { createT } from '@/core/i18n/messages';
+import { messages as legacyMessages } from './messages';
 import { Button } from '@/ui/button';
 
 const state = vi.hoisted(() => ({ index: 0, values: [] as unknown[], setters: [] as ReturnType<typeof vi.fn>[] }));
@@ -35,7 +36,7 @@ it('shows the exact empty copy and a real history count without sample chart val
 it('opens the existing sheet and changes the pressed range control', () => {
   const tree = ProgressV3(props);
   const buttons = [...find(tree, 'button'), ...find(tree, Button)];
-  const log = buttons.find(button => button.props['aria-label'] === 'سجّل وزن النهارده');
+  const log = buttons.find(button => button.props['aria-label'] === createT(legacyMessages, 'ar')('sendWeeklyCheckin'));
   if (typeof log?.props.onClick !== 'function') throw new Error('Missing log control');
   log.props.onClick();
   expect(props.onLog).toHaveBeenCalledOnce();

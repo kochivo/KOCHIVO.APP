@@ -121,10 +121,12 @@ describe('local draft restoration', () => {
       sessionStorage: { getItem: () => JSON.stringify({ injuries: ['knee'] }) } });
     expect(readIntakeDraft(now).injuries).toEqual(['knee']);
   });
-  it('uses sane defaults when storage is corrupt, denied, or missing on the server', () => {
+  it('keeps measurements unconfirmed when storage is corrupt, denied, or missing on the server', () => {
     for (const raw of ['{', 'null', '[]', '{"sex":"invalid"}']) {
       vi.stubGlobal('window', { sessionStorage: { getItem: () => raw } });
-      expect(readIntakeDraft(now)).toMatchObject({ birth_year: 1998, height_cm: 170, weight_kg: 75 });
+      expect(readIntakeDraft(now)).not.toHaveProperty('birth_year');
+      expect(readIntakeDraft(now)).not.toHaveProperty('height_cm');
+      expect(readIntakeDraft(now)).not.toHaveProperty('weight_kg');
     }
     vi.stubGlobal('window', { get sessionStorage() { throw new Error('denied'); } });
     expect(readIntakeDraft(now).target_weight_kg).toBeNull();

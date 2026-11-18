@@ -1,4 +1,6 @@
 export const arStd = {
+  voiceOnlyReady: "التسجيل جاهز للإرسال وحده",
+  sendVoiceOnly: "أرسل التسجيل فقط",
   'suggest.meal': 'وجبتي القادمة', accountChatTitle: 'مساعد Kochivo', home: 'الرئيسية',
   confirmLabel: 'تأكيد الطلب', confirmAction: 'نفّذ', confirmCancel: 'إلغاء', confirmCancelled: 'تم الإلغاء.',
   confirmExpired: 'انتهت صلاحية هذا الطلب. أرسله مجدداً.', 'context.player': 'صفحة اللاعب', 'context.program': 'صفحة البرنامج',

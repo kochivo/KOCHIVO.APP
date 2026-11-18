@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import Image from 'next/image';
 import type { ReactNode } from 'react';
 import { MessageCircle } from 'lucide-react';
@@ -90,7 +91,11 @@ export function CaptainProfileCard({ variant = 'legacy', children }: { variant?:
   const contact = url ? <a href={url} target="_blank" rel="noopener noreferrer" aria-label={page ? p('whatsapp') : t('messageYourCoachOnWhatsApp')}
     className={buttonClass({ variant: (page) ? 'secondary' : 'primary', block: false, className: page ? "flex min-h-12 items-center justify-center gap-inline px-page-x text-row font-bold" : "flex min-h-14 items-center justify-center gap-inline px-page-x font-extrabold" })}>
     {page ? <KoCaptainChat aria-hidden className="size-[18px]" /> : <MessageCircle aria-hidden className="size-5" />}{page ? p('whatsapp') : t('messageYourCoachOnWhatsApp')}
-  </a> : <Button disabled variant={page ? 'secondary' : 'primary'} className="min-h-12 w-full">{t('yourCoachHasnTAddedA')}</Button>;
+  </a> : workspace ? <div className="space-y-stack">
+    <p className="text-sm text-muted">{t('yourCoachHasnTAddedA')}</p>
+    {data.captainId && <Link href={`/${locale}/player/captain`}
+      className={buttonClass({ variant: 'secondary', block: true })}>{t('inAppConversation')}</Link>}
+  </div> : <Button disabled variant={page ? 'secondary' : 'primary'} className="min-h-12 w-full">{t('yourCoachHasnTAddedA')}</Button>;
   if (!page) return <GlassCard className="space-y-card-gap p-section">{identity}{chip}{dates}{contact}</GlassCard>;
   if (workspace) return <>
     <section className="glass space-y-stack rounded-card p-card">{identity}</section>

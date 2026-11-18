@@ -75,22 +75,25 @@ export function MealCard({ meal, log, today, planTitle, primary = false }: { mea
       })}
     </ul>
     <p className="text-start text-xs text-muted"><bdi>{t('macroSummary', { protein: formatNumber(macros.protein, locale), carbs: formatNumber(macros.carbs, locale), fat: formatNumber(macros.fat, locale) })}</bdi></p>
-    <Button size="lg" className="w-full" variant={v6 ? 'secondary' : !meal.items.length ? 'secondary' : eaten ? 'ghost' : 'primary'} aria-pressed={eaten}
+    {!v6 && <Button size="lg" className="w-full" variant={v6 ? 'secondary' : !meal.items.length ? 'secondary' : eaten ? 'ghost' : 'primary'} aria-pressed={eaten}
       disabled={busy || !meal.items.length} onClick={() => void save(!eaten, swaps, Date.now())}>
       {eaten && <Check aria-hidden="true" className="size-5" />}{t('mealEaten')}
-    </Button>
-    {error && <p role="alert" className="text-sm text-danger">{t('saveFailedTryAgain')}</p>}
+    </Button>}
+    {!v6 && error && <p role="alert" className="text-sm text-danger">{t('saveFailedTryAgain')}</p>}
   </GlassCard>;
   if (!v6) return details;
   const name = starterText(meal.name, locale, planTitle);
+  const featuredAction = primary && !eaten;
   return <article className={`glass rounded-card px-card py-stack ${primary && !eaten ? 'border-lime/30' : ''}`}>
     <div className="flex items-center gap-stack">
-      {eaten ? <span role="img" aria-label={v6t('eaten')} className="grid size-12 shrink-0 place-items-center">
-        <span className="grid size-8 place-items-center rounded-control bg-lime text-on-lime"><Check aria-hidden className="size-4" strokeWidth={3} /></span>
-      </span> : <button type="button" disabled={busy || !meal.items.length} aria-label={v6t('eatMeal', { meal: name })}
-        onClick={() => void save(true, swaps, Date.now())}
-        className="press grid size-12 shrink-0 place-items-center rounded-control disabled:opacity-50"><span aria-hidden className="size-8 rounded-control border border-line" /></button>}
-      <button type="button" aria-label={v6t('details')} aria-expanded={open} onClick={() => setOpen(value => !value)}
+      {featuredAction ? <span aria-hidden className="grid size-12 shrink-0 place-items-center"><span className="size-8 rounded-control border border-line" /></span> :
+        <button type="button" disabled={busy || (!eaten && !meal.items.length)} aria-pressed={eaten} aria-label={v6t('eatMeal', { meal: name })}
+          onClick={() => void save(!eaten, swaps, Date.now())}
+          className="press grid size-12 shrink-0 place-items-center rounded-control disabled:opacity-50">
+          {eaten ? <span aria-hidden className="grid size-8 place-items-center rounded-control bg-lime text-on-lime"><Check className="size-4" strokeWidth={3} /></span>
+            : <span aria-hidden className="size-8 rounded-control border border-line" />}
+        </button>}
+      <button type="button" aria-label={`${name} · ${v6t('details')}`} aria-expanded={open} onClick={() => setOpen(value => !value)}
         className="press flex min-h-12 min-w-0 flex-1 flex-col justify-center rounded-control font-sans text-start">
         <span className="text-md font-bold">{name}</span>
         {meal.time_of_day && <time className="text-xs text-muted" dateTime={meal.time_of_day}><bdi>{meal.time_of_day.slice(0, 5)}</bdi></time>}
@@ -102,7 +105,7 @@ export function MealCard({ meal, log, today, planTitle, primary = false }: { mea
           return `${chosen.name} ${formatPortion(chosen, locale, t('g'))}`;
     }).join(' · ') : t('thisMealIsBeingPrepared')}</p>
     {!open && <MealBudget meal={meal} swaps={swaps} />}
-    {primary && !eaten && <div className="mt-stack flex flex-wrap gap-inline">
+    {featuredAction && <div className="mt-stack flex flex-wrap gap-inline">
       {meal.items.some(item => item.alternatives.length > 0) && <Button type="button" aria-expanded={open} variant="secondary" onClick={() => setOpen(value => !value)}>{v4t('swap')}</Button>}
       <Button type="button" block={false} className="min-w-0 flex-1" disabled={busy || !meal.items.length} onClick={() => void save(true, swaps, Date.now())}><Check aria-hidden className="size-5" />{t('mealEaten')}</Button>
     </div>}

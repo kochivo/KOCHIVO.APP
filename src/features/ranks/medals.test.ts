@@ -9,7 +9,10 @@ it('tracks all four sets, including independent consecutive crowns', () => {
   ]);
   expect(medals.earnedCount({ workouts: 250, full_weeks: 52, prs: 100, crowns: 12, crown_streak: 3 })).toBe(20);
 });
-it.each([[1,24,'lessWeek',0], [24,24,'oneWeek',1], [25,24,'oneWeek',1], [46,24,'weeks',2], [100,24,'months',1], [100,0,'months',1]] as const)(
+it.each([undefined, 0])('omits an estimate at a weekly pace of %s', weekly => {
+  expect(estimate.timeEstimate(100, weekly)).toBeNull();
+});
+it.each([[1,24,'lessWeek',0], [24,24,'oneWeek',1], [25,24,'oneWeek',1], [46,24,'weeks',2], [100,24,'months',1]] as const)(
   'rounds a %i point estimate at %i points per week', (needed, weekly, key, n) => {
     expect(estimate.timeEstimate(needed,weekly)).toEqual({ key,n });
   });

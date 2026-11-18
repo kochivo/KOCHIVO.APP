@@ -5,7 +5,8 @@ import { messages } from '../messages';
 import { formatNumber } from '@/lib/format';
 import { localDate } from '@/lib/dates';
 
-import { Chip, Stepper, TextField } from '@/ui';
+import { Button, Chip, Stepper, TextField } from '@/ui';
+import { sampleMeasurements } from '../wizard';
 import type { StepProps } from '../wizard';
 import { MetricSlider } from './metric-slider';
 
@@ -17,9 +18,9 @@ export function StepBasics({ draft, update, errors, touch }: StepProps) {
   const year = Number(localDate(new Date(), timezone).slice(0, 4));
   return (
     <div className="space-y-card-gap">
-      <TextField label={t('yourName')} autoComplete="name" maxLength={80} value={draft.full_name ?? ''}
+      <TextField data-intake-field="full_name" label={t('yourName')} autoComplete="name" maxLength={80} value={draft.full_name ?? ''}
         onChange={(event) => update({ full_name: event.target.value })} onBlur={() => touch('full_name')} error={errors.full_name} />
-      <fieldset className="space-y-inline" onBlur={() => touch('sex')}>
+      <fieldset data-intake-field="sex" className="space-y-inline" onBlur={() => touch('sex')}>
         <legend className="mb-inline text-sm text-muted">{t('sex')}</legend>
         <div className="flex gap-inline">
           {([{ key: 'male', label: t('male') }, { key: 'female', label: t('female') }] as const).map(({ key, label }) => (
@@ -29,22 +30,32 @@ export function StepBasics({ draft, update, errors, touch }: StepProps) {
         </div>
         {errors.sex && <p role="alert" className="text-sm text-danger">{errors.sex}</p>}
       </fieldset>
-      <div className="space-y-inline" onBlur={() => touch('birth_year')}>
-        <Stepper format={(value) => formatNumber(value, locale)} label={t('age')} value={year - (draft.birth_year ?? year - 25)}
+      <div data-intake-field="birth_year" className="space-y-inline" onBlur={() => touch('birth_year')}>
+        <Stepper format={(value) => formatNumber(value, locale)} label={t('age')} value={year - (draft.birth_year ?? sampleMeasurements.birth_year)}
           step={1} min={10} max={year - 1930} onChange={(age) => update({ birth_year: year - age })} />
+        {draft.birth_year === undefined && <Button type="button" variant="secondary" onClick={event => {
+          event.currentTarget.parentElement?.querySelector('input')?.focus();
+          update({ birth_year: sampleMeasurements.birth_year });
+        }}>{t('confirmMeasurement')}</Button>}
         {errors.birth_year && <p role="alert" className="text-sm text-danger">{errors.birth_year}</p>}
       </div>
       {([
-        { field: 'height_cm', label: t('heightCm'), value: 170 },
-        { field: 'weight_kg', label: t('currentWeightKg'), value: 75 },
+        { field: 'height_cm', label: t('heightCm'), value: sampleMeasurements.height_cm },
+        { field: 'weight_kg', label: t('currentWeightKg'), value: sampleMeasurements.weight_kg },
       ] as const).map(({ field, label, value }) => (
-        <MetricSlider key={field} field={field} label={label} value={draft[field] ?? value}
-          onChange={next => update({ [field]: next })} onBlur={() => touch(field)} error={errors[field]} />
+        <div key={field} data-intake-field={field} className="space-y-inline">
+          <MetricSlider field={field} label={label} value={draft[field] ?? value}
+            onChange={next => update({ [field]: next })} onBlur={() => touch(field)} error={errors[field]} />
+          {draft[field] === undefined && <Button type="button" variant="secondary" onClick={event => {
+            event.currentTarget.parentElement?.querySelector('input')?.focus();
+            update({ [field]: value });
+          }}>{t('confirmMeasurement')}</Button>}
+        </div>
       ))}
-      <fieldset className="space-y-stack" onBlur={() => touch('target_weight_kg')}>
+      <fieldset data-intake-field="target_weight_kg" className="space-y-stack" onBlur={() => touch('target_weight_kg')}>
         <legend className="mb-inline text-sm text-muted">{t('targetWeightOptional')}</legend>
         <Chip pressed={draft.target_weight_kg == null} onClick={() => update({ target_weight_kg: null })}>{t('notSet')}</Chip>
-        <MetricSlider field="target_weight_kg" label={t('targetWeightKg')} value={draft.target_weight_kg ?? draft.weight_kg ?? 75}
+        <MetricSlider field="target_weight_kg" label={t('targetWeightKg')} value={draft.target_weight_kg ?? draft.weight_kg ?? sampleMeasurements.weight_kg}
           onChange={next => update({ target_weight_kg: next })} onBlur={() => touch('target_weight_kg')} error={errors.target_weight_kg} />
       </fieldset>
     </div>

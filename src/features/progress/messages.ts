@@ -5,6 +5,7 @@ export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
+    partialStrength: "جزء من سجل القوة ما اتحمّلش. اللي متاح ظاهر هنا.",
     workoutHistory: 'سجل تماريني',
     bodyFatOptional: "نسبة الدهون (اختياري)",
     bodyFat: "نسبة الدهون",
@@ -96,6 +97,7 @@ export const messages = defineMessages({
     frontPhoto: "صورة {value0} من قدام",
   },
   en: {
+    partialStrength: "Some strength history couldn’t load. Available data is shown here.",
     workoutHistory: 'My workout history',
     bodyFatOptional: "Body fat % (optional)",
     bodyFat: "Body fat",

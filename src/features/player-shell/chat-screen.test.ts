@@ -4,6 +4,7 @@ import { beforeEach, expect, it, vi } from 'vitest';
 import { LocaleProvider } from '@/core/i18n/client';
 import { CaptainHeading } from './components/captain-heading';
 import { CaptainPendingAssessment } from './components/captain-pending-assessment';
+import { PlayerAssessmentsWorkspace } from './components/player-assessments-workspace';
 import { CaptainScreen } from './components/captain-screen';
 
 const state = vi.hoisted(() => ({ v6: true, due: true }));
@@ -40,4 +41,13 @@ it('renders chat instead of profile details, assessment details and WhatsApp in 
   state.v6 = false;
   expect(screen()).toContain('profile-content');
   expect(screen()).toContain('legacy-voice');
+});
+
+it('gives the featured due assessment one destination and a section heading', () => {
+  const html = render(createElement(PlayerAssessmentsWorkspace, {
+    due: [{ id: 'a', due_at: null, forms: { title: 'Assessment' } }], past: [], actionable: true,
+  }));
+  expect(html.match(/href="\/ar\/player\/forms\/a"/g)).toHaveLength(1);
+  expect(html).toContain('<h2 id="workspace-assessment-due"');
+  expect(html).toContain('aria-labelledby="assessment-record-a assessment-title-a"');
 });

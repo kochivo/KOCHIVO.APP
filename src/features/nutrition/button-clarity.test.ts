@@ -30,14 +30,17 @@ it('preserves the legacy completion controls when the workspace flag is off', ()
 
 it.each([{ completed: [], next: 0 }, { completed: ['first'], next: 1 }, { completed: ['first', 'second'], next: 2 },
   { completed: ['first', 'second', 'third'], next: null }])(
-  'marks the next meal and shows logged checks as status with $completed eaten', ({ completed, next }) => {
+  'marks the next meal and keeps logged checks reversible with $completed eaten', ({ completed, next }) => {
     vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
     data.completed = completed;
     const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' }, createElement(NutritionScreen)));
     const lime = html.match(/<button[^>]*control-primary /g) ?? [];
     expect(lime).toHaveLength(next === null ? 0 : 1);
-    expect(html.match(/role="img" aria-label="Eaten"/g) ?? []).toHaveLength(completed.length);
-    expect(html.match(/aria-label="Ate /g) ?? []).toHaveLength(3 - completed.length);
-    if (next !== null) expect(html).toContain(`aria-label="Ate ${['first', 'second', 'third'][next]}"`);
+    expect(html.match(/aria-pressed="true" aria-label="Ate /g) ?? []).toHaveLength(completed.length);
+    expect(html.match(/aria-label="Ate /g) ?? []).toHaveLength(next === null ? 3 : 2);
+    for (const name of ['first', 'second', 'third']) {
+      expect(html).toContain(`aria-label="${name} · Meal details and swaps"`);
+    }
+    if (next !== null) expect(html).not.toContain(`aria-label="Ate ${['first', 'second', 'third'][next]}"`);
   },
 );

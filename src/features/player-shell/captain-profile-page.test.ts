@@ -62,3 +62,12 @@ it('reuses loading, error and no-captain states', () => {
   expect(render(true)).toContain('إنت مش متابع مع كابتن دلوقتي');
   expect(render(true)).not.toContain('Renewal flow');
 });
+
+it('uses the in-app conversation when Workspace has no WhatsApp number', () => {
+  state.data = { ...captain, captainId: 'captain', phone: null };
+  const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' },
+    createElement(CaptainProfileCard, { variant: 'workspace' })));
+  expect(html).toContain('href="/en/player/captain"');
+  expect(html).toContain('Message your coach here');
+  expect(html).not.toContain('<button disabled');
+});
