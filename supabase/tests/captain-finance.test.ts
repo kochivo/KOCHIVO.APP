@@ -34,7 +34,9 @@ describe('captain packages', () => {
     expect((await as(other, `update public.captain_packages set price_egp = 1 where id = $1 returning id`, [pkg])).rows).toEqual([]);
   });
   it('archives instead of deleting', async () => {
-    await expect(as(captain, 'delete from public.captain_packages where id = $1', [pkg])).rejects.toThrow();
+    // Since 0153 only durations of an unused archived tier can be deleted; an active package is left untouched.
+    expect((await as(captain, 'delete from public.captain_packages where id = $1 returning id', [pkg])).rows).toEqual([]);
+    expect((await db.query('select id from public.captain_packages where id = $1', [pkg])).rows).toEqual([{ id: pkg }]);
   });
 });
 
