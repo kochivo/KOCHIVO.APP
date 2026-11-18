@@ -120,6 +120,7 @@ it('adds phone exercise rows while keeping the desktop grid and disabling the re
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
   const html = renderToStaticMarkup(createElement(ExerciseLibrary));
   expect(html).toContain('max-md:flex-row');
+  expect(html).toMatch(/<header data-captain-phone-heading="true"[^>]*max-md:flex-nowrap/);
   expect(html).toContain('min-[760px]:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5');
   expect(html).toContain('سكوات');
   expect(html).toContain('رجل');

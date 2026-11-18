@@ -10,6 +10,7 @@ import { ErrorState } from '@/ui/error-state';
 import { LoadingState } from '@/ui/loading-state';
 import { PageBarTitle } from '@/ui/page-bar-title';
 import { PageBarActions } from '@/ui/page-bar-actions';
+import { PageBarMenu } from '@/ui/page-bar-menu';
 import { workspaceMessages } from '../messages';
 import { messages as financeMessages } from '../workspace/messages';
 import { messages } from '../tiers/messages';
@@ -63,8 +64,11 @@ export function WorkspaceCatalog() {
   return <section id="catalog-heading" tabIndex={-1} className="space-y-card-gap" aria-busy={catalog.busy}>
     <PageBarTitle title={finance('catalogTitle')} subtitle={finance('catalogIntro')} />
     <PageBarActions>
-      <Link href="/captain/billing" aria-label={t('back')} className="press grid min-h-12 min-w-12 cursor-pointer place-items-center rounded-full border border-line bg-surface focus-visible:ring-2 focus-visible:ring-lime"><KoSend aria-hidden className="size-4 rotate-45 ltr:rotate-225" /></Link>
-      <Button disabled={catalog.busy} onClick={() => setPanel({ kind: 'tier' })} block={false} className="ms-auto"><KoPlus aria-hidden className="size-4" />{t('newPackage')}</Button>
+      <Link href="/captain/billing" aria-label={t('back')} className="press grid min-h-12 min-w-12 cursor-pointer place-items-center rounded-full border border-line bg-surface focus-visible:ring-2 focus-visible:ring-lime max-md:hidden"><KoSend aria-hidden className="size-4 rotate-45 ltr:rotate-225" /></Link>
+      <Button disabled={catalog.busy} aria-label={t('newPackage')} onClick={() => setPanel({ kind: 'tier' })} block={false} className="ms-auto max-md:min-w-12 max-md:px-inline!">
+        <KoPlus aria-hidden className="size-4 max-md:text-on-lime!" /><span className="max-md:sr-only">{t('newPackage')}</span>
+      </Button>
+      <PageBarMenu><Link href="/captain/billing" className="press flex min-h-12 items-center rounded-control px-stack text-sm focus-visible:ring-2 focus-visible:ring-lime">{t('back')}</Link></PageBarMenu>
     </PageBarActions>
     {(catalog.error || catalog.status === 'error') && <ErrorState message={catalog.error || legacy('loadFailed')} retryLabel={legacy('retry')} onRetry={() => void catalog.retry()} />}
     {tiers.length ? <div className="grid items-stretch gap-card-gap min-[760px]:grid-cols-2 min-[1100px]:grid-cols-6">{tiers.map((tier, index) => <div key={tier.id}

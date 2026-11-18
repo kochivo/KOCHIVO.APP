@@ -16,7 +16,7 @@ const exceptions: Record<string, number> = {
   // T-383..T-388 captain phone shell and player-file header (2026-11-18): +1..3 KiB on these routes.
   '/captain/players/[playerId]/programs': 327, // measured 326.01
   '/captain/players/[playerId]/nutrition': 313, // measured 312.02
-  '/captain/players/[playerId]/preview': 313, // measured 312.86
+  '/captain/players/[playerId]/preview': 314, // measured 313.11 after T-389 phone header menu
   '/demo': 282, // measured 281.58
 };
 

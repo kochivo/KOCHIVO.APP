@@ -61,7 +61,7 @@ export function WorkspaceBilling({ data, today, moneyOwed }: { data: Promise<Bil
     finally { setBusy(false); lock.current = false; }
   }
   return <section id="billing-heading" tabIndex={-1} className="flex min-w-0 flex-col gap-card-gap" aria-busy={busy || refreshing}>
-    <PageBarTitle title={t('title')} subtitle={t('intro')} />
+    <PageBarTitle title={t('title')} subtitle={t('intro')} phoneSubtitle={formatDateAr(today, { month: 'long' }, locale)} />
     <PageBarActions>
       <Link href="/captain/billing/packages" aria-label={t('catalog')}
         className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 min-w-12 items-center px-page-x text-row max-md:px-inline!" })}>

@@ -5,6 +5,8 @@ import { createT } from '@/core/i18n/messages';
 import { HomeHeroView } from './home-hero-view';
 import { HomeTilesView } from './home-tiles-view';
 import { PhoneHomeNeeds } from './phone-home-needs';
+import { PhoneHomeStats } from './phone-home-stats';
+import { SmartAlerts } from '../components/smart-alerts';
 import { homeMessages } from './messages';
 import { homeV11Messages } from './messages';
 
@@ -34,6 +36,18 @@ it('renders three phone stats from real totals and keeps the four-cell desktop s
   expect(html).toContain('max-sm:grid-cols-3!');
 });
 
+it('renders an adherence change only when a prior reading exists', () => {
+  const props = { locale: 'en' as const, adherence: 19, previous: 0, trained: 1, active: 3, paid: 0 };
+  expect(renderToStaticMarkup(createElement(PhoneHomeStats, props))).not.toContain('+19%');
+  expect(renderToStaticMarkup(createElement(PhoneHomeStats, { ...props, hasPrevious: true }))).toContain('+19%');
+});
+
+it('keeps one visible phone empty state when tasks and alerts are both empty', () => {
+  const tasks = renderToStaticMarkup(createElement(PhoneHomeNeeds, { locale: 'en', contacts: new Map(), tasks: [] }));
+  const alerts = renderToStaticMarkup(createElement(SmartAlerts, { alerts: [], hideEmptyOnPhone: true }));
+  expect(tasks).toMatch(/^<section class="[^"]*md:hidden/);
+  expect(alerts).toMatch(/^<div[^>]*class="[^"]*max-md:hidden/);
+});
 it('opens the selected review, an absent player’s chat and the payment workflow', () => {
   const html = renderToStaticMarkup(createElement(PhoneHomeNeeds, { locale: 'en', contacts: new Map(),
     tasks: [

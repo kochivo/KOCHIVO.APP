@@ -20,7 +20,9 @@ export function KoWidget({ role, interactive = false, account = false, panelMess
   panelMessages?: { loading: string; error: string; retry: string; fallback: string };
 }) {
   const t = useT(messages);
+  const captainPhone = role === 'captain' && captainWorkspaceEnabled();
   const position = role === 'captain' ? 'min-[760px]:start-auto min-[760px]:end-20' : '';
+  const phonePosition = captainPhone ? 'max-md:start-auto! max-md:end-[max(var(--spacing-page-x),var(--safe-end))]! max-md:bottom-[var(--nav-clearance)]! max-md:size-12' : '';
   const motionRef = useInView<HTMLSpanElement>();
   interactive = account || interactive;
   const feedT = useT(koFeedMessages);
@@ -61,12 +63,12 @@ export function KoWidget({ role, interactive = false, account = false, panelMess
     <button id={openerId} type="button" data-ko-launcher data-floating-fab aria-label={urgent ? feedT('badge', { count: urgent }) : t(account ? 'accountChatTitle' : 'open')} aria-haspopup="dialog" aria-expanded={open}
       onClick={() => { if (open) close(); else { setClosing(false); setOpen(true); if (!panel.Component) void loadPanel(); } setExpression('welcome'); }}
       onMouseEnter={() => { if (!open) setExpression('cheer'); }} onMouseLeave={() => { if (!open) setExpression('welcome'); }}
-      className={`group fixed start-[max(1rem,var(--safe-start))] bottom-[calc(var(--nav-clearance)+0.5rem)] z-30 grid size-13 min-h-12 min-w-12 place-items-center rounded-card border border-lime/30 bg-bg shadow-xl transition-transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:translate-y-0 lg:bottom-6 ${position}`}>
+      className={`group fixed start-[max(1rem,var(--safe-start))] bottom-[calc(var(--nav-clearance)+0.5rem)] z-30 grid size-13 min-h-12 min-w-12 place-items-center rounded-card border border-lime/30 bg-bg shadow-xl transition-transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:translate-y-0 lg:bottom-6 ${position}${phonePosition ? ` ${phonePosition}` : ''}`}>
       {!open && <span ref={motionRef} aria-hidden className="pointer-events-none absolute inset-0 rounded-card bg-lime/10 shadow-lime-glow animate-[ko-breathe_3.5s_ease-in-out_infinite] motion-reduce:animate-none" />}
-      <KoAvatar expression={urgent > 0 ? 'thinking' : expression} motion={open ? 'none' : 'idle'} className="size-13" />
+      <KoAvatar expression={urgent > 0 ? 'thinking' : expression} motion={open ? 'none' : 'idle'} className={captainPhone ? 'size-13 max-md:size-12' : 'size-13'} />
       {urgent > 0 ? <span key={urgent} aria-hidden className="absolute -top-1 -end-1 grid size-6 place-items-center rounded-full bg-danger-soft text-xs font-bold text-danger animate-[ko-pop-in_200ms_ease-out_both] motion-reduce:animate-none">{urgent}</span>
         : !interactive && <span aria-hidden className="absolute -top-1 -end-1 grid size-5 place-items-center rounded-full border border-line bg-surface-raised text-muted"><Hammer className="size-3" /></span>}
-      <span className="pointer-events-none absolute bottom-full start-0 mb-inline whitespace-nowrap rounded-control border border-line bg-surface px-stack py-inline text-xs text-ink opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 motion-reduce:transition-none">{t(account ? 'accountChatTitle' : interactive ? 'chatTitle' : 'soon')}</span>
+      <span className={`pointer-events-none absolute bottom-full start-0 mb-inline whitespace-nowrap rounded-control border border-line bg-surface px-stack py-inline text-xs text-ink opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 motion-reduce:transition-none${captainPhone ? ' max-md:start-auto max-md:end-0' : ''}`}>{t(account ? 'accountChatTitle' : interactive ? 'chatTitle' : 'soon')}</span>
     </button>
     {open && (panel.Component ? <panel.Component role={role} expression={expression} closing={closing}
       onClosed={() => { setOpen(false); setClosing(false); }} onExpression={setExpression} onClose={close}

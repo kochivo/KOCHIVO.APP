@@ -6,9 +6,9 @@ import { StatStrip } from '@/ui/stat-strip';
 import type { homeMessages, homeV11Messages } from './messages';
 import { PhoneHomeStats } from './phone-home-stats';
 
-export function HomeTilesView({ t, locale, onSelect, old, adherence, previous, trained, active, pending, paid, progress, incomeGoal, phone, style }: {
+export function HomeTilesView({ t, locale, onSelect, old, adherence, previous, hasPrevious, trained, active, pending, paid, progress, incomeGoal, phone, style }: {
   t: Translator<typeof homeV11Messages>; locale: Locale; onSelect?: (href: string) => void; old: Translator<typeof homeMessages>;
-  adherence: number; previous: number; trained: number; active: number; pending: number; paid: number; progress: number;
+  adherence: number; previous: number; hasPrevious?: boolean; trained: number; active: number; pending: number; paid: number; progress: number;
   incomeGoal?: number | null; responsiveTo?: 'viewport' | 'container'; phone?: boolean; style?: ArabicStyle;
 }) {
   const number = (value: number) => formatNumber(value, locale);
@@ -26,6 +26,6 @@ export function HomeTilesView({ t, locale, onSelect, old, adherence, previous, t
       percent: active ? trained / active * 100 : 0 },
   ]} /></div>;
   return phone ? <div><div className="hidden md:block">{desktop}</div>
-    <PhoneHomeStats {...{ locale, style, adherence, previous, trained, active, paid }} /></div> : desktop;
+    <PhoneHomeStats {...{ locale, style, adherence, previous, hasPrevious, trained, active, paid }} /></div> : desktop;
 }
 

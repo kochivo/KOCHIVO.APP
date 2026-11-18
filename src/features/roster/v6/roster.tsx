@@ -42,12 +42,12 @@ export function WorkspaceRoster({ data, today, extras, details }: WorkspaceRoste
   }).length;
   const failed = Boolean(result.error || extras.error || (details && 'error' in details));
   return <section className="space-y-card-gap">
-    <PageBarTitle title={failed ? t('players') : t('playersCount', { count: formatNumber(players.length, locale) })} />
+    <PageBarTitle title={failed ? t('players') : t('playersCount', { count: formatNumber(players.length, locale) })}
+      phoneTitle={t('players')} phoneSubtitle={!failed && details ? phone('summary', { total: formatNumber(players.length, locale), trained: formatNumber(trained, locale) }) : undefined} />
     <PageBarActions>
-      <Link href="/captain/players/new" className={buttonClass({ variant: 'primary', block: false, className: "press inline-flex min-h-12 shrink-0 cursor-pointer items-center gap-inline px-page-x text-xs font-semibold focus-visible:ring-2 focus-visible:ring-lime" })}><KoInvite aria-hidden className="size-4" />{t('add')}</Link>
+      <Link href="/captain/players/new" aria-label={t('add')} className={buttonClass({ variant: 'primary', block: false, className: "press inline-flex min-h-12 shrink-0 cursor-pointer items-center gap-inline px-page-x text-xs font-semibold focus-visible:ring-2 focus-visible:ring-lime max-md:min-w-12 max-md:px-inline!" })}><KoInvite aria-hidden className="size-4" /><span className="max-md:sr-only">{t('add')}</span></Link>
     </PageBarActions>
     {!failed && <div className="space-y-stack md:hidden">
-      {details && <p className="text-xs text-muted">{phone('summary', { total: formatNumber(players.length, locale), trained: formatNumber(trained, locale) })}</p>}
       <label className="recessed flex min-h-12 items-center gap-inline rounded-control border border-line px-card">
         <Search aria-hidden className="size-4 shrink-0 text-muted" />
         <input type="search" value={search} onChange={event => setSearch(event.target.value)} aria-label={phone('search')}

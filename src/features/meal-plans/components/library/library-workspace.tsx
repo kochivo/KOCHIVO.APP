@@ -11,6 +11,7 @@ import { Segmented } from '@/ui/segmented';
 import { Box, FileText, ListFilter, Search } from 'lucide-react';
 import { PageBarTitle } from '@/ui/page-bar-title';
 import { PageBarActions } from '@/ui/page-bar-actions';
+import { PageBarMenu } from '@/ui/page-bar-menu';
 import { KoPlus } from '@/ui/icons/ko-plus';
 import { useToast } from '@/ui/toast';
 import { foodResourceKey } from '../../data/food-resource-version';
@@ -70,7 +71,14 @@ export function LibraryWorkspace() {
     finally { pending.current.delete(id); }
   }
   return <section className="grid min-w-0 gap-card-gap">
-    <PageBarTitle title={t('title')} subtitle={loading ? t('loading') : resource.data ? t('count', { count: foods.length }) : t('subtitle')} /><PageBarActions><Button variant="secondary" onClick={() => setRecipe(true)}>{t('recipeNew')}</Button><Button id="new-library-food" onClick={() => setSelected(null)}><KoPlus aria-hidden className="size-5" />{bt('new')}</Button></PageBarActions>
+    <PageBarTitle title={t('title')} subtitle={loading ? t('loading') : resource.data ? t('count', { count: foods.length }) : t('subtitle')} />
+    <PageBarActions>
+      <Button variant="secondary" className="max-md:hidden!" onClick={() => setRecipe(true)}>{t('recipeNew')}</Button>
+      <Button id="new-library-food" aria-label={bt('new')} className="max-md:min-w-12 max-md:px-inline!" onClick={() => setSelected(null)}>
+        <KoPlus aria-hidden className="size-5 max-md:text-on-lime!" /><span className="max-md:sr-only">{bt('new')}</span>
+      </Button>
+      <PageBarMenu><Button variant="ghost" onClick={() => setRecipe(true)}>{t('recipeNew')}</Button></PageBarMenu>
+    </PageBarActions>
     <div className="flex min-w-0 flex-wrap items-center gap-stack">
       <label className="flex min-h-12 w-full min-w-0 items-center gap-inline rounded-control border border-line-soft bg-bg-deep px-stack min-[760px]:w-1/3">
         <span className="sr-only">{bt('search')}</span><Search aria-hidden className="size-4 shrink-0 text-muted" />

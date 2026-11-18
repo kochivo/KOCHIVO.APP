@@ -1,10 +1,15 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { createElement } from 'react';
+import type { ReactNode } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { LocaleProvider } from '@/core/i18n/client';
 import { WorkspaceProgramCard } from './components/workspace-program-card';
 import { WorkspaceProgramsView } from './components/workspace-programs-view';
 import { filterPrograms, programWeek } from './components/workspace-program-model';
+
+vi.mock('@/ui/page-bar-actions', () => ({
+  PageBarActions: ({ children }: { children: ReactNode }) => createElement('header', { 'data-program-actions': true }, children),
+}));
 
 describe('workspace program tabs', () => {
   const rows = [
@@ -30,6 +35,11 @@ describe('workspace program tabs', () => {
     expect(html).toMatch(/My programs(?:<!-- -->)? 1/);
     expect(html).toMatch(/From KOCHIVO(?:<!-- -->)? 1/);
     expect(html).toMatch(/role="radiogroup" class="[^"]*max-md:hidden"/);
+    const actions = html.match(/<header data-program-actions="true">([\s\S]*?)<\/header>/)?.[1] ?? '';
+    expect(actions.match(/control-primary/g)).toHaveLength(1);
+    expect(actions.match(/data-page-bar-menu/g)).toHaveLength(1);
+    expect(actions).toMatch(/<details[^>]*>[^]*?<summary[^>]*aria-label="More actions"[^]*?Ask KO[^]*?<\/details>/);
+    expect(html.slice(html.indexOf('</header>'))).not.toContain('Ask KO');
   });
 });
 

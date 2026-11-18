@@ -13,12 +13,13 @@ const variants: Record<'active' | 'idle', string> = {
 export interface SegmentedProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange'> {
   options: Options;
   value: string;
+  phoneScroll?: boolean;
   onChange: (value: string) => void;
 }
 
-export function Segmented({ options, value, onChange, className, ...props }: SegmentedProps) {
+export function Segmented({ options, value, onChange, className, phoneScroll, ...props }: SegmentedProps) {
   return (
-    <div {...props} role="radiogroup" className={cn('glass flex gap-inline rounded-control p-inline', className)}>
+    <div {...props} role="radiogroup" className={cn('glass flex gap-inline rounded-control p-inline', phoneScroll && 'max-md:max-w-full max-md:overflow-x-auto', className)}>
       {options.map((option, index) => (
         <button
           key={option.value}
@@ -43,7 +44,7 @@ export function Segmented({ options, value, onChange, className, ...props }: Seg
             const target = event.currentTarget.parentElement?.children.item(next);
             if (target instanceof HTMLButtonElement) target.focus();
           }}
-          className={cn('press min-h-12 min-w-0 flex-1 rounded-control px-stack text-sm', variants[option.value === value ? 'active' : 'idle'])}
+          className={cn('press min-h-12 min-w-0 flex-1 rounded-control px-stack text-sm', phoneScroll && 'max-md:shrink-0 max-md:basis-auto max-md:whitespace-nowrap', variants[option.value === value ? 'active' : 'idle'])}
         >{option.label}</button>
       ))}
     </div>

@@ -20,13 +20,14 @@ const styles: Record<AlertKind, { icon: LucideIcon; tone: string }> = {
 };
 const VISIBLE = 5;
 
-export function SmartAlerts({ alerts }: { alerts: SmartAlert[] }) {
+export function SmartAlerts({ alerts, hideEmptyOnPhone }: { alerts: SmartAlert[]; hideEmptyOnPhone?: boolean }) {
   const t = useT(messages);
   const locale = useLocale();
   const [expanded, setExpanded] = useState(false);
   const shown = expanded ? alerts : alerts.slice(0, VISIBLE);
   return (
-    <GlassCard role="region" aria-labelledby="alerts-heading" className="min-w-0 space-y-card-gap p-card">
+    <GlassCard role="region" aria-labelledby="alerts-heading"
+      className={hideEmptyOnPhone && alerts.length === 0 ? 'min-w-0 space-y-card-gap p-card max-md:hidden' : 'min-w-0 space-y-card-gap p-card'}>
       <div>
         <h2 id="alerts-heading" className="text-xl font-bold">{t('smartAlerts')}</h2>
         <p className="text-sm text-muted">{t('alertsHint')}</p>

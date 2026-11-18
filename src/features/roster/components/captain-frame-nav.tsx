@@ -24,10 +24,10 @@ const CaptainQuickAddSheet = dynamic(() => import('./captain-quick-add-sheet').t
   loading: () => <LoadingState />,
 });
 
-export function CaptainFrameNav({ counts: initialCounts, captain, players, plan, tools }: {
+export function CaptainFrameNav({ counts: initialCounts, captain, players, plan, bell, tools }: {
   counts: FrameCounts; captain?: CaptainFrameData['captain'];
   players?: CaptainFrameData['players'];
-  plan?: { tier: string; used: number; limit: number } | null; tools?: ReactNode;
+  plan?: { tier: string; used: number; limit: number } | null; bell?: ReactNode; tools?: ReactNode;
 }) {
   const load = useCallback(() => loadCaptainFrameCounts(), []);
   const resource = useResource('captain:frame-counts', load, { pollMs: 30_000 });
@@ -81,7 +81,7 @@ export function CaptainFrameNav({ counts: initialCounts, captain, players, plan,
   return <CaptainFrameNavView active={active} counts={counts} open={open}
     onMore={() => { setAction(null); setSheet({ path, kind: 'more' }); }} onClose={close}
     adding={adding} onQuickAdd={() => { setAction(null); setSheet({ path, kind: 'quickAdd' }); }}
-    more={open ? <CaptainMoreSheet active={active} counts={counts} captain={captain} plan={plan} tools={tools} onClose={close} />
+    more={open ? <CaptainMoreSheet active={active} counts={counts} captain={captain} plan={plan} bell={bell} tools={tools} onClose={close} />
       : adding ? <CaptainQuickAddSheet players={players ?? null} onClose={close}
         onAction={target => setAction({ origin: path, target, expires: Date.now() + 8_000 })} /> : null} />;
 }

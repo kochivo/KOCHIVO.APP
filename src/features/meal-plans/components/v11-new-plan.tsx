@@ -12,6 +12,7 @@ import { KoPlus } from '@/ui/icons/ko-plus';
 import { usePageBarTarget } from '@/ui/page-bar-slot';
 import { RowChevron } from '@/ui/row-chevron';
 import { PageBarActions } from '@/ui/page-bar-actions';
+import { PageBarMenu } from '@/ui/page-bar-menu';
 import { Segmented } from '@/ui/segmented';
 import { messages } from './v11/messages';
 import { filterMealPlans } from './v11/meal-library-model';
@@ -39,7 +40,9 @@ export function V11NewPlan({ plans }: { plans?: MealLibraryPlan[] }) {
     if (index > 0) choices.unshift(...choices.splice(index, 1));
   }
   function openAssignment(planId?: string) {
-    setAssignment({ planId, opener: document.activeElement instanceof HTMLElement ? document.activeElement : null });
+    const active = document.activeElement;
+    const menuTrigger = active?.closest('[data-page-bar-menu]')?.querySelector('summary');
+    setAssignment({ planId, opener: menuTrigger ?? (active instanceof HTMLElement ? active : null) });
   }
   return <>
     {titleTarget && createPortal(<>
@@ -47,17 +50,18 @@ export function V11NewPlan({ plans }: { plans?: MealLibraryPlan[] }) {
       {plans && <p className="text-xs text-muted max-md:hidden">{t('librarySummary', { plans: plans.length, players: playerCount })}</p>}
       <div className="flex items-center gap-stack md:hidden">
         <Link href="/captain" aria-label={t('back')} className={buttonClass({ variant: 'secondary', block: false, className: 'min-w-12 shrink-0 px-stack' })}><RowChevron className="rotate-180" /></Link>
-        <div><h1 className="text-md font-bold">{t('plans')}</h1>
+        <div className="min-w-0"><h1 className="text-md font-bold">{t('plans')}</h1>
           {plans && <p className="text-xs text-muted">{t('phonePlanCount', { n: plans.length })}</p>}
         </div>
       </div>
     </>, titleTarget)}
     <PageBarActions>
-      <Button id="v11-assign" onClick={() => openAssignment()} variant="secondary" block={false}>
+      <Button id="v11-assign" onClick={() => openAssignment()} variant="secondary" block={false} className="max-md:hidden!">
         <Pencil aria-hidden className="size-4" />{t('writePlan')}
       </Button>
+      <PageBarMenu><Button variant="ghost" onClick={() => openAssignment()}>{t('writePlan')}</Button></PageBarMenu>
       <Button id="meal-library-create" aria-label={t('newPlan')} onClick={() => setCreating(true)} block={false} className="max-md:min-w-12 max-md:px-stack!">
-        <KoPlus aria-hidden className="size-5" /><span className="max-md:sr-only">{t('newPlan')}</span>
+        <KoPlus aria-hidden className="size-5 max-md:text-on-lime!" /><span className="max-md:sr-only">{t('newPlan')}</span>
       </Button>
     </PageBarActions>
     {plans && <>
@@ -67,7 +71,7 @@ export function V11NewPlan({ plans }: { plans?: MealLibraryPlan[] }) {
           <input type="search" value={search} onChange={event => setSearch(event.target.value)}
             aria-label={t('findPlan')} placeholder={t('findPlan')} className="min-h-12 min-w-0 flex-1 bg-transparent text-row outline-none placeholder:text-muted" />
         </label>
-        <Segmented aria-label={t('filterPlans')} value={filter} onChange={setFilter} className="max-w-full"
+        <Segmented phoneScroll aria-label={t('filterPlans')} value={filter} onChange={setFilter} className="max-w-full"
           options={[filterOption('all'), filterOption('assigned'), filterOption('unassigned')]} />
         <span className="ms-auto hidden text-xs text-muted xl:block">{t('recentlyEdited')}</span>
       </div>

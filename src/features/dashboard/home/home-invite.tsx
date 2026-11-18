@@ -1,21 +1,16 @@
 'use client';
-import { useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { buttonClass } from '@/ui/button';
 import { KoPlus } from '@/ui/icons/ko-plus';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
-
-const phone = '(width < 48rem)';
-function subscribe(onChange: () => void) {
-  if (!captainWorkspaceEnabled() || !window.matchMedia) return () => {};
-  const media = window.matchMedia(phone);
-  media.addEventListener('change', onChange);
-  return () => media.removeEventListener('change', onChange);
-}
+import { PageBarMenu } from '@/ui/page-bar-menu';
 
 export function HomeInvite({ label }: { name: string; label: string }) {
-  const isPhone = useSyncExternalStore(subscribe, () => captainWorkspaceEnabled() && Boolean(window.matchMedia?.(phone).matches), () => false);
-  return <Link href="/captain/players/new" data-tour="invite-player" className={buttonClass({ variant: isPhone ? 'secondary' : 'primary', block: false,
-    className: 'min-h-12 shrink-0 font-semibold!',
+  const workspace = captainWorkspaceEnabled();
+  const invite = <Link href="/captain/players/new" data-tour="invite-player" className={buttonClass({ variant: 'primary', block: false,
+    className: workspace ? 'min-h-12 shrink-0 font-semibold! max-md:hidden!' : 'min-h-12 shrink-0 font-semibold!',
   })}><KoPlus aria-hidden className="size-5" />{label}</Link>;
+  return workspace ? <>{invite}<PageBarMenu><Link href="/captain/players/new" className={buttonClass({ variant: 'ghost', block: false })}>
+    <KoPlus aria-hidden className="size-5" />{label}
+  </Link></PageBarMenu></> : invite;
 }

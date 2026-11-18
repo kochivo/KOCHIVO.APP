@@ -9,14 +9,20 @@ afterEach(() => { vi.unstubAllEnvs(); });
 const render = (role: 'captain' | 'player', locale: 'ar' | 'en' = 'ar') =>
   renderToStaticMarkup(createElement(LocaleProvider, { locale }, createElement(FeedbackButton, { role })));
 
-it('keeps the mobile target above navigation and the desktop target in normal flow', () => {
+it('hides the floating feedback target on workspace phones and preserves its desktop placement', () => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
   const html = render('captain');
   expect(html).toContain('bottom-[calc(var(--nav-clearance)+0.5rem)]');
   expect(html).toContain('lg:static');
+  expect(html).toContain('max-md:hidden!');
   expect(html).not.toContain('lg:bottom-6');
   expect(html).toContain('min-h-12');
   expect(html).toContain('aria-label="بلّغ عن مشكلة"');
+});
+it('renders an inline translated feedback action in More', () => {
+  const html = renderToStaticMarkup(createElement(FeedbackButton, { role: 'captain', placement: 'more' }));
+  expect(html).toContain('ابعت ملاحظة');
+  expect(html).not.toContain('data-floating-fab');
 });
 it('keeps the floating captain button when the workspace flag is off', () => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '');

@@ -2,7 +2,7 @@
 
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { IconButton } from '@/ui/icon-button';
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState, useSyncExternalStore } from 'react';
 import { usePathname } from 'next/navigation';
 import { X } from 'lucide-react';
 import { useT } from '@/core/i18n/client';
@@ -14,6 +14,15 @@ import { koEntryMessages as messages } from '@/features/ko-entry';
 import { Button } from '@/ui/button';
 import { dismissDesktopTeaser, useTeaserDesktop } from '../hooks/use-teaser-desktop';
 import { KoTeaserCorner } from './ko-teaser-corner';
+
+const desktopQuery = '(min-width: 48rem)';
+function subscribeViewport(notify: () => void) {
+  const media = window.matchMedia(desktopQuery);
+  media.addEventListener('change', notify);
+  return () => media.removeEventListener('change', notify);
+}
+const ignoreViewport = () => () => {};
+const serverViewport = () => false;
 
 function loadTeaserPanel() {
   return import('./ko-teaser-panel').then(
@@ -33,8 +42,12 @@ export function KoTeaser({ role, userId, joined: initialJoined, readFailed = fal
   const returnFocus = useRef(false);
   const [joined, setJoined] = useState(initialJoined);
   const position = role === 'captain' ? 'min-[760px]:start-auto min-[760px]:end-20' : '';
+  const captainPhone = role === 'captain' && captainWorkspaceEnabled();
+  const phonePosition = captainPhone ? 'max-md:start-auto! max-md:end-[max(var(--spacing-page-x),var(--safe-end))]! max-md:bottom-[var(--nav-clearance)]! max-md:size-12' : '';
   const [panel, setPanel] = useState<{ Component: typeof KoTeaserPanel | null; failed: boolean }>({ Component: null, failed: false });
-  const desktopStatus = useTeaserDesktop(role === 'captain' && captainWorkspaceEnabled(), userId);
+  const desktopViewport = useSyncExternalStore(captainPhone ? subscribeViewport : ignoreViewport,
+    () => captainPhone && window.matchMedia(desktopQuery).matches, serverViewport);
+  const desktopStatus = useTeaserDesktop(desktopViewport, userId);
   const desktop = desktopStatus !== 'phone';
   const open = desktop ? (desktopOpen ?? desktopStatus === 'desktop') : phoneOpen;
   const excluded = /^\/player\/(?:workout|onboarding)(?:\/|$)/.test(path) || path === '/player/captain';
@@ -77,9 +90,9 @@ export function KoTeaser({ role, userId, joined: initialJoined, readFailed = fal
       }}
       className={desktop
         ? 'fixed end-page-x bottom-page-y z-30 grid size-13 min-h-12 min-w-12 place-items-center rounded-card border border-lime/30 bg-bg shadow-xl'
-        : `fixed start-[max(1rem,var(--safe-start))] bottom-[calc(var(--nav-clearance)+0.5rem)] z-30 grid size-13 min-h-12 min-w-12 place-items-center rounded-card border border-lime/30 bg-bg shadow-xl lg:bottom-6 ${position}`}>
-      <KoAvatar expression="welcome" motion={open ? 'none' : 'idle'} className="size-13" />
-      <span className="absolute -top-2 -end-3 rounded-full border border-line bg-surface-raised px-inline py-inline text-xs font-bold text-muted">{t('soon')}</span>
+        : `fixed start-[max(1rem,var(--safe-start))] bottom-[calc(var(--nav-clearance)+0.5rem)] z-30 grid size-13 min-h-12 min-w-12 place-items-center rounded-card border border-lime/30 bg-bg shadow-xl lg:bottom-6 ${position}${phonePosition ? ` ${phonePosition}` : ''}`}>
+      <KoAvatar expression="welcome" motion={open ? 'none' : 'idle'} className={captainPhone ? 'size-13 max-md:size-12' : 'size-13'} />
+      <span className={`absolute -top-2 -end-3 rounded-full border border-line bg-surface-raised px-inline py-inline text-xs font-bold text-muted${captainPhone ? ' max-md:end-0' : ''}`}>{t('soon')}</span>
     </button>}
     {open && (panel.Component ? <panel.Component role={role} userId={userId} joined={joined} readFailed={readFailed}
       openerId={openerId} desktop={desktop} onClose={close} onJoined={() => setJoined(true)} />

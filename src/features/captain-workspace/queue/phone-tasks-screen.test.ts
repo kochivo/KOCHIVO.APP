@@ -48,6 +48,10 @@ it('opens the linked task as a single card and offers next and previous controls
   viewport.phone = true;
   viewport.hash = '#program%3Ab';
   const html = render();
+  expect(html.match(/<h1\b/g)).toHaveLength(1);
+  expect(html).toMatch(/<header data-captain-phone-heading="true"/);
+  expect(html.match(/aria-label="Find a player"/g)).toHaveLength(1);
+  expect(html).toContain('data-page-bar-menu');
   expect(html).toContain('2 waiting');
   expect(html).toContain('4 reviewed');
   expect(html).toContain('Sara');

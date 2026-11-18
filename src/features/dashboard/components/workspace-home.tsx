@@ -7,7 +7,8 @@ import { listRenewalRequests } from '@/features/billing';
 import type { RosterPlayer, RosterResult } from '@/features/roster';
 import { PageBarTitle } from '@/ui/page-bar-title';
 import { PageBarActions } from '@/ui/page-bar-actions';
-import { formatDateAr, localDate } from '@/lib/dates';
+import { formatDateAr, localDate, saturdayWeek } from '@/lib/dates';
+import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { loadHomeSummary } from '../data/workspace';
 import { loadHomeFollowup } from '../data/home-followup';
 import { loadHomeContacts } from '../data/home-contacts';
@@ -56,19 +57,21 @@ export async function WorkspaceHome({ data, now = new Date() }: {
   const count = tasks.length;
   const contacts = await readHome(loadHomeContacts(tasks.filter(task => task.kind === 'absent').map(task => task.playerId)));
   const training = trainingToday(players, summary.sessions, now, timezone);
+  const weekStart = saturdayWeek(today)[0] ?? today;
+  const hasPrevious = summary.previousAdherence !== 0 || summary.sessions.some(session => session.date < weekStart);
   const finder = (rows: RosterPlayer[]) => rows.map(player => ({ playerId: player.playerId, fullName: player.fullName,
     programTitle: player.programTitle, lastSeen: lastSeenLabel(player.lastTrainingDate, player.playerToday ?? today, locale) }));
   return <section data-tour-ready="true">
     {header}
     <div className="space-y-card-gap">
       <HomeHero tasks={tasks} count={count} completed={summary.completedTasks} adherence={summary.adherence} />
-      <HomeTiles adherence={summary.adherence} previous={summary.previousAdherence} trained={training.trained} active={training.active}
+      <HomeTiles adherence={summary.adherence} previous={summary.previousAdherence} hasPrevious={hasPrevious} trained={training.trained} active={training.active}
         pending={count} paid={summary.paid} progress={taskProgress(summary.completedTasks, count)} />
       {!contacts && <WorkspaceError />}
       <div className="grid items-start gap-card-gap min-[1100px]:grid-cols-[minmax(0,1fr)_minmax(0,330px)]">
         <div className="min-w-0 space-y-card-gap">
           <HomeTaskList tasks={tasks} count={count} contacts={contacts ?? new Map()} today={today} />
-          <SmartAlerts alerts={buildAlerts(players, dues, today)} />
+          <SmartAlerts alerts={buildAlerts(players, dues, today)} hideEmptyOnPhone={captainWorkspaceEnabled()} />
         </div>
         <div className="min-w-0 space-y-card-gap">
           <PlayerFinder players={finder(players)} recent={finder(recentActivity(players))} />

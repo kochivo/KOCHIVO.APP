@@ -30,7 +30,7 @@ export async function CaptainWorkspaceFrame({ children, sidebarFooter }: { child
         <BrandMark className="size-7" />{t('brand')}
       </Link>
       <CaptainFrameNav counts={data?.counts ?? { tasks: null, inbox: null, join: null, billing: null }}
-        captain={data?.captain} players={data?.players} plan={plan} tools={<><NotificationBell captain /><HeaderInstall /></>} />
+        captain={data?.captain} players={data?.players} plan={plan} bell={<NotificationBell captain round />} tools={<HeaderInstall />} />
       <div className="mt-auto hidden space-y-stack pt-card md:block">
         {data?.captain ? <CaptainAccountMenu placement="sidebar">
           {data.captain.avatar ? <Image src={data.captain.avatar} alt="" width={36} height={36} unoptimized className="size-9 shrink-0 rounded-full object-cover ring-1 ring-lime ring-offset-2 ring-offset-bg" />
@@ -43,9 +43,9 @@ export async function CaptainWorkspaceFrame({ children, sidebarFooter }: { child
       </div>
       <CaptainDevice />
     </aside>
-    <div className="min-w-0 flex-1">
+    <div className="group/page min-w-0 flex-1">
       <CaptainTopBar players={data?.players ?? null} bell={<NotificationBell captain />} install={<HeaderInstall />} />
-      <main className="captain-content min-w-0">{children}</main>
+      <main className="captain-content min-w-0 max-md:pb-[calc(var(--nav-clearance)+var(--spacing-touch)+var(--spacing-card))]!">{children}</main>
     </div>
     <KoAccountLink />
   </div>;

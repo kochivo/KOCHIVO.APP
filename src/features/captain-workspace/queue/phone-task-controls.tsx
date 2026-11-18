@@ -7,6 +7,7 @@ import { useLocale, useT } from '@/core/i18n/client';
 import { useResource } from '@/core/resource';
 import { formatNumber } from '@/lib/format';
 import { Button, buttonClass, clickableClass } from '@/ui/button';
+import { PageBarMenu } from '@/ui/page-bar-menu';
 import { loadQueueCounts } from './data/counts';
 import { taskMessages } from './messages';
 import { phoneTaskMessages } from './phone/messages';
@@ -27,18 +28,21 @@ export function PhoneTaskControls({ at, open, counts, filter, onFilter, search, 
   const segments = done === undefined ? 0 : Math.min(10, open + done);
   const filled = done === undefined || segments === 0 ? 0 : Math.round(segments * done / (open + done));
   return <div className="flex flex-col gap-card-gap">
-    <header className="flex min-h-12 items-center gap-inline">
+    <header data-captain-phone-heading className="flex min-h-12 items-center gap-inline">
       <div className="min-w-0 flex-1">
-        <h1 className="text-h font-bold">{copy('title')}</h1>
-        <p className="text-xs text-muted" aria-live="polite">
+        <h1 className="truncate text-h font-bold">{copy('title')}</h1>
+        <p className="truncate text-xs text-muted" aria-live="polite">
           {t('waiting', { count: number(open) })}
           {done !== undefined && <> · {t('done', { count: number(done) })}</>}
         </p>
       </div>
       <Button variant="secondary" block={false} className="size-12 p-0" aria-label={t('search')} aria-expanded={searchOpen}
         onClick={() => { if (searchOpen) onSearch(''); setSearchOpen(!searchOpen); }}><Search aria-hidden className="size-5" /></Button>
-      <Link href={`/${locale}/captain/inbox`} aria-label={t('inbox')} className={buttonClass({ variant: 'secondary', block: false, className: 'size-12 p-0' })}>
-        <MessageCircle aria-hidden className="size-5" /></Link>
+      <PageBarMenu>
+        <Link href={`/${locale}/captain/inbox`} className={buttonClass({ variant: 'ghost', block: false })}>
+          <MessageCircle aria-hidden className="size-5" />{t('inbox')}
+        </Link>
+      </PageBarMenu>
     </header>
     {Boolean(count.error) && <div className="flex items-center justify-between gap-stack" role="alert"><p className="text-xs text-danger">{copy('error')}</p>
       <Button variant="secondary" block={false} onClick={() => void count.retry()}>{copy('retry')}</Button></div>}

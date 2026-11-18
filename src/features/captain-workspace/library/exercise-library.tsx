@@ -56,14 +56,16 @@ export function ExerciseLibrary() {
   const rows = resource.data?.data.filter(row => !row.archived_at && (!mine || row.is_own)) ?? [];
   const total = resource.data?.total;
   return <section className="grid min-w-0 gap-card-gap">
-    <header className="flex flex-wrap items-center gap-card-gap">
+    <header data-captain-phone-heading={enabled || undefined}
+      className={enabled ? 'flex flex-wrap items-center gap-card-gap max-md:flex-nowrap max-md:gap-inline' : 'flex flex-wrap items-center gap-card-gap'}>
       {enabled && <Link href="/captain" aria-label={t('returnToCaptain')} className={buttonClass({ variant: 'secondary', block: false, className: 'min-w-12 shrink-0 px-stack md:hidden' })}><RowChevron className="rotate-180" /></Link>}
-      <div className="me-auto"><h1 className="text-h font-bold">{t('title')}</h1>
+      <div className={enabled ? 'me-auto max-md:min-w-0 max-md:[&>*]:truncate' : 'me-auto'}>
+        <h1 className="text-h font-bold">{enabled ? <><span className="max-md:hidden">{t('title')}</span><span className="md:hidden">{t('shortTitle')}</span></> : t('title')}</h1>
         {total !== undefined && <p className="text-xs text-muted">{t('count', { count: total.toLocaleString('en') })}</p>}
       </div>
-      <Link id="new-library-exercise" href="/captain/library/exercises/new"
-        className={buttonClass({ variant: 'primary', block: false, className: `inline-flex min-h-12 items-center gap-inline px-page-x font-semibold ${enabled ? 'max-md:min-w-12 max-md:px-stack!' : ''}` })}>
-        <KoPlus aria-hidden className="size-5" />{enabled ? <span className="max-md:sr-only">{t('new')}</span> : t('new')}
+      <Link id="new-library-exercise" href="/captain/library/exercises/new" aria-label={enabled ? t('new') : undefined}
+        className={buttonClass({ variant: 'primary', block: false, className: `inline-flex min-h-12 items-center gap-inline px-page-x font-semibold ${enabled ? 'max-md:min-w-12 max-md:shrink-0 max-md:px-stack!' : ''}` })}>
+        <KoPlus aria-hidden className={enabled ? 'size-5 max-md:text-on-lime!' : 'size-5'} />{enabled ? <span className="max-md:sr-only">{t('new')}</span> : t('new')}
       </Link>
     </header>
     <div className="flex min-w-0 flex-wrap items-center gap-stack">

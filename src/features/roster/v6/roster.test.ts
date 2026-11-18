@@ -60,7 +60,7 @@ it('counts trained players and scopes the phone search to the phone list', () =>
 });
 it('puts the total and lime invite action in the shared bar without a page header', () => {
   const html = render();
-  expect(html).toMatch(/data-slot="title"[^>]*><h1[^>]*>اللاعبين 1<\/h1>/);
+  expect(html).toMatch(/data-slot="title"[^>]*><h1[^>]*><span class="max-md:hidden">اللاعبين 1<\/span><span class="md:hidden">اللاعبين<\/span><\/h1>/);
   expect(html).toMatch(/data-slot="actions"[^>]*><a[^>]*control-primary[^>]*href="\/captain\/players\/new"/);
   expect(html).toContain('ضيف لاعب');
   expect(html).not.toContain('<header');

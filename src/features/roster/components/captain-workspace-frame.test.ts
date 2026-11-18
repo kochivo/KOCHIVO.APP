@@ -8,6 +8,7 @@ import { CaptainNavGroups } from './captain-nav-groups';
 import { CaptainSearchPalette } from './captain-search-palette';
 import { CaptainMoreSheet } from './captain-more-sheet';
 import { CaptainQuickAddSheet } from './captain-quick-add-sheet';
+import { CaptainTopBar } from './captain-top-bar';
 
 const state = vi.hoisted(() => ({ load: vi.fn(), path: '/captain/players/id' }));
 vi.mock('server-only', () => ({}));
@@ -31,6 +32,25 @@ function render(node: React.ReactNode) {
 }
 const counts = { tasks: 4, inbox: 3, join: 2, billing: null };
 
+function renderTopBar(path: string) {
+  const previous = state.path;
+  state.path = path;
+  try { return render(createElement(CaptainTopBar, { players: null, bell: null, install: null })); }
+  finally { state.path = previous; }
+}
+
+it('keeps the desktop page bar layout and confines the single-row layout to phones', () => {
+  const html = renderTopBar('/captain/billing/packages');
+  const bar = html.match(/data-captain-top-bar="true" class="([^"]+)"/)?.[1]?.split(' ') ?? [];
+  expect(bar.filter(token => !token.startsWith('max-md:')).join(' ')).toBe(
+    'group/top glass mb-stack flex min-h-16 flex-wrap items-center gap-inline rounded-control border border-line px-inline py-inline',
+  );
+  expect(bar).toContain('max-md:flex-nowrap');
+  expect(bar).toContain('max-md:group-has-[[data-captain-phone-heading]]/page:hidden');
+  expect(html).toMatch(/id="page-bar-actions" class="[^"]*max-md:shrink-0 max-md:flex-nowrap/);
+  expect(html).toContain('max-md:[&amp;_h1]:truncate');
+});
+
 it('renders grouped navigation, real captain identity and the existing plan footer', async () => {
   state.load.mockResolvedValue({ counts, captain: { name: 'Actual captain', avatar: null }, players: [{ id: 'p1', name: 'Actual player' }] });
   const html = render(await CaptainWorkspaceFrame({ children: 'Page content', sidebarFooter: 'Current plan' }));
@@ -48,6 +68,8 @@ it('renders grouped navigation, real captain identity and the existing plan foot
   expect(html).toContain('data-header-install="true"');
   expect(html).toMatch(/<aside\b[\s\S]*data-captain-device="true"[\s\S]*<\/aside>/);
   expect(html).toContain('data-ko-account="true"');
+  expect(html).toContain('group/page min-w-0 flex-1');
+  expect(html).toContain('max-md:pb-[calc(var(--nav-clearance)+var(--spacing-touch)+var(--spacing-card))]!');
   expect(html).toMatch(/<button\b[^>]*popovertarget="[^"]+"[^>]*>[\s\S]*Actual captain/i);
   expect(html).toContain('id="page-bar-title"');
   expect(html).toContain('id="page-bar-actions"');
@@ -70,12 +92,13 @@ it('puts only remaining destinations into grouped mobile tiles', () => {
   expect(html).not.toContain('href="/captain/inbox"');
 });
 
-it('offers the existing account popover from the mobile More sheet', () => {
-  const html = render(createElement(CaptainMoreSheet, { active: 'players', counts, onClose: () => {} }));
-  expect(html).toContain('popover="auto"');
-  expect(html).toMatch(/popovertarget=/i);
-  expect(html).toContain('حسابي');
-  expect(html).not.toContain('lg:hidden');
+it('puts search and notifications in the More header without a second account menu', () => {
+  const html = render(createElement(CaptainMoreSheet, { active: 'players', counts, onClose: () => {},
+    bell: createElement('button', { 'data-captain-bell': true }) }));
+  const header = html.match(/<header[^>]*>.*?<\/header>/)?.[0];
+  expect(header).toContain('captain-more-search');
+  expect(header).toContain('data-captain-bell');
+  expect(html).not.toContain('popovertarget=');
 });
 
 it('lists the phone groups, inbox and live plan usage in More', () => {
