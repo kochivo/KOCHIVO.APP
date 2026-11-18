@@ -9,14 +9,15 @@ import { connectAccount } from '../data/access';
 import { consentPath, oauthRedirectUrl } from '../data/oauth-path';
 import { ConsentActions } from './consent-actions';
 
-export async function ConsentPage({ authorizationId: id }: { authorizationId?: string | string[] }) {
+export async function ConsentPage({ authorizationId }: { authorizationId?: string | string[] }) {
   if (!mcpOrigin()) notFound();
   const t = await getT(messages);
-  const account = await connectAccount().catch(() => undefined);
-  if (account === null && typeof id === 'string' && id) {
+  const id = typeof authorizationId === 'string' && authorizationId.trim() ? authorizationId : null;
+  const account = id ? await connectAccount().catch(() => undefined) : undefined;
+  if (account === null && id) {
     redirect(`/login?${new URLSearchParams({ returnTo: consentPath(id) })}`);
   }
-  const result = account && typeof id === 'string' && id
+  const result = account && id
     ? await account.db.auth.oauth.getAuthorizationDetails(id).catch(() => null) : null;
   const details = result?.data;
   if (details && 'redirect_url' in details) {
@@ -27,9 +28,13 @@ export async function ConsentPage({ authorizationId: id }: { authorizationId?: s
   return <main className="relative min-h-dvh bg-bg px-page-x py-page-y text-ink">
     <div className="mx-auto flex min-h-[calc(100dvh-2*var(--spacing-page-y))] w-full max-w-lg flex-col gap-card-gap">
       {!details || 'redirect_url' in details ? <div role="alert" className="glass space-y-stack rounded-card p-card">
-        <p>{t('loadError')}</p>
-        {typeof id === 'string' && id && <a href={consentPath(id)}
-          className={buttonClass({ variant: 'secondary' })}>{t('retry')}</a>}
+        {id ? <>
+          <p>{t('loadError')}</p>
+          <a href={consentPath(id)} className={buttonClass({ variant: 'secondary' })}>{t('retry')}</a>
+        </> : <>
+          <h1 className="text-h font-extrabold">{t('incompleteLink')}</h1>
+          <p>{t('restartConsent')}</p>
+        </>}
       </div> : !account?.eligible ? <>
         <h1 className="pt-section text-h font-extrabold">{t('ineligible')}</h1>
         <ConsentActions id={details.authorization_id} eligible={false} />
@@ -50,11 +55,16 @@ export async function ConsentPage({ authorizationId: id }: { authorizationId?: s
           </header>
           <section className="glass space-y-stack rounded-card p-card">
             <h2 className="font-semibold">{t('can')}</h2>
-            <ul><li className="flex items-start gap-stack text-sm"><Check aria-hidden className="size-5 shrink-0 text-lime" />{t(player ? 'playerAccess' : 'canRead')}</li></ul>
-            {player ? <p className="text-sm text-muted">{t('playerPhotos')}</p> : <>
-              <h2 className="font-semibold">{t('cannot')}</h2>
-              <ul><li className="flex items-start gap-stack text-sm text-muted"><X aria-hidden className="size-5 shrink-0" />{t('cannotChange')}</li></ul>
-            </>}
+            <ul className="space-y-stack">
+              {(player ? ['playerRead', 'playerLog'] as const : ['canRead'] as const).map(key =>
+                <li key={key} className="flex items-start gap-stack text-sm"><Check aria-hidden className="size-5 shrink-0 text-lime" />{t(key)}</li>)}
+            </ul>
+            {player && <p className="text-sm text-muted">{t('playerPhotos')}</p>}
+            <h2 className="font-semibold">{t('cannot')}</h2>
+            <ul className="space-y-stack">
+              {(player ? ['playerCannotEdit', 'playerCannotSee'] as const : ['cannotChange'] as const).map(key =>
+                <li key={key} className="flex items-start gap-stack text-sm text-muted"><X aria-hidden className="size-5 shrink-0" />{t(key)}</li>)}
+            </ul>
           </section>
           <p className="text-sm text-muted">{t('sharing', { company, client })}</p>
           <ConsentActions id={details.authorization_id} eligible />

@@ -4,6 +4,7 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { ConsentPage } from './components/consent-page';
 import { decideConsent, loadConnectedTools, revokeConnectedTool } from './data/actions';
 import { GrantList } from './components/grant-list';
+import { ConnectionDialog } from './components/connection-dialog';
 import { createT } from '@/core/i18n/messages';
 import { messages } from './messages';
 
@@ -38,6 +39,7 @@ vi.mock('@/core/supabase/server', () => ({
 const client = { id: 'connector', name: 'Claude', uri: '', logo_uri: '' };
 const grant = { client, granted_at: '2026-11-13T00:00:00Z', scopes: ['openid'] };
 const id = 'authorization-id';
+const grantActions = { onConnect: vi.fn(), onDisconnect: vi.fn() };
 
 beforeEach(() => {
   vi.resetAllMocks();
@@ -60,7 +62,7 @@ it('offers an unconfirmed player only the denial action and rejects direct appro
   mocks.profile.mockResolvedValue({ data: { role: 'player', suspended_at: null } });
   const html = renderToStaticMarkup(await ConsentPage({ authorizationId: id }));
   expect(html).toContain('This account cannot connect tools');
-  expect(html).toContain('>Back<');
+  expect(html).toContain('>Deny and return<');
   expect(html).not.toContain('>Allow<');
   expect(await decideConsent(id, 'approve')).toBe(false);
   expect(mocks.approve).not.toHaveBeenCalled();
@@ -71,7 +73,8 @@ it('offers an unconfirmed player only the denial action and rejects direct appro
 it('explains player access and lets a confirmed player approve', async () => {
   mocks.profile.mockResolvedValue({ data: { role: 'player', role_confirmed: true, suspended_at: null } });
   const html = renderToStaticMarkup(await ConsentPage({ authorizationId: id }));
-  expect(html).toContain('log plan meals when you ask');
+  expect(html).toContain('Mark meals in your plan as eaten when you ask');
+  expect(html).toContain('What it cannot do');
   expect(html).toContain('Food photos');
   expect(html).toContain('>Allow<');
   await expect(decideConsent(id, 'approve')).rejects.toThrow('https://claude.ai/approved');
@@ -82,6 +85,8 @@ it('shows the client, company and captain name without the email', async () => {
   expect(html).toContain('Claude wants to connect');
   expect(html).toContain('Anthropic');
   expect(html).toContain('Signed in as Sam');
+  expect(html).toContain('What it cannot do');
+  expect(html).not.toContain('Mark meals in your plan as eaten');
   expect(html).not.toContain('private@example.com');
   await expect(decideConsent(id, 'approve')).rejects.toThrow('https://claude.ai/approved');
 });
@@ -105,15 +110,62 @@ it('loads grants and counts MCP calls from the start of the captain’s week', a
 });
 
 it('renders the grant name, date and disconnect action', () => {
-  const html = renderToStaticMarkup(createElement(GrantList, { grants: [grant], onRevoke: vi.fn() }));
+  const html = renderToStaticMarkup(createElement(GrantList, { grants: [grant], ...grantActions }));
   expect(html).toContain('Claude');
   expect(html).toContain('13 Nov 2026');
   expect(html).toContain('>Disconnect<');
+  expect(html).not.toContain('Connect Claude');
 });
 
-it('renders the empty grant list', () => {
-  expect(renderToStaticMarkup(createElement(GrantList, { grants: [], onRevoke: vi.fn() })))
-    .toContain('No tools connected yet');
+it('shows both setup choices without connected grants', () => {
+  const html = renderToStaticMarkup(createElement(GrantList, { grants: [], ...grantActions }));
+  expect(html).toMatch(/Connect Claude.*Connect ChatGPT/);
+  expect(html.match(/Not connected/g)).toHaveLength(2);
+  expect(html).not.toContain('Disconnect');
+});
+
+const dialogProps = {
+  url: 'https://kochivo.site/api/mcp', fallback: vi.fn(), onClose: vi.fn(), onConfirm: vi.fn(),
+  pending: false, failed: false,
+};
+const opener = {} as HTMLButtonElement;
+
+it.each([['Claude', 'Add custom connector'], ['ChatGPT', 'Developer mode']] as const)(
+  'shows only the selected setup steps for %s', (name, instructions) => {
+    const html = renderToStaticMarkup(createElement(ConnectionDialog, {
+      ...dialogProps, step: { kind: 'connect', name, opener },
+    }));
+    expect(html).toMatch(/<h2[^>]+tabindex="-1"[^>]*>/i);
+    expect(html).toContain(instructions);
+    expect(html).toContain(dialogProps.url);
+    expect(html).toContain('>Copy<');
+    expect(html).not.toContain(name === 'Claude' ? 'Developer mode' : 'Add custom connector');
+  });
+
+it('offers a scoped disconnect retry and a way to keep the grant', () => {
+  const html = renderToStaticMarkup(createElement(ConnectionDialog, {
+    ...dialogProps, failed: true, step: { kind: 'disconnect', name: client.name, id: client.id, opener },
+  }));
+  expect(html).toContain('role="alertdialog"');
+  expect(html).toContain('Claude will lose access to your account right away');
+  expect(html).toContain('Could not disconnect the tool. Try again.');
+  expect(html).toContain('>Keep connected<');
+  expect(html).toContain('>Disconnect<');
+  expect(dialogProps.onConfirm).not.toHaveBeenCalled();
+});
+
+it.each([undefined, '', '  ', [id, id]])('explains how to restart an incomplete consent link (%s)', async authorizationId => {
+  const html = renderToStaticMarkup(await ConsentPage({ authorizationId }));
+  expect(html).toContain('<h1');
+  expect(html).toContain('Start again from Claude or ChatGPT');
+  expect(html).not.toContain('Try again');
+  expect(mocks.details).not.toHaveBeenCalled();
+});
+
+it('retries the requested authorization only when the link contains a single ID', async () => {
+  mocks.details.mockResolvedValue({ error: new Error('Unavailable') });
+  const html = renderToStaticMarkup(await ConsentPage({ authorizationId: id }));
+  expect(html).toContain('href="/oauth/consent?authorization_id=authorization-id"');
 });
 
 it('revokes a grant for the signed-in pilot', async () => {

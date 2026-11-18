@@ -1,16 +1,19 @@
 'use client';
 import { useLocale, useT } from '@/core/i18n/client';
 import { formatTimestampAr } from '@/lib/dates';
-import { Button, buttonClass } from '@/ui/button';
+import { Button } from '@/ui/button';
 import type { OAuthGrant } from '@supabase/supabase-js';
 import { messages } from '../messages';
 
-export function GrantList({ grants, onRevoke, pending, player = false }: {
-  grants: OAuthGrant[]; onRevoke: (id: string) => void; pending?: boolean; player?: boolean;
+export type ConnectApp = 'Claude' | 'ChatGPT';
+const apps: ConnectApp[] = ['Claude', 'ChatGPT'];
+
+export function GrantList({ grants, onDisconnect, onConnect, player = false }: {
+  grants: OAuthGrant[]; onDisconnect: (id: string, name: string, opener: HTMLButtonElement) => void;
+  onConnect: (app: ConnectApp, opener: HTMLButtonElement) => void; player?: boolean;
 }) {
   const t = useT(messages), locale = useLocale();
-  if (!grants.length) return <p className="glass rounded-card p-card text-sm text-muted">{t('empty')}</p>;
-  const available = ['Claude', 'ChatGPT'].filter(name => !grants.some(({ client }) =>
+  const available = apps.filter(name => !grants.some(({ client }) =>
     client.name?.toLowerCase().includes(name.toLowerCase())));
   return <ul className="glass divide-y divide-line-soft rounded-card px-card">
     {grants.map(({ client, granted_at }) => {
@@ -24,7 +27,8 @@ export function GrantList({ grants, onRevoke, pending, player = false }: {
             {formatTimestampAr(granted_at, { dateStyle: 'medium' }, locale)}
           </time>
         </div>
-        <Button variant="secondary" block={false} disabled={pending} onClick={() => onRevoke(client.id)}>{t('disconnect')}</Button>
+        <Button variant="secondary" block={false} aria-label={t('disconnectTool', { name })}
+          onClick={event => onDisconnect(client.id, name, event.currentTarget)}>{t('disconnect')}</Button>
       </li>;
     })}
     {available.map(name => <li key={name} className="flex items-center gap-stack py-stack">
@@ -33,8 +37,8 @@ export function GrantList({ grants, onRevoke, pending, player = false }: {
         <p className="font-bold"><bdi>{name}</bdi></p>
         <p className="text-sm text-muted">{t('notConnected')}</p>
       </div>
-      <a href="#mcp-connection-url" aria-label={t('connectTool', { name })}
-        className={buttonClass({ variant: 'secondary', block: false, className: 'text-lime!' })}>{t('connect')}</a>
+      <Button variant="secondary" block={false} className="text-lime!" aria-label={t('connectTool', { name })}
+        onClick={event => onConnect(name, event.currentTarget)}>{t('connect')}</Button>
     </li>)}
   </ul>;
 }

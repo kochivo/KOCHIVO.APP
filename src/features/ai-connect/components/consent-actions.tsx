@@ -17,7 +17,7 @@ export function ConsentActions({ id, eligible }: { id: string; eligible: boolean
       {t(pending ? 'pending' : 'allow')}
     </Button>}
     <Button type="submit" name="decision" value="deny" variant="secondary" size="lg" block disabled={pending}>
-      {t(pending ? 'pending' : eligible ? 'deny' : 'back')}
+      {t(pending ? 'pending' : 'deny')}
     </Button>
   </form>;
 }
