@@ -399,6 +399,8 @@ dialog:modal {
   padding-inline-end: max(1.25rem, var(--safe-end));
 }
 html[data-keyboard='open'] dialog:modal { inset-block-end: var(--keyboard-inset); }
+/* Fixed bars follow the visual viewport when iOS leaves it shifted after the keyboard closes. */
+.viewport-pinned { translate: 0 var(--viewport-shift, 0px); }
 @layer components {
   .marketing-wrap { width: 100%; max-width: 1200px; margin-inline: auto; padding-inline: clamp(1rem, 4vw, 2rem); }
   .marketing-section { padding-block-start: clamp(4rem, 9vw, 7.5rem); }

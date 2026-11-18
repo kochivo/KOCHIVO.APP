@@ -30,7 +30,7 @@ export function CaptainPhoneNav({ active, tasks, open, adding, onMore, onQuickAd
       </Link>;
   };
   return <nav data-captain-phone-nav aria-label={phone('navigation')}
-    className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 items-end bg-bg px-inline pb-[calc(var(--spacing-card)+var(--safe-bottom))] md:hidden">
+    className="viewport-pinned fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 items-end bg-bg px-inline pb-[calc(var(--spacing-card)+var(--safe-bottom))] md:hidden">
     {tabs.filter(item => item.id !== 'players').map(tab)}
     <button id="captain-quick-add" type="button" aria-label={phone('quickAdd')} aria-haspopup="dialog" aria-expanded={adding} onClick={onQuickAdd}
       className="press relative col-start-3 row-start-1 grid size-16 -translate-y-stack cursor-pointer place-items-center self-end justify-self-center rounded-card focus-visible:ring-2 focus-visible:ring-lime">

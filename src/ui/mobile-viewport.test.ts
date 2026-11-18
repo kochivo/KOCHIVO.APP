@@ -56,3 +56,40 @@ it('keeps the focused field visible as the keyboard shrinks and restores the vis
   viewport.dispatchEvent(new Event('resize'));
   expect(properties.size).toBe(0);
 });
+
+it('moves fixed bars back to the screen edge when iOS leaves the viewport shifted after the keyboard', () => {
+  vi.useFakeTimers();
+  const properties = new Map<string, string>();
+  class Field { matches = () => false; scrollIntoView = vi.fn(); }
+  const viewport = Object.assign(new EventTarget(), { height: 740, offsetTop: 0, scale: 1 });
+  const document = Object.assign(new EventTarget(), {
+    activeElement: new Field(),
+    documentElement: { dataset: {} as Record<string, string>, style: {
+      setProperty: (key: string, value: string) => properties.set(key, value),
+      removeProperty: (key: string) => properties.delete(key),
+    } },
+  });
+  const scrollTo = vi.fn();
+  vi.stubGlobal('window', { visualViewport: viewport, innerHeight: 740, scrollX: 0, scrollY: 900, scrollTo });
+  vi.stubGlobal('document', document);
+  vi.stubGlobal('HTMLElement', Field);
+  vi.stubGlobal('requestAnimationFrame', (callback: () => void) => { callback(); return 1; });
+  vi.stubGlobal('cancelAnimationFrame', () => {});
+  MobileViewport();
+  const cleanup = lifecycle.effect?.();
+  viewport.offsetTop = 53.4;
+  viewport.dispatchEvent(new Event('scroll'));
+  expect(properties.get('--viewport-shift')).toBe('53px');
+  document.dispatchEvent(new Event('focusout'));
+  vi.advanceTimersByTime(300);
+  expect(scrollTo).toHaveBeenCalledWith(0, 900);
+  viewport.offsetTop = 0;
+  viewport.dispatchEvent(new Event('scroll'));
+  expect(properties.has('--viewport-shift')).toBe(false);
+  viewport.scale = 2;
+  viewport.offsetTop = 200;
+  viewport.dispatchEvent(new Event('scroll'));
+  expect(properties.has('--viewport-shift')).toBe(false);
+  cleanup?.();
+  vi.useRealTimers();
+});

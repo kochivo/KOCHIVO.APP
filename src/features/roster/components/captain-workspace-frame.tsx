@@ -23,7 +23,7 @@ export async function CaptainWorkspaceFrame({ children, sidebarFooter }: { child
   ]);
   const plan = summary && { tier: summary.plan.tier, used: summary.used, limit: summary.plan.player_limit };
   return <div className="flex min-h-dvh w-full min-w-0 gap-stack px-page-x pb-card pt-[max(1rem,var(--safe-top))] min-[760px]:py-page-y">
-    <div aria-hidden className="pointer-events-none fixed inset-x-0 top-0 z-40 h-[var(--safe-top)] bg-bg" />
+    <div aria-hidden className="viewport-pinned pointer-events-none fixed inset-x-0 top-0 z-40 h-[var(--safe-top)] bg-bg" />
     <style>{`[data-area="captain"] [role="radiogroup"][aria-label=${JSON.stringify(appearance('theme'))}] { display: none; }`}</style>
     <aside className="contents w-[236px] shrink-0 md:sticky md:top-3 md:flex md:h-[calc(100dvh-1.5rem)] md:flex-col md:overflow-y-auto md:border-e md:border-line-soft md:pe-stack">
       <Link href="/captain" aria-label={t('home')} className="hidden min-h-12 items-center gap-inline px-inline font-display text-base font-extrabold tracking-[.14em] md:flex">
