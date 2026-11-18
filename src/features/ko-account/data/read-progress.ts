@@ -34,10 +34,16 @@ function rankText(tier: string | null | undefined, locale: Locale) {
   const known = TIERS.find(row => row.tier === tier);
   return known ? createT(ranksMessages, locale)(known.tier) : undefined;
 }
-function monthText(row: { done?: number | null; planned?: number | null; adherence?: number | null }, t: Translator, locale: Locale) {
-  return row.done != null && row.planned != null && row.adherence != null
-    ? t('progressMonth', { done: formatNumber(row.done, locale), planned: formatNumber(row.planned, locale),
-      adherence: formatNumber(row.adherence, locale) }) : undefined;
+export function progressMonth({ done, planned, adherence }: {
+  done?: number | null; planned?: number | null; adherence?: number | null;
+}) {
+  return done != null && planned != null && adherence != null ? { done, planned, adherence } : null;
+}
+
+function monthText(row: Parameters<typeof progressMonth>[0], t: Translator, locale: Locale) {
+  const month = progressMonth(row);
+  return month ? t('progressMonth', { done: formatNumber(month.done, locale), planned: formatNumber(month.planned, locale),
+    adherence: formatNumber(month.adherence, locale) }) : undefined;
 }
 
 async function myProgress(actor: KoActor, locale: Locale, today: string) {
