@@ -1,7 +1,7 @@
-import type { ProgramSnapshot, WorkoutSessionRow } from '@/core/offline';
+import type { ProgramSnapshot } from '@/core/offline';
 import { isWeeklyProgram, pickTodayDay } from './next-day';
 
-export function isRestDay(snapshot: ProgramSnapshot, sessions: WorkoutSessionRow[], today: string): boolean {
+export function isRestDay(snapshot: ProgramSnapshot, sessions: Parameters<typeof pickTodayDay>[1], today: string): boolean {
   if (!today) return false;
   if (isWeeklyProgram(snapshot)) return Boolean(pickTodayDay(snapshot, sessions, today)?.is_rest_day);
   return snapshot.training_days.length > 0 &&

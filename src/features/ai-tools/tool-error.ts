@@ -11,7 +11,7 @@ const messages = {
 } satisfies Record<Exclude<ToolStatus, 'ok'>, string>;
 
 export class ToolError extends Error {
-  constructor(readonly code: 'forbidden' | 'not_found') {
+  constructor(readonly code: 'forbidden' | 'not_found' | 'invalid_input') {
     super(messages[code]);
   }
 }

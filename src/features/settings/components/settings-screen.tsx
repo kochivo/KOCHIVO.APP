@@ -45,7 +45,7 @@ export function SettingsScreen({ signOut, connectedTools }: {
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
-  const playerSettings = captainWorkspaceEnabled() ? /^(?:\/(?:ar|en))?\/player(?:\/|$)/.test(pathname) : pathname.startsWith('/player');
+  const playerSettings = /^(?:\/(?:ar|en))?\/player(?:\/|$)/.test(pathname);
   const [language, setLanguage] = useState(locale);
   const [languageError, setLanguageError] = useState('');
   const [languagePending, setLanguagePending] = useState(false);
@@ -78,11 +78,16 @@ export function SettingsScreen({ signOut, connectedTools }: {
     });
     return () => { active = false; };
   }, [attempt, t]);
+  const connectedSection = connectedTools && <section className="space-y-card-gap">
+    <h2 className="text-h font-extrabold">{tools('connectedTools')}</h2>
+    <p className="text-sm text-muted">{tools(playerSettings ? 'playerIntro' : 'intro')}</p>
+    <ConnectedTools {...connectedTools} player={playerSettings} />
+  </section>;
   if (playerSettings && captainWorkspaceEnabled()) return <PlayerAccount profile={profile} onProfileSave={setProfile}
     profileForm={loading ? <LoadingState variant="detail" /> : error ? <ErrorState message={error} retryLabel={t('tryAgain')} onRetry={() => {
       setLoading(true); setError(''); setAttempt(value => value + 1);
     }} /> : profile ? <PlayerProfileEditor profile={profile} onSave={setProfile} /> : null}
-    install={<InstallButton role="player" />} signOut={signOut}
+    install={<InstallButton role="player" />} signOut={signOut} connectedTools={connectedSection}
     privacy={profile && <><ExportCard />
       {!demo && !demoExpiry(profile) && <DeleteAccountCard requestedAt={profile.deletion_requested_at} />}</>}>
     <GlassToggle /><ThemeSwitch />
@@ -118,11 +123,7 @@ export function SettingsScreen({ signOut, connectedTools }: {
       <ExportCard />
       {!demo && !demoExpiry(profile) && <DeleteAccountCard requestedAt={profile.deletion_requested_at} />}
     </> : null}
-    {!playerSettings && connectedTools && <section className="space-y-card-gap">
-      <h2 className="text-h font-extrabold">{tools('connectedTools')}</h2>
-      <p className="text-sm text-muted">{tools('intro')}</p>
-      <ConnectedTools {...connectedTools} />
-    </section>}
+    {connectedSection}
     {signOut}
   </div>;
 }

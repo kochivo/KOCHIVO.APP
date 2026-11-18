@@ -4,9 +4,12 @@ import { playerHomeMessages } from '@/features/player-home/server';
 import { SettingsScreen } from '@/features/settings';
 import { SignOutButton } from '@/features/auth';
 
-export default function SettingsPage() {
+import { connectedToolsSettings } from '@/features/ai-connect/server';
+
+export default async function SettingsPage() {
+  const connectedTools = await connectedToolsSettings();
   // The captain layout already provides <main>; the player shell does not.
-  return <main className="px-page-x pt-section pb-32"><SettingsScreen signOut={<SignOutButton variant="danger" className="min-h-12 w-full" />} /></main>;
+  return <main className="px-page-x pt-section pb-32"><SettingsScreen connectedTools={connectedTools} signOut={<SignOutButton variant="danger" className="min-h-12 w-full" />} /></main>;
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {

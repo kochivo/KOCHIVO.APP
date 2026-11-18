@@ -154,12 +154,14 @@ it('returns the result when audit writing fails', async () => {
   expect(warn).toHaveBeenCalledOnce();
 });
 
-it('lists only the self-progress tool for players', () => {
+it('lists only player tools', () => {
   expect(listTools('player')).toEqual([{
-    name: 'get_athlete_progress', description: expect.any(String),
+    name: 'get_athlete_progress', description: expect.any(String), kind: 'read',
     inputJsonSchema: expect.objectContaining({
       $schema: 'http://json-schema.org/draft-07/schema#',
       properties: { athleteId: { type: 'string', format: 'uuid', pattern: expect.any(String) } },
     }),
-  }]);
+  }, expect.objectContaining({ name: 'get_my_nutrition_today', kind: 'read' }),
+  expect.objectContaining({ name: 'get_my_workout_today', kind: 'read' }),
+  expect.objectContaining({ name: 'log_my_meal', kind: 'write' })]);
 });

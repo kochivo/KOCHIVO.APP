@@ -21,9 +21,9 @@ import { PlayerStatTiles } from './player-stat-tiles';
 import { ProfileWriteContext, useProfileWriter } from '../hooks/use-profile-write';
 import css from './player-account.module.css';
 
-export function PlayerAccount({ profile, profileForm, children, privacy, install, signOut, onProfileSave }: {
+export function PlayerAccount({ profile, profileForm, children, privacy, install, signOut, connectedTools, onProfileSave }: {
   profile: SettingsProfile | null; profileForm: ReactNode; children?: ReactNode; privacy?: ReactNode; install: ReactNode; signOut: ReactNode;
-  onProfileSave: (profile: SettingsProfile) => void;
+  connectedTools?: ReactNode; onProfileSave: (profile: SettingsProfile) => void;
 }) {
   const t = useT(messages);
   const v6t = useT(v6Messages);
@@ -84,6 +84,7 @@ export function PlayerAccount({ profile, profileForm, children, privacy, install
         </div>}
       </details>
     </section>
+    {connectedTools}
     <div aria-label={t('logout')} className="[&_button]:min-h-12 [&_button]:w-full [&_button]:rounded-control [&_button]:border-line! [&_button]:bg-surface! [&_button]:text-danger! [&_button]:shadow-none!">{signOut}</div>
   </div></ProfileWriteContext>;
 }

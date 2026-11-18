@@ -5,8 +5,8 @@ import { Button, buttonClass } from '@/ui/button';
 import type { OAuthGrant } from '@supabase/supabase-js';
 import { messages } from '../messages';
 
-export function GrantList({ grants, onRevoke, pending }: {
-  grants: OAuthGrant[]; onRevoke: (id: string) => void; pending?: boolean;
+export function GrantList({ grants, onRevoke, pending, player = false }: {
+  grants: OAuthGrant[]; onRevoke: (id: string) => void; pending?: boolean; player?: boolean;
 }) {
   const t = useT(messages), locale = useLocale();
   if (!grants.length) return <p className="glass rounded-card p-card text-sm text-muted">{t('empty')}</p>;
@@ -19,7 +19,7 @@ export function GrantList({ grants, onRevoke, pending }: {
         <span aria-hidden className="grid size-12 shrink-0 place-items-center rounded-control bg-surface-raised font-extrabold">{Array.from(name)[0]}</span>
         <div className="min-w-0 flex-1">
           <p className="wrap-anywhere font-bold"><bdi>{name}</bdi></p>
-          <p className="text-sm text-muted">{t('connected')}</p>
+          <p className="text-sm text-muted">{t(player ? 'playerConnected' : 'connected')}</p>
           <time className="text-xs text-muted" dateTime={granted_at}>
             {formatTimestampAr(granted_at, { dateStyle: 'medium' }, locale)}
           </time>

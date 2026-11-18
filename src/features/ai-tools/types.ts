@@ -18,7 +18,7 @@ export type AiTool<I, O> = {
   input: z.ZodType<I>;
   output: z.ZodType<O>;
   roles: readonly AiActor['role'][];
-  kind: 'read';
+  kind: 'read' | 'write';
   run(ctx: ToolContext, input: I): Promise<O>;
 };
 

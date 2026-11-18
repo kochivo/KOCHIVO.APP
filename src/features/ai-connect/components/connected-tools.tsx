@@ -10,7 +10,7 @@ import { loadConnectedTools, revokeConnectedTool } from '../data/actions';
 import { messages } from '../messages';
 import { GrantList } from './grant-list';
 
-export function ConnectedTools({ userId, url }: { userId: string; url: string }) {
+export function ConnectedTools({ userId, url, player = false }: { userId: string; url: string; player?: boolean }) {
   const t = useT(messages), toast = useToast();
   const [pending, start] = useTransition();
   const load = useCallback(() => loadConnectedTools(), []);
@@ -28,7 +28,7 @@ export function ConnectedTools({ userId, url }: { userId: string; url: string })
     {!resource.data ? resource.error
       ? <ErrorState message={t('loadError')} retryLabel={t('retry')} onRetry={() => void resource.retry()} />
       : <LoadingState variant="detail" />
-      : <GrantList grants={resource.data.grants} pending={pending} onRevoke={id => start(async () => {
+      : <GrantList player={player} grants={resource.data.grants} pending={pending} onRevoke={id => start(async () => {
         const saved = await resource.mutate(current => ({
           count: current?.count ?? 0, grants: (current?.grants ?? []).filter(grant => grant.client.id !== id),
         }), async () => {
@@ -47,13 +47,15 @@ export function ConnectedTools({ userId, url }: { userId: string; url: string })
     </section>
     <section className="glass space-y-stack rounded-card p-card">
       <h3 className="text-title font-semibold">{t('canSee')}</h3>
-      <p className="text-sm">{t('visible')}</p>
-      <h3 className="text-title font-semibold">{t('neverSees')}</h3>
-      <p className="text-sm text-muted">{t('hidden')}</p>
+      <p className="text-sm">{t(player ? 'playerAccess' : 'visible')}</p>
+      {player ? <p className="text-sm text-muted">{t('playerPhotos')}</p> : <>
+        <h3 className="text-title font-semibold">{t('neverSees')}</h3>
+        <p className="text-sm text-muted">{t('hidden')}</p>
+      </>}
     </section>
     {resource.data && <section className="glass rounded-card p-card">
       <h3 className="text-title font-semibold">{t('usage')}</h3>
-      <p className="text-sm text-muted">{t('usageCount', { count: resource.data.count })}</p>
+      <p className="text-sm text-muted">{t(player ? 'playerUsageCount' : 'usageCount', { count: resource.data.count })}</p>
     </section>}
   </div>;
 }

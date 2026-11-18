@@ -36,6 +36,14 @@ afterAll(async () => { await db?.close(); });
 
 it.each([
   ['GET', '/programs'],
+  ['GET', '/meal_logs'],
+  ['HEAD', '/meals'],
+  ['GET', '/meal_items'],
+  ['HEAD', '/meal_item_alternatives'],
+  ['GET', '/foods'],
+  ['GET', '/ai_player_workout_history'],
+  ['HEAD', '/ai_player_training_days'],
+  ['POST', '/rpc/ai_log_meal'],
   ['HEAD', '/program_exercises'],
   ['POST', '/rpc/captain_roster'],
 ])('allows OAuth %s %s', async (method, path) => {
@@ -46,7 +54,10 @@ it.each([
   ['POST', '/rpc/ko_apply_action'],
   ['POST', '/workout_sessions'],
   ['PATCH', '/profiles'],
-  ['GET', '/meal_logs'],
+  ['GET', '/player_intake'],
+  ['GET', '/workout_sessions'],
+  ['POST', '/meal_logs'],
+  ['POST', '/rpc/sync_meal_logs'],
   ['GET', '/rpc/captain_roster'],
   ['GET', '/programs/extra'],
   ['', ''],
@@ -95,6 +106,15 @@ it.each([
   expect((await run(false, remove, [id])).rows).toEqual([{ id }]);
 });
 
+it('opens only the listed nutrition reads and preserves the first-party write policies', async () => {
+  const tables = ['foods', 'meal_item_alternatives', 'meal_items', 'meal_logs', 'meals'];
+  const { rows } = await db.query(`select tablename, policyname from pg_policies
+    where schemaname = 'public' and tablename = any($1) and policyname like 'first_party_%'
+    order by tablename, policyname`, [tables]);
+  expect(rows).toEqual(tables.flatMap(tablename => ['delete', 'insert', 'update']
+    .map(action => ({ tablename, policyname: `first_party_${action}` }))));
+});
+
 it('hides non-allowlisted rows from OAuth even without the gate', async () => {
   await db.query(`insert into public.notifications (user_id, type) values ($1, 'player_joined')`, [captain]);
   const select = 'select user_id from public.notifications';
@@ -120,6 +140,23 @@ it('preserves captain RLS across allowed program, day and exercise reads', async
   for (const oauth of [true, false]) {
     expect((await run(oauth, select)).rows).toEqual([{ title: 'Own plan', day: 1, sets: 3 }]);
   }
+});
+
+it('limits workout scheduling to the caller and excludes private fields', async () => {
+  await db.query(`update public.profiles set role_confirmed=true where id in ($1,$2)`, [player, otherPlayer]);
+  await db.query(`insert into public.player_intake
+    (player_id,birth_year,sex,height_cm,weight_kg,training_days,session_minutes,experience,notes)
+    values ($1,1995,'male',180,80,'{3}',45,'new','private'),($2,1995,'male',180,80,'{1}',45,'new','private')`,
+  [player, otherPlayer]);
+  await db.query(`insert into public.workout_sessions
+    (id,player_id,training_date,started_at,client_updated_at,player_note)
+    values (gen_random_uuid(),$1,public.user_today($1),now(),now(),'private'),
+           (gen_random_uuid(),$2,public.user_today($2),now(),now(),'private')`, [player, otherPlayer]);
+  expect((await run(true, 'select * from public.ai_player_training_days', [], 'GET', '/ai_player_training_days', player)).rows)
+    .toEqual([{ training_days: [3] }]);
+  const history = await run(true, 'select * from public.ai_player_workout_history', [], 'GET', '/ai_player_workout_history', player);
+  expect(history.rows).toEqual([{ id: expect.any(String), player_id: player, program_day_id: null,
+    training_date: expect.anything(), completed_at: null }]);
 });
 
 it('blocks OAuth access to private storage objects', async () => {

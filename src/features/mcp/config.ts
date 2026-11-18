@@ -13,7 +13,10 @@ export function mcpOrigin() {
   return null;
 }
 
-export function isMcpCaptain(id: string, profile: { role: string; suspended_at: string | null } | null) {
-  return Boolean(mcpOrigin() && profile?.role === 'captain' && profile.suspended_at === null &&
-    process.env.MCP_PILOT_USER_IDS?.split(',').some(pilot => pilot.trim() === id));
+export function isMcpEligible(id: string, profile: { role: string; role_confirmed: boolean; suspended_at: string | null } | null):
+  profile is { role: 'captain' | 'player'; role_confirmed: true; suspended_at: null } {
+  const pilots = process.env.MCP_PILOT_USER_IDS;
+  return Boolean(mcpOrigin() && (profile?.role === 'captain' || profile?.role === 'player') &&
+    profile.role_confirmed && profile.suspended_at === null &&
+    (pilots?.trim() === '*' || pilots?.split(',').some(pilot => pilot.trim() === id)));
 }

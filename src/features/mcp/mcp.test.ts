@@ -22,7 +22,7 @@ beforeEach(() => {
   vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', 'https://project.supabase.co');
   mocks.claims.mockResolvedValue({ data: { claims: { sub: 'captain-id', client_id: 'client/one' } }, error: null });
   mocks.user.mockResolvedValue({ data: { user: { id: 'captain-id' } }, error: null });
-  mocks.profile.mockResolvedValue({ data: { role: 'captain', suspended_at: null, timezone: 'Africa/Cairo' } });
+  mocks.profile.mockResolvedValue({ data: { role: 'captain', role_confirmed: true, suspended_at: null, timezone: 'Africa/Cairo' } });
   mocks.create.mockReturnValue({
     auth: { getClaims: mocks.claims, getUser: mocks.user },
     from: () => ({ select: () => ({ eq: () => ({ maybeSingle: mocks.profile }) }) }),
@@ -56,9 +56,24 @@ it('accepts notifications with no response body', async () => {
 
 it('advertises the registry tools with read-only annotations', async () => {
   const inputSchema = { type: 'object' };
-  mocks.list.mockReturnValue([{ name: 'list_athletes', description: 'Lists athletes', inputJsonSchema: inputSchema }]);
+  mocks.list.mockReturnValue([{ name: 'list_athletes', description: 'Lists athletes', kind: 'read', inputJsonSchema: inputSchema }]);
   expect((await (await post(rpc('tools/list'))).json()).result.tools).toEqual([
     { name: 'list_athletes', description: 'Lists athletes', inputSchema, annotations: { readOnlyHint: true, openWorldHint: false } },
+  ]);
+});
+
+it('advertises only player tools and marks meal logging writable', async () => {
+  const { listTools } = await vi.importActual<typeof AiTools>('@/features/ai-tools/server');
+  mocks.list.mockImplementation(listTools);
+  vi.stubEnv('MCP_PILOT_USER_IDS', '*');
+  mocks.profile.mockResolvedValue({ data: { role: 'player', role_confirmed: true, suspended_at: null } });
+  const response = await post(rpc('tools/list'));
+  expect(response.status).toBe(200);
+  const { result } = await response.json();
+  expect(result.tools.map((tool: { name: string; annotations: { readOnlyHint: boolean } }) =>
+    [tool.name, tool.annotations.readOnlyHint])).toEqual([
+    ['get_athlete_progress', true], ['get_my_nutrition_today', true],
+    ['get_my_workout_today', true], ['log_my_meal', false],
   ]);
 });
 
@@ -109,9 +124,9 @@ it.each(['missing', 'invalid', 'app session', 'revoked'])('challenges a %s token
     'Bearer resource_metadata="https://kochivo.site/.well-known/oauth-protected-resource"');
 });
 
-it.each(['player', 'non-pilot', 'suspended', 'bad origin'])('rejects %s with 403', async kind => {
+it.each(['unconfirmed', 'non-pilot', 'suspended', 'bad origin'])('rejects %s with 403', async kind => {
   if (kind === 'non-pilot') vi.stubEnv('MCP_PILOT_USER_IDS', 'other');
-  if (kind === 'player') mocks.profile.mockResolvedValue({ data: { role: 'player', suspended_at: null } });
+  if (kind === 'unconfirmed') mocks.profile.mockResolvedValue({ data: { role: 'player', suspended_at: null } });
   if (kind === 'suspended') mocks.profile.mockResolvedValue({ data: { role: 'captain', suspended_at: '2026-11-01' } });
   const response = await post(rpc('ping'), kind === 'bad origin' ? { origin: 'https://other.site' } : {});
   expect(response.status).toBe(403);

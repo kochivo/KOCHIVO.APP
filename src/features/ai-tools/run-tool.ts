@@ -59,6 +59,6 @@ export async function runTool(ctx: ToolContext, name: string, rawArgs: unknown):
     result = failure(error === timeout ? 'timeout' : error instanceof ToolError ? error.code : 'unavailable');
   }
   // Unknown names are untrusted and can contain caller-supplied text.
-  await audit(ctx, tool?.name ?? 'unknown_tool', result.ok ? 'ok' : result.error.code, performance.now() - start);
+  await audit(ctx, tool?.name ?? 'unknown_tool', tool?.kind ?? 'read', result.ok ? 'ok' : result.error.code, performance.now() - start);
   return result;
 }

@@ -31,11 +31,12 @@ export async function ConsentPage({ authorizationId: id }: { authorizationId?: s
         {typeof id === 'string' && id && <a href={consentPath(id)}
           className={buttonClass({ variant: 'secondary' })}>{t('retry')}</a>}
       </div> : !account?.eligible ? <>
-        <h1 className="pt-section text-h font-extrabold">{t('captainsOnly')}</h1>
+        <h1 className="pt-section text-h font-extrabold">{t('ineligible')}</h1>
         <ConsentActions id={details.authorization_id} eligible={false} />
       </> : (() => {
         const client = details.client.name?.trim() || t('unknownClient');
         const company = /claude/i.test(client) ? 'Anthropic' : /chatgpt/i.test(client) ? 'OpenAI' : t('company');
+        const player = account.profile?.role === 'player';
         const name = account.profile?.full_name?.trim();
         return <>
           <header className="space-y-card-gap pt-section text-center">
@@ -49,9 +50,11 @@ export async function ConsentPage({ authorizationId: id }: { authorizationId?: s
           </header>
           <section className="glass space-y-stack rounded-card p-card">
             <h2 className="font-semibold">{t('can')}</h2>
-            <ul><li className="flex items-start gap-stack text-sm"><Check aria-hidden className="size-5 shrink-0 text-lime" />{t('canRead')}</li></ul>
-            <h2 className="font-semibold">{t('cannot')}</h2>
-            <ul><li className="flex items-start gap-stack text-sm text-muted"><X aria-hidden className="size-5 shrink-0" />{t('cannotChange')}</li></ul>
+            <ul><li className="flex items-start gap-stack text-sm"><Check aria-hidden className="size-5 shrink-0 text-lime" />{t(player ? 'playerAccess' : 'canRead')}</li></ul>
+            {player ? <p className="text-sm text-muted">{t('playerPhotos')}</p> : <>
+              <h2 className="font-semibold">{t('cannot')}</h2>
+              <ul><li className="flex items-start gap-stack text-sm text-muted"><X aria-hidden className="size-5 shrink-0" />{t('cannotChange')}</li></ul>
+            </>}
           </section>
           <p className="text-sm text-muted">{t('sharing', { company, client })}</p>
           <ConsentActions id={details.authorization_id} eligible />

@@ -45,7 +45,7 @@ beforeEach(() => {
   vi.stubEnv('KO_ORIGIN', 'https://kochivo.site');
   vi.stubEnv('MCP_PILOT_USER_IDS', 'pilot');
   mocks.claims.mockResolvedValue({ data: { claims: { sub: 'pilot' } } });
-  mocks.profile.mockResolvedValue({ data: { role: 'captain', suspended_at: null, full_name: 'Sam', timezone: 'Africa/Cairo' } });
+  mocks.profile.mockResolvedValue({ data: { role: 'captain', role_confirmed: true, suspended_at: null, full_name: 'Sam', timezone: 'Africa/Cairo' } });
   mocks.details.mockResolvedValue({ data: { authorization_id: id, client, user: { email: 'private@example.com' } } });
   mocks.deny.mockResolvedValue({ data: { redirect_url: 'https://claude.ai/denied' } });
   mocks.approve.mockResolvedValue({ data: { redirect_url: 'https://claude.ai/approved' } });
@@ -56,16 +56,25 @@ beforeEach(() => {
 });
 afterEach(() => vi.unstubAllEnvs());
 
-it('offers a player only the denial action and rejects direct approval', async () => {
+it('offers an unconfirmed player only the denial action and rejects direct approval', async () => {
   mocks.profile.mockResolvedValue({ data: { role: 'player', suspended_at: null } });
   const html = renderToStaticMarkup(await ConsentPage({ authorizationId: id }));
-  expect(html).toContain('Only captains can connect tools');
+  expect(html).toContain('This account cannot connect tools');
   expect(html).toContain('>Back<');
   expect(html).not.toContain('>Allow<');
   expect(await decideConsent(id, 'approve')).toBe(false);
   expect(mocks.approve).not.toHaveBeenCalled();
   await expect(decideConsent(id, 'deny')).rejects.toThrow('https://claude.ai/denied');
   expect(mocks.deny).toHaveBeenCalledWith(id, { skipBrowserRedirect: true });
+});
+
+it('explains player access and lets a confirmed player approve', async () => {
+  mocks.profile.mockResolvedValue({ data: { role: 'player', role_confirmed: true, suspended_at: null } });
+  const html = renderToStaticMarkup(await ConsentPage({ authorizationId: id }));
+  expect(html).toContain('log plan meals when you ask');
+  expect(html).toContain('Food photos');
+  expect(html).toContain('>Allow<');
+  await expect(decideConsent(id, 'approve')).rejects.toThrow('https://claude.ai/approved');
 });
 
 it('shows the client, company and captain name without the email', async () => {

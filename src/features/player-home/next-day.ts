@@ -1,4 +1,5 @@
-import type { ProgramSnapshot, WorkoutSessionRow } from '@/core/offline';
+import type { ProgramSnapshot } from '@/core/offline';
+import type { Tables } from '@/types/database';
 import { isWeeklyProgram, weeklyFinished } from '@/core/offline/program-cycle';
 import { localDate, weeklyWeekday } from '@/lib/dates';
 export { isWeeklyProgram, weeklyFinished } from '@/core/offline/program-cycle';
@@ -14,7 +15,7 @@ export function nextTrainingDay(snapshot: ProgramSnapshot, today: string) {
   }
 }
 
-export function pickTodayDay(snapshot: ProgramSnapshot, sessions: WorkoutSessionRow[], today: string) {
+export function pickTodayDay(snapshot: ProgramSnapshot, sessions: readonly Pick<Tables<'workout_sessions'>, 'id' | 'program_day_id' | 'completed_at' | 'training_date'>[], today: string) {
   if (isWeeklyProgram(snapshot)) return weeklyFinished(snapshot, today) ? undefined :
     snapshot.days.find(day => day.weekday === weeklyWeekday(today));
   const days = [...snapshot.days].sort((a, b) => a.position - b.position);
