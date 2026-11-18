@@ -1,5 +1,5 @@
 'use client';
-import { Check, ChevronLeft, Pencil } from 'lucide-react';
+import { Check, ChevronLeft } from 'lucide-react';
 import { useLocale, useT } from '@/core/i18n/client';
 import { formatNumber } from '@/lib/format';
 import { workspaceMessages } from '../messages';
@@ -8,18 +8,20 @@ import { duplicateDuration, durationLabel } from '../package-choice';
 import type { Tier, CatalogPackage } from '../tiers/types';
 import { tierAccent } from '../tiers/tier-accent';
 import { Button } from '@/ui/button';
+import { WorkspaceTierOptions } from '../tiers/workspace-tier-options';
 
-export function WorkspaceTierCard({ tier, packages, busy, count, onEdit, onPackage }: {
+export function WorkspaceTierCard({ tier, packages, busy, count, onEdit, onPackage, onFeature, onArchive }: {
   tier: Tier; packages: CatalogPackage[]; busy: boolean; count?: number;
-  onEdit: () => void; onPackage: (item?: CatalogPackage) => void;
+  onEdit: () => void; onPackage: (item?: CatalogPackage) => void; onFeature: () => void; onArchive: () => void;
 }) {
   const t = useT(workspaceMessages), catalog = useT(messages), locale = useLocale(), accent = tierAccent(tier.color);
-  return <article data-tier-color={tier.color} className={`${tier.is_featured ? 'glass-featured cut-corner' : 'glass'} relative flex h-full min-w-0 flex-col rounded-card p-card`}>
+  return <article data-tier-color={tier.color} className={`${tier.is_featured ? 'glass-featured' : 'glass'} relative flex h-full min-w-0 flex-col rounded-card p-card`}>
     <span aria-hidden className={`absolute inset-x-card top-0 h-1 rounded-b-sm ${accent.bar}`} />
     <header className="flex flex-wrap items-center gap-inline">
       <span aria-hidden className={`size-3 shrink-0 rounded-full ${accent.bar}`} />
       <h2 className="min-w-0 flex-1 break-words text-title font-bold"><span className={accent.text}>{tier.name}</span></h2>
       {tier.is_featured && <span className="tone-lime rounded-md px-inline text-micro font-semibold">{t('featured')}</span>}
+      <WorkspaceTierOptions tier={tier} busy={busy} onEdit={onEdit} onAdd={() => onPackage()} onFeature={onFeature} onArchive={onArchive} />
     </header>
     {tier.description && <p className="mt-inline text-xs text-muted">{tier.description}</p>}
     <div className="my-stack divide-y divide-line-soft">{packages.length ? packages.map(item =>
@@ -34,11 +36,6 @@ export function WorkspaceTierCard({ tier, packages, busy, count, onEdit, onPacka
     <ul className="mb-card-gap space-y-stack text-row">{tier.features.length ? tier.features.map((feature, index) =>
       <li key={index} className="flex items-start gap-inline"><Check aria-hidden className="size-5 shrink-0 text-lime" />{feature}</li>)
       : <li className="text-muted">{catalog('noFeatures')}</li>}</ul>
-    <footer className="mt-auto flex flex-wrap items-center gap-inline border-t border-line-soft pt-stack">
-      {count !== undefined && <span className="me-auto text-xs text-muted">{catalog('players', { n: formatNumber(count, locale) })}</span>}
-      <Button variant="secondary" block={false} disabled={busy} onClick={() => onPackage()}
-        className="border-dashed">{catalog('addDuration')}</Button>
-      <Button disabled={busy} onClick={onEdit} variant="secondary" block={false}><Pencil aria-hidden className="size-4" />{t('edit')}</Button>
-    </footer>
+    {count !== undefined && <p className="mt-auto text-xs text-muted">{catalog('players', { n: formatNumber(count, locale) })}</p>}
   </article>;
 }

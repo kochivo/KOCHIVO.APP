@@ -1,6 +1,7 @@
-import { beforeEach, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import type { Tables } from '@/types/database';
 import { changeTierStatus } from './tier-operations';
+import { setTierArchived } from './catalog-actions';
 
 const state = vi.hoisted(() => ({ rows: [] as Tables<'captain_package_tiers'>[], fail: '' }));
 vi.mock('server-only', () => ({}));
@@ -28,10 +29,12 @@ vi.mock('./client', () => ({ captainClient: async () => ({ captainId: 'owner', c
 } }) }));
 const oldId = '01900000-0000-7000-8000-000000000207', newId = '01900000-0000-7000-8000-000000000208';
 beforeEach(() => {
+  vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '0');
   state.fail = '';
   state.rows = [oldId, newId].map((id, position) => ({ id, captain_id: 'owner', name: id, description: '', color: 'lime', features: [], position,
     is_featured: position === 0, archived_at: null, created_at: '2026-11-12T00:00:00Z' }));
 });
+afterEach(() => vi.unstubAllEnvs());
 it('switches featured tiers without violating the unique featured constraint', async () => {
   expect(await changeTierStatus(newId, 'feature')).toEqual({ data: true });
   expect(state.rows.map(row => row.is_featured)).toEqual([false, true]);
@@ -52,4 +55,12 @@ it('releases the featured slot when archiving a tier', async () => {
   expect(await changeTierStatus(oldId, 'archive', new Date('2026-11-12T12:00:00Z'))).toEqual({ data: true });
   expect(state.rows[0]?.is_featured).toBe(false);
   expect(state.rows[0]?.archived_at).toBe('2026-11-12T12:00:00.000Z');
+});
+it('archives and restores a workspace package', async () => {
+  vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
+  const now = new Date('2026-11-12T12:00:00Z');
+  expect(await changeTierStatus(oldId, 'archive', now)).toEqual({ data: true });
+  expect(state.rows[0]).toMatchObject({ is_featured: false, archived_at: now.toISOString() });
+  expect(await setTierArchived(oldId, false, now)).toEqual({ data: true });
+  expect(state.rows[0]?.archived_at).toBeNull();
 });

@@ -1,5 +1,5 @@
-import { beforeEach, expect, it, vi } from 'vitest';
-import { saveOffer, saveTier, setOfferPaused, setTierArchived, assignPackageTier } from './catalog-actions';
+import { afterEach, beforeEach, expect, it, vi } from 'vitest';
+import { saveOffer, saveTier, setOfferPaused, setTierArchived, assignPackageTier, deleteArchivedTier } from './catalog-actions';
 import { fetchPackageCatalog, fetchPlayerTier } from './catalog-read';
 import { activatePlayerWithOffer, renewPlayerWithOffer } from './offer-sales';
 
@@ -27,6 +27,25 @@ beforeEach(() => {
     };
     return chain;
   });
+});
+afterEach(() => vi.unstubAllEnvs());
+it('reports a history refusal from the atomic delete operation and accepts a successful delete', async () => {
+  fake.rpc.mockResolvedValueOnce({ data: false, error: null }).mockResolvedValueOnce({ data: true, error: null });
+  expect(await deleteArchivedTier(id)).toEqual({ error: 'deleteTierBlocked' });
+  expect(await deleteArchivedTier(id)).toEqual({ data: true });
+  expect(fake.rpc).toHaveBeenCalledWith('delete_archived_package_tier', { p_tier: id });
+});
+it('omits archived tier durations from workspace public choices while retaining captain access', async () => {
+  vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
+  const packages = [{ id: 'active', tier_id: id }, { id: 'archived', tier_id: 'old' }];
+  fake.from.mockImplementation((table: string) => {
+    const data = table === 'captain_packages' ? packages : table === 'captain_package_tiers' ? [{ id }] : [];
+    const chain = { select: () => chain, eq: () => chain, is: () => chain, order: () => chain,
+      then: (resolve: (value: { data: unknown[]; error: null }) => unknown) => Promise.resolve({ data, error: null }).then(resolve) };
+    return chain;
+  });
+  expect((await fetchPackageCatalog('captain')).packages.map(row => row.id)).toEqual(['active']);
+  expect((await fetchPackageCatalog('captain', true)).packages.map(row => row.id)).toEqual(['active', 'archived']);
 });
 it('validates tier tokens, features and untrusted ownership before writing', async () => {
   for (const patch of [{ color: '#ffffff' }, { features: Array(11).fill('Feature') }, { captain_id: 'other' }, { name: '' }]) {

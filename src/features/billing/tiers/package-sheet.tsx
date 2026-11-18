@@ -1,4 +1,5 @@
 'use client';
+import { useState } from 'react';
 import { useT } from '@/core/i18n/client';
 import { uuidv7 } from '@/core/offline/ids';
 import { ResponsiveDialog } from '@/ui/responsive-dialog';
@@ -9,11 +10,20 @@ import { archivePackage } from '../data/finance-actions';
 import { messages } from './messages';
 import type { CatalogPackage } from './types';
 import type { useCatalog } from './use-catalog';
+import { DurationArchiveConfirm } from './duration-archive-confirm';
 
-export function PackageSheet({ item, tierId, catalog, onClose }: { item?: CatalogPackage; tierId: string; catalog: ReturnType<typeof useCatalog>; onClose: () => void }) {
+export function PackageSheet({ item, tierId, catalog, onClose, confirmArchive = false }: {
+  item?: CatalogPackage; tierId: string; catalog: ReturnType<typeof useCatalog>; onClose: () => void; confirmArchive?: boolean;
+}) {
   const t = useT(messages);
+  const [confirming, setConfirming] = useState(false);
   if (!catalog.data) return null;
-  return <ResponsiveDialog modal fallbackId="catalog-heading" onDismiss={() => { if (!catalog.busy) onClose(); }} aria-labelledby="package-title"
+  async function archive() {
+    if (!item) return;
+    if (await catalog.change(current => ({ ...current, packages: current.packages.filter(row => row.id !== item.id) }),
+      () => archivePackage({ id: item.id }))) onClose();
+  }
+  return <><ResponsiveDialog modal fallbackId="catalog-heading" onDismiss={() => { if (!catalog.busy) onClose(); }} aria-labelledby="package-title"
     className="sheet fixed inset-0 m-auto max-h-[90dvh] w-[calc(100%-32px)] max-w-lg overflow-y-auto rounded-card border border-line bg-surface p-card text-ink backdrop:bg-bg-deep/80">
     <h2 id="package-title" className="mb-card-gap font-display text-title">{t(item ? 'editPackage' : 'addDuration')}</h2>
     <PackagesCard packages={[]} onChange={() => {}} initialAdding editor={{ item, tierId, packages: catalog.data.packages, tiers: catalog.data.tiers, tierLabel: t('tier'), noTierLabel: t('noTier'), saveLabel: t('save'), save: async fields => {
@@ -24,9 +34,12 @@ export function PackageSheet({ item, tierId, catalog, onClose }: { item?: Catalo
     } }} />
     {catalog.error && <p role="alert" className="mt-stack text-sm text-danger">{catalog.error}</p>}
     <div className="mt-card-gap flex flex-wrap gap-inline"><Button variant="secondary" disabled={catalog.busy} onClick={onClose}>{t('cancel')}</Button>
-      {item && <Button variant="secondary" disabled={catalog.busy} onClick={async () => {
-        if (await catalog.change(current => ({ ...current, packages: current.packages.filter(row => row.id !== item.id) }), () => archivePackage({ id: item.id }))) onClose();
-      }}>{t('archivePackage')}</Button>}
+      {item && <Button variant="secondary" disabled={catalog.busy} onClick={() => confirmArchive ? setConfirming(true) : void archive()}>
+        {t(confirmArchive ? 'archiveDuration' : 'archivePackage')}
+      </Button>}
     </div>
-  </ResponsiveDialog>;
+  </ResponsiveDialog>
+    {item && confirming && <DurationArchiveConfirm name={item.name} busy={catalog.busy} error={catalog.error}
+      onCancel={() => { if (!catalog.busy) setConfirming(false); }} onConfirm={() => void archive()} />}
+  </>;
 }

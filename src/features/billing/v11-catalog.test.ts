@@ -11,12 +11,12 @@ it('renders real tier features and all duration prices with a featured treatment
   const tier = catalog.tiers[0];
   if (!tier) throw new Error('Missing tier fixture');
   const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' },
-    createElement(WorkspaceTierCard, { tier, packages: catalog.packages, busy: false, onEdit: noop, onPackage: noop })));
+    createElement(WorkspaceTierCard, { tier, packages: catalog.packages, busy: false, onEdit: noop, onPackage: noop, onFeature: noop, onArchive: noop })));
   for (const value of ['VIP', 'Weekly call', '2,500', '6,500', 'glass-featured']) expect(html).toContain(value);
-  expect(html.match(/<button/g)).toHaveLength(4);
+  expect(html.match(/<button/g)).toHaveLength(6);
   expect(html.match(/dir-icon/g)).toHaveLength(catalog.packages.length);
   expect(html).toContain('focus-visible:ring-2');
-  expect(html).toContain('border-dashed');
+  expect(html).toContain('اختيارات VIP');
 });
 it('shows the actual offer state instead of marking expired offers as running', () => {
   const render = (now: string) => renderToStaticMarkup(createElement(LocaleProvider, { locale: 'ar' },

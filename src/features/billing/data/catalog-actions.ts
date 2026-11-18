@@ -5,6 +5,9 @@ import { unstable_rethrow } from 'next/navigation';
 import { uuidv7 } from '@/core/offline/ids';
 import { getT } from '@/core/i18n/server';
 import { isPermissionDenied } from '@/core/supabase/errors';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { AppDatabase } from '@/types/app-database';
+import { messages as tierMessages } from '../tiers/messages';
 import { messages } from '../messages';
 import { captainClient } from './client';
 import { offerInput, tierInput } from './catalog-validation';
@@ -74,6 +77,27 @@ export async function setTierArchived(id: string, archived: boolean, now = new D
       .eq('id', id).eq('captain_id', captainId).select('id').single();
     if (result.error) throw result.error;
     refresh(); return { data: true as const };
+  } catch (error) { return failure(error); }
+}
+
+type DeleteTierDatabase = Omit<AppDatabase, 'public'> & {
+  public: Omit<AppDatabase['public'], 'Functions'> & {
+    Functions: AppDatabase['public']['Functions'] & {
+      delete_archived_package_tier: { Args: { p_tier: string }; Returns: boolean };
+    };
+  };
+};
+
+export async function deleteArchivedTier(id: string): Promise<ActionResult<true>> {
+  if (!z.uuid().safeParse(id).success) return { error: (await getT(messages))('packageInvalid') };
+  try {
+    const { client } = await captainClient();
+    const { data, error } = await (client as unknown as SupabaseClient<DeleteTierDatabase>)
+      .rpc('delete_archived_package_tier', { p_tier: id });
+    if (error && error.code !== '23503') throw error;
+    if (!data) return { error: (await getT(tierMessages))('deleteTierBlocked') };
+    refresh();
+    return { data: true };
   } catch (error) { return failure(error); }
 }
 

@@ -1,6 +1,6 @@
 # T-376: Archive, restore and delete packages (v6 captain)
 
-**Migration:** none, unless strictly needed for delete. If it is, add a new numbered migration that only adds things. **Owner decision 2026-11-18:** the captain can create packages but cannot archive or delete them. Match the canvas page «الرسوم والباقات», screens 3 and 4 (`docs/mockups/charts/`).
+**Migration:** none, unless strictly needed for delete. If it is, add a new numbered migration that only adds things. **Owner report 2026-11-18 (the bug to fix):** today the captain can create packages but has no way to archive or delete them. The owner wants archive, restore and delete to work. Match the canvas page «الرسوم والباقات», screens 3 and 4 (`docs/mockups/charts/`).
 
 ## Cause
 - The old `tiers/tier-card.tsx` had an archive button.

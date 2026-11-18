@@ -3,6 +3,7 @@ import { createResourceStore } from '@/core/resource/store';
 import { catalogFixture } from './catalog-fixture';
 import type { Catalog } from './types';
 import { useCatalog } from './use-catalog';
+import { archiveTier } from './archive-tier';
 
 const state = vi.hoisted(() => ({ store: undefined as ReturnType<typeof createResourceStore> | undefined }));
 vi.mock('react', () => ({ useCallback: (callback: unknown) => callback, useRef: () => ({ current: false }), useState: (initial: unknown) => [initial, () => {}] }));
@@ -17,6 +18,18 @@ vi.mock('@/core/resource', () => ({ useResource: (key: string, load: () => Promi
 beforeEach(async () => {
   state.store = createResourceStore({ now: () => 1 });
   await state.store.retry('billing:tiers-workspace', async () => catalogFixture);
+});
+it('moves a tier to the archived list immediately and restores it on failure', async () => {
+  const tier = catalogFixture.tiers[0];
+  if (!tier) throw new Error('Missing tier');
+  const at = '2026-11-18T10:00:00Z';
+  const hook = useCatalog();
+  const read = () => state.store?.read<Catalog>('billing:tiers-workspace').data;
+  const change = hook.change(current => archiveTier(current, tier, 4, at), async () => ({ error: 'denied' }));
+  expect(read()?.tiers).toEqual([]);
+  expect(read()?.archivedTiers).toEqual([{ id: tier.id, name: tier.name, archived_at: at, current: 4, past: 0 }]);
+  expect(await change).toBe(false);
+  expect(read()).toEqual(catalogFixture);
 });
 it.each(['returned', 'thrown'])('rolls back failed %s writes and blocks duplicate submission', async mode => {
   let resolve: () => void = () => {};
