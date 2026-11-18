@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>الترتيب</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700&amp;family=Manrope:wght@600;700;800&amp;family=Saira+Condensed:wght@800;900&amp;display=swap">
+<style>
+body{margin:0;background:#090a0b}
+*{box-sizing:border-box}
+.app{position:relative;display:flex;background:#090a0b;color:#f4f4f1;font-family:Alexandria,sans-serif;overflow:hidden}
+.orb{position:absolute;top:-240px;inset-inline-start:300px;width:640px;height:480px;border-radius:50%;background:radial-gradient(closest-side,rgba(182,233,79,.10),transparent);pointer-events:none}
+.n{font-family:Manrope,sans-serif;font-weight:800;letter-spacing:-.025em;font-variant-numeric:tabular-nums}
+.eng{font-family:"Saira Condensed",sans-serif;font-weight:900;line-height:.9;color:transparent;-webkit-text-stroke:1.4px #cdf56f;background:repeating-linear-gradient(135deg,#b6e94f 0 1.6px,transparent 1.6px 5.5px);-webkit-background-clip:text;background-clip:text}
+.card{position:relative;background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.018));border:1px solid rgba(255,255,255,.07);box-shadow:inset 0 1px 0 rgba(255,255,255,.05);border-radius:18px}
+.cut{clip-path:polygon(0 0,calc(100% - 22px) 0,100% 22px,100% 100%,0 100%)}
+.ko{background:linear-gradient(90deg,rgba(182,233,79,.10),rgba(182,233,79,.03) 55%,rgba(255,255,255,.02));border:1px solid rgba(182,233,79,.18)}
+.ic{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.mu{color:#a6abb0}.fa{color:#80858b}.li{color:#b6e94f}.am{color:#f2b544}.co{color:#ffa080}
+.h2{margin:0;font-size:15px;font-weight:700}
+.ch{display:flex;align-items:center;gap:8px;padding:14px 18px 10px}
+.row{display:flex;align-items:center;gap:12px;min-height:58px;padding:0 18px;border-top:1px solid rgba(255,255,255,.05)}
+.av{flex:none;border-radius:50%;background:#1d2024;display:grid;place-items:center;font-weight:700}
+.btn{min-height:40px;padding:0 14px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:#f4f4f1;font:inherit;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap}
+.btnp{min-height:48px;padding:0 22px;border-radius:14px;border:0;background:linear-gradient(180deg,#cdf56f,#a9e03c);color:#0b0c0d;font:inherit;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 10px 26px -10px rgba(182,233,79,.75),inset 0 1px 0 rgba(255,255,255,.5);display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap}
+.tag{font-size:11px;font-weight:600;padding:4px 10px;border-radius:8px;white-space:nowrap}
+.t-li{color:#b6e94f;background:rgba(182,233,79,.1)}.t-co{color:#ffa080;background:rgba(255,160,128,.1)}.t-bl{color:#9fb8ff;background:rgba(120,150,255,.12)}.t-am{color:#f2b544;background:rgba(242,181,68,.12)}.t-gr{color:#a6abb0;background:rgba(255,255,255,.06)}
+.seg{display:flex;gap:2px;padding:3px;border-radius:10px;background:rgba(0,0,0,.3)}
+.seg button{min-height:32px;padding:0 12px;border-radius:8px;border:0;font:inherit;font-size:12px;cursor:pointer;background:transparent;color:#a6abb0}
+.seg button.on{background:rgba(255,255,255,.09);color:#f4f4f1;font-weight:600}
+.bar{height:4px;border-radius:2px;background:rgba(255,255,255,.07)}.bar>i{display:block;height:100%;border-radius:2px}
+.in{height:44px;border-radius:12px;display:flex;align-items:center;gap:10px;padding:0 14px;color:#80858b;font-size:13px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08)}
+.th{display:flex;align-items:center;gap:12px;min-height:38px;padding:0 18px;font-size:11px;color:#80858b}
+.ph{border-radius:12px;background:repeating-linear-gradient(135deg,rgba(255,255,255,.04) 0 6px,transparent 6px 12px),#141618;border:1px solid rgba(255,255,255,.06)}
+</style>
+</helmet>
+
+<div class="app" dir="rtl" style="width:390px;height:844px;flex-direction:column">
+  <div class="orb" aria-hidden="true" style="inset-inline-start:-160px;width:600px;height:460px;top:-250px;background:radial-gradient(closest-side,rgba(182,233,79,.13),transparent)"></div>
+  <div class="n" style="position:relative;display:flex;justify-content:space-between;padding:12px 24px 2px;font-size:13px"><span>9:41</span><span class="fa" style="font-size:11px">5G 82%</span></div>
+  <div style="position:relative;flex:1;min-height:0;display:flex;flex-direction:column;padding:8px 16px 10px;gap:12px;overflow:hidden">
+  <header style="display:flex;align-items:center;gap:10px;min-height:48px"><button aria-label="ارجع" class="btn" style="width:44px;height:44px;padding:0;border-radius:14px"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="transform:scaleX(-1)"><path d="M15 18l-6-6 6-6"></path></svg></button><div style="flex:1;min-width:0"><b style="font-size:16px">الترتيب</b><span class="fa" style="display:block;font-size:11px">نوفمبر</span></div></header>
+  <div style="display:flex;gap:6px;overflow:hidden"><span style="min-height:36px;padding:0 12px;border-radius:12px;display:grid;place-items:center;font-size:12px;white-space:nowrap;background:rgba(255,255,255,.1);font-weight:700">الشهر ده</span><span style="min-height:36px;padding:0 12px;border-radius:12px;display:grid;place-items:center;font-size:12px;white-space:nowrap;color:#a6abb0;background:rgba(255,255,255,.03)">الأسبوع</span><span style="min-height:36px;padding:0 12px;border-radius:12px;display:grid;place-items:center;font-size:12px;white-space:nowrap;color:#a6abb0;background:rgba(255,255,255,.03)">كل الوقت</span></div>
+  <section class="cut" style="border-radius:22px;padding:16px;background:linear-gradient(160deg,rgba(242,181,68,.14),rgba(242,181,68,.03) 60%),#121110;border:1px solid rgba(242,181,68,.25);display:flex;align-items:center;gap:14px"><span class="av" style="width:56px;height:56px;font-size:22px;box-shadow:inset 0 0 0 2px #f2b544;">ن</span><div style="flex:1"><span class="am" style="font-size:12px;font-weight:700">الأولى</span><b style="display:block;font-size:18px">نور السيد</b><span class="fa" style="font-size:11px">ذهبي · 12 تمرين</span></div><span class="eng" style="font-size:44px;-webkit-text-stroke-color:#f2b544;background-image:repeating-linear-gradient(135deg,#f2b544 0 1.6px,transparent 1.6px 5.5px)">2,240</span></section>
+  <section class="card" style="padding:2px 0"><div style="display:flex;align-items:center;gap:12px;min-height:64px;padding:0 14px;"><span class="n fa" style="width:16px">2</span><span class="av" style="width:36px;height:36px;font-size:14px;">ه</span><div style="flex:1;min-width:0"><b style="font-size:14px">هشام فؤاد</b><span class="fa" style="display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></span></div><span class="n" style="font-size:15px">1,980</span></div><div style="display:flex;align-items:center;gap:12px;min-height:64px;padding:0 14px;border-top:1px solid rgba(255,255,255,.05)"><span class="n fa" style="width:16px">3</span><span class="av" style="width:36px;height:36px;font-size:14px;">س</span><div style="flex:1;min-width:0"><b style="font-size:14px">سارة مصطفى</b><span class="fa" style="display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></span></div><span class="n" style="font-size:15px">1,620</span></div><div style="display:flex;align-items:center;gap:12px;min-height:64px;padding:0 14px;border-top:1px solid rgba(255,255,255,.05)"><span class="n fa" style="width:16px">4</span><span class="av" style="width:36px;height:36px;font-size:14px;">ي</span><div style="flex:1;min-width:0"><b style="font-size:14px">يوسف أحمد</b><span class="fa" style="display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></span></div><span class="n" style="font-size:15px">1,410</span></div><div style="display:flex;align-items:center;gap:12px;min-height:64px;padding:0 14px;border-top:1px solid rgba(255,255,255,.05)"><span class="n fa" style="width:16px">5</span><span class="av" style="width:36px;height:36px;font-size:14px;">م</span><div style="flex:1;min-width:0"><b style="font-size:14px">محمد حسن</b><span class="fa" style="display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></span></div><span class="n" style="font-size:15px">1,120</span></div><div style="display:flex;align-items:center;gap:12px;min-height:64px;padding:0 14px;border-top:1px solid rgba(255,255,255,.05)"><span class="n fa" style="width:16px">6</span><span class="av" style="width:36px;height:36px;font-size:14px;">ل</span><div style="flex:1;min-width:0"><b style="font-size:14px">ليلى عادل</b><span class="fa" style="display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></span></div><span class="n" style="font-size:15px">860</span></div></section></div>
+  
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
