@@ -60,3 +60,14 @@ it('shows phone overview links, the public page and sign out alongside the deskt
   expect(html).toContain('max-md:hidden');
   expect(html).toMatch(/<a[^>]*aria-current="page"[^>]*href="\?section=profile"/);
 });
+
+it('only adds the connected-tools section for an eligible captain', () => {
+  query.section = 'connected-tools';
+  const disabled = renderToStaticMarkup(createElement(CaptainSettings));
+  expect(disabled).not.toContain('section=connected-tools');
+  const enabled = renderToStaticMarkup(createElement(CaptainSettings, {
+    connectedTools: { userId: 'pilot', url: 'https://kochivo.site/api/mcp' },
+  }));
+  expect(enabled).toContain('id="settings-connected-tools"');
+  expect(enabled).toMatch(/aria-current="page"[^>]*href="\?section=connected-tools"/);
+});

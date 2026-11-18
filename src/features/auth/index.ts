@@ -1,4 +1,5 @@
 export { decideRoute } from './routing';
+export { consentReturnPath } from './consent-return';
 export { authMode } from './auth-mode';
 export type { AuthMode } from './auth-mode';
 export { CaptainAuthCard } from './components/captain-auth-card-entry';

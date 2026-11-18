@@ -26,6 +26,7 @@ import { demoExpiry, useDemoExpiry } from '@/features/demo';
 import { TourReplay } from '@/ui/tour-replay';
 import { PushToggleCard } from '@/features/notifications';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { ConnectedTools, connectedToolsMessages } from '@/features/ai-connect';
 
 const CaptainProfileCard = dynamic(() => import('./captain-profile-card').then(module => module.CaptainProfileCard));
 const InviteMessageForm = dynamic(() => import('./invite-message-form').then(module => module.InviteMessageForm));
@@ -35,8 +36,11 @@ const ProfileForm = dynamic(() => import('./profile-form').then(module => module
 const PlayerProfileEditor = dynamic(() => import('./player-profile-editor').then(module => module.PlayerProfileEditor), { loading: () => <LoadingState variant="detail" /> });
 const CycleEntry = dynamic(() => import('@/features/player-home').then(module => module.CycleEntry), { ssr: false });
 
-export function SettingsScreen({ signOut }: { signOut?: ReactNode }) {
+export function SettingsScreen({ signOut, connectedTools }: {
+  signOut?: ReactNode; connectedTools?: { userId: string; url: string } | null;
+}) {
   const t = useT(messages);
+  const tools = useT(connectedToolsMessages);
   const appearanceT = useT(appearanceMessages);
   const locale = useLocale();
   const router = useRouter();
@@ -114,6 +118,11 @@ export function SettingsScreen({ signOut }: { signOut?: ReactNode }) {
       <ExportCard />
       {!demo && !demoExpiry(profile) && <DeleteAccountCard requestedAt={profile.deletion_requested_at} />}
     </> : null}
+    {!playerSettings && connectedTools && <section className="space-y-card-gap">
+      <h2 className="text-h font-extrabold">{tools('connectedTools')}</h2>
+      <p className="text-sm text-muted">{tools('intro')}</p>
+      <ConnectedTools {...connectedTools} />
+    </section>}
     {signOut}
   </div>;
 }

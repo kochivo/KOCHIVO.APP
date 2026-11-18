@@ -17,7 +17,9 @@ import { SignupCodeStep } from './signup-code-step';
 import { LoginMethods } from './login-methods';
 import { AuthLogo } from './auth-logo';
 
-export function CaptainAuthCard({ callbackError = false, initialMode = 'login' }: { callbackError?: boolean; initialMode?: AuthMode }) {
+export function CaptainAuthCard({ callbackError = false, initialMode = 'login', returnTo }: {
+  callbackError?: boolean; initialMode?: AuthMode; returnTo?: string;
+}) {
   const t = useT(messages);
   const locale = useLocale();
   const callAuthAction = (action: Parameters<typeof runAuthAction>[0]) => runAuthAction(action, locale, t);
@@ -31,12 +33,12 @@ export function CaptainAuthCard({ callbackError = false, initialMode = 'login' }
       <div className="flex flex-wrap items-center justify-between gap-stack"><Link href={`/${locale}`} aria-label={t('authBrand')} className="press inline-flex min-h-12 items-center rounded-control focus-visible:outline-lime"><AuthLogo /></Link><LanguageSwitch compact /></div>
       <div className="space-y-inline pt-section"><h1 className="text-3xl font-extrabold">{t('loginTitle')}</h1><p className="text-sm text-muted">{t('loginEveryone')}</p></div>
       {callbackError && <p role="alert" className="text-danger">{t('signInFailedTryAgain')}</p>}
-      <LoginMethods />
+      <LoginMethods returnTo={returnTo} />
       <div className="flex items-center gap-stack text-sm text-faint"><span className="h-px flex-1 bg-line" />{t('loginOr')}<span className="h-px flex-1 bg-line" /></div>
-      <GoogleButton intent="captain" />
+      <GoogleButton intent="captain" returnTo={returnTo} />
       <div className="mt-auto space-y-inline pt-section text-center">
         <Link href="/welcome#code" className="inline-flex min-h-12 items-center text-sm text-lime">{t('newPlayerInvite')}</Link>
-        <div><Button variant="ghost" onClick={() => setMode('signup')}>{t('createAccount')}</Button></div>
+        {!returnTo && <div><Button variant="ghost" onClick={() => setMode('signup')}>{t('createAccount')}</Button></div>}
       </div>
     </div>
   </main>;

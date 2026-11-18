@@ -27,6 +27,7 @@ import { PreferencesSection } from './captain/preferences-section';
 import { CaptainPhoneSettingsMenu } from './captain/phone-settings-menu';
 import { messages as phoneMessages } from '../captain-phone/messages';
 import { buttonClass } from '@/ui/button';
+import { ConnectedTools } from '@/features/ai-connect';
 
 const Profile = dynamic(() => import('./captain-profile-card').then(m => m.CaptainProfileCard), { loading: () => <LoadingState variant="detail" /> });
 const PaymentMethods = dynamic(() => import('./payment-methods-card').then(m => m.PaymentMethodsCard), { loading: () => <LoadingState variant="detail" /> });
@@ -34,10 +35,12 @@ const FoodPrices = dynamic(() => import('@/features/meal-plans').then(m => m.Foo
 const PublicPage = dynamic(() => import('./public-page-settings').then(m => m.PublicPageSettings), { loading: () => <LoadingState variant="detail" /> });
 const Ramadan = dynamic(() => import('./ramadan-settings').then(m => m.RamadanSettings), { loading: () => <LoadingState variant="detail" /> });
 
-export function CaptainSettings({ signOut }: { signOut?: ReactNode }) {
+export function CaptainSettings({ signOut, connectedTools }: {
+  signOut?: ReactNode; connectedTools?: { userId: string; url: string } | null;
+}) {
   const t = useT(messages), legacy = useT(legacyMessages), phone = useT(phoneMessages), demo = useDemoExpiry();
   const query = useSearchParams();
-  const section = selectedSection(query?.get('section') ?? null);
+  const section = selectedSection(query?.get('section') ?? null, !!connectedTools);
   const overview = !query?.has('section');
   const overviewQuery = new URLSearchParams(query?.toString());
   overviewQuery.delete('section');
@@ -53,12 +56,15 @@ export function CaptainSettings({ signOut }: { signOut?: ReactNode }) {
     {!profile ? resource.error ? <ErrorState message={legacy('couldnTLoadSettings')} retryLabel={t('retry')} onRetry={() => void resource.retry()} />
       : <LoadingState variant="detail" /> :
       <div className="grid items-start gap-card-gap max-md:grid-cols-1! min-[760px]:grid-cols-[minmax(0,1fr)_minmax(0,3.4fr)]">
-        {overview && <CaptainPhoneSettingsMenu profile={profile} query={query?.toString() ?? ''} timezone={timezone} signOut={signOut} />}
-        <div className="hidden md:contents"><SectionNav section={section} query={query?.toString() ?? ''} /></div>
-        {!overview && <Link href={overviewHref} className={buttonClass({ variant: 'secondary', block: false, className: 'justify-self-start md:hidden!' })}>{phone('back')}</Link>}
+        {overview && <CaptainPhoneSettingsMenu profile={profile} query={query?.toString() ?? ''} timezone={timezone}
+          connectedTools={!!connectedTools} signOut={signOut} />}
+        <div className="hidden md:contents"><SectionNav section={section} query={query?.toString() ?? ''} connectedTools={!!connectedTools} /></div>
+        {!overview && section !== 'connected-tools' && <Link href={overviewHref} className={buttonClass({
+          variant: 'secondary', block: false, className: 'justify-self-start md:hidden!',
+        })}>{phone('back')}</Link>}
         <section key={section} id={`settings-${section}`}
-          className={`glass min-w-0 space-y-card-gap rounded-card p-card${overview ? ' max-md:hidden' : ''}`}>
-          <SectionHeading section={section} />
+          className={`min-w-0 space-y-card-gap ${section === 'connected-tools' ? '' : 'glass rounded-card p-card'}${overview ? ' max-md:hidden' : ''}`}>
+          <SectionHeading section={section} overviewHref={overviewHref} />
           {section === 'profile' && <Profile workspace profile={profile} onSave={setEdited} />}
           {section === 'page' && <PublicPage profile={profile} onSave={setEdited} />}
           {section === 'invite' && <InviteSection profile={profile} onSave={setEdited} />}
@@ -67,6 +73,7 @@ export function CaptainSettings({ signOut }: { signOut?: ReactNode }) {
             {now && ramadanSettingsVisible(localDate(now, timezone)) && <Ramadan />}
           </>}
           {section === 'subscription' && <><SubscriptionEntry /><PaymentMethods /><FoodPrices /></>}
+          {section === 'connected-tools' && connectedTools && <ConnectedTools {...connectedTools} />}
           {section === 'security' && <SecuritySection profile={profile} onSave={setEdited}
             signOut={signOut} canDelete={!demo && !demoExpiry(profile)} />}
         </section>

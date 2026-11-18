@@ -13,6 +13,7 @@ import { signInPassword } from '../data/sign-in-password';
 import { sendSignInEmailCode, verifySignInEmailCode } from '../data/sign-in-email-code';
 import { OtpInput } from './otp-input';
 import { isInstalledApp } from '@/lib/installed-app';
+import { consentReturnPath } from '../consent-return';
 
 function subscribeInstalled(onChange: () => void) {
   const media = window.matchMedia('(display-mode: standalone)');
@@ -22,7 +23,7 @@ function subscribeInstalled(onChange: () => void) {
 const installedSnapshot = () => isInstalledApp(window);
 const serverSnapshot = () => false;
 
-export function LoginMethods() {
+export function LoginMethods({ returnTo }: { returnTo?: string } = {}) {
   const t = useT(messages);
   const locale = useLocale();
   const installed = useSyncExternalStore(subscribeInstalled, installedSnapshot, serverSnapshot);
@@ -46,7 +47,7 @@ export function LoginMethods() {
           : codeEmail ? verifySignInEmailCode({ email: codeEmail, token }) : sendSignInEmailCode({ email }), locale, t);
         setError(result.error ?? ''); setMessage(result.message ?? '');
         if (result.codeEmail) setCodeEmail(result.codeEmail);
-        if (result.redirect) window.location.assign(result.redirect);
+        if (result.redirect) window.location.assign(consentReturnPath(returnTo) ?? result.redirect);
       });
     }}>
       <fieldset disabled={pending} className="space-y-card-gap">

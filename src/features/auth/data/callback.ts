@@ -11,6 +11,7 @@ import { coachSlug } from '@/lib/coach-slug';
 import { completeCoachRequest } from './coach-request';
 import { homeFor } from '../routing';
 import { packageSelection, selectionQuery } from '../package-selection';
+import { consentReturnPath } from '../consent-return';
 
 export async function handleAuthCallback(request: NextRequest) {
   // Behind the host's proxy request.url is the container address (0.0.0.0:8080), not the site.
@@ -20,6 +21,7 @@ export async function handleAuthCallback(request: NextRequest) {
   jar.delete('auth-intent');
   let intent: 'captain' | 'player' | undefined;
   let invite: string | null = null;
+  let returnTo: string | undefined;
   let coach = coachSlug(request.nextUrl.searchParams.get('coach'));
   let selection = packageSelection(Object.fromEntries(request.nextUrl.searchParams));
   if (coach) intent = 'player';
@@ -31,6 +33,7 @@ export async function handleAuthCallback(request: NextRequest) {
         if ('code' in value && typeof value.code === 'string') invite = parseInviteCode(value.code);
         if (!coach && 'coach' in value) coach = coachSlug(value.coach);
         if (!selection.package) selection = packageSelection(value);
+        if ('returnTo' in value) returnTo = consentReturnPath(value.returnTo);
       }
     }
     // An explicit coach signup must never redeem an unrelated, stale OAuth invite.
@@ -46,7 +49,7 @@ export async function handleAuthCallback(request: NextRequest) {
     if (exchange.error) throw exchange.error;
     const user = await profile(client);
     if (!user) throw new Error('Missing profile');
-    if (user.admin) return NextResponse.redirect(new URL(homeFor(user), origin));
+    if (user.admin) return NextResponse.redirect(new URL(returnTo ?? homeFor(user), origin));
     if (!user.roleConfirmed) {
       if (!intent) return NextResponse.redirect(new URL('/login', origin));
       const confirmation = await client.rpc('confirm_role', { p_role: intent });
@@ -61,7 +64,7 @@ export async function handleAuthCallback(request: NextRequest) {
       return NextResponse.redirect(new URL('/player/onboarding', origin));
     }
     if (coach) return NextResponse.redirect(new URL(await completeCoachRequest(client, coach, selection), origin));
-    return NextResponse.redirect(new URL(homeFor(user), origin));
+    return NextResponse.redirect(new URL(returnTo ?? homeFor(user), origin));
   } catch (error) {
     unstable_rethrow(error);
     const target = new URL(invite ? `/i/${invite}` : '/login', origin);
@@ -70,6 +73,7 @@ export async function handleAuthCallback(request: NextRequest) {
       new URLSearchParams(selectionQuery(selection)).forEach((value, key) => target.searchParams.set(key, value));
     }
     target.searchParams.set('error', authError(error, await getT(messages)));
+    if (returnTo && !coach && !invite) target.searchParams.set('returnTo', returnTo);
     return NextResponse.redirect(target);
   }
 }

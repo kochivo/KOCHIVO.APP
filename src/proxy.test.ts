@@ -7,6 +7,10 @@ it.each(['/sitemap.xml', '/robots.txt'])('leaves metadata endpoint %s outside th
   expect(unstable_doesMiddlewareMatch({ config, nextConfig: {}, url })).toBe(false);
 });
 
+it.each(['/api/mcp', '/.well-known/oauth-protected-resource'])('leaves %s outside the locale proxy', url => {
+  expect(unstable_doesMiddlewareMatch({ config, nextConfig: {}, url })).toBe(false);
+});
+
 it.each(['/_vercel/insights/script.js', '/_vercel/insights/view', '/_vercel/insights/event'])('leaves analytics endpoint %s outside the auth/locale proxy', url => {
   expect(unstable_doesMiddlewareMatch({ config, nextConfig: {}, url })).toBe(false);
 });

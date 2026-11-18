@@ -8,6 +8,6 @@ const Workspace = dynamic(() => import('./captain-settings').then(module => modu
   loading: () => <LoadingState variant="detail" />,
 });
 
-export function CaptainSettings({ signOut }: { signOut?: ReactNode }) {
-  return <Suspense fallback={<LoadingState variant="detail" />}><Workspace signOut={signOut} /></Suspense>;
+export function CaptainSettings(props: { signOut?: ReactNode; connectedTools?: { userId: string; url: string } | null }) {
+  return <Suspense fallback={<LoadingState variant="detail" />}><Workspace {...props} /></Suspense>;
 }

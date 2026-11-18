@@ -2,11 +2,12 @@ import { useState, useSyncExternalStore } from 'react';
 import type { ReactNode } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { Bell, Copy, CreditCard, FileText, Link2, MessageCircle, Pencil } from 'lucide-react';
+import { Bell, Copy, CreditCard, FileText, Link2, MessageCircle, Pencil, Plug } from 'lucide-react';
 import { useLocale, useT } from '@/core/i18n/client';
 import { DEFAULT_TIMEZONE } from '@/lib/dates';
 import { Button, buttonClass, clickableClass } from '@/ui/button';
 import { RowChevron } from '@/ui/row-chevron';
+import { connectedToolsMessages } from '@/features/ai-connect';
 import { messages } from '../../captain-phone/messages';
 import { messages as sections } from '../../captain-sections/messages';
 import { messages as settings } from '../../messages';
@@ -22,11 +23,12 @@ function subscribeToPhone(notify: () => void) {
   return () => media.removeEventListener('change', notify);
 }
 
-export function CaptainPhoneSettingsMenu({ profile, query, timezone, signOut }: {
-  profile: SettingsProfile; query: string; timezone: string; signOut?: ReactNode;
+export function CaptainPhoneSettingsMenu({ profile, query, timezone, signOut, connectedTools }: {
+  profile: SettingsProfile; query: string; timezone: string; signOut?: ReactNode; connectedTools?: boolean;
 }) {
   const t = useT(messages), sectionT = useT(sections), preferences = useT(workspace);
   const legacy = useT(settings), locale = useLocale();
+  const tools = useT(connectedToolsMessages);
   const slug = profile.public_slug;
   const phone = useSyncExternalStore(subscribeToPhone, () => window.matchMedia(phoneMedia).matches, () => false);
   const [copyStatus, setCopyStatus] = useState<'copied' | 'copyFailed'>();
@@ -48,6 +50,7 @@ export function CaptainPhoneSettingsMenu({ profile, query, timezone, signOut }: 
   const accountRows = [
     { url: href('subscription'), Icon: CreditCard, label: t('subscription') },
     { url: href('security'), Icon: FileText, label: t('security') },
+    ...(connectedTools ? [{ url: href('connected-tools'), Icon: Plug, label: tools('connectedTools') }] : []),
   ];
   return <div className="flex min-h-[calc(100dvh-var(--captain-content-clearance)-max(var(--spacing-card),var(--safe-top))-var(--spacing-card)-4rem-var(--spacing-stack))] min-w-0 flex-col gap-card-gap md:hidden">
     <section className="glass flex items-center gap-card-gap rounded-card p-card">
