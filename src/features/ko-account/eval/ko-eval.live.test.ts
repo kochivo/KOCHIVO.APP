@@ -54,7 +54,7 @@ describe.skipIf(process.env.KO_EVAL !== '1')('KO baseline eval', () => {
         try {
           const planned = await planIntent(
             testCase.role, { text: testCase.text }, apiKey, AbortSignal.timeout(30_000),
-            testCase.context, testCase.history ?? [], fetcher,
+            testCase.context, testCase.history ?? [], fetcher, testCase.facts,
           );
           ms += performance.now() - start;
           // Same grounding as the chat route: latest text plus the last KO question.

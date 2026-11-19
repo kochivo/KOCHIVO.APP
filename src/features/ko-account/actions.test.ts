@@ -119,7 +119,7 @@ it.each([true, false])('takes a big action credit before committing when availab
 
 it('returns quick buttons at the daily cap without calling Gemini', async () => {
   setup('player', 'daily');
-  const fetcher = vi.fn();
+  const fetcher = vi.fn(async () => Response.json({}));
   vi.stubGlobal('fetch', fetcher);
   expect(await (await post({ text: 'Help' })).json()).toMatchObject({
     kind: 'message', text: expect.stringContaining('message limit'),
@@ -128,9 +128,9 @@ it('returns quick buttons at the daily cap without calling Gemini', async () => 
   expect(fetcher).not.toHaveBeenCalled();
 });
 
-it('warns once per captain and month when the shared cap blocks Gemini', async () => {
+it('warns once per captain and month when the shared cap blocks the reply', async () => {
   setup('captain', 'monthly');
-  const fetcher = vi.fn();
+  const fetcher = vi.fn(async () => Response.json({}));
   vi.stubGlobal('fetch', fetcher);
   const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
   const one = await (await post({ text: 'Help' })).json();

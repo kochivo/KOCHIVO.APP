@@ -6,6 +6,12 @@ import { historyContents } from './history';
 import type { KoTurn } from './history';
 
 export type KoMedia = { data: Uint8Array; mimeType: string };
+export class KoModelError extends Error {
+  constructor(readonly status: number) {
+    super('Gemini HTTP ' + status);
+  }
+}
+
 type KoInput = { text: string } | { audio: Uint8Array; mimeType: string };
 type Declaration = { name: string; description: string; parameters?: object; parametersJsonSchema?: object };
 
@@ -84,7 +90,7 @@ async function requestCalls(
     signal: signal ? AbortSignal.any([signal, timeout]) : timeout,
     cache: 'no-store',
   });
-  if (!response.ok) throw new Error(`Gemini HTTP ${response.status}`);
+  if (!response.ok) throw new KoModelError(response.status);
   const decoded = modelResponse.safeParse(await response.json());
   return decoded.data?.candidates[0]?.content.parts.flatMap(({ functionCall }) => {
     if (functionCall === undefined) return [];

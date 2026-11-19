@@ -3,3 +3,5 @@ export type { KoRole } from './policy';
 export { koAudioTypes, koMaxAudio, koMaxText, koRecordMs } from './agent-limits';
 export { messages as koPreviewMessages } from './messages';
 export type { KoReply, AccountAction, AccountReply, KoCredits, KoUpgrade } from './wire';
+export { answerSources } from './answer-sources';
+export type { AnswerSource } from './answer-sources';

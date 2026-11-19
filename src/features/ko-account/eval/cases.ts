@@ -7,7 +7,7 @@ export type KoEvalTag = 'clear' | 'slang' | 'followup' | 'ambiguous' | 'unsafe' 
 export type KoEvalArgs = Record<string, string | number | boolean>;
 export interface KoEvalCase {
   id: string; role: 'player' | 'captain'; text: string; tag: KoEvalTag;
-  expect: Kind | readonly Kind[]; args?: KoEvalArgs; history?: KoTurn[]; context?: string;
+  expect: Kind | readonly Kind[]; args?: KoEvalArgs; history?: KoTurn[]; context?: string; facts?: string;
 }
 
 const bench = 'bench|بنش|صدر';
@@ -133,4 +133,25 @@ const captain: KoEvalCase[] = [
   { id: 'c50', role: 'captain', tag: 'franco', text: 'khalli el bench le mena 3 sets', expect: 'update_exercise', args: { exercise: bench, player: 'mena|منة|منه', sets: 3 } },
 ];
 
-export const koEvalCases: readonly KoEvalCase[] = [...player, ...captain];
+const playerFacts = '[workout_today] Upper body; Bench Press: 4 sets x 10 reps\n[workout_tomorrow] rest day\n' +
+  '[nutrition_today] kcal remaining 850 / target 2200; protein g remaining 60 / target 150; Lunch: Rice 204 g\n' +
+  '[progress] month done 13, planned 15, adherence 87%; rank challenger; lifetime points 520; points to crown 30\n[captain] Adel';
+const teamFacts = '[team_summary] roster count 12; inactive 7+ days: Nour; expiring: Mariam 2026-11-23; crown leader: Ahmed';
+const answers: KoEvalCase[] = [
+  { id: 'a01', role: 'player', tag: 'slang', text: 'أنا ماشي كويس الشهر ده؟', expect: 'answer', facts: playerFacts },
+  { id: 'a02', role: 'player', tag: 'slang', text: 'فاضلي كام سعرة النهارده', expect: 'answer', facts: playerFacts },
+  { id: 'a03', role: 'player', tag: 'slang', text: 'الغدا بتاعي إيه', expect: 'answer', facts: playerFacts },
+  { id: 'a04', role: 'player', tag: 'slang', text: 'عندي تمرين ايه النهارده', expect: 'answer', facts: playerFacts },
+  { id: 'a05', role: 'player', tag: 'clear', text: 'بكرة راحة؟', expect: 'answer', facts: playerFacts },
+  { id: 'a06', role: 'player', tag: 'english', text: 'How far am I from the crown?', expect: 'answer', facts: playerFacts },
+  { id: 'a07', role: 'player', tag: 'followup', text: 'طب والبروتين؟', expect: 'answer', facts: playerFacts,
+    history: [{ role: 'user', text: 'فاضلي كام سعرة؟' }, { role: 'ko', text: 'فاضلك 850 سعرة النهارده.' }] },
+  { id: 'a08', role: 'captain', tag: 'slang', text: 'مين من لاعيبتي بقاله كتير ما جاش', expect: 'answer', facts: teamFacts },
+  { id: 'a09', role: 'captain', tag: 'clear', text: 'مين اشتراكه بيخلص الأسبوع ده؟', expect: 'answer', facts: teamFacts },
+  { id: 'a10', role: 'captain', tag: 'english', text: 'Who leads the crown this month?', expect: 'answer', facts: teamFacts },
+  { id: 'a11', role: 'captain', tag: 'slang', text: 'عندي كام لاعب؟', expect: 'answer', facts: teamFacts },
+  { id: 'a12', role: 'captain', tag: 'slang', text: 'عامل إيه في التمرين الشهر ده؟', context: 'Nour', expect: 'answer',
+    facts: teamFacts + '\n[player_summary] Nour; month done 11, planned 14, adherence 79%' },
+];
+
+export const koEvalCases: readonly KoEvalCase[] = [...player, ...captain, ...answers];

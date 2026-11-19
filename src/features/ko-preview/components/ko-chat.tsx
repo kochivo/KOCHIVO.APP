@@ -142,7 +142,7 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
       setHistory(entries => [...entries, { speaker: 'user' as const, text: clip ? t('voiceNote') : photo ? `${t('mealPhoto')} ${prompt}`.trim() : prompt,
         contextText: clip ? '' : prompt, timestamp },
         { speaker: 'ko' as const, text: answer, timestamp, actions: newCards, ...(result.kind === 'message' && {
-          quick: result.quick, upgrade: result.upgrade,
+          quick: result.quick, upgrade: result.upgrade, sources: result.sources,
         }) }].slice(-(userId ? koHistoryLimit : 30)));
       setDraft('');
       setClip(null);
@@ -180,7 +180,7 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
           ? role === 'captain' ? 'accountCaptain' : 'accountPlayer'
           : role === 'captain' ? 'chatCaptain' : 'chatPlayer')} sheet={sheet} />}
         {history.map((entry, index) => <Fragment key={entry.actions?.[0]?.id ?? index}>
-          <KoMessage speaker={entry.speaker} text={entry.text} sheet={sheet}>
+          <KoMessage speaker={entry.speaker} text={entry.text} sources={entry.sources} sheet={sheet}>
             {entry.quick?.length ? <KoQuickButtons quick={entry.quick} disabled={busy || recorder.status !== 'idle' || Boolean(clip || photo)}
               send={text => void submit(undefined, text)} /> : role === 'captain' && entry.upgrade ? <KoUpgradeCard upgrade={entry.upgrade} /> : null}
           </KoMessage>

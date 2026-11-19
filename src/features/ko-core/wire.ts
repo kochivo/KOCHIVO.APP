@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { answerSources } from './answer-sources';
 
 export const koReplySchema = z.discriminatedUnion('kind', [
   z.object({ kind: z.enum(['updated', 'read']), sets: z.number(), reps: z.number() }),
@@ -17,7 +18,7 @@ export const accountReplySchema = z.discriminatedUnion('kind', [
   z.object({
     kind: z.literal('message'), text: z.string(), optionsToken: z.string().optional(),
     actions: z.array(actionSchema).max(3).optional(), quick: z.array(z.string()).max(3).optional(),
-    upgrade: upgradeSchema.optional(),
+    upgrade: upgradeSchema.optional(), sources: z.array(z.enum(answerSources)).max(4).optional(),
   }),
   z.object({ kind: z.literal('confirm'), text: z.string(), token: z.string() }),
 ]);

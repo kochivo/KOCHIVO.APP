@@ -6,25 +6,12 @@ export const messages = defineMessages({
   get arStd() {
     return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? {
       ...arStd,
-      clarify_my_progress: 'ماذا تريد أن تعرف عن تقدمك؟',
-      clarify_why_not_counted: 'أي تمرين لم يُحتسب؟',
-      clarify_player_summary: 'لأي لاعب تريد ملخصًا؟',
-      clarify_team_summary: 'ماذا تريد أن تعرف عن لاعبيك؟',
-      clarify_unsupported_payments: 'لا يعرض KO المدفوعات هنا بعد. راجع صفحة الاشتراكات والمدفوعات.',
-      clarify_other_captain: 'يعرض KO لاعبيك فقط.',
-      clarify_swap_exercise: 'ما التمرين، وأين تشعر بالألم إن وُجد؟',
-      clarify_read_exercise: 'عن أي تمرين تريد التفاصيل؟',
-      clarify_update_exercise: 'ما التمرين، وما العدد المطلوب للمجموعات أو التكرارات؟',
-      clarify_create_training: 'لمن البرنامج، وكم يومًا للتدريب أو ما أيامه؟',
-      clarify_create_nutrition: 'لمن الخطة، وما أهداف السعرات والبروتين والكربوهيدرات والدهون؟',
-      clarify_renew_subscription: 'اشتراك من تريد تجديده، ولأي مدة؟',
-      clarify_send_reminder: 'إلى أي لاعب أرسل تذكيرًا بالتمرين؟',
-      clarify_read_nutrition: 'عن أي وجبة أو طعام تسأل؟',
-      clarify_meal_photo: 'هل يمكنك إرسال صورة أوضح للوجبة؟',
-      clarify_clarify: 'هل يمكنك توضيح طلبك؟',
     } : undefined;
   },
   ar: {
+    clarify_answer: 'مش لاقي إجابة واضحة في بياناتك.',
+    koBusy: 'KO عليه ضغط كبير النهارده. جرّب تاني بعد شوية، ولو لسه مش شغال جرّب بكرة الصبح.',
+    koBusyNow: 'KO مشغول دلوقتي، جرّب كمان دقيقة.',
     limitReached: 'خلصت رسايلك معايا النهارده، وبترجع بكره الصبح. لحد كده الزراير دي شغالة:',
     creditsOut: 'رصيد الحاجات الكبيرة خلص الشهر ده ({used} من {cap})، وبيتجدد أول {month}. الكلام العادي والتعديلات الصغيرة شغالين عادي.',
     creditCost: 'هياخد 1 من رصيد الحاجات الكبيرة.',
@@ -137,6 +124,9 @@ export const messages = defineMessages({
     unclear: 'مش فاهمك أوي. قولّي عايز تعمل إيه ولمين.',
   },
   en: {
+    clarify_answer: 'I couldn’t find a clear answer in your data.',
+    koBusy: 'KO is busy today. Try again in a bit. If it still doesn’t work, try tomorrow morning.',
+    koBusyNow: 'KO is busy right now. Try again in a minute.',
     limitReached: 'You’ve reached today’s message limit. It resets tomorrow morning. These buttons still work:',
     creditsOut: 'You’ve used this month’s big-action credits ({used} of {cap}). They reset on the first of {month}. Chat and small edits still work.',
     creditCost: 'This uses 1 big-action credit.',

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { answerSources } from '@/features/ko-core';
 import type { AccountReply } from '@/features/ko-core';
 import type { ActionState, ChatAction } from './use-ko-actions';
 
@@ -7,6 +8,7 @@ export const koHistoryLimit = 40;
 const keyFor = (userId: string) => `kochivo.ko.chat.${userId}`;
 type FinalState = { kind: 'done'; text: string } | { kind: 'failed'; text: string } | { kind: 'cancelled' } | { kind: 'expired' };
 type SavedEntry = { speaker: 'user' | 'ko'; text: string; contextText?: string; timestamp: number;
+  sources?: Extract<AccountReply, { kind: 'message' }>['sources'];
   actions?: { title: string; state: FinalState }[] };
 
 // Hand-written checks keep zod (about 90 KiB) out of the KO client bundle.
@@ -28,8 +30,11 @@ function readEntry(value: unknown): SavedEntry | null {
     if (!state || !isRecord(item) || typeof item.title !== 'string') return null;
     actions.push({ title: item.title, state });
   }
+  const storedSources: unknown = value.sources;
+  const sources = Array.isArray(storedSources) ? answerSources.filter(source => storedSources.includes(source)).slice(0, 4) : [];
   return { speaker: value.speaker, text: value.text, timestamp: value.timestamp,
     ...(typeof value.contextText === 'string' && { contextText: value.contextText }),
+    ...(sources.length && { sources }),
     ...(Array.isArray(value.actions) && { actions }) };
 }
 type Extras = Pick<Extract<AccountReply, { kind: 'message' }>, 'quick' | 'upgrade'>;
@@ -64,8 +69,8 @@ export function saveKoHistory(userId: string, entries: Entry[], states: Record<s
     }
     // A different tab may have removed the chat before its storage event arrives.
     if (requireExisting && storage.getItem(key) === null) return false;
-    const saved = entries.slice(-koHistoryLimit).map(({ speaker, text, contextText, timestamp, actions }) => ({
-      speaker, text, contextText, timestamp,
+    const saved = entries.slice(-koHistoryLimit).map(({ speaker, text, contextText, timestamp, actions, sources }) => ({
+      speaker, text, contextText, timestamp, sources,
       actions: actions?.map(({ id, title, restoredState }) => {
         const state = restoredState ?? states[id];
         return { title, state: state?.kind === 'done' || state?.kind === 'failed' ? { kind: state.kind, text: state.text }

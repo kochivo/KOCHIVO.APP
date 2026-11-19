@@ -63,3 +63,11 @@ it('does not recreate a saved conversation removed in another tab', () => {
   expect(saveKoHistory('a', entries, {}, true)).toBe(false);
   expect(values.has(key)).toBe(false);
 });
+
+it('restores source chips with the answer text', () => {
+  storage();
+  saveKoHistory('a', [{ speaker: 'ko', text: 'Rest day', sources: ['workout_today'], timestamp: now }], {});
+  expect(loadKoHistory('a', now)).toEqual([{
+    speaker: 'ko', text: 'Rest day', sources: ['workout_today'], timestamp: now,
+  }]);
+});

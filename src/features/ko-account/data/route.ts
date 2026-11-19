@@ -4,10 +4,10 @@ import { z } from 'zod';
 import { createT } from '@/core/i18n/messages';
 import { getArabicStyle } from '@/core/i18n/server';
 import { runTool } from '@/features/ai-tools/server';
-import type { AccountAction } from '@/features/ko-core';
+import type { AccountAction, AnswerSource } from '@/features/ko-core';
 import { localDate } from '@/lib/dates';
 import type { KoMedia } from '@/features/ko-agent';
-import { maxHistoryChars, parseHistory } from '@/features/ko-agent';
+import { KoModelError, maxHistoryChars, parseHistory } from '@/features/ko-agent';
 import { koPreviewMessages } from '@/features/ko-core';
 import { getKoActor, resolvePlayer } from './account';
 import type { KoActor } from './account';
@@ -15,6 +15,8 @@ import { approvalLifetimeMs, mealLogPayload, verifyApproval } from './approval';
 import { mealToolContext } from './log-meal';
 import { koAccountConfig } from '@/features/ko-entry/server';
 import { commitApproval, executeIntent, say } from './execute';
+import { reviewAnswer } from './answer-guard';
+import { loadFacts } from './facts';
 import { groundIntent } from './ground';
 import { planIntent } from './intents';
 import { normalizeName } from './match';
@@ -153,7 +155,6 @@ export async function postKoAccountChat(request: Request) {
     }
     if (!audio && !photo && text === suggestions('suggest.meal') && actor.role === 'player')
       return playerReply(await executeIntent(actor, { kind: 'read_nutrition', args: {} }, locale, config.secret, now), config.origin.protocol === 'https:');
-
     let media: KoMedia | undefined;
     const file = photo ?? audio;
     if (file !== null) {
@@ -165,12 +166,23 @@ export async function postKoAccountChat(request: Request) {
       media = { data: new Uint8Array(await file.arrayBuffer()), mimeType: type === 'audio/mp4' ? 'audio/m4a' : type };
     }
     if (!text && !media) return reply({ error: 'invalid' }, 400);
+    // Usage is taken before Gemini so an account at its cap never spends the shared free-tier quota.
+    // A busy Gemini (429/503) still counts; on a 429 the shared quota is gone for the day anyway.
     if (await takeUsage(actor, now, photo !== null, config.secret) !== 'ok') {
       return reply({ kind: 'message', text: actionT('limitReached'), quick: quickKeys.map(key => actionT(key)) });
     }
     const history = parseHistory(form.get('history'));
     const contextPlayer = await resolveContext(actor, form.get('context'));
-    const planned = await planIntent(actor.role, { text, media }, config.key, request.signal, contextPlayer?.name, history);
+    const facts = process.env.KO_ANSWER === '0' || photo ? undefined
+      : await loadFacts(actor, now, request.signal, contextPlayer).catch(() => undefined);
+    const planned = await planIntent(actor.role, { text, media }, config.key, request.signal, contextPlayer?.name, history, fetch, facts)
+      .catch((error: unknown) => {
+        if (!(error instanceof KoModelError) || (error.status !== 429 && error.status !== 503)) throw error;
+        console.warn('KO model busy', error.status);
+        return error.status;
+      });
+    if (planned === 429) return reply({ kind: 'message', text: actionT('koBusy'), quick: quickKeys.map(key => actionT(key)) });
+    if (planned === 503) return reply(say(actionT('koBusyNow')));
     const lastTurn = history.at(-1);
     const question = lastTurn?.role === 'ko' && /[?؟]\s*$/.test(lastTurn.text) ? lastTurn.text : '';
     const exclusive = planned.find(intent => intent.kind === 'meal_photo' || intent.kind === 'swap_exercise');
@@ -178,10 +190,21 @@ export async function postKoAccountChat(request: Request) {
       text ? groundIntent(intent, question ? question + '\n' + text : text) : intent);
     const texts: string[] = [];
     const actions: AccountAction[] = [];
+    const sources = new Set<AnswerSource>();
     let optionsToken: string | undefined;
     let upgrade: Extract<AccountReply, { kind: 'message' }>['upgrade'];
     let credits: Awaited<ReturnType<typeof readCredits>> | undefined;
-    for (const intent of intents) {
+    for (let intent of intents) {
+      if (intent.kind === 'answer') {
+        const answer = reviewAnswer(intent.args, facts ?? '', text);
+        if (answer.ok) {
+          texts.push(answer.text);
+          for (const source of answer.sources) sources.add(source);
+          continue;
+        }
+        console.warn('KO answer guard', answer.reason);
+        intent = answer.fallback;
+      }
       const big = isBigAction(intent.kind);
       if (big && actor.role === 'captain') {
         credits ??= await readCredits(actor, locale);
@@ -206,6 +229,7 @@ export async function postKoAccountChat(request: Request) {
       kind: 'message' as const,
       text: texts.join('\n\n') || (actions.length ? actionT(actions.length > 1 ? 'actionsReady' : 'actionReady') : t('unclear')),
       ...(actions.length && { actions }),
+      ...(sources.size && { sources: [...sources].slice(0, 4) }),
       ...(optionsToken && { optionsToken }),
       ...(upgrade && { upgrade }),
     };

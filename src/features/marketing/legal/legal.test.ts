@@ -49,6 +49,8 @@ describe('public legal pages', () => {
         .toEqual(headings[page === PrivacyPage ? 0 : 1]);
       expect(html).toContain('href="https://wa.me/');
       expect(html).toContain(locale === 'en' ? 'Last updated: 16 November 2026' : 'آخر تحديث: 16 نوفمبر 2026');
+      if (page === PrivacyPage) expect(html).toContain(locale === 'en' ? 'which may use or review them' :
+        standard ? 'وقد يستخدمها أو يراجعها' : 'وممكن يستخدمها أو يراجعها');
       expect(html).not.toMatch(/Supabase|Vercel|Resend|Sentry|Google|Gemini/i);
       const seo = await metadata(props);
       expect(seo.title).toContain(title);

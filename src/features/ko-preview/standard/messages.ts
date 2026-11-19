@@ -35,6 +35,10 @@ export const arStd = {
   stopVoice: 'أوقف التسجيل', voiceRecording: 'جاري التسجيل الآن…', voiceReady: 'التسجيل جاهز، أرسله عندما تريد',
   discardVoice: 'احذف التسجيل', voiceNote: 'رسالة صوتية', micError: 'تعذّر التسجيل. تحقق من إذن الميكروفون أو اكتب رسالتك.',
   accountCaptain: 'اكتب أو أرسل رسالة صوتية. حدّد ما تريد ولمن.', accountPlayer: 'اسأل عن خطتك، أو أرسل صورة وجبة لمراجعة حصتك.',
-  accountPrivacy: 'تُرسل رسالتك أو تسجيلك أو صورتك إلى Gemini عند الضغط على إرسال.', mealPhoto: 'صورة وجبة',
+  sourceWorkout: 'خطة الكابتن',
+  sourceNutrition: 'طعام اليوم',
+  sourceProgress: 'تقدّمك',
+  sourceTeam: 'لاعبوك',
+  accountPrivacy: 'تُرسل رسالتك أو تسجيلك أو صورتك إلى Gemini عند الضغط على إرسال، وقد تستخدمها Google لتحسين خدماتها. لا ترسل بيانات حساسة.', mealPhoto: 'صورة وجبة',
   photoReady: 'صورة الوجبة جاهزة', discardPhoto: 'احذف الصورة', photoError: 'اختر صورة JPEG أو PNG أو WebP بحجم 3 ميجابايت أو أقل.',
 } as const;

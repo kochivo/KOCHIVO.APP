@@ -47,6 +47,15 @@ it.each(['ar', 'en'] as const)('renders a small launcher, accessible typing and 
   expect(user).not.toContain('<img');
   expect(ko).toContain('dir="auto"');
   expect(user).toContain('motion-reduce:animate-none');
+  expect(ko).not.toContain('space-y-inline');
+  expect(user).not.toContain('space-y-inline');
+  const sourced = render(createElement(KoMessage, {
+    speaker: 'ko', text: 'hello', sources: ['workout_today', 'workout_tomorrow', 'nutrition_today'],
+  }));
+  expect(sourced).toContain(locale === 'ar' ? 'خطة الكابتن' : 'Coach’s plan');
+  expect(sourced).toContain(locale === 'ar' ? 'أكل النهارده' : 'Today’s meals');
+  expect(sourced.match(/rounded-chip/g)).toHaveLength(2);
+  expect(sourced).not.toContain('<button');
 });
 
 it('keeps KO copy colloquial and free of emoji', () => {

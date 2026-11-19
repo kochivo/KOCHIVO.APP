@@ -1,5 +1,5 @@
 import { expect, it, vi } from 'vitest';
-import { planIntent } from './data/intents';
+import { parseIntent, planIntent } from './data/intents';
 
 vi.mock('server-only', () => ({}));
 
@@ -36,4 +36,12 @@ it('keeps repeated tools with distinct arguments', async () => {
     { kind: 'send_reminder', args: { player: 'Youssef' } },
     { kind: 'send_reminder', args: { player: 'Ahmed' } },
   ]);
+});
+
+it('parses only explicit injury swap requests in the player tool allowlist', () => {
+  expect(parseIntent('swap_exercise', { exercise: 'Squat', injury: 'knee' }, ['swap_exercise']))
+    .toEqual({ kind: 'swap_exercise', args: { exercise: 'Squat', reason: 'injury', injury: 'knee' } });
+  expect(parseIntent('swap_exercise', { exercise: 'Squat', injury: 'elbow' }, ['swap_exercise'])).toEqual({
+    kind: 'clarify', args: { question: '' }, reason: 'swap_exercise' });
+  expect(parseIntent('swap_exercise', { exercise: 'Squat', injury: 'knee' }, ['read_exercise'])).toBeNull();
 });

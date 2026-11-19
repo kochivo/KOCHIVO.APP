@@ -24,7 +24,7 @@ function count(result: { count: number | null; error: unknown }) {
   if (result.error) throw result.error;
   return result.count;
 }
-function shift(date: string, days: number) {
+export function shift(date: string, days: number) {
   const at = new Date(`${date}T12:00:00Z`);
   at.setUTCDate(at.getUTCDate() + days);
   return localDate(at, 'UTC');
@@ -46,17 +46,21 @@ function monthText(row: Parameters<typeof progressMonth>[0], t: Translator, loca
     adherence: formatNumber(month.adherence, locale) }) : undefined;
 }
 
+export async function readMyPoints(actor: KoActor) {
+  return checked(await actor.db.rpc('my_points'));
+}
+
 async function myProgress(actor: KoActor, locale: Locale, today: string) {
   const t = createT(messages, locale);
   const [points, recent, scans] = await Promise.all([
-    actor.db.rpc('my_points'),
+    readMyPoints(actor),
     actor.db.from('workout_sessions').select('id', { count: 'exact', head: true })
       .eq('player_id', actor.id).not('completed_at', 'is', null)
       .gte('training_date', shift(today, -6)).lte('training_date', today),
     actor.db.from('body_scans').select('scan_date').eq('player_id', actor.id)
       .lte('scan_date', today).order('scan_date', { ascending: false }).limit(1),
   ]);
-  const p = checked(points);
+  const p = points;
   const workouts = count(recent);
   const scan = checked(scans)?.[0];
   const lines: (string | undefined)[] = [];
@@ -115,23 +119,32 @@ async function whyNotCounted(actor: KoActor, locale: Locale, today: string) {
   return lines.join('\n');
 }
 
+export async function readRoster(actor: KoActor) {
+  return checked(await actor.db.rpc('captain_roster')) ?? [];
+}
+
+export async function readTeamProgress(actor: KoActor, today: string, roster: Awaited<ReturnType<typeof readRoster>>) {
+  const links = checked(await actor.db.from('coach_clients').select('player_id,pending,frozen_at')
+    .eq('captain_id', actor.id).is('archived_at', null));
+  const board = checked(await actor.db.rpc('team_leaderboard', { p_month: `${today.slice(0, 7)}-01` }));
+  const inactive = roster.filter(row => {
+    const last = row.last_training_date || row.started_on;
+    return last && daysBetween(last, today) >= 7;
+  });
+  const expiring = roster.filter(row => row.access_until && endingSoon(today, row.access_until)
+    && links?.some(link => link.player_id === row.player_id && !link.pending && !link.frozen_at));
+  const leader = board?.find(row => row.is_crown && roster.some(player => player.player_id === row.player_id));
+  return { inactive, expiring, leader, board };
+}
+
 async function captainSummary(actor: KoActor, intent: Extract<ReadIntent, { kind: 'player_summary' | 'team_summary' }>,
   locale: Locale, today: string, context?: { id: string; name: string }) {
   const t = createT(messages, locale);
-  const roster = checked(await actor.db.rpc('captain_roster'));
+  const roster = await readRoster(actor);
   if (intent.kind === 'team_summary') {
     if (!roster?.length) return t('teamEmpty');
-    const links = checked(await actor.db.from('coach_clients').select('player_id,pending,frozen_at')
-      .eq('captain_id', actor.id).is('archived_at', null));
-    const board = checked(await actor.db.rpc('team_leaderboard', { p_month: `${today.slice(0, 7)}-01` }));
+    const { inactive, expiring, leader, board } = await readTeamProgress(actor, today, roster);
     const names = (rows: typeof roster) => rows.map(row => row.full_name).join('، ') || t('teamNone');
-    const inactive = roster.filter(row => {
-      const last = row.last_training_date || row.started_on;
-      return last && daysBetween(last, today) >= 7;
-    });
-    const expiring = roster.filter(row => row.access_until && endingSoon(today, row.access_until)
-      && links?.some(link => link.player_id === row.player_id && !link.pending && !link.frozen_at));
-    const leader = board?.find(row => row.is_crown && roster.some(player => player.player_id === row.player_id));
     const zero = roster.filter(row => board?.some(entry => entry.player_id === row.player_id && entry.done === 0));
     return [t('teamInactive', { names: names(inactive) }), t('teamExpiring', { names: names(expiring) }),
       !board ? undefined : leader && leader.adherence != null ? t('teamCrown', { name: leader.display_name ||

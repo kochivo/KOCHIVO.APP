@@ -22,6 +22,7 @@ vi.mock('@/features/ko-feed/hooks/use-ko-feed', () => ({ refreshFeed: vi.fn(), u
 const chat = vi.hoisted(() => ({ actor: null as KoActor | null, pilots: new Set<string>(), plan: vi.fn() }));
 vi.mock('./data/usage', () => ({ takeUsage: async () => 'ok' }));
 vi.mock('./data/account', async original => ({ ...await original<typeof AccountModule>(), getKoActor: async () => chat.actor }));
+vi.mock('./data/facts', () => ({ loadFacts: async () => '' }));
 vi.mock('./data/meal', () => ({ readMeal: async () => [] }));
 vi.mock('./data/intents', async original => ({ ...await original<typeof IntentsModule>(), planIntent: chat.plan }));
 vi.mock('@/features/ko-entry/server', () => ({ koAccountConfig: () => ({
@@ -93,13 +94,6 @@ it('handles missing, ambiguous and unsafe options without suggesting a change', 
   expect(ambiguous.from).not.toHaveBeenCalledWith('exercise_generator_tags');
   expect((await prepareSwap(withPlan(['Bridge'], []).actor, 'Bridge', 'knee', 'ar')).text)
     .toBe('مفيش بديل آمن دلوقتي، كلّم الكابتن.');
-});
-it('parses only explicit injury swap requests in the player tool allowlist', () => {
-  expect(parseIntent('swap_exercise', { exercise: 'Squat', injury: 'knee' }, ['swap_exercise']))
-    .toEqual({ kind: 'swap_exercise', args: { exercise: 'Squat', reason: 'injury', injury: 'knee' } });
-  expect(parseIntent('swap_exercise', { exercise: 'Squat', injury: 'elbow' }, ['swap_exercise'])).toEqual({
-    kind: 'clarify', args: { question: '' }, reason: 'swap_exercise' });
-  expect(parseIntent('swap_exercise', { exercise: 'Squat', injury: 'knee' }, ['read_exercise'])).toBeNull();
 });
 const secret = 'swap-test-secret-12345678901234567890';
 const now = 1_800_000_000_000;

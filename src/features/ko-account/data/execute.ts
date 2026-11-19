@@ -33,8 +33,9 @@ export async function executeIntent(actor: KoActor, intent: Intent, locale: Loca
     return { kind: 'message', text: '', actions: [{ id, title, detail,
       token: issueApproval({ kind, payload, player, actor: actor.id, id, expires: now + approvalLifetimeMs, label }, secret) }] };
   };
+  if (intent.kind === 'answer') return say(t('unclear'));
   if (intent.kind === 'clarify') return say('reason' in intent
-    ? (intent.reason === 'log_meal' || intent.reason === 'my_workout'
+    ? (intent.reason === 'log_meal' || intent.reason === 'my_workout' || intent.reason === 'answer'
       ? actionT(`clarify_${intent.reason}`) : t(`clarify_${intent.reason}`)) : intent.args.question);
   if (intent.kind === 'my_workout') {
     if (actor.role !== 'player') return say(actionT('unclear'));
