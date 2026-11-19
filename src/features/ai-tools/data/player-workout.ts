@@ -33,8 +33,9 @@ export async function playerReadinessDecision(ctx: ToolContext, date: string) {
 
 export async function playerWorkout(ctx: ToolContext, today: string) {
   const { id, db } = ctx.actor;
+  const cardio = ctx.client === 'ko' ? 'program_cardio(*),' : '';
   const [program, decision] = await Promise.all([db.from('programs')
-    .select('id,title,notes,settings,program_days(id,position,title,weekday,is_rest_day,program_exercises(id,exercise_id,position,sets,reps_min,reps_max,rest_seconds,superset_group,rpe,tempo,notes,set_plan,exercises(name_ar,name_en,media_path)))')
+    .select(`id,title,notes,settings,program_days(id,position,title,weekday,is_rest_day,${cardio}program_exercises(id,exercise_id,position,sets,reps_min,reps_max,rest_seconds,superset_group,rpe,tempo,notes,set_plan,exercises(name_ar,name_en,media_path)))`)
     .eq('player_id', id).eq('status', 'active').eq('is_template', false)
     .abortSignal(ctx.signal).returns<ProgramResponse[]>().maybeSingle(), playerReadinessDecision(ctx, today)]);
   if (program.error) throw program.error;

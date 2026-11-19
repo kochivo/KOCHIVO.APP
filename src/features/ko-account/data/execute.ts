@@ -57,7 +57,8 @@ export async function executeIntent(actor: KoActor, intent: Intent, locale: Loca
       name: (locale === 'ar' ? row.name_ar || row.name_en : row.name_en || row.name_ar) ?? '',
       sets: row.sets, reps: range(row.reps_min, row.reps_max, '-'),
     }));
-    return say([actionT(tomorrow ? 'workoutTomorrow' : 'workoutToday', { title }), ...lines].join('\n'));
+    const cardio = workout.day.cardio?.map(({ kind, minutes }) => actionT('workoutCardio', { kind, minutes })) ?? [];
+    return say([actionT(tomorrow ? 'workoutTomorrow' : 'workoutToday', { title }), ...lines, ...cardio].join('\n'));
   }
   if (intent.kind === 'my_progress' || intent.kind === 'why_not_counted' ||
       intent.kind === 'player_summary' || intent.kind === 'team_summary')

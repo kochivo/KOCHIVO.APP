@@ -15,13 +15,18 @@ afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); vi.unstubAllEnvs(
 
 const pack = '[workout_today] rest day\n[workout_tomorrow] no program\n[progress] lifetime points 28';
 
-function setup(status: number, calls: { name: string; args: object }[] = []) {
+function setup(status: number, calls: { name: string; args: object }[] = [], pending = false) {
   const rpc = vi.fn(async (name: string) => ({
-    data: name === 'ko_rate_take' ? true : name === 'ko_usage_tier' ? [{ captain_id: 'captain', tier: 'entry' }] : 'ok',
+    data: name === 'ko_rate_take' ? true : name === 'ko_usage_tier' ? [{ captain_id: 'captain', tier: 'entry' }]
+      : name === 'my_captain_id' ? 'captain' : 'ok',
     error: null,
   }));
   vi.spyOn(Date, 'now').mockReturnValue(Date.parse('2026-11-19T12:00:00Z'));
-  vi.spyOn(account, 'getKoActor').mockResolvedValue({ id: 'pilot', role: 'player', db: { rpc } } as unknown as KoActor);
+  const query = { select: vi.fn(() => query), eq: vi.fn(() => query), is: vi.fn(() => query),
+    limit: async () => ({ data: pending ? [{ id: 'required-form' }] : [], error: null }),
+  };
+  const from = vi.fn(() => query);
+  vi.spyOn(account, 'getKoActor').mockResolvedValue({ id: 'pilot', role: 'player', db: { rpc, from } } as unknown as KoActor);
   vi.spyOn(entry, 'koAccountConfig').mockReturnValue({
     origin: new URL('https://ko.test'), pilots: new Set(['pilot']), secret: 's'.repeat(32), key: 'key',
   });
@@ -31,7 +36,7 @@ function setup(status: number, calls: { name: string; args: object }[] = []) {
   }) : new Response(null, { status }));
   vi.stubGlobal('fetch', fetcher);
   const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
-  return { rpc, load, fetcher, warn };
+  return { rpc, load, fetcher, warn, from, query };
 }
 
 function post(text: string) {
@@ -42,6 +47,19 @@ function post(text: string) {
     method: 'POST', body, headers: { origin: 'https://ko.test', host: 'ko.test', 'content-length': '1000' },
   }));
 }
+
+it('points to the required start form before reading the workout or facts', async () => {
+  const { from, query, load } = setup(200, [{ name: 'my_workout', args: { day: 'today' } }], true);
+  const workout = vi.spyOn(ai, 'playerWorkout');
+  expect(await (await post('What is my workout today?')).json()).toEqual({
+    kind: 'message', text: 'Complete the required start form on the Assessments page first.',
+  });
+  expect(from.mock.calls).toEqual([['form_requests']]);
+  expect(query.eq.mock.calls).toEqual([['player_id', 'pilot'], ['captain_id', 'captain'], ['blocks_access', true]]);
+  expect(query.is).toHaveBeenCalledWith('answered_at', null);
+  expect(load).not.toHaveBeenCalled();
+  expect(workout).not.toHaveBeenCalled();
+});
 
 it.each([429, 503, 500])('handles Gemini HTTP %s after taking usage first', async status => {
   const { fetcher, rpc, warn } = setup(status);

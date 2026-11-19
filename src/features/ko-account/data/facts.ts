@@ -45,7 +45,8 @@ export function formatFacts(sections: readonly Section[]) {
 export function workoutFacts(workout: Workout) {
   if (!workout) return ['no program'];
   if (workout.rest || !workout.day) return ['rest day'];
-  return [workout.day.title || 'workout', ...workout.day.exercises.map(row =>
+  return [workout.day.title || 'workout', ...(workout.day.cardio ?? []).map(row => row.kind + ': ' + row.minutes + ' min'),
+    ...workout.day.exercises.map(row =>
     (row.name_ar || row.name_en || '') + ': ' + row.sets + ' sets x ' +
     (row.reps_max && row.reps_max !== row.reps_min ? row.reps_min + '-' + row.reps_max : row.reps_min) + ' reps')];
 }

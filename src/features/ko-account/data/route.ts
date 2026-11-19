@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { createT } from '@/core/i18n/messages';
 import { getArabicStyle } from '@/core/i18n/server';
 import { runTool } from '@/features/ai-tools/server';
+import { hasPendingStartForm } from '@/features/player-shell/server';
 import type { AccountAction, AnswerSource } from '@/features/ko-core';
 import { localDate } from '@/lib/dates';
 import type { KoMedia } from '@/features/ko-agent';
@@ -114,12 +115,18 @@ export async function postKoAccountChat(request: Request) {
     const text = typeof entry === 'string' ? entry.trim() : '';
     const command = normalizeName(text);
     const explicitConfirm = form.get('confirm') === '1';
+    const quick = quickKeys.find(key => text === actionT(key) || text === t(key));
+    const quickProgress = quick === 'quickProgress' && !audio && !photo && !explicitConfirm;
+    const formPending = actor.role === 'player' && !quickProgress && (explicitConfirm || Boolean(text || audio || photo)) &&
+      await hasPendingStartForm(actor.db, actor.id);
+    const formReply = () => playerReply(say(actionT('startFormPending')), config.origin.protocol === 'https:');
     if (explicitConfirm || (!audio && !photo && ['نفذ', 'تمام نفذ', 'confirm', 'approve'].includes(command))) {
       const expired = () => reply(say(actionT('expired')), explicitConfirm || typeof token === 'string' ? 410 : 200);
       const action = typeof token === 'string' ? verifyApproval(token, actor.id, now, config.secret) : null;
       if (typeof token !== 'string' || !action || audio || photo || action.kind === 'swap_options') return expired();
       if (action.kind === 'meal_log') {
         if (actor.role !== 'player' || action.player !== actor.id) return expired();
+        if (formPending) return formReply();
         const payload = mealLogPayload.safeParse(action.payload);
         if (!payload.success) return expired();
         const { mealId, eaten, name } = payload.data;
@@ -145,18 +152,19 @@ export async function postKoAccountChat(request: Request) {
         .find(part => part.startsWith(`${swapCookie}=`))?.slice(swapCookie.length + 1);
       const signed = typeof token === 'string' ? token : cookie;
       const action = signed ? verifyApproval(signed, actor.id, now, config.secret) : null;
+      if (formPending && action?.kind === 'swap_options') return formReply();
       const result = actor.role === 'player' && action?.kind === 'swap_options' && action.player === actor.id
         ? await chooseSwap(actor, action.payload, text, locale) : say(t('expired'));
       return playerReply(result, config.origin.protocol === 'https:');
     }
     const suggestions = createT(koPreviewMessages, locale);
-    const quick = quickKeys.find(key => text === actionT(key) || text === t(key));
     if (!audio && !photo && quick) {
+      if (formPending) return formReply();
       const player = actor.role === 'captain' ? await resolveContext(actor, form.get('context')) : undefined;
       return reply(say(await readQuick(actor, quick, locale, now, request.signal, actionT, player)));
     }
     if (!audio && !photo && text === suggestions('suggest.meal') && actor.role === 'player')
-      return playerReply(await executeIntent(actor, { kind: 'read_nutrition', args: {} }, locale, config.secret, now), config.origin.protocol === 'https:');
+      return formPending ? formReply() : playerReply(await executeIntent(actor, { kind: 'read_nutrition', args: {} }, locale, config.secret, now), config.origin.protocol === 'https:');
     let media: KoMedia | undefined;
     const file = photo ?? audio;
     if (file !== null) {
@@ -175,7 +183,7 @@ export async function postKoAccountChat(request: Request) {
     }
     const history = parseHistory(form.get('history'));
     const contextPlayer = await resolveContext(actor, form.get('context'));
-    const facts = process.env.KO_ANSWER === '0' || photo ? undefined
+    const facts = process.env.KO_ANSWER === '0' || photo || formPending ? undefined
       : await loadFacts(actor, now, request.signal, contextPlayer).catch(() => undefined);
     const planned = await planIntent(actor.role, { text, media }, config.key, request.signal, contextPlayer?.name, history, fetch, facts)
       .catch((error: unknown) => {
@@ -190,6 +198,7 @@ export async function postKoAccountChat(request: Request) {
     const exclusive = planned.find(intent => intent.kind === 'meal_photo' || intent.kind === 'swap_exercise');
     const intents = (exclusive ? [exclusive] : planned).map(intent =>
       text ? groundIntent(intent, question ? question + '\n' + text : text) : intent);
+    if (formPending && !intents.every(({ kind }) => kind === 'my_progress' || kind === 'why_not_counted')) return formReply();
     const texts: string[] = [];
     const actions: AccountAction[] = [];
     const sources = new Set<AnswerSource>();

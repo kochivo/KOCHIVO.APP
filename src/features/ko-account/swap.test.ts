@@ -113,7 +113,8 @@ function chatRequest(text: string, cookie?: string, token?: string) {
 }
 function authenticated(role: 'player' | 'captain' = 'player') {
   const rpc = vi.fn().mockResolvedValue({ error: null });
-  const sharedRpc = (name: string, args: unknown) => name === 'ko_rate_take' ? Promise.resolve({ data: true, error: null }) : rpc(name, args);
+  const sharedRpc = (name: string, args: unknown) => name === 'ko_rate_take' || name === 'my_captain_id'
+    ? Promise.resolve({ data: name === 'ko_rate_take' ? true : null, error: null }) : rpc(name, args);
   chat.actor = { id: player, role, db: { rpc: sharedRpc } } as unknown as KoActor;
   chat.pilots.add(player);
   vi.spyOn(Date, 'now').mockReturnValue(now);

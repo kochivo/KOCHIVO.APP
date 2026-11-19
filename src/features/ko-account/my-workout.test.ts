@@ -4,6 +4,7 @@ import { executeIntent } from './data/execute';
 import { parseIntent } from './data/intents';
 import { isBigAction } from './data/limits';
 import { messages } from './messages';
+import { workoutFacts } from './data/facts';
 
 const { playerWorkout } = vi.hoisted(() => ({ playerWorkout: vi.fn() }));
 vi.mock('server-only', () => ({}));
@@ -16,6 +17,15 @@ const run = (day?: 'today' | 'tomorrow', role: KoActor['role'] = 'player', local
   executeIntent({ ...actor, role }, { kind: 'my_workout', args: { day } }, locale, 'unused', now);
 
 beforeEach(() => playerWorkout.mockReset());
+
+it('includes a cardio-only day in both the workout answer and facts', async () => {
+  const workout = { rest: false, day: { id: 'day', position: 1, title: 'Conditioning', exercises: [],
+    cardio: [{ id: 'bike', day_id: 'day', position: 1, kind: 'Bike', minutes: 30, intensity: 'moderate', notes: '' }],
+  } };
+  playerWorkout.mockResolvedValue(workout);
+  expect((await run('today', 'player', 'en')).text).toBe("Today's workout: Conditioning\nBike: 30 min");
+  expect(workoutFacts(workout)).toEqual(['Conditioning', 'Bike: 30 min']);
+});
 
 it('parses a missing day as today and accepts tomorrow', () => {
   expect(parseIntent('my_workout', {}, ['my_workout'])).toEqual({ kind: 'my_workout', args: { day: 'today' } });

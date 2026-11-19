@@ -30,6 +30,7 @@ function setup(role: KoActor['role'], usage = 'ok', credit = true) {
     data: name === 'ko_rate_take' ? true : name === 'ko_apply_action' ? { sent: true }
       : name === 'ko_usage_tier' ? [{ captain_id: actorId, tier: 'entry' }]
       : name === 'ko_usage_take' ? usage
+      : name === 'my_captain_id' ? null
       : name === 'ko_usage_claim_warning' ? !warned && (warned = true)
       : name === 'ko_usage_summary' ? [{ credits_used: credit ? 0 : 10, credits_cap: 10, month: '2027-01-01' }]
       : name === 'ko_credit_take' ? credit
@@ -170,7 +171,8 @@ it.each(['Today’s workout', 'Today’s meals', 'My progress'])('answers %s wit
   vi.spyOn(ai, 'playerWorkout').mockResolvedValue(null);
   vi.spyOn(progress, 'readProgress').mockResolvedValue('Your progress');
   expect(await (await post({ text })).json()).toMatchObject({ kind: 'message', text: expect.any(String) });
-  expect(rpc.mock.calls).toEqual([['ko_rate_take', { p_limit: 12, p_window_seconds: 60 }]]);
+  expect(rpc.mock.calls.map(([name]) => name)).toEqual(text === 'My progress'
+    ? ['ko_rate_take'] : ['ko_rate_take', 'my_captain_id']);
   expect(fetcher).not.toHaveBeenCalled();
 });
 

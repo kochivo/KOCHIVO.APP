@@ -171,6 +171,7 @@ it.each(['returned', 'thrown', 'success', 'missing'])('preserves a successful me
   if (mode === 'missing') vi.stubEnv('KO_MEAL_RECEIPT_SECRET', '');
   if (mode === 'returned' || mode === 'thrown') await db.query('update public.profiles set suspended_at=now() where id=$1', [player]);
   const rpc = async (name: string, args: { p_day: string; p_receipt: string }) => {
+    if (name === 'my_captain_id') return { data: null, error: null };
     if (name === 'ko_usage_tier') return { data: [{ captain_id: captain, tier: 'entry' }], error: null };
     if (name !== 'award_meal_check') return { data: name === 'ko_usage_take' ? 'ok' : true, error: null };
     try {

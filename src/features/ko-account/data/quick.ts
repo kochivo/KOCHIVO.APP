@@ -22,10 +22,10 @@ export async function readQuick(actor: KoActor, key: typeof quickKeys[number], l
   const day = localDate(ctx.now, ctx.timezone);
   const workout = player ? await captainWorkout(ctx, day) : await playerWorkout(ctx, day);
   if (key === 'quickWorkout') {
-    if (workout?.rest || !workout?.day?.exercises.length) return t('quickWorkoutEmpty');
+    if (workout?.rest || !workout?.day || (!workout.day.exercises.length && !workout.day.cardio?.length)) return t('quickWorkoutEmpty');
     return [workout.day.title, ...workout.day.exercises.map(row => t('quickExercise', {
       name: (locale === 'ar' ? row.name_ar || row.name_en : row.name_en || row.name_ar) ?? '', sets: row.sets,
-    }))].filter(Boolean).join('\n');
+    })), ...(workout.day.cardio ?? []).map(({ kind, minutes }) => t('workoutCardio', { kind, minutes }))].filter(Boolean).join('\n');
   }
   const plan = await playerNutritionPlan(ctx);
   if (!plan) return t('quickMealsEmpty');

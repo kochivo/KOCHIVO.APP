@@ -1,4 +1,6 @@
 export const arStd = {
+  workoutCardio: '{kind}: {minutes} دقيقة',
+  startFormPending: 'أكمل استمارة البداية المطلوبة في صفحة التقييمات أولًا.',
   trainingTitle: 'برنامج {goal} {days} أيام – {player}',
   trainingGoal_muscle: 'زيادة العضلات', trainingGoal_fat_loss: 'خسارة الدهون', trainingGoal_strength: 'قوة', trainingGoal_general: 'لياقة',
   trainingSat: 'السبت', trainingSun: 'الأحد', trainingMon: 'الاثنين', trainingTue: 'الثلاثاء',

@@ -1,6 +1,6 @@
 import type { PGlite } from '@electric-sql/pglite';
 import { afterAll, beforeAll, beforeEach, expect, it } from 'vitest';
-import { asUser, createCaptainWithPlayer, createTestDb, createUser } from './harness';
+import { asUser, createCaptainWithPlayer, createTestDb, createUser, TEST_NOW } from './harness';
 
 let db: PGlite, captain: string, player: string, otherCaptain: string, otherPlayer: string, link: string, pkg: string;
 const id = '01900000-0000-7000-8000-000000000354';
@@ -112,4 +112,26 @@ it('manual unfreeze clears the automatic return date', async () => {
   await asUser(db, captain, tx => tx.query('select set_player_frozen($1,false)', [link]));
   expect((await db.query('select frozen_at,frozen_until from coach_clients where id=$1', [link])).rows)
     .toEqual([{ frozen_at: null, frozen_until: null }]);
+});
+
+it('restores access at Cairo midnight before the release job finalizes the freeze', async () => {
+  await db.query("update profiles set timezone='Africa/Cairo' where id=$1", [captain]);
+  await db.query(`update coach_clients set frozen_at='2026-11-03T10:00:00Z',
+    frozen_until='2026-11-06',access_until='2026-11-04' where id=$1`, [link]);
+  const clock = (at: string) => db.exec(`create or replace function pg_catalog.now() returns timestamptz
+    language sql stable as $$ select timestamptz '${at}' $$;`);
+  try {
+    for (const [at, allowed] of [
+      ['2026-11-05T21:59:59Z', false], ['2026-11-05T22:00:00Z', true], ['2026-11-06T05:00:00Z', true],
+    ] as const) {
+      await clock(at);
+      const result = await asUser(db, player, tx => tx.query(
+        'select player_can_read() as read, player_can_read_from($1) as scoped, player_can_write() as write', [captain]));
+      expect(result.rows).toEqual([{ read: allowed, scoped: allowed, write: allowed }]);
+    }
+    expect((await db.query('select frozen_until::text from coach_clients where id=$1', [link])).rows)
+      .toEqual([{ frozen_until: '2026-11-06' }]);
+  } finally {
+    await clock(TEST_NOW);
+  }
 });

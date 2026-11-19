@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { expect, it, vi } from 'vitest';
 import type { AppDatabase } from '@/types/app-database';
-import { runTool } from './server';
+import { playerWorkout, runTool } from './server';
 import type { ToolContext } from './types';
 
 vi.mock('server-only', () => ({}));
@@ -26,8 +26,8 @@ const plan = {
   }],
 };
 
-function fixture({ rest = false, noPlan = false, rotating = false, role = 'player' }: {
-  rest?: boolean; noPlan?: boolean; rotating?: boolean; role?: ToolContext['actor']['role'];
+function fixture({ rest = false, noPlan = false, rotating = false, cardio = false, role = 'player' }: {
+  rest?: boolean; noPlan?: boolean; rotating?: boolean; cardio?: boolean; role?: ToolContext['actor']['role'];
 } = {}) {
   let logged: { meal_id: string; log_date: string; completed_at: string | null; swaps: unknown; eaten_macros: unknown }[] = [];
   const calls: { path: string; body: unknown }[] = [];
@@ -44,11 +44,15 @@ function fixture({ rest = false, noPlan = false, rotating = false, role = 'playe
       case 'programs':
         return Response.json(url.searchParams.get('player_id') === `eq.${player}` && !noPlan ? [{
           id: 'program', title: 'Training', settings: {}, program_days: [{
-            id: 'day', title: 'Upper body', position: 1, weekday: rotating ? null : 5, is_rest_day: rest,
-            program_exercises: [{ id: 'exercise', position: 1, sets: 2, reps_min: 8, reps_max: 10,
+            id: 'day', title: cardio ? 'Conditioning' : 'Upper body', position: 1, weekday: rotating ? null : 5, is_rest_day: rest,
+            ...(cardio && url.searchParams.get('select')?.includes('program_cardio(*)') && {
+              program_cardio: [{ id: 'bike', day_id: 'day', position: 1, kind: 'Bike', minutes: 30 }],
+            }),
+            program_exercises: cardio ? [] : [{ id: 'exercise', position: 1, sets: 2, reps_min: 8, reps_max: 10,
               rest_seconds: 90, exercises: { name_en: 'Press' } }],
           }, ...(rotating ? [{ id: 'day-2', title: 'Lower body', position: 2, program_exercises: [] }] : [])],
         }] : []);
+      case 'readiness_decisions': return Response.json([]);
       case 'ai_my_training_days': return Response.json([rest ? 3 : 4]);
       case 'ai_player_workout_history': return Response.json(url.searchParams.get('training_date') === `lt.${today}` ? [{
         id: 'session', program_day_id: 'day', training_date: '2026-11-18', completed_at: '2026-11-18T09:00:00Z',
@@ -95,6 +99,13 @@ it('reads the caller’s workout in their local day', async () => {
     title: 'Upper body', exercises: [{ name: 'Press', sets: 2, restSeconds: 90,
       reps: [{ min: 8, max: 10 }, { min: 8, max: 10 }] }],
   } });
+});
+
+it('reads the scheduled cardio blocks for KO on a cardio-only day', async () => {
+  const { ctx } = fixture({ cardio: true });
+  expect(await playerWorkout({ ...ctx, client: 'ko' }, today)).toMatchObject({
+    rest: false, day: { title: 'Conditioning', exercises: [], cardio: [{ kind: 'Bike', minutes: 30 }] },
+  });
 });
 
 it('advances rotating workouts using the caller’s completed sessions and training weekdays', async () => {
