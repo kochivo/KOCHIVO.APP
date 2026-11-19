@@ -97,7 +97,7 @@ it('keeps the real widget for pilots', async () => {
   vi.stubEnv('GOOGLE_GENERATIVE_AI_API_KEY', 'test');
   const result = await KoAccountLink({});
   expect(result?.type).not.toBe(KoTeaser);
-  expect(result?.props).toEqual({ role: 'captain' });
+  expect(result?.props).toEqual({ role: 'captain', userId: 'user' });
 });
 it('opens the real widget to every signed-in account when the pilot list is *', async () => {
   for (const key of ['KO_ENABLED', 'KO_GEMINI_PAID']) vi.stubEnv(key, '1');

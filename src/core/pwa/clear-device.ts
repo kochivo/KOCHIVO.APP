@@ -4,7 +4,14 @@ import { rememberLocalUser } from '@/core/offline/remembered-user';
 export async function clearDeviceCache() {
   clearDeviceRole();
   rememberLocalUser(null);
-  try { window.localStorage.removeItem('kochivo.my-captain'); } catch { /* Storage may be blocked. */ }
+  try {
+    const storage = window.localStorage;
+    storage.removeItem('kochivo.my-captain');
+    for (let index = storage.length - 1; index >= 0; index--) {
+      const key = storage.key(index);
+      if (key?.startsWith('kochivo.ko.chat.')) storage.removeItem(key);
+    }
+  } catch { /* Storage may be blocked. */ }
   if ('caches' in window) {
     const names = await caches.keys();
     await Promise.all(names.filter(name => name.startsWith('kochivo-shell-')).map(name => caches.delete(name)));

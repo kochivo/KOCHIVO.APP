@@ -16,15 +16,16 @@ import type { KoExpression, KoRole } from '../policy';
 import { KoAvatar } from '@/ui/ko-avatar';
 import { KoChat } from './ko-chat';
 
-export function KoPanel({ role, expression, onExpression, onClose, openerId, interactive = false, account = false, closing = false, onClosed }: {
+export function KoPanel({ role, expression, onExpression, onClose, openerId, interactive = false, account = false, userId, closing = false, onClosed }: {
   role: KoRole; expression: KoExpression; onExpression: (value: KoExpression) => void; onClose: () => void; openerId: string; interactive?: boolean;
-  account?: boolean; closing?: boolean; onClosed?: () => void;
+  account?: boolean; userId?: string; closing?: boolean; onClosed?: () => void;
 }) {
   const t = useT(messages);
   interactive = account || interactive;
   const titleId = useId();
   const pathname = usePathname();
   const [dropped, setDropped] = useState(false);
+  const [header, setHeader] = useState<HTMLElement | null>(null);
   const context = dropped ? null : contextFromPath(pathname ?? '/');
   const Icon = role === 'captain' ? ClipboardList : Dumbbell;
   return <ResponsiveDialog data-ko-panel data-closing={closing} aria-labelledby={titleId} fallbackId={openerId} openerId={openerId} onDismiss={onClose}
@@ -37,7 +38,7 @@ export function KoPanel({ role, expression, onExpression, onClose, openerId, int
     }}
     className="sheet fixed inset-auto start-[max(1rem,var(--safe-start))] bottom-[calc(var(--nav-clearance)+4.5rem)] z-50 m-0 max-h-[calc(100dvh-var(--safe-top)-var(--nav-clearance)-6rem)] w-96 max-w-[calc(100vw-2rem)] overflow-y-auto rounded-card border border-line text-start text-ink shadow-2xl backdrop:bg-bg-deep/50 lg:bottom-24 lg:max-h-[calc(100dvh-var(--safe-top)-7rem)] motion-reduce:animate-none">
     <div className="glass-strong">
-    <header className="glass-strong sticky top-0 z-10 flex items-center gap-stack border-b border-line p-card before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-linear-to-r before:from-line before:via-lime/50 before:to-line">
+    <header ref={userId ? setHeader : undefined} className="glass-strong sticky top-0 z-10 flex items-center gap-stack border-b border-line p-card before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-linear-to-r before:from-line before:via-lime/50 before:to-line">
       <span className="relative size-10 shrink-0"><KoAvatar expression={expression} className="size-10" /><span aria-hidden className="absolute bottom-0 end-0 size-2 rounded-full bg-lime ring-2 ring-surface" /></span>
       <div><span id={interactive ? titleId : undefined} className="font-display text-xl font-extrabold">{t('name')}</span>
         <p className="text-xs text-muted">{t('subtitle')}</p></div>
@@ -48,7 +49,7 @@ export function KoPanel({ role, expression, onExpression, onClose, openerId, int
       {captainWorkspaceEnabled() ? <IconButton type="button" aria-label={t('context.remove')} onClick={() => setDropped(true)} className="grid min-h-12 min-w-12 place-items-center"><X aria-hidden className="size-4" /></IconButton> : <button type="button" aria-label={t('context.remove')} onClick={() => setDropped(true)} className="grid min-h-12 min-w-12 place-items-center"><X aria-hidden className="size-4" /></button>}
     </div>}
     <KoFeed avatar={value => <KoAvatar expression={value} className="size-10" />} />
-    {interactive ? <KoChat role={role} context={context} onExpression={onExpression} account={account} /> : <div className="space-y-card-gap p-card">
+    {interactive ? <KoChat role={role} context={context} onExpression={onExpression} account={account} userId={userId} header={header} /> : <div className="space-y-card-gap p-card">
       <div className="text-center">
         {captainWorkspaceEnabled() ? <Button variant="secondary" aria-label={t('changeExpression')} onClick={() => onExpression(nextKoExpression(expression))} className="mx-auto min-h-12 flex-col gap-inline rounded-card border border-line p-stack hover:scale-105 motion-reduce:hover:scale-100">
           <KoAvatar expression={expression} className="size-32" />

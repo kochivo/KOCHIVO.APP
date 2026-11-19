@@ -15,8 +15,8 @@ import { KoAvatar } from '@/ui/ko-avatar';
 import type { KoPanel } from './ko-panel';
 import { Button } from '@/ui/button';
 
-export function KoWidget({ role, interactive = false, account = false, panelMessages }: {
-  role: KoRole; interactive?: boolean; account?: boolean;
+export function KoWidget({ role, interactive = false, account = false, userId, panelMessages }: {
+  role: KoRole; interactive?: boolean; account?: boolean; userId?: string;
   panelMessages?: { loading: string; error: string; retry: string; fallback: string };
 }) {
   const t = useT(messages);
@@ -72,7 +72,7 @@ export function KoWidget({ role, interactive = false, account = false, panelMess
     </button>
     {open && (panel.Component ? <panel.Component role={role} expression={expression} closing={closing}
       onClosed={() => { setOpen(false); setClosing(false); }} onExpression={setExpression} onClose={close}
-      openerId={openerId} interactive={interactive} account={account} />
+      openerId={openerId} interactive={interactive} account={account} userId={userId} />
       : <ResponsiveDialog data-ko-panel aria-label={t('accountChatTitle')} fallbackId={openerId} openerId={openerId} onDismiss={close}
         className="sheet fixed inset-auto start-[max(1rem,var(--safe-start))] bottom-[calc(var(--nav-clearance)+4.5rem)] z-50 m-0 w-96 max-w-[calc(100vw-2rem)] rounded-card border border-line p-card text-start text-ink lg:bottom-24">
         {captainWorkspaceEnabled() ? <IconButton type="button" onClick={close} aria-label={t('close')} className="ms-auto grid min-h-12 min-w-12 place-items-center"><X aria-hidden className="size-5" /></IconButton> : <button type="button" onClick={close} aria-label={t('close')} className="ms-auto grid min-h-12 min-w-12 place-items-center"><X aria-hidden className="size-5" /></button>}

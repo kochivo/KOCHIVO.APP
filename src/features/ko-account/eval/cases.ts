@@ -16,6 +16,10 @@ const deadlift = 'deadlift|ديدلفت|دیدلفت|رفعة ميتة|الأر�
 const press = 'shoulder press|overhead|كتف|ضغط';
 
 const player: KoEvalCase[] = [
+  { id: 'p51', role: 'player', tag: 'slang', text: 'عندي تمرين ايه النهارده', expect: 'my_workout', args: { day: 'today' } },
+  { id: 'p52', role: 'player', tag: 'slang', text: 'تمرين النهارده؟', expect: 'my_workout', args: { day: 'today' } },
+  { id: 'p53', role: 'player', tag: 'slang', text: 'بكرة عندي ايه', expect: 'my_workout', args: { day: 'tomorrow' } },
+  { id: 'p54', role: 'player', tag: 'slang', text: 'السكوات كام عدة', expect: 'read_exercise', args: { exercise: squat } },
   { id: 'p01', role: 'player', tag: 'clear', text: 'أنا ماشي كويس الشهر ده؟', expect: 'my_progress' },
   { id: 'p02', role: 'player', tag: 'slang', text: 'طمني عليا يا كو، عامل ايه في التمرين', expect: 'my_progress' },
   { id: 'p03', role: 'player', tag: 'clear', text: 'فاضلي قد ايه على التاج؟', expect: 'my_progress' },

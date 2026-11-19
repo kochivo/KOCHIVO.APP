@@ -2,11 +2,13 @@
 
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { IconButton } from '@/ui/icon-button';
-import { Fragment, useEffect, useRef, useState } from 'react';
+import { Fragment, Suspense, lazy, useCallback, useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
+import { createPortal } from 'react-dom';
 import { ArrowUp, Camera, Mic, Square, X } from 'lucide-react';
 import { usePathname } from 'next/navigation';
-import { KoFeed } from './ko-feed';
+// The feed pulls the whole player data layer; load it only when the player opens it.
+const KoFeed = lazy(() => import('./ko-feed').then(module => ({ default: module.KoFeed })));
 import { KoAvatar } from '@/ui/ko-avatar';
 import { KoMessage } from './ko-message';
 import { KoTyping } from './ko-typing';
@@ -15,7 +17,7 @@ import { KoCreditMeter } from './ko-credit-meter';
 import { KoQuickButtons } from './ko-quick-buttons';
 import { KoUpgradeCard } from './ko-upgrade-card';
 import { chatActions, latestPendingAction, useKoActions } from '../hooks/use-ko-actions';
-import type { ChatAction } from '../hooks/use-ko-actions';
+import { koHistoryLimit, useKoHistory } from '../hooks/use-ko-history';
 import { contextFromPath } from '../context';
 import type { KoContext } from '../context';
 import { canSubmitKoDraft } from '../composer-draft';
@@ -29,10 +31,10 @@ import type { KoReply } from '@/features/ko-core';
 import type { AccountReply } from '@/features/ko-core';
 import { Button } from '@/ui/button';
 
-type Extras = Pick<Extract<AccountReply, { kind: 'message' }>, 'quick' | 'upgrade'>;
-type Entry = Extras & { speaker: 'user' | 'ko'; text: string; contextText?: string; actions?: ChatAction[] };
-
-export function KoChat({ role, onExpression, account = false, context: suppliedContext }: { role: KoRole; onExpression?: (value: KoExpression) => void; account?: boolean; context?: KoContext | null }) {
+export function KoChat({ role, onExpression, account = false, context: suppliedContext, userId, header, now = Date.now }: {
+  role: KoRole; onExpression?: (value: KoExpression) => void; account?: boolean; context?: KoContext | null;
+  userId?: string; header?: HTMLElement | null; now?: () => number;
+}) {
   const t = useT(messages);
   const locale = useLocale();
   const pathname = usePathname();
@@ -44,7 +46,6 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
   const [draft, setDraft] = useState('');
   const [clip, setClip] = useState<Blob | null>(null);
   const [photo, setPhoto] = useState<File | null>(null);
-  const [history, setHistory] = useState<Entry[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const active = useRef<AbortController | null>(null);
@@ -52,8 +53,15 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
   const camera = useRef<HTMLInputElement>(null);
   const recorder = useKoRecorder(setClip, () => setError(t('micError')));
   const actions = useKoActions(locale, t('chatError'));
+  const resetConversation = useCallback(() => {
+    active.current?.abort();
+    setBusy(false);
+    setSent(false);
+    onExpression?.('welcome');
+  }, [onExpression]);
+  const { history, setHistory, clearHistory } = useKoHistory(account ? userId : undefined, actions.states, resetConversation, now);
   const cards = history.flatMap(entry => entry.actions ?? []);
-  const pending = history.at(-1)?.actions?.some(action => !actions.states[action.id]);
+  const pending = history.at(-1)?.actions?.some(action => !action.restoredState && !actions.states[action.id]);
 
   useEffect(() => () => active.current?.abort(), []);
   const serializedContext = JSON.stringify(context);
@@ -105,23 +113,27 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
     else if (prompt) body.set('text', prompt);
     try {
       const response = await fetch(account ? '/api/ko' : '/dev/ko/chat', { method: 'POST', body, signal: controller.signal });
+      if (controller.signal.aborted) return;
       if (!response.ok) {
         const failure = await response.json().catch(() => null) as { error?: string } | null;
+        if (controller.signal.aborted) return;
         setError(t(failure?.error === 'configuration' ? 'chatSetup' : 'chatError'));
         onExpression?.('welcome');
         return;
       }
       const result = await response.json() as KoReply | AccountReply;
+      if (controller.signal.aborted) return;
       const answer = result.kind === 'message' || result.kind === 'confirm' ? result.text
         : result.kind === 'updated' || result.kind === 'read'
         ? t(result.kind === 'updated' ? 'chatUpdated' : 'chatRead', { sets: result.sets, reps: result.reps })
         : result.kind === 'clarify' ? result.question : t('chatUnsupported');
       const newCards = account && (result.kind === 'message' || result.kind === 'confirm') ? chatActions(result) : undefined;
+      const timestamp = now();
       setHistory(entries => [...entries, { speaker: 'user' as const, text: clip ? t('voiceNote') : photo ? `${t('mealPhoto')} ${prompt}`.trim() : prompt,
-        contextText: clip ? '' : prompt },
-        { speaker: 'ko' as const, text: answer, actions: newCards, ...(result.kind === 'message' && {
+        contextText: clip ? '' : prompt, timestamp },
+        { speaker: 'ko' as const, text: answer, timestamp, actions: newCards, ...(result.kind === 'message' && {
           quick: result.quick, upgrade: result.upgrade,
-        }) }].slice(-30));
+        }) }].slice(-(userId ? koHistoryLimit : 30)));
       setDraft('');
       setClip(null);
       setPhoto(null);
@@ -138,17 +150,21 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
   }
 
   const recording = recorder.status === 'recording';
+  const suggestions = suggestionsFor(role, context, sent || Boolean(userId && history.length));
   return <div data-ko-chat>
+    {account && userId && header && history.length > 0 && createPortal(
+      <Button type="button" variant="ghost" className="min-h-12 shrink-0 text-xs" aria-label={t('clearChat')}
+        onClick={clearHistory}>{t('clearChat')}</Button>, header)}
     {account && context && <div className="flex items-center gap-inline border-b border-line px-page-x text-sm text-muted">
       <span>{t(`context.${context.screen}`)}</span>
       {captainWorkspaceEnabled() ? <IconButton type="button" aria-label={t('context.remove')} onClick={() => setDropped(true)} className="grid min-h-12 min-w-12 place-items-center"><X aria-hidden className="size-4" /></IconButton> : <button type="button" aria-label={t('context.remove')} onClick={() => setDropped(true)} className="grid min-h-12 min-w-12 place-items-center"><X aria-hidden className="size-4" /></button>}
     </div>}
-    {showFeed && <KoFeed avatar={value => <KoAvatar expression={value} className="size-10" />} />}
+    {showFeed && <Suspense fallback={<KoTyping />}><KoFeed avatar={value => <KoAvatar expression={value} className="size-10" />} /></Suspense>}
     <div ref={log} role="log" aria-label={t(account ? 'accountChatTitle' : 'chatTitle')} className="flex max-h-60 min-h-32 flex-col gap-stack overflow-y-auto p-card text-sm">
       {account && <KoCreditMeter key={actions.revision} role={role} />}
-      <KoMessage speaker="ko" text={t(account
+      {(!userId || history.length === 0) && <KoMessage speaker="ko" text={t(account
         ? role === 'captain' ? 'accountCaptain' : 'accountPlayer'
-        : role === 'captain' ? 'chatCaptain' : 'chatPlayer')} />
+        : role === 'captain' ? 'chatCaptain' : 'chatPlayer')} />}
       {history.map((entry, index) => <Fragment key={entry.actions?.[0]?.id ?? index}>
         <KoMessage speaker={entry.speaker} text={entry.text}>
           {entry.quick?.length ? <KoQuickButtons quick={entry.quick} disabled={busy || recorder.status !== 'idle' || Boolean(clip || photo)}
@@ -156,9 +172,10 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
         </KoMessage>
         {account && entry.actions?.map((action, position) => {
           const state = actions.states[action.id];
+          const restored = action.restoredState;
           const upgrade = state?.kind === 'failed' ? state.upgrade : undefined;
           return <Fragment key={action.id}><KoActionCard action={action} number={position + 1}
-          state={state} busy={busy || recorder.status !== 'idle' || Boolean(clip || photo)}
+          state={restored?.kind === 'expired' ? undefined : restored ?? state} busy={busy || recorder.status !== 'idle' || Boolean(clip || photo)}
           focus={position === 0 && index === history.length - 1}
           onConfirm={() => actions.confirm(action)} onCancel={() => actions.cancel(action)} />
           {role === 'captain' && upgrade && <KoUpgradeCard upgrade={upgrade} />}
@@ -167,8 +184,8 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
       </Fragment>)}
       {busy && <KoTyping />}
     </div>
-    {suggestionsFor(role, context, sent).length > 0 && <div className="flex flex-wrap gap-inline px-page-x pb-stack" role="group" aria-label={t('suggestions')}>
-      {suggestionsFor(role, context, sent).map(key => <Button key={key} type="button" disabled={busy || Boolean(clip) || recorder.status !== 'idle' || (key === 'suggest.player' && !contextName)}
+    {suggestions.length > 0 && <div className="flex flex-wrap gap-inline px-page-x pb-stack" role="group" aria-label={t('suggestions')}>
+      {suggestions.map(key => <Button key={key} type="button" disabled={busy || Boolean(clip) || recorder.status !== 'idle' || (key === 'suggest.player' && !contextName)}
         variant={'secondary'} block={false} className={"min-h-12 rounded-chip px-stack text-start text-sm text-lime-ink disabled:opacity-50"}
         onClick={() => {
           if (key === 'suggest.today') { setShowFeed(account); setSent(true); return; }

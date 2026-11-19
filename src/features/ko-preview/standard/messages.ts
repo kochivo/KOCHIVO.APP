@@ -13,6 +13,7 @@ export const arStd = {
   'suggest.meal': 'وجبتي القادمة', accountChatTitle: 'مساعد Kochivo', home: 'الرئيسية',
   confirmLabel: 'تأكيد الطلب', confirmAction: 'نفّذ', confirmCancel: 'إلغاء', confirmCancelled: 'تم الإلغاء.',
   confirmExpired: 'انتهت صلاحية هذا الطلب. أرسله مجدداً.', 'context.player': 'صفحة اللاعب', 'context.program': 'صفحة البرنامج',
+  clearChat: 'امسح المحادثة',
   'context.inbox': 'المهام', 'context.nutrition': 'التغذية', 'context.home': 'الرئيسية', 'context.remove': 'أزل سياق الصفحة',
   suggestions: 'اقتراحات', 'suggest.today': 'ما الذي يحتاج إلى اهتمامي اليوم؟', 'suggest.player': 'كيف حال {name}؟',
   'suggest.program': 'أعدّ برنامجاً', name: 'KO', subtitle: 'مساعدك في Kochivo', open: 'افتح KO، مساعدك القادم',

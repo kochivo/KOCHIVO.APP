@@ -1,7 +1,7 @@
 import 'server-only';
 import { nutritionDay, playerMealLogs, playerNutritionPlan, playerWorkout } from '@/features/ai-tools/server';
 import { isRestDay } from '@/features/player-home/server';
-import { fetchPlayerPreview } from '@/features/player-preview';
+import { fetchPlayerPreview } from '@/features/player-preview/server';
 import { localDate } from '@/lib/dates';
 import type { createT } from '@/core/i18n/messages';
 import type { messages } from '../messages';

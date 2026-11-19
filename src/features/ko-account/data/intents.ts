@@ -17,6 +17,8 @@ const meal = z.strictObject({
 });
 
 const tools = {
+  my_workout: { schema: z.strictObject({ day: z.enum(['today', 'tomorrow']).default('today') }),
+    description: 'Player asks what their workout is today or tomorrow, which exercises, or whether today is a rest day (عندي تمرين ايه النهارده، تمرين النهارده، تمرين بكرة، النهارده راحة؟). Not for one named exercise; use read_exercise for that.' },
   my_progress: { schema: z.strictObject({}),
     description: 'Player asks how am I doing / أنا ماشي كويس, progress, rank, lifetime points, monthly adherence or distance to the crown. Read only their own progress. For a workout not counted use why_not_counted instead.' },
   why_not_counted: { schema: z.strictObject({}),
@@ -33,7 +35,7 @@ const tools = {
   }).refine(args => args.reason !== 'injury' || args.injury !== undefined, { path: ['injury'] }),
     description: 'Player requests alternatives for a named exercise in their active program. Machine busy / taken / occupied → reason busy: read-only alternatives, no request or plan change. Doesn\'t feel right / uncomfortable without a body part → discomfort: captain approval for a permanent swap. Named knee, shoulder or lower back pain → injury with that explicit body part: captain approval. Other pain → clarify and suggest asking the captain. Never medical advice.' },
   read_exercise: { schema: z.strictObject({ ...namedExercise, player: name.optional(), how: z.boolean().optional() }),
-    description: 'Read exercise sets, reps and coach instructions from the current assigned training plan.' },
+    description: 'Only when the player names a specific exercise. Read its sets, reps and coach instructions from the current assigned training plan.' },
   update_exercise: { schema: z.strictObject({ ...target, ...namedExercise, sets: sets.optional(), reps: reps.optional() }),
     description: 'Propose an explicit absolute sets or reps change in the assigned plan. Preserve unspecified values. Ask if relative, ambiguous or missing.' },
   create_training: { schema: z.strictObject({ ...target, title, days: z.array(z.strictObject({
@@ -68,7 +70,7 @@ export function clarifyIntent(reason: ClarificationReason): Clarification {
 }
 
 const captain = ['player_summary', 'team_summary', 'read_exercise', 'update_exercise', 'create_training', 'create_nutrition', 'renew_subscription', 'send_reminder', 'clarify'] as const;
-const player = ['my_progress', 'why_not_counted', 'read_exercise', 'read_nutrition', 'log_meal', 'swap_exercise', 'clarify'] as const;
+const player = ['my_workout', 'my_progress', 'why_not_counted', 'read_exercise', 'read_nutrition', 'log_meal', 'swap_exercise', 'clarify'] as const;
 
 type GeminiSchema = {
   type?: string;

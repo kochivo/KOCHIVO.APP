@@ -4,6 +4,7 @@ import { uuidv7 } from '@/core/offline/ids';
 import { createT } from '@/core/i18n/messages';
 import { localDate } from '@/lib/dates';
 import type { ArabicStyle } from '@/core/i18n/locale';
+import { playerWorkout } from '@/features/ai-tools/server';
 import { currentExercise, resolvePlayer } from './account';
 import type { KoActor } from './account';
 import { approvalLifetimeMs, issueApproval } from './approval';
@@ -21,7 +22,7 @@ type Locale = 'ar' | 'en';
 import type { AccountReply } from '@/features/ko-core';
 export type { AccountReply } from '@/features/ko-core';
 export const say = (text: string): AccountReply => ({ kind: 'message', text });
-const range = (min: number, max: number | null) => max !== null && max !== min ? `${min}–${max}` : String(min);
+const range = (min: number, max: number | null, separator = '–') => max !== null && max !== min ? `${min}${separator}${max}` : String(min);
 
 export async function executeIntent(actor: KoActor, intent: Intent, locale: Locale, secret: string, now: number,
   contextPlayer?: { id: string; name: string }, signal = new AbortController().signal, style?: ArabicStyle): Promise<AccountReply> {
@@ -33,7 +34,29 @@ export async function executeIntent(actor: KoActor, intent: Intent, locale: Loca
       token: issueApproval({ kind, payload, player, actor: actor.id, id, expires: now + approvalLifetimeMs, label }, secret) }] };
   };
   if (intent.kind === 'clarify') return say('reason' in intent
-    ? (intent.reason === 'log_meal' ? actionT('clarify_log_meal') : t(`clarify_${intent.reason}`)) : intent.args.question);
+    ? (intent.reason === 'log_meal' || intent.reason === 'my_workout'
+      ? actionT(`clarify_${intent.reason}`) : t(`clarify_${intent.reason}`)) : intent.args.question);
+  if (intent.kind === 'my_workout') {
+    if (actor.role !== 'player') return say(actionT('unclear'));
+    const ctx = await mealToolContext(actor, now, signal);
+    const tomorrow = intent.args.day === 'tomorrow';
+    let date = localDate(ctx.now, ctx.timezone);
+    if (tomorrow) {
+      // Advance the local calendar date even when the next day has a different UTC offset.
+      const calendarDay = new Date(`${date}T12:00:00Z`);
+      calendarDay.setUTCDate(calendarDay.getUTCDate() + 1);
+      date = localDate(calendarDay, 'UTC');
+    }
+    const workout = await playerWorkout(ctx, date);
+    if (!workout) return say(actionT('workoutNoProgram'));
+    if (workout.rest || !workout.day) return say(actionT(tomorrow ? 'workoutRestTomorrow' : 'workoutRestToday'));
+    const title = workout.day.title || actionT('workoutUntitled');
+    const lines = workout.day.exercises.slice(0, 10).map(row => actionT('workoutExercise', {
+      name: (locale === 'ar' ? row.name_ar || row.name_en : row.name_en || row.name_ar) ?? '',
+      sets: row.sets, reps: range(row.reps_min, row.reps_max, '-'),
+    }));
+    return say([actionT(tomorrow ? 'workoutTomorrow' : 'workoutToday', { title }), ...lines].join('\n'));
+  }
   if (intent.kind === 'my_progress' || intent.kind === 'why_not_counted' ||
       intent.kind === 'player_summary' || intent.kind === 'team_summary')
     return say(await readProgress(actor, intent, locale, now, contextPlayer));

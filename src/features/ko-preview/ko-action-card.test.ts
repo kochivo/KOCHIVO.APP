@@ -16,7 +16,7 @@ import { createT } from '@/core/i18n/messages';
 const hooks = vi.hoisted(() => ({ active: false, cursor: 0, values: [] as unknown[], effects: [] as (() => void | (() => void))[], locale: 'ar' as 'ar' | 'en', setClip: undefined as ((clip: Blob) => void) | undefined }));
 vi.mock('react', async importOriginal => {
   const original = await importOriginal<typeof ReactModule>();
-  return { ...original,
+  return { ...original, useCallback: (callback: () => void, deps: readonly unknown[]) => hooks.active ? callback : original.useCallback(callback, deps),
     useState(initial: unknown) {
       if (!hooks.active) return original.useState(initial);
       const index = hooks.cursor++;

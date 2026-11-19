@@ -1,7 +1,7 @@
-import { afterEach, expect, it } from 'vitest';
+import { afterEach, expect, it, vi } from 'vitest';
 import Dexie from 'dexie';
 import { localDb, setLocalUser } from '@/core/offline/db';
-import { closeDeviceDb, finalDeviceSync } from './clear-device';
+import { clearDeviceCache, closeDeviceDb, finalDeviceSync } from './clear-device';
 
 afterEach(async () => { await setLocalUser(null); await Dexie.delete('kochivo-logout-player'); });
 
@@ -24,4 +24,18 @@ it.each([false, true])('closes local access and retains only pending databases: 
 it('signs a captain out without a local database', async () => {
   await expect(finalDeviceSync()).resolves.toBeUndefined();
   await expect(closeDeviceDb()).resolves.toBeUndefined();
+});
+
+it('clears KO chat for every account during device cleanup', async () => {
+  const keys = new Set(['kochivo.ko.chat.a', 'kochivo.ko.chat.b', 'other']);
+  vi.stubGlobal('window', { localStorage: {
+    get length() { return keys.size; },
+    key: (index: number) => [...keys][index],
+    removeItem: (key: string) => keys.delete(key),
+  } });
+  vi.stubGlobal('navigator', {});
+  try {
+    await clearDeviceCache();
+    expect([...keys]).toEqual(['other']);
+  } finally { vi.unstubAllGlobals(); }
 });

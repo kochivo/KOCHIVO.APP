@@ -24,6 +24,9 @@ vi.mock('react', async original => {
   } };
 });
 vi.mock('server-only', () => ({}));
+vi.mock('@/core/supabase/server', () => ({
+  supabaseServer: () => ({ auth: { getClaims: async () => ({ data: { claims: { sub: 'pilot-user' } } }) } }),
+}));
 vi.mock('@/features/ko-entry/server', () => ({ koPilotAvailable: () => state.pilot, koTeaserEnabled: () => false }));
 vi.mock('next/headers', () => ({ headers: () => new Headers({ 'x-kochivo-path': state.path }), cookies: () => new Map() }));
 vi.mock('next/navigation', () => ({ usePathname: () => state.path }));
@@ -47,7 +50,7 @@ it.each(['/player/workout', '/player/workout/day', '/player/onboarding', '/playe
 it.each([false, true])('renders the gated client widget for a pilot (player=%s)', async player => {
   state.pilot = true;
   const result = await KoAccountLink({ player });
-  expect(result?.props).toEqual({ role: player ? 'player' : 'captain' });
+  expect(result?.props).toEqual({ role: player ? 'player' : 'captain', userId: 'pilot-user' });
   expect(result?.type).not.toBe('a');
 });
 

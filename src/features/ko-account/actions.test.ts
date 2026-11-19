@@ -1,7 +1,7 @@
 import { afterEach, expect, it, vi } from 'vitest';
 import * as ai from '@/features/ai-tools/server';
 import * as entry from '@/features/ko-entry/server';
-import * as preview from '@/features/player-preview';
+import * as preview from '@/features/player-preview/server';
 import type { AccountReply } from '@/features/ko-core';
 import * as account from './data/account';
 import type { KoActor } from './data/account';

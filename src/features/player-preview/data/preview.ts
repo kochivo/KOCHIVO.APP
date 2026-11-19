@@ -1,4 +1,4 @@
-'use server';
+import 'server-only';
 import { unstable_rethrow } from 'next/navigation';
 import { foodName } from '@/lib/display-name';
 import { getLocale } from '@/core/i18n/server';
@@ -7,9 +7,9 @@ import { messages } from '../messages';
 
 import { z } from 'zod';
 import { supabaseServer } from '@/core/supabase/server';
-import { mapProgramSnapshot, pickTodayDay } from '@/features/player-home';
+import { mapProgramSnapshot, pickTodayDay } from '@/features/player-home/server';
 import type { ProgramResponse } from '@/features/player-home';
-import { mapNutritionSnapshot } from '@/features/nutrition';
+import { mapNutritionSnapshot } from '@/features/nutrition/server';
 import type { WorkoutSessionRow } from '@/core/offline';
 import { localDate } from '@/lib/dates';
 import { activityWeek } from '../week';

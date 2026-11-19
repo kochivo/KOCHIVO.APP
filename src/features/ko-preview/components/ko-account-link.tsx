@@ -13,11 +13,11 @@ export async function KoAccountLink({ player = false }: { player?: boolean }) {
     if (/^\/player\/(?:workout|onboarding)(?:\/|$)/.test(path)) return null;
   }
   const role = player ? 'player' : 'captain';
-  if (pilot) return <KoAccountWidget role={role} />;
   const db = await supabaseServer();
   const { data, error } = await db.auth.getClaims();
   const userId = data?.claims?.sub;
   if (error || !userId || data.claims.is_anonymous === true) return null;
+  if (pilot) return <KoAccountWidget role={role} userId={userId} />;
   const waitlist = await db.from('ko_waitlist').select('user_id').eq('user_id', userId).maybeSingle();
   return <KoTeaser role={role} userId={userId} joined={Boolean(waitlist.data)} readFailed={Boolean(waitlist.error)} />;
 }
