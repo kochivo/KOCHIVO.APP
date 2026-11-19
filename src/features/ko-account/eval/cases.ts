@@ -1,4 +1,5 @@
 import type { KoTurn } from '@/features/ko-agent';
+import type { AnswerSource } from '@/features/ko-core';
 import type { Intent } from '../data/intents';
 
 type Kind = Intent['kind'];
@@ -8,6 +9,7 @@ export type KoEvalArgs = Record<string, string | number | boolean>;
 export interface KoEvalCase {
   id: string; role: 'player' | 'captain'; text: string; tag: KoEvalTag;
   expect: Kind | readonly Kind[]; args?: KoEvalArgs; history?: KoTurn[]; context?: string; facts?: string;
+  source?: AnswerSource;
 }
 
 const bench = 'bench|بنش|صدر';
@@ -141,7 +143,8 @@ const answers: KoEvalCase[] = [
   { id: 'a01', role: 'player', tag: 'slang', text: 'أنا ماشي كويس الشهر ده؟', expect: 'answer', facts: playerFacts },
   { id: 'a02', role: 'player', tag: 'slang', text: 'فاضلي كام سعرة النهارده', expect: 'answer', facts: playerFacts },
   { id: 'a03', role: 'player', tag: 'slang', text: 'الغدا بتاعي إيه', expect: 'answer', facts: playerFacts },
-  { id: 'a04', role: 'player', tag: 'slang', text: 'عندي تمرين ايه النهارده', expect: 'answer', facts: playerFacts },
+  { id: 'a04', role: 'player', tag: 'slang', text: 'عندي تمرين ايه النهارده', expect: 'my_workout', args: { day: 'today' },
+    facts: '[me] name: Nour Ali; role: player\n' + playerFacts },
   { id: 'a05', role: 'player', tag: 'clear', text: 'بكرة راحة؟', expect: 'answer', facts: playerFacts },
   { id: 'a06', role: 'player', tag: 'english', text: 'How far am I from the crown?', expect: 'answer', facts: playerFacts },
   { id: 'a07', role: 'player', tag: 'followup', text: 'طب والبروتين؟', expect: 'answer', facts: playerFacts,
@@ -154,4 +157,21 @@ const answers: KoEvalCase[] = [
     facts: teamFacts + '\n[player_summary] Nour; month done 11, planned 14, adherence 79%' },
 ];
 
-export const koEvalCases: readonly KoEvalCase[] = [...player, ...captain, ...answers];
+const smallTalk = [
+  ['انا اسمي ايه', 'slang'], ['عارفني؟', 'slang'], ['انت مين', 'slang'],
+  ['تعرف تعمل ايه', 'slang'], ['شكرا', 'slang'], ['صباح الخير', 'slang'],
+  ['ana esmy eh', 'franco'], ['who am I', 'english'],
+] as const;
+const identityFacts = {
+  player: '[me] name: Nour Ali; role: player\n' + playerFacts,
+  captain: '[me] name: Adel Amin; role: captain; roster count 12\n' + teamFacts,
+};
+const identity = (['player', 'captain'] as const).flatMap(role =>
+  smallTalk.map(([text, tag], index): KoEvalCase => ({
+    id: `me-${role}-${index + 1}`, role, text, tag, expect: 'answer', source: 'me', facts: identityFacts[role],
+  })));
+
+export const koEvalCases: readonly KoEvalCase[] = [...player, ...captain, ...answers, ...identity, {
+  id: 'me-captain-team', role: 'captain', tag: 'slang', text: 'مين واقع من لاعيبتي',
+  expect: 'team_summary', facts: identityFacts.captain,
+}];

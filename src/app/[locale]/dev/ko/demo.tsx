@@ -25,7 +25,7 @@ export function KoDemo({ initialRole }: { initialRole: KoRole }) {
         options={[{ value: 'captain', label: t('captainRole') }, { value: 'player', label: t('playerRole') }]} />
       <section className="glass-strong space-y-3 rounded-card p-6"><h2 className="text-xl font-bold">{t('sampleTitle')}</h2><p className="text-sm leading-7 text-muted">{t('sampleBody')}</p></section>
       <div className="grid gap-4 sm:grid-cols-2">{[role === 'captain' ? 'captainFeature' : 'playerFeature', 'soon'].map(key => <section key={key} className="rounded-card border border-line bg-surface p-6"><p className="text-sm font-bold">{t(key as 'captainFeature' | 'playerFeature' | 'soon')}</p><p className="mt-3 text-xs leading-7 text-muted">{t(role)}</p></section>)}</div>
-      <div data-preview-end className="min-h-64 rounded-card border border-line p-6 text-sm text-muted">{t('chatPrivacy')}</div>
+      <div data-preview-end aria-hidden="true" className="min-h-64 rounded-card border border-line" />
     </main>
     <FeedbackButton role={role} /><KoPreview key={role} role={role} interactive />
     <BottomNav aria-label={t('sampleTitle')} items={items} />

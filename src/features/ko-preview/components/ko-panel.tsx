@@ -40,7 +40,6 @@ export function KoPanel({ role, expression, onExpression, onClose, openerId, int
   const style = interactive ? {
     padding: 0,
     '--ko-floating-limit': floatingLimit,
-    '--ko-sheet-height': 'calc(var(--visible-viewport-height, 100dvh) - var(--safe-top) - 0.75rem)',
     '--ko-drag-offset': `${offset}px`,
   } as CSSProperties : { padding: 0, maxBlockSize: floatingLimit };
   return <ResponsiveDialog data-ko-panel data-closing={closing} aria-labelledby={titleId} fallbackId={openerId} openerId={openerId} onDismiss={onClose}
@@ -52,7 +51,7 @@ export function KoPanel({ role, expression, onExpression, onClose, openerId, int
       if (event.clientX < box.x || event.clientX > box.right || event.clientY < box.y || event.clientY > box.bottom) onClose();
     }}
     className={cn('sheet fixed inset-auto z-50 m-0 border border-line text-start text-ink shadow-2xl backdrop:bg-bg-deep/50 motion-reduce:animate-none', interactive
-      ? 'open:grid grid-rows-1 overflow-hidden max-lg:inset-x-0 max-lg:bottom-0 max-lg:h-(--ko-sheet-height) max-lg:max-h-none! max-lg:w-full max-lg:max-w-none max-lg:rounded-t-card motion-safe:max-lg:translate-y-(--ko-drag-offset) lg:start-[max(1rem,var(--safe-start))] lg:bottom-24 lg:max-h-(--ko-floating-limit) lg:w-96 lg:max-w-[calc(100vw-2rem)] lg:rounded-card'
+      ? 'open:grid grid-rows-1 overflow-hidden max-lg:inset-x-0 max-lg:[inset-block:calc(var(--safe-top)+0.75rem)_0] max-lg:h-auto max-lg:max-h-none! max-lg:w-full max-lg:max-w-none max-lg:rounded-t-card motion-safe:max-lg:translate-y-(--ko-drag-offset) lg:start-[max(1rem,var(--safe-start))] lg:bottom-24 lg:max-h-(--ko-floating-limit) lg:w-96 lg:max-w-[calc(100vw-2rem)] lg:rounded-card'
       : 'start-[max(1rem,var(--safe-start))] bottom-[calc(var(--nav-clearance)+4.5rem)] max-h-[calc(100dvh-var(--safe-top)-var(--nav-clearance)-6rem)] w-96 max-w-[calc(100vw-2rem)] overflow-y-auto rounded-card lg:bottom-24 lg:max-h-[calc(100dvh-var(--safe-top)-7rem)]')}>
     <div className={`glass-strong ${interactive ? 'flex min-h-0 flex-col overflow-hidden' : ''}`}>
     <header ref={userId ? setHeader : undefined} {...(interactive ? handlers : {})} className={`glass-strong sticky top-0 z-10 flex items-center gap-stack border-b border-line p-card before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-linear-to-r before:from-line before:via-lime/50 before:to-line ${interactive ? 'shrink-0 max-lg:touch-none max-lg:pt-section' : ''}`}>

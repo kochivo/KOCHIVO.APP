@@ -4,11 +4,13 @@ import type { KoActor } from './data/account';
 import * as account from './data/account';
 import * as entry from '@/features/ko-entry/server';
 import * as intents from './data/intents';
+import * as facts from './data/facts';
 import { postKoAccountChat } from './data/route';
 
-afterEach(() => { vi.restoreAllMocks(); });
+afterEach(() => { vi.restoreAllMocks(); vi.unstubAllEnvs(); });
 
 it.each(['allowed', 'limited', 'error', 'throws'] as const)('handles a shared rate RPC that is %s', async mode => {
+  vi.stubEnv('KO_ANSWER', '');
   vi.spyOn(Date, 'now').mockReturnValue(1_800_000_000_000);
   const rpc = vi.fn(async (name: string, args: unknown) => {
     if (name === 'ko_usage_tier') return { data: [{ captain_id: 'pilot', tier: 'entry' }], error: null };
@@ -23,6 +25,7 @@ it.each(['allowed', 'limited', 'error', 'throws'] as const)('handles a shared ra
     origin: new URL('https://ko.test'), pilots: new Set(['pilot']), secret: 's'.repeat(32), key: 'key',
   });
   const planner = vi.spyOn(intents, 'planIntent').mockResolvedValue([]);
+  const load = vi.spyOn(facts, 'loadFacts').mockResolvedValue('[me] name: Nour; role: captain');
   const logger = vi.spyOn(console, 'error').mockImplementation(() => {});
   const form = new FormData();
   form.set('text', 'Help');
@@ -33,5 +36,6 @@ it.each(['allowed', 'limited', 'error', 'throws'] as const)('handles a shared ra
   expect(response.status).toBe(mode === 'allowed' ? 200 : 429);
   if (mode !== 'allowed') expect(await response.json()).toEqual({ error: 'rateLimit' });
   expect(planner).toHaveBeenCalledTimes(mode === 'allowed' ? 1 : 0);
+  expect(load).toHaveBeenCalledTimes(mode === 'allowed' ? 1 : 0);
   expect(logger).toHaveBeenCalledTimes(mode === 'error' || mode === 'throws' ? 1 : 0);
 });

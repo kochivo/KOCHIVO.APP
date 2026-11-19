@@ -4,9 +4,7 @@ import { arStd } from './standard/messages';
 export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() {
-    return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? {
-      ...arStd,
-    } : undefined;
+    return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? { ...arStd } : undefined;
   },
   ar: {
     "trainingTitle.one": "برنامج {goal} ليوم واحد – {player}", "trainingTitle.two": "برنامج {goal} ليومين – {player}", "trainingTitle.few": "برنامج {goal} لـ{days} أيام – {player}", "trainingTitle.many": "برنامج {goal} لـ{days} يوم – {player}", "trainingTitle.other": "برنامج {goal} لـ{days} يوم – {player}", trainingDay: '{weekday} – {title}: {exercises}', trainingExercise: '{name} {sets}×{reps}',
@@ -14,7 +12,8 @@ export const messages = defineMessages({
     trainingSat: 'السبت', trainingSun: 'الأحد', trainingMon: 'الاتنين', trainingTue: 'التلات', trainingWed: 'الأربع', trainingThu: 'الخميس', trainingFri: 'الجمعة',
     trainingFocus_full: 'جسم كامل', trainingFocus_upper: 'جزء علوي', trainingFocus_lower: 'رجل', trainingFocus_push: 'دفع', trainingFocus_pull: 'سحب',
     trainingSeparator: '، ', trainingExerciseUnknown: 'تمرين', trainingEditHint: 'تقدر تعدّل التمارين بعد الحفظ من محرر البرنامج.', trainingFailed: 'مش قادر أعمل البرنامج دلوقتي، جرّب من مولّد البرامج في صفحة اللاعب.',
-    clarify_answer: 'مش لاقي إجابة واضحة في بياناتك.',
+    clarify_answer_captain: 'المعلومة دي مش عندي. أقدر أقولك مين واقع من لاعيبتك، أو أعمل برنامج، أو أفكّر لاعب بالتمرين.',
+    clarify_answer_player: 'المعلومة دي مش عندي. أقدر أقولك تمرينك، أكلك، أو تقدمك.',
     koBusy: 'KO عليه ضغط كبير النهارده. جرّب تاني بعد شوية، ولو لسه مش شغال جرّب بكرة الصبح.',
     koBusyNow: 'KO مشغول دلوقتي، جرّب كمان دقيقة.',
     limitReached: 'خلصت رسايلك معايا النهارده، وبترجع بكره الصبح. لحد كده الزراير دي شغالة:',
@@ -134,7 +133,8 @@ export const messages = defineMessages({
     trainingSat: 'Saturday', trainingSun: 'Sunday', trainingMon: 'Monday', trainingTue: 'Tuesday', trainingWed: 'Wednesday', trainingThu: 'Thursday', trainingFri: 'Friday',
     trainingFocus_full: 'Full body', trainingFocus_upper: 'Upper body', trainingFocus_lower: 'Legs', trainingFocus_push: 'Push', trainingFocus_pull: 'Pull',
     trainingSeparator: ', ', trainingExerciseUnknown: 'Exercise', trainingEditHint: 'You can change exercises in the program editor after saving.', trainingFailed: 'I couldn’t create the program. Try the program generator on the player’s page.',
-    clarify_answer: 'I couldn’t find a clear answer in your data.',
+    clarify_answer_captain: "I don't have that information. I can show who's falling behind, draft a program, or set up a workout reminder.",
+    clarify_answer_player: "I don't have that information. I can show your workout, meals, or progress.",
     koBusy: 'KO is busy today. Try again in a bit. If it still doesn’t work, try tomorrow morning.',
     koBusyNow: 'KO is busy right now. Try again in a minute.',
     limitReached: 'You’ve reached today’s message limit. It resets tomorrow morning. These buttons still work:',

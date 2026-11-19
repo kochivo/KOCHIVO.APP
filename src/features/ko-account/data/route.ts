@@ -17,6 +17,7 @@ import { confirmMealApproval, mealToolContext } from './log-meal';
 import { koAccountConfig } from '@/features/ko-entry/server';
 import { commitApproval, executeIntent, say } from './execute';
 import { reviewAnswer } from './answer-guard';
+import { chatReply as reply } from './reply';
 import { loadFacts } from './facts';
 import { groundIntent } from './ground';
 import { planIntent } from './intents';
@@ -54,7 +55,6 @@ export async function resolveContext(actor: KoActor, raw: unknown) {
   return row ? { id: row.player_id, name: row.full_name } : undefined;
 }
 
-const reply = (data: object, status = 200) => Response.json(data, { status, headers: { 'Cache-Control': 'no-store' } });
 const swapCookie = 'ko_swap_options';
 function playerReply(result: AccountReply, secure: boolean) {
   if (result.kind === 'confirm') return reply(result);

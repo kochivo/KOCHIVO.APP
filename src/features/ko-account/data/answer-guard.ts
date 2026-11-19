@@ -29,6 +29,7 @@ export function guardAnswer(text: string, facts: string, userText: string) {
 }
 
 export const fallbackBySource = {
+  me: { kind: 'clarify', args: { question: '' }, reason: 'answer' },
   workout_today: { kind: 'my_workout', args: { day: 'today' } },
   workout_tomorrow: { kind: 'my_workout', args: { day: 'tomorrow' } },
   nutrition_today: { kind: 'read_nutrition', args: {} },

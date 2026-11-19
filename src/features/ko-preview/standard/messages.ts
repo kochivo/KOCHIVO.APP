@@ -31,7 +31,7 @@ export const arStd = {
   chatRead: "Bench Press في الخطة التجريبية: {sets} و{reps} لكل مجموعة.", 'chatReadSets.one': "مجموعة واحدة", 'chatReadSets.two': "مجموعتان", 'chatReadSets.few': "{sets} مجموعات", 'chatReadSets.many': "{sets} مجموعة", 'chatReadSets.other': "{sets} مجموعة", 'chatReadReps.one': "تكرار واحد", 'chatReadReps.two': "تكراران", 'chatReadReps.few': "{reps} تكرارات", 'chatReadReps.many': "{reps} تكرارًا", 'chatReadReps.other': "{reps} تكرار",
   chatUnsupported: 'هذه التجربة خاصة بـBench Press في خطة أحمد. حدّد ما تريد تغييره.',
   chatSetup: 'مفتاح Gemini غير موجود على الخادم المحلي.', chatError: 'تعذّر إكمال الطلب الآن. حاول مجدداً.',
-  chatPrivacy: 'هذه بيانات تجريبية فقط. تُرسل رسالتك أو تسجيلك إلى Gemini عند الضغط على إرسال.', recordVoice: 'سجّل رسالة صوتية',
+  recordVoice: 'سجّل رسالة صوتية',
   stopVoice: 'أوقف التسجيل', voiceRecording: 'جاري التسجيل الآن…', voiceReady: 'التسجيل جاهز، أرسله عندما تريد',
   discardVoice: 'احذف التسجيل', voiceNote: 'رسالة صوتية', micError: 'تعذّر التسجيل. تحقق من إذن الميكروفون أو اكتب رسالتك.',
   accountCaptain: 'اكتب أو أرسل رسالة صوتية. حدّد ما تريد ولمن.', accountPlayer: 'اسأل عن خطتك، أو أرسل صورة وجبة لمراجعة حصتك.',
@@ -39,6 +39,6 @@ export const arStd = {
   sourceNutrition: 'طعام اليوم',
   sourceProgress: 'تقدّمك',
   sourceTeam: 'لاعبوك',
-  accountPrivacy: 'تُرسل رسالتك أو تسجيلك أو صورتك إلى Gemini عند الضغط على إرسال، وقد تستخدمها Google لتحسين خدماتها. لا ترسل بيانات حساسة.', mealPhoto: 'صورة وجبة',
+  sourceMe: 'ملفك الشخصي', mealPhoto: 'صورة وجبة',
   photoReady: 'صورة الوجبة جاهزة', discardPhoto: 'احذف الصورة', photoError: 'اختر صورة JPEG أو PNG أو WebP بحجم 3 ميجابايت أو أقل.',
 } as const;

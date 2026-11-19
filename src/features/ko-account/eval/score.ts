@@ -34,7 +34,9 @@ export function matchCase(testCase: KoEvalCase, intent: Intent | null): {
   const expected = typeof testCase.expect === 'string' ? [testCase.expect] : testCase.expect;
   const tool = expected.includes(intent.kind);
   const actualArgs: Record<string, unknown> = intent.args;
-  const args = Object.entries(testCase.args ?? {}).every(([key, value]) => {
+  const source = !testCase.source || (intent.kind === 'answer' && intent.args.sources.length === 1 &&
+    intent.args.sources[0] === testCase.source);
+  const args = source && Object.entries(testCase.args ?? {}).every(([key, value]) => {
     const actual = actualArgs[key];
     if (!Object.hasOwn(actualArgs, key) || actual === undefined) return false;
     if (typeof value !== 'string') return actual === value;
@@ -81,7 +83,7 @@ export function summarize(results: readonly EvalResult[]) {
   const latencies = results.map(result => result.ms).sort((a, b) => a - b);
   const failures = results.filter(result => result.outcome !== 'pass').map(result => ({
     id: result.case.id, text: result.case.text,
-    expected: { kind: result.case.expect, args: result.case.args },
+    expected: { kind: result.case.expect, args: result.case.args, source: result.case.source },
     got: result.got, outcome: result.outcome, error: result.error,
   }));
   return {

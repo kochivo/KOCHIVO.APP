@@ -31,6 +31,10 @@ it('offers a text composer and microphone on the explicit demo only', () => {
     role: 'captain', expression: 'welcome', onExpression() {}, onClose() {}, openerId: 'opener', interactive: true,
   })));
   expect(html).toContain('data-ko-chat');
+  expect(html).toContain('max-lg:[inset-block:calc(var(--safe-top)+0.75rem)_0]');
+  expect(html).not.toContain('--ko-sheet-height');
+  expect(html).toContain('motion-safe:max-lg:translate-y-(--ko-drag-offset)');
+  expect(html).toContain('max-lg:pb-[calc(var(--spacing-stack)+var(--safe-bottom))]');
   expect(html).toContain('type="submit"');
   expect(html).toContain('aria-label="Record a voice note"');
 });

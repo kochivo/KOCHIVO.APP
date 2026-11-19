@@ -5,7 +5,7 @@ import { messages } from '../messages';
 const label = {
   workout_today: 'sourceWorkout', workout_tomorrow: 'sourceWorkout', captain: 'sourceWorkout',
   nutrition_today: 'sourceNutrition', progress: 'sourceProgress',
-  team_summary: 'sourceTeam', player_summary: 'sourceTeam',
+  me: 'sourceMe', team_summary: 'sourceTeam', player_summary: 'sourceTeam',
 } as const satisfies Record<AnswerSource, string>;
 
 export function KoSourceChips({ sources }: { sources: AnswerSource[] }) {

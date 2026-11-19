@@ -96,25 +96,57 @@ async function captainName(actor: KoActor) {
   return data[0]?.full_name ?? 'no captain';
 }
 
+async function playerIdentity(actor: KoActor) {
+  const [profile, relation, intake, captain] = await Promise.all([
+    actor.db.from('profiles').select('full_name').eq('id', actor.id).maybeSingle(),
+    actor.db.from('coach_clients').select('started_on').eq('player_id', actor.id)
+      .is('archived_at', null).maybeSingle(),
+    actor.db.from('player_intake').select('target_weight_kg,training_days').eq('player_id', actor.id).maybeSingle(),
+    captainName(actor),
+  ]);
+  const goal = intake.data?.target_weight_kg;
+  const days = intake.data?.training_days;
+  const facts = [
+    profile.data?.full_name ? 'name: ' + profile.data.full_name : '',
+    'role: player',
+    'captain: ' + captain,
+    relation.data?.started_on ? 'coaching start date: ' + relation.data.started_on : '',
+    goal != null ? 'goal: target weight ' + goal + ' kg' : '',
+    days?.length ? 'training days: ' + days.join(', ') + ' (0 Sunday through 6 Saturday)' : '',
+  ];
+  return { captain, facts };
+}
+
 async function playerFacts(actor: KoActor, now: number, signal: AbortSignal) {
   const ctx = await mealToolContext(actor, now, signal);
   const today = localDate(ctx.now, ctx.timezone);
-  const [workout, tomorrow, plan, logs, progress, captain] = await Promise.all([
+  const [workout, tomorrow, plan, logs, progress, me] = await Promise.all([
     playerWorkout(ctx, today), playerWorkout(ctx, shift(today, 1)), playerNutritionPlan(ctx),
-    playerMealLogs(ctx, today), playerProgress(actor, today), captainName(actor),
+    playerMealLogs(ctx, today), playerProgress(actor, today), playerIdentity(actor),
   ]);
   return formatFacts([
+    ['me', me.facts],
     ['workout_today', workoutFacts(workout)], ['workout_tomorrow', workoutFacts(tomorrow)],
     ['nutrition_today', nutritionFacts(plan && nutritionDay(plan, logs, today, workout?.rest ?? false), logs, today)],
-    ['progress', progress], ['captain', [captain]],
+    ['progress', progress], ['captain', [me.captain]],
   ]);
 }
 
 async function captainFacts(actor: KoActor, now: number, context?: Context) {
   const today = localDate(new Date(now), await getTimezone());
-  const roster = await readRoster(actor);
+  const [roster, profile, plan] = await Promise.all([
+    readRoster(actor),
+    actor.db.from('profiles').select('full_name,public_slug').eq('id', actor.id).maybeSingle(),
+    actor.db.rpc('current_tier', { p_captain: actor.id }),
+  ]);
   const team = roster.length ? await readTeamProgress(actor, today, roster) : null;
-  const sections: Section[] = [['team_summary', [
+  const sections: Section[] = [['me', [
+    profile.data?.full_name ? 'name: ' + profile.data.full_name : '',
+    'role: captain',
+    profile.data?.public_slug ? 'public page: ' + profile.data.public_slug : '',
+    'roster count ' + roster.length,
+    plan.data ? 'plan: ' + plan.data : '',
+  ]], ['team_summary', [
     'roster count ' + roster.length,
     'inactive 7+ days: ' + (team?.inactive.length ?? 0),
     'subscriptions ending within 7 days: ' + (team?.expiring.length ?? 0),

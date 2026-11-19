@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Intent } from '../data/intents';
 import type { KoEvalCase } from './cases';
+import { koEvalCases } from './cases';
 import { matchCase, normalize, renderReport, summarize } from './score';
 import type { EvalResult } from './score';
 
@@ -19,6 +20,14 @@ describe('normalize', () => {
 });
 
 describe('matchCase', () => {
+  it('requires the me citation on identity cases for both roles', () => {
+    const cases = koEvalCases.filter(testCase => testCase.source === 'me');
+    expect(cases).toHaveLength(16);
+    for (const testCase of cases) {
+      expect(matchCase(testCase, { kind: 'answer', args: { text: 'Hi Nour.', sources: ['me'] } }).outcome).toBe('pass');
+      expect(matchCase(testCase, { kind: 'answer', args: { text: 'Hi Nour.', sources: ['me', 'team_summary'] } }).outcome).toBe('bad_args');
+    }
+  });
   it('matches normalized alternatives, exact numbers, and allowed tools', () => {
     expect(matchCase({ ...bench, expect: ['read_exercise', 'update_exercise'] }, update))
       .toEqual({ tool: true, args: true, outcome: 'pass' });

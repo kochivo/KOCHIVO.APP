@@ -71,10 +71,11 @@ it.each(['ar', 'en'] as const)('renders account chat, feed and a launcher withou
   // T-409: the feed sits at the top of the chat log so it scrolls with the conversation.
   expect(panel.indexOf('data-feed')).toBeLessThan(panel.indexOf(t('accountPlayer')));
   for (const html of [launcher, panel]) {
-    for (const key of ['chatTitle', 'status', 'soon', 'chatPrivacy'] as const) expect(html).not.toContain(t(key));
+    for (const key of ['chatTitle', 'status', 'soon'] as const) expect(html).not.toContain(t(key));
     expect(html).not.toMatch(/(?:ml-|mr-|pl-|pr-|text-left)/);
   }
   expect(panel.match(new RegExp(t('context.remove'), 'g'))).toHaveLength(1);
+  expect(panel).not.toContain('Gemini');
 });
 
 it('keeps the client wrapper private and panel and chat out of the launcher imports', () => {

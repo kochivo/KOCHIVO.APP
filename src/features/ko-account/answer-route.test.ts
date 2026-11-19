@@ -5,6 +5,7 @@ import * as account from './data/account';
 import type { KoActor } from './data/account';
 import * as facts from './data/facts';
 import * as progress from './data/read-progress';
+import { chatReply } from './data/reply';
 import { postKoAccountChat } from './data/route';
 
 vi.mock('server-only', () => ({}));
@@ -15,7 +16,7 @@ afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); vi.unstubAllEnvs(
 
 const pack = '[workout_today] rest day\n[workout_tomorrow] no program\n[progress] lifetime points 28';
 
-function setup(status: number, calls: { name: string; args: object }[] = [], pending = false) {
+function setup(status: number, calls: { name: string; args: object }[] = [], pending = false, role: KoActor['role'] = 'player') {
   const rpc = vi.fn(async (name: string) => ({
     data: name === 'ko_rate_take' ? true : name === 'ko_usage_tier' ? [{ captain_id: 'captain', tier: 'entry' }]
       : name === 'my_captain_id' ? 'captain' : 'ok',
@@ -26,7 +27,7 @@ function setup(status: number, calls: { name: string; args: object }[] = [], pen
     limit: async () => ({ data: pending ? [{ id: 'required-form' }] : [], error: null }),
   };
   const from = vi.fn(() => query);
-  vi.spyOn(account, 'getKoActor').mockResolvedValue({ id: 'pilot', role: 'player', db: { rpc, from } } as unknown as KoActor);
+  vi.spyOn(account, 'getKoActor').mockResolvedValue({ id: 'pilot', role, db: { rpc, from } } as unknown as KoActor);
   vi.spyOn(entry, 'koAccountConfig').mockReturnValue({
     origin: new URL('https://ko.test'), pilots: new Set(['pilot']), secret: 's'.repeat(32), key: 'key',
   });
@@ -86,6 +87,52 @@ it('returns the grounded model answer and its citations after one Gemini call', 
   const request = JSON.parse(String(fetcher.mock.calls[0]?.[1]?.body));
   expect(request.systemInstruction.parts[0].text).toContain(pack);
   expect(request.tools[0].functionDeclarations).toEqual(expect.arrayContaining([expect.objectContaining({ name: 'answer' })]));
+});
+
+it.each(['captain', 'player'] as const)('uses the %s first name for an identity question', async role => {
+  const { load, fetcher } = setup(200, [
+    { name: 'answer', args: { text: 'أيوه يا نور. إحنا هنا في كو.', sources: ['me'] } },
+  ], false, role);
+  load.mockResolvedValue(`[me] name: نور علي; role: ${role}`);
+  expect(await (await post('عارفني؟')).json()).toEqual({
+    kind: 'message', text: 'أيوه يا نور. إحنا هنا في كو.', sources: ['me'],
+  });
+  const request = JSON.parse(String(fetcher.mock.calls[0]?.[1]?.body));
+  expect(request.systemInstruction.parts[0].text).toContain('call answer with only source me');
+  expect(request.systemInstruction.parts[0].text).toContain('[me] name: نور علي');
+});
+
+it.each([
+  ['captain', 'I can show who\'s falling behind, draft a program, or set up a workout reminder.'],
+  ['player', 'I can show your workout, meals, or progress.'],
+] as const)('offers %s help when the model answer is rejected', async (role, help) => {
+  setup(200, [{ name: 'answer', args: { text: 'Nour.', sources: ['me'] } }], false, role);
+  expect(await (await post('Who am I?')).json()).toEqual({
+    kind: 'message', text: "I don't have that information. " + help,
+  });
+});
+
+it.each([
+  ['How many points?', [{ name: 'answer', args: { text: 'عندك ٢٨ نقطة.', sources: ['progress'] } }], 'عندك 28 نقطة.'],
+  ['Can you change my plan?', [{ name: 'clarify', args: { question: 'تقصد ٣ مجموعات؟' } }], 'تقصد 3 مجموعات؟'],
+  ['How am I doing?', [{ name: 'my_progress', args: {} }], 'عملت 4 تمارين.'],
+  ['My progress', [], 'عملت 4 تمارين.'],
+] as const)('normalizes digits for %s', async (text, calls, expected) => {
+  setup(200, [...calls]);
+  vi.spyOn(progress, 'readProgress').mockResolvedValue('عملت ۴ تمارين.');
+  const body = await (await post(text)).json();
+  expect(body.text).toBe(expected);
+});
+
+it('normalizes quick and action copy while preserving approval tokens', async () => {
+  const action = { id: 'action', title: 'تمرين ٢', detail: '٣ مجموعات', token: 'opaque٢' };
+  const response = chatReply({ kind: 'message', text: '', quick: ['تمرين ٤'], actions: [action] });
+  expect(await response.json()).toEqual({
+    kind: 'message', text: '', quick: ['تمرين 4'], actions: [{ ...action, title: 'تمرين 2', detail: '3 مجموعات' }],
+  });
+  expect(await chatReply({ kind: 'confirm', text: 'وجبة ٢', token: action.token }).json()).toEqual({
+    kind: 'confirm', text: 'وجبة 2', token: action.token,
+  });
 });
 
 it.each([

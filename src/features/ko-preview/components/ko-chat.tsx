@@ -249,7 +249,6 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
           variant={(captainWorkspaceEnabled()) ? 'secondary' : (pending) ? 'secondary' : 'primary'} block={false} className={`grid min-h-12 min-w-12 place-items-center disabled:opacity-50 ${captainWorkspaceEnabled() || pending ? 'text-muted' : ''} ${phoneButton}`}><ArrowUp aria-hidden className="size-5" /></Button>
       </div>
       {error && <p role="alert" className="mt-inline text-xs text-muted">{error}</p>}
-      <p className="mt-inline text-xs text-muted">{t(account ? 'accountPrivacy' : 'chatPrivacy')}</p>
     </form>
   </div>;
 }

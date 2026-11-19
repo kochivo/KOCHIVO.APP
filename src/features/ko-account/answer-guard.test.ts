@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { guardAnswer } from './data/answer-guard';
+import { guardAnswer, reviewAnswer } from './data/answer-guard';
 
 const facts = '[progress] done ١٣, adherence 86.5%, last workout 2026-11-19';
 
@@ -20,4 +20,13 @@ it.each([
   ['x'.repeat(701), '', 'length'],
 ] as const)('checks %s against the facts and user text', (text, userText, reason) => {
   expect(guardAnswer(text, facts, userText)).toBe(reason);
+});
+
+it('accepts a me citation and uses clarify if the source is missing', () => {
+  const args = { text: 'أيوه يا نور.', sources: ['me'] as const };
+  const answer = { ...args, sources: [...args.sources] };
+  expect(reviewAnswer(answer, '[me] Name: Nour Ali; role: player', 'عارفني؟')).toEqual({ ok: true, ...answer });
+  expect(reviewAnswer(answer, facts, 'عارفني؟')).toMatchObject({
+    ok: false, reason: 'source', fallback: { kind: 'clarify', reason: 'answer' },
+  });
 });

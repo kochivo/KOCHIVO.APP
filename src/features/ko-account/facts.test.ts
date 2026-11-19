@@ -11,6 +11,7 @@ vi.mock('@/core/timezone/server', () => ({
 
 const now = Date.parse('2026-11-19T22:30:00Z');
 const id = '11111111-1111-4111-8111-111111111111';
+const contact = `${id} coach@example.test +20 123 456 7890`;
 
 afterEach(() => vi.restoreAllMocks());
 
@@ -39,16 +40,27 @@ it('loads the player’s two local workout dates, nutrition, progress and captai
     id, meal_id: id, log_date: '2026-11-20', swaps: {}, completed_at: null,
     client_updated_at: '2026-11-20T10:00:00Z', deleted_at: null,
   }]);
-  const query = {
-    select: () => query, eq: () => query, not: () => query, lte: () => query, order: () => query, limit: () => query,
-    maybeSingle: async () => ({ data: { training_date: '2026-11-18' }, error: null }),
+  const queryFor = (data: object | undefined) => {
+    const query = {
+      select: () => query, eq: () => query, not: () => query, lte: () => query, order: () => query, limit: () => query,
+      is: () => query,
+      maybeSingle: async () => ({ data, error: null }),
+    };
+    return query;
   };
+  const rows: Record<string, object> = {
+    profiles: { full_name: 'Nour Ali ' + contact },
+    coach_clients: { started_on: '2026-09-01' },
+    player_intake: { target_weight_kg: 75, training_days: [0, 2, 4] },
+    workout_sessions: { training_date: '2026-11-18' },
+  };
+  const from = (table: string) => queryFor(rows[table]);
   const rpc = vi.fn(async (name: string) => ({
     data: name === 'my_points'
       ? { done: 13, planned: 15, adherence: 86, lifetime: 320, tier: 'entry', crown_gap: 28 }
       : [{ full_name: 'Adel', phone: '01012345678' }], error: null,
   }));
-  const actor = { id, role: 'player', db: { from: () => query, rpc } } as unknown as KoActor;
+  const actor = { id, role: 'player', db: { from, rpc } } as unknown as KoActor;
   const pack = await loadFacts(actor, now, new AbortController().signal);
   expect(workout.mock.calls.map(([, day]) => day)).toEqual(['2026-11-20', '2026-11-21']);
   expect(pack).toContain('[workout_today] rest day');
@@ -58,7 +70,8 @@ it('loads the player’s two local workout dates, nutrition, progress and captai
   expect(pack).toContain('points to crown 28');
   expect(pack).toContain('last workout 2026-11-18');
   expect(pack).toContain('[captain] Adel');
-  expect(pack).not.toMatch(/11111111|01012345678/);
+  expect(pack).toContain('[me] name: Nour Ali; role: player; captain: Adel; coaching start date: 2026-09-01; goal: target weight 75 kg; training days: 0, 2, 4');
+  expect(pack).not.toMatch(/11111111|01012345678|example\.test|456 7890/);
 });
 
 it('keeps saved nutrition facts when the active plan is gone', () => {
@@ -78,15 +91,20 @@ it('loads a captain roster, scoped screen summary, crown leader and bounded upco
   const query = { select: () => query, eq: () => query, is: async () => ({ data: links, error: null }) };
   const swaps = { select: () => swaps, eq: () => swaps, then: (resolve: (data: object) => void) => resolve({ count: 0, error: null }) };
   const rpc = vi.fn(async (name: string) => ({
-    data: name === 'captain_roster' ? roster : [
+    data: name === 'captain_roster' ? roster : name === 'current_tier' ? 'champion' : [
       { player_id: 'player0', display_name: 'Player Zero', is_crown: true, done: 12, planned: 12, adherence: 100 },
     ], error: null,
   }));
+  const profile = { select: () => profile, eq: () => profile, maybeSingle: async () => ({
+    data: { full_name: 'Adel Amin ' + contact, public_slug: 'adel-fitness' }, error: null,
+  }) };
   const actor = { id, role: 'captain', db: {
-    rpc, from: (table: string) => table === 'coach_clients' ? query : swaps,
+    rpc, from: (table: string) => table === 'coach_clients' ? query : table === 'profiles' ? profile : swaps,
   } } as unknown as KoActor;
   const pack = await loadFacts(actor, now, new AbortController().signal, { id: 'player0', name: 'Player Zero' });
   expect(pack).toContain('[team_summary] roster count 12; inactive 7+ days: 12; subscriptions ending within 7 days: 12; crown leader: Player Zero');
+  expect(pack).toContain('[me] name: Adel Amin; role: captain; public page: adel-fitness; roster count 12; plan: champion');
+  expect(pack).not.toMatch(/11111111|example\.test|456 7890/);
   expect(pack.match(/inactive: Player /g)).toHaveLength(10);
   expect(pack).toContain('expiring: Player 0 2026-11-24');
   expect(pack).not.toContain('expiring: Player 10');
