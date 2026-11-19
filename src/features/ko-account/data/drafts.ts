@@ -5,7 +5,7 @@ import type { Intent } from './intents';
 import type { Approval } from './approval';
 import { matchNamed } from './match';
 
-type Draft = Extract<Intent, { kind: 'create_training' | 'create_nutrition' }>;
+type Draft = Extract<Intent, { kind: 'create_nutrition' }>;
 async function catalog<T>(load: (offset: number) => PromiseLike<{ data: T[] | null; error: unknown }>) {
   const rows: T[] = [];
   for (let offset = 0; offset < 3000; offset += 500) {
@@ -22,28 +22,6 @@ export async function buildDraft(actor: KoActor, intent: Draft): Promise<{
   payload: Approval['payload']; preview: string; actual?: ReturnType<typeof sumMacros>;
 } | null> {
   const id = uuidv7();
-  if (intent.kind === 'create_training') {
-    const { title, days } = intent.args;
-    if (new Set(days.map(day => day.weekday)).size !== days.length) return null;
-    const items = await catalog(offset => actor.db.from('exercises').select('id,name_ar,name_en')
-      .is('archived_at', null).order('id').range(offset, offset + 499));
-    const daysByWeekday = new Map(days.map(day => [day.weekday, day]));
-    let valid = true;
-    const week = Array.from({ length: 7 }, (_, index) => {
-      const day = daysByWeekday.get((index + 6) % 7);
-      const dayId = uuidv7();
-      const exercises = (day?.exercises ?? []).flatMap((row, position) => {
-        const matches = matchNamed(items, row.name);
-        if (matches.length !== 1 || !matches[0]) { valid = false; return []; }
-        return [{ id: uuidv7(), day_id: dayId, exercise_id: matches[0].id, position: position + 1,
-          sets: row.sets, reps_min: row.reps, reps_max: null, superset_group: null, rest_seconds: 90 }];
-      });
-      return { id: dayId, program_id: id, weekday: index, position: index + 1, title: day?.title ?? '', is_rest_day: !day, exercises, cardio: [] };
-    });
-    const preview = days.map(day => `${day.title}: ${day.exercises.map(item => `${item.name} (${item.sets} × ${item.reps})`).join(', ')}`).join('\n');
-    return valid ? { payload: { id, title, days: week, repeatWeekly: true }, preview } : null;
-  }
-
   const { title, targets, meals } = intent.args;
   const foods = await catalog(offset => actor.db.from('foods')
     .select('id,name_ar,name_en,kcal_per_100g,protein_per_100g,carbs_per_100g,fat_per_100g')

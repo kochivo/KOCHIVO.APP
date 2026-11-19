@@ -10,11 +10,6 @@ const arabicNumbers = [
 ];
 const numberWords = new Map(arabicNumbers.flatMap((words, index) =>
   words.split(' ').map(word => [word, index + 1] as const)));
-const weekdays = new Set([
-  'السبت', 'الاحد', 'الاثنين', 'الاتنين', 'الثلاثاء', 'التلات', 'الاربعاء', 'الاربع', 'الخميس', 'الجمعة',
-  'sat', 'sun', 'mon', 'tue', 'wed', 'thu', 'fri',
-  'saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday',
-]);
 const relative = new Set(['زود', 'قلل', 'شوية', 'more', 'less']);
 const absolute = new Set(['to', 'الى', 'ل', 'لحد', 'خلي', 'خليه', 'خليها']);
 const genericExercises = new Set(['التمرين', 'تمرين', 'exercise', 'the exercise']);
@@ -120,11 +115,6 @@ export function groundIntent(intent: Intent | Intent[], text: string): Intent | 
       const days = durations(tokens, normalized);
       return days.length && days.every(value => value === intent.args.days) ? intent : clarifyIntent(intent.kind);
     }
-    case 'create_training':
-      return /\d/.test(normalized) || tokens.some(token => weekdays.has(token)) ||
-        tokens.some((token, index) => token === 'يومين' || token === 'يومان' ||
-          (dayUnits.has(token) && numberValue(tokens[index - 1]) !== undefined))
-        ? intent : clarifyIntent(intent.kind);
     case 'create_nutrition':
       return Object.values(intent.args.targets).every(target => tokens.some(token => numberValue(token) === target))
         ? intent : clarifyIntent(intent.kind);

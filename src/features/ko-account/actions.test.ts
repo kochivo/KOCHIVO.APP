@@ -110,6 +110,7 @@ it.each([true, false])('takes a big action credit before committing when availab
   expect(response.status).toBe(credit ? 200 : 409);
   expect(rpc).toHaveBeenCalledWith('ko_credit_take', { p_month: '2027-01-01', p_cap: 10, p_token: token });
   const names = rpc.mock.calls.map(([name]) => name);
+  expect(names.filter(name => name === 'ko_credit_take')).toHaveLength(1);
   if (credit) expect(names.indexOf('ko_apply_action')).toBeGreaterThan(names.indexOf('ko_credit_take'));
   else {
     expect(names).not.toContain('ko_apply_action');
@@ -143,13 +144,11 @@ it('warns once per captain and month when the shared cap blocks the reply', asyn
 
 it.each([true, false])('shows the cost or upgrade without charging for a big-action preview: %s', async credit => {
   const rpc = setup('captain', 'ok', credit);
-  mockCalls([{ name: 'create_training', args: { title: 'New workout', player: 'Youssef', days: [
-    { title: 'Upper', weekday: 1, exercises: [{ name: 'Bench', sets: 3, reps: 10 }] },
-  ] } }]);
+  mockCalls([{ name: 'create_training', args: { title: 'New workout', player: 'Youssef', days: 3 } }]);
   const execute = vi.spyOn(executor, 'executeIntent').mockResolvedValue({
     kind: 'message', text: '', actions: [{ id: 'id', title: 'Workout', detail: 'Preview', token: 'token' }],
   });
-  const response = await post({ text: 'Create a 1 day program for Youssef' });
+  const response = await post({ text: 'Create a 3 day program for Youssef' });
   const result = await response.json();
   expect(response.status).toBe(200);
   if (credit) expect(result).toMatchObject({ actions: [{ detail: 'Preview\nThis uses 1 big-action credit.' }] });

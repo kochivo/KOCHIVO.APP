@@ -17,8 +17,7 @@ const renew = (days: number): Intent => ({ kind: 'renew_subscription', args: { p
 const swap = (injury: NonNullable<Extract<Intent, { kind: 'swap_exercise' }>['args']['injury']>): Intent =>
   ({ kind: 'swap_exercise', args: { exercise: 'Bench', reason: 'injury', injury } });
 const training: Intent = { kind: 'create_training', args: {
-  player: 'محمود', title: 'برنامج محمود', days: [{ title: 'Chest', weekday: 1,
-    exercises: [{ name: 'Bench', sets: 3, reps: 10 }] }],
+  player: 'محمود', title: 'برنامج محمود', days: 3,
 } };
 const nutrition: Intent = { kind: 'create_nutrition', args: {
   title: 'Meal plan', targets: { kcal: 2200, protein: 120, carbs: 250, fat: 80 }, meals: [],
@@ -42,7 +41,6 @@ it.each<[string, Intent]>([
   ['رسغي بيوجعني في البنش', swap('shoulder')],
   ['My shoulder blade hurts', swap('knee')],
   ['I hurt my backbone', swap('lower_back')],
-  ['عايز برنامج لمحمود', training],
   ['سعرات 22000', nutrition],
   ['نظام أكل 2200 سعر لمنة', nutrition],
 ])('asks for clarification for %s', (text, intent) => {
@@ -75,8 +73,6 @@ it.each<[string, Intent]>([
   ['أجدد ليوسف كام يوم؟\nشهر', renew(30)],
   ['أجدد ليوسف كام يوم؟\n٤٥', renew(45)],
   ['برنامج لمحمود 3 أيام', training],
-  ['برنامج لمحمود يومين', training],
-  ['برنامج لمحمود الجمعة', training],
   ['سعرات 2200 بروتين 120 كارب 250 دهون 80', nutrition],
   ['الوجع في أنهي حتة بالظبط؟\nالركبة', swap('knee')],
   ['My rokba hurts', swap('knee')],

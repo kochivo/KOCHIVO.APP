@@ -34,6 +34,15 @@ const splits: Record<number, readonly DayRecipe[]> = {
   5: [push, pull, lower, upper, lower], 6: [push, pull, lower, push, pull, lower],
 };
 
+export function dayFocus(count: number, index: number) {
+  const recipe = splits[count]?.[index];
+  if (recipe === upper) return 'upper';
+  if (recipe === lower) return 'lower';
+  if (recipe === push) return 'push';
+  if (recipe === pull) return 'pull';
+  return 'full';
+}
+
 export function slotRecipes(brief: GeneratorBrief): Pattern[][] {
   const count = brief.minutes === 45 ? 4 : brief.minutes === 60 ? 6 : 8;
   return (splits[brief.weekdays.length] ?? []).map(day => day.map(pattern => {

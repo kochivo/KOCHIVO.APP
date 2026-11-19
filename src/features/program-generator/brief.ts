@@ -17,3 +17,15 @@ export const generatorBriefSchema = z.strictObject({
 });
 
 export type GeneratorBrief = z.infer<typeof generatorBriefSchema>;
+
+export type IntakeDefaults = { trainingDays?: number[]; experience?: string; sessionMinutes?: number; injuries?: string[] };
+export function initialBrief(intake?: IntakeDefaults | null, seed = 0, playerId?: string): GeneratorBrief {
+  const days = [...new Set((intake?.trainingDays ?? []).filter(day => Number.isInteger(day) && day >= 0 && day <= 6)
+    .map(day => (day + 1) % 7))].sort((a, b) => a - b);
+  const minutes = intake?.sessionMinutes;
+  return { goal: 'general', level: intake?.experience === 'over_3y' ? 'advanced' : intake?.experience === '1_3y' ? 'intermediate' : 'beginner',
+    weekdays: days.length >= 2 && days.length <= 6 ? days : [0, 2, 4],
+    minutes: minutes === 45 || minutes === 60 || minutes === 90 ? minutes : 60,
+    equipment: 'gym', injuries: injuries.filter(injury => intake?.injuries?.includes(injury)), seed,
+    ...(playerId ? { playerId } : {}) };
+}

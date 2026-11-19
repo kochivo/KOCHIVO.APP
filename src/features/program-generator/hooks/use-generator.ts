@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { generatorBriefSchema, injuries } from '../brief';
+import { generatorBriefSchema } from '../brief';
 import type { GeneratorBrief } from '../brief';
 import { generateProgram } from '../generate';
 import type { GeneratedProgram } from '../generate';
@@ -9,18 +9,10 @@ import { eligible, selectionReasons } from '../pick';
 import type { Candidate } from '../pick';
 import { prescription } from '../prescription';
 
-export type IntakeDefaults = { trainingDays?: number[]; experience?: string; sessionMinutes?: number; injuries?: string[] };
+export { initialBrief } from '../brief';
+export type { IntakeDefaults } from '../brief';
+
 export type ManualSwap = { weekday: number; position: number; exerciseId: string };
-export function initialBrief(intake?: IntakeDefaults | null, seed = 0, playerId?: string): GeneratorBrief {
-  const days = [...new Set((intake?.trainingDays ?? []).filter(day => Number.isInteger(day) && day >= 0 && day <= 6)
-    .map(day => (day + 1) % 7))].sort((a, b) => a - b);
-  const minutes = intake?.sessionMinutes;
-  return { goal: 'general', level: intake?.experience === 'over_3y' ? 'advanced' : intake?.experience === '1_3y' ? 'intermediate' : 'beginner',
-    weekdays: days.length >= 2 && days.length <= 6 ? days : [0, 2, 4],
-    minutes: minutes === 45 || minutes === 60 || minutes === 90 ? minutes : 60,
-    equipment: 'gym', injuries: injuries.filter(injury => intake?.injuries?.includes(injury)), seed,
-    ...(playerId ? { playerId } : {}) };
-}
 export function alternativesFor(program: GeneratedProgram, weekday: number, position: number, candidates: readonly Candidate[]) {
   const day = program.days.find(day => day.weekday === weekday);
   const row = day?.exercises.find(row => row.position === position);

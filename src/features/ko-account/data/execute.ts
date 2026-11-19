@@ -10,6 +10,7 @@ import type { KoActor } from './account';
 import { approvalLifetimeMs, issueApproval } from './approval';
 import type { Approval } from './approval';
 import { buildDraft } from './drafts';
+import { buildTrainingDraft } from './training-draft';
 import type { Intent } from './intents';
 import { matchNamed } from './match';
 import { readMeal } from './meal';
@@ -28,8 +29,8 @@ export async function executeIntent(actor: KoActor, intent: Intent, locale: Loca
   contextPlayer?: { id: string; name: string }, signal = new AbortController().signal, style?: ArabicStyle): Promise<AccountReply> {
   const t = createT(messages, locale);
   const actionT = createT(messages, locale, style);
-  const action = (kind: Approval['kind'], player: string, payload: Approval['payload'], title: string, detail: string, label: string): AccountReply => {
-    const id = uuidv7(now);
+  const action = (kind: Approval['kind'], player: string, payload: Approval['payload'], title: string, detail: string, label: string,
+    id = uuidv7(now)): AccountReply => {
     return { kind: 'message', text: '', actions: [{ id, title, detail,
       token: issueApproval({ kind, payload, player, actor: actor.id, id, expires: now + approvalLifetimeMs, label }, secret) }] };
   };
@@ -118,14 +119,22 @@ export async function executeIntent(actor: KoActor, intent: Intent, locale: Loca
       before: `${row.sets} × ${current}`, after: `${sets ?? row.sets} × ${reps ?? current}` }), name,
     actionT('actionExercise', { exercise: name, name: player.name }));
   }
-  if (intent.kind === 'create_training' || intent.kind === 'create_nutrition') {
+  if (intent.kind === 'create_training') {
+    const id = uuidv7(now);
+    const draft = await buildTrainingDraft(actor, player, intent.args, id, now, locale, actionT);
+    if (!draft) return say(actionT('trainingFailed'));
+    const { title } = draft.payload;
+    return action('training', player.id, draft.payload, actionT('actionTraining', { title }),
+      `${actionT('target', { name: player.name })}\n${draft.preview}`, title, id);
+  }
+  if (intent.kind === 'create_nutrition') {
     const draft = await buildDraft(actor, intent);
     if (!draft) return say(t('catalog'));
-    const targets = intent.kind === 'create_nutrition' ? `\n${t('targets', intent.args.targets)}` : '';
+    const targets = `\n${t('targets', intent.args.targets)}`;
     const actual = draft.actual ? `\n${t('actual', { ...draft.actual })}` : '';
-    return preview(intent.kind === 'create_training' ? 'training' : 'nutrition', draft.payload,
+    return preview('nutrition', draft.payload,
       `${t('draft', { title: intent.args.title })}${targets}${actual}\n${draft.preview}`, intent.args.title,
-      actionT(intent.kind === 'create_training' ? 'actionTraining' : 'actionNutrition', { title: intent.args.title, name: player.name }));
+      actionT('actionNutrition', { title: intent.args.title, name: player.name }));
   }
   if (intent.kind === 'renew_subscription') {
     const { data, error } = await actor.db.from('coach_clients').select('access_until,sessions_left,frozen_at,pending')

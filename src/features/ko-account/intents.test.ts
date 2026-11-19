@@ -1,5 +1,6 @@
 import { expect, it, vi } from 'vitest';
 import { parseIntent, planIntent } from './data/intents';
+import { groundIntent } from './data/ground';
 
 vi.mock('server-only', () => ({}));
 
@@ -7,13 +8,23 @@ const read = { name: 'team_summary', args: {} };
 const reminder = { name: 'send_reminder', args: { player: 'Youssef' } };
 const invalid = { name: 'renew_subscription', args: { days: -1 } };
 
-async function plan(calls: unknown[]) {
+async function plan(calls: unknown[], text = 'Youssef and the team') {
   const fetcher: typeof fetch = async () => Response.json({
     candidates: [{ content: { parts: calls.map(functionCall => ({ functionCall })) } }],
   });
-  return planIntent('captain', { text: 'Youssef and the team' }, 'key',
+  return planIntent('captain', { text }, 'key',
     new AbortController().signal, undefined, [], fetcher);
 }
+
+it.each([
+  ['برنامج تضخيم ٣ ايام', { goal: 'muscle', days: 3 }],
+  ['اعمل البرنامج حسب بياناته', {}],
+] as const)('uses a short training brief for %s', async (text, args) => {
+  const intents = await plan([{ name: 'create_training', args }], text);
+  const expected = { kind: 'create_training', args };
+  expect(intents).toEqual([expected]);
+  expect(groundIntent(intents, text)).toEqual(expected);
+});
 
 it('plans two requests in order', async () => {
   expect((await plan([read, reminder])).map(intent => intent.kind)).toEqual(['team_summary', 'send_reminder']);

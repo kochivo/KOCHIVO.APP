@@ -162,7 +162,8 @@ it.each(['player', 'captain'] as const)('offers only role-appropriate read tools
     } } });
   } else {
     expect(declaration('create_training')).toMatchObject({ parameters: { properties: {
-      days: { items: { properties: { weekday: { type: 'INTEGER', minimum: 0, maximum: 6 } } } },
+      days: { type: 'INTEGER', minimum: 2, maximum: 6 },
+      weekdays: { items: { type: 'INTEGER', minimum: 0, maximum: 6 } },
     } } });
   }
 });
