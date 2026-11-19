@@ -5,6 +5,7 @@ import { afterEach, expect, it, vi } from 'vitest';
 import { createT } from '@/core/i18n/messages';
 import { KoChat } from './components/ko-chat';
 import { KoMessage } from './components/ko-message';
+import { KoPanel } from './components/ko-panel';
 import { messages } from './messages';
 
 const hooks = vi.hoisted(() => ({ cursor: 0, values: [] as unknown[] }));
@@ -12,6 +13,7 @@ vi.mock('react', async importOriginal => ({
   ...await importOriginal<typeof ReactModule>(),
   useCallback: (callback: unknown) => callback,
   useEffect: () => {},
+  useId: () => 'ko-title',
   useRef: (current: unknown) => ({ current }),
   useState(initial: unknown) {
     const index = hooks.cursor++;
@@ -68,4 +70,14 @@ it('renders saved messages, sends them with a follow-up, and clears the conversa
   expect(empty.filter(node => node.type === KoMessage).map(node => node.props.text)).toEqual([messages.ar.accountPlayer]);
   expect(empty.some(node => node.props['aria-label'] === messages.ar.suggestions)).toBe(true);
   expect(empty.some(node => node.props['aria-label'] === 'امسح المحادثة')).toBe(false);
+});
+
+it('closes the account sheet through its header button', () => {
+  hooks.cursor = 0;
+  const close = vi.fn();
+  const panel = KoPanel({ role: 'player', account: true, expression: 'welcome', onExpression() {}, onClose: close, openerId: 'opener' });
+  const button = elements(panel).find(node => node.props['aria-label'] === messages.ar.close);
+  expect(button).toBeDefined();
+  (button?.props.onClick as () => void)();
+  expect(close).toHaveBeenCalledOnce();
 });

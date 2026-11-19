@@ -12,9 +12,10 @@ export default async function KoPage() {
   const actor = await getKoActor();
   if (!actor) notFound();
   const t = await getT(koPreviewMessages);
-  return <main className="mx-auto w-full max-w-xl px-page-x pb-section pt-[var(--safe-top)]">
-    <section className="glass-strong overflow-hidden rounded-card border border-line">
-      <header className="flex items-center justify-between gap-stack border-b border-line p-card">
+  return <main className="mx-auto flex w-full max-w-xl flex-col px-page-x pb-section pt-[var(--safe-top)]"
+    style={{ blockSize: 'var(--visible-viewport-height, 100dvh)' }}>
+    <section className="glass-strong flex min-h-0 flex-1 flex-col overflow-hidden rounded-card border border-line">
+      <header className="flex shrink-0 items-center justify-between gap-stack border-b border-line p-card">
         <h1 className="font-display text-xl font-extrabold">{t('accountChatTitle')}</h1>
         <Link href={actor.role === 'captain' ? '/captain' : '/player'}
           className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-12 items-center px-stack text-sm" })}>{t('home')}</Link>

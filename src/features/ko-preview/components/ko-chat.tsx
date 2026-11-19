@@ -3,7 +3,7 @@
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { IconButton } from '@/ui/icon-button';
 import { Fragment, Suspense, lazy, useCallback, useEffect, useRef, useState } from 'react';
-import type { FormEvent } from 'react';
+import type { FormEvent, ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { ArrowUp, Camera, Mic, Square, X } from 'lucide-react';
 import { usePathname } from 'next/navigation';
@@ -27,13 +27,12 @@ import { koMaxText } from '@/features/ko-core';
 import { useKoRecorder } from '../hooks/use-ko-recorder';
 import { messages } from '../messages';
 import type { KoExpression, KoRole } from '../policy';
-import type { KoReply } from '@/features/ko-core';
-import type { AccountReply } from '@/features/ko-core';
+import type { AccountReply, KoReply } from '@/features/ko-core';
 import { Button } from '@/ui/button';
 
-export function KoChat({ role, onExpression, account = false, context: suppliedContext, userId, header, now = Date.now }: {
+export function KoChat({ role, onExpression, account = false, context: suppliedContext, userId, header, sheet = false, feed, now = Date.now }: {
   role: KoRole; onExpression?: (value: KoExpression) => void; account?: boolean; context?: KoContext | null;
-  userId?: string; header?: HTMLElement | null; now?: () => number;
+  userId?: string; header?: HTMLElement | null; sheet?: boolean; feed?: ReactNode; now?: () => number;
 }) {
   const t = useT(messages);
   const locale = useLocale();
@@ -77,7 +76,18 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
       .catch(() => { if (!controller.signal.aborted) setContextName(''); });
     return () => controller.abort();
   }, [account, serializedContext, context?.screen]);
-  useEffect(() => { if (log.current) log.current.scrollTop = log.current.scrollHeight; }, [history, busy]);
+  const fill = account || sheet;
+  useEffect(() => {
+    const element = log.current;
+    if (!element) return;
+    const latest = () => { element.scrollTop = element.scrollHeight; };
+    if (fill && !history.length && !busy) { element.scrollTop = 0; return; }
+    latest();
+    if (!fill || typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(latest);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [history, busy, fill]);
 
   async function submit(event?: FormEvent<HTMLFormElement>, suggestion?: string) {
     event?.preventDefault();
@@ -151,40 +161,45 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
 
   const recording = recorder.status === 'recording';
   const suggestions = suggestionsFor(role, context, sent || Boolean(userId && history.length));
-  return <div data-ko-chat>
+  const phoneButton = sheet ? 'max-lg:min-h-14! max-lg:min-w-14 shrink-0' : '';
+  return <div data-ko-chat className={fill ? 'flex min-h-0 flex-1 flex-col' : undefined}>
     {account && userId && header && history.length > 0 && createPortal(
       <Button type="button" variant="ghost" className="min-h-12 shrink-0 text-xs" aria-label={t('clearChat')}
         onClick={clearHistory}>{t('clearChat')}</Button>, header)}
-    {account && context && <div className="flex items-center gap-inline border-b border-line px-page-x text-sm text-muted">
+    {account && context && <div className="flex shrink-0 items-center gap-inline border-b border-line px-page-x text-sm text-muted">
       <span>{t(`context.${context.screen}`)}</span>
       {captainWorkspaceEnabled() ? <IconButton type="button" aria-label={t('context.remove')} onClick={() => setDropped(true)} className="grid min-h-12 min-w-12 place-items-center"><X aria-hidden className="size-4" /></IconButton> : <button type="button" aria-label={t('context.remove')} onClick={() => setDropped(true)} className="grid min-h-12 min-w-12 place-items-center"><X aria-hidden className="size-4" /></button>}
     </div>}
-    {showFeed && <Suspense fallback={<KoTyping />}><KoFeed avatar={value => <KoAvatar expression={value} className="size-10" />} /></Suspense>}
-    <div ref={log} role="log" aria-label={t(account ? 'accountChatTitle' : 'chatTitle')} className="flex max-h-60 min-h-32 flex-col gap-stack overflow-y-auto p-card text-sm">
-      {account && <KoCreditMeter key={actions.revision} role={role} />}
-      {(!userId || history.length === 0) && <KoMessage speaker="ko" text={t(account
-        ? role === 'captain' ? 'accountCaptain' : 'accountPlayer'
-        : role === 'captain' ? 'chatCaptain' : 'chatPlayer')} />}
-      {history.map((entry, index) => <Fragment key={entry.actions?.[0]?.id ?? index}>
-        <KoMessage speaker={entry.speaker} text={entry.text}>
-          {entry.quick?.length ? <KoQuickButtons quick={entry.quick} disabled={busy || recorder.status !== 'idle' || Boolean(clip || photo)}
-            send={text => void submit(undefined, text)} /> : role === 'captain' && entry.upgrade ? <KoUpgradeCard upgrade={entry.upgrade} /> : null}
-        </KoMessage>
-        {account && entry.actions?.map((action, position) => {
-          const state = actions.states[action.id];
-          const restored = action.restoredState;
-          const upgrade = state?.kind === 'failed' ? state.upgrade : undefined;
-          return <Fragment key={action.id}><KoActionCard action={action} number={position + 1}
-          state={restored?.kind === 'expired' ? undefined : restored ?? state} busy={busy || recorder.status !== 'idle' || Boolean(clip || photo)}
-          focus={position === 0 && index === history.length - 1}
-          onConfirm={() => actions.confirm(action)} onCancel={() => actions.cancel(action)} />
-          {role === 'captain' && upgrade && <KoUpgradeCard upgrade={upgrade} />}
-          </Fragment>;
-        })}
-      </Fragment>)}
-      {busy && <KoTyping />}
+    {!sheet && showFeed && <Suspense fallback={<KoTyping />}><KoFeed avatar={value => <KoAvatar expression={value} className="size-10" />} /></Suspense>}
+    <div ref={log} role="log" aria-label={t(account ? 'accountChatTitle' : 'chatTitle')} className={`flex flex-col overflow-y-auto text-sm ${fill ? 'min-h-0 flex-1 overscroll-contain' : 'max-h-60 min-h-32'}`}>
+      {feed}
+      {sheet && showFeed && <Suspense fallback={<KoTyping />}><KoFeed avatar={value => <KoAvatar expression={value} className="size-10" />} /></Suspense>}
+      <div className="flex flex-col gap-stack p-card">
+        {account && <KoCreditMeter key={actions.revision} role={role} />}
+        {(!userId || history.length === 0) && <KoMessage speaker="ko" text={t(account
+          ? role === 'captain' ? 'accountCaptain' : 'accountPlayer'
+          : role === 'captain' ? 'chatCaptain' : 'chatPlayer')} sheet={sheet} />}
+        {history.map((entry, index) => <Fragment key={entry.actions?.[0]?.id ?? index}>
+          <KoMessage speaker={entry.speaker} text={entry.text} sheet={sheet}>
+            {entry.quick?.length ? <KoQuickButtons quick={entry.quick} disabled={busy || recorder.status !== 'idle' || Boolean(clip || photo)}
+              send={text => void submit(undefined, text)} /> : role === 'captain' && entry.upgrade ? <KoUpgradeCard upgrade={entry.upgrade} /> : null}
+          </KoMessage>
+          {account && entry.actions?.map((action, position) => {
+            const state = actions.states[action.id];
+            const restored = action.restoredState;
+            const upgrade = state?.kind === 'failed' ? state.upgrade : undefined;
+            return <Fragment key={action.id}><KoActionCard action={action} number={position + 1}
+              state={restored?.kind === 'expired' ? undefined : restored ?? state} busy={busy || recorder.status !== 'idle' || Boolean(clip || photo)}
+              focus={position === 0 && index === history.length - 1}
+              onConfirm={() => actions.confirm(action)} onCancel={() => actions.cancel(action)} />
+              {role === 'captain' && upgrade && <KoUpgradeCard upgrade={upgrade} />}
+            </Fragment>;
+          })}
+        </Fragment>)}
+        {busy && <KoTyping />}
+      </div>
     </div>
-    {suggestions.length > 0 && <div className="flex flex-wrap gap-inline px-page-x pb-stack" role="group" aria-label={t('suggestions')}>
+    {suggestions.length > 0 && <div className="flex shrink-0 flex-wrap gap-inline px-page-x pb-stack" role="group" aria-label={t('suggestions')}>
       {suggestions.map(key => <Button key={key} type="button" disabled={busy || Boolean(clip) || recorder.status !== 'idle' || (key === 'suggest.player' && !contextName)}
         variant={'secondary'} block={false} className={"min-h-12 rounded-chip px-stack text-start text-sm text-lime-ink disabled:opacity-50"}
         onClick={() => {
@@ -192,7 +207,7 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
           void submit(undefined, t(key, { name: contextName }));
         }}>{t(key, { name: contextName || t('context.player') })}</Button>)}
     </div>}
-    <form onSubmit={submit} className="border-t border-line p-stack">
+    <form onSubmit={submit} className={`shrink-0 border-t border-line p-stack ${sheet ? 'max-lg:pb-[calc(var(--spacing-stack)+var(--safe-bottom))]' : ''}`}>
       {account && role === 'player' && <input ref={camera} type="file" className="hidden" accept="image/jpeg,image/png,image/webp"
         onChange={event => {
           const file = event.target.files?.[0];
@@ -214,18 +229,18 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
           {captainWorkspaceEnabled() ? <IconButton type="button" disabled={busy} aria-label={t('discardVoice')} onClick={() => setClip(null)} className="border border-danger/40 text-danger! grid min-h-12 min-w-12 place-items-center text-ink"><X aria-hidden className="size-4" /></IconButton> : <button type="button" disabled={busy} aria-label={t('discardVoice')} onClick={() => setClip(null)} className="grid min-h-12 min-w-12 place-items-center text-muted"><X aria-hidden className="size-4" /></button>}
         </div> : <input dir="auto" value={draft} maxLength={koMaxText} onChange={event => setDraft(event.target.value)}
           aria-label={t('chatInput')} placeholder={t(recording ? 'voiceRecording' : 'chatInput')} disabled={busy || recorder.status !== 'idle'}
-          className="min-h-12 min-w-0 flex-1 rounded-full border border-line bg-bg px-page-x text-base outline-offset-2 placeholder:text-muted" />}
+          className={`min-h-12 min-w-0 flex-1 rounded-full border border-line bg-bg px-page-x text-base outline-offset-2 placeholder:text-muted ${sheet ? 'max-lg:min-h-14!' : ''}`} />}
         {account && role === 'player' && !clip && !photo && <Button type="button" disabled={busy || recorder.status !== 'idle'}
           aria-label={t('mealPhoto')} onClick={() => camera.current?.click()}
-          variant={'secondary'} block={false} className={"grid min-h-12 min-w-12 place-items-center text-lime-ink disabled:opacity-50"}><Camera aria-hidden className="size-5" /></Button>}
+          variant={'secondary'} block={false} className={`grid min-h-12 min-w-12 place-items-center text-lime-ink disabled:opacity-50 ${phoneButton}`}><Camera aria-hidden className="size-5" /></Button>}
         {!clip && !photo && <button type="button" disabled={busy || recorder.status === 'starting' || Boolean(draft)}
           onClick={() => { setError(''); if (recording) recorder.stop(); else void recorder.start(); }}
           aria-label={t(recording ? 'stopVoice' : 'recordVoice')} aria-pressed={recording}
-          className="grid min-h-12 min-w-12 place-items-center rounded-control border border-line text-lime-ink disabled:opacity-50">
+          className={`grid min-h-12 min-w-12 place-items-center rounded-control border border-line text-lime-ink disabled:opacity-50 ${phoneButton}`}>
           {recording ? <Square aria-hidden className="size-4" /> : <Mic aria-hidden className="size-5" />}
         </button>}
         <Button type="submit" aria-label={t(clip ? 'sendVoiceOnly' : 'chatSend')} disabled={busy || recorder.status !== 'idle' || !canSubmitKoDraft(draft, clip, photo)}
-          variant={(captainWorkspaceEnabled()) ? 'secondary' : (pending) ? 'secondary' : 'primary'} block={false} className={`grid min-h-12 min-w-12 place-items-center disabled:opacity-50 ${captainWorkspaceEnabled() ? "text-muted" : pending ? "text-muted" : ""} `}><ArrowUp aria-hidden className="size-5" /></Button>
+          variant={(captainWorkspaceEnabled()) ? 'secondary' : (pending) ? 'secondary' : 'primary'} block={false} className={`grid min-h-12 min-w-12 place-items-center disabled:opacity-50 ${captainWorkspaceEnabled() || pending ? 'text-muted' : ''} ${phoneButton}`}><ArrowUp aria-hidden className="size-5" /></Button>
       </div>
       {error && <p role="alert" className="mt-inline text-xs text-muted">{error}</p>}
       <p className="mt-inline text-xs text-muted">{t(account ? 'accountPrivacy' : 'chatPrivacy')}</p>

@@ -12,6 +12,7 @@ import type { KoFeedItem } from '@/features/ko-feed';
 import { decideSwapOptimistically } from '@/features/ko-feed';
 import { refreshFeed } from '@/features/ko-feed';
 import { buttonClass } from '@/ui/button';
+import { feedReply } from '../feed-reply';
 
 function exerciseName(value: unknown, locale: string): string {
   if (!value || typeof value !== 'object') return '';
@@ -66,14 +67,15 @@ export function FeedCard({ item, onDismiss, primary = true }: { item: KoFeedItem
     setError(false);
     const body = new FormData();
     body.set('locale', locale);
-    body.set('text', confirm ? 'confirm' : t(renewal ? 'renewPrompt' : 'reminderPrompt', { name: item.player_name, days }));
-    if (confirm && reply?.token) body.set('token', reply.token);
+    // Same confirm protocol as the chat action cards (T-403): the flag and token, no text.
+    if (confirm && reply?.token) { body.set('confirm', '1'); body.set('token', reply.token); }
+    else body.set('text', t(renewal ? 'renewPrompt' : 'reminderPrompt', { name: item.player_name, days }));
     try {
       const response = await fetch('/api/ko', { method: 'POST', body });
       if (!response.ok) throw new Error('preview failed');
-      const result: unknown = await response.json();
-      if (!result || typeof result !== 'object' || !('text' in result) || typeof result.text !== 'string') throw new Error('invalid preview');
-      setReply({ text: result.text, token: 'kind' in result && result.kind === 'confirm' && 'token' in result && typeof result.token === 'string' ? result.token : undefined });
+      const next = feedReply(await response.json());
+      if (!next) throw new Error('invalid preview');
+      setReply(next);
     } catch { setError(true); }
     finally { setBusy(false); }
   }

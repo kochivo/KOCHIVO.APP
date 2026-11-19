@@ -68,7 +68,8 @@ it.each(['ar', 'en'] as const)('renders account chat, feed and a launcher withou
   expect(launcher).toContain('bottom-[calc(var(--nav-clearance)+0.5rem)]');
   expect(panel).toContain(t('accountPlayer'));
   expect(panel).toContain(t('mealPhoto'));
-  expect(panel.indexOf('data-feed')).toBeLessThan(panel.indexOf('data-ko-chat'));
+  // T-409: the feed sits at the top of the chat log so it scrolls with the conversation.
+  expect(panel.indexOf('data-feed')).toBeLessThan(panel.indexOf(t('accountPlayer')));
   for (const html of [launcher, panel]) {
     for (const key of ['chatTitle', 'status', 'soon', 'chatPrivacy'] as const) expect(html).not.toContain(t(key));
     expect(html).not.toMatch(/(?:ml-|mr-|pl-|pr-|text-left)/);

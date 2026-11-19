@@ -34,3 +34,22 @@ it('offers a text composer and microphone on the explicit demo only', () => {
   expect(html).toContain('type="submit"');
   expect(html).toContain('aria-label="Record a voice note"');
 });
+
+it('renders a full-height account log and a decorative grabber', () => {
+  const t = createT(messages, 'en');
+  const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' }, createElement(KoPanel, {
+    role: 'player', account: true, expression: 'welcome', onExpression() {}, onClose() {}, openerId: 'opener',
+  })));
+  const log = html.match(/<div role="log"[^>]*>/)?.[0];
+  expect(log).toContain('flex-1');
+  expect(log).toContain('min-h-0');
+  expect(log).not.toContain('max-h-60');
+  expect(html).toMatch(/aria-hidden="true" class="[^"]*h-1 w-10 rounded-full bg-line/);
+  for (const label of ['chatInput', 'mealPhoto', 'recordVoice', 'chatSend'] as const) {
+    const control = html.split('<').find(tag => tag.includes(`aria-label="${t(label)}"`));
+    expect(control).toContain('min-h-14');
+  }
+  const close = html.split('<').find(tag => tag.includes(`aria-label="${t('close')}"`));
+  expect(close).toContain('min-h-12');
+  expect(close).toContain('min-w-12');
+});
