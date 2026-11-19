@@ -67,5 +67,5 @@
 
 ## Checks
 - `npx tsc --noEmit -p .`
-- `npx eslint src/features/ko-account src/features/ko-core src/features/ko-preview src/features/ko-entry "src/app/[[]locale]/dev/ko"`
+- `npx eslint src/features/ko-account src/features/ko-core src/features/ko-preview src/features/ko-entry src/app`
 - `npx vitest run src/features/ko-account src/features/ko-core src/features/ko-preview src/features/ko-entry src/ui src/core/i18n/coverage.test.ts src/lib/shared-surface-imports.test.ts`
