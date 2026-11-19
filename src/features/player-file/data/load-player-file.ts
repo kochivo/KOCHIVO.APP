@@ -7,12 +7,12 @@ import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import type { PlayerFile } from '../model';
 import { formHistory, mergePlayerFile } from '../merge';
 
-interface LoadOptions { checkinLimit?: number; now?: Date; lastViewedAt?: string; timezone?: string }
+interface LoadOptions { checkinLimit?: number; now?: Date; lastViewedAt?: string; timezone?: string; formCaptainId?: string }
 
 /** Pass the caller's authenticated client: existing table RLS controls player access. */
 export async function loadPlayerFile(
   client: SupabaseClient<AppDatabase>, playerId: string,
-  { checkinLimit = 12, now = new Date(), lastViewedAt, timezone }: LoadOptions = {},
+  { checkinLimit = 12, now = new Date(), lastViewedAt, timezone, formCaptainId }: LoadOptions = {},
 ): Promise<PlayerFile> {
   if (!Number.isSafeInteger(checkinLimit) || checkinLimit < 0) throw new RangeError('Invalid check-in limit');
   const zonePromise = timezone ?? readPlayerTimezone(client, playerId);
@@ -31,9 +31,11 @@ export async function loadPlayerFile(
     ...(checkins.data ?? []).map(checkinSnapshot),
   ];
   if (captainWorkspaceEnabled()) {
-    const requests = await client.from('form_requests').select('id,form_id,answered_at,forms!form_requests_form_id_fkey(title)')
-      .eq('player_id',playerId).not('answered_at','is',null)
-      .order('answered_at',{ascending:false}).order('id').limit(12);
+    const answered = client.from('form_requests').select('id,form_id,answered_at,forms!form_requests_form_id_fkey(title)')
+      .eq('player_id',playerId).not('answered_at','is',null);
+    // A player can also see answers submitted to previous captains.
+    if (formCaptainId) answered.eq('captain_id', formCaptainId);
+    const requests = await answered.order('answered_at',{ascending:false}).order('id').limit(12);
     if (requests.error) throw requests.error;
     const ids = requests.data.map(r => r.id), formIds = [...new Set(requests.data.map(r => r.form_id))];
     if (ids.length) {

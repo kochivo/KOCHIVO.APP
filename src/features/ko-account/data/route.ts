@@ -12,7 +12,7 @@ import { koPreviewMessages } from '@/features/ko-core';
 import { getKoActor, resolvePlayer } from './account';
 import type { KoActor } from './account';
 import { approvalLifetimeMs, mealLogPayload, verifyApproval } from './approval';
-import { mealToolContext } from './log-meal';
+import { confirmMealApproval, mealToolContext } from './log-meal';
 import { koAccountConfig } from '@/features/ko-entry/server';
 import { commitApproval, executeIntent, say } from './execute';
 import { reviewAnswer } from './answer-guard';
@@ -117,7 +117,7 @@ export async function postKoAccountChat(request: Request) {
     if (explicitConfirm || (!audio && !photo && ['نفذ', 'تمام نفذ', 'confirm', 'approve'].includes(command))) {
       const expired = () => reply(say(actionT('expired')), explicitConfirm || typeof token === 'string' ? 410 : 200);
       const action = typeof token === 'string' ? verifyApproval(token, actor.id, now, config.secret) : null;
-      if (!action || audio || photo || action.kind === 'swap_options') return expired();
+      if (typeof token !== 'string' || !action || audio || photo || action.kind === 'swap_options') return expired();
       if (action.kind === 'meal_log') {
         if (actor.role !== 'player' || action.player !== actor.id) return expired();
         const payload = mealLogPayload.safeParse(action.payload);
@@ -125,10 +125,12 @@ export async function postKoAccountChat(request: Request) {
         const { mealId, eaten, name } = payload.data;
         const ctx = await mealToolContext(actor, now, request.signal);
         // Keep the meal on the day the player reviewed, including across local midnight.
-        const result = await runTool({ ...ctx, now: new Date(action.expires - approvalLifetimeMs) }, 'log_my_meal', { mealId, eaten });
+        const result = await runTool({ ...ctx, now: new Date(action.expires - approvalLifetimeMs), confirmMeal: confirmMealApproval(actor, token) },
+          'log_my_meal', { mealId, eaten });
+        if (result.ok && result.data && typeof result.data === 'object' && 'replayed' in result.data) return expired();
         return result.ok ? reply(say(actionT(eaten ? 'mealEaten' : 'mealSkipped', { name }))) : reply(say(actionT('mealLogFailed')), 409);
       }
-      if (actor.role !== 'captain' || typeof token !== 'string') return expired();
+      if (actor.role !== 'captain') return expired();
       try {
         if (isBigAction(action.kind) && !(await takeCredit(actor, await readCredits(actor, locale), token)))
           return reply(creditsOut(await readCredits(actor, locale), actionT), 409);

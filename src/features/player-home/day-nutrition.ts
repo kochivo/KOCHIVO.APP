@@ -1,5 +1,5 @@
-import type { MealLogRow, NutritionSnapshot } from '@/core/offline';
-import { eatenTotals, targetsOf } from '@/features/nutrition';
+import type { MealLogRow, NutritionMeal, NutritionSnapshot } from '@/core/offline';
+import { completedMeal, dayNutritionTargets, eatenTotals, filterMeals } from '@/features/nutrition';
 
 interface DayNutrition {
   kind: 'today' | 'past' | 'future';
@@ -10,14 +10,19 @@ interface DayNutrition {
 }
 
 export function dayNutrition(
-  snapshot: NutritionSnapshot, logs: readonly MealLogRow[], date: string, today: string,
+  snapshot: NutritionSnapshot | null, logs: readonly MealLogRow[], date: string, today: string, rest = false,
 ): DayNutrition {
   const kind = date === today ? 'today' : date < today ? 'past' : 'future';
-  const plan: DayNutrition = { kind, targetKcal: targetsOf(snapshot).kcal, mealsTotal: snapshot.meals.length };
+  const meals = filterMeals(snapshot?.meals ?? [], rest);
+  const plan: DayNutrition = { kind, targetKcal: snapshot ? dayNutritionTargets(snapshot, rest).kcal : 0, mealsTotal: meals.length };
   if (kind === 'future') return plan;
-  const dayLogs = logs.filter(row => row.log_date === date && !row.deleted_at);
   return {
-    ...plan, eatenKcal: eatenTotals(snapshot, dayLogs, date).kcal,
-    mealsDone: snapshot.meals.filter(meal => dayLogs.some(row => row.meal_id === meal.id && row.completed_at)).length,
+    ...plan, eatenKcal: eatenTotals(snapshot, logs, date).kcal,
+    mealsDone: meals.filter(meal => logs.some(row => row.meal_id === meal.id && completedMeal(row, date))).length,
   };
+}
+
+export function nextMeal(meals: readonly NutritionMeal[], logs: readonly MealLogRow[], date: string, rest = false) {
+  return filterMeals(meals, rest).find(meal =>
+    !logs.some(log => log.meal_id === meal.id && completedMeal(log, date)));
 }

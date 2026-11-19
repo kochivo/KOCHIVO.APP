@@ -25,9 +25,9 @@ import { HomeRankCard } from './home-rank-card';
 
 const StreakSheet = dynamic(() => import('./streak-sheet').then(module => module.StreakSheet), { ssr: false });
 
-export function V3Home({ weightKg, now, today, firstName, playerId, snapshot, day, rest, sessions, onPreview, readiness, week, showToday = true }: {
+export function V3Home({ weightKg, now, today, firstName, playerId, snapshot, day, rest, nutritionRest = rest, sessions, onPreview, readiness, week, showToday = true }: {
   weightKg?: number; now: Date; today: string; firstName?: string; playerId?: string; snapshot?: ProgramSnapshot | null;
-  day?: SnapshotDay; rest: boolean; sessions: WorkoutSessionRow[];
+  day?: SnapshotDay; rest: boolean; nutritionRest?: boolean; sessions: WorkoutSessionRow[];
   onPreview: (date: string) => void; readiness?: ReactNode; week?: ReactNode; showToday?: boolean;
 }) {
   const t = useT(messages);
@@ -68,7 +68,7 @@ export function V3Home({ weightKg, now, today, firstName, playerId, snapshot, da
           className={buttonClass({ variant: 'secondary', block: false, className: 'self-start' })}>{v4('tomorrow')}</a>}
       </>} /></div>
     {!rest && <>{dailyCheck}{rank}</>}
-    <div data-home-section="nutrition"><HomeTiles weightKg={weightKg} today={today} playerId={playerId} rest={rest} /></div>
+    <div data-home-section="nutrition"><HomeTiles weightKg={weightKg} today={today} playerId={playerId} rest={rest} nutritionRest={nutritionRest} /></div>
     {rest && <>
       <div data-home-section="tomorrow"><TomorrowCard day={tomorrowDay} date={tomorrow} rest={tomorrowRest} onPreview={onPreview} /></div>
       {rank}

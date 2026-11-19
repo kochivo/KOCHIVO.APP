@@ -72,7 +72,8 @@ export async function executeIntent(actor: KoActor, intent: Intent, locale: Loca
   }
   if (intent.kind === 'read_nutrition' || intent.kind === 'meal_photo') {
     if (actor.role !== 'player') return say(t('unclear'));
-    const rows = await readMeal(actor, intent.args.meal, intent.args.foods, locale);
+    const rows = await readMeal(actor, intent.args.meal, intent.args.foods, locale,
+      intent.kind === 'read_nutrition' ? { now, signal } : undefined);
     const portions = rows?.map(row => t('portion', { ...row, alternative: row.alternative ? t('alternative') : '' })).join('\n');
     return say(intent.kind === 'meal_photo'
       ? `${t('photo', { foods: intent.args.foods.join('، ') })}\n\n${portions || t('noMeal')}`

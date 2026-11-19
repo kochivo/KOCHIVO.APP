@@ -1,6 +1,7 @@
 'use client';
 
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
+import { uuidv7 } from '@/core/offline/ids';
 import { IconButton } from '@/ui/icon-button';
 import { Fragment, Suspense, lazy, useCallback, useEffect, useRef, useState } from 'react';
 import type { FormEvent, ReactNode } from 'react';
@@ -139,9 +140,11 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
         : result.kind === 'clarify' ? result.question : t('chatUnsupported');
       const newCards = account && (result.kind === 'message' || result.kind === 'confirm') ? chatActions(result) : undefined;
       const timestamp = now();
-      setHistory(entries => [...entries, { speaker: 'user' as const, text: clip ? t('voiceNote') : photo ? `${t('mealPhoto')} ${prompt}`.trim() : prompt,
+      const questionId = uuidv7(timestamp);
+      const answerId = uuidv7(timestamp);
+      setHistory(entries => [...entries, { id: questionId, speaker: 'user' as const, text: clip ? t('voiceNote') : photo ? `${t('mealPhoto')} ${prompt}`.trim() : prompt,
         contextText: clip ? '' : prompt, timestamp },
-        { speaker: 'ko' as const, text: answer, timestamp, actions: newCards, ...(result.kind === 'message' && {
+        { id: answerId, speaker: 'ko' as const, text: answer, timestamp, actions: newCards, ...(result.kind === 'message' && {
           quick: result.quick, upgrade: result.upgrade, sources: result.sources,
         }) }].slice(-(userId ? koHistoryLimit : 30)));
       setDraft('');
@@ -179,7 +182,7 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
         {(!userId || history.length === 0) && <KoMessage speaker="ko" text={t(account
           ? role === 'captain' ? 'accountCaptain' : 'accountPlayer'
           : role === 'captain' ? 'chatCaptain' : 'chatPlayer')} sheet={sheet} />}
-        {history.map((entry, index) => <Fragment key={entry.actions?.[0]?.id ?? index}>
+        {history.map((entry, index) => <Fragment key={entry.id}>
           <KoMessage speaker={entry.speaker} text={entry.text} sources={entry.sources} sheet={sheet}>
             {entry.quick?.length ? <KoQuickButtons quick={entry.quick} disabled={busy || recorder.status !== 'idle' || Boolean(clip || photo)}
               send={text => void submit(undefined, text)} /> : role === 'captain' && entry.upgrade ? <KoUpgradeCard upgrade={entry.upgrade} /> : null}

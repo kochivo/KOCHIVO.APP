@@ -1,3 +1,6 @@
+import { positive, validateTrainingDays } from '@/lib/day-targets';
+export { cycle } from '@/lib/day-targets';
+
 export type Goal = 'cut' | 'maintain' | 'bulk';
 export interface BodyInputs {
   weightKg: number;
@@ -7,12 +10,6 @@ export interface BodyInputs {
   bodyFatPct?: number;
 }
 
-function positive(...values: number[]) {
-  if (values.some(value => !Number.isFinite(value) || value <= 0)) throw new RangeError('Expected positive finite values');
-}
-function days(value: number) {
-  if (!Number.isInteger(value) || value < 0 || value > 7) throw new RangeError('Expected 0–7 training days');
-}
 function rawBmr(input: BodyInputs) {
   positive(input.weightKg, input.heightCm, input.age);
   if (input.bodyFatPct !== undefined) {
@@ -29,7 +26,7 @@ export function bmr(input: BodyInputs): number {
 /** Days/week: 0–1 → 1.2, 2–3 → 1.375, 4–5 → 1.55, 6–7 → 1.725.
  * Sessions ≥75 minutes add .05; the overall factor cannot exceed 1.9. */
 export function activityFactor(trainingDays: number, sessionMinutes: number): number {
-  days(trainingDays);
+  validateTrainingDays(trainingDays);
   if (!Number.isFinite(sessionMinutes) || sessionMinutes < 0) throw new RangeError('Invalid session duration');
   const base = trainingDays <= 1 ? 1.2 : trainingDays <= 3 ? 1.375 : trainingDays <= 5 ? 1.55 : 1.725;
   return Math.min(1.9, base + (sessionMinutes >= 75 ? .05 : 0));
@@ -62,14 +59,4 @@ export function macros(kcal: number, weightKg: number, { proteinGPerKg = 2, fatP
   return { grams: { protein, fat, carbs }, percentages: {
     protein: protein * 4 / kcal * 100, fat: fat * 9 / kcal * 100, carbs: carbs * 4 / kcal * 100,
   } };
-}
-
-/** Rounded to 10 kcal: the resulting weekly mean may differ by at most 5 kcal/day. */
-export function cycle(avgKcal: number, trainingDays: number) {
-  positive(avgKcal);
-  days(trainingDays);
-  const round10 = (value: number) => Math.round(value / 10) * 10;
-  if (trainingDays === 0 || trainingDays === 7) return { training: round10(avgKcal), rest: round10(avgKcal) };
-  const training = round10(avgKcal * 1.08);
-  return { training, rest: round10((7 * avgKcal - trainingDays * training) / (7 - trainingDays)) };
 }

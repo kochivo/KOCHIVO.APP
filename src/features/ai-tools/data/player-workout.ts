@@ -1,7 +1,7 @@
 import 'server-only';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { isWeeklyProgram } from '@/core/offline/program-cycle';
-import { isRestDay, mapProgramSnapshot, pickTodayDay } from '@/features/player-home/server';
+import { mapProgramSnapshot, pickTodayDay, resolveRestDay } from '@/features/player-home/server';
 import type { AppDatabase } from '@/types/app-database';
 import type { Tables } from '@/types/database';
 import type { ToolContext } from '../types';
@@ -21,19 +21,29 @@ type ScheduleDatabase = {
   };
 };
 
+export async function playerReadinessDecision(ctx: ToolContext, date: string) {
+  // Connected MCP clients have a restricted endpoint allowlist.
+  if (ctx.client !== 'ko') return null;
+  const { id, db } = ctx.actor;
+  const { data, error } = await db.from('readiness_decisions').select('decision')
+    .eq('player_id', id).eq('decision_date', date).abortSignal(ctx.signal).maybeSingle();
+  if (error) throw error;
+  return data?.decision ?? null;
+}
+
 export async function playerWorkout(ctx: ToolContext, today: string) {
   const { id, db } = ctx.actor;
-  const program = await db.from('programs')
+  const [program, decision] = await Promise.all([db.from('programs')
     .select('id,title,notes,settings,program_days(id,position,title,weekday,is_rest_day,program_exercises(id,exercise_id,position,sets,reps_min,reps_max,rest_seconds,superset_group,rpe,tempo,notes,set_plan,exercises(name_ar,name_en,media_path)))')
     .eq('player_id', id).eq('status', 'active').eq('is_template', false)
-    .abortSignal(ctx.signal).returns<ProgramResponse[]>().maybeSingle();
+    .abortSignal(ctx.signal).returns<ProgramResponse[]>().maybeSingle(), playerReadinessDecision(ctx, today)]);
   if (program.error) throw program.error;
-  if (!program.data?.program_days.length) return null;
+  if (!program.data?.program_days.length) return resolveRestDay(null, [], today, decision) ? { day: undefined, rest: true } : null;
 
   const snapshot = mapProgramSnapshot(program.data, [], id);
   if (isWeeklyProgram(snapshot)) {
     const day = pickTodayDay(snapshot, [], today);
-    return { day, rest: !day || day.is_rest_day };
+    return { day, rest: resolveRestDay(snapshot, [], today, decision) };
   }
 
   // The function returns only the signed-in player's training days from private intake.
@@ -52,5 +62,5 @@ export async function playerWorkout(ctx: ToolContext, today: string) {
   snapshot.training_days = schedule.data ?? [];
   const history = [logged.data, latest.data].filter(row => row !== null);
   const day = pickTodayDay(snapshot, history, today);
-  return { day, rest: isRestDay(snapshot, history, today) || Boolean(day?.is_rest_day) };
+  return { day, rest: resolveRestDay(snapshot, history, today, decision) };
 }

@@ -1,6 +1,6 @@
 import { afterEach, expect, it, vi } from 'vitest';
 import * as ai from '@/features/ai-tools/server';
-import { factsBudget, formatFacts, loadFacts } from './data/facts';
+import { factsBudget, formatFacts, loadFacts, nutritionFacts } from './data/facts';
 import type { KoActor } from './data/account';
 
 vi.mock('server-only', () => ({}));
@@ -53,12 +53,21 @@ it('loads the player’s two local workout dates, nutrition, progress and captai
   expect(workout.mock.calls.map(([, day]) => day)).toEqual(['2026-11-20', '2026-11-21']);
   expect(pack).toContain('[workout_today] rest day');
   expect(pack).toContain('[workout_tomorrow] no program');
-  expect(pack).toContain('[nutrition_today] kcal remaining 2100 / target 2100; protein g remaining 150 / target 150; Lunch (logged skipped); Lunch: Rice 204 g');
+  expect(pack).toContain('[nutrition_today] kcal remaining 2100 / target 2100; protein g remaining 150 / target 150; carbs g remaining 250 / target 250; fat g remaining 60 / target 60; eaten kcal 0, protein 0 g, carbs 0 g, fat 0 g; Lunch (logged skipped); Lunch: Rice 204 g');
   expect(pack).toContain('[progress] month done 13, planned 15, adherence 86%');
   expect(pack).toContain('points to crown 28');
   expect(pack).toContain('last workout 2026-11-18');
   expect(pack).toContain('[captain] Adel');
   expect(pack).not.toMatch(/11111111|01012345678/);
+});
+
+it('keeps saved nutrition facts when the active plan is gone', () => {
+  const today = '2026-11-20';
+  const stamp = '2026-11-20T01:00:00Z';
+  expect(nutritionFacts(null, [{
+    id, meal_id: null, log_date: today, swaps: {}, completed_at: stamp, client_updated_at: stamp, deleted_at: null,
+    eaten_macros: { kcal: 500, protein: 25, carbs: 60, fat: 18 },
+  }], today)).toContain('eaten kcal 500, protein 25 g, carbs 60 g, fat 18 g');
 });
 
 it('loads a captain roster, scoped screen summary, crown leader and bounded upcoming subscriptions', async () => {

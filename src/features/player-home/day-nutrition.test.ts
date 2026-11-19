@@ -5,7 +5,7 @@ import type { MealLogRow, NutritionSnapshot } from '@/core/offline';
 import type * as Nutrition from '@/features/nutrition';
 import { LocaleProvider } from '@/core/i18n/client';
 import { NutritionSlot } from './components/nutrition-slot';
-import { dayNutrition } from './day-nutrition';
+import { dayNutrition, nextMeal } from './day-nutrition';
 
 const state = vi.hoisted(() => ({ snapshot: null as NutritionSnapshot | null, logs: [] as MealLogRow[], date: '' }));
 vi.mock('@/features/nutrition', async original => ({
@@ -35,6 +35,15 @@ const log = (meal_id: string, log_date = past, changes: Partial<MealLogRow> = {}
 });
 
 describe('dayNutrition', () => {
+  it('counts and suggests only rest meals on a past rest day', () => {
+    const split = { ...snapshot, meals: snapshot.meals.map(meal => ({
+      ...meal, day_type: meal.id === 'breakfast' ? 'rest' as const : 'training' as const,
+    })) };
+    expect(dayNutrition(split, [log('breakfast')], past, today, true))
+      .toMatchObject({ mealsDone: 1, mealsTotal: 1 });
+    expect(nextMeal(split.meals, [log('breakfast')], past, true)).toBeUndefined();
+    expect(nextMeal(split.meals, [], past, true)?.id).toBe('breakfast');
+  });
   it('keeps today totals and counts only completed meals for today', () => {
     expect(dayNutrition(snapshot, [log('breakfast', today), log('dinner')], today, today))
       .toEqual({ kind: 'today', eatenKcal: 200, targetKcal: 1800, mealsDone: 1, mealsTotal: 2 });
@@ -68,9 +77,21 @@ describe('dayNutrition', () => {
 
 describe('selected day nutrition card', () => {
   beforeEach(() => { state.snapshot = snapshot; state.logs = []; state.date = ''; });
-  const render = (date?: string, locale: 'ar' | 'en' = 'en') => renderToStaticMarkup(
-    createElement(LocaleProvider, { locale }, createElement(NutritionSlot, { date })),
+  const render = (date?: string, locale: 'ar' | 'en' = 'en', rest?: boolean) => renderToStaticMarkup(
+    createElement(LocaleProvider, { locale }, createElement(NutritionSlot, { date, rest })),
   );
+  it('shows one of one for a past rest day on a split plan', () => {
+    state.snapshot = { ...snapshot, meals: snapshot.meals.map(meal => ({
+      ...meal, day_type: meal.id === 'breakfast' ? 'rest' : 'training',
+    })) };
+    state.logs = [log('breakfast')];
+    expect(render(past, 'en', true)).toContain('1 of 1 meal');
+  });
+  it('shows saved calories if the active plan was removed', () => {
+    state.snapshot = null;
+    state.logs = [log('breakfast', past, { meal_id: null, eaten_macros: { kcal: 500, protein: 25, carbs: 60, fat: 18 } })];
+    expect(render(past)).toContain('500 / 0 kcal');
+  });
   it('keeps today linked with the next meal and defaults to today', () => {
     const html = render();
     expect(state.date).toBe(today);

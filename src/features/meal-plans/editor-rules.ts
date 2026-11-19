@@ -1,5 +1,4 @@
-import type { Macros } from '@/lib/macros';
-import { cycle } from './energy';
+export { dayTargets } from '@/lib/day-targets';
 import type { DayType, FoodUnit, Meal, PlanDraft } from './types';
 
 export function targetStatus(planned: number, target: number): 'within' | 'over' | 'under' {
@@ -21,12 +20,6 @@ export function moveVisibleMeal(draft: PlanDraft, id: string, direction: number,
   if (!neighbor || !current) return draft;
   return { ...draft, meals: draft.meals.map(meal => meal.id === id ? { ...neighbor, position: meal.position }
     : meal.id === neighbor.id ? { ...current, position: meal.position } : meal) };
-}
-export function dayTargets(targets: Macros, trainingDays: number, day: 'training' | 'rest'): Macros {
-  // An empty numeric input is temporarily zero; save validation reports it without crashing the editor.
-  if (!Number.isFinite(targets.kcal) || targets.kcal <= 0) return targets;
-  const kcal = cycle(targets.kcal, trainingDays)[day];
-  return { ...targets, kcal, carbs: Math.max(0, Math.round((kcal - targets.protein * 4 - targets.fat * 9) / 4)) };
 }
 export function copyTrainingMeals(draft: PlanDraft, id: () => string): PlanDraft {
   const retained = draft.meals.filter(meal => meal.dayType !== 'rest');

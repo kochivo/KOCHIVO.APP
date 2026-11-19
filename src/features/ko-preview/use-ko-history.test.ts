@@ -15,14 +15,14 @@ function storage() {
 
 it('round-trips text and final card states per user without tokens', () => {
   const { values } = storage();
-  const entry: Entry = { speaker: 'ko', text: 'Reply', contextText: 'Context', timestamp: now,
+  const entry: Entry = { id: 'reply', speaker: 'ko', text: 'Reply', contextText: 'Context', timestamp: now,
     actions: ['done', 'cancelled', 'failed', 'pending'].map(id => ({
       id, title: id, detail: 'private detail', approval: createApproval('private-token', now),
     })) };
   saveKoHistory('a', [entry], { done: { kind: 'done', text: 'Saved' }, cancelled: { kind: 'cancelled' },
-    failed: { kind: 'failed', text: 'Error' } });
+    failed: { kind: 'failed', text: 'Error' } }, now);
   expect(JSON.parse(values.get('kochivo.ko.chat.a') ?? '')).toEqual([{
-    speaker: 'ko', text: 'Reply', contextText: 'Context', timestamp: now, actions: [
+    id: 'reply', speaker: 'ko', text: 'Reply', contextText: 'Context', timestamp: now, actions: [
       { title: 'done', state: { kind: 'done', text: 'Saved' } },
       { title: 'cancelled', state: { kind: 'cancelled' } },
       { title: 'failed', state: { kind: 'failed', text: 'Error' } },
@@ -40,9 +40,9 @@ it('keeps the last 40 entries and drops history older than seven days', () => {
   storage();
   const cutoff = now - 7 * 86_400_000;
   const entries = Array.from({ length: 42 }, (_, i): Entry => ({
-    speaker: 'user', text: String(i), timestamp: cutoff + i - 3,
+    id: String(i), speaker: 'user', text: String(i), timestamp: cutoff + i - 3,
   }));
-  saveKoHistory('a', entries, {});
+  saveKoHistory('a', entries, {}, cutoff);
   expect(loadKoHistory('a', cutoff).map(entry => entry.text)).toEqual(entries.slice(2).map(entry => entry.text));
   expect(loadKoHistory('a', now).map(entry => entry.text)).toEqual(entries.slice(3).map(entry => entry.text));
 });
@@ -50,24 +50,24 @@ it('keeps the last 40 entries and drops history older than seven days', () => {
 it('tolerates blocked storage', () => {
   const { setItem } = storage();
   setItem.mockImplementation(() => { throw new Error('blocked'); });
-  expect(() => saveKoHistory('a', [{ speaker: 'user', text: 'Hi', timestamp: now }], {})).not.toThrow();
+  expect(() => saveKoHistory('a', [{ id: 'hi', speaker: 'user', text: 'Hi', timestamp: now }], {}, now)).not.toThrow();
   expect(loadKoHistory('a', now)).toEqual([]);
 });
 
 it('does not recreate a saved conversation removed in another tab', () => {
   const { values } = storage();
   const key = 'kochivo.ko.chat.a';
-  const entries: Entry[] = [{ speaker: 'user', text: 'Hi', timestamp: now }];
-  expect(saveKoHistory('a', entries, {})).toBe(true);
+  const entries: Entry[] = [{ id: 'hi', speaker: 'user', text: 'Hi', timestamp: now }];
+  expect(saveKoHistory('a', entries, {}, now)).toBe(true);
   values.delete(key);
-  expect(saveKoHistory('a', entries, {}, true)).toBe(false);
+  expect(saveKoHistory('a', entries, {}, now, true)).toBe(false);
   expect(values.has(key)).toBe(false);
 });
 
 it('restores source chips with the answer text', () => {
   storage();
-  saveKoHistory('a', [{ speaker: 'ko', text: 'Rest day', sources: ['workout_today'], timestamp: now }], {});
+  saveKoHistory('a', [{ id: 'rest', speaker: 'ko', text: 'Rest day', sources: ['workout_today'], timestamp: now }], {}, now);
   expect(loadKoHistory('a', now)).toEqual([{
-    speaker: 'ko', text: 'Rest day', sources: ['workout_today'], timestamp: now,
+    id: 'rest', speaker: 'ko', text: 'Rest day', sources: ['workout_today'], timestamp: now,
   }]);
 });

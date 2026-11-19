@@ -1,4 +1,5 @@
 import type { PGlite } from '@electric-sql/pglite';
+import { createHmac } from 'node:crypto';
 import { afterAll, beforeAll, expect, it } from 'vitest';
 import { stableId } from '../../src/core/offline/ids';
 import { asUser, createCaptainWithPlayer, createTestDb, TEST_NOW } from './harness';
@@ -117,4 +118,35 @@ it('shares the offline row and keeps the latest client timestamp', async () => {
   expect((await read()).rows).toEqual([{ id, eaten: true }]);
   await sync(new Date(Date.parse(TEST_NOW) + 1000).toISOString());
   expect((await read()).rows).toEqual([{ id, eaten: false }]);
+});
+
+it('consumes KO approvals atomically and leaves a later offline correction intact', async () => {
+  const secret = 'ko-test-signing-key-123456789012345';
+  await db.query('insert into security_private.ko_approval_config(signing_key) values ($1)', [secret]);
+  const mealId = meals[2];
+  const body = Buffer.from(JSON.stringify({
+    actor: player, player, kind: 'meal_log', payload: { mealId, eaten: true },
+    id: '33333333-3333-4333-8333-333333333334', expires: Date.parse(TEST_NOW) + 60_000,
+  })).toString('base64url');
+  const token = body + '.' + createHmac('sha256', secret).update(body).digest('hex');
+  const confirm = (user = player, date = yesterday) => asUser(db, user, tx =>
+    tx.query('select public.ko_confirm_meal($1,$2,$3,$4,$5,$6) as applied',
+      [token, mealId, date, {}, true, macros]));
+  await expect(asUser(db, player, async tx => {
+    await tx.query(`select set_config('request.jwt.claims',$1,true),
+      set_config('request.method','POST',true),set_config('request.path','/rpc/ko_confirm_meal',true)`,
+    [JSON.stringify({ sub: player, role: 'authenticated', client_id: 'client' })]);
+    await tx.query('select public.oauth_request_gate()');
+  })).rejects.toMatchObject({ code: '42501' });
+  await expect(confirm(otherPlayer)).rejects.toMatchObject({ code: '42501' });
+  await expect(confirm(player, '2026-11-01')).rejects.toMatchObject({ code: '22023' });
+  expect((await confirm()).rows).toEqual([{ applied: true }]);
+  const id = await stableId('meal', mealId, yesterday);
+  await asUser(db, player, tx => tx.query('select public.sync_meal_logs($1)', [JSON.stringify([{
+    id, meal_id: mealId, log_date: yesterday, completed_at: null,
+    client_updated_at: new Date(Date.parse(TEST_NOW) + 1000).toISOString(),
+  }])]));
+  expect((await confirm()).rows).toEqual([{ applied: false }]);
+  expect((await db.query('select completed_at from public.meal_logs where id=$1', [id])).rows)
+    .toEqual([{ completed_at: null }]);
 });

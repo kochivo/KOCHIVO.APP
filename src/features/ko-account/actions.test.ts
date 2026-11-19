@@ -10,9 +10,11 @@ import type { Approval } from './data/approval';
 import { postKoAccountChat } from './data/route';
 import * as progress from './data/read-progress';
 import * as executor from './data/execute';
+import * as meal from './data/log-meal';
 
 vi.mock('server-only', () => ({}));
 vi.mock('@/core/timezone/server', () => ({ getPlayerTimezone: async () => 'Africa/Cairo' }));
+vi.mock('@/core/i18n/server', () => ({ getArabicStyle: async () => undefined }));
 
 const actorId = '22222222-2222-4222-8222-222222222222';
 const playerId = '11111111-1111-4111-8111-111111111111';
@@ -35,7 +37,7 @@ function setup(role: KoActor['role'], usage = 'ok', credit = true) {
     error: null,
   }));
   const query = {
-    select: () => query, eq: () => query, is: () => query,
+    select: () => query, eq: () => query, is: () => query, abortSignal: () => query,
     maybeSingle: async () => ({
       data: { access_until: '2027-01-28', sessions_left: null, frozen_at: null, pending: false }, error: null,
     }),
@@ -200,6 +202,34 @@ it('keeps the reviewed local meal date across midnight', async () => {
   expect(response.status).toBe(200);
   expect(run).toHaveBeenCalledWith(expect.objectContaining({ now: new Date(reviewedAt), timezone: 'Africa/Cairo' }),
     'log_my_meal', { mealId: playerId, eaten: true });
+});
+
+it('applies a double-tapped meal approval once and returns the Arabic expiry reply', async () => {
+  setup('player');
+  const token = tokenFor('meal_log');
+  const apply = vi.fn();
+  const consumed = new Set<string>();
+  vi.spyOn(meal, 'confirmMealApproval').mockImplementation((_actor, approval) => async () => {
+    expect(approval).toBe(token);
+    if (consumed.has(approval)) return { data: false, error: null };
+    consumed.add(approval);
+    apply();
+    return { data: true, error: null };
+  });
+  vi.spyOn(ai, 'runTool').mockImplementation(async ({ confirmMeal, signal }) => {
+    const result = await confirmMeal?.({ p_meal_id: playerId, p_log_date: '2027-01-15',
+      p_swaps: {}, p_eaten: true, p_eaten_macros: null }, signal);
+    return { ok: true, data: result?.data === false ? { replayed: true } : {} };
+  });
+  const [first, second] = await Promise.all([
+    post({ confirm: '1', token, locale: 'ar' }),
+    post({ confirm: '1', token, locale: 'ar' }),
+  ]);
+  const responses = [first, second];
+  expect(responses.map(response => response.status).sort()).toEqual([200, 410]);
+  expect(await responses.find(response => response.status === 410)?.json())
+    .toMatchObject({ text: expect.stringContaining('انتهت') });
+  expect(apply).toHaveBeenCalledOnce();
 });
 
 it.each([

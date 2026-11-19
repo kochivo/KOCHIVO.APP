@@ -4,7 +4,8 @@ import type { AppDatabase } from '@/types/app-database';
 import type { MealLogRow, NutritionMeal } from '@/core/offline';
 import { filterMeals } from './day-type-filter';
 import { fetchNutritionSnapshot, mapNutritionSnapshot, type NutritionResponse } from './data/nutrition-snapshot';
-import { targetsOf } from './macros';
+import { dayNutritionTargets, targetsOf } from './macros';
+import { dayTargets } from '@/lib/day-targets';
 import { formatPortion } from './format-portion';
 
 const today = '2026-11-15';
@@ -13,6 +14,18 @@ const meals: NutritionMeal[] = [undefined, 'all', 'training', 'rest'].map((day_t
   items: [{ id: String(index), position: 0, name: 'Food', grams: 100, photo_path: null,
     per100g: { kcal: 100, protein: 10, carbs: 10, fat: 1 }, alternatives: [] }],
 }));
+it.each([
+  { day: 'training' as const, expected: { kcal: 2160, protein: 150, carbs: 264, fat: 56 } },
+  { day: 'rest' as const, expected: { kcal: 1880, protein: 150, carbs: 194, fat: 56 } },
+])('uses the captain editor targets for a $day day', ({ day, expected }) => {
+  const targets = { kcal: 2000, protein: 150, carbs: 225, fat: 56 };
+  const snapshot = { id: 'active' as const, player_id: 'p', plan_id: 'plan', title: 'Plan',
+    targets, meals, training_day_count: 3 };
+  expect(dayNutritionTargets(snapshot, day === 'rest')).toEqual(expected);
+  expect(dayTargets(targets, 3, day)).toEqual(expected);
+  expect(dayNutritionTargets({ ...snapshot, targets: { ...targets, protein: null } }, day === 'rest')).toEqual(expected);
+  expect(dayNutritionTargets({ ...snapshot, meals: meals.slice(0, 2) }, day === 'rest')).toEqual(targets);
+});
 it('shows only shared meals during loading and defaults unknown days to training', () => {
   expect(filterMeals(meals, undefined, [], today).map(meal => meal.id)).toEqual(['0', '1']);
   expect(filterMeals(meals, null, [], today).map(meal => meal.id)).toEqual(['0', '1', '2']);

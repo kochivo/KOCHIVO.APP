@@ -10,7 +10,7 @@ import { localDb, type MealLogRow, type NutritionMeal } from '@/core/offline';
 import { foodPhotoUrl } from '@/core/storage/media-url';
 import { Button, EmptyState, GlassCard } from '@/ui';
 import { setMealEaten } from '../data/log-meal';
-import { mealMacros } from '../macros';
+import { completedMeal, eatenMacros, mealMacros } from '../macros';
 import { formatPortion } from '../format-portion';
 import { starterText } from '@/lib/starter-text';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
@@ -31,8 +31,8 @@ export function MealCard({ meal, log, today, planTitle, primary = false }: { mea
   const [error, setError] = useState(false);
   const [open, setOpen] = useState(false);
   const swaps = log?.swaps ?? {};
-  const eaten = Boolean(log?.completed_at && !log.deleted_at && log.log_date === today);
-  const macros = mealMacros(meal, swaps);
+  const eaten = completedMeal(log, today);
+  const macros = (eaten ? eatenMacros(log.eaten_macros) : null) ?? mealMacros(meal, swaps);
   async function save(nextEaten: boolean, nextSwaps: Record<string, string>, now: number) {
     setBusy(true);
     setError(false);

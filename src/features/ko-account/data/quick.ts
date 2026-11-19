@@ -1,6 +1,6 @@
 import 'server-only';
-import { nutritionDay, playerMealLogs, playerNutritionPlan, playerWorkout } from '@/features/ai-tools/server';
-import { isRestDay } from '@/features/player-home/server';
+import { nutritionDay, playerMealLogs, playerNutritionPlan, playerReadinessDecision, playerWorkout } from '@/features/ai-tools/server';
+import { resolveRestDay } from '@/features/player-home/server';
 import { fetchPlayerPreview } from '@/features/player-preview/server';
 import { localDate } from '@/lib/dates';
 import type { createT } from '@/core/i18n/messages';
@@ -20,7 +20,7 @@ export async function readQuick(actor: KoActor, key: typeof quickKeys[number], l
   if (actor.role === 'captain' && !player) return t('quickPlayerOnly');
   const ctx = await mealToolContext(player ? { ...actor, id: player.id } : actor, now, signal);
   const day = localDate(ctx.now, ctx.timezone);
-  const workout = player ? await captainWorkout(player.id, day) : await playerWorkout(ctx, day);
+  const workout = player ? await captainWorkout(ctx, day) : await playerWorkout(ctx, day);
   if (key === 'quickWorkout') {
     if (workout?.rest || !workout?.day?.exercises.length) return t('quickWorkoutEmpty');
     return [workout.day.title, ...workout.day.exercises.map(row => t('quickExercise', {
@@ -34,13 +34,13 @@ export async function readQuick(actor: KoActor, key: typeof quickKeys[number], l
   return meals.map(meal => meal.name).join('\n') || t('quickMealsEmpty');
 }
 
-async function captainWorkout(playerId: string, today: string) {
-  const result = await fetchPlayerPreview(playerId, today);
+async function captainWorkout(ctx: Awaited<ReturnType<typeof mealToolContext>>, today: string) {
+  const [result, decision] = await Promise.all([fetchPlayerPreview(ctx.actor.id, today), playerReadinessDecision(ctx, today)]);
   if (result.error) throw new Error(result.error);
   const preview = result.data;
-  if (!preview?.program) return null;
+  if (!preview) return null;
   return {
     day: preview.todayDay,
-    rest: isRestDay(preview.program, preview.sessions, today) || Boolean(preview.todayDay?.is_rest_day),
+    rest: resolveRestDay(preview.program, preview.sessions, today, decision),
   };
 }

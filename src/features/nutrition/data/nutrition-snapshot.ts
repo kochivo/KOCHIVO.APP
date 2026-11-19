@@ -6,12 +6,15 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { NutritionFood, NutritionSnapshot } from '@/core/offline';
 import type { Tables } from '@/types/database';
 import type { AppDatabase as Database } from '@/types/app-database';
+import { loadPlayerFile } from '@/features/player-file';
+import { hasSplitMenu } from '../day-type-filter';
 
 type FoodResponse = Pick<Tables<'foods'>, 'name_ar' | 'photo_path' |
   'kcal_per_100g' | 'protein_per_100g' | 'carbs_per_100g' | 'fat_per_100g'> & { units?: NutritionFood['units'] };
 type AlternativeResponse = Pick<Tables<'meal_item_alternatives'>, 'id' | 'grams'> & { foods: FoodResponse | null };
 export type NutritionResponse = Pick<Tables<'nutrition_plans'>,
   'id' | 'title' | 'target_kcal' | 'target_protein' | 'target_carbs' | 'target_fat'> & {
+  captain_id?: string;
   water_target_ml?: number | null;
   meals: (Pick<Tables<'meals'>, 'id' | 'position' | 'name'> & {
     day_type?: 'all' | 'training' | 'rest'; time_of_day?: string | null; ramadan_slot?: 'iftar' | 'post_workout' | 'suhoor' | null;
@@ -44,12 +47,18 @@ export function mapNutritionSnapshot(plan: NutritionResponse, playerId: string):
     })),
   };
 }
-export async function fetchNutritionSnapshot(client: SupabaseClient<Database>): Promise<NutritionSnapshot | null> {
+export async function nutritionTrainingDayCount(client: SupabaseClient<Database>, playerId: string,
+  formCaptainId: string | undefined, options: { now: Date; timezone?: string }): Promise<number> {
+  const { facts } = await loadPlayerFile(client, playerId, { ...options, formCaptainId, checkinLimit: 0 });
+  return facts.trainingDays?.value.length ?? 0;
+}
+
+export async function fetchNutritionSnapshot(client: SupabaseClient<Database>, now = new Date()): Promise<NutritionSnapshot | null> {
   const { data: auth, error } = await client.auth.getUser();
   if (error || !auth.user) throw error ?? new Error('Missing session');
   const foodFields = 'name_ar,photo_path,kcal_per_100g,protein_per_100g,carbs_per_100g,fat_per_100g';
   const read = (extended: boolean) => {
-    const columns: string = `id,title,water_target_ml,target_kcal,target_protein,target_carbs,target_fat,meals(id,position,name,${extended ? 'day_type,time_of_day,ramadan_slot,' : ''}meal_items(id,position,grams,${extended ? 'unit,' : ''}foods(${foodFields}${extended ? ',units' : ''}),meal_item_alternatives(id,grams,foods(${foodFields}))))`;
+    const columns: string = `id,captain_id,title,water_target_ml,target_kcal,target_protein,target_carbs,target_fat,meals(id,position,name,${extended ? 'day_type,time_of_day,ramadan_slot,' : ''}meal_items(id,position,grams,${extended ? 'unit,' : ''}foods(${foodFields}${extended ? ',units' : ''}),meal_item_alternatives(id,grams,foods(${foodFields}))))`;
     return client.from('nutrition_plans').select(columns)
       .eq('player_id', auth.user.id).eq('status', 'active').maybeSingle();
   };
@@ -58,5 +67,11 @@ export async function fetchNutritionSnapshot(client: SupabaseClient<Database>): 
   const { data, error: readError } = result;
   if (readError) throw readError;
   // The generated schema predates the portion columns selected above.
-  return data ? mapNutritionSnapshot(data as unknown as NutritionResponse, auth.user.id) : null;
+  if (!data) return null;
+  const plan = data as unknown as NutritionResponse;
+  const snapshot = mapNutritionSnapshot(plan, auth.user.id);
+  if (hasSplitMenu(snapshot.meals)) {
+    snapshot.training_day_count = await nutritionTrainingDayCount(client, auth.user.id, plan.captain_id, { now });
+  }
+  return snapshot;
 }

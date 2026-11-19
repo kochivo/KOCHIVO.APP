@@ -138,6 +138,18 @@ it('shows rest content, tomorrow preview and the food action without a workout p
   expect(html).not.toContain('/player/rank');
   expect(html).not.toMatch(/<a\b[^>]*class="[^"]*\bcontrol-primary\b[^"/]*"/);
 });
+it('suggests the next rest meal when a training-only meal comes first', () => {
+  const meals = state.meals;
+  state.meals = [
+    { id: 'train', name: 'Training lunch', day_type: 'training', position: 0, items: [] },
+    { id: 'rest', name: 'Rest lunch', day_type: 'rest', position: 1, items: [] },
+  ];
+  try {
+    const html = render(true);
+    expect(html).toContain('Rest lunch');
+    expect(html).not.toContain('Training lunch');
+  } finally { state.meals = meals; }
+});
 it('only promises streak preservation on a scheduled rest day', () => {
   expect(render(true, '2026-11-10')).toContain('الراحة مش هتقطع الـ1 يوم بتوعك');
   expect(render(true, '2026-11-11')).not.toContain('الراحة مش هتقطع');

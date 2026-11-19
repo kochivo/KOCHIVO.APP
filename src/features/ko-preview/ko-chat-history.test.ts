@@ -6,20 +6,27 @@ import { createT } from '@/core/i18n/messages';
 import { KoChat } from './components/ko-chat';
 import { KoMessage } from './components/ko-message';
 import { KoPanel } from './components/ko-panel';
+import { useKoHistory as historyHook } from './hooks/use-ko-history';
 import { messages } from './messages';
 
-const hooks = vi.hoisted(() => ({ cursor: 0, values: [] as unknown[] }));
+const hooks = vi.hoisted(() => ({
+  cursor: 0, values: [] as unknown[], effects: undefined as (() => unknown)[] | undefined,
+}));
 vi.mock('react', async importOriginal => ({
   ...await importOriginal<typeof ReactModule>(),
   useCallback: (callback: unknown) => callback,
-  useEffect: () => {},
+  useEffect: (effect: () => unknown) => { hooks.effects?.push(effect); },
   useId: () => 'ko-title',
-  useRef: (current: unknown) => ({ current }),
+  useRef(current: unknown) {
+    const index = hooks.cursor++;
+    return hooks.values[index] ??= { current };
+  },
   useState(initial: unknown) {
     const index = hooks.cursor++;
-    if (!(index in hooks.values)) hooks.values[index] = typeof initial === 'function' ? initial() : initial;
-    return [hooks.values[index], (value: unknown) => {
-      hooks.values[index] = typeof value === 'function' ? value(hooks.values[index]) : value;
+    const values = hooks.values;
+    if (!(index in values)) values[index] = typeof initial === 'function' ? initial() : initial;
+    return [values[index], (value: unknown) => {
+      values[index] = typeof value === 'function' ? value(values[index]) : value;
     }];
   },
 }));
@@ -37,7 +44,51 @@ function elements(node: ReactNode): { type: unknown; props: Record<string, unkno
   return [{ type: node.type, props: node.props }, ...elements(node.props.children)];
 }
 
-afterEach(() => { hooks.values = []; vi.unstubAllGlobals(); vi.restoreAllMocks(); });
+afterEach(() => { hooks.values = []; hooks.effects = undefined; vi.unstubAllGlobals(); vi.restoreAllMocks(); });
+
+it('merges appends from two hook instances and refreshes each tab on storage events', () => {
+  const now = () => 100;
+  const key = 'kochivo.ko.chat.player';
+  const storage = new Map<string, string>();
+  const localStorage = {
+    getItem: (key: string) => storage.get(key) ?? null,
+    setItem: (key: string, value: string) => storage.set(key, value),
+  };
+  const tab = () => {
+    const values: unknown[] = [];
+    const events = new EventTarget();
+    const window = Object.assign(events, { localStorage });
+    const onClear = vi.fn();
+    return {
+      render() {
+        vi.stubGlobal('window', window);
+        hooks.cursor = 0;
+        hooks.values = values;
+        const effects: (() => unknown)[] = [];
+        hooks.effects = effects;
+        const history = historyHook('player', {}, onClear, now);
+        return { ...history, effects };
+      },
+      refresh() {
+        vi.stubGlobal('window', window);
+        events.dispatchEvent(Object.assign(new Event('storage'), { key, newValue: localStorage.getItem(key) }));
+      },
+    };
+  };
+  const first = tab();
+  const second = tab();
+  for (const [instance, id, timestamp] of [[second, 'second', 100], [first, 'first', 99]] as const) {
+    const initial = instance.render();
+    initial.effects[1]?.();
+    initial.setHistory([{ id, speaker: 'user', text: id, timestamp }]);
+  }
+  second.render().effects[0]?.();
+  first.render().effects[0]?.();
+  for (const instance of [first, second]) {
+    instance.refresh();
+    expect(instance.render().history.map(entry => entry.id)).toEqual(['first', 'second']);
+  }
+});
 
 it('renders saved messages, sends them with a follow-up, and clears the conversation', async () => {
   const now = 100;

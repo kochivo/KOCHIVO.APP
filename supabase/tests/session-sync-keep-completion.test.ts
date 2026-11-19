@@ -19,3 +19,18 @@ it('preserves completion and feedback on newer null starts, accepts newer feedba
   await sync(row);
   expect((await read()).rows).toEqual([{ done: true, session_rpe: 9, player_note: 'New' }]);
 });
+
+it.each([true, false])('merges an older completion when it syncs first: %s', async completedFirst => {
+  const sessionId = completedFirst ? '01900000-0000-7000-8000-000000000342' : '01900000-0000-7000-8000-000000000343';
+  const completed = { ...row, id: sessionId };
+  const newer = { ...completed, completed_at: null, session_rpe: 9, player_note: null,
+    client_updated_at: '2026-11-16T12:00:00Z' };
+  for (const update of completedFirst ? [completed, newer] : [newer, completed]) await sync(update);
+  const read = (latest: string) => db.query(`select completed_at = $2::timestamptz as first_completion,
+    session_rpe, player_note, client_updated_at = $3::timestamptz as newest
+    from public.workout_sessions where id = $1`, [sessionId, row.completed_at, latest]);
+  const expected = [{ first_completion: true, session_rpe: 9, player_note: 'Done', newest: true }];
+  expect((await read(newer.client_updated_at)).rows).toEqual(expected);
+  await sync({ ...newer, completed_at: '2026-11-16T13:00:00Z', client_updated_at: '2026-11-16T13:00:00Z' });
+  expect((await read('2026-11-16T13:00:00Z')).rows).toEqual(expected);
+});

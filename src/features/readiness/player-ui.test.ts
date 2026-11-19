@@ -34,6 +34,7 @@ vi.mock('@/features/readiness', async original => ({
   PlayerReadiness: (await import('./components/daily-panel')).DailyPanel,
   useTodayDecision: () => state.decision,
 }));
+vi.mock('@/core/offline/use-today-decision', () => ({ useTodayDecision: (playerId?: string) => playerId ? state.decision : null }));
 vi.mock('./hooks/use-daily-check', () => ({ useDailyCheck: () => ({ row: null, saved: false, error: false, save() {}, retry() {} }) }));
 vi.mock('@/lib/use-calendar-clock', () => ({ useCalendarClock: () => ({ now: new Date('2026-11-04T10:00:00Z'), online: true }) }));
 vi.mock('../player-home/hooks/use-program-snapshot', () => ({ useProgramSnapshot: () => ({

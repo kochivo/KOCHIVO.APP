@@ -113,6 +113,7 @@ export interface NutritionMeal {
 }
 
 export interface NutritionSnapshot {
+  training_day_count?: number;
   /** Optional for older caches; no indexed fields change. */
   water_target_ml?: number | null;
   id: 'active';

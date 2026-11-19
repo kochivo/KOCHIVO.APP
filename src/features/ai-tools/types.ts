@@ -1,7 +1,11 @@
 import type { z } from 'zod';
 import type { KoActor } from '@/features/ko-account/server';
+import type { Macros } from '@/lib/macros';
 
 export type AiActor = KoActor;
+
+export type MealWriteArgs = { p_meal_id: string; p_log_date: string; p_swaps: Record<string, string>;
+  p_eaten: boolean; p_eaten_macros: Macros | null };
 
 export type ToolContext = {
   actor: AiActor;
@@ -10,6 +14,8 @@ export type ToolContext = {
   now: Date;
   timezone: string;
   signal: AbortSignal;
+  confirmMeal?: (args: MealWriteArgs, signal: AbortSignal) =>
+    PromiseLike<{ data: boolean | null; error: { code: string } | null }>;
 };
 
 export type AiTool<I, O> = {

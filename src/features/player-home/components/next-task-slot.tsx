@@ -1,6 +1,6 @@
 'use client';
 import type { ProgramSnapshot, WorkoutSessionRow } from '@/core/offline';
-import { useMealLogs, useNutritionSnapshot } from '@/features/nutrition';
+import { filterMeals, useMealLogs, useNutritionSnapshot } from '@/features/nutrition';
 import { useT } from '@/core/i18n/client';
 import { saturdayWeek } from '@/lib/dates';
 import { ErrorState, LoadingState } from '@/ui';
@@ -13,9 +13,9 @@ import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import Link from 'next/link';
 import { buttonClass } from '@/ui/button';
 
-export function NextTaskSlot({ snapshot, sessions, today, playerId, retryKey, onRetry, rest, workoutInHero }: {
+export function NextTaskSlot({ snapshot, sessions, today, playerId, retryKey, onRetry, rest, nutritionRest = rest, workoutInHero }: {
   snapshot: ProgramSnapshot | null; sessions: WorkoutSessionRow[]; today: string;
-  playerId?: string; retryKey: number; onRetry: () => void; rest?: boolean; workoutInHero?: boolean;
+  playerId?: string; retryKey: number; onRetry: () => void; rest?: boolean; nutritionRest?: boolean; workoutInHero?: boolean;
 }) {
   const t = useT(messages);
   const status = useTaskStatus(today, playerId, retryKey);
@@ -28,7 +28,8 @@ export function NextTaskSlot({ snapshot, sessions, today, playerId, retryKey, on
   const remote = status.status === 'ready' ? status
     : { intakeDone: true, checkInWeeks: [saturdayWeek(today)[0] ?? today], voiceNotes: [] };
   const task = playerNextTask({ today, snapshot, sessions, rest, intakeDone: remote.intakeDone,
-    meals: nutrition.snapshot?.meals ?? [], mealLogs: logs, checkInWeeks: remote.checkInWeeks, voiceNotes: remote.voiceNotes });
+    meals: filterMeals(nutrition.snapshot?.meals ?? [], nutritionRest ?? false), mealLogs: logs,
+    checkInWeeks: remote.checkInWeeks, voiceNotes: remote.voiceNotes });
   return <>{!(workoutInHero && (task.kind === 'start' || task.kind === 'continue')) &&
     <NextTaskCard task={task} day={snapshot ? pickTodayDay(snapshot, sessions, today) : undefined} />}
     {captainWorkspaceEnabled() && task.kind !== 'voice' && remote.voiceNotes.some(note => !note.listenedAt) &&

@@ -8,10 +8,10 @@ import { Utensils } from 'lucide-react';
 import { EmptyState, ErrorState, GlassCard, LoadingState } from '@/ui';
 import { formatNumber } from '@/lib/format';
 import { starterText } from '@/lib/starter-text';
-import { dayNutrition } from '../day-nutrition';
+import { dayNutrition, nextMeal } from '../day-nutrition';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 
-export function NutritionSlot({ date }: { date?: string }) {
+export function NutritionSlot({ date, rest = false }: { date?: string; rest?: boolean }) {
   const t = useT(messages);
   const locale = useLocale();
   const v3 = captainWorkspaceEnabled();
@@ -21,11 +21,11 @@ export function NutritionSlot({ date }: { date?: string }) {
   if (status === 'error') return <ErrorState message={t('couldntLoadYourMealPlan')} retryLabel={t('tryAgain')} onRetry={retry} />;
   if (status === 'loading' || logs === undefined) return <LoadingState variant="cards" />;
   const contact = { label: t('messageCoach'), href: '/player/captain' };
-  if (!snapshot || !snapshot.meals.length) return <EmptyState icon={Utensils} title={t('todaysMeals')} body={t('yourCoachIsPreparingYourMealPlan')}
-    action={v3 ? undefined : contact} secondary={v3 ? contact : undefined} />;
-  const summary = dayNutrition(snapshot, logs, selectedDate, today);
+  const summary = dayNutrition(snapshot ?? null, logs, selectedDate, today, rest);
+  if (!snapshot?.meals.length && !summary.eatenKcal) return <EmptyState icon={Utensils} title={t('todaysMeals')}
+    body={t('yourCoachIsPreparingYourMealPlan')} action={v3 ? undefined : contact} secondary={v3 ? contact : undefined} />;
   const weekday = (['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as const)[new Date(`${selectedDate}T12:00:00Z`).getUTCDay()];
-  const next = snapshot.meals.find((meal) => !logs.some((row) => row.meal_id === meal.id && row.completed_at));
+  const next = nextMeal(snapshot?.meals ?? [], logs, selectedDate, rest);
   const total = formatNumber(summary.mealsTotal, locale);
   const target = formatNumber(summary.targetKcal, locale);
   const content = <>
@@ -33,12 +33,12 @@ export function NutritionSlot({ date }: { date?: string }) {
         <p>{summary.kind === 'future'
           ? t('plannedMeals', { target, meals: t('mealCount', { n: summary.mealsTotal, count: total }) })
           : t('eatenCalories', { eaten: formatNumber(summary.eatenKcal ?? 0, locale), target })}</p>
-        <p className="text-muted">{summary.kind === 'today'
-          ? next ? t('nextMeal', { value0: starterText(next.name, locale, snapshot.title) }) : t('youveEatenAllYourMealsToday')
+        {summary.mealsTotal > 0 && <p className="text-muted">{summary.kind === 'today'
+          ? next ? t('nextMeal', { value0: starterText(next.name, locale, snapshot?.title) }) : t('youveEatenAllYourMealsToday')
           : summary.kind === 'future' ? t('planForThatDay')
           : summary.mealsDone === 0 ? t('noFoodLoggedThatDay')
           : t('completedMeals', { done: formatNumber(summary.mealsDone ?? 0, locale),
-            meals: t('mealCount', { n: summary.mealsTotal, count: total }) })}</p>
+            meals: t('mealCount', { n: summary.mealsTotal, count: total }) })}</p>}
         {stale && <p className="text-muted">{t('lastUpdatedAWhileAgo')}</p>}
     </>;
   const card = v3 ? <section className="glass space-y-inline rounded-card p-card text-sm">{content}</section>

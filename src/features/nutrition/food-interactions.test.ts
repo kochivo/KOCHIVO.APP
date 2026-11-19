@@ -65,6 +65,22 @@ afterEach(async () => {
 });
 const now = Date.parse('2026-11-13T10:00:00Z');
 
+it('shows the logged calories on a checked card after a portion edit', () => {
+  vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
+  const stamp = new Date(now).toISOString();
+  const props = {
+    today: '2026-11-13', meal: { id: 'meal', name: 'Lunch', position: 1, items: [{
+      id: 'rice', position: 1, name: 'Rice', grams: 200, photo_path: null, alternatives: [],
+      per100g: { kcal: 100, protein: 2, carbs: 20, fat: 1 },
+    }] },
+    log: { id: 'log', meal_id: 'meal', log_date: '2026-11-13', swaps: {}, completed_at: stamp,
+      client_updated_at: stamp, deleted_at: null, eaten_macros: { kcal: 500, protein: 10, carbs: 40, fat: 8 } },
+  };
+  const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' }, createElement(MealCard, props)));
+  expect(html).toContain('aria-pressed="true"');
+  expect(html).toContain('>500</bdi>');
+});
+
 it('the meal check logs and reverses completion through the offline queue', async () => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
   vi.spyOn(Date, 'now').mockReturnValue(now);

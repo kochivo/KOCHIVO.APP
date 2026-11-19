@@ -8,7 +8,7 @@ import { Package, Utensils } from 'lucide-react';
 import { Button, EmptyState, ErrorState, LoadingState, SyncPill } from '@/ui';
 import { useNutritionSnapshot } from '../hooks/use-nutrition-snapshot';
 import { useMealLogs } from '../hooks/use-meal-logs';
-import { eatenTotals, targetsOf } from '../macros';
+import { dayNutritionTargets, eatenTotals } from '../macros';
 import { filterMeals } from '../day-type-filter';
 import { MacroRing } from './macro-ring';
 import { MealCard } from './meal-card';
@@ -42,7 +42,13 @@ export function NutritionScreen() {
   const setRest = useCallback((rest: boolean | null | undefined) => setDay({ today, rest }), [today]);
   const visible = snapshot ? { ...snapshot, meals: filterMeals(snapshot.meals, rest, logs ?? [], today) } : null;
   const planTitle = snapshot ? starterText(snapshot.title, locale) : '';
-  const calories = v6 && visible ? targetsOf(visible).kcal : 0;
+  const target = snapshot ? dayNutritionTargets(snapshot, rest) : null;
+  const eaten = logs ? eatenTotals(snapshot ?? null, logs, today) : null;
+  const calories = target?.kcal ?? 0;
+  const hasEaten = eaten && Object.values(eaten).some(value => value > 0);
+  const summary = eaten && (target || hasEaten) && (v6
+    ? <FoodMacroSummary eaten={eaten} target={target ?? { kcal: 0, protein: 0, carbs: 0, fat: 0 }} />
+    : <MacroRing eaten={eaten} target={target ?? { kcal: 0, protein: 0, carbs: 0, fat: 0 }} />);
   const sync = <SyncPill state={!online ? 'offline' : parked && parked > 0 ? 'attention' : pending === undefined || pending > 0 ? 'pending' : 'synced'} pending={pending} onRetry={retrySync} />;
   const budget = status !== 'error' && status !== 'loading' && visible?.meals.length && logs
     ? <BudgetSummary showShopping={!v6} meals={visible.meals} swaps={Object.assign({}, ...logs.filter(log => log.log_date === today && !log.deleted_at).map(log => log.swaps))} />
@@ -60,18 +66,18 @@ export function NutritionScreen() {
     </header>}
     {status === 'error' ? <ErrorState message={t('couldntLoadYourMealPlan')} retryLabel={t('tryAgain')} onRetry={retry} /> :
       status === 'loading' || logs === undefined ? <LoadingState variant="cards" /> : !visible || !visible.meals.length ?
-        <EmptyState icon={Utensils} title={t('yourCoachIsPreparingYourMealPlan')} body={t('itWillAppearHereWhenReady')} action={{ label: t('messageCoach'), href: '/player/captain' }} /> : <>
+        <>{(hasEaten || Boolean(snapshot?.meals.length)) && summary}<EmptyState icon={Utensils} title={t('yourCoachIsPreparingYourMealPlan')} body={t('itWillAppearHereWhenReady')} action={{ label: t('messageCoach'), href: '/player/captain' }} /></> : <>
           {stale && <div className="flex items-center justify-between gap-inline text-sm text-muted">
             <p>{t('lastUpdatedAWhileAgo')}</p><Button variant={v6 ? 'secondary' : 'ghost'} onClick={retry}>{t('tryAgain')}</Button>
           </div>}
-          {v6 ? <FoodMacroSummary eaten={eatenTotals(visible, logs, today)} target={targetsOf(visible)} /> : <MacroRing eaten={eatenTotals(visible, logs, today)} target={targetsOf(visible)} />}
+          {summary}
           {!v6 && budget}
           {ramadan.data?.active ? <RamadanMeals meals={visible.meals} logs={logs} today={today} title={visible.title} /> : v6 ? <ol data-food-section="meals" className="flex list-none flex-col gap-card-gap" aria-label={v6t('meals')}>{visible.meals.map(meal => <li key={`${today}-${meal.id}`}>
             <MealCard meal={meal} today={today} planTitle={visible.title}
               primary={meal.id === visible.meals.find(candidate => candidate.items.length > 0 && !logs.some(row => row.meal_id === candidate.id && row.log_date === today && row.completed_at && !row.deleted_at))?.id}
               log={logs.find(row => row.meal_id === meal.id && row.log_date === today && !row.deleted_at)} />
           </li>)}</ol> : <ul className="space-y-card-gap" aria-label={t('todaysMealsList')}>{visible.meals.map(meal => <li key={`${today}-${meal.id}`}>
-            <MealCard meal={meal} today={today} planTitle={visible.title} log={logs.find(row => row.meal_id === meal.id)} />
+            <MealCard meal={meal} today={today} planTitle={visible.title} log={logs.find(row => row.meal_id === meal.id && row.log_date === today && !row.deleted_at)} />
           </li>)}</ul>}
         </>}
     {v6 && <>

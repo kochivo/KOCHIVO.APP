@@ -24,9 +24,9 @@ import { NextTaskSlot } from './next-task-slot';
 import { TodayCard, estimateMinutes, warmupDuration } from './today-card';
 import { NutritionSlot } from './nutrition-slot';
 import { WeeklyRestCard } from './weekly-rest-card';
-import type { Decision } from '@/features/readiness';
+import { useTodayDecision } from '@/core/offline/use-today-decision';
 import { usePlayerWeight } from '../hooks/use-player-weight';
-import { isRestDay } from '../rest-day';
+import { isRestDay, resolveRestDay } from '../rest-day';
 import { starterText } from '@/lib/starter-text';
 import { previewFor } from '../day-preview';
 import { DayPreviewCard } from './day-preview-card';
@@ -76,9 +76,12 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
   const weekSessions = useWeekSessions(today || '2000-01-01', onError, retryKey);
   const day = snapshot && sessions && today ? pickTodayDay(snapshot, sessions, today) : undefined;
   const weekly = snapshot ? isWeeklyProgram(snapshot) : false;
-  const [decision, setDecision] = useState<Decision | null>(null);
-  const rest = decision === 'rest' || Boolean(snapshot && sessions && today &&
-    (isRestDay(snapshot, sessions, today) || (v6 && weekly && !day && !weeklyFinished(snapshot, today))));
+  const decision = useTodayDecision(playerId, today);
+  const selectedDecision = useTodayDecision(selectedDate !== today ? playerId : undefined, selectedDate);
+  const nutritionRest = resolveRestDay(snapshot, sessions ?? [], today, decision);
+  const rest = decision === 'rest' || (nutritionRest &&
+    (!snapshot || !weekly || Boolean(day) || (v6 && !weeklyFinished(snapshot, today))));
+  const selectedRest = selectedDate === today ? nutritionRest : resolveRestDay(snapshot, sessions ?? [], selectedDate, selectedDecision);
   const tomorrowAt = new Date(`${today || '2000-01-01'}T12:00:00Z`);
   tomorrowAt.setUTCDate(tomorrowAt.getUTCDate() + 1);
   const tomorrow = snapshot && sessions ? pickTodayDay(snapshot, sessions, localDate(tomorrowAt, 'UTC')) : undefined;
@@ -88,9 +91,11 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
   const showError = failed && (!snapshot || localError);
   const nextWeekAt = new Date(`${today || '2000-01-01'}T12:00:00Z`);
   nextWeekAt.setUTCDate(nextWeekAt.getUTCDate() + 7);
-  const preview = snapshot && today ? v6 && rest && selectedDate === localDate(tomorrowAt, 'UTC')
+  const plannedPreview = snapshot && today ? v6 && rest && selectedDate === localDate(tomorrowAt, 'UTC')
     ? { day: tomorrow, status: tomorrowRest || tomorrow?.is_rest_day || (weekly && !tomorrow) ? 'rest' as const : 'upcoming' as const }
     : previewFor(snapshot, sessions ?? [], selectedDate, today) : { day: undefined, status: 'rest' as const };
+  const preview = selectedDecision === 'rest' && plannedPreview.status !== 'completed'
+    ? { day: undefined, status: 'rest' as const } : plannedPreview;
   const sync = <SyncPill state={!online ? 'offline' : parked && parked > 0 ? 'attention' : pending === undefined || pending > 0 ? 'pending' : 'synced'} pending={pending}
     onRetry={() => { void retryParked(localDb()).catch(onError); }} />;
   const statusHeader = <header className="flex flex-wrap items-center justify-between gap-stack">
@@ -111,20 +116,19 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
     {!v6 && dailyExtras}
     {showError ? <ErrorState message={t('couldntLoadYourProgram')} retryLabel={t('tryAgain')} onRetry={retryProgram} /> : loading || !now ? <LoadingState variant="cards" /> : <>
       {v6 && <V3Home weightKg={weightKg} now={now} today={today} firstName={firstName} playerId={playerId} snapshot={snapshot} day={day}
-        rest={rest} sessions={sessions ?? []} onPreview={date => setSelection({ today, date })} week={weekStrip} showToday={selectedDate === today}
+        rest={rest} nutritionRest={nutritionRest} sessions={sessions ?? []} onPreview={date => setSelection({ today, date })} week={weekStrip} showToday={selectedDate === today}
         readiness={<MorningRow playerId={playerId} today={today} rest={rest}><PlayerReadiness weightKg={weightKg} playerId={playerId} today={today} rest={rest} coachRest={decision === 'rest'}
-          onDecisionChange={setDecision} tomorrowRest={Boolean(tomorrowRest || (weekly && !tomorrow))}
+          tomorrowRest={Boolean(tomorrowRest || (weekly && !tomorrow))}
           tomorrow={tomorrow && !tomorrowRest && !tomorrow.is_rest_day ? starterText(tomorrow.title, locale) : undefined} /></MorningRow>} />}
       <div hidden={selectedDate !== today} className="space-y-card-gap">
-      {v6 ? <NextTaskSlot rest={rest} snapshot={snapshot ?? null} sessions={sessions ?? []} today={today} playerId={playerId}
+      {v6 ? <NextTaskSlot rest={rest} nutritionRest={nutritionRest} snapshot={snapshot ?? null} sessions={sessions ?? []} today={today} playerId={playerId}
         retryKey={retryKey} onRetry={() => setRetryKey(value => value + 1)} workoutInHero={!rest && Boolean(day?.exercises.length)} />
         : rest ? <PlayerReadiness weightKg={weightKg} playerId={playerId} today={today} rest coachRest={decision === 'rest'}
-        onDecisionChange={setDecision}
         tomorrowRest={Boolean(tomorrowRest)}
         tomorrow={tomorrow && !tomorrowRest && !tomorrow.is_rest_day ? starterText(tomorrow.title, locale) : undefined} /> : <>
-      <NextTaskSlot snapshot={snapshot ?? null} sessions={sessions ?? []} today={today} playerId={playerId}
+      <NextTaskSlot nutritionRest={nutritionRest} snapshot={snapshot ?? null} sessions={sessions ?? []} today={today} playerId={playerId}
         retryKey={retryKey} onRetry={() => setRetryKey(value => value + 1)} />
-      <PlayerReadiness weightKg={weightKg} playerId={playerId} today={today} rest={false} onDecisionChange={setDecision} />
+      <PlayerReadiness weightKg={weightKg} playerId={playerId} today={today} rest={false} />
       </>}
       </div>
       {!v6 && weekStrip}
@@ -143,6 +147,6 @@ export function HomeScreen({ firstName, playerId }: { firstName?: string; player
     </>}
     {v6 && dailyExtras}
     {captainWorkspaceEnabled() && <PendingForms layout="home" />}
-    {(!v6 || selectedDate !== today || showError || loading) && <NutritionSlot date={selectedDate || undefined} />}
+    {(!v6 || selectedDate !== today || showError || loading) && <NutritionSlot date={selectedDate || undefined} rest={selectedRest} />}
   </main>;
 }

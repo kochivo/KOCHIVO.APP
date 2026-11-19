@@ -7,6 +7,7 @@ import { ok, fail } from '@/lib/action-result';
 import type { ActionResult } from '@/lib/action-result';
 import { z } from 'zod';
 import { uuidv7 } from '@/core/offline/ids';
+import { planTargets } from '@/lib/day-targets';
 import { planClient, toFood } from './client';
 import type { PlanDraft, PlanSummary } from '../types';
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
@@ -63,7 +64,7 @@ export async function loadPlan(id: string): Promise<ActionResult<PlanDraft>> {
   }
   return ok({ id, playerId: plan.player_id, title: plan.title, status: plan.status,
     waterTargetMl: z.object({ water_target_ml: z.number().nullable().optional() }).parse(plan).water_target_ml ?? null,
-    targets: { kcal: plan.target_kcal ?? 2000, protein: plan.target_protein ?? 150, carbs: plan.target_carbs ?? 225, fat: plan.target_fat ?? 56 },
+    targets: planTargets({ kcal: plan.target_kcal, protein: plan.target_protein, carbs: plan.target_carbs, fat: plan.target_fat }),
     meals: (meals.data ?? []).map((meal, index) => ({ id: meal.id, name: meal.name, position: index + 1,
       ramadanSlot: z.object({ ramadan_slot: z.enum(['iftar','post_workout','suhoor']).nullable().optional() }).parse(meal).ramadan_slot ?? null,
       ...(captainWorkspaceEnabled() ? { dayType: mealDayType(meal), timeOfDay: (meal as typeof meal & { time_of_day?: string | null }).time_of_day ?? null } : {}),

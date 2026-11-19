@@ -52,6 +52,10 @@ describe('nutrition snapshot and macros', () => {
     const edited = { ...snapshot, meals: snapshot.meals.map(entry => ({ ...entry, items: [] })) };
     expect(eatenTotals(edited, [saved], today)).toEqual(saved.eaten_macros);
   });
+  it.each(['old-plan-meal', null])('counts a completed snapshot with meal reference %s', (meal_id) => {
+    const eaten_macros = { kcal: 500, protein: 25, carbs: 60, fat: 18 };
+    expect(eatenTotals(snapshot, [{ ...log, meal_id, eaten_macros }], today)).toEqual(eaten_macros);
+  });
 });
 
 it('keeps one row and one outbox entry across toggles and eaten swaps', async () => {

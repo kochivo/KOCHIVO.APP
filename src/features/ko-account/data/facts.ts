@@ -1,6 +1,7 @@
 import 'server-only';
 import { getTimezone } from '@/core/timezone/server';
 import { nutritionDay, playerMealLogs, playerNutritionPlan, playerWorkout } from '@/features/ai-tools/server';
+import { eatenTotals } from '@/features/nutrition/server';
 import type { AnswerSource } from '@/features/ko-core';
 import { localDate } from '@/lib/dates';
 import type { KoActor } from './account';
@@ -49,13 +50,18 @@ export function workoutFacts(workout: Workout) {
     (row.reps_max && row.reps_max !== row.reps_min ? row.reps_min + '-' + row.reps_max : row.reps_min) + ' reps')];
 }
 
-export function nutritionFacts(nutrition: Nutrition | null, logs: Logs) {
-  if (!nutrition) return ['no nutrition plan'];
+export function nutritionFacts(nutrition: Nutrition | null, logs: Logs, today: string) {
+  const eaten = nutrition?.eaten ?? eatenTotals(null, logs, today);
+  const totals = 'eaten kcal ' + eaten.kcal + ', protein ' + eaten.protein + ' g, carbs ' + eaten.carbs + ' g, fat ' + eaten.fat + ' g';
+  if (!nutrition) return ['no nutrition plan', totals];
   const { targets, remaining, meals } = nutrition;
   const logged = new Map(logs.map(row => [row.meal_id, row.completed_at]));
   return [
     'kcal remaining ' + remaining.kcal + ' / target ' + targets.kcal,
     'protein g remaining ' + remaining.protein + ' / target ' + targets.protein,
+    'carbs g remaining ' + remaining.carbs + ' / target ' + targets.carbs,
+    'fat g remaining ' + remaining.fat + ' / target ' + targets.fat,
+    totals,
     ...meals.flatMap(meal => [
       meal.name + (logged.get(meal.id) ? ' (logged eaten)' : logged.has(meal.id) ? ' (logged skipped)' : ' (not logged)'),
       ...meal.items.map(item => meal.name + ': ' + item.name + ' ' + item.grams + ' g'),
@@ -98,7 +104,7 @@ async function playerFacts(actor: KoActor, now: number, signal: AbortSignal) {
   ]);
   return formatFacts([
     ['workout_today', workoutFacts(workout)], ['workout_tomorrow', workoutFacts(tomorrow)],
-    ['nutrition_today', nutritionFacts(plan && nutritionDay(plan, logs, today, workout?.rest ?? false), logs)],
+    ['nutrition_today', nutritionFacts(plan && nutritionDay(plan, logs, today, workout?.rest ?? false), logs, today)],
     ['progress', progress], ['captain', [captain]],
   ]);
 }
