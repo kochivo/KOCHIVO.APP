@@ -45,6 +45,11 @@
 
    Also add negative cases: «مين واقع من لاعيبتي» stays `team_summary`, and «عندي تمرين ايه النهارده» stays `my_workout`.
 
+7. **Remove the Gemini line under the composer** (owner decision 2026-11-19). In `ko-preview/components/ko-chat.tsx:252`, delete the `<p>` that shows `accountPrivacy` / `chatPrivacy`.
+   - Remove both keys from `ko-preview` messages in `ar`, `en` and `arStd`.
+   - Update `ko-entry.test.ts` and the dev demo (`src/app/[locale]/dev/ko/demo.tsx`) so they no longer use those keys.
+   - Do not touch the legal pages: the privacy policy keeps the Gemini disclosure.
+
 ## Out of scope
 - New tools.
 - The paid model.
@@ -62,5 +67,5 @@
 
 ## Checks
 - `npx tsc --noEmit -p .`
-- `npx eslint src/features/ko-account src/features/ko-core src/features/ko-preview`
-- `npx vitest run src/features/ko-account src/features/ko-core src/features/ko-preview src/ui src/core/i18n/coverage.test.ts src/lib/shared-surface-imports.test.ts`
+- `npx eslint src/features/ko-account src/features/ko-core src/features/ko-preview src/features/ko-entry "src/app/[[]locale]/dev/ko"`
+- `npx vitest run src/features/ko-account src/features/ko-core src/features/ko-preview src/features/ko-entry src/ui src/core/i18n/coverage.test.ts src/lib/shared-surface-imports.test.ts`
