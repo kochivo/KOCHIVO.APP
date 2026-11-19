@@ -33,13 +33,19 @@ export function DecisionCard({ playerId, score, exercises, applied, onApplied }:
   return <section className="glass space-y-card-gap rounded-card p-card">
     <h2>{t('decision')}</h2>
     <p>{t('suggested', { decision: t(suggestion) })}</p>
-    <p className="text-muted">{t('sets', { original, suggested: setsFor(suggestion) })}</p>
+    <p className="text-muted">{t('sets', {
+      original: t('setsOriginal', { n: original, original }),
+      suggested: t('setsSuggested', { n: setsFor(suggestion), suggested: setsFor(suggestion) }),
+    })}</p>
     <div role="group" aria-label={t('override')} className="flex flex-wrap gap-inline">
       {(['keep', 'reduce', 'rest'] as const).map(decision => <button type="button" key={decision} disabled={busy}
         aria-pressed={selected === decision} onClick={() => setOverride(decision)}
         className={`min-h-12 rounded-control border border-line px-stack ${selected === decision ? 'bg-lime text-on-lime' : 'text-muted'}`}>{t(decision)}</button>)}
     </div>
-    {selected !== suggestion && <p className="text-muted">{t('sets', { original, suggested: setsFor(selected) })}</p>}
+    {selected !== suggestion && <p className="text-muted">{t('sets', {
+      original: t('setsOriginal', { n: original, original }),
+      suggested: t('setsSuggested', { n: setsFor(selected), suggested: setsFor(selected) }),
+    })}</p>}
     <Button type="button" disabled={busy} onClick={() => void apply()} variant={'primary'} block={false} className={"min-h-12 w-full px-page-x font-bold"}>{t('apply')}</Button>
     {applied && <p role="status" className="text-sm text-muted">{t('applied')}</p>}
     {error && <p role="alert" className="text-danger">{error}</p>}

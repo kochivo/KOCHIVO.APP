@@ -33,7 +33,7 @@ export function WorkspaceBillingRow({ player, today, packages }: { player: Billi
   const price = player.lastPayment?.price_egp ?? chosen?.price_egp;
   const pill = player.awaitingPlansAt ? t('waitingForPlans') : player.pending || frozenAt ? t(state.label, { n: state.days }) : days < 0 && player.sessionsLeft == null
     ? payment('late', { n: -days, count: formatNumber(-days, locale) }) : player.due > 0 ? payment('balance', { amount: formatNumber(player.due, locale) })
-      : player.sessionsLeft === 0 ? payment('sessionsEnded') : segment === 'ending' ? payment('ends', { n: days, count: formatNumber(days, locale) }) : payment('until', { date: date(player.accessUntil) });
+      : player.sessionsLeft === 0 ? payment('sessionsEnded') : segment === 'ending' ? payment(days === 0 ? 'endsToday' : 'ends', { n: days, count: formatNumber(days, locale) }) : payment('until', { date: date(player.accessUntil) });
   async function action() {
     if (state.action === 'unfreeze' && player.linkId) {
       if (lock.current) return;

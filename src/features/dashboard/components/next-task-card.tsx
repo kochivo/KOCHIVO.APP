@@ -11,7 +11,7 @@ export async function NextTaskCard({ tasks, captainFirstName }: { tasks: Captain
   const [t, locale] = await Promise.all([getT(messages), getLocale()]);
   const task = tasks[0];
   if (!task) return null;
-  const title = (task: CaptainTask) => t(`task.${task.kind}`, { name: task.name ?? '', count: formatNumber(task.count ?? 0, locale) });
+  const title = (task: CaptainTask) => t(`task.${task.kind}`, { name: task.name ?? '', n: task.count ?? 0, count: formatNumber(task.count ?? 0, locale) });
   return <GlassCard data-tour="captain-home" level="featured" className="space-y-card-gap p-section">
     <h2 className="text-3xl font-extrabold lg:break-words">{title(task)}</h2>
     <p className="text-sm text-muted">{t(task.kind === 'done' ? 'taskDoneContext' : 'taskContext')}</p>

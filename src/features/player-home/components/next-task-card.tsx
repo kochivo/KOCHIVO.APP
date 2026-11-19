@@ -18,12 +18,13 @@ export function NextTaskCard({ task, day }: { task: PlayerTask; day?: SnapshotDa
   const wt = useT(warmupMessages);
   const locale = useLocale();
   const view = taskPresentation(task);
+  const minutes = day ? estimateMinutes(day.exercises) + warmupDuration(day) + (day.cardio ?? []).reduce((sum, block) => sum + block.minutes, 0) : 0;
   if (captainWorkspaceEnabled()) return <section className="glass space-y-stack rounded-card p-card">
     <p className="text-xs text-faint">{t(view.heading, { name: starterText(task.name ?? '', locale) })}</p>
     {view.workout && <h2 className="font-display text-h font-semibold">{starterText(task.name ?? '', locale)}</h2>}
     <p className="text-xs text-muted">{view.workout && day ? t('v6WorkoutSummary', {
-      exercises: formatNumber(day.exercises.length, locale),
-      minutes: formatNumber(estimateMinutes(day.exercises) + warmupDuration(day) + (day.cardio ?? []).reduce((sum, block) => sum + block.minutes, 0), locale),
+      exercises: t('v6WorkoutSummaryExercises', { n: day.exercises.length, exercises: formatNumber(day.exercises.length, locale) }),
+      minutes: t('v6WorkoutSummaryMinutes', { n: minutes, minutes: formatNumber(minutes, locale) }),
     }) : task.tomorrow ? t('taskTomorrow', { name: starterText(task.tomorrow, locale) }) :
       t(task.kind === 'waiting' ? 'taskWaitingContext' : task.kind === 'done' ? 'taskDoneContext' : 'taskContext')}</p>
     {view.workout && day && warmupDuration(day) > 0 && <p className="text-xs text-warn">{wt('time', { minutes: formatNumber(warmupDuration(day), locale) })}</p>}

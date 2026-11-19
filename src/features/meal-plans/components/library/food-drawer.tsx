@@ -66,7 +66,7 @@ export function FoodDrawer({ food, onClose, onSaved, onMutation, onAdd }: {
         href={id ? `${base}/${id}/edit` : `${base}/new?copyFrom=${food.id}`}>{foodT('editFood')}</Link>}
       {id && food.replacesId && <Button variant="secondary" disabled={busy} onClick={() => void remove(true)}>{t('restore')}</Button>}
       {id && <>
-        {uses > 0 && <p className="text-muted">{t('blocked', { count: uses })}</p>}
+        {uses > 0 && <p className="text-muted">{t('blocked', { n: uses, count: uses })}</p>}
         <Button variant="secondary" type="button" disabled={busy || uses > 0} className="min-h-12 border border-danger/40 text-danger! disabled:opacity-50" onClick={() => void remove()}>{t('delete')}</Button>
       </>}
       <FoodFacts food={food} onAdd={onAdd} />

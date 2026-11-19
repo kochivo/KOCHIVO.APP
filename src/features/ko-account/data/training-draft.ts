@@ -31,7 +31,7 @@ export async function buildTrainingDraft(actor: KoActor, player: { id: string; n
   const result = generateProgram({ ...defaults, goal, weekdays, minutes, level, equipment, injuries }, candidates.data);
   if (result.error || !weekdays) return null;
 
-  const defaultTitle = t('trainingTitle', { goal: t(`trainingGoal_${goal}`), days: weekdays.length, player: player.name });
+  const defaultTitle = t('trainingTitle', { n: weekdays.length, goal: t(`trainingGoal_${goal}`), days: weekdays.length, player: player.name });
   const title = args.title ?? Array.from(defaultTitle).slice(0, 80).join('').trimEnd();
   const draft = toProgramDraft(result.data, uuidv7(now), title, () => uuidv7(now));
   const lines: string[] = [];

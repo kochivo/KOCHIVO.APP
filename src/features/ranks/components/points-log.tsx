@@ -19,7 +19,7 @@ export function PointsLog({ logs }: { logs: MyPoints['logs'] }) {
         <time dateTime={row.earned_on} className="text-xs text-muted">{formatDateAr(row.earned_on, { day: 'numeric', month: 'short', year: 'numeric' }, locale)}</time>
         {row.status !== 'counted' && <p className="text-sm text-muted">{t(row.status)}</p>}
       </div>
-      <span className={row.status === 'counted' ? 'text-sm font-bold' : 'text-sm font-bold line-through text-muted'}>{t('points', { n: formatNumber(row.points, locale) })}</span>
+      <span className={row.status === 'counted' ? 'text-sm font-bold' : 'text-sm font-bold line-through text-muted'}>{t('points', { n: formatNumber(row.points, locale) }, row.points)}</span>
     </li>)}</ul>
   </section>;
 }

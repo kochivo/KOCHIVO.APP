@@ -29,7 +29,7 @@ export function PhoneHomeNeeds({ tasks, contacts, locale, today, style, debts = 
           const message = task.kind === 'absent' && phone ? whatsappUrl({ phone, text: old('reminder', { name: task.name }) }) : null;
           const action = task.kind === 'absent' ? t('message')
             : task.kind === 'checkin' ? t('reply') : task.kind === 'dues' ? t('recordPayment') : home(`action.${task.kind}`);
-          const description = task.kind === 'absent' ? t('absence', { days: formatNumber(task.days ?? 0, locale) })
+          const description = task.kind === 'absent' ? t('absence', { n: task.days ?? 0, days: formatNumber(task.days ?? 0, locale) })
             : task.title || home(task.kind, { name: task.name, days: task.days ?? 0 });
           const tone = task.kind === 'absent' ? 'border-danger' : task.kind === 'receipt' || task.kind === 'dues' ? 'border-warn' : 'border-info';
           const href = task.kind === 'absent' ? message ?? `/captain/players/${task.playerId}/chat`

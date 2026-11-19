@@ -9,6 +9,6 @@ export function PlayerMedalChip({ lifetime, locale }: { lifetime: number; locale
   const rank = medalRank(lifetime);
   return <div className="mb-stack inline-flex h-chip items-center gap-inline rounded-full border border-line bg-surface px-stack text-xs">
     <Medal rank={MEDAL_RANKS.findIndex(entry => entry.rank === rank) as 0 | 1 | 2 | 3 | 4 | 5 | 6} size={28} label={t(rank)} />
-    <span>{t(rank)}</span><span>{t('points', { n: formatNumber(lifetime, locale) })}</span>
+    <span>{t(rank)}</span><span>{t('points', { n: formatNumber(lifetime, locale) }, lifetime)}</span>
   </div>;
 }

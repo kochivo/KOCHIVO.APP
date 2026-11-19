@@ -58,7 +58,7 @@ it('renders multi-select, succeeded players and named failures', () => {
    false, '', 0, ['omar'], ['ali'], { omar: 'Failed' }, false];
  const html = render(createElement(AssignSheet, { template, onClose() {} }));
  expect(html.match(/type="checkbox"/g)).toHaveLength(3);
- expect(html).toContain('Select all'); expect(html).toContain('Assign to 1 players');
+ expect(html).toContain('Select all'); expect(html).toContain('Assign to 1 player');
  expect(html).toMatch(/<input(?=[^>]*value="ali")(?=[^>]*disabled="")(?=[^>]*checked="")[^>]*>/);
  expect(html).toContain('Omar: Failed'); expect(html).toContain('Assigned');
 });

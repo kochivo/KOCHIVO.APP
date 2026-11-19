@@ -2,6 +2,10 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   arStd: {
+    'exercises.one': 'تمرين واحد', 'exercises.two': 'تمرينان', 'exercises.few': '{count} تمارين',
+    'exercises.many': '{count} تمرينًا', 'exercises.other': '{count} تمرين',
+    'meals.one': 'وجبة واحدة مسجلة', 'meals.two': 'وجبتان مسجلتان', 'meals.few': '{count} وجبات مسجلة',
+    'meals.many': '{count} وجبةً مسجلةً', 'meals.other': '{count} وجبة مسجلة',
     shortDays: 'أحد اثنين ثلاثاء أربعاء خميس جمعة سبت',
     readOnly: 'هذه معاينة فقط. أي تعديل في البرنامج أو نظام الأكل يظهر هنا مباشرة.',
     'sets.zero': 'لا توجد مجموعات', 'sets.two': 'مجموعتان', 'sets.few': '{count} مجموعات',
@@ -58,12 +62,12 @@ export const messages = defineMessages({
     'training': "تمرين",
     'restDay': "راحة",
     'todayRest': "النهارده راحة",
-    'exercises.one': "{count} تمارين",
-    'exercises.other': "{count} تمارين",
+    'exercises.one': 'تمرين واحد', 'exercises.two': 'تمرينين', 'exercises.few': '{count} تمارين',
+    'exercises.many': '{count} تمرين', 'exercises.other': '{count} تمرين',
     'weekActivity': "نشاط الأسبوع",
     'noTraining': "مفيش تمرين متسجل",
-    'meals.one': "{count} وجبات متسجلة",
-    'meals.other': "{count} وجبات متسجلة",
+    'meals.one': 'وجبة واحدة متسجلة', 'meals.two': 'وجبتين متسجلين', 'meals.few': '{count} وجبات متسجلة',
+    'meals.many': '{count} وجبة متسجلة', 'meals.other': '{count} وجبة متسجلة',
     'failed': "المعاينة متحمّلتش. جرّب تاني",
     'invalid': "بيانات المعاينة مش صحيحة",
     'dash': "—",

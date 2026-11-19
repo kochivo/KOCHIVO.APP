@@ -11,7 +11,10 @@ export function offerValue(offer: Pick<CatalogOffer, 'kind' | 'value'>, t: T) {
 }
 export function statusLabel(offer: CatalogOffer, now: Date, zone: string, locale: Locale, t: T) {
   const status = offerStatus(offer, now);
-  if (status === 'running') return `${t(status)} · ${t('remaining', { n: Math.max(0, daysBetween(localDate(now, zone), localDate(new Date(offer.ends_at), zone))) })}`;
+  if (status === 'running') {
+    const days = Math.max(0, daysBetween(localDate(now, zone), localDate(new Date(offer.ends_at), zone)));
+    return `${t(status)} · ${t(days === 0 ? 'remainingToday' : 'remaining', { n: days })}`;
+  }
   if (status === 'scheduled') return `${t(status)} · ${t('startsOn', { date: formatTimestampAr(offer.starts_at, { day: 'numeric', month: 'long' }, locale, zone) })}`;
   return t(status);
 }

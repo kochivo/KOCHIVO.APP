@@ -23,6 +23,8 @@ it('shows expiry alongside paid status and labels a used-up session package', ()
     }))));
   expect(render(player)).toContain('Expired');
   expect(render(player)).toContain('>Paid<');
+  expect(render({ ...player, accessUntil: today })).toContain('Ends today');
+  expect(render({ ...player, accessUntil: '2026-11-19' })).toContain('Ends tomorrow');
   expect(render({ ...player, accessUntil: '2026-11-19', sessionsLeft: 0 })).toContain('No sessions left');
 });
 

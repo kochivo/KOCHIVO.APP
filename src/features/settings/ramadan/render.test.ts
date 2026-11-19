@@ -8,7 +8,7 @@ vi.mock('@/core/resource', () => ({ useResource: () => ({ data: { preferences: {
   players: [{ id: 'one', name: 'Ali' }], exempt: [] } }) }));
 it('renders the captain controls, exemption roster and real player count', () => {
   const html = renderToStaticMarkup(createElement(RamadanSettings, { today: '2027-02-08' }));
-  for (const text of ['وضع رمضان', 'طبّق على 1 لاعب', 'Ali', '3000', '2027-02-08', 'مش صايم']) expect(html).toContain(text);
+  for (const text of ['وضع رمضان', 'طبّق على لاعب واحد', 'Ali', '3000', '2027-02-08', 'مش صايم']) expect(html).toContain(text);
 });
 it.each(['2027-01-24', '2027-03-10', '2029-12-21', '2031-01-01'])('hides the entire section on %s', today => {
   expect(renderToStaticMarkup(createElement(RamadanSettings, { today }))).toBe('');

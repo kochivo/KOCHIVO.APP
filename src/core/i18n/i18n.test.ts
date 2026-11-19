@@ -40,6 +40,7 @@ describe('locale foundation', () => {
     });
     expect(createT(messages, 'en')('hello', { name: '$&' })).toBe('Hello $&');
     expect(createT(messages, 'ar')('players', { n: 3 })).toBe('3 لاعبين');
+    expect(createT(messages, 'ar')('players', { n: '٣' }, 3)).toBe('٣ لاعبين');
     expect(createT(messages, 'ar')('players', { n: 11 })).toBe('11 لاعب');
     expect(createT(messages, 'ar')('players', { n: 0 })).toBe('0 لاعب');
     expect(createT(messages, 'en')('players', { n: 1 })).toBe('One player');

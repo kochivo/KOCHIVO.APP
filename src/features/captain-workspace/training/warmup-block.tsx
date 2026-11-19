@@ -39,7 +39,7 @@ export function WarmupBlock({ day, update }: { day: DraftDay; update: Update }) 
   return <section className="glass rounded-card border border-line-soft">
     <button aria-expanded={open} aria-controls={`warmup-${day.id}`} className={`${clickableClass} flex min-h-16 w-full items-center gap-stack px-page-x py-card text-start`} onClick={() => setOpen(value => !value)}>
       <span className="grid size-6 shrink-0 place-items-center rounded-lg bg-warn-soft font-display text-xs font-extrabold text-warn">{1}</span>
-      <h2 className="font-display text-title font-semibold">{t('warmTitle')}</h2><span className="text-xs text-faint">{t('warmCount', { n: warmup.items.length, m: warmupMinutes(warmup) })}</span>
+      <h2 className="font-display text-title font-semibold">{t('warmTitle')}</h2><span className="text-xs text-faint">{t('warmCount', { n: warmup.items.length, m: warmupMinutes(warmup) }, warmupMinutes(warmup))}</span>
       <DisclosureChevron expanded={open} className="ms-auto size-4" />
     </button>
     {open && <div id={`warmup-${day.id}`}>

@@ -70,7 +70,7 @@ it('provides Egyptian, standard Arabic and English public page copy', () => {
     expect(createT(messages, 'ar')('requestJoin')).toBe('اطلب تشترك');
     expect(createT(messages, 'ar', 'standard')('requestJoin')).toBe('اطلب الانضمام');
     expect(createT(messages, 'en')('requestJoin')).toBe('Request to join');
-    expect(createT(messages, 'ar', 'standard')('bonusOfferLabel', { name: 'عرض', count: 7 })).toBe('عرض · 7 يوم هدية');
+    expect(createT(messages, 'ar', 'standard')('bonusOfferLabel', { name: 'عرض', n: 7, count: 7 })).toBe('عرض · 7 أيام هدية');
   } finally { vi.unstubAllEnvs(); }
 });
 it('fills the named slots with this captain’s data and replaces all three full-capacity actions', () => {

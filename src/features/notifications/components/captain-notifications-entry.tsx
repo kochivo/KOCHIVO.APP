@@ -45,7 +45,7 @@ export function CaptainNotificationsEntry() {
                   name: row.payload.display_name || row.payload.name || row.payload.captain_name || '',
                   rank: t(medalKey(row.payload.medal) ?? 'iron'),
                   n: row.payload.needs_workouts ?? 0, gap: row.payload.gap ?? 0,
-                })}</p>
+                }, row.payload.gap ?? 0)}</p>
                 <time dateTime={row.created_at} className="block truncate text-micro text-muted">{t(time.key, { n: time.n })}</time>
               </div>
               {!row.is_read && <><span className="text-micro text-muted">{t('unread')}</span><span aria-hidden className="size-2 shrink-0 rounded-full bg-lime" /></>}

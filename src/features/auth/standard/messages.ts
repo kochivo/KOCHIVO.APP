@@ -29,7 +29,7 @@ export const arStd = {
   forgotPassword: 'نسيت كلمة السر؟', playerOpenTheInviteYourCoach: 'لاعب؟ افتح رابط الدعوة الذي أرسله الكابتن', checkYourEmail: 'تحقق من بريدك الإلكتروني',
   ifAnAccountExistsAReset: 'إذا كان هناك حساب بهذا البريد فسيصلك رمز. تحقق من الرسائل غير المرغوب فيها أيضاً.',
   enterYourEmailToGetA: 'أدخل بريدك الإلكتروني لنرسل رمزاً لإعادة تعيين كلمة السر.', sending: 'جاري الإرسال',
-  sendAgainInSeconds: 'أرسل مجدداً بعد {remaining} ثانية', sendAgain: 'أرسل مجدداً', sendResetLink: 'أرسل الرمز', backToSignIn: 'العودة لتسجيل الدخول',
+  'sendAgainInSeconds.one': "أرسل مجدداً بعد ثانية واحدة", 'sendAgainInSeconds.two': "أرسل مجدداً بعد ثانيتين", 'sendAgainInSeconds.few': "أرسل مجدداً بعد {remaining} ثوانٍ", 'sendAgainInSeconds.many': "أرسل مجدداً بعد {remaining} ثانية", 'sendAgainInSeconds.other': "أرسل مجدداً بعد {remaining} ثانية", sendAgain: 'أرسل مجدداً', sendResetLink: 'أرسل الرمز', backToSignIn: 'العودة لتسجيل الدخول',
   signingIn: 'جاري تسجيل الدخول', continueWithGoogle: 'تابع باستخدام جوجل', signInCode: 'رمز الدخول', digit: 'رقم {n}', tryAgain: 'حاول مجدداً',
   coach: 'كابتن', invitesYouToGetStarted: 'يدعوك للبدء معه', enterYourCode: 'أدخل الرمز', letSGetStarted: 'لنبدأ', connectingYourAccount: 'جاري ربط الحساب',
   continueWithYourCoach: 'تابع مع الكابتن', noPasswordNeededChooseHowTo: 'لا تحتاج إلى كلمة سر. اختر طريقة الدخول', weSentA6DigitCode: 'أرسلنا رمزاً من 6 أرقام إلى',

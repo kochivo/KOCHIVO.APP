@@ -71,11 +71,11 @@ export function ActivatePanel({ captain, plans, onClose, onSuccess, embedded = f
         </label>
         {plan && <div className="glass-strong space-y-inline rounded-control p-stack">
           <p className="num text-title font-bold">{t('currency', { amount: formatNumber(plan.price_egp * months, locale) })}</p>
-          <p className="text-xs text-muted">{d('period', { price: formatNumber(plan.price_egp, locale), months: formatNumber(months, locale) })}</p>
+          <p className="text-xs text-muted">{d('period', { n: months, price: formatNumber(plan.price_egp, locale), months: formatNumber(months, locale) })}</p>
           {currentTime !== undefined && <p className="text-xs text-muted">{d(captain.tier !== 'entry' && captain.tier_ends_at && Date.parse(captain.tier_ends_at) > currentTime ? 'startsAfter' : 'startsNow')}</p>}
         </div>}
         <Button type="submit" className="w-full" disabled={!plan || pending}>
-          <KoBilling aria-hidden className="size-5" />{pending ? t('activating') : d('activateMonths', { tier: tierLabel(tier), months: formatNumber(months, locale) })}
+          <KoBilling aria-hidden className="size-5" />{pending ? t('activating') : d('activateMonths', { n: months, tier: tierLabel(tier), months: formatNumber(months, locale) })}
         </Button>
       </fieldset>
       {error && <p role="alert" className="mt-stack text-danger">{error}</p>}

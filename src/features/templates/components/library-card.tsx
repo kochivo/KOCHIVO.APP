@@ -15,10 +15,10 @@ export function LibraryCard({ onOpen, error, ...props }: ComponentProps<typeof L
   const t = useT(messages), tt = useT(templateMessages), locale = useLocale();
   const number = (value: number) => formatNumber(value, locale);
   const training = template.kind === 'program';
-  const usage = template.uses === 1 ? t('usedOne') : template.uses ? t('used', { n: number(template.uses) }) : t(training ? 'unusedTraining' : 'unusedNutrition');
+  const usage = template.uses === 1 ? t('usedOne') : template.uses ? t('used', { n: number(template.uses) }, template.uses) : t(training ? 'unusedTraining' : 'unusedNutrition');
   const summary = training ? [tt('dayCount', { n: template.count, count: number(template.count) }),
-    template.minutes ? t('minutes', { minutes: number(template.minutes) }) : '', template.place ? t(template.place) : ''].filter(Boolean).join(' · ')
-    : [t('meals', { meals: number(template.count) }), template.protein != null ? t('protein', { protein: number(template.protein) }) : '', template.split ? t('split') : ''].filter(Boolean).join(' · ');
+    template.minutes ? t('minutes', { n: template.minutes, minutes: number(template.minutes) }) : '', template.place ? t(template.place) : ''].filter(Boolean).join(' · ')
+    : [t('meals', { n: template.count, meals: number(template.count) }), template.protein != null ? t('protein', { protein: number(template.protein) }) : '', template.split ? t('split') : ''].filter(Boolean).join(' · ');
   // Lift the card whose menu is open above its siblings; each glass card is its own stacking layer.
   return <li className={training ? 'glass relative rounded-card border border-line-soft px-page-x py-page-y has-[details[open]]:z-20' : 'relative flex flex-wrap items-center gap-stack border-t border-line-soft px-page-x py-stack first:border-t-0 has-[details[open]]:z-20'}>
     {training ? <>

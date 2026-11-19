@@ -18,9 +18,10 @@ export function StatusCards({ playerId, profile, summary, locale, today }: {
   const date = (value: string | null) => value ? formatDateAr(localDate(new Date(value), profile.timezone ?? DEFAULT_TIMEZONE), { day: 'numeric', month: 'long' }, locale) : t('unavailable');
   const primary = primaryCard({ training: Boolean(profile.program), nutrition: Boolean(profile.nutrition), assessments: Boolean(summary.assessment) });
   const base = `/captain/players/${playerId}`;
+  const trainingDays = profile.program?.days ?? profile.intake?.trainingDays.length;
   const cards = [
     { key: 'training', href: `${base}/programs`, title: profile.program ? starterText(profile.program.title, locale) : t('noProgram'),
-      line: t('trainingSummary', { days: n(profile.program?.days ?? profile.intake?.trainingDays.length), last: lastSeenLabel(summary.lastTraining, today, locale) }),
+      line: t('trainingSummary', { n: trainingDays ?? 0, days: n(trainingDays), last: lastSeenLabel(summary.lastTraining, today, locale) }),
       action: t(profile.program ? 'openTraining' : 'createTraining') },
     { key: 'nutrition', href: `${base}/nutrition`, title: profile.nutrition ? starterText(profile.nutrition.title, locale) : t('noNutrition'),
       line: profile.nutrition ? t('nutritionTargets', { kcal: n(profile.nutrition.kcal), protein: n(profile.nutrition.protein) }) : t('prepareTargets'),

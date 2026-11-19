@@ -16,14 +16,14 @@ export function SignupsChart({ signups }: { signups: AdminDashboard['signups'] }
       <div className="flex gap-inline text-xs"><span className="text-lime">{t('captainSeries')}</span><span className="text-calm">{t('playerSeries')}</span></div>
     </header>
     {signups.length ? <svg viewBox="0 0 600 120" preserveAspectRatio="none" className="h-32 w-full" role="img"
-      aria-label={t('chartSummary', { days: formatNumber(signups.length, locale) })}>
+      aria-label={t('chartSummary', { n: signups.length, days: formatNumber(signups.length, locale) })}>
       {signups.map((day, i) => (['captains', 'players'] as const).map((series, j) => {
         const height = day[series] / max * 116;
         return <rect key={`${day.day}-${series}`} data-series={series} x={i * 600 / signups.length + j * 8} y={120 - height}
           width="7" height={height} rx="2" className={series === 'captains' ? 'fill-lime/70' : 'fill-calm/70'} />;
       }))}
     </svg> : <p className="text-sm text-muted">{t('noSignups')}</p>}
-    <figcaption className="text-xs text-muted">{peak && peak.captains + peak.players > 0 ? t('peak', {
+    <figcaption className="text-xs text-muted">{peak && peak.captains + peak.players > 0 ? t('peak', { n: peak.captains + peak.players,
       day: endsLabel(peak.day, locale), count: formatNumber(peak.captains + peak.players, locale),
     }) : t('noSignups')}</figcaption>
   </figure>;

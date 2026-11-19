@@ -74,7 +74,7 @@ describe('player ranks', () => {
     expect(shouldCelebrate('invalid', 'elite')).toBe(false);
   });
 
-  it.each([[0, '100 points to Bronze'], [99, '1 points to Bronze'],
+  it.each([[0, '100 points to Bronze'], [99, '1 point to Bronze'],
     [100, '100 points to Silver'], [600, '300 points to Legend']] as const)('shows progress at %s', (lifetime, text) => {
     const html = render(createElement(RankHero, { lifetime }));
     expect(html).toContain(text);
@@ -119,7 +119,7 @@ describe('player ranks', () => {
     for (const holdsCrown of [true, false]) {
       const html = render(createElement(CrownRace, { points, holdsCrown }), locale);
       expect(html).toContain(locale === 'ar' ? 'التزامك 50٪' : '50% of your plan');
-      expect(html).toContain(locale === 'ar' ? '4 من 8 تمرين الشهر ده' : '4 of 8 workouts this month');
+      expect(html).toContain(locale === 'ar' ? '4 من 8 تمارين الشهر ده' : '4 of 8 workouts this month');
       expect(html).toContain(locale === 'ar' ? 'بحد أدنى 4 تمارين' : 'at least 4 workouts this month');
       expect(html).toContain(locale === 'ar' ? 'الأرقام الجديدة والـInBody' : 'Records and InBody scans');
       expect(html).toContain(locale === 'ar' ? 'السباق بيبدأ من جديد يوم 1' : 'Resets on the 1st');
@@ -130,19 +130,19 @@ describe('player ranks', () => {
         expect(html).toContain(locale === 'ar' ? 'aria-label="التاج"' : 'aria-label="Crown"');
         expect(html).not.toContain(locale === 'ar' ? 'فاضلك' : 'to the crown');
       } else {
-        expect(html).toContain(locale === 'ar' ? 'فاضلك 9 درجة وتاخد التاج' : '9 to the crown');
+        expect(html).toContain(locale === 'ar' ? 'فاضلك 9 درجات وتاخد التاج' : '9 to the crown');
         expect(html).toContain(locale === 'ar' ? 'المركز 2' : 'Position 2');
       }
     }
   });
 
   it.each(['ar', 'en'] as const)('prioritizes missing workouts over the gap in %s', locale => {
-    for (const needed of [1, 2, 4]) {
+    for (const [needed, arabic] of [[1, 'فاضلك تمرين واحد عشان تدخل سباق التاج'],
+      [2, 'فاضلك تمرينين عشان تدخل سباق التاج'], [4, 'فاضلك 4 تمارين عشان تدخل سباق التاج']] as const) {
       const html = render(createElement(CrownRace, {
         points: { ...points, done: 4 - needed, crown_needs_workouts: needed }, holdsCrown: false,
       }), locale);
       const english = needed === 1 ? '1 more workout to enter the crown race' : `${needed} more workouts to enter the crown race`;
-      const arabic = needed === 1 ? 'فاضلك تمرين واحد عشان تدخل سباق التاج' : `فاضلك ${needed} تمارين عشان تدخل سباق التاج`;
       expect(html).toContain(locale === 'ar' ? arabic : english);
       expect(html).toContain(locale === 'ar' ? 'المركز 2' : 'Position 2');
       expect(html).not.toContain(locale === 'ar' ? 'درجة وتاخد التاج' : 'to the crown');
@@ -194,7 +194,7 @@ describe('player ranks', () => {
     expect(render(createElement(PointsLog, { logs: [] }))).toContain('No points yet. Finish your first workout');
     expect(render(createElement(TeamBoard, { rows: [] }))).toContain('Nobody has trained this month');
     expect(render(createElement(CrownRace, { points: { ...points, month_position: null }, holdsCrown: false }))).toContain('Join a captain');
-    expect(render(createElement(RankHero, { lifetime: 99 }), 'ar')).toContain('فاضلك 1 نقطة لرتبة برونز');
+    expect(render(createElement(RankHero, { lifetime: 99 }), 'ar')).toContain('فاضلك نقطة واحدة لرتبة برونز');
     expect(render(createElement(PointsLog, { logs: [] }), 'ar')).toContain('لسه ما كسبتش نقط. كمّل أول تمرين');
   });
 

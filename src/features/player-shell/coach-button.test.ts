@@ -11,7 +11,7 @@ it('links to chat with a real avatar and the unread message count', () => {
   expect(html).toContain('src="/coach.jpg"');
   expect(html).toContain('data-unread');
   expect(html).toContain('>2</span>');
-  expect(html).toContain('الشات مع الكابتن، 2 رسايل مش مقروءة');
+  expect(html).toContain('الشات مع الكابتن، رسالتين مش مقروءين');
   expect(html).toContain('min-h-12');
 });
 

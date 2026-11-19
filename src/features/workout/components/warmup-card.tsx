@@ -37,7 +37,7 @@ export function WarmupCard({ warmup, checked, disabled, onToggle, v4 = false }: 
   if (v4) return <details id="warmup-checklist" className="glass rounded-card px-card">
     <summary className="flex min-h-14 cursor-pointer list-none items-center gap-inline [&::-webkit-details-marker]:hidden">
       <Flame aria-hidden className="size-5 shrink-0 text-warn" />
-      <span className="min-w-0 flex-1"><b className="text-sm">{wt('v3Warmup')} · {wt('v3Minutes', { minutes: formatNumber(warmupMinutes(warmup), locale) })}</b>
+      <span className="min-w-0 flex-1"><b className="text-sm">{wt('v3Warmup')} · {wt('v3Minutes', { n: warmupMinutes(warmup), minutes: formatNumber(warmupMinutes(warmup), locale) })}</b>
         <span className="block truncate text-micro text-muted">{warmup.items.map(item => item.name).join(' · ')}</span></span>
       <span className="tone-lime rounded-md px-inline text-micro">{vt('optional')}</span>
     </summary>
@@ -47,7 +47,7 @@ export function WarmupCard({ warmup, checked, disabled, onToggle, v4 = false }: 
     className={v3 ? 'rounded-[24px] border border-line-soft bg-surface px-page-x py-card' : 'glass rounded-[22px] border border-warn/35 px-page-x py-page-y'}>
     <div className={`${v3 ? 'mb-inline' : 'mb-inline'} flex items-center justify-between gap-inline`}>
       <span className={v3 ? 'text-md font-bold' : 'rounded-full bg-warn-soft px-stack py-inline text-xs text-warn'}>{v3 ? wt('v3Warmup') : t('title', { step: formatNumber(1, locale) })}</span>
-      <span className={v3 ? 'text-xs text-sore' : 'text-xs tabular-nums text-faint'}>{v3 ? wt('v3Minutes', { minutes: formatNumber(warmupMinutes(warmup), locale) }) : t('min', { amount: formatNumber(warmupMinutes(warmup), locale) })}</span>
+      <span className={v3 ? 'text-xs text-sore' : 'text-xs tabular-nums text-faint'}>{v3 ? wt('v3Minutes', { n: warmupMinutes(warmup), minutes: formatNumber(warmupMinutes(warmup), locale) }) : t('min', { amount: formatNumber(warmupMinutes(warmup), locale) })}</span>
     </div>
     {checklist}
   </section>;

@@ -51,7 +51,7 @@ export function V3Home({ weightKg, now, today, firstName, playerId, snapshot, da
   const dailyCheck = <div data-home-section="readiness" className="empty:hidden">{readiness}</div>;
   return <section data-mood={rest ? 'rest' : undefined} className="flex flex-col gap-card-gap">
     <HomeHeader now={now} firstName={firstName} rest={rest} streak={stats && <button id="streak-pill" type="button" onClick={() => setStreakOpen(true)} aria-haspopup="dialog"
-      aria-label={t('streakLabel', { count: formatNumber(stats.current, locale), done: formatNumber(stats.weekDone, locale), planned: formatNumber(stats.weekPlanned, locale) })}
+      aria-label={t('streakLabel', { n: stats.current, count: formatNumber(stats.current, locale), done: formatNumber(stats.weekDone, locale), planned: formatNumber(stats.weekPlanned, locale) })}
       className="press flex min-h-12 shrink-0 items-center gap-inline rounded-control px-inline text-sm font-extrabold tabular-nums">
       <Flame aria-hidden className="size-4 text-warn" />{formatNumber(stats.current, locale)}
     </button>} />
@@ -72,7 +72,7 @@ export function V3Home({ weightKg, now, today, firstName, playerId, snapshot, da
     {rest && <>
       <div data-home-section="tomorrow"><TomorrowCard day={tomorrowDay} date={tomorrow} rest={tomorrowRest} onPreview={onPreview} /></div>
       {rank}
-      {stats && snapshot && !trains(today) && <p className="ko-strip rounded-card p-card text-xs">{t('homeRestStreak', { count: formatNumber(stats.current, locale) })}</p>}
+      {stats && snapshot && !trains(today) && <p className="ko-strip rounded-card p-card text-xs">{t('homeRestStreak', { count: formatNumber(stats.current, locale) }, stats.current)}</p>}
       {dailyCheck}
     </>}
     </div>

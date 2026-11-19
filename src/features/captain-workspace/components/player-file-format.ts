@@ -21,7 +21,7 @@ export function optionLabel(value: string, locale: Locale): string {
   const key = options.find(key => key === value);
   if (key) return t(key);
   if (value === '1_3y') return t('experienceRange', { min: formatNumber(1, locale), max: formatNumber(3, locale) });
-  if (value === 'over_3y') return t('experienceOver', { count: formatNumber(3, locale) });
+  if (value === 'over_3y') return t('experienceOver', { n: 3, count: formatNumber(3, locale) });
   return value;
 }
 export function factValue(key: FactKey, value: FactValues[FactKey] | undefined, locale: Locale): string {
@@ -31,7 +31,7 @@ export function factValue(key: FactKey, value: FactValues[FactKey] | undefined, 
     ? (weekdays[item] ? t(weekdays[item]) : t('unavailable')) : optionLabel(item, locale)).join(' · ') : t('none');
   if (typeof value === 'number') {
     const count = formatNumber(value, locale);
-    if (key === 'age') return t('years', { count });
+    if (key === 'age') return t('years', { n: value, count });
     if (key === 'height' || key === 'waist') return t('cm', { count });
     if (key === 'sessionMinutes') return t('minutes', { count });
     return t('kg', { count });

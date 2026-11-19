@@ -31,7 +31,7 @@ export function ConversationPane({ player, captainId, at, onBack, onGuard, onUpd
       <button type="button" aria-label={t('back')} onClick={onBack} className={`${secondaryButtonClass} grid min-h-12 min-w-12 place-items-center md:hidden`}><ArrowRight aria-hidden className="size-4 ltr:rotate-180" /></button>
       <ConversationAvatar name={player.fullName} url={player.avatarUrl} phone />
       <div className="min-w-0 flex-1"><h2 className="text-row font-semibold max-md:text-md">{player.fullName}</h2>
-        {Number.isFinite(days) && <p className="text-micro text-muted">{t('remaining', { n: formatNumber(days, locale) })}</p>}</div>
+        {Number.isFinite(days) && <p className="text-micro text-muted">{t(days === 0 ? 'remainingToday' : 'remaining', { n: formatNumber(days, locale) }, days)}</p>}</div>
       <Link href={`/captain/players/${player.playerId}`} aria-label={t('profile')} className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-card text-micro max-md:min-w-12 max-md:px-0" })}>
         <span className="max-md:hidden">{t('profile')}</span><UserRound aria-hidden className="size-5 md:hidden" />
       </Link>

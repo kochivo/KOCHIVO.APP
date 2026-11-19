@@ -45,7 +45,7 @@ export function WorkspaceProgramsView(props: ComponentProps<typeof LibraryView>)
       <div className="flex items-center gap-stack md:hidden">
         <Link href="/captain" aria-label={phone('back')} className={buttonClass({ variant: 'secondary', block: false, className: 'min-w-12 shrink-0 px-stack' })}><RowChevron className="rotate-180" /></Link>
         <div className="min-w-0"><h1 className="text-md font-bold">{t('programsTitle')}</h1>
-          {!loading && !error && <p className="text-xs text-muted">{phone('count', { count: formatNumber(filterPrograms(templates, 'mine').length, locale) })}</p>}
+          {!loading && !error && <p className="text-xs text-muted">{phone('count', { n: filterPrograms(templates, 'mine').length, count: formatNumber(filterPrograms(templates, 'mine').length, locale) })}</p>}
         </div>
       </div>
     </>, titleTarget)}

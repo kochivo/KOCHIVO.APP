@@ -41,7 +41,7 @@ export function HomeHero({ day, rest, restAction, finished = false, doneToday = 
         <span className="flex items-center gap-inline"><Dumbbell aria-hidden className="size-4" />
           {t('exerciseCount', { n: day.exercises.length, count: formatNumber(day.exercises.length, locale) })}</span>
         {minutes > 0 && <span className="flex items-center gap-inline"><Timer aria-hidden className="size-4" />
-          {t('homeMinutes', { count: formatNumber(minutes, locale) })}</span>}
+          {t('homeMinutes', { n: minutes, count: formatNumber(minutes, locale) })}</span>}
       </div>
       {(day.exercises.length > 0 || Boolean(day.warmup?.items.length)) && <div className="flex flex-wrap gap-inline">
         {day.exercises.slice(0, 3).map(exercise => <span key={exercise.id} className="tone-neutral rounded-md px-inline text-micro font-semibold">

@@ -12,7 +12,7 @@ it('renders each task once with only the first primary action', async () => {
     { kind: 'renew', name: 'Mona', href: '/captain/billing' },
   ] }));
   expect(html).toContain('اعمل إيه النهارده');
-  expect(html).toContain('راجع 2 check-in');
+  expect(html).toContain('راجع اتنين Check-in');
   expect(html).toContain('ابدأ المراجعة');
   expect(html).toContain('Ali مالوش نظام أكل');
   expect(html).toContain('اعمل نظام');

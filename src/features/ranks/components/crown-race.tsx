@@ -21,16 +21,16 @@ export function CrownRace({ points, holdsCrown, holderName }: {
       <Gift aria-hidden="true" className="size-5 shrink-0" />{t('crownPrize', { prize: points.crown_prize })}
     </p>}
     <p className="text-3xl font-bold tabular-nums">{t('adherence', { n: formatNumber(points.adherence, locale) })}</p>
-    <p>{t('workouts', { done: formatNumber(points.done, locale), planned: formatNumber(points.planned, locale) })}</p>
+    <p>{t('workouts', { n: points.planned, done: formatNumber(points.done, locale), planned: formatNumber(points.planned, locale) })}</p>
     {holdsCrown ? <div className="flex items-center gap-card-gap"><RankBadge tier="crown" label={t('crown')} />
       <p className="font-bold">{t('holder')}</p></div> : <>
       <p className="text-xl font-bold">{t('position', { n: formatNumber(points.month_position, locale) })}</p>
       <p>{needed !== null && needed > 0
-        ? holderName ? t('crownWorkouts', { n: formatNumber(needed, locale), name: holderName })
-          : t(needed === 1 ? 'needsWorkout' : 'needsWorkouts', { n: formatNumber(needed, locale) })
-        : t('gap', { n: formatNumber(points.crown_gap, locale) })}</p>
+        ? holderName ? t('crownWorkouts', { n: formatNumber(needed, locale), name: holderName }, needed)
+          : t('needsWorkouts', { n: formatNumber(needed, locale) }, needed)
+        : t('gap', { n: formatNumber(points.crown_gap, locale) }, points.crown_gap)}</p>
     </>}
-    <p className="text-sm text-muted">{t('rule', { n: formatNumber(CROWN_MIN_WORKOUTS, locale) })}</p>
+    <p className="text-sm text-muted">{t('rule', { n: formatNumber(CROWN_MIN_WORKOUTS, locale) }, CROWN_MIN_WORKOUTS)}</p>
     <p className="text-sm text-muted">{t('reset')}</p>
   </section>;
 }

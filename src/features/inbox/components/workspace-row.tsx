@@ -28,7 +28,7 @@ export function WorkspaceRow({ item, inputs, now, selected, onSelect, idPrefix =
     <span aria-hidden className="glass grid size-[38px] place-items-center rounded-full border border-line text-xs">{item.player_name.slice(0, 1)}</span>
     <span className="min-w-0"><span className="flex flex-wrap items-center gap-inline text-sm font-medium">{item.player_name}
       <TierBadge tier={item.tier} />
-      {(flag || item.kind === 'assessment' && item.answers.some(answer => answer.alert)) && <span className="rounded-full bg-warn-soft px-stack py-inline text-micro text-warn">{flag ? flagT(flag.key, values) : t('assessmentAlert')}</span>}</span>
+      {(flag || item.kind === 'assessment' && item.answers.some(answer => answer.alert)) && <span className="rounded-full bg-warn-soft px-stack py-inline text-micro text-warn">{flag ? flagT(flag.key, values, (flag.values.weeks ?? flag.values.days ?? flag.values.hours)) : t('assessmentAlert')}</span>}</span>
       <span className="mt-inline block truncate text-micro text-faint">{kind}{summary && ` · ${summary}`}</span></span>
     <span className="flex items-center gap-inline"><span className={`text-end text-micro ${isOverdue(item, now) ? 'text-warn' : 'text-faint'}`}>{followupAge(item.created_at, now, locale, style)}</span><RowChevron /></span>
   </button>;

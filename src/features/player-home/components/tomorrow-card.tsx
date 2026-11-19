@@ -28,7 +28,7 @@ export function TomorrowCard({ day, date, rest, onPreview }: {
       <span className="min-w-0 flex-1">
         <b className="text-md">{rest ? t('homeTomorrowRest') : day ? starterText(day.title, locale) : t('homeNoTomorrow')}</b>
         {!rest && day && <span className="block text-xs text-muted">{t('exerciseCount', { n: day.exercises.length, count: formatNumber(day.exercises.length, locale) })}
-          {minutes > 0 && <> · {t('homeMinutes', { count: formatNumber(minutes, locale) })}</>}
+          {minutes > 0 && <> · {t('homeMinutes', { n: minutes, count: formatNumber(minutes, locale) })}</>}
         </span>}
       </span>
       {!rest && day && <ChevronLeft aria-hidden className="size-4 shrink-0 text-muted ltr:rotate-180" />}

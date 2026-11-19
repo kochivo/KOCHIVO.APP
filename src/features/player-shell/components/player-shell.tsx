@@ -54,7 +54,7 @@ export function PlayerShell({ children, unassignedAction }: { children?: ReactNo
     ? formatDateAr(captain.data.subscriptionStartsOn, { day: 'numeric', month: 'long', year: 'numeric' }, locale) : '' });
   const training = !/\/player\/(settings|onboarding|captain|progress)(?:\/|$)/.test(pathname);
   const message = blocked ? null : futureStart ? startMessage : state === 'ending' ?
-    t('subscriptionEndsIn', { n: left }) :
+    t(left === 0 ? 'subscriptionEndsToday' : 'subscriptionEndsIn', { n: left }) :
     state === 'ended' ? t('yourSubscriptionEndedContactYourCoach') :
     state === 'archived' ? t('yourCoachPausedYourCoaching') : null;
   if (!captain.data && !/\/player\/settings(?:\/|$)/.test(pathname)) {

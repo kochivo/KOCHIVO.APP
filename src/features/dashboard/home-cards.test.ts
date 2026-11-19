@@ -30,7 +30,7 @@ it('keeps the form-video category beside its exercise and age', async () => {
 it('messages absent players on WhatsApp and uses their profile when no phone exists', async () => {
   const rows = ['a', 'b'].map(id => ({ id, playerId: id, name: id, kind: 'absent' as const, days: 5, lastTrainingDate: '2026-11-06' }));
   const html = renderToStaticMarkup(await HomeNeeds({ rows, now, failed: false, contacts: new Map([['a', '+20 100 123 4567']]) }));
-  expect(html).toContain('غايب 5 أيام');
+  expect(html).toContain('غايب من 5 أيام');
   expect(html).toContain('https://wa.me/201001234567?text=');
   expect(html).toContain('ما اتمرنش من الجمعة');
   expect(html).toContain('href="/captain/players/b"');

@@ -17,7 +17,7 @@ export function BodyMap({ volume, muscles, total }: { volume: Record<Region, num
   const { card, selection, select, close } = useMusclePopover();
   const top = [...muscleKeys].filter(muscle => (muscles[muscle] ?? 0) > 0)
     .sort((a, b) => (muscles[b] ?? 0) - (muscles[a] ?? 0)).slice(0, 3)
-    .map(muscle => t('regionSets', { muscle: mt(`muscle.${muscle}`), sets: muscles[muscle] ?? 0 })).join(t('separator')) || t('noRegions');
+    .map(muscle => t('regionSets', { n: muscles[muscle] ?? 0, muscle: mt(`muscle.${muscle}`), sets: muscles[muscle] ?? 0 })).join(t('separator')) || t('noRegions');
   const detail = selection && (selection.kind === 'region'
     ? { name: t(`region.${selection.key as Region}`), sets: volume[selection.key as Region] }
     : { name: mt(`muscle.${selection.key as Muscle}`), sets: muscles[selection.key as Muscle] ?? 0 });
@@ -34,11 +34,11 @@ export function BodyMap({ volume, muscles, total }: { volume: Record<Region, num
       <svg aria-hidden viewBox="0 0 100 8" preserveAspectRatio="none" className="h-2 min-w-8 flex-1 overflow-hidden rounded-full rtl:rotate-180">
         {HEAT_STEPS.map((sets, index) => <rect key={sets} x={index * 20} width="20" height="8" className={heatClass(sets)} />)}
       </svg>
-      <span>{t('more')}</span><span className="shrink-0 font-bold text-ink">{mt('sets', { sets: total })}</span>
+      <span>{t('more')}</span><span className="shrink-0 font-bold text-ink">{mt('sets', { n: total, sets: total })}</span>
     </div>
     <ul className="mt-stack grid grid-cols-3 gap-inline">
       {regions.map(region => <li key={region}><button type="button" data-muscle-trigger
-        aria-label={t('regionSets', { muscle: t(`region.${region}`), sets: volume[region] })}
+        aria-label={t('regionSets', { n: volume[region], muscle: t(`region.${region}`), sets: volume[region] })}
         aria-pressed={selection?.kind === 'region' && selection.key === region}
         aria-controls={selection?.kind === 'region' && selection.key === region ? `${id}-detail` : undefined}
         onClick={event => {
@@ -52,7 +52,7 @@ export function BodyMap({ volume, muscles, total }: { volume: Record<Region, num
     {selection && detail && <div id={`${id}-detail`} role="status"
       className="glass-strong pointer-events-none absolute z-10 rounded-control p-stack text-sm font-bold text-ink shadow-lime-glow"
       style={{ insetInlineStart: selection.x, top: selection.y, width: selection.width, maxHeight: 72 }} dir="ltr">
-      <bdi>{t('regionSets', { muscle: detail.name, sets: detail.sets })}</bdi>
+      <bdi>{t('regionSets', { n: detail.sets, muscle: detail.name, sets: detail.sets })}</bdi>
     </div>}
   </div>;
 }

@@ -54,7 +54,7 @@ export function ShoppingScreen() {
     <header className="flex min-h-12 items-center gap-inline">
       <Link href="/player/nutrition" aria-label={v4t('back')} className={buttonClass({ variant: 'secondary', className: 'size-12 shrink-0 px-0' })}><ChevronRight aria-hidden className="dir-icon size-5" /></Link>
       <div className="min-w-0"><h1 className="text-title font-bold">{t('shopping')}</h1>
-        <p className="text-xs text-muted">{v4t('week', { days: formatNumber(7, locale) })}</p></div>
+        <p className="text-xs text-muted">{v4t('week', { n: 7, days: formatNumber(7, locale) })}</p></div>
     </header>
     {content()}
   </main>;

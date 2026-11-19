@@ -20,7 +20,7 @@ it('renders a disabled unchecked switch until an assessment is selected', () => 
   const selected = render(['form'], true);
   expect(selected).toMatch(/role="switch"[^>]*aria-checked="true"/);
   expect(selected).not.toMatch(/role="switch"[^>]*disabled=""/);
-  expect(selected).toContain('Goals'); expect(selected).toContain('1 questions');
+  expect(selected).toContain('Goals'); expect(selected).toContain('1 question');
   expect(selected).toContain('Preview');
 });
 it('provides the empty state and creates a fresh editor draft in a separate tab', () => {

@@ -69,7 +69,7 @@ export function FeedCard({ item, onDismiss, primary = true }: { item: KoFeedItem
     body.set('locale', locale);
     // Same confirm protocol as the chat action cards (T-403): the flag and token, no text.
     if (confirm && reply?.token) { body.set('confirm', '1'); body.set('token', reply.token); }
-    else body.set('text', t(renewal ? 'renewPrompt' : 'reminderPrompt', { name: item.player_name, days }));
+    else body.set('text', t(renewal ? 'renewPrompt' : 'reminderPrompt', { name: item.player_name, n: days, days }));
     try {
       const response = await fetch('/api/ko', { method: 'POST', body });
       if (!response.ok) throw new Error('preview failed');

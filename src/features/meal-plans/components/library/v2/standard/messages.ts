@@ -3,7 +3,7 @@ export const arStd = {
   loading: 'جارٍ تحميل الأطعمة...', filters: 'المرشحات', tabCount: '{label} {count}', usedInPlans: 'عدد الخطط التي تستخدم هذا الطعام: {count}',
   mismatch: 'السعرات {kcal} لكن مجموع الماكروز يقارب {calculated}. راجع القيم.',
   small: 'طبق صغير · {grams} جم', medium: 'طبق متوسط · {grams} جم', large: 'طبق كبير · {grams} جم', noRecent: 'لم تضف أطعمة بعد',
-  title: 'مكتبة الطعام', subtitle: 'ابحث بالعربية أو الإنجليزية، وراجع القيم، وحدّد الكمية وأضفها للاعب.', count: '{count} طعام', foodName: 'الطعام', defaultServing: '100 جم',
+  title: 'مكتبة الطعام', subtitle: 'ابحث بالعربية أو الإنجليزية، وراجع القيم، وحدّد الكمية وأضفها للاعب.', 'count.one': "صنف واحد", 'count.two': "صنفان", 'count.few': "{count} أصناف", 'count.many': "{count} صنفًا", 'count.other': "{count} صنف", foodName: 'الطعام', defaultServing: '100 جم',
   training: 'يوم تدريب', rest: 'يوم راحة', everyDay: 'كل الأيام', noPlayers: 'لا يوجد لاعبون. أضف لاعبًا أولًا',
   eg: 'مصري', gulf: 'خليجي', lev: 'شامي', na: 'شمال أفريقيا', intl: 'عالمي', all: 'الكل', mine: 'أطعمتي', favorites: 'المفضلة',
   arabic: 'عربي', recent: 'أطعمتك الأخيرة', protein: 'بروتين مرتفع ≥ 15 جم', fat: 'دهون منخفضة ≤ 5 جم', carbs: 'كربوهيدرات منخفضة ≤ 10 جم', kcal: 'سعرات منخفضة ≤ 120',

@@ -21,7 +21,7 @@ export function RankJourney({ lifetime }: { lifetime: number }) {
           <Medal rank={index as MedalMetal} locked={index > current + 1} label={t(rank)} />
           <b>{t(rank)}</b><span className={next ? 'text-lime' : 'text-muted'}>{index <= current ? t('earned') : next
             ? t('percent', { n: formatNumber(Math.floor((lifetime - previous) / (threshold - previous) * 100), locale) })
-            : t('points', { n: formatNumber(threshold, locale) })}</span>
+            : t('points', { n: formatNumber(threshold, locale) }, threshold)}</span>
         </li>;
       })}
     </ol>

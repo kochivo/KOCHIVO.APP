@@ -13,7 +13,7 @@ export function CoachButtonView({ name, avatarUrl, unread = 0, loading = false }
   const t = useT(messages);
   const locale = useLocale();
   const count = formatNumber(unread, locale);
-  return <Link href="/player/captain" aria-label={unread > 0 ? t('v4CoachUnread', { count }) : t('v4CoachChat')}
+  return <Link href="/player/captain" aria-label={unread > 0 ? t('v4CoachUnread', { n: unread, count }) : t('v4CoachChat')}
     aria-busy={loading || undefined} className="press relative grid min-h-12 min-w-12 shrink-0 place-items-center rounded-full">
     <span aria-hidden className="relative grid size-11 place-items-center overflow-hidden rounded-full border-2 border-lime bg-surface-raised text-title font-bold text-ink">
       {avatarUrl ? <Image src={avatarUrl} alt="" width={44} height={44} className="size-full object-cover" unoptimized /> : name?.trim().slice(0, 1)}

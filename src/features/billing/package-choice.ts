@@ -11,11 +11,12 @@ export function duplicateDuration(packages: CatalogPackage[], item: Duration) {
 export function firstUnusedDuration(packages: CatalogPackage[], tierId: string, id?: string) {
   return durationPresets.find(days => !duplicateDuration(packages, { id, tier_id: tierId || null, kind: 'days', days, sessions: null })) ?? null;
 }
-export function durationLabel(days: number, t: (key: 'month' | 'months' | 'days' | 'year', values?: Record<string, string>) => string, locale: Locale) {
+export function durationLabel(days: number, t: (key: 'month' | 'months' | 'days' | 'year', values?: Record<string, string | number>, count?: number) => string, locale: Locale) {
   if (days === 30) return t('month');
   if (days === 365) return t('year');
-  const count = (days % 30 === 0 ? days / 30 : days).toLocaleString(locale === 'en' ? 'en-US' : 'ar-EG');
-  return t(days % 30 === 0 ? 'months' : 'days', { n: count, count });
+  const n = days % 30 === 0 ? days / 30 : days;
+  const count = n.toLocaleString(locale === 'en' ? 'en-US' : 'ar-EG');
+  return t(days % 30 === 0 ? 'months' : 'days', { n: count, count }, n);
 }
 export type PricingCatalog = { tiers: Tier[]; packages: CatalogPackage[]; offers: CatalogOffer[] };
 export function pricingBanner(catalog: PricingCatalog, isRenewal: boolean, now: Date) {

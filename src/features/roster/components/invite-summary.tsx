@@ -23,7 +23,7 @@ export function InviteSummary({ input, pkg }: { input: PlayerInvite; pkg?: Invit
     <div className="flex items-center justify-between"><span className="text-sm text-muted">{t('owed')}</span><b className="text-2xl tabular-nums">{money(amount.remaining)}</b></div>
     <div className="border-t border-line pt-card"><h3 className="mb-stack text-xs text-muted">{t('flow')}</h3><div className="flex flex-wrap items-center gap-inline text-xs">
       <span className="glass rounded-full px-stack py-inline">{t('account')}</span>
-      {!!input.formIds?.length && <span className="glass rounded-full px-stack py-inline">{t('fill', { n: formatNumber(input.formIds.length, locale) })}</span>}
+      {!!input.formIds?.length && <span className="glass rounded-full px-stack py-inline">{t('fill', { n: formatNumber(input.formIds.length, locale) }, input.formIds.length)}</span>}
       <span className="glass rounded-full px-stack py-inline">{t('program')}</span>
     </div></div>
   </aside>;

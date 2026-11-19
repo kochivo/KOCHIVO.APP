@@ -26,7 +26,7 @@ export function CheckinList({ playerId, profile, locale }: { playerId: string; p
         </div>
         <div className="flex flex-wrap items-center gap-stack text-xs text-muted">
           {row.weightKg !== null && <span>{t('weight')} {n(row.weightKg, t('kg'))}</span>}
-          <span>{vt('photoCount', { count: formatNumber(row.photoCount ?? row.photos.length, locale) })}</span>
+          <span>{vt('photoCount', { n: row.photoCount ?? row.photos.length, count: formatNumber(row.photoCount ?? row.photos.length, locale) })}</span>
         </div>
         <Disclosure label={vt('open')} className="glass text-sm">
         <dl>{row.waistCm !== null && <FactRow label={t('waist')}>{n(row.waistCm, t('cm'))}</FactRow>}

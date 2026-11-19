@@ -105,7 +105,7 @@ export function CaptainProfileCard({ variant = 'legacy', children }: { variant?:
       {progress && <div className="flex items-end gap-stack">
         <span aria-hidden className="engraved font-display text-stat-large-wide font-extrabold">{formatNumber(progress.daysLeft, locale)}</span>
         <span aria-hidden className="text-xs text-muted">{c('daysRemaining')}</span>
-        <span className="sr-only">{p('daysLeft', { n: formatNumber(progress.daysLeft, locale) })}</span>
+        <span className="sr-only">{p(progress.daysLeft === 0 ? 'daysLeftToday' : 'daysLeft', { n: formatNumber(progress.daysLeft, locale) }, progress.daysLeft)}</span>
       </div>}
       {dates}
       {progress?.percent != null && <ProgressBar thin aria-label={p('subscription')} value={progress.percent} max={100} />}
@@ -119,7 +119,7 @@ export function CaptainProfileCard({ variant = 'legacy', children }: { variant?:
       {dates}
       {progress && progress.percent !== null && <progress aria-label={p('subscription')} value={progress.percent} max={100}
         className="block h-[7px] w-full appearance-none overflow-hidden rounded-full border-0 bg-line [&::-webkit-progress-bar]:bg-line [&::-webkit-progress-value]:rounded-full [&::-webkit-progress-value]:bg-lime [&::-moz-progress-bar]:bg-lime" />}
-      {progress && <p className="text-xs text-muted">{p('daysLeft', { n: formatNumber(progress.daysLeft, locale) })}</p>}
+      {progress && <p className="text-xs text-muted">{p(progress.daysLeft === 0 ? 'daysLeftToday' : 'daysLeft', { n: formatNumber(progress.daysLeft, locale) }, progress.daysLeft)}</p>}
     </section>
     {children}{contact}
   </>;

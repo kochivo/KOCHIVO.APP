@@ -20,7 +20,7 @@ export function PackagePicker({ packages, plan, onPick, onChange }: {
     <div className="grid gap-stack min-[760px]:grid-cols-2">{packages.map(pkg => <label key={pkg.id} className={`press glass flex min-h-24 cursor-pointer items-center gap-stack rounded-[16px] border p-stack hover:bg-ink/5 focus-within:ring-2 focus-within:ring-lime ${plan.packageId === pkg.id ? 'border-ink/40' : 'border-line'}`}>
       <input type="radio" name="package" value={pkg.id} checked={plan.packageId === pkg.id} onChange={() => onPick(pkg)} className="size-5 accent-lime" />
       <span className="min-w-0 flex-1"><span className="block font-bold">{pkg.name}</span>
-        <span className="text-sm text-muted">{pkg.kind === 'days' ? durationLabel(pkg.days, p, locale) : t('durationSessions', { count: formatNumber(pkg.sessions ?? 1, locale) })}</span></span>
+        <span className="text-sm text-muted">{pkg.kind === 'days' ? durationLabel(pkg.days, p, locale) : t('durationSessions', { n: pkg.sessions ?? 1, count: formatNumber(pkg.sessions ?? 1, locale) })}</span></span>
       <span>{t('money', { amount: formatNumber(pkg.price_egp, locale) })}</span>
     </label>)}
     <label className="press glass flex min-h-24 cursor-pointer items-center gap-stack rounded-[16px] border border-dashed border-line p-stack hover:bg-ink/5 focus-within:ring-2 focus-within:ring-lime">

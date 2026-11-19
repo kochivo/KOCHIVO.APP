@@ -20,7 +20,7 @@ export const arStd = {
   "sessionsLeft.two": "تبقت حصتان",
   "sessionsLeft.few": "تبقت {count} حصص",
   "sessionsLeft.other": "تبقت {count} حصة",
-  "daysLeft": "تبقى {count} يوم",
+  endsToday: 'ينتهي اليوم', endsTomorrow: 'ينتهي غدًا', 'daysLeft.one': "تبقى يوم واحد", 'daysLeft.two': "تبقى يومين", 'daysLeft.few': "تبقى {count} أيام", 'daysLeft.many': "تبقى {count} يومًا", 'daysLeft.other': "تبقى {count} يوم",
   "freeze": "جمّد الاشتراك",
   "unfreeze": "ألغِ التجميد",
   "confirm": "هل تريد تغيير حالة التجميد؟",

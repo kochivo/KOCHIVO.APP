@@ -53,7 +53,7 @@ export function InviteContent({ captainFirstName, assessments = [] }: { captainF
         const response = await createPlayerInvite(input);
         if ('error' in response) setError(response.error);
         else { setResult({ code: response.code, input: { ...input, name: input.name.trim() } });
-          toast.success({ title: success('inviteReady', { name: input.name.trim() }), detail: success('package', { name: packages?.find(pkg => pkg.id === input.packageId)?.name ?? success(input.kind === 'sessions' ? 'customSessions' : 'customPackage', { days: input.quantity }) }), icon: 'player' }); }
+          toast.success({ title: success('inviteReady', { name: input.name.trim() }), detail: success('package', { name: packages?.find(pkg => pkg.id === input.packageId)?.name ?? success(input.kind === 'sessions' ? 'customSessions' : 'customPackage', { n: input.quantity, days: input.quantity }) }), icon: 'player' }); }
       } catch { setError(t('failed')); }
     });
   }

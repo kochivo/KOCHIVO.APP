@@ -24,7 +24,7 @@ it('shows the selected conversation, voice preview and unread pill', () => {
   expect(html).toContain('علي');
   expect(html).toContain('رسالة صوتية · 0:18');
   expect(html).toContain('aria-pressed="true"');
-  expect(html).toContain('2 رسائل غير مقروءة');
+  expect(html).toContain('aria-label="رسالتين مش مقروءين"');
   expect(html).toContain('<time');
   expect(html).toContain('bg-surface-raised border-s-lime');
 });
@@ -37,7 +37,8 @@ it('shows voice duration, time and an accessible unread dot on the phone', () =>
   const html = render(h(PhoneConversationList, { rows, at: '2026-11-15T10:00:00Z', onSelect() {} }));
   expect(html).toContain('رسالة صوت 0:24');
   expect(html).toContain('size-2.5 rounded-full bg-lime');
-  expect(html).toContain('2 رسائل غير مقروءة');
+  expect(html).toContain('aria-label="رسالتين مش مقروءين"');
+  expect(html).toContain('محادثة جديدة واحدة');
   expect(html).toContain('dateTime="2026-11-14T10:00:00Z"');
   expect(html).toContain('امبارح');
 });

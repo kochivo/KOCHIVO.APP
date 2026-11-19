@@ -18,7 +18,7 @@ export function PublicPackageCards(props: {
   const preferred = durations.filter(days => packages.some(p => p.days === days && p.tier_id === featured?.id));
   const initial = preferred[Math.floor(preferred.length / 2)] ?? durations[0] ?? 30;
   const options = durations.map(days => ({
-    days, label: t('packageDays', { count: formatNumber(days) }), content: <PublicTierCards {...props} days={days} />,
+    days, label: t('packageDays', { n: days, count: formatNumber(days) }), content: <PublicTierCards {...props} days={days} />,
   }));
   return <section data-section="packages" id="packs" className="public-section">
     <p className="mb-stack text-sm text-lime">{t('packagesTitle')}</p><h2 className="public-heading">{t('packagesHint')}</h2>

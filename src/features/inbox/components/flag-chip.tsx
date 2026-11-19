@@ -10,5 +10,5 @@ export function FlagChip({ flag }: { flag: TriageFlag }) {
   const locale = useLocale();
   const values = Object.fromEntries(Object.entries(flag.values).map(([key, value]) =>
     [key, formatNumber(Math.round(value * 10) / 10, locale)]));
-  return <span className="glass rounded-full px-stack py-inline text-sm text-muted">{t(flag.key, values)}</span>;
+  return <span className="glass rounded-full px-stack py-inline text-sm text-muted">{t(flag.key, values, (flag.values.weeks ?? flag.values.days ?? flag.values.hours))}</span>;
 }

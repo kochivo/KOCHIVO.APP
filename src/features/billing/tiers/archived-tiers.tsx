@@ -23,7 +23,8 @@ export function ArchivedTiers({ tiers, busy, onRestore, onDelete }: {
         <p className="break-words text-sm font-bold text-muted">{tier.name}</p>
         <p className="text-xs text-muted">{t('archivedTierDetails', {
           date: formatTimestampAr(tier.archived_at, { day: 'numeric', month: 'short', year: 'numeric' }, locale),
-          current: formatNumber(tier.current, locale), past: formatNumber(tier.past, locale),
+          current: t('archivedTierSubscribers', { n: tier.current, count: formatNumber(tier.current, locale) }),
+          past: t('archivedTierSubscribers', { n: tier.past, count: formatNumber(tier.past, locale) }),
         })}</p>
       </div>
       <Button variant="secondary" block={false} disabled={busy} onClick={() => onRestore(tier.id)}>{t('restoreTier')}</Button>

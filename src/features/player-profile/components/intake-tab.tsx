@@ -26,7 +26,7 @@ export async function IntakeTab({ intake, today, playerId }: { intake: ProfileIn
       <GlassCard className="space-y-card-gap p-card">
         <h2 className="text-lg font-bold">{t('basics')}</h2>
         <dl className="grid grid-cols-2 gap-card-gap">
-          <Fact label={t('age')}>{t('years', { count: n(ageIn(intake.birthYear, today)) })}</Fact>
+          <Fact label={t('age')}>{t('years', { n: ageIn(intake.birthYear, today), count: n(ageIn(intake.birthYear, today)) })}</Fact>
           <Fact label={t('sex')}>{o(intake.sex)}</Fact>
           <Fact label={t('height')}>{n(intake.heightCm)} {t('cm')}</Fact>
           <Fact label={t('weight')}>{n(intake.weightKg)} {t('kg')}</Fact>
@@ -38,7 +38,7 @@ export async function IntakeTab({ intake, today, playerId }: { intake: ProfileIn
         <h2 className="text-lg font-bold">{t('schedule')}</h2>
         <dl className="grid gap-card-gap">
           <Fact label={t('days')}>{list(trainingDayKeys(intake.trainingDays).map((day) => o(day)))}</Fact>
-          <Fact label={t('sessionLength')}>{t('minutes', { count: n(intake.sessionMinutes) })}</Fact>
+          <Fact label={t('sessionLength')}>{t('minutes', { n: intake.sessionMinutes, count: n(intake.sessionMinutes) })}</Fact>
         </dl>
       </GlassCard>
       <GlassCard className="space-y-card-gap p-card">

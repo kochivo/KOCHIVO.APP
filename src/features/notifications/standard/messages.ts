@@ -17,7 +17,7 @@ export const arStd = {
   form_requested: 'ينتظر الكابتن ردّك على {name}', rank_up: 'ترقّيت إلى رتبة جديدة', rank_up_champion: 'ترقّيت! أصبحت بطلاً',
   rank_up_elite: 'ترقّيت! أصبحت من النخبة', rank_up_legend: 'ترقّيت! أصبحت أسطورة', crown_taken: 'التاج معك. حافظ عليه',
   crown_lost: 'فقدت التاج. استعده', crown_close: 'التاج قريب! التمارين المتبقية: {n}، وتبقّت 3 أيام',
-  crown_close_points: 'التاج قريب! تبقّت لك {gap} درجة', crown_defend: 'حافظ على التاج: تبقّت 3 أيام على نهاية الشهر',
+  'crown_close_points.one': "التاج قريب! تبقّت لك درجة واحدة", 'crown_close_points.two': "التاج قريب! تبقّت لك درجتان", 'crown_close_points.few': "التاج قريب! تبقّت لك {gap} درجات", 'crown_close_points.many': "التاج قريب! تبقّت لك {gap} درجة", 'crown_close_points.other': "التاج قريب! تبقّت لك {gap} درجة", crown_defend: 'حافظ على التاج: تبقّت 3 أيام على نهاية الشهر',
   subscription_expiring: 'ينتهي اشتراك {name} بعد 3 أيام', subscription_expired: 'انتهى اشتراك {name} اليوم',
   subscription_expiring_player: 'ينتهي اشتراكك مع الكابتن {name} بعد 3 أيام',
   subscription_expired_player: 'انتهى اشتراكك اليوم، تواصل مع الكابتن', captain_approved: 'تم تفعيل حسابك، مرحباً بك في KOCHIVO',
@@ -27,5 +27,5 @@ export const arStd = {
   empty: 'لا توجد إشعارات بعد', error: 'تعذّر تحميل الإشعارات. حاول مجدداً', titleWithUnread: 'الإشعارات، توجد إشعارات غير مقروءة', unread: 'غير مقروء', retry: 'حاول مجدداً',
   saveError: 'تعذّر تعليم الإشعار كمقروء. حاول مجدداً', plan_assigned: 'تم تعيين برنامج {name} لك',
   nutrition_updated: 'تم تحديث خطتك الغذائية {name}', player_joined: 'انضم إليك {name}',
-  player_inactive: 'لم يتمرّن {name} منذ 3 أيام أو أكثر', now: 'الآن', minutes: 'منذ {n} دقيقة', hours: 'منذ {n} ساعة', days: 'منذ {n} يوم',
+  player_inactive: 'لم يتمرّن {name} منذ 3 أيام أو أكثر', now: 'الآن', 'minutes.one': "منذ دقيقة واحدة", 'minutes.two': "منذ دقيقتين", 'minutes.few': "منذ {n} دقائق", 'minutes.many': "منذ {n} دقيقة", 'minutes.other': "منذ {n} دقيقة", 'hours.one': "منذ ساعة واحدة", 'hours.two': "منذ ساعتين", 'hours.few': "منذ {n} ساعات", 'hours.many': "منذ {n} ساعة", 'hours.other': "منذ {n} ساعة", 'days.one': "أمس", 'days.two': "منذ يومين", 'days.few': "منذ {n} أيام", 'days.many': "منذ {n} يومًا", 'days.other': "منذ {n} يوم",
 } as const;

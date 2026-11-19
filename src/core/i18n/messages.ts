@@ -17,7 +17,8 @@ type Standard<A extends Dictionary, S extends Partial<Record<keyof A, string>>> 
 type PluralBase<K> = K extends `${infer Base}.other` ? Base : never;
 export type MessageKey<M extends Messages> = Extract<keyof M['ar'], string> | PluralBase<keyof M['ar']>;
 export type Variables = Record<string, string | number>;
-export type Translator<M extends Messages> = (key: MessageKey<M>, vars?: Variables) => string;
+// An explicit count lets callers keep a formatted number in the displayed variables.
+export type Translator<M extends Messages> = (key: MessageKey<M>, vars?: Variables, count?: number) => string;
 
 // Arabic-only plural categories are the sole exception to exact dictionary parity.
 export function defineMessages<const A extends Dictionary, const E extends English<A>,
@@ -31,8 +32,7 @@ export function createT<M extends Messages>(messages: M, locale: Locale, style: 
   const dictionary: Dictionary = locale === 'ar' && style === 'standard' && internationalEnabled()
     ? { ...messages.ar, ...messages.arStd } : messages[locale];
   const plurals = new Intl.PluralRules(intlLocale(locale));
-  return (key, vars = {}) => {
-    const count = vars.n;
+  return (key, vars = {}, count = typeof vars.n === 'number' ? vars.n : undefined) => {
     const template = dictionary[key] ?? (typeof count === 'number'
       ? dictionary[`${key}.${plurals.select(count)}`] ?? dictionary[`${key}.other`]
       : undefined);

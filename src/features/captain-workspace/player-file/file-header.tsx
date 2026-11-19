@@ -32,7 +32,7 @@ export function FileHeader({ playerId, profile, summary, tab, locale, today, unr
   const Back = locale === 'en' ? ArrowLeft : ArrowRight;
   const initial = profile.intake?.weightKg, target = summary.file.facts.targetWeight?.value;
   const goal = initial !== undefined && target != null ? t(target < initial ? 'lose' : target > initial ? 'gain' : 'maintain') : null;
-  const subtitle = [goal, summary.subscription.awaiting_plans_at ? createT(subscriptionMessages, locale)('waiting') : t('days', { count: formatNumber(Math.max(0, daysBetween(today, summary.subscription.access_until)), locale) }), summary.rank ? createT(ranksMessages, locale)(summary.rank) : null].filter(Boolean).join(' · ');
+  const subtitle = [goal, summary.subscription.awaiting_plans_at ? createT(subscriptionMessages, locale)('waiting') : t('days', { n: Math.max(0, daysBetween(today, summary.subscription.access_until)), count: formatNumber(Math.max(0, daysBetween(today, summary.subscription.access_until)), locale) }), summary.rank ? createT(ranksMessages, locale)(summary.rank) : null].filter(Boolean).join(' · ');
   const weight = summary.file.facts.weight?.value;
   const remaining = Math.max(0, daysBetween(today, summary.subscription.access_until));
   const planned = summary.file.facts.trainingDays?.value.length ?? profile.program?.days ?? 0;

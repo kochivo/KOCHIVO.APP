@@ -26,8 +26,8 @@ export function HomeRankCard({ playerId }: { playerId?: string }) {
   const stars = legendStars(data.lifetime);
   const threshold = (MEDAL_RANKS[index]?.threshold ?? 0) + stars * 300;
   const next = nextMedalRank(data.lifetime);
-  const goal = rank === 'legend' ? t('nextStar', { n: number(next.needed), next: number(stars + 1) })
-    : t('next', { n: number(next.needed), tier: t(next.rank) });
+  const goal = rank === 'legend' ? t('nextStar', { n: number(next.needed), next: number(stars + 1) }, next.needed)
+    : t('next', { n: number(next.needed), tier: t(next.rank) }, next.needed);
   const label = stars ? t('legendWithStars', { n: number(stars) }) : t(rank);
   return <Link href="/player/rank" className="press glass flex min-h-12 items-center gap-stack rounded-card px-card py-stack">
     <span aria-hidden className="flex shrink-0 items-center">
@@ -36,7 +36,7 @@ export function HomeRankCard({ playerId }: { playerId?: string }) {
       {index < 6 && <Medal rank={(index + 1) as 1 | 2 | 3 | 4 | 5 | 6} size={24} label="" locked />}
     </span>
     <div className="flex min-w-0 flex-1 flex-col gap-inline">
-      <span className="flex flex-wrap items-baseline gap-inline text-xs text-warn"><b className="text-sm text-ink">{label}</b>{t('points', { n: number(data.lifetime) })}</span>
+      <span className="flex flex-wrap items-baseline gap-inline text-xs text-warn"><b className="text-sm text-ink">{label}</b>{t('points', { n: number(data.lifetime) }, data.lifetime)}</span>
       <ProgressBar thin value={data.lifetime - threshold} max={data.lifetime + next.needed - threshold} aria-label={goal}
         className="[&>div]:bg-warn" />
       <span className="text-micro text-muted">{data.month_position != null && <>{copy('place', { place: number(data.month_position) })} · </>}{goal}</span>

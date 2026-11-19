@@ -20,7 +20,7 @@ export function GeneratedExercise({ row, onSwap }: { row: Exercise; onSwap: () =
   const [details, setDetails] = useState(false);
   const name = (row.library && exerciseName(row.library, locale)) || t('unavailable');
   const n = (value: number) => formatNumber(value, locale);
-  const summary = t('prescription', { sets: n(row.sets), min: n(row.reps_min), max: n(row.reps_max ?? row.reps_min), rest: n(row.rest_seconds) });
+  const summary = t('prescription', { n: row.rest_seconds, sets: n(row.sets), min: n(row.reps_min), max: n(row.reps_max ?? row.reps_min), rest: n(row.rest_seconds) });
   const reasons = row.reasons.filter(reason => reason === 'captain_favorite' || reason.startsWith('injury_safe_') || reason.startsWith('replaced_for_')).slice(0, 2);
   return <article className="glass flex items-center gap-stack rounded-control p-stack">
     {captainWorkspaceEnabled() ? <Button variant="secondary" type="button" className="min-h-12 flex-1 flex-col items-start! space-y-inline text-start" aria-haspopup="dialog" onClick={() => setDetails(true)}>

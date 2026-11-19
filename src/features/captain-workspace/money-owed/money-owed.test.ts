@@ -1,10 +1,27 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { expect, it } from 'vitest';
+import { afterEach, expect, it, vi } from 'vitest';
 import { createT } from '@/core/i18n/messages';
 import type { MoneyOwed } from '@/features/billing/server';
 import { MoneyOwedView } from './money-owed-view';
 import { messages } from './messages';
+
+afterEach(() => vi.unstubAllEnvs());
+
+it.each([
+  ['ar', 'egyptian', ['جنيه مستني من لاعب واحد', 'جنيه مستني من لاعبين', 'جنيه مستني من 3 لاعبين', 'جنيه مستني من 11 لاعب', 'جنيه مستني من 100 لاعب'],
+    ['خلص امبارح', 'خلص من يومين', 'خلص من 3 أيام', 'خلص من 11 يوم', 'خلص من 100 يوم']],
+  ['ar', 'standard', ['جنيه مستحق من لاعب واحد', 'جنيه مستحق من لاعبين', 'جنيه مستحق من 3 لاعبين', 'جنيه مستحق من 11 لاعبًا', 'جنيه مستحق من 100 لاعب'],
+    ['انتهى أمس', 'انتهى منذ يومين', 'انتهى منذ 3 أيام', 'انتهى منذ 11 يومًا', 'انتهى منذ 100 يوم']],
+  ['en', 'egyptian', ['EGP waiting from 1 player', 'EGP waiting from 2 players', 'EGP waiting from 3 players', 'EGP waiting from 11 players', 'EGP waiting from 100 players'],
+    ['Expired yesterday', 'Expired 2 days ago', 'Expired 3 days ago', 'Expired 11 days ago', 'Expired 100 days ago']],
+] as const)('inflects money owed and expiry in %s (%s)', (locale, style, total, expired) => {
+  vi.stubEnv('NEXT_PUBLIC_INTERNATIONAL', '1');
+  const t = createT(messages, locale, style);
+  const counts = [1, 2, 3, 11, 100];
+  expect(counts.map(n => t('total', { n, count: n }))).toEqual(total);
+  expect(counts.map(n => t('expired', { n, count: n }))).toEqual(expired);
+});
 
 const data: MoneyOwed = { total: 2000, count: 4, unpriced: 1, rows: [
   { playerId: 'a', name: 'Ali', reason: 'expired', amount: 1200, since: '2026-11-01', days: 3 },

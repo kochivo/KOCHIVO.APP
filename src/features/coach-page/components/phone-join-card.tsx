@@ -12,8 +12,8 @@ export function PhoneJoinCard({ row, relative, pending, onResolve }: {
   onResolve: (id: string, status: 'accepted' | 'declined') => void;
 }) {
   const t = useT(joinPhoneMessages), join = useT(messages), locale = useLocale();
-  const days = row.package_days == null ? null : join('packageDays', { count: formatNumber(row.package_days, locale) });
-  const sessions = row.package_sessions == null ? null : t('sessions', { n: formatNumber(row.package_sessions, locale) });
+  const days = row.package_days == null ? null : join('packageDays', { n: row.package_days, count: formatNumber(row.package_days, locale) });
+  const sessions = row.package_sessions == null ? null : t('sessions', { n: formatNumber(row.package_sessions, locale) }, row.package_sessions);
   return <li data-join-row={row.id} tabIndex={-1} aria-busy={pending} className="glass flex min-w-0 flex-col gap-card-gap rounded-card p-card md:hidden">
     <div className="flex items-center gap-card-gap">
       <span aria-hidden className="grid size-13 shrink-0 place-items-center rounded-full border-2 border-info bg-surface-raised text-title font-bold">{row.full_name.trim().slice(0, 1)}</span>

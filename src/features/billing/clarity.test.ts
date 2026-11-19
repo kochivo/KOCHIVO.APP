@@ -16,12 +16,13 @@ afterEach(() => vi.unstubAllEnvs());
 it.each([1, 2, 5, 11, 100])('pluralizes player limits and overdue counts for %s', n => {
   vi.stubEnv('NEXT_PUBLIC_INTERNATIONAL', '1');
   for (const style of ['egyptian', 'standard'] as const) {
-    const unit = n >= 2 && n <= 10 ? 'لاعبين' : 'لاعب';
-    expect(createT(messages, 'ar', style)('usage', { used: 1, n, count: n })).toBe(`1 من ${n} ${unit}`);
-    expect(createT(messages, 'ar', style)('price', { price: 0, n, count: n })).toContain(`${n} ${unit}`);
-    expect(createT(workspace, 'ar', style)('usage', { used: 1, n, limit: n })).toBe(`1 من ${n} ${unit}`);
-    expect(createT(workspace, 'ar', style)('usageTail', { n, limit: n })).toBe(`من ${n} ${unit}`);
-    expect(createT(payments, 'ar', style)('summary', { n, count: n, paid: 0, due: 0, ending: 0 })).toContain(`من ${n} ${unit} ·`);
+    const players = n === 1 ? 'لاعب واحد' : n === 2 ? 'لاعبين'
+      : `${n} ${n <= 10 ? 'لاعبين' : n === 11 && style === 'standard' ? 'لاعبًا' : 'لاعب'}`;
+    expect(createT(messages, 'ar', style)('usage', { used: 1, n, count: n })).toBe(`1 من ${players}`);
+    expect(createT(messages, 'ar', style)('price', { price: 0, n, count: n })).toContain(`${players}`);
+    expect(createT(workspace, 'ar', style)('usage', { used: 1, n, limit: n })).toBe(`1 من ${players}`);
+    expect(createT(workspace, 'ar', style)('usageTail', { n, limit: n })).toBe(`من ${players}`);
+    expect(createT(payments, 'ar', style)('summary', { n, count: n, paid: 0, due: 0, ending: 0 })).toContain(`من ${players} ·`);
   }
   const unit = n === 1 ? 'player' : 'players';
   expect(createT(workspace, 'en')('usageTail', { n, limit: n })).toBe(`of ${n} ${unit}`);

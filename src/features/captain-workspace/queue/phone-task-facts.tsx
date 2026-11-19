@@ -30,7 +30,7 @@ export function PhoneTaskFacts({ item, triage, now }: {
   if (item.waist_cm !== null) facts.push({ label: t('waist'), value: number(item.waist_cm) });
   if (sleep.length >= 3) {
     const average = sleep.reduce((sum, hours) => sum + hours, 0) / sleep.length;
-    facts.push({ label: t('sleep'), value: t('hours', { value: number(Number(average.toFixed(1))) }) });
+    facts.push({ label: t('sleep'), value: t('hours', { n: Number(average.toFixed(1)), value: number(Number(average.toFixed(1))) }) });
   }
   return <StatStrip items={facts} className={cn('recessed [&>div]:px-stack [&_p>span:first-child]:text-title',
     facts.length === 3 && 'max-sm:grid-cols-3!')} />;

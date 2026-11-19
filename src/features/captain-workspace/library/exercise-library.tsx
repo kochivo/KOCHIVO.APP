@@ -61,7 +61,7 @@ export function ExerciseLibrary() {
       {enabled && <Link href="/captain" aria-label={t('returnToCaptain')} className={buttonClass({ variant: 'secondary', block: false, className: 'min-w-12 shrink-0 px-stack md:hidden' })}><RowChevron className="rotate-180" /></Link>}
       <div className={enabled ? 'me-auto max-md:min-w-0 max-md:[&>*]:truncate' : 'me-auto'}>
         <h1 className="text-h font-bold">{enabled ? <><span className="max-md:hidden">{t('title')}</span><span className="md:hidden">{t('shortTitle')}</span></> : t('title')}</h1>
-        {total !== undefined && <p className="text-xs text-muted">{t('count', { count: total.toLocaleString('en') })}</p>}
+        {total !== undefined && <p className="text-xs text-muted">{t('count', { n: total, count: total.toLocaleString('en') })}</p>}
       </div>
       <Link id="new-library-exercise" href="/captain/library/exercises/new" aria-label={enabled ? t('new') : undefined}
         className={buttonClass({ variant: 'primary', block: false, className: `inline-flex min-h-12 items-center gap-inline px-page-x font-semibold ${enabled ? 'max-md:min-w-12 max-md:shrink-0 max-md:px-stack!' : ''}` })}>

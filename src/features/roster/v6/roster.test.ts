@@ -48,7 +48,7 @@ it('renders real player data and urgent status in both views, and weekly dots in
 });
 it('counts trained players and applies the same roster search at both widths', () => {
   const html = render();
-  expect(html).toContain('1 لاعب · 1 اتمرنوا الأسبوع ده');
+  expect(html).toContain('لاعب واحد · 1 اتمرنوا الأسبوع ده');
   expect(html).toContain('type="search"');
   state.search = '  aLI  ';
   expect(render().match(/href="\/captain\/players\/p"/g)).toHaveLength(2);

@@ -17,13 +17,13 @@ export function MoneyOwedView({ data, mode, playerId, locale, t, onSelect, rowAc
   const number = (value: number) => formatNumber(value, locale);
   const date = (value: string) => formatDateAr(value, { day: 'numeric', month: 'short', year: 'numeric' }, locale);
   const description = (row: MoneyOwedRow) => row.reason === 'soon'
-    ? t(row.days === 0 ? 'today' : row.days === 1 ? 'tomorrow' : 'soon', { n: number(row.days) })
-    : t(row.reason, { n: number(row.days), date: date(row.since) });
-  const summary = <StatStrip items={[{ label: t('total', { n: number(data.count) }), tone: 'warn',
+    ? t(row.days === 0 ? 'today' : row.days === 1 ? 'tomorrow' : 'soon', { n: row.days, count: number(row.days) })
+    : t(row.reason === 'expired' && row.days === 0 ? 'expiredToday' : row.reason, { n: row.days, count: number(row.days), date: date(row.since) });
+  const summary = <StatStrip items={[{ label: t('total', { n: data.count, count: number(data.count) }), tone: 'warn',
     value: <Link prefetch={onSelect ? false : undefined} href={onSelect ? '#/captain/billing' : '/captain/billing'}
       onClick={onSelect ? event => { event.preventDefault(); onSelect('/captain/billing'); } : undefined}
       className="inline-flex min-h-12 items-center hover:underline">{number(data.total)}</Link>,
-    note: data.unpriced > 0 ? t('unknown', { n: number(data.unpriced) }) : undefined,
+    note: data.unpriced > 0 ? t('unknown', { n: data.unpriced, count: number(data.unpriced) }) : undefined,
   }]} />;
   if (mode === 'home') return summary;
   const rows = mode === 'player' ? data.rows.filter(row => row.playerId === playerId) : data.rows;

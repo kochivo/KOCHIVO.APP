@@ -15,7 +15,7 @@ export function QueueRow({ row, locale, onReview, flags = [] }: { row: Row; loca
       <span key={change.key} className={`rounded-full px-stack py-inline text-xs ${change.style === 'danger' ? 'bg-danger-soft text-danger' : change.style === 'warn' ? 'bg-warn-soft text-warn' : 'glass text-muted'}`}>
         {change.delta === undefined ? t(change.key) : <bdi dir="ltr">{t(change.key, { value: `${change.delta > 0 ? '+' : ''}${formatNumber(change.delta, locale)}` })}</bdi>}
       </span>)}{flags.slice(0, Math.max(0, 3 - row.changes.length)).map(flag => <FlagChip key={flag.key} flag={flag} />)}</div>
-    <p className={`text-sm tabular-nums ${row.late ? 'text-warn' : 'text-muted'}`}>{t('hours', { value: formatNumber(Math.floor(row.ageHours), locale) })}</p>
+    <p className={`text-sm tabular-nums ${row.late ? 'text-warn' : 'text-muted'}`}>{t('hours', { n: Math.floor(row.ageHours), value: formatNumber(Math.floor(row.ageHours), locale) })}</p>
     {row.item.kind === 'request' ? <Link href={`/${locale}/captain/players/${row.player.id}/programs?view=forms&requestId=${row.item.id}`} className="flex min-h-12 items-center rounded-control bg-lime-soft px-page-x font-bold text-lime">{t('review')}</Link> :
       row.kind === 'renewal' ? <Link href={`/captain/players/${row.player.id}`} className="flex min-h-12 items-center rounded-control bg-lime-soft px-page-x font-bold text-lime">{t('review')}</Link> :
       <button id={`queue-${row.kind}-${row.item.id}`} onClick={onReview} className="min-h-12 rounded-control bg-lime-soft px-page-x font-bold text-lime">{t('review')}</button>}

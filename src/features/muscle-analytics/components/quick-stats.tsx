@@ -12,7 +12,7 @@ export function QuickStats({ week, readiness }: { week: VolumeWeek; readiness: n
   const items = [
     { label: t('weeklySets'), value: stats.total, detail: t('legend'), Icon: Layers },
     { label: t('mostWorked'), value: stats.mostWorked ? t(`muscle.${stats.mostWorked.muscle}`) : t('noRegions'),
-      detail: stats.mostWorked ? t('sets', { sets: stats.mostWorked.sets }) : t('emptyWeek'), Icon: Trophy },
+      detail: stats.mostWorked ? t('sets', { n: stats.mostWorked.sets, sets: stats.mostWorked.sets }) : t('emptyWeek'), Icon: Trophy },
     { label: t('recovery'), value: t(stats.recovery), detail: t(readiness === null ? 'volumeRecovery' : 'dailyRecovery'), Icon: Activity },
   ];
   return <dl className="grid grid-cols-3 gap-inline md:grid-cols-1 md:gap-stack">

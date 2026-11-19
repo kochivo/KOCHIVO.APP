@@ -21,6 +21,7 @@ export function PlayerRow({ player, today, meta, activity, mobile = false }: {
   const n = (value: number) => formatNumber(value, locale);
   const days = Math.max(0, daysBetween(today, player.accessUntil));
   const status = playerStatus(player, today, activity?.video);
+  const statusKey = status.key === 'renewal' && status.count === 0 ? 'daysToday' : status.key === 'good' ? 'okay' : status.key;
   const goal = meta && meta.target !== null ? t(meta.target < meta.weight ? 'lose' : meta.target > meta.weight ? 'gain' : 'maintain') : null;
   const avatarClass = `shrink-0 ${mobile ? 'size-11 rounded-full text-title' : 'size-[38px] rounded-xl text-sm'}`;
   const avatar = player.avatarUrl ? <Image src={player.avatarUrl} alt="" width={42} height={42} unoptimized
@@ -29,11 +30,12 @@ export function PlayerRow({ player, today, meta, activity, mobile = false }: {
   const pill = <span className={`inline-flex h-6 shrink-0 items-center whitespace-nowrap rounded-full border px-stack text-micro font-medium ${
     status.tone === 'warn' ? 'border-warn/20 bg-warn/10 text-warn' : status.tone === 'calm' ? 'border-calm/20 bg-calm/10 text-calm' :
       status.tone === 'lime' ? 'border-lime/20 bg-lime/10 text-lime' : 'border-line bg-ink/5 text-muted'}`}>
-    {t(status.key === 'good' ? 'okay' : status.key, { n: status.count, count: n(status.count) })}</span>;
+    {t(statusKey, { n: status.count, count: n(status.count) })}</span>;
   const dots = activity ? <WeekDots today={player.playerToday ?? today} startedOn={player.startedOn} activity={activity} /> : null;
   const href = `/captain/players/${player.playerId}`;
+  const subscriptionKey = status.key === 'expired' ? 'expired' : days === 0 && !player.frozenAt ? 'daysToday' : 'days';
   const detail = status.key === 'absent' ? t('absent', { n: status.count, count: n(status.count) }) :
-    player.awaitingPlansAt ? t('waitingForPlans') : status.key === 'needsProgram' ? t('needsProgram') : t('days', { n: days, count: n(days) });
+    player.awaitingPlansAt ? t('waitingForPlans') : status.key === 'needsProgram' ? t('needsProgram') : t(subscriptionKey, { n: days, count: n(days) });
   if (mobile) return <div className="border-t border-line-soft first:border-0">
     <Link href={href} prefetch={false} className="press flex min-h-16 items-center gap-stack px-card text-start hover:bg-ink/5 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-lime">
     {avatar}<div className="min-w-0 flex-1"><b className="block truncate text-sm">{player.fullName}</b>

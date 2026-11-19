@@ -29,7 +29,7 @@ export function SetControls({ state, secondary = false }: { state: ReturnType<ty
     <div ref={repsRef} tabIndex={-1} role="group" aria-label={t('reps')}
       aria-describedby={repsInvalid ? 'set-error' : undefined} className={repsInvalid ? 'rounded-card ring-2 ring-danger' : undefined}>
       <Stepper format={value => formatNumber(value, locale)} label={t('reps')} value={state.reps} step={1} min={0} onChange={state.setReps}
-        hint={state.performance?.reps != null ? t('lastTimeReps', { value: formatNumber(state.performance.reps, locale) }) : undefined} />
+        hint={state.performance?.reps != null ? t('lastTimeReps', { n: state.performance.reps, value: formatNumber(state.performance.reps, locale) }) : undefined} />
     </div>
     {state.invalid && <p id="set-error" role="alert" className="text-danger">{t(issue === 'reps' ? 'enterReps' : 'enterWeightAndReps')}</p>}
     <Button variant={secondary ? 'secondary' : 'primary'} size="lg" className="min-h-17 w-full px-page-x text-xl" disabled={state.disabled || state.typedWeightInvalid || state.typedRepsInvalid} onClick={() => void state.complete()}>

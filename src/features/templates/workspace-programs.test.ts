@@ -69,6 +69,6 @@ describe('program weekday markers', () => {
     expect(html).toContain('grid-cols-7');
     expect(html).toMatch(/class="[^"]*\smd:hidden"/);
     expect(html).toContain('max-md:hidden');
-    expect(html).toMatch(/ · [7٧] تمرين/);
+    expect(html).toMatch(/ · [7٧] تمارين/);
   });
 });

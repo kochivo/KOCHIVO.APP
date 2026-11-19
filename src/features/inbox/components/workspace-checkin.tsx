@@ -18,7 +18,7 @@ export function WorkspaceCheckin({ item, inputs, now }: { item: Extract<InboxIte
     <WorkspaceKpis item={item} inputs={inputs} />
     <dl className="px-page-x">
       <div className="flex justify-between gap-stack py-stack text-row"><dt className="text-muted">{t('sleep')}</dt>
-        <dd className={averages.sleep !== null && averages.sleep < 6 ? 'text-warn' : ''}>{averages.sleep === null ? t('dash') : t('hours', { value: formatNumber(Math.round(averages.sleep * 10) / 10, locale) })}</dd></div>
+        <dd className={averages.sleep !== null && averages.sleep < 6 ? 'text-warn' : ''}>{averages.sleep === null ? t('dash') : t('hours', { n: Math.round(averages.sleep * 10) / 10, value: formatNumber(Math.round(averages.sleep * 10) / 10, locale) })}</dd></div>
       <div className="flex justify-between gap-stack border-t border-line-soft py-stack text-row"><dt className="text-muted">{t('sorenessAnswer')}</dt>
         <dd className={averages.soreness !== null && averages.soreness >= 4 ? 'text-warn' : ''}>{averages.soreness === null ? t('dash') : formatNumber(Math.round(averages.soreness * 10) / 10, locale)}</dd></div>
       <div className="flex justify-between gap-stack border-t border-line-soft py-stack text-row"><dt className="shrink-0 text-muted">{t('noteAnswer')}</dt>

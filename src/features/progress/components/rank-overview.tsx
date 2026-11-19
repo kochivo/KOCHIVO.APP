@@ -25,7 +25,7 @@ export function RankOverview() {
   return <Link href="/player/rank" className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-16 items-center gap-stack p-card" })}>
     <Medal rank={MEDAL_RANKS.findIndex(entry => entry.rank === rank) as 0 | 1 | 2 | 3 | 4 | 5 | 6} size={32} label={ranks(rank)} />
     <div className="min-w-0 flex-1"><p className="text-sm">{ranks(rank)}</p>
-      <p className="mt-inline text-xs text-faint">{t('nextRank', { points: formatNumber(next.needed, locale), tier: ranks(next.rank) })}</p></div>
+      <p className="mt-inline text-xs text-faint">{t('nextRank', { n: next.needed, points: formatNumber(next.needed, locale), tier: ranks(next.rank) })}</p></div>
     <ChevronLeft aria-hidden className="size-4 text-faint ltr:rotate-180" />
   </Link>;
 }

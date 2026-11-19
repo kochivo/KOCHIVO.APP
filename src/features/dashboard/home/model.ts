@@ -17,7 +17,7 @@ export function greetingPeriod(now: Date, timezone: string): 'morning' | 'evenin
 }
 export function summaryLine(counts: { replies: number; unpaid: number; ending: number }, t: TranslateSummary) {
   const parts = ([['replies', 'summaryReplies'], ['unpaid', 'summaryUnpaid'], ['ending', 'summaryEnding']] as const)
-    .flatMap(([key, message]) => counts[key] > 0 ? [t(message, { count: counts[key] })] : []);
+    .flatMap(([key, message]) => counts[key] > 0 ? [t(message, { n: counts[key], count: counts[key] })] : []);
   return parts.length ? t('summaryPrefix') + parts.join(t('summaryJoin')) : '';
 }
 export function endingPlayers(players: RosterPlayer[], now: Date, timezone: string) {

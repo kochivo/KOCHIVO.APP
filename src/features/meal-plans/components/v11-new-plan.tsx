@@ -47,7 +47,10 @@ export function V11NewPlan({ plans }: { plans?: MealLibraryPlan[] }) {
   return <>
     {titleTarget && createPortal(<>
       <h1 className="text-base font-semibold max-md:hidden">{t('plans')}</h1>
-      {plans && <p className="text-xs text-muted max-md:hidden">{t('librarySummary', { plans: plans.length, players: playerCount })}</p>}
+      {plans && <p className="text-xs text-muted max-md:hidden">{t('librarySummary', {
+        plans: t('librarySummaryPlans', { n: plans.length, plans: plans.length }),
+        players: t('librarySummaryPlayers', { n: playerCount, players: playerCount }),
+      })}</p>}
       <div className="flex items-center gap-stack md:hidden">
         <Link href="/captain" aria-label={t('back')} className={buttonClass({ variant: 'secondary', block: false, className: 'min-w-12 shrink-0 px-stack' })}><RowChevron className="rotate-180" /></Link>
         <div className="min-w-0"><h1 className="text-md font-bold">{t('plans')}</h1>

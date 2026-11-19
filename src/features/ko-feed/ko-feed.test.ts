@@ -136,7 +136,9 @@ it('counts only urgent tasks and translates the badge announcement', () => {
   expect(urgentCount([])).toBe(0);
   const rows = [item({ kind: 'inactive', severity: 'urgent' }), item({ kind: 'no_program', severity: 'generate' })];
   expect(urgentCount(rows)).toBe(1);
-  for (const locale of ['ar', 'en'] as const) expect(createT(messages, locale)('badge', { count: urgentCount(rows) })).toContain('1');
+  const n = urgentCount(rows);
+  expect(createT(messages, 'ar')('badge', { n, count: n })).toContain('مهمة مستعجلة واحدة');
+  expect(createT(messages, 'en')('badge', { n, count: n })).toContain('1 urgent task');
 });
 
 it('shows at most five cards initially', () => {

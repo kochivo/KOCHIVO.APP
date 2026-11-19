@@ -34,7 +34,7 @@ export function WorkspaceBillingPhonePlayer({ row, today, onOpen }: {
         : player.awaitingPlansAt ? finance('waitingForPlans')
           : usedUp ? payment('sessionsEnded')
             : !hasPackage ? workspace('noPackage')
-              : ending ? t('endingIn', { count: number(days) })
+              : ending ? t(days === 0 ? 'endingToday' : 'endingIn', { n: days, count: number(days) })
                 : paidUp || paid > 0 ? [t('paidAmount', { amount: number(paid) }), method === 'unset' ? null : methodT(method)].filter(Boolean).join(' · ')
                   : workspace('unpaid');
   const usage = usedUp && player.due > 0 && !player.pending && !player.frozenAt ? payment('sessionsEnded') : null;

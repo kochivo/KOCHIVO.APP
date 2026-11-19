@@ -75,7 +75,7 @@ export async function deleteLibraryFood(id: string): Promise<ActionResult<void>>
   ]);
   if (usage.error || alternatives.error) return fail(t('error'));
   const count = (usage.count ?? 0) + (alternatives.count ?? 0);
-  if (count) return fail(t('blocked', { count }));
+  if (count) return fail(t('blocked', { n: count, count }));
   const deleted = await deleteCustomFood(id, true);
   return deleted.ok ? ok(undefined) : deleted;
 }

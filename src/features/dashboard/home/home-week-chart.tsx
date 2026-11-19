@@ -21,7 +21,7 @@ export async function HomeWeekChart({ sessions, today }: { sessions: { date: str
           const label = t(days[index] ?? 'saturday');
           const count = formatNumber(day.count, locale);
           return <li key={day.date} aria-current={current ? 'date' : undefined} className="min-w-0 text-center">
-            <span className="sr-only">{t('chartDay', { day: label, count })}</span>
+            <span className="sr-only">{t('chartDay', { n: day.count, day: label, count })}</span>
             <div aria-hidden="true" className="flex h-[110px] flex-col items-center justify-end gap-inline">
               {!future && <span className={`font-display text-micro font-bold tabular-nums ${current ? 'text-lime' : 'text-muted'}`}>{count}</span>}
               <span className={`block w-full max-w-[26px] rounded-md ${future ? 'bg-line-soft' : current ? 'bg-lime' : 'bg-lime/35'}`}
@@ -39,7 +39,7 @@ export async function HomeWeekChart({ sessions, today }: { sessions: { date: str
     <header className="mb-stack flex items-center gap-inline"><h2 className="text-md font-semibold">{t('teamWorkouts')}</h2><span className="ms-auto text-xs text-muted">{t('thisWeek')}</span></header>
     <div role="img" aria-label={t('teamWorkouts')} className="flex h-[110px] items-end gap-inline px-inline pt-inline">{chart.map((day, index) =>
       <div key={day.date} className={`min-w-0 flex-1 rounded-t-md rounded-b-[3px] ${day.passed ? 'bg-linear-to-b from-lime to-lime/75' : 'bg-surface-raised'}`}
-        style={{ height: `${day.count / max * 100}%` }}><span className="sr-only">{t('chartDay', { day: t(days[index] ?? 'saturday'), count: formatNumber(day.count, locale) })}</span></div>)}</div>
+        style={{ height: `${day.count / max * 100}%` }}><span className="sr-only">{t('chartDay', { n: day.count, day: t(days[index] ?? 'saturday'), count: formatNumber(day.count, locale) })}</span></div>)}</div>
     <div aria-hidden className="flex gap-inline px-inline pt-inline text-xs text-faint">{days.map(day => <span key={day} className="min-w-0 flex-1 text-center">{t(day)}</span>)}</div>
     {!chart.some(day => day.count) && <p className="mt-stack text-center text-xs text-muted">{t('emptyChart')}</p>}
   </section>;

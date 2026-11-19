@@ -52,7 +52,7 @@ export function CaptainMoreSheet({ active, counts, captain, plan, bell, tools, o
         : <span aria-hidden className="grid size-[52px] shrink-0 place-items-center rounded-full bg-surface-raised text-title font-bold ring-2 ring-lime">{captain?.name.slice(0, 1)}</span>}
       <div className="min-w-0 flex-1">
         <p className="truncate text-md font-bold">{captain?.name ?? t('settingsAccount')}</p>
-        <p className="text-xs text-muted">{plan && planName ? phone('usage', { plan: planName, used: formatNumber(plan.used, locale), limit: formatNumber(plan.limit, locale) }) : t('unavailable')}</p>
+        <p className="text-xs text-muted">{plan && planName ? phone('usage', { n: plan.limit, plan: planName, used: formatNumber(plan.used, locale), limit: formatNumber(plan.limit, locale) }) : t('unavailable')}</p>
       </div>
       <ChevronLeft className="dir-icon size-4 shrink-0 text-muted" aria-hidden />
     </Link>

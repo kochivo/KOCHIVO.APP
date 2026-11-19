@@ -17,8 +17,8 @@ export function WorkspaceJoinCard({ row, now, phone, pending, onResolve }: {
   row: JoinRequestRow; now: number; phone?: boolean; pending?: boolean; onResolve: (id: string, status: 'accepted' | 'declined') => void;
 }) {
   const t = useT(messages), pack = useT(joinPhoneMessages), locale = useLocale();
-  const days = row.package_days == null ? null : t('packageDays', { count: formatNumber(row.package_days, locale) });
-  const sessions = row.package_sessions == null ? null : pack('sessions', { n: formatNumber(row.package_sessions, locale) });
+  const days = row.package_days == null ? null : t('packageDays', { n: row.package_days, count: formatNumber(row.package_days, locale) });
+  const sessions = row.package_sessions == null ? null : pack('sessions', { n: formatNumber(row.package_sessions, locale) }, row.package_sessions);
   const elapsed = row.created_at ? Math.max(0, now - Date.parse(row.created_at)) : NaN;
   const unit = elapsed >= 86400000 ? 'day' : elapsed >= 3600000 ? 'hour' : 'minute';
   const divisor = unit === 'day' ? 86400000 : unit === 'hour' ? 3600000 : 60000;

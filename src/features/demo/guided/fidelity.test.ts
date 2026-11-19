@@ -28,7 +28,7 @@ it('renders the real home hero, the four-number strip and money owed from reduce
   expect(html).toContain('4 مهام');
   const updated = render(createElement(CaptainHome, { ...props(), state: { ...props().state, paid: true, renewed: true } }));
   expect(updated).toContain('>500</a>');
-  expect(updated).toContain('2 مهام');
+  expect(updated).toContain('مهمتين');
   expect(updated).not.toContain('>1,500</a>');
 });
 it('renders production set rows with logged sets, editable inputs and the pulse source', () => {

@@ -45,9 +45,11 @@ export function WorkspaceLeaderboard({ locale, board }: ComponentProps<typeof Le
   const active = board.month === current ? board : previous;
   const rows = active?.rows && rankingRows(active.rows, allTime);
   const leader = rows?.find(row => (allTime ? row.lifetime : row.monthly) > 0);
-  const subtitle = board.now ? copy('monthSummary', {
+  const daysLeft = board.now ? daysBetween(localDate(board.now, zone), next) - 1 : 0;
+  const subtitle = board.now ? copy(daysLeft === 0 ? 'monthSummaryToday' : 'monthSummary', {
+    n: daysLeft,
     month: formatDateAr(current, { month: 'long' }, locale),
-    days: formatNumber(daysBetween(localDate(board.now, zone), next) - 1, locale),
+    days: formatNumber(daysLeft, locale),
   }) : undefined;
   const options = [{ value: 'thisMonth', label: t('thisMonth') }, { value: 'allTime', label: t('allTime') }] as const;
   const period = {

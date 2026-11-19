@@ -18,11 +18,11 @@ export function RankHero({ lifetime, weekly }: { lifetime: number; holdsCrown?: 
   const stars = legendStars(lifetime);
   const index = MEDAL_RANKS.findIndex(entry => entry.rank === rank) as MedalMetal;
   const threshold = rank === 'legend' ? 900 + stars * 300 : MEDAL_RANKS[index]?.threshold ?? 0;
-  const label = rank === 'legend' ? t('nextStar', { n: formatNumber(next.needed, locale), next: formatNumber(stars + 1, locale) })
-    : t('next', { n: formatNumber(next.needed, locale), tier: t(next.rank) });
+  const label = rank === 'legend' ? t('nextStar', { n: formatNumber(next.needed, locale), next: formatNumber(stars + 1, locale) }, next.needed)
+    : t('next', { n: formatNumber(next.needed, locale), tier: t(next.rank) }, next.needed);
   const estimate = timeEstimate(next.needed, weekly);
   const estimateLabel = t('estimate', { next: label, time: estimate
-    ? t(estimate.key, { n: formatNumber(estimate.n, locale) }) : t('moreHistoryForEstimate') });
+    ? t(estimate.key, { n: formatNumber(estimate.n, locale) }, estimate.n) : t('moreHistoryForEstimate') });
   const refined = captainWorkspaceEnabled();
   const rankLabel = stars ? t('legendWithStars', { n: formatNumber(stars, locale) }) : t(rank);
   if (refined) return <section data-rank-section="hero" className="glass-strong cut-corner space-y-stack rounded-card border-warn/30 bg-warn-soft p-card text-center">
@@ -39,7 +39,7 @@ export function RankHero({ lifetime, weekly }: { lifetime: number; holdsCrown?: 
       <Medal rank={index} size={96} label={rankLabel} />
       <div className="min-w-0 flex-1 space-y-inline">
         <h2 className="font-display text-h font-extrabold">{rankLabel}</h2>
-        <p className="text-sm text-muted">{t('points', { n: formatNumber(lifetime, locale) })}</p>
+        <p className="text-sm text-muted">{t('points', { n: formatNumber(lifetime, locale) }, lifetime)}</p>
         <ProgressBar thin={refined} value={lifetime - threshold} max={lifetime + next.needed - threshold} aria-label={label} />
         <p className="text-xs text-muted">{estimateLabel}</p>
       </div>

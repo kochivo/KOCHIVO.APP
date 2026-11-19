@@ -12,5 +12,9 @@ export function balanceLabel(balance: PlayerBalance, today: string, locale: Loca
   if (balance.awaiting_plans_at) return t('waitingForPlans');
   if (balance.sessions_left !== null) return t('sessionsLeft', { n: balance.sessions_left, count: formatNumber(balance.sessions_left, locale) });
   const date = balance.frozen_at ? localDate(new Date(balance.frozen_at), timezone) : today;
-  return t('daysLeft', { count: formatNumber(Math.max(0, daysBetween(date, balance.access_until)), locale) });
+  const remaining = daysBetween(date, balance.access_until);
+  if (!balance.frozen_at && remaining === 0) return t('endsToday');
+  if (!balance.frozen_at && remaining === 1) return t('endsTomorrow');
+  const days = Math.max(0, remaining);
+  return t('daysLeft', { n: days, count: formatNumber(days, locale) });
 }

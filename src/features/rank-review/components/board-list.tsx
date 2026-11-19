@@ -18,7 +18,7 @@ export function BoardList({ rows, locale }: { rows: LeaderboardRow[]; locale: Lo
         <span className="font-bold">{row.monthly > 0 ? formatNumber(row.position, locale) : t('notYet')}</span>
         <Medal rank={MEDAL_RANKS.findIndex(entry => entry.rank === medalRank(row.lifetime)) as 0 | 1 | 2 | 3 | 4 | 5 | 6} size={36} label={createT(ranksMessages, locale)(medalRank(row.lifetime))} />
         <div className="min-w-0 flex-1"><p className="break-words font-bold">{row.display_name}</p>
-          <p className="text-sm text-muted">{t('lifetime', { count: formatNumber(row.lifetime, locale) })}</p></div>
+          <p className="text-sm text-muted">{t('lifetime', { n: row.lifetime, count: formatNumber(row.lifetime, locale) })}</p></div>
         <div className="shrink-0 text-end text-sm tabular-nums">
           <p className="font-bold">{t('percent', { n: formatNumber(row.adherence, locale) })}</p>
           <p className="text-muted">{t('workouts', {

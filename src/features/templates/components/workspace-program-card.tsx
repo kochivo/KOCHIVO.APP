@@ -27,7 +27,7 @@ export function WorkspaceProgramCard({ template, busy, error, onOpen, onCopyAndE
         <button type="button" disabled={busy} onClick={onOpen} className={`${clickableClass} flex min-h-12 w-full items-center gap-card-gap text-start`}>
           <span className="cut-corner-sm grid size-11 shrink-0 place-items-center bg-lime-soft text-lime"><KoTemplate aria-hidden className="size-5" /></span>
           <span className="min-w-0 flex-1"><b className="block break-words text-sm">{starterText(template.title, locale)}</b>
-            <span className="block text-xs text-muted">{days}{template.exerciseCount !== undefined && <> · {phone('exercises', { count: formatNumber(template.exerciseCount, locale) })}</>}</span>
+            <span className="block text-xs text-muted">{days}{template.exerciseCount !== undefined && <> · {phone('exercises', { n: template.exerciseCount, count: formatNumber(template.exerciseCount, locale) })}</>}</span>
           </span>
           <span className="tone-neutral shrink-0 rounded-md px-inline text-micro font-semibold">{players}</span>
         </button>

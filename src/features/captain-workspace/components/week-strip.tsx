@@ -20,7 +20,7 @@ export function WeekStrip({ cells, selectedId, onSelect, locale }: {
             <span className="text-muted">{cell.weekday ? t(cell.weekday) : t('day', { count: formatNumber(cell.day?.position ?? 0, locale) })}</span>
             <span className="line-clamp-2 break-words font-bold">{cell.rest ? t('rest') : cell.day?.title ? starterText(cell.day.title, locale) : t('training')}</span>
             {summary && <span className="text-muted">
-              <span className="block">{t('sets', { count: formatNumber(summary.sets, locale) })}</span>
+              <span className="block">{t('sets', { n: summary.sets, count: formatNumber(summary.sets, locale) })}</span>
               <span className="block">{t('minutes', { count: formatNumber(summary.minutes, locale) })}</span>
             </span>}
           </button>

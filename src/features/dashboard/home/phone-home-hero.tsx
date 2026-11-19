@@ -26,8 +26,8 @@ export function PhoneHomeHero({ tasks, count, locale, style }: { tasks: HomeTask
       <p className="text-xs font-bold text-lime">{home('todayTasks')}</p>
       <h2 className="text-h font-bold">{count ? t('waiting', { n: count, count: number(count) }) : home('emptyHero')}</h2>
       {count > 0 && <>
-        <p className="text-xs text-muted">{t('estimate', { minutes: number(taskEstimate(count)) })}
-          {first && <> · {t('first', { task: home(first.kind, { name: first.name, days: first.days ?? 0 }) })}</>}</p>
+        <p className="text-xs text-muted">{t('estimate', { n: taskEstimate(count), minutes: number(taskEstimate(count)) })}
+          {first && <> · {t('first', { task: home(first.kind, { name: first.name, n: first.days ?? 0, days: first.days ?? 0 }) })}</>}</p>
         <ul className="flex flex-wrap gap-inline">{chips.filter(chip => chip.count > 0).map(chip =>
           <li key={chip.key} className={`rounded-md px-inline text-micro font-semibold ${chip.tone}`}>{t(chip.key, { n: chip.count, count: number(chip.count) })}</li>)}</ul>
         <Link href="/captain/tasks" className={buttonClass({ size: 'lg', block: true })}><KoPlay aria-hidden className="size-5" />{home('startTasks')}</Link>

@@ -136,7 +136,10 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
       if (controller.signal.aborted) return;
       const answer = result.kind === 'message' || result.kind === 'confirm' ? result.text
         : result.kind === 'updated' || result.kind === 'read'
-        ? t(result.kind === 'updated' ? 'chatUpdated' : 'chatRead', { sets: result.sets, reps: result.reps })
+        ? t(result.kind === 'updated' ? 'chatUpdated' : 'chatRead', {
+          sets: t('chatReadSets', { n: result.sets, sets: result.sets }),
+          reps: t('chatReadReps', { n: result.reps, reps: result.reps }),
+        })
         : result.kind === 'clarify' ? result.question : t('chatUnsupported');
       const newCards = account && (result.kind === 'message' || result.kind === 'confirm') ? chatActions(result) : undefined;
       const timestamp = now();

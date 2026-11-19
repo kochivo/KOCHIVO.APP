@@ -39,8 +39,8 @@ export function QueueScreen() {
     <StatStrip items={(['all', 'late', 'needsReply', 'reviewed'] as const).map(key => ({
       label: t(key), value: formatNumber(metrics[key], locale), tone: key === 'late' ? 'warn' : 'ink',
     }))} />
-    <p className="text-sm text-muted">{t('replyHours')} {metrics.replyHours === null ? t('unavailable') : t('hours', { value: formatNumber(Math.round(metrics.replyHours * 10) / 10, locale) })}
-      {metrics.comparison !== null && <> · {t('comparison', { value: formatNumber(Math.round(metrics.comparison * 10) / 10, locale) })}</>}
+    <p className="text-sm text-muted">{t('replyHours')} {metrics.replyHours === null ? t('unavailable') : t('hours', { n: Math.round(metrics.replyHours * 10) / 10, value: formatNumber(Math.round(metrics.replyHours * 10) / 10, locale) })}
+      {metrics.comparison !== null && <> · {t('comparison', { n: Math.round(metrics.comparison * 10) / 10, value: formatNumber(Math.round(metrics.comparison * 10) / 10, locale) })}</>}
       {' · '}{t('reviewedWeek')} {formatNumber(metrics.reviewedWeek, locale)}</p>
     <p className="text-xs text-muted">{t('sample')}</p>
     <div className="flex flex-wrap justify-between gap-card-gap"><div className="flex flex-wrap gap-inline">

@@ -16,7 +16,7 @@ export function TierStatusConfirm({ kind, name, count = 0, busy, error, onCancel
     className="sheet fixed inset-0 m-auto max-h-[90dvh] w-[calc(100%-32px)] max-w-lg space-y-card-gap overflow-y-auto rounded-card border border-line bg-surface p-card text-ink backdrop:bg-bg-deep/80">
     <h2 id="tier-status-title" className="text-title font-bold">{t(archive ? 'archiveTierTitle' : 'deleteTierTitle', { name })}</h2>
     {archive ? <ul id="tier-status-detail" className="space-y-stack text-sm">
-      {[t('archiveTierPlayers', { n: formatNumber(count, locale) }), t('archiveTierVisibility'), t('archiveTierRestore')].map(line =>
+      {[t('archiveTierPlayers', { n: formatNumber(count, locale) }, count), t('archiveTierVisibility'), t('archiveTierRestore')].map(line =>
         <li key={line} className="flex items-start gap-inline"><Check aria-hidden className="size-5 shrink-0 text-lime" />{line}</li>)}
     </ul> : <p id="tier-status-detail" className="text-sm">{t('deleteTierDetail')}</p>}
     {error && <p role="alert" className="text-sm text-danger">{error}</p>}

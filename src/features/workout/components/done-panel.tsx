@@ -29,13 +29,13 @@ export function DonePanel({ workout, lifetime, sessionId, onBack }: { workout?: 
   const next = lifetime === undefined || medalRank(lifetime) === 'legend' ? undefined : nextMedalRank(lifetime);
   let line: string | undefined;
   if (preview?.counted) {
-    line = t('expectedPoints', { n: number(preview.points) });
+    line = t('expectedPoints', { n: number(preview.points) }, preview.points);
     if (next && next.needed > 0) line = t('pointsWithNext', { points: line,
-      next: rankT('workoutNext', { n: number(next.needed), tier: rankT(next.rank) }) });
+      next: rankT('workoutNext', { n: number(next.needed), tier: rankT(next.rank) }, next.needed) });
   } else if (preview?.reason === 'short') {
-    line = t('pointsShort', { n: number(preview.minMinutes) });
+    line = t('pointsShort', { n: number(preview.minMinutes) }, preview.minMinutes);
   } else if (preview?.reason === 'sets' && workout) {
-    line = t('pointsSets', { logged: number(workout.loggedSets), planned: number(workout.plannedSets), min: number(preview.minSets) });
+    line = t('pointsSets', { n: workout.plannedSets, logged: number(workout.loggedSets), planned: number(workout.plannedSets), min: number(preview.minSets) });
   }
   return <section className="glass-strong space-y-card-gap rounded-card p-section text-center">
     <h1 className={painHeadline ? 'text-title font-extrabold' : 'text-3xl font-extrabold'}>

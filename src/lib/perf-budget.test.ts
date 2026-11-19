@@ -12,12 +12,13 @@ const exceptions: Record<string, number> = {
   '/login': 201,
   '/welcome': 201,
   '/offline': 207, // T-363..T-368 refined look: measured 206.03
-  '/captain/programs/[programId]': 316, // CI measured 315.06 after T-395..T-401
+  '/captain/programs/[programId]': 317, // measured 316.35 after T-417 plural forms
   // T-383..T-388 captain phone shell and player-file header (2026-11-18): +1..3 KiB on these routes.
-  '/captain/players/[playerId]/programs': 334, // measured 333.04 after T-413..T-418 (audit number fixes)
-  '/captain/players/[playerId]/nutrition': 317, // measured 316.29 after T-413..T-418 (split day targets)
+  '/captain/players/[playerId]/programs': 335, // measured 334.18 after T-413..T-418 (audit fixes, plural forms)
+  '/captain/players/[playerId]/nutrition': 318, // measured 317.81 after T-413..T-418 (split targets, plural forms)
   '/captain/players/[playerId]/preview': 315, // measured 314.38 after T-399 player-file fixes
-  '/demo': 290, // measured 287.97 locally after T-395..T-401; CI builds run slightly larger
+  '/demo': 292, // measured 290.06 after T-417 plural forms; CI builds run slightly larger
+  '/player': 302, // measured 301.18 after T-417: Arabic plural forms ship with the shared player messages
 };
 
 it.skipIf(!existsSync(statsPath))('keeps first-load route JavaScript within gzip budgets', () => {

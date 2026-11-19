@@ -52,13 +52,13 @@ it('renders the expanded desktop card and collapsed mobile summary with intake f
   expect(html).toContain('href="/captain/players/player"');
   expect(html).toContain('aria-expanded="false"');
   expect(html.match(/data-training-day=/g)).toHaveLength(7);
-  expect(html).toContain('1 program days, 3 available');
+  expect(html).toContain('1 day in the program, 3 days available');
 });
 it('recalculates day count and the selected day estimate from new draft props', () => {
   const day = draft.days[0]; if (!day) throw new Error('Missing day');
   const changed = { ...draft, days: Array.from({ length: 4 }, (_, index) => ({ ...day, id: String(index) })) };
   const html = renderToStaticMarkup(createElement(TrainingFacts, { ...props, draft: changed }));
-  expect(html).toContain('4 program days, 3 available');
+  expect(html).toContain('4 days in the program, 3 days available');
   expect(html).toMatch(/data-fit-check="days"[^>]*text-warn/);
 });
 it('recalculates minutes and counts each tagged exercise once after edits', () => {
@@ -72,7 +72,7 @@ it('recalculates minutes and counts each tagged exercise once after edits', () =
   };
   const render = (current: typeof selected) => renderToStaticMarkup(createElement(TrainingFacts, { ...props, day: current, candidates }));
   expect(render(selected)).toContain('About 20 minutes today, 30 available');
-  expect(render(selected)).toContain('1 exercises may affect an injury');
+  expect(render(selected)).toContain('1 exercise may affect an injury');
   const edited = { ...selected, exercises: selected.exercises.map(item => ({ ...item, sets: 10 })) };
   expect(render(edited)).toContain('About 50 minutes today, 30 available');
   expect(render(edited)).toMatch(/data-fit-check="minutes"[^>]*text-warn/);

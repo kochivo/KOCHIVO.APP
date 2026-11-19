@@ -10,6 +10,6 @@ export function usePainSkipNotice() {
   const locale = useLocale();
   const toast = useToast();
   return (count: number, report: PainReportRow) => {
-    if (count > 0) toast.success({ title: t('removed', { n: formatNumber(count, locale), area: t(report.area) }), icon: 'check' });
+    if (count > 0) toast.success({ title: t('removed', { n: formatNumber(count, locale), area: t(report.area) }, count), icon: 'check' });
   };
 }

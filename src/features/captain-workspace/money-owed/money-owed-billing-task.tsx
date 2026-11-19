@@ -22,7 +22,7 @@ export function MoneyOwedBillingTask({ data, locale, t }: { data: MoneyOwed; loc
       <Link href={`/captain/players/${row.playerId}`} className="flex min-h-12 flex-wrap items-center gap-inline hover:underline">
         <b className="wrap-break-word text-sm">{row.name}</b>
         <span className="flex-1 text-xs text-muted">{row.reason === 'expired'
-          ? t('expired', { n: number(row.days) })
+          ? t(row.days === 0 ? 'expiredToday' : 'expired', { n: row.days, count: number(row.days) })
           : t('partial', { date: formatDateAr(row.since, { day: 'numeric', month: 'short' }, locale) })}</span>
         {row.amount !== null && row.amount > 0 && <span className="text-xs text-warn">{t('currency', { amount: number(row.amount) })}</span>}
       </Link>

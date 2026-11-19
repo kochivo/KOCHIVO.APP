@@ -36,7 +36,7 @@ export function CaptainFreezeRequests({ playerId, onDecided }: { playerId?: stri
     {!resource.data && !resource.error && <LoadingState variant="detail" />}
     {resource.data?.data && (resource.data.data.length ? <ul className="divide-y divide-line-soft">{resource.data.data.map(row =>
       <li key={row.id} className="flex flex-wrap items-center gap-stack py-stack">
-        <div><p>{row.name} · {t('duration', { count: formatNumber(row.days, locale) })}</p>
+        <div><p>{row.name} · {t('duration', { n: row.days, count: formatNumber(row.days, locale) })}</p>
           {row.note && <p className="break-words text-sm text-muted">{row.note}</p>}</div>
         <div className="ms-auto flex gap-inline"><Button variant="secondary" disabled={busy} onClick={() => void decide(row.id, true)}>{t('approve')}</Button>
           <Button variant="secondary" disabled={busy} onClick={() => void decide(row.id, false)}>{t('decline')}</Button></div>

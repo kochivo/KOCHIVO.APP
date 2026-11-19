@@ -18,7 +18,7 @@ export const messages = defineMessages({
     mismatch: 'السعرات مش متطابقة مع الماكروز. تقدر تحفظ بعد المراجعة',
     duplicate: 'فيه أكلة بنفس الاسم. راجعها قبل الحفظ', addUnit: 'ضيف وحدة', removeUnit: 'شيل الوحدة',
     unitAr: 'الوحدة بالعربي', unitEn: 'الوحدة بالإنجليزي', grams: 'جرام', noUnits: 'مفيش وحدات',
-    delete: 'امسح الأكلة', blocked: 'مش ممكن تمسحها؛ مستخدمة {count} مرة في الخطط',
+    delete: 'امسح الأكلة', 'blocked.one': "مش ممكن تمسحها؛ مستخدمة مرة واحدة في الخطط", 'blocked.two': "مش ممكن تمسحها؛ مستخدمة مرتين في الخطط", 'blocked.few': "مش ممكن تمسحها؛ مستخدمة {count} مرات في الخطط", 'blocked.many': "مش ممكن تمسحها؛ مستخدمة {count} مرة في الخطط", 'blocked.other': "مش ممكن تمسحها؛ مستخدمة {count} مرة في الخطط",
     confirmDelete: 'متأكد إنك عايز تمسح الأكلة؟', saving: 'بنحفظ…', duplicateError: 'مش قادرين نراجع الأسماء. جرّب تاني',
   },
   en: {
@@ -34,7 +34,7 @@ export const messages = defineMessages({
     mismatch: 'Calories do not match macros. You can still save after reviewing',
     duplicate: 'A food has the same name. Review before saving', addUnit: 'Add unit', removeUnit: 'Remove unit',
     unitAr: 'Arabic unit', unitEn: 'English unit', grams: 'Grams', noUnits: 'No units',
-    delete: 'Delete food', blocked: 'Cannot delete; used {count} times in plans',
+    delete: 'Delete food', 'blocked.one': "Cannot delete; used {count} time in plans", 'blocked.other': "Cannot delete; used {count} times in plans",
     confirmDelete: 'Delete this food?', saving: 'Saving…', duplicateError: 'Could not check names. Try again',
   },
 });

@@ -71,7 +71,7 @@ export function LibraryWorkspace() {
     finally { pending.current.delete(id); }
   }
   return <section className="grid min-w-0 gap-card-gap">
-    <PageBarTitle title={t('title')} subtitle={loading ? t('loading') : resource.data ? t('count', { count: foods.length }) : t('subtitle')} />
+    <PageBarTitle title={t('title')} subtitle={loading ? t('loading') : resource.data ? t('count', { n: foods.length, count: foods.length }) : t('subtitle')} />
     <PageBarActions>
       <Button variant="secondary" className="max-md:hidden!" onClick={() => setRecipe(true)}>{t('recipeNew')}</Button>
       <Button id="new-library-food" aria-label={bt('new')} className="max-md:min-w-12 max-md:px-inline!" onClick={() => setSelected(null)}>

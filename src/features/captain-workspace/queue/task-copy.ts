@@ -2,8 +2,8 @@ import type { Translator } from '@/core/i18n/messages';
 import type { CaptainTask } from './tasks-model';
 import type { taskMessages } from './messages';
 export function taskText(task: CaptainTask, t: Translator<typeof taskMessages>) {
-  if (task.kind === 'absent') return t(task.neverTrained ? 'neverTrained' : 'absentText', { days: task.days ?? 0 });
-  if (task.kind === 'renew') return t('renewText', { days: task.days ?? 0 });
+  if (task.kind === 'absent') return t(task.neverTrained ? 'neverTrained' : 'absentText', { n: task.days ?? 0, days: task.days ?? 0 });
+  if (task.kind === 'renew') return t('renewText', { n: task.days ?? 0, days: task.days ?? 0 });
   if (task.kind === 'program') return t('programText');
   if (task.kind === 'nutrition') return t('nutritionText');
   if (task.kind === 'receipt') return t('receiptText');

@@ -32,7 +32,7 @@ describe('captain ranking views', () => {
   it.each(['ar', 'en'] as const)('shows holder adherence or explains the workout minimum in %s', locale => {
     const filled = renderToStaticMarkup(createElement(CrownCard, { holder, locale }));
     expect(filled).toContain('Mona');
-    expect(filled).toContain(locale === 'ar' ? 'التزام 75٪ · 6 من 8 تمرين' : '75% adherence · 6 of 8 workouts');
+    expect(filled).toContain(locale === 'ar' ? 'التزام 75٪ · 6 من 8 تمارين' : '75% adherence · 6 of 8 workouts');
     const empty = renderToStaticMarkup(createElement(CrownCard, { locale }));
     expect(empty).toContain(locale === 'ar' ? 'لسه محدش أخد التاج الشهر ده' : 'Nobody holds the crown yet this month');
     expect(empty).toContain(locale === 'ar' ? 'بحد أدنى 4 تمارين' : 'at least 4 workouts this month');

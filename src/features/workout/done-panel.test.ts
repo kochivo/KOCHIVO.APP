@@ -26,7 +26,7 @@ for (const locale of ['ar', 'en'] as const) {
     expect(html).toContain('text-muted');
   });
   it(`renders missing sets in ${locale}`, () => {
-    expect(render({ loggedSets: 5 })).toContain(locale === 'ar' ? 'سجّلت 5 من 10 مجموعة، محتاج 6' : 'you logged 5 of 10 sets, 6 needed');
+    expect(render({ loggedSets: 5 })).toContain(locale === 'ar' ? 'سجّلت 5 من 10 مجموعات، محتاج 6' : 'you logged 5 of 10 sets, 6 needed');
   });
   it(`omits the next tier when unknown or at Legend in ${locale}`, () => {
     for (const lifetime of [undefined, 900]) {

@@ -19,12 +19,12 @@ const render = (chat: RosterPlayer['chat']) => renderToStaticMarkup(createElemen
 it('links a positive unread badge to chat and keeps the task badge distinct', () => {
   const html = render({ unread: 2, body: 'أول سطر\nثاني سطر', voice: false, createdAt: '2026-11-13T07:44:00Z' });
   expect(html).toContain('href="/captain/players/p/chat"');
-  expect(html).toContain('aria-label="2 رسايل جديدة"');
+  expect(html).toContain('aria-label="رسالتين جداد"');
   expect(html).toMatch(/tone-lime[^>]*>2<\/a>/);
   expect(html).toContain('أول سطر');
   expect(html).not.toContain('ثاني سطر');
-  expect(html).toContain('مهام مستنياك');
-  expect(render({ unread: 0 })).not.toContain('رسايل جديدة');
+  expect(html).toContain('aria-label="مهمة واحدة مستنياك"');
+  expect(render({ unread: 0 })).not.toMatch(/aria-label="[^"]*(?:رسالة جديدة|رسالتين جداد|رسايل جديدة)"/);
 });
 it('shows the voice preview with its time', () => {
   expect(render({ unread: 1, voice: true, createdAt: '2026-11-13T07:44:00Z' })).toContain('رسالة صوتية · 9:44');

@@ -25,7 +25,7 @@ export function PlayerFactsCard({ name, facts, meals, logs, today, sent }: {
     <dl>
       <FactRow label={t('goal')}>{t(goal)}</FactRow>
       <FactRow label={t('weight')}>{t('weightValue', { weight: number(weight) })}</FactRow>
-      <FactRow label={t('ageHeight')}>{t('ageHeightValue', { age: number(facts.age?.value), height: number(facts.height?.value) })}</FactRow>
+      <FactRow label={t('ageHeight')}>{t('ageHeightValue', { n: facts.age?.value ?? 0, age: number(facts.age?.value), height: number(facts.height?.value) })}</FactRow>
       <FactRow label={t('weekly')}>{sent ? t('weeklyValue', { done: number(done) }) : t('unsent')}</FactRow>
     </dl>
   </aside>;

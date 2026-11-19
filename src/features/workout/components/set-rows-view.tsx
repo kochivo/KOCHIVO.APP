@@ -54,7 +54,7 @@ export function SetRowsView({ state, secondary = false, separateCompletedStatus 
         {current.exercise.set_plan && <p className="text-xs text-muted"><bdi>{at('target', { reps: target.reps_max === null ? at('failure') :
           target.reps_min === target.reps_max ? formatNumber(target.reps_min, locale) : at('range', {
             min: formatNumber(target.reps_min, locale), max: formatNumber(target.reps_max, locale) }) })}
-          {target.rir !== null && at('rir', { n: formatNumber(target.rir, locale) })}</bdi></p>}
+          {target.rir !== null && at('rir', { n: formatNumber(target.rir, locale) }, target.rir)}</bdi></p>}
         <div aria-current={active ? 'step' : undefined}
         className="grid grid-cols-[24px_minmax(0,1fr)_minmax(0,1fr)_56px] items-center gap-inline">
         <span className="relative text-center font-display text-sm text-faint">{formatNumber(setIndex, locale)}

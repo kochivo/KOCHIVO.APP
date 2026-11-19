@@ -23,7 +23,7 @@ export function PhoneFileHeader({ base, playerId, today, name, goal, packageName
   const t = createT(messages, locale, style), phone = createT(phoneMessages, locale, style), vt = createT(v11Messages, locale, style);
   const count = formatNumber(unreadCount, locale);
   const subtitle = [goal, packageName, waiting ? createT(subscriptionMessages, locale, style)('waiting') :
-    t('days', { count: formatNumber(remaining, locale) })].filter(Boolean).join(' · ');
+    t('days', { n: remaining, count: formatNumber(remaining, locale) })].filter(Boolean).join(' · ');
   const routes = [
     ['overview', base, phone('overview')], ['training', `${base}/programs`, phone('training')],
     ['nutrition', `${base}/nutrition`, phone('nutrition')], ['checkins', `${base}/checkins`, phone('checkins')],

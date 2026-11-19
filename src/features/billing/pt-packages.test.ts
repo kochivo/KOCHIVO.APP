@@ -27,6 +27,8 @@ it('names the activation dialog and all its controls', () => {
 it('labels balances using Cairo dates, including a frozen midnight boundary', () => {
   const balance = { id: 'link', pending: false, sessions_left: null, frozen_at: null, access_until: '2026-11-15' };
   expect(balanceLabel(balance, '2026-11-03', 'en')).toBe('12 days left');
+  expect(balanceLabel(balance, balance.access_until, 'en')).toBe('Ends today');
+  expect(balanceLabel(balance, '2026-11-14', 'en')).toBe('Ends tomorrow');
   expect(balanceLabel({ ...balance, sessions_left: 7 }, '2026-11-03', 'en')).toBe('7 sessions left');
   expect(balanceLabel({ ...balance, pending: true }, '2026-11-03', 'en')).toBe('Awaiting activation');
   expect(balanceLabel({ ...balance, frozen_at: '2026-11-02T23:00:00Z' }, '2026-11-10', 'en')).toBe('12 days left');

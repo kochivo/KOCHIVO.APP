@@ -30,7 +30,9 @@ export function WarmupWorkout({ state, today, progress }: {
     <div className="space-y-inline">
       <p className="text-xs text-faint">{t('today', { weekday: t(weekdays[weeklyWeekday(state.session?.training_date ?? today)] ?? 'sat') })}</p>
       <h1 className="font-display text-h leading-[1.15]" style={{ fontWeight: 600 }}>{starterText(day.title, locale)}</h1>
-      <p className="pb-inline text-xs text-muted">{t('summary', { minutes: formatNumber(minutes, locale), count: formatNumber(day.exercises.length, locale) })}</p>
+      <p className="pb-inline text-xs text-muted">{t('summary', {
+          minutes: t('summaryMinutes', { n: minutes, minutes: formatNumber(minutes, locale) }), count: t('summaryCount', { n: day.exercises.length, count: formatNumber(day.exercises.length, locale) }),
+        })}</p>
     </div>
     <WarmupCard warmup={warmup} checked={progress.checked} disabled={progress.loading || progress.error} onToggle={progress.toggle} />
     <section className="glass-strong space-y-stack rounded-[22px] border border-line-soft px-page-x py-page-y">

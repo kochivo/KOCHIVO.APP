@@ -18,7 +18,7 @@ export async function HomeTasks({ players, dues, today, mealPlanPlayers, lastPay
       if (task.kind === 'invite') return null;
       const lastPayment = lastPayments.find(([id]) => id === task.playerId)?.[1];
       return <li key={`${task.kind}:${index}`} className="flex min-h-16 flex-wrap items-center justify-between gap-stack px-page-x py-stack">
-        <div><p className="text-sm">{t(task.kind === 'late' ? 'lateTask' : task.days !== undefined ? 'endingTask' : task.kind, { name: task.name ?? '', count: task.days ?? task.count ?? 0 })}</p>
+        <div><p className="text-sm">{t(task.kind === 'late' ? 'lateTask' : task.days === 0 ? 'endingTaskToday' : task.days !== undefined ? 'endingTask' : task.kind, { name: task.name ?? '', n: task.days ?? task.count ?? 0, count: task.days ?? task.count ?? 0 })}</p>
           <p className="text-xs text-faint">{lastPayment ? t('lastPayment', { date: formatDateAr(lastPayment, { day: 'numeric', month: 'long' }, locale) }) : t(`hint.${task.kind}`)}</p></div>
         <Link className={buttonClass({ variant: 'secondary', block: false, className: "inline-flex min-h-12 items-center px-page-x text-xs" })} href={task.href}>{t(`action.${task.kind}`)}</Link>
       </li>;

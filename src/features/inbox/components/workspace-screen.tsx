@@ -67,7 +67,7 @@ export function WorkspaceScreen({ joinRequests }: { joinRequests: Record<string,
   const oldest = data?.oldest ?? metrics.oldest;
   const summary = data && waiting ? t('summary', { n: formatNumber(waiting, locale) })
     + (oldest ? t('oldest', { age: followupAge(oldest, now, locale, style) }) : '')
-    + (hours === null ? '' : t('average', { h: formatNumber(Math.round(hours * 10) / 10, locale) })) : '';
+    + (hours === null ? '' : t('average', { n: Math.round(hours * 10) / 10, h: formatNumber(Math.round(hours * 10) / 10, locale) })) : '';
   const caughtUp = data && !waiting && !data.more && status === 'waiting' && kind === 'all' && !search.trim();
   async function send(reply: string, advance: boolean) {
     if (!selected || selected.kind === 'request' || !data) return;

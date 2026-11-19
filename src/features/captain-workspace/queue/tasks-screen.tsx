@@ -89,7 +89,7 @@ export function TasksScreen() {
       return;
     }
     if (task.kind === 'swap') { await complete(task, () => approveTaskSwap(task)); return; }
-    const body = t(task.kind === 'renew' ? 'reminder' : 'absentMessage', { days: task.days ?? 0 });
+    const body = t(task.kind === 'renew' ? 'reminder' : 'absentMessage', { n: task.days ?? 0, days: task.days ?? 0 });
     await complete(task, () => replyToTask(task, data.captainId, body));
   }
   async function send(body: string, voice?: Pick<VoiceInput, 'blob' | 'mimeType' | 'durationSeconds' | 'id'>) {

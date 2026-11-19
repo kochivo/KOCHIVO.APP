@@ -38,7 +38,7 @@ export function SmartAlerts({ alerts, hideEmptyOnPhone }: { alerts: SmartAlert[]
           const count = formatNumber(alert.value, locale);
           return <li key={`${alert.kind}:${alert.playerId}`} className="glass-raised flex items-center gap-stack rounded-control p-stack">
             <span aria-hidden className={`grid size-10 shrink-0 place-items-center rounded-full ${tone}`}><Icon className="size-5" /></span>
-            <p className="min-w-0 flex-1 text-sm lg:truncate">{t(`alert.${alert.kind}`, { name: alert.name, count, amount: count })}</p>
+            <p className="min-w-0 flex-1 text-sm lg:truncate">{t(alert.kind === 'ending' && alert.value === 0 ? 'alert.endingToday' : `alert.${alert.kind}`, { name: alert.name, n: alert.value, count, amount: count })}</p>
             <Link href={alert.href} prefetch={false} className="inline-flex min-h-12 shrink-0 items-center rounded-control px-stack text-sm font-bold text-lime hover:bg-ink/5">
               {t(`action.${alert.kind}`)}
             </Link>

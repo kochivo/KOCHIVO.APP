@@ -62,7 +62,7 @@ export function ConnectedTools({ userId, url, player = false }: { userId: string
     </section>
     {resource.data && <section className="glass rounded-card p-card">
       <h3 className="text-title font-semibold">{t('usage')}</h3>
-      <p className="text-sm text-muted">{t(player ? 'playerUsageCount' : 'usageCount', { count: resource.data.count })}</p>
+      <p className="text-sm text-muted">{t(player ? 'playerUsageCount' : 'usageCount', { n: resource.data.count, count: resource.data.count }, resource.data.count)}</p>
     </section>}
     {step && <ConnectionDialog step={step} url={url} pending={pending} failed={failed}
       fallback={focusList} onClose={() => setStep(null)} onConfirm={disconnect} />}

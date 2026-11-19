@@ -18,7 +18,7 @@ export function ProgramPrescriptionRow({ row, locale }: { row: ProgramSummaryExe
     <div className="min-w-0 flex-1">
       <h3 className="break-words text-sm font-semibold">{row.library ? exerciseName(row.library, locale) : t('unavailableExercise')}</h3>
       <p className="mt-inline text-xs text-muted"><bdi dir="ltr">{n(row.sets)} × {prescription}</bdi>
-        {row.rest_seconds != null && <> · {t('rest', { seconds: n(row.rest_seconds) })}</>}
+        {row.rest_seconds != null && <> · {t('rest', { n: row.rest_seconds, seconds: n(row.rest_seconds) })}</>}
       </p>
     </div>
   </li>;

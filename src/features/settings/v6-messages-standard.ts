@@ -1,5 +1,9 @@
 export const arStd = {
-  title: 'حسابي', coach: 'مع الكابتن {name} · بقي {n} يومًا', language: 'اللغة',
+  title: 'حسابي', 'coach.one': "مع الكابتن {name} · بقي يوم واحد",
+    'coach.two': "مع الكابتن {name} · بقي يومين",
+    'coach.few': "مع الكابتن {name} · بقي {n} أيام",
+    'coach.many': "مع الكابتن {name} · بقي {n} يومًا",
+    'coach.other': "مع الكابتن {name} · بقي {n} يومًا", language: 'اللغة',
   arabic: 'عربي', english: 'English',
   units: 'الوحدات', metric: 'كجم', imperial: 'lb', reminder: 'تذكير التمرين',
   reminderInfo: 'تُرسل التذكيرات حسب خطة التمرين', install: 'ثبّت التطبيق على هاتفك',

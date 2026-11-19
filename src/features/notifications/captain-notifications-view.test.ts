@@ -40,7 +40,7 @@ describe('captain notification list', () => {
       created_at: '2026-11-14T08:00:00Z', is_read: true,
     }] });
     expect(html).toContain('Mariam requested to join');
-    expect(html).toContain('1 hours ago');
+    expect(html).toContain('1 hour ago');
     expect(html).toContain('href="/captain/join"');
     expect(html).toContain('href="/captain/billing"');
     expect(html.match(/rounded-full bg-lime/g)).toHaveLength(1);

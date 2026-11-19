@@ -15,7 +15,7 @@ export function CrownCard({ holder, locale }: { holder?: LeaderboardRow; locale:
       <p className="text-muted">{holder ? t('adherence', {
         n: formatNumber(holder.adherence, locale), done: formatNumber(holder.done, locale),
         planned: formatNumber(holder.planned, locale),
-      }) : t('rule', { count: formatNumber(CROWN_MIN_WORKOUTS, locale) })}</p>
+      }, holder.planned) : t('rule', { n: CROWN_MIN_WORKOUTS, count: formatNumber(CROWN_MIN_WORKOUTS, locale) })}</p>
     </div>
   </section>;
 }

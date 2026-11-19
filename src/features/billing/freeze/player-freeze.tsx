@@ -40,7 +40,7 @@ export function PlayerFreeze() {
     {notice && <p role="status" className="text-lime">{notice}</p>}
     {data?.frozenUntil ? <p className="text-warn">{t('until', { date: formatDateAr(data.frozenUntil, { day: 'numeric', month: 'long', year: 'numeric' }, locale) })}</p>
       : data?.pendingId ? <><p role="status">{t('pending')}</p><Button variant="secondary" disabled={busy} onClick={() => void change()}>{t('cancel')}</Button></>
-      : data && data.remaining > 0 && <><p className="text-sm text-muted">{t('remaining', { count: formatNumber(data.remaining, locale) })}</p>
+      : data && data.remaining > 0 && <><p className="text-sm text-muted">{t('remaining', { n: data.remaining, count: formatNumber(data.remaining, locale) })}</p>
         <Button id="freeze-request-trigger" variant="secondary" disabled={busy} onClick={() => setOpen(true)}>{t('request')}</Button></>}
     {open && data && <RequestSheet remaining={data.remaining} onClose={() => setOpen(false)} onSend={(days, note) => void change(days, note)} />}
   </div>;

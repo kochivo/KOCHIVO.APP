@@ -42,7 +42,7 @@ export function progressMonth({ done, planned, adherence }: {
 
 function monthText(row: Parameters<typeof progressMonth>[0], t: Translator, locale: Locale) {
   const month = progressMonth(row);
-  return month ? t('progressMonth', { done: formatNumber(month.done, locale), planned: formatNumber(month.planned, locale),
+  return month ? t('progressMonth', { n: month.planned, done: formatNumber(month.done, locale), planned: formatNumber(month.planned, locale),
     adherence: formatNumber(month.adherence, locale) }) : undefined;
 }
 
@@ -69,18 +69,18 @@ async function myProgress(actor: KoActor, locale: Locale, today: string) {
     if (rank && p.lifetime != null) lines.push(t('progressRank', { rank, points: formatNumber(p.lifetime, locale) }));
     if (p.lifetime != null) {
       const next = TIERS.find(row => row.threshold > p.lifetime);
-      lines.push(next ? t('progressNext', { points: formatNumber(next.threshold - p.lifetime, locale),
+      lines.push(next ? t('progressNext', { n: next.threshold - p.lifetime, points: formatNumber(next.threshold - p.lifetime, locale),
         rank: createT(ranksMessages, locale)(next.tier) }) : t('progressTop'));
     }
     lines.push(monthText(p, t, locale));
     if (p.month_position != null) {
       lines.push(t('progressPosition', { position: formatNumber(p.month_position, locale) }));
-      if (p.crown_needs_workouts > 0) lines.push(t('progressNeeds', { count: formatNumber(p.crown_needs_workouts, locale) }));
+      if (p.crown_needs_workouts > 0) lines.push(t('progressNeeds', { n: p.crown_needs_workouts, count: formatNumber(p.crown_needs_workouts, locale) }));
       else if (p.crown_gap != null) lines.push(p.crown_gap === 0 ? t('progressCrown')
-        : t('progressGap', { count: formatNumber(p.crown_gap, locale) }));
-    } else if (p.crown_needs_workouts > 0) lines.push(t('progressNeeds', { count: formatNumber(p.crown_needs_workouts, locale) }));
+        : t('progressGap', { n: p.crown_gap, count: formatNumber(p.crown_gap, locale) }));
+    } else if (p.crown_needs_workouts > 0) lines.push(t('progressNeeds', { n: p.crown_needs_workouts, count: formatNumber(p.crown_needs_workouts, locale) }));
   }
-  if (workouts != null) lines.push(t('progressWeek', { count: formatNumber(workouts, locale) }));
+  if (workouts != null) lines.push(t('progressWeek', { n: workouts, count: formatNumber(workouts, locale) }));
   if (scan?.scan_date) lines.push(t('progressScan', { date: dateText(scan.scan_date, locale) }));
   return lines.filter(Boolean).join('\n') || t('progressEmpty');
 }
@@ -112,7 +112,7 @@ async function whyNotCounted(actor: KoActor, locale: Locale, today: string) {
   const date = dateText(row.earned_on, locale);
   const lines: string[] = [];
   if (Number.isFinite(seconds) && seconds < minSeconds)
-    lines.push(t('countShort', { date, minutes: formatNumber(Math.ceil(minSeconds / 60), locale) }));
+    lines.push(t('countShort', { n: Math.ceil(minSeconds / 60), date, minutes: formatNumber(Math.ceil(minSeconds / 60), locale) }));
   const needed = Math.ceil(plannedSets * WORKOUT_THRESHOLDS.setsRatio);
   if (logged < needed) lines.push(t('countSets', { date, logged: formatNumber(logged, locale), needed: formatNumber(needed, locale) }));
   if (row.status === 'rejected' || !lines.length) lines.push(t(row.status === 'rejected' ? 'countRejected' : 'countPending', { date }));

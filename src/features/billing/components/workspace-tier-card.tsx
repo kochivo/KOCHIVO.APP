@@ -36,6 +36,6 @@ export function WorkspaceTierCard({ tier, packages, busy, count, onEdit, onPacka
     <ul className="mb-card-gap space-y-stack text-row">{tier.features.length ? tier.features.map((feature, index) =>
       <li key={index} className="flex items-start gap-inline"><Check aria-hidden className="size-5 shrink-0 text-lime" />{feature}</li>)
       : <li className="text-muted">{catalog('noFeatures')}</li>}</ul>
-    {count !== undefined && <p className="mt-auto text-xs text-muted">{catalog('players', { n: formatNumber(count, locale) })}</p>}
+    {count !== undefined && <p className="mt-auto text-xs text-muted">{catalog('players', { n: formatNumber(count, locale) }, count)}</p>}
   </article>;
 }

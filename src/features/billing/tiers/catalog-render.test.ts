@@ -17,7 +17,7 @@ it('renders calculated savings, featured tier, player count and duration control
   const html = render(createElement(TierCard, { tier, packages: catalog.packages, count: 4, busy: false, onEdit: noop, onFeature: noop, onMove: noop, onArchive: noop, onPackage: noop }));
   expect(html).toContain('وفّر 13%');
   expect(html).toContain('الأكثر طلبًا');
-  expect(html).toContain('4 لاعيبة عليها');
+  expect(html).toContain('4 لاعبين عليها');
   expect(html).toContain('+ مدة');
   expect(html).toContain('Weekly call');
 });

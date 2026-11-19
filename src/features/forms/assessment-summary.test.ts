@@ -10,6 +10,6 @@ it('states finite count and open-ended schedules without inventing an end date',
   expect(assessmentSummary({ ...s, ends_on: null }, 'Ali', 'Knee', 'en')).toContain('until you stop it');
 });
 it('states on-join eligibility and one delivery per new player', () => {
-  expect(assessmentSummary({ ...s, kind: 'on_join', ends_on: null }, null, 'Start', 'en')).toContain('(1 sends)');
+  expect(assessmentSummary({ ...s, kind: 'on_join', ends_on: null }, null, 'Start', 'en')).toContain('(1 send)');
   expect(assessmentSummary({ ...s, kind: 'on_join' }, 'Ali', 'Start', 'en', '2026-11-01')).toContain('joined before the start date');
 });

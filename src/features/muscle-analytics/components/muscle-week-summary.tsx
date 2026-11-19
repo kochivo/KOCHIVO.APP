@@ -21,7 +21,7 @@ export function MuscleWeekSummary({ week }: { week?: VolumeWeek }) {
       const intensity = heatIntensity(sets);
       return <div key={muscle} className="flex items-center gap-inline text-xs">
         <span className="w-24 shrink-0">{label}</span>
-        <ProgressBar thin value={sets} max={HIGH_VOLUME_THRESHOLD} aria-label={label} aria-valuetext={t('regionSets', { muscle: label, sets: count })}
+        <ProgressBar thin value={sets} max={HIGH_VOLUME_THRESHOLD} aria-label={label} aria-valuetext={t('regionSets', { n: sets, muscle: label, sets: count })}
           className={`flex-1 ${intensity < .45 ? '[&>div]:bg-muted [&>div]:bg-none' : intensity < .7 ? '[&>div]:bg-warn [&>div]:bg-none' : ''}`} />
         <bdi className="shrink-0 font-display text-muted">{count}</bdi>
       </div>;

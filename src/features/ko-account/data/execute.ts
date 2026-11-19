@@ -105,7 +105,10 @@ export async function executeIntent(actor: KoActor, intent: Intent, locale: Loca
     const name = localized(row);
     const current = range(row.reps_min, row.reps_max);
     if (intent.kind === 'read_exercise') {
-      const result = t('exercise', { name, day: row.day, sets: row.sets, reps: current });
+      const result = t('exercise', {
+        name, day: row.day, sets: t('exerciseSets', { n: row.sets, sets: row.sets }),
+        reps: t(row.reps_max === null || row.reps_max === row.reps_min ? 'exerciseReps' : 'exerciseReps.other', { n: row.reps_min, reps: current }),
+      });
       const instructions = (locale === 'ar' ? row.instructions_ar ?? row.instructions_en : row.instructions_en).slice(0, 6);
       return say(intent.args.how && instructions.length ? [result, ...instructions].join('\n') : result);
     }
@@ -144,8 +147,8 @@ export async function executeIntent(actor: KoActor, intent: Intent, locale: Loca
     if (error) throw error;
     if (!data?.access_until || data.sessions_left !== null || data.frozen_at || data.pending) return say(t('unavailableRenewal'));
     return preview('renew', { days: intent.args.days, previous: data.access_until },
-      t('renew', { days: intent.args.days, previous: data.access_until }), player.name,
-      actionT('actionRenew', { name: player.name, days: intent.args.days }));
+      t('renew', { n: intent.args.days, days: intent.args.days, previous: data.access_until }), player.name,
+      actionT('actionRenew', { n: intent.args.days, name: player.name, days: intent.args.days }));
   }
   return preview('reminder', { date: localDate(new Date(now), await getPlayerTimezone(player.id)) },
     t('reminder'), player.name, actionT('actionReminder', { name: player.name }));
@@ -165,7 +168,11 @@ export async function commitApproval(actor: KoActor, action: Approval, token: st
   if (action.kind === 'renew' && result.until) return say(t('renewed', { until: result.until }));
   if (action.kind === 'reminder') return say(t(result.sent ? 'sent' : 'alreadySent'));
   if (action.kind === 'exercise' && result.sets !== undefined && result.reps !== undefined) {
-    return say(t('savedExercise', { name: action.label, sets: result.sets, reps: range(result.reps, result.max ?? null) }));
+    return say(t('savedExercise', {
+      name: action.label, sets: t('exerciseSets', { n: result.sets, sets: result.sets }),
+      reps: t(result.max == null || result.max === result.reps ? 'exerciseReps' : 'exerciseReps.other',
+        { n: result.reps, reps: range(result.reps, result.max ?? null) }),
+    }));
   }
   return say(t('done'));
 }

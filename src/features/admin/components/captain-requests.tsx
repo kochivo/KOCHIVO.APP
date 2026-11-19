@@ -38,7 +38,7 @@ export function CaptainRequests({ rows, error: loadError, primaryAction = true }
   return <section aria-labelledby="captain-requests-title" className="glass space-y-card-gap rounded-card p-card" aria-busy={pending}>
     <header className="flex flex-wrap items-center gap-stack">
       <h2 id="captain-requests-title" className="text-title font-semibold">{t('title')}</h2>
-      <span className={`num rounded-full px-stack py-inline text-sm ${visible.length ? 'bg-lime-soft text-lime' : 'bg-surface text-muted'}`} aria-label={t('count', { n: formatNumber(visible.length, locale) })}>
+      <span className={`num rounded-full px-stack py-inline text-sm ${visible.length ? 'bg-lime-soft text-lime' : 'bg-surface text-muted'}`} aria-label={t('count', { n: formatNumber(visible.length, locale) }, visible.length)}>
         {formatNumber(visible.length, locale)}
       </span>
     </header>

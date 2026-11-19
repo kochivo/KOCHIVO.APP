@@ -36,7 +36,7 @@ it('hides streak details when a live query returns an unrelated or malformed val
     const valid = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' },
       createElement(Greeting, { now: new Date('2026-11-06T08:00:00Z'), playerId: 'player' })));
     expect(valid).toContain('id="streak-pill"');
-    expect(valid).toContain('Training streak: 1 days');
+    expect(valid).toContain('Training streak: 1 day');
   } finally { liveQueryMock.mockRestore(); }
 });
 

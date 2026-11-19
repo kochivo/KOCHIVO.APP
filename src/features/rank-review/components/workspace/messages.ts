@@ -2,7 +2,7 @@ import { defineMessages } from '@/core/i18n/messages';
 
 const arStd = {
   rowDetails: 'التفاصيل',
-  monthSummary: '{month} · الأيام المتبقية: {days}',
+  monthSummaryToday: '{month} · ينتهي اليوم', 'monthSummary.one': "{month} · ينتهي غدًا", 'monthSummary.two': "{month} · بقي يومان", 'monthSummary.few': "{month} · بقي {days} أيام", 'monthSummary.many': "{month} · بقي {days} يومًا", 'monthSummary.other': "{month} · بقي {days} يوم",
   firstMonthly: 'الأول هذا الشهر', firstAllTime: 'الأول في الترتيب العام',
   rank: 'المركز', player: 'اللاعب', medal: 'الميدالية', workouts: 'التمارين', points: 'النقاط',
   leaderMedal: 'ميدالية {medal}', missing: '—',
@@ -17,7 +17,7 @@ export const workspaceMessages = defineMessages({
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
     rowDetails: 'التفاصيل',
-    monthSummary: '{month} · باقي {days} يوم على نهاية الشهر',
+    monthSummaryToday: '{month} · بيخلص النهارده', 'monthSummary.one': "{month} · بيخلص بكرة", 'monthSummary.two': "{month} · باقي يومين على نهاية الشهر", 'monthSummary.few': "{month} · باقي {days} أيام على نهاية الشهر", 'monthSummary.many': "{month} · باقي {days} يوم على نهاية الشهر", 'monthSummary.other': "{month} · باقي {days} يوم على نهاية الشهر",
     firstMonthly: 'الأول الشهر ده', firstAllTime: 'الأول على كل الوقت',
     rank: 'المركز', player: 'اللاعب', medal: 'الميدالية', workouts: 'تمارين', points: 'النقط',
     leaderMedal: 'ميدالية {medal}', missing: '—',
@@ -29,7 +29,7 @@ export const workspaceMessages = defineMessages({
   },
   en: {
     rowDetails: 'Details',
-    monthSummary: '{month} · {days} days left',
+    monthSummaryToday: '{month} · Ends today', 'monthSummary.one': "{month} · Ends tomorrow", 'monthSummary.other': "{month} · {days} days left",
     firstMonthly: 'First this month', firstAllTime: 'First all time',
     rank: 'Rank', player: 'Player', medal: 'Medal', workouts: 'Workouts', points: 'Points',
     leaderMedal: '{medal} medal', missing: '—',

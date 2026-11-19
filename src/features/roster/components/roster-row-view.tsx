@@ -44,7 +44,7 @@ export function RosterRowView({ player, today, error, t, locale, billing, archiv
           </Link>
         </div>
         {(chat?.unread ?? 0) > 0 && <Link prefetch={false} onClick={onSelect ? event => { event.preventDefault(); onSelect((event.currentTarget.getAttribute('href') ?? '').replace(/^#/, '')); } : undefined} href={onSelect ? `#${`/captain/players/${player.playerId}/chat`}` : `/captain/players/${player.playerId}/chat`}
-          aria-label={t('chatUnread', { count: formatNumber(chat?.unread ?? 0, locale) })}
+          aria-label={t('chatUnread', { n: chat?.unread ?? 0, count: formatNumber(chat?.unread ?? 0, locale) })}
           className="tone-lime inline-flex min-h-12 min-w-12 items-center justify-center rounded-full font-display text-xs font-bold">{formatNumber(chat?.unread ?? 0, locale)}</Link>}
         {player.openTasks > 0 && <span aria-label={t('taskCount', { n: player.openTasks, count: formatNumber(player.openTasks, locale) })} className="tone-lime rounded-full px-inline text-xs font-bold">{formatNumber(player.openTasks, locale)}</span>}
       </div>

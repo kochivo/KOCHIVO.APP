@@ -39,10 +39,13 @@ export async function PlanTab({ playerId, program, nutrition }: Pick<PlayerProfi
     <div className="space-y-card-gap">
       <div className="grid gap-card-gap md:grid-cols-2">
         {program ? <PlanCard icon={Dumbbell} heading={t('program')} title={starterText(program.title, locale)} href={`${base}/programs`} action={t('edit')}
-          lines={[t('programSummary', { days: n(program.days), exercises: n(program.exercises) }), updated(program.updatedAt)]} /> :
+          lines={[t('programSummary', {
+          days: t('programSummaryDays', { n: program.days, days: n(program.days) }),
+          exercises: t('programSummaryExercises', { n: program.exercises, exercises: n(program.exercises) }),
+        }), updated(program.updatedAt)]} /> :
           <EmptyState icon={Dumbbell} title={t('noProgramTitle')} body={t('noProgramBody')} action={{ label: t('writeProgram'), href: `${base}/programs` }} />}
         {nutrition ? <PlanCard icon={Salad} heading={t('nutrition')} title={starterText(nutrition.title, locale)} href={`${base}/nutrition`} action={t('edit')}
-          lines={[t('nutritionSummary', { meals: n(nutrition.meals), kcal: n(nutrition.kcal) }),
+          lines={[t('nutritionSummary', { n: nutrition.meals, meals: n(nutrition.meals), kcal: n(nutrition.kcal) }),
             t('macros', { protein: n(nutrition.protein), carbs: n(nutrition.carbs), fat: n(nutrition.fat) }), updated(nutrition.updatedAt)]} /> :
           <EmptyState icon={Salad} title={t('noNutritionTitle')} body={t('noNutritionBody')} action={{ label: t('writeNutrition'), href: `${base}/nutrition` }} />}
       </div>

@@ -17,9 +17,9 @@ it.each([
 });
 it('omits zero summary parts and keeps natural conjunctions', () => {
   const t = createT(homeMessages, 'ar');
-  expect(summaryLine({ replies: 4, unpaid: 2, ending: 3 }, t)).toBe('عندك 4 مستنيين ردك، و2 لسه ما دفعوش، و3 اشتراكهم هيخلص الأسبوع ده');
+  expect(summaryLine({ replies: 4, unpaid: 2, ending: 3 }, t)).toBe('عندك 4 مستنيين ردك، و2 لسه ما دفعوش، و3 اشتراكات هتخلص الأسبوع ده');
   expect(summaryLine({ replies: 0, unpaid: 2, ending: 0 }, t)).toBe('عندك 2 لسه ما دفعوش');
-  expect(summaryLine({ replies: 4, unpaid: 0, ending: 3 }, t)).toBe('عندك 4 مستنيين ردك، و3 اشتراكهم هيخلص الأسبوع ده');
+  expect(summaryLine({ replies: 4, unpaid: 0, ending: 3 }, t)).toBe('عندك 4 مستنيين ردك، و3 اشتراكات هتخلص الأسبوع ده');
   expect(summaryLine({ replies: 0, unpaid: 0, ending: 0 }, t)).toBe('');
 });
 it('reserves an absent-player row, caps at four and excludes frozen, pending and duplicate players', () => {

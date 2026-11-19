@@ -30,7 +30,7 @@ it('shows known package details and phone actions while retaining the desktop ro
   expect(html).toContain('وافق وابدأ');
   expect(html).toContain('من لينك الدعوة');
   expect(html.match(/30 يوم/g)).toHaveLength(2);
-  expect(html.match(/12 حصص/g)).toHaveLength(2);
+  expect(html.match(/12 حصة/g)).toHaveLength(2);
   expect(html).toContain('md:hidden');
   expect(html).toContain('hidden md:');
   expect(html).toContain('اقبل');

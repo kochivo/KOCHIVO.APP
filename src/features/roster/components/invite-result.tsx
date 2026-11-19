@@ -30,7 +30,7 @@ export function InviteResult({ input, pkg, code, captainFirstName, onAnother }: 
     <div className="glass-strong flex flex-col items-center gap-card-gap rounded-[24px] p-section text-center">
       <span className="glass flex size-16 items-center justify-center rounded-[20px] text-xl font-bold">{input.name.trim().split(/\s+/).slice(0,2).map(part => part[0]).join(' ')}</span>
       <div><b className="text-lg">{input.name}</b><p className="mt-inline text-sm text-muted">{pkg?.name ?? t('custom')}</p>
-        {!!input.formIds?.length && <p className="mt-inline text-xs text-muted">{p(input.gate ? 'assessmentCount' : 'optionalCount', { n: formatNumber(input.formIds.length, locale) })}</p>}</div>
+        {!!input.formIds?.length && <p className="mt-inline text-xs text-muted">{p(input.gate ? 'assessmentCount' : 'optionalCount', { n: formatNumber(input.formIds.length, locale) }, input.formIds.length)}</p>}</div>
       <div className="flex w-full items-end gap-inline"><label className="block min-w-0 flex-1 space-y-inline text-start"><span className="sr-only">{t('link')}</span>
         <input readOnly dir="ltr" value={url} onFocus={event => event.currentTarget.select()} className="min-h-12 w-full rounded-control border border-line bg-bg px-stack text-sm text-ink" /></label>
         <Button variant="secondary" className="min-h-12" onClick={copy} aria-label={t('copy')}><Copy aria-hidden className="size-5" /></Button></div>

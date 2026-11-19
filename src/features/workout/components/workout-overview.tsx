@@ -42,7 +42,9 @@ export function WorkoutOverview({ state, progress, onStart, onBack, playerId }: 
     <header className="flex items-center gap-stack">
       <IconButton aria-label={t('back')} onClick={onBack}><ArrowRight aria-hidden className="dir-icon size-5" /></IconButton>
       <div><h1 ref={focusHeading} tabIndex={-1} className="text-md font-bold">{starterText(day.title, locale)}</h1>
-        <span className="text-xs text-muted">{t('v3Summary', { minutes: formatNumber(minutes, locale), count: formatNumber(day.exercises.length, locale) })}</span></div>
+        <span className="text-xs text-muted">{t('v3Summary', {
+          minutes: t('v3SummaryMinutes', { n: minutes, minutes: formatNumber(minutes, locale) }), count: t('v3SummaryCount', { n: day.exercises.length, count: formatNumber(day.exercises.length, locale) }),
+        })}</span></div>
     </header>
     <StatStrip className="max-sm:grid-cols-3! [&>div]:px-stack" items={[
       { label: vt('exercises'), value: number(day.exercises.length) },

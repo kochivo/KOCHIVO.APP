@@ -151,7 +151,7 @@ it('suggests the next rest meal when a training-only meal comes first', () => {
   } finally { state.meals = meals; }
 });
 it('only promises streak preservation on a scheduled rest day', () => {
-  expect(render(true, '2026-11-10')).toContain('الراحة مش هتقطع الـ1 يوم بتوعك');
+  expect(render(true, '2026-11-10')).toContain('الراحة مش هتقطع سلسلة اليوم الواحد');
   expect(render(true, '2026-11-11')).not.toContain('الراحة مش هتقطع');
 });
 it('does not link tomorrow when it is also rest', () => {

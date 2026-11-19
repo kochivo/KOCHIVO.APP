@@ -30,8 +30,8 @@ export function RankV6({ data, holdsCrown, retry }: { data: RankData; holdsCrown
         <h2 className="font-display text-title font-semibold">{t('race')}</h2>
       </header><TeamBoard rows={data.board} />
       <p className="px-page-x pb-card text-xs text-muted">{holdsCrown ? t('holder') : holderName && gapWorkouts !== null && gapWorkouts > 0
-        ? t('crownWorkouts', { n: formatNumber(gapWorkouts, locale), name: holderName })
-        : t('gap', { n: formatNumber(data.points.crown_gap, locale) })}</p>
+        ? t('crownWorkouts', { n: formatNumber(gapWorkouts, locale), name: holderName }, gapWorkouts)
+        : t('gap', { n: formatNumber(data.points.crown_gap, locale) }, data.points.crown_gap)}</p>
     </section>
     <section data-rank-section="points" className="space-y-stack">
       <RankPointSources logs={data.points.logs} />

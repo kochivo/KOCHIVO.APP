@@ -5,12 +5,17 @@ export const messages = defineMessages({
   // The local env branch lets Next remove these strings from flag-off client builds.
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? arStd : undefined; },
   ar: {
-    morning: 'جاوب على سؤالين الصبح', food: 'الأكل', water: 'المية', meals: '/ {total} وجبات',
+    morning: 'جاوب على سؤالين الصبح', food: 'الأكل', water: 'المية', 'meals.one': "/ وجبة واحدة",
+    'meals.two': "/ وجبتين",
+    'meals.few': "/ {total} وجبات",
+    'meals.many': "/ {total} وجبة",
+    'meals.other': "/ {total} وجبة",
     litres: '/ {goal} L', addWater: 'ضيف 250 مل', saveFailed: 'الحفظ متعملش. جرّب تاني.', retry: 'جرّب تاني',
     workoutDetails: 'تمرين النهارده', voice: 'اسمع رسالة الكابتن',
   },
   en: {
-    morning: 'Answer two morning questions', food: 'Food', water: 'Water', meals: '/ {total} meals',
+    morning: 'Answer two morning questions', food: 'Food', water: 'Water', 'meals.one': "/ {total} meal",
+    'meals.other': "/ {total} meals",
     litres: '/ {goal} L', addWater: 'Add 250 ml', saveFailed: 'Save failed. Try again.', retry: 'Try again',
     workoutDetails: 'Today’s workout', voice: 'Listen to your coach’s note',
   },

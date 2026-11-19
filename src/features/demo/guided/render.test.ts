@@ -1,13 +1,47 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { expect, it } from 'vitest';
+import { afterEach, expect, it, vi } from 'vitest';
 import { LocaleProvider } from '@/core/i18n/client';
 import { Intro } from './intro';
 import { Summary } from './summary';
 import { initialState } from './state';
+import { Meals } from './meals';
+import { PhoneFood } from './phone-food';
 import { CaptainViews } from './captain-views';
+import { GuideCard } from './guide-card';
+import { Workout } from './workout';
 import type { Page } from './steps';
 
+it('shows the sum of the demo meals on both screens', () => {
+  const props = { state: { ...initialState(0), eaten: [true, true, true, true] }, dispatch() {}, act() {}, now: () => 0 };
+  const render = (view: typeof Meals | typeof PhoneFood) => renderToStaticMarkup(
+    createElement(LocaleProvider, { locale: 'en' }, createElement(view, props)),
+  );
+  const meals = render(Meals);
+  const values = [...meals.matchAll(/<small[^>]*>(\d+) calories<\/small>/g)].map(match => Number(match[1]));
+  expect(values).toHaveLength(4);
+  expect(values.reduce((sum, value) => sum + value, 0)).toBe(2250);
+  expect(meals).toContain('2250 calories');
+  expect(render(PhoneFood)).toContain('aria-valuemax="2250" aria-valuenow="2250"');
+});
+
+afterEach(() => vi.unstubAllEnvs());
+
+it.each([
+  ['ar', 'egyptian', 'علامة الصح جنب المجموعة', 'إنهاء المجموعة'],
+  ['ar', 'standard', 'علامة الصح بجانب المجموعة', 'إنهاء المجموعة'],
+  ['en', 'egyptian', 'check mark beside the set', 'Complete set'],
+] as const)('uses the workout control name in the %s (%s) guide', (locale, style, hint, name) => {
+  vi.stubEnv('NEXT_PUBLIC_INTERNATIONAL', '1');
+  const state = { ...initialState(0), step: 11, guide: 'open' as const };
+  const props = { state, dispatch() {}, act() {}, now: () => 0 };
+  const guide = createElement(GuideCard, { ...props, plans: [], onAccount() {} });
+  const workout = createElement(Workout, props);
+  const html = renderToStaticMarkup(createElement(LocaleProvider, { locale, style }, guide, workout));
+  expect(html).toContain(hint);
+  expect(html).toMatch(new RegExp(`<p[^>]*>[^<]*${name}`));
+  expect(html).toContain(`aria-label="${name}"`);
+});
 
 it('renders all four sizes and skip as accessible opening actions', () => {
   const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' }, createElement(Intro, { onChoose: () => undefined })));

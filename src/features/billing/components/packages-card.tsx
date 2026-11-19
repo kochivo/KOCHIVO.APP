@@ -56,18 +56,28 @@ export function PackagesCard({ packages: initial, onChange, initialAdding = fals
     && (values.max_freeze_days === null || Number.isInteger(values.max_freeze_days) && values.max_freeze_days >= 0 && values.max_freeze_days <= 90);
   function update(next: Package[]) { setPackages(next); onChange(next); }
 
+  const packageDetail = (pkg: Pick<Package, 'name' | 'days' | 'kind' | 'sessions'>) => {
+    const days = formatNumber(pkg.days, locale);
+    return pkg.kind === 'sessions' && pkg.sessions != null
+      ? success('sessionPackageDetail', {
+        name: pkg.name,
+        days: success('sessionPackageDetailDays', { n: pkg.days, days }),
+        sessions: success('sessionPackageDetailSessions', { n: pkg.sessions, sessions: formatNumber(pkg.sessions, locale) }),
+      })
+      : success('packageDetail', { n: pkg.days, name: pkg.name, days });
+  };
   async function add() {
     if (!valid || busy) return;
     setBusy(true); setError('');
     try {
       if (editor) {
-        if (await editor.save({ ...values, tier_id: tierId || null })) toast.success({ title: success('packageSaved'), detail: success(values.kind === 'sessions' && values.sessions !== null ? 'sessionPackageDetail' : 'packageDetail', { name: values.name, days: formatNumber(values.days, locale), sessions: formatNumber(values.sessions ?? 0, locale) }), icon: 'payment' });
+        if (await editor.save({ ...values, tier_id: tierId || null })) toast.success({ title: success('packageSaved'), detail: packageDetail(values), icon: 'payment' });
         return;
       }
       const result = await createPackage(values);
       if (result.error !== undefined) setError(result.error);
       else { update([...packages, result.data]); setName(''); setPrice(''); setDays('30'); setAdding(false);
-        toast.success({ title: success('packageSaved'), detail: success(result.data.kind === 'sessions' && result.data.sessions !== null ? 'sessionPackageDetail' : 'packageDetail', { name: result.data.name, days: formatNumber(result.data.days, locale), sessions: formatNumber(result.data.sessions ?? 0, locale) }), icon: 'payment' }); }
+        toast.success({ title: success('packageSaved'), detail: packageDetail(result.data), icon: 'payment' }); }
     } catch { setError(t('packageFailed')); } finally { setBusy(false); }
   }
   async function archive(item: Package) {

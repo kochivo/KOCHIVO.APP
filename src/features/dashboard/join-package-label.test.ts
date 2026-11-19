@@ -5,8 +5,8 @@ import { joinPackageLabel } from './home/join-package-label';
 
 afterEach(() => vi.unstubAllEnvs());
 it.each([
-  [30, null, 'شهر'], [60, null, '2 شهور'], [90, null, '3 شهور'],
-  [45, null, '45 يوم'], [1, null, '1 يوم'], [null, 12, '12 حصة'], [null, 1, '1 حصة'],
+  [30, null, 'شهر واحد'], [60, null, 'شهرين'], [90, null, '3 شهور'],
+  [45, null, '45 يوم'], [1, null, 'يوم واحد'], [null, 12, '12 حصة'], [null, 1, 'حصة واحدة'],
   [null, null, ''], [0, null, ''], [-30, null, ''], [1.5, null, ''],
   [null, 0, ''], [null, -1, ''], [null, 1.5, ''], [30, 12, ''],
 ])('labels days=%s sessions=%s as %s', (days, sessions, expected) => {

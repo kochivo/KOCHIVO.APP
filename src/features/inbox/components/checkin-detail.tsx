@@ -37,7 +37,7 @@ export function CheckinDetail({ item, history = [], dailyChecks = [], now }: {
     <dl className="glass-strong grid grid-cols-2 gap-card-gap rounded-card p-card">
       <div><dt className="text-muted">{t('weight')}</dt><dd className="text-2xl font-bold">{item.body_weight_kg === null ? t('dash') : formatNumber(item.body_weight_kg, locale)} {t('kg')}</dd><dd>{delta('body_weight_kg')}</dd></div>
       <div><dt className="text-muted">{t('waist')}</dt><dd className="text-2xl font-bold">{item.waist_cm === null ? t('dash') : formatNumber(item.waist_cm, locale)} {t('cm')}</dd><dd>{delta('waist_cm')}</dd></div>
-      {averages?.sleep != null && <div><dt className="text-muted">{t('sleepAverage')}</dt><dd>{t('hoursUnit', { value: formatNumber(Math.round(averages.sleep * 10) / 10, locale) })}</dd></div>}
+      {averages?.sleep != null && <div><dt className="text-muted">{t('sleepAverage')}</dt><dd>{t('hoursUnit', { n: Math.round(averages.sleep * 10) / 10, value: formatNumber(Math.round(averages.sleep * 10) / 10, locale) })}</dd></div>}
       {averages?.soreness != null && <div><dt className="text-muted">{t('sorenessAverage')}</dt><dd>{t('sorenessUnit', { value: formatNumber(Math.round(averages.soreness * 10) / 10, locale) })}</dd></div>}
     </dl>
     <p className="whitespace-pre-wrap text-muted">{item.notes || t('noNotes')}</p>

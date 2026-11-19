@@ -31,10 +31,10 @@ export function PricingCards({ catalog, name, now, signup, isRenewal = false, on
     {banner && time && <div role="status" className="flex flex-wrap items-center gap-stack rounded-[18px] border border-warn/30 bg-warn-soft px-page-x py-card">
       <b className="text-warn">{banner.name}</b>
       <span className="text-row text-muted">{t(banner.kind === 'percent' ? 'percentOffer' : banner.kind === 'amount' ? 'amountOffer' : 'bonusOffer', {
-        value: formatNumber(banner.value, locale), durations: covered.map(durationLabel).join(t('durationSeparator')),
+        n: banner.value, value: formatNumber(banner.value, locale), durations: covered.map(durationLabel).join(t('durationSeparator')),
       })}</span>
       <span className="ms-auto font-display text-sm font-extrabold tabular-nums text-warn">{time.ended ? t('ended')
-        : t('remaining', { days: formatNumber(time.days, locale), hours: formatNumber(time.hours, locale) })}</span>
+        : t('remaining', { days: t('remainingDays', { n: time.days, days: formatNumber(time.days, locale) }), hours: t('remainingHours', { n: time.hours, hours: formatNumber(time.hours, locale) }) })}</span>
     </div>}
     <header className="space-y-inline text-center"><h2 className="font-display text-stat font-semibold leading-tight">{t('title', { name })}</h2>
       <p className="text-row text-muted">{t('hint')}</p></header>
@@ -53,7 +53,7 @@ export function PricingCards({ catalog, name, now, signup, isRenewal = false, on
         <div className="glass-strong flex flex-wrap items-baseline gap-inline rounded-control px-stack py-inline"><b className="font-display text-stat font-extrabold tabular-nums">{formatNumber(card.price, locale)}</b>
           <small className="text-faint">{t('currency')}</small>{card.price < card.listPrice && <s className="font-display text-md text-faint">{formatNumber(card.listPrice, locale)}</s>}</div>
         <p className={`text-xs ${banner && !time?.ended && !card.offer ? 'text-faint' : 'text-warn'}`}>{banner && !time?.ended && !card.offer ? t('excluded') : t('monthly', { price: formatNumber(card.monthly, locale) })}</p>
-        {card.offer?.kind === 'bonus_days' && <p className="text-xs text-warn">{t('bonus', { days: formatNumber(card.offer.value, locale) })}</p>}
+        {card.offer?.kind === 'bonus_days' && <p className="text-xs text-warn">{t('bonus', { n: card.offer.value, days: formatNumber(card.offer.value, locale) })}</p>}
         <ul className="flex-1 text-row leading-[2.1] text-muted">{card.features.map(feature => <li key={feature.text} className={`flex items-start gap-inline ${feature.included ? '' : 'text-faint'}`}>
           {feature.included ? <Check aria-hidden className="mt-inline size-4 shrink-0 text-lime" /> : <Minus aria-hidden className="mt-inline size-4 shrink-0" />}{feature.text}</li>)}</ul>
         {href ? <a href={href} className={action}>{t('choose', { tier: card.tier.name })}</a>

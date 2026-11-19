@@ -8,7 +8,7 @@ import type { StreakStats } from '../streak';
 export function StreakPill({ stats, onOpen }: { stats: StreakStats; onOpen: () => void }) {
   const t = useT(messages);
   const locale = useLocale();
-  const values = { count: formatNumber(stats.current, locale), done: formatNumber(stats.weekDone, locale), planned: formatNumber(stats.weekPlanned, locale) };
+  const values = { n: stats.current, count: formatNumber(stats.current, locale), done: formatNumber(stats.weekDone, locale), planned: formatNumber(stats.weekPlanned, locale) };
   return <button id="streak-pill" type="button" onClick={onOpen} aria-haspopup="dialog"
     aria-label={t('streakLabel', values)} className="flex min-h-12 items-center rounded-full text-xs font-medium">
     <span className="inline-flex min-h-[26px] items-center gap-inline rounded-full border border-ink/10 bg-ink/5 px-stack py-inline">

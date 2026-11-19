@@ -60,7 +60,7 @@ export function KoWidget({ role, interactive = false, account = false, userId, p
     };
   }, [open, closing, close]);
   return <>
-    <button id={openerId} type="button" data-ko-launcher data-floating-fab aria-label={urgent ? feedT('badge', { count: urgent }) : t(account ? 'accountChatTitle' : 'open')} aria-haspopup="dialog" aria-expanded={open}
+    <button id={openerId} type="button" data-ko-launcher data-floating-fab aria-label={urgent ? feedT('badge', { n: urgent, count: urgent }) : t(account ? 'accountChatTitle' : 'open')} aria-haspopup="dialog" aria-expanded={open}
       onClick={() => { if (open) close(); else { setClosing(false); setOpen(true); if (!panel.Component) void loadPanel(); } setExpression('welcome'); }}
       onMouseEnter={() => { if (!open) setExpression('cheer'); }} onMouseLeave={() => { if (!open) setExpression('welcome'); }}
       className={`group fixed start-[max(1rem,var(--safe-start))] bottom-[calc(var(--nav-clearance)+0.5rem)] z-30 grid size-13 min-h-12 min-w-12 place-items-center rounded-card border border-lime/30 bg-bg shadow-xl transition-transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:translate-y-0 lg:bottom-6 ${position}${phonePosition ? ` ${phonePosition}` : ''}`}>

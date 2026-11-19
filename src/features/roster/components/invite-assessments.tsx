@@ -40,7 +40,7 @@ export function InviteAssessments({ forms, formIds, gate, onChange }: {
       <label className="flex min-h-16 flex-1 cursor-pointer items-center gap-stack py-stack">
         <input type="checkbox" checked={formIds.includes(form.id)} disabled={!formIds.includes(form.id) && formIds.length >= 5}
           onChange={() => onChange(toggleInviteForm(formIds, gate, form.id))} className="size-5 accent-lime" />
-        <span><span className="block text-sm font-semibold">{form.title}</span><span className="text-xs text-muted">{t('questions', { n: formatNumber(form.questions.length, locale) })}</span></span>
+        <span><span className="block text-sm font-semibold">{form.title}</span><span className="text-xs text-muted">{t('questions', { n: formatNumber(form.questions.length, locale) }, form.questions.length)}</span></span>
       </label>
       <Button variant="secondary" onClick={() => setPreview(form)} className="min-h-12 text-xs">{t('preview')}</Button>
     </div>)}

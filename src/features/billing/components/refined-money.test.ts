@@ -63,7 +63,7 @@ it('shows archived packages with dates, subscriber counts and restore controls',
   expect(html).toContain('<details');
   expect(html).toContain('Archived packages');
   expect(html).toContain('Old package');
-  expect(html).toMatch(/Archived [^·]*2026 · 2 current · 3 past/);
+  expect(html).toMatch(/Archived [^·]*2026 · Current: 2 subscribers · Past: 3 subscribers/);
   expect(html).toContain('>Restore</button>');
   expect(html.match(/>Delete permanently<\/button>/g)).toHaveLength(1);
   expect(html.indexOf('Delete permanently')).toBeGreaterThan(html.indexOf('Unused package'));

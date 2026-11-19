@@ -45,7 +45,7 @@ export function BriefSheet({ brief, playerName, profileWarning = false, inDialog
     </fieldset>
     <fieldset className={panel}><legend className="mb-inline font-bold">{t('minutes')}</legend>
       <div className="flex flex-wrap gap-inline">{([45, 60, 90] as const).map(minutes => <Chip key={minutes} pressed={brief.minutes === minutes}
-        onClick={() => onChange({ ...brief, minutes })}>{t('duration', { count: formatNumber(minutes, locale) })}</Chip>)}</div>
+        onClick={() => onChange({ ...brief, minutes })}>{t('duration', { n: minutes, count: formatNumber(minutes, locale) })}</Chip>)}</div>
     </fieldset>
     <fieldset className={panel}><legend className="mb-inline font-bold">{t('equipment')}</legend>
       <div className="flex flex-wrap gap-inline">{equipmentTiers.map(equipment => <Chip key={equipment} pressed={brief.equipment === equipment}

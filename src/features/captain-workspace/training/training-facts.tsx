@@ -43,10 +43,10 @@ export function TrainingFacts({ profile, file, locale, draft, day, fatPct, candi
   const risk = injuryCount(day?.exercises.map(row => candidates.find(item => item.exercise_id === row.exercise_id)?.stress) ?? [], injuries);
   const count = draft.days.filter(item => !item.is_rest_day).length;
   const checks = [
-    { key: 'days', ok: checkDays(count, intake.trainingDays), text: t('daysFit', { program: n(count), available: n(intake.trainingDays.length) }) },
+    { key: 'days', ok: checkDays(count, intake.trainingDays), text: t('daysFit', { program: t('fitDays', { n: count, count: n(count) }), available: t('fitDays', { n: intake.trainingDays.length, count: n(intake.trainingDays.length) }) }) },
     { key: 'minutes', ok: minutes !== null && checkMinutes(minutes, intake.sessionMinutes), text: minutes === null ? t('unknownEstimate')
-      : t('minutesFit', { estimated: n(minutes), available: n(intake.sessionMinutes) }) },
-    { key: 'injuries', ok: risk === 0, text: risk ? t('injuryFit', { n: n(risk) }) : t('injuryClear') },
+      : t('minutesFit', { n: minutes, estimated: n(minutes), available: n(intake.sessionMinutes) }) },
+    { key: 'injuries', ok: risk === 0, text: risk ? t('injuryFit', { n: n(risk) }, risk) : t('injuryClear') },
   ];
   return <section className="glass-strong min-w-0 rounded-card border border-line-soft p-card">
     <div className="flex flex-wrap items-center gap-stack">

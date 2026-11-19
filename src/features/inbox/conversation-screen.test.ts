@@ -44,7 +44,7 @@ it('shows phone filter controls and a new count alongside the preserved desktop 
   const html = render();
   expect(html).toContain('مش مقروء');
   expect(html).toContain('صور');
-  expect(html).toContain('جداد');
+  expect(html).toContain('محادثة جديدة واحدة');
   expect(html).toContain('md:hidden');
   expect(html).toContain('hidden min-w-0 md:block');
   expect(html).toContain('bg-surface-raised border-s-lime');

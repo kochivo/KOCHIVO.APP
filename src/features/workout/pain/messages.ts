@@ -2,7 +2,11 @@ import { defineMessages } from '@/core/i18n/messages';
 
 export const messages = defineMessages({
   ar: {
-    stopWorkout: 'وقّف تمرين النهارده', removed: 'شلنا {n} تمارين عشان {area}',
+    stopWorkout: 'وقّف تمرين النهارده', 'removed.one': "شلنا تمرين واحد عشان {area}",
+    'removed.two': "شلنا تمرينين عشان {area}",
+    'removed.few': "شلنا {n} تمارين عشان {area}",
+    'removed.many': "شلنا {n} تمرين عشان {area}",
+    'removed.other': "شلنا {n} تمرين عشان {area}",
     finishStopped: 'وقفنا تمرين النهارده عشان الوجع. الكابتن عرف.',
     finishSafe: 'خلصت التمارين الآمنة. شلنا {n} عشان الوجع، والكابتن عرف.',
     carried: 'تقرير الوجع ({area}) بيأثر على التمرين ده.', switchTo: 'بدّل لـ {name}', skipExercise: 'عدّي التمرين ده',
@@ -21,7 +25,11 @@ export const messages = defineMessages({
     ankle_l: 'الكاحل الشمال', ankle_r: 'الكاحل اليمين', other: 'مكان تاني',
   },
   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? {
-    stopWorkout: 'أوقف تمرين اليوم', removed: 'أزلنا {n} تمارين بسبب الألم في {area}',
+    stopWorkout: 'أوقف تمرين اليوم', 'removed.one': "أزلنا تمرين واحد بسبب الألم في {area}",
+    'removed.two': "أزلنا تمرينين بسبب الألم في {area}",
+    'removed.few': "أزلنا {n} تمارين بسبب الألم في {area}",
+    'removed.many': "أزلنا {n} تمرينًا بسبب الألم في {area}",
+    'removed.other': "أزلنا {n} تمرين بسبب الألم في {area}",
     finishStopped: 'أوقفنا تمرين اليوم بسبب الألم. أُبلغ المدرب.',
     finishSafe: 'أنهيت التمارين الآمنة. أزلنا {n} بسبب الألم، وأُبلغ المدرب.',
     carried: 'تقرير الألم ({area}) يؤثر على هذا التمرين.', switchTo: 'انتقل إلى {name}', skipExercise: 'تخطّ هذا التمرين',
@@ -40,7 +48,8 @@ export const messages = defineMessages({
     ankle_l: 'الكاحل الأيسر', ankle_r: 'الكاحل الأيمن', other: 'مكان آخر',
   } as const : undefined; },
   en: {
-    stopWorkout: "Stop today's workout", removed: 'Removed {n} exercises for {area} pain',
+    stopWorkout: "Stop today's workout", 'removed.one': "Removed {n} exercise for {area} pain",
+    'removed.other': "Removed {n} exercises for {area} pain",
     finishStopped: "We stopped today's workout because of pain. Your coach knows.",
     finishSafe: 'You finished the safe exercises. We removed {n} for pain. Your coach knows.',
     carried: 'Your pain report ({area}) affects this exercise.', switchTo: 'Switch to {name}', skipExercise: 'Skip this exercise',

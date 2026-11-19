@@ -47,9 +47,9 @@ export function FinishPoints({ sessionId, expected = false, expectedPrs = 0, ini
   return <section className={v4 ? 'glass space-y-stack rounded-card p-stack' : 'glass-strong space-y-stack rounded-card p-card'}>
     {v4 ? <div className="flex items-center gap-stack">
       <MedalIcon aria-hidden className="size-6 shrink-0 text-lime" />
-      <div><p className="text-sm font-bold">{counted.length ? t('points', { n: `+${formatNumber(total, locale)}` }) :
+      <div><p className="text-sm font-bold">{counted.length ? t('points', { n: `+${formatNumber(total, locale)}` }, total) :
         t(pending ? 'pendingAward' : rows.length ? 'rejected' : 'pendingPoints')}</p>
-        {next && <p className="text-micro text-muted">{t('workoutNext', { n: formatNumber(next.needed, locale), tier: t(next.rank) })}</p>}
+        {next && <p className="text-micro text-muted">{t('workoutNext', { n: formatNumber(next.needed, locale), tier: t(next.rank) }, next.needed)}</p>}
       </div>
     </div> : <p className={`text-center font-display font-extrabold ${counted.length ? 'text-stat-wide text-lime' : 'text-sm text-muted'}`}>{counted.length ? `+${formatNumber(total, locale)}` : t(pending ? 'pendingAward' : rows.length ? 'rejected' : 'pendingPoints')}</p>}
     {rows.map(row => <div key={row.id} className="flex items-center justify-between gap-inline text-sm">
@@ -64,7 +64,7 @@ export function FinishPoints({ sessionId, expected = false, expectedPrs = 0, ini
     {rank && lifetime !== undefined && next && <div className="flex items-center gap-stack">
       <Medal rank={index as 0 | 1 | 2 | 3 | 4 | 5 | 6} label={t(rank)} />
       <div className="flex-1 space-y-inline"><b>{t(rank)}</b>
-        <ProgressBar value={lifetime - threshold} max={lifetime + next.needed - threshold} aria-label={t('workoutNext', { n: formatNumber(next.needed, locale), tier: t(next.rank) })} />
+        <ProgressBar value={lifetime - threshold} max={lifetime + next.needed - threshold} aria-label={t('workoutNext', { n: formatNumber(next.needed, locale), tier: t(next.rank) }, next.needed)} />
       </div>
     </div>}
     {data?.points.month_position && data.points.month_position <= 3 && <p className="text-sm">{t('crownFinish', { n: formatNumber(data.points.month_position, locale) })}</p>}

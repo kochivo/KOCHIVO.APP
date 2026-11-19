@@ -43,7 +43,7 @@ export function WorkspaceRoster({ data, today, extras, details }: WorkspaceRoste
   const failed = Boolean(result.error || extras.error || (details && 'error' in details));
   return <section className="space-y-card-gap">
     <PageBarTitle title={failed ? t('players') : t('playersCount', { count: formatNumber(players.length, locale) })}
-      phoneTitle={t('players')} phoneSubtitle={!failed && details ? phone('summary', { total: formatNumber(players.length, locale), trained: formatNumber(trained, locale) }) : undefined} />
+      phoneTitle={t('players')} phoneSubtitle={!failed && details ? phone('summary', { n: players.length, total: formatNumber(players.length, locale), trained: formatNumber(trained, locale) }) : undefined} />
     <PageBarActions>
       <Link href="/captain/players/new" aria-label={t('add')} className={buttonClass({ variant: 'primary', block: false, className: "press inline-flex min-h-12 shrink-0 cursor-pointer items-center gap-inline px-page-x text-xs font-semibold focus-visible:ring-2 focus-visible:ring-lime max-md:min-w-12 max-md:px-inline!" })}><KoInvite aria-hidden className="size-4" /><span className="max-md:sr-only">{t('add')}</span></Link>
     </PageBarActions>

@@ -130,7 +130,7 @@ export function PlayerEditor({ data, editableMealNames = false, restViewOnly = f
       </div>}
       <Disclosure label={t('more')} className="mt-card-gap text-muted" onToggle={event => setMore(event.currentTarget.open)}>
         <p className="text-xs text-faint">{automaticTargets(facts) ? t('calculated', { name }) : t('missing')}</p>
-        <p className="text-xs text-faint">{t('facts', { weight: facts.weight ? formatNumber(facts.weight.value, locale) : '—', goal: t(goal), days: formatNumber(facts.trainingDays?.value.length ?? 0, locale) })}</p>
+        <p className="text-xs text-faint">{t('facts', { n: facts.trainingDays?.value.length ?? 0, weight: facts.weight ? formatNumber(facts.weight.value, locale) : '—', goal: t(goal), days: formatNumber(facts.trainingDays?.value.length ?? 0, locale) }, facts.trainingDays?.value.length ?? 0)}</p>
         <Button variant="secondary" aria-expanded={calculator} disabled={state.busy} onClick={() => setCalculator(!calculator)} className="min-h-12 rounded-full">{t('edit')}<DisclosureChevron expanded={calculator} /></Button>
         {more && <div className="grid gap-card-gap min-[1001px]:grid-cols-2">{!template && <SmartNotesPanel meals={visible} planMeals={draft.meals} targets={targets} facts={facts} logs={context.logs} today={context.today} sent={draft.status !== 'draft'}
           onIncrease={(id, grams) => update(draft => {

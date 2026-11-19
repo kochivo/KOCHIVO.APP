@@ -35,7 +35,7 @@ export function CaptainsTable({ rows, selected, onActivate, onReset, activity = 
   };
   const lastActive = (row: CaptainRow) => {
     const relative = relativeActivity(currentTime === undefined ? null : activity.find(item => item.id === row.id)?.lastActiveAt, currentTime ?? 0);
-    return d(relative.key, { n: formatNumber(relative.days ?? 0, locale) });
+    return d(relative.key, { n: formatNumber(relative.days ?? 0, locale) }, relative.days);
   };
   const state = (row: CaptainRow) => <span className={`rounded-full border border-line px-inline py-inline text-micro ${row.suspended ? 'bg-danger-soft text-danger' : row.tier === 'entry' ? 'bg-surface text-muted' : 'bg-calm-soft text-calm'}`}>{t(stateLabels[captainState(row)])}</span>;
   const controls = (row: CaptainRow) => {

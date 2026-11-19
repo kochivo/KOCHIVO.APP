@@ -13,7 +13,7 @@ export async function WorkspaceActivity({ events, now = new Date() }: { events: 
       {events.map(event => <li key={`${event.kind}:${event.id}`}><Link href={`/captain/players/${event.playerId}`} className="flex min-h-16 items-center gap-stack px-page-x py-card">
         <span aria-hidden className="glass grid size-[38px] shrink-0 place-items-center rounded-full border border-line text-xs">{event.name.slice(0, 1)}</span>
         <div className="min-w-0 text-sm"><p>{t(event.kind, { name: event.name, title: event.title || t('workoutTitle'), value: formatNumber(event.value ?? 0, locale) })}</p>
-          <p className="mt-inline text-micro text-faint">{ageLabel(event.at, now, locale)}{event.sets == null ? '' : ` · ${t('sets', { count: formatNumber(event.sets, locale) })}`}</p></div>
+          <p className="mt-inline text-micro text-faint">{ageLabel(event.at, now, locale)}{event.sets == null ? '' : ` · ${t('sets', { n: event.sets, count: formatNumber(event.sets, locale) })}`}</p></div>
       </Link></li>)}
     </ul>}
   </section>;

@@ -29,9 +29,9 @@ export function PublicTierCards({ catalog, signup, requested, accepting = true, 
         <div className="glass-strong rounded-control p-card">
           <p className="flex flex-wrap items-baseline gap-inline"><b className="font-display text-4xl font-extrabold tabular-nums">{formatNumber(price)}</b><span className="text-sm text-muted">{t('currency')}</span>
             {price < pkg.price_egp && <s className="text-sm text-muted">{formatNumber(pkg.price_egp)}</s>}
-          </p><p className="mt-inline text-sm text-muted">{t('packageDays', { count: formatNumber(pkg.days) })}</p>
+          </p><p className="mt-inline text-sm text-muted">{t('packageDays', { n: pkg.days, count: formatNumber(pkg.days) })}</p>
         </div>
-        {offer && <p className="text-sm text-lime">{offer.kind === 'bonus_days' ? t('bonusOfferLabel', { name: offer.name, count: formatNumber(offer.value) }) : offer.name}</p>}
+        {offer && <p className="text-sm text-lime">{offer.kind === 'bonus_days' ? t('bonusOfferLabel', { name: offer.name, n: offer.value, count: formatNumber(offer.value) }) : offer.name}</p>}
         {features.length > 0 && <ul className="flex-1 space-y-stack border-t border-line-soft pt-card text-sm text-muted">{features.map((feature, index) =>
           <li key={`${index}-${feature}`} className="flex items-start gap-inline"><Check aria-hidden strokeWidth={1.5} className="mt-inline size-4 shrink-0 text-lime" />{feature}</li>)}</ul>}
         {!requested && accepting && <div className="mt-auto"><PublicSignup href={href} label={t('requestPackage')} secondary /></div>}

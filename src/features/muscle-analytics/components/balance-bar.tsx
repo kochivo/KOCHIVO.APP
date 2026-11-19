@@ -19,7 +19,7 @@ export function BalanceBar({ volume }: { volume: MuscleVolume }) {
         data-segment={group} className={`h-full ${colors[group]} transition-all duration-150 motion-reduce:transition-none`}
         style={{ width: `${values[group]}%` }} />)}
     </div>
-    {values.core > 0 && <p className="text-sm text-muted">{t('regionSets', { muscle: t('muscle.core'), sets: values.core })}</p>}
+    {values.core > 0 && <p className="text-sm text-muted">{t('regionSets', { n: values.core, muscle: t('muscle.core'), sets: values.core })}</p>}
     {values.under.length > 0 && <p className="glass flex items-center gap-inline rounded-control p-stack text-sm text-muted">
       <AlertTriangle aria-hidden className="size-4 shrink-0 text-lime" />{t('undertrained', { groups: values.under.map(group => t(group)).join(t('separator')) })}
     </p>}

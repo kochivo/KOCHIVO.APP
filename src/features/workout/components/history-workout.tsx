@@ -59,7 +59,7 @@ export function HistoryWorkoutRow({ workout, title, names, exerciseId, v3 = fals
           <span className="text-micro text-muted">{formatDate(workout.training_date, { weekday: 'short' }, locale)}</span>
         </span>
         <span className="min-w-0 flex-1"><b className="text-sm"><bdi>{starterText(title, locale)}</bdi></b>
-          <span className="block text-micro text-muted">{v3t('summary', { min: formatNumber(minutes, locale), sets: formatNumber(workout.setCount, locale) })}
+          <span className="block text-micro text-muted">{v3t('summary', { n: workout.setCount, min: formatNumber(minutes, locale), sets: formatNumber(workout.setCount, locale) })}
             {volume && <> · {vt('historyVolume', { value: volume.value, unit: t(volume.unit) })}</>}
           </span>
         </span>
@@ -68,7 +68,7 @@ export function HistoryWorkoutRow({ workout, title, names, exerciseId, v3 = fals
       </> : <>
       <span className="block font-bold">{formatDate(workout.training_date, { day: 'numeric', month: 'short', year: 'numeric' }, locale)}</span>
       <span className="text-sm text-muted"><bdi>{starterText(title, locale)}</bdi>{' · '}
-        {t('historySets', { count: formatNumber(exercises.reduce((count, exercise) => count + exercise.sets.length, 0), locale) })}</span></>}
+        {t('historySets', { n: exercises.reduce((count, exercise) => count + exercise.sets.length, 0), count: formatNumber(exercises.reduce((count, exercise) => count + exercise.sets.length, 0), locale) })}</span></>}
     </summary>
     <div className="mt-stack space-y-card-gap">{exercises.length ? exercises.map(exercise => {
       const name = names.find(row => row.id === exercise.id);

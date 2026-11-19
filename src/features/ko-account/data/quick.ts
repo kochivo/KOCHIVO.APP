@@ -23,7 +23,7 @@ export async function readQuick(actor: KoActor, key: typeof quickKeys[number], l
   const workout = player ? await captainWorkout(ctx, day) : await playerWorkout(ctx, day);
   if (key === 'quickWorkout') {
     if (workout?.rest || !workout?.day || (!workout.day.exercises.length && !workout.day.cardio?.length)) return t('quickWorkoutEmpty');
-    return [workout.day.title, ...workout.day.exercises.map(row => t('quickExercise', {
+    return [workout.day.title, ...workout.day.exercises.map(row => t('quickExercise', { n: row.sets,
       name: (locale === 'ar' ? row.name_ar || row.name_en : row.name_en || row.name_ar) ?? '', sets: row.sets,
     })), ...(workout.day.cardio ?? []).map(({ kind, minutes }) => t('workoutCardio', { kind, minutes }))].filter(Boolean).join('\n');
   }

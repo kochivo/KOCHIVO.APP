@@ -130,7 +130,7 @@ describe('selected day nutrition card', () => {
     state.logs = [log('breakfast')];
     const html = render(past, 'ar');
     expect(html).toContain('أكل خميس');
-    expect(html).toContain('وجبات');
+    expect(html).toContain('وجبتين');
     expect(html).not.toContain('<a');
   });
 });

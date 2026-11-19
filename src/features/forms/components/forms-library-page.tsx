@@ -64,7 +64,10 @@ export async function FormsLibraryPage({ captain, client, locale, query, now = n
     </PageBarActions></>}
     {!form && !workspace && <header className="flex flex-wrap items-center gap-card-gap">
       <div className="me-auto"><h1 className="font-display text-stat font-semibold leading-tight">{m.title}</h1>
-        <p className="mt-inline text-row text-muted">{t('subline', { n: active, m: data.waitingReview })}</p></div>
+        <p className="mt-inline text-row text-muted">{t('subline', {
+          n: t('sublineN', { n: active }),
+          m: t('sublineM', { n: data.waitingReview, m: data.waitingReview }),
+        })}</p></div>
       <TemplateLinkEntry href={`${base}?template=custom`} primary>{m.newForm}</TemplateLinkEntry>
     </header>}
     <FormsLibraryEntry key={form?.id ?? 'list'} form={form ?? null} locale={locale} players={data.players.length}

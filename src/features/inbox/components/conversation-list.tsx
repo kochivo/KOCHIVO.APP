@@ -21,7 +21,7 @@ export function ConversationList({ rows, selected, onSelect }: {
           <ConversationAvatar name={player.fullName} url={player.avatarUrl} />
           <span className="min-w-0 flex-1"><b className="block text-row font-semibold">{player.fullName}</b>
             <small className="block truncate text-micro text-muted">{conversationPreview(latest, t)}</small></span>
-          {unread > 0 && <span aria-label={t('unread', { n: formatNumber(unread, locale) })}
+          {unread > 0 && <span aria-label={t('unread', { n: formatNumber(unread, locale) }, unread)}
             className="rounded-full border border-lime/20 bg-lime-soft px-inline py-inline font-display text-micro text-lime">{formatNumber(unread, locale)}</span>}
           {latest && Number.isFinite(Date.parse(latest.createdAt)) && <time dateTime={latest.createdAt} className="shrink-0 text-micro text-muted">{time.format(new Date(latest.createdAt))}</time>}
         </button>

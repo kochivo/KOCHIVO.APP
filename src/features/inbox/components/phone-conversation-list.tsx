@@ -37,7 +37,7 @@ export function PhoneConversationList({ rows, at, onSelect }: { rows?: Conversat
         <ChevronRight aria-hidden className="size-5 ltr:rotate-180" />
       </Link>
       <div><h1 className="text-md font-bold">{chat('title')}</h1>
-        {rows && <p className="text-micro text-muted">{t('newCount', { n: count })}</p>}
+        {rows && <p className="text-micro text-muted">{t('newCount', { n: unread, count })}</p>}
       </div>
     </header>
     {rows && <>
@@ -59,7 +59,7 @@ export function PhoneConversationList({ rows, at, onSelect }: { rows?: Conversat
                 ? t('voice', { duration: voiceDuration(latest.durationSeconds ?? 0) }) : conversationPreview(latest, chat)}</small></span>
             <span className="flex shrink-0 flex-col items-end gap-inline">
               {latest && Number.isFinite(Date.parse(latest.createdAt)) && <time dateTime={latest.createdAt} className="font-display text-micro text-muted">{timestamp(latest.createdAt)}</time>}
-              {unread > 0 && <span role="img" aria-label={chat('unread', { n: formatNumber(unread, locale) })} className="size-2.5 rounded-full bg-lime" />}
+              {unread > 0 && <span role="img" aria-label={chat('unread', { n: formatNumber(unread, locale) }, unread)} className="size-2.5 rounded-full bg-lime" />}
             </span>
           </button>
         </li>)}</ul> : filter !== 'all' && <Button variant="secondary" block={false} className="mx-auto mb-card flex" onClick={() => {
