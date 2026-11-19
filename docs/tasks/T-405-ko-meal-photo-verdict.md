@@ -5,7 +5,7 @@ Owner approved the mockup on 2026-11-19: `docs/mockups/ko/meal-photo/meal-photo.
 2. A small-part verdict.
 3. One question when the photo is unclear.
 
-**Start only after T-403 has landed.** This card reuses the T-403 `KoActionCard` and the `actions` wire field.
+**T-403 and T-406 have landed.** Reuse the T-403 `KoActionCard`, the `actions` wire field, and the T-406 `quick` field and quick buttons (do not add them again). A meal photo counts as a photo in the T-406 daily cap.
 
 ## The look must not change (hard rule)
 - The KO panel, bubbles, composer and colors stay as they are.
@@ -101,6 +101,19 @@ Owner approved the mockup on 2026-11-19: `docs/mockups/ko/meal-photo/meal-photo.
 - `message` gains an optional `meal` object: `{ verdict, line, items: [{ name, amount, unit, kcal }], after, target, mealName, token }`.
 - `message` also gains an optional `quick: string[]` (max 3).
 - Validate both with zod in `ko-core/wire.ts`. `playerReply` passes them through.
+
+### 6. Same verdict without a photo (owner report 2026-11-19)
+- Today, «طب أنا برا وهاكل الوجبة دي» and «آكل قد إيه من دي» get a dead end: «الوجبات اللي بره مش في خطتك فمش هقدر أحسب».
+- With the flag on, a **text** that describes a meal goes through the same flow:
+  - Examples: «هاكل طبق كشري برا», «عزومة فيها فراخ ورز آكل قد إيه».
+  - Add a player intent `meal_estimate`, which has the same `foods` and `unsure` schema as the new `meal_photo`. Its description: "Player describes a meal they are about to eat (not in their plan) and asks whether or how much to eat."
+  - It produces the same verdict card.
+- A follow-up like «آكل قد إيه من دي» right after a photo reuses the last analysis kept in history. It does not ask for the photo again.
+- Without the flag, keep today's text but make it helpful: «ابعتلي صورة الأكلة أو اكتبلي فيها إيه، وأقولك تاكل قد إيه.» Do not offer a plan swap.
+
+### 7. Smaller photos
+- Resize the photo on the device to at most 1024 px on the long side, as JPEG at quality 0.8, before upload. Use canvas, with no new dependency.
+- This halves the cost of a photo.
 
 ## Messages
 - All strings go in `ko-account/messages.ts` and `ko-preview/messages.ts`, with `ar`, `arStd` and `en`.
