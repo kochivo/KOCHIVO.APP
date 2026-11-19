@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-theme="dark" data-glass="blur" style="color-scheme:dark" class="hJlnFq_variable _9jpQ5a_variable _5nBW7q_variable">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KO stage 2 on the real panel</title>
+<link rel="stylesheet" href="site.css">
+<style>
+  /* Mockup frame only: place three real panels side by side. */
+  .frame{display:flex;flex-wrap:wrap;gap:32px;justify-content:center;align-items:flex-start;padding:32px 16px}
+  .col{width:384px;max-width:100%}
+  .col > h2{margin-bottom:12px}
+  .panel{position:relative;inset:auto;margin:0}
+  .new{outline:2px dashed var(--color-lime, #c6ff3d);outline-offset:3px;border-radius:16px}
+</style>
+</head>
+<body class="min-h-dvh">
+<div class="mx-auto max-w-5xl px-page-x pt-card text-center">
+  <h1 class="font-display text-xl font-extrabold">KO: المرحلة التانية على الشاشة الحقيقية</h1>
+  <p class="mt-inline text-sm text-muted">نفس لوحة KO اللي على الموقع بنفس الألوان والخطوط والأزرار. الجديد بس متعلّم عليه بخط متقطّع.</p>
+</div>
+
+<div class="frame">
+
+<!-- 1. Player today -->
+<section class="col">
+  <h2 class="text-sm font-bold text-muted">١. اللاعب: النهارده</h2>
+  <div class="panel sheet w-96 max-w-full overflow-hidden rounded-card border border-line text-start text-ink shadow-2xl">
+    <div class="glass-strong">
+      <header class="glass-strong sticky top-0 z-10 flex items-center gap-stack border-b border-line p-card">
+        <span class="relative size-10 shrink-0"><img src="welcome.png" class="size-10 object-contain" alt=""><span class="absolute bottom-0 end-0 size-2 rounded-full bg-lime ring-2 ring-surface"></span></span>
+        <div><span class="font-display text-xl font-extrabold">KO</span><p class="text-xs text-muted">مساعدك في Kochivo</p></div>
+      </header>
+      <div class="flex min-h-32 flex-col gap-stack p-card text-sm">
+        <div class="flex max-w-[90%] items-start gap-inline self-end"><p dir="auto" class="whitespace-pre-wrap break-words rounded-2xl px-stack py-inline leading-6 bg-surface-raised">أنا ماشي إزاي الشهر ده؟</p></div>
+        <div class="flex max-w-[90%] items-start gap-inline self-start"><img src="welcome.png" class="size-6" alt=""><p dir="auto" class="whitespace-pre-wrap break-words rounded-2xl px-stack py-inline leading-6 glass">الرتبة: فضي، نقطك من أول يوم: 1240.
+الشهر ده: 9 من 12 تمرين، الالتزام 75٪.
+مركزك في سباق التاج: 3.</p></div>
+      </div>
+      <form class="border-t border-line p-stack"><div class="flex items-center gap-inline">
+        <input dir="auto" placeholder="اكتب لـ KO" class="min-h-12 min-w-0 flex-1 rounded-full border border-line bg-bg px-page-x text-base placeholder:text-muted">
+      </div><p class="mt-inline text-xs text-muted">رسالتك أو الفويس أو الصورة بيتبعت لـ Gemini لما تدوس ابعت.</p></form>
+    </div>
+  </div>
+  <p class="mt-stack text-sm text-muted">النهارده: جمل ثابتة ورا بعض.</p>
+</section>
+
+<!-- 2. Player new: natural reply + sources -->
+<section class="col">
+  <h2 class="text-sm font-bold text-lime-ink">٢. اللاعب: الجديد</h2>
+  <div class="panel sheet w-96 max-w-full overflow-hidden rounded-card border border-line text-start text-ink shadow-2xl">
+    <div class="glass-strong">
+      <header class="glass-strong sticky top-0 z-10 flex items-center gap-stack border-b border-line p-card">
+        <span class="relative size-10 shrink-0"><img src="welcome.png" class="size-10 object-contain" alt=""><span class="absolute bottom-0 end-0 size-2 rounded-full bg-lime ring-2 ring-surface"></span></span>
+        <div><span class="font-display text-xl font-extrabold">KO</span><p class="text-xs text-muted">مساعدك في Kochivo</p></div>
+      </header>
+      <div class="flex min-h-32 flex-col gap-stack p-card text-sm">
+        <div class="flex max-w-[90%] items-start gap-inline self-end"><p dir="auto" class="whitespace-pre-wrap break-words rounded-2xl px-stack py-inline leading-6 bg-surface-raised">أنا ماشي إزاي الشهر ده؟ وسجّلي إني خلصت الغدا</p></div>
+        <div class="flex max-w-[90%] items-start gap-inline self-start"><img src="welcome.png" class="size-6" alt="">
+          <div class="space-y-inline">
+            <p dir="auto" class="whitespace-pre-wrap break-words rounded-2xl px-stack py-inline leading-6 glass">ماشي كويس. عملت 9 تمارين من 12 الشهر ده، يعني التزامك 75٪، وإنت التالت في سباق التاج. كمّل كده.</p>
+            <div class="new flex flex-wrap gap-inline" aria-label="مصادر الرد">
+              <span class="rounded-chip border border-line px-stack py-inline text-xs text-muted">تمارين الشهر</span>
+              <span class="rounded-chip border border-line px-stack py-inline text-xs text-muted">سباق التاج</span>
+            </div>
+          </div>
+        </div>
+        <div class="new space-y-inline rounded-control border border-line p-stack">
+          <p class="text-sm font-bold">١. تسجيل وجبة الغدا إنها اتاكلت</p>
+          <div class="flex flex-wrap gap-inline">
+            <button class="control press inline-flex items-center justify-center gap-inline rounded-control control-secondary text-ink control-md min-h-12 px-page-x text-sm">نفّذ</button>
+            <button class="control press inline-flex items-center justify-center gap-inline rounded-control control-secondary text-ink control-md min-h-12 rounded-control px-page-x text-muted text-sm">إلغاء</button>
+          </div>
+        </div>
+      </div>
+      <form class="border-t border-line p-stack"><div class="flex items-center gap-inline">
+        <input dir="auto" placeholder="اكتب لـ KO" class="min-h-12 min-w-0 flex-1 rounded-full border border-line bg-bg px-page-x text-base placeholder:text-muted">
+      </div><p class="mt-inline text-xs text-muted">رسالتك أو الفويس أو الصورة بيتبعت لـ Gemini لما تدوس ابعت.</p></form>
+    </div>
+  </div>
+  <p class="mt-stack text-sm text-muted">رد بكلام طبيعي من أرقامه الحقيقية بس، وتحته منين جاب الأرقام. وفي نفس الرسالة طلب تاني بزرار «نفّذ» لوحده.</p>
+</section>
+
+<!-- 3. Captain new: several actions in one message -->
+<section class="col">
+  <h2 class="text-sm font-bold text-lime-ink">٣. الكابتن: كذا طلب في رسالة واحدة</h2>
+  <div class="panel sheet w-96 max-w-full overflow-hidden rounded-card border border-line text-start text-ink shadow-2xl">
+    <div class="glass-strong">
+      <header class="glass-strong sticky top-0 z-10 flex items-center gap-stack border-b border-line p-card">
+        <span class="relative size-10 shrink-0"><img src="welcome.png" class="size-10 object-contain" alt=""><span class="absolute bottom-0 end-0 size-2 rounded-full bg-lime ring-2 ring-surface"></span></span>
+        <div><span class="font-display text-xl font-extrabold">KO</span><p class="text-xs text-muted">مساعدك في Kochivo</p></div>
+      </header>
+      <div class="flex min-h-32 flex-col gap-stack p-card text-sm">
+        <div class="flex max-w-[90%] items-start gap-inline self-end"><p dir="auto" class="whitespace-pre-wrap break-words rounded-2xl px-stack py-inline leading-6 bg-surface-raised">يوسف آخر مرة اتمرن إمتى؟ جدد له شهر وفكّره يتمرن النهارده</p></div>
+        <div class="flex max-w-[90%] items-start gap-inline self-start"><img src="welcome.png" class="size-6" alt="">
+          <div class="space-y-inline">
+            <p dir="auto" class="whitespace-pre-wrap break-words rounded-2xl px-stack py-inline leading-6 glass">يوسف آخر تمرين ليه كان يوم 16 نوفمبر، يعني بقاله 3 أيام. اشتراكه بيخلص 20 نوفمبر. جهزتلك الطلبين تحت، أكّد كل واحد لوحده.</p>
+            <div class="new flex flex-wrap gap-inline">
+              <span class="rounded-chip border border-line px-stack py-inline text-xs text-muted">آخر تمرين</span>
+              <span class="rounded-chip border border-line px-stack py-inline text-xs text-muted">الاشتراك</span>
+            </div>
+          </div>
+        </div>
+        <div class="new space-y-inline rounded-control border border-line p-stack">
+          <p class="text-sm"><span class="text-lime-ink">✓</span> <b>١. تجديد اشتراك يوسف 30 يوم</b></p>
+          <p class="text-xs text-muted">اتجدد لحد 20 ديسمبر.</p>
+        </div>
+        <div class="new space-y-inline rounded-control border border-line p-stack">
+          <p class="text-sm font-bold">٢. تذكير يوسف بتمرين النهارده</p>
+          <div class="flex flex-wrap gap-inline">
+            <button class="control press inline-flex items-center justify-center gap-inline rounded-control control-secondary text-ink control-md min-h-12 px-page-x text-sm">نفّذ</button>
+            <button class="control press inline-flex items-center justify-center gap-inline rounded-control control-secondary text-ink control-md min-h-12 rounded-control px-page-x text-muted text-sm">إلغاء</button>
+          </div>
+        </div>
+      </div>
+      <form class="border-t border-line p-stack"><div class="flex items-center gap-inline">
+        <input dir="auto" placeholder="اكتب لـ KO" class="min-h-12 min-w-0 flex-1 rounded-full border border-line bg-bg px-page-x text-base placeholder:text-muted">
+      </div><p class="mt-inline text-xs text-muted">رسالتك أو الفويس أو الصورة بيتبعت لـ Gemini لما تدوس ابعت.</p></form>
+    </div>
+  </div>
+  <p class="mt-stack text-sm text-muted">لحد 3 طلبات في رسالة. كل طلب بيغيّر حاجة ليه كارت وزرار «نفّذ» لوحده، والطلب اللي اتنفّذ بيبان عليه ✓.</p>
+</section>
+
+</div>
+</body>
+</html>
