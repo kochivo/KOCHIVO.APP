@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-theme="dark" data-glass="blur" style="color-scheme:dark" class="hJlnFq_variable _9jpQ5a_variable _5nBW7q_variable">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KO learning</title>
+<link rel="stylesheet" href="../stage2/site.css">
+<style>
+  /* Mockup frame only: three 390x844 phones side by side, same sheet as T-409/T-419. */
+  .frame{display:flex;flex-wrap:wrap;gap:40px;justify-content:center;align-items:flex-start;padding:24px 16px}
+  .col{width:390px}
+  .phone{position:relative;width:390px;height:844px;overflow:hidden;border-radius:44px;border:1px solid var(--color-line);background:var(--color-bg)}
+  .new{outline:2px dashed var(--color-lime,#c6ff3d);outline-offset:3px;border-radius:16px}
+  .cap{font-size:13px;line-height:1.7}
+  svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  svg.s{width:16px;height:16px}
+</style>
+</head>
+<body class="min-h-dvh">
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="up" viewBox="0 0 24 24"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/></symbol>
+  <symbol id="down" viewBox="0 0 24 24"><path d="M17 14V2"/><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"/></symbol>
+  <symbol id="mark" viewBox="0 0 24 24"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></symbol>
+  <symbol id="trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></symbol>
+  <symbol id="x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+  <symbol id="back" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+  <symbol id="cam" viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></symbol>
+  <symbol id="mic" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v3"/></symbol>
+</svg>
+
+<div class="mx-auto max-w-5xl px-page-x pt-card text-center">
+  <h1 class="font-display text-xl font-extrabold">KO بيتعلم من كلامك</h1>
+  <p class="mt-inline text-sm text-muted">نفس شاشة KO على الموبايل بالظبط (بعد T-419). الجديد متعلّم عليه بخط متقطّع.</p>
+</div>
+
+<div class="frame">
+
+<!-- 1. MEMORY + FEEDBACK IN CHAT -->
+<section class="col"><h2 class="mb-stack text-sm font-bold text-lime-ink">1. بيفتكر، وتقيّم الرد</h2>
+<div class="phone">
+  <div class="sheet absolute inset-x-0 bottom-0 flex flex-col overflow-hidden rounded-t-card border border-line text-start text-ink" style="top:59px">
+    <div class="glass-strong flex min-h-0 flex-1 flex-col">
+      <div class="mx-auto mt-inline h-1 w-10 rounded-full bg-line"></div>
+      <header class="flex items-center gap-stack border-b border-line px-card pb-stack pt-inline"><span class="relative size-10 shrink-0"><img src="../stage2/welcome.png" class="size-10 object-contain" alt=""><span class="absolute bottom-0 end-0 size-2 rounded-full bg-lime ring-2 ring-surface"></span></span><div class="flex-1"><span class="font-display text-xl font-extrabold">KO</span><p class="text-xs text-muted">مساعدك في Kochivo</p></div><span class="grid size-12 place-items-center rounded-control border border-line text-muted new"><svg class="i"><use href="#mark"/></svg></span><span class="grid size-12 place-items-center rounded-control border border-line"><svg class="i"><use href="#x"/></svg></span></header>
+      <div class="flex min-h-0 flex-1 flex-col gap-stack overflow-hidden p-card text-base">
+        <div class="flex max-w-[85%] items-start gap-inline self-end"><p class="rounded-2xl bg-surface-raised px-stack py-inline leading-7">حمو اتمرن النهارده؟ (حمو يعني أحمد سامي)</p></div>
+        <div class="flex max-w-[85%] items-start gap-inline self-start"><img src="../stage2/welcome.png" class="size-7" alt=""><div class="min-w-0 space-y-inline">
+          <p class="glass rounded-2xl px-stack py-inline leading-7">أيوه، أحمد سامي خلّص تمرين رجل الساعة 7 الصبح، 5 من 5 تمارين.</p>
+          <div class="flex flex-wrap gap-inline"><span class="text-xs text-muted rounded-chip border border-line px-inline">من فريقك</span></div>
+          <div class="new flex items-center gap-inline rounded-2xl border border-line px-stack py-inline text-sm"><svg class="i s text-lime-ink"><use href="#mark"/></svg><span class="flex-1">هفتكر إن «حمو» هو أحمد سامي.</span><span class="flex min-h-12 items-center px-inline text-xs text-muted underline">تراجع</span></div>
+          <div class="new flex gap-inline"><span class="grid size-12 place-items-center rounded-control text-muted" aria-label="رد مفيد"><svg class="i"><use href="#up"/></svg></span><span class="grid size-12 place-items-center rounded-control text-muted" aria-label="رد مش مفيد"><svg class="i"><use href="#down"/></svg></span></div>
+        </div></div>
+        <div class="flex max-w-[85%] items-start gap-inline self-end"><p class="rounded-2xl bg-surface-raised px-stack py-inline leading-7">وكام واحد واقع؟</p></div>
+        <div class="flex max-w-[85%] items-start gap-inline self-start"><img src="../stage2/welcome.png" class="size-7" alt=""><div class="min-w-0 space-y-inline">
+          <p class="glass rounded-2xl px-stack py-inline leading-7">3 لاعيبة ما اتمرنوش من أسبوع: كريم، يوسف، ومازن.</p>
+          <div class="flex gap-inline"><span class="grid size-12 place-items-center rounded-control text-muted"><svg class="i"><use href="#up"/></svg></span><span class="grid size-12 place-items-center rounded-control bg-surface-raised text-ink"><svg class="i"><use href="#down"/></svg></span></div>
+          <div class="new space-y-inline rounded-2xl border border-line p-stack"><p class="text-sm">إيه اللي مش مظبوط؟</p><div class="flex flex-wrap gap-inline text-sm"><span class="flex min-h-12 items-center rounded-full border border-line px-stack">فهمني غلط</span><span class="flex min-h-12 items-center rounded-full border border-line px-stack">المعلومة غلط</span><span class="flex min-h-12 items-center rounded-full border border-line px-stack">طويل</span></div></div>
+        </div></div>
+      </div>
+      <div class="border-t border-line p-stack" style="padding-bottom:28px">
+        <div class="flex items-center gap-inline"><span class="flex flex-1 items-center rounded-full border border-line px-card text-base text-muted" style="min-height:56px">اكتب رسالة لـ KO</span><span class="grid place-items-center rounded-control border border-line" style="width:56px;height:56px"><svg class="i"><use href="#cam"/></svg></span><span class="grid place-items-center rounded-control border border-line" style="width:56px;height:56px"><svg class="i"><use href="#mic"/></svg></span></div>
+      </div>
+    </div>
+  </div>
+</div>
+<ul class="cap mt-stack space-y-inline text-muted">
+  <li>لما تقول حاجة تستاهل تتحفظ (اسم دلع، تفضيل، أكلة مش بتاكلها)، KO يحفظها ويقولك في سطر صغير تحت رده. لو مش عايزها، دوس «تراجع» وتتمسح على طول.</li>
+  <li>تحت كل رد زرارين صغيرين: مفيد / مش مفيد. لو دوست «مش مفيد» يسألك سؤال واحد بـ 3 اختيارات. ولو مش عايز تختار، عادي.</li>
+  <li>الردود اللي اتعلّم عليها «مش مفيد» بتتجمع من غير أسماء ولا أرقام، وأنا براجعها كل أسبوع وأحوّلها لقواعد وأسئلة اختبار، علشان KO يتحسن للكل.</li>
+  <li>زرار جديد في الهيدر (علامة الحفظ) بيفتح «KO فاكر إيه».</li>
+</ul>
+</section>
+
+<!-- 2. CORRECTION -->
+<section class="col"><h2 class="mb-stack text-sm font-bold text-lime-ink">2. تصحّحه مرة، ميغلطش تاني</h2>
+<div class="phone">
+  <div class="sheet absolute inset-x-0 bottom-0 flex flex-col overflow-hidden rounded-t-card border border-line text-start text-ink" style="top:59px">
+    <div class="glass-strong flex min-h-0 flex-1 flex-col">
+      <div class="mx-auto mt-inline h-1 w-10 rounded-full bg-line"></div>
+      <header class="flex items-center gap-stack border-b border-line px-card pb-stack pt-inline"><span class="relative size-10 shrink-0"><img src="../stage2/welcome.png" class="size-10 object-contain" alt=""><span class="absolute bottom-0 end-0 size-2 rounded-full bg-lime ring-2 ring-surface"></span></span><div class="flex-1"><span class="font-display text-xl font-extrabold">KO</span><p class="text-xs text-muted">مساعدك في Kochivo</p></div><span class="grid size-12 place-items-center rounded-control border border-line text-muted"><svg class="i"><use href="#mark"/></svg></span><span class="grid size-12 place-items-center rounded-control border border-line"><svg class="i"><use href="#x"/></svg></span></header>
+      <div class="flex min-h-0 flex-1 flex-col gap-stack overflow-hidden p-card text-base">
+        <div class="flex max-w-[85%] items-start gap-inline self-end"><p class="rounded-2xl bg-surface-raised px-stack py-inline leading-7">ابعتلي الجدول بتاع بكره</p></div>
+        <div class="flex max-w-[85%] items-start gap-inline self-start"><img src="../stage2/welcome.png" class="size-7" alt=""><p class="glass rounded-2xl px-stack py-inline leading-7">بكره عندك 3 مواعيد اشتراكات بتخلص: كريم، يوسف، ومازن.</p></div>
+        <div class="flex max-w-[85%] items-start gap-inline self-end"><p class="rounded-2xl bg-surface-raised px-stack py-inline leading-7">لأ، الجدول عندي يعني برنامج التمرين</p></div>
+        <div class="flex max-w-[85%] items-start gap-inline self-start"><img src="../stage2/welcome.png" class="size-7" alt=""><div class="min-w-0 space-y-inline">
+          <p class="glass rounded-2xl px-stack py-inline leading-7">تمام، فهمت. بكره عند فريقك تمرين ضهر وباي لـ 6 لاعيبة، وراحة لـ 4.</p>
+          <div class="new flex items-center gap-inline rounded-2xl border border-line px-stack py-inline text-sm"><svg class="i s text-lime-ink"><use href="#mark"/></svg><span class="flex-1">هفتكر إن «الجدول» عندك يعني برنامج التمرين.</span><span class="flex min-h-12 items-center px-inline text-xs text-muted underline">تراجع</span></div>
+        </div></div>
+        <div class="flex max-w-[85%] items-start gap-inline self-end opacity-60"><p class="rounded-2xl bg-surface-raised px-stack py-inline leading-7">(بعد يومين) الجدول بتاع النهارده؟</p></div>
+        <div class="flex max-w-[85%] items-start gap-inline self-start opacity-60"><img src="../stage2/welcome.png" class="size-7" alt=""><p class="glass rounded-2xl px-stack py-inline leading-7">النهارده رجل لـ 5 لاعيبة، وصدر لـ 3.</p></div>
+      </div>
+      <div class="border-t border-line p-stack" style="padding-bottom:28px">
+        <div class="flex items-center gap-inline"><span class="flex flex-1 items-center rounded-full border border-line px-card text-base text-muted" style="min-height:56px">اكتب رسالة لـ KO</span><span class="grid place-items-center rounded-control border border-line" style="width:56px;height:56px"><svg class="i"><use href="#cam"/></svg></span><span class="grid place-items-center rounded-control border border-line" style="width:56px;height:56px"><svg class="i"><use href="#mic"/></svg></span></div>
+      </div>
+    </div>
+  </div>
+</div>
+<ul class="cap mt-stack space-y-inline text-muted">
+  <li>لما تقول «لأ قصدي...» أو «مش كده»، KO يفهم إنه غلط، يرد الرد الصح، ويحفظ التصحيح.</li>
+  <li>التصحيح بيتحفظ لك إنت بس. كابتن تاني ممكن يكون «الجدول» عنده حاجة تانية.</li>
+  <li>المرة الجاية (آخر رسالتين) بيفهم على طول من غير ما تشرح.</li>
+</ul>
+</section>
+
+<!-- 3. WHAT KO REMEMBERS -->
+<section class="col"><h2 class="mb-stack text-sm font-bold text-lime-ink">3. «KO فاكر إيه عنك»</h2>
+<div class="phone">
+  <div class="sheet absolute inset-x-0 bottom-0 flex flex-col overflow-hidden rounded-t-card border border-line text-start text-ink new" style="top:59px">
+    <div class="glass-strong flex min-h-0 flex-1 flex-col">
+      <div class="mx-auto mt-inline h-1 w-10 rounded-full bg-line"></div>
+      <header class="flex items-center gap-stack border-b border-line px-card pb-stack pt-inline"><span class="grid size-12 place-items-center rounded-control border border-line" aria-label="رجوع"><svg class="i"><use href="#back"/></svg></span><div class="flex-1"><span class="font-display text-lg font-extrabold">KO فاكر إيه عنك</span><p class="text-xs text-muted">7 حاجات</p></div><span class="grid size-12 place-items-center rounded-control border border-line"><svg class="i"><use href="#x"/></svg></span></header>
+      <div class="flex min-h-0 flex-1 flex-col gap-stack overflow-hidden p-card text-base">
+        <div class="flex items-center gap-stack rounded-card border border-line p-stack"><div class="flex-1"><p class="font-bold">خلّي KO يتعلم من كلامي</p><p class="text-xs text-muted">لو قفلته، KO مش هيحفظ حاجة جديدة.</p></div><span class="relative h-7 w-12 rounded-full bg-lime"><span class="absolute top-1 start-1 size-5 rounded-full bg-bg-deep"></span></span></div>
+        <ul class="divide-y divide-line rounded-card border border-line">
+          <li class="flex items-center gap-stack ps-stack"><span class="flex-1 py-inline">«حمو» هو أحمد سامي</span><span class="grid size-12 place-items-center text-muted" aria-label="امسح"><svg class="i"><use href="#trash"/></svg></span></li>
+          <li class="flex items-center gap-stack ps-stack"><span class="flex-1 py-inline">«الجدول» يعني برنامج التمرين</span><span class="grid size-12 place-items-center text-muted"><svg class="i"><use href="#trash"/></svg></span></li>
+          <li class="flex items-center gap-stack ps-stack"><span class="flex-1 py-inline">بتحب الردود قصيرة</span><span class="grid size-12 place-items-center text-muted"><svg class="i"><use href="#trash"/></svg></span></li>
+          <li class="flex items-center gap-stack ps-stack"><span class="flex-1 py-inline">بتكتب بالفرانكو ساعات</span><span class="grid size-12 place-items-center text-muted"><svg class="i"><use href="#trash"/></svg></span></li>
+          <li class="flex items-center gap-stack ps-stack"><span class="flex-1 py-inline">يوسف عنده إصابة في الكتف، بلاش ضغط فوق الراس</span><span class="grid size-12 place-items-center text-muted"><svg class="i"><use href="#trash"/></svg></span></li>
+          <li class="flex items-center gap-stack ps-stack"><span class="flex-1 py-inline">مازن مش بياكل لبن</span><span class="grid size-12 place-items-center text-muted"><svg class="i"><use href="#trash"/></svg></span></li>
+          <li class="flex items-center gap-stack ps-stack"><span class="flex-1 py-inline">بتتابع لاعيبتك بالليل بعد 10</span><span class="grid size-12 place-items-center text-muted"><svg class="i"><use href="#trash"/></svg></span></li>
+        </ul>
+        <span class="flex min-h-12 items-center justify-center text-sm text-muted underline">امسح كل اللي KO فاكره</span>
+      </div>
+    </div>
+  </div>
+</div>
+<ul class="cap mt-stack space-y-inline text-muted">
+  <li>بتفتح من علامة الحفظ في هيدر KO، جوه نفس الشاشة، مش صفحة جديدة.</li>
+  <li>كل حاجة ليها زرار مسح. وتحت «امسح الكل»، وبيسألك تأكيد قبل ما يمسح.</li>
+  <li>مفتاح فوق تقفل بيه التعلم خالص.</li>
+  <li>لو مفيش حاجات محفوظة: «لسه KO ما حفظش حاجة عنك. اتكلم معاه عادي وهو هيتعلم.»</li>
+  <li>اللي KO بيحفظه بيبان لصاحبه بس. اللاعب مش بيشوف اللي الكابتن حافظه عنه، والعكس.</li>
+  <li>مش بيحفظ أرقام تليفونات ولا فلوس ولا كلام حساس. الحد الأقصى 30 حاجة، والأقدم يتشال.</li>
+</ul>
+</section>
+
+</div>
+</body></html>
