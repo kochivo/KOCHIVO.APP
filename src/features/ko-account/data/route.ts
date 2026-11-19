@@ -76,6 +76,7 @@ async function rateLimited(actor: KoActor) {
 export async function postKoAccountChat(request: Request) {
   const config = koAccountConfig();
   if (!config || request.headers.get('origin') !== config.origin.origin || request.headers.get('host') !== config.origin.host) {
+    if (config) console.warn('KO request origin or host does not match KO_ORIGIN', { origin: request.headers.get('origin'), host: request.headers.get('host') });
     return reply({ error: 'unavailable' }, 404);
   }
   const size = Number(request.headers.get('content-length'));
