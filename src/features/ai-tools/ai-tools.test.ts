@@ -145,6 +145,16 @@ it.each([false, null])('fails closed when the rate RPC returns %s', async data =
   expect(roster).not.toHaveBeenCalled();
 });
 
+it('gives external assistants a larger tool-call window than in-app KO', async () => {
+  const { ctx, rpc } = fixture();
+  await runTool({ ...ctx, client: 'mcp:claude' }, 'list_athletes', {});
+  expect(rpc).toHaveBeenCalledWith('ko_rate_take', { p_limit: 30, p_window_seconds: 60 });
+});
+
+it.each(['captain', 'player'] as const)('describes every %s tool input as a JSON object schema', role => {
+  for (const tool of listTools(role)) expect(tool.inputJsonSchema).toMatchObject({ type: 'object' });
+});
+
 it('returns the result when audit writing fails', async () => {
   const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
   const { ctx, audit } = fixture();

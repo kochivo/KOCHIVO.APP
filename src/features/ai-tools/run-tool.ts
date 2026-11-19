@@ -7,9 +7,15 @@ import type { AiTool, ToolContext, ToolResult } from './types';
 const timeout = Symbol('tool timeout');
 const cancelled = Symbol('tool cancelled');
 
+// External assistants (Claude, ChatGPT) often call several tools for one answer,
+// e.g. one detail lookup per athlete, so they get a larger share of the window.
+const mcpLimit = 30;
+const koLimit = 12;
+
 async function rateAllowed(ctx: ToolContext) {
   try {
-    const { data, error } = await ctx.actor.db.rpc('ko_rate_take', { p_limit: 12, p_window_seconds: 60 });
+    const limit = ctx.client === 'ko' ? koLimit : mcpLimit;
+    const { data, error } = await ctx.actor.db.rpc('ko_rate_take', { p_limit: limit, p_window_seconds: 60 });
     return !error && data === true;
   } catch {
     return false;

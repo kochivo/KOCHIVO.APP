@@ -5,7 +5,7 @@ const messages = {
   forbidden: 'This action is forbidden.',
   invalid_input: 'Invalid tool input.',
   not_found: 'Tool or record not found.',
-  rate_limited: 'Tool rate limit reached.',
+  rate_limited: 'Too many tool calls in the last minute. Wait about a minute, then try again.',
   timeout: 'Tool timed out.',
   unavailable: 'Tool unavailable.',
 } satisfies Record<Exclude<ToolStatus, 'ok'>, string>;
