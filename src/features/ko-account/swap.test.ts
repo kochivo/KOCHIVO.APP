@@ -6,8 +6,7 @@ import { chooseSwap, prepareSwap } from './data/swap';
 import type { KoActor } from './data/account';
 import type * as AccountModule from './data/account';
 import type * as IntentsModule from './data/intents';
-import { issueApproval, verifyApproval } from './data/approval';
-import type { Approval } from './data/approval';
+import { issueApproval, verifyApproval, type Approval } from './data/approval';
 import { postKoAccountChat } from './data/route';
 import { executeIntent } from './data/execute';
 import { createT } from '@/core/i18n/messages';
@@ -21,6 +20,7 @@ vi.mock('@/features/ko-feed/hooks/use-ko-feed', () => ({ refreshFeed: vi.fn(), u
     data: { reason: 'discomfort', injury: null, from: { en: 'Bridge' }, to: { en: 'Alternative' } } }],
 }) }));
 const chat = vi.hoisted(() => ({ actor: null as KoActor | null, pilots: new Set<string>(), plan: vi.fn() }));
+vi.mock('./data/usage', () => ({ takeUsage: async () => 'ok' }));
 vi.mock('./data/account', async original => ({ ...await original<typeof AccountModule>(), getKoActor: async () => chat.actor }));
 vi.mock('./data/meal', () => ({ readMeal: async () => [] }));
 vi.mock('./data/intents', async original => ({ ...await original<typeof IntentsModule>(), planIntent: chat.plan }));

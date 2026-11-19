@@ -12,7 +12,9 @@ afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 const playerId = '11111111-1111-4111-8111-111111111111';
 const actorId = '22222222-2222-4222-8222-222222222222';
 const actor = { id: actorId, role: 'captain', db: {
-  rpc: async (name: string) => ({ data: name === 'ko_rate_take' ? true : [{ player_id: playerId, full_name: 'Ahmed' }], error: null }),
+  rpc: async (name: string) => ({ data: name === 'ko_rate_take' ? true
+    : name === 'ko_usage_tier' ? [{ captain_id: actorId, tier: 'entry' }]
+    : name === 'ko_usage_take' ? 'ok' : [{ player_id: playerId, full_name: 'Ahmed' }], error: null }),
 } } as unknown as KoActor;
 
 it('silently drops foreign, malformed and unknown context', async () => {

@@ -10,6 +10,7 @@ import { createApproval } from './approval';
 import { KoActionCard } from './components/ko-action-card';
 import type { ActionState } from './hooks/use-ko-actions';
 import { KoChat } from './components/ko-chat';
+import { KoQuickButtons } from './components/ko-quick-buttons';
 import { createT } from '@/core/i18n/messages';
 
 const hooks = vi.hoisted(() => ({ active: false, cursor: 0, values: [] as unknown[], effects: [] as (() => void | (() => void))[], locale: 'ar' as 'ar' | 'en', setClip: undefined as ((clip: Blob) => void) | undefined }));
@@ -69,6 +70,22 @@ async function send(text: string) {
   const form = chat().find(element => element.type === 'form');
   await (form?.props.onSubmit as () => Promise<void>)();
 }
+
+it('sends the exact quick-button text with 48px controls', async () => {
+  const quick = ['تمرين النهارده', 'أكل النهارده', 'تقدّمي'];
+  const fetcher = vi.fn(async () => Response.json({ kind: 'message', text: 'Reply', quick }));
+  vi.stubGlobal('fetch', fetcher);
+  await send('Help');
+  const controls = chat().find(element => element.type === KoQuickButtons);
+  const sendQuick = controls?.props.send as (text: string) => void;
+  const html = renderToStaticMarkup(createElement(KoQuickButtons, { quick, disabled: false, send: sendQuick }));
+  expect(html.match(/<button[^>]*min-h-12[^>]*>/g)).toHaveLength(3);
+  const button = elements(KoQuickButtons({ quick, disabled: false, send: sendQuick })).find(element => element.props.children === quick[0]);
+  (button?.props.onClick as () => void)();
+  expect(fetcher).toHaveBeenLastCalledWith('/api/ko', expect.objectContaining({ body: expect.any(FormData) }));
+  const calls = fetcher.mock.calls as unknown as [string, RequestInit][];
+  expect((calls.at(-1)?.[1].body as FormData).get('text')).toBe(quick[0]);
+});
 
 it('sends only the six prior visible text entries in order within the history budget', async () => {
   const requests: FormData[] = [];

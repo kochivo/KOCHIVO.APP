@@ -1,6 +1,7 @@
 import { afterEach, expect, it, vi } from 'vitest';
 import * as ai from '@/features/ai-tools/server';
 import * as entry from '@/features/ko-entry/server';
+import * as preview from '@/features/player-preview';
 import type { AccountReply } from '@/features/ko-core';
 import * as account from './data/account';
 import type { KoActor } from './data/account';
@@ -8,6 +9,7 @@ import { approvalLifetimeMs, issueApproval, verifyApproval } from './data/approv
 import type { Approval } from './data/approval';
 import { postKoAccountChat } from './data/route';
 import * as progress from './data/read-progress';
+import * as executor from './data/execute';
 
 vi.mock('server-only', () => ({}));
 vi.mock('@/core/timezone/server', () => ({ getPlayerTimezone: async () => 'Africa/Cairo' }));
@@ -20,9 +22,15 @@ const secret = 's'.repeat(32);
 
 afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 
-function setup(role: KoActor['role']) {
+function setup(role: KoActor['role'], usage = 'ok', credit = true) {
+  let warned = false;
   const rpc = vi.fn(async (name: string) => ({
     data: name === 'ko_rate_take' ? true : name === 'ko_apply_action' ? { sent: true }
+      : name === 'ko_usage_tier' ? [{ captain_id: actorId, tier: 'entry' }]
+      : name === 'ko_usage_take' ? usage
+      : name === 'ko_usage_claim_warning' ? !warned && (warned = true)
+      : name === 'ko_usage_summary' ? [{ credits_used: credit ? 0 : 10, credits_cap: 10, month: '2027-01-01' }]
+      : name === 'ko_credit_take' ? credit
       : [{ player_id: playerId, full_name: 'Youssef' }],
     error: null,
   }));
@@ -92,6 +100,86 @@ it('applies a captain approval with only the confirm flag and token', async () =
   expect(response.status).toBe(200);
   expect(await response.json()).toEqual({ kind: 'message', text: 'Workout reminder queued.' });
   expect(rpc).toHaveBeenCalledWith('ko_apply_action', { p_token: token });
+  expect(rpc).not.toHaveBeenCalledWith('ko_credit_take', expect.anything());
+});
+
+it.each([true, false])('takes a big action credit before committing when available: %s', async credit => {
+  const rpc = setup('captain', 'ok', credit);
+  const token = tokenFor('training');
+  const response = await post({ confirm: '1', token });
+  expect(response.status).toBe(credit ? 200 : 409);
+  expect(rpc).toHaveBeenCalledWith('ko_credit_take', { p_month: '2027-01-01', p_cap: 10, p_token: token });
+  const names = rpc.mock.calls.map(([name]) => name);
+  if (credit) expect(names.indexOf('ko_apply_action')).toBeGreaterThan(names.indexOf('ko_credit_take'));
+  else {
+    expect(names).not.toContain('ko_apply_action');
+    expect(await response.json()).toMatchObject({ kind: 'message', upgrade: { tier: 'champion', credits: 100 } });
+  }
+});
+
+it('returns quick buttons at the daily cap without calling Gemini', async () => {
+  setup('player', 'daily');
+  const fetcher = vi.fn();
+  vi.stubGlobal('fetch', fetcher);
+  expect(await (await post({ text: 'Help' })).json()).toMatchObject({
+    kind: 'message', text: expect.stringContaining('message limit'),
+    quick: ['Today’s workout', 'Today’s meals', 'My progress'],
+  });
+  expect(fetcher).not.toHaveBeenCalled();
+});
+
+it('warns once per captain and month when the shared cap blocks Gemini', async () => {
+  setup('captain', 'monthly');
+  const fetcher = vi.fn();
+  vi.stubGlobal('fetch', fetcher);
+  const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+  const one = await (await post({ text: 'Help' })).json();
+  const two = await (await post({ text: 'Help' })).json();
+  expect(one).toMatchObject({ kind: 'message', quick: expect.arrayContaining(['My progress']) });
+  expect(two).toEqual(one);
+  expect(warn).toHaveBeenCalledTimes(1);
+  expect(fetcher).not.toHaveBeenCalled();
+});
+
+it.each([true, false])('shows the cost or upgrade without charging for a big-action preview: %s', async credit => {
+  const rpc = setup('captain', 'ok', credit);
+  mockCalls([{ name: 'create_training', args: { title: 'New workout', player: 'Youssef', days: [
+    { title: 'Upper', weekday: 1, exercises: [{ name: 'Bench', sets: 3, reps: 10 }] },
+  ] } }]);
+  const execute = vi.spyOn(executor, 'executeIntent').mockResolvedValue({
+    kind: 'message', text: '', actions: [{ id: 'id', title: 'Workout', detail: 'Preview', token: 'token' }],
+  });
+  const response = await post({ text: 'Create a 1 day program for Youssef' });
+  const result = await response.json();
+  expect(response.status).toBe(200);
+  if (credit) expect(result).toMatchObject({ actions: [{ detail: 'Preview\nThis uses 1 big-action credit.' }] });
+  else {
+    expect(result).toMatchObject({ upgrade: { tier: 'champion', credits: 100 } });
+    expect(result).not.toHaveProperty('actions');
+    expect(execute).not.toHaveBeenCalled();
+  }
+  expect(rpc.mock.calls.map(([name]) => name)).not.toContain('ko_credit_take');
+});
+
+it.each(['Today’s workout', 'Today’s meals', 'My progress'])('answers %s without taking quota or calling Gemini', async text => {
+  const rpc = setup('player');
+  const fetcher = vi.fn();
+  vi.stubGlobal('fetch', fetcher);
+  vi.spyOn(ai, 'playerNutritionPlan').mockResolvedValue(null);
+  vi.spyOn(ai, 'playerWorkout').mockResolvedValue(null);
+  vi.spyOn(progress, 'readProgress').mockResolvedValue('Your progress');
+  expect(await (await post({ text })).json()).toMatchObject({ kind: 'message', text: expect.any(String) });
+  expect(rpc.mock.calls).toEqual([['ko_rate_take', { p_limit: 12, p_window_seconds: 60 }]]);
+  expect(fetcher).not.toHaveBeenCalled();
+});
+
+it('reads the selected roster player’s workout for a captain shortcut', async () => {
+  const rpc = setup('captain');
+  const read = vi.spyOn(preview, 'fetchPlayerPreview').mockResolvedValue({ data: null });
+  const response = await post({ text: 'Today’s workout', context: JSON.stringify({ screen: 'player', playerId }) });
+  expect(await response.json()).toEqual({ kind: 'message', text: 'No workout scheduled today.' });
+  expect(read).toHaveBeenCalledWith(playerId, '2027-01-15');
+  expect(rpc.mock.calls.map(([name]) => name)).toEqual(['ko_rate_take', 'captain_roster']);
 });
 
 it('confirms a player meal through the KO tool client', async () => {

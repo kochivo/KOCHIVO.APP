@@ -6,6 +6,8 @@ import * as executor from './data/execute';
 import { groundIntent } from './data/ground';
 import type { Intent } from './data/intents';
 import { postKoAccountChat } from './data/route';
+import type * as UsageModule from './data/usage';
+vi.mock('./data/usage', async original => ({ ...await original<typeof UsageModule>(), takeUsage: async () => 'ok' }));
 
 vi.mock('server-only', () => ({}));
 

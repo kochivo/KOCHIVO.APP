@@ -1,4 +1,13 @@
 export const arStd = {
+  creditMeterTitle: 'رصيد الإجراءات الكبيرة',
+  creditMeterAmount: '{used} من {cap}',
+  creditMeterNote: 'المحادثة العادية لا تُحتسب. يتجدد الرصيد في أول {month}.',
+  upgradeTitle: 'هل تريد رصيدًا أكبر؟',
+  upgradeMonthlyCredits: '{credits} في الشهر',
+  'upgradeTier.entry': 'ENTRY', 'upgradeTier.champion': 'CHAMPION',
+  'upgradeTier.legend': 'LEGEND', 'upgradeTier.empire': 'EMPIRE',
+  upgrade: 'ترقية الباقة',
+  later: 'لاحقًا',
   voiceOnlyReady: "التسجيل جاهز للإرسال وحده",
   sendVoiceOnly: "أرسل التسجيل فقط",
   'suggest.meal': 'وجبتي القادمة', accountChatTitle: 'مساعد Kochivo', home: 'الرئيسية',

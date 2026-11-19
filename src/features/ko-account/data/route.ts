@@ -22,6 +22,9 @@ import { messages } from '../messages';
 import { mealReceipt } from './meal-receipt';
 import { chooseSwap } from './swap';
 import type { AccountReply } from './execute';
+import { isBigAction } from './limits';
+import { creditsOut, readCredits, takeCredit, takeUsage } from './usage';
+import { quickKeys, readQuick } from './quick';
 
 const maxImage = 3_000_000;
 const maxAudio = 1_000_000;
@@ -83,13 +86,18 @@ export async function postKoAccountChat(request: Request) {
     const actor = await getKoActor();
     if (!actor || !config.pilots.has(actor.id)) return reply({ error: 'unauthorized' }, 403);
     const now = Date.now();
-    if (await rateLimited(actor)) return reply({ error: 'rateLimit' }, 429);
     const form = await request.formData().catch(() => null);
     if (!form) return reply({ error: 'invalid' }, 400);
     const locale = form.get('locale') === 'en' ? 'en' : 'ar';
     const style = locale === 'ar' ? await getArabicStyle() : undefined;
     const t = createT(messages, locale);
     const actionT = createT(messages, locale, style);
+    if (form.get('usage') === '1') {
+      if (actor.role !== 'captain') return reply({ error: 'unauthorized' }, 403);
+      const { used, cap, month } = await readCredits(actor, locale);
+      return reply({ used, cap, month });
+    }
+    if (await rateLimited(actor)) return reply({ error: 'rateLimit' }, 429);
     const entry = form.get('text');
     const audio = form.get('audio');
     const photo = form.get('photo');
@@ -119,14 +127,14 @@ export async function postKoAccountChat(request: Request) {
       }
       if (actor.role !== 'captain' || typeof token !== 'string') return expired();
       try {
+        if (isBigAction(action.kind) && !(await takeCredit(actor, await readCredits(actor, locale), token)))
+          return reply(creditsOut(await readCredits(actor, locale), actionT), 409);
         const result = await commitApproval(actor, action, token, locale, style);
         return reply(result, result.text === actionT('changed') ? 409 : 200);
       } catch {
         return reply(say(actionT('actionFailed')), 502);
       }
     }
-    const history = parseHistory(form.get('history'));
-    const contextPlayer = await resolveContext(actor, form.get('context'));
     if (actor.role === 'player' && !audio && !photo && /^[0-9٠-٩]+$/.test(text)) {
       const cookie = request.headers.get('cookie')?.split(';').map(part => part.trim())
         .find(part => part.startsWith(`${swapCookie}=`))?.slice(swapCookie.length + 1);
@@ -137,6 +145,11 @@ export async function postKoAccountChat(request: Request) {
       return playerReply(result, config.origin.protocol === 'https:');
     }
     const suggestions = createT(koPreviewMessages, locale);
+    const quick = quickKeys.find(key => text === actionT(key) || text === t(key));
+    if (!audio && !photo && quick) {
+      const player = actor.role === 'captain' ? await resolveContext(actor, form.get('context')) : undefined;
+      return reply(say(await readQuick(actor, quick, locale, now, request.signal, actionT, player)));
+    }
     if (!audio && !photo && text === suggestions('suggest.meal') && actor.role === 'player')
       return playerReply(await executeIntent(actor, { kind: 'read_nutrition', args: {} }, locale, config.secret, now), config.origin.protocol === 'https:');
 
@@ -151,6 +164,11 @@ export async function postKoAccountChat(request: Request) {
       media = { data: new Uint8Array(await file.arrayBuffer()), mimeType: type === 'audio/mp4' ? 'audio/m4a' : type };
     }
     if (!text && !media) return reply({ error: 'invalid' }, 400);
+    if (await takeUsage(actor, now, photo !== null, config.secret) !== 'ok') {
+      return reply({ kind: 'message', text: actionT('limitReached'), quick: quickKeys.map(key => actionT(key)) });
+    }
+    const history = parseHistory(form.get('history'));
+    const contextPlayer = await resolveContext(actor, form.get('context'));
     const planned = await planIntent(actor.role, { text, media }, config.key, request.signal, contextPlayer?.name, history);
     const lastTurn = history.at(-1);
     const question = lastTurn?.role === 'ko' && /[?؟]\s*$/.test(lastTurn.text) ? lastTurn.text : '';
@@ -160,11 +178,26 @@ export async function postKoAccountChat(request: Request) {
     const texts: string[] = [];
     const actions: AccountAction[] = [];
     let optionsToken: string | undefined;
+    let upgrade: Extract<AccountReply, { kind: 'message' }>['upgrade'];
+    let credits: Awaited<ReturnType<typeof readCredits>> | undefined;
     for (const intent of intents) {
+      const big = isBigAction(intent.kind);
+      if (big && actor.role === 'captain') {
+        credits ??= await readCredits(actor, locale);
+        if (credits.used >= credits.cap) {
+          const blocked = creditsOut(credits, actionT);
+          if (!texts.includes(blocked.text)) {
+            texts.push(blocked.text);
+            upgrade = blocked.upgrade;
+          }
+          continue;
+        }
+      }
       const item = await executeIntent(actor, intent, locale, config.secret, now, contextPlayer, request.signal, style);
       if (item.text) texts.push(item.text);
       if (item.kind === 'message') {
-        actions.push(...(item.actions ?? []));
+        actions.push(...(item.actions ?? []).map(action => big
+          ? { ...action, detail: `${action.detail}\n${actionT('creditCost')}` } : action));
         optionsToken = item.optionsToken;
       }
     }
@@ -173,6 +206,7 @@ export async function postKoAccountChat(request: Request) {
       text: texts.join('\n\n') || (actions.length ? actionT(actions.length > 1 ? 'actionsReady' : 'actionReady') : t('unclear')),
       ...(actions.length && { actions }),
       ...(optionsToken && { optionsToken }),
+      ...(upgrade && { upgrade }),
     };
     if (photo && actor.role === 'player' && exclusive?.kind === 'meal_photo') {
       const secret = process.env.KO_MEAL_RECEIPT_SECRET;

@@ -2916,6 +2916,11 @@ export type Database = {
         }[]
       }
       current_tier: { Args: { p_captain: string }; Returns: string }
+      ko_usage_tier: { Args: Record<never, never>; Returns: { captain_id: string; tier: string }[] }
+      ko_usage_take: { Args: { p_day: string; p_kind: string; p_msg_cap: number; p_photo_cap: number; p_month_cap: number }; Returns: string }
+      ko_credit_take: { Args: { p_month: string; p_cap: number; p_token?: string }; Returns: boolean }
+      ko_usage_summary: { Args: Record<never, never>; Returns: { credits_used: number; credits_cap: number; month: string }[] }
+      ko_usage_claim_warning: { Args: { p_month_cap: number; p_proof: string }; Returns: boolean }
       decide_exercise_swap: {
         Args: { p_approve: boolean; p_id: string }
         Returns: undefined

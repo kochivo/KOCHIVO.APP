@@ -11,6 +11,9 @@ import { KoAvatar } from '@/ui/ko-avatar';
 import { KoMessage } from './ko-message';
 import { KoTyping } from './ko-typing';
 import { KoActionCard } from './ko-action-card';
+import { KoCreditMeter } from './ko-credit-meter';
+import { KoQuickButtons } from './ko-quick-buttons';
+import { KoUpgradeCard } from './ko-upgrade-card';
 import { chatActions, latestPendingAction, useKoActions } from '../hooks/use-ko-actions';
 import type { ChatAction } from '../hooks/use-ko-actions';
 import { contextFromPath } from '../context';
@@ -26,7 +29,8 @@ import type { KoReply } from '@/features/ko-core';
 import type { AccountReply } from '@/features/ko-core';
 import { Button } from '@/ui/button';
 
-type Entry = { speaker: 'user' | 'ko'; text: string; contextText?: string; actions?: ChatAction[] };
+type Extras = Pick<Extract<AccountReply, { kind: 'message' }>, 'quick' | 'upgrade'>;
+type Entry = Extras & { speaker: 'user' | 'ko'; text: string; contextText?: string; actions?: ChatAction[] };
 
 export function KoChat({ role, onExpression, account = false, context: suppliedContext }: { role: KoRole; onExpression?: (value: KoExpression) => void; account?: boolean; context?: KoContext | null }) {
   const t = useT(messages);
@@ -115,7 +119,9 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
       const newCards = account && (result.kind === 'message' || result.kind === 'confirm') ? chatActions(result) : undefined;
       setHistory(entries => [...entries, { speaker: 'user' as const, text: clip ? t('voiceNote') : photo ? `${t('mealPhoto')} ${prompt}`.trim() : prompt,
         contextText: clip ? '' : prompt },
-        { speaker: 'ko' as const, text: answer, actions: newCards }].slice(-30));
+        { speaker: 'ko' as const, text: answer, actions: newCards, ...(result.kind === 'message' && {
+          quick: result.quick, upgrade: result.upgrade,
+        }) }].slice(-30));
       setDraft('');
       setClip(null);
       setPhoto(null);
@@ -139,15 +145,25 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
     </div>}
     {showFeed && <KoFeed avatar={value => <KoAvatar expression={value} className="size-10" />} />}
     <div ref={log} role="log" aria-label={t(account ? 'accountChatTitle' : 'chatTitle')} className="flex max-h-60 min-h-32 flex-col gap-stack overflow-y-auto p-card text-sm">
+      {account && <KoCreditMeter key={actions.revision} role={role} />}
       <KoMessage speaker="ko" text={t(account
         ? role === 'captain' ? 'accountCaptain' : 'accountPlayer'
         : role === 'captain' ? 'chatCaptain' : 'chatPlayer')} />
       {history.map((entry, index) => <Fragment key={entry.actions?.[0]?.id ?? index}>
-        <KoMessage speaker={entry.speaker} text={entry.text} />
-        {account && entry.actions?.map((action, position) => <KoActionCard key={action.id} action={action} number={position + 1}
-          state={actions.states[action.id]} busy={busy || recorder.status !== 'idle' || Boolean(clip || photo)}
+        <KoMessage speaker={entry.speaker} text={entry.text}>
+          {entry.quick?.length ? <KoQuickButtons quick={entry.quick} disabled={busy || recorder.status !== 'idle' || Boolean(clip || photo)}
+            send={text => void submit(undefined, text)} /> : role === 'captain' && entry.upgrade ? <KoUpgradeCard upgrade={entry.upgrade} /> : null}
+        </KoMessage>
+        {account && entry.actions?.map((action, position) => {
+          const state = actions.states[action.id];
+          const upgrade = state?.kind === 'failed' ? state.upgrade : undefined;
+          return <Fragment key={action.id}><KoActionCard action={action} number={position + 1}
+          state={state} busy={busy || recorder.status !== 'idle' || Boolean(clip || photo)}
           focus={position === 0 && index === history.length - 1}
-          onConfirm={() => actions.confirm(action)} onCancel={() => actions.cancel(action)} />)}
+          onConfirm={() => actions.confirm(action)} onCancel={() => actions.cancel(action)} />
+          {role === 'captain' && upgrade && <KoUpgradeCard upgrade={upgrade} />}
+          </Fragment>;
+        })}
       </Fragment>)}
       {busy && <KoTyping />}
     </div>

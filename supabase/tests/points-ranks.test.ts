@@ -171,7 +171,8 @@ it.each(['returned', 'thrown', 'success', 'missing'])('preserves a successful me
   if (mode === 'missing') vi.stubEnv('KO_MEAL_RECEIPT_SECRET', '');
   if (mode === 'returned' || mode === 'thrown') await db.query('update public.profiles set suspended_at=now() where id=$1', [player]);
   const rpc = async (name: string, args: { p_day: string; p_receipt: string }) => {
-    if (name === 'ko_rate_take') return { data: true, error: null };
+    if (name === 'ko_usage_tier') return { data: [{ captain_id: captain, tier: 'entry' }], error: null };
+    if (name !== 'award_meal_check') return { data: name === 'ko_usage_take' ? 'ok' : true, error: null };
     try {
       await asUser(db, player, tx => tx.query('select public.award_meal_check($1::date,$2)', [args.p_day, args.p_receipt]));
       return { error: null };
@@ -181,9 +182,8 @@ it.each(['returned', 'thrown', 'success', 'missing'])('preserves a successful me
   chat.actor = { id: player, role: 'player', db: { rpc, from: () => query } } as unknown as KoActor;
   chat.pilots.add(player);
   const form = new FormData(); form.set('locale', 'en'); form.set('photo', new File(['photo'], 'meal.jpg', { type: 'image/jpeg' }));
-  const request = new Request('https://kochivo.test/api/ko', { method: 'POST', body: form,
-    headers: { origin: 'https://kochivo.test', host: 'kochivo.test', 'content-length': '1000' } });
-  const response = await postKoAccountChat(request);
+  const response = await postKoAccountChat(new Request('https://kochivo.test/api/ko', { method: 'POST', body: form,
+    headers: { origin: 'https://kochivo.test', host: 'kochivo.test', 'content-length': '1000' } }));
   expect(response.status).toBe(200); expect(await response.json()).toMatchObject({ kind: 'message', text: expect.stringContaining('Rice') });
   expect((await logs()).rows).toHaveLength(mode === 'success' ? 1 : 0);
   if (mode === 'success') expect(warn).not.toHaveBeenCalled();

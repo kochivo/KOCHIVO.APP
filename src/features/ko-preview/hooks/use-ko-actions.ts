@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import type { AccountAction, AccountReply } from '@/features/ko-core';
+import type { AccountAction, AccountReply, KoUpgrade } from '@/features/ko-core';
 import { createApproval } from '../approval';
 
 export type ActionState =
   | { kind: 'submitting' | 'cancelled' }
-  | { kind: 'done' | 'failed'; text: string };
+  | { kind: 'done' | 'failed'; text: string; upgrade?: KoUpgrade };
 
 export type ChatAction = Omit<AccountAction, 'token'> & {
   approval: ReturnType<typeof createApproval>;
@@ -22,6 +22,7 @@ export function latestPendingAction(cards: ChatAction[], states: Record<string, 
 
 export function useKoActions(locale: string, failureText: string) {
   const [states, setStates] = useState<Record<string, ActionState>>({});
+  const [revision, setRevision] = useState(0);
   const inFlight = useRef(new Set<AbortController>());
   useEffect(() => {
     const requests = inFlight.current;
@@ -46,10 +47,12 @@ export function useKoActions(locale: string, failureText: string) {
       update(action.id, {
         kind: response.ok && result.kind === 'message' ? 'done' : 'failed',
         text: result.kind === 'message' ? result.text : failureText,
+        ...(result.kind === 'message' && result.upgrade && { upgrade: result.upgrade }),
       });
     } catch {
       if (!controller.signal.aborted) update(action.id, { kind: 'failed', text: failureText });
     } finally {
+      if (!controller.signal.aborted) setRevision(value => value + 1);
       inFlight.current.delete(controller);
     }
   }
@@ -59,5 +62,5 @@ export function useKoActions(locale: string, failureText: string) {
     update(action.id, { kind: 'cancelled' });
   }
 
-  return { states, confirm, cancel };
+  return { states, confirm, cancel, revision };
 }

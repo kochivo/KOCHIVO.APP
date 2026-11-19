@@ -11,6 +11,8 @@ afterEach(() => { vi.restoreAllMocks(); });
 it.each(['allowed', 'limited', 'error', 'throws'] as const)('handles a shared rate RPC that is %s', async mode => {
   vi.spyOn(Date, 'now').mockReturnValue(1_800_000_000_000);
   const rpc = vi.fn(async (name: string, args: unknown) => {
+    if (name === 'ko_usage_tier') return { data: [{ captain_id: 'pilot', tier: 'entry' }], error: null };
+    if (name === 'ko_usage_take') return { data: 'ok', error: null };
     expect(name).toBe('ko_rate_take');
     expect(args).toEqual({ p_limit: 12, p_window_seconds: 60 });
     if (mode === 'throws') throw new Error('Connection failed');
