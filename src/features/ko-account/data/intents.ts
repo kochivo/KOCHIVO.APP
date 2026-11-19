@@ -21,12 +21,14 @@ const tools = {
   why_not_counted: { schema: z.strictObject({}),
     description: 'Player asks why a workout did not count / ليه التمرين ما اتحسبش. Explain the latest pending or rejected workout in the last 14 days using actual duration and logged sets. Not a general progress question.' },
   player_summary: { schema: z.strictObject(target),
-    description: 'Captain reads one roster player: last workout, monthly done/planned and adherence, rank, open swaps and subscription end. Use the named player or omit player for the current screen context.' },
+    description: 'Captain reads one roster player: last workout, monthly done/planned and adherence, rank, open swaps and subscription end. Use this for questions about one named player, including بقاله كتير ما جاش or اختفى. Omit player to use the current screen context.' },
   team_summary: { schema: z.strictObject({}),
-    description: 'Captain asks about the team, who is falling behind / مين واقع من لاعيبتي: inactive 7+ days, subscriptions ending within 7 days, crown leader and zero workouts this month. Read only the captain roster.' },
+    description: 'Captain asks about their own roster, who is falling behind / مين واقع من لاعيبتي: inactive 7+ days, subscriptions ending within 7 days, crown leader and zero workouts this month. Use clarify for payments, dues or another captain’s players.' },
   swap_exercise: { schema: z.strictObject({ exercise: name,
-    reason: z.enum(['injury', 'busy', 'discomfort']).default('injury'),
-    injury: z.enum(['knee', 'shoulder', 'lower_back']).optional(),
+    reason: z.enum(['injury', 'busy', 'discomfort']).default('injury')
+      .describe('وجع أو إصابة / pain or injury → injury; الجهاز مشغول أو عليه حد / occupied machine → busy; مش مرتاح / uncomfortable without a named pain location → discomfort.'),
+    injury: z.enum(['knee', 'shoulder', 'lower_back']).optional()
+      .describe('ركبة أو ركبتي / knee → knee; كتف أو كتفي / shoulder → shoulder; ضهر من تحت أو أسفل الظهر / lower back → lower_back.'),
   }).refine(args => args.reason !== 'injury' || args.injury !== undefined, { path: ['injury'] }),
     description: 'Player requests alternatives for a named exercise in their active program. Machine busy / taken / occupied → reason busy: read-only alternatives, no request or plan change. Doesn\'t feel right / uncomfortable without a body part → discomfort: captain approval for a permanent swap. Named knee, shoulder or lower back pain → injury with that explicit body part: captain approval. Other pain → clarify and suggest asking the captain. Never medical advice.' },
   read_exercise: { schema: z.strictObject({ ...namedExercise, player: name.optional(), how: z.boolean().optional() }),
@@ -44,7 +46,7 @@ const tools = {
     description: 'Create a reviewable meal plan using the calorie and macro targets explicitly supplied by the captain. Ask for missing targets, allergies or exclusions if relevant. Use unambiguous catalog food names and cooked/raw form.' },
   renew_subscription: { schema: z.strictObject({ ...target, days: z.number().int().min(1).max(365) }),
     description: 'Preview a day-based subscription extension. Do not infer days. No cash amount is collected; the extension is recorded in billing history.' },
-  send_reminder: { schema: z.strictObject(target), description: 'Preview an immediate in-app workout reminder for one player only.' },
+  send_reminder: { schema: z.strictObject(target), description: 'Preview an immediate in-app workout reminder for one player only. Includes فكّر / فكره / ذكّر / ابعتله تنبيه.' },
   read_nutrition: { schema: z.strictObject({ meal: title.optional(), foods: z.array(name).max(10).optional() }),
     description: 'Read the player’s assigned meal portions and approved alternatives. Include any food names requested.' },
   meal_photo: { schema: z.strictObject({ meal: title.optional(), foods: z.array(name).min(1).max(10) }),
@@ -53,12 +55,28 @@ const tools = {
     description: 'Ask for the missing information, or explain that the operation is unavailable. Do not claim anything was saved or advise on medical issues.' },
 };
 type ToolName = keyof typeof tools;
-export type Intent = { [K in ToolName]: { kind: K; args: z.input<(typeof tools)[K]['schema']> } }[ToolName];
+type ToolIntent = { [K in ToolName]: { kind: K; args: z.input<(typeof tools)[K]['schema']> } }[ToolName];
+type ClarificationReason = ToolName | 'unsupported_payments' | 'other_captain';
+type Clarification = { kind: 'clarify'; args: { question: '' }; reason: ClarificationReason };
+export type Intent = ToolIntent | Clarification;
+
+export function clarifyIntent(reason: ClarificationReason): Clarification {
+  return { kind: 'clarify', args: { question: '' }, reason };
+}
 
 const captain = ['player_summary', 'team_summary', 'read_exercise', 'update_exercise', 'create_training', 'create_nutrition', 'renew_subscription', 'send_reminder', 'clarify'] as const;
 const player = ['my_progress', 'why_not_counted', 'read_exercise', 'read_nutrition', 'swap_exercise', 'clarify'] as const;
 
-type GeminiSchema = { type?: string; properties?: Record<string, GeminiSchema>; items?: GeminiSchema; required?: string[] };
+type GeminiSchema = {
+  type?: string;
+  properties?: Record<string, GeminiSchema>;
+  items?: GeminiSchema;
+  required?: string[];
+  enum?: string[];
+  description?: string;
+  minimum?: number;
+  maximum?: number;
+};
 
 function geminiParameters(schema: GeminiSchema): GeminiSchema {
   return {
@@ -67,6 +85,10 @@ function geminiParameters(schema: GeminiSchema): GeminiSchema {
       .map(([key, value]) => [key, geminiParameters(value)])) }),
     ...(schema.items && { items: geminiParameters(schema.items) }),
     ...(schema.required?.length && { required: schema.required }),
+    ...(schema.enum && { enum: schema.enum }),
+    ...(schema.description !== undefined && { description: schema.description }),
+    ...(schema.minimum !== undefined && { minimum: schema.minimum }),
+    ...(schema.maximum !== undefined && { maximum: schema.maximum }),
   };
 }
 
@@ -74,7 +96,7 @@ export function parseIntent(kind: string, args: unknown, permitted: readonly Too
   const key = permitted.find(value => value === kind);
   if (!key) return null;
   const parsed = tools[key].schema.safeParse(args);
-  return parsed.success ? { kind: key, args: parsed.data } as Intent : null;
+  return parsed.success ? { kind: key, args: parsed.data } as ToolIntent : clarifyIntent(key);
 }
 
 export async function planIntent(role: KoRole, input: { text?: string; media?: KoMedia }, key: string, signal: AbortSignal, contextName?: string, history: readonly KoTurn[] = [], fetcher: typeof fetch = fetch) {

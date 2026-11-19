@@ -154,4 +154,15 @@ it.each(['player', 'captain'] as const)('offers only role-appropriate read tools
   const denied = role === 'player' ? ['player_summary', 'team_summary'] : ['my_progress', 'why_not_counted'];
   for (const name of permitted) expect(names).toContain(name);
   for (const name of denied) expect(names).not.toContain(name);
+  const declaration = (name: string) => body.tools.flatMap(t => t.functionDeclarations).find(d => d.name === name);
+  if (role === 'player') {
+    expect(declaration('swap_exercise')).toMatchObject({ parameters: { properties: {
+      reason: { type: 'STRING', enum: ['injury', 'busy', 'discomfort'], description: expect.any(String) },
+      injury: { type: 'STRING', enum: ['knee', 'shoulder', 'lower_back'], description: expect.stringContaining('lower_back') },
+    } } });
+  } else {
+    expect(declaration('create_training')).toMatchObject({ parameters: { properties: {
+      days: { items: { properties: { weekday: { type: 'INTEGER', minimum: 0, maximum: 6 } } } },
+    } } });
+  }
 });

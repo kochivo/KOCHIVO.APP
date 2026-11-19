@@ -11,6 +11,7 @@ import type { KoActor } from './account';
 import { verifyApproval } from './approval';
 import { koAccountConfig } from '@/features/ko-entry/server';
 import { commitApproval, executeIntent, say } from './execute';
+import { groundIntent } from './ground';
 import { planIntent } from './intents';
 import { normalizeName } from './match';
 import { messages } from '../messages';
@@ -123,7 +124,10 @@ export async function postKoAccountChat(request: Request) {
       media = { data: new Uint8Array(await file.arrayBuffer()), mimeType: type === 'audio/mp4' ? 'audio/m4a' : type };
     }
     if (!text && !media) return reply({ error: 'invalid' }, 400);
-    const intent = await planIntent(actor.role, { text, media }, config.key, request.signal, contextPlayer?.name, history);
+    const planned = await planIntent(actor.role, { text, media }, config.key, request.signal, contextPlayer?.name, history);
+    const lastTurn = history.at(-1);
+    const question = lastTurn?.role === 'ko' && /[?؟]\s*$/.test(lastTurn.text) ? lastTurn.text : '';
+    const intent = planned && text ? groundIntent(planned, question ? question + '\n' + text : text) : planned;
     const result = intent ? await executeIntent(actor, intent, locale, config.secret, now, contextPlayer) : say(t('unclear'));
     if (photo && actor.role === 'player' && intent?.kind === 'meal_photo' && result.kind === 'message') {
       const secret = process.env.KO_MEAL_RECEIPT_SECRET;

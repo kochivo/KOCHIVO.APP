@@ -23,7 +23,7 @@ const range = (min: number, max: number | null) => max !== null && max !== min ?
 
 export async function executeIntent(actor: KoActor, intent: Intent, locale: Locale, secret: string, now: number, contextPlayer?: { id: string; name: string }): Promise<AccountReply> {
   const t = createT(messages, locale);
-  if (intent.kind === 'clarify') return say(intent.args.question);
+  if (intent.kind === 'clarify') return say('reason' in intent ? t(`clarify_${intent.reason}`) : intent.args.question);
   if (intent.kind === 'my_progress' || intent.kind === 'why_not_counted' ||
       intent.kind === 'player_summary' || intent.kind === 'team_summary')
     return say(await readProgress(actor, intent, locale, now, contextPlayer));

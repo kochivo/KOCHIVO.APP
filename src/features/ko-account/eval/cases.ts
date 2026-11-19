@@ -12,7 +12,7 @@ export interface KoEvalCase {
 
 const bench = 'bench|بنش|صدر';
 const squat = 'squat|سكوات|اسكوات';
-const deadlift = 'deadlift|ديدلفت|دیدلفت|رفعة ميتة|رفعة أرضية';
+const deadlift = 'deadlift|ديدلفت|دیدلفت|رفعة ميتة|الأرضية';
 const press = 'shoulder press|overhead|كتف|ضغط';
 
 const player: KoEvalCase[] = [

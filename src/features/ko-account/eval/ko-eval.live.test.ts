@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import { setTimeout as wait } from 'node:timers/promises';
 import { describe, expect, it, vi } from 'vitest';
 import { localDate } from '@/lib/dates';
+import { groundIntent } from '../data/ground';
 import { planIntent } from '../data/intents';
 import { koEvalCases } from './cases';
 import type { KoEvalCase } from './cases';
@@ -51,11 +52,15 @@ describe.skipIf(process.env.KO_EVAL !== '1')('KO baseline eval', () => {
         if (attempt > 0) await wait(20_000);
         const start = performance.now();
         try {
-          const got = await planIntent(
+          const planned = await planIntent(
             testCase.role, { text: testCase.text }, apiKey, AbortSignal.timeout(30_000),
             testCase.context, testCase.history ?? [], fetcher,
           );
           ms += performance.now() - start;
+          // Same grounding as the chat route: latest text plus the last KO question.
+          const last = testCase.history?.at(-1);
+          const question = last?.role === 'ko' && /[?؟]\s*$/.test(last.text) ? `${last.text}\n` : '';
+          const got = planned ? groundIntent(planned, question + testCase.text) : null;
           return { case: testCase, got, outcome: matchCase(testCase, got).outcome, ms: Math.round(ms), tokens };
         } catch (cause) {
           ms += performance.now() - start;
@@ -73,7 +78,7 @@ describe.skipIf(process.env.KO_EVAL !== '1')('KO baseline eval', () => {
 
     const date = localDate(new Date(), 'Africa/Cairo');
     const directory = join('docs', 'ko', 'eval');
-    const base = join(directory, `${date}-baseline`);
+    const base = join(directory, `${date}-${process.env.KO_EVAL_NAME ?? 'baseline'}`);
     const report = renderReport(summarize(results), { model, date, runCount: results.length });
     await mkdir(directory, { recursive: true });
     await writeFile(`${base}.md`, report, 'utf8');

@@ -97,8 +97,8 @@ it('handles missing, ambiguous and unsafe options without suggesting a change', 
 it('parses only explicit injury swap requests in the player tool allowlist', () => {
   expect(parseIntent('swap_exercise', { exercise: 'Squat', injury: 'knee' }, ['swap_exercise']))
     .toEqual({ kind: 'swap_exercise', args: { exercise: 'Squat', reason: 'injury', injury: 'knee' } });
-  expect(parseIntent('swap_exercise', { exercise: 'Squat', injury: 'elbow' }, ['swap_exercise'])).toBeNull();
-  expect(parseIntent('swap_exercise', { exercise: 'Squat' }, ['swap_exercise'])).toBeNull();
+  expect(parseIntent('swap_exercise', { exercise: 'Squat', injury: 'elbow' }, ['swap_exercise'])).toEqual({
+    kind: 'clarify', args: { question: '' }, reason: 'swap_exercise' });
   expect(parseIntent('swap_exercise', { exercise: 'Squat', injury: 'knee' }, ['read_exercise'])).toBeNull();
 });
 const secret = 'swap-test-secret-12345678901234567890';
@@ -211,9 +211,9 @@ it('rate-limits numeric choices through the existing shared limiter', async () =
 });
 it.each(['injury', 'busy', 'discomfort'])('validates %s and requires a body part only for injury', reason => {
   const parse = (injury?: string) => parseIntent('swap_exercise', { exercise: 'Bridge', reason, ...(injury && { injury }) }, ['swap_exercise']);
-  expect(Boolean(parse())).toBe(reason !== 'injury');
+  expect(parse()?.kind).toBe(reason === 'injury' ? 'clarify' : 'swap_exercise');
   expect(parse('knee')?.args).toMatchObject({ reason });
-  expect(parse('elbow')).toBeNull();
+  expect(parse('elbow')?.kind).toBe('clarify');
 });
 it.each(['ar', 'en'] as const)('renders the discomfort captain reason in %s', locale => {
   const html = renderToStaticMarkup(createElement(LocaleProvider, { locale }, createElement(KoFeed, { avatar: () => null })));
