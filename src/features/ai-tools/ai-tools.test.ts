@@ -145,10 +145,10 @@ it.each([false, null])('fails closed when the rate RPC returns %s', async data =
   expect(roster).not.toHaveBeenCalled();
 });
 
-it('gives external assistants a larger tool-call window than in-app KO', async () => {
+it('sends the only window ko_rate_take accepts for external assistants too', async () => {
   const { ctx, rpc } = fixture();
   await runTool({ ...ctx, client: 'mcp:claude' }, 'list_athletes', {});
-  expect(rpc).toHaveBeenCalledWith('ko_rate_take', { p_limit: 30, p_window_seconds: 60 });
+  expect(rpc).toHaveBeenCalledWith('ko_rate_take', { p_limit: 12, p_window_seconds: 60 });
 });
 
 it.each(['captain', 'player'] as const)('describes every %s tool input as a JSON object schema', role => {
