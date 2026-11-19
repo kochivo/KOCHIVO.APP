@@ -14,8 +14,8 @@ const exceptions: Record<string, number> = {
   '/offline': 207, // T-363..T-368 refined look: measured 206.03
   '/captain/programs/[programId]': 316, // CI measured 315.06 after T-395..T-401
   // T-383..T-388 captain phone shell and player-file header (2026-11-18): +1..3 KiB on these routes.
-  '/captain/players/[playerId]/programs': 333, // measured 332.31 after T-395..T-401 (M3 review fixes)
-  '/captain/players/[playerId]/nutrition': 316, // measured 315.59 after T-395..T-401
+  '/captain/players/[playerId]/programs': 334, // measured 333.04 after T-413..T-418 (audit number fixes)
+  '/captain/players/[playerId]/nutrition': 317, // measured 316.29 after T-413..T-418 (split day targets)
   '/captain/players/[playerId]/preview': 315, // measured 314.38 after T-399 player-file fixes
   '/demo': 290, // measured 287.97 locally after T-395..T-401; CI builds run slightly larger
 };
