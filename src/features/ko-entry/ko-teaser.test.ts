@@ -8,7 +8,7 @@ import { createT } from '@/core/i18n/messages';
 import type * as ButtonModule from '@/ui/button';
 import type * as IconButtonModule from '@/ui/icon-button';
 import { KoAccountLink } from '../ko-preview/components/ko-account-link';
-import { koTeaserEnabled } from './config';
+import { koAccountConfig, koTeaserEnabled } from './config';
 import { KoTeaser } from '../ko-preview/components/ko-teaser';
 import { KoTeaserPanel } from '../ko-preview/components/ko-teaser-panel';
 import { joinWaitlist } from './data/join-waitlist';
@@ -98,6 +98,18 @@ it('keeps the real widget for pilots', async () => {
   const result = await KoAccountLink({});
   expect(result?.type).not.toBe(KoTeaser);
   expect(result?.props).toEqual({ role: 'captain' });
+});
+it('opens the real widget to every signed-in account when the pilot list is *', async () => {
+  for (const key of ['KO_ENABLED', 'KO_GEMINI_PAID']) vi.stubEnv(key, '1');
+  vi.stubEnv('KO_ORIGIN', 'https://example.com');
+  vi.stubEnv('KO_APPROVAL_SECRET', 's'.repeat(32));
+  vi.stubEnv('KO_PILOT_USER_IDS', '*');
+  vi.stubEnv('GOOGLE_GENERATIVE_AI_API_KEY', 'test');
+  mocks.claims.mockResolvedValue({ data: { claims: { sub: 'someone-else' } }, error: null });
+  expect((await KoAccountLink({}))?.type).not.toBe(KoTeaser);
+  mocks.claims.mockResolvedValue({ data: { claims: { sub: 'someone-else', is_anonymous: true } }, error: null });
+  expect(await KoAccountLink({})).toBeNull();
+  expect(koAccountConfig()?.pilots.has('anyone')).toBe(true);
 });
 it.each(['ar', 'en'] as const)('renders the badge, examples, and joined states in %s', locale => {
   const t = createT(messages, locale);

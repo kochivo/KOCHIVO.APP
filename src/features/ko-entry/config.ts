@@ -12,7 +12,10 @@ export function koAccountConfig() {
   try {
     const origin = new URL(KO_ORIGIN);
     if (origin.origin !== KO_ORIGIN || (process.env.NODE_ENV === 'production' && origin.protocol !== 'https:')) return null;
-    return { origin, secret: KO_APPROVAL_SECRET, key: GOOGLE_GENERATIVE_AI_API_KEY, pilots: new Set(KO_PILOT_USER_IDS.split(',').map(id => id.trim())) };
+    const ids = new Set(KO_PILOT_USER_IDS.split(',').map(id => id.trim()));
+    // KO_PILOT_USER_IDS='*' opens KO to every signed-in account, matching MCP_PILOT_USER_IDS.
+    const pilots: Pick<ReadonlySet<string>, 'has'> = { has: id => ids.has('*') || ids.has(id) };
+    return { origin, secret: KO_APPROVAL_SECRET, key: GOOGLE_GENERATIVE_AI_API_KEY, pilots };
   } catch {
     return null;
   }
