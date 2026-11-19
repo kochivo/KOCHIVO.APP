@@ -11,8 +11,7 @@ export function activeSubscription(player: Subscription, today: string) {
 }
 
 export function expiringSoon<T extends Subscription>(players: T[], today: string) {
-  return players.filter(player => !player.pending && !player.frozenAt && !player.awaitingPlansAt
-    && endingSoon(today, player.accessUntil))
+  return players.filter(player => activeSubscription(player, today) && endingSoon(today, player.accessUntil))
     .sort((a, b) => a.accessUntil.localeCompare(b.accessUntil));
 }
 

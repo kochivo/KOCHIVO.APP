@@ -8,16 +8,23 @@ export function groupByTiming<T extends { timing: string; position: number }>(ro
     .filter(group => group.items.length > 0);
 }
 
-export function supplementAdherence(
+export function supplementAdherenceCounts(
   logs: { supplement_id: string; log_date: string; taken_at: string | null; deleted_at?: string | null }[],
-  supplements: { id: string }[], days: number, now: number, timezone = DEFAULT_TIMEZONE,
-): number {
-  if (days <= 0 || supplements.length === 0) return 0;
-  const ids = new Set(supplements.map(row => row.id));
+  supplements: { id: string; created_at: string }[], days: number, now: number, timezone = DEFAULT_TIMEZONE,
+) {
   const today = localDate(new Date(now), timezone);
+  const eligibleDays = new Map(supplements.map(row => {
+    const assigned = localDate(new Date(row.created_at), timezone);
+    return [row.id, Math.max(0, Math.min(days, daysBetween(assigned, today) + 1))];
+  }));
   const ticks = new Set(logs.filter(row => {
     const age = daysBetween(row.log_date, today);
-    return ids.has(row.supplement_id) && row.taken_at && !row.deleted_at && age >= 0 && age < days;
+    return row.taken_at && !row.deleted_at && age >= 0 && age < (eligibleDays.get(row.supplement_id) ?? 0);
   }).map(row => `${row.supplement_id}:${row.log_date}`));
-  return ticks.size / (ids.size * days);
+  return { taken: ticks.size, eligible: [...eligibleDays.values()].reduce((total, count) => total + count, 0) };
+}
+
+export function supplementAdherence(...args: Parameters<typeof supplementAdherenceCounts>): number {
+  const { taken, eligible } = supplementAdherenceCounts(...args);
+  return eligible > 0 ? taken / eligible : 0;
 }

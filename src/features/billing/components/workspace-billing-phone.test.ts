@@ -5,8 +5,26 @@ import { expect, it } from 'vitest';
 import { LocaleProvider } from '@/core/i18n/client';
 import { WorkspaceBillingPhoneIncome } from './workspace-billing-phone-income';
 import { WorkspaceBillingPhonePayments } from './workspace-billing-phone-payments';
+import { WorkspaceBillingPhonePlayer } from './workspace-billing-phone-player';
+import { paymentRows } from './workspace-billing-summary';
+import type { BillingPlayer } from '../types';
 
 const source = (file: string) => readFileSync(new URL(file, import.meta.url), 'utf8');
+
+it('shows expiry alongside paid status and labels a used-up session package', () => {
+  const today = '2026-11-18';
+  const player: BillingPlayer = { playerId: 'p', fullName: 'Ali', accessUntil: '2026-11-17', status: 'expired',
+    phone: null, due: 0, startedOn: '2026-10-18', lastTrainingDate: null, programTitle: null, openTasks: 0,
+    lastPayment: { id: 'payment', captain_id: 'captain', player_id: 'p', period_start: '2026-10-18', period_end: '2026-11-17',
+      package_id: 'package', days: 30, price_egp: 900, amount_egp: 900, created_at: '2026-10-18T12:00:00Z' } };
+  const render = (entry: BillingPlayer) => renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' },
+    paymentRows([entry], [], today).map(row => createElement(WorkspaceBillingPhonePlayer, {
+      key: row.player.playerId, row, today, onOpen() {},
+    }))));
+  expect(render(player)).toContain('Expired');
+  expect(render(player)).toContain('>Paid<');
+  expect(render({ ...player, accessUntil: '2026-11-19', sessionsLeft: 0 })).toContain('No sessions left');
+});
 
 it('bounds the phone income and payment list to the phone breakpoint', () => {
   const billing = source('./workspace-billing.tsx');

@@ -50,7 +50,7 @@ export function CalmChart({ points, bodyFat = [], title, unit, compact, today, t
     <bdi className="font-display text-stat font-extrabold tabular-nums">{format(latest.value)}</bdi>
     <span className="text-sm text-muted">{weight.length ? unit : t('percent')}</span>
   </div>;
-  const singlePoint = dates.length === 1 || (weight.length === 1 && fat.length < 2);
+  const singlePoint = dates.length === 1;
   const options = [
     { value: 'month', label: t('chartMonth') },
     { value: 'quarter', label: t('chartQuarter') },
@@ -76,15 +76,16 @@ export function CalmChart({ points, bodyFat = [], title, unit, compact, today, t
         <p className="text-sm text-muted">{t(latest ? 'chartFirst' : 'chartEmptyPeriod')}</p>
       </div>
       : <ChartPlot points={primary} secondary={weight.length ? fat : []} dates={dates}
-        target={goal} compact={Boolean(compact)} today={anchor} todayLabel={t('chartToday')} locale={locale} id={id} />}
+        target={goal} compact={Boolean(compact)} today={anchor} todayLabel={t('chartToday')} locale={locale} id={id}
+        percent={t('percent')} primaryIsFat={!weight.length} />}
     <p className="sr-only">{series.flatMap(entry => entry.points.map(point =>
       `${entry.label}: ${date(point.date)}: ${format(point.value)} ${entry.unit}`)).join(t('separator'))}</p>
     <footer className="flex flex-wrap items-center justify-between gap-inline">
       {latest && <ul className="flex flex-wrap items-center gap-inline text-xs text-muted">
-        {weight.length > 0 && <li className="flex items-center gap-inline"><span aria-hidden className="w-3.5 border-t-2 border-lime" />{title}</li>}
+        {weight.length > 0 && <li className="flex items-center gap-inline"><span aria-hidden className="w-3.5 border-t-2 border-lime" />{title} ({unit})</li>}
         {goal != null && !singlePoint && <li className="flex items-center gap-inline"><span aria-hidden className="w-3.5 border-t border-dashed border-muted" />
           {t('chartGoal', { value: format(goal) })}</li>}
-        {fat.length > 0 && <li className="flex items-center gap-inline"><span aria-hidden className={`w-3.5 border-t-2 ${weight.length ? 'border-muted' : 'border-lime'}`} />{t('bodyFat')}</li>}
+        {fat.length > 0 && <li className="flex items-center gap-inline"><span aria-hidden className={`w-3.5 border-t-2 ${weight.length ? 'border-muted' : 'border-lime'}`} />{t('bodyFat')} ({t('percent')})</li>}
       </ul>}
       <Button variant="ghost" className="ms-auto text-xs text-muted underline" aria-expanded={table}
         aria-controls={`${id}-table`} onClick={() => setTable(value => !value)}>{t(table ? 'chartHide' : 'chartShow')}</Button>

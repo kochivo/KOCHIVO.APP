@@ -9,7 +9,13 @@ export interface MoneyOwedRow {
   reason: MoneyOwedRecord['reason'] | 'soon'; since: string; days: number;
 }
 type Player = { playerId: string; fullName: string; accessUntil: string; pending?: boolean;
-  frozenAt?: string | null; awaitingPlansAt?: string | null };
+  frozenAt?: string | null; awaitingPlansAt?: string | null; sessionsLeft?: number | null };
+
+export function moneyOwedSoon(player: Player, today: string, owing: Set<string>) {
+  const days = daysBetween(today, player.accessUntil);
+  return !player.pending && !player.frozenAt && !player.awaitingPlansAt && !owing.has(player.playerId)
+    && (player.sessionsLeft == null || player.sessionsLeft > 0) && days >= 0 && days <= 3;
+}
 
 export function buildMoneyOwed(records: MoneyOwedRecord[], players: Player[], prices: Map<string, number | null>, now: Date, timezone: string) {
   const today = localDate(now, timezone);
@@ -20,10 +26,9 @@ export function buildMoneyOwed(records: MoneyOwedRecord[], players: Player[], pr
   }));
   const owing = new Set(records.map(record => record.player_id));
   for (const player of players) {
-    const days = daysBetween(today, player.accessUntil);
-    if (!player.pending && !player.frozenAt && !player.awaitingPlansAt && !owing.has(player.playerId) && days >= 0 && days <= 3) rows.push({
+    if (moneyOwedSoon(player, today, owing)) rows.push({
       playerId: player.playerId, name: player.fullName, amount: prices.get(player.playerId) ?? null,
-      reason: 'soon', since: player.accessUntil, days,
+      reason: 'soon', since: player.accessUntil, days: daysBetween(today, player.accessUntil),
     });
   }
   return { rows, total: records.reduce((sum, record) => sum + (record.amount_egp ?? 0), 0),

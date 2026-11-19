@@ -16,9 +16,9 @@ it('groups by timing in daily order and position', () => {
 
 it('counts unique ticks in the Cairo window, excluding future dates and unrelated rows', () => {
   const logs = ['2026-10-28', '2026-10-29', '2026-11-04', '2026-11-04', '2026-11-05'].map(log_date => ({ supplement_id: 'a', log_date, taken_at: 'yes' }));
-  expect(supplementAdherence(logs, [{ id: 'a' }], 7, now)).toBeCloseTo(2 / 7);
+  expect(supplementAdherence(logs, [{ id: 'a', created_at: '2026-10-01T00:00:00Z' }], 7, now)).toBeCloseTo(2 / 7);
   expect(supplementAdherence(logs, [], 7, now)).toBe(0);
-  expect(supplementAdherence(logs, [{ id: 'b' }], 7, now)).toBe(0);
+  expect(supplementAdherence(logs, [{ id: 'b', created_at: '2026-10-01T00:00:00Z' }], 7, now)).toBe(0);
 });
 
 it('ticks and unticks locally before sync, coalescing stable ids and retrying', async () => {
@@ -54,8 +54,8 @@ it('preserves a synced untick when an older refresh finishes late', async () => 
 it('uses Cairo midnight and ignores unticked records', () => {
   const logs = [{ supplement_id: 'a', log_date: '2026-11-05', taken_at: 'yes' },
     { supplement_id: 'a', log_date: '2026-11-04', taken_at: null }];
-  expect(supplementAdherence(logs, [{ id: 'a' }], 1, Date.parse('2026-11-04T22:30:00Z'))).toBe(1);
-  expect(supplementAdherence(logs, [{ id: 'a' }], 0, now)).toBe(0);
+  expect(supplementAdherence(logs, [{ id: 'a', created_at: '2026-10-01T00:00:00Z' }], 1, Date.parse('2026-11-04T22:30:00Z'))).toBe(1);
+  expect(supplementAdherence(logs, [{ id: 'a', created_at: '2026-10-01T00:00:00Z' }], 0, now)).toBe(0);
 });
 
 it('writes the current day after midnight even with yesterday ticked and no refresh', async () => {

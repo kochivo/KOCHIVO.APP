@@ -30,7 +30,7 @@ export function WorkspaceBillingPaymentRow({ row, onOpen }: { row: PaymentRow; o
   const [status, tone] = player.frozenAt ? [finance('frozen'), 'tone-neutral']
     : player.pending ? [finance('pending'), 'tone-neutral']
       : player.due > 0 ? [t('balance', { amount: number(player.due) }), 'tone-warn']
-        : !hasPackage ? [t('noPackage'), 'tone-neutral']
+        : !hasPackage && player.sessionsLeft !== 0 ? [t('noPackage'), 'tone-neutral']
           : player.awaitingPlansAt ? [finance('waitingForPlans'), 'tone-info']
             : player.sessionsLeft === 0 ? [paymentT('sessionsEnded'), 'tone-warn']
               : ending ? [t('soon'), 'tone-warn']
@@ -56,7 +56,9 @@ export function WorkspaceBillingPaymentRow({ row, onOpen }: { row: PaymentRow; o
           className={fullyPaid ? 'mt-inline' : 'mt-inline [&>div]:bg-warn [&>div]:bg-none'} />
       </>}
     </td>
-    <td className={cell}><span className={`inline-flex rounded-md px-inline text-micro font-semibold ${tone}`}>{status}</span></td>
+    <td className={cell}><span className={`inline-flex rounded-md px-inline text-micro font-semibold ${tone}`}>{status}</span>
+      {player.sessionsLeft === 0 && player.due > 0 && !player.frozenAt && !player.pending &&
+        <small className="block text-xs text-faint">{paymentT('sessionsEnded')}</small>}</td>
     <td className={`${cell} text-xs text-faint`}>{hasPackage
       ? <time dateTime={player.accessUntil}>{t('endsOn', { date: date(player.accessUntil) })}</time>
       : <time dateTime={player.startedOn}>{t('startedOn', { date: date(player.startedOn) })}</time>}</td>

@@ -8,11 +8,12 @@ import type { MyPoints } from '../data/load-my-points';
 import { messages } from '../messages';
 import { CROWN_MIN_WORKOUTS } from '../tiers';
 
-export function CrownRace({ points, holdsCrown }: {
-  points: MyPoints & { crown_prize?: string | null }; holdsCrown: boolean;
+export function CrownRace({ points, holdsCrown, holderName }: {
+  points: MyPoints & { crown_prize?: string | null }; holdsCrown: boolean; holderName?: string;
 }) {
   const t = useT(messages);
   const locale = useLocale();
+  const needed = points.crown_needs_workouts;
   if (points.month_position === null) return <EmptyState icon={Crown} title={t('race')} body={t('noCaptain')} />;
   return <section className="glass-strong space-y-stack rounded-card p-card">
     <h2 className="font-bold">{t('race')}</h2>
@@ -24,10 +25,10 @@ export function CrownRace({ points, holdsCrown }: {
     {holdsCrown ? <div className="flex items-center gap-card-gap"><RankBadge tier="crown" label={t('crown')} />
       <p className="font-bold">{t('holder')}</p></div> : <>
       <p className="text-xl font-bold">{t('position', { n: formatNumber(points.month_position, locale) })}</p>
-      <p>{points.crown_needs_workouts > 0
-        ? t(points.crown_needs_workouts === 1 ? 'needsWorkout' : 'needsWorkouts', {
-          n: formatNumber(points.crown_needs_workouts, locale),
-        }) : t('gap', { n: formatNumber(points.crown_gap, locale) })}</p>
+      <p>{needed !== null && needed > 0
+        ? holderName ? t('crownWorkouts', { n: formatNumber(needed, locale), name: holderName })
+          : t(needed === 1 ? 'needsWorkout' : 'needsWorkouts', { n: formatNumber(needed, locale) })
+        : t('gap', { n: formatNumber(points.crown_gap, locale) })}</p>
     </>}
     <p className="text-sm text-muted">{t('rule', { n: formatNumber(CROWN_MIN_WORKOUTS, locale) })}</p>
     <p className="text-sm text-muted">{t('reset')}</p>

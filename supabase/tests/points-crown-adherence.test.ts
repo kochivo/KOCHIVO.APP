@@ -98,8 +98,16 @@ it('floors late joiners at eight and returns holder and chaser progress', async 
   await db.query(`update public.coach_clients set started_on='2026-11-25' where player_id=$1`, [player]);
   await workout(player, '2026-11-25'); await workout(player, '2026-11-26'); await days(peer, 4);
   expect((await mine()).rows[0]?.result).toMatchObject({ adherence: 25, done: 2, planned: 8, monthly: 25,
-    crown_gap: 26, crown_needs_workouts: 2 });
+    crown_gap: 26, crown_needs_workouts: 3 });
   expect((await mine(peer)).rows[0]?.result).toMatchObject({ crown_gap: 0, crown_needs_workouts: 0, done: 4 });
+});
+it('needs one workout when the next rounded score beats the crown holder', async () => {
+  await plan(player, [3, 4, 5]); await plan(peer, [1, 3, 4, 5]);
+  await days(player, 4); await days(peer, 7);
+  expect((await board()).rows[0]).toMatchObject({ player_id: peer, done: 7, planned: 17, monthly: 41, is_crown: true });
+  expect((await mine()).rows[0]?.result).toMatchObject({ done: 4, planned: 12, monthly: 33, crown_needs_workouts: 1 });
+  await workout(player, '2026-11-05');
+  expect((await board()).rows[0]).toMatchObject({ player_id: player, monthly: 42, is_crown: true });
 });
 it('keeps players without a program visible with zero adherence and no crown', async () => {
   await days(player, 4);

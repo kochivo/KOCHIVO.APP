@@ -3,13 +3,12 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { localDb, useLiveQuery } from '@/core/offline';
 import type { KochivoDB } from '@/core/offline';
 import { loadSupabaseBrowser } from '@/core/supabase/lazy';
-import { shiftDate } from '../streak';
 
 interface History { accountStart: string; dates: string[] }
 const isDate = (value: unknown): value is string => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value);
 export async function readLocalStreakDates(db: KochivoDB, today: string): Promise<string[]> {
   const rows = await db.workout_sessions.where('training_date')
-    .between(shiftDate(today, -119), today, true, true).toArray();
+    .belowOrEqual(today).toArray();
   return rows.filter(row => row.completed_at !== null).map(row => row.training_date);
 }
 function cachedHistory(key: string): History | undefined {
@@ -27,16 +26,26 @@ async function readHistory(playerId: string, today: string): Promise<History> {
   if (!navigator.onLine && cached) return cached;
   try {
     const client = await loadSupabaseBrowser();
-    const [sessions, link] = await Promise.all([
-      client.from('workout_sessions').select('training_date').eq('player_id', playerId)
-        .not('completed_at', 'is', null).gte('training_date', shiftDate(today, -119)).lte('training_date', today),
-      client.from('coach_clients').select('started_on').eq('player_id', playerId).is('archived_at', null)
-        .order('started_on', { ascending: true }).limit(1).maybeSingle(),
-    ]);
-    if (sessions.error) throw sessions.error;
+    const link = await client.from('coach_clients').select('started_on').eq('player_id', playerId).is('archived_at', null)
+      .order('started_on', { ascending: true }).limit(1).maybeSingle();
     if (link.error) throw link.error;
     if (!link.data) throw new Error('Missing player link');
-    const history = { accountStart: link.data.started_on, dates: sessions.data.map(row => row.training_date) };
+    const accountStart = link.data.started_on;
+    const dates = new Set<string>();
+    const pageSize = 500;
+    let cursor: string | undefined;
+    for (;;) {
+      const query = client.from('workout_sessions').select('id,training_date').eq('player_id', playerId)
+        .not('completed_at', 'is', null).gte('training_date', accountStart).lte('training_date', today)
+        .order('id').limit(pageSize);
+      const page = await (cursor ? query.gt('id', cursor) : query);
+      if (page.error) throw page.error;
+      for (const row of page.data) dates.add(row.training_date);
+      const last = page.data.at(-1);
+      if (!last || page.data.length < pageSize) break;
+      cursor = last.id;
+    }
+    const history = { accountStart, dates: [...dates] };
     try { localStorage.setItem(key, JSON.stringify(history)); } catch { /* Local workouts still work without this optional cache. */ }
     return history;
   } catch (error) {

@@ -12,7 +12,7 @@ import { ArrowDown, ArrowUp } from 'lucide-react';
 import { useT } from '@/core/i18n';
 import type { SupplementRow } from '@/core/offline/tables';
 import { messages } from '../messages';
-import { supplementAdherence } from '../model';
+import { supplementAdherence, supplementAdherenceCounts } from '../model';
 import { archiveSupplement, reorderSupplements, saveSupplement } from '../data/captain';
 import { loadSupplements } from '../data/load-supplements';
 import type { SupplementDraft } from '../data/captain';
@@ -54,7 +54,7 @@ export function CaptainSupplements({ playerId }: { playerId: string }) {
     {data?.rows.map((row, index) => <article key={row.id} className="glass space-y-stack rounded-card p-card">
       <div className="flex flex-wrap items-center gap-stack"><h3 className="font-bold">{row.name}</h3><span>{row.dose}</span><span className="glass rounded-full px-stack py-inline text-sm">{t(row.timing)}</span></div>
       {row.notes && <p className="text-sm text-muted">{row.notes}</p>}
-      <p className="text-sm">{t('adherence', { count: Math.round(supplementAdherence(data.logs, [row], 7, now, data.timezone) * 7) })}</p>
+      <p className="text-sm">{t('adherence', supplementAdherenceCounts(data.logs, [row], 7, now, data.timezone))}</p>
       <div className="flex flex-wrap gap-inline">
         {captainWorkspaceEnabled() ? <Button variant="secondary" className="min-h-12 px-stack" disabled={busy} onClick={() => setEditing(row)}>{t('edit')}</Button> : <button className="min-h-12 px-stack" disabled={busy} onClick={() => setEditing(row)}>{t('edit')}</button>}
         {captainWorkspaceEnabled() ? <Button variant="secondary" className="min-h-12 border border-danger/40 px-stack text-danger!" disabled={busy} onClick={() => void mutate(() => archiveSupplement(row.id, Date.now()))}>{t('archive')}</Button> : <button className="min-h-12 px-stack" disabled={busy} onClick={() => void mutate(() => archiveSupplement(row.id, Date.now()))}>{t('archive')}</button>}

@@ -27,8 +27,8 @@ export interface StreakStats {
 export function computeStreak({ today, completedDates, isTrainingDay, accountStart }: {
   today: string; completedDates: readonly string[]; isTrainingDay: (date: string) => boolean; accountStart: string;
 }): StreakStats {
-  const start = [accountStart, shiftDate(today, -119)].sort()[1] ?? today;
-  const completed = new Set(completedDates.filter(date => date >= start && date <= today));
+  const completed = new Set(completedDates.filter(date => date >= accountStart && date <= today));
+  const start = [...completed].sort()[0] ?? today;
   let run = 0;
   let best = 0;
   for (let date = start; date <= today; date = shiftDate(date, 1)) {

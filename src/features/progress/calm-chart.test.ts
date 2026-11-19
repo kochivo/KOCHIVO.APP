@@ -3,6 +3,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, expect, it, vi } from 'vitest';
 import { LocaleProvider } from '@/core/i18n/client';
 import { LineChart } from './components/line-chart';
+import { ChartPlot } from './components/chart/chart-plot';
 import { dateTicks, filterPeriod, yTicks } from './series';
 
 const points = [{ date: '2026-10-20', value: 82 }, { date: '2026-11-18', value: 78.4 }];
@@ -27,6 +28,43 @@ it('shows the first value in a dashed empty plot', () => {
   expect(html).toContain('الرسم بيظهر من تاني متابعة');
   expect(html).toContain('border-dashed');
   expect(html).not.toContain('<polyline');
+});
+
+const firstDate = '2026-09-05';
+const irregular = [
+  { date: firstDate, value: 82 },
+  { date: '2026-09-12', value: 80 },
+  { date: '2026-11-14', value: 78 },
+];
+const plot = (values = irregular, secondary: typeof irregular = [], primaryIsFat = false) =>
+  renderToStaticMarkup(createElement(ChartPlot, {
+    points: values, secondary, dates: [...new Set(values.map(point => point.date))],
+    today: '2026-11-18', todayLabel: 'Today', locale: 'en', id: 'chart', compact: false,
+    percent: '%', primaryIsFat,
+  }));
+
+it('positions readings and date labels by elapsed calendar days', () => {
+  const html = plot();
+  const line = html.match(/<polyline points="([^"]+)"/)?.[1];
+  const [first = NaN, second = NaN, last = NaN] = (line ?? '').split(' ').map(pair => Number(pair.split(',')[0]));
+  expect((second - first) / (last - first)).toBeCloseTo(0.1);
+  expect(html.match(/dateTime="2026-09-12"[^>]*inset-inline-start:([\d.]+)%/i)?.[1]).toBe(String(second));
+});
+
+it('centers single and same-day readings without dividing by zero', () => {
+  expect(plot(irregular.slice(0, 1))).toContain('inset-inline-start:50%');
+  const sameDay = plot(irregular.map(point => ({ ...point, date: firstDate })));
+  expect(sameDay).toContain('points="50,10 50,50 50,90"');
+  expect(sameDay).not.toContain('NaN');
+});
+
+it('shows percentage ticks on the logical end axis when weight and body fat are plotted', () => {
+  const fat = irregular.map((point, index) => ({ ...point, value: 30 - index * 5 }));
+  const html = plot(irregular, fat);
+  expect(html).toMatch(/col-start-3 text-end[^>]*><bdi[^>]*>30%/);
+  expect(html).toContain('>25%</bdi>');
+  expect(html).toContain('>20%</bdi>');
+  expect(plot(fat, [], true)).toMatch(/col-start-2 text-end[^>]*><bdi[^>]*>30%/);
 });
 
 it('shows the goal and colors the change lime only when it approaches the goal', () => {

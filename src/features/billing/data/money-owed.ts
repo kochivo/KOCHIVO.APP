@@ -2,10 +2,10 @@ import 'server-only';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { getTimezone } from '@/core/timezone/server';
 import { fetchRoster } from '@/features/roster/server';
-import { daysBetween, localDate } from '@/lib/dates';
+import { localDate } from '@/lib/dates';
 import type { AppDatabase } from '@/types/app-database';
 import { captainClient } from './client';
-import { buildMoneyOwed } from './money-owed-model';
+import { buildMoneyOwed, moneyOwedSoon } from './money-owed-model';
 import type { MoneyOwedRecord } from './money-owed-model';
 export type { MoneyOwed, MoneyOwedRow } from './money-owed-model';
 
@@ -31,8 +31,7 @@ export async function fetchMoneyOwed(now = new Date()) {
   }
   const today = localDate(now, timezone);
   const owing = new Set(records.map(row => row.player_id));
-  const soon = roster.players.filter(player => !player.pending && !owing.has(player.playerId)
-    && daysBetween(today, player.accessUntil) >= 0 && daysBetween(today, player.accessUntil) <= 3);
+  const soon = roster.players.filter(player => moneyOwedSoon(player, today, owing));
   const prices = new Map<string, number | null>();
   for (let chunk = 0; chunk < soon.length; chunk += 100) {
     const ids = soon.slice(chunk, chunk + 100).map(player => player.playerId);

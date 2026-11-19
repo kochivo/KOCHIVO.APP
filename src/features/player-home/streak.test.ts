@@ -7,7 +7,7 @@ import * as offline from '@/core/offline';
 import type { ProgramSnapshot, WorkoutSessionRow } from '@/core/offline';
 import { liveQuery } from 'dexie';
 import { readLocalStreakDates } from './hooks/use-streak-sessions';
-import { computeStreak, trainingDay } from './streak';
+import { computeStreak, shiftDate, trainingDay } from './streak';
 import { buildWeek } from './week';
 import { StreakPill } from './components/streak-pill';
 import { StreakRing } from './components/streak-ring';
@@ -92,7 +92,14 @@ it('renders a four-fifths ring and sheet details', () => {
   for (const text of ['الأسبوع ده', 'أحسن رقم', 'الشهر ده', '21', '17', 'أيام الراحة اللي في برنامجك مش بتكسر الرقم. بيتكسر بس لو فوّت يوم تمرين.']) expect(html).toContain(text);
 });
 
-it('observes offline completions within the 120-day window without a reload', async () => {
+it('counts a 130-day run and retains the best after the streak breaks', () => {
+  const completedDates = Array.from({ length: 130 }, (_, i) => shiftDate(base.today, -i));
+  const options = { ...base, accountStart: shiftDate(base.today, -129), completedDates };
+  expect(computeStreak(options)).toMatchObject({ current: 130, best: 130 });
+  expect(computeStreak({ ...options, today: shiftDate(base.today, 2) })).toMatchObject({ current: 0, best: 130 });
+});
+
+it('observes new offline completions and includes sessions older than 120 days', async () => {
   const db = new KochivoDB('streak-live-test');
   const row: WorkoutSessionRow = { id: 'session', program_day_id: 'day', training_date: base.today,
     started_at: '2026-11-06T08:00:00Z', completed_at: null, client_updated_at: '2026-11-06T08:00:00Z' };
@@ -102,10 +109,10 @@ it('observes offline completions within the 120-day window without a reload', as
     const first = new Promise<string[]>(resolve => { notify = resolve; });
     const subscription = liveQuery(() => readLocalStreakDates(db, base.today)).subscribe(dates => notify(dates));
     try {
-      expect(await first).toEqual([]);
+      expect(await first).toEqual(['2026-07-09']);
       const next = new Promise<string[]>(resolve => { notify = resolve; });
       await db.workout_sessions.put({ ...row, completed_at: '2026-11-06T09:00:00Z' });
-      expect(await next).toEqual([base.today]);
+      expect(await next).toEqual(['2026-07-09', base.today]);
     } finally { subscription.unsubscribe(); }
   } finally { await db.delete(); }
 });

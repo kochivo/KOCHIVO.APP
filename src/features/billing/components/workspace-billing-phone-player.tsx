@@ -2,7 +2,7 @@ import { useLocale, useT } from '@/core/i18n/client';
 import { daysBetween } from '@/lib/dates';
 import { formatNumber } from '@/lib/format';
 import { Button, buttonClass, clickableClass } from '@/ui/button';
-import { workspaceMessages } from '../messages';
+import { messages, workspaceMessages } from '../messages';
 import { messages as financeMessages } from '../workspace/messages';
 import { messages as methodMessages } from '../methods/messages';
 import { messages as paymentMessages } from '../payments/messages';
@@ -22,16 +22,23 @@ export function WorkspaceBillingPhonePlayer({ row, today, onOpen }: {
   const paidUp = fullyPaid && player.due === 0;
   const canRemind = ending && action === 'history' && !player.awaitingPlansAt && player.sessionsLeft !== 0;
   const reminder = canRemind && waLink(player.phone, reminderText(player.fullName, player.accessUntil, locale));
-  const detail = player.frozenAt ? finance('frozen')
+  const legacy = useT(messages);
+  const usedUp = player.sessionsLeft === 0;
+  const expiry = days < 0 && !usedUp && !player.frozenAt && !player.pending && !player.awaitingPlansAt
+    && (hasPackage || player.due > 0)
+    ? player.due > 0 && player.sessionsLeft == null ? payment('late', { n: -days, count: number(-days) }) : legacy('expired')
+    : null;
+  const paymentDetail = player.frozenAt ? finance('frozen')
     : player.pending ? finance('pending')
-      : player.due > 0 ? [workspace('balance', { amount: number(player.due) }),
-        days < 0 && player.sessionsLeft == null ? payment('late', { n: -days, count: number(-days) }) : null].filter(Boolean).join(' · ')
+      : player.due > 0 ? workspace('balance', { amount: number(player.due) })
         : player.awaitingPlansAt ? finance('waitingForPlans')
-          : player.sessionsLeft === 0 ? payment('sessionsEnded')
+          : usedUp ? payment('sessionsEnded')
             : !hasPackage ? workspace('noPackage')
               : ending ? t('endingIn', { count: number(days) })
                 : paidUp || paid > 0 ? [t('paidAmount', { amount: number(paid) }), method === 'unset' ? null : methodT(method)].filter(Boolean).join(' · ')
                   : workspace('unpaid');
+  const usage = usedUp && player.due > 0 && !player.pending && !player.frozenAt ? payment('sessionsEnded') : null;
+  const detail = [paymentDetail, usage, expiry].filter(Boolean).join(' · ');
   const showPaid = paidUp && action === 'history' && !canRemind && !player.frozenAt
     && !player.awaitingPlansAt && player.sessionsLeft !== 0;
   const actionLabel = action === 'activate' || (action === 'renew' && !hasPackage) ? workspace('setPackage')
