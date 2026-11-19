@@ -25,7 +25,7 @@ export function StartGateScreen({ data, captain }: { data: Awaited<ReturnType<ty
     </li>)}</ul>
     <p className="flex items-center gap-inline text-xs leading-6 text-muted"><Lock aria-hidden className="size-4 shrink-0" />{t('locked')}</p>
     <div className="flex flex-wrap gap-inline"><Link href={`/${locale}/player/captain`} className={linkClass}>{t('chat')}</Link><Link href={`/${locale}/player/settings`} className={linkClass}>{t('settings')}</Link></div>
-    {next && <div className="glass-strong fixed inset-x-0 bottom-[var(--page-bottom-clearance)] z-30 px-page-x pb-[max(0.75rem,var(--safe-bottom))] pt-stack">
+    {next && <div data-action-bar className="glass-strong fixed inset-x-0 bottom-[var(--page-bottom-clearance)] z-30 px-page-x pb-[max(0.75rem,var(--safe-bottom))] pt-stack">
       <Link href={`/${locale}/player/forms/${next.id}`} className={buttonClass({ variant: 'primary', block: false, className: "press mx-auto flex min-h-14 max-w-lg cursor-pointer items-center justify-center gap-inline px-page-x font-bold focus-visible:ring-2 focus-visible:ring-lime" })}><KoSend aria-hidden className="size-5" />{t('next', { form: next.title })}</Link>
     </div>}
   </section>;

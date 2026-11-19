@@ -11,7 +11,7 @@ export function MobileActions({ locale }: { locale: Locale }) {
   const PlusIcon = captainWorkspaceEnabled() ? KoPlus : Plus;
   const SendIcon = captainWorkspaceEnabled() ? KoSend : Send;
   const t = createT(messages, locale);
-  return <div className="fixed start-0 end-0 bottom-[calc(var(--nav-clearance)+4.5rem)] z-30 flex gap-stack border-t border-line bg-surface p-card lg:hidden">
+  return <div data-action-bar className="fixed start-0 end-0 bottom-[calc(var(--nav-clearance)+4.5rem)] z-30 flex gap-stack border-t border-line bg-surface p-card lg:hidden">
     <Button type="button" aria-label={t('add')} variant={'secondary'} block={false} className={"grid size-14 shrink-0 place-items-center"}>
       <PlusIcon aria-hidden strokeWidth={1.5} className="size-6" />
     </Button>

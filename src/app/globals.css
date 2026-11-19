@@ -449,7 +449,16 @@ html[data-keyboard='open'] dialog:modal { inset-block-end: var(--keyboard-inset)
 .toast-leave { animation: toast-fade 200ms ease-out forwards; }
 /* On small screens the fixed chat composer owns the bottom edge; floating buttons would cover it. */
 @media (max-width: 1023.98px) {
-  body:has([data-chat-composer]) [data-floating-fab] { display: none; }
+  body:has([data-chat-composer]) [data-floating-fab]:not([data-floating-fab="teaser"]) { display: none; }
+}
+
+@media (width < 48rem) {
+  body:has([data-action-bar]:not([data-action-bar="invite"])) [data-floating-fab] { display: none; }
+}
+
+/* The invite footer switches to its inline action at 760px. */
+@media (width < 760px) {
+  body:has([data-action-bar="invite"]) [data-floating-fab] { display: none; }
 }
 @keyframes toast-fade { to { opacity: 0; } }
 /* The marketing page keeps its own type scale. */

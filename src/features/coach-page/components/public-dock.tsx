@@ -19,7 +19,7 @@ export function PublicDock({ children }: { children: ReactNode }) {
     observer.observe(name);
     return () => observer.disconnect();
   }, []);
-  return <div hidden={!visible} data-public-dock className="public-dock fixed start-0 end-0 bottom-0 z-30 border-t border-line bg-bg-deep md:hidden">
+  return <div hidden={!visible} data-action-bar={visible || undefined} data-public-dock className="public-dock fixed start-0 end-0 bottom-0 z-30 border-t border-line bg-bg-deep md:hidden">
     {children}
   </div>;
 }

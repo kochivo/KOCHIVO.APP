@@ -20,7 +20,7 @@ export function CaptainQuestion({ contactUrl }: { contactUrl?: string | null }) 
   const phone = valid ? contactUrl.split('/').at(-1) : undefined;
   const questionUrl = phone ? whatsappUrl({ phone, text: text.trim() }) : null;
   const control = v3 ? 'flex size-[52px] shrink-0 items-center justify-center rounded-full bg-surface-raised' : 'flex min-h-12 min-w-12 items-center justify-center rounded-control border border-line-soft';
-  return <section className={v3 ? 'fixed start-4 end-4 bottom-[96px] z-40 mx-auto max-w-[480px] space-y-inline' : 'glass space-y-stack rounded-card border border-line-soft p-card'}>
+  return <section data-action-bar={v3 || undefined} className={v3 ? 'fixed start-4 end-4 bottom-[96px] z-40 mx-auto max-w-[480px] space-y-inline' : 'glass space-y-stack rounded-card border border-line-soft p-card'}>
     {!v3 && <h2 className="text-xs text-faint">{t('ask')}</h2>}
     <div className="flex items-center gap-inline">
       <input value={text} maxLength={1000} onChange={event => setText(event.target.value)} placeholder={v3 ? captainT('placeholder') : t('placeholder')}

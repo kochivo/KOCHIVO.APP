@@ -136,7 +136,7 @@ export function IntakeWizard({ statusError }: { statusError?: string }) {
         <legend className="sr-only">{titles[index]}</legend>
         <Screen draft={draft} update={change} errors={errors} touch={touch} />
       </fieldset>
-      <footer className="glass-strong sticky bottom-0 space-y-stack rounded-t-card p-card pb-[max(1rem,env(safe-area-inset-bottom))]">
+      <footer data-action-bar className="glass-strong sticky bottom-0 space-y-stack rounded-t-card p-card pb-[max(1rem,env(safe-area-inset-bottom))]">
         {offline && <p role="status" className="text-sm text-muted">{offlineMessage}</p>}
         {error && <p role="alert" className="text-sm text-danger">{error}</p>}
         <div className="flex gap-stack">

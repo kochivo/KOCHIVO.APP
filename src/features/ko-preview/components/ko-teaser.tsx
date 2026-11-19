@@ -77,7 +77,7 @@ export function KoTeaser({ role, userId, joined: initialJoined, readFailed = fal
     <Button type="button" onClick={() => void loadPanel()} variant={'primary'} block={false} className={"mt-stack min-h-12 px-page-x"}>{t('retry')}</Button>
   </> : <p role="status">{t('loading')}</p>;
   return <>
-    {(!desktop || !open) && <button id={openerId} type="button" aria-label={t('teaserOpen')} aria-haspopup="dialog" aria-expanded={open}
+    {(!desktop || !open) && <button id={openerId} type="button" data-floating-fab="teaser" aria-label={t('teaserOpen')} aria-haspopup="dialog" aria-expanded={open}
       ref={desktop ? button => {
         if (button && returnFocus.current) {
           returnFocus.current = false;

@@ -123,7 +123,7 @@ export function InviteForm({ packages, forms = [], today, busy = false, error, o
       </fieldset>
       <InviteSummary input={input} pkg={pkg} />
     </div>
-    <footer className="glass-strong fixed inset-x-0 bottom-[var(--page-bottom-clearance)] z-30 flex items-center gap-card-gap border-t border-line px-page-x pb-[max(0.75rem,var(--safe-bottom))] pt-stack min-[760px]:hidden">
+    <footer data-action-bar="invite" className="glass-strong fixed inset-x-0 bottom-[var(--page-bottom-clearance)] z-30 flex items-center gap-card-gap border-t border-line px-page-x pb-[max(0.75rem,var(--safe-bottom))] pt-stack min-[760px]:hidden">
       <div className="shrink-0 text-xs text-muted">{p('owed')}<b className="mt-inline block text-lg text-ink">{money(amounts.remaining)}</b></div>
       {step < 3 ? <Button variant="secondary" className="min-h-12 flex-1" disabled={busy} onClick={() => progress(step)}>{p('next')}</Button> :
         <Button type="submit" className="min-h-12 flex-1" disabled={busy} aria-busy={busy}>{create}</Button>}

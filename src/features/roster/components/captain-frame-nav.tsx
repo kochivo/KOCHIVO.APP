@@ -93,7 +93,7 @@ export function CaptainFrameNav({ counts: initialCounts, captain, players, plan,
     more={open ? <CaptainMoreSheet active={active} counts={counts} captain={captain} plan={plan} bell={bell} tools={tools} onClose={close} />
       : adding ? <CaptainQuickAddSheet players={players ?? null} onClose={close}
         onAction={target => setAction({ origin: path, target, expires: Date.now() + 8_000 })} /> : null} />
-    {(action || failed) && <div className="viewport-pinned glass-strong fixed inset-x-page-x bottom-[var(--nav-clearance)] z-40 flex items-center gap-inline rounded-control p-stack md:hidden">
+    {(action || failed) && <div data-action-bar className="viewport-pinned glass-strong fixed inset-x-page-x bottom-[var(--nav-clearance)] z-40 flex items-center gap-inline rounded-control p-stack md:hidden">
       <p role={failed ? 'alert' : 'status'} className="flex-1 text-sm">{t(failed ? 'actionUnavailable' : 'openingAction')}</p>
       {failed && <Button variant="secondary" block={false} onClick={chooseAgain}>{t('chooseAction')}</Button>}
     </div>}

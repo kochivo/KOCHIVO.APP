@@ -107,7 +107,7 @@ export function WorkoutSet({ state, v4 = false }: { state: ReturnType<typeof use
       {!v4 && state.rest.remaining > 0 && <RestPanel remaining={state.rest.remaining} total={state.rest.total} sound={state.rest.sound} onToggleSound={state.rest.toggleSound}
         flashing={state.rest.flashing} onExtend={state.rest.extend} onSkip={state.rest.skip} />}
       <SupersetCue state={state} next />
-      <Button type="button" style={{ fontFamily: 'inherit' }} disabled={blocked || state.typedWeightInvalid || state.typedRepsInvalid} onClick={() => void state.complete()}
+      <Button type="button" data-action-bar={v4 || undefined} style={{ fontFamily: 'inherit' }} disabled={blocked || state.typedWeightInvalid || state.typedRepsInvalid} onClick={() => void state.complete()}
         variant={state.painCarried?.length ? 'secondary' : 'primary'} block={false} className={v4 ?
           'sticky bottom-page-y z-10 mt-auto flex min-h-14 w-full items-center justify-center gap-inline text-md font-bold disabled:opacity-50' :
           'mt-auto flex min-h-[68px] w-full items-center justify-center gap-stack text-xl font-black disabled:opacity-50'}>

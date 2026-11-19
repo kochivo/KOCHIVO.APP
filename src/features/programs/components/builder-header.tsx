@@ -26,7 +26,7 @@ export function BuilderHeader({ draft, dirty, busy, onTitle, onSave, onActivate 
     <div className="flex flex-wrap gap-inline">
       {!dirty && !busy && draft.player_id && <SaveTemplateButton kind="program" id={draft.id} title={draft.title} />}
       <Button variant={draft.player_id ? 'secondary' : 'primary'} className="min-h-12" disabled={busy} onClick={onSave}>{draft.player_id ? t('save') : templateT('saveTemplate')}</Button>
-      {draft.player_id && <div className="sheet fixed start-[var(--safe-start)] end-[var(--safe-end)] bottom-[var(--nav-clearance)] z-20 h-[var(--builder-action-height)] p-stack lg:static lg:h-auto lg:border-0 lg:bg-transparent lg:p-0">
+      {draft.player_id && <div data-action-bar className="sheet fixed start-[var(--safe-start)] end-[var(--safe-end)] bottom-[var(--nav-clearance)] z-20 h-[var(--builder-action-height)] p-stack lg:static lg:h-auto lg:border-0 lg:bg-transparent lg:p-0">
         <Button className="min-h-12" disabled={busy} onClick={onActivate}>{t('activateForPlayer')}</Button>
       </div>}
     </div>
