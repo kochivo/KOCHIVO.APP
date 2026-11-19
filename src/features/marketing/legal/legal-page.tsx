@@ -30,6 +30,7 @@ export async function LegalPage({ kind, locale }: { kind: 'privacy' | 'terms'; l
             {t('privacy2Body').split('|').map(item => <li key={item}>{item}</li>)}
           </ul>
           : <p className="text-md leading-relaxed text-muted">{t(`${kind}${section}Body`)}</p>}
+        {kind === 'privacy' && section === 5 && <p className="text-md leading-relaxed text-muted">{t('privacyKoMemory')}</p>}
       </section>)}
       <a href={whatsappUrl} className={buttonClass({ variant: 'secondary', block: false })}>{t('support')}</a>
     </main>

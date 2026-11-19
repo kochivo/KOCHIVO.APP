@@ -7,7 +7,7 @@ import { groundIntent } from '../data/ground';
 import { planIntent } from '../data/intents';
 import { koEvalCases } from './cases';
 import type { KoEvalCase } from './cases';
-import { matchCase, renderReport, summarize } from './score';
+import { matchPlan, renderReport, summarize } from './score';
 import type { EvalResult, TokenCounts } from './score';
 
 vi.mock('server-only', () => ({}));
@@ -54,14 +54,14 @@ describe.skipIf(process.env.KO_EVAL !== '1')('KO baseline eval', () => {
         try {
           const planned = await planIntent(
             testCase.role, { text: testCase.text }, apiKey, AbortSignal.timeout(30_000),
-            testCase.context, testCase.history ?? [], fetcher, testCase.facts,
+              testCase.context, testCase.history ?? [], fetcher, testCase.facts, testCase.learning,
           );
           ms += performance.now() - start;
           // Same grounding as the chat route: latest text plus the last KO question.
           const last = testCase.history?.at(-1);
           const question = last?.role === 'ko' && /[?؟]\s*$/.test(last.text) ? `${last.text}\n` : '';
-          const got = planned ? groundIntent(planned, question + testCase.text) : null;
-          return { case: testCase, got, outcome: matchCase(testCase, got).outcome, ms: Math.round(ms), tokens };
+            const result = matchPlan(testCase, planned.map(intent => groundIntent(intent, question + testCase.text)));
+            return { case: testCase, ...result, ms: Math.round(ms), tokens };
         } catch (cause) {
           ms += performance.now() - start;
           error = cause instanceof Error ? cause.message : String(cause);

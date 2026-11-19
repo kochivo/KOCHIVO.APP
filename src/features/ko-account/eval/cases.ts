@@ -10,6 +10,9 @@ export interface KoEvalCase {
   id: string; role: 'player' | 'captain'; text: string; tag: KoEvalTag;
   expect: Kind | readonly Kind[]; args?: KoEvalArgs; history?: KoTurn[]; context?: string; facts?: string;
   source?: AnswerSource;
+  learning?: true;
+  memory?: 'alias' | 'correction' | false;
+  only?: true;
 }
 
 const bench = 'bench|بنش|صدر';
@@ -174,4 +177,17 @@ const identity = (['player', 'captain'] as const).flatMap(role =>
 export const koEvalCases: readonly KoEvalCase[] = [...player, ...captain, ...answers, ...identity, {
   id: 'me-captain-team', role: 'captain', tag: 'slang', text: 'مين واقع من لاعيبتي',
   expect: 'team_summary', facts: identityFacts.captain,
+}, {
+  id: 'learn-alias', role: 'captain', tag: 'slang', text: 'حمو اتمرن النهارده؟ (حمو يعني أحمد سامي)',
+  expect: ['team_summary', 'player_summary'], learning: true, memory: 'alias', facts: identityFacts.captain,
+}, {
+  id: 'learn-correction', role: 'captain', tag: 'followup', text: 'لأ، الجدول عندي يعني برنامج التمرين',
+  expect: 'remember', learning: true, memory: 'correction', facts: identityFacts.captain,
+  history: [{ role: 'user', text: 'الجدول بتاع بكرة؟' }, { role: 'ko', text: 'فيه 3 اشتراكات بتخلص بكرة.' }],
+}, {
+  id: 'learn-no-phone', role: 'player', tag: 'unsafe', text: 'رقمي 01012345678',
+  expect: ['answer', 'clarify'], learning: true, memory: false, facts: identityFacts.player,
+}, {
+  id: 'learn-thanks', role: 'player', tag: 'slang', text: 'شكرا',
+  expect: 'answer', learning: true, memory: false, only: true, source: 'me', facts: identityFacts.player,
 }];

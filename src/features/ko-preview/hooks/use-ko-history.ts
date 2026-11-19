@@ -9,6 +9,10 @@ const keyFor = (userId: string) => `kochivo.ko.chat.${userId}`;
 type FinalState = { kind: 'done'; text: string } | { kind: 'failed'; text: string } | { kind: 'cancelled' } | { kind: 'expired' };
 type SavedEntry = { id: string; speaker: 'user' | 'ko'; text: string; contextText?: string; timestamp: number;
   sources?: Extract<AccountReply, { kind: 'message' }>['sources'];
+  memory?: Extract<AccountReply, { kind: 'message' }>['memory'];
+  feedbackIntent?: string;
+  rating?: boolean;
+  memoryRemoved?: true;
   actions?: { title: string; state: FinalState }[] };
 
 // Hand-written checks keep zod (about 90 KiB) out of the KO client bundle.
@@ -34,7 +38,13 @@ function readEntry(value: unknown, index: number): SavedEntry | null {
   const storedSources: unknown = value.sources;
   const sources = Array.isArray(storedSources) ? answerSources.filter(source => storedSources.includes(source)).slice(0, 4) : [];
   const id = typeof value.id === 'string' ? value.id : `legacy-${value.timestamp}-${index}`;
+  const memory = isRecord(value.memory) && typeof value.memory.id === 'string' && typeof value.memory.text === 'string'
+    ? { id: value.memory.id, text: value.memory.text } : undefined;
   return { id, speaker: value.speaker, text: value.text, timestamp: value.timestamp,
+    ...(memory && { memory }),
+    ...(typeof value.feedbackIntent === 'string' && { feedbackIntent: value.feedbackIntent }),
+    ...(typeof value.rating === 'boolean' && { rating: value.rating }),
+    ...(value.memoryRemoved === true && { memoryRemoved: true as const }),
     ...(typeof value.contextText === 'string' && { contextText: value.contextText }),
     ...(sources.length && { sources }),
     ...(Array.isArray(value.actions) && { actions }) };
@@ -43,6 +53,13 @@ type Extras = Pick<Extract<AccountReply, { kind: 'message' }>, 'quick' | 'upgrad
 export type Entry = Omit<SavedEntry, 'actions'> & Extras & {
   actions?: (ChatAction & { restoredState?: FinalState })[];
 };
+
+export function modelHistory(history: Entry[]) {
+  const turns = history.map(entry => ({ role: entry.speaker, text: entry.contextText ?? entry.text }))
+    .filter(entry => entry.text.length > 0).slice(-6).map(entry => ({ ...entry, text: entry.text.slice(0, 500) }));
+  while (turns.reduce((sum, turn) => sum + turn.text.length, 0) > 2000) turns.shift();
+  return turns;
+}
 
 function parseHistory(raw: string | null): SavedEntry[] {
   try {
@@ -69,6 +86,21 @@ export function loadKoHistory(userId: string, now: number): Entry[] {
   } catch { return []; }
 }
 
+export function saveKoLearningState(userId: string, entryId: string, change: { rating: boolean } | { memoryRemoved: true }) {
+  const key = keyFor(userId);
+  const persist = () => {
+    try {
+      const storage = window.localStorage;
+      const entries = parseHistory(storage.getItem(key));
+      if (!entries.some(entry => entry.id === entryId)) return;
+      storage.setItem(key, JSON.stringify(entries.map(entry => entry.id !== entryId ? entry :
+        'memoryRemoved' in change ? { ...entry, memory: undefined, memoryRemoved: true } : { ...entry, ...change })));
+    } catch { /* Storage can be unavailable in private browsing. */ }
+  };
+  if (window.navigator?.locks) void window.navigator.locks.request(key, persist).catch(persist);
+  else persist();
+}
+
 export function saveKoHistory(userId: string, entries: Entry[], states: Record<string, ActionState>, now: number, requireExisting = false) {
   try {
     const storage = window.localStorage;
@@ -83,8 +115,8 @@ export function saveKoHistory(userId: string, entries: Entry[], states: Record<s
     const stored = parseHistory(raw);
     const storedIds = new Set(stored.map(entry => entry.id));
     const saved = entries.filter(entry => !storedIds.has(entry.id) ||
-      entry.actions?.some(action => !action.restoredState)).map<SavedEntry>(({ id, speaker, text, contextText, timestamp, actions, sources }) => ({
-      id, speaker, text, timestamp, contextText, sources,
+      entry.actions?.some(action => !action.restoredState)).map<SavedEntry>(({ id, speaker, text, contextText, timestamp, actions, sources, memory, feedbackIntent }) => ({
+      id, speaker, text, timestamp, contextText, sources, memory, feedbackIntent,
       actions: actions?.map(({ id, title, restoredState }) => {
         const state = restoredState ?? states[id];
         return { title, state: state?.kind === 'done' || state?.kind === 'failed' ? { kind: state.kind, text: state.text }

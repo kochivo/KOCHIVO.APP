@@ -10,6 +10,7 @@ export function chatReply(data: Reply, status = 200) {
     body = data.kind === 'confirm' ? { ...data, text } : {
       ...data,
       text,
+      ...(data.memory && { memory: { ...data.memory, text: latinDigits(data.memory.text) } }),
       ...(data.quick && { quick: data.quick.map(latinDigits) }),
       ...(data.actions && { actions: data.actions.map(action => ({
         ...action, title: latinDigits(action.title), detail: latinDigits(action.detail),

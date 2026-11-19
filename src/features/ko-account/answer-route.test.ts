@@ -26,7 +26,12 @@ function setup(status: number, calls: { name: string; args: object }[] = [], pen
   const query = { select: vi.fn(() => query), eq: vi.fn(() => query), is: vi.fn(() => query),
     limit: async () => ({ data: pending ? [{ id: 'required-form' }] : [], error: null }),
   };
-  const from = vi.fn(() => query);
+  const insert = vi.fn().mockResolvedValue({ error: null });
+  const settings = vi.fn().mockResolvedValue({ data: null, error: null });
+  const memoryQuery = { select: () => memoryQuery, eq: () => memoryQuery, order: () => memoryQuery,
+    limit: async () => ({ data: [{ id: 'old', text: 'Prefers a morning workout' }], error: null }),
+    maybeSingle: settings, insert };
+  const from = vi.fn((table: string) => table.startsWith('ko_memor') ? memoryQuery : query);
   vi.spyOn(account, 'getKoActor').mockResolvedValue({ id: 'pilot', role, db: { rpc, from } } as unknown as KoActor);
   vi.spyOn(entry, 'koAccountConfig').mockReturnValue({
     origin: new URL('https://ko.test'), pilots: new Set(['pilot']), secret: 's'.repeat(32), key: 'key',
@@ -37,7 +42,7 @@ function setup(status: number, calls: { name: string; args: object }[] = [], pen
   }) : new Response(null, { status }));
   vi.stubGlobal('fetch', fetcher);
   const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
-  return { rpc, load, fetcher, warn, from, query };
+  return { rpc, load, fetcher, warn, from, query, insert, settings };
 }
 
 function post(text: string) {
@@ -79,7 +84,7 @@ it('returns the grounded model answer and its citations after one Gemini call', 
   const args = { text: 'You have 28 lifetime points.', sources: ['progress'] };
   const { fetcher, load, rpc, warn } = setup(200, [{ name: 'answer', args }]);
   const response = await post('How many points do I have?');
-  expect(await response.json()).toEqual({ kind: 'message', ...args });
+  expect(await response.json()).toEqual({ kind: 'message', ...args, feedbackIntent: 'answer' });
   expect(load).toHaveBeenCalledTimes(1);
   expect(fetcher).toHaveBeenCalledTimes(1);
   expect(rpc.mock.calls.filter(([name]) => name === 'ko_usage_take')).toHaveLength(1);
@@ -95,7 +100,7 @@ it.each(['captain', 'player'] as const)('uses the %s first name for an identity 
   ], false, role);
   load.mockResolvedValue(`[me] name: نور علي; role: ${role}`);
   expect(await (await post('عارفني؟')).json()).toEqual({
-    kind: 'message', text: 'أيوه يا نور. إحنا هنا في كو.', sources: ['me'],
+    kind: 'message', text: 'أيوه يا نور. إحنا هنا في كو.', sources: ['me'], feedbackIntent: 'answer',
   });
   const request = JSON.parse(String(fetcher.mock.calls[0]?.[1]?.body));
   expect(request.systemInstruction.parts[0].text).toContain('call answer with only source me');
@@ -145,7 +150,8 @@ it.each([
   vi.spyOn(progress, 'readProgress').mockResolvedValue('Your progress from the database.');
   const workout = vi.spyOn(ai, 'playerWorkout').mockResolvedValue({ day: undefined, rest: true });
   const response = await post('What should I know?');
-  expect(await response.json()).toEqual({ kind: 'message', text: expected });
+  expect(await response.json()).toEqual({ kind: 'message', text: expected,
+    feedbackIntent: source === 'progress' ? 'my_progress' : 'my_workout' });
   if (source === 'workout_tomorrow') expect(workout).toHaveBeenCalledWith(expect.anything(), '2026-11-20');
   expect(fetcher).toHaveBeenCalledTimes(1);
   expect(warn.mock.calls).toEqual([['KO answer guard', reason]]);
@@ -155,10 +161,32 @@ it('skips facts and removes the answer tool when disabled', async () => {
   vi.stubEnv('KO_ANSWER', '0');
   const { load, fetcher } = setup(200, [{ name: 'my_progress', args: {} }]);
   vi.spyOn(progress, 'readProgress').mockResolvedValue('Progress template');
-  expect(await (await post('How am I doing?')).json()).toEqual({ kind: 'message', text: 'Progress template' });
+  expect(await (await post('How am I doing?')).json()).toEqual({
+    kind: 'message', text: 'Progress template', feedbackIntent: 'my_progress',
+  });
   expect(load).not.toHaveBeenCalled();
   expect(fetcher).toHaveBeenCalledTimes(1);
   const request = JSON.parse(String(fetcher.mock.calls[0]?.[1]?.body));
   expect(request.systemInstruction.parts[0].text).not.toContain('Facts about this user');
   expect(request.tools[0].functionDeclarations).not.toEqual(expect.arrayContaining([expect.objectContaining({ name: 'answer' })]));
+});
+
+it.each(['on', 'off', 'broken insert'] as const)('handles learning %s in the existing tool plan', async mode => {
+  const { fetcher, insert, settings, warn } = setup(200, [
+    { name: 'answer', args: { text: 'Got it.', sources: ['progress'] } },
+    { name: 'remember', args: { kind: 'preference', text: 'Prefers working out at ٨' } },
+  ]);
+  if (mode === 'off') settings.mockResolvedValue({ data: { learning: false }, error: null });
+  if (mode === 'broken insert') insert.mockResolvedValue({ error: { code: 'unexpected' } });
+  const body = await (await post('I prefer working out at 8')).json();
+  expect(body.text).toBe('Got it.');
+  expect(body.memory).toEqual(mode === 'on' ? { id: expect.any(String), text: 'Prefers working out at 8' } : undefined);
+  expect(insert).toHaveBeenCalledTimes(mode === 'off' ? 0 : 1);
+  expect(fetcher).toHaveBeenCalledTimes(1);
+  const request = JSON.parse(String(fetcher.mock.calls[0]?.[1]?.body));
+  expect(request.systemInstruction.parts[0].text).toContain('[memory] Prefers a morning workout');
+  const declaration = request.tools[0].functionDeclarations.find((tool: { name: string }) => tool.name === 'remember');
+  if (mode === 'off') expect(declaration).toBeUndefined();
+  else expect(declaration.parameters.properties.text.maxLength).toBe('200');
+  expect(warn).toHaveBeenCalledTimes(mode === 'broken insert' ? 1 : 0);
 });

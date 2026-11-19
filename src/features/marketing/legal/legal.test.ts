@@ -51,6 +51,9 @@ describe('public legal pages', () => {
       expect(html).toContain(locale === 'en' ? 'Last updated: 16 November 2026' : 'آخر تحديث: 16 نوفمبر 2026');
       if (page === PrivacyPage) expect(html).toContain(locale === 'en' ? 'which may use or review them' :
         standard ? 'وقد يستخدمها أو يراجعها' : 'وممكن يستخدمها أو يراجعها');
+      const memory = locale === 'en' ? 'Ratings are stored without your name.' :
+        standard ? 'تُحفظ التقييمات دون اسمك.' : 'التقييمات بتتحفظ من غير اسمك.';
+      expect(html.includes(memory)).toBe(page === PrivacyPage);
       expect(html).not.toMatch(/Supabase|Vercel|Resend|Sentry|Google|Gemini/i);
       const seo = await metadata(props);
       expect(seo.title).toContain(title);

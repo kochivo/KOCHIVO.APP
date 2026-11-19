@@ -22,7 +22,7 @@ import { matchPlanMeal, mealToolContext } from './log-meal';
 type Locale = 'ar' | 'en';
 import type { AccountReply } from '@/features/ko-core';
 export type { AccountReply } from '@/features/ko-core';
-export const say = (text: string): AccountReply => ({ kind: 'message', text });
+export const say = (text: string): Extract<AccountReply, { kind: 'message' }> => ({ kind: 'message', text });
 const range = (min: number, max: number | null, separator = '–') => max !== null && max !== min ? `${min}${separator}${max}` : String(min);
 
 export async function executeIntent(actor: KoActor, intent: Intent, locale: Locale, secret: string, now: number,
@@ -34,7 +34,7 @@ export async function executeIntent(actor: KoActor, intent: Intent, locale: Loca
     return { kind: 'message', text: '', actions: [{ id, title, detail,
       token: issueApproval({ kind, payload, player, actor: actor.id, id, expires: now + approvalLifetimeMs, label }, secret) }] };
   };
-  if (intent.kind === 'answer') return say(t('unclear'));
+  if (intent.kind === 'answer' || intent.kind === 'remember') return say(t('unclear'));
   if (intent.kind === 'clarify') {
     if (!('reason' in intent)) return say(intent.args.question);
     const { reason } = intent;

@@ -1,16 +1,15 @@
 import { getTimezone } from '@/core/timezone/server';
 import 'server-only';
-import { z } from 'zod';
 import { createT } from '@/core/i18n/messages';
 import { getArabicStyle } from '@/core/i18n/server';
 import { runTool } from '@/features/ai-tools/server';
 import { hasPendingStartForm } from '@/features/player-shell/server';
 import type { AccountAction, AnswerSource } from '@/features/ko-core';
 import { localDate } from '@/lib/dates';
-import type { KoMedia } from '@/features/ko-agent';
 import { KoModelError, maxHistoryChars, parseHistory } from '@/features/ko-agent';
 import { koPreviewMessages } from '@/features/ko-core';
-import { getKoActor, resolvePlayer } from './account';
+import { getKoActor } from './account';
+import { resolveContext } from './context';
 import type { KoActor } from './account';
 import { approvalLifetimeMs, mealLogPayload, verifyApproval } from './approval';
 import { confirmMealApproval, mealToolContext } from './log-meal';
@@ -18,7 +17,10 @@ import { koAccountConfig } from '@/features/ko-entry/server';
 import { commitApproval, executeIntent, say } from './execute';
 import { reviewAnswer } from './answer-guard';
 import { chatReply as reply } from './reply';
-import { loadFacts } from './facts';
+import { appendMemoryFacts, loadFacts } from './facts';
+import { readChatMemory, rememberFromPlan } from './chat-memory';
+import { maxImage, readChatMedia } from './chat-media';
+import { feedbackIntents } from './feedback';
 import { groundIntent } from './ground';
 import { planIntent } from './intents';
 import { normalizeName } from './match';
@@ -30,30 +32,7 @@ import { isBigAction } from './limits';
 import { creditsOut, readCredits, takeCredit, takeUsage } from './usage';
 import { quickKeys, readQuick } from './quick';
 
-const maxImage = 3_000_000;
-const maxAudio = 1_000_000;
-const audioTypes = new Set(['audio/webm', 'audio/ogg', 'audio/mp4', 'audio/m4a', 'audio/wav']);
-const imageTypes = new Set(['image/jpeg', 'image/png', 'image/webp']);
-
-const contextSchema = z.discriminatedUnion('screen', [
-  z.strictObject({ screen: z.literal('player'), playerId: z.uuid() }),
-  z.strictObject({ screen: z.literal('program'), programId: z.uuid() }),
-  z.strictObject({ screen: z.enum(['home', 'inbox', 'nutrition']) }),
-]);
-
-export async function resolveContext(actor: KoActor, raw: unknown) {
-  let value: unknown;
-  try { value = typeof raw === 'string' ? JSON.parse(raw) : raw; } catch { return undefined; }
-  const parsed = contextSchema.safeParse(value);
-  if (!parsed.success || parsed.data.screen !== 'player') return undefined;
-  const id = parsed.data.playerId;
-  if (actor.role === 'player') return id === actor.id ? await resolvePlayer(actor, undefined) ?? undefined : undefined;
-  const { data, error } = await actor.db.rpc('captain_roster');
-  if (error) throw error;
-  // Take the roster row by id; a name lookup would drop players who share a name.
-  const row = data.find(player => player.player_id === id);
-  return row ? { id: row.player_id, name: row.full_name } : undefined;
-}
+export { resolveContext } from './context';
 
 const swapCookie = 'ko_swap_options';
 function playerReply(result: AccountReply, secure: boolean) {
@@ -161,20 +140,15 @@ export async function postKoAccountChat(request: Request) {
     if (!audio && !photo && quick) {
       if (formPending) return formReply();
       const player = actor.role === 'captain' ? await resolveContext(actor, form.get('context')) : undefined;
-      return reply(say(await readQuick(actor, quick, locale, now, request.signal, actionT, player)));
+      return reply({ ...say(await readQuick(actor, quick, locale, now, request.signal, actionT, player)), feedbackIntent: 'quick' });
     }
-    if (!audio && !photo && text === suggestions('suggest.meal') && actor.role === 'player')
-      return formPending ? formReply() : playerReply(await executeIntent(actor, { kind: 'read_nutrition', args: {} }, locale, config.secret, now), config.origin.protocol === 'https:');
-    let media: KoMedia | undefined;
-    const file = photo ?? audio;
-    if (file !== null) {
-      const photoRequest = photo !== null;
-      if (!(file instanceof File) || file.size <= 0 || file.size > (photoRequest ? maxImage : maxAudio) ||
-          (photoRequest && actor.role !== 'player')) return reply({ error: 'invalid' }, 400);
-      const type = file.type.split(';', 1)[0] ?? '';
-      if (!(photoRequest ? imageTypes : audioTypes).has(type)) return reply({ error: 'invalid' }, 415);
-      media = { data: new Uint8Array(await file.arrayBuffer()), mimeType: type === 'audio/mp4' ? 'audio/m4a' : type };
+    if (!audio && !photo && text === suggestions('suggest.meal') && actor.role === 'player') {
+      if (formPending) return formReply();
+      const item = await executeIntent(actor, { kind: 'read_nutrition', args: {} }, locale, config.secret, now);
+      return playerReply(item.kind === 'message' ? { ...item, feedbackIntent: 'quick' } : item, config.origin.protocol === 'https:');
     }
+    const { media, status } = await readChatMedia(photo ?? audio, photo !== null, actor.role);
+    if (status) return reply({ error: 'invalid' }, status);
     if (!text && !media) return reply({ error: 'invalid' }, 400);
     // Usage is taken before Gemini so an account at its cap never spends the shared free-tier quota.
     // A busy Gemini (429/503) still counts; on a 429 the shared quota is gone for the day anyway.
@@ -183,9 +157,13 @@ export async function postKoAccountChat(request: Request) {
     }
     const history = parseHistory(form.get('history'));
     const contextPlayer = await resolveContext(actor, form.get('context'));
-    const facts = process.env.KO_ANSWER === '0' || photo || formPending ? undefined
-      : await loadFacts(actor, now, request.signal, contextPlayer).catch(() => undefined);
-    const planned = await planIntent(actor.role, { text, media }, config.key, request.signal, contextPlayer?.name, history, fetch, facts)
+    const [accountFacts, memoryState] = await Promise.all([
+      process.env.KO_ANSWER === '0' || photo || formPending ? undefined
+        : loadFacts(actor, now, request.signal, contextPlayer).catch(() => undefined),
+      readChatMemory(actor, !photo && !formPending),
+    ]);
+    const facts = accountFacts === undefined ? undefined : appendMemoryFacts(accountFacts, memoryState.memories.map(row => row.text));
+    const planned = await planIntent(actor.role, { text, media }, config.key, request.signal, contextPlayer?.name, history, fetch, facts, memoryState.learning)
       .catch((error: unknown) => {
         if (!(error instanceof KoModelError) || (error.status !== 429 && error.status !== 503)) throw error;
         console.warn('KO model busy', error.status);
@@ -202,13 +180,16 @@ export async function postKoAccountChat(request: Request) {
     const texts: string[] = [];
     const actions: AccountAction[] = [];
     const sources = new Set<AnswerSource>();
+    let feedbackIntent: string | undefined;
     let optionsToken: string | undefined;
     let upgrade: Extract<AccountReply, { kind: 'message' }>['upgrade'];
     let credits: Awaited<ReturnType<typeof readCredits>> | undefined;
     for (let intent of intents) {
+      if (intent.kind === 'remember') continue;
       if (intent.kind === 'answer') {
         const answer = reviewAnswer(intent.args, facts ?? '', text);
         if (answer.ok) {
+          feedbackIntent ??= intent.kind;
           texts.push(answer.text);
           for (const source of answer.sources) sources.add(source);
           continue;
@@ -229,6 +210,7 @@ export async function postKoAccountChat(request: Request) {
         }
       }
       const item = await executeIntent(actor, intent, locale, config.secret, now, contextPlayer, request.signal, style);
+      feedbackIntent ??= feedbackIntents.find(kind => kind === intent.kind);
       if (item.text) texts.push(item.text);
       if (item.kind === 'message') {
         actions.push(...(item.actions ?? []).map(action => big
@@ -236,6 +218,7 @@ export async function postKoAccountChat(request: Request) {
         optionsToken = item.optionsToken;
       }
     }
+    const memory = await rememberFromPlan(actor, planned, memoryState, now);
     const result = {
       kind: 'message' as const,
       text: texts.join('\n\n') || (actions.length ? actionT(actions.length > 1 ? 'actionsReady' : 'actionReady') : t('unclear')),
@@ -243,6 +226,8 @@ export async function postKoAccountChat(request: Request) {
       ...(sources.size && { sources: [...sources].slice(0, 4) }),
       ...(optionsToken && { optionsToken }),
       ...(upgrade && { upgrade }),
+      ...(memory && { memory }),
+      ...(feedbackIntent && !actions.length && !upgrade && { feedbackIntent }),
     };
     if (photo && actor.role === 'player' && exclusive?.kind === 'meal_photo') {
       const secret = process.env.KO_MEAL_RECEIPT_SECRET;

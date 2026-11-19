@@ -61,7 +61,7 @@ it.each(['ar', 'en'] as const)('renders a small launcher, accessible typing and 
 it('keeps KO copy colloquial and free of emoji', () => {
   for (const dictionary of [messages, accountMessages]) {
     for (const text of Object.values(dictionary.ar)) {
-      expect(text).not.toMatch(/يرجى|الرجاء|سوف|أريد|لم /u);
+      expect(text).not.toMatch(/يرجى|الرجاء|سوف|أريد|(?<!\p{L})لم /u);
     }
     for (const locale of ['ar', 'en'] as const) {
       for (const text of Object.values(dictionary[locale])) expect(text).not.toMatch(/\p{Extended_Pictographic}/u);

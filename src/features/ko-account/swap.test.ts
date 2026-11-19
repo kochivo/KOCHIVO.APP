@@ -6,6 +6,7 @@ import { chooseSwap, prepareSwap } from './data/swap';
 import type { KoActor } from './data/account';
 import type * as AccountModule from './data/account';
 import type * as IntentsModule from './data/intents';
+import type * as FactsModule from './data/facts';
 import { issueApproval, verifyApproval, type Approval } from './data/approval';
 import { postKoAccountChat } from './data/route';
 import { executeIntent } from './data/execute';
@@ -22,7 +23,9 @@ vi.mock('@/features/ko-feed/hooks/use-ko-feed', () => ({ refreshFeed: vi.fn(), u
 const chat = vi.hoisted(() => ({ actor: null as KoActor | null, pilots: new Set<string>(), plan: vi.fn() }));
 vi.mock('./data/usage', () => ({ takeUsage: async () => 'ok' }));
 vi.mock('./data/account', async original => ({ ...await original<typeof AccountModule>(), getKoActor: async () => chat.actor }));
-vi.mock('./data/facts', () => ({ loadFacts: async () => '' }));
+vi.mock('./data/facts', async importOriginal => ({
+  ...await importOriginal<typeof FactsModule>(), loadFacts: async () => '',
+}));
 vi.mock('./data/meal', () => ({ readMeal: async () => [] }));
 vi.mock('./data/intents', async original => ({ ...await original<typeof IntentsModule>(), planIntent: chat.plan }));
 vi.mock('@/features/ko-entry/server', () => ({ koAccountConfig: () => ({

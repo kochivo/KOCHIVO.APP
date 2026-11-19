@@ -183,6 +183,18 @@ export type AppDatabase = Omit<Database, 'public'> & {
   public: Omit<Public, 'Tables' | 'Functions'> & {
     Tables: Omit<Public['Tables'], keyof CorrectedTables | 'form_checks' | 'check_ins' | 'foods'> & Omit<CorrectedTables, 'profiles'> & WomenModeTables & {
       foods: SourcedFoods;
+      ko_memories: {
+        Row: { id: string; user_id: string; kind: string; text: string; player_id: string | null; created_at: string };
+        Insert: { id: string; kind: string; text: string; player_id?: string | null };
+        Update: never;
+        Relationships: [];
+      };
+      ko_memory_settings: {
+        Row: { user_id: string; learning: boolean };
+        Insert: { user_id: string; learning: boolean };
+        Update: { learning: boolean };
+        Relationships: [];
+      };
       profiles: TimezoneProfiles;
       assessment_schedules: AssessmentSchedulesTable;
       pain_reports: {
@@ -207,6 +219,10 @@ export type AppDatabase = Omit<Database, 'public'> & {
       submit_custom_form_answers: { Args: { p_request: string; p_answers: Json }; Returns: undefined };
       save_custom_form: { Args: { p_form: Json; p_questions: Json }; Returns: undefined };
       ko_rate_take: { Args: { p_limit: number; p_window_seconds: number }; Returns: boolean };
+      ko_feedback_submit: { Args: {
+        p_id: string; p_helpful: boolean; p_reason: string | null; p_intent: string; p_sources: string[];
+        p_question: string; p_answer: string;
+      }; Returns: boolean };
       sync_pain_reports: { Args: { p_rows: Json }; Returns: undefined };
       expire_pain_swaps: { Args: never; Returns: undefined };
       answer_pain: { Args: { p_report: string; p_reply: PainReply }; Returns: undefined };

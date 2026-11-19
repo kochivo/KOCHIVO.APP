@@ -12,13 +12,14 @@ import { usePathname } from 'next/navigation';
 const KoFeed = lazy(() => import('./ko-feed').then(module => ({ default: module.KoFeed })));
 import { KoAvatar } from '@/ui/ko-avatar';
 import { KoMessage } from './ko-message';
+import { KoReplyLearning } from './ko-reply-learning';
 import { KoTyping } from './ko-typing';
 import { KoActionCard } from './ko-action-card';
 import { KoCreditMeter } from './ko-credit-meter';
 import { KoQuickButtons } from './ko-quick-buttons';
 import { KoUpgradeCard } from './ko-upgrade-card';
 import { chatActions, latestPendingAction, useKoActions } from '../hooks/use-ko-actions';
-import { koHistoryLimit, useKoHistory } from '../hooks/use-ko-history';
+import { koHistoryLimit, modelHistory, useKoHistory } from '../hooks/use-ko-history';
 import { contextFromPath } from '../context';
 import type { KoContext } from '../context';
 import { canSubmitKoDraft } from '../composer-draft';
@@ -26,6 +27,7 @@ import { suggestionsFor } from '../suggestions';
 import { useLocale, useT } from '@/core/i18n/client';
 import { koMaxText } from '@/features/ko-core';
 import { useKoRecorder } from '../hooks/use-ko-recorder';
+import { useKoContextName } from '../hooks/use-ko-context-name';
 import { messages } from '../messages';
 import type { KoExpression, KoRole } from '../policy';
 import type { AccountReply, KoReply } from '@/features/ko-core';
@@ -40,9 +42,10 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
   const pathname = usePathname();
   const [dropped, setDropped] = useState(false);
   const context = dropped ? null : suppliedContext === undefined ? contextFromPath(pathname ?? '/') : suppliedContext;
-  const [contextName, setContextName] = useState('');
+  const contextName = useKoContextName(account, context);
   const [showFeed, setShowFeed] = useState(false);
   const [sent, setSent] = useState(false);
+  const [feedbackCloseSignal, closeFeedback] = useState(0);
   const [draft, setDraft] = useState('');
   const [clip, setClip] = useState<Blob | null>(null);
   const [photo, setPhoto] = useState<File | null>(null);
@@ -64,19 +67,6 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
   const pending = history.at(-1)?.actions?.some(action => !action.restoredState && !actions.states[action.id]);
 
   useEffect(() => () => active.current?.abort(), []);
-  const serializedContext = JSON.stringify(context);
-  useEffect(() => {
-    if (!account || context?.screen !== 'player') return;
-    const controller = new AbortController();
-    const body = new FormData();
-    body.set('context', serializedContext);
-    body.set('contextOnly', '1');
-    void fetch('/api/ko', { method: 'POST', body, signal: controller.signal })
-      .then(async response => response.ok ? response.json() as Promise<{ name: string | null }> : null)
-      .then(result => { if (!controller.signal.aborted) setContextName(result?.name ?? ''); })
-      .catch(() => { if (!controller.signal.aborted) setContextName(''); });
-    return () => controller.abort();
-  }, [account, serializedContext, context?.screen]);
   const fill = account || sheet;
   useEffect(() => {
     const element = log.current;
@@ -94,6 +84,7 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
     event?.preventDefault();
     const prompt = (suggestion ?? draft).trim();
     if (active.current || recorder.status !== 'idle' || !canSubmitKoDraft(prompt, clip, photo)) return;
+    closeFeedback(value => value + 1);
     if (account && !clip && !photo && /^(?:(?:تمام\s+)?نف[ّ]?ذ|confirm|approve)[.!؟]?$/iu.test(prompt)) {
       const latest = latestPendingAction(cards, actions.states);
       if (latest) {
@@ -112,11 +103,7 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
     const body = new FormData();
     if (context) body.set('context', JSON.stringify(context));
     if (account) {
-      // Keep this text-only projection local: the agent's public runtime API is server-only.
-      const turns = history.map(entry => ({ role: entry.speaker, text: entry.contextText ?? entry.text }))
-        .filter(entry => entry.text.length > 0).slice(-6).map(entry => ({ ...entry, text: entry.text.slice(0, 500) }));
-      while (turns.reduce((sum, turn) => sum + turn.text.length, 0) > 2000) turns.shift();
-      body.set('history', JSON.stringify(turns));
+      body.set('history', JSON.stringify(modelHistory(history)));
       body.set('locale', locale);
       if (photo) body.set('photo', photo);
     } else body.set('role', role);
@@ -149,6 +136,7 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
         contextText: clip ? '' : prompt, timestamp },
         { id: answerId, speaker: 'ko' as const, text: answer, timestamp, actions: newCards, ...(result.kind === 'message' && {
           quick: result.quick, upgrade: result.upgrade, sources: result.sources,
+          memory: result.memory, feedbackIntent: result.feedbackIntent,
         }) }].slice(-(userId ? koHistoryLimit : 30)));
       setDraft('');
       setClip(null);
@@ -187,6 +175,8 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
           : role === 'captain' ? 'chatCaptain' : 'chatPlayer')} sheet={sheet} />}
         {history.map((entry, index) => <Fragment key={entry.id}>
           <KoMessage speaker={entry.speaker} text={entry.text} sources={entry.sources} sheet={sheet}>
+            {account && (entry.memory || entry.memoryRemoved || entry.feedbackIntent) && <KoReplyLearning entry={entry}
+              previous={history[index - 1]} closeSignal={feedbackCloseSignal} userId={userId} />}
             {entry.quick?.length ? <KoQuickButtons quick={entry.quick} disabled={busy || recorder.status !== 'idle' || Boolean(clip || photo)}
               send={text => void submit(undefined, text)} /> : role === 'captain' && entry.upgrade ? <KoUpgradeCard upgrade={entry.upgrade} /> : null}
           </KoMessage>

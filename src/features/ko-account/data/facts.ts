@@ -26,7 +26,25 @@ function clean(value: string) {
     .join('').replace(/\s+/g, ' ').trim();
 }
 
-export function formatFacts(sections: readonly Section[]) {
+export function formatFacts(sections: readonly Section[], memories: readonly string[] = []) {
+  return appendMemoryFacts(formatAccountFacts(sections), memories);
+}
+
+export function appendMemoryFacts(facts: string, memories: readonly string[]) {
+  const budget = Math.min(900, factsBudget - encoder.encode(facts).length - Number(Boolean(facts)));
+  const prefix = '[memory]';
+  let line = prefix;
+  for (const value of memories) {
+    const safe = clean(value);
+    if (!safe) continue;
+    const next = line + (line === prefix ? ' ' : '; ') + safe;
+    if (encoder.encode(next).length > budget) break;
+    line = next;
+  }
+  return line === prefix ? facts : [facts, line].filter(Boolean).join('\n');
+}
+
+function formatAccountFacts(sections: readonly Section[]) {
   if (!sections.length) return '';
   const budget = Math.floor(factsBudget / sections.length);
   return sections.map(([id, values]) => {

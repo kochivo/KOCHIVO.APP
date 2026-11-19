@@ -55,6 +55,17 @@ function percent(count: number, total: number): number {
   return total ? count / total * 100 : 0;
 }
 
+export function matchPlan(testCase: KoEvalCase, plan: readonly Intent[]) {
+  const expected = typeof testCase.expect === 'string' ? [testCase.expect] : testCase.expect;
+  const got = testCase.learning ? plan.find(intent => expected.includes(intent.kind)) ?? plan[0] : plan[0];
+  const memories = plan.filter(intent => intent.kind === 'remember');
+  const result = matchCase(testCase, got ?? null);
+  const invalidMemory = testCase.memory === false ? memories.length > 0 : Boolean(testCase.memory) &&
+    (memories.length !== 1 || memories[0]?.args.kind !== testCase.memory);
+  const outcome = invalidMemory ? 'bad_args' : testCase.only && plan.length !== 1 ? 'wrong_tool' : result.outcome;
+  return { got: got ?? null, outcome } as const;
+}
+
 function groupPassRates(results: readonly EvalResult[], key: 'tag' | 'role'): Record<string, number> {
   const groups = new Map<string, { count: number; pass: number }>();
   for (const result of results) {

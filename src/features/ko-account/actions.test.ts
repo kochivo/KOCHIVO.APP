@@ -180,7 +180,7 @@ it('reads the selected roster player’s workout for a captain shortcut', async 
   const rpc = setup('captain');
   const read = vi.spyOn(preview, 'fetchPlayerPreview').mockResolvedValue({ data: null });
   const response = await post({ text: 'Today’s workout', context: JSON.stringify({ screen: 'player', playerId }) });
-  expect(await response.json()).toEqual({ kind: 'message', text: 'No workout scheduled today.' });
+  expect(await response.json()).toEqual({ kind: 'message', text: 'No workout scheduled today.', feedbackIntent: 'quick' });
   expect(read).toHaveBeenCalledWith(playerId, '2027-01-15');
   expect(rpc.mock.calls.map(([name]) => name)).toEqual(['ko_rate_take', 'captain_roster']);
 });

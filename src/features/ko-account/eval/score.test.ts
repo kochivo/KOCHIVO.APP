@@ -21,7 +21,7 @@ describe('normalize', () => {
 
 describe('matchCase', () => {
   it('requires the me citation on identity cases for both roles', () => {
-    const cases = koEvalCases.filter(testCase => testCase.source === 'me');
+    const cases = koEvalCases.filter(testCase => testCase.id.startsWith('me-') && testCase.source === 'me');
     expect(cases).toHaveLength(16);
     for (const testCase of cases) {
       expect(matchCase(testCase, { kind: 'answer', args: { text: 'Hi Nour.', sources: ['me'] } }).outcome).toBe('pass');

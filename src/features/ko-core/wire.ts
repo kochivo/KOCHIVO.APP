@@ -19,6 +19,8 @@ export const accountReplySchema = z.discriminatedUnion('kind', [
     kind: z.literal('message'), text: z.string(), optionsToken: z.string().optional(),
     actions: z.array(actionSchema).max(3).optional(), quick: z.array(z.string()).max(3).optional(),
     upgrade: upgradeSchema.optional(), sources: z.array(z.enum(answerSources)).max(4).optional(),
+    memory: z.object({ id: z.uuid(), text: z.string().refine(text => [...text].length <= 200) }).optional(),
+    feedbackIntent: z.string().optional(),
   }),
   z.object({ kind: z.literal('confirm'), text: z.string(), token: z.string() }),
 ]);

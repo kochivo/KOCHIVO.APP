@@ -3,6 +3,7 @@ import { arStd } from './standard/messages';
 
 export const messages = defineMessages({
   ar: {
+    privacyKoMemory: 'KO بيحفظ ملاحظات قصيرة من كلامك معاه، زي الأسماء والتفضيلات، عشان يفهمك أحسن. تقدر تشوفها وتمسحها من KO أو تقفل التعلّم. التقييمات بتتحفظ من غير اسمك.',
     brand: 'KOCHIVO', home: 'ارجع للرئيسية', support: 'تواصل مع الدعم على واتساب',
     updated: 'آخر تحديث: 16 نوفمبر 2026',
     privacyTitle: 'سياسة الخصوصية', privacyDescription: 'اعرف كوتشيفو بيستخدم بياناتك إزاي، ومين بيشوفها، وإيه حقوقك.',
@@ -54,6 +55,7 @@ export const messages = defineMessages({
   },
   arStd,
   en: {
+    privacyKoMemory: 'KO saves short notes from your chats, such as names and preferences, to understand you better. You can see and delete them in KO or turn learning off. Ratings are stored without your name.',
     brand: 'KOCHIVO', home: 'Back to home', support: 'Contact support on WhatsApp',
     updated: 'Last updated: 16 November 2026',
     privacyTitle: 'Privacy policy', privacyDescription: 'How KOCHIVO uses your data, who can see it, and your rights.',

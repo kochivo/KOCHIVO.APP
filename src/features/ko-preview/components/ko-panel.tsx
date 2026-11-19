@@ -6,7 +6,7 @@ import { Button } from '@/ui/button';
 import { useId, useState } from 'react';
 import type { CSSProperties } from 'react';
 import { usePathname } from 'next/navigation';
-import { ClipboardList, Dumbbell, LockKeyhole, X } from 'lucide-react';
+import { Bookmark, ChevronLeft, ClipboardList, Dumbbell, LockKeyhole, X } from 'lucide-react';
 import { useT } from '@/core/i18n/client';
 import { ResponsiveDialog } from '@/ui/responsive-dialog';
 import { KoFeed } from './ko-feed';
@@ -16,6 +16,7 @@ import { koExpressions, nextKoExpression } from '../policy';
 import type { KoExpression, KoRole } from '../policy';
 import { KoAvatar } from '@/ui/ko-avatar';
 import { KoChat } from './ko-chat';
+import { KoMemoryView } from './ko-memory-view';
 import { useSheetDrag } from '../hooks/use-sheet-drag';
 import { cn } from '@/lib/cn';
 
@@ -31,10 +32,12 @@ export function KoPanel({ role, expression, onExpression, onClose, openerId, int
   const pathname = usePathname();
   const [dropped, setDropped] = useState(false);
   const [header, setHeader] = useState<HTMLElement | null>(null);
+  const [memoryOpen, setMemoryOpen] = useState(false);
+  const [memoryCount, setMemoryCount] = useState<number | null>(null);
   const { offset, handlers } = useSheetDrag(interactive && !closing, onClose);
   const context = dropped ? null : contextFromPath(pathname ?? '/');
   const Icon = role === 'captain' ? ClipboardList : Dumbbell;
-  const closeClass = `ms-auto grid min-h-12 min-w-12 place-items-center rounded-control hover:bg-ink/5 hover:text-ink ${interactive ? 'max-lg:order-last' : ''}`;
+  const closeClass = `${account ? '' : 'ms-auto'} grid min-h-12 min-w-12 place-items-center rounded-control hover:bg-ink/5 hover:text-ink ${interactive ? 'max-lg:order-last' : ''}`;
   const feed = <KoFeed avatar={value => <KoAvatar expression={value} className="size-10" />} />;
   // MobileViewport also pins modal dialogs above the keyboard through the global dialog rule.
   const style = interactive ? {
@@ -56,9 +59,19 @@ export function KoPanel({ role, expression, onExpression, onClose, openerId, int
     <div className={`glass-strong ${interactive ? 'flex min-h-0 flex-col overflow-hidden' : ''}`}>
     <header ref={userId ? setHeader : undefined} {...(interactive ? handlers : {})} className={`glass-strong sticky top-0 z-10 flex items-center gap-stack border-b border-line p-card before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-linear-to-r before:from-line before:via-lime/50 before:to-line ${interactive ? 'shrink-0 max-lg:touch-none max-lg:pt-section' : ''}`}>
       {interactive && <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-inline mx-auto h-1 w-10 rounded-full bg-line lg:hidden" />}
+      {memoryOpen ? <>
+        <IconButton type="button" aria-label={t('memoryBack')} onClick={() => setMemoryOpen(false)} className="size-12 shrink-0 border border-line">
+          <ChevronLeft aria-hidden className="dir-icon size-5" />
+        </IconButton>
+        <div className="flex-1"><span id={titleId} className="font-display text-lg font-extrabold">{t('memoryTitle')}</span>
+          {memoryCount !== null && <p className="text-xs text-muted">{t('memoryCount', { n: memoryCount })}</p>}</div>
+      </> : <>
       <span className="relative size-10 shrink-0"><KoAvatar expression={expression} className="size-10" /><span aria-hidden className="absolute bottom-0 end-0 size-2 rounded-full bg-lime ring-2 ring-surface" /></span>
       <div className={interactive ? 'max-lg:flex-1' : undefined}><span id={interactive ? titleId : undefined} className="font-display text-xl font-extrabold">{t('name')}</span>
         <p className="text-xs text-muted">{t('subtitle')}</p></div>
+      {account && <IconButton type="button" aria-label={t('memoryOpen')} onClick={() => { setMemoryCount(null); setMemoryOpen(true); }}
+        className="ms-auto size-12 shrink-0 border border-line text-muted"><Bookmark aria-hidden className="size-5" /></IconButton>}
+      </>}
       {captainWorkspaceEnabled() ? <IconButton type="button" onClick={onClose} aria-label={t('close')} className={`${closeClass} text-ink`}><X aria-hidden className="size-5" /></IconButton> : <button type="button" onClick={onClose} aria-label={t('close')} className={`${closeClass} text-muted`}><X aria-hidden className="size-5" /></button>}
     </header>
     {!account && context && <div className="flex items-center gap-inline border-b border-line px-page-x text-sm text-muted">
@@ -66,7 +79,8 @@ export function KoPanel({ role, expression, onExpression, onClose, openerId, int
       {captainWorkspaceEnabled() ? <IconButton type="button" aria-label={t('context.remove')} onClick={() => setDropped(true)} className="grid min-h-12 min-w-12 place-items-center"><X aria-hidden className="size-4" /></IconButton> : <button type="button" aria-label={t('context.remove')} onClick={() => setDropped(true)} className="grid min-h-12 min-w-12 place-items-center"><X aria-hidden className="size-4" /></button>}
     </div>}
     {!interactive && feed}
-    {interactive ? <KoChat role={role} context={context} onExpression={onExpression} account={account} userId={userId} header={header} sheet feed={feed} /> : <div className="space-y-card-gap p-card">
+    {memoryOpen && <KoMemoryView onCount={setMemoryCount} />}
+    {interactive ? <div className={memoryOpen ? 'hidden' : 'contents'}><KoChat role={role} context={context} onExpression={onExpression} account={account} userId={userId} header={memoryOpen ? null : header} sheet feed={feed} /></div> : <div className="space-y-card-gap p-card">
       <div className="text-center">
         {captainWorkspaceEnabled() ? <Button variant="secondary" aria-label={t('changeExpression')} onClick={() => onExpression(nextKoExpression(expression))} className="mx-auto min-h-12 flex-col gap-inline rounded-card border border-line p-stack hover:scale-105 motion-reduce:hover:scale-100">
           <KoAvatar expression={expression} className="size-32" />

@@ -54,6 +54,9 @@ it('renders a full-height account log and a decorative grabber', () => {
     expect(control).toContain('min-h-14');
   }
   const close = html.split('<').find(tag => tag.includes(`aria-label="${t('close')}"`));
+  const bookmark = `aria-label="${t('memoryOpen')}"`;
+  expect(html).toContain(bookmark);
+  expect(html.indexOf(bookmark)).toBeLessThan(html.indexOf(`aria-label="${t('close')}"`));
   expect(close).toContain('min-h-12');
   expect(close).toContain('min-w-12');
 });
