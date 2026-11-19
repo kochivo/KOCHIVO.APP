@@ -131,7 +131,9 @@ it.each(['audio', 'question', 'old user value', 'old KO question', 'KO statement
       parts: [{ functionCall: { name: 'update_exercise', args } }],
     } }] })));
     const execute = vi.spyOn(executor, 'executeIntent');
-    if (mode === 'audio' || mode === 'question') execute.mockResolvedValue({ kind: 'confirm', text: 'Preview', token: 'test' });
+    if (mode === 'audio' || mode === 'question') execute.mockResolvedValue({
+      kind: 'message', text: '', actions: [{ id: 'action', title: 'Title', detail: 'Preview', token: 'test' }],
+    });
     const form = new FormData();
     form.set('locale', 'en');
     if (mode === 'audio') form.set('audio', new Blob(['audio'], { type: 'audio/webm' }), 'request.webm');
@@ -147,7 +149,7 @@ it.each(['audio', 'question', 'old user value', 'old KO question', 'KO statement
     }));
     expect(response.status).toBe(200);
     if (mode === 'audio' || mode === 'question') {
-      expect(await response.json()).toMatchObject({ kind: 'confirm' });
+      expect(await response.json()).toMatchObject({ kind: 'message', actions: [{ token: 'test' }] });
       expect(execute.mock.calls[0]?.[1]).toEqual({ kind: 'update_exercise', args });
     } else {
       expect(await response.json()).toEqual({ kind: 'message', text: 'Which exercise, and what exact sets or reps should it have?' });

@@ -94,9 +94,8 @@ it('includes the per-set snapshot in the signed KO preview', async () => {
   const now = Date.parse(TEST_NOW);
   const result = await executeIntent(actor, { kind: 'update_exercise', args: { exercise: 'Squat', reps: 15 } },
     'en', secret, now, { id: player, name: 'Player' });
-  expect(result.kind).toBe('confirm');
-  if (result.kind !== 'confirm') throw new Error('Expected KO confirmation');
-  expect(verifyApproval(result.token, captain, now, secret)?.payload).toEqual({
+  const token = result.kind === 'message' ? result.actions?.[0]?.token : undefined;
+  expect(verifyApproval(token ?? '', captain, now, secret)?.payload).toEqual({
     id, sets: null, reps: 15, previousSets: 2, previousReps: 8, previousMax: 12, previousSetPlan: original,
   });
 });

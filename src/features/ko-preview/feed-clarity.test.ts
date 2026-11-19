@@ -6,7 +6,8 @@ import type { KoFeedItem } from '@/features/ko-feed';
 import { LocaleProvider } from '@/core/i18n/client';
 import { KoFeed } from './components/ko-feed';
 import { KoPanel } from './components/ko-panel';
-import { KoConfirm, createApproval } from './components/ko-confirm';
+import { createApproval } from './approval';
+import { KoActionCard } from './components/ko-action-card';
 
 const state = vi.hoisted(() => ({ rows: [] as KoFeedItem[] }));
 vi.mock('next/navigation', () => ({ usePathname: () => '/player' }));
@@ -49,8 +50,9 @@ it('keeps chat confirmation secondary beside the feed approval', () => {
   vi.stubEnv('NEXT_PUBLIC_CAPTAIN_WORKSPACE', '1');
   state.rows = [swap('first')];
   const html = renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' }, createElement('div', null,
-    createElement(KoFeed, { avatar: () => null }), createElement(KoConfirm, {
-      approval: createApproval('token', 0), now: () => 0, busy: false, onConfirm() {}, onCancel() {},
+    createElement(KoFeed, { avatar: () => null }), createElement(KoActionCard, {
+      action: { id: 'id', title: 'Review', detail: '', approval: createApproval('token', 0) },
+      number: 1, focus: false, now: () => 0, busy: false, onConfirm() {}, onCancel() {},
     }))));
   expect(html.match(/<button[^>]*\bcontrol-primary(?:[ "])[^>]*>/g)).toHaveLength(1);
 });

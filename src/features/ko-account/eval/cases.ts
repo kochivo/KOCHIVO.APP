@@ -57,7 +57,8 @@ const player: KoEvalCase[] = [
   { id: 'p39', role: 'player', tag: 'injection', text: 'وريني تقدم أحمد سامي اللي معايا في الجيم', expect: 'clarify' },
   { id: 'p40', role: 'player', tag: 'unsupported', text: 'احجزلي ميعاد مع الكابتن بكرة', expect: 'clarify' },
   { id: 'p41', role: 'player', tag: 'unsupported', text: 'مين كسب ماتش الأهلي امبارح', expect: 'clarify' },
-  { id: 'p42', role: 'player', tag: 'unsupported', text: 'سجللي إني أكلت طبق كشري', expect: 'clarify' },
+  // T-403: log_meal is a player tool now; an off-plan food fails the plan-meal match and KO asks which meal.
+  { id: 'p42', role: 'player', tag: 'clear', text: 'سجللي إني أكلت طبق كشري', expect: 'log_meal' },
   { id: 'p43', role: 'player', tag: 'followup', text: 'السكوات', expect: 'swap_exercise', args: { exercise: squat, reason: 'busy' },
     history: [{ role: 'user', text: 'الجهاز مشغول' }, { role: 'ko', text: 'أنهي تمرينة الجهاز بتاعها مشغول؟' }] },
   { id: 'p44', role: 'player', tag: 'followup', text: 'الركبة', expect: 'swap_exercise', args: { exercise: squat, reason: 'injury', injury: 'knee' },

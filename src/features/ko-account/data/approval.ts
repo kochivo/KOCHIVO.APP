@@ -3,10 +3,12 @@ import { z } from 'zod';
 
 const actionSchema = z.strictObject({
   actor: z.uuid(), id: z.uuid(), player: z.uuid(), expires: z.number().int(),
-  kind: z.enum(['exercise', 'training', 'nutrition', 'renew', 'reminder', 'swap_options']),
+  kind: z.enum(['exercise', 'training', 'nutrition', 'renew', 'reminder', 'swap_options', 'meal_log']),
   label: z.string().max(160), payload: z.json(),
 });
 export type Approval = z.infer<typeof actionSchema>;
+export const approvalLifetimeMs = 600_000;
+export const mealLogPayload = z.strictObject({ mealId: z.uuid(), eaten: z.boolean(), name: z.string() });
 
 const sign = (data: string, secret: string) => createHmac('sha256', secret).update(data).digest();
 

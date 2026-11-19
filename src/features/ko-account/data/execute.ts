@@ -3,9 +3,10 @@ import { z } from 'zod';
 import { uuidv7 } from '@/core/offline/ids';
 import { createT } from '@/core/i18n/messages';
 import { localDate } from '@/lib/dates';
+import type { ArabicStyle } from '@/core/i18n/locale';
 import { currentExercise, resolvePlayer } from './account';
 import type { KoActor } from './account';
-import { issueApproval } from './approval';
+import { approvalLifetimeMs, issueApproval } from './approval';
 import type { Approval } from './approval';
 import { buildDraft } from './drafts';
 import type { Intent } from './intents';
@@ -14,6 +15,7 @@ import { readMeal } from './meal';
 import { messages } from '../messages';
 import { prepareSwap } from './swap';
 import { readProgress } from './read-progress';
+import { matchPlanMeal, mealToolContext } from './log-meal';
 
 type Locale = 'ar' | 'en';
 import type { AccountReply } from '@/features/ko-core';
@@ -21,9 +23,17 @@ export type { AccountReply } from '@/features/ko-core';
 export const say = (text: string): AccountReply => ({ kind: 'message', text });
 const range = (min: number, max: number | null) => max !== null && max !== min ? `${min}–${max}` : String(min);
 
-export async function executeIntent(actor: KoActor, intent: Intent, locale: Locale, secret: string, now: number, contextPlayer?: { id: string; name: string }): Promise<AccountReply> {
+export async function executeIntent(actor: KoActor, intent: Intent, locale: Locale, secret: string, now: number,
+  contextPlayer?: { id: string; name: string }, signal = new AbortController().signal, style?: ArabicStyle): Promise<AccountReply> {
   const t = createT(messages, locale);
-  if (intent.kind === 'clarify') return say('reason' in intent ? t(`clarify_${intent.reason}`) : intent.args.question);
+  const actionT = createT(messages, locale, style);
+  const action = (kind: Approval['kind'], player: string, payload: Approval['payload'], title: string, detail: string, label: string): AccountReply => {
+    const id = uuidv7(now);
+    return { kind: 'message', text: '', actions: [{ id, title, detail,
+      token: issueApproval({ kind, payload, player, actor: actor.id, id, expires: now + approvalLifetimeMs, label }, secret) }] };
+  };
+  if (intent.kind === 'clarify') return say('reason' in intent
+    ? (intent.reason === 'log_meal' ? actionT('clarify_log_meal') : t(`clarify_${intent.reason}`)) : intent.args.question);
   if (intent.kind === 'my_progress' || intent.kind === 'why_not_counted' ||
       intent.kind === 'player_summary' || intent.kind === 'team_summary')
     return say(await readProgress(actor, intent, locale, now, contextPlayer));
@@ -32,7 +42,7 @@ export async function executeIntent(actor: KoActor, intent: Intent, locale: Loca
     if (!result.payload) return say(result.text);
     return { kind: 'message', text: result.text, optionsToken: issueApproval({
       actor: actor.id, player: actor.id, id: uuidv7(now), kind: 'swap_options', label: '',
-      expires: now + 600_000, payload: result.payload,
+      expires: now + approvalLifetimeMs, payload: result.payload,
     }, secret) };
   }
   if (intent.kind === 'read_nutrition' || intent.kind === 'meal_photo') {
@@ -43,15 +53,20 @@ export async function executeIntent(actor: KoActor, intent: Intent, locale: Loca
       ? `${t('photo', { foods: intent.args.foods.join('، ') })}\n\n${portions || t('noMeal')}`
       : portions || t('noMeal'));
   }
+  if (intent.kind === 'log_meal') {
+    if (actor.role !== 'player') return say(t('unclear'));
+    const { meal, names } = await matchPlanMeal(await mealToolContext(actor, now, signal), intent.args.meal);
+    if (!meal) return say(names.length ? actionT('mealChoices', { names: names.join(', ') }) : actionT('mealPlanEmpty'));
+    const { id: mealId, name } = meal;
+    const eaten = intent.args.eaten ?? true;
+    return action('meal_log', actor.id, { mealId, eaten, name }, actionT(eaten ? 'actionEaten' : 'actionSkipped', { name }), '', '');
+  }
   if (actor.role === 'player' && intent.kind !== 'read_exercise') return say(t('unclear'));
   const player = intent.args.player === undefined && contextPlayer
     ? contextPlayer : await resolvePlayer(actor, intent.args.player);
   if (!player) return say(t('athlete'));
-  const preview = (kind: Approval['kind'], payload: Approval['payload'], text: string, label: string) => ({
-    kind: 'confirm' as const,
-    text: `${t('target', { name: player.name })}\n${text}\n\n${t('confirm')}`,
-    token: issueApproval({ kind, payload, player: player.id, actor: actor.id, id: uuidv7(now), expires: now + 600_000, label }, secret),
-  });
+  const preview = (kind: Approval['kind'], payload: Approval['payload'], text: string, label: string, title: string) =>
+    action(kind, player.id, payload, title, `${t('target', { name: player.name })}\n${text}`, label);
 
   if (intent.kind === 'read_exercise' || intent.kind === 'update_exercise') {
     const rows = await currentExercise(actor, player.id, intent.args.exercise, intent.args.day);
@@ -76,7 +91,8 @@ export async function executeIntent(actor: KoActor, intent: Intent, locale: Loca
       return say(t('changed'));
     return preview('exercise', { id: row.id, sets: sets ?? null, reps: reps ?? null, previousSets: row.sets,
       previousReps: row.reps_min, previousMax: row.reps_max, previousSetPlan: z.json().parse(snapshot.data.set_plan) }, t('change', { name, day: row.day,
-      before: `${row.sets} × ${current}`, after: `${sets ?? row.sets} × ${reps ?? current}` }), name);
+      before: `${row.sets} × ${current}`, after: `${sets ?? row.sets} × ${reps ?? current}` }), name,
+    actionT('actionExercise', { exercise: name, name: player.name }));
   }
   if (intent.kind === 'create_training' || intent.kind === 'create_nutrition') {
     const draft = await buildDraft(actor, intent);
@@ -84,7 +100,8 @@ export async function executeIntent(actor: KoActor, intent: Intent, locale: Loca
     const targets = intent.kind === 'create_nutrition' ? `\n${t('targets', intent.args.targets)}` : '';
     const actual = draft.actual ? `\n${t('actual', { ...draft.actual })}` : '';
     return preview(intent.kind === 'create_training' ? 'training' : 'nutrition', draft.payload,
-      `${t('draft', { title: intent.args.title })}${targets}${actual}\n${draft.preview}`, intent.args.title);
+      `${t('draft', { title: intent.args.title })}${targets}${actual}\n${draft.preview}`, intent.args.title,
+      actionT(intent.kind === 'create_training' ? 'actionTraining' : 'actionNutrition', { title: intent.args.title, name: player.name }));
   }
   if (intent.kind === 'renew_subscription') {
     const { data, error } = await actor.db.from('coach_clients').select('access_until,sessions_left,frozen_at,pending')
@@ -92,13 +109,15 @@ export async function executeIntent(actor: KoActor, intent: Intent, locale: Loca
     if (error) throw error;
     if (!data?.access_until || data.sessions_left !== null || data.frozen_at || data.pending) return say(t('unavailableRenewal'));
     return preview('renew', { days: intent.args.days, previous: data.access_until },
-      t('renew', { days: intent.args.days, previous: data.access_until }), player.name);
+      t('renew', { days: intent.args.days, previous: data.access_until }), player.name,
+      actionT('actionRenew', { name: player.name, days: intent.args.days }));
   }
-  return preview('reminder', { date: localDate(new Date(now), await getPlayerTimezone(player.id)) }, t('reminder'), player.name);
+  return preview('reminder', { date: localDate(new Date(now), await getPlayerTimezone(player.id)) },
+    t('reminder'), player.name, actionT('actionReminder', { name: player.name }));
 }
 
-export async function commitApproval(actor: KoActor, action: Approval, token: string, locale: Locale): Promise<AccountReply> {
-  const t = createT(messages, locale);
+export async function commitApproval(actor: KoActor, action: Approval, token: string, locale: Locale, style?: ArabicStyle) {
+  const t = createT(messages, locale, style);
   const { data, error } = await actor.db.rpc('ko_apply_action', { p_token: token });
   if (error?.code === '40001') return say(t('changed'));
   if (error) throw error;

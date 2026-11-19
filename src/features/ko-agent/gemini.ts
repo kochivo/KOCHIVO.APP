@@ -28,9 +28,10 @@ const clarifyTool = {
 };
 const modelResponse = z.object({
   candidates: z.array(z.object({ content: z.object({ parts: z.array(z.object({
-    functionCall: z.object({ name: z.string(), args: z.unknown().optional() }).optional(),
+    functionCall: z.unknown().optional(),
   })) }) })).min(1),
 });
+const functionCallSchema = z.object({ name: z.string(), args: z.unknown().optional() });
 
 export async function selectKoTool(
   role: KoRole, input: KoInput, key: string, signal?: AbortSignal, fetcher: typeof fetch = fetch,
@@ -52,6 +53,19 @@ export async function requestKoTool(
   tools: Declaration[], system: string, input: { text?: string; media?: KoMedia }, key: string,
   signal?: AbortSignal, fetcher: typeof fetch = fetch, history: readonly KoTurn[] = [],
 ): Promise<KoToolCall | null> {
+  const calls = await requestCalls(tools, system, input, key, signal, fetcher, history);
+  const call = calls.length === 1 ? calls[0] : undefined;
+  return call && tools.some(item => item.name === call.name) ? { ...call, args: call.args ?? {} } : null;
+}
+
+export async function requestKoTools(...args: Parameters<typeof requestKoTool>): Promise<KoToolCall[]> {
+  return (await requestCalls(...args)).slice(0, 3);
+}
+
+async function requestCalls(
+  tools: Declaration[], system: string, input: { text?: string; media?: KoMedia }, key: string,
+  signal?: AbortSignal, fetcher: typeof fetch = fetch, history: readonly KoTurn[] = [],
+): Promise<KoToolCall[]> {
   const parts = [
     ...(input.text ? [{ text: input.text }] : []),
     ...(input.media ? [{ inlineData: { mimeType: input.media.mimeType, data: Buffer.from(input.media.data).toString('base64') } }] : []),
@@ -72,9 +86,10 @@ export async function requestKoTool(
   });
   if (!response.ok) throw new Error(`Gemini HTTP ${response.status}`);
   const decoded = modelResponse.safeParse(await response.json());
-  const calls = decoded.success
-    ? decoded.data.candidates[0]?.content.parts.flatMap(item => item.functionCall ? [item.functionCall] : [])
-    : null;
-  const call = calls?.length === 1 ? calls[0] : undefined;
-  return call && tools.some(item => item.name === call.name) ? { name: call.name, args: call.args ?? {} } : null;
+  return decoded.data?.candidates[0]?.content.parts.flatMap(({ functionCall }) => {
+    if (functionCall === undefined) return [];
+    const call = functionCallSchema.safeParse(functionCall);
+    return call.success ? [{ name: call.data.name, args: call.data.args === undefined ? {} : call.data.args }]
+      : [{ name: '', args: {} }];
+  }) ?? [];
 }

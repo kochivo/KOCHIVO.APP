@@ -20,7 +20,7 @@ it.each(['allowed', 'limited', 'error', 'throws'] as const)('handles a shared ra
   vi.spyOn(entry, 'koAccountConfig').mockReturnValue({
     origin: new URL('https://ko.test'), pilots: new Set(['pilot']), secret: 's'.repeat(32), key: 'key',
   });
-  const planner = vi.spyOn(intents, 'planIntent').mockResolvedValue(null);
+  const planner = vi.spyOn(intents, 'planIntent').mockResolvedValue([]);
   const logger = vi.spyOn(console, 'error').mockImplementation(() => {});
   const form = new FormData();
   form.set('text', 'Help');

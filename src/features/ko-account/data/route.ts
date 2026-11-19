@@ -2,13 +2,17 @@ import { getTimezone } from '@/core/timezone/server';
 import 'server-only';
 import { z } from 'zod';
 import { createT } from '@/core/i18n/messages';
+import { getArabicStyle } from '@/core/i18n/server';
+import { runTool } from '@/features/ai-tools/server';
+import type { AccountAction } from '@/features/ko-core';
 import { localDate } from '@/lib/dates';
 import type { KoMedia } from '@/features/ko-agent';
 import { maxHistoryChars, parseHistory } from '@/features/ko-agent';
 import { koPreviewMessages } from '@/features/ko-core';
 import { getKoActor, resolvePlayer } from './account';
 import type { KoActor } from './account';
-import { verifyApproval } from './approval';
+import { approvalLifetimeMs, mealLogPayload, verifyApproval } from './approval';
+import { mealToolContext } from './log-meal';
 import { koAccountConfig } from '@/features/ko-entry/server';
 import { commitApproval, executeIntent, say } from './execute';
 import { groundIntent } from './ground';
@@ -47,9 +51,10 @@ export async function resolveContext(actor: KoActor, raw: unknown) {
 const reply = (data: object, status = 200) => Response.json(data, { status, headers: { 'Cache-Control': 'no-store' } });
 const swapCookie = 'ko_swap_options';
 function playerReply(result: AccountReply, secure: boolean) {
-  const token = result.kind === 'message' ? result.optionsToken : undefined;
-  const response = reply({ kind: result.kind, text: result.text });
-  // Keep options with the browser without changing the shared chat's captain confirmation flow.
+  if (result.kind === 'confirm') return reply(result);
+  const { optionsToken: token, ...body } = result;
+  const response = reply(body);
+  // Swap choices travel in an HttpOnly cookie.
   response.headers.set('Set-Cookie', `${swapCookie}=${token ?? ''}; Path=/api/ko; HttpOnly; SameSite=Strict; Max-Age=${token ? 600 : 0}${secure ? '; Secure' : ''}`);
   return response;
 }
@@ -82,17 +87,46 @@ export async function postKoAccountChat(request: Request) {
     const form = await request.formData().catch(() => null);
     if (!form) return reply({ error: 'invalid' }, 400);
     const locale = form.get('locale') === 'en' ? 'en' : 'ar';
+    const style = locale === 'ar' ? await getArabicStyle() : undefined;
     const t = createT(messages, locale);
+    const actionT = createT(messages, locale, style);
     const entry = form.get('text');
     const audio = form.get('audio');
     const photo = form.get('photo');
     const token = form.get('token');
-    const history = parseHistory(form.get('history'));
-    const contextPlayer = await resolveContext(actor, form.get('context'));
-    if (form.get('contextOnly') === '1') return reply({ name: contextPlayer?.name ?? null });
+    if (form.get('contextOnly') === '1') {
+      const contextPlayer = await resolveContext(actor, form.get('context'));
+      return reply({ name: contextPlayer?.name ?? null });
+    }
     if ((entry !== null && typeof entry !== 'string') || (typeof entry === 'string' && entry.length > 500) ||
         (audio !== null && photo !== null)) return reply({ error: 'invalid' }, 400);
     const text = typeof entry === 'string' ? entry.trim() : '';
+    const command = normalizeName(text);
+    const explicitConfirm = form.get('confirm') === '1';
+    if (explicitConfirm || (!audio && !photo && ['نفذ', 'تمام نفذ', 'confirm', 'approve'].includes(command))) {
+      const expired = () => reply(say(actionT('expired')), explicitConfirm || typeof token === 'string' ? 410 : 200);
+      const action = typeof token === 'string' ? verifyApproval(token, actor.id, now, config.secret) : null;
+      if (!action || audio || photo || action.kind === 'swap_options') return expired();
+      if (action.kind === 'meal_log') {
+        if (actor.role !== 'player' || action.player !== actor.id) return expired();
+        const payload = mealLogPayload.safeParse(action.payload);
+        if (!payload.success) return expired();
+        const { mealId, eaten, name } = payload.data;
+        const ctx = await mealToolContext(actor, now, request.signal);
+        // Keep the meal on the day the player reviewed, including across local midnight.
+        const result = await runTool({ ...ctx, now: new Date(action.expires - approvalLifetimeMs) }, 'log_my_meal', { mealId, eaten });
+        return result.ok ? reply(say(actionT(eaten ? 'mealEaten' : 'mealSkipped', { name }))) : reply(say(actionT('mealLogFailed')), 409);
+      }
+      if (actor.role !== 'captain' || typeof token !== 'string') return expired();
+      try {
+        const result = await commitApproval(actor, action, token, locale, style);
+        return reply(result, result.text === actionT('changed') ? 409 : 200);
+      } catch {
+        return reply(say(actionT('actionFailed')), 502);
+      }
+    }
+    const history = parseHistory(form.get('history'));
+    const contextPlayer = await resolveContext(actor, form.get('context'));
     if (actor.role === 'player' && !audio && !photo && /^[0-9٠-٩]+$/.test(text)) {
       const cookie = request.headers.get('cookie')?.split(';').map(part => part.trim())
         .find(part => part.startsWith(`${swapCookie}=`))?.slice(swapCookie.length + 1);
@@ -102,16 +136,9 @@ export async function postKoAccountChat(request: Request) {
         ? await chooseSwap(actor, action.payload, text, locale) : say(t('expired'));
       return playerReply(result, config.origin.protocol === 'https:');
     }
-    const command = normalizeName(text);
     const suggestions = createT(koPreviewMessages, locale);
     if (!audio && !photo && text === suggestions('suggest.meal') && actor.role === 'player')
       return playerReply(await executeIntent(actor, { kind: 'read_nutrition', args: {} }, locale, config.secret, now), config.origin.protocol === 'https:');
-    if (!audio && !photo && (command === 'نفذ' || command === 'تمام نفذ' || command === 'confirm' || command === 'approve')) {
-      if (typeof token !== 'string' || actor.role !== 'captain') return reply(say(t('expired')));
-      const action = verifyApproval(token, actor.id, now, config.secret);
-      if (!action || action.kind === 'swap_options') return reply(say(t('expired')));
-      return reply(await commitApproval(actor, action, token, locale));
-    }
 
     let media: KoMedia | undefined;
     const file = photo ?? audio;
@@ -127,9 +154,27 @@ export async function postKoAccountChat(request: Request) {
     const planned = await planIntent(actor.role, { text, media }, config.key, request.signal, contextPlayer?.name, history);
     const lastTurn = history.at(-1);
     const question = lastTurn?.role === 'ko' && /[?؟]\s*$/.test(lastTurn.text) ? lastTurn.text : '';
-    const intent = planned && text ? groundIntent(planned, question ? question + '\n' + text : text) : planned;
-    const result = intent ? await executeIntent(actor, intent, locale, config.secret, now, contextPlayer) : say(t('unclear'));
-    if (photo && actor.role === 'player' && intent?.kind === 'meal_photo' && result.kind === 'message') {
+    const exclusive = planned.find(intent => intent.kind === 'meal_photo' || intent.kind === 'swap_exercise');
+    const intents = (exclusive ? [exclusive] : planned).map(intent =>
+      text ? groundIntent(intent, question ? question + '\n' + text : text) : intent);
+    const texts: string[] = [];
+    const actions: AccountAction[] = [];
+    let optionsToken: string | undefined;
+    for (const intent of intents) {
+      const item = await executeIntent(actor, intent, locale, config.secret, now, contextPlayer, request.signal, style);
+      if (item.text) texts.push(item.text);
+      if (item.kind === 'message') {
+        actions.push(...(item.actions ?? []));
+        optionsToken = item.optionsToken;
+      }
+    }
+    const result = {
+      kind: 'message' as const,
+      text: texts.join('\n\n') || (actions.length ? actionT(actions.length > 1 ? 'actionsReady' : 'actionReady') : t('unclear')),
+      ...(actions.length && { actions }),
+      ...(optionsToken && { optionsToken }),
+    };
+    if (photo && actor.role === 'player' && exclusive?.kind === 'meal_photo') {
       const secret = process.env.KO_MEAL_RECEIPT_SECRET;
       if (!secret) console.warn('Meal points skipped: KO_MEAL_RECEIPT_SECRET is missing');
       else {

@@ -2,7 +2,7 @@
 
 import { captainWorkspaceEnabled } from '@/lib/captain-workspace-enabled';
 import { IconButton } from '@/ui/icon-button';
-import { useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { ArrowUp, Camera, Mic, Square, X } from 'lucide-react';
 import { usePathname } from 'next/navigation';
@@ -10,7 +10,9 @@ import { KoFeed } from './ko-feed';
 import { KoAvatar } from '@/ui/ko-avatar';
 import { KoMessage } from './ko-message';
 import { KoTyping } from './ko-typing';
-import { KoConfirm, createApproval } from './ko-confirm';
+import { KoActionCard } from './ko-action-card';
+import { chatActions, latestPendingAction, useKoActions } from '../hooks/use-ko-actions';
+import type { ChatAction } from '../hooks/use-ko-actions';
 import { contextFromPath } from '../context';
 import type { KoContext } from '../context';
 import { canSubmitKoDraft } from '../composer-draft';
@@ -24,7 +26,7 @@ import type { KoReply } from '@/features/ko-core';
 import type { AccountReply } from '@/features/ko-core';
 import { Button } from '@/ui/button';
 
-type Entry = { speaker: 'user' | 'ko'; text: string; contextText?: string };
+type Entry = { speaker: 'user' | 'ko'; text: string; contextText?: string; actions?: ChatAction[] };
 
 export function KoChat({ role, onExpression, account = false, context: suppliedContext }: { role: KoRole; onExpression?: (value: KoExpression) => void; account?: boolean; context?: KoContext | null }) {
   const t = useT(messages);
@@ -38,7 +40,6 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
   const [draft, setDraft] = useState('');
   const [clip, setClip] = useState<Blob | null>(null);
   const [photo, setPhoto] = useState<File | null>(null);
-  const [approval, setApproval] = useState<ReturnType<typeof createApproval> | null>(null);
   const [history, setHistory] = useState<Entry[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -46,6 +47,9 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
   const log = useRef<HTMLDivElement>(null);
   const camera = useRef<HTMLInputElement>(null);
   const recorder = useKoRecorder(setClip, () => setError(t('micError')));
+  const actions = useKoActions(locale, t('chatError'));
+  const cards = history.flatMap(entry => entry.actions ?? []);
+  const pending = history.at(-1)?.actions?.some(action => !actions.states[action.id]);
 
   useEffect(() => () => active.current?.abort(), []);
   const serializedContext = JSON.stringify(context);
@@ -67,6 +71,15 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
     event?.preventDefault();
     const prompt = (suggestion ?? draft).trim();
     if (active.current || recorder.status !== 'idle' || !canSubmitKoDraft(prompt, clip, photo)) return;
+    if (account && !clip && !photo && /^(?:(?:تمام\s+)?نف[ّ]?ذ|confirm|approve)[.!؟]?$/iu.test(prompt)) {
+      const latest = latestPendingAction(cards, actions.states);
+      if (latest) {
+        setDraft('');
+        setError('');
+        await actions.confirm(latest);
+        return;
+      }
+    }
     const controller = new AbortController();
     active.current = controller;
     setBusy(true);
@@ -82,11 +95,6 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
       while (turns.reduce((sum, turn) => sum + turn.text.length, 0) > 2000) turns.shift();
       body.set('history', JSON.stringify(turns));
       body.set('locale', locale);
-      const confirming = !clip && !photo && /^(?:(?:تمام\s+)?نف[ّ]?ذ|confirm|approve)[.!؟]?$/iu.test(prompt);
-      const token = confirming ? approval?.take(Date.now()) : null;
-      if (token) body.set('token', token);
-      approval?.clear();
-      setApproval(null);
       if (photo) body.set('photo', photo);
     } else body.set('role', role);
     if (clip) body.set('audio', clip, 'voice-note');
@@ -104,10 +112,10 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
         : result.kind === 'updated' || result.kind === 'read'
         ? t(result.kind === 'updated' ? 'chatUpdated' : 'chatRead', { sets: result.sets, reps: result.reps })
         : result.kind === 'clarify' ? result.question : t('chatUnsupported');
-      setApproval(account && result.kind === 'confirm' ? createApproval(result.token, Date.now()) : null);
+      const newCards = account && (result.kind === 'message' || result.kind === 'confirm') ? chatActions(result) : undefined;
       setHistory(entries => [...entries, { speaker: 'user' as const, text: clip ? t('voiceNote') : photo ? `${t('mealPhoto')} ${prompt}`.trim() : prompt,
         contextText: clip ? '' : prompt },
-        { speaker: 'ko' as const, text: answer }].slice(-30));
+        { speaker: 'ko' as const, text: answer, actions: newCards }].slice(-30));
       setDraft('');
       setClip(null);
       setPhoto(null);
@@ -134,10 +142,13 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
       <KoMessage speaker="ko" text={t(account
         ? role === 'captain' ? 'accountCaptain' : 'accountPlayer'
         : role === 'captain' ? 'chatCaptain' : 'chatPlayer')} />
-      {history.map((entry, index) => <KoMessage key={index} {...entry} />)}
-      {account && approval && <KoConfirm approval={approval} busy={busy || recorder.status !== 'idle' || Boolean(clip || photo)}
-        onConfirm={() => { void submit(undefined, t('confirmAction')); }}
-        onCancel={() => { approval.clear(); setApproval(null); setHistory(entries => [...entries, { speaker: 'ko' as const, text: t('confirmCancelled') }].slice(-30)); }} />}
+      {history.map((entry, index) => <Fragment key={entry.actions?.[0]?.id ?? index}>
+        <KoMessage speaker={entry.speaker} text={entry.text} />
+        {account && entry.actions?.map((action, position) => <KoActionCard key={action.id} action={action} number={position + 1}
+          state={actions.states[action.id]} busy={busy || recorder.status !== 'idle' || Boolean(clip || photo)}
+          focus={position === 0 && index === history.length - 1}
+          onConfirm={() => actions.confirm(action)} onCancel={() => actions.cancel(action)} />)}
+      </Fragment>)}
       {busy && <KoTyping />}
     </div>
     {suggestionsFor(role, context, sent).length > 0 && <div className="flex flex-wrap gap-inline px-page-x pb-stack" role="group" aria-label={t('suggestions')}>
@@ -181,7 +192,7 @@ export function KoChat({ role, onExpression, account = false, context: suppliedC
           {recording ? <Square aria-hidden className="size-4" /> : <Mic aria-hidden className="size-5" />}
         </button>}
         <Button type="submit" aria-label={t(clip ? 'sendVoiceOnly' : 'chatSend')} disabled={busy || recorder.status !== 'idle' || !canSubmitKoDraft(draft, clip, photo)}
-          variant={(captainWorkspaceEnabled()) ? 'secondary' : (approval) ? 'secondary' : 'primary'} block={false} className={`grid min-h-12 min-w-12 place-items-center disabled:opacity-50 ${captainWorkspaceEnabled() ? "text-muted" : approval ? "text-muted" : ""} `}><ArrowUp aria-hidden className="size-5" /></Button>
+          variant={(captainWorkspaceEnabled()) ? 'secondary' : (pending) ? 'secondary' : 'primary'} block={false} className={`grid min-h-12 min-w-12 place-items-center disabled:opacity-50 ${captainWorkspaceEnabled() ? "text-muted" : pending ? "text-muted" : ""} `}><ArrowUp aria-hidden className="size-5" /></Button>
       </div>
       {error && <p role="alert" className="mt-inline text-xs text-muted">{error}</p>}
       <p className="mt-inline text-xs text-muted">{t(account ? 'accountPrivacy' : 'chatPrivacy')}</p>

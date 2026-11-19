@@ -26,8 +26,7 @@ it('resolves the caller roster and defaults an omitted target to that player', a
   const context = await resolveContext(actor, JSON.stringify({ screen: 'player', playerId }));
   expect(context).toEqual({ id: playerId, name: 'Ahmed' });
   const result = await executeIntent(actor, { kind: 'send_reminder', args: {} }, 'en', 's'.repeat(32), 1_800_000_000_000, context);
-  expect(result.kind).toBe('confirm');
-  expect(result.text).toContain('Ahmed');
+  expect(result).toMatchObject({ kind: 'message', actions: [{ title: expect.stringContaining('Ahmed') }] });
 });
 
 it('an explicit unknown player wins over the context default', async () => {
@@ -47,7 +46,7 @@ it('passes clarification history through the account planner with an injected Ge
   } }] }));
   const history = [{ role: 'ko' as const, text: 'Which day?' }];
   expect(await planIntent('captain', { text: 'Saturday' }, 'key', new AbortController().signal, undefined, history, fetcher))
-    .toEqual({ kind: 'read_exercise', args: { exercise: 'Bench', day: 'Saturday' } });
+    .toEqual([{ kind: 'read_exercise', args: { exercise: 'Bench', day: 'Saturday' } }]);
   expect(JSON.parse(String(fetcher.mock.calls[0]?.[1]?.body)).contents).toEqual([
     { role: 'user', parts: [{ text: '…' }] }, { role: 'model', parts: [{ text: 'Which day?' }] },
     { role: 'user', parts: [{ text: 'Saturday' }] },
@@ -74,7 +73,7 @@ it.each(['valid', 'invalid'] as const)('never commits from history confirmations
   });
   const response = await postKoAccountChat(request());
   expect(response.status).toBe(200);
-  expect(await response.json()).toMatchObject({ kind: 'confirm' });
+  expect(await response.json()).toMatchObject({ kind: 'message', actions: [{ token: expect.any(String) }] });
   expect(JSON.parse(String(fetcher.mock.calls[0]?.[1]?.body)).contents).toHaveLength(mode === 'valid' ? 3 : 1);
   form.set('text', 'confirm');
   const expired = await postKoAccountChat(request());

@@ -1,4 +1,3 @@
-import type { PGlite } from '@electric-sql/pglite';
 import { afterAll, afterEach, beforeAll, beforeEach, expect, it, vi } from 'vitest';
 import { asUser, createCaptainWithPlayer, createTestDb, createUser, TEST_NOW } from './harness';
 import type { KoActor } from '@/features/ko-account/data/account';
@@ -8,12 +7,12 @@ const chat = vi.hoisted(() => ({ actor: null as KoActor | null, pilots: new Set<
 vi.mock('@/features/ko-account/data/account', async original => ({
   ...await original<typeof import('@/features/ko-account/data/account')>(), getKoActor: async () => chat.actor,
 }));
-vi.mock('@/features/ko-account/data/intents', () => ({ planIntent: async () => ({ kind: 'meal_photo', args: { foods: ['Rice'] } }) }));
+vi.mock('@/features/ko-account/data/intents', () => ({ planIntent: async () => [{ kind: 'meal_photo', args: { foods: ['Rice'] } }] }));
 vi.mock('@/features/ko-entry/server', () => ({ koAccountConfig: () => ({
   origin: new URL('https://kochivo.test'), secret: 'points-test-secret-12345678901234567890', key: 'test', pilots: chat.pilots,
 }) }));
 afterEach(() => { vi.restoreAllMocks(); vi.unstubAllEnvs(); chat.pilots.clear(); });
-let db: PGlite, captain: string, player: string, peer: string, outsider: string, day: string, exercise: string;
+let db: Awaited<ReturnType<typeof createTestDb>>, captain: string, player: string, peer: string, outsider: string, day: string, exercise: string;
 beforeAll(async () => { db = await createTestDb(); });
 afterAll(async () => { await db.close(); });
 beforeEach(async () => {

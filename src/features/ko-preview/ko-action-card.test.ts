@@ -6,7 +6,9 @@ import type * as LocaleModule from '@/core/i18n/client';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, expect, it, vi } from 'vitest';
 import { LocaleProvider } from '@/core/i18n/client';
-import { KoConfirm, createApproval } from './components/ko-confirm';
+import { createApproval } from './approval';
+import { KoActionCard } from './components/ko-action-card';
+import type { ActionState } from './hooks/use-ko-actions';
 import { KoChat } from './components/ko-chat';
 import { createT } from '@/core/i18n/messages';
 
@@ -102,59 +104,74 @@ it('contributes only KO’s reply after a voice note without a visible transcrip
   expect(requests[1]?.has('audio')).toBe(false);
 });
 
-it.each(['ar', 'en'] as const)('shows only account confirmations and sends the signed form once (%s)', async locale => {
+const cards = [
+  { id: 'first', title: 'Renew subscription', detail: 'Review the dates', token: 'signed-first' },
+  { id: 'second', title: 'Send reminder', detail: '', token: 'signed-second' },
+];
+const visibleCards = () => chat().filter(element => element.type === KoActionCard);
+
+it.each(['ar', 'en'] as const)('confirms only the selected card and keeps both cards in the log (%s)', async locale => {
   hooks.locale = locale;
   const requests: FormData[] = [];
   vi.stubGlobal('fetch', async (_url: string, init: RequestInit) => {
     requests.push(init.body as FormData);
-    return Response.json(requests.length === 1 ? { kind: 'confirm', text: 'Review', token: 'signed' } : { kind: 'message', text: 'Saved' });
+    return Response.json(requests.length === 1 ? { kind: 'message', text: 'Review', actions: cards } : { kind: 'message', text: 'Saved' });
   });
   await send('Change sets');
-  expect(chat(false).some(element => element.type === KoConfirm)).toBe(false);
-  const row = chat().find(element => element.type === KoConfirm);
-  expect(row).toBeDefined();
-  const confirm = row?.props.onConfirm as () => void;
-  confirm(); confirm();
+  expect(chat(false).some(element => element.type === KoActionCard)).toBe(false);
+  expect(visibleCards()).toHaveLength(2);
+  const row = visibleCards()[0];
+  const confirm = row?.props.onConfirm as () => Promise<void>;
+  await Promise.all([confirm(), confirm()]);
   expect(requests).toHaveLength(2);
-  expect(requests[1]?.get('token')).toBe('signed');
-  expect(requests[1]?.get('text')).toBe(locale === 'ar' ? 'نفّذ' : 'Confirm');
-  expect(chat().some(element => element.type === KoConfirm)).toBe(false);
-  await Promise.resolve();
+  expect(requests[1]?.get('token')).toBe('signed-first');
+  expect(requests[1]?.get('confirm')).toBe('1');
+  expect(requests[1]?.get('text')).toBeNull();
+  expect(visibleCards()[0]?.props.state).toEqual({ kind: 'done', text: 'Saved' });
+  expect(visibleCards()[1]?.props.state).toBeUndefined();
 });
 
-it('cancel adds a local reply and removes approval without a request', async () => {
+it('cancels one card locally without a request', async () => {
   let calls = 0;
-  vi.stubGlobal('fetch', async () => { calls++; return Response.json({ kind: 'confirm', text: 'Review', token: 'signed' }); });
+  vi.stubGlobal('fetch', async () => { calls++; return Response.json({ kind: 'message', text: 'Review', actions: cards }); });
   await send('Change sets');
-  const row = chat().find(element => element.type === KoConfirm);
+  const row = visibleCards()[0];
   (row?.props.onCancel as () => void)();
   expect(calls).toBe(1);
-  expect(chat().some(element => element.type === KoConfirm)).toBe(false);
-  expect(chat().some(element => element.props.text === (hooks.locale === 'ar' ? 'تمام، لغيته.' : 'Cancelled.'))).toBe(true);
-  expect((row?.props.approval as ReturnType<typeof createApproval>).take(0)).toBeNull();
+  expect(visibleCards()[0]?.props.state).toEqual({ kind: 'cancelled' });
+  expect(visibleCards()[1]?.props.state).toBeUndefined();
 });
 
-it.each(['نفّذ', 'another message'])('clears the row on sending %s and preserves typed approval', async text => {
+it('keeps the server error on the card that was confirmed', async () => {
+  vi.stubGlobal('fetch', async (_url: string, init: RequestInit) => (init.body as FormData).has('confirm')
+    ? Response.json({ kind: 'message', text: 'The plan changed.' }, { status: 409 })
+    : Response.json({ kind: 'message', text: 'Review', actions: cards }));
+  await send('Change the plan');
+  await (visibleCards()[1]?.props.onConfirm as () => Promise<void>)();
+  expect(visibleCards()[0]?.props.state).toBeUndefined();
+  expect(visibleCards()[1]?.props.state).toEqual({ kind: 'failed', text: 'The plan changed.' });
+});
+
+it('keeps pending cards through another message and confirms the newest one by typing', async () => {
   const requests: FormData[] = [];
   vi.stubGlobal('fetch', async (_url: string, init: RequestInit) => {
     requests.push(init.body as FormData);
-    return Response.json(requests.length === 1 ? { kind: 'confirm', text: 'Review', token: 'signed' } : { kind: 'message', text: 'Reply' });
+    return Response.json(requests.length === 1 ? { kind: 'message', text: 'Review', actions: cards } : { kind: 'message', text: 'Reply' });
   });
   await send('Change sets');
-  await send(text);
-  expect(requests[1]?.get('token')).toBe(text === 'نفّذ' ? 'signed' : null);
-  expect(chat().some(element => element.type === KoConfirm)).toBe(false);
+  await send('another message');
+  await send('نفّذ');
+  expect(requests[1]?.get('token')).toBeNull();
+  expect(JSON.parse(String(requests[1]?.get('history')))).toEqual([
+    { role: 'user', text: 'Change sets' }, { role: 'ko', text: 'Review' },
+  ]);
+  expect(requests[2]?.get('token')).toBe('signed-second');
+  expect(visibleCards()[1]?.props.state).toEqual({ kind: 'done', text: 'Reply' });
 });
 
 it('consumes a token only once, including double taps', () => {
   const approval = createApproval('signed', 100);
   expect(approval.take(101)).toBe('signed');
-  expect(approval.take(101)).toBeNull();
-});
-
-it('cancel clears the token without submitting', () => {
-  const approval = createApproval('signed', 100);
-  approval.clear();
   expect(approval.take(101)).toBeNull();
 });
 
@@ -174,14 +191,16 @@ it('focuses confirm on appearance and replaces controls when the expiry timer fi
     return {} as ReturnType<typeof setTimeout>;
   });
   const approval = createApproval('signed', 100);
+  const clock = () => now;
   const render = () => {
     hooks.cursor = 0;
-    return elements(KoConfirm({ approval, busy: false, now: () => now, onConfirm() {}, onCancel() {} }));
+    return elements(KoActionCard({ action: { id: 'id', title: 'Review', detail: '', approval }, number: 1,
+      focus: true, busy: false, now: clock, onConfirm() {}, onCancel() {} }));
   };
   const button = render().find(element => (element.type === 'button' || element.type === Button));
   let focused = false;
   (button?.props.ref as { current: { focus(): void } }).current = { focus() { focused = true; } };
-  hooks.effects[0]?.();
+  hooks.effects.forEach(effect => effect());
   expect(focused).toBe(true);
   expect(delay).toBe(600000);
   now = 600100;
@@ -191,14 +210,24 @@ it('focuses confirm on appearance and replaces controls when the expiry timer fi
 });
 
 it.each(['ar', 'en'] as const)('renders accessible controls and expiry in %s', locale => {
-  const render = (now: number, busy = false) => renderToStaticMarkup(createElement(LocaleProvider, { locale },
-    createElement(KoConfirm, { approval: createApproval('signed', 100), now: () => now, busy, onConfirm() {}, onCancel() {} })));
+  const render = (now: number, busy = false, state?: ActionState) => renderToStaticMarkup(createElement(LocaleProvider, { locale },
+    createElement(KoActionCard, { action: { id: 'id', title: 'Review', detail: 'Before → after', approval: createApproval('signed', 100) },
+      number: 1, now: () => now, state, busy, focus: false, onConfirm() {}, onCancel() {} })));
   const html = render(100);
   expect(html).toContain('role="group"');
   expect(html).toContain(locale === 'ar' ? 'نفّذ' : 'Confirm');
-  expect(html).toContain('min-h-12');
+  expect(html.match(/<button[^>]*min-h-12[^>]*>/g)).toHaveLength(2);
+  expect(html).toContain('Before → after');
+  expect(html).toContain('1.');
   expect(html).toContain(locale === 'ar' ? 'dir="rtl"' : 'dir="ltr"');
   expect(render(100, true).match(/disabled=""/g)).toHaveLength(2);
   expect(render(600100)).not.toContain('<button');
   expect(render(600100)).toContain(locale === 'ar' ? 'الطلب ده خلص وقته' : 'This request expired');
+  const done = render(600100, false, { kind: 'done', text: 'Saved' });
+  expect(done).toContain('text-lime-ink');
+  expect(done).toContain('Saved');
+  expect(done).not.toContain('<button');
+  const cancelled = render(100, false, { kind: 'cancelled' });
+  expect(cancelled).toContain(locale === 'ar' ? 'تمام، لغيته.' : 'Cancelled.');
+  expect(cancelled).not.toContain('<button');
 });

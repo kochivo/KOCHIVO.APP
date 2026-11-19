@@ -85,7 +85,11 @@ function durations(tokens: string[], text: string) {
   });
 }
 
-export function groundIntent(intent: Intent, text: string): Intent {
+export function groundIntent(intent: Intent, text: string): Intent;
+export function groundIntent(intents: Intent[], text: string): Intent | null;
+export function groundIntent(intent: Intent | Intent[], text: string): Intent | null {
+  // The single-request eval scores the first call.
+  if (Array.isArray(intent)) return intent[0] ? groundIntent(intent[0], text) : null;
   const normalized = normalize(text);
   const tokens = normalized.match(/[+-]?\d+(?:[.,٫]\d+)*|\p{L}+/gu) ?? [];
   switch (intent.kind) {

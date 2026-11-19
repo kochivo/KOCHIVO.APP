@@ -172,7 +172,7 @@ it('keeps numeric requests behind the pilot gate', async () => {
 });
 it('preserves captain numeric intent handling without allowing the player request tool', async () => {
   const rpc = authenticated('captain');
-  chat.plan.mockResolvedValue({ kind: 'clarify', args: { question: 'Which exercise?' } });
+  chat.plan.mockResolvedValue([{ kind: 'clarify', args: { question: 'Which exercise?' } }]);
   const response = await postKoAccountChat(chatRequest('1', `ko_swap_options=${optionsToken()}`));
   expect(await response.json()).toMatchObject({ text: 'Which exercise?' });
   expect(chat.plan).toHaveBeenCalledTimes(1);
@@ -185,7 +185,7 @@ it('sets an HttpOnly options cookie from the normal intent path for the existing
     { exercise_id: target, pattern: 'hinge', stress: [], exercises: { name_ar: null, name_en: 'Alternative' } },
   ]);
   chat.actor = { ...fixture.actor, db: { ...fixture.actor.db, rpc: chat.actor?.db.rpc } } as unknown as KoActor;
-  chat.plan.mockResolvedValue({ kind: 'swap_exercise', args: { exercise: 'Bridge', injury: 'knee' } });
+  chat.plan.mockResolvedValue([{ kind: 'swap_exercise', args: { exercise: 'Bridge', injury: 'knee' } }]);
   const response = await postKoAccountChat(chatRequest('My knee hurts doing Bridge'));
   expect(await response.json()).toMatchObject({ kind: 'message', text: expect.stringContaining('Send the number') });
   const cookie = response.headers.get('set-cookie') ?? '';

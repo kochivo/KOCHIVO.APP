@@ -24,3 +24,10 @@ it('rejects malformed reply variants without adding parsing to existing flows', 
   for (const reply of [{ kind: 'confirm', text: 'Review' }, { kind: 'message', text: 3 }, { kind: 'unknown' }])
     expect(accountReplySchema.safeParse(reply).success).toBe(false);
 });
+
+it('preserves action order and enforces the three-card limit', () => {
+  const actions = ['first', 'second', 'third'].map(id => ({ id, title: id, detail: 'Preview', token: 'signed' }));
+  const reply = { kind: 'message', text: 'Review', actions };
+  expect(accountReplySchema.parse(reply)).toEqual(reply);
+  expect(accountReplySchema.safeParse({ ...reply, actions: [...actions, actions[0]] }).success).toBe(false);
+});

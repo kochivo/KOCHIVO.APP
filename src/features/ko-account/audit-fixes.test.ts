@@ -40,8 +40,7 @@ it('signs the New York player date when the Cairo captain is on the next day', a
   const actor = { id: '00000000-0000-7000-8000-000000000001', role: 'captain' } as KoActor;
   const playerId = '00000000-0000-7000-8000-000000000002';
   const reply = await executeIntent(actor, { kind: 'send_reminder', args: {} }, 'en', secret, now, { id: playerId, name: 'Player' });
-  expect(reply.kind).toBe('confirm');
-  if (reply.kind !== 'confirm') throw new Error('Expected approval');
-  expect(verifyApproval(reply.token, actor.id, now, secret)?.payload).toEqual({ date: '2026-11-16' });
+  const token = reply.kind === 'message' ? reply.actions?.[0]?.token : undefined;
+  expect(verifyApproval(token ?? '', actor.id, now, secret)?.payload).toEqual({ date: '2026-11-16' });
   expect(getPlayerTimezone).toHaveBeenCalledWith(playerId);
 });
