@@ -18,10 +18,11 @@ import type { DemoPlan } from './types';
 import { ViewBoundary } from './view-boundary';
 import { DemoHeader } from './demo-header';
 import './guided.css';
+import './workspace-theme.css';
 
 const AccountDemo = dynamic(() => import('../components/demo-screen').then(m => m.DemoScreen), { loading: () => <LazyState /> });
 export function GuidedScreen({ plans, state, dispatch, now, onLanguage }: { plans: readonly DemoPlan[]; state: DemoState; dispatch: (action: Action) => void; now: () => number; onLanguage: () => void }) {
-  const [account, setAccount] = useState(false);
+  const [account, setAccount] = useState(false), [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const t = useT(guidedMessages), toast = useToast();
   useTarget(state);
   const act = (event: string, text?: string) => {
@@ -32,11 +33,10 @@ export function GuidedScreen({ plans, state, dispatch, now, onLanguage }: { plan
     if (key) toast.success({ title: t(key, { name: text ?? state.name }), detail: event === 'set' ? `${state.kg} ${t('kg')} × ${state.reps}` : t('successDetail'), icon: event === 'pay' || event === 'renew' ? 'payment' : event === 'send' || event === 'reply' ? 'message' : 'check' });
   };
   if (account) return <><div className="p-card"><Button variant="secondary" onClick={() => setAccount(false)}>{t('back')}</Button></div><ViewBoundary message={t('error')} retryLabel={t('retry')}><AccountDemo /></ViewBoundary></>;
-  if (state.intro) return <Intro onChoose={n => dispatch({ type: 'start', n, now: now() })} />;
   const props = { state, dispatch, act, now };
-  return <div data-guide-state={state.guide} className="demo-shell min-h-dvh bg-bg-deep text-ink">
-    <DemoHeader state={state} dispatch={dispatch} now={now} onLanguage={onLanguage} />
-    <main data-demo-stage data-view={state.view} className="demo-stage mx-auto max-w-[1480px] p-page-x"><CaptainPane {...props} plans={plans} /><PhonePane {...props} /></main>
-    <GuideCard state={state} plans={plans} dispatch={dispatch} now={now} onAccount={() => setAccount(true)} />
+  return <div data-demo-theme={theme} data-guide-state={state.guide} className="demo-shell min-h-dvh bg-bg-deep text-ink">
+    <DemoHeader state={state} dispatch={dispatch} now={now} onLanguage={onLanguage} theme={theme} onTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')} />
+    {state.intro ? <Intro onChoose={n => dispatch({ type: 'start', n, now: now() })} /> : <><main data-demo-stage data-view={state.view} className="demo-stage mx-auto max-w-[1480px] p-page-x"><CaptainPane {...props} plans={plans} /><PhonePane {...props} /></main>
+    <GuideCard state={state} plans={plans} dispatch={dispatch} now={now} onAccount={() => setAccount(true)} /></>}
   </div>;
 }

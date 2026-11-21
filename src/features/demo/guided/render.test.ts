@@ -13,7 +13,7 @@ import { Workout } from './workout';
 import type { Page } from './steps';
 
 it('shows the sum of the demo meals on both screens', () => {
-  const props = { state: { ...initialState(0), eaten: [true, true, true, true] }, dispatch() {}, act() {}, now: () => 0 };
+  const props = { state: { ...initialState(0), step: 8, eaten: [true, true, true, true] }, dispatch() {}, act() {}, now: () => 0 };
   const render = (view: typeof Meals | typeof PhoneFood) => renderToStaticMarkup(
     createElement(LocaleProvider, { locale: 'en' }, createElement(view, props)),
   );

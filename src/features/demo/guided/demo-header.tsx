@@ -1,14 +1,14 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Monitor, RotateCcw, Smartphone } from 'lucide-react';
+import { Monitor, RotateCcw, Smartphone, Sun, Moon } from 'lucide-react';
 import { KoSettings } from '@/ui/icons/ko-settings';
 import { useT } from '@/core/i18n/client';
 import { Button, buttonClass } from '@/ui/button';
 import { guidedMessages } from './messages';
 import type { Action, DemoState } from './state';
 
-export function DemoHeader({ state, dispatch, now, onLanguage }: {
-  state: DemoState; dispatch: (action: Action) => void; now: () => number; onLanguage: () => void;
+export function DemoHeader({ state, dispatch, now, onLanguage, theme = 'dark', onTheme }: {
+  state: DemoState; dispatch: (action: Action) => void; now: () => number; onLanguage: () => void; theme?: 'dark' | 'light'; onTheme?: () => void;
 }) {
   const t = useT(guidedMessages);
   const language = <Button variant="ghost" className="demo-language text-xs text-muted" onClick={event => {
@@ -28,7 +28,8 @@ export function DemoHeader({ state, dispatch, now, onLanguage }: {
       <span className="demo-fixture-pill items-center gap-inline rounded-full border border-line px-stack text-xs text-muted">
         <i aria-hidden className="size-2 rounded-full bg-lime ring-2 ring-lime-soft" />{t('label')}
       </span>
-      <div className="demo-desktop-actions ms-auto items-center gap-inline">
+      {onTheme && <Button variant="secondary" block={false} className="demo-theme-toggle ms-auto" aria-label={t(theme === 'dark' ? 'lightTheme' : 'darkTheme')} onClick={onTheme}>{theme === 'dark' ? <Sun aria-hidden className="size-5" /> : <Moon aria-hidden className="size-5" />}<span className="sr-only">{t(theme === 'dark' ? 'lightTheme' : 'darkTheme')}</span></Button>}
+      <div className="demo-desktop-actions items-center gap-inline">
         {language}
         {restart}
         <Link prefetch={false} href="/#pricing" className={buttonClass({ block: false })}>{t('free')}</Link>

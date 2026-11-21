@@ -26,12 +26,12 @@ it.each([
   ['captain-home.tsx', 'HomeHeroView', 'HomeTilesView', 'HomeTaskListView'],
   ['captain-pane.tsx', 'CaptainFrameNavView'],
   ['workout.tsx', 'SetRowsView'],
-  ['phone-pane.tsx', 'PlayerTabsView'],
+  ['phone-pane.tsx', 'DemoPlayerNav'],
   ['chat-list.tsx', 'ConversationList'],
   ['chat-messages.tsx', 'ChatThreadView', 'ConversationBubbles'],
   ['tasks.tsx', 'TaskRow'],
   ['money.tsx', 'WorkspaceBillingTiles', 'MoneyOwedView'],
-  ['roster.tsx', 'RosterRowView'],
+  ['roster.tsx', 'WeekDots'],
   ['food-row.tsx', 'V11FoodRowView'],
 ])('uses production views in %s', (file, ...views) => {
   const source = readFileSync(new URL(file, import.meta.url), 'utf8');

@@ -1,0 +1,776 @@
+diff --git a/src/features/demo/guided/captain-pane.tsx b/src/features/demo/guided/captain-pane.tsx
+index d5c084c..6df5568 100644
+--- a/src/features/demo/guided/captain-pane.tsx
++++ b/src/features/demo/guided/captain-pane.tsx
+@@ -6,6 +6,7 @@ import { CaptainNavGroups } from '@/features/roster/components/captain-nav-group
+ import type { FrameId } from '@/features/roster/components/captain-frame-model';
+ import { frameMessages } from '@/features/roster/components/captain-frame-messages';
+ /* eslint-enable no-restricted-imports */
++import { BrandMark } from '@/ui/brand-mark';
+ import { Bell, Search } from 'lucide-react';
+ import { useT } from '@/core/i18n/client';
+ import { Button } from '@/ui/button';
+@@ -17,6 +18,7 @@ import { planIndex } from './state';
+ import type { Page } from './steps';
+ import type { PaneProps } from './types';
+ import type { DemoPlan } from './types';
++import { DemoPhoneNav } from './demo-phone-nav';
+ import { LazyState } from './lazy-state';
+ import { ViewBoundary } from './view-boundary';
+ 
+@@ -34,17 +36,19 @@ export function CaptainPane(props: PaneProps & { plans: readonly DemoPlan[] }) {
+   return <section className="demo-captain-column min-w-0" aria-label={t('captain')}>
+     <p className="demo-pane-caption mb-stack text-xs text-muted"><b>{t('captainPane')}</b> · {t('captainCaption', { n: state.n })}</p>
+     <div className="demo-captain overflow-hidden rounded-card border border-line bg-bg" data-area="captain">
+-      <aside className="demo-captain-side glass flex flex-col gap-stack p-stack">
+-        <CaptainFrameNavView available={available} active={active} counts={counts} open={more} onMore={() => setMore(true)} onClose={() => setMore(false)} onSelect={select}
+-          more={more && <div className="demo-more sheet rounded-card p-card"><Button variant="secondary" onClick={() => setMore(false)}>{frame('close')}</Button><CaptainNavGroups available={available} active={active} counts={counts} tiles onSelect={select} /></div>} />
+-        <div className="demo-captain-card mt-auto rounded-control bg-surface p-stack"><b className="text-sm">{t('captainName')}</b><p className="text-xs text-muted">{props.plans[planIndex(state.n)]?.name} · {t('playersCount', { n: state.n })}</p></div>
++      <aside className="demo-captain-side flex flex-col gap-stack p-stack">
++        <div className="demo-workspace-brand flex min-h-12 items-center gap-inline px-inline font-display text-base font-extrabold tracking-[.14em]"><BrandMark className="size-7" />{frame('brand')}</div>
++        <div className="demo-desktop-nav"><CaptainFrameNavView available={available} active={active} counts={counts} open={more} onMore={() => setMore(true)} onClose={() => setMore(false)} onSelect={select} /></div>
++        {more && <div className="demo-more sheet rounded-card p-card"><Button variant="secondary" onClick={() => setMore(false)}>{frame('close')}</Button><CaptainNavGroups available={available} active={active} counts={counts} tiles onSelect={select} /></div>}
++        <DemoPhoneNav active={active} count={needed} more={more} onSelect={select} onMore={() => setMore(!more)} onAdd={() => go('add')} />
++        <div className="demo-captain-card mt-auto rounded-control border border-line bg-surface-raised p-stack"><b className="text-sm">{t('captainName')}</b><p className="text-xs text-muted">{props.plans[planIndex(state.n)]?.name} · {t('playersCount', { n: state.n })}</p></div>
+       </aside>
+       <div className="demo-captain-main grid min-w-0 content-start gap-card-gap p-card">
+         <header className="demo-captain-bar glass flex items-center justify-between gap-inline rounded-card p-stack">
+-          <div className="min-w-0 flex-1"><h2 className="truncate text-title font-semibold">{state.page === 'home' ? t('greeting') : state.page === 'player' ? t('names').split('|')[0] : state.page === 'tasks' ? frame('tasks') : state.page === 'join' ? frame('join') : state.page === 'inbox' ? frame('mobileInbox') : t(state.page)}</h2><p className="truncate text-xs text-muted">{state.page === 'players' ? t('playersCount', { n: state.n + state.invites.length }) : t('date')}</p></div>
+-          <Button variant="secondary" className="demo-search" onClick={() => go('players')}><Search aria-hidden className="size-4" />{t('search')}</Button>
++          <div className="min-w-0 flex-1"><h2 className="truncate text-title font-semibold">{state.page === 'home' ? t('greeting') : state.page === 'player' ? t('names').split('|')[0] : state.page === 'tasks' ? frame('tasks') : state.page === 'join' ? frame('join') : state.page === 'inbox' ? frame('mobileInbox') : state.page === 'programs' ? frame('programs') : state.page === 'food' ? frame('plans') : state.page === 'money' ? frame('billing') : t(state.page)}</h2>{(state.page === 'home' || state.page === 'players') && <p className="truncate text-xs text-muted">{state.page === 'players' ? t('playersCount', { n: state.n + state.invites.length }) : t('date')}</p>}</div>
++          <Button variant="secondary" className="demo-search" onClick={() => go('players')}><Search aria-hidden className="size-4" /><span>{frame('search')}</span><kbd className="ms-auto rounded bg-bg px-inline py-inline text-micro">{frame('shortcut')}</kbd></Button>
+           <IconButton aria-label={t('needs')} onClick={() => go('home')}><Bell aria-hidden className="size-5" /></IconButton>
+-          <Button block={false} onClick={() => go('add')}><KoPlus className="size-5" />{t('add')}</Button>
++          <Button className="demo-add-player" block={false} onClick={() => go('add')}><KoPlus className="size-5" />{t('add')}</Button>
+         </header>
+         {state.page === 'home' ? <CaptainHome {...props} /> : <ViewBoundary message={t('error')} retryLabel={t('retry')}><Views {...props} /></ViewBoundary>}
+       </div>
+diff --git a/src/features/demo/guided/demo-header.tsx b/src/features/demo/guided/demo-header.tsx
+index 97f4f6c..54dbb0d 100644
+--- a/src/features/demo/guided/demo-header.tsx
++++ b/src/features/demo/guided/demo-header.tsx
+@@ -1,14 +1,14 @@
+ import Image from 'next/image';
+ import Link from 'next/link';
+-import { Monitor, RotateCcw, Smartphone } from 'lucide-react';
++import { Monitor, RotateCcw, Smartphone, Sun, Moon } from 'lucide-react';
+ import { KoSettings } from '@/ui/icons/ko-settings';
+ import { useT } from '@/core/i18n/client';
+ import { Button, buttonClass } from '@/ui/button';
+ import { guidedMessages } from './messages';
+ import type { Action, DemoState } from './state';
+ 
+-export function DemoHeader({ state, dispatch, now, onLanguage }: {
+-  state: DemoState; dispatch: (action: Action) => void; now: () => number; onLanguage: () => void;
++export function DemoHeader({ state, dispatch, now, onLanguage, theme = 'dark', onTheme }: {
++  state: DemoState; dispatch: (action: Action) => void; now: () => number; onLanguage: () => void; theme?: 'dark' | 'light'; onTheme?: () => void;
+ }) {
+   const t = useT(guidedMessages);
+   const language = <Button variant="ghost" className="demo-language text-xs text-muted" onClick={event => {
+@@ -28,7 +28,8 @@ export function DemoHeader({ state, dispatch, now, onLanguage }: {
+       <span className="demo-fixture-pill items-center gap-inline rounded-full border border-line px-stack text-xs text-muted">
+         <i aria-hidden className="size-2 rounded-full bg-lime ring-2 ring-lime-soft" />{t('label')}
+       </span>
+-      <div className="demo-desktop-actions ms-auto items-center gap-inline">
++      {onTheme && <Button variant="secondary" block={false} className="demo-theme-toggle ms-auto" aria-label={t(theme === 'dark' ? 'lightTheme' : 'darkTheme')} onClick={onTheme}>{theme === 'dark' ? <Sun aria-hidden className="size-5" /> : <Moon aria-hidden className="size-5" />}<span className="sr-only">{t(theme === 'dark' ? 'lightTheme' : 'darkTheme')}</span></Button>}
++      <div className="demo-desktop-actions items-center gap-inline">
+         {language}
+         {restart}
+         <Link prefetch={false} href="/#pricing" className={buttonClass({ block: false })}>{t('free')}</Link>
+diff --git a/src/features/demo/guided/demo-library.tsx b/src/features/demo/guided/demo-library.tsx
+new file mode 100644
+index 0000000..a70631e
+--- /dev/null
++++ b/src/features/demo/guided/demo-library.tsx
+@@ -0,0 +1,21 @@
++import { useState } from 'react';
++import { Search } from 'lucide-react';
++import { useT } from '@/core/i18n/client';
++import { GlassCard } from '@/ui/glass-card';
++import { Button } from '@/ui/button';
++import { mealPlanCalories } from './meal-calories';
++import { guidedMessages } from './messages';
++
++/** A local library entry point, with no account routes or create/assign side effects. */
++export function DemoLibrary({ kind, onOpen }: { kind: 'programs' | 'food'; onOpen: () => void }) {
++  const t = useT(guidedMessages), [query, setQuery] = useState('');
++  const titles = kind === 'programs' ? [t('programTitle')] : [t('foodTitle')];
++  return <section className="grid gap-card-gap">
++    <label className="recessed flex min-h-12 items-center gap-inline rounded-control px-card"><Search aria-hidden className="size-4 text-muted" /><input type="search" className="min-w-0 flex-1 bg-transparent text-sm outline-none" aria-label={t('librarySearch')} placeholder={t(kind === 'programs' ? 'programs' : 'food')} value={query} onChange={e => setQuery(e.target.value)} /></label>
++    <div className="demo-library-grid">{titles.filter(title => title.toLocaleLowerCase().includes(query.toLocaleLowerCase())).map(title => <GlassCard key={title} className="grid gap-stack">
++      <div className="flex items-start justify-between gap-inline"><h3 className="text-md font-bold">{title}</h3><span className="tone-lime rounded-control px-inline text-micro">{kind === 'programs' ? t('day', { n: 4 }) : t('calories', { n: mealPlanCalories })}</span></div>
++      {kind === 'food' && <><div className="flex h-2 overflow-hidden rounded-full" aria-hidden><span className="w-[34%] bg-lime" /><span className="w-[50%] bg-info" /><span className="flex-1 bg-warn" /></div><p className="text-xs text-muted">{t('macroNames').split('|').map((name, i) => `${name} ${[170, 250, 63][i]}`).join(' · ')}</p></>}
++      <footer className="mt-stack flex items-center justify-between gap-inline border-t border-line-soft pt-stack"><span className="text-xs text-muted">{t('names').split('|')[0]}</span><Button block={false} variant="secondary" onClick={onOpen}>{t('overview')}</Button></footer>
++    </GlassCard>)}</div>
++  </section>;
++}
+diff --git a/src/features/demo/guided/demo-phone-nav.tsx b/src/features/demo/guided/demo-phone-nav.tsx
+new file mode 100644
+index 0000000..3083a23
+--- /dev/null
++++ b/src/features/demo/guided/demo-phone-nav.tsx
+@@ -0,0 +1,28 @@
++import { EllipsisVertical } from 'lucide-react';
++import { useT } from '@/core/i18n/client';
++// eslint-disable-next-line no-restricted-imports -- The demo mirrors navigation with local callbacks only.
++import { frameItems } from '@/features/roster/components/captain-frame-model';
++// eslint-disable-next-line no-restricted-imports -- Shared navigation labels.
++import { frameMessages } from '@/features/roster/components/captain-frame-messages';
++// eslint-disable-next-line no-restricted-imports -- Type for the shared navigation model.
++import type { FrameId } from '@/features/roster/components/captain-frame-model';
++import { guidedMessages } from './messages';
++import { KoPlus } from '@/ui/icons/ko-plus';
++
++export function DemoPhoneNav({ active, count, more, onSelect, onMore, onAdd }: {
++  active: FrameId; count: number; more: boolean; onSelect: (id: FrameId) => void; onMore: () => void; onAdd: () => void;
++}) {
++  const t = useT(frameMessages), demo = useT(guidedMessages);
++  return <nav className="demo-phone-coach-nav" aria-label={t('work')}>
++    {(['home', 'tasks', 'add', 'players', 'more'] as const).map(id => {
++      const item = frameItems.find(item => item.id === id), Icon = item?.icon;
++      const selected = id === 'more' ? more : id === active && !more;
++      return <button key={id} type="button" aria-label={id === 'add' ? demo('add') : undefined} aria-current={selected ? 'page' : undefined}
++        className={id === 'add' ? 'demo-quick-add' : `demo-phone-coach-tab ${selected ? 'text-ink font-bold' : 'text-muted'}`}
++        onClick={() => id === 'add' ? onAdd() : id === 'more' ? onMore() : onSelect(id)}>
++        {id === 'add' ? <KoPlus className="size-7" /> : <><span className="relative">{Icon ? <Icon aria-hidden className={`size-5 ${selected ? 'text-lime' : ''}`} /> : <EllipsisVertical aria-hidden className="size-5" />}
++          {id === 'tasks' && count > 0 && <span className="absolute -end-3 -top-2 rounded-full bg-lime px-inline text-micro text-on-lime">{count}</span>}</span>{t(id)}</>}
++      </button>;
++    })}
++  </nav>;
++}
+diff --git a/src/features/demo/guided/demo-player-nav.tsx b/src/features/demo/guided/demo-player-nav.tsx
+new file mode 100644
+index 0000000..54a6356
+--- /dev/null
++++ b/src/features/demo/guided/demo-player-nav.tsx
+@@ -0,0 +1,22 @@
++import { useT } from '@/core/i18n/client';
++import { KoHome } from '@/ui/icons/ko-home';
++import { KoTraining } from '@/ui/icons/ko-training';
++import { KoMealPlans } from '@/ui/icons/ko-meal-plans';
++import { KoProgress } from '@/ui/icons/ko-progress';
++import { KoCaptainChat } from '@/ui/icons/ko-captain-chat';
++import { guidedMessages } from './messages';
++import type { PaneProps } from './types';
++
++export function DemoPlayerNav({ state, dispatch, now }: PaneProps) {
++  const t = useT(guidedMessages);
++  const items = [
++    { tab: 'workout', key: 'workout', Icon: KoHome }, { tab: 'food', key: 'food', Icon: KoMealPlans },
++    { tab: 'workout', key: 'done', Icon: KoTraining }, { tab: 'me', key: 'progress', Icon: KoProgress },
++    { tab: 'coach', key: 'coach', Icon: KoCaptainChat },
++  ] as const;
++  return <nav className="demo-player-nav" aria-label={t('changeView')}>{items.map(({ tab, key, Icon }, i) => <button type="button" key={key}
++    aria-label={i === 2 ? t('workout') : undefined} aria-current={state.tab === tab && i !== 2 ? 'page' : undefined}
++    className={i === 2 ? 'demo-player-workout' : 'demo-player-tab'} onClick={() => dispatch({ type: 'phone', tab, now: now() })}>
++    <Icon aria-hidden className="size-5" />{i !== 2 && <span>{t(key)}</span>}
++  </button>)}</nav>;
++}
+diff --git a/src/features/demo/guided/guided-screen.tsx b/src/features/demo/guided/guided-screen.tsx
+index 9254ebc..ceeeba0 100644
+--- a/src/features/demo/guided/guided-screen.tsx
++++ b/src/features/demo/guided/guided-screen.tsx
+@@ -18,10 +18,11 @@ import type { DemoPlan } from './types';
+ import { ViewBoundary } from './view-boundary';
+ import { DemoHeader } from './demo-header';
+ import './guided.css';
++import './workspace-theme.css';
+ 
+ const AccountDemo = dynamic(() => import('../components/demo-screen').then(m => m.DemoScreen), { loading: () => <LazyState /> });
+ export function GuidedScreen({ plans, state, dispatch, now, onLanguage }: { plans: readonly DemoPlan[]; state: DemoState; dispatch: (action: Action) => void; now: () => number; onLanguage: () => void }) {
+-  const [account, setAccount] = useState(false);
++  const [account, setAccount] = useState(false), [theme, setTheme] = useState<'dark' | 'light'>('dark');
+   const t = useT(guidedMessages), toast = useToast();
+   useTarget(state);
+   const act = (event: string, text?: string) => {
+@@ -32,11 +33,10 @@ export function GuidedScreen({ plans, state, dispatch, now, onLanguage }: { plan
+     if (key) toast.success({ title: t(key, { name: text ?? state.name }), detail: event === 'set' ? `${state.kg} ${t('kg')} × ${state.reps}` : t('successDetail'), icon: event === 'pay' || event === 'renew' ? 'payment' : event === 'send' || event === 'reply' ? 'message' : 'check' });
+   };
+   if (account) return <><div className="p-card"><Button variant="secondary" onClick={() => setAccount(false)}>{t('back')}</Button></div><ViewBoundary message={t('error')} retryLabel={t('retry')}><AccountDemo /></ViewBoundary></>;
+-  if (state.intro) return <Intro onChoose={n => dispatch({ type: 'start', n, now: now() })} />;
+   const props = { state, dispatch, act, now };
+-  return <div data-guide-state={state.guide} className="demo-shell min-h-dvh bg-bg-deep text-ink">
+-    <DemoHeader state={state} dispatch={dispatch} now={now} onLanguage={onLanguage} />
+-    <main data-demo-stage data-view={state.view} className="demo-stage mx-auto max-w-[1480px] p-page-x"><CaptainPane {...props} plans={plans} /><PhonePane {...props} /></main>
+-    <GuideCard state={state} plans={plans} dispatch={dispatch} now={now} onAccount={() => setAccount(true)} />
++  return <div data-demo-theme={theme} data-guide-state={state.guide} className="demo-shell min-h-dvh bg-bg-deep text-ink">
++    <DemoHeader state={state} dispatch={dispatch} now={now} onLanguage={onLanguage} theme={theme} onTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')} />
++    {state.intro ? <Intro onChoose={n => dispatch({ type: 'start', n, now: now() })} /> : <><main data-demo-stage data-view={state.view} className="demo-stage mx-auto max-w-[1480px] p-page-x"><CaptainPane {...props} plans={plans} /><PhonePane {...props} /></main>
++    <GuideCard state={state} plans={plans} dispatch={dispatch} now={now} onAccount={() => setAccount(true)} /></>}
+   </div>;
+ }
+diff --git a/src/features/demo/guided/guided.css b/src/features/demo/guided/guided.css
+index 6cf6f83..cc5d89d 100644
+--- a/src/features/demo/guided/guided.css
++++ b/src/features/demo/guided/guided.css
+@@ -104,3 +104,67 @@
+   .demo-tasks li { flex-wrap: wrap; }
+   .demo-tasks li > :first-child { flex-basis: 100%; }
+ }
++
++/* Keep the two-device story, but give the coach the real workspace dimensions. */
++.demo-stage { max-inline-size: 1920px; grid-template-columns: minmax(0, 1fr) 342px; }
++.demo-captain { grid-template-columns: 212px minmax(0, 1fr); background: radial-gradient(ellipse at 85% 0%, var(--aurora-glow), transparent 60%), var(--color-bg-deep); }
++.demo-captain-side { border-inline-end: 1px solid var(--color-line-soft); }
++.demo-captain-main { padding: var(--spacing-stack); gap: var(--spacing-card-gap); }
++.demo-captain-bar { min-block-size: 64px; border-radius: var(--radius-control); }
++.demo-captain-bar h2 { font-size: 1rem; }
++.demo-captain .control-primary { inline-size: auto; }
++.demo-captain .demo-workspace-brand { flex-shrink: 0; }
++.demo-captain .demo-search { font-size: var(--text-xs); }
++.demo-phone-coach-nav { display: none; }
++.demo-desktop-nav > nav { display: none; }
++.demo-shell .demo-resume { background: var(--color-surface-raised); }
++.demo-player-column { align-self: start; }
++@media (min-width: 980px) and (max-width: 1499px) {
++  .demo-captain { grid-template-columns: 184px minmax(0, 1fr); }
++  .demo-captain-bar .demo-search span, .demo-captain-bar .demo-search kbd { display: none; }
++  .demo-captain-bar .demo-search { display: inline-flex; padding-inline: var(--spacing-inline); }
++  .demo-captain-bar .demo-add-player { font-size: var(--text-xs); padding-inline: var(--spacing-stack); }
++}
++@media (width < 760px) {
++  .demo-shell .demo-stage { padding-inline: 0; padding-block-start: 0; }
++  .demo-captain { border: 0; border-radius: 0; min-block-size: calc(100dvh - 64px); block-size: auto; }
++  .demo-captain-main { overflow: visible; padding: var(--spacing-page-x); }
++  .demo-captain-bar { background: transparent; border: 0; box-shadow: none; padding: 0; }
++  .demo-captain-bar h2 { font-size: var(--text-h); white-space: normal; }
++  .demo-captain-bar .demo-add-player { inline-size: 48px; padding-inline: 0; font-size: 0; }
++  .demo-captain-bar .demo-search, .demo-captain-bar > .control:has(> .lucide-bell) { display: none; }
++  .demo-workspace-brand { display: none; }
++  .demo-phone-coach-nav { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); align-items: end; position: fixed; inset-inline: 0; inset-block-end: 0; z-index: 40; min-block-size: 80px; padding: 0 var(--spacing-inline) calc(var(--spacing-card) + var(--safe-bottom)); background: var(--color-bg); }
++  .demo-phone-coach-tab { display: flex; flex-direction: column; align-items: center; justify-content: end; gap: var(--spacing-inline); min-block-size: 56px; font-size: var(--text-micro); }
++  .demo-quick-add { inline-size: 60px; block-size: 60px; display: grid; place-items: center; justify-self: center; border-radius: var(--radius-card); background: linear-gradient(180deg, var(--color-lime-top), var(--color-lime-bottom)); color: var(--color-on-lime); rotate: 45deg; margin-block-end: var(--spacing-stack); }
++  .demo-quick-add > svg { rotate: -45deg; }
++  .demo-captain-side .demo-more { position: fixed; inset-inline: var(--spacing-page-x); inset-block-end: 100px; max-block-size: 60dvh; background: var(--color-surface); }
++  .demo-shell:has(.demo-stage[data-view='captain']) :is(.demo-guide, .demo-resume) { inset-block-end: calc(100px + var(--safe-bottom)); }
++}
++
++.demo-captain [data-home-hero] > a.control-secondary { background: linear-gradient(180deg, var(--color-lime-top), var(--color-lime-bottom)); color: var(--color-on-lime); font-weight: 800; box-shadow: var(--shadow-control-primary); }
++
++@media (width < 760px) {
++  .demo-roster-table, .demo-roster-table tbody, .demo-roster-row { display: block; }
++  .demo-roster-table thead { display: none; }
++  .demo-roster-row { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; padding: var(--spacing-stack); }
++  .demo-roster-row td { display: none; }
++  .demo-roster-row td:first-child, .demo-roster-row td:last-child { display: block; padding: 0; }
++  .demo-roster-name b { white-space: normal; }
++}
++
++.demo-player-nav { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); align-items: end; background: var(--color-bg); padding: var(--demo-stack); gap: var(--demo-inline); }
++.demo-player-tab { display: flex; flex-direction: column; justify-content: end; align-items: center; gap: var(--demo-inline); min-block-size: 54px; font-size: var(--text-micro); color: var(--color-muted); }
++.demo-player-tab[aria-current='page'] { color: var(--color-lime-ink); font-weight: 700; }
++.demo-player-workout { display: grid; place-items: center; inline-size: 50px; block-size: 50px; align-self: center; justify-self: center; rotate: 45deg; border-radius: var(--radius-control); background: linear-gradient(180deg,var(--color-lime-top),var(--color-lime-bottom)); color: var(--color-on-lime); }
++.demo-player-workout > svg { rotate: -45deg; }
++.demo-phone .text-lime { color: var(--color-lime-ink); }
++
++.demo-library-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,250px),1fr)); gap: var(--spacing-card-gap); }
++.demo-captain .demo-more { position: fixed; inset-inline: 1rem; inset-block-end: 90px; max-block-size: 65dvh; }
++@media (width < 760px) {
++  .demo-header { padding-inline: .75rem; }
++  .demo-header a[aria-label] img { inline-size: 56px; block-size: auto; }
++  .demo-shell .demo-theme-toggle { min-inline-size: 42px; padding-inline: .5rem; }
++  .demo-shell .demo-view-option { padding-inline: .5rem; }
++}
+diff --git a/src/features/demo/guided/meals.tsx b/src/features/demo/guided/meals.tsx
+index 54e1653..eb64a1e 100644
+--- a/src/features/demo/guided/meals.tsx
++++ b/src/features/demo/guided/meals.tsx
+@@ -1,3 +1,5 @@
++import { useState } from 'react';
++import { DemoLibrary } from './demo-library';
+ import { useT } from '@/core/i18n/client';
+ import { GlassCard } from '@/ui/glass-card';
+ import { Button } from '@/ui/button';
+@@ -8,11 +10,13 @@ import type { PaneProps } from './types';
+ import { FoodRow } from './food-row';
+ 
+ export function Meals({ state, act }: PaneProps) {
++  const [opened, setOpened] = useState(state.step === 8);
+   const t = useT(guidedMessages), foods = t('foods').split('|');
+   const meals = [[foods[0], foods[1], foods[2]], [foods[3], t('alternatives').split('|')[state.swap], foods[4]], [foods[5], foods[6]], [foods[7], foods[8]]];
+-  return <div className="grid gap-card-gap min-[1200px]:grid-cols-2"><GlassCard className="grid gap-stack p-card"><h3 className="text-md font-semibold">{t('foodTitle')} · {t('calories', { n: mealPlanCalories })}</h3>
++  if (!opened) return <DemoLibrary kind="food" onOpen={() => setOpened(true)} />;
++  return <><Button block={false} variant="secondary" onClick={() => setOpened(false)}>{t('food')}</Button><div className="grid gap-card-gap min-[1200px]:grid-cols-2"><GlassCard className="grid gap-stack p-card"><h3 className="text-md font-semibold">{t('foodTitle')} · {t('calories', { n: mealPlanCalories })}</h3>
+     {meals.map((foods, i) => <section key={i} className="grid gap-stack"><h4 className="flex justify-between text-sm font-semibold">{t('meals').split('|')[i]}<small className="text-muted">{t('calories', { n: mealCalories[i] ?? 0 })}</small></h4>
+       <ul>{foods.map((food, j) => <FoodRow key={j} name={food ?? ''}>{i === 1 && j === 1 && <Button variant="secondary" data-demo-target="swap" onClick={() => act('swap')}>{t('swap')}</Button>}</FoodRow>)}</ul>
+     </section>)}
+-  </GlassCard><GlassCard className="grid content-start gap-stack p-card"><h3>{t('macros')}</h3>{t('macroNames').split('|').map((name, i) => <div key={name} className="grid gap-stack"><div className="flex justify-between text-sm"><span>{name}</span><b dir="ltr">{t('grams', { n: [170, 250, 63][i] ?? 0 })}</b></div><ProgressBar value={[170, 250, 63][i] ?? 0} max={[200, 300, 90][i] ?? 1} aria-label={name} /></div>)}<p className="text-xs text-muted">{t('swapDetail')}</p>{state.swap > 0 && <p className="rounded-control bg-lime-soft p-stack text-sm">{t('alternatives').split('|')[state.swap]}</p>}</GlassCard></div>;
++  </GlassCard><GlassCard className="grid content-start gap-stack p-card"><h3>{t('macros')}</h3>{t('macroNames').split('|').map((name, i) => <div key={name} className="grid gap-stack"><div className="flex justify-between text-sm"><span>{name}</span><b dir="ltr">{t('grams', { n: [170, 250, 63][i] ?? 0 })}</b></div><ProgressBar value={[170, 250, 63][i] ?? 0} max={[200, 300, 90][i] ?? 1} aria-label={name} /></div>)}<p className="text-xs text-muted">{t('swapDetail')}</p>{state.swap > 0 && <p className="rounded-control bg-lime-soft p-stack text-sm">{t('alternatives').split('|')[state.swap]}</p>}</GlassCard></div></>;
+ }
+diff --git a/src/features/demo/guided/messages.ts b/src/features/demo/guided/messages.ts
+index 3573241..927970c 100644
+--- a/src/features/demo/guided/messages.ts
++++ b/src/features/demo/guided/messages.ts
+@@ -1,6 +1,7 @@
+ import { defineMessages } from '@/core/i18n/messages';
+ export const guidedMessages = defineMessages({
+   ar: {
++    lightTheme: 'الوضع الفاتح', darkTheme: 'الوضع الغامق',
+     joinTitle: 'طلب انضمام جديد', joinDetail: 'يوسف علي بعت طلب انضمام بالرابط بتاعك', joinApprove: 'اقبل الطلب', joinDecline: 'ارفض', joinDone: 'اتقبل طلب يوسف، وهيوصله لينك التسجيل', joinEmpty: 'مفيش طلبات انضمام دلوقتي', joinSuccess: 'اتقبل طلب الانضمام',
+     grams: '{n} جم', egp: '{n} ج.م', programNames: 'تضخيم 4 أيام|تنشيف 3 أيام|قوة 5 أيام|لياقة 3 أيام', colPlayer: 'اللاعب', colLast: 'آخر تسجيل', colUntil: 'الاشتراك لحد', colPackage: 'الباقة والحالة', noActions: 'لسه محدش جرّب حاجة بنفسه، جرّب أي خطوة من الجولة.',
+     'summaryPlayers.one': 'لاعب', 'summaryPlayers.two': 'لاعبين', 'summaryPlayers.few': 'لاعبين', 'summaryPlayers.many': 'لاعب', 'summaryPlayers.other': 'لاعب',
+@@ -40,6 +41,7 @@ export const guidedMessages = defineMessages({
+     titles: 'مرحباً، هذا يوم المدرّب هشام|يومك في نظرة|من يحتاجك اليوم|راجع تقييم سارة|اعتمد وأرسل ردك|التواصل في مكانه|ملف اللاعب|عدّل البرنامج|تغذية مع بدائل|مدفوعاتك أمامك|أضف لاعباً في دقيقة|أنت الآن محمد في النادي|يومك بالأرقام', 'step0.one': "حساب تجريبي يضم لاعب واحد. لوحة المدرّب وهاتف محمد متصلان. يمكنك تجربة كل شيء.", 'step0.two': "حساب تجريبي يضم لاعبين. لوحة المدرّب وهاتف محمد متصلان. يمكنك تجربة كل شيء.", 'step0.few': "حساب تجريبي يضم {n} لاعبين. لوحة المدرّب وهاتف محمد متصلان. يمكنك تجربة كل شيء.", 'step0.many': "حساب تجريبي يضم {n} لاعبًا. لوحة المدرّب وهاتف محمد متصلان. يمكنك تجربة كل شيء.", 'step0.other': "حساب تجريبي يضم {n} لاعب. لوحة المدرّب وهاتف محمد متصلان. يمكنك تجربة كل شيء.", step1: 'عدد المتدرّبين والردود المطلوبة والاشتراكات القريبة من الانتهاء والمدفوعات المتأخرة.', step2: 'المهام مرتبة، وبجانب كل مهمة الإجراء المناسب. جرّب تذكير عمر.', step3: 'أرسلت سارة صورها ومقاساتها. افتح التقييم.', step4: 'راجع الصور والمقاسات والإجابات ثم اكتب ردك واعتمده ليصل إلى سارة.', step5: 'أرسل رسالة إلى محمد وشاهد وصولها إلى هاتفه فوراً.', step6: 'تقدّم محمد في مكان واحد: الوزن والالتزام والأوزان التي رفعها.', step7: 'أضف تمريناً من مكتبة تتجاوز 1,300 تمرين متحرك. يصل التعديل فوراً إلى اللاعب.', step8: 'يمكنك أنت أو اللاعب تبديل الصنف، مع ضبط الكمية على المغذيات نفسها.', step9: 'اعرف المدفوعات المتبقية. أحضر محمد الباقي نقداً، سجّله.', step10: 'حدّد الاسم والباقة والتقييمات المطلوبة، ثم أنشئ رابط دعوة لإرساله.', step11: 'غيّر الوزن واضغط علامة الصح بجانب المجموعة («إنهاء المجموعة»). يبدأ مؤقّت الراحة تلقائياً.', step12: 'يوم مدرّب كامل دون محادثات واتساب.', summarySetArrived: 'وصلتك مجموعة محمد مباشرة.',
+   } as const : undefined; },
+   en: {
++    lightTheme: 'Light theme', darkTheme: 'Dark theme',
+     joinTitle: 'New join request', joinDetail: 'Youssef Ali asked to join through your invite link', joinApprove: 'Accept request', joinDecline: 'Decline', joinDone: 'Youssef’s request was accepted. He gets the signup link.', joinEmpty: 'No join requests right now', joinSuccess: 'Join request accepted',
+     grams: '{n} g', egp: 'EGP {n}', programNames: 'Hypertrophy 4 days|Fat loss 3 days|Strength 5 days|Fitness 3 days', colPlayer: 'Player', colLast: 'Last activity', colUntil: 'Access until', colPackage: 'Package and status', noActions: 'You have not tried anything yet. Try any step in the tour.',
+     'summaryPlayers.one': 'Player', 'summaryPlayers.other': 'Players',
+diff --git a/src/features/demo/guided/phone-pane.tsx b/src/features/demo/guided/phone-pane.tsx
+index 63f199e..3bdeeef 100644
+--- a/src/features/demo/guided/phone-pane.tsx
++++ b/src/features/demo/guided/phone-pane.tsx
+@@ -1,18 +1,14 @@
+-import { useLocale, useT } from '@/core/i18n/client';
+-/* eslint-disable no-restricted-imports -- T-288 shares the real player shell presentation. */
+-import { PlayerTabsView } from '@/features/player-shell/components/player-tabs-view';
+-import { messages as shellMessages } from '@/features/player-shell/messages';
+-/* eslint-enable no-restricted-imports */
++import { useT } from '@/core/i18n/client';
+ import { guidedMessages } from './messages';
++import { DemoPlayerNav } from './demo-player-nav';
+ import { Workout } from './workout';
+ import { PhoneFood } from './phone-food';
+ import { PhoneMe } from './phone-me';
+ import { Chat } from './chat';
+ import type { PaneProps } from './types';
+ 
+-const paths = { workout: '/player', food: '/player/nutrition', coach: '/player/captain', me: '/player/progress' } as const;
+ export function PhonePane(props: PaneProps) {
+-  const { state, dispatch, now } = props, t = useT(guidedMessages), shell = useT(shellMessages), locale = useLocale();
++  const { state } = props, t = useT(guidedMessages);
+   return <section className="demo-player-column min-w-0" aria-label={t('phoneTitle')}>
+     <p className="demo-pane-caption mb-stack text-xs text-muted"><b>{t('phoneTitle')}</b> · {t('player')}</p>
+     <div className="demo-phone mx-auto" data-phone-frame>
+@@ -25,9 +21,7 @@ export function PhonePane(props: PaneProps) {
+         {state.tab === 'coach' && <Chat {...props} phone />}{state.tab === 'me' && <PhoneMe {...props} />}
+       </div>
+       <div data-phone-tabs data-demo-target="coach-tab" className="demo-phone-tabs shrink-0">
+-        <PlayerTabsView pathname={paths[state.tab]} locale={locale} label={shell('navigation')}
+-          onSelect={href => { const tab = (Object.entries(paths).find(([, path]) => path === href)?.[0] ?? 'workout') as keyof typeof paths;
+-            dispatch({ type: 'phone', tab, now: now() }); }} />
++        <DemoPlayerNav {...props} />
+       </div>
+       </div>
+     </div>
+diff --git a/src/features/demo/guided/player-file.tsx b/src/features/demo/guided/player-file.tsx
+index 77cda0a..2acb038 100644
+--- a/src/features/demo/guided/player-file.tsx
++++ b/src/features/demo/guided/player-file.tsx
+@@ -3,6 +3,9 @@ import { useLocale, useT } from '@/core/i18n/client';
+ import { TrainingAdherence } from '@/features/captain-workspace/player-file/training-adherence';
+ import { Measurements } from '@/features/captain-workspace/player-file/measurements';
+ /* eslint-enable no-restricted-imports */
++import { StatStrip } from '@/ui/stat-strip';
++// eslint-disable-next-line no-restricted-imports -- Shared player file labels only.
++import { messages as fileMessages } from '@/features/captain-workspace/player-file/messages';
+ import { GlassCard } from '@/ui/glass-card';
+ import { Button } from '@/ui/button';
+ import { guidedMessages } from './messages';
+@@ -11,9 +14,15 @@ import { WeightChart } from './weight-chart';
+ import type { PaneProps } from './types';
+ 
+ export function PlayerFile({ state, dispatch, now }: PaneProps) {
+-  const t = useT(guidedMessages), locale = useLocale();
+-  return <><GlassCard className="flex flex-wrap items-center gap-inline p-card"><h3 className="flex-1 text-title">{t('names').split('|')[0]}</h3><Button variant="secondary" onClick={() => dispatch({ type: 'go', page: 'inbox', now: now() })}>{t('message')}</Button></GlassCard>
+-    <nav className="flex flex-wrap gap-inline">{(['programs', 'food', 'assess', 'money'] as const).map(page => <Button key={page} variant="secondary" onClick={() => dispatch({ type: 'go', page, now: now() })}>{t(page)}</Button>)}</nav>
++  const t = useT(guidedMessages), ft = useT(fileMessages), locale = useLocale();
++  const go = (page: 'programs' | 'food' | 'assess' | 'money' | 'inbox') => dispatch({ type: 'go', page, now: now() });
++  return <><GlassCard className="grid items-center gap-card-gap min-[1200px]:grid-cols-2"><div className="flex items-center gap-stack"><span aria-hidden className="glass-strong grid size-16 shrink-0 place-items-center rounded-full border-2 border-lime text-title font-bold">{t('names')[0]}</span><div><h3 className="text-title font-bold">{t('names').split('|')[0]}</h3><p className="text-xs text-muted">{t('programTitle')}</p><Button variant="secondary" block={false} onClick={() => go('inbox')}>{ft('chat')}</Button></div></div><StatStrip items={[
++    { label: ft('weight'), value: 80.6, unit: t('kg'), tone: 'lime' }, { label: ft('adherence'), value: '92%' },
++    { label: ft('training'), value: 11 }, { label: ft('subscription'), value: 30, unit: ft('dayUnit'), tone: 'warn' },
++  ]} /></GlassCard>
++    <nav className="flex max-w-full gap-inline overflow-x-auto border-b border-line-soft" aria-label={ft('tabs')}><button type="button" aria-current="page" className="min-h-12 shrink-0 border-b-2 border-lime px-card text-sm font-bold">{ft('overview')}</button>{([
++      ['programs', 'training'], ['food', 'nutrition'], ['assess', 'checkins'], ['assess', 'assessments'], ['inbox', 'chat'],
++    ] as const).map(([page, key]) => <button type="button" key={key} className="min-h-12 shrink-0 px-card text-sm text-muted" onClick={() => go(page)}>{ft(key)}</button>)}</nav>
+     <div className="grid gap-stack min-[760px]:grid-cols-3"><TrainingAdherence completed={11} planned={12} rpe={null} locale={locale} />
+       <Measurements metrics={[{ key: 'weight', value: 80.6, change: -3.4 }]} locale={locale} />
+       <div className="glass-strong rounded-control p-stack"><p className="text-xs text-muted">{t('bench')}</p><b className="text-h tabular-nums">{Math.max(65, ...state.sets.map(s => s[0]))}</b></div>
+diff --git a/src/features/demo/guided/programs.tsx b/src/features/demo/guided/programs.tsx
+index 64f0f36..1f80b63 100644
+--- a/src/features/demo/guided/programs.tsx
++++ b/src/features/demo/guided/programs.tsx
+@@ -8,16 +8,18 @@ import { TextField } from '@/ui/text-field';
+ import { Chip } from '@/ui/chip';
+ import { KoPlus } from '@/ui/icons/ko-plus';
+ import { guidedMessages } from './messages';
++import { DemoLibrary } from './demo-library';
+ import { DemoRow } from './demo-row';
+ import type { PaneProps } from './types';
+ 
+ export function Programs({ state, dispatch, act }: PaneProps) {
+-  const t = useT(guidedMessages), [library, setLibrary] = useState(false), [query, setQuery] = useState('');
++  const t = useT(guidedMessages), [opened, setOpened] = useState(state.step === 7), [library, setLibrary] = useState(false), [query, setQuery] = useState('');
+   const ex = t('exercises').split('|'), indices = [[0, 1, 2, 3], [4, 5, 6], [7, 8], [9, 10]][state.day] ?? [], locale = useLocale();
+   const row = (name: string, id: string, first = false) => ({ id, sets: first ? 4 : 3, reps_min: first ? 8 : 12,
+     reps_max: first ? 8 : 12, rest_seconds: 90, library: { name_ar: name, name_en: name, media_path: null } });
+   const choices = t('library').split('|').filter(x => x.toLocaleLowerCase().includes(query.toLocaleLowerCase()));
+-  return <><h3>{t('programTitle')}</h3><div className="flex flex-wrap gap-inline">{t('days').split('|').map((name, day) => <Chip key={day} pressed={state.day === day} onClick={() => { dispatch({ type: 'patch', patch: { day } }); setLibrary(false); }}>{t('day', { n: day + 1 })} · {name}</Chip>)}</div>
++  if (!opened) return <DemoLibrary kind="programs" onOpen={() => setOpened(true)} />;
++  return <><Button block={false} variant="secondary" onClick={() => setOpened(false)}>{t('programs')}</Button><h3>{t('programTitle')}</h3><div className="flex flex-wrap gap-inline">{t('days').split('|').map((name, day) => <Chip key={day} pressed={state.day === day} onClick={() => { dispatch({ type: 'patch', patch: { day } }); setLibrary(false); }}>{t('day', { n: day + 1 })} · {name}</Chip>)}</div>
+     <div className="grid gap-card-gap min-[1200px]:grid-cols-2"><GlassCard className="grid gap-stack p-card">
+       <ul>{indices.map((i, j) => <ProgramPrescriptionRow key={i} row={row(ex[i] ?? '', `exercise-${i}`, j === 0)} locale={locale} />)}
+       {state.day === 0 && state.added.map((name, i) => <ProgramPrescriptionRow key={`added-${i}`} row={row(name, `added-${i}`)} locale={locale} />)}</ul>
+diff --git a/src/features/demo/guided/render.test.ts b/src/features/demo/guided/render.test.ts
+index ae8602e..63eb9b8 100644
+--- a/src/features/demo/guided/render.test.ts
++++ b/src/features/demo/guided/render.test.ts
+@@ -13,7 +13,7 @@ import { Workout } from './workout';
+ import type { Page } from './steps';
+ 
+ it('shows the sum of the demo meals on both screens', () => {
+-  const props = { state: { ...initialState(0), eaten: [true, true, true, true] }, dispatch() {}, act() {}, now: () => 0 };
++  const props = { state: { ...initialState(0), step: 8, eaten: [true, true, true, true] }, dispatch() {}, act() {}, now: () => 0 };
+   const render = (view: typeof Meals | typeof PhoneFood) => renderToStaticMarkup(
+     createElement(LocaleProvider, { locale: 'en' }, createElement(view, props)),
+   );
+diff --git a/src/features/demo/guided/roster.tsx b/src/features/demo/guided/roster.tsx
+index 5300ae9..e809080 100644
+--- a/src/features/demo/guided/roster.tsx
++++ b/src/features/demo/guided/roster.tsx
+@@ -1,32 +1,45 @@
+ import { useState } from 'react';
++import { Search } from 'lucide-react';
+ import { useLocale, useT } from '@/core/i18n/client';
+-/* eslint-disable no-restricted-imports -- T-288 reuses the roster row without its billing loader. */
+-import { RosterRowView } from '@/features/roster/components/roster-row-view';
+-import { messages as rosterMessages } from '@/features/roster/messages';
++/* eslint-disable no-restricted-imports -- Reuse the current workspace's pure status and week presentation. */
++import { messages } from '@/features/roster/v6/messages';
++import { WeekDots } from '@/features/roster/v6/week-dots';
++import { matchesTab, playerStatus, tabCounts, tabs } from '@/features/roster/v6/model';
++import type { Tab } from '@/features/roster/v6/model';
++import type { RosterPlayer } from '@/features/roster/types';
+ /* eslint-enable no-restricted-imports */
+-import { GlassCard } from '@/ui/glass-card';
+-import { TextField } from '@/ui/text-field';
+ import { guidedMessages } from './messages';
+ import type { PaneProps } from './types';
+ 
+ export function Roster({ state, dispatch, now }: PaneProps) {
+-  const t = useT(guidedMessages), rt = useT(rosterMessages), locale = useLocale(), [query, setQuery] = useState('');
+-  const names = [...t('names').split('|').slice(0, state.n), ...state.invites].filter(n => n.toLocaleLowerCase().includes(query.toLocaleLowerCase()));
+-  // Row order follows the names list: 0 Mohamed, 1 Sara, 2 Omar (absent 4 days), 3 Mariam (ends in 3 days).
+-  const programs = t('programNames').split('|'), ends = ['2026-12-15', '2026-12-01', '2026-12-08', '2026-11-18', '2026-12-22', '2026-12-04', '2026-12-29', '2026-12-12'];
+-  const starts = ['2026-10-15', '2026-09-28', '2026-10-06', '2026-10-18', '2026-11-01', '2026-09-15', '2026-10-27', '2026-11-08'];
+-  const lastDates = ['2026-11-15', '2026-11-15', '2026-11-11', '2026-11-14', '2026-11-15', '2026-11-13', '2026-11-14', '2026-11-12'];
+-  return <GlassCard className="grid gap-stack p-card"><h3>{t('players')} · {state.n + state.invites.length}</h3><TextField label={t('search')} value={query} onChange={e => setQuery(e.target.value)} />
+-    <div role="table" aria-label={rt('players')} className="space-y-stack lg:glass-strong lg:overflow-hidden lg:rounded-card lg:space-y-0">
+-      <div role="row" className="hidden px-card py-inline text-xs text-muted min-[760px]:grid min-[760px]:grid-cols-[minmax(0,2fr)_1fr_1fr_1fr_3rem] min-[760px]:gap-stack">
+-        {(['colPlayer', 'colLast', 'colUntil', 'colPackage'] as const).map(key => <span key={key} role="columnheader">{t(key)}</span>)}<span aria-hidden />
+-      </div>
+-      {names.map((name, i) => <RosterRowView key={`${name}-${i}`} player={{ playerId: `demo-player-${i}`, fullName: name,
+-        accessUntil: ends[i % ends.length] ?? '', startedOn: starts[i % starts.length] ?? '', lastTrainingDate: lastDates[i % lastDates.length] ?? '', programTitle: programs[i % programs.length] ?? '', openTasks: 0 }}
+-        today="2026-11-15" t={rt} locale={locale}
+-        billing={<span>{t('packages').split('|')[i % 3]}</span>}
+-        onSelect={href => dispatch({ type: 'go', page: href.includes('/chat') ? 'inbox' : href.includes('/programs') ? 'programs' : href.includes('/nutrition') ? 'food' : 'player', now: now() })} />)}
+-    </div>
+-    {!names.length && <div className="p-card text-sm"><b>{t('empty')}</b><p className="text-muted">{t('emptyDetail')}</p></div>}
+-  </GlassCard>;
++  const t = useT(guidedMessages), rt = useT(messages), locale = useLocale();
++  const [query, setQuery] = useState(''), [filter, setFilter] = useState<Tab>('all');
++  const fixtures = t('names').split('|');
++  const names = [...Array.from({ length: state.n }, (_, i) => fixtures[i] ?? `${t('player')} ${i + 1}`), ...state.invites];
++  const programs = t('programNames').split('|');
++  const players: RosterPlayer[] = names.map((fullName, i) => ({ fullName, playerId: `demo-player-${i}`,
++    accessUntil: i === 3 ? '2026-11-18' : '2026-12-15', startedOn: '2026-10-15',
++    lastTrainingDate: i === 2 ? '2026-11-11' : '2026-11-15', programTitle: programs[i % programs.length] ?? '', openTasks: i === 1 ? 1 : 0 }));
++  const counts = tabCounts(players, '2026-11-15');
++  const rows = players.filter(player => matchesTab(player, filter, '2026-11-15') && player.fullName.toLocaleLowerCase().includes(query.toLocaleLowerCase()));
++  const go = () => dispatch({ type: 'go', page: 'player', now: now() });
++  return <section className="grid gap-card-gap">
++    <label className="recessed flex min-h-12 items-center gap-inline rounded-control border border-line px-card"><Search aria-hidden className="size-4 text-muted" />
++      <input type="search" aria-label={t('search')} placeholder={t('search')} value={query} onChange={e => setQuery(e.target.value)} className="min-w-0 flex-1 bg-transparent text-sm outline-none" /></label>
++    <div className="demo-roster-filters flex max-w-full gap-inline overflow-x-auto rounded-full border border-line p-inline">{tabs.map(tab => <button type="button" key={tab} aria-pressed={filter === tab} onClick={() => setFilter(tab)}
++      className={`min-h-12 shrink-0 rounded-full px-stack text-micro ${filter === tab ? 'glass-strong text-ink' : 'text-muted'}`}>{rt(tab)} <span className="ms-inline">{counts[tab]}</span></button>)}</div>
++    <div className="glass overflow-hidden rounded-card"><table className="demo-roster-table w-full border-collapse text-start" aria-label={rt('players')}>
++      <thead><tr>{(['player', 'week', 'weight', 'rpe', 'subscription', 'status'] as const).map(key => <th key={key} className="border-b border-line-soft px-stack py-inline text-start text-xs font-medium text-faint">{rt(key)}</th>)}</tr></thead>
++      <tbody>{rows.map((player, i) => { const status = playerStatus(player, '2026-11-15');
++        return <tr key={player.playerId} className="demo-roster-row relative border-b border-line-soft text-row last:border-0">
++          <td className="px-stack py-inline"><button type="button" onClick={go} className="demo-roster-name flex min-h-12 w-full items-center gap-stack text-start"><span aria-hidden className="glass-strong grid size-10 shrink-0 place-items-center rounded-control font-bold text-lime">{player.fullName[0]}</span><span className="min-w-0"><b className="block truncate">{player.fullName}</b><small className="text-muted">{rt('gain')}</small></span></button></td>
++          <td className="px-stack py-inline"><WeekDots today="2026-11-15" startedOn={player.startedOn} activity={{ dates: ['2026-11-14', ...(i === 2 ? [] : ['2026-11-15'])], weekdays: [0, 2, 4], rpe: null, video: false }} /></td>
++          <td className="px-stack py-inline tabular-nums">{80.6 - i}</td><td className="px-stack py-inline">{rt('unknown')}</td>
++          <td className="px-stack py-inline">{rt('dayCount', { n: i === 3 ? 3 : 30, count: i === 3 ? 3 : 30 })}</td>
++          <td className="px-stack py-inline"><span className={`inline-flex whitespace-nowrap rounded-full border px-stack py-inline text-micro ${status.tone === 'lime' ? 'border-lime/20 bg-lime-soft text-lime' : 'border-warn/20 bg-warn-soft text-warn'}`}>{rt(status.key === 'good' ? 'okay' : status.key, { n: status.count, count: status.count })}</span></td>
++        </tr>;
++      })}</tbody>
++    </table></div>{!rows.length && <p role="status" className="glass rounded-card p-card text-sm text-muted">{t('empty')}</p>}
++    <span className="sr-only">{locale}</span>
++  </section>;
+ }
+diff --git a/src/features/demo/guided/shared-views.test.ts b/src/features/demo/guided/shared-views.test.ts
+index af3c6ec..0159c68 100644
+--- a/src/features/demo/guided/shared-views.test.ts
++++ b/src/features/demo/guided/shared-views.test.ts
+@@ -26,12 +26,12 @@ it.each([
+   ['captain-home.tsx', 'HomeHeroView', 'HomeTilesView', 'HomeTaskListView'],
+   ['captain-pane.tsx', 'CaptainFrameNavView'],
+   ['workout.tsx', 'SetRowsView'],
+-  ['phone-pane.tsx', 'PlayerTabsView'],
++  ['phone-pane.tsx', 'DemoPlayerNav'],
+   ['chat-list.tsx', 'ConversationList'],
+   ['chat-messages.tsx', 'ChatThreadView', 'ConversationBubbles'],
+   ['tasks.tsx', 'TaskRow'],
+   ['money.tsx', 'WorkspaceBillingTiles', 'MoneyOwedView'],
+-  ['roster.tsx', 'RosterRowView'],
++  ['roster.tsx', 'WeekDots'],
+   ['food-row.tsx', 'V11FoodRowView'],
+ ])('uses production views in %s', (file, ...views) => {
+   const source = readFileSync(new URL(file, import.meta.url), 'utf8');
+diff --git a/src/features/demo/guided/workspace-restyle.test.ts b/src/features/demo/guided/workspace-restyle.test.ts
+new file mode 100644
+index 0000000..392b368
+--- /dev/null
++++ b/src/features/demo/guided/workspace-restyle.test.ts
+@@ -0,0 +1,44 @@
++import { createElement } from 'react';
++import { renderToStaticMarkup } from 'react-dom/server';
++import { expect, it } from 'vitest';
++import { LocaleProvider } from '@/core/i18n/client';
++import { DemoLibrary } from './demo-library';
++import { DemoPlayerNav } from './demo-player-nav';
++import { DemoPhoneNav } from './demo-phone-nav';
++import { Programs } from './programs';
++import { Meals } from './meals';
++import { initialState } from './state';
++
++const props = { state: initialState(0), dispatch() {}, act() {}, now: () => 0 };
++const render = (element: ReturnType<typeof createElement>) => renderToStaticMarkup(createElement(LocaleProvider, { locale: 'en' }, element));
++
++it('keeps all five coach mobile controls local', () => {
++  const html = render(createElement(DemoPhoneNav, { active: 'home', count: 3, more: false, onSelect() {}, onMore() {}, onAdd() {} }));
++  expect(html.match(/<button/g)).toHaveLength(5);
++  expect(html).toContain('demo-quick-add');
++  expect(html).not.toContain('href=');
++});
++it('keeps the five player controls local', () => {
++  const html = render(createElement(DemoPlayerNav, props));
++  expect(html.match(/<button/g)).toHaveLength(5);
++  expect(html).toContain('demo-player-workout');
++  expect(html).not.toContain('href=');
++});
++it.each(['programs', 'food'] as const)('provides a local %s library', kind => {
++  const html = render(createElement(DemoLibrary, { kind, onOpen() {} }));
++  expect(html).toContain('type="search"');
++  expect(html).toContain('Overview');
++  expect(html).not.toContain('href=');
++});
++it('opens the training editor directly for its guided step', () => {
++  expect(render(createElement(Programs, { ...props, state: { ...props.state, step: 7 } }))).toContain('data-demo-target="addex"');
++});
++it('opens the meal editor directly for its guided step', () => {
++  expect(render(createElement(Meals, { ...props, state: { ...props.state, step: 8 } }))).toContain('data-demo-target="swap"');
++});
++it('renders an accessible shared theme switch', async () => {
++  const { DemoHeader } = await import('./demo-header');
++  const html = render(createElement(DemoHeader, { state: props.state, dispatch() {}, now: () => 0, onLanguage() {}, theme: 'dark', onTheme() {} }));
++  expect(html).toContain('aria-label="Light theme"');
++  expect(html).not.toContain('aria-label="Dark theme"');
++});
+diff --git a/src/features/demo/guided/workspace-theme.css b/src/features/demo/guided/workspace-theme.css
+new file mode 100644
+index 0000000..f50791e
+--- /dev/null
++++ b/src/features/demo/guided/workspace-theme.css
+@@ -0,0 +1,200 @@
++/* Production theme tokens scoped to this demo. Both previews share one local choice. */
++.demo-shell[data-demo-theme='dark'] {
++  --color-rose: #e98aaa;
++  --color-ivory: #ede6d3;
++  --color-ivory-muted: #8a877f;
++  --color-ivory-hatch: #cfc8b4;
++  --color-bronze-1: #ffd9b0;
++  --color-bronze-2: #c47f45;
++  --color-bronze-3: #6e3a17;
++  --color-bronze-4: #e0a26a;
++  --color-silver-1: #ffffff;
++  --color-silver-2: #bfc5ce;
++  --color-silver-3: #6f7782;
++  --color-silver-4: #eef1f4;
++  --color-gold-1: #fff4c2;
++  --color-gold-2: #e3b448;
++  --color-gold-3: #8f620e;
++  --color-gold-4: #f6d77e;
++  --color-platinum-1: #f4f1ff;
++  --color-platinum-2: #a99fd0;
++  --color-platinum-3: #4b4470;
++  --color-platinum-4: #e4defc;
++  --color-crown-gem-1: #f1ffc4;
++  --color-crown-gem-2: #c8f550;
++  --color-crown-gem-3: #5f8a10;
++  --color-bronze-face-1: #4a2a16;
++  --color-bronze-face-2: #1a0d06;
++  --color-silver-face-1: #3a3f47;
++  --color-silver-face-2: #121418;
++  --color-gold-face-1: #3d2e0c;
++  --color-gold-face-2: #140f03;
++  --color-obsidian-1: #2c2840;
++  --color-obsidian-2: #07060c;
++  --color-crown-gem-face-1: #1f2a0a;
++  --color-crown-gem-face-2: #050703;
++  --color-bg: #090a0b;
++  --color-surface: #141414;
++  --color-line: #292929;
++  --color-ink: #f4f4f1;
++  --color-muted: #a6abb0;
++  --color-faint: #80858b;
++  --color-calm: #c9d5ff;
++  --color-water: #60a5fa;
++  --color-sleep: #b4a0f5;
++  --color-sore: #f5ac78;
++  --color-ember: #c8936f;
++  --color-lime: #b6e94f;
++  --color-lime-top: #cdf56f;
++  --color-lime-bottom: #a9e03c;
++  --color-control-top: rgb(255 255 255 / .09);
++  --color-control-bottom: rgb(255 255 255 / .04);
++  --color-control-border: rgb(255 255 255 / .13);
++  --color-control-highlight: rgb(255 255 255 / .1);
++  --color-control-hover: rgb(255 255 255 / .1);
++  --shadow-control-primary: inset 0 1px 0 rgb(255 255 255 / .5), 0 10px 26px -10px rgb(182 233 79 / .75);
++  --color-lime-ink: #b6e94f;
++  --color-bg-deep: #070808;
++  --color-surface-raised: #1c1c1c;
++  --color-exercise-media: #fff;
++  --color-line-soft: rgb(242 242 238 / 0.06);
++  --color-on-lime: #101418;
++  --color-lime-soft: rgb(182 233 79 / 0.12);
++  --color-warn: #f2b544;
++  --color-warn-soft: rgb(242 181 68 / 0.12);
++  --color-danger: #ffa080;
++  --color-danger-soft: rgb(255 138 101 / 0.12);
++  --color-info: #9fb8ff;
++  --color-info-soft: rgb(120 150 255 / 0.12);
++  --color-neutral-soft: rgb(255 255 255 / 0.06);
++  --radius-card: 1.125rem;
++  --radius-control: .875rem;
++  --radius-chip: 9999px;
++  --spacing-page-x: 1rem;
++  --spacing-page-y: 1rem;
++  --spacing-section: 1.5rem;
++  --spacing-card: 1rem;
++  --spacing-card-gap: .75rem;
++  --spacing-stack: .5rem;
++  --spacing-inline: .5rem;
++  --spacing-control: 1.25rem;
++  --spacing-chip: 2.375rem;
++  --text-micro: .71875rem;
++  --text-row: .8125rem;
++  --text-md: .9375rem;
++  --text-title: 1.1875rem;
++  --text-h: 1.5rem;
++  --text-stat: 2rem;
++  --text-stat-wide: 2.5rem;
++  --text-stat-large: 3rem;
++  --text-stat-large-wide: 3.75rem;
++  --spacing-touch: 3rem;
++  --shadow-lime-glow: inset 0 1px 0 rgb(255 255 255 / .25), 0 0 18px color-mix(in srgb, var(--color-lime) 25%, transparent);
++  --shadow-lime-glow-hover: inset 0 1px 0 rgb(255 255 255 / .3), 0 0 18px color-mix(in srgb, var(--color-lime) 32%, transparent);
++  --glass-fill: color-mix(in srgb, var(--color-ink) 4%, transparent);
++  --glass-strong-tint: color-mix(in srgb, var(--color-ink) 6.5%, var(--color-surface));
++  --glass-tint: rgb(255 255 255 / 0.03);
++  --glass-tint-raised: rgb(255 255 255 / 0.05);
++  --glass-strong-tint: rgb(255 255 255 / 0.07);
++  --glass-hairline: rgb(255 255 255 / 0.09);
++  --glass-highlight: rgb(255 255 255 / 0.04);
++  --glass-strong-border: rgb(255 255 255 / 0.09);
++  --glass-strong-highlight: rgb(255 255 255 / 0.04);
++  --glass-fill: linear-gradient(180deg, rgb(255 255 255 / .045), rgb(255 255 255 / .018));
++  --glass-border: rgb(255 255 255 / 0.07);
++  --glass-shadow: inset 0 1px 0 var(--glass-highlight), 0 4px 24px -8px rgb(0 0 0 / 0.5);
++  --glass-strong-shadow: var(--glass-shadow);
++  --glass-hover-fill: radial-gradient(ellipse at top, var(--glass-highlight), transparent 70%), var(--glass-tint-raised);
++  --featured-fill: radial-gradient(ellipse at top, color-mix(in srgb, var(--color-lime) 8%, transparent), transparent 65%), var(--glass-strong-tint);
++  --featured-shadow: inset 0 1px 0 var(--glass-highlight), 0 8px 32px -8px rgb(0 0 0 / .6);
++  --aurora-glow: color-mix(in srgb, var(--color-lime) 11%, transparent);
++  --orb-glow: color-mix(in srgb, var(--color-lime) 7%, transparent);
++  --primary-fill: linear-gradient(180deg, var(--color-lime), color-mix(in srgb, var(--color-lime) 90%, var(--color-bg)));
++  --progress-start: color-mix(in srgb, var(--color-lime) 80%, var(--color-bg));
++  --progress-fill: linear-gradient(90deg, var(--progress-start), var(--color-lime));
++  --progress-ring-glow: 0 0 2px color-mix(in srgb, var(--color-lime) 25%, transparent);
++  --progress-edge: 2px 0 5px color-mix(in srgb, var(--color-lime) 25%, transparent);
++  --primary-lift: -1px;
++  --recessed-fill: color-mix(in srgb, var(--color-bg-deep) 35%, transparent);
++  --recessed-border: rgb(255 255 255 / 0.04);
++  --recessed-shadow: inset 0 2px 6px rgb(0 0 0 / 0.5);
++  --glass-fill: color-mix(in srgb, var(--color-ink) 4%, transparent);
++  --glass-strong-tint: color-mix(in srgb, var(--color-ink) 6.5%, var(--color-surface));
++  color: var(--color-ink); color-scheme: dark;
++}
++.demo-shell[data-demo-theme='dark'] .text-lime { color: var(--color-lime); }
++.demo-shell[data-demo-theme='dark'] .recessed { background: var(--recessed-fill); border-color: var(--recessed-border); box-shadow: var(--recessed-shadow); }
++@media (min-width: 760px) { .demo-shell[data-demo-theme='dark'] { --spacing-card: 1.25rem; --spacing-card-gap: 1rem; --spacing-stack: .75rem; } }
++
++.demo-shell[data-demo-theme='dark'] .glass { --glass-solid-background: var(--glass-fill); }
++.demo-shell[data-demo-theme='dark'] .glass-strong { --glass-solid-background: var(--glass-strong-tint); }
++.demo-shell[data-demo-theme='dark'] .glass-raised { --glass-solid-background: var(--glass-tint-raised); }
++.demo-shell[data-demo-theme='dark'] .sheet { background: var(--color-surface); }
++
++.demo-shell[data-demo-theme='light'] {
++  --color-rose: #a53760;
++  --color-ivory: #514735;
++  --color-ivory-muted: #756b5b;
++  --color-ivory-hatch: #8a795a;
++  --color-ember: #96613e;
++  --color-bg: #f6f7f4;
++  --color-bg-deep: #eceee8;
++  --color-surface: #ffffff;
++  --color-surface-raised: #f0f2ed;
++  --color-line: #d9ddd4;
++  --color-line-soft: rgb(18 22 26 / 0.08);
++  --color-ink: #12161a;
++  --color-muted: #535b63;
++  --color-faint: #535b63;
++  --radius-card: 1.5rem;
++  --radius-control: 1rem;
++  --radius-chip: 1rem;
++  --spacing-card: 1rem;
++  --spacing-card-gap: .75rem;
++  --text-stat: 1.5rem;
++  --text-stat-wide: 1.875rem;
++  --text-stat-large: 2.25rem;
++  --text-stat-large-wide: 3rem;
++  --color-lime: #b6e94f;
++  --color-lime-ink: #426c00;
++  --color-on-lime: #101418;
++  --color-lime-soft: rgb(182 233 79 / 0.12);
++  --color-warn: #805400;
++  --color-warn-soft: rgb(128 84 0 / 0.12);
++  --color-danger: #ac391b;
++  --color-danger-soft: rgb(172 57 27 / 0.12);
++  --color-info: #2f4fa8;
++  --color-info-soft: rgb(47 79 168 / 0.1);
++  --color-neutral-soft: rgb(0 0 0 / 0.05);
++  --glass-tint: rgb(255 255 255 / 0.6);
++  --glass-tint-raised: rgb(255 255 255 / 0.85);
++  --glass-strong-tint: rgb(255 255 255 / 0.95);
++  --glass-hairline: var(--color-line-soft);
++  --glass-highlight: rgb(255 255 255 / 0.5);
++  --glass-strong-border: rgb(18 22 26 / 0.12);
++  --glass-strong-highlight: rgb(255 255 255 / 0.8);
++  --glass-shadow: inset 0 1px 0 var(--glass-highlight);
++  --glass-strong-shadow: inset 0 1px 0 var(--glass-strong-highlight);
++  /* Dark-theme recessed values are invisible on light surfaces (white border, near-white fill). */
++  --recessed-fill: color-mix(in srgb, var(--color-bg-deep) 60%, transparent);
++  --recessed-border: var(--color-line);
++  --recessed-shadow: inset 0 1px 3px rgb(18 22 26 / 0.06);
++  --shadow-lime-glow: 0 0 0 1px color-mix(in srgb, var(--color-lime) 25%, transparent), 0 4px 14px color-mix(in srgb, var(--color-lime) 16%, transparent);
++  --shadow-lime-glow-hover: 0 0 0 1px color-mix(in srgb, var(--color-lime) 35%, transparent), 0 6px 18px color-mix(in srgb, var(--color-lime) 22%, transparent);
++  --glass-hover-fill: var(--glass-tint-raised);
++  --hover-lift: -.25rem;
++  --primary-lift: -.25rem;
++  --press-scale: .95;
++  --enter-rise: 8px;
++  --enter-duration: 280ms;
++  --page-glow: rgb(182 233 79 / 0.06);
++  --mesh-glow: rgb(182 233 79 / 0.08);
++  --mesh-top: #e7ece2;
++  --mesh-bottom: #edf0e9;
++}
++
++.demo-shell[data-demo-theme='dark'] .theme-light-only, .demo-shell[data-demo-theme='light'] .theme-dark-only { display: none; }
++.demo-shell[data-demo-theme='dark'] .theme-dark-only, .demo-shell[data-demo-theme='light'] .theme-light-only { display: block; }
++
++.demo-shell[data-demo-theme='light'] .text-lime { color: var(--color-lime-ink); }
++.demo-shell[data-demo-theme='light'] .tone-lime { color: var(--color-lime-ink); }
