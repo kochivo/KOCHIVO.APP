@@ -14,7 +14,7 @@ export function Tasks({ state, act, dispatch, now }: PaneProps) {
   const tasks: CaptainTask[] = [
     ...(!state.approved ? [{ id: 'review', kind: 'checkin' as const, playerId: 'sara', name: names[1] ?? '', at: '2026-11-15' }] : []),
     ...(!state.nudged ? [{ id: 'nudge', kind: 'absent' as const, playerId: 'omar', name: names[2] ?? '', at: '2026-11-11', days: 4 }] : []),
-    ...(!state.renewed ? [{ id: 'renew', kind: 'renew' as const, playerId: 'ali', name: names[3] ?? '', at: '2026-11-16', days: 1 }] : []),
+    ...(!state.renewed ? [{ id: 'renew', kind: 'renew' as const, playerId: 'ali', name: names[3] ?? '', at: '2026-11-18', days: 3 }] : []),
   ];
   const action = (task: CaptainTask) => task.id === 'review' ? dispatch({ type: 'go', page: 'assess', now: now() }) : act(task.id);
   return <section className="demo-tasks glass min-w-0 rounded-card p-card">

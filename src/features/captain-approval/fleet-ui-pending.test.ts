@@ -43,3 +43,11 @@ it('offers sign-out before the captain submits intake', async () => {
   state.locale = 'en'; state.intake = null; state.error = null;
   expect(await render('pending')).toContain('Sign out');
 });
+it.each(['ar', 'en'] as const)('offers the demo, the review time and WhatsApp while pending in %s', async locale => {
+  state.locale = locale; state.intake = { current_tool: 'other_app' }; state.error = null;
+  const pending = await render('pending');
+  expect(pending).toContain('href="/demo"');
+  expect(pending).toContain(locale === 'ar' ? '24 ساعة' : '24 hours');
+  expect(pending).toContain('wa.me');
+  expect(await render('rejected')).not.toContain('href="/demo"');
+});

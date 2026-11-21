@@ -63,7 +63,7 @@ export function WorkspaceLeaderboard({ locale, board }: ComponentProps<typeof Le
   function closeNext() { board.setMonth(current); }
 
   return <div className="space-y-card-gap pb-card">
-    <PageBarTitle title={t('workspaceTitle')} subtitle={subtitle} />
+    <PageBarTitle title={t('workspaceTitle')} subtitle={subtitle} phoneHide />
     <PageBarActions>
       <Segmented {...period} className="hidden shrink-0 whitespace-nowrap md:flex" />
     </PageBarActions>

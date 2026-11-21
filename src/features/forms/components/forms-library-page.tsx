@@ -56,6 +56,7 @@ export async function FormsLibraryPage({ captain, client, locale, query, now = n
   if (query.edit && !form) notFound();
   const active = data.forms.filter(f => f.schedule || data.schedules.some(s => s.form_id === f.id && !s.paused_at)).length;
   return <div dir={locale === 'ar' ? 'rtl' : 'ltr'} className="space-y-card-gap">
+    {form && workspace && <PageBarTitle title={w('title')} />}
     {!form && workspace && <><PageBarTitle title={w('title')} /><PageBarActions>
       <Button type="button" popoverTarget="assessment-templates" aria-label={w('newForm')} variant="primary" block={false}
         className="press inline-flex min-h-12 cursor-pointer items-center gap-inline px-page-x text-sm font-semibold focus-visible:ring-2 focus-visible:ring-lime max-md:min-w-12 max-md:px-inline!">

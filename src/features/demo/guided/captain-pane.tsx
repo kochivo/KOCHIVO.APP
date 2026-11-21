@@ -21,15 +21,15 @@ import { LazyState } from './lazy-state';
 import { ViewBoundary } from './view-boundary';
 
 const Views = dynamic(() => import('./captain-views').then(m => m.CaptainViews), { loading: () => <LazyState /> });
-const destinations: Partial<Record<FrameId, Page>> = { home: 'home', tasks: 'tasks', inbox: 'inbox', players: 'players', programs: 'programs', plans: 'food', forms: 'assess', billing: 'money', join: 'add' };
+const destinations: Partial<Record<FrameId, Page>> = { home: 'home', tasks: 'tasks', inbox: 'inbox', players: 'players', programs: 'programs', plans: 'food', forms: 'assess', billing: 'money', join: 'join' };
 const available = Object.keys(destinations) as FrameId[];
 export function CaptainPane(props: PaneProps & { plans: readonly DemoPlan[] }) {
   const { state, dispatch, now } = props, t = useT(guidedMessages), frame = useT(frameMessages);
   const [more, setMore] = useState(false);
   const go = (page: Page) => dispatch({ type: 'go', page, now: now() });
-  const needed = [!state.approved, !state.nudged, !state.renewed, !state.paid].filter(Boolean).length;
+  const needed = [!state.approved, !state.nudged, !state.renewed].filter(Boolean).length;
   const active = (Object.entries(destinations).find(([, page]) => page === (state.page === 'player' ? 'players' : state.page))?.[0] ?? 'home') as FrameId;
-  const counts = { tasks: needed, inbox: 2 + state.unread, join: state.approved ? 0 : 1, billing: state.paid ? 0 : 1 };
+  const counts = { tasks: needed, inbox: 2 + state.unread, join: state.joined ? 0 : 1, billing: state.paid ? 0 : 1 };
   const select = (id: FrameId) => { const page = destinations[id]; if (page) { go(page); setMore(false); } };
   return <section className="demo-captain-column min-w-0" aria-label={t('captain')}>
     <p className="demo-pane-caption mb-stack text-xs text-muted"><b>{t('captainPane')}</b> · {t('captainCaption', { n: state.n })}</p>
@@ -41,7 +41,7 @@ export function CaptainPane(props: PaneProps & { plans: readonly DemoPlan[] }) {
       </aside>
       <div className="demo-captain-main grid min-w-0 content-start gap-card-gap p-card">
         <header className="demo-captain-bar glass flex items-center justify-between gap-inline rounded-card p-stack">
-          <div className="min-w-0 flex-1"><h2 className="truncate text-title font-semibold">{state.page === 'home' ? t('greeting') : state.page === 'player' ? t('names').split('|')[0] : state.page === 'tasks' ? frame('tasks') : state.page === 'inbox' ? frame('mobileInbox') : t(state.page)}</h2><p className="truncate text-xs text-muted">{state.page === 'players' ? t('playersCount', { n: state.n + state.invites.length }) : t('date')}</p></div>
+          <div className="min-w-0 flex-1"><h2 className="truncate text-title font-semibold">{state.page === 'home' ? t('greeting') : state.page === 'player' ? t('names').split('|')[0] : state.page === 'tasks' ? frame('tasks') : state.page === 'join' ? frame('join') : state.page === 'inbox' ? frame('mobileInbox') : t(state.page)}</h2><p className="truncate text-xs text-muted">{state.page === 'players' ? t('playersCount', { n: state.n + state.invites.length }) : t('date')}</p></div>
           <Button variant="secondary" className="demo-search" onClick={() => go('players')}><Search aria-hidden className="size-4" />{t('search')}</Button>
           <IconButton aria-label={t('needs')} onClick={() => go('home')}><Bell aria-hidden className="size-5" /></IconButton>
           <Button block={false} onClick={() => go('add')}><KoPlus className="size-5" />{t('add')}</Button>

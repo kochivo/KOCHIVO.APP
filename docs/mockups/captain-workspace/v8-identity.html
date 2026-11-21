@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KOCHIVO — هوية السيستم v8</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Changa:wght@500;600;800&family=Alexandria:wght@400;500;700&family=Manrope:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{--floor:#0c0d0e;--plate:#1c1f22;--plate2:#15171a;--edge:#2b2f33;--chalk:#f2f3ee;--dust:#9ca2a8;--lime:#b6e94f;--lime-deep:#8fc22a;--ink:#0e1206;--warn:#ff9a73;--calm:#9db2ff;--ivory:#ede6d3;--gold:#d9b25a}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#060707;color:var(--chalk);font-family:Alexandria,sans-serif;padding:40px 24px 80px}
+.n,.num{font-family:Manrope,sans-serif;unicode-bidi:isolate;direction:ltr;display:inline-block}
+.poster{font-family:Changa,sans-serif;font-weight:800;letter-spacing:-.01em}
+.wrap{max-width:1280px;margin:0 auto}
+header.top{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-bottom:28px;border-bottom:1px solid var(--edge);padding-bottom:22px}
+header.top h1{font-family:Changa;font-weight:800;font-size:40px;line-height:1}
+header.top p{color:var(--dust);max-width:620px;line-height:1.8;font-size:14px;margin-top:10px}
+.tick{position:relative;padding-inline-start:18px}
+.tick::before{content:"";position:absolute;inset-inline-start:0;top:4px;bottom:4px;width:6px;background:var(--lime);transform:skewX(-20deg)}
+.rules{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:44px}
+.rule{background:var(--plate2);border:1px solid var(--edge);padding:14px 16px;font-size:13px;line-height:1.7;color:var(--dust)}
+.rule b{display:block;color:var(--chalk);font-family:Changa;font-weight:600;font-size:16px;margin-bottom:4px}
+section.dir{margin-bottom:70px}
+.dir-head{display:flex;align-items:baseline;gap:18px;margin-bottom:16px}
+.dir-head .letter{font-family:Changa;font-weight:800;font-size:72px;line-height:.8;color:var(--lime)}
+.dir-head h2{font-family:Changa;font-weight:800;font-size:30px}
+.dir-head p{color:var(--dust);font-size:14px;line-height:1.8;max-width:760px}
+.btn{white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 26px;font-family:Changa;font-weight:600;font-size:15px;border:0;cursor:pointer;clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%)}
+.btn.go{background:var(--lime);color:var(--ink)}
+.btn.ghost{background:var(--edge);color:var(--chalk)}
+.hatch{background-image:repeating-linear-gradient(-45deg,transparent 0 5px,rgba(182,233,79,.55) 5px 6px)}
+.hatch-warn{background-image:repeating-linear-gradient(-45deg,transparent 0 5px,rgba(255,154,115,.6) 5px 6px)}
+svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* frame */
+.app{background:var(--floor);border:1px solid var(--edge);height:770px;display:grid;grid-template-columns:1fr 84px;overflow:hidden;position:relative}
+.rail{grid-column:2;grid-row:1;border-inline-start:1px solid var(--edge);display:flex;flex-direction:column;align-items:center;padding:18px 0;gap:6px;background:var(--plate2)}
+.rail .mark{width:44px;height:44px;margin-bottom:14px;background:url(kochivo-logo.png) no-repeat;background-size:auto 44px;background-position:right center;}
+.rail a{width:64px;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--dust);font-size:10.5px;text-decoration:none;position:relative}
+.rail a.on{color:var(--chalk)}
+.rail a.on::after{content:"";position:absolute;inset-inline-start:-10px;top:12px;bottom:12px;width:4px;background:var(--lime);transform:skewX(-20deg)}
+.rail a .dot{position:absolute;top:6px;inset-inline-end:12px;min-width:16px;height:16px;padding:0 4px;background:var(--lime);color:var(--ink);font:800 10px Manrope;display:grid;place-items:center;clip-path:polygon(3px 0,100% 0,calc(100% - 3px) 100%,0 100%)}
+.main{grid-column:1;grid-row:1;padding:26px 32px;overflow:hidden;position:relative}
+.topline{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}
+.topline .date{color:var(--dust);font-size:13px}
+.topline .logo{height:26px}
+
+/* ===== A ===== */
+.a-grid{display:grid;grid-template-columns:1.55fr 1fr;gap:22px;height:calc(100% - 60px)}
+.a-hero{background:var(--plate);position:relative;overflow:hidden;padding:30px 34px;padding-inline-end:200px;display:flex;flex-direction:column}
+.a-hero .slash{position:absolute;inset-block:-20px;inset-inline-end:-30px;width:150px;background:var(--lime);transform:skewX(-40deg);transform-origin:top}
+.a-hero .slash2{position:absolute;inset-block:-20px;inset-inline-end:150px;width:20px;background:var(--lime);transform:skewX(-40deg);transform-origin:top}
+.a-hero .kicker{font-family:Changa;font-weight:600;font-size:13px;letter-spacing:.14em;color:var(--lime);position:relative}
+.a-hero .who{font-family:Changa;font-weight:800;font-size:66px;line-height:1;margin:12px 0 6px;position:relative}
+.a-hero .why{font-size:17px;color:var(--chalk);position:relative;max-width:420px;line-height:1.7}
+.a-hero .why em{font-style:normal;color:var(--warn)}
+.a-facts{display:flex;gap:30px;margin:26px 0;position:relative}
+.a-facts div{border-inline-start:2px solid var(--edge);padding-inline-start:12px}
+.a-facts b{display:block;font:800 30px Manrope}
+.a-facts span{font-size:12px;color:var(--dust)}
+.a-quote{background:var(--floor);border-inline-start:4px solid var(--lime);padding:14px 16px;font-size:14px;line-height:1.8;color:var(--dust);position:relative;max-width:480px}
+.a-quote b{color:var(--chalk);font-weight:500}
+.a-actions{margin-top:auto;display:flex;gap:10px;position:relative}
+.a-count{position:absolute;inset-block-end:26px;inset-inline-end:24px;font:800 15px Manrope;color:var(--ink);z-index:2}
+.a-side{display:flex;flex-direction:column;gap:10px}
+.a-side h3{font-family:Changa;font-weight:600;font-size:15px;color:var(--dust);display:flex;justify-content:space-between}
+.mv{display:grid;grid-template-columns:44px 1fr auto;align-items:center;gap:12px;background:var(--plate2);border:1px solid var(--edge);padding:12px 14px;min-height:66px;position:relative}
+.mv .no{font:800 22px Manrope;color:var(--edge)}
+.mv b{display:block;font-family:Changa;font-weight:600;font-size:17px}
+.mv small{color:var(--dust);font-size:12px}
+.mv .tag{font-size:11px;padding:4px 10px;clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);background:var(--edge);color:var(--chalk)}
+.mv .tag.w{background:var(--warn);color:var(--ink)}
+.mv .tag.c{background:var(--calm);color:var(--ink)}
+.mv .tag.l{background:var(--lime);color:var(--ink)}
+.a-done{margin-top:auto;background:var(--plate2);border:1px solid var(--edge);padding:14px 16px;display:flex;align-items:center;gap:14px}
+.a-done .bar{flex:1;height:10px;background:var(--edge);position:relative;clip-path:polygon(5px 0,100% 0,calc(100% - 5px) 100%,0 100%)}
+.a-done .bar i{position:absolute;inset-block:0;inset-inline-start:0;width:40%;background:var(--lime)}
+.a-done span{font-size:13px;color:var(--dust)}
+
+/* ===== B ===== */
+.b-filters{display:flex;gap:8px;margin-bottom:18px;align-items:center}
+.chip{font-family:Changa;font-weight:600;font-size:13px;padding:8px 18px;background:var(--plate2);border:1px solid var(--edge);color:var(--dust);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+.chip.on{background:var(--chalk);color:var(--ink);border-color:var(--chalk)}
+.chip .num{margin-inline-start:8px;opacity:.7}
+.b-board{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.card{background:var(--plate);position:relative;overflow:hidden;height:250px;padding:16px 16px 14px;display:flex;flex-direction:column}
+.card .jn{direction:ltr;unicode-bidi:isolate;position:absolute;inset-block-start:-14px;inset-inline-start:10px;font:800 110px/1 Manrope;color:var(--plate2);-webkit-text-stroke:1px var(--edge)}
+.card .stripe{position:absolute;inset-block:0;inset-inline-end:-6px;width:16px;transform:skewX(-14deg)}
+.card.need .stripe{background:var(--warn)}
+.card.ok .stripe{background:var(--lime)}
+.card.new .stripe{background:var(--calm)}
+.card.quiet .stripe{background:var(--edge)}
+.card .top{position:relative;padding-inline-end:12px;display:flex;justify-content:space-between;align-items:start}
+.card .av{width:46px;height:46px;background:var(--edge);display:grid;place-items:center;font-family:Changa;font-weight:800;font-size:18px;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+.card .rank{font-size:10.5px;color:var(--gold);border:1px solid var(--gold);padding:2px 8px;letter-spacing:.06em;font-family:Manrope;font-weight:800}
+.card .nm{position:relative;margin-top:auto;font-family:Changa;font-weight:800;font-size:23px;line-height:1.1}
+.card .goal{position:relative;font-size:12px;color:var(--dust);margin-top:2px}
+.card .meta{position:relative;display:flex;gap:16px;margin-top:12px;padding-top:10px;border-top:1px solid var(--edge)}
+.card .meta div{font-size:11px;color:var(--dust)}
+.card .meta b{display:block;font:800 17px Manrope;color:var(--chalk)}
+.card .flag{position:relative;margin-top:10px;font-size:12px;display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--floor)}
+.card.need .flag{color:var(--warn)}
+.card.new .flag{color:var(--calm)}
+.card .flag .h{width:16px;height:16px;flex:none}
+.b-legend{display:flex;gap:18px;margin-top:16px;font-size:12px;color:var(--dust)}
+.b-legend i{display:inline-block;width:10px;height:14px;transform:skewX(-14deg);margin-inline-end:6px;vertical-align:middle}
+
+/* ===== C ===== */
+.c-grid{display:grid;grid-template-columns:1fr 300px;gap:26px;height:calc(100% - 60px)}
+.c-now{display:flex;align-items:baseline;gap:16px;margin-bottom:18px}
+.c-now .clock{font:800 54px/1 Manrope;color:var(--chalk)}
+.c-now .clock em{font-style:normal;color:var(--lime)}
+.c-now p{color:var(--dust);font-size:14px}
+.tl{position:relative;padding-inline-start:0}
+.tl::before{content:"";position:absolute;inset-block:6px 0;inset-inline-start:74px;width:2px;background:var(--edge)}
+.ev{display:grid;grid-template-columns:62px 26px 1fr;align-items:start;gap:0;min-height:76px;position:relative}
+.ev .t{font:800 14px Manrope;color:var(--dust);padding-top:14px;text-align:end;padding-inline-end:4px}
+.ev .pin{width:14px;height:14px;margin:16px 0 0 0;justify-self:center;background:var(--plate);border:2px solid var(--dust);transform:skewX(-14deg);position:relative;z-index:1}
+.ev.live .pin{background:var(--lime);border-color:var(--lime)}
+.ev.done .pin{background:var(--edge);border-color:var(--edge)}
+.ev .body{margin-inline-start:14px;margin-bottom:10px;padding:12px 16px;background:var(--plate2);border:1px solid var(--edge);display:flex;align-items:center;gap:14px}
+.ev.live .body{background:var(--plate);border-color:var(--lime)}
+.ev.done .body{opacity:.5}
+.ev .body .tx{flex:1}
+.ev .body b{font-family:Changa;font-weight:600;font-size:16px;display:block}
+.ev .body small{color:var(--dust);font-size:12.5px;line-height:1.6}
+.ev .mini{font-family:Changa;font-weight:600;font-size:13px;padding:8px 16px;background:var(--edge);color:var(--chalk);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);white-space:nowrap}
+.ev.live .mini{background:var(--lime);color:var(--ink)}
+.ev .ok{color:var(--lime);font-size:12px;font-family:Changa}
+.c-side{display:flex;flex-direction:column;gap:14px}
+.panel{background:var(--plate2);border:1px solid var(--edge);padding:16px}
+.panel h4{font-family:Changa;font-weight:600;font-size:14px;color:var(--dust);margin-bottom:12px}
+.big3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.big3 div{font-size:11px;color:var(--dust)}
+.big3 b{display:block;font:800 28px Manrope;color:var(--chalk)}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;align-items:end;height:90px}
+.week i{display:block;background:var(--edge);transform:skewX(-10deg)}
+.week i.on{background:var(--lime)}
+.week-l{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;font-size:10px;color:var(--dust);text-align:center;margin-top:6px}
+.inboxp .r{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--edge);font-size:13px}
+.inboxp .r:last-child{border:0}
+.inboxp .r .av{flex:none !important;width:30px;height:30px;background:var(--edge);display:grid;place-items:center;font-family:Changa;font-size:12px;font-weight:800;clip-path:polygon(5px 0,100% 0,calc(100% - 5px) 100%,0 100%)}
+.inboxp .r span{flex:1;color:var(--dust);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.inboxp .r span b{color:var(--chalk);font-weight:500}
+
+/* phone */
+.duo{display:grid;grid-template-columns:1fr 330px;gap:22px;align-items:start}
+.phone{background:var(--floor);border:1px solid var(--edge);border-radius:30px;height:770px;overflow:hidden;position:relative;padding:22px 18px}
+.phone .pnav{position:absolute;inset-inline:14px;bottom:14px;height:62px;background:var(--plate);display:grid;grid-template-columns:repeat(4,1fr);align-items:center;text-align:center;font-size:10px;color:var(--dust)}
+.phone .pnav div{display:flex;flex-direction:column;align-items:center;gap:3px}
+.phone .pnav .on{color:var(--lime)}
+.note{font-size:12.5px;color:var(--dust);margin-top:12px;line-height:1.8}
+.note b{color:var(--chalk)}
+.pick{margin-top:50px;background:var(--plate);padding:26px 30px;position:relative;overflow:hidden}
+.pick h3{font-family:Changa;font-weight:800;font-size:26px;margin-bottom:10px}
+.pick p{color:var(--dust);line-height:1.9;font-size:14px;max-width:820px}
+.pick .slash{position:absolute;inset-block:-10px;inset-inline-start:-50px;width:90px;background:var(--lime);transform:skewX(-40deg)}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"/></symbol>
+    <symbol id="i-team" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 5.5a3 3 0 010 5.8M21 20c0-2.6-1.6-4.8-4-5.6"/></symbol>
+    <symbol id="i-inbox" viewBox="0 0 24 24"><path d="M4 5h16v11h-5l-3 3-3-3H4z"/></symbol>
+    <symbol id="i-dumb" viewBox="0 0 24 24"><path d="M3 10v4M6 7v10M18 7v10M21 10v4M6 12h12"/></symbol>
+    <symbol id="i-food" viewBox="0 0 24 24"><path d="M7 3v8M5 3v5a2 2 0 004 0V3M7 11v10M17 3c-2 0-3 2.5-3 6h3v12"/></symbol>
+    <symbol id="i-cash" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12"/><circle cx="12" cy="12" r="2.5"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5l11 7-11 7z"/></symbol>
+    <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></symbol>
+  </defs>
+</svg>
+
+<div class="wrap">
+<header class="top">
+  <div>
+    <img src="kochivo-logo.png" alt="KOCHIVO" style="height:34px;margin-bottom:16px">
+    <h1>شكل السيستم — من هويتنا احنا</h1>
+    <p>3 اتجاهات مختلفة لنفس الشاشة: رئيسية الكابتن. كلهم طالعين من اللوجو والموقع: الشرطة الليمون المايلة، خط البوستر الرياضي، الزراير المايلة، والتظليل المحفور بتاع أيقونات KO. اختار اتجاه، وبعدها نبني عليه باقي الشاشات.</p>
+  </div>
+  <div class="tick poster" style="font-size:20px;line-height:1.3">YOUR NEXT MOVE<br>STARTS HERE.</div>
+</header>
+
+<div class="rules">
+  <div class="rule"><b>الشرطة المايلة</b>هي توقيعنا. تحدد الحالة والمكان اللي انت فيه، مش ديكور.</div>
+  <div class="rule"><b>خط البوستر</b>الأسماء والأرقام الكبيرة بخط رياضي تقيل، زي لوحة الملعب.</div>
+  <div class="rule"><b>من غير لمعة</b>لا توهج، لا تدرجات، لا كروت مدورة ناعمة. حواف حادة وأسطح مطفية.</div>
+  <div class="rule"><b>ليمون واحد</b>زرار رئيسي واحد بس في الشاشة. التحذير برتقالي، الجديد أزرق هادي.</div>
+</div>
+
+<!-- ============ A ============ -->
+<section class="dir">
+  <div class="dir-head"><span class="letter">A</span><div><h2>حركتك الجاية</h2><p>الشاشة بتقولك تعمل إيه دلوقتي: حركة واحدة كبيرة قدامك، وبعدها الطابور. بتخلص واحدة والجاية تطلع مكانها. ده نفس شعارنا «YOUR NEXT MOVE» متحول لطريقة شغل.</p></div></div>
+  <div class="duo">
+  <div class="app">
+    <nav class="rail">
+      <img src="kochivo-icon.png" alt="" style="width:44px;height:44px;margin-bottom:14px">
+      <a class="on"><svg class="i"><use href="#i-home"/></svg>اليوم<span class="dot">6</span></a>
+      <a><svg class="i"><use href="#i-inbox"/></svg>الوارد<span class="dot">3</span></a>
+      <a><svg class="i"><use href="#i-team"/></svg>اللاعبين</a>
+      <a><svg class="i"><use href="#i-dumb"/></svg>التمارين</a>
+      <a><svg class="i"><use href="#i-food"/></svg>الأكل</a>
+      <a><svg class="i"><use href="#i-cash"/></svg>الفلوس</a>
+      <a style="margin-top:auto"><svg class="i"><use href="#i-gear"/></svg>حسابك</a>
+    </nav>
+    <div class="main">
+      <div class="topline"><div class="poster" style="font-size:26px">صباح الخير يا كابتن علي</div><div class="date">الجمعة ١٤ نوفمبر</div></div>
+      <div class="a-grid">
+        <div class="a-hero">
+          <div class="slash"></div><div class="slash2"></div>
+          <div class="kicker">الحركة الجاية · فيديو أداء</div>
+          <div class="who">محمد حسن</div>
+          <div class="why">بعت فيديو سكوات <span class="n">100</span> كجم وسأل: <em>«ركبتي بتدخل لجوه، أكمل ولا أنزل الوزن؟»</em></div>
+          <div class="a-facts">
+            <div><b>3/4</b><span>تمارين الأسبوع</span></div>
+            <div><b>8.5</b><span>آخر RPE</span></div>
+            <div><b>22</b><span>يوم باقي</span></div>
+          </div>
+          <div class="a-quote"><b>KO شايف:</b> آخر 3 جلسات RPE فوق 8. ممكن تنزله لـ<span class="n">90</span> كجم الأسبوع ده وتركز على الركبة.</div>
+          <div class="a-actions">
+            <button class="btn go"><svg class="i"><use href="#i-play"/></svg>شوف الفيديو ورد</button>
+            <button class="btn ghost"><svg class="i"><use href="#i-mic"/></svg>رد بصوتك</button>
+            <button class="btn ghost">بعدين</button>
+          </div>
+          <div class="a-count">01 / 06</div>
+        </div>
+        <div class="a-side">
+          <h3><span>بعدها</span><span class="n">5</span></h3>
+          <div class="mv"><span class="no">02</span><div><b>يوسف عادل</b><small>غايب من 5 أيام</small></div><span class="tag w">غايب</span></div>
+          <div class="mv"><span class="no">03</span><div><b>سارة محمود</b><small>بعتت متابعة الأسبوع + صورة</small></div><span class="tag">متابعة</span></div>
+          <div class="mv"><span class="no">04</span><div><b>كريم سامي</b><small>طالب يبدل الضغط بالدمبل</small></div><span class="tag">تبديل</span></div>
+          <div class="mv"><span class="no">05</span><div><b>نور أحمد</b><small>اشتراكه بيخلص بعد 3 أيام</small></div><span class="tag c">تجديد</span></div>
+          <div class="mv"><span class="no">06</span><div><b>عمر خالد</b><small>لسه مالوش برنامج</small></div><span class="tag l">جديد</span></div>
+          <div class="a-done"><span>خلصت <span class="n">4</span> من <span class="n">10</span> النهارده</span><div class="bar"><i></i></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div>
+    <div class="phone">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px"><img src="kochivo-logo.png" alt="" style="height:20px"><span class="n" style="color:var(--dust);font-size:12px">01 / 06</span></div>
+      <div class="a-hero" style="padding:22px 20px;padding-inline-end:70px;height:450px">
+        <div class="slash" style="width:70px;inset-inline-end:-40px"></div>
+        <div class="kicker">الحركة الجاية</div>
+        <div class="who" style="font-size:42px">محمد حسن</div>
+        <div class="why" style="font-size:14px">بعت فيديو سكوات وسأل عن ركبته.</div>
+        <div class="a-facts" style="gap:18px;margin:18px 0"><div><b style="font-size:22px">3/4</b><span>الأسبوع</span></div><div><b style="font-size:22px">8.5</b><span>RPE</span></div></div>
+        <div class="a-actions" style="flex-direction:column"><button class="btn go" style="width:100%">شوف الفيديو ورد</button><button class="btn ghost" style="width:100%">بعدين</button></div>
+      </div>
+      <div class="mv" style="margin-top:12px"><span class="no">02</span><div><b>يوسف عادل</b><small>غايب 5 أيام</small></div><span class="tag w">غايب</span></div>
+      <div class="pnav"><div class="on"><svg class="i"><use href="#i-home"/></svg>اليوم</div><div><svg class="i"><use href="#i-team"/></svg>اللاعبين</div><div><svg class="i"><use href="#i-dumb"/></svg>التمارين</div><div><svg class="i"><use href="#i-food"/></svg>الأكل</div></div>
+    </div>
+    <p class="note"><b>إحساسها:</b> مدرب في الملعب، بيتعامل مع لاعب لاعب. مفيش جداول.</p>
+  </div>
+  </div>
+</section>
+
+<!-- ============ B ============ -->
+<section class="dir">
+  <div class="dir-head"><span class="letter">B</span><div><h2>لوحة الفريق</h2><p>اللاعبين كروت زي كروت اللاعبين في الملعب: رقم كبير، رتبة، وشرطة لونها بيقول حالته. اللي محتاج منك حاجة شرطته برتقالي وعليه سطر واحد يقولك إيه. بتشوف فريقك كله في نظرة.</p></div></div>
+  <div class="app">
+    <nav class="rail">
+      <img src="kochivo-icon.png" alt="" style="width:44px;height:44px;margin-bottom:14px">
+      <a><svg class="i"><use href="#i-home"/></svg>اليوم</a>
+      <a><svg class="i"><use href="#i-inbox"/></svg>الوارد<span class="dot">3</span></a>
+      <a class="on"><svg class="i"><use href="#i-team"/></svg>الفريق</a>
+      <a><svg class="i"><use href="#i-dumb"/></svg>التمارين</a>
+      <a><svg class="i"><use href="#i-food"/></svg>الأكل</a>
+      <a><svg class="i"><use href="#i-cash"/></svg>الفلوس</a>
+      <a style="margin-top:auto"><svg class="i"><use href="#i-gear"/></svg>حسابك</a>
+    </nav>
+    <div class="main">
+      <div class="topline"><div class="poster" style="font-size:30px">الفريق <span class="n" style="color:var(--dust);font-size:22px">24</span></div><button class="btn go">ضيف لاعب</button></div>
+      <div class="b-filters">
+        <span class="chip on">الكل<span class="num">24</span></span>
+        <span class="chip">محتاجينك<span class="num">6</span></span>
+        <span class="chip">ماشيين تمام<span class="num">15</span></span>
+        <span class="chip">جداد<span class="num">2</span></span>
+        <span class="chip">بيخلص اشتراكهم<span class="num">3</span></span>
+      </div>
+      <div class="b-board">
+        <div class="card need"><span class="jn">07</span><span class="stripe"></span>
+          <div class="top"><span class="av">م ح</span><span class="rank">GOLD</span></div>
+          <div class="nm">محمد حسن</div><div class="goal">زيادة قوة · <span class="n">82</span> كجم</div>
+          <div class="meta"><div><b>3/4</b>الأسبوع</div><div><b>8.5</b>RPE</div><div><b>22</b>يوم</div></div>
+          <div class="flag"><span class="h hatch-warn"></span>فيديو سكوات مستني ردك</div></div>
+        <div class="card need"><span class="jn">12</span><span class="stripe"></span>
+          <div class="top"><span class="av">ي ع</span><span class="rank">SILVER</span></div>
+          <div class="nm">يوسف عادل</div><div class="goal">تنشيف · <span class="n">94</span> كجم</div>
+          <div class="meta"><div><b>0/4</b>الأسبوع</div><div><b>—</b>RPE</div><div><b>40</b>يوم</div></div>
+          <div class="flag"><span class="h hatch-warn"></span>غايب من 5 أيام</div></div>
+        <div class="card ok"><span class="jn">03</span><span class="stripe"></span>
+          <div class="top"><span class="av">س م</span><span class="rank">GOLD</span></div>
+          <div class="nm">سارة محمود</div><div class="goal">لياقة · <span class="n">61</span> كجم</div>
+          <div class="meta"><div><b>4/4</b>الأسبوع</div><div><b>7</b>RPE</div><div><b>18</b>يوم</div></div>
+          <div class="flag" style="color:var(--lime)"><span class="h hatch"></span>كاملة الأسبوع</div></div>
+        <div class="card new"><span class="jn">24</span><span class="stripe"></span>
+          <div class="top"><span class="av">ع خ</span><span class="rank" style="color:var(--dust);border-color:var(--edge)">NEW</span></div>
+          <div class="nm">عمر خالد</div><div class="goal">زيادة عضل · <span class="n">70</span> كجم</div>
+          <div class="meta"><div><b>—</b>الأسبوع</div><div><b>—</b>RPE</div><div><b>30</b>يوم</div></div>
+          <div class="flag"><span class="h" style="background:var(--calm)"></span>محتاج برنامج</div></div>
+        <div class="card ok"><span class="jn">09</span><span class="stripe"></span>
+          <div class="top"><span class="av">ك س</span><span class="rank">BRONZE</span></div>
+          <div class="nm">كريم سامي</div><div class="goal">زيادة قوة · <span class="n">88</span> كجم</div>
+          <div class="meta"><div><b>2/3</b>الأسبوع</div><div><b>7.5</b>RPE</div><div><b>12</b>يوم</div></div></div>
+        <div class="card need"><span class="jn">15</span><span class="stripe"></span>
+          <div class="top"><span class="av">ن أ</span><span class="rank">SILVER</span></div>
+          <div class="nm">نور أحمد</div><div class="goal">تنشيف · <span class="n">67</span> كجم</div>
+          <div class="meta"><div><b>3/4</b>الأسبوع</div><div><b>6.5</b>RPE</div><div><b>3</b>يوم</div></div>
+          <div class="flag"><span class="h hatch-warn"></span>الاشتراك بيخلص</div></div>
+        <div class="card quiet"><span class="jn">05</span><span class="stripe"></span>
+          <div class="top"><span class="av">ه م</span><span class="rank">GOLD</span></div>
+          <div class="nm">هالة مصطفى</div><div class="goal">لياقة · <span class="n">58</span> كجم</div>
+          <div class="meta"><div><b>3/3</b>الأسبوع</div><div><b>6</b>RPE</div><div><b>51</b>يوم</div></div></div>
+        <div class="card ok"><span class="jn">11</span><span class="stripe"></span>
+          <div class="top"><span class="av">أ ف</span><span class="rank">BRONZE</span></div>
+          <div class="nm">أحمد فتحي</div><div class="goal">زيادة عضل · <span class="n">76</span> كجم</div>
+          <div class="meta"><div><b>2/4</b>الأسبوع</div><div><b>8</b>RPE</div><div><b>27</b>يوم</div></div></div>
+      </div>
+      <div class="b-legend"><span><i style="background:var(--warn)"></i>محتاجك</span><span><i style="background:var(--lime)"></i>ماشي تمام</span><span><i style="background:var(--calm)"></i>جديد</span><span><i style="background:var(--edge)"></i>هادي</span></div>
+    </div>
+  </div>
+  <p class="note"><b>إحساسها:</b> لوحة تكتيك في غرفة الملابس. الرتب جاية من نظام الرتب اللي عندنا، والرقم بيتحسب بترتيب الانضمام.</p>
+</section>
+
+<!-- ============ C ============ -->
+<section class="dir">
+  <div class="dir-head"><span class="letter">C</span><div><h2>يوم الكابتن</h2><p>اليوم كخط زمني من الصبح: كل حاجة حصلت ولسه هتحصل في مكانها بالساعة، وتعمل الأكشن من السطر نفسه. نفس القصة اللي على الموقع «من 9:02 الصبح»، بس دي شغلك الحقيقي.</p></div></div>
+  <div class="app">
+    <nav class="rail">
+      <img src="kochivo-icon.png" alt="" style="width:44px;height:44px;margin-bottom:14px">
+      <a class="on"><svg class="i"><use href="#i-home"/></svg>اليوم<span class="dot">4</span></a>
+      <a><svg class="i"><use href="#i-inbox"/></svg>الوارد<span class="dot">3</span></a>
+      <a><svg class="i"><use href="#i-team"/></svg>اللاعبين</a>
+      <a><svg class="i"><use href="#i-dumb"/></svg>التمارين</a>
+      <a><svg class="i"><use href="#i-food"/></svg>الأكل</a>
+      <a><svg class="i"><use href="#i-cash"/></svg>الفلوس</a>
+      <a style="margin-top:auto"><svg class="i"><use href="#i-gear"/></svg>حسابك</a>
+    </nav>
+    <div class="main">
+      <div class="c-grid">
+        <div>
+          <div class="c-now"><span class="clock"><em>1</em>:47</span><p>الجمعة ١٤ نوفمبر · فاضلك <span class="n">4</span> حاجات النهارده</p></div>
+          <div class="tl">
+            <div class="ev done"><span class="t">9:02</span><span class="pin"></span><div class="body"><div class="tx"><b>سارة محمود خلصت تمرين الرجل</b><small>4/4 الأسبوع · RPE 7</small></div><span class="ok">اتشاف</span></div></div>
+            <div class="ev done"><span class="t">10:30</span><span class="pin"></span><div class="body"><div class="tx"><b>دفعة أحمد فتحي اتأكدت</b><small>انستاباي · <span class="n">800</span> جنيه</small></div><span class="ok">اتأكدت</span></div></div>
+            <div class="ev live"><span class="t">12:15</span><span class="pin"></span><div class="body"><div class="tx"><b>محمد حسن بعت فيديو سكوات</b><small>«ركبتي بتدخل لجوه، أكمل ولا أنزل الوزن؟» · KO بيقترح تنزل لـ<span class="n">90</span> كجم</small></div><span class="mini">شوف ورد</span></div></div>
+            <div class="ev"><span class="t">1:10</span><span class="pin"></span><div class="body"><div class="tx"><b>كريم سامي طالب تبديل تمرين</b><small>الضغط بالبار ← الضغط بالدمبل · كتفه واجعه</small></div><span class="mini">وافق</span></div></div>
+            <div class="ev"><span class="t">1:40</span><span class="pin"></span><div class="body"><div class="tx"><b>طلب انضمام جديد: عمر خالد</b><small>زيادة عضل · <span class="n">70</span> كجم · 3 أيام في الأسبوع</small></div><span class="mini">قبول</span></div></div>
+            <div class="ev"><span class="t">طول اليوم</span><span class="pin"></span><div class="body"><div class="tx"><b>يوسف عادل غايب من 5 أيام</b><small>آخر تمرين يوم الأحد</small></div><span class="mini">ابعتله</span></div></div>
+          </div>
+        </div>
+        <div class="c-side">
+          <div class="panel"><h4>النهارده</h4><div class="big3"><div><b>11</b>اتمرنوا</div><div><b>3</b>رسايل</div><div><b>2</b>دفعات</div></div></div>
+          <div class="panel"><h4>تمارين الفريق الأسبوع ده</h4>
+            <div class="week"><i class="on" style="height:60%"></i><i class="on" style="height:85%"></i><i class="on" style="height:50%"></i><i class="on" style="height:95%"></i><i class="on" style="height:70%"></i><i style="height:40%"></i><i style="height:10%"></i></div>
+            <div class="week-l"><span>سبت</span><span>حد</span><span>اتنين</span><span>تلات</span><span>أربع</span><span>خميس</span><span>جمعة</span></div></div>
+          <div class="panel inboxp"><h4>صندوق الوارد</h4>
+            <div class="r"><span class="av">س</span><span><b>سارة:</b> تمام يا كوتش هغير الفطار</span></div>
+            <div class="r"><span class="av">ك</span><span><b>كريم:</b> رسالة صوتية</span></div>
+            <div class="r"><span class="av">ن</span><span><b>نور:</b> هجدد بكرة ان شاء الله</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="note"><b>إحساسها:</b> مذكرة يوم المدرب. بتعرف حصل إيه وفاضل إيه من غير ما تدور.</p>
+</section>
+
+<div class="pick"><span class="slash"></span><div style="padding-inline-start:60px">
+  <h3>رأيي</h3>
+  <p><b style="color:var(--chalk)">A للرئيسية + B لصفحة اللاعبين</b>. A بتخلي الكابتن يخلص شغله واحدة واحدة، وB بتديله نظرة على فريقه كله. الاتنين من نفس اللغة. C ممكن تبقى تاب «اليوم كله» جوه A لو حبيت. كل الداتا اللي في الشاشات موجودة عندنا فعلا، ومفيش فيها حاجة محتاجة جداول جديدة.</p>
+</div></div>
+</div>
+</body>
+</html>

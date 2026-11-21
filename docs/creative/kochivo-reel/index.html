@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>KOCHIVO</title>
+  <link rel="stylesheet" href="/brand-fonts/fonts.css">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main>
+    <section class="viewer">
+      <canvas width="1080" height="1920"></canvas>
+      <button id="overlay" class="overlay" type="button"></button>
+    </section>
+    <aside>
+      <img class="wordmark" src="/brand-png/logo-primary@2x.png" alt="KOCHIVO">
+      <p id="eyebrow" class="eyebrow"></p>
+      <h1 id="title"></h1>
+      <p id="about" class="muted"></p>
+      <div class="controls">
+        <button id="play" type="button" class="primary"></button>
+        <button id="sound" type="button"></button>
+      </div>
+      <div class="scrub">
+        <output id="time" dir="ltr">00:00 / 00:31</output>
+        <input id="seek" type="range" min="0" max="31.2" step="0.05" value="0" dir="ltr">
+      </div>
+      <nav id="chapters"></nav>
+      <a id="download" href="./kochivo-day.mp4" download hidden></a>
+      <p id="details" class="details"></p>
+      <p id="status" role="status"></p>
+    </aside>
+  </main>
+  <script type="module" src="./player.mjs"></script>
+</body>
+</html>

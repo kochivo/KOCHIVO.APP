@@ -3,6 +3,8 @@
   "configurations": [
     { "name": "master", "runtimeExecutable": "npm", "runtimeArgs": ["run", "dev", "--", "-p", "3000"], "port": 3000 },
     { "name": "landing-b", "runtimeExecutable": "npm", "runtimeArgs": ["--prefix", "C:/Users/ALY/Desktop/KOCHIVO-WT/b", "run", "dev", "--", "-p", "3101"], "port": 3101 },
-    { "name": "builder-a", "runtimeExecutable": "npm", "runtimeArgs": ["--prefix", "C:/Users/ALY/Desktop/KOCHIVO-WT/a", "run", "dev", "--", "-p", "3102"], "port": 3102 }
+    { "name": "builder-a", "runtimeExecutable": "npm", "runtimeArgs": ["--prefix", "C:/Users/ALY/Desktop/KOCHIVO-WT/a", "run", "dev", "--", "-p", "3102"], "port": 3102 },
+    { "name": "master-v6", "runtimeExecutable": "cmd", "runtimeArgs": ["/c", "set NEXT_PUBLIC_CAPTAIN_WORKSPACE=1&& npm run dev -- -p 3000"], "port": 3000 },
+    { "name": "mockups", "runtimeExecutable": "node", "runtimeArgs": ["C:/Users/ALY/AppData/Local/Temp/claude/2b64e5fa05a10440/e5998d07-2996-4fa9-8f4b-e6f6dd03b922/scratchpad/mockup-server.mjs"], "port": 3199 }
   ]
 }

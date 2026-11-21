@@ -42,7 +42,7 @@ export function CaptainNotificationsEntry() {
               <div className="min-w-0 flex-1">
                 {row.type === 'player_pain' && <span className="rounded-full bg-danger-soft px-stack py-inline text-xs text-danger">{t('urgent')}</span>}
                 <p className="text-row font-semibold">{t(notificationTextKey(row), {
-                  name: row.payload.display_name || row.payload.name || row.payload.captain_name || '',
+                  name: row.payload.display_name || row.payload.name || row.payload.captain_name || t('someone'),
                   rank: t(medalKey(row.payload.medal) ?? 'iron'),
                   n: row.payload.needs_workouts ?? 0, gap: row.payload.gap ?? 0,
                 }, row.payload.gap ?? 0)}</p>

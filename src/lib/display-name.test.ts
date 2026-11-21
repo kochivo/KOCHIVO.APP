@@ -11,3 +11,12 @@ it.each([exerciseName, foodName])('selects database names with locale fallbacks'
   }
   expect(name({}, 'en')).toBe('');
 });
+
+it('uses the first real name word and skips a leading title', async () => {
+  const { givenName } = await import('./display-name');
+  expect(givenName('كابتن تجربة')).toBe('تجربة');
+  expect(givenName('Coach Sara Ali')).toBe('Sara');
+  expect(givenName('  محمد حسن ')).toBe('محمد');
+  expect(givenName('كابتن')).toBe('كابتن');
+  expect(givenName('')).toBe('');
+});

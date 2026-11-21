@@ -75,7 +75,7 @@ export const messages = {
     kinds: { checkin: 'Weekly assessment', onboarding: 'Starting assessment', progress: 'Monthly measurements', injury: 'Injury assessment', update: 'Data update' },
     types: { number: 'Number', scale: 'Rating 1–10', choice: 'Choice', multi: 'Multiple choice', text: 'Text', photos: 'Photos', yesno: 'Yes or no' },
     facts: { weight: 'Weight', targetWeight: 'Target weight', height: 'Height', age: 'Age', sex: 'Sex', experience: 'Experience', trainingDays: 'Training days', sessionMinutes: 'Session minutes', injuries: 'Injuries', medical: 'Medical conditions', allergies: 'Allergies', waist: 'Waist', note: 'Notes' },
-    labels: { weight: 'Morning weight?', waist: 'Waist measurement?', sleep: 'How was your sleep?', adherence: 'How many days did you follow your meal plan?', injuries: 'Any injuries?', photos: 'Progress photos', note: 'Anything for your captain?', height: 'Your height?', age: 'Your age?', targetWeight: 'Your target weight?', sessionMinutes: 'Minutes available to train?', medical: 'Medical conditions?', allergies: 'Any allergies?' },
+    labels: { weight: 'Morning weight?', waist: 'Waist measurement?', sleep: 'How was your sleep?', adherence: 'How many days did you follow your meal plan?', injuries: 'Any injuries?', photos: 'Progress photos', note: 'Anything for your coach?', height: 'Your height?', age: 'Your age?', targetWeight: 'Your target weight?', sessionMinutes: 'Minutes available to train?', medical: 'Medical conditions?', allergies: 'Any allergies?' },
     weekdays: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
   },
 } as const;

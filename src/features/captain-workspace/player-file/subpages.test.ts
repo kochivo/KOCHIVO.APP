@@ -64,3 +64,17 @@ it('keeps meal edits visibly editable and the chat in an inbox-style panel', () 
   expect(source('./chat-entry.tsx')).toContain('glass');
   expect(source('../../player-preview/components/preview-screen.tsx')).toContain('PageBarTitle');
 });
+
+it('lists answers in question order and includes a written answer', () => {
+  const q = (id: string, position: number, label: string) => ({ id, form_id: 'form', position, label_ar: label, label_en: label } as RequestData['questions'][number]);
+  const a = (id: string, question_id: string, value: unknown) => ({ id, question_id, value } as unknown as RequestData['answers'][number]);
+  const request: RequestData = { title: 'Weekly', questions: [q('q2', 2, 'Sleep'), q('q1', 1, 'Weight'), q('q3', 3, 'Note')],
+    answers: [a('a2', 'q2', 7), a('a1', 'q1', 74.5), a('a3', 'q3', 'Feeling good')], request: {
+      id: 'request', form_id: 'form', player_id: 'p', captain_id: 'c', sent_at: '2026-11-01T10:00:00Z',
+      answered_at: '2026-11-14T10:00:00Z', due_at: null, reminded_at: null, reviewed_at: null, captain_reply: null, status: null,
+    } };
+  const html = renderToStaticMarkup(createElement(AssessmentCards, { playerId: 'p', locale: 'en', timezone: 'Africa/Cairo', requests: [request] }));
+  expect(html.indexOf('Weight')).toBeLessThan(html.indexOf('Sleep'));
+  expect(html.indexOf('Sleep')).toBeLessThan(html.indexOf('Note'));
+  expect(html).toContain('Feeling good');
+});

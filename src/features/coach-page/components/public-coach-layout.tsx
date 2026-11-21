@@ -37,7 +37,9 @@ export function PublicCoachLayout({ coach, slug, requested, t, pricing, sections
       <div className="public-wrap flex min-h-20 items-center justify-between gap-section">
         <Link href="/" aria-label={t('brand')} className="inline-flex min-h-12 items-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/brand/logo-primary.png" alt={t('brand')} width={85} height={24} />
+          <img src="/brand/logo-primary.png" alt={t('brand')} width={85} height={24} className="theme-dark-only" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/brand/logo-primary-light.png" alt={t('brand')} width={85} height={24} className="theme-light-only" />
         </Link>
         <Link href="/login" className="inline-flex min-h-12 items-center text-sm text-muted hover:text-ink">{t('playerLogin')}</Link>
       </div>

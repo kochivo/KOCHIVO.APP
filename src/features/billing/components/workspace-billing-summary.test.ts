@@ -31,3 +31,16 @@ it('counts balance, missing package, ending and paid independently', () => {
   expect(expectedIncome(rows, 1100, today, 'Africa/Cairo')).toBe(1600);
   expect(expectedIncome(rows, 1100, '2026-12-01', 'Africa/Cairo')).toBe(1100);
 });
+
+it('treats a zero-price package as a trial, excluded from the paid filter and income', () => {
+  const today = '2026-11-16';
+  const player: BillingPlayer = { playerId: 'p', fullName: 'Ali', accessUntil: '2026-12-16', status: 'active',
+    phone: null, lastPayment: null, due: 0, startedOn: today, lastTrainingDate: null, programTitle: null, openTasks: 0 };
+  const trialPayment = { id: 'payment', captain_id: 'captain', player_id: 'p', period_start: today, period_end: '2026-12-16',
+    package_id: 'package', days: 30, price_egp: 0, amount_egp: 0, collected_egp: 0, created_at: '2026-11-16T12:00:00Z' };
+  const rows = paymentRows([{ ...player, lastPayment: trialPayment }], [], today);
+  expect(rows[0]).toMatchObject({ trial: true, total: 0, fullyPaid: true });
+  expect(paymentMatches(rows[0]!, 'paid')).toBe(false);
+  expect(paymentMatches(rows[0]!, 'all')).toBe(true);
+  expect(expectedIncome(rows, 1000, today, 'Africa/Cairo')).toBe(1000);
+});

@@ -1,0 +1,33 @@
+
+> kochivo@0.1.0 check
+> npm run typecheck && npm run lint && npm run audit:release && npm run test
+
+
+> kochivo@0.1.0 typecheck
+> tsc --noEmit
+
+
+> kochivo@0.1.0 lint
+> eslint .
+
+
+> kochivo@0.1.0 audit:release
+> node scripts/release-audit.mjs
+
+Release audit: 4584 tracked files, 0 findings
+
+> kochivo@0.1.0 test
+> vitest run
+
+
+ RUN  v5.1.0 C:/Users/ALY/Desktop/KOCHIVO-REBRAND
+
+
+ Test Files  1138 passed | 1 skipped (1139)
+      Tests  7106 passed | 1 skipped (7107)
+   Start at  23:59:21
+   Duration  262.35s (tests 75%, import 17%, transform 4%, setup 4%)
+
+    Isolate  1139 workers spawned · ~415ms startup each (spawn + environment, per file)
+             at least ~31.09s faster with isolate: false — reuses workers across files instead of one per file
+

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>KOCHIVO</title>
+  <link rel="stylesheet" href="/brand-fonts/fonts.css">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main>
+    <section class="viewer"><canvas width="1080" height="1920"></canvas></section>
+    <aside>
+      <p id="eyebrow" class="eyebrow"></p>
+      <h1 id="heading"></h1>
+      <p id="about" class="muted"></p>
+      <p id="silent" class="badge"></p>
+      <div class="controls">
+        <button id="play" class="primary" type="button" disabled></button>
+        <button id="previous" type="button" disabled></button>
+        <button id="next" type="button" disabled></button>
+      </div>
+      <output id="time" dir="ltr"></output>
+      <input id="seek" type="range" min="0" step="0.05" value="0" dir="ltr" disabled>
+      <nav id="chapters"></nav>
+      <details><summary id="details-title"></summary><p id="details" class="muted"></p></details>
+      <button id="export" type="button" disabled></button>
+      <p id="status" role="status"></p>
+    </aside>
+  </main>
+  <script type="module" src="./player.mjs"></script>
+</body>
+</html>

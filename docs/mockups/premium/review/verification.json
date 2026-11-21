@@ -1,0 +1,196 @@
+{
+  "pages": [
+    {
+      "id": "site",
+      "route": "/",
+      "group": "public"
+    },
+    {
+      "id": "coach-site",
+      "route": "/c/[slug]",
+      "group": "public"
+    },
+    {
+      "id": "demo",
+      "route": "/demo",
+      "group": "public"
+    },
+    {
+      "id": "ko",
+      "route": "/ko",
+      "group": "public"
+    },
+    {
+      "id": "login",
+      "route": "/login",
+      "group": "auth"
+    },
+    {
+      "id": "invite",
+      "route": "/i/[code]",
+      "group": "auth"
+    },
+    {
+      "id": "forgot",
+      "route": "/forgot-password",
+      "group": "auth"
+    },
+    {
+      "id": "reset",
+      "route": "/reset-password",
+      "group": "auth"
+    },
+    {
+      "id": "coach-home",
+      "route": "/captain",
+      "group": "captain"
+    },
+    {
+      "id": "roster",
+      "route": "/captain/players",
+      "group": "captain"
+    },
+    {
+      "id": "athlete",
+      "route": "/captain/players/[playerId]",
+      "group": "captain"
+    },
+    {
+      "id": "athlete-programs",
+      "route": "/captain/players/[playerId]/programs",
+      "group": "captain"
+    },
+    {
+      "id": "athlete-nutrition",
+      "route": "/captain/players/[playerId]/nutrition",
+      "group": "captain"
+    },
+    {
+      "id": "athlete-preview",
+      "route": "/captain/players/[playerId]/preview",
+      "group": "captain"
+    },
+    {
+      "id": "inbox",
+      "route": "/captain/inbox",
+      "group": "captain"
+    },
+    {
+      "id": "templates",
+      "route": "/captain/templates",
+      "group": "captain"
+    },
+    {
+      "id": "program",
+      "route": "/captain/programs/[programId]",
+      "group": "captain"
+    },
+    {
+      "id": "meal-builder",
+      "route": "/captain/nutrition/[planId]",
+      "group": "captain"
+    },
+    {
+      "id": "leaderboard",
+      "route": "/captain/leaderboard",
+      "group": "captain"
+    },
+    {
+      "id": "billing",
+      "route": "/captain/billing",
+      "group": "captain"
+    },
+    {
+      "id": "coach-settings",
+      "route": "/captain/settings",
+      "group": "captain"
+    },
+    {
+      "id": "pending",
+      "route": "/captain/pending",
+      "group": "system"
+    },
+    {
+      "id": "player-home",
+      "route": "/player",
+      "group": "player"
+    },
+    {
+      "id": "workout",
+      "route": "/player/workout/[dayId]",
+      "group": "player"
+    },
+    {
+      "id": "nutrition",
+      "route": "/player/nutrition",
+      "group": "player"
+    },
+    {
+      "id": "progress",
+      "route": "/player/progress",
+      "group": "player"
+    },
+    {
+      "id": "history",
+      "route": "/player/history",
+      "group": "player"
+    },
+    {
+      "id": "rank",
+      "route": "/player/rank",
+      "group": "player"
+    },
+    {
+      "id": "my-coach",
+      "route": "/player/captain",
+      "group": "player"
+    },
+    {
+      "id": "player-settings",
+      "route": "/player/settings",
+      "group": "player"
+    },
+    {
+      "id": "onboarding",
+      "route": "/player/onboarding",
+      "group": "player"
+    },
+    {
+      "id": "offline",
+      "route": "/offline",
+      "group": "system"
+    },
+    {
+      "id": "suspended",
+      "route": "/suspended",
+      "group": "system"
+    },
+    {
+      "id": "admin",
+      "route": "/admin",
+      "group": "system"
+    },
+    {
+      "id": "dev-ui",
+      "route": "/dev/ui",
+      "group": "system"
+    },
+    {
+      "id": "dev-ko",
+      "route": "/dev/ko",
+      "group": "system"
+    }
+  ],
+  "errors": [],
+  "overflows": [],
+  "interactions": [
+    "roster search and empty state",
+    "water, workout steppers, set completion and rest",
+    "meal log and food alternative",
+    "invitation, code step and four-step onboarding",
+    "review response stays local",
+    "program builder adds an exercise",
+    "mobile captain menu"
+  ],
+  "passed": true
+}

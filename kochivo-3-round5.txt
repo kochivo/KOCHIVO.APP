@@ -1,0 +1,271 @@
+From 2f457cd79743234bf30ce5009e56cd013b59c2f6 Mon Sep 17 00:00:00 2001
+From: Instinct Agent <agent@instinct.com>
+Date: Sat, 21 Nov 2026 14:24:31 +0200
+Subject: [PATCH] round5: signup error reporting, trial billing rows, package
+ price+duration on creation
+
+---
+ src/features/auth/errors.ts                   | 10 +++++-
+ .../workspace-billing-payment-row.tsx         |  7 +++--
+ .../workspace-billing-phone-player.tsx        |  7 +++--
+ .../workspace-billing-summary.test.ts         | 13 ++++++++
+ .../components/workspace-billing-summary.ts   |  6 ++--
+ src/features/billing/data/catalog-actions.ts  |  5 +--
+ .../billing/data/catalog-validation.ts        |  2 +-
+ src/features/billing/messages.ts              |  2 ++
+ src/features/billing/tiers/tier-sheet.tsx     | 31 ++++++++++++++++---
+ 9 files changed, 66 insertions(+), 17 deletions(-)
+
+diff --git a/src/features/auth/errors.ts b/src/features/auth/errors.ts
+index 4453d6f..e6269cd 100644
+--- a/src/features/auth/errors.ts
++++ b/src/features/auth/errors.ts
+@@ -34,5 +34,13 @@ export function authError(error: unknown, locale: Locale | Translator<typeof mes
+     });
+     return t('emailProviderFailed');
+   }
+-  return errorMessages(t)[code] ?? t('somethingWentWrongTryAgain');
++  const mapped = errorMessages(t)[code];
++  if (!mapped) {
++    // Unmapped failures surface as a generic message; report them with their
++    // code so they stay diagnosable instead of failing silently.
++    const failure = error instanceof Error ? error : new Error(String(readError(error).message ?? 'unknown auth error'));
++    const status = isAuthError(error) ? error.status : undefined;
++    report?.(failure, { tags: { area: 'auth-unmapped', code, status: String(status ?? '') } });
++  }
++  return mapped ?? t('somethingWentWrongTryAgain');
+ }
+diff --git a/src/features/billing/components/workspace-billing-payment-row.tsx b/src/features/billing/components/workspace-billing-payment-row.tsx
+index 4b63b32..bcb0049 100644
+--- a/src/features/billing/components/workspace-billing-payment-row.tsx
++++ b/src/features/billing/components/workspace-billing-payment-row.tsx
+@@ -16,7 +16,7 @@ export function WorkspaceBillingPaymentRow({ row, onOpen }: { row: PaymentRow; o
+   const t = useT(workspaceMessages), legacy = useT(messages), finance = useT(financeMessages), methods = useT(methodMessages);
+   const paymentT = useT(paymentMessages), locale = useLocale(), timezone = useTimezone();
+   const catalog = useT(catalogMessages);
+-  const { player, chosen, total, paid, method, hasPackage, fullyPaid, action, ending } = row;
++  const { player, chosen, total, paid, method, hasPackage, fullyPaid, action, ending, trial } = row;
+   const payment = player.lastPayment;
+   const number = (value: number) => formatNumber(value, locale);
+   const dateOptions = { day: 'numeric', month: 'long' } as const;
+@@ -33,7 +33,8 @@ export function WorkspaceBillingPaymentRow({ row, onOpen }: { row: PaymentRow; o
+         : !hasPackage && player.sessionsLeft !== 0 ? [t('noPackage'), 'tone-neutral']
+           : player.awaitingPlansAt ? [finance('waitingForPlans'), 'tone-info']
+             : player.sessionsLeft === 0 ? [paymentT('sessionsEnded'), 'tone-warn']
+-              : ending ? [t('soon'), 'tone-warn']
++              : trial ? [t('trial'), 'tone-info']
++                : ending ? [t('soon'), 'tone-warn']
+                 : fullyPaid ? [t('fullyPaid'), 'tone-lime']
+                   : total === null ? [t('confirmed'), 'tone-neutral']
+                     : [t(paid > 0 ? 'partial' : 'unpaid'), 'tone-warn'];
+@@ -49,7 +50,7 @@ export function WorkspaceBillingPaymentRow({ row, onOpen }: { row: PaymentRow; o
+       </div>
+     </td>
+     <td className={cell}>
+-      {total === null ? <span className="text-faint">{t('dash')}</span> : <>
++      {trial ? <span className="text-faint">{t('trial')}</span> : total === null ? <span className="text-faint">{t('dash')}</span> : <>
+         <p className="font-display font-bold tabular-nums">{number(paid)} <span className="text-xs text-faint">{t('paidOf', { total: number(total) })}</span></p>
+         <ProgressBar thin value={total === 0 ? 1 : paid} max={total || 1}
+           aria-label={t('paidProgress', { paid: number(paid), total: number(total) })}
+diff --git a/src/features/billing/components/workspace-billing-phone-player.tsx b/src/features/billing/components/workspace-billing-phone-player.tsx
+index 0079b17..a818b54 100644
+--- a/src/features/billing/components/workspace-billing-phone-player.tsx
++++ b/src/features/billing/components/workspace-billing-phone-player.tsx
+@@ -1,5 +1,5 @@
+ import { useLocale, useT } from '@/core/i18n/client';
+-import { daysBetween } from '@/lib/dates';
++import { daysBetween, formatDateAr } from '@/lib/dates';
+ import { formatNumber } from '@/lib/format';
+ import { Button, buttonClass, clickableClass } from '@/ui/button';
+ import { messages, workspaceMessages } from '../messages';
+@@ -16,7 +16,7 @@ export function WorkspaceBillingPhonePlayer({ row, today, onOpen }: {
+   const locale = useLocale(), t = useT(phoneMessages), workspace = useT(workspaceMessages);
+   const finance = useT(financeMessages), methodT = useT(methodMessages);
+   const payment = useT(paymentMessages);
+-  const { player, method, paid, action, hasPackage, fullyPaid, ending } = row;
++  const { player, method, paid, action, hasPackage, fullyPaid, ending, trial } = row;
+   const days = daysBetween(today, player.accessUntil);
+   const number = (value: number) => formatNumber(value, locale);
+   const paidUp = fullyPaid && player.due === 0;
+@@ -34,12 +34,13 @@ export function WorkspaceBillingPhonePlayer({ row, today, onOpen }: {
+         : player.awaitingPlansAt ? finance('waitingForPlans')
+           : usedUp ? payment('sessionsEnded')
+             : !hasPackage ? workspace('noPackage')
++              : trial ? workspace('trialEnds', { date: formatDateAr(player.accessUntil, { day: 'numeric', month: 'long' }, locale) })
+               : ending ? t(days === 0 ? 'endingToday' : 'endingIn', { n: days, count: number(days) })
+                 : paidUp || paid > 0 ? [t('paidAmount', { amount: number(paid) }), method === 'unset' ? null : methodT(method)].filter(Boolean).join(' · ')
+                   : workspace('unpaid');
+   const usage = usedUp && player.due > 0 && !player.pending && !player.frozenAt ? payment('sessionsEnded') : null;
+   const detail = [paymentDetail, usage, expiry].filter(Boolean).join(' · ');
+-  const showPaid = paidUp && action === 'history' && !canRemind && !player.frozenAt
++  const showPaid = paidUp && !trial && action === 'history' && !canRemind && !player.frozenAt
+     && !player.awaitingPlansAt && player.sessionsLeft !== 0;
+   const actionLabel = action === 'activate' || (action === 'renew' && !hasPackage) ? workspace('setPackage')
+     : action !== 'history' ? t('record') : workspace('payments');
+diff --git a/src/features/billing/components/workspace-billing-summary.test.ts b/src/features/billing/components/workspace-billing-summary.test.ts
+index 967733e..71741db 100644
+--- a/src/features/billing/components/workspace-billing-summary.test.ts
++++ b/src/features/billing/components/workspace-billing-summary.test.ts
+@@ -31,3 +31,16 @@ it('counts balance, missing package, ending and paid independently', () => {
+   expect(expectedIncome(rows, 1100, today, 'Africa/Cairo')).toBe(1600);
+   expect(expectedIncome(rows, 1100, '2026-12-01', 'Africa/Cairo')).toBe(1100);
+ });
++
++it('treats a zero-price package as a trial, excluded from the paid filter and income', () => {
++  const today = '2026-11-16';
++  const player: BillingPlayer = { playerId: 'p', fullName: 'Ali', accessUntil: '2026-12-16', status: 'active',
++    phone: null, lastPayment: null, due: 0, startedOn: today, lastTrainingDate: null, programTitle: null, openTasks: 0 };
++  const trialPayment = { id: 'payment', captain_id: 'captain', player_id: 'p', period_start: today, period_end: '2026-12-16',
++    package_id: 'package', days: 30, price_egp: 0, amount_egp: 0, collected_egp: 0, created_at: '2026-11-16T12:00:00Z' };
++  const rows = paymentRows([{ ...player, lastPayment: trialPayment }], [], today);
++  expect(rows[0]).toMatchObject({ trial: true, total: 0, fullyPaid: true });
++  expect(paymentMatches(rows[0], 'paid')).toBe(false);
++  expect(paymentMatches(rows[0], 'all')).toBe(true);
++  expect(expectedIncome(rows, 1000, today, 'Africa/Cairo')).toBe(1000);
++});
+diff --git a/src/features/billing/components/workspace-billing-summary.ts b/src/features/billing/components/workspace-billing-summary.ts
+index b07cbf2..ffccd6b 100644
+--- a/src/features/billing/components/workspace-billing-summary.ts
++++ b/src/features/billing/components/workspace-billing-summary.ts
+@@ -33,7 +33,9 @@ export function paymentRows(players: BillingPlayer[], packages: Package[], today
+       const action: PaymentAction = player.frozenAt ? 'history' : player.pending ? 'activate'
+         : player.due > 0 ? 'collect' : !hasPackage ? 'renew'
+           : !fullyPaid && total !== null ? 'renew' : 'history';
+-      return { player, chosen, total, paid, method, hasPackage, fullyPaid, action,
++      // A package with a zero total is a trial: reported as trial, never as paid revenue.
++      const trial = hasPackage && total === 0;
++      return { player, chosen, total, paid, method, hasPackage, fullyPaid, action, trial,
+         ending: endingIds.has(player.playerId) };
+     });
+ }
+@@ -56,7 +58,7 @@ export function paymentMatches(row: PaymentRow, filter: PaymentFilter) {
+     case 'overdue': return row.player.due > 0;
+     case 'noPackage': return !row.hasPackage;
+     case 'ending': return row.ending;
+-    case 'paid': return row.fullyPaid && row.player.due === 0;
++    case 'paid': return row.fullyPaid && row.player.due === 0 && !row.trial;
+   }
+ }
+ export function subscriptionTiles(players: Subscription[], today: string, income: number, pending: number) {
+diff --git a/src/features/billing/data/catalog-actions.ts b/src/features/billing/data/catalog-actions.ts
+index 159c3ac..e01a92b 100644
+--- a/src/features/billing/data/catalog-actions.ts
++++ b/src/features/billing/data/catalog-actions.ts
+@@ -29,10 +29,11 @@ export async function saveTier(input: unknown): Promise<ActionResult<Tables<'cap
+   if (!parsed.success) return { error: (await getT(messages))('packageInvalid') };
+   try {
+     const { client, captainId } = await captainClient();
+-    const { id, ...fields } = parsed.data;
++    const { id, newId, ...fields } = parsed.data;
+     const table = client.from('captain_package_tiers');
++    // newId lets the caller attach a first duration to the tier it is creating.
+     const query = id ? table.update(fields).eq('id', id).eq('captain_id', captainId)
+-      : table.insert({ ...fields, id: uuidv7(), captain_id: captainId });
++      : table.insert({ ...fields, id: newId ?? uuidv7(), captain_id: captainId });
+     const result = await query.select().single();
+     if (result.error) throw result.error;
+     refresh(); return { data: result.data };
+diff --git a/src/features/billing/data/catalog-validation.ts b/src/features/billing/data/catalog-validation.ts
+index ec1bd32..5b71464 100644
+--- a/src/features/billing/data/catalog-validation.ts
++++ b/src/features/billing/data/catalog-validation.ts
+@@ -2,7 +2,7 @@ import { z } from 'zod';
+ 
+ const id = z.uuid();
+ export const tierInput = z.object({
+-  id: id.optional(), name: z.string().trim().min(1).max(40), description: z.string().max(80).default(''),
++  id: id.optional(), newId: id.optional(), name: z.string().trim().min(1).max(40), description: z.string().max(80).default(''),
+   color: z.enum(['muted', 'lime', 'warn', 'danger']).default('muted'), position: z.number().int().min(0).default(0),
+   features: z.array(z.string().max(80)).max(10).default([]), is_featured: z.boolean().default(false),
+ }).strict();
+diff --git a/src/features/billing/messages.ts b/src/features/billing/messages.ts
+index e525ed5..c00b71a 100644
+--- a/src/features/billing/messages.ts
++++ b/src/features/billing/messages.ts
+@@ -14,6 +14,7 @@ export const workspaceMessages = defineMessages({
+     title: 'الاشتراكات', catalog: 'الباقات والعروض', income: 'دخل الشهر', pending: 'مستني تأكيد',
+     ending: 'بيخلص خلال 7 أيام', active: 'اشتراك شغال', soon: 'بيخلص قريب', all: 'كل الدفعات',
+     noPayment: 'مفيش دفعة متسجلة', unpaid: 'من غير مبلغ', partial: 'مدفوعة جزئيًا', fullyPaid: 'مدفوعة كاملة',
++    trial: 'تجريبي', trialEnds: 'تجريبي · بيخلص {date}',
+     confirm: 'وافق', confirmed: 'اتأكدت', saved: 'اتوافق على طلب تجديد {name}',
+     renewalRequest: 'طلب تجديد · {package}', renewalOnly: 'تجديد من غير دفعة',
+     fallback: 'اتقبل الطلب. العرض خلص؛ راجع تفاصيل الاشتراك', 'after.one': "بكرة", 'after.two': "بعد يومين", 'after.few': "بعد {n} أيام", 'after.many': "بعد {n} يوم", 'after.other': "بعد {n} يوم",
+@@ -32,6 +33,7 @@ export const workspaceMessages = defineMessages({
+     title: 'Subscriptions', catalog: 'Packages and offers', income: 'Monthly income', pending: 'Awaiting confirmation',
+     ending: 'Ending within 7 days', active: 'Active subscriptions', soon: 'Ending soon', all: 'All payments',
+     noPayment: 'No payment recorded', unpaid: 'Not paid', partial: 'Partly paid', fullyPaid: 'Paid in full',
++    trial: 'Trial', trialEnds: 'Trial · ends {date}',
+     confirm: 'Approve', confirmed: 'Confirmed', saved: '{name}’s renewal request approved',
+     renewalRequest: 'Renewal request · {package}', renewalOnly: 'Renewed without payment',
+     fallback: 'Request approved. The offer expired; review the subscription', 'after.one': "Tomorrow", 'after.other': "In {n} days",
+diff --git a/src/features/billing/tiers/tier-sheet.tsx b/src/features/billing/tiers/tier-sheet.tsx
+index af96f05..7abdeb5 100644
+--- a/src/features/billing/tiers/tier-sheet.tsx
++++ b/src/features/billing/tiers/tier-sheet.tsx
+@@ -1,30 +1,47 @@
+ 'use client';
+ import { useState } from 'react';
+-import { useT } from '@/core/i18n/client';
++import { useLocale, useT } from '@/core/i18n/client';
+ import { uuidv7 } from '@/core/offline/ids';
+ import { ResponsiveDialog } from '@/ui/responsive-dialog';
+ import { TextField } from '@/ui/text-field';
+ import { Button } from '@/ui/button';
+ import { saveTier } from '../data/catalog-actions';
++import { saveCatalogPackage } from '../data/catalog-package';
++import { durationLabel } from '../package-choice';
+ import { messages } from './messages';
++import { messages as billingMessages } from '../messages';
+ import type { Tier } from './types';
+ import type { useCatalog } from './use-catalog';
+ import { useToast } from '@/ui/toast';
+ import { messages as successMessages } from '../success/messages';
+ 
+ export function TierSheet({ tier, catalog, onClose }: { tier?: Tier; catalog: ReturnType<typeof useCatalog>; onClose: () => void }) {
+-  const t = useT(messages);
++  const t = useT(messages), billing = useT(billingMessages), locale = useLocale();
+   const success = useT(successMessages), toast = useToast();
+   const [name, setName] = useState(tier?.name ?? ''), [description, setDescription] = useState(tier?.description ?? '');
+   const [features, setFeatures] = useState(tier?.features.join('\n') ?? ''), [color, setColor] = useState(tier?.color ?? 'muted');
++  const [price, setPrice] = useState(''), [days, setDays] = useState('30');
+   const [error, setError] = useState('');
+   async function save() {
+     const list = features.split('\n').map(value => value.trim()).filter(Boolean);
+     if (!name.trim() || list.length > 10 || list.some(value => value.length > 80)) { setError(t('invalid')); return; }
++    // A new tier is created together with its first duration: price and days are required.
++    const priceValue = Number(price), daysValue = Number(days);
++    if (!tier && (!Number.isInteger(priceValue) || priceValue < 0 || priceValue > 100000
++      || !Number.isInteger(daysValue) || daysValue < 1 || daysValue > 365)) { setError(t('invalid')); return; }
+     const fields = { name: name.trim(), description, features: list, color, position: tier?.position ?? Math.max(-1, ...(catalog.data?.tiers.map(row => row.position) ?? [])) + 1, is_featured: tier?.is_featured ?? false };
+-    const optimistic: Tier = { ...fields, id: tier?.id ?? uuidv7(), captain_id: tier?.captain_id ?? '', archived_at: null, created_at: tier?.created_at ?? '' };
+-    if (await catalog.change(current => ({ ...current, tiers: tier ? current.tiers.map(row => row.id === tier.id ? optimistic : row) : [...current.tiers, optimistic] }),
+-      () => saveTier({ ...fields, ...(tier ? { id: tier.id } : {}) }))) {
++    const newId = tier ? undefined : uuidv7();
++    const optimistic: Tier = { ...fields, id: tier?.id ?? newId as string, captain_id: tier?.captain_id ?? '', archived_at: null, created_at: tier?.created_at ?? '' };
++    const durationName = !tier ? durationLabel(daysValue, t, locale) : '';
++    const optimisticPackage = !tier && newId ? { id: uuidv7(), name: durationName, price_egp: priceValue, days: daysValue, kind: 'days' as const, sessions: null, tier_id: newId, max_freeze_days: null } : null;
++    if (await catalog.change(current => ({ ...current,
++      tiers: tier ? current.tiers.map(row => row.id === tier.id ? optimistic : row) : [...current.tiers, optimistic],
++      packages: optimisticPackage ? [...current.packages, optimisticPackage] : current.packages }),
++      async () => {
++        const saved = await saveTier({ ...fields, ...(tier ? { id: tier.id } : { newId }) });
++        if (saved.error !== undefined || !optimisticPackage || !newId) return saved;
++        return saveCatalogPackage({ name: durationName, price: priceValue, days: daysValue, kind: 'days', sessions: null, tier_id: newId });
++      })) {
+       toast.success({ title: success('packageSaved'), detail: success('packageName', { name: fields.name }), icon: 'payment' }); onClose();
+     }
+   }
+@@ -38,6 +55,10 @@ export function TierSheet({ tier, catalog, onClose }: { tier?: Tier; catalog: Re
+       <label className="block text-xs text-faint">{t('color')}<select value={color} onChange={event => setColor(event.target.value)} className="mt-inline min-h-12 w-full rounded-control border border-line bg-surface px-stack text-ink">
+         {(['muted', 'lime', 'warn', 'danger'] as const).map(value => <option key={value} value={value}>{t(value)}</option>)}
+       </select></label>
++      {!tier && <div className="flex gap-inline">
++        <div className="flex-1"><TextField label={billing('packagePrice')} type="number" inputMode="numeric" min={0} max={100000} step={1} required value={price} onChange={event => setPrice(event.target.value)} /></div>
++        <div className="flex-1"><TextField label={billing('packageDays')} type="number" inputMode="numeric" min={1} max={365} step={1} required value={days} onChange={event => setDays(event.target.value)} /></div>
++      </div>}
+       {(error || catalog.error) && <p role="alert" className="text-sm text-danger">{error || catalog.error}</p>}
+       <div className="flex gap-inline"><Button type="submit" disabled={catalog.busy}>{t('save')}</Button><Button variant="secondary" disabled={catalog.busy} onClick={onClose}>{t('cancel')}</Button></div>
+     </form>
+-- 
+2.34.1
+

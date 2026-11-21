@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KOCHIVO — سيستم الكابتن (Liquid Glass)</title>
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700&family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0c0d;--deep:#070808;--ink:#f4f4f1;--muted:#a6abb0;--line:rgb(255 255 255/.09);--lime:#b6e94f;--lime-soft:rgb(182 233 79/.12);--warn:#ff9a73;--warn-soft:rgb(255 154 115/.12);--calm:#9db2ff;--calm-soft:rgb(157 178 255/.12);--gold:#e2c069;
+--glass:rgb(255 255 255/.045);--glass-raised:rgb(255 255 255/.07);--glass-strong:rgb(255 255 255/.085);--hl:rgb(255 255 255/.10);
+--shadow:inset 0 1px 0 var(--hl),0 10px 40px -12px rgb(0 0 0/.7)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Manrope,Alexandria,sans-serif;background:#050606;color:var(--ink);padding:36px 24px 80px}
+.n{font-family:Manrope;unicode-bidi:isolate;direction:ltr;display:inline-block;font-variant-numeric:tabular-nums}
+.wrap{max-width:1360px;margin:0 auto}
+.intro{display:flex;justify-content:space-between;align-items:end;margin-bottom:26px;gap:24px}
+.intro h1{font:700 30px Alexandria}
+.intro p{color:var(--muted);font-size:14px;line-height:1.9;max-width:720px;margin-top:8px}
+h2.sec{font:700 20px Alexandria;margin:56px 0 6px}
+p.sub{color:var(--muted);font-size:13.5px;margin-bottom:16px;line-height:1.8}
+
+/* scene = app background with depth so the glass reads */
+.scene{position:relative;overflow:hidden;border-radius:28px;background:radial-gradient(120% 80% at 85% -10%,#18210c 0%,transparent 55%),radial-gradient(90% 70% at 0% 110%,#0f1420 0%,transparent 60%),linear-gradient(180deg,var(--bg),var(--deep));border:1px solid var(--line)}
+.scene::before{content:"";position:absolute;width:520px;height:520px;border-radius:50%;background:rgb(182 233 79/.10);filter:blur(90px);top:-160px;inset-inline-start:260px}
+.scene::after{content:"";position:absolute;width:420px;height:420px;border-radius:50%;background:rgb(157 178 255/.07);filter:blur(90px);bottom:-160px;inset-inline-end:120px}
+.glass{background:var(--glass);border:1px solid var(--line);box-shadow:var(--shadow);backdrop-filter:blur(24px) saturate(140%);-webkit-backdrop-filter:blur(24px) saturate(140%);border-radius:22px;position:relative}
+.glass-strong{background:var(--glass-strong);border:1px solid rgb(255 255 255/.12);box-shadow:var(--shadow);backdrop-filter:blur(30px) saturate(150%);-webkit-backdrop-filter:blur(30px) saturate(150%);border-radius:24px;position:relative}
+.featured{border:1px solid transparent;background:radial-gradient(ellipse at top,rgb(182 233 79/.10),transparent 60%) padding-box,linear-gradient(var(--glass-strong),var(--glass-strong)) padding-box,linear-gradient(225deg,rgb(182 233 79/.55),rgb(255 255 255/.08) 60%) border-box}
+.desk{height:720px;display:grid;grid-template-columns:1fr 252px;gap:18px;padding:18px;position:relative;z-index:1}
+.side{grid-column:2;grid-row:1;padding:18px 14px;display:flex;flex-direction:column;gap:4px}
+.side .brand{display:flex;align-items:center;gap:10px;padding:6px 8px 18px}
+.side .brand img{height:24px}
+.side .grp{font-size:11px;color:var(--muted);padding:14px 12px 6px;letter-spacing:.02em}
+.side a{display:flex;align-items:center;gap:12px;min-height:44px;padding:0 12px;border-radius:14px;color:var(--muted);font:500 14px Alexandria;text-decoration:none}
+.side a.on{background:var(--glass-raised);color:var(--ink);box-shadow:inset 0 1px 0 var(--hl)}
+.side a.on svg{color:var(--lime)}
+.side a .b{margin-inline-start:auto;min-width:22px;height:22px;padding:0 7px;border-radius:99px;background:var(--lime);color:#0e1206;font:800 11px Manrope;display:grid;place-items:center}
+.side a .b.soft{background:var(--glass-raised);color:var(--ink)}
+.side .me{margin-top:auto;display:flex;align-items:center;gap:10px;padding:12px;border-radius:16px;background:var(--glass)}
+.side .me .av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#2a3318,#151a0c);display:grid;place-items:center;font:700 13px Alexandria;color:var(--lime);border:1px solid rgb(182 233 79/.3)}
+.side .me small{display:block;color:var(--muted);font-size:11px}
+svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.main{grid-column:1;grid-row:1;display:flex;flex-direction:column;gap:16px;min-width:0}
+.bar{display:flex;align-items:center;gap:12px;padding:10px 12px 10px 10px;border-radius:20px}
+.bar h3{font:700 22px Alexandria;padding-inline-start:8px}
+.bar .date{color:var(--muted);font-size:13px}
+.search{margin-inline-start:auto;display:flex;align-items:center;gap:8px;height:42px;padding:0 14px;border-radius:99px;background:var(--glass);border:1px solid var(--line);color:var(--muted);font:400 13px Alexandria;width:240px}
+.icb{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:var(--glass);border:1px solid var(--line);color:var(--ink);position:relative}
+.icb i{position:absolute;top:9px;inset-inline-end:10px;width:8px;height:8px;border-radius:50%;background:var(--lime);box-shadow:0 0 8px var(--lime)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 22px;border-radius:14px;font:600 14px Alexandria;border:0;white-space:nowrap}
+.btn.go{background:linear-gradient(180deg,#c3f062,var(--lime));color:#0e1206;box-shadow:inset 0 1px 0 rgb(255 255 255/.35),0 0 22px rgb(182 233 79/.28)}
+.btn.gl{background:var(--glass-raised);color:var(--ink);border:1px solid var(--line);box-shadow:inset 0 1px 0 var(--hl)}
+.pill{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 11px;border-radius:99px;font:600 11.5px Alexandria}
+.pill.w{background:var(--warn-soft);color:var(--warn)}
+.pill.c{background:var(--calm-soft);color:var(--calm)}
+.pill.l{background:var(--lime-soft);color:var(--lime)}
+.pill.m{background:var(--glass-raised);color:var(--muted)}
+
+/* home */
+.home{display:grid;grid-template-columns:1.45fr 1fr;gap:16px;flex:1;min-height:0}
+.hero{padding:26px 28px;display:flex;flex-direction:column;overflow:hidden}
+.hero .k{display:flex;align-items:center;gap:10px;color:var(--lime);font:600 13px Alexandria}
+.hero .k .n{color:var(--muted);margin-inline-start:auto;font-size:13px}
+.who{display:flex;align-items:center;gap:16px;margin:18px 0 14px}
+.who .av{width:64px;height:64px;border-radius:20px;background:linear-gradient(135deg,#3a4524,#1a1f10);display:grid;place-items:center;font:700 22px Alexandria;border:1px solid rgb(255 255 255/.12)}
+.who b{display:block;font:700 30px Alexandria}
+.who small{color:var(--muted);font-size:13px}
+.msg{padding:16px 18px;border-radius:18px;background:rgb(0 0 0/.25);border:1px solid var(--line);display:flex;gap:16px;align-items:center}
+.vid{width:120px;height:78px;border-radius:14px;flex:none;background:linear-gradient(160deg,#252a1d,#0f110c);display:grid;place-items:center;border:1px solid var(--line);position:relative;overflow:hidden}
+.vid::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 18px,rgb(255 255 255/.025) 18px 19px)}
+.vid span{width:36px;height:36px;border-radius:50%;background:rgb(255 255 255/.14);backdrop-filter:blur(8px);display:grid;place-items:center;z-index:1}
+.vid em{position:absolute;bottom:6px;inset-inline-start:8px;font:700 10px Manrope;font-style:normal;color:var(--ink);z-index:1}
+.msg p{font:400 14.5px/1.8 Alexandria}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}
+.stat{padding:14px 16px;border-radius:16px;background:var(--glass);border:1px solid var(--line)}
+.stat b{font:800 26px Manrope;display:block}
+.stat small{color:var(--muted);font:400 12px Alexandria}
+.ko{display:flex;gap:12px;align-items:start;padding:14px 16px;border-radius:16px;background:var(--lime-soft);border:1px solid rgb(182 233 79/.22);font:400 13.5px/1.8 Alexandria}
+.ko .dot{width:30px;height:30px;border-radius:10px;background:var(--lime);color:#0e1206;display:grid;place-items:center;font:800 11px Manrope;flex:none}
+.acts{margin-top:auto;display:flex;gap:10px;padding-top:16px}
+.col{display:flex;flex-direction:column;gap:16px;min-height:0}
+.queue{padding:18px;flex:1;overflow:hidden}
+.qh{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.qh b{font:700 16px Alexandria}
+.qh a{color:var(--muted);font-size:12.5px;font-family:Alexandria}
+.seg{display:flex;gap:6px;margin-bottom:12px;padding:4px;border-radius:99px;background:rgb(0 0 0/.25);border:1px solid var(--line);width:max-content}
+.seg span{padding:6px 14px;border-radius:99px;font:500 12.5px Alexandria;color:var(--muted)}
+.seg span.on{background:var(--glass-strong);color:var(--ink);box-shadow:inset 0 1px 0 var(--hl)}
+.row{display:flex;align-items:center;gap:12px;padding:10px;border-radius:16px}
+.row:hover,.row.h{background:var(--glass-raised)}
+.row .av{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;font:700 14px Alexandria;flex:none;background:var(--glass-raised);border:1px solid var(--line)}
+.row .t{flex:1;min-width:0}
+.row .t b{display:block;font:600 14px Alexandria}
+.row .t small{color:var(--muted);font:400 12px Alexandria;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.prog{padding:18px}
+.ring{display:flex;align-items:center;gap:18px}
+.ring svg{width:92px;height:92px;flex:none}
+.ring b{font:800 30px Manrope}
+.ring small{display:block;color:var(--muted);font:400 12.5px Alexandria;line-height:1.7}
+
+/* players */
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.pc{padding:18px;overflow:hidden}
+.pc .top{display:flex;align-items:center;gap:12px}
+.pc .av{width:48px;height:48px;border-radius:16px;display:grid;place-items:center;font:700 16px Alexandria;background:linear-gradient(135deg,#2b3020,#14170e);border:1px solid rgb(255 255 255/.1)}
+.pc .top b{font:700 16px Alexandria;display:block}
+.pc .top small{color:var(--muted);font:400 12px Alexandria}
+.pc .rank{margin-inline-start:auto;font:800 10px Manrope;letter-spacing:.08em;color:var(--gold);padding:4px 9px;border-radius:99px;background:rgb(226 192 105/.10);border:1px solid rgb(226 192 105/.25)}
+.week{display:flex;gap:5px;margin:18px 0 6px}
+.week i{flex:1;height:30px;border-radius:8px;background:rgb(255 255 255/.06)}
+.week i.d{background:linear-gradient(180deg,#c3f062,#8fc22a);box-shadow:0 0 10px rgb(182 233 79/.25)}
+.week i.x{background:rgb(255 154 115/.25)}
+.wl{display:flex;justify-content:space-between;color:var(--muted);font:400 11px Alexandria}
+.pc .ft{display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+.pc .ft span{color:var(--muted);font:400 12px Alexandria}
+.pc.need{box-shadow:var(--shadow),inset 0 0 0 1px rgb(255 154 115/.25)}
+
+/* inbox */
+.inbox{display:grid;grid-template-columns:300px 1fr 260px;gap:16px;flex:1;min-height:0}
+.thread{display:flex;flex-direction:column;padding:0;overflow:hidden}
+.th-h{display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid var(--line)}
+.th-b{flex:1;padding:18px;display:flex;flex-direction:column;gap:10px;overflow:hidden}
+.bub{max-width:70%;padding:11px 15px;border-radius:18px;font:400 14px/1.7 Alexandria}
+.bub.p{background:var(--glass-raised);border:1px solid var(--line);border-start-start-radius:6px;align-self:flex-start}
+.bub.me{background:linear-gradient(180deg,#c3f062,var(--lime));color:#0e1206;border-start-end-radius:6px;align-self:flex-end}
+.bub small{display:block;font-size:10.5px;opacity:.6;margin-top:2px}
+.voice{display:flex;align-items:center;gap:10px;min-width:220px}
+.voice .wave{flex:1;height:22px;background:repeating-linear-gradient(90deg,currentColor 0 2px,transparent 2px 5px);mask:linear-gradient(90deg,#000 0 30%,rgb(0 0 0/.35) 30%);-webkit-mask:linear-gradient(90deg,rgb(0 0 0/.35) 0 70%,#000 70%)}
+.compose{margin:0 14px 14px;display:flex;gap:8px;align-items:center;padding:8px;border-radius:18px;background:rgb(0 0 0/.25);border:1px solid var(--line)}
+.compose .f{flex:1;color:var(--muted);font:400 13.5px Alexandria;padding:0 8px}
+.qr{display:flex;gap:6px;padding:0 14px 10px;flex-wrap:wrap}
+.qr span{padding:6px 12px;border-radius:99px;background:var(--glass);border:1px solid var(--line);font:400 12px Alexandria;color:var(--muted)}
+.ctx{padding:18px;display:flex;flex-direction:column;gap:12px}
+.ctx .kv{display:flex;justify-content:space-between;font:400 13px Alexandria;color:var(--muted)}
+.ctx .kv b{color:var(--ink);font-weight:600}
+
+/* phone */
+.phones{display:flex;gap:26px;justify-content:center;flex-wrap:wrap}
+.phone{width:360px;height:760px;border-radius:44px;padding:16px 16px 0;position:relative;overflow:hidden}
+.phone .in{position:relative;z-index:1;display:flex;flex-direction:column;gap:12px;height:100%}
+.ph-top{display:flex;align-items:center;justify-content:space-between;padding:6px 4px 2px}
+.ph-top b{font:700 20px Alexandria}
+.pnav{position:absolute;bottom:16px;inset-inline:16px;height:66px;border-radius:99px;display:flex;align-items:center;justify-content:space-around;z-index:2}
+.pnav div{display:flex;flex-direction:column;align-items:center;gap:3px;font:500 10.5px Alexandria;color:var(--muted);padding:6px 12px;border-radius:99px}
+.pnav .on{background:var(--lime-soft);color:var(--lime)}
+.note{margin-top:46px;padding:24px 28px;border-radius:22px;background:rgb(255 255 255/.03);border:1px solid var(--line);font:400 14px/1.95 Alexandria;color:var(--muted)}
+.note b{color:var(--ink)}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="home" viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"/></symbol>
+<symbol id="inbox" viewBox="0 0 24 24"><path d="M4 5h16v11h-5l-3 3-3-3H4z"/></symbol>
+<symbol id="team" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 5.5a3 3 0 010 5.8M21 20c0-2.6-1.6-4.8-4-5.6"/></symbol>
+<symbol id="dumb" viewBox="0 0 24 24"><path d="M3 10v4M6 7v10M18 7v10M21 10v4M6 12h12"/></symbol>
+<symbol id="food" viewBox="0 0 24 24"><path d="M7 3v8M5 3v5a2 2 0 004 0V3M7 11v10M17 3c-2 0-3 2.5-3 6h3v12"/></symbol>
+<symbol id="cash" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="3"/><circle cx="12" cy="12" r="2.5"/></symbol>
+<symbol id="video" viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="3"/><path d="M16 10l5-3v10l-5-3"/></symbol>
+<symbol id="chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
+<symbol id="star" viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/></symbol>
+<symbol id="gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></symbol>
+<symbol id="bell" viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0112 0v5l2 2H4zM10 20a2 2 0 004 0"/></symbol>
+<symbol id="search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4-4"/></symbol>
+<symbol id="play" viewBox="0 0 24 24"><path d="M8 5l11 7-11 7z" fill="currentColor"/></symbol>
+<symbol id="mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></symbol>
+<symbol id="send" viewBox="0 0 24 24"><path d="M20 4L3 11l7 3 3 7z"/></symbol>
+<symbol id="plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+</defs></svg>
+
+<div class="wrap">
+<div class="intro"><div>
+  <h1>سيستم الكابتن — نفس روح v6 (Liquid Glass)</h1>
+  <p>نفس الزجاج الشفاف والحواف الناعمة والليمون اللي بينور اللي في الأبلكيشن دلوقتي، بس متطور: طبقات زجاج فوق خلفية فيها عمق، ونقطة تركيز واحدة في كل شاشة. 3 شاشات للديسكتوب و3 للموبايل.</p>
+</div><img src="kochivo-logo.png" alt="KOCHIVO" style="height:30px"></div>
+
+<!-- ============ 1 HOME ============ -->
+<h2 class="sec">1 · الرئيسية</h2>
+<p class="sub">فوق: الحركة الجاية في كارت زجاج بحافة ليمون. جنبها الطابور وتقدم اليوم.</p>
+<div class="scene"><div class="desk">
+  <aside class="side glass">
+    <div class="brand"><img src="kochivo-logo.png" alt=""></div>
+    <a class="on"><svg class="i"><use href="#home"/></svg>الرئيسية<span class="b">6</span></a>
+    <a><svg class="i"><use href="#inbox"/></svg>صندوق الوارد<span class="b soft">3</span></a>
+    <a><svg class="i"><use href="#team"/></svg>اللاعبين</a>
+    <div class="grp">المكتبة</div>
+    <a><svg class="i"><use href="#dumb"/></svg>خطط التمارين</a>
+    <a><svg class="i"><use href="#food"/></svg>الأكل</a>
+    <div class="grp">البيزنس</div>
+    <a><svg class="i"><use href="#cash"/></svg>الدفعات</a>
+    <a><svg class="i"><use href="#star"/></svg>التقييمات</a>
+    <div class="me"><span class="av">ع</span><div style="font:600 13px Alexandria">كابتن علي<small>24 لاعب</small></div><svg class="i" style="margin-inline-start:auto;color:var(--muted)"><use href="#gear"/></svg></div>
+  </aside>
+  <div class="main">
+    <div class="bar glass"><h3>صباح الخير يا كابتن</h3><span class="date">الجمعة ١٤ نوفمبر</span>
+      <div class="search"><svg class="i" style="width:16px"><use href="#search"/></svg>دور على لاعب…</div>
+      <span class="icb"><svg class="i"><use href="#bell"/></svg><i></i></span>
+      <button class="btn go"><svg class="i"><use href="#plus"/></svg>ضيف لاعب</button></div>
+    <div class="home">
+      <section class="hero glass-strong featured">
+        <div class="k"><svg class="i" style="width:18px"><use href="#video"/></svg>الحركة الجاية · فيديو أداء<span class="n">1 / 6</span></div>
+        <div class="who"><span class="av">م</span><div><b>محمد حسن</b><small>زيادة قوة · الأسبوع الـ<span class="n">6</span> من البرنامج</small></div><span class="pill w" style="margin-inline-start:auto">مستني ردك من ساعة</span></div>
+        <div class="msg"><div class="vid"><span><svg class="i" style="width:14px"><use href="#play"/></svg></span><em>0:24</em></div>
+          <p>سكوات <span class="n">100</span> كجم: «ركبتي بتدخل لجوه في آخر عدة، أكمل ولا أنزل الوزن؟»</p></div>
+        <div class="stats">
+          <div class="stat"><b class="n">3/4</b><small>تمارين الأسبوع</small></div>
+          <div class="stat"><b class="n">8.5</b><small>آخر RPE</small></div>
+          <div class="stat"><b class="n">22</b><small>يوم في الاشتراك</small></div>
+        </div>
+        <div class="ko"><span class="dot">KO</span><div>آخر 3 جلسات الـRPE فوق 8. اقتراحي تنزله <span class="n">90</span> كجم الأسبوع ده وتضيف تمرين للركبة.</div></div>
+        <div class="acts"><button class="btn go"><svg class="i"><use href="#play"/></svg>شوف الفيديو ورد</button><button class="btn gl"><svg class="i"><use href="#mic"/></svg>رد بصوتك</button><button class="btn gl" style="margin-inline-start:auto">بعدين</button></div>
+      </section>
+      <div class="col">
+        <section class="queue glass">
+          <div class="qh"><b>بعدها في الطابور</b><a>الكل</a></div>
+          <div class="seg"><span class="on">الكل 5</span><span>عاجل 2</span><span>متابعات 1</span><span>فلوس 1</span></div>
+          <div class="row h"><span class="av">ي</span><div class="t"><b>يوسف عادل</b><small>آخر تمرين يوم الأحد</small></div><span class="pill w">غايب 5 أيام</span></div>
+          <div class="row"><span class="av">س</span><div class="t"><b>سارة محمود</b><small>بعتت متابعة الأسبوع وصورة</small></div><span class="pill m">متابعة</span></div>
+          <div class="row"><span class="av">ك</span><div class="t"><b>كريم سامي</b><small>عايز يبدل البنش بالدمبل</small></div><span class="pill m">تبديل</span></div>
+          <div class="row"><span class="av">ن</span><div class="t"><b>نور أحمد</b><small>الاشتراك بيخلص بعد 3 أيام</small></div><span class="pill c">تجديد</span></div>
+          <div class="row"><span class="av">ع</span><div class="t"><b>عمر خالد</b><small>انضم امبارح ولسه مالوش برنامج</small></div><span class="pill l">جديد</span></div>
+        </section>
+        <section class="prog glass">
+          <div class="ring">
+            <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="none" stroke="rgb(255 255 255/.08)" stroke-width="9"/><circle cx="50" cy="50" r="42" fill="none" stroke="#b6e94f" stroke-width="9" stroke-linecap="round" stroke-dasharray="264" stroke-dasharray="105 264" style="stroke-dasharray:105 264;filter:drop-shadow(0 0 4px rgb(182 233 79/.5))" transform="rotate(-90 50 50)"/></svg>
+            <div><b class="n">4/10</b><small>خلصت 4 حاجات من 10 النهارده<br><span class="n">11</span> لاعب اتمرنوا · <span class="n">2</span> دفعات اتأكدت</small></div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<!-- ============ 2 PLAYERS ============ -->
+<h2 class="sec">2 · اللاعبين</h2>
+<p class="sub">كل لاعب كارت زجاج: الرتبة، وأيام تمرينه في الأسبوع بالمربعات (ليمون = اتمرن، برتقالي = فوّت)، وتحت حالته. اللي محتاجك حافته برتقالي خفيف.</p>
+<div class="scene"><div class="desk" style="height:700px">
+  <aside class="side glass">
+    <div class="brand"><img src="kochivo-logo.png" alt=""></div>
+    <a><svg class="i"><use href="#home"/></svg>الرئيسية<span class="b">6</span></a>
+    <a><svg class="i"><use href="#inbox"/></svg>صندوق الوارد<span class="b soft">3</span></a>
+    <a class="on"><svg class="i"><use href="#team"/></svg>اللاعبين</a>
+    <div class="grp">المكتبة</div>
+    <a><svg class="i"><use href="#dumb"/></svg>خطط التمارين</a>
+    <a><svg class="i"><use href="#food"/></svg>الأكل</a>
+    <div class="grp">البيزنس</div>
+    <a><svg class="i"><use href="#cash"/></svg>الدفعات</a>
+    <a><svg class="i"><use href="#star"/></svg>التقييمات</a>
+    <div class="me"><span class="av">ع</span><div style="font:600 13px Alexandria">كابتن علي<small>24 لاعب</small></div></div>
+  </aside>
+  <div class="main">
+    <div class="bar glass"><h3>اللاعبين <span class="n" style="color:var(--muted);font-size:18px">24</span></h3>
+      <div class="seg" style="margin:0 12px"><span class="on">الكل</span><span>محتاجينك 6</span><span>ماشيين تمام 15</span><span>جداد 2</span><span>بيخلص 3</span></div>
+      <div class="search" style="width:200px"><svg class="i" style="width:16px"><use href="#search"/></svg>دور…</div>
+      <button class="btn go"><svg class="i"><use href="#plus"/></svg>ضيف لاعب</button></div>
+    <div class="grid">
+      <div class="pc glass need"><div class="top"><span class="av">م</span><div><b>محمد حسن</b><small>زيادة قوة</small></div><span class="rank">GOLD</span></div>
+        <div class="week"><i class="d"></i><i class="d"></i><i></i><i class="d"></i><i></i><i></i><i></i></div><div class="wl"><span>سبت</span><span>جمعة</span></div>
+        <div class="ft"><span>RPE <span class="n">8.5</span></span><span class="pill w">فيديو مستني</span></div></div>
+      <div class="pc glass need"><div class="top"><span class="av">ي</span><div><b>يوسف عادل</b><small>تنشيف</small></div><span class="rank">SILVER</span></div>
+        <div class="week"><i class="x"></i><i class="x"></i><i class="x"></i><i></i><i></i><i></i><i></i></div><div class="wl"><span>سبت</span><span>جمعة</span></div>
+        <div class="ft"><span>آخر تمرين الأحد</span><span class="pill w">غايب</span></div></div>
+      <div class="pc glass"><div class="top"><span class="av">س</span><div><b>سارة محمود</b><small>لياقة</small></div><span class="rank">GOLD</span></div>
+        <div class="week"><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i><i></i><i></i><i></i></div><div class="wl"><span>سبت</span><span>جمعة</span></div>
+        <div class="ft"><span>RPE <span class="n">7</span></span><span class="pill l">كاملة</span></div></div>
+      <div class="pc glass"><div class="top"><span class="av">ع</span><div><b>عمر خالد</b><small>زيادة عضل</small></div><span class="rank" style="color:var(--calm);background:var(--calm-soft);border-color:rgb(157 178 255/.25)">NEW</span></div>
+        <div class="week"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="wl"><span>سبت</span><span>جمعة</span></div>
+        <div class="ft"><span>انضم امبارح</span><span class="pill c">محتاج برنامج</span></div></div>
+      <div class="pc glass"><div class="top"><span class="av">ك</span><div><b>كريم سامي</b><small>زيادة قوة</small></div><span class="rank">BRONZE</span></div>
+        <div class="week"><i class="d"></i><i></i><i class="d"></i><i></i><i></i><i></i><i></i></div><div class="wl"><span>سبت</span><span>جمعة</span></div>
+        <div class="ft"><span>RPE <span class="n">7.5</span></span><span class="pill m">طلب تبديل</span></div></div>
+      <div class="pc glass need"><div class="top"><span class="av">ن</span><div><b>نور أحمد</b><small>تنشيف</small></div><span class="rank">SILVER</span></div>
+        <div class="week"><i class="d"></i><i class="d"></i><i class="d"></i><i></i><i></i><i></i><i></i></div><div class="wl"><span>سبت</span><span>جمعة</span></div>
+        <div class="ft"><span>باقي <span class="n">3</span> أيام</span><span class="pill c">تجديد</span></div></div>
+      <div class="pc glass"><div class="top"><span class="av">ه</span><div><b>هالة مصطفى</b><small>لياقة</small></div><span class="rank">GOLD</span></div>
+        <div class="week"><i class="d"></i><i class="d"></i><i class="d"></i><i></i><i></i><i></i><i></i></div><div class="wl"><span>سبت</span><span>جمعة</span></div>
+        <div class="ft"><span>RPE <span class="n">6</span></span><span class="pill l">كاملة</span></div></div>
+      <div class="pc glass"><div class="top"><span class="av">أ</span><div><b>أحمد فتحي</b><small>زيادة عضل</small></div><span class="rank">BRONZE</span></div>
+        <div class="week"><i class="d"></i><i></i><i class="d"></i><i></i><i></i><i></i><i></i></div><div class="wl"><span>سبت</span><span>جمعة</span></div>
+        <div class="ft"><span>RPE <span class="n">8</span></span><span class="pill m">ماشي</span></div></div>
+    </div>
+  </div>
+</div></div>
+
+<!-- ============ 3 INBOX ============ -->
+<h2 class="sec">3 · صندوق الوارد</h2>
+<p class="sub">المحادثات على اليمين، الشات في النص بفقاعات زجاج ورسايل صوتية، وعلى الشمال ملخص اللاعب عشان ترد وانت فاهم.</p>
+<div class="scene"><div class="desk" style="height:700px">
+  <aside class="side glass">
+    <div class="brand"><img src="kochivo-logo.png" alt=""></div>
+    <a><svg class="i"><use href="#home"/></svg>الرئيسية<span class="b">6</span></a>
+    <a class="on"><svg class="i"><use href="#inbox"/></svg>صندوق الوارد<span class="b">3</span></a>
+    <a><svg class="i"><use href="#team"/></svg>اللاعبين</a>
+    <div class="grp">المكتبة</div>
+    <a><svg class="i"><use href="#dumb"/></svg>خطط التمارين</a>
+    <a><svg class="i"><use href="#food"/></svg>الأكل</a>
+    <div class="grp">البيزنس</div>
+    <a><svg class="i"><use href="#cash"/></svg>الدفعات</a>
+    <a><svg class="i"><use href="#star"/></svg>التقييمات</a>
+    <div class="me"><span class="av">ع</span><div style="font:600 13px Alexandria">كابتن علي<small>24 لاعب</small></div></div>
+  </aside>
+  <div class="main"><div class="inbox">
+    <section class="glass" style="padding:14px;overflow:hidden">
+      <div class="seg" style="width:auto"><span class="on">الكل</span><span>مش مقروء 3</span><span>صوت</span></div>
+      <div class="row h"><span class="av">ك</span><div class="t"><b>كريم سامي</b><small>رسالة صوتية · 0:18</small></div><span class="pill l">2</span></div>
+      <div class="row"><span class="av">س</span><div class="t"><b>سارة محمود</b><small>تمام يا كوتش هغير الفطار</small></div><span class="pill l">1</span></div>
+      <div class="row"><span class="av">ن</span><div class="t"><b>نور أحمد</b><small>هجدد بكرة ان شاء الله</small></div></div>
+      <div class="row"><span class="av">م</span><div class="t"><b>محمد حسن</b><small>انت: شوفت الفيديو، نزل 90</small></div></div>
+      <div class="row"><span class="av">ه</span><div class="t"><b>هالة مصطفى</b><small>شكرا يا كابتن</small></div></div>
+    </section>
+    <section class="glass-strong thread">
+      <div class="th-h"><span class="av" style="width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:var(--glass-raised);font:700 15px Alexandria">ك</span><div><b style="font:700 15px Alexandria">كريم سامي</b><small style="display:block;color:var(--muted);font:400 12px Alexandria">اتمرن النهارده · صدر وكتف</small></div></div>
+      <div class="th-b">
+        <div class="bub p">كابتن كتفي واجعني في البنش بالبار من الأسبوع اللي فات<small>12:58</small></div>
+        <div class="bub p voice"><svg class="i" style="width:16px"><use href="#play"/></svg><span class="wave"></span><span class="n" style="font-size:11px">0:18</span></div>
+        <div class="bub me">ولا يهمك، هبدلهولك بالدمبل النهارده وخف الوزن شوية<small>1:12</small></div>
+        <div class="bub p">تمام، طب أعمل كام عدة؟<small>1:15</small></div>
+      </div>
+      <div class="qr"><span>3×10 بوزن خفيف</span><span>ابعتلي فيديو</span><span>تمام كده</span></div>
+      <div class="compose"><span class="icb" style="width:38px;height:38px"><svg class="i"><use href="#mic"/></svg></span><span class="f">اكتب رسالة…</span><button class="btn go" style="min-height:40px;padding:0 16px"><svg class="i"><use href="#send"/></svg></button></div>
+    </section>
+    <section class="glass ctx">
+      <div style="display:flex;align-items:center;gap:10px"><b style="font:700 15px Alexandria">عن كريم</b><span class="rank" style="margin-inline-start:auto;font:800 10px Manrope;color:var(--gold);padding:4px 9px;border-radius:99px;background:rgb(226 192 105/.1)">BRONZE</span></div>
+      <div class="kv"><span>الهدف</span><b>زيادة قوة</b></div>
+      <div class="kv"><span>الأسبوع</span><b class="n">2/3</b></div>
+      <div class="kv"><span>آخر RPE</span><b class="n">7.5</b></div>
+      <div class="kv"><span>الاشتراك</span><b>باقي <span class="n">12</span> يوم</b></div>
+      <div class="ko" style="font-size:12.5px"><span class="dot">KO</span><div>عنده طلب تبديل مفتوح للبنش. تقدر توافق من هنا.</div></div>
+      <button class="btn gl" style="margin-top:auto">وافق على التبديل</button>
+      <button class="btn gl">افتح ملفه</button>
+    </section>
+  </div></div>
+</div></div>
+
+<!-- ============ PHONES ============ -->
+<h2 class="sec">4 · على الموبايل</h2>
+<p class="sub">نفس الزجاج، والناف بار كبسولة عايمة زي اللي عند اللاعب دلوقتي.</p>
+<div class="phones">
+  <div class="phone scene"><div class="in">
+    <div class="ph-top"><b>صباح الخير يا كابتن</b><span class="icb"><svg class="i"><use href="#bell"/></svg><i></i></span></div>
+    <section class="glass-strong featured" style="padding:18px;border-radius:24px">
+      <div class="hero" style="padding:0"><div class="k" style="font-size:12px">الحركة الجاية<span class="n">1 / 6</span></div></div>
+      <div class="who" style="margin:12px 0"><span class="av" style="width:48px;height:48px;border-radius:15px;font-size:17px">م</span><div><b style="font-size:20px">محمد حسن</b><small>فيديو سكوات مستني ردك</small></div></div>
+      <div class="msg" style="padding:10px"><div class="vid" style="width:84px;height:56px"><span style="width:28px;height:28px"><svg class="i" style="width:12px"><use href="#play"/></svg></span></div><p style="font-size:12.5px">«ركبتي بتدخل لجوه، أكمل ولا أنزل؟»</p></div>
+      <button class="btn go" style="width:100%;margin-top:14px">شوف الفيديو ورد</button>
+    </section>
+    <section class="glass" style="padding:10px;border-radius:22px">
+      <div class="row"><span class="av">ي</span><div class="t"><b>يوسف عادل</b><small>آخر تمرين الأحد</small></div><span class="pill w">غايب</span></div>
+      <div class="row"><span class="av">س</span><div class="t"><b>سارة محمود</b><small>متابعة الأسبوع</small></div><span class="pill m">متابعة</span></div>
+      <div class="row"><span class="av">ن</span><div class="t"><b>نور أحمد</b><small>باقي 3 أيام</small></div><span class="pill c">تجديد</span></div>
+    </section>
+  </div>
+  <nav class="pnav glass-strong"><div class="on"><svg class="i"><use href="#home"/></svg>الرئيسية</div><div><svg class="i"><use href="#inbox"/></svg>الوارد</div><div><svg class="i"><use href="#team"/></svg>اللاعبين</div><div><svg class="i"><use href="#dumb"/></svg>المكتبة</div></nav></div>
+
+  <div class="phone scene"><div class="in">
+    <div class="ph-top"><b>اللاعبين <span class="n" style="color:var(--muted);font-size:15px">24</span></b><span class="icb"><svg class="i"><use href="#search"/></svg></span></div>
+    <div class="seg" style="width:auto;overflow:hidden"><span class="on">الكل</span><span>محتاجينك 6</span><span>جداد 2</span></div>
+    <div class="pc glass need" style="border-radius:22px"><div class="top"><span class="av">م</span><div><b>محمد حسن</b><small>زيادة قوة</small></div><span class="rank">GOLD</span></div>
+      <div class="week" style="margin-top:14px"><i class="d"></i><i class="d"></i><i></i><i class="d"></i><i></i><i></i><i></i></div>
+      <div class="ft"><span>RPE <span class="n">8.5</span></span><span class="pill w">فيديو مستني</span></div></div>
+    <div class="pc glass" style="border-radius:22px"><div class="top"><span class="av">س</span><div><b>سارة محمود</b><small>لياقة</small></div><span class="rank">GOLD</span></div>
+      <div class="week" style="margin-top:14px"><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i><i></i><i></i><i></i></div>
+      <div class="ft"><span>RPE <span class="n">7</span></span><span class="pill l">كاملة</span></div></div>
+  </div>
+  <nav class="pnav glass-strong"><div><svg class="i"><use href="#home"/></svg>الرئيسية</div><div><svg class="i"><use href="#inbox"/></svg>الوارد</div><div class="on"><svg class="i"><use href="#team"/></svg>اللاعبين</div><div><svg class="i"><use href="#dumb"/></svg>المكتبة</div></nav></div>
+
+  <div class="phone scene"><div class="in">
+    <div class="ph-top"><b>كريم سامي</b><span class="pill l">أونلاين</span></div>
+    <section class="glass-strong thread" style="border-radius:24px;flex:1;margin-bottom:96px">
+      <div class="th-b" style="padding:14px">
+        <div class="bub p" style="max-width:85%">كابتن كتفي واجعني في البنش<small>12:58</small></div>
+        <div class="bub p voice" style="min-width:0;max-width:85%"><svg class="i" style="width:16px"><use href="#play"/></svg><span class="wave"></span><span class="n" style="font-size:11px">0:18</span></div>
+        <div class="bub me" style="max-width:85%">هبدلهولك بالدمبل النهارده<small>1:12</small></div>
+        <div class="bub p" style="max-width:85%">تمام، كام عدة؟<small>1:15</small></div>
+      </div>
+      <div class="qr"><span>3×10 خفيف</span><span>ابعت فيديو</span></div>
+      <div class="compose"><span class="icb" style="width:36px;height:36px"><svg class="i"><use href="#mic"/></svg></span><span class="f">اكتب…</span><button class="btn go" style="min-height:38px;padding:0 14px"><svg class="i"><use href="#send"/></svg></button></div>
+    </section>
+  </div>
+  <nav class="pnav glass-strong"><div><svg class="i"><use href="#home"/></svg>الرئيسية</div><div class="on"><svg class="i"><use href="#inbox"/></svg>الوارد</div><div><svg class="i"><use href="#team"/></svg>اللاعبين</div><div><svg class="i"><use href="#dumb"/></svg>المكتبة</div></nav></div>
+</div>
+
+<div class="note"><b>ده نفس نظام v6 اللي في الأبلكيشن:</b> الزجاج (glass و glass-strong)، والكارت المميز بحافة ليمون (featured)، والزرار الليمون اللي بينور، والكبسولات، والناف العايم. الجديد إن الصفحات بقت منظمة حوالين «إيه اللي محتاج مني دلوقتي». كل الداتا موجودة عندنا، ومفيش جداول جديدة.</div>
+</div>
+</body>
+</html>

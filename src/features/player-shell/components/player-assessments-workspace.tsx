@@ -30,7 +30,7 @@ export function PlayerAssessmentsWorkspace({ due, past, actionable }: PlayerAsse
       items={[
         { label: t('waiting'), value: count(due.length), tone: 'lime' },
         { label: t('doneMonth'), value: month ? count(past.filter(row => day(row.answered_at).startsWith(month)).length) : '–' },
-        { label: t('nextDue'), value: count(nextDue ? due.filter(row => row.due_at && day(row.due_at) === nextDue).length : 0),
+        { label: t('nextDue'), value: nextDue ? count(due.filter(row => row.due_at && day(row.due_at) === nextDue).length) : '–',
           note: nextDue && formatDateAr(nextDue, { month: 'short', day: 'numeric' }, locale) },
       ]} />
     <section aria-labelledby="workspace-assessment-due" className="space-y-stack">

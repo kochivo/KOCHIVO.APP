@@ -100,10 +100,11 @@ export function MealCard({ meal, log, today, planTitle, primary = false }: { mea
       </button>
       <p className="shrink-0 text-micro text-muted"><bdi className="font-display text-md font-extrabold tabular-nums text-ink">{formatNumber(macros.kcal, locale)}</bdi> {t('kcal')}</p>
     </div>
-    <p className="text-xs text-muted">{meal.items.length ? meal.items.map(item => {
+    <p className="text-xs text-muted">{meal.items.length ? meal.items.map((item, index) => {
           const chosen = item.alternatives.find(alt => alt.id === swaps[item.id]) ?? item;
-          return `${chosen.name} ${formatPortion(chosen, locale, t('g'))}`;
-    }).join(' · ') : t('thisMealIsBeingPrepared')}</p>
+          // Each item is isolated so Arabic names and Latin units keep their order in either UI language.
+          return <span key={item.id}>{index > 0 && ' · '}<bdi>{`${chosen.name} ${formatPortion(chosen, locale, t('g'))}`}</bdi></span>;
+    }) : t('thisMealIsBeingPrepared')}</p>
     {!open && <MealBudget meal={meal} swaps={swaps} />}
     {featuredAction && <div className="mt-stack flex flex-wrap gap-inline">
       {meal.items.some(item => item.alternatives.length > 0) && <Button type="button" aria-expanded={open} variant="secondary" onClick={() => setOpen(value => !value)}>{v4t('swap')}</Button>}

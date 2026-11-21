@@ -21,8 +21,8 @@ export function Money({ state, act, dispatch, now }: PaneProps) {
         : <Button block={false} variant="secondary" onClick={() => act('remind')}>{t('nudge')}</Button>}
       onSelect={href => dispatch({ type: 'go', page: href.includes('players') ? 'player' : 'money', now: now() })} /></div>
     <div className="grid gap-card-gap min-[1200px]:grid-cols-2"><GlassCard level="strong" className="grid content-start gap-stack p-card"><h3>{t('collected')}</h3><p className="text-stat-large font-bold tabular-nums">{collected.toLocaleString('en-US')}<small className="ms-inline text-sm text-muted">{t('currency')}</small></p>
-    <ProgressBar value={collected} max={collected + owed} aria-label={t('collected')} /><p className="text-sm text-warn">{t('owed')} · {owed}</p>
-    {(['cash', 'transfer', 'payments'] as const).map((key, i) => <DemoRow key={key} title={t(key)} detail={String([9200, collected - 9200, 17 + Number(state.paid) + Number(state.renewed)][i])} />)}
+    <ProgressBar value={collected} max={collected + owed} aria-label={t('collected')} /><p className="text-sm text-warn">{t('owed')} · {t('egp', { n: owed.toLocaleString('en-US') })}</p>
+    {(['cash', 'transfer', 'payments'] as const).map((key, i) => <DemoRow key={key} title={t(key)} detail={i < 2 ? t('egp', { n: [9200, collected - 9200][i]?.toLocaleString('en-US') ?? '' }) : String(17 + Number(state.paid) + Number(state.renewed))} />)}
   </GlassCard><GlassCard className="grid content-start gap-stack p-card">
     <h3>{t('package')}</h3>{t('packages').split('|').map((title, i) => <DemoRow key={title} title={title} detail={t('packageDetails').split('|')[i]} />)}
   </GlassCard></div></>;

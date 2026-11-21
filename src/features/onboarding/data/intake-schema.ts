@@ -37,6 +37,11 @@ export const medicalOptions = [
   { key: 'other', label: 'other' },
 ] as const;
 
+/** Pregnancy is not offered to players who said they are male. */
+export function medicalOptionsFor(sex?: string) {
+  return sex === 'male' ? medicalOptions.filter(option => option.key !== 'pregnancy') : [...medicalOptions];
+}
+
 export function toggleChip<Key extends string>(list: readonly Key[], key: Key): Key[] {
   if (list.includes(key)) return list.filter((selected) => selected !== key);
   if (key === 'none') return [key];

@@ -1,0 +1,184 @@
+{
+  "scenes": [
+    {
+      "id": "intro",
+      "title": "أول يوم ليك في Kochivo",
+      "captions": 2
+    },
+    {
+      "id": "invitation",
+      "title": "افتح لينك الدعوة",
+      "captions": 2
+    },
+    {
+      "id": "signin",
+      "title": "اختار طريقة الدخول",
+      "captions": 2
+    },
+    {
+      "id": "otp",
+      "title": "أكّد إيميلك",
+      "captions": 2
+    },
+    {
+      "id": "welcome",
+      "title": "خلّي الكابتن يعرفك",
+      "captions": 2
+    },
+    {
+      "id": "basics",
+      "title": "اكتب بياناتك بدقة",
+      "captions": 2
+    },
+    {
+      "id": "schedule",
+      "title": "ظبّط وقت التمرين",
+      "captions": 2
+    },
+    {
+      "id": "health",
+      "title": "عرّف الكابتن بصحتك",
+      "captions": 2
+    },
+    {
+      "id": "food-setup",
+      "title": "راجع أكلك وابعت بياناتك",
+      "captions": 2
+    },
+    {
+      "id": "waiting",
+      "title": "خطتك ممكن تحتاج تجهيز",
+      "captions": 2
+    },
+    {
+      "id": "home",
+      "title": "دي صفحتك الرئيسية",
+      "captions": 2
+    },
+    {
+      "id": "daily",
+      "title": "راجع يومك قبل ما تبدأ",
+      "captions": 2
+    },
+    {
+      "id": "readiness",
+      "title": "جاوب على سؤالين الصبح",
+      "captions": 2
+    },
+    {
+      "id": "water",
+      "title": "سجّل مية النهارده",
+      "captions": 2
+    },
+    {
+      "id": "workout",
+      "title": "افتح تمرين النهارده",
+      "captions": 2
+    },
+    {
+      "id": "sets",
+      "title": "سجّل كل مجموعة",
+      "captions": 2
+    },
+    {
+      "id": "rest",
+      "title": "خد وقت الراحة",
+      "captions": 2
+    },
+    {
+      "id": "form",
+      "title": "محتاج مراجعة للفورم؟",
+      "captions": 2
+    },
+    {
+      "id": "finish",
+      "title": "كمّل مجموعاتك للنهاية",
+      "captions": 2
+    },
+    {
+      "id": "nutrition",
+      "title": "افتح أكل النهارده",
+      "captions": 2
+    },
+    {
+      "id": "swap",
+      "title": "بديل من غير حسابات",
+      "captions": 2
+    },
+    {
+      "id": "meal",
+      "title": "سجّل الوجبة بعد ما تاكل",
+      "captions": 2
+    },
+    {
+      "id": "supplements",
+      "title": "لو الكابتن محدد مكملات",
+      "captions": 2
+    },
+    {
+      "id": "progress",
+      "title": "تابع تطورك",
+      "captions": 2
+    },
+    {
+      "id": "checkin",
+      "title": "ابعت تحديث الأسبوع",
+      "captions": 2
+    },
+    {
+      "id": "inbody",
+      "title": "سجّل فحص InBody",
+      "captions": 2
+    },
+    {
+      "id": "history",
+      "title": "ارجع لسجل تمارينك",
+      "captions": 2
+    },
+    {
+      "id": "rank",
+      "title": "شوف رتبتك ومنافستك",
+      "captions": 2
+    },
+    {
+      "id": "captain",
+      "title": "تواصل مع كابتنك",
+      "captions": 2
+    },
+    {
+      "id": "settings",
+      "title": "ظبّط التطبيق ليك",
+      "captions": 2
+    },
+    {
+      "id": "notifications",
+      "title": "راجع الجديد من الجرس",
+      "captions": 2
+    },
+    {
+      "id": "install",
+      "title": "خلّي Kochivo على موبايلك",
+      "captions": 2
+    },
+    {
+      "id": "offline",
+      "title": "لو النت فصل في الجيم",
+      "captions": 2
+    },
+    {
+      "id": "outro",
+      "title": "أنت جاهز تبدأ",
+      "captions": 2
+    }
+  ],
+  "errors": [],
+  "duration": 416,
+  "fonts": {
+    "heading": true,
+    "body": true
+  },
+  "mobileFits": true,
+  "controls": true,
+  "silent": true,
+  "passed": true
+}

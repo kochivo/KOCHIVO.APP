@@ -1,0 +1,29 @@
+{
+  "removedRedirectedViews": [
+    {
+      "id": "08-onboarding",
+      "role": "player",
+      "redirectedTo": "/demo"
+    },
+    {
+      "id": "08-onboarding",
+      "role": "player",
+      "redirectedTo": "/demo"
+    },
+    {
+      "id": "08-onboarding",
+      "role": "player",
+      "redirectedTo": "/demo"
+    },
+    {
+      "id": "08-onboarding",
+      "role": "player",
+      "redirectedTo": "/demo"
+    }
+  ],
+  "unavailableInDemo": [
+    "Player onboarding: the demo already has submitted intake; the route redirects.",
+    "Invite creation is disabled in demo mode.",
+    "Admin-only screens and token-protected password reset/invite flows require a real authorized session or valid link."
+  ]
+}

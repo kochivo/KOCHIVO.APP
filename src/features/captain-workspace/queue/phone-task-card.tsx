@@ -26,7 +26,8 @@ export function PhoneTaskCard({ task, at, triage, pending, canMove, onNext, onAc
   const item = task.item, now = new Date(at);
   const time = task.kind === 'renew' ? formatDateAr(task.at, { day: 'numeric', month: 'long' }, locale) : ageLabel(task.at, now, locale);
   const description = item?.kind === 'checkin' ? item.notes : item?.kind === 'form' ? item.note : taskText(task, copy);
-  return <article className="glass flex min-h-[calc(100dvh-var(--nav-clearance)-12rem)] min-w-0 flex-col gap-card-gap rounded-card p-card">
+  // Shorter floor than full viewport: a sparse task (header + one line) used to leave a large blank area above the actions.
+  return <article className="glass flex min-h-[calc(55dvh-var(--nav-clearance))] min-w-0 flex-col gap-card-gap rounded-card p-card">
     <header className="flex min-w-0 items-center gap-stack">
       <Link href={`/${locale}/captain/players/${task.playerId}`} aria-label={`${t('profile')} · ${task.name}`}
         className={`${clickableClass} glass grid size-13 shrink-0 place-items-center overflow-hidden rounded-full border-2 border-lime text-title font-bold`}>

@@ -1,6 +1,7 @@
 'use server';
 import { supabaseServer } from '@/core/supabase/server';
 import { unstable_rethrow } from 'next/navigation';
+import { givenName } from '@/lib/display-name';
 
 export async function fetchPlayerIdentity() {
   let firstName: string | undefined;
@@ -12,7 +13,7 @@ export async function fetchPlayerIdentity() {
       playerId = data.claims.sub;
       const profile = await client.from('profiles').select('full_name').eq('id', playerId)
         .maybeSingle<{ full_name: string }>();
-      firstName = profile.data?.full_name.trim().split(/\s+/)[0] || undefined;
+      firstName = givenName(profile.data?.full_name ?? '') || undefined;
     }
   } catch (error) {
     unstable_rethrow(error);

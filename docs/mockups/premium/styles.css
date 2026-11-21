@@ -1,0 +1,43 @@
+#kochivo-premium {
+  --k-bg: light-dark(__LIGHT_BG__, __DARK_BG__); --k-surface: light-dark(__LIGHT_SURFACE__, __DARK_SURFACE__);
+  --k-raised: light-dark(__LIGHT_SURFACE__, __DARK_RAISED__); --k-ink: light-dark(__LIGHT_INK__, __DARK_INK__);
+  --k-muted: light-dark(__LIGHT_MUTED__, __DARK_MUTED__); --k-line: light-dark(__LIGHT_LINE__, __DARK_LINE__);
+  --k-lime: __LIME__; --k-lime-ink: light-dark(__LIME_INK__, __LIME__); --k-on-lime: __ON_LIME__;
+  --k-paper: __DARK_INK__; --k-night: __DARK_BG__; --k-radius: 14px; --k-space: 32px;
+  --k-soft: color-mix(in srgb, var(--k-ink) 4%, var(--k-bg));
+  --k-font: Manrope, Alexandria, sans-serif; --k-photo: url('__HERO__');
+  font-family: var(--k-font); color: var(--k-ink); direction: rtl; font-size: 16px; line-height: 1.8;
+  inline-size: 100%; min-inline-size: 0; color-scheme: light dark;
+}
+#kochivo-premium[data-appearance='dark'] { color-scheme: dark; }
+#kochivo-premium[data-appearance='light'] { color-scheme: light; }
+#kochivo-premium *, #kochivo-premium *::before, #kochivo-premium *::after { box-sizing: border-box; }
+#kochivo-premium h1, #kochivo-premium h2, #kochivo-premium h3, #kochivo-premium p { margin: 0; }
+#kochivo-premium h1 { font-size: clamp(26px, 3vw, 34px); font-weight: 600; line-height: 1.6; }
+#kochivo-premium h2 { font-size: 20px; font-weight: 600; line-height: 1.7; }
+#kochivo-premium h3 { font-size: 17px; font-weight: 600; }
+#kochivo-premium p { color: var(--k-muted); }
+#kochivo-premium small, #kochivo-premium .k-small { font-size: 12px; line-height: 1.8; }
+#kochivo-premium .k-muted { color: var(--k-muted); }
+#kochivo-premium .k-eyebrow { color: var(--k-lime-ink); font-size: 12px; font-weight: 500; }
+#kochivo-premium .k-concept-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; padding: 12px 20px 18px; padding-inline-end: 96px; font-size: 12px; background: var(--k-bg); }
+#kochivo-premium .k-concept-toolbar label { display: flex; flex-direction: column; gap: 4px; flex: 1; min-inline-size: 150px; }
+#kochivo-premium .k-concept-toolbar select { background: var(--k-surface); color: var(--k-ink); border: 1px solid var(--k-line); border-radius: 8px; min-block-size: 48px; padding-inline: 12px; font: inherit; inline-size: 100%; }
+#kochivo-premium .k-concept-name { display: flex; flex-direction: column; margin-inline-end: 12px; }
+#kochivo-premium .k-product { background: var(--k-bg); color: var(--k-ink); min-inline-size: 0; position: relative; }
+#kochivo-premium button, #kochivo-premium input, #kochivo-premium textarea, #kochivo-premium select { font-family: var(--k-font); font-size: 14px; }
+#kochivo-premium button { color: inherit; min-block-size: 48px; background: transparent; border: 0; }
+#kochivo-premium button:focus-visible, #kochivo-premium summary:focus-visible { outline: 2px solid var(--k-lime-ink); outline-offset: 3px; }
+#kochivo-premium .k-button { display: inline-flex; align-items: center; justify-content: center; gap: 9px; padding: 10px 18px; border: 1px solid var(--k-line); border-radius: calc(var(--k-radius) * .6); background: var(--k-surface); font-size: 13px; font-weight: 500; line-height: 1.6; max-inline-size: 100%; }
+#kochivo-premium .k-button:hover { border-color: var(--k-muted); }
+#kochivo-premium .k-button.k-primary { background: var(--k-lime); color: var(--k-on-lime); border-color: transparent; }
+#kochivo-premium .k-done { color: var(--k-lime-ink); }
+#kochivo-premium .k-action-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+#kochivo-premium svg { inline-size: 18px; block-size: 18px; flex-shrink: 0; stroke-width: 1.5; }
+#kochivo-premium .k-page-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px; margin-block-end: 32px; }
+#kochivo-premium .k-page-heading p { margin-block-start: 10px; max-inline-size: 48em; font-size: 14px; }
+#kochivo-premium .k-wordmark { display: flex; align-items: center; padding: 0; min-inline-size: 130px; }
+#kochivo-premium .k-wordmark img { inline-size: 136px; block-size: 44px; object-fit: contain; }
+#kochivo-premium .k-logo-light { display: none; }
+#kochivo-premium[data-appearance='light'] .k-logo-light { display: block; }
+#kochivo-premium[data-appearance='light'] .k-logo-dark { display: none; }

@@ -1,0 +1,307 @@
+@import 'tailwindcss';
+@import './surfaces.css';
+[dir='ltr'] .dir-icon { transform: scaleX(-1); }
+/* KOCHIVO design tokens — colors come from brand/tokens/palette.css (2026-10-26); use utilities, never raw hex in components. */
+@theme {
+  --color-bg: #0b0c0d;
+  --color-surface: #141414;
+  --color-line: #292929;
+  --color-ink: #f4f4f1;
+  --color-muted: #a6abb0;
+  --color-faint: #80858b;
+  --color-calm: #c9d5ff;
+  --color-water: #60a5fa;
+  --color-sleep: #b4a0f5;
+  --color-sore: #f5ac78;
+  --color-ember: #c8936f;
+  --color-lime: #b6e94f;
+  --color-lime-ink: #b6e94f;
+  --color-bg-deep: #070808;
+  --color-surface-raised: #1c1c1c;
+  --color-line-soft: rgb(242 242 238 / 0.06);
+  --color-on-lime: #101418;
+  --color-lime-soft: rgb(182 233 79 / 0.12);
+  --color-warn: #f2b544;
+  --color-warn-soft: rgb(242 181 68 / 0.12);
+  --color-danger: #ffa080;
+  --color-danger-soft: rgb(255 138 101 / 0.12);
+  --font-sans: var(--font-manrope), var(--font-alexandria), system-ui, sans-serif;
+  /* headings, buttons and big labels: athletic display face; body text stays on the calmer sans */
+  --font-display: var(--font-manrope), var(--font-changa), var(--font-alexandria), system-ui, sans-serif;
+  --radius-card: 1.25rem;
+  --radius-control: .875rem;
+  --radius-chip: 9999px;
+  --spacing-card: 1.25rem;
+  --spacing-card-gap: 1rem;
+  --text-stat: 2rem;
+  --text-stat-wide: 2.5rem;
+  --text-stat-large: 3rem;
+  --text-stat-large-wide: 3.75rem;
+  --spacing-touch: 3rem;
+  --shadow-lime-glow: inset 0 1px 0 rgb(255 255 255 / .25), 0 0 18px color-mix(in srgb, var(--color-lime) 25%, transparent);
+  --shadow-lime-glow-hover: inset 0 1px 0 rgb(255 255 255 / .3), 0 0 18px color-mix(in srgb, var(--color-lime) 32%, transparent);
+}
+:root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-start: env(safe-area-inset-left);
+  --safe-end: env(safe-area-inset-right);
+  --nav-height: calc(4.5rem + 2px);
+  --nav-clearance: calc(var(--nav-height) + 1rem + var(--safe-bottom));
+  --builder-action-height: calc(4.5rem + 2px);
+  --glass-tint: rgb(255 255 255 / 0.03);
+  --glass-tint-raised: rgb(255 255 255 / 0.05);
+  --glass-strong-tint: rgb(255 255 255 / 0.07);
+  --glass-hairline: rgb(255 255 255 / 0.09);
+  --glass-highlight: rgb(255 255 255 / 0.04);
+  --glass-strong-border: rgb(255 255 255 / 0.09);
+  --glass-strong-highlight: rgb(255 255 255 / 0.04);
+  --glass-fill: var(--glass-tint);
+  --glass-border: var(--glass-hairline);
+  --glass-shadow: inset 0 1px 0 var(--glass-highlight), 0 4px 24px -8px rgb(0 0 0 / 0.5);
+  --glass-strong-shadow: var(--glass-shadow);
+  --glass-hover-fill: radial-gradient(ellipse at top, var(--glass-highlight), transparent 70%), var(--glass-tint-raised);
+  --featured-angle: 135deg;
+  --featured-edge: linear-gradient(var(--featured-angle), color-mix(in srgb, var(--color-lime) 45%, transparent), rgb(255 255 255 / .08) 65%);
+  --featured-fill: radial-gradient(ellipse at top, color-mix(in srgb, var(--color-lime) 8%, transparent), transparent 65%), var(--glass-strong-tint);
+  --featured-shadow: inset 0 1px 0 var(--glass-highlight), 0 8px 32px -8px rgb(0 0 0 / .6);
+  --aurora-glow: color-mix(in srgb, var(--color-lime) 11%, transparent);
+  --orb-glow: color-mix(in srgb, var(--color-lime) 7%, transparent);
+  --primary-fill: linear-gradient(180deg, var(--color-lime), color-mix(in srgb, var(--color-lime) 90%, var(--color-bg)));
+  --progress-start: color-mix(in srgb, var(--color-lime) 80%, var(--color-bg));
+  --progress-fill: linear-gradient(90deg, var(--progress-start), var(--color-lime));
+  --progress-ring-glow: 0 0 2px color-mix(in srgb, var(--color-lime) 25%, transparent);
+  --progress-edge: 2px 0 5px color-mix(in srgb, var(--color-lime) 25%, transparent);
+  --selected-border: color-mix(in srgb, var(--color-lime) 40%, transparent);
+  --hover-lift: -2px;
+  --primary-lift: -1px;
+  --press-scale: .98;
+  --enter-rise: 6px;
+  --enter-duration: 300ms;
+  --recessed-fill: color-mix(in srgb, var(--color-bg-deep) 35%, transparent);
+  --recessed-border: rgb(255 255 255 / 0.04);
+  --recessed-shadow: inset 0 2px 6px rgb(0 0 0 / 0.5);
+  --page-glow: transparent;
+  --mesh-glow: transparent;
+  --mesh-top: #0b0c0d;
+  --mesh-bottom: #070808;
+}
+[dir='rtl'] { --safe-start: env(safe-area-inset-right); --safe-end: env(safe-area-inset-left); }
+[data-mood='rest'] {
+  --color-bg: #0a1224;
+  --color-bg-deep: #080f20;
+  --color-surface: #111e37;
+  --color-surface-raised: #172640;
+  --color-line: #1e2a47;
+  --color-line-soft: rgb(201 213 255 / .08);
+  --color-ink: #e6ecff;
+  --color-muted: #8c9bc4;
+  --color-faint: #8c9bc4;
+  --color-lime: var(--color-calm);
+  --color-lime-ink: var(--color-calm);
+  --color-on-lime: #0a1224;
+  --color-lime-soft: rgb(201 213 255 / .12);
+  --glass-tint: rgb(36 62 108 / .18);
+  --glass-tint-raised: rgb(36 62 108 / .26);
+  --glass-strong-tint: #14213b;
+  --glass-hairline: var(--color-line);
+  --glass-strong-border: #2b3b60;
+  --glass-highlight: rgb(201 213 255 / .05);
+  --glass-strong-highlight: rgb(201 213 255 / .05);
+  --glass-fill: var(--glass-tint);
+  --glass-border: var(--color-line);
+  --glass-shadow: inset 0 1px 0 var(--glass-highlight), 0 4px 24px -8px rgb(0 0 0 / .5);
+  --glass-strong-shadow: var(--glass-shadow);
+  --glass-hover-fill: var(--glass-tint-raised);
+  --featured-fill: radial-gradient(ellipse at top, color-mix(in srgb, var(--color-calm) 8%, transparent), transparent 65%), var(--glass-strong-tint);
+  --featured-edge: linear-gradient(var(--featured-angle), color-mix(in srgb, var(--color-calm) 35%, transparent), var(--color-line) 65%);
+  --primary-fill: linear-gradient(180deg, var(--color-calm), color-mix(in srgb, var(--color-calm) 90%, var(--color-bg)));
+  --progress-start: color-mix(in srgb, var(--color-calm) 80%, var(--color-bg));
+  --progress-fill: linear-gradient(90deg, var(--progress-start), var(--color-calm));
+  --progress-ring-glow: 0 0 2px color-mix(in srgb, var(--color-calm) 25%, transparent);
+  --progress-edge: 0 0 5px color-mix(in srgb, var(--color-calm) 25%, transparent);
+  --selected-border: color-mix(in srgb, var(--color-calm) 40%, transparent);
+  --shadow-lime-glow: 0 0 18px color-mix(in srgb, var(--color-calm) 20%, transparent);
+  --shadow-lime-glow-hover: 0 0 18px color-mix(in srgb, var(--color-calm) 28%, transparent);
+  --aurora-glow: color-mix(in srgb, var(--color-calm) 11%, transparent);
+  --orb-glow: color-mix(in srgb, var(--color-calm) 7%, transparent);
+  --page-glow: transparent;
+  --mesh-glow: transparent;
+  --mesh-top: var(--color-bg);
+  --mesh-bottom: var(--color-bg-deep);
+  color-scheme: dark;
+}
+html[data-glass='solid'] [data-mood='rest'] { --glass-solid-background: var(--color-surface); }
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  [data-mood='rest'] { --glass-solid-background: var(--color-surface); }
+}
+@media (prefers-reduced-transparency: reduce) {
+  [data-mood='rest'] { --glass-solid-background: var(--color-surface); }
+}
+[dir='rtl'] { --featured-angle: 225deg; --progress-edge: -2px 0 5px color-mix(in srgb, var(--color-lime) 25%, transparent); }
+html[data-theme='light'] {
+  --color-ember: #96613e;
+  --color-bg: #f6f7f4;
+  --color-bg-deep: #eceee8;
+  --color-surface: #ffffff;
+  --color-surface-raised: #f0f2ed;
+  --color-line: #d9ddd4;
+  --color-line-soft: rgb(18 22 26 / 0.08);
+  --color-ink: #12161a;
+  --color-muted: #535b63;
+  --color-faint: #535b63;
+  --radius-card: 1.5rem;
+  --radius-control: 1rem;
+  --radius-chip: 1rem;
+  --spacing-card: 1rem;
+  --spacing-card-gap: .75rem;
+  --text-stat: 1.5rem;
+  --text-stat-wide: 1.875rem;
+  --text-stat-large: 2.25rem;
+  --text-stat-large-wide: 3rem;
+  --color-lime: #b6e94f;
+  --color-lime-ink: #426c00;
+  --color-on-lime: #101418;
+  --color-lime-soft: rgb(182 233 79 / 0.12);
+  --color-warn: #805400;
+  --color-warn-soft: rgb(128 84 0 / 0.12);
+  --color-danger: #ac391b;
+  --color-danger-soft: rgb(172 57 27 / 0.12);
+  --glass-tint: rgb(255 255 255 / 0.6);
+  --glass-tint-raised: rgb(255 255 255 / 0.85);
+  --glass-strong-tint: rgb(255 255 255 / 0.95);
+  --glass-hairline: var(--color-line-soft);
+  --glass-highlight: rgb(255 255 255 / 0.5);
+  --glass-strong-border: rgb(18 22 26 / 0.12);
+  --glass-strong-highlight: rgb(255 255 255 / 0.8);
+  --glass-shadow: inset 0 1px 0 var(--glass-highlight);
+  --glass-strong-shadow: inset 0 1px 0 var(--glass-strong-highlight);
+  --shadow-lime-glow: 0 0 0 1px color-mix(in srgb, var(--color-lime) 25%, transparent), 0 4px 14px color-mix(in srgb, var(--color-lime) 16%, transparent);
+  --shadow-lime-glow-hover: 0 0 0 1px color-mix(in srgb, var(--color-lime) 35%, transparent), 0 6px 18px color-mix(in srgb, var(--color-lime) 22%, transparent);
+  --glass-hover-fill: var(--glass-tint-raised);
+  --hover-lift: -.25rem;
+  --primary-lift: -.25rem;
+  --press-scale: .95;
+  --enter-rise: 8px;
+  --enter-duration: 280ms;
+  --page-glow: rgb(182 233 79 / 0.06);
+  --mesh-glow: rgb(182 233 79 / 0.08);
+  --mesh-top: #e7ece2;
+  --mesh-bottom: #edf0e9;
+}
+html[data-theme='light'] .text-lime { color: var(--color-lime-ink); }
+@utility sheet {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+@utility mesh {
+  background: radial-gradient(ellipse at top, var(--mesh-glow), transparent 60%),
+    linear-gradient(135deg, var(--mesh-top), var(--color-bg-deep));
+}
+@utility bg-glow {
+  background: radial-gradient(ellipse at top, var(--page-glow), transparent 65%), var(--color-bg);
+}
+html[data-theme='light'] .bg-ink.text-on-lime { color: var(--color-surface); }
+/* Theme-specific artwork, such as the logo whose letters are white in dark mode. */
+html:not([data-theme='light']) .theme-light-only, html[data-theme='light'] .theme-dark-only { display: none; }
+@layer base {
+  html { -webkit-tap-highlight-color: transparent; }
+  html:not([data-theme='light']) { color-scheme: dark; }
+  html[data-theme='light'] { color-scheme: light; }
+  body {
+    background: var(--color-bg-deep);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-feature-settings: 'tnum' 1;
+    -webkit-font-smoothing: antialiased;
+    /* break-word, not anywhere: anywhere shrinks min-content and splits short words in tight grids. */
+    overflow-wrap: break-word;
+    padding-inline: var(--safe-start) var(--safe-end);
+  }
+  button, summary, [role='button'] { touch-action: manipulation; }
+  button { min-block-size: 3rem; }
+  input, textarea, select { font-size: max(1rem, 16px) !important; min-inline-size: 0; scroll-margin-block: calc(5rem + var(--safe-top)); }
+  html { scroll-padding-block: calc(5rem + var(--safe-top)); }
+  html:has(dialog:modal), body:has(dialog:modal) { overflow: hidden; }
+  dialog { overflow-y: auto; overscroll-behavior: contain; }
+  dialog::backdrop { background: color-mix(in srgb, var(--color-bg-deep) 80%, transparent); }
+  /* Fixed pseudo-element instead of background-attachment:fixed (broken on iOS). */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(50rem 32rem at 100% -10%, var(--mesh-glow), transparent 60%),
+      radial-gradient(48rem 48rem at -10% 25%, var(--mesh-top), transparent 65%),
+      radial-gradient(40rem 36rem at 80% 110%, var(--mesh-bottom), transparent 70%),
+      var(--color-bg-deep);
+  }
+  h1, h2, h3, button { font-family: var(--font-display); }
+  body:not(:has(.marketing-wrap)) { @apply text-sm md:text-base; }
+  :focus-visible { outline: 2px solid var(--color-lime-ink); outline-offset: 2px; }
+}
+/* Override sheet utility padding as well as browser defaults, including landscape notches. */
+dialog:modal {
+  max-block-size: min(90dvh, calc(var(--visible-viewport-height, 100dvh) - 2rem));
+  padding-block-start: max(1.25rem, var(--safe-top));
+  padding-block-end: max(1.25rem, var(--safe-bottom));
+  padding-inline-start: max(1.25rem, var(--safe-start));
+  padding-inline-end: max(1.25rem, var(--safe-end));
+}
+html[data-keyboard='open'] dialog:modal { inset-block-end: var(--keyboard-inset); }
+@layer components {
+  .marketing-wrap { width: 100%; max-width: 1200px; margin-inline: auto; padding-inline: clamp(1rem, 4vw, 2rem); }
+  .marketing-section { padding-block-start: clamp(4rem, 9vw, 7.5rem); }
+  .marketing-heading { font-size: clamp(2rem, 4vw, 2.75rem); font-weight: 800; line-height: 1.3; }
+  .marketing-eyebrow { color: var(--color-lime-ink); font-size: .75rem; font-weight: 700; letter-spacing: .2em; }
+  :lang(ar) .marketing-eyebrow, [dir='rtl'] .marketing-eyebrow { letter-spacing: 0; }
+  .marketing-primary, .marketing-ghost { display: inline-flex; min-height: 3rem; align-items: center; justify-content: center; border-radius: var(--radius-control); font-family: var(--font-display); font-weight: 800; }
+  .marketing-primary { background: var(--color-lime); color: var(--color-on-lime); box-shadow: 0 14px 36px -10px color-mix(in srgb, var(--color-lime) 35%, transparent); }
+  .marketing-ghost:hover { background: color-mix(in srgb, var(--color-ink) 8%, transparent); }
+  .marketing-slogan { align-self: stretch; font-family: var(--font-manrope), sans-serif; font-weight: 800; font-size: clamp(2.5rem, 7.43vw, 5.25rem); line-height: .95; letter-spacing: -.035em; text-transform: uppercase; text-align: end; }
+  /* The slogan is always LTR, so follow the page side instead of its own start/end. */
+  html[dir='ltr'] .marketing-slogan { text-align: left; }
+  .marketing-outline { color: transparent; -webkit-text-stroke: 2px var(--color-ink); background: linear-gradient(90deg, var(--color-ink) 50%, transparent 50%) no-repeat; background-size: 200% 100%; background-position: 100% 0; background-clip: text; -webkit-background-clip: text; }
+  .marketing-slogan > span { animation: marketing-rise .7s cubic-bezier(.2,.8,.2,1) both; }
+  .marketing-slogan > span:nth-child(2) { animation: marketing-rise .7s cubic-bezier(.2,.8,.2,1) .12s both, marketing-sweep 1.6s ease-in-out 1.1s both; }
+  .marketing-slogan > span:nth-child(3) { animation-delay: .24s; }
+  .marketing-after { animation: marketing-rise .7s cubic-bezier(.2,.8,.2,1) .5s both; }
+  .marketing-beam { transform-origin: 100% 50%; animation: marketing-grow .8s cubic-bezier(.2,.8,.2,1) .45s both; }
+  .marketing-phone { animation: marketing-float 6s ease-in-out infinite; }
+}
+@keyframes marketing-rise { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+@keyframes marketing-sweep { 0% { background-position: 100% 0; } 45%, 60% { background-position: 0 0; } 100% { background-position: -100% 0; } }
+@keyframes marketing-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes marketing-float { 50% { transform: translateY(-6px); } }
+@media (max-width: 700px) {
+  .marketing-slogan { font-size: clamp(2rem, 11.5vw, 3.25rem); }
+}
+@supports (animation-timeline: view()) {
+  .marketing-reveal { animation: marketing-rise linear both; animation-timeline: view(); animation-range: entry 0% entry 35%; }
+}
+/* Sits above the bottom nav and the sticky primary action, so a toast never covers either. */
+.toast-stack { inset-inline: 0; bottom: calc(10.5rem + var(--safe-bottom)); }
+.toast-leave { animation: toast-fade 200ms ease-out forwards; }
+@keyframes toast-fade { to { opacity: 0; } }
+/* The marketing page keeps its own type scale. */
+body:not(:has(.marketing-wrap)) :is(h1, h2, h3) { font-weight: 700; color: var(--color-ink); }
+@layer base {
+  body:not(:has(.marketing-wrap)) :is(h2, h3) { @apply font-display text-base md:text-lg ltr:tracking-tight; }
+}
+body:not(:has(.marketing-wrap)) .text-muted { font-weight: 500; }
+@keyframes surface-in { from { opacity: 0; transform: translateY(var(--enter-rise)); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .marketing-slogan > span, .marketing-after, .marketing-beam, .marketing-phone, .marketing-reveal, .empty-state-in { animation: none; }
+  .enter, .shimmer, .toast-leave { animation: none; }
+  .press, .press-scale, .press:hover, .press:active, .press-scale:active {
+    transition: none;
+    transform: none;
+    scale: none;
+    translate: none;
+  }
+  .hover-lift, .hover-lift:hover, .hover-lift:active { transform: none; translate: none; transition: none; }
+}

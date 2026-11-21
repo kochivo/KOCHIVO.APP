@@ -1,0 +1,17 @@
+{
+  "source": "src/app/globals.css",
+  "note": "Current app colors differ from the original brand palette; both are supplied.",
+  "dark": {
+    "bg": "#0b0c0d",
+    "surface": "#141414",
+    "line": "#292929",
+    "ink": "#f4f4f1",
+    "muted": "#a6abb0",
+    "lime": "#b6e94f"
+  },
+  "fonts": {
+    "latin": "Manrope",
+    "arabicBody": "Alexandria",
+    "arabicDisplay": "Changa"
+  }
+}

@@ -1,0 +1,95 @@
+@media (max-width: 800px) {
+  #kochivo-premium .k-public-section { padding: 60px 32px; }
+  #kochivo-premium .k-dashboard-columns { grid-template-columns: 1fr; gap: 24px; }
+  #kochivo-premium .k-hero-copy { inline-size: 78%; }
+  #kochivo-premium .k-hero-copy h1 { font-size: 62px; }
+  #kochivo-premium .k-public-split { gap: 32px; padding: 48px 32px; }
+  #kochivo-premium .k-pricing-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #kochivo-premium .k-auth-main { padding: 32px; }
+  #kochivo-premium .k-auth-editorial { padding: 32px; }
+  #kochivo-premium .k-captain-shell { grid-template-columns: 150px minmax(0, 1fr); }
+  #kochivo-premium .k-workspace-content { padding-inline: 24px; }
+  #kochivo-premium .k-inbox-layout, #kochivo-premium .k-settings-layout { grid-template-columns: 1fr; gap: 24px; }
+  #kochivo-premium .k-inbox-list, #kochivo-premium .k-settings-nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #kochivo-premium .k-attention { flex-direction: column; align-items: start; }
+}
+@media (max-width: 600px) {
+  #kochivo-premium { --k-space: 20px; }
+  #kochivo-premium .k-concept-toolbar { padding-inline-end: 0; padding-block-start: 54px; }
+  #kochivo-premium .k-concept-name { flex-basis: 100%; }
+  #kochivo-premium .k-concept-toolbar label { min-inline-size: 125px; }
+  #kochivo-premium .k-site-nav { padding: 16px 20px; gap: 12px; flex-wrap: wrap; }
+  #kochivo-premium .k-site-nav nav { gap: 0; }
+  #kochivo-premium .k-site-nav nav .k-button { padding-inline: 10px; font-size: 11px; }
+  #kochivo-premium .k-landing-hero { min-block-size: 620px; padding: 44px 24px; }
+  #kochivo-premium .k-landing-hero .k-editorial-image { opacity: .34; object-position: 35% center; }
+  #kochivo-premium .k-hero-copy { inline-size: 100%; }
+  #kochivo-premium .k-hero-copy h1 { font-size: clamp(44px, 11vw, 62px); }
+  #kochivo-premium .k-hero-copy .k-hero-arabic { font-size: 20px; }
+  #kochivo-premium .k-public-section { padding: 52px 24px; }
+  #kochivo-premium .k-editorial-heading h2 { font-size: 27px; }
+  #kochivo-premium .k-process { grid-template-columns: 1fr; gap: 28px; }
+  #kochivo-premium .k-process h3 { margin-block-start: 14px; }
+  #kochivo-premium .k-public-split, #kochivo-premium .k-coach-public { grid-template-columns: 1fr; padding: 40px 24px; gap: 32px; }
+  #kochivo-premium .k-coach-photo { min-block-size: 340px; }
+  #kochivo-premium .k-mini-workout { padding: 24px; }
+  #kochivo-premium .k-public-split h2 { font-size: 27px; }
+  #kochivo-premium .k-pricing-list { gap: 20px; }
+  #kochivo-premium .k-pricing-list strong { font-size: 30px; }
+  #kochivo-premium .k-final-cta { padding: 36px 24px; flex-direction: column; align-items: start; }
+  #kochivo-premium .k-final-cta h2 { font-size: 23px; }
+  #kochivo-premium .k-site-footer { padding-inline: 24px; }
+  #kochivo-premium .k-choice-page, #kochivo-premium .k-ko-page { padding: 48px 24px; }
+  #kochivo-premium .k-role-choices { grid-template-columns: 1fr; gap: 0; }
+  #kochivo-premium .k-auth-layout { grid-template-columns: 1fr; min-block-size: 0; }
+  #kochivo-premium .k-auth-editorial { display: none; }
+  #kochivo-premium .k-auth-main { padding: 32px 24px 60px; }
+  #kochivo-premium .k-captain-shell { grid-template-columns: 1fr; }
+  #kochivo-premium .k-sidebar { display: none; }
+  #kochivo-premium .k-coach-mobile-menu { display: block; }
+  #kochivo-premium .k-sidebar-brand, #kochivo-premium .k-coach-id { display: none; }
+  #kochivo-premium .k-sidebar nav { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }
+  #kochivo-premium .k-sidebar nav button { flex-direction: column; justify-content: center; gap: 4px; padding: 8px 2px; font-size: 11px; }
+  #kochivo-premium .k-sidebar nav small { display: none; }
+  #kochivo-premium .k-workspace-bar { padding: 12px 20px; }
+  #kochivo-premium .k-workspace-content { padding: 28px 20px 44px; }
+  #kochivo-premium .k-page-heading { margin-block-end: 28px; gap: 18px; }
+  #kochivo-premium .k-page-heading h1 { font-size: 26px; }
+  #kochivo-premium .k-page-heading p { font-size: 13px; }
+  #kochivo-premium .k-stats { gap: 24px 16px; }
+  #kochivo-premium .k-stats > div { min-inline-size: 75px; }
+  #kochivo-premium .k-stats dd { font-size: 29px; }
+  #kochivo-premium .k-stats dt { font-size: 11px; }
+  #kochivo-premium .k-two-columns { gap: 18px; }
+  #kochivo-premium .k-inbox-list { grid-template-columns: 1fr; }
+  #kochivo-premium .k-library-index { inline-size: 38px; font-size: 30px; }
+  #kochivo-premium .k-plan-list > button, #kochivo-premium .k-library > button { gap: 16px; }
+  #kochivo-premium .k-crown-feature { padding: 24px; gap: 16px; flex-wrap: wrap; }
+  #kochivo-premium .k-crown-feature > strong { font-size: 38px; }
+  #kochivo-premium .k-player-header { padding: 16px 20px; }
+  #kochivo-premium .k-player-content { padding: 28px 20px; }
+  #kochivo-premium .k-player-content > .k-two-columns { grid-template-columns: 1fr; }
+  #kochivo-premium .k-readiness-values { display: flex; flex-wrap: wrap; gap: 24px; }
+  #kochivo-premium .k-water { display: grid; grid-template-columns: 1fr auto; align-items: center; }
+  #kochivo-premium .k-water .k-section-title { grid-column: 1 / -1; }
+  #kochivo-premium .k-workout-feature { padding: 28px; }
+  #kochivo-premium .k-workout-feature h2 { font-size: 31px; }
+  #kochivo-premium .k-player-week .k-week > button { min-inline-size: 36px; }
+  #kochivo-premium .k-week small { font-size: 11px; }
+  #kochivo-premium .k-stepper > div { gap: 8px; }
+  #kochivo-premium .k-stepper button { inline-size: 56px; min-inline-size: 56px; }
+  #kochivo-premium .k-focus-content .k-two-columns { grid-template-columns: 1fr; }
+  #kochivo-premium .k-stepper strong { font-size: 30px; }
+  #kochivo-premium .k-meal { gap: 14px; }
+  #kochivo-premium .k-meal h2 { font-size: 18px; }
+  #kochivo-premium .k-meal-heading { font-size: 11px; }
+  #kochivo-premium .k-profile-line { gap: 14px; }
+  #kochivo-premium .k-form-grid { gap: 16px; }
+  #kochivo-premium .k-intake-progress span { font-size: 11px; }
+  #kochivo-premium .k-system-admin { padding: 32px 20px; }
+  #kochivo-premium .k-status-page { padding-inline: 24px; }
+}
+@media (max-width: 420px) {
+  #kochivo-premium .k-week { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  #kochivo-premium .k-week > button { min-inline-size: 48px; }
+}

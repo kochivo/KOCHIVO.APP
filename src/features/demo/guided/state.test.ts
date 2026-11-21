@@ -89,3 +89,10 @@ describe('guided demo', () => {
     expect(canPulse(false, rect, { ...rect, x: -50 }, 390, 844)).toBe(false);
   });
 });
+
+it('accepts the join request separately from the assessment approval', () => {
+  const start = reduceDemo(initialState(0), { type: 'start', n: 18, now: 0 });
+  const joined = reduceDemo(start, { type: 'event', event: 'joinok', now: 1 });
+  expect(joined.joined).toBe(true);
+  expect(joined.approved).toBe(false);
+});

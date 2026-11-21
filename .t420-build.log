@@ -1,0 +1,131 @@
+
+> kochivo@0.1.0 build
+> next build
+
+▲ Next.js 16.4.6 (Turbopack)
+- Environments: .env.local
+✓ Running next.config.ts took 1619ms
+- Experiments (use with caution):
+  · clientTraceMetadata
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 55s
+  Running next.config.js provided runAfterProductionCompile ...
+✓ Completed runAfterProductionCompile in 5.6s
+  Running TypeScript ...
+✓ Finished filesystem cache database compaction in 24.4s
+  Finished TypeScript in 88s ...
+  Collecting page data using 15 workers ...
+  Generating static pages using 15 workers (0/97) ...
+KO is unavailable: KO_ENABLED must be 1; KO_GEMINI_PAID must be 1; KO_APPROVAL_SECRET must be at least 32 characters; KO_PILOT_USER_IDS is empty; KO_ORIGIN is not a valid URL
+KO is unavailable: KO_ENABLED must be 1; KO_GEMINI_PAID must be 1; KO_APPROVAL_SECRET must be at least 32 characters; KO_PILOT_USER_IDS is empty; KO_ORIGIN is not a valid URL
+  Generating static pages using 15 workers (24/97) 
+  Generating static pages using 15 workers (48/97) 
+  Generating static pages using 15 workers (72/97) 
+KO is unavailable: KO_ENABLED must be 1; KO_GEMINI_PAID must be 1; KO_APPROVAL_SECRET must be at least 32 characters; KO_PILOT_USER_IDS is empty; KO_ORIGIN is not a valid URL
+✓ Generating static pages using 15 workers (97/97) in 1338ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /_not-found
+├ ƒ /.well-known/oauth-protected-resource
+├   /[locale]
+│ ├ ● /ar
+│ └ ● /en
+├ ƒ /[locale]/[...notFound]
+├ ƒ /[locale]/admin
+├ ƒ /[locale]/api/captain/task-count
+├ ƒ /[locale]/api/ko
+├ ƒ /[locale]/api/ko/learning
+├ ƒ /[locale]/api/share/rank
+├ ƒ /[locale]/auth/callback
+├ ƒ /[locale]/auth/confirm
+├ ƒ /[locale]/c/[slug]
+├ ƒ /[locale]/c/[slug]/opengraph-image
+├ ƒ /[locale]/captain
+├ ƒ /[locale]/captain/billing
+├ ƒ /[locale]/captain/billing/packages
+├ ƒ /[locale]/captain/inbox
+├ ƒ /[locale]/captain/join
+├ ƒ /[locale]/captain/leaderboard
+├ ƒ /[locale]/captain/library/exercises
+├ ƒ /[locale]/captain/library/exercises/[exerciseId]/edit
+├ ƒ /[locale]/captain/library/exercises/new
+├ ƒ /[locale]/captain/library/foods
+├ ƒ /[locale]/captain/library/foods/[foodId]/edit
+├ ƒ /[locale]/captain/library/foods/new
+├ ƒ /[locale]/captain/library/forms
+├ ƒ /[locale]/captain/library/meal-plans
+├ ƒ /[locale]/captain/notifications
+├ ƒ /[locale]/captain/nutrition/[planId]
+├ ƒ /[locale]/captain/pending
+├ ƒ /[locale]/captain/players
+├ ƒ /[locale]/captain/players/[playerId]
+├ ƒ /[locale]/captain/players/[playerId]/assessments
+├ ƒ /[locale]/captain/players/[playerId]/chat
+├ ƒ /[locale]/captain/players/[playerId]/checkins
+├ ƒ /[locale]/captain/players/[playerId]/nutrition
+├ ƒ /[locale]/captain/players/[playerId]/preview
+├ ƒ /[locale]/captain/players/[playerId]/programs
+├ ƒ /[locale]/captain/players/new
+├ ƒ /[locale]/captain/programs/[programId]
+├ ƒ /[locale]/captain/settings
+├ ƒ /[locale]/captain/tasks
+├ ƒ /[locale]/captain/templates
+├   /[locale]/demo
+│ ├ ● /ar/demo
+│ └ ● /en/demo
+├   /[locale]/dev/ko
+│ ├ ● /ar/dev/ko
+│ └ ● /en/dev/ko
+├ ƒ /[locale]/dev/ko/chat
+├   /[locale]/dev/ui
+│ ├ ● /ar/dev/ui
+│ └ ● /en/dev/ui
+├   /[locale]/forgot-password
+│ ├ ● /ar/forgot-password
+│ └ ● /en/forgot-password
+├ ƒ /[locale]/i/[code]
+├   /[locale]/ko
+│ ├ ● /ar/ko
+│ └ ● /en/ko
+├ ƒ /[locale]/login
+├ ƒ /[locale]/oauth/consent
+├   /[locale]/offline
+│ ├ ● /ar/offline
+│ └ ● /en/offline
+├ ƒ /[locale]/opengraph-image
+├ ƒ /[locale]/player
+├ ƒ /[locale]/player/assessments
+├ ƒ /[locale]/player/captain
+├ ƒ /[locale]/player/captain/profile
+├ ƒ /[locale]/player/forms/[requestId]
+├ ƒ /[locale]/player/history
+├ ƒ /[locale]/player/nutrition
+├ ƒ /[locale]/player/nutrition/shopping
+├ ƒ /[locale]/player/onboarding
+├ ƒ /[locale]/player/progress
+├ ƒ /[locale]/player/rank
+├ ƒ /[locale]/player/settings
+├ ƒ /[locale]/player/workout/[dayId]
+├   /[locale]/privacy
+│ ├ ● /ar/privacy
+│ └ ● /en/privacy
+├ ƒ /[locale]/reset-password
+├ ƒ /[locale]/suspended
+├   /[locale]/terms
+│ ├ ● /ar/terms
+│ └ ● /en/terms
+├ ƒ /[locale]/welcome
+├ ƒ /api/mcp
+├ ○ /manifest.webmanifest
+├ ○ /robots.txt
+└ ○ /sitemap.xml
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+

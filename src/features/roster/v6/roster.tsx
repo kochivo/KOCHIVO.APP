@@ -54,7 +54,7 @@ export function WorkspaceRoster({ data, today, extras, details }: WorkspaceRoste
           placeholder={phone('search')} className="min-w-0 flex-1 bg-transparent text-sm outline-none focus-visible:ring-2 focus-visible:ring-lime" />
       </label>
     </div>}
-    {([false, true] as const).map(mobile => <div key={String(mobile)} className={`${mobile ? 'flex md:hidden' : 'hidden md:flex'} w-max max-w-full gap-inline overflow-x-auto max-md:rounded-control md:rounded-full md:border md:border-line md:bg-bg-deep/25 md:p-inline`} aria-label={t('players')}>
+    {([false, true] as const).map(mobile => <div key={String(mobile)} className={`${mobile ? 'flex md:hidden chip-scroll' : 'hidden md:flex'} w-max max-w-full gap-inline overflow-x-auto max-md:rounded-control md:rounded-full md:border md:border-line md:bg-bg-deep/25 md:p-inline`} aria-label={t('players')}>
       {(mobile ? ['all', 'needsYou', 'good', 'ending', 'newPlayers', 'stopped'] as const : tabs).map(tab => <button key={tab} type="button" aria-pressed={filter === tab} onClick={() => setFilter(tab)}
         className={`min-h-12 shrink-0 whitespace-nowrap rounded-control px-stack text-micro md:rounded-full ${filter === tab ? 'glass-strong text-ink' : 'text-muted hover:text-ink max-md:bg-ink/5'}`}>
         {tab === 'ending' ? <><span className="md:hidden">{phone('ending')}</span><span className="hidden md:inline">{t(tab)}</span></> : t(tab)}

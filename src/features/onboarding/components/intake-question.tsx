@@ -5,7 +5,7 @@ import { useEffect, useRef } from 'react';
 import { Button, TextField, Stepper } from '@/ui';
 import { formatNumber } from '@/lib/format';
 import { messages } from '../messages';
-import { allergyOptions, injuryOptions, medicalOptions } from '../data/intake-schema';
+import { allergyOptions, injuryOptions, medicalOptionsFor } from '../data/intake-schema';
 import type { IntakeQuestion as Field } from '../v6-steps';
 import { sampleMeasurements } from '../wizard';
 import type { IntakeDraft } from '../wizard';
@@ -57,7 +57,7 @@ export function IntakeQuestion({ field, draft, update, year }: {
       onClick={() => { update({ [field]: sampleMeasurements[field] }); heading.current?.focus(); }}>{t('confirmMeasurement')}</Button>}
     {field === 'training_days' && <DayPicker value={draft.training_days ?? []} onChange={training_days => update({ training_days })} />}
     {field === 'injuries' && <ChipGroup label={label} options={injuryOptions} value={draft.injuries ?? []} onChange={injuries => update({ injuries })} />}
-    {field === 'medical' && <><ChipGroup label={label} options={medicalOptions} value={draft.medical ?? []} onChange={medical => update({ medical })} />
+    {field === 'medical' && <><ChipGroup label={label} options={medicalOptionsFor(draft.sex)} value={draft.medical ?? []} onChange={medical => update({ medical })} />
       {draft.medical?.some(value => value !== 'none') && <p className="text-sm text-muted">{t('yourCoachWillReviewThisBeforePlanning')}</p>}</>}
     {field === 'allergies' && <ChipGroup label={label} options={allergyOptions} value={draft.allergies ?? []} onChange={allergies => update({ allergies })} />}
     {field === 'notes' && <><BudgetField value={draft.food_budget_monthly_egp} onChange={food_budget_monthly_egp => update({ food_budget_monthly_egp })} /><TextField label={label} value={draft.notes ?? ''} maxLength={500} placeholder={t('forExampleIWorkNightShifts')}

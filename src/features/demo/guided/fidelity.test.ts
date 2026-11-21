@@ -25,7 +25,7 @@ it('renders the real home hero, the four-number strip and money owed from reduce
   expect(html).toContain('data-home-tiles');
   expect(html).toContain('16/20');
   expect(html).toContain('1,500');
-  expect(html).toContain('4 مهام');
+  expect(html).toContain('3 مهام');
   const updated = render(createElement(CaptainHome, { ...props(), state: { ...props().state, paid: true, renewed: true } }));
   expect(updated).toContain('>500</a>');
   expect(updated).toContain('مهمتين');

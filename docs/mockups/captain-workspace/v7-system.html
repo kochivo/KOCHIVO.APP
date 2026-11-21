@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>كوتشيفو v7: النظام الجديد</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300..800&family=Manrope:wght@500;600;700;800&display=swap">
+<style>
+:root{
+  --bg:#0b0c0d;--panel:#111213;--panel2:#16171a;--line:#222427;--line2:#2c2f33;
+  --ink:#ededea;--ink2:#c4c7cb;--muted:#8d9298;--faint:#6b7076;
+  --lime:#b6e94f;--onlime:#0f1306;--limedim:rgba(182,233,79,.12);
+  --amber:#e0a84a;--amberdim:rgba(224,168,74,.12);--red:#e2705f;--reddim:rgba(226,112,95,.12)
+}
+*{box-sizing:border-box}
+body{margin:0;background:#060707;color:var(--ink);font-family:Alexandria,sans-serif;font-weight:400}
+.n{font-family:Manrope;font-feature-settings:"tnum";font-weight:700}
+.wrap{max-width:1480px;margin:0 auto;padding:36px 20px 80px}
+.doc{max-width:1040px}
+.doc h1{font-size:28px;font-weight:700;margin:0 0 8px;letter-spacing:-.2px}
+.doc h2{font-size:19px;font-weight:700;margin:44px 0 10px;display:flex;align-items:center;gap:10px}
+.doc h2::before{content:"";width:5px;height:18px;background:var(--lime);transform:skewX(-14deg);display:inline-block}
+.doc p{color:var(--ink2);font-size:14.5px;line-height:1.95;margin:0 0 10px}
+.doc ul{color:var(--ink2);font-size:14px;line-height:1.95;margin:0;padding-inline-start:20px}
+table.t{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+table.t th{text-align:start;font-weight:500;color:var(--faint);font-size:12px;padding:10px 12px;border-bottom:1px solid var(--line2)}
+table.t td{padding:11px 12px;border-bottom:1px solid var(--line);color:var(--ink2);vertical-align:top;line-height:1.7}
+table.t td:first-child{color:var(--ink);font-weight:600;white-space:nowrap}
+.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:5px;white-space:nowrap}
+.y{background:var(--limedim);color:var(--lime)}
+.p{background:var(--amberdim);color:var(--amber)}
+.x{background:var(--reddim);color:var(--red)}
+.g{background:#1d1f22;color:var(--muted)}
+.phase{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:10px}
+.phase div{border:1px solid var(--line2);border-radius:10px;padding:14px 16px;background:var(--panel)}
+.phase b{display:block;font-size:14px;margin-bottom:6px}
+.phase span{font-size:13px;color:var(--ink2);line-height:1.8;display:block}
+.rules{display:grid;grid-template-columns:repeat(2,1fr);gap:8px 24px;margin-top:8px}
+.rules div{font-size:13.5px;color:var(--ink2);line-height:1.8;padding:8px 0;border-bottom:1px solid var(--line)}
+.rules b{color:var(--ink);font-weight:600}
+.shot{margin-top:18px}
+.shot .cap{font-size:13px;color:var(--muted);margin:10px 2px 0;line-height:1.8;max-width:980px}
+.shot .cap b{color:var(--ink);font-weight:600}
+
+/* ---------- app frame ---------- */
+.app{width:100%;height:860px;border:1px solid var(--line2);border-radius:14px;overflow:hidden;background:var(--bg);display:flex}
+.sb{width:232px;flex-shrink:0;background:var(--panel);border-inline-start:1px solid var(--line);display:flex;flex-direction:column;padding:16px 10px 12px}
+.brand{display:flex;align-items:center;gap:10px;padding:2px 10px 16px}
+.brand .mk{width:26px;height:26px;position:relative}
+.brand .mk::before{content:"";position:absolute;inset:2px 9px;background:var(--lime);transform:skewX(-16deg);border-radius:2px}
+.brand b{font-family:Manrope;font-weight:800;letter-spacing:2px;font-size:14px}
+.sch{margin:0 6px 14px;height:34px;border:1px solid var(--line2);border-radius:8px;display:flex;align-items:center;padding:0 10px;gap:8px;color:var(--faint);font-size:12px}
+.sch kbd{margin-inline-start:auto;font-family:Manrope;font-size:10px;border:1px solid var(--line2);border-radius:4px;padding:1px 5px;color:var(--muted)}
+.gl{font-size:11px;color:var(--faint);padding:12px 12px 4px}
+.it{display:flex;align-items:center;gap:10px;height:32px;padding:0 12px;border-radius:7px;font-size:13px;color:var(--ink2)}
+.it svg{width:16px;height:16px;flex-shrink:0;color:var(--muted)}
+.it .c{margin-inline-start:auto;font-family:Manrope;font-size:11px;font-weight:700;color:var(--muted)}
+.it .c.h{color:var(--onlime);background:var(--lime);border-radius:5px;padding:0 6px;line-height:18px}
+.it.on{background:var(--panel2);color:var(--ink);font-weight:600;box-shadow:inset -2px 0 0 var(--lime)}
+.it.on svg{color:var(--ink)}
+.me{margin-top:auto;border-top:1px solid var(--line);padding:12px 8px 0;display:flex;align-items:center;gap:10px}
+.av{width:30px;height:30px;border-radius:50%;background:#24272b;color:var(--ink2);display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0}
+.av.lg{width:52px;height:52px;font-size:18px}
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.top{height:56px;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 24px;gap:12px;flex-shrink:0}
+.crumb{font-size:12px;color:var(--faint)}
+.crumb b{color:var(--ink2);font-weight:500}
+.top .sp{flex:1}
+.ib{width:34px;height:34px;border:1px solid var(--line2);border-radius:8px;display:inline-flex;align-items:center;justify-content:center;color:var(--muted);position:relative}
+.ib svg{width:16px;height:16px}
+.ib i{position:absolute;top:6px;inset-inline-end:7px;width:6px;height:6px;border-radius:3px;background:var(--lime)}
+.pg{flex:1;overflow:hidden;padding:24px 28px}
+.ph{display:flex;align-items:flex-end;gap:16px;margin-bottom:20px}
+.ph h1{margin:0;font-size:24px;font-weight:700;letter-spacing:-.2px}
+.ph .sub{font-size:13px;color:var(--muted);margin-top:4px}
+.ph .sp{flex:1}
+.b1{height:36px;padding:0 14px;border-radius:8px;background:var(--lime);color:var(--onlime);font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.b2{height:36px;padding:0 14px;border-radius:8px;border:1px solid var(--line2);color:var(--ink);font-size:13px;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.b3{height:30px;padding:0 10px;border-radius:7px;border:1px solid var(--line2);color:var(--ink2);font-size:12px;display:inline-flex;align-items:center;white-space:nowrap}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:20px}
+.kpi{padding:16px 18px;border-inline-start:1px solid var(--line);background:var(--panel)}
+.kpi:first-child{border-inline-start:0}
+.kpi .l{font-size:12px;color:var(--muted)}
+.kpi .v{font-family:Manrope;font-weight:700;font-size:28px;margin-top:6px;letter-spacing:-.5px}
+.kpi .v small{font-size:13px;color:var(--muted);font-weight:600;margin-inline-start:4px}
+.kpi .d{font-size:12px;margin-top:4px;color:var(--muted)}
+.up{color:var(--lime)} .dn{color:var(--red)}
+.up,.dn,.n{unicode-bidi:isolate;direction:ltr;display:inline-block}
+.grid{display:grid;gap:16px}
+.box{border:1px solid var(--line);border-radius:10px;background:var(--panel);overflow:hidden}
+.bh{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.bh b{font-size:14px;font-weight:600}
+.bh span{font-size:12px;color:var(--faint)}
+.bh .sp{flex:1}
+.bh a{font-size:12px;color:var(--ink2);text-decoration:none}
+.r{display:flex;align-items:center;gap:12px;padding:11px 16px;border-bottom:1px solid var(--line);font-size:13px}
+.r:last-child{border-bottom:0}
+.r .nm{font-weight:600;color:var(--ink)}
+.r .s{color:var(--muted);font-size:12px}
+.r .sp{flex:1}
+.why{font-size:12px;color:var(--ink2);line-height:1.7}
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block;flex-shrink:0}
+.st{font-size:11px;padding:2px 8px;border-radius:5px;white-space:nowrap}
+table.d{width:100%;border-collapse:collapse;font-size:13px}
+table.d th{text-align:start;font-weight:500;color:var(--faint);font-size:12px;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--panel);white-space:nowrap}
+table.d td{padding:10px 14px;border-bottom:1px solid var(--line);color:var(--ink2);white-space:nowrap}
+table.d td .nm{color:var(--ink);font-weight:600}
+table.d tr.sel td{background:var(--panel2)}
+.bar{height:6px;border-radius:3px;background:#24272b;overflow:hidden;width:90px;display:inline-block;vertical-align:middle}
+.bar i{display:block;height:100%;background:var(--ink2);border-radius:3px}
+.fl{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.fl span{height:30px;padding:0 12px;border-radius:7px;border:1px solid var(--line2);font-size:12px;color:var(--ink2);display:inline-flex;align-items:center;gap:6px}
+.fl span b{font-family:Manrope;font-weight:700;color:var(--muted)}
+.fl span.on{background:var(--ink);color:#0b0c0d;border-color:var(--ink)}
+.fl span.on b{color:#0b0c0d}
+.tabs{display:flex;gap:22px;border-bottom:1px solid var(--line);margin-bottom:18px}
+.tabs span{padding:10px 0;font-size:13px;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs span.on{color:var(--ink);font-weight:600;border-color:var(--lime)}
+.hm{display:grid;grid-template-columns:repeat(30,1fr);gap:3px}
+.hm i{aspect-ratio:1;border-radius:3px;background:#202326}
+.hm i.a{background:rgba(182,233,79,.25)} .hm i.b{background:rgba(182,233,79,.55)} .hm i.c{background:var(--lime)} .hm i.z{background:rgba(226,112,95,.45)}
+.note{border-inline-start:2px solid var(--line2);padding:2px 12px;font-size:12.5px;color:var(--ink2);line-height:1.8}
+.sugg{border:1px solid var(--line2);border-radius:8px;padding:10px 12px;font-size:12.5px;color:var(--ink2);line-height:1.8;background:var(--panel2)}
+.sugg .who{font-size:11px;color:var(--faint);display:block;margin-bottom:2px}
+@media (max-width:1100px){.phase,.rules{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="doc">
+  <h1>كوتشيفو v7: النظام الجديد</h1>
+  <p>دخلت على كل جزء في النسخة التجريبية بتاعة GymRate، في لوحة الكابتن (32 صفحة) وفي تطبيق اللاعب، وقارنت كل جزء باللي موجود عندنا في الكود فعلًا. تحت هتلاقي ثلاث حاجات: الجدول، وقواعد الشكل الجديد، وخطة الشغل. وبعدهم الـ mockup.</p>
+
+  <h2>كل جزء عندهم، وعندنا إيه</h2>
+  <p>
+    <span class="tag y">عندنا</span> موجود ومش محتاج حاجة ·
+    <span class="tag p">نكمّله</span> موجود عندنا بس ناقص ·
+    <span class="tag g">جديد</span> نعمله ·
+    <span class="tag x">لأ</span> مش هنعمله
+  </p>
+  <table class="t">
+    <tr><th>الجزء عندهم</th><th>بيعمل إيه</th><th>عندنا</th><th>هناخد منه إيه</th></tr>
+    <tr><td>نظرة عامة</td><td>4 أرقام، و«3 عملاء محتاجين تدخلك» مع سبب كل واحد، وقايمة الشغل، وإيراد آخر 7 أيام</td><td><span class="tag p">نكمّله</span></td><td>عندنا الرئيسية ورادار الانقطاع. نعيد ترتيبها: الأرقام فوق، وبعدها «محتاجين تدخلك» وجنب كل واحد سبب مكتوب بجملة واضحة، وبعدها قايمة الشغل.</td></tr>
+    <tr><td>الوارد</td><td>طابور واحد لكل الأنواع، واختصارات J و K و R و E</td><td><span class="tag p">نكمّله</span></td><td>«المتابعة» عندنا. نضيف عليها الرسايل وطلبات الانضمام والاختصارات.</td></tr>
+    <tr><td>الرسائل</td><td>شات مع كل عميل</td><td><span class="tag y">عندنا</span></td><td>لسه رافعينه. يبقى ليه صفحة «صندوق الوارد».</td></tr>
+    <tr><td>الرسائل الجماعية</td><td>رسالة لمجموعة، ومعاها تنبيه «اقرأ رسايلهم الأول»</td><td><span class="tag g">جديد</span></td><td>ناخدها كلها، ومعاها التنبيه.</td></tr>
+    <tr><td>مراجعة الأداء</td><td>فيديو، وملاحظات عند ثواني معينة، ورسم على اللقطة، وصوت</td><td><span class="tag p">نكمّله</span></td><td>الملاحظات عند ثانية معينة والملاحظات الجاهزة. من غير الرسم.</td></tr>
+    <tr><td>تقييم التمرين</td><td>قايمة بتقييم كل تمرينة</td><td><span class="tag p">نكمّله</span></td><td>البيانات عندنا وبيروح بيها إشعار بس. نعمل لها صفحة «بعد التمرين».</td></tr>
+    <tr><td>التعديلات الصحية</td><td>الذكاء الاصطناعي يعدّل البرنامج للإصابة أو الحمل</td><td><span class="tag x">لأ</span></td><td>حاجة طبية وفيها مسؤولية. نكتفي بإن الإصابة تبان بلون واضح.</td></tr>
+    <tr><td>العملاء</td><td>جدول فيه الالتزام وآخر متابعة والحالة والتجديد، وفلاتر بالأعداد، وتصدير</td><td><span class="tag p">نكمّله</span></td><td>نحوّل قايمة اللاعيبة لجدول حقيقي بأعمدة، وفلاتر عليها أعداد، وتصدير CSV.</td></tr>
+    <tr><td>مركز الاستيراد</td><td>يرفع ملفات PDF أو Excel من أدوات تانية</td><td><span class="tag g">جديد</span></td><td>بعدين. ممكن يبقى خدمة يدوية مننا لأي كابتن جديد.</td></tr>
+    <tr><td>العملاء المحتملون</td><td>CRM للناس اللي بتسأل</td><td><span class="tag g">جديد</span></td><td>نسخة صغيرة: اللي فتح صفحتك وما كمّلش، واللي اتعتذر له.</td></tr>
+    <tr><td>مكتبة الخطط والخطط الأساسية</td><td>خطط تمرين وأكل جاهزة</td><td><span class="tag y">عندنا</span></td><td>خطط التمارين والأنظمة الغذائية.</td></tr>
+    <tr><td>التمارين والأطعمة</td><td>مكتبة خاصة بالكوتش</td><td><span class="tag y">عندنا</span></td><td>مكتبة الأكلات موجودة. نتأكد إن الكابتن يقدر يضيف تمرين بنفسه.</td></tr>
+    <tr><td>بروتوكول التحسين</td><td>جرعات هرمونات وحقن</td><td><span class="tag x">لأ</span></td><td>خطر قانوني وطبي. عندنا المكملات وكفاية.</td></tr>
+    <tr><td>حزم التهيئة</td><td>خطة ونماذج وخطوات تتدي للعميل الجديد بضغطة</td><td><span class="tag g">جديد</span></td><td>«باقة البداية»: «اقبل» تدي اللاعب البرنامج والأكل والتقييم الأول مرة واحدة.</td></tr>
+    <tr><td>الباقات والمدفوعات</td><td>الباقات، والفواتير، والدفع كاش وإنستاباي وفودافون كاش</td><td><span class="tag y">عندنا</span></td><td>الباقات والعروض والدفعات موجودة، وطريقة الدفع بتتسجل.</td></tr>
+    <tr><td>التحليلات</td><td>إيراد كل شهر، والإيراد المتكرر، وكل باقة فيها كام، والالتزام، وإتمام المتابعات، وتصدير</td><td><span class="tag p">نكمّله</span></td><td>صفحة «الأرقام»: الإيراد كل شهر، وكل باقة فيها كام لاعب، ومين بيجدد، والالتزام.</td></tr>
+    <tr><td>الأتمتة</td><td>رسالة متابعة يكتبها الذكاء الاصطناعي للي بطّل، والكوتش يراجعها، ورسايل مجدولة</td><td><span class="tag p">نكمّله</span></td><td>KO يكتب مسودة للي بطّل، والكابتن يوافق عليها. ومعاها الرسايل المجدولة من الرسالة الجماعية.</td></tr>
+    <tr><td>نماذج الاستقبال</td><td>أسئلة أول مرة</td><td><span class="tag y">عندنا</span></td><td>التقييمات واستمارة البداية.</td></tr>
+    <tr><td>التحدي</td><td>تحدي 90 يوم وترتيب</td><td><span class="tag y">عندنا</span></td><td>الترتيب موجود، والميداليات متوافق عليها.</td></tr>
+    <tr><td>الإحالات والشركاء والمتجر</td><td>نقاط ومكافآت ومتجر</td><td><span class="tag x">لأ</span></td><td>مش دلوقتي.</td></tr>
+    <tr><td>الملف والهوية</td><td>لينك عام، وتقييم تلقائي موثّق، وآراء العملاء، وقبل وبعد</td><td><span class="tag p">نكمّله</span></td><td>صفحتك العامة موجودة. نضيف عليها آراء اللاعيبة وصور قبل وبعد، بموافقة اللاعب.</td></tr>
+    <tr><td>تصاميم PDF، وصوت الذكاء، ورصيد الذكاء</td><td>PDF بهوية الكوتش، وصوت مستنسخ</td><td><span class="tag x">لأ</span></td><td>مش أولوية.</td></tr>
+    <tr><td>ملف العميل</td><td>أرقام فوق، ودرجة كل يوم من 10 لآخر 30 يوم، وسلسلة، و«الخطة جاهزة بحلول»، وقفل مواعيد المتابعة، وتحليل أسبوعي</td><td><span class="tag p">نكمّله</span></td><td>نضيف شبكة آخر 30 يوم (اتمرن، وسجّل أكل)، و«الخطة جاهزة يوم …» للاعب الجديد، وتحليل أسبوعي من KO.</td></tr>
+    <tr><td>تطبيق العميل</td><td>درجة اليوم من 10، وتمرينة النهارده، وأكل النهارده</td><td><span class="tag y">عندنا</span></td><td>تطبيق v3 عندنا بنفس الفكرة وأكتر.</td></tr>
+  </table>
+
+  <h2>الخلاصة</h2>
+  <p>أغلب اللي عندهم موجود عندنا. الفرق الحقيقي في حاجتين: <b style="color:var(--ink)">الترتيب</b>، يعني كل حاجة ليها مكان واضح، و<b style="color:var(--ink)">الشكل</b>، يعني إحساس سيستم شغل احترافي. اللي ناقصنا فعلًا: الرسايل الجماعية، وصفحة «بعد التمرين»، وجدول اللاعبين الحقيقي، وصفحة الأرقام، وباقة البداية، وآراء اللاعيبة.</p>
+
+  <h2>قواعد الشكل الجديد: إزاي ما يبانش AI</h2>
+  <div class="rules">
+    <div><b>مفيش توهج ولا تدرّج ألوان ولا نجوم «✨»:</b> ده أكتر حاجة بتفضح التصميم المعمول بالـ AI.</div>
+    <div><b>KO بيتكلم بهدوء:</b> اقتراحه سطر رمادي مكتوب جنبه «اقتراح KO»، مش كارت ملوّن وزرار سحري.</div>
+    <div><b>الليموني للزرار الأساسي والحالة بس:</b> زرار واحد في الصفحة، والباقي رمادي.</div>
+    <div><b>أرقام بخط Manrope وجداول حقيقية:</b> بخطوط رفيعة وأعمدة، زي أدوات الشغل المحترمة.</div>
+    <div><b>أركان أصغر:</b> من 8 لـ10 بكسل بدل 22. الكروت المدورة أوي شكلها لعبة.</div>
+    <div><b>من اللوجو:</b> الخط المايل الليموني علامة صغيرة جنب العناوين، مش زينة في كل حتة.</div>
+    <div><b>كلام قصير ومباشر:</b> «حبيبة مستنية من 20 ساعة»، مش «يحتاج عميلك إلى اهتمامك».</div>
+    <div><b>كثافة معقولة:</b> صفوف ارتفاعها من 40 لـ44 بكسل، والكابتن يشوف 12 لاعب من غير ما ينزل.</div>
+  </div>
+
+  <h2>هنعمل إيه بالترتيب</h2>
+  <div class="phase">
+    <div><b>المرحلة 1: الهيكل والشكل</b><span>القايمة الجانبية الجديدة بمجموعاتها، والشكل الجديد على كل الصفحات، وصفحة «اليوم»، وجدول اللاعبين، وصندوق الوارد. من غير جداول جديدة في قاعدة البيانات.</span></div>
+    <div><b>المرحلة 2: الشغل اليومي</b><span>«المتابعة» فيها كل الأنواع، وصفحة «بعد التمرين»، وملاحظات الفيديو، وملف اللاعب الجديد بشبكة آخر 30 يوم. فيه جدول واحد جديد لملاحظات الفيديو.</span></div>
+    <div><b>المرحلة 3: البيزنس</b><span>الرسايل الجماعية والمجدولة، وصفحة «الأرقام»، وباقة البداية، وآراء اللاعيبة على صفحتك العامة. فيها جداول جديدة، وكل جدول هيستنى موافقتك.</span></div>
+  </div>
+</div>
+
+<!-- ============ SCREEN 1: TODAY ============ -->
+<div class="doc"><h2>١. اليوم</h2></div>
+<div class="shot">
+<div class="app" data-active="today">
+  <div class="main">
+    <div class="top"><span class="crumb"><b>اليوم</b></span><span class="sp"></span><span class="ib"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10 21h4"/></svg><i></i></span><span class="av">ع</span></div>
+    <div class="pg">
+      <div class="ph"><div><h1>صباح الخير يا كابتن علي</h1><div class="sub">السبت 14 نوفمبر · عندك 9 حاجات مستنياك، أولها حبيبة</div></div><span class="sp"></span><span class="b2">رسالة جماعية</span><span class="b1">ابدأ المتابعة</span></div>
+      <div class="kpis">
+        <div class="kpi"><div class="l">لاعبين شغالين</div><div class="v">29</div><div class="d"><span class="up">+3</span> الشهر ده</div></div>
+        <div class="kpi"><div class="l">مستنيين ردك</div><div class="v">9</div><div class="d">أقدم واحد من 20 ساعة</div></div>
+        <div class="kpi"><div class="l">اتحصّل الشهر ده</div><div class="v">18,600<small>ج</small></div><div class="d"><span class="up">+12%</span> عن أكتوبر</div></div>
+        <div class="kpi"><div class="l">الالتزام · آخر 7 أيام</div><div class="v">86<small>%</small></div><div class="d"><span class="dn">−3</span> عن الأسبوع اللي فات</div></div>
+      </div>
+      <div class="grid" style="grid-template-columns:1.35fr 1fr">
+        <div class="box">
+          <div class="bh"><b>محتاجين تدخلك</b><span>3 لاعيبة</span><span class="sp"></span><a>كل اللاعيبة</a></div>
+          <div class="r"><span class="av">ع</span><div style="flex:1;min-width:0"><div><span class="nm">عمر حسن</span> <span class="s">· تنشيف · 3 شهور</span></div><div class="why">ما اتمرنش ولا سجّل أكل من 8 أيام، وما ردّش على آخر رسالة.</div></div><span class="b3">ابعتله</span></div>
+          <div class="r"><span class="av">ه</span><div style="flex:1;min-width:0"><div><span class="nm">هنا وائل</span> <span class="s">· قوة · شهر</span></div><div class="why">تالت تمرين ورا بعض تقيّمه 9 أو أكتر، وكتبت إن كتفها شادد.</div></div><span class="b3">افتح</span></div>
+          <div class="r"><span class="av">ر</span><div style="flex:1;min-width:0"><div><span class="nm">ريم جمال</span> <span class="s">· تخسيس · شهر</span></div><div class="why">اشتراكها بيخلص الاتنين، وما طلبتش تجديد.</div></div><span class="b3">جدد</span></div>
+          <div style="padding:10px 16px;border-top:1px solid var(--line)"><div class="sugg"><span class="who">اقتراح KO لعمر</span>«عامل إيه يا عمر؟ مش شايفك الأسبوع ده. لو الوقت ضيق، أظبطلك برنامج 3 أيام بدل 4.»</div></div>
+        </div>
+        <div class="grid">
+          <div class="box">
+            <div class="bh"><b>المتابعة</b><span>9 مستنيين</span><span class="sp"></span><a>افتح الكل</a></div>
+            <div class="r"><span class="dot" style="background:var(--amber)"></span><span class="nm">حبيبة عزت</span><span class="s">طلب انضمام</span><span class="sp"></span><span class="s n">20 س</span></div>
+            <div class="r"><span class="dot" style="background:var(--lime)"></span><span class="nm">أحمد سامي</span><span class="s">رسالة · 2</span><span class="sp"></span><span class="s n">40 د</span></div>
+            <div class="r"><span class="dot" style="background:var(--muted)"></span><span class="nm">نور إبراهيم</span><span class="s">فيديو أداء</span><span class="sp"></span><span class="s n">دلوقتي</span></div>
+            <div class="r"><span class="dot" style="background:var(--muted)"></span><span class="nm">سارة عادل</span><span class="s">متابعة أسبوعية</span><span class="sp"></span><span class="s n">5 س</span></div>
+          </div>
+          <div class="box">
+            <div class="bh"><b>تجديدات الأسبوع ده</b><span class="sp"></span><span class="n" style="font-size:13px;color:var(--ink2)">4,800 ج</span></div>
+            <div class="r"><span class="nm">ريم جمال</span><span class="s">شهر</span><span class="sp"></span><span class="s">الاتنين</span><span class="n" style="font-size:12px">1,200</span></div>
+            <div class="r"><span class="nm">حسن علي</span><span class="s">شهر</span><span class="sp"></span><span class="s">الأربع</span><span class="n" style="font-size:12px">1,200</span></div>
+            <div class="r"><span class="nm">سلمى ناصر</span><span class="s">3 شهور</span><span class="sp"></span><span class="s">الجمعة</span><span class="n" style="font-size:12px">2,400</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<p class="cap">
+  <b>اليوم</b> هي أول صفحة الكابتن يفتحها.
+  <br>• فوق: أربع أرقام بس، وجنب كل رقم مقارنة بالأسبوع أو الشهر اللي فات.
+  <br>• «محتاجين تدخلك»: كل لاعب مكتوب جنبه السبب بجملة عادية. KO بيقترح رسالة في سطر رمادي هادي، من غير ما يبان إنه المسيطر على الصفحة.
+  <br>• على الشمال: ملخص المتابعة، والتجديدات اللي جاية ومجموع فلوسها.
+</p>
+</div>
+
+<!-- ============ SCREEN 2: PLAYERS TABLE ============ -->
+<div class="doc"><h2>٢. اللاعبين</h2></div>
+<div class="shot">
+<div class="app" data-active="players">
+  <div class="main">
+    <div class="top"><span class="crumb"><b>اللاعبين</b></span><span class="sp"></span><span class="ib"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10 21h4"/></svg></span><span class="av">ع</span></div>
+    <div class="pg">
+      <div class="ph"><div><h1>اللاعبين</h1><div class="sub">29 شغالين من 30</div></div><span class="sp"></span><span class="b2">تصدير CSV</span><span class="b1">ضيف لاعب</span></div>
+      <div class="fl"><span class="on">شغالين <b>29</b></span><span>بيخلص قريب <b>3</b></span><span>محتاجين نظرة <b>3</b></span><span>متجمّدين <b>0</b></span><span>خلص اشتراكهم <b>1</b></span><span>مؤرشفين <b>0</b></span><span style="margin-inline-start:auto;width:240px;color:var(--faint)">دوّر باسم أو رقم…</span></div>
+      <div class="box">
+        <table class="d">
+          <tr><th>اللاعب</th><th>البرنامج</th><th>الالتزام · 30 يوم</th><th>آخر تمرين</th><th>الوزن</th><th>آخر متابعة</th><th>الاشتراك</th><th>الحالة</th></tr>
+          <tr><td><span class="row" style="display:flex;gap:10px;align-items:center"><span class="av">س</span><span class="nm">سارة عادل</span></span></td><td>تخسيس · 4 أيام</td><td><span class="bar"><i style="width:96%"></i></span> <span class="n">96%</span></td><td>النهارده</td><td><span class="n">68.2</span> <span class="up n">−4.1</span></td><td>من 5 ساعات</td><td>13 يناير</td><td><span class="st y">ماشية كويس</span></td></tr>
+          <tr class="sel"><td><span style="display:flex;gap:10px;align-items:center"><span class="av">ع</span><span class="nm">عمر حسن</span></span></td><td>تنشيف · 4 أيام</td><td><span class="bar"><i style="width:41%;background:var(--red)"></i></span> <span class="n">41%</span></td><td>من 8 أيام</td><td><span class="n">91.0</span> <span class="n" style="color:var(--muted)">0.0</span></td><td>من 12 يوم</td><td>22 ديسمبر</td><td><span class="st x">محتاج نظرة</span></td></tr>
+          <tr><td><span style="display:flex;gap:10px;align-items:center"><span class="av">أ</span><span class="nm">أحمد سامي</span></span></td><td>تنشيف · 4 أيام</td><td><span class="bar"><i style="width:92%"></i></span> <span class="n">92%</span></td><td>بيتمرن دلوقتي</td><td><span class="n">82.4</span> <span class="up n">−1.2</span></td><td>من 3 أيام</td><td>4 ديسمبر</td><td><span class="st y">ماشي كويس</span></td></tr>
+          <tr><td><span style="display:flex;gap:10px;align-items:center"><span class="av">ر</span><span class="nm">ريم جمال</span></span></td><td>تخسيس · 3 أيام</td><td><span class="bar"><i style="width:78%"></i></span> <span class="n">78%</span></td><td>أمس</td><td><span class="n">74.5</span> <span class="up n">−2.0</span></td><td>من 6 أيام</td><td>16 نوفمبر</td><td><span class="st p">بيخلص قريب</span></td></tr>
+          <tr><td><span style="display:flex;gap:10px;align-items:center"><span class="av">ه</span><span class="nm">هنا وائل</span></span></td><td>قوة · 3 أيام</td><td><span class="bar"><i style="width:88%"></i></span> <span class="n">88%</span></td><td>النهارده</td><td><span class="n">61.0</span> <span class="n" style="color:var(--muted)">+0.3</span></td><td>من 4 أيام</td><td>2 ديسمبر</td><td><span class="st x">محتاج نظرة</span></td></tr>
+          <tr><td><span style="display:flex;gap:10px;align-items:center"><span class="av">ن</span><span class="nm">نور إبراهيم</span></span></td><td>قوة · 3 أيام</td><td><span class="bar"><i style="width:100%"></i></span> <span class="n">100%</span></td><td>النهارده</td><td><span class="n">77.8</span> <span class="n" style="color:var(--muted)">+1.1</span></td><td>من 3 أيام</td><td>14 فبراير</td><td><span class="st y">ماشي كويس</span></td></tr>
+          <tr><td><span style="display:flex;gap:10px;align-items:center"><span class="av">ك</span><span class="nm">كريم جلال</span></span></td><td>تنشيف · 4 أيام</td><td><span class="bar"><i style="width:88%"></i></span> <span class="n">88%</span></td><td>من يومين</td><td><span class="n">83.9</span> <span class="up n">−5.5</span></td><td>دلوقتي</td><td>27 نوفمبر</td><td><span class="st y">ماشي كويس</span></td></tr>
+          <tr><td><span style="display:flex;gap:10px;align-items:center"><span class="av">م</span><span class="nm">منى سمير</span></span></td><td>تخسيس · 4 أيام</td><td><span class="bar"><i style="width:84%"></i></span> <span class="n">84%</span></td><td>أمس</td><td><span class="n">70.1</span> <span class="up n">−3.3</span></td><td>من 4 ساعات</td><td>11 ديسمبر</td><td><span class="st y">ماشية كويس</span></td></tr>
+          <tr><td><span style="display:flex;gap:10px;align-items:center"><span class="av">ي</span><span class="nm">يوسف نبيل</span></span></td><td>تضخيم · 5 أيام</td><td><span class="bar"><i style="width:90%"></i></span> <span class="n">90%</span></td><td>النهارده</td><td><span class="n">79.4</span> <span class="n" style="color:var(--muted)">+2.4</span></td><td>من يومين</td><td>9 فبراير</td><td><span class="st y">ماشي كويس</span></td></tr>
+          <tr><td><span style="display:flex;gap:10px;align-items:center"><span class="av">ح</span><span class="nm">حسن علي</span></span></td><td>تخسيس · 3 أيام</td><td><span class="bar"><i style="width:70%"></i></span> <span class="n">70%</span></td><td>من 3 أيام</td><td><span class="n">95.2</span> <span class="up n">−1.0</span></td><td>من 5 أيام</td><td>18 نوفمبر</td><td><span class="st p">بيخلص قريب</span></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<p class="cap">
+  <b>اللاعبين</b> بقت جدول حقيقي.
+  <br>• فوق: فلاتر، وعلى كل فلتر عدد اللاعيبة.
+  <br>• الأعمدة: الالتزام لآخر 30 يوم، وآخر تمرين، والوزن والفرق، وآخر متابعة، ونهاية الاشتراك، والحالة.
+  <br>• الأحمر بيظهر في الحالات المهمة بس. الكابتن يشوف 10 لاعيبة من غير ما ينزل.
+  <br>• دوس على أي صف يفتح ملف اللاعب.
+</p>
+</div>
+
+<!-- ============ SCREEN 3: PLAYER FILE ============ -->
+<div class="doc"><h2>٣. ملف اللاعب</h2></div>
+<div class="shot">
+<div class="app" data-active="players">
+  <div class="main">
+    <div class="top"><span class="crumb">اللاعبين ‹ <b>عمر حسن</b></span><span class="sp"></span><span class="ib"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10 21h4"/></svg></span><span class="av">ع</span></div>
+    <div class="pg">
+      <div class="ph" style="align-items:center"><span class="av lg">ع</span><div><h1>عمر حسن</h1><div class="sub">تنشيف · باقة 3 شهور · من 24 سبتمبر لـ22 ديسمبر · <span style="color:var(--red)">محتاج نظرة</span></div></div><span class="sp"></span><span class="b2">عدّل البرنامج</span><span class="b1">ابعتله رسالة</span></div>
+      <div class="tabs"><span class="on">نظرة عامة</span><span>التمرين</span><span>الأكل</span><span>المتابعات</span><span>التقييمات</span><span>الصور</span><span>الشات</span><span>ملاحظات</span></div>
+      <div class="kpis" style="grid-template-columns:repeat(5,1fr)">
+        <div class="kpi"><div class="l">الوزن</div><div class="v">91.0<small>كجم</small></div><div class="d">ثابت من 3 أسابيع</div></div>
+        <div class="kpi"><div class="l">من البداية</div><div class="v up">−3.4</div><div class="d">كان 94.4</div></div>
+        <div class="kpi"><div class="l">الالتزام · 30 يوم</div><div class="v dn">41<small>%</small></div><div class="d">كان 85% الشهر اللي فات</div></div>
+        <div class="kpi"><div class="l">آخر تمرين</div><div class="v">8<small>أيام</small></div><div class="d">2 نوفمبر · يوم الرجل</div></div>
+        <div class="kpi"><div class="l">فاضل في الاشتراك</div><div class="v">38<small>يوم</small></div><div class="d">3,000 ج اتدفعت</div></div>
+      </div>
+      <div class="grid" style="grid-template-columns:1.4fr 1fr">
+        <div class="grid">
+          <div class="box"><div class="bh"><b>آخر 30 يوم</b><span>كل مربع يوم</span><span class="sp"></span><span style="font-size:11px;color:var(--faint);display:flex;gap:10px;align-items:center"><span><i class="dot" style="background:var(--lime)"></i> تمرين وأكل</span><span><i class="dot" style="background:rgba(182,233,79,.4)"></i> واحد منهم</span><span><i class="dot" style="background:rgba(226,112,95,.6)"></i> فوّت يوم تمرين</span></span></div>
+            <div style="padding:14px 16px">
+              <div class="hm">
+                <i class="c"></i><i class="c"></i><i class="b"></i><i class="c"></i><i></i><i class="c"></i><i class="c"></i><i class="b"></i><i class="c"></i><i></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="b"></i><i></i><i class="c"></i><i class="b"></i><i class="c"></i><i class="a"></i><i></i><i class="a"></i><i class="z"></i><i class="a"></i><i></i><i class="z"></i><i></i><i class="z"></i><i></i><i class="z"></i><i></i>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--faint);margin-top:6px"><span>16 أكتوبر</span><span>النهارده</span></div>
+            </div>
+          </div>
+          <div class="box"><div class="bh"><b>الوزن</b><span>كل متابعة</span></div>
+            <svg viewBox="0 0 600 150" width="100%" height="150" preserveAspectRatio="none" style="display:block"><g stroke="#222427"><line x1="0" y1="30" x2="600" y2="30"/><line x1="0" y1="75" x2="600" y2="75"/><line x1="0" y1="120" x2="600" y2="120"/></g><polyline fill="none" stroke="#c4c7cb" stroke-width="2" points="20,28 110,44 200,62 290,80 380,96 470,98 560,98"/><g fill="#ededea"><circle cx="20" cy="28" r="3"/><circle cx="110" cy="44" r="3"/><circle cx="200" cy="62" r="3"/><circle cx="290" cy="80" r="3"/><circle cx="380" cy="96" r="3"/><circle cx="470" cy="98" r="3"/><circle cx="560" cy="98" r="3"/></g></svg>
+          </div>
+        </div>
+        <div class="grid">
+          <div class="box"><div class="bh"><b>ملخص الأسبوع</b><span>اقتراح KO · راجعه قبل ما تبعته</span></div>
+            <div style="padding:12px 16px;display:flex;flex-direction:column;gap:10px">
+              <div class="note">بطّل تمرين من يوم 2 نوفمبر بعد أسبوعين التزام عالي. الوزن ثابت من 3 أسابيع، وآخر متابعة كتب فيها «الشغل زاد».</div>
+              <div class="note">الأكل اتسجّل يومين بس من آخر 10 أيام.</div>
+              <div class="note">في الغالب الوقت هو المشكلة، مش البرنامج. ممكن برنامج 3 أيام يرجّعه.</div>
+            </div>
+          </div>
+          <div class="box"><div class="bh"><b>آخر المتابعات</b><span class="sp"></span><a>كلها</a></div>
+            <div class="r"><span class="n">2 نوفمبر</span><span class="s" style="flex:1">91.0 كجم · «الشغل زاد ومش لاحق»</span><span class="st p">مستنية</span></div>
+            <div class="r"><span class="n">26 أكتوبر</span><span class="s" style="flex:1">91.2 كجم</span><span class="st g">اتراجعت</span></div>
+            <div class="r"><span class="n">19 أكتوبر</span><span class="s" style="flex:1">91.4 كجم</span><span class="st g">اتراجعت</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<p class="cap">
+  <b>ملف اللاعب</b>
+  <br>• فوق: خمس أرقام بتلخّص حاله.
+  <br>• شبكة آخر 30 يوم: كل مربع يوم، والأحمر معناه إنه فوّت تمرين.
+  <br>• منحنى الوزن.
+  <br>• ملخص الأسبوع من KO: نقط مكتوبة بهدوء، والكابتن يقراها ويقرر.
+  <br>• نفس التابات بتاعة ملف اللاعب الحالي، وزاد عليها «الشات».
+</p>
+</div>
+
+<!-- ============ SCREEN 4: NUMBERS ============ -->
+<div class="doc"><h2>٤. الأرقام</h2></div>
+<div class="shot">
+<div class="app" data-active="numbers" style="height:840px">
+  <div class="main">
+    <div class="top"><span class="crumb">البيزنس ‹ <b>الأرقام</b></span><span class="sp"></span><span class="ib"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10 21h4"/></svg></span><span class="av">ع</span></div>
+    <div class="pg">
+      <div class="ph"><div><h1>الأرقام</h1><div class="sub">آخر 6 شهور</div></div><span class="sp"></span><div class="fl" style="margin:0"><span>30 يوم</span><span>90 يوم</span><span class="on">6 شهور</span><span>سنة</span></div><span class="b2">تصدير CSV</span></div>
+      <div class="kpis">
+        <div class="kpi"><div class="l">اتحصّل في 6 شهور</div><div class="v">95,400<small>ج</small></div><div class="d"><span class="up">+18%</span> عن الـ6 اللي قبلهم</div></div>
+        <div class="kpi"><div class="l">متوقع كل شهر من الاشتراكات</div><div class="v">29,500<small>ج</small></div><div class="d">من 29 اشتراك شغّال</div></div>
+        <div class="kpi"><div class="l">جدّدوا</div><div class="v">74<small>%</small></div><div class="d">20 من 27 اشتراك خلص</div></div>
+        <div class="kpi"><div class="l">المتابعات اتبعتت في ميعادها</div><div class="v">88<small>%</small></div><div class="d">الالتزام 86%</div></div>
+      </div>
+      <div class="grid" style="grid-template-columns:1.4fr 1fr">
+        <div class="box"><div class="bh"><b>اللي اتحصّل كل شهر</b><span>جنيه</span></div>
+          <div style="padding:16px 18px 10px;display:flex;align-items:flex-end;gap:22px;height:240px">
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px"><span class="n" style="font-size:11px;color:var(--muted)">12.1k</span><div style="width:100%;height:110px;background:#2c2f33;border-radius:4px 4px 0 0"></div><span style="font-size:11px;color:var(--faint)">يونيو</span></div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px"><span class="n" style="font-size:11px;color:var(--muted)">14.4k</span><div style="width:100%;height:130px;background:#2c2f33;border-radius:4px 4px 0 0"></div><span style="font-size:11px;color:var(--faint)">يوليو</span></div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px"><span class="n" style="font-size:11px;color:var(--muted)">15.0k</span><div style="width:100%;height:136px;background:#2c2f33;border-radius:4px 4px 0 0"></div><span style="font-size:11px;color:var(--faint)">أغسطس</span></div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px"><span class="n" style="font-size:11px;color:var(--muted)">17.2k</span><div style="width:100%;height:156px;background:#2c2f33;border-radius:4px 4px 0 0"></div><span style="font-size:11px;color:var(--faint)">سبتمبر</span></div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px"><span class="n" style="font-size:11px;color:var(--muted)">18.1k</span><div style="width:100%;height:164px;background:#2c2f33;border-radius:4px 4px 0 0"></div><span style="font-size:11px;color:var(--faint)">أكتوبر</span></div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px"><span class="n" style="font-size:11px;color:var(--ink)">18.6k</span><div style="width:100%;height:168px;background:var(--lime);border-radius:4px 4px 0 0"></div><span style="font-size:11px;color:var(--ink2)">نوفمبر</span></div>
+          </div>
+        </div>
+        <div class="box"><div class="bh"><b>كل باقة</b></div>
+          <table class="d">
+            <tr><th>الباقة</th><th>لاعبين</th><th>كل شهر</th><th>جدّدوا</th></tr>
+            <tr><td class="nm">شهر · 1,200</td><td class="n">6</td><td class="n">7,200</td><td class="n">61%</td></tr>
+            <tr><td class="nm">3 شهور · 3,000</td><td class="n">16</td><td class="n">16,000</td><td class="n">79%</td></tr>
+            <tr><td class="nm">6 شهور · 5,400</td><td class="n">7</td><td class="n">6,300</td><td class="n">86%</td></tr>
+          </table>
+          <div style="padding:12px 16px;border-top:1px solid var(--line)"><div class="note">باقة الـ3 شهور هي اللي بتجيب أكتر فلوس، واللي بيجدّدها كتير.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<p class="cap">
+  <b>الأرقام</b>: كل الفلوس واللاعيبة في صفحة واحدة.
+  <br>• فوق: اللي اتحصّل، واللي متوقع كل شهر من الاشتراكات، ونسبة التجديد، ونسبة المتابعات اللي اتبعتت في ميعادها.
+  <br>• تحت: اللي اتحصّل كل شهر، والشهر الحالي بس بالليموني.
+  <br>• جنبه جدول الباقات: كل باقة فيها كام لاعب، وبتجيب كام في الشهر، ونسبة اللي جدّدوها.
+  <br>• كل الأرقام دي بتتحسب من الدفعات والاشتراكات اللي عندنا أصلًا.
+</p>
+</div>
+
+</div>
+
+<script>
+// One sidebar for every frame so the structure reads the same everywhere.
+const I = {
+  today:'<path d="M3 11l9-7 9 7v9h-6v-6H9v6H3z"/>',
+  queue:'<path d="M4 13l3-8h10l3 8v6H4z"/><path d="M4 13h5l1 2h4l1-2h5"/>',
+  inbox:'<path d="M4 5h16v11H9l-5 4z"/>',
+  video:'<rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3"/>',
+  after:'<path d="M3 12h4l3-7 4 14 3-7h4"/>',
+  join:'<circle cx="10" cy="8" r="4"/><path d="M3 21a7 7 0 0 1 14 0M19 8v6M16 11h6"/>',
+  players:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"/>',
+  train:'<path d="M6 8v8M18 8v8M3 10v4M21 10v4M6 12h12"/>',
+  food:'<path d="M4 11h16a8 8 0 0 1-16 0zM12 3v4M8 5v2M16 5v2"/>',
+  forms:'<path d="M8 3h8v4H8zM6 5H4v16h16V5h-2M8 12h8M8 16h5"/>',
+  pack:'<path d="M3 7l9-4 9 4-9 4z"/><path d="M3 7v10l9 4 9-4V7"/>',
+  money:'<rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/>',
+  num:'<path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/>',
+  bc:'<path d="M3 11v2l13 5V6zM16 8a4 4 0 0 1 0 8"/>',
+  page:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+  set:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>'
+};
+const ic=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${I[k]}</svg>`;
+const groups=[
+  [null,[['today','اليوم'],['players','اللاعبين','29']]],
+  ['الشغل اليومي',[['queue','المتابعة','9',1],['inbox','صندوق الوارد','3',1],['video','فيديوهات الأداء','1'],['after','بعد التمرين','3'],['join','طلبات الانضمام','2']]],
+  ['المكتبة',[['train','خطط التمارين'],['food','الأنظمة الغذائية'],['food','مكتبة الأكلات'],['forms','التقييمات'],['pack','باقات البداية']]],
+  ['البيزنس',[['money','الباقات والدفعات'],['num','الأرقام'],['bc','الرسايل الجماعية']]],
+  ['حسابك',[['page','صفحتك العامة'],['set','الإعدادات']]]
+];
+document.querySelectorAll('.app').forEach(app=>{
+  const a=app.dataset.active, key={today:'اليوم',players:'اللاعبين',numbers:'الأرقام'}[a];
+  let h=`<div class="sb"><div class="brand"><span class="mk"></span><b>KOCHIVO</b></div><div class="sch">${ic('page').replace('viewBox','style="width:14px;height:14px" viewBox')} دوّر على لاعب أو صفحة<kbd>Ctrl K</kbd></div>`;
+  for(const [g,items] of groups){ if(g) h+=`<div class="gl">${g}</div>`; for(const [k,l,c,hot] of items){ h+=`<div class="it${l===key?' on':''}">${ic(k)}<span>${l}</span>${c?`<span class="c${hot?' h':''}">${c}</span>`:''}</div>`; } }
+  h+=`<div class="me"><span class="av">ع</span><div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:13px;font-weight:600">كابتن علي</span><span style="font-size:11px;color:var(--faint)">29 لاعب شغّال</span></div></div></div>`;
+  app.insertAdjacentHTML('afterbegin',h);
+});
+</script>
+</body>
+</html>

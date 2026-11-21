@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>أفكار جديدة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700&family=Changa:wght@600;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#0b0d0a; --ink:#f3f2ec; --muted:#9a9c94; --faint:#6d7068; --lime:#c8f550; --on-lime:#10140a; --line:rgba(255,255,255,.08); --amber:#f2b84b; --calm:#7fd4c1; }
+  * { box-sizing:border-box; margin:0; }
+  body { background:radial-gradient(120% 60% at 80% 0%, #1d2610 0%, var(--bg) 55%); color:var(--ink); font-family:'Alexandria',system-ui,sans-serif; padding:24px 16px 40px; min-height:100vh; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(330px,1fr)); gap:28px; max-width:1480px; margin-inline:auto; }
+  .label { font:600 13px 'Alexandria'; color:var(--muted); margin:0 6px 10px; display:flex; gap:8px; align-items:center; }
+  .label b { background:var(--lime); color:var(--on-lime); border-radius:999px; min-width:22px; height:22px; display:inline-grid; place-items:center; font:800 12px 'Manrope'; }
+  .phone { border-radius:40px; border:1px solid var(--line); background:linear-gradient(145deg,#2a2c27,#121410 40%,#0a0b09); padding:10px; }
+  .screen { border-radius:32px; background:var(--bg); min-height:640px; padding:18px 14px 20px; display:flex; flex-direction:column; gap:12px; position:relative; overflow:hidden; }
+  .status { display:flex; justify-content:space-between; font:700 12px 'Manrope'; color:var(--ink); padding:0 6px 4px; }
+  .glass { background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02)); border:1px solid var(--line); border-radius:22px; padding:14px; }
+  .strong { background:linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,255,255,.04)); }
+  h2 { font:700 18px 'Alexandria'; }
+  h3 { font:700 15px 'Alexandria'; }
+  .sub { font:400 12px/1.7 'Alexandria'; color:var(--muted); }
+  .row { display:flex; align-items:center; gap:8px; }
+  .between { justify-content:space-between; }
+  .chips { display:flex; flex-wrap:wrap; gap:6px; }
+  .chip { font:600 11.5px 'Alexandria'; padding:6px 10px; border-radius:999px; border:1px solid var(--line); background:rgba(255,255,255,.04); }
+  .chip.lime { background:rgba(200,245,80,.12); border-color:rgba(200,245,80,.35); color:var(--lime); }
+  .chip.amber { background:rgba(242,184,75,.12); border-color:rgba(242,184,75,.35); color:var(--amber); }
+  .num { font:800 30px/1 'Manrope'; letter-spacing:-.03em; }
+  .btn { min-height:48px; border-radius:999px; border:0; font:700 15px 'Alexandria'; display:flex; align-items:center; justify-content:center; gap:8px; width:100%; }
+  .btn.primary { background:var(--lime); color:var(--on-lime); box-shadow:0 8px 24px rgba(200,245,80,.22); }
+  .btn.ghost { background:rgba(255,255,255,.06); color:var(--ink); border:1px solid var(--line); }
+  .sets { display:grid; grid-template-columns:repeat(7,1fr); gap:5px; }
+  .sets i { height:30px; border-radius:10px; background:rgba(255,255,255,.05); border:1px solid var(--line); display:grid; place-items:center; font:700 12px 'Manrope'; font-style:normal; color:var(--faint); }
+  .sets i.done { background:rgba(200,245,80,.16); border-color:rgba(200,245,80,.4); color:var(--lime); }
+  .sets i.now { border:2px solid var(--lime); color:var(--ink); }
+  .timer { display:flex; align-items:center; gap:14px; }
+  .ring { width:92px; height:92px; border-radius:50%; background:conic-gradient(var(--lime) 0 73%, rgba(255,255,255,.08) 73% 100%); display:grid; place-items:center; flex:none; }
+  .ring span { width:76px; height:76px; border-radius:50%; background:#11140d; display:grid; place-items:center; font:800 22px 'Manrope'; }
+  .tempo { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; text-align:center; }
+  .tempo div { border-radius:14px; background:rgba(255,255,255,.04); border:1px solid var(--line); padding:8px 2px; }
+  .tempo b { font:800 20px 'Manrope'; display:block; }
+  .tempo small { font:500 10.5px 'Alexandria'; color:var(--muted); }
+  .opt { border-radius:18px; border:1px solid var(--line); padding:12px; display:flex; gap:10px; align-items:flex-start; background:rgba(255,255,255,.03); }
+  .opt.on { border:2px solid var(--lime); background:rgba(200,245,80,.06); }
+  .dot { width:20px; height:20px; border-radius:50%; border:2px solid var(--faint); flex:none; margin-top:2px; }
+  .opt.on .dot { border-color:var(--lime); background:radial-gradient(var(--lime) 45%, transparent 50%); }
+  .days { display:flex; gap:4px; margin-top:6px; }
+  .days span { font:600 10.5px 'Alexandria'; padding:3px 7px; border-radius:8px; background:rgba(255,255,255,.05); color:var(--muted); }
+  .photo { height:170px; border-radius:20px; background:
+      radial-gradient(circle at 38% 55%, #e9dfc4 0 22%, transparent 23%),
+      radial-gradient(circle at 64% 45%, #b5773c 0 17%, transparent 18%),
+      radial-gradient(circle at 60% 70%, #5f8f3a 0 9%, transparent 10%),
+      radial-gradient(circle at 50% 52%, #f4f1ea 0 40%, #d9d4c8 41% 43%, transparent 44%),
+      #2b2a25; position:relative; }
+  .tag { position:absolute; font:700 11px 'Alexandria'; background:rgba(11,13,10,.82); border:1px solid rgba(200,245,80,.45); color:var(--ink); padding:4px 8px; border-radius:999px; }
+  .macros { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; text-align:center; }
+  .macros div { border-radius:14px; background:rgba(255,255,255,.04); border:1px solid var(--line); padding:8px 2px; }
+  .macros b { font:800 16px 'Manrope'; display:block; }
+  .macros small { font:500 10.5px 'Alexandria'; color:var(--muted); }
+  .compare { border-radius:16px; background:rgba(242,184,75,.08); border:1px solid rgba(242,184,75,.3); padding:10px 12px; font:500 12.5px/1.8 'Alexandria'; }
+  .compare b { color:var(--amber); }
+  .ko { width:30px; height:30px; border-radius:50%; background:#1a2208; border:1px solid rgba(200,245,80,.4); display:grid; place-items:center; font:800 11px 'Manrope'; color:var(--lime); flex:none; }
+  .supp { display:flex; gap:12px; }
+  .pill { width:44px; height:44px; border-radius:14px; background:rgba(127,212,193,.12); border:1px solid rgba(127,212,193,.35); display:grid; place-items:center; color:var(--calm); font:800 13px 'Manrope'; flex:none; }
+  .code { display:flex; align-items:center; gap:8px; border:1.5px dashed rgba(200,245,80,.5); border-radius:16px; padding:8px 8px 8px 12px; background:rgba(200,245,80,.05); }
+  .code span { flex:1; font:800 17px 'Manrope'; letter-spacing:.08em; direction:ltr; text-align:start; }
+  .copy { min-height:40px; padding-inline:14px; border-radius:999px; border:0; background:var(--lime); color:var(--on-lime); font:700 13px 'Alexandria'; }
+  .time { white-space:nowrap; font:600 11px 'Alexandria'; color:var(--calm); background:rgba(127,212,193,.1); padding:3px 8px; border-radius:999px; }
+  .fine { font:400 11px/1.7 'Alexandria'; color:var(--faint); }
+  .tabs { margin-top:auto; display:flex; justify-content:space-around; background:rgba(255,255,255,.05); border:1px solid var(--line); border-radius:999px; padding:6px; font:600 11px 'Alexandria'; color:var(--muted); }
+  .tabs span { padding:8px 12px; border-radius:999px; }
+  .tabs .on { background:var(--ink); color:var(--bg); }
+  .toast { position:absolute; inset-inline:14px; bottom:84px; background:#1c2214; border:1px solid rgba(200,245,80,.4); border-radius:16px; padding:10px 12px; font:600 12.5px 'Alexandria'; display:flex; gap:8px; align-items:center; }
+  .toast b { color:var(--lime); }
+  .note { font:400 12.5px/1.8 'Alexandria'; color:var(--muted); margin:10px 6px 0; }
+</style>
+</head>
+<body>
+<div class="grid">
+
+  <!-- 1. Workout technique + rest timer -->
+  <section>
+    <p class="label"><b>1</b>اللاعب: التكنيك + تايمر الراحة</p>
+    <div class="phone"><div class="screen">
+      <div class="status"><span>6:42</span><span>5G</span></div>
+      <div class="row between"><div><p class="sub">اليوم 2 · صدر وتراي</p><h2>بنش برس بالبار</h2></div><span class="chip lime">FST-7</span></div>
+      <div class="glass">
+        <p class="sub" style="margin-bottom:8px">التمبو اللي الكابتن حدده</p>
+        <div class="tempo">
+          <div><b>3</b><small>نزول</small></div><div><b>0</b><small>تحت</small></div>
+          <div><b>1</b><small>طلوع</small></div><div><b>0</b><small>فوق</small></div>
+        </div>
+      </div>
+      <div class="chips"><span class="chip"><bdi>7 × 12</bdi> مجاميع</span><span class="chip">راحة 30 ث</span><span class="chip amber">آخر مجموعة: دروب سِت</span></div>
+      <div class="sets"><i class="done">1</i><i class="done">2</i><i class="done">3</i><i class="now">4</i><i>5</i><i>6</i><i>7</i></div>
+      <div class="glass strong timer">
+        <div class="ring"><span>0:22</span></div>
+        <div style="flex:1">
+          <h3>راحة</h3>
+          <p class="sub">المجموعة 4 جاية · <bdi>60 كجم × 12</bdi></p>
+          <p class="sub">بين المجاميع: ثبات بوز 10 ث</p>
+          <div class="row" style="margin-top:8px"><span class="chip">+15 ث</span><span class="chip">تخطّي</span></div>
+        </div>
+      </div>
+      <p class="fine">التايمر بيبدأ لوحده بعد ما تسجّل المجموعة، وبيرنّ ويهزّ الموبايل لما يخلص حتى لو الشاشة مقفولة.</p>
+      <div class="tabs"><span class="on">التمرين</span><span>الأكل</span><span>الكابتن</span><span>أنا</span></div>
+    </div></div>
+    <p class="note">الكابتن بيختار التكنيك من قايمة جنب كل تمرين: تمبو، دروب سِت، FST-7، ريست بوز.</p>
+  </section>
+
+  <!-- 2. One-click templates -->
+  <section>
+    <p class="label"><b>2</b>الكابتن: غيّر نظام اللاعب بضغطة</p>
+    <div class="phone"><div class="screen">
+      <div class="status"><span>9:10</span><span>5G</span></div>
+      <p class="sub">ملف أحمد سامي · البرنامج</p>
+      <h2>اختار نظام جديد</h2>
+      <div class="opt on"><span class="dot"></span><div style="flex:1">
+        <div class="row between"><h3>7 مجاميع ضخ</h3><span class="chip lime">3 أيام</span></div>
+        <p class="sub">كل يوم ينتهي بفينشر 7 × 12 براحة 30 ث</p>
+        <div class="days"><span>صدر وتراي</span><span>ضهر وباي</span><span>رجل وكتف</span></div>
+      </div></div>
+      <div class="opt"><span class="dot"></span><div style="flex:1">
+        <div class="row between"><h3>فول بادي</h3><span class="chip">3 أيام</span></div>
+        <p class="sub">قوة وتضخيم · 5 × 5 للتمارين الأساسية</p>
+      </div></div>
+      <div class="opt"><span class="dot"></span><div style="flex:1">
+        <div class="row between"><h3>دفع / سحب / رجل</h3><span class="chip">6 أيام</span></div>
+        <p class="sub">الكلاسيكي · كل عضلة مرتين في الأسبوع</p>
+      </div></div>
+      <div class="glass">
+        <p class="sub">الأوزان بتتحسب من آخر أرقام أحمد</p>
+        <div class="row between" style="margin-top:6px"><span>بنش برس</span><b style="font:800 15px Manrope">62.5 كجم</b></div>
+        <div class="row between"><span>سكوات</span><b style="font:800 15px Manrope">90 كجم</b></div>
+        <p class="fine" style="margin-top:6px">البرنامج القديم بيتحفظ في التاريخ، وتقدر ترجعله.</p>
+      </div>
+      <button class="btn primary" style="margin-top:auto">طبّق من بكرة</button>
+    </div></div>
+    <p class="note">القوالب دي بتبقى في مكتبة الكابتن جنب قوالبه، ويقدر يعدّل فيها قبل ما يطبق.</p>
+  </section>
+
+  <!-- 3. Meal camera -->
+  <section>
+    <p class="label"><b>3</b>اللاعب: صوّر طبقك و KO يحسب</p>
+    <div class="phone"><div class="screen">
+      <div class="status"><span>2:05</span><span>5G</span></div>
+      <div class="row between"><div><p class="sub">الغدا · 2:00 م</p><h2>رز وفراخ مشوية</h2></div><span class="chip">من الكاميرا</span></div>
+      <div class="photo">
+        <span class="tag" style="inset-inline-end:16px;top:58px">رز ~220 ج</span>
+        <span class="tag" style="inset-inline-start:22px;top:34px">فراخ ~180 ج</span>
+        <span class="tag" style="inset-inline-start:40px;bottom:22px">سلطة</span>
+      </div>
+      <div class="macros">
+        <div><b>620</b><small>سعرات</small></div><div><b>48</b><small>بروتين</small></div>
+        <div><b>72</b><small>كارب</small></div><div><b>14</b><small>دهون</small></div>
+      </div>
+      <div class="row" style="align-items:flex-start;gap:10px">
+        <span class="ko">KO</span>
+        <div class="compare">وجبتك عند الكابتن: <b>150 ج رز</b>.<br>اللي في الصورة حوالي <b>220 ج</b>. شيل ربع الرز تقريبًا، والفراخ تمام.</div>
+      </div>
+      <div class="row" style="margin-top:auto"><button class="btn ghost">عدّل الكميات</button><button class="btn primary">سجّل الوجبة</button></div>
+      <p class="fine">ده تقدير من الصورة مش وزن حقيقي. الكابتن بيشوف الصورة في ملفك.</p>
+    </div></div>
+    <p class="note">بيشتغل على أي وجبة، حتى لو مش في الخطة. محتاج AI لكل صورة (تكلفة)، فممكن يبقى للباقات الأعلى.</p>
+  </section>
+
+  <!-- 4. Supplements + promo -->
+  <section>
+    <p class="label"><b>4</b>اللاعب: مكملات الكابتن وكود الخصم</p>
+    <div class="phone"><div class="screen">
+      <div class="status"><span>8:30</span><span>5G</span></div>
+      <p class="sub">من الكابتن هشام</p>
+      <h2>مكملاتك</h2>
+      <div class="glass">
+        <div class="supp"><span class="pill">CR</span><div style="flex:1">
+          <div class="row between"><h3>كرياتين مونوهيدرات</h3><span class="time">بعد التمرين</span></div>
+          <p class="sub">5 جرام · كل يوم حتى يوم الراحة</p>
+          <p class="sub">مع مية كتير طول اليوم.</p>
+        </div></div>
+        <div class="code" style="margin-top:12px"><span>COACHPR15</span><button class="copy">انسخ الكود</button></div>
+        <div class="row between" style="margin-top:10px"><span class="sub">خصم 15% من المتجر المعتمد</span><span style="font:700 13px Alexandria;color:var(--lime)">افتح المتجر</span></div>
+      </div>
+      <div class="glass">
+        <div class="supp"><span class="pill">WP</span><div style="flex:1">
+          <div class="row between"><h3>واي بروتين</h3><span class="time">الصبح</span></div>
+          <p class="sub">سكوب واحد · لو ما وصلتش لهدف البروتين</p>
+        </div></div>
+      </div>
+      <p class="fine">الكابتن ممكن ياخد عمولة من الكود. الملاحظات من الكابتن، مش نصيحة طبية.</p>
+      <div class="toast"><b>اتنسخ الكود</b> <bdi>COACHPR15</bdi></div>
+      <div class="tabs"><span>التمرين</span><span class="on">الأكل</span><span>الكابتن</span><span>أنا</span></div>
+    </div></div>
+    <p class="note">الكابتن بيضيف الكود ورابط الشراء من نفس شاشة المكملات اللي عنده دلوقتي.</p>
+  </section>
+
+</div>
+</body>
+</html>

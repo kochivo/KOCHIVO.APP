@@ -22,6 +22,9 @@ export async function CaptainPendingScreen({ status }: { status: 'pending' | 're
       <p className="text-muted">{t(status)}</p>
       {status === 'rejected' && whatsapp && <RowLink href={whatsapp}>{t('support')}</RowLink>}
       {status === 'pending' && <ApprovalWatcher />}
+      {status === 'pending' && <p className="text-sm text-muted">{t('wait')}</p>}
+      {status === 'pending' && <RowLink href="/demo">{t('demo')}</RowLink>}
+      {status === 'pending' && whatsapp && <RowLink href={whatsapp}>{t('waitSupport')}</RowLink>}
       <PushToggleCard />
       <SignOutButton variant="danger" className="min-h-12 w-full border border-line !bg-surface !text-ink" />
     </section>
@@ -36,6 +39,9 @@ export async function CaptainPendingScreen({ status }: { status: 'pending' | 're
       {status === 'rejected' && whatsapp && <a href={whatsapp}
         className={buttonClass({ variant: 'secondary', block: false, className: "flex min-h-12 items-center justify-center px-page-x font-bold" })}>{t('support')}</a>}
       {status === 'pending' && <ApprovalWatcher />}
+      {status === 'pending' && <p className="text-sm text-muted">{t('wait')}</p>}
+      {status === 'pending' && <RowLink href="/demo">{t('demo')}</RowLink>}
+      {status === 'pending' && whatsapp && <RowLink href={whatsapp}>{t('waitSupport')}</RowLink>}
       <PushToggleCard />
       <SignOutButton variant="danger" className="min-h-12 w-full" />
     </section>

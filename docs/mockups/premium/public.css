@@ -1,0 +1,53 @@
+#kochivo-premium .k-site-nav { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 20px 32px; border-block-end: 1px solid var(--k-line); }
+#kochivo-premium .k-site-nav nav { display: flex; gap: 8px; flex-wrap: wrap; }
+#kochivo-premium .k-site-nav nav .k-button { border: 0; background: transparent; }
+#kochivo-premium .k-landing-hero { position: relative; background: var(--k-night); color: var(--k-paper); isolation: isolate; min-block-size: 650px; display: flex; align-items: center; padding: 60px 52px; }
+#kochivo-premium .k-editorial-image { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; object-fit: cover; z-index: -1; }
+#kochivo-premium .k-landing-hero .k-editorial-image { opacity: .52; object-position: 40% center; }
+#kochivo-premium .k-hero-copy { inline-size: 66%; position: relative; }
+#kochivo-premium .k-hero-copy h1 { font-family: Manrope, sans-serif; font-size: clamp(43px, 7.4vw, 84px); line-height: 1.01; font-weight: 800; letter-spacing: -.055em; text-align: end; margin-block: 24px; }
+#kochivo-premium .k-hero-copy h1 span { display: block; }
+#kochivo-premium .k-hero-copy .k-outline { color: transparent; -webkit-text-stroke: 1px var(--k-paper); }
+#kochivo-premium .k-hero-copy .k-eyebrow { color: var(--k-lime); }
+#kochivo-premium .k-hero-copy .k-hero-arabic { font-size: 24px; color: var(--k-paper); margin-block: 20px 12px; }
+#kochivo-premium .k-hero-copy .k-hero-body { color: var(--k-paper); opacity: .82; max-inline-size: 35em; font-size: 14px; margin-block-end: 28px; }
+#kochivo-premium .k-hero-copy small { display: block; margin-block-start: 16px; opacity: .7; }
+#kochivo-premium .k-hero-copy .k-button:not(.k-primary) { color: var(--k-paper); background: var(--k-night); }
+#kochivo-premium .k-public-section { padding: 80px 52px; }
+#kochivo-premium .k-editorial-heading { max-inline-size: 600px; margin-block-end: 44px; }
+#kochivo-premium .k-editorial-heading h2 { font-size: 34px; margin-block: 12px 18px; }
+#kochivo-premium .k-process { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
+#kochivo-premium .k-process > div { border-block-start: 1px solid var(--k-line); padding-block-start: 24px; }
+#kochivo-premium .k-process-no { font: 500 20px Manrope, sans-serif; color: var(--k-muted); }
+#kochivo-premium .k-process h3 { margin-block: 22px 10px; }
+#kochivo-premium .k-process p { font-size: 14px; }
+#kochivo-premium .k-public-split { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; background: var(--k-soft); padding: 64px 52px; align-items: center; }
+#kochivo-premium .k-public-split h2 { font-size: 32px; margin-block: 14px; }
+#kochivo-premium .k-public-split p { margin-block-end: 24px; }
+#kochivo-premium .k-mini-workout { padding: 32px; border-radius: var(--k-radius); border: 1px solid var(--k-line); background: var(--k-bg); }
+#kochivo-premium .k-mini-workout h2, #kochivo-premium .k-mini-workout h3 { font-size: 27px; margin-block: 16px 8px; }
+#kochivo-premium .k-mini-workout p { font-size: 13px; }
+#kochivo-premium .k-mini-exercise { display: flex; align-items: center; gap: 12px; padding-block: 22px; font-size: 13px; }
+#kochivo-premium .k-pricing-list { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
+#kochivo-premium .k-pricing-list > div { padding-block: 24px; border-block-start: 1px solid var(--k-line); }
+#kochivo-premium .k-pricing-list h3 { text-align: start; font-size: 13px; }
+#kochivo-premium .k-pricing-list p { font-size: 12px; min-block-size: 48px; margin-block: 12px; }
+#kochivo-premium .k-pricing-list strong { font-size: 38px; font-weight: 500; display: block; text-align: start; }
+#kochivo-premium .k-pricing-list small { display: block; margin-block-end: 24px; color: var(--k-muted); }
+#kochivo-premium .k-faq { padding-block-start: 0; }
+#kochivo-premium .k-faq details { border-block-end: 1px solid var(--k-line); padding-block: 16px; }
+#kochivo-premium summary { display: flex; align-items: center; justify-content: space-between; gap: 20px; min-block-size: 48px; list-style: none; font-size: 15px; }
+#kochivo-premium details p { padding-block: 14px; font-size: 14px; }
+#kochivo-premium .k-final-cta { padding: 52px; display: flex; justify-content: space-between; align-items: center; gap: 32px; border-block: 1px solid var(--k-line); }
+#kochivo-premium .k-final-cta h2 { max-inline-size: 18em; font-size: 27px; }
+#kochivo-premium .k-site-footer { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px; padding: 24px 32px; font: 400 12px Manrope, sans-serif; color: var(--k-muted); }
+#kochivo-premium .k-coach-public { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; padding: 52px; }
+#kochivo-premium .k-coach-public > div:last-child > * { margin-block-end: 24px; }
+#kochivo-premium .k-coach-photo { min-block-size: 590px; position: relative; isolation: isolate; background: var(--k-night); display: flex; align-items: end; color: var(--k-paper); padding: 24px; }
+#kochivo-premium .k-coach-photo img { object-position: 28% center; }
+#kochivo-premium .k-choice-page, #kochivo-premium .k-ko-page { padding: 80px 52px; min-block-size: 620px; }
+#kochivo-premium .k-role-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+#kochivo-premium .k-role-choices button { text-align: start; border-block: 1px solid var(--k-line); padding: 32px 0; }
+#kochivo-premium .k-role-choices h2 { margin-block: 26px 12px; }
+#kochivo-premium .k-role-choices p { font-size: 14px; margin-block-end: 30px; }
+#kochivo-premium .k-ko-monogram { font: 500 120px/.95 Manrope, sans-serif; display: block; text-align: start; margin-block-end: 40px; }

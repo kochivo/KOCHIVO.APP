@@ -12,8 +12,9 @@ export function Summary({ state, plans, now, onExplore, onAccount }: { state: De
   if (!plan) return null;
   const name = plan.name;
   return <div className="grid gap-stack">
-    <div className="grid grid-cols-3 gap-inline">
-      {[[values.actions, t('actions')], [values.elapsed, t('time')], [values.players, t('summaryPlayers', { n: values.players })]].map(([value, label]) =>
+    {values.actions === 0 && <p className="rounded-control border border-lime/30 bg-lime-soft p-stack text-xs">{t('noActions')}</p>}
+    <div className={`grid ${values.actions === 0 ? 'grid-cols-2' : 'grid-cols-3'} gap-inline`}>
+      {[...(values.actions === 0 ? [] : [[values.actions, t('actions')]]), [values.elapsed, t('time')], [values.players, t('summaryPlayers', { n: values.players })]].map(([value, label]) =>
         <div key={label} className="glass-strong rounded-control p-stack text-center">
           <b className="block text-title tabular-nums" dir="ltr">{value}</b><span className="text-micro text-muted">{label}</span>
         </div>)}

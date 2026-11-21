@@ -79,7 +79,7 @@ export function NotificationDropdown({ openerId, notifications: n, onClose }: Pr
                   {row.type === 'player_pain' && <span className="rounded-full bg-danger-soft px-stack py-inline text-xs text-danger">{t('urgent')}</span>}
                   {Icon && (v6 ? <span className={`glass grid size-10 shrink-0 place-items-center rounded-xl ${iconColour}`}><Icon aria-hidden className="size-5" /></span>
                     : <Icon aria-hidden className="size-5 shrink-0" />)}
-                  {t(notificationTextKey(row), { name: row.payload.display_name || row.payload.name || row.payload.captain_name || '', rank: t(medalKey(row.payload.medal) ?? 'iron'),
+                  {t(notificationTextKey(row), { name: row.payload.display_name || row.payload.name || row.payload.captain_name || t('someone'), rank: t(medalKey(row.payload.medal) ?? 'iron'),
                     n: row.payload.needs_workouts ?? 0, gap: row.payload.gap ?? 0 }, row.payload.gap ?? 0)}
                 </p>
                 <time dateTime={row.created_at} className={v6 ? 'ms-touch mt-inline block text-micro text-faint' : 'mt-inline block text-xs font-normal text-muted'}>{t(time.key, { n: time.n })}</time>

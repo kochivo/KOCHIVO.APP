@@ -1,0 +1,2026 @@
+{
+  "capturedAt": "2026-11-06",
+  "uniqueScreens": 36,
+  "viewVariants": 144,
+  "pngScreenshots": 288,
+  "reelPngs": 72,
+  "issues": [],
+  "files": [
+    {
+      "file": "02-screenshots/public/dark/desktop/01-home.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 1200109,
+      "sha256": "36f92d59e061a68d2ef258ba319c669dda3f66e6be9a6409c6c066addcc6145b"
+    },
+    {
+      "file": "02-screenshots/public/dark/desktop/01-home--full.png",
+      "width": 3600,
+      "height": 14775,
+      "bytes": 2668273,
+      "sha256": "abe1c5b2a246edc7e238c616897014f9733eae9378bd9a971bd59597804d498e"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/01-dashboard.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 866720,
+      "sha256": "0552288c12b3784b8bc62254e59e915bd4ccab71e269212d2b843c89abc9e08e"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/01-dashboard--full.png",
+      "width": 3600,
+      "height": 4078,
+      "bytes": 1086631,
+      "sha256": "b3d741b01f34eb037b96bf72ad01d9e76ee26bfc055b127d0e943a98b3e51abb"
+    },
+    {
+      "file": "02-screenshots/public/dark/mobile/01-home.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 510942,
+      "sha256": "37987cc3ac7581bf0663f4e933fad8e63b33b2984c498ba22cbe254996ad9088"
+    },
+    {
+      "file": "02-screenshots/public/dark/mobile/01-home--full.png",
+      "width": 1080,
+      "height": 27673,
+      "bytes": 2585688,
+      "sha256": "3e93a612f31b06623ef824edb1529aba0e504b84f6948923091505b1156404ed"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/01-dashboard.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 354480,
+      "sha256": "d3c18d72c6fd5fa36877b74feb09967762ee306929a888e1f94143dd19283184"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/01-dashboard--full.png",
+      "width": 1080,
+      "height": 6793,
+      "bytes": 673392,
+      "sha256": "95a4142b55bee314b91b5f34b5a160f71511e38f1dd28fc5db564f0b9f3d1c5b"
+    },
+    {
+      "file": "02-screenshots/public/light/desktop/01-home.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 685848,
+      "sha256": "84ccf488ca7cada6df3d3a59e95485307d2924d86cd2104b1ab0f4e1b9723a3c"
+    },
+    {
+      "file": "02-screenshots/public/light/desktop/01-home--full.png",
+      "width": 3600,
+      "height": 14775,
+      "bytes": 2083398,
+      "sha256": "37e16a0da875e63b995287f1fd3c8066aed15a1c7152382501348eb8eb3bc318"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/01-dashboard.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 578981,
+      "sha256": "ba5f18b2ec494ad708fa8df68cc086a768c5130c97feca8fa0ac68fe6725df0d"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/01-dashboard--full.png",
+      "width": 3600,
+      "height": 4078,
+      "bytes": 818819,
+      "sha256": "59fd1d789843055249df2cdb4ca309066b39bb0067ea0eea237869a815bca0b3"
+    },
+    {
+      "file": "02-screenshots/public/light/mobile/01-home.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 544508,
+      "sha256": "9fdbfbb7d2991dfd71d9270a748d0999a2eb081b3c8c83f3e1feba5ad34140d1"
+    },
+    {
+      "file": "02-screenshots/public/light/mobile/01-home--full.png",
+      "width": 1080,
+      "height": 27673,
+      "bytes": 2593841,
+      "sha256": "9aca86174c8f248567e6fa4118808dcdfd93f920841256fe3682570d17785b6c"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/01-dashboard.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 234087,
+      "sha256": "b0e4a15f71c1566db72067871cfad4b57c99ca88718fa88578065fb17ea26ab1"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/01-dashboard--full.png",
+      "width": 1080,
+      "height": 6793,
+      "bytes": 574756,
+      "sha256": "2abb934f4634fc55c4a751663956aab66f62e380495108d3b183f11a95551720"
+    },
+    {
+      "file": "02-screenshots/public/dark/desktop/02-demo.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 934976,
+      "sha256": "0bd90de017816a389629892b69c24beb70dd7fbfd6aa141225c3b46d5f058673"
+    },
+    {
+      "file": "02-screenshots/public/dark/desktop/02-demo--full.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 934976,
+      "sha256": "0bd90de017816a389629892b69c24beb70dd7fbfd6aa141225c3b46d5f058673"
+    },
+    {
+      "file": "02-screenshots/public/dark/mobile/02-demo.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 320287,
+      "sha256": "327300c38d67dab54eade220c8c0894fcec004728b61e40bb4a098c535c7a782"
+    },
+    {
+      "file": "02-screenshots/public/dark/mobile/02-demo--full.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 320287,
+      "sha256": "327300c38d67dab54eade220c8c0894fcec004728b61e40bb4a098c535c7a782"
+    },
+    {
+      "file": "02-screenshots/public/light/desktop/02-demo.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 517815,
+      "sha256": "957619ce1ca7e82cdf94b3c43b6a4b3255fd59745b56b5234b0d79600a31836f"
+    },
+    {
+      "file": "02-screenshots/public/light/desktop/02-demo--full.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 517815,
+      "sha256": "957619ce1ca7e82cdf94b3c43b6a4b3255fd59745b56b5234b0d79600a31836f"
+    },
+    {
+      "file": "02-screenshots/public/light/mobile/02-demo.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 302478,
+      "sha256": "2df52a183faea42fab9b46f1adf680803d0aca33f1c7e0eef10b4be0061b68d7"
+    },
+    {
+      "file": "02-screenshots/public/light/mobile/02-demo--full.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 300794,
+      "sha256": "c2d92a862679a2a3f024f050c7cb5b3131ae9984c4d6a69880c74bae746b5ba8"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/02-players.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 869046,
+      "sha256": "7225224ba8cb8b0bcba7972caad78ac2f11ca627086f78f48c5372ead4be241d"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/02-players--full.png",
+      "width": 3600,
+      "height": 3495,
+      "bytes": 985420,
+      "sha256": "8860359ef8820615639ff29286564e462eccee4bf77d08b28b74cbd5224271c5"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/02-players.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 312736,
+      "sha256": "0d07591672add3af441d4218ecbe3585f77daf6761b01b781c13aaad4e276fc4"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/02-players--full.png",
+      "width": 1080,
+      "height": 9125,
+      "bytes": 675083,
+      "sha256": "517dcb7f57cb7c1b7fb3be9d3d81c0bca0d7d680d60242937da8ff8f6e33eca9"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/02-players.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 635995,
+      "sha256": "b5fcb45765b9f0498ab6881ab8ce3ea613a1df7ed48414f247fb1946eac70993"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/02-players--full.png",
+      "width": 3600,
+      "height": 3495,
+      "bytes": 751019,
+      "sha256": "5cc8b35fbfc4fc6929edf95773e3e4e6d59c14516ef7dfe24c549a7e7d0bbd79"
+    },
+    {
+      "file": "02-screenshots/public/dark/desktop/03-login.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 954503,
+      "sha256": "164c76121fb1b8a4d3abdf19a43834d6ad2cee0c0aa1612d49d34ded72a202db"
+    },
+    {
+      "file": "02-screenshots/public/dark/desktop/03-login--full.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 954503,
+      "sha256": "164c76121fb1b8a4d3abdf19a43834d6ad2cee0c0aa1612d49d34ded72a202db"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/02-players.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 229735,
+      "sha256": "5249e259f95d5576c4da2de481d881a89fab7a52106df328a96ef0a11881af4c"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/02-players--full.png",
+      "width": 1080,
+      "height": 9125,
+      "bytes": 621503,
+      "sha256": "ee0623d615136529ffdd157839c6d42d2e06be23081d82d879487c6ccfa41b4b"
+    },
+    {
+      "file": "02-screenshots/public/dark/mobile/03-login.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 217406,
+      "sha256": "ac72780d0a01fadd77a022aa7b0aaff5f924ea10f052a9139f0a19c97e81053e"
+    },
+    {
+      "file": "02-screenshots/public/dark/mobile/03-login--full.png",
+      "width": 1080,
+      "height": 2130,
+      "bytes": 237817,
+      "sha256": "a53e3f2ec59ee538b2774138d352b81040b0a77abf5fa38625916aadd19411c7"
+    },
+    {
+      "file": "02-screenshots/public/light/desktop/03-login.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 866868,
+      "sha256": "0551ab34d81f35b7888bf7a7af1bb6b3e63fe0c0f13eecdee93f853435703238"
+    },
+    {
+      "file": "02-screenshots/public/light/desktop/03-login--full.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 866868,
+      "sha256": "0551ab34d81f35b7888bf7a7af1bb6b3e63fe0c0f13eecdee93f853435703238"
+    },
+    {
+      "file": "02-screenshots/public/light/mobile/03-login.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 127613,
+      "sha256": "157f16e2d2113aed7be08aed7405912d67a65ea6b68fb09d81649bd4113d131f"
+    },
+    {
+      "file": "02-screenshots/public/light/mobile/03-login--full.png",
+      "width": 1080,
+      "height": 2130,
+      "bytes": 148609,
+      "sha256": "ca1316bb620eba4ea62fbc752a4a485a966b3c87c894d9c2ff270c2f4771f08e"
+    },
+    {
+      "file": "02-screenshots/public/dark/desktop/04-signup.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 969992,
+      "sha256": "daed3f48ac1775e4e2ec979c8e72d0bf21984b673d0b839d892422b0705ff116"
+    },
+    {
+      "file": "02-screenshots/public/dark/desktop/04-signup--full.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 969992,
+      "sha256": "daed3f48ac1775e4e2ec979c8e72d0bf21984b673d0b839d892422b0705ff116"
+    },
+    {
+      "file": "02-screenshots/public/dark/mobile/04-signup.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 219974,
+      "sha256": "5fcc17ec2f8e4f650bb196645ef5617d7a8c8c851405d740a7bc6e167301f55e"
+    },
+    {
+      "file": "02-screenshots/public/dark/mobile/04-signup--full.png",
+      "width": 1080,
+      "height": 2360,
+      "bytes": 244997,
+      "sha256": "9f9640460f49c5f53905aaab3365571d349e83526fe808a0207f1d3b9a78943b"
+    },
+    {
+      "file": "02-screenshots/public/light/desktop/04-signup.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 857537,
+      "sha256": "f41507a75662a74d3980259303d3cbc53cc2f682a676016f72bcc966fbd3422a"
+    },
+    {
+      "file": "02-screenshots/public/light/desktop/04-signup--full.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 857537,
+      "sha256": "f41507a75662a74d3980259303d3cbc53cc2f682a676016f72bcc966fbd3422a"
+    },
+    {
+      "file": "02-screenshots/public/light/mobile/04-signup.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 128265,
+      "sha256": "e824daad6e94fcf360caec24a559f5e056fd44a7e7ebb82ace6093301b69e9e1"
+    },
+    {
+      "file": "02-screenshots/public/light/mobile/04-signup--full.png",
+      "width": 1080,
+      "height": 2360,
+      "bytes": 162634,
+      "sha256": "1be9bd8d36228df1aec16f717bcfddf58c2f280e4a44e21b06a94b7a474f807d"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/03-inbox.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 933178,
+      "sha256": "f56272b11567ee1ad3b8557ff877e3c1913166e6b6bd320c506150fde41e53bb"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/03-inbox--full.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 933178,
+      "sha256": "f56272b11567ee1ad3b8557ff877e3c1913166e6b6bd320c506150fde41e53bb"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/03-inbox.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 326297,
+      "sha256": "41c824588aeb6fb668cac3755ad1387d802cab53b98f0a15b368f2279f82ba65"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/03-inbox--full.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 326297,
+      "sha256": "41c824588aeb6fb668cac3755ad1387d802cab53b98f0a15b368f2279f82ba65"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/03-inbox.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 546718,
+      "sha256": "def220591f70df8535751502973f0aea5a2b997f4d5b248dd114189e82dd49f1"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/03-inbox--full.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 546718,
+      "sha256": "def220591f70df8535751502973f0aea5a2b997f4d5b248dd114189e82dd49f1"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/03-inbox.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 197850,
+      "sha256": "14fa9f4aa873790e972a0516af97cbb603d7d3cad320d041c81a30bada00b3c9"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/03-inbox--full.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 197850,
+      "sha256": "14fa9f4aa873790e972a0516af97cbb603d7d3cad320d041c81a30bada00b3c9"
+    },
+    {
+      "file": "02-screenshots/public/dark/desktop/05-forgot-password.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 896798,
+      "sha256": "8b977f7da561778b9779d7d236f9470f3c522fd8aa0a78925abe4b4bfafe19d5"
+    },
+    {
+      "file": "02-screenshots/public/dark/desktop/05-forgot-password--full.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 896798,
+      "sha256": "8b977f7da561778b9779d7d236f9470f3c522fd8aa0a78925abe4b4bfafe19d5"
+    },
+    {
+      "file": "02-screenshots/public/dark/mobile/05-forgot-password.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 287402,
+      "sha256": "dfb5438a24d8412edecd56f5c0f5e1e6cebaa6f0346c6463cbf84f2f92e1fb60"
+    },
+    {
+      "file": "02-screenshots/public/dark/mobile/05-forgot-password--full.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 287402,
+      "sha256": "dfb5438a24d8412edecd56f5c0f5e1e6cebaa6f0346c6463cbf84f2f92e1fb60"
+    },
+    {
+      "file": "02-screenshots/public/light/desktop/05-forgot-password.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 886776,
+      "sha256": "0da38c7c50ba2c01d029133d731d20734f9446ca3ff16f6292fcf2c230ed4373"
+    },
+    {
+      "file": "02-screenshots/public/light/desktop/05-forgot-password--full.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 886776,
+      "sha256": "0da38c7c50ba2c01d029133d731d20734f9446ca3ff16f6292fcf2c230ed4373"
+    },
+    {
+      "file": "02-screenshots/public/light/mobile/05-forgot-password.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 207797,
+      "sha256": "ddf61b7de48c6bc8b1d069f65b440e3b7ac25f5c1bea439a66ac2c8ab514298a"
+    },
+    {
+      "file": "02-screenshots/public/light/mobile/05-forgot-password--full.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 207797,
+      "sha256": "ddf61b7de48c6bc8b1d069f65b440e3b7ac25f5c1bea439a66ac2c8ab514298a"
+    },
+    {
+      "file": "02-screenshots/public/dark/desktop/06-offline.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 881953,
+      "sha256": "aefa85247bf76d6278369c40dd694ed75bc2c727424c10617dd3f401026bc401"
+    },
+    {
+      "file": "02-screenshots/public/dark/desktop/06-offline--full.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 881953,
+      "sha256": "aefa85247bf76d6278369c40dd694ed75bc2c727424c10617dd3f401026bc401"
+    },
+    {
+      "file": "02-screenshots/public/dark/mobile/06-offline.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 355540,
+      "sha256": "3c033f7f9b6548c84a3e6a2d2bf0a7fec259eb15f33d80dbb9333a272774f746"
+    },
+    {
+      "file": "02-screenshots/public/dark/mobile/06-offline--full.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 355540,
+      "sha256": "3c033f7f9b6548c84a3e6a2d2bf0a7fec259eb15f33d80dbb9333a272774f746"
+    },
+    {
+      "file": "02-screenshots/public/light/desktop/06-offline.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 400352,
+      "sha256": "c84648062100fd3227bdf19d1063dce3137d150625827507af1c1143c6e80d67"
+    },
+    {
+      "file": "02-screenshots/public/light/desktop/06-offline--full.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 400352,
+      "sha256": "c84648062100fd3227bdf19d1063dce3137d150625827507af1c1143c6e80d67"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/04-templates.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 943960,
+      "sha256": "134d1a535547908a374e1ac1e52b6fba424c7d7fa8ac3588e89a2d06eabc7ffa"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/04-templates--full.png",
+      "width": 3600,
+      "height": 3250,
+      "bytes": 1043487,
+      "sha256": "e6e1a1c6af46e9991eced71602c2bfdc01c4ca4554602a51d9082a24fbebb0cb"
+    },
+    {
+      "file": "02-screenshots/public/light/mobile/06-offline.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 366270,
+      "sha256": "d974a7698e5d5710f8ee95f005853cb8493a6ee1552eb9ab5c2b32a2d9932255"
+    },
+    {
+      "file": "02-screenshots/public/light/mobile/06-offline--full.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 366270,
+      "sha256": "d974a7698e5d5710f8ee95f005853cb8493a6ee1552eb9ab5c2b32a2d9932255"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/04-templates.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 333211,
+      "sha256": "b740c6cb61272f058ffa5b2fede0a5ca8e725c911ae6ad3b5ff5667b849cf416"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/04-templates--full.png",
+      "width": 1080,
+      "height": 5025,
+      "bytes": 551495,
+      "sha256": "824a387b36cec996ef2c7519c2ed1df5a519fc7bc49b50c3b06142c9fa466b34"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/04-templates.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 666850,
+      "sha256": "fac6a18dbe6153638333180aa01a96eb2e9ecff15f417fcd957b7aecb1d2bc63"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/04-templates--full.png",
+      "width": 3600,
+      "height": 3250,
+      "bytes": 769378,
+      "sha256": "7bc69983d9bc9651bc62d8437c56be21b31b66713f3eced2ff14cd79f8d8a4d3"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/04-templates.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 261996,
+      "sha256": "5da46a66ffeb2732e3a11d6a1dc9eaeb59470201e0d38a864722a9e1818f196a"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/04-templates--full.png",
+      "width": 1080,
+      "height": 5025,
+      "bytes": 516006,
+      "sha256": "96121e8c1b14bd5eae3c965c68a7fe77902d11839897b9fe482dad09d00a5c1a"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/05-billing.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 901993,
+      "sha256": "0179a516cac39a8ed2ec3cc07dd3569a3f8cb952869c5bb14c87c95924ee6fbc"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/05-billing--full.png",
+      "width": 3600,
+      "height": 5380,
+      "bytes": 1171246,
+      "sha256": "c1e86967cf98e9ce275cbfcb6aa27a0f1af4931512ae2a2500b3791565de3a5a"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/05-billing.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 336457,
+      "sha256": "22154937d367fa69b0d4defc74a07fff3cb2b7b58a6e3ce94d068152c7cd823e"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/05-billing--full.png",
+      "width": 1080,
+      "height": 8830,
+      "bytes": 731868,
+      "sha256": "ca943a01386bae4269ac222282a5dcacadca0693be50c38c9d4dd477e337c360"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/05-billing.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 674286,
+      "sha256": "eed7cc4ab1a4f36fb3dd7a2a15fa28f75c20be877e5d7fd5254fc7d77495826b"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/05-billing--full.png",
+      "width": 3600,
+      "height": 5380,
+      "bytes": 1069421,
+      "sha256": "bbf3c8ff20858c597e06fc25ff4a17aa0a50a7f86e23187db2982d91db0579c7"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/05-billing.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 240045,
+      "sha256": "8b84c2350fb8d43f13f4cb89312aad76462af4ce44e3217074ae2dd199ce1e6e"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/05-billing--full.png",
+      "width": 1080,
+      "height": 8830,
+      "bytes": 681487,
+      "sha256": "e24e118f90b6147a89330c05342ed7a0f9dc84455afb495f9da2396f51693cd1"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/06-settings.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 919706,
+      "sha256": "dde647b74dfc8254c5110a44c93fb3529aa2a5a19254c618d238c0391afe613a"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/06-settings--full.png",
+      "width": 3600,
+      "height": 6105,
+      "bytes": 1158186,
+      "sha256": "6deee7bea9beda1046d360ce361dd7eaf548f1cddc96f5a4cafba9bdc141fd6b"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/06-settings.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 298030,
+      "sha256": "d09e516985f495c65112d12c466a3183c5cc1f8009cea9ac0be3f8ae8eea6fe0"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/06-settings--full.png",
+      "width": 1080,
+      "height": 7238,
+      "bytes": 540752,
+      "sha256": "4e4ed47dc557a3dd6eeb20dc4b457fd966be03049c0d6d3d0cb2a43c6f58dfd5"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/06-settings.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 708526,
+      "sha256": "33ac2a2f2baafb624042cec273bbe861ab99ce24f8a0bf6f35dd50484066bf5f"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/06-settings--full.png",
+      "width": 3600,
+      "height": 6105,
+      "bytes": 1179769,
+      "sha256": "3ebde860046fffb98b9f9b1a6851c3eca85258d576fe32d8bf3b0bea3e08f67f"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/06-settings.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 216799,
+      "sha256": "e8141b8fc373a946e97cffc94ed036130b0e22ab0da512c5069dc3a24eefc5dd"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/06-settings--full.png",
+      "width": 1080,
+      "height": 7238,
+      "bytes": 449160,
+      "sha256": "7af1cd2dd61f638767a898c64de2a74ccaebe2f54f56c8175322f2e1ed78cb3c"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/08-player-progress.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 754180,
+      "sha256": "4e03bd884d9978521652c0dd7c654765ca753dca9bbf663890cea601ca6ed47b"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/08-player-progress--full.png",
+      "width": 3600,
+      "height": 5000,
+      "bytes": 935854,
+      "sha256": "eb570e51c2409ec80d98dd8d88c9a5950ae6b91de931ded5b748a31208153335"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/08-player-progress.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 320131,
+      "sha256": "23e84efef7436ccd9b0ca353259ed9b44ce62f4240bc85fa9b4728b01eb72cf1"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/08-player-progress--full.png",
+      "width": 1080,
+      "height": 4623,
+      "bytes": 469101,
+      "sha256": "4ea6e2079e5febef29f033b4a9821de42435934b995c345e37946131b7f9dce2"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/08-player-progress.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 572762,
+      "sha256": "a38f82ad3d33938e95c8f947732ad7a933c0965fa9dabfc86031cecb35ccad0a"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/08-player-progress--full.png",
+      "width": 3600,
+      "height": 5000,
+      "bytes": 758743,
+      "sha256": "a5c14f839719425afb62a25c9fca046e38f74967f7a9430d1bdc484ca4cc1128"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/08-player-progress.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 323341,
+      "sha256": "09b69941084e04217b814ccc54410e63be1e8ccdf1cd4fb428668c3b5d014052"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/08-player-progress--full.png",
+      "width": 1080,
+      "height": 4623,
+      "bytes": 481216,
+      "sha256": "c3e13c093a0d7010a4678f20ef2e93851009817b031749328bafc1c241ced950"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/09-player-plan.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 767320,
+      "sha256": "29d692f147784f417890385d1155bbcb810659ff1287ac2c082c70818f4ec98a"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/09-player-plan--full.png",
+      "width": 3600,
+      "height": 2755,
+      "bytes": 794708,
+      "sha256": "172741541e6ad2792f0b9e474ebe21346a67a2d38db03f11cc2f671b9dcb719c"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/09-player-plan.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 289495,
+      "sha256": "8370768a252cbddd24bda0f41dd14ef222dc8816570a22bf1582a169de8d3521"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/09-player-plan--full.png",
+      "width": 1080,
+      "height": 3805,
+      "bytes": 387772,
+      "sha256": "41690b17c0eee3fd311707426316fc7a116e75e42b8fb481e526ca8961a6f9ce"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/09-player-plan.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 529350,
+      "sha256": "1aea7108cfda357d327e1bdace4c1625af0e71dbb5266dccd6b4451c70830f25"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/09-player-plan--full.png",
+      "width": 3600,
+      "height": 2755,
+      "bytes": 549350,
+      "sha256": "90b9e87621b53ca56c0d2afc86760eb23a1150decc410c46aa493edcf1eec9f3"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/09-player-plan.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 215974,
+      "sha256": "1cc7b4209986592201db90237ed9424604c301e8525e82a3a1347bf3b72b33f1"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/09-player-plan--full.png",
+      "width": 1080,
+      "height": 3805,
+      "bytes": 316852,
+      "sha256": "ecfd5689dc5f08a9d0aec4e4dabd11ddced99517e32cf42f6ea721af64e9b2b9"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/10-player-checkins.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 850796,
+      "sha256": "6df8967ec99bb54a53203ea76c0313cb07d99377048ff69e7bfc9f0e4c93241c"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/10-player-checkins--full.png",
+      "width": 3600,
+      "height": 2580,
+      "bytes": 860268,
+      "sha256": "88b388de4908889f30b009fc523a2e4233d0859edafe6a96f30e8e5d3f49873c"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/10-player-checkins.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 305182,
+      "sha256": "00fda6ae37cb9795a7d2d735caa7bbee5d50501808bdb100e37697de3355969e"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/10-player-checkins--full.png",
+      "width": 1080,
+      "height": 3950,
+      "bytes": 440464,
+      "sha256": "5510b40c0c0d00e15085c1e37b2eec8626d19f7459a506609f99b67f56c0c4bf"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/10-player-checkins.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 586231,
+      "sha256": "8b572be0e174d06810535def217226c0fc8bf03fd7e6d22bfba43c24a87a25ef"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/10-player-checkins--full.png",
+      "width": 3600,
+      "height": 2580,
+      "bytes": 593889,
+      "sha256": "1642429797ddc72944aa6a4a3892943e57274c0c9f9e7f8580546afbdacc0c9b"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/10-player-checkins.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 230669,
+      "sha256": "7a67f63c91cf28cdc2ae229a4aef48460080d88e213e33ed32d88e5c8cdf823e"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/10-player-checkins--full.png",
+      "width": 1080,
+      "height": 3950,
+      "bytes": 362992,
+      "sha256": "f7fb1f7c261a8e47802ca893159835f9a72a4409357bb6600b2b14a09dced3fb"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/11-player-analysis.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 761676,
+      "sha256": "0c5e95692385ced087418f82d381a0918d051906b8053f3cce41f98445d21176"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/11-player-analysis--full.png",
+      "width": 3600,
+      "height": 4175,
+      "bytes": 986737,
+      "sha256": "0799a1328154d8cc83fc76b909f198f50238df399ffb5e9c2f680c79fd27a1f6"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/11-player-analysis.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 298355,
+      "sha256": "3b220a0c86b9ada867bb06fa57650807a12fd0266b45923709b7d9bd9055a84f"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/11-player-analysis--full.png",
+      "width": 1080,
+      "height": 4703,
+      "bytes": 528398,
+      "sha256": "28b79ee578a2dbee84a6d118eafacfd6c82a74fd1922c8fd082b9b425f7d4e40"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/11-player-analysis.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 778079,
+      "sha256": "8348493b2cc09f0c73dc674f5de45073946e1d263f6e2dac75e06fa79a3e4311"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/11-player-analysis--full.png",
+      "width": 3600,
+      "height": 4175,
+      "bytes": 996994,
+      "sha256": "a50366c7d550c9baa9e6ae37887a2b2f3979f75f36c177238c238effbb35b0b6"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/11-player-analysis.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 226378,
+      "sha256": "d25f7547ffa9fec533d6d4e31915ef957df4a8c739f4b9953742c83eb2fdb6f1"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/11-player-analysis--full.png",
+      "width": 1080,
+      "height": 4703,
+      "bytes": 440711,
+      "sha256": "5adbc145cdb12554b20067d2553000d66ef3dcc9beb4e0d6c1a116926e487899"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/12-player-readiness.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 873983,
+      "sha256": "f7c3cd592d30bcca8afb0ab889e00e0a45086ad8c0ebe340fa4bdb14464dc3f7"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/12-player-readiness--full.png",
+      "width": 3600,
+      "height": 3765,
+      "bytes": 1000341,
+      "sha256": "2507def0da3590509061b58e81071c4195ce315c91a493118a5a7f3fe12ad6a9"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/12-player-readiness.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 285506,
+      "sha256": "f7855dd9547a1b9fd1fa84c1ae7906cd371139a4c9b932e58f61acfedb673e45"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/12-player-readiness--full.png",
+      "width": 1080,
+      "height": 4160,
+      "bytes": 454956,
+      "sha256": "5d741678808a0c9e696722da0f78f1e7a158eb25e32985f8266c1c8d84b5604e"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/12-player-readiness.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 596298,
+      "sha256": "da5326bdab885111faf8abe026158e5757861d5a8f66a04a267e201b0584b005"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/12-player-readiness--full.png",
+      "width": 3600,
+      "height": 3765,
+      "bytes": 747642,
+      "sha256": "05a33a1cbb9b50e3d753cd32bdd473131970d1ba1775b35db45dc6e355468f4b"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/12-player-readiness.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 213503,
+      "sha256": "8fcae1bc9bd51197f1de825dc5ae5b7260209f3ab79a19c714c8940a0164add1"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/12-player-readiness--full.png",
+      "width": 1080,
+      "height": 4160,
+      "bytes": 417147,
+      "sha256": "2a6aff8c3907e44a6a34fcb043dc35e774ec5e4d6abe47a467e3ba4eb692dda0"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/13-player-programs.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 850904,
+      "sha256": "4f281b153018892e7260a547b37d7ac3981398fc17b5b5ce1e2719890097e388"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/13-player-programs--full.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 850904,
+      "sha256": "4f281b153018892e7260a547b37d7ac3981398fc17b5b5ce1e2719890097e388"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/13-player-programs.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 307810,
+      "sha256": "e01cf5dd6de1d69e6513aa9e2b0091e8a6f2264af7295359a2e0a04f03f37bee"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/13-player-programs--full.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 307810,
+      "sha256": "e01cf5dd6de1d69e6513aa9e2b0091e8a6f2264af7295359a2e0a04f03f37bee"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/13-player-programs.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 472516,
+      "sha256": "e7c8ac23b9d468582235f41af918cb74420fc3d8e7f84dfd477480be05b128b4"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/13-player-programs--full.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 472516,
+      "sha256": "e7c8ac23b9d468582235f41af918cb74420fc3d8e7f84dfd477480be05b128b4"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/13-player-programs.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 163885,
+      "sha256": "29ad2d1fae9e04fd5ed4f610900092ee66c3cea089625d9eb21bf40c649d9113"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/13-player-programs--full.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 163885,
+      "sha256": "29ad2d1fae9e04fd5ed4f610900092ee66c3cea089625d9eb21bf40c649d9113"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/14-player-nutrition.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 839454,
+      "sha256": "66843fea5e27e283ed0a25230d7ab5c8e2117adbbb2f4b83c2ded6c9d7faf3de"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/14-player-nutrition--full.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 839454,
+      "sha256": "66843fea5e27e283ed0a25230d7ab5c8e2117adbbb2f4b83c2ded6c9d7faf3de"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/14-player-nutrition.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 307033,
+      "sha256": "3205af2b53a0c929d57c160e3059c6bc7611fe94aa30dba1e38497e85aa67238"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/14-player-nutrition--full.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 307033,
+      "sha256": "3205af2b53a0c929d57c160e3059c6bc7611fe94aa30dba1e38497e85aa67238"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/14-player-nutrition.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 467827,
+      "sha256": "d2dfead96e50f378ac041f9111cff685a320d235a762af1ff61d5a22fda31c03"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/14-player-nutrition--full.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 467827,
+      "sha256": "d2dfead96e50f378ac041f9111cff685a320d235a762af1ff61d5a22fda31c03"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/14-player-nutrition.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 167407,
+      "sha256": "b755dd7d43bba6719c13f70b63eef357d5ce8ec1cd9fbbf5150764f154247c80"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/14-player-nutrition--full.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 167407,
+      "sha256": "b755dd7d43bba6719c13f70b63eef357d5ce8ec1cd9fbbf5150764f154247c80"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/15-player-preview.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 1086203,
+      "sha256": "48951926d5808db790e0c30ea62bfb8b653ff2addae5588b554f4ff5ca936732"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/15-player-preview--full.png",
+      "width": 3600,
+      "height": 2495,
+      "bytes": 1087758,
+      "sha256": "5d8f1cc9c473fe542616404cab2785cc43853dc80804a8fd9114b8cc5866b274"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/15-player-preview.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 312364,
+      "sha256": "ac67b15c5eaf92f404f8318a1d4481dfd5758fd043c5a400972fbfb1c03930ec"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/15-player-preview--full.png",
+      "width": 1080,
+      "height": 2733,
+      "bytes": 372131,
+      "sha256": "27128d8ad20fc1c42643bf76b307f2c26136f7ab82d184703b805e1bd71fad85"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/15-player-preview.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 706238,
+      "sha256": "35668ea4ccbda161f511cd435477bae6b6860ed10d811b40826729b4edcc107a"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/15-player-preview--full.png",
+      "width": 3600,
+      "height": 2495,
+      "bytes": 710823,
+      "sha256": "5a42ac8693abef0f584bad71eda1776940f653943c15329b8efacb71e75b76e5"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/15-player-preview.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 196454,
+      "sha256": "63c8469d275170761dd3e4844f97370b3ccda2c6cdaed76c9041684ced6f32b6"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/15-player-preview--full.png",
+      "width": 1080,
+      "height": 2733,
+      "bytes": 258731,
+      "sha256": "6fd54a7f85efb2790dc72be798e5aa1c3184c0186c6815fdcb60ba571097a806"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/18-nutrition-builder.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 922740,
+      "sha256": "8258b7390e6611f175b3352a0fe4ec66a3f362606aad7a8efa8098f9ceaa60d7"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/18-nutrition-builder--full.png",
+      "width": 3600,
+      "height": 15675,
+      "bytes": 2166551,
+      "sha256": "9a98c5a047664638f20f8b5a1c0c383dee8419e44de692c10c7e47e4e5dd014f"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/18-nutrition-builder.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 298291,
+      "sha256": "cfbd1b616fd7c5dde39004bef00147b393278694a2402a911bd2f9dde8a732e3"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/18-nutrition-builder--full.png",
+      "width": 1080,
+      "height": 20235,
+      "bytes": 1643805,
+      "sha256": "88bdbf952ee93bb4157d67087cf03d424735dfa36396b0842e47d5e4c4032973"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/18-nutrition-builder.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 699883,
+      "sha256": "075464d8ca74b0fa52cd5cd0569220abaf47ab57dac9bd35d8e74ffba9c7d94d"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/18-nutrition-builder--full.png",
+      "width": 3600,
+      "height": 15675,
+      "bytes": 3161821,
+      "sha256": "3faa1a5cd23448a2957b21bc5882aa7c255be418cdbfda960b662bee437d5cbc"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/18-nutrition-builder.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 225993,
+      "sha256": "9955720580ab942aab443b850538129d7dc03b8ecbceff0fc5edda608bb22a00"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/18-nutrition-builder--full.png",
+      "width": 1080,
+      "height": 20235,
+      "bytes": 1449247,
+      "sha256": "bc66579b35d932ef3c625bb22be962f884e56ceb98282b52c7b840a19e443cdc"
+    },
+    {
+      "file": "02-screenshots/player/dark/desktop/01-home.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 434715,
+      "sha256": "5dd5d0d5dcba8ce6799105513030fdbadac6069926d76f6b8867ad44c9a7d871"
+    },
+    {
+      "file": "02-screenshots/player/dark/desktop/01-home--full.png",
+      "width": 3600,
+      "height": 3515,
+      "bytes": 485073,
+      "sha256": "512a9ae9b9f24a1fe03301e880b0aa3cebad0371f061efbc47edfcdb7d94c02b"
+    },
+    {
+      "file": "02-screenshots/player/dark/mobile/01-home.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 185807,
+      "sha256": "c0946eae4c6c7a4c80f3e25ec7f78b71bff12cf778128e4931dbed523369bbbb"
+    },
+    {
+      "file": "02-screenshots/player/dark/mobile/01-home--full.png",
+      "width": 1080,
+      "height": 3755,
+      "bytes": 306381,
+      "sha256": "c982fcf3c0e0ead3a901d47a118db822d057f6a735c4109d8e3363ec96d8cdaf"
+    },
+    {
+      "file": "02-screenshots/player/light/desktop/01-home.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 225558,
+      "sha256": "2034ae326ffc12e1e716218bf4de4603c83bd9b7b6cc2f06b05153758a5aa350"
+    },
+    {
+      "file": "02-screenshots/player/light/desktop/01-home--full.png",
+      "width": 3600,
+      "height": 3515,
+      "bytes": 265984,
+      "sha256": "7d301d0e268af82b2785aec75c55670d6d253e81fe05ac137ead9a7ac913aa88"
+    },
+    {
+      "file": "02-screenshots/player/light/mobile/01-home.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 134136,
+      "sha256": "5a068c7bf5ab0c9d7663d268142404b932ea5d1c17b8bd933d958cbea0e17057"
+    },
+    {
+      "file": "02-screenshots/player/light/mobile/01-home--full.png",
+      "width": 1080,
+      "height": 3755,
+      "bytes": 215777,
+      "sha256": "1b2f23b06d523a2dc627ffa96613c310279e4ebe274a22b23165c3e625753af7"
+    },
+    {
+      "file": "02-screenshots/player/dark/desktop/02-nutrition.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 596523,
+      "sha256": "194d75bf203a2dd8f85e49388ed42663cb82180a4802f91b7ca18fa53018f637"
+    },
+    {
+      "file": "02-screenshots/player/dark/desktop/02-nutrition--full.png",
+      "width": 3600,
+      "height": 6175,
+      "bytes": 1328031,
+      "sha256": "f0763a5ab5a0d1cb4674e65c757ce916136de81bde42ff54f71c74b3873dac8c"
+    },
+    {
+      "file": "02-screenshots/player/dark/mobile/02-nutrition.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 273904,
+      "sha256": "3f21f9dd8b076ce9976d806e8e7a7233973889807a0b101cdd292be0d73b0d81"
+    },
+    {
+      "file": "02-screenshots/player/dark/mobile/02-nutrition--full.png",
+      "width": 1080,
+      "height": 6345,
+      "bytes": 1033213,
+      "sha256": "1b93938ea640d754706348ad0a77c97ae613b720cfe8010cb00bc67fdcc0d70b"
+    },
+    {
+      "file": "02-screenshots/player/light/desktop/02-nutrition.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 411107,
+      "sha256": "490737cc094d2531f3bb20c912f8ab776ccbcb6c71c0a3eac171b1dd02f01772"
+    },
+    {
+      "file": "02-screenshots/player/light/desktop/02-nutrition--full.png",
+      "width": 3600,
+      "height": 6175,
+      "bytes": 1110786,
+      "sha256": "d9c7ebbd4e2f30bc65c6859ace4567846e97a986b6447fbb68cfa0e64929cfb9"
+    },
+    {
+      "file": "02-screenshots/player/light/mobile/02-nutrition.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 223362,
+      "sha256": "fecea2855bd383c4a0eb214fe631463be3739d60735b0156d367954e0e52cedc"
+    },
+    {
+      "file": "02-screenshots/player/light/mobile/02-nutrition--full.png",
+      "width": 1080,
+      "height": 6345,
+      "bytes": 943858,
+      "sha256": "8c2a894ddc2e23fcd83daa488f7ed090e03183af300b4077cb99655846149da8"
+    },
+    {
+      "file": "02-screenshots/player/dark/desktop/03-progress.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 417994,
+      "sha256": "8c1f184d8bf5aee9933a8db296e10ce85d79f8c3e578cea7020aeec5ce859083"
+    },
+    {
+      "file": "02-screenshots/player/dark/desktop/03-progress--full.png",
+      "width": 3600,
+      "height": 5493,
+      "bytes": 665101,
+      "sha256": "f93ffc788ab9e3ffb3e71220bcd52b73640c8f8083bdb15659a65f58b148c713"
+    },
+    {
+      "file": "02-screenshots/player/dark/mobile/03-progress.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 178762,
+      "sha256": "6ad06b53eb1b9451a3113826e3448b4b4a8ff7df30adcbf52d63994c0a179d18"
+    },
+    {
+      "file": "02-screenshots/player/dark/mobile/03-progress--full.png",
+      "width": 1080,
+      "height": 6300,
+      "bytes": 508473,
+      "sha256": "f20de04a0c1660d9f64520b4418d89f3eebd2d5f91f793776a360cfe22ba2423"
+    },
+    {
+      "file": "02-screenshots/player/light/desktop/03-progress.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 234106,
+      "sha256": "8949a6d942efad394fd5f68d397680e8cac045f29f51cc6124de56498e6bd888"
+    },
+    {
+      "file": "02-screenshots/player/light/desktop/03-progress--full.png",
+      "width": 3600,
+      "height": 5493,
+      "bytes": 442955,
+      "sha256": "6394a1fe12e94d7e1a2072f19eca515cc519cd357d7bd06dd5723d875f1e6450"
+    },
+    {
+      "file": "02-screenshots/player/light/mobile/03-progress.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 120739,
+      "sha256": "97b0bafe2304144e1d5e742f98cc2b306173b8f703481cf927d385b56691aebd"
+    },
+    {
+      "file": "02-screenshots/player/light/mobile/03-progress--full.png",
+      "width": 1080,
+      "height": 6300,
+      "bytes": 410182,
+      "sha256": "e1f4f5286eacdaecea37ed4448b3b23c0e5f875163260752a82c7cf0bf29aeea"
+    },
+    {
+      "file": "02-screenshots/player/dark/desktop/04-history.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 389057,
+      "sha256": "c0196a13999b1d277331dbd42105243bf4bc8a4ffc040697eaa2e3eb62c9e7a5"
+    },
+    {
+      "file": "02-screenshots/player/dark/desktop/04-history--full.png",
+      "width": 3600,
+      "height": 3670,
+      "bytes": 450361,
+      "sha256": "735eec5422b0563ea4f811e484815274caeba0370e7b55cd7b5bff6f509581b1"
+    },
+    {
+      "file": "02-screenshots/player/dark/mobile/04-history.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 169655,
+      "sha256": "5efa7bc11be5c2a776909fe7830cda8690b64d7a87f72a6eaa505bcdd4227795"
+    },
+    {
+      "file": "02-screenshots/player/dark/mobile/04-history--full.png",
+      "width": 1080,
+      "height": 3630,
+      "bytes": 251457,
+      "sha256": "1f340be0a993479ea5f7cbc6a52572805b7213fb753b82c2358b409eaf20d281"
+    },
+    {
+      "file": "02-screenshots/player/light/desktop/04-history.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 205549,
+      "sha256": "7ef545311f9e2d1e55c21b7c2df4cf0e366348ba5dc81add7a48ffeb9f421091"
+    },
+    {
+      "file": "02-screenshots/player/light/desktop/04-history--full.png",
+      "width": 3600,
+      "height": 3670,
+      "bytes": 262383,
+      "sha256": "2c43b063b677e349a5a314363b2b9b0701087aaca8134299a31b233c8e5e4039"
+    },
+    {
+      "file": "02-screenshots/player/light/mobile/04-history.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 116191,
+      "sha256": "da9bd6930c9f61bf60c03049b7dc26408a803e0957c1d9eb398446eb90b4abec"
+    },
+    {
+      "file": "02-screenshots/player/light/mobile/04-history--full.png",
+      "width": 1080,
+      "height": 3630,
+      "bytes": 191194,
+      "sha256": "68681ff73abfb209874d41fd9cdfd19ce3a2274e6257dfaa44c667ec6efc7a0d"
+    },
+    {
+      "file": "02-screenshots/player/dark/desktop/05-captain.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 407194,
+      "sha256": "0a7cbef208fb581832d34f8ceb7fc83aef9c723139b7bf1a21ef1342f4759260"
+    },
+    {
+      "file": "02-screenshots/player/dark/desktop/05-captain--full.png",
+      "width": 3600,
+      "height": 2890,
+      "bytes": 413811,
+      "sha256": "80a1450ca72b79a241f412873696b82ad8774228be95810ff47e57983c94b038"
+    },
+    {
+      "file": "02-screenshots/player/dark/mobile/05-captain.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 174218,
+      "sha256": "1b87426e52f2988896809dabfe0e82b6c37ab333869fbffd35eda0bbad194a0d"
+    },
+    {
+      "file": "02-screenshots/player/dark/mobile/05-captain--full.png",
+      "width": 1080,
+      "height": 3110,
+      "bytes": 226270,
+      "sha256": "90292ffd735108433fa86c8c820d899cf5a237fd2cc1c8139f82e4861a970c59"
+    },
+    {
+      "file": "02-screenshots/player/light/desktop/05-captain.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 198145,
+      "sha256": "0b51ddcfdaa1dd2a0dd0c4c486f1c5e53df34e612fe4a77a1cd73d57c0d87747"
+    },
+    {
+      "file": "02-screenshots/player/light/desktop/05-captain--full.png",
+      "width": 3600,
+      "height": 2890,
+      "bytes": 204636,
+      "sha256": "363415399153036024881f6e07916354eeb7127988e7b1552c1972fd2db90ce0"
+    },
+    {
+      "file": "02-screenshots/player/light/mobile/05-captain.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 118027,
+      "sha256": "c000b4bfd7f1375d3c2f36f3c592c1fa41def9133a2e7f03b273a15176b17224"
+    },
+    {
+      "file": "02-screenshots/player/light/mobile/05-captain--full.png",
+      "width": 1080,
+      "height": 3110,
+      "bytes": 159913,
+      "sha256": "f7d29e13256c4a82db0a735806bfce42a9e37359ec9a2b64ea9e44d87addc986"
+    },
+    {
+      "file": "02-screenshots/player/dark/desktop/06-settings.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 392402,
+      "sha256": "4b81343c9c7a5613c9168631d60bcf0f6d0e3258c53b12b97c0690425136e8af"
+    },
+    {
+      "file": "02-screenshots/player/dark/desktop/06-settings--full.png",
+      "width": 3600,
+      "height": 3940,
+      "bytes": 463345,
+      "sha256": "e23f78869969f8f5196f2060f6f058c3ab51d89104180423cdc9ff7659b86bda"
+    },
+    {
+      "file": "02-screenshots/player/dark/mobile/06-settings.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 160406,
+      "sha256": "441b251135e3ccaf5d37e2ed7df19941d8b49ae8267bda228b0937a2e9947b44"
+    },
+    {
+      "file": "02-screenshots/player/dark/mobile/06-settings--full.png",
+      "width": 1080,
+      "height": 4160,
+      "bytes": 250991,
+      "sha256": "22188a48dc3bf60bc575698754709296b2a8ccbf830a6b27d7e8b36ac2eb3024"
+    },
+    {
+      "file": "02-screenshots/player/light/desktop/06-settings.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 194593,
+      "sha256": "7bf6aefadd020c9cea5feafc107b2ded4264324316377454993409444d43dce3"
+    },
+    {
+      "file": "02-screenshots/player/light/desktop/06-settings--full.png",
+      "width": 3600,
+      "height": 3940,
+      "bytes": 259998,
+      "sha256": "fc7a32de5608947b00ef4a1b869b6da2f5d03f7afda242dd2ec7db83c044426b"
+    },
+    {
+      "file": "02-screenshots/player/light/mobile/06-settings.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 103997,
+      "sha256": "b08fb1ad369703e7759755450c35182db7f3ad199c2d2c0a5676797c801a2aee"
+    },
+    {
+      "file": "02-screenshots/player/light/mobile/06-settings--full.png",
+      "width": 1080,
+      "height": 4160,
+      "bytes": 184736,
+      "sha256": "bc4cb77e4f192e8e4dc34267f42b5538fbc083f5a61a4ac06417a14553fc4edc"
+    },
+    {
+      "file": "02-screenshots/player/dark/desktop/07-workout.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 413660,
+      "sha256": "9b07e02a3e5e7d05b7bae513bb658479e28b91b5bdbf1798e4e47393fe39f5a0"
+    },
+    {
+      "file": "02-screenshots/player/dark/desktop/07-workout--full.png",
+      "width": 3600,
+      "height": 2665,
+      "bytes": 434996,
+      "sha256": "e84ddc0ac5ff2860e54db100a466ee2403f247765c8d7474d70583d3315129d7"
+    },
+    {
+      "file": "02-screenshots/player/dark/mobile/07-workout.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 187359,
+      "sha256": "4234a3dcd557359093779460a34848ae97f83b8e5fdc566dd746ee2f77114ff6"
+    },
+    {
+      "file": "02-screenshots/player/dark/mobile/07-workout--full.png",
+      "width": 1080,
+      "height": 2905,
+      "bytes": 255162,
+      "sha256": "6a56873f5c2076cb99499817ab19775d801418e019ead11b341d8d8eefde7f6d"
+    },
+    {
+      "file": "02-screenshots/player/light/desktop/07-workout.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 201139,
+      "sha256": "7679c36537e435bbcec5871639b6544a3a0bd06ba6cd984bed1a20affa6c6f58"
+    },
+    {
+      "file": "02-screenshots/player/light/desktop/07-workout--full.png",
+      "width": 3600,
+      "height": 2665,
+      "bytes": 224991,
+      "sha256": "899431687272f08d6cf54525bb74ac679f52e1d162ffa216d934b5adf3aa2c3f"
+    },
+    {
+      "file": "02-screenshots/player/light/mobile/07-workout.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 130749,
+      "sha256": "7572549a2610520db74ba7f21f90617f3c7a0e26f72aab048115fd5b1d126c19"
+    },
+    {
+      "file": "02-screenshots/player/light/mobile/07-workout--full.png",
+      "width": 1080,
+      "height": 2905,
+      "bytes": 181221,
+      "sha256": "865815e06f5bdab57019fcdeeab530e9979034df37dd3ea5e6b2fb4ac9a0511e"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/16-program-builder.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 874829,
+      "sha256": "77c54e822f7ea4cf7593ba3ccfa8478fa244db44a49a7f0a668821ac351a46c9"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/16-program-builder--full.png",
+      "width": 3600,
+      "height": 4675,
+      "bytes": 1116091,
+      "sha256": "0316e60fb307f0a4146aed6dd8b9821c283dd1b3f47c24509fed4f26577030ee"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/16-program-builder.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 320902,
+      "sha256": "e3cc70f3c22344e0cbfc5bd490ce180a473cb3b74648a6cec7548e5e9a4a32f6"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/16-program-builder--full.png",
+      "width": 1080,
+      "height": 8695,
+      "bytes": 654033,
+      "sha256": "2e93ce7b82ac9f36f0a9b88c449658e80a5114974dad31bd28ac7506ceb8fd95"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/16-program-builder.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 650919,
+      "sha256": "c729aba7546687907246d3c353f85e20702b8b166e6592ab357cac7d61f6e952"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/16-program-builder--full.png",
+      "width": 3600,
+      "height": 4675,
+      "bytes": 971480,
+      "sha256": "f7405526115e45a406034a072b63bc1e78104eb918d907c71317fd437a4f47dc"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/16-program-builder.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 245203,
+      "sha256": "120c22734d82c222d8cdbff464cd80e7a748d9227ccdd6bcdd2d4a50d1e6b295"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/16-program-builder--full.png",
+      "width": 1080,
+      "height": 8695,
+      "bytes": 561900,
+      "sha256": "ac25539a31b0891b9fad9cc524e5e6a42c8d4763989007efd8421b104af67cb2"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/17-exercise-library.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 455628,
+      "sha256": "785c64f84c6e09ea0eba641d3531032159795dfe1e9b3b5a1d3ea32831b1cb0b"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/17-exercise-library--full.png",
+      "width": 3600,
+      "height": 4715,
+      "bytes": 688383,
+      "sha256": "f5d5b73097743383bdb783f7bf9082c39b9df9673dae01e7b941a22c314bdebe"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/17-exercise-library.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 122003,
+      "sha256": "5fc9d3361765da09aba31e6ea872572980a32e0f9553a7157c83c71e1019bd5a"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/17-exercise-library--full.png",
+      "width": 1080,
+      "height": 8735,
+      "bytes": 451894,
+      "sha256": "7b52786b5db1aeeff7fae5008b69b190e087bc9668ed40bff220fc5fc2462dfa"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/17-exercise-library.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 403056,
+      "sha256": "a7b65ecc19d9205bf3d16e06fe10f0bb5c67e251f7b31eb0bf92df687dd055f5"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/17-exercise-library--full.png",
+      "width": 3600,
+      "height": 4715,
+      "bytes": 729867,
+      "sha256": "a5573f344bf2cfb9e0e7556ab8ecd8c1af5ed2154593d5f9ebf6436b07a29789"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/17-exercise-library.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 107958,
+      "sha256": "158b74b2eb53eb05eba2797f3b83350c86e69a2f430014a1cefca11984827b26"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/17-exercise-library--full.png",
+      "width": 1080,
+      "height": 8735,
+      "bytes": 425401,
+      "sha256": "19f778e5e3a16177144ab76b1ca2eabde9bba015a3a08e606712f555a207691c"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/19-food-library.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 922542,
+      "sha256": "b139a639e8282c84b84e3170e49c782d73892df370b8e6df379990171672ba96"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/19-food-library--full.png",
+      "width": 3600,
+      "height": 17465,
+      "bytes": 2696145,
+      "sha256": "db4410d1d1d0958c0289dd1bf60bf8fadc766ed434313b8a2224ccb090a39329"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/19-food-library.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 300718,
+      "sha256": "d5c76270c29257f908a947520374006b09a8060fcbe302286c9220b04f7b61a4"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/19-food-library--full.png",
+      "width": 1080,
+      "height": 22015,
+      "bytes": 2082475,
+      "sha256": "5021cd9d66bb3b1857dede6af6ce060d3c230682aec41784c5dd080dd8b06c2c"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/19-food-library.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 695427,
+      "sha256": "5f55d57b572b8723595eb1e0ca5722b30ca8b8c28fc258f0fb7eb97ea5e48a80"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/19-food-library--full.png",
+      "width": 3600,
+      "height": 17465,
+      "bytes": 4003657,
+      "sha256": "a676648986f8874d54b398d64dc6815896dc5ab066bb3dbe452e99f9eed799f6"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/19-food-library.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 229841,
+      "sha256": "f85fae478aaf2f525b18eec6952b1f719dae01a3df67c399a59ec09381af8eac"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/19-food-library--full.png",
+      "width": 1080,
+      "height": 22015,
+      "bytes": 1904833,
+      "sha256": "ed6f118ef2096cdf451d5492fcabc0bcd26446328d15d696d4875e239b32eacc"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/20-nutrition-templates.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 943925,
+      "sha256": "78c685c70fcd071376b173bb40c93e2135e5d179de6a9cf34ef5cd44a0eef85b"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/20-nutrition-templates--full.png",
+      "width": 3600,
+      "height": 2810,
+      "bytes": 991899,
+      "sha256": "c450e9f446f41d73373f6d8e017e871784d822f461447ab8e056ad1c3375bb18"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/20-nutrition-templates.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 334971,
+      "sha256": "9576583ac52f45cb1c7bc96e213465e114310fe2b54cc8ceb72f5507703c01ac"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/20-nutrition-templates--full.png",
+      "width": 1080,
+      "height": 4145,
+      "bytes": 482135,
+      "sha256": "819f8cbfc6c6b915dd9072744afe4f388987b1262f4959b2a41ad5f4e52e4397"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/20-nutrition-templates.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 641316,
+      "sha256": "c589181c3feb2f4f2948431deea8180bbc0f2d3376744b67622f136d419ea0e7"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/20-nutrition-templates--full.png",
+      "width": 3600,
+      "height": 2810,
+      "bytes": 679567,
+      "sha256": "18b953ece9d2e7b540291e28e1c7257a10f25d3048b7fdb061edb71191510bac"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/20-nutrition-templates.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 259777,
+      "sha256": "761e898d15874089c8542e7f20b046e3b0882ded37257f5214f502714d31eb26"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/20-nutrition-templates--full.png",
+      "width": 1080,
+      "height": 4145,
+      "bytes": 436904,
+      "sha256": "c7ccc2015226c965b7ec8cfa22658c02fd9a30d4078ee884af77db4870f58186"
+    },
+    {
+      "file": "02-screenshots/public/dark/desktop/07-ui-kit.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 1146651,
+      "sha256": "1a766c2d298cb95c3c6411158ab8de52ee4884193696a6aaf515b6160ac5b982"
+    },
+    {
+      "file": "02-screenshots/public/dark/desktop/07-ui-kit--full.png",
+      "width": 3600,
+      "height": 7035,
+      "bytes": 1429388,
+      "sha256": "f7e86bf1908072d25eec269b3e4dbeadbb7fb6644861655acb2ca1e39b19b2ce"
+    },
+    {
+      "file": "02-screenshots/public/dark/mobile/07-ui-kit.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 362683,
+      "sha256": "507b91c17a9261419a0bc48a2fc5cddcd1d37e85943aef8fcdf9466b0fe347a7"
+    },
+    {
+      "file": "02-screenshots/public/dark/mobile/07-ui-kit--full.png",
+      "width": 1080,
+      "height": 7865,
+      "bytes": 633657,
+      "sha256": "ea74b384f022730f7bc5544f152bc157f9d4d06562f192ee69b32c9cb5ad47a2"
+    },
+    {
+      "file": "02-screenshots/public/light/desktop/07-ui-kit.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 579441,
+      "sha256": "c2c5faf7658b4df5cf6a3ff2b81ec28661457ddc5865dc196f32db22c0865870"
+    },
+    {
+      "file": "02-screenshots/public/light/desktop/07-ui-kit--full.png",
+      "width": 3600,
+      "height": 7035,
+      "bytes": 875746,
+      "sha256": "5c7d782e3123198fdfde7244555c698977e7a9eb4e9b452087e034a68cd196ec"
+    },
+    {
+      "file": "02-screenshots/public/light/mobile/07-ui-kit.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 387698,
+      "sha256": "8afb58836cd233ec626be76d82a6a5c63961f766d5f11919d5fe285ee17702d1"
+    },
+    {
+      "file": "02-screenshots/public/light/mobile/07-ui-kit--full.png",
+      "width": 1080,
+      "height": 7865,
+      "bytes": 668291,
+      "sha256": "1412897cd0af6d309e65da5cac942c38625a113a5f3247fa4b759c546f560289"
+    },
+    {
+      "file": "02-screenshots/player/dark/desktop/10-food-swap.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 597710,
+      "sha256": "c53e3d38ee4be410f62063ce941db9bc9885a6331c0c71651e42dc74289c7e70"
+    },
+    {
+      "file": "02-screenshots/player/dark/desktop/10-food-swap--full.png",
+      "width": 3600,
+      "height": 6175,
+      "bytes": 1332202,
+      "sha256": "1d7d368b00d6d77ced276969ca10ef3065fc3bdf0f3d60b0da58d43a0df990d7"
+    },
+    {
+      "file": "02-screenshots/player/dark/mobile/10-food-swap.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 274726,
+      "sha256": "b384e09000be737bce1e302e44ad62a10b6e294185112e70db97680a8347b68a"
+    },
+    {
+      "file": "02-screenshots/player/dark/mobile/10-food-swap--full.png",
+      "width": 1080,
+      "height": 6345,
+      "bytes": 1036894,
+      "sha256": "843a185691a5596bf9fc2c2bc511ee9017e953b745ab4e3a9f288cd264300b43"
+    },
+    {
+      "file": "02-screenshots/player/light/desktop/10-food-swap.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 412109,
+      "sha256": "a58931675f8bc07b828426e5b21e155e436d1a4f4f01d836e856152ad35ebbae"
+    },
+    {
+      "file": "02-screenshots/player/light/desktop/10-food-swap--full.png",
+      "width": 3600,
+      "height": 6175,
+      "bytes": 1115484,
+      "sha256": "a48bd6c5fe18b1c4ca9d974e852cbab140a0fe6bd3ee3cf612409617ca5d433d"
+    },
+    {
+      "file": "02-screenshots/player/light/mobile/10-food-swap.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 224349,
+      "sha256": "5cc9246f23b6d15576c9e66b98e602726f483672519cdad866de7812363dc7a4"
+    },
+    {
+      "file": "02-screenshots/player/light/mobile/10-food-swap--full.png",
+      "width": 1080,
+      "height": 6345,
+      "bytes": 948951,
+      "sha256": "f32f27ed07eee732885787733d3a7f0efbd29f069987382dd74c1559c83aa53d"
+    },
+    {
+      "file": "02-screenshots/player/dark/desktop/11-rest-timer.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 419359,
+      "sha256": "c22311db6adbd98094f3c07b8065838e2b172e551dab1053c8faae24a96f9080"
+    },
+    {
+      "file": "02-screenshots/player/dark/desktop/11-rest-timer--full.png",
+      "width": 3600,
+      "height": 3030,
+      "bytes": 454095,
+      "sha256": "0ab550417e902a77ad71da64168407374a945e45c7d04e230ede9556fc5eeefe"
+    },
+    {
+      "file": "02-screenshots/player/dark/mobile/11-rest-timer.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 185837,
+      "sha256": "c7dce1ef2573b9b79b215c35cb56987fa43795e7604fc0a94d4de7dcf9f8c956"
+    },
+    {
+      "file": "02-screenshots/player/dark/mobile/11-rest-timer--full.png",
+      "width": 1080,
+      "height": 3270,
+      "bytes": 259434,
+      "sha256": "75a2f9ad01154f018ef948248bf2b9628acb5c71436fd31acc342fafd4ae7fb5"
+    },
+    {
+      "file": "02-screenshots/player/light/desktop/11-rest-timer.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 218891,
+      "sha256": "1b68cfd1dc66b5e36e657eb709e1a5ae2b144f5e7326fb2c05a17d96f540da45"
+    },
+    {
+      "file": "02-screenshots/player/light/desktop/11-rest-timer--full.png",
+      "width": 3600,
+      "height": 3030,
+      "bytes": 248618,
+      "sha256": "2f24acdb41877c2b812496d749d43fb0a88e9ee53ea9d4e1af10f952873952ff"
+    },
+    {
+      "file": "02-screenshots/player/light/mobile/11-rest-timer.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 127831,
+      "sha256": "d87c57e9a26112ba4bf5f49b8a429d6878694dea424ec09d422cdb0966232c12"
+    },
+    {
+      "file": "02-screenshots/player/light/mobile/11-rest-timer--full.png",
+      "width": 1080,
+      "height": 3270,
+      "bytes": 194456,
+      "sha256": "c3f1cff2e3992649cb4292f335aa2b0fb82700f2d4efbbd43e2956d4e3fb54c9"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/07-player-intake.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 750688,
+      "sha256": "0d3f28e2c59669e956d73a2256237e18728fc52d09cbd1abe5b5b7c4e548ca9f"
+    },
+    {
+      "file": "02-screenshots/captain/dark/desktop/07-player-intake--full.png",
+      "width": 3600,
+      "height": 2765,
+      "bytes": 775956,
+      "sha256": "74d565400fbd7c36ed4ad23075ec1c8ef2e1bca0aab923b6faf922bdf10eefd1"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/07-player-intake.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 292390,
+      "sha256": "2dce024e76eef74ee9959a7397bce08656b324fc5ac2868fe2a4311a58ff4cbf"
+    },
+    {
+      "file": "02-screenshots/captain/dark/mobile/07-player-intake--full.png",
+      "width": 1080,
+      "height": 3850,
+      "bytes": 372752,
+      "sha256": "e2e1c921f1a713623b177a1d1d358507b0d897016a66e1200737e0be143976e6"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/07-player-intake.png",
+      "width": 3600,
+      "height": 2400,
+      "bytes": 524009,
+      "sha256": "588a92438b24a6e18f11c1f8d7464ffc0ca73f31c2199bfd458b502170ba85ad"
+    },
+    {
+      "file": "02-screenshots/captain/light/desktop/07-player-intake--full.png",
+      "width": 3600,
+      "height": 2765,
+      "bytes": 542378,
+      "sha256": "f94155a9011a4417a8ca29979005422f9a265dbe80de84136bc2d90bf0a41356"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/07-player-intake.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 217768,
+      "sha256": "a50c9149a3d7128e78b46d62c7877c94e16220e0dee1aa6021142f990418872b"
+    },
+    {
+      "file": "02-screenshots/captain/light/mobile/07-player-intake--full.png",
+      "width": 1080,
+      "height": 3850,
+      "bytes": 305648,
+      "sha256": "214541149e5d18715b4a1e8bb153b41578359ed4a4f206c5a269afebe9b3d446"
+    }
+  ]
+}

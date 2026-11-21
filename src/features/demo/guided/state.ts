@@ -7,7 +7,7 @@ export function initialState(now: number) {
   return {
     intro: true, n: 18, started: now, ended: null as number | null, step: 0,
     page: 'home' as Page, view: 'captain' as 'captain' | 'player', guide: 'open' as 'open' | 'min' | 'closed',
-    did: [] as string[], nudged: false, approved: false, renewed: false, paid: false,
+    did: [] as string[], nudged: false, approved: false, joined: false, renewed: false, paid: false,
     invite: false, invites: [] as string[], name: '', pkg: 1, gate: true, initial: true, photos: true,
     chat: 'mohamed' as Thread, threads: { mohamed: [], sara: [], omar: [] } as Record<Thread, ChatMessage[]>,
     tab: 'workout' as PhoneTab, kg: 65, reps: 8, sets: [[60, 10], [62.5, 8]] as [number, number][], restUntil: 0,
@@ -54,6 +54,7 @@ export function reduceDemo(state: DemoState, action: Action): DemoState {
   if (event === 'approve' && !state.approved) {
     next.approved = true; next.threads = { ...state.threads, sara: [...state.threads.sara, { from: 'captain', text: text ?? '' }] }; addFeed();
   }
+  if (event === 'joinok' && !state.joined) { next.joined = true; addFeed(); }
   if (event === 'pay' && !state.paid) { next.paid = true; addFeed(); }
   if (event === 'invite' && !state.invite) { next.invite = true; next.invites = [...state.invites, text ?? state.name]; next.name = text ?? state.name; addFeed(); }
   if (event === 'again') { next.invite = false; next.name = ''; }

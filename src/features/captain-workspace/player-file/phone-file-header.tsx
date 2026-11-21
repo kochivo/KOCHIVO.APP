@@ -45,7 +45,7 @@ export function PhoneFileHeader({ base, playerId, today, name, goal, packageName
         <KoCaptainChat aria-hidden className="size-5" />
       </Link>
     </header>
-    <nav aria-label={t('tabs')} className="flex max-w-full gap-inline overflow-x-auto">
+    <nav aria-label={t('tabs')} className="chip-scroll flex max-w-full gap-inline overflow-x-auto">
       {routes.map(([key, href, label]) => <Link key={key} href={href} prefetch={false} aria-current={tab === key ? 'page' : undefined}
         className={chipClass(tab === key)}>
         {label}

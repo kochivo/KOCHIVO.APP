@@ -1,0 +1,87 @@
+{
+  "galleryCards": 36,
+  "brokenImages": 0,
+  "filters": "passed",
+  "videos": [
+    {
+      "file": "04-video-clips/captain-01-dashboard-scroll.webm",
+      "title": "الرئيسية",
+      "width": 1080,
+      "height": 1920,
+      "durationSeconds": 8,
+      "fps": 20,
+      "source": "02-screenshots/captain/dark/mobile/01-dashboard--full.png",
+      "type": "Animated scroll from a static screenshot; not live interaction recording",
+      "audio": false,
+      "verified": {
+        "width": 1080,
+        "height": 1920,
+        "duration": 8
+      }
+    },
+    {
+      "file": "04-video-clips/captain-16-program-builder-scroll.webm",
+      "title": "مصمم البرنامج",
+      "width": 1080,
+      "height": 1920,
+      "durationSeconds": 8,
+      "fps": 20,
+      "source": "02-screenshots/captain/dark/mobile/16-program-builder--full.png",
+      "type": "Animated scroll from a static screenshot; not live interaction recording",
+      "audio": false,
+      "verified": {
+        "width": 1080,
+        "height": 1920,
+        "duration": 8
+      }
+    },
+    {
+      "file": "04-video-clips/captain-18-nutrition-builder-scroll.webm",
+      "title": "مصمم التغذية",
+      "width": 1080,
+      "height": 1920,
+      "durationSeconds": 8,
+      "fps": 20,
+      "source": "02-screenshots/captain/dark/mobile/18-nutrition-builder--full.png",
+      "type": "Animated scroll from a static screenshot; not live interaction recording",
+      "audio": false,
+      "verified": {
+        "width": 1080,
+        "height": 1920,
+        "duration": 8
+      }
+    },
+    {
+      "file": "04-video-clips/player-02-nutrition-scroll.webm",
+      "title": "الأكل والماكروز",
+      "width": 1080,
+      "height": 1920,
+      "durationSeconds": 8,
+      "fps": 20,
+      "source": "02-screenshots/player/dark/mobile/02-nutrition--full.png",
+      "type": "Animated scroll from a static screenshot; not live interaction recording",
+      "audio": false,
+      "verified": {
+        "width": 1080,
+        "height": 1920,
+        "duration": 8
+      }
+    },
+    {
+      "file": "04-video-clips/player-03-progress-scroll.webm",
+      "title": "التطور والمتابعة",
+      "width": 1080,
+      "height": 1920,
+      "durationSeconds": 8,
+      "fps": 20,
+      "source": "02-screenshots/player/dark/mobile/03-progress--full.png",
+      "type": "Animated scroll from a static screenshot; not live interaction recording",
+      "audio": false,
+      "verified": {
+        "width": 1080,
+        "height": 1920,
+        "duration": 8
+      }
+    }
+  ]
+}

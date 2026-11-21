@@ -1,0 +1,977 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KOCHIVO — نموذج الكابتن v11</title>
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700&family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0c0d;--deep:#070808;--ink:#f4f4f1;--muted:#a6abb0;--dim:#6f7479;--line:rgb(255 255 255/.08);--lime:#b6e94f;--lime-soft:rgb(182 233 79/.12);--warn:#ff9a73;--warn-soft:rgb(255 154 115/.12);--calm:#9db2ff;--calm-soft:rgb(157 178 255/.12);--gold:#e2c069;--g:rgb(255 255 255/.04);--g2:rgb(255 255 255/.065);--hl:rgb(255 255 255/.08);--sh:inset 0 1px 0 var(--hl),0 8px 30px -12px rgb(0 0 0/.7)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Alexandria,sans-serif;background:#050606;color:var(--ink);font-size:13px;padding:18px 20px 40px}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+.n{font-family:Manrope;unicode-bidi:isolate;direction:ltr;display:inline-block;font-variant-numeric:tabular-nums}
+svg.i{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+svg.s{width:15px;height:15px}
+.top{max-width:1400px;margin:0 auto 14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.top h1{font-size:18px;font-weight:700}
+.top p{color:var(--muted);font-size:12.5px}
+.mode{margin-inline-start:auto;display:flex;padding:3px;border-radius:99px;background:var(--g);border:1px solid var(--line)}
+.mode button{padding:7px 16px;border-radius:99px;color:var(--muted);font-size:12.5px}
+.mode button.on{background:var(--lime);color:#0e1206;font-weight:600}
+.stage{max-width:1400px;margin:0 auto}
+.scene{position:relative;overflow:hidden;background:radial-gradient(100% 70% at 90% -10%,#141b0b 0%,transparent 55%),radial-gradient(80% 60% at 0% 110%,#0d111b 0%,transparent 60%),linear-gradient(180deg,var(--bg),var(--deep));border:1px solid var(--line)}
+.glass{background:var(--g);border:1px solid var(--line);box-shadow:var(--sh);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border-radius:18px}
+/* desktop */
+.desk{height:calc(100vh - 90px);min-height:640px;border-radius:24px;display:grid;grid-template-columns:1fr 220px;gap:14px;padding:14px}
+.side{grid-column:2;grid-row:1;padding:14px 10px;display:flex;flex-direction:column;gap:2px;overflow:auto}
+.brand{padding:4px 8px 12px}.brand img{height:20px}
+.grp{font-size:10.5px;color:var(--dim);padding:12px 10px 4px}
+.nav{display:flex;align-items:center;gap:10px;height:36px;padding:0 10px;border-radius:10px;color:var(--muted);font-size:13px;width:100%;text-align:start}
+.nav:hover{background:var(--g)}
+.nav.on{background:var(--g2);color:var(--ink);box-shadow:inset 0 1px 0 var(--hl)}
+.nav.on svg{color:var(--lime)}
+.b{margin-inline-start:auto;min-width:20px;height:18px;padding:0 6px;border-radius:99px;background:var(--lime);color:#0e1206;font:800 10.5px Manrope;display:grid;place-items:center}
+.b.s{background:var(--g2);color:var(--ink)}
+.me{margin-top:auto;display:flex;align-items:center;gap:10px;padding:10px;border-radius:14px;background:var(--g);border:1px solid var(--line)}
+.me small{display:block;color:var(--muted);font-size:11px}
+.content{grid-column:1;grid-row:1;overflow:auto;min-width:0;border-radius:18px;container-type:inline-size;scrollbar-width:thin;scrollbar-color:#2a2d2f transparent}
+.pg{display:flex;flex-direction:column;gap:12px;padding-bottom:20px}
+/* phone */
+.phonewrap{display:flex;justify-content:center}
+.phone{width:390px;height:calc(100vh - 90px);min-height:700px;max-height:844px;border-radius:44px;position:relative;padding:0}
+.phone .content{position:absolute;inset:0;padding:16px 14px 96px;border-radius:44px}
+.pnav{position:absolute;bottom:14px;inset-inline:12px;height:62px;border-radius:99px;display:flex;align-items:center;justify-content:space-around;z-index:5;background:rgb(28 31 28/.8)}
+.pnav button{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;color:var(--muted);padding:6px 9px;border-radius:99px;position:relative}
+.pnav button.on{background:var(--lime-soft);color:var(--lime)}
+.pnav .b{position:absolute;top:0;inset-inline-end:2px;min-width:15px;height:15px;font-size:9px;padding:0 3px}
+.dimmer{position:absolute;inset:0;background:rgb(0 0 0/.5);z-index:6;border-radius:44px;display:none}
+.sheet{position:absolute;inset-inline:0;bottom:0;z-index:7;padding:10px 14px 96px;border-radius:26px 26px 44px 44px;background:rgb(20 22 20/.96);backdrop-filter:blur(24px);border-top:1px solid var(--line);display:none;max-height:85%;overflow:auto}
+.sheet.open,.dimmer.open{display:block}
+.grab{width:38px;height:4px;border-radius:9px;background:var(--g2);margin:0 auto 6px}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tiles button{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 4px;border-radius:14px;background:var(--g);border:1px solid var(--line);font-size:11px;position:relative;min-height:72px}
+.tiles button svg{color:var(--lime)}
+.tiles .cnt{position:absolute;top:6px;inset-inline-end:8px;font:800 9.5px Manrope;color:var(--lime)}
+/* shared ui */
+.bar{display:flex;align-items:center;gap:10px;padding:8px 10px 8px 8px;border-radius:14px;flex-wrap:wrap}
+.bar h2{font-size:16px;font-weight:700;padding-inline-start:6px}
+.muted{color:var(--muted)}.dim{color:var(--dim)}
+.search{margin-inline-start:auto;display:flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:99px;background:var(--g);border:1px solid var(--line);color:var(--dim);font-size:12px;width:220px}
+.search kbd{margin-inline-start:auto;font:600 10px Manrope;padding:2px 6px;border-radius:6px;background:var(--g2);color:var(--muted)}
+.icb{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--g);border:1px solid var(--line);position:relative;flex:none}
+.icb i{position:absolute;top:7px;inset-inline-end:8px;width:7px;height:7px;border-radius:50%;background:var(--lime)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:34px;padding:0 14px;border-radius:10px;font-weight:600;font-size:12.5px;white-space:nowrap}
+.btn.go{background:var(--lime);color:#0e1206;box-shadow:inset 0 1px 0 rgb(255 255 255/.35),0 0 16px rgb(182 233 79/.2)}
+.btn.gl{background:var(--g2);border:1px solid var(--line)}
+.btn.sm{height:28px;padding:0 10px;font-size:11.5px;border-radius:8px}
+.pill{display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:99px;font-size:10.5px;font-weight:600;white-space:nowrap}
+.w{background:var(--warn-soft);color:var(--warn)}.c{background:var(--calm-soft);color:var(--calm)}.l{background:var(--lime-soft);color:var(--lime)}.m{background:var(--g2);color:var(--muted)}
+.card{padding:14px;border-radius:18px;min-width:0}
+.ch{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.ch b{font-size:14px;font-weight:600}
+.ch .cnt{font:700 11px Manrope;color:var(--muted);padding:1px 7px;border-radius:99px;background:var(--g2)}
+.ch .lnk{margin-inline-start:auto;color:var(--muted);font-size:11.5px}
+.tabs{display:flex;gap:4px;padding:3px;border-radius:99px;background:rgb(0 0 0/.25);border:1px solid var(--line);width:max-content;max-width:100%;overflow:auto;scrollbar-width:none}
+.tabs button{padding:5px 12px;border-radius:99px;font-size:11.5px;color:var(--muted);white-space:nowrap}
+.tabs button.on{background:var(--g2);color:var(--ink);box-shadow:inset 0 1px 0 var(--hl)}
+.row{display:flex;align-items:center;gap:10px;padding:8px;border-radius:12px;min-height:50px;width:100%;text-align:start}
+.row+.row{border-top:1px solid var(--line)}
+.row.h{background:var(--g2);border-color:transparent}
+button.row:hover{background:var(--g)}
+.av{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;font-size:12px;font-weight:700;flex:none;background:var(--g2);border:1px solid var(--line)}
+.av.lg{width:52px;height:52px;border-radius:16px;font-size:19px;background:linear-gradient(135deg,#2b3320,#13170c);border-color:rgb(182 233 79/.25)}
+.t{flex:1;min-width:0}
+.t b{display:block;font-size:13px;font-weight:600}
+.t small{color:var(--muted);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.rank{font:800 9.5px Manrope;letter-spacing:.06em;color:var(--gold);padding:2px 7px;border-radius:99px;background:rgb(226 192 105/.1)}
+.wk{display:flex;gap:3px}.wk i{width:10px;height:10px;border-radius:3px;background:var(--g2)}.wk i.d{background:var(--lime)}.wk i.x{background:rgb(255 154 115/.55)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.g21{display:grid;grid-template-columns:1.4fr 1fr;gap:12px}
+.g12{display:grid;grid-template-columns:260px 1fr;gap:12px}
+.inb{grid-template-columns:270px 1fr}
+.st{display:flex;align-items:center;gap:12px;padding:12px 14px}
+.st svg.r{width:44px;height:44px;flex:none}
+.st b{font:800 19px Manrope;display:block;line-height:1.15}
+.st small{color:var(--muted);font-size:11.5px}
+.tr{margin-inline-start:auto;font:700 11px Manrope;color:var(--lime)}
+.chart{display:flex;align-items:end;gap:8px;height:110px;padding:6px 4px 0}
+.chart i{flex:1;border-radius:6px 6px 3px 3px;background:var(--g2)}
+.chart i.d{background:linear-gradient(180deg,#c3f062,rgb(143 194 42/.75))}
+.chl{display:flex;gap:8px;font-size:10px;color:var(--dim);padding:4px 4px 0}.chl span{flex:1;text-align:center}
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-size:11px;color:var(--dim);font-weight:500;text-align:start;padding:8px 10px;border-bottom:1px solid var(--line)}
+.tbl td{padding:8px 10px;border-bottom:1px solid var(--line);font-size:12.5px}
+.tbl tr.click{cursor:pointer}.tbl tr.click:hover td{background:var(--g)}
+.who{display:flex;align-items:center;gap:10px}.who b{font-weight:600;display:block}.who small{color:var(--muted);font-size:11px}
+.kv{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);padding:7px 0;border-bottom:1px solid var(--line)}
+.kv:last-child{border:0}.kv b{color:var(--ink);font-weight:600}
+.ko{display:flex;gap:10px;align-items:start;padding:12px;border-radius:14px;background:var(--lime-soft);border:1px solid rgb(182 233 79/.2);font-size:12.5px;line-height:1.8}
+.ko .dot{width:26px;height:26px;border-radius:8px;background:var(--lime);color:#0e1206;display:grid;place-items:center;font:800 10px Manrope;flex:none}
+.vid{border-radius:14px;background:linear-gradient(160deg,#252a1d,#0f110c);border:1px solid var(--line);display:grid;place-items:center;aspect-ratio:16/9;position:relative}
+.vid span{width:40px;height:40px;border-radius:50%;background:rgb(255 255 255/.14);display:grid;place-items:center}
+.ph{border-radius:12px;background:linear-gradient(180deg,#1d2117,#0e100b);border:1px solid var(--line);position:relative;aspect-ratio:3/4;display:grid;place-items:center;color:var(--dim)}
+.ph small{position:absolute;bottom:6px;inset-inline-start:8px;font-size:10.5px;color:var(--muted)}
+.metric{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.metric:last-child{border:0}.metric span{flex:1;color:var(--muted);font-size:12px}.metric b{font:700 13px Manrope}
+.legend div{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted);margin:3px 0}
+.legend i{width:8px;height:8px;border-radius:50%}.legend b{color:var(--ink);font:700 11.5px Manrope;margin-inline-start:auto}
+.bub{max-width:75%;padding:10px 14px;border-radius:16px;font-size:13px;line-height:1.7}
+.bub.p{background:var(--g2);border:1px solid var(--line);border-start-start-radius:5px;align-self:flex-start}
+.bub.me{background:var(--lime);color:#0e1206;border-start-end-radius:5px;align-self:flex-end}
+.bub small{display:block;font-size:10px;opacity:.6}
+.compose{display:flex;gap:8px;align-items:center;padding:6px;border-radius:16px;background:rgb(0 0 0/.25);border:1px solid var(--line)}
+.compose .f{flex:1;color:var(--dim);padding:0 8px}
+.qr{display:flex;gap:6px;flex-wrap:wrap}.qr span{padding:5px 11px;border-radius:99px;background:var(--g);border:1px solid var(--line);font-size:11.5px;color:var(--muted)}
+.ex{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ex:last-child{border:0}
+.ex .gif{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#22261b,#101209);border:1px solid var(--line);flex:none}
+.tpl .tag{font-size:10.5px;color:var(--muted);padding:2px 8px;border-radius:99px;background:var(--g2)}
+.days{display:flex;gap:4px;margin:10px 0}.days span{flex:1;height:26px;border-radius:7px;background:var(--g2);display:grid;place-items:center;font-size:10px;color:var(--muted)}.days span.on{background:var(--lime-soft);color:var(--lime)}
+.podium{display:flex;align-items:end;justify-content:center;gap:10px;padding-top:10px}
+.podium div{flex:1;max-width:130px;border-radius:14px 14px 4px 4px;background:var(--g2);border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:end;gap:4px;padding:10px 6px}
+.podium b{font:800 18px Manrope}
+.toggle{width:36px;height:20px;border-radius:99px;background:var(--lime);position:relative;flex:none}.toggle::after{content:"";position:absolute;top:2px;inset-inline-start:2px;width:16px;height:16px;border-radius:50%;background:#0e1206}
+.toggle.off{background:var(--g2)}.toggle.off::after{inset-inline-start:auto;inset-inline-end:2px;background:var(--muted)}
+.empty{padding:26px;text-align:center;color:var(--muted);font-size:12.5px}
+.hint{max-width:1400px;margin:10px auto 0;color:var(--dim);font-size:11.5px}
+.builder{display:grid;grid-template-columns:1fr 300px;gap:12px;align-items:start}
+.builder.fb{grid-template-columns:1fr 320px}
+.picker{position:sticky;top:0;max-height:calc(100vh - 200px);overflow:auto}
+.gif{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#22261b,#101209);border:1px solid var(--line);flex:none;display:grid;place-items:center;color:var(--dim)}
+.gif.lg{width:64px;height:64px;border-radius:14px}
+.gif.xl{width:100%;height:auto;aspect-ratio:4/3;border-radius:14px;margin-bottom:8px}
+.exc{display:flex;gap:12px;align-items:flex-start}
+.grip{color:var(--dim);cursor:grab;padding-top:4px}
+.fields{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.fields label{display:flex;flex-direction:column;gap:2px;padding:6px 10px;border-radius:10px;background:rgb(0 0 0/.25);border:1px solid var(--line);font-size:10.5px;color:var(--muted);min-width:64px}
+.fields label b{font-size:14px;color:var(--ink)}
+.sets{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.sets span{font-size:10.5px;color:var(--dim);padding:4px 8px;border-radius:8px;background:var(--g)}
+.sets b{color:var(--ink);margin-inline-start:4px}
+.sum{display:flex;justify-content:space-around;padding:10px;border-radius:14px;font-size:12px;color:var(--muted)}
+.qr span.onq{background:var(--lime-soft);color:var(--lime);border-color:rgb(182 233 79/.25)}
+.excard{display:flex;flex-direction:column;text-align:start;gap:2px}
+.excard b{font-size:13px}.excard small{font-size:11px}
+.steps{padding-inline-start:18px;line-height:2;color:var(--muted);font-size:12.5px}
+.macros{display:flex;gap:16px;align-items:center}
+.mbar .ml{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted)}
+.mbar .ml b{color:var(--ink);font-size:11.5px}
+.track{height:7px;border-radius:9px;background:var(--g2);overflow:hidden;margin-top:3px}
+.track i{display:block;height:100%;border-radius:9px;transition:width .35s}
+.addline{display:flex;align-items:center;gap:6px;width:100%;padding:9px;margin-top:6px;border-radius:10px;border:1px dashed var(--line);color:var(--muted);font-size:12px}
+.addline:hover{border-color:rgb(182 233 79/.4);color:var(--ink)}
+.qtypes{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.qtypes button{display:flex;flex-direction:column;align-items:center;gap:5px;padding:10px 4px;border-radius:12px;background:var(--g);border:1px solid var(--line);font-size:11px}
+.qtypes button svg{color:var(--lime)}
+.mini-phone{width:280px;min-height:500px;border-radius:32px;padding:20px 16px;background:rgb(0 0 0/.35);border:1px solid var(--line);display:flex;flex-direction:column;gap:14px;position:sticky;top:0}
+.prog-dots{display:flex;gap:4px}.prog-dots i{flex:1;height:4px;border-radius:9px;background:var(--g2)}.prog-dots i.on{background:var(--lime)}
+.inp{padding:12px 14px;border-radius:12px;background:var(--g2);border:1px solid var(--line);font-size:18px;font-weight:700}
+.inp small{font-size:12px;color:var(--muted)}
+.scale{display:flex;gap:6px}.scale span{flex:1;height:44px;border-radius:12px;background:var(--g2);display:grid;place-items:center;font:700 15px Manrope}.scale span.on{background:var(--lime);color:#0e1206}
+.opt{padding:11px 14px;border-radius:12px;background:var(--g2);border:1px solid var(--line);font-size:13px}.opt.on{border-color:var(--lime);background:var(--lime-soft)}
+.tier{position:relative;display:flex;flex-direction:column}
+.tier.feat{border:1px solid transparent;background:radial-gradient(ellipse at top,rgb(182 233 79/.09),transparent 65%) padding-box,linear-gradient(rgb(255 255 255/.05),rgb(255 255 255/.05)) padding-box,linear-gradient(225deg,rgb(182 233 79/.5),rgb(255 255 255/.06) 60%) border-box}
+@container (max-width:700px){.builder,.builder.fb{grid-template-columns:1fr}.qtypes{grid-template-columns:repeat(3,1fr)}.exg{grid-template-columns:1fr 1fr}.fields label{min-width:56px}}
+.asg-bg{position:fixed;inset:0;z-index:80;background:rgb(0 0 0/.55);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:20px}
+.asg-bg.open{display:flex}
+.asg{width:min(620px,96vw);max-height:88vh;display:flex;flex-direction:column;border-radius:24px;background:rgb(20 22 20/.97);border:1px solid var(--line);box-shadow:0 30px 80px -20px #000;animation:pgin .25s}
+.asg-bg.mobile{align-items:flex-end;padding:0}
+.asg-bg.mobile .asg{width:390px;max-height:86vh;border-radius:28px 28px 0 0}
+.asg-h{display:flex;gap:12px;align-items:flex-start;padding:16px 18px 12px;border-bottom:1px solid var(--line)}
+.asg-h>div{flex:1;min-width:0}.asg-h b{font-size:15px}
+.stp{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.stp span{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--dim);padding:3px 9px 3px 4px;border-radius:99px;background:var(--g)}
+.stp span i{font-style:normal;width:17px;height:17px;border-radius:50%;display:grid;place-items:center;background:var(--g2);font-size:10px}
+.stp span.on{color:var(--ink);background:var(--g2)}.stp span.on i{background:var(--lime);color:#0e1206}
+.stp span.done{color:var(--lime)}.stp span.done svg{width:13px;height:13px}
+.asg-b{padding:14px 18px;overflow:auto;flex:1}
+.asg-f{display:flex;gap:8px;padding:12px 18px;border-top:1px solid var(--line)}
+.asg-f .btn{height:42px;padding:0 20px}
+.pick{display:flex;align-items:center;gap:10px;width:100%;padding:10px;margin-bottom:6px;border-radius:14px;background:var(--g);border:1px solid var(--line);text-align:start}
+.pick.on{border-color:rgb(182 233 79/.5);background:var(--lime-soft)}
+.pick svg.r{width:40px;height:40px}
+.fld{margin-bottom:16px}.fld>label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:7px}
+.fld .ok{color:var(--lime)}.fld .bad{color:var(--warn)}
+.seg2{display:flex;gap:6px}.seg2 button{flex:1;height:40px;border-radius:12px;background:var(--g);border:1px solid var(--line);font-size:12.5px}.seg2 button.on{background:var(--lime-soft);border-color:rgb(182 233 79/.5);color:var(--lime)}
+.dayp{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:6px}.dayp button{height:44px;border-radius:12px;background:var(--g);border:1px solid var(--line);font-size:11px}.dayp button.on{background:var(--lime);color:#0e1206;font-weight:700;border-color:var(--lime)}
+.stepper{display:flex;align-items:center;gap:10px}.stepper button{width:44px;height:44px;border-radius:12px;background:var(--g2);border:1px solid var(--line);font-size:20px}.stepper b{font:800 22px Manrope;min-width:60px;text-align:center}.stepper span{color:var(--muted);font-size:12px}
+.stepper.big b{font-size:28px;min-width:90px}
+.sumhead{display:flex;gap:12px;align-items:center}.sumhead b{display:block;font-size:14px}.sumhead small{font-size:12px}
+.weekp{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:12px}.weekp div{padding:8px 2px;border-radius:12px;background:var(--g);border:1px solid var(--line);text-align:center}.weekp small{display:block;font-size:9.5px;color:var(--dim)}.weekp b{font-size:11.5px;color:var(--muted);font-weight:500}.weekp .on{background:var(--lime-soft);border-color:rgb(182 233 79/.35)}.weekp .on b{color:var(--lime);font-weight:700}
+.note2{display:flex;gap:8px;align-items:center;margin-top:12px;padding:10px 12px;border-radius:12px;background:var(--g);font-size:12px;color:var(--muted)}
+.hidden{display:none!important}
+.mic{display:flex;gap:6px;margin-inline-start:auto}
+.pcards{display:flex;flex-direction:column;gap:8px}
+.pcard{display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;text-align:start;width:100%}
+.pcard .av{width:42px;height:42px;border-radius:13px;font-size:15px}
+.fab{position:absolute;bottom:88px;inset-inline-start:18px;z-index:8;width:54px;height:54px;border-radius:18px;background:var(--lime);color:#0e1206;display:grid;place-items:center;box-shadow:0 10px 30px -6px rgb(182 233 79/.45),inset 0 1px 0 rgb(255 255 255/.4)}
+.fab svg{width:24px;height:24px;stroke-width:2.2}
+.fabmenu{position:absolute;bottom:152px;inset-inline-start:18px;z-index:8;display:flex;flex-direction:column;gap:6px;animation:pgin .2s}
+.fabmenu button{display:flex;align-items:center;gap:10px;height:46px;padding:0 16px;border-radius:14px;background:rgb(30 33 30/.97);border:1px solid var(--line);font-size:13px;white-space:nowrap;box-shadow:0 10px 30px -10px #000}
+.fabmenu button svg{color:var(--lime)}
+.msheet .ch{margin-bottom:8px}
+.msearch{display:flex;align-items:center;gap:8px;height:42px;padding:0 14px;border-radius:12px;background:var(--g2);color:var(--dim);font-size:13px}
+.addb{width:34px;height:34px;border-radius:10px;background:var(--lime-soft);color:var(--lime);display:grid;place-items:center;flex:none}
+@container (max-width:700px){.row{min-height:58px}.btn.sm{height:36px;padding:0 12px;font-size:12px}.tabs button{padding:8px 14px;font-size:12px}.icb{width:40px;height:40px}.ex{min-height:54px}}
+/* class-A polish: motion, feedback, command palette */
+.pg{animation:pgin .28s cubic-bezier(.2,.8,.2,1)}
+@keyframes pgin{from{opacity:0;transform:translateY(8px)}}
+.card,.st,.btn,.nav,.row,.tiles button{transition:background .15s,transform .15s,box-shadow .15s,opacity .2s}
+.btn:active{transform:scale(.97)}
+section.card:hover,.st:hover{box-shadow:inset 0 1px 0 rgb(255 255 255/.12),0 12px 36px -14px rgb(0 0 0/.8)}
+.row.bye{opacity:0;transform:translateX(-24px)}
+.search{cursor:pointer}
+.toast{position:fixed;bottom:28px;left:50%;transform:translate(-50%,20px);opacity:0;z-index:99;display:flex;align-items:center;gap:10px;padding:10px 16px;border-radius:14px;background:rgb(28 31 28/.92);backdrop-filter:blur(20px);border:1px solid var(--line);box-shadow:0 16px 40px -10px #000;font-size:13px;transition:all .25s;pointer-events:none}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast .ok{width:22px;height:22px;border-radius:50%;background:var(--lime);color:#0e1206;display:grid;place-items:center}
+.toast .undo{color:var(--lime);font-weight:600;margin-inline-start:6px}
+.pal-bg{position:fixed;inset:0;z-index:90;background:rgb(0 0 0/.55);backdrop-filter:blur(4px);display:none;align-items:flex-start;justify-content:center;padding-top:12vh}
+.pal-bg.open{display:flex}
+.pal{width:min(560px,92vw);border-radius:20px;background:rgb(22 24 22/.95);border:1px solid var(--line);box-shadow:0 30px 80px -20px #000;overflow:hidden;animation:pgin .2s}
+.pal input{width:100%;background:none;border:0;outline:0;color:var(--ink);font:500 15px Alexandria;padding:16px 18px;border-bottom:1px solid var(--line)}
+.pal .list{max-height:340px;overflow:auto;padding:6px}
+.pal .grp{padding:8px 10px 4px}
+.pal .it{display:flex;align-items:center;gap:10px;width:100%;padding:9px 10px;border-radius:10px;text-align:start;font-size:13px}
+.pal .it.on{background:var(--g2)}
+.pal .it small{margin-inline-start:auto;color:var(--dim);font-size:11px}
+.pal .foot{display:flex;gap:14px;padding:8px 14px;border-top:1px solid var(--line);color:var(--dim);font-size:11px}
+.pal kbd,.foot kbd{font:600 10px Manrope;padding:1px 5px;border-radius:5px;background:var(--g2);color:var(--muted)}
+.brief{display:flex;gap:14px;align-items:center;padding:14px 16px;border-radius:18px;border:1px solid transparent;background:radial-gradient(ellipse at top,rgb(182 233 79/.09),transparent 65%) padding-box,linear-gradient(rgb(255 255 255/.05),rgb(255 255 255/.05)) padding-box,linear-gradient(225deg,rgb(182 233 79/.5),rgb(255 255 255/.06) 60%) border-box;box-shadow:var(--sh)}
+.brief .dot{width:38px;height:38px;border-radius:12px;background:var(--lime);color:#0e1206;display:grid;place-items:center;font:800 12px Manrope;flex:none;box-shadow:0 0 18px rgb(182 233 79/.35)}
+.brief p{flex:1;line-height:1.8;font-size:13px}
+.brief p b{color:var(--lime);font-weight:600}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@container (max-width:700px){
+  .g2,.g3,.g21,.g12,.inb{grid-template-columns:1fr}
+  .g4{grid-template-columns:1fr 1fr}
+  .search,.bar .hide-m{display:none}
+  .bar{padding:4px 2px;background:none;border:0;box-shadow:none;backdrop-filter:none}
+  .bar h2{font-size:18px}
+  .desk-only{display:none !important}
+  .tbl .hide-m{display:none}
+  .st{padding:10px 12px}.st svg.r{width:36px;height:36px}.st b{font-size:16px}
+}
+@container (min-width:701px){.mob-only{display:none !important}}
+
+/* ===== WOW pass: real liquid glass needs something behind it ===== */
+.scene{background:#08090a;isolation:isolate}
+.scene>.orbs{position:absolute;inset:0;z-index:-1;overflow:hidden;pointer-events:none;border-radius:inherit}
+.orbs i{position:absolute;border-radius:50%;filter:blur(70px);opacity:.55;animation:drift 22s ease-in-out infinite alternate}
+.orbs i:nth-child(1){width:46%;aspect-ratio:1;background:radial-gradient(circle,#b6e94f 0%,rgb(182 233 79/0) 68%);top:-18%;inset-inline-start:22%;opacity:.32}
+.orbs i:nth-child(2){width:40%;aspect-ratio:1;background:radial-gradient(circle,#4f7cff 0%,rgb(79 124 255/0) 68%);bottom:-22%;inset-inline-end:-6%;opacity:.28;animation-duration:28s}
+.orbs i:nth-child(3){width:30%;aspect-ratio:1;background:radial-gradient(circle,#2fd4a7 0%,rgb(47 212 167/0) 70%);top:38%;inset-inline-start:-8%;opacity:.18;animation-duration:34s}
+.orbs b{position:absolute;inset:0;background-image:linear-gradient(rgb(255 255 255/.025) 1px,transparent 1px),linear-gradient(90deg,rgb(255 255 255/.025) 1px,transparent 1px);background-size:44px 44px;mask-image:radial-gradient(ellipse at 60% 20%,#000 0%,transparent 75%);-webkit-mask-image:radial-gradient(ellipse at 60% 20%,#000 0%,transparent 75%)}
+.orbs u{position:absolute;inset:0;opacity:.07;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+@keyframes drift{to{transform:translate(6%,8%) scale(1.12)}}
+.glass,.card.glass,.st.glass{background:linear-gradient(160deg,rgb(255 255 255/.075),rgb(255 255 255/.025) 45%,rgb(255 255 255/.04));backdrop-filter:blur(28px) saturate(170%);-webkit-backdrop-filter:blur(28px) saturate(170%);border:1px solid rgb(255 255 255/.07);box-shadow:inset 0 1px 0 rgb(255 255 255/.14),inset 0 -1px 0 rgb(0 0 0/.25),0 1px 2px rgb(0 0 0/.4),0 18px 40px -18px rgb(0 0 0/.85);position:relative}
+.glass::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(140deg,rgb(255 255 255/.22),rgb(255 255 255/0) 30%,rgb(255 255 255/0) 70%,rgb(182 233 79/.12));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.side.glass,.bar.glass{background:linear-gradient(180deg,rgb(255 255 255/.06),rgb(255 255 255/.025))}
+.nav.on{background:linear-gradient(90deg,rgb(182 233 79/.16),rgb(182 233 79/.04));color:var(--ink);box-shadow:inset 0 1px 0 rgb(255 255 255/.08)}
+.nav.on::after{content:"";position:absolute;inset-inline-start:-10px;top:9px;bottom:9px;width:3px;border-radius:9px;background:var(--lime);box-shadow:0 0 12px var(--lime)}
+.nav{position:relative}
+.bar h2{font-size:20px;letter-spacing:-.01em}
+.st b{font-size:24px;letter-spacing:-.02em}
+.st{padding:16px}
+.ring-anim circle:nth-child(2){animation:ringin 1.1s cubic-bezier(.2,.8,.2,1) both}
+@keyframes ringin{from{stroke-dasharray:0 999}}
+.chart i{animation:barin .9s cubic-bezier(.2,.8,.2,1) both;transform-origin:bottom}
+.chart i:nth-child(2){animation-delay:.05s}.chart i:nth-child(3){animation-delay:.1s}.chart i:nth-child(4){animation-delay:.15s}.chart i:nth-child(5){animation-delay:.2s}.chart i:nth-child(6){animation-delay:.25s}.chart i:nth-child(7){animation-delay:.3s}
+@keyframes barin{from{transform:scaleY(0)}}
+.pg>*{animation:rise .5s cubic-bezier(.2,.8,.2,1) both}
+.pg>*:nth-child(2){animation-delay:.04s}.pg>*:nth-child(3){animation-delay:.08s}.pg>*:nth-child(4){animation-delay:.12s}.pg>*:nth-child(5){animation-delay:.16s}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}}
+.av[data-h]{background:linear-gradient(135deg,hsl(var(--h) 45% 32%),hsl(calc(var(--h) + 40) 40% 16%));border-color:hsl(var(--h) 50% 50%/.35);color:hsl(var(--h) 70% 85%)}
+/* home hero */
+.hero2{display:grid;grid-template-columns:auto 1fr auto;gap:22px;align-items:center;padding:22px 24px;border-radius:24px;overflow:hidden}
+.hero2::after{content:"";position:absolute;inset-inline-end:-60px;top:-80px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgb(182 233 79/.22),transparent 65%);pointer-events:none}
+.hero2 .big{font:800 64px/1 Manrope;letter-spacing:-.04em;background:linear-gradient(180deg,#fff,#c9d3b8);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero2 .lbl{font-size:13px;color:var(--muted);margin-top:6px}
+.hero2 p{font-size:14px;line-height:1.9;max-width:520px}
+.hero2 p b{color:var(--lime);font-weight:600}
+.hero2 .ko-tag{display:inline-flex;align-items:center;gap:6px;font:800 11px Manrope;color:#0e1206;background:var(--lime);padding:3px 9px;border-radius:99px;margin-bottom:8px;box-shadow:0 0 16px rgb(182 233 79/.4)}
+.hero2 .btn{height:46px;padding:0 24px;font-size:14px;border-radius:14px}
+.btn.go{background:linear-gradient(180deg,#cdf56f,#a9e03c);box-shadow:inset 0 1px 0 rgb(255 255 255/.55),inset 0 -2px 0 rgb(0 0 0/.12),0 6px 20px -4px rgb(182 233 79/.45)}
+.btn.go:hover{filter:brightness(1.06);transform:translateY(-1px)}
+section.card:hover{transform:translateY(-2px)}
+@container (max-width:700px){.hero2{grid-template-columns:1fr;gap:12px;padding:18px}.hero2 .big{font-size:52px}.hero2 .btn{width:100%}}
+@media (prefers-reduced-motion:reduce){.orbs i{animation:none}}
+/* ===== TUNE pass: wow look kept, layout fixes ===== */
+
+/* type scale */
+.nav{height:40px;font-size:14px;gap:12px;border-radius:12px}
+.side{gap:3px;padding:16px 12px}
+.bar h2{font-size:20px}
+.search{height:38px;font-size:13px}
+.card{padding:18px;border-radius:20px}
+.pg{gap:16px}.g2,.g3,.g4,.g21,.g12,.builder{gap:16px}
+.ch b{font-size:15px}
+.row{min-height:58px;padding:10px;gap:12px}
+.t b{font-size:14px}.t small,.who small,.me small{font-size:12px}
+.av{width:38px;height:38px;border-radius:12px;font-size:14px}
+.pill{height:24px;padding:0 10px;font-size:11.5px;font-weight:500}
+.kv,.metric span,.sum,.note2{font-size:13px}
+.metric b{font-size:14px}
+.tbl th{font-size:12px}.tbl td{font-size:13.5px}
+.chl,.days span,.tiles button,.qtypes button,.stp span,.pal .it small,.pal .foot{font-size:12px}
+.bub{font-size:14px}.bub small{font-size:11px}
+.fld>label,.addline,.dayp button{font-size:13px}
+.excard b{font-size:14px}.excard small{font-size:12px}
+.st b{font-size:24px}.st{padding:18px}
+.pnav button{font-size:11px}
+.desk{grid-template-columns:1fr 244px}.nav{white-space:nowrap}
+.search{width:250px;white-space:nowrap}.search kbd{white-space:nowrap}
+@container (max-width:700px){.bar.glass{background:none;border:0;box-shadow:none;backdrop-filter:none;padding:4px 2px}.bar.glass::before{display:none}.hero2>svg,.hero2::after{display:none}.hero2{grid-template-columns:1fr auto;align-items:end}.hero2>div:nth-child(2){grid-column:1/-1}.hero2 .big{font-size:44px}}
+.pnav.glass{position:absolute}
+.row>.pill{min-width:96px;justify-content:center}.row>.btn.sm{min-width:78px}
+.st .tr{margin-inline-start:auto;align-self:flex-start}
+.ch .cnt{margin-inline-start:6px}
+.row>.t{min-width:0;flex:1}.row>.t small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@container (max-width:700px){.row>.btn.sm{min-width:0}.g21>*{min-width:0}}
+
+
+.fl{display:flex;flex-direction:column;gap:6px;font-size:12.5px;color:var(--muted)}.fl em{font-style:normal;color:var(--warn);font-size:11px}
+.fi{height:44px;padding:0 14px;border-radius:12px;background:rgb(255 255 255/.04);border:1px solid var(--line);color:var(--ink);font:inherit;font-size:14px;width:100%;outline:none;transition:border-color .2s}
+.fi:focus{border-color:var(--lime);background:rgb(182 233 79/.04)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}.chip{height:38px;padding:0 16px;border-radius:99px;background:rgb(255 255 255/.04);border:1px solid var(--line);color:var(--muted);font-size:13px}.chip.on{background:var(--lime-soft);border-color:rgb(182 233 79/.45);color:var(--lime)}
+.stepl{display:flex;align-items:center;gap:10px;margin-bottom:8px}.stepl>span{width:28px;height:28px;border-radius:50%;background:var(--g2);display:grid;place-items:center;flex:none;font-size:12px;color:var(--muted)}
+.drop{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:150px;border-radius:16px;border:1.5px dashed rgb(255 255 255/.14);color:var(--muted);text-align:center}.drop b{color:var(--ink);font-size:14px}.drop.sq{width:120px;min-height:0;flex:none}
+.prev{display:flex;flex-direction:column;gap:4px;padding:14px;border-radius:16px;background:rgb(0 0 0/.2)}.prev .gif.xl{width:100%;height:150px;border-radius:12px;margin-bottom:8px}
+.unit{display:grid;grid-template-columns:1fr auto 110px auto 80px;align-items:center;gap:10px;margin-bottom:8px}.unit b{font-size:12.5px;color:var(--lime);text-align:end}
+.macbar{display:flex;height:8px;border-radius:9px;overflow:hidden;gap:2px;margin-top:12px}.macbar i{display:block}
+.okn{color:var(--lime)}.badn{color:var(--warn);background:var(--warn-soft)!important}
+.ppanel{padding:16px 18px}.pp-h{display:flex;align-items:center;gap:12px;margin-bottom:12px}.pp-h .av.lg{width:46px;height:46px}
+.pp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.pp-grid div{padding:10px 12px;border-radius:14px;background:rgb(255 255 255/.035);border:1px solid var(--line)}.pp-grid small{display:block;color:var(--muted);font-size:11.5px}.pp-grid b{font-size:20px}.pp-grid i{font-style:normal;color:var(--dim);font-size:11px;margin-inline-start:4px}
+.pp-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px}.pp-row>small{color:var(--muted);font-size:12px;min-width:76px}
+.pp-days{display:flex;gap:4px}.pp-days span{padding:4px 9px;border-radius:9px;font-size:12px;background:rgb(255 255 255/.04);color:var(--dim)}.pp-days span.on{background:var(--lime-soft);color:var(--lime)}
+.pp-note{font-size:12.5px}.pill svg{width:13px;height:13px;margin-inline-end:4px}
+.pp-checks{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}.pp-checks span{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;padding:6px 10px;border-radius:10px}.pp-checks .ok{color:var(--lime);background:var(--lime-soft)}.pp-checks .no{color:var(--warn);background:var(--warn-soft)}
+.riskn{display:flex;align-items:center;gap:8px;margin-top:8px;padding:8px 10px;border-radius:12px;background:var(--warn-soft);color:var(--warn);font-size:12.5px}.riskn span{flex:1}.riskn .btn{width:auto}
+.mapt td{vertical-align:top;padding:12px 10px}.mapt code{font-size:12px;color:var(--muted)}.dbt{font:500 11.5px Manrope;color:var(--calm);direction:ltr;unicode-bidi:isolate}
+@container (max-width:700px){.pp-grid{grid-template-columns:1fr 1fr}.unit{grid-template-columns:1fr 90px auto}.unit>span:first-of-type,.unit b{display:none}.mapt th:nth-child(3),.mapt td:nth-child(3),.mapt th:nth-child(5),.mapt td:nth-child(5),.mapt th:nth-child(1),.mapt td:nth-child(1){display:none}.mapt .dbt{word-break:break-word}.pp-days{flex-wrap:wrap}.pp-row>small{min-width:0;width:100%}.drop.sq{width:90px}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="home" viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"/></symbol>
+<symbol id="tasks" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/></symbol>
+<symbol id="inbox" viewBox="0 0 24 24"><path d="M5 5h14v10H9l-4 4z"/></symbol>
+<symbol id="team" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 5.5a3 3 0 010 5.8M21 20c0-2.6-1.6-4.8-4-5.6"/></symbol>
+<symbol id="join" viewBox="0 0 24 24"><circle cx="10" cy="8" r="3.5"/><path d="M3 20c0-3.6 3-6.5 7-6.5M18 13v6M15 16h6"/></symbol>
+<symbol id="trophy" viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 01-8 0zM8 6H5a3 3 0 003 4M16 6h3a3 3 0 01-3 4M12 13v4M8 20h8"/></symbol>
+<symbol id="cash" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="3"/><circle cx="12" cy="12" r="2.5"/></symbol>
+<symbol id="dumb" viewBox="0 0 24 24"><path d="M3 10v4M6 7v10M18 7v10M21 10v4M6 12h12"/></symbol>
+<symbol id="plate" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/></symbol>
+<symbol id="food" viewBox="0 0 24 24"><path d="M7 3v8M5 3v5a2 2 0 004 0V3M7 11v10M17 3c-2 0-3 2.5-3 6h3v12"/></symbol>
+<symbol id="form" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h3"/></symbol>
+<symbol id="gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></symbol>
+<symbol id="bell" viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0112 0v5l2 2H4zM10 20a2 2 0 004 0"/></symbol>
+<symbol id="search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4-4"/></symbol>
+<symbol id="plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="dots" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/></symbol>
+<symbol id="check" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></symbol>
+<symbol id="x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+<symbol id="cam" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="3"/><circle cx="12" cy="13.5" r="3.5"/><path d="M9 7l1.5-3h3L15 7"/></symbol>
+<symbol id="back" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+<symbol id="play" viewBox="0 0 24 24"><path d="M8 5l11 7-11 7z" fill="currentColor"/></symbol>
+<symbol id="mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></symbol>
+<symbol id="send" viewBox="0 0 24 24"><path d="M20 4L3 11l7 3 3 7z"/></symbol>
+<symbol id="link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 005.7 0l3-3a4 4 0 00-5.7-5.7l-1 1M14 10a4 4 0 00-5.7 0l-3 3a4 4 0 005.7 5.7l1-1"/></symbol>
+<symbol id="eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/></symbol>
+<symbol id="copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M4 16V4h12"/></symbol>
+<symbol id="run" viewBox="0 0 24 24"><circle cx="14" cy="4.5" r="2"/><path d="M8 21l3-6 3 2v5M6 12l3-4 4 1 3 4h3M11 15l-2-3"/></symbol><symbol id="spark" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/></symbol><symbol id="grip" viewBox="0 0 24 24"><circle cx="9" cy="6" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="18" r="1"/></symbol><symbol id="alert" viewBox="0 0 24 24"><path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17v.5"/></symbol><symbol id="hash" viewBox="0 0 24 24"><path d="M5 9h14M5 15h14M10 4L8 20M16 4l-2 16"/></symbol>
+</defs></svg>
+
+<div class="top">
+  <img src="kochivo-logo.png" alt="KOCHIVO" style="height:22px">
+  <div><h1>نموذج شغل الكابتن — كل الشاشات</h1><p>اضغط على أي حاجة في القايمة أو أي لاعب عشان تتنقل. وجرب الموبايل من الزرار.</p></div>
+  <button class="btn gl" data-gomap style="height:34px;margin-inline-start:auto">كل الصفحات: القديم والجديد</button><div class="mode" style="margin-inline-start:8px"><button id="m-desk" class="on">ديسكتوب</button><button id="m-mob">موبايل</button></div>
+</div>
+<div class="stage" id="stage"></div>
+<p class="hint">نموذج شكل بس: الأرقام والأسماء للتوضيح، والأقسام كلها حقيقية موجودة عندنا.</p>
+
+<script>
+const ic=(id,c='i')=>`<svg class="${c}"><use href="#${id}"/></svg>`;
+const ring=(p,col='#b6e94f',size=44,txt='')=>{const r=size/2-5,C=2*Math.PI*r;return `<svg class="r ring-anim" viewBox="0 0 ${size} ${size}" style="width:${size}px;height:${size}px"><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="rgb(255 255 255/.08)" stroke-width="${size>60?8:5}"/><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${col}" stroke-width="${size>60?8:5}" stroke-linecap="round" stroke-dasharray="${C*p} ${C}" transform="rotate(-90 ${size/2} ${size/2})"/>${txt?`<text x="${size/2}" y="${size/2+5}" text-anchor="middle" fill="#f4f4f1" font-family="Manrope" font-weight="800" font-size="${size/5}">${txt}</text>`:''}</svg>`};
+const wk=a=>`<div class="wk">${a.map(x=>`<i class="${x}"></i>`).join('')}</div>`;
+
+const P=[
+ {id:'mo',n:'محمد حسن',a:'م',goal:'زيادة قوة',rank:'GOLD',w:['d','d','','d','','',''],kg:'82.4',rpe:'8.5',days:22,st:['w','فيديو مستني']},
+ {id:'yo',n:'يوسف عادل',a:'ي',goal:'تنشيف',rank:'SILVER',w:['x','x','x','','','',''],kg:'94.0',rpe:'—',days:40,st:['w','غايب 5 أيام']},
+ {id:'sa',n:'سارة محمود',a:'س',goal:'لياقة',rank:'GOLD',w:['d','d','d','d','','',''],kg:'61.2',rpe:'7',days:18,st:['m','متابعة جديدة']},
+ {id:'ka',n:'كريم سامي',a:'ك',goal:'زيادة قوة',rank:'BRONZE',w:['d','','d','','','',''],kg:'88.1',rpe:'7.5',days:12,st:['m','طلب تبديل']},
+ {id:'no',n:'نور أحمد',a:'ن',goal:'تنشيف',rank:'SILVER',w:['d','d','d','','','',''],kg:'67.3',rpe:'6.5',days:3,st:['c','بيخلص بعد 3 أيام']},
+ {id:'om',n:'عمر خالد',a:'ع',goal:'زيادة عضل',rank:'',w:['','','','','','',''],kg:'70.0',rpe:'—',days:30,st:['c','محتاج برنامج']},
+ {id:'ha',n:'هالة مصطفى',a:'ه',goal:'لياقة',rank:'GOLD',w:['d','d','d','','','',''],kg:'58.0',rpe:'6',days:51,st:['l','ماشية تمام']},
+ {id:'ah',n:'أحمد فتحي',a:'أ',goal:'زيادة عضل',rank:'BRONZE',w:['d','','d','','','',''],kg:'76.5',rpe:'8',days:27,st:['l','ماشي تمام']},
+];
+const TASKS=[
+ {p:'mo',k:'video',tag:['w','فيديو أداء'],txt:'سكوات 100 كجم: «ركبتي بتدخل لجوه، أكمل ولا أنزل؟»',act:'رد'},
+ {p:'yo',k:'absent',tag:['w','غياب'],txt:'آخر تمرين يوم الأحد، 5 أيام',act:'ابعتله'},
+ {p:'sa',k:'checkin',tag:['m','متابعة أسبوعية'],txt:'بعتت المتابعة: الوزن 61.2 + صورتين',act:'راجع'},
+ {p:'ka',k:'swap',tag:['m','طلب تبديل'],txt:'عايز يبدل البنش بالبار بالدمبل، كتفه واجعه',act:'وافق'},
+ {p:'no',k:'renew',tag:['c','تجديد'],txt:'الاشتراك بيخلص بعد 3 أيام',act:'فكّره'},
+ {p:'om',k:'program',tag:['c','بدون برنامج'],txt:'انضم امبارح ولسه مالوش برنامج',act:'ادّيله برنامج'},
+];
+const byId=id=>P.find(p=>p.id===id);
+const INTAKE={ka:{age:27,sex:'راجل',h:178,w:'88.1',tw:'84',days:[0,2,4,5],min:60,exp:'من سنة لـ3 سنين',inj:['كتف يمين: بيوجعه في البنش'],med:[],alg:[],notes:'بيخلص شغل 6، بيتمرن بالليل في جيم كامل.',bf:'19%',rpe:'7.5',comp:'3 من 4',risk:['بنش برس بالبار','ضغط كتف بالدمبل']},
+ om:{age:22,sex:'راجل',h:175,w:'70.0',tw:'76',days:[0,2,4],min:60,exp:'جديد',inj:[],med:[],alg:['لاكتوز'],notes:'أول مرة يتمرن في جيم.',bf:'16%',rpe:'—',comp:'لسه مبدأش',risk:[]}};
+const DAYS7=['سبت','حد','اتنين','تلات','أربع','خميس','جمعة'];
+const SWAPTO={'بنش برس بالبار':'بنش مايل بالدمبل','ضغط كتف بالدمبل':'رفرفة جانبي'};
+
+const NAV=[
+ {g:'شغلي',items:[['home','الرئيسية','home'],['tasks','المهام','tasks',6],['inbox','صندوق الوارد','inbox',3]]},
+ {g:'لاعبيني',items:[['players','اللاعبين','team'],['join','طلبات الانضمام','join',2,1],['ranks','الترتيب','trophy'],['billing','الاشتراكات والدفعات','cash',2,1]]},
+ {g:'مكتبتي',items:[['programs','برامج التمرين','dumb'],['exercises','مكتبة التمارين','run'],['plans','الأنظمة الغذائية','plate'],['foods','مكتبة الأكلات','food'],['forms','الفورمات','form']]},
+ {g:'حسابي',items:[['settings','الإعدادات','gear']]},
+];
+const TITLES={};NAV.forEach(g=>g.items.forEach(i=>TITLES[i[0]]=i[1]));TITLES.player='ملف اللاعب';Object.assign(TITLES,{notifs:'الإشعارات',packages:'الباقات والعروض'});
+const MOB=[['home','الرئيسية','home'],['tasks','المهام','tasks',6],['inbox','الوارد','inbox',3],['players','اللاعبين','team']];
+
+const S={mode:'desk',screen:'home',player:'mo',pTab:'over',taskTab:'all',sel:0,sheet:false,chat:'ka'};
+const TPLS=[['قوة 4 أيام','4 أيام · 12 أسبوع',[1,1,0,1,1,0,0],9],['تنشيف 5 أيام','5 أيام · 8 أسابيع',[1,1,1,0,1,1,0],6],['مبتدئ فول بادي','3 أيام · 6 أسابيع',[1,0,1,0,1,0,0],5],['ضخامة PPL','6 أيام · 12 أسبوع',[1,1,1,1,1,1,0],3],['البيت بدمبلز','3 أيام · 8 أسابيع',[1,0,1,0,1,0,0],1]];
+const EX=[
+ {n:'سكوات بالبار',en:'Barbell Back Squat',m:'رجل',tg:'الفخد الأمامي',eq:'بار'},{n:'رومانيان ديدلفت',en:'Romanian Deadlift',m:'رجل',tg:'الفخد الخلفي',eq:'بار'},
+ {n:'لانجز بالدمبل',en:'Dumbbell Lunge',m:'رجل',tg:'الفخد الأمامي',eq:'دمبل'},{n:'ليج برس',en:'Leg Press',m:'رجل',tg:'الفخد الأمامي',eq:'جهاز'},
+ {n:'ليج كيرل',en:'Lying Leg Curl',m:'رجل',tg:'الفخد الخلفي',eq:'جهاز'},{n:'سمانة واقف',en:'Standing Calf Raise',m:'رجل',tg:'السمانة',eq:'جهاز'},
+ {n:'بنش برس بالبار',en:'Barbell Bench Press',m:'صدر',tg:'الصدر',eq:'بار'},{n:'بنش مايل بالدمبل',en:'Incline DB Press',m:'صدر',tg:'الصدر العلوي',eq:'دمبل'},
+ {n:'كابل فلاي',en:'Cable Fly',m:'صدر',tg:'الصدر',eq:'كابل'},{n:'عقلة',en:'Pull-up',m:'ضهر',tg:'المجنص',eq:'وزن الجسم'},
+ {n:'سحب أمامي',en:'Lat Pulldown',m:'ضهر',tg:'المجنص',eq:'كابل'},{n:'تجديف بالبار',en:'Barbell Row',m:'ضهر',tg:'وسط الضهر',eq:'بار'},
+ {n:'ضغط كتف بالدمبل',en:'DB Shoulder Press',m:'كتف',tg:'الكتف الأمامي',eq:'دمبل'},{n:'رفرفة جانبي',en:'Lateral Raise',m:'كتف',tg:'الكتف الجانبي',eq:'دمبل'},
+ {n:'باي بالبار',en:'Barbell Curl',m:'دراع',tg:'الباي',eq:'بار'},{n:'تراي بالحبل',en:'Rope Pushdown',m:'دراع',tg:'التراي',eq:'كابل'},
+ {n:'بلانك',en:'Plank',m:'بطن',tg:'البطن',eq:'وزن الجسم'},{n:'سكوات جوبلت بتاعي',en:'Goblet Squat (custom)',m:'رجل',tg:'الفخد الأمامي',eq:'دمبل',mine:1},
+];
+const PROG=[
+ {t:'رجل',ex:[{n:'سكوات بالبار',m:'رجل',sets:4,reps:'6',rest:'2:00',rir:2,kg:'100',plan:['8','6','6','4'],alt:'ليج برس'},{n:'رومانيان ديدلفت',m:'رجل',sets:3,reps:'8',rest:'1:30',rir:2,kg:'80'},{n:'لانجز بالدمبل',m:'رجل',sets:3,reps:'10',rest:'1:00',rir:3,kg:'20'},{n:'ليج كيرل',m:'رجل',sets:3,reps:'12',rest:'1:00',rir:2,kg:'35'}]},
+ {t:'صدر',ex:[{n:'بنش برس بالبار',m:'صدر',sets:4,reps:'6',rest:'2:00',rir:2,kg:'80',alt:'بنش بالدمبل'},{n:'بنش مايل بالدمبل',m:'صدر',sets:3,reps:'10',rest:'1:30',rir:2,kg:'26'},{n:'كابل فلاي',m:'صدر',sets:3,reps:'12',rest:'1:00',rir:1,kg:'15'}]},
+ {t:'ضهر',ex:[{n:'عقلة',m:'ضهر',sets:4,reps:'8',rest:'1:30',rir:2,kg:'—'},{n:'تجديف بالبار',m:'ضهر',sets:3,reps:'8',rest:'1:30',rir:2,kg:'70'}]},
+ {t:'كتف',ex:[]},
+];
+const FOODS=[{n:'صدر فراخ مشوي',q:'150ج',k:248,p:46,c:0,f:5},{n:'رز أبيض مطبوخ',q:'200ج',k:260,p:5,c:56,f:1},{n:'بيض',q:'3 حبات',k:234,p:19,c:2,f:16},{n:'شوفان',q:'60ج',k:233,p:10,c:40,f:4},{n:'زبادي يوناني',q:'170ج',k:100,p:17,c:6,f:0},{n:'تونة مصفاة',q:'علبة',k:116,p:26,c:0,f:1},{n:'موز',q:'حباية',k:105,p:1,c:27,f:0}];
+const PLAN={train:[{n:'الفطار',time:'9:00',f:[FOODS[2],FOODS[3]]},{n:'الغدا',time:'3:00',f:[FOODS[0],FOODS[1]]},{n:'بعد التمرين',time:'7:00',f:[FOODS[4],FOODS[6]]},{n:'العشا',time:'10:00',f:[FOODS[5]]}],
+ rest:[{n:'الفطار',time:'10:00',f:[FOODS[2]]},{n:'الغدا',time:'3:00',f:[FOODS[0]]},{n:'العشا',time:'9:00',f:[FOODS[4]]}]};
+const QT={num:['رقم','hash'],text:['كتابة','edit'],choice:['اختيار','tasks'],scale:['تقييم 1-5','star'],photo:['صور','cam']};
+const FORMQ=[{l:'وزنك النهارده كام؟',t:'num',req:1},{l:'التزامك بالأكل الأسبوع ده',t:'choice',req:1},{l:'طاقتك في التمرين من 1 لـ5',t:'scale',req:1},{l:'نمت كام ساعة في المتوسط؟',t:'num'},{l:'صور المتابعة',t:'photo',req:1},{l:'في أي حاجة عايز تقولها للكابتن؟',t:'text'}];
+const PARENT={exNew:'exercises',foodNew:'foods',map:'home',progEdit:'programs',exDetail:'exercises',planEdit:'plans',formEdit:'forms',packages:'billing',notifs:'home',player:'players'};
+Object.assign(S,{day:0,mus:'الكل',ex:'',dtype:'train',meal:0,fq:0});
+const go=(s,extra={})=>{if(s!=='progEdit'&&!('forPlayer' in extra))S.forPlayer=null;Object.assign(S,{screen:s,sheet:false,taskOpen:false,chatOpen:false,mpick:null,fab:false},extra);render();};
+
+/* ---------- screens ---------- */
+const header=(title,right='',sub='')=>`<div class="bar glass"><h2>${title}</h2>${sub?`<span class="muted hide-m" style="font-size:12px">${sub}</span>`:''}<div class="search" data-pal>${ic('search','i s')}دور على لاعب أو صفحة<kbd>Ctrl K</kbd></div><span class="mob-only mic"><button class="icb" data-pal aria-label="بحث">${ic('search','i s')}</button><button class="icb" data-go="notifs" aria-label="الإشعارات">${ic('bell','i s')}<i></i></button></span>${right}</div>`;
+const bell=`<span class="icb hide-m" data-go="notifs" style="cursor:pointer">${ic('bell','i s')}<i></i></span>`;
+
+const taskRow=(t,i,compact)=>{const p=byId(t.p);return `<div class="row ${!compact&&S.sel===i?'h':''}" data-sel="${i}" style="cursor:pointer"><span class="av">${p.a}</span><div class="t"><b>${p.n}</b><small>${t.txt}</small></div><span class="pill ${t.tag[0]} desk-only">${t.tag[1]}</span><button class="btn sm ${i===0?'go':'gl'}" data-act="${i}">${t.act}</button></div>`};
+
+const SCREENS={
+home:()=>`<div class="pg">
+ ${header('صباح الخير يا كابتن علي',bell+`<button class="btn go" data-go="join">${ic('plus','i s')}ضيف لاعب</button>`,'الجمعة ١٤ نوفمبر')}
+ <div class="hero2 glass">${ring(TASKS.length?1-TASKS.length/10:1,'#b6e94f',96,'')}<div><span class="ko-tag">KO · ملخص الصبح</span>${TASKS.length?`<p>عندك <b>${TASKS.length} مهام</b> هياخدوا حوالي <b>${TASKS.length*3} دقيقة</b>. ابدأ بفيديو محمد، ويوسف غايب من 5 أيام ومحتاج رسالة.</p>`:'<p><b>خلصت كل مهام النهارده.</b> فريقك ماشي تمام.</p>'}</div><div style="text-align:center"><div class="big n" data-count="${TASKS.length}">${TASKS.length}</div><div class="lbl">مهام النهارده</div>${TASKS.length?'<button class="btn go" data-start style="margin-top:12px">ابدأ المهام</button>':''}</div></div>
+ <div class="g4">
+  <div class="st glass">${ring(.75)}<div><b class="n">75%</b><small>التزام الأسبوع</small></div><span class="tr n desk-only">+6%</span></div>
+  <div class="st glass">${ring(.46)}<div><b class="n">11/24</b><small>اتمرنوا النهارده</small></div></div>
+  <button class="st glass" data-go="tasks" style="text-align:start">${ring(.25,'#ff9a73')}<div><b class="n">${TASKS.length}</b><small>مهام مستنياك</small></div></button>
+  <button class="st glass" data-go="billing" style="text-align:start">${ring(.62,'#9db2ff')}<div><b class="n">12,400</b><small>جنيه الشهر ده</small></div></button>
+ </div>
+ <div class="g21">
+  <section class="card glass"><div class="ch"><b>المهام</b><span class="cnt n">${TASKS.length}</span><button class="lnk" data-go="tasks">كلها</button></div>
+   ${TASKS.length?TASKS.slice(0,5).map((t,i)=>taskRow(t,i,true)).join(''):'<div class="empty">مفيش مهام. عاش يا كابتن.</div>'}</section>
+  <div style="display:flex;flex-direction:column;gap:12px">
+   <section class="card glass"><div class="ch"><b>تمارين الفريق</b><span class="lnk">الأسبوع ده</span></div>
+    <div class="chart">${[55,80,48,92,66,30,12].map((h,i)=>`<i class="${i<5?'d':''}" style="height:${h}%"></i>`).join('')}</div>
+    <div class="chl">${['سبت','حد','اتنين','تلات','أربع','خميس','جمعة'].map(d=>`<span>${d}</span>`).join('')}</div></section>
+   <section class="card glass"><div class="ch"><b>مستني منك تأكيد</b></div>
+    <button class="row" data-go="billing"><span class="av">${ic('cash','i s')}</span><div class="t"><b>دفعتين</b><small>أحمد فتحي وهالة مصطفى</small></div><span class="pill l n">2</span></button>
+    <button class="row" data-go="join"><span class="av">${ic('join','i s')}</span><div class="t"><b>طلبين انضمام</b><small>عمر خالد ومريم سعيد</small></div><span class="pill l n">2</span></button></section>
+  </div>
+ </div></div>`,
+
+tasks:()=>{const cnt=k=>TASKS.filter(t=>t.k===k).length;const tabs=[['all','الكل',TASKS.length],['video','فيديوهات',cnt('video')],['checkin','متابعات',cnt('checkin')],['absent','غياب',cnt('absent')],['swap','تبديل',cnt('swap')],['renew','تجديد',cnt('renew')],['program','بدون برنامج',cnt('program')]];if(S.sel>=TASKS.length)S.sel=0;if(!TASKS.length)return `<div class="pg">${header('المهام')}<section class="card glass"><div class="empty" style="padding:60px">${ring(1,'#b6e94f',78,'0')}<p style="margin-top:12px;font-size:15px;color:var(--ink)">خلصت كل المهام</p><p>عاش يا كابتن. أي حاجة جديدة هتظهر هنا.</p></div></section></div>`;
+ const list=TASKS.map((t,i)=>[t,i]).filter(([t])=>S.taskTab==='all'||t.k===S.taskTab);
+ const t=TASKS[S.sel]||TASKS[0],p=byId(t.p);
+ return `<div class="pg">${header('المهام','', 'كل اللي مستني منك، مترتب بالأهم')}
+ <div class="tabs ${S.mode==='mob'&&S.taskOpen?'hidden':''}">${tabs.map(x=>`<button class="${S.taskTab===x[0]?'on':''}" data-ttab="${x[0]}">${x[1]} <span class="n">${x[2]}</span></button>`).join('')}</div>
+ <div class="g21">
+  <section class="card glass ${S.mode==='mob'&&S.taskOpen?'hidden':''}">${list.length?list.map(([t,i])=>taskRow(t,i)).join(''):`<div class="empty">مفيش حاجة هنا. عاش يا كابتن.</div>`}</section>
+  <section class="card glass ${S.mode==='mob'&&!S.taskOpen?'hidden':''}">
+   <button class="btn sm gl mob-only" data-tback style="margin-bottom:10px">${ic('back','i s')}كل المهام</button>
+   <div class="ch"><span class="av">${p.a}</span><div class="t"><b>${p.n}</b><small>${p.goal} · ${t.tag[1]}</small></div><button class="btn sm gl" data-player="${p.id}">افتح الملف</button></div>
+   ${t.k==='video'?`<div class="vid"><span>${ic('play','i s')}</span></div><p style="margin:10px 0;line-height:1.8">${t.txt}</p><div class="ko"><span class="dot">KO</span><div>آخر 3 جلسات RPE فوق 8. اقتراحي تنزله 90 كجم الأسبوع ده.</div></div>`
+   :t.k==='checkin'?`<div class="g2" style="gap:8px;margin-bottom:10px"><div class="ph">${ic('cam')}<small>قدام</small></div><div class="ph">${ic('cam')}<small>جنب</small></div></div><div class="kv"><span>الوزن</span><b class="n">61.2 (−0.6)</b></div><div class="kv"><span>الالتزام بالأكل</span><b>كويس</b></div><div class="kv"><span>النوم</span><b>7 ساعات</b></div>`
+   :`<p style="line-height:1.9" class="muted">${t.txt}</p>`}
+   <div class="compose" style="margin-top:12px"><span class="icb">${ic('mic','i s')}</span><span class="f">اكتب رد…</span><button class="btn go" data-reply>ابعت الرد</button></div>
+  </section>
+ </div></div>`},
+
+inbox:()=>{const conv=[['ka','رسالة صوتية · 0:18',2],['sa','تمام يا كوتش هغير الفطار',1],['no','هجدد بكرة إن شاء الله',0],['mo','انت: شوفت الفيديو، نزل 90',0],['ha','شكرا يا كابتن',0]];
+ const p=byId(S.chat);
+ return `<div class="pg">${header('صندوق الوارد')}
+ <div class="g12 inb">
+  <section class="card glass ${S.mode==='mob'&&S.chatOpen?'hidden':''}">${conv.map(c=>{const q=byId(c[0]);return `<button class="row ${S.chat===c[0]?'h':''}" data-chat="${c[0]}"><span class="av">${q.a}</span><div class="t"><b>${q.n}</b><small>${c[1]}</small></div>${c[2]?`<span class="pill l n">${c[2]}</span>`:''}</button>`}).join('')}</section>
+  <section class="card glass ${S.mode==='mob'&&!S.chatOpen?'hidden':''}" style="display:flex;flex-direction:column;gap:10px;min-height:470px">
+   <div class="ch" style="margin:0;padding-bottom:10px;border-bottom:1px solid var(--line)"><button class="icb mob-only" data-cback aria-label="رجوع">${ic('back','i s')}</button><span class="av">${p.a}</span><div class="t"><b>${p.n}</b><small>${p.goal} · باقي ${p.days} يوم</small></div><button class="btn sm gl" data-player="${p.id}">الملف</button></div>
+   <div style="flex:1;display:flex;flex-direction:column;gap:8px">
+    <div class="bub p">كابتن كتفي واجعني في البنش من الأسبوع اللي فات<small>12:58</small></div>
+    <div class="bub p" style="display:flex;align-items:center;gap:8px">${ic('play','i s')}<span style="width:120px;height:18px;background:repeating-linear-gradient(90deg,currentColor 0 2px,transparent 2px 5px);opacity:.6"></span><span class="n" style="font-size:11px">0:18</span></div>
+    <div class="bub me">هبدلهولك بالدمبل النهارده وخف الوزن<small>1:12</small></div>
+    <div class="bub p">تمام، أعمل كام عدة؟<small>1:15</small></div>
+   </div>
+   <div class="qr"><span>3×10 بوزن خفيف</span><span>ابعتلي فيديو</span><span>تمام كده</span></div>
+   <div class="compose"><span class="icb">${ic('mic','i s')}</span><span class="f">اكتب رسالة…</span><button class="btn go">${ic('send','i s')}</button></div>
+  </section>
+ </div></div>`},
+
+players:()=>`<div class="pg">${header('اللاعبين <span class="n muted" style="font-size:13px">24</span>',`<button class="btn go" data-go="join">${ic('plus','i s')}ضيف لاعب</button>`)}
+ <div class="tabs"><button class="on">الكل <span class="n">24</span></button><button>محتاجينك <span class="n">6</span></button><button>ماشيين تمام <span class="n">15</span></button><button>جداد <span class="n">2</span></button><button>بيخلص اشتراكهم <span class="n">3</span></button><button>متوقفين <span class="n">1</span></button></div>
+ <section class="mob-only pcards">${P.map(p=>`<button class="pcard glass" data-player="${p.id}"><span class="av">${p.a}</span><div class="t"><b>${p.n}</b><small>${p.goal} · باقي ${p.days} يوم</small><div style="margin-top:6px">${wk(p.w)}</div></div><span class="pill ${p.st[0]}">${p.st[1]}</span></button>`).join('')}</section>
+ <section class="card glass desk-only" style="padding:4px 6px"><table class="tbl">
+  <tr><th>اللاعب</th><th>الأسبوع</th><th class="hide-m">الوزن</th><th class="hide-m">آخر RPE</th><th class="hide-m">الاشتراك</th><th>الحالة</th></tr>
+  ${P.map(p=>`<tr class="click" data-player="${p.id}"><td><div class="who"><span class="av">${p.a}</span><div><b>${p.n}</b><small>${p.goal}</small></div>${p.rank?`<span class="rank desk-only">${p.rank}</span>`:''}</div></td><td>${wk(p.w)}</td><td class="hide-m n">${p.kg}</td><td class="hide-m n">${p.rpe}</td><td class="hide-m"><span class="n" ${p.days<=3?'style="color:var(--warn)"':''}>${p.days}</span> يوم</td><td><span class="pill ${p.st[0]}">${p.st[1]}</span></td></tr>`).join('')}
+ </table></section></div>`,
+
+player:()=>{const p=byId(S.player);const tabs=[['over','نظرة عامة'],['prog','البرنامج'],['food','الأكل'],['check','المتابعات الأسبوعية'],['assess','التقييمات'],['chat','الشات']];
+ const body={
+ over:`<div class="g3">
+   <section class="card glass" style="display:flex;align-items:center;gap:14px">${ring(.75,'#b6e94f',78,'75%')}<div><b>التزام التمرين</b><div class="muted" style="font-size:11.5px;margin-top:4px;line-height:1.7"><span class="n">3</span> من <span class="n">4</span> الأسبوع ده<br>آخر RPE <span class="n">${p.rpe}</span></div></div></section>
+   <section class="card glass" style="display:flex;align-items:center;gap:14px">${ring(.82,'#9db2ff',78,'2.6k')}<div class="legend" style="flex:1"><b style="font-size:13px">أكل النهارده</b><div><i style="background:#b6e94f"></i>بروتين<b>140/180</b></div><div><i style="background:#9db2ff"></i>كارب<b>230/290</b></div><div><i style="background:#e2c069"></i>دهون<b>60/75</b></div></div></section>
+   <section class="card glass"><div class="ch" style="margin-bottom:4px"><b>القياسات</b></div><div class="metric"><span>الوزن</span><b class="n">${p.kg}</b><span class="pill l n">+1.2</span></div><div class="metric"><span>نسبة الدهون</span><b class="n">16%</b><span class="pill l n">−0.8</span></div><div class="metric"><span>سكوات أقصى</span><b class="n">110</b><span class="pill l n">+10</span></div></section>
+  </div>
+  <div class="g2">
+   <section class="card glass"><div class="ch"><b>صور المتابعة</b><button class="lnk" data-ptab="check">كلها</button></div><div class="g2" style="gap:8px"><div class="ph">${ic('cam')}<small>١٤ سبتمبر</small></div><div class="ph">${ic('cam')}<small>١٤ نوفمبر</small></div></div></section>
+   <section class="card glass"><div class="ch"><b>آخر تمرين</b><span class="lnk">رجل · امبارح</span></div>
+    ${[['سكوات','4×6 · 100 كجم','w','RPE 9'],['رومانيان ديدلفت','3×8 · 80 كجم','m','RPE 8'],['لانجز','3×10 · 20 كجم','m','RPE 7'],['ليج كيرل','3×12 · 35 كجم','m','RPE 7']].map(e=>`<div class="ex"><span class="gif"></span><div class="t"><b>${e[0]}</b><small class="n">${e[1]}</small></div><span class="pill ${e[2]}">${e[3]}</span></div>`).join('')}</section>
+  </div>`,
+ prog:`<section class="card glass"><div class="ch"><b>قوة 4 أيام</b><span class="pill l">الأسبوع 6 من 12</span><button class="btn sm gl" style="margin-inline-start:auto" data-asg="prog:${p.id}">${ic('copy','i s')}غيّر البرنامج</button><button class="btn sm go">${ic('edit','i s')}عدّل</button></div>
+   <div class="tabs" style="margin-bottom:10px"><button class="on">يوم 1 · رجل</button><button>يوم 2 · صدر</button><button>يوم 3 · ضهر</button><button>يوم 4 · كتف</button></div>
+   ${[['سكوات','4 × 6','100 كجم'],['رومانيان ديدلفت','3 × 8','80 كجم'],['لانجز بالدمبل','3 × 10','20 كجم'],['ليج كيرل','3 × 12','35 كجم'],['سمانة واقف','4 × 15','60 كجم']].map(e=>`<div class="ex"><span class="gif"></span><div class="t"><b>${e[0]}</b><small>${e[1]} · راحة 90 ثانية</small></div><span class="n muted">${e[2]}</span></div>`).join('')}</section>`,
+ food:`<div class="g21"><section class="card glass"><div class="ch"><b>النظام: تضخيم 2,600</b><button class="btn sm gl" style="margin-inline-start:auto" data-asg="plan:${p.id}">غيّر النظام</button></div>
+   ${[['الفطار','4 بيض + شوفان 80ج','620','l','اتسجل'],['الغدا','فراخ 200ج + رز 250ج','840','l','اتسجل'],['سناك','زبادي يوناني + موز','310','m','لسه'],['العشا','تونة + بطاطس','650','m','لسه']].map(m=>`<div class="ex"><span class="av">${ic('plate','i s')}</span><div class="t"><b>${m[0]}</b><small>${m[1]}</small></div><span class="n muted" style="font-size:12px">${m[2]}</span><span class="pill ${m[3]}">${m[4]}</span></div>`).join('')}</section>
+   <section class="card glass" style="display:flex;flex-direction:column;align-items:center;gap:10px">${ring(.56,'#b6e94f',110,'1,460')}<div class="muted" style="font-size:12px">من 2,600 سعر النهارده</div><div class="legend" style="width:100%"><div><i style="background:#b6e94f"></i>بروتين<b>140/180</b></div><div><i style="background:#9db2ff"></i>كارب<b>230/290</b></div><div><i style="background:#e2c069"></i>دهون<b>60/75</b></div></div></section></div>`,
+ check:`<section class="card glass">${[['الأسبوع 6','١٤ نوفمبر','82.4','l','جديدة'],['الأسبوع 5','٧ نوفمبر','82.0','m','اتراجعت'],['الأسبوع 4','٣١ أكتوبر','81.6','m','اتراجعت']].map(c=>`<div class="row"><span class="av">${ic('form','i s')}</span><div class="t"><b>${c[0]}</b><small>${c[1]} · الوزن <span class="n">${c[2]}</span> · صورتين</small></div><span class="pill ${c[3]}">${c[4]}</span><button class="btn sm gl">افتح</button></div>`).join('')}</section>`,
+ assess:`<div class="g2">${[['تقييم البداية','١ أكتوبر','وزن 81.2 · دهون 16.8% · سكوات 100'],['تقييم الشهر','١ نوفمبر','وزن 82.0 · دهون 16.2% · سكوات 105']].map(a=>`<section class="card glass"><div class="ch"><b>${a[0]}</b><span class="lnk">${a[1]}</span></div><p class="muted" style="line-height:1.8">${a[2]}</p></section>`).join('')}<button class="card glass" style="display:flex;align-items:center;justify-content:center;gap:8px;color:var(--lime);min-height:90px">${ic('plus','i s')}تقييم جديد</button></div>`,
+ chat:`<section class="card glass" style="display:flex;flex-direction:column;gap:8px"><div class="bub p">كابتن شوفت الفيديو؟<small>12:40</small></div><div class="bub me">شوفته، نزل 90 الأسبوع ده وركز على الركبة<small>1:02</small></div><div class="compose"><span class="icb">${ic('mic','i s')}</span><span class="f">اكتب رسالة…</span><button class="btn go">${ic('send','i s')}</button></div></section>`};
+ return `<div class="pg"><div class="bar glass"><button class="icb" data-go="players" aria-label="رجوع">${ic('back','i s')}</button><span class="av lg" style="width:40px;height:40px;font-size:15px">${p.a}</span><div class="t" style="flex:none"><b style="font-size:15px">${p.n}</b><small>${p.goal} · باقي ${p.days} يوم ${p.rank?'· '+p.rank:''}</small></div>
+  <div style="margin-inline-start:auto;display:flex;gap:8px"><button class="btn gl hide-m">${ic('eye','i s')}شوف زي اللاعب</button><button class="btn gl" data-chatp="${p.id}">${ic('inbox','i s')}<span class="hide-m">رسالة</span></button></div></div>
+  <div class="tabs">${tabs.map(t=>`<button class="${S.pTab===t[0]?'on':''}" data-ptab="${t[0]}">${t[1]}</button>`).join('')}</div>${body[S.pTab]}</div>`},
+
+join:()=>`<div class="pg">${header('طلبات الانضمام','<button class="btn gl hide-m">'+ic('link','i s')+'انسخ لينك الانضمام</button>')}
+ <div class="g2">${[['ع','عمر خالد','امبارح','زيادة عضل','70 كجم · 178 سم','3 أيام','جيم كامل'],['م','مريم سعيد','من ساعتين','تنشيف','74 كجم · 165 سم','4 أيام','البيت بدمبلز']].map(j=>`<section class="card glass">
+  <div class="ch"><span class="av">${j[0]}</span><div class="t"><b>${j[1]}</b><small>بعت الطلب ${j[2]}</small></div><span class="pill c">جديد</span></div>
+  <div class="kv"><span>الهدف</span><b>${j[3]}</b></div><div class="kv"><span>الجسم</span><b>${j[4]}</b></div><div class="kv"><span>أيام التمرين</span><b>${j[5]}</b></div><div class="kv"><span>مكان التمرين</span><b>${j[6]}</b></div>
+  <div style="display:flex;gap:8px;margin-top:12px"><button class="btn go" style="flex:1" data-done="اتقبل ${j[1]} وبعتناله رسالة ترحيب">${ic('check','i s')}اقبل</button><button class="btn gl">${ic('x','i s')}ارفض</button></div></section>`).join('')}</div></div>`,
+
+ranks:()=>`<div class="pg">${header('الترتيب','<div class="tabs hide-m"><button class="on">الشهر ده</button><button>كل الوقت</button></div>')}
+ <section class="card glass"><div class="podium">
+  <div style="height:120px"><span class="av">س</span><small>سارة</small><b class="n">2</b></div>
+  <div style="height:150px;border-color:rgb(226 192 105/.4)"><span class="av" style="color:var(--gold)">ه</span><small>هالة</small><b class="n" style="color:var(--gold)">1</b></div>
+  <div style="height:100px"><span class="av">م</span><small>محمد</small><b class="n">3</b></div></div></section>
+ <section class="card glass">${[['ه','هالة مصطفى','GOLD','14 تمرين · 1,240 نقطة'],['س','سارة محمود','GOLD','13 تمرين · 1,180 نقطة'],['م','محمد حسن','GOLD','12 تمرين · 1,090 نقطة'],['أ','أحمد فتحي','BRONZE','9 تمارين · 760 نقطة'],['ك','كريم سامي','BRONZE','8 تمارين · 700 نقطة']].map((r,i)=>`<div class="row"><span class="n muted" style="width:18px">${i+1}</span><span class="av">${r[0]}</span><div class="t"><b>${r[1]}</b><small>${r[3]}</small></div><span class="rank">${r[2]}</span></div>`).join('')}</section></div>`,
+
+billing:()=>`<div class="pg">${header('الاشتراكات والدفعات','<button class="btn gl" data-go="packages">الباقات والعروض</button>')}
+ <div class="g4"><div class="st glass">${ring(.62,'#9db2ff')}<div><b class="n">12,400</b><small>دخل الشهر</small></div></div><div class="st glass">${ring(.2,'#ff9a73')}<div><b class="n">2</b><small>مستني تأكيد</small></div></div><div class="st glass">${ring(.12,'#ff9a73')}<div><b class="n">3</b><small>بيخلص الأسبوع ده</small></div></div><div class="st glass">${ring(.9)}<div><b class="n">22</b><small>اشتراك شغال</small></div></div></div>
+ <div class="g2">
+  <section class="card glass"><div class="ch"><b>مستني تأكيد</b><span class="cnt n">2</span></div>
+   ${[['أ','أحمد فتحي','انستاباي · 800 جنيه · باقة شهر'],['ه','هالة مصطفى','فودافون كاش · 1,200 جنيه · باقة 3 شهور']].map(x=>`<div class="row"><span class="av">${x[0]}</span><div class="t"><b>${x[1]}</b><small>${x[2]}</small></div><button class="btn sm gl">إيصال</button><button class="btn sm go" data-done="اتأكدت دفعة ${x[1]} واتجدد اشتراكه">${ic('check','i s')}أكد</button></div>`).join('')}</section>
+  <section class="card glass"><div class="ch"><b>بيخلص قريب</b><span class="cnt n">3</span></div>
+   ${[['ن','نور أحمد','بعد 3 أيام'],['ك','كريم سامي','بعد 12 يوم'],['س','سارة محمود','بعد 18 يوم']].map(x=>`<div class="row"><span class="av">${x[0]}</span><div class="t"><b>${x[1]}</b><small>${x[2]}</small></div><button class="btn sm gl">فكّره</button></div>`).join('')}</section>
+ </div>
+ <section class="card glass"><div class="ch"><b>كل الدفعات</b></div><table class="tbl"><tr><th>اللاعب</th><th>المبلغ</th><th class="hide-m">الطريقة</th><th class="hide-m">التاريخ</th><th>الحالة</th></tr>
+  ${[['سارة محمود','800','انستاباي','١٠ نوفمبر','l','اتأكدت'],['محمد حسن','2,100','فودافون كاش','٣ نوفمبر','l','اتأكدت'],['أحمد فتحي','800','انستاباي','١٤ نوفمبر','w','مستنية']].map(r=>`<tr><td>${r[0]}</td><td class="n">${r[1]}</td><td class="hide-m">${r[2]}</td><td class="hide-m">${r[3]}</td><td><span class="pill ${r[4]}">${r[5]}</span></td></tr>`).join('')}</table></section></div>`,
+
+programs:()=>`<div class="pg">${header('برامج التمرين',`<button class="btn gl hide-m" data-go="progEdit">${ic('spark','i s')}اطلب من KO</button><button class="btn gl" data-forp="ka">${ic('team','i s')}برنامج للاعب</button><button class="btn go" data-go="progEdit">${ic('plus','i s')}برنامج جديد</button>`)}
+ <div class="tabs"><button class="on">برامجي <span class="n">5</span></button><button>جاهزة من KOCHIVO <span class="n">12</span></button><button>شغالة مع لاعبين <span class="n">24</span></button></div>
+ <div class="g3">${TPLS.map((t,i)=>`<section class="card glass tpl"><div class="ch"><b>${t[0]}</b><span class="tag" style="margin-inline-start:auto">${t[3]} لاعبين</span></div><small class="muted">${t[1]}</small>
+  <div class="days">${['س','ح','ن','ث','ر','خ','ج'].map((d,j)=>`<span class="${t[2][j]?'on':''}">${d}</span>`).join('')}</div>
+  <div style="display:flex;gap:6px"><button class="btn sm gl" style="flex:1" data-go="progEdit">${ic('edit','i s')}عدّل</button><button class="btn sm gl" style="flex:1" data-asg="prog">ادّيه للاعب</button></div></section>`).join('')}
+  <button class="card glass" data-go="progEdit" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--lime);min-height:150px">${ic('plus')}برنامج جديد<small class="muted">من الصفر، من برنامج جاهز، أو KO يعمله</small></button></div></div>`,
+
+progEdit:()=>{const day=PROG[S.day];const vol=day.ex.reduce((a,e)=>a+e.sets,0);const fp=S.forPlayer&&byId(S.forPlayer);const I=fp&&(INTAKE[fp.id]||INTAKE.ka);const risky=e=>I&&I.risk.includes(e.n);
+ return `<div class="pg"><div class="bar glass"><button class="icb" data-go="programs" aria-label="رجوع">${ic('back','i s')}</button><div class="t" style="flex:none"><b style="font-size:15px">${fp?`برنامج ${fp.n}`:'قوة 4 أيام'}</b><small>${fp?`مبني من قالب «قوة 4 أيام» · ${PROG.length} أيام في الأسبوع`:'قالب · 12 أسبوع · 9 لاعبين عليه'}</small></div>
+  <div style="margin-inline-start:auto;display:flex;gap:8px"><button class="btn gl hide-m" data-done-t="KO كمّل اليوم بتمرينين مناسبين">${ic('spark','i s')}KO يكمّله</button><button class="btn gl hide-m">${ic('eye','i s')}شوفه زي اللاعب</button>${fp?`<button class="btn go" data-toast="اتبعت البرنامج لـ${fp.n} ويبدأ السبت">ابعته لـ${fp.n.split(' ')[0]}</button>`:'<button class="btn go" data-toast="اتحفظ البرنامج واتحدث عند 9 لاعبين">احفظ</button>'}</div></div>
+ <div class="tabs">${PROG.map((d,i)=>`<button class="${S.day===i?'on':''}" data-day="${i}">يوم ${i+1} · ${d.t}</button>`).join('')}<button data-toast="اتضاف يوم جديد">${ic('plus','i s')}</button></div>
+ ${fp?playerPanel(fp,I,day):''}
+ <div class="builder ${fp?'b3':''}">
+  <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+   <section class="card glass"><div class="ch"><b>الإحماء</b><span class="muted" style="font-size:11.5px">قبل التمرين</span><span class="muted" style="margin-inline-start:auto;font-size:11.5px">مجموعات تدريجية</span><span class="toggle"></span></div>
+    <div class="qr"><span>5 دقايق مشاية</span><span>فتح حوض</span><span>سكوات بالوزن</span><span style="color:var(--lime)">+ إضافة</span></div></section>
+   ${day.ex.length?day.ex.map((e,i)=>`<section class="card glass exc"><span class="grip">${ic('grip','i s')}</span><span class="gif lg"></span>
+    <div class="t"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><b>${i+1}. ${e.n}</b><span class="pill m">${e.m}</span>${e.alt?`<span class="pill c">بديل: ${e.alt}</span>`:''}</div>${risky(e)?`<div class="riskn">${ic('alert','i s')}<span>ممكن يضايق ${I.inj[0].split(':')[0]}. ${SWAPTO[e.n]?`KO يقترح «${SWAPTO[e.n]}».`:''}</span>${SWAPTO[e.n]?`<button class="btn sm gl" data-swapx="${i}">بدّله</button>`:''}</div>`:''}
+     <div class="fields"><label>مجموعات<b class="n">${e.sets}</b></label><label>عدات<b class="n">${e.reps}</b></label><label>راحة<b class="n">${e.rest}</b></label><label class="hide-m">RIR<b class="n">${e.rir}</b></label><label class="hide-m">وزن مقترح<b class="n">${e.kg}</b></label></div>
+     <div class="sets">${Array.from({length:e.sets},(_,k)=>`<span>مجموعة ${k+1}<b class="n">${e.plan?e.plan[k]:e.reps}</b></span>`).join('')}</div></div>
+    <button class="icb" data-rmex="${i}" aria-label="شيل">${ic('x','i s')}</button></section>`).join(''):`<section class="card glass"><div class="empty">اليوم ده فاضي. ضيف تمارين من المكتبة اللي جنبك.</div></section>`}
+   <button class="btn go mob-only" data-mpick="ex" style="height:46px">${ic('plus','i s')}ضيف تمرين</button>
+   <div class="sum glass"><span>${day.ex.length} تمارين</span><span><span class="n">${vol}</span> مجموعة</span><span>حوالي <span class="n">${Math.round(vol*2.6)}</span> دقيقة</span></div>
+  </div>
+  <section class="card glass picker desk-only"><div class="ch"><b>مكتبة التمارين</b><button class="lnk" data-go="exercises">افتحها</button></div>
+   <div class="search" style="width:100%;margin:0 0 8px">${ic('search','i s')}دور على تمرين…</div>
+   <div class="qr" style="margin-bottom:8px">${['رجل','صدر','ضهر','كتف','دراع','بطن'].map((m,i)=>`<span class="${i===0?'onq':''}">${m}</span>`).join('')}</div>
+   ${EX.filter(x=>x.m==='رجل').map(x=>`<div class="ex"><span class="gif"></span><div class="t"><b>${x.n}</b><small>${x.eq}</small></div><button class="icb" data-addex="${x.n}" aria-label="ضيف">${ic('plus','i s')}</button></div>`).join('')}
+  </section>
+ </div></div>`},
+
+exNew:()=>{const parts=['رجل','صدر','ضهر','كتف','دراع','بطن','كارديو'];const eqs=['بار','دمبل','جهاز','كابل','وزن الجسم','كيتل بل','أستك'];const sec=['الفخد الأمامي','الفخد الخلفي','المؤخرة','السمانة','البطن','أسفل الضهر'];
+ return `<div class="pg"><div class="bar glass"><button class="icb" data-go="exercises" aria-label="رجوع">${ic('back','i s')}</button><div class="t" style="flex:none"><b style="font-size:15px">تمرين جديد</b><small>هيظهر في مكتبتك انت ولاعيبتك بس</small></div>
+  <div style="margin-inline-start:auto;display:flex;gap:8px"><button class="btn gl hide-m" data-go="exercises">إلغاء</button><button class="btn go" data-exsave>احفظ التمرين</button></div></div>
+ <div class="builder">
+  <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+   <section class="card glass"><div class="ch"><b>الاسم</b></div>
+    <div class="g2"><label class="fl">بالعربي<input class="fi" id="exn" value="سكوات بلغاري بالدمبل" data-live></label><label class="fl">بالإنجليزي (مطلوب)<input class="fi" id="exe" value="Bulgarian Split Squat" dir="ltr" data-live></label></div>
+    <div class="note2" style="margin-top:10px">${ic('spark','i s')}فيه تمرين شبهه في المكتبة: <b style="color:var(--ink)">لانجز بالدمبل</b>. لو هو ده، استخدمه بدل ما تكرره.</div></section>
+   <section class="card glass"><div class="ch"><b>العضلة الأساسية</b><span class="muted" style="font-size:12px">اختار واحدة</span></div>
+    <div class="chips" data-one>${parts.map((m,i)=>`<button class="chip ${i===0?'on':''}">${m}</button>`).join('')}</div>
+    <label class="fl" style="margin-top:12px">العضلة المستهدفة<input class="fi" value="الفخد الأمامي والمؤخرة"></label></section>
+   <section class="card glass"><div class="ch"><b>عضلات مساعدة</b><span class="muted" style="font-size:12px">اختار أكتر من واحدة</span></div>
+    <div class="chips">${sec.map((m,i)=>`<button class="chip ${i<3&&i!==0?'on':''}">${m}</button>`).join('')}</div></section>
+   <section class="card glass"><div class="ch"><b>الأداة</b></div>
+    <div class="chips" data-one>${eqs.map((m,i)=>`<button class="chip ${i===1?'on':''}">${m}</button>`).join('')}</div></section>
+   <section class="card glass"><div class="ch"><b>خطوات الأداء</b><span class="muted" style="font-size:12px">اللاعب هيشوفها تحت الفيديو</span></div>
+    ${['حط رجلك الورانية على بنش، والقدامية خطوة كبيرة لقدام.','انزل لحد ما ركبتك الورانية تقرب من الأرض.','اطلع وانت ضاغط على كعب الرجل القدامية.'].map((x,i)=>`<div class="stepl"><span class="n">${i+1}</span><input class="fi" value="${x}"></div>`).join('')}
+    <button class="addline">${ic('plus','i s')}ضيف خطوة</button></section>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+   <section class="card glass"><div class="ch"><b>الفيديو</b><span class="muted" style="font-size:12px">رفع GIF هييجي بعدين</span></div>
+    <label class="fl">لينك فيديو (يوتيوب)<input class="fi" placeholder="https://" dir="ltr"></label></section>
+   <section class="card glass"><div class="ch"><b>كده هيظهر للاعب</b></div>
+    <div class="prev"><span class="gif xl">${ic('play','i s')}</span><b id="pv-n">سكوات بلغاري بالدمبل</b><small class="muted" id="pv-e">Bulgarian Split Squat</small><div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap"><span class="pill m">رجل</span><span class="pill m">دمبل</span><span class="pill l">بتاعي</span></div></div></section>
+  </div>
+ </div></div>`},
+
+foodNew:()=>`<div class="pg"><div class="bar glass"><button class="icb" data-go="foods" aria-label="رجوع">${ic('back','i s')}</button><div class="t" style="flex:none"><b style="font-size:15px">أكلة جديدة</b><small>هتظهر في مكتبتك وفي أنظمة لاعيبتك</small></div>
+  <div style="margin-inline-start:auto;display:flex;gap:8px"><button class="btn gl hide-m" data-go="foods">إلغاء</button><button class="btn go" data-foodsave>احفظ الأكلة</button></div></div>
+ <div class="builder">
+  <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+   <section class="card glass"><div class="ch"><b>الاسم والصورة</b></div>
+    <div style="display:flex;gap:12px;align-items:stretch"><div class="drop sq">${ic('cam')}<small>صورة</small></div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:8px"><label class="fl">بالعربي<input class="fi" id="fdn" value="كفتة مشوية بيتي" data-live></label><label class="fl">بالإنجليزي<input class="fi" value="Grilled kofta" dir="ltr"></label></div></div></section>
+   <section class="card glass"><div class="ch"><b>القيم الغذائية</b><span class="muted" style="font-size:12px">لكل 100 جرام</span></div>
+    <div class="g4 macin">${[['سعرات','k',230],['بروتين','p',18],['كارب','c',4],['دهون','f',16]].map(m=>`<label class="fl">${m[0]}<input class="fi n" type="number" data-mac="${m[1]}" value="${m[2]}"></label>`).join('')}</div>
+    <div class="note2" id="fd-chk" style="margin-top:10px"></div>
+    </section>
+   <section class="card glass"><div class="ch"><b>وحدات القياس</b><span class="muted" style="font-size:12px">عشان اللاعب ميوزنش كل مرة</span></div>
+    ${[['صباع',60],['طبق',250]].map(u=>`<div class="unit"><input class="fi" value="${u[0]}"><span class="muted">=</span><input class="fi n" type="number" value="${u[1]}" data-unit><span class="muted">جرام</span><b class="n" data-ukcal></b></div>`).join('')}
+    <button class="addline">${ic('plus','i s')}ضيف وحدة</button></section>
+  </div>
+  <section class="card glass"><div class="ch"><b>كده هتظهر في النظام</b></div>
+   <div class="prev"><span class="gif xl"></span><b id="pv-fd">كفتة مشوية بيتي</b><small class="muted">صباع (<span class="n">60</span> جرام)</small>
+    <div class="macbar" id="fd-bar"></div><div class="sum" id="fd-sum" style="margin-top:10px"></div></div></section>
+ </div></div>`,
+
+map:()=>{const R=[
+ ['/captain','الرئيسية','ملخص KO بالصبح، المهام بالترتيب، تمارين الفريق في رسمة واحدة','notifications, check_ins, workout_sessions, ko_action_receipts'],
+ ['—  (جديدة)','المهام','كل اللي مستني منك في مكان واحد، وكل مهمة بزرار تنفيذ ورد جاهز','check_ins, form_checks, exercise_swap_requests, player_payments'],
+ ['/captain/inbox','صندوق الوارد','الشات وفي جنبه ملف اللاعب، رسايل صوتية، رد بضغطة','chat_messages, voice_notes, notifications'],
+ ['/captain/players','اللاعبين','جدول بالالتزام والحالة، وكروت على الموبايل','profiles, coach_clients, player_intake, workout_sessions'],
+ ['/captain/players/[id]','ملف اللاعب','تبويبات أوضح: نظرة عامة، تمرين، أكل، متابعات، قياسات، شات','player_intake, body_scans, check_ins, form_answers, programs, nutrition_plans, chat_messages'],
+ ['/captain/pending','طلبات الانضمام','قبول وتعيين برنامج ونظام في خطوة واحدة','coach_join_requests, programs, nutrition_plans'],
+ ['/captain/leaderboard','الترتيب','نفس النقط والرتب بشكل أوضح','points_log, player_points'],
+ ['/captain/billing','الاشتراكات والدفعات','تأكيد الدفعات من فوق، والباقات والعروض في صفحة واحدة','player_payments, captain_package_tiers, captain_offers, player_renewal_requests'],
+ ['/captain/templates','برامج التمرين','القوالب ككروت، وزرار «ادّي للاعب»','programs (is_template)'],
+ ['/captain/programs/[id]','بناء البرنامج','بيانات اللاعب جنبك وانت بتبني، وتحذير لو تمرين يضايق إصابته','programs, program_days, program_exercises (rir, alternatives, set_plan), player_intake'],
+ ['—  (جديدة) /captain/library/exercises','مكتبة التمارين + تمرين جديد','فلتر بالعضلة والأداة، وفورم تمرين جديد بمعاينة حية','exercises (owner_id, video_url, media_path)'],
+ ['/captain/library/meal-plans','الأنظمة الغذائية','يوم تمرين ويوم راحة، والماكروز بتتحسب وانت بتضيف','nutrition_plans, meals (day_type), meal_items'],
+ ['/captain/library/foods','مكتبة الأكلات + أكلة جديدة','فورم أكلة بالقيم لكل 100ج، ووحدات قياس، ومراجعة السعرات','foods (units, photo_path)'],
+ ['/captain/library/forms','الفورمات','محرر أسئلة واضح، وجدولة كل أسبوع أو شهر','forms, form_questions, form_requests, assessment_schedules'],
+ ['/captain/settings','الإعدادات','صفحتك العامة والباقات والإشعارات','profiles, captain_packages'],
+];
+ return `<div class="pg">${header('كل الصفحات: من القديم للجديد','','نفس الداتابيز ونفس المنطق')}
+ <div class="g3">
+  <div class="st glass"><div><b class="n">${R.length}</b><small>صفحة اتحسنت</small></div></div>
+  <div class="st glass"><div><b class="n">0</b><small>جداول جديدة في المرحلة الأولى</small></div></div>
+  <div class="st glass"><div><b class="n">0</b><small>تغيير في القواعد والصلاحيات (RLS)</small></div></div>
+ </div>
+ <section class="card glass" style="padding:6px 8px"><table class="tbl mapt"><tr><th>المسار الحالي</th><th>الشاشة الجديدة</th><th>اللي اتحسن</th><th>بتقرا وتكتب في</th><th></th></tr>
+ ${R.map(r=>`<tr><td><code class="n">${r[0]}</code></td><td><b>${r[1]}</b></td><td class="muted">${r[2]}</td><td><span class="dbt">${r[3]}</span></td><td><span class="pill l">نفس الداتا</span></td></tr>`).join('')}</table></section>
+ <section class="card glass"><div class="ch"><b>إيه اللي مش هيتغير</b></div>
+  <div class="kv"><span>الحفظ أوفلاين للجلسات والمجموعات والأكل</span><b>زي ما هو (saveAndQueue)</b></div>
+  <div class="kv"><span>صلاحيات الكابتن واللاعب</span><b>نفس RLS</b></div>
+  <div class="kv"><span>KO ومولّد البرامج</span><b>نفس المنطق، بس ظاهر في أماكن أكتر</b></div>
+  <div class="kv"><span>تطبيق اللاعب</span><b>مش هيتأثر</b></div></section></div>`},
+
+exercises:()=>{const ms=['الكل','رجل','صدر','ضهر','كتف','دراع','بطن','كارديو'];const list=EX.filter(x=>S.mus==='الكل'||x.m===S.mus);
+ return `<div class="pg">${header('مكتبة التمارين <span class="n muted" style="font-size:13px">1,300+</span>',`<button class="btn go" data-go="exNew">${ic('plus','i s')}تمرين جديد</button>`)}
+ <div class="tabs">${ms.map(m=>`<button class="${S.mus===m?'on':''}" data-mus="${m}">${m}</button>`).join('')}</div>
+ <div class="qr"><span class="onq">كل الأدوات</span><span>بار</span><span>دمبل</span><span>جهاز</span><span>كابل</span><span>وزن الجسم</span><span>تماريني</span></div>
+ <div class="g4 exg">${list.map(x=>`<button class="card glass excard" data-exd="${x.n}"><span class="gif xl">${ic('play','i s')}</span><b>${x.n}</b><small class="muted">${x.en}</small><div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap"><span class="pill m">${x.m}</span><span class="pill m">${x.eq}</span>${x.mine?'<span class="pill l">بتاعي</span>':''}</div></button>`).join('')}</div></div>`},
+
+exDetail:()=>{const x=EX.find(e=>e.n===S.ex)||EX[0];
+ return `<div class="pg"><div class="bar glass"><button class="icb" data-go="exercises" aria-label="رجوع">${ic('back','i s')}</button><div class="t" style="flex:none"><b style="font-size:15px">${x.n}</b><small>${x.en}</small></div><button class="btn gl" style="margin-inline-start:auto" data-toast="اتضاف لبرنامج قوة 4 أيام">${ic('plus','i s')}ضيفه لبرنامج</button></div>
+ <div class="g2">
+  <section class="card glass"><div class="gif xl" style="aspect-ratio:1;height:auto">${ic('play')}</div><div class="qr" style="margin-top:10px"><span>${ic('link','i s')} فيديو يوتيوب بتاعك</span></div></section>
+  <div style="display:flex;flex-direction:column;gap:12px">
+   <section class="card glass"><div class="ch"><b>العضلات</b></div><div class="kv"><span>الأساسية</span><b>${x.m} (${x.tg})</b></div><div class="kv"><span>المساعدة</span><b>المؤخرة، أسفل الضهر</b></div><div class="kv"><span>الأداة</span><b>${x.eq}</b></div></section>
+   <section class="card glass"><div class="ch"><b>طريقة الأداء</b><button class="lnk">عدّل</button></div><ol class="steps"><li>قف وقدميك بعرض الكتف والبار على ضهرك.</li><li>انزل لحد ما فخدك يبقى موازي للأرض وضهرك مفرود.</li><li>اطلع بقوة من الكعب ومتقفلش الركبة فوق.</li></ol></section>
+   <section class="card glass"><div class="ch"><b>البدائل</b><span class="muted" style="font-size:11.5px">اللاعب يقدر يبدل بيهم</span></div><div class="qr"><span>جوبلت سكوات</span><span>ليج برس</span><span>هاك سكوات</span><span style="color:var(--lime)">+ بديل</span></div></section>
+  </div></div></div>`},
+
+plans:()=>`<div class="pg">${header('الأنظمة الغذائية',`<button class="btn gl" data-asg="plan">ادّي نظام للاعب</button><button class="btn go" data-go="planEdit">${ic('plus','i s')}نظام جديد</button>`)}
+ <div class="g3">${[['تضخيم 2,600','2,600',[180,290,75],4],['تنشيف 1,900','1,900',[160,170,60],7],['صيام متقطع 2,200','2,200',[170,220,70],2]].map(p=>`<button class="card glass" data-go="planEdit" style="display:flex;gap:14px;align-items:center;text-align:start">${ring(.7,'#b6e94f',72,p[1])}<div style="flex:1"><b>${p[0]}</b><div class="legend"><div><i style="background:#b6e94f"></i>بروتين<b>${p[2][0]}g</b></div><div><i style="background:#9db2ff"></i>كارب<b>${p[2][1]}g</b></div><div><i style="background:#e2c069"></i>دهون<b>${p[2][2]}g</b></div></div><small class="muted">${p[3]} لاعبين عليه · يوم تمرين ويوم راحة</small></div></button>`).join('')}
+ <button class="card glass" data-go="planEdit" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--lime);min-height:120px">${ic('plus')}نظام جديد<small class="muted">حط الهدف والسعرات، وضيف الأكلات</small></button></div></div>`,
+
+planEdit:()=>{const meals=PLAN[S.dtype];const tot=meals.reduce((a,m)=>{m.f.forEach(f=>{a.k+=f.k;a.p+=f.p;a.c+=f.c;a.f+=f.f});return a},{k:0,p:0,c:0,f:0});const T={k:2600,p:180,c:290,f:75};
+ const bar=(l,v,t,col)=>`<div class="mbar"><div class="ml"><span>${l}</span><b class="n">${Math.round(v)}/${t}</b></div><div class="track"><i style="width:${Math.min(100,v/t*100)}%;background:${col}"></i></div></div>`;
+ return `<div class="pg"><div class="bar glass"><button class="icb" data-go="plans" aria-label="رجوع">${ic('back','i s')}</button><div class="t" style="flex:none"><b style="font-size:15px">تضخيم 2,600</b><small>4 لاعبين عليه</small></div><button class="btn go" style="margin-inline-start:auto" data-toast="اتحفظ النظام واتحدث عند 4 لاعبين">احفظ</button></div>
+ <div class="tabs"><button class="${S.dtype==='train'?'on':''}" data-dtype="train">يوم تمرين</button><button class="${S.dtype==='rest'?'on':''}" data-dtype="rest">يوم راحة</button></div>
+ <div class="builder">
+  <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+   <section class="card glass macros">${ring(Math.min(1,tot.k/T.k),'#b6e94f',96,Math.round(tot.k).toLocaleString('en'))}<div style="flex:1;display:flex;flex-direction:column;gap:8px"><small class="muted">من ${T.k.toLocaleString('en')} سعر · ${tot.k>T.k?'<span style="color:var(--warn)">زيادة</span>':'فاضل '+Math.round(T.k-tot.k)}</small>${bar('بروتين',tot.p,T.p,'#b6e94f')}${bar('كارب',tot.c,T.c,'#9db2ff')}${bar('دهون',tot.f,T.f,'#e2c069')}</div></section>
+   ${meals.map((m,mi)=>`<section class="card glass"><div class="ch"><b>${m.n}</b><span class="muted" style="font-size:11.5px">${m.time}</span><span class="n muted" style="margin-inline-start:auto;font-size:12px">${m.f.reduce((a,f)=>a+f.k,0)} سعر</span></div>
+    ${m.f.map((f,fi)=>`<div class="ex"><span class="gif" style="width:36px;height:36px"></span><div class="t"><b>${f.n}</b><small><span class="n">${f.q}</span> · ب ${f.p} · ك ${f.c} · د ${f.f}</small></div><span class="n" style="font-size:12px">${f.k}</span><button class="icb" data-rmfood="${mi}:${fi}" aria-label="شيل" style="width:28px;height:28px">${ic('x','i s')}</button></div>`).join('')}
+    <button class="addline" data-meal="${mi}">${ic('plus','i s')}ضيف أكلة${S.meal===mi?' · <span style="color:var(--lime)">هتتضاف هنا</span>':''}</button></section>`).join('')}
+  </div>
+  <section class="card glass picker desk-only"><div class="ch"><b>مكتبة الأكلات</b><button class="lnk" data-go="foods">افتحها</button></div>
+   <div class="search" style="width:100%;margin:0 0 8px">${ic('search','i s')}دور على أكلة…</div>
+   <div class="qr" style="margin-bottom:8px"><span class="onq">بروتين</span><span>كارب</span><span>دهون</span><span>أكلاتي</span></div>
+   ${FOODS.map((f,i)=>`<div class="ex"><span class="gif" style="width:36px;height:36px"></span><div class="t"><b>${f.n}</b><small><span class="n">${f.q}</span> · ${f.k} سعر · ب ${f.p}</small></div><button class="icb" data-addfood="${i}" aria-label="ضيف">${ic('plus','i s')}</button></div>`).join('')}
+  </section>
+ </div></div>`},
+
+foods:()=>`<div class="pg">${header('مكتبة الأكلات',`<button class="btn go" data-go="foodNew">${ic('plus','i s')}أكلة جديدة</button>`)}
+ <div class="tabs"><button class="on">الكل</button><button>بروتين</button><button>كارب</button><button>دهون</button><button>خضار وفاكهة</button><button>أكلات مصرية</button><button>أكلاتي</button></div>
+ <section class="card glass" style="padding:4px 6px"><table class="tbl"><tr><th>الأكلة</th><th>الوحدة</th><th>سعرات</th><th>بروتين</th><th class="hide-m">كارب</th><th class="hide-m">دهون</th><th class="hide-m"></th></tr>
+ ${[['صدر فراخ مشوي','100ج · صدر','165','31','0','3.6'],['رز أبيض مطبوخ','100ج · كوباية','130','2.7','28','0.3'],['بيض','حباية','78','6.3','0.6','5.3'],['شوفان','100ج · كوباية','389','17','66','7'],['فول مدمس','100ج · طبق','110','7.6','19','0.5'],['كشري','طبق وسط','650','18','115','12'],['تونة مصفاة','علبة','116','26','0','1']].map(f=>`<tr><td><div class="who"><span class="gif" style="width:32px;height:32px"></span><b>${f[0]}</b></div></td><td class="muted">${f[1]}</td><td class="n">${f[2]}</td><td class="n">${f[3]}</td><td class="hide-m n">${f[4]}</td><td class="hide-m n">${f[5]}</td><td class="hide-m"><button class="btn sm gl">${ic('edit','i s')}</button></td></tr>`).join('')}</table></section></div>`,
+
+forms:()=>`<div class="pg">${header('الفورمات',`<button class="btn go" data-go="formEdit">${ic('plus','i s')}فورم جديد</button>`)}
+ <div class="g3">${[['المتابعة الأسبوعية','متابعة','كل جمعة 9 الصبح',8,'22/24','l','شغال'],['فورم الانضمام','انضمام','أول ما يشترك',12,'2 جديد','l','شغال'],['تقييم الشهر','تقدم','أول كل شهر',6,'—','m','متوقف'],['فورم إصابة','إصابة','وقت ما تبعته',5,'—','m','يدوي']].map(f=>`<button class="card glass" data-go="formEdit" style="text-align:start;display:flex;flex-direction:column;gap:6px"><div class="ch" style="margin:0"><span class="av">${ic('form','i s')}</span><b>${f[0]}</b><span class="pill ${f[5]}" style="margin-inline-start:auto">${f[6]}</span></div><small class="muted">${f[1]} · ${f[2]} · ${f[3]} أسئلة</small><div class="kv" style="border:0;padding-bottom:0"><span>الردود</span><b class="n">${f[4]}</b></div></button>`).join('')}
+ <button class="card glass" data-go="formEdit" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--lime);min-height:120px">${ic('plus')}فورم جديد<small class="muted">ابدأ من قالب أو من الصفر</small></button></div></div>`,
+
+formEdit:()=>{const q=FORMQ[S.fq]||FORMQ[0];
+ return `<div class="pg"><div class="bar glass"><button class="icb" data-go="forms" aria-label="رجوع">${ic('back','i s')}</button><div class="t" style="flex:none"><b style="font-size:15px">المتابعة الأسبوعية</b><small>${FORMQ.length} أسئلة · بيتبعت كل جمعة</small></div><button class="btn go" style="margin-inline-start:auto" data-toast="اتحفظ الفورم وهيتبعت الجمعة الجاية">احفظ</button></div>
+ <div class="builder fb">
+  <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+   <section class="card glass">${FORMQ.map((x,i)=>`<button class="row ${S.fq===i?'h':''}" data-fq="${i}"><span class="grip">${ic('grip','i s')}</span><span class="av">${ic(QT[x.t][1],'i s')}</span><div class="t"><b>${i+1}. ${x.l}</b><small>${QT[x.t][0]}${x.req?' · إجباري':''}</small></div><span class="icb" data-rmq="${i}" style="width:28px;height:28px">${ic('x','i s')}</span></button>`).join('')}</section>
+   <section class="card glass"><div class="ch"><b>ضيف سؤال</b></div><div class="qtypes">${Object.entries(QT).map(([k,v])=>`<button data-addq="${k}">${ic(v[1],'i s')}${v[0]}</button>`).join('')}</div></section>
+   <section class="card glass"><div class="ch"><b>الإعدادات</b></div>
+    <div class="kv"><span>النوع</span><b>متابعة أسبوعية</b></div><div class="kv"><span>بيتبعت</span><b>كل جمعة · 9:00 الصبح</b></div><div class="kv"><span>تذكير لو مردش</span><b>بعد 24 ساعة</b></div><div class="kv"><span>لمين</span><b>كل اللاعبين (24)</b></div></section>
+  </div>
+  <div class="desk-only" style="display:flex;justify-content:center"><div class="mini-phone"><small class="muted">زي ما اللاعب هيشوفه</small><div class="prog-dots">${FORMQ.map((_,i)=>`<i class="${i<=S.fq?'on':''}"></i>`).join('')}</div>
+   <b style="font-size:15px;line-height:1.6">${q.l}</b>${q.t==='num'?`<div class="inp n">82.4 <small>كجم</small></div>`:q.t==='scale'?`<div class="scale">${[1,2,3,4,5].map(n=>`<span class="${n===4?'on':''}">${n}</span>`).join('')}</div>`:q.t==='photo'?`<div class="g2" style="gap:8px"><div class="ph">${ic('cam')}<small>قدام</small></div><div class="ph">${ic('cam')}<small>جنب</small></div></div>`:q.t==='choice'?`<div style="display:flex;flex-direction:column;gap:6px">${['ممتاز','كويس','متوسط','وحش'].map((o,i)=>`<span class="opt ${i===1?'on':''}">${o}</span>`).join('')}</div>`:`<div class="inp" style="min-height:70px;color:var(--dim)">اكتب هنا…</div>`}
+   <button class="btn go" style="width:100%;margin-top:auto">التالي</button></div></div>
+ </div></div>`},
+
+packages:()=>`<div class="pg"><div class="bar glass"><button class="icb" data-go="billing" aria-label="رجوع">${ic('back','i s')}</button><h2>الباقات والعروض</h2><button class="btn go" style="margin-inline-start:auto" data-toast="افتح باقة جديدة">${ic('plus','i s')}باقة جديدة</button></div>
+ <div class="g3">${[['أساسي','متابعة أونلاين',['برنامج تمرين','نظام أكل','متابعة أسبوعية'],[['شهر','800'],['3 شهور','2,100']],0],['ذهبي','الأكثر طلبًا',['كل اللي في الأساسي','شات ورسايل صوتية','مراجعة فيديوهات الأداء'],[['شهر','1,200'],['3 شهور','3,200']],1],['VIP','متابعة يومية',['كل اللي في الذهبي','مكالمة كل أسبوع','تعديل يومي للبرنامج'],[['شهر','2,000']],0]].map(t=>`<section class="card glass tier ${t[4]?'feat':''}">${t[4]?'<span class="pill l" style="position:absolute;top:12px;inset-inline-end:12px">مميزة</span>':''}<b style="font-size:16px">${t[0]}</b><small class="muted">${t[1]}</small>
+  <div style="margin:12px 0;display:flex;flex-direction:column;gap:6px">${t[2].map(f=>`<div style="display:flex;gap:8px;align-items:center;font-size:12.5px"><span style="color:var(--lime)">${ic('check','i s')}</span>${f}</div>`).join('')}</div>
+  ${t[3].map(p=>`<div class="kv"><span>${p[0]}</span><b><span class="n">${p[1]}</span> جنيه</b></div>`).join('')}<button class="btn sm gl" style="margin-top:10px;width:100%">${ic('edit','i s')}عدّل</button></section>`).join('')}</div>
+ <section class="card glass"><div class="ch"><b>العروض</b><button class="lnk" data-toast="افتح عرض جديد">+ عرض جديد</button></div>
+  <div class="row"><span class="av" style="color:var(--lime)">%</span><div class="t"><b>خصم الشتا</b><small>15% على كل الباقات · لحد آخر ديسمبر</small></div><span class="pill l">شغال</span></div>
+  <div class="row"><span class="av" style="color:var(--lime)">+</span><div class="t"><b>هات صاحبك</b><small>أسبوعين زيادة على الباقة الذهبي</small></div><span class="pill l">شغال</span></div></section></div>`,
+
+notifs:()=>`<div class="pg">${header('الإشعارات','<button class="btn gl hide-m" data-toast="كل الإشعارات اتقرت">علّم الكل مقروء</button>')}
+ <section class="card glass">${[['play','محمد حسن بعت فيديو سكوات','من ساعة','tasks'],['cash','أحمد فتحي بعت إيصال دفع 800 جنيه','من ساعتين','billing'],['join','طلب انضمام جديد من مريم سعيد','من 3 ساعات','join'],['form','سارة محمود بعتت المتابعة الأسبوعية','النهارده 9:40','tasks'],['trophy','هالة مصطفى طلعت الأولى في الترتيب','امبارح','ranks']].map((n,i)=>`<button class="row ${i<3?'h':''}" data-go="${n[3]}"><span class="av">${ic(n[0],'i s')}</span><div class="t"><b>${n[1]}</b><small>${n[2]}</small></div>${i<3?'<i style="width:8px;height:8px;border-radius:50%;background:var(--lime)"></i>':''}</button>`).join('')}</section></div>`,
+
+settings:()=>`<div class="pg">${header('الإعدادات')}
+ <div class="g2">
+  <section class="card glass"><div class="ch"><b>صفحتك</b><button class="btn sm gl" style="margin-inline-start:auto">${ic('eye','i s')}شوفها</button></div>
+   <div class="row"><span class="av lg">ع</span><div class="t"><b>كابتن علي إسماعيل</b><small>kochivo.site/c/ali</small></div><button class="btn sm gl">${ic('copy','i s')}انسخ</button></div>
+   <div class="kv"><span>النبذة</span><b>مدرب قوة وتنشيف · 8 سنين</b></div><div class="kv"><span>الصور والشهادات</span><b>4</b></div></section>
+  <section class="card glass"><div class="ch"><b>طرق الدفع</b></div><div class="kv"><span>انستاباي</span><b>مفعّل</b></div><div class="kv"><span>فودافون كاش</span><b>مفعّل</b></div><div class="kv"><span>تحويل بنكي</span><b class="muted">مش مفعّل</b></div></section>
+  <section class="card glass"><div class="ch"><b>اللغة والوقت</b></div><div class="kv"><span>اللغة</span><b>عربي مصري</b></div><div class="kv"><span>المنطقة الزمنية</span><b>القاهرة (تلقائي)</b></div></section>
+  <section class="card glass"><div class="ch"><b>الإشعارات</b></div>${[['رسالة جديدة',1],['فيديو أداء',1],['دفعة جديدة',1],['ملخص الصبح',0]].map(x=>`<div class="kv" style="align-items:center"><span>${x[0]}</span><span class="toggle ${x[1]?'':'off'}"></span></div>`).join('')}</section>
+ </div></div>`,
+};
+
+/* ---------- shell ---------- */
+const bc=i=>i[0]==='tasks'?TASKS.length:i[3];
+function playerPanel(p,I,day){const warn=day.ex.filter(e=>I.risk.includes(e.n));const mins=Math.round(day.ex.reduce((a,e)=>a+e.sets,0)*2.6)+8;
+ const checks=[[PROG.length<=I.days.length,`${PROG.length} أيام في البرنامج، وهو فاضي ${I.days.length} أيام`],[mins<=I.min,`اليوم ده حوالي ${mins} دقيقة من ${I.min} عنده`],[!warn.length,warn.length?`${warn.length} تمرين ممكن يضايق إصابته`:'مفيش تمرين بيضايق إصابته في اليوم ده']];
+ return `<section class="card glass ppanel"><div class="pp-h"><span class="av lg">${p.a}</span><div class="t"><b>${p.n}</b><small>${I.age} سنة · ${I.sex} · خبرة ${I.exp}</small></div><button class="lnk" data-player="${p.id}">ملفه كامل</button></div>
+  <div class="pp-grid">
+   <div><small>الطول</small><b class="n">${I.h}</b><i>سم</i></div><div><small>الوزن</small><b class="n">${I.w}</b><i>كجم</i></div><div><small>الهدف</small><b class="n">${I.tw}</b><i>كجم</i></div><div><small>الدهون</small><b class="n">${I.bf}</b><i>آخر قياس</i></div>
+  </div>
+  <div class="pp-row"><small>أيام التمرين</small><div class="pp-days">${DAYS7.map((d,i)=>`<span class="${I.days.includes(i)?'on':''}">${d}</span>`).join('')}</div><span class="muted" style="font-size:12px">${I.min} دقيقة</span></div>
+  <div class="pp-row">${I.inj.length?I.inj.map(x=>`<span class="pill w">${ic('alert','i s')}${x}</span>`).join(''):'<span class="pill l">مفيش إصابات</span>'}${I.alg.map(x=>`<span class="pill c">حساسية: ${x}</span>`).join('')}<span class="muted pp-note">«${I.notes}»</span></div>
+  <div class="pp-checks">${checks.map(c=>`<span class="${c[0]?'ok':'no'}">${ic(c[0]?'check':'alert','i s')}${c[1]}</span>`).join('')}</div></section>`}
+function sideHTML(){const cur=PARENT[S.screen]||S.screen;return `<aside class="side glass"><div class="brand"><img src="kochivo-logo.png" alt=""></div>
+ ${NAV.map(g=>`<div class="grp">${g.g}</div>${g.items.map(i=>`<button class="nav ${cur===i[0]?'on':''}" data-go="${i[0]}">${ic(i[2])}${i[1]}${bc(i)?`<span class="b ${i[4]?'s':''}">${bc(i)}</span>`:''}</button>`).join('')}`).join('')}
+ <div class="me"><span class="av" style="color:var(--lime)">ع</span><div style="font-size:12.5px;font-weight:600">كابتن علي<small>24 لاعب</small></div></div></aside>`}
+function sheetHTML(){const rest=NAV.map(g=>({g:g.g,items:g.items.filter(i=>!MOB.find(m=>m[0]===i[0]))})).filter(g=>g.items.length);
+ return `<div class="grab"></div>${rest.map(g=>`<div class="grp" style="padding:10px 4px 6px">${g.g}</div><div class="tiles">${g.items.map(i=>`<button data-go="${i[0]}">${bc(i)?`<span class="cnt">${bc(i)}</span>`:''}${ic(i[2])}${i[1]}</button>`).join('')}</div>`).join('')}`}
+function render(){const st=document.getElementById('stage');const body=SCREENS[S.screen]();
+ if(S.mode==='desk'){st.innerHTML=`<div class="scene desk"><div class="orbs"><i></i><i></i><i></i><b></b><u></u></div>${sideHTML()}<main class="content">${body}</main></div>`;}
+ else{const cur=PARENT[S.screen]||S.screen;const inMob=MOB.find(m=>m[0]===cur);
+  st.innerHTML=`<div class="phonewrap"><div class="scene phone"><div class="orbs"><i></i><i></i><i></i><b></b><u></u></div><main class="content">${body}</main><div class="dimmer ${S.sheet?'open':''}" data-close></div><div class="sheet ${S.sheet?'open':''}">${sheetHTML()}</div>
+  ${mobExtras()}<nav class="pnav glass">${MOB.map(m=>`<button class="${cur===m[0]&&!S.sheet?'on':''}" data-go="${m[0]}">${bc(m)?`<span class="b">${bc(m)}</span>`:''}${ic(m[2])}${m[1]}</button>`).join('')}<button class="${(!inMob||S.sheet)?'on':''}" data-more>${ic('dots')}المزيد</button></nav></div></div>`;}
+ document.querySelectorAll('.content').forEach(c=>c.scrollTop=0);}
+/* toast + undo */
+const toastEl=document.createElement('div');toastEl.className='toast';document.body.appendChild(toastEl);let toastT,lastDone=null;
+function toast(msg,undo){toastEl.innerHTML=`<span class="ok">${ic('check','i s')}</span>${msg}${undo?'<span class="undo">تراجع</span>':''}`;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>toastEl.classList.remove('show'),2600);}
+const DONE_MSG={video:p=>`اتبعت ردك على فيديو ${p.n}`,checkin:p=>`اتراجعت متابعة ${p.n}`,program:p=>`اتعمل برنامج لـ${p.n}`,absent:p=>`اتبعتت رسالة لـ${p.n}`,swap:p=>`اتوافق على تبديل ${p.n} واتعدل البرنامج`,renew:p=>`اتبعت تذكير التجديد لـ${p.n}`};
+function finishTask(i,rowEl){const t=TASKS[i];const p=byId(t.p);const fin=()=>{lastDone=TASKS.splice(i,1)[0];toast(DONE_MSG[t.k](p),true);render();};if(rowEl){rowEl.classList.add('bye');setTimeout(fin,200)}else fin();}
+/* command palette */
+const pal=document.createElement('div');pal.className='pal-bg';pal.innerHTML=`<div class="pal"><input placeholder="دور على لاعب، صفحة، أو أمر…"><div class="list"></div><div class="foot"><span><kbd>↑↓</kbd> تنقل</span><span><kbd>Enter</kbd> افتح</span><span><kbd>Esc</kbd> اقفل</span></div></div>`;document.body.appendChild(pal);
+let palIdx=0,palItems=[];
+function palBuild(q=''){q=q.trim();const pages=Object.entries(TITLES).filter(([k])=>k!=='player').map(([k,v])=>({g:'الصفحات',t:v,s:'صفحة',run:()=>go(k)}));
+ const ppl=P.map(p=>({g:'اللاعبين',t:p.n,s:p.goal,run:()=>go('player',{player:p.id,pTab:'over'})}));
+ const cmds=[{g:'أوامر',t:'ضيف لاعب جديد',s:'أمر',run:()=>go('join')},{g:'أوامر',t:'برنامج جديد',s:'أمر',run:()=>go('programs')},{g:'أوامر',t:'ابعت رسالة للاعب',s:'أمر',run:()=>go('inbox')}];
+ palItems=[...ppl,...pages,...cmds].filter(x=>!q||x.t.includes(q));palIdx=0;palDraw();}
+function palDraw(){let g='';pal.querySelector('.list').innerHTML=palItems.length?palItems.map((x,i)=>{const h=x.g!==g?`<div class="grp">${x.g}</div>`:'';g=x.g;return h+`<button class="it ${i===palIdx?'on':''}" data-pi="${i}">${x.g==='اللاعبين'?`<span class="av" style="width:26px;height:26px;font-size:11px">${x.t[0]}</span>`:ic(x.g==='أوامر'?'plus':'back','i s')}${x.t}<small>${x.s}</small></button>`}).join(''):'<div class="empty">مفيش نتايج</div>';}
+function palOpen(){pal.classList.add('open');const inp=pal.querySelector('input');inp.value='';palBuild();setTimeout(()=>inp.focus(),10);}
+function palClose(){pal.classList.remove('open')}
+pal.addEventListener('click',e=>{const it=e.target.closest('[data-pi]');if(it){palClose();palItems[+it.dataset.pi].run();return}if(e.target===pal)palClose();});
+pal.querySelector('input').addEventListener('input',e=>palBuild(e.target.value));
+document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();pal.classList.contains('open')?palClose():palOpen();return}
+ if(!pal.classList.contains('open'))return;
+ if(e.key==='Escape')palClose();
+ if(e.key==='ArrowDown'){palIdx=Math.min(palIdx+1,palItems.length-1);palDraw();e.preventDefault()}
+ if(e.key==='ArrowUp'){palIdx=Math.max(palIdx-1,0);palDraw();e.preventDefault()}
+ if(e.key==='Enter'&&palItems[palIdx]){palClose();palItems[palIdx].run()}});
+toastEl.addEventListener('click',()=>{});
+document.addEventListener('click',e=>{if(e.target.closest('.toast .undo')&&lastDone){TASKS.push(lastDone);lastDone=null;toastEl.classList.remove('show');render();}},true);
+document.addEventListener('click',e=>{const el=e.target.closest('[data-reply],[data-pal],[data-done],[data-start],[data-go],[data-player],[data-ptab],[data-ttab],[data-sel],[data-chat],[data-chatp],[data-more],[data-close],[data-act]');if(!el)return;
+ const d=el.dataset;
+ if(d.pal!==undefined){palOpen();return}
+ if(d.reply!==undefined){finishTask(S.sel,null);return}
+ if(d.done){const box=el.closest('.row')||el.closest('section.card');box.classList.add('bye');setTimeout(()=>box.remove(),200);toast(d.done);return}
+ if(d.start!==undefined){S.sel=0;S.taskTab='all';go('tasks');return}
+ if(d.act!==undefined){const i=+d.act,t=TASKS[i];
+  if(t.k==='video'||t.k==='checkin'){S.sel=i;S.taskTab='all';go('tasks');}
+  else if(t.k==='program'){openAsg('prog',t.p);A.skipPlayer=1;A.step=1;renderAsg();}
+  else finishTask(i,el.closest('.row'));return;}
+ if(d.go){go(d.go);return}
+ if(d.player){go('player',{player:d.player,pTab:'over'});return}
+ if(d.ptab){if(d.ptab==='chat'){go('inbox',{chat:S.player});return}S.pTab=d.ptab;render();return}
+ if(d.ttab){S.taskTab=d.ttab;render();return}
+ if(d.sel!==undefined){S.sel=+d.sel;if(S.mode==='mob'){go('tasks',{taskOpen:true,taskTab:'all'});return}render();return}
+ if(d.chat){S.chat=d.chat;S.chatOpen=true;render();return}
+ if(d.chatp){go('inbox',{chat:d.chatp,chatOpen:true});return}
+ if(d.more!==undefined){S.sheet=!S.sheet;render();return}
+ if(d.close!==undefined){S.sheet=false;render();}
+});
+document.getElementById('m-desk').onclick=()=>{S.mode='desk';S.sheet=false;document.getElementById('m-desk').className='on';document.getElementById('m-mob').className='';render()};
+document.getElementById('m-mob').onclick=()=>{S.mode='mob';document.getElementById('m-mob').className='on';document.getElementById('m-desk').className='';render()};
+document.addEventListener('click',e=>{const el=e.target.closest('[data-day],[data-rmex],[data-addex],[data-exd],[data-mus],[data-dtype],[data-rmfood],[data-addfood],[data-meal],[data-fq],[data-rmq],[data-addq],[data-toast],[data-done-t]');if(!el)return;e.stopPropagation();const d=el.dataset;
+ if(d.rmq!==undefined){FORMQ.splice(+d.rmq,1);S.fq=0;toast('اتشال السؤال');render();return}
+ if(d.day!==undefined){S.day=+d.day;render();return}
+ if(d.rmex!==undefined){const x=PROG[S.day].ex.splice(+d.rmex,1)[0];toast('اتشال '+x.n);render();return}
+ if(d.addex){const x=EX.find(e=>e.n===d.addex);PROG[S.day].ex.push({n:x.n,m:x.m,sets:3,reps:'10',rest:'1:30',rir:2,kg:'—'});toast('اتضاف '+x.n+' ليوم '+(S.day+1));S.mpick=null;render();return}
+ if(d.exd){S.ex=d.exd;go('exDetail');return}
+ if(d.mus){S.mus=d.mus;render();return}
+ if(d.dtype){S.dtype=d.dtype;S.meal=0;render();return}
+ if(d.rmfood){const [m,i]=d.rmfood.split(':').map(Number);PLAN[S.dtype][m].f.splice(i,1);render();return}
+ if(d.addfood!==undefined){const fd=FOODS[+d.addfood];const m=PLAN[S.dtype][S.meal];m.f.push(fd);toast('اتضاف '+fd.n+' للـ'+m.n);S.mpick=null;render();return}
+ if(d.meal!==undefined){S.meal=+d.meal;render();return}
+ if(d.fq!==undefined){S.fq=+d.fq;render();return}
+ if(d.addq){FORMQ.push({l:'سؤال جديد ('+QT[d.addq][0]+')',t:d.addq});S.fq=FORMQ.length-1;toast('اتضاف سؤال');render();return}
+ if(d.doneT){PROG[S.day].ex.push({n:'ليج برس',m:'رجل',sets:3,reps:'12',rest:'1:30',rir:2,kg:'160'},{n:'سمانة واقف',m:'رجل',sets:4,reps:'15',rest:'1:00',rir:1,kg:'60'});toast(d.doneT);render();return}
+ if(d.toast){toast(d.toast);return}
+},true);
+/* ---------- assign flow: program / meal plan to a player ---------- */
+const asgBg=document.createElement('div');asgBg.className='asg-bg';document.body.appendChild(asgBg);
+const DAYN=['السبت','الحد','الاتنين','التلات','الأربع','الخميس','الجمعة'];
+const PLANS=[{n:'تضخيم 2,600',k:2600,p:180,c:290,f:75,fit:'زيادة عضل أو قوة'},{n:'تنشيف 1,900',k:1900,p:160,c:170,f:60,fit:'تنشيف'},{n:'صيام متقطع 2,200',k:2200,p:170,c:220,f:70,fit:'ثبات الوزن'}];
+let A=null;
+function openAsg(kind,player){const p=player?byId(player):null;
+ A={kind,player:player||null,step:player?1:0,pick:kind==='prog'?0:0,days:[1,1,0,1,1,0,0],start:1,weights:'auto',weeks:12,kcal:2650,restLess:1,note:''};
+ if(p&&kind==='prog'&&p.goal==='تنشيف')A.pick=1;if(p&&kind==='plan'&&p.goal==='تنشيف'){A.pick=1;A.kcal=1950}
+ renderAsg();}
+function closeAsg(){A=null;renderAsg();}
+function asgSteps(){const t=A.kind==='prog'?['اختار اللاعب','اختار البرنامج','ظبطه ليه','راجع وابعت']:['اختار اللاعب','اختار النظام','ظبطه ليه','راجع وابعت'];return t;}
+function renderAsg(){if(!A){asgBg.classList.remove('open');asgBg.innerHTML='';return}
+ asgBg.classList.add('open');asgBg.classList.toggle('mobile',S.mode==='mob');
+ const p=A.player?byId(A.player):null;const steps=asgSteps();const first=p&&A.step>=1&&A.fromPlayer!==false?1:0;
+ const tpl=TPLS[A.pick],plan=PLANS[A.pick];const nd=A.days.filter(Boolean).length;const tplDays=tpl[2].filter(Boolean).length;
+ let body='';
+ if(A.step===0){body=`<p class="muted" style="margin-bottom:10px">لمين ${A.kind==='prog'?'البرنامج':'النظام'} ده؟</p>${P.map(q=>`<button class="pick ${A.player===q.id?'on':''}" data-a-player="${q.id}"><span class="av">${q.a}</span><div class="t"><b>${q.n}</b><small>${q.goal} · ${q.st[1]}</small></div>${q.id==='om'?'<span class="pill c">مالوش برنامج</span>':''}</button>`).join('')}`}
+ else if(A.step===1&&A.kind==='prog'){body=`<div class="ko" style="margin-bottom:10px"><span class="dot">KO</span><div>${p.n} هدفه <b>${p.goal}</b> وبيتمرن <b>4 أيام</b> في جيم كامل. أنسب برنامج: <b>${TPLS[p.goal==='تنشيف'?1:0][0]}</b>.</div></div>
+  ${TPLS.map((t,i)=>`<button class="pick ${A.pick===i?'on':''}" data-a-pick="${i}"><span class="av">${ic('dumb','i s')}</span><div class="t"><b>${t[0]}</b><small>${t[1]} · ${t[3]} لاعبين عليه</small></div>${i===(p.goal==='تنشيف'?1:0)?'<span class="pill l">KO بيرشحه</span>':''}</button>`).join('')}
+  <button class="pick" data-a-new><span class="av" style="color:var(--lime)">${ic('spark','i s')}</span><div class="t"><b>KO يعمله مخصوص لـ${p.n.split(' ')[0]}</b><small>من هدفه وأيامه ومكان تمرينه</small></div></button>`}
+ else if(A.step===1){body=`<div class="ko" style="margin-bottom:10px"><span class="dot">KO</span><div>${p.n}: <span class="n">${p.kg}</span> كجم، هدفه <b>${p.goal}</b>. احتياجه التقريبي <b class="n">${p.goal==='تنشيف'?'1,950':'2,650'}</b> سعر.</div></div>
+  ${PLANS.map((x,i)=>`<button class="pick ${A.pick===i?'on':''}" data-a-pick="${i}">${ring(.7,'#b6e94f',40)}<div class="t"><b>${x.n}</b><small>ب ${x.p} · ك ${x.c} · د ${x.f} · مناسب لـ${x.fit}</small></div>${(p.goal==='تنشيف'?1:0)===i?'<span class="pill l">KO بيرشحه</span>':''}</button>`).join('')}`}
+ else if(A.step===2&&A.kind==='prog'){body=`
+  <div class="fld"><label>يبدأ إمتى</label><div class="seg2">${['النهارده','بكرة','السبت الجاي'].map((x,i)=>`<button class="${A.start===i?'on':''}" data-a-start="${i}">${x}</button>`).join('')}</div></div>
+  <div class="fld"><label>أيام التمرين <span class="${nd===tplDays?'ok':'bad'}">${nd} من ${tplDays}</span></label><div class="dayp">${DAYN.map((d,i)=>`<button class="${A.days[i]?'on':''}" data-a-day="${i}">${d}</button>`).join('')}</div><small class="muted">KO اختارها من فورم الانضمام: بيقدر يتمرن السبت والحد والتلات والأربع.</small></div>
+  <div class="fld"><label>الأوزان في الأول</label><button class="pick ${A.weights==='auto'?'on':''}" data-a-w="auto"><span class="av">${ic('spark','i s')}</span><div class="t"><b>KO يحسبها من آخر أرقامه</b><small>سكوات 100 · بنش 80 · رومانيان 80</small></div></button><button class="pick ${A.weights==='empty'?'on':''}" data-a-w="empty"><span class="av">${ic('edit','i s')}</span><div class="t"><b>سيبها فاضية</b><small>اللاعب يكتب أوزانه أول أسبوع</small></div></button></div>
+  <div class="fld"><label>المدة</label><div class="stepper"><button data-a-wk="-1">−</button><b class="n">${A.weeks}</b><span>أسبوع</span><button data-a-wk="1">+</button></div></div>
+  <div class="fld"><label>رسالة للاعب (اختياري)</label><div class="inp" style="font-size:13px;font-weight:400;color:var(--dim)">ركز على الفورم في السكوات الأسبوع ده…</div></div>`}
+ else if(A.step===2){const pr=Math.round(A.kcal*0.27/4),cb=Math.round(A.kcal*0.45/4),ft=Math.round(A.kcal*0.28/9);body=`
+  <div class="fld"><label>السعرات في يوم التمرين</label><div class="stepper big"><button data-a-k="-50">−</button><b class="n">${A.kcal.toLocaleString('en')}</b><span>سعر</span><button data-a-k="50">+</button></div><small class="muted">KO حسبها من وزنه ${p.kg} كجم وهدفه ونشاطه.</small></div>
+  <div class="fld"><label>الماكروز (بتتحسب لوحدها)</label>${[['بروتين',pr,'#b6e94f',`${(pr/parseFloat(p.kg)).toFixed(1)}ج لكل كيلو`],['كارب',cb,'#9db2ff',''],['دهون',ft,'#e2c069','']].map(m=>`<div class="mbar"><div class="ml"><span>${m[0]} <small class="dim">${m[3]}</small></span><b class="n">${m[1]}g</b></div><div class="track"><i style="width:${Math.min(100,m[1]/(m[0]==='كارب'?350:m[0]==='بروتين'?220:100)*100)}%;background:${m[2]}"></i></div></div>`).join('')}</div>
+  <div class="fld"><label class="row" style="padding:0;min-height:0"><span style="flex:1">يوم الراحة أقل <span class="n">300</span> سعر (الكارب بيقل)</span><span class="toggle ${A.restLess?'':'off'}" data-a-rest></span></label></div>
+  <div class="fld"><label>الأكلات</label><div class="pick on" style="cursor:default"><span class="av">${ic('plate','i s')}</span><div class="t"><b>الكميات هتتظبط لوحدها على ${A.kcal.toLocaleString('en')}</b><small>نفس أكلات «${plan.n}» بكميات جديدة · يقدر يبدل أي أكلة بزيها</small></div></div></div>`}
+ else{const days=A.days.map((on,i)=>on);let k=0;const wk=DAYN.map((d,i)=>{const on=days[i];const lbl=on?PROG[k%PROG.length].t:'راحة';if(on)k++;return [d,lbl,on]});
+  body=A.kind==='prog'?`<div class="sumhead"><span class="av lg">${p.a}</span><div><b>${tpl[0]} ← ${p.n}</b><small class="muted">${['من النهارده','من بكرة','من السبت الجاي'][A.start]} · ${A.weeks} أسبوع · ${nd} أيام</small></div></div>
+  <div class="weekp">${wk.map(w=>`<div class="${w[2]?'on':''}"><small>${w[0]}</small><b>${w[1]}</b></div>`).join('')}</div>
+  <div class="card glass" style="padding:12px;margin-top:10px"><div class="ch" style="margin-bottom:4px"><b>أول يوم: رجل</b><span class="muted" style="font-size:11.5px;margin-inline-start:auto">${A.weights==='auto'?'أوزان KO':'من غير أوزان'}</span></div>
+   ${PROG[0].ex.slice(0,4).map(e=>`<div class="ex"><span class="gif" style="width:32px;height:32px"></span><div class="t"><b>${e.n}</b><small>${e.sets}×${e.reps}</small></div><span class="n muted">${A.weights==='auto'?e.kg+' كجم':'—'}</span></div>`).join('')}</div>
+  <div class="note2">${ic('bell','i s')} ${p.n.split(' ')[0]} هيوصله إشعار، والبرنامج هيظهرله في الرئيسية ${['النهارده','بكرة','السبت'][A.start]}.</div>`
+  :`<div class="sumhead"><span class="av lg">${p.a}</span><div><b>${plan.n} ← ${p.n}</b><small class="muted">${A.kcal.toLocaleString('en')} سعر يوم التمرين · ${(A.kcal-(A.restLess?300:0)).toLocaleString('en')} يوم الراحة</small></div></div>
+  <div class="g2" style="gap:8px;margin-top:10px">${[['يوم تمرين',A.kcal],['يوم راحة',A.kcal-(A.restLess?300:0)]].map(d=>`<div class="card glass" style="padding:12px;display:flex;gap:10px;align-items:center">${ring(.8,'#b6e94f',54,'')}<div><b class="n">${d[1].toLocaleString('en')}</b><small class="muted" style="display:block">${d[0]}</small></div></div>`).join('')}</div>
+  <div class="card glass" style="padding:12px;margin-top:10px">${PLAN.train.map(m=>`<div class="ex"><span class="av">${ic('plate','i s')}</span><div class="t"><b>${m.n} · ${m.time}</b><small>${m.f.map(f=>f.n).join(' + ')}</small></div><span class="n muted">${Math.round(m.f.reduce((a,f)=>a+f.k,0)*A.kcal/2600)}</span></div>`).join('')}</div>
+  <div class="note2">${ic('bell','i s')} ${p.n.split(' ')[0]} هيلاقي النظام في صفحة الأكل، ويسجل وجباته عليه من بكرة.</div>`}
+ const canNext=A.step===0?!!A.player:A.step===2&&A.kind==='prog'?nd===tplDays:true;
+ const vis=steps.slice(p&&A.skipPlayer?1:0);
+ asgBg.innerHTML=`<div class="asg"><div class="asg-h"><div><b>${A.kind==='prog'?'ادّي برنامج':'ادّي نظام غذائي'}${p?` لـ${p.n}`:''}</b><div class="stp">${steps.map((s,i)=>`<span class="${i===A.step?'on':i<A.step?'done':''}">${i<A.step?ic('check','i s'):`<i class="n">${i+1}</i>`}${s}</span>`).join('')}</div></div><button class="icb" data-a-close aria-label="اقفل">${ic('x','i s')}</button></div>
+ <div class="asg-b">${body}</div>
+ <div class="asg-f">${A.step>(A.skipPlayer?1:0)?`<button class="btn gl" data-a-back>رجوع</button>`:''}<span style="flex:1"></span>${A.step<3?`<button class="btn go" data-a-next ${canNext?'':'disabled style="opacity:.4"'}>التالي</button>`:`<button class="btn go" data-a-send>${ic('send','i s')}ابعته لـ${p.n.split(' ')[0]}</button>`}</div></div>`;}
+asgBg.addEventListener('click',e=>{const el=e.target.closest('[data-a-player],[data-a-pick],[data-a-new],[data-a-start],[data-a-day],[data-a-w],[data-a-wk],[data-a-k],[data-a-rest],[data-a-next],[data-a-back],[data-a-send],[data-a-close]');
+ if(!el){if(e.target===asgBg)closeAsg();return}const d=el.dataset;
+ if(d.aClose!==undefined)return closeAsg();
+ if(d.aPlayer){A.player=d.aPlayer}
+ if(d.aPick!==undefined)A.pick=+d.aPick;
+ if(d.aNew!==undefined){A.pick=0;toast('KO عمل برنامج مخصوص من هدفه وأيامه');A.step=2}
+ if(d.aStart!==undefined)A.start=+d.aStart;
+ if(d.aDay!==undefined)A.days[+d.aDay]=A.days[+d.aDay]?0:1;
+ if(d.aW)A.weights=d.aW;
+ if(d.aWk)A.weeks=Math.max(4,Math.min(24,A.weeks+ +d.aWk));
+ if(d.aK)A.kcal=Math.max(1200,Math.min(4500,A.kcal+ +d.aK));
+ if(d.aRest!==undefined)A.restLess=A.restLess?0:1;
+ if(d.aNext!==undefined&&!el.disabled)A.step++;
+ if(d.aBack!==undefined)A.step--;
+ if(d.aSend!==undefined){const p=byId(A.player);const what=A.kind==='prog'?TPLS[A.pick][0]:PLANS[A.pick].n;
+  const ti=TASKS.findIndex(t=>t.p===A.player&&t.k==='program');if(ti>-1&&A.kind==='prog')TASKS.splice(ti,1);
+  if(A.kind==='prog'&&p.st[1]==='محتاج برنامج')p.st=['l','ماشي تمام'];
+  toast(`اتبعت «${what}» لـ${p.n}`);closeAsg();render();return}
+ renderAsg();});
+
+document.addEventListener('click',e=>{const el=e.target.closest('[data-asg]');if(!el)return;e.stopPropagation();const [k,p]=el.dataset.asg.split(':');openAsg(k,p||null);if(p)A.skipPlayer=1,A.step=1;},true);
+
+function mobExtras(){let h='';const fabOn=['home','tasks','players','programs','plans'].includes(S.screen)&&!S.taskOpen;
+ if(fabOn)h+=`<button class="fab" data-fab aria-label="إضافة">${ic(S.fab?'x':'plus')}</button>`;
+ if(S.fab)h+=`<div class="dimmer open" data-fabclose></div><div class="fabmenu">${[['join','ضيف لاعب','data-go="join"'],['dumb','ادّي برنامج للاعب','data-asg="prog"'],['plate','ادّي نظام غذائي','data-asg="plan"'],['edit','اعمل برنامج جديد','data-go="progEdit"'],['inbox','ابعت رسالة','data-go="inbox"']].map(a=>`<button ${a[2]}>${ic(a[0],'i s')}${a[1]}</button>`).join('')}</div>`;
+ if(S.mpick){const ex=S.mpick==='ex';h+=`<div class="dimmer open" data-mpclose></div><div class="sheet open msheet"><div class="grab"></div><div class="ch"><b>${ex?'ضيف تمرين ليوم '+(S.day+1):'ضيف أكلة لـ'+PLAN[S.dtype][S.meal].n}</b><button class="icb" data-mpclose style="margin-inline-start:auto">${ic('x','i s')}</button></div>
+  <div class="msearch">${ic('search','i s')}${ex?'دور على تمرين…':'دور على أكلة…'}</div>
+  <div class="qr" style="margin:8px 0">${(ex?['رجل','صدر','ضهر','كتف','دراع','بطن']:['بروتين','كارب','دهون','أكلاتي']).map((m,i)=>`<span class="${i===0?'onq':''}">${m}</span>`).join('')}</div>
+  ${ex?EX.filter(x=>x.m==='رجل').map(x=>`<button class="ex" data-addex="${x.n}" style="width:100%;text-align:start"><span class="gif"></span><div class="t"><b>${x.n}</b><small>${x.eq}</small></div><span class="addb">${ic('plus','i s')}</span></button>`).join('')
+   :FOODS.map((fd,i)=>`<button class="ex" data-addfood="${i}" style="width:100%;text-align:start"><span class="gif" style="width:36px;height:36px"></span><div class="t"><b>${fd.n}</b><small><span class="n">${fd.q}</span> · ${fd.k} سعر · ب ${fd.p}</small></div><span class="addb">${ic('plus','i s')}</span></button>`).join('')}</div>`;}
+ return h;}
+document.addEventListener('click',e=>{const el=e.target.closest('[data-fab],[data-fabclose],[data-mpick],[data-mpclose],[data-tback],[data-cback],[data-meal]');if(!el)return;const d=el.dataset;
+ if(d.meal!==undefined){if(S.mode==='mob'){e.stopPropagation();S.meal=+d.meal;S.mpick='food';render();}return}
+ e.stopPropagation();
+ if(d.fab!==undefined){S.fab=!S.fab;render();return}
+ if(d.fabclose!==undefined){S.fab=false;render();return}
+ if(d.mpick){S.mpick=d.mpick;render();return}
+ if(d.mpclose!==undefined){S.mpick=null;render();return}
+ if(d.tback!==undefined){S.taskOpen=false;render();return}
+ if(d.cback!==undefined){S.chatOpen=false;render();return}
+},true);
+document.addEventListener('click',e=>{if(e.target.closest('.fabmenu [data-go],.fabmenu [data-asg]'))setTimeout(()=>{S.fab=false;if(A)renderAsg();},0);},true);
+document.addEventListener('click',e=>{if(e.target.closest('[data-addex],[data-addfood]')&&S.mpick)setTimeout(()=>{S.mpick=null;render();},0);},false);
+
+const hue=t=>{let h=0;for(const c of t)h=(h*31+c.charCodeAt(0))%360;return (h+60)%360};
+function polish(){document.querySelectorAll('.av:not([data-h])').forEach(a=>{const t=a.textContent.trim();if(t.length===1&&/[\u0600-\u06FF]/.test(t)){a.dataset.h=1;a.style.setProperty('--h',hue(t))}});
+ document.querySelectorAll('[data-count]').forEach(el=>{const to=+el.dataset.count;let v=0;const st=performance.now();const tick=n=>{const k=Math.min(1,(n-st)/700);el.textContent=Math.round(to*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(tick)};requestAnimationFrame(tick)});}
+const _render=render;render=function(){_render();polish();};
+document.addEventListener('click',e=>{const el=e.target.closest('.chip,[data-exsave],[data-foodsave],[data-forp],[data-swapx],[data-gomap]');if(!el)return;
+ if(el.classList.contains('chip')){const g=el.parentElement;if(g.hasAttribute('data-one'))g.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));el.classList.toggle('on');return}
+ e.stopPropagation();const d=el.dataset;
+ if(d.exsave!==undefined){const n=(document.getElementById('exn')||{}).value||'تمرين جديد';EX.push({n,en:(document.getElementById('exe')||{}).value||'',m:'رجل',tg:'الفخد الأمامي',eq:'دمبل',mine:1});go('exercises',{mus:'رجل'});toast('اتحفظ «'+n+'» في مكتبتك');return}
+ if(d.foodsave!==undefined){const n=(document.getElementById('fdn')||{}).value||'أكلة';const v=k=>+document.querySelector('[data-mac="'+k+'"]').value;FOODS.push({n,q:'صباع',k:Math.round(v('k')*.6),p:Math.round(v('p')*.6),c:Math.round(v('c')*.6),f:Math.round(v('f')*.6)});go('foods');toast('اتحفظت «'+n+'» في مكتبتك');return}
+ if(d.forp){S.day=1;go('progEdit',{forPlayer:d.forp});return}
+ if(d.gomap!==undefined){if(S.mode!=='desk')document.getElementById('m-desk').click();go('map');return}
+ if(d.swapx!==undefined){const ex=PROG[S.day].ex[+d.swapx];const to=SWAPTO[ex.n];ex.alt=null;ex.n=to;toast('اتبدل لـ«'+to+'»');render();return}
+},true);
+document.addEventListener('input',e=>{if(!document.querySelector('.macin,#exn'))return;foodLive();
+ const n=document.getElementById('exn'),pv=document.getElementById('pv-n');if(n&&pv)pv.textContent=n.value;const en=document.getElementById('exe'),pe=document.getElementById('pv-e');if(en&&pe)pe.textContent=en.value;
+ const fn=document.getElementById('fdn'),pf=document.getElementById('pv-fd');if(fn&&pf)pf.textContent=fn.value;});
+function foodLive(){const box=document.getElementById('fd-chk');if(!box)return;const v=k=>+document.querySelector('[data-mac="'+k+'"]').value||0;const k=v('k'),p=v('p'),c=v('c'),f=v('f');const calc=Math.round(p*4+c*4+f*9);const ok=Math.abs(calc-k)<=k*.08;
+ box.innerHTML=ok?ic('check','i s')+'السعرات مظبوطة مع الماكروز (<span class="n">'+calc+'</span> محسوبة)':ic('alert','i s')+'الماكروز بتطلع <span class="n">'+calc+'</span> سعر، وانت كاتب <span class="n">'+k+'</span>. راجع الأرقام.';box.className='note2 '+(ok?'okn':'badn');
+ const tot=p*4+c*4+f*9||1;document.getElementById('fd-bar').innerHTML='<i style="flex:'+p*4/tot+';background:var(--lime)"></i><i style="flex:'+c*4/tot+';background:var(--calm)"></i><i style="flex:'+f*9/tot+';background:var(--warn)"></i>';
+ const g=60/100;document.getElementById('fd-sum').innerHTML='<span><b class="n">'+Math.round(k*g)+'</b> سعر</span><span>ب <b class="n">'+Math.round(p*g)+'</b></span><span>ك <b class="n">'+Math.round(c*g)+'</b></span><span>د <b class="n">'+Math.round(f*g)+'</b></span>';
+ document.querySelectorAll('[data-unit]').forEach(u=>{u.parentElement.querySelector('[data-ukcal]').textContent=Math.round(k*(+u.value||0)/100)+' سعر'});}
+const _r2=render;render=function(){_r2();foodLive();};
+render();
+</script>
+</body>
+</html>

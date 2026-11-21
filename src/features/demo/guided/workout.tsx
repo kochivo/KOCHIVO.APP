@@ -57,7 +57,7 @@ export function Workout({ state, dispatch, act, now }: PaneProps) {
     },
     rest: { remaining },
   };
-  return <div className="demo-workout grid gap-stack"><header className="flex items-center justify-between gap-inline"><div><p className="text-xs text-muted">{t('day', { n: 2 })}</p><h3 className="text-sm font-semibold">{t('days').split('|')[0]}</h3></div><span className="rounded-full border border-lime/30 p-stack text-micro text-lime">{t('offline')}</span></header>
+  return <div className="demo-workout grid gap-stack"><header className="flex items-center justify-between gap-inline"><div><p className="text-xs text-muted">{t('day', { n: 1 })}</p><h3 className="text-sm font-semibold">{t('days').split('|')[0]}</h3></div><span className="rounded-full border border-lime/30 p-stack text-micro text-lime">{t('offline')}</span></header>
     <GlassCard className="grid gap-stack p-stack"><h4 className="text-sm font-semibold">{ex[0]}</h4><div aria-hidden className="demo-exercise-preview recessed grid place-items-center rounded-control"><KoTraining className="size-6 text-muted" /></div>
       {rows.current && <ExerciseHeader exercise={rows.current.exercise} last={null} prescriptionOnly />}
       <p className="text-xs text-muted">{t('previous')}</p>

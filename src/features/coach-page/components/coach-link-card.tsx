@@ -1,13 +1,13 @@
 import Link from 'next/link';
 import { getT } from '@/core/i18n/server';
 import { GlassCard } from '@/ui';
-import { loadCaptainSlug } from '../data/captain-slug';
+import { ensureCaptainSlug } from '../data/captain-slug';
 import { messages } from '../messages';
 import { CopyLinkButton } from './copy-link-button-entry';
 import { buttonClass } from '@/ui/button';
 
 export async function CoachLinkCard() {
-  const [t, result] = await Promise.all([getT(messages), loadCaptainSlug()]);
+  const [t, result] = await Promise.all([getT(messages), ensureCaptainSlug()]);
   return <GlassCard className="min-w-0 space-y-card-gap p-card">
     <div className="min-w-0 space-y-inline">
       <h2 className="text-lg font-bold">{t('pageLink')}</h2>

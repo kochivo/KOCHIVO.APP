@@ -29,10 +29,11 @@ export async function saveTier(input: unknown): Promise<ActionResult<Tables<'cap
   if (!parsed.success) return { error: (await getT(messages))('packageInvalid') };
   try {
     const { client, captainId } = await captainClient();
-    const { id, ...fields } = parsed.data;
+    const { id, newId, ...fields } = parsed.data;
     const table = client.from('captain_package_tiers');
+    // newId lets the caller attach a first duration to the tier it is creating.
     const query = id ? table.update(fields).eq('id', id).eq('captain_id', captainId)
-      : table.insert({ ...fields, id: uuidv7(), captain_id: captainId });
+      : table.insert({ ...fields, id: newId ?? uuidv7(), captain_id: captainId });
     const result = await query.select().single();
     if (result.error) throw result.error;
     refresh(); return { data: result.data };

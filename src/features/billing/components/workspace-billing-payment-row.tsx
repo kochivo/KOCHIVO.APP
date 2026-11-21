@@ -16,7 +16,7 @@ export function WorkspaceBillingPaymentRow({ row, onOpen }: { row: PaymentRow; o
   const t = useT(workspaceMessages), legacy = useT(messages), finance = useT(financeMessages), methods = useT(methodMessages);
   const paymentT = useT(paymentMessages), locale = useLocale(), timezone = useTimezone();
   const catalog = useT(catalogMessages);
-  const { player, chosen, total, paid, method, hasPackage, fullyPaid, action, ending } = row;
+  const { player, chosen, total, paid, method, hasPackage, fullyPaid, action, ending, trial } = row;
   const payment = player.lastPayment;
   const number = (value: number) => formatNumber(value, locale);
   const dateOptions = { day: 'numeric', month: 'long' } as const;
@@ -33,7 +33,8 @@ export function WorkspaceBillingPaymentRow({ row, onOpen }: { row: PaymentRow; o
         : !hasPackage && player.sessionsLeft !== 0 ? [t('noPackage'), 'tone-neutral']
           : player.awaitingPlansAt ? [finance('waitingForPlans'), 'tone-info']
             : player.sessionsLeft === 0 ? [paymentT('sessionsEnded'), 'tone-warn']
-              : ending ? [t('soon'), 'tone-warn']
+              : trial ? [t('trial'), 'tone-info']
+                : ending ? [t('soon'), 'tone-warn']
                 : fullyPaid ? [t('fullyPaid'), 'tone-lime']
                   : total === null ? [t('confirmed'), 'tone-neutral']
                     : [t(paid > 0 ? 'partial' : 'unpaid'), 'tone-warn'];
@@ -49,7 +50,7 @@ export function WorkspaceBillingPaymentRow({ row, onOpen }: { row: PaymentRow; o
       </div>
     </td>
     <td className={cell}>
-      {total === null ? <span className="text-faint">{t('dash')}</span> : <>
+      {trial ? <span className="text-faint">{t('trial')}</span> : total === null ? <span className="text-faint">{t('dash')}</span> : <>
         <p className="font-display font-bold tabular-nums">{number(paid)} <span className="text-xs text-faint">{t('paidOf', { total: number(total) })}</span></p>
         <ProgressBar thin value={total === 0 ? 1 : paid} max={total || 1}
           aria-label={t('paidProgress', { paid: number(paid), total: number(total) })}

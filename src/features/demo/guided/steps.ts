@@ -1,4 +1,4 @@
-export type Page = 'home' | 'tasks' | 'inbox' | 'players' | 'player' | 'programs' | 'food' | 'assess' | 'money' | 'add';
+export type Page = 'home' | 'tasks' | 'inbox' | 'players' | 'player' | 'programs' | 'food' | 'assess' | 'money' | 'add' | 'join';
 export type PhoneTab = 'workout' | 'food' | 'coach' | 'me';
 export const steps: readonly { page: Page; target?: string; event?: string; view?: 'captain' | 'player' }[] = [
   { page: 'home' }, { page: 'home', target: 'kpis' },

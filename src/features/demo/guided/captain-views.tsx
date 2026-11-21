@@ -6,6 +6,7 @@ import { Meals } from './meals';
 import { Assessment } from './assessment';
 import { Money } from './money';
 import { Invite } from './invite';
+import { JoinRequests } from './join-requests';
 import { Tasks } from './tasks';
 import type { PaneProps } from './types';
 
@@ -19,6 +20,7 @@ export function CaptainViews(props: PaneProps) {
     case 'food': return <Meals {...props} />;
     case 'assess': return <Assessment {...props} />;
     case 'money': return <Money {...props} />;
+    case 'join': return <JoinRequests {...props} />;
     case 'add': return <Invite {...props} />;
     default: return null;
   }

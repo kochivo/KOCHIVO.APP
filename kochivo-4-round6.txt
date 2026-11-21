@@ -1,0 +1,305 @@
+From 63fb255ffdcbb4f37d79134ca40da64c2e99db60 Mon Sep 17 00:00:00 2001
+From: Kochivo fixes <fixes@local>
+Date: Sat, 21 Nov 2026 14:30:14 +0200
+Subject: [PATCH] round 6: mobile friction fixes (headers, FAB clearance, chip
+ fade, light inputs, logo, tabs, tasks card, join name)
+
+---
+ src/app/globals.css                                |  7 +++++++
+ .../captain-workspace/player-file/file-header.tsx  |  2 +-
+ .../player-file/phone-file-header.tsx              |  2 +-
+ .../captain-workspace/queue/phone-task-card.tsx    |  3 ++-
+ .../coach-page/components/public-coach-layout.tsx  |  4 +++-
+ .../coach-page/components/workspace-join-view.tsx  |  2 +-
+ .../inbox/components/conversation-screen.tsx       |  2 +-
+ .../components/captain-notifications-entry.tsx     |  2 +-
+ .../components/notification-dropdown.tsx           |  2 +-
+ src/features/notifications/messages.ts             |  4 ++--
+ .../progress/components/chart/calm-chart.tsx       |  2 +-
+ .../components/workspace-leaderboard.tsx           |  2 +-
+ .../roster/components/captain-workspace-frame.tsx  |  3 ++-
+ src/features/roster/v6/roster.tsx                  |  2 +-
+ .../components/workspace-programs-view.tsx         | 10 +++++++++-
+ src/ui/page-bar-title.tsx                          |  9 ++++++---
+ .../migrations/0163_join_request_name_fallback.sql | 14 ++++++++++++++
+ 17 files changed, 54 insertions(+), 18 deletions(-)
+ create mode 100644 supabase/migrations/0163_join_request_name_fallback.sql
+
+diff --git a/src/app/globals.css b/src/app/globals.css
+index 06fd3f6..595b61b 100644
+--- a/src/app/globals.css
++++ b/src/app/globals.css
+@@ -322,6 +322,10 @@ html[data-theme='light'] {
+   --glass-strong-highlight: rgb(255 255 255 / 0.8);
+   --glass-shadow: inset 0 1px 0 var(--glass-highlight);
+   --glass-strong-shadow: inset 0 1px 0 var(--glass-strong-highlight);
++  /* Dark-theme recessed values are invisible on light surfaces (white border, near-white fill). */
++  --recessed-fill: color-mix(in srgb, var(--color-bg-deep) 60%, transparent);
++  --recessed-border: var(--color-line);
++  --recessed-shadow: inset 0 1px 3px rgb(18 22 26 / 0.06);
+   --shadow-lime-glow: 0 0 0 1px color-mix(in srgb, var(--color-lime) 25%, transparent), 0 4px 14px color-mix(in srgb, var(--color-lime) 16%, transparent);
+   --shadow-lime-glow-hover: 0 0 0 1px color-mix(in srgb, var(--color-lime) 35%, transparent), 0 6px 18px color-mix(in srgb, var(--color-lime) 22%, transparent);
+   --glass-hover-fill: var(--glass-tint-raised);
+@@ -499,3 +503,6 @@ body:not(:has(.marketing-wrap)) .text-muted { font-weight: 500; }
+   inset-inline: min(0px, calc((100% - 48px) / 2));
+   inset-block: min(0px, calc((100% - 48px) / 2));
+ }
++/* Horizontally scrolling chip rows: fade the inline-end edge so a clipped chip reads as scrollable, not cut off. */
++.chip-scroll { padding-inline-end: 1.25rem; -webkit-mask-image: linear-gradient(to left, transparent, #000 1.5rem); mask-image: linear-gradient(to left, transparent, #000 1.5rem); }
++[dir='rtl'] .chip-scroll { -webkit-mask-image: linear-gradient(to right, transparent, #000 1.5rem); mask-image: linear-gradient(to right, transparent, #000 1.5rem); }
+diff --git a/src/features/captain-workspace/player-file/file-header.tsx b/src/features/captain-workspace/player-file/file-header.tsx
+index fbc6834..26493b2 100644
+--- a/src/features/captain-workspace/player-file/file-header.tsx
++++ b/src/features/captain-workspace/player-file/file-header.tsx
+@@ -38,7 +38,7 @@ export function FileHeader({ playerId, profile, summary, tab, locale, today, unr
+   const planned = summary.file.facts.trainingDays?.value.length ?? profile.program?.days ?? 0;
+   const phone = captainWorkspaceEnabled();
+   return <>
+-    <PageBarTitle title={profile.name} subtitle={subtitle} />
++    <PageBarTitle title={profile.name} subtitle={subtitle} phoneHide />
+     <PageBarActions>
+       <Link href="/captain/players" aria-label={vt('back')} className={`${clickableClass} glass press grid min-h-12 min-w-12 cursor-pointer place-items-center rounded-full border border-line focus-visible:ring-2 focus-visible:ring-lime${phone ? ' max-md:hidden' : ''}`}><Back aria-hidden className="size-5" /></Link>
+       <Link href={`${base}/preview`} prefetch={false} aria-label={t('preview')} className={`${clickableClass} glass press ${phone ? 'hidden md:inline-flex' : 'inline-flex min-w-12 justify-center max-[760px]:px-0'} min-h-12 cursor-pointer items-center gap-inline rounded-full border border-line px-page-x text-sm focus-visible:ring-2 focus-visible:ring-lime`}><Eye aria-hidden className="size-4" /><span className={phone ? undefined : 'max-[760px]:sr-only'}>{t('preview')}</span></Link>
+diff --git a/src/features/captain-workspace/player-file/phone-file-header.tsx b/src/features/captain-workspace/player-file/phone-file-header.tsx
+index b6c177f..107a818 100644
+--- a/src/features/captain-workspace/player-file/phone-file-header.tsx
++++ b/src/features/captain-workspace/player-file/phone-file-header.tsx
+@@ -45,7 +45,7 @@ export function PhoneFileHeader({ base, playerId, today, name, goal, packageName
+         <KoCaptainChat aria-hidden className="size-5" />
+       </Link>
+     </header>
+-    <nav aria-label={t('tabs')} className="flex max-w-full gap-inline overflow-x-auto">
++    <nav aria-label={t('tabs')} className="chip-scroll flex max-w-full gap-inline overflow-x-auto">
+       {routes.map(([key, href, label]) => <Link key={key} href={href} prefetch={false} aria-current={tab === key ? 'page' : undefined}
+         className={chipClass(tab === key)}>
+         {label}
+diff --git a/src/features/captain-workspace/queue/phone-task-card.tsx b/src/features/captain-workspace/queue/phone-task-card.tsx
+index b0b4a90..5453ab7 100644
+--- a/src/features/captain-workspace/queue/phone-task-card.tsx
++++ b/src/features/captain-workspace/queue/phone-task-card.tsx
+@@ -26,7 +26,8 @@ export function PhoneTaskCard({ task, at, triage, pending, canMove, onNext, onAc
+   const item = task.item, now = new Date(at);
+   const time = task.kind === 'renew' ? formatDateAr(task.at, { day: 'numeric', month: 'long' }, locale) : ageLabel(task.at, now, locale);
+   const description = item?.kind === 'checkin' ? item.notes : item?.kind === 'form' ? item.note : taskText(task, copy);
+-  return <article className="glass flex min-h-[calc(100dvh-var(--nav-clearance)-12rem)] min-w-0 flex-col gap-card-gap rounded-card p-card">
++  // Shorter floor than full viewport: a sparse task (header + one line) used to leave a large blank area above the actions.
++  return <article className="glass flex min-h-[calc(55dvh-var(--nav-clearance))] min-w-0 flex-col gap-card-gap rounded-card p-card">
+     <header className="flex min-w-0 items-center gap-stack">
+       <Link href={`/${locale}/captain/players/${task.playerId}`} aria-label={`${t('profile')} · ${task.name}`}
+         className={`${clickableClass} glass grid size-13 shrink-0 place-items-center overflow-hidden rounded-full border-2 border-lime text-title font-bold`}>
+diff --git a/src/features/coach-page/components/public-coach-layout.tsx b/src/features/coach-page/components/public-coach-layout.tsx
+index ab04f85..38a4878 100644
+--- a/src/features/coach-page/components/public-coach-layout.tsx
++++ b/src/features/coach-page/components/public-coach-layout.tsx
+@@ -37,7 +37,9 @@ export function PublicCoachLayout({ coach, slug, requested, t, pricing, sections
+       <div className="public-wrap flex min-h-20 items-center justify-between gap-section">
+         <Link href="/" aria-label={t('brand')} className="inline-flex min-h-12 items-center">
+           {/* eslint-disable-next-line @next/next/no-img-element */}
+-          <img src="/brand/logo-primary.png" alt={t('brand')} width={85} height={24} />
++          <img src="/brand/logo-primary.png" alt={t('brand')} width={85} height={24} className="theme-dark-only" />
++          {/* eslint-disable-next-line @next/next/no-img-element */}
++          <img src="/brand/logo-primary-light.png" alt={t('brand')} width={85} height={24} className="theme-light-only" />
+         </Link>
+         <Link href="/login" className="inline-flex min-h-12 items-center text-sm text-muted hover:text-ink">{t('playerLogin')}</Link>
+       </div>
+diff --git a/src/features/coach-page/components/workspace-join-view.tsx b/src/features/coach-page/components/workspace-join-view.tsx
+index 081764b..e398d9d 100644
+--- a/src/features/coach-page/components/workspace-join-view.tsx
++++ b/src/features/coach-page/components/workspace-join-view.tsx
+@@ -29,7 +29,7 @@ export function WorkspaceJoinView({ initialRequests, initialLink, retryLinkActio
+   const link = initialLink.error ? recoveredLink ?? initialLink : initialLink;
+   const url = !link.error && link.slug ? `https://kochivo.site/c/${link.slug}` : null;
+   return <>
+-    <PageBarTitle title={t('pending')} />
++    <PageBarTitle title={t('pending')} phoneHide />
+     {phone && <header className="mb-card-gap flex min-h-12 items-center gap-stack md:hidden">
+       <Link href="/captain" aria-label={phoneT('back')} className={buttonClass({ variant: 'secondary', block: false, className: 'grid size-12 shrink-0 place-items-center px-0' })}>
+         <ChevronRight aria-hidden className="size-5 ltr:rotate-180" />
+diff --git a/src/features/inbox/components/conversation-screen.tsx b/src/features/inbox/components/conversation-screen.tsx
+index bb23f52..9d6344e 100644
+--- a/src/features/inbox/components/conversation-screen.tsx
++++ b/src/features/inbox/components/conversation-screen.tsx
+@@ -43,7 +43,7 @@ export function ConversationScreen(props: ConversationProps) {
+     setSelected(id); setChatOpen(true);
+   };
+   return <section>
+-    <PageBarTitle title={t('title')} />
++    <PageBarTitle title={t('title')} phoneHide />
+     <div className={chatOpen ? 'hidden' : 'mb-card-gap md:hidden'}><PhoneConversationList rows={rows} at={at} onSelect={choose} /></div>
+     {(error || resource.error || !captainId) && <ErrorState message={t('error')} retryLabel={t('retry')} onRetry={() => error || !captainId ? router.refresh() : void resource.retry()} />}
+     {!rows ? !error && !resource.error && captainId && <LoadingState variant="list" aria-label={t('loading')} /> :
+diff --git a/src/features/notifications/components/captain-notifications-entry.tsx b/src/features/notifications/components/captain-notifications-entry.tsx
+index d3531a8..8008581 100644
+--- a/src/features/notifications/components/captain-notifications-entry.tsx
++++ b/src/features/notifications/components/captain-notifications-entry.tsx
+@@ -42,7 +42,7 @@ export function CaptainNotificationsEntry() {
+               <div className="min-w-0 flex-1">
+                 {row.type === 'player_pain' && <span className="rounded-full bg-danger-soft px-stack py-inline text-xs text-danger">{t('urgent')}</span>}
+                 <p className="text-row font-semibold">{t(notificationTextKey(row), {
+-                  name: row.payload.display_name || row.payload.name || row.payload.captain_name || '',
++                  name: row.payload.display_name || row.payload.name || row.payload.captain_name || t('someone'),
+                   rank: t(medalKey(row.payload.medal) ?? 'iron'),
+                   n: row.payload.needs_workouts ?? 0, gap: row.payload.gap ?? 0,
+                 }, row.payload.gap ?? 0)}</p>
+diff --git a/src/features/notifications/components/notification-dropdown.tsx b/src/features/notifications/components/notification-dropdown.tsx
+index 8e992f2..59a38bf 100644
+--- a/src/features/notifications/components/notification-dropdown.tsx
++++ b/src/features/notifications/components/notification-dropdown.tsx
+@@ -79,7 +79,7 @@ export function NotificationDropdown({ openerId, notifications: n, onClose }: Pr
+                   {row.type === 'player_pain' && <span className="rounded-full bg-danger-soft px-stack py-inline text-xs text-danger">{t('urgent')}</span>}
+                   {Icon && (v6 ? <span className={`glass grid size-10 shrink-0 place-items-center rounded-xl ${iconColour}`}><Icon aria-hidden className="size-5" /></span>
+                     : <Icon aria-hidden className="size-5 shrink-0" />)}
+-                  {t(notificationTextKey(row), { name: row.payload.display_name || row.payload.name || row.payload.captain_name || '', rank: t(medalKey(row.payload.medal) ?? 'iron'),
++                  {t(notificationTextKey(row), { name: row.payload.display_name || row.payload.name || row.payload.captain_name || t('someone'), rank: t(medalKey(row.payload.medal) ?? 'iron'),
+                     n: row.payload.needs_workouts ?? 0, gap: row.payload.gap ?? 0 }, row.payload.gap ?? 0)}
+                 </p>
+                 <time dateTime={row.created_at} className={v6 ? 'ms-touch mt-inline block text-micro text-faint' : 'mt-inline block text-xs font-normal text-muted'}>{t(time.key, { n: time.n })}</time>
+diff --git a/src/features/notifications/messages.ts b/src/features/notifications/messages.ts
+index b80bd05..8bed388 100644
+--- a/src/features/notifications/messages.ts
++++ b/src/features/notifications/messages.ts
+@@ -43,7 +43,7 @@ export const messages = defineMessages({
+     sessions_used_up: 'حصص اللاعب خلصت. راجع الاشتراك',
+     workout_feedback: 'فيه تقييم تمرين جديد محتاج تشوفه',
+     workout_reminder: 'جاهز لتمرين النهارده؟ {name} مستنيك',
+-    join_requested: '{name} بعت طلب انضمام',
++    join_requested: '{name} بعت طلب انضمام', someone: 'لاعب جديد',
+     title: 'الإشعارات', close: 'اقفل الإشعارات', markAll: 'علّم الكل كمقروء',
+     loading: 'بنحمّل الإشعارات…', empty: 'لسه مفيش إشعارات',
+     error: 'مش قادرين نحمّل الإشعارات، جرّب تاني', titleWithUnread: 'الإشعارات، فيه إشعارات مش مقروءة', unread: 'مش مقروء', retry: 'جرّب تاني',
+@@ -100,7 +100,7 @@ export const messages = defineMessages({
+     sessions_used_up: 'Player sessions used up. Review the subscription',
+     workout_feedback: 'New workout feedback needs your attention',
+     workout_reminder: 'Ready for today’s workout? {name} is waiting',
+-    join_requested: '{name} requested to join',
++    join_requested: '{name} requested to join', someone: 'A new player',
+     title: 'Notifications', close: 'Close notifications', markAll: 'Mark all as read',
+     loading: 'Loading notifications…', empty: 'No notifications yet',
+     error: 'Could not load notifications. Try again', titleWithUnread: 'Notifications, unread alerts', unread: 'Unread', retry: 'Try again',
+diff --git a/src/features/progress/components/chart/calm-chart.tsx b/src/features/progress/components/chart/calm-chart.tsx
+index dae17d0..d7e4c39 100644
+--- a/src/features/progress/components/chart/calm-chart.tsx
++++ b/src/features/progress/components/chart/calm-chart.tsx
+@@ -67,7 +67,7 @@ export function CalmChart({ points, bodyFat = [], title, unit, compact, today, t
+           </span>}
+         </div>}
+       </div>
+-      <Segmented options={options} value={period} aria-label={t('chartPeriod')}
++      <Segmented options={options} value={period} aria-label={t('chartPeriod')} phoneScroll
+         onChange={value => { if (value === 'month' || value === 'quarter' || value === 'all') setPeriod(value); }} />
+     </header>
+     {singlePoint || !latest
+diff --git a/src/features/rank-review/components/workspace-leaderboard.tsx b/src/features/rank-review/components/workspace-leaderboard.tsx
+index bb6dbfe..8d9d11b 100644
+--- a/src/features/rank-review/components/workspace-leaderboard.tsx
++++ b/src/features/rank-review/components/workspace-leaderboard.tsx
+@@ -63,7 +63,7 @@ export function WorkspaceLeaderboard({ locale, board }: ComponentProps<typeof Le
+   function closeNext() { board.setMonth(current); }
+ 
+   return <div className="space-y-card-gap pb-card">
+-    <PageBarTitle title={t('workspaceTitle')} subtitle={subtitle} />
++    <PageBarTitle title={t('workspaceTitle')} subtitle={subtitle} phoneHide />
+     <PageBarActions>
+       <Segmented {...period} className="hidden shrink-0 whitespace-nowrap md:flex" />
+     </PageBarActions>
+diff --git a/src/features/roster/components/captain-workspace-frame.tsx b/src/features/roster/components/captain-workspace-frame.tsx
+index e876fe9..5c250fb 100644
+--- a/src/features/roster/components/captain-workspace-frame.tsx
++++ b/src/features/roster/components/captain-workspace-frame.tsx
+@@ -45,7 +45,8 @@ export async function CaptainWorkspaceFrame({ children, sidebarFooter }: { child
+     </aside>
+     <div className="group/page min-w-0 flex-1">
+       <CaptainTopBar players={data?.players ?? null} bell={<NotificationBell captain />} install={<HeaderInstall />} />
+-      <main className="captain-content min-w-0 max-md:pb-[calc(var(--nav-clearance)+var(--spacing-touch)+var(--spacing-card))]!">{children}</main>
++      {/* Mobile padding also clears the assistant launcher above the bottom nav, so it never covers list actions. */}
++      <main className="captain-content min-w-0 max-md:pb-[calc(var(--nav-clearance)+var(--spacing-touch)+var(--spacing-card)+3.25rem+var(--spacing-card-gap))]!">{children}</main>
+     </div>
+     <KoAccountLink />
+   </div>;
+diff --git a/src/features/roster/v6/roster.tsx b/src/features/roster/v6/roster.tsx
+index b3ccf45..76b6a9a 100644
+--- a/src/features/roster/v6/roster.tsx
++++ b/src/features/roster/v6/roster.tsx
+@@ -54,7 +54,7 @@ export function WorkspaceRoster({ data, today, extras, details }: WorkspaceRoste
+           placeholder={phone('search')} className="min-w-0 flex-1 bg-transparent text-sm outline-none focus-visible:ring-2 focus-visible:ring-lime" />
+       </label>
+     </div>}
+-    {([false, true] as const).map(mobile => <div key={String(mobile)} className={`${mobile ? 'flex md:hidden' : 'hidden md:flex'} w-max max-w-full gap-inline overflow-x-auto max-md:rounded-control md:rounded-full md:border md:border-line md:bg-bg-deep/25 md:p-inline`} aria-label={t('players')}>
++    {([false, true] as const).map(mobile => <div key={String(mobile)} className={`${mobile ? 'flex md:hidden chip-scroll' : 'hidden md:flex'} w-max max-w-full gap-inline overflow-x-auto max-md:rounded-control md:rounded-full md:border md:border-line md:bg-bg-deep/25 md:p-inline`} aria-label={t('players')}>
+       {(mobile ? ['all', 'needsYou', 'good', 'ending', 'newPlayers', 'stopped'] as const : tabs).map(tab => <button key={tab} type="button" aria-pressed={filter === tab} onClick={() => setFilter(tab)}
+         className={`min-h-12 shrink-0 whitespace-nowrap rounded-control px-stack text-micro md:rounded-full ${filter === tab ? 'glass-strong text-ink' : 'text-muted hover:text-ink max-md:bg-ink/5'}`}>
+         {tab === 'ending' ? <><span className="md:hidden">{phone('ending')}</span><span className="hidden md:inline">{t(tab)}</span></> : t(tab)}
+diff --git a/src/features/templates/components/workspace-programs-view.tsx b/src/features/templates/components/workspace-programs-view.tsx
+index a28dc45..b2262ea 100644
+--- a/src/features/templates/components/workspace-programs-view.tsx
++++ b/src/features/templates/components/workspace-programs-view.tsx
+@@ -1,6 +1,6 @@
+ 'use client';
+ 
+-import { useState } from 'react';
++import { useEffect, useRef, useState } from 'react';
+ import { createPortal } from 'react-dom';
+ import Link from 'next/link';
+ import type { ComponentProps } from 'react';
+@@ -35,6 +35,14 @@ export function WorkspaceProgramsView(props: ComponentProps<typeof LibraryView>)
+   const titleTarget = usePageBarTarget('title');
+   const [tab, setTab] = useState<ProgramTab>('mine');
+   const [picking, setPicking] = useState(false), [generatorRequest, setGeneratorRequest] = useState(0);
++  // First load: when the coach has no programs of their own yet, land on the ready templates instead of an empty tab.
++  const autoTabbed = useRef(false);
++  useEffect(() => {
++    if (autoTabbed.current || loading || error || tab !== 'mine') return;
++    if (filterPrograms(templates, 'mine').length === 0 && filterPrograms(templates, 'ready').length > 0) {
++      autoTabbed.current = true; setTab('ready');
++    }
++  }, [templates, loading, error, tab]);
+   const visible = filterPrograms(templates, tab);
+   const disabled = creating || loading || !!error;
+   const label = (item: typeof tabs[number]) => loading || error ? t(item.label)
+diff --git a/src/ui/page-bar-title.tsx b/src/ui/page-bar-title.tsx
+index 1855d1f..65aa7c0 100644
+--- a/src/ui/page-bar-title.tsx
++++ b/src/ui/page-bar-title.tsx
+@@ -3,13 +3,16 @@
+ import { createPortal } from 'react-dom';
+ import { usePageBarTarget } from './page-bar-slot';
+ 
+-export function PageBarTitle({ title, subtitle, phoneTitle, phoneSubtitle }: {
++export function PageBarTitle({ title, subtitle, phoneTitle, phoneSubtitle, phoneHide }: {
+   title: string; subtitle?: string; phoneTitle?: string; phoneSubtitle?: string;
++  /** Hide the portaled bar title on phones, where the view renders its own header. */
++  phoneHide?: boolean;
+ }) {
+   const target = usePageBarTarget('title');
++  const hide = phoneHide ? ' max-md:hidden' : '';
+   return target ? createPortal(<>
+-    <h1 className="text-base font-semibold">{phoneTitle ? <><span className="max-md:hidden">{title}</span><span className="md:hidden">{phoneTitle}</span></> : title}</h1>
+-    {subtitle && <p className={phoneSubtitle ? 'text-xs text-muted max-md:hidden' : 'text-xs text-muted'}>{subtitle}</p>}
++    <h1 className={`text-base font-semibold${hide}`}>{phoneTitle ? <><span className="max-md:hidden">{title}</span><span className="md:hidden">{phoneTitle}</span></> : title}</h1>
++    {subtitle && <p className={phoneSubtitle || phoneHide ? 'text-xs text-muted max-md:hidden' : 'text-xs text-muted'}>{subtitle}</p>}
+     {phoneSubtitle && <p className="text-xs text-muted md:hidden">{phoneSubtitle}</p>}
+   </>, target) : null;
+ }
+diff --git a/supabase/migrations/0163_join_request_name_fallback.sql b/supabase/migrations/0163_join_request_name_fallback.sql
+new file mode 100644
+index 0000000..1d4b946
+--- /dev/null
++++ b/supabase/migrations/0163_join_request_name_fallback.sql
+@@ -0,0 +1,14 @@
++-- Join-request notifications landed with a blank player name whenever the new
++-- player's profile had an empty full_name at request time. Fall back to a
++-- generic label so the coach never sees " requested to join".
++create or replace function security_private.notify_join_request() returns trigger
++language plpgsql security definer set search_path = '' as $$
++begin
++  insert into public.notifications(id,user_id,type,payload)
++    select new.id,new.captain_id,'join_requested',
++      jsonb_build_object('name', coalesce(nullif(btrim(p.full_name), ''), 'لاعب جديد'))
++    from public.profiles p where p.id=new.player_id;
++  return new;
++end;
++$$;
++revoke all on function security_private.notify_join_request() from public, anon, authenticated;
+-- 
+2.34.1
+

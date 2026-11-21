@@ -45,7 +45,8 @@ export async function CaptainWorkspaceFrame({ children, sidebarFooter }: { child
     </aside>
     <div className="group/page min-w-0 flex-1">
       <CaptainTopBar players={data?.players ?? null} bell={<NotificationBell captain />} install={<HeaderInstall />} />
-      <main className="captain-content min-w-0 max-md:pb-[calc(var(--nav-clearance)+var(--spacing-touch)+var(--spacing-card))]!">{children}</main>
+      {/* Mobile padding also clears the assistant launcher above the bottom nav, so it never covers list actions. */}
+      <main className="captain-content min-w-0 max-md:pb-[calc(var(--nav-clearance)+var(--spacing-touch)+var(--spacing-card)+3.25rem+var(--spacing-card-gap))]!">{children}</main>
     </div>
     <KoAccountLink />
   </div>;

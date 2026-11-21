@@ -74,7 +74,7 @@ export function V11NewPlan({ plans }: { plans?: MealLibraryPlan[] }) {
           <input type="search" value={search} onChange={event => setSearch(event.target.value)}
             aria-label={t('findPlan')} placeholder={t('findPlan')} className="min-h-12 min-w-0 flex-1 bg-transparent text-row outline-none placeholder:text-muted" />
         </label>
-        <Segmented phoneScroll aria-label={t('filterPlans')} value={filter} onChange={setFilter} className="max-w-full"
+        <Segmented phoneScroll aria-label={t('filterPlans')} value={filter} onChange={setFilter} className="max-w-full shrink-0"
           options={[filterOption('all'), filterOption('assigned'), filterOption('unassigned')]} />
         <span className="ms-auto hidden text-xs text-muted xl:block">{t('recentlyEdited')}</span>
       </div>

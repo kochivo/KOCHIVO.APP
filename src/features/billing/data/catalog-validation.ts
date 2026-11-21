@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 const id = z.uuid();
 export const tierInput = z.object({
-  id: id.optional(), name: z.string().trim().min(1).max(40), description: z.string().max(80).default(''),
+  id: id.optional(), newId: id.optional(), name: z.string().trim().min(1).max(40), description: z.string().max(80).default(''),
   color: z.enum(['muted', 'lime', 'warn', 'danger']).default('muted'), position: z.number().int().min(0).default(0),
   features: z.array(z.string().max(80)).max(10).default([]), is_featured: z.boolean().default(false),
 }).strict();

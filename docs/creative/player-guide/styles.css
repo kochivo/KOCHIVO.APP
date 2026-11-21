@@ -1,0 +1,30 @@
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: Alexandria, sans-serif; }
+main { min-block-size: 100dvh; display: flex; align-items: center; justify-content: center; gap: clamp(24px, 5vw, 100px); padding: 28px; }
+.viewer { block-size: min(92dvh, 1040px); aspect-ratio: 9 / 16; flex-shrink: 0; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+canvas { display: block; inline-size: 100%; block-size: 100%; }
+aside { inline-size: min(480px, 100%); min-inline-size: 0; }
+.eyebrow { color: var(--lime); font: 600 13px Manrope, Alexandria, sans-serif; }
+h1 { font: 700 38px/1.5 Changa, sans-serif; margin-block: 12px; }
+.muted { color: var(--muted); font-size: 13px; line-height: 1.9; }
+.badge { display: inline-block; border: 1px solid var(--line); border-radius: 24px; padding: 9px 14px; font-size: 11px; color: var(--muted); }
+.controls { display: flex; gap: 10px; flex-wrap: wrap; margin-block: 20px; }
+button, summary { font: 600 12px Alexandria, sans-serif; min-block-size: 48px; border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; color: var(--ink); background: var(--surface); cursor: pointer; }
+button:disabled { opacity: .45; cursor: wait; }
+.primary { background: var(--lime); color: var(--bg); border-color: var(--lime); }
+button:focus-visible, input:focus-visible, summary:focus-visible { outline: 2px solid var(--lime); outline-offset: 4px; }
+input { inline-size: 100%; min-block-size: 48px; accent-color: var(--lime); }
+output { display: block; font: 500 13px Manrope, sans-serif; color: var(--muted); text-align: start; }
+nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-block: 14px 20px; }
+nav button { text-align: start; font-size: 11px; }
+nav button[aria-current="true"] { color: var(--lime); border-color: var(--lime); }
+details { margin-block-end: 16px; }
+summary { background: transparent; color: var(--muted); }
+#status { color: var(--muted); font-size: 12px; line-height: 1.8; }
+@media (max-width: 800px) {
+  main { flex-direction: column; align-items: center; padding: 16px; gap: 24px; }
+  .viewer { block-size: auto; inline-size: min(100%, 430px); }
+  aside { inline-size: min(100%, 480px); }
+  h1 { font-size: 30px; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }

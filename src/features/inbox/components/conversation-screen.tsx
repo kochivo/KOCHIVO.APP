@@ -43,7 +43,7 @@ export function ConversationScreen(props: ConversationProps) {
     setSelected(id); setChatOpen(true);
   };
   return <section>
-    <PageBarTitle title={t('title')} />
+    <PageBarTitle title={t('title')} phoneHide />
     <div className={chatOpen ? 'hidden' : 'mb-card-gap md:hidden'}><PhoneConversationList rows={rows} at={at} onSelect={choose} /></div>
     {(error || resource.error || !captainId) && <ErrorState message={t('error')} retryLabel={t('retry')} onRetry={() => error || !captainId ? router.refresh() : void resource.retry()} />}
     {!rows ? !error && !resource.error && captainId && <LoadingState variant="list" aria-label={t('loading')} /> :

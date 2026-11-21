@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>شكل الرتب</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700&family=Changa:wght@500;600;700;800&family=Manrope:wght@500;700;800&display=swap">
+<style>
+:root {
+  --bg: #0b0c0d; --deep: #070808; --surface: #141515; --raised: #1c1d1d;
+  --line: #292a2a; --soft: rgba(242,242,238,.07); --glass: rgba(255,255,255,.035); --glass-line: rgba(255,255,255,.09);
+  --ink: #f4f4f1; --muted: #a6abb0; --faint: #7d8288; --warn: #f2b544;
+  --lime: #b6e94f; --lime-dim: rgba(182,233,79,.13); --on-lime: #101418;
+  --display: "Manrope", "Changa", "Alexandria", system-ui, sans-serif;
+  --text: "Manrope", "Alexandria", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--text); font-size: 14.5px; line-height: 1.6; }
+.page { max-width: 1240px; margin: 0 auto; padding: 40px 16px 90px; }
+h1, h2, h3 { margin: 0; font-family: var(--display); text-wrap: balance; }
+h1 { font-size: clamp(28px, 4.4vw, 42px); font-weight: 800; line-height: 1.2; }
+h2 { font-size: 22px; font-weight: 800; }
+h3 { font-size: 15px; font-weight: 700; }
+p { margin: 0; }
+.lede { color: var(--muted); max-width: 72ch; margin-top: 12px; }
+.small { font-size: 12.5px; } .muted { color: var(--muted); } .faint { color: var(--faint); } .lime { color: var(--lime); }
+.num { font-family: "Manrope", sans-serif; font-weight: 800; direction: ltr; unicode-bidi: isolate; }
+section { margin-top: 56px; display: grid; gap: 16px; }
+.head { display: grid; gap: 6px; }
+.head p { color: var(--muted); max-width: 78ch; }
+.tag { display: inline-flex; align-items: center; min-height: 28px; border-radius: 999px; padding: 2px 12px; font-size: 12px; border: 1px solid rgba(182,233,79,.45); background: var(--lime-dim); color: var(--lime); justify-self: start; }
+.row7 { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; padding: 18px 12px; border-radius: 22px; border: 1px solid var(--line); background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.04), transparent 60%), var(--deep); }
+.tier { display: grid; justify-items: center; gap: 4px; text-align: center; }
+.tier svg { width: 100%; max-width: 128px; height: auto; overflow: visible; }
+.tier b { font-family: var(--display); font-size: 14px; }
+.tier span { font-size: 11.5px; color: var(--faint); }
+.split { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 18px; align-items: start; }
+.phone { border: 1px solid var(--line); border-radius: 32px; background: var(--bg); padding: 16px 14px; display: grid; gap: 12px; position: relative; overflow: hidden; }
+.phone::before { content: ""; position: absolute; inset: -20% -30% auto -30%; height: 320px; background: radial-gradient(circle at 50% 30%, var(--glow, rgba(227,178,60,.22)), transparent 62%); pointer-events: none; }
+.hero { display: grid; justify-items: center; gap: 4px; text-align: center; padding-top: 6px; position: relative; }
+.hero svg { width: 170px; height: auto; overflow: visible; }
+.hero h3 { font-size: 26px; font-weight: 800; }
+.prog { height: 10px; border-radius: 99px; background: var(--deep); border: 1px solid var(--soft); overflow: hidden; }
+.prog i { display: block; height: 100%; width: 62%; background: var(--lime); border-radius: 99px; }
+.glass { background: var(--glass); border: 1px solid var(--glass-line); border-radius: 18px; padding: 12px 14px; display: grid; gap: 8px; position: relative; }
+.mini { display: flex; gap: 10px; align-items: center; }
+.mini svg { width: 44px; height: auto; flex: none; overflow: visible; }
+.pros { display: grid; gap: 6px; font-size: 13.5px; }
+.pros span::before { content: "+ "; color: var(--lime); font-weight: 800; }
+.pros span.con::before { content: "− "; color: var(--warn); }
+.decide { border: 1px solid rgba(242,181,68,.35); background: rgba(242,181,68,.07); border-radius: 16px; padding: 14px 16px; display: grid; gap: 8px; font-size: 13.5px; }
+.decide b { color: var(--warn); }
+.now svg { opacity: .9; }
+@media (max-width: 1000px) { .row7 { grid-template-columns: repeat(4, minmax(0, 1fr)); } .split { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main class="page">
+  <p class="small faint">KOCHIVO · شكل الرتب · نسخة 6</p>
+  <h1>3 أشكال جديدة للرتب</h1>
+  <p class="lede">الشكل الحالي (درع بجناحات ونجمة) شبه ألعاب الموبايل، ومش بيقول KOCHIVO. الثلاث أشكال دي معمولة من هوية KO نفسها، والسبع رتب زي ما هي: حديد، برونز، فضة، ذهب، بلاتين، ماس، أسطورة. كل رتبة بتكبر في التفاصيل مش في الحجم بس.</p>
+
+  <section class="now">
+    <div class="head"><h2>الشكل الحالي</h2><p>للمقارنة.</p></div>
+    <div class="row7" id="now"></div>
+  </section>
+
+  <section>
+    <div class="head"><span class="tag">اقتراحي</span><h2>أ. حزام البطولة</h2><p>KO يعني نوك أوت، والرتبة على شكل لوحة حزام بطل الملاكمة. اللوحة بتكبر وبتاخد أحجار كريمة كل ما الرتبة تعلى، والأسطورة لوحتها بلون KOCHIVO. محدش في السوق عامل كده.</p></div>
+    <div class="split">
+      <div style="display:grid;gap:16px">
+        <div class="row7" id="belt"></div>
+        <div class="pros"><span>مرتبط باسم KO والملاكمة، فبيبقى بتاعنا إحنا بس.</span><span>شكله عريض، فبيبان كويس في كارت المشاركة على الإنستجرام.</span><span>الحزام نفسه بيحكي «بطل»، فاللاعب بيحس إنه كسب حاجة.</span><span class="con">في الحجم الصغير جدًا (جنب الاسم) بنستخدم اللوحة اللي في النص بس من غير الحزام.</span></div>
+      </div>
+      <div class="phone" style="--glow:rgba(227,178,60,.24)"><div class="hero" id="belt-hero"></div>
+        <div class="glass"><div style="display:flex"><span class="small muted">فاضلك على البلاتين</span><span class="num small" style="margin-inline-end:auto">58 / 100</span></div><div class="prog"><i></i></div></div>
+        <div class="glass"><span class="small faint">في الترتيب جنب الاسم</span><div class="mini" id="belt-mini"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="head"><h2>ب. العملة المحفورة</h2><p>عملة معدن عليها KO محفور بنفس أسلوب الأيقونات المحفورة اللي اخترتها (الخطوط المظللة). الرتب العالية بتاخد غصن غار وتاج. هادية وفخمة.</p></div>
+    <div class="split">
+      <div style="display:grid;gap:16px">
+        <div class="row7" id="coin"></div>
+        <div class="pros"><span>ماشية مع الأيقونات المحفورة اللي في التطبيق.</span><span>بتبان كويس في أي حجم، حتى جنب الاسم.</span><span class="con">العملات فكرة معروفة أكتر من الحزام.</span></div>
+      </div>
+      <div class="phone" style="--glow:rgba(127,178,255,.22)"><div class="hero" id="coin-hero"></div>
+        <div class="glass"><div style="display:flex"><span class="small muted">فاضلك على الأسطورة</span><span class="num small" style="margin-inline-end:auto">180 / 300</span></div><div class="prog"><i></i></div></div>
+        <div class="glass"><span class="small faint">في الترتيب جنب الاسم</span><div class="mini" id="coin-mini"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="head"><h2>ج. الكريستالة</h2><p>حجر سداسي متقطّع زي الألماظ، وعدد الحلقات حواليه بيزيد مع الرتبة. شكل حديث ونضيف.</p></div>
+    <div class="split">
+      <div style="display:grid;gap:16px">
+        <div class="row7" id="gem"></div>
+        <div class="pros"><span>حديث وبسيط، وبيلمع كويس على الخلفية الغامقة.</span><span>الحلقات بتوضّح الرتبة من غير كلام.</span><span class="con">أقل ارتباط بـ KO والرياضة من الحزام.</span></div>
+      </div>
+      <div class="phone" style="--glow:rgba(127,217,196,.22)"><div class="hero" id="gem-hero"></div>
+        <div class="glass"><div style="display:flex"><span class="small muted">فاضلك على الماس</span><span class="num small" style="margin-inline-end:auto">120 / 200</span></div><div class="prog"><i></i></div></div>
+        <div class="glass"><span class="small faint">في الترتيب جنب الاسم</span><div class="mini" id="gem-mini"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="decide">
+      <b>قرار ليك</b>
+      <span>نبدّل الشكل الحالي بأنهي واحد: أ (الحزام، اقتراحي)، ولا ب (العملة)، ولا ج (الكريستالة)، ولا نسيب الحالي؟</span>
+      <span class="faint">التبديل مش هيغيّر أي حاجة في النقط ولا الرتب ولا الداتابيز، بيغيّر الرسمة بس (ملف واحد).</span>
+    </div>
+  </section>
+</main>
+<script>
+const T = [
+  { n: 'حديد', p: 0,   m: ['#d3d6da', '#8d9298', '#3f4347'], g: ['#c9ccd0', '#6c7177'] },
+  { n: 'برونز', p: 100, m: ['#f6caa2', '#c27a45', '#5e3016'], g: ['#ffb27a', '#a4572a'] },
+  { n: 'فضة', p: 200,  m: ['#ffffff', '#bcc4cc', '#5f6973'], g: ['#e8eef5', '#8e99a5'] },
+  { n: 'ذهب', p: 300,  m: ['#fff0b8', '#e3b23c', '#7c520e'], g: ['#ffe27a', '#c78a12'] },
+  { n: 'بلاتين', p: 400, m: ['#eafff9', '#86dcc8', '#2a7364'], g: ['#b9fff0', '#3fb59c'] },
+  { n: 'ماس', p: 600,  m: ['#eaf3ff', '#86b8ff', '#2546a0'], g: ['#cfe3ff', '#4f86ff'] },
+  { n: 'أسطورة', p: 900, m: ['#f6ffd8', '#b6e94f', '#3f5c0c'], g: ['#e9ffb0', '#86c21f'] },
+];
+const defs = (id, t) => `<defs>
+  <linearGradient id="${id}m" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${t.m[0]}"/><stop offset=".5" stop-color="${t.m[1]}"/><stop offset="1" stop-color="${t.m[2]}"/></linearGradient>
+  <linearGradient id="${id}d" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${t.m[2]}"/><stop offset="1" stop-color="#0b0c0d"/></linearGradient>
+  <linearGradient id="${id}g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${t.g[0]}"/><stop offset="1" stop-color="${t.g[1]}"/></linearGradient>
+  <radialGradient id="${id}s" cx=".35" cy=".25" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/></radialGradient>
+  <pattern id="${id}h" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="4" stroke="${t.m[2]}" stroke-width="1.2" opacity=".55"/></pattern>
+</defs>`;
+const ko = (x, y, s, fill, shade) => `<g font-family="Manrope, sans-serif" font-weight="800" font-size="${s}" text-anchor="middle" direction="ltr">
+  <text x="${x}" y="${y + 1.2}" fill="${shade}" opacity=".9">KO</text><text x="${x}" y="${y}" fill="${fill}">KO</text></g>`;
+const pips = (r, cx, cy, gap, fill) => Array.from({ length: r + 1 }, (_, i) => `<circle cx="${cx + (i - r / 2) * gap}" cy="${cy}" r="2.2" fill="${fill}"/>`).join('');
+
+/* A: championship belt */
+function belt(r, id, full = true) {
+  const t = T[r], w = 32 + r * 2, h = 38 + r * 1.8;
+  const plate = `M${60 - w} ${60 - h * .55} Q60 ${60 - h * 1.05} ${60 + w} ${60 - h * .55} L${60 + w + 4} ${60 + h * .45} Q60 ${60 + h * 1.15} ${60 - w - 4} ${60 + h * .45} Z`;
+  const inner = `M${60 - w + 7} ${60 - h * .45} Q60 ${60 - h * .85} ${60 + w - 7} ${60 - h * .45} L${60 + w - 4} ${60 + h * .36} Q60 ${60 + h * .92} ${60 - w + 4} ${60 + h * .36} Z`;
+  const strap = full ? `<rect x="-30" y="${60 - 13}" width="180" height="26" rx="6" fill="#151617" stroke="#2c2d2e"/>
+    <line x1="-26" y1="${60 - 9}" x2="146" y2="${60 - 9}" stroke="#3a3b3c" stroke-dasharray="3 3"/><line x1="-26" y1="${60 + 9}" x2="146" y2="${60 + 9}" stroke="#3a3b3c" stroke-dasharray="3 3"/>` : '';
+  const sides = full && r >= 1 ? [-1, 1].map(s => {
+    const x = 60 + s * (w + 15);
+    return `<rect x="${x - 9}" y="${60 - 11}" width="18" height="22" rx="4" fill="url(#${id}m)" stroke="${t.m[2]}"/>
+      ${r >= 3 ? `<circle cx="${x}" cy="60" r="${3 + (r >= 5 ? 1.2 : 0)}" fill="url(#${id}g)" stroke="${t.m[2]}" stroke-width=".8"/>` : `<circle cx="${x}" cy="60" r="1.8" fill="${t.m[2]}"/>`}
+      ${r >= 5 ? `<rect x="${x + s * 13 - 7}" y="${60 - 8}" width="14" height="16" rx="3" fill="url(#${id}m)" stroke="${t.m[2]}"/><circle cx="${x + s * 13}" cy="60" r="2.4" fill="url(#${id}g)"/>` : ''}`;
+  }).join('') : '';
+  const crown = r >= 6 ? `<path d="M46 ${60 - h - 2} l4 -12 6 7 4 -10 4 10 6 -7 4 12Z" fill="url(#${id}m)" stroke="${t.m[2]}"/>` : '';
+  const jewels = r >= 4 ? Array.from({ length: r - 3 }, (_, i) => {
+    const n = r - 3, x = 60 + (i - (n - 1) / 2) * 9;
+    return `<circle cx="${x}" cy="${60 - h * .62}" r="2.6" fill="url(#${id}g)" stroke="${t.m[2]}" stroke-width=".6"/>`;
+  }).join('') : '';
+  return `<svg viewBox="-34 0 188 120" role="img" aria-label="${t.n}">${defs(id, t)}
+    <ellipse cx="60" cy="112" rx="${40 + r * 3}" ry="4" fill="#000" opacity=".5"/>
+    ${strap}${sides}${crown}
+    <path d="${plate}" fill="url(#${id}m)" stroke="${t.m[2]}" stroke-width="1.2"/>
+    <path d="${inner}" fill="url(#${id}d)" stroke="${t.m[0]}" stroke-opacity=".5"/>
+    <path d="${inner}" fill="url(#${id}h)" opacity=".5"/>
+    ${jewels}
+    ${ko(60, 66, 20 + r * .8, `url(#${id}m)`, '#000')}
+    ${pips(r, 60, 60 + h * .62, 6, t.m[0])}
+    <path d="${plate}" fill="url(#${id}s)"/>
+  </svg>`;
+}
+
+/* B: engraved coin */
+function coin(r, id) {
+  const t = T[r], R = 38 + r * 1.2;
+  const ticks = Array.from({ length: 36 }, (_, i) => {
+    const a = i * Math.PI / 18, x1 = 60 + Math.cos(a) * (R - 2), y1 = 60 + Math.sin(a) * (R - 2), x2 = 60 + Math.cos(a) * (R - 6), y2 = 60 + Math.sin(a) * (R - 6);
+    return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${t.m[2]}" stroke-width="1" opacity=".6"/>`;
+  }).join('');
+  const leaf = (side) => Array.from({ length: 6 }, (_, i) => {
+    const deg = side < 0 ? 105 + i * 19 : 75 - i * 19, a = deg * Math.PI / 180;
+    const x = 60 + Math.cos(a) * (R + 7), y = 60 + Math.sin(a) * (R + 7);
+    return `<ellipse cx="${x}" cy="${y}" rx="2.8" ry="6.5" transform="rotate(${deg + side * 28} ${x} ${y})" fill="url(#${id}m)" stroke="${t.m[2]}" stroke-width=".6"/>`;
+  }).join('');
+  const laurel = r >= 4 ? leaf(1) + leaf(-1) : '';
+  const crown = r >= 6 ? `<path d="M48 ${60 - R - 4} l3 -12 6 6 3 -9 3 9 6 -6 3 12Z" fill="url(#${id}m)" stroke="${t.m[2]}"/>` : '';
+  const star = r >= 5 ? `<circle cx="60" cy="${60 - R + 12}" r="2.6" fill="url(#${id}g)"/>` : '';
+  return `<svg viewBox="0 0 120 120" role="img" aria-label="${t.n}">${defs(id, t)}
+    <ellipse cx="60" cy="112" rx="${30 + r * 2}" ry="4" fill="#000" opacity=".5"/>
+    ${laurel}${crown}
+    <circle cx="60" cy="60" r="${R}" fill="url(#${id}m)" stroke="${t.m[2]}" stroke-width="1.2"/>
+    ${ticks}
+    <circle cx="60" cy="60" r="${R - 9}" fill="url(#${id}d)" stroke="${t.m[0]}" stroke-opacity=".55"/>
+    <circle cx="60" cy="60" r="${R - 9}" fill="url(#${id}h)"/>
+    ${star}
+    ${ko(60, 67, 22, `url(#${id}m)`, '#000')}
+    ${pips(r, 60, 60 + R - 15, 5.5, t.m[0])}
+    <circle cx="60" cy="60" r="${R}" fill="url(#${id}s)"/>
+  </svg>`;
+}
+
+/* C: crystal */
+function gem(r, id) {
+  const t = T[r], R = 30 + r * 1;
+  const hex = (rad, rot = -90) => Array.from({ length: 6 }, (_, i) => { const a = (rot + i * 60) * Math.PI / 180; return [60 + Math.cos(a) * rad, 60 + Math.sin(a) * rad]; });
+  const pts = hex(R), inner = hex(R * .52);
+  const facets = pts.map((p, i) => {
+    const q = pts[(i + 1) % 6], a = inner[i], b = inner[(i + 1) % 6];
+    const op = [.95, .7, .45, .3, .5, .8][i];
+    return `<path d="M${p[0]} ${p[1]} L${q[0]} ${q[1]} L${b[0]} ${b[1]} L${a[0]} ${a[1]}Z" fill="${t.m[1]}" opacity="${op}"/>`;
+  }).join('');
+  const rings = Array.from({ length: r }, (_, i) => {
+    const rr = R + 7 + i * 4.2, h = hex(rr);
+    return `<path d="M${h.map(p => p.join(' ')).join(' L')}Z" fill="none" stroke="${t.m[1]}" stroke-width="${i === r - 1 ? 1.6 : 1}" opacity="${.85 - i * .1}"/>`;
+  }).join('');
+  const spikes = r >= 6 ? hex(R + 34).map((p, i) => i % 2 ? '' : `<path d="M${60 + (p[0] - 60) * .78} ${60 + (p[1] - 60) * .78} L${p[0]} ${p[1]}" stroke="${t.m[0]}" stroke-width="2" stroke-linecap="round"/>`).join('') : '';
+  return `<svg viewBox="0 0 120 120" role="img" aria-label="${t.n}">${defs(id, t)}
+    <ellipse cx="60" cy="114" rx="${26 + r * 3}" ry="3.5" fill="#000" opacity=".5"/>
+    ${spikes}${rings}
+    <path d="M${pts.map(p => p.join(' ')).join(' L')}Z" fill="${t.m[2]}" stroke="${t.m[0]}" stroke-width="1.2"/>
+    ${facets}
+    <path d="M${inner.map(p => p.join(' ')).join(' L')}Z" fill="url(#${id}g)" stroke="${t.m[0]}" stroke-width=".8"/>
+    ${ko(60, 64.5, 11 + r * .3, '#0b0c0d', 'transparent')}
+    <path d="M${pts.map(p => p.join(' ')).join(' L')}Z" fill="url(#${id}s)"/>
+  </svg>`;
+}
+
+/* current: a lightweight copy of src/ui/medal-art.tsx */
+function current(r, id) {
+  const t = T[r], shield = r >= 3;
+  const frame = shield ? 'M60 16 96 29v29c0 23-16 39-36 47C40 97 24 81 24 58V29Z' : 'M60 16 96 36v42L60 98 24 78V36Z';
+  const inner = shield ? 'M60 25 87 35v23c0 18-12 30-27 37-15-7-27-19-27-37V35Z' : 'M60 25 88 40v32L60 88 32 72V40Z';
+  const span = 6 + (r - 2) * 3.2;
+  const wing = `M30 48C${22 - span} 40 ${10 - span} 44 ${4 - span * .6} 36C${8 - span * .4} 58 ${18 - span * .3} 70 34 72Z`;
+  return `<svg viewBox="0 0 120 120" role="img" aria-label="${t.n}">${defs(id, t)}
+    ${r >= 2 ? `<path d="${wing}" fill="url(#${id}m)" stroke="${t.m[2]}"/><path d="${wing}" transform="translate(120 0) scale(-1 1)" fill="url(#${id}m)" stroke="${t.m[2]}"/>` : ''}
+    ${r >= 5 ? `<path d="M44 20 50 6l6 10 4-12 4 12 6-10 6 14Z" fill="url(#${id}m)" stroke="${t.m[2]}"/>` : ''}
+    <path d="${frame}" fill="url(#${id}m)" stroke="${t.m[2]}" stroke-width="1.2"/>
+    <path d="${inner}" fill="url(#${id}d)"/>
+    <path d="M60 44l4.6 10.4 11.4 1.1-8.6 7.6 2.5 11.2L60 68.6l-9.9 5.7 2.5-11.2-8.6-7.6 11.4-1.1Z" fill="url(#${id}g)"/>
+  </svg>`;
+}
+
+const fill = (el, fn, key) => {
+  document.getElementById(el).innerHTML = T.map((t, r) =>
+    `<div class="tier">${fn(r, key + r)}<b>${t.n}</b><span><span class="num">${t.p}</span> نقطة</span></div>`).join('');
+};
+fill('now', current, 'n'); fill('belt', belt, 'b'); fill('coin', coin, 'c'); fill('gem', gem, 'g');
+document.getElementById('belt-hero').innerHTML = belt(3, 'bh') + '<span class="small faint">رتبتك</span><h3>ذهب</h3><span class="small muted"><span class="num">342</span> نقطة</span>';
+document.getElementById('coin-hero').innerHTML = coin(5, 'ch') + '<span class="small faint">رتبتك</span><h3>ماس</h3><span class="small muted"><span class="num">720</span> نقطة</span>';
+document.getElementById('gem-hero').innerHTML = gem(4, 'gh') + '<span class="small faint">رتبتك</span><h3>بلاتين</h3><span class="small muted"><span class="num">520</span> نقطة</span>';
+const mini = (fn, key, smallFn) => [1, 3, 6].map(r => `<div class="mini">${smallFn(r, key + r)}<div><b>${['', 'أحمد', '', 'منى', '', '', 'كريم'][r]}</b><div class="small faint">${T[r].n}</div></div></div>`).join('');
+document.getElementById('belt-mini').innerHTML = mini(belt, 'bm', (r, id) => belt(r, id, false));
+document.getElementById('coin-mini').innerHTML = mini(coin, 'cm', coin);
+document.getElementById('gem-mini').innerHTML = mini(gem, 'gm', gem);
+</script>
+</body>
+</html>

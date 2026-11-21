@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>الشغل اليومي وصندوق الوارد</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300..900&family=Manrope:wght@500;700;800&display=swap">
+<style>
+:root{--bg:#0a0b0c;--surface:#141516;--raised:#1b1c1e;--line:#26282a;--soft:rgba(255,255,255,.07);--ink:#f4f4f1;--muted:#a6abb0;--faint:#80858b;--lime:#b6e94f;--onlime:#101418;--gold:#e3b448;--goldbg:#1f1806;--goldline:rgba(227,180,72,.45);--limesoft:#26301a;--warn:#f5ac78;--warnbg:#2a1a10}
+*{box-sizing:border-box}
+body{margin:0;background:#050506;color:var(--ink);font-family:Alexandria,Manrope,sans-serif}
+.wrap{max-width:1300px;margin:0 auto;padding:28px 16px 64px;display:flex;flex-direction:column;gap:18px}
+.intro h1{font-size:22px;margin:0 0 6px}
+.intro p{color:var(--muted);margin:0;font-size:14px;line-height:1.8}
+h2.sec{margin:22px 0 0;font-size:18px}
+.cap{font-size:13px;color:var(--muted);line-height:1.8;max-width:900px}
+.cap b{color:var(--ink)}
+.desk{width:100%;height:640px;overflow:hidden;background:var(--bg);border-radius:20px;border:1px solid var(--line);display:flex}
+.num{font-family:Manrope;font-weight:800}
+.row{display:flex;align-items:center;gap:12px}
+.card{border-radius:18px;background:var(--surface);border:1px solid var(--soft);padding:14px}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 12px;font-size:12px;white-space:nowrap}
+.chip.o{border:1px solid var(--soft);color:var(--ink)}
+.btn-lime{min-height:48px;border-radius:24px;background:var(--lime);color:var(--onlime);font-weight:900;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 18px;white-space:nowrap}
+.btn-out{min-height:44px;border-radius:22px;border:1px solid var(--soft);color:var(--ink);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 14px;white-space:nowrap}
+.label{font-size:12px;color:var(--faint)}
+.av{width:40px;height:40px;border-radius:20px;background:var(--raised);display:flex;align-items:center;justify-content:center;font-weight:900;flex-shrink:0}
+.badge{min-width:20px;height:20px;border-radius:10px;background:var(--lime);color:var(--onlime);font-size:11px;display:inline-flex;align-items:center;justify-content:center;font-family:Manrope;font-weight:800;padding:0 6px}
+.stat{display:flex;flex-direction:column;gap:2px;flex:1;border-radius:14px;background:var(--surface);border:1px solid var(--soft);padding:10px 12px}
+.stat b{font-family:Manrope;font-size:18px}
+.stat span{font-size:11px;color:var(--muted)}
+/* sidebar */
+.side{width:220px;flex-shrink:0;border-inline-start:1px solid var(--soft);background:#0d0e0f;padding:14px 10px;display:flex;flex-direction:column;gap:2px;overflow:hidden}
+.side .it{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:31px;border-radius:10px;padding:0 12px;font-size:13px;color:var(--muted)}
+.side .it.on{background:var(--raised);color:var(--ink);font-weight:800;box-shadow:inset -3px 0 0 var(--lime)}
+.side .it .c{font-family:Manrope;font-weight:800;font-size:11px;color:var(--muted)}
+.side .it .c.hot{background:var(--lime);color:var(--onlime);border-radius:9px;min-width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;padding:0 5px}
+.side .g{font-size:11px;color:var(--faint);padding:7px 12px 1px}
+.side .g.hl{color:var(--lime)}
+/* main */
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
+.head{padding:16px 20px 0;display:flex;flex-direction:column;gap:12px;border-bottom:1px solid var(--soft)}
+.head h1{margin:0;font-size:22px;font-weight:900}
+.head .sub{font-size:12px;color:var(--muted)}
+.ptabs{display:flex;gap:4px;overflow:hidden}
+.ptabs span{padding:10px 14px;font-size:13px;color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap;display:inline-flex;gap:6px;align-items:center}
+.ptabs .on{color:var(--ink);font-weight:800;border-bottom-color:var(--lime)}
+.ptabs .c{font-family:Manrope;font-weight:800;font-size:11px;color:var(--faint)}
+.body{flex:1;display:flex;min-height:0}
+.list{width:330px;flex-shrink:0;border-inline-start:1px solid var(--soft);display:flex;flex-direction:column;min-height:0}
+.seg{display:flex;border-radius:12px;background:var(--surface);border:1px solid var(--soft);padding:3px;gap:3px}
+.seg span{flex:1;text-align:center;padding:7px 6px;border-radius:9px;font-size:12px;color:var(--muted);white-space:nowrap}
+.seg .on{background:var(--raised);color:var(--ink);font-weight:800}
+.qrow{display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid var(--soft)}
+.qrow.sel{background:var(--raised);box-shadow:inset -3px 0 0 var(--lime)}
+.qrow .txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.qrow .txt span{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qrow .side-meta{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0}
+.time{font-family:Manrope;font-size:11px;color:var(--faint)}
+.kind{font-size:11px;border-radius:999px;padding:3px 9px;border:1px solid var(--soft);color:var(--muted);white-space:nowrap}
+.why{font-size:11px;color:var(--warn)}
+.search{min-height:42px;border-radius:21px;background:var(--surface);border:1px solid var(--soft);display:flex;align-items:center;padding:0 14px;font-size:13px;color:var(--faint);gap:8px}
+.bin{align-self:flex-start;max-width:72%;border-radius:20px 20px 20px 6px;padding:11px 14px;background:var(--surface);border:1px solid var(--soft);font-size:14px;line-height:1.6}
+.bout{align-self:flex-end;max-width:72%;border-radius:20px 20px 6px 20px;padding:11px 14px;background:var(--raised);font-size:14px;line-height:1.6}
+.meta{font-size:10px;font-family:Manrope;opacity:.7;margin-top:4px}
+.ctx{width:250px;flex-shrink:0;border-inline-end:1px solid var(--soft);padding:14px;display:flex;flex-direction:column;gap:10px;background:#0d0e0f}
+.ko{border-radius:16px;border:1px dashed rgba(182,233,79,.4);background:rgba(182,233,79,.05);padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.rpe{width:28px;height:28px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:Manrope;font-weight:800;font-size:12px;flex-shrink:0}
+.vid{border-radius:16px;overflow:hidden;background:#000;position:relative;border:1px solid var(--soft)}
+/* phone */
+.phones{display:flex;flex-wrap:wrap;gap:28px;justify-content:center}
+.phone{width:390px;height:844px;position:relative;overflow:hidden;background:var(--bg);border-radius:36px;border:1px solid var(--line)}
+.pcol{display:flex;flex-direction:column;gap:12px;padding:16px 18px 0}
+.nav{position:absolute;inset-inline:12px;bottom:14px;height:66px;border-radius:33px;background:var(--raised);border:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-around;align-items:center;padding:0 6px}
+.nav i{width:48px;height:48px;border-radius:24px;color:var(--muted);display:flex;align-items:center;justify-content:center;position:relative;font-style:normal}
+.nav .on{width:auto;padding:0 14px;background:var(--ink);color:var(--onlime);gap:6px;font-size:13px;font-weight:800}
+.nav .dot{position:absolute;top:4px;inset-inline-end:2px;min-width:18px;height:18px;border-radius:9px;background:var(--lime);color:var(--onlime);font-family:Manrope;font-weight:800;font-size:10px;display:flex;align-items:center;justify-content:center}
+figure{margin:0;display:flex;flex-direction:column;gap:10px;align-items:center}
+figcaption{font-size:13px;color:var(--muted);text-align:center;max-width:390px;line-height:1.7}
+figcaption b{color:var(--ink);display:block;font-size:15px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="intro">
+  <h1>الشغل اليومي وصندوق الوارد</h1>
+  <p>في القايمة الجانبية مجموعة جديدة اسمها <b style="color:var(--ink)">«الشغل اليومي»</b>، وكل حاجة فيها ليها صفحة لوحدها. الشات بقى ليه مكان لوحده اسمه <b style="color:var(--ink)">«صندوق الوارد»</b>، فيه كل المحادثات مع اللاعيبة زي واتساب. وفوق كل صفحة من الصفحات دي نفس التابات، علشان تنقل بينهم من غير ما ترجع للقايمة.</p>
+</div>
+
+<h2 class="sec">١. صندوق الوارد: الشات لوحده</h2>
+<div class="desk" data-page="inbox">
+  <div class="main">
+    <div class="body">
+      <div class="list">
+        <div style="padding:12px 14px;display:flex;flex-direction:column;gap:10px">
+          <div class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4-4"/></svg> دوّر على لاعب أو رسالة</div>
+          <div class="seg"><span class="on">الكل</span><span>مستنية ردك · 3</span><span>مش مقروءة</span></div>
+        </div>
+        <div style="flex:1;overflow:hidden">
+          <div class="qrow sel"><span class="av">أ</span><span class="txt"><b style="font-size:14px">أحمد سامي</b><span>ينفع أبدّل الرز ببطاطس في الغدا؟</span></span><span class="side-meta"><span class="time">11:05</span><span class="badge">2</span></span></div>
+          <div class="qrow"><span class="av">ي</span><span class="txt"><b style="font-size:14px">يوسف نبيل</b><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg> رسالة صوتية · 0:18</span></span><span class="side-meta"><span class="time">10:40</span><span class="badge">1</span></span></div>
+          <div class="qrow"><span class="av">س</span><span class="txt"><b style="font-size:14px">سارة عادل</b><span>طب ينفع أتمرن الخميس بدلها؟</span></span><span class="side-meta"><span class="time">9:20</span><span class="badge">1</span></span></div>
+          <div class="qrow"><span class="av">ك</span><span class="txt"><b style="font-size:14px">كريم جلال</b><span>أنت: تمام، كمّل على كده</span></span><span class="side-meta"><span class="time">أمس</span><span style="font-size:11px;color:var(--faint)">✓✓</span></span></div>
+          <div class="qrow"><span class="av">م</span><span class="txt"><b style="font-size:14px">منى سمير</b><span>تمام يا كابتن</span></span><span class="side-meta"><span class="time">أمس</span></span></div>
+          <div class="qrow"><span class="av">ن</span><span class="txt"><b style="font-size:14px">نور إبراهيم</b><span>أنت: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg> رسالة صوتية · 0:31</span></span><span class="side-meta"><span class="time">السبت</span><span style="font-size:11px;color:var(--faint)">✓</span></span></div>
+        </div>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+        <div class="row" style="padding:12px 16px;border-bottom:1px solid var(--soft)"><span class="av">أ</span><span style="flex:1;display:flex;flex-direction:column;gap:2px"><b style="font-size:15px">أحمد سامي</b><span style="font-size:12px;color:var(--muted)">بيتمرن دلوقتي · يوم الضغط</span></span><span class="btn-out" style="min-height:38px;font-size:12px">ملف اللاعب</span></div>
+        <div style="flex:1;padding:14px 16px;display:flex;flex-direction:column;gap:10px;overflow:hidden">
+          <span style="align-self:center;font-size:11px;color:var(--faint)">النهارده</span>
+          <div class="bout">كمّل على نفس الأكل الأسبوع ده، الوزن نازل كويس.<div class="meta" dir="ltr">9:41 ✓✓</div></div>
+          <div class="bin">ينفع أبدّل الرز ببطاطس في الغدا؟<div class="meta" dir="ltr">11:05</div></div>
+          <div class="ko" style="margin-top:auto"><div class="row" style="gap:8px"><span class="chip" style="background:var(--limesoft);color:var(--lime);padding:2px 9px;font-weight:800">KO</span><span style="font-size:12px;color:var(--muted)">رد مقترح من خطة أكله</span></div><span style="font-size:13px">أيوه، بدّل الـ150 جرام رز بـ200 جرام بطاطس مسلوقة.</span><div class="row" style="gap:6px"><span class="chip o">استخدمه</span><span class="chip o">عدّله</span></div></div>
+        </div>
+        <div style="padding:10px 16px;border-top:1px solid var(--soft);display:flex;flex-direction:column;gap:8px">
+          <div class="row" style="gap:6px"><span class="label">ردود جاهزة:</span><span class="chip o">تمام كمّل</span><span class="chip o">ابعتلي فيديو</span><span class="chip o">هبصّلك وأرد</span></div>
+          <div class="row" style="gap:8px"><div style="flex:1;min-height:48px;border-radius:24px;border:1px solid rgba(255,255,255,.10);background:var(--surface);padding:0 16px;display:flex;align-items:center;font-size:14px;color:var(--muted)">اكتب لأحمد</div><span style="width:48px;height:48px;border-radius:24px;background:var(--raised);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span><span class="btn-lime">ابعت</span></div>
+        </div>
+      </div>
+      <div class="ctx">
+        <span class="label">عن أحمد</span>
+        <div class="row" style="gap:8px"><span class="stat"><b>82.4</b><span>كجم · <span style="color:var(--lime)">−1.2</span></span></span><span class="stat"><b>4/4</b><span>تمرينات</span></span></div>
+        <div class="row" style="gap:8px"><span class="stat"><b>21</b><span>يوم اشتراك</span></span><span class="stat"><b>7</b><span>آخر تمرين</span></span></div>
+        <span class="label">غدا النهارده</span>
+        <div class="card" style="padding:0"><div class="row" style="padding:9px 12px;border-bottom:1px solid var(--soft);background:rgba(182,233,79,.06)"><span style="flex:1;font-size:12px">رز أبيض</span><span class="num" style="font-size:12px">150 g</span></div><div class="row" style="padding:9px 12px"><span style="flex:1;font-size:12px">صدور فراخ</span><span class="num" style="font-size:12px">200 g</span></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+<p class="cap"><b>صندوق الوارد</b> فيه كل المحادثات، والجديد فوق، وعلى كل لاعب رقم باللي ما اتقراش. فوق القايمة بحث وفلتر «مستنية ردك». في النص الشات نفسه بكتابة وفويس، وتحته ردود جاهزة واقتراح KO. على الشمال ملخص اللاعب علشان ترد من غير ما تفتح ملفه. ده نفس الشات اللي لسه رافعينه، بس بقى ليه صفحة لوحده للكابتن.</p>
+
+<h2 class="sec">٢. المتابعة: كل اللي مستنيك في قايمة واحدة</h2>
+<div class="desk" data-page="queue">
+  <div class="main">
+    <div class="body">
+      <div style="flex:1;overflow:hidden;padding:14px 20px;display:flex;flex-direction:column;gap:10px">
+        <div class="row" style="justify-content:space-between"><span style="font-size:13px;color:var(--muted)">خلّصت <b class="num" style="color:var(--ink)">6</b> من <b class="num" style="color:var(--ink)">15</b> النهارده</span><span class="seg" style="width:300px"><span class="on">محتاج ردك</span><span>أجّلتها</span><span>خلصت</span></span></div>
+        <div class="card" style="padding:0">
+          <div class="qrow"><span class="av">ح</span><span class="txt"><b style="font-size:14px">حبيبة عزت</b><span>عاوزة تبدأ معاك · باقة شهر</span></span><span class="why">مستنية من 20 ساعة</span><span class="kind" style="border-color:var(--goldline);color:var(--gold)">طلب انضمام</span><span class="btn-out" style="min-height:36px">راجِع</span></div>
+          <div class="qrow"><span class="av">أ</span><span class="txt"><b style="font-size:14px">أحمد سامي</b><span>«ينفع أبدّل الرز ببطاطس؟»</span></span><span class="why">سأل وهو في الجيم</span><span class="kind" style="border-color:rgba(182,233,79,.35);color:var(--lime)">رسالة</span><span class="btn-out" style="min-height:36px">رد</span></div>
+          <div class="qrow"><span class="av">ه</span><span class="txt"><b style="font-size:14px">هنا وائل</b><span>قيّمت التمرين 10 من 10</span></span><span class="why">تالت تمرين تقيل ورا بعض</span><span class="kind">بعد التمرين</span><span class="btn-out" style="min-height:36px">راجِع</span></div>
+          <div class="qrow"><span class="av">ن</span><span class="txt"><b style="font-size:14px">نور إبراهيم</b><span>سكوات بالبار · فيديو 0:22</span></span><span class="why">بعته وهو في الجيم</span><span class="kind">فيديو أداء</span><span class="btn-out" style="min-height:36px">راجِع</span></div>
+          <div class="qrow"><span class="av">س</span><span class="txt"><b style="font-size:14px">سارة عادل</b><span>الوزن 68.2 كجم · الوسط نزل 1 سم</span></span><span class="time">من 5 ساعات</span><span class="kind">متابعة أسبوعية</span><span class="btn-out" style="min-height:36px">راجِع</span></div>
+          <div class="qrow" style="border:0"><span class="av">ر</span><span class="txt"><b style="font-size:14px">ريم جمال</b><span>اشتراكها بيخلص بعد يومين</span></span><span class="time">من ساعة</span><span class="kind">تجديد</span><span class="btn-out" style="min-height:36px">راجِع</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<p class="cap"><b>المتابعة</b> هي الصفحة اللي تبدأ بيها يومك. فيها كل حاجة مستنياك من كل الأنواع، مترتبة حسب الأهم، وجنب كل سطر سبب أهميته. «رد» أو «راجِع» بيفتح الحاجة في صفحتها، فالرسالة مثلًا بتفتح في صندوق الوارد. لما تخلّص تلاقي سطر «خلّصت 6 من 15».</p>
+
+<h2 class="sec">٣. فيديوهات الأداء</h2>
+<div class="desk" data-page="videos">
+  <div class="main">
+    <div class="body">
+      <div class="list">
+        <div style="padding:12px 14px"><div class="seg"><span class="on">مستنية · 1</span><span>اتراجعت</span><span>الكل</span></div></div>
+        <div class="qrow sel"><span class="av">ن</span><span class="txt"><b style="font-size:14px">نور إبراهيم</b><span>سكوات بالبار · 0:22</span><span class="why">بعته وهو في الجيم</span></span><span class="time">دلوقتي</span></div>
+        <div class="qrow"><span class="av">ز</span><span class="txt"><b style="font-size:14px">زياد مصطفى</b><span>ديدليفت · اتراجع</span></span><span class="time">أمس</span></div>
+      </div>
+      <div style="flex:1;padding:14px 18px;display:flex;flex-direction:column;gap:10px;min-width:0">
+        <div class="row" style="justify-content:space-between"><span style="display:flex;flex-direction:column;gap:2px"><b style="font-size:15px">نور إبراهيم · سكوات بالبار</b><span style="font-size:12px;color:var(--muted)">«ركبي بتدخل لجوه في آخر عدتين؟»</span></span><span class="btn-out" style="min-height:38px">قارنه باللي فات</span></div>
+        <div class="row" style="gap:14px;align-items:stretch;flex:1;min-height:0">
+          <div class="vid" style="flex:1.3"><svg width="100%" height="100%" viewBox="0 0 354 300" preserveAspectRatio="xMidYMid slice"><rect width="354" height="300" fill="#111214"/><g stroke="#3a3d40" stroke-width="10" stroke-linecap="round" fill="none"><path d="M177 90v60M177 150l-24 46 10 50M177 150l24 46-10 50"/><path d="M115 100h124"/></g><circle cx="177" cy="70" r="16" fill="#3a3d40"/></svg>
+            <div style="position:absolute;inset-inline:10px;bottom:10px;display:flex;gap:8px;align-items:center"><span style="width:38px;height:38px;border-radius:19px;background:var(--lime);color:var(--onlime);display:flex;align-items:center;justify-content:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span><span class="chip" style="background:rgba(0,0,0,.65)">واقف عند <span class="num" dir="ltr">0:14</span></span><span class="chip" style="background:rgba(0,0,0,.65);margin-inline-start:auto">ببطء</span></div></div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:10px;min-width:0">
+            <span class="label">دوس ملاحظة تتسجل عند <span class="num" dir="ltr">0:14</span></span>
+            <div style="display:flex;gap:6px;flex-wrap:wrap"><span class="chip" style="background:var(--goldbg);border:1px solid var(--goldline);color:var(--gold)">الركب لجوه</span><span class="chip o">العمق ناقص</span><span class="chip o">الضهر بيتقوّس</span><span class="chip o">+ اكتب</span></div>
+            <div class="card" style="padding:10px 12px;display:flex;gap:10px"><span class="chip num" style="background:var(--goldbg);color:var(--gold);padding:3px 8px" dir="ltr">0:14</span><span style="font-size:13px;line-height:1.6"><b>الركب لجوه:</b> زق الركب لبرّه وانت طالع.</span></div>
+            <span class="btn-out" style="justify-content:flex-start"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg> سجّل رد صوتي</span>
+            <span class="btn-lime" style="margin-top:auto">ابعت الرد لنور</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<p class="cap"><b>فيديوهات الأداء</b> ليها صفحة لوحدها. على اليمين الفيديوهات المستنية مراجعة، وفي النص الفيديو. على الشمال الملاحظات الجاهزة، وكل ملاحظة بتتسجل عند الثانية اللي موقّف عندها الفيديو، وتقدر تسجّل رد صوتي. الرد بيوصل للاعب في صندوق الوارد.</p>
+
+<h2 class="sec">٤. بعد التمرين</h2>
+<div class="desk" data-page="after">
+  <div class="main">
+    <div class="body">
+      <div style="flex:1;padding:14px 20px;display:flex;flex-direction:column;gap:12px;overflow:hidden">
+        <div class="seg" style="width:340px"><span class="on">محتاج نظرة · 3</span><span>اتراجع</span><span>الكل</span></div>
+        <div class="card" style="border-color:var(--goldline);display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+          <span class="row" style="width:200px"><span class="av">ه</span><span style="display:flex;flex-direction:column;gap:2px"><b style="font-size:14px">هنا وائل</b><span class="why">تالت تمرين تقيل ورا بعض</span></span></span>
+          <span style="display:flex;flex-direction:column;gap:4px"><span class="label">صعوبة آخر 6 تمرينات (من 10)</span><span class="row" style="gap:5px"><span class="rpe" style="background:var(--warnbg);color:var(--warn);outline:2px solid var(--warn)">10</span><span class="rpe" style="background:var(--warnbg);color:var(--warn)">9</span><span class="rpe" style="background:var(--warnbg);color:var(--warn)">9</span><span class="rpe" style="background:var(--raised);color:var(--muted)">7</span><span class="rpe" style="background:var(--raised);color:var(--muted)">7</span><span class="rpe" style="background:var(--raised);color:var(--muted)">6</span></span></span>
+          <span style="flex:1;min-width:200px;font-size:13px;line-height:1.6;border-radius:12px;background:var(--raised);padding:9px 12px">«آخر مجموعتين في البنش ما قدرتش أكمّلهم، والكتف شادد.»</span>
+          <span class="row" style="gap:8px"><span class="btn-lime">خفّف الأسبوع ده 10%</span><span class="btn-out">رد عليها</span></span>
+        </div>
+        <div class="card row" style="gap:16px"><span class="row" style="width:200px"><span class="av">ك</span><span style="display:flex;flex-direction:column;gap:2px"><b style="font-size:14px">كريم جلال</b><span class="why">قيّم التمرين 10 من 10</span></span></span><span class="row" style="gap:5px"><span class="rpe" style="background:var(--warnbg);color:var(--warn)">10</span><span class="rpe" style="background:var(--raised);color:var(--muted)">8</span><span class="rpe" style="background:var(--raised);color:var(--muted)">7</span></span><span style="flex:1"></span><span class="btn-out">رد عليه</span><span class="btn-out">خلّصت</span></div>
+        <div class="card row" style="gap:16px"><span class="row" style="width:200px"><span class="av">م</span><span style="display:flex;flex-direction:column;gap:2px"><b style="font-size:14px">منى سمير</b><span style="font-size:11px;color:var(--muted)">3 تمرينات سهلة ورا بعض</span></span></span><span class="row" style="gap:5px"><span class="rpe" style="background:var(--raised);color:var(--muted)">3</span><span class="rpe" style="background:var(--raised);color:var(--muted)">3</span><span class="rpe" style="background:var(--raised);color:var(--muted)">4</span></span><span style="flex:1"></span><span class="btn-out">زوّد الأوزان 5%</span><span class="btn-out">خلّصت</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+<p class="cap"><b>بعد التمرين</b> فيها اللاعيبة اللي التمرين كان تقيل أوي أو سهل أوي عليهم. المربعات الصغيرة تقييم كل تمرينة من 10، والأحدث على اليمين، والبرتقاني معناه تقيل جدًا. فيه زرار بيخفف أوزان الأسبوع أو يزوّدها على طول.</p>
+
+<h2 class="sec">٥. الرسايل الجماعية</h2>
+<div class="desk" data-page="broadcast">
+  <div class="main">
+    <div class="body">
+      <div style="flex:1;padding:14px 20px;display:flex;flex-direction:column;gap:12px;overflow:hidden">
+        <div class="row" style="justify-content:space-between"><span class="label">اللي بعته قبل كده</span><span class="btn-lime">رسالة جماعية جديدة</span></div>
+        <div class="card" style="padding:0">
+          <div class="qrow"><span class="txt"><b style="font-size:14px">«الجيم قافل الجمعة الجاية للصيانة…»</b><span>النهارده 9:00 ص · كل الشغالين</span></span><span class="row" style="gap:18px;font-size:12px;color:var(--muted)"><span>اتبعتت <b class="num" style="color:var(--ink)">24</b></span><span>قروها <b class="num" style="color:var(--lime)">18</b></span><span>ردّوا <b class="num" style="color:var(--ink)">4</b></span></span><span class="btn-out" style="min-height:36px">فكّر الـ6 اللي ما قروش</span></div>
+          <div class="qrow"><span class="txt"><b style="font-size:14px">«تحدي الشهر: 10 آلاف خطوة كل يوم»</b><span>الأحد · برنامج تخسيس</span></span><span class="row" style="gap:18px;font-size:12px;color:var(--muted)"><span>اتبعتت <b class="num" style="color:var(--ink)">11</b></span><span>قروها <b class="num" style="color:var(--lime)">11</b></span><span>ردّوا <b class="num" style="color:var(--ink)">7</b></span></span><span style="width:150px"></span></div>
+          <div class="qrow" style="border:0"><span class="txt"><b style="font-size:14px">«<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg> رسالة صوتية · 0:42»</b><span>بكرة 9:00 ص · بطّلوا تمرين</span></span><span class="chip" style="background:var(--goldbg);color:var(--gold)">متجدولة</span><span class="btn-out" style="min-height:36px">عدّلها</span></div>
+        </div>
+        <p style="margin:0;font-size:12px;color:var(--muted)">الرد على الرسالة الجماعية بيوصلك في صندوق الوارد زي أي رسالة، ومحدش من اللاعيبة بيشوف مين غيره وصلته.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<p class="cap"><b>الرسايل الجماعية</b> فيها كل رسالة بعتها لأكتر من لاعب، وجنبها مكتوب بالأرقام كام لاعب وصلته وكام قراها وكام رد. «رسالة جماعية جديدة» بتفتح تلات خطوات: مين يوصله، بعدين الرسالة، بعدين إمتى تتبعت.</p>
+
+<h2 class="sec">٦. على الموبايل</h2>
+<div class="phones">
+<figure>
+<div class="phone">
+  <div class="pcol">
+    <div class="row" style="justify-content:space-between"><h1 style="margin:0;font-size:22px;font-weight:900">صندوق الوارد</h1><span class="btn-out" style="min-height:38px;font-size:12px">رسالة جماعية</span></div>
+    <div class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4-4"/></svg> دوّر على لاعب</div>
+    <div class="seg"><span class="on">الكل</span><span>مستنية ردك · 3</span><span>مش مقروءة</span></div>
+  </div>
+  <div style="margin-top:8px">
+    <div class="qrow"><span class="av">أ</span><span class="txt"><b style="font-size:14px">أحمد سامي</b><span>ينفع أبدّل الرز ببطاطس في الغدا؟</span></span><span class="side-meta"><span class="time">11:05</span><span class="badge">2</span></span></div>
+    <div class="qrow"><span class="av">ي</span><span class="txt"><b style="font-size:14px">يوسف نبيل</b><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg> رسالة صوتية · 0:18</span></span><span class="side-meta"><span class="time">10:40</span><span class="badge">1</span></span></div>
+    <div class="qrow"><span class="av">س</span><span class="txt"><b style="font-size:14px">سارة عادل</b><span>طب ينفع أتمرن الخميس بدلها؟</span></span><span class="side-meta"><span class="time">9:20</span><span class="badge">1</span></span></div>
+    <div class="qrow"><span class="av">ك</span><span class="txt"><b style="font-size:14px">كريم جلال</b><span>أنت: تمام، كمّل على كده</span></span><span class="side-meta"><span class="time">أمس</span></span></div>
+    <div class="qrow"><span class="av">م</span><span class="txt"><b style="font-size:14px">منى سمير</b><span>تمام يا كابتن</span></span><span class="side-meta"><span class="time">أمس</span></span></div>
+  </div>
+  <nav class="nav">
+    <i><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9h-6v-6H9v6H3z"/></svg></i><i><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"/></svg></i><i><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13l3-8h10l3 8v6H4z"/><path d="M4 13h5l1 2h4l1-2h5"/></svg><span class="dot">6</span></i><i class="on"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg> الوارد</i><i><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></i>
+  </nav>
+</div>
+<figcaption><b>صندوق الوارد على الموبايل</b>نفس القايمة. لما تدوس على لاعب الشات بيفتح في صفحة لوحده، ومنه تقدر تفتح ملخص اللاعب.</figcaption>
+</figure>
+
+<figure>
+<div class="phone">
+  <div class="pcol">
+    <h1 style="margin:0;font-size:22px;font-weight:900">المزيد</h1>
+    <span class="label">الشغل اليومي</span>
+    <div class="card" style="padding:0">
+      <div class="qrow"><span class="txt"><b style="font-size:14px">فيديوهات الأداء</b></span><span class="badge">1</span></div>
+      <div class="qrow"><span class="txt"><b style="font-size:14px">بعد التمرين</b></span><span class="badge">3</span></div>
+      <div class="qrow"><span class="txt"><b style="font-size:14px">طلبات الانضمام</b></span><span class="badge">2</span></div>
+      <div class="qrow" style="border:0"><span class="txt"><b style="font-size:14px">الرسايل الجماعية</b></span></div>
+    </div>
+    <span class="label">المكتبة</span>
+    <div class="card" style="padding:0">
+      <div class="qrow"><span class="txt"><b style="font-size:14px">خطط التمارين</b></span></div>
+      <div class="qrow"><span class="txt"><b style="font-size:14px">الأنظمة الغذائية</b></span></div>
+      <div class="qrow" style="border:0"><span class="txt"><b style="font-size:14px">مكتبة الأكلات</b></span></div>
+    </div>
+    <span class="label">الإدارة</span>
+    <div class="card" style="padding:0">
+      <div class="qrow"><span class="txt"><b style="font-size:14px">التقييمات</b></span></div>
+      <div class="qrow"><span class="txt"><b style="font-size:14px">الدفعات</b></span></div>
+      <div class="qrow" style="border:0"><span class="txt"><b style="font-size:14px">الإعدادات</b></span></div>
+    </div>
+  </div>
+  <nav class="nav">
+    <i><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9h-6v-6H9v6H3z"/></svg></i><i><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"/></svg></i><i><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13l3-8h10l3 8v6H4z"/><path d="M4 13h5l1 2h4l1-2h5"/></svg><span class="dot">6</span></i><i><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg><span class="dot">3</span></i><i class="on"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg> المزيد</i>
+  </nav>
+</div>
+<figcaption><b>شريط التنقل على الموبايل</b>خمس أماكن: الرئيسية، اللاعبين، المتابعة، صندوق الوارد، المزيد. «المزيد» فيه باقي صفحات الشغل اليومي والمكتبة والإدارة، بنفس ترتيب القايمة الجانبية على الكمبيوتر.</figcaption>
+</figure>
+</div>
+
+</div>
+
+<script>
+// Shared sidebar + page tabs, so every frame shows the same structure.
+const pages = [
+  ['queue','المتابعة','6','كل اللي مستنيك النهارده'],
+  ['inbox','صندوق الوارد','3','كل محادثاتك مع اللاعيبة'],
+  ['videos','فيديوهات الأداء','1','فيديوهات التكنيك اللي اللاعيبة بعتوها'],
+  ['after','بعد التمرين','3','اللاعيبة قالوا إيه بعد التمرين'],
+  ['join','طلبات الانضمام','2','الناس اللي عاوزين يبدأوا معاك'],
+  ['broadcast','الرسايل الجماعية','','رسالة واحدة لأكتر من لاعب'],
+];
+function sidebar(active){
+  const item=(label,on,c,hot)=>`<div class="it${on?' on':''}"><span>${label}</span>${c?`<span class="c${hot?' hot':''}">${c}</span>`:''}</div>`;
+  return `<div class="side">
+    <div class="row" style="padding:2px 10px 10px;gap:8px"><span style="width:28px;height:28px;border-radius:8px;background:var(--lime);color:var(--onlime);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px">K</span><b style="font-size:14px">كوتشيفو</b></div>
+    ${item('الرئيسية')}${item('اللاعبين')}
+    <div class="g hl">الشغل اليومي</div>
+    ${pages.map(p=>item(p[1],p[0]===active,p[2],p[0]==='queue'||p[0]==='inbox')).join('')}
+    <div class="g">التمارين</div>${item('خطط التمارين')}
+    <div class="g">الأكل</div>${item('الأنظمة الغذائية')}${item('مكتبة الأكلات')}
+    <div class="g">الإدارة</div>${item('التقييمات')}${item('الدفعات')}${item('الإعدادات')}
+  </div>`;
+}
+function head(active){
+  const p=pages.find(x=>x[0]===active);
+  return `<div class="head"><div><span class="label">الشغل اليومي</span><h1>${p[1]}</h1><span class="sub">${p[3]}</span></div>
+    <div class="ptabs">${pages.map(x=>`<span class="${x[0]===active?'on':''}">${x[1]}${x[2]?` <span class="c">${x[2]}</span>`:''}</span>`).join('')}</div></div>`;
+}
+document.querySelectorAll('.desk[data-page]').forEach(d=>{
+  const a=d.dataset.page;
+  d.insertAdjacentHTML('afterbegin', sidebar(a));
+  d.querySelector('.main').insertAdjacentHTML('afterbegin', head(a));
+});
+</script>
+</body>
+</html>

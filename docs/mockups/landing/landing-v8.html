@@ -1,0 +1,881 @@
+<title>KOCHIVO Landing v8</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600&family=Changa:wght@600;800&family=Manrope:wght@700;800&display=swap">
+<style>
+/* Layout: built on the logo's diagonal stroke. Dark gym floor, one lime slash per section, sports-poster type, a pinned phone that tells one captain's day as you scroll. Single dark look by choice. */
+:root {
+  --floor: #0c0d0e; --floor-2: #141618; --plate: #1c1f22; --edge: #2b2f33;
+  --chalk: #f2f3ee; --dust: #9ca2a8; --lime: #b6e94f; --lime-deep: #8fc22a; --ink-on-lime: #0e1206;
+  --warn: #ff9a73; --calm: #9db2ff;
+  --f-poster: "Changa", "Alexandria", system-ui, sans-serif;
+  --f-body: "Alexandria", system-ui, sans-serif;
+  --f-num: "Manrope", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box }
+body { background: var(--floor); color: var(--chalk); font-family: var(--f-body); font-size: 16px; line-height: 1.7; overflow-x: clip }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--floor) }
+.wrap { max-width: 1200px; margin-inline: auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)) }
+h1, h2, h3 { margin: 0; text-wrap: balance }
+h2 { font: 800 clamp(2.1rem, 5.4vw, 4.2rem)/1.05 var(--f-poster) }
+h3 { font: 600 1.15rem/1.35 var(--f-body) }
+p { margin: 0 }
+.num { font-family: var(--f-num); direction: ltr; unicode-bidi: isolate; font-variant-numeric: tabular-nums }
+section { position: relative; padding-block: clamp(72px, 10vw, 128px) }
+.tick { font: 600 .82rem var(--f-body); color: var(--lime); display: flex; align-items: center; gap: .7rem }
+.tick::before { content: ""; width: 26px; height: 4px; background: var(--lime); transform: skewX(-40deg) }
+.sub { color: var(--dust); font-size: 1.06rem; max-width: 52ch }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: .6rem; min-height: 3.4rem; padding-inline: 1.7rem; font: 800 1rem var(--f-poster); text-decoration: none; border: 0; cursor: pointer; clip-path: polygon(14px 0, 100% 0, calc(100% - 14px) 100%, 0 100%); transition: transform .2s ease, background-color .2s ease }
+.btn:hover { transform: translateY(-2px) }
+.btn:focus-visible, a:focus-visible, button:focus-visible, summary:focus-visible { outline: 3px solid var(--calm); outline-offset: 4px }
+.btn-lime { background: var(--lime); color: var(--ink-on-lime) } .btn-lime:hover { background: #c8f56a }
+.btn-plate { background: var(--plate); color: var(--chalk) } .btn-plate:hover { background: var(--edge) }
+.btn .go { display: inline-block; transition: transform .2s } .btn:hover .go { transform: translateX(-5px) }
+
+/* Header */
+header.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: rgb(12 13 14 / .94); border-bottom: 1px solid var(--edge) }
+.top .wrap { display: flex; align-items: center; gap: 2rem; min-height: 72px }
+.top img { height: 34px; width: auto; display: block }
+.nav { display: flex; gap: 1.8rem; font-size: .92rem }
+.nav a { color: var(--dust); text-decoration: none; transition: color .2s } .nav a:hover { color: var(--chalk) }
+.top .sp { flex: 1 }
+.top .login { color: var(--chalk); text-decoration: none; font-size: .92rem; font-weight: 500 }
+.top .btn { min-height: 2.8rem; padding-inline: 1.2rem; font-size: .92rem }
+@media (max-width: 880px) { .nav, .top .login { display: none } .top img { height: 28px } }
+
+/* Hero */
+.hero { padding-block: clamp(48px, 7vw, 96px) clamp(40px, 6vw, 80px); overflow: hidden }
+.slash { position: absolute; z-index: 0; background: var(--lime); transform: skewX(-42deg); transform-origin: bottom }
+.hero .slash { width: clamp(90px, 13vw, 190px); height: 135%; top: -20%; inset-inline-start: 18%; opacity: .95 }
+.hero .slash.thin { width: clamp(16px, 2vw, 28px); inset-inline-start: 34%; background: var(--plate); opacity: 1 }
+.hero-grid { position: relative; z-index: 1; display: grid; grid-template-columns: 1.15fr 1fr; gap: clamp(28px, 4vw, 56px); align-items: center }
+.hero-grid > * { min-width: 0 }
+.hero h1 { font: 800 clamp(2.9rem, 7.6vw, 6.2rem)/.98 var(--f-poster); letter-spacing: -.01em }
+.hero h1 .l { display: block }
+.hero h1 .hl { color: var(--lime) }
+.hero .sub { margin-top: 1.4rem; font-size: clamp(1.05rem, 1.6vw, 1.18rem) }
+.cta { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: 2rem }
+.fine { margin-top: 1rem; font-size: .86rem; color: var(--dust) } .fine a { color: var(--chalk) }
+/* The slogan is the headline: English, uppercase, set like a race poster. It reads left to right inside the RTL page. */
+.slogan-h { margin-top: 1.3rem; direction: ltr; text-align: right; font: 800 clamp(3rem, 7.8vw, 6.6rem)/.9 var(--f-num); letter-spacing: -.045em }
+.slogan-h .l { display: block; overflow: hidden; padding-bottom: .04em }
+.slogan-h .hl { color: var(--lime) }
+.ar-line { margin-top: 1.1rem; font: 800 clamp(1.3rem, 2.4vw, 1.75rem)/1.3 var(--f-poster); display: flex; align-items: center; gap: .8rem }
+.ar-line::after { content: ""; flex: 1; max-width: 120px; height: 3px; background: var(--edge) }
+.slogan-h .l { animation: line .8s cubic-bezier(.2,.7,.2,1) both } .slogan-h .l:nth-child(2) { animation-delay: .09s } .slogan-h .l:nth-child(3) { animation-delay: .18s }
+@keyframes line { from { transform: translateY(60%); clip-path: inset(0 0 100% 0) } to { clip-path: inset(0 0 0 0) } }
+/* Phone status bar for realism */
+.status { display: flex; justify-content: space-between; font: 700 .66rem var(--f-num); color: var(--chalk); direction: ltr; margin-top: -.3rem }
+.status i { display: inline-block; width: 18px; height: 9px; border: 1.5px solid var(--chalk); border-radius: 3px; position: relative; vertical-align: middle }
+.status i::after { content: ""; position: absolute; inset: 1px 5px 1px 1px; background: var(--chalk); border-radius: 1px }
+
+/* Devices */
+.devices { position: relative; height: clamp(440px, 46vw, 560px) }
+.phone { position: absolute; width: 250px; border-radius: 38px; padding: 8px; background: #2a2e32; box-shadow: 0 50px 80px -30px #000 }
+.phone-in { position: relative; height: 100%; border-radius: 31px; background: #0a0b0c; overflow: hidden; padding: 1.2rem 1rem; display: grid; gap: .65rem; align-content: start; font-size: .82rem }
+.notch { width: 74px; height: 20px; border-radius: 99px; background: #000; justify-self: center; margin-top: -.5rem }
+.hero .phone { height: 500px; inset-inline-start: 6%; top: 0; transform: rotate(-4deg) }
+.hero .phone.back { height: 440px; width: 220px; inset-inline-start: auto; inset-inline-end: 4%; top: 70px; transform: rotate(5deg); background: #202326 }
+.m { color: var(--dust); font-size: .74rem }
+.big { font: 800 3.2rem/1 var(--f-num); text-align: center }
+.stp { display: grid; grid-template-columns: 2.8rem 1fr 2.8rem; align-items: center; gap: .4rem }
+.stp span { height: 2.8rem; border-radius: 14px; background: var(--plate); display: grid; place-items: center; font: 800 1.3rem var(--f-num) }
+.pr { text-align: center; color: var(--lime); font-size: .78rem; font-weight: 600 }
+.done { background: var(--lime); color: var(--ink-on-lime); border-radius: 14px; text-align: center; padding: .75rem; font: 800 .92rem var(--f-poster) }
+.sets { display: grid; gap: .35rem }
+.sets div { display: flex; justify-content: space-between; padding: .5rem .7rem; border-radius: 10px; background: var(--floor-2); font-size: .76rem }
+.sets .ok { color: var(--lime) }
+.row { display: flex; align-items: center; gap: .6rem; padding: .55rem .65rem; border-radius: 12px; background: var(--floor-2); font-size: .78rem }
+.row .n { flex: 1; min-width: 0 }
+.av { width: 1.9rem; height: 1.9rem; border-radius: 50%; display: grid; place-items: center; font-weight: 600; font-size: .72rem; flex: none; background: var(--plate) }
+.tag { font-size: .66rem; padding: .18rem .55rem; border-radius: 99px; white-space: nowrap; font-weight: 600 }
+.t-l { background: rgb(182 233 79 / .15); color: var(--lime) } .t-w { background: rgb(255 154 115 / .14); color: var(--warn) } .t-c { background: rgb(157 178 255 / .15); color: var(--calm) }
+.example { position: absolute; bottom: -6px; inset-inline-end: 0; font-size: .74rem; color: var(--dust) }
+@media (max-width: 900px) {
+  .hero-grid { grid-template-columns: 1fr } .devices { height: 470px }
+  .hero .phone { inset-inline-start: 2% } .hero .phone.back { inset-inline-end: 0; width: 190px; height: 400px }
+  .hero .slash { inset-inline-start: 55%; height: 90% }  .hero .slash.thin { inset-inline-start: 72% }
+}
+@media (max-width: 420px) { .hero .phone { width: 215px; height: 450px } .hero .phone.back { width: 160px; height: 360px } }
+
+/* Score strip */
+.score { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: clamp(28px, 4vw, 44px); border: 1px solid var(--edge); background: var(--floor-2) }
+.score .cell { padding: 1.5rem 1.4rem; border-inline-start: 1px solid var(--edge) }
+.score .cell:first-child { border-inline-start: 0 }
+.score strong { display: block; font: 800 clamp(1.8rem, 3.5vw, 2.6rem)/1.1 var(--f-num) }
+.score strong.ar { font-family: var(--f-poster) }
+.score span { color: var(--dust); font-size: .88rem } .score strong span { color: inherit; font-size: inherit }
+@media (max-width: 640px) { .score { grid-template-columns: 1fr } .score .cell { border-inline-start: 0 } .score .cell + .cell { border-top: 1px solid var(--edge) } }
+
+/* Before / after */
+.split { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin-top: clamp(32px, 5vw, 56px); border: 1px solid var(--edge) }
+.split > div { padding: clamp(1.4rem, 3.5vw, 2.6rem); display: grid; gap: 1.1rem; align-content: start }
+.split .before { background: var(--floor-2) }
+.split .after { background: var(--lime); color: var(--ink-on-lime); clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%) }
+.split h3 { font: 800 1.4rem var(--f-poster) }
+.split ul { margin: 0; padding: 0; list-style: none; display: grid; gap: .9rem }
+.split li { display: grid; grid-template-columns: 1.5rem 1fr; gap: .5rem; font-size: 1.03rem }
+.split .before li { color: var(--dust) }
+.split .before li::before { content: "×"; color: var(--warn); font-weight: 700 }
+.split .after li::before { content: "✓"; font-weight: 800 }
+@media (max-width: 760px) { .split { grid-template-columns: 1fr } }
+
+/* Scroll story */
+.story-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 5vw, 80px); margin-top: clamp(32px, 5vw, 56px) }
+.story-grid > * { min-width: 0 }
+.pin { position: sticky; top: 110px; height: 560px; display: grid; place-items: center }
+.pin .slash { width: 120px; height: 100%; inset-inline-start: 30%; top: 0; opacity: .9 }
+.pin .phone { position: relative; height: 520px; z-index: 1 }
+.screen { position: absolute; inset: 0; padding: 1.2rem 1rem; display: grid; gap: .65rem; align-content: start; opacity: 0; transform: translateY(14px); transition: opacity .45s ease, transform .45s ease }
+.screen.on { opacity: 1; transform: none }
+.screen .clock { font: 800 .78rem var(--f-num); color: var(--lime) }
+.screen h4 { margin: 0; font: 600 .98rem var(--f-body) }
+.pick { display: grid; gap: .35rem }
+.pick label { display: flex; align-items: center; gap: .55rem; padding: .5rem .6rem; border-radius: 10px; background: var(--floor-2); font-size: .76rem }
+.pick i { width: 1rem; height: 1rem; border-radius: 4px; border: 1.5px solid var(--edge); flex: none }
+.pick .on i { background: var(--lime); border-color: var(--lime) }
+.video { aspect-ratio: 9 / 11; max-width: 100%; border-radius: 14px; background: repeating-linear-gradient(-42deg, var(--plate) 0 18px, var(--floor-2) 18px 36px); display: grid; place-items: center }
+.video b { width: 3rem; height: 3rem; border-radius: 50%; background: var(--lime); color: var(--ink-on-lime); display: grid; place-items: center; font-size: 1rem; padding-inline-start: 3px }
+.bubble { padding: .6rem .8rem; border-radius: 14px; font-size: .78rem; line-height: 1.55 }
+.bubble.me { background: var(--lime); color: var(--ink-on-lime); justify-self: start; border-end-start-radius: 4px }
+.bubble.them { background: var(--plate); justify-self: end; border-end-end-radius: 4px }
+.steps { display: grid }
+.step { min-height: 72vh; display: grid; align-content: center; gap: .9rem; padding-block: 2rem; opacity: .32; transition: opacity .35s ease }
+.step.on { opacity: 1 }
+.step .when { font: 800 clamp(2.6rem, 5vw, 3.8rem)/1 var(--f-num); color: var(--lime) }
+.step h3 { font: 800 clamp(1.5rem, 2.6vw, 2rem)/1.2 var(--f-poster) }
+.step p { color: var(--dust); max-width: 42ch }
+.step:first-child { min-height: 52vh; align-content: start; padding-top: 4rem }
+.step:last-child { min-height: 60vh }
+@media (max-width: 860px) {
+  .story-grid { grid-template-columns: 1fr } .pin { top: 84px; height: 380px; z-index: 2 } .pin .phone { height: 360px; width: 200px }
+  .pin .slash { width: 70px } .step { min-height: 55vh; background: linear-gradient(transparent, var(--floor) 30%) } .step:first-child { min-height: 40vh }
+}
+
+/* Feature rack */
+.rack { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--edge); margin-top: clamp(32px, 5vw, 56px) }
+.rack article { padding: 1.8rem 1.6rem 2rem 0; padding-inline: 0 1.6rem; border-bottom: 1px solid var(--edge); display: grid; gap: .55rem; align-content: start; position: relative }
+.rack article:not(:nth-child(3n+1)) { padding-inline-start: 1.6rem; border-inline-start: 1px solid var(--edge) }
+.rack .no { font: 800 .8rem var(--f-num); color: var(--dust) }
+.rack article::after { content: ""; position: absolute; bottom: -1px; inset-inline-start: 0; height: 3px; width: 0; background: var(--lime); transition: width .35s ease }
+.rack article:hover::after { width: 100% }
+.rack p { color: var(--dust); font-size: .95rem }
+.soon-tag { display: inline-block; vertical-align: middle; margin-inline-start: .4rem; padding: .15rem .65rem; font: 800 .7rem var(--f-poster); color: var(--lime); border: 1px solid var(--lime); clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%) }
+.rack .soon .ic { border-style: dashed }
+@media (max-width: 860px) { .rack { grid-template-columns: 1fr 1fr } .rack article:not(:nth-child(3n+1)) { padding-inline-start: 0; border-inline-start: 0 } .rack article:nth-child(even) { padding-inline-start: 1.2rem; border-inline-start: 1px solid var(--edge) } }
+@media (max-width: 540px) { .rack { grid-template-columns: 1fr } .rack article:nth-child(even) { padding-inline-start: 0; border-inline-start: 0 } }
+
+/* Pricing */
+.plans { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: clamp(32px, 5vw, 56px) }
+.plan { background: var(--floor-2); border: 1px solid var(--edge); padding: 1.6rem 1.4rem; display: grid; gap: .35rem; align-content: start; position: relative; overflow: hidden; transition: transform .25s ease, border-color .25s ease }
+.plan:hover { transform: translateY(-4px); border-color: var(--dust) }
+.plan .tier { font: 800 .78rem var(--f-num); letter-spacing: .2em; color: var(--dust) }
+.plan .amt { font: 800 2.7rem/1.1 var(--f-num); margin-top: .5rem } .plan .amt small { font: 400 .86rem var(--f-body); color: var(--dust) }
+.plan .pl { font-weight: 600 } .plan .who { color: var(--dust); font-size: .9rem }
+.plan .btn { margin-top: 1.2rem; min-height: 3rem }
+.plan.hot { background: var(--lime); color: var(--ink-on-lime); border-color: var(--lime) }
+.plan.hot .tier, .plan.hot .who, .plan.hot .amt small { color: rgb(14 18 6 / .65) }
+.plan.hot .btn { background: var(--ink-on-lime); color: var(--lime) }
+.plan { display: flex; flex-direction: column }
+.plan-top { display: flex; align-items: center; justify-content: space-between; gap: .5rem }
+.badge { background: var(--ink-on-lime); color: var(--lime); font: 800 .72rem var(--f-poster); padding: .3rem .8rem; clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%) }
+.feat { list-style: none; margin: 1.1rem 0 0; padding: 1.1rem 0 0; border-top: 1px solid var(--edge); display: grid; gap: .55rem; font-size: .9rem }
+.feat li { display: grid; grid-template-columns: 1.2rem 1fr; gap: .3rem }
+.feat li::before { content: "✓"; color: var(--lime); font-weight: 800 }
+.plan.hot .feat { border-color: rgb(14 18 6 / .2) } .plan.hot .feat li::before { color: var(--ink-on-lime) }
+.plan .btn { margin-top: auto } .plan .feat + .btn { margin-top: 1.4rem }
+.plan > .btn:last-child { margin-top: auto } .plan .feat { margin-bottom: 1.4rem }
+.note { color: var(--dust); font-size: .86rem; margin-top: .7rem }
+@media (max-width: 980px) { .plans { grid-template-columns: 1fr 1fr } }
+@media (max-width: 520px) { .plans { grid-template-columns: 1fr } }
+
+/* FAQ */
+.faq-grid { display: grid; grid-template-columns: .8fr 1.2fr; gap: clamp(28px, 5vw, 80px) }
+.faq-grid > * { min-width: 0 }
+.faq { border-top: 1px solid var(--edge) }
+details { border-bottom: 1px solid var(--edge) }
+summary { cursor: pointer; min-height: 4.2rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; list-style: none; font-weight: 600; font-size: 1.04rem }
+summary::-webkit-details-marker { display: none }
+summary::after { content: ""; flex: none; width: 14px; height: 14px; border-inline-end: 2.5px solid var(--lime); border-bottom: 2.5px solid var(--lime); transform: rotate(45deg) translateY(-4px); transition: transform .25s }
+details[open] summary::after { transform: rotate(-135deg) translateY(-2px) }
+details p { color: var(--dust); padding-bottom: 1.3rem; max-width: 58ch }
+@media (max-width: 860px) { .faq-grid { grid-template-columns: 1fr } }
+
+/* Close */
+.close { background: var(--lime); color: var(--ink-on-lime); overflow: hidden }
+.close .slash { background: var(--ink-on-lime); width: clamp(60px, 9vw, 130px); height: 160%; top: -30%; inset-inline-end: 8%; inset-inline-start: auto; opacity: .92 }
+.close .slash.thin { width: clamp(12px, 1.6vw, 22px); inset-inline-end: 22%; opacity: .25 }
+.close .wrap { position: relative; z-index: 1; display: grid; gap: 1.4rem; justify-items: start }
+.close h2 { font-size: clamp(2.4rem, 7vw, 5.4rem); max-width: 12ch }
+.close p { max-width: 44ch; font-size: 1.08rem; color: rgb(14 18 6 / .75) }
+.close .btn { background: var(--ink-on-lime); color: var(--lime) }
+footer { padding-block: 36px; color: var(--dust); font-size: .86rem }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; align-items: center }
+footer img { height: 26px; width: auto; display: block }
+
+/* Entrances: content is visible at rest; JS adds a one-time rise only to blocks below the fold. */
+.js .rise.wait { opacity: .001; transform: translateY(28px) }
+.js .rise { transition: opacity .7s ease, transform .7s cubic-bezier(.2,.7,.2,1) }
+.hero .slash { animation: cut .9s cubic-bezier(.7,0,.2,1) both } .hero .slash.thin { animation-delay: .12s }
+@keyframes cut { from { transform: skewX(-42deg) scaleY(0) } }
+
+/* v6 small effects: all one-shot or input-driven, transform/opacity only, nothing loops. */
+.progress { position: fixed; top: env(safe-area-inset-top, 0px); inset-inline: 0; height: 3px; z-index: 40; background: var(--lime); transform-origin: right; transform: scaleX(0); pointer-events: none }
+header.top { transition: min-height .25s, background-color .25s }
+.top .wrap { transition: min-height .25s ease }
+header.top.slim .wrap { min-height: 58px }
+.btn { position: relative; overflow: hidden }
+.btn:active { transform: translateY(1px) scale(.97) }
+.btn-lime::after, .plan.hot .btn::after { content: ""; position: absolute; inset: -20% auto -20% -60%; width: 40%; background: rgb(255 255 255 / .45); transform: skewX(-42deg); transition: inset-inline-start .55s ease; pointer-events: none }
+.btn-lime:hover::after, .plan.hot .btn:hover::after { inset-inline-start: 130% }
+.plan.hot .btn::after { background: rgb(182 233 79 / .25) }
+.tick::before { transition: width .6s cubic-bezier(.2,.7,.2,1) .15s }
+.js .tick.rise.wait::before { width: 0 }
+/* Hero depth: phones drift with the pointer, toasts pop in once */
+.devices { perspective: 1200px; --mx: 0; --my: 0 }
+.hero .phone { transition: transform .5s cubic-bezier(.2,.7,.2,1); will-change: transform }
+.hero .phone:not(.back) { transform: translate3d(calc(var(--mx) * -14px), calc(var(--my) * -10px), 0) rotate(-4deg) rotateY(calc(var(--mx) * 6deg)) }
+.hero .phone.back { transform: translate3d(calc(var(--mx) * 8px), calc(var(--my) * 6px), 0) rotate(5deg) }
+.toast { position: absolute; z-index: 3; display: flex; align-items: center; gap: .6rem; padding: .7rem .95rem; border-radius: 16px; background: var(--plate); border: 1px solid var(--edge); box-shadow: 0 24px 40px -18px #000; font-size: .8rem; white-space: nowrap; animation: pop .6s cubic-bezier(.2,1.3,.4,1) both; transition: transform .5s cubic-bezier(.2,.7,.2,1) }
+.toast b { width: 1.7rem; height: 1.7rem; border-radius: 50%; display: grid; place-items: center; background: var(--lime); color: var(--ink-on-lime); font-size: .8rem; flex: none }
+.toast small { display: block; color: var(--dust); font-size: .68rem; line-height: 1.3 }
+.toast.t1 { top: 0; inset-inline-end: 2%; animation-delay: 1.1s; transform: translate3d(calc(var(--mx) * -22px), calc(var(--my) * -16px), 0) }
+.toast.t2 { bottom: 9%; inset-inline-end: 6%; animation-delay: 1.9s; transform: translate3d(calc(var(--mx) * 18px), calc(var(--my) * 12px), 0) }
+.toast.t2 b { background: var(--calm) }
+@keyframes pop { from { opacity: 0; scale: .85; translate: 0 12px } }
+.stp .plus { transition: background-color .2s, color .2s, scale .15s }
+.stp .plus.press { background: var(--lime); color: var(--ink-on-lime); scale: .9 }
+.big.bump { animation: bump .45s cubic-bezier(.2,1.4,.4,1) }
+@keyframes bump { 40% { scale: 1.14; color: var(--lime) } }
+.pr { transition: opacity .4s, translate .4s } .pr.hide { opacity: 0; translate: 0 6px }
+@media (max-width: 900px) { .toast.t1 { top: 6px; inset-inline-end: 0 } .toast.t2 { bottom: 2%; inset-inline-end: 0 } }
+@media (max-width: 420px) { .toast { font-size: .72rem; padding: .55rem .75rem } .toast small { display: none } }
+/* Score strip numbers count up once */
+.score .cell { transition: background-color .25s } .score .cell:hover { background: var(--plate) }
+.score .cell:hover strong { color: var(--lime) } .score strong { transition: color .25s }
+/* Before/after: the "after" ticks land one by one */
+.js .split.wait .after li { opacity: 0; translate: 16px 0 }
+.split .after li { transition: opacity .45s ease, translate .45s cubic-bezier(.2,.7,.2,1) }
+.split .after li:nth-child(2) { transition-delay: .5s } .split .after li:nth-child(3) { transition-delay: .62s } .split .after li:nth-child(4) { transition-delay: .74s } .split .after li:nth-child(1) { transition-delay: .38s }
+/* Story: step rail under the pinned phone */
+.rail { position: absolute; bottom: -4px; display: flex; gap: 6px; z-index: 2 }
+.rail i { width: 26px; height: 4px; background: var(--edge); transform: skewX(-40deg); transition: background-color .3s, width .3s }
+.rail i.on { background: var(--lime); width: 44px }
+.step .when { transition: translate .4s cubic-bezier(.2,.7,.2,1) } .step:not(.on) .when { translate: 0 8px }
+/* Feature rack: icon, number turns lime, slash marker slides in */
+.rack article { transition: background-color .3s }
+.rack article:hover { background: linear-gradient(var(--floor-2), transparent) }
+.rack .ic { width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid var(--edge); border-radius: 12px; color: var(--chalk); transition: color .3s, border-color .3s, rotate .4s cubic-bezier(.2,1.4,.4,1) }
+.rack .ic svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round }
+.rack article:hover .ic { color: var(--lime); border-color: var(--lime); rotate: -8deg }
+.rack article:hover .no { color: var(--lime) }
+.rack .head { display: flex; align-items: center; justify-content: space-between; margin-bottom: .4rem }
+.rack .no { transition: color .3s; font-size: 1rem }
+/* Pricing: hot plan catches light once when it arrives */
+.plan.hot::before { content: ""; position: absolute; inset: -10% auto -10% -50%; width: 35%; background: rgb(255 255 255 / .35); transform: skewX(-42deg); opacity: 0; pointer-events: none }
+.plans.shine .plan.hot::before { animation: sweep 1.1s .5s cubic-bezier(.4,0,.2,1) both }
+@keyframes sweep { 0% { opacity: 1; inset-inline-start: -50% } 100% { opacity: 1; inset-inline-start: 140% } }
+.plan .amt { transition: color .25s } .plan:not(.hot):hover .amt { color: var(--lime) }
+/* FAQ: answer slides open */
+details p { animation: none } details[open] p { animation: drop .35s ease both }
+@keyframes drop { from { opacity: 0; translate: 0 -6px } }
+summary { transition: color .2s } summary:hover { color: var(--lime) }
+/* Close band: slash cuts in when it arrives */
+.close.wait .slash { transform: skewX(-42deg) scaleY(0) }
+.close .slash { transition: transform .9s cubic-bezier(.7,0,.2,1) } .close .slash.thin { transition-delay: .12s }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important } .js .rise.wait { opacity: 1; transform: none } .screen { transition: none } .progress { display: none } .js .split.wait .after li { opacity: 1; translate: none } .close.wait .slash { transform: skewX(-42deg) } }
+
+/* App skin (owner decision 2026-11-13): public pages speak the app's language. Same tokens as globals.css: pill buttons, glass cards with a hairline, rounded corners, the faint lime glow behind the page. No big slashes. */
+:root { --glass: rgb(255 255 255 / .03); --glass-raised: rgb(255 255 255 / .05); --hair: rgb(255 255 255 / .09); --r-card: 1.5rem; --r-ctl: 1rem; --glass-shadow: inset 0 1px 0 rgb(255 255 255 / .04), 0 4px 24px -8px rgb(0 0 0 / .5); --lime-glow: inset 0 1px 0 rgb(255 255 255 / .25), 0 0 18px rgb(182 233 79 / .25) }
+body { background: #070808 }
+body::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(50rem 32rem at 100% -10%, rgb(182 233 79 / .07), transparent 60%), radial-gradient(40rem 36rem at 0% 110%, rgb(182 233 79 / .04), transparent 70%), #070808 }
+/* The lime slash from the logo stays: it is the brand mark, everything else follows the app. */
+.close { position: relative; overflow: hidden }
+.hero .cta .btn-lime { box-shadow: 0 0 0 4px #070808, 0 0 18px rgb(182 233 79 / .25) }
+.close .slash { background: var(--lime); opacity: .9; z-index: 0 }
+.close .slash.thin { background: var(--lime); opacity: .3 }
+.close .wrap { position: relative; z-index: 1; background: radial-gradient(ellipse at top, rgb(182 233 79 / .1), transparent 65%), rgb(14 16 14 / .78) !important }
+.btn { clip-path: none; border-radius: 9999px; min-height: 3.25rem }
+.btn-lime, .close .btn { box-shadow: var(--lime-glow) }
+.btn-lime:hover { box-shadow: inset 0 1px 0 rgb(255 255 255 / .3), 0 0 18px rgb(182 233 79 / .32) }
+.btn-lime::after, .plan.hot .btn::after { display: none }
+.btn-plate { background: var(--glass-raised); border: 1px solid var(--hair) } .btn-plate:hover { background: rgb(255 255 255 / .08) }
+.tick::before { width: 8px; height: 8px; border-radius: 50%; transform: none }
+.chip, .badge, .soon-tag, .tag { clip-path: none; border-radius: 9999px }
+.glassy, .plan, .pack, .steps li, .toast, .score, .proof .wrap, .portrait, .social a, .split > div { background: var(--glass); border: 1px solid var(--hair); border-radius: var(--r-card); box-shadow: var(--glass-shadow) }
+.social a { border-radius: 9999px }
+.bar i { transform: none; border-radius: 3px }
+.rail i { transform: none; border-radius: 4px }
+
+header.top { background: rgb(7 8 8 / .85); border-bottom-color: var(--hair) }
+.split { border: 0; gap: 12px }
+.split .after { background: radial-gradient(ellipse at top, rgb(182 233 79 / .08), transparent 65%), rgb(255 255 255 / .07); color: var(--chalk); border-color: rgb(182 233 79 / .45) }
+.split .after li::before { color: var(--lime) }
+.score { overflow: hidden } .score .cell:hover { background: var(--glass-raised) }
+.rack { border-top: 0; gap: 12px } .rack article, .rack article:not(:nth-child(3n+1)), .rack article:nth-child(even) { padding: 1.6rem 1.4rem; border: 1px solid var(--hair); border-radius: var(--r-card); background: var(--glass); box-shadow: var(--glass-shadow) }
+.rack article::after { display: none } .rack article:hover { background: var(--glass-raised); border-color: rgb(182 233 79 / .35) }
+.rack .ic { border-radius: 9999px }
+.plan:hover { border-color: rgb(255 255 255 / .2) }
+.plan.hot { background: radial-gradient(ellipse at top, rgb(182 233 79 / .08), transparent 65%), rgb(255 255 255 / .07); color: var(--chalk); border-color: rgb(182 233 79 / .45) }
+.plan.hot .tier, .plan.hot .who, .plan.hot .amt small { color: var(--dust) }
+.plan.hot .amt { color: var(--lime) }
+.plan.hot .feat { border-color: var(--hair) } .plan.hot .feat li::before { color: var(--lime) }
+.plan.hot .btn { background: var(--lime); color: var(--ink-on-lime); box-shadow: var(--lime-glow) }
+.plan.hot::before { display: none }
+.badge { background: var(--lime); color: var(--ink-on-lime) }
+.faq { border-top: 0 } details { background: var(--glass); border: 1px solid var(--hair); border-radius: var(--r-ctl); padding-inline: 1.2rem; margin-bottom: 8px }
+.close { background: none; color: var(--chalk); padding-block: clamp(40px, 6vw, 72px) }
+.close .wrap { padding-block: clamp(36px, 6vw, 64px); padding-inline: clamp(20px, 5vw, 56px); max-width: calc(1200px - 32px); background: radial-gradient(ellipse at top, rgb(182 233 79 / .1), transparent 65%), rgb(255 255 255 / .06); border: 1px solid rgb(182 233 79 / .45); border-radius: var(--r-card) }
+.close p { color: var(--dust) } .close .btn { background: var(--lime); color: var(--ink-on-lime) }
+@media (max-width: 1232px) { .close .wrap { margin-inline: 16px } }
+.stp span { border-radius: var(--r-ctl) }
+
+/* UPGRADE layer: same structure and copy, the app's glass family. Static light only, no blur except the header, no infinite animation. */
+html.up body{background:radial-gradient(ellipse 60% 40% at 30% 0%,rgb(182 233 79/.10),transparent 70%) no-repeat,var(--floor)}
+html.up header.top{background:rgb(12 13 14/.62);backdrop-filter:blur(18px) saturate(150%);-webkit-backdrop-filter:blur(18px) saturate(150%);border-bottom-color:rgb(255 255 255/.07);box-shadow:inset 0 -1px 0 rgb(255 255 255/.03)}
+html.up .hero::before{content:"";position:absolute;inset:-10% -10% auto auto;width:70%;height:120%;background:radial-gradient(closest-side,rgb(182 233 79/.16),transparent 75%);pointer-events:none;z-index:0}
+html.up .hero::after{content:"";position:absolute;inset:auto auto -20% -10%;width:55%;height:80%;background:radial-gradient(closest-side,rgb(157 178 255/.10),transparent 75%);pointer-events:none;z-index:0}
+html.up .btn-lime{background:linear-gradient(180deg,#cdf56f,var(--lime));box-shadow:0 12px 30px -10px rgb(182 233 79/.55)}
+html.up .btn-lime:hover{background:linear-gradient(180deg,#d6f985,#c3f25e)}
+html.up .btn-plate{background:rgb(255 255 255/.07);box-shadow:inset 0 1px 0 rgb(255 255 255/.1)}
+/* Phones: metal bezel, screen glare, the app's glass inside */
+html.up .phone{background:linear-gradient(145deg,#4a4f55,#1d2024 40%,#2e3237 70%,#15171a);box-shadow:inset 0 1px 1px rgb(255 255 255/.25),0 0 0 1px rgb(0 0 0/.6),0 60px 90px -30px #000,0 30px 80px -40px rgb(182 233 79/.35)}
+html.up .phone-in{background:radial-gradient(ellipse 90% 40% at 70% 0%,rgb(182 233 79/.16),transparent 70%),radial-gradient(ellipse 80% 35% at 0% 100%,rgb(157 178 255/.12),transparent 70%),#0a0b0c}
+html.up .phone-in::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(115deg,rgb(255 255 255/.07),transparent 28%);pointer-events:none}
+html.up .row,html.up .sets div,html.up .pick label{background:linear-gradient(160deg,rgb(255 255 255/.075),rgb(255 255 255/.025));box-shadow:inset 0 1px 0 rgb(255 255 255/.08)}
+html.up .stp span{background:rgb(255 255 255/.07);box-shadow:inset 0 1px 0 rgb(255 255 255/.1)}
+html.up .done,html.up .bubble.me{background:linear-gradient(180deg,#cdf56f,var(--lime));box-shadow:0 8px 20px -8px rgb(182 233 79/.6)}
+html.up .bubble.them{background:rgb(255 255 255/.08);box-shadow:inset 0 1px 0 rgb(255 255 255/.08)}
+html.up .big{text-shadow:0 0 30px rgb(182 233 79/.25)}
+/* Glass panels with a fine rim */
+html.up .score,html.up .split .before,html.up .plan:not(.hot),html.up .faq{position:relative;background:linear-gradient(160deg,rgb(255 255 255/.06),rgb(255 255 255/.02) 50%,rgb(255 255 255/.035)),rgb(20 22 24/.7);border-color:rgb(255 255 255/.08);box-shadow:inset 0 1px 0 rgb(255 255 255/.09),0 24px 50px -30px #000}
+html.up .score,html.up .split,html.up .plan{border-radius:22px;overflow:hidden}
+html.up .split{border-color:rgb(255 255 255/.08)}
+html.up .split .after{background:radial-gradient(90% 80% at 100% 0%,rgb(255 255 255/.35),transparent 60%),linear-gradient(180deg,#cdf56f,var(--lime))}
+html.up .plan.hot{background:radial-gradient(90% 60% at 100% 0%,rgb(255 255 255/.4),transparent 60%),linear-gradient(180deg,#cdf56f,var(--lime));box-shadow:0 30px 60px -24px rgb(182 233 79/.5)}
+html.up .plan:not(.hot)::before,html.up .score::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(140deg,rgb(255 255 255/.22),transparent 30%,transparent 70%,rgb(182 233 79/.18));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+html.up .faq{border-radius:22px;padding-inline:1.4rem}
+html.up details:last-child{border-bottom:0}
+html.up .rack article{transition:background-color .3s ease}
+html.up .rack article:hover{background:linear-gradient(180deg,rgb(182 233 79/.06),transparent)}
+html.up .step.on .when{text-shadow:0 0 34px rgb(182 233 79/.35)}
+html.up .pin::before{content:"";position:absolute;inset:10% 0;background:radial-gradient(closest-side,rgb(182 233 79/.14),transparent 75%);pointer-events:none}
+html.up .close{background:radial-gradient(ellipse 60% 70% at 50% 100%,rgb(182 233 79/.14),transparent 70%)}
+/* Before/after toggle (mockup only) */
+section{overflow-x:clip}
+.upsw{position:fixed;bottom:18px;inset-inline-start:18px;z-index:50;display:flex;padding:4px;border-radius:99px;background:rgb(20 22 24/.9);border:1px solid rgb(255 255 255/.12);box-shadow:0 12px 30px -10px #000;font-family:var(--f-body)}
+.upsw button{border:0;background:none;color:var(--dust);padding:.5rem 1.1rem;border-radius:99px;font:600 .85rem var(--f-body);cursor:pointer}
+.upsw button.on{background:var(--lime);color:var(--ink-on-lime)}
+@media (prefers-reduced-motion:reduce){html.up .rack article{transition:none}}
+</style>
+
+<div class="progress" aria-hidden="true"></div>
+<style>
+/* Additions for v8: the real captain workspace (v11 glass) inside a laptop, and the guided demo. Same tokens as the page. */
+[hidden]{display:none!important}
+.kic{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.inside-grid{position:relative;margin-top:clamp(28px,4vw,48px);padding-bottom:40px}
+.laptop{max-width:980px;margin-inline-start:auto;border-radius:18px;padding:10px 10px 0;background:linear-gradient(145deg,#3a3f45,#1b1e21 50%,#2a2e33);box-shadow:inset 0 1px 1px rgb(255 255 255/.18),0 60px 90px -40px #000,0 30px 90px -50px rgb(182 233 79/.35)}
+.laptop .lid{border-radius:10px 10px 0 0;overflow:hidden;background:#08090a}
+.laptop .base{height:14px;margin:0 -34px;border-radius:0 0 14px 14px;background:linear-gradient(180deg,#2f3338,#16181b);box-shadow:0 18px 30px -12px #000}
+.inside-grid>.phone{position:absolute;inset-inline-end:0;bottom:0;height:470px;width:230px;transform:rotate(3deg);z-index:2}
+/* v11 workspace */
+.kws{position:relative;isolation:isolate;display:grid;grid-template-columns:184px minmax(0,1fr);text-align:start;font-size:13px;line-height:1.6;color:var(--chalk);background:#08090a;overflow:hidden}
+.korbs{position:absolute;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.korbs i{position:absolute;border-radius:50%;filter:blur(60px)}
+.korbs i:nth-child(1){width:46%;aspect-ratio:1;background:radial-gradient(circle,#b6e94f 0%,rgb(182 233 79/0) 68%);top:-24%;inset-inline-start:24%;opacity:.3}
+.korbs i:nth-child(2){width:40%;aspect-ratio:1;background:radial-gradient(circle,#4f7cff 0%,rgb(79 124 255/0) 68%);bottom:-26%;inset-inline-end:-6%;opacity:.26}
+.korbs i:nth-child(3){width:30%;aspect-ratio:1;background:radial-gradient(circle,#2fd4a7 0%,rgb(47 212 167/0) 70%);top:40%;inset-inline-start:-8%;opacity:.16}
+.korbs b{position:absolute;inset:0;background-image:linear-gradient(rgb(255 255 255/.025) 1px,transparent 1px),linear-gradient(90deg,rgb(255 255 255/.025) 1px,transparent 1px);background-size:44px 44px;mask-image:radial-gradient(ellipse at 60% 20%,#000 0%,transparent 75%);-webkit-mask-image:radial-gradient(ellipse at 60% 20%,#000 0%,transparent 75%)}
+.kg{background:linear-gradient(160deg,rgb(255 255 255/.075),rgb(255 255 255/.025) 45%,rgb(255 255 255/.04));border:1px solid rgb(255 255 255/.07);box-shadow:inset 0 1px 0 rgb(255 255 255/.14),inset 0 -1px 0 rgb(0 0 0/.25),0 18px 40px -18px rgb(0 0 0/.85);border-radius:16px}
+.kside{margin:10px;padding:12px 8px;display:flex;flex-direction:column;gap:2px;border-radius:18px}
+.kside img{height:18px;width:auto;margin:2px 8px 14px;align-self:flex-start}
+.kside span{display:flex;align-items:center;gap:9px;min-height:36px;padding:0 9px;border-radius:10px;color:var(--dust);font-size:12.5px}
+.kside span.on{background:rgb(182 233 79/.12);color:var(--lime)}
+.kside span b{margin-inline-start:auto;font:700 10.5px var(--f-num);background:rgb(255 255 255/.08);border-radius:99px;padding:0 7px;color:var(--chalk)}
+.kmain{padding:14px 14px 14px 10px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.ktop{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 12px}
+.ktop h4{margin:0;font-size:15px;flex:1 1 11rem;font-weight:700}
+.ktop h4 small{display:block;font-size:11px;color:var(--dust);font-weight:400}
+.ksr{width:36px;height:36px;border-radius:50%;border:1px solid rgb(255 255 255/.08);display:grid;place-items:center;color:var(--dust)}
+.kbtn{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 14px;border-radius:11px;font:700 12px var(--f-body);background:linear-gradient(180deg,#cdf56f,#a9e03c);color:var(--ink-on-lime);box-shadow:0 8px 20px -8px rgb(182 233 79/.6);border:0;cursor:pointer}
+.khero{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px;align-items:center;padding:14px 16px}
+.khero .ring{width:84px;height:84px}
+.khero b{font-size:15px;display:block}.khero small{color:var(--dust);font-size:11.5px;display:block}
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px}
+.kpis div{padding:8px 10px;border-radius:12px;background:rgb(0 0 0/.25);border:1px solid rgb(255 255 255/.05)}
+.kpis span{display:block;font-size:10.5px;color:var(--dust)}
+.kpis strong{font:800 19px var(--f-num)}
+.kpis .w strong{color:var(--warn)}.kpis .l strong{color:var(--lime)}
+.kcols{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:10px}
+.kp{padding:12px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.kp h5{margin:0 0 2px;font-size:12.5px;display:flex;align-items:center;gap:6px;font-weight:700}
+.kp h5 em{font-style:normal;margin-inline-start:auto;font:700 11px var(--f-num);color:var(--dust)}
+.kn{display:flex;align-items:center;gap:9px;min-height:46px;padding:5px 8px;border-radius:11px;background:rgb(0 0 0/.22);border:1px solid rgb(255 255 255/.04)}
+.kav{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;font-size:11px;font-weight:700;flex:none;background:rgb(255 255 255/.08)}
+.kn div{min-width:0;flex:1}
+.kn b{font-size:12px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kn small{display:block;font-size:10.5px;color:var(--dust);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kc{font-size:10.5px;padding:2px 9px;border-radius:99px;white-space:nowrap}
+.kc.w{background:rgb(255 154 115/.12);color:var(--warn)}.kc.c{background:rgb(157 178 255/.12);color:var(--calm)}.kc.l{background:rgb(182 233 79/.12);color:var(--lime)}
+.kact{height:28px;padding:0 10px;border-radius:8px;background:rgb(255 255 255/.07);border:1px solid rgb(255 255 255/.08);font:600 11px var(--f-body);color:var(--chalk);cursor:pointer}
+.kmsg{max-width:88%;padding:6px 10px;border-radius:12px;font-size:11.5px;line-height:1.55}
+.kmsg.t{background:rgb(255 255 255/.07);align-self:flex-start}
+.kmsg.me{background:linear-gradient(180deg,#cdf56f,#a9e03c);color:var(--ink-on-lime);align-self:flex-end;display:flex;align-items:center;gap:6px}
+.kmsg .wv{display:flex;gap:2px;align-items:center}.kmsg .wv i{width:2.5px;border-radius:2px;background:currentColor;opacity:.7}
+.kcomp{display:flex;gap:6px;margin-top:auto}
+.kcomp span{flex:1;height:34px;border-radius:99px;border:1px solid rgb(255 255 255/.08);display:flex;align-items:center;padding:0 12px;font-size:11px;color:var(--dust)}
+.kcomp i{width:34px;height:34px;border-radius:50%;background:var(--lime);display:grid;place-items:center;color:var(--ink-on-lime)}
+
+/* section copy beside the laptop */
+.inside-copy{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:28px}
+.inside-copy div{padding:16px;border-radius:16px;background:var(--plate);border:1px solid var(--edge)}
+.inside-copy b{display:block;font-size:15px;margin-bottom:4px}
+.inside-copy p{color:var(--dust);font-size:13.5px;line-height:1.7}
+
+/* demo band */
+.demo-band{position:relative;overflow:hidden;isolation:isolate;display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:32px;align-items:center;padding:clamp(24px,4vw,48px);border:1px solid rgb(182 233 79/.25);background:linear-gradient(120deg,rgb(182 233 79/.13),rgb(182 233 79/.02) 60%),var(--floor-2);clip-path:polygon(28px 0,100% 0,calc(100% - 28px) 100%,0 100%)}
+.demo-band h2{font-size:clamp(2rem,4.6vw,3.4rem)}
+.demo-band .sub{margin:1rem 0 1.6rem}
+.tcard{padding:16px;display:flex;flex-direction:column;gap:10px;border-radius:18px}
+.tcard .hd{display:flex;align-items:center;gap:10px}
+.tcard .hd img{width:34px;height:34px;border-radius:10px}
+.tcard .hd b{font-size:13px;display:block}.tcard .hd small{font-size:11.5px;color:var(--dust)}
+.tcard .cnt{margin-inline-start:auto;font:700 12px var(--f-num);color:var(--dust)}
+.tbar{height:4px;border-radius:99px;background:rgb(255 255 255/.08);overflow:hidden}
+.tbar i{display:block;height:100%;background:var(--lime);transition:width .3s}
+
+/* demo view */
+body.demo main,body.demo footer{display:none}
+#v-demo{padding-block:20px 40px}
+.dhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.dhead h1{font:800 clamp(1.6rem,3.6vw,2.4rem)/1.1 var(--f-poster);margin-inline-end:auto}
+.dhead h1 small{display:block;font:400 13px var(--f-body);color:var(--dust);margin-top:6px}
+.dwho{display:flex;padding:4px;background:var(--floor-2);border:1px solid var(--edge);clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
+.dwho button{height:42px;padding:0 18px;font:700 13px var(--f-body);color:var(--dust);background:none;border:0;cursor:pointer;display:inline-flex;align-items:center;gap:6px;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+.dwho button[aria-pressed=true]{background:var(--lime);color:var(--ink-on-lime)}
+.dgrid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:16px;align-items:start}
+.stage{border-radius:20px;border:1px solid var(--edge);overflow:hidden;position:relative;background:#08090a;min-height:560px}
+.pview{display:grid;place-items:center;min-height:560px;padding:24px;position:relative;isolation:isolate}
+.pview .phone{position:relative;height:510px;width:250px}
+.kspot{position:relative;z-index:5;box-shadow:0 0 0 3px var(--lime),0 0 0 9999px rgb(0 0 0/.62)!important;transition:box-shadow .3s}
+.tour{position:sticky;top:96px;padding:18px;gap:12px}
+.tour h3{font:800 1.35rem/1.35 var(--f-poster);margin:0}
+.tour p{color:var(--dust);font-size:14px}
+.ttry{font-size:12.5px;color:var(--lime);display:flex;gap:6px;align-items:center}
+.tnav{display:flex;gap:8px}.tnav .btn{flex:1;min-height:3rem;padding-inline:1rem;font-size:.95rem}
+.tlist{display:flex;flex-direction:column;gap:2px;border-top:1px solid var(--edge);padding-top:10px}
+.tlist button{display:flex;gap:10px;align-items:center;min-height:36px;font:400 12.5px var(--f-body);color:var(--dust);text-align:start;border-radius:8px;padding:0 6px;background:none;border:0;cursor:pointer}
+.tlist button.on{color:var(--chalk);background:rgb(255 255 255/.05)}
+.tlist button i{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--edge);flex:none;display:grid;place-items:center;font:700 9px var(--f-num);font-style:normal}
+.tlist button.dn i{background:rgb(182 233 79/.14);border-color:transparent;color:var(--lime)}
+.tlist button.on i{border-color:var(--lime);color:var(--lime)}
+.kstp{display:grid;grid-template-columns:40px 1fr 40px;gap:6px;align-items:center}
+.kstp button{height:40px;border-radius:11px;background:rgb(255 255 255/.07);border:0;color:var(--chalk);font:700 18px var(--f-num);cursor:pointer}
+.kstp div{text-align:center;font:800 30px var(--f-num)}
+.kdone{height:46px;border-radius:12px;border:0;cursor:pointer;background:linear-gradient(180deg,#cdf56f,var(--lime));color:var(--ink-on-lime);font:700 13px var(--f-body);width:100%}
+.dnote{color:var(--dust);font-size:12.5px;margin-top:14px}
+
+@media (max-width:980px){
+  .inside-copy{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .demo-band{grid-template-columns:1fr;clip-path:none}
+  .dgrid{grid-template-columns:1fr}.tour{position:static}
+}
+@media (max-width:760px){
+  .kws{grid-template-columns:1fr}.kside{display:none}
+  .kcols{grid-template-columns:1fr}
+  .inside-grid .kcols>.kp:last-child{display:none}
+  .laptop{padding:6px 6px 0}.laptop .base{margin:0 -12px}
+  .inside-grid>.phone{position:relative;inset:auto;margin:-80px auto 0;transform:rotate(2deg);height:420px;width:205px}
+  .kpis{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .dwho{width:100%}.dwho button{flex:1;justify-content:center}
+  .pview .phone{height:470px;width:230px}
+}
+@media (max-width:520px){.inside-copy{grid-template-columns:1fr}.khero .ring{width:64px;height:64px}}
+</style>
+
+<header class="top" dir="rtl" lang="ar">
+  <div class="wrap">
+    <a href="#top" aria-label="KOCHIVO"><img src="logo-primary.png" alt="KOCHIVO" width="120" height="34"></a>
+    <nav class="nav" aria-label="أقسام الصفحة"><a href="#day">يوم الكابتن</a><a href="#features">المميزات</a><a href="#pricing">الباقات</a><a href="#faq">أسئلة</a><a href="#demo">الديمو</a></nav>
+    <span class="sp"></span>
+    <a class="login" href="#pricing">دخول</a>
+    <a class="btn btn-lime" href="#start">ابدأ مجاناً</a>
+  </div>
+</header>
+
+<main dir="rtl" lang="ar" id="top">
+  <section class="hero">
+    <span class="slash" aria-hidden="true"></span><span class="slash thin" aria-hidden="true"></span>
+    <div class="wrap hero-grid">
+      <div>
+        <p class="tick">للكباتن الأونلاين</p>
+        <h1 class="slogan-h" lang="en"><span class="l">YOUR NEXT</span><span class="l"><span class="hl">MOVE</span> STARTS</span><span class="l">HERE.</span></h1>
+        <p class="ar-line">خطوتك الجاية بتبدأ من هنا</p>
+        <p class="sub">تمرين وأكل ومتابعة واشتراكات كل لاعيبتك في مكان واحد. واللاعب بيسجّل تمرينه بإيد واحدة وهو في الجيم.</p>
+        <div class="cta">
+          <a class="btn btn-lime" href="#pricing" id="start">ابدأ مجاناً · لحد 5 لاعبين <span class="go" aria-hidden="true">←</span></a>
+          <a class="btn btn-plate" href="#demo">جرّب الديمو</a>
+        </div>
+        <p class="fine">لاعب ومعاك دعوة؟ <a href="#day">ادخل من هنا</a></p>
+      </div>
+      <div class="devices" aria-label="تطبيق اللاعب ولوحة الكابتن، بيانات مثال">
+        <div class="phone back"><div class="phone-in">
+          <span class="notch"></span>
+          <span class="status"><span>9:41</span><i></i></span>
+          <span class="m">النهارده · محتاجين منك</span>
+          <div class="row"><span class="av">س</span><span class="n">سارة بعتت فيديو</span><span class="tag t-c">رد</span></div>
+          <div class="row"><span class="av">م</span><span class="n">محمد غايب 4 أيام</span><span class="tag t-w">فكّره</span></div>
+          <div class="row"><span class="av">أ</span><span class="n">أحمد بيخلص بعد 3</span><span class="tag t-l">جدّد</span></div>
+          <span class="m" style="margin-top:.5rem">خلّصوا تمرين النهارده</span>
+          <strong class="num" style="font-size:2rem">11/14</strong>
+        </div></div>
+        <div class="phone"><div class="phone-in">
+          <span class="notch"></span>
+          <span class="status"><span>6:30</span><i></i></span>
+          <span class="m">اليوم 2 · صدر وترايسبس</span>
+          <strong style="font-size:1rem">بنش بريس بالبار</strong>
+          <div class="sets"><div><span class="num">60 × 10</span><span class="ok">✓</span></div><div><span class="num">62.5 × 8</span><span class="ok">✓</span></div></div>
+          <div class="stp"><span aria-hidden="true">−</span><div class="big num" id="kg">65</div><span class="plus" aria-hidden="true">+</span></div>
+          <span class="pr" id="pr">رقم جديد · زيادة 5 كجم</span>
+          <div class="done">تمت المجموعة</div>
+        </div></div>
+        <div class="toast t1" aria-hidden="true"><b>✓</b><span>سارة خلّصت تمرين النهارده<small>بوش · 4/4 تمارين</small></span></div>
+        <div class="toast t2" aria-hidden="true"><b>▶</b><span>فيديو جديد من محمد<small>سكوات · سِت 3</small></span></div>
+        <span class="example">بيانات مثال</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <p class="tick rise">ليه كوتشيفو</p>
+      <h2 class="rise" style="margin-top:1rem">بطّل تدير لاعيبتك<br>من خمس أماكن.</h2>
+      <div class="split rise">
+        <div class="before"><h3>من غير كوتشيفو</h3><ul>
+          <li>البرنامج PDF على واتساب</li><li>الأكل في نوتس وصور مبعترة</li><li>مين دفع ومين لأ في دماغك</li><li>تعرف إن اللاعب وقف بعد ما يمشي</li>
+        </ul></div>
+        <div class="after"><h3>مع كوتشيفو</h3><ul>
+          <li>البرنامج في تطبيق اللاعب، وتعدّله في ثانية</li><li>نظام أكل بالماكروز، واللاعب يبدّل بنفسه</li><li>الاشتراكات والفلوس قدامك بالتاريخ</li><li>تنبيه لما لاعب يعدّي 3 أيام من غير تسجيل</li>
+        </ul></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="inside" style="padding-top:0">
+    <div class="wrap">
+      <p class="tick rise">من جوه السيستم</p>
+      <h2 class="rise" style="margin-top:1rem">ده اللي هتفتحه<br>كل يوم الصبح.</h2>
+      <p class="sub rise" style="margin-top:1rem">لوحة الكابتن وموبايل اللاعب زي ما هما بالظبط. مش رسمة.</p>
+      <div class="inside-grid">
+        <div class="laptop"><div class="lid" data-ws="landing"></div><div class="base"></div></div>
+        <div class="phone"><div class="phone-in">
+          <span class="notch"></span><span class="status"><span>6:30</span><i></i></span>
+          <span class="m">اليوم 2 · صدر وترايسبس</span>
+          <strong style="font-size:1rem">بنش بريس بالبار</strong>
+          <div class="sets"><div><span class="num">60 × 10</span><span class="ok">✓</span></div><div><span class="num">62.5 × 8</span><span class="ok">✓</span></div></div>
+          <div class="stp"><span aria-hidden="true">−</span><div class="big num">65</div><span class="plus" aria-hidden="true">+</span></div>
+          <div class="done">تمت المجموعة</div>
+        </div></div>
+      </div>
+      <div class="inside-copy rise">
+        <div><b>مين محتاجك</b><p>التقييمات، اللي وقف تمرين، واللي اشتراكه بيخلص، مترتبين أول ما تفتح.</p></div>
+        <div><b>الشات جوه الملف</b><p>رسايل وفويس نوت مع كل لاعب، جنب برنامجه وتقييماته.</p></div>
+        <div><b>فلوسك قدامك</b><p>المتحصّل والمتأخر، والدفع الجزئي والإيصالات.</p></div>
+        <div><b>اللاعب من الجيم</b><p>يسجّل المجموعة بضغطة، حتى لو النت قاطع.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap">
+      <div class="demo-band rise">
+        <div><p class="tick">الديمو</p><h2 style="margin-top:1rem">جرّبه بإيدك<br>قبل ما تسجّل.</h2>
+          <p class="sub">حساب كابتن فيه لاعبين وبيانات تجريبية. دليل بيمشّيك في يوم كابتن في 9 خطوات، وتبدّل وتشوف موبايل اللاعب.</p>
+          <a class="btn btn-lime" href="#demo">افتح الديمو <span class="go" aria-hidden="true">←</span></a></div>
+        <div class="tcard kg"><div class="hd"><img src="icon.png" alt=""><div><b>يوم كابتن في 3 دقايق</b><small>الخطوة 8</small></div><span class="cnt num">8 / 9</span></div>
+          <div class="tbar"><i style="width:88%"></i></div>
+          <b style="font-size:15px">سجّل مجموعة من موبايل اللاعب</b><small style="color:var(--dust);font-size:12.5px">دوس «تمت المجموعة»، وشوفها بتوصل لوحة الكابتن على طول.</small></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="day" style="padding-top:0">
+    <div class="wrap">
+      <p class="tick rise">يوم كابتن عادي</p>
+      <h2 class="rise" style="margin-top:1rem">من البرنامج للرد<br>في دقايق.</h2>
+      <div class="story-grid">
+        <div class="steps">
+          <div class="step on" data-s="0"><span class="when num">9:02</span><h3>برنامج بوش اتوزّع على سارة</h3><p>من قالب جاهز أو قالبك، على لاعب واحد أو عشرة في ضغطة.</p></div>
+          <div class="step" data-s="1"><span class="when num">10:15</span><h3>سارة خلّصت تمرين النهارده</h3><p>بتسجّل الوزن والعدّات بإيد واحدة، وبتشوف آخر وزن قبل كل سِت.</p></div>
+          <div class="step" data-s="2"><span class="when num">10:16</span><h3>بعتت فيديو سكوات</h3><p>الفيديوهات والرسايل الصوتية والاستمارات بتوصلك في صندوق واحد.</p></div>
+          <div class="step" data-s="3"><span class="when num">10:20</span><h3>ردّيت عليها: نزّل أبطأ</h3><p>ردّك بيوصلها في التطبيق. وإنت عارف مين خلّص ومين بيبعد ومين مستني ردّك.</p></div>
+        </div>
+        <div><div class="pin">
+          <span class="slash" aria-hidden="true"></span>
+          <div class="phone" aria-label="شاشة الخطوة الحالية، بيانات مثال"><div class="phone-in" style="padding:0">
+            <div class="screen on" data-s="0"><span class="notch"></span><span class="clock">9:02</span><h4>وزّع «بوش · 4 أيام»</h4>
+              <div class="pick"><label class="on"><i></i>سارة محمود</label><label><i></i>محمد علي</label><label><i></i>أحمد سامي</label><label><i></i>نور حسن</label></div>
+              <div class="done">وزّع على 1 لاعب</div></div>
+            <div class="screen" data-s="1"><span class="notch"></span><span class="clock">10:15</span><h4>سارة · بوش · اليوم 1</h4>
+              <div class="sets"><div><span>بنش بريس</span><span class="ok">4/4 ✓</span></div><div><span>دمبل مايل</span><span class="ok">3/3 ✓</span></div><div><span>ضغط كتف</span><span class="ok">3/3 ✓</span></div><div><span>ترايسبس بالحبل</span><span class="ok">3/3 ✓</span></div></div>
+              <span class="tag t-l" style="justify-self:start">التمرين اتحسب</span></div>
+            <div class="screen" data-s="2"><span class="notch"></span><span class="clock">10:16</span><h4>سارة بعتت فيديو</h4>
+              <div class="video"><b aria-hidden="true">▶</b></div><span class="m">سكوات · 40 كجم · سِت 3</span></div>
+            <div class="screen" data-s="3"><span class="notch"></span><span class="clock">10:20</span><h4>سارة</h4>
+              <div class="bubble them">ده السكوات بتاعي، كده صح؟</div>
+              <div class="bubble me">حلو. نزّل أبطأ، 3 ثواني لتحت، وخلّي ركبتك ماشية مع صوابعك.</div>
+              <span class="m">اتبعتت · 10:20</span></div>
+          </div></div>
+          <span class="rail" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i></span>
+        </div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="features" style="padding-top:0">
+    <div class="wrap">
+      <p class="tick rise">كل اللي محتاجه</p>
+      <h2 class="rise" style="margin-top:1rem">ومفيش حاجة زيادة.</h2>
+      <div class="score rise">
+        <div class="cell"><strong class="num"><span data-to="1300">1,300</span>+</strong><span>تمرين بحركة متحركة</span></div>
+        <div class="cell"><strong class="ar">أكل مصري</strong><span>بالماكروز والبدائل</span></div>
+        <div class="cell"><strong class="num" data-to="3">3</strong><span>ضغطات لأي مهمة يومية</span></div>
+      </div>
+      <div class="rack rise">
+        <article><div class="head"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 7v10M3 9v6M18 7v10M21 9v6M6 12h12"/></svg></span><span class="no num">01</span></div><h3>مصمم البرامج</h3><p>سوبر سِتس وقوالب جاهزة، ومكتبة فيها أكتر من 1,300 تمرين بحركة.</p></article>
+        <article><div class="head"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 12h16a8 8 0 0 1-16 0zM9 8c0-2 1-3 3-4M14 8c0-1.5 1-2.5 2.5-3"/></svg></span><span class="no num">02</span></div><h3>أكل بالبدائل</h3><p>الماكروز بتتحسب وإنت بتكتب، واللاعب يبدّل الرز بالمكرونة والكمية بتتظبط.</p></article>
+        <article><div class="head"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 13l3-8h12l3 8v6H3zM3 13h5l1 2h6l1-2h5"/></svg></span><span class="no num">03</span></div><h3>صندوق واحد</h3><p>فيديوهات الأداء والرسايل الصوتية والتحديثات في مكان واحد.</p></article>
+        <article><div class="head"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4zM10 21h4"/></svg></span><span class="no num">04</span></div><h3>تنبيه الانسحاب</h3><p>لاعب عدّى 3 أيام من غير تسجيل يظهرلك فوق، قبل ما يفكّر يمشي.</p></article>
+        <article><div class="head"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 16a8 8 0 1 1 16 0M12 16l4-5"/></svg></span><span class="no num">05</span></div><h3>جاهزية وتحليل عضلات</h3><p>النوم والمية والإجهاد في رقم، وتوازن البوش والبول على كل عضلة.</p></article>
+        <article><div class="head"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 6h18v12H3zM3 10h18M7 15h4"/></svg></span><span class="no num">06</span></div><h3>الاشتراكات</h3><p>كاش أو تحويل، متسجّل بالتاريخ، وتجديد بضغطة.</p></article>
+        <article class="soon"><div class="head"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3l2.2 5.3L20 9l-4.4 3.8L17 18.5 12 15.6 7 18.5l1.4-5.7L4 9l5.8-.7z"/></svg></span><span class="no num">07</span></div><h3>KO مساعدك <span class="soon-tag">قريباً</span></h3><p>بيقرالك يوم لاعيبتك ويقولك مين محتاج منك إيه، ويجهّزلك الرد.</p></article>
+        <article class="soon"><div class="head"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4"/></svg></span><span class="no num">08</span></div><h3>ترتيب اللاعيبة <span class="soon-tag">قريباً</span></h3><p>لاعيبتك بيتنافسوا على الترتيب، والأول بياخد الجايزة اللي إنت تحددها.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section id="pricing" style="padding-top:0">
+    <div class="wrap">
+      <p class="tick rise">الباقات</p>
+      <h2 class="rise" style="margin-top:1rem">على قد عدد لاعيبتك.</h2>
+      <p class="sub rise" style="margin-top:1rem">اختار على قد عدد لاعيبتك، وكبّر الباقة وقت ما تحتاج.</p>
+      <div class="plans rise">
+        <div class="plan"><span class="tier num">ENTRY</span><span class="amt num">0 <small>ج</small></span><span class="pl">لحد 5 لاعبين</span><span class="who">لو لسه بادئ</span><ul class="feat"><li>برامج تمرين وأنظمة أكل</li><li>قوالب كوتشيفو وقوالبك</li><li>جاهزية وتحليل عضلات</li><li>فيديوهات ورسايل صوتية</li><li>متابعة الاشتراكات</li></ul><a class="btn btn-plate" href="#start">ابدأ مجاناً</a></div>
+        <div class="plan"><span class="tier num">CHAMPION</span><span class="amt num">399 <small>ج / شهر</small></span><span class="pl">لحد 20 لاعب</span><span class="who">كابتن بيكبر</span><ul class="feat"><li>برامج تمرين وأنظمة أكل</li><li>قوالب كوتشيفو وقوالبك</li><li>جاهزية وتحليل عضلات</li><li>فيديوهات ورسايل صوتية</li><li>متابعة الاشتراكات</li></ul><a class="btn btn-plate" href="#start">اشترك</a></div>
+        <div class="plan hot"><div class="plan-top"><span class="tier num">LEGEND</span><span class="badge">الأكثر طلباً</span></div><span class="amt num">699 <small>ج / شهر</small></span><span class="pl">لحد 40 لاعب</span><span class="who">للكابتن المحترف</span><ul class="feat"><li>برامج تمرين وأنظمة أكل</li><li>قوالب كوتشيفو وقوالبك</li><li>جاهزية وتحليل عضلات</li><li>فيديوهات ورسايل صوتية</li><li>متابعة الاشتراكات</li></ul><a class="btn" href="#start">اشترك</a></div>
+        <div class="plan"><span class="tier num">EMPIRE</span><span class="amt num">1,499 <small>ج / شهر</small></span><span class="pl">لحد 100 لاعب</span><span class="who">لو عندك عدد كبير من اللاعبين</span><ul class="feat"><li>برامج تمرين وأنظمة أكل</li><li>قوالب كوتشيفو وقوالبك</li><li>جاهزية وتحليل عضلات</li><li>فيديوهات ورسايل صوتية</li><li>متابعة الاشتراكات</li></ul><a class="btn btn-plate" href="#start">اشترك</a></div>
+      </div>
+      <p class="note">مفيش تجديد تلقائي. الاشتراك والتفعيل على واتساب بعد تأكيد الدفع.</p>
+    </div>
+  </section>
+
+  <section id="faq" style="padding-top:0">
+    <div class="wrap faq-grid">
+      <div><p class="tick">أسئلة</p><h2 style="margin-top:1rem">قبل ما تبدأ.</h2></div>
+      <div class="faq">
+        <details open><summary>اللاعب محتاج يدفع حاجة؟</summary><p>لا. اللاعب بيدخل مجاناً بلينك الدعوة، والكابتن هو اللي بيشترك.</p></details>
+        <details><summary>لازم أنزّله من المتجر؟</summary><p>لا. بيتفتح من المتصفح ويتثبّت على الشاشة الرئيسية زي أي تطبيق.</p></details>
+        <details><summary>حد غيري يقدر يشوف لاعيبتي؟</summary><p>لا. كل كابتن بيشوف لاعيبته بس.</p></details>
+        <details><summary>لو الاشتراك خلص أو عايز لاعبين أكتر؟</summary><p>بياناتك بتفضل محفوظة. كلّمنا على واتساب ونرقّي الباقة في نفس اليوم.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="close">
+    <span class="slash" aria-hidden="true"></span><span class="slash thin" aria-hidden="true"></span>
+    <div class="wrap">
+      <h2>ابدأ بأول لاعب النهارده.</h2>
+      <p>مجاناً لحد 5 لاعبين، ومن غير تجديد تلقائي.</p>
+      <a class="btn" href="#start">اعمل حسابك كابتن <span class="go" aria-hidden="true">←</span></a>
+    </div>
+  </section>
+</main>
+
+<footer dir="rtl" lang="ar">
+  <div class="wrap"><img src="logo-primary.png" alt="KOCHIVO" width="92" height="26"><span>الخصوصية · الشروط · واتساب</span><span class="num">© Gym visual</span></div>
+</footer>
+<div id="v-demo" dir="rtl" lang="ar" hidden><div class="wrap">
+  <div class="dhead">
+    <h1>الديمو<small>حساب كابتن هشام · 18 لاعب · بيانات تجريبية</small></h1>
+    <div class="dwho" role="group" aria-label="بدّل الشاشة">
+      <button type="button" id="who-c" aria-pressed="true">لوحة الكابتن</button>
+      <button type="button" id="who-p" aria-pressed="false">موبايل اللاعب</button>
+    </div>
+    <a class="btn btn-plate" href="#top" style="min-height:3rem">ارجع للموقع</a>
+  </div>
+  <div class="dgrid">
+    <div class="stage">
+      <div id="s-c" data-ws="demo"></div>
+      <div id="s-p" class="pview" hidden><div class="korbs"><i></i><i></i><i></i><b></b></div>
+        <div class="phone"><div class="phone-in">
+          <span class="notch"></span><span class="status"><span>6:30</span><i></i></span>
+          <span class="m">اليوم 2 · صدر وترايسبس</span>
+          <strong style="font-size:1rem">بنش بريس بالبار</strong>
+          <div class="sets" data-k="ex"><div><span class="num">60 × 10</span><span class="ok">✓</span></div><div><span class="num">62.5 × 8</span><span class="ok">✓</span></div></div>
+          <div data-k="log" style="display:grid;gap:.6rem;border-radius:14px;padding:6px">
+            <span class="m">المجموعة <span class="num" data-k="setn">3</span> · كيلو × 8</span>
+            <div class="kstp"><button type="button" data-k="minus" aria-label="أقل">−</button><div class="num" data-k="kg">65</div><button type="button" data-k="plus" aria-label="أكتر">+</button></div>
+            <button type="button" class="kdone" data-k="done">تمت المجموعة</button>
+          </div>
+          <span class="m" data-k="meals" style="border-radius:10px;padding:4px">أكل النهارده · 1,260 من 2,400 سعر</span>
+        </div></div>
+      </div>
+    </div>
+    <aside class="tour kg" aria-live="polite" style="display:flex;flex-direction:column">
+      <div class="tcard" style="padding:0"><div class="hd"><img src="icon.png" alt=""><div><b>يوم كابتن في 3 دقايق</b><small>دوس على أي خطوة</small></div><span class="cnt num" id="t-cnt">1 / 9</span></div></div>
+      <div class="tbar"><i id="t-bar"></i></div>
+      <h3 id="t-h"></h3><p id="t-p"></p>
+      <div class="ttry" id="t-try" hidden><svg class="kic"><use href="#ki-check"/></svg><span></span></div>
+      <div class="tnav"><button type="button" class="btn btn-plate" id="t-prev">السابق</button><button type="button" class="btn btn-lime" id="t-next">التالي</button></div>
+      <div class="tlist" id="t-list"></div>
+    </aside>
+  </div>
+  <p class="dnote">في الديمو الحقيقي كل حاجة بتتداس وتتعدل، والبيانات بتتمسح بعد 24 ساعة.</p>
+</div></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="ki-home" viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"/></symbol>
+<symbol id="ki-tasks" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/></symbol>
+<symbol id="ki-inbox" viewBox="0 0 24 24"><path d="M5 5h14v10H9l-4 4z"/></symbol>
+<symbol id="ki-team" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 5.5a3 3 0 010 5.8M21 20c0-2.6-1.6-4.8-4-5.6"/></symbol>
+<symbol id="ki-dumb" viewBox="0 0 24 24"><path d="M3 10v4M6 7v10M18 7v10M21 10v4M6 12h12"/></symbol>
+<symbol id="ki-food" viewBox="0 0 24 24"><path d="M7 3v8M5 3v5a2 2 0 004 0V3M7 11v10M17 3c-2 0-3 2.5-3 6h3v12"/></symbol>
+<symbol id="ki-form" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h3"/></symbol>
+<symbol id="ki-cash" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="3"/><circle cx="12" cy="12" r="2.5"/></symbol>
+<symbol id="ki-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4-4"/></symbol>
+<symbol id="ki-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></symbol>
+<symbol id="ki-play" viewBox="0 0 24 24"><path d="M8 5l11 7-11 7z"/></symbol>
+<symbol id="ki-check" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></symbol>
+</defs></svg>
+
+<script>
+(function(){
+const I=(id)=>`<svg class="kic"><use href="#ki-${id}"/></svg>`;
+const wave=(n)=>Array.from({length:n},(_,i)=>`<i style="height:${5+((i*7)%11)}px"></i>`).join('');
+const ws=()=>`<div class="kws"><div class="korbs"><i></i><i></i><i></i><b></b></div>
+ <aside class="kside kg"><img src="logo-primary.png" alt="KOCHIVO">
+  <span class="on">${I('home')}الرئيسية</span><span>${I('tasks')}المهام<b>4</b></span><span>${I('inbox')}الوارد<b>2</b></span><span>${I('team')}اللاعبين</span><span>${I('dumb')}البرامج</span><span>${I('food')}الأكل</span><span>${I('form')}التقييمات</span><span>${I('cash')}الفلوس</span></aside>
+ <div class="kmain">
+  <div class="ktop kg"><h4>صباح الخير يا كابتن هشام<small>السبت 15 نوفمبر</small></h4><span class="ksr">${I('search')}</span><button type="button" class="kbtn" data-k="add">ضيف لاعب</button></div>
+  <div class="khero kg" data-k="kpis">
+   <svg class="ring" viewBox="0 0 96 96" aria-hidden="true"><circle cx="48" cy="48" r="40" fill="none" stroke="rgb(255 255 255/.08)" stroke-width="8"/><circle cx="48" cy="48" r="40" fill="none" stroke="#b6e94f" stroke-width="8" stroke-linecap="round" stroke-dasharray="197 251" transform="rotate(-90 48 48)"/><text x="48" y="45" text-anchor="middle" fill="#f2f3ee" font-family="Manrope" font-weight="800" font-size="20">14</text><text x="48" y="62" text-anchor="middle" fill="#9ca2a8" font-family="Alexandria" font-size="10">من 18</text></svg>
+   <div><b>14 لاعب اتمرنوا النهارده</b><small>4 لسه، منهم عمر واقف من 4 أيام</small>
+    <div class="kpis"><div class="l"><span>مستنيين ردك</span><strong>4</strong></div><div><span>بيخلصوا الأسبوع ده</span><strong>2</strong></div><div class="w" data-k="owed"><span>فلوس متأخرة</span><strong>1,500</strong></div></div></div>
+  </div>
+  <div class="kcols">
+   <div class="kp kg" data-k="needs"><h5>مين محتاجك النهارده <em>4</em></h5>
+    <div class="kn"><span class="kav" style="background:rgb(157 178 255/.14);color:var(--calm)">س م</span><div><b>سارة مصطفى</b><small>بعتت التقييم الأسبوعي بالصور</small></div><button type="button" class="kact" data-k="review">راجع</button></div>
+    <div class="kn"><span class="kav" style="background:rgb(255 154 115/.14);color:var(--warn)">ع خ</span><div><b>عمر خالد</b><small>مسجّلش تمرين من 4 أيام</small></div><span class="kc w">وقف</span></div>
+    <div class="kn"><span class="kav">م أ</span><div><b>مريم أحمد</b><small>اشتراكها بيخلص بعد 3 أيام</small></div><span class="kc c">جدّد</span></div>
+    <div class="kn" data-k="feed"><span class="kav" style="background:rgb(182 233 79/.14);color:var(--lime)">م ح</span><div><b>محمد حسن</b><small data-k="feedtxt">خلّص يوم 1 · دفع 1,000 من 2,000</small></div><span class="kc l" data-k="feedchip">فاضل 1,000</span></div>
+   </div>
+   <div class="kp kg" data-k="chat"><h5>سارة مصطفى <em>من 5 دقايق</em></h5>
+    <div class="kmsg t">كابتن الوزن نزل 1.2 كيلو، بعتّلك الصور</div>
+    <div class="kmsg me">${I('play')}<span class="wv">${wave(16)}</span><span class="num" style="font:700 10.5px var(--f-num)">0:24</span></div>
+    <div class="kmsg t">تمام هزود الكارب يوم التمرين</div>
+    <div class="kcomp"><span>اكتب رسالة…</span><i>${I('mic')}</i></div>
+   </div>
+  </div>
+ </div></div>`;
+document.querySelectorAll('[data-ws]').forEach(e=>e.innerHTML=ws());
+
+const D=document.getElementById('v-demo'),q=(k)=>D.querySelector(`[data-k="${k}"]`);
+const steps=[
+ {v:'c',k:'kpis',h:'ده يومك في نظرة',p:'كام لاعب اتمرن النهارده، كام مستني ردك، مين اشتراكه بيخلص، وكام فلوس متأخرة.'},
+ {v:'c',k:'needs',h:'مين محتاجك النهارده',p:'اللي محتاجك مترتب لوحده: تقييم مستني مراجعة، لاعب وقف، اشتراك بيخلص، وفلوس فاضلة.'},
+ {v:'c',k:'review',h:'راجع تقييم سارة',p:'سارة بعتت صورها ومقاساتها. من هنا تفتحها وترد وتعدّل برنامجها.',t:'دوس «راجع»'},
+ {v:'c',k:'chat',h:'الكلام في مكانه',p:'شات وفويس نوت مع كل لاعب، جنب برنامجه وتقييماته، مش ضايع وسط الواتساب.'},
+ {v:'c',k:'owed',h:'فلوسك قدامك',p:'1,500 جنيه متأخرة. تدوس تشوف مين، وتسجّل الدفعة أو تفكّره.'},
+ {v:'c',k:'add',h:'ضيف لاعب في دقيقة',p:'اسمه وباقته والتقييمات اللي يملاها قبل ما يبدأ، وبيطلعلك لينك تبعته على واتساب.',t:'دوس «ضيف لاعب»'},
+ {v:'p',k:'ex',h:'دلوقتي انت محمد، اللاعب',p:'دي تمرينة النهارده على موبايله، والمجموعات اللي خلّصها.'},
+ {v:'p',k:'log',h:'سجّل مجموعة',p:'غيّر الوزن ودوس «تمت المجموعة». شغال حتى لو النت قاطع في الجيم.',t:'جرّب: + وبعدين «تمت المجموعة»'},
+ {v:'c',k:'feed',h:'وصلتك على طول',p:'المجموعة اللي محمد سجّلها ظهرت عندك. انت بتدرّب، والباقي متنظم.'}
+];
+let i=0,kg=65,setn=3;
+const list=document.getElementById('t-list');
+list.innerHTML=steps.map((s,n)=>`<button type="button" data-n="${n}"><i>${n+1}</i>${s.h}</button>`).join('');
+list.onclick=(e)=>{const b=e.target.closest('button');if(b){i=+b.dataset.n;render();}};
+function setWho(v){document.getElementById('s-c').hidden=v!=='c';document.getElementById('s-p').hidden=v!=='p';document.getElementById('who-c').setAttribute('aria-pressed',v==='c');document.getElementById('who-p').setAttribute('aria-pressed',v==='p');}
+function render(){
+ const s=steps[i];setWho(s.v);
+ D.querySelectorAll('.kspot').forEach(e=>e.classList.remove('kspot'));
+ const t=q(s.k);if(t)t.classList.add('kspot');
+ document.getElementById('t-cnt').textContent=`${i+1} / ${steps.length}`;
+ document.getElementById('t-bar').style.width=`${(i+1)/steps.length*100}%`;
+ document.getElementById('t-h').textContent=s.h;document.getElementById('t-p').textContent=s.p;
+ const tr=document.getElementById('t-try');tr.hidden=!s.t;if(s.t)tr.querySelector('span').textContent=s.t;
+ const pv=document.getElementById('t-prev');pv.disabled=i===0;pv.style.opacity=i===0?.4:1;
+ document.getElementById('t-next').textContent=i===steps.length-1?'ابدأ مجاناً':'التالي';
+ list.querySelectorAll('button').forEach((b,n)=>{b.className=n<i?'dn':n===i?'on':'';b.querySelector('i').textContent=n<i?'✓':n+1;});
+}
+document.getElementById('t-next').onclick=()=>{if(i<steps.length-1){i++;render();}};
+document.getElementById('t-prev').onclick=()=>{if(i>0){i--;render();}};
+document.getElementById('who-c').onclick=()=>setWho('c');
+document.getElementById('who-p').onclick=()=>setWho('p');
+D.addEventListener('click',(e)=>{const k=e.target.closest('[data-k]')?.dataset.k;if(k==='review'&&i===2){i=3;render();}if(k==='add'&&i===5){i=6;render();}});
+q('plus').onclick=()=>{kg+=2.5;q('kg').textContent=kg;};
+q('minus').onclick=()=>{kg=Math.max(0,kg-2.5);q('kg').textContent=kg;};
+q('done').onclick=()=>{q('ex').insertAdjacentHTML('beforeend',`<div><span class="num">${kg} × 8</span><span class="ok">✓</span></div>`);setn++;q('setn').textContent=setn;q('feedtxt').textContent=`سجّل بنش بريس ${kg} كيلو × 8 · دلوقتي`;q('feedchip').textContent='رقم جديد';if(i===7){i=8;render();}};
+function route(){const d=location.hash==='#demo';document.body.classList.toggle('demo',d);D.hidden=!d;if(d){window.scrollTo(0,0);render();}}
+window.addEventListener('hashchange',route);route();
+})();
+</script>
+
+
+<script>
+const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+if ('IntersectionObserver' in window) {
+  // Scroll story: the step crossing the middle of the screen drives the pinned phone.
+  const steps = [...document.querySelectorAll('.step')], screens = [...document.querySelectorAll('.screen')];
+  const rail = [...document.querySelectorAll('.rail i')];
+  const show = i => { steps.forEach(s => s.classList.toggle('on', +s.dataset.s === i)); screens.forEach(s => s.classList.toggle('on', +s.dataset.s === i)); rail.forEach((r, n) => r.classList.toggle('on', n === i)); };
+  const story = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) show(+e.target.dataset.s); }), { rootMargin: '-45% 0px -45% 0px' });
+  steps.forEach(s => story.observe(s));
+  // One-time rise for blocks still below the fold.
+  if (!calm) {
+    document.documentElement.classList.add('js');
+    const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.remove('wait'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px' });
+    document.querySelectorAll('.rise, .close').forEach(el => { if (el.getBoundingClientRect().top > innerHeight) { el.classList.add('wait'); io.observe(el); } });
+    // The pricing row gets its one light sweep the moment it lands.
+    const plans = document.querySelector('.plans');
+    new IntersectionObserver((es, o) => es.forEach(e => { if (e.isIntersecting) { plans.classList.add('shine'); o.disconnect(); } }), { threshold: .5 }).observe(plans);
+    // Score numbers count up once.
+    const fmt = n => n.toLocaleString('en-US');
+    const counter = new IntersectionObserver(es => es.forEach(e => {
+      if (!e.isIntersecting) return; counter.unobserve(e.target);
+      const el = e.target, to = +el.dataset.to, t0 = performance.now();
+      const tick = t => { const k = Math.min(1, (t - t0) / 1100); el.textContent = fmt(Math.round(to * (1 - Math.pow(1 - k, 3)))); if (k < 1) requestAnimationFrame(tick); };
+      requestAnimationFrame(tick);
+    }), { threshold: .6 });
+    document.querySelectorAll('[data-to]').forEach(el => { el.textContent = '0'; counter.observe(el); });
+  }
+}
+if (!calm) {
+  // Hero phone logs one more set: press +, 62.5 becomes 65, the PR line appears.
+  const kg = document.getElementById('kg'), pr = document.getElementById('pr'), plus = document.querySelector('.stp .plus');
+  kg.textContent = '62.5'; pr.classList.add('hide');
+  setTimeout(() => { plus.classList.add('press'); setTimeout(() => { plus.classList.remove('press'); kg.textContent = '65'; kg.classList.add('bump'); pr.classList.remove('hide'); }, 180); }, 1500);
+  // Pointer parallax on the hero devices, desktop pointers only.
+  const dev = document.querySelector('.devices');
+  if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    let raf = 0;
+    document.querySelector('.hero').addEventListener('pointermove', e => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => { raf = 0; dev.style.setProperty('--mx', (e.clientX / innerWidth - .5).toFixed(3)); dev.style.setProperty('--my', (e.clientY / innerHeight - .5).toFixed(3)); });
+    });
+  }
+}
+// Reading progress and a slimmer header once you leave the hero.
+const bar = document.querySelector('.progress'), hdr = document.querySelector('header.top');
+let ticking = false;
+addEventListener('scroll', () => {
+  if (ticking) return; ticking = true;
+  requestAnimationFrame(() => { ticking = false; const max = document.documentElement.scrollHeight - innerHeight; bar.style.transform = `scaleX(${max > 0 ? scrollY / max : 0})`; hdr.classList.toggle('slim', scrollY > 80); });
+}, { passive: true });
+</script>
+<script>document.documentElement.classList.add("up")</script>

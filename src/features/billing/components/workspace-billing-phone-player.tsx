@@ -1,5 +1,5 @@
 import { useLocale, useT } from '@/core/i18n/client';
-import { daysBetween } from '@/lib/dates';
+import { daysBetween, formatDateAr } from '@/lib/dates';
 import { formatNumber } from '@/lib/format';
 import { Button, buttonClass, clickableClass } from '@/ui/button';
 import { messages, workspaceMessages } from '../messages';
@@ -16,7 +16,7 @@ export function WorkspaceBillingPhonePlayer({ row, today, onOpen }: {
   const locale = useLocale(), t = useT(phoneMessages), workspace = useT(workspaceMessages);
   const finance = useT(financeMessages), methodT = useT(methodMessages);
   const payment = useT(paymentMessages);
-  const { player, method, paid, action, hasPackage, fullyPaid, ending } = row;
+  const { player, method, paid, action, hasPackage, fullyPaid, ending, trial } = row;
   const days = daysBetween(today, player.accessUntil);
   const number = (value: number) => formatNumber(value, locale);
   const paidUp = fullyPaid && player.due === 0;
@@ -34,12 +34,13 @@ export function WorkspaceBillingPhonePlayer({ row, today, onOpen }: {
         : player.awaitingPlansAt ? finance('waitingForPlans')
           : usedUp ? payment('sessionsEnded')
             : !hasPackage ? workspace('noPackage')
+              : trial ? workspace('trialEnds', { date: formatDateAr(player.accessUntil, { day: 'numeric', month: 'long' }, locale) })
               : ending ? t(days === 0 ? 'endingToday' : 'endingIn', { n: days, count: number(days) })
                 : paidUp || paid > 0 ? [t('paidAmount', { amount: number(paid) }), method === 'unset' ? null : methodT(method)].filter(Boolean).join(' · ')
                   : workspace('unpaid');
   const usage = usedUp && player.due > 0 && !player.pending && !player.frozenAt ? payment('sessionsEnded') : null;
   const detail = [paymentDetail, usage, expiry].filter(Boolean).join(' · ');
-  const showPaid = paidUp && action === 'history' && !canRemind && !player.frozenAt
+  const showPaid = paidUp && !trial && action === 'history' && !canRemind && !player.frozenAt
     && !player.awaitingPlansAt && player.sessionsLeft !== 0;
   const actionLabel = action === 'activate' || (action === 'renew' && !hasPackage) ? workspace('setPackage')
     : action !== 'history' ? t('record') : workspace('payments');

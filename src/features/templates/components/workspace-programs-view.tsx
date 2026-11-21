@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import type { ComponentProps } from 'react';
@@ -35,6 +35,14 @@ export function WorkspaceProgramsView(props: ComponentProps<typeof LibraryView>)
   const titleTarget = usePageBarTarget('title');
   const [tab, setTab] = useState<ProgramTab>('mine');
   const [picking, setPicking] = useState(false), [generatorRequest, setGeneratorRequest] = useState(0);
+  // First load: when the coach has no programs of their own yet, land on the ready templates instead of an empty tab.
+  const autoTabbed = useRef(false);
+  useEffect(() => {
+    if (autoTabbed.current || loading || error || tab !== 'mine') return;
+    if (filterPrograms(templates, 'mine').length === 0 && filterPrograms(templates, 'ready').length > 0) {
+      autoTabbed.current = true; setTab('ready');
+    }
+  }, [templates, loading, error, tab]);
   const visible = filterPrograms(templates, tab);
   const disabled = creating || loading || !!error;
   const label = (item: typeof tabs[number]) => loading || error ? t(item.label)

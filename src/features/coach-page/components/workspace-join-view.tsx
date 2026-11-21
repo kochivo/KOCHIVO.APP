@@ -29,7 +29,7 @@ export function WorkspaceJoinView({ initialRequests, initialLink, retryLinkActio
   const link = initialLink.error ? recoveredLink ?? initialLink : initialLink;
   const url = !link.error && link.slug ? `https://kochivo.site/c/${link.slug}` : null;
   return <>
-    <PageBarTitle title={t('pending')} />
+    <PageBarTitle title={t('pending')} phoneHide />
     {phone && <header className="mb-card-gap flex min-h-12 items-center gap-stack md:hidden">
       <Link href="/captain" aria-label={phoneT('back')} className={buttonClass({ variant: 'secondary', block: false, className: 'grid size-12 shrink-0 place-items-center px-0' })}>
         <ChevronRight aria-hidden className="size-5 ltr:rotate-180" />

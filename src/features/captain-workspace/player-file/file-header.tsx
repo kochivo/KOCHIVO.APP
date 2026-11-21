@@ -38,7 +38,7 @@ export function FileHeader({ playerId, profile, summary, tab, locale, today, unr
   const planned = summary.file.facts.trainingDays?.value.length ?? profile.program?.days ?? 0;
   const phone = captainWorkspaceEnabled();
   return <>
-    <PageBarTitle title={profile.name} subtitle={subtitle} />
+    <PageBarTitle title={profile.name} subtitle={subtitle} phoneHide />
     <PageBarActions>
       <Link href="/captain/players" aria-label={vt('back')} className={`${clickableClass} glass press grid min-h-12 min-w-12 cursor-pointer place-items-center rounded-full border border-line focus-visible:ring-2 focus-visible:ring-lime${phone ? ' max-md:hidden' : ''}`}><Back aria-hidden className="size-5" /></Link>
       <Link href={`${base}/preview`} prefetch={false} aria-label={t('preview')} className={`${clickableClass} glass press ${phone ? 'hidden md:inline-flex' : 'inline-flex min-w-12 justify-center max-[760px]:px-0'} min-h-12 cursor-pointer items-center gap-inline rounded-full border border-line px-page-x text-sm focus-visible:ring-2 focus-visible:ring-lime`}><Eye aria-hidden className="size-4" /><span className={phone ? undefined : 'max-[760px]:sr-only'}>{t('preview')}</span></Link>

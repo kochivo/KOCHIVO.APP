@@ -1,0 +1,44 @@
+{
+  "source": "local-player-demo",
+  "captures": [
+    {
+      "id": "home",
+      "source": "supplied-demo-capture-2026-11-06"
+    },
+    {
+      "id": "nutrition",
+      "source": "supplied-demo-capture-2026-11-06"
+    },
+    {
+      "id": "progress",
+      "source": "supplied-demo-capture-2026-11-06"
+    },
+    {
+      "id": "history",
+      "source": "supplied-demo-capture-2026-11-06"
+    },
+    {
+      "id": "captain",
+      "source": "supplied-demo-capture-2026-11-06"
+    },
+    {
+      "id": "settings",
+      "source": "supplied-demo-capture-2026-11-06"
+    },
+    {
+      "id": "workout",
+      "source": "supplied-demo-capture-2026-11-06"
+    },
+    {
+      "id": "swap",
+      "source": "supplied-demo-capture-2026-11-06"
+    },
+    {
+      "id": "rest",
+      "source": "supplied-demo-capture-2026-11-06"
+    }
+  ],
+  "limitations": [
+    "page.goto: net::ERR_TOO_MANY_REDIRECTS at http://127.0.0.1:3000/demo\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:3000/demo\", waiting until \"networkidle\"\u001b[22m\n"
+  ]
+}

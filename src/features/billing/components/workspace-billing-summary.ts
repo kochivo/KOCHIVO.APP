@@ -33,7 +33,9 @@ export function paymentRows(players: BillingPlayer[], packages: Package[], today
       const action: PaymentAction = player.frozenAt ? 'history' : player.pending ? 'activate'
         : player.due > 0 ? 'collect' : !hasPackage ? 'renew'
           : !fullyPaid && total !== null ? 'renew' : 'history';
-      return { player, chosen, total, paid, method, hasPackage, fullyPaid, action,
+      // A package with a zero total is a trial: reported as trial, never as paid revenue.
+      const trial = hasPackage && total === 0;
+      return { player, chosen, total, paid, method, hasPackage, fullyPaid, action, trial,
         ending: endingIds.has(player.playerId) };
     });
 }
@@ -56,7 +58,7 @@ export function paymentMatches(row: PaymentRow, filter: PaymentFilter) {
     case 'overdue': return row.player.due > 0;
     case 'noPackage': return !row.hasPackage;
     case 'ending': return row.ending;
-    case 'paid': return row.fullyPaid && row.player.due === 0;
+    case 'paid': return row.fullyPaid && row.player.due === 0 && !row.trial;
   }
 }
 export function subscriptionTiles(players: Subscription[], today: string, income: number, pending: number) {

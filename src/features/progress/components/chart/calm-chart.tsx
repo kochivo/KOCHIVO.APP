@@ -67,7 +67,7 @@ export function CalmChart({ points, bodyFat = [], title, unit, compact, today, t
           </span>}
         </div>}
       </div>
-      <Segmented options={options} value={period} aria-label={t('chartPeriod')}
+      <Segmented options={options} value={period} aria-label={t('chartPeriod')} phoneScroll
         onChange={value => { if (value === 'month' || value === 'quarter' || value === 'all') setPeriod(value); }} />
     </header>
     {singlePoint || !latest
