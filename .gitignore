@@ -24,3 +24,11 @@ Thumbs.db
 screenshots/
 
 .claude/scheduled_tasks.lock
+
+# Build/test/agent logs and old patch notes: never committed (release-audit rejects *.log)
+*.log
+*.bak
+*.orig
+*.tmp
+.t4*
+kochivo-*.txt
