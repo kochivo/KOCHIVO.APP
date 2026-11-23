@@ -1,0 +1,13 @@
+diff --git a/src/lib/perf-budget.test.ts b/src/lib/perf-budget.test.ts
+index db24250b..c308d97e 100644
+--- a/src/lib/perf-budget.test.ts
++++ b/src/lib/perf-budget.test.ts
+@@ -15,7 +15,7 @@ const exceptions: Record<string, number> = {
+   '/captain/programs/[programId]': 317, // measured 316.35 after T-417 plural forms
+   // T-383..T-388 captain phone shell and player-file header (2026-11-18): +1..3 KiB on these routes.
+   '/captain/players/[playerId]/programs': 335, // measured 334.18 after T-413..T-418 (audit fixes, plural forms)
+-  '/captain/players/[playerId]/nutrition': 318, // measured 317.81 after T-413..T-418 (split targets, plural forms)
++  '/captain/players/[playerId]/nutrition': 319, // measured 318.05 in CI run #81 (2026-11-24): +5 arStd strings from the CI fixes
+   '/captain/players/[playerId]/preview': 315, // measured 314.38 after T-399 player-file fixes
+   '/demo': 292, // measured 290.06 after T-417 plural forms; CI builds run slightly larger
+   '/player': 302, // measured 301.18 after T-417: Arabic plural forms ship with the shared player messages
