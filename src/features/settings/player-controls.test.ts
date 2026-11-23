@@ -31,12 +31,12 @@ beforeEach(() => {
 });
 afterEach(() => { vi.unstubAllGlobals(); vi.unstubAllEnvs(); });
 
-it('saves English through the existing language action and refreshes the locale', async () => {
-  const tree = PlayerPreferences({ units: 'metric' });
-  const control = buttons(tree).find(button => button.props.children === 'English');
-  await control?.props.onClick?.();
-  expect(state.language).toHaveBeenCalledExactlyOnceWith({ locale: 'en', label: 'english' });
-  expect(state.refresh).toHaveBeenCalledOnce();
+it('does not offer an in-app language chooser for players', () => {
+  // The player app follows the phone's language by product decision; there
+  // is no language action in PlayerPreferences to save through.
+  const labels = buttons(PlayerPreferences({ units: 'metric' })).map(button => button.props.children);
+  expect(labels).not.toContain('English');
+  expect(labels).not.toContain('عربي');
 });
 it('does not offer a manual Arabic style in More', () => {
   expect(buttons(PlayerPreferences({ units: 'metric', styleOnly: true }))).toHaveLength(0);

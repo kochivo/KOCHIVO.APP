@@ -69,7 +69,7 @@ it('renders grouped navigation, real captain identity and the existing plan foot
   expect(html).toMatch(/<aside\b[\s\S]*data-captain-device="true"[\s\S]*<\/aside>/);
   expect(html).toContain('data-ko-account="true"');
   expect(html).toContain('group/page min-w-0 flex-1');
-  expect(html).toContain('max-md:pb-[calc(var(--nav-clearance)+var(--spacing-touch)+var(--spacing-card))]!');
+  expect(html).toContain('max-md:pb-[calc(var(--nav-clearance)+var(--spacing-touch)+var(--spacing-card)+3.25rem+var(--spacing-card-gap))]!');
   expect(html).toMatch(/<button\b[^>]*popovertarget="[^"]+"[^>]*>[\s\S]*Actual captain/i);
   expect(html).toContain('id="page-bar-title"');
   expect(html).toContain('id="page-bar-actions"');

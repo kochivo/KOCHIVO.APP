@@ -22,7 +22,7 @@ export const arStd = {
   subscription_expiring_player: 'ينتهي اشتراكك مع الكابتن {name} بعد 3 أيام',
   subscription_expired_player: 'انتهى اشتراكك اليوم، تواصل مع الكابتن', captain_approved: 'تم تفعيل حسابك، مرحباً بك في KOCHIVO',
   sessions_used_up: 'انتهت حصص اللاعب. راجع الاشتراك', workout_feedback: 'يوجد تقييم تمرين جديد للمراجعة',
-  workout_reminder: 'هل أنت جاهز لتمرين اليوم؟ {name} بانتظارك', join_requested: 'أرسل {name} طلب انضمام',
+  workout_reminder: 'هل أنت جاهز لتمرين اليوم؟ {name} بانتظارك', join_requested: 'أرسل {name} طلب انضمام', someone: 'لاعب جديد',
   title: 'الإشعارات', close: 'أغلق الإشعارات', markAll: 'علّم الكل كمقروء', loading: 'جاري تحميل الإشعارات…',
   empty: 'لا توجد إشعارات بعد', error: 'تعذّر تحميل الإشعارات. حاول مجدداً', titleWithUnread: 'الإشعارات، توجد إشعارات غير مقروءة', unread: 'غير مقروء', retry: 'حاول مجدداً',
   saveError: 'تعذّر تعليم الإشعار كمقروء. حاول مجدداً', plan_assigned: 'تم تعيين برنامج {name} لك',

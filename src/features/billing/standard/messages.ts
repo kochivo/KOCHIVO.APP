@@ -8,6 +8,7 @@ export const workspaceArStd = {
   title: 'الاشتراكات', catalog: 'الباقات والعروض', income: 'دخل الشهر', pending: 'بانتظار التأكيد',
   ending: 'تنتهي خلال 7 أيام', active: 'اشتراك نشط', soon: 'تنتهي قريبًا', all: 'كل الدفعات',
   noPayment: 'لا توجد دفعة مسجلة', unpaid: 'دون مبلغ', partial: 'مدفوعة جزئيًا', fullyPaid: 'مدفوعة بالكامل',
+  trial: 'تجريبي', trialEnds: 'تجريبي · ينتهي {date}',
   confirm: 'وافق', confirmed: 'مؤكدة', saved: 'تمت الموافقة على طلب تجديد {name}',
   renewalRequest: 'طلب تجديد · {package}', renewalOnly: 'تجديد دون دفعة',
   fallback: 'تم قبول الطلب. انتهى العرض؛ راجع تفاصيل الاشتراك', 'after.one': "غدًا", 'after.two': "بعد يومين", 'after.few': "بعد {n} أيام", 'after.many': "بعد {n} يومًا", 'after.other': "بعد {n} يوم",

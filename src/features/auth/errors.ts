@@ -35,12 +35,8 @@ export function authError(error: unknown, locale: Locale | Translator<typeof mes
     return t('emailProviderFailed');
   }
   const mapped = errorMessages(t)[code];
-  if (!mapped) {
-    // Unmapped failures surface as a generic message; report them with their
-    // code so they stay diagnosable instead of failing silently.
-    const failure = error instanceof Error ? error : new Error(String(readError(error).message ?? 'unknown auth error'));
-    const status = isAuthError(error) ? error.status : undefined;
-    report?.(failure, { tags: { area: 'auth-unmapped', code, status: String(status ?? '') } });
-  }
+  // Unmapped failures stay generic and silent: only email-provider failures
+  // are reported above, and reporting the raw error here would leak the
+  // private details it carries (for example an email address) to Sentry.
   return mapped ?? t('somethingWentWrongTryAgain');
 }

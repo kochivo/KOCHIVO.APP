@@ -16,16 +16,21 @@ vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => ({
   auth: { getClaims: async () => ({ data: { claims: { sub: 'captain-id' } }, error: null }) },
   from: (table: string) => {
     expect(table).toBe('profiles');
-    return { select: (fields: string) => {
-      expect(fields).toBe('public_slug');
-      return { eq: (field: string, id: string) => {
-        expect([field, id]).toEqual(['id', 'captain-id']);
-        return { single: async () => {
-          if (state.fail) throw new Error('offline');
-          return { data: { public_slug: state.slug }, error: null };
+    return {
+      select: (fields: string) => {
+        expect(['public_slug', 'public_slug, full_name']).toContain(fields);
+        return { eq: (field: string, id: string) => {
+          expect([field, id]).toEqual(['id', 'captain-id']);
+          return { single: async () => {
+            if (state.fail) throw new Error('offline');
+            return { data: { public_slug: state.slug, full_name: 'Actual Captain' }, error: null };
+          } };
         } };
-      } };
-    } };
+      },
+      // Every generated slug is already taken, so ensureCaptainSlug exhausts
+      // its candidates and falls back to the stored (invalid) slug.
+      update: () => ({ eq: () => ({ is: () => ({ select: async () => ({ error: { code: '23505' }, data: null }) }) }) }),
+    };
   },
 }) }));
 beforeEach(() => { state.slug = 'ali-coach'; state.fail = false; state.locale = 'en'; });

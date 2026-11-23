@@ -27,8 +27,10 @@ it('binds identity, plan, subscription and existing rank, retaining editing and 
     privacy: [createElement('button', { key: 'export' }, 'Export data'), createElement('button', { key: 'delete' }, 'Delete account')],
   }, [createElement(GlassToggle, { key: 'glass' }), createElement(ThemeSwitch, { key: 'theme' }),
       createElement(TourReplay, { key: 'tour', role: 'player' })])));
+  // The player app follows the phone's language, so the account page has no
+  // in-app language row: 'اللغة', 'عربي' and 'English' are not expected here.
   for (const content of ['Actual player', 'Real captain', 'Actual plan', '15 ديسمبر', 'بطل', 'يوم ورا بعض',
-    'اللغة', 'الشكل', 'فكّرني بالتمرين', 'الوزن بـ', 'ازاي تستخدم التطبيق', 'المزيد', 'عربي', 'English',
+    'الشكل', 'فكّرني بالتمرين', 'الوزن بـ', 'ازاي تستخدم التطبيق', 'المزيد',
     'Profile and timezone editor', 'Install app', 'Export data', 'Delete account', 'Sign out', 'KO']) expect(html).toContain(content);
   expect(html).not.toContain('فصحى');
   expect(html).toContain('aria-label="غيّر صورة البروفايل"');

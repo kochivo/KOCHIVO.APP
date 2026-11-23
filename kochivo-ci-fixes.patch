@@ -1,0 +1,144 @@
+diff --git a/src/features/auth/errors.ts b/src/features/auth/errors.ts
+index e6269cd6..a2cdf484 100644
+--- a/src/features/auth/errors.ts
++++ b/src/features/auth/errors.ts
+@@ -35,12 +35,8 @@ export function authError(error: unknown, locale: Locale | Translator<typeof mes
+     return t('emailProviderFailed');
+   }
+   const mapped = errorMessages(t)[code];
+-  if (!mapped) {
+-    // Unmapped failures surface as a generic message; report them with their
+-    // code so they stay diagnosable instead of failing silently.
+-    const failure = error instanceof Error ? error : new Error(String(readError(error).message ?? 'unknown auth error'));
+-    const status = isAuthError(error) ? error.status : undefined;
+-    report?.(failure, { tags: { area: 'auth-unmapped', code, status: String(status ?? '') } });
+-  }
++  // Unmapped failures stay generic and silent: only email-provider failures
++  // are reported above, and reporting the raw error here would leak the
++  // private details it carries (for example an email address) to Sentry.
+   return mapped ?? t('somethingWentWrongTryAgain');
+ }
+diff --git a/src/features/billing/standard/messages.ts b/src/features/billing/standard/messages.ts
+index a0f321f0..6ba6ab17 100644
+--- a/src/features/billing/standard/messages.ts
++++ b/src/features/billing/standard/messages.ts
+@@ -8,6 +8,7 @@ export const workspaceArStd = {
+   title: 'الاشتراكات', catalog: 'الباقات والعروض', income: 'دخل الشهر', pending: 'بانتظار التأكيد',
+   ending: 'تنتهي خلال 7 أيام', active: 'اشتراك نشط', soon: 'تنتهي قريبًا', all: 'كل الدفعات',
+   noPayment: 'لا توجد دفعة مسجلة', unpaid: 'دون مبلغ', partial: 'مدفوعة جزئيًا', fullyPaid: 'مدفوعة بالكامل',
++  trial: 'تجريبي', trialEnds: 'تجريبي · ينتهي {date}',
+   confirm: 'وافق', confirmed: 'مؤكدة', saved: 'تمت الموافقة على طلب تجديد {name}',
+   renewalRequest: 'طلب تجديد · {package}', renewalOnly: 'تجديد دون دفعة',
+   fallback: 'تم قبول الطلب. انتهى العرض؛ راجع تفاصيل الاشتراك', 'after.one': "غدًا", 'after.two': "بعد يومين", 'after.few': "بعد {n} أيام", 'after.many': "بعد {n} يومًا", 'after.other': "بعد {n} يوم",
+diff --git a/src/features/coach-page/coach-link-card.test.ts b/src/features/coach-page/coach-link-card.test.ts
+index 67221575..c0aaf900 100644
+--- a/src/features/coach-page/coach-link-card.test.ts
++++ b/src/features/coach-page/coach-link-card.test.ts
+@@ -16,16 +16,21 @@ vi.mock('@/core/supabase/server', () => ({ supabaseServer: async () => ({
+   auth: { getClaims: async () => ({ data: { claims: { sub: 'captain-id' } }, error: null }) },
+   from: (table: string) => {
+     expect(table).toBe('profiles');
+-    return { select: (fields: string) => {
+-      expect(fields).toBe('public_slug');
+-      return { eq: (field: string, id: string) => {
+-        expect([field, id]).toEqual(['id', 'captain-id']);
+-        return { single: async () => {
+-          if (state.fail) throw new Error('offline');
+-          return { data: { public_slug: state.slug }, error: null };
++    return {
++      select: (fields: string) => {
++        expect(['public_slug', 'public_slug, full_name']).toContain(fields);
++        return { eq: (field: string, id: string) => {
++          expect([field, id]).toEqual(['id', 'captain-id']);
++          return { single: async () => {
++            if (state.fail) throw new Error('offline');
++            return { data: { public_slug: state.slug, full_name: 'Actual Captain' }, error: null };
++          } };
+         } };
+-      } };
+-    } };
++      },
++      // Every generated slug is already taken, so ensureCaptainSlug exhausts
++      // its candidates and falls back to the stored (invalid) slug.
++      update: () => ({ eq: () => ({ is: () => ({ select: async () => ({ error: { code: '23505' }, data: null }) }) }) }),
++    };
+   },
+ }) }));
+ beforeEach(() => { state.slug = 'ali-coach'; state.fail = false; state.locale = 'en'; });
+diff --git a/src/features/demo/guided/messages.ts b/src/features/demo/guided/messages.ts
+index 927970c9..568e8b9c 100644
+--- a/src/features/demo/guided/messages.ts
++++ b/src/features/demo/guided/messages.ts
+@@ -25,6 +25,7 @@ export const guidedMessages = defineMessages({
+     playerName: 'اسم اللاعب', package: 'الباقة', assessments: 'التقييمات اللي هيملاها', initial: 'تقييم أولي', initialDetail: 'الهدف، الإصابات، الأيام المتاحة', photosTitle: 'صور ومقاسات', gate: 'لازم يملاها قبل ما يبدأ', gateDetail: 'مش هيشوف برنامجه غير لما يبعتها', makeLink: 'اعمل لينك الدعوة', copy: 'انسخ', whatsapp: 'ابعته على واتساب', again: 'ضيف لاعب تاني', inviteUrl: 'kochivo.site/j/Y7k2', workout: 'التمرين', coach: 'الكابتن', me: 'أنا', progress: 'تقدّمي', offline: 'من غير نت', done: 'تمت المجموعة', rest: 'راحة', skipRest: 'تخطّى', set: 'مجموعة {n}', previous: 'المرة اللي فاتت: 62.5 × 8', upcoming: 'الجاي', records: 'أرقامك القياسية', recordNames: 'بنش بريس|سكوات|رفعة ميتة', subscription: 'اشتراكي', loading: 'جاري التحميل', error: 'مش قادرين نعرض الشاشة', retry: 'جرّب تاني', homeLink: 'ارجع للموقع', changeView: 'بدّل الشاشة',
+   },
+   get arStd() { return process.env.NEXT_PUBLIC_INTERNATIONAL === '1' ? {
++    lightTheme: 'الوضع الفاتح', darkTheme: 'الوضع الداكن',
+     'summaryPlayers.one': 'لاعب', 'summaryPlayers.two': 'لاعبان', 'summaryPlayers.few': 'لاعبين', 'summaryPlayers.many': 'لاعباً', 'summaryPlayers.other': 'لاعب',
+     captainPane: 'لوحة المدرّب', 'captainCaption.one': "المدرّب هشام، لاعب واحد", 'captainCaption.two': "المدرّب هشام، لاعبين", 'captainCaption.few': "المدرّب هشام، {n} لاعبين", 'captainCaption.many': "المدرّب هشام، {n} لاعبًا", 'captainCaption.other': "المدرّب هشام، {n} لاعب", phoneTime: '6:42', phoneNetwork: '5G', initialFeedTimes: '8:10|7:55|أمس',
+     nudgeText: 'يا عمر، نفتقدك. اليوم تمرين الرجل، ننتظرك.', freePrice: 'مجاناً',
+diff --git a/src/features/notifications/standard/messages.ts b/src/features/notifications/standard/messages.ts
+index 7b5d7f8a..8f013f44 100644
+--- a/src/features/notifications/standard/messages.ts
++++ b/src/features/notifications/standard/messages.ts
+@@ -22,7 +22,7 @@ export const arStd = {
+   subscription_expiring_player: 'ينتهي اشتراكك مع الكابتن {name} بعد 3 أيام',
+   subscription_expired_player: 'انتهى اشتراكك اليوم، تواصل مع الكابتن', captain_approved: 'تم تفعيل حسابك، مرحباً بك في KOCHIVO',
+   sessions_used_up: 'انتهت حصص اللاعب. راجع الاشتراك', workout_feedback: 'يوجد تقييم تمرين جديد للمراجعة',
+-  workout_reminder: 'هل أنت جاهز لتمرين اليوم؟ {name} بانتظارك', join_requested: 'أرسل {name} طلب انضمام',
++  workout_reminder: 'هل أنت جاهز لتمرين اليوم؟ {name} بانتظارك', join_requested: 'أرسل {name} طلب انضمام', someone: 'لاعب جديد',
+   title: 'الإشعارات', close: 'أغلق الإشعارات', markAll: 'علّم الكل كمقروء', loading: 'جاري تحميل الإشعارات…',
+   empty: 'لا توجد إشعارات بعد', error: 'تعذّر تحميل الإشعارات. حاول مجدداً', titleWithUnread: 'الإشعارات، توجد إشعارات غير مقروءة', unread: 'غير مقروء', retry: 'حاول مجدداً',
+   saveError: 'تعذّر تعليم الإشعار كمقروء. حاول مجدداً', plan_assigned: 'تم تعيين برنامج {name} لك',
+diff --git a/src/features/roster/components/captain-workspace-frame.test.ts b/src/features/roster/components/captain-workspace-frame.test.ts
+index 442a9ea0..3c25d9d9 100644
+--- a/src/features/roster/components/captain-workspace-frame.test.ts
++++ b/src/features/roster/components/captain-workspace-frame.test.ts
+@@ -69,7 +69,7 @@ it('renders grouped navigation, real captain identity and the existing plan foot
+   expect(html).toMatch(/<aside\b[\s\S]*data-captain-device="true"[\s\S]*<\/aside>/);
+   expect(html).toContain('data-ko-account="true"');
+   expect(html).toContain('group/page min-w-0 flex-1');
+-  expect(html).toContain('max-md:pb-[calc(var(--nav-clearance)+var(--spacing-touch)+var(--spacing-card))]!');
++  expect(html).toContain('max-md:pb-[calc(var(--nav-clearance)+var(--spacing-touch)+var(--spacing-card)+3.25rem+var(--spacing-card-gap))]!');
+   expect(html).toMatch(/<button\b[^>]*popovertarget="[^"]+"[^>]*>[\s\S]*Actual captain/i);
+   expect(html).toContain('id="page-bar-title"');
+   expect(html).toContain('id="page-bar-actions"');
+diff --git a/src/features/settings/player-account-view.test.ts b/src/features/settings/player-account-view.test.ts
+index 6e3f969b..65d44006 100644
+--- a/src/features/settings/player-account-view.test.ts
++++ b/src/features/settings/player-account-view.test.ts
+@@ -27,8 +27,10 @@ it('binds identity, plan, subscription and existing rank, retaining editing and
+     privacy: [createElement('button', { key: 'export' }, 'Export data'), createElement('button', { key: 'delete' }, 'Delete account')],
+   }, [createElement(GlassToggle, { key: 'glass' }), createElement(ThemeSwitch, { key: 'theme' }),
+       createElement(TourReplay, { key: 'tour', role: 'player' })])));
++  // The player app follows the phone's language, so the account page has no
++  // in-app language row: 'اللغة', 'عربي' and 'English' are not expected here.
+   for (const content of ['Actual player', 'Real captain', 'Actual plan', '15 ديسمبر', 'بطل', 'يوم ورا بعض',
+-    'اللغة', 'الشكل', 'فكّرني بالتمرين', 'الوزن بـ', 'ازاي تستخدم التطبيق', 'المزيد', 'عربي', 'English',
++    'الشكل', 'فكّرني بالتمرين', 'الوزن بـ', 'ازاي تستخدم التطبيق', 'المزيد',
+     'Profile and timezone editor', 'Install app', 'Export data', 'Delete account', 'Sign out', 'KO']) expect(html).toContain(content);
+   expect(html).not.toContain('فصحى');
+   expect(html).toContain('aria-label="غيّر صورة البروفايل"');
+diff --git a/src/features/settings/player-controls.test.ts b/src/features/settings/player-controls.test.ts
+index 11f7ca7f..586d570d 100644
+--- a/src/features/settings/player-controls.test.ts
++++ b/src/features/settings/player-controls.test.ts
+@@ -31,12 +31,12 @@ beforeEach(() => {
+ });
+ afterEach(() => { vi.unstubAllGlobals(); vi.unstubAllEnvs(); });
+ 
+-it('saves English through the existing language action and refreshes the locale', async () => {
+-  const tree = PlayerPreferences({ units: 'metric' });
+-  const control = buttons(tree).find(button => button.props.children === 'English');
+-  await control?.props.onClick?.();
+-  expect(state.language).toHaveBeenCalledExactlyOnceWith({ locale: 'en', label: 'english' });
+-  expect(state.refresh).toHaveBeenCalledOnce();
++it('does not offer an in-app language chooser for players', () => {
++  // The player app follows the phone's language by product decision; there
++  // is no language action in PlayerPreferences to save through.
++  const labels = buttons(PlayerPreferences({ units: 'metric' })).map(button => button.props.children);
++  expect(labels).not.toContain('English');
++  expect(labels).not.toContain('عربي');
+ });
+ it('does not offer a manual Arabic style in More', () => {
+   expect(buttons(PlayerPreferences({ units: 'metric', styleOnly: true }))).toHaveLength(0);
