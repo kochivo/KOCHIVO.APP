@@ -40,7 +40,10 @@ export function WorkspaceProgramsView(props: ComponentProps<typeof LibraryView>)
   useEffect(() => {
     if (autoTabbed.current || loading || error || tab !== 'mine') return;
     if (filterPrograms(templates, 'mine').length === 0 && filterPrograms(templates, 'ready').length > 0) {
-      autoTabbed.current = true; setTab('ready');
+      autoTabbed.current = true;
+      // Deferred: a synchronous setState here is a cascading render (react-hooks/set-state-in-effect).
+      // The microtask runs before paint, so the landing tab is unchanged.
+      queueMicrotask(() => setTab('ready'));
     }
   }, [templates, loading, error, tab]);
   const visible = filterPrograms(templates, tab);
